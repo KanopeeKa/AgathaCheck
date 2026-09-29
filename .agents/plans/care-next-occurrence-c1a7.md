@@ -12,7 +12,7 @@
 | **author** | Claude Code session, with the product owner (2026-09-29) |
 | **revisions** | v1 2026-09-29 · v2 2026-09-29 (product decisions) · v3 2026-09-29 (confirmations, UI review, data, E2E) |
 | **approval** | Owner sign-off in chat 2026-09-29 ("You have my sign off. Go ahead."), including the data wipe and category-default change |
-| **execution branch** | `claude/eager-edison-mf34j6` (Claude Code session branch); one commit per phase with the `phase(<n>/<m>):` prefix; one PR per child to `main` |
+| **execution model** | Owner, 2026-09-29: execute-plan in essence. `claude/eager-edison-mf34j6` is the **integration branch for the whole plan**; phases are committed with the `phase(<n>/<m>):` prefix **without approval stops**; a **draft PR to `main`** is opened early for CI signal; it is marked ready and **merged** when every child is done and all gates are green; then **babysit `pre-uat-e2e.yml` until green** |
 | **default_merge_mode** | `auto` |
 | **programme_ref** | `docs/domains/pet_care/features/care-item-evolution.md` (canonical Care Item spec) |
 | **reviewed commit** | `f6b6285` (`main`, 2026-09-29) — all file:line references are against this commit |
@@ -715,7 +715,7 @@ Reuses `pet_care/presentation/widgets/care_surface/*` primitives (`CareCollectio
 
 ## 10. Child plans and phases
 
-Order **A → B → C → D → E → F**. Each child: commits `phase(<n>/<m>): …` on the execution branch; local verification (§11); one PR to `main` per child; merged before the next child starts. A child estimated above 48h is split.
+Order **A → B → C → D → E → F**, all on the integration branch `claude/eager-edison-mf34j6` (execution model in Metadata). Each phase: local verification (§11) then a `phase(<n>/<m>): …` commit and push, with no approval stop. The branch is rebased on `origin/main` regularly (merge policy). One draft PR to `main` carries the whole plan; it merges after child F with `./scripts/pre-push.sh`, the full localhost E2E suite and CI green, then `pre-uat-e2e.yml` is babysat to green.
 
 ### Child A — `care-occurrence-spec-c1a7` (docs only)
 
@@ -920,14 +920,16 @@ Edits to `support/api.ts` are serialized (shared file, `docs/architecture/index.
 
 Clinical vaccination courses and lapse rules (copy hint later) · "As needed" medication (use Record something) · push reminder delivery (D-CIE-021) and reminder dedupe per due date · carer notifications on missed doses (People + notifications) · renaming `health_entries` / wire fields.
 
-## 14. Owner confirmations still pending (the plan uses these defaults)
+## 14. Owner confirmations (validated 2026-09-29)
 
-1. **UIR-7:** labels **Fixed schedule** / **After it's done**, section title **Schedule type** (matches existing app copy and the canonical spec).
-2. **UIR-1:** rows keep one action (Mark as done / Review); Skip, Change date, Postpone, Plan another date live on the Care Item view.
-3. **UIR-9:** "Record earlier doses" labels **Given / Not given** (medication) and **Done / Not done** (other care).
-4. **§5.15:** setting label **"If done after the due date"**.
-5. **§6.4:** the UAT dataset.
-6. **§11.4 (v3.1):** canary swap — the PR canary's care test becomes "Marking care as done shows its next date straight away" (count stays at 4).
+All six were formally validated by the owner on 2026-09-29:
+
+1. **UIR-7:** labels **Fixed schedule** / **After it's done**, section title **Schedule type** — ✅
+2. **UIR-1:** one action per row (Mark as done / Review); other actions on the Care Item view — ✅
+3. **UIR-9:** **Given / Not given** (medication), **Done / Not done** (other care) — ✅
+4. **§5.15:** setting label **"If done after the due date"** — ✅
+5. **§6.4:** the UAT dataset — ✅
+6. **§11.4:** canary swap to "Marking care as done shows its next date straight away" — ✅
 
 ## 15. Review checklist for Cursor
 
@@ -988,11 +990,11 @@ Context for every resolution: **there are no users yet** (pre-launch), so compat
 ## Runtime state
 
 ```yaml
-autonomy: approved
-current_phase: null
+autonomy: active
+current_phase: "A1"
 last_completed_phase: null
-halt_reason: "owner final read-through requested before build"
-next_action: "on owner go: child A (docs)"
+halt_reason: null
+next_action: "child A: canonical documentation"
 artifact_ref:
   branch: claude/eager-edison-mf34j6
   plan_path: .agents/plans/care-next-occurrence-c1a7.md
