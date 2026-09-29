@@ -5,7 +5,7 @@ import '../../../../../core/utils/calendar_date.dart';
 import '../../../../../core/theme/experience_colors.dart';
 import '../../../../../core/utils/constants.dart';
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../vet/presentation/providers/vet_providers.dart';
+import '../../providers/pet_vet_contacts_provider.dart';
 import '../../../../weight_tracking/presentation/providers/weight_providers.dart';
 import '../../../domain/entities/pet.dart';
 import '../../../domain/services/pet_detail_actions.dart';
@@ -34,11 +34,9 @@ class PetDetailProfileCard extends ConsumerWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    final vetsAsync = ref.watch(vetListProvider);
+    final vetsAsync = ref.watch(petVetOptionsProvider);
     final vets = vetsAsync.valueOrNull ?? [];
-    final assignedVet = (pet.vetId != null && pet.vetId!.isNotEmpty)
-        ? vets.where((v) => v.id == pet.vetId).firstOrNull
-        : null;
+    final assignedVet = findPetVetOption(vets, pet.vetId);
 
     final displayWeight = pet.weight;
     final l = AppLocalizations.of(context)!;
@@ -278,8 +276,8 @@ class PetDetailProfileCard extends ConsumerWidget {
   Widget _buildVetRow(
     BuildContext context,
     WidgetRef ref,
-    dynamic assignedVet,
-    List vets,
+    PetVetOption? assignedVet,
+    List<PetVetOption> vets,
     ThemeData theme,
     ColorScheme colorScheme,
   ) {
@@ -344,7 +342,9 @@ class PetDetailProfileCard extends ConsumerWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  assignedVet != null ? assignedVet.name : l.noVetAssigned,
+                  assignedVet != null
+                      ? assignedVet.displayName
+                      : l.noVetAssigned,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: assignedVet != null
                         ? colorScheme.primary
@@ -373,9 +373,9 @@ class PetDetailProfileCard extends ConsumerWidget {
                 PopupMenuItem<String?>(value: null, child: Text(l.removeVet)),
               ...vets.map(
                 (vet) => PopupMenuItem<String?>(
-                  value: vet.id,
-                  enabled: assignedVet?.id != vet.id,
-                  child: Text(vet.name),
+                  value: vet.vetId,
+                  enabled: assignedVet?.vetId != vet.vetId,
+                  child: Text(vet.displayName),
                 ),
               ),
             ],
