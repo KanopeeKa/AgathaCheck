@@ -9,7 +9,8 @@ import '../../../../core/branding/logo_assets.dart';
 import '../../../experience/domain/entities/app_experience.dart';
 import '../../domain/entities/pet_report_supplement.dart';
 import '../../../sharing/presentation/providers/sharing_providers.dart';
-import '../../../vet/presentation/providers/vet_providers.dart';
+import '../../../vet/domain/entities/vet.dart';
+import '../providers/pet_vet_contacts_provider.dart';
 import '../../../weight_tracking/presentation/providers/weight_providers.dart';
 import '../../data/services/pdf_saver.dart' as pdf_saver;
 import '../../data/services/pet_report_service.dart';
@@ -41,10 +42,11 @@ class DownloadReportController {
     );
 
     try {
-      final vets = ref.read(vetListProvider).valueOrNull ?? [];
-      final assignedVet = (pet.vetId != null && pet.vetId!.isNotEmpty)
-          ? vets.where((v) => v.id == pet.vetId).firstOrNull
-          : null;
+      final vetOptions = ref.read(petVetOptionsProvider).valueOrNull ?? [];
+      final vetOption = findPetVetOption(vetOptions, pet.vetId);
+      final assignedVet = vetOption == null
+          ? null
+          : Vet(id: vetOption.vetId, name: vetOption.displayName);
 
       final weightEntries = await ref.read(
         weightEntriesProvider(pet.id).future,

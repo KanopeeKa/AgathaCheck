@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 
+import { syncPetPrimaryVetFromLegacyVetId } from '../../lib/people/petVetLink.js';
 import { upsertContactFromVet } from '../../lib/people/vetSync.js';
 
 /**
@@ -46,28 +47,11 @@ export async function backfillPeopleFromVets(client) {
   );
 
   for (const pet of pets.rows) {
-    const contact = await client.query(
-      `SELECT pc.id
-       FROM people_contacts pc
-       WHERE pc.legacy_vet_id = $1`,
-      [pet.vet_id],
-    );
-    if (contact.rows.length === 0) continue;
-    const contactId = contact.rows[0].id;
-
-    const existing = await client.query(
-      `SELECT id FROM pet_contact_relationships
-       WHERE pet_id = $1 AND contact_id = $2 AND relationship_kind = 'primary_vet'`,
-      [pet.pet_id, contactId],
-    );
-    if (existing.rows.length > 0) continue;
-
-    await client.query(
-      `INSERT INTO pet_contact_relationships (
-         id, pet_id, contact_id, relationship_kind, is_primary, active,
-         created_at, updated_at
-       ) VALUES ($1, $2, $3, 'primary_vet', true, true, NOW(), NOW())`,
-      [uuidv4(), pet.pet_id, contactId],
+    await syncPetPrimaryVetFromLegacyVetId(
+      client,
+      pet.pet_id,
+      pet.vet_id,
+      pet.owner_user_id,
     );
   }
 }

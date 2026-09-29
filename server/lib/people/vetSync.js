@@ -97,6 +97,47 @@ export async function upsertContactFromVet(pool, vetRow, userId) {
  * @param {import('pg').Pool|import('pg').PoolClient} pool
  * @param {string} vetId
  */
+/**
+ * Push People contact fields onto the linked legacy vets row.
+ * @param {import('pg').Pool|import('pg').PoolClient} pool
+ * @param {object} contactRow loadContactForViewer row
+ * @param {string} userId
+ */
+export async function syncVetRowFromContact(pool, contactRow, userId) {
+  const legacyVetId = contactRow.legacy_vet_id;
+  if (!legacyVetId || !userId) return;
+
+  const existing = await pool.query(
+    'SELECT name FROM vets WHERE id = $1 AND user_id = $2',
+    [legacyVetId, userId],
+  );
+  if (existing.rows.length === 0) return;
+
+  const kind = contactRow.kind || 'person';
+  const clinic = kind === 'organisation' ? (contactRow.name || '').trim() : '';
+  const name =
+    kind === 'organisation'
+      ? (existing.rows[0].name || contactRow.name || '').trim()
+      : (contactRow.name || '').trim();
+
+  await pool.query(
+    `UPDATE vets
+     SET name = $1, clinic = $2, phone = $3, email = $4, address = $5, website = $6,
+         updated_at = NOW()
+     WHERE id = $7 AND user_id = $8`,
+    [
+      name || 'Vet',
+      clinic,
+      contactRow.phone || null,
+      contactRow.email || null,
+      contactRow.address || '',
+      contactRow.website || '',
+      legacyVetId,
+      userId,
+    ],
+  );
+}
+
 export async function deleteContactForVet(pool, vetId) {
   if (!vetId) return;
   const contact = await pool.query(

@@ -1,0 +1,173 @@
+{
+  "schema_version": 1,
+  "plan_id": "people-vet-unify-a58d",
+  "approved_at": "2026-09-29T09:40:00Z",
+  "approved_by": "user chat 2026-09-29: Implement with /execute-plan full agreement phase 0 to phase 5 + cleanup",
+  "approved_until": "2026-10-01T09:40:00Z",
+  "content_hash": "sha256:0ede331e95ab1f882d9ab92b09e292347be3d3da3ffa8441611201f92f9fa5d7",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/people-vet-unify-integration-a58d",
+  "control_issue": 1427,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "p0-data-repair",
+      "title": "Seed + reconcile vets → People contacts",
+      "branch": "cursor/people-vet-unify-p0-a58d",
+      "allowed_paths": [
+        "server/db/seeds/**",
+        "server/lib/people/**",
+        "server/scripts/migrations/073_people_vet_backfill.js",
+        "server/scripts/reconcilePeopleVets.js",
+        "server/test/people/**",
+        "server/test/seed.test.js",
+        ".agents/plans/people-vet-unify-a58d.md",
+        ".agents/plans/people-vet-unify-a58d.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null
+    },
+    {
+      "id": "p1-pet-write-sync",
+      "title": "Pet vet_id writes sync primary_vet relationship",
+      "branch": "cursor/people-vet-unify-p1-a58d",
+      "allowed_paths": [
+        "server/lib/people/**",
+        "server/routes/pets/**",
+        "server/test/people/**",
+        "server/test/routes/pets/**",
+        ".agents/plans/people-vet-unify-a58d.md",
+        ".agents/plans/people-vet-unify-a58d.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null
+    },
+    {
+      "id": "p2-flutter-read",
+      "title": "Pet profile/form read vets via People contacts",
+      "branch": "cursor/people-vet-unify-p2-a58d",
+      "allowed_paths": [
+        "flutter_app/lib/features/pet_profile/**",
+        "flutter_app/lib/features/people/**",
+        "flutter_app/test/features/pet_profile/**",
+        "flutter_app/test/features/people/**",
+        ".agents/plans/people-vet-unify-a58d.md",
+        ".agents/plans/people-vet-unify-a58d.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null
+    },
+    {
+      "id": "p3-contact-vet-sync",
+      "title": "People contact mutations sync legacy vets row",
+      "branch": "cursor/people-vet-unify-p3-a58d",
+      "allowed_paths": [
+        "server/lib/people/**",
+        "server/routes/people/**",
+        "server/routes/vets.js",
+        "server/test/people/**",
+        ".agents/plans/people-vet-unify-a58d.md",
+        ".agents/plans/people-vet-unify-a58d.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null
+    },
+    {
+      "id": "p4-vet-ui-redirect",
+      "title": "Unified create vet + vet routes → People",
+      "branch": "cursor/people-vet-unify-p4-a58d",
+      "allowed_paths": [
+        "flutter_app/lib/features/pet_profile/**",
+        "flutter_app/lib/features/vet/**",
+        "flutter_app/lib/core/router/**",
+        "flutter_app/test/**",
+        "e2e/**",
+        ".agents/plans/people-vet-unify-a58d.md",
+        ".agents/plans/people-vet-unify-a58d.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null
+    },
+    {
+      "id": "p5-cleanup",
+      "title": "Docs, BDD, seed assertion, ship integration → main",
+      "branch": "cursor/people-vet-unify-p5-a58d",
+      "allowed_paths": [
+        "docs/**",
+        "e2e/**",
+        "server/test/**",
+        ".agents/**",
+        ".agents/plans/people-vet-unify-a58d.md",
+        ".agents/plans/people-vet-unify-a58d.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null
+    }
+  ]
+}

@@ -10,6 +10,8 @@ import 'package:pet_profile_app/features/organization/presentation/providers/org
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/screens/pet_form_screen.dart';
+import 'package:pet_profile_app/features/people/domain/entities/people_contact.dart';
+import 'package:pet_profile_app/features/people/presentation/providers/people_providers.dart';
 import 'package:pet_profile_app/features/vet/domain/entities/vet.dart';
 import 'package:pet_profile_app/features/vet/presentation/providers/vet_providers.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
@@ -32,6 +34,22 @@ class _VetsNotifier extends VetListNotifier {
     Vet(
       id: 'vet-1',
       name: 'Dr Smith',
+      phone: '01234',
+      email: 'vet@example.com',
+      address: '1 Vet Road',
+    ),
+  ];
+}
+
+class _PeopleVetContactsNotifier extends PeopleContactsNotifier {
+  @override
+  Future<List<PeopleContact>> build() async => const [
+    PeopleContact(
+      id: 'contact-1',
+      kind: 'person',
+      name: 'Dr Smith',
+      roles: ['vet'],
+      legacyVetId: 'vet-1',
       phone: '01234',
       email: 'vet@example.com',
       address: '1 Vet Road',
@@ -73,6 +91,7 @@ Widget _wrapAddForm({RecordingPetRepository? repo, String? initialOrgId}) {
       petRepositoryProvider.overrideWithValue(repository),
       organizationListProvider.overrideWith(_OrgsNotifier.new),
       vetListProvider.overrideWith(_VetsNotifier.new),
+      peopleContactsProvider.overrideWith(_PeopleVetContactsNotifier.new),
       apiBaseUrlProvider.overrideWithValue('http://test.local'),
       allPetsIncludingOrgProvider.overrideWith((ref) async => <Pet>[]),
     ],
@@ -89,6 +108,7 @@ Widget _wrap(Pet pet) {
     overrides: [
       petListProvider.overrideWith(() => _ExistingPetNotifier(pet)),
       vetListProvider.overrideWith(_VetsNotifier.new),
+      peopleContactsProvider.overrideWith(_PeopleVetContactsNotifier.new),
       apiBaseUrlProvider.overrideWithValue('http://test.local'),
     ],
     child: const MaterialApp(

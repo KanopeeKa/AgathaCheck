@@ -4,6 +4,7 @@ import { CONTACT_KINDS, CONTACT_ROLES } from './constants.js';
 import { userOwnsContact } from './authz.js';
 import { ensurePersonalDirectory } from './directory.js';
 import { loadContactForViewer } from './contactMapping.js';
+import { syncVetRowFromContact } from './vetSync.js';
 
 function normalizeRoles(raw) {
   if (raw == null) return [];
@@ -161,5 +162,10 @@ export async function patchPersonalContact(pool, contactId, userId, body) {
   }
 
   const row = await loadContactForViewer(pool, contactId, userId);
+  if (row?.legacy_vet_id) {
+    await syncVetRowFromContact(pool, row, userId);
+    const refreshed = await loadContactForViewer(pool, contactId, userId);
+    return { row: refreshed };
+  }
   return { row };
 }

@@ -5,7 +5,6 @@ import '../../l10n/app_localizations.dart';
 import '../../features/experience/presentation/widgets/experience_shell_scaffold.dart';
 import '../../features/vet/presentation/screens/vet_detail_screen.dart';
 import '../../features/vet/presentation/screens/vet_form_screen.dart';
-import '../../features/vet/presentation/screens/vet_list_screen.dart';
 
 List<RouteBase> buildVetExperienceRoutes() {
   return [
@@ -17,6 +16,13 @@ List<RouteBase> buildVetExperienceRoutes() {
         if (path == '/pc/vets' || path == '/pc/vets/') {
           return '/pc/people?filter=professionals';
         }
+        if (path == '/pc/vets/add') {
+          return '/pc/people/new';
+        }
+        final detailMatch = RegExp(r'^/pc/vets/([^/]+)$').firstMatch(path);
+        if (detailMatch != null && detailMatch.group(1) != 'add') {
+          return '/pc/people?filter=professionals';
+        }
         return null;
       },
       routes: _vetFormRoutes(listPath: '/pc/vets'),
@@ -26,7 +32,10 @@ List<RouteBase> buildVetExperienceRoutes() {
       name: 'guardianVets',
       redirect: (context, state) => _legacyPetCareVetRedirect(state.uri.path),
     ),
-    GoRoute(path: '/g/vets/add', redirect: (context, state) => '/pc/vets/add'),
+    GoRoute(
+      path: '/g/vets/add',
+      redirect: (context, state) => '/pc/people/new',
+    ),
     GoRoute(
       path: '/g/vets/edit/:id',
       redirect: (context, state) =>
@@ -88,7 +97,7 @@ String? redirectLegacyVetPath(GoRouterState state) =>
 
 String? legacyVetRedirectForPath(String path) {
   if (path == '/vets') return '/pc/vets';
-  if (path == '/vets/add') return '/pc/vets/add';
+  if (path == '/vets/add') return '/pc/people/new';
   final editMatch = RegExp(r'^/vets/edit/([^/]+)$').firstMatch(path);
   if (editMatch != null) {
     return '/pc/vets/edit/${editMatch.group(1)}';
