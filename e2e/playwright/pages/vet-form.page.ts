@@ -38,6 +38,11 @@ export class VetFormPage {
 
   async save(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
+    const onPeopleEdit = /\/pc\/people\/[^/]+\/edit/.test(this.page.url());
+    if (onPeopleEdit) {
+      await this.page.getByRole('button', { name: /^Save$/i }).click();
+      return;
+    }
     await this.page
       .getByRole('button', {
         name: /^(Add Vet|Save changes|Save)$/i,
@@ -106,10 +111,15 @@ export class VetFormPage {
 
   async updatePhone(newPhone: string): Promise<void> {
     await this.expectLoaded();
-    const phoneField = this.page.getByRole('textbox', { name: 'Phone' });
-    await phoneField.clear();
-    await phoneField.fill(newPhone);
+    const phoneField = this.page
+      .getByRole('textbox', { name: /^Phone$/i })
+      .or(this.page.getByLabel(/^Phone$/i));
+    await phoneField.first().clear();
+    await phoneField.first().fill(newPhone);
     await this.save();
+    await waitForFlutterRoutePattern(this.page, /\/pc\/people(?:\?|$|\/)/, 30_000).catch(
+      () => undefined,
+    );
     await this.expectSaved('edit');
   }
 }

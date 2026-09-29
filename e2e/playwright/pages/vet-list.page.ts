@@ -171,8 +171,10 @@ export class VetListPage {
     if (await inlineEdit.isVisible({ timeout: 2_000 }).catch(() => false)) {
       await inlineEdit.click();
     } else if (await this.onPeopleHub()) {
-      const vetId = await this.resolveVetIdByName(name);
-      await this.openVetEditRoute(vetId);
+      await this.openPersonDetailFromHub(name);
+      await this.page.getByRole('button', { name: /^Edit details$/i }).click();
+      await waitForFlutterRoutePattern(this.page, /\/pc\/people\/[^/]+\/edit/, 30_000);
+      await refreshFlutterAccessibility(this.page);
     } else {
       await this.vetRowLocator(name).click();
       await waitForFlutterRoutePattern(this.page, /\/(pc|g|o)\/vets\/[^/]+$/, 30_000);
@@ -193,25 +195,46 @@ export class VetListPage {
 
   async clickDeleteVet(name: string): Promise<void> {
     await this.clickEditVet(name);
-    await this.page.getByRole('button', { name: /Delete Vet/i }).click();
+    const legacyDelete = this.page.getByRole('button', { name: /Delete Vet/i });
+    if (await legacyDelete.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      await legacyDelete.click();
+    } else {
+      await this.page.getByRole('button', { name: /^Remove contact$/i }).click();
+    }
     await refreshFlutterAccessibility(this.page);
   }
 
   async confirmDeletion(): Promise<void> {
-    await this.page.getByRole('button', { name: 'Delete' }).last().click();
+    const removeConfirm = this.page
+      .getByRole('button', { name: /^Remove contact$/i })
+      .last();
+    if (await removeConfirm.isVisible({ timeout: 3_000 }).catch(() => false)) {
+      await removeConfirm.click();
+    } else {
+      await this.page.getByRole('button', { name: 'Delete' }).last().click();
+    }
     await this.page.waitForTimeout(1_000);
   }
 
   async cancelDeletion(): Promise<void> {
     await this.page.getByRole('button', { name: 'Cancel' }).click();
-    // Dialog dismissed — should still be on the edit form
-    await this.page.getByRole('button', { name: /Delete Vet/i }).waitFor({ timeout: 15_000 });
+    const stillOnEdit =
+      (await this.page.getByRole('button', { name: /Delete Vet/i }).isVisible({ timeout: 5_000 }).catch(() => false)) ||
+      (await this.page.getByRole('button', { name: /^Remove contact$/i }).isVisible({ timeout: 5_000 }).catch(() => false));
+    if (!stillOnEdit) {
+      throw new Error('Expected vet/contact delete to be cancelled on edit screen');
+    }
     await refreshFlutterAccessibility(this.page);
   }
 
   /** Vet delete cancel leaves the edit form open — return to the list before assertions. */
   async backToListFromEdit(): Promise<void> {
-    await this.page.getByRole('button', { name: /back to veterinarians/i }).click();
+    const backToVets = this.page.getByRole('button', { name: /back to veterinarians/i });
+    if (await backToVets.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      await backToVets.click();
+    } else {
+      await this.page.getByRole('button', { name: /^Back$/i }).first().click();
+    }
     await refreshFlutterAccessibility(this.page);
     await this.expectLoaded();
   }
