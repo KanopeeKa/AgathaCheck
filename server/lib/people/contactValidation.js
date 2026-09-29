@@ -7,7 +7,16 @@ const LIMITS = {
   private_note: 5000,
 };
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+/** Structural check only (no regex — avoids ReDoS on user input). */
+function isValidEmailShape(email) {
+  const at = email.indexOf('@');
+  if (at <= 0 || at !== email.lastIndexOf('@')) return false;
+  const domain = email.slice(at + 1);
+  const dot = domain.indexOf('.');
+  if (dot <= 0 || dot >= domain.length - 1) return false;
+  if (/[\s]/.test(email)) return false;
+  return true;
+}
 
 function trimOrNull(value) {
   if (value == null) return null;
@@ -38,11 +47,11 @@ export function validateContactInput(body, opts = {}) {
 
   if (body.email !== undefined) {
     const email = trimOrNull(body.email);
-    if (email && !EMAIL_RE.test(email)) {
-      return { error: 'Invalid email' };
-    }
     const len = checkLength('email', email, LIMITS.email);
     if (len) return { error: len };
+    if (email && !isValidEmailShape(email)) {
+      return { error: 'Invalid email' };
+    }
   }
 
   if (body.phone !== undefined) {
