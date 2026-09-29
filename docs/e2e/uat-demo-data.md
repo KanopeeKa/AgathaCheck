@@ -3,7 +3,7 @@ title: UAT demo data
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-09-04
+last_updated: 2026-09-29
 tags: [e2e, uat, demo]
 ---
 # UAT demo data
@@ -78,8 +78,9 @@ node server/scripts/sync-demo-credentials-doc.js
 |--------|----------------|
 | **Owned pets** | Buddy (dog) and Whiskers (cat) — Frederique; Pip (dog) — Dave |
 | **Org pets** | Clinic Cat (Happy Paws); Max, Luna, Rocky, Mittens (Rescue Hearts) |
-| **Health** | Vaccinations, medications, overdue preventives, vet visits, active health issue |
-| **Care scheduling (CSM)** | Multi-per-day weekly course, per-family anchors, weight occurrence links, far-future weight series, `from_completion` pending hop |
+| **Care occurrences** | Every care behaviour of the care occurrences programme — see [Care occurrences](#care-occurrences) below |
+| **Health** | Vet visit record, active health issue |
+| **Care scheduling (CSM)** | Multi-time weekly course and a daily After-it's-done item (away-planning inputs); established weekly weight check |
 | **Away Planning** | Carer mix (all/some/none), five coverage-state windows, multi-time intersection, past/upcoming/cancelled absences, downloaded-then-edited handover timestamp |
 | **Weight** | Weight history for Buddy and Whiskers |
 | **Vets** | Dr. Sarah Mitchell linked to Buddy |
@@ -89,7 +90,7 @@ node server/scripts/sync-demo-credentials-doc.js
 | **Adoption** | Rocky journey (pending conditions); Luna prospect + scheduled visit |
 | **Custody** | Pending transfer of Luna to Grace |
 | **Sharing** | Carol has shared access to Buddy; pending share link for Whiskers |
-| **Notifications** | Overdue flea treatment (urgent); foster request admin alert |
+| **Notifications** | Overdue wellness review (urgent); foster request admin alert |
 | **Org connections** | Happy Paws Clinic ↔ Rescue Hearts |
 | **Permissions** | Bob has `manage_pets` override at Happy Paws |
 | **Document templates** | Adoption milestones + foster intake checklist at Rescue Hearts |
@@ -108,8 +109,9 @@ Run individually with `node server/scripts/seed.js --scenario=<name>`:
 | `org-clinic` | Happy Paws Clinic, Bob, Clinic Cat (discoverable, org UX v3) |
 | `org-v3-demo` | Minimal org UX v3 subset: clinic + Rescue Hearts shell + connection |
 | `rescue-hearts` | Rescue Hearts charity, Eve, Dave, Grace, org pets |
-| `health-care` | Vets, health entries, weight, timeline, family events |
-| `care-schedule-fixture` | CSM edge-case rhythms: multi-per-day non-daily, anchor defaults, weight paths |
+| `health-care` | Vets, health issues, weight, timeline, family events, Max's flea treatment |
+| `care-occurrences` | Buddy's and Whiskers' care, built through the care commands (see below) |
+| `care-schedule-fixture` | Multi-time weekly course and a daily After-it's-done item used by away planning |
 | `away-planning` | Planned absences: carer mix, coverage states, lifecycle, multi-time overlap (after `care-schedule-fixture`) |
 | `fostering` | Foster profiles, placements, requests |
 | `adoption` | Journeys, prospects, visits, custody transfers |
@@ -130,7 +132,43 @@ server/db/seeds/
 server/scripts/seed.js   # CLI entry point
 ```
 
-Idempotent `INSERT … ON CONFLICT DO UPDATE` — safe to re-run without truncate.
+Idempotent `INSERT … ON CONFLICT DO UPDATE` — safe to re-run without truncate. Care items are recreated (delete by fixed id, then create through the care commands), so their occurrences are always consistent.
+
+**Care is seeded through the app's commands only** (`server/db/seeds/helpers/care-commands.js`): create, record doses, mark done, plan another date, postpone. Seeds never write `health_occurrences` with SQL — `scripts/check_occurrence_writes.js` enforces it. Commands are replayed at past pet-home clocks (`Europe/Paris`), so time-dependent states come out right.
+
+---
+
+## Care occurrences
+
+Seeded by `care-occurrences` relative to the seed day in the pet's timezone (`Europe/Paris`). Asserted row by row in `server/test/db/seeds/careOccurrencesSeed.test.js` (seed clock pinned with `SEED_CARE_CLOCK`). Every row uses its category's default schedule type unless it says "set explicitly".
+
+| Pet | Care item | Setup | What UAT shows |
+|-----|-----------|-------|----------------|
+| Buddy | Apoquel (medication, Fixed schedule, 08:00 & 18:00) | Started 10 days ago; older doses recorded; yesterday 18:00 and today 08:00 not recorded | Today: "1 dose not recorded" + 08:00 Overdue (until 18:00) + 18:00 Due |
+| Buddy | Heart tablet (medication, Fixed schedule, daily 09:00) | Remembered choice "Skip the next date" | Advanced settings → "If done after the due date" shows it |
+| Buddy | NexGard (parasite prevention, monthly) | Due in 3 days | Due soon |
+| Buddy | DHPP vaccine (yearly) | First dose done 20 days ago; booster planned in 10 days | Due soon: the booster (planned); after it, yearly from the booster |
+| Buddy | Rabies vaccine (yearly) | Due in 200 days | Upcoming (collapsed) |
+| Buddy | Wellness review (yearly) | Overdue by 5 days | Today → Overdue first; "Estimated next" moves with today |
+| Buddy | Dental chew (dental, daily, no time) | Done yesterday → due today | "Anytime" group (or "Today's list") |
+| Buddy | Grooming (every 6 weeks) | Paused 3 days ago | "Paused since …"; Resume asks the date |
+| Buddy | Weekly weight check | Four weigh-ins recorded | Established marker (`care-item-model-fixture`) |
+| Whiskers | Methimazole (medication, Fixed schedule, 08:00 & 20:00) | Last three days not recorded; one older dose auto-closed | Stack row "6 doses not recorded" → Review; History shows "Record as given" |
+| Whiskers | Flea treatment (parasite prevention, monthly, 19:00) | Due today at 19:00 | Evening group |
+| Whiskers | Nail trim (every 3 weeks) | Due tomorrow | Due soon |
+| Whiskers | Cat vaccination (yearly) | Due in 90 days | Upcoming |
+| Whiskers | Monthly weigh-in (weight monitoring, **Fixed schedule set explicitly**) | Anchored on the most recent 31st, that weigh-in recorded | Next dates clamp to month ends (30th / 31st); Advanced summary shows the non-default type |
+| Whiskers | Vet visit | Recorded last week | History only, no open date |
+
+Changes from the plan table (`.agents/plans/care-next-occurrence-c1a7.md` §6.4): the month-end weigh-in is on Whiskers (Buddy already has the established weekly weight check); Grooming is paused without an end date (for After-it's-done care, "Postpone until" moves the date rather than pausing); the trip with NexGard postponed after return and the booster kept with Carol is added with absences (child E).
+
+### Resetting care data
+
+The product is pre-launch: care data is wiped and reseeded, not migrated.
+
+- **UAT:** after deploy, run **Actions → UAT reset demo data** (`scripts/db/uat-refresh-demo.sh` truncates application tables and reseeds).
+- **Local:** `APP_ENV=development scripts/db/uat-reset.sh`.
+- **Check:** `node server/scripts/care/repair_occurrences.js --dry-run` reports any invariant violation (expect 0 after seeding).
 
 ---
 

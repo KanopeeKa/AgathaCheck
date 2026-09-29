@@ -139,6 +139,7 @@ run_governance() {
   node --test scripts/github_issue_workflow.test.js
   node --test scripts/db/normalize-schema-dump.test.js
   node scripts/db/check-migration-manifest.js
+  node scripts/check_occurrence_writes.js
   node e2e/scripts/check_bdd_coverage.js
   node e2e/scripts/check_test_quality.js --report-only
   node e2e/scripts/validate-shard-manifest.mjs --report-only

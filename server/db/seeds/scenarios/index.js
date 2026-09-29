@@ -3,6 +3,7 @@ import { seedConnections } from './connections.js';
 import { seedFostering } from './fostering.js';
 import { seedGuardian } from './guardian.js';
 import { seedCareItemModelFixture } from './care-item-model-fixture.js';
+import { seedCareOccurrences } from './care-occurrences.js';
 import { seedAwayPlanning } from './away-planning.js';
 import { seedCareScheduleFixture } from './care-schedule-fixture.js';
 import { seedHealthCare } from './health-care.js';
@@ -18,6 +19,7 @@ export const SCENARIOS = {
   'org-v3-demo': seedOrgV3Demo,
   'rescue-hearts': seedRescueHearts,
   'health-care': seedHealthCare,
+  'care-occurrences': seedCareOccurrences,
   'care-schedule-fixture': seedCareScheduleFixture,
   'away-planning': seedAwayPlanning,
   'care-item-model-fixture': seedCareItemModelFixture,
@@ -36,6 +38,7 @@ export const ALL_SCENARIOS = [
   'org-clinic',
   'rescue-hearts',
   'health-care',
+  'care-occurrences',
   'care-schedule-fixture',
   'away-planning',
   'care-item-model-fixture',

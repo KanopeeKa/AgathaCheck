@@ -18,6 +18,13 @@ import {
 } from '../../../lib/care/plannedAbsence.js';
 import { DEMO_IDS } from '../demo-constants.js';
 import { calendarDaysFromToday, timestampFromNow } from '../helpers.js';
+import {
+  completeEarliest,
+  createSeedCareItem,
+  planDate,
+  seedNow,
+  skipEarliest,
+} from '../helpers/care-commands.js';
 
 export const AWAY_PLANNING_ABSENCE_IDS = [
   DEMO_IDS.awPastAllCompletedAbsence,
@@ -172,44 +179,25 @@ export async function countAwayPlanningSeedRows(client) {
 }
 
 async function seedNoUnresolvedFixture(client, startsOn, endsOn) {
-  await client.query(
-    `INSERT INTO health_entries (
-       id, pet_id, user_id, type, name, dosage, frequency,
-       start_date, next_due_date, status, remind_days_before, notes, care_family,
-       care_setting, care_planning, care_importance
-     )
-     VALUES ($1, $2, $3, 'other', 'Away-planning skipped/completed demo', '', 'once',
-             $4, $4, 'active', 0, 'AW-SEED no_unresolved_items window', NULL,
-             'other', 'planned', 'optional')
-     ON CONFLICT (id) DO UPDATE SET
-       start_date = EXCLUDED.start_date,
-       next_due_date = EXCLUDED.next_due_date,
-       notes = EXCLUDED.notes,
-       updated_at = NOW()`,
-    [DEMO_IDS.awNoUnresolvedEntry, DEMO_IDS.buddyPet, DEMO_IDS.alice, startsOn],
-  );
-
-  await client.query(
-    `INSERT INTO health_occurrences (
-       id, health_entry_id, scheduled_date, status, completed_on, notes
-     )
-     VALUES
-       ($1, $4, $2::date, 'completed', $2::date, 'Completed before away window'),
-       ($3, $4, $5::date, 'skipped', NULL, 'Skipped dose')
-     ON CONFLICT (id) DO UPDATE SET
-       scheduled_date = EXCLUDED.scheduled_date,
-       status = EXCLUDED.status,
-       completed_on = EXCLUDED.completed_on,
-       notes = EXCLUDED.notes,
-       updated_at = NOW()`,
-    [
-      DEMO_IDS.awNoUnresolvedOccCompleted,
-      startsOn,
-      DEMO_IDS.awNoUnresolvedOccSkipped,
-      DEMO_IDS.awNoUnresolvedEntry,
-      endsOn,
-    ],
-  );
+  // One-off care done and a second planned date skipped inside a past
+  // absence (coverage: no unresolved items) — through the care commands.
+  const now = seedNow();
+  const item = { entryId: DEMO_IDS.awNoUnresolvedEntry, userId: DEMO_IDS.alice };
+  const before = { todayIso: startsOn, nowTimeIso: '07:00', timeZone: now.timeZone };
+  await createSeedCareItem(client, {
+    id: item.entryId,
+    petId: DEMO_IDS.buddyPet,
+    userId: DEMO_IDS.alice,
+    name: 'Away-planning skipped/completed demo',
+    careFamily: 'other',
+    frequency: 'once',
+    firstDate: startsOn,
+    remindDaysBefore: 0,
+    notes: 'AW-SEED no_unresolved_items window',
+  }, before);
+  await planDate(client, item, endsOn, before);
+  await completeEarliest(client, item, { ...before, nowTimeIso: '18:00' });
+  await skipEarliest(client, item, { todayIso: endsOn, nowTimeIso: '18:00', timeZone: now.timeZone });
 }
 
 export async function seedAwayPlanning(client) {

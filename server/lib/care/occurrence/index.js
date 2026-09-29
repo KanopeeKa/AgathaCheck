@@ -81,6 +81,22 @@ export async function runCareCommand(pool, {
 }
 
 /**
+ * Run one command inside a transaction the caller already opened (seeds,
+ * migration hooks). Locks the item row; never BEGINs or COMMITs.
+ *
+ * @template T
+ * @param {import('pg').PoolClient} db client inside an open transaction
+ * @param {{ entryId: string, userId?: string|null, asOf: object }} params
+ * @param {(ctx: object) => Promise<{ event: object|null, result?: T }>} command
+ */
+export async function applyCareCommand(db, { entryId, userId = null, asOf }, command) {
+  const locked = await db.query('SELECT * FROM health_entries WHERE id = $1 FOR UPDATE', [entryId]);
+  if (!locked.rows[0]) return null;
+  const out = await executeCareCommand({ db, entry: locked.rows[0], asOf, userId }, command);
+  return { ...out, asOf };
+}
+
+/**
  * Map a command error to an HTTP response; returns false for other errors.
  *
  * @param {import('express').Response} res
