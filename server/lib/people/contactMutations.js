@@ -4,7 +4,7 @@ import { CONTACT_KINDS, CONTACT_ROLES } from './constants.js';
 import { userOwnsContact } from './authz.js';
 import { ensurePersonalDirectory } from './directory.js';
 import { loadContactForViewer } from './contactMapping.js';
-import { syncVetRowFromContact } from './vetSync.js';
+import { ensureLegacyVetForContact, syncVetRowFromContact } from './vetSync.js';
 
 function normalizeRoles(raw) {
   if (raw == null) return [];
@@ -73,7 +73,11 @@ export async function createPersonalContact(pool, userId, body) {
     );
   }
 
-  const row = await loadContactForViewer(pool, id, userId);
+  let row = await loadContactForViewer(pool, id, userId);
+  if (row && roles.includes('vet')) {
+    await ensureLegacyVetForContact(pool, row, userId);
+    row = await loadContactForViewer(pool, id, userId);
+  }
   return { row };
 }
 
@@ -161,11 +165,14 @@ export async function patchPersonalContact(pool, contactId, userId, body) {
     );
   }
 
-  const row = await loadContactForViewer(pool, contactId, userId);
+  let row = await loadContactForViewer(pool, contactId, userId);
+  if (row?.roles?.includes('vet')) {
+    await ensureLegacyVetForContact(pool, row, userId);
+    row = await loadContactForViewer(pool, contactId, userId);
+  }
   if (row?.legacy_vet_id) {
     await syncVetRowFromContact(pool, row, userId);
-    const refreshed = await loadContactForViewer(pool, contactId, userId);
-    return { row: refreshed };
+    row = await loadContactForViewer(pool, contactId, userId);
   }
   return { row };
 }

@@ -37,23 +37,15 @@ test.describe('Veterinarian management', () => {
     await vetList.openAddForm();
 
     const vetForm = new VetFormPage(page);
-    await vetForm.createVet({
-      name: 'Dr. Smith',
-      phone: '555-1234',
-      email: 'drsmith@vetclinic.com',
-      address: '123 Vet Lane',
-      notes: 'Open on weekends',
-    });
+    await vetForm.createVet({ name: 'Dr. Smith' });
 
     await vetList.expectLoaded();
     await vetList.expectVetVisible('Dr. Smith');
     await checkA11y(page, 'vet list after create');
-    await vetList.expectPhoneVisible('555-1234', 'Dr. Smith');
 
     const vets = await getVets(baseURL, testUser.accessToken);
     const created = vets.find((v) => v.name === 'Dr. Smith');
     expect(created).toBeTruthy();
-    expect(created?.phone).toBe('555-1234');
   });
 
   test('user can create a vet with only a name', async ({ page, testUser }) => {

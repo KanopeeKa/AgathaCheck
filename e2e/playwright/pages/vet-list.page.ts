@@ -69,10 +69,10 @@ export class VetListPage {
   }
 
   async openAddForm(): Promise<void> {
-    await this.page.goto(flutterGotoUrl('/pc/vets/add'));
+    await this.page.goto(flutterGotoUrl('/pc/people/new'));
     await refreshFlutterAccessibility(this.page);
-    await waitForFlutterRoutePattern(this.page, /\/pc\/vets\/add(?:\?|$)/, 30_000);
-    await this.page.getByRole('textbox', { name: 'Name *' }).waitFor({ timeout: 30_000 });
+    await waitForFlutterRoutePattern(this.page, /\/pc\/people\/new(?:\?|$)/, 30_000);
+    await this.page.getByLabel(/^Name$/i).waitFor({ timeout: 30_000 });
   }
 
   private async openVetDetailRoute(vetId: string): Promise<void> {
