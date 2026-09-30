@@ -269,7 +269,7 @@ skip_jobs = []
 if not run_analyze:
     skip_jobs.append("flutter-analyze")
 if not run_stack:
-    skip_jobs.extend(["flutter-test", "flutter-coverage", "flutter-build-web", "ci-e2e-canary"])
+    skip_jobs.extend(["flutter-prep", "flutter-test", "flutter-coverage", "flutter-build-web", "ci-e2e-canary"])
 if not run_integration:
     skip_jobs.append("flutter-integration")
 

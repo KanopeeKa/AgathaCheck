@@ -119,6 +119,10 @@ PR Playwright canary (`@smoke-ci`, retries 0), including three org journeys (dis
 
 #### Path-scoped PR CI (`ci-scope`)
 
+**Which PRs get CI:** PRs into `main`, into programme integration branches (`cursor/*-integration-*`) and
+into agent work branches (`claude/**`) — the same PR tier everywhere, so phase PRs into an integration line
+are no longer gated only by local pre-push (parallel-programmes §6 TEST.2).
+
 `ci.yml` job **`ci-scope / Resolve CI scope`** classifies the PR diff (shared rules in
 `scripts/ci/ci-scope-lib.sh`, also used by `pre-push-changed.sh`). Flutter jobs may be
 **skipped** when out of scope; `ci-gate` accepts `skipped` only for jobs listed in
@@ -142,6 +146,17 @@ in `ci.yml` / `ci-full-audit.yml` (via ci-scope `run_shards`), `run_tests_ci_sha
 `merge_flutter_coverage.sh` and `pre-push.sh`. Governance runs `node scripts/ci/flutter-shards.mjs check`:
 every active `*_test.dart` must be owned by **exactly one** shard (frozen roots from the frozen-domains
 manifest and the integration dir are excluded). Adding or splitting a shard = editing the manifest only.
+
+**Batched runner.** `run_tests_ci_shard.sh` → `scripts/ci/flutter-shard-runner.mjs` runs each shard in
+batches of up to 24 files, one `flutter test --concurrency 4 --coverage` process per batch (instead of one
+process per file, ~5–6 s startup each). Linux `flutter_tester` intermittently segfaults while collecting
+coverage and the tool can then hang, so every batch runs under a no-progress watchdog (90 s): a failed batch
+re-runs only its non-passing files one per process; a killed batch re-runs all its files one per process.
+A file that passes only in isolation is reported as a warning in the job summary. Roots in the manifest's
+`perFileRoots` (currently `test/features/auth`, which crashes the collector when batched) always run one
+file per process. Coverage is merged in Node (`scripts/ci/lcov-merge.mjs`), so shards and the coverage job no
+longer install apt `lcov`. Measured on a 4-vCPU box (2026-09-30): the six shards take 46–75 s each
+(`auth`, whose files run one per process, is the longest); the `health` shard alone took 315 s with one process per file.
 
 **All shards run whenever the Flutter stack runs.** Per-domain shard selection was removed in plan
 `test-health-ci-5f3a`: with batched shards a full run costs about the wall-clock of one shard, and running
@@ -248,9 +263,12 @@ gh api repos/KanopeeKa/AgathaCheck/branches/main/protection \
 **Optional shard checks** (`flutter-test (<shard>) / Flutter tests (<shard>)`) need
 not be required individually — `ci-gate` fails when any matrix leg fails.
 
-**Codegen contract:** `flutter-analyze` runs canonical `build_runner` + legal sync once and
-uploads `flutter-prep-<sha>.tar.gz`; downstream `flutter-test-*`, `flutter-integration`, and
-`flutter-build-web` download, verify, and restore that archive (no redundant prep in shards).
+**Codegen contract:** `flutter-prep` (`_reusable-flutter-prep.yml`) runs canonical `build_runner` +
+legal sync once and uploads `flutter-prep-<sha>.tar.gz`; the `flutter-test` matrix and
+`flutter-integration` download, verify, and restore that archive (no redundant prep in shards).
+`flutter-analyze` runs its own codegen in parallel (it analyzes the mocks) and no longer gates shards.
+`flutter-build-web` needs no prep: `build_runner` only generates test mocks and the web build uses the
+committed legal assets, so it starts right after `ci-scope` (its canary path is the PR critical path).
 Missing or corrupt prep artifacts fail at download/verify/restore with `::error::` annotations.
 
 **Stability note:** Keep `ci.yml` caller ids (`startup-smoke`, `test-suite`, `flutter-analyze`, etc.) and reusable
@@ -261,7 +279,8 @@ display strings exactly.
 |-------------------------|---------------|------------------|
 | `startup-smoke / PR startup smoke` | `_reusable-pr-startup-smoke.yml` | Postgres bootstrap, `node bin/start.js`, `/backend/health` + root |
 | `test-suite / Governance (BDD + file size)` | `_reusable-test.yml` | BDD mapping gate (`check_bdd_coverage.js`; run `--report-only` for live counts — gate is 68% of active scenarios), priority tags, file size ≤ 500 lines |
-| `flutter-analyze / Flutter (analyze & format)` | `_reusable-flutter-analyze.yml` | format, legal sync, codegen, analyze; uploads `flutter-prep-<sha>` |
+| `flutter-prep / Flutter prep (codegen + legal assets)` | `_reusable-flutter-prep.yml` | canonical codegen + legal sync; uploads `flutter-prep-<sha>` for shards and integration |
+| `flutter-analyze / Flutter (analyze & format)` | `_reusable-flutter-analyze.yml` | format, codegen, analyze |
 | `flutter-test (<shard>) / Flutter tests (<shard>)` | `_reusable-flutter-test-shard.yml` | matrix leg per shard in `flutter_app/test/ci_shards.json`, per-shard coverage |
 | `flutter-coverage / Flutter domain coverage` | `_reusable-flutter-coverage.yml` | merge shard lcov, domain coverage ≥ 65% |
 | `flutter-integration / Flutter integration` | `_reusable-flutter-integration.yml` | pet profile integration tests |

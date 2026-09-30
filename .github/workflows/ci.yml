@@ -4,7 +4,13 @@ name: CI
 # See docs/pipelines/ci-cd-gates.md §1 (branch protection table).
 on:
   pull_request:
-    branches: [ "main" ]
+    # main + integration lines (parallel-programmes §6 TEST.2): phase PRs into programme
+    # integration branches and agent work branches get the same PR tier, so conflicts and
+    # breakage surface before the final PR to main.
+    branches:
+      - main
+      - 'cursor/*-integration-*'
+      - 'claude/**'
   workflow_dispatch:
     inputs:
       force_full:
@@ -62,9 +68,16 @@ jobs:
     if: needs.ci-scope.outputs.run_flutter_analyze == 'true'
     uses: ./.github/workflows/_reusable-flutter-analyze.yml
 
+  # Canonical codegen (mocks) + legal assets for shards and integration — no dependency on
+  # analyze/format so shards start as soon as prep uploads.
+  flutter-prep:
+    needs: ci-scope
+    if: needs.ci-scope.outputs.run_flutter_stack == 'true'
+    uses: ./.github/workflows/_reusable-flutter-prep.yml
+
   # One matrix leg per shard in flutter_app/test/ci_shards.json (ci-scope emits run_shards).
   flutter-test:
-    needs: [ci-scope, flutter-analyze]
+    needs: [ci-scope, flutter-prep]
     if: >-
       needs.ci-scope.outputs.run_flutter_stack == 'true' &&
       needs.ci-scope.outputs.run_shards != '[]'
@@ -82,17 +95,19 @@ jobs:
     uses: ./.github/workflows/_reusable-flutter-coverage.yml
 
   flutter-integration:
-    needs: [ci-scope, flutter-analyze]
+    needs: [ci-scope, flutter-prep]
     if: needs.ci-scope.outputs.run_flutter_integration == 'true'
     uses: ./.github/workflows/_reusable-flutter-integration.yml
 
+  # Web build needs no codegen (build_runner only generates test mocks) and uses the committed
+  # legal assets, so it starts right after ci-scope (the canary path is the PR critical path).
   flutter-build-web:
-    needs: [ci-scope, flutter-analyze]
+    needs: ci-scope
     if: needs.ci-scope.outputs.run_flutter_stack == 'true'
     uses: ./.github/workflows/_reusable-build-web.yml
     with:
       run_codegen: false
-      use_flutter_prep_artifact: true
+      use_flutter_prep_artifact: false
       source_workflow: ci
     secrets:
       POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
@@ -118,6 +133,7 @@ jobs:
       - startup-smoke
       - test-suite
       - flutter-analyze
+      - flutter-prep
       - flutter-test
       - flutter-coverage
       - flutter-integration
@@ -130,6 +146,7 @@ jobs:
       startup_smoke: ${{ needs.startup-smoke.result }}
       test_suite: ${{ needs.test-suite.result }}
       flutter_analyze: ${{ needs.flutter-analyze.result }}
+      flutter_prep: ${{ needs.flutter-prep.result }}
       flutter_test: ${{ needs.flutter-test.result }}
       flutter_coverage: ${{ needs.flutter-coverage.result }}
       flutter_integration: ${{ needs.flutter-integration.result }}
