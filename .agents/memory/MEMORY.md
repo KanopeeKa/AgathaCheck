@@ -70,7 +70,7 @@ Institutional knowledge for cloud agents. Domain workflows live in **Skills** (`
 ## Quick references
 
 - **Experience program:** earlier references and file names using “Organisation” or “Guardian” (workspace) are legacy; interpret through **Pet Care** / **Shelter** (D38) and evolve screens deliberately. See [pet_care README](/docs/domains/pet_care/README.md).
-- **Execute-plan autonomy:** `.agents/memory/execute-plan-autonomy.md` — gate `0` = run-until-blocked; bare `/execute-plan` infers plan_id; no routine turn checkpoints
+- **Execute-plan autonomy:** `.agents/memory/execute-plan-autonomy.md` — gate `0` = run-until-blocked; **phase merge → implement next phase same session** (skip only explicit blockers like CARE-gated phase 5); never end turn with a progress summary; full grant = babysit+ merge without waiting for owner
 - Domain map: `docs/architecture/index.md`
 - Efficiency plan: `docs/agent-efficiency/plans/agent-efficiency-plan.md`
 - Pre-push: `./scripts/pre-push-changed.sh` (iteration) · `./scripts/pre-push.sh` (merge)
