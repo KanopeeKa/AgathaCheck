@@ -4,7 +4,7 @@
   "approved_at": "2026-09-30T00:00:00Z",
   "approved_by": "user chat 2026-09-29: 'Go ahead, write up a plan such as execute-plan and then implement all of the above' (WAF: work around, never assume fixable; keep CI reasonably short)",
   "approved_until": "2026-10-02T00:00:00Z",
-  "content_hash": "sha256:890b9f6f61411fc51e4ff7266e1f2f7989511b8a10d5c2c6e2bc815b833a55a3",
+  "content_hash": "sha256:b88f5e69d8db772a62d9ae4496fff3d8729b1979ae5438880a99a750bd7faee2",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "main",
@@ -171,10 +171,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "governance",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1468",
+      "merge_commit": "a436175f8c55caba2a8cd031b9450cef5f9ab6d5"
     },
     {
       "id": "5",
