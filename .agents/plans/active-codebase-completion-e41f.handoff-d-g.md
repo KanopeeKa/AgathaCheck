@@ -68,7 +68,7 @@ gh run list --workflow pre-uat-e2e.yml --branch main --limit 3
 
 ## Plan runtime pins after bookkeeping
 
-Roadmap `.md` `artifact_ref.plan_commit` / `snapshot_commit` may still cite **`ce702c09`** (Batch D product merge) until a bookkeeping PR lands. After **#1471** merges, run on `main`:
+**#1471** refreshes `artifact_ref` via `sync-runtime` on the bookkeeping branch. After it merges to `main`, optionally re-run on `main` so pins match the merge SHA:
 
 ```bash
 node scripts/execute_plan_runtime.js sync-runtime active-codebase-completion-e41f --write
