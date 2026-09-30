@@ -104,7 +104,15 @@ npm run report       # open HTML report after a run
 
 ## CI
 
-Shard count for full localhost E2E is **nine** (active Pet Care specs only; frozen Shelter/Fostering specs are in `frozen-e2e-specs.mjs`) — update `matrix.shard`, `shard_total`, and `e2e/scripts/shard-files.mjs` together in `pre-uat-e2e.yml`, `e2e.yml`, and `_reusable-e2e-local.yml`.
+Shard count for full localhost E2E is **nine** (active Pet Care specs only; frozen Shelter/Fostering specs are in `frozen-e2e-specs.mjs`). Shards are **duration-balanced** (LPT on `e2e/scripts/spec-durations.json`) — always inspect the live layout with:
+
+```bash
+node e2e/scripts/shard-files.mjs --summary
+```
+
+When changing shard count, update `SHARD_TOTAL` in `shard-files.mjs`, `matrix.shard` / `shard_total` in `pre-uat-e2e.yml`, `e2e.yml`, and `_reusable-e2e-local.yml` together.
+
+**PR pre-merge E2E:** `ci.yml` job `ci-e2e-affected` runs a bounded subset of specs on localhost (`e2e/scripts/select-affected-specs.mjs`: ≤720 s, ≤3 legs) when the PR diff is E2E-only. E2E-only PRs skip the Flutter unit stack but still build web (often from cache) and run `@smoke-ci`. Backend-only PRs do not run affected legs.
 
 ```bash
 cd e2e && npm run shard:plan    # list file groups per shard
@@ -113,9 +121,9 @@ cd e2e && npm run test:ci-shard -- 3   # run one shard locally (stack must be ru
 
 | Workflow | Trigger | Role |
 |----------|---------|------|
-| `ci.yml` | PR → `main` (+ manual dispatch) | Flutter analyze + unit/widget tests + web build; backend Jest |
+| `ci.yml` | PR → `main`, integration branches, `claude/**` | Path-scoped Flutter + web build + `@smoke-ci`; **affected E2E** on E2E-only diffs |
 | `codeql.yml` | PR → `main` (+ weekly schedule) | Static security analysis (JavaScript/TypeScript) |
-| `e2e.yml` | manual + weekly cron (non-blocking) | Full Playwright against **localhost** (9 file-balanced shards) |
+| `e2e.yml` | manual + weekly cron (non-blocking) | Full Playwright against **localhost** (9 duration-balanced shards) |
 | `promote-uat.yml` | after Pre-UAT E2E green (`workflow_run`) + manual dispatch | Create `uat-YYMMDD-PR#` tag (see `docs/pipelines/promotion-contract.md`) |
 | `pre-uat-e2e.yml` | `push` → `main` + `workflow_dispatch` | Full localhost Playwright (9 shards) — async post-merge, does not block merges |
 | `deploy-uat.yml` | push → `uat-*` tag | FTP deploy → HTTP post-deploy smoke → `prod-ready` gate |
@@ -152,8 +160,8 @@ cd e2e && npm run test:smoke        # alias for test:smoke-uat
 | Tag | Role |
 |-----|------|
 | `@smoke-ci` | PR CI canary subset (must also include `@smoke-uat`) |
-| `@smoke-uat` | UAT live smoke (nightly advisory) + broader guardian paths |
-| `@smoke-a11y` | axe accessibility scans (weekly / UAT, not PR canary) |
+| `@smoke-uat` | UAT live smoke (nightly advisory) + broader guardian paths; also runs in localhost `full` project (not `uat-smoke`, which is WAF/warmup-specific) |
+| `@smoke-a11y` | axe accessibility scans (weekly / UAT + localhost `full`; not PR canary) |
 
 `@smoke-a11y` tests run **axe** after the journey completes. CI fails on **critical** and **serious** violations (see `playwright/support/axe.ts`). `@smoke-ci` excludes axe for speed.
 

@@ -5,6 +5,7 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import path from 'node:path';
+import { SHARDS } from '../e2e/scripts/shard-files.mjs';
 import { fileURLToPath } from 'node:url';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -41,7 +42,10 @@ function run(paths) {
 {
   const out = run(['flutter_app/lib/features/experience/presentation/screens/foo.dart']);
   assert.ok(out.shards.length >= 1);
-  assert.ok(out.shards.some((s) => s.index === 3 || s.index === 4));
+  const navShard = SHARDS.findIndex((shard) => shard.includes('playwright/tests/guardian.navigation.spec.ts')) + 1;
+  const hit = out.shards.find((s) => s.index === navShard);
+  assert.ok(hit, `experience change should flag the shard holding guardian.navigation (${navShard})`);
+  assert.equal(hit.risk, 'high');
 }
 
 {

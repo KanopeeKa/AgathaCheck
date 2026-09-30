@@ -48,6 +48,18 @@ if [[ "$head_msg" == *"[ci-full]"* ]]; then
   CI_SCOPE_ESCAPE_FULL=true
 fi
 
+# Affected Playwright specs for PR E2E (bounded budget; server-only paths excluded so
+# backend PRs keep their short tier — Pre-UAT covers them post-merge).
+CI_SCOPE_E2E_SELECTION='{}'
+if ci_scope_run_web_build; then
+  ui_paths="$(printf '%s\n' "${changed[@]}" | grep -v '^server/' || true)"
+  if ! CI_SCOPE_E2E_SELECTION="$(printf '%s\n' "$ui_paths" | node "$ROOT/e2e/scripts/select-affected-specs.mjs")"; then
+    echo "::warning::select-affected-specs.mjs failed — PR runs the @smoke-ci canary only"
+    CI_SCOPE_E2E_SELECTION='{}'
+  fi
+fi
+export CI_SCOPE_E2E_SELECTION
+
 json="$(ci_scope_emit_json)"
 scope_name="$(python3 -c 'import json,sys; print(json.load(sys.stdin)["scope"])' <<<"$json")"
 run_analyze="$(python3 -c 'import json,sys; print("true" if json.load(sys.stdin)["run_flutter_analyze"] else "false")' <<<"$json")"
@@ -57,6 +69,10 @@ run_e2e_audit="$(python3 -c 'import json,sys; print("true" if json.load(sys.stdi
 run_integration="$(python3 -c 'import json,sys; print("true" if json.load(sys.stdin)["run_flutter_integration"] else "false")' <<<"$json")"
 run_flutter_coverage="$(python3 -c 'import json,sys; print("true" if json.load(sys.stdin)["run_flutter_coverage"] else "false")' <<<"$json")"
 run_shards="$(python3 -c 'import json,sys; print(json.dumps(json.load(sys.stdin)["run_shards"]))' <<<"$json")"
+run_web_build="$(python3 -c 'import json,sys; print("true" if json.load(sys.stdin)["run_web_build"] else "false")' <<<"$json")"
+run_e2e_affected="$(python3 -c 'import json,sys; print("true" if json.load(sys.stdin)["run_e2e_affected"] else "false")' <<<"$json")"
+e2e_matrix="$(python3 -c 'import json,sys; print(json.dumps(json.load(sys.stdin)["e2e_matrix"], separators=(",", ":")))' <<<"$json")"
+e2e_deferred="$(python3 -c 'import json,sys; print(", ".join(json.load(sys.stdin)["e2e_deferred"]) or "none")' <<<"$json")"
 echo "$json"
 
 if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
@@ -72,6 +88,9 @@ if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
     echo "run_flutter_integration=$run_integration"
     echo "run_flutter_coverage=$run_flutter_coverage"
     echo "run_shards=$run_shards"
+    echo "run_web_build=$run_web_build"
+    echo "run_e2e_affected=$run_e2e_affected"
+    echo "e2e_matrix=$e2e_matrix"
   } >>"$GITHUB_OUTPUT"
 fi
 
@@ -82,12 +101,15 @@ if [[ -n "${GITHUB_STEP_SUMMARY:-}" ]]; then
     echo "- **Scope:** \`$scope_name\`"
     echo "- **Base → head:** \`${BASE_SHA:0:7}\` → \`${HEAD_SHA:0:7}\`"
     echo "- **Flutter analyze:** $run_analyze"
-    echo "- **Flutter stack (shards/build/canary):** $run_stack"
+    echo "- **Flutter stack (prep/shards/coverage):** $run_stack"
     echo "- **Flutter shards:** \`$run_shards\`"
     echo "- **Flutter coverage (all shards):** $run_flutter_coverage"
     echo "- **Backend Jest:** $run_backend"
     echo "- **E2E npm audit:** $run_e2e_audit"
     echo "- **Flutter integration:** $run_integration"
+    echo "- **Web build + @smoke-ci canary:** $run_web_build"
+    echo "- **Affected E2E legs:** \`$e2e_matrix\`"
+    echo "- **E2E deferred to Pre-UAT (budget/broad):** $e2e_deferred"
     if [[ "$CI_SCOPE_ESCAPE_FULL" == true ]]; then
       echo "- **Escape:** ci-full (label or commit token)"
     fi

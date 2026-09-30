@@ -108,10 +108,42 @@ ci_scope_classify_paths $'flutter_app/lib/features/organization/presentation/scr
 json="$(ci_scope_emit_json)"
 assert_json_field "$json" run_flutter_stack False "frozen org paths skip flutter stack"
 
-# Generic e2e scripts do not trigger org-specific Playwright job (full suite is audit/pre-uat only)
+# Generic e2e scripts: web build + affected E2E legs, not the Flutter unit stack
 ci_scope_classify_paths $'e2e/scripts/check-smoke-tags.mjs'
 json="$(ci_scope_emit_json)"
-assert_json_field "$json" run_flutter_stack True "generic e2e scripts force full stack"
+assert_json_field "$json" run_flutter_stack False "generic e2e scripts skip flutter stack"
+assert_json_field "$json" run_web_build True "generic e2e scripts run web build"
+
+# E2E-only spec change with affected selection → non-empty ci-e2e-affected matrix
+ci_scope_reset
+ci_scope_classify_paths $'e2e/playwright/tests/auth.login.spec.ts'
+CI_SCOPE_E2E_SELECTION='{"legs":[["playwright/tests/auth.login.spec.ts"]],"selected":["playwright/tests/auth.login.spec.ts"],"deferred":[],"broad":false,"estimated_sec":120,"reasons":{}}'
+json="$(ci_scope_emit_json)"
+assert_json_field "$json" run_flutter_stack False "e2e-only spec skips flutter stack"
+assert_json_field "$json" run_e2e_affected True "e2e-only with legs runs affected matrix"
+python3 -c 'import json,sys; d=json.load(sys.stdin); assert len(d["e2e_matrix"])==1, d' <<<"$json"
+
+# e2e/package-lock.json still forces the full CI stack
+ci_scope_reset
+ci_scope_classify_paths $'e2e/package-lock.json'
+json="$(ci_scope_emit_json)"
+assert_json_field "$json" run_flutter_stack True "e2e lockfile forces full stack"
+
+# Backend-only: no web build, no affected E2E (canary + Pre-UAT cover server paths)
+ci_scope_reset
+ci_scope_classify_paths $'server/routes/pets/index.js'
+CI_SCOPE_E2E_SELECTION='{"legs":[["playwright/tests/pet.profiles.spec.ts"]],"selected":["playwright/tests/pet.profiles.spec.ts"],"deferred":[],"broad":false,"estimated_sec":200,"reasons":{}}'
+json="$(ci_scope_emit_json)"
+assert_json_field "$json" run_web_build False "server-only skips web build"
+assert_json_field "$json" run_e2e_affected False "server-only ignores injected e2e selection"
+
+# Broad e2e infra change: selection may defer specs (tier 0–1 only) — matrix still runs when legs exist
+ci_scope_reset
+ci_scope_classify_paths $'e2e/playwright/support/api.ts'
+CI_SCOPE_E2E_SELECTION='{"legs":[["playwright/tests/sharing.spec.ts"]],"selected":["playwright/tests/sharing.spec.ts"],"deferred":["playwright/tests/pet.profiles.spec.ts"],"broad":true,"estimated_sec":180,"reasons":{"playwright/tests/pet.profiles.spec.ts":"tier>1"}}'
+json="$(ci_scope_emit_json)"
+assert_json_field "$json" run_e2e_affected True "broad e2e touch with legs runs affected matrix"
+python3 -c 'import json,sys; d=json.load(sys.stdin); assert d["e2e_deferred"], d' <<<"$json"
 
 # Flutter stack always carries the domain coverage gate
 ci_scope_classify_paths $'flutter_app/test/core/utils/calendar_date_test.dart'

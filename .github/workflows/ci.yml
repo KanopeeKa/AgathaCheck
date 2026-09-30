@@ -4,7 +4,13 @@ name: CI
 # See docs/pipelines/ci-cd-gates.md §1 (branch protection table).
 on:
   pull_request:
-    branches: [ "main" ]
+    # main + integration lines (parallel-programmes §6 TEST.2): phase PRs into programme
+    # integration branches and agent work branches get the same PR tier, so conflicts and
+    # breakage surface before the final PR to main.
+    branches:
+      - main
+      - 'cursor/*-integration-*'
+      - 'claude/**'
   workflow_dispatch:
     inputs:
       force_full:
@@ -28,6 +34,9 @@ jobs:
       run_flutter_stack: ${{ steps.scope.outputs.run_flutter_stack }}
       run_flutter_coverage: ${{ steps.scope.outputs.run_flutter_coverage }}
       run_shards: ${{ steps.scope.outputs.run_shards }}
+      run_web_build: ${{ steps.scope.outputs.run_web_build }}
+      run_e2e_affected: ${{ steps.scope.outputs.run_e2e_affected }}
+      e2e_matrix: ${{ steps.scope.outputs.e2e_matrix }}
       run_backend: ${{ steps.scope.outputs.run_backend }}
       run_e2e_audit: ${{ steps.scope.outputs.run_e2e_audit }}
       run_flutter_integration: ${{ steps.scope.outputs.run_flutter_integration }}
@@ -62,9 +71,16 @@ jobs:
     if: needs.ci-scope.outputs.run_flutter_analyze == 'true'
     uses: ./.github/workflows/_reusable-flutter-analyze.yml
 
+  # Canonical codegen (mocks) + legal assets for shards and integration — no dependency on
+  # analyze/format so shards start as soon as prep uploads.
+  flutter-prep:
+    needs: ci-scope
+    if: needs.ci-scope.outputs.run_flutter_stack == 'true'
+    uses: ./.github/workflows/_reusable-flutter-prep.yml
+
   # One matrix leg per shard in flutter_app/test/ci_shards.json (ci-scope emits run_shards).
   flutter-test:
-    needs: [ci-scope, flutter-analyze]
+    needs: [ci-scope, flutter-prep]
     if: >-
       needs.ci-scope.outputs.run_flutter_stack == 'true' &&
       needs.ci-scope.outputs.run_shards != '[]'
@@ -82,17 +98,22 @@ jobs:
     uses: ./.github/workflows/_reusable-flutter-coverage.yml
 
   flutter-integration:
-    needs: [ci-scope, flutter-analyze]
+    needs: [ci-scope, flutter-prep]
     if: needs.ci-scope.outputs.run_flutter_integration == 'true'
     uses: ./.github/workflows/_reusable-flutter-integration.yml
 
+  # Web build needs no codegen (build_runner only generates test mocks) and uses the committed
+  # legal assets, so it starts right after ci-scope (the canary path is the PR critical path).
   flutter-build-web:
-    needs: [ci-scope, flutter-analyze]
-    if: needs.ci-scope.outputs.run_flutter_stack == 'true'
+    needs: ci-scope
+    if: needs.ci-scope.outputs.run_web_build == 'true'
     uses: ./.github/workflows/_reusable-build-web.yml
     with:
       run_codegen: false
-      use_flutter_prep_artifact: true
+      use_flutter_prep_artifact: false
+      # Reuse the main build (saved by Pre-UAT) when Flutter build inputs are unchanged,
+      # e.g. e2e-only PRs — the build step is skipped on a cache hit.
+      web_cache: restore
       source_workflow: ci
     secrets:
       POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
@@ -102,11 +123,31 @@ jobs:
     needs: [ci-scope, flutter-build-web]
     if: >-
       always() &&
-      needs.ci-scope.outputs.run_flutter_stack == 'true' &&
+      needs.ci-scope.outputs.run_web_build == 'true' &&
       needs.flutter-build-web.result == 'success'
     uses: ./.github/workflows/_reusable-e2e-local.yml
     with:
       test_suite: smoke-ci
+      web_artifact_name: ${{ needs.flutter-build-web.outputs.artifact_name }}
+
+  # Pre-merge E2E for the specs this PR can break (e2e/scripts/select-affected-specs.mjs):
+  # changed specs and page objects first, then product areas; budget 12 min of spec time in
+  # at most 3 parallel legs; the rest is left to Pre-UAT (listed in the ci-scope summary).
+  ci-e2e-affected:
+    needs: [ci-scope, flutter-build-web]
+    if: >-
+      always() &&
+      needs.ci-scope.outputs.run_e2e_affected == 'true' &&
+      needs.flutter-build-web.result == 'success'
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.ci-scope.outputs.e2e_matrix) }}
+    uses: ./.github/workflows/_reusable-e2e-local.yml
+    with:
+      test_suite: specs
+      spec_files: ${{ matrix.specs }}
+      report_name_suffix: leg-${{ matrix.leg }}
       web_artifact_name: ${{ needs.flutter-build-web.outputs.artifact_name }}
 
   # Umbrella required check: ci-gate / CI passed (reusable workflow caller/reusable name form).
@@ -118,11 +159,13 @@ jobs:
       - startup-smoke
       - test-suite
       - flutter-analyze
+      - flutter-prep
       - flutter-test
       - flutter-coverage
       - flutter-integration
       - flutter-build-web
       - ci-e2e-canary
+      - ci-e2e-affected
     if: always()
     uses: ./.github/workflows/_reusable-ci-gate.yml
     with:
@@ -130,8 +173,10 @@ jobs:
       startup_smoke: ${{ needs.startup-smoke.result }}
       test_suite: ${{ needs.test-suite.result }}
       flutter_analyze: ${{ needs.flutter-analyze.result }}
+      flutter_prep: ${{ needs.flutter-prep.result }}
       flutter_test: ${{ needs.flutter-test.result }}
       flutter_coverage: ${{ needs.flutter-coverage.result }}
       flutter_integration: ${{ needs.flutter-integration.result }}
       flutter_build_web: ${{ needs.flutter-build-web.result }}
       ci_e2e_canary: ${{ needs.ci-e2e-canary.result }}
+      ci_e2e_affected: ${{ needs.ci-e2e-affected.result }}

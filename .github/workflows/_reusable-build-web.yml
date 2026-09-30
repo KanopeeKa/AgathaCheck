@@ -26,9 +26,16 @@ on:
         type: string
         default: ''
       use_flutter_prep_artifact:
-        description: Restore flutter-prep-<sha> from flutter-analyze (CI only)
+        description: Restore flutter-prep-<sha> from flutter-prep (CI only)
         type: boolean
         default: false
+      web_cache:
+        description: >-
+          none (default) | save — cache build/web keyed on Flutter build inputs (Pre-UAT on main) |
+          restore — reuse that cache when inputs are unchanged and skip the build (PR CI only;
+          never for deploys: a restored build keeps the manifest of the commit that built it)
+        type: string
+        default: none
     secrets:
       POSTHOG_API_KEY:
         required: false
@@ -80,12 +87,30 @@ jobs:
         run: |
           echo "::notice::flutter clean skipped (Phase 4 UAT experiment). Set repo variable UAT_FLUTTER_CLEAN=true or workflow_dispatch run_clean=true to restore."
 
+      - name: Web build cache key
+        id: web_cache_key
+        if: inputs.web_cache != 'none'
+        env:
+          POSTHOG_SET: ${{ secrets.POSTHOG_API_KEY != '' }}
+        run: |
+          echo "key=web-build-v1-${{ runner.os }}-${FLUTTER_VERSION}-ph${POSTHOG_SET}-${{ hashFiles('flutter_app/lib/**', 'flutter_app/web/**', 'flutter_app/assets/**', 'flutter_app/pubspec.yaml', 'flutter_app/pubspec.lock', 'flutter_app/l10n.yaml', 'flutter_app/analysis_options.yaml', 'flutter_app/scripts/inject_posthog_web.sh', 'scripts/ci/build-flutter-web.sh', 'scripts/ci/write-build-manifest.sh', 'scripts/ci/verify-web-artifact.sh') }}" >> "$GITHUB_OUTPUT"
+
+      - name: Restore cached web build
+        id: web_cache_restore
+        if: inputs.web_cache == 'restore'
+        uses: actions/cache/restore@v5
+        with:
+          path: flutter_app/build/web
+          key: ${{ steps.web_cache_key.outputs.key }}
+
       - name: Set up Flutter
+        if: steps.web_cache_restore.outputs.cache-hit != 'true'
         uses: ./.github/actions/setup-flutter
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
 
       - name: Cache Flutter dependencies
+        if: steps.web_cache_restore.outputs.cache-hit != 'true'
         uses: actions/cache@v5
         with:
           path: |
@@ -110,6 +135,7 @@ jobs:
         run: bash scripts/ci/restore-flutter-prep-artifact.sh flutter-prep-artifact.tar.gz
 
       - name: Build Flutter web (shared)
+        if: steps.web_cache_restore.outputs.cache-hit != 'true'
         env:
           POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
           RUN_CLEAN: ${{ inputs.run_clean }}
@@ -118,6 +144,25 @@ jobs:
           SOURCE_WORKFLOW: ${{ inputs.source_workflow != '' && inputs.source_workflow || github.workflow }}
           FLUTTER_VERSION: ${{ env.FLUTTER_VERSION }}
         run: bash scripts/ci/build-flutter-web.sh
+
+      - name: Note reused web build
+        if: steps.web_cache_restore.outputs.cache-hit == 'true'
+        run: |
+          built_from="$(python3 -c 'import json; print(json.load(open("flutter_app/build/web/build-manifest.json")).get("git_sha") or "unknown")' 2>/dev/null || echo unknown)"
+          echo "::notice::Flutter build inputs unchanged — reused cached web build (built from ${built_from})"
+          echo "Reused cached web build from \`${built_from}\` (Flutter build inputs unchanged)." >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Verify cached web artifact contract
+        if: steps.web_cache_restore.outputs.cache-hit == 'true'
+        run: WEB_DIR=flutter_app/build/web bash scripts/ci/verify-web-artifact.sh
+
+      - name: Save web build cache
+        if: inputs.web_cache == 'save'
+        uses: actions/cache/save@v5
+        continue-on-error: true
+        with:
+          path: flutter_app/build/web
+          key: ${{ steps.web_cache_key.outputs.key }}
 
       - name: Upload web artifact
         if: inputs.upload_artifact

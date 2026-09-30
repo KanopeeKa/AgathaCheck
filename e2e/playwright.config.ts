@@ -81,7 +81,7 @@ export default defineConfig({
     },
     {
       name: 'full',
-      grepInvert: /@smoke-ci|@smoke-uat|@smoke-a11y|@warmup-uat/,
+      grepInvert: /@smoke-ci|@warmup-uat/,
       retries: 0,
       use: sharedUse,
     },

@@ -105,8 +105,15 @@ ci_scope_classify_path() {
     e2e/playwright/tests/organisation*.spec.ts|e2e/playwright/tests/foster*.spec.ts|e2e/playwright/tests/adoption.spec.ts|e2e/playwright/tests/experience.foster-portal.spec.ts|e2e/playwright/tests/fostering*.spec.ts|e2e/playwright/tests/org.*.spec.ts)
       # Frozen Playwright specs — governance only
       ;;
-    e2e/*)
+    e2e/package-lock.json|e2e/package.json)
+      # Must precede e2e/* (first match wins) — dependency changes still run everything.
+      CI_SCOPE_E2E_LOCK_CHANGED=true
       CI_SCOPE_FORCE_FULL=true
+      CI_SCOPE_HAS_E2E=true
+      ;;
+    e2e/*)
+      # E2E-only change: no Flutter unit stack — web build (cached when Flutter inputs are
+      # unchanged) + @smoke-ci canary + affected specs (e2e/scripts/select-affected-specs.mjs).
       CI_SCOPE_HAS_E2E=true
       ;;
     .github/workflows/*)
@@ -123,10 +130,6 @@ ci_scope_classify_path() {
       ;;
     server/package-lock.json)
       CI_SCOPE_SERVER_LOCK_CHANGED=true
-      CI_SCOPE_FORCE_FULL=true
-      ;;
-    e2e/package-lock.json)
-      CI_SCOPE_E2E_LOCK_CHANGED=true
       CI_SCOPE_FORCE_FULL=true
       ;;
   esac
@@ -181,13 +184,19 @@ ci_scope_run_flutter_analyze() {
   [[ "$CI_SCOPE_FORCE_FULL" == true || "$CI_SCOPE_ESCAPE_FULL" == true ]] && return 0
   [[ "$CI_SCOPE_HAS_FLUTTER" == true ]] && return 0
   [[ "$CI_SCOPE_HAS_SERVER_ROUTES" == true || "$CI_SCOPE_HAS_SERVER_LIB" == true ]] && return 0
-  [[ "$CI_SCOPE_HAS_E2E" == true ]] && return 0
   return 1
 }
 
 ci_scope_run_flutter_stack() {
   [[ "$CI_SCOPE_FORCE_FULL" == true || "$CI_SCOPE_ESCAPE_FULL" == true ]] && return 0
-  [[ "$CI_SCOPE_HAS_FLUTTER" == true || "$CI_SCOPE_HAS_E2E" == true ]] && return 0
+  [[ "$CI_SCOPE_HAS_FLUTTER" == true ]] && return 0
+  return 1
+}
+
+# Web build + @smoke-ci canary (+ affected specs): any Flutter change, or an E2E-only change.
+ci_scope_run_web_build() {
+  ci_scope_run_flutter_stack && return 0
+  [[ "$CI_SCOPE_HAS_E2E" == true ]] && return 0
   return 1
 }
 
@@ -229,16 +238,17 @@ ci_scope_all_shards_json() {
 ci_scope_emit_json() {
   local scope
   scope="$(ci_scope_resolve_name)"
-  local run_analyze run_stack run_backend run_e2e_audit run_integration all_shards
+  local run_analyze run_stack run_web run_backend run_e2e_audit run_integration all_shards
   run_analyze="$(ci_scope_bool ci_scope_run_flutter_analyze)"
   run_stack="$(ci_scope_bool ci_scope_run_flutter_stack)"
+  run_web="$(ci_scope_bool ci_scope_run_web_build)"
   run_backend="$(ci_scope_bool ci_scope_run_backend)"
   run_e2e_audit="$(ci_scope_bool ci_scope_run_e2e_audit)"
   run_integration="$(ci_scope_bool ci_scope_run_integration)"
   all_shards="$(ci_scope_all_shards_json)"
 
   python3 - "$scope" "$CI_SCOPE_FORCE_FULL" "$CI_SCOPE_ESCAPE_FULL" "$run_analyze" "$run_stack" "$run_backend" "$run_e2e_audit" "$run_integration" \
-    "$all_shards" <<'PY'
+    "$all_shards" "$run_web" "${CI_SCOPE_E2E_SELECTION:-}" <<'PY'
 import json, sys
 
 (
@@ -251,7 +261,9 @@ import json, sys
     run_e2e_audit,
     run_integration,
     all_shards,
-) = sys.argv[1:10]
+    run_web,
+    e2e_selection,
+) = sys.argv[1:12]
 
 def b(v):
     return v == "true"
@@ -261,15 +273,28 @@ run_stack = b(run_stack)
 run_backend = b(run_backend)
 run_e2e_audit = b(run_e2e_audit)
 run_integration = b(run_integration)
+run_web = b(run_web)
 
 # Every shard in flutter_app/test/ci_shards.json runs whenever the Flutter stack runs.
 run_shards = json.loads(all_shards) if run_stack else []
+
+# Affected Playwright specs (select-affected-specs.mjs JSON, computed in resolve-ci-scope.sh).
+selection = json.loads(e2e_selection) if e2e_selection else {}
+e2e_matrix = (
+    [{"leg": i + 1, "specs": " ".join(leg)} for i, leg in enumerate(selection.get("legs", []))]
+    if run_web
+    else []
+)
 
 skip_jobs = []
 if not run_analyze:
     skip_jobs.append("flutter-analyze")
 if not run_stack:
-    skip_jobs.extend(["flutter-test", "flutter-coverage", "flutter-build-web", "ci-e2e-canary"])
+    skip_jobs.extend(["flutter-prep", "flutter-test", "flutter-coverage"])
+if not run_web:
+    skip_jobs.extend(["flutter-build-web", "ci-e2e-canary"])
+if not e2e_matrix:
+    skip_jobs.append("ci-e2e-affected")
 if not run_integration:
     skip_jobs.append("flutter-integration")
 
@@ -286,6 +311,10 @@ print(
             "run_e2e_audit": run_e2e_audit,
             "run_flutter_integration": run_integration,
             "run_shards": run_shards,
+            "run_web_build": run_web,
+            "run_e2e_affected": bool(e2e_matrix),
+            "e2e_matrix": e2e_matrix,
+            "e2e_deferred": selection.get("deferred", []) if run_web else [],
             "skip_jobs": skip_jobs,
         },
         separators=(",", ":"),

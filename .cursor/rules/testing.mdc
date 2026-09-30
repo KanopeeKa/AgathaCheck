@@ -19,13 +19,21 @@ Run `./scripts/pre-push-changed.sh` during iteration or `./scripts/pre-push.sh` 
 | Flutter domain/data | `flutter test` | Models, repos, datasources |
 | Flutter UI | Widget tests | Extracted widgets + critical screens |
 | Integration | `flutter test` integration dir | **Blocking in CI** — no `continue-on-error` |
-| Journeys | Playwright (`e2e/`) | Full suite: **pre-uat-e2e.yml** (9 active shards) post-merge to `main`; PR: **@smoke-ci** canary only (Pet Care — no org/foster smoke). Frozen specs listed in `e2e/scripts/frozen-e2e-specs.mjs`. |
+| Journeys | Playwright (`e2e/`) | Full suite: **pre-uat-e2e.yml** (9 **duration-balanced** localhost shards from `e2e/scripts/shard-files.mjs`) post-merge to `main`; PR: **@smoke-ci** canary + **affected specs** (`ci-e2e-affected`, budget in `select-affected-specs.mjs`) when the diff is E2E-only; Flutter PRs still run the full stack + canary. Frozen specs listed in `e2e/scripts/frozen-e2e-specs.mjs`. |
 
 ## BDD (hybrid — no Cucumber runner)
 
 - Gherkin specs: `flutter_app/test/bdd/features/`
 - Playwright implementations: `e2e/playwright/tests/` with `/** @bdd <feature> */` comment
 - New user journey → add Gherkin scenario **and** Playwright spec (or link debt issue)
+
+## Flutter CI shards
+
+Active Flutter unit/widget tests run in **six** manifest shards (`pet-profile`, `experience`, `core`, `auth`, `health`, `pet-care`) from `flutter_app/test/ci_shards.json`. `test/features/auth` stays in `perFileRoots` (coverage collector segfault when batched — not a flake).
+
+## Semantics contract (page objects)
+
+When a Playwright page object depends on a Flutter `Semantics(identifier: …)` (or label) that is not covered by an existing widget test, add a **semantics-contract** widget test in the mirrored `flutter_app/test/` path (pattern from #1235) in the same PR as the locator.
 
 ## E2E locator hygiene
 

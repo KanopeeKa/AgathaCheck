@@ -1,7 +1,8 @@
-# Flutter analyze + format. Runs its own codegen (mocks are analyzed too) in parallel with
-# flutter-prep; the shared prep artifact for shards comes from _reusable-flutter-prep.yml.
-# Caller: ci.yml job id `flutter-analyze`.
-name: Reusable Flutter analyze
+# Canonical Flutter prep for parallel CI shards: build_runner mocks + synced legal assets,
+# uploaded once as flutter-prep-<sha>. Split out of flutter-analyze so test shards start
+# without waiting for format + analyze (plan test-health-ci-5f3a phase 2).
+# Callers: ci.yml / ci-full-audit.yml job id `flutter-prep`.
+name: Reusable Flutter prep
 
 on:
   workflow_call:
@@ -13,10 +14,10 @@ permissions:
   contents: read
 
 jobs:
-  analyze:
-    name: Flutter (analyze & format)
+  prep:
+    name: Flutter prep (codegen + legal assets)
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v5
 
@@ -44,33 +45,31 @@ jobs:
 
       - name: Generate code (build_runner)
         working-directory: flutter_app
-        run: |
-          if grep -q "build_runner" pubspec.yaml; then
-            dart run build_runner build --delete-conflicting-outputs
-          else
-            echo "build_runner not configured; skipping codegen."
-          fi
-
-      - name: Check Dart format
-        run: |
-          dart format --output=none --set-exit-if-changed flutter_app/lib flutter_app/test
+        run: dart run build_runner build --delete-conflicting-outputs
 
       - name: Sync legal documents into app assets
         run: node scripts/sync_legal_documents.js
 
-      - name: Analyze
-        working-directory: flutter_app
-        run: flutter analyze --no-fatal-warnings --no-fatal-infos
+      - name: Stage Flutter prep artifact
+        run: bash scripts/ci/stage-flutter-prep-artifact.sh
 
-      - name: Write analyze job summary
+      - name: Upload Flutter prep artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: flutter-prep-${{ github.sha }}
+          path: flutter-prep-artifact.tar.gz
+          retention-days: 1
+          if-no-files-found: error
+
+      - name: Write prep job summary
         if: always()
         run: |
           end=$(date +%s)
           start="${JOB_START_EPOCH:-$end}"
           dur=$((end - start))
-          bash scripts/ci/append-summary.sh "Flutter analyze job" \
-            "workflow=flutter-analyze" \
-            "job=analyze" \
+          bash scripts/ci/append-summary.sh "Flutter prep job" \
+            "workflow=flutter-prep" \
+            "job=prep" \
             "sha=${{ github.sha }}" \
             "run_id=${{ github.run_id }}" \
             "duration_sec=${dur}"

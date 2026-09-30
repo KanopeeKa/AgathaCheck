@@ -115,9 +115,13 @@ aggregate `flutter-test` result and `flutter-coverage / Flutter domain coverage`
 **Blocking via `ci-gate`:** `ci-e2e-canary / Playwright @smoke-ci canary (localhost)` —
 PR Playwright canary (`@smoke-ci`, retries 0), including three org journeys (discovery, profile, dashboard). Required when `flutter-build-web` succeeds; skipped when build fails (gate still fails on build). Enforced in `scripts/ci/assert-ci-gate.sh`. See [e2e-ci-canary-plan.md](./e2e-ci-canary-plan.md).
 
-**Full org journey E2E** (frozen Shelter specs; 13 specs in `org-e2e-specs.mjs`) runs in **`ci-full-audit.yml`** only (scheduled/manual), **not** in active `pre-uat-e2e.yml` (9 Pet Care shards). Governance still runs `check-org-e2e-locators.mjs` when org Flutter changes without a matching E2E touch.
+**Full org journey E2E** (frozen Shelter specs; 13 specs in `org-e2e-specs.mjs`) runs in **`ci-full-audit.yml`** only (scheduled/manual), **not** in active `pre-uat-e2e.yml` (9 **duration-balanced** Pet Care shards — see `node e2e/scripts/shard-files.mjs --summary`; indices shift when specs/timings change). Governance still runs `check-org-e2e-locators.mjs` when org Flutter changes without a matching E2E touch.
 
 #### Path-scoped PR CI (`ci-scope`)
+
+**Which PRs get CI:** PRs into `main`, into programme integration branches (`cursor/*-integration-*`) and
+into agent work branches (`claude/**`) — the same PR tier everywhere, so phase PRs into an integration line
+are no longer gated only by local pre-push (parallel-programmes §6 TEST.2).
 
 `ci.yml` job **`ci-scope / Resolve CI scope`** classifies the PR diff (shared rules in
 `scripts/ci/ci-scope-lib.sh`, also used by `pre-push-changed.sh`). Flutter jobs may be
@@ -126,13 +130,17 @@ PR Playwright canary (`@smoke-ci`, retries 0), including three org journeys (dis
 
 | Always runs | May skip on narrow diffs |
 |-------------|--------------------------|
-| `startup-smoke`, `test-suite` (governance + backend + e2e audit), CodeQL | Flutter analyze*, shards, coverage, integration, build-web, `@smoke-ci` canary |
+| `startup-smoke`, `test-suite` (governance + backend + e2e audit), CodeQL | Flutter analyze*, shards, coverage, integration, build-web, `@smoke-ci` canary, `ci-e2e-affected` |
 
 \*Flutter **analyze** still runs when `server/routes/**` or `server/lib/**` changed (API contract), even if `flutter_app/**` is untouched.
 
+**E2E-only PRs** (`e2e/**` without `flutter_app/**`): skip the Flutter unit stack; run **cached web build** (when Flutter inputs unchanged) + `@smoke-ci` canary + **`ci-e2e-affected`** matrix legs chosen by `e2e/scripts/select-affected-specs.mjs` (≤720 s budget, ≤3 legs; broad infra edits keep tiers 0–1 only). `resolve-ci-scope.sh` drops `server/**` paths before selection so **backend-only PRs stay short** (canary + post-merge Pre-UAT cover server changes). `e2e/package.json` / `e2e/package-lock.json` still force the **full** CI stack.
+
+**Web build cache:** `pre-uat-e2e.yml` on `main` **saves** `flutter_app/build/web`; PR `ci.yml` **restores** it (`web_cache: restore`). First PR after a cache miss builds normally. On cache **hit**, Flutter setup/build steps are skipped but **`verify-web-artifact.sh` still runs** on the restored tree. Cache key includes PostHog presence (`ph0`/`ph1`) and hashes build scripts plus `flutter_app` inputs.
+
 **Force full suite:** PR label `ci-full`, commit message token `[ci-full]`, or `workflow_dispatch` with `force_full: true`.
 
-**Never skip (force full):** migrations, `server/config/security.js`, `flutter_app/lib/core/**`, `e2e/**`, `.github/workflows/**`, lockfiles, `scripts/ci/**`.
+**Never skip (force full):** migrations, `server/config/security.js`, `flutter_app/lib/core/**`, `e2e/package.json`, `e2e/package-lock.json`, `.github/workflows/**`, server/flutter lockfiles, `scripts/ci/**`.
 
 #### Flutter shards (manifest-driven matrix)
 
@@ -142,6 +150,17 @@ in `ci.yml` / `ci-full-audit.yml` (via ci-scope `run_shards`), `run_tests_ci_sha
 `merge_flutter_coverage.sh` and `pre-push.sh`. Governance runs `node scripts/ci/flutter-shards.mjs check`:
 every active `*_test.dart` must be owned by **exactly one** shard (frozen roots from the frozen-domains
 manifest and the integration dir are excluded). Adding or splitting a shard = editing the manifest only.
+
+**Batched runner.** `run_tests_ci_shard.sh` → `scripts/ci/flutter-shard-runner.mjs` runs each shard in
+batches of up to 24 files, one `flutter test --concurrency 4 --coverage` process per batch (instead of one
+process per file, ~5–6 s startup each). Linux `flutter_tester` intermittently segfaults while collecting
+coverage and the tool can then hang, so every batch runs under a no-progress watchdog (90 s): a failed batch
+re-runs only its non-passing files one per process; a killed batch re-runs all its files one per process.
+A file that passes only in isolation is reported as a warning in the job summary. Roots in the manifest's
+`perFileRoots` (currently `test/features/auth`, which crashes the collector when batched) always run one
+file per process. Coverage is merged in Node (`scripts/ci/lcov-merge.mjs`), so shards and the coverage job no
+longer install apt `lcov`. Measured on a 4-vCPU box (2026-09-30): the six shards take 46–75 s each
+(`auth`, whose files run one per process, is the longest); the `health` shard alone took 315 s with one process per file.
 
 **All shards run whenever the Flutter stack runs.** Per-domain shard selection was removed in plan
 `test-health-ci-5f3a`: with batched shards a full run costs about the wall-clock of one shard, and running
@@ -248,9 +267,12 @@ gh api repos/KanopeeKa/AgathaCheck/branches/main/protection \
 **Optional shard checks** (`flutter-test (<shard>) / Flutter tests (<shard>)`) need
 not be required individually — `ci-gate` fails when any matrix leg fails.
 
-**Codegen contract:** `flutter-analyze` runs canonical `build_runner` + legal sync once and
-uploads `flutter-prep-<sha>.tar.gz`; downstream `flutter-test-*`, `flutter-integration`, and
-`flutter-build-web` download, verify, and restore that archive (no redundant prep in shards).
+**Codegen contract:** `flutter-prep` (`_reusable-flutter-prep.yml`) runs canonical `build_runner` +
+legal sync once and uploads `flutter-prep-<sha>.tar.gz`; the `flutter-test` matrix and
+`flutter-integration` download, verify, and restore that archive (no redundant prep in shards).
+`flutter-analyze` runs its own codegen in parallel (it analyzes the mocks) and no longer gates shards.
+`flutter-build-web` needs no prep: `build_runner` only generates test mocks and the web build uses the
+committed legal assets, so it starts right after `ci-scope` (its canary path is the PR critical path).
 Missing or corrupt prep artifacts fail at download/verify/restore with `::error::` annotations.
 
 **Stability note:** Keep `ci.yml` caller ids (`startup-smoke`, `test-suite`, `flutter-analyze`, etc.) and reusable
@@ -261,7 +283,8 @@ display strings exactly.
 |-------------------------|---------------|------------------|
 | `startup-smoke / PR startup smoke` | `_reusable-pr-startup-smoke.yml` | Postgres bootstrap, `node bin/start.js`, `/backend/health` + root |
 | `test-suite / Governance (BDD + file size)` | `_reusable-test.yml` | BDD mapping gate (`check_bdd_coverage.js`; run `--report-only` for live counts — gate is 68% of active scenarios), priority tags, file size ≤ 500 lines |
-| `flutter-analyze / Flutter (analyze & format)` | `_reusable-flutter-analyze.yml` | format, legal sync, codegen, analyze; uploads `flutter-prep-<sha>` |
+| `flutter-prep / Flutter prep (codegen + legal assets)` | `_reusable-flutter-prep.yml` | canonical codegen + legal sync; uploads `flutter-prep-<sha>` for shards and integration |
+| `flutter-analyze / Flutter (analyze & format)` | `_reusable-flutter-analyze.yml` | format, codegen, analyze |
 | `flutter-test (<shard>) / Flutter tests (<shard>)` | `_reusable-flutter-test-shard.yml` | matrix leg per shard in `flutter_app/test/ci_shards.json`, per-shard coverage |
 | `flutter-coverage / Flutter domain coverage` | `_reusable-flutter-coverage.yml` | merge shard lcov, domain coverage ≥ 65% |
 | `flutter-integration / Flutter integration` | `_reusable-flutter-integration.yml` | pet profile integration tests |
