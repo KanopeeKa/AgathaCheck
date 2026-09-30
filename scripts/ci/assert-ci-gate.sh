@@ -52,20 +52,23 @@ declare -A RESULTS=(
   [flutter-integration]="${FLUTTER_INTEGRATION:-}"
   [flutter-build-web]="${FLUTTER_BUILD_WEB:-}"
   [ci-e2e-canary]="${CI_E2E_CANARY:-}"
+  [ci-e2e-affected]="${CI_E2E_AFFECTED:-}"
 )
 
-# ci-e2e-canary skips when flutter-build-web fails or scope skips stack; require green when build ran.
-ci_e2e_canary_passes() {
-  local canary="${CI_E2E_CANARY:-}"
+# E2E jobs (canary, affected specs) skip when flutter-build-web fails or scope skips them;
+# require green when the build ran and scope selected them.
+e2e_job_passes() {
+  local job="$1"
+  local result="$2"
   local build="${FLUTTER_BUILD_WEB:-}"
-  if job_expects_skip "ci-e2e-canary"; then
-    [[ "$canary" == "success" || "$canary" == "skipped" ]]
+  if job_expects_skip "$job"; then
+    [[ "$result" == "success" || "$result" == "skipped" ]]
     return
   fi
   if [[ "$build" == "success" ]]; then
-    [[ "$canary" == "success" ]]
+    [[ "$result" == "success" ]]
   else
-    [[ "$canary" == "success" || "$canary" == "skipped" ]]
+    [[ "$result" == "success" || "$result" == "skipped" ]]
   fi
 }
 
@@ -90,10 +93,10 @@ trap 'rm -f "$SUMMARY_TMP"' EXIT
   echo "| Job | Result | Pass |"
   echo "|-----|--------|------|"
   for job in startup-smoke test-suite flutter-analyze flutter-prep flutter-test \
-    flutter-coverage flutter-integration flutter-build-web ci-e2e-canary; do
+    flutter-coverage flutter-integration flutter-build-web ci-e2e-canary ci-e2e-affected; do
     result="${RESULTS[$job]}"
-    if [[ "$job" == "ci-e2e-canary" ]]; then
-      if ci_e2e_canary_passes; then
+    if [[ "$job" == "ci-e2e-canary" || "$job" == "ci-e2e-affected" ]]; then
+      if e2e_job_passes "$job" "$result"; then
         pass="yes"
       else
         pass="**no**"

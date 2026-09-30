@@ -51,6 +51,8 @@ jobs:
       ref: ${{ needs.resolve-commit.outputs.test_sha }}
       upload_artifact: true
       source_workflow: Pre-UAT E2E
+      # Seed the web-build cache on main so e2e-only PRs skip the Flutter build (never restores here).
+      web_cache: save
 
   e2e-full:
     name: Full localhost E2E
@@ -61,7 +63,7 @@ jobs:
       # pass/fail) so promotion stalling is diagnosed precisely. The gate below
       # still requires every shard green before promote-uat runs.
       fail-fast: false
-      # Shard count: 9 (Pet Care only) — keep in sync with e2e/scripts/shard-files.mjs and e2e.yml.
+      # Shard count: 9 (Pet Care only; duration-balanced in e2e/scripts/shard-files.mjs) — keep in sync with e2e.yml.
       matrix:
         shard: [1, 2, 3, 4, 5, 6, 7, 8, 9]
     uses: ./.github/workflows/_reusable-e2e-local.yml

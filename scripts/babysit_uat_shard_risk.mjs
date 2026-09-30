@@ -15,69 +15,27 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { SHARDS, SHARD_TOTAL } from '../e2e/scripts/shard-files.mjs';
+import { AREAS, areasForPath, isBroadPath } from '../e2e/scripts/spec-domains.mjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
-/** Shards with historical flake sensitivity — boost to high when overlapped. */
-const HIGH_BOOST_SHARDS = new Set([3, 4, 8]);
+/**
+ * Specs with historical flake sensitivity — boost their shards to high when overlapped.
+ * (Spec-based, not shard-index-based: shard membership is duration-balanced and moves.)
+ */
+const HIGH_BOOST_SPECS = new Set([
+  'guardian.dashboard.spec.ts',
+  'guardian.navigation.spec.ts',
+  'away.planning.spec.ts',
+  'away.plan.detail.v2.spec.ts',
+  'away.care.planning.spec.ts',
+  'people-hub.spec.ts',
+  'experience.navigation.spec.ts',
+  'notifications.spec.ts',
+]);
 
 const RISK_ORDER = { none: 0, low: 1, medium: 2, high: 3 };
-
-/** Repo-relative path patterns → shard indices (1-based). Active Pet Care shards only. */
-const PATH_TO_SHARDS = [
-  {
-    re: /^flutter_app\/lib\/features\/health_tracking\//,
-    shards: [1],
-    reason: 'health Flutter',
-  },
-  {
-    re: /^flutter_app\/lib\/features\/pet_profile\//,
-    shards: [2],
-    reason: 'pet Flutter',
-  },
-  {
-    re: /^flutter_app\/lib\/features\/auth\//,
-    shards: [5],
-    reason: 'auth Flutter',
-  },
-  {
-    re: /^flutter_app\/lib\/features\/experience\//,
-    shards: [3, 4],
-    reason: 'experience Flutter',
-  },
-  {
-    re: /^flutter_app\/lib\/features\/notifications\//,
-    shards: [8],
-    reason: 'notifications Flutter',
-  },
-  {
-    re: /^flutter_app\/lib\/features\/sharing\//,
-    shards: [7],
-    reason: 'sharing Flutter',
-  },
-  {
-    re: /^flutter_app\/lib\/features\/weight_tracking\//,
-    shards: [6],
-    reason: 'weight Flutter',
-  },
-  {
-    re: /^flutter_app\/lib\/features\/vet\//,
-    shards: [9],
-    reason: 'vet Flutter',
-  },
-  {
-    re: /^flutter_app\/lib\/core\//,
-    shards: [3, 4, 5, 7, 8, 9],
-    reason: 'shared core',
-    risk: 'low',
-  },
-  {
-    re: /^e2e\/playwright\/support\//,
-    shards: Array.from({ length: SHARD_TOTAL }, (_, i) => i + 1),
-    reason: 'shared E2E support',
-    risk: 'medium',
-  },
-];
+const ALL_SHARDS = Array.from({ length: SHARD_TOTAL }, (_, i) => i + 1);
 
 const specToShard = new Map();
 for (let i = 0; i < SHARDS.length; i++) {
@@ -190,15 +148,18 @@ function classifyPath(changedPath) {
     }
   }
 
-  for (const rule of PATH_TO_SHARDS) {
-    if (!rule.re.test(changedPath)) continue;
-    const baseRisk = rule.risk ?? 'medium';
-    for (const shard of rule.shards) {
-      let risk = baseRisk;
-      if (baseRisk !== 'low' && HIGH_BOOST_SHARDS.has(shard)) {
-        risk = 'high';
-      }
-      hits.push({ shard, risk, reason: `${rule.reason}: ${changedPath}` });
+  if (changedPath.startsWith('e2e/playwright/support/') || changedPath.startsWith('e2e/playwright/fixtures/')) {
+    for (const shard of ALL_SHARDS) hits.push({ shard, risk: 'medium', reason: `shared E2E support: ${changedPath}` });
+  } else if (isBroadPath(changedPath)) {
+    for (const shard of ALL_SHARDS) hits.push({ shard, risk: 'low', reason: `shared core: ${changedPath}` });
+  }
+
+  for (const area of areasForPath(changedPath)) {
+    for (const spec of AREAS[area].specs) {
+      const shard = specToShard.get(`playwright/tests/${spec}`);
+      if (!shard) continue;
+      const risk = HIGH_BOOST_SPECS.has(spec) ? 'high' : 'medium';
+      hits.push({ shard, risk, reason: `${area} (${spec}): ${changedPath}` });
     }
   }
 

@@ -38,6 +38,11 @@ on:
       ci_e2e_canary:
         required: true
         type: string
+      ci_e2e_affected:
+        description: Aggregate result of the ci-e2e-affected matrix (PR affected specs)
+        required: false
+        type: string
+        default: ''
 
 permissions:
   contents: read
@@ -66,4 +71,5 @@ jobs:
           FLUTTER_INTEGRATION: ${{ inputs.flutter_integration }}
           FLUTTER_BUILD_WEB: ${{ inputs.flutter_build_web }}
           CI_E2E_CANARY: ${{ inputs.ci_e2e_canary }}
+          CI_E2E_AFFECTED: ${{ inputs.ci_e2e_affected }}
         run: bash scripts/ci/assert-ci-gate.sh
