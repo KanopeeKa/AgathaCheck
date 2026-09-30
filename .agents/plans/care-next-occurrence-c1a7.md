@@ -13,7 +13,7 @@
 | **revisions** | v1 2026-09-29 · v2 2026-09-29 (product decisions) · v3 2026-09-29 (confirmations, UI review, data, E2E) |
 | **approval** | Owner sign-off in chat 2026-09-29 ("You have my sign off. Go ahead."), including the data wipe and category-default change |
 | **execution model** | Owner, 2026-09-29: execute-plan in essence. `claude/eager-edison-mf34j6` is the **integration branch for the whole plan**; phases are committed with the `phase(<n>/<m>):` prefix **without approval stops**; a **draft PR to `main`** is opened early for CI signal; it is marked ready and **merged** when every child is done and all gates are green; then **babysit `pre-uat-e2e.yml` until green** |
-| **coordination (2026-09-30)** | Follows [parallel-programmes.md](../../docs/agent-efficiency/parallel-programmes.md) (CARE). **Lands per child**: A+B (landing 2b, after ARCH D; TEST slice 1 on `main` too), then C+D (3b), then E+F (5b), each its own integration → `main` PR with `/babysit-uat`; `claude/eager-edison-mf34j6` stays the integration line and is rebased after every landing. Migration `083_care_occurrence_model` is kept (first in the queue). One landing at a time; landing broadcast on every open programme control issue/PR. Area ownership: care engine (A+B), absences (E), care UI (C, D, F), pet-profile agenda (C); shared E2E files are append-only outside CARE's window (after TEST slice 1). From ARCH D / TEST slice 1 on: new Flutter code passes `scripts/check_feature_imports.js`; new Flutter test folders are added to `flutter_app/test/ci_shards.json` |
+| **coordination (2026-09-30)** | Follows [parallel-programmes.md](../../docs/agent-efficiency/parallel-programmes.md) (CARE). **Lands per child**: A+B (landing 2b, after ARCH D; TEST slice 1 on `main` too), then C+D (3b), then E+F (5b), each its own integration → `main` PR with `/babysit-uat`; `claude/eager-edison-mf34j6` stays the shared integration line and merges main after every landing (no rebase or force-push after takeover). Migration `083_care_occurrence_model` is kept (first in the queue). One landing at a time; landing broadcast on every open programme control issue/PR. Area ownership: care engine (A+B), absences (E), care UI (C, D, F), pet-profile agenda (C); shared E2E files are append-only outside CARE's window (after TEST slice 1). From ARCH D / TEST slice 1 on: new Flutter code passes `scripts/check_feature_imports.js`; new Flutter test folders are added to `flutter_app/test/ci_shards.json` |
 | **default_merge_mode** | `auto` |
 | **programme_ref** | `docs/domains/pet_care/features/care-item-evolution.md` (canonical Care Item spec) |
 | **reviewed commit** | `f6b6285` (`main`, 2026-09-29) — all file:line references are against this commit |
@@ -709,24 +709,24 @@ Reuses `pet_care/presentation/widgets/care_surface/*` primitives (`CareCollectio
 | `docs/architecture/api-reference.md` | §7.2 |
 | `docs/e2e/uat-demo-data.md` | Reset procedure + seed table (child B) |
 | `.agents/memory/health-entry-completion.md` + `MEMORY.md` | Replace stale `health_history`/sentinel description |
-| `docs/e2e/README.md` (child B/C) | Test clock header, API-only care helpers, no SQL seeding for care |
+| `e2e/README.md` (child B/C) | Test clock header, API-only care helpers, no SQL seeding for care |
 | `docs/pipelines/ci-cd-gates.md`, `docs/pipelines/e2e-ci-canary-plan.md` (child C) | Canary journey list: "API-seeded health read" → "care completion shows the next date" (§11.4) |
 
 ---
 
 ## 10. Child plans and phases
 
-Order **A → B → C → D → E → F**, all on the integration branch `claude/eager-edison-mf34j6` (execution model in Metadata). Each phase: local verification (§11) then a `phase(<n>/<m>): …` commit and push, with no approval stop. The branch is rebased on `origin/main` regularly (merge policy).
+Order **A → B → C → D → E → F**, all on the integration branch `claude/eager-edison-mf34j6` (execution model in Metadata). Each phase: local verification (§11) then a `phase(<n>/<m>): …` commit and push, with no approval stop. Merge `origin/main` into this shared branch regularly; preserve history rather than rebasing or force-pushing.
 
 **Landings (parallel-programmes.md §6, 2026-09-30):** three slices, each through its own integration → `main` PR:
 
 | Slice | Children | Landing # | Gate before opening the `main` PR |
 |---|---|---|---|
-| A+B | A (docs), B (engine, migration 083, seeds) | 2b (after ARCH D; TEST slice 1 also on `main`) | No other programme `main` PR open; rebase on `main`; full `./scripts/pre-push.sh`; all 9 localhost Playwright shards; CI green; then `/babysit-uat` |
+| A+B | A (docs), B (engine, migration 083, seeds) | 2b (after ARCH D; TEST slice 1 also on `main`) | No other programme `main` PR open; merge `main`; full `./scripts/pre-push.sh`; all 9 localhost Playwright shards; CI green; then `/babysit-uat` |
 | C+D | C (agenda, row, sheets), D (form, Care Item view) | 3b | Same, plus `scripts/check_feature_imports.js` and `flutter_app/test/ci_shards.json` for new test folders |
 | E+F | E (absences), F (module, compat routes deleted) | 5b | Same |
 
-PR [KanopeeKa/AgathaCheck#1448](https://github.com/KanopeeKa/AgathaCheck/pull/1448) carries the A+B slice; C+D and E+F open new PRs from the same branch after each landing and rebase.
+PR [KanopeeKa/AgathaCheck#1448](https://github.com/KanopeeKa/AgathaCheck/pull/1448) carries the A+B slice; C+D and E+F open new PRs from the same branch after each landing and main merge.
 
 ### Child A — `care-occurrence-spec-c1a7` (docs only)
 
@@ -748,7 +748,7 @@ PR [KanopeeKa/AgathaCheck#1448](https://github.com/KanopeeKa/AgathaCheck/pull/14
 | B6 | Care tick + `server/scripts/care/care_tick.js` + ops note (host cron; coordinate with `docs/ops/prod-backup-restore-plan.md`) | `default` |
 | B7 | Readers: reminders (pet TZ, skip paused, never on estimated dates), projection/planner "today", list/detail DTOs, OpenAPI; **test clock** header (§5.16) | `single-backend-route` |
 | B8 | **UAT seed upgrade** (§6.4) + seed DB tests + `uat-demo-data.md` | `default` |
-| B9 | DB integration tests (`server/test/db/careOccurrences.integration.test.js`): property test ≥ 500 random steps asserting INV-1…5 and OR-4; CR-1…7; LC-3…5; migration idempotency | `default` |
+| B9 | DB integration tests (split across `server/test/db/careOccurrences.*.integration.test.js` and `migration083.integration.test.js`): property test ≥ 500 random steps asserting INV-1…5 and OR-4; CR-1…7; LC-3…5; migration rollback/retry/idempotency | `default` |
 | B10 | **E2E fallout of server changes** (§11.3 "B" rows): replace SQL care helpers with API helpers + test clock; update specs that relied on T−1, the reminder window or `PUT next_due_date`; notifications and away specs green | `bdd-journey` |
 
 **Exit:** all §8.1–8.7 and §8.10 cases as Jest tests; PostgreSQL CI job green; `mark-taken`/`ensure-open` never 400 for active planned items; reminder after on-time completion; AB-1 via existing endpoints; repair dry-run 0 violations after seeding; write-path guard green; **existing away-planning, notifications, health and dashboard Playwright specs green on localhost** (review R10); `./scripts/pre-push.sh` green. Response additions only.
@@ -873,7 +873,7 @@ Pure date rules (month-end clamp, DST, origins, property test) stay in Jest — 
 | `away.plan.detail.v2.spec.ts`, `away.planning.spec.ts` | Seed via API; assertions unchanged | B10 |
 | `care.item.absence.spec.ts` | Remove ensure-open expectations; add PP-5 and AB-2 | E6 |
 | `weight.tracking.spec.ts` | Check weigh-in completion and weight-entry deletion (UN-5) still pass | B10 |
-| `sharing.spec.ts`, `adoption.spec.ts`, `organisation.pet.management.spec.ts` | Use `createHealthEntry` only — no change expected; run in B10 | B10 |
+| `sharing.spec.ts`; frozen `adoption.spec.ts`, `organisation.pet.management.spec.ts` | Run active sharing in B10. Adoption and organisation pet management are excluded by the frozen-domain manifest; do not reactivate them for the nine-shard Pet Care gate | B10 |
 | **New** `care.agenda.spec.ts` | `care_agenda.feature` | C6 — shard 1 (with `health.tracking`, `care.item.absence`) |
 | **New** `care.schedules.spec.ts` | `care_schedules.feature` (localhost; uses the test clock for time-of-day cases) | C6 — shard 4 (currently one file) |
 | **New** `care.item.form.spec.ts` | `care_item_form.feature` | D4 — shard 6 (with `weight.tracking`, `care-suggestion`) |

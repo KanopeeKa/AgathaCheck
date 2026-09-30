@@ -4,10 +4,70 @@ Everything a new agent needs to continue the CARE programme from where the
 previous session stopped. Read this first, then the plan
 ([care-next-occurrence-c1a7.md](care-next-occurrence-c1a7.md)) and
 [parallel-programmes.md](../../docs/agent-efficiency/parallel-programmes.md) §5–§7
-(on `main` once PR #1454 lands; until then on branch `claude/exciting-bardeen-hy6yzp`).
+on `main`.
 
 **Delete this file in the commit that lands the A+B slice** (it is a working
 note, not documentation).
+
+## Takeover corrections — 2026-09-30
+
+The owner approved Replit Agent continuing and pushing this plan after a
+read-only review and the previous agent's confirmation of these corrections.
+This section supersedes conflicting operational instructions below; the quoted
+owner messages remain historical context.
+
+- **One writer, preserved history:** continue on `claude/eager-edison-mf34j6`.
+  Merge `origin/main` into this shared branch; do not rebase or force-push it.
+- **First fix:** migration 083 must leave transaction ownership with the
+  migration runner. Remove its internal transaction boundaries and do not
+  swallow item synchronization errors. Prove failure rollback, successful retry,
+  repeat-run safety, and preservation of the enclosing transaction.
+- **B9 is mandatory:** CR-1…7 and migration idempotency are exit criteria.
+  Explicitly cover delayed-tick catch-up, pet-timezone day boundaries,
+  concurrent completion of different slots, and DST tick deduplication.
+- **Verification:** use Flutter 3.44.0 / Dart 3.12, Node 22 and PostgreSQL 16.
+  A full nine-shard `e2e.yml` dispatch is an accepted localhost gate if the
+  frontend artifact and tests are verified against the same candidate commit.
+  This does not replace full pre-push or post-merge pre-UAT checks.
+- **Landing:** A+B only after ARCH D is on main, main's pre-UAT is green,
+  and no other programme is landing. TEST phase 1 and PEOPLE documentation
+  already landed; the audit dependency files already match main.
+- **Data safety:** local validation uses an isolated disposable database.
+  No production reset or broad repair of older migrations is authorized by
+  this takeover.
+
+### Takeover implementation and evidence
+
+- Migration 083 is now transaction-neutral and propagates failures. Its actual
+  CLI PostgreSQL tests prove rollback of schema, earlier item writes and ledger,
+  followed by successful retry and idempotent CLI/hook reruns.
+- B9 now covers all CR-1…7 explicitly, including held advisory-lock overlap,
+  two authorized carers racing for one or different slots, delayed catch-up,
+  timezone boundaries and both UTC instants of the autumn repeated hour.
+  Spring gaps retain the stored time but become due at the first real minute;
+  Paris and Lord Howe are covered. Formatter/slot caches are bounded.
+- B10 covers real next occurrences on away plans, separate estimated summaries,
+  exact today/tomorrow dose counts, and reminder recreation after on-time
+  completion. Notification grouping uses the actual accessibility groups and
+  its SQL backdate helper rejects a zero-row update.
+- Backend verification passed: **153 suites / 1,184 tests**, including real DB
+  suites. Focused migration tests: **2/2**; schedule/catch-up tests: **37/37**.
+  Full local seeding into a separate disposable database followed by repair
+  dry-run checked **18 care items, zero violations**.
+- The full pre-push and all nine active localhost shards are still required
+  landing evidence; use the exact-candidate workflow results/comments on
+  [PR 1448](https://github.com/KanopeeKa/AgathaCheck/pull/1448), not the earlier
+  focused counts, to determine whether those gates have finished.
+- For browser runs, explicitly supply the same isolated PG settings as the
+  backend as well as `E2E_BASE_URL`. Non-care notification helpers still use
+  SQL, so changing the HTTP URL alone is insufficient.
+- Keep disposable database/workflow settings out of the pushed `.replit`.
+  Older migrations with internal transaction boundaries were handed to ARCH E
+  on [its control issue](https://github.com/KanopeeKa/AgathaCheck/issues/1446#issuecomment-5918723158);
+  they are not part of the CARE fix.
+
+The original checkpoint list and unfinished-work notes below describe the
+pre-takeover state; this section supersedes them.
 
 ---
 
@@ -41,7 +101,7 @@ Standing rules:
 ## 2. parallel-programmes.md rules that bind CARE
 
 - **§6 CARE deltas:** land per child — **A+B**, then **C+D**, then **E+F** — each its own
-  integration → `main` PR with `/babysit-uat`; rebase the integration branch after every
+  integration → `main` PR with `/babysit-uat`; merge main into the integration branch after every
   landing. Keep migration **083** (renumber only if another programme takes 083 first).
   Completion records the provider snapshot from the item's attached contact, not filtered
   by the completer's directory (PEOPLE invariant I12) — **done in B4b**. E2E infra changes
@@ -50,7 +110,7 @@ Standing rules:
   until it lands. Child C's pet-profile agenda lands before ARCH G / PEOPLE p13.
 - **§5:** one landing at a time (check no other programme `main` PR is open/landing);
   after each landing post the §7 landing broadcast on every open programme control
-  issue/PR (ARCH #1446/#1447, TEST #1449 / PR #1455, PEOPLE PR #1454); rebase then full
+  issue/PR (ARCH #1446/#1447, TEST #1449 / PR #1455, PEOPLE PR #1454); merge main then full
   pre-push + 9 shards; stay in CARE's area (`server/lib/people/**` belongs to PEOPLE);
   shared E2E files append-only outside the owner window; contracts travel with code; no
   cross-branch merges.
@@ -59,7 +119,7 @@ Standing rules:
 
 ## 3. Where things stand
 
-### Branch `claude/eager-edison-mf34j6` (pushed, head `4645c4e`)
+### Historical pre-takeover checkpoints on `claude/eager-edison-mf34j6`
 
 | Commit | What |
 |---|---|
@@ -147,20 +207,23 @@ Then run the remaining B10 specs (plan §11.3 "B" rows) and fix fallout:
 - `care.item.absence.spec.ts`, `guardian.dashboard.spec.ts` (already asserts there is no
   "snooze" button), `pet.profiles.spec.ts`.
 - `weight.tracking.spec.ts` — weigh-in completion and weight-entry deletion (UN-5).
-- `sharing.spec.ts`, `adoption.spec.ts`, `organisation.pet.management.spec.ts` — no change expected; run them.
+- `sharing.spec.ts` — no change expected; run it. `adoption.spec.ts` and
+  `organisation.pet.management.spec.ts` are now in the frozen-domain manifest,
+  excluded from the active nine-shard gate; do not reactivate them.
 - `@smoke-ci` canary.
 - BDD gate: `node e2e/scripts/check_bdd_coverage.js --report-only` (≥ 68 % of active scenarios).
 
 Commit as `phase(B10/33): e2e: care API helpers and test clock replace SQL care seeding`
-and push. Optional B9 leftovers: CR-5 (different stack slots) and a migration-083
-idempotency test.
+and push. Required B9 completion includes CR-5 (different stack slots),
+migration-083 idempotency and failure rollback, plus explicit CR-2, CR-3 and
+CR-6 database coverage (see takeover corrections above).
 
 ### 5.2 Land the A+B slice (landing 2b)
 
 1. Wait until **ARCH D** and **TEST slice 1** (PR #1455) are on `main`, and no other
    programme `main` PR is open/landing.
-2. `git fetch origin main && git rebase origin/main` (branch is ours; force-with-lease
-   push is fine). Keep migration **083** unless `main` took that number. Resolve
+2. `git fetch origin main && git merge origin/main` (shared branch; no rebase or
+   force-push). Keep migration **083** unless `main` took that number. Resolve
    `ci_shards.json`: any **new Flutter test folder** from this branch must be listed there.
 3. `./scripts/pre-push.sh` (full) green.
 4. All **9 localhost Playwright shards** green (see §6 for local setup; shard list in
@@ -174,7 +237,7 @@ idempotency test.
 
 ### 5.3 After A+B lands
 
-Rebase the integration branch, then child **C** (agenda, row, sheets), **D** (form + Care
+Merge main into the integration branch, then child **C** (agenda, row, sheets), **D** (form + Care
 Item view) → C+D PR (landing 3b), then **E** (absences) + **F** (module consolidation,
 compat routes deleted) → E+F PR (5b). New gates from here on: new Flutter code passes
 `node scripts/check_feature_imports.js`; new Flutter test folders go in
