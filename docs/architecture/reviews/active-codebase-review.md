@@ -263,7 +263,7 @@ These are implementation design/test requirements, not claims of newly observed 
 
 **Scope discipline:** complete the contract and failure tests within each owning package; do not create a generic queue framework, offline mutation ledger, new auth platform, storage migration or unrelated refactor to satisfy this register. If a listed operational guarantee cannot be met by the current environment, stop that package's cutover and document the concrete blocker.
 
-## Implementation status (as of 2026-09-29)
+## Implementation status (as of 2026-09-30)
 
 Batches A–C shipped the core step of Packages 1–4 and 6–8 (PRs #1282–#1319). Measured against the exit gates in **Detailed implementation plan** below, several packages are still partial, and Package 9's coupling has regressed since the review baseline (unique cross-feature edges 50 → 59, directives 466 → 536, strongly connected features 12 → 13). The remaining work is scheduled by the execute-plan roadmap [`active-codebase-completion-e41f`](../../../.agents/plans/active-codebase-completion-e41f.md) (control issue #1446), which also records decisions D8–D23. The copy of this document on branch `replit/preuat-adoption-pets-e7d3d1d` is historical; this file on `main` is authoritative.
 
@@ -277,9 +277,9 @@ Batches A–C shipped the core step of Packages 1–4 and 6–8 (PRs #1282–#13
 | 6 Passed-away notification contract | Done (core) | #1299 | Repeat POST re-notifies every collaborator; `api-reference.md` still lists the endpoint under "Lifecycle stubs" | `active-codebase-batch-e-backend-integrity-e41f` |
 | 7 Pet cache authority | Partial | #1309, #1319 | No freshness limit; cached `fetchedAt` is set to `now()`; pet detail not migrated; no offline journey test | `active-codebase-batch-g-client-authority-e41f` |
 | 8 Canonical health state | Partial | #1315 | No `CareScheduleController` (15 repository calls in 10 widget files); `refresh()` drops data on failure; no out-of-order or session guard | `active-codebase-batch-g-client-authority-e41f` |
-| 9 Public APIs and cycles | Not started (regressed) | — | No block-new import gate; no public entrypoints for 13 of 16 active features; 13-feature strongly connected component | `active-codebase-batch-d-guardrails-e41f`, `active-codebase-batch-i1-public-apis-e41f`, `active-codebase-batch-i2-acyclic-graph-e41f` |
+| 9 Public APIs and cycles | Partial (gate) | #1467 (Batch D) | **D6 block-new** import gate in CI (`check_feature_imports.js`); public entrypoints and cycle-breaking still open | `active-codebase-batch-i1-public-apis-e41f`, `active-codebase-batch-i2-acyclic-graph-e41f` |
 | 10 Ports and transport boundaries | Not started | — | No `AuthRepository`/`SessionStore`/`HealthDocumentsRepository`; `server/lib` imports `server/routes`; no central async error boundary | `active-codebase-batch-h-ports-transport-e41f` |
-| 11 Measurable standards | Not started | — | Size gate excludes `server/lib` and `server/services`; Flutter coverage threshold documented as 65% but enforced at 70%; files absent from LCOV are ignored; ESLint covers 4 paths | `active-codebase-batch-d-guardrails-e41f`, `active-codebase-batch-j-standards-e41f` |
+| 11 Measurable standards | Partial (D7/D23) | #1467 (Batch D) | `server/lib` / `server/services` size **report-only**; docs and scripts agree on **70%** Flutter coverage threshold; full ratchet and LCOV denominator work remain | `active-codebase-batch-j-standards-e41f` |
 | 12 Extractions and final acceptance | Not started | — | Hotspot extractions, ADRs, component READMEs, before/after metrics | `active-codebase-batch-k-final-acceptance-e41f` |
 
 Update the row for a package when the child plan that owns it merges to `main`.

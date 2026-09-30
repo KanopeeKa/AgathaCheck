@@ -5,7 +5,7 @@
   "approved_at": "2026-09-29T22:39:00Z",
   "approved_by": "standing grant — roadmap active-codebase-completion-e41f (#1446), user chat 2026-09-29: \"That's fine, go ahead, and let me know exactly what to do if you need me.\" (roadmap #1446)",
   "approved_until": "2026-10-01T22:39:00Z",
-  "autonomy": "active",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "cursor/active-codebase-d-integration-e41f",
   "control_issue": 1447,
@@ -135,11 +135,14 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1467",
+      "pr_head_sha": "7af4583bd42b745b5e6cde3272d7e2e5420d2271",
+      "merge_commit": "ce702c0927134416858a5aa7cac17f45d7795289"
     }
   ],
-  "content_hash": "sha256:08e148ec3da59e82552478e408f4fb4780a5ea24fac31caa9c633bb5ddfd3c1c"
+  "content_hash": "sha256:53ccd999d5d525ad6bd2383ea9a81a7224a0647db99858f0acb8179b08048910"
 }
