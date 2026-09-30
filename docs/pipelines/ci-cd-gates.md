@@ -381,7 +381,7 @@ Pre-UAT does **not** block merge — it runs post-merge only. Manual replay:
 | `UAT post-deploy smoke` (`smoke`) | **Yes** | HTTP health on live UAT (`scripts/uat-post-deploy-smoke.sh`) |
 | `Prod ready` (`prod-ready`) | **Yes** (aggregate) | Required for PROD environment gate |
 
-**Advisory (non-blocking):** `uat-live-e2e.yml` — nightly live `@smoke-uat` with WAF warmup.
+**Advisory (non-blocking):** `uat-live-e2e.yml` — nightly in-host SSH loopback API smoke (WAF-proof); optional manual browser `@smoke-uat` (WAF inconclusive).
 
 **`prod-ready` validation:** `scripts/ci/assert-uat-gates.sh` — deploy + HTTP smoke + migrations only.
 
