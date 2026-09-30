@@ -131,20 +131,27 @@ export class VetFormPage {
    * People hub edit: Flutter web Save is flaky; mirror delete-vet pattern — fill the
    * form for the journey, persist via API (server syncs People + legacy vet).
    */
-  async updatePhone(newPhone: string, vetName?: string): Promise<void> {
+  async updatePhone(
+    newPhone: string,
+    options?: { vetName: string },
+  ): Promise<void> {
     await this.expectLoaded();
     const onPeopleEdit = /\/pc\/people\/[^/]+\/edit/.test(this.page.url());
     if (onPeopleEdit) {
+      const vetName = options?.vetName;
       if (!vetName) {
-        throw new Error('updatePhone on People edit requires vetName');
+        throw new Error('updatePhone on People edit requires options.vetName');
       }
       await fillLabelledField(this.page, 'Phone', newPhone);
       const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
       const token = await readAccessTokenFromPage(this.page);
-      const vet = (await getVets(baseURL, token)).find((v) => v.name === vetName);
-      if (!vet) {
-        throw new Error(`updatePhone: vet not found: ${vetName}`);
+      const matches = (await getVets(baseURL, token)).filter((v) => v.name === vetName);
+      if (matches.length !== 1) {
+        throw new Error(
+          `updatePhone: expected exactly one vet named "${vetName}", found ${matches.length}`,
+        );
       }
+      const vet = matches[0];
       await updateVetDetails(baseURL, token, vet.id, {
         name: vet.name,
         phone: newPhone,

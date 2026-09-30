@@ -4,7 +4,7 @@
  */
 import type { Locator, Page } from '@playwright/test';
 import { expect } from '@playwright/test';
-import { deleteVet, getPeopleContactIdForVetName, getVets } from '../support/api';
+import { deleteVet, getVets } from '../support/api';
 import {
   dismissConsentBannerIfPresent,
   escapeRegExp,
@@ -15,7 +15,6 @@ import {
   waitForFlutterRoutePattern,
 } from '../support/flutter';
 import { readAccessTokenFromPage } from '../support/ui-auth';
-import { VetFormPage } from './vet-form.page';
 
 export class VetListPage {
   /** People hub: legacy vets delete via API (contact DELETE is blocked when linked). */
@@ -38,11 +37,40 @@ export class VetListPage {
     return vetId!;
   }
 
+  private async waitForVetFormLoaded(): Promise<void> {
+    await this.page
+      .getByLabel(/^Name$/i)
+      .or(this.page.getByRole('textbox', { name: 'Name *' }))
+      .first()
+      .waitFor({ timeout: 30_000 });
+  }
+
   private async openPeopleEditForVet(name: string): Promise<void> {
     const vetId = await this.resolveVetIdByName(name);
     await dismissConsentBannerIfPresent(this.page);
     await this.openVetEditRoute(vetId);
-    await new VetFormPage(this.page).expectLoaded();
+    await this.waitForVetFormLoaded();
+  }
+
+  /** People hub detail: phone row shows value text plus a Call action. */
+  private async expectPeopleDetailPhoneVisible(phone: string, vetName: string): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    const phonePattern = new RegExp(escapeRegExp(phone), 'i');
+    const phoneLocator = this.page.getByText(phonePattern).or(semanticsByName(this.page, phonePattern));
+    const detailGroupPattern = new RegExp(
+      `${escapeRegExp(vetName)}[\\s\\S]*Phone[\\s\\S]*${escapeRegExp(phone)}`,
+      'i',
+    );
+    await expect(this.page.getByRole('button', { name: /^Call$/i })).toBeVisible({
+      timeout: 30_000,
+    });
+    const mergedVisible = await semanticsByName(this.page, detailGroupPattern)
+      .isVisible()
+      .catch(() => false);
+    if (mergedVisible) {
+      return;
+    }
+    await expect(phoneLocator.first()).toBeVisible({ timeout: 15_000 });
   }
 
   private async onPeopleHub(): Promise<boolean> {
@@ -329,10 +357,7 @@ export class VetListPage {
 
     const detailRoute = flutterRoutePath(this.page.url());
     if (/^\/pc\/people\/[^/?]+$/.test(detailRoute)) {
-      await refreshFlutterAccessibility(this.page);
-      await expect(this.page.getByRole('button', { name: /^Call$/i })).toBeVisible({
-        timeout: 30_000,
-      });
+      await this.expectPeopleDetailPhoneVisible(phone, vetName);
       return;
     }
 
@@ -382,9 +407,8 @@ export class VetListPage {
         await refreshFlutterAccessibility(this.page);
       }
 
-      const callAction = this.page.getByRole('button', { name: /^Call$/i });
-      if (await callAction.isVisible().catch(() => false)) {
-        await expect(callAction).toBeVisible({ timeout: 5_000 });
+      if (/^\/pc\/people\/[^/?]+$/.test(flutterRoutePath(this.page.url()))) {
+        await this.expectPeopleDetailPhoneVisible(phone, vetName);
         return;
       }
       await expect(phoneLocator.first()).toBeVisible({ timeout: 15_000 });
