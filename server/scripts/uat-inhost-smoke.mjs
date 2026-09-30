@@ -132,6 +132,10 @@ async function main() {
   } finally {
     if (child && !child.killed) {
       child.kill('SIGTERM');
+      await new Promise((resolve) => {
+        child.once('exit', resolve);
+        setTimeout(resolve, 5000).unref();
+      });
     }
   }
 }

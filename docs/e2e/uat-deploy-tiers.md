@@ -86,9 +86,15 @@ flowchart TD
 
 **Primary entry (WAF-proof):** SSH whitelist → `scripts/ci/uat-inhost-smoke-remote.sh` on the UAT host. The script starts `bin/start.js` on `127.0.0.1:<ephemeral>` with the deployed UAT `.env`/DB, then runs `server/scripts/uat-inhost-smoke.mjs` (signup → pet → health entry → pets list → public share preview → account delete). No HTTP request crosses Apache/Tiger Protect.
 
-**Optional browser gate:** `workflow_dispatch` input `run_browser_smoke` runs `scripts/ci/run-live-uat-gate.sh` (`@smoke-uat`). Tiger Protect blocks are **inconclusive**, not product failures — see [uat-waf-queue-lessons.md](./uat-waf-queue-lessons.md).
+**Ops requirement:** loopback verification runs only when the **UAT** GitHub Environment has `UAT_SSH_ENABLED=true` and SSH secrets configured. If the variable is unset/false, the workflow completes with a **notice** (verification skipped) — not a product pass. When SSH is enabled, whitelist or smoke failure **fails** the job.
 
-**Failure:** advisory only — **does not block promotion**.
+**Triggers after deploy:** any successful **Deploy UAT** completion (tag promote, `workflow_dispatch` replay, or `workflow_run`) starts in-host smoke via `workflow_run` — manual deploys are included.
+
+**Concurrency:** `uat-live-e2e.yml` uses the same concurrency group id as `deploy-uat` (`deploy-uat`) so post-deploy verification does not overlap deploy SSH; rare overlap between cron and a deploy-triggered run is still possible and is accepted (low frequency).
+
+**Optional browser gate:** `workflow_dispatch` input `run_browser_smoke` runs `scripts/ci/run-live-uat-gate.sh` (`@smoke-uat`) with `environment: UAT` (bypass/basic-auth secrets). Tiger Protect blocks are **inconclusive**, not product failures — see [uat-waf-queue-lessons.md](./uat-waf-queue-lessons.md).
+
+**Failure:** advisory only — **does not block promotion** (except misconfiguration when `UAT_SSH_ENABLED=true` but SSH/smoke could not run).
 
 **Local replay:** `scripts/ci/run-uat-inhost-smoke-local.sh` (PostgreSQL + migrations required).
 
