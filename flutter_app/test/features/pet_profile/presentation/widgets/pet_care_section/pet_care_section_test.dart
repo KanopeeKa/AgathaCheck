@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
+import 'package:pet_profile_app/core/widgets/care_mark_done_button.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/care_establishment.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/care_family.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
@@ -208,7 +209,7 @@ void main() {
     expect(find.text('Mystery care'), findsOneWidget);
     expect(find.text('Weekly weight'), findsOneWidget);
     expect(find.textContaining('Established'), findsOneWidget);
-    expect(find.text('Done'), findsWidgets);
+    expect(find.byType(CareMarkDoneButton), findsWidgets);
   });
 
   testWidgets('optimistic completion removes item from its group', (
@@ -233,7 +234,7 @@ void main() {
     expect(find.text('Morning supplement'), findsOneWidget);
     expect(find.byKey(const Key('pet_care_group_today')), findsOneWidget);
 
-    await tester.tap(find.text('Done'));
+    await tester.tap(find.byKey(const Key('pet_care_action_done_today-1')));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Mark Completed'));
     await tester.pumpAndSettle();

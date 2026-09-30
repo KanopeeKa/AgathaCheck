@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../../../../health_tracking/presentation/widgets/health_entry_status.dart';
+import '../../../../../core/widgets/care_mark_done_button.dart';
 import 'care_surface_tokens.dart';
 
-/// Action role — care item row with family icon, title, status subtitle, and affordance.
+/// Action role — care item row with family icon, title, status subtitle, and
+/// the shared [CareMarkDoneButton] affordance.
 class CareActionRow extends StatelessWidget {
   const CareActionRow({
     super.key,
@@ -13,8 +15,10 @@ class CareActionRow extends StatelessWidget {
     required this.statusTreatment,
     required this.semanticLabel,
     required this.leading,
-    required this.trailingLabel,
     this.onPressed,
+    this.markDoneKey,
+    this.markDoneSemanticLabel,
+    this.markDoneSemanticsIdentifier,
     this.onTap,
     this.inset = false,
   });
@@ -25,8 +29,12 @@ class CareActionRow extends StatelessWidget {
   final HealthEntryStatusTreatment statusTreatment;
   final String semanticLabel;
   final Widget leading;
-  final String trailingLabel;
+
+  /// Mark-done action; when null the trailing [CareMarkDoneButton] is hidden.
   final VoidCallback? onPressed;
+  final Key? markDoneKey;
+  final String? markDoneSemanticLabel;
+  final String? markDoneSemanticsIdentifier;
   final VoidCallback? onTap;
 
   /// When true, renders flat on a [CareCollectionInsetList] background (no card chrome).
@@ -42,7 +50,8 @@ class CareActionRow extends StatelessWidget {
 
     return Semantics(
       label: semanticLabel,
-      button: onTap != null || onPressed != null,
+      // The trailing CareMarkDoneButton is its own semantic button.
+      button: onTap != null,
       child: Material(
         color: inset ? Colors.transparent : colorScheme.surface,
         borderRadius: radius,
@@ -94,9 +103,11 @@ class CareActionRow extends StatelessWidget {
                   ),
                   if (onPressed != null) ...[
                     const SizedBox(width: 8),
-                    FilledButton.tonal(
+                    CareMarkDoneButton(
+                      key: markDoneKey,
                       onPressed: onPressed,
-                      child: Text(trailingLabel),
+                      semanticLabel: markDoneSemanticLabel,
+                      semanticsIdentifier: markDoneSemanticsIdentifier,
                     ),
                   ],
                 ],

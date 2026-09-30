@@ -15,7 +15,6 @@ class PetCareTemporalGroupSection extends StatelessWidget {
     required this.group,
     required this.entries,
     required this.establishedEntryIds,
-    required this.trailingLabel,
     required this.onMarkDone,
     required this.onViewEntry,
     this.inset = false,
@@ -24,7 +23,6 @@ class PetCareTemporalGroupSection extends StatelessWidget {
   final CareTemporalGroup group;
   final List<HealthEntry> entries;
   final Set<String> establishedEntryIds;
-  final String trailingLabel;
   final void Function(HealthEntry entry) onMarkDone;
   final void Function(HealthEntry entry) onViewEntry;
   final bool inset;
@@ -34,7 +32,6 @@ class PetCareTemporalGroupSection extends StatelessWidget {
     required List<CareTemporalGroup> groups,
     required Map<CareTemporalGroup, List<HealthEntry>> buckets,
     required Set<String> establishedEntryIds,
-    required String trailingLabel,
     required void Function(HealthEntry entry) onMarkDone,
     required void Function(HealthEntry entry) onViewEntry,
   }) {
@@ -83,7 +80,6 @@ class PetCareTemporalGroupSection extends StatelessWidget {
               l10n: l10n,
               colorScheme: colorScheme,
               isEstablished: establishedEntryIds.contains(entries[i].id),
-              trailingLabel: trailingLabel,
               onMarkDone: () => onMarkDone(entries[i]),
               onTap: () => onViewEntry(entries[i]),
             ).build(inset: true),
@@ -135,7 +131,6 @@ class PetCareTemporalGroupSection extends StatelessWidget {
             l10n: l10n,
             colorScheme: colorScheme,
             isEstablished: establishedEntryIds.contains(entries[i].id),
-            trailingLabel: trailingLabel,
             onMarkDone: () => onMarkDone(entries[i]),
             onTap: () => onViewEntry(entries[i]),
           ).build(inset: inset),

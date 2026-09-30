@@ -9,13 +9,17 @@ import 'package:pet_profile_app/features/pet_care/presentation/widgets/care_surf
 import 'package:pet_profile_app/features/pet_care/presentation/widgets/care_surface/care_destination_row.dart';
 import 'package:pet_profile_app/features/pet_care/presentation/widgets/care_surface/care_surface_tokens.dart';
 import 'package:pet_profile_app/features/pet_care/presentation/widgets/care_surface/care_insight_tile.dart';
+import 'package:pet_profile_app/core/widgets/care_mark_done_button.dart';
 import 'package:pet_profile_app/features/pet_care/presentation/widgets/care_surface/care_trend_sparkline.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/widgets/care_family_icon.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/care_family.dart';
+import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 Widget _host(Widget child) {
   return MaterialApp(
     theme: AppTheme.lightTheme,
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    supportedLocales: AppLocalizations.supportedLocales,
     home: Scaffold(body: SingleChildScrollView(child: child)),
   );
 }
@@ -83,14 +87,13 @@ void main() {
             statusTreatment: dueTodayStatusTreatment(),
             semanticLabel: 'Evening supplement, due today',
             leading: const CareFamilyIcon(family: CareFamily.medication),
-            trailingLabel: 'Done',
             onPressed: () {},
           ),
         ),
       );
 
       expect(find.text('Evening supplement'), findsOneWidget);
-      expect(find.text('Done'), findsOneWidget);
+      expect(find.byType(CareMarkDoneButton), findsOneWidget);
       expect(find.text('Due today'), findsOneWidget);
     });
   });
@@ -209,7 +212,6 @@ void main() {
               statusTreatment: dueTodayStatusTreatment(),
               semanticLabel: 'Walk check-in due today',
               leading: const CareFamilyIcon(family: CareFamily.other),
-              trailingLabel: 'Done',
               onPressed: () {},
             ),
             const SizedBox(height: 8),

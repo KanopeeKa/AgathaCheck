@@ -16,7 +16,6 @@ class PetCareActionRowBuilder {
     required this.l10n,
     required this.colorScheme,
     required this.isEstablished,
-    required this.trailingLabel,
     this.onMarkDone,
     this.onTap,
     this.statusLineOverride,
@@ -27,7 +26,6 @@ class PetCareActionRowBuilder {
   final AppLocalizations l10n;
   final ColorScheme colorScheme;
   final bool isEstablished;
-  final String trailingLabel;
   final VoidCallback? onMarkDone;
   final VoidCallback? onTap;
   final String? statusLineOverride;
@@ -61,12 +59,10 @@ class PetCareActionRowBuilder {
       statusTreatment: statusTreatment,
       semanticLabel: semanticLabel,
       leading: CareFamilyIcon.forEntry(entry),
-      trailingLabel: trailingLabel,
-      onPressed: onMarkDone == null
-          ? null
-          : () {
-              onMarkDone!();
-            },
+      onPressed: onMarkDone,
+      markDoneKey: Key('pet_care_action_done_${entry.id}'),
+      markDoneSemanticLabel: l10n.dueEventRowMarkDoneLabel(entry.name),
+      markDoneSemanticsIdentifier: 'pet_care_action_done_${entry.id}',
       onTap: onTap,
     );
   }
