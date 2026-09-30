@@ -48,6 +48,12 @@ jobs:
       - name: Frozen domain boundary (active tree)
         run: bash scripts/check_frozen_domain_boundaries.sh
 
+      - name: Cross-feature import gate (D6 block-new)
+        run: node scripts/check_feature_imports.js
+
+      - name: Cross-feature import gate fixtures
+        run: node --test scripts/check_feature_imports.test.js
+
       - name: Test quality scorecard (depth metrics)
         run: node e2e/scripts/check_test_quality.js --report-only
 
@@ -62,6 +68,12 @@ jobs:
 
       - name: File size gate (500 lines)
         run: node scripts/check_file_size.js
+
+      - name: File size gate fixtures (blocking roots + D7 report-only)
+        run: node --test scripts/check_file_size.test.js
+
+      - name: Flutter coverage threshold consistency (D23)
+        run: node --test scripts/check_coverage_threshold_consistency.test.js
 
       - name: CI gate assertion tests
         run: node --test scripts/ci/assert-ci-gate.test.js

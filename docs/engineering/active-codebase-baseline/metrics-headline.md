@@ -3,14 +3,15 @@ title: Active codebase metrics headline
 owner: Engineering
 audience: agent
 status: active
-last_updated: 2026-09-22
+last_updated: 2026-09-29
 tags: [architecture, metrics, generated]
 ---
+
 # Architecture size metrics (refined)
 
-Generated: 2026-09-22T14:50:20+00:00 (runtime; commit-scoped counts below are stable)
+Generated: 2026-09-29T22:42:58+00:00 (runtime; commit-scoped counts below are stable)
 Repository: `.`
-Git commit: `71e0020eb0ee9b66473db976ee781af5307d5d3d`
+Git commit: `f669b3ef18dbd5939caefc211c6ed05599aee524`
 
 ## Exact definitions
 
@@ -26,19 +27,19 @@ Git commit: `71e0020eb0ee9b66473db976ee781af5307d5d3d`
 
 | Comparable scope                           | Files | Physical lines | Approx. nonblank noncomment |
 | :----------------------------------------- | ----: | -------------: | --------------------------: |
-| Review-scope production                    | 786   | 83,740         | 73,850                      |
-|   active Flutter library                   | 629   | 66,514         | 59,522                      |
-|   active server registration approximation | 157   | 17,226         | 14,328                      |
-| Review-safe tests                          | 486   | 70,623         | 61,809                      |
+| Review-scope production                    | 914   | 98,755         | 86,833                      |
+|   active Flutter library                   | 704   | 75,405         | 67,558                      |
+|   active server registration approximation | 210   | 23,350         | 19,275                      |
+| Review-safe tests                          | 570   | 79,246         | 69,601                      |
 
 ## Classification audit
 
 | Class                                                       | Files | Physical lines | Meaning                       |
 | :---------------------------------------------------------- | ----: | -------------: | :---------------------------- |
-| Server registration approximation (before family exclusion) | 167   | 19,863         | review-policy traversal       |
+| Server registration approximation (before family exclusion) | 220   | 25,987         | review-policy traversal       |
 | Shelter-family removed from quality scope                   | 10    | 2,637          | conservative lexical list     |
-| Server inventory complement                                 | 72    | 7,956          | not selected by approximation |
-| Additional frozen CI tests removed                          | 38    | 6,137          | active Jest + frozen E2E sets |
+| Server inventory complement                                 | 76    | 8,328          | not selected by approximation |
+| Additional frozen CI tests removed                          | 38    | 6,152          | active Jest + frozen E2E sets |
 
 ### Shelter-family inventory excluded from quality totals/ranking
 
@@ -121,26 +122,27 @@ These are the non-manifest-root files selected by active Jest ignore entries or 
 | core/config               | 1     | 20             | 12              |
 | core/network              | 1     | 83             | 57              |
 | core/providers            | 6     | 143            | 114             |
-| core/router               | 8     | 950            | 874             |
+| core/router               | 8     | 1,116          | 1,014           |
 | core/services             | 4     | 321            | 276             |
 | core/theme                | 4     | 559            | 469             |
-| core/utils                | 5     | 342            | 271             |
+| core/utils                | 5     | 345            | 274             |
 | core/web                  | 6     | 182            | 127             |
 | core/widgets              | 26    | 2,558          | 2,281           |
 | feature/about             | 7     | 454            | 419             |
-| feature/auth              | 27    | 4,358          | 4,039           |
+| feature/auth              | 27    | 4,404          | 4,084           |
 | feature/care_intelligence | 18    | 1,133          | 1,005           |
 | feature/care_taxonomy     | 7     | 401            | 369             |
-| feature/experience        | 61    | 7,818          | 6,809           |
-| feature/health_tracking   | 113   | 14,382         | 12,939          |
+| feature/experience        | 62    | 8,148          | 7,111           |
+| feature/health_tracking   | 144   | 18,241         | 16,453          |
 | feature/help              | 1     | 237            | 206             |
 | feature/notifications     | 18    | 2,325          | 2,107           |
-| feature/pet_care          | 59    | 5,924          | 5,330           |
-| feature/pet_profile       | 175   | 16,204         | 14,609          |
+| feature/people            | 16    | 2,257          | 2,094           |
+| feature/pet_care          | 72    | 7,610          | 6,800           |
+| feature/pet_profile       | 180   | 16,325         | 14,696          |
 | feature/pet_tags          | 11    | 779            | 694             |
-| feature/sharing           | 31    | 3,585          | 3,269           |
+| feature/sharing           | 40    | 4,007          | 3,649           |
 | feature/subscription      | 4     | 722            | 651             |
-| feature/vet               | 27    | 2,442          | 2,103           |
+| feature/vet               | 27    | 2,443          | 2,104           |
 | feature/weight_tracking   | 7     | 396            | 341             |
 | main.dart                 | 1     | 111            | 97              |
 
@@ -148,64 +150,64 @@ These are the non-manifest-root files selected by active Jest ignore entries or 
 
 | Area       | Files | Physical lines | Heuristic lines |
 | :--------- | ----: | -------------: | --------------: |
-| bin        | 1     | 172            | 153             |
+| bin        | 1     | 178            | 159             |
 | config     | 10    | 430            | 280             |
 | db         | 3     | 467            | 426             |
-| lib        | 70    | 7,529          | 5,641           |
+| lib        | 111   | 12,451         | 9,449           |
 | middleware | 2     | 76             | 59              |
-| routes     | 67    | 7,618          | 6,940           |
-| services   | 4     | 934            | 829             |
+| routes     | 79    | 8,764          | 8,024           |
+| services   | 4     | 984            | 878             |
 
 ## Review-safe tests
 
 | Area        | Files | Physical lines | Heuristic lines |
 | :---------- | ----: | -------------: | --------------: |
 | .github     | 5     | 365            | 311             |
-| e2e         | 83    | 15,301         | 12,689          |
-| flutter_app | 252   | 32,181         | 28,295          |
-| scripts     | 29    | 2,652          | 2,280           |
-| server      | 117   | 20,124         | 18,234          |
+| e2e         | 89    | 16,684         | 13,904          |
+| flutter_app | 282   | 36,220         | 31,988          |
+| scripts     | 36    | 2,706          | 2,322           |
+| server      | 158   | 23,271         | 21,076          |
 
 ## Biggest 15 review-scope production files
 
-| File                                                                                                            | Physical lines | Heuristic lines |
-| :-------------------------------------------------------------------------------------------------------------- | -------------: | --------------: |
-| server/routes/healthEntries/occurrencesRouter.js                                                                | 498            | 478             |
-| flutter_app/lib/features/auth/presentation/widgets/landing/landing_auth_forms.dart                              | 488            | 467             |
-| flutter_app/lib/core/widgets/consent_banner.dart                                                                | 463            | 435             |
-| flutter_app/lib/features/subscription/presentation/screens/paywall_screen.dart                                  | 457            | 435             |
-| flutter_app/lib/features/health_tracking/data/datasources/health_remote_datasource.dart                         | 451            | 410             |
-| server/routes/careContext/plannedAbsencesRouter.js                                                              | 449            | 392             |
-| server/services/sharing/shareInviteService.js                                                                   | 447            | 399             |
-| flutter_app/lib/features/pet_profile/presentation/screens/pet_form_screen.dart                                  | 441            | 406             |
-| flutter_app/lib/features/notifications/presentation/widgets/notification_panel.dart                             | 437            | 398             |
-| flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_due_events_screen.dart               | 421            | 342             |
-| flutter_app/lib/core/router/app_router.dart                                                                     | 418            | 403             |
-| flutter_app/lib/features/pet_profile/presentation/screens/widgets/manage_events_collection_filter.dart          | 411            | 372             |
-| flutter_app/lib/features/experience/presentation/screens/pet_care/global_events_list.dart                       | 409            | 317             |
-| flutter_app/lib/features/pet_profile/presentation/screens/pet_list_screen.dart                                  | 409            | 391             |
-| flutter_app/lib/features/health_tracking/presentation/widgets/health_dashboard/health_dashboard_entry_list.dart | 408            | 375             |
+| File                                                                                                   | Physical lines | Heuristic lines |
+| :----------------------------------------------------------------------------------------------------- | -------------: | --------------: |
+| server/lib/care/schedule/projectSchedule.js                                                            | 502            | 362             |
+| flutter_app/lib/features/auth/presentation/widgets/landing/landing_auth_forms.dart                     | 488            | 467             |
+| server/routes/healthEntries/occurrencesRouter.js                                                       | 474            | 453             |
+| flutter_app/lib/core/widgets/consent_banner.dart                                                       | 463            | 435             |
+| flutter_app/lib/features/subscription/presentation/screens/paywall_screen.dart                         | 457            | 435             |
+| server/services/sharing/shareInviteService.js                                                          | 456            | 408             |
+| flutter_app/lib/features/pet_profile/presentation/screens/pet_form_screen.dart                         | 441            | 406             |
+| flutter_app/lib/features/notifications/presentation/widgets/notification_panel.dart                    | 437            | 398             |
+| flutter_app/lib/core/router/app_router.dart                                                            | 427            | 412             |
+| flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_due_events_screen.dart      | 421            | 342             |
+| server/routes/healthEntries/crudRouter.js                                                              | 416            | 409             |
+| server/routes/pets/coreRouter.js                                                                       | 416            | 409             |
+| flutter_app/lib/features/pet_profile/presentation/screens/widgets/manage_events_collection_filter.dart | 411            | 372             |
+| flutter_app/lib/features/experience/presentation/screens/pet_care/global_events_list.dart              | 409            | 317             |
+| flutter_app/lib/features/pet_profile/presentation/screens/pet_list_screen.dart                         | 409            | 391             |
 
 ## Function-length heuristic: top 8
 
 This is deliberately narrow and approximate: only JS/TS/Dart functions whose complete signature and opening brace are on one line are candidates. Comments and simple quoted strings are stripped, then physical lines are counted until braces balance. Multiline signatures are missed; regex literals, interpolation, unusual syntax, or braces in complex strings can distort spans. Use only as a triage signal, never a quality gate.
 
-| Function                   | File:line                                                                                            | Physical span |
-| :------------------------- | :--------------------------------------------------------------------------------------------------- | ------------: |
-| registerOccurrenceRoutes   | server/routes/healthEntries/occurrencesRouter.js:63                                                  | 386           |
-| build                      | flutter_app/lib/features/pet_profile/presentation/screens/pet_list_screen.dart:58                    | 351           |
-| registerCoreRoutes         | server/routes/pets/coreRouter.js:41                                                                  | 349           |
-| registerCrudRoutes         | server/routes/healthEntries/crudRouter.js:29                                                         | 348           |
-| registerFamilyEventsRoutes | server/routes/pets/familyEventsRouter.js:8                                                           | 271           |
-| registerCompletionRoutes   | server/routes/healthEntries/completionRouter.js:17                                                   | 261           |
-| build                      | flutter_app/lib/features/pet_profile/presentation/widgets/pet_detail/pet_detail_profile_card.dart:33 | 244           |
-| build                      | flutter_app/lib/features/notifications/presentation/widgets/notification_tile.dart:33                | 225           |
+| Function                     | File:line                                                                                            | Physical span |
+| :--------------------------- | :--------------------------------------------------------------------------------------------------- | ------------: |
+| registerCrudRoutes           | server/routes/healthEntries/crudRouter.js:31                                                         | 386           |
+| registerCoreRoutes           | server/routes/pets/coreRouter.js:47                                                                  | 370           |
+| registerOccurrenceRoutes     | server/routes/healthEntries/occurrencesRouter.js:65                                                  | 358           |
+| build                        | flutter_app/lib/features/pet_profile/presentation/screens/pet_list_screen.dart:58                    | 351           |
+| registerFamilyEventsRoutes   | server/routes/pets/familyEventsRouter.js:9                                                           | 274           |
+| registerCompletionRoutes     | server/routes/healthEntries/completionRouter.js:17                                                   | 261           |
+| registerPlannedAbsenceRoutes | server/routes/careContext/plannedAbsencesRouter.js:44                                                | 253           |
+| build                        | flutter_app/lib/features/pet_profile/presentation/widgets/pet_detail/pet_detail_profile_card.dart:33 | 242           |
 
 ## Cross-feature Flutter imports
 
 Only literal Dart `import`, `export`, and `part` directives are scanned. Package paths resolve at `flutter_app/lib`; relative paths normalize from the importer. URI conditionals, interpolation, aliases and runtime references are ignored; self-feature edges are omitted.
 
-Unique directed feature edges: **50**; matching directives: **466**.
+Unique directed feature edges: **59**; matching directives: **536**.
 
 | Edge                                | Importing files | Directives |
 | :---------------------------------- | --------------: | ---------: |
@@ -217,42 +219,51 @@ Unique directed feature edges: **50**; matching directives: **466**.
 | care_intelligence → pet_profile     | 4               | 5          |
 | care_taxonomy → health_tracking     | 1               | 2          |
 | care_taxonomy → pet_profile         | 3               | 3          |
-| experience → auth                   | 4               | 5          |
+| experience → auth                   | 5               | 6          |
 | experience → health_tracking        | 8               | 19         |
 | experience → notifications          | 2               | 2          |
+| experience → people                 | 1               | 4          |
 | experience → pet_care               | 5               | 7          |
-| experience → pet_profile            | 22              | 51         |
+| experience → pet_profile            | 23              | 55         |
 | experience → pet_tags               | 1               | 3          |
-| experience → sharing                | 2               | 2          |
+| experience → sharing                | 3               | 3          |
 | experience → vet                    | 1               | 3          |
-| health_tracking → auth              | 2               | 2          |
+| health_tracking → auth              | 3               | 3          |
 | health_tracking → care_taxonomy     | 13              | 25         |
 | health_tracking → experience        | 2               | 4          |
-| health_tracking → pet_care          | 2               | 3          |
-| health_tracking → pet_profile       | 35              | 69         |
+| health_tracking → people            | 2               | 3          |
+| health_tracking → pet_care          | 9               | 22         |
+| health_tracking → pet_profile       | 38              | 75         |
 | health_tracking → weight_tracking   | 1               | 1          |
 | notifications → auth                | 1               | 1          |
 | notifications → pet_profile         | 6               | 10         |
-| pet_care → auth                     | 2               | 2          |
+| people → auth                       | 1               | 1          |
+| people → experience                 | 2               | 4          |
+| people → pet_profile                | 1               | 2          |
+| people → sharing                    | 1               | 2          |
+| people → vet                        | 2               | 3          |
+| pet_care → auth                     | 3               | 3          |
 | pet_care → care_intelligence        | 3               | 7          |
 | pet_care → experience               | 4               | 8          |
-| pet_care → health_tracking          | 4               | 7          |
-| pet_care → pet_profile              | 10              | 13         |
+| pet_care → health_tracking          | 8               | 17         |
+| pet_care → people                   | 1               | 2          |
+| pet_care → pet_profile              | 12              | 16         |
 | pet_profile → auth                  | 4               | 4          |
 | pet_profile → care_intelligence     | 2               | 4          |
 | pet_profile → care_taxonomy         | 5               | 6          |
 | pet_profile → experience            | 17              | 29         |
 | pet_profile → health_tracking       | 31              | 67         |
 | pet_profile → notifications         | 4               | 4          |
+| pet_profile → people                | 2               | 3          |
 | pet_profile → pet_care              | 12              | 18         |
 | pet_profile → pet_tags              | 1               | 1          |
 | pet_profile → sharing               | 7               | 7          |
-| pet_profile → vet                   | 6               | 7          |
+| pet_profile → vet                   | 3               | 3          |
 | pet_profile → weight_tracking       | 10              | 16         |
 | pet_tags → auth                     | 1               | 1          |
 | pet_tags → experience               | 1               | 2          |
-| sharing → auth                      | 4               | 4          |
-| sharing → experience                | 1               | 2          |
+| sharing → auth                      | 6               | 6          |
+| sharing → experience                | 2               | 4          |
 | sharing → pet_profile               | 12              | 15         |
 | subscription → auth                 | 1               | 1          |
 | vet → auth                          | 1               | 1          |
@@ -264,20 +275,20 @@ Unique directed feature edges: **50**; matching directives: **466**.
 
 Strongly connected multi-feature components: **1**. Components mean mutual reachability, not every simple cycle.
 
-- auth ↔ care_intelligence ↔ care_taxonomy ↔ experience ↔ health_tracking ↔ notifications ↔ pet_care ↔ pet_profile ↔ pet_tags ↔ sharing ↔ vet ↔ weight_tracking
+- auth ↔ care_intelligence ↔ care_taxonomy ↔ experience ↔ health_tracking ↔ notifications ↔ people ↔ pet_care ↔ pet_profile ↔ pet_tags ↔ sharing ↔ vet ↔ weight_tracking
 
 ## Exclusions
 
 | Reason                             | Tracked files | Source files | Source physical lines |
 | :--------------------------------- | ------------: | -----------: | --------------------: |
-| frozen manifest roots              | 354           | 351          | 48,994                |
-| manifest active surfaces to remove | 2             | 2            | 327                   |
-| generated source                   | 3             | 3            | 24,721                |
+| frozen manifest roots              | 354           | 351          | 48,995                |
+| manifest active surfaces to remove | 2             | 2            | 329                   |
+| generated source                   | 3             | 3            | 27,157                |
 | build/tool outputs                 | 0             | 0            | 0                     |
 | dependency outputs                 | 0             | 0            | 0                     |
 | design/media outputs               | 251           | 175          | 15,827                |
 
-Tracked files total: **2,970**. Eligible source files after path exclusions: **1,678**. Files outside exact headline definitions remain inventory only. Frozen CI test removals are classification removals in addition to path exclusions and are reported above.
+Tracked files total: **3,280**. Eligible source files after path exclusions: **1,917**. Files outside exact headline definitions remain inventory only. Frozen CI test removals are classification removals in addition to path exclusions and are reported above.
 
 ## Reproduce
 

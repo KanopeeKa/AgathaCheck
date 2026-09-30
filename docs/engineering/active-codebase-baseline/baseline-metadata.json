@@ -1,9 +1,31 @@
 {
-  "baseline_id": "active-codebase-a1",
-  "recorded_at": "2026-09-22T15:05:00Z",
-  "git_commit": "71e0020eb0ee9b66473db976ee781af5307d5d3d",
+  "baseline_id": "active-codebase-d1",
+  "recorded_at": "2026-09-29T22:50:00Z",
+  "git_commit": "f669b3ef18dbd5939caefc211c6ed05599aee524",
   "architecture_review": "docs/architecture/reviews/active-codebase-review.md",
-  "execute_plan": "active-codebase-batch-a-cbb8",
-  "batch": "A1",
-  "notes": "Refresh git_commit when merging characterization PR; run metrics script for headline inventory."
+  "execute_plan": "active-codebase-batch-d-guardrails-e41f",
+  "batch": "D1",
+  "notes": "Refresh git_commit and current figures whenever metrics-headline.md is regenerated; append the previous values to previous_baselines.",
+  "source_tree_equals": "main@adaff34de2bc815637fa3362a72b7cc888017b2d (only .agents/plans differ)",
+  "previous_baselines": [
+    {
+      "baseline_id": "active-codebase-review",
+      "git_commit": "a8c7db1be2e493f10623e6b9a37fced0b7a31d0c",
+      "unique_feature_edges": 50,
+      "directives": 466,
+      "scc_features": 12
+    },
+    {
+      "baseline_id": "active-codebase-a1",
+      "git_commit": "71e0020eb0ee9b66473db976ee781af5307d5d3d",
+      "unique_feature_edges": 50,
+      "directives": 466,
+      "scc_features": 12
+    }
+  ],
+  "current": {
+    "unique_feature_edges": 59,
+    "directives": 536,
+    "scc_features": 13
+  }
 }
