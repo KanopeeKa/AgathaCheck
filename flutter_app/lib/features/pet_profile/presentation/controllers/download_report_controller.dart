@@ -46,7 +46,14 @@ class DownloadReportController {
       final vetOption = findPetVetOption(vetOptions, pet.vetId);
       final assignedVet = vetOption == null
           ? null
-          : Vet(id: vetOption.vetId, name: vetOption.displayName);
+          : Vet(
+              id: vetOption.vetId,
+              name: vetOption.displayName,
+              phone: vetOption.phone ?? '',
+              email: vetOption.email ?? '',
+              address: vetOption.address ?? '',
+              website: vetOption.website ?? '',
+            );
 
       final weightEntries = await ref.read(
         weightEntriesProvider(pet.id).future,

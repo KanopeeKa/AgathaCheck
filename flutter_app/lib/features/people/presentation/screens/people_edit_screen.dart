@@ -93,11 +93,7 @@ class _PeopleEditScreenState extends ConsumerState<PeopleEditScreen> {
     } on HttpException catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              '${AppLocalizations.of(context)!.peopleSaveError} ($e)',
-            ),
-          ),
+          SnackBar(content: Text(_saveErrorMessage(context, e))),
         );
       }
     } catch (_) {
@@ -177,7 +173,8 @@ class _PeopleEditScreenState extends ConsumerState<PeopleEditScreen> {
           .deleteContact(widget.personId);
       if (mounted) context.go('/pc/people');
     } on HttpException catch (e) {
-      final message = e.message.contains('400') || e.message.contains('409')
+      final status = _peopleApiStatusCode(e);
+      final message = status == 400 || status == 409
           ? l.peopleRemoveVetLinkedError
           : l.peopleRemoveError;
       if (mounted) {
@@ -390,4 +387,18 @@ class _PeopleEditScreenState extends ConsumerState<PeopleEditScreen> {
       ),
     );
   }
+}
+
+int? _peopleApiStatusCode(HttpException e) {
+  final match = RegExp(r'People API (\d+):').firstMatch(e.message);
+  return match != null ? int.tryParse(match.group(1)!) : null;
+}
+
+String _saveErrorMessage(BuildContext context, HttpException e) {
+  final l = AppLocalizations.of(context)!;
+  final status = _peopleApiStatusCode(e);
+  if (status == 400) {
+    return l.peopleSaveValidationError;
+  }
+  return l.peopleSaveError;
 }
