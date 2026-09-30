@@ -1017,6 +1017,7 @@ export async function getVets(baseURL: string, token: string): Promise<TestVet[]
 export interface TestPeopleContact {
   id: string;
   name: string;
+  phone?: string | null;
   legacy_vet_id?: string | null;
 }
 
@@ -1044,14 +1045,19 @@ export async function getPeopleContactIdForVetName(
   if (!vetId) {
     throw new Error(`getPeopleContactIdForVetName: no vet named "${vetName}"`);
   }
-  const contacts = await getPeopleContacts(baseURL, token);
-  const contactId = contacts.find((c) => c.legacy_vet_id === vetId)?.id;
-  if (!contactId) {
-    throw new Error(
-      `getPeopleContactIdForVetName: no people contact for vet "${vetName}" (${vetId})`,
-    );
+
+  for (let attempt = 0; attempt < 8; attempt += 1) {
+    const contacts = await getPeopleContacts(baseURL, token);
+    const contactId = contacts.find((c) => c.legacy_vet_id === vetId)?.id;
+    if (contactId) return contactId;
+    if (attempt < 7) {
+      await new Promise((r) => setTimeout(r, 500));
+    }
   }
-  return contactId;
+
+  throw new Error(
+    `getPeopleContactIdForVetName: no people contact for vet "${vetName}" (${vetId})`,
+  );
 }
 
 export async function updateVetDetails(
