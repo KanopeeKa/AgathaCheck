@@ -9,7 +9,7 @@ tags: [agent-efficiency, execute-plan, coordination, integration-branches]
 
 # Parallel programmes — landing order and coordination
 
-**As of 2026-09-30 (`main` @ `3ca7bd4`).** Four multi-phase programmes are in flight. Their `allowed_paths` overlap on the same files. This page sets **which programme owns which area when**, the **order in which they land on `main`**, and the **rebase rules** that keep everyone's work from being redone. Every programme's plan must link here and follow §4–§6.
+**As of 2026-09-30 (`main` @ `a436175f`).** Four multi-phase programmes are in flight. Land **one commit at a time** and wait for pre-UAT green on that SHA before the next merge (mid-run merges waste the in-flight pre-UAT run). Their `allowed_paths` overlap on the same files. This page sets **which programme owns which area when**, the **order in which they land on `main`**, and the **rebase rules** that keep everyone's work from being redone. Every programme's plan must link here and follow §4–§6.
 
 **Slots 0a–0c closed (2026-09-30):** slot **0c** closed when pre-UAT passed on `3ca7bd4` ([#1464](https://github.com/KanopeeKa/AgathaCheck/pull/1464), [run 36776956776](https://github.com/KanopeeKa/AgathaCheck/actions/runs/36776956776); includes server B2 via [#1462](https://github.com/KanopeeKa/AgathaCheck/pull/1462) @ `985f2ca`). Slot **0b** on `eee5cb1b` ([#1454](https://github.com/KanopeeKa/AgathaCheck/pull/1454)). Slot **0a** on `238ca5f8` via [#1456](https://github.com/KanopeeKa/AgathaCheck/pull/1456) and [#1458](https://github.com/KanopeeKa/AgathaCheck/pull/1458). **Next People landing:** slot **4** (`people-server-7f3b`) after CARE A+B (2b) and ARCH E (3a) are on `main`. **Out-of-order:** [#1455](https://github.com/KanopeeKa/AgathaCheck/pull/1455) (`e32fff71`, TEST 1a / shard manifest) merged before 0b; treat as an early partial of slot **2a**, not as slot 1 (ARCH D).
 
@@ -23,8 +23,8 @@ Related: [autonomous-pr-policy.md](./autonomous-pr-policy.md) · [execute-plan-s
 |---|---|---|---|---|---|
 | **CARE** | `care-next-occurrence-c1a7` (roadmap, children A–F) | draft PR #1448 | `claude/eager-edison-mf34j6` | Care occurrence engine (migration `083_care_occurrence_model`, data reset, reseed), agenda, form, absences, Care Item module (server + Flutter), care E2E programme | Child A committed; child B (engine) in progress |
 | **ARCH** | `active-codebase-completion-e41f` (roadmap, children D–K) | #1446 (roadmap), #1447 (D) | `cursor/active-codebase-d-integration-e41f` (one integration branch per child) | Guardrails, transactions and cleanup jobs, account erasure, client authority, ports and transport, public APIs, acyclic graph, standards | Approved; child D starting — **rebase onto `main` after #1455** (CI workflows) before D.2/D.3 edits |
-| **TEST** | `test-health-ci-5f3a` (7 phases) | #1449 | `claude/relaxed-einstein-jqecfg` | Flutter shards, CI speed, pre-merge E2E, KPI and coverage docs, BDD hygiene, WAF-proof UAT smoke, security and perf tests | Approved; **#1455 landed** (`e32fff71`, TEST 1a shard manifest + ownership gate); phases 2–3 remain for full slice **2a** |
-| **PEOPLE** | `people-domain-refactor-7f3b` (roadmap, 4 children) | [#1460](https://github.com/KanopeeKa/AgathaCheck/issues/1460) | per-child integration branches (see roadmap) | Hotfixes, server, client core, client integration (target doc on `main`) | Slot **0c** done (#1462/#1464 @ `3ca7bd4`); **server** waits slot 4 gates (CARE 2b + ARCH 3a) |
+| **TEST** | `test-health-ci-5f3a` (7 phases) | #1449 | `claude/relaxed-einstein-jqecfg` | Flutter shards, CI speed, pre-merge E2E, KPI and coverage docs, BDD hygiene, WAF-proof UAT smoke, security and perf tests | **#1455** (1a), **#1463** (1b) landed early; **#1468** (phase 4 KPI) landed out of order. Remaining slice **2a** (phases 2–3) still waits slot **1** (ARCH D). Do not duplicate ARCH D.3 coverage doc edits in flight PRs. |
+| **PEOPLE** | `people-domain-refactor-7f3b` (roadmap, 4 children) | [#1460](https://github.com/KanopeeKa/AgathaCheck/issues/1460) | per-child integration branches (see roadmap) | Hotfixes, server, client core, client integration (target doc on `main`) | Slot **0c** done; roadmap **halted** (`human_pause`) until CARE **2b** + ARCH **3a** on `main` and fresh `approve-autonomous` before `people-server-7f3b` |
 
 ---
 
@@ -196,7 +196,7 @@ Applied in the plan itself (2026-09-29):
 
 - **Four landings** (roadmap `people-domain-refactor-7f3b`): hotfixes right after this page lands (0c); server after ARCH E (4); client core after the server and CARE C+D (5c); client integration after CARE E+F and ARCH G (8).
 - **Pre-bootstrap gate:** no overlapping live plan, artifacts on `main`, and an entry gate on every phase that depends on another programme.
-- **Scope:** server writer/access (s1) split from usages/provider rules (s2); migrations by name; B6 handed to CARE B; every UI phase keeps shards 1/3/9 green and each client child ships its own journeys; c1 adopts ARCH D20 (entrypoint) and H (transport) conventions.
+- **Scope:** server writer/access (s1) split from usages/provider rules (s2); migrations by name; B6 handed to CARE B; every UI phase resolves E2E shards with `node e2e/scripts/shard-files.mjs --summary` and each client child ships its own journeys; c1 adopts ARCH D20 (entrypoint) and H (transport) conventions.
 
 ---
 
