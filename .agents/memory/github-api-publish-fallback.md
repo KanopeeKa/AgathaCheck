@@ -16,3 +16,17 @@ Verify both before dispatching SHA-specific validation; do not treat that brief
 lag as evidence that the push failed.
 
 When an impure Node helper needs the repository, pass the workspace root explicitly rather than relying on `process.cwd()`, which may not be callable in that sandbox. Parse Git index output inside the impure process; tool-output transport can strip tab delimiters.
+
+Repository `permissions.push` describes account-level repository access, not
+the effective OAuth permissions for every file path.
+
+**Why:** A healthy connection successfully created blobs and an ordinary-file
+tree, but tree creation touching an Actions workflow returned 404. The offered
+reauthorization scopes included `repo`, not `workflow`. Successful repository
+reads therefore did not establish that the complete change could be published.
+
+**How to apply:** Diagnose path-specific write failures before claiming push
+access has recovered. Preserve the complete local history; do not omit required
+workflow changes or work around provider restrictions. Reauthorization is only
+useful when it can offer the missing permission; otherwise use an authorized
+Git push path with workflow-file access.

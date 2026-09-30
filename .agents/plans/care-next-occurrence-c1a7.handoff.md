@@ -62,14 +62,21 @@ owner messages remain historical context.
   the sole failure was a five-second sharing-test timeout. Its complete file
   then passed **9/9** on a focused rerun. Do not describe the initial coverage
   run as wholly green; fresh CI must confirm the result.
-- GitHub connector execution recovered; authenticated repository access confirms
-  push permission. No OAuth reauthorization was needed.
+- GitHub connector execution recovered, but account-level repository push
+  permission did not establish workflow-file write access. Ordinary-file tree
+  creation succeeds; creating a tree with the changed Actions workflow returns
+  404. Offered OAuth scopes omit `workflow`, so reconnecting the same connector
+  is not a supported remedy. Shell Git explicitly rejects its credentials.
+  The reconciled commits remain local; no partial change was pushed.
 - The owner reconfirmed a sole writer. The remote branch update and latest
   `origin/main` were merged without rewriting history; the local clock/CI fixes
   and the newer TEST/PEOPLE changes are all preserved.
 - The old full pre-push was stopped before merging because incoming test changes
   would invalidate its result. Fresh full pre-push and exact-candidate CI are
   required for the combined tree; do not infer signoff from older passing jobs.
+- Fresh combined-tree verification passed governance, **153 backend suites /
+  1,185 tests**, and **12 E2E helper tests** plus TypeScript. The new full
+  pre-push continues through Flutter; its final result is still pending.
 - Landing is still blocked independently of publishing: ARCH D PR #1467 remains
   open, main's latest pre-UAT run is pending, and other programme PRs are open.
   Keep this PR draft and preserve the original serialized landing gates.
