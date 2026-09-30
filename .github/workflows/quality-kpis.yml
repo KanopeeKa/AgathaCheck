@@ -1,0 +1,31 @@
+# Advisory CI health KPIs (PR CI duration, Pre-UAT pass rate, remedial commit share).
+name: Quality KPIs (weekly)
+
+on:
+  schedule:
+    - cron: '0 7 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  kpis:
+    name: CI health KPIs (advisory)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - name: Compute KPIs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/quality/ci-health-kpis.mjs --days 14
