@@ -52,6 +52,14 @@ export async function resolveCanonicalOpenDateIso(pool, entry, todayIso) {
     [entry.id],
   );
 
+  if (lastClosed.rows.length === 0) {
+    // Never materialised: the head is the deferred next due date (T-1 rule).
+    const nextDue = dateToIsoDate(entry.next_due_date);
+    if (nextDue && isOccurrenceDateWithinSeries(entry, nextDue)) {
+      return nextDue;
+    }
+  }
+
   const closedScheduledDate = lastClosed.rows[0]
     ? dateToIsoDate(lastClosed.rows[0].scheduled_date)
     : dateToIsoDate(entry.start_date) || todayIso;
