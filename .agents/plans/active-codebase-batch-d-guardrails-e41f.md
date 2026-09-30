@@ -34,18 +34,18 @@ Make the programme's real status visible, and stop architecture regressions **be
 
 ```yaml
 autonomy: active
-current_phase: 2
-last_completed_phase: 1
+current_phase: 4
+last_completed_phase: 3
 halt_reason: null
-next_action: "continue phase 2 on branch cursor/active-codebase-d2-import-gate-e41f"
+next_action: "continue phase 4 on branch cursor/active-codebase-d-integration-e41f"
 artifact_ref:
-  branch: cursor/active-codebase-d2-import-gate-e41f
+  branch: cursor/active-codebase-d-integration-e41f
   plan_path: .agents/plans/active-codebase-batch-d-guardrails-e41f.md
-  plan_commit: 6f7a59b600ca8ce906929f21fea8c7415b56d3a7
+  plan_commit: 3be676eeba96c7601570208c97b6833eb3ecd107
   snapshot_path: .agents/plans/active-codebase-batch-d-guardrails-e41f.snapshot.json
-  snapshot_commit: 6f7a59b600ca8ce906929f21fea8c7415b56d3a7
+  snapshot_commit: 3be676eeba96c7601570208c97b6833eb3ecd107
 open_prs: []
-merge_commits: {}
+merge_commits: {"1":"6f7a59b600ca8ce906929f21fea8c7415b56d3a7","2":"0232029e517e40487a89ca63932ef550019b36bc","3":"d7a77fde92cef5ea4fc711e6eec19903fc3b849e"}
 debt_issue_refs: []
 ```
 
