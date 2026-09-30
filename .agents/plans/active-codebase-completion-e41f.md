@@ -206,9 +206,9 @@ next_action: "bootstrap and gate child plan active-codebase-batch-e-backend-inte
 artifact_ref:
   branch: cursor/arch-d-g-handover-26ff
   plan_path: .agents/plans/active-codebase-completion-e41f.md
-  plan_commit: 8fa1b1f5154164d8a2322aa6d8d50567ed795590
+  plan_commit: 6f4053952b53c68ce2ee6102b2626cbbb7499333
   snapshot_path: .agents/plans/active-codebase-completion-e41f.snapshot.json
-  snapshot_commit: 8fa1b1f5154164d8a2322aa6d8d50567ed795590
+  snapshot_commit: 6f4053952b53c68ce2ee6102b2626cbbb7499333
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
