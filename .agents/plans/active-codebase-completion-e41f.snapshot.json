@@ -11,13 +11,13 @@
   "base_branch": "main",
   "control_issue": 1446,
   "artifact_branch_policy": "phase-branch",
-  "current_child_plan_id": "active-codebase-batch-d-guardrails-e41f",
+  "current_child_plan_id": "active-codebase-batch-e-backend-integrity-e41f",
   "child_plans": [
     {
       "plan_id": "active-codebase-batch-d-guardrails-e41f",
-      "status": "in_progress",
-      "pr_url": null,
-      "merge_commit": null
+      "status": "merged",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1467",
+      "merge_commit": "ce702c0927134416858a5aa7cac17f45d7795289"
     },
     {
       "plan_id": "active-codebase-batch-e-backend-integrity-e41f",
@@ -99,5 +99,5 @@
       "merge_commit": null
     }
   ],
-  "content_hash": "sha256:6e91904e8b08e81ec84ad57a8727a6132d3f331428b9e71379ce76844c1e03f5"
+  "content_hash": "sha256:48f08edba8b05736c2e8d9e3638a6bf2b2ea61a0f1d7ca16fad73f1801d13a8a"
 }

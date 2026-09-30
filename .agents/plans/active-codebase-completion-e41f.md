@@ -195,18 +195,20 @@ The roadmap is complete only when **all** of the following hold on `main`:
 
 ## Runtime state (agent-updated)
 
+**Agent handover (gates D–G delta):** [`.agents/plans/active-codebase-completion-e41f.handoff-d-g.md`](./active-codebase-completion-e41f.handoff-d-g.md) on `main` (full playbook remains on branch `claude/friendly-davinci-5zcxj2` until copied).
+
 ```yaml
 autonomy: active
 current_phase: orchestrate
 last_completed_phase: null
 halt_reason: null
-next_action: "child active-codebase-batch-d-guardrails-e41f phase 4 (integration → main) waits for slot 0b (#1454) to land; then E waits for slot 2b (CARE A+B)"
+next_action: "bootstrap and gate child plan active-codebase-batch-e-backend-integrity-e41f"
 artifact_ref:
-  branch: null
+  branch: cursor/arch-d-g-handover-26ff
   plan_path: .agents/plans/active-codebase-completion-e41f.md
-  plan_commit: null
+  plan_commit: 6f4053952b53c68ce2ee6102b2626cbbb7499333
   snapshot_path: .agents/plans/active-codebase-completion-e41f.snapshot.json
-  snapshot_commit: null
+  snapshot_commit: 6f4053952b53c68ce2ee6102b2626cbbb7499333
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
