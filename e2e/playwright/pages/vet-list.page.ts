@@ -368,7 +368,8 @@ export class VetListPage {
       }
 
       const route = flutterRoutePath(this.page.url());
-      const onDetail = /\/(pc|g|o)\/vets\/[^/]+$/.test(route);
+      // Vet detail routes redirect to the person's page since the People–vet unification.
+      const onDetail = /\/(pc|g|o)\/vets\/[^/]+$/.test(route) || /^\/pc\/people\/[^/?]+$/.test(route);
       const onList =
         /\/(pc|g|o)\/vets(?:\?|$)/.test(route) || /^\/pc\/people(?:\?|$)/.test(route);
       const phoneVisible = await phoneLocator.first().isVisible().catch(() => false);
@@ -381,10 +382,27 @@ export class VetListPage {
         await this.expectLoaded();
         await this.expectVetVisible(vetName);
         await this.openVetDetail(vetName);
-        await waitForFlutterRoutePattern(this.page, /\/(pc|g|o)\/vets\/[^/]+$/, 30_000);
+        await waitForFlutterRoutePattern(
+          this.page,
+          /\/(pc|g|o)\/vets\/[^/]+$|^\/pc\/people\/[^/?]+$/,
+          30_000,
+        );
         await refreshFlutterAccessibility(this.page);
       }
 
+      if (/^\/pc\/people\/[^/?]+$/.test(flutterRoutePath(this.page.url()))) {
+        // The person's page renders the phone as SelectableText, which Flutter web does not
+        // expose to the DOM. Read it from the edit form instead: Flutter web puts a text
+        // field's value in the DOM once the field is focused.
+        // `context.push` opens the edit form without changing the URL, so wait for the field.
+        await this.page.getByRole('button', { name: /^Edit details$/i }).first().click();
+        await refreshFlutterAccessibility(this.page);
+        const phoneField = this.page.getByRole('textbox', { name: /^Phone$/i }).first();
+        await phoneField.waitFor({ timeout: 30_000 });
+        await phoneField.click();
+        await expect(phoneField).toHaveValue(phonePattern, { timeout: 15_000 });
+        return;
+      }
       await expect(phoneLocator.first()).toBeVisible({ timeout: 15_000 });
     }).toPass({ timeout: 45_000 });
   }
