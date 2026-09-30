@@ -3,7 +3,7 @@ title: Modularity conventions
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-22
+last_updated: 2026-09-29
 tags: [architecture, modularity]
 ---
 # Modularity & refactoring rules
@@ -73,6 +73,28 @@ test/features/<feature>/   # Mirror lib structure
 - Stub controllers: keep file, mark `@pending-review` in `refactoring-debt.md`, do not wire until approved.
 
 ---
+
+## Cross-feature imports (D5/D6 gate)
+
+`node scripts/check_feature_imports.js` blocks **new** cross-feature import violations in `flutter_app/lib`. It runs in `scripts/pre-push.sh`, `scripts/pre-push-changed.sh` and the CI governance job. Existing violations are recorded by **identity** (`rule|importer|target`, not counts) in `scripts/feature-import-baseline.json`, so removing one violation cannot hide a different new one.
+
+| Rule | Fails when |
+|---|---|
+| R1 `domain-to-experience` | A feature other than `experience` imports anything under `features/experience/` (domain features never depend on the shell). |
+| R2 `cross-feature-data` | Code outside feature X imports `features/X/data/**`. Use X's domain port or provider instead. |
+| R3 `cross-feature-presentation` | Code outside feature X imports `features/X/presentation/**`. |
+| R4 `new-feature-edge` | A feature → feature import edge appears that is not in the baseline edge list. |
+
+**Composition entrypoints (D5):** `lib/features/experience/**`, `lib/core/router/**` and the root wiring files `lib/*.dart` may import other features' presentation (R3 exempt). They are still subject to R2. There is no blanket `core/**` exemption.
+
+**Scope:** active Dart files only. Generated files (`*.g.dart`, `*.freezed.dart`, `*.mocks.dart`, `lib/l10n/`), the frozen `sourceRoots` and `activeSurfacesToRemove` from `docs/engineering/frozen-domains/manifest.json` are skipped. Every run also prints the feature-level strongly connected components (informational until the no-cycle rule lands).
+
+**Baseline workflow — it only shrinks:**
+
+- Fixed a violation? The check fails with `RESOLVED …` until you run `node scripts/check_feature_imports.js --update-baseline` and commit the smaller baseline in the same PR.
+- `--update-baseline` refuses to add anything.
+- A genuinely approved exception uses `--accept-new "<reason + approval link>"`, which records the identity, reason and date under `exceptions`. Only use it with explicit human approval recorded on the PR.
+- `--summary` prints the current counts without failing.
 
 ## Testing expectations
 

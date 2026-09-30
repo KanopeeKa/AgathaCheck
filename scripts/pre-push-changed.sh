@@ -122,6 +122,8 @@ run_governance() {
   node scripts/check_file_size.js
   node scripts/check_hardcoded_shell_return_to.js
   bash scripts/check_frozen_domain_boundaries.sh
+  node scripts/check_feature_imports.js
+  node --test scripts/check_feature_imports.test.js
   node scripts/validate_execute_plan_snapshot.js .agents/plans/_example.snapshot.json
   node scripts/validate_execute_plan_snapshot.js --drift-test
   node --test scripts/execute_plan_runtime.test.js
@@ -173,9 +175,9 @@ run_server() {
       local unique
       unique="$(printf '%s\n' "${jest_args[@]}" | sort -u | tr '\n' ' ')"
       echo "    jest $unique"
-      npx jest --env=node --forceExit $unique
+      npx jest -c jest.config.active.cjs --env=node --forceExit --passWithNoTests $unique
     else
-      npx jest --env=node --forceExit
+      npx jest -c jest.config.active.cjs --env=node --forceExit
     fi
     echo "    policy coverage ratchet"
     npm run test:policy-coverage

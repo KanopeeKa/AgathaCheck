@@ -48,6 +48,12 @@ jobs:
       - name: Frozen domain boundary (active tree)
         run: bash scripts/check_frozen_domain_boundaries.sh
 
+      - name: Cross-feature import gate (D6 block-new)
+        run: node scripts/check_feature_imports.js
+
+      - name: Cross-feature import gate fixtures
+        run: node --test scripts/check_feature_imports.test.js
+
       - name: Test quality scorecard (depth metrics)
         run: node e2e/scripts/check_test_quality.js --report-only
 
