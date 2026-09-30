@@ -204,8 +204,8 @@ void main() {
       expect(legacyVetRedirectForPath('/vets'), '/pc/vets');
     });
 
-    test('/vets/add → /g/vets/add', () {
-      expect(legacyVetRedirectForPath('/vets/add'), '/pc/vets/add');
+    test('/vets/add → /pc/people/new (vets live in People since #1440)', () {
+      expect(legacyVetRedirectForPath('/vets/add'), '/pc/people/new');
     });
 
     test('/vets/edit/vet-42 → /g/vets/edit/vet-42', () {
@@ -396,7 +396,10 @@ void main() {
   group('/pc/fostering deep-link', () {
     late SharedPreferences prefs;
     setUp(() async {
-      SharedPreferences.setMockInitialValues({});
+      // Onboarding done — otherwise an empty pet list sends /pc/home to /pc/onboarding.
+      SharedPreferences.setMockInitialValues({
+        'pet_care_onboarding_completed': true,
+      });
       prefs = await SharedPreferences.getInstance();
     });
 

@@ -31,10 +31,10 @@
   "devDependencies": {
     "@babel/core": "^8.0.6",
     "@babel/preset-env": "^8.0.6",
-    "@eslint/js": "^9.39.5",
+    "@eslint/js": "^10.0.1",
     "babel-jest": "^30.5.2",
     "babel-plugin-transform-import-meta": "^3.0.0",
-    "eslint": "^9.39.5",
+    "eslint": "^10.11.0",
     "jest": "^30.5.2",
     "nodemon": "^3.0.1",
     "supertest": "^7.3.0"

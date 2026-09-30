@@ -18,6 +18,7 @@ Part of the AgathaTrack domain-first documentation tree. Cross-cutting architect
 | Section | Link |
 |---------|------|
 | Functional spec (decisions D1–D28) | [features/people-care-team.md](features/people-care-team.md) |
+| **Refactor target, gaps and plan** | [changes/people-domain-refactor.md](changes/people-domain-refactor.md) |
 | Vocabulary (EN/FR) | [features/vocabulary.md](features/vocabulary.md) |
 | UI hub navigation (5-tab, desk module) | [changes/ui-hub-navigation.md](changes/ui-hub-navigation.md) |
 | Backend delivery phases | [changes/delivery-plan.md](changes/delivery-plan.md) |
@@ -25,16 +26,22 @@ Part of the AgathaTrack domain-first documentation tree. Cross-cutting architect
 
 ## Implementation status (Guardian / Pet Care)
 
+State at `main` @ `adaff34` (2026-09-29). Gaps and the target are in [changes/people-domain-refactor.md](changes/people-domain-refactor.md) (§4 gap analysis, §1 bugs B1–B13).
+
 | Capability | Status | Notes |
 |------------|--------|-------|
-| Contacts API + basic list | Shipped | `people-care-team-a58d` p1 |
-| Fifth nav tab `/pc/people` | Shipped | `people-ui-hub-a58d` |
-| Today **People** desk module | Shipped | Professionals, carers, household rail |
-| Hub list (search, filters, sections) | Shipped | `ListTile` rows — remodel replaces with cards |
-| Person detail `/pc/people/:id` | Planned | `people-hub-remodel-a58d` p1–p2 |
-| Person edit + danger zone | Planned | Revoke/remove **only** in Edit |
-| Unified **Add person** + sharing | Planned | Reuses `features/sharing` |
-| Households / guest access | Backend phases p3–p4 | See delivery plan |
+| Contacts API (personal directory) | Shipped | `people-care-team-a58d`; household-directory contacts not exposed yet → `people-server-7f3b` s5 |
+| Pet relationships API | Shipped (API only) | No UI sets out-of-hours vet or emergency contacts → `people-client-integration-7f3b` i2 |
+| Vets ↔ People | Shipped, two-way sync | `people-vet-unify-a58d` + #1440; becomes one-way projection → `people-server-7f3b` s3 |
+| Fifth nav tab `/pc/people` (EN label **Contacts**) | Shipped | `people-ui-hub-a58d` |
+| Today desk module | Shipped, partial | Raw role labels (B5), ranking rules not implemented, rail shows households not members → hotfix h2, client-core c3 |
+| Hub list | Shipped, partial | Directory cards; name-only search; household sections are empty placeholders; desktop list–detail broken (B4) → client-core c3 |
+| Person detail `/pc/people/:id` | Shipped, partial | One page, no tabs, linked pets for vets only → client-core c4 |
+| Person edit + danger zone | Shipped, partial | Roles and kind not editable; no reactivate → client-core c5 |
+| Add person | Shipped, partial | Single screen, 4 of 10 roles, no pet linking, generic invite hand-off → client-core c6 |
+| Households | Backend shipped; UI minimal | List and create only, under Pets; no email invites → server s5–s6, client-core c7 |
+| Absence guest access | Shipped | `people-care-team-a58d` p4 |
+| **Refactor** | Planned | Roadmap [`people-domain-refactor-7f3b`](/.agents/plans/people-domain-refactor-7f3b.md), landing order in [parallel-programmes.md](/docs/agent-efficiency/parallel-programmes.md). The hub remodel plan (`people-hub-remodel-a58d`) is closed; delivery of its remaining scope moves to the refactor |
 
 ## Domains this changes
 

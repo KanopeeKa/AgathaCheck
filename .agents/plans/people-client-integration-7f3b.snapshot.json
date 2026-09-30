@@ -1,0 +1,225 @@
+{
+  "schema_version": 1,
+  "approved_at": "2026-09-29T00:00:00Z",
+  "approved_until": "2026-10-01T00:00:00Z",
+  "content_hash": "sha256:459c8c5cc4c47da89dde9755c69989f4ae5913dd7363affec058eb72e19ac890",
+  "autonomy": "halted",
+  "default_merge_mode": "auto",
+  "control_issue": 999999,
+  "artifact_branch_policy": "phase-branch",
+  "plan_id": "people-client-integration-7f3b",
+  "base_branch": "cursor/people-client-integration-integration-7f3b",
+  "approved_by": "DRAFT — bootstrapped under the standing grant of roadmap people-domain-refactor-7f3b when its entry gate is met (see people-client-integration-7f3b.md)",
+  "phases": [
+    {
+      "id": "i1-consumers",
+      "title": "Pet profile, care, Away Planning and report use the façade",
+      "branch": "cursor/people-integration-i1-consumers-7f3b",
+      "allowed_paths": [
+        "flutter_app/lib/features/pet_profile/presentation/widgets/pet_form/**",
+        "flutter_app/lib/features/pet_profile/presentation/widgets/pet_detail/pet_detail_profile_card.dart",
+        "flutter_app/lib/features/pet_profile/presentation/providers/pet_vet_contacts_provider.dart",
+        "flutter_app/lib/features/pet_profile/presentation/controllers/**",
+        "flutter_app/lib/features/pet_profile/data/services/pet_report_service.dart",
+        "flutter_app/lib/features/pet_profile/data/services/pet_report_profile_section.dart",
+        "flutter_app/lib/features/health_tracking/**",
+        "flutter_app/lib/features/pet_care/context/**",
+        "flutter_app/lib/features/people/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/pet_profile/**",
+        "flutter_app/test/features/health_tracking/**",
+        "flutter_app/test/features/pet_care/**",
+        "flutter_app/test/features/people/**",
+        "e2e/playwright/pages/**",
+        "e2e/playwright/tests/health.tracking.spec.ts",
+        "e2e/playwright/tests/away.planning.spec.ts",
+        "e2e/playwright/tests/away.plan.detail.v2.spec.ts",
+        "e2e/playwright/tests/away.care.planning.spec.ts",
+        "e2e/playwright/tests/veterinarian.spec.ts",
+        "e2e/playwright/tests/pet.profiles.spec.ts",
+        ".agents/plans/people-client-integration-7f3b.md",
+        ".agents/plans/people-client-integration-7f3b.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "db/**",
+        ".github/workflows/**",
+        "flutter_app/lib/features/organization/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "i2-pet-people",
+      "title": "People around {pet} and emergency card",
+      "branch": "cursor/people-integration-i2-pet-people-7f3b",
+      "allowed_paths": [
+        "flutter_app/lib/features/people/**",
+        "flutter_app/lib/features/pet_profile/presentation/screens/pet_detail_screen.dart",
+        "flutter_app/lib/features/pet_profile/presentation/widgets/pet_detail/**",
+        "flutter_app/lib/features/experience/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/people/**",
+        "flutter_app/test/features/pet_profile/**",
+        "flutter_app/test/features/experience/**",
+        "e2e/playwright/pages/**",
+        "e2e/playwright/tests/pet.profiles.spec.ts",
+        ".agents/plans/people-client-integration-7f3b.md",
+        ".agents/plans/people-client-integration-7f3b.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "db/**",
+        ".github/workflows/**",
+        "flutter_app/lib/features/organization/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "i3-retire-legacy",
+      "title": "Delete legacy code; guards strict",
+      "branch": "cursor/people-integration-i3-retire-7f3b",
+      "allowed_paths": [
+        "flutter_app/lib/features/vet/**",
+        "flutter_app/test/features/vet/**",
+        "flutter_app/lib/features/people/**",
+        "flutter_app/test/features/people/**",
+        "flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_my_vets_section.dart",
+        "flutter_app/test/features/experience/**",
+        "flutter_app/lib/core/router/vet_routes.dart",
+        "flutter_app/lib/core/router/experience_routes.dart",
+        "flutter_app/test/core/router/**",
+        "server/lib/people/**",
+        "server/test/people/**",
+        "docs/architecture/api-reference.md",
+        ".agents/plans/people-client-integration-7f3b.md",
+        ".agents/plans/people-client-integration-7f3b.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "db/**",
+        "e2e/**",
+        ".github/workflows/**",
+        "flutter_app/lib/features/organization/**",
+        "server/routes/organizations/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "file-split",
+        "governance-allowlist",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "i4-e2e-integration",
+      "title": "Integration journeys",
+      "branch": "cursor/people-integration-i4-e2e-7f3b",
+      "allowed_paths": [
+        "flutter_app/test/bdd/features/people.feature",
+        "flutter_app/test/bdd/features/away_planning.feature",
+        "flutter_app/test/bdd/features/health_tracking.feature",
+        "flutter_app/test/bdd/features/pet_profiles.feature",
+        "e2e/playwright/**",
+        "scripts/bdd-priority-tag-map.json",
+        "e2e/scripts/shard-files.mjs",
+        "docs/e2e/**",
+        "flutter_app/lib/features/people/**",
+        ".agents/plans/people-client-integration-7f3b.md",
+        ".agents/plans/people-client-integration-7f3b.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "db/**",
+        ".github/workflows/**",
+        "flutter_app/lib/features/organization/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "i5-ship-main",
+      "title": "Integration → main; docs describe the shipped state",
+      "branch": "cursor/people-integration-i5-ship-7f3b",
+      "allowed_paths": [
+        "docs/domains/people/**",
+        "docs/design/terminology.md",
+        "docs/architecture/index.md",
+        "docs/debt/refactoring-log.md",
+        "docs/agent-efficiency/parallel-programmes.md",
+        ".agents/memory/MEMORY.md",
+        ".agents/plans/people-client-integration-7f3b.md",
+        ".agents/plans/people-client-integration-7f3b.snapshot.json",
+        ".agents/plans/people-domain-refactor-7f3b.md",
+        ".agents/plans/people-domain-refactor-7f3b.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    }
+  ]
+}

@@ -83,6 +83,10 @@ Response contact shape: `{ id, directory_id, kind, name, phone, email, address, 
 
 Vets API (`/api/vets`) dual-writes linked `people_contacts` rows via `legacy_vet_id` until clients migrate.
 
+#### Planned — `people-domain-refactor-7f3b` (not implemented)
+
+Additive changes, listed in [people-domain-refactor.md](/docs/domains/people/changes/people-domain-refactor.md) §3.6: `GET /api/people/roster`, enriched contact detail, `GET /api/people/contacts/:id/related`, `GET /api/people/contacts/by-legacy-vet/:vetId`, `GET /api/pets/:petId/people`, slot/add/remove relationship endpoints, usage-aware `DELETE` (`409 contact_in_use`), household removal preview and household email invites, `contact_id` on pet share invites, and a `code` field on People error bodies. `/api/vets` becomes a compat adapter over a one-way projection. Each entry moves to the tables above in the PR that ships it.
+
 ### Organizations (`/api/organizations`)
 | Method | Path | Authorization |
 |---|---|---|

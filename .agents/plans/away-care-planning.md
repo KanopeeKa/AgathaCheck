@@ -122,7 +122,7 @@ Fix away-plan display honesty (overdue/open occurrences visible with real dates)
 ## Runtime state
 
 ```yaml
-autonomy: active
+autonomy: revoked   # closed 2026-09-29 — see .agents/plans/README.md § Closed stale plans
 current_phase: acp-8
 last_completed_phase: acp-6
 halt_reason: null

@@ -63,7 +63,7 @@ See snapshot for branch names, `allowed_paths`, and exit criteria.
 ## Runtime
 
 ```yaml
-autonomy: active
+autonomy: revoked   # closed 2026-09-29 — see .agents/plans/README.md § Closed stale plans
 current_phase: cc4
 last_completed_phase: cc2
 halt_reason: null

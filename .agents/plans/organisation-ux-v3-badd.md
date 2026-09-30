@@ -49,7 +49,7 @@ Full `allowed_paths` / branches: `.agents/plans/organisation-ux-v3-badd.snapshot
 ## Runtime state
 
 ```yaml
-autonomy: active
+autonomy: revoked   # closed 2026-09-29 — see .agents/plans/README.md § Closed stale plans
 current_phase: 12
 last_completed_phase: 11
 halt_reason: null

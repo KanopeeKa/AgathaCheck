@@ -25,7 +25,7 @@ Complete the database bootstrap initiative after Phase 1–2 (#249): fast canoni
 ## Runtime state
 
 ```yaml
-autonomy: active
+autonomy: revoked   # closed 2026-09-29 — see .agents/plans/README.md § Closed stale plans
 current_phase: "3"
 last_completed_phase: "2"
 next_action: "babysit+ phase 3 PR"

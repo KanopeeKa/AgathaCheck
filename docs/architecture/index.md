@@ -117,13 +117,17 @@ Product domains are documented under [/docs/domains/](/docs/domains/). Each row 
 | BDD | `sharing.feature` |
 | E2E | `sharing.spec.ts` |
 
-### People (planned, not implemented)
+### People (Contacts)
 
 | | Path |
 |---|------|
 | **Docs** | [/docs/domains/people/README.md](/docs/domains/people/README.md) |
 | Spec | [/docs/domains/people/features/people-care-team.md](/docs/domains/people/features/people-care-team.md) (D1–D28) |
-| Builds on | `server/lib/petAccess.js`, `server/routes/vets.js`, `server/routes/careContext/` |
+| Refactor target | [/docs/domains/people/changes/people-domain-refactor.md](/docs/domains/people/changes/people-domain-refactor.md) (roadmap `people-domain-refactor-7f3b`) |
+| Flutter | `flutter_app/lib/features/people/` |
+| Node | `server/routes/people/`, `server/lib/people/`, `server/routes/pets/peopleRelationshipsRouter.js`, `server/lib/households/` |
+| Jest | `server/test/people/**`, `server/test/households/**` |
+| BDD / E2E | `people.feature` · `people-hub.spec.ts`, `veterinarian.spec.ts` |
 
 ### Notifications
 

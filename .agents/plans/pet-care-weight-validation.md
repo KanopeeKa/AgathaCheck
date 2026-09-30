@@ -24,7 +24,7 @@ Standing grant: Pet Care hardening roadmap (user chat 2026-09-05).
 
 ```yaml
 plan_id: pet-care-weight-validation
-autonomy: active
+autonomy: revoked   # closed 2026-09-29 — see .agents/plans/README.md § Closed stale plans
 current_phase: 1
 next_action: implement on cursor/pet-care-weight-validation-75cb
 ```

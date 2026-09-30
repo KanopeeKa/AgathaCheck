@@ -4,11 +4,11 @@
   "approved_at": "2026-09-29T18:05:00Z",
   "approved_by": "user chat 2026-09-29: /execute-plan full authority; naming=amend vocabulary; mobile=scroll; retire vet screens",
   "approved_until": "2026-10-01T18:05:00Z",
-  "content_hash": "sha256:pending",
-  "autonomy": "active",
+  "content_hash": "sha256:bd834fa134a48ef8f83e6ed5295079c80875b0f93ea2ac9ee6aa69f89ed77f44",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "main",
-  "control_issue": null,
+  "control_issue": 1440,
   "artifact_branch_policy": "phase-branch",
   "phases": [
     {
@@ -25,11 +25,16 @@
         "docs/design/terminology.md",
         ".agents/plans/contacts-detail-parity-fcd9.*"
       ],
-      "forbidden_paths": [".github/workflows/**"],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
       "spawn_allowed": false,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "merged"
+      "status": "merged",
+      "allowed_exceptions": [],
+      "spawn_config": null,
+      "status_reason": null
     },
     {
       "id": "p0b-pet-vet-id",
@@ -40,11 +45,16 @@
         "flutter_app/lib/features/vet/**",
         "flutter_app/test/features/pet_profile/**"
       ],
-      "forbidden_paths": [".github/workflows/**"],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
       "spawn_allowed": false,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "merged"
+      "status": "merged",
+      "allowed_exceptions": [],
+      "spawn_config": null,
+      "status_reason": null
     },
     {
       "id": "p1-retire-vet-ui",
@@ -57,29 +67,109 @@
         "e2e/**",
         "flutter_app/test/**"
       ],
-      "forbidden_paths": [".github/workflows/**"],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
       "spawn_allowed": false,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "merged"
+      "status": "merged",
+      "allowed_exceptions": [],
+      "spawn_config": null,
+      "status_reason": null
     },
     {
       "id": "p2-unified-add",
       "title": "Single-screen add with inferred kind and dedupe",
       "branch": "cursor/contacts-detail-parity-fcd9",
-      "status": "merged"
+      "status": "merged",
+      "allowed_exceptions": [],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "exit_checklist": "default",
+      "status_reason": null,
+      "allowed_paths": [
+        "flutter_app/lib/features/people/**",
+        "flutter_app/lib/features/vet/**",
+        "flutter_app/lib/features/pet_profile/**",
+        "flutter_app/lib/core/router/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/**",
+        "server/lib/people/**",
+        "server/routes/people/**",
+        "server/db/**",
+        "server/test/people/**",
+        "server/test/vets.test.js",
+        "e2e/playwright/**",
+        "docs/domains/people/**",
+        ".agents/plans/contacts-detail-parity-fcd9.snapshot.json"
+      ],
+      "status_detail": "allowed_paths reconstructed from PR #1440 on 2026-09-29 (missing in original snapshot)."
     },
     {
       "id": "p2b-works-at",
       "title": "Works at + legacy note migration",
       "branch": "cursor/contacts-detail-parity-fcd9",
-      "status": "merged"
+      "status": "merged",
+      "allowed_exceptions": [],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "exit_checklist": "default",
+      "status_reason": null,
+      "allowed_paths": [
+        "flutter_app/lib/features/people/**",
+        "flutter_app/lib/features/vet/**",
+        "flutter_app/lib/features/pet_profile/**",
+        "flutter_app/lib/core/router/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/**",
+        "server/lib/people/**",
+        "server/routes/people/**",
+        "server/db/**",
+        "server/test/people/**",
+        "server/test/vets.test.js",
+        "e2e/playwright/**",
+        "docs/domains/people/**",
+        ".agents/plans/contacts-detail-parity-fcd9.snapshot.json"
+      ],
+      "status_detail": "allowed_paths reconstructed from PR #1440 on 2026-09-29 (missing in original snapshot)."
     },
     {
       "id": "p3-server-hardening",
       "title": "PATCH transactions and field validation",
       "branch": "cursor/contacts-detail-parity-fcd9",
-      "status": "merged"
+      "status": "merged",
+      "allowed_exceptions": [],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "exit_checklist": "default",
+      "status_reason": null,
+      "allowed_paths": [
+        "flutter_app/lib/features/people/**",
+        "flutter_app/lib/features/vet/**",
+        "flutter_app/lib/features/pet_profile/**",
+        "flutter_app/lib/core/router/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/**",
+        "server/lib/people/**",
+        "server/routes/people/**",
+        "server/db/**",
+        "server/test/people/**",
+        "server/test/vets.test.js",
+        "e2e/playwright/**",
+        "docs/domains/people/**",
+        ".agents/plans/contacts-detail-parity-fcd9.snapshot.json"
+      ],
+      "status_detail": "allowed_paths reconstructed from PR #1440 on 2026-09-29 (missing in original snapshot)."
     }
   ]
 }

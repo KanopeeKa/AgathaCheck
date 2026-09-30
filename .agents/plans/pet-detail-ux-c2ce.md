@@ -86,7 +86,7 @@ Deliver pet-detail screen UX fixes (care preview parity, photo accent removal, o
 ## Runtime state (agent-updated)
 
 ```yaml
-autonomy: active
+autonomy: completed   # closed 2026-09-29 — see .agents/plans/README.md § Closed stale plans
 current_phase: null
 last_completed_phase: 3
 halt_reason: null

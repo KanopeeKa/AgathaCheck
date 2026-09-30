@@ -4,7 +4,7 @@
   "approved_at": "2026-09-17T21:15:00Z",
   "approved_by": "standing grant — user chat 2026-09-17 execute-plan autonomous (v2 final spec)",
   "approved_until": "2026-09-19T21:15:00Z",
-  "autonomy": "active",
+  "autonomy": "revoked",
   "default_merge_mode": "auto",
   "base_branch": "cursor/pet-share-invite-integration-13cc",
   "control_issue": 1226,
@@ -94,5 +94,5 @@
       "pr_head_sha": "6eb28211b4bce10cce726aeb12106a05856a0d06"
     }
   ],
-  "content_hash": "sha256:7beb3fc34fef330d0b349f8d840fb68eff62121c03b7a8985fea9983ede27d25"
+  "content_hash": "sha256:2bdef29b3da5221f85ff0a2a6fb27ef38d0ecfb0855475b5f4d3a65b09378a64"
 }

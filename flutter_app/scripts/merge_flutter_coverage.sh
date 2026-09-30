@@ -6,7 +6,12 @@ cd "$(dirname "$0")/.."
 INPUT_ROOT="${1:-_coverage_shards}"
 THRESHOLD="${DOMAIN_COVERAGE_THRESHOLD:-70}"
 
-shards=(pet-core pet-screens pet-widgets health rest-a rest-b experience pet-care)
+# Shard ids come from flutter_app/test/ci_shards.json (single source of truth).
+mapfile -t shards < <(node ../scripts/ci/flutter-shards.mjs list)
+if [[ ${#shards[@]} -eq 0 ]]; then
+  echo "::error::No Flutter shards listed in test/ci_shards.json" >&2
+  exit 1
+fi
 merged="coverage/lcov.merged.info"
 mkdir -p coverage
 rm -f "$merged"

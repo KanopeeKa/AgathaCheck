@@ -42,7 +42,7 @@ Deliver maintainable navigation v2: config-driven drawer (g/p/w groups), Home+Ha
 ## Runtime state
 
 ```yaml
-autonomy: active
+autonomy: revoked   # closed 2026-09-29 — see .agents/plans/README.md § Closed stale plans
 current_phase: 10
 last_completed_phase: 9
 halt_reason: null

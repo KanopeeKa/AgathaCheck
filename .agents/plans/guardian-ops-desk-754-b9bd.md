@@ -41,7 +41,7 @@ Land the Pet Care operations desk redesign from PR #754 in reviewable atomic sli
 ## Runtime state
 
 ```yaml
-autonomy: active
+autonomy: completed   # closed 2026-09-29 — see .agents/plans/README.md § Closed stale plans
 current_phase: null
 last_completed_phase: 5
 halt_reason: null

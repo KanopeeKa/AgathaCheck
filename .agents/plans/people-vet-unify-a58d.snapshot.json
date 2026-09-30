@@ -4,8 +4,8 @@
   "approved_at": "2026-09-29T09:40:00Z",
   "approved_by": "user chat 2026-09-29: Implement with /execute-plan full agreement phase 0 to phase 5 + cleanup",
   "approved_until": "2026-10-01T09:40:00Z",
-  "content_hash": "sha256:0ede331e95ab1f882d9ab92b09e292347be3d3da3ffa8441611201f92f9fa5d7",
-  "autonomy": "active",
+  "content_hash": "sha256:610986f2d80f2a51ab64aecdb6411c7f8781ffd0a4271fc2deac2627f878c771",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "cursor/people-vet-unify-integration-a58d",
   "control_issue": 1427,
@@ -165,9 +165,10 @@
       "spawn_allowed": false,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
-      "status_detail": null
+      "status_detail": "Merged into the integration branch via #1433; landed on main with #1434 (945f2a3). Runtime sync was skipped at the time; recorded 2026-09-29.",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1433"
     }
   ]
 }
