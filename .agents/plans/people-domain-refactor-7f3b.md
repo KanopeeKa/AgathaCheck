@@ -192,16 +192,17 @@ db/**
 ## Runtime state (agent-updated)
 
 ```yaml
-autonomy: halted            # draft — becomes active on approve-autonomous
-current_phase: null
-current_child_plan_id: null
+autonomy: active
+current_phase: orchestrate
 last_completed_phase: null
-halt_reason: "draft — slot 0b done; awaiting roadmap control issue + approve-autonomous people-domain-refactor-7f3b"
-next_action: "owner posts approve-autonomous on roadmap control issue; then bootstrap people-hotfixes-7f3b (slot 0c)"
+halt_reason: null
+next_action: "continue child plan people-hotfixes-7f3b"
 artifact_ref:
   branch: main
   plan_path: .agents/plans/people-domain-refactor-7f3b.md
+  plan_commit: 33b59b50f4fa7ad3f42e67d5783acb0db2702333
   snapshot_path: .agents/plans/people-domain-refactor-7f3b.snapshot.json
+  snapshot_commit: 33b59b50f4fa7ad3f42e67d5783acb0db2702333
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

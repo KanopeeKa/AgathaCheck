@@ -134,11 +134,17 @@ flutter_app/lib/features/organization/**
 ## Runtime state (agent-updated)
 
 ```yaml
-autonomy: halted            # draft — bootstrapped by the roadmap
-current_phase: null
+autonomy: active
+current_phase: h1-server-kind
 last_completed_phase: null
-halt_reason: "draft — waiting for roadmap bootstrap"
-next_action: "roadmap bootstraps after landing slot 0b"
+halt_reason: null
+next_action: "continue phase h1-server-kind on branch cursor/people-hotfix-h1-kind-7f3b"
+artifact_ref:
+  branch: cursor/people-hotfix-h1-kind-7f3b
+  plan_path: .agents/plans/people-hotfixes-7f3b.md
+  plan_commit: 33b59b50f4fa7ad3f42e67d5783acb0db2702333
+  snapshot_path: .agents/plans/people-hotfixes-7f3b.snapshot.json
+  snapshot_commit: 33b59b50f4fa7ad3f42e67d5783acb0db2702333
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
