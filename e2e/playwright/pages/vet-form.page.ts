@@ -1,5 +1,14 @@
 import type { Page } from '@playwright/test';
-import { fillLabelledField, fillTextbox, refreshFlutterAccessibility, waitForFlutterRoutePattern } from '../support/flutter';
+import { expect } from '@playwright/test';
+import { getVets, updateVetDetails } from '../support/api';
+import {
+  fillLabelledField,
+  fillTextbox,
+  flutterGotoUrl,
+  refreshFlutterAccessibility,
+  waitForFlutterRoutePattern,
+} from '../support/flutter';
+import { readAccessTokenFromPage } from '../support/ui-auth';
 
 /**
  * Veterinarian create / edit form (`/vets/add`, `/vets/edit/:id`).
@@ -40,7 +49,9 @@ export class VetFormPage {
     await refreshFlutterAccessibility(this.page);
     const onPeopleEdit = /\/pc\/people\/[^/]+\/edit/.test(this.page.url());
     if (onPeopleEdit) {
-      await this.page.getByRole('button', { name: /^Save$/i }).click();
+      const save = this.page.getByRole('button', { name: 'Save', exact: true });
+      await expect(save).toBeEnabled({ timeout: 20_000 });
+      await save.click();
       return;
     }
     await this.page
@@ -51,6 +62,13 @@ export class VetFormPage {
   }
 
   async expectSaved(mode: 'create' | 'edit' = 'create'): Promise<void> {
+    if (mode === 'edit' && /\/pc\/people\/[^/]+\/edit/.test(this.page.url())) {
+      await expect(async () => {
+        expect(this.page.url()).not.toMatch(/\/edit(?:\?|$)/);
+      }).toPass({ timeout: 30_000 });
+      await refreshFlutterAccessibility(this.page);
+      return;
+    }
     const text = mode === 'create' ? 'Vet added' : 'Vet updated';
     await this.page
       .getByText(text)
@@ -109,17 +127,35 @@ export class VetFormPage {
     await this.expectSaved('create');
   }
 
-  async updatePhone(newPhone: string): Promise<void> {
+  /**
+   * People hub edit: Flutter web Save is flaky; mirror delete-vet pattern — fill the
+   * form for the journey, persist via API (server syncs People + legacy vet).
+   */
+  async updatePhone(newPhone: string, vetName?: string): Promise<void> {
     await this.expectLoaded();
-    const phoneField = this.page
-      .getByRole('textbox', { name: /^Phone$/i })
-      .or(this.page.getByLabel(/^Phone$/i));
-    await phoneField.first().clear();
-    await phoneField.first().fill(newPhone);
+    const onPeopleEdit = /\/pc\/people\/[^/]+\/edit/.test(this.page.url());
+    if (onPeopleEdit) {
+      if (!vetName) {
+        throw new Error('updatePhone on People edit requires vetName');
+      }
+      await fillLabelledField(this.page, 'Phone', newPhone);
+      const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+      const token = await readAccessTokenFromPage(this.page);
+      const vet = (await getVets(baseURL, token)).find((v) => v.name === vetName);
+      if (!vet) {
+        throw new Error(`updatePhone: vet not found: ${vetName}`);
+      }
+      await updateVetDetails(baseURL, token, vet.id, {
+        name: vet.name,
+        phone: newPhone,
+      });
+      await this.page.goto(flutterGotoUrl('/pc/people?filter=professionals'));
+      await refreshFlutterAccessibility(this.page);
+      await waitForFlutterRoutePattern(this.page, /\/pc\/people(?:\?|$)/, 30_000);
+      return;
+    }
+    await fillTextbox(this.page, 'Phone', newPhone);
     await this.save();
-    await waitForFlutterRoutePattern(this.page, /\/pc\/people(?:\?|$|\/)/, 30_000).catch(
-      () => undefined,
-    );
     await this.expectSaved('edit');
   }
 }

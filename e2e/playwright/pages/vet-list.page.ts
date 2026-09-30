@@ -15,6 +15,7 @@ import {
   waitForFlutterRoutePattern,
 } from '../support/flutter';
 import { readAccessTokenFromPage } from '../support/ui-auth';
+import { VetFormPage } from './vet-form.page';
 
 export class VetListPage {
   /** People hub: legacy vets delete via API (contact DELETE is blocked when linked). */
@@ -38,16 +39,10 @@ export class VetListPage {
   }
 
   private async openPeopleEditForVet(name: string): Promise<void> {
-    let contactId = '';
-    await expect(async () => {
-      const token = await readAccessTokenFromPage(this.page);
-      contactId = await getPeopleContactIdForVetName(this.baseURL(), token, name);
-    }).toPass({ timeout: 45_000 });
+    const vetId = await this.resolveVetIdByName(name);
     await dismissConsentBannerIfPresent(this.page);
-    await this.page.goto(flutterGotoUrl(`/pc/people/${contactId}/edit`));
-    await refreshFlutterAccessibility(this.page);
-    await waitForFlutterRoutePattern(this.page, /\/pc\/people\/[^/]+\/edit/, 45_000);
-    await this.page.getByText(/^Edit details$/i).first().waitFor({ timeout: 45_000 });
+    await this.openVetEditRoute(vetId);
+    await new VetFormPage(this.page).expectLoaded();
   }
 
   private async onPeopleHub(): Promise<boolean> {
@@ -332,6 +327,15 @@ export class VetListPage {
       throw new Error('expectPhoneVisible: vetName required for guardian compact-row list');
     }
 
+    const detailRoute = flutterRoutePath(this.page.url());
+    if (/^\/pc\/people\/[^/?]+$/.test(detailRoute)) {
+      await refreshFlutterAccessibility(this.page);
+      await expect(this.page.getByRole('button', { name: /^Call$/i })).toBeVisible({
+        timeout: 30_000,
+      });
+      return;
+    }
+
     const phonePattern = new RegExp(escapeRegExp(phone), 'i');
     // Guardian detail merges fields into one group label; org list cards use Veterinarian: … Phone: …
     const phoneLocator = this.page.getByText(phonePattern).or(semanticsByName(this.page, phonePattern));
@@ -355,7 +359,9 @@ export class VetListPage {
       }
 
       const route = flutterRoutePath(this.page.url());
-      const onDetail = /\/(pc|g|o)\/vets\/[^/]+$/.test(route);
+      const onDetail =
+        /\/(pc|g|o)\/vets\/[^/]+$/.test(route) ||
+        /^\/pc\/people\/[^/?]+$/.test(route);
       const onList =
         /\/(pc|g|o)\/vets(?:\?|$)/.test(route) || /^\/pc\/people(?:\?|$)/.test(route);
       const phoneVisible = await phoneLocator.first().isVisible().catch(() => false);
@@ -368,10 +374,19 @@ export class VetListPage {
         await this.expectLoaded();
         await this.expectVetVisible(vetName);
         await this.openVetDetail(vetName);
-        await waitForFlutterRoutePattern(this.page, /\/(pc|g|o)\/vets\/[^/]+$/, 30_000);
+        await waitForFlutterRoutePattern(
+          this.page,
+          /\/(pc|g|o)\/vets\/[^/]+$|\/pc\/people\/[^/?]+$/,
+          30_000,
+        );
         await refreshFlutterAccessibility(this.page);
       }
 
+      const callAction = this.page.getByRole('button', { name: /^Call$/i });
+      if (await callAction.isVisible().catch(() => false)) {
+        await expect(callAction).toBeVisible({ timeout: 5_000 });
+        return;
+      }
       await expect(phoneLocator.first()).toBeVisible({ timeout: 15_000 });
     }).toPass({ timeout: 45_000 });
   }

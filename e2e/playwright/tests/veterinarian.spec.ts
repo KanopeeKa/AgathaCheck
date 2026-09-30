@@ -135,9 +135,10 @@ test.describe('Veterinarian management', () => {
     await vetList.clickEditVet('Dr. Smith');
 
     const vetForm = new VetFormPage(page);
-    await vetForm.updatePhone('555-5678');
+    await vetForm.updatePhone('555-5678', 'Dr. Smith');
 
     await vetList.expectLoaded();
+    await vetList.openVetDetail('Dr. Smith');
     await vetList.expectPhoneVisible('555-5678', 'Dr. Smith');
 
     const vets = await getVets(baseURL, user.accessToken);
