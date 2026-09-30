@@ -22,7 +22,7 @@ editor, org tier defaults, foster invites, and onboarding timeline per D-v4-* de
 ## Runtime state
 
 ```yaml
-autonomy: active
+autonomy: completed   # closed 2026-09-29 — see .agents/plans/README.md § Closed stale plans
 current_phase: null
 last_completed_phase: H
 halt_reason: null

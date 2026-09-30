@@ -24,6 +24,8 @@ node --test scripts/uat_coordinator_payload.test.js
 node --test scripts/ci/evaluate-uat-promote-hold.test.js
 node --test scripts/ci/resolve-promote-commit-sha.test.js
 node --test scripts/ci/assert-ci-gate.test.js
+node scripts/ci/flutter-shards.mjs check
+node --test scripts/ci/flutter-shards.test.mjs
 node scripts/check_skill_frontmatter.js
 node --test scripts/github_issue_workflow.test.js
 node --test scripts/db/normalize-schema-dump.test.js
@@ -46,7 +48,8 @@ echo "==> Flutter (codegen + analyze + active CI shards)"
   cd flutter_app
   dart run build_runner build --delete-conflicting-outputs
   flutter analyze --no-fatal-warnings --no-fatal-infos
-  for shard in pet-core pet-screens pet-widgets health rest-a rest-b experience pet-care; do
+  mapfile -t shards < <(node ../scripts/ci/flutter-shards.mjs list)
+  for shard in "${shards[@]}"; do
     bash scripts/run_tests_ci_shard.sh "$shard"
   done
 )

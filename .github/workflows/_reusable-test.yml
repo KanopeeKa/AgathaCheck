@@ -78,6 +78,14 @@ jobs:
       - name: CI gate assertion tests
         run: node --test scripts/ci/assert-ci-gate.test.js
 
+      - name: Flutter shard ownership (every active test runs in exactly one shard)
+        run: |
+          node scripts/ci/flutter-shards.mjs check
+          node --test scripts/ci/flutter-shards.test.mjs
+
+      - name: CI scope resolver tests
+        run: node --test scripts/ci/ci-scope.test.js
+
       - name: Write governance job summary
         if: always()
         run: |

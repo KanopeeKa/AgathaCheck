@@ -87,7 +87,7 @@ Use the PR template checklist. In summary:
 
 **Gate contract (blocking vs advisory, UAT/PROD rules):** [docs/pipelines/ci-cd-gates.md](docs/pipelines/ci-cd-gates.md)
 
-- Flutter analyze, format, and parallel domain test shards (`pet-core`, `pet-screens`, `pet-widgets`, `health`, `rest-a`, `rest-b`, `experience`, `pet-care`) + merged domain coverage
+- Flutter analyze, format, and parallel domain test shards (matrix from `flutter_app/test/ci_shards.json`; `node scripts/ci/flutter-shards.mjs check` proves every active test file is owned) + merged domain coverage
 - Flutter integration test (blocking)
 - Node Jest tests
 - `npm audit --audit-level=high` (server + e2e)

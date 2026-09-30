@@ -380,7 +380,7 @@ After all phases merged into `cursor/pet-form-redesign-f4a2-integration`:
 ## Runtime state (agent-updated)
 
 ```yaml
-autonomy: active
+autonomy: revoked   # closed 2026-09-29 — see .agents/plans/README.md § Closed stale plans
 current_phase: 4
 last_completed_phase: 6
 halt_reason: null

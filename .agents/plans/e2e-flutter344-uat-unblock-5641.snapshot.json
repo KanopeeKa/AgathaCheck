@@ -4,7 +4,7 @@
   "approved_at": "2026-07-28T12:40:00Z",
   "approved_by": "user-chat-execute-plan-standing-grant",
   "approved_until": "2026-07-30T12:40:00Z",
-  "autonomy": "active",
+  "autonomy": "revoked",
   "default_merge_mode": "auto",
   "base_branch": "main",
   "control_issue": 500,
@@ -65,5 +65,5 @@
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:e756b47e0efc042e2daea4292854ba9604d9e561283264addb0c9891d95ac1f5"
+  "content_hash": "sha256:aebee793963da13dc0edb6dda9c6c945f43ddaa620116c91bc89efb045e1afbe"
 }

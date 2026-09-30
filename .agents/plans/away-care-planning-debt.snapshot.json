@@ -4,7 +4,7 @@
   "approved_at": "2026-09-24T12:00:00Z",
   "approved_by": "User chat 2026-09-24 — implement all review-follow-up items with /execute-plan full autonomy",
   "approved_until": "2026-09-26T12:00:00Z",
-  "autonomy": "active",
+  "autonomy": "revoked",
   "default_merge_mode": "auto",
   "base_branch": "main",
   "control_issue": 1323,
@@ -51,5 +51,5 @@
       "merge_commit": null
     }
   ],
-  "content_hash": "sha256:db43e74adb928edb61b1ce720069b326ab075653364b3b43ffdb9e941752641c"
+  "content_hash": "sha256:164cdd9cb8a660fb7fc898577a7fb84f03251905daa0d76e3c5be2c387a02c66"
 }

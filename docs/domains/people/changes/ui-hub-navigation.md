@@ -4,7 +4,7 @@ owner: Product / Experience
 audience: both
 domain: people
 status: active
-last_updated: 2026-09-28
+last_updated: 2026-09-29
 related_plan: people-ui-hub-a58d, people-hub-remodel-a58d
 ---
 
@@ -59,6 +59,8 @@ Replace `PetCareMyVetsSection` with one module eyebrow **People** (vocabulary), 
 | [people-care-team.md § UI](../features/people-care-team.md) | Bottom tab + desk module allowed |
 | [guardian-dashboard-brief.md](/docs/domains/pet_profile/features/guardian-dashboard-brief.md) | My Vets section → People module (historical table row superseded) |
 | [phase-1-navigation.md](/docs/domains/navigation/changes/phase-1-navigation.md) | Fifth primary destination documented |
+
+> **2026-09-29:** the navigation decisions above stay in force. Hub, desk and card **layout** details are superseded by [people-domain-refactor.md](people-domain-refactor.md) §3.8, delivered by `people-client-core-7f3b` (c3 hub and desk).
 
 ## Follow-up (execute-plan `people-hub-remodel-a58d`)
 

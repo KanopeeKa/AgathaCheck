@@ -27,6 +27,7 @@ jobs:
       main_sha: ${{ github.event.workflow_run.head_sha }}
       reason: ${{ steps.counter.outputs.reason }}
       merge_count: ${{ steps.counter.outputs.merge_count }}
+      flutter_shards: ${{ steps.shards.outputs.list }}
     steps:
       - uses: actions/checkout@v5
 
@@ -44,6 +45,10 @@ jobs:
         env:
           CI_AUDIT_STATE_FILE: .ci-full-audit-state/state.json
         run: bash scripts/ci/merge-audit-counter.sh decide
+
+      - name: List Flutter CI shards (flutter_app/test/ci_shards.json)
+        id: shards
+        run: echo "list=$(node scripts/ci/flutter-shards.mjs list --json)" >> "$GITHUB_OUTPUT"
 
       - name: Save merge counter state
         uses: actions/cache/save@v5
@@ -67,71 +72,19 @@ jobs:
     if: needs.decide.outputs.should_run == 'true'
     uses: ./.github/workflows/_reusable-flutter-analyze.yml
 
-  flutter-test-pet-core:
+  flutter-test:
     needs: [decide, flutter-analyze]
     if: needs.decide.outputs.should_run == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: ${{ fromJSON(needs.decide.outputs.flutter_shards) }}
     uses: ./.github/workflows/_reusable-flutter-test-shard.yml
     with:
-      shard: pet-core
-
-  flutter-test-pet-screens:
-    needs: [decide, flutter-analyze]
-    if: needs.decide.outputs.should_run == 'true'
-    uses: ./.github/workflows/_reusable-flutter-test-shard.yml
-    with:
-      shard: pet-screens
-
-  flutter-test-pet-widgets:
-    needs: [decide, flutter-analyze]
-    if: needs.decide.outputs.should_run == 'true'
-    uses: ./.github/workflows/_reusable-flutter-test-shard.yml
-    with:
-      shard: pet-widgets
-
-  flutter-test-health:
-    needs: [decide, flutter-analyze]
-    if: needs.decide.outputs.should_run == 'true'
-    uses: ./.github/workflows/_reusable-flutter-test-shard.yml
-    with:
-      shard: health
-
-  flutter-test-rest-a:
-    needs: [decide, flutter-analyze]
-    if: needs.decide.outputs.should_run == 'true'
-    uses: ./.github/workflows/_reusable-flutter-test-shard.yml
-    with:
-      shard: rest-a
-
-  flutter-test-rest-b:
-    needs: [decide, flutter-analyze]
-    if: needs.decide.outputs.should_run == 'true'
-    uses: ./.github/workflows/_reusable-flutter-test-shard.yml
-    with:
-      shard: rest-b
-  flutter-test-experience:
-    needs: [decide, flutter-analyze]
-    if: needs.decide.outputs.should_run == 'true'
-    uses: ./.github/workflows/_reusable-flutter-test-shard.yml
-    with:
-      shard: experience
-  flutter-test-pet-care:
-    needs: [decide, flutter-analyze]
-    if: needs.decide.outputs.should_run == 'true'
-    uses: ./.github/workflows/_reusable-flutter-test-shard.yml
-    with:
-      shard: pet-care
+      shard: ${{ matrix.shard }}
 
   flutter-coverage:
-    needs:
-      - decide
-      - flutter-test-pet-core
-      - flutter-test-pet-screens
-      - flutter-test-pet-widgets
-      - flutter-test-health
-      - flutter-test-rest-a
-      - flutter-test-rest-b
-      - flutter-test-experience
-      - flutter-test-pet-care
+    needs: [decide, flutter-test]
     if: needs.decide.outputs.should_run == 'true'
     uses: ./.github/workflows/_reusable-flutter-coverage.yml
 
@@ -168,14 +121,7 @@ jobs:
       - startup-smoke
       - test-suite
       - flutter-analyze
-      - flutter-test-pet-core
-      - flutter-test-pet-screens
-      - flutter-test-pet-widgets
-      - flutter-test-health
-      - flutter-test-rest-a
-      - flutter-test-rest-b
-      - flutter-test-experience
-      - flutter-test-pet-care
+      - flutter-test
       - flutter-coverage
       - flutter-integration
       - flutter-build-web
@@ -198,14 +144,7 @@ jobs:
           STARTUP_SMOKE: ${{ needs.startup-smoke.result }}
           TEST_SUITE: ${{ needs.test-suite.result }}
           FLUTTER_ANALYZE: ${{ needs.flutter-analyze.result }}
-          FLUTTER_TEST_PET_CORE: ${{ needs.flutter-test-pet-core.result }}
-          FLUTTER_TEST_PET_SCREENS: ${{ needs.flutter-test-pet-screens.result }}
-          FLUTTER_TEST_PET_WIDGETS: ${{ needs.flutter-test-pet-widgets.result }}
-          FLUTTER_TEST_HEALTH: ${{ needs.flutter-test-health.result }}
-          FLUTTER_TEST_REST_A: ${{ needs.flutter-test-rest-a.result }}
-          FLUTTER_TEST_REST_B: ${{ needs.flutter-test-rest-b.result }}
-          FLUTTER_TEST_EXPERIENCE: ${{ needs.flutter-test-experience.result }}
-          FLUTTER_TEST_PET_CARE: ${{ needs.flutter-test-pet-care.result }}
+          FLUTTER_TEST: ${{ needs.flutter-test.result }}
           FLUTTER_COVERAGE: ${{ needs.flutter-coverage.result }}
           FLUTTER_INTEGRATION: ${{ needs.flutter-integration.result }}
           FLUTTER_BUILD_WEB: ${{ needs.flutter-build-web.result }}
