@@ -1,0 +1,31 @@
+{
+  "$comment": "Measured Playwright time per active spec (sum of test durations, seconds) from green Pre-UAT E2E run 36611087844 (main @ f6b6285, 2026-09-29). Used by shard-files.mjs (LPT balance of the 9 Pre-UAT shards) and select-affected-specs.mjs (PR E2E budget). Refresh from a green Pre-UAT run when a shard drifts past ~1.3x the mean; unknown specs default to defaultSec.",
+  "source_run": 36611087844,
+  "defaultSec": 90,
+  "specs": {
+    "account.area.spec.ts": 86,
+    "auth.login.spec.ts": 37,
+    "auth.profile.spec.ts": 74,
+    "auth.signup.spec.ts": 67,
+    "away.care.planning.spec.ts": 80,
+    "away.plan.detail.v2.spec.ts": 70,
+    "away.planning.spec.ts": 81,
+    "care-suggestion.spec.ts": 56,
+    "care.item.absence.spec.ts": 44,
+    "experience.navigation.spec.ts": 138,
+    "gdpr.data-rights.spec.ts": 43,
+    "guardian.dashboard.spec.ts": 171,
+    "guardian.navigation.spec.ts": 114,
+    "guardian.onboarding.spec.ts": 19,
+    "health.tracking.spec.ts": 325,
+    "help.faq.spec.ts": 172,
+    "notifications.spec.ts": 227,
+    "people-hub.spec.ts": 31,
+    "pet.detail-navigation.spec.ts": 42,
+    "pet.profiles.spec.ts": 418,
+    "pet.timeline.spec.ts": 35,
+    "sharing.spec.ts": 92,
+    "veterinarian.spec.ts": 170,
+    "weight.tracking.spec.ts": 163
+  }
+}

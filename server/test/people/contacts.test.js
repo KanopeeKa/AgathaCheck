@@ -182,6 +182,26 @@ describe('People contacts API', () => {
     expect(res.body.name).toBe('Jamie W.');
   });
 
+  it('PATCH name without kind does not re-infer kind (B2)', async () => {
+    contacts.set(
+      'contact-org',
+      makeContactRow({
+        id: 'contact-org',
+        kind: 'organisation',
+        name: 'Greenhill Veterinary Clinic',
+        roles: ['vet'],
+        legacy_vet_id: 'vet-legacy-1',
+      }),
+    );
+    const res = await request(app)
+      .patch('/api/people/contacts/contact-org')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ name: 'Greenhill Animal Hospital' });
+    expect(res.statusCode).toBe(200);
+    expect(res.body.kind).toBe('organisation');
+    expect(res.body.name).toBe('Greenhill Animal Hospital');
+  });
+
   it('DELETE /api/people/contacts/:id removes contact', async () => {
     contacts.set('contact-del', makeContactRow({ id: 'contact-del', legacy_vet_id: null }));
     const res = await request(app)

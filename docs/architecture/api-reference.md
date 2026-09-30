@@ -69,7 +69,7 @@ Personal directory contacts (phase 1). Storage: migrations `072_*`–`074_*`. Sp
 | GET | `/contacts` | authenticated — caller's personal directory; optional `?include_inactive=true` |
 | POST | `/contacts` | authenticated — body `{ kind, name, phone?, email?, address?, website?, works_at_contact_id?, roles?, private_note? }`; `kind` ∈ {`person`,`organisation`}; `roles` ⊆ sitter, walker, vet, vet_nurse, groomer, trainer, behaviourist, boarding, emergency_contact, other |
 | GET | `/contacts/:id` | authenticated — owner of directory only |
-| PATCH | `/contacts/:id` | authenticated — partial update; `private_note` is per-caller only |
+| PATCH | `/contacts/:id` | authenticated — partial update; `private_note` is per-caller only; **`kind` changes only when `kind` is sent** (rename alone does not re-infer kind) |
 | DELETE | `/contacts/:id` | authenticated — blocked when `legacy_vet_id` is set (delete vet instead) or pet relationship exists (`409`) |
 
 Response contact shape: `{ id, directory_id, kind, name, phone, email, address, website, works_at_contact_id, linked_user_id, inactive_at, legacy_vet_id, roles[], private_note, created_at, updated_at }`.

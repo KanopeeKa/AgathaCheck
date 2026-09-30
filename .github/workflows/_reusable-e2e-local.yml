@@ -3,6 +3,7 @@
 # Full suite: nine parallel matrix legs (Pet Care file-balanced manifest in e2e/scripts/shard-files.mjs);
 # callers pass shard_total: 9 and matrix.shard [1..9] — keep in sync when changing shard count.
 # PR canary: test_suite smoke-ci runs @smoke-ci only (retries 0).
+# PR affected specs: test_suite specs runs spec_files chosen by e2e/scripts/select-affected-specs.mjs.
 # Full org journey: test_suite org-journey (ci-full-audit / manual only).
 name: Reusable E2E (localhost)
 
@@ -26,9 +27,17 @@ on:
         type: string
         default: ''
       test_suite:
-        description: Playwright suite — shard (file-balanced CI shard), smoke-ci (PR @smoke-ci canary), or org-journey (org IA Playwright bundle)
+        description: Playwright suite — shard (duration-balanced CI shard), smoke-ci (PR @smoke-ci canary), specs (PR affected specs from spec_files), or org-journey (org IA Playwright bundle)
         type: string
         default: shard
+      spec_files:
+        description: Space-separated e2e-relative spec paths (playwright/tests/<name>.spec.ts) for test_suite specs
+        type: string
+        default: ''
+      report_name_suffix:
+        description: Suffix for the Playwright report artifact (needed when several specs legs run in one workflow)
+        type: string
+        default: ''
 
 env:
   FLUTTER_VERSION: '3.44.0'
@@ -36,7 +45,7 @@ env:
 jobs:
   e2e:
     name: >-
-      ${{ inputs.test_suite == 'smoke-ci' && 'Playwright @smoke-ci canary (localhost)' || inputs.test_suite == 'org-journey' && 'Playwright org journey (localhost)' || format('Playwright E2E (localhost{0})', inputs.shard_total > 1 && format(' shard {0}/{1}', inputs.shard_index, inputs.shard_total) || '') }}
+      ${{ inputs.test_suite == 'smoke-ci' && 'Playwright @smoke-ci canary (localhost)' || inputs.test_suite == 'org-journey' && 'Playwright org journey (localhost)' || inputs.test_suite == 'specs' && format('Playwright affected specs (localhost {0})', inputs.report_name_suffix) || format('Playwright E2E (localhost{0})', inputs.shard_total > 1 && format(' shard {0}/{1}', inputs.shard_index, inputs.shard_total) || '') }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
@@ -133,9 +142,23 @@ jobs:
         working-directory: e2e
         env:
           E2E_BASE_URL: http://localhost:3000
+          SPEC_FILES: ${{ inputs.spec_files }}
         run: |
           if [ "${{ inputs.test_suite }}" = "smoke-ci" ]; then
             npm run test:smoke-ci
+          elif [ "${{ inputs.test_suite }}" = "specs" ]; then
+            read -r -a specs <<<"$SPEC_FILES"
+            if [ "${#specs[@]}" -eq 0 ]; then
+              echo "::error::test_suite specs needs spec_files"
+              exit 1
+            fi
+            for spec in "${specs[@]}"; do
+              if [[ ! "$spec" =~ ^playwright/tests/[A-Za-z0-9._-]+\.spec\.ts$ ]]; then
+                echo "::error::Refusing unexpected spec path: $spec"
+                exit 1
+              fi
+            done
+            npx playwright test --project=full --max-failures=1 "${specs[@]}"
           elif [ "${{ inputs.test_suite }}" = "org-journey" ]; then
             npm run test:org-journey
           else
@@ -147,7 +170,7 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: >-
-            ${{ inputs.test_suite == 'smoke-ci' && 'playwright-report-localhost-smoke-ci' || inputs.test_suite == 'org-journey' && 'playwright-report-localhost-org-journey' || format('playwright-report-localhost-shard-{0}-of-{1}', inputs.shard_index, inputs.shard_total) }}
+            ${{ inputs.test_suite == 'smoke-ci' && 'playwright-report-localhost-smoke-ci' || inputs.test_suite == 'org-journey' && 'playwright-report-localhost-org-journey' || inputs.test_suite == 'specs' && format('playwright-report-localhost-specs-{0}', inputs.report_name_suffix) || format('playwright-report-localhost-shard-{0}-of-{1}', inputs.shard_index, inputs.shard_total) }}
           path: e2e/playwright-report/
 
       - name: Write E2E job summary

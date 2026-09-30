@@ -1,18 +1,18 @@
 {
   "schema_version": 1,
-  "approved_at": "2026-09-29T00:00:00Z",
-  "approved_until": "2026-10-01T00:00:00Z",
-  "content_hash": "sha256:61941c0b3d57da4c1061c4964737720f6fa3265a6f3a4ba66336b432b68ddc42",
-  "autonomy": "halted",
+  "approved_at": "2026-09-30T20:25:34.151Z",
+  "approved_until": "2026-10-02T20:25:34.151Z",
+  "content_hash": "sha256:01b59d1bad26a95c89aedd6f26b33060543a2805a744fda18b1f4a4f8b595a4b",
+  "autonomy": "active",
   "default_merge_mode": "auto",
-  "control_issue": 999999,
+  "control_issue": 1460,
   "artifact_branch_policy": "phase-branch",
   "plan_id": "people-domain-refactor-7f3b",
   "plan_kind": "roadmap",
   "programme_ref": "docs/domains/people/changes/people-domain-refactor.md",
   "base_branch": "main",
-  "approved_by": "DRAFT — pending approve-autonomous people-domain-refactor-7f3b on the roadmap control issue (see plan § How to run)",
-  "current_child_plan_id": null,
+  "approved_by": "user chat 2026-09-30: approve-autonomous people-domain-refactor-7f3b (control issue #1460)",
+  "current_child_plan_id": "people-server-7f3b",
   "phases": [
     {
       "id": "orchestrate",
@@ -58,9 +58,9 @@
   "child_plans": [
     {
       "plan_id": "people-hotfixes-7f3b",
-      "status": "pending",
-      "pr_url": null,
-      "merge_commit": null
+      "status": "merged",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1464",
+      "merge_commit": "3ca7bd4ccb2063fff271bb68fba7a7681a4d7788"
     },
     {
       "plan_id": "people-server-7f3b",

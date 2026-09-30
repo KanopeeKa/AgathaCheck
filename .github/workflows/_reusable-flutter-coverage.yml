@@ -1,5 +1,6 @@
 # Merge per-shard Flutter coverage and enforce the domain coverage gate.
-# Caller: ci.yml job id `flutter-coverage` (after all test shards).
+# Caller: ci.yml job id `flutter-coverage` (after all test shards). Merge is pure Node
+# (scripts/ci/lcov-merge.mjs) — no apt lcov.
 name: Reusable Flutter coverage
 
 on:
@@ -25,9 +26,6 @@ jobs:
           pattern: flutter-coverage-*
           path: _coverage_shards
           merge-multiple: false
-
-      - name: Set up lcov
-        uses: ./.github/actions/setup-lcov
 
       - name: Merge coverage and enforce gate
         working-directory: flutter_app

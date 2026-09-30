@@ -5,10 +5,21 @@ import '../../../people/presentation/providers/people_providers.dart';
 
 /// Legacy `vets.id` value stored on [Pet.vetId], with a People roster label.
 class PetVetOption {
-  const PetVetOption({required this.vetId, required this.displayName});
+  const PetVetOption({
+    required this.vetId,
+    required this.displayName,
+    this.phone,
+    this.email,
+    this.address,
+    this.website,
+  });
 
   final String vetId;
   final String displayName;
+  final String? phone;
+  final String? email;
+  final String? address;
+  final String? website;
 }
 
 List<PetVetOption> petVetOptionsFromContacts(List<PeopleContact> contacts) {
@@ -20,7 +31,16 @@ List<PetVetOption> petVetOptionsFromContacts(List<PeopleContact> contacts) {
             c.legacyVetId != null &&
             c.legacyVetId!.isNotEmpty,
       )
-      .map((c) => PetVetOption(vetId: c.legacyVetId!, displayName: c.name))
+      .map(
+        (c) => PetVetOption(
+          vetId: c.legacyVetId!,
+          displayName: c.name,
+          phone: c.phone,
+          email: c.email,
+          address: c.address,
+          website: c.website,
+        ),
+      )
       .toList();
   options.sort((a, b) => a.displayName.compareTo(b.displayName));
   return options;
