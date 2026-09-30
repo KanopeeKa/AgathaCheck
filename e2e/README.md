@@ -170,6 +170,38 @@ Set `E2E=1` on the UAT Node app if auth rate limits interfere.
 3. Seed data via `playwright/support/api.ts` when setup is faster than UI.
 4. Add a spec in `playwright/tests/` with a `@bdd` comment linking to the feature file.
 
+Run browser tests with the same disposable `PGHOST`, `PGPORT`, `PGUSER` and
+`PGDATABASE` as the local backend, and unset an unrelated `DATABASE_URL`.
+`E2E_BASE_URL` controls HTTP requests only; non-care notification fixtures still
+use SQL and must not inherit a different workspace database.
+
+### Care occurrence journeys
+
+Use `playwright/support/care-api.ts` to create care and perform occurrence
+commands (complete, skip, plan another date, change date, postpone, resume and
+undo). Do not insert, update or pin `health_occurrences` with SQL, or set
+`next_due_date` to simulate completion; the server maintains those facts.
+Use the general API helpers for users, pets and absences.
+
+For deterministic scheduling cases, `withCareClock` supplies `X-Care-As-Of`
+to both browser requests and care API helpers for the duration of the case.
+The value is a local date-time in the pet's home timezone. Start the local
+test server with `APP_ENV=ci` and `E2E=1`. The care clock is accepted only in
+development/test/CI and is ignored and logged on UAT/production.
+Live UAT and `@smoke-ci` canaries must remain clock-independent.
+
+Fixed schedules intentionally store the next day's slots as well as today's
+open slots. Assert dose rows by their calendar date, then verify the exact
+completed occurrence and the remaining pending rows. An after-it's-done away
+projection may contain both a real open occurrence and later estimated dates;
+assert their IDs, sources and date basis separately.
+
+Before landing CARE, run the full pre-push gate and all nine active localhost
+shards. A manual `e2e.yml` run uses the same localhost stack on CI; verify its
+web artifact and test checkout match the candidate commit. The active shard
+manifest excludes frozen Shelter/Fostering specs, including adoption and
+organisation pet management; do not enable those domains for this gate.
+
 ## Selector strategy
 
 Flutter web exposes an accessibility tree. Prefer, in order:

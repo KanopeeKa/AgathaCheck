@@ -12,9 +12,9 @@ Feature: Away care planning display
     And I should not see a planned care row for that overdue entry
 
   @P1
-  Scenario: Completion-based care shows an estimated date on the away plan
+  Scenario: After-it's-done care shows an estimated date on the away plan
     Given I am signed in as a guardian with a saved planned absence
-    And a completion-based health entry has care scheduled during the absence
+    And after-it's-done care is due before I leave with a possible next date during my trip
     When I open the away plan for that absence
     Then I should see an estimated date on the planned care row for that entry
 
@@ -31,3 +31,11 @@ Feature: Away care planning display
     And a health entry has care scheduled during the absence
     When I open the away plan for that absence
     Then I should see a planned care row for that entry
+
+  @P1
+  Scenario: Care done before the trip still appears on the away plan
+    Given I am signed in as a guardian with weekly after-it's-done care due today
+    And my trip starts in five days and ends in twelve days
+    When I mark today's care done on time
+    Then the next real occurrence should fall during the trip
+    And the away plan should list that care with its occurrence id

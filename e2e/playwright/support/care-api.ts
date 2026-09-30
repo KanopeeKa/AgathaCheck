@@ -132,6 +132,49 @@ export async function getCareItem(baseURL: string, token: string, entryId: strin
   return res.body as unknown as CareItem;
 }
 
+/** Read the actual away-window projection, including materialised occurrence ids. */
+export async function getCarePeriodCoverage(
+  baseURL: string,
+  token: string,
+  petId: string,
+  startsOn: string,
+  endsOn: string,
+): Promise<{
+  items: Array<{
+    health_entry_id: string;
+    occurrence_id: string | null;
+    scheduled_date: string;
+    source: string;
+  }>;
+  planned_care_items: Array<{
+    health_entry_id: string;
+    in_window?: { first_date: string; last_date: string; count: number; date_basis: string } | null;
+  }>;
+}> {
+  const query = new URLSearchParams({ starts_on: startsOn, ends_on: endsOn });
+  const res = await apiFetch(
+    `${baseURL.replace(/\/$/, '')}${API_PREFIX}/pets/${petId}/care-period-coverage?${query}`,
+    { headers: { Authorization: `Bearer ${token}`, ...(careClock ? { [CARE_CLOCK_HEADER]: careClock } : {}) } },
+  );
+  const text = await res.text();
+  if (!res.ok) throw new Error(`getCarePeriodCoverage failed (${res.status}): ${text}`);
+  return JSON.parse(text);
+}
+
+/** Trigger a reminder scan with the same pinned care clock as the care commands. */
+export async function checkCareReminders(baseURL: string, token: string): Promise<void> {
+  const res = await apiFetch(`${baseURL.replace(/\/$/, '')}${API_PREFIX}/notifications/check-due`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      ...(careClock ? { [CARE_CLOCK_HEADER]: careClock } : {}),
+    },
+    body: JSON.stringify({}),
+  });
+  if (!res.ok) throw new Error(`checkCareReminders failed (${res.status}): ${await res.text()}`);
+}
+
 /** Complete one open date; returns the raw result so tests can assert a 409. */
 export async function completeOccurrence(
   baseURL: string,

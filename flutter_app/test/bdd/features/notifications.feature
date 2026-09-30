@@ -21,10 +21,11 @@ Feature: Notifications
     Then a notification of type "due_soon" should be created for "Flea Treatment"
 
   @P1
-  Scenario: Notification generated when entry is completed
-    Given a pet "Bella" has a health entry "Heartworm"
-    When the user marks "Heartworm" as taken
-    Then a notification of type "completed" should be created for "Heartworm"
+  Scenario: A reminder is created again after care is done on time
+    Given a pet "Bella" has weekly care due today with a seven-day reminder
+    When the user marks that care done on time
+    And the system checks for due care
+    Then a "due_soon" reminder should be created for the next real date
 
   # ── Viewing Notifications ────────────────────────────────────
 

@@ -344,6 +344,10 @@ test.describe('Health tracking', () => {
     // Fixed schedule stores today's doses and tomorrow's (D-CSM-023).
     expect(occurrencesBefore).toHaveLength(4);
     expect(occurrencesBefore.every((row) => row.status === 'pending')).toBe(true);
+    const tomorrow = new Date(`${today}T12:00:00Z`);
+    tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
+    expect(occurrencesBefore.filter((row) => row.scheduled_date === today)).toHaveLength(2);
+    expect(occurrencesBefore.filter((row) => row.scheduled_date === tomorrow.toISOString().slice(0, 10))).toHaveLength(2);
 
     await loginAs(page, testUser);
     const petList = new PetListPage(page);
@@ -356,7 +360,7 @@ test.describe('Health tracking', () => {
 
     const stackSheet = new OccurrenceStackSheetPage(page);
     await stackSheet.expectLoaded(entryName);
-    await stackSheet.expectDueTodayDoseCount(2);
+    await stackSheet.expectDueTodayDoseCount(2, today);
     await stackSheet.recordLatestDose();
 
     const occurrencesAfter = await getHealthEntryOccurrences(
