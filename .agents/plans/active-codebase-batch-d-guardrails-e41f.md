@@ -41,9 +41,9 @@ next_action: "plan complete"
 artifact_ref:
   branch: cursor/arch-d-g-handover-26ff
   plan_path: .agents/plans/active-codebase-batch-d-guardrails-e41f.md
-  plan_commit: ce702c0927134416858a5aa7cac17f45d7795289
+  plan_commit: 97908af5ab5c9cd11e4e0b68d9032f6d094e0547
   snapshot_path: .agents/plans/active-codebase-batch-d-guardrails-e41f.snapshot.json
-  snapshot_commit: ce702c0927134416858a5aa7cac17f45d7795289
+  snapshot_commit: 97908af5ab5c9cd11e4e0b68d9032f6d094e0547
 open_prs: []
 merge_commits: {"1":"6f7a59b600ca8ce906929f21fea8c7415b56d3a7","2":"0232029e517e40487a89ca63932ef550019b36bc","3":"d7a77fde92cef5ea4fc711e6eec19903fc3b849e","4":"ce702c0927134416858a5aa7cac17f45d7795289"}
 debt_issue_refs: []
