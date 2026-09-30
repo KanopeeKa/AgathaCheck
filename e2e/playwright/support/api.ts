@@ -1017,6 +1017,7 @@ export async function getVets(baseURL: string, token: string): Promise<TestVet[]
 export interface TestPeopleContact {
   id: string;
   name: string;
+  phone?: string | null;
   legacy_vet_id?: string | null;
 }
 

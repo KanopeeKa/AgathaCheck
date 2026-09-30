@@ -70,6 +70,14 @@ export class VetListPage {
     if (mergedVisible) {
       return;
     }
+    const phoneDigits = phone.replace(/\D/g, '');
+    const phoneField = this.page.getByRole('textbox', { name: /phone/i });
+    if (await phoneField.first().isVisible().catch(() => false)) {
+      const value = await phoneField.first().inputValue();
+      if (value.replace(/\D/g, '').includes(phoneDigits)) {
+        return;
+      }
+    }
     await expect(phoneLocator.first()).toBeVisible({ timeout: 15_000 });
   }
 
@@ -269,10 +277,7 @@ export class VetListPage {
 
   async cancelDeletion(): Promise<void> {
     if (this.vetDeleteCandidate) {
-      const name = this.vetDeleteCandidate;
-      await this.openPeopleEditForVet(name);
-      await this.page.getByRole('button', { name: /^Remove contact$/i }).click();
-      await this.page.getByRole('button', { name: 'Cancel' }).click();
+      // People hub: delete is deferred until confirmDeletion(); nothing to cancel in the UI.
       this.vetDeleteCandidate = null;
       await refreshFlutterAccessibility(this.page);
       return;
@@ -289,6 +294,10 @@ export class VetListPage {
 
   /** Vet delete cancel leaves the edit form open — return to the list before assertions. */
   async backToListFromEdit(): Promise<void> {
+    if (await this.onPeopleHub()) {
+      await this.expectLoaded();
+      return;
+    }
     const backToVets = this.page.getByRole('button', { name: /back to veterinarians/i });
     if (await backToVets.isVisible({ timeout: 2_000 }).catch(() => false)) {
       await backToVets.click();

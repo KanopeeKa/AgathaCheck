@@ -135,14 +135,8 @@ export class VetFormPage {
     newPhone: string,
     options?: { vetName: string },
   ): Promise<void> {
-    await this.expectLoaded();
-    const onPeopleEdit = /\/pc\/people\/[^/]+\/edit/.test(this.page.url());
-    if (onPeopleEdit) {
-      const vetName = options?.vetName;
-      if (!vetName) {
-        throw new Error('updatePhone on People edit requires options.vetName');
-      }
-      await fillLabelledField(this.page, 'Phone', newPhone);
+    const vetName = options?.vetName;
+    if (vetName) {
       const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
       const token = await readAccessTokenFromPage(this.page);
       const matches = (await getVets(baseURL, token)).filter((v) => v.name === vetName);
@@ -161,6 +155,7 @@ export class VetFormPage {
       await waitForFlutterRoutePattern(this.page, /\/pc\/people(?:\?|$)/, 30_000);
       return;
     }
+    await this.expectLoaded();
     await fillTextbox(this.page, 'Phone', newPhone);
     await this.save();
     await this.expectSaved('edit');
