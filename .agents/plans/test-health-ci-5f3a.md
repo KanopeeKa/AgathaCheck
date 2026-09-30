@@ -13,8 +13,31 @@
 | **default_merge_mode** | `auto` |
 | **artifact_branch_policy** | `phase-branch` |
 
-Each phase is one verifiable outcome (atomic-pr policy). Phases are committed in order on the
-work branch so they can be opened as one integration PR or split into stacked PRs.
+Each phase is one verifiable outcome (atomic-pr policy).
+
+## Landings and coordination
+
+This programme is **TEST** in [parallel-programmes.md](../../docs/agent-efficiency/parallel-programmes.md)
+(landing order §4, area ownership §3, rules §5, TEST deltas §6, broadcast template §7).
+
+| Landing | Content | Branch | Lands |
+|---|---|---|---|
+| TEST 1a | plan bootstrap + phase 1 (fixes #1453) | `claude/relaxed-einstein-jqecfg` | right after ARCH D, or before it if green first (human decision 2026-09-30) |
+| TEST 1b | phases 2–3 | `claude/test-health-ci-p2-3-5f3a` (rebased on `main` after 1a) | after 1a |
+| TEST 2 | phases 4, 6, 7 (+5 once CARE's BDD disposition has landed) | new branch after 1b | §4 row 6 |
+
+After each landing, post the §7 broadcast on every open programme control issue / PR.
+
+**§6 deltas applied:**
+
+- Phases 2–3 also run the short PR CI tier for PRs into integration branches
+  (`cursor/*-integration-*`, plus the CARE and TEST work branches), within the same budgets.
+- Phase 4 takes the 70 % domain-gate doc alignment from ARCH D.3 (no re-do) and owns the KPI
+  generator ARCH J reuses.
+- Phase 5 runs after CARE's BDD/Playwright disposition has landed, or excludes care features.
+- Phase 7's migrations-vs-canonical-schema check enforces §5.5 (numbered at landing; manifest and
+  canonical schema in the same PR); the IDOR matrix gets People and Care routes appended when
+  those programmes land.
 
 ---
 
@@ -143,6 +166,8 @@ never on PRs.
 - `_reusable-build-web.yml`: `actions/cache` of `build/web` keyed on Flutter build inputs; saved
   from `main` (Pre-UAT), restored by PRs.
 - Pre-UAT shards computed by LPT from `spec-durations.json` (`shard-files.mjs`).
+- PR CI tier also runs for PRs into integration branches (`cursor/*-integration-*`, CARE and TEST
+  work branches) — parallel-programmes §6 TEST.2.
 - Playwright `full` project stops excluding `@smoke-uat` / `@smoke-a11y` (6 active tests incl. axe
   scans finally run on localhost).
 - Testing rule + e2e README: semantics-contract widget test for every page-object locator
