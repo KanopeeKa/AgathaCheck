@@ -92,6 +92,13 @@ describe('fixed-schedule slots (D-CSM-023)', () => {
     ]);
   });
 
+  it('a monthly dose from a week ago stays stored while it is only overdue', () => {
+    const entry = fixed({ frequency: 'monthly', schedule_anchor_date: '2026-06-03' });
+    expect(expectedFixedSlots({ entry, todayIso: '2026-06-10' }).map((s) => s.date)).toEqual([
+      '2026-06-03', '2026-07-03',
+    ]);
+  });
+
   it('a future anchor only stores the first date', () => {
     const entry = fixed({ frequency: 'monthly', schedule_anchor_date: '2026-07-31' });
     expect(expectedFixedSlots({ entry, todayIso: '2026-06-10' })).toEqual([

@@ -2,8 +2,9 @@
  * Fixed-schedule slots (D-CSM-023) — pure.
  *
  * Stored open slots for a Fixed-schedule item: every series date from
- * today − 3 days through today, plus the next series date after today,
- * each multiplied by the item's times of day.
+ * today − 3 days through today, the latest series date on or before today
+ * (still Overdue until the next one is due), plus the next series date after
+ * today, each multiplied by the item's times of day.
  */
 
 import { dateToIsoDate } from '../../calendarDate.js';
@@ -12,6 +13,7 @@ import {
   addDaysIso,
   seriesDateAfter,
   seriesDateOnOrAfter,
+  seriesDateOnOrBefore,
   seriesDatesBetween,
   seriesStep,
 } from './seriesDates.js';
@@ -66,6 +68,11 @@ export function expectedFixedSlots({ entry, todayIso }) {
   const endIso = dateToIsoDate(entry.repeat_end_date);
 
   const dates = floor <= todayIso ? seriesDatesBetween(anchor, entry, floor, todayIso) : [];
+  // The latest date on or before today stays open while it is only Overdue
+  // (a weekly or monthly dose whose next date has not come yet).
+  const resumeFloor = maxIso(anchor, dateToIsoDate(entry.series_resumed_on));
+  const latest = seriesDateOnOrBefore(anchor, entry, todayIso);
+  if (latest && latest >= resumeFloor && !dates.includes(latest)) dates.unshift(latest);
   const nextAfterToday = seriesDateOnOrAfter(anchor, entry, maxIso(floor, addDaysIso(todayIso, 1)));
   dates.push(nextAfterToday);
 

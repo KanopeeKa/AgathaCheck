@@ -69,7 +69,7 @@ Follow `docs/architecture/calendar-dates.md`:
 |---------------|------------------------|
 | **Once** | The single occurrence until it closes |
 | **After it's done** | Exactly one open date from the rule (`computed`), **unless** a person planned dates (`planned`), in which case those are the open dates and no computed one exists. Created when the item is created and whenever the last open date closes (D-CSM-022) |
-| **Fixed schedule** | Every slot from **today − 3 days** through **today** not yet closed, plus every slot of the **next series date after today** (if a person already closed that date, the one after it), plus any `planned` extras (D-CSM-023). A Not recorded slot closes once the slot after it is three days old; an Overdue slot is never closed automatically. Kept up to date by every command's catch-up and by the care tick every 15 minutes (D-CSM-031) |
+| **Fixed schedule** | Every slot from **today − 3 days** through **today** not yet closed, the latest series date on or before today, plus every slot of the **next series date after today** (if a person already closed that date, the one after it), plus any `planned` extras (D-CSM-023). A Not recorded slot closes once the slot after it is three days old; an Overdue slot is never closed automatically. Kept up to date by every command's catch-up and by the care tick every 15 minutes (D-CSM-031) |
 | **Paused** | Whatever was open stays (hidden); nothing new is created (D-CSM-028) |
 | **Unplanned / recorded** | None |
 

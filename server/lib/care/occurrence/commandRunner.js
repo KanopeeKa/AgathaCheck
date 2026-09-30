@@ -104,6 +104,8 @@ export async function executeCareCommand({ db, entry, asOf, userId }, fn) {
   const synced = await syncOpenOccurrences(db, afterAction, asOf);
   const computed = new Set(synced.createdComputed);
   for (const id of synced.created) trace.createdRow(id, computed.has(id) ? 'computed' : 'schedule');
+  // The sync may finish the item (one-off done, end date reached); undo restores it.
+  if ((synced.entry?.status || 'active') !== (fresh.status || 'active')) trace.markEntryChanged();
 
   let undoToken = null;
   if (event) {

@@ -299,6 +299,7 @@ People tiers decide what each person sees.
 | Done after its due date while another date is already planned | Asks what to do with that date (below) | "Done · Undo" |
 
 - **Why overdue care asks (D-CIE-009):** for "after completion" schedules, the done date sets every following date. One tap on 27 Sep for care done on 12 Sep would move the next date by 15 days. The question is asked for every overdue item, so the history stays accurate too.
+- **The provider is kept whoever completes it (PEOPLE I12).** The occurrence records the provider of the contact attached to the care item, even when a co-parent or carer who can't see that contact completes it.
 - **Add details** offers:
   - a note
   - who performed it (defaults to you)

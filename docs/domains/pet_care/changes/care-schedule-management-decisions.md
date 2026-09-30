@@ -232,7 +232,7 @@ Example: due 5 Jun (monthly). On 7 Jun, still not done → “Overdue · 5 Jun�
 
 | Rule | Detail |
 |------|--------|
-| Stored slots | Every slot (date × time of day) from **today − 3 days** through **today** not yet closed, plus every slot of the **next series date after today** (unless paused or past the end date), plus any `planned` extras. These are real rows created by commands and the care tick |
+| Stored slots | Every slot (date × time of day) from **today − 3 days** through **today** not yet closed, the **latest series date on or before today** (a weekly or monthly dose stays Overdue until the next one is due), every slot of the **next series date after today** (if a person already closed it, the one after), unless paused or past the end date, plus any `planned` extras. These are real rows created by commands and the care tick |
 | Dates | `schedule_anchor_date + n × interval`, clamped (D-CSM-024), never chained from the previous date |
 | Overdue | From the slot's time (or the end of its day when untimed) until the **next slot of the series** is due |
 | Not recorded | Once the next slot is due, a still-open slot shows **Not recorded** and joins the **stack** |

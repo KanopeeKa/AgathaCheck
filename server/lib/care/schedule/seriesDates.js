@@ -231,3 +231,17 @@ export function isSeriesDate(anchorIso, entry, dateIso) {
   if (dateIso < anchorIso) return false;
   return seriesDateOnOrAfter(anchorIso, entry, dateIso) === dateIso;
 }
+
+/**
+ * Latest series date on or before `targetIso`, or null when the series starts later.
+ *
+ * @param {string} anchorIso
+ * @param {object} entry
+ * @param {string} targetIso
+ * @returns {string|null}
+ */
+export function seriesDateOnOrBefore(anchorIso, entry, targetIso) {
+  if (targetIso < anchorIso) return null;
+  const next = firstIndexOnOrAfter(anchorIso, entry, addDaysIso(targetIso, 1));
+  return next === 0 ? null : addSteps(anchorIso, entry, next - 1);
+}

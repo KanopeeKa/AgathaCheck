@@ -28,19 +28,22 @@ const view = (it) => it.open_occurrences.map((o) => `${o.scheduled_date} ${o.sch
 beforeAll(async () => {
   pool = createDbPool();
   try {
-    await pool.query("SELECT 1 FROM information_schema.columns WHERE table_name = 'health_occurrences' AND column_name = 'origin'");
-    client = await pool.connect();
-    await client.query('BEGIN');
-    process.env.SEED_CARE_CLOCK = `${CLOCK.todayIso}T${CLOCK.nowTimeIso}`;
-    await seedGuardian(client);
-    await seedCareOccurrences(client);
-    await seedCareOccurrences(client);
-    dbReady = true;
-  } catch (err) {
-    dbReady = false;
-    if (client) await client.query('ROLLBACK').catch(() => {});
-    if (!String(err.message).includes('ECONNREFUSED')) throw err;
+    const ready = await pool.query(
+      "SELECT 1 FROM information_schema.columns WHERE table_name = 'health_occurrences' AND column_name = 'origin'",
+    );
+    if (ready.rows.length === 0) return;
+  } catch {
+    // No PostgreSQL in this job (unit CI): the DB suite runs in the
+    // "Backend integration (PostgreSQL)" job.
+    return;
   }
+  client = await pool.connect();
+  await client.query('BEGIN');
+  process.env.SEED_CARE_CLOCK = `${CLOCK.todayIso}T${CLOCK.nowTimeIso}`;
+  await seedGuardian(client);
+  await seedCareOccurrences(client);
+  await seedCareOccurrences(client);
+  dbReady = true;
 }, 60000);
 
 afterAll(async () => {

@@ -278,6 +278,17 @@ describe('lifecycle and compatibility routes', () => {
     expect(reopened.body.open_occurrences).toHaveLength(1);
   });
 
+  it('undoing the completion of one-off care makes it active again', async () => {
+    if (!harness.pool) return;
+    const entry = await created({ care_family: 'other', frequency: 'once', next_due_date: '2026-06-05' }, '2026-06-01T09:00');
+    const done = await api.at('2026-06-05T09:00').complete(entry.id, entry.open_occurrences[0].id, {});
+    expect(done.body.entry.status).toBe('completed');
+    const undone = await api.at('2026-06-05T09:01').undo(entry.id, { undo_token: done.body.undo_token });
+    expect(undone.body.entry.status).toBe('active');
+    expect(undone.body.entry.open_occurrences).toHaveLength(1);
+    expect(await invariantViolations(harness.pool, entry.id)).toEqual([]);
+  });
+
   it('F7 reopening a closed series creates its next date at once', async () => {
     if (!harness.pool) return;
     const entry = await created(flea('2026-06-05'), '2026-06-01T09:00');
