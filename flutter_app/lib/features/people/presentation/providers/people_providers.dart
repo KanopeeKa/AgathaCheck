@@ -64,6 +64,7 @@ class PeopleContactsNotifier extends AsyncNotifier<List<PeopleContact>> {
     final ds = ref.read(peopleRemoteDataSourceProvider);
     final updated = await ds.updateContact(id, patch);
     mergeLocal(updated);
+    ref.invalidate(peopleContactDetailProvider(id));
     return updated.toEntity();
   }
 
@@ -87,16 +88,21 @@ final peopleContactByIdProvider = Provider.family<PeopleContact?, String>((
   return async.valueOrNull?.where((c) => c.id == id).firstOrNull;
 });
 
+/// Fetches one contact from the server and merges it into [peopleContactsProvider].
+///
+/// Must not `watch` the contacts list: `mergeLocal` below changes that list, which
+/// would re-run this provider, fetch again and merge again — an endless refetch loop
+/// that left the edit screen on its loading spinner. Mutations through
+/// [PeopleContactsNotifier.updateContactPatch] invalidate this provider instead.
 final peopleContactDetailProvider = FutureProvider.autoDispose
     .family<PeopleContact?, String>((ref, id) async {
-      final cached = ref.watch(peopleContactByIdProvider(id));
       final ds = ref.read(peopleRemoteDataSourceProvider);
       try {
         final model = await ds.getContact(id);
         ref.read(peopleContactsProvider.notifier).mergeLocal(model);
         return model.toEntity();
       } catch (_) {
-        return cached;
+        return ref.read(peopleContactByIdProvider(id));
       }
     });
 

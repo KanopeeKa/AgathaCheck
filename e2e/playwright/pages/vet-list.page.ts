@@ -16,6 +16,19 @@ import {
 } from '../support/flutter';
 import { readAccessTokenFromPage } from '../support/ui-auth';
 
+/**
+ * From a People edit or person page, return to the People list (professionals filter).
+ * Editing a contact opened by deep link pops to the person's page (`/pc/people/:id`); on
+ * wide layouts that page is a list/detail split whose shell button is "Go back" (history),
+ * so navigate to the list route directly, as `confirmDeletion` already does.
+ */
+export async function backToPeopleList(page: Page): Promise<void> {
+  if (/^\/pc\/people(?:\?|$)/.test(flutterRoutePath(page.url()))) return;
+  await page.goto(flutterGotoUrl('/pc/people?filter=professionals'));
+  await refreshFlutterAccessibility(page);
+  await waitForFlutterRoutePattern(page, /^\/pc\/people(?:\?|$)/, 30_000);
+}
+
 export class VetListPage {
   /** People hub: legacy vets delete via API (contact DELETE is blocked when linked). */
   private vetDeleteCandidate: string | null = null;
@@ -269,10 +282,10 @@ export class VetListPage {
     const backToVets = this.page.getByRole('button', { name: /back to veterinarians/i });
     if (await backToVets.isVisible({ timeout: 2_000 }).catch(() => false)) {
       await backToVets.click();
+      await refreshFlutterAccessibility(this.page);
     } else {
-      await this.page.getByRole('button', { name: /^Back$/i }).first().click();
+      await backToPeopleList(this.page);
     }
-    await refreshFlutterAccessibility(this.page);
     await this.expectLoaded();
   }
 

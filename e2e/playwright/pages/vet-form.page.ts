@@ -1,5 +1,12 @@
 import type { Page } from '@playwright/test';
-import { fillLabelledField, fillTextbox, refreshFlutterAccessibility, waitForFlutterRoutePattern } from '../support/flutter';
+import {
+  fillLabelledField,
+  fillTextbox,
+  flutterRoutePath,
+  refreshFlutterAccessibility,
+  waitForFlutterRoutePattern,
+} from '../support/flutter';
+import { backToPeopleList } from './vet-list.page';
 
 /**
  * Veterinarian create / edit form (`/vets/add`, `/vets/edit/:id`).
@@ -62,7 +69,10 @@ export class VetFormPage {
       .or(this.page.getByText(/Dr\./))
       .first()
       .waitFor({ timeout: 15_000 });
-    await waitForFlutterRoutePattern(this.page, /\/pc\/people(?:\?|$)/, 30_000).catch(() =>
+    // Edit pops back to the person's page (`/pc/people/:id`); create returns to the list.
+    const savedRoute =
+      mode === 'edit' ? /\/pc\/people(?:\?|$|\/[^/?]+$)/ : /\/pc\/people(?:\?|$)/;
+    await waitForFlutterRoutePattern(this.page, savedRoute, 30_000).catch(() =>
       waitForFlutterRoutePattern(this.page, /\/pc\/vets(?:\?|$)/, 30_000),
     );
   }
@@ -121,5 +131,8 @@ export class VetFormPage {
       () => undefined,
     );
     await this.expectSaved('edit');
+    if (/^\/pc\/people\/[^/?]+$/.test(flutterRoutePath(this.page.url()))) {
+      await backToPeopleList(this.page);
+    }
   }
 }
