@@ -134,18 +134,18 @@ flutter_app/lib/features/organization/**
 ## Runtime state (agent-updated)
 
 ```yaml
-autonomy: active
-current_phase: h2-client-fixes
-last_completed_phase: h1-server-kind
+autonomy: completed
+current_phase: null
+last_completed_phase: h2-client-fixes
 halt_reason: null
-next_action: "continue phase h2-client-fixes on branch cursor/people-hotfix-h2-client-7f3b"
+next_action: "plan complete"
 artifact_ref:
-  branch: cursor/people-hotfix-h1-kind-7f3b
+  branch: main
   plan_path: .agents/plans/people-hotfixes-7f3b.md
-  plan_commit: 3923693720e047a3b13b9f63877472a5110c8be2
+  plan_commit: 3ca7bd4ccb2063fff271bb68fba7a7681a4d7788
   snapshot_path: .agents/plans/people-hotfixes-7f3b.snapshot.json
-  snapshot_commit: 3923693720e047a3b13b9f63877472a5110c8be2
+  snapshot_commit: 3ca7bd4ccb2063fff271bb68fba7a7681a4d7788
 open_prs: []
-merge_commits: {"h1-server-kind":"985f2caad3b9b39626cb961f0560e8267192014d"}
+merge_commits: {"h1-server-kind":"985f2caad3b9b39626cb961f0560e8267192014d","h2-client-fixes":"3ca7bd4ccb2063fff271bb68fba7a7681a4d7788"}
 debt_issue_refs: []
 ```
