@@ -1,80 +1,22 @@
 #!/usr/bin/env bash
-# Run Flutter tests for one CI domain shard with coverage output.
+# Run Flutter tests for one CI shard with coverage output.
+# Shard → test files come from flutter_app/test/ci_shards.json (scripts/ci/flutter-shards.mjs).
 # Tests run one file at a time (Linux flutter_tester segfault isolation).
 set -uo pipefail
 
 SHARD="${1:-}"
-if [[ -z "$SHARD" ]]; then
-  echo "usage: run_tests_ci_shard.sh <pet-core|pet-screens|pet-widgets|health|org|rest-a|rest-b|experience|pet-care>" >&2
-  exit 1
-fi
-
 cd "$(dirname "$0")/.."
+SHARDS_CLI="../scripts/ci/flutter-shards.mjs"
 
-shard_paths() {
-  case "$SHARD" in
-    pet-core)
-      printf '%s\n' \
-        test/features/pet_profile/data \
-        test/features/pet_profile/domain
-      ;;
-    pet-screens) printf '%s\n' test/features/pet_profile/presentation/screens ;;
-    pet-widgets)
-      printf '%s\n' \
-        test/features/pet_profile/presentation/widgets \
-        test/features/pet_profile/presentation/controllers \
-        test/features/pet_profile/presentation/providers \
-        test/features/pet_profile/presentation/utils
-      ;;
-    health) printf '%s\n' test/features/health_tracking ;;
-    org) printf '%s\n' test/features/organization ;;
-    rest-a)
-      printf '%s\n' \
-        test/features/auth \
-        test/features/sharing \
-        test/features/notifications \
-        test/features/subscription
-      ;;
-    experience)
-      printf '%s\n' test/features/experience
-      ;;
-    pet-care)
-      printf '%s\n' \
-        test/features/pet_care \
-        test/features/care_intelligence \
-        test/features/pet_tags
-      ;;
-    rest-b)
-      printf '%s\n' \
-        test/features/vet \
-        test/features/weight_tracking \
-        test/features/help \
-        test/features/about \
-        test/features/api_base_url_wiring_test.dart
-      ;;
-    *)
-      echo "::error::Unknown shard '${SHARD}' (expected pet-core|pet-screens|pet-widgets|health|org|rest-a|rest-b|experience|pet-care)" >&2
-      return 1
-      ;;
-  esac
-}
-
-mapfile -t roots < <(shard_paths) || exit 1
-
-mapfile -t files < <(
-  for root in "${roots[@]}"; do
-    if [[ -f "$root" ]]; then
-      echo "$root"
-    elif [[ -d "$root" ]]; then
-      find "$root" -name '*_test.dart' ! -path '*/integration/*'
-    fi
-  done | sort -u
-)
-
-if [[ ${#files[@]} -eq 0 ]]; then
-  echo "::error::No test files found for shard ${SHARD}" >&2
+if [[ -z "$SHARD" ]]; then
+  echo "usage: run_tests_ci_shard.sh <shard> (one of: $(node "$SHARDS_CLI" list | tr '\n' ' '))" >&2
   exit 1
 fi
+
+if ! shard_files="$(node "$SHARDS_CLI" files "$SHARD")"; then
+  exit 1
+fi
+mapfile -t files <<<"$shard_files"
 
 rm -rf coverage
 mkdir -p coverage
@@ -129,5 +71,5 @@ else
   echo "::warning::No coverage/lcov.info produced for shard ${SHARD}"
 fi
 
-echo "Ran $count test files for shard ${SHARD} (skipped $skipped with skip-ci)."
+echo "Ran $count test files for shard ${SHARD} (skipped $skipped with skip-ci/frozen tags)."
 exit "$failed"

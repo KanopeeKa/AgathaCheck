@@ -130,6 +130,8 @@ run_governance() {
   node --test scripts/ci/evaluate-uat-promote-hold.test.js
   node --test scripts/ci/resolve-promote-commit-sha.test.js
   node --test scripts/ci/assert-ci-gate.test.js
+  node scripts/ci/flutter-shards.mjs check
+  node --test scripts/ci/flutter-shards.test.mjs
   node --test scripts/ci/detect-deploy-package-changed.test.js
   node scripts/check_skill_frontmatter.js
   node scripts/validate_openapi.js

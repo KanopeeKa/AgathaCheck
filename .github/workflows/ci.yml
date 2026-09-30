@@ -62,89 +62,22 @@ jobs:
     if: needs.ci-scope.outputs.run_flutter_analyze == 'true'
     uses: ./.github/workflows/_reusable-flutter-analyze.yml
 
-  flutter-test-pet-core:
+  # One matrix leg per shard in flutter_app/test/ci_shards.json (ci-scope emits run_shards).
+  flutter-test:
     needs: [ci-scope, flutter-analyze]
     if: >-
       needs.ci-scope.outputs.run_flutter_stack == 'true' &&
-      contains(fromJSON(needs.ci-scope.outputs.run_shards), 'pet-core')
+      needs.ci-scope.outputs.run_shards != '[]'
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: ${{ fromJSON(needs.ci-scope.outputs.run_shards) }}
     uses: ./.github/workflows/_reusable-flutter-test-shard.yml
     with:
-      shard: pet-core
-
-  flutter-test-pet-screens:
-    needs: [ci-scope, flutter-analyze]
-    if: >-
-      needs.ci-scope.outputs.run_flutter_stack == 'true' &&
-      contains(fromJSON(needs.ci-scope.outputs.run_shards), 'pet-screens')
-    uses: ./.github/workflows/_reusable-flutter-test-shard.yml
-    with:
-      shard: pet-screens
-
-  flutter-test-pet-widgets:
-    needs: [ci-scope, flutter-analyze]
-    if: >-
-      needs.ci-scope.outputs.run_flutter_stack == 'true' &&
-      contains(fromJSON(needs.ci-scope.outputs.run_shards), 'pet-widgets')
-    uses: ./.github/workflows/_reusable-flutter-test-shard.yml
-    with:
-      shard: pet-widgets
-
-  flutter-test-health:
-    needs: [ci-scope, flutter-analyze]
-    if: >-
-      needs.ci-scope.outputs.run_flutter_stack == 'true' &&
-      contains(fromJSON(needs.ci-scope.outputs.run_shards), 'health')
-    uses: ./.github/workflows/_reusable-flutter-test-shard.yml
-    with:
-      shard: health
-
-  flutter-test-rest-a:
-    needs: [ci-scope, flutter-analyze]
-    if: >-
-      needs.ci-scope.outputs.run_flutter_stack == 'true' &&
-      contains(fromJSON(needs.ci-scope.outputs.run_shards), 'rest-a')
-    uses: ./.github/workflows/_reusable-flutter-test-shard.yml
-    with:
-      shard: rest-a
-
-  flutter-test-rest-b:
-    needs: [ci-scope, flutter-analyze]
-    if: >-
-      needs.ci-scope.outputs.run_flutter_stack == 'true' &&
-      contains(fromJSON(needs.ci-scope.outputs.run_shards), 'rest-b')
-    uses: ./.github/workflows/_reusable-flutter-test-shard.yml
-    with:
-      shard: rest-b
-
-  flutter-test-experience:
-    needs: [ci-scope, flutter-analyze]
-    if: >-
-      needs.ci-scope.outputs.run_flutter_stack == 'true' &&
-      contains(fromJSON(needs.ci-scope.outputs.run_shards), 'experience')
-    uses: ./.github/workflows/_reusable-flutter-test-shard.yml
-    with:
-      shard: experience
-
-  flutter-test-pet-care:
-    needs: [ci-scope, flutter-analyze]
-    if: >-
-      needs.ci-scope.outputs.run_flutter_stack == 'true' &&
-      contains(fromJSON(needs.ci-scope.outputs.run_shards), 'pet-care')
-    uses: ./.github/workflows/_reusable-flutter-test-shard.yml
-    with:
-      shard: pet-care
+      shard: ${{ matrix.shard }}
 
   flutter-coverage:
-    needs:
-      - ci-scope
-      - flutter-test-pet-core
-      - flutter-test-pet-screens
-      - flutter-test-pet-widgets
-      - flutter-test-health
-      - flutter-test-rest-a
-      - flutter-test-rest-b
-      - flutter-test-experience
-      - flutter-test-pet-care
+    needs: [ci-scope, flutter-test]
     if: needs.ci-scope.outputs.run_flutter_coverage == 'true'
     uses: ./.github/workflows/_reusable-flutter-coverage.yml
 
@@ -185,14 +118,7 @@ jobs:
       - startup-smoke
       - test-suite
       - flutter-analyze
-      - flutter-test-pet-core
-      - flutter-test-pet-screens
-      - flutter-test-pet-widgets
-      - flutter-test-health
-      - flutter-test-rest-a
-      - flutter-test-rest-b
-      - flutter-test-experience
-      - flutter-test-pet-care
+      - flutter-test
       - flutter-coverage
       - flutter-integration
       - flutter-build-web
@@ -204,14 +130,7 @@ jobs:
       startup_smoke: ${{ needs.startup-smoke.result }}
       test_suite: ${{ needs.test-suite.result }}
       flutter_analyze: ${{ needs.flutter-analyze.result }}
-      flutter_test_pet_core: ${{ needs.flutter-test-pet-core.result }}
-      flutter_test_pet_screens: ${{ needs.flutter-test-pet-screens.result }}
-      flutter_test_pet_widgets: ${{ needs.flutter-test-pet-widgets.result }}
-      flutter_test_health: ${{ needs.flutter-test-health.result }}
-      flutter_test_rest_a: ${{ needs.flutter-test-rest-a.result }}
-      flutter_test_rest_b: ${{ needs.flutter-test-rest-b.result }}
-      flutter_test_experience: ${{ needs.flutter-test-experience.result }}
-      flutter_test_pet_care: ${{ needs.flutter-test-pet-care.result }}
+      flutter_test: ${{ needs.flutter-test.result }}
       flutter_coverage: ${{ needs.flutter-coverage.result }}
       flutter_integration: ${{ needs.flutter-integration.result }}
       flutter_build_web: ${{ needs.flutter-build-web.result }}

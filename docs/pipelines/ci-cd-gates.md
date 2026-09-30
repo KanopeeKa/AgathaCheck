@@ -108,8 +108,9 @@ but are not individually required once the ruleset is migrated.
 checks listed in **Main protection** ruleset should be removed when
 **`ci-gate / CI passed`** is added. Keep `Analyze JavaScript`.
 
-**Optional (visible, not required individually):** `flutter-test-{pet-core,pet-screens,pet-widgets,health,rest-a,rest-b,experience,pet-care} / Flutter tests (<shard>)` —
-the merge gate `flutter-coverage / Flutter domain coverage` covers shard failures (enforced via `ci-gate`).
+**Optional (visible, not required individually):** `flutter-test (<shard>) / Flutter tests (<shard>)` —
+one matrix leg per shard in [`flutter_app/test/ci_shards.json`](../../flutter_app/test/ci_shards.json); the
+aggregate `flutter-test` result and `flutter-coverage / Flutter domain coverage` are enforced via `ci-gate`.
 
 **Blocking via `ci-gate`:** `ci-e2e-canary / Playwright @smoke-ci canary (localhost)` —
 PR Playwright canary (`@smoke-ci`, retries 0), including three org journeys (discovery, profile, dashboard). Required when `flutter-build-web` succeeds; skipped when build fails (gate still fails on build). Enforced in `scripts/ci/assert-ci-gate.sh`. See [e2e-ci-canary-plan.md](./e2e-ci-canary-plan.md).
@@ -133,9 +134,20 @@ PR Playwright canary (`@smoke-ci`, retries 0), including three org journeys (dis
 
 **Never skip (force full):** migrations, `server/config/security.js`, `flutter_app/lib/core/**`, `e2e/**`, `.github/workflows/**`, lockfiles, `scripts/ci/**`.
 
-#### Per-domain Flutter shard selection
+#### Flutter shards (manifest-driven matrix)
 
-PR CI runs only the shards whose domain changed: ci-scope JSON carries `run_shards[]` alongside the `run_flutter_stack` boolean, and each `flutter-test-*` job's `if` checks its shard in that array (e.g. only `health` runs when `flutter_app/test/features/health/**` changed). When any shard is scoped out, `flutter-coverage` is skipped (merged domain coverage needs every active shard); unselected shards land in `skip_jobs` so `ci-gate` accepts them as scoped skips. `pre-push-changed.sh` narrows locally the same way by running `flutter test` under `test/features/<domain>/`.
+Shards are defined once in [`flutter_app/test/ci_shards.json`](../../flutter_app/test/ci_shards.json)
+(shard id → test roots). `scripts/ci/flutter-shards.mjs` serves every consumer: the `flutter-test` matrix
+in `ci.yml` / `ci-full-audit.yml` (via ci-scope `run_shards`), `run_tests_ci_shard.sh`,
+`merge_flutter_coverage.sh` and `pre-push.sh`. Governance runs `node scripts/ci/flutter-shards.mjs check`:
+every active `*_test.dart` must be owned by **exactly one** shard (frozen roots from the frozen-domains
+manifest and the integration dir are excluded). Adding or splitting a shard = editing the manifest only.
+
+**All shards run whenever the Flutter stack runs.** Per-domain shard selection was removed in plan
+`test-health-ci-5f3a`: with batched shards a full run costs about the wall-clock of one shard, and running
+every shard keeps the domain coverage gate and cross-domain widget tests on every Flutter PR (they were
+skipped on narrow PRs, and CI does not run on push to `main`). `pre-push-changed.sh` still narrows locally
+by running `flutter test` under `test/features/<domain>/`.
 
 **Drift backstop:** non-blocking **`CI full audit (main)`** (`ci-full-audit.yml`) runs the **full** suite on `main` every **12 merges** (counter in Actions cache `.ci-full-audit-state`) or when the last audit is older than **7 days**. Failures open an `agent-approved` issue for `agent-dispatch.yml`. Weekly `audit-advisory.yml` runs non-blocking `npm audit` on `main`.
 
@@ -233,8 +245,8 @@ gh api repos/KanopeeKa/AgathaCheck/branches/main/protection \
 # or for rulesets: inspect the ruleset required-check list in the UI
 ```
 
-**Optional shard checks** (`flutter-test-{pet-core,pet-screens,pet-widgets,health,rest-a,rest-b,experience,pet-care} / Flutter tests (<shard>)`) need
-not be required individually — `flutter-coverage` fails when any shard fails.
+**Optional shard checks** (`flutter-test (<shard>) / Flutter tests (<shard>)`) need
+not be required individually — `ci-gate` fails when any matrix leg fails.
 
 **Codegen contract:** `flutter-analyze` runs canonical `build_runner` + legal sync once and
 uploads `flutter-prep-<sha>.tar.gz`; downstream `flutter-test-*`, `flutter-integration`, and
@@ -250,7 +262,7 @@ display strings exactly.
 | `startup-smoke / PR startup smoke` | `_reusable-pr-startup-smoke.yml` | Postgres bootstrap, `node bin/start.js`, `/backend/health` + root |
 | `test-suite / Governance (BDD + file size)` | `_reusable-test.yml` | BDD mapping gate (`check_bdd_coverage.js`; run `--report-only` for live counts — gate is 68% of active scenarios), priority tags, file size ≤ 500 lines |
 | `flutter-analyze / Flutter (analyze & format)` | `_reusable-flutter-analyze.yml` | format, legal sync, codegen, analyze; uploads `flutter-prep-<sha>` |
-| `flutter-test-* / Flutter tests (<shard>)` | `_reusable-flutter-test-shard.yml` | domain test shards (pet-core, pet-screens, pet-widgets, health, rest-a, rest-b, experience, pet-care) with per-shard coverage |
+| `flutter-test (<shard>) / Flutter tests (<shard>)` | `_reusable-flutter-test-shard.yml` | matrix leg per shard in `flutter_app/test/ci_shards.json`, per-shard coverage |
 | `flutter-coverage / Flutter domain coverage` | `_reusable-flutter-coverage.yml` | merge shard lcov, domain coverage ≥ 65% |
 | `flutter-integration / Flutter integration` | `_reusable-flutter-integration.yml` | pet profile integration tests |
 | `flutter-build-web / Build Flutter web` | `_reusable-build-web.yml` | web release build + `web-build-<sha>` artifact |

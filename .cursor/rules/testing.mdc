@@ -39,4 +39,5 @@ Run `./scripts/pre-push-changed.sh` during iteration or `./scripts/pre-push.sh` 
 - New route → Jest; new widget → widget test in mirrored path.
 - BDD: keep `@bdd` header titles **exact** match to Gherkin `Scenario:` lines; frozen scenarios use `@frozen` or live in excluded feature patterns (`manifest.json`).
 - Pre-push: `node scripts/check_file_size.js`, `node e2e/scripts/check_bdd_coverage.js`, `bash scripts/check_frozen_domain_boundaries.sh`.
-- Frozen domains: no `flutter-test-org` shard; Jest active config excludes `server/test/organizations`; manual `scripts/test-frozen-domains.sh` only.
+- Flutter CI shards: `flutter_app/test/ci_shards.json` is the only shard list — a new test directory must fall under a shard root (`node scripts/ci/flutter-shards.mjs check`, governance-blocking).
+- Frozen domains: no org shard (frozen `testRoots` in `docs/engineering/frozen-domains/manifest.json` are excluded from the shard check); Jest active config excludes `server/test/organizations`; manual `scripts/test-frozen-domains.sh` only.
