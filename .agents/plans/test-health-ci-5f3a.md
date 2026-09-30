@@ -246,8 +246,8 @@ around it; never classify a WAF block as a product failure.
 
 **Exit criteria:**
 
-- [ ] In-host smoke passes against a local stack (same script, `--base-app` mode)
-- [ ] Nightly workflow no longer depends on any request passing the WAF
+- [x] In-host smoke passes against a local stack (same script, `--local` / `--base-url` mode)
+- [x] Nightly workflow no longer depends on any request passing the WAF
 
 ### Phase 7 — Security, performance and risk tests
 

@@ -25,7 +25,8 @@ flowchart TD
   DEPLOY --> READY[prod-ready]
   READY --> PROD[deploy-prod.yml]
 
-  NIGHTLY["uat-live-e2e.yml — nightly / manual"] -.->|advisory| WARN[warning only]
+  NIGHTLY["uat-live-e2e.yml — in-host SSH smoke"] -.->|advisory| WARN[warning only]
+  BROWSER["optional browser @smoke-uat"] -.->|WAF inconclusive| WARN
 ```
 
 | Tier | Workflow | Blocking merge? | Gates UAT deploy? |
@@ -33,7 +34,7 @@ flowchart TD
 | **PR** | `ci.yml` (`@smoke-ci`) | Yes (via `ci-gate`) | — |
 | **1 — Pre-UAT E2E** | `pre-uat-e2e.yml` on `push: main` | **No** (async) | Yes |
 | **2 — UAT deploy** | `deploy-uat.yml` (HTTP smoke) | — | Yes (`prod-ready`) |
-| **3 — Live UAT** | `uat-live-e2e.yml` | **No** (advisory) | No |
+| **3 — Live UAT** | `uat-live-e2e.yml` (in-host SSH loopback smoke) | **No** (advisory) | No |
 
 **Throttle:** only the **latest green E2E at `origin/main` HEAD** promotes. If `main` advances during a run, that run skips promote; the queued run for the newer HEAD is authoritative.
 
@@ -79,15 +80,17 @@ flowchart TD
 
 ---
 
-## Tier 3: Live UAT E2E (`uat-live-e2e.yml`)
+## Tier 3: Live UAT verification (`uat-live-e2e.yml`)
 
-**Trigger:** cron `0 2 * * *` UTC + `workflow_dispatch`.
+**Trigger:** cron `0 2 * * *` UTC, `workflow_run` after successful **Deploy UAT**, and `workflow_dispatch`.
 
-**Entry:** `scripts/ci/run-live-uat-gate.sh` (warmup-uat + @smoke-uat, single Playwright process).
+**Primary entry (WAF-proof):** SSH whitelist → `scripts/ci/uat-inhost-smoke-remote.sh` on the UAT host. The script starts `bin/start.js` on `127.0.0.1:<ephemeral>` with the deployed UAT `.env`/DB, then runs `server/scripts/uat-inhost-smoke.mjs` (signup → pet → health entry → pets list → public share preview → account delete). No HTTP request crosses Apache/Tiger Protect.
 
-**Failure:** workflow warning only — **does not block promotion**.
+**Optional browser gate:** `workflow_dispatch` input `run_browser_smoke` runs `scripts/ci/run-live-uat-gate.sh` (`@smoke-uat`). Tiger Protect blocks are **inconclusive**, not product failures — see [uat-waf-queue-lessons.md](./uat-waf-queue-lessons.md).
 
-**WAF rules:** see [uat-waf-queue-lessons.md](./uat-waf-queue-lessons.md).
+**Failure:** advisory only — **does not block promotion**.
+
+**Local replay:** `scripts/ci/run-uat-inhost-smoke-local.sh` (PostgreSQL + migrations required).
 
 ---
 
@@ -122,7 +125,8 @@ flowchart TD
 | Pre-UAT E2E | `.github/workflows/pre-uat-e2e.yml` |
 | Promote tag | `.github/workflows/promote-uat.yml` |
 | Light deploy | `.github/workflows/deploy-uat.yml` |
-| Advisory live E2E | `.github/workflows/uat-live-e2e.yml` |
+| Advisory live verification | `.github/workflows/uat-live-e2e.yml` |
+| In-host loopback smoke | `server/scripts/uat-inhost-smoke.mjs` · `scripts/ci/uat-inhost-smoke-remote.sh` |
 | HTTP smoke | `scripts/uat-post-deploy-smoke.sh` |
 | Prod-ready gates | `scripts/ci/assert-uat-gates.sh` |
 | Manual runbook | `docs/e2e/uat-promote-manual.md` |
