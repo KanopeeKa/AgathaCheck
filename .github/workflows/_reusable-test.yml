@@ -80,6 +80,12 @@ jobs:
       - name: Pre-UAT shard risk (spec domains)
         run: node --test scripts/babysit_uat_shard_risk.test.mjs
 
+      - name: Quality scorecard metrics (live counts + doc block)
+        run: |
+          node scripts/quality/generate-scorecard-metrics.mjs --write-scorecard
+          node --test scripts/quality/generate-scorecard-metrics.test.mjs
+          node scripts/quality/generate-scorecard-metrics.mjs --check
+
       - name: Write governance job summary
         if: always()
         run: |
