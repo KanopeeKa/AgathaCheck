@@ -92,9 +92,9 @@ class _PeopleEditScreenState extends ConsumerState<PeopleEditScreen> {
       if (mounted) context.pop(true);
     } on HttpException catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(_saveErrorMessage(context, e))),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(_saveErrorMessage(context, e))));
       }
     } catch (_) {
       if (mounted) {

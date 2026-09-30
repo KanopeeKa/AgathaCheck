@@ -124,13 +124,17 @@ class _PeopleAddPersonScreenState extends ConsumerState<PeopleAddPersonScreen> {
     } on HttpException catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.peopleSaveError)),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.peopleSaveError),
+          ),
         );
       }
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.peopleSaveError)),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.peopleSaveError),
+          ),
         );
       }
     } finally {
@@ -176,8 +180,7 @@ class _PeopleAddPersonScreenState extends ConsumerState<PeopleAddPersonScreen> {
             onPressed: () {
               setState(() {
                 final current = _resolvedKind();
-                _forcedKind =
-                    current == 'person' ? 'organisation' : 'person';
+                _forcedKind = current == 'person' ? 'organisation' : 'person';
               });
             },
             child: Text(l.peopleKindChange),
