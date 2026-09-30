@@ -265,7 +265,7 @@ These are implementation design/test requirements, not claims of newly observed 
 
 ## Implementation status (as of 2026-09-30)
 
-Batches A–C shipped the core step of Packages 1–4 and 6–8 (PRs #1282–#1319). Measured against the exit gates in **Detailed implementation plan** below, several packages are still partial, and Package 9's coupling has regressed since the review baseline (unique cross-feature edges 50 → 59, directives 466 → 536, strongly connected features 12 → 13). The remaining work is scheduled by the execute-plan roadmap [`active-codebase-completion-e41f`](../../../.agents/plans/active-codebase-completion-e41f.md) (control issue #1446), which also records decisions D8–D23. The copy of this document on branch `replit/preuat-adoption-pets-e7d3d1d` is historical; this file on `main` is authoritative.
+Batches A–C shipped the core step of Packages 1–4 and 6–8 (PRs #1282–#1319). Measured against the exit gates in **Detailed implementation plan** below, several packages are still partial. Package 9's coupling has **regressed** since the review baseline (unique cross-feature edges 50 → 59, directives 466 → 536, strongly connected features 12 → 13), while Batch D (#1467) landed the **D6 block-new gate** so new violations cannot land—the graph metrics below remain worse than baseline until I1/I2. The remaining work is scheduled by the execute-plan roadmap [`active-codebase-completion-e41f`](../../../.agents/plans/active-codebase-completion-e41f.md) (control issue #1446), which also records decisions D8–D23. The copy of this document on branch `replit/preuat-adoption-pets-e7d3d1d` is historical; this file on `main` is authoritative.
 
 | Package | Status | Merged PRs | Open items | Owning child plan |
 |---|---|---|---|---|

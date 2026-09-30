@@ -195,6 +195,8 @@ The roadmap is complete only when **all** of the following hold on `main`:
 
 ## Runtime state (agent-updated)
 
+**Agent handover (gates D–G delta):** [`.agents/plans/active-codebase-completion-e41f.handoff-d-g.md`](./active-codebase-completion-e41f.handoff-d-g.md) on `main` (full playbook remains on branch `claude/friendly-davinci-5zcxj2` until copied).
+
 ```yaml
 autonomy: active
 current_phase: orchestrate

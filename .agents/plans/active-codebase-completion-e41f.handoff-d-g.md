@@ -20,7 +20,7 @@ last_updated: 2026-09-30
 |------|--------|
 | PR | [#1467](https://github.com/KanopeeKa/AgathaCheck/pull/1467) |
 | Merge SHA | `ce702c0927134416858a5aa7cac17f45d7795289` |
-| Control issue | #1447 — runtime `complete-plan` run; close issue when bookkeeping PR merges |
+| Control issue | #1447 — closed (completed); runtime `complete-plan` run at D landing |
 | Roadmap | Child D **merged** in `.agents/plans/active-codebase-completion-e41f.snapshot.json`; `next_child_plan_id` = **E** |
 
 **Pre-UAT on `ce702c09`:** workflow run [36781958843](https://github.com/KanopeeKa/AgathaCheck/actions/runs/36781958843) shows `BUILD_RESULT` and `E2E_RESULT` **success**, but the gate job exited because **`main` advanced to `a340e15` (#1470 TEST phase 6) during the run** (same pattern as #1459 run 565). Not a shard regression from Batch D. Wait for a **stable** `main` tip with green pre-UAT before the next ARCH landing.
@@ -66,6 +66,19 @@ gh pr view 1448 --json state,isDraft,mergeable
 gh run list --workflow pre-uat-e2e.yml --branch main --limit 3
 ```
 
-## Bookkeeping branch
+## Plan runtime pins after bookkeeping
 
-Plan snapshot updates + this supplement + review status rows: branch `cursor/arch-d-g-handover-26ff` (open PR to `main` when ready).
+Roadmap `.md` `artifact_ref.plan_commit` / `snapshot_commit` may still cite **`ce702c09`** (Batch D product merge) until a bookkeeping PR lands. After **#1471** merges, run on `main`:
+
+```bash
+node scripts/execute_plan_runtime.js sync-runtime active-codebase-completion-e41f --write
+node scripts/execute_plan_runtime.js sync-runtime active-codebase-batch-d-guardrails-e41f --write
+node scripts/validate_execute_plan_snapshot.js --fix-hash .agents/plans/active-codebase-completion-e41f.snapshot.json
+node scripts/validate_execute_plan_snapshot.js --fix-hash .agents/plans/active-codebase-batch-d-guardrails-e41f.snapshot.json
+```
+
+That refreshes `artifact_ref` to the current `main` SHA without changing autonomy or child status.
+
+## Bookkeeping
+
+Plan snapshot updates + this supplement + review status rows: merged via [#1471](https://github.com/KanopeeKa/AgathaCheck/pull/1471).
