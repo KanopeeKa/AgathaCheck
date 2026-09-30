@@ -246,8 +246,8 @@ around it; never classify a WAF block as a product failure.
 
 **Exit criteria:**
 
-- [ ] In-host smoke passes against a local stack (same script, `--base-app` mode)
-- [ ] Nightly workflow no longer depends on any request passing the WAF
+- [x] In-host smoke passes against a local stack (same script, `--local` / `--base-url` mode)
+- [x] Nightly workflow no longer depends on any request passing the WAF
 
 ### Phase 7 — Security, performance and risk tests
 
@@ -278,18 +278,18 @@ around it; never classify a WAF block as a product failure.
 
 ```yaml
 autonomy: active
-current_phase: 4
-last_completed_phase: 3
+current_phase: 6
+last_completed_phase: 4
 halt_reason: null
-next_action: "continue phase 4 on branch claude/relaxed-einstein-jqecfg"
+next_action: "continue phase 6 on branch claude/relaxed-einstein-jqecfg"
 artifact_ref:
-  branch: cursor/test-health-ci-phase4-edcb
+  branch: cursor/test-health-ci-phase6-edcb
   plan_path: .agents/plans/test-health-ci-5f3a.md
-  plan_commit: e89d8c4d7d4ef905b616dd4881bfda87028ae14b
+  plan_commit: bbb03c1f96cb22080c7a0dbf235ae8a429ef3e34
   snapshot_path: .agents/plans/test-health-ci-5f3a.snapshot.json
-  snapshot_commit: e89d8c4d7d4ef905b616dd4881bfda87028ae14b
+  snapshot_commit: bbb03c1f96cb22080c7a0dbf235ae8a429ef3e34
 open_prs: []
-merge_commits: {"2":"e89d8c4d7d4ef905b616dd4881bfda87028ae14b","3":"e89d8c4d7d4ef905b616dd4881bfda87028ae14b"}
+merge_commits: {"2":"e89d8c4d7d4ef905b616dd4881bfda87028ae14b","3":"e89d8c4d7d4ef905b616dd4881bfda87028ae14b","4":"a436175f8c55caba2a8cd031b9450cef5f9ab6d5"}
 debt_issue_refs: []
 ```
 

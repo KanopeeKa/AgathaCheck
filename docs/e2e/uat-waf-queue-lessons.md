@@ -219,6 +219,14 @@ Acquiring a 90-minute lease **before** a successful agent launch blocked all pro
 
 **Do not:** Call `passHostingWaf` on every landing `goto` in live smoke — it duplicates warmup and triggers auth signup probes.
 
+### 19. Prefer in-host loopback smoke over external browser for nightly UAT (added Sep 30)
+
+**Problem:** GitHub Actions egress cannot be HTTP-whitelisted on o2switch. Nightly `@smoke-uat` from CI runners is routinely **WAF-blocked**, which is infra noise not a product signal.
+
+**Fix:** `uat-live-e2e.yml` runs `server/scripts/uat-inhost-smoke.mjs` on the UAT host over SSH (loopback only). External browser `@smoke-uat` is **manual** (`workflow_dispatch` + `run_browser_smoke`); WAF-classified failures are **inconclusive**.
+
+**Do not:** Treat Tiger Protect blocks on CI→public UAT HTTP as release failures. **Do not** ask for CI IP HTTP whitelist.
+
 ---
 
 ## Operator recovery cheat sheet

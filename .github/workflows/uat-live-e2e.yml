@@ -1,14 +1,26 @@
 name: UAT live E2E
 
-# Advisory live UAT browser E2E (Tiger Protect WAF). Does not block promotion.
+# Primary signal: in-host loopback smoke over SSH (WAF-proof).
+# External browser @smoke-uat is optional manual only — WAF failures are inconclusive.
 # See docs/e2e/uat-deploy-tiers.md
 on:
   schedule:
     - cron: '0 2 * * *'
-  workflow_dispatch: {}
+  workflow_run:
+    workflows:
+      - 'Deploy UAT (uat.agathatrack.com)'
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      run_browser_smoke:
+        description: Run external browser @smoke-uat (often WAF-blocked — inconclusive)
+        required: false
+        type: boolean
+        default: false
 
+# Serialize with deploy-uat.yml (same group id) so cron/post-deploy SSH does not race whitelist slots.
 concurrency:
-  group: uat-live-e2e
+  group: deploy-uat
   cancel-in-progress: false
 
 permissions:
@@ -18,10 +30,119 @@ env:
   UAT_BASE_URL: https://uat.agathatrack.com
 
 jobs:
-  uat-live-e2e:
-    name: Live UAT smoke (@smoke-uat)
+  uat-inhost-smoke:
+    name: UAT in-host smoke (SSH loopback)
+    if: >-
+      github.event_name != 'workflow_run' ||
+      github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment: UAT
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Require SSH configuration
+        id: ssh_ready
+        env:
+          CPANEL_SERVER: ${{ secrets.UAT_SSH_HOST }}
+          CPANEL_USER: ${{ secrets.UAT_SSH_USER }}
+          CPANEL_TOKEN: ${{ secrets.UAT_CPANEL_API_TOKEN }}
+          SSH_KEY: ${{ secrets.UAT_SSH_PRIVATE_KEY }}
+        run: |
+          if [ "${{ vars.UAT_SSH_ENABLED }}" != "true" ]; then
+            echo "::warning::UAT_SSH_ENABLED is not true — skipping in-host smoke"
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          missing=()
+          [ -z "$CPANEL_SERVER" ] && missing+=('UAT_SSH_HOST')
+          [ -z "$CPANEL_USER" ] && missing+=('UAT_SSH_USER')
+          [ -z "$CPANEL_TOKEN" ] && missing+=('UAT_CPANEL_API_TOKEN')
+          [ -z "$SSH_KEY" ] && missing+=('UAT_SSH_PRIVATE_KEY')
+          if [ ${#missing[@]} -gt 0 ]; then
+            echo "::error::Missing UAT SSH secrets: ${missing[*]}"
+            exit 1
+          fi
+          echo "ready=true" >> "$GITHUB_OUTPUT"
+
+      - name: Get runner public IP
+        if: steps.ssh_ready.outputs.ready == 'true'
+        id: runner_ip
+        run: |
+          ip="$(curl -sf --retry 3 https://api.ipify.org)"
+          echo "ipv4=${ip}" >> "$GITHUB_OUTPUT"
+
+      - name: o2switch SSH whitelist — clear CI slots
+        if: steps.ssh_ready.outputs.ready == 'true'
+        continue-on-error: true
+        env:
+          CPANEL_SERVER: ${{ secrets.UAT_SSH_HOST }}
+          CPANEL_USER: ${{ secrets.UAT_SSH_USER }}
+          CPANEL_TOKEN: ${{ secrets.UAT_CPANEL_API_TOKEN }}
+        run: bash scripts/o2switch-ssh-whitelist.sh remove_all
+
+      - name: o2switch SSH whitelist — allow GitHub runner
+        if: steps.ssh_ready.outputs.ready == 'true'
+        id: whitelist_add
+        env:
+          CPANEL_SERVER: ${{ secrets.UAT_SSH_HOST }}
+          CPANEL_USER: ${{ secrets.UAT_SSH_USER }}
+          CPANEL_TOKEN: ${{ secrets.UAT_CPANEL_API_TOKEN }}
+          RUNNER_IP: ${{ steps.runner_ip.outputs.ipv4 }}
+        run: bash scripts/o2switch-ssh-whitelist.sh add
+
+      - name: Wait for firewall
+        if: steps.whitelist_add.outcome == 'success'
+        run: sleep 30
+
+      - name: Prepare in-host smoke script
+        if: steps.whitelist_add.outcome == 'success'
+        run: bash scripts/ci/prepare-uat-inhost-smoke.sh
+
+      - name: Run in-host smoke via SSH
+        if: steps.whitelist_add.outcome == 'success'
+        uses: appleboy/ssh-action@2ead5e36573f08b82fbfce1504f1a4b05a647c6f # v1.2.2
+        with:
+          host: ${{ secrets.UAT_SSH_HOST }}
+          username: ${{ secrets.UAT_SSH_USER }}
+          key: ${{ secrets.UAT_SSH_PRIVATE_KEY }}
+          passphrase: ${{ secrets.UAT_SSH_PASSPHRASE }}
+          port: ${{ secrets.UAT_SSH_PORT || 22 }}
+          timeout: 120s
+          command_timeout: 10m
+          script_path: .ci-uat-inhost-smoke.sh
+
+      - name: o2switch SSH whitelist — cleanup
+        if: always()
+        continue-on-error: true
+        env:
+          CPANEL_SERVER: ${{ secrets.UAT_SSH_HOST }}
+          CPANEL_USER: ${{ secrets.UAT_SSH_USER }}
+          CPANEL_TOKEN: ${{ secrets.UAT_CPANEL_API_TOKEN }}
+          RUNNER_IP: ${{ steps.runner_ip.outputs.ipv4 }}
+        run: bash scripts/o2switch-ssh-whitelist.sh remove
+
+      - name: Fail when loopback verification was required but not executed
+        if: >-
+          steps.ssh_ready.outputs.ready == 'true' &&
+          steps.whitelist_add.outcome != 'success'
+        run: |
+          echo "::error::UAT_SSH_ENABLED=true but runner IP whitelist failed — in-host smoke did not run."
+          exit 1
+
+      - name: Verification skipped (SSH not enabled)
+        if: steps.ssh_ready.outputs.ready != 'true'
+        run: |
+          echo "::notice title=uat_inhost_verification_skipped::Loopback UAT verification skipped. Set repository variable UAT_SSH_ENABLED=true on the UAT environment (and SSH secrets) so nightly and post-deploy runs execute in-host smoke."
+
+  uat-live-browser-smoke:
+    name: Live UAT browser (@smoke-uat, optional)
+    if: >-
+      (github.event_name == 'workflow_dispatch' && inputs.run_browser_smoke == true)
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    environment: UAT
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v5
 
@@ -38,19 +159,34 @@ jobs:
           npm ci
           npx playwright install chromium --with-deps
 
-      - name: Run live UAT gate (WAF warmup + @smoke-uat)
+      - name: Run live UAT gate (WAF may block — inconclusive)
+        id: browser_gate
+        continue-on-error: true
         env:
           E2E_BASE_URL: ${{ env.UAT_BASE_URL }}
           E2E_BYPASS_TOKEN: ${{ secrets.E2E_BYPASS_TOKEN }}
           E2E_TLS_INSECURE: '1'
           E2E_SKIP_NODE_UAT_PREFLIGHT: '1'
           NODE_TLS_REJECT_UNAUTHORIZED: '0'
-          # Optional Directory Privacy — default off. When enabled, secrets required
-          # (Playwright httpCredentials + fail-closed in run-live-uat-gate.sh).
           UAT_BASIC_AUTH_ENABLED: ${{ vars.UAT_BASIC_AUTH_ENABLED }}
           UAT_BASIC_AUTH_USER: ${{ secrets.UAT_BASIC_AUTH_USER }}
           UAT_BASIC_AUTH_PASSWORD: ${{ secrets.UAT_BASIC_AUTH_PASSWORD }}
         run: bash scripts/ci/run-live-uat-gate.sh
+
+      - name: Classify browser failure (WAF → inconclusive)
+        if: steps.browser_gate.outcome != 'success'
+        id: classify
+        run: |
+          kind="$(HEALTH_OUTCOME=success WARMUP_OUTCOME=failure COMBINED_LIVE_GATE=true \
+            PLAYWRIGHT_REPORT_DIR=e2e/playwright-report PLAYWRIGHT_RESULTS_DIR=e2e/test-results \
+            bash scripts/ci/classify-uat-smoke-failure.sh | sed -n 's/^smoke_failure_kind=//p')"
+          echo "kind=${kind}" >> "$GITHUB_OUTPUT"
+          if [ "$kind" = "waf" ]; then
+            echo "::warning::Browser @smoke-uat inconclusive (Tiger Protect WAF) — not a product failure."
+            exit 0
+          fi
+          echo "::warning::Browser @smoke-uat failed (non-WAF) — advisory only."
+          exit 1
 
       - name: Upload Playwright report
         if: always()
@@ -58,12 +194,3 @@ jobs:
         with:
           name: playwright-report-uat-live-e2e
           path: e2e/playwright-report/
-
-  notify-on-failure:
-    if: failure()
-    needs: uat-live-e2e
-    runs-on: ubuntu-latest
-    steps:
-      - name: Live UAT E2E failed (advisory)
-        run: |
-          echo "::warning::Advisory live UAT E2E failed — promotion is not blocked. Check Tiger Protect / UAT env (E2E=1, bypass token)."

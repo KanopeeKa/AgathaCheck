@@ -22,9 +22,24 @@ Stop only when:
 
 **Not stop points:** PR opened, CI green, control-issue milestone, worker returned, e2e-debug opened remedial PR. Continue in-loop; e2e-debug **must** chain `/babysit-uat` same session.
 
+### Phase boundaries (hard rule)
+
+**Merging phase N is the start of phase N+1 in the same session — not a checkpoint.**
+
+| After this | Do immediately (same turn) | Forbidden |
+|------------|----------------------------|-----------|
+| Phase PR merged to `main` | `set-phase` merged → checkout/implement next pending phase → open PR or continue coding | User-visible summary that ends the turn |
+| Slice PR merged (e.g. TEST 1b) | §7 broadcast (if required) → next phase implementation | "Next: phase X on branch …" without coding |
+| Phase blocked (e.g. CARE gate) | **Skip only that phase**; start next allowed phase (e.g. 5 blocked → **6**) | Stopping the whole programme |
+| User says "do not stop" / full-plan grant | No turn end until §Halt or `complete-plan` | Asking permission; progress-only replies |
+
+**Anti-patterns that look like compliance but are stops:** posting milestone on #1449 then replying in chat; `chore(plan): phase N in progress` as the only commit before ending; listing "what's next" without tool calls.
+
+**Owner merge override:** When the human grants full autonomous execute-plan (merge between phases), **babysit+ squash-merge** when CI is green — do not wait for human merge even if an older handoff said "owner merges."
+
 ## Cloud turns
 
-Prefer long tool-only stretches before any user-visible reply. Control-issue milestones are **telemetry**, not session boundaries. If the platform ends the turn mid-phase, next session: `/execute-plan` (no id) or `resume-plan` on the issue — never permission-seeking chat.
+Prefer long tool-only stretches before any user-visible reply. Control-issue milestones are **telemetry**, not session boundaries. **Do not send a user-visible message between phases** unless §Halt. If the platform ends the turn mid-phase, next session: `/execute-plan` (no id) or `resume-plan` on the issue — never permission-seeking chat.
 
 ## User chat vs control issue
 
