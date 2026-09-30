@@ -1014,6 +1014,46 @@ export async function getVets(baseURL: string, token: string): Promise<TestVet[]
   return res.json<TestVet[]>();
 }
 
+export interface TestPeopleContact {
+  id: string;
+  name: string;
+  legacy_vet_id?: string | null;
+}
+
+export async function getPeopleContacts(
+  baseURL: string,
+  token: string,
+): Promise<TestPeopleContact[]> {
+  const res = await apiFetch(apiUrl('/people/contacts', baseURL), {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`getPeopleContacts failed (${res.status}): ${body}`);
+  }
+  return res.json<TestPeopleContact[]>();
+}
+
+export async function getPeopleContactIdForVetName(
+  baseURL: string,
+  token: string,
+  vetName: string,
+): Promise<string> {
+  const vets = await getVets(baseURL, token);
+  const vetId = vets.find((v) => v.name === vetName)?.id;
+  if (!vetId) {
+    throw new Error(`getPeopleContactIdForVetName: no vet named "${vetName}"`);
+  }
+  const contacts = await getPeopleContacts(baseURL, token);
+  const contactId = contacts.find((c) => c.legacy_vet_id === vetId)?.id;
+  if (!contactId) {
+    throw new Error(
+      `getPeopleContactIdForVetName: no people contact for vet "${vetName}" (${vetId})`,
+    );
+  }
+  return contactId;
+}
+
 export async function updateVetDetails(
   baseURL: string,
   token: string,
