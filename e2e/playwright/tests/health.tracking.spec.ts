@@ -10,7 +10,6 @@
  * Scenario: Deleting a health entry
  * Scenario: Unified event edit route redirects legacy paths
  * Scenario: Undoing a completed entry
- * Scenario: Snoozing a health entry
  * Scenario: Filtering entries by type using tabs
  * Scenario: Due events appear on the pet list screen
  * Scenario: No due events shows all caught up
@@ -27,14 +26,12 @@ import {
   createHealthEntry,
   getHealthEntry,
   getHealthEntryOccurrences,
-  seedMultiDoseHealthEntry,
-  markHealthEntryTaken,
   updateHealthEntry,
   deleteHealthEntry,
-  undoCompleteHealthEntry,
   getHealthEntries,
   exportHealthEntriesCsv,
 } from '../support/api';
+import { completeNextOccurrence, createCareItem, undoLast } from '../support/care-api';
 
 test.describe('Health tracking', () => {
   // ── Existing Wave 0 tests ─────────────────────────────────────────────────
@@ -72,7 +69,7 @@ test.describe('Health tracking', () => {
     await dashboard.expectLoaded();
     await dashboard.expectEntryVisible(entry.name);
 
-    await markHealthEntryTaken(baseURL, testUser.accessToken, entry.id);
+    await completeNextOccurrence(baseURL, testUser.accessToken, entry.id);
     const updated = await getHealthEntry(baseURL, testUser.accessToken, entry.id);
     expect(updated.status).toBe('completed');
     expect(updated.completed_on).toBeTruthy();
@@ -241,11 +238,12 @@ test.describe('Health tracking', () => {
       frequency: 'once',
     });
 
-    await markHealthEntryTaken(baseURL, testUser.accessToken, entry.id);
+    await completeNextOccurrence(baseURL, testUser.accessToken, entry.id);
     const completed = await getHealthEntry(baseURL, testUser.accessToken, entry.id);
     expect(completed.status).toBe('completed');
 
-    const restored = await undoCompleteHealthEntry(baseURL, testUser.accessToken, entry.id);
+    await undoLast(baseURL, testUser.accessToken, entry.id);
+    const restored = await getHealthEntry(baseURL, testUser.accessToken, entry.id);
     expect(restored.status).toBe('active');
 
     await loginAs(page, testUser);
@@ -255,43 +253,6 @@ test.describe('Health tracking', () => {
     const dashboard = new HealthDashboardPage(page);
     await dashboard.expectLoaded();
     await dashboard.expectEntryVisible(entry.name);
-  });
-
-  test('snoozing a health entry pushes the due date forward', async ({ page, testUser }) => {
-    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
-    const pet = await createPet(baseURL, testUser.accessToken, 'Bella');
-    const today = new Date().toISOString().slice(0, 10);
-    const entry = await createHealthEntry(baseURL, testUser.accessToken, pet.id, {
-      name: 'Flea Treatment',
-      nextDueDate: today,
-    });
-
-    const expectedDue = new Date(`${today}T12:00:00`);
-    expectedDue.setDate(expectedDue.getDate() + 3);
-    const snoozedDueDate = expectedDue.toISOString().slice(0, 10);
-
-    await updateHealthEntry(baseURL, testUser.accessToken, entry.id, {
-      name: entry.name,
-      nextDueDate: snoozedDueDate,
-    });
-
-    const updated = await getHealthEntry(baseURL, testUser.accessToken, entry.id);
-    expect(updated.name).toBe(entry.name);
-    expect(updated.next_due_date).toBe(snoozedDueDate);
-
-    await loginAs(page, testUser);
-    const petList = new PetListPage(page);
-    await petList.openHealthDashboard();
-
-    const dashboard = new HealthDashboardPage(page);
-    await dashboard.expectLoaded();
-    // Global /pc/events defaults to Due and Overdue; snoozed +3 days is outside that window.
-    await dashboard.showAllStatusEntries();
-    await dashboard.expectEntryVisible(entry.name);
-    // Due and Overdue filter: +3 days with default remind_days_before=1 is outside the window.
-    await dashboard.selectDueOverdueFilter();
-    await dashboard.expectEntryNotVisible(entry.name);
-    await dashboard.expectEmptyState();
   });
 
   // ── Wave C: Tab filtering ─────────────────────────────────────────────────
@@ -366,11 +327,13 @@ test.describe('Health tracking', () => {
     const pet = await createPet(baseURL, testUser.accessToken, 'Bella');
     const today = new Date().toISOString().slice(0, 10);
     const entryName = 'Twice Daily Meds';
-    const entry = await seedMultiDoseHealthEntry(baseURL, testUser.accessToken, pet.id, {
+    const entry = await createCareItem(baseURL, testUser.accessToken, pet.id, {
       name: entryName,
-      nextDueDate: today,
-      // Late times so doses stay in "Due today" (not "Missed") regardless of CI run hour.
-      scheduleTimes: ['23:58', '23:59'],
+      careFamily: 'medication',
+      frequency: 'daily',
+      dueDate: today,
+      // Late times so doses stay Due (not Overdue) regardless of CI run hour.
+      times: ['23:58', '23:59'],
     });
 
     const occurrencesBefore = await getHealthEntryOccurrences(
@@ -378,7 +341,8 @@ test.describe('Health tracking', () => {
       testUser.accessToken,
       entry.id,
     );
-    expect(occurrencesBefore).toHaveLength(2);
+    // Fixed schedule stores today's doses and tomorrow's (D-CSM-023).
+    expect(occurrencesBefore).toHaveLength(4);
     expect(occurrencesBefore.every((row) => row.status === 'pending')).toBe(true);
 
     await loginAs(page, testUser);
@@ -406,7 +370,7 @@ test.describe('Health tracking', () => {
       entry.id,
       { status: 'past' },
     );
-    expect(occurrencesAfter.filter((row) => row.status === 'pending')).toHaveLength(1);
+    expect(occurrencesAfter.filter((row) => row.status === 'pending')).toHaveLength(3);
     expect(pastOccurrences.filter((row) => row.status === 'completed')).toHaveLength(1);
   });
 

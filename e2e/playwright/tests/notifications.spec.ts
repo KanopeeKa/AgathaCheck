@@ -31,13 +31,13 @@ import {
   inviteToOrganization,
   markNotificationRead,
   markAllNotificationsRead,
-  markHealthEntryTaken,
   seedOverdueNotification,
   seedPetOnlyNotification,
   signupUser,
   triggerCheckDueNotifications,
   type TestNotification,
 } from '../support/api';
+import { completeNextOccurrence } from '../support/care-api';
 import { checkA11y } from '../support/axe';
 import { refreshFlutterAccessibility, waitForFlutterRoutePattern, flutterGotoUrl, flutterRoutePath } from '../support/flutter';
 import { NotificationsPage } from '../pages/notifications.page';
@@ -221,7 +221,7 @@ test.describe('Notifications', () => {
     await markAllNotificationsRead(baseURL, user.accessToken);
     // Pet list mount runs checkDueEntries; completing the overdue entry prevents
     // a fresh unread notification from being created on first load.
-    await markHealthEntryTaken(baseURL, user.accessToken, entry.id);
+    await completeNextOccurrence(baseURL, user.accessToken, entry.id);
 
     const unreadCount = await getUnreadNotificationCount(baseURL, user.accessToken);
     expect(unreadCount).toBe(0);

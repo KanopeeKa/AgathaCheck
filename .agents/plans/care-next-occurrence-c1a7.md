@@ -13,6 +13,7 @@
 | **revisions** | v1 2026-09-29 · v2 2026-09-29 (product decisions) · v3 2026-09-29 (confirmations, UI review, data, E2E) |
 | **approval** | Owner sign-off in chat 2026-09-29 ("You have my sign off. Go ahead."), including the data wipe and category-default change |
 | **execution model** | Owner, 2026-09-29: execute-plan in essence. `claude/eager-edison-mf34j6` is the **integration branch for the whole plan**; phases are committed with the `phase(<n>/<m>):` prefix **without approval stops**; a **draft PR to `main`** is opened early for CI signal; it is marked ready and **merged** when every child is done and all gates are green; then **babysit `pre-uat-e2e.yml` until green** |
+| **coordination (2026-09-30)** | Follows [parallel-programmes.md](../../docs/agent-efficiency/parallel-programmes.md) (CARE). **Lands per child**: A+B (landing 2b, after ARCH D; TEST slice 1 on `main` too), then C+D (3b), then E+F (5b), each its own integration → `main` PR with `/babysit-uat`; `claude/eager-edison-mf34j6` stays the integration line and is rebased after every landing. Migration `083_care_occurrence_model` is kept (first in the queue). One landing at a time; landing broadcast on every open programme control issue/PR. Area ownership: care engine (A+B), absences (E), care UI (C, D, F), pet-profile agenda (C); shared E2E files are append-only outside CARE's window (after TEST slice 1). From ARCH D / TEST slice 1 on: new Flutter code passes `scripts/check_feature_imports.js`; new Flutter test folders are added to `flutter_app/test/ci_shards.json` |
 | **default_merge_mode** | `auto` |
 | **programme_ref** | `docs/domains/pet_care/features/care-item-evolution.md` (canonical Care Item spec) |
 | **reviewed commit** | `f6b6285` (`main`, 2026-09-29) — all file:line references are against this commit |
@@ -715,7 +716,17 @@ Reuses `pet_care/presentation/widgets/care_surface/*` primitives (`CareCollectio
 
 ## 10. Child plans and phases
 
-Order **A → B → C → D → E → F**, all on the integration branch `claude/eager-edison-mf34j6` (execution model in Metadata). Each phase: local verification (§11) then a `phase(<n>/<m>): …` commit and push, with no approval stop. The branch is rebased on `origin/main` regularly (merge policy). One draft PR to `main` carries the whole plan; it merges after child F with `./scripts/pre-push.sh`, the full localhost E2E suite and CI green, then `pre-uat-e2e.yml` is babysat to green.
+Order **A → B → C → D → E → F**, all on the integration branch `claude/eager-edison-mf34j6` (execution model in Metadata). Each phase: local verification (§11) then a `phase(<n>/<m>): …` commit and push, with no approval stop. The branch is rebased on `origin/main` regularly (merge policy).
+
+**Landings (parallel-programmes.md §6, 2026-09-30):** three slices, each through its own integration → `main` PR:
+
+| Slice | Children | Landing # | Gate before opening the `main` PR |
+|---|---|---|---|
+| A+B | A (docs), B (engine, migration 083, seeds) | 2b (after ARCH D; TEST slice 1 also on `main`) | No other programme `main` PR open; rebase on `main`; full `./scripts/pre-push.sh`; all 9 localhost Playwright shards; CI green; then `/babysit-uat` |
+| C+D | C (agenda, row, sheets), D (form, Care Item view) | 3b | Same, plus `scripts/check_feature_imports.js` and `flutter_app/test/ci_shards.json` for new test folders |
+| E+F | E (absences), F (module, compat routes deleted) | 5b | Same |
+
+PR [KanopeeKa/AgathaCheck#1448](https://github.com/KanopeeKa/AgathaCheck/pull/1448) carries the A+B slice; C+D and E+F open new PRs from the same branch after each landing and rebase.
 
 ### Child A — `care-occurrence-spec-c1a7` (docs only)
 
@@ -730,6 +741,7 @@ Order **A → B → C → D → E → F**, all on the integration branch `claude
 |-------|-------|----------------|
 | B1 | Pure `schedule/*` + table tests (§8.1–8.3, LC trigger) | `default` |
 | B2 | Migration 083 (§6.2) + light hook + repair script | `single-backend-route` |
+| B4b | **Provider snapshot (PEOPLE I12):** completion records the item's attached contact without filtering by the completer's directory (`providerUsed.js`); co-parent regression test | `single-backend-route` |
 | B3 | `withCareItemLock`, `syncOpenOccurrences`, transactions, 409s, post-commit effects | `single-backend-route` |
 | B4 | Rewire every path in §4.4 (create incl. recommendations, complete with ask-before-saving, skip, stack, record, undo, PUT reconcile, close/reopen, weight, compat routes) + write-path guard `scripts/check_occurrence_writes.js` wired into `./scripts/pre-push.sh` | `single-backend-route` |
 | B5 | New commands and routes (§7.2) | `single-backend-route` |

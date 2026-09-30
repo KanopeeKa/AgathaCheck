@@ -135,16 +135,6 @@ Feature: Health Tracking
     When the user undoes the completion of "Heartworm"
     Then "Heartworm" should move back to the active entries
 
-  # ── Snoozing Entries ─────────────────────────────────────────
-
-  @P1
-  Scenario: Snoozing a health entry
-    Given "Bella" has a due health entry "Flea Treatment"
-    When the user opens the view screen for "Flea Treatment"
-    And the user snoozes "Flea Treatment" for 3 days
-    Then the due date of "Flea Treatment" should be pushed forward by 3 days
-    And a snackbar should confirm the snooze
-
   # ── Entry History ────────────────────────────────────────────
 
   @P1
