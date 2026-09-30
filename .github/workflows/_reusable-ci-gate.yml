@@ -17,28 +17,8 @@ on:
       flutter_analyze:
         required: true
         type: string
-      flutter_test_pet_core:
-        required: true
-        type: string
-      flutter_test_pet_screens:
-        required: true
-        type: string
-      flutter_test_pet_widgets:
-        required: true
-        type: string
-      flutter_test_health:
-        required: true
-        type: string
-      flutter_test_rest_a:
-        required: true
-        type: string
-      flutter_test_rest_b:
-        required: true
-        type: string
-      flutter_test_experience:
-        required: true
-        type: string
-      flutter_test_pet_care:
+      flutter_test:
+        description: Aggregate result of the flutter-test shard matrix
         required: true
         type: string
       flutter_coverage:
@@ -75,14 +55,7 @@ jobs:
           STARTUP_SMOKE: ${{ inputs.startup_smoke }}
           TEST_SUITE: ${{ inputs.test_suite }}
           FLUTTER_ANALYZE: ${{ inputs.flutter_analyze }}
-          FLUTTER_TEST_PET_CORE: ${{ inputs.flutter_test_pet_core }}
-          FLUTTER_TEST_PET_SCREENS: ${{ inputs.flutter_test_pet_screens }}
-          FLUTTER_TEST_PET_WIDGETS: ${{ inputs.flutter_test_pet_widgets }}
-          FLUTTER_TEST_HEALTH: ${{ inputs.flutter_test_health }}
-          FLUTTER_TEST_REST_A: ${{ inputs.flutter_test_rest_a }}
-          FLUTTER_TEST_REST_B: ${{ inputs.flutter_test_rest_b }}
-          FLUTTER_TEST_EXPERIENCE: ${{ inputs.flutter_test_experience }}
-          FLUTTER_TEST_PET_CARE: ${{ inputs.flutter_test_pet_care }}
+          FLUTTER_TEST: ${{ inputs.flutter_test }}
           FLUTTER_COVERAGE: ${{ inputs.flutter_coverage }}
           FLUTTER_INTEGRATION: ${{ inputs.flutter_integration }}
           FLUTTER_BUILD_WEB: ${{ inputs.flutter_build_web }}

@@ -14,6 +14,14 @@ assert_eq() {
   fi
 }
 
+ALL_SHARDS="$(node "$ROOT/scripts/ci/flutter-shards.mjs" list --json)"
+
+assert_all_shards() {
+  local json="$1" msg="$2"
+  python3 -c 'import json,sys; got=json.loads(sys.argv[1])["run_shards"]; want=json.loads(sys.argv[2]); assert got==want, (got, want)' "$json" "$ALL_SHARDS" \
+    || { echo "FAIL: $msg" >&2; exit 1; }
+}
+
 assert_json_field() {
   local json="$1" field="$2" want="$3" msg="$4"
   local got
@@ -66,34 +74,34 @@ ci_scope_classify_paths $'flutter_app/lib/features/auth/presentation/screens/log
 json="$(ci_scope_emit_json)"
 assert_json_field "$json" run_backend False "flutter-only skips backend"
 assert_json_field "$json" run_flutter_integration False "flutter-only without pet_profile skips integration"
-python3 -c 'import json,sys; shards=json.load(sys.stdin)["run_shards"]; assert shards==["rest-a"], shards' <<<"$json"
+assert_all_shards "$json" "flutter change runs every manifest shard"
 
 # ESLint ratchet validator inputs keep backend scope so the F-20 lint job runs
 ci_scope_classify_paths $'scripts/validate_eslint.js'
 json="$(ci_scope_emit_json)"
 assert_json_field "$json" run_backend True "validate_eslint input keeps backend scope"
 
-# Experience-domain change runs only the experience shard
+# Any Flutter domain change runs every manifest shard + the coverage gate
 ci_scope_classify_paths $'flutter_app/lib/features/experience/presentation/widgets/shelter_navigation_sidebar.dart'
 json="$(ci_scope_emit_json)"
 assert_json_field "$json" run_flutter_stack True "experience change runs stack"
-python3 -c 'import json,sys; shards=json.load(sys.stdin)["run_shards"]; assert shards==["experience"], shards' <<<"$json"
+assert_all_shards "$json" "flutter change runs every manifest shard"
 
-# Vet-domain change runs only the rest-b shard
+# Vet-domain change still runs every shard
 ci_scope_classify_paths $'flutter_app/test/features/vet/presentation/widgets/vet_team_card_test.dart'
 json="$(ci_scope_emit_json)"
-python3 -c 'import json,sys; shards=json.load(sys.stdin)["run_shards"]; assert shards==["rest-b"], shards' <<<"$json"
+assert_all_shards "$json" "flutter change runs every manifest shard"
 
-# Pet Care domain change runs only the pet-care shard
+# Pet Care domain change still runs every shard
 ci_scope_classify_paths $'flutter_app/lib/features/pet_care/context/away_plan_copy.dart'
 json="$(ci_scope_emit_json)"
 assert_json_field "$json" run_flutter_stack True "pet-care change runs stack"
-python3 -c 'import json,sys; shards=json.load(sys.stdin)["run_shards"]; assert shards==["pet-care"], shards' <<<"$json"
+assert_all_shards "$json" "flutter change runs every manifest shard"
 
-# care-intelligence and pet-tags changes also map to the pet-care shard
+# care-intelligence and pet-tags changes still run every shard
 ci_scope_classify_paths $'flutter_app/test/features/care_intelligence/presentation/widgets/care_suggestion_card_test.dart\nflutter_app/test/features/pet_tags/domain/pet_tag_filter_test.dart'
 json="$(ci_scope_emit_json)"
-python3 -c 'import json,sys; shards=json.load(sys.stdin)["run_shards"]; assert shards==["pet-care"], shards' <<<"$json"
+assert_all_shards "$json" "flutter change runs every manifest shard"
 
 # Frozen organisation code does not run active Flutter CI
 ci_scope_classify_paths $'flutter_app/lib/features/organization/presentation/screens/organisation_profile_screen.dart'
@@ -104,5 +112,16 @@ assert_json_field "$json" run_flutter_stack False "frozen org paths skip flutter
 ci_scope_classify_paths $'e2e/scripts/check-smoke-tags.mjs'
 json="$(ci_scope_emit_json)"
 assert_json_field "$json" run_flutter_stack True "generic e2e scripts force full stack"
+
+# Flutter stack always carries the domain coverage gate
+ci_scope_classify_paths $'flutter_app/test/core/utils/calendar_date_test.dart'
+json="$(ci_scope_emit_json)"
+assert_json_field "$json" run_flutter_coverage True "flutter change runs domain coverage gate"
+assert_all_shards "$json" "core test change runs every shard"
+
+# Server-only change runs no Flutter shard and skips the matrix job
+ci_scope_classify_paths $'server/scripts/seed.js'
+json="$(ci_scope_emit_json)"
+python3 -c 'import json,sys; d=json.load(sys.stdin); assert d["run_shards"]==[], d; assert "flutter-test" in d["skip_jobs"], d' <<<"$json"
 
 echo "ci-scope tests passed"

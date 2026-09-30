@@ -8,7 +8,7 @@ void main() {
     });
 
     test('maps add path', () {
-      expect(legacyVetRedirectForPath('/vets/add'), '/pc/vets/add');
+      expect(legacyVetRedirectForPath('/vets/add'), '/pc/people/new');
     });
 
     test('maps edit path', () {
