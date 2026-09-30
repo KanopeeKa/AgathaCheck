@@ -36,6 +36,38 @@ owner messages remain historical context.
   No production reset or broad repair of older migrations is authorized by
   this takeover.
 
+### Validation follow-up — not ready to land
+
+- Pushed candidate: `df24d31d3c4d09e012c1046a2f01952540123817`.
+  [Nine-shard CI](https://github.com/KanopeeKa/AgathaCheck/actions/runs/36772443621)
+  finished with **eight passing shards and shard 3 failing**.
+- [Regular CI](https://github.com/KanopeeKa/AgathaCheck/actions/runs/36772351948)
+  passed PostgreSQL integration, all Flutter shards, analyze/format, coverage,
+  integration, web build, governance, audits and the smoke canary. The
+  database-free backend Jest job failed: it also selects the new DB-required
+  suites. A separate unit-only Jest config and CI command are being verified
+  locally; full `npm test` and the PostgreSQL job still require real DB coverage.
+  This follow-up still needs a new remote CI run.
+- The uploaded CI log identifies the new pre-trip-completion scenario failing
+  during Flutter bootstrap, before login; 28 other shard-3 scenarios did not run.
+  The page-wide clock header reached external assets. It is now restricted to
+  same-origin backend API requests, preserves other handlers/headers, and clears
+  safely after a timeout closes the page. No scenario assertion or timeout was
+  weakened. The unchanged scenario passed locally after a clean server restart.
+- Helper verification: **12/12 unit tests**, E2E TypeScript, and a real Chromium
+  two-origin probe passed. The probe proves the old global header reaches the
+  external resource server while the scoped clock does not, and still reaches
+  the backend API.
+- Database-free unit coverage: **141/142 suites, 1,113/1,114 tests** passed;
+  the sole failure was a five-second sharing-test timeout. Its complete file
+  then passed **9/9** on a focused rerun. Do not describe the initial coverage
+  run as wholly green; fresh CI must confirm the result.
+- GitHub connector execution currently fails during runtime replay; shell Git
+  previously failed authentication. This is a publishing/tool-access blocker,
+  not evidence that the working OAuth connection needs reauthorization.
+- The full local pre-push remains in progress. Do not infer full signoff from
+  the CI jobs that did pass. All original landing dependencies still apply.
+
 ### Takeover implementation and evidence
 
 - Migration 083 is now transaction-neutral and propagates failures. Its actual

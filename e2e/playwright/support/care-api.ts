@@ -6,6 +6,7 @@
  */
 import type { Page } from '@playwright/test';
 import { apiFetch } from './api-fetch';
+import { setPageCareClock } from './care-clock';
 
 const API_PREFIX = process.env.E2E_API_PREFIX ?? '/backend/api';
 const CARE_CLOCK_HEADER = 'X-Care-As-Of';
@@ -16,7 +17,7 @@ let careClock: string | null = null;
 export async function withCareClock(isoLocal: string | null, page?: Page): Promise<void> {
   careClock = isoLocal;
   if (page) {
-    await page.setExtraHTTPHeaders(isoLocal ? { [CARE_CLOCK_HEADER]: isoLocal } : {});
+    await setPageCareClock(page, isoLocal);
   }
 }
 

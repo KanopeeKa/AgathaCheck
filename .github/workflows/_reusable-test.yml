@@ -115,7 +115,7 @@ jobs:
 
       - name: Run backend tests with coverage
         working-directory: server
-        run: npm test -- --forceExit --coverage
+        run: npm run test:unit -- --forceExit --coverage
 
       - name: Upload Jest coverage
         uses: actions/upload-artifact@v6
@@ -162,6 +162,10 @@ jobs:
       - name: npm audit (high and above)
         working-directory: e2e
         run: npm audit --audit-level=high
+
+      - name: E2E helper unit tests
+        working-directory: e2e
+        run: npm run test:unit
 
       - name: Write E2E audit job summary
         if: always()
