@@ -278,15 +278,17 @@ around it; never classify a WAF block as a product failure.
 
 ```yaml
 autonomy: active
-current_phase: "1"
-last_completed_phase: null
+current_phase: 3
+last_completed_phase: 1
 halt_reason: null
-next_action: implement phase 1
+next_action: "continue phase 3 on branch claude/test-health-ci-p2-3-5f3a"
 artifact_ref:
-  branch: claude/relaxed-einstein-jqecfg
+  branch: cursor/test-health-ci-1b-edcb
   plan_path: .agents/plans/test-health-ci-5f3a.md
+  plan_commit: 6bc88befd5a71c082af01dfd493d9121d8ec76aa
   snapshot_path: .agents/plans/test-health-ci-5f3a.snapshot.json
-open_prs: []
+  snapshot_commit: 6bc88befd5a71c082af01dfd493d9121d8ec76aa
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1463"]
 merge_commits: {}
 debt_issue_refs: []
 ```

@@ -1,70 +1,76 @@
 #!/usr/bin/env node
 /**
- * File-balanced Playwright shards for Pre-UAT E2E (active Pet Care specs only).
+ * Duration-balanced Playwright shards for Pre-UAT E2E (active Pet Care specs only).
  *
- * Frozen Shelter/Fostering specs are listed in frozen-e2e-specs.mjs and validated
- * via validate-shard-manifest.mjs allowlist — not run in CI shards (9 active shards
- * since Shelter domain freeze; was 12–13 when org/foster specs were in the matrix).
+ * Every active spec in playwright/tests (frozen Shelter/Fostering specs from
+ * frozen-e2e-specs.mjs and the live-UAT warmup excluded) is assigned by LPT
+ * (longest processing time first → least-loaded shard) using the measured
+ * per-spec times in spec-durations.json. New specs are picked up automatically
+ * with the default estimate, so the manifest cannot drift from the tests folder.
+ * Output is deterministic (ties broken by name, then lowest shard index).
  *
  * Usage:
- *   node e2e/scripts/shard-files.mjs           # print manifest summary
+ *   node e2e/scripts/shard-files.mjs           # print manifest summary with estimated load
  *   node e2e/scripts/shard-files.mjs 3         # print space-separated paths for shard 3
  */
+import fs from 'node:fs';
+import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { FROZEN_E2E_SPECS } from './frozen-e2e-specs.mjs';
 
 export const SHARD_TOTAL = 9;
 
-/** @type {string[][]} */
-export const SHARDS = [
-  ['playwright/tests/health.tracking.spec.ts', 'playwright/tests/care.item.absence.spec.ts'],
-  [
-    'playwright/tests/pet.profiles.spec.ts',
-    'playwright/tests/pet.detail-navigation.spec.ts',
-    'playwright/tests/pet.timeline.spec.ts',
-  ],
-  [
-    'playwright/tests/guardian.navigation.spec.ts',
-    'playwright/tests/guardian.dashboard.spec.ts',
-    'playwright/tests/people-hub.spec.ts',
-    'playwright/tests/away.planning.spec.ts',
-    'playwright/tests/away.plan.detail.v2.spec.ts',
-    'playwright/tests/away.care.planning.spec.ts',
-  ],
-  ['playwright/tests/experience.navigation.spec.ts'],
-  [
-    'playwright/tests/auth.login.spec.ts',
-    'playwright/tests/auth.signup.spec.ts',
-    'playwright/tests/auth.profile.spec.ts',
-  ],
-  [
-    'playwright/tests/weight.tracking.spec.ts',
-    'playwright/tests/care-suggestion.spec.ts',
-  ],
-  [
-    'playwright/tests/sharing.spec.ts',
-    'playwright/tests/account.area.spec.ts',
-  ],
-  [
-    'playwright/tests/notifications.spec.ts',
-    'playwright/tests/help.faq.spec.ts',
-  ],
-  [
-    'playwright/tests/gdpr.data-rights.spec.ts',
-    'playwright/tests/guardian.onboarding.spec.ts',
-    'playwright/tests/veterinarian.spec.ts',
-  ],
-];
+const here = path.dirname(fileURLToPath(import.meta.url));
+const TESTS_DIR = path.join(here, '..', 'playwright', 'tests');
+const DURATIONS = JSON.parse(fs.readFileSync(path.join(here, 'spec-durations.json'), 'utf8'));
+
+/** Specs never run by Pre-UAT localhost shards. */
+export const NON_SHARD_SPECS = new Set(['uat-auth-warmup.spec.ts', ...FROZEN_E2E_SPECS]);
+
+export function activeSpecs(testsDir = TESTS_DIR) {
+  return fs
+    .readdirSync(testsDir)
+    .filter((f) => f.endsWith('.spec.ts') && !NON_SHARD_SPECS.has(f))
+    .sort();
+}
+
+export function specSeconds(spec, durations = DURATIONS) {
+  return durations.specs?.[spec] ?? durations.defaultSec ?? 90;
+}
+
+/**
+ * LPT assignment of specs into `total` shards.
+ * @returns {{ shards: string[][], loads: number[] }} shard entries are spec basenames
+ */
+export function balanceSpecs(specs, total, secondsOf) {
+  const order = [...specs].sort((a, b) => secondsOf(b) - secondsOf(a) || a.localeCompare(b));
+  const shards = Array.from({ length: total }, () => []);
+  const loads = Array.from({ length: total }, () => 0);
+  for (const spec of order) {
+    let target = 0;
+    for (let i = 1; i < total; i++) if (loads[i] < loads[target]) target = i;
+    shards[target].push(spec);
+    loads[target] += secondsOf(spec);
+  }
+  for (const shard of shards) shard.sort();
+  return { shards, loads };
+}
+
+const balanced = balanceSpecs(activeSpecs(), SHARD_TOTAL, (spec) => specSeconds(spec));
+
+/** @type {string[][]} e2e-relative paths per shard (index 0 = shard 1). */
+export const SHARDS = balanced.shards.map((shard) => shard.map((spec) => `playwright/tests/${spec}`));
+export const SHARD_LOADS = balanced.loads;
 
 if (SHARDS.length !== SHARD_TOTAL) {
   throw new Error(`shard-files.mjs: expected ${SHARD_TOTAL} shards, got ${SHARDS.length}`);
 }
 
-if (process.argv[1] && fileURLToPath(import.meta.url) === fileURLToPath(`file://${process.argv[1]}`)) {
+if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])) {
   const shardArg = process.argv[2];
   if (shardArg === undefined || shardArg === '--summary') {
     for (let i = 0; i < SHARDS.length; i++) {
-      const files = SHARDS[i];
-      console.log(`Shard ${i + 1}/${SHARD_TOTAL}: ${files.join(', ')}`);
+      console.log(`Shard ${i + 1}/${SHARD_TOTAL} (~${SHARD_LOADS[i]}s): ${SHARDS[i].join(', ')}`);
     }
   } else {
     const index = Number(shardArg);

@@ -4,7 +4,7 @@
   "approved_at": "2026-09-30T00:00:00Z",
   "approved_by": "user chat 2026-09-29: 'Go ahead, write up a plan such as execute-plan and then implement all of the above' (WAF: work around, never assume fixable; keep CI reasonably short)",
   "approved_until": "2026-10-02T00:00:00Z",
-  "content_hash": "sha256:242b606ec2660b3e958ee30a2f1577176737267c0b1bd131ef30a7ccab1489d0",
+  "content_hash": "sha256:4dbc8192320a5685d3c904c3b826195fe5e6fd578095f4232ca4a43974f9cbdc",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "main",
@@ -49,15 +49,15 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "governance",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
-      "status_detail": "Landing TEST 1a: plan bootstrap + phase 1 PR to main (fixes #1453)",
+      "status_detail": "TEST 1a merged #1455 @ e32fff7",
       "debt_issue_refs": []
     },
     {
       "id": "2",
       "title": "Flutter CI speed (batched runner, prep job, node lcov)",
-      "branch": "claude/relaxed-einstein-jqecfg",
+      "branch": "claude/test-health-ci-p2-3-5f3a",
       "allowed_paths": [
         "flutter_app/test/ci_shards.json",
         "flutter_app/scripts/**",
@@ -97,7 +97,7 @@
     {
       "id": "3",
       "title": "Pre-merge E2E within budget + Pre-UAT balance",
-      "branch": "claude/relaxed-einstein-jqecfg",
+      "branch": "claude/test-health-ci-p2-3-5f3a",
       "allowed_paths": [
         "e2e/scripts/**",
         "e2e/playwright.config.ts",
@@ -131,10 +131,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "governance",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1463",
+      "pr_head_sha": "6bc88bef"
     },
     {
       "id": "4",
