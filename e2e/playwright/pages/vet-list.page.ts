@@ -4,7 +4,7 @@
  */
 import type { Locator, Page } from '@playwright/test';
 import { expect } from '@playwright/test';
-import { deleteVet, getPeopleContactIdForVetName, getVets } from '../support/api';
+import { deleteVet, getVets } from '../support/api';
 import {
   dismissConsentBannerIfPresent,
   escapeRegExp,
@@ -37,17 +37,40 @@ export class VetListPage {
     return vetId!;
   }
 
+  private async waitForVetFormLoaded(): Promise<void> {
+    await this.page
+      .getByLabel(/^Name$/i)
+      .or(this.page.getByRole('textbox', { name: 'Name *' }))
+      .first()
+      .waitFor({ timeout: 30_000 });
+  }
+
   private async openPeopleEditForVet(name: string): Promise<void> {
-    let contactId = '';
-    await expect(async () => {
-      const token = await readAccessTokenFromPage(this.page);
-      contactId = await getPeopleContactIdForVetName(this.baseURL(), token, name);
-    }).toPass({ timeout: 45_000 });
+    const vetId = await this.resolveVetIdByName(name);
     await dismissConsentBannerIfPresent(this.page);
-    await this.page.goto(flutterGotoUrl(`/pc/people/${contactId}/edit`));
+    await this.openVetEditRoute(vetId);
+    await this.waitForVetFormLoaded();
+  }
+
+  /** People hub detail: phone row shows value text plus a Call action. */
+  private async expectPeopleDetailPhoneVisible(phone: string, vetName: string): Promise<void> {
     await refreshFlutterAccessibility(this.page);
-    await waitForFlutterRoutePattern(this.page, /\/pc\/people\/[^/]+\/edit/, 45_000);
-    await this.page.getByText(/^Edit details$/i).first().waitFor({ timeout: 45_000 });
+    const phonePattern = new RegExp(escapeRegExp(phone), 'i');
+    const phoneLocator = this.page.getByText(phonePattern).or(semanticsByName(this.page, phonePattern));
+    const detailGroupPattern = new RegExp(
+      `${escapeRegExp(vetName)}[\\s\\S]*Phone[\\s\\S]*${escapeRegExp(phone)}`,
+      'i',
+    );
+    await expect(this.page.getByRole('button', { name: /^Call$/i })).toBeVisible({
+      timeout: 30_000,
+    });
+    const mergedVisible = await semanticsByName(this.page, detailGroupPattern)
+      .isVisible()
+      .catch(() => false);
+    if (mergedVisible) {
+      return;
+    }
+    await expect(phoneLocator.first()).toBeVisible({ timeout: 15_000 });
   }
 
   private async onPeopleHub(): Promise<boolean> {
@@ -332,6 +355,12 @@ export class VetListPage {
       throw new Error('expectPhoneVisible: vetName required for guardian compact-row list');
     }
 
+    const detailRoute = flutterRoutePath(this.page.url());
+    if (/^\/pc\/people\/[^/?]+$/.test(detailRoute)) {
+      await this.expectPeopleDetailPhoneVisible(phone, vetName);
+      return;
+    }
+
     const phonePattern = new RegExp(escapeRegExp(phone), 'i');
     // Guardian detail merges fields into one group label; org list cards use Veterinarian: … Phone: …
     const phoneLocator = this.page.getByText(phonePattern).or(semanticsByName(this.page, phonePattern));
@@ -355,7 +384,9 @@ export class VetListPage {
       }
 
       const route = flutterRoutePath(this.page.url());
-      const onDetail = /\/(pc|g|o)\/vets\/[^/]+$/.test(route);
+      const onDetail =
+        /\/(pc|g|o)\/vets\/[^/]+$/.test(route) ||
+        /^\/pc\/people\/[^/?]+$/.test(route);
       const onList =
         /\/(pc|g|o)\/vets(?:\?|$)/.test(route) || /^\/pc\/people(?:\?|$)/.test(route);
       const phoneVisible = await phoneLocator.first().isVisible().catch(() => false);
@@ -368,10 +399,18 @@ export class VetListPage {
         await this.expectLoaded();
         await this.expectVetVisible(vetName);
         await this.openVetDetail(vetName);
-        await waitForFlutterRoutePattern(this.page, /\/(pc|g|o)\/vets\/[^/]+$/, 30_000);
+        await waitForFlutterRoutePattern(
+          this.page,
+          /\/(pc|g|o)\/vets\/[^/]+$|\/pc\/people\/[^/?]+$/,
+          30_000,
+        );
         await refreshFlutterAccessibility(this.page);
       }
 
+      if (/^\/pc\/people\/[^/?]+$/.test(flutterRoutePath(this.page.url()))) {
+        await this.expectPeopleDetailPhoneVisible(phone, vetName);
+        return;
+      }
       await expect(phoneLocator.first()).toBeVisible({ timeout: 15_000 });
     }).toPass({ timeout: 45_000 });
   }
