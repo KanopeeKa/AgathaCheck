@@ -34,7 +34,7 @@ Deliver the People target model in four independently landable slices. Each slic
 
 ### Pre-bootstrap gate (human + agent, before any approval)
 
-1. **Artifacts on `main`.** The docs PR from `claude/exciting-bardeen-hy6yzp` has merged. It carries:
+1. **Artifacts on `main`.** Docs PR [#1454](https://github.com/KanopeeKa/AgathaCheck/pull/1454) has merged (`eee5cb1b`). Slot **0b** is closed (pre-UAT green on that SHA). It carries:
    - this roadmap, the four child plans and snapshots;
    - the target doc and `parallel-programmes.md`;
    - the stale-plan closure;
@@ -196,10 +196,10 @@ autonomy: halted            # draft — becomes active on approve-autonomous
 current_phase: null
 current_child_plan_id: null
 last_completed_phase: null
-halt_reason: "draft — awaiting pre-bootstrap gate, roadmap control issue and approve-autonomous"
-next_action: "land the docs PR (slot 0b, after pre-UAT is green on #1445), then bootstrap people-hotfixes-7f3b"
+halt_reason: "draft — slot 0b done; awaiting roadmap control issue + approve-autonomous people-domain-refactor-7f3b"
+next_action: "owner posts approve-autonomous on roadmap control issue; then bootstrap people-hotfixes-7f3b (slot 0c)"
 artifact_ref:
-  branch: claude/exciting-bardeen-hy6yzp
+  branch: main
   plan_path: .agents/plans/people-domain-refactor-7f3b.md
   snapshot_path: .agents/plans/people-domain-refactor-7f3b.snapshot.json
 open_prs: []
