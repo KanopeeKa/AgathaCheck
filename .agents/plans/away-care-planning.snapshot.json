@@ -4,7 +4,7 @@
   "approved_at": "2026-09-23T23:35:00Z",
   "approved_by": "User chat 2026-09-23 - Cursor review accepted; execute-plan full autonomy; no phase validation gates",
   "approved_until": "2026-09-25T23:35:00Z",
-  "autonomy": "active",
+  "autonomy": "revoked",
   "default_merge_mode": "auto",
   "base_branch": "cursor/away-care-planning-integration-43b3",
   "control_issue": 1304,
@@ -230,5 +230,5 @@
       "merge_commit": null
     }
   ],
-  "content_hash": "sha256:6411477f6bca2b2fc649afd012fee603699e0e5da945b0e58d3193a57b24b369"
+  "content_hash": "sha256:b9c6e5fefecee391e98b299f80568d94fc2efa363de6f191aaa5693249fa3326"
 }

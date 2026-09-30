@@ -27,7 +27,7 @@ Extract sharing.js and petAccessRoutes.js into shareLinkService/shareAccessServi
 ## Runtime state
 
 ```yaml
-autonomy: active
+autonomy: revoked   # closed 2026-09-29 — see .agents/plans/README.md § Closed stale plans
 current_phase: 1
 last_completed_phase: 2
 halt_reason: null

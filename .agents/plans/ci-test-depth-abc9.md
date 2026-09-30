@@ -167,7 +167,7 @@ Close the gap between BDD mapping metrics and real test execution: add depth/exe
 ## Runtime state
 
 ```yaml
-autonomy: active
+autonomy: revoked   # closed 2026-09-29 — see .agents/plans/README.md § Closed stale plans
 current_phase: F6
 last_completed_phase: F5
 halt_reason: null

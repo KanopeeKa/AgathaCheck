@@ -4,12 +4,12 @@
   "approved_at": "2026-09-15T15:10:00Z",
   "approved_by": "user chat 2026-09-15 — CSM verification confirmed; per-family anchor defaults; proceed CSM-0 onward; /execute-plan",
   "approved_until": "2026-09-17T15:10:00Z",
-  "autonomy": "active",
+  "autonomy": "revoked",
   "default_merge_mode": "auto",
   "base_branch": "cursor/care-schedule-management-v1-integration-csm1",
   "control_issue": 1173,
   "artifact_branch_policy": "phase-branch",
-  "content_hash": "sha256:a803267d7267e7674d326a921080e4a38e702b35b4836b28e63e80dbd6f02345",
+  "content_hash": "sha256:172cb5f5a5b67db043a95b91dd31be5115b018d3a1e7b8aecca6c17d199dde5c",
   "phases": [
     {
       "id": "csm-0",

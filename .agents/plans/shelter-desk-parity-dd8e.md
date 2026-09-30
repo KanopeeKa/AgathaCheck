@@ -56,7 +56,7 @@ Widget tests + `docs/e2e/navigation-contract.md` shelter hub notes.
 ## Runtime state
 
 ```yaml
-autonomy: active
+autonomy: revoked   # closed 2026-09-29 — see .agents/plans/README.md § Closed stale plans
 current_phase: 0
 last_completed_phase: 7
 halt_reason: null

@@ -333,7 +333,7 @@ After phase 4 merges into `cursor/collection-filter-canonical-integration-f8a2`:
 ## Runtime state (agent-updated)
 
 ```yaml
-autonomy: active
+autonomy: completed   # closed 2026-09-29 — see .agents/plans/README.md § Closed stale plans
 current_phase: null
 last_completed_phase: 4
 halt_reason: null

@@ -25,11 +25,11 @@ Eliminate drift between legacy `vets` / `pets.vet_id` and People (`people_contac
 ## Runtime
 
 ```yaml
-autonomy: active
-current_phase: p5-cleanup
-last_completed_phase: p4-vet-ui-redirect
+autonomy: completed   # closed 2026-09-29 — see .agents/plans/README.md § Closed stale plans
+current_phase: null
+last_completed_phase: p5-cleanup
 halt_reason: null
-next_action: "continue phase p5-cleanup on branch cursor/people-vet-unify-p5-a58d"
+next_action: "plan complete — p5 landed via #1433 → #1434 (945f2a3); closed 2026-09-29"
 artifact_ref:
   branch: cursor/people-vet-unify-p5-a58d
   plan_path: .agents/plans/people-vet-unify-a58d.md

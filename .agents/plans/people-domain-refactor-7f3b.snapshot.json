@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "approved_at": "2026-09-29T00:00:00Z",
+  "approved_until": "2026-10-01T00:00:00Z",
+  "content_hash": "sha256:61941c0b3d57da4c1061c4964737720f6fa3265a6f3a4ba66336b432b68ddc42",
+  "autonomy": "halted",
+  "default_merge_mode": "auto",
+  "control_issue": 999999,
+  "artifact_branch_policy": "phase-branch",
+  "plan_id": "people-domain-refactor-7f3b",
+  "plan_kind": "roadmap",
+  "programme_ref": "docs/domains/people/changes/people-domain-refactor.md",
+  "base_branch": "main",
+  "approved_by": "DRAFT — pending approve-autonomous people-domain-refactor-7f3b on the roadmap control issue (see plan § How to run)",
+  "current_child_plan_id": null,
+  "phases": [
+    {
+      "id": "orchestrate",
+      "title": "Roadmap orchestration (child bootstrap, gates, broadcasts)",
+      "branch": "cursor/people-refactor-orchestrate-7f3b",
+      "allowed_paths": [
+        ".agents/plans/people-domain-refactor-7f3b.md",
+        ".agents/plans/people-domain-refactor-7f3b.snapshot.json",
+        ".agents/plans/people-hotfixes-7f3b.md",
+        ".agents/plans/people-hotfixes-7f3b.snapshot.json",
+        ".agents/plans/people-server-7f3b.md",
+        ".agents/plans/people-server-7f3b.snapshot.json",
+        ".agents/plans/people-client-core-7f3b.md",
+        ".agents/plans/people-client-core-7f3b.snapshot.json",
+        ".agents/plans/people-client-integration-7f3b.md",
+        ".agents/plans/people-client-integration-7f3b.snapshot.json",
+        "docs/domains/people/**",
+        "docs/agent-efficiency/parallel-programmes.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "server/**",
+        "flutter_app/**",
+        "e2e/**",
+        "db/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    }
+  ],
+  "child_plans": [
+    {
+      "plan_id": "people-hotfixes-7f3b",
+      "status": "pending",
+      "pr_url": null,
+      "merge_commit": null
+    },
+    {
+      "plan_id": "people-server-7f3b",
+      "status": "pending",
+      "pr_url": null,
+      "merge_commit": null
+    },
+    {
+      "plan_id": "people-client-core-7f3b",
+      "status": "pending",
+      "pr_url": null,
+      "merge_commit": null
+    },
+    {
+      "plan_id": "people-client-integration-7f3b",
+      "status": "pending",
+      "pr_url": null,
+      "merge_commit": null
+    }
+  ]
+}

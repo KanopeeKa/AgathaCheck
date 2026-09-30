@@ -24,7 +24,7 @@ Rebuild the Organisation area around a single organisation profile (pet-profile-
 ## Runtime state
 
 ```yaml
-autonomy: active
+autonomy: revoked   # closed 2026-09-29 — see .agents/plans/README.md § Closed stale plans
 current_phase: 2a
 last_completed_phase: F0-F2
 halt_reason: null
