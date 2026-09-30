@@ -72,8 +72,13 @@ jobs:
     if: needs.decide.outputs.should_run == 'true'
     uses: ./.github/workflows/_reusable-flutter-analyze.yml
 
+  flutter-prep:
+    needs: decide
+    if: needs.decide.outputs.should_run == 'true'
+    uses: ./.github/workflows/_reusable-flutter-prep.yml
+
   flutter-test:
-    needs: [decide, flutter-analyze]
+    needs: [decide, flutter-prep]
     if: needs.decide.outputs.should_run == 'true'
     strategy:
       fail-fast: false
@@ -89,17 +94,17 @@ jobs:
     uses: ./.github/workflows/_reusable-flutter-coverage.yml
 
   flutter-integration:
-    needs: [decide, flutter-analyze]
+    needs: [decide, flutter-prep]
     if: needs.decide.outputs.should_run == 'true'
     uses: ./.github/workflows/_reusable-flutter-integration.yml
 
   flutter-build-web:
-    needs: [decide, flutter-analyze]
+    needs: decide
     if: needs.decide.outputs.should_run == 'true'
     uses: ./.github/workflows/_reusable-build-web.yml
     with:
       run_codegen: false
-      use_flutter_prep_artifact: true
+      use_flutter_prep_artifact: false
       source_workflow: ci-full-audit
     secrets:
       POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
@@ -121,6 +126,7 @@ jobs:
       - startup-smoke
       - test-suite
       - flutter-analyze
+      - flutter-prep
       - flutter-test
       - flutter-coverage
       - flutter-integration
@@ -144,6 +150,7 @@ jobs:
           STARTUP_SMOKE: ${{ needs.startup-smoke.result }}
           TEST_SUITE: ${{ needs.test-suite.result }}
           FLUTTER_ANALYZE: ${{ needs.flutter-analyze.result }}
+          FLUTTER_PREP: ${{ needs.flutter-prep.result }}
           FLUTTER_TEST: ${{ needs.flutter-test.result }}
           FLUTTER_COVERAGE: ${{ needs.flutter-coverage.result }}
           FLUTTER_INTEGRATION: ${{ needs.flutter-integration.result }}

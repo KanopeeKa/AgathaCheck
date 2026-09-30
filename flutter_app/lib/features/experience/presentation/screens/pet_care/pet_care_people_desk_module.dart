@@ -7,6 +7,7 @@ import '../../../../auth/presentation/providers/auth_providers.dart';
 import '../../../../people/domain/entities/people_contact.dart';
 import '../../../../people/domain/entities/person_roster_entry.dart';
 import '../../../../people/presentation/providers/people_providers.dart';
+import '../../../../people/presentation/utils/people_contact_role_labels.dart';
 import '../../../../people/presentation/widgets/people_directory_card.dart';
 import '../../../../pet_profile/domain/entities/pet.dart';
 import '../../../../pet_profile/presentation/providers/pet_providers.dart';
@@ -225,12 +226,13 @@ class _DeskPersonCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final count = linkedPetCount ?? 0;
     final entry = PersonRosterEntry.fromContact(
       contact,
       subtitle: contact.roles.isEmpty
-          ? contact.kind
-          : contact.roles.join(' · '),
+          ? peopleContactKindLabel(l, contact.kind)
+          : peopleContactRolesLine(l, contact.roles),
       linkedPetCount: count > 0 ? count : null,
     );
     return PeopleDirectoryCard(

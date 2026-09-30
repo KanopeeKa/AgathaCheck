@@ -7163,4 +7163,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get peopleAddPersonSave => 'Save person';
+
+  @override
+  String get peopleAddRolesRequired => 'Choose at least one role to continue.';
+
+  @override
+  String get peopleSaveValidationError => 'Check the details and try again.';
 }

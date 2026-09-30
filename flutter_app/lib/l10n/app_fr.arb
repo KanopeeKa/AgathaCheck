@@ -2685,5 +2685,7 @@
   "peopleAddAppAccessBody": "Vous pouvez les inviter à partager des animaux, ou terminer sans invitation.",
   "peopleAddAppAccessSkip": "Pas maintenant",
   "peopleAddAppAccessContinue": "Inviter",
-  "peopleAddPersonSave": "Enregistrer"
+  "peopleAddPersonSave": "Enregistrer",
+  "peopleAddRolesRequired": "Choisissez au moins un rôle pour continuer.",
+  "peopleSaveValidationError": "Vérifiez les informations et réessayez."
 }

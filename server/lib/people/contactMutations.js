@@ -118,8 +118,6 @@ export async function patchPersonalContact(pool, contactId, userId, body) {
     const roleResult = normalizeRoles(body.roles);
     if (roleResult.error) return { error: roleResult.error };
     roles = roleResult.roles ?? [];
-  } else if (body.name != null && !body.kind) {
-    kind = inferContactKind({ name, roles });
   }
 
   const inactiveAt = body.inactive_at ?? body.inactiveAt;

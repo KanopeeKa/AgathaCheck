@@ -12675,6 +12675,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save person'**
   String get peopleAddPersonSave;
+
+  /// No description provided for @peopleAddRolesRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose at least one role to continue.'**
+  String get peopleAddRolesRequired;
+
+  /// No description provided for @peopleSaveValidationError.
+  ///
+  /// In en, this message translates to:
+  /// **'Check the details and try again.'**
+  String get peopleSaveValidationError;
 }
 
 class _AppLocalizationsDelegate

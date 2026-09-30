@@ -1,7 +1,8 @@
 # Run one Flutter domain test shard with per-shard coverage output.
 # Caller: ci.yml / ci-full-audit.yml matrix job `flutter-test` (one leg per shard in
 # flutter_app/test/ci_shards.json).
-# Canonical codegen + legal sync run in flutter-analyze; this job restores that prep artifact.
+# Canonical codegen + legal sync run once in flutter-prep; this job restores that prep artifact.
+# Tests run batched (scripts/ci/flutter-shard-runner.mjs); coverage is merged in Node (no apt lcov).
 name: Reusable Flutter test shard
 
 on:
@@ -22,8 +23,8 @@ jobs:
   test-shard:
     name: Flutter tests (${{ inputs.shard }})
     runs-on: ubuntu-latest
-    # Allow a bounded lcov bootstrap retry plus the domain test suite.
-    timeout-minutes: 40
+    # Batched shards take ~1–2.5 min; the runner's watchdog bounds tester hangs.
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v5
 
@@ -60,11 +61,8 @@ jobs:
       - name: Restore Flutter prep state
         run: bash scripts/ci/restore-flutter-prep-artifact.sh flutter-prep-artifact.tar.gz
 
-      - name: Set up lcov
-        uses: ./.github/actions/setup-lcov
-
       - name: Run shard tests with coverage
-        timeout-minutes: 30
+        timeout-minutes: 15
         working-directory: flutter_app
         run: bash scripts/run_tests_ci_shard.sh "${{ inputs.shard }}"
 

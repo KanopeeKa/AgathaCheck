@@ -12,11 +12,8 @@ if [[ ${#shards[@]} -eq 0 ]]; then
   echo "::error::No Flutter shards listed in test/ci_shards.json" >&2
   exit 1
 fi
-merged="coverage/lcov.merged.info"
 mkdir -p coverage
-rm -f "$merged"
-
-found=0
+inputs=()
 for shard in "${shards[@]}"; do
   candidates=(
     "${INPUT_ROOT}/flutter-coverage-${shard}/lcov.info"
@@ -37,20 +34,15 @@ for shard in "${shards[@]}"; do
     exit 1
   fi
   echo "Merging ${file}"
-  if [[ ! -f "$merged" ]]; then
-    cp "$file" "$merged"
-  else
-    lcov -a "$merged" -a "$file" -o coverage/lcov.tmp.info >/dev/null
-    mv coverage/lcov.tmp.info "$merged"
-  fi
-  found=$((found + 1))
+  inputs+=("$file")
 done
+found=${#inputs[@]}
 
 if [[ "$found" -ne ${#shards[@]} ]]; then
   echo "::error::Expected ${#shards[@]} shard coverage files, found ${found}" >&2
   exit 1
 fi
 
-cp "$merged" coverage/lcov.info
+node ../scripts/ci/lcov-merge.mjs --out coverage/lcov.info "${inputs[@]}"
 node scripts/check_domain_coverage.js --threshold "$THRESHOLD" --lcov coverage/lcov.info
 echo "Merged ${found} shard coverage files"

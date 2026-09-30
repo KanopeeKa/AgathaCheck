@@ -42,6 +42,7 @@ class PeopleContactsNotifier extends AsyncNotifier<List<PeopleContact>> {
     final current = state.valueOrNull ?? [];
     final idx = current.indexWhere((c) => c.id == entity.id);
     if (idx >= 0) {
+      if (current[idx] == entity) return;
       final next = [...current];
       next[idx] = entity;
       state = AsyncData(next);
@@ -89,7 +90,7 @@ final peopleContactByIdProvider = Provider.family<PeopleContact?, String>((
 
 final peopleContactDetailProvider = FutureProvider.autoDispose
     .family<PeopleContact?, String>((ref, id) async {
-      final cached = ref.watch(peopleContactByIdProvider(id));
+      final cached = ref.read(peopleContactByIdProvider(id));
       final ds = ref.read(peopleRemoteDataSourceProvider);
       try {
         final model = await ds.getContact(id);

@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
-  "approved_at": "2026-09-29T00:00:00Z",
-  "approved_until": "2026-10-01T00:00:00Z",
-  "content_hash": "sha256:fad50d10b4b4bd48cd1b0c0941ce4ca80926317af2ce6b5e44135375b62f058b",
-  "autonomy": "halted",
+  "approved_at": "2026-09-30T20:25:41.764Z",
+  "approved_until": "2026-10-02T20:25:41.764Z",
+  "content_hash": "sha256:9addabf76cbcd5361adac512d6b8ae787adbd1840e26a1f0b59707ca2adb3dc8",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
-  "control_issue": 999999,
+  "control_issue": 1461,
   "artifact_branch_policy": "phase-branch",
   "plan_id": "people-hotfixes-7f3b",
   "base_branch": "main",
-  "approved_by": "DRAFT — bootstrapped under the standing grant of roadmap people-domain-refactor-7f3b when its entry gate is met (see people-hotfixes-7f3b.md)",
+  "approved_by": "standing grant — roadmap people-domain-refactor-7f3b #1460 (user chat 2026-09-30)",
   "phases": [
     {
       "id": "h1-server-kind",
@@ -37,13 +37,13 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1462",
+      "pr_head_sha": "39236937",
+      "merge_commit": "985f2caad3b9b39626cb961f0560e8267192014d"
     },
     {
       "id": "h2-client-fixes",
@@ -75,13 +75,13 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1464",
+      "pr_head_sha": "46482023",
+      "merge_commit": "3ca7bd4ccb2063fff271bb68fba7a7681a4d7788"
     }
   ]
 }
