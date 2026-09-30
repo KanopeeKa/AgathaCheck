@@ -149,9 +149,50 @@ describe('occurrence status (D-CIE-024)', () => {
     expect(occurrenceStatus({ occurrence: occ('2026-05-05', null), entry, asOf: at('2026-06-20', '10:00') })).toBe('overdue');
   });
 
-  it('CR-6 a 02:30 slot on the spring clock change is overdue once the clock shows 03:00', () => {
+  it('CR-6 spring-forward 02:30 is due at the first real minute 03:00, not 03:30', () => {
     const entry = fixed({ schedule_times: ['02:30'] });
-    expect(occurrenceStatus({ occurrence: occ('2027-03-28', '02:30'), entry, asOf: at('2027-03-28', '03:00') })).toBe('overdue');
+    const status = (time, zone = 'Europe/Paris') => occurrenceStatus({
+      occurrence: occ('2027-03-28', '02:30'), entry,
+      asOf: { ...at('2027-03-28', time), timeZone: zone },
+    });
+    expect(status('01:59')).toBe('due');
+    expect(status('03:00')).toBe('due');
+    expect(status('03:01')).toBe('overdue');
+    expect(status('03:30')).toBe('overdue');
+    expect(status('02:31', 'UTC')).toBe('overdue');
+  });
+
+  it('normal and repeated autumn times keep their actual wall time', () => {
+    const entry = fixed({ schedule_times: ['02:30'] });
+    for (const date of ['2027-03-27', '2027-10-31']) {
+      const status = (time) => occurrenceStatus({
+        occurrence: occ(date, '02:30'), entry,
+        asOf: { ...at(date, time), timeZone: 'Europe/Paris' },
+      });
+      expect(status('02:29')).toBe('due');
+      expect(status('02:30')).toBe('due');
+      expect(status('02:31')).toBe('overdue');
+    }
+  });
+
+  it('Lord Howe half-hour spring gap moves 02:15 to 02:30, not 02:45', () => {
+    const entry = fixed({ schedule_times: ['02:15'] });
+    const status = (date, time) => occurrenceStatus({
+      occurrence: occ(date, '02:15'), entry,
+      asOf: { ...at(date, time), timeZone: 'Australia/Lord_Howe' },
+    });
+    expect(status('2027-10-03', '01:59')).toBe('due');
+    expect(status('2027-10-03', '02:30')).toBe('due');
+    expect(status('2027-10-03', '02:31')).toBe('overdue');
+    expect(status('2027-10-02', '02:15')).toBe('due');
+    expect(status('2027-10-02', '02:16')).toBe('overdue');
+    // The autumn 01:30 hour is repeated, not a missing wall time.
+    const autumn = (time) => occurrenceStatus({
+      occurrence: occ('2027-04-04', '01:45'), entry,
+      asOf: { ...at('2027-04-04', time), timeZone: 'Australia/Lord_Howe' },
+    });
+    expect(autumn('01:45')).toBe('due');
+    expect(autumn('01:46')).toBe('overdue');
   });
 });
 

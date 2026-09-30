@@ -3,8 +3,6 @@
 -- postpone-until, and a ledger payload for whole-command undo.
 -- Existing rows are adjusted by the JS hook (083_care_occurrence_model.js).
 
-BEGIN;
-
 ALTER TABLE health_occurrences
   ADD COLUMN IF NOT EXISTS origin VARCHAR(16) NOT NULL DEFAULT 'computed';
 
@@ -85,5 +83,3 @@ ALTER TABLE care_schedule_events
       'stack_resolved', 'undone', 'schedule_changed'
     )
   );
-
-COMMIT;

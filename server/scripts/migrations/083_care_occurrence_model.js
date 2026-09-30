@@ -33,7 +33,8 @@ export async function migrateCareOccurrenceModel(client) {
   const { rows } = await client.query(
     `SELECT * FROM health_entries
      WHERE status IN ('active', 'paused')
-       AND COALESCE(care_planning, 'planned') <> 'unplanned'`,
+       AND COALESCE(care_planning, 'planned') <> 'unplanned'
+     ORDER BY id`,
   );
   for (const entry of rows) {
     if (entry.recurrence_anchor === 'from_due_date' && !entry.schedule_anchor_date) {
@@ -53,14 +54,8 @@ export async function migrateCareOccurrenceModel(client) {
       }
     }
     const zone = await loadPetHomeTimezone(client, entry.pet_id);
-    // The SQL file commits its own transaction; each item syncs in its own.
-    await client.query('BEGIN');
-    try {
-      await syncOpenOccurrences(client, entry, careAsOfForZone(zone));
-      await client.query('COMMIT');
-    } catch (err) {
-      await client.query('ROLLBACK');
-      console.warn(`083: sync skipped for ${entry.id}: ${err.message}`);
-    }
+    // The migration runner owns the transaction for DDL, every item, and
+    // the ledger row. Propagate failures so it can roll back the whole batch.
+    await syncOpenOccurrences(client, entry, careAsOfForZone(zone));
   }
 }
