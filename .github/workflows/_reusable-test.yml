@@ -74,6 +74,12 @@ jobs:
       - name: CI scope resolver tests
         run: node --test scripts/ci/ci-scope.test.js
 
+      - name: Pre-merge affected E2E selection tests
+        run: node --test e2e/scripts/select-affected-specs.test.mjs
+
+      - name: Pre-UAT shard risk (spec domains)
+        run: node --test scripts/babysit_uat_shard_risk.test.mjs
+
       - name: Write governance job summary
         if: always()
         run: |

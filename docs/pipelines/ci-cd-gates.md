@@ -115,7 +115,7 @@ aggregate `flutter-test` result and `flutter-coverage / Flutter domain coverage`
 **Blocking via `ci-gate`:** `ci-e2e-canary / Playwright @smoke-ci canary (localhost)` —
 PR Playwright canary (`@smoke-ci`, retries 0), including three org journeys (discovery, profile, dashboard). Required when `flutter-build-web` succeeds; skipped when build fails (gate still fails on build). Enforced in `scripts/ci/assert-ci-gate.sh`. See [e2e-ci-canary-plan.md](./e2e-ci-canary-plan.md).
 
-**Full org journey E2E** (frozen Shelter specs; 13 specs in `org-e2e-specs.mjs`) runs in **`ci-full-audit.yml`** only (scheduled/manual), **not** in active `pre-uat-e2e.yml` (9 Pet Care shards). Governance still runs `check-org-e2e-locators.mjs` when org Flutter changes without a matching E2E touch.
+**Full org journey E2E** (frozen Shelter specs; 13 specs in `org-e2e-specs.mjs`) runs in **`ci-full-audit.yml`** only (scheduled/manual), **not** in active `pre-uat-e2e.yml` (9 **duration-balanced** Pet Care shards — see `node e2e/scripts/shard-files.mjs --summary`; indices shift when specs/timings change). Governance still runs `check-org-e2e-locators.mjs` when org Flutter changes without a matching E2E touch.
 
 #### Path-scoped PR CI (`ci-scope`)
 
@@ -130,13 +130,17 @@ are no longer gated only by local pre-push (parallel-programmes §6 TEST.2).
 
 | Always runs | May skip on narrow diffs |
 |-------------|--------------------------|
-| `startup-smoke`, `test-suite` (governance + backend + e2e audit), CodeQL | Flutter analyze*, shards, coverage, integration, build-web, `@smoke-ci` canary |
+| `startup-smoke`, `test-suite` (governance + backend + e2e audit), CodeQL | Flutter analyze*, shards, coverage, integration, build-web, `@smoke-ci` canary, `ci-e2e-affected` |
 
 \*Flutter **analyze** still runs when `server/routes/**` or `server/lib/**` changed (API contract), even if `flutter_app/**` is untouched.
 
+**E2E-only PRs** (`e2e/**` without `flutter_app/**`): skip the Flutter unit stack; run **cached web build** (when Flutter inputs unchanged) + `@smoke-ci` canary + **`ci-e2e-affected`** matrix legs chosen by `e2e/scripts/select-affected-specs.mjs` (≤720 s budget, ≤3 legs; broad infra edits keep tiers 0–1 only). `resolve-ci-scope.sh` drops `server/**` paths before selection so **backend-only PRs stay short** (canary + post-merge Pre-UAT cover server changes). `e2e/package.json` / `e2e/package-lock.json` still force the **full** CI stack.
+
+**Web build cache:** `pre-uat-e2e.yml` on `main` **saves** `flutter_app/build/web`; PR `ci.yml` **restores** it (`web_cache: restore`). First PR after a cache miss builds normally. On cache **hit**, Flutter setup/build steps are skipped but **`verify-web-artifact.sh` still runs** on the restored tree. Cache key includes PostHog presence (`ph0`/`ph1`) and hashes build scripts plus `flutter_app` inputs.
+
 **Force full suite:** PR label `ci-full`, commit message token `[ci-full]`, or `workflow_dispatch` with `force_full: true`.
 
-**Never skip (force full):** migrations, `server/config/security.js`, `flutter_app/lib/core/**`, `e2e/**`, `.github/workflows/**`, lockfiles, `scripts/ci/**`.
+**Never skip (force full):** migrations, `server/config/security.js`, `flutter_app/lib/core/**`, `e2e/package.json`, `e2e/package-lock.json`, `.github/workflows/**`, server/flutter lockfiles, `scripts/ci/**`.
 
 #### Flutter shards (manifest-driven matrix)
 
