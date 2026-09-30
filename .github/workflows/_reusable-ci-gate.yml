@@ -17,6 +17,11 @@ on:
       flutter_analyze:
         required: true
         type: string
+      flutter_prep:
+        description: Result of flutter-prep (codegen + legal assets artifact)
+        required: false
+        type: string
+        default: ''
       flutter_test:
         description: Aggregate result of the flutter-test shard matrix
         required: true
@@ -55,6 +60,7 @@ jobs:
           STARTUP_SMOKE: ${{ inputs.startup_smoke }}
           TEST_SUITE: ${{ inputs.test_suite }}
           FLUTTER_ANALYZE: ${{ inputs.flutter_analyze }}
+          FLUTTER_PREP: ${{ inputs.flutter_prep }}
           FLUTTER_TEST: ${{ inputs.flutter_test }}
           FLUTTER_COVERAGE: ${{ inputs.flutter_coverage }}
           FLUTTER_INTEGRATION: ${{ inputs.flutter_integration }}

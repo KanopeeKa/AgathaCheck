@@ -23,7 +23,7 @@ node --test scripts/ci/evaluate-uat-promote-hold.test.js
 node --test scripts/ci/resolve-promote-commit-sha.test.js
 node --test scripts/ci/assert-ci-gate.test.js
 node scripts/ci/flutter-shards.mjs check
-node --test scripts/ci/flutter-shards.test.mjs
+node --test scripts/ci/flutter-shards.test.mjs scripts/ci/flutter-shard-runner.test.mjs
 node scripts/check_skill_frontmatter.js
 node --test scripts/github_issue_workflow.test.js
 node --test scripts/db/normalize-schema-dump.test.js

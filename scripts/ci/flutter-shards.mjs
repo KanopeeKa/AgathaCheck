@@ -33,7 +33,7 @@ function normalizeRoot(root) {
   return root.replace(/^flutter_app\//, '').replace(/\/+$/, '');
 }
 
-function isUnder(file, root) {
+export function isUnder(file, root) {
   return file === root || file.startsWith(`${root}/`);
 }
 
@@ -55,6 +55,7 @@ export function loadManifest(manifestPath = MANIFEST_PATH) {
     shard.roots = shard.roots.map(normalizeRoot);
   }
   manifest.excludedRoots = (manifest.excludedRoots || []).map(normalizeRoot);
+  manifest.perFileRoots = (manifest.perFileRoots || []).map(normalizeRoot);
   return manifest;
 }
 

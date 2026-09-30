@@ -46,6 +46,7 @@ declare -A RESULTS=(
   [startup-smoke]="${STARTUP_SMOKE:-}"
   [test-suite]="${TEST_SUITE:-}"
   [flutter-analyze]="${FLUTTER_ANALYZE:-}"
+  [flutter-prep]="${FLUTTER_PREP:-}"
   [flutter-test]="${FLUTTER_TEST:-}"
   [flutter-coverage]="${FLUTTER_COVERAGE:-}"
   [flutter-integration]="${FLUTTER_INTEGRATION:-}"
@@ -88,7 +89,7 @@ trap 'rm -f "$SUMMARY_TMP"' EXIT
   echo
   echo "| Job | Result | Pass |"
   echo "|-----|--------|------|"
-  for job in startup-smoke test-suite flutter-analyze flutter-test \
+  for job in startup-smoke test-suite flutter-analyze flutter-prep flutter-test \
     flutter-coverage flutter-integration flutter-build-web ci-e2e-canary; do
     result="${RESULTS[$job]}"
     if [[ "$job" == "ci-e2e-canary" ]]; then

@@ -1,32 +1,46 @@
 {
-  "$comment": "Single source of truth for Flutter CI test shards (ci.yml matrix, ci-full-audit, coverage merge, pre-push). Every active *_test.dart must fall under exactly one shard root \u2014 enforced by `node scripts/ci/flutter-shards.mjs check` (governance job). Frozen roots come from docs/engineering/frozen-domains/manifest.json. Paths are relative to flutter_app/.",
+  "$comment": "Single source of truth for Flutter CI test shards (ci.yml matrix, ci-full-audit, coverage merge, pre-push). Every active *_test.dart must fall under exactly one shard root \u2014 enforced by `node scripts/ci/flutter-shards.mjs check` (governance job). Frozen roots come from docs/engineering/frozen-domains/manifest.json. Paths are relative to flutter_app/. Shards are balanced from measured batched timings (~45-90 s of tests each on a 4-vCPU runner); re-balance when a shard's job exceeds ~2.5 min.",
   "version": 1,
   "excludedRoots": [
     "test/features/pet_profile/presentation/integration"
   ],
+  "perFileRoots_comment": "Roots whose files always run one per `flutter test` process. test/features/auth intermittently segfaults flutter_tester during coverage collection when batched (Flutter 3.44, 2026-09-30) \u2014 in batch with other roots and occasionally alone; per-file it is stable (~6 s/file). Other roots run batched; any crash there is caught by the runner's no-progress watchdog + isolated re-run.",
+  "perFileRoots": [
+    "test/features/auth"
+  ],
   "shards": [
     {
-      "id": "pet-core",
+      "id": "pet-profile",
       "roots": [
-        "test/features/pet_profile/data",
-        "test/features/pet_profile/domain",
-        "test/features/pet_profile/pdf_download_user_agent_test.dart",
-        "test/features/pet_profile/pet_vet_contacts_provider_test.dart"
+        "test/features/pet_profile"
       ]
     },
     {
-      "id": "pet-screens",
+      "id": "experience",
       "roots": [
-        "test/features/pet_profile/presentation/screens"
+        "test/features/experience",
+        "test/features/vet",
+        "test/features/weight_tracking",
+        "test/features/help",
+        "test/features/about",
+        "test/features/api_base_url_wiring_test.dart"
       ]
     },
     {
-      "id": "pet-widgets",
+      "id": "core",
       "roots": [
-        "test/features/pet_profile/presentation/widgets",
-        "test/features/pet_profile/presentation/controllers",
-        "test/features/pet_profile/presentation/providers",
-        "test/features/pet_profile/presentation/utils"
+        "test/core",
+        "test/features/people",
+        "test/features/care_taxonomy",
+        "test/features/sharing",
+        "test/features/notifications",
+        "test/features/subscription"
+      ]
+    },
+    {
+      "id": "auth",
+      "roots": [
+        "test/features/auth"
       ]
     },
     {
@@ -36,44 +50,11 @@
       ]
     },
     {
-      "id": "rest-a",
-      "roots": [
-        "test/features/auth",
-        "test/features/sharing",
-        "test/features/notifications",
-        "test/features/subscription"
-      ]
-    },
-    {
-      "id": "rest-b",
-      "roots": [
-        "test/features/vet",
-        "test/features/weight_tracking",
-        "test/features/help",
-        "test/features/about",
-        "test/features/api_base_url_wiring_test.dart"
-      ]
-    },
-    {
-      "id": "experience",
-      "roots": [
-        "test/features/experience"
-      ]
-    },
-    {
       "id": "pet-care",
       "roots": [
         "test/features/pet_care",
         "test/features/care_intelligence",
         "test/features/pet_tags"
-      ]
-    },
-    {
-      "id": "core",
-      "roots": [
-        "test/core",
-        "test/features/people",
-        "test/features/care_taxonomy"
       ]
     }
   ]
