@@ -209,7 +209,7 @@ CI changes are additive steps in the governance job of `_reusable-test.yml` only
 - `node scripts/check_feature_imports.js`: OK (R1=56 R2=6 R3=201, 59 edges); fixtures 11/11.
 - `node --test scripts/check_file_size.test.js scripts/check_coverage_threshold_consistency.test.js`: pass.
 - `./scripts/validate_docs.sh --strict`: 0 errors. All execute-plan snapshots validate.
-- `./scripts/pre-push.sh`: <result; list only the known pre-existing failures>.
+- `./scripts/pre-push.sh`: passed on `c81b09ec` (rerun after the final `main` merge and update this line).
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 ```
@@ -497,5 +497,7 @@ export default {
   - roadmap and D snapshots valid;
   - E–K drafts valid with placeholder approvals;
   - dry-run merge with #1454's head: clean.
-- **Full `BOT=true ./scripts/pre-push.sh` on `c81b09ec`:** see the line below (appended when
-  the run finished).
+- **Full `BOT=true ./scripts/pre-push.sh` on `c81b09ec`:** passed (exit 0, "✓ Full pre-push
+  passed"). This covers the governance, Jest, analyze, Flutter shard tests and format checks.
+  The #1453 directories (`test/core/**` …) are not in any shard yet, so the known router
+  failures don't show up here. Rerun it after merging `main` again (§4.1).
