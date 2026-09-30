@@ -196,13 +196,13 @@ autonomy: active
 current_phase: orchestrate
 last_completed_phase: null
 halt_reason: null
-next_action: "continue child plan people-hotfixes-7f3b"
+next_action: "bootstrap and gate child plan people-server-7f3b"
 artifact_ref:
   branch: main
   plan_path: .agents/plans/people-domain-refactor-7f3b.md
-  plan_commit: 33b59b50f4fa7ad3f42e67d5783acb0db2702333
+  plan_commit: 3ca7bd4ccb2063fff271bb68fba7a7681a4d7788
   snapshot_path: .agents/plans/people-domain-refactor-7f3b.snapshot.json
-  snapshot_commit: 33b59b50f4fa7ad3f42e67d5783acb0db2702333
+  snapshot_commit: 3ca7bd4ccb2063fff271bb68fba7a7681a4d7788
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

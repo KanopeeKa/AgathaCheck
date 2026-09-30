@@ -2,7 +2,7 @@
   "schema_version": 1,
   "approved_at": "2026-09-30T20:25:34.151Z",
   "approved_until": "2026-10-02T20:25:34.151Z",
-  "content_hash": "sha256:5bc613ea4689d63e29b0a9e905fb8db1188e0c72305d583595278e358da99704",
+  "content_hash": "sha256:01b59d1bad26a95c89aedd6f26b33060543a2805a744fda18b1f4a4f8b595a4b",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "control_issue": 1460,
@@ -12,7 +12,7 @@
   "programme_ref": "docs/domains/people/changes/people-domain-refactor.md",
   "base_branch": "main",
   "approved_by": "user chat 2026-09-30: approve-autonomous people-domain-refactor-7f3b (control issue #1460)",
-  "current_child_plan_id": "people-hotfixes-7f3b",
+  "current_child_plan_id": "people-server-7f3b",
   "phases": [
     {
       "id": "orchestrate",
@@ -58,9 +58,9 @@
   "child_plans": [
     {
       "plan_id": "people-hotfixes-7f3b",
-      "status": "in_progress",
-      "pr_url": null,
-      "merge_commit": null
+      "status": "merged",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1464",
+      "merge_commit": "3ca7bd4ccb2063fff271bb68fba7a7681a4d7788"
     },
     {
       "plan_id": "people-server-7f3b",

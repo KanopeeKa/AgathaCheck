@@ -286,7 +286,7 @@ display strings exactly.
 | `flutter-prep / Flutter prep (codegen + legal assets)` | `_reusable-flutter-prep.yml` | canonical codegen + legal sync; uploads `flutter-prep-<sha>` for shards and integration |
 | `flutter-analyze / Flutter (analyze & format)` | `_reusable-flutter-analyze.yml` | format, codegen, analyze |
 | `flutter-test (<shard>) / Flutter tests (<shard>)` | `_reusable-flutter-test-shard.yml` | matrix leg per shard in `flutter_app/test/ci_shards.json`, per-shard coverage |
-| `flutter-coverage / Flutter domain coverage` | `_reusable-flutter-coverage.yml` | merge shard lcov, domain coverage ≥ 65% |
+| `flutter-coverage / Flutter domain coverage` | `_reusable-flutter-coverage.yml` | merge shard lcov, domain coverage ≥ 70% |
 | `flutter-integration / Flutter integration` | `_reusable-flutter-integration.yml` | pet profile integration tests |
 | `flutter-build-web / Build Flutter web` | `_reusable-build-web.yml` | web release build + `web-build-<sha>` artifact |
 | `test-suite / Backend (Node.js Jest)` | `_reusable-test.yml` | Jest, npm audit high+ |

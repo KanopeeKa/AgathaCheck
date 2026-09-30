@@ -10,23 +10,43 @@ tags: [quality, metrics]
 
 Living metrics for Agatha Track quality. Update when CI or test counts change materially.
 
-**Last updated:** 2026-09-24 (BDD counts de-hard-coded; live values from `check_bdd_coverage.js --report-only`)
+**Last updated:** live metrics block below (`generate-scorecard-metrics.mjs`)
 
 ---
 
-## Test counts
+## Live metrics
 
-| Layer | Count | Gate |
-|---|---:|---|
-| Flutter unit/widget | 449 | CI on `main` |
-| Flutter integration | 1 flow | CI on `main` (blocking) |
-| Node Jest | 544 | CI on `main` |
-| Playwright E2E | 79+ | Pre-UAT E2E (9-shard Pet Care, post-merge) |
-| BDD Gherkin scenarios | live (script) | Spec (hybrid — Playwright executor) |
-| BDD → Playwright coverage | **80.2% (146/182 active)** | CI gate **123/182 active (68%)** — `e2e/scripts/check_bdd_coverage.js` |
-| Test quality scorecard | D1–D6 metrics | `node e2e/scripts/check_test_quality.js --report-only` (CI governance) |
-| Pre-UAT shard orphans | **0** | `e2e/scripts/validate-shard-manifest.mjs` |
-| @smoke-ci PR canary | **5** | `ci-e2e-canary` job |
+<!-- scorecard-metrics:begin -->
+**Auto-generated block** — refresh with `node scripts/quality/generate-scorecard-metrics.mjs --write-scorecard` (2026-09-30).
+
+| Metric | Value | Enforced by |
+|--------|------:|-------------|
+| Flutter unit/widget (active CI) | 271 | 6 shards (`ci_shards.json`) |
+| Flutter frozen / excluded tests | 62 / 1 | frozen-domains manifest |
+| Flutter unowned tests | 0 | `flutter-shards.mjs check` |
+| Flutter integration flows | 1 | `flutter-integration` job |
+| Jest (active / frozen) | 152 / 46 | `jest.config.active.cjs` |
+| Playwright (active / frozen) | 24 / 21 | `shard-files.mjs` + frozen list |
+| BDD active scenarios | 191 (18 frozen excluded) | `check_bdd_coverage.js` |
+| BDD mapped (active) | 79.1% (151/191) | gate **129/191 (68%)** |
+| BDD title drift (active) | 13 | `generate-scorecard-metrics.mjs --check` |
+| BDD uncovered (active) | 40 | informational |
+| Pre-UAT shard orphans | 0 | `validate-shard-manifest.mjs` |
+| @smoke-ci / @smoke-uat / @smoke-a11y | 4 / 12 / 4 | `check-smoke-tags.mjs` |
+| Flutter domain coverage gate | **70%** | `check_domain_coverage.js` |
+<!-- scorecard-metrics:end -->
+
+## Test counts (reference)
+
+| Layer | Gate |
+|---|---|
+| Flutter unit/widget | CI shards on every Flutter PR (`ci_shards.json`) |
+| Flutter integration | Blocking `flutter-integration` job |
+| Node Jest | `jest.config.active.cjs` on `main` |
+| Playwright E2E | Pre-UAT E2E (9 duration-balanced shards, post-merge) |
+| BDD → Playwright | `e2e/scripts/check_bdd_coverage.js` (68% of active scenarios) |
+| Test quality depth | `node e2e/scripts/check_test_quality.js --report-only` (governance) |
+| Scorecard invariants | `node scripts/quality/generate-scorecard-metrics.mjs --check` (governance) |
 
 ## CI security
 
@@ -49,7 +69,7 @@ Living metrics for Agatha Track quality. Update when CI or test counts change ma
 
 | Layer | Status |
 |---|---|
-| Flutter domain (`lib/**/domain/**`) | **65% line coverage gate** (CI) |
+| Flutter domain (`lib/**/domain/**`) | **70% line coverage gate** (CI) |
 | Flutter lcov (full app) | CI artifact |
 | Jest Istanbul | CI artifact (report-only) |
 
