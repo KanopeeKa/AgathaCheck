@@ -104,7 +104,6 @@ class _PetCareSectionState extends ConsumerState<PetCareSection> {
             groups: CareTemporalGroup.values,
             buckets: bucketMap,
             establishedEntryIds: establishedIds,
-            trailingLabel: l.done,
             onMarkDone: _onMarkDone,
             onViewEntry: (entry) => HomeEventActions.viewEntry(context, entry),
           );
