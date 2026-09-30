@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../data/datasources/people_remote_datasource.dart';
 import '../../data/models/people_contact_model.dart';
 import '../../domain/entities/people_contact.dart';
 import '../providers/people_providers.dart';
@@ -41,9 +42,7 @@ class _PeopleAddPersonScreenState extends ConsumerState<PeopleAddPersonScreen> {
   @override
   void initState() {
     super.initState();
-    _roles.addAll(
-      widget.initialRoles.isEmpty ? {'sitter'} : widget.initialRoles,
-    );
+    _roles.addAll(widget.initialRoles);
     if (_roles.contains('vet')) {
       _contactExpanded = true;
     }
@@ -122,6 +121,22 @@ class _PeopleAddPersonScreenState extends ConsumerState<PeopleAddPersonScreen> {
       } else {
         context.pop(true);
       }
+    } on HttpException catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.peopleSaveError),
+          ),
+        );
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.peopleSaveError),
+          ),
+        );
+      }
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -163,12 +178,9 @@ class _PeopleAddPersonScreenState extends ConsumerState<PeopleAddPersonScreen> {
           ),
           TextButton(
             onPressed: () {
-              final inferred = inferPeopleContactKind(
-                name: _nameController.text,
-                roles: _roles,
-              );
               setState(() {
-                _forcedKind = inferred == 'person' ? 'organisation' : 'person';
+                final current = _resolvedKind();
+                _forcedKind = current == 'person' ? 'organisation' : 'person';
               });
             },
             child: Text(l.peopleKindChange),
@@ -214,6 +226,14 @@ class _PeopleAddPersonScreenState extends ConsumerState<PeopleAddPersonScreen> {
                 ),
             ],
           ),
+          if (_roles.isEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(
+                l.peopleAddRolesRequired,
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ),
           if (_roles.contains('vet') && organisations.isNotEmpty) ...[
             const SizedBox(height: 12),
             DropdownButtonFormField<String?>(

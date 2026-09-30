@@ -135,17 +135,17 @@ flutter_app/lib/features/organization/**
 
 ```yaml
 autonomy: active
-current_phase: h1-server-kind
-last_completed_phase: null
+current_phase: h2-client-fixes
+last_completed_phase: h1-server-kind
 halt_reason: null
-next_action: "continue phase h1-server-kind on branch cursor/people-hotfix-h1-kind-7f3b"
+next_action: "continue phase h2-client-fixes on branch cursor/people-hotfix-h2-client-7f3b"
 artifact_ref:
   branch: cursor/people-hotfix-h1-kind-7f3b
   plan_path: .agents/plans/people-hotfixes-7f3b.md
-  plan_commit: d170ca5208c913539352043dad117a3f37326f56
+  plan_commit: 3923693720e047a3b13b9f63877472a5110c8be2
   snapshot_path: .agents/plans/people-hotfixes-7f3b.snapshot.json
-  snapshot_commit: d170ca5208c913539352043dad117a3f37326f56
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1462"]
-merge_commits: {}
+  snapshot_commit: 3923693720e047a3b13b9f63877472a5110c8be2
+open_prs: []
+merge_commits: {"h1-server-kind":"985f2caad3b9b39626cb961f0560e8267192014d"}
 debt_issue_refs: []
 ```
