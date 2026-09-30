@@ -2,7 +2,7 @@
   "schema_version": 1,
   "approved_at": "2026-09-30T20:25:41.764Z",
   "approved_until": "2026-10-02T20:25:41.764Z",
-  "content_hash": "sha256:c6fdbe0d05cd2b443b6349e38889cc9c91731abf87e41c869b27b468f202440c",
+  "content_hash": "sha256:064ab25c3fe499787a34aacc7644923ce7d73d7eca2d8d331848a8b406133427",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "control_issue": 1461,
@@ -37,12 +37,13 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1462",
-      "pr_head_sha": "d170ca5208c913539352043dad117a3f37326f56"
+      "pr_head_sha": "39236937",
+      "merge_commit": "985f2caad3b9b39626cb961f0560e8267192014d"
     },
     {
       "id": "h2-client-fixes",
@@ -74,12 +75,9 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
       "debt_issue_refs": []
     }
   ]

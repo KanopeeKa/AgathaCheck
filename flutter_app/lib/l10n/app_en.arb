@@ -2818,5 +2818,7 @@
   "peopleAddAppAccessBody": "You can invite them to share pets in the app, or finish without inviting now.",
   "peopleAddAppAccessSkip": "Not now",
   "peopleAddAppAccessContinue": "Invite",
-  "peopleAddPersonSave": "Save person"
+  "peopleAddPersonSave": "Save person",
+  "peopleAddRolesRequired": "Choose at least one role to continue.",
+  "peopleSaveValidationError": "Check the details and try again."
 }

@@ -7276,4 +7276,12 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get peopleAddPersonSave => 'Enregistrer';
+
+  @override
+  String get peopleAddRolesRequired =>
+      'Choisissez au moins un rôle pour continuer.';
+
+  @override
+  String get peopleSaveValidationError =>
+      'Vérifiez les informations et réessayez.';
 }
