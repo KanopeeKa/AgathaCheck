@@ -278,16 +278,16 @@ around it; never classify a WAF block as a product failure.
 
 ```yaml
 autonomy: active
-current_phase: 5
+current_phase: 6
 last_completed_phase: 4
 halt_reason: null
-next_action: "start phase 5: checkout claude/relaxed-einstein-jqecfg"
+next_action: "continue phase 6 on branch claude/relaxed-einstein-jqecfg"
 artifact_ref:
-  branch: main
+  branch: cursor/test-health-ci-phase6-edcb
   plan_path: .agents/plans/test-health-ci-5f3a.md
-  plan_commit: a436175f8c55caba2a8cd031b9450cef5f9ab6d5
+  plan_commit: bbb03c1f96cb22080c7a0dbf235ae8a429ef3e34
   snapshot_path: .agents/plans/test-health-ci-5f3a.snapshot.json
-  snapshot_commit: a436175f8c55caba2a8cd031b9450cef5f9ab6d5
+  snapshot_commit: bbb03c1f96cb22080c7a0dbf235ae8a429ef3e34
 open_prs: []
 merge_commits: {"2":"e89d8c4d7d4ef905b616dd4881bfda87028ae14b","3":"e89d8c4d7d4ef905b616dd4881bfda87028ae14b","4":"a436175f8c55caba2a8cd031b9450cef5f9ab6d5"}
 debt_issue_refs: []
