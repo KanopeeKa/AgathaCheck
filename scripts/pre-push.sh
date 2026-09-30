@@ -25,6 +25,9 @@ node --test scripts/ci/assert-ci-gate.test.js
 node --test scripts/ci/ci-scope.test.js
 node --test e2e/scripts/select-affected-specs.test.mjs
 node --test scripts/babysit_uat_shard_risk.test.mjs
+node --test scripts/quality/generate-scorecard-metrics.test.mjs
+node scripts/quality/generate-scorecard-metrics.mjs --write-scorecard
+node scripts/quality/generate-scorecard-metrics.mjs --check
 node scripts/ci/flutter-shards.mjs check
 node --test scripts/ci/flutter-shards.test.mjs scripts/ci/flutter-shard-runner.test.mjs
 node scripts/check_skill_frontmatter.js

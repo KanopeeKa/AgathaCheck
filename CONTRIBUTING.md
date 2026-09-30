@@ -93,7 +93,7 @@ Use the PR template checklist. In summary:
 - `npm audit --audit-level=high` (server + e2e)
 - CodeQL (JavaScript)
 - `dart format --set-exit-if-changed` (Flutter code only, blocks merge)
-- Flutter domain line coverage ≥ 65% (`check_domain_coverage.js`)
+- Flutter domain line coverage ≥ 70% (`check_domain_coverage.js`)
 - BDD scenario mapping gate: `node e2e/scripts/check_bdd_coverage.js --report-only` (live counts from the script only; gate is 68% of active scenarios)
 - Hand-written file size ≤ 500 lines (`scripts/check_file_size.js`; grandfather ratchet for legacy monoliths)
 - Coverage artifacts: full Flutter lcov + Jest Istanbul (report-only beyond domain gate)
