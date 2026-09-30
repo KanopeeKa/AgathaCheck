@@ -134,12 +134,18 @@ flutter_app/lib/features/organization/**
 ## Runtime state (agent-updated)
 
 ```yaml
-autonomy: halted            # draft — bootstrapped by the roadmap
-current_phase: null
+autonomy: active
+current_phase: h1-server-kind
 last_completed_phase: null
-halt_reason: "draft — waiting for roadmap bootstrap"
-next_action: "roadmap bootstraps after landing slot 0b"
-open_prs: []
+halt_reason: null
+next_action: "continue phase h1-server-kind on branch cursor/people-hotfix-h1-kind-7f3b"
+artifact_ref:
+  branch: cursor/people-hotfix-h1-kind-7f3b
+  plan_path: .agents/plans/people-hotfixes-7f3b.md
+  plan_commit: d170ca5208c913539352043dad117a3f37326f56
+  snapshot_path: .agents/plans/people-hotfixes-7f3b.snapshot.json
+  snapshot_commit: d170ca5208c913539352043dad117a3f37326f56
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1462"]
 merge_commits: {}
 debt_issue_refs: []
 ```
