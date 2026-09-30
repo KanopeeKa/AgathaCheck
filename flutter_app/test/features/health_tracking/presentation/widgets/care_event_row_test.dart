@@ -8,7 +8,7 @@ import 'package:pet_profile_app/features/health_tracking/domain/entities/health_
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_occurrence.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/occurrence_scheduling.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/widgets/care_event_row.dart';
-import 'package:pet_profile_app/features/pet_care/presentation/widgets/care_surface/care_mark_done_button.dart';
+import 'package:pet_profile_app/core/widgets/care_mark_done_button.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/widgets/care_event_row_context.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/widgets/care_family_icon.dart';
@@ -23,16 +23,6 @@ final _overdueEntry = HealthEntry(
   frequency: HealthFrequency.monthly,
   startDate: DateTime(2024, 1, 1),
   nextDueDate: DateTime(2020, 1, 1),
-);
-
-final _dueEntry = HealthEntry(
-  id: 'entry-2',
-  petId: 'pet-1',
-  name: 'Midday water check',
-  type: HealthEntryType.other,
-  frequency: HealthFrequency.daily,
-  startDate: DateTime(2024, 1, 1),
-  nextDueDate: DateTime.now(),
 );
 
 const _pet = Pet(id: 'pet-1', name: 'Miso', species: 'Dog');
@@ -125,9 +115,7 @@ void main() {
       expect(find.text('Open'), findsNothing);
     });
 
-    testWidgets('care-family chip matches mark-done control size', (
-      tester,
-    ) async {
+    testWidgets('care-family chip is 32dp with a 22dp icon', (tester) async {
       await tester.pumpWidget(_buildRow(_overdueEntry));
       await tester.pumpAndSettle();
 

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../pet_profile/domain/entities/pet.dart';
-import '../../../pet_care/presentation/widgets/care_surface/care_mark_done_button.dart';
+import '../../../../core/widgets/care_mark_done_button.dart';
 import '../../../pet_profile/presentation/widgets/care_family_icon.dart';
 import '../../domain/entities/health_entry.dart';
 import '../../domain/occurrence_scheduling.dart';

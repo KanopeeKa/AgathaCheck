@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../health_tracking/presentation/widgets/health_entry_status.dart';
-import 'care_mark_done_button.dart';
+import '../../../../../core/widgets/care_mark_done_button.dart';
 import 'care_surface_tokens.dart';
 
 /// Action role — care item row with family icon, title, status subtitle, and
@@ -50,7 +50,8 @@ class CareActionRow extends StatelessWidget {
 
     return Semantics(
       label: semanticLabel,
-      button: onTap != null || onPressed != null,
+      // The trailing CareMarkDoneButton is its own semantic button.
+      button: onTap != null,
       child: Material(
         color: inset ? Colors.transparent : colorScheme.surface,
         borderRadius: radius,

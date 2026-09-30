@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
-import 'package:pet_profile_app/features/pet_care/presentation/widgets/care_surface/care_mark_done_button.dart';
+import 'package:pet_profile_app/core/widgets/care_mark_done_button.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/care_establishment.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/care_family.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';

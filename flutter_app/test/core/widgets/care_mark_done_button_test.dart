@@ -6,7 +6,7 @@ import 'package:pet_profile_app/features/health_tracking/presentation/widgets/ca
 import 'package:pet_profile_app/features/health_tracking/presentation/widgets/care_event_row_context.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/widgets/health_entry_status.dart';
 import 'package:pet_profile_app/features/pet_care/presentation/widgets/care_surface/care_action_row.dart';
-import 'package:pet_profile_app/features/pet_care/presentation/widgets/care_surface/care_mark_done_button.dart';
+import 'package:pet_profile_app/core/widgets/care_mark_done_button.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/care_family.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/widgets/care_family_icon.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
