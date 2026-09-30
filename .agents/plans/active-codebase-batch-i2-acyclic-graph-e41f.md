@@ -20,6 +20,10 @@ last_updated: 2026-09-29
 | **depends on** | Batch I1 merged |
 | **router risk** | R2 — protocols `flutter-mobile`, `testing`, `documentation` |
 
+## Entry gate (coordination, `docs/agent-efficiency/parallel-programmes.md`)
+
+- Landing slot **10**, after I1. Also wait for PEOPLE `people-client-integration-7f3b` i2 and CARE F, since I2 moves pet-profile surfaces those two add.
+
 ## Goal
 
 Package 9, second half (D5, D21). Take the active Flutter feature graph from one strongly connected component (13 features at `0cc739e`) to **zero** multi-feature SCCs, using cuts chosen from the measured graph. Make the result permanent with a checker rule that has no baseline. Apply the same ownership direction to the server.

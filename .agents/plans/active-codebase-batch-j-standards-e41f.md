@@ -20,6 +20,11 @@ last_updated: 2026-09-29
 | **depends on** | Batch D merged. Parallel-eligible with I1 and I2 (scripts, CI and server lint config only). |
 | **router risk** | R2 — protocols `testing`, `documentation`; CI edits limited to D9(b) |
 
+## Entry gate (coordination, `docs/agent-efficiency/parallel-programmes.md`)
+
+- Landing slot **11**. Bootstrap after **TEST slice 2** (`test-health-ci-5f3a` phases 4, 6, 7) has landed. TEST owns `.github/workflows/**`, coverage config and the shard manifest until then.
+- **Build on TEST, don't duplicate it:** reuse TEST's KPI/coverage generator and its shard manifest + ownership gate (#1455, which also closes #1453). Re-baseline J.1 and J.4 against what TEST has shipped before implementing and drop anything TEST already enforces.
+
 ## Goal
 
 Finish Package 11 (D6, D7, D23). Every gate measures an explicit, published universe:

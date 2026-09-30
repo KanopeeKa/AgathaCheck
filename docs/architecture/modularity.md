@@ -96,6 +96,31 @@ test/features/<feature>/   # Mirror lib structure
 - A genuinely approved exception uses `--accept-new "<reason + approval link>"`, which records the identity, reason and date under `exceptions`. Only use it with explicit human approval recorded on the PR.
 - `--summary` prints the current counts without failing.
 
+## Feature ports and transport (Flutter)
+
+This is the target shape for a feature's data access. Batch H of `active-codebase-completion-e41f` converts auth and health documents to it. New or rewritten data layers (for example the People client refactor) should use it from the start, so they are not converted twice.
+
+| Layer | Owns | Must not |
+|---|---|---|
+| `domain/` | Entities with value equality, and **ports**: abstract repositories such as `AuthRepository`, `SessionStore` or `HealthDocumentsRepository`. Ports return domain types and typed failures. | Import `application/`, `data/`, `package:http` or Flutter widgets. |
+| `data/` | Port implementations, remote data sources, DTOs and their mapping to entities. The only place wire strings exist. | Be imported from another feature (R2 above) or from its own `presentation/`. |
+| `application/` | Wiring and use-case state: one provider per port that picks the `data/` implementation, derived providers, commands and form controllers. With `data/`, the only layer that may import `data/`. | Import `presentation/`. |
+| `presentation/` | Screens, widgets and routes. They read `application/` providers and `domain/` types. | Construct services or clients (`AuthService()`, `http.Client()`), or import `data/**`. |
+
+**One transport authority.** Every authenticated request goes through the injected `AuthHttpClient` (`lib/core/network/auth_http_client.dart`), obtained through `authHttpClientProvider`. It injects the bearer token and performs the single 401 → refresh → replay. Features never:
+
+- build `Authorization` headers by hand;
+- call the refresh endpoint;
+- keep their own copy of the access token.
+
+A session that cannot be refreshed surfaces as `SessionExpiredException`. Map it, and HTTP 4xx, 5xx and network errors, to the port's typed failures inside `data/`, not in widgets.
+
+**Wiring.** One provider per port in `application/`, typed as the port (`Provider<XRepository>`). Tests override that provider with a fake, so presentation tests need no HTTP mocking. Never keep two providers for the same data source. A provider that loads an entity never writes back into the provider it watches: without value equality this refetches forever (the People detail loop, B1 in `docs/domains/people/changes/people-domain-refactor.md`).
+
+Existing features still declare providers under `presentation/providers/`. They move to `application/` when their data layer is converted (Batch H for auth and health documents; the People client refactor for People).
+
+**Public entrypoint (D20, Batch I1).** Each feature will expose one entrypoint, `lib/features/<feature>/<feature>.dart`, that exports its domain types, ports, providers and the UI surfaces other features may use. It never exports `data/`. Once it exists, other features import only the entrypoint. Until then, the cross-feature import gate above keeps new edges out.
+
 ## Testing expectations
 
 | Layer | Tool | When |

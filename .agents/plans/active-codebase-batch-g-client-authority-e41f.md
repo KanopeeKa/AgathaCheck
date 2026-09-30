@@ -20,6 +20,10 @@ last_updated: 2026-09-29
 | **parallel-eligible with** | Batches E and F (Flutter-only, disjoint paths except the l10n ARB files, which F.4 also edits; if run in parallel, merge F before G's integration PR and resolve ARB conflicts with `flutter gen-l10n`) |
 | **router risk** | R2 — protocols `flutter-mobile`, `accessibility`, `testing`, `date-time` |
 
+## Entry gate (coordination, `docs/agent-efficiency/parallel-programmes.md`)
+
+- Landing slot **7**. Bootstrap only after **CARE E+F** (slot 5b) have landed. **Re-baseline Package 8 first**: CARE F's Care Item module changes the health store and occurrence widgets, so re-measure the direct repository calls and the store's refresh semantics on `main` and shrink or close G.2/G.3 accordingly before implementing. The "parallel-eligible with E and F" note in the metadata is superseded by this gate.
+
 ## Goal
 
 Finish Packages 7 and 8 (D2, D18, D19):

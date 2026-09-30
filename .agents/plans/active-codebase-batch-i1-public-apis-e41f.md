@@ -20,6 +20,10 @@ last_updated: 2026-09-29
 | **depends on** | Batches D (import gate), G (health/pet authority pattern) and H (auth/document ports) merged |
 | **router risk** | R2 — protocols `flutter-mobile`, `testing`, `documentation` |
 
+## Entry gate (coordination, `docs/agent-efficiency/parallel-programmes.md`)
+
+- Landing slot **10** (I1 then I2). Bootstrap after ARCH H (slot 9) has landed.
+
 ## Goal
 
 Package 9, first half (D5, D20). Every active Flutter feature gets **one documented public entrypoint**. Then the forbidden edges are removed: domain features importing `experience`, cross-feature `data/` imports, and cross-feature `presentation/` internals. Finally, all cross-feature imports go through public entrypoints. The acyclic target is Batch I2.

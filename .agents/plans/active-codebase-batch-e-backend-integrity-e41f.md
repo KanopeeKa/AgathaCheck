@@ -19,6 +19,12 @@ last_updated: 2026-09-29
 | **artifact_branch_policy** | `phase-branch` |
 | **router risk** | R3 (transactions, migration, file deletion) — protocols `database-and-migrations`, `data-lifecycle`, `private-files`, `api-contract`, `testing`, `observability` |
 
+## Entry gate (coordination, `docs/agent-efficiency/parallel-programmes.md`)
+
+- Landing slot **3a**. Bootstrap only after **CARE A+B** (`care-next-occurrence-c1a7`, slot 2b) has landed on `main` with pre-UAT green. E's weight-in-completion (D12) and any care-engine changes target CARE's new occurrence engine, so re-read `server/lib/care/**` and `server/routes/healthEntries/**` on `main` before implementing.
+- Area ownership (§3): E owns pets core and transactions (`server/routes/pets/coreRouter.js`, `pets/shared.js`, `server/lib/db/**`) and sharing invites (`server/routes/sharing/**`, `server/services/sharing/**`) until it lands. `server/routes/pets/peopleRelationshipsRouter.js` belongs to PEOPLE (`people-server-7f3b` s3 rewrites it onto `withTransaction`), so it is **not** in E's paths.
+- Migrations are named here and numbered at landing (§5.5): the next free number on `main` when the integration → `main` PR opens. CARE keeps `083`.
+
 ## Goal
 
 Finish Packages 3, 4 and 6 as the review's exit gates define them:
@@ -212,7 +218,6 @@ server/lib/care/progression/careMilestoneService.js
 server/routes/careContext/plannedAbsencesRouter.js
 server/routes/pets/shared.js
 server/routes/pets/transferRouter.js
-server/routes/pets/peopleRelationshipsRouter.js
 server/routes/sharing/petAccessRoutes.js
 server/test/architecture/**
 server/test/helpers/**
@@ -243,9 +248,9 @@ docs
 
 **Acceptance criteria:**
 
-- [ ] **E.3-1** A new architecture test, `server/test/architecture/transactionOwnership.test.js`, fails on `query('BEGIN')`, `query("BEGIN")` or `withOptionalTransaction` anywhere in `server/**` except `server/lib/db/withTransaction.js`, `server/scripts/**`, `server/db/seeds/**`, manifest frozen `serverRoots`, and the frozen lib files `server/lib/fosterInvite.js` and `server/lib/orgPermissions.js`. It ships with a **temporary allowlist naming exactly** the phase-4 files (`server/services/sharing/shareInviteService.js`, `server/services/sharing/shareLinkService.js`, `server/routes/healthEntries/completeWeightRouter.js`, `server/routes/weightEntries.js`).
+- [ ] **E.3-1** A new architecture test, `server/test/architecture/transactionOwnership.test.js`, fails on `query('BEGIN')`, `query("BEGIN")` or `withOptionalTransaction` anywhere in `server/**` except `server/lib/db/withTransaction.js`, `server/scripts/**`, `server/db/seeds/**`, manifest frozen `serverRoots`, and the frozen lib files `server/lib/fosterInvite.js` and `server/lib/orgPermissions.js`. It ships with a **temporary allowlist naming exactly** the phase-4 files (`server/services/sharing/shareInviteService.js`, `server/services/sharing/shareLinkService.js`, `server/routes/healthEntries/completeWeightRouter.js`, `server/routes/weightEntries.js`), plus the PEOPLE-owned `server/routes/pets/peopleRelationshipsRouter.js` with an expiry of "when `people-server-7f3b` s3 lands".
 - [ ] **E.3-2** All three `withOptionalTransaction` copies are deleted. Tests use a shared mock pool with `connect()` (`server/test/helpers/`), and no pool-only fallback remains in active code.
-- [ ] **E.3-3** Existing suites for planned absences, care milestones, people relationships, pet access, individual transfer and pet activity pass, with only mock-setup changes. A real-PG test for planned-absence create proves rollback on an injected failure.
+- [ ] **E.3-3** Existing suites for planned absences, care milestones, pet access, individual transfer and pet activity pass, with only mock-setup changes. A real-PG test for planned-absence create proves rollback on an injected failure.
 - [ ] **E.3-4** No response shape changes; the existing contract and route tests pass unchanged.
 
 ---
@@ -305,7 +310,7 @@ docs
 - [ ] **E.4-7** Weight completion (D12): the weight-establishment evaluation and insert and `refreshPetWeightCache` run on the transaction client. Fault injection in either rolls back with 500 and no weight entry. Post-commit audit and activity failures are logged (warn, with action and ids) and never change the 201/200. The silent `.catch(() => {})` is removed.
 - [ ] **E.4-8** Weight replay semantics are unchanged: a semantically equal replay returns 200 with the same observation, and a different payload returns 409. Real-PG test: concurrent identical completions produce one `weight_entries` row.
 - [ ] **E.4-9** The weight create and update transaction in `server/routes/weightEntries.js` moves to `withTransaction`, with the same in-transaction cache and establishment handling.
-- [ ] **E.4-10** The temporary allowlist in `transactionOwnership.test.js` is **empty**; no active file keeps a hand-written transaction.
+- [ ] **E.4-10** The temporary allowlist in `transactionOwnership.test.js` contains only the PEOPLE-owned `peopleRelationshipsRouter.js` entry (removed by PEOPLE s3); no ARCH-owned file keeps a hand-written transaction.
 - [ ] **E.4-11** The only response change is the additive `replayed` flag, documented in OpenAPI and `api-reference.md`. Installed-client note: Flutter treats any status below 400 as success and reads the same body fields, so a 200 replay works unchanged.
 
 ---

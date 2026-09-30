@@ -108,7 +108,6 @@
         "server/routes/careContext/plannedAbsencesRouter.js",
         "server/routes/pets/shared.js",
         "server/routes/pets/transferRouter.js",
-        "server/routes/pets/peopleRelationshipsRouter.js",
         "server/routes/sharing/petAccessRoutes.js",
         "server/test/architecture/**",
         "server/test/helpers/**",

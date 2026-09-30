@@ -20,6 +20,10 @@ last_updated: 2026-09-29
 | **depends on** | Batch E merged to `main` (`cleanup_jobs`, runner, `TransactionAborted` guard) |
 | **router risk** | R3 — protocols `security`, `authorization`, `data-lifecycle`, `private-files`, `database-and-migrations`, `api-contract`, `observability`, `testing`; integration review mandatory |
 
+## Entry gate (coordination, `docs/agent-efficiency/parallel-programmes.md`)
+
+- Landing slot **5a**. Bootstrap only after ARCH E (3a) **and** the PEOPLE server (`people-server-7f3b`, slot 4) have landed on `main`, because PEOPLE adds new personal-data tables that erasure must cover.
+
 ## Goal
 
 Deliver Package 5 under D3, D4, D15, D16 and D17. Account deletion returns **202 Accepted** only after a durable acceptance transaction: the database is erased, sessions are revoked, and cleanup jobs for files and PostHog are queued. Pre-erasure access tokens are rejected immediately. Cleanup can resume after crashes, provider outages and retries without a live account, and every step is visible through a scoped status capability. The only pre-approved migration is `account_erasure_operations` (D9a).
@@ -96,7 +100,7 @@ docs
 
 **Acceptance criteria:**
 
-- [ ] **F.1-1** `docs/engineering/privacy/erasure-data-map.json` lists every table that has a FK to `users(id)` or a `user_id`, `*_user_id`, `*_by` or `email` column, with its erasure action (`cascade` \| `set_null` \| `explicit_delete` \| `retained` plus reason), and every file-bearing column with its storage kind.
+- [ ] **F.1-1** `docs/engineering/privacy/erasure-data-map.json` lists every table (including the PEOPLE tables `people_contacts`, `people_contact_private_notes`, `people_contact_household_notes`, `household_invites`, `pet_share_invites.contact_id` and contact `linked_user_id` links) that has a FK to `users(id)` or a `user_id`, `*_user_id`, `*_by` or `email` column, with its erasure action (`cascade` \| `set_null` \| `explicit_delete` \| `retained` plus reason), and every file-bearing column with its storage kind.
 - [ ] **F.1-2** A real-PG test, `server/test/db/erasureDataMap.test.js`, reads `pg_constraint`/`information_schema` and **fails** when a user FK or matching column is missing from the map, so a future table cannot silently escape erasure.
 - [ ] **F.1-3** `erasure-data-map.md` states: the synchronous DB scope (D15); the async scope (files, PostHog); retained data with its lawful basis (for example, audit events with the actor anonymised); shared/household behaviour (the 409 confirmation is kept); frozen retained schema and GDPR export coverage; and any data that currently survives erasure, listed as a numbered gap with an owner.
 - [ ] **F.1-4** ADR `docs/architecture/decisions/0001-account-erasure-acceptance.md` (with frontmatter and an index `README.md`) records the commit point, job types, status capability, token rejection and rollback rules (never restore erased data).

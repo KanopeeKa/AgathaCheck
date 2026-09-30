@@ -19,6 +19,10 @@
         ".agents/plans/active-codebase-batch-h-ports-transport-e41f.*",
         "flutter_app/lib/features/auth/**",
         "flutter_app/lib/core/network/auth_http_client.dart",
+        "flutter_app/lib/core/services/analytics_service.dart",
+        "flutter_app/lib/features/experience/presentation/screens/account_screen.dart",
+        "flutter_app/lib/features/experience/presentation/widgets/experience_drawer_identity_header.dart",
+        "flutter_app/lib/features/organization/presentation/providers/shelter_pinned_org_provider.dart",
         "flutter_app/test/features/auth/**",
         "flutter_app/test/core/network/**",
         "scripts/feature-import-baseline.json"
@@ -53,6 +57,7 @@
         ".agents/plans/active-codebase-batch-h-ports-transport-e41f.*",
         "flutter_app/lib/features/health_tracking/data/**",
         "flutter_app/lib/features/health_tracking/domain/**",
+        "flutter_app/lib/features/health_tracking/application/**",
         "flutter_app/lib/features/health_tracking/presentation/controllers/health_entry_form_controller_photos.dart",
         "flutter_app/lib/features/health_tracking/presentation/providers/health_issue_providers.dart",
         "flutter_app/lib/features/health_tracking/presentation/providers/health_providers.dart",

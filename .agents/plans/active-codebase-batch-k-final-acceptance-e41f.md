@@ -20,6 +20,10 @@ last_updated: 2026-09-29
 | **depends on** | Batches D–J merged |
 | **router risk** | R2 — protocols `testing`, `documentation`, `flutter-mobile`, `api-contract` |
 
+## Entry gate (coordination, `docs/agent-efficiency/parallel-programmes.md`)
+
+- Landing slot **12**: after every other ARCH child and the programmes they wait on have landed.
+
 ## Goal
 
 Deliver Package 12 and the programme's final acceptance:

@@ -118,6 +118,24 @@ Approving this roadmap accepts every **recommended** option below. To change one
 
 **Default is sequential.** The orchestrator may run a parallel-eligible child with `/spawn-sprint-agents` only when its `allowed_paths` stay disjoint from the running child's. Integration → `main` merges are always serialized: babysit merge preflight, then pre-UAT on each merge SHA.
 
+### Cross-programme landing slots (supersedes the parallel-eligible column)
+
+Since 2026-09-30 this roadmap (ARCH) shares `main` with CARE, TEST and PEOPLE. `docs/agent-efficiency/parallel-programmes.md` (§4) owns the landing order, and it wins over the table above. Each child's **Entry gate** section restates its slot.
+
+| Child | Slot | Bootstrap / land after (each with pre-UAT green on its merge SHA) |
+|---|---|---|
+| D | 1 | 0a (#1445) and 0b (#1454, the People docs PR that adds the coordination doc) |
+| E | 3a | CARE A+B (2b) |
+| F | 5a | ARCH E (3a) and PEOPLE server (4) |
+| G | 7 | CARE E+F (5b); re-baseline Package 8 first |
+| H | 9 | PEOPLE client integration (8) |
+| I1 | 10 | ARCH H (9) |
+| I2 | 10, after I1 | I1 |
+| J | 11 | TEST slice 2 (6) |
+| K | 12 | everything else |
+
+The rules in that doc apply to every child: one landing on `main` at a time; a landing broadcast on each programme's control thread after each merge; migrations are named, not numbered, until landing; each programme stays inside the areas it owns. A later child may start development early on its own branches (the doc's "Develops in parallel with" column), but it opens its integration → `main` PR only in its slot.
+
 ## Delivery mechanics (every child)
 
 1. Create the child integration branch from current `main`. The snapshot `base_branch` is that integration branch.
@@ -179,10 +197,10 @@ The roadmap is complete only when **all** of the following hold on `main`:
 
 ```yaml
 autonomy: active
-current_phase: null
+current_phase: orchestrate
 last_completed_phase: null
 halt_reason: null
-next_action: "awaiting approve-autonomous active-codebase-completion-e41f; then bootstrap child active-codebase-batch-d-guardrails-e41f"
+next_action: "child active-codebase-batch-d-guardrails-e41f phase 4 (integration → main) waits for slot 0b (#1454) to land; then E waits for slot 2b (CARE A+B)"
 artifact_ref:
   branch: null
   plan_path: .agents/plans/active-codebase-completion-e41f.md

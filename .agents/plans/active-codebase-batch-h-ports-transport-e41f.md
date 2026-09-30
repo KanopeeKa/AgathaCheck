@@ -20,6 +20,10 @@ last_updated: 2026-09-29
 | **depends on** | Batches F and G merged (auth routes and health presentation are stable) |
 | **router risk** | R3 for H.4 (auth) — protocols `security`, `authorization`, `api-contract`, `flutter-mobile`, `testing`; integration review mandatory |
 
+## Entry gate (coordination, `docs/agent-efficiency/parallel-programmes.md`)
+
+- Landing slot **9**. Bootstrap only after the PEOPLE client landings (`people-client-core-7f3b`, `people-client-integration-7f3b`) so each new data layer is converted once. The port/transport convention H applies is published in `docs/architecture/modularity.md` §Feature ports and transport (landed with Batch D) so PEOPLE c1 can adopt it from the start.
+
 ## Goal
 
 Deliver Package 10:
@@ -75,6 +79,10 @@ debt_issue_refs: []
 .agents/plans/active-codebase-batch-h-ports-transport-e41f.*
 flutter_app/lib/features/auth/**
 flutter_app/lib/core/network/auth_http_client.dart
+flutter_app/lib/core/services/analytics_service.dart
+flutter_app/lib/features/experience/presentation/screens/account_screen.dart
+flutter_app/lib/features/experience/presentation/widgets/experience_drawer_identity_header.dart
+flutter_app/lib/features/organization/presentation/providers/shelter_pinned_org_provider.dart
 flutter_app/test/features/auth/**
 flutter_app/test/core/network/**
 scripts/feature-import-baseline.json
@@ -98,8 +106,8 @@ file-split
 
 **Acceptance criteria:**
 
-- [ ] **H.1-1** `AuthRepository` (login, register, refresh, logout, deleteAccount, exportData, profile read/update, password change) and `SessionStore` (read, write, clear tokens) live in `features/auth/domain`. The implementations wrap `AuthService` and `TokenStore` in `features/auth/data`. `AuthNotifier` depends only on the ports, through providers, and its state machine and public API are unchanged.
-- [ ] **H.1-2** No presentation file constructs `AuthService()` (today: `my_details_screen.dart:242` and `:305`), and no file outside `features/auth/data` imports `features/auth/data/**`. The feature-import baseline shrinks accordingly.
+- [ ] **H.1-1** `AuthRepository` (login, register, refresh, logout, deleteAccount, exportData, profile read/update, password change) and `SessionStore` (read, write, clear tokens) live in `features/auth/domain`. The implementations wrap `AuthService` and `TokenStore` in `features/auth/data`. The port providers live in `features/auth/application` (convention: `docs/architecture/modularity.md` §Feature ports and transport). `AuthNotifier` depends only on the ports, through those providers, and its state machine and public API are unchanged.
+- [ ] **H.1-2** No presentation file constructs `AuthService()` (today: `my_details_screen.dart:242` and `:305`), and no file outside `features/auth/data` and `features/auth/application` imports `features/auth/data/**`. Today that also means the four cross-feature importers in `allowed_paths` (`analytics_service.dart`, `account_screen.dart`, `experience_drawer_identity_header.dart`, `shelter_pinned_org_provider.dart`); re-list them with `grep -rn "auth/data/" flutter_app/lib` at bootstrap and update `allowed_paths` before stamping. The feature-import baseline shrinks accordingly.
 - [ ] **H.1-3** Tests with fakes cover login, logout, session restore and delete-account (F.4 behaviour). `auth_refresh_test.dart` (single-flight refresh plus request replay) passes unchanged.
 - [ ] **H.1-4** `AuthHttpClient` stays the only refresh authority. A grep-based test fails if any new file under `flutter_app/lib` calls the refresh endpoint directly.
 
@@ -120,6 +128,7 @@ file-split
 .agents/plans/active-codebase-batch-h-ports-transport-e41f.*
 flutter_app/lib/features/health_tracking/data/**
 flutter_app/lib/features/health_tracking/domain/**
+flutter_app/lib/features/health_tracking/application/**
 flutter_app/lib/features/health_tracking/presentation/controllers/health_entry_form_controller_photos.dart
 flutter_app/lib/features/health_tracking/presentation/providers/health_issue_providers.dart
 flutter_app/lib/features/health_tracking/presentation/providers/health_providers.dart
@@ -148,9 +157,9 @@ file-split
 
 **Acceptance criteria:**
 
-- [ ] **H.2-1** A `HealthDocumentsRepository` port (upload and remove for health-entry photos and health-issue documents, returning a typed `HealthDocument` with id and url, with typed failures) lives in `health_tracking/domain`. Its implementation in `data/` uses the injected authenticated HTTP client.
+- [ ] **H.2-1** A `HealthDocumentsRepository` port (upload and remove for health-entry photos and health-issue documents, returning a typed `HealthDocument` with id and url, with typed failures) lives in `health_tracking/domain`. Its implementation in `data/` uses the injected authenticated HTTP client, and its provider lives in `health_tracking/application/`.
 - [ ] **H.2-2** The duplicate datasource providers `healthRemoteDataSourceProvider` and `healthDataSourceProvider` are consolidated into one. The health data layer never builds `Authorization` headers by hand (grep test).
-- [ ] **H.2-3** The five presentation files listed use the port; `health_tracking/presentation/**` never imports `health_tracking/data/**`.
+- [ ] **H.2-3** The five presentation files listed use the port and no longer import `health_tracking/data/**`. The other `health_tracking/presentation → data` imports (15 files in total on 2026-09-30, these five included; re-count at bootstrap) may not grow: a test pins the remaining list, and it only shrinks.
 - [ ] **H.2-4** Tests cover upload success; upload failure (4xx, 5xx and network, each mapped to a typed error); delete success and failure; and 401 → refresh → replay through the client.
 
 ---
