@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
+import 'package:pet_profile_app/features/pet_care/presentation/widgets/care_surface/care_mark_done_button.dart';
 import 'package:pet_profile_app/features/pet_care/domain/care_temporal_group.dart';
 import 'package:pet_profile_app/features/pet_care/domain/services/care_temporal_grouping_service.dart';
 import 'package:pet_profile_app/features/pet_care/presentation/providers/care_temporal_grouping_providers.dart';
@@ -99,7 +100,7 @@ void main() {
       find.byKey(const Key('pet_care_action_one-off-done')),
       findsOneWidget,
     );
-    expect(find.text('Done'), findsWidgets);
+    expect(find.byType(CareMarkDoneButton), findsWidgets);
     expect(
       find.byKey(const Key('pet_manage_events_collection_filter_bar')),
       findsNothing,

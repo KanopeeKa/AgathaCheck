@@ -106,7 +106,6 @@ class _AllCareListState extends ConsumerState<AllCareList> {
               group: group,
               entries: groupEntries,
               establishedEntryIds: establishedIds,
-              trailingLabel: l.done,
               onMarkDone: _onMarkDone,
               onViewEntry: (entry) =>
                   HomeEventActions.viewEntry(context, entry),

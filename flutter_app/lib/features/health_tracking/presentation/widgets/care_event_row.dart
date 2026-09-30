@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../pet_profile/domain/entities/pet.dart';
+import '../../../pet_care/presentation/widgets/care_surface/care_mark_done_button.dart';
 import '../../../pet_profile/presentation/widgets/care_family_icon.dart';
 import '../../domain/entities/health_entry.dart';
 import '../../domain/occurrence_scheduling.dart';
@@ -46,7 +47,7 @@ class CareEventRow extends StatelessWidget {
 
   static const _kMinTouchTarget = 48.0;
 
-  /// Visual square shared by the care-family chip and mark-done control.
+  /// Visual square of the care-family chip.
   static const _kActionControlSize = 32.0;
 
   @override
@@ -147,19 +148,11 @@ class CareEventRow extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-            Semantics(
-              button: true,
-              identifier: 'care_event_row_done_${entry.id}',
-              label: l.dueEventRowMarkDoneLabel(entry.name),
-              excludeSemantics: true,
-              onTap: isMarkDoneEnabled ? onMarkDone : null,
-              child: Tooltip(
-                message: l.markAsDone,
-                child: _MarkDoneButton(
-                  key: Key('care_event_row_done_${entry.id}'),
-                  onTap: isMarkDoneEnabled ? onMarkDone : null,
-                ),
-              ),
+            CareMarkDoneButton(
+              key: Key('care_event_row_done_${entry.id}'),
+              semanticsIdentifier: 'care_event_row_done_${entry.id}',
+              semanticLabel: l.dueEventRowMarkDoneLabel(entry.name),
+              onPressed: isMarkDoneEnabled ? onMarkDone : null,
             ),
           ],
         ),
@@ -185,54 +178,6 @@ class _StatusLineText extends StatelessWidget {
       status: status,
       theme: theme,
       colorScheme: colorScheme,
-    );
-  }
-}
-
-class _MarkDoneButton extends StatelessWidget {
-  const _MarkDoneButton({super.key, required this.onTap});
-
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: CareEventRow._kMinTouchTarget,
-      height: CareEventRow._kMinTouchTarget,
-      child: Material(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(12),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(12),
-          child: Center(
-            child: Container(
-              width: CareEventRow._kActionControlSize,
-              height: CareEventRow._kActionControlSize,
-              decoration: BoxDecoration(
-                color: onTap == null
-                    ? AppColorTokens.guardianCareLight.withValues(alpha: 0.5)
-                    : AppColorTokens.guardianCareLight,
-                border: Border.all(
-                  color: AppColorTokens.guardianCarePrimary.withValues(
-                    alpha: onTap == null ? 0.4 : 1,
-                  ),
-                  width: 1.5,
-                ),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Icon(
-                Icons.check,
-                size: 18,
-                color: AppColorTokens.guardianCarePrimary.withValues(
-                  alpha: onTap == null ? 0.4 : 1,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

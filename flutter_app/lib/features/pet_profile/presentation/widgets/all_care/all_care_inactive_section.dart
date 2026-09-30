@@ -87,7 +87,6 @@ class _InactiveRow extends StatelessWidget {
       l10n: l,
       colorScheme: colorScheme,
       isEstablished: isEstablished,
-      trailingLabel: l.done,
       statusLineOverride: closed ? l.eventStatusClosed : null,
       statusTreatmentOverride: closed ? completedStatusTreatment() : null,
       onMarkDone: closed ? null : () => onMarkDone(entry),

@@ -8,6 +8,7 @@ import 'package:pet_profile_app/features/health_tracking/domain/entities/health_
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_occurrence.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/occurrence_scheduling.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/widgets/care_event_row.dart';
+import 'package:pet_profile_app/features/pet_care/presentation/widgets/care_surface/care_mark_done_button.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/widgets/care_event_row_context.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/widgets/care_family_icon.dart';
@@ -143,15 +144,9 @@ void main() {
       await tester.pumpWidget(_buildRow(_overdueEntry));
       await tester.pumpAndSettle();
 
-      final sizedBoxes = tester.widgetList<SizedBox>(find.byType(SizedBox));
-      final has48 = sizedBoxes.any(
-        (sb) =>
-            sb.width != null &&
-            sb.width! >= 48 &&
-            sb.height != null &&
-            sb.height! >= 48,
-      );
-      expect(has48, isTrue);
+      final size = tester.getSize(find.byType(CareMarkDoneButton));
+      expect(size.width, greaterThanOrEqualTo(48));
+      expect(size.height, greaterThanOrEqualTo(48));
     });
 
     testWidgets('tapping mark-done invokes callback', (tester) async {
