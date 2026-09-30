@@ -21,9 +21,9 @@ Deliver the People target model in four independently landable slices. Each slic
 
 | Order | Child `plan_id` | Outcome | Landing slot ([parallel-programmes §4](../../docs/agent-efficiency/parallel-programmes.md)) | Entry gate: must already be on `main` | Integration branch |
 |---|---|---|---|---|---|
-| 1 | `people-hotfixes-7f3b` | Six cheap People bugs fixed now (B1, B2, B5, B7, B9, B13), each with a regression test | right after slot 0b (People-owned files only; disjoint with ARCH D) | docs PR (slot 0b) | none (phase PRs → `main`) |
+| 1 | `people-hotfixes-7f3b` | Six cheap People bugs fixed now (B1, B2, B5, B7, B9, B13), each with a regression test | slot 0c, right after the docs PR (People-owned files only; disjoint with ARCH D) | docs PR (slot 0b) | none (phase PRs → `main`) |
 | 2 | `people-server-7f3b` | Server: single writer, access policy, usage-aware delete, relationships source of truth with vet projection, read models, household directory, invites linked to contacts | slot 4 | CARE A+B (2b) and ARCH E (3a) | `cursor/people-server-integration-7f3b` |
-| 3 | `people-client-core-7f3b` | Client: typed core and façade, components and picker, hub, detail, edit, add flow, household UI, E2E for those | after slot 4, before slot 8 (People-owned client files) | `people-server-7f3b` and CARE C+D (3b) | `cursor/people-client-core-integration-7f3b` |
+| 3 | `people-client-core-7f3b` | Client: typed core and façade, components and picker, hub, detail, edit, add flow, household UI, E2E for those | slot 5c (People-owned client files; disjoint with ARCH F and CARE E+F) | `people-server-7f3b` and CARE C+D (3b) | `cursor/people-client-core-integration-7f3b` |
 | 4 | `people-client-integration-7f3b` | Consumers use the façade and picker, People around {pet}, legacy deleted, E2E for integrations, docs shipped | slot 8 | `people-client-core-7f3b`, CARE E+F (5b) and ARCH G (7) | `cursor/people-client-integration-integration-7f3b` |
 
 **Why four and not one:** the People client needs the care UI and pet profile to settle first (CARE, ARCH G), but most of it doesn't touch them. Splitting lets the hotfixes, the server and the People-owned screens land weeks earlier. Every slice ships its own E2E, so Playwright never lags behind for long.

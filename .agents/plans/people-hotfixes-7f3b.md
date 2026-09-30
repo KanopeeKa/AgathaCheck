@@ -9,7 +9,7 @@
 | **default_merge_mode** | `auto` |
 | **artifact_branch_policy** | `phase-branch` |
 | **phases** | 2 (commit prefix `phase(<n>/2): …`) |
-| **entry gate** | Docs PR (landing slot 0b) merged. Touches People-owned files only, so it may land before or after ARCH D ([parallel-programmes §4](../../docs/agent-efficiency/parallel-programmes.md)) |
+| **entry gate** | Docs PR (landing slot 0b, #1454) merged. Lands in slot 0c. Touches People-owned files only, so it may land before or after ARCH D ([parallel-programmes §4](../../docs/agent-efficiency/parallel-programmes.md)) |
 | **source of truth** | [target doc](../../docs/domains/people/changes/people-domain-refactor.md) §1 (bugs B1–B13) |
 
 ## Goal

@@ -9,7 +9,7 @@
 | **default_merge_mode** | `auto` |
 | **artifact_branch_policy** | `phase-branch` |
 | **phases** | 9 (commit prefix `phase(<n>/9): …`) |
-| **entry gate** | On `origin/main`: `people-server-7f3b` **and** CARE C+D (agenda, row, form; they touch the Today home content and the care form). Lands after slot 4 and before slot 8 in [parallel-programmes §4](../../docs/agent-efficiency/parallel-programmes.md); People-owned client files only |
+| **entry gate** | On `origin/main`: `people-server-7f3b` **and** CARE C+D (agenda, row, form; they touch the Today home content and the care form). Landing slot 5c in [parallel-programmes §4](../../docs/agent-efficiency/parallel-programmes.md); People-owned client files only |
 | **source of truth** | [target doc](../../docs/domains/people/changes/people-domain-refactor.md) §3.7 (Flutter architecture) and §3.8 (UI/UX) |
 
 ## Goal

@@ -32,15 +32,15 @@ Related: [autonomous-pr-policy.md](./autonomous-pr-policy.md) · [execute-plan-s
 
    | File or area | CARE | ARCH | TEST | PEOPLE |
    |---|---|---|---|---|
-   | `server/lib/care/**`, completion and occurrence routes | B, F | E (weight in completion transaction), H | 7 (IDOR tests) | p1b (provider rules) |
-   | `server/routes/careContext/plannedAbsencesRouter.js` | E | E, H | — | p1 (carer writes via façade) |
-   | `server/routes/pets/peopleRelationshipsRouter.js`, `pets/coreRouter.js` | — | E, H | — | p2 |
-   | `server/routes/sharing/**` (invites) | — | E (invite replay, D22), H | — | p5 |
-   | `flutter_app/lib/features/health_tracking/presentation/**` | C, D, F | G, H | — | p8 (provider field) |
-   | `flutter_app/lib/features/pet_care/context/**` | E | G (one widget) | — | p8 (carer picker, handover) |
-   | `pet_profile/.../pet_detail_screen.dart` and pet-profile sections | C (agenda) | G, I2 (move to `experience`) | — | p8, p13 |
+   | `server/lib/care/**`, completion and occurrence routes | B, F | E (weight in completion transaction), H | 7 (IDOR tests) | server s2 (provider rules) |
+   | `server/routes/careContext/plannedAbsencesRouter.js` | E | E, H | — | server s1 (carer contact writes via `lib/people`, no route change) |
+   | `server/routes/pets/peopleRelationshipsRouter.js`, `pets/coreRouter.js` | — | E, H | — | server s3 |
+   | `server/routes/sharing/**` (invites) | — | E (invite replay, D22), H | — | server s6 |
+   | `flutter_app/lib/features/health_tracking/presentation/**` | C, D, F | G, H | — | client-integration i1 (provider field) |
+   | `flutter_app/lib/features/pet_care/context/**` | E | G (one widget) | — | client-integration i1 (carer picker, handover) |
+   | `pet_profile/.../pet_detail_screen.dart` and pet-profile sections | C (agenda) | G, I2 (move to `experience`) | — | client-integration i1, i2 |
    | `.github/workflows/_reusable-test.yml`, coverage config, 70% threshold docs | — | D.2, D.3 (additive governance steps), J | 2, 4 | — |
-   | `e2e/scripts/shard-files.mjs`, `e2e/playwright/support/api.ts`, canary tags | E2E programme | F, G | 1, 3, 5 | p16 |
+   | `e2e/scripts/shard-files.mjs`, `e2e/playwright/support/api.ts`, canary tags | E2E programme | F, G | 1, 3, 5 | client-core c8, client-integration i4 |
    | `db/migrations/*`, `db/schema/**` | 083 | E, F (3 tables) | 7 (canonical check) | 4 tables |
 
 2. **Integration branches get no CI.** `ci.yml` runs `pull_request` only for PRs into `main`. Phase PRs into an integration branch are gated only by the agent's local `./scripts/pre-push.sh`, which doesn't run Playwright. So conflicts and E2E breakage stay invisible until the final PR to `main`. That is how the ~18 `fix(e2e)` PRs after the last two People plans happened, including #1442–#1444.
@@ -54,16 +54,16 @@ An **owner** may change files in an area; everyone else waits until the owner's 
 
 | Area (paths) | Owner, in order | Released when |
 |---|---|---|
-| Care engine: `server/lib/care/**`, `server/routes/healthEntries/**`, occurrence routes, care seeds | CARE (A+B) → ARCH E → PEOPLE p1b → ARCH H | each slice lands |
-| Absences: `server/routes/careContext/**`, `flutter_app/lib/features/pet_care/context/**` | CARE (E) → PEOPLE p8 → ARCH H | CARE E+F lands |
-| Care UI: `flutter_app/lib/features/health_tracking/presentation/**` | CARE (C, D, F) → ARCH G → PEOPLE p8 → ARCH H | CARE C+D, then E+F land |
-| People server: `server/lib/people/**`, `server/routes/people/**`, `server/routes/pets/peopleRelationshipsRouter.js`, `server/lib/households/**`, `server/routes/households/**` | PEOPLE (wave A) | PEOPLE wave A lands |
-| Pets core and transactions: `server/routes/pets/coreRouter.js`, `pets/shared.js`, `server/lib/db/**` | ARCH E → PEOPLE p2 (vet_id adapter only) | ARCH E lands |
-| Sharing invites: `server/routes/sharing/**`, `server/services/sharing/**` | ARCH E (E.4) → PEOPLE p5 | ARCH E lands |
-| Pet profile composition: `pet_profile/presentation/screens/**`, pet-profile sections | CARE C → ARCH G → PEOPLE p8/p13 → ARCH I2 | each slice lands |
-| People client: `flutter_app/lib/features/people/**` | PEOPLE (waves B–D) | PEOPLE client landing |
+| Care engine: `server/lib/care/**`, `server/routes/healthEntries/**`, occurrence routes, care seeds | CARE (A+B) → ARCH E → PEOPLE server s2 → ARCH H | each slice lands |
+| Absences: `server/routes/careContext/**`, `flutter_app/lib/features/pet_care/context/**` | CARE (E) → PEOPLE client-integration i1 → ARCH H | CARE E+F lands |
+| Care UI: `flutter_app/lib/features/health_tracking/presentation/**` | CARE (C, D, F) → ARCH G → PEOPLE client-integration i1 → ARCH H | CARE C+D, then E+F land |
+| People server: `server/lib/people/**`, `server/routes/people/**`, `server/routes/pets/peopleRelationshipsRouter.js`, `server/lib/households/**`, `server/routes/households/**` | PEOPLE server (`people-server-7f3b`) | PEOPLE server lands |
+| Pets core and transactions: `server/routes/pets/coreRouter.js`, `pets/shared.js`, `server/lib/db/**` | ARCH E → PEOPLE server s3 (vet_id adapter only) | ARCH E lands |
+| Sharing invites: `server/routes/sharing/**`, `server/services/sharing/**` | ARCH E (E.4) → PEOPLE server s6 | ARCH E lands |
+| Pet profile composition: `pet_profile/presentation/screens/**`, pet-profile sections | CARE C → ARCH G → PEOPLE client-integration i1/i2 → ARCH I2 | each slice lands |
+| People client: `flutter_app/lib/features/people/**` | PEOPLE client-core, then client-integration | each PEOPLE client landing |
 | CI and coverage: `.github/workflows/**`, coverage config, threshold docs | TEST (1–3), with one exception: ARCH D.2/D.3 may **add** governance steps to `_reusable-test.yml` (additions only; nothing removed, reordered or weakened). Then TEST (4) → ARCH J | TEST slice 1 lands |
-| Shared E2E infrastructure: `e2e/scripts/shard-files.mjs`, `e2e/playwright/support/api.ts`, smoke/canary tags, `scripts/bdd-priority-tag-map.json` | TEST (1, 3) → CARE (E2E programme) → TEST (5) → PEOPLE p16 → ARCH K | each slice lands; others append only |
+| Shared E2E infrastructure: `e2e/scripts/shard-files.mjs`, `e2e/playwright/support/api.ts`, smoke/canary tags, `scripts/bdd-priority-tag-map.json` | TEST (1, 3) → CARE (E2E programme) → TEST (5) → PEOPLE c8 / i4 → ARCH K | each slice lands; others append only |
 | Shared docs: `docs/architecture/api-reference.md`, `openapi/pet-care-critical.json`, `docs/design/terminology.md`, `.agents/memory/MEMORY.md` | everyone | textual merges; update in the same PR as the code |
 
 ---
@@ -75,18 +75,20 @@ Landings into `main` happen **one at a time**. Each is followed by pre-UAT E2E g
 | # | Landing on `main` | Must already be on `main` | Develops in parallel with |
 |---|---|---|---|
 | 0a | **PR #1445** (`fix(e2e)`: API helpers for vet contact edit navigation). Merged as `f04e19a`; the slot closes when pre-UAT is green on `f04e19a` | — | everything |
-| 0b | **PEOPLE docs PR**: plan artifacts, this page, stale-plan closure. Not merged before 0a's pre-UAT is green | 0a (pre-UAT green) | everything |
+| 0b | **PEOPLE docs PR** (#1454): plan artifacts, this page, stale-plan closure. Not merged before 0a's pre-UAT is green | 0a (pre-UAT green) | everything |
+| 0c | **PEOPLE hotfixes** (`people-hotfixes-7f3b`: B1, B2, B5, B7, B9, B13; People-owned files only) (disjoint with 1) | 0b | ARCH D |
 | 1 | **ARCH D** (guardrails: baseline, feature-import gate, D7 report, D.2/D.3 additive governance steps in `_reusable-test.yml`, D.3 coverage docs) | 0b | CARE B, TEST 1–3 |
 | 2a | **TEST slice 1** (phases 1–3: Flutter shards, CI speed, pre-merge E2E, CI for integration PRs) (disjoint with 2b) | 1 | CARE B |
 | 2b | **CARE A+B** (canonical spec, occurrence engine, migration 083, reseed) (disjoint with 2a) | 1 | TEST 1–3, ARCH E prep |
-| 3a | **ARCH E** (transactions, cleanup jobs, pet delete, invite replay, weight-in-completion) (disjoint with 3b) | 2b | CARE C+D, PEOPLE wave A |
-| 3b | **CARE C+D** (agenda, row, form, Care Item view) (disjoint with 3a) | 2b | ARCH E, PEOPLE wave A |
-| 4 | **PEOPLE wave A** (server p0–p5) | 3a | CARE E+F, PEOPLE client core |
+| 3a | **ARCH E** (transactions, cleanup jobs, pet delete, invite replay, weight-in-completion) (disjoint with 3b) | 2b | CARE C+D, PEOPLE server |
+| 3b | **CARE C+D** (agenda, row, form, Care Item view) (disjoint with 3a) | 2b | ARCH E, PEOPLE server |
+| 4 | **PEOPLE server** (`people-server-7f3b`, s1–s7) | 3a | CARE E+F, PEOPLE client core |
 | 5a | **ARCH F** (account erasure; inventory includes People tables) (disjoint with 5b) | 3a, 4 | CARE E+F |
-| 5b | **CARE E+F** (absences on real occurrences, Care Item module, care E2E programme) (disjoint with 5a) | 3b | ARCH F, PEOPLE client |
+| 5b | **CARE E+F** (absences on real occurrences, Care Item module, care E2E programme) (disjoint with 5a, 5c) | 3b | ARCH F, PEOPLE client core |
+| 5c | **PEOPLE client core** (`people-client-core-7f3b`: typed core, picker, hub, detail, edit, add, households UI, E2E; People-owned client files only) (disjoint with 5a, 5b) | 4, 3b | CARE E+F, ARCH F |
 | 6 | **TEST slice 2** (phases 4, 6, 7). Phase 5 (BDD hygiene) rides here only if CARE's BDD disposition has landed (5b); otherwise it lands after 5b | 1 (and 5b for phase 5) | ARCH G |
 | 7 | **ARCH G** (client authority; Package 8 re-baselined against CARE F's Care Item module) | 5b | PEOPLE client |
-| 8 | **PEOPLE client** (p6–p17) | 4, 5b, 7 | ARCH H prep |
+| 8 | **PEOPLE client integration** (`people-client-integration-7f3b`: consumers, People around {pet}, legacy deletion, E2E) | 5c, 5b, 7 | ARCH H prep |
 | 9 | **ARCH H** (ports and transport; converts the new People and Care data layers once) | 8 | ARCH J |
 | 10 | **ARCH I1 → I2** (public entrypoints, then acyclic graph: pet-profile surfaces move to `experience`) | 9 | ARCH J |
 | 11 | **ARCH J** (standards; builds on TEST's CI and KPI generator) | 6 | I1, I2 |
@@ -94,18 +96,22 @@ Landings into `main` happen **one at a time**. Each is followed by pre-UAT E2E g
 
 ```mermaid
 flowchart LR
-  L0a["0a PR #1445 (pre-UAT green)"] --> L0b["0b PEOPLE docs"]
+  L0a["0a PR 1445 (pre-UAT green)"] --> L0b["0b PEOPLE docs"]
   L0b --> L1["1 ARCH D"]
+  L0b --> L0c["0c PEOPLE hotfixes"]
   L1 --> L2a["2a TEST 1–3"]
   L1 --> L2b["2b CARE A+B"]
   L2b --> L3a["3a ARCH E"]
   L2b --> L3b["3b CARE C+D"]
-  L3a --> L4["4 PEOPLE wave A"]
+  L3a --> L4["4 PEOPLE server"]
   L4 --> L5a["5a ARCH F"]
   L3b --> L5b["5b CARE E+F"]
   L1 --> L6["6 TEST 4,6,7 (+5 after 5b)"]
   L5b --> L7["7 ARCH G"]
-  L5b --> L8["8 PEOPLE client"]
+  L4 --> L5c["5c PEOPLE client core"]
+  L3b --> L5c
+  L5c --> L8["8 PEOPLE client integration"]
+  L5b --> L8
   L7 --> L8
   L8 --> L9["9 ARCH H"]
   L9 --> L10["10 ARCH I1 → I2"]
@@ -121,7 +127,7 @@ flowchart LR
 - **Guardrails first.** ARCH D's feature-import gate should exist before new feature code lands, so no programme adds edges it later has to remove.
 - **Signal next.** TEST slice 1 gives every later landing faster CI and CI on integration PRs.
 - **The biggest behavioural change lands early and in slices.** CARE B, C+D and E+F land separately, so dependants rebase over small changes.
-- **Infrastructure before its users.** ARCH E's transaction and cleanup helpers and its invite semantics land before PEOPLE wave A writes new transactional code and invite links. ARCH F erasure lands after PEOPLE adds new personal-data tables.
+- **Infrastructure before its users.** ARCH E's transaction and cleanup helpers and its invite semantics land before the PEOPLE server writes new transactional code and invite links. ARCH F erasure lands after PEOPLE adds new personal-data tables.
 - **Structural moves last.** ARCH H and I1/I2 move files across features; they run after the feature programmes stop moving those files.
 
 ---
@@ -157,21 +163,21 @@ Each list below is the delta against that programme's current plan. It is ready 
 
 1. **Land per child instead of once at the end:** A+B as soon as B is green, then C+D, then E+F. Each goes through its own integration → `main` PR with `/babysit-uat`. Keep `claude/eager-edison-mf34j6` as the integration line and rebase it after each landing.
 2. Keep migration `083_care_occurrence_model` (first migration in the queue). If anything lands a migration before it, renumber on rebase (§5.5).
-3. In child B's completion commands, record the **provider snapshot from the contact attached to the care item without filtering by the completer's own directory**. This is PEOPLE invariant I12; today a co-parent or carer completion silently drops the provider (`server/lib/care/providerUsed.js:47`). PEOPLE p1b adds the People-façade validation and regression tests on top after CARE B lands.
+3. In child B's completion commands, record the **provider snapshot from the contact attached to the care item without filtering by the completer's own directory**. This is PEOPLE invariant I12; today a co-parent or carer completion silently drops the provider (`server/lib/care/providerUsed.js:47`). PEOPLE `people-server-7f3b` s2 adds the People-façade validation and regression tests on top after CARE B lands.
 4. Coordinate E2E infrastructure with TEST: the shard manifest restructure and the canary swap either land after TEST slice 1 or are agreed with it on #1449.
-5. Child E owns `plannedAbsencesRouter.js` and `features/pet_care/context/**` until it lands; PEOPLE p8 (carer picker, handover contacts) waits. Child C's pet-profile agenda lands before ARCH G and PEOPLE p13 touch the pet profile.
+5. Child E owns `plannedAbsencesRouter.js` and `features/pet_care/context/**` until it lands; PEOPLE `people-client-integration-7f3b` i1 (carer picker, handover contacts) waits. Child C's pet-profile agenda lands before ARCH G and PEOPLE i2 touch the pet profile.
 
 ### ARCH — `active-codebase-completion-e41f`
 
 1. **D** proceeds now. D.3 is the single owner of the coverage-threshold (70%) doc alignment. D.2 and D.3 may **add** governance steps to `.github/workflows/_reusable-test.yml` (additions only: no step removed, reordered or weakened). Every other `.github/workflows/**` edit waits for TEST slice 1, and J builds on that afterwards. Name the added steps on #1449 so TEST phase 2's batching keeps them.
-2. **E** starts after CARE B has landed. E's weight-in-completion (D12) and `plannedAbsencesRouter.js` changes apply to CARE's new engine. Remove `server/routes/pets/peopleRelationshipsRouter.js` from E's `allowed_paths` before the E child is bootstrapped (its snapshot is still a draft): PEOPLE p2 rewrites that router onto the shared transaction helper. E keeps `pets/coreRouter.js`; PEOPLE p2 rebases on it.
-3. **F** starts after PEOPLE wave A has landed. Its F.1 personal-data inventory must include:
+2. **E** starts after CARE B has landed. E's weight-in-completion (D12) and `plannedAbsencesRouter.js` changes apply to CARE's new engine. Remove `server/routes/pets/peopleRelationshipsRouter.js` from E's `allowed_paths` before the E child is bootstrapped (its snapshot is still a draft): PEOPLE `people-server-7f3b` s3 rewrites that router onto the shared transaction helper. E keeps `pets/coreRouter.js`; PEOPLE s3 rebases on it.
+3. **F** starts after the PEOPLE server (`people-server-7f3b`) has landed. Its F.1 personal-data inventory must include:
    - `people_contacts`, `people_contact_private_notes`, `people_contact_household_notes`;
    - `household_invites`, `pet_share_invites.contact_id`;
    - contact `linked_user_id` links.
 4. **G** starts after CARE E+F have landed. Re-baseline Package 8 (health store, `CareScheduleController`) against CARE F's Care Item module before implementing; expect G.2/G.3 to shrink or close.
-5. **H** runs after the PEOPLE client landing, so each new data layer is converted once. Publish H's port/transport convention early (in D or E docs) so PEOPLE p6 can adopt it from the start.
-6. **I2** runs after PEOPLE p13 and CARE F, since it moves pet-profile surfaces those two add.
+5. **H** runs after the PEOPLE client landings, so each new data layer is converted once. Publish H's port/transport convention early (in D or E docs) so PEOPLE `people-client-core-7f3b` c1 can adopt it from the start.
+6. **I2** runs after PEOPLE `people-client-integration-7f3b` i2 and CARE F, since it moves pet-profile surfaces those two add.
 7. **J** runs after TEST slice 2 and uses TEST's KPI generator rather than a second one.
 
 ### TEST — `test-health-ci-5f3a`
@@ -186,9 +192,9 @@ Each list below is the delta against that programme's current plan. It is ready 
 
 Applied in the plan itself (2026-09-29):
 
-- **Two landings:** wave A (server p0–p5) after ARCH E; client (p6–p17) after CARE E+F and ARCH G.
+- **Four landings** (roadmap `people-domain-refactor-7f3b`): hotfixes right after this page lands (0c); server after ARCH E (4); client core after the server and CARE C+D (5c); client integration after CARE E+F and ARCH G (8).
 - **Pre-bootstrap gate:** no overlapping live plan, artifacts on `main`, and an entry gate on every phase that depends on another programme.
-- **Scope:** p1 split into p1a/p1b; migrations by name; B6 handed to CARE B; UI phases keep shards 1/3/9 green; p6 adopts ARCH D20 (entrypoint) and H (transport) conventions.
+- **Scope:** server writer/access (s1) split from usages/provider rules (s2); migrations by name; B6 handed to CARE B; every UI phase keeps shards 1/3/9 green and each client child ships its own journeys; c1 adopts ARCH D20 (entrypoint) and H (transport) conventions.
 
 ---
 
