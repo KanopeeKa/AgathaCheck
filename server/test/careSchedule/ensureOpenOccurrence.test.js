@@ -109,6 +109,32 @@ describe('ensureOpenOccurrence', () => {
     expect(inserted).toContain('2026-10-27');
   });
 
+  it('uses the deferred next_due_date as head when nothing was ever materialised', async () => {
+    const entry = makeEntry({
+      frequency: 'daily',
+      start_date: new Date('2026-07-01'),
+      next_due_date: new Date('2026-10-05'),
+    });
+    const inserted = [];
+    const pool = {
+      query: async (sql, params) => {
+        if (sql.includes('INSERT INTO health_occurrences')) {
+          inserted.push(params[2]);
+        }
+        return { rows: [] };
+      },
+    };
+
+    const result = await ensureOpenOccurrence(pool, {
+      entry,
+      todayIso: '2026-09-28',
+    });
+
+    expect(result.ok).toBe(true);
+    expect(result.head_date).toBe('2026-10-05');
+    expect(inserted).toEqual(['2026-10-05']);
+  });
+
   it('rejects requested_date that is not the open head', async () => {
     const entry = makeEntry();
     const pool = {
