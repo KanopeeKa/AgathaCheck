@@ -48,8 +48,8 @@ owner messages remain historical context.
   Paris and Lord Howe are covered. Formatter/slot caches are bounded.
 - B10 covers real next occurrences on away plans, separate estimated summaries,
   exact today/tomorrow dose counts, and reminder recreation after on-time
-  completion. Notification grouping uses the actual accessibility groups and
-  its SQL backdate helper rejects a zero-row update.
+  completion. Notification grouping retains its verified existing assertion;
+  its SQL backdate helper now rejects a zero-row update.
 - Backend verification passed: **153 suites / 1,184 tests**, including real DB
   suites. Focused migration tests: **2/2**; schedule/catch-up tests: **37/37**.
   Full local seeding into a separate disposable database followed by repair

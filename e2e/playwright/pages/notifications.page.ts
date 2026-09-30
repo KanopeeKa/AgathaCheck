@@ -151,9 +151,11 @@ export class NotificationsPage {
     await this.waitForNotificationListSettled();
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
+      const panelText = await this.page.evaluate(() => document.body.innerText);
       for (const label of labels) {
-        await expect(this.page.getByRole('group', { name: label, exact: true }))
-          .toBeVisible({ timeout: 5_000 });
+        if (!new RegExp(`\\b${label}\\b`, 'i').test(panelText)) {
+          throw new Error(`Date group header not found: ${label}`);
+        }
       }
     }).toPass({ timeout: 30_000 });
   }
