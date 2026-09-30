@@ -9,7 +9,7 @@
 | **default_merge_mode** | `auto` |
 | **artifact_branch_policy** | `phase-branch` |
 | **phases** | 2 (commit prefix `phase(<n>/2): …`) |
-| **entry gate** | Docs PR (landing slot 0) merged. Touches People-owned files only, so it may land before or after ARCH D ([parallel-programmes §4](../../docs/agent-efficiency/parallel-programmes.md)) |
+| **entry gate** | Docs PR (landing slot 0b) merged. Touches People-owned files only, so it may land before or after ARCH D ([parallel-programmes §4](../../docs/agent-efficiency/parallel-programmes.md)) |
 | **source of truth** | [target doc](../../docs/domains/people/changes/people-domain-refactor.md) §1 (bugs B1–B13) |
 
 ## Goal
@@ -133,7 +133,7 @@ autonomy: halted            # draft — bootstrapped by the roadmap
 current_phase: null
 last_completed_phase: null
 halt_reason: "draft — waiting for roadmap bootstrap"
-next_action: "roadmap bootstraps after landing slot 0"
+next_action: "roadmap bootstraps after landing slot 0b"
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

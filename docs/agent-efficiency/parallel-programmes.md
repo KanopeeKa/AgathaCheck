@@ -3,13 +3,13 @@ title: Parallel programmes — landing order and coordination
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-09-29
+last_updated: 2026-09-30
 tags: [agent-efficiency, execute-plan, coordination, integration-branches]
 ---
 
 # Parallel programmes — landing order and coordination
 
-**As of 2026-09-29 (`main` @ `adaff34`).** Four multi-phase programmes are in flight or about to start. Their `allowed_paths` overlap on the same files. This page sets **which programme owns which area when**, the **order in which they land on `main`**, and the **rebase rules** that keep everyone's work from being redone. Every programme's plan must link here and follow §4–§6.
+**As of 2026-09-30 (`main` @ `f04e19a`).** Four multi-phase programmes are in flight or about to start. Their `allowed_paths` overlap on the same files. This page sets **which programme owns which area when**, the **order in which they land on `main`**, and the **rebase rules** that keep everyone's work from being redone. Every programme's plan must link here and follow §4–§6.
 
 Related: [autonomous-pr-policy.md](./autonomous-pr-policy.md) · [execute-plan-schema.md](./execute-plan-schema.md) · [atomic-pr-policy.md](./atomic-pr-policy.md) · stale-plan closure ledger: [.agents/plans/README.md](../../.agents/plans/README.md) § Closed stale plans.
 
@@ -21,7 +21,7 @@ Related: [autonomous-pr-policy.md](./autonomous-pr-policy.md) · [execute-plan-s
 |---|---|---|---|---|---|
 | **CARE** | `care-next-occurrence-c1a7` (roadmap, children A–F) | draft PR #1448 | `claude/eager-edison-mf34j6` | Care occurrence engine (migration `083_care_occurrence_model`, data reset, reseed), agenda, form, absences, Care Item module (server + Flutter), care E2E programme | Child A committed; child B (engine) in progress |
 | **ARCH** | `active-codebase-completion-e41f` (roadmap, children D–K) | #1446 (roadmap), #1447 (D) | `cursor/active-codebase-d-integration-e41f` (one integration branch per child) | Guardrails, transactions and cleanup jobs, account erasure, client authority, ports and transport, public APIs, acyclic graph, standards | Approved; child D starting |
-| **TEST** | `test-health-ci-5f3a` (7 phases) | #1449 | `claude/relaxed-einstein-jqecfg` | Flutter shards, CI speed, pre-merge E2E, KPI and coverage docs, BDD hygiene, WAF-proof UAT smoke, security and perf tests | Plan drafted; awaiting approval |
+| **TEST** | `test-health-ci-5f3a` (7 phases) | #1449 | `claude/relaxed-einstein-jqecfg` | Flutter shards, CI speed, pre-merge E2E, KPI and coverage docs, BDD hygiene, WAF-proof UAT smoke, security and perf tests | Approved (owner, 2026-09-29); phase 1 (Flutter shard manifest, test ownership) done |
 | **PEOPLE** | `people-domain-refactor-7f3b` (18 phases, two landings) | draft (control issue at bootstrap) | `cursor/people-domain-refactor-integration-7f3b` (at bootstrap) | People server (single writer, access, relationships, read models, households, invites) and People client (typed core, picker, hub, detail, edit, add, pet section, households UI) | Draft; artifacts on `claude/exciting-bardeen-hy6yzp` |
 
 ---
@@ -39,7 +39,7 @@ Related: [autonomous-pr-policy.md](./autonomous-pr-policy.md) · [execute-plan-s
    | `flutter_app/lib/features/health_tracking/presentation/**` | C, D, F | G, H | — | p8 (provider field) |
    | `flutter_app/lib/features/pet_care/context/**` | E | G (one widget) | — | p8 (carer picker, handover) |
    | `pet_profile/.../pet_detail_screen.dart` and pet-profile sections | C (agenda) | G, I2 (move to `experience`) | — | p8, p13 |
-   | `.github/workflows/_reusable-test.yml`, coverage config, 70% threshold docs | — | D.3, J | 2, 4 | — |
+   | `.github/workflows/_reusable-test.yml`, coverage config, 70% threshold docs | — | D.2, D.3 (additive governance steps), J | 2, 4 | — |
    | `e2e/scripts/shard-files.mjs`, `e2e/playwright/support/api.ts`, canary tags | E2E programme | F, G | 1, 3, 5 | p16 |
    | `db/migrations/*`, `db/schema/**` | 083 | E, F (3 tables) | 7 (canonical check) | 4 tables |
 
@@ -62,7 +62,7 @@ An **owner** may change files in an area; everyone else waits until the owner's 
 | Sharing invites: `server/routes/sharing/**`, `server/services/sharing/**` | ARCH E (E.4) → PEOPLE p5 | ARCH E lands |
 | Pet profile composition: `pet_profile/presentation/screens/**`, pet-profile sections | CARE C → ARCH G → PEOPLE p8/p13 → ARCH I2 | each slice lands |
 | People client: `flutter_app/lib/features/people/**` | PEOPLE (waves B–D) | PEOPLE client landing |
-| CI and coverage: `.github/workflows/**`, coverage config, threshold docs | TEST (1–3) → ARCH D.3 (docs only) → TEST (4) → ARCH J | TEST slice 1 lands |
+| CI and coverage: `.github/workflows/**`, coverage config, threshold docs | TEST (1–3), with one exception: ARCH D.2/D.3 may **add** governance steps to `_reusable-test.yml` (additions only; nothing removed, reordered or weakened). Then TEST (4) → ARCH J | TEST slice 1 lands |
 | Shared E2E infrastructure: `e2e/scripts/shard-files.mjs`, `e2e/playwright/support/api.ts`, smoke/canary tags, `scripts/bdd-priority-tag-map.json` | TEST (1, 3) → CARE (E2E programme) → TEST (5) → PEOPLE p16 → ARCH K | each slice lands; others append only |
 | Shared docs: `docs/architecture/api-reference.md`, `openapi/pet-care-critical.json`, `docs/design/terminology.md`, `.agents/memory/MEMORY.md` | everyone | textual merges; update in the same PR as the code |
 
@@ -74,8 +74,9 @@ Landings into `main` happen **one at a time**. Each is followed by pre-UAT E2E g
 
 | # | Landing on `main` | Must already be on `main` | Develops in parallel with |
 |---|---|---|---|
-| 0 | **PEOPLE docs PR**: plan artifacts, this page, stale-plan closure | — | everything |
-| 1 | **ARCH D** (guardrails: baseline, feature-import gate, D7 report, D.3 coverage docs) | 0 | CARE B, TEST 1–3 |
+| 0a | **PR #1445** (`fix(e2e)`: API helpers for vet contact edit navigation). Merged as `f04e19a`; the slot closes when pre-UAT is green on `f04e19a` | — | everything |
+| 0b | **PEOPLE docs PR**: plan artifacts, this page, stale-plan closure. Not merged before 0a's pre-UAT is green | 0a (pre-UAT green) | everything |
+| 1 | **ARCH D** (guardrails: baseline, feature-import gate, D7 report, D.2/D.3 additive governance steps in `_reusable-test.yml`, D.3 coverage docs) | 0b | CARE B, TEST 1–3 |
 | 2a | **TEST slice 1** (phases 1–3: Flutter shards, CI speed, pre-merge E2E, CI for integration PRs) (disjoint with 2b) | 1 | CARE B |
 | 2b | **CARE A+B** (canonical spec, occurrence engine, migration 083, reseed) (disjoint with 2a) | 1 | TEST 1–3, ARCH E prep |
 | 3a | **ARCH E** (transactions, cleanup jobs, pet delete, invite replay, weight-in-completion) (disjoint with 3b) | 2b | CARE C+D, PEOPLE wave A |
@@ -93,7 +94,8 @@ Landings into `main` happen **one at a time**. Each is followed by pre-UAT E2E g
 
 ```mermaid
 flowchart LR
-  L0["0 PEOPLE docs"] --> L1["1 ARCH D"]
+  L0a["0a PR #1445 (pre-UAT green)"] --> L0b["0b PEOPLE docs"]
+  L0b --> L1["1 ARCH D"]
   L1 --> L2a["2a TEST 1–3"]
   L1 --> L2b["2b CARE A+B"]
   L2b --> L3a["3a ARCH E"]
@@ -115,6 +117,7 @@ flowchart LR
 
 **Why this order:**
 
+- **Clear the red first.** The last five pre-UAT runs on `main` (after #1441–#1444) failed on the People/vet E2E specs. #1445 is the fix, so nothing else lands until pre-UAT is green on its merge commit.
 - **Guardrails first.** ARCH D's feature-import gate should exist before new feature code lands, so no programme adds edges it later has to remove.
 - **Signal next.** TEST slice 1 gives every later landing faster CI and CI on integration PRs.
 - **The biggest behavioural change lands early and in slices.** CARE B, C+D and E+F land separately, so dependants rebase over small changes.
@@ -160,7 +163,7 @@ Each list below is the delta against that programme's current plan. It is ready 
 
 ### ARCH — `active-codebase-completion-e41f`
 
-1. **D** proceeds now. D.3 is the single owner of the coverage-threshold (70%) doc alignment. D makes **no** `.github/workflows/**` edits; TEST owns them until TEST slice 1 lands, and J builds on that afterwards.
+1. **D** proceeds now. D.3 is the single owner of the coverage-threshold (70%) doc alignment. D.2 and D.3 may **add** governance steps to `.github/workflows/_reusable-test.yml` (additions only: no step removed, reordered or weakened). Every other `.github/workflows/**` edit waits for TEST slice 1, and J builds on that afterwards. Name the added steps on #1449 so TEST phase 2's batching keeps them.
 2. **E** starts after CARE B has landed. E's weight-in-completion (D12) and `plannedAbsencesRouter.js` changes apply to CARE's new engine. Remove `server/routes/pets/peopleRelationshipsRouter.js` from E's `allowed_paths` before the E child is bootstrapped (its snapshot is still a draft): PEOPLE p2 rewrites that router onto the shared transaction helper. E keeps `pets/coreRouter.js`; PEOPLE p2 rebases on it.
 3. **F** starts after PEOPLE wave A has landed. Its F.1 personal-data inventory must include:
    - `people_contacts`, `people_contact_private_notes`, `people_contact_household_notes`;
@@ -173,7 +176,7 @@ Each list below is the delta against that programme's current plan. It is ready 
 
 ### TEST — `test-health-ci-5f3a`
 
-1. **Land phases 1–3 first** as one slice. TEST owns `.github/workflows/**`, coverage config and the shard manifest structure until then.
+1. **Land phases 1–3 first** as one slice (phase 1 is done). TEST owns `.github/workflows/**`, coverage config and the shard manifest structure until then, except ARCH D.2/D.3's additive governance steps in `_reusable-test.yml`: keep them when restructuring CI in phase 2.
 2. In phase 2 or 3, **run the short PR CI tier for PRs into integration branches** (`cursor/*-integration-*`, plus the CARE and TEST work branches), not only PRs into `main`. Integration programmes currently land blind (§2.2). Keep the ≤5 min Flutter / ≤8 min UI+E2E budgets.
 3. Phase 4: take the 70% domain-gate doc alignment from ARCH D.3 instead of re-doing it; own the KPI generator that ARCH J will reuse.
 4. Phase 5 (BDD hygiene): run after CARE's BDD/Playwright disposition (CARE §11.2–11.6) has landed, or exclude care features from it.
@@ -203,7 +206,7 @@ Applied in the plan itself (2026-09-29):
 ## 8. Housekeeping
 
 - **Stale plans:** 42 snapshots that still said `active` on `main` were closed on 2026-09-29, along with 7 open control issues (#1427, #1373, #1094, #1093, #671, #652, #500). The ledger is in [.agents/plans/README.md](../../.agents/plans/README.md) § Closed stale plans.
-- **Idle sessions that look superseded** (for the owner to archive):
+- **Idle sessions that look superseded** (the owner is archiving them, 2026-09-30):
   - People contact detail/edit flows (`claude/blissful-tesla-zo0yyg`) — superseded by #1440 and PEOPLE.
   - Unified care team concept review (`claude/friendly-hopper-la0gx7`) — spec landed via #1344.
   - Care Item Evolution specification review (`claude/festive-einstein-tgv8yh`) — superseded by CARE.

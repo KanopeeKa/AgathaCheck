@@ -522,7 +522,7 @@ The execute-plan contract is a roadmap, [`.agents/plans/people-domain-refactor-7
 
 | Child | Phases | Outcome | Entry gate (on `main`) |
 |---|---|---|---|
-| [`people-hotfixes-7f3b`](/.agents/plans/people-hotfixes-7f3b.md) | h1 kind (B2) · h2 client fixes (B1, B5, B7, B9, B13) | The cheap bugs fixed now, with regression tests | docs PR (slot 0) |
+| [`people-hotfixes-7f3b`](/.agents/plans/people-hotfixes-7f3b.md) | h1 kind (B2) · h2 client fixes (B1, B5, B7, B9, B13) | The cheap bugs fixed now, with regression tests | docs PR (slot 0b) |
 | [`people-server-7f3b`](/.agents/plans/people-server-7f3b.md) | s1 writer and access · s2 usages and provider rules (B3, B6 test, B10, B12) · s3 relationships and vet projection (B11) · s4 read models · s5 household directory and notes · s6 household invites and contact links · s7 ship | People server complete | CARE A+B, ARCH E (slot 4) |
 | [`people-client-core-7f3b`](/.agents/plans/people-client-core-7f3b.md) | c1 typed core and façade (B1) · c2 components and picker · c3 hub, list–detail, desk (B4, B5) · c4 detail · c5 edit (B13) · c6 add flow (B9) · c7 households UI · c8 E2E · c9 ship | People-owned screens complete, with journeys | `people-server-7f3b`, CARE C+D |
 | [`people-client-integration-7f3b`](/.agents/plans/people-client-integration-7f3b.md) | i1 consumers (B7, B8) · i2 People around {pet} · i3 retire legacy · i4 E2E · i5 ship and docs | Integration with pet profile, care and Away Planning complete; legacy gone | `people-client-core-7f3b`, CARE E+F, ARCH G (slot 8) |
