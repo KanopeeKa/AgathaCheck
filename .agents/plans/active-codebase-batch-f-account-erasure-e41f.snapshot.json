@@ -1,0 +1,198 @@
+{
+  "schema_version": 1,
+  "plan_id": "active-codebase-batch-f-account-erasure-e41f",
+  "programme_ref": "docs/architecture/reviews/active-codebase-review.md",
+  "approved_at": null,
+  "approved_by": "standing grant — roadmap active-codebase-completion-e41f (pending approve-autonomous active-codebase-completion-e41f)",
+  "approved_until": null,
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/active-codebase-f-integration-e41f",
+  "control_issue": null,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Erasure data map and acceptance ADR",
+      "branch": "cursor/active-codebase-f1-erasure-data-map-e41f",
+      "allowed_paths": [
+        ".agents/plans/active-codebase-batch-f-account-erasure-e41f.*",
+        "docs/engineering/privacy/**",
+        "docs/architecture/decisions/**",
+        "docs/architecture/index.md",
+        "server/test/db/erasureDataMap*.test.js",
+        "server/test/db/helpers/**"
+      ],
+      "forbidden_paths": [
+        "server/lib/**",
+        "server/routes/**",
+        "flutter_app/**",
+        "e2e/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "2",
+      "title": "Erasure service, 202 contract and status capability",
+      "branch": "cursor/active-codebase-f2-erasure-service-e41f",
+      "allowed_paths": [
+        ".agents/plans/active-codebase-batch-f-account-erasure-e41f.*",
+        "db/migrations/*_account_erasure_operations.sql",
+        "db/migrations/*_account_erasure_operations_down.sql",
+        "server/lib/account/**",
+        "server/lib/jobs/handlers/posthogPersonDelete.js",
+        "server/lib/jobs/handlers/index.js",
+        "server/lib/posthogServer.js",
+        "server/lib/petDataLifecycle.js",
+        "server/routes/auth/profileRouter.js",
+        "server/routes/auth/index.js",
+        "server/test/auth/**",
+        "server/test/account/**",
+        "server/test/db/accountErasure*.test.js",
+        "server/test/migrations/*_account_erasure_operations.test.js",
+        "docs/architecture/api-reference.md",
+        "docs/architecture/openapi/pet-care-critical.json",
+        "docs/ops/account-erasure.md"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "e2e/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "3",
+      "title": "Reject pre-erasure access tokens and close upload races",
+      "branch": "cursor/active-codebase-f3-access-rejection-e41f",
+      "allowed_paths": [
+        ".agents/plans/active-codebase-batch-f-account-erasure-e41f.*",
+        "server/lib/auth/accountExistence.js",
+        "server/bin/server.js",
+        "server/lib/safeUpload.js",
+        "server/lib/privateHealthStorage.js",
+        "server/routes/pets/photoRouter.js",
+        "server/routes/healthEntries/shared.js",
+        "server/test/auth/accountExistence*.test.js",
+        "server/test/db/erasureRace*.test.js",
+        "docs/ops/observability.md"
+      ],
+      "forbidden_paths": [
+        "server/routes/auth/**",
+        "flutter_app/**",
+        "e2e/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "4",
+      "title": "Client handling, BDD and E2E",
+      "branch": "cursor/active-codebase-f4-erasure-client-e41f",
+      "allowed_paths": [
+        ".agents/plans/active-codebase-batch-f-account-erasure-e41f.*",
+        "flutter_app/lib/features/auth/presentation/screens/my_details_screen.dart",
+        "flutter_app/lib/features/auth/data/auth_service.dart",
+        "flutter_app/lib/l10n/app_en.arb",
+        "flutter_app/lib/l10n/app_fr.arb",
+        "flutter_app/lib/l10n/app_localizations.dart",
+        "flutter_app/lib/l10n/app_localizations_en.dart",
+        "flutter_app/lib/l10n/app_localizations_fr.dart",
+        "flutter_app/test/features/auth/**",
+        "flutter_app/test/bdd/features/gdpr_data_rights.feature",
+        "e2e/playwright/tests/gdpr.data-rights.spec.ts",
+        "e2e/playwright/pages/my-details.page.ts",
+        "e2e/playwright/support/api.ts"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "5",
+      "title": "Integration → main + pre-UAT",
+      "branch": "cursor/active-codebase-f-integration-e41f",
+      "allowed_paths": [
+        "**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/deploy-*.yml"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    }
+  ],
+  "content_hash": null
+}

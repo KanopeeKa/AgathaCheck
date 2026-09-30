@@ -88,16 +88,20 @@ export class CommandTrace {
  * @param {object} params.entry locked health_entries row
  * @param {{ todayIso: string, nowTimeIso: string, timeZone?: string }} params.asOf
  * @param {string|null} params.userId
- * @param {(ctx: { db: any, entry: object, asOf: object, userId: string|null, trace: CommandTrace, openRows: object[] }) => Promise<{ event: CommandEvent|null, result?: T }>} fn
+ * @param {(ctx: { db: any, entry: object, initialDates: { next_due_date: unknown, start_date: unknown }, asOf: object, userId: string|null, trace: CommandTrace, openRows: object[] }) => Promise<{ event: CommandEvent|null, result?: T }>} fn
  * @returns {Promise<T & { entry: object, openOccurrences: object[], undoToken: string|null }>}
  */
 export async function executeCareCommand({ db, entry, asOf, userId }, fn) {
+  const initialDates = rowSnapshot({
+    next_due_date: entry.next_due_date,
+    start_date: entry.start_date,
+  });
   const caughtUp = await syncOpenOccurrences(db, entry, asOf);
   const fresh = caughtUp.entry || await reloadEntry(db, entry.id);
   const trace = new CommandTrace(fresh);
   const openRows = await listOpenRows(db, fresh.id);
   const { event, result = {} } = await fn({
-    db, entry: fresh, asOf, userId, trace, openRows,
+    db, entry: fresh, initialDates, asOf, userId, trace, openRows,
   });
 
   const afterAction = await reloadEntry(db, fresh.id);

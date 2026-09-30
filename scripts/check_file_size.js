@@ -5,8 +5,12 @@
  * Grandfathered files in scripts/file-size-allowlist.json may exceed the limit
  * but must not grow beyond their recorded max (ratchet).
  *
+ * server/lib and server/services are scanned in report-only mode (D7, active-codebase
+ * review): offenders are listed under "Report-only (D7)" and never change the exit code.
+ * Published exceptions: docs/engineering/active-codebase-baseline/size-report.md.
+ *
  * Usage:
- *   node scripts/check_file_size.js [--limit 500] [--report-only]
+ *   node scripts/check_file_size.js [--limit 500] [--report-only] [--root <repo dir>]
  *
  * Exit codes:
  *   0  all checks pass (or --report-only)
@@ -18,12 +22,15 @@
 const fs = require('fs');
 const path = require('path');
 
-const REPO_ROOT = path.resolve(__dirname, '..');
-const ALLOWLIST_PATH = path.join(__dirname, 'file-size-allowlist.json');
-
 const SCAN_ROOTS = [
   'flutter_app/lib',
   'server/routes',
+];
+
+/** D7: measured and reported, never blocking (ratchet lands in a later batch). */
+const REPORT_ONLY_ROOTS = [
+  'server/lib',
+  'server/services',
 ];
 
 const EXCLUDE_DIR_NAMES = new Set(['l10n']);
@@ -32,22 +39,26 @@ const EXCLUDE_SUFFIXES = ['.g.dart', '.mocks.dart', '.freezed.dart'];
 function parseArgs(argv) {
   let limit = 500;
   let reportOnly = false;
+  let root = path.resolve(__dirname, '..');
   for (let i = 2; i < argv.length; i++) {
     if (argv[i] === '--limit' && argv[i + 1]) {
       limit = Number(argv[++i]);
     } else if (argv[i] === '--report-only') {
       reportOnly = true;
+    } else if (argv[i] === '--root' && argv[i + 1]) {
+      root = path.resolve(argv[++i]);
     }
   }
   if (!Number.isFinite(limit) || limit < 1) {
     throw new Error(`Invalid --limit: ${limit}`);
   }
-  return { limit, reportOnly };
+  return { limit, reportOnly, root };
 }
 
-function loadAllowlist() {
-  if (!fs.existsSync(ALLOWLIST_PATH)) return {};
-  const raw = JSON.parse(fs.readFileSync(ALLOWLIST_PATH, 'utf8'));
+function loadAllowlist(root) {
+  const allowlistPath = path.join(root, 'scripts/file-size-allowlist.json');
+  if (!fs.existsSync(allowlistPath)) return {};
+  const raw = JSON.parse(fs.readFileSync(allowlistPath, 'utf8'));
   const out = {};
   for (const [key, value] of Object.entries(raw)) {
     if (key.startsWith('_')) continue;
@@ -62,10 +73,10 @@ function shouldSkip(relPath) {
   return EXCLUDE_SUFFIXES.some((suf) => relPath.endsWith(suf));
 }
 
-function collectFiles() {
+function collectFiles(repoRoot, scanRoots) {
   const files = [];
-  for (const root of SCAN_ROOTS) {
-    const absRoot = path.join(REPO_ROOT, root);
+  for (const root of scanRoots) {
+    const absRoot = path.join(repoRoot, root);
     if (!fs.existsSync(absRoot)) continue;
     walk(absRoot, root);
   }
@@ -98,14 +109,14 @@ function countLines(absPath) {
 }
 
 function main() {
-  const { limit, reportOnly } = parseArgs(process.argv);
-  const allowlist = loadAllowlist();
+  const { limit, reportOnly, root } = parseArgs(process.argv);
+  const allowlist = loadAllowlist(root);
   const violations = [];
   const grandfathered = [];
-  const allFiles = collectFiles();
+  const allFiles = collectFiles(root, SCAN_ROOTS);
 
   for (const rel of allFiles) {
-    const lines = countLines(path.join(REPO_ROOT, rel));
+    const lines = countLines(path.join(root, rel));
     const ceiling = allowlist[rel];
 
     if (ceiling !== undefined) {
@@ -132,6 +143,15 @@ function main() {
   console.log(`File size gate: ${limit} lines (hand-written dart/js under ${SCAN_ROOTS.join(', ')})`);
   console.log(`Grandfathered files: ${grandfathered.length}`);
   console.log(`Scanned files: ${allFiles.length}`);
+
+  const reportOnlyOffenders = collectFiles(root, REPORT_ONLY_ROOTS)
+    .map((rel) => ({ rel, lines: countLines(path.join(root, rel)) }))
+    .filter((f) => f.lines > limit)
+    .sort((a, b) => b.lines - a.lines);
+  console.log(`\nReport-only (D7): ${REPORT_ONLY_ROOTS.join(', ')} — ${reportOnlyOffenders.length} file(s) over ${limit} lines (non-blocking)`);
+  for (const f of reportOnlyOffenders) {
+    console.log(`  ${f.lines} lines  ${f.rel}`);
+  }
 
   if (grandfathered.length > 0) {
     console.log('\nGrandfathered (must shrink over time):');

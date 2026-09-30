@@ -1,12 +1,15 @@
 import { publicError } from '../../config/security.js';
-import { normalizeCalendarDateInput } from '../../lib/calendarDate.js';
+import { normalizeCalendarDateInput, dateToIsoDate } from '../../lib/calendarDate.js';
 import { userCanManageHealthEntry } from '../../lib/petAccess.js';
 import {
   closeSeriesCommand,
   completeOccurrenceCommand,
+  createInitialOccurrences,
+  listOpenRows,
   reopenSeriesCommand,
   undoCommand,
 } from '../../lib/care/occurrence/index.js';
+import { seriesStep } from '../../lib/care/schedule/seriesDates.js';
 import { careItemWire } from './careItemWire.js';
 import { extractUserId, historyToMap } from './shared.js';
 import { handleCommand } from './occurrencesRouter.js';
@@ -28,9 +31,33 @@ export function registerCompletionRoutes(router, pool) {
     return handleCommand(pool, req, res, {
       guard: (entry) => (isWeightMonitoringEntry(entry) ? WEIGHT_GENERIC_COMPLETE_ERROR : null),
       command: async (ctx) => {
-        const target = ctx.openRows[0];
+        let openRows = ctx.openRows;
+        if (
+          openRows.length === 0
+          && ctx.entry.status === 'paused'
+        ) {
+          return { event: null, result: { occurrence: null, paused: true } };
+        }
+
+        // The command runner's normal sync materialises recurring heads. Legacy
+        // one-off rows can still lack an occurrence (for example, imported
+        // rows), so create their canonical date inside this command transaction.
+        if (
+          openRows.length === 0
+          && ctx.entry.status === 'active'
+          && (ctx.entry.care_planning || 'planned') !== 'unplanned'
+          && !seriesStep(ctx.entry)
+        ) {
+          const firstDate = dateToIsoDate(ctx.initialDates.next_due_date)
+            || dateToIsoDate(ctx.initialDates.start_date)
+            || ctx.asOf.todayIso;
+          await createInitialOccurrences(ctx, { firstDate });
+          openRows = await listOpenRows(ctx.db, ctx.entry.id);
+        }
+
+        const target = openRows[0];
         if (!target) return { event: null, result: { occurrence: null } };
-        return completeOccurrenceCommand(ctx, {
+        return completeOccurrenceCommand({ ...ctx, openRows }, {
           occurrenceId: target.id,
           completedOn: normalizeCalendarDateInput(body.completed_on || body.completedOn),
           notes: body.notes || '',
@@ -46,7 +73,10 @@ export function registerCompletionRoutes(router, pool) {
       }),
       respond: async (out) => {
         if (!out.occurrence) {
-          return { status: 400, body: { error: 'No open date to complete' } };
+          return {
+            status: 400,
+            body: { error: out.paused ? 'Care item is paused' : 'No open date to complete' },
+          };
         }
         return { body: await entryBody(pool, out, req) };
       },

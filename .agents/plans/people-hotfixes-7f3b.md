@@ -127,7 +127,7 @@ flutter_app/lib/features/organization/**
 - [ ] B5 widget test: the desk shows "Vet nurse · Emergency contact", not wire values
 - [ ] B7 test: the report vet block includes phone/email/address when present
 - [ ] B9 and B13 widget tests: failed save shows mapped copy; kind toggles back and forth; Save disabled with no role
-- [ ] `flutter analyze` and `flutter test` green; `./scripts/pre-push-changed.sh --e2e-shards 3,9` green (desk and vet specs)
+- [ ] `flutter analyze` and `flutter test` green; `./scripts/pre-push-changed.sh --e2e-shards <indices from shard-files --summary>` green (desk and vet specs)
 
 ---
 

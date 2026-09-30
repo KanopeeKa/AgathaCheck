@@ -174,7 +174,7 @@ Weight monitoring rhythms: generic complete and `mark-taken` return `400` — us
 
 | Method | Path | Notes |
 |---|---|---|
-| POST | `/:id/mark-taken` | Completes the most urgent open slot; never 400 for an active planned item |
+| POST | `/:id/mark-taken` | **Deprecated** — completes the most urgent open slot, materialising the canonical open head first when missing; never 400 for an active planned item; **no `health_history` write**; prefer occurrence complete |
 | POST | `/:id/occurrences/ensure-open` | Returns the current open occurrences with `created: false` (every active planned item already has one, D-CSM-019) |
 | POST | `/:id/pause` | = `postpone { until: null, reason: 'pause' }` |
 | POST | `/:id/occurrences/skip-missed` | Body `{ as_of? }`; wrapper over `resolve-stack` |

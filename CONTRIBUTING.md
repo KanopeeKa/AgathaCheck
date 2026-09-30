@@ -3,7 +3,7 @@ title: Contributing to Agatha Track
 owner: Documentation Team
 audience: human
 status: active
-last_updated: 2026-08-21
+last_updated: 2026-09-29
 tags: [contributing,workflow]
 ---
 # Contributing to Agatha Track

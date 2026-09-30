@@ -164,6 +164,7 @@ test.describe('Guardian dashboard', () => {
     await dashboard.open();
     await dashboard.expectCareVisible('Actionable Care');
     await page.locator(`[flt-semantics-identifier="care_event_row_done_${entry.id}"]`).click();
+    await page.getByRole('button', { name: 'Mark Completed', exact: true }).click();
     const undo = page.locator(`[flt-semantics-identifier="care_event_row_undo_${entry.id}"]`);
     await expect(async () => {
       await refreshFlutterAccessibility(page);

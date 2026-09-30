@@ -3,7 +3,7 @@ title: Active codebase architecture review
 owner: Engineering
 audience: both
 status: accepted
-last_updated: 2026-09-22
+last_updated: 2026-09-29
 peer_reviewed: 2026-09-22
 tags: [architecture, review, modularity, pet-care]
 ---
@@ -262,6 +262,27 @@ These are implementation design/test requirements, not claims of newly observed 
 | **Compatibility and baseline rules can silently widen scope.** Mixed transfer router registers individual and org transfer; family-events includes org-specific writes and reads (`transferRouter.js`, `familyEventsRouter.js`). | P2/P11: list routes, callers and response fields before gating. Historical/retained reads are classified, not assumed active or frozen by filename. Store baseline revision and exact violation identities; publish size exceptions, not just totals. | Both-prefix route matrix; active individual transfer preserved; forbidden org mutations unavailable; intentional historical-read policy tested. A different new violation fails even when total violation count decreases. |
 
 **Scope discipline:** complete the contract and failure tests within each owning package; do not create a generic queue framework, offline mutation ledger, new auth platform, storage migration or unrelated refactor to satisfy this register. If a listed operational guarantee cannot be met by the current environment, stop that package's cutover and document the concrete blocker.
+
+## Implementation status (as of 2026-09-30)
+
+Batches A–C shipped the core step of Packages 1–4 and 6–8 (PRs #1282–#1319). Measured against the exit gates in **Detailed implementation plan** below, several packages are still partial. Package 9's coupling has **regressed** since the review baseline (unique cross-feature edges 50 → 59, directives 466 → 536, strongly connected features 12 → 13), while Batch D (#1467) landed the **D6 block-new gate** so new violations cannot land—the graph metrics below remain worse than baseline until I1/I2. The remaining work is scheduled by the execute-plan roadmap [`active-codebase-completion-e41f`](../../../.agents/plans/active-codebase-completion-e41f.md) (control issue #1446), which also records decisions D8–D23. The copy of this document on branch `replit/preuat-adoption-pets-e7d3d1d` is historical; this file on `main` is authoritative.
+
+| Package | Status | Merged PRs | Open items | Owning child plan |
+|---|---|---|---|---|
+| 1 Baseline and failure contracts | Done | #1282 | Baseline README rows refreshed in Batch D phase 1 | `active-codebase-batch-d-guardrails-e41f` |
+| 2 Active/frozen boundary | Done | #1283, #1284 | None. Org-transfer and org-scoped family-event writes return JSON 404 when `ENABLE_FROZEN_DOMAINS` is off (`server/lib/frozenDomains.js`), which clients observe exactly as an unmounted route; the manifest-driven checker runs in CI. | — |
+| 3 Transaction owner and pet deletion | Partial | #1295, #1296 | No `cleanup_jobs` (files deleted best-effort after commit); `files_removed` counts scheduled files; audit write not awaited inside the transaction; `DELETE /pets/:id` deletes the pet row outside the data transaction; ~20 hand-written `BEGIN` blocks and 3 `withOptionalTransaction` copies with a pool fallback | `active-codebase-batch-e-backend-integrity-e41f` |
+| 4 Stable committed command results | Partial | #1297 | Invite-code retry runs inside an aborted transaction; no invite replay or concurrency control; invite notifications written after commit; weight establishment and cache refresh fail silently after commit | `active-codebase-batch-e-backend-integrity-e41f` |
+| 5 Resumable account erasure | Not started | — | `DELETE /api/auth/me` is synchronous, purges files and PostHog before deleting the user row, and leaves access JWTs valid | `active-codebase-batch-f-account-erasure-e41f` |
+| 6 Passed-away notification contract | Done (core) | #1299 | Repeat POST re-notifies every collaborator; `api-reference.md` still lists the endpoint under "Lifecycle stubs" | `active-codebase-batch-e-backend-integrity-e41f` |
+| 7 Pet cache authority | Partial | #1309, #1319 | No freshness limit; cached `fetchedAt` is set to `now()`; pet detail not migrated; no offline journey test | `active-codebase-batch-g-client-authority-e41f` |
+| 8 Canonical health state | Partial | #1315 | No `CareScheduleController` (15 repository calls in 10 widget files); `refresh()` drops data on failure; no out-of-order or session guard | `active-codebase-batch-g-client-authority-e41f` |
+| 9 Public APIs and cycles | Partial (gate) | #1467 (Batch D) | **D6 block-new** import gate in CI (`check_feature_imports.js`); public entrypoints and cycle-breaking still open | `active-codebase-batch-i1-public-apis-e41f`, `active-codebase-batch-i2-acyclic-graph-e41f` |
+| 10 Ports and transport boundaries | Not started | — | No `AuthRepository`/`SessionStore`/`HealthDocumentsRepository`; `server/lib` imports `server/routes`; no central async error boundary | `active-codebase-batch-h-ports-transport-e41f` |
+| 11 Measurable standards | Partial (D7/D23) | #1467 (Batch D) | `server/lib` / `server/services` size **report-only**; docs and scripts agree on **70%** Flutter coverage threshold; full ratchet and LCOV denominator work remain | `active-codebase-batch-j-standards-e41f` |
+| 12 Extractions and final acceptance | Not started | — | Hotspot extractions, ADRs, component READMEs, before/after metrics | `active-codebase-batch-k-final-acceptance-e41f` |
+
+Update the row for a package when the child plan that owns it merges to `main`.
 
 ## Detailed implementation plan to reach the target state
 

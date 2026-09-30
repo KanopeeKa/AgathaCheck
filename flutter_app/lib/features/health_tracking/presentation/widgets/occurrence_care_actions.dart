@@ -39,7 +39,7 @@ class OccurrenceCareActions {
 
     final summary = summarizeOpenOccurrences(occurrences, DateTime.now());
 
-    if (summary.openCount > 1 || summary.missedCount >= 1) {
+    if (summary.missedCount > 0) {
       final stackResult = await showOccurrenceStackSheet(
         context,
         entry: entry,
@@ -175,7 +175,7 @@ class OccurrenceCareActions {
     final summary = summarizeOpenOccurrences(occurrences, DateTime.now());
     if (summary.openCount == 0) return null;
 
-    if (summary.openCount > 1 || summary.missedCount >= 1) {
+    if (summary.missedCount > 0) {
       final stackResult = await showOccurrenceStackSheet(
         context,
         entry: entry,

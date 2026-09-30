@@ -28,7 +28,7 @@ Other features (pet profile, care, Away Planning, report) keep working through *
 
 - **Start of phase:** rebase on `origin/main`; run the full `./scripts/pre-push.sh` after any landing broadcast.
 - **Areas released to this child:** People client (`flutter_app/lib/features/people/**`), the Today desk module and home content, People routes and households UI. **Not released:** care UI (`health_tracking/presentation/**`), absences (`pet_care/context/**`), and pet profile screens and sections. Don't edit those here.
-- **E2E stays green in every phase:** each UI phase updates the existing specs and page objects it affects **in the same PR** and runs `./scripts/pre-push-changed.sh --e2e-shards 3,9` against `bin/start.js` (AGENTS.md single-origin). Shard 3 covers the People hub, desk, nav and Away Planning; shard 9 covers vets. Shared E2E files (`support/api.ts`, `shard-files.mjs`, tags) are append-only.
+- **E2E stays green in every phase:** each UI phase updates the affected specs and page objects **in the same PR**. At phase start run `node e2e/scripts/shard-files.mjs --summary` (TEST 1b rebalance — do not use frozen shard lists). Pick shard indices whose spec files you touch (e.g. `people-hub.spec.ts`, `veterinarian.spec.ts`), then `./scripts/pre-push-changed.sh --e2e-shards <indices>` against `bin/start.js` (AGENTS.md single-origin). Shared E2E files (`support/api.ts`, `shard-files.mjs`, tags) are append-only.
 - **Feature-import gate (ARCH D):** `node scripts/check_feature_imports.js` green; the baseline may only shrink.
 - Files ≤300 lines ideally, ≤500 hard; no private widget over 80 lines in a page file.
 
@@ -226,7 +226,7 @@ flutter_app/lib/features/pet_care/**
 - [ ] Widget tests: sections (members, invites), search over role/email/pet, filters and URL state, empty/loading/error
 - [ ] Widget test at 1280×800: detail in the pane, shell outside the split, search survives selection (B4)
 - [ ] Desk tests: localized role line (B5), Vet team rule, ranking, member rail
-- [ ] `./scripts/pre-push-changed.sh --e2e-shards 3,9` green with the updated specs
+- [ ] `./scripts/pre-push-changed.sh --e2e-shards <indices from shard-files --summary>` green with the updated specs
 
 ---
 
@@ -286,7 +286,7 @@ flutter_app/lib/features/pet_profile/**
 
 - [ ] Widget tests per tab and variant; "Link to a pet" invalidates detail and petPeople
 - [ ] Tabs and action bar labelled for screen readers; no raw error text
-- [ ] `--e2e-shards 3,9` green
+- [ ] `--e2e-shards` (resolved via `shard-files.mjs --summary`) green
 
 ---
 
@@ -352,7 +352,7 @@ flutter_app/lib/features/pet_profile/**
 
 - [ ] Widget tests: validation, roles/kind edit, linked read-only, slot replace, reactivate, usages dialog, removal preview
 - [ ] Discard dialog on dirty back; no raw exception text
-- [ ] `--e2e-shards 3,9` green
+- [ ] `--e2e-shards` (resolved via `shard-files.mjs --summary`) green
 
 ---
 
@@ -421,7 +421,7 @@ flutter_app/lib/features/pet_care/**
 
 - [ ] Widget tests for each tile path; kind explicit; roles required for carers and professionals; duplicate card opens existing; mapped save errors
 - [ ] Share handoff prefilled and sends `contact_id`; household invite path sends `contact_id`
-- [ ] `grep -rn inferPeopleContactKind flutter_app/lib` empty; `--e2e-shards 3,9` green
+- [ ] `grep -rn inferPeopleContactKind flutter_app/lib` empty; `--e2e-shards` (from `shard-files.mjs --summary`) green
 
 ---
 

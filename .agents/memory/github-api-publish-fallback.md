@@ -30,3 +30,26 @@ access has recovered. Preserve the complete local history; do not omit required
 workflow changes or work around provider restrictions. Reauthorization is only
 useful when it can offer the missing permission; otherwise use an authorized
 Git push path with workflow-file access.
+
+Successful fetching from a public repository does not prove that Git's write
+credentials are valid.
+
+**Why:** Public reads can succeed without authentication, while a push rejects
+the credentials. A Git pane's generic rejection message does not distinguish
+this from divergent history or branch rules.
+
+**How to apply:** Check history and branch rules without changing them. For an
+explicitly authorized token in Replit Secrets, test authenticated `/user` access
+inside a process that never logs the token. A 401 `Bad credentials` identifies
+an authentication failure; do not attempt to fix it by rewriting branch history.
+
+Repair an authorized push without silently replacing the user's saved Git
+credential configuration.
+
+**Why:** The editor's Git login and an independently authorized push can use
+different credential paths. A successful push through one path does not prove
+that the Git pane's saved login has been repaired.
+
+**How to apply:** Prefer command-scoped authentication for the authorized
+operation. Keep credentials in Replit Secrets, never in remote URLs or logs.
+Check workflow-file write permission separately from repository push access.

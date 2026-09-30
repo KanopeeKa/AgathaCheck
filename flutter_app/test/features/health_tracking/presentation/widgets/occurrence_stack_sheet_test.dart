@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/core/utils/calendar_date.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_occurrence.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/occurrence_scheduling.dart';
+import 'package:pet_profile_app/features/health_tracking/presentation/providers/occurrence_providers.dart';
+import 'package:pet_profile_app/features/health_tracking/presentation/widgets/occurrence_care_actions.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/widgets/occurrence_stack_sheet.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
@@ -47,6 +50,42 @@ Widget _buildSheet({
         occurrences: occurrences,
         onRecordHead: onRecordHead ?? (_, __, ___) async {},
         onSkipAllMissed: onSkipAllMissed ?? () async {},
+      ),
+    ),
+  );
+}
+
+Widget _buildCareActionsHarness({
+  required List<HealthOccurrence> occurrences,
+  required ValueChanged<OccurrenceMarkDoneResult?> onResult,
+}) {
+  return ProviderScope(
+    overrides: [
+      entryOccurrencesProvider(
+        _entry.id,
+      ).overrideWith((ref) async => occurrences),
+    ],
+    child: MaterialApp(
+      theme: AppTheme.lightTheme,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: Builder(
+        builder: (context) => Scaffold(
+          body: Consumer(
+            builder: (context, ref, _) => ElevatedButton(
+              onPressed: () async {
+                onResult(
+                  await OccurrenceCareActions.showMarkDoneFlow(
+                    context,
+                    ref,
+                    _entry,
+                  ),
+                );
+              },
+              child: const Text('Open care actions'),
+            ),
+          ),
+        ),
       ),
     ),
   );
@@ -156,6 +195,64 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(recorded, isFalse);
+    });
+  });
+
+  group('OccurrenceCareActions.showMarkDoneFlow', () {
+    testWidgets(
+      'due-today and future pending occurrences use the normal date flow',
+      (tester) async {
+        final today = calendarDateOnly(DateTime.now());
+        final tomorrow = today.add(const Duration(days: 1));
+        OccurrenceMarkDoneResult? result;
+
+        await tester.pumpWidget(
+          _buildCareActionsHarness(
+            occurrences: [
+              _occ(id: 'today', date: today),
+              _occ(id: 'future', date: tomorrow),
+            ],
+            onResult: (value) => result = value,
+          ),
+        );
+        await tester.tap(find.text('Open care actions'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Record doses for Morning meds'), findsNothing);
+        expect(find.text('Mark as completed'), findsOneWidget);
+        await tester.tap(find.text('Mark Completed'));
+        await tester.pumpAndSettle();
+
+        expect(result, isNotNull);
+        expect(result!.completedOn, calendarDateOnly(DateTime.now()));
+        expect(result!.occurrenceId, isNull);
+      },
+    );
+
+    testWidgets('a genuinely missed occurrence still opens the stack', (
+      tester,
+    ) async {
+      final today = calendarDateOnly(DateTime.now());
+      final yesterday = today.subtract(const Duration(days: 1));
+      OccurrenceMarkDoneResult? result;
+
+      await tester.pumpWidget(
+        _buildCareActionsHarness(
+          occurrences: [
+            _occ(id: 'missed', date: yesterday),
+            _occ(id: 'today', date: today),
+          ],
+          onResult: (value) => result = value,
+        ),
+      );
+      await tester.tap(find.text('Open care actions'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Record doses for Morning meds'), findsOneWidget);
+      expect(find.text('Overdue'), findsOneWidget);
+      expect(find.text('Due today'), findsOneWidget);
+      expect(find.text('Mark as completed'), findsNothing);
+      expect(result, isNull);
     });
   });
 

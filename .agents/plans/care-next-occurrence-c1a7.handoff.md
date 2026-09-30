@@ -83,6 +83,32 @@ owner messages remain historical context.
 
 ### Takeover implementation and evidence
 
+#### Final A+B readiness checkpoint — supersedes earlier pending status
+
+- The publishing blocker was resolved with a normal fast-forward Git push;
+  shared history is intact. No credentials or runtime `.replit` settings belong
+  in the committed tree.
+- Published checkpoint `7b5ee94b5965f1713d03e36899a4ed75627e7a24` passed full
+  local pre-push and [full CI](https://github.com/KanopeeKa/AgathaCheck/actions/runs/36785731270).
+  Its [nine-shard E2E](https://github.com/KanopeeKa/AgathaCheck/actions/runs/36785734073)
+  passed eight shards, including the formerly failing away-care shard. Shard 5
+  exposed dashboard completion treating a due-today plus future pending pair as
+  a missed-dose stack. The compatibility fix preserves true missed-dose review;
+  the test confirms the existing completion-date sheet before asserting Undo.
+- ARCH D is merged. Main `2cad1a5efe690752cd62a2abd5d65d71df36ad7d` passed
+  [pre-UAT](https://github.com/KanopeeKa/AgathaCheck/actions/runs/36785434178)
+  and is being merged into the shared CARE branch without rewriting history.
+- The incoming `mark-taken` materialization fix is retained through the new
+  command engine, not by restoring the obsolete helper. Missing one-off heads
+  preserve their original due date from the transaction-locked row before sync
+  clears its cache. Strict PostgreSQL regressions cover null and differing start
+  dates; database-free CI excludes these integration tests.
+- PR #1448 already targets `main` and has been updated for A+B only. C+D and E+F
+  remain separate later landings. Keep this PR draft until the final combined
+  candidate passes full pre-push, fresh exact-candidate CI and all nine E2E
+  shards. Recheck current main pre-UAT and serialized landing before readiness.
+- Earlier green checkpoint results do not verify the new combined candidate.
+
 - Migration 083 is now transaction-neutral and propagates failures. Its actual
   CLI PostgreSQL tests prove rollback of schema, earlier item writes and ledger,
   followed by successful retry and idempotent CLI/hook reruns.
