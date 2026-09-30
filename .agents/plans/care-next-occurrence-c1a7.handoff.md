@@ -62,11 +62,17 @@ owner messages remain historical context.
   the sole failure was a five-second sharing-test timeout. Its complete file
   then passed **9/9** on a focused rerun. Do not describe the initial coverage
   run as wholly green; fresh CI must confirm the result.
-- GitHub connector execution currently fails during runtime replay; shell Git
-  previously failed authentication. This is a publishing/tool-access blocker,
-  not evidence that the working OAuth connection needs reauthorization.
-- The full local pre-push remains in progress. Do not infer full signoff from
-  the CI jobs that did pass. All original landing dependencies still apply.
+- GitHub connector execution recovered; authenticated repository access confirms
+  push permission. No OAuth reauthorization was needed.
+- The owner reconfirmed a sole writer. The remote branch update and latest
+  `origin/main` were merged without rewriting history; the local clock/CI fixes
+  and the newer TEST/PEOPLE changes are all preserved.
+- The old full pre-push was stopped before merging because incoming test changes
+  would invalidate its result. Fresh full pre-push and exact-candidate CI are
+  required for the combined tree; do not infer signoff from older passing jobs.
+- Landing is still blocked independently of publishing: ARCH D PR #1467 remains
+  open, main's latest pre-UAT run is pending, and other programme PRs are open.
+  Keep this PR draft and preserve the original serialized landing gates.
 
 ### Takeover implementation and evidence
 
