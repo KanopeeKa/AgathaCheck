@@ -44,7 +44,10 @@ export function registerCompletionRoutes(router, pool) {
         const asOfCtx = await asOfContextForEntry(pool, row, req);
         const ensured = await ensureOpenOccurrence(pool, { entry: row, todayIso: asOfCtx.todayIso });
         if (!ensured.ok) {
-          return res.status(400).json({ error: NO_PENDING_OCCURRENCE_ERROR });
+          const error = ensured.error === 'entry_paused'
+            ? 'Care item is paused'
+            : NO_PENDING_OCCURRENCE_ERROR;
+          return res.status(400).json({ error });
         }
       }
       const closed = await completeOldestPendingOccurrence(pool, entryId, userId, body, req);

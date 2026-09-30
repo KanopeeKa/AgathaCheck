@@ -110,7 +110,7 @@ describe('POST /api/health-entries/:id/mark-taken with no materialised occurrenc
       .send({ completed_on: '2026-09-30' });
 
     expect(res.statusCode).toBe(400);
-    expect(res.body.error).toMatch(/pending occurrence/i);
+    expect(res.body.error).toBe('Care item is paused');
     expect(occurrences).toHaveLength(0);
   });
 });
