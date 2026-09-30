@@ -200,13 +200,13 @@ autonomy: active
 current_phase: orchestrate
 last_completed_phase: null
 halt_reason: null
-next_action: "child active-codebase-batch-d-guardrails-e41f phase 4 (integration → main) waits for slot 0b (#1454) to land; then E waits for slot 2b (CARE A+B)"
+next_action: "bootstrap and gate child plan active-codebase-batch-e-backend-integrity-e41f"
 artifact_ref:
-  branch: null
+  branch: cursor/arch-d-g-handover-26ff
   plan_path: .agents/plans/active-codebase-completion-e41f.md
-  plan_commit: null
+  plan_commit: ce702c0927134416858a5aa7cac17f45d7795289
   snapshot_path: .agents/plans/active-codebase-completion-e41f.snapshot.json
-  snapshot_commit: null
+  snapshot_commit: ce702c0927134416858a5aa7cac17f45d7795289
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
