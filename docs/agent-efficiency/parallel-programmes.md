@@ -3,13 +3,15 @@ title: Parallel programmes — landing order and coordination
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-09-30
+last_updated: 2026-09-30T20:00:00Z
 tags: [agent-efficiency, execute-plan, coordination, integration-branches]
 ---
 
 # Parallel programmes — landing order and coordination
 
-**As of 2026-09-30 (`main` @ `f04e19a`).** Four multi-phase programmes are in flight or about to start. Their `allowed_paths` overlap on the same files. This page sets **which programme owns which area when**, the **order in which they land on `main`**, and the **rebase rules** that keep everyone's work from being redone. Every programme's plan must link here and follow §4–§6.
+**As of 2026-09-30 (`main` @ `eee5cb1b`).** Four multi-phase programmes are in flight. Their `allowed_paths` overlap on the same files. This page sets **which programme owns which area when**, the **order in which they land on `main`**, and the **rebase rules** that keep everyone's work from being redone. Every programme's plan must link here and follow §4–§6.
+
+**Slots 0a–0b closed (2026-09-30):** pre-UAT is green on `eee5cb1b` ([#1454](https://github.com/KanopeeKa/AgathaCheck/pull/1454), [run 36766914323](https://github.com/KanopeeKa/AgathaCheck/actions/runs/36766914323)). Slot 0a closed when pre-UAT passed on `238ca5f8` via [#1456](https://github.com/KanopeeKa/AgathaCheck/pull/1456) and [#1458](https://github.com/KanopeeKa/AgathaCheck/pull/1458). **Next People landing:** slot **0c** (`people-hotfixes-7f3b`) after roadmap bootstrap. **Out-of-order:** [#1455](https://github.com/KanopeeKa/AgathaCheck/pull/1455) (`e32fff71`, TEST 1a / shard manifest) merged before 0b; treat as an early partial of slot **2a**, not as slot 1 (ARCH D).
 
 Related: [autonomous-pr-policy.md](./autonomous-pr-policy.md) · [execute-plan-schema.md](./execute-plan-schema.md) · [atomic-pr-policy.md](./atomic-pr-policy.md) · stale-plan closure ledger: [.agents/plans/README.md](../../.agents/plans/README.md) § Closed stale plans.
 
@@ -17,12 +19,12 @@ Related: [autonomous-pr-policy.md](./autonomous-pr-policy.md) · [execute-plan-s
 
 ## 1. Programmes
 
-| Code | Plan | Control / PR | Work branch | Scope | State (2026-09-29) |
+| Code | Plan | Control / PR | Work branch | Scope | State (2026-09-30) |
 |---|---|---|---|---|---|
 | **CARE** | `care-next-occurrence-c1a7` (roadmap, children A–F) | draft PR #1448 | `claude/eager-edison-mf34j6` | Care occurrence engine (migration `083_care_occurrence_model`, data reset, reseed), agenda, form, absences, Care Item module (server + Flutter), care E2E programme | Child A committed; child B (engine) in progress |
-| **ARCH** | `active-codebase-completion-e41f` (roadmap, children D–K) | #1446 (roadmap), #1447 (D) | `cursor/active-codebase-d-integration-e41f` (one integration branch per child) | Guardrails, transactions and cleanup jobs, account erasure, client authority, ports and transport, public APIs, acyclic graph, standards | Approved; child D starting |
-| **TEST** | `test-health-ci-5f3a` (7 phases) | #1449 | `claude/relaxed-einstein-jqecfg` | Flutter shards, CI speed, pre-merge E2E, KPI and coverage docs, BDD hygiene, WAF-proof UAT smoke, security and perf tests | Approved (owner, 2026-09-29); phase 1 (Flutter shard manifest, test ownership) done |
-| **PEOPLE** | `people-domain-refactor-7f3b` (18 phases, two landings) | draft (control issue at bootstrap) | `cursor/people-domain-refactor-integration-7f3b` (at bootstrap) | People server (single writer, access, relationships, read models, households, invites) and People client (typed core, picker, hub, detail, edit, add, pet section, households UI) | Draft; artifacts on `claude/exciting-bardeen-hy6yzp` |
+| **ARCH** | `active-codebase-completion-e41f` (roadmap, children D–K) | #1446 (roadmap), #1447 (D) | `cursor/active-codebase-d-integration-e41f` (one integration branch per child) | Guardrails, transactions and cleanup jobs, account erasure, client authority, ports and transport, public APIs, acyclic graph, standards | Approved; child D starting — **rebase onto `main` after #1455** (CI workflows) before D.2/D.3 edits |
+| **TEST** | `test-health-ci-5f3a` (7 phases) | #1449 | `claude/relaxed-einstein-jqecfg` | Flutter shards, CI speed, pre-merge E2E, KPI and coverage docs, BDD hygiene, WAF-proof UAT smoke, security and perf tests | Approved; **#1455 landed** (`e32fff71`, TEST 1a shard manifest + ownership gate); phases 2–3 remain for full slice **2a** |
+| **PEOPLE** | `people-domain-refactor-7f3b` (roadmap, 4 children) | control issue at bootstrap | per-child integration branches (see roadmap) | Hotfixes, server, client core, client integration (target doc on `main`) | Slot **0b** done (#1454 @ `eee5cb1b`); **0c** next after `approve-autonomous` |
 
 ---
 
@@ -74,11 +76,11 @@ Landings into `main` happen **one at a time**. Each is followed by pre-UAT E2E g
 
 | # | Landing on `main` | Must already be on `main` | Develops in parallel with |
 |---|---|---|---|
-| 0a | **PR #1445** (`fix(e2e)`: API helpers for vet contact edit navigation). Merged as `f04e19a`; the slot closes when pre-UAT is green on `f04e19a` | — | everything |
-| 0b | **PEOPLE docs PR** (#1454): plan artifacts, this page, stale-plan closure. Not merged before 0a's pre-UAT is green | 0a (pre-UAT green) | everything |
+| 0a | **Done — PR #1445** (`f04e19a`). Slot closed when pre-UAT passed on **`238ca5f8`** ([#1456](https://github.com/KanopeeKa/AgathaCheck/pull/1456), [#1458](https://github.com/KanopeeKa/AgathaCheck/pull/1458)) | — | — |
+| 0b | **Done — PEOPLE docs PR #1454** (`eee5cb1b`): roadmap, four child plans, this page, stale-plan closure. Pre-UAT green [run 36766914323](https://github.com/KanopeeKa/AgathaCheck/actions/runs/36766914323) on `eee5cb1b` | 0a closed | — |
 | 0c | **PEOPLE hotfixes** (`people-hotfixes-7f3b`: B1, B2, B5, B7, B9, B13; People-owned files only) (disjoint with 1) | 0b | ARCH D |
 | 1 | **ARCH D** (guardrails: baseline, feature-import gate, D7 report, D.2/D.3 additive governance steps in `_reusable-test.yml`, D.3 coverage docs) | 0b | CARE B, TEST 1–3 |
-| 2a | **TEST slice 1** (phases 1–3: Flutter shards, CI speed, pre-merge E2E, CI for integration PRs) (disjoint with 2b) | 1 | CARE B |
+| 2a | **TEST slice 1** (phases 1–3: Flutter shards, CI speed, pre-merge E2E, CI for integration PRs) (disjoint with 2b). **Partial early landing:** [#1455](https://github.com/KanopeeKa/AgathaCheck/pull/1455) (`e32fff71`, TEST 1a manifest) merged before 0b; remaining 2a work still waits for slot **1** (ARCH D) | 1 | CARE B |
 | 2b | **CARE A+B** (canonical spec, occurrence engine, migration 083, reseed) (disjoint with 2a) | 1 | TEST 1–3, ARCH E prep |
 | 3a | **ARCH E** (transactions, cleanup jobs, pet delete, invite replay, weight-in-completion) (disjoint with 3b) | 2b | CARE C+D, PEOPLE server |
 | 3b | **CARE C+D** (agenda, row, form, Care Item view) (disjoint with 3a) | 2b | ARCH E, PEOPLE server |
@@ -123,7 +125,7 @@ flowchart LR
 
 **Why this order:**
 
-- **Clear the red first.** The last five pre-UAT runs on `main` (after #1441–#1444) failed on the People/vet E2E specs. #1445 is the fix, so nothing else lands until pre-UAT is green on its merge commit.
+- **Clear the red first (resolved 2026-09-30).** Vet/People shard-9 failures were fixed on `main` via #1445 → #1456 → #1458; pre-UAT is green on `eee5cb1b`. New landings follow §4 from slot **0c** onward.
 - **Guardrails first.** ARCH D's feature-import gate should exist before new feature code lands, so no programme adds edges it later has to remove.
 - **Signal next.** TEST slice 1 gives every later landing faster CI and CI on integration PRs.
 - **The biggest behavioural change lands early and in slices.** CARE B, C+D and E+F land separately, so dependants rebase over small changes.

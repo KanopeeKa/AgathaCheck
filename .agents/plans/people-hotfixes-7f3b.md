@@ -18,6 +18,11 @@ Stop the most visible People bugs while the larger refactor waits for its landin
 
 Out of scope here: B3, B4, B6, B8, B10, B11, B12. They need the new server model, the picker or the list–detail layout, and are fixed in `people-server-7f3b` and the client children.
 
+### Pre-bootstrap check (2026-09-30, `main` @ `eee5cb1b`)
+
+- **E2E remediations [#1456](https://github.com/KanopeeKa/AgathaCheck/pull/1456) / [#1458](https://github.com/KanopeeKa/AgathaCheck/pull/1458):** touched only `e2e/playwright/**` and `server/package*.json` (audit). **No** `flutter_app/lib/features/people/**` changes. Vet-edit Playwright flows were updated; **h2** scope for B9/B13 on the Flutter edit/add screens is unchanged.
+- **Overlapping live plans:** only `test-health-ci-5f3a` (#1449) has `autonomy: active` with a future `approved_until`; it does not overlap `server/lib/people/**` or `flutter_app/lib/features/people/**`.
+
 ---
 
 ### Phase 1 — `h1-server-kind` · Renaming a contact never changes its kind (B2)
