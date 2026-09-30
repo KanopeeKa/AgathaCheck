@@ -5,7 +5,9 @@ import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/core/utils/calendar_date.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_occurrence.dart';
+import 'package:pet_profile_app/features/health_tracking/domain/repositories/health_repository.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/occurrence_scheduling.dart';
+import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/occurrence_providers.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/widgets/occurrence_care_actions.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/widgets/occurrence_stack_sheet.dart';
@@ -25,13 +27,14 @@ HealthOccurrence _occ({
   required String id,
   required DateTime date,
   String? time,
+  String status = 'pending',
 }) {
   return HealthOccurrence(
     id: id,
     entryId: 'entry-1',
     scheduledDate: date,
     scheduledTime: time,
-    status: 'pending',
+    status: status,
   );
 }
 
@@ -58,12 +61,15 @@ Widget _buildSheet({
 Widget _buildCareActionsHarness({
   required List<HealthOccurrence> occurrences,
   required ValueChanged<OccurrenceMarkDoneResult?> onResult,
+  HealthRepository? repository,
 }) {
   return ProviderScope(
     overrides: [
       entryOccurrencesProvider(
         _entry.id,
       ).overrideWith((ref) async => occurrences),
+      if (repository != null)
+        healthRepositoryProvider.overrideWithValue(repository),
     ],
     child: MaterialApp(
       theme: AppTheme.lightTheme,
@@ -89,6 +95,42 @@ Widget _buildCareActionsHarness({
       ),
     ),
   );
+}
+
+class _RecordingHealthRepository implements HealthRepository {
+  final completedOccurrenceIds = <String>[];
+  final skipEarlierMissedValues = <bool>[];
+  var skipMissedCalls = 0;
+
+  @override
+  Future<HealthOccurrence> completeOccurrence(
+    String entryId,
+    String occurrenceId, {
+    String notes = '',
+    DateTime? completedOn,
+    bool skipEarlierMissed = false,
+  }) async {
+    completedOccurrenceIds.add(occurrenceId);
+    skipEarlierMissedValues.add(skipEarlierMissed);
+    return _occ(id: occurrenceId, date: completedOn ?? DateTime.now());
+  }
+
+  @override
+  Future<List<HealthEntry>> getEntries({
+    String? petId,
+    HealthEntryType? type,
+  }) async {
+    return [_entry];
+  }
+
+  @override
+  Future<int> skipMissedOccurrences(String entryId) async {
+    skipMissedCalls++;
+    return 0;
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 void main() {
@@ -226,6 +268,98 @@ void main() {
         expect(result, isNotNull);
         expect(result!.completedOn, calendarDateOnly(DateTime.now()));
         expect(result!.occurrenceId, isNull);
+      },
+    );
+
+    testWidgets(
+      'completed today history does not make one due dose look like a stack',
+      (tester) async {
+        final today = calendarDateOnly(DateTime.now());
+        final tomorrow = today.add(const Duration(days: 1));
+        OccurrenceMarkDoneResult? result;
+
+        await tester.pumpWidget(
+          _buildCareActionsHarness(
+            occurrences: [
+              _occ(id: 'completed-today', date: today, status: 'completed'),
+              _occ(id: 'today-pending', date: today),
+              _occ(id: 'future-pending', date: tomorrow),
+            ],
+            onResult: (value) => result = value,
+          ),
+        );
+        await tester.tap(find.text('Open care actions'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Record doses for Morning meds'), findsNothing);
+        expect(find.text('Mark as completed'), findsOneWidget);
+        expect(find.text('Overdue'), findsNothing);
+        await tester.tap(find.text('Mark Completed'));
+        await tester.pumpAndSettle();
+
+        expect(result, isNotNull);
+        expect(result!.occurrenceId, isNull);
+      },
+    );
+
+    testWidgets(
+      'multiple due-today doses open stack without treating future doses as missed',
+      (tester) async {
+        final now = DateTime.now();
+        final today = calendarDateOnly(now);
+        final tomorrow = today.add(const Duration(days: 1));
+        final firstDoseTime = now.add(const Duration(minutes: 1));
+        final secondDoseTime = now.add(const Duration(minutes: 2));
+        final timedHeadIsAvailable = calendarDateOnly(secondDoseTime) == today;
+        String formatTime(DateTime date) =>
+            '${date.hour.toString().padLeft(2, '0')}:'
+            '${date.minute.toString().padLeft(2, '0')}';
+        final repository = _RecordingHealthRepository();
+        OccurrenceMarkDoneResult? result;
+
+        await tester.pumpWidget(
+          _buildCareActionsHarness(
+            occurrences: [
+              _occ(
+                id: 'today-first',
+                date: today,
+                time: timedHeadIsAvailable ? formatTime(firstDoseTime) : null,
+              ),
+              _occ(
+                id: 'today-second',
+                date: today,
+                time: timedHeadIsAvailable ? formatTime(secondDoseTime) : null,
+              ),
+              _occ(id: 'future-first', date: tomorrow),
+              _occ(id: 'future-second', date: tomorrow),
+            ],
+            repository: repository,
+            onResult: (value) => result = value,
+          ),
+        );
+        await tester.tap(find.text('Open care actions'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Record doses for Morning meds'), findsOneWidget);
+        expect(find.text('Overdue'), findsNothing);
+        expect(find.text('Due today'), findsOneWidget);
+        expect(find.text('Coming up'), findsOneWidget);
+        expect(find.text('Mark as completed'), findsNothing);
+
+        await tester.tap(find.byKey(const Key('occurrence_record_head')));
+        await tester.pumpAndSettle();
+
+        expect(repository.completedOccurrenceIds, hasLength(1));
+        expect([
+          'today-first',
+          'today-second',
+        ], contains(repository.completedOccurrenceIds.single));
+        if (timedHeadIsAvailable) {
+          expect(repository.completedOccurrenceIds, ['today-first']);
+        }
+        expect(repository.skipEarlierMissedValues, [false]);
+        expect(repository.skipMissedCalls, 0);
+        expect(result?.occurrenceId, repository.completedOccurrenceIds.single);
       },
     );
 
