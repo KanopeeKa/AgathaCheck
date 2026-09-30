@@ -142,10 +142,10 @@ next_action: "continue phase h1-server-kind on branch cursor/people-hotfix-h1-ki
 artifact_ref:
   branch: cursor/people-hotfix-h1-kind-7f3b
   plan_path: .agents/plans/people-hotfixes-7f3b.md
-  plan_commit: 33b59b50f4fa7ad3f42e67d5783acb0db2702333
+  plan_commit: d170ca5208c913539352043dad117a3f37326f56
   snapshot_path: .agents/plans/people-hotfixes-7f3b.snapshot.json
-  snapshot_commit: 33b59b50f4fa7ad3f42e67d5783acb0db2702333
-open_prs: []
+  snapshot_commit: d170ca5208c913539352043dad117a3f37326f56
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1462"]
 merge_commits: {}
 debt_issue_refs: []
 ```
