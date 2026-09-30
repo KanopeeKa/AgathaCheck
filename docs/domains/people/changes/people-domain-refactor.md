@@ -548,6 +548,6 @@ The execute-plan contract is a roadmap, [`.agents/plans/people-domain-refactor-7
 | Collisions with CARE, ARCH and TEST | Shared landing order, area ownership and rebase rules in [parallel-programmes.md](/docs/agent-efficiency/parallel-programmes.md); entry gates on every child; hand-offs (B6 to CARE B, relationships router out of ARCH E) |
 | Authorization regressions (household visibility) | One `access.js`; matrix tests; Router R3 with `authorization` + `security` protocols on s1, s2, s4, s5, s6 |
 | Old mobile clients | Compat adapters with contract tests; additive fields only |
-| E2E churn (the previous remodel needed ~15 fix PRs) | Stable `Key`s / semantics identifiers defined in c2 and documented; every UI phase keeps shards 1/3/9 green in the same PR; each child ships its own journeys (c8, i4) on `people.page.ts`; locator hygiene per [testing rule](/.cursor/rules/testing.mdc) |
+| E2E churn (the previous remodel needed ~15 fix PRs) | Stable `Key`s / semantics identifiers defined in c2 and documented; every UI phase resolves affected pre-UAT shards via `node e2e/scripts/shard-files.mjs --summary` (not fixed index lists) and keeps them green in the same PR; each child ships its own journeys (c8, i4) on `people.page.ts`; locator hygiene per [testing rule](/.cursor/rules/testing.mdc) |
 | Data migration `*_people_relationship_slots` dedupe | Idempotent, keeps the newest row, logs count, migration test with duplicates fixture |
 | File-size gate on big screens | Pages split into section widgets from the start (≤300 lines) |

@@ -27,7 +27,7 @@ Fixes B7 and B8 for good.
 
 - **Start of phase:** rebase on `origin/main`; run the full `./scripts/pre-push.sh` after any landing broadcast.
 - **Areas released to this child:** care UI, absences and pet profile, now that CARE E+F and ARCH G have landed. Work **against CARE's Care Item module public API and ARCH G's controllers/store**, not around them. If a needed hook is missing, add it through that module's public API in the same PR, and note it in the PR body for the CARE/ARCH owners.
-- **E2E stays green in every phase:** update the affected specs and page objects in the same PR and run `./scripts/pre-push-changed.sh --e2e-shards 1,3,9` against `bin/start.js` (1 = health tracking, 3 = People, desk, nav, Away Planning, 9 = vets). Shared E2E files are append-only.
+- **E2E stays green in every phase:** update the affected specs and page objects in the same PR. At phase start run `node e2e/scripts/shard-files.mjs --summary` and pass the shard indices for every spec you touch (health, People hub/desk, vets, etc. — lists change when TEST rebalance lands). Then `./scripts/pre-push-changed.sh --e2e-shards <indices>` against `bin/start.js`. Shared E2E files are append-only.
 - `node scripts/check_feature_imports.js` green; the baseline may only shrink.
 
 ---
@@ -97,7 +97,7 @@ flutter_app/lib/features/organization/**
 
 - [ ] B7 regression (report vet coordinates) and B8 regression (inactive not offered; unknown current renders) kept green in their new locations
 - [ ] Widget tests for each migrated field (selection, clear, quick add, typed name for provider)
-- [ ] No file in pet_profile, health_tracking or pet_care imports People internals; `--e2e-shards 1,3,9` green
+- [ ] No file in pet_profile, health_tracking or pet_care imports People internals; `--e2e-shards` (from `shard-files.mjs --summary`) green
 
 ---
 
@@ -153,7 +153,7 @@ flutter_app/lib/features/organization/**
 **Exit criteria:**
 
 - [ ] Widget tests: owner vs Can log care, set/clear out-of-hours vet, add/reorder emergency contacts, call only with a phone
-- [ ] `--e2e-shards 1,3,9` green
+- [ ] `--e2e-shards` (from `shard-files.mjs --summary`) green
 
 ---
 
