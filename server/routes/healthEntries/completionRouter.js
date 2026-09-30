@@ -4,7 +4,8 @@ import { userCanManageHealthEntry } from '../../lib/petAccess.js';
 import { logAuditEventSafe } from '../../lib/audit.js';
 import { recordPetActivityForPet } from '../../lib/petActivity.js';
 import { extractUserId, healthEntryToMap, historyToMap } from './shared.js';
-import { completeOldestPendingOccurrence } from './occurrencesRouter.js';
+import { asOfContextForEntry, completeOldestPendingOccurrence } from './occurrencesRouter.js';
+import { ensureOpenOccurrence } from '../../lib/care/schedule/ensureOpenOccurrence.js';
 import { closeHealthEntrySeries } from '../../lib/occurrenceLifecycle.js';
 import { undoLastAction } from '../../lib/care/schedule/undoLastAction.js';
 import {
@@ -30,15 +31,21 @@ export function registerCompletionRoutes(router, pool) {
       );
       if (existing.rows.length === 0) return res.status(404).json({ error: 'Entry not found' });
       const row = existing.rows[0];
+      if (isWeightMonitoringEntry(row)) {
+        return res.status(400).json({ error: WEIGHT_GENERIC_COMPLETE_ERROR });
+      }
       const occPending = await pool.query(
         `SELECT id FROM health_occurrences WHERE health_entry_id = $1 AND status = 'pending' LIMIT 1`,
         [entryId]
       );
       if (occPending.rows.length === 0) {
-        return res.status(400).json({ error: NO_PENDING_OCCURRENCE_ERROR });
-      }
-      if (isWeightMonitoringEntry(row)) {
-        return res.status(400).json({ error: WEIGHT_GENERIC_COMPLETE_ERROR });
+        // Head not materialised yet (next due outside the T-1 window, or rows
+        // seeded without occurrences): materialise it, as ensure-open does.
+        const asOfCtx = await asOfContextForEntry(pool, row, req);
+        const ensured = await ensureOpenOccurrence(pool, { entry: row, todayIso: asOfCtx.todayIso });
+        if (!ensured.ok) {
+          return res.status(400).json({ error: NO_PENDING_OCCURRENCE_ERROR });
+        }
       }
       const closed = await completeOldestPendingOccurrence(pool, entryId, userId, body, req);
       if (!closed) {

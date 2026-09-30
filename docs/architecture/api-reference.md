@@ -169,7 +169,7 @@ Weight monitoring rhythms: generic complete and `mark-taken` return `400` — us
 
 | Method | Path | Notes |
 |---|---|---|
-| POST | `/:id/mark-taken` | **Deprecated** — completes oldest pending occurrence via `completeOccurrence`; **no `health_history` write**; prefer occurrence complete |
+| POST | `/:id/mark-taken` | **Deprecated** — completes oldest pending occurrence via `completeOccurrence`; **no `health_history` write**; when none is pending, first materialises the canonical open head (same as `occurrences/ensure-open`), else `400`; prefer occurrence complete |
 | POST | `/:id/undo-complete` | **Legacy** — replaced by `POST /:id/schedule/undo` (CSM-8) |
 | GET | `/:id/history` | Read-only legacy `health_history` rows (no new writes after CSM-7) |
 
