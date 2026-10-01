@@ -38,6 +38,10 @@ if ! uat_nm_use_node; then
 fi
 echo "node_bin=${UAT_NODE_BIN}"
 
+echo "=== Ensure care taxonomy JSON ==="
+mkdir -p "${APPDIR}/shared"
+# __UAT_EMBED_CARE_TAXONOMY_JSON__
+
 echo "=== Truncate application data ==="
 node db/seeds/truncate-data.js
 
