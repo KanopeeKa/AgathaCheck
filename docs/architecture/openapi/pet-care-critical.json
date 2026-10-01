@@ -221,12 +221,12 @@
               }
             }
           },
-          "409": {
-            "description": "A next-date choice is needed (nothing saved)",
+          "400": {
+            "description": "Refused, nothing saved — e.g. next_choice_not_available when an explicit next_choice does not fit this completion (D-CSM-026)",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/NextChoiceRequired"
+                  "$ref": "#/components/schemas/CareCommandError"
                 }
               }
             }
@@ -621,80 +621,32 @@
               "string",
               "null"
             ]
+          },
+          "next_choice_applied": {
+            "description": "Completions only: the next-date choice applied when done late with a waiting date (sent, remembered, or keep); null when none was needed (D-CSM-026)",
+            "enum": [
+              "keep",
+              "skip_next",
+              "shift_following",
+              null
+            ]
           }
         }
       },
-      "NextChoiceRequired": {
+      "CareCommandError": {
         "type": "object",
         "required": [
           "error",
-          "code",
-          "waiting_occurrence",
-          "shift",
-          "options"
+          "code"
         ],
-        "additionalProperties": false,
-        "description": "409 — nothing was saved; re-send with next_choice (D-CSM-026)",
+        "additionalProperties": true,
+        "description": "4xx from a care command; nothing was saved",
         "properties": {
           "error": {
             "type": "string"
           },
           "code": {
-            "const": "next_choice_required"
-          },
-          "waiting_occurrence": {
-            "type": "object",
-            "required": [
-              "id",
-              "scheduled_date",
-              "scheduled_time",
-              "origin"
-            ],
-            "properties": {
-              "id": {
-                "type": "string"
-              },
-              "scheduled_date": {
-                "$ref": "#/components/schemas/CalendarDate"
-              },
-              "scheduled_time": {
-                "type": [
-                  "string",
-                  "null"
-                ]
-              },
-              "origin": {
-                "type": "string"
-              }
-            }
-          },
-          "shift": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "days": {
-                "type": "integer"
-              },
-              "minutes": {
-                "type": "integer"
-              }
-            }
-          },
-          "options": {
-            "type": "array",
-            "items": {
-              "oneOf": [
-                {
-                  "const": "keep"
-                },
-                {
-                  "const": "skip_next"
-                },
-                {
-                  "const": "shift_following"
-                }
-              ]
-            }
+            "type": "string"
           }
         }
       }

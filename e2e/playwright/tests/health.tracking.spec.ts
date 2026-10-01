@@ -15,6 +15,7 @@
  * Scenario: No due events shows all caught up
  * Scenario: Exporting health entries as CSV
  * Scenario: Multi-dose daily medication shows stack sheet for recording doses
+ * Scenario: A dose recorded late keeps the next dose
  */
 import { test, expect, loginAs, seedPetWithDueHealthEntry } from '../fixtures/auth.fixture';
 import { HealthDashboardPage } from '../pages/health-dashboard.page';
@@ -31,7 +32,7 @@ import {
   getHealthEntries,
   exportHealthEntriesCsv,
 } from '../support/api';
-import { completeNextOccurrence, createCareItem, undoLast } from '../support/care-api';
+import { completeNextOccurrence, createCareItem, undoLast, withCareClock } from '../support/care-api';
 
 test.describe('Health tracking', () => {
   // ── Existing Wave 0 tests ─────────────────────────────────────────────────
@@ -376,6 +377,51 @@ test.describe('Health tracking', () => {
     );
     expect(occurrencesAfter.filter((row) => row.status === 'pending')).toHaveLength(3);
     expect(pastOccurrences.filter((row) => row.status === 'completed')).toHaveLength(1);
+  });
+
+  test('a twice-daily dose recorded late keeps the evening dose', async ({ page, testUser }) => {
+    // D-CSM-026 (revised 2026-10-01): the app sends no next-date choice; the
+    // server keeps the waiting 18:00 dose instead of refusing the completion.
+    test.skip(isLiveHostingTarget(process.env.E2E_BASE_URL ?? ''), 'needs the localhost test clock');
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const day = '2026-06-05';
+    const entryName = 'Apoquel';
+    const pet = await createPet(baseURL, testUser.accessToken, 'Bella');
+    try {
+      await withCareClock(`${day}T07:00`);
+      const entry = await createCareItem(baseURL, testUser.accessToken, pet.id, {
+        name: entryName,
+        careFamily: 'medication',
+        frequency: 'daily',
+        dueDate: day,
+        times: ['08:00', '18:00'],
+      });
+      const [morning, evening] = entry.open_occurrences;
+      expect([morning.scheduled_time, evening.scheduled_time]).toEqual(['08:00', '18:00']);
+
+      // Pet home time is UTC: the browser and the server both read 15:00.
+      await withCareClock(`${day}T15:00`, page);
+      await page.clock.setFixedTime(new Date(`${day}T15:00:00Z`));
+      await loginAs(page, testUser);
+      const petList = new PetListPage(page);
+      await petList.openHealthDashboard();
+      const dashboard = new HealthDashboardPage(page);
+      await dashboard.expectLoaded();
+      await dashboard.expectEntryVisible(entryName);
+      await dashboard.clickMarkDoneForEntry(entry.id);
+
+      const stackSheet = new OccurrenceStackSheetPage(page);
+      await stackSheet.expectLoaded(entryName);
+      await stackSheet.recordLatestOverdueDoseToday();
+
+      const open = await getHealthEntryOccurrences(baseURL, testUser.accessToken, entry.id);
+      const past = await getHealthEntryOccurrences(baseURL, testUser.accessToken, entry.id, { status: 'past' });
+      expect(past.filter((row) => row.status === 'completed').map((row) => row.id)).toEqual([morning.id]);
+      expect(open.map((row) => row.id)).toContain(evening.id);
+      expect(open).toHaveLength(3);
+    } finally {
+      await withCareClock(null, page);
+    }
   });
 
   test('CSV export returns health entries as CSV data', async ({ page, testUser }) => {

@@ -133,15 +133,18 @@ describe('next-date choice (D-CSM-026)', () => {
     expect(res.statusCode).toBe(200);
   });
 
-  it('FX-8 done on Saturday asks, saves nothing, then moves the schedule', async () => {
+  it('FX-8 done on Saturday keeps the next date unless a choice is sent (D-CSM-026 v4)', async () => {
     if (!harness.pool) return;
+    const kept = await created(weeklyMonday, '2026-06-01T07:00');
+    const keep = await api.at('2026-06-06T09:00').complete(kept.id, kept.open_occurrences[0].id, {});
+    expect(keep.statusCode).toBe(200);
+    expect(keep.body.next_choice_applied).toBe('keep');
+    expect(keep.body.entry.open_occurrences.map((o) => o.scheduled_date)).toEqual(['2026-06-08']);
+
     const entry = await created(weeklyMonday, '2026-06-01T07:00');
-    const first = entry.open_occurrences[0];
-    const ask = await api.at('2026-06-06T09:00').complete(entry.id, first.id, {});
-    expect(ask.statusCode).toBe(409);
-    expect(ask.body).toMatchObject({ code: 'next_choice_required', shift: { days: 5 } });
-    expect((await occurrenceRows(harness.pool, entry.id)).find((r) => r.id === first.id).status).toBe('pending');
-    const moved = await api.at('2026-06-06T09:00').complete(entry.id, first.id, { next_choice: 'shift_following' });
+    const moved = await api.at('2026-06-06T09:00').complete(entry.id, entry.open_occurrences[0].id, {
+      next_choice: 'shift_following',
+    });
     expect(moved.statusCode).toBe(200);
     expect(moved.body.entry.schedule_anchor_date).toBe('2026-06-06');
     expect(moved.body.entry.open_occurrences.map((o) => o.scheduled_date)).toEqual(['2026-06-13']);
@@ -161,15 +164,51 @@ describe('next-date choice (D-CSM-026)', () => {
     expect(again.body.next_choice_applied).toBe('skip_next');
   });
 
-  it('LC-3 / LC-4 twice daily recorded at 15:00 asks; skip next is undone as a whole', async () => {
+  it('LC-3 twice daily recorded at 15:00 with no choice keeps the 18:00 dose', async () => {
+    if (!harness.pool) return;
+    const entry = await created(twiceDaily('2026-06-05'), '2026-06-05T07:00');
+    const [morning, evening] = entry.open_occurrences;
+    const res = await api.at('2026-06-05T15:00').complete(entry.id, morning.id, {});
+    expect(res.statusCode).toBe(200);
+    expect(res.body.next_choice_applied).toBe('keep');
+    const rows = await occurrenceRows(harness.pool, entry.id);
+    expect(rows.find((r) => r.id === morning.id).status).toBe('completed');
+    expect(rows.find((r) => r.id === evening.id).status).toBe('pending');
+    expect(await invariantViolations(harness.pool, entry.id)).toEqual([]);
+  });
+
+  it('LC-3b a remembered choice that does not fit this case falls back to keep', async () => {
+    if (!harness.pool) return;
+    const entry = await created(twiceDaily('2026-06-05'), '2026-06-05T07:00');
+    await harness.pool.query(
+      "UPDATE health_entries SET late_completion_choice = 'shift_following' WHERE id = $1",
+      [entry.id],
+    );
+    const [morning, evening] = entry.open_occurrences;
+    const res = await api.at('2026-06-05T15:00').complete(entry.id, morning.id, {});
+    expect(res.statusCode).toBe(200);
+    expect(res.body.next_choice_applied).toBe('keep');
+    const rows = await occurrenceRows(harness.pool, entry.id);
+    expect(rows.find((r) => r.id === evening.id).status).toBe('pending');
+  });
+
+  it('LC-3c an explicit choice that does not fit this case is refused and saves nothing', async () => {
     if (!harness.pool) return;
     const entry = await created(twiceDaily('2026-06-05'), '2026-06-05T07:00');
     const morning = entry.open_occurrences[0];
-    const ask = await api.at('2026-06-05T15:00').complete(entry.id, morning.id, {});
-    expect(ask.statusCode).toBe(409);
-    expect(ask.body.options).toEqual(['keep', 'skip_next']);
+    const res = await api.at('2026-06-05T15:00').complete(entry.id, morning.id, { next_choice: 'shift_following' });
+    expect(res.statusCode).toBe(400);
+    expect(res.body.code).toBe('next_choice_not_available');
+    const rows = await occurrenceRows(harness.pool, entry.id);
+    expect(rows.find((r) => r.id === morning.id).status).toBe('pending');
+  });
+
+  it('LC-4 skip next is undone as a whole', async () => {
+    if (!harness.pool) return;
+    const entry = await created(twiceDaily('2026-06-05'), '2026-06-05T07:00');
+    const [morning, evening] = entry.open_occurrences;
     const done = await api.at('2026-06-05T15:00').complete(entry.id, morning.id, { next_choice: 'skip_next' });
-    const evening = entry.open_occurrences[1];
+    expect(done.statusCode).toBe(200);
     let rows = await occurrenceRows(harness.pool, entry.id);
     expect(rows.find((r) => r.id === evening.id).status).toBe('skipped');
     await api.at('2026-06-05T15:01').undo(entry.id, { undo_token: done.body.undo_token });

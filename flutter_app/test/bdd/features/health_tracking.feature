@@ -130,6 +130,14 @@ Feature: Health Tracking
     Then 1 open dose should remain for "Twice Daily Meds"
 
   @P1
+  Scenario: A dose recorded late keeps the next dose
+    Given "Bella" has a daily medication "Apoquel" scheduled at "08:00" and "18:00"
+    And it is 15:00, so the 08:00 dose is overdue
+    When the user records the 08:00 dose as done today
+    Then the 08:00 dose should be recorded
+    And the 18:00 dose should still be planned
+
+  @P1
   Scenario: Undoing a completed entry
     Given "Bella" has a completed health entry "Heartworm"
     When the user undoes the completion of "Heartworm"

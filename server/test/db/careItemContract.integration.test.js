@@ -45,17 +45,18 @@ describe('care item contract', () => {
     expect(res.body.open_occurrences.length).toBeLessThanOrEqual(10);
   });
 
-  it('complete matches CareCommandResponse, and the 409 matches NextChoiceRequired', async () => {
+  it('complete matches CareCommandResponse with no choice sent, and a refused choice matches CareCommandError', async () => {
     if (!harness.pool) return;
     const created = await api.at('2026-06-01T07:00').create({
-      care_family: 'vaccination', frequency: 'yearly', next_due_date: '2026-06-01', planned_dates: ['2026-07-01'],
+      care_family: 'medication', frequency: 'daily', next_due_date: '2026-06-01', schedule_times: ['08:00', '18:00'],
     });
-    const first = created.body.open_occurrences[0];
-    const ask = await api.at('2026-06-25T09:00').complete(created.body.id, first.id, {});
-    expect(ask.statusCode).toBe(409);
-    assertResponse('/health-entries/{id}/occurrences/{occId}/complete', 'post', 409, ask.body);
-    const done = await api.at('2026-06-25T09:00').complete(created.body.id, first.id, { next_choice: 'keep' });
+    const morning = created.body.open_occurrences[0];
+    const refused = await api.at('2026-06-01T15:00').complete(created.body.id, morning.id, { next_choice: 'shift_following' });
+    expect(refused.statusCode).toBe(400);
+    assertResponse('/health-entries/{id}/occurrences/{occId}/complete', 'post', 400, refused.body);
+    const done = await api.at('2026-06-01T15:00').complete(created.body.id, morning.id, {});
     expect(done.statusCode).toBe(200);
+    expect(done.body.next_choice_applied).toBe('keep');
     assertResponse('/health-entries/{id}/occurrences/{occId}/complete', 'post', 200, done.body);
   });
 });

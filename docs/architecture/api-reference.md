@@ -162,7 +162,7 @@ Returns upcoming active absences for the entry's pet with per-absence `affected`
 | Method | Path | Notes |
 |---|---|---|
 | GET | `/:id/occurrences` | Query `status=open` (default) or `status=past`; optional `as_of` calendar day; rows include `origin`, `close_reason` |
-| POST | `/:id/occurrences/:occId/complete` | Body `{ completed_on?, notes?, next_choice?: 'keep' \| 'skip_next' \| 'shift_following', remember_choice?, earlier_choice?: 'complete' \| 'skip' \| 'keep' }`; 200 `{ occurrence, next_due_date, entry, undo_token, next_choice_applied }`; **409 `next_choice_required`** `{ waiting_occurrence, shift, options }` — nothing saved (D-CSM-026); **409 `earlier_choice_required`** `{ earlier_occurrence, options }`; **409 `occurrence_not_open`** |
+| POST | `/:id/occurrences/:occId/complete` | Body `{ completed_on?, notes?, next_choice?: 'keep' \| 'skip_next' \| 'shift_following', remember_choice?, earlier_choice?: 'complete' \| 'skip' \| 'keep' }`; 200 `{ occurrence, next_due_date, entry, undo_token, next_choice_applied }`. Never asks (D-CSM-026, revised 2026-10-01): no `next_choice` → the remembered choice if it fits, otherwise `keep`; no `earlier_choice` → `keep`. **400 `next_choice_not_available`** when an explicit choice doesn't fit (nothing saved); **409 `occurrence_not_open`** |
 | POST | `/:id/occurrences/:occId/skip` | Body `{ notes? }`; same response shape as complete; ledger `skipped` |
 | POST | `/:id/occurrences` | Plan another date — body `{ scheduled_date, scheduled_time? }`; `planned` occurrence; `warnings[]` when within half an interval of another open date (D-CSM-025) |
 | POST | `/:id/occurrences/:occId/record` | Record a Not recorded slot as given — body `{ completed_on }` (D-CSM-023) |

@@ -169,7 +169,7 @@ export async function completeWeightOccurrence(pool, {
       notes: payload.notes || '',
       nextChoice: body.next_choice || body.nextChoice || null,
       rememberChoice: Boolean(body.remember_choice ?? body.rememberChoice),
-      earlierChoice: body.earlier_choice || body.earlierChoice || 'keep',
+      earlierChoice: body.earlier_choice || body.earlierChoice || null,
       body,
     }));
     if (!out) {
@@ -179,6 +179,7 @@ export async function completeWeightOccurrence(pool, {
       status: 201,
       body: {
         ...buildCompletionResponse(weightRow, out.occurrence, out.entry.next_due_date),
+        next_choice_applied: out.appliedChoice ?? null,
         undo_token: out.undoToken,
       },
     };

@@ -126,19 +126,21 @@ describe('planned dates (D-CSM-025, D-CSM-021)', () => {
     expect(openDates(second.body.entry)).toEqual(['2027-07-01:computed:coming_up']);
   });
 
-  it('PL-2 a late first dose asks about the booster before saving anything', async () => {
+  it('PL-2 a late first dose keeps the booster unless a choice is sent (D-CSM-026 v4)', async () => {
     if (!harness.pool) return;
-    const entry = await created({
+    const booster = {
       care_family: 'vaccination', frequency: 'yearly', next_due_date: '2026-06-01', planned_dates: ['2026-07-01'],
-    }, '2026-06-01T09:00');
-    const first = entry.open_occurrences[0];
-    const ask = await api.at('2026-06-20T09:00').complete(entry.id, first.id, {});
-    expect(ask.statusCode).toBe(409);
-    expect(ask.body.code).toBe('next_choice_required');
-    expect(ask.body.shift).toEqual({ days: 19 });
-    const rows = await occurrenceRows(harness.pool, entry.id);
-    expect(rows.filter((r) => r.status === 'pending')).toHaveLength(2);
-    const moved = await api.at('2026-06-20T09:00').complete(entry.id, first.id, { next_choice: 'shift_following' });
+    };
+    const kept = await created(booster, '2026-06-01T09:00');
+    const keep = await api.at('2026-06-20T09:00').complete(kept.id, kept.open_occurrences[0].id, {});
+    expect(keep.statusCode).toBe(200);
+    expect(keep.body.next_choice_applied).toBe('keep');
+    expect(openDates(keep.body.entry)).toEqual(['2026-07-01:planned:coming_up']);
+
+    const shifted = await created(booster, '2026-06-01T09:00');
+    const moved = await api.at('2026-06-20T09:00').complete(shifted.id, shifted.open_occurrences[0].id, {
+      next_choice: 'shift_following',
+    });
     expect(moved.statusCode).toBe(200);
     expect(openDates(moved.body.entry)).toEqual(['2026-07-20:planned:coming_up']);
   });
@@ -163,18 +165,23 @@ describe('planned dates (D-CSM-025, D-CSM-021)', () => {
     expect(res.body.entry.open_occurrences).toHaveLength(2);
   });
 
-  it('PL-5 / OR-3 marking the later date first asks about the earlier one', async () => {
+  it('PL-5 / OR-3 marking the later date first keeps the earlier one open unless a choice is sent', async () => {
     if (!harness.pool) return;
-    const entry = await created(flea('2026-06-05'), '2026-06-01T09:00');
-    const planned = await api.at('2026-06-01T09:00').plan(entry.id, { scheduled_date: '2026-07-01' });
+    const kept = await created(flea('2026-06-05'), '2026-06-01T09:00');
+    const plannedKept = await api.at('2026-06-01T09:00').plan(kept.id, { scheduled_date: '2026-07-01' });
+    const laterKept = plannedKept.body.entry.open_occurrences.find((o) => o.scheduled_date === '2026-07-01');
+    const keep = await api.at('2026-06-10T09:00').complete(kept.id, laterKept.id, {});
+    expect(keep.statusCode).toBe(200);
+    expect(openDates(keep.body.entry)).toEqual(['2026-06-05:computed:overdue']);
+    expect(await invariantViolations(harness.pool, kept.id)).toEqual([]);
+
+    const skipped = await created(flea('2026-06-05'), '2026-06-01T09:00');
+    const planned = await api.at('2026-06-01T09:00').plan(skipped.id, { scheduled_date: '2026-07-01' });
     const later = planned.body.entry.open_occurrences.find((o) => o.scheduled_date === '2026-07-01');
-    const ask = await api.at('2026-06-10T09:00').complete(entry.id, later.id, {});
-    expect(ask.statusCode).toBe(409);
-    expect(ask.body.code).toBe('earlier_choice_required');
-    const done = await api.at('2026-06-10T09:00').complete(entry.id, later.id, { earlier_choice: 'skip' });
+    const done = await api.at('2026-06-10T09:00').complete(skipped.id, later.id, { earlier_choice: 'skip' });
     expect(done.statusCode).toBe(200);
     expect(openDates(done.body.entry)).toEqual(['2026-07-10:computed:coming_up']);
-    expect(await invariantViolations(harness.pool, entry.id)).toEqual([]);
+    expect(await invariantViolations(harness.pool, skipped.id)).toEqual([]);
   });
 });
 

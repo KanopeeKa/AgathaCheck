@@ -13,7 +13,7 @@ description: Occurrences are the source of truth — always one real open date, 
 
 **Origins (D-CSM-021):** `schedule` · `computed` (≤ 1 open, only when nothing else is open) · `planned` (set by a person; never moved by the app).
 
-**Complete:** `POST …/occurrences/:occId/complete { completed_on?, next_choice?, remember_choice? }`. May return **409 `next_choice_required`** (nothing saved) when done late with a waiting date; re-send with `next_choice`. **409 `occurrence_not_open`** when already closed. Overdue items ask "When was this done?" first (D-CIE-009).
+**Complete:** `POST …/occurrences/:occId/complete { completed_on?, next_choice?, remember_choice? }`. Never asks (D-CSM-026 revised 2026-10-01): with no `next_choice` the remembered choice applies if it fits, otherwise `keep`; the response says which in `next_choice_applied`. An explicit choice that doesn't fit → 400 `next_choice_not_available`. Same on `complete-weight`. No `earlier_choice` → the earlier After-it's-done date stays open. **409 `occurrence_not_open`** when already closed. Overdue items ask "When was this done?" first (D-CIE-009).
 
 **Undo (D-CSM-029):** reverses the whole last command; deletes a created next date only if still `computed`.
 

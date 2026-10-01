@@ -1,9 +1,10 @@
 /**
  * Mark as done (D-CSM-022, D-CSM-026, D-CSM-030; D-CIE-009).
  *
- * Ask before saving: when a next-date choice is needed and none is given or
- * remembered, the command throws 409 `next_choice_required` and the whole
- * transaction rolls back — nothing is saved.
+ * Never asks (D-CSM-026 v4): when a next-date choice is needed and none is
+ * sent, the remembered choice applies if it fits, otherwise Keep. A later
+ * After-it's-done date completed while an earlier one is open leaves the
+ * earlier one open unless `earlier_choice` says otherwise (PL-5 v4).
  */
 
 import { fetchUserSnapshot } from '../../../people/userSnapshot.js';
@@ -12,27 +13,20 @@ import { deriveCompletionTiming } from '../../schedule/completionTiming.js';
 import { isFixedSchedule } from '../../schedule/fixedSlots.js';
 import {
   NEXT_CHOICES,
+  NEXT_CHOICE_KEEP,
   evaluateNextChoice,
   instantMinutes,
   pickWaitingOccurrence,
 } from '../../schedule/lateCompletion.js';
 import { scheduleTimesFromEntry } from '../../schedule/scheduleTimes.js';
 import { SCHEDULE_EVENT_COMPLETED } from '../../schedule/scheduleEventLedger.js';
-import { CareCommandError, badRequest, notOpen } from '../careCommandError.js';
+import { badRequest, notOpen } from '../careCommandError.js';
 import { applyNextChoice } from './nextChoice.js';
 import { markCompleted, markSkipped } from '../occurrenceRepository.js';
 import { updateEntryFields } from '../entryRepository.js';
 
-export const EARLIER_CHOICES = ['complete', 'skip', 'keep'];
-
-function occurrenceWire(row) {
-  return {
-    id: row.id,
-    scheduled_date: row.scheduled_date,
-    scheduled_time: row.scheduled_time,
-    origin: row.origin,
-  };
-}
+export const EARLIER_CHOICE_KEEP = 'keep';
+export const EARLIER_CHOICES = ['complete', 'skip', EARLIER_CHOICE_KEEP];
 
 /**
  * Close one open occurrence as done (no choices) — shared with stack review.
@@ -100,30 +94,27 @@ export async function completeOccurrenceCommand(ctx, {
     throw badRequest('invalid_earlier_choice', `earlier_choice must be one of ${EARLIER_CHOICES.join(', ')}`);
   }
 
-  // After it's done: marking a later date while an earlier one is open asks first (PL-5).
+  // After it's done: a later date completed while an earlier one is open
+  // (PL-5). Without a choice the earlier date stays open.
   let remaining = openRows.filter((o) => o.id !== row.id);
+  let appliedEarlier = null;
   if (!isFixedSchedule(entry)) {
     const rowAt = instantMinutes(row.scheduled_date, row.scheduled_time);
     const earlier = remaining.filter(
       (o) => instantMinutes(o.scheduled_date, o.scheduled_time) < rowAt,
     );
     if (earlier.length > 0) {
-      if (!earlierChoice) {
-        throw new CareCommandError(409, 'earlier_choice_required', 'An earlier date is still open', {
-          earlier_occurrence: occurrenceWire(earlier[0]),
-          options: EARLIER_CHOICES,
-        });
-      }
+      appliedEarlier = earlierChoice || EARLIER_CHOICE_KEEP;
       for (const e of earlier) {
-        if (earlierChoice === 'complete') {
+        if (appliedEarlier === 'complete') {
           await closeAsDone(ctx, e, { completedOn: completedOnIso });
           trace.closedRow(e);
-        } else if (earlierChoice === 'skip') {
+        } else if (appliedEarlier === 'skip') {
           await markSkipped(db, { entryId: entry.id, occurrenceId: e.id, closeReason: 'user', userId: ctx.userId });
           trace.closedRow(e);
         }
       }
-      if (earlierChoice !== 'keep') {
+      if (appliedEarlier !== EARLIER_CHOICE_KEEP) {
         const earlierIds = new Set(earlier.map((e) => e.id));
         remaining = remaining.filter((o) => !earlierIds.has(o.id));
       }
@@ -144,14 +135,7 @@ export async function completeOccurrenceCommand(ctx, {
     const remembered = entry.late_completion_choice && evaluation.options.includes(entry.late_completion_choice)
       ? entry.late_completion_choice
       : null;
-    appliedChoice = nextChoice || remembered;
-    if (!appliedChoice) {
-      throw new CareCommandError(409, 'next_choice_required', 'Choose what happens to the next date', {
-        waiting_occurrence: occurrenceWire(waiting),
-        shift: evaluation.shift,
-        options: evaluation.options,
-      });
-    }
+    appliedChoice = nextChoice || remembered || NEXT_CHOICE_KEEP;
     if (!evaluation.options.includes(appliedChoice)) {
       throw badRequest('next_choice_not_available', `next_choice ${appliedChoice} is not available here`);
     }
@@ -184,7 +168,7 @@ export async function completeOccurrenceCommand(ctx, {
       toDate: completedOnIso,
       extra: {
         next_choice: appliedChoice,
-        earlier_choice: earlierChoice,
+        earlier_choice: appliedEarlier,
         shift: evaluation.required ? evaluation.shift : null,
       },
     },

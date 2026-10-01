@@ -49,7 +49,7 @@ Unique pending constraint per entry + instant: `(health_entry_id, scheduled_date
 | `schedule_times` | JSONB | Ordered `["08:00","18:00"]`; empty/null with checkbox off → all-day (`NULL` time) |
 | `recurrence_anchor` | VARCHAR | `from_due_date` = **Fixed schedule**, `from_completion` = **After it's done**; default from care family on create (D-CSM-020) |
 | `schedule_anchor_date` | DATE | Fixed schedule: the date series dates are counted from (D-CSM-023, D-CSM-024) |
-| `late_completion_choice` | VARCHAR | `keep` \| `skip_next` \| `shift_following`; null = ask (D-CSM-026) |
+| `late_completion_choice` | VARCHAR | `keep` \| `skip_next` \| `shift_following`; null = keep (D-CSM-026) |
 | `paused_since` | DATE | Set when series paused (CSM-9) |
 | `paused_until` | DATE | Postpone-until end date for Fixed-schedule items; null = no end (D-CSM-028) |
 | `schedule_policy_version` | VARCHAR | CSM policy tag on entry |
@@ -180,7 +180,7 @@ Every row is a test (Jest for rules and commands, Flutter widget tests for the a
 | PL-2 | First dose done 20 Jun (due 1 Jun), booster 1 Jul waiting | Gap 11 < 15 → Keep / Skip / Move by 19 days |
 | PL-3 | Change date on the open computed 5 Jun → 20 Jun | Same occurrence, now `planned` |
 | PL-4 | Plan another date 8 Jun while 5 Jun open | Warning; add anyway → two open |
-| PL-5 | AID: mark the later 1 Jul done while 5 Jun is open | 409 `earlier_choice_required`: mark 5 Jun done / skip / keep |
+| PL-5 | AID: mark the later 1 Jul done while 5 Jun is open | No `earlier_choice` → 5 Jun stays open; `complete` / `skip` close it in the same transaction. The app opens the Care Item view for this case |
 | PL-6 | Delete the only planned date | Rule creates the next; user confirms the date |
 | PL-7 | FX: plan an extra one-off dose | `planned`, independent of the series |
 
@@ -202,9 +202,9 @@ Every row is a test (Jest for rules and commands, Flutter widget tests for the a
 | id | Case | Expected |
 |----|------|----------|
 | LC-1 | Remember “Skip the next date” | Applied automatically in the completion transaction; visible and resettable in Advanced settings |
-| LC-2 | Dismiss the sheet | Keep; nothing remembered |
-| LC-3 | FX twice daily: 08:00 recorded at 15:00, 18:00 waiting | Gap 10 h → 3 h → 409 `next_choice_required`; Keep / Skip 18:00 (Move is not offered for an hours shift on care given several times a day) |
-| LC-4 | Re-sent with `next_choice: 'skip_next'` | One transaction: dose completed, 18:00 skipped; Undo reverses both |
+| LC-2 | Nothing remembered, no choice sent | Keep; `next_choice_applied: keep` |
+| LC-3 | FX twice daily: 08:00 recorded at 15:00, 18:00 waiting | Gap 10 h → 3 h → the trigger fires; with no choice the 18:00 dose is kept (200). Only Keep / Skip 18:00 are offered (Move is not offered for an hours shift on care given several times a day): an explicit `shift_following` gets 400 `next_choice_not_available`, and a remembered one falls back to Keep |
+| LC-4 | Sent with `next_choice: 'skip_next'` | One transaction: dose completed, 18:00 skipped; Undo reverses both |
 | LC-5 | Response lost; app retries | 409 `occurrence_not_open`; the app reloads the item |
 | UN-1 | AID done → computed next → Undo | Reopen; computed next deleted |
 | UN-2 | AID done → next changed (planned) → Undo | Reopen; planned kept |
@@ -270,7 +270,7 @@ Every row is a test (Jest for rules and commands, Flutter widget tests for the a
 | Method | Path | Purpose |
 |--------|------|---------|
 | GET | `/api/health-entries/:id/occurrences` | List open (`status=open`) or past (`status=past`) |
-| POST | `/api/health-entries/:id/occurrences/:occId/complete` | Complete (409 `next_choice_required` / `occurrence_not_open`) |
+| POST | `/api/health-entries/:id/occurrences/:occId/complete` | Complete (400 `next_choice_not_available` / 409 `occurrence_not_open`) |
 | POST | `/api/health-entries/:id/occurrences/:occId/skip` | Skip |
 | POST | `/api/health-entries/:id/occurrences` | Plan another date |
 | POST | `/api/health-entries/:id/occurrences/:occId/reschedule` | Change date (`scope: this \| following`) |

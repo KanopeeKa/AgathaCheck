@@ -315,14 +315,11 @@ People tiers decide what each person sees.
 
 ### Done after the due date, with another date waiting (D-CSM-026)
 
-When care is done late, another planned or scheduled date is waiting, and the gap to it shrank by more than half, the app asks before saving:
+When care is done late, another planned or scheduled date is waiting, and the gap to it shrank by more than half, the app **does not ask** (revised 2026-10-01):
 
-- **Keep {date}** (selected by default; also what closing the sheet does)
-- **Skip {date}**
-- **Move this and following by {N}**
-- ☐ **Remember my choice for this care item** — shown and changeable in Advanced settings as **If done after the due date**.
-
-Copy example: "Recorded after its planned time. The next dose is planned for 18:00." No wording about whether that is safe (D-CIE-004).
+- The waiting date is **kept**, unless the care item remembers another choice in Advanced settings, **If done after the due date**: Keep · Skip the next date · Move this and following. A remembered choice that doesn't fit this completion falls back to Keep.
+- The confirmation says so and offers a way to change it: "Apoquel done · Undo — Next stays 18:00 · Change". **Change** opens Change date on the waiting date (**This and following** moves the series).
+- No wording about whether that is safe (D-CIE-004).
 
 ```mermaid
 sequenceDiagram
@@ -330,19 +327,10 @@ sequenceDiagram
   participant A as App
   participant S as Server
   U->>A: Mark as done
-  alt overdue
-    A->>U: When was this done?
-    U->>A: date
-  end
   A->>S: complete {completed_on}
-  alt choice needed and none remembered
-    S-->>A: 409 next_choice_required (nothing saved)
-    A->>U: Keep / Skip next / Move this and following (+ Remember)
-    U->>A: choice
-    A->>S: complete {completed_on, next_choice, remember_choice}
-  end
-  S-->>A: 200 {entry with open_occurrences, undo_token}
-  A->>U: Done · Undo (server-confirmed)
+  Note over S: no choice sent: remembered choice if it fits, otherwise Keep
+  S-->>A: 200 {entry with open_occurrences, next_choice_applied, undo_token}
+  A->>U: Done · Undo, plus "Next stays … · Change" when a choice was applied
 ```
 
 ### Plan another date (D-CSM-025)
@@ -351,7 +339,7 @@ sequenceDiagram
 - Planned dates come first: the schedule rule adds a date only when nothing is planned.
 - A date within half an interval of another open date asks first: "Another date is already planned for 5 Jun. Add this one too?"
 - Vaccines: "+ Add a booster date" under the first due date. First dose 1 Jun, booster 1 Jul, then yearly: the booster follows the first dose, and the yearly date counts from the booster.
-- After it's done: marking a later date done while an earlier one is open asks about the earlier one: **Mark it done** / **Skip it** / **Keep it**.
+- After it's done: when a later date is open together with an earlier one, the app opens the Care Item view so each date can be marked done, skipped or moved on its own. A completion request without `earlier_choice` keeps the earlier date open.
 
 ## Absences
 

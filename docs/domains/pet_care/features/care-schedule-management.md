@@ -61,7 +61,7 @@ care_context  care_progression  care_intelligence
 - **Origins** (D-CSM-021): `schedule` (Fixed-schedule rule), `computed` (After-it's-done rule, at most one open), `planned` (set by a person). The app never moves `schedule` or `planned` dates on its own; planned dates take precedence over the rule.
 - **Fixed schedule** (D-CSM-023): slots from today − 3 days through today plus the next series date are stored; a slot is Overdue until the next slot is due, then **Not recorded** (the stack); a Not recorded slot closes as `not_recorded` once the slot after it is three days old, and can still be recorded as given from History.
 - **After it's done** (D-CSM-022): one open date, Overdue until done, skipped or postponed; the next date counts from the done date.
-- **Month-end clamp** (D-CSM-024), **Plan another date** (D-CSM-025), **ask before saving** when done late with a waiting date (D-CSM-026), **This date only / This and following** (D-CSM-027), **Postpone until** as the only pause/absence move (D-CSM-028), **whole-command undo** (D-CSM-029), **early completion** confirmation (D-CSM-030).
+- **Month-end clamp** (D-CSM-024), **Plan another date** (D-CSM-025), **Keep the waiting date** when done late, unless the item remembers another choice (D-CSM-026, revised 2026-10-01), **This date only / This and following** (D-CSM-027), **Postpone until** as the only pause/absence move (D-CSM-028), **whole-command undo** (D-CSM-029), **early completion** confirmation (D-CSM-030).
 - **Care tick** every 15 minutes, with the same catch-up run by every command first (D-CSM-031).
 - **Edits are commands** (D-CSM-032); **one lock, one transaction** per command; 409 when the occurrence is no longer open (D-CSM-033).
 
@@ -84,7 +84,7 @@ One entry point per real-world action. Every primitive runs inside `withCareItem
 
 | Primitive | Purpose | HTTP route |
 |-----------|---------|------------|
-| `complete` | Close an occurrence as done; store `completion_timing`; apply D-CSM-026 (409 `next_choice_required` when a choice is needed); create the next date when nothing else is open | `POST …/occurrences/:occId/complete` |
+| `complete` | Close an occurrence as done; store `completion_timing`; apply D-CSM-026 (no choice sent → remembered choice if it fits, otherwise keep); create the next date when nothing else is open | `POST …/occurrences/:occId/complete` |
 | `skip` | Close as skipped (`close_reason = 'user'`); ledger `skipped` | `POST …/occurrences/:occId/skip` |
 | `resolveStack` | Record earlier doses: Given → completed, Not given → skipped (`user`) | `POST …/occurrences/resolve-stack` |
 | `recordAsGiven` | Record a closed Not recorded slot as given | `POST …/occurrences/:occId/record` |
@@ -123,7 +123,7 @@ All routes mount under `/api/health-entries` and `/backend/api/health-entries`. 
 |--------|------|------|----------|
 | GET | `/` (`?pet_id=`), `/:id` | — | Entry fields plus `open_occurrences[] { id, scheduled_date, scheduled_time, status, origin }` (`status`: `coming_up` \| `due` \| `overdue` \| `not_recorded`), `as_of { date, time, timezone }`, `estimated_next { date, basis }` (display only), `schedule_anchor_date`, `late_completion_choice`, `paused_until`, `paused_since`, `resume_default_date` (paused items) |
 | GET | `/:id/occurrences` | Query: `status=open` (default) or `status=past`; optional `as_of` | Open or closed occurrence rows, with `origin` and `close_reason` |
-| POST | `/:id/occurrences/:occId/complete` | `{ completed_on?, notes?, next_choice?, remember_choice?, earlier_choice? }` | 200 `{ occurrence, next_due_date, entry, undo_token, next_choice_applied }`; **409 `next_choice_required`** `{ waiting_occurrence, shift, options }` with nothing saved (D-CSM-026); **409 `earlier_choice_required`** `{ earlier_occurrence, options: [complete, skip, keep] }` (After it's done); **409 `occurrence_not_open`** |
+| POST | `/:id/occurrences/:occId/complete` | `{ completed_on?, notes?, next_choice?, remember_choice?, earlier_choice? }` | 200 `{ occurrence, next_due_date, entry, undo_token, next_choice_applied }` (D-CSM-026: no `next_choice` → remembered choice if it fits, otherwise `keep`; no `earlier_choice` → `keep`); **400 `next_choice_not_available`** when an explicit choice doesn't fit, nothing saved; **409 `occurrence_not_open`** |
 | POST | `/:id/occurrences/:occId/skip` | `{ notes? }` | Same response shape as complete |
 | POST | `/:id/occurrences` | `{ scheduled_date, scheduled_time? }` | New `planned` occurrence; `warnings[]` when another open date is within half an interval |
 | POST | `/:id/occurrences/:occId/reschedule` | `{ scheduled_date, scope?: 'this' \| 'following', reason_code?, reason_note? }` | Validates per D-ACP-009 / D-CSM-027; ledger `rescheduled` or `schedule_scope_changed`; `warnings[]`, `next_due_date` |
@@ -222,7 +222,7 @@ On success: occurrence row updates, ledger `rescheduled` event, **`health_entrie
 **Additions (care occurrences, migration 083):**
 
 - `health_occurrences`: `origin` (`schedule` | `computed` | `planned`), `close_reason` (`user` | `not_recorded` | `paused` | `covered` | `system`)
-- `health_entries`: `schedule_anchor_date`, `late_completion_choice` (`keep` | `skip_next` | `shift_following` | null = ask), `paused_until`
+- `health_entries`: `schedule_anchor_date`, `late_completion_choice` (`keep` | `skip_next` | `shift_following` | null = keep), `paused_until`
 - `care_schedule_events` types: `postponed`, `materialised`, `late_choice_applied`, `not_recorded_closed`, `schedule_scope_changed`
 
 **Additions (CSM-1):**

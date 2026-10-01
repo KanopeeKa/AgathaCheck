@@ -50,6 +50,21 @@ export class OccurrenceStackSheetPage {
     }).toPass({ timeout: 30_000 });
   }
 
+  /** Records the latest dose when it is overdue: the app asks "When was this done?" and Today is chosen. */
+  async recordLatestOverdueDoseToday(): Promise<void> {
+    await this.page.getByRole('button', { name: /Record latest dose/i }).click();
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await expect(this.page.getByText(/When was this done\?/i)).toBeVisible();
+    }).toPass({ timeout: 15_000 });
+    await this.page.getByRole('button', { name: /^Today$/i }).click();
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await expect(this.page.getByText(/When was this done\?/i)).toHaveCount(0);
+      await expect(this.page.getByRole('button', { name: /Record latest dose/i })).toHaveCount(0);
+    }).toPass({ timeout: 30_000 });
+  }
+
   async dismiss(): Promise<void> {
     await this.page.getByRole('button', { name: /Not now/i }).click();
   }

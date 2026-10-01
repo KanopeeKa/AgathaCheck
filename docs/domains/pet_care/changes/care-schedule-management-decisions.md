@@ -215,12 +215,12 @@ Rules:
 
 | Event | Result |
 |-------|--------|
-| Done | If another open occurrence waits, it becomes the next date (D-CSM-026 may ask first). Otherwise a `computed` occurrence at `completed_on + interval` (month-end clamp, D-CSM-024) |
+| Done | If another open occurrence waits, it becomes the next date (D-CSM-026 decides what happens to it when done late). Otherwise a `computed` occurrence at `completed_on + interval` (month-end clamp, D-CSM-024) |
 | Skipped | Same, counted from `max(scheduled_date, today) + interval` |
 | Not done after its day (or time) | **Overdue** until done, skipped or postponed. No stack |
 | Estimated next | While overdue, the item shows **“Estimated next: today + interval”**. This is **display only**: never a row, never an action, never a reminder |
 | Completing overdue care | D-CIE-009 stays: “When was this done?” first; that date feeds the rule |
-| Completing a later open date while an earlier one is open | Ask: **Mark it done** / **Skip it** / **Keep it** for the earlier date (409 `earlier_choice_required`, nothing saved; re-send with `earlier_choice`) |
+| Completing a later open date while an earlier one is open | The earlier date stays open (**Keep**) unless the request sends `earlier_choice` = `complete` or `skip`. The app does not ask: it opens the Care Item view for this case, where each date has its own actions (revised 2026-10-01, see D-CSM-026) |
 
 Example: due 5 Jun (monthly). On 7 Jun, still not done → “Overdue · 5 Jun”, “Estimated next: 7 Jul”. Recorded on 7 Jun as done on 6 Jun → next 6 Jul.
 
@@ -267,22 +267,26 @@ When the anchor's day does not exist in the target month, use the month's last d
 
 ---
 
-## D-CSM-026 — Done after the due date, with a waiting date (2026-09-29)
+## D-CSM-026 — Done after the due date, with a waiting date (2026-09-29, revised 2026-10-01)
 
-**Status:** Frozen
+**Status:** Frozen · revised 2026-10-01 by the owner (care-next-occurrence-c1a7 amendment v4)
 
 **Trigger:** an occurrence is done after its due day or time, another open `planned` or `schedule` occurrence waits, and the gap to it has shrunk by **more than half** of the originally planned gap (`waiting.scheduled − closed.scheduled`; minutes for timed slots, days otherwise).
 
-**Choice:** **Keep [date]** (pre-selected, and the result of dismissing) · **Skip [date]** · **Move this and following by [N]** (Fixed schedule: new anchor; After it's done: shifts the waiting planned dates; not offered when the shift is in hours on care given several times a day) · ☐ **Remember my choice for this care item** → `health_entries.late_completion_choice` (`keep` | `skip_next` | `shift_following`; `null` = ask). Shown and resettable in Advanced settings as **“If done after the due date”**.
+**Choices:** **Keep [date]** · **Skip [date]** · **Move this and following by [N]** (Fixed schedule: new anchor; After it's done: shifts the waiting planned dates; not offered when the shift is in hours on care given several times a day).
 
-**Ask before saving:** one command, one commit.
+**Never asks:** completing care is never refused for a missing choice.
 
-1. `POST …/occurrences/:occId/complete { completed_on, next_choice?, remember_choice? }`.
-2. When the trigger fires, no `next_choice` is sent and none is remembered, the server **saves nothing** and answers **409 `next_choice_required`** with `{ waiting_occurrence, shift, options }`.
-3. The app asks, then re-sends the same request with `next_choice` (and `remember_choice: true` when ticked).
-4. Completion, choice and remembered preference commit in **one transaction**. Undo reverses all of it.
+1. `POST …/occurrences/:occId/complete { completed_on?, next_choice?, remember_choice? }` (and `…/complete-weight`).
+2. Without `next_choice`, the item's remembered choice (`health_entries.late_completion_choice`) applies when it is offered for this completion; otherwise **Keep**. `null` means Keep.
+3. An explicit `next_choice` that is not offered for this completion is refused with **400 `next_choice_not_available`**; nothing is saved.
+4. The response carries **`next_choice_applied`** (`keep` | `skip_next` | `shift_following`, or `null` when the trigger did not fire). After a completion that triggered the rule, the app says the next date stays and offers **Change**, which opens Change date on the waiting occurrence (**This and following** covers the move).
+5. The remembered choice is set in Advanced settings, **“If done after the due date”**: Keep · Skip the next date · Move this and following.
+6. Completion, choice and remembered preference commit in **one transaction**. Undo reverses all of it.
 
 A retry after a lost response gets **409 `occurrence_not_open`**; the app reloads the item. No medical advice in the copy (D-CIE-004).
+
+**Revision (2026-10-01):** the first version answered **409 `next_choice_required`** and saved nothing until the app re-sent a choice (“ask before saving”). App versions that send no choice could not record a dose done late (for example the 08:00 dose of twice-daily care recorded at 15:00), and the choice sheet was dropped from the agenda design (amendment v4). The 409 is withdrawn; the same revision withdraws **409 `earlier_choice_required`** (table above).
 
 ---
 

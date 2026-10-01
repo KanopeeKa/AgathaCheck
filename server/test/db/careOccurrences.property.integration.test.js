@@ -89,13 +89,13 @@ describe('care occurrence invariants under random commands (OR-4)', () => {
       ]);
       let res = null;
       if (action === 'complete' && occ) {
-        res = await api.at(clock()).complete(id, occ.id, {});
-        if (res.statusCode === 409 && res.body.code === 'next_choice_required') {
-          res = await api.at(clock()).complete(id, occ.id, { next_choice: pick(res.body.options) });
-        }
-        if (res.statusCode === 409 && res.body.code === 'earlier_choice_required') {
-          res = await api.at(clock()).complete(id, occ.id, { earlier_choice: pick(res.body.options) });
-        }
+        // No choice falls back to keep (D-CSM-026 v4); explicit choices are mixed in.
+        res = await api.at(clock()).complete(id, occ.id, pick([
+          {},
+          {},
+          { next_choice: pick(['keep', 'skip_next', 'shift_following']) },
+          { earlier_choice: pick(['complete', 'skip', 'keep']) },
+        ]));
       } else if (action === 'skip' && occ) {
         res = await api.at(clock()).skip(id, occ.id);
       } else if (action === 'plan') {
