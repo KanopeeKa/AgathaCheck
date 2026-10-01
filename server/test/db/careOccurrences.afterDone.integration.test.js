@@ -8,7 +8,6 @@ import {
   careApi,
   createOwner,
   invariantViolations,
-  occurrenceRows,
   openHarness,
   removeOwner,
 } from './helpers/careHarness.js';
