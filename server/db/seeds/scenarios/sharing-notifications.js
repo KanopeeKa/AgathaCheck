@@ -22,7 +22,7 @@ export async function seedSharingNotifications(client) {
     [DEMO_IDS.carolPetAccess, DEMO_IDS.buddyPet, DEMO_IDS.carol, DEMO_IDS.alice],
   );
 
-  // Overdue health notification for Buddy flea treatment
+  // Overdue health notification for Buddy's wellness review (care-occurrences)
   await client.query(
     `INSERT INTO notifications (
        id, user_id, pet_id, pet_name, health_entry_id, title, type, message,
@@ -40,8 +40,8 @@ export async function seedSharingNotifications(client) {
       DEMO_IDS.buddyPet,
       'Buddy',
       DEMO_IDS.buddyOverduePreventive,
-      'Flea treatment overdue',
-      'Buddy flea treatment was due — please administer or update the schedule',
+      'Wellness review overdue',
+      'Buddy\'s wellness review was due — book it or change the date',
     ],
   );
 

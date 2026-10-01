@@ -17,7 +17,31 @@ export function contactRowToProviderSnapshot(contactRow) {
 }
 
 /**
+ * The contact attached to a care item, whoever's directory it lives in.
+ * Reading it is authorised by the completer's access to the pet (checked by
+ * the route), not by the completer's own directory — PEOPLE invariant I12:
+ * a co-parent or carer completing care keeps the item's provider.
+ *
+ * @param {import('pg').Pool|import('pg').PoolClient} pool
+ * @param {string} contactId
+ * @returns {Promise<object|null>}
+ */
+async function loadAttachedContact(pool, contactId) {
+  const result = await pool.query(
+    `SELECT pc.id, pc.directory_id, pc.kind, pc.name, pc.phone, pc.email
+     FROM people_contacts pc
+     WHERE pc.id = $1`,
+    [contactId],
+  );
+  return result.rows[0] ?? null;
+}
+
+/**
  * Resolve provider used at completion from entry defaults and optional body overrides.
+ *
+ * The item's own contact is always snapshotted (I12). A different contact in
+ * the body must be one the completer can see; otherwise the item's contact is
+ * kept rather than silently dropping the provider.
  *
  * @param {import('pg').Pool|import('pg').PoolClient} pool
  * @param {string} userId
@@ -43,18 +67,27 @@ export async function resolveProviderUsedForCompletion(pool, userId, entry, body
   }
 
   let snapshot = null;
+  if (bodyContact && bodyContact !== entry.provider_contact_id) {
+    const row = await loadContactForViewer(pool, bodyContact, userId);
+    if (row) {
+      return { contactId: bodyContact, typedName: null, snapshot: contactRowToProviderSnapshot(row) };
+    }
+    contactId = entry.provider_contact_id || null;
+    typedName = contactId ? null : (bodyTyped || entry.provider_typed_name || null);
+  }
   if (contactId) {
-    const row = await loadContactForViewer(pool, contactId, userId);
+    const row = await loadAttachedContact(pool, contactId);
     if (!row) {
       contactId = null;
     } else {
       snapshot = contactRowToProviderSnapshot(row);
     }
-  } else if (typedName) {
+  }
+  if (!contactId && typedName) {
     snapshot = { typed_name: typedName, name: typedName };
   }
 
-  return { contactId, typedName: typedName || null, snapshot };
+  return { contactId, typedName: contactId ? null : (typedName || null), snapshot };
 }
 
 /**

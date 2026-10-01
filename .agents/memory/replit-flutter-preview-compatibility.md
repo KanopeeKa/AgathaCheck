@@ -14,3 +14,13 @@ When Flutter 3.44 runs `pub get` here, it temporarily resolves several SDK-pinne
 **Why:** A visual-preview command must not silently create dependency changes that look ready to commit, especially when they come from Flutter's SDK constraints rather than a deliberate package update.
 
 **How to apply:** Treat the lockfile as immutable in preview-only tooling. Refuse to run if it already has uncommitted edits, back it up before `pub get`, and restore it after the build.
+
+Flutter version probes can fail when a downstream consumer closes stdout early,
+even though the installed SDK works.
+
+**Why:** Dart-based CLI output can turn an early pipe close into a failing exit
+under strict shell pipeline handling, which resembles a toolchain startup fault.
+
+**How to apply:** When diagnosing a failed SDK probe, capture its complete output
+before selecting the first line; do not infer SDK incompatibility from a
+closed-output-pipe failure.

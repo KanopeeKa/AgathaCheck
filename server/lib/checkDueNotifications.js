@@ -1,7 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
 
 import { accessiblePetSql, petNotificationRecipientIds } from './petAccess.js';
-import { dateToIsoDate, todayCalendarIso } from './calendarDate.js';
+import { dateToIsoDate } from './calendarDate.js';
+import { careAsOfForZone } from './care/occurrence/careAsOf.js';
+import { normalizePetHomeTimezone } from './petHomeTimezone.js';
 
 /**
  * In-app deep link for a care notification tied to a health entry (view screen).
@@ -79,26 +81,39 @@ async function insertDueNotification(pool, {
 /**
  * Scan health entries for pets the caller can access and create due/overdue
  * notifications for every owner and collaborator on each affected pet.
+ *
+ * `next_due_date` is the earliest real open occurrence (D-CSM-019), so
+ * reminders never fire on an estimated date. Paused items are skipped and
+ * "today" is each pet's home calendar day (D-CIE-005).
+ *
+ * @param {import('pg').Pool} pool
+ * @param {string} userId
+ * @param {Record<string, string>} [petNamesFromClient]
+ * @param {{ clock?: { todayIso: string, nowTimeIso: string }|null }} [options] test clock
  */
-export async function checkDueNotifications(pool, userId, petNamesFromClient = {}) {
+export async function checkDueNotifications(pool, userId, petNamesFromClient = {}, { clock = null } = {}) {
   const entries = await pool.query(
     `SELECT he.id, he.pet_id, he.name, he.next_due_date, he.remind_days_before,
-            p.name AS pet_name
+            p.name AS pet_name, p.home_timezone AS pet_home_timezone
      FROM health_entries he
      JOIN pets p ON p.id = he.pet_id
      WHERE ${accessiblePetSql('p', '$1')}
        AND he.next_due_date IS NOT NULL
-       AND he.status != 'completed'
-       AND (he.completed_on IS NULL)`,
+       AND he.status = 'active'
+       AND COALESCE(he.care_planning, 'planned') <> 'unplanned'
+       AND (he.completed_on IS NULL OR COALESCE(he.frequency, 'once') <> 'once')`,
     [userId]
   );
 
-  const todayIso = todayCalendarIso();
+  const todayByZone = new Map();
   let created = 0;
 
   for (const entry of entries.rows) {
     const dueIso = dateToIsoDate(entry.next_due_date);
     if (!dueIso) continue;
+    const zone = normalizePetHomeTimezone(entry.pet_home_timezone);
+    if (!todayByZone.has(zone)) todayByZone.set(zone, careAsOfForZone(zone, clock).todayIso);
+    const todayIso = todayByZone.get(zone);
     const petName = petNamesFromClient[entry.pet_id] || entry.pet_name || 'Pet';
     const recipients = await petNotificationRecipientIds(pool, entry.pet_id);
 

@@ -1200,28 +1200,6 @@ export async function getHealthEntry(
   }>();
 }
 
-export async function markHealthEntryTaken(
-  baseURL: string,
-  token: string,
-  entryId: string,
-  completedOn?: string,
-): Promise<void> {
-  const res = await apiFetch(apiUrl(`/health-entries/${entryId}/mark-taken`, baseURL), {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({
-      completed_on: completedOn ?? new Date().toISOString().slice(0, 10),
-    }),
-  });
-
-  if (!res.ok) {
-    const body = await res.text();
-    throw new Error(`markHealthEntryTaken failed (${res.status}): ${body}`);
-  }
-}
 export async function createHealthEntry(
   baseURL: string,
   token: string,
@@ -1330,21 +1308,6 @@ export async function deleteHealthEntry(
   }
 }
 
-export async function undoCompleteHealthEntry(
-  baseURL: string,
-  token: string,
-  entryId: string,
-): Promise<{ status: string; next_due_date: string | null; name: string }> {
-  const res = await apiFetch(apiUrl(`/health-entries/${entryId}/undo-complete`, baseURL), {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  if (!res.ok) {
-    const body = await res.text();
-    throw new Error(`undoCompleteHealthEntry failed (${res.status}): ${body}`);
-  }
-  return res.json<{ status: string; next_due_date: string | null; name: string }>();
-}
 
 export async function getHealthEntries(
   baseURL: string,
@@ -1374,105 +1337,8 @@ export async function exportHealthEntriesCsv(
   return res.text();
 }
 
-export async function seedMultiDoseHealthEntry(
-  baseURL: string,
-  token: string,
-  petId: string,
-  options: {
-    name: string;
-    nextDueDate: string;
-    scheduleTimes: string[];
-  },
-): Promise<TestHealthEntry> {
-  const entry = await createHealthEntry(baseURL, token, petId, {
-    name: options.name,
-    careFamily: 'medication',
-    nextDueDate: options.nextDueDate,
-    frequency: 'daily',
-  });
 
-  const { execSync } = await import('node:child_process');
-  const { randomUUID } = await import('node:crypto');
-  const host = process.env.PGHOST ?? 'localhost';
-  const port = process.env.PGPORT ?? '5432';
-  const user = process.env.PGUSER ?? 'user';
-  const password = process.env.PGPASSWORD ?? 'password';
-  const database = process.env.PGDATABASE ?? 'agatha_db';
-  const timesArraySql = options.scheduleTimes
-    .map((time) => `'${time.replace(/'/g, "''")}'`)
-    .join(', ');
-  const occValues = options.scheduleTimes
-    .map((time) => {
-      const occId = randomUUID();
-      return `('${occId}', '${entry.id}', '${options.nextDueDate}', '${time}', 'pending')`;
-    })
-    .join(',\n      ');
 
-  execSync(
-    `PGPASSWORD='${password}' psql -h '${host}' -p '${port}' -U '${user}' -d '${database}' -v ON_ERROR_STOP=1 -c "
-      UPDATE health_entries
-      SET schedule_times = jsonb_build_array(${timesArraySql})
-      WHERE id = '${entry.id}';
-      DELETE FROM health_occurrences WHERE health_entry_id = '${entry.id}';
-      INSERT INTO health_occurrences (id, health_entry_id, scheduled_date, scheduled_time, status)
-      VALUES
-      ${occValues};
-    "`,
-    { stdio: 'pipe' },
-  );
-
-  return entry;
-}
-
-/** Seed one closed + one open occurrence for planner E2E (from_completion weekly). */
-export function seedPlannerOccurrenceChain(
-  entryId: string,
-  openDate: string,
-  lastCompletedDate: string,
-): void {
-  const host = process.env.PGHOST ?? 'localhost';
-  const port = process.env.PGPORT ?? '5432';
-  const user = process.env.PGUSER ?? 'user';
-  const password = process.env.PGPASSWORD ?? 'password';
-  const database = process.env.PGDATABASE ?? 'agatha_db';
-  const safeEntryId = entryId.replace(/'/g, "''");
-  const safeOpen = openDate.replace(/'/g, "''");
-  const safeClosed = lastCompletedDate.replace(/'/g, "''");
-  const closedId = randomUUID();
-  const openId = randomUUID();
-  execSync(
-    `PGPASSWORD='${password}' psql -h '${host}' -p '${port}' -U '${user}' -d '${database}' -v ON_ERROR_STOP=1 -c "
-      UPDATE health_entries SET next_due_date = '${safeOpen}' WHERE id = '${safeEntryId}';
-      DELETE FROM health_occurrences WHERE health_entry_id = '${safeEntryId}';
-      INSERT INTO health_occurrences (id, health_entry_id, scheduled_date, scheduled_time, status, completed_on)
-      VALUES ('${closedId}', '${safeEntryId}', '${safeClosed}', NULL, 'completed', '${safeClosed}');
-      INSERT INTO health_occurrences (id, health_entry_id, scheduled_date, scheduled_time, status)
-      VALUES ('${openId}', '${safeEntryId}', '${safeOpen}', NULL, 'pending');
-    "`,
-    { stdio: 'pipe' },
-  );
-}
-
-/** Align the open pending occurrence (and entry cache) to a calendar date for E2E planner seeds. */
-export function pinOpenOccurrenceForEntry(entryId: string, scheduledDate: string): void {
-  const host = process.env.PGHOST ?? 'localhost';
-  const port = process.env.PGPORT ?? '5432';
-  const user = process.env.PGUSER ?? 'user';
-  const password = process.env.PGPASSWORD ?? 'password';
-  const database = process.env.PGDATABASE ?? 'agatha_db';
-  const safeDate = scheduledDate.replace(/'/g, "''");
-  const safeEntryId = entryId.replace(/'/g, "''");
-  const occId = randomUUID();
-  execSync(
-    `PGPASSWORD='${password}' psql -h '${host}' -p '${port}' -U '${user}' -d '${database}' -v ON_ERROR_STOP=1 -c "
-      UPDATE health_entries SET next_due_date = '${safeDate}' WHERE id = '${safeEntryId}';
-      DELETE FROM health_occurrences WHERE health_entry_id = '${safeEntryId}';
-      INSERT INTO health_occurrences (id, health_entry_id, scheduled_date, scheduled_time, status)
-      VALUES ('${occId}', '${safeEntryId}', '${safeDate}', NULL, 'pending');
-    "`,
-    { stdio: 'pipe' },
-  );
-}
 
 export async function getHealthEntryOccurrences(
   baseURL: string,
@@ -1518,20 +1384,6 @@ export async function completeHealthOccurrence(
   }
 }
 
-export async function getHealthEntryHistory(
-  baseURL: string,
-  token: string,
-  entryId: string,
-): Promise<Array<{ id: string; status: string; completed_on: string | null; changed_at: string }>> {
-  const res = await apiFetch(apiUrl(`/health-entries/${entryId}/history`, baseURL), {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  if (!res.ok) {
-    const body = await res.text();
-    throw new Error(`getHealthEntryHistory failed (${res.status}): ${body}`);
-  }
-  return res.json<Array<{ id: string; status: string; completed_on: string | null; changed_at: string }>>();
-}
 
 // ── Notification helpers ──────────────────────────────────────────────────────
 

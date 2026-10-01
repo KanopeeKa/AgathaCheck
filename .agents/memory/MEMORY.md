@@ -49,8 +49,9 @@ Institutional knowledge for cloud agents. Domain workflows live in **Skills** (`
 - [Local-first cache & remote sync](local-first-sync.md) — server is source of truth; never re-push local-only rows on read (resurrects deleted data); create rolls back + rethrows on remote failure.
 - [Flutter web password-manager autofill](flutter-web-password-managers.md) — CanvasKit paints fields on canvas so extensions (Proton Pass) can't autofill; fix is a native HTML form in index.html bridged to Dart.
 - [Tool-output token scrambling](tool-output-token-scrambling.md) — grep/bash can mangle source tokens in file content (e.g. weight→ln); read tool shows truth, edits use real tokens.
-- [Health entry completion semantics](health-entry-completion.md) — UI derives overdue/completed from next_due_date only (no status field); mark-taken must advance/sentinel next_due_date in the backend.
+- [Care item completion semantics](health-entry-completion.md) — occurrences are the source of truth; every active planned item always has a real open occurrence (D-CSM-019); Fixed schedule vs After it's done; complete never asks (missing choices fall back to the remembered choice or keep); `next_due_date` is a read-only cache.
 - [Pet Care mobile completion](guardian-mobile-completion.md) — compact dashboard completion keeps a reversible list-level preview while the server remains authoritative (legacy filename).
+- [Care dose selection compatibility](care-dose-selection-compatibility.md) — pair single-date dashboard confirmation with same-day multi-dose selection when verifying legacy routing.
 - [Canonical product name](canonical-product-name.md) — use AgathaTrack in current product UI and copy; AgathaCheck is the legacy name.
 - [Shelter terminology and evolving design](shelter-terminology-and-evolving-design.md) — Shelter is the canonical teal mode; evolve prior references screen by screen.
 - [JWT secret dev/test fallback](jwt-secret-dev-fallback.md) — keep the prod-gated 'default_secret' fallback; CI/Jest sign tokens with it and workflows set no secret.
@@ -59,6 +60,7 @@ Institutional knowledge for cloud agents. Domain workflows live in **Skills** (`
 - [Replit agent operating policy](replit-agent-operating-policy.md) — **Legacy (Replit only).** Cursor Cloud agents: use `AGENTS.md` + `.cursor/rules/` instead.
 - [Flutter pub cache Matrix4 quirk](flutter-pubcache-matrix4.md) — `flutter test` failing inside the SDK's painting lib (Matrix4/Vector4 undefined) = stale cache; run `flutter pub get` first.
 - [Replit Flutter preview compatibility](replit-flutter-preview-compatibility.md) — preview toolchain can lag the app’s Dart requirement; never treat an older CI bundle as current-source visual verification.
+- [Replit test runtime](replit-test-runtime.md) — keep disposable PostgreSQL alive across shell calls; supply Nix libraries to the matching Playwright browser.
 - [GitHub API publishing fallback](github-api-publish-fallback.md) — when shell Git auth is unavailable but GitHub OAuth works, publish a verified branch through guarded Git data API calls.
 - [Mockup sandbox hygiene](mockup-sandbox-registration.md) — use managed sandboxes; keep nested installs artifact-scoped and prevent verification builds from dirtying tracked dist output.
 - [Body-supplied organization_id validation](body-supplied-org-id-validation.md) — pet create/update must verify caller is in organization_users before persisting org_id; backend enforces 403 on non-member.

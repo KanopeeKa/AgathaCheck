@@ -21,20 +21,13 @@ function createPool() {
   });
 }
 
-const CARE_FIXTURE_ENTRY_IDS = [
-  DEMO_IDS.careFixtureTodayPending,
-  DEMO_IDS.careFixtureTodayDone,
-  DEMO_IDS.careFixtureOneOffToday,
-  DEMO_IDS.careFixtureUncategorised,
-  DEMO_IDS.careFixtureUpcomingWeek,
-  DEMO_IDS.careFixtureWeightEntry,
-];
+const CARE_FIXTURE_ENTRY_IDS = [DEMO_IDS.careFixtureWeightEntry];
 
-const CARE_FIXTURE_WEIGHT_OCC_IDS = [
-  DEMO_IDS.careFixtureWeightOcc1,
-  DEMO_IDS.careFixtureWeightOcc2,
-  DEMO_IDS.careFixtureWeightOcc3,
-  DEMO_IDS.careFixtureWeightOcc4,
+const CARE_FIXTURE_WEIGHT_ENTRY_IDS = [
+  DEMO_IDS.careFixtureWeightWe1,
+  DEMO_IDS.careFixtureWeightWe2,
+  DEMO_IDS.careFixtureWeightWe3,
+  DEMO_IDS.careFixtureWeightWe4,
 ];
 
 async function countCareFixtureRows(client) {
@@ -43,14 +36,13 @@ async function countCareFixtureRows(client) {
     [CARE_FIXTURE_ENTRY_IDS],
   );
   const occurrences = await client.query(
-    `SELECT COUNT(*)::int AS count FROM health_occurrences
-     WHERE health_entry_id = $1 OR id = $2`,
-    [DEMO_IDS.careFixtureWeightEntry, DEMO_IDS.careFixtureTodayDoneOcc],
+    `SELECT COUNT(*)::int AS count FROM health_occurrences WHERE health_entry_id = $1`,
+    [DEMO_IDS.careFixtureWeightEntry],
   );
   const weightEntries = await client.query(
     `SELECT COUNT(*)::int AS count FROM weight_entries
-     WHERE health_occurrence_id = ANY($1::uuid[])`,
-    [CARE_FIXTURE_WEIGHT_OCC_IDS],
+     WHERE id = ANY($1::uuid[]) AND health_occurrence_id IS NOT NULL`,
+    [CARE_FIXTURE_WEIGHT_ENTRY_IDS],
   );
   const establishments = await client.query(
     `SELECT COUNT(*)::int AS count FROM care_establishments WHERE health_entry_id = $1`,
@@ -109,8 +101,8 @@ describe('care-item-model-fixture seed database rows (issue #1125)', () => {
       const first = await countCareFixtureRows(client);
       await seedCareItemModelFixture(client);
       const second = await countCareFixtureRows(client);
-      expect(first.entries).toBe(6);
-      expect(first.occurrences).toBe(6);
+      expect(first.entries).toBe(1);
+      expect(first.occurrences).toBe(5);
       expect(first.weight_entries).toBe(4);
       expect(first.establishments).toBe(1);
       expect(first.pebble).toBe(1);
@@ -121,43 +113,25 @@ describe('care-item-model-fixture seed database rows (issue #1125)', () => {
          FROM health_entries WHERE id = ANY($1::uuid[]) ORDER BY id`,
         [CARE_FIXTURE_ENTRY_IDS],
       );
-      expect(entryRows.rows).toHaveLength(6);
-      expect(new Set(entryRows.rows.map((r) => r.status))).toEqual(new Set(['active']));
-      const byId = Object.fromEntries(entryRows.rows.map((r) => [r.id, r]));
-      expect(byId[DEMO_IDS.careFixtureTodayDone].care_family).toBe('medication');
-      expect(byId[DEMO_IDS.careFixtureWeightEntry].care_family).toBe('weight_monitoring');
-      expect(byId[DEMO_IDS.careFixtureWeightEntry].care_setting).toBe('home');
-      expect(byId[DEMO_IDS.careFixtureWeightEntry].care_importance).toBe('recommended');
-      expect(byId[DEMO_IDS.careFixtureUncategorised].care_family).toBeNull();
+      expect(entryRows.rows).toHaveLength(1);
+      const [weightEntry] = entryRows.rows;
+      expect(weightEntry.status).toBe('active');
+      expect(weightEntry.care_family).toBe('weight_monitoring');
+      expect(weightEntry.care_setting).toBe('home');
+      expect(weightEntry.care_importance).toBe('recommended');
 
       const occRows = await client.query(
-        `SELECT id, health_entry_id, status FROM health_occurrences
-         WHERE health_entry_id = ANY($1::uuid[]) OR id = ANY($2::uuid[])
-         ORDER BY id`,
-        [[DEMO_IDS.careFixtureWeightEntry, DEMO_IDS.careFixtureTodayDone], [DEMO_IDS.careFixtureWeightOccPending]],
+        `SELECT status FROM health_occurrences WHERE health_entry_id = $1`,
+        [DEMO_IDS.careFixtureWeightEntry],
       );
-      const occStatuses = occRows.rows.map((r) => r.status).sort();
-      expect(occStatuses).toEqual([
-        'completed',
-        'completed',
-        'completed',
-        'completed',
-        'completed',
-        'pending',
+      expect(occRows.rows.map((r) => r.status).sort()).toEqual([
+        'completed', 'completed', 'completed', 'completed', 'pending',
       ]);
-      expect(
-        occRows.rows.filter((r) => r.health_entry_id === DEMO_IDS.careFixtureWeightEntry),
-      ).toHaveLength(5);
-      expect(occRows.rows).toContainEqual({
-        id: DEMO_IDS.careFixtureTodayDoneOcc,
-        health_entry_id: DEMO_IDS.careFixtureTodayDone,
-        status: 'completed',
-      });
 
       const weightRows = await client.query(
         `SELECT health_occurrence_id, pet_id FROM weight_entries
-         WHERE health_occurrence_id = ANY($1::uuid[])`,
-        [CARE_FIXTURE_WEIGHT_OCC_IDS],
+         WHERE id = ANY($1::uuid[]) AND health_occurrence_id IS NOT NULL`,
+        [CARE_FIXTURE_WEIGHT_ENTRY_IDS],
       );
       expect(weightRows.rows).toHaveLength(4);
       expect(

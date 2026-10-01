@@ -171,6 +171,21 @@ export const DEMO_IDS = {
   awNoUnresolvedEntry: 'a6000001-0001-4001-8001-000000000030',
   awNoUnresolvedOccCompleted: 'a6300001-0001-4001-8001-000000000030',
   awNoUnresolvedOccSkipped: 'a6300001-0001-4001-8001-000000000031',
+
+  // Care occurrences UAT dataset (care-next-occurrence-c1a7 §6.4)
+  coBuddyApoquel: 'a6000001-0001-4001-8001-000000000101',
+  coBuddyHeartTablet: 'a6000001-0001-4001-8001-000000000102',
+  coBuddyNexgard: 'a6000001-0001-4001-8001-000000000103',
+  coBuddyDhpp: 'a6000001-0001-4001-8001-000000000104',
+  coBuddyRabies: 'a6000001-0001-4001-8001-000000000105',
+  coBuddyDentalChew: 'a6000001-0001-4001-8001-000000000106',
+  coBuddyGrooming: 'a6000001-0001-4001-8001-000000000107',
+  coWhiskersMethimazole: 'a6000001-0001-4001-8001-000000000108',
+  coWhiskersFlea: 'a6000001-0001-4001-8001-000000000109',
+  coWhiskersNailTrim: 'a6000001-0001-4001-8001-000000000110',
+  coWhiskersVaccination: 'a6000001-0001-4001-8001-000000000111',
+  coWhiskersWeighIn: 'a6000001-0001-4001-8001-000000000112',
+  coWhiskersWeighInWeight: 'a6200001-0001-4001-8001-000000000101',
 };
 
 export const DEMO_USERS = {

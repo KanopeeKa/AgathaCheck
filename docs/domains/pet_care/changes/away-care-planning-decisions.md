@@ -3,7 +3,7 @@ title: Away Care Planning — Decisions
 owner: Product / Agent
 audience: both
 status: frozen
-last_updated: 2026-09-23
+last_updated: 2026-09-29
 tags: [pet_care, care_context, care_schedule_management, away_planning, decisions]
 ---
 
@@ -12,7 +12,7 @@ tags: [pet_care, care_context, care_schedule_management, away_planning, decision
 **Delivery plan:** [away-care-planning-delivery-plan.md](./away-care-planning-delivery-plan.md)
 **Builds on:** [away-plan-detail-v2-decisions.md](./away-plan-detail-v2-decisions.md) (D-AWD-*), [away-planning-decisions.md](./away-planning-decisions.md) (D-AWAY-*), [care-schedule-management-decisions.md](./care-schedule-management-decisions.md) (D-CSM-*)
 
-**Status: frozen** (ACP-DOC-0, 2026-09-23). Product answers were given in chat on 2026-09-23 (summarised in the delivery plan §1.3). Cursor review resolutions are recorded in delivery plan §9. Decisions marked *amends* change a frozen decision and must be read together with it.
+**Status: frozen** (ACP-DOC-0, 2026-09-23; D-ACP-011 added 2026-09-29). Product answers were given in chat on 2026-09-23 (summarised in the delivery plan §1.3). Cursor review resolutions are recorded in delivery plan §9. Decisions marked *amends* change a frozen decision and must be read together with it.
 
 ---
 
@@ -70,6 +70,8 @@ estimates := all d' in [S, E] reachable by repeated advanceByFrequency, within s
 - Example (confirmed with product): open occurrence due Mon 1st, every 7 days. Absence 6th–10th → estimated **8th**. Absence 20th–23rd → estimated **22nd**.
 - **Footnote copy (frozen):** "Estimated dates assume you complete overdue care today, then keep to the usual interval." This matches the algorithm (overdue open occurrence → base = `today`; on-time open → base = `scheduled_date`). The originally drafted "done on its due date" wording was incorrect for overdue rows.
 
+> **Amended 2026-09-29 by [D-ACP-011](#d-acp-011--absences-work-on-real-occurrences-supersedes-d-acp-010-amends-d-acp-003).** `O` is now **the last open occurrence** (planned dates included), and estimates apply only to **After-it's-done** dates after it. Fixed-schedule dates inside a window are computed from `schedule_anchor_date` (D-CSM-023), not estimated. `indeterminate_pending` is used only for paused items (every active planned item has an open occurrence, D-CSM-019). The "no O" branch is removed.
+
 ---
 
 ## D-ACP-004 — "Due before you leave" replaces predicted "overdue at the start"
@@ -122,6 +124,8 @@ Confirmed by product: when a `from_due_date` occurrence is moved, the **followin
 
 D-CSM-006's "does not change series recurrence rule" remains true: frequency and interval are unchanged, only the phase moves. The reschedule UI must say so in its preview (delivery plan R-C3).
 
+> **Amended 2026-09-29 by [D-CSM-027](./care-schedule-management-decisions.md#d-csm-027--changing-a-date-2026-09-29).** Moving a Fixed-schedule date now asks the scope: **This date only** (default — the moved date becomes `planned` and the series keeps its anchor) or **This and following** (new `schedule_anchor_date`). “The next booster counts from when it was given” is now the **After it's done** rule, which vaccination uses by default (D-CSM-020).
+
 ---
 
 ## D-ACP-008 — Care Planner is a bounded, deterministic component in Care Context, not CIM
@@ -151,6 +155,8 @@ D-CSM-006's "does not change series recurrence rule" remains true: frequency and
 3. The route returns `warnings[]` (non-blocking): `outside_flexibility` (D-ACP-006), `interval_changed` (`{ previous_gap_days, usual_gap_days }`), and `earlier_only_later_move` when an `earlier_only` item is moved later than its current date. The client renders these; the server stays the source of truth. Manual moves of `fixed` / `earlier_only` items are **never blocked** (True North #10); warnings only.
 4. Update the test expectation: `nextDueDate` becomes the new date, and `advanceSeriesCalled` stays `false`.
 
+> **Amended 2026-09-29 by D-CSM-027 / D-CSM-032.** Validation rule 2's “on or after the next hop” limit applies to **This date only** on a Fixed schedule (a slot cannot pass the next series date). **This and following** may move further (it changes the anchor). The cache refresh in rule 1 is now `syncOpenOccurrences`, run by every command (D-CSM-019).
+
 ---
 
 ## D-ACP-010 — Fixed future dates beyond the open occurrence are deferred
@@ -160,3 +166,27 @@ The "planned fixed" chain (fix occurrence #3 while #2 is still open) needs a new
 **Amended 2026-09-28 (D-CSM-018):** On-demand **`ensureOpenOccurrence`** materialises the **open head** so estimated in-window dates can be rescheduled or skipped without pre-generating the series. Absence UX uses **Review date** → ensure head → **Change date** or **Skip**. Multi-hop "edit hop #3 while #2 is open" still needs schedule-intent if product requires it later.
 
 Absence needs are covered by: estimates + **ensure-open** + rescheduling the open occurrence + Care Planner suggestions (ACP-6 BR-5) + **Keep with {carer}** resolution.
+
+> **Superseded 2026-09-29 by [D-ACP-011](#d-acp-011--absences-work-on-real-occurrences-supersedes-d-acp-010-amends-d-acp-003).**
+
+---
+
+## D-ACP-011 — Absences work on real occurrences (supersedes D-ACP-010, amends D-ACP-003)
+
+**Status:** Frozen (2026-09-29, care occurrences programme `care-next-occurrence-c1a7`).
+
+Every active planned Care Item now always has a real open occurrence with an id (D-CSM-019), and people can add dates (**Plan another date**, D-CSM-025). So:
+
+| Topic | Rule |
+|-------|------|
+| Occurrence ids | Every away-plan row for an active item carries a real `occurrence_id`. `indeterminate_pending` is only for paused items |
+| Review date | Opens the real occurrence directly: Change date, Skip, Postpone. No ensure step |
+| Later dates | A date inside the trip can be **planned** (Plan another date) and **looked after by** the pet's carer; the assignment sits on the real occurrence |
+| Move after return | **Postpone until** the day after return (`reason: absence`, `absence_id`) — the same command as Pause (D-CSM-028). Stores the `move_after` resolution |
+| Move before leaving | **Change date** (D-CSM-027) |
+| Estimates | Only for After-it's-done dates after the last open occurrence (D-ACP-003 as amended) |
+| Fixed schedule in a window | Dates are computed from `schedule_anchor_date`; one rhythm row per item; doses are stored as their days arrive or when someone plans or assigns them |
+| Trip dates change | The resolution shows “needs review” (unchanged) |
+
+Schedule-intent records are no longer needed.
+

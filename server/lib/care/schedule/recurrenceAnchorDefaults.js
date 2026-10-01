@@ -1,18 +1,19 @@
 /**
- * Per-family recurrence anchor defaults (D-CSM-001).
+ * Per-family schedule type defaults (D-CSM-020, amends D-CSM-001).
  *
- * Clinical-interval families default to fixed cadence; guardian-paced families
- * default to completion-based scheduling.
+ * Medication → Fixed schedule (`from_due_date`): each dose is recorded.
+ * Every other family → After it's done (`from_completion`): the next date
+ * counts from the day it is done (parasite labels, boosters, D-ACP-007).
  */
 
 export const RECURRENCE_ANCHOR_FROM_COMPLETION = 'from_completion';
 export const RECURRENCE_ANCHOR_FROM_DUE_DATE = 'from_due_date';
 
-/** Care families that use clinical fixed-interval anchors when none is explicit. */
-export const CLINICAL_DUE_DATE_CARE_FAMILIES = new Set([
-  'vaccination',
-  'parasite_prevention',
-]);
+/** Care families that default to a Fixed schedule when none is explicit. */
+export const FIXED_SCHEDULE_CARE_FAMILIES = new Set(['medication']);
+
+/** @deprecated kept for older imports; use FIXED_SCHEDULE_CARE_FAMILIES. */
+export const CLINICAL_DUE_DATE_CARE_FAMILIES = FIXED_SCHEDULE_CARE_FAMILIES;
 
 const VALID_ANCHORS = new Set([
   RECURRENCE_ANCHOR_FROM_COMPLETION,
@@ -24,7 +25,7 @@ const VALID_ANCHORS = new Set([
  * @returns {string}
  */
 export function defaultRecurrenceAnchorForCareFamily(careFamily) {
-  if (careFamily && CLINICAL_DUE_DATE_CARE_FAMILIES.has(careFamily)) {
+  if (careFamily && FIXED_SCHEDULE_CARE_FAMILIES.has(careFamily)) {
     return RECURRENCE_ANCHOR_FROM_DUE_DATE;
   }
   return RECURRENCE_ANCHOR_FROM_COMPLETION;

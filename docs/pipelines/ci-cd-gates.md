@@ -289,11 +289,17 @@ display strings exactly.
 | `flutter-coverage / Flutter domain coverage` | `_reusable-flutter-coverage.yml` | merge shard lcov, domain coverage ≥ 70% |
 | `flutter-integration / Flutter integration` | `_reusable-flutter-integration.yml` | pet profile integration tests |
 | `flutter-build-web / Build Flutter web` | `_reusable-build-web.yml` | web release build + `web-build-<sha>` artifact |
-| `test-suite / Backend (Node.js Jest)` | `_reusable-test.yml` | Jest, npm audit high+ |
+| `test-suite / Backend (Node.js Jest)` | `_reusable-test.yml` | Database-free unit coverage (`server npm run test:unit -- --forceExit --coverage`, excludes `test/db`), npm audit high+ |
 | `test-suite / Backend integration (PostgreSQL)` | `_reusable-test.yml` | `server/test/db` suite on ephemeral PostgreSQL 16 (bootstrap-db + canonical schema), F-17 |
 | `test-suite / ESLint (Pet Care policy ratchet)` | `_reusable-test.yml` | `validate_eslint.js` ratchet on policy modules, F-20 |
-| `test-suite / E2E package audit` | `_reusable-test.yml` | e2e `npm audit` high+ |
+| `test-suite / E2E package audit` | `_reusable-test.yml` | e2e `npm audit` high+ and blocking helper unit tests (`e2e npm run test:unit`) |
 | `Analyze JavaScript` | `codeql.yml` | CodeQL static analysis |
+
+Required database tests remain strict: the PostgreSQL integration job runs
+`server/test/db` against real PostgreSQL, and local full pre-push still runs
+`npm test` with those suites included. Do not turn a missing database into a
+passing or skipped required test. The unit-only CI command separates execution
+environments; it does not replace transaction or concurrency verification.
 
 **Note:** Exact check names appear in the GitHub PR checks UI. Verify periodically with:
 

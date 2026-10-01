@@ -1,4 +1,18 @@
 export { SCHEDULE_POLICY_VERSION } from './schedulePolicy.js';
+export { resolveNextSeriesDate } from './advanceSeries.js';
+export * from './seriesDates.js';
+export {
+  STACK_WINDOW_DAYS,
+  expectedFixedSlots,
+  isFixedSchedule,
+  nextSeriesSlotAfter,
+  scheduleAnchorIso,
+  stackWindowStart,
+} from './fixedSlots.js';
+export * from './occurrenceStatus.js';
+export { estimatedNextWhileOverdue, nextComputedDate } from './nextComputed.js';
+export * from './lateCompletion.js';
+export { normalizeTime, scheduleTimesFromEntry } from './scheduleTimes.js';
 export {
   CLINICAL_DUE_DATE_CARE_FAMILIES,
   RECURRENCE_ANCHOR_FROM_COMPLETION,
@@ -6,11 +20,6 @@ export {
   defaultRecurrenceAnchorForCareFamily,
   resolveRecurrenceAnchorForWrite,
 } from './recurrenceAnchorDefaults.js';
-export { advanceSeries, resolveNextSeriesDate } from './advanceSeries.js';
-export { adjustCadence } from './adjustCadence.js';
-export { completeOccurrence } from './completeOccurrence.js';
-export { rescheduleOccurrence } from './rescheduleOccurrence.js';
-export { ensureOpenOccurrence, resolveCanonicalOpenDateIso } from './ensureOpenOccurrence.js';
 export {
   resolveScheduleFlexibility,
   intervalDaysForEntry,
@@ -20,9 +29,6 @@ export {
   loadLastClosedOccurrenceDateIso,
   loadLastClosedOccurrenceDatesByEntryId,
 } from './validateReschedule.js';
-export { skipMissedOccurrences, skipOccurrence } from './skipOccurrence.js';
-export { pauseSeries, resumeSeries } from './pauseResumeSeries.js';
-export { undoLastAction } from './undoLastAction.js';
 export { explainGap, scheduleEventToFact } from './explainGap.js';
 export {
   insertCareScheduleEvent,

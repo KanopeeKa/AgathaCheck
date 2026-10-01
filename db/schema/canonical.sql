@@ -174,7 +174,9 @@ CREATE TABLE public.care_schedule_events (
     idempotency_key character varying(255),
     policy_version character varying(20) NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
-    CONSTRAINT care_schedule_events_event_type_check CHECK (((event_type)::text = ANY ((ARRAY['rescheduled'::character varying, 'skipped'::character varying, 'paused'::character varying, 'resumed'::character varying, 'cadence_adjusted'::character varying])::text[])))
+    payload jsonb,
+    undone_at timestamp with time zone,
+    CONSTRAINT care_schedule_events_event_type_check CHECK (((event_type)::text = ANY ((ARRAY['rescheduled'::character varying, 'skipped'::character varying, 'paused'::character varying, 'resumed'::character varying, 'cadence_adjusted'::character varying, 'completed'::character varying, 'postponed'::character varying, 'materialised'::character varying, 'late_choice_applied'::character varying, 'not_recorded_closed'::character varying, 'schedule_scope_changed'::character varying, 'planned'::character varying, 'recorded'::character varying, 'stack_resolved'::character varying, 'undone'::character varying, 'schedule_changed'::character varying])::text[])))
 );
 CREATE TABLE public.custody_transfers (
     id uuid NOT NULL,
@@ -349,7 +351,12 @@ CREATE TABLE public.health_entries (
     importance_overridden boolean DEFAULT false NOT NULL,
     provider_contact_id uuid,
     provider_typed_name text,
-    care_blocks jsonb DEFAULT '{}'::jsonb NOT NULL
+    care_blocks jsonb DEFAULT '{}'::jsonb NOT NULL,
+    schedule_anchor_date date,
+    late_completion_choice character varying(16),
+    paused_until date,
+    series_resumed_on date,
+    CONSTRAINT health_entries_late_completion_choice_check CHECK (((late_completion_choice IS NULL) OR ((late_completion_choice)::text = ANY ((ARRAY['keep'::character varying, 'skip_next'::character varying, 'shift_following'::character varying])::text[]))))
 );
 CREATE TABLE public.health_entry_absence_resolutions (
     id uuid NOT NULL,
@@ -430,7 +437,12 @@ CREATE TABLE public.health_occurrences (
     provider_contact_id uuid,
     provider_typed_name text,
     provider_contact_snapshot jsonb,
+    origin character varying(16) DEFAULT 'computed'::character varying NOT NULL,
+    close_reason character varying(16),
+    series_date date,
+    CONSTRAINT health_occurrences_close_reason_check CHECK (((close_reason IS NULL) OR ((close_reason)::text = ANY ((ARRAY['user'::character varying, 'not_recorded'::character varying, 'paused'::character varying, 'covered'::character varying, 'system'::character varying])::text[])))),
     CONSTRAINT health_occurrences_completion_timing_check CHECK (((completion_timing IS NULL) OR ((completion_timing)::text = ANY ((ARRAY['early'::character varying, 'on_time'::character varying, 'late'::character varying])::text[])))),
+    CONSTRAINT health_occurrences_origin_check CHECK (((origin)::text = ANY ((ARRAY['schedule'::character varying, 'computed'::character varying, 'planned'::character varying])::text[]))),
     CONSTRAINT health_occurrences_status_check CHECK (((status)::text = ANY ((ARRAY['pending'::character varying, 'completed'::character varying, 'skipped'::character varying])::text[])))
 );
 CREATE TABLE public.household_members (
@@ -1145,6 +1157,7 @@ CREATE INDEX idx_foster_request_pets_request_id ON public.foster_request_pets US
 CREATE INDEX idx_foster_request_responses_request_id ON public.foster_request_responses USING btree (foster_request_id);
 CREATE INDEX idx_foster_request_targets_request_id ON public.foster_request_targets USING btree (foster_request_id);
 CREATE INDEX idx_foster_requests_org_id ON public.foster_requests USING btree (organization_id);
+CREATE INDEX idx_health_entries_care_tick ON public.health_entries USING btree (status, recurrence_anchor) WHERE ((status)::text = ANY ((ARRAY['active'::character varying, 'paused'::character varying])::text[]));
 CREATE INDEX idx_health_entries_pet_id ON public.health_entries USING btree (pet_id);
 CREATE INDEX idx_health_entries_provider_contact_id ON public.health_entries USING btree (provider_contact_id) WHERE (provider_contact_id IS NOT NULL);
 CREATE INDEX idx_health_entries_user_id ON public.health_entries USING btree (user_id);
@@ -1153,6 +1166,7 @@ CREATE INDEX idx_health_entry_absence_resolutions_entry ON public.health_entry_a
 CREATE INDEX idx_health_event_photos_occurrence ON public.health_event_photos USING btree (health_occurrence_id) WHERE (health_occurrence_id IS NOT NULL);
 CREATE INDEX idx_health_issue_documents_issue_id ON public.health_issue_documents USING btree (health_issue_id);
 CREATE INDEX idx_health_occurrences_entry_id ON public.health_occurrences USING btree (health_entry_id);
+CREATE INDEX idx_health_occurrences_entry_series_slot ON public.health_occurrences USING btree (health_entry_id, COALESCE(series_date, scheduled_date));
 CREATE INDEX idx_health_occurrences_entry_status_date ON public.health_occurrences USING btree (health_entry_id, status, scheduled_date, scheduled_time);
 CREATE UNIQUE INDEX idx_health_occurrences_open_slot ON public.health_occurrences USING btree (health_entry_id, scheduled_date, COALESCE(scheduled_time, '00:00:00'::time without time zone)) WHERE ((status)::text = 'pending'::text);
 CREATE INDEX idx_health_occurrences_provider_contact_id ON public.health_occurrences USING btree (provider_contact_id) WHERE (provider_contact_id IS NOT NULL);

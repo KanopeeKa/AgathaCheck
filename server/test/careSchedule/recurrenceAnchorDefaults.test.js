@@ -6,13 +6,13 @@ import {
 } from '../../lib/care/schedule/recurrenceAnchorDefaults.js';
 
 describe('recurrenceAnchorDefaults', () => {
-  it('defaults vaccination and parasite_prevention to from_due_date', () => {
-    expect(defaultRecurrenceAnchorForCareFamily('vaccination')).toBe('from_due_date');
-    expect(defaultRecurrenceAnchorForCareFamily('parasite_prevention')).toBe('from_due_date');
+  it('defaults medication to a Fixed schedule (D-CSM-020)', () => {
+    expect(defaultRecurrenceAnchorForCareFamily('medication')).toBe('from_due_date');
   });
 
-  it('defaults other care families to from_completion', () => {
-    expect(defaultRecurrenceAnchorForCareFamily('medication')).toBe('from_completion');
+  it('defaults every other care family to After it\'s done (D-CSM-020)', () => {
+    expect(defaultRecurrenceAnchorForCareFamily('vaccination')).toBe('from_completion');
+    expect(defaultRecurrenceAnchorForCareFamily('parasite_prevention')).toBe('from_completion');
     expect(defaultRecurrenceAnchorForCareFamily('weight_monitoring')).toBe('from_completion');
     expect(defaultRecurrenceAnchorForCareFamily('grooming')).toBe('from_completion');
     expect(defaultRecurrenceAnchorForCareFamily(null)).toBe('from_completion');
@@ -33,11 +33,11 @@ describe('recurrenceAnchorDefaults', () => {
     expect(resolveRecurrenceAnchorForWrite({
       careFamily: 'parasite_prevention',
       explicitAnchor: null,
-    })).toBe('from_due_date');
+    })).toBe('from_completion');
     expect(resolveRecurrenceAnchorForWrite({
       careFamily: 'medication',
       explicitAnchor: undefined,
-    })).toBe('from_completion');
+    })).toBe('from_due_date');
   });
 
   it('rejects invalid explicit anchors', () => {

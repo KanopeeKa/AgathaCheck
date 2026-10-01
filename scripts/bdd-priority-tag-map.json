@@ -35,7 +35,9 @@
     "Pre-departure overdue care links to the pet profile instead of listing on the plan": "P1",
     "Completion-based care shows an estimated date on the away plan": "P1",
     "Changing a care date from the care item updates the next dates": "P1",
-    "In-window care shows on the away plan during the absence": "P1"
+    "In-window care shows on the away plan during the absence": "P1",
+    "After-it's-done care shows an estimated date on the away plan": "P1",
+    "Care done before the trip still appears on the away plan": "P1"
   },
   "care_suggestion.feature": {
     "A care suggestion surfaces on the pet profile contextual slot": "P1",
@@ -95,12 +97,14 @@
     "Exporting health entries as PDF": "P2",
     "Filtering health entries by organisation": "P2",
     "Unified event edit route redirects legacy paths": "P1",
-    "Multi-dose daily medication shows stack sheet for recording doses": "P1"
+    "Multi-dose daily medication shows stack sheet for recording doses": "P1",
+    "A dose recorded late keeps the next dose": "P1"
   },
   "notifications.feature": {
     "Notification generated for overdue health entry": "P1",
     "Notification generated for entry due soon": "P1",
     "Notification generated when entry is completed": "P1",
+    "A reminder is created again after care is done on time": "P1",
     "Viewing the notification list": "P0",
     "Notifications grouped by date": "P2",
     "Empty notifications shows message": "P0",

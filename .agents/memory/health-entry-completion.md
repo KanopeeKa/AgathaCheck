@@ -1,25 +1,24 @@
 ---
-name: Health entry completion / overdue semantics
-description: Three-date model — due, completed on, marked at — and recurrence anchor modes
+name: Care item completion / occurrence semantics
+description: Occurrences are the source of truth — always one real open date, two schedule types, commands under one lock (2026-09-29)
 ---
 
-The Flutter `HealthEntry` entity tracks:
-- `nextDueDate` (a) — when the current/upcoming occurrence is due; null when completion-only one-time entries
-- `completedOn` (b) — when a one-time entry was completed
-- History rows store `due_date`, `completed_on`, `marked_at` (c), and `marked_by_user_id`
+**Source of truth:** `health_occurrences` rows + the `care_schedule_events` ledger. `health_history` is retired (D-CSM-003); the `9999` sentinel is legacy read-only.
 
-**Completion state (one-time):** `completedOn != null` (legacy `nextDueDate.year >= 9999` still read for backward compat).
+**Guarantee (D-CSM-019):** every active planned care item always has ≥ 1 stored open occurrence (`status = 'pending'`), created in the **same transaction** as the command that needs it. No T−1 window, no "ensure" step. `health_entries.next_due_date` is a derived cache = earliest open occurrence; only `syncOpenOccurrences` writes it. `PUT` does not (D-CSM-032).
 
-**Recurring:** series stays open; each `mark-taken` writes a history row and advances `nextDueDate`.
+**Schedule types (D-CSM-020, wire unchanged):**
+- `from_due_date` = **Fixed schedule** (default for `medication`) — dates from `schedule_anchor_date`; slots from today − 3 through today + the next series date are stored; missed slots become **Not recorded** (stack), closed as `not_recorded` after 3 days, recordable later.
+- `from_completion` = **After it's done** (default for every other family) — one open date; next = done date + interval; overdue until done/skipped/postponed.
 
-**Recurrence anchor** (`recurrence_anchor` on `health_entries`):
-- `from_completion` (default for **new** entries) — next due = completed on + interval
-- `from_due_date` (backfilled on **existing** recurring entries at migration) — next due = original due + interval
+**Origins (D-CSM-021):** `schedule` · `computed` (≤ 1 open, only when nothing else is open) · `planned` (set by a person; never moved by the app).
 
-**Rule:** `mark-taken` accepts optional `completed_on` in the body (defaults to today). `marked_at` and user are set server-side.
+**Complete:** `POST …/occurrences/:occId/complete { completed_on?, next_choice?, remember_choice? }`. Never asks (D-CSM-026 revised 2026-10-01): with no `next_choice` the remembered choice applies if it fits, otherwise `keep`; the response says which in `next_choice_applied`. An explicit choice that doesn't fit → 400 `next_choice_not_available`. Same on `complete-weight`. No `earlier_choice` → the earlier After-it's-done date stays open. **409 `occurrence_not_open`** when already closed. Overdue items ask "When was this done?" first (D-CIE-009).
 
-**Undo:** reverts the latest history row and restores `next_due_date` / clears `completed_on` on the entry.
+**Undo (D-CSM-029):** reverses the whole last command; deletes a created next date only if still `computed`.
 
-Handler logic is in `server/routes/healthEntries.js`; shared recurrence helpers live in `server/lib/recurrenceHelper.js`.
+**Every command** runs in `withCareItemLock` (transaction + row lock), catches up Fixed-schedule slots first, ends with `syncOpenOccurrences`; side effects after commit. Only `server/lib/care/occurrence/**` may write `health_occurrences` (`scripts/check_occurrence_writes.js`).
 
-**Org family events:** `from_date` = due, `to_date` = completed on; `family_event_history` stores the three-date audit trail.
+**"Today"** = pet home timezone, supplied by the server as `as_of`. Test clock header `X-Care-As-Of` works only in development/test/ci.
+
+Canonical docs: `docs/domains/pet_care/changes/care-schedule-management-decisions.md` (D-CSM-019…033), `docs/domains/health_tracking/changes/occurrence-scheduling.md` (case matrix), `docs/domains/pet_care/features/care-item-evolution.md` (D-CIE-024…028).

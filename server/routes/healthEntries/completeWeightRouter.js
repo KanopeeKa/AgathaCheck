@@ -6,7 +6,11 @@ import { recordPetActivityForPet } from '../../lib/petActivity.js';
 import { hasPetCapability, PET_CAPABILITIES } from '../../lib/petCapabilityPolicy.js';
 import { accessiblePetSql, userCanManageHealthEntry } from '../../lib/petAccess.js';
 import { refreshPetWeightCache } from '../../lib/petWeightSync.js';
-import { completeOccurrence } from '../../lib/care/schedule/completeOccurrence.js';
+import {
+  CareCommandError,
+  completeOccurrenceCommand,
+  runCareCommand,
+} from '../../lib/care/occurrence/index.js';
 import {
   occurrenceToMap,
   resolveCompletedOn,
@@ -130,63 +134,58 @@ export async function completeWeightOccurrence(pool, {
   }
 
   const completedOn = resolveCompletedOn(body.completed_on || body.completedOn || payload.date);
-  const markedAt = new Date();
   const weightId = newWeightEntryId();
-  const client = await pool.connect();
-  let committed = false;
   let committedResponse;
 
   try {
-    await client.query('BEGIN');
-
-    const weightResult = await client.query(
-      `INSERT INTO weight_entries
-        (id, pet_id, user_id, weight, unit, date, notes, measurement_source, health_occurrence_id)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-       RETURNING *`,
-      [
-        weightId,
-        petId,
-        userId,
-        payload.weight,
-        payload.unit,
-        payload.date,
-        payload.notes,
-        payload.measurement_source,
-        occurrenceId,
-      ],
-    );
-
-    const completion = await completeOccurrence(client, {
-      entry,
-      occurrenceId,
+    let weightRow = null;
+    const out = await runCareCommand(pool, {
+      entryId,
       userId,
+      req,
+      beforeCommand: async (db) => {
+        const weightResult = await db.query(
+          `INSERT INTO weight_entries
+            (id, pet_id, user_id, weight, unit, date, notes, measurement_source, health_occurrence_id)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+           RETURNING *`,
+          [
+            weightId,
+            petId,
+            userId,
+            payload.weight,
+            payload.unit,
+            payload.date,
+            payload.notes,
+            payload.measurement_source,
+            occurrenceId,
+          ],
+        );
+        weightRow = weightResult.rows[0];
+      },
+    }, (ctx) => completeOccurrenceCommand(ctx, {
+      occurrenceId,
       completedOn,
-      notes: payload.notes,
-      markedAt,
-    });
-    if (!completion) {
-      await client.query('ROLLBACK');
+      notes: payload.notes || '',
+      nextChoice: body.next_choice || body.nextChoice || null,
+      rememberChoice: Boolean(body.remember_choice ?? body.rememberChoice),
+      earlierChoice: body.earlier_choice || body.earlierChoice || null,
+      body,
+    }));
+    if (!out) {
       return { status: 404, body: { error: 'Occurrence not found' } };
     }
-
-    await client.query('COMMIT');
-    committed = true;
     committedResponse = {
       status: 201,
-      body: buildCompletionResponse(
-        weightResult.rows[0],
-        completion.occurrence,
-        completion.nextDueDate,
-      ),
+      body: {
+        ...buildCompletionResponse(weightRow, out.occurrence, out.entry.next_due_date),
+        next_choice_applied: out.appliedChoice ?? null,
+        undo_token: out.undoToken,
+      },
     };
   } catch (err) {
-    if (!committed) {
-      try {
-        await client.query('ROLLBACK');
-      } catch {
-        // ignore rollback failure; preserve original error
-      }
+    if (err instanceof CareCommandError) {
+      return { status: err.status, body: err.toBody() };
     }
     if (err.code === '23505') {
       const linked = await findLinkedWeight(pool, occurrenceId);
@@ -220,8 +219,6 @@ export async function completeWeightOccurrence(pool, {
       };
     }
     throw err;
-  } finally {
-    client.release();
   }
 
   runPostCommitWeightCompletionSideEffects(pool, {

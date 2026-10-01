@@ -33,10 +33,12 @@ export const PET_ACTIVITY_HOOK_MANIFEST = Object.freeze([
     minCalls: 2,
   },
   {
+    // Every care command route (complete, skip, record, postpone, undo, close,
+    // reopen …) records activity through the shared `handleCommand` helper.
     id: 'health-entry-completion',
-    file: 'server/routes/healthEntries/completionRouter.js',
+    file: 'server/routes/healthEntries/occurrencesRouter.js',
     eventType: 'health_log',
-    minCalls: 5,
+    minCalls: 1,
   },
   {
     id: 'health-document-upload',

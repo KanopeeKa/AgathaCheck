@@ -8,6 +8,7 @@ import {
   buildNotificationDeepLink,
   checkDueNotifications,
 } from '../lib/checkDueNotifications.js';
+import { careClockFromRequest } from '../lib/care/occurrence/careAsOf.js';
 import {
   normaliseKind,
   normalisePriority,
@@ -165,7 +166,9 @@ export default function notificationsRoutes(pool) {
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
       const petNames = req.body?.pet_names || req.body?.petNames || {};
-      const result = await checkDueNotifications(pool, userId, petNames);
+      const result = await checkDueNotifications(pool, userId, petNames, {
+        clock: careClockFromRequest(req),
+      });
       res.json(result);
     } catch (err) {
       res.status(500).json({ error: publicError(err) });

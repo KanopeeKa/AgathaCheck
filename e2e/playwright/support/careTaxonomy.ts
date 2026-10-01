@@ -20,6 +20,8 @@ export function deriveLegacyHealthEntryType(
 ): string {
   const definition = careTaxonomy.families[careFamily as CareFamilyWire];
   if (!definition) return 'other';
-  const legacy = definition.derived_legacy_type[careSetting];
+  const legacyTypes: Readonly<Partial<Record<string, string>>> =
+    definition.derived_legacy_type;
+  const legacy = legacyTypes[careSetting];
   return legacy ?? 'other';
 }

@@ -5,7 +5,11 @@ import { logAuditEventSafe } from '../../lib/audit.js';
 import { normalizeCalendarDateInput } from '../../lib/calendarDate.js';
 import { hasPetCapability, PET_CAPABILITIES } from '../../lib/petCapabilityPolicy.js';
 import { accessiblePetSql } from '../../lib/petAccess.js';
-import { materialiseInitialOccurrences } from '../../lib/occurrenceScheduling.js';
+import {
+  createInitialOccurrences,
+  runCareCommand,
+} from '../../lib/care/occurrence/index.js';
+import { defaultRecurrenceAnchorForCareFamily } from '../../lib/care/schedule/recurrenceAnchorDefaults.js';
 import { extractUserId } from '../pets/shared.js';
 import {
   RESPONSE_ACTIONS,
@@ -79,13 +83,13 @@ async function createRhythmFromRecommendation(pool, recommendation, userId, adju
   });
   const startDate = normalizeCalendarDateInput(payload.startDate);
   const nextDueDate = normalizeCalendarDateInput(payload.nextDueDate);
-  const result = await pool.query(
+  const insertEntry = (db) => db.query(
     `INSERT INTO health_entries (
        id, pet_id, user_id, name, type, dosage, frequency, frequency_interval,
        start_date, next_due_date, recurrence_anchor, remind_days_before,
        status, care_family, care_setting, care_planning, care_importance,
        importance_overridden, care_source
-     ) VALUES ($1,$2,$3,$4,$5,'',$6,$7,$8,$9,'from_completion',7,'active',$10,$11,$12,$13,$14,$15)
+     ) VALUES ($1,$2,$3,$4,$5,'',$6,$7,$8,$9,$16,7,'active',$10,$11,$12,$13,$14,$15)
      RETURNING *`,
     [
       entryId,
@@ -103,10 +107,11 @@ async function createRhythmFromRecommendation(pool, recommendation, userId, adju
       payload.careImportance,
       payload.importanceOverridden,
       payload.careSource,
+      defaultRecurrenceAnchorForCareFamily(payload.careFamily),
     ],
   );
-  const entry = result.rows[0];
-  await materialiseInitialOccurrences(pool, entry);
+  await runCareCommand(pool, { entryId, userId, beforeLock: insertEntry }, (ctx) =>
+    createInitialOccurrences(ctx, { firstDate: nextDueDate || startDate || null }));
   return entryId;
 }
 

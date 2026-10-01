@@ -1,4 +1,5 @@
 import { publicError } from '../../config/security.js';
+import { updateCompletedDetails } from '../../lib/care/occurrence/index.js';
 import { resolveProviderUsedPatch } from '../../lib/care/providerUsed.js';
 import { occurrenceToMap } from '../../lib/occurrenceScheduling.js';
 import { extractUserId } from './shared.js';
@@ -22,26 +23,13 @@ export function registerOccurrencePatchRoutes(router, pool) {
       if (providerPatch?.error) {
         return res.status(400).json({ error: providerPatch.error });
       }
-      const sets = ['notes = $1', 'updated_at = NOW()'];
-      const params = [notes];
-      if (providerPatch) {
-        sets.push(`provider_contact_id = $${params.length + 1}`);
-        params.push(providerPatch.contactId);
-        sets.push(`provider_typed_name = $${params.length + 1}`);
-        params.push(providerPatch.typedName);
-        sets.push(`provider_contact_snapshot = $${params.length + 1}::jsonb`);
-        params.push(
-          providerPatch.snapshot ? JSON.stringify(providerPatch.snapshot) : null,
-        );
-      }
-      params.push(req.params.occId, entryId);
-      const updated = await pool.query(
-        `UPDATE health_occurrences SET ${sets.join(', ')}
-         WHERE id = $${params.length - 1} AND health_entry_id = $${params.length}
-           AND status = 'completed'
-         RETURNING *`,
-        params,
-      );
+      const updatedRow = await updateCompletedDetails(pool, {
+        entryId,
+        occurrenceId: req.params.occId,
+        notes,
+        provider: providerPatch || null,
+      });
+      const updated = { rows: updatedRow ? [updatedRow] : [] };
       if (updated.rows.length === 0) {
         return res.status(404).json({ error: 'Occurrence not found' });
       }

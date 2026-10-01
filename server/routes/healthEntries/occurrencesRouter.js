@@ -1,32 +1,32 @@
 import { publicError } from '../../config/security.js';
 import { normalizeCalendarDateInput } from '../../lib/calendarDate.js';
-import { resolveOccurrenceAsOf } from '../../lib/petHomeTimezone.js';
 import { logAuditEventSafe } from '../../lib/audit.js';
 import { recordPetActivityForPet } from '../../lib/petActivity.js';
 import { userCanManageHealthEntry } from '../../lib/petAccess.js';
-import { adjustCadence } from '../../lib/care/schedule/adjustCadence.js';
-import { completeOccurrence } from '../../lib/care/schedule/completeOccurrence.js';
 import {
-  pauseSeries,
-  resumeSeries,
-} from '../../lib/care/schedule/pauseResumeSeries.js';
-import {
-  skipMissedOccurrences,
-  skipOccurrence,
-} from '../../lib/care/schedule/skipOccurrence.js';
-import { undoLastAction } from '../../lib/care/schedule/undoLastAction.js';
-import {
-  listMissedOccurrenceIds,
-  listOpenOccurrences,
-  occurrenceToMap,
-  resolveCompletedOn,
-} from '../../lib/occurrenceScheduling.js';
-import { tryAutoCloseRecurringWithEndDate } from '../../lib/occurrenceLifecycle.js';
-import { extractUserId, healthEntryToMap } from './shared.js';
+  completeOccurrenceCommand,
+  listOpenRows,
+  openOccurrenceToWire,
+  planAnotherDateCommand,
+  recordAsGivenCommand,
+  resolveCareAsOfForRead,
+  resolveStackCommand,
+  runCareCommand,
+  sendCareCommandError,
+  skipOccurrenceCommand,
+  undoCommand,
+} from '../../lib/care/occurrence/index.js';
+import { markSkipped } from '../../lib/care/occurrence/occurrenceRepository.js';
+import { slotIsPastDue } from '../../lib/care/schedule/occurrenceStatus.js';
+import { occurrenceToMap } from '../../lib/occurrenceScheduling.js';
+import { commandResponse } from './careItemWire.js';
+import { extractUserId } from './shared.js';
 import {
   isWeightMonitoringEntry,
   WEIGHT_GENERIC_COMPLETE_ERROR,
 } from './weightOccurrenceCompletion.js';
+
+const PAST_STATUSES = new Set(['overdue', 'not_recorded']);
 
 export async function loadEntry(pool, entryId, userId) {
   if (!(await userCanManageHealthEntry(pool, entryId, userId))) {
@@ -51,16 +51,77 @@ export async function loadOccurrence(pool, entryId, occId) {
   return result.rows[0] || null;
 }
 
-async function asOfForEntry(pool, entry, req) {
-  const resolved = await resolveOccurrenceAsOf(pool, entry, req);
-  return resolved.todayIso;
+function logOccurrenceAction(pool, req, { userId, entry, action, metadata = {}, activity = null }) {
+  logAuditEventSafe(pool, {
+    actorUserId: userId,
+    action,
+    resourceType: 'health_entry',
+    resourceId: entry.id,
+    petId: entry.pet_id,
+    metadata,
+    req,
+  });
+  if (activity) {
+    recordPetActivityForPet(pool, {
+      petId: entry.pet_id,
+      actorUserId: userId,
+      eventType: 'health_log',
+      metadata: { action: activity, entry_type: entry.type },
+    });
+  }
 }
 
-async function asOfContextForEntry(pool, entry, req) {
-  return resolveOccurrenceAsOf(pool, entry, req);
+/**
+ * Parse, authorise, run one command, answer. Shared by every occurrence route.
+ */
+async function handleCommand(pool, req, res, { command, respond, audit, guard }) {
+  const userId = extractUserId(req);
+  if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+  try {
+    const entry = await loadEntry(pool, req.params.id, userId);
+    if (!entry) return res.status(404).json({ error: 'Entry not found' });
+    if (guard) {
+      const blocked = guard(entry);
+      if (blocked) return res.status(400).json({ error: blocked });
+    }
+    const out = await runCareCommand(pool, { entryId: entry.id, userId, req }, command);
+    if (!out) return res.status(404).json({ error: 'Entry not found' });
+    if (audit) logOccurrenceAction(pool, req, { userId, entry, ...audit(out) });
+    const { status = 200, body } = await respond(out);
+    return res.status(status).json(body);
+  } catch (err) {
+    if (sendCareCommandError(res, err)) return undefined;
+    return res.status(500).json({ error: publicError(err) });
+  }
 }
 
-export { asOfContextForEntry };
+function weightGuard(entry) {
+  return isWeightMonitoringEntry(entry) ? WEIGHT_GENERIC_COMPLETE_ERROR : null;
+}
+
+/**
+ * Compat `skip_earlier_missed`: skip earlier past-due open dates in the same command.
+ */
+function withEarlierPastDueSkipped(occurrenceId, run) {
+  return async (ctx) => {
+    const target = ctx.openRows.find((o) => o.id === occurrenceId);
+    if (!target) return run(ctx);
+    const skippedIds = new Set();
+    for (const row of ctx.openRows) {
+      if (row.id === occurrenceId) continue;
+      const earlier = row.scheduled_date < target.scheduled_date
+        || (row.scheduled_date === target.scheduled_date
+          && (row.scheduled_time ?? '') < (target.scheduled_time ?? ''));
+      if (!earlier || !slotIsPastDue({ date: row.scheduled_date, time: row.scheduled_time }, ctx.asOf)) continue;
+      await markSkipped(ctx.db, {
+        entryId: ctx.entry.id, occurrenceId: row.id, closeReason: 'user', userId: ctx.userId,
+      });
+      ctx.trace.closedRow(row);
+      skippedIds.add(row.id);
+    }
+    return run({ ...ctx, openRows: ctx.openRows.filter((o) => !skippedIds.has(o.id)) });
+  };
+}
 
 export function registerOccurrenceRoutes(router, pool) {
   router.get('/:id/occurrences', async (req, res) => {
@@ -69,17 +130,30 @@ export function registerOccurrenceRoutes(router, pool) {
     try {
       const entry = await loadEntry(pool, req.params.id, userId);
       if (!entry) return res.status(404).json({ error: 'Entry not found' });
-      const asOfCtx = await asOfContextForEntry(pool, entry, req);
-      await tryAutoCloseRecurringWithEndDate(pool, entry, asOfCtx.todayIso);
       const status = req.query.status || 'open';
       if (status === 'open') {
-        const rows = await listOpenOccurrences(
-          pool,
-          entry.id,
-          asOfCtx.todayIso,
-          asOfCtx.nowTimeIso,
+        const asOf = await resolveCareAsOfForRead(pool, entry, req);
+        const rows = await listOpenRows(pool, entry.id);
+        const names = await pool.query(
+          `SELECT ho.id, TRIM(COALESCE(u.first_name, '') || ' ' || COALESCE(u.last_name, '')) AS marked_by_name
+           FROM health_occurrences ho LEFT JOIN users u ON u.id = ho.marked_by_user_id
+           WHERE ho.health_entry_id = $1 AND ho.status = 'pending'`,
+          [entry.id],
         );
-        return res.json(rows);
+        const nameById = new Map(names.rows.map((r) => [r.id, r.marked_by_name]));
+        const wire = rows.map((row) => {
+          const status = openOccurrenceToWire(row, entry, asOf);
+          return {
+            ...occurrenceToMap({ ...row, marked_by_name: nameById.get(row.id) }),
+            status: 'pending',
+            occurrence_status: status.status,
+            origin: status.origin,
+            missed: PAST_STATUSES.has(status.status),
+          };
+        });
+        wire.sort((a, b) => `${b.scheduled_date}|${b.scheduled_time ?? ''}`
+          .localeCompare(`${a.scheduled_date}|${a.scheduled_time ?? ''}`));
+        return res.json(wire);
       }
       const result = await pool.query(
         `SELECT ho.*,
@@ -91,384 +165,141 @@ export function registerOccurrenceRoutes(router, pool) {
            COALESCE(ho.scheduled_time, '00:00:00'::time) DESC`,
         [entry.id]
       );
-      res.json(result.rows.map(occurrenceToMap));
+      return res.json(result.rows.map(occurrenceToMap));
     } catch (err) {
-      res.status(500).json({ error: publicError(err) });
+      return res.status(500).json({ error: publicError(err) });
     }
   });
 
-  router.post('/:id/occurrences/:occId/complete', async (req, res) => {
-    const userId = extractUserId(req);
-    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    try {
-      const entryId = req.params.id;
-      const entry = await loadEntry(pool, entryId, userId);
-      if (!entry) return res.status(404).json({ error: 'Entry not found' });
-      if (isWeightMonitoringEntry(entry)) {
-        return res.status(400).json({ error: WEIGHT_GENERIC_COMPLETE_ERROR });
-      }
-      const occ = await loadOccurrence(pool, entryId, req.params.occId);
-      if (!occ || occ.status !== 'pending') {
-        return res.status(404).json({ error: 'Occurrence not found' });
-      }
-      const body = req.body || {};
-      const completedOn = resolveCompletedOn(body.completed_on || body.completedOn);
-      const notes = body.notes || '';
-      const markedAt = new Date();
-      const skipEarlier = Boolean(body.skip_earlier_missed || body.skipEarlierMissed);
-      const asOfCtx = await asOfContextForEntry(pool, entry, req);
-
-      if (skipEarlier) {
-        const missedIds = await listMissedOccurrenceIds(
-          pool,
-          entryId,
-          asOfCtx.todayIso,
-          asOfCtx.nowTimeIso,
-        );
-        const earlier = missedIds.filter((id) => id !== occ.id);
-        if (earlier.length > 0) {
-          await skipMissedOccurrences(pool, {
-            entry,
-            userId,
-            occurrenceIds: earlier,
-            markedAt,
-            todayIso: asOfCtx.todayIso,
-          });
-        }
-      }
-
-      const performedBy = body.performed_by_user_id || body.performedByUserId || null;
-      const completion = await completeOccurrence(pool, {
-        entry,
-        occurrenceId: occ.id,
-        userId,
-        completedOn,
-        notes,
-        markedAt,
-        todayIso: asOfCtx.todayIso,
-        performedByUserId: performedBy,
-        body,
-      });
-      if (!completion) {
-        return res.status(404).json({ error: 'Occurrence not found' });
-      }
-      logAuditEventSafe(pool, {
-        actorUserId: userId,
-        action: 'health_occurrence.completed',
-        resourceType: 'health_entry',
-        resourceId: entryId,
-        petId: entry.pet_id,
-        metadata: { occurrence_id: occ.id },
-        req,
-      });
-      recordPetActivityForPet(pool, {
-        petId: entry.pet_id,
-        actorUserId: userId,
-        eventType: 'health_log',
-        metadata: { action: 'complete_occurrence', entry_type: entry.type },
-      });
-      const row = completion.occurrence;
-      row.marked_by_name = null;
-      res.json({
-        occurrence: occurrenceToMap(row),
-        next_due_date: completion.nextDueDate,
-      });
-    } catch (err) {
-      res.status(500).json({ error: publicError(err) });
-    }
-  });
-
-  router.post('/:id/occurrences/:occId/skip', async (req, res) => {
-    const userId = extractUserId(req);
-    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    try {
-      const entryId = req.params.id;
-      const entry = await loadEntry(pool, entryId, userId);
-      if (!entry) return res.status(404).json({ error: 'Entry not found' });
-      const occ = await loadOccurrence(pool, entryId, req.params.occId);
-      if (!occ || occ.status !== 'pending') {
-        return res.status(404).json({ error: 'Occurrence not found' });
-      }
-      const notes = (req.body || {}).notes || '';
-      const markedAt = new Date();
-      const todayIso = await asOfForEntry(pool, entry, req);
-      const skipped = await skipOccurrence(pool, {
-        entry,
-        occurrenceId: occ.id,
-        userId,
-        notes,
-        markedAt,
-        todayIso,
-      });
-      if (!skipped) {
-        return res.status(404).json({ error: 'Occurrence not found' });
-      }
-      logAuditEventSafe(pool, {
-        actorUserId: userId,
-        action: 'health_occurrence.skipped',
-        resourceType: 'health_entry',
-        resourceId: entryId,
-        petId: entry.pet_id,
-        metadata: { occurrence_id: occ.id },
-        req,
-      });
-      res.json(occurrenceToMap(skipped.occurrence));
-    } catch (err) {
-      res.status(500).json({ error: publicError(err) });
-    }
-  });
-
-  router.post('/:id/occurrences/skip-missed', async (req, res) => {
-    const userId = extractUserId(req);
-    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    try {
-      const entryId = req.params.id;
-      const entry = await loadEntry(pool, entryId, userId);
-      if (!entry) return res.status(404).json({ error: 'Entry not found' });
-      const asOfCtx = await asOfContextForEntry(pool, entry, req);
-      const missedIds = await listMissedOccurrenceIds(
-        pool,
-        entryId,
-        asOfCtx.todayIso,
-        asOfCtx.nowTimeIso,
-      );
-      if (missedIds.length === 0) {
-        return res.json({ skipped: [], count: 0 });
-      }
-      const markedAt = new Date();
-      const batch = await skipMissedOccurrences(pool, {
-        entry,
-        userId,
-        occurrenceIds: missedIds,
-        markedAt,
-        todayIso: asOfCtx.todayIso,
-      });
-      logAuditEventSafe(pool, {
-        actorUserId: userId,
-        action: 'health_occurrence.skip_missed',
-        resourceType: 'health_entry',
-        resourceId: entryId,
-        petId: entry.pet_id,
-        metadata: { count: batch.count },
-        req,
-      });
-      res.json({ skipped: batch.skipped, count: batch.count });
-    } catch (err) {
-      res.status(500).json({ error: publicError(err) });
-    }
-  });
-
-  router.post('/:id/adjust-cadence', async (req, res) => {
-    const userId = extractUserId(req);
-    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    try {
-      const entryId = req.params.id;
-      const entry = await loadEntry(pool, entryId, userId);
-      if (!entry) return res.status(404).json({ error: 'Entry not found' });
-      const body = req.body || {};
-      const effectiveFrom = normalizeCalendarDateInput(
-        body.effective_from || body.effectiveFrom,
-      );
-      if (!effectiveFrom) {
-        return res.status(400).json({ error: 'effective_from is required' });
-      }
-      const adjusted = await adjustCadence(pool, {
-        entry,
-        userId,
-        effectiveFrom,
-        frequency: body.frequency,
-        frequencyInterval: body.frequency_interval ?? body.frequencyInterval,
-        frequencyDays: body.frequency_days ?? body.frequencyDays,
-        recurrenceAnchor: body.recurrence_anchor ?? body.recurrenceAnchor,
-        reasonCode: body.reason_code || body.reasonCode || null,
-        reasonNote: body.reason_note || body.reasonNote || body.notes || null,
-        todayIso: await asOfForEntry(pool, entry, req),
-      });
-      if (!adjusted) {
-        return res.status(400).json({ error: 'Entry cadence cannot be adjusted' });
-      }
-      logAuditEventSafe(pool, {
-        actorUserId: userId,
-        action: 'health_entry.cadence_adjusted',
-        resourceType: 'health_entry',
-        resourceId: entryId,
-        petId: entry.pet_id,
-        metadata: {
-          effective_from: effectiveFrom,
-          schedule_event_id: adjusted.scheduleEventId,
-        },
-        req,
-      });
-      recordPetActivityForPet(pool, {
-        petId: entry.pet_id,
-        actorUserId: userId,
-        eventType: 'health_log',
-        metadata: { action: 'adjust_cadence', entry_type: entry.type },
-      });
-      adjusted.entry.pet_name = null;
-      res.json({
-        entry: healthEntryToMap(adjusted.entry),
-        next_due_date: adjusted.nextDueDate,
-        schedule_event_id: adjusted.scheduleEventId,
-      });
-    } catch (err) {
-      res.status(500).json({ error: publicError(err) });
-    }
-  });
-
-  router.post('/:id/pause', async (req, res) => {
-    const userId = extractUserId(req);
-    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    try {
-      const entryId = req.params.id;
-      const entry = await loadEntry(pool, entryId, userId);
-      if (!entry) return res.status(404).json({ error: 'Entry not found' });
-      const body = req.body || {};
-      const paused = await pauseSeries(pool, {
-        entry,
-        userId,
-        pausedFrom: body.paused_from || body.pausedFrom,
-        reasonCode: body.reason_code || body.reasonCode || null,
-        reasonNote: body.reason_note || body.reasonNote || body.notes || null,
-      });
-      if (!paused) {
-        return res.status(400).json({ error: 'Entry cannot be paused' });
-      }
-      logAuditEventSafe(pool, {
-        actorUserId: userId,
-        action: 'health_entry.paused',
-        resourceType: 'health_entry',
-        resourceId: entryId,
-        petId: entry.pet_id,
-        metadata: { paused_since: paused.pausedSince },
-        req,
-      });
-      paused.entry.pet_name = null;
-      res.json(healthEntryToMap(paused.entry));
-    } catch (err) {
-      res.status(500).json({ error: publicError(err) });
-    }
-  });
-
-  router.post('/:id/resume', async (req, res) => {
-    const userId = extractUserId(req);
-    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    try {
-      const entryId = req.params.id;
-      const entry = await loadEntry(pool, entryId, userId);
-      if (!entry) return res.status(404).json({ error: 'Entry not found' });
-      const body = req.body || {};
-      const resumed = await resumeSeries(pool, {
-        entry,
-        userId,
-        reasonCode: body.reason_code || body.reasonCode || null,
-        reasonNote: body.reason_note || body.reasonNote || body.notes || null,
-      });
-      if (!resumed) {
-        return res.status(400).json({ error: 'Entry cannot be resumed' });
-      }
-      logAuditEventSafe(pool, {
-        actorUserId: userId,
-        action: 'health_entry.resumed',
-        resourceType: 'health_entry',
-        resourceId: entryId,
-        petId: entry.pet_id,
-        metadata: {},
-        req,
-      });
-      resumed.entry.pet_name = null;
-      res.json(healthEntryToMap(resumed.entry));
-    } catch (err) {
-      res.status(500).json({ error: publicError(err) });
-    }
-  });
-
-  router.post('/:id/occurrences/:occId/undo', async (req, res) => {
-    const userId = extractUserId(req);
-    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    try {
-      const entryId = req.params.id;
-      const entry = await loadEntry(pool, entryId, userId);
-      if (!entry) return res.status(404).json({ error: 'Entry not found' });
-      const occId = req.params.occId;
-
-      const undone = await undoLastAction(pool, {
-        entry,
-        userId,
-        occurrenceId: occId,
-      });
-      if (!undone || !undone.occurrence) {
-        return res.status(400).json({
-          error: 'No matching schedule action to undo for this occurrence; use POST /:id/schedule/undo',
-        });
-      }
-
-      logAuditEventSafe(pool, {
-        actorUserId: userId,
-        action: 'health_occurrence.undone',
-        resourceType: 'health_entry',
-        resourceId: entryId,
-        petId: entry.pet_id,
-        metadata: { occurrence_id: occId, action_type: undone.actionType },
-        req,
-      });
-      const row = undone.occurrence;
-      row.marked_by_name = null;
-      res.json(occurrenceToMap(row));
-    } catch (err) {
-      res.status(500).json({ error: publicError(err) });
-    }
-  });
-}
-
-/**
- * Complete the oldest pending occurrence for mark-taken compatibility.
- */
-export async function completeOldestPendingOccurrence(pool, entryId, userId, body = {}, req = null) {
-  const performedBy = body.performed_by_user_id || body.performedByUserId || null;
-  const entry = (await pool.query('SELECT * FROM health_entries WHERE id = $1', [entryId])).rows[0];
-  if (isWeightMonitoringEntry(entry)) {
-    const err = new Error(WEIGHT_GENERIC_COMPLETE_ERROR);
-    err.statusCode = 400;
-    throw err;
-  }
-  const pending = await pool.query(
-    `SELECT id FROM health_occurrences
-     WHERE health_entry_id = $1 AND status = 'pending'
-     ORDER BY scheduled_date ASC,
-       COALESCE(scheduled_time, '00:00:00'::time) ASC
-     LIMIT 1`,
-    [entryId]
-  );
-  if (pending.rows.length === 0) return null;
-  const occId = pending.rows[0].id;
-  const completedOn = resolveCompletedOn(body.completed_on || body.completedOn);
-  const notes = body.notes || '';
-  const markedAt = new Date();
-  const asOfCtx = await resolveOccurrenceAsOf(pool, entry, req);
-  const todayIso = asOfCtx.todayIso;
-  const completion = await completeOccurrence(pool, {
-    entry,
-    occurrenceId: occId,
-    userId,
-    completedOn,
-    notes,
-    markedAt,
-    todayIso,
-    performedByUserId: performedBy,
-    body,
-  });
-  if (!completion) return null;
-  if (req) {
-    logAuditEventSafe(pool, {
-      actorUserId: userId,
-      action: 'health_occurrence.completed',
-      resourceType: 'health_entry',
-      resourceId: entryId,
-      petId: entry.pet_id,
-      metadata: { occurrence_id: occId, via: 'mark-taken' },
-      req,
+  router.post('/:id/occurrences/:occId/complete', (req, res) => {
+    const body = req.body || {};
+    const occurrenceId = req.params.occId;
+    const run = (ctx) => completeOccurrenceCommand(ctx, {
+      occurrenceId,
+      completedOn: normalizeCalendarDateInput(body.completed_on || body.completedOn),
+      notes: body.notes || '',
+      nextChoice: body.next_choice || body.nextChoice || null,
+      rememberChoice: Boolean(body.remember_choice ?? body.rememberChoice),
+      earlierChoice: body.earlier_choice || body.earlierChoice || null,
+      body,
     });
-  }
-  return completion.occurrence;
+    const skipEarlier = Boolean(body.skip_earlier_missed || body.skipEarlierMissed);
+    return handleCommand(pool, req, res, {
+      guard: weightGuard,
+      command: skipEarlier ? withEarlierPastDueSkipped(occurrenceId, run) : run,
+      audit: () => ({
+        action: 'health_occurrence.completed',
+        metadata: { occurrence_id: occurrenceId },
+        activity: 'complete_occurrence',
+      }),
+      respond: async (out) => ({
+        body: await commandResponse(pool, out, req, {
+          occurrence: occurrenceToMap(out.occurrence),
+          next_choice_applied: out.appliedChoice ?? null,
+        }),
+      }),
+    });
+  });
+
+  router.post('/:id/occurrences/:occId/skip', (req, res) => {
+    const body = req.body || {};
+    const occurrenceId = req.params.occId;
+    return handleCommand(pool, req, res, {
+      command: (ctx) => skipOccurrenceCommand(ctx, {
+        occurrenceId,
+        notes: body.notes || '',
+        reasonCode: body.reason_code || body.reasonCode || null,
+      }),
+      audit: () => ({ action: 'health_occurrence.skipped', metadata: { occurrence_id: occurrenceId } }),
+      respond: async (out) => {
+        const occurrence = occurrenceToMap(out.occurrence);
+        return { body: { ...occurrence, ...(await commandResponse(pool, out, req, { occurrence })) } };
+      },
+    });
+  });
+
+  router.post('/:id/occurrences', (req, res) => {
+    const body = req.body || {};
+    return handleCommand(pool, req, res, {
+      command: (ctx) => planAnotherDateCommand(ctx, {
+        date: normalizeCalendarDateInput(body.scheduled_date || body.scheduledDate),
+        time: body.scheduled_time || body.scheduledTime || null,
+        reasonCode: body.reason_code || body.reasonCode || null,
+      }),
+      audit: (out) => ({
+        action: 'health_occurrence.planned',
+        metadata: { occurrence_id: out.occurrenceId },
+        activity: 'plan_date',
+      }),
+      respond: async (out) => ({
+        status: 201,
+        body: await commandResponse(pool, out, req, {
+          occurrence_id: out.occurrenceId,
+          warnings: out.warnings,
+        }),
+      }),
+    });
+  });
+
+  router.post('/:id/occurrences/:occId/record', (req, res) => {
+    const body = req.body || {};
+    const occurrenceId = req.params.occId;
+    return handleCommand(pool, req, res, {
+      guard: weightGuard,
+      command: (ctx) => recordAsGivenCommand(ctx, {
+        occurrenceId,
+        completedOn: normalizeCalendarDateInput(body.completed_on || body.completedOn),
+      }),
+      audit: () => ({ action: 'health_occurrence.recorded', metadata: { occurrence_id: occurrenceId } }),
+      respond: async (out) => ({
+        body: await commandResponse(pool, out, req, { occurrence: occurrenceToMap(out.occurrence) }),
+      }),
+    });
+  });
+
+  router.post('/:id/occurrences/resolve-stack', (req, res) => {
+    const body = req.body || {};
+    const given = Array.isArray(body.given) ? body.given : [];
+    const notGiven = Array.isArray(body.not_given ?? body.notGiven) ? (body.not_given ?? body.notGiven) : [];
+    return handleCommand(pool, req, res, {
+      guard: weightGuard,
+      command: (ctx) => resolveStackCommand(ctx, { given, notGiven }),
+      audit: () => ({
+        action: 'health_occurrence.stack_resolved',
+        metadata: { given: given.length, not_given: notGiven.length },
+        activity: 'record_doses',
+      }),
+      respond: async (out) => ({
+        body: await commandResponse(pool, out, req, { given: out.given, not_given: out.notGiven }),
+      }),
+    });
+  });
+
+  // Compatibility (deleted in child F): skip every past-due open date.
+  router.post('/:id/occurrences/skip-missed', (req, res) => handleCommand(pool, req, res, {
+    command: async (ctx) => {
+      const past = ctx.openRows.filter((row) => slotIsPastDue(
+        { date: row.scheduled_date, time: row.scheduled_time },
+        ctx.asOf,
+      )).map((row) => row.id);
+      if (past.length === 0) return { event: null, result: { given: [], notGiven: [] } };
+      return resolveStackCommand(ctx, { notGiven: past });
+    },
+    audit: (out) => ({ action: 'health_occurrence.skip_missed', metadata: { count: out.notGiven.length } }),
+    respond: async (out) => ({ body: { skipped: out.notGiven, count: out.notGiven.length } }),
+  }));
+
+  // Compatibility (deleted in child F): per-occurrence undo.
+  router.post('/:id/occurrences/:occId/undo', (req, res) => handleCommand(pool, req, res, {
+    command: (ctx) => undoCommand(ctx, {}),
+    audit: (out) => ({
+      action: 'health_occurrence.undone',
+      metadata: { occurrence_id: req.params.occId, action_type: out.undoneType },
+    }),
+    respond: async (out) => ({
+      body: out.occurrence ? occurrenceToMap(out.occurrence) : { undone: out.undoneType },
+    }),
+  }));
 }
+
+export { handleCommand, logOccurrenceAction };

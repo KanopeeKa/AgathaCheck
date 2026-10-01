@@ -7,7 +7,10 @@ import { logAuditEventSafe } from '../lib/audit.js';
 import { extractUserId } from '../lib/requireAuth.js';
 import { dateToIsoDate, normalizeCalendarDateInput, todayCalendarIso } from '../lib/calendarDate.js';
 import { refreshPetWeightCache } from '../lib/petWeightSync.js';
-import { syncNextDueDateFromOccurrences } from '../lib/occurrenceScheduling.js';
+import {
+  runCareCommand,
+  undoCompletionOfOccurrence,
+} from '../lib/care/occurrence/index.js';
 import {
   accessiblePetSql,
   userCanManageWeightEntry,
@@ -204,29 +207,17 @@ export default function weightEntriesRoutes(pool) {
         return res.status(404).json({ error: 'Not found' });
       }
       const row = existing.rows[0];
-      const client = await pool.connect();
-      try {
-        await client.query('BEGIN');
-        if (row.health_occurrence_id) {
-          const occResult = await client.query(
-            `UPDATE health_occurrences SET status = 'pending', completed_on = NULL,
-              marked_at = NULL, marked_by_user_id = NULL, notes = '', updated_at = NOW()
-             WHERE id = $1
-             RETURNING health_entry_id`,
-            [row.health_occurrence_id],
-          );
-          const entryId = occResult.rows[0]?.health_entry_id;
-          if (entryId) {
-            await syncNextDueDateFromOccurrences(client, entryId);
-          }
-        }
-        await client.query('DELETE FROM weight_entries WHERE id = $1', [req.params.id]);
-        await client.query('COMMIT');
-      } catch (txErr) {
-        await client.query('ROLLBACK');
-        throw txErr;
-      } finally {
-        client.release();
+      const deleteWeight = (db) => db.query('DELETE FROM weight_entries WHERE id = $1', [req.params.id]);
+      const linked = row.health_occurrence_id
+        ? await pool.query('SELECT health_entry_id FROM health_occurrences WHERE id = $1', [row.health_occurrence_id])
+        : { rows: [] };
+      const entryId = linked.rows[0]?.health_entry_id;
+      if (entryId) {
+        // Deleting a weigh-in's weight entry undoes that completion (D-CSM-029, UN-5).
+        await runCareCommand(pool, { entryId, userId, req, beforeCommand: deleteWeight }, (ctx) =>
+          undoCompletionOfOccurrence(ctx, { occurrenceId: row.health_occurrence_id }));
+      } else {
+        await deleteWeight(pool);
       }
       if (row.pet_id) {
         await refreshPetWeightCache(pool, row.pet_id);

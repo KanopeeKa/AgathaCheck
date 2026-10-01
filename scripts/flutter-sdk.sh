@@ -86,7 +86,8 @@ agatha_flutter_verify() {
   local dart_version
   local flutter_version
   dart_version="$(dart --version 2>&1)"
-  flutter_version="$(flutter --version 2>&1 | head -n 1)"
+  flutter_version="$(flutter --version 2>&1)"
+  flutter_version="${flutter_version%%$'\n'*}"
   echo "${flutter_version}"
   echo "${dart_version}"
 

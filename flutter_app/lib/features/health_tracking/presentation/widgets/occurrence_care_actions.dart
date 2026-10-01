@@ -37,9 +37,10 @@ class OccurrenceCareActions {
       return OccurrenceMarkDoneResult(completedOn: completedOn);
     }
 
-    final summary = summarizeOpenOccurrences(occurrences, DateTime.now());
+    final now = DateTime.now();
+    final summary = summarizeOpenOccurrences(occurrences, now);
 
-    if (summary.openCount > 1 || summary.missedCount >= 1) {
+    if (_shouldShowOccurrenceStack(occurrences, summary, now)) {
       final stackResult = await showOccurrenceStackSheet(
         context,
         entry: entry,
@@ -172,10 +173,11 @@ class OccurrenceCareActions {
       return null;
     }
 
-    final summary = summarizeOpenOccurrences(occurrences, DateTime.now());
+    final now = DateTime.now();
+    final summary = summarizeOpenOccurrences(occurrences, now);
     if (summary.openCount == 0) return null;
 
-    if (summary.openCount > 1 || summary.missedCount >= 1) {
+    if (_shouldShowOccurrenceStack(occurrences, summary, now)) {
       final stackResult = await showOccurrenceStackSheet(
         context,
         entry: entry,
@@ -222,5 +224,21 @@ class OccurrenceCareActions {
       occurrenceId: occurrenceId,
       alreadyPersisted: true,
     );
+  }
+
+  static bool _shouldShowOccurrenceStack(
+    List<HealthOccurrence> occurrences,
+    OccurrenceSummary summary,
+    DateTime now,
+  ) {
+    if (summary.missedCount > 0) return true;
+    return occurrences
+            .where(
+              (occurrence) =>
+                  occurrence.isPending &&
+                  occurrenceZone(occurrence, now) == OccurrenceZone.dueToday,
+            )
+            .length >
+        1;
   }
 }

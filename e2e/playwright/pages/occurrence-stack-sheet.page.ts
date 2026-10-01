@@ -24,11 +24,20 @@ export class OccurrenceStackSheetPage {
     await expect(this.page.getByText(/^Due today$/i)).toBeVisible();
   }
 
-  async expectDueTodayDoseCount(count: number): Promise<void> {
+  async expectDueTodayDoseCount(count: number, todayIso: string): Promise<void> {
     await this.expectDueTodayZone();
-    const dueToday = this.page.getByText(/^Due today$/i);
-    const zone = this.page.locator('flt-semantics').filter({ has: dueToday });
-    await expect(zone.getByText(/\bat\b/i)).toHaveCount(count);
+    // The sheet's semantics parent contains all zones, including stored tomorrow
+    // slots. Match the displayed calendar date instead of counting every "at" row.
+    // Dart DateFormat('dd MMM yy') in the app's English locale renders
+    // September as "Sep". Node's en-GB Intl short month is "Sept", so
+    // format the month with en-US while preserving Dart's day-month-year order.
+    const [year, , day] = todayIso.split('-');
+    const monthLabel = new Intl.DateTimeFormat('en-US', {
+      month: 'short',
+      timeZone: 'UTC',
+    }).format(new Date(`${todayIso}T12:00:00Z`));
+    const todayLabel = `${day} ${monthLabel} ${year.slice(-2)}`;
+    await expect(this.page.getByText(new RegExp(`^${escapeRegExp(todayLabel)}\\s+at\\s+`, 'i'))).toHaveCount(count);
   }
 
   async recordLatestDose(): Promise<void> {
@@ -38,6 +47,21 @@ export class OccurrenceStackSheetPage {
       await expect(
         this.page.getByRole('button', { name: /Record latest dose/i }),
       ).toHaveCount(0);
+    }).toPass({ timeout: 30_000 });
+  }
+
+  /** Records the latest dose when it is overdue: the app asks "When was this done?" and Today is chosen. */
+  async recordLatestOverdueDoseToday(): Promise<void> {
+    await this.page.getByRole('button', { name: /Record latest dose/i }).click();
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await expect(this.page.getByText(/When was this done\?/i)).toBeVisible();
+    }).toPass({ timeout: 15_000 });
+    await this.page.getByRole('button', { name: /^Today$/i }).click();
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await expect(this.page.getByText(/When was this done\?/i)).toHaveCount(0);
+      await expect(this.page.getByRole('button', { name: /Record latest dose/i })).toHaveCount(0);
     }).toPass({ timeout: 30_000 });
   }
 

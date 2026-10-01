@@ -36,6 +36,7 @@ import { migratePrivateHealthFiles } from './migrations/050_private_health_files
 import { migrateShareLinkExpiry } from './migrations/051_share_link_expiry.js';
 import { backfillPeopleFromVets } from './migrations/073_people_vet_backfill.js';
 import { migratePlannedAbsenceCarerContacts } from './migrations/075_planned_absence_carer_contacts.js';
+import { migrateCareOccurrenceModel } from './migrations/083_care_occurrence_model.js';
 import { maybeAutoSeedMigrationLedger } from './lib/migration-ledger.js';
 
 const { Pool } = pg;
@@ -125,6 +126,7 @@ const CODE_MIGRATIONS = {
   '051_share_link_expiry.sql': migrateShareLinkExpiry,
   '073_people_vet_backfill.sql': backfillPeopleFromVets,
   '075_planned_absence_contact_carers.sql': migratePlannedAbsenceCarerContacts,
+  '083_care_occurrence_model.sql': migrateCareOccurrenceModel,
 };
 
 async function applyMigration(client, name, sql) {

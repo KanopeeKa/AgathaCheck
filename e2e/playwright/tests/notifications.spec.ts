@@ -2,6 +2,7 @@
  * @bdd notifications.feature
  * Scenario: Notification generated for overdue health entry
  * Scenario: Notification generated for entry due soon
+ * Scenario: A reminder is created again after care is done on time
  * Scenario: Notifications grouped by date
  * Scenario: Notification shows pet name and color
  * Scenario: Viewing the notification list
@@ -17,7 +18,7 @@
  * Scenario: Tapping a pet notification without health entry navigates to pet detail
  * Scenario: Tapping an organisation notification navigates to org detail
  */
-import { execSync } from 'node:child_process';
+import { execFileSync } from 'node:child_process';
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
 import {
   acceptInvite,
@@ -31,13 +32,19 @@ import {
   inviteToOrganization,
   markNotificationRead,
   markAllNotificationsRead,
-  markHealthEntryTaken,
   seedOverdueNotification,
   seedPetOnlyNotification,
   signupUser,
   triggerCheckDueNotifications,
   type TestNotification,
 } from '../support/api';
+import {
+  checkCareReminders,
+  completeNextOccurrence,
+  createCareItem,
+  getCareItem,
+  withCareClock,
+} from '../support/care-api';
 import { checkA11y } from '../support/axe';
 import { refreshFlutterAccessibility, waitForFlutterRoutePattern, flutterGotoUrl, flutterRoutePath } from '../support/flutter';
 import { NotificationsPage } from '../pages/notifications.page';
@@ -49,15 +56,27 @@ import { GuardianDashboardPage } from '../pages/guardian-dashboard.page';
 
 /** Backdate a notification row for date-grouping E2E (no REST field for created_at). */
 function backdateNotification(notificationId: string, daysAgo: number): void {
+  if (!/^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i.test(notificationId)
+      || !Number.isSafeInteger(daysAgo) || daysAgo < 1) {
+    throw new Error('backdateNotification requires a UUID and positive integer day offset');
+  }
   const host = process.env.PGHOST ?? 'localhost';
   const port = process.env.PGPORT ?? '5432';
   const user = process.env.PGUSER ?? 'user';
   const password = process.env.PGPASSWORD ?? 'password';
   const database = process.env.PGDATABASE ?? 'agatha_db';
-  execSync(
-    `PGPASSWORD='${password}' psql -h '${host}' -p '${port}' -U '${user}' -d '${database}' -c "UPDATE notifications SET created_at = NOW() - interval '${daysAgo} days' WHERE id = '${notificationId}'"`,
-    { stdio: 'pipe' },
-  );
+  const output = execFileSync('psql', [
+    '-X', '-v', 'ON_ERROR_STOP=1',
+    '-h', host, '-p', port, '-U', user, '-d', database,
+    '-t', '-A',
+    '-c', `UPDATE notifications SET created_at = NOW() - interval '${daysAgo} days' WHERE id = '${notificationId}' RETURNING id`,
+  ], {
+    encoding: 'utf8',
+    env: { ...process.env, PGPASSWORD: password },
+  });
+  if (!output.split(/\s+/).includes(notificationId)) {
+    throw new Error(`backdateNotification updated no row for notification ${notificationId}`);
+  }
 }
 
 test.describe('Notifications', () => {
@@ -98,6 +117,40 @@ test.describe('Notifications', () => {
 
     expect(dueSoon).toBeTruthy();
     expect(dueSoon!.title).toMatch(/Flea Treatment|Bella/i);
+  });
+
+  test('A reminder is created again after care is done on time', async ({ page, testUser }) => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const pet = await createPet(baseURL, testUser.accessToken, 'Bella');
+    const today = new Date().toISOString().slice(0, 10);
+    const nextWeek = new Date(`${today}T12:00:00Z`);
+    nextWeek.setUTCDate(nextWeek.getUTCDate() + 7);
+    await withCareClock(`${today}T12:00`, page);
+    try {
+      const entry = await createCareItem(baseURL, testUser.accessToken, pet.id, {
+        name: 'Weekly grooming reminder',
+        careFamily: 'grooming',
+        frequency: 'weekly',
+        dueDate: today,
+        scheduleType: 'from_completion',
+        remindDaysBefore: 7,
+      });
+      expect((await getNotifications(baseURL, testUser.accessToken))
+        .filter((n) => n.health_entry_id === entry.id)).toHaveLength(0);
+
+      await completeNextOccurrence(baseURL, testUser.accessToken, entry.id, { completedOn: today });
+      const next = await getCareItem(baseURL, testUser.accessToken, entry.id);
+      expect(next.next_due_date).toBe(nextWeek.toISOString().slice(0, 10));
+      expect(next.open_occurrences[0]?.scheduled_date).toBe(next.next_due_date);
+
+      await checkCareReminders(baseURL, testUser.accessToken);
+      const reminders = (await getNotifications(baseURL, testUser.accessToken))
+        .filter((n) => n.health_entry_id === entry.id && n.type === 'due_soon');
+      expect(reminders).toHaveLength(1);
+      expect(reminders[0].message).toContain(next.next_due_date!);
+    } finally {
+      await withCareClock(null, page);
+    }
   });
 
   // ── Empty state ───────────────────────────────────────────────────────────
@@ -221,7 +274,7 @@ test.describe('Notifications', () => {
     await markAllNotificationsRead(baseURL, user.accessToken);
     // Pet list mount runs checkDueEntries; completing the overdue entry prevents
     // a fresh unread notification from being created on first load.
-    await markHealthEntryTaken(baseURL, user.accessToken, entry.id);
+    await completeNextOccurrence(baseURL, user.accessToken, entry.id);
 
     const unreadCount = await getUnreadNotificationCount(baseURL, user.accessToken);
     expect(unreadCount).toBe(0);
