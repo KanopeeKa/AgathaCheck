@@ -15,6 +15,8 @@
   "include": [
     "playwright/support/care-clock.ts",
     "playwright/support/care-clock.test.ts",
+    "playwright/support/care-zone.ts",
+    "playwright/support/care-zone.test.ts",
     "playwright/support/normalize-stored-token.ts",
     "playwright/support/normalize-stored-token.test.ts",
     "playwright/support/waf-markers.ts",

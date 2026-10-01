@@ -32,7 +32,8 @@ import {
   getHealthEntries,
   exportHealthEntriesCsv,
 } from '../support/api';
-import { completeNextOccurrence, createCareItem, undoLast, withCareClock } from '../support/care-api';
+import { completeNextOccurrence, createCareItem, createPetInZone, undoLast } from '../support/care-api';
+import { zoneAtMidAfternoon } from '../support/care-zone';
 
 test.describe('Health tracking', () => {
   // ── Existing Wave 0 tests ─────────────────────────────────────────────────
@@ -379,29 +380,30 @@ test.describe('Health tracking', () => {
     expect(pastOccurrences.filter((row) => row.status === 'completed')).toHaveLength(1);
   });
 
-  test('a twice-daily dose recorded late keeps the evening dose', async ({ page, testUser }) => {
-    // D-CSM-026 (revised 2026-10-01): the app sends no next-date choice; the
-    // server keeps the waiting 18:00 dose instead of refusing the completion.
-    test.skip(isLiveHostingTarget(process.env.E2E_BASE_URL ?? ''), 'needs the localhost test clock');
-    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
-    const day = '2026-06-05';
-    const entryName = 'Apoquel';
-    const pet = await createPet(baseURL, testUser.accessToken, 'Bella');
-    try {
-      await withCareClock(`${day}T07:00`);
+  test.describe('dose recorded late', () => {
+    // Real time, no test clock: the pet and the browser share a zone where it
+    // is mid-afternoon, so the 08:00 dose is overdue and 18:00 is still ahead.
+    const lateDose = zoneAtMidAfternoon();
+    test.use({ timezoneId: lateDose.timeZone });
+
+    test('a twice-daily dose recorded late keeps the evening dose', async ({ page, testUser }) => {
+      // D-CSM-026 (revised 2026-10-01): the app sends no next-date choice; the
+      // server keeps the waiting 18:00 dose instead of refusing the completion.
+      const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+      const entryName = 'Apoquel';
+      const pet = await createPetInZone(baseURL, testUser.accessToken, 'Bella', lateDose.timeZone);
       const entry = await createCareItem(baseURL, testUser.accessToken, pet.id, {
         name: entryName,
         careFamily: 'medication',
         frequency: 'daily',
-        dueDate: day,
+        dueDate: lateDose.day,
         times: ['08:00', '18:00'],
       });
       const [morning, evening] = entry.open_occurrences;
-      expect([morning.scheduled_time, evening.scheduled_time]).toEqual(['08:00', '18:00']);
+      expect([morning.scheduled_date, morning.scheduled_time]).toEqual([lateDose.day, '08:00']);
+      expect([evening.scheduled_date, evening.scheduled_time]).toEqual([lateDose.day, '18:00']);
+      expect(morning.status).toBe('overdue');
 
-      // Pet home time is UTC: the browser and the server both read 15:00.
-      await withCareClock(`${day}T15:00`, page);
-      await page.clock.setFixedTime(new Date(`${day}T15:00:00Z`));
       await loginAs(page, testUser);
       const petList = new PetListPage(page);
       await petList.openHealthDashboard();
@@ -419,9 +421,7 @@ test.describe('Health tracking', () => {
       expect(past.filter((row) => row.status === 'completed').map((row) => row.id)).toEqual([morning.id]);
       expect(open.map((row) => row.id)).toContain(evening.id);
       expect(open).toHaveLength(3);
-    } finally {
-      await withCareClock(null, page);
-    }
+    });
   });
 
   test('CSV export returns health entries as CSV data', async ({ page, testUser }) => {

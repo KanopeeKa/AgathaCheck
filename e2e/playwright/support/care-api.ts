@@ -21,6 +21,22 @@ export async function withCareClock(isoLocal: string | null, page?: Page): Promi
   }
 }
 
+/** Create a pet whose home time zone is `timeZone` (care "today" follows it). */
+export async function createPetInZone(
+  baseURL: string,
+  token: string,
+  name: string,
+  timeZone: string,
+): Promise<{ id: string; name: string }> {
+  const res = await apiFetch(`${baseURL.replace(/\/$/, '')}${API_PREFIX}/pets`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ name, species: 'Dog', home_timezone: timeZone }),
+  });
+  if (!res.ok) throw new Error(`createPetInZone failed (${res.status}): ${await res.text()}`);
+  return res.json<{ id: string; name: string }>();
+}
+
 export type OccurrenceStatus = 'coming_up' | 'due' | 'overdue' | 'not_recorded';
 
 export interface OpenOccurrence {
