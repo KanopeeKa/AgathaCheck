@@ -12,12 +12,16 @@ const TAXONOMY_CANDIDATES = [
 
 let cachedTaxonomy = null;
 
-function resolveTaxonomyPath() {
-  for (const candidate of TAXONOMY_CANDIDATES) {
+/**
+ * @param {string[]} [candidates]
+ * @returns {string}
+ */
+export function resolveTaxonomyPath(candidates = TAXONOMY_CANDIDATES) {
+  for (const candidate of candidates) {
     if (fs.existsSync(candidate)) return candidate;
   }
   throw new Error(
-    `care taxonomy file not found (tried: ${TAXONOMY_CANDIDATES.join(', ')})`,
+    `care taxonomy file not found (tried: ${candidates.join(', ')})`,
   );
 }
 
