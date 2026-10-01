@@ -1,6 +1,8 @@
 # Care Item occurrences: always-real next dates, two schedule types, one agenda — roadmap plan (v3)
 
 > **Status: APPROVED BY OWNER (2026-09-29) — v3.1.** v3 added the owner's confirmations, the `/ui-design-deep` review (§5.18), the data reset and UAT seed upgrade (§6.3–6.4). **v3.1** folds in Cursor's review (§17: "ask before saving" completion, pause/type-switch simplifications, extra cases, write-path guard, test clock) and a full audit of existing BDD scenarios, Playwright specs, helpers, page objects and the CI canary, with a keep/update/delete/new disposition (§11.2–11.6). Review checklist: §15.
+>
+> **Amendment v4 (2026-10-01, owner-approved): §18.** Occurrence-first completion for children C, D and F (rows open their date, an occurrence screen, no stacked popups, no "dose" in copy, `health_history` dropped), the D-CSM-026 revision that already landed with A+B (completion never asks; the server keeps the waiting date), and a full data reset on UAT **and production**. Where §18 and earlier sections disagree, §18 wins.
 
 ## Metadata
 
@@ -10,8 +12,8 @@
 | **plan_kind** | `roadmap` (parent orchestrator; six child plans, §10) |
 | **title** | Every active Care Item always has real, actionable occurrences; two plain schedule types; one Today / Due soon / Upcoming agenda; Absences use the same primitives |
 | **author** | Claude Code session, with the product owner (2026-09-29) |
-| **revisions** | v1 2026-09-29 · v2 2026-09-29 (product decisions) · v3 2026-09-29 (confirmations, UI review, data, E2E) |
-| **approval** | Owner sign-off in chat 2026-09-29 ("You have my sign off. Go ahead."), including the data wipe and category-default change |
+| **revisions** | v1 2026-09-29 · v2 2026-09-29 (product decisions) · v3 2026-09-29 (confirmations, UI review, data, E2E) · v3.1 2026-09-29 (review, test audit) · **v4 2026-10-01 (§18: occurrence-first completion, D-CSM-026 revision, full reset)** |
+| **approval** | Owner sign-off in chat 2026-09-29 ("You have my sign off. Go ahead."), including the data wipe and category-default change. **v4** approved 2026-10-01: the recommended options D-a … D-g, the review corrections in §18.2, the D-CSM-026 server fallback in A+B, and a full reset on UAT and production ("no user") |
 | **execution model** | Owner, 2026-09-29: execute-plan in essence. `claude/eager-edison-mf34j6` is the **integration branch for the whole plan**; phases are committed with the `phase(<n>/<m>):` prefix **without approval stops**; a **draft PR to `main`** is opened early for CI signal; it is marked ready and **merged** when every child is done and all gates are green; then **babysit `pre-uat-e2e.yml` until green** |
 | **coordination (2026-09-30)** | Follows [parallel-programmes.md](../../docs/agent-efficiency/parallel-programmes.md) (CARE). **Lands per child**: A+B (landing 2b, after ARCH D; TEST slice 1 on `main` too), then C+D (3b), then E+F (5b), each its own integration → `main` PR with `/babysit-uat`; `claude/eager-edison-mf34j6` stays the shared integration line and merges main after every landing (no rebase or force-push after takeover). Migration `083_care_occurrence_model` is kept (first in the queue). One landing at a time; landing broadcast on every open programme control issue/PR. Area ownership: care engine (A+B), absences (E), care UI (C, D, F), pet-profile agenda (C); shared E2E files are append-only outside CARE's window (after TEST slice 1). From ARCH D / TEST slice 1 on: new Flutter code passes `scripts/check_feature_imports.js`; new Flutter test folders are added to `flutter_app/test/ci_shards.json` |
 | **default_merge_mode** | `auto` |
@@ -266,6 +268,8 @@ Stored statuses stay `pending` / `completed` / `skipped`; `close_reason` disting
 
 ### 5.6 Done after the due date, with a waiting date — D-CSM-026
 
+> **Superseded 2026-10-01 by §18.3 (D-CSM-026 revised, landed with A+B):** completion never asks. Without `next_choice` the server applies the remembered choice if it fits, otherwise **Keep**; the 409 `next_choice_required` and 409 `earlier_choice_required` are withdrawn, and the late-choice sheet (UIR-8) is dropped. The text below is kept as the v3.1 record.
+
 Trigger: an occurrence is done after its due time/day, another open `planned` or `schedule` occurrence waits, and the gap to it has shrunk by **more than half** of the originally planned gap (`waiting.scheduled − closed.scheduled`; minutes for timed slots, days otherwise).
 
 Sheet (§5.18 UIR-8): **Keep [date]** (pre-selected; default when dismissed) · **Skip [date]** · **Move this and following by [N]** (Fixed schedule: new anchor; After it's done: shifts waiting planned dates) · ☐ **Remember my choice for this care item** → `health_entries.late_completion_choice` (`keep` | `skip_next` | `shift_following`; `null` = ask), shown and resettable in Advanced settings as **"If done after the due date"**.
@@ -439,14 +443,18 @@ Sources read: `docs/design/true-north.md`, `principles.md`, `copy-tone.md`, `ter
 
 Ledger (`care_schedule_events`) new types: `postponed`, `materialised` (`cause`, `caused_by_occurrence_id`), `late_choice_applied`, `not_recorded_closed`, `schedule_scope_changed`. UUIDs generated in JS (no `gen_random_uuid()`, AGENTS.md).
 
-### 6.3 Data reset (owner-approved; replaces v2 backfill)
+### 6.3 Data reset (owner-approved; replaces v2 backfill; extended to production 2026-10-01)
 
-The app is pre-launch (`docs/ops/prod-backup-restore-plan.md`); existing care data is disposable.
+The app is pre-launch (`docs/ops/prod-backup-restore-plan.md`) and has **no users**; existing data is disposable.
 
-- Migration 083 only adds columns with safe defaults and a light JS hook that sets `origin` on existing open rows, sets `schedule_anchor_date` for fixed items and runs `syncOpenOccurrences`, so developer databases keep working. No attempt to preserve history semantics.
-- **UAT:** after deploy, run **Actions → UAT reset demo data** (`scripts/db/uat-refresh-demo.sh`: truncates application tables, re-seeds). **Local:** `APP_ENV=development scripts/db/uat-reset.sh`. Documented in `docs/e2e/uat-demo-data.md` and the child B PR.
+- Migration 083 only adds columns with safe defaults and a light JS hook that sets `origin` on existing open rows, sets `schedule_anchor_date` for fixed items and runs `syncOpenOccurrences` inside the migration runner's transaction, so any database keeps working. No attempt to preserve history semantics.
+- **Full reset, owner decision 2026-10-01:** **UAT and production** are both reset after the deploy that carries migration 083. A full reset empties **every application table** (users included), keeping the schema and `_migrations`.
+  - **UAT:** **Actions → UAT reset demo data** (`scripts/db/uat-refresh-demo.sh`: truncates application tables, re-seeds the demo dataset). Announce it on the open programme control issues first: other programmes' UAT accounts are wiped too.
+  - **Production:** truncate only, **no demo seed**. `uat-refresh-demo.sh` refuses production by design, so the operator runs the one-off steps in `docs/ops/care-tick.md` §"Production reset (one-off, 2026-10)": a `pg_dump` first, a user count check, then `server/db/seeds/truncate-data.js` with an explicit one-off `APP_ENV` override. Migrations insert no reference rows, so an empty database is valid.
+  - **Local:** `APP_ENV=development scripts/db/uat-reset.sh`.
 - Category defaults: new data uses D-CSM-020; the reset removes old-default items.
-- Repair script `server/scripts/care/repair_occurrences.js --dry-run|--apply` reports INV-1…5 violations (used after reset and in UAT runbooks).
+- Repair script `server/scripts/care/repair_occurrences.js --dry-run|--apply` reports INV-1…5 violations; run the dry run after each reset (expect 0).
+- The care tick cron is installed on each host **after** its reset (`docs/ops/care-tick.md`).
 
 ### 6.4 UAT seed upgrade (child B, phase B3)
 
@@ -999,22 +1007,334 @@ Context for every resolution: **there are no users yet** (pre-launch), so compat
 
 ---
 
+## 18. Amendment v4 (2026-10-01) — occurrence-first completion
+
+| Field | Value |
+|---|---|
+| **status** | Approved by the owner 2026-10-01 (recommended options D-a … D-g; review corrections §18.2; full reset on UAT and production) |
+| **applies to** | Child C (agenda, row, sheets), child D (form, Care Item view), child F (module, compat routes). §18.3 already landed with A+B |
+| **does not change** | Child A and B decisions, except D-CSM-026 / PL-5 (§18.3) and the ids amended in §18.5 |
+| **lands with** | The C+D slice (landing 3b). C0 (server) is the first phase of that slice |
+| **supersedes** | §5.6 (late-choice flow), §5.14 (row destination), §5.18 UIR-1 (row destination), UIR-8 (late-choice sheet), UIR-9 (stack review sheet), UIR-21 (occurrence menu on the Care Item view) |
+
+### 18.1 Owner requirements (2026-09-30 / 10-01)
+
+| # | Requirement |
+|---|---|
+| R13 | Remove duplicate popups. Completing care never stacks one sheet on top of another. |
+| R14 | Care family is what matters; health entry type is nearly retired. |
+| R15 | Only fields required to mark care as done can block completion (weight is required). Everything else lives on the occurrence screen. |
+| R16 | When there is more than one date to sort out, open the care item and handle each date there with Done, Skip or Change date. |
+| R17 | Every stored occurrence can be acted on, including upcoming ones. Upcoming occurrences never count toward a stack. |
+| R18 | No "dose" in any copy. Buttons say **Done**; the accessible label is **"Mark {name} as done"** (FR "Marquer {name} comme fait"). |
+| R19 | "Add details" opens the occurrence screen, not a sheet. |
+| R20 | Lists make a clear difference between the care item and the occurrence, with one list type everywhere. |
+| R21 | Logging, tests and documentation are planned with each phase. |
+| R22 | `health_history` is removed. Reseed instead of migrating. |
+| R23 | A calendar will come later. |
+| R24 | Full reset on UAT **and production** (no users). |
+
+### 18.2 Review corrections folded into this amendment (2026-10-01)
+
+| # | Finding | Resolution |
+|---|---|---|
+| RV-1 | The current app records a late dose without a next-date choice; the A+B server answered 409 `next_choice_required`, and neither the stack sheet nor weight completion could handle it | Fixed in A+B (§18.3): the server never asks |
+| RV-2 | Draft DN-6 had the app send `late_completion_choice ?? 'keep'`. A remembered **Move this and following** is not offered for an hours shift on care given several times a day, so the server would answer 400 and save nothing | The one-tap path sends **no** `next_choice`; the server applies the remembered choice only when it fits, otherwise Keep. Explicit choices come only from Change flows |
+| RV-3 | Draft stack rule counted only overdue and not-recorded slots. For a Fixed schedule item without a time, yesterday's slot is Not recorded and today's is Due **all day**, so one tap would record **yesterday's** slot while today's stays due (double-dose risk) | Stack = two or more open slots that have **started** (§18.4, D-CIE-034) |
+| RV-4 | Completing a later After-it's-done date while an earlier one is open (409 `earlier_choice_required`) had no defined behaviour once every occurrence is actionable (R17) | DN-1c: the tick opens the Care Item view. The server keeps the earlier date open when no `earlier_choice` is sent (§18.3) |
+| RV-5 | Editing a completion date (D-CSM-034) is its own action, so it becomes the item's last action; "Undo" on that occurrence would undo the date edit, not the completion | The Undo button names what it reverses (§18.6.2); the next date to move is identified from the completion's ledger payload |
+| RV-6 | `health_history` has **no writers** on `main` (only `GET /:id/history` and the GDPR export read it): history in All care filters is already stale | Migration 084 and the reader switch are C0's first change; reserve **084** on the parallel-programmes board |
+| RV-7 | `server/lib/gdprUserExport.js` may belong to another programme; C0 + C4b make C+D large | Confirm ownership on the control issue before C0. C+D may land as **3b-i (C0 + C)** and **3b-ii (D)** if it grows beyond one reviewable PR; announce the split on the control issue |
+
+### 18.3 D-CSM-026 / PL-5 revision — landed with A+B (2026-10-01)
+
+| Rule | Behaviour |
+|---|---|
+| Done late with a waiting date, no `next_choice` sent | The item's remembered choice applies **if it is offered for this completion**; otherwise **Keep**. `late_completion_choice = null` means Keep (was "ask") |
+| Explicit `next_choice` that is not offered | **400 `next_choice_not_available`**, nothing saved |
+| Response | `next_choice_applied` (`keep` / `skip_next` / `shift_following`, or `null` when the trigger did not fire) on `…/complete` **and** `…/complete-weight` |
+| After it's done: later date completed while an earlier one is open, no `earlier_choice` | The earlier date stays open (Keep). `complete` / `skip` still close it in the same transaction |
+| Withdrawn | 409 `next_choice_required`, 409 `earlier_choice_required`, the late-choice sheet (UIR-8), "Remember my choice" in the sheet |
+| Unchanged | Trigger (D-CSM-026), one transaction, whole-command undo, 409 `occurrence_not_open` |
+
+Canonical docs updated in A+B: `care-schedule-management-decisions.md` (D-CSM-026, PL-5 row), `care-schedule-management.md`, `care-item-evolution.md`, `occurrence-scheduling.md`, `api-reference.md`, `openapi/pet-care-critical.json`.
+
+### 18.4 Decision record v4
+
+| id | Topic | Decision |
+|---|---|---|
+| D-a | Completing overdue care | **Fixed schedule:** one tap, done today; the confirmation offers **Change date**. **After it's done:** "When was this done?" (D-CIE-009 kept) as the only completion sheet, Today preselected |
+| D-b | Completing early (more than half an interval, D-CSM-030) | The confirmation dialog stays (UIR-10) |
+| D-c | Row | **R3:** the row opens its **occurrence**; the occurrence screen links to its care item (§18.6.3) |
+| D-d | Calendar | No stored horizon. A future calendar reads stored occurrences plus estimated dates; estimates have no actions (D-CIE-033) |
+| D-e | Occurrence screen | Added; occurrence actions move there from the Care Item view menu (§18.6.4) |
+| D-f | Copy | "Dose" removed everywhere, including the approved stack copy (§18.6.7) |
+| D-g | Vehicle | This amendment, in the roadmap before child C starts |
+
+**Decisions amended (by id):**
+
+| id | Was | Now |
+|---|---|---|
+| D-CIE-009 | Every overdue completion asks "When was this done?" | Only for **After it's done** items. Fixed schedule completes today, with Change date afterwards |
+| D-CSM-026 | 409 + late-choice sheet with Remember | §18.3. The remembered choice is set only in Advanced settings ("If done after the due date": Keep · Skip the next date · Move this and following) |
+| D-CSM-023 (copy) | "3 doses not recorded" | "3 not recorded" for every family |
+| D-CIE-017 | Occurrence menu on the Care Item view | Occurrence actions live on the occurrence screen; the Care Item view keeps item actions and lists occurrences |
+| D-CIE-026 / UIR-1 | Row opens the Care Item view | Row opens the occurrence screen. Stack rows and rows without an open occurrence open the Care Item view. One trailing action is kept |
+| UIR-8 | Late-choice sheet | Deleted |
+| UIR-9 | "Record earlier doses" with Given / Not given | Deleted; stacks are handled on the Care Item view (§18.6.5) |
+| UIR-21 | Hero: Mark as done / Review + occurrence menu | The hero shows the leading occurrence; tapping it opens the occurrence screen; its Done follows §18.6.1 |
+
+**New decisions:**
+
+| id | Decision |
+|---|---|
+| D-CIE-029 | **Occurrence screen:** one screen per occurrence, for every status (§18.6.4) |
+| D-CIE-030 | **Done shortcut:** one rule on every surface (§18.6.1) |
+| D-CIE-031 | **Completion requirements per family:** only *required* inputs; today only weight monitoring (weight value) (§18.6.2) |
+| D-CIE-032 | **Copy:** no "dose"; buttons **Done**; label and required-input heading "Mark {name} as done"; confirmation "{name} done" (§18.6.7) |
+| D-CIE-033 | **Calendar:** read-only projection, deferred; out of scope for C+D |
+| D-CIE-034 | **Stack:** two or more open slots of one Fixed-schedule item that have **started** — overdue, not recorded, or due with their time reached (a slot without a time has started from the beginning of its day). Coming-up slots and slots later today never count |
+| D-CSM-034 | **Edit the completion date** of a completed occurrence (§18.7.2) |
+| D-CSM-035 | **`health_history` is dropped**; history comes only from occurrences (§18.7.3) |
+
+### 18.5 Vocabulary additions (§2)
+
+| Term | Meaning |
+|---|---|
+| Occurrence screen | The screen for one occurrence, titled with the care item name and date |
+| Leading occurrence | The occurrence a row represents: the most urgent started one (overdue / not recorded / due), otherwise the next coming up |
+| Stack | D-CIE-034 |
+| Completion requirement | An input that must have a value before an occurrence can be completed (D-CIE-031) |
+
+### 18.6 Behaviour
+
+#### 18.6.1 Done shortcut (D-CIE-030)
+
+The same rule applies to the tick on any row, the Care Item view hero, an occurrence line, and the occurrence screen's **Done**.
+
+| # | Situation | Done does |
+|---|---|---|
+| DN-1 | Stack (D-CIE-034) | Opens the Care Item view at Needs attention. Nothing is saved |
+| DN-1c | After it's done: the occurrence has an earlier open date | Opens the Care Item view. Nothing is saved |
+| DN-2 | Completion requirement (weight), not on the occurrence screen | Opens the occurrence screen with the field focused. Nothing is saved |
+| DN-3 | After it's done, overdue | "When was this done?" (Today preselected / due date / Other…) → complete with that date |
+| DN-4 | More than half an interval early | Early-completion dialog (UIR-10) → complete today |
+| DN-5 | Anything else (coming up, due, a single started Fixed-schedule slot) | Completes today with one request |
+| DN-6 | Every completion | Sends **no** `next_choice` (§18.3 applies the remembered choice or Keep). The button shows progress; the row changes only after the server confirms (UIR-2) |
+| DN-7 | Success | "{name} done · Undo". Second line only when useful: "Next: 1 Nov", or "Next stays 18:00 · Change" when `next_choice_applied` is set (Change opens Change date on the waiting occurrence). A Fixed-schedule overdue / not-recorded completion adds **Change date** (opens the occurrence screen on the date field) |
+| DN-8 | Item paused, closed or recorded-only | No tick |
+| DN-9 | Failure | Error with Retry. 409 `occurrence_not_open` reloads silently and shows "Already updated" |
+
+DN-3 and DN-4 are the only places where completion opens anything, and they never apply together (an overdue occurrence can't be early). **SH-1:** no completion path opens a modal while another modal it opened is showing.
+
+#### 18.6.2 Completion requirements (D-CIE-031)
+
+| Family | Requirement | Endpoint |
+|---|---|---|
+| `weight_monitoring` | `weight { value, unit }`, value > 0 | `…/complete-weight` |
+| All others | none | `…/complete` |
+
+A requirement is shown only on the occurrence screen, under "Mark {name} as done", above **Done**. Adding one later = one enum entry + one field widget + server validation. The server stays the authority (400 without the requirement).
+
+#### 18.6.3 Row (R3; replaces §5.14)
+
+Built on `CareActionRow` and the shared `CareMarkDoneButton` (PR #1472).
+
+| State | Third line | Tap row | Tick |
+|---|---|---|---|
+| One started or coming-up occurrence | "Next · {date[ · time]} · {status chip}" | Occurrence screen | §18.6.1 |
+| Stack | "{n} not recorded" (info chip) | Care Item view | Care Item view (DN-1) |
+| Done today (quiet row at the end of Today) | "Done · 08:12" | Completed occurrence screen | none |
+| Paused / closed / recorded-only (All care) | "Paused since …" / "Ended {date}" / "Done {date}" | Care Item view | none |
+
+Accessibility (amends UIR-18): one merged row label ("Bella, Heartworm pill, next 28 Sep, overdue. Opens this date."; a stack row ends "Opens the care item."); the tick label "Mark Heartworm pill as done"; two focus stops per row.
+
+#### 18.6.4 Occurrence screen (D-CIE-029)
+
+Route `/pet/:petId/events/:entryId/occurrences/:occurrenceId` (with `returnTo`). Loads `GET /api/health-entries/:entryId/occurrences/:occId` (§18.7.1). Same components as the Care Item view (`CareItemModule`, `CareItemSectionHeader`, `CareItemStatusPill` with `notRecorded`).
+
+| Element | Rule |
+|---|---|
+| Header | Care item name with › (opens the Care Item view); pet · family · schedule type; status pill + date/time (pet-zone suffix when it differs, UIR-16) |
+| Open: primary | "Mark {name} as done"; required fields; "When was this done?" inline (required for After-it's-done overdue, Today for others); **Done** |
+| Open: secondary | **Skip**, **Change date** (UIR-11); ⋯ holds Postpone (UIR-12) and Plan another date |
+| Completed | Inline edit: When was this done? (D-CSM-034), notes, provider, documents. **Undo** when this item's last action is on this occurrence; its label names the action ("Undo", or "Undo date change" after an edit) |
+| Closed (skipped / not recorded) | "Record as done" (existing `…/record`) with a date field, within the history window |
+| Estimated date | Never an occurrence screen; a subtitle on the Care Item view only |
+| States | Skeleton; error + Retry; 404 "This date no longer exists" + link to the care item |
+| Accessibility | Header `Semantics(header: true)`; persistent labels; Done disabled until required fields are valid, hint names the missing field; ids `occurrence_screen`, `occurrence_done`, `occurrence_skip`, `occurrence_change_date`, `occurrence_field_weight`, `occurrence_field_completed_on` |
+| Analytics | `occurrenceDetail` in `sensitiveAnalyticsScreens` |
+
+#### 18.6.5 Care Item view (amends UIR-21, §5.13 stack)
+
+| Area | Change |
+|---|---|
+| Needs attention | Open occurrences as `OccurrenceLine` rows (date, status chip, tick); a line opens its occurrence screen; a stack shows every slot (today − 3 … today, D-CSM-023) |
+| Bulk (stack only) | **Mark all as done** (each slot on its own date, `resolve-stack` `given`) and **Skip all** (`not_given`); server-confirmed; one Undo |
+| Coming up | Next open occurrence(s) as actionable lines (R17) |
+| Estimated next | Display-only subtitle (AID-10) |
+| History | Closed occurrences as lines; each opens its occurrence screen |
+| Removed | The occurrence ⋯ menu on this view, and Review |
+
+#### 18.6.6 Sheets and dialogs (amends §7.3 `sheets/`)
+
+| Kept | Removed |
+|---|---|
+| `completion_date_sheet.dart` (DN-3) · `early_completion_dialog.dart` (DN-4) · `change_date_sheet.dart` · `postpone_sheet.dart` · `resume_date_sheet.dart` · `plan_another_date_sheet.dart` | Planned but not built: `record_earlier_doses_sheet.dart`, `late_choice_sheet.dart`. Today's code: `occurrence_stack_sheet.dart`, `mark_complete_sheet.dart`, `overdue_completion_sheet.dart`, `occurrence_add_details_sheet.dart`, `occurrence_review_sheet.dart`, the health-issue linkage prompt (becomes a field on the completed occurrence screen). `AddWeightEntrySheet` stays for standalone weight logging only; its input becomes a shared `WeightInputField` |
+
+#### 18.6.7 Copy (D-CIE-032)
+
+| Key | EN | FR |
+|---|---|---|
+| `done` (existing) | Done | Fait |
+| `careMarkDoneLabel` (replaces `dueEventRowMarkDoneLabel`) | Mark {name} as done | Marquer {name} comme fait |
+| `careDoneSnackbar` | {name} done | {name} · fait |
+| `careNextDate` | Next: {date} | Prochaine : {date} |
+| `careNextStays` | Next stays {dateOrTime} | Prochaine inchangée : {dateOrTime} |
+| `careAlreadyUpdated` | Already updated | Déjà mis à jour |
+| `careStackCount` | {n} not recorded | {n} non enregistré(s) (ICU plural) |
+| `careMarkAllDone` / `careSkipAll` | Mark all as done / Skip all | Tout marquer comme fait / Tout ignorer |
+| `careRecordAsDone` | Record as done | Enregistrer comme fait |
+| `occurrenceAboutItem` | About this care item | À propos de ce soin |
+| `occurrenceGone` | This date no longer exists | Cette date n'existe plus |
+| `careCategoryBlockProductDose*` | Product and amount / Add product details / Amount / Unit | Produit et quantité / Ajouter le produit / Quantité / Unité |
+
+Deleted once unused: `occurrenceStackSheetTitle`, `occurrenceRecordHead`, `occurrenceSkipEarlierMissed`, `markCompleteSheetTitle`, `markCompleteSheetSubtitle`, `markCompletedAction`. **Guard test:** no `app_en.arb` / `app_fr.arb` value matches `\bdoses?\b` (empty allowlist).
+
+### 18.7 Server changes in C0 (small, additive; writes stay in `server/lib/care/occurrence/**`)
+
+#### 18.7.1 `GET /api/health-entries/:id/occurrences/:occId` (new)
+
+Same authorization as `GET /:id/occurrences`. Response `{ occurrence, entry: { id, pet_id, name, care_family, recurrence_anchor, late_completion_choice, status, as_of }, last_action: { type, occurrence_id } | null, linked_weight?: { value, unit } }`. 404 when not found or not on that entry. OpenAPI entry + contract test.
+
+#### 18.7.2 `PATCH /:id/occurrences/:occId` adds `completed_on` (D-CSM-034)
+
+- Completed occurrences only; not in the future; not before the item's `start_date`.
+- **Fixed schedule:** only the date changes.
+- **After it's done:** if this is the latest completion and the computed occurrence **its completion command created** (from that command's ledger payload, `created[].origin = 'computed'`) is still open and still `computed`, it is re-dated to `completed_on + interval` (D-CSM-024 clamp) in the same `withCareItemLock` transaction. If it has become `planned` (moved), it stays; the response carries `next_unchanged: true`. Earlier completions: date only.
+- Runs through `executeCareCommand`: ledger `completion_date_changed { from, to, occurrence_id, moved_computed_id? }`, audit `health_occurrence.completed_on_changed` after commit; undo reverses it like any command (RV-5).
+
+#### 18.7.3 Drop `health_history` (D-CSM-035)
+
+- Migration `084_drop_health_history.sql` (reserve 084 on the board). Down recreates the empty table from `canonical.sql`; manifest and `canonical.sql` regenerated; backup docs checked.
+- `GET /:id/history` reads closed occurrences (same wire fields). The GDPR export exports occurrences (owner of `gdprUserExport.js` confirmed first, RV-7).
+- Remaining readers removed: Flutter All care filters (F29), seeds, tests.
+- Reset: §6.3 (UAT and production).
+
+#### 18.7.4 No change
+
+`…/complete`, `…/complete-weight`, `resolve-stack`, `record`, `reschedule`, `postpone`, undo. The client calls them per §18.6.1.
+
+### 18.8 Flutter layout (amends §7.3)
+
+```
+flutter_app/lib/features/care_item/
+  domain/        completion_requirements.dart  leading_occurrence.dart  stack_rule.dart
+  application/   care_completion_flow.dart (the only entry point for Done)
+                 care_completion_service.dart (endpoint, error mapping; never sends next_choice on one-tap)
+                 occurrence_controller.dart
+  presentation/  row/care_item_row.dart
+                 occurrence/ occurrence_line.dart occurrence_screen.dart occurrence_primary_block.dart
+                             occurrence_details_block.dart fields/{weight_input_field,completed_on_field}.dart
+                 sheets/ completion_date_sheet.dart change_date_sheet.dart postpone_sheet.dart
+                         resume_date_sheet.dart plan_another_date_sheet.dart early_completion_dialog.dart
+```
+
+Files ≤ 300 lines where possible, ≤ 500 always. `test/features/care_item/**` registered in `flutter_app/test/ci_shards.json`. No new cross-feature edges (`scripts/check_feature_imports.js`). Removed in C4 / F2: `OccurrenceCareActions`, `PetEventOccurrenceActions.markDone`, `WeightOccurrenceCareActions` (merged into the service), `HomeEventActions.markDone` / `showCompletionSheet` / `commitCompletion`, the dashboard `_markTaken`, every `_optimisticallyCompletedIds` / `_completed` pattern, the sheets in §18.6.6.
+
+### 18.9 Case matrix additions (each becomes a test)
+
+| id | Case | Expected |
+|---|---|---|
+| DN-1 | Fixed med, 3 not recorded, tick | Care Item view at Needs attention; no request |
+| DN-1b | Daily Fixed med **without a time**: yesterday Not recorded, today Due, tick | Stack (two started) → Care Item view; no request (RV-3) |
+| DN-1c | AID flea treatment overdue 5 Jun + planned 1 Jul, tick on 1 Jul | Care Item view; no request (RV-4) |
+| DN-2 | Weigh-in due, tick | Occurrence screen, weight focused; Done disabled until weight > 0 |
+| DN-2b | Weigh-in screen, 12.4 kg, Done | `complete-weight`; "Monthly weigh-in done · Undo" |
+| DN-3 | AID overdue 5 days, tick | Date sheet, Today preselected; no second modal |
+| DN-3b | Same on the occurrence screen | Inline required date; no sheet |
+| DN-4 | Monthly item done 20 days early | Dialog; Cancel saves nothing |
+| DN-5 | Weekly due today, tick | One request; "… done · Undo" + "Next: {+7}"; row moves to Due soon without reload |
+| DN-5b | Fixed med 08:00 overdue at 10:00 (18:00 not yet), tick | Completed today; Change date offered |
+| DN-6a | Late with a waiting date, nothing remembered | No `next_choice` sent; 200 `next_choice_applied: keep`; "Next stays 18:00 · Change" |
+| DN-6b | Remembered `skip_next` | Applied by the server; message reflects it |
+| DN-6c | Remembered `shift_following`, twice daily at 15:00 | Server falls back to keep; 200 (RV-2) |
+| DN-9 | Two carers, second taps Done | 409 → silent reload + "Already updated" |
+| RW-1…4 | Row taps (single → occurrence; stack → Care Item view; paused → Care Item view, no tick; done-today → completed occurrence) | As §18.6.3 |
+| OS-1 | Change a completed date (Fixed) | Only that occurrence changes |
+| OS-2 | Latest AID completion, its computed next still computed | Next re-dated, same transaction |
+| OS-3 | Same, next now planned | Unchanged; `next_unchanged: true` |
+| OS-3b | Undo right after OS-2 | Reverses the date change only; label "Undo date change" (RV-5) |
+| OS-4 | Not recorded slot → Record as done | `record`; slot shows Done |
+| OS-5 | Occurrence removed by undo while open | 404 state + link |
+| OS-6 | Coming-up occurrence | Done / Skip / Change date available (R17) |
+| CI-1 | Stack: Mark all as done | One `resolve-stack`; one Undo restores all |
+| HX-1 | After 084 | History from occurrences, same fields; GDPR export without `health_history` |
+| SH-1 | Every completion path | Never two modals at once |
+| CP-1 | ARB guard | No "dose"/"doses" in EN or FR |
+
+### 18.10 Logging and observability
+
+- **Client analytics** (consent-gated; fixed values only, no names, weights, notes or dates): `care_done_tapped`, `care_done_succeeded` (`status_before`, `schedule_type`, latency bucket), `care_done_failed` (`network` / `validation` / `conflict` / `not_open` / `unknown`), `care_done_undone`, `care_completion_date_changed` (shift bucket), `care_stack_resolved`, `occurrence_screen_opened` (`source`). Each with `family`, `surface`, `path` where relevant.
+- **Client diagnostics:** `CareCompletionService` maps errors to a sealed `CareCommandFailure`, logged via `developer.log` (`care.completion`) with error class and HTTP status only. No empty `catch (_)` in care completion code.
+- **Server:** audit metadata gains optional `source` / `path`; new audit `health_occurrence.completed_on_changed`; warn logs with request id for 400 and 409 `occurrence_not_open`; migration 084 logs the row count before the drop.
+- **Health check:** repair dry run after every reset (0 violations; `health_history` absent after 084).
+
+### 18.11 Tests and documentation
+
+- **Flutter:** domain tests (`completion_requirements`, `leading_occurrence`, `stack_rule` incl. DN-1b), `care_completion_flow_test` (DN-*, SH-1 with a modal counter), `care_completion_service_test`, `care_item_row_test`, `occurrence_screen_test`, `occurrence_line_test`, ARB guard. Delete or rewrite the tests of removed widgets.
+- **Server:** GET occurrence (authz, 404, DTO), PATCH `completed_on` (OS-1…3b, validation, undo), history from occurrences, GDPR export, migration 084 up/down/idempotency; the property test gains the PATCH command; OpenAPI contract tests.
+- **BDD (C6 / D4, scenarios land with their specs):** care_agenda "A care row opens its date, and the date links to the care item"; new @P1 "Care that needs a weight opens its date to enter the weight", "Several dates to sort out open the care item", "Upcoming care can be marked as done early"; care_schedules "Missed fixed-schedule care can be marked as done together on the care item", "Care older than three days can still be recorded from history", "Care done after its due date keeps the next planned date and offers to change it" (replaces the ask scenario), "A remembered choice is applied without asking again" (kept), new @P1 "Changing when care was done moves the next date of after-it's-done care"; health_tracking history scenario rewritten without `health_history`. The A+B scenario "A dose recorded late keeps the next dose" is reworded "Care recorded late keeps the next date" in C5.
+- **Playwright:** new `occurrence.page.ts`, `completion-date.sheet.ts`; not created: `record-earlier-doses.sheet.ts`, `next-date-choice.sheet.ts`; `care-agenda.page.ts` `stackRow(name).open()`, `openRow(name)` → `OccurrencePage`; `care-item.page.ts` `needsAttentionLines()`, `markAllDone()`, `skipAll()`; `support/api.ts` `getOccurrence`, `patchOccurrence`; axe on the occurrence screen and completion date sheet; weigh-in through the occurrence screen. The canary (§11.4) is unchanged.
+- **Docs:** `care-item-evolution.md` (D-CIE-029…034, amended D-CIE-009 / 017 / 026), `care-schedule-management.md` (D-CSM-034, 035, D-CSM-023 copy), `care-item-view-ui.md` (R3, occurrence screen, sheet inventory), `terminology.md` / `copy-tone.md` ("dose" retired), `api-reference.md` + OpenAPI, `uat-demo-data.md` (history from occurrences, reseed after 084), `docs/debt/debt.md` (calendar projection, notification deep link to the occurrence).
+
+### 18.12 Phase changes (amends §10)
+
+| Phase | Change |
+|---|---|
+| **C0 (new, server)** | §18.7.1–18.7.3, audit `source` / `path`, OpenAPI. Exit `single-backend-route`; DB integration tests; repair dry run 0 |
+| C1 | + `completion_requirements`, `leading_occurrence`, `stack_rule` (D-CIE-034), `CareCompletionService` with tests (no UI) |
+| C3 | Agenda rows route per R3 (stack → Care Item view) |
+| C4 | Row R3 + `CareCompletionFlow` on every surface; sheets per §18.6.6; removed sheets and helpers deleted; analytics events |
+| **C4b (new)** | Occurrence screen, route, `OccurrenceLine`, weight input, completed-occurrence editing, `occurrenceDetail` sensitive screen. Exit `flutter-screen-split` |
+| C5 | Copy §18.6.7 + ARB guard |
+| C6 | BDD / Playwright per §18.11 |
+| D2 | Advanced settings "If done after the due date": Keep · Skip the next date · Move this and following (no "Ask me") |
+| D3 | Care Item view per §18.6.5 (Needs attention lines, bulk actions, occurrence menu removed) |
+| F2 | Confirm no client, test or doc still relies on the withdrawn 409s; compat routes deleted as planned |
+
+### 18.13 Risks
+
+| Risk | Mitigation |
+|---|---|
+| One tap on a Fixed-schedule overdue occurrence records today instead of the real time | Change date in the confirmation; `care_completion_date_changed` measures use; for Fixed schedule the date only affects history |
+| Accidental tick on upcoming care moves an After-it's-done schedule | Early dialog (more than half an interval) + Undo |
+| Users expect the row to open the care item | › on the occurrence header; row label says "Opens this date"; `occurrence_screen_opened{source}` monitored |
+| Keep by default hides "Move this and following" | Change date → This and following on the waiting occurrence; remembered choice in Advanced settings |
+| Migration 084 is irreversible for data | Pre-launch; down recreates an empty table; UAT and production reset |
+| C+D grows | C0 and C4b are separate phases with exits; split into 3b-i / 3b-ii if needed (RV-7) |
+
+### 18.14 Out of scope (each tracked as a debt issue)
+
+Calendar view and `GET /api/care-calendar` (D-CIE-033) · notification deep link to the occurrence · further family completion requirements · renaming `health_entries` / `health_occurrences`.
+
+---
+
 ## Runtime state
 
 ```yaml
 autonomy: active
-current_phase: "B1"
-last_completed_phase: "A1"
+current_phase: "A+B landing (2b)"
+last_completed_phase: "B10"
 halt_reason: null
-next_action: "child B: B1 pure schedule modules (seriesDates, fixedSlots, nextComputed, lateCompletion, occurrenceStatus) + table tests"
+next_action: "Land PR #1448 (A+B) with the D-CSM-026 server fallback; reset UAT and production; install the care tick cron; then child C starting with C0 (§18.12)"
 artifact_ref:
   branch: claude/eager-edison-mf34j6
   plan_path: .agents/plans/care-next-occurrence-c1a7.md
-  plan_commit: 57c27f3
+  amendment: "§18 (v4, 2026-10-01)"
   snapshot_path: null
   snapshot_commit: null
-open_prs: []
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1448"]
 merge_commits: {}
 debt_issue_refs: []
-drift_check_A1: "git diff --stat f6b6285..origin/main -- server/lib/care server/lib/occurrenceScheduling.js server/routes/healthEntries flutter_app/lib/features/health_tracking flutter_app/lib/features/pet_care → empty (2026-09-29)"
 ```

@@ -164,11 +164,13 @@ Changes from the plan table (`.agents/plans/care-next-occurrence-c1a7.md` §6.4)
 
 ### Resetting care data
 
-The product is pre-launch: care data is wiped and reseeded, not migrated.
+The product is pre-launch with no users: data is wiped and reseeded, not migrated. The reset empties **every** application table, accounts included.
 
-- **UAT:** after deploy, run **Actions → UAT reset demo data** (`scripts/db/uat-refresh-demo.sh` truncates application tables and reseeds).
+- **UAT:** after the deploy that carries migration 083, run **Actions → UAT reset demo data** (`scripts/db/uat-refresh-demo.sh` truncates application tables and reseeds).
+- **Production (one-off, owner decision 2026-10-01):** emptied without demo data — steps in [Care tick runbook](../ops/care-tick.md#production-reset-one-off-2026-10).
 - **Local:** `APP_ENV=development scripts/db/uat-reset.sh`.
 - **Check:** `node server/scripts/care/repair_occurrences.js --dry-run` reports any invariant violation (expect 0 after seeding).
+- **Then** install the care tick cron on that host ([runbook](../ops/care-tick.md#install-the-cron-o2switch-cpanel)).
 
 ---
 
