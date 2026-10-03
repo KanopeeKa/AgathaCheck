@@ -5,7 +5,7 @@ import { afterAll, beforeAll, describe, expect, it } from '@jest/globals';
 
 import { assertMatchesSchema } from '../../lib/openapi/assertDto.js';
 import { loadPetCareCriticalSpec, responseSchema } from '../../lib/openapi/petCareCriticalSpec.js';
-import { careApi, createOwner, openHarness, removeOwner } from './helpers/careHarness.js';
+import { careApi, createOwner, openStrictHarness, removeOwner } from './helpers/careHarness.js';
 
 const spec = loadPetCareCriticalSpec();
 let harness;
@@ -19,8 +19,7 @@ function assertResponse(pathKey, method, status, body) {
 }
 
 beforeAll(async () => {
-  harness = await openHarness();
-  if (!harness.pool) return;
+  harness = await openStrictHarness();
   owner = await createOwner(harness.pool, { timeZone: 'Europe/Paris' });
   api = careApi(harness.app, owner);
 }, 30000);
@@ -34,7 +33,6 @@ afterAll(async () => {
 
 describe('care item contract', () => {
   it('GET /health-entries/:id matches CareItem, including a twice-daily stack', async () => {
-    if (!harness.pool) return;
     const created = await api.at('2026-06-01T07:00').create({
       care_family: 'medication', frequency: 'daily', next_due_date: '2026-06-01', schedule_times: ['08:00', '18:00'],
     });
@@ -46,7 +44,6 @@ describe('care item contract', () => {
   });
 
   it('complete matches CareCommandResponse with no choice sent, and a refused choice matches CareCommandError', async () => {
-    if (!harness.pool) return;
     const created = await api.at('2026-06-01T07:00').create({
       care_family: 'medication', frequency: 'daily', next_due_date: '2026-06-01', schedule_times: ['08:00', '18:00'],
     });

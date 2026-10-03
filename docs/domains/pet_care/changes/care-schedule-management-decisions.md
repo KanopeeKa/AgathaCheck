@@ -3,7 +3,7 @@ title: Care Schedule Management — Decision log
 owner: Product / Agent
 audience: both
 status: active
-last_updated: 2026-09-29
+last_updated: 2026-10-03
 tags: [pet_care, care_planning, decisions]
 ---
 
@@ -381,3 +381,23 @@ A job runs **every 15 minutes** (`server/scripts/care/care_tick.js`, host cron, 
 - A future command touching several items must lock them in ascending `health_entry_id` order.
 - **Write-path guard:** no `INSERT` / `UPDATE` / `DELETE` on `health_occurrences` outside `server/lib/care/occurrence/**` (migrations excluded; seeds call commands). Enforced by `scripts/check_occurrence_writes.js` in `./scripts/pre-push.sh`.
 - Compatibility routes (`mark-taken`, `ensure-open`, the `pause` wrapper, `skip-missed`, legacy `undo-complete`) exist only until the new client ships and are then deleted — there are no installed clients to protect.
+
+---
+
+## D-CSM-034 — Change when care was done (2026-10-01)
+
+**Status:** Frozen
+
+A completed occurrence's **completed on** date can be changed (`PATCH /:id/occurrences/:occId` with `completed_on` alone). Not in the future, not before the item's start date; completed occurrences only (409 `occurrence_not_completed`).
+
+- **Fixed schedule:** only that occurrence changes.
+- **After it's done:** when this is the item's latest completion and the computed next date **its completion created** (from that command's ledger payload) is still open and still `computed`, that date moves to the new done date + interval (D-CSM-024 clamp) in the same transaction. A next date a person moved (`planned`) stays; the response says `next_unchanged: true`. Earlier completions: date only.
+- One command under the item lock: ledger `completion_date_changed`, audit `health_occurrence.completed_on_changed`. Undo reverses it like any command (D-CSM-029); being the item's latest action, the app labels it "Undo date change".
+
+---
+
+## D-CSM-035 — History comes from occurrences only (2026-10-01)
+
+**Status:** Frozen (table drop pending)
+
+`health_history` has had no writers since CSM-7. `GET /:id/history` now reads closed occurrences (completed and skipped) with the same wire fields (`due_date` = scheduled date, `changed_at` = when it was marked). The table is dropped by migration `*_drop_health_history` (numbered at landing) once the GDPR user export reads occurrences instead; the owner of `server/lib/gdprUserExport.js` is confirming on the ARCH control issue. Until then the table stays, unread by care.

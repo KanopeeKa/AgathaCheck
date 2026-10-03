@@ -50,7 +50,7 @@ care_context  care_progression  care_intelligence
 | CSM-14 | Shipped | Care Context thin caller over `projectSchedule` |
 | CSM-15 | Shipped | Flutter: client `snooze()` removed |
 | CSM-17 | Shipped | Integration gate — projection corpus, CP weight evidence, CIM baseline (`integrationGate.test.js`) |
-| Care occurrences (`care-next-occurrence-c1a7`) | In delivery | D-CSM-019 … D-CSM-033: stored open occurrence always; two schedule types; care tick; commands under one lock. Sections below describe this model |
+| Care occurrences (`care-next-occurrence-c1a7`) | In delivery | D-CSM-019 … D-CSM-035: stored open occurrence always; two schedule types; care tick; commands under one lock. Sections below describe this model |
 
 ---
 
@@ -93,6 +93,7 @@ One entry point per real-world action. Every primitive runs inside `withCareItem
 | `postpone` | Postpone until a date, or pause without one (D-CSM-028) | `POST …/:id/postpone` |
 | `resume` | Resume on a chosen date (default: the date it would have had) | `POST …/:id/resume` |
 | `adjustCadence` | Change the series rule forward from `effective_from` only | `POST …/:id/adjust-cadence` |
+| `changeCompletionDate` | Change when a completed occurrence was done; After it's done also moves the computed next date its completion created (D-CSM-034) | `PATCH …/occurrences/:occId` with `completed_on` |
 | `undo` | Reverse the last command as a whole (D-CSM-029) | `POST …/:id/schedule/undo` |
 | `projectSchedule` | Read-only projection with per-item certainty | Care-period projection |
 | `explainGap` | Read-only schedule facts for CIM | `GET …/:id/schedule-explain` |
@@ -123,6 +124,9 @@ All routes mount under `/api/health-entries` and `/backend/api/health-entries`. 
 |--------|------|------|----------|
 | GET | `/` (`?pet_id=`), `/:id` | — | Entry fields plus `open_occurrences[] { id, scheduled_date, scheduled_time, status, origin }` (`status`: `coming_up` \| `due` \| `overdue` \| `not_recorded`), `as_of { date, time, timezone }`, `estimated_next { date, basis }` (display only), `schedule_anchor_date`, `late_completion_choice`, `paused_until`, `paused_since`, `resume_default_date` (paused items) |
 | GET | `/:id/occurrences` | Query: `status=open` (default) or `status=past`; optional `as_of` | Open or closed occurrence rows, with `origin` and `close_reason` |
+| GET | `/:id/occurrences/:occId` | — | `{ occurrence (+ occurrence_status), entry { id, pet_id, name, care_family, recurrence_anchor, late_completion_choice, status, as_of }, last_action { type, occurrence_id } \| null, linked_weight? { value, unit } }`; 404 when not on that item |
+| PATCH | `/:id/occurrences/:occId` | `{ completed_on }` alone, or `{ notes?, provider_contact_id?, provider_typed_name? }` | Completed occurrences only. `completed_on`: care command response plus `moved_next_id`, `next_unchanged` (D-CSM-034); 400 `invalid_completed_on` / `completed_on_in_future` / `completed_on_before_start` / `completed_on_with_other_fields`; 409 `occurrence_not_completed` |
+| GET | `/:id/history` | — | Closed occurrences (completed, skipped), newest first, history wire fields (D-CSM-035) |
 | POST | `/:id/occurrences/:occId/complete` | `{ completed_on?, notes?, next_choice?, remember_choice?, earlier_choice? }` | 200 `{ occurrence, next_due_date, entry, undo_token, next_choice_applied }` (D-CSM-026: no `next_choice` → remembered choice if it fits, otherwise `keep`; no `earlier_choice` → `keep`); **400 `next_choice_not_available`** when an explicit choice doesn't fit, nothing saved; **409 `occurrence_not_open`** |
 | POST | `/:id/occurrences/:occId/skip` | `{ notes? }` | Same response shape as complete |
 | POST | `/:id/occurrences` | `{ scheduled_date, scheduled_time? }` | New `planned` occurrence; `warnings[]` when another open date is within half an interval |
@@ -209,9 +213,10 @@ On success: occurrence row updates, ledger `rescheduled` event, **`health_entrie
 `health_history` is **retired for complete/skip purposes**:
 
 - **CSM-7:** No new `health_history` rows on complete or skip; occurrence rows + `care_schedule_events` are authoritative.
-- `GET /:id/history` remains read-only for legacy rows until table drop.
+- `GET /:id/history` reads closed occurrences (D-CSM-035); legacy rows are no longer read by care.
+- The table is dropped by migration `*_drop_health_history` once the GDPR export reads occurrences (D-CSM-035).
 - `POST /:id/undo-complete` and per-occurrence `undo` are **legacy** — replaced by `undoLastAction` (CSM-8).
-- Table stays in place until a later cleanup migration; no backfill into `care_schedule_events`.
+- No backfill into `care_schedule_events` (pre-launch reset, care-next-occurrence-c1a7 §6.3).
 
 ---
 

@@ -3,7 +3,7 @@ title: Care tick — host cron runbook
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-10-01
+last_updated: 2026-10-03
 tags: [ops, cron, care, occurrences]
 ---
 # Care tick — host cron runbook
@@ -81,7 +81,7 @@ Same steps on each host; only the folder differs.
    # {"at":"…","skipped":false,"processed":…,"created":…,"closed":…}
    ```
 
-3. cPanel → **Advanced → Cron Jobs → Add New Cron Job**: Common settings **Once Per Fifteen Minutes** (`*/15 * * * *`), Command:
+3. cPanel → **Advanced → Cron Jobs → Add New Cron Job**. Leave **Common Settings** alone (it has no fifteen-minute entry) and type the five fields: Minute `*/15`, Hour `*`, Day `*`, Month `*`, Weekday `*`. Command:
 
    ```bash
    cd $HOME/uat.agathatrack.com/backend && $HOME/nodevenv/uat.agathatrack.com/backend/22/bin/node scripts/care/care_tick.js >> $HOME/logs/care_tick_uat.log 2>&1

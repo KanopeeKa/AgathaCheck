@@ -377,6 +377,25 @@ export async function updateCompletedDetails(db, {
 }
 
 /**
+ * Change when a completed occurrence was done (D-CSM-034). Completed rows only.
+ *
+ * @param {import('pg').PoolClient} db
+ * @param {{ entryId: string, occurrenceId: string, completedOn: string, completionTiming: string }} params
+ * @returns {Promise<object|null>}
+ */
+export async function updateCompletedOn(db, {
+  entryId, occurrenceId, completedOn, completionTiming,
+}) {
+  const result = await db.query(
+    `UPDATE health_occurrences SET completed_on = $1, completion_timing = $2, updated_at = NOW()
+     WHERE id = $3 AND health_entry_id = $4 AND status = 'completed'
+     RETURNING *`,
+    [completedOn, completionTiming, occurrenceId, entryId],
+  );
+  return normalizeOccurrenceRow(result.rows[0] || null);
+}
+
+/**
  * Close every open occurrence of an item (series closed / archived).
  *
  * @param {import('pg').PoolClient} db

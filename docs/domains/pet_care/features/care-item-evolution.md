@@ -11,7 +11,7 @@ related_bdd: []
 
 # Care Item — functional spec
 
-**Status:** active target model, 2026-09-27; **amended 2026-09-29** by the care occurrences programme (D-CIE-024 … D-CIE-028 below, timing decisions D-CSM-019 … D-CSM-033, absences D-ACP-011). This document is the **single canonical product spec** for Care Items (series + occurrences + detail view + absence join-work). Execute-plans: [`care-item-evolution`](../../../.agents/plans/care-item-evolution.md), [`care-next-occurrence-c1a7`](../../../.agents/plans/care-next-occurrence-c1a7.md).
+**Status:** active target model, 2026-09-27; **amended 2026-09-29** by the care occurrences programme (D-CIE-024 … D-CIE-028 below, and 2026-10-01 D-CIE-029 … D-CIE-034, timing decisions D-CSM-019 … D-CSM-035, absences D-ACP-011). This document is the **single canonical product spec** for Care Items (series + occurrences + detail view + absence join-work). Execute-plans: [`care-item-evolution`](../../../.agents/plans/care-item-evolution.md), [`care-next-occurrence-c1a7`](../../../.agents/plans/care-next-occurrence-c1a7.md).
 
 **Supersedes:** [care-item-model-delivery-plan.md](../changes/care-item-model-delivery-plan.md) (profile/list presentation roadmap — historical). The old execute-plan roadmap [`pet-care-item-model`](../../../.agents/plans/pet-care-item-model.md) is **superseded**; do not start new work from it.
 
@@ -69,6 +69,12 @@ Four principles:
 | D-CIE-026 | One row, one action | Agreed 2026-09-29 | Rows show name, status and date, and one trailing action: **Mark as done**, or **Review** for doses not recorded. Other actions are on the Care Item view. The row changes only after the server confirms |
 | D-CIE-027 | Create and Edit: main fields first, **Advanced settings** collapsed | Agreed 2026-09-29 | Plan something shows only **Due date**; Record something shows only **Completed on**. Advanced settings: Where, Priority, Schedule type, If done after the due date, Provider, Documents. See Edit |
 | D-CIE-028 | The server supplies "today" | Agreed 2026-09-29 | Responses carry `as_of` and a status per open occurrence, in the pet's home timezone. The app refreshes on resume, every 15 minutes while care is on screen, and when the pet's day changes |
+| D-CIE-029 | One **occurrence screen** per occurrence, for every status | Agreed 2026-10-01 | Rows open the occurrence; its header links to the Care Item view. Open: Done with any required input, Skip, Change date. Completed: change when it was done (D-CSM-034), notes, provider, documents, Undo. Server: `GET /:id/occurrences/:occId` |
+| D-CIE-030 | **Done** follows one rule on every surface | Agreed 2026-10-01 | A stack, an earlier open After-it's-done date, or a required input opens a screen and saves nothing; an overdue After-it's-done date asks "When was this done?"; more than half an interval early asks to confirm; anything else completes today in one request. The app never sends `next_choice` on one tap |
+| D-CIE-031 | Completion requirements per family, **required inputs only** | Agreed 2026-10-01 | Today only weight monitoring (a weight above 0, sent to `complete-weight`) |
+| D-CIE-032 | Copy: no "dose" | Agreed 2026-10-01 | Buttons say **Done**; "Mark {name} as done"; confirmation "{name} done" |
+| D-CIE-033 | Calendar: read-only projection, deferred | Agreed 2026-10-01 | Stored occurrences plus estimated dates; estimates carry no actions. Out of scope for the care occurrences programme |
+| D-CIE-034 | **Stack** = two or more open slots of one Fixed-schedule item that have **started** | Agreed 2026-10-01 | Overdue, not recorded, or due with their time reached; a slot without a time has started from the beginning of its day. Coming-up slots and slots later today never count |
 | D-CIE-023 | Pet **home timezone** on `pets.home_timezone` (IANA) | Agreed | Default at create: owner account TZ when People P4 exists, else `X-Client-Timezone` once, else `UTC`. Editable on pet profile. Care "today" and timed Overdue use this zone. **Absence guest access** keeps People **D24** (creator account TZ on the absence) — two fields, two jobs. Fallback chain: pet → owner account TZ → `UTC` |
 
 ## Where we start

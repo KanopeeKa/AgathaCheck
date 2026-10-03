@@ -1,5 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
-
 import { publicError } from '../../config/security.js';
 import { logAuditEventSafe } from '../../lib/audit.js';
 import { recordPetActivityForPet } from '../../lib/petActivity.js';

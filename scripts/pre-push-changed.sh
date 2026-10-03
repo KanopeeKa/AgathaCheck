@@ -183,9 +183,11 @@ run_server() {
       local unique
       unique="$(printf '%s\n' "${jest_args[@]}" | sort -u | tr '\n' ' ')"
       echo "    jest $unique"
-      npx jest -c jest.config.active.cjs --env=node --forceExit --passWithNoTests $unique
+      # In band like `npm test` and CI: the care DB suites share one database
+      # and the global care tick, so parallel workers interfere.
+      npx jest -c jest.config.active.cjs --env=node --runInBand --forceExit --passWithNoTests $unique
     else
-      npx jest -c jest.config.active.cjs --env=node --forceExit
+      npx jest -c jest.config.active.cjs --env=node --runInBand --forceExit
     fi
     echo "    policy coverage ratchet"
     npm run test:policy-coverage
