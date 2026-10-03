@@ -36,6 +36,7 @@ import {
   completeNextOccurrence,
   createCareItem,
   createPetInZone,
+  listHealthEntryOccurrences,
   undoLast,
   withCareClock,
 } from '../support/care-api';
@@ -339,7 +340,7 @@ test.describe('Health tracking', () => {
       times: ['08:00', '20:00'],
     });
 
-    const occurrencesBefore = await getHealthEntryOccurrences(
+    const occurrencesBefore = await listHealthEntryOccurrences(
       baseURL,
       testUser.accessToken,
       entry.id,
@@ -364,12 +365,12 @@ test.describe('Health tracking', () => {
     const agenda = new CareAgendaPage(page);
     await agenda.expectDoneSnackbar(entryName);
 
-    const occurrencesAfter = await getHealthEntryOccurrences(
+    const occurrencesAfter = await listHealthEntryOccurrences(
       baseURL,
       testUser.accessToken,
       entry.id,
     );
-    const pastOccurrences = await getHealthEntryOccurrences(
+    const pastOccurrences = await listHealthEntryOccurrences(
       baseURL,
       testUser.accessToken,
       entry.id,

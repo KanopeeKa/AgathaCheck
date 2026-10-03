@@ -149,7 +149,7 @@ test.describe('Guardian dashboard', () => {
       const careRegion = dashboard.careRegion();
       await expect(careRegion.getByRole('button', { name: /snooze/i })).toHaveCount(0);
       const agenda = new CareAgendaPage(page);
-      await agenda.openRow(entry.id);
+      await agenda.openRow(entry.id, entry.name);
       const occurrence = new OccurrencePage(page);
       await occurrence.expectLoaded();
       await expect(page.getByRole('button', { name: /go back/i })).toBeVisible();

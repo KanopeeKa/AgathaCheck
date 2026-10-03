@@ -32,7 +32,7 @@ test.describe('Care agenda (occurrence-first)', () => {
       const dashboard = new GuardianDashboardPage(page);
       await dashboard.open();
       const agenda = new CareAgendaPage(page);
-      await agenda.openRow(entry.id);
+      await agenda.openRow(entry.id, entry.name);
       const occurrence = new OccurrencePage(page);
       await occurrence.expectLoaded();
       await page.locator('[flt-semantics-identifier="occurrence_about_item"]').click();
