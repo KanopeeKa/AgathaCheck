@@ -2727,5 +2727,9 @@
   "careOccurrenceLoadError": "Impossible de charger cette date.",
   "careNewDateTitle": "Nouvelle date",
   "careDateMoved": "Date modifiée",
-  "careEstimatedNext": "Prochaine estimée : {date}"
+  "careEstimatedNext": "Prochaine estimée : {date}",
+  "careIfDoneLateTitle": "Si c'est fait après la date prévue",
+  "careIfDoneLateKeep": "Garder la prochaine date",
+  "careIfDoneLateSkip": "Ignorer la prochaine date",
+  "careIfDoneLateShift": "Décaler celle-ci et les suivantes"
 }

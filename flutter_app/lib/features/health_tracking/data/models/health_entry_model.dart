@@ -43,6 +43,7 @@ class HealthEntryModel extends HealthEntry {
     super.providerTypedName,
     super.careBlocks,
     super.schedule,
+    super.lateCompletionChoice,
     super.createdAt,
     super.updatedAt,
   });
@@ -94,6 +95,7 @@ class HealthEntryModel extends HealthEntry {
       careBlocks: CareItemBlocks.fromJson(
         json['care_blocks'] as Map<String, dynamic>?,
       ),
+      lateCompletionChoice: json['late_completion_choice'] as String?,
       schedule: json['as_of'] is Map<String, dynamic>
           ? careItemScheduleFromJson(json)
           : null,
@@ -139,6 +141,7 @@ class HealthEntryModel extends HealthEntry {
       providerTypedName: entry.providerTypedName,
       careBlocks: entry.careBlocks,
       schedule: entry.schedule,
+      lateCompletionChoice: entry.lateCompletionChoice,
       createdAt: entry.createdAt,
       updatedAt: entry.updatedAt,
     );
@@ -160,6 +163,8 @@ class HealthEntryModel extends HealthEntry {
       if (completedOn != null)
         'completed_on': toCalendarDateString(completedOn),
       'recurrence_anchor': recurrenceAnchor.apiValue,
+      if (frequency != HealthFrequency.once)
+        'late_completion_choice': lateCompletionChoice,
       'notes': notes,
       if (healthIssueId != null) 'health_issue_id': healthIssueId,
       'remind_days_before': remindDaysBefore,

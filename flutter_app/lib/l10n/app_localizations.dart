@@ -12957,6 +12957,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Estimated next: {date}'**
   String careEstimatedNext(String date);
+
+  /// No description provided for @careIfDoneLateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'If done after the due date'**
+  String get careIfDoneLateTitle;
+
+  /// No description provided for @careIfDoneLateKeep.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep the next date'**
+  String get careIfDoneLateKeep;
+
+  /// No description provided for @careIfDoneLateSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip the next date'**
+  String get careIfDoneLateSkip;
+
+  /// No description provided for @careIfDoneLateShift.
+  ///
+  /// In en, this message translates to:
+  /// **'Move this and following'**
+  String get careIfDoneLateShift;
 }
 
 class _AppLocalizationsDelegate

@@ -59,6 +59,7 @@ class HealthEntry {
     this.providerTypedName,
     this.careBlocks = const CareItemBlocks(),
     this.schedule,
+    this.lateCompletionChoice,
     this.createdAt,
     this.updatedAt,
   });
@@ -156,6 +157,10 @@ class HealthEntry {
   /// Open occurrences, status and "today" from the server (D-CIE-028); null
   /// for entries built locally. When present it is the only status source.
   final CareItemSchedule? schedule;
+
+  /// "If done after the due date": `keep`, `skip_next`, `shift_following`,
+  /// or null (keep). Set only in Advanced settings (D-CSM-026 v4).
+  final String? lateCompletionChoice;
 
   /// When this entry was created.
   final DateTime? createdAt;
@@ -263,6 +268,8 @@ class HealthEntry {
     bool clearProvider = false,
     CareItemBlocks? careBlocks,
     CareItemSchedule? schedule,
+    String? lateCompletionChoice,
+    bool clearLateCompletionChoice = false,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -314,6 +321,9 @@ class HealthEntry {
           : (providerTypedName ?? this.providerTypedName),
       careBlocks: careBlocks ?? this.careBlocks,
       schedule: schedule ?? this.schedule,
+      lateCompletionChoice: clearLateCompletionChoice
+          ? null
+          : (lateCompletionChoice ?? this.lateCompletionChoice),
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );

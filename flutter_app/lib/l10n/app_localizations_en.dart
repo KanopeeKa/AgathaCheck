@@ -7332,4 +7332,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String careEstimatedNext(String date) {
     return 'Estimated next: $date';
   }
+
+  @override
+  String get careIfDoneLateTitle => 'If done after the due date';
+
+  @override
+  String get careIfDoneLateKeep => 'Keep the next date';
+
+  @override
+  String get careIfDoneLateSkip => 'Skip the next date';
+
+  @override
+  String get careIfDoneLateShift => 'Move this and following';
 }

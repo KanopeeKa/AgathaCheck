@@ -57,3 +57,26 @@ describe('care item contract', () => {
     assertResponse('/health-entries/{id}/occurrences/{occId}/complete', 'post', 200, done.body);
   });
 });
+
+describe('If done after the due date (D2, D-CSM-026 v4)', () => {
+  it('create and edit store the remembered choice; an unknown value is refused', async () => {
+    const created = await api.at('2026-06-01T07:00').create({
+      care_family: 'medication', frequency: 'daily', next_due_date: '2026-06-01',
+      schedule_times: ['08:00', '18:00'], late_completion_choice: 'skip_next',
+    });
+    expect(created.statusCode).toBe(201);
+    expect(created.body.late_completion_choice).toBe('skip_next');
+    assertResponse('/health-entries/{id}', 'get', 200, created.body);
+
+    const base = {
+      name: 'Care', care_family: 'medication', frequency: 'daily', next_due_date: '2026-06-01',
+      schedule_times: ['08:00', '18:00'], recurrence_anchor: 'from_due_date',
+    };
+    const cleared = await api.at('2026-06-01T07:05').put(created.body.id, { ...base, late_completion_choice: null });
+    expect(cleared.statusCode).toBe(200);
+    expect(cleared.body.late_completion_choice).toBeNull();
+
+    const refused = await api.at('2026-06-01T07:06').put(created.body.id, { ...base, late_completion_choice: 'ask' });
+    expect(refused.statusCode).toBe(400);
+  });
+});

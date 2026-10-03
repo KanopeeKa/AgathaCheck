@@ -2872,5 +2872,9 @@
   "careNewDateTitle": "New date",
   "careDateMoved": "Date changed",
   "careEstimatedNext": "Estimated next: {date}",
-  "@careEstimatedNext": {"placeholders": {"date": {"type": "String"}}}
+  "@careEstimatedNext": {"placeholders": {"date": {"type": "String"}}},
+  "careIfDoneLateTitle": "If done after the due date",
+  "careIfDoneLateKeep": "Keep the next date",
+  "careIfDoneLateSkip": "Skip the next date",
+  "careIfDoneLateShift": "Move this and following"
 }

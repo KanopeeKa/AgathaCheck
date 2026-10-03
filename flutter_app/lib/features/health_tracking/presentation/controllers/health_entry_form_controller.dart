@@ -110,6 +110,7 @@ class HealthEntryFormController extends HealthEntryFormControllerBase
         dueDate: entry.nextDueDate,
         completedOn: entry.completedOn,
         recurrenceAnchor: entry.recurrenceAnchor,
+        lateCompletionChoice: entry.lateCompletionChoice,
         repeatEndDate: entry.repeatEndDate,
         remindDaysBefore: entry.remindDaysBefore,
         selectedHealthIssueId: entry.healthIssueId,
@@ -262,6 +263,11 @@ class HealthEntryFormController extends HealthEntryFormControllerBase
 
   void setRecurrenceAnchor(RecurrenceAnchor anchor) =>
       state = state.copyWith(recurrenceAnchor: anchor);
+
+  void setLateCompletionChoice(String? choice) => state = state.copyWith(
+    lateCompletionChoice: choice,
+    clearLateCompletionChoice: choice == null,
+  );
 
   void setDueDate(DateTime? date) =>
       state = state.copyWith(dueDate: date, startDate: date ?? state.startDate);

@@ -280,6 +280,7 @@ class _HistoryModule extends StatelessWidget {
                 showDividerBefore: true,
                 child: PetEventPastOccurrencesSection(
                   entryId: entry.id,
+                  petId: entry.petId,
                   muted: muted,
                 ),
               ),

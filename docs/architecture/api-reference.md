@@ -171,6 +171,8 @@ Returns upcoming active absences for the entry's pet with per-absence `affected`
 | POST | `/:id/occurrences/:occId/record` | Record a Not recorded slot as given — body `{ completed_on }` (D-CSM-023) |
 | POST | `/:id/occurrences/resolve-stack` | Record earlier doses — body `{ given: [ids], not_given: [ids] }` |
 
+**If done after the due date (D-CSM-026 v4):** `POST /` and `PUT /:id` accept `late_completion_choice` (`keep` · `skip_next` · `shift_following` · `null`); any other value → 400. Completion applies it when no `next_choice` is sent.
+
 **Audit tags:** occurrence commands accept optional body fields `source` and `path` (short snake_case tags such as `agenda` / `one_tap`); they are copied to the audit metadata and never stored elsewhere. Refused commands (400, 409) are logged at warn with the request id.
 
 Weight monitoring rhythms: generic complete and `mark-taken` return `400` — use `POST /api/pets/:petId/care-rhythms/:entryId/occurrences/:occurrenceId/complete-weight` (see Care progression below). Deleting the weight entry of a weigh-in undoes that completion (D-CSM-029).
