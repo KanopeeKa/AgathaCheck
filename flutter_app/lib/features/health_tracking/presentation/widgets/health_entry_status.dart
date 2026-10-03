@@ -25,6 +25,7 @@ String formatHealthEntryStatusLine(HealthEntry entry, AppLocalizations l) {
 enum HealthEntryStatusKind {
   completed,
   overdue,
+  notRecorded,
   dueToday,
   dueSoon,
   scheduled,
@@ -130,6 +131,26 @@ HealthEntryStatusTreatment dueTodayStatusTreatment() {
     foregroundColor: AppColorTokens.body,
     iconColor: AppColorTokens.warning,
     backgroundColor: AppColorTokens.warningLight,
+  );
+}
+
+/// Not recorded (D-CIE-024): info, not error — it assumes commitment (UIR-3).
+HealthEntryStatusTreatment notRecordedStatusTreatment() {
+  return const HealthEntryStatusTreatment(
+    kind: HealthEntryStatusKind.notRecorded,
+    icon: Icons.history_toggle_off,
+    foregroundColor: AppColorTokens.body,
+    iconColor: AppColorTokens.info,
+    backgroundColor: AppColorTokens.infoLight,
+  );
+}
+
+/// Coming up: neutral text (D-CIE-024).
+HealthEntryStatusTreatment comingUpStatusTreatment(ColorScheme colorScheme) {
+  return HealthEntryStatusTreatment(
+    kind: HealthEntryStatusKind.scheduled,
+    icon: Icons.event_outlined,
+    foregroundColor: colorScheme.onSurfaceVariant,
   );
 }
 

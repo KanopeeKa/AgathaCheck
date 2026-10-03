@@ -195,3 +195,40 @@ void returnToPetEventView(
   }
   goToPetEventView(context, petId: petId, entryId: entryId);
 }
+
+/// Builds `/pet/:petId/events/:entryId/occurrences/:occurrenceId` (occurrence
+/// screen, D-CIE-029) with optional `focus` and encoded `returnTo`.
+String occurrenceScreenLocation(
+  String petId,
+  String entryId,
+  String occurrenceId, {
+  String? focus,
+  String? returnTo,
+}) {
+  final query = <String>[
+    if (focus != null) 'focus=$focus',
+    if (returnTo != null && returnTo.isNotEmpty)
+      'returnTo=${encodeShellReturnTo(returnTo)}',
+  ];
+  final base = '/pet/$petId/events/$entryId/occurrences/$occurrenceId';
+  return query.isEmpty ? base : '$base?${query.join('&')}';
+}
+
+/// Opens the occurrence screen preserving the current screen as `returnTo`.
+void openOccurrenceScreen(
+  BuildContext context, {
+  required String petId,
+  required String entryId,
+  required String occurrenceId,
+  String? focus,
+}) {
+  context.push(
+    occurrenceScreenLocation(
+      petId,
+      entryId,
+      occurrenceId,
+      focus: focus,
+      returnTo: currentShellLocation(context),
+    ),
+  );
+}

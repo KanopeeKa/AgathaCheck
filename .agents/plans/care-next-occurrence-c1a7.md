@@ -1335,6 +1335,7 @@ Recorded before C0 starts; every item below is approved with the phases (execute
 | EX-8 | Order: C0 → C1 (pause, report) → C2–C5 → C4b → C6 → D2/D3 (+ D4). If the diff stops being one reviewable PR, land **3b-i (C0 + C)** and **3b-ii (D)** and announce it on the control issue (RV-7) |
 | EX-10 | C1 shape: `flutter_app/lib/features/care_item/` imports **no other feature** (core only). Its authenticated client comes from `careItemHttpClientProvider`, overridden in `lib/main.dart` (composition) with `authHttpClientProvider`; tests override it with a mock. `CareItemsController` (one list read, server-confirmed updates) and `CareCompletionService` (endpoint by family, never `next_choice` / `earlier_choice`, sealed failures, `developer.log('care.completion')`) are not wired to any screen until C3/C4. The optional warn-only `check_care_item_boundary.sh` is not added: `check_feature_imports.js` already blocks new edges |
 | EX-11 | C2 shape: `HealthEntry.schedule` (`CareItemSchedule`, parsed from the list/detail read) is the only status source for server data. The six old rules (F25) now go through it: `HealthEntry.isOverdue` / `isDueToday` (stacks and not recorded count as overdue), and `CareTemporalGroupingService.groupForSchedule` (agenda overdue → needs attention, today → today, due soon → upcoming; later dates and done-today rows do not change Care Status). Their device-clock fallbacks remain only for entries built without a server read (tests, local drafts) and are deleted in F2. New edges `health_tracking→care_item`, `pet_care→care_item` (and later consumers) are accepted exceptions: `care_item` is a leaf that imports core only, so it cannot join the import cycle. Server read additions gain `last_done { occurrence_id, completed_on, time }` for done-today rows |
+| EX-12 | C3–C4b shape: one agenda widget `pet_care/…/care_agenda/` (`CareAgendaCollection`, rows `CareAgendaRowTile`) on the dashboard (with the orientation line), the pet profile, the pet's All care and global All care; paused / ended / recorded-only items follow without a tick. Every Done goes through `CareCompletionFlow` (`care_item/presentation`): `decideDone` (DN-1…DN-8), at most one modal (date sheet or early dialog), one request, snackbar "{name} done · Undo" with "Next: …" / "Next stays … · Change" and Change date for a late Fixed-schedule completion; 409 → "Already updated". Rows open the occurrence screen (`/pet/:petId/events/:entryId/occurrences/:occurrenceId`, analytics-sensitive `occurrenceDetail`); stacks and done-today rows open the Care Item view. The Care Item view's Needs attention lists every open occurrence as a line with Mark all as done / Skip all for a stack (`resolve-stack`, one Undo). `careDataChangedProvider` (overridden in `main.dart`) reloads care data after occurrence-screen commands. Old optimistic rows, their tests and the unused `PetEventsPreviewSection` are deleted; the old completion helpers (`OccurrenceCareActions`, sheets) remain only behind the legacy dates section for entries without a schedule and are deleted in F2. New cross-feature imports of the shared agenda are accepted exceptions, consolidated in F1/F3. Live minutes: the agenda advances timed Due → Overdue each minute and reloads every 15 minutes |
 | EX-9 | Known red checks that are not CARE's: UAT live E2E in-host smoke (`node: command not found`, TEST [#1470](https://github.com/KanopeeKa/AgathaCheck/issues/1470)); production post-deploy smoke while production is in coming-soon mode |
 
 ---
@@ -1343,10 +1344,10 @@ Recorded before C0 starts; every item below is approved with the phases (execute
 
 ```yaml
 autonomy: active
-current_phase: "C3"
-last_completed_phase: "C2"
+current_phase: "C5"
+last_completed_phase: "C4b"
 halt_reason: null
-next_action: "C3: agenda on dashboard, pet profile, All care, pet list, nav badge"
+next_action: "C5: copy + ARB dose guard; then C6 tests/E2E, D2/D3"
 artifact_ref:
   branch: claude/eager-edison-mf34j6
   plan_path: .agents/plans/care-next-occurrence-c1a7.md
@@ -1360,6 +1361,7 @@ merge_commits:
 phase_commits:
   c0: d9e03b4
   c1: f592202
+  c2: 48ef57c
 pending_answers:
   gdpr_export_owner: "https://github.com/KanopeeKa/AgathaCheck/issues/1446#issuecomment-5970721429"
 debt_issue_refs: []

@@ -116,6 +116,74 @@ class CareCompletionService {
     });
   }
 
+  /// Skip one open occurrence.
+  Future<CareOutcome<CareCommandResult>> skip({
+    required String entryId,
+    required String occurrenceId,
+  }) {
+    return _run('skip', () async {
+      final body = await _remote.postOccurrenceAction(
+        entryId,
+        occurrenceId,
+        'skip',
+        const {},
+      );
+      return _commandResult(entryId, body);
+    });
+  }
+
+  /// Record a closed Not recorded date as done (D-CSM-023).
+  Future<CareOutcome<CareCommandResult>> recordAsDone({
+    required String entryId,
+    required String occurrenceId,
+    required DateTime completedOn,
+  }) {
+    return _run('record', () async {
+      final body = await _remote.postOccurrenceAction(
+        entryId,
+        occurrenceId,
+        'record',
+        {'completed_on': toCalendarDateString(completedOn)},
+      );
+      return _commandResult(entryId, body);
+    });
+  }
+
+  /// Move one open occurrence to [date] (this date only).
+  Future<CareOutcome<CareCommandResult>> changeDate({
+    required String entryId,
+    required String occurrenceId,
+    required DateTime date,
+  }) {
+    return _run('change_date', () async {
+      final body = await _remote.postOccurrenceAction(
+        entryId,
+        occurrenceId,
+        'reschedule',
+        {'scheduled_date': toCalendarDateString(date), 'scope': 'this'},
+      );
+      return _commandResult(entryId, body);
+    });
+  }
+
+  /// Stack bulk action (§18.6.5): [given] closes as done on each slot's own
+  /// date, [notGiven] as skipped; one command, one Undo.
+  Future<CareOutcome<CareCommandResult>> resolveStack({
+    required String entryId,
+    List<String> given = const [],
+    List<String> notGiven = const [],
+  }) {
+    return _run('stack', () async {
+      final body = await _remote.postResolveStack(entryId, {
+        'given': given,
+        'not_given': notGiven,
+        'source': 'care_item',
+        'path': 'stack',
+      });
+      return _commandResult(entryId, body);
+    });
+  }
+
   /// Undo the command [undoToken] names, or the item's last one.
   Future<CareOutcome<CareCommandResult>> undo({
     required String entryId,

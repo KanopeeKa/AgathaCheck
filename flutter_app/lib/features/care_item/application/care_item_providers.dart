@@ -39,3 +39,9 @@ final careItemsControllerProvider =
         petId: petId,
       );
     });
+
+/// Called after any care command so the app reloads care data. Overridden at
+/// composition (`lib/main.dart`) to refresh the health entries list.
+final careDataChangedProvider = Provider<Future<void> Function()>((ref) {
+  return () async {};
+});

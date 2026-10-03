@@ -7284,4 +7284,173 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get peopleSaveValidationError =>
       'Vérifiez les informations et réessayez.';
+
+  @override
+  String get careAgendaToday => 'Aujourd\'hui';
+
+  @override
+  String get careAgendaDueSoon => 'Bientôt';
+
+  @override
+  String careAgendaUpcoming(int count) {
+    return 'À venir ($count)';
+  }
+
+  @override
+  String get careAgendaTodaysList => 'Liste du jour';
+
+  @override
+  String get careAgendaMorning => 'Matin';
+
+  @override
+  String get careAgendaAfternoon => 'Après-midi';
+
+  @override
+  String get careAgendaEvening => 'Soir';
+
+  @override
+  String get careAgendaAnytime => 'À tout moment';
+
+  @override
+  String get careAgendaNothingDueToday => 'Rien à faire aujourd\'hui';
+
+  @override
+  String careAgendaOrientation(int overdue, int today) {
+    return '$overdue en retard · $today à faire aujourd\'hui';
+  }
+
+  @override
+  String get careAgendaShowUpcoming => 'Afficher les soins à venir';
+
+  @override
+  String get careAgendaHideUpcoming => 'Masquer les soins à venir';
+
+  @override
+  String careStackCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count non enregistrés',
+      one: '1 non enregistré',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String careDoneAt(String time) {
+    return 'Fait · $time';
+  }
+
+  @override
+  String get careStatusNotRecorded => 'Non enregistré';
+
+  @override
+  String get careStatusComingUp => 'À venir';
+
+  @override
+  String get careStatusDue => 'À faire';
+
+  @override
+  String careMarkDoneLabel(String name) {
+    return 'Marquer $name comme fait';
+  }
+
+  @override
+  String careDoneSnackbar(String name) {
+    return '$name · fait';
+  }
+
+  @override
+  String careNextDate(String date) {
+    return 'Prochaine : $date';
+  }
+
+  @override
+  String careNextStays(String dateOrTime) {
+    return 'Prochaine inchangée : $dateOrTime';
+  }
+
+  @override
+  String get careAlreadyUpdated => 'Déjà mis à jour';
+
+  @override
+  String get careMarkAllDone => 'Tout marquer comme fait';
+
+  @override
+  String get careSkipAll => 'Tout ignorer';
+
+  @override
+  String get careRecordAsDone => 'Enregistrer comme fait';
+
+  @override
+  String get occurrenceAboutItem => 'À propos de ce soin';
+
+  @override
+  String get occurrenceGone => 'Cette date n\'existe plus';
+
+  @override
+  String get careRowOpensDate => 'Ouvre cette date.';
+
+  @override
+  String get careRowOpensItem => 'Ouvre le soin.';
+
+  @override
+  String get careChangeDate => 'Changer la date';
+
+  @override
+  String get careUndoDateChange => 'Annuler le changement de date';
+
+  @override
+  String get careCommandFailed => 'Enregistrement impossible. Réessayez.';
+
+  @override
+  String get careRetry => 'Réessayer';
+
+  @override
+  String careEarlyCompletionBody(String date) {
+    return 'Prévu le $date. Le marquer comme fait aujourd\'hui ?';
+  }
+
+  @override
+  String get careNextStaysChange => 'Modifier';
+
+  @override
+  String get careSkip => 'Ignorer';
+
+  @override
+  String get careWeightRequiredHint =>
+      'Saisissez le poids pour le marquer comme fait';
+
+  @override
+  String get careWeightFieldLabel => 'Poids (kg)';
+
+  @override
+  String get careCompletedOnLabel => 'Quand a-t-il été fait ?';
+
+  @override
+  String get careDateSaved => 'Date enregistrée';
+
+  @override
+  String careSkipped(String name) {
+    return '$name ignoré';
+  }
+
+  @override
+  String careRecorded(String name) {
+    return '$name enregistré comme fait';
+  }
+
+  @override
+  String get careOccurrenceLoadError => 'Impossible de charger cette date.';
+
+  @override
+  String get careNewDateTitle => 'Nouvelle date';
+
+  @override
+  String get careDateMoved => 'Date modifiée';
+
+  @override
+  String careEstimatedNext(String date) {
+    return 'Prochaine estimée : $date';
+  }
 }

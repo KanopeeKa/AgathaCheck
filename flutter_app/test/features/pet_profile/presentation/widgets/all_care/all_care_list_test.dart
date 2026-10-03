@@ -5,12 +5,11 @@ import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
 import 'package:pet_profile_app/core/widgets/care_mark_done_button.dart';
-import 'package:pet_profile_app/features/pet_care/domain/care_temporal_group.dart';
-import 'package:pet_profile_app/features/pet_care/domain/services/care_temporal_grouping_service.dart';
-import 'package:pet_profile_app/features/pet_care/presentation/providers/care_temporal_grouping_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/care_progression_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/widgets/all_care/all_care_list.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
+
+import '../../../../../helpers/care_schedule_entries.dart';
 
 class _FakeHealthEntriesNotifier extends HealthEntriesNotifier {
   _FakeHealthEntriesNotifier(this._entries);
@@ -36,11 +35,6 @@ HealthEntry _entry({
     nextDueDate: nextDue,
     remindDaysBefore: 3,
   );
-}
-
-DateTime _today() {
-  final now = DateTime.now();
-  return DateTime(now.year, now.month, now.day);
 }
 
 Widget _wrap(List<HealthEntry> entries, {ProviderContainer? container}) {
@@ -70,44 +64,44 @@ ProviderContainer _buildContainer(List<HealthEntry> entries) {
 }
 
 void main() {
-  testWidgets('renders temporal groups with care action rows', (tester) async {
-    final today = _today();
-    await tester.pumpWidget(
-      _wrap([
-        _entry(id: 'overdue', nextDue: today.subtract(const Duration(days: 1))),
-        _entry(id: 'today', nextDue: today),
-        _entry(id: 'upcoming', nextDue: today.add(const Duration(days: 2))),
-        _entry(
-          id: 'one-off-done',
-          nextDue: DateTime(9999),
-          frequency: HealthFrequency.once,
-        ),
-      ]),
-    );
-    await tester.pumpAndSettle();
+  testWidgets(
+    'planned care uses the agenda; ended care follows without a tick',
+    (tester) async {
+      await tester.pumpWidget(
+        _wrap([
+          scheduledEntry(id: 'overdue', name: 'overdue', dueInDays: -1),
+          scheduledEntry(id: 'today', name: 'today', dueInDays: 0),
+          scheduledEntry(id: 'upcoming', name: 'upcoming', dueInDays: 2),
+          _entry(
+            id: 'one-off-done',
+            nextDue: DateTime(9999),
+            frequency: HealthFrequency.once,
+          ),
+        ]),
+      );
+      await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('all_care_list')), findsOneWidget);
-    expect(
-      find.byKey(const Key('pet_care_group_needsAttention')),
-      findsOneWidget,
-    );
-    expect(find.byKey(const Key('pet_care_group_today')), findsOneWidget);
-    expect(find.byKey(const Key('pet_care_group_upcoming')), findsOneWidget);
-    expect(find.byKey(const Key('pet_care_action_overdue')), findsOneWidget);
-    expect(find.byKey(const Key('pet_care_action_today')), findsOneWidget);
-    expect(find.byKey(const Key('all_care_inactive_section')), findsOneWidget);
-    expect(
-      find.byKey(const Key('pet_care_action_one-off-done')),
-      findsOneWidget,
-    );
-    expect(find.byType(CareMarkDoneButton), findsWidgets);
-    expect(
-      find.byKey(const Key('pet_manage_events_collection_filter_bar')),
-      findsNothing,
-    );
-    expect(find.text('Recurring'), findsNothing);
-    expect(find.text('One-time'), findsNothing);
-  });
+      expect(find.byKey(const Key('all_care_list')), findsOneWidget);
+      expect(find.byKey(const Key('care_agenda_today')), findsOneWidget);
+      expect(find.byKey(const Key('care_agenda_due_soon')), findsOneWidget);
+      expect(find.byKey(const Key('pet_care_action_overdue')), findsOneWidget);
+      expect(find.byKey(const Key('pet_care_action_today')), findsOneWidget);
+      expect(find.byKey(const Key('pet_care_action_upcoming')), findsOneWidget);
+      expect(
+        find.byKey(const Key('all_care_inactive_section')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const Key('pet_care_action_one-off-done')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const Key('pet_care_action_done_one-off-done')),
+        findsNothing,
+      );
+      expect(find.byType(CareMarkDoneButton), findsNWidgets(3));
+    },
+  );
 
   testWidgets('shows empty state when pet has no care items', (tester) async {
     await tester.pumpWidget(_wrap([]));
@@ -115,60 +109,5 @@ void main() {
 
     expect(find.byKey(const Key('all_care_empty')), findsOneWidget);
     expect(find.text('Start their care routine'), findsOneWidget);
-  });
-
-  testWidgets('profile and All care place the same item in the same group', (
-    tester,
-  ) async {
-    const grouping = CareTemporalGroupingService();
-    final today = _today();
-    final entries = [
-      _entry(id: 'overdue', nextDue: today.subtract(const Duration(days: 2))),
-      _entry(id: 'today', nextDue: today),
-      _entry(id: 'upcoming', nextDue: today.add(const Duration(days: 1))),
-    ];
-
-    final container = _buildContainer(entries);
-    await tester.pumpWidget(_wrap(entries, container: container));
-    await tester.pumpAndSettle();
-
-    final buckets = grouping.bucketsForEntries(
-      entries,
-      petId: 'pet-1',
-      now: DateTime.now(),
-    );
-
-    // Provider agreement (issue #1139): the widget renders from
-    // petCareTemporalBucketsProvider, so its grouping must match the
-    // service result the test asserts against.
-    final providerBuckets = container.read(
-      petCareTemporalBucketsProvider('pet-1'),
-    );
-    for (final group in CareTemporalGroup.values) {
-      final providerIds = providerBuckets
-          .entriesIn(group)
-          .map((entry) => entry.id)
-          .toSet();
-      final serviceIds = buckets
-          .entriesIn(group)
-          .map((entry) => entry.id)
-          .toSet();
-      expect(providerIds, serviceIds, reason: 'provider agrees on $group');
-    }
-
-    for (final group in CareTemporalGroup.values) {
-      for (final entry in buckets.entriesIn(group)) {
-        expect(
-          find.byKey(Key('pet_care_group_${group.name}')),
-          findsOneWidget,
-          reason: 'group header for ${entry.id}',
-        );
-        expect(
-          find.byKey(Key('pet_care_action_${entry.id}')),
-          findsOneWidget,
-          reason: 'action row for ${entry.id}',
-        );
-      }
-    }
   });
 }

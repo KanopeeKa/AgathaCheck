@@ -6,20 +6,19 @@ import '../../../../health_tracking/presentation/widgets/health_entry_status.dar
 import '../../../../health_tracking/presentation/widgets/pet_event_lifecycle.dart';
 import '../pet_care_section/pet_care_action_row_builder.dart';
 
-/// Care items with no active temporal group (closed, completed, or outside horizon).
+/// Care items outside the agenda (paused, ended, recorded only): no tick;
+/// the row opens the Care Item view (§18.6.3).
 class AllCareInactiveSection extends StatelessWidget {
   const AllCareInactiveSection({
     super.key,
     required this.entries,
     required this.establishedEntryIds,
     required this.onViewEntry,
-    required this.onMarkDone,
   });
 
   final List<HealthEntry> entries;
   final Set<String> establishedEntryIds;
   final void Function(HealthEntry entry) onViewEntry;
-  final Future<void> Function(HealthEntry entry) onMarkDone;
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +52,6 @@ class AllCareInactiveSection extends StatelessWidget {
             colorScheme: colorScheme,
             isEstablished: establishedEntryIds.contains(entries[i].id),
             onViewEntry: onViewEntry,
-            onMarkDone: onMarkDone,
           ),
         ],
       ],
@@ -68,7 +66,6 @@ class _InactiveRow extends StatelessWidget {
     required this.colorScheme,
     required this.isEstablished,
     required this.onViewEntry,
-    required this.onMarkDone,
   });
 
   final HealthEntry entry;
@@ -76,7 +73,6 @@ class _InactiveRow extends StatelessWidget {
   final ColorScheme colorScheme;
   final bool isEstablished;
   final void Function(HealthEntry entry) onViewEntry;
-  final Future<void> Function(HealthEntry entry) onMarkDone;
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +85,7 @@ class _InactiveRow extends StatelessWidget {
       isEstablished: isEstablished,
       statusLineOverride: closed ? l.eventStatusClosed : null,
       statusTreatmentOverride: closed ? completedStatusTreatment() : null,
-      onMarkDone: closed ? null : () => onMarkDone(entry),
+      // Paused, ended and recorded-only rows carry no tick (DN-8, §18.6.3).
       onTap: () => onViewEntry(entry),
     ).build();
   }

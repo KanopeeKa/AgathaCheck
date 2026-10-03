@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/care_item/care_item.dart';
 import '../../features/auth/presentation/providers/auth_providers.dart';
 import '../../features/auth/presentation/screens/forgot_password_screen.dart';
 import '../../features/auth/presentation/screens/landing_screen.dart';
@@ -254,6 +255,16 @@ final routerProvider = Provider<GoRouter>((ref) {
             allowedTypes: kAllPetEventTypes,
           );
         },
+      ),
+      GoRoute(
+        path: '/pet/:petId/events/:entryId/occurrences/:occurrenceId',
+        name: 'occurrenceDetail',
+        builder: (context, state) => OccurrenceScreen(
+          petId: state.pathParameters['petId']!,
+          entryId: state.pathParameters['entryId']!,
+          occurrenceId: state.pathParameters['occurrenceId']!,
+          focus: state.uri.queryParameters['focus'],
+        ),
       ),
       GoRoute(
         path: '/pet/:petId/events/:entryId',

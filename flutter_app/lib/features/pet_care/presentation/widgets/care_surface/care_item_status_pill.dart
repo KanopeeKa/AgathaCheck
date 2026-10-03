@@ -25,6 +25,10 @@ class CareItemStatusPill extends StatelessWidget {
         AppColorTokens.petCareLight,
         AppColorTokens.petCarePrimary,
       ),
+      CareItemStatusTone.notRecorded => (
+        AppColorTokens.infoLight,
+        AppColorTokens.info,
+      ),
       CareItemStatusTone.neutral => (
         theme.colorScheme.surfaceContainerHighest,
         theme.colorScheme.onSurfaceVariant,
@@ -48,4 +52,5 @@ class CareItemStatusPill extends StatelessWidget {
   }
 }
 
-enum CareItemStatusTone { neutral, due, overdue }
+/// `notRecorded` uses info tokens, not error (D-CIE-024, UIR-3).
+enum CareItemStatusTone { neutral, due, overdue, notRecorded }

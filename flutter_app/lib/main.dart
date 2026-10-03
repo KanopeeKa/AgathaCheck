@@ -13,6 +13,7 @@ import 'core/utils/constants.dart';
 import 'core/widgets/consent_banner.dart';
 import 'features/auth/presentation/providers/auth_providers.dart';
 import 'features/care_item/care_item.dart';
+import 'features/health_tracking/presentation/providers/health_providers.dart';
 import 'features/pet_profile/presentation/providers/pet_providers.dart';
 import 'features/subscription/data/services/revenuecat_service.dart';
 
@@ -33,6 +34,10 @@ Future<void> main() async {
         sharedPreferencesProvider.overrideWithValue(prefs),
         careItemHttpClientProvider.overrideWith(
           (ref) => ref.watch(authHttpClientProvider),
+        ),
+        careDataChangedProvider.overrideWith(
+          (ref) =>
+              () => ref.read(healthEntriesNotifierProvider.notifier).refresh(),
         ),
       ],
       child: const PetProfileApp(),

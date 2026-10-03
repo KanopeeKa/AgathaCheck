@@ -17,6 +17,7 @@ class CareItemSchedule {
     this.pausedUntil,
     this.resumeDefaultDate,
     this.repeatsDailyOrMore = false,
+    this.intervalDays,
     this.lastDone,
   }) : openOccurrences = List.unmodifiable(
          [...openOccurrences]..sort((a, b) => a.compareTo(b)),
@@ -49,6 +50,10 @@ class CareItemSchedule {
 
   /// Daily or more often: shown only in Today (D-CIE-025).
   final bool repeatsDailyOrMore;
+
+  /// Approximate days between dates (early-completion check, D-CSM-030);
+  /// null for one-off care.
+  final int? intervalDays;
 
   /// Latest completion, for "done today" rows.
   final LastDone? lastDone;

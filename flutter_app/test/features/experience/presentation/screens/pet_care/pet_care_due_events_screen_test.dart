@@ -3,6 +3,7 @@ import 'package:pet_profile_app/features/health_tracking/presentation/widgets/ca
 import 'package:pet_profile_app/features/pet_profile/presentation/screens/widgets/manage_events_filters.dart';
 
 import 'pet_care_events_test_helpers.dart';
+import '../../../../../helpers/care_schedule_entries.dart';
 
 // ---------------------------------------------------------------------------
 // Test data
@@ -330,7 +331,26 @@ void main() {
   // Layout breakpoint tests
   // ---------------------------------------------------------------------------
 
-  testWidgets('uses CareEventRow at all viewport widths', (tester) async {
+  testWidgets('planned care uses the agenda', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(800, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(
+      buildListScreen(
+        pets: const [_ownedPet],
+        notifierFactory: () => TestFixedEntriesNotifier([
+          scheduledEntry(id: 'planned', name: 'Planned', petId: _ownedPet.id),
+          _ownedEntry,
+        ]),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('care_agenda')), findsOneWidget);
+    expect(find.byKey(const Key('pet_care_action_planned')), findsOneWidget);
+  });
+
+  testWidgets('legacy rows render at all viewport widths', (tester) async {
     await tester.binding.setSurfaceSize(const Size(800, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
@@ -345,6 +365,9 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('global_events_list')), findsOneWidget);
-    expect(find.byType(CareEventRow), findsOneWidget);
+    expect(
+      find.byKey(Key('global_events_row_${_ownedEntry.id}')),
+      findsOneWidget,
+    );
   });
 }

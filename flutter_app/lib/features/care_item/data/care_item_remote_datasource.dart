@@ -126,4 +126,32 @@ class CareItemRemoteDataSource {
       ),
     );
   }
+
+  Future<Map<String, dynamic>> postOccurrenceAction(
+    String entryId,
+    String occurrenceId,
+    String action,
+    Map<String, dynamic> body,
+  ) async {
+    return _decode(
+      await client.post(
+        _entries('/$entryId/occurrences/$occurrenceId/$action'),
+        headers: _json,
+        body: json.encode(body),
+      ),
+    );
+  }
+
+  Future<Map<String, dynamic>> postResolveStack(
+    String entryId,
+    Map<String, dynamic> body,
+  ) async {
+    return _decode(
+      await client.post(
+        _entries('/$entryId/occurrences/resolve-stack'),
+        headers: _json,
+        body: json.encode(body),
+      ),
+    );
+  }
 }

@@ -62,6 +62,7 @@ CareItemSchedule careItemScheduleFromJson(Map<String, dynamic> json) {
     pausedUntil: parseCalendarDate(json['paused_until']),
     resumeDefaultDate: parseCalendarDate(json['resume_default_date']),
     repeatsDailyOrMore: _repeatsDailyOrMore(json),
+    intervalDays: _intervalDays(json),
     lastDone: _lastDone(json['last_done']),
   );
 }
@@ -75,6 +76,24 @@ bool _repeatsDailyOrMore(Map<String, dynamic> json) {
       return ((json['frequency_days'] as num?)?.toInt() ?? 0) == 1;
     default:
       return false;
+  }
+}
+
+int? _intervalDays(Map<String, dynamic> json) {
+  final n = (json['frequency_interval'] as num?)?.toInt() ?? 1;
+  switch (json['frequency']) {
+    case 'daily':
+      return n;
+    case 'weekly':
+      return 7 * n;
+    case 'monthly':
+      return 30 * n;
+    case 'yearly':
+      return 365 * n;
+    case 'custom':
+      return (json['frequency_days'] as num?)?.toInt();
+    default:
+      return null;
   }
 }
 
