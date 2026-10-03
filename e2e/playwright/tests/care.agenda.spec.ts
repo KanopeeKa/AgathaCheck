@@ -11,7 +11,8 @@ import { CareAgendaPage } from '../pages/care-agenda.page';
 import { CareItemPage } from '../pages/care-item.page';
 import { GuardianDashboardPage } from '../pages/guardian-dashboard.page';
 import { OccurrencePage } from '../pages/occurrence.page';
-import { createCareItem, createPet, withCareClock } from '../support/care-api';
+import { createCareItem, withCareClock } from '../support/care-api';
+import { createPet } from '../support/api';
 import { loginAs } from '../support/ui-auth';
 import { CompletionDateSheetPage } from '../pages/completion-date.sheet';
 
