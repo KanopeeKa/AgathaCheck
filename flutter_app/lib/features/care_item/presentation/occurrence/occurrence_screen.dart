@@ -43,8 +43,15 @@ class _OccurrenceScreenState extends ConsumerState<OccurrenceScreen> {
     _load();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
+      final router = GoRouter.maybeOf(context);
+      if (router == null) return;
       final source =
-          GoRouterState.of(context).uri.queryParameters['source'] ?? 'unknown';
+          router
+              .routerDelegate
+              .currentConfiguration
+              .uri
+              .queryParameters['source'] ??
+          'unknown';
       ref.read(analyticsServiceProvider).capture('occurrence_screen_opened', {
         'source': source,
       });
@@ -138,6 +145,7 @@ class _Header extends StatelessWidget {
     };
     final when = [DateFormat.yMMMd().format(occ.date), ?occ.time].join(' · ');
     return Semantics(
+      identifier: 'occurrence_about_item',
       header: true,
       child: InkWell(
         key: const Key('occurrence_about_item'),
