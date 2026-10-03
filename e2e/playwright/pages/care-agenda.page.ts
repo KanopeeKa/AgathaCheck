@@ -61,7 +61,7 @@ export class CareAgendaPage {
       await expect(
         this.page.locator('[flt-semantics-identifier="care_done_snackbar"]').or(
           this.page.getByText(new RegExp(`${escapeRegExp(entryName)}.*done`, 'i')),
-        ),
+        ).first(),
       ).toBeVisible();
     }).toPass({ timeout: 45_000 });
   }

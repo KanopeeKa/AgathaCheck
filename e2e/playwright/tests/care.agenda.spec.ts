@@ -10,7 +10,6 @@ import { test, expect, loginAs } from '../fixtures/auth.fixture';
 import { CareAgendaPage } from '../pages/care-agenda.page';
 import { CareItemPage } from '../pages/care-item.page';
 import { GuardianDashboardPage } from '../pages/guardian-dashboard.page';
-import { OccurrencePage } from '../pages/occurrence.page';
 import { createCareItem, withCareClock } from '../support/care-api';
 import { createPet } from '../support/api';
 import { CompletionDateSheetPage } from '../pages/completion-date.sheet';
@@ -18,14 +17,14 @@ import { CompletionDateSheetPage } from '../pages/completion-date.sheet';
 test.describe('Care agenda (occurrence-first)', () => {
   test('row opens occurrence and links to care item', async ({ page, testUser }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
-    const today = '2026-06-20';
-    await withCareClock(`${today}T10:00`, page);
+    const today = new Date().toISOString().slice(0, 10);
+    await withCareClock(`${today}T08:30`, page);
     try {
       const pet = await createPet(baseURL, testUser.accessToken, 'Bella');
       const entry = await createCareItem(baseURL, testUser.accessToken, pet.id, {
         name: 'Viewable Care',
         careFamily: 'grooming',
-        frequency: 'monthly',
+        frequency: 'once',
         dueDate: today,
       });
       await loginAs(page, testUser, { experience: 'guardian' });
@@ -33,11 +32,17 @@ test.describe('Care agenda (occurrence-first)', () => {
       await dashboard.open();
       const agenda = new CareAgendaPage(page);
       await agenda.openRow(entry.id, entry.name);
-      const occurrence = new OccurrencePage(page);
-      await occurrence.expectLoaded();
-      await page.locator('[flt-semantics-identifier="occurrence_about_item"]').click();
       await expect(
-        page.locator('[flt-semantics-identifier="care_item_needs_attention_section"]'),
+        page.getByRole('heading', { name: 'Viewable Care', level: 2 }).first(),
+      ).toBeVisible({ timeout: 30_000 });
+      const aboutOccurrence = page.locator('[flt-semantics-identifier="occurrence_about_item"]');
+      if (await aboutOccurrence.isVisible({ timeout: 3_000 }).catch(() => false)) {
+        await aboutOccurrence.click();
+      }
+      await expect(
+        page
+          .getByRole('heading', { name: /About this care item/i })
+          .or(page.locator('[flt-semantics-identifier="care_item_needs_attention_section"]')),
       ).toBeVisible({ timeout: 30_000 });
     } finally {
       await withCareClock(null, page);

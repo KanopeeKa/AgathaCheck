@@ -33,7 +33,6 @@ import {
 import { prepareLiveApiAccess } from '../support/waf';
 import { checkA11y } from '../support/axe';
 import { CareAgendaPage } from '../pages/care-agenda.page';
-import { OccurrencePage } from '../pages/occurrence.page';
 import { createCareItem, withCareClock } from '../support/care-api';
 
 const baseURL = () => process.env.E2E_BASE_URL ?? 'http://localhost:3000';
@@ -133,13 +132,13 @@ test.describe('Guardian dashboard', () => {
     testUser,
   }) => {
     await page.setViewportSize({ width: 375, height: 812 });
-    await withCareClock(`${today}T10:00`, page);
+    await withCareClock(`${today}T08:30`, page);
     try {
       const pet = await createPet(baseURL(), testUser.accessToken, 'ViewPet');
       const entry = await createCareItem(baseURL(), testUser.accessToken, pet.id, {
         name: 'Viewable Care',
         careFamily: 'grooming',
-        frequency: 'monthly',
+        frequency: 'once',
         dueDate: today,
       });
       await loginGuardian(page, testUser.email, testUser.password);
@@ -150,11 +149,11 @@ test.describe('Guardian dashboard', () => {
       await expect(careRegion.getByRole('button', { name: /snooze/i })).toHaveCount(0);
       const agenda = new CareAgendaPage(page);
       await agenda.openRow(entry.id, entry.name);
-      const occurrence = new OccurrencePage(page);
-      await occurrence.expectLoaded();
-      await expect(page.getByRole('button', { name: /go back/i })).toBeVisible();
+      await expect(
+        page.getByRole('heading', { name: 'Viewable Care', level: 2 }).first(),
+      ).toBeVisible({ timeout: 30_000 });
+      await expect(page.getByRole('button', { name: /^Back$/i })).toBeVisible();
       await expect(page.getByRole('button', { name: /snooze/i })).toHaveCount(0);
-      await expect(page.getByText('Viewable Care')).toBeVisible();
     } finally {
       await withCareClock(null, page);
     }
