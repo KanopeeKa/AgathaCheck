@@ -11,6 +11,7 @@
     "away.plan.detail.v2.spec.ts": 70,
     "away.planning.spec.ts": 81,
     "care-suggestion.spec.ts": 56,
+    "care.agenda.spec.ts": 90,
     "care.item.absence.spec.ts": 44,
     "experience.navigation.spec.ts": 138,
     "gdpr.data-rights.spec.ts": 43,

@@ -88,7 +88,22 @@ class _OccurrenceScreenState extends ConsumerState<OccurrenceScreen> {
       identifier: 'occurrence_screen',
       child: Scaffold(
         key: const Key('occurrence_screen'),
-        appBar: AppBar(title: Text(title)),
+        appBar: AppBar(
+          title: Text(title),
+          leading: BackButton(
+            onPressed: () {
+              final router = GoRouter.maybeOf(context);
+              handleShellBack(
+                context,
+                returnTo: router == null
+                    ? null
+                    : shellReturnToFromState(GoRouterState.of(context)),
+                defaultPath:
+                    '/pet/${widget.petId}/events/${widget.entryId}',
+              );
+            },
+          ),
+        ),
         body: switch (outcome) {
           null => const Center(child: CircularProgressIndicator()),
           CareFailed(failure: CareNotOpenFailure(gone: true)) => _Message(

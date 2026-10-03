@@ -119,8 +119,11 @@ export function registerOccurrencePatchRoutes(router, pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     const body = req.body || {};
+    const hasCompletedOn =
+      Object.prototype.hasOwnProperty.call(body, 'completed_on')
+      || Object.prototype.hasOwnProperty.call(body, 'completedOn');
     const rawCompletedOn = body.completed_on ?? body.completedOn;
-    if (rawCompletedOn !== undefined) {
+    if (hasCompletedOn) {
       const completedOn = normalizeCalendarDateInput(rawCompletedOn);
       if (!completedOn) {
         return res.status(400).json({
