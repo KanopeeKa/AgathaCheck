@@ -61,6 +61,31 @@ CareItemSchedule careItemScheduleFromJson(Map<String, dynamic> json) {
     lateCompletionChoice: json['late_completion_choice'] as String?,
     pausedUntil: parseCalendarDate(json['paused_until']),
     resumeDefaultDate: parseCalendarDate(json['resume_default_date']),
+    repeatsDailyOrMore: _repeatsDailyOrMore(json),
+    lastDone: _lastDone(json['last_done']),
+  );
+}
+
+bool _repeatsDailyOrMore(Map<String, dynamic> json) {
+  final interval = (json['frequency_interval'] as num?)?.toInt() ?? 1;
+  switch (json['frequency']) {
+    case 'daily':
+      return interval <= 1;
+    case 'custom':
+      return ((json['frequency_days'] as num?)?.toInt() ?? 0) == 1;
+    default:
+      return false;
+  }
+}
+
+LastDone? _lastDone(Object? raw) {
+  if (raw is! Map<String, dynamic>) return null;
+  final id = raw['occurrence_id'] as String?;
+  if (id == null) return null;
+  return LastDone(
+    occurrenceId: id,
+    completedOn: parseCalendarDate(raw['completed_on']),
+    time: _time(raw['time']),
   );
 }
 

@@ -1,3 +1,4 @@
+import '../../../care_item/care_item.dart';
 import '../../domain/entities/care_item_blocks.dart';
 import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/recurrence_anchor.dart';
@@ -41,6 +42,7 @@ class HealthEntryModel extends HealthEntry {
     super.providerContactId,
     super.providerTypedName,
     super.careBlocks,
+    super.schedule,
     super.createdAt,
     super.updatedAt,
   });
@@ -92,6 +94,9 @@ class HealthEntryModel extends HealthEntry {
       careBlocks: CareItemBlocks.fromJson(
         json['care_blocks'] as Map<String, dynamic>?,
       ),
+      schedule: json['as_of'] is Map<String, dynamic>
+          ? careItemScheduleFromJson(json)
+          : null,
       createdAt: json['created_at'] != null
           ? DateTime.tryParse(json['created_at'] as String)
           : null,
@@ -133,6 +138,7 @@ class HealthEntryModel extends HealthEntry {
       providerContactId: entry.providerContactId,
       providerTypedName: entry.providerTypedName,
       careBlocks: entry.careBlocks,
+      schedule: entry.schedule,
       createdAt: entry.createdAt,
       updatedAt: entry.updatedAt,
     );

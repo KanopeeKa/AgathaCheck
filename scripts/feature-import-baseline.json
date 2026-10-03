@@ -291,6 +291,7 @@
     "experience->sharing",
     "experience->vet",
     "health_tracking->auth",
+    "health_tracking->care_item",
     "health_tracking->care_taxonomy",
     "health_tracking->experience",
     "health_tracking->people",
@@ -306,6 +307,7 @@
     "people->vet",
     "pet_care->auth",
     "pet_care->care_intelligence",
+    "pet_care->care_item",
     "pet_care->experience",
     "pet_care->health_tracking",
     "pet_care->people",
@@ -333,5 +335,16 @@
     "vet->pet_profile",
     "weight_tracking->auth"
   ],
-  "exceptions": []
+  "exceptions": [
+    {
+      "identity": "R4|health_tracking->care_item",
+      "reason": "care-next-occurrence-c1a7 §7.3/§18.15 EX-11: features import the care_item leaf module (imports core only) through its barrel; a leaf cannot join the import cycle",
+      "accepted_on": "2026-10-03"
+    },
+    {
+      "identity": "R4|pet_care->care_item",
+      "reason": "care-next-occurrence-c1a7 §18.15 EX-11: the shared grouping service reads the care_item leaf module's agenda rule",
+      "accepted_on": "2026-10-03"
+    }
+  ]
 }

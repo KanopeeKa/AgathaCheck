@@ -99,6 +99,8 @@ describe('GET one occurrence (§18.7.1)', () => {
       status: 'completed', occurrence_status: 'done', completed_on: '2026-06-10',
     });
     expect(res.body.last_action).toEqual({ type: 'completed', occurrence_id: first.id });
+    const item = await api.at('2026-06-10T09:05').get(entry.id);
+    expect(item.body.last_done).toEqual({ occurrence_id: first.id, completed_on: '2026-06-10', time: expect.stringMatching(/^\d\d:\d\d$/) });
   });
 
   it('carries the weight saved with a weigh-in', async () => {

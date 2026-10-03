@@ -1334,6 +1334,7 @@ Recorded before C0 starts; every item below is approved with the phases (execute
 | EX-7 | C0 follow-ups folded in: `docs/ops/care-tick.md` uses typed cron fields (cPanel has no fifteen-minute common setting); unused `uuidv4` import removed from `completeWeightRouter.js`; the older care DB suites fail instead of skipping when PostgreSQL is not migrated (`openStrictHarness`) |
 | EX-8 | Order: C0 → C1 (pause, report) → C2–C5 → C4b → C6 → D2/D3 (+ D4). If the diff stops being one reviewable PR, land **3b-i (C0 + C)** and **3b-ii (D)** and announce it on the control issue (RV-7) |
 | EX-10 | C1 shape: `flutter_app/lib/features/care_item/` imports **no other feature** (core only). Its authenticated client comes from `careItemHttpClientProvider`, overridden in `lib/main.dart` (composition) with `authHttpClientProvider`; tests override it with a mock. `CareItemsController` (one list read, server-confirmed updates) and `CareCompletionService` (endpoint by family, never `next_choice` / `earlier_choice`, sealed failures, `developer.log('care.completion')`) are not wired to any screen until C3/C4. The optional warn-only `check_care_item_boundary.sh` is not added: `check_feature_imports.js` already blocks new edges |
+| EX-11 | C2 shape: `HealthEntry.schedule` (`CareItemSchedule`, parsed from the list/detail read) is the only status source for server data. The six old rules (F25) now go through it: `HealthEntry.isOverdue` / `isDueToday` (stacks and not recorded count as overdue), and `CareTemporalGroupingService.groupForSchedule` (agenda overdue → needs attention, today → today, due soon → upcoming; later dates and done-today rows do not change Care Status). Their device-clock fallbacks remain only for entries built without a server read (tests, local drafts) and are deleted in F2. New edges `health_tracking→care_item`, `pet_care→care_item` (and later consumers) are accepted exceptions: `care_item` is a leaf that imports core only, so it cannot join the import cycle. Server read additions gain `last_done { occurrence_id, completed_on, time }` for done-today rows |
 | EX-9 | Known red checks that are not CARE's: UAT live E2E in-host smoke (`node: command not found`, TEST [#1470](https://github.com/KanopeeKa/AgathaCheck/issues/1470)); production post-deploy smoke while production is in coming-soon mode |
 
 ---
@@ -1341,11 +1342,11 @@ Recorded before C0 starts; every item below is approved with the phases (execute
 ## Runtime state
 
 ```yaml
-autonomy: paused
-current_phase: "C2"
-last_completed_phase: "C1"
-halt_reason: "Owner pause after C1 (effort change), then continue C2–C5, C4b, C6, D2/D3 without further approval"
-next_action: "C2: occurrence_status.dart + care_agenda.dart on care_item (status from the server, R3 routing data); delete the six old rules (F25)"
+autonomy: active
+current_phase: "C3"
+last_completed_phase: "C2"
+halt_reason: null
+next_action: "C3: agenda on dashboard, pet profile, All care, pet list, nav badge"
 artifact_ref:
   branch: claude/eager-edison-mf34j6
   plan_path: .agents/plans/care-next-occurrence-c1a7.md
@@ -1358,6 +1359,7 @@ merge_commits:
   a_b_hotfix_1473: baf7f77
 phase_commits:
   c0: d9e03b4
+  c1: f592202
 pending_answers:
   gdpr_export_owner: "https://github.com/KanopeeKa/AgathaCheck/issues/1446#issuecomment-5970721429"
 debt_issue_refs: []

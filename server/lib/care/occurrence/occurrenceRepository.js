@@ -75,6 +75,33 @@ export async function listOpenRowsByEntry(db, entryIds) {
 }
 
 /**
+ * Latest completed occurrence per item (agenda "done today", list reads).
+ *
+ * @param {import('pg').Pool|import('pg').PoolClient} db
+ * @param {string[]} entryIds
+ * @returns {Promise<Map<string, { id: string, completed_on: string|null, marked_at: Date|null }>>}
+ */
+export async function listLastDoneByEntry(db, entryIds) {
+  const map = new Map();
+  if (entryIds.length === 0) return map;
+  const result = await db.query(
+    `SELECT DISTINCT ON (health_entry_id) health_entry_id, id, completed_on, marked_at
+     FROM health_occurrences
+     WHERE health_entry_id = ANY($1::uuid[]) AND status = 'completed'
+     ORDER BY health_entry_id, completed_on DESC NULLS LAST, marked_at DESC NULLS LAST`,
+    [entryIds],
+  );
+  for (const row of result.rows) {
+    map.set(row.health_entry_id, {
+      id: row.id,
+      completed_on: row.completed_on ? dateToIsoDate(row.completed_on) : null,
+      marked_at: row.marked_at || null,
+    });
+  }
+  return map;
+}
+
+/**
  * @param {import('pg').PoolClient} db
  * @param {string} entryId
  * @param {string} occurrenceId

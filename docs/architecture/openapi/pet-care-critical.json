@@ -690,6 +690,44 @@
                 "type": "null"
               }
             ]
+          },
+          "last_done": {
+            "description": "Latest completion: occurrence, day, and when it was marked in the pet's home zone (agenda done-today rows)",
+            "oneOf": [
+              {
+                "type": "object",
+                "required": [
+                  "occurrence_id",
+                  "completed_on",
+                  "time"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "occurrence_id": {
+                    "type": "string"
+                  },
+                  "completed_on": {
+                    "oneOf": [
+                      {
+                        "$ref": "#/components/schemas/CalendarDate"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "time": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         }
       },

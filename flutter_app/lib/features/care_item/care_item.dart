@@ -12,9 +12,12 @@ export 'application/care_completion_service.dart'
         CareCompletionService;
 export 'application/care_item_providers.dart';
 export 'application/care_items_controller.dart';
+export 'data/care_item_wire.dart' show careItemScheduleFromJson;
+export 'domain/care_agenda.dart';
 export 'domain/care_item_schedule.dart';
 export 'domain/care_occurrence.dart';
 export 'domain/completion_requirements.dart';
 export 'domain/leading_occurrence.dart';
 export 'domain/occurrence_detail.dart';
+export 'domain/occurrence_status.dart';
 export 'domain/stack_rule.dart';

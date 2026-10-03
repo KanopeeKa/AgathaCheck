@@ -16,6 +16,8 @@ class CareItemSchedule {
     this.lateCompletionChoice,
     this.pausedUntil,
     this.resumeDefaultDate,
+    this.repeatsDailyOrMore = false,
+    this.lastDone,
   }) : openOccurrences = List.unmodifiable(
          [...openOccurrences]..sort((a, b) => a.compareTo(b)),
        );
@@ -45,6 +47,26 @@ class CareItemSchedule {
   final DateTime? pausedUntil;
   final DateTime? resumeDefaultDate;
 
+  /// Daily or more often: shown only in Today (D-CIE-025).
+  final bool repeatsDailyOrMore;
+
+  /// Latest completion, for "done today" rows.
+  final LastDone? lastDone;
+
   bool get isActive => status == 'active';
+
+  /// Done on the item's today (pet home calendar).
+  bool get doneToday => lastDone?.completedOn == asOf.date;
   bool get isPaused => status == 'paused';
+}
+
+/// The latest completion of a care item.
+class LastDone {
+  const LastDone({required this.occurrenceId, this.completedOn, this.time});
+
+  final String occurrenceId;
+  final DateTime? completedOn;
+
+  /// When it was marked, `HH:mm` in the pet's home zone.
+  final String? time;
 }
