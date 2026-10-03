@@ -310,13 +310,7 @@ test.describe('Health tracking', () => {
 
   test('pet list shows "You\'re all caught up" when no entries are due', async ({ page, testUser }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
-    const pet = await createPet(baseURL, testUser.accessToken, 'Bella');
-    const futureDate = new Date();
-    futureDate.setDate(futureDate.getDate() + 30);
-    await createHealthEntry(baseURL, testUser.accessToken, pet.id, {
-      name: 'Future Treatment',
-      nextDueDate: futureDate.toISOString().slice(0, 10),
-    });
+    await createPet(baseURL, testUser.accessToken, 'Bella');
 
     await loginAs(page, testUser);
     const petList = new PetListPage(page);

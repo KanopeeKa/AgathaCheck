@@ -260,7 +260,10 @@ void main() {
         await tester.tap(find.text('Open care actions'));
         await tester.pumpAndSettle();
 
-        expect(find.text('Record earlier dates for Morning meds'), findsNothing);
+        expect(
+          find.text('Record earlier dates for Morning meds'),
+          findsNothing,
+        );
         expect(find.text('Mark as completed'), findsOneWidget);
         await tester.tap(find.text('Mark Completed'));
         await tester.pumpAndSettle();
@@ -291,7 +294,10 @@ void main() {
         await tester.tap(find.text('Open care actions'));
         await tester.pumpAndSettle();
 
-        expect(find.text('Record earlier dates for Morning meds'), findsNothing);
+        expect(
+          find.text('Record earlier dates for Morning meds'),
+          findsNothing,
+        );
         expect(find.text('Mark as completed'), findsOneWidget);
         expect(find.text('Overdue'), findsNothing);
         await tester.tap(find.text('Mark Completed'));
@@ -340,7 +346,10 @@ void main() {
         await tester.tap(find.text('Open care actions'));
         await tester.pumpAndSettle();
 
-        expect(find.text('Record earlier dates for Morning meds'), findsOneWidget);
+        expect(
+          find.text('Record earlier dates for Morning meds'),
+          findsOneWidget,
+        );
         expect(find.text('Overdue'), findsNothing);
         expect(find.text('Due today'), findsOneWidget);
         expect(find.text('Coming up'), findsOneWidget);
@@ -382,7 +391,10 @@ void main() {
       await tester.tap(find.text('Open care actions'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Record earlier dates for Morning meds'), findsOneWidget);
+      expect(
+        find.text('Record earlier dates for Morning meds'),
+        findsOneWidget,
+      );
       expect(find.text('Overdue'), findsOneWidget);
       expect(find.text('Due today'), findsOneWidget);
       expect(find.text('Mark as completed'), findsNothing);

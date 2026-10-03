@@ -33,6 +33,8 @@ import {
 import { prepareLiveApiAccess } from '../support/waf';
 import { checkA11y } from '../support/axe';
 import { CareAgendaPage } from '../pages/care-agenda.page';
+import { OccurrencePage } from '../pages/occurrence.page';
+import { createCareItem, withCareClock } from '../support/care-api';
 
 const baseURL = () => process.env.E2E_BASE_URL ?? 'http://localhost:3000';
 const today = new Date().toISOString().slice(0, 10);
@@ -131,25 +133,31 @@ test.describe('Guardian dashboard', () => {
     testUser,
   }) => {
     await page.setViewportSize({ width: 375, height: 812 });
-    const pet = await createPet(baseURL(), testUser.accessToken, 'ViewPet');
-    const entry = await createHealthEntry(baseURL(), testUser.accessToken, pet.id, {
-      name: 'Viewable Care',
-      nextDueDate: today,
-    });
-    await loginGuardian(page, testUser.email, testUser.password);
-    const dashboard = new GuardianDashboardPage(page);
-    await dashboard.open();
-    await dashboard.expectCareVisible('Viewable Care');
-    const careRegion = dashboard.careRegion();
-    await expect(careRegion.getByRole('button', { name: /snooze/i })).toHaveCount(0);
-    const agenda = new CareAgendaPage(page);
-    await agenda.openRow(entry.id);
-    await expect(
-      page.locator('[flt-semantics-identifier="occurrence_screen"]'),
-    ).toBeVisible({ timeout: 30_000 });
-    await expect(page.getByRole('button', { name: /go back/i })).toBeVisible();
-    await expect(page.getByRole('button', { name: /snooze/i })).toHaveCount(0);
-    await expect(page.getByText('Viewable Care')).toBeVisible();
+    await withCareClock(`${today}T10:00`, page);
+    try {
+      const pet = await createPet(baseURL(), testUser.accessToken, 'ViewPet');
+      const entry = await createCareItem(baseURL(), testUser.accessToken, pet.id, {
+        name: 'Viewable Care',
+        careFamily: 'grooming',
+        frequency: 'monthly',
+        dueDate: today,
+      });
+      await loginGuardian(page, testUser.email, testUser.password);
+      const dashboard = new GuardianDashboardPage(page);
+      await dashboard.open();
+      await dashboard.expectCareVisible('Viewable Care');
+      const careRegion = dashboard.careRegion();
+      await expect(careRegion.getByRole('button', { name: /snooze/i })).toHaveCount(0);
+      const agenda = new CareAgendaPage(page);
+      await agenda.openRow(entry.id);
+      const occurrence = new OccurrencePage(page);
+      await occurrence.expectLoaded();
+      await expect(page.getByRole('button', { name: /go back/i })).toBeVisible();
+      await expect(page.getByRole('button', { name: /snooze/i })).toHaveCount(0);
+      await expect(page.getByText('Viewable Care')).toBeVisible();
+    } finally {
+      await withCareClock(null, page);
+    }
   });
 
   test('Care preview supports completion and undo', async ({ page, testUser }) => {
