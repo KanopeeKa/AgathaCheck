@@ -212,6 +212,7 @@ describe('changing when care was done (D-CSM-034)', () => {
       [{ completed_on: '2026-06-11' }, 400, 'completed_on_in_future'],
       [{ completed_on: '2026-06-01' }, 400, 'completed_on_before_start'],
       [{ completed_on: 'soon' }, 400, 'invalid_completed_on'],
+      [{ completed_on: null }, 400, 'invalid_completed_on'],
       [{ completed_on: '2026-06-09', notes: 'x' }, 400, 'completed_on_with_other_fields'],
     ];
     for (const [body, status, code] of cases) {

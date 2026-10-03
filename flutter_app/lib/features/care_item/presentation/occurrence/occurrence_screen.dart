@@ -98,8 +98,7 @@ class _OccurrenceScreenState extends ConsumerState<OccurrenceScreen> {
                 returnTo: router == null
                     ? null
                     : shellReturnToFromState(GoRouterState.of(context)),
-                defaultPath:
-                    '/pet/${widget.petId}/events/${widget.entryId}',
+                defaultPath: '/pet/${widget.petId}/events/${widget.entryId}',
               );
             },
           ),
