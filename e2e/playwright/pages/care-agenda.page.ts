@@ -19,15 +19,21 @@ export class CareAgendaPage {
     ).toBeVisible({ timeout: 30_000 });
   }
 
-  /** Tap the row body (opens the occurrence screen, or the care item for a stack). */
-  async openRow(entryName: string): Promise<void> {
+  /** Tap the row body (opens the occurrence screen). */
+  async openRow(entryId: string): Promise<void> {
     await refreshFlutterAccessibility(this.page);
-    const row = semanticsByName(
-      this.page,
-      new RegExp(`${escapeRegExp(entryName)}.*Opens (this date|the care item)`, 'i'),
-    ).first();
-    await expect(row).toBeVisible({ timeout: 30_000 });
-    await row.click();
+    await this.page
+      .locator(`[flt-semantics-identifier="care_agenda_row_${entryId}"]`)
+      .click();
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  /** Stack row opens the care item view (DN-1). */
+  async openStack(entryId: string): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    await this.page
+      .locator(`[flt-semantics-identifier="care_agenda_stack_${entryId}"]`)
+      .click();
     await refreshFlutterAccessibility(this.page);
   }
 

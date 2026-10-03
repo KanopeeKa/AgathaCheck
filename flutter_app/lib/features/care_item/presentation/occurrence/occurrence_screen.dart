@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/providers/analytics_providers.dart';
 import '../../../../core/router/shell_return_navigation.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../application/care_command_outcome.dart';
@@ -39,6 +41,14 @@ class _OccurrenceScreenState extends ConsumerState<OccurrenceScreen> {
   void initState() {
     super.initState();
     _load();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final source =
+          GoRouterState.of(context).uri.queryParameters['source'] ?? 'unknown';
+      ref.read(analyticsServiceProvider).capture('occurrence_screen_opened', {
+        'source': source,
+      });
+    });
   }
 
   Future<void> _load() async {

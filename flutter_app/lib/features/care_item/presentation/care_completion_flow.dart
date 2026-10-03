@@ -81,6 +81,7 @@ class CareCompletionFlow {
           entryId: schedule.entryId,
           occurrenceId: occurrence.id,
           focus: requirement.name,
+          source: _analyticsSource(source),
         );
         return;
       case DoneAsksDate(:final occurrence):
@@ -141,6 +142,7 @@ class CareCompletionFlow {
           schedule: schedule,
           result: value,
           onChanged: onChanged,
+          source: source,
           changeDateOccurrenceId: offerChangeDate ? target.id : null,
         );
       case CareFailed(:final failure):
@@ -170,6 +172,7 @@ class CareCompletionFlow {
     required CareItemSchedule schedule,
     required CareCommandResult result,
     required CareChanged onChanged,
+    required CareCommandSource source,
     String? changeDateOccurrenceId,
   }) {
     final l = AppLocalizations.of(context)!;
@@ -217,6 +220,7 @@ class CareCompletionFlow {
                         entryId: schedule.entryId,
                         occurrenceId: changeOccurrenceId!,
                         focus: 'date',
+                        source: _analyticsSource(source),
                       );
                     },
                     child: Text(l.careChangeDate),
@@ -280,6 +284,9 @@ class CareCompletionFlow {
     return 'gte_3s';
   }
 }
+
+String _analyticsSource(CareCommandSource source) =>
+    source == CareCommandSource.careItem ? 'care_item' : source.name;
 
 final careCompletionFlowProvider = Provider<CareCompletionFlow>((ref) {
   final analytics = ref.watch(analyticsServiceProvider);

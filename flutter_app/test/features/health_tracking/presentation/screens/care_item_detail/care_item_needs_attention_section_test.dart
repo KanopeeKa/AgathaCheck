@@ -84,4 +84,43 @@ void main() {
     expect(body['given'], ['slot-2', 'slot-1', 'slot-0']);
     expect(find.text('Undo'), findsOneWidget);
   });
+
+  testWidgets('leading open slot shows Change date (UIR-21)', (tester) async {
+    final today = careToday();
+    final entry = scheduledEntry(
+      id: 'groom',
+      name: 'Grooming',
+      frequency: HealthFrequency.monthly,
+      open: [
+        OpenOccurrence(
+          id: 'slot-1',
+          date: today.subtract(const Duration(days: 2)),
+          status: CareOccurrenceStatus.overdue,
+          origin: CareOccurrenceOrigin.schedule,
+        ),
+      ],
+    );
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [healthEntriesNotifierProvider.overrideWith(_Notifier.new)],
+        child: MaterialApp(
+          theme: AppTheme.lightTheme,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: CareItemNeedsAttentionSection(
+              entry: entry,
+              schedule: entry.schedule!,
+              muted: false,
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(
+      find.byKey(const Key('care_item_occurrence_reschedule_slot-1')),
+      findsOneWidget,
+    );
+  });
 }

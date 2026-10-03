@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/providers/analytics_providers.dart';
 import '../../../../core/utils/calendar_date_picker.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../application/care_command_outcome.dart';
@@ -276,6 +277,11 @@ class _OccurrenceBlocksState extends ConsumerState<OccurrenceBlocks> {
               occurrenceId: _occ.id,
               completedOn: picked,
             );
+            if (outcome is CareSucceeded) {
+              ref
+                  .read(analyticsServiceProvider)
+                  .capture('care_completion_date_changed', const {});
+            }
             await _report(outcome, l.careDateSaved);
           }),
         ),

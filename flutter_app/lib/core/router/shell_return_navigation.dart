@@ -204,9 +204,11 @@ String occurrenceScreenLocation(
   String occurrenceId, {
   String? focus,
   String? returnTo,
+  String? source,
 }) {
   final query = <String>[
     if (focus != null) 'focus=$focus',
+    if (source != null && source.isNotEmpty) 'source=$source',
     if (returnTo != null && returnTo.isNotEmpty)
       'returnTo=${encodeShellReturnTo(returnTo)}',
   ];
@@ -221,6 +223,7 @@ void openOccurrenceScreen(
   required String entryId,
   required String occurrenceId,
   String? focus,
+  String? source,
 }) {
   context.push(
     occurrenceScreenLocation(
@@ -228,6 +231,7 @@ void openOccurrenceScreen(
       entryId,
       occurrenceId,
       focus: focus,
+      source: source,
       returnTo: currentShellLocation(context),
     ),
   );

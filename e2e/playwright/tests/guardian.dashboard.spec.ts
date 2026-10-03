@@ -126,7 +126,7 @@ test.describe('Guardian dashboard', () => {
     await dashboard.goBackToDashboard();
   });
 
-  test('Care preview row opens event view with occurrence workbench', async ({
+  test('Care preview row opens the occurrence screen', async ({
     page,
     testUser,
   }) => {
@@ -143,8 +143,10 @@ test.describe('Guardian dashboard', () => {
     const careRegion = dashboard.careRegion();
     await expect(careRegion.getByRole('button', { name: /snooze/i })).toHaveCount(0);
     const agenda = new CareAgendaPage(page);
-    await agenda.openRow('Viewable Care');
-    await expect(page).toHaveURL(new RegExp(`/occurrences/`));
+    await agenda.openRow(entry.id);
+    await expect(
+      page.locator('[flt-semantics-identifier="occurrence_screen"]'),
+    ).toBeVisible({ timeout: 30_000 });
     await expect(page.getByRole('button', { name: /go back/i })).toBeVisible();
     await expect(page.getByRole('button', { name: /snooze/i })).toHaveCount(0);
     await expect(page.getByText('Viewable Care')).toBeVisible();

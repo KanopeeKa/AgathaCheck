@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../../core/providers/analytics_providers.dart';
 import '../../../../../core/router/shell_return_navigation.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../care_item/care_item.dart';
@@ -10,7 +11,9 @@ import '../../../../pet_care/presentation/widgets/care_surface/care_item_section
 import '../../../../pet_care/presentation/widgets/care_surface/care_item_status_pill.dart';
 import '../../../../../core/widgets/care_mark_done_button.dart';
 import '../../../domain/entities/health_entry.dart';
+import '../../../domain/entities/health_occurrence.dart';
 import '../../providers/health_providers.dart';
+import '../../widgets/pet_event_occurrence_actions.dart';
 import '../../widgets/pet_event_view_providers.dart';
 
 /// Needs attention on the Care Item view (§18.6.5): every open occurrence
@@ -62,6 +65,10 @@ class _CareItemNeedsAttentionSectionState
     final messenger = ScaffoldMessenger.of(context)..hideCurrentSnackBar();
     switch (outcome) {
       case CareSucceeded(:final value):
+        ref.read(analyticsServiceProvider).capture('care_stack_resolved', {
+          'count': ids.length,
+          'done': done,
+        });
         messenger.showSnackBar(
           SnackBar(
             content: Text(l.careDoneSnackbar(_s.name)),
@@ -90,50 +97,73 @@ class _CareItemNeedsAttentionSectionState
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final stack = isStack(_s);
+    final leading = leadingOccurrence(_s);
     final estimated = _s.estimatedNext;
-    return CareItemModule(
-      key: const Key('care_item_needs_attention_section'),
-      semanticLabel: l.careItemNeedsAttentionTitle,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          CareItemSectionHeader(
-            title: l.careItemNeedsAttentionTitle,
-            icon: Icons.flag_outlined,
-          ),
-          const SizedBox(height: 8),
-          for (final occ in _s.openOccurrences)
-            _OccurrenceLine(
-              entry: widget.entry,
-              schedule: _s,
-              occurrence: occ,
-              muted: widget.muted || _busy,
-              onChanged: _refresh,
-            ),
-          if (estimated != null)
-            Padding(
-              padding: const EdgeInsets.only(top: 8),
-              child: Text(
-                l.careEstimatedNext(DateFormat.MMMd().format(estimated.date)),
-                key: const Key('care_item_estimated_next'),
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-            ),
-          if (stack && !widget.muted) ...[
-            const SizedBox(height: 12),
-            FilledButton(
-              key: const Key('care_item_mark_all_done'),
-              onPressed: _busy ? null : () => _bulk(done: true),
-              child: Text(l.careMarkAllDone),
+    return Semantics(
+      identifier: 'care_item_needs_attention_section',
+      child: CareItemModule(
+        key: const Key('care_item_needs_attention_section'),
+        semanticLabel: l.careItemNeedsAttentionTitle,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            CareItemSectionHeader(
+              title: l.careItemNeedsAttentionTitle,
+              icon: Icons.flag_outlined,
             ),
             const SizedBox(height: 8),
-            OutlinedButton(
-              key: const Key('care_item_skip_all'),
-              onPressed: _busy ? null : () => _bulk(done: false),
-              child: Text(l.careSkipAll),
-            ),
+            for (final occ in _s.openOccurrences)
+              _OccurrenceLine(
+                entry: widget.entry,
+                schedule: _s,
+                occurrence: occ,
+                muted: widget.muted || _busy,
+                onChanged: _refresh,
+              ),
+            if (estimated != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Text(
+                  l.careEstimatedNext(DateFormat.MMMd().format(estimated.date)),
+                  key: const Key('care_item_estimated_next'),
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ),
+            if (!stack && leading != null && !widget.muted) ...[
+              const SizedBox(height: 12),
+              OutlinedButton(
+                key: Key('care_item_occurrence_reschedule_${leading.id}'),
+                onPressed: () => PetEventOccurrenceActions.changeDate(
+                  context,
+                  ref,
+                  widget.entry,
+                  HealthOccurrence(
+                    id: leading.id,
+                    entryId: widget.entry.id,
+                    scheduledDate: leading.date,
+                    scheduledTime: leading.time,
+                    status: 'pending',
+                  ),
+                ),
+                child: Text(l.rescheduleActionLabel),
+              ),
+            ],
+            if (stack && !widget.muted) ...[
+              const SizedBox(height: 12),
+              FilledButton(
+                key: const Key('care_item_mark_all_done'),
+                onPressed: _busy ? null : () => _bulk(done: true),
+                child: Text(l.careMarkAllDone),
+              ),
+              const SizedBox(height: 8),
+              OutlinedButton(
+                key: const Key('care_item_skip_all'),
+                onPressed: _busy ? null : () => _bulk(done: false),
+                child: Text(l.careSkipAll),
+              ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }
@@ -185,6 +215,7 @@ class _OccurrenceLine extends ConsumerWidget {
           petId: entry.petId,
           entryId: entry.id,
           occurrenceId: occurrence.id,
+          source: 'care_item',
         ),
         child: ConstrainedBox(
           constraints: const BoxConstraints(minHeight: 56),

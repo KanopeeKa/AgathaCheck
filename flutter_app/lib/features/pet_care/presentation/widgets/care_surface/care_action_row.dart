@@ -19,6 +19,7 @@ class CareActionRow extends StatelessWidget {
     this.markDoneKey,
     this.markDoneSemanticLabel,
     this.markDoneSemanticsIdentifier,
+    this.rowSemanticsIdentifier,
     this.onTap,
     this.inset = false,
   });
@@ -35,6 +36,7 @@ class CareActionRow extends StatelessWidget {
   final Key? markDoneKey;
   final String? markDoneSemanticLabel;
   final String? markDoneSemanticsIdentifier;
+  final String? rowSemanticsIdentifier;
   final VoidCallback? onTap;
 
   /// When true, renders flat on a [CareCollectionInsetList] background (no card chrome).
@@ -49,6 +51,7 @@ class CareActionRow extends StatelessWidget {
         : BorderRadius.circular(CareSurfaceTokens.actionRadius);
 
     return Semantics(
+      identifier: rowSemanticsIdentifier,
       label: semanticLabel,
       // The trailing CareMarkDoneButton is its own semantic button.
       button: onTap != null,

@@ -32,7 +32,13 @@ import {
   getHealthEntries,
   exportHealthEntriesCsv,
 } from '../support/api';
-import { completeNextOccurrence, createCareItem, createPetInZone, undoLast } from '../support/care-api';
+import {
+  completeNextOccurrence,
+  createCareItem,
+  createPetInZone,
+  undoLast,
+  withCareClock,
+} from '../support/care-api';
 import { refreshFlutterAccessibility } from '../support/flutter';
 import { zoneAtMidAfternoon } from '../support/care-zone';
 
@@ -327,16 +333,17 @@ test.describe('Health tracking', () => {
     testUser,
   }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const today = '2026-06-15';
+    await withCareClock(`${today}T10:00`, page);
+    try {
     const pet = await createPet(baseURL, testUser.accessToken, 'Bella');
-    const today = new Date().toISOString().slice(0, 10);
     const entryName = 'Twice Daily Meds';
     const entry = await createCareItem(baseURL, testUser.accessToken, pet.id, {
       name: entryName,
       careFamily: 'medication',
       frequency: 'daily',
       dueDate: today,
-      // Morning slots are started at any normal CI hour; evening stays upcoming.
-      times: ['06:00', '20:00'],
+      times: ['08:00', '20:00'],
     });
 
     const occurrencesBefore = await getHealthEntryOccurrences(
@@ -362,10 +369,6 @@ test.describe('Health tracking', () => {
     await dashboard.clickMarkDoneForEntry(entry.id);
 
     const agenda = new CareAgendaPage(page);
-    if (await page.getByText(/Needs attention|À traiter/i).isVisible().catch(() => false)) {
-      await page.getByRole('button', { name: /Mark Twice Daily Meds as done/i }).first().click();
-      await refreshFlutterAccessibility(page);
-    }
     await agenda.expectDoneSnackbar(entryName);
 
     const occurrencesAfter = await getHealthEntryOccurrences(
@@ -381,6 +384,36 @@ test.describe('Health tracking', () => {
     );
     expect(occurrencesAfter.filter((row) => row.status === 'pending')).toHaveLength(3);
     expect(pastOccurrences.filter((row) => row.status === 'completed')).toHaveLength(1);
+    } finally {
+      await withCareClock(null, page);
+    }
+  });
+
+  test('multi-dose stack opens the care item view', async ({ page, testUser }) => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const today = '2026-06-15';
+    await withCareClock(`${today}T22:00`, page);
+    try {
+      const pet = await createPet(baseURL, testUser.accessToken, 'Bella');
+      const entry = await createCareItem(baseURL, testUser.accessToken, pet.id, {
+        name: 'Stack Meds',
+        careFamily: 'medication',
+        frequency: 'daily',
+        dueDate: today,
+        times: ['08:00', '20:00'],
+      });
+      await loginAs(page, testUser);
+      const petList = new PetListPage(page);
+      await petList.openHealthDashboard();
+      const dashboard = new HealthDashboardPage(page);
+      await dashboard.expectLoaded();
+      await dashboard.clickMarkDoneForEntry(entry.id);
+      await expect(
+        page.locator('[flt-semantics-identifier="care_item_needs_attention_section"]'),
+      ).toBeVisible({ timeout: 30_000 });
+    } finally {
+      await withCareClock(null, page);
+    }
   });
 
   test.describe('dose recorded late', () => {

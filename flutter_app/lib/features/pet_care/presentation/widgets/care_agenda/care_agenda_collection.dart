@@ -88,6 +88,7 @@ class _CareAgendaCollectionState extends ConsumerState<CareAgendaCollection> {
       petId: entry.petId,
       entryId: entry.id,
       occurrenceId: occurrence.id,
+      source: widget.source.name,
     );
   }
 

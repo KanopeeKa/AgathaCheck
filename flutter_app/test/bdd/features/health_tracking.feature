@@ -129,6 +129,13 @@ Feature: Health Tracking
     And 1 open date should remain for "Twice Daily Meds"
 
   @P1
+  Scenario: Multi-dose stack opens the care item view
+    Given "Bella" has a daily medication "Stack Meds" scheduled at "08:00" and "20:00"
+    When the user navigates to the health dashboard
+    And the user taps "Mark as done" for "Stack Meds"
+    Then the care item view should show Needs attention for "Stack Meds"
+
+  @P1
   Scenario: Care recorded late keeps the next date
     Given "Bella" has a daily medication "Apoquel" scheduled at "08:00" and "18:00"
     And it is 15:00, so the 08:00 date is overdue

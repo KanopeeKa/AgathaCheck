@@ -97,8 +97,9 @@
     "Exporting health entries as PDF": "P2",
     "Filtering health entries by organisation": "P2",
     "Unified event edit route redirects legacy paths": "P1",
-    "Multi-dose daily medication shows stack sheet for recording doses": "P1",
-    "A dose recorded late keeps the next dose": "P1"
+    "Multi-dose daily medication records one date from the agenda": "P1",
+    "Care recorded late keeps the next date": "P1",
+    "Multi-dose stack opens the care item view": "P1"
   },
   "notifications.feature": {
     "Notification generated for overdue health entry": "P1",
@@ -305,7 +306,7 @@
     "My Pets preview is capped at four with an All Pets destination": "P0",
     "Care preview orders overdue, due today, and upcoming items": "P0",
     "Care preview supports completion and undo": "P0",
-    "Care preview row opens the event view screen": "P1",
+    "Care preview row opens the occurrence screen": "P1",
     "Veterinary team preview reaches linked vet details": "P1",
     "Empty Pet Care dashboard shows first-use guidance without false alerts": "P1",
     "Pending foster placement surfaces as a notification, not a dashboard banner": "P1",

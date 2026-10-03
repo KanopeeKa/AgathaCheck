@@ -63,6 +63,7 @@ class PetCareActionRowBuilder {
       markDoneKey: Key('pet_care_action_done_${entry.id}'),
       markDoneSemanticLabel: l10n.careMarkDoneLabel(entry.name),
       markDoneSemanticsIdentifier: 'pet_care_action_done_${entry.id}',
+      rowSemanticsIdentifier: 'care_agenda_row_${entry.id}',
       onTap: onTap,
     );
   }

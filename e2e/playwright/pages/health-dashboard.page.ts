@@ -147,8 +147,6 @@ export class HealthDashboardPage {
     await refreshFlutterAccessibility(this.page);
     await this.page
       .locator(`[flt-semantics-identifier="pet_care_action_done_${entryId}"]`)
-      .or(this.page.locator(`[flt-semantics-identifier="care_event_row_done_${entryId}"]`))
-      .first()
       .click();
   }
 

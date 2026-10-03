@@ -97,6 +97,9 @@ class CareAgendaRowTile extends StatelessWidget {
       key: row.isStack
           ? Key('care_agenda_stack_${entry.id}')
           : Key('pet_care_action_${entry.id}'),
+      rowSemanticsIdentifier: row.isStack
+          ? 'care_agenda_stack_${entry.id}'
+          : 'care_agenda_row_${entry.id}',
       inset: inset,
       title: entry.name,
       subtitle: subtitle,
