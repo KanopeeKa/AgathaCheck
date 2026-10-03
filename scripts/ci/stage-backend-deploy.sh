@@ -58,6 +58,14 @@ tar -C "$SRC" \
   --exclude=.env \
   -cf - . | tar -C "$DEST" -xf -
 
+TAXONOMY_SRC="${ROOT}/shared/care_taxonomy.json"
+if [[ ! -f "$TAXONOMY_SRC" ]]; then
+  echo "::error::missing ${TAXONOMY_SRC} — required for backend care taxonomy on UAT/PROD" >&2
+  exit 1
+fi
+mkdir -p "${DEST}/shared"
+cp "$TAXONOMY_SRC" "${DEST}/shared/care_taxonomy.json"
+
 mkdir -p "${DEST}/db" "${DEST}/db/schema" "${DEST}/tmp"
 if [[ -d "${ROOT}/db/migrations" ]]; then
   cp -R "${ROOT}/db/migrations" "${DEST}/db/migrations"
