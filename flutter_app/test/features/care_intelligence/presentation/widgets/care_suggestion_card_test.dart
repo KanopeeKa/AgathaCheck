@@ -320,10 +320,7 @@ void main() {
         repository: _FakeCareIntelligenceRepository(),
         child: CareSuggestionCard(
           petId: 'pet-1',
-          recommendation: _recommendationWith(
-            frequency: 'weekly',
-            interval: 3,
-          ),
+          recommendation: _recommendationWith(frequency: 'weekly', interval: 3),
         ),
       ),
     );
