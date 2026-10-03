@@ -121,21 +121,20 @@ Feature: Health Tracking
     And a success message "Marked as done" should appear
 
   @P1
-  Scenario: Multi-dose daily medication shows stack sheet for recording doses
-    Given "Bella" has a daily medication "Twice Daily Meds" scheduled at "08:00" and "18:00"
+  Scenario: Multi-dose daily medication records one date from the agenda
+    Given "Bella" has a daily medication "Twice Daily Meds" scheduled at "06:00" and "20:00"
     When the user navigates to the health dashboard
     And the user taps "Mark as done" for "Twice Daily Meds"
-    Then the occurrence stack sheet should show 2 doses due today
-    When the user records the latest dose
-    Then 1 open dose should remain for "Twice Daily Meds"
+    Then "Twice Daily Meds" should show a done confirmation with Undo
+    And 1 open date should remain for "Twice Daily Meds"
 
   @P1
-  Scenario: A dose recorded late keeps the next dose
+  Scenario: Care recorded late keeps the next date
     Given "Bella" has a daily medication "Apoquel" scheduled at "08:00" and "18:00"
-    And it is 15:00, so the 08:00 dose is overdue
-    When the user records the 08:00 dose as done today
-    Then the 08:00 dose should be recorded
-    And the 18:00 dose should still be planned
+    And it is 15:00, so the 08:00 date is overdue
+    When the user records the 08:00 date as done today
+    Then the 08:00 date should be recorded
+    And the 18:00 date should still be planned
 
   @P1
   Scenario: Undoing a completed entry

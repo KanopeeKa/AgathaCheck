@@ -67,9 +67,11 @@ class _OccurrenceScreenState extends ConsumerState<OccurrenceScreen> {
       CareSucceeded(:final value) => value.item.name,
       _ => '',
     };
-    return Scaffold(
-      key: const Key('occurrence_screen'),
-      appBar: AppBar(title: Text(title)),
+    return Semantics(
+      identifier: 'occurrence_screen',
+      child: Scaffold(
+        key: const Key('occurrence_screen'),
+        appBar: AppBar(title: Text(title)),
       body: switch (outcome) {
         null => const Center(child: CircularProgressIndicator()),
         CareFailed(failure: CareNotOpenFailure(gone: true)) => _Message(
@@ -100,6 +102,7 @@ class _OccurrenceScreenState extends ConsumerState<OccurrenceScreen> {
           ],
         ),
       },
+      ),
     );
   }
 }

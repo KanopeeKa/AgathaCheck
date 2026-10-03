@@ -39,6 +39,7 @@ class PetCareUpcomingEventsSection extends ConsumerWidget {
 
     return Semantics(
       container: true,
+      explicitChildNodes: true,
       label: l.careEyebrow,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -101,10 +102,16 @@ class PetCareUpcomingEventsSection extends ConsumerWidget {
       ),
       header: (agenda) => Padding(
         padding: const EdgeInsets.only(bottom: 8),
-        child: Text(
-          careAgendaOrientation(l, agenda),
-          key: const Key('care_agenda_orientation'),
-          style: Theme.of(context).textTheme.bodyMedium,
+        child: Semantics(
+          identifier: 'care_agenda_orientation',
+          label: careAgendaOrientation(l, agenda),
+          child: ExcludeSemantics(
+            child: Text(
+              careAgendaOrientation(l, agenda),
+              key: const Key('care_agenda_orientation'),
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ),
         ),
       ),
     );

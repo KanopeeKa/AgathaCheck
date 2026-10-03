@@ -102,7 +102,7 @@ class HealthEntriesNotifier extends AsyncNotifier<List<HealthEntry>> {
 
   /// Refreshes the list of health entries from the server.
   Future<void> refresh() async {
-    state = const AsyncValue.loading();
+    state = const AsyncLoading<List<HealthEntry>>().copyWithPrevious(state);
     state = await AsyncValue.guard(() => build());
   }
 

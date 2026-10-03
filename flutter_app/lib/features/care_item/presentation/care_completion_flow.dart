@@ -195,7 +195,10 @@ class CareCompletionFlow {
     messenger.showSnackBar(
       SnackBar(
         key: const Key('care_done_snackbar'),
-        content: Column(
+        content: Semantics(
+          identifier: 'care_done_snackbar',
+          container: true,
+          child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -220,6 +223,7 @@ class CareCompletionFlow {
                 ),
               ),
           ],
+          ),
         ),
         action: undoToken == null
             ? null

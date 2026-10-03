@@ -14,13 +14,13 @@
  * Scenario: Due events appear on the pet list screen
  * Scenario: No due events shows all caught up
  * Scenario: Exporting health entries as CSV
- * Scenario: Multi-dose daily medication shows stack sheet for recording doses
- * Scenario: A dose recorded late keeps the next dose
+ * Scenario: Multi-dose daily medication records one date from the agenda
+ * Scenario: Care recorded late keeps the next date
  */
 import { test, expect, loginAs, seedPetWithDueHealthEntry } from '../fixtures/auth.fixture';
 import { HealthDashboardPage } from '../pages/health-dashboard.page';
-import { OccurrenceStackSheetPage } from '../pages/occurrence-stack-sheet.page';
 import { PetListPage } from '../pages/pet-list.page';
+import { CareAgendaPage } from '../pages/care-agenda.page';
 import { isLiveHostingTarget } from '../support/hosting';
 import {
   createPet,
@@ -321,7 +321,7 @@ test.describe('Health tracking', () => {
 
   // ── Wave D: Multi-dose occurrences ────────────────────────────────────────
 
-  test('multi-dose daily medication shows stack sheet and records one dose', async ({
+  test('multi-dose daily medication records one date from the agenda', async ({
     page,
     testUser,
   }) => {
@@ -334,8 +334,8 @@ test.describe('Health tracking', () => {
       careFamily: 'medication',
       frequency: 'daily',
       dueDate: today,
-      // Late times so doses stay Due (not Overdue) regardless of CI run hour.
-      times: ['23:58', '23:59'],
+      // Morning slots are started at any normal CI hour; evening stays upcoming.
+      times: ['06:00', '20:00'],
     });
 
     const occurrencesBefore = await getHealthEntryOccurrences(
@@ -360,10 +360,12 @@ test.describe('Health tracking', () => {
     await dashboard.expectEntryVisible(entryName);
     await dashboard.clickMarkDoneForEntry(entry.id);
 
-    const stackSheet = new OccurrenceStackSheetPage(page);
-    await stackSheet.expectLoaded(entryName);
-    await stackSheet.expectDueTodayDoseCount(2, today);
-    await stackSheet.recordLatestDose();
+    const agenda = new CareAgendaPage(page);
+    if (await page.getByText(/Needs attention|À traiter/i).isVisible().catch(() => false)) {
+      await page.getByRole('button', { name: /Mark Twice Daily Meds as done/i }).first().click();
+      await refreshFlutterAccessibility(page);
+    }
+    await agenda.expectDoneSnackbar(entryName);
 
     const occurrencesAfter = await getHealthEntryOccurrences(
       baseURL,
@@ -386,7 +388,7 @@ test.describe('Health tracking', () => {
     const lateDose = zoneAtMidAfternoon();
     test.use({ timezoneId: lateDose.timeZone });
 
-    test('a twice-daily dose recorded late keeps the evening dose', async ({ page, testUser }) => {
+    test('a twice-daily date recorded late keeps the evening date', async ({ page, testUser }) => {
       // D-CSM-026 (revised 2026-10-01): the app sends no next-date choice; the
       // server keeps the waiting 18:00 dose instead of refusing the completion.
       const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
@@ -412,9 +414,8 @@ test.describe('Health tracking', () => {
       await dashboard.expectEntryVisible(entryName);
       await dashboard.clickMarkDoneForEntry(entry.id);
 
-      const stackSheet = new OccurrenceStackSheetPage(page);
-      await stackSheet.expectLoaded(entryName);
-      await stackSheet.recordLatestOverdueDoseToday();
+      const agenda = new CareAgendaPage(page);
+      await agenda.expectDoneSnackbar(entryName);
 
       const open = await getHealthEntryOccurrences(baseURL, testUser.accessToken, entry.id);
       const past = await getHealthEntryOccurrences(baseURL, testUser.accessToken, entry.id, { status: 'past' });

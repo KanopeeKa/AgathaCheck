@@ -4,7 +4,7 @@
  * Scenario: Care preview separates Due and Soon
  * Scenario: My Pets preview is capped at four with an All Pets destination
  * Scenario: Care preview orders overdue, due today, and upcoming items
- * Scenario: Care preview row opens the event view screen
+ * Scenario: Care preview row opens the occurrence screen
  * Scenario: Care preview supports completion and undo
  * Scenario: Veterinary team preview reaches linked vet details
  * Scenario: Empty Pet Care dashboard shows first-use guidance without false alerts
@@ -32,6 +32,7 @@ import {
 } from '../support/flutter';
 import { prepareLiveApiAccess } from '../support/waf';
 import { checkA11y } from '../support/axe';
+import { CareAgendaPage } from '../pages/care-agenda.page';
 
 const baseURL = () => process.env.E2E_BASE_URL ?? 'http://localhost:3000';
 const today = new Date().toISOString().slice(0, 10);
@@ -141,14 +142,11 @@ test.describe('Guardian dashboard', () => {
     await dashboard.expectCareVisible('Viewable Care');
     const careRegion = dashboard.careRegion();
     await expect(careRegion.getByRole('button', { name: /snooze/i })).toHaveCount(0);
-    await page.locator(`[flt-semantics-identifier="care_event_row_view_${entry.id}"]`).click();
-    await refreshFlutterAccessibility(page);
-    // Flutter web push from dashboard may not update the hash route; assert workbench UI.
+    const agenda = new CareAgendaPage(page);
+    await agenda.openRow('Viewable Care');
+    await expect(page).toHaveURL(new RegExp(`/occurrences/`));
     await expect(page.getByRole('button', { name: /go back/i })).toBeVisible();
     await expect(page.getByRole('button', { name: /snooze/i })).toHaveCount(0);
-    await expect(
-      page.getByRole('button', { name: /care item actions/i }),
-    ).toBeVisible();
     await expect(page.getByText('Viewable Care')).toBeVisible();
   });
 
@@ -163,18 +161,11 @@ test.describe('Guardian dashboard', () => {
     const dashboard = new GuardianDashboardPage(page);
     await dashboard.open();
     await dashboard.expectCareVisible('Actionable Care');
-    await page.locator(`[flt-semantics-identifier="care_event_row_done_${entry.id}"]`).click();
-    await page.getByRole('button', { name: 'Mark Completed', exact: true }).click();
-    const undo = page.locator(`[flt-semantics-identifier="care_event_row_undo_${entry.id}"]`);
-    await expect(async () => {
-      await refreshFlutterAccessibility(page);
-      await expect(undo).toBeVisible();
-    }).toPass({ timeout: 45_000 });
-    await undo.click();
-    await refreshFlutterAccessibility(page);
-    await expect(
-      page.locator(`[flt-semantics-identifier="care_event_row_done_${entry.id}"]`),
-    ).toBeVisible();
+    const agenda = new CareAgendaPage(page);
+    await agenda.markDone(entry.id);
+    await agenda.expectDoneSnackbar('Actionable Care');
+    await agenda.undoLastDone();
+    await expect(agenda.doneButton(entry.id)).toBeVisible();
   });
 
   test('People desk preview opens person detail from vet card', async ({ page, testUser }) => {

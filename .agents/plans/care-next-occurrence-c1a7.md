@@ -1345,10 +1345,10 @@ Recorded before C0 starts; every item below is approved with the phases (execute
 
 ```yaml
 autonomy: active
-current_phase: "C6 + D4"
-last_completed_phase: "D3"
+current_phase: "landing 3b PR"
+last_completed_phase: "C6 + D4"
 halt_reason: null
-next_action: "C6/D4: run and fix Playwright specs locally against the new agenda, occurrence screen and Care Item view; BDD scenarios"
+next_action: "Open integration → main PR; ./scripts/pre-push.sh; /babysit-uat"
 artifact_ref:
   branch: claude/eager-edison-mf34j6
   plan_path: .agents/plans/care-next-occurrence-c1a7.md
@@ -1365,6 +1365,7 @@ phase_commits:
   c2: 48ef57c
   c3_c4b: 66ee32e
   c5: 7ca773c
+  d2_d3: fbdba57c
 pending_answers:
   gdpr_export_owner: "https://github.com/KanopeeKa/AgathaCheck/issues/1446#issuecomment-5970721429"
 debt_issue_refs: []

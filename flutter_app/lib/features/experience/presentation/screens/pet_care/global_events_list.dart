@@ -138,7 +138,10 @@ class _GlobalEventsListState extends ConsumerState<GlobalEventsList> {
       );
     }
 
-    if (entriesAsync is AsyncLoading || historiesAsync is AsyncLoading) {
+    final entriesLoading = entriesAsync.isLoading && !entriesAsync.hasValue;
+    final historiesLoading =
+        historiesAsync.isLoading && !historiesAsync.hasValue;
+    if (entriesLoading || historiesLoading) {
       return const Padding(
         padding: EdgeInsets.symmetric(vertical: 32),
         child: Center(child: CircularProgressIndicator()),

@@ -226,6 +226,33 @@ export async function completeNextOccurrence(
   return res.body.entry as CareItem;
 }
 
+export async function getOccurrence(
+  baseURL: string,
+  token: string,
+  entryId: string,
+  occurrenceId: string,
+): Promise<Record<string, unknown>> {
+  const res = expectOk(
+    'getOccurrence',
+    await send(baseURL, token, 'GET', `/${entryId}/occurrences/${occurrenceId}`),
+  );
+  return res.body as Record<string, unknown>;
+}
+
+export async function patchOccurrence(
+  baseURL: string,
+  token: string,
+  entryId: string,
+  occurrenceId: string,
+  body: { completed_on: string },
+): Promise<Record<string, unknown>> {
+  const res = expectOk(
+    'patchOccurrence',
+    await send(baseURL, token, 'PATCH', `/${entryId}/occurrences/${occurrenceId}`, body),
+  );
+  return res.body as Record<string, unknown>;
+}
+
 export async function skipOccurrence(baseURL: string, token: string, entryId: string, occurrenceId: string) {
   return expectOk('skipOccurrence', await send(baseURL, token, 'POST', `/${entryId}/occurrences/${occurrenceId}/skip`, {}));
 }
