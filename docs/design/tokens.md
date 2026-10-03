@@ -163,7 +163,7 @@ Empty states, onboarding, welcome — not main action buttons.
 
 ## Agatha message surfaces (Care Intelligence)
 
-Used for “Suggested by Agatha” rhythm proposals and related guidance — not org-mode primary CTAs.
+Used for “Suggested by Agatha” routine proposals and related guidance — not org-mode primary CTAs.
 
 | Token | Hex | Use |
 |-------|-----|-----|

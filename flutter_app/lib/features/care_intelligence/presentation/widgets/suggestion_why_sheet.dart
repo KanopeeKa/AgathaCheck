@@ -5,9 +5,14 @@ import '../../../../l10n/app_localizations.dart';
 Future<void> showSuggestionWhySheet(
   BuildContext context, {
   required String rationaleKey,
+  required String routineName,
+  String? petName,
+  String? cadenceLabel,
 }) {
   final l = AppLocalizations.of(context)!;
+  final theme = Theme.of(context);
   final body = _rationaleText(l, rationaleKey);
+  final hasPetName = petName != null && petName.isNotEmpty;
 
   return showModalBottomSheet<void>(
     context: context,
@@ -18,12 +23,23 @@ Future<void> showSuggestionWhySheet(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Text(l.careSuggestionWhyTitle, style: theme.textTheme.titleMedium),
+          const SizedBox(height: 12),
+          if (hasPetName)
+            Text(
+              l.careSuggestionWhyForPet(petName),
+              style: theme.textTheme.titleSmall,
+            ),
           Text(
-            l.careSuggestionWhyTitle,
-            style: Theme.of(context).textTheme.titleMedium,
+            cadenceLabel == null
+                ? routineName
+                : l.careSuggestionWhyRoutineSummary(routineName, cadenceLabel),
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
           ),
           const SizedBox(height: 12),
-          Text(body, style: Theme.of(context).textTheme.bodyMedium),
+          Text(body, style: theme.textTheme.bodyMedium),
         ],
       ),
     ),

@@ -913,8 +913,57 @@ class AppLocalizationsFr extends AppLocalizations {
       'Un bilan annuel de bien-être permet de vérifier tranquillement vaccins, prévention des parasites et santé du quotidien.';
 
   @override
-  String careSuggestionCadenceSummary(int interval, String frequency) {
-    return 'Tous les $interval $frequency';
+  String careSuggestionCadenceDaily(int interval) {
+    String _temp0 = intl.Intl.pluralLogic(
+      interval,
+      locale: localeName,
+      other: 'Tous les $interval jours',
+      one: 'Tous les jours',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String careSuggestionCadenceWeekly(int interval) {
+    String _temp0 = intl.Intl.pluralLogic(
+      interval,
+      locale: localeName,
+      other: 'Toutes les $interval semaines',
+      one: 'Toutes les semaines',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String careSuggestionCadenceMonthly(int interval) {
+    String _temp0 = intl.Intl.pluralLogic(
+      interval,
+      locale: localeName,
+      other: 'Tous les $interval mois',
+      one: 'Tous les mois',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String careSuggestionCadenceYearly(int interval) {
+    String _temp0 = intl.Intl.pluralLogic(
+      interval,
+      locale: localeName,
+      other: 'Tous les $interval ans',
+      one: 'Tous les ans',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String careSuggestionWhyForPet(String petName) {
+    return 'Pour $petName';
+  }
+
+  @override
+  String careSuggestionWhyRoutineSummary(String routine, String cadence) {
+    return '$routine · $cadence';
   }
 
   @override

@@ -342,11 +342,31 @@
   "careSuggestionWeightMonitoringWhy": "Monthly weigh-ins build a simple record, making gradual weight changes easier to notice between vet visits.",
   "careSuggestionDentalWhy": "An annual dental review gives you a set moment to check teeth and gums and note anything worth mentioning to your vet.",
   "careSuggestionWellnessWhy": "A yearly wellness review is a calm checkpoint to confirm vaccines, parasite prevention, and day-to-day health still match your pet's needs.",
-  "careSuggestionCadenceSummary": "Every {interval} {frequency}",
-  "@careSuggestionCadenceSummary": {
+  "careSuggestionCadenceDaily": "{interval, plural, =1{Every day} other{Every {interval} days}}",
+  "@careSuggestionCadenceDaily": {
+    "placeholders": { "interval": { "type": "int" } }
+  },
+  "careSuggestionCadenceWeekly": "{interval, plural, =1{Every week} other{Every {interval} weeks}}",
+  "@careSuggestionCadenceWeekly": {
+    "placeholders": { "interval": { "type": "int" } }
+  },
+  "careSuggestionCadenceMonthly": "{interval, plural, =1{Every month} other{Every {interval} months}}",
+  "@careSuggestionCadenceMonthly": {
+    "placeholders": { "interval": { "type": "int" } }
+  },
+  "careSuggestionCadenceYearly": "{interval, plural, =1{Every year} other{Every {interval} years}}",
+  "@careSuggestionCadenceYearly": {
+    "placeholders": { "interval": { "type": "int" } }
+  },
+  "careSuggestionWhyForPet": "For {petName}",
+  "@careSuggestionWhyForPet": {
+    "placeholders": { "petName": { "type": "String" } }
+  },
+  "careSuggestionWhyRoutineSummary": "{routine} · {cadence}",
+  "@careSuggestionWhyRoutineSummary": {
     "placeholders": {
-      "interval": { "type": "int" },
-      "frequency": { "type": "String" }
+      "routine": { "type": "String" },
+      "cadence": { "type": "String" }
     }
   },
   "careSafeguardTitle": "Worth checking with your vet",

@@ -1688,11 +1688,41 @@ abstract class AppLocalizations {
   /// **'A yearly wellness review is a calm checkpoint to confirm vaccines, parasite prevention, and day-to-day health still match your pet\'s needs.'**
   String get careSuggestionWellnessWhy;
 
-  /// No description provided for @careSuggestionCadenceSummary.
+  /// No description provided for @careSuggestionCadenceDaily.
   ///
   /// In en, this message translates to:
-  /// **'Every {interval} {frequency}'**
-  String careSuggestionCadenceSummary(int interval, String frequency);
+  /// **'{interval, plural, =1{Every day} other{Every {interval} days}}'**
+  String careSuggestionCadenceDaily(int interval);
+
+  /// No description provided for @careSuggestionCadenceWeekly.
+  ///
+  /// In en, this message translates to:
+  /// **'{interval, plural, =1{Every week} other{Every {interval} weeks}}'**
+  String careSuggestionCadenceWeekly(int interval);
+
+  /// No description provided for @careSuggestionCadenceMonthly.
+  ///
+  /// In en, this message translates to:
+  /// **'{interval, plural, =1{Every month} other{Every {interval} months}}'**
+  String careSuggestionCadenceMonthly(int interval);
+
+  /// No description provided for @careSuggestionCadenceYearly.
+  ///
+  /// In en, this message translates to:
+  /// **'{interval, plural, =1{Every year} other{Every {interval} years}}'**
+  String careSuggestionCadenceYearly(int interval);
+
+  /// No description provided for @careSuggestionWhyForPet.
+  ///
+  /// In en, this message translates to:
+  /// **'For {petName}'**
+  String careSuggestionWhyForPet(String petName);
+
+  /// No description provided for @careSuggestionWhyRoutineSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{routine} · {cadence}'**
+  String careSuggestionWhyRoutineSummary(String routine, String cadence);
 
   /// No description provided for @careSafeguardTitle.
   ///

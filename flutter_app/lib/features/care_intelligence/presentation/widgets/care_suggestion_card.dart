@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../pet_profile/domain/entities/pet.dart';
 import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../health_tracking/presentation/widgets/care_event_row_pet_avatar.dart';
 import '../../domain/entities/care_recommendation.dart';
+import '../care_suggestion_copy.dart';
 import 'care_suggestion_respond_actions.dart';
 import 'suggestion_why_sheet.dart';
 
@@ -15,14 +14,20 @@ class CareSuggestionCard extends ConsumerStatefulWidget {
     super.key,
     required this.petId,
     required this.recommendation,
-    this.pet,
     this.petName,
+    this.petAvatar,
   });
 
   final String petId;
   final CareRecommendation recommendation;
-  final Pet? pet;
+
+  /// Names the pet in the "Why?" sheet. Supply it on every surface.
   final String? petName;
+
+  /// Pet photo supplied by the host surface. When present the card also shows
+  /// an identity row — needed where one card stands for any pet (dashboard),
+  /// redundant where the surface already names the pet (pet profile).
+  final Widget? petAvatar;
 
   @override
   ConsumerState<CareSuggestionCard> createState() => _CareSuggestionCardState();
@@ -31,9 +36,9 @@ class CareSuggestionCard extends ConsumerStatefulWidget {
 class _CareSuggestionCardState extends ConsumerState<CareSuggestionCard> {
   bool _responding = false;
 
-  bool get _showPetContext {
+  String? get _petName {
     final name = widget.petName;
-    return name != null && name.isNotEmpty;
+    return (name == null || name.isEmpty) ? null : name;
   }
 
   Future<void> _respond(CareRecommendationResponseAction action) async {
@@ -61,10 +66,8 @@ class _CareSuggestionCardState extends ConsumerState<CareSuggestionCard> {
       widget.petId,
     );
     final recommendation = widget.recommendation;
-    final cadenceSummary = l.careSuggestionCadenceSummary(
-      recommendation.suggestedFrequencyInterval,
-      recommendation.suggestedFrequency,
-    );
+    final cadenceLabel = careSuggestionCadenceLabel(l, recommendation);
+    final petName = _petName;
 
     return Card(
       key: Key('care_suggestion_card_${recommendation.id}'),
@@ -85,20 +88,14 @@ class _CareSuggestionCardState extends ConsumerState<CareSuggestionCard> {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              if (_showPetContext) ...[
+              if (widget.petAvatar != null && petName != null) ...[
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    CareEventRowPetAvatar(
-                      pet: widget.pet,
-                      petName: widget.petName,
-                    ),
+                    widget.petAvatar!,
                     const SizedBox(width: 8),
                     Expanded(
-                      child: Text(
-                        widget.petName!,
-                        style: theme.textTheme.titleSmall,
-                      ),
+                      child: Text(petName, style: theme.textTheme.titleSmall),
                     ),
                   ],
                 ),
@@ -108,13 +105,15 @@ class _CareSuggestionCardState extends ConsumerState<CareSuggestionCard> {
                 recommendation.suggestedName,
                 style: theme.textTheme.titleMedium,
               ),
-              const SizedBox(height: 4),
-              Text(
-                cadenceSummary,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
+              if (cadenceLabel != null) ...[
+                const SizedBox(height: 4),
+                Text(
+                  cadenceLabel,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
                 ),
-              ),
+              ],
               const SizedBox(height: 12),
               Wrap(
                 spacing: 8,
@@ -149,6 +148,9 @@ class _CareSuggestionCardState extends ConsumerState<CareSuggestionCard> {
                         : () => showSuggestionWhySheet(
                             context,
                             rationaleKey: recommendation.rationaleKey,
+                            routineName: recommendation.suggestedName,
+                            petName: petName,
+                            cadenceLabel: cadenceLabel,
                           ),
                     child: Text(l.careSuggestionWhy),
                   ),

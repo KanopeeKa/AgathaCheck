@@ -277,11 +277,31 @@
   "careSuggestionWeightMonitoringWhy": "Des pesées mensuelles créent un historique simple pour repérer plus tôt les variations de poids entre les visites vétérinaires.",
   "careSuggestionDentalWhy": "Un contrôle dentaire annuel vous donne un moment dédié pour observer dents et gencives et noter ce qui mérite d’être évoqué chez le vétérinaire.",
   "careSuggestionWellnessWhy": "Un bilan annuel de bien-être permet de vérifier tranquillement vaccins, prévention des parasites et santé du quotidien.",
-  "careSuggestionCadenceSummary": "Tous les {interval} {frequency}",
-  "@careSuggestionCadenceSummary": {
+  "careSuggestionCadenceDaily": "{interval, plural, =1{Tous les jours} other{Tous les {interval} jours}}",
+  "@careSuggestionCadenceDaily": {
+    "placeholders": { "interval": { "type": "int" } }
+  },
+  "careSuggestionCadenceWeekly": "{interval, plural, =1{Toutes les semaines} other{Toutes les {interval} semaines}}",
+  "@careSuggestionCadenceWeekly": {
+    "placeholders": { "interval": { "type": "int" } }
+  },
+  "careSuggestionCadenceMonthly": "{interval, plural, =1{Tous les mois} other{Tous les {interval} mois}}",
+  "@careSuggestionCadenceMonthly": {
+    "placeholders": { "interval": { "type": "int" } }
+  },
+  "careSuggestionCadenceYearly": "{interval, plural, =1{Tous les ans} other{Tous les {interval} ans}}",
+  "@careSuggestionCadenceYearly": {
+    "placeholders": { "interval": { "type": "int" } }
+  },
+  "careSuggestionWhyForPet": "Pour {petName}",
+  "@careSuggestionWhyForPet": {
+    "placeholders": { "petName": { "type": "String" } }
+  },
+  "careSuggestionWhyRoutineSummary": "{routine} · {cadence}",
+  "@careSuggestionWhyRoutineSummary": {
     "placeholders": {
-      "interval": { "type": "int" },
-      "frequency": { "type": "String" }
+      "routine": { "type": "String" },
+      "cadence": { "type": "String" }
     }
   },
   "careFamilyFieldLabel": "Catégorie de soins",

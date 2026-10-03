@@ -904,8 +904,57 @@ class AppLocalizationsEn extends AppLocalizations {
       'A yearly wellness review is a calm checkpoint to confirm vaccines, parasite prevention, and day-to-day health still match your pet\'s needs.';
 
   @override
-  String careSuggestionCadenceSummary(int interval, String frequency) {
-    return 'Every $interval $frequency';
+  String careSuggestionCadenceDaily(int interval) {
+    String _temp0 = intl.Intl.pluralLogic(
+      interval,
+      locale: localeName,
+      other: 'Every $interval days',
+      one: 'Every day',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String careSuggestionCadenceWeekly(int interval) {
+    String _temp0 = intl.Intl.pluralLogic(
+      interval,
+      locale: localeName,
+      other: 'Every $interval weeks',
+      one: 'Every week',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String careSuggestionCadenceMonthly(int interval) {
+    String _temp0 = intl.Intl.pluralLogic(
+      interval,
+      locale: localeName,
+      other: 'Every $interval months',
+      one: 'Every month',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String careSuggestionCadenceYearly(int interval) {
+    String _temp0 = intl.Intl.pluralLogic(
+      interval,
+      locale: localeName,
+      other: 'Every $interval years',
+      one: 'Every year',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String careSuggestionWhyForPet(String petName) {
+    return 'For $petName';
+  }
+
+  @override
+  String careSuggestionWhyRoutineSummary(String routine, String cadence) {
+    return '$routine · $cadence';
   }
 
   @override
