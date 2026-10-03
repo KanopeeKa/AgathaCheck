@@ -33,6 +33,7 @@ import {
   exportHealthEntriesCsv,
 } from '../support/api';
 import { completeNextOccurrence, createCareItem, createPetInZone, undoLast } from '../support/care-api';
+import { refreshFlutterAccessibility } from '../support/flutter';
 import { zoneAtMidAfternoon } from '../support/care-zone';
 
 test.describe('Health tracking', () => {
