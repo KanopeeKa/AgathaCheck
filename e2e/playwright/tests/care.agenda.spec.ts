@@ -6,14 +6,13 @@
  * Scenario: Missed fixed-schedule care can be marked as done together on the care item
  * Scenario: Care done after its due date keeps the next planned date and offers to change it
  */
-import { test, expect } from '../fixtures/auth.fixture';
+import { test, expect, loginAs } from '../fixtures/auth.fixture';
 import { CareAgendaPage } from '../pages/care-agenda.page';
 import { CareItemPage } from '../pages/care-item.page';
 import { GuardianDashboardPage } from '../pages/guardian-dashboard.page';
 import { OccurrencePage } from '../pages/occurrence.page';
 import { createCareItem, withCareClock } from '../support/care-api';
 import { createPet } from '../support/api';
-import { loginAs } from '../support/ui-auth';
 import { CompletionDateSheetPage } from '../pages/completion-date.sheet';
 
 test.describe('Care agenda (occurrence-first)', () => {
