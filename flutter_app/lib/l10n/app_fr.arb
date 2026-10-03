@@ -259,8 +259,8 @@
   "careSourceAgathaAdjusted": "Ajusté avec Agatha",
   "careSourceSystemDefault": "Calendrier par défaut",
   "careSuggestionTitle": "Suggestion d'Agatha",
-  "careSuggestionAccept": "Ajouter le rythme",
-  "careSuggestionRhythmAdded": "Rythme « {name} » ajouté",
+  "careSuggestionAccept": "Ajouter la routine",
+  "careSuggestionRhythmAdded": "Routine « {name} » ajoutée",
   "@careSuggestionRhythmAdded": {
     "placeholders": {
       "name": { "type": "String" }
@@ -268,15 +268,15 @@
   },
   "careSuggestionRespondFailed": "Impossible de mettre à jour cette suggestion. Réessayez.",
   "careSafeguardDismissFailed": "Impossible d'ignorer. Réessayez.",
-  "careSuggestionEditForbidden": "Vous pouvez consulter les soins de cet animal, mais pas ajouter de rythmes.",
+  "careSuggestionEditForbidden": "Vous pouvez consulter les soins de cet animal, mais pas ajouter de routines.",
   "careSuggestionDismiss": "Ignorer",
   "careSuggestionNotRelevant": "Pas pertinent",
   "careSuggestionWhy": "Pourquoi ?",
   "careSuggestionWhyTitle": "Pourquoi Agatha propose ceci",
-  "careSuggestionGenericWhy": "Ce rythme récurrent peut vous aider à rester organisé entre les visites vétérinaires.",
-  "careSuggestionWeightMonitoringWhy": "Des contrôles de poids réguliers permettent de repérer tôt les changements progressifs.",
-  "careSuggestionDentalWhy": "Un rythme de suivi dentaire aide à garder les soins bucco-dentaires au calendrier.",
-  "careSuggestionWellnessWhy": "Un bilan annuel offre un point de repère calme pour les soins courants.",
+  "careSuggestionGenericWhy": "Cette routine récurrente place les soins réguliers dans votre calendrier pour que l’essentiel ne passe pas à la trappe quand la vie s’accélère.",
+  "careSuggestionWeightMonitoringWhy": "Des pesées mensuelles créent un historique simple pour repérer plus tôt les variations de poids entre les visites vétérinaires.",
+  "careSuggestionDentalWhy": "Un contrôle dentaire annuel vous donne un moment dédié pour observer dents et gencives et noter ce qui mérite d’être évoqué chez le vétérinaire.",
+  "careSuggestionWellnessWhy": "Un bilan annuel de bien-être permet de vérifier tranquillement vaccins, prévention des parasites et santé du quotidien.",
   "careSuggestionCadenceSummary": "Tous les {interval} {frequency}",
   "@careSuggestionCadenceSummary": {
     "placeholders": {

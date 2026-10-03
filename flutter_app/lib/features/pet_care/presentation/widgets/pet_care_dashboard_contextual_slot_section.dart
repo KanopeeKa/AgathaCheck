@@ -37,6 +37,8 @@ class PetCareDashboardContextualSlotSection extends ConsumerWidget {
           PetCareDashboardSuggestionSlot() => CareSuggestionCard(
             petId: slot.petId,
             recommendation: slot.recommendation,
+            pet: pets.where((pet) => pet.id == slot.petId).firstOrNull,
+            petName: _petName(pets, slot.petId),
           ),
           PetCareDashboardMilestoneSlot() => CareMilestoneMomentCard(
             petId: slot.moment.petId,

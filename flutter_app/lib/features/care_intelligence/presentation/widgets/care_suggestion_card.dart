@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../pet_profile/domain/entities/pet.dart';
 import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../health_tracking/presentation/widgets/care_event_row_pet_avatar.dart';
 import '../../domain/entities/care_recommendation.dart';
 import 'care_suggestion_respond_actions.dart';
 import 'suggestion_why_sheet.dart';
@@ -13,10 +15,14 @@ class CareSuggestionCard extends ConsumerStatefulWidget {
     super.key,
     required this.petId,
     required this.recommendation,
+    this.pet,
+    this.petName,
   });
 
   final String petId;
   final CareRecommendation recommendation;
+  final Pet? pet;
+  final String? petName;
 
   @override
   ConsumerState<CareSuggestionCard> createState() => _CareSuggestionCardState();
@@ -24,6 +30,11 @@ class CareSuggestionCard extends ConsumerStatefulWidget {
 
 class _CareSuggestionCardState extends ConsumerState<CareSuggestionCard> {
   bool _responding = false;
+
+  bool get _showPetContext {
+    final name = widget.petName;
+    return name != null && name.isNotEmpty;
+  }
 
   Future<void> _respond(CareRecommendationResponseAction action) async {
     if (_responding) return;
@@ -74,6 +85,24 @@ class _CareSuggestionCardState extends ConsumerState<CareSuggestionCard> {
                   fontWeight: FontWeight.w600,
                 ),
               ),
+              if (_showPetContext) ...[
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    CareEventRowPetAvatar(
+                      pet: widget.pet,
+                      petName: widget.petName,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        widget.petName!,
+                        style: theme.textTheme.titleSmall,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
               const SizedBox(height: 8),
               Text(
                 recommendation.suggestedName,

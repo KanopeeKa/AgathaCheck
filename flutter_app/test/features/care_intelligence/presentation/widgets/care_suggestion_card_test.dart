@@ -10,6 +10,7 @@ import 'package:pet_profile_app/features/care_intelligence/presentation/provider
 import 'package:pet_profile_app/features/care_intelligence/presentation/widgets/care_suggestion_card.dart';
 import 'package:pet_profile_app/features/experience/domain/entities/app_experience.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/care_family.dart';
+import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet_viewer_role.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/services/pet_detail_actions.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_detail_viewer_context_provider.dart';
@@ -136,7 +137,7 @@ void main() {
     await tester.pump(const Duration(milliseconds: 100));
     await tester.pumpAndSettle();
 
-    expect(find.text('Weight check rhythm added'), findsOneWidget);
+    expect(find.text('Weight check routine added'), findsOneWidget);
   });
 
   testWidgets('accept shows error snackbar when respond fails', (tester) async {
@@ -219,7 +220,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
-      find.text("You can view this pet's care but cannot add rhythms."),
+      find.text("You can view this pet's care but cannot add routines."),
       findsOneWidget,
     );
   });
@@ -252,7 +253,7 @@ void main() {
       final acceptSemantics = tester.getSemantics(
         find.byKey(const Key('care_suggestion_accept_rec-1')),
       );
-      expect(acceptSemantics.getSemanticsData().label, 'Add rhythm');
+      expect(acceptSemantics.getSemanticsData().label, 'Add routine');
       expect(
         acceptSemantics.getSemanticsData().hasAction(SemanticsAction.tap),
         isTrue,
@@ -268,4 +269,27 @@ void main() {
       );
     },
   );
+
+  testWidgets('shows pet avatar and name when pet context is provided', (
+    tester,
+  ) async {
+    const pet = Pet(id: 'pet-1', name: 'Luna', species: 'dog');
+    final repository = _FakeCareIntelligenceRepository();
+
+    await tester.pumpWidget(
+      _wrap(
+        viewerContext: _viewerContext(canEditHealth: true),
+        repository: repository,
+        child: CareSuggestionCard(
+          petId: 'pet-1',
+          recommendation: _recommendation,
+          pet: pet,
+          petName: pet.name,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Luna'), findsOneWidget);
+  });
 }

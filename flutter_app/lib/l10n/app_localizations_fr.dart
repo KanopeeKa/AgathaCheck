@@ -866,11 +866,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careSuggestionTitle => 'Suggestion d\'Agatha';
 
   @override
-  String get careSuggestionAccept => 'Ajouter le rythme';
+  String get careSuggestionAccept => 'Ajouter la routine';
 
   @override
   String careSuggestionRhythmAdded(String name) {
-    return 'Rythme « $name » ajouté';
+    return 'Routine « $name » ajoutée';
   }
 
   @override
@@ -882,7 +882,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careSuggestionEditForbidden =>
-      'Vous pouvez consulter les soins de cet animal, mais pas ajouter de rythmes.';
+      'Vous pouvez consulter les soins de cet animal, mais pas ajouter de routines.';
 
   @override
   String get careSuggestionDismiss => 'Ignorer';
@@ -898,19 +898,19 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careSuggestionGenericWhy =>
-      'Ce rythme récurrent peut vous aider à rester organisé entre les visites vétérinaires.';
+      'Cette routine récurrente place les soins réguliers dans votre calendrier pour que l’essentiel ne passe pas à la trappe quand la vie s’accélère.';
 
   @override
   String get careSuggestionWeightMonitoringWhy =>
-      'Des contrôles de poids réguliers permettent de repérer tôt les changements progressifs.';
+      'Des pesées mensuelles créent un historique simple pour repérer plus tôt les variations de poids entre les visites vétérinaires.';
 
   @override
   String get careSuggestionDentalWhy =>
-      'Un rythme de suivi dentaire aide à garder les soins bucco-dentaires au calendrier.';
+      'Un contrôle dentaire annuel vous donne un moment dédié pour observer dents et gencives et noter ce qui mérite d’être évoqué chez le vétérinaire.';
 
   @override
   String get careSuggestionWellnessWhy =>
-      'Un bilan annuel offre un point de repère calme pour les soins courants.';
+      'Un bilan annuel de bien-être permet de vérifier tranquillement vaccins, prévention des parasites et santé du quotidien.';
 
   @override
   String careSuggestionCadenceSummary(int interval, String frequency) {
