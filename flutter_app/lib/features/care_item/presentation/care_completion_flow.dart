@@ -199,30 +199,30 @@ class CareCompletionFlow {
           identifier: 'care_done_snackbar',
           container: true,
           child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(l.careDoneSnackbar(schedule.name)),
-            if (second != null) Text(second),
-            if (changeOccurrenceId != null)
-              Align(
-                alignment: Alignment.centerLeft,
-                child: TextButton(
-                  key: const Key('care_done_change_date'),
-                  onPressed: () {
-                    messenger.hideCurrentSnackBar();
-                    openOccurrenceScreen(
-                      context,
-                      petId: schedule.petId,
-                      entryId: schedule.entryId,
-                      occurrenceId: changeOccurrenceId!,
-                      focus: 'date',
-                    );
-                  },
-                  child: Text(l.careChangeDate),
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(l.careDoneSnackbar(schedule.name)),
+              if (second != null) Text(second),
+              if (changeOccurrenceId != null)
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton(
+                    key: const Key('care_done_change_date'),
+                    onPressed: () {
+                      messenger.hideCurrentSnackBar();
+                      openOccurrenceScreen(
+                        context,
+                        petId: schedule.petId,
+                        entryId: schedule.entryId,
+                        occurrenceId: changeOccurrenceId!,
+                        focus: 'date',
+                      );
+                    },
+                    child: Text(l.careChangeDate),
+                  ),
                 ),
-              ),
-          ],
+            ],
           ),
         ),
         action: undoToken == null

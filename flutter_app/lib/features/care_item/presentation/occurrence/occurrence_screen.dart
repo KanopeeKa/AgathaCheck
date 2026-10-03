@@ -72,36 +72,36 @@ class _OccurrenceScreenState extends ConsumerState<OccurrenceScreen> {
       child: Scaffold(
         key: const Key('occurrence_screen'),
         appBar: AppBar(title: Text(title)),
-      body: switch (outcome) {
-        null => const Center(child: CircularProgressIndicator()),
-        CareFailed(failure: CareNotOpenFailure(gone: true)) => _Message(
-          key: const Key('occurrence_gone'),
-          text: l.occurrenceGone,
-          actionLabel: l.occurrenceAboutItem,
-          onAction: _openItem,
-        ),
-        CareFailed() => _Message(
-          key: const Key('occurrence_error'),
-          text: l.careOccurrenceLoadError,
-          actionLabel: l.careRetry,
-          onAction: () {
-            setState(() => _outcome = null);
-            _load();
-          },
-        ),
-        CareSucceeded(:final value) => ListView(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
-          children: [
-            _Header(detail: value, onOpenItem: _openItem),
-            const SizedBox(height: 16),
-            OccurrenceBlocks(
-              detail: value,
-              focus: widget.focus,
-              onChanged: _changed,
-            ),
-          ],
-        ),
-      },
+        body: switch (outcome) {
+          null => const Center(child: CircularProgressIndicator()),
+          CareFailed(failure: CareNotOpenFailure(gone: true)) => _Message(
+            key: const Key('occurrence_gone'),
+            text: l.occurrenceGone,
+            actionLabel: l.occurrenceAboutItem,
+            onAction: _openItem,
+          ),
+          CareFailed() => _Message(
+            key: const Key('occurrence_error'),
+            text: l.careOccurrenceLoadError,
+            actionLabel: l.careRetry,
+            onAction: () {
+              setState(() => _outcome = null);
+              _load();
+            },
+          ),
+          CareSucceeded(:final value) => ListView(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+            children: [
+              _Header(detail: value, onOpenItem: _openItem),
+              const SizedBox(height: 16),
+              OccurrenceBlocks(
+                detail: value,
+                focus: widget.focus,
+                onChanged: _changed,
+              ),
+            ],
+          ),
+        },
       ),
     );
   }
