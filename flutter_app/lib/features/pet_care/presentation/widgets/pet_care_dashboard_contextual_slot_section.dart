@@ -13,10 +13,16 @@ class PetCareDashboardContextualSlotSection extends ConsumerWidget {
     super.key,
     required this.pets,
     required this.petIds,
+    this.petAvatarBuilder,
   });
 
   final List<Pet> pets;
   final List<String> petIds;
+
+  /// Supplied by the composition layer so this section stays free of
+  /// cross-feature presentation imports. Without it, suggestion cards render
+  /// without a pet photo.
+  final Widget Function(Pet? pet, String petName)? petAvatarBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -37,6 +43,11 @@ class PetCareDashboardContextualSlotSection extends ConsumerWidget {
           PetCareDashboardSuggestionSlot() => CareSuggestionCard(
             petId: slot.petId,
             recommendation: slot.recommendation,
+            petName: _petName(pets, slot.petId),
+            petAvatar: petAvatarBuilder?.call(
+              pets.where((pet) => pet.id == slot.petId).firstOrNull,
+              _petName(pets, slot.petId),
+            ),
           ),
           PetCareDashboardMilestoneSlot() => CareMilestoneMomentCard(
             petId: slot.moment.petId,

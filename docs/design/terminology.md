@@ -81,6 +81,18 @@ Legal or technical **guardianship** is separate from Pet Care relationship langu
 | **AgathaCheck** | Legacy — do not introduce in new copy |
 | **Agatha** | Product voice for explainable suggestions — not a chat persona, simulated person, or veterinarian |
 
+## Recurring care: routine (UI) vs rhythm (internal)
+
+| Layer | Word | Examples |
+|-------|------|----------|
+| User-facing EN/FR copy | **routine** / *routine* | `careSuggestionAccept` (“Add routine”), `careSuggestionRhythmAdded`, Agatha “Why?” copy |
+| Internal code, API, docs | **rhythm** | `/api/pets/:petId/care-rhythms/…`, `weight_monitoring_rhythm`, `CareSource` provenance, domain docs |
+
+“Rhythm” was never explained to pet parents and competed with the already-shipped **routine care** wording in
+[`copy-tone.md`](./copy-tone.md). Keep it in code and on the wire — renaming persisted keys or endpoints for copy
+reasons is explicitly out of scope ([pet-care-architecture](../../.cursor/rules/pet-care-architecture.mdc)).
+ARB **keys** may keep `Rhythm` in their name; only the values are user-facing.
+
 ## Pet Care workspace labels (D38)
 
 Keep these EN/FR labels distinct in copy and l10n:

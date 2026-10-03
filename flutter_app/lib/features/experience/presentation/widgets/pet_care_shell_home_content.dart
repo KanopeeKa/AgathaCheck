@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/app_color_tokens.dart';
 import '../../../health_tracking/presentation/providers/health_providers.dart';
+import '../../../health_tracking/presentation/widgets/care_event_row_pet_avatar.dart';
 import '../../../pet_profile/domain/entities/pet.dart';
 import '../../../pet_profile/presentation/controllers/pet_list_controller.dart';
 import '../screens/pet_care/pet_care_dashboard_helpers.dart';
@@ -84,6 +85,8 @@ class PetCareShellHomeContent extends ConsumerWidget {
                   PetCareDashboardContextualSlotSection(
                     pets: shellPets,
                     petIds: shellPetIds,
+                    petAvatarBuilder: (pet, petName) =>
+                        CareEventRowPetAvatar(pet: pet, petName: petName),
                   ),
                   PetCareOperationsDeskLayout(
                     useWideLayout:
