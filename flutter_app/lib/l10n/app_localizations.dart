@@ -8922,7 +8922,7 @@ abstract class AppLocalizations {
   /// No description provided for @scheduleAtSpecificTimesHint.
   ///
   /// In en, this message translates to:
-  /// **'When off, doses are tracked as all-day events.'**
+  /// **'When off, care is tracked as all-day events.'**
   String get scheduleAtSpecificTimesHint;
 
   /// No description provided for @addAnotherScheduleTime.
@@ -11049,12 +11049,6 @@ abstract class AppLocalizations {
   /// **'View {name}'**
   String dueEventRowViewPetContextLabel(String name);
 
-  /// No description provided for @dueEventRowMarkDoneLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Mark {name} as done'**
-  String dueEventRowMarkDoneLabel(String name);
-
   /// No description provided for @dueEventRowUndoLabel.
   ///
   /// In en, this message translates to:
@@ -11100,7 +11094,7 @@ abstract class AppLocalizations {
   /// No description provided for @occurrenceStackSheetTitle.
   ///
   /// In en, this message translates to:
-  /// **'Record doses for {name}'**
+  /// **'Record earlier dates for {name}'**
   String occurrenceStackSheetTitle(String name);
 
   /// No description provided for @occurrenceZoneMissed.
@@ -11124,13 +11118,13 @@ abstract class AppLocalizations {
   /// No description provided for @occurrenceRecordHead.
   ///
   /// In en, this message translates to:
-  /// **'Record latest dose'**
+  /// **'Record the latest date'**
   String get occurrenceRecordHead;
 
   /// No description provided for @occurrenceSkipEarlierMissed.
   ///
   /// In en, this message translates to:
-  /// **'Skip earlier overdue doses when recording'**
+  /// **'Skip earlier overdue dates when recording'**
   String get occurrenceSkipEarlierMissed;
 
   /// No description provided for @occurrenceReviewEach.
@@ -11214,13 +11208,13 @@ abstract class AppLocalizations {
   /// No description provided for @careCategoryBlockProductDoseTitle.
   ///
   /// In en, this message translates to:
-  /// **'Product and dose'**
+  /// **'Product and amount'**
   String get careCategoryBlockProductDoseTitle;
 
   /// No description provided for @careCategoryBlockAddProductDose.
   ///
   /// In en, this message translates to:
-  /// **'Add dose details'**
+  /// **'Add product details'**
   String get careCategoryBlockAddProductDose;
 
   /// No description provided for @careCategoryBlockProductName.
@@ -11244,13 +11238,13 @@ abstract class AppLocalizations {
   /// No description provided for @careCategoryBlockDoseAmount.
   ///
   /// In en, this message translates to:
-  /// **'Dose amount'**
+  /// **'Amount'**
   String get careCategoryBlockDoseAmount;
 
   /// No description provided for @careCategoryBlockDoseUnit.
   ///
   /// In en, this message translates to:
-  /// **'Dose unit'**
+  /// **'Unit'**
   String get careCategoryBlockDoseUnit;
 
   /// No description provided for @careCategoryBlockRouteMethod.
@@ -11965,7 +11959,7 @@ abstract class AppLocalizations {
   /// No description provided for @awayPlanningIndeterminatePending.
   ///
   /// In en, this message translates to:
-  /// **'Waiting on a prior dose'**
+  /// **'Waiting on an earlier date'**
   String get awayPlanningIndeterminatePending;
 
   /// No description provided for @awayPlanningIndeterminateChain.

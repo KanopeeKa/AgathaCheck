@@ -1708,7 +1708,7 @@
   "period": "Période",
   "repeatEndsBy": "Répétition jusqu'au",
   "scheduleAtSpecificTimes": "Planifier à des heures précises",
-  "scheduleAtSpecificTimesHint": "Si désactivé, les doses sont suivies comme événements toute la journée.",
+  "scheduleAtSpecificTimesHint": "Si désactivé, les soins sont suivis comme événements toute la journée.",
   "addAnotherScheduleTime": "Ajouter une autre heure par jour",
   "removeScheduleTime": "Supprimer l'heure",
   "never": "Jamais",
@@ -2195,12 +2195,6 @@
       "name": { "type": "String" }
     }
   },
-  "dueEventRowMarkDoneLabel": "Marquer {name} comme fait",
-  "@dueEventRowMarkDoneLabel": {
-    "placeholders": {
-      "name": { "type": "String" }
-    }
-  },
   "dueEventRowUndoLabel": "Annuler la complétion de {name}",
   "@dueEventRowUndoLabel": {
     "placeholders": {
@@ -2234,7 +2228,7 @@
       "count": { "type": "int" }
     }
   },
-  "occurrenceStackSheetTitle": "Enregistrer les doses pour {name}",
+  "occurrenceStackSheetTitle": "Enregistrer les dates précédentes pour {name}",
   "@occurrenceStackSheetTitle": {
     "placeholders": {
       "name": { "type": "String" }
@@ -2243,8 +2237,8 @@
   "occurrenceZoneMissed": "En retard",
   "occurrenceZoneDueToday": "Aujourd'hui",
   "occurrenceZoneComingUp": "À venir",
-  "occurrenceRecordHead": "Enregistrer la dose la plus récente",
-  "occurrenceSkipEarlierMissed": "Ignorer les doses en retard antérieures lors de l'enregistrement",
+  "occurrenceRecordHead": "Enregistrer la date la plus récente",
+  "occurrenceSkipEarlierMissed": "Ignorer les dates en retard antérieures lors de l'enregistrement",
   "occurrenceReviewEach": "Voir dans l'événement",
   "occurrenceSkipAllMissed": "Ignorer tous les retards",
   "occurrenceNotNow": "Pas maintenant",
@@ -2269,13 +2263,13 @@
   "careAddDetailsTitle": "Ajouter des détails",
   "careDetailsSaved": "Détails enregistrés",
   "careDetailsSaveFailed": "Impossible d'enregistrer les détails. Réessayez.",
-  "careCategoryBlockProductDoseTitle": "Produit et dose",
-  "careCategoryBlockAddProductDose": "Ajouter les détails de dose",
+  "careCategoryBlockProductDoseTitle": "Produit et quantité",
+  "careCategoryBlockAddProductDose": "Ajouter le produit",
   "careCategoryBlockProductName": "Nom du produit",
   "careCategoryBlockForm": "Forme",
   "careCategoryBlockStrength": "Concentration",
-  "careCategoryBlockDoseAmount": "Quantité de dose",
-  "careCategoryBlockDoseUnit": "Unité de dose",
+  "careCategoryBlockDoseAmount": "Quantité",
+  "careCategoryBlockDoseUnit": "Unité",
   "careCategoryBlockRouteMethod": "Voie ou mode",
   "careCategoryBlockVisitTitle": "Visite",
   "careCategoryBlockAddVisit": "Ajouter les détails de visite",
@@ -2485,7 +2479,7 @@
     }
   },
   "awayPlanningChainAnchorExplainer": "Les dates de certains soins dépendent de la complétion du précédent et peuvent changer.",
-  "awayPlanningIndeterminatePending": "En attente d'une dose précédente",
+  "awayPlanningIndeterminatePending": "En attente d'une date précédente",
   "awayPlanningIndeterminateChain": "Dépend de soins antérieurs dans la chaîne",
   "awayPlanningIndeterminateGeneric": "Horaire pas encore connu",
   "awayPlanningOpenDueBeforeLeave": "{date} · À faire avant votre départ",

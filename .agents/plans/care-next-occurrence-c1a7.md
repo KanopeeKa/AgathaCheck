@@ -1344,10 +1344,10 @@ Recorded before C0 starts; every item below is approved with the phases (execute
 
 ```yaml
 autonomy: active
-current_phase: "C5"
-last_completed_phase: "C4b"
+current_phase: "C6"
+last_completed_phase: "C5"
 halt_reason: null
-next_action: "C5: copy + ARB dose guard; then C6 tests/E2E, D2/D3"
+next_action: "C6: BDD + Playwright per §18.11; then D2/D3"
 artifact_ref:
   branch: claude/eager-edison-mf34j6
   plan_path: .agents/plans/care-next-occurrence-c1a7.md
@@ -1362,6 +1362,7 @@ phase_commits:
   c0: d9e03b4
   c1: f592202
   c2: 48ef57c
+  c3_c4b: 66ee32e
 pending_answers:
   gdpr_export_owner: "https://github.com/KanopeeKa/AgathaCheck/issues/1446#issuecomment-5970721429"
 debt_issue_refs: []

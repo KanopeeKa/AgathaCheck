@@ -5031,7 +5031,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get scheduleAtSpecificTimesHint =>
-      'Si désactivé, les doses sont suivies comme événements toute la journée.';
+      'Si désactivé, les soins sont suivis comme événements toute la journée.';
 
   @override
   String get addAnotherScheduleTime => 'Ajouter une autre heure par jour';
@@ -6275,11 +6275,6 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String dueEventRowMarkDoneLabel(String name) {
-    return 'Marquer $name comme fait';
-  }
-
-  @override
   String dueEventRowUndoLabel(String name) {
     return 'Annuler la complétion de $name';
   }
@@ -6312,7 +6307,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String occurrenceStackSheetTitle(String name) {
-    return 'Enregistrer les doses pour $name';
+    return 'Enregistrer les dates précédentes pour $name';
   }
 
   @override
@@ -6325,11 +6320,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get occurrenceZoneComingUp => 'À venir';
 
   @override
-  String get occurrenceRecordHead => 'Enregistrer la dose la plus récente';
+  String get occurrenceRecordHead => 'Enregistrer la date la plus récente';
 
   @override
   String get occurrenceSkipEarlierMissed =>
-      'Ignorer les doses en retard antérieures lors de l\'enregistrement';
+      'Ignorer les dates en retard antérieures lors de l\'enregistrement';
 
   @override
   String get occurrenceReviewEach => 'Voir dans l\'événement';
@@ -6377,10 +6372,10 @@ class AppLocalizationsFr extends AppLocalizations {
       'Impossible d\'enregistrer les détails. Réessayez.';
 
   @override
-  String get careCategoryBlockProductDoseTitle => 'Produit et dose';
+  String get careCategoryBlockProductDoseTitle => 'Produit et quantité';
 
   @override
-  String get careCategoryBlockAddProductDose => 'Ajouter les détails de dose';
+  String get careCategoryBlockAddProductDose => 'Ajouter le produit';
 
   @override
   String get careCategoryBlockProductName => 'Nom du produit';
@@ -6392,10 +6387,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careCategoryBlockStrength => 'Concentration';
 
   @override
-  String get careCategoryBlockDoseAmount => 'Quantité de dose';
+  String get careCategoryBlockDoseAmount => 'Quantité';
 
   @override
-  String get careCategoryBlockDoseUnit => 'Unité de dose';
+  String get careCategoryBlockDoseUnit => 'Unité';
 
   @override
   String get careCategoryBlockRouteMethod => 'Voie ou mode';
@@ -6858,7 +6853,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get awayPlanningIndeterminatePending =>
-      'En attente d\'une dose précédente';
+      'En attente d\'une date précédente';
 
   @override
   String get awayPlanningIndeterminateChain =>

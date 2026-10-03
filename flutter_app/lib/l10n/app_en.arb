@@ -1787,7 +1787,7 @@
   "period": "Period",
   "repeatEndsBy": "Repeat ends by",
   "scheduleAtSpecificTimes": "Schedule at specific times",
-  "scheduleAtSpecificTimesHint": "When off, doses are tracked as all-day events.",
+  "scheduleAtSpecificTimesHint": "When off, care is tracked as all-day events.",
   "addAnotherScheduleTime": "Add another time per day",
   "removeScheduleTime": "Remove time",
   "never": "Never",
@@ -2275,12 +2275,6 @@
       "name": { "type": "String" }
     }
   },
-  "dueEventRowMarkDoneLabel": "Mark {name} as done",
-  "@dueEventRowMarkDoneLabel": {
-    "placeholders": {
-      "name": { "type": "String" }
-    }
-  },
   "dueEventRowUndoLabel": "Undo completion of {name}",
   "@dueEventRowUndoLabel": {
     "placeholders": {
@@ -2314,7 +2308,7 @@
       "count": { "type": "int" }
     }
   },
-  "occurrenceStackSheetTitle": "Record doses for {name}",
+  "occurrenceStackSheetTitle": "Record earlier dates for {name}",
   "@occurrenceStackSheetTitle": {
     "placeholders": {
       "name": { "type": "String" }
@@ -2323,8 +2317,8 @@
   "occurrenceZoneMissed": "Overdue",
   "occurrenceZoneDueToday": "Due today",
   "occurrenceZoneComingUp": "Coming up",
-  "occurrenceRecordHead": "Record latest dose",
-  "occurrenceSkipEarlierMissed": "Skip earlier overdue doses when recording",
+  "occurrenceRecordHead": "Record the latest date",
+  "occurrenceSkipEarlierMissed": "Skip earlier overdue dates when recording",
   "occurrenceReviewEach": "Review in event view",
   "occurrenceSkipAllMissed": "Skip all overdue",
   "occurrenceNotNow": "Not now",
@@ -2349,13 +2343,13 @@
   "careAddDetailsTitle": "Add details",
   "careDetailsSaved": "Details saved",
   "careDetailsSaveFailed": "Could not save details. Try again.",
-  "careCategoryBlockProductDoseTitle": "Product and dose",
-  "careCategoryBlockAddProductDose": "Add dose details",
+  "careCategoryBlockProductDoseTitle": "Product and amount",
+  "careCategoryBlockAddProductDose": "Add product details",
   "careCategoryBlockProductName": "Product name",
   "careCategoryBlockForm": "Form",
   "careCategoryBlockStrength": "Strength",
-  "careCategoryBlockDoseAmount": "Dose amount",
-  "careCategoryBlockDoseUnit": "Dose unit",
+  "careCategoryBlockDoseAmount": "Amount",
+  "careCategoryBlockDoseUnit": "Unit",
   "careCategoryBlockRouteMethod": "Route or method",
   "careCategoryBlockVisitTitle": "Visit",
   "careCategoryBlockAddVisit": "Add visit details",
@@ -2611,7 +2605,7 @@
     }
   },
   "awayPlanningChainAnchorExplainer": "Dates for some care events depend on when the previous one is completed, and may shift.",
-  "awayPlanningIndeterminatePending": "Waiting on a prior dose",
+  "awayPlanningIndeterminatePending": "Waiting on an earlier date",
   "awayPlanningIndeterminateChain": "Depends on earlier care in the chain",
   "awayPlanningIndeterminateGeneric": "Timing not yet known",
   "awayPlanningOpenDueBeforeLeave": "{date} · Due before you leave",

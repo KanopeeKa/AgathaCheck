@@ -61,7 +61,7 @@ class PetCareActionRowBuilder {
       leading: CareFamilyIcon.forEntry(entry),
       onPressed: onMarkDone,
       markDoneKey: Key('pet_care_action_done_${entry.id}'),
-      markDoneSemanticLabel: l10n.dueEventRowMarkDoneLabel(entry.name),
+      markDoneSemanticLabel: l10n.careMarkDoneLabel(entry.name),
       markDoneSemanticsIdentifier: 'pet_care_action_done_${entry.id}',
       onTap: onTap,
     );

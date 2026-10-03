@@ -4952,7 +4952,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get scheduleAtSpecificTimesHint =>
-      'When off, doses are tracked as all-day events.';
+      'When off, care is tracked as all-day events.';
 
   @override
   String get addAnotherScheduleTime => 'Add another time per day';
@@ -6174,11 +6174,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String dueEventRowMarkDoneLabel(String name) {
-    return 'Mark $name as done';
-  }
-
-  @override
   String dueEventRowUndoLabel(String name) {
     return 'Undo completion of $name';
   }
@@ -6211,7 +6206,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String occurrenceStackSheetTitle(String name) {
-    return 'Record doses for $name';
+    return 'Record earlier dates for $name';
   }
 
   @override
@@ -6224,11 +6219,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get occurrenceZoneComingUp => 'Coming up';
 
   @override
-  String get occurrenceRecordHead => 'Record latest dose';
+  String get occurrenceRecordHead => 'Record the latest date';
 
   @override
   String get occurrenceSkipEarlierMissed =>
-      'Skip earlier overdue doses when recording';
+      'Skip earlier overdue dates when recording';
 
   @override
   String get occurrenceReviewEach => 'Review in event view';
@@ -6275,10 +6270,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careDetailsSaveFailed => 'Could not save details. Try again.';
 
   @override
-  String get careCategoryBlockProductDoseTitle => 'Product and dose';
+  String get careCategoryBlockProductDoseTitle => 'Product and amount';
 
   @override
-  String get careCategoryBlockAddProductDose => 'Add dose details';
+  String get careCategoryBlockAddProductDose => 'Add product details';
 
   @override
   String get careCategoryBlockProductName => 'Product name';
@@ -6290,10 +6285,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careCategoryBlockStrength => 'Strength';
 
   @override
-  String get careCategoryBlockDoseAmount => 'Dose amount';
+  String get careCategoryBlockDoseAmount => 'Amount';
 
   @override
-  String get careCategoryBlockDoseUnit => 'Dose unit';
+  String get careCategoryBlockDoseUnit => 'Unit';
 
   @override
   String get careCategoryBlockRouteMethod => 'Route or method';
@@ -6748,7 +6743,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Dates for some care events depend on when the previous one is completed, and may shift.';
 
   @override
-  String get awayPlanningIndeterminatePending => 'Waiting on a prior dose';
+  String get awayPlanningIndeterminatePending => 'Waiting on an earlier date';
 
   @override
   String get awayPlanningIndeterminateChain =>

@@ -151,7 +151,7 @@ class CareEventRow extends StatelessWidget {
             CareMarkDoneButton(
               key: Key('care_event_row_done_${entry.id}'),
               semanticsIdentifier: 'care_event_row_done_${entry.id}',
-              semanticLabel: l.dueEventRowMarkDoneLabel(entry.name),
+              semanticLabel: l.careMarkDoneLabel(entry.name),
               onPressed: isMarkDoneEnabled ? onMarkDone : null,
             ),
           ],

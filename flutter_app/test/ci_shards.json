@@ -30,6 +30,7 @@
       "id": "core",
       "roots": [
         "test/core",
+        "test/l10n",
         "test/features/people",
         "test/features/care_taxonomy",
         "test/features/sharing",

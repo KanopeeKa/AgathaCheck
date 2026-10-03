@@ -11,7 +11,7 @@ export class OccurrenceStackSheetPage {
 
   async expectLoaded(entryName: string): Promise<void> {
     const pattern = new RegExp(
-      `Record doses for ${escapeRegExp(entryName)}`,
+      `Record earlier dates for ${escapeRegExp(entryName)}`,
       'i',
     );
     await expect(async () => {
@@ -41,18 +41,18 @@ export class OccurrenceStackSheetPage {
   }
 
   async recordLatestDose(): Promise<void> {
-    await this.page.getByRole('button', { name: /Record latest dose/i }).click();
+    await this.page.getByRole('button', { name: /Record the latest date/i }).click();
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
       await expect(
-        this.page.getByRole('button', { name: /Record latest dose/i }),
+        this.page.getByRole('button', { name: /Record the latest date/i }),
       ).toHaveCount(0);
     }).toPass({ timeout: 30_000 });
   }
 
   /** Records the latest dose when it is overdue: the app asks "When was this done?" and Today is chosen. */
   async recordLatestOverdueDoseToday(): Promise<void> {
-    await this.page.getByRole('button', { name: /Record latest dose/i }).click();
+    await this.page.getByRole('button', { name: /Record the latest date/i }).click();
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
       await expect(this.page.getByText(/When was this done\?/i)).toBeVisible();
@@ -61,7 +61,7 @@ export class OccurrenceStackSheetPage {
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
       await expect(this.page.getByText(/When was this done\?/i)).toHaveCount(0);
-      await expect(this.page.getByRole('button', { name: /Record latest dose/i })).toHaveCount(0);
+      await expect(this.page.getByRole('button', { name: /Record the latest date/i })).toHaveCount(0);
     }).toPass({ timeout: 30_000 });
   }
 
