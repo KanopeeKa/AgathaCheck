@@ -530,13 +530,13 @@ autonomy: active
 current_phase: s3-relationships
 last_completed_phase: s2-usages-provider
 halt_reason: null
-next_action: "start phase s3-relationships: checkout cursor/people-server-s3-relationships-7f3b"
+next_action: "continue phase s3-relationships on branch cursor/people-server-s3-relationships-7f3b"
 artifact_ref:
   branch: cursor/people-server-integration-7f3b
   plan_path: .agents/plans/people-server-7f3b.md
-  plan_commit: 0ad9564c30504f19b3e8e37688a8387926f2cc23
+  plan_commit: 3fc29bc9b05eee15f7ad780da7f166d494c5d8d9
   snapshot_path: .agents/plans/people-server-7f3b.snapshot.json
-  snapshot_commit: 0ad9564c30504f19b3e8e37688a8387926f2cc23
+  snapshot_commit: 3fc29bc9b05eee15f7ad780da7f166d494c5d8d9
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
