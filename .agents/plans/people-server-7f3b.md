@@ -530,13 +530,13 @@ autonomy: active
 current_phase: s5-households-api
 last_completed_phase: s4-read-models
 halt_reason: null
-next_action: "continue phase s5-households-api on branch cursor/people-server-s5-households-7f3b"
+next_action: "start phase s5-households-api: checkout cursor/people-server-s5-households-7f3b"
 artifact_ref:
   branch: cursor/people-server-integration-7f3b
   plan_path: .agents/plans/people-server-7f3b.md
-  plan_commit: c1b5e545b1043c5b496d9f96ba20141dcc18e91b
+  plan_commit: 063d6b62bb9894d8a3bddca83900e680a24839e2
   snapshot_path: .agents/plans/people-server-7f3b.snapshot.json
-  snapshot_commit: c1b5e545b1043c5b496d9f96ba20141dcc18e91b
+  snapshot_commit: 063d6b62bb9894d8a3bddca83900e680a24839e2
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
