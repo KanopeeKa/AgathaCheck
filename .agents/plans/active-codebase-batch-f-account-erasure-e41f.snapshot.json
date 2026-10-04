@@ -100,6 +100,7 @@
         "server/lib/privateHealthStorage.js",
         "server/routes/pets/photoRouter.js",
         "server/routes/healthEntries/shared.js",
+        "server/routes/healthEntries/documentsRouter.js",
         "server/test/auth/accountExistence*.test.js",
         "server/test/db/erasureRace*.test.js",
         "docs/ops/observability.md"
@@ -118,10 +119,13 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "complete",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
     },
     {
       "id": "4",
@@ -189,5 +193,5 @@
       "merge_commit": null
     }
   ],
-  "content_hash": "sha256:6223fe1048326de96b5df4adc823dd08acd09a9c060ed938393c59ef9a14b59b"
+  "content_hash": "sha256:f0f719b316e318c468738bd50b42a6cc0f517c5415eb773dd4235320630df5fc"
 }

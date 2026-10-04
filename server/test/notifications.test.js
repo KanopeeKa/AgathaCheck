@@ -337,7 +337,12 @@ describe('Notifications API', () => {
   describe('Error handling', () => {
     it('returns 500 when database throws on GET /', async () => {
       const pool = buildMockPool({
-        query: async () => { throw new Error('DB down'); },
+        query: async (sql) => {
+          if (String(sql).includes('SELECT 1 FROM users WHERE id = $1')) {
+            return { rows: [{ '?column?': 1 }] };
+          }
+          throw new Error('DB down');
+        },
       });
       const a = createApp(pool);
       const res = await request(a)

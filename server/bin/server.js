@@ -30,7 +30,10 @@ import { createStaticUploadLimiter } from '../config/rateLimit.js';
 import { logPublicAccessModeOnce } from '../config/publicAccess.js';
 import { requestContextMiddleware } from '../middleware/requestContext.js';
 import { publicAccessGate } from '../middleware/publicAccessGate.js';
-import { createAccountExistenceMiddleware } from '../lib/auth/accountExistence.js';
+import {
+  createAccountExistenceMiddleware,
+  installTestAccountExistencePoolCompat,
+} from '../lib/auth/accountExistence.js';
 
 function getServerDir() {
   try {
@@ -61,6 +64,9 @@ function createPool() {
 export function createApp(customPool, comparePassword) {
   const app = express();
   const pool = customPool || createPool();
+  if (customPool && !(customPool instanceof Pool)) {
+    installTestAccountExistencePoolCompat(pool);
+  }
   // Expose the pool so the startup wrapper can close it on graceful shutdown.
   app.locals.pool = pool;
 

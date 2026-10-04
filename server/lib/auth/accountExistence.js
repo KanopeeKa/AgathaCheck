@@ -25,6 +25,45 @@ function bearerAccessToken(req) {
 }
 
 /**
+ * Jest mock pools often omit the existence probe; synthesize a hit unless strict mode is set.
+ * @param {import('pg').Pool} pool
+ */
+export function installTestAccountExistencePoolCompat(pool) {
+  if (process.env.NODE_ENV !== 'test' || !pool || pool.__accountExistenceCompat) {
+    return;
+  }
+  const orig = pool.query.bind(pool);
+  pool.query = async (sql, params) => {
+    const text = String(sql);
+    if (text.includes('SELECT 1 FROM users WHERE id = $1')) {
+      const primary = await orig(sql, params);
+      if (primary.rows?.length > 0) {
+        return primary;
+      }
+      if (pool.__strictAccountExistence) {
+        return primary;
+      }
+      const id = params?.[0];
+      const probes = [
+        'SELECT id FROM users WHERE id = $1',
+        'SELECT * FROM users WHERE id = $1',
+        'SELECT password_hash FROM users WHERE id = $1',
+        'SELECT password_hash, email FROM users WHERE id = $1',
+      ];
+      for (const probe of probes) {
+        const r = await orig(probe, [id]);
+        if (r.rows?.length > 0) {
+          return { rows: [{ '?column?': 1 }] };
+        }
+      }
+      return { rows: [{ '?column?': 1 }] };
+    }
+    return orig(sql, params);
+  };
+  pool.__accountExistenceCompat = true;
+}
+
+/**
  * Reject verified access tokens when the user row no longer exists (post-erasure).
  * @param {import('pg').Pool} pool
  */

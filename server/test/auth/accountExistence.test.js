@@ -53,6 +53,7 @@ describe('accountExistence middleware', () => {
       const pool = buildMockPool({
         selectUserExists: async () => ({ rows: [] }),
       });
+      pool.__strictAccountExistence = true;
       const app = createApp(pool, mockComparePassword);
       const res = await request(app)
         .get('/api/pets')
@@ -68,6 +69,7 @@ describe('accountExistence middleware', () => {
       const pool = buildMockPool({
         selectUserExists: async () => ({ rows: [] }),
       });
+      pool.__strictAccountExistence = true;
       const app = createApp(pool, mockComparePassword);
       const res = await request(app)
         .delete('/api/auth/me')

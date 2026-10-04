@@ -42,16 +42,16 @@ Today's defect, for reference: `DELETE /api/auth/me` (`server/routes/auth/profil
 
 ```yaml
 autonomy: active
-current_phase: 4
-last_completed_phase: 3
+current_phase: 3
+last_completed_phase: 2
 halt_reason: null
-next_action: "continue phase 4 on branch cursor/active-codebase-f4-erasure-client-e41f"
+next_action: "continue phase 3 on branch cursor/active-codebase-f3-access-rejection-e41f"
 artifact_ref:
-  branch: cursor/active-codebase-f4-erasure-client-e41f
+  branch: cursor/active-codebase-f3-access-rejection-e41f
   plan_path: .agents/plans/active-codebase-batch-f-account-erasure-e41f.md
-  plan_commit: 07c53e236ad4ae050fe85ec31b3a9a62d550e19e
+  plan_commit: ced3cb1dbd426dc9cf507d3f03ce17fa05db37bf
   snapshot_path: .agents/plans/active-codebase-batch-f-account-erasure-e41f.snapshot.json
-  snapshot_commit: 07c53e236ad4ae050fe85ec31b3a9a62d550e19e
+  snapshot_commit: ced3cb1dbd426dc9cf507d3f03ce17fa05db37bf
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
