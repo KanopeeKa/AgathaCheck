@@ -14,10 +14,7 @@ class ShellNotificationBell extends ConsumerWidget {
     final indicator = ref.watch(notificationBellIndicatorProvider);
     final count = indicator.numericCount;
     final bellTooltip = count > 0
-        ? l.drawerItemUnreadSemantics(
-            l.notificationsBellTooltip,
-            count,
-          )
+        ? l.drawerItemUnreadSemantics(l.notificationsBellTooltip, count)
         : indicator.showDot
         ? l.notificationsBellTooltip
         : l.notificationsBellTooltip;

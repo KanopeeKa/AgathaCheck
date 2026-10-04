@@ -10,11 +10,12 @@ import '../utils/notification_navigation.dart';
 import 'notification_date_groups.dart';
 import 'notification_tile.dart';
 
-typedef NotificationInboxTileTap = Future<void> Function(
-  BuildContext context,
-  WidgetRef ref,
-  AppNotification notification,
-);
+typedef NotificationInboxTileTap =
+    Future<void> Function(
+      BuildContext context,
+      WidgetRef ref,
+      AppNotification notification,
+    );
 
 /// Date-grouped inbox list with Activity pinned sections (FR-IN-3/4).
 class NotificationInboxList extends ConsumerWidget {
@@ -79,22 +80,20 @@ class NotificationInboxList extends ConsumerWidget {
         .where(NotificationInboxV2Rules.needsResponse)
         .where((n) => !NotificationInboxV2Rules.isUrgent(n))
         .toList();
-    final needsResponseIds =
-        needsResponse.map((notification) => notification.id).toSet();
+    final needsResponseIds = needsResponse
+        .map((notification) => notification.id)
+        .toSet();
 
     final pinnedUrgent = selectedTab == NotificationInboxTab.activity
         ? filtered
-            .where(
-              (n) =>
-                  NotificationInboxV2Rules.isUrgent(n) &&
-                  !needsResponseIds.contains(n.id),
-            )
-            .toList()
+              .where(
+                (n) =>
+                    NotificationInboxV2Rules.isUrgent(n) &&
+                    !needsResponseIds.contains(n.id),
+              )
+              .toList()
         : const <AppNotification>[];
-    final pinnedIds = {
-      ...needsResponseIds,
-      ...pinnedUrgent.map((n) => n.id),
-    };
+    final pinnedIds = {...needsResponseIds, ...pinnedUrgent.map((n) => n.id)};
 
     final grouped = groupNotificationsByDate(
       context,

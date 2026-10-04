@@ -78,8 +78,9 @@ class NotificationInboxV2Rules {
     return hasOtherUnreadActivity || hasUnreadSuggestions;
   }
 
-  static int activityTabIndicatorCount(Iterable<AppNotification> notifications) =>
-      bellNumericCount(notifications);
+  static int activityTabIndicatorCount(
+    Iterable<AppNotification> notifications,
+  ) => bellNumericCount(notifications);
 
   static bool forYouTabShowDot(Iterable<AppNotification> notifications) =>
       notifications.any((n) => isForYouKind(n.kind) && !n.isRead);

@@ -30,12 +30,19 @@ void main() {
   group('NotificationInboxV2Rules calm badge', () {
     test('bell number counts needs-response and urgent activity items', () {
       final list = [
-        _n(kind: NotificationKind.relationship, wireType: 'shareInviteReceived'),
+        _n(
+          kind: NotificationKind.relationship,
+          wireType: 'shareInviteReceived',
+        ),
         _n(
           kind: NotificationKind.administrative,
           priority: NotificationPriority.urgent,
         ),
-        _n(kind: NotificationKind.relationship, wireType: 'shareInviteAccepted', isRead: true),
+        _n(
+          kind: NotificationKind.relationship,
+          wireType: 'shareInviteAccepted',
+          isRead: true,
+        ),
       ];
       expect(NotificationInboxV2Rules.bellNumericCount(list), 2);
     });

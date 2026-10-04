@@ -38,7 +38,8 @@ class _NotificationPanelState extends ConsumerState<NotificationPanel> {
     final selectedTab = ref.watch(notificationInboxSessionTabProvider);
     final prefs = ref.watch(notificationPreferencesProvider).valueOrNull;
     final mutedIds = prefs?.mutedPetIds.toSet() ?? {};
-    final visible = notificationsAsync.valueOrNull
+    final visible =
+        notificationsAsync.valueOrNull
             ?.where(
               (n) =>
                   n.petId == null ||
@@ -57,13 +58,16 @@ class _NotificationPanelState extends ConsumerState<NotificationPanel> {
               _PanelHeader(l: l, theme: theme, onMarkAllRead: _markAllRead),
               NotificationInboxTabBar(
                 selected: selectedTab,
-                onSelected: (tab) => ref
-                    .read(notificationInboxSessionTabProvider.notifier)
-                    .state = tab,
+                onSelected: (tab) =>
+                    ref
+                            .read(notificationInboxSessionTabProvider.notifier)
+                            .state =
+                        tab,
                 activityIndicatorCount:
                     NotificationInboxV2Rules.activityTabIndicatorCount(visible),
-                forYouShowDot:
-                    NotificationInboxV2Rules.forYouTabShowDot(visible),
+                forYouShowDot: NotificationInboxV2Rules.forYouTabShowDot(
+                  visible,
+                ),
               ),
               const NotificationInboxV2Explainer(
                 onOpenActions: _openActionsFromPanel,

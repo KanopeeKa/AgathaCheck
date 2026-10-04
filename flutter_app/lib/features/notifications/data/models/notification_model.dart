@@ -147,8 +147,9 @@ class NotificationPreferencesModel {
       'notify_completed': notifyCompleted,
       'muted_pet_ids': mutedPetIds,
       if (v2ExplainerDismissedAt != null)
-        'v2_explainer_dismissed_at':
-            v2ExplainerDismissedAt!.toUtc().toIso8601String(),
+        'v2_explainer_dismissed_at': v2ExplainerDismissedAt!
+            .toUtc()
+            .toIso8601String(),
     };
   }
 }

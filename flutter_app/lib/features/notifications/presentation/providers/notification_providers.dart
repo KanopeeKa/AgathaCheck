@@ -86,16 +86,15 @@ final notificationBellIndicatorProvider = Provider<NotificationBellIndicator>((
     data: (list) {
       final visible = list.where(
         (n) =>
-            n.petId == null ||
-            n.petId!.isEmpty ||
-            !mutedIds.contains(n.petId),
+            n.petId == null || n.petId!.isEmpty || !mutedIds.contains(n.petId),
       );
       return NotificationBellIndicator(
         numericCount: NotificationInboxV2Rules.bellNumericCount(visible),
         showDot: NotificationInboxV2Rules.bellShowDot(visible),
       );
     },
-    loading: () => const NotificationBellIndicator(numericCount: 0, showDot: false),
+    loading: () =>
+        const NotificationBellIndicator(numericCount: 0, showDot: false),
     error: (_, __) =>
         const NotificationBellIndicator(numericCount: 0, showDot: false),
   );

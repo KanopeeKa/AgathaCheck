@@ -127,19 +127,20 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
             children: [
               NotificationInboxTabBar(
                 selected: selectedTab,
-                onSelected: (tab) => ref
-                    .read(notificationInboxSessionTabProvider.notifier)
-                    .state = tab,
+                onSelected: (tab) =>
+                    ref
+                            .read(notificationInboxSessionTabProvider.notifier)
+                            .state =
+                        tab,
                 activityIndicatorCount:
-                    NotificationInboxV2Rules.activityTabIndicatorCount(
-                      visible,
-                    ),
+                    NotificationInboxV2Rules.activityTabIndicatorCount(visible),
                 forYouShowDot: NotificationInboxV2Rules.forYouTabShowDot(
                   visible,
                 ),
               ),
               NotificationInboxV2Explainer(
-                onOpenActions: (context) => navigateToNotificationActions(context),
+                onOpenActions: (context) =>
+                    navigateToNotificationActions(context),
               ),
               Expanded(
                 child: NotificationInboxList(

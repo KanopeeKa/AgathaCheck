@@ -6,10 +6,7 @@ import '../providers/notification_providers.dart';
 
 /// One-time v2 inbox explainer (FR-EM-3, AC-IN-9).
 class NotificationInboxV2Explainer extends ConsumerWidget {
-  const NotificationInboxV2Explainer({
-    super.key,
-    this.onOpenActions,
-  });
+  const NotificationInboxV2Explainer({super.key, this.onOpenActions});
 
   final void Function(BuildContext context)? onOpenActions;
 
