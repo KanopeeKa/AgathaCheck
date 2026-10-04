@@ -281,15 +281,15 @@ autonomy: active
 current_phase: 5
 last_completed_phase: 6
 halt_reason: null
-next_action: "phase 5 BDD hygiene PR → phase 7 security/perf"
+next_action: "continue phase 5 on branch claude/relaxed-einstein-jqecfg"
 artifact_ref:
-  branch: cursor/test-health-ci-phase6-edcb
+  branch: cursor/test-health-ci-phase5-edcb
   plan_path: .agents/plans/test-health-ci-5f3a.md
-  plan_commit: bbb03c1f96cb22080c7a0dbf235ae8a429ef3e34
+  plan_commit: a13c751addecaea671ee2eda45c01fba5d4b5c9a
   snapshot_path: .agents/plans/test-health-ci-5f3a.snapshot.json
-  snapshot_commit: bbb03c1f96cb22080c7a0dbf235ae8a429ef3e34
-open_prs: []
-merge_commits: {"2":"e89d8c4d7d4ef905b616dd4881bfda87028ae14b","3":"e89d8c4d7d4ef905b616dd4881bfda87028ae14b","4":"a436175f8c55caba2a8cd031b9450cef5f9ab6d5"}
+  snapshot_commit: a13c751addecaea671ee2eda45c01fba5d4b5c9a
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1511"]
+merge_commits: {"2":"e89d8c4d7d4ef905b616dd4881bfda87028ae14b","3":"e89d8c4d7d4ef905b616dd4881bfda87028ae14b","4":"a436175f8c55caba2a8cd031b9450cef5f9ab6d5","6":"a340e15670d8c185614f746c7ee213701b2d467d"}
 debt_issue_refs: []
 ```
 

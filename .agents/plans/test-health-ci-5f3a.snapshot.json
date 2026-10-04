@@ -4,7 +4,7 @@
   "approved_at": "2026-10-04T00:00:00Z",
   "approved_by": "user chat 2026-10-04: autonomous-approved on #1449; proceed with PRs through babysit+",
   "approved_until": "2026-10-06T00:00:00Z",
-  "content_hash": "sha256:171dece0c95133e830a48642cfbd2a2fd975e06f6ea555a21699459b22c8acef",
+  "content_hash": "sha256:ea55c315bce5d64a5e0640abe16f750bad04ca27b7627867e970ceada9613625",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "main",
@@ -210,7 +210,9 @@
       "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1511",
+      "pr_head_sha": "a13c751addecaea671ee2eda45c01fba5d4b5c9a"
     },
     {
       "id": "6",
