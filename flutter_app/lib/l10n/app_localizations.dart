@@ -8853,6 +8853,12 @@ abstract class AppLocalizations {
   /// **'This action is irreversible. All your pets, health entries, weight records, notifications, and organisation memberships will be permanently deleted. Enter your password to confirm.'**
   String get deleteAccountWarning;
 
+  /// No description provided for @accountDeletionLandingMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account has been deleted. Remaining files and analytics data are still being removed.'**
+  String get accountDeletionLandingMessage;
+
   /// No description provided for @error.
   ///
   /// In en, this message translates to:

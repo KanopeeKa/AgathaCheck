@@ -1786,6 +1786,7 @@
   "deleteAccount": "Delete Account",
   "deleteAccountSubtitle": "Permanently delete your account and all data",
   "deleteAccountWarning": "This action is irreversible. All your pets, health entries, weight records, notifications, and organisation memberships will be permanently deleted. Enter your password to confirm.",
+  "accountDeletionLandingMessage": "Your account has been deleted. Remaining files and analytics data are still being removed.",
   "error": "Error",
   "maxPhotosReached": "Maximum 4 documents per event",
   "failedToLoadPhotos": "Failed to load documents: {error}",

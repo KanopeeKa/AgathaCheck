@@ -108,11 +108,57 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
     }
   }
 
+  bool _showAccountDeletedMessage(GoRouterState routerState) {
+    return routerState.uri.queryParameters['accountDeleted'] == '1';
+  }
+
+  Widget _accountDeletedBanner(ThemeData theme, AppLocalizations l10n) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Semantics(
+        label: l10n.accountDeletionLandingMessage,
+        child: MergeSemantics(
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.secondaryContainer,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ExcludeSemantics(
+                  child: Icon(
+                    Icons.info_outline,
+                    color: theme.colorScheme.onSecondaryContainer,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    l10n.accountDeletionLandingMessage,
+                    style: TextStyle(
+                      color: theme.colorScheme.onSecondaryContainer,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final auth = ref.watch(authProvider);
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
+    final routerState = GoRouterState.of(context);
+    final showAccountDeleted = _showAccountDeletedMessage(routerState);
 
     final authCard = LandingAuthCard(
       theme: theme,
@@ -149,10 +195,18 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
       ),
     );
 
+    final authCardWithBanner = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (showAccountDeleted) _accountDeletedBanner(theme, l10n),
+        authCard,
+      ],
+    );
+
     return LandingOperationsDeskPage(
       baseTheme: theme,
       l10n: l10n,
-      authCard: authCard,
+      authCard: authCardWithBanner,
     );
   }
 }

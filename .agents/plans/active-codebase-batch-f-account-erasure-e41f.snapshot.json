@@ -120,12 +120,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1516",
-      "pr_head_sha": "d5f666cc"
+      "pr_head_sha": "1f3f89b7"
     },
     {
       "id": "4",
@@ -134,6 +134,7 @@
       "allowed_paths": [
         ".agents/plans/active-codebase-batch-f-account-erasure-e41f.*",
         "flutter_app/lib/features/auth/presentation/screens/my_details_screen.dart",
+        "flutter_app/lib/features/auth/presentation/screens/landing_screen.dart",
         "flutter_app/lib/features/auth/data/auth_service.dart",
         "flutter_app/lib/l10n/app_en.arb",
         "flutter_app/lib/l10n/app_fr.arb",
@@ -158,13 +159,10 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "bdd-journey",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "debt_issue_refs": []
     },
     {
       "id": "5",
@@ -193,5 +191,5 @@
       "merge_commit": null
     }
   ],
-  "content_hash": "sha256:59fcc0c6a7c6d76dcfb008b5130d0f942d182534c1e26390602538972ec86bd9"
+  "content_hash": "sha256:0123352d3190eb899b04e5667456b1c9f284d5d14edd581e44a906e7431c522a"
 }

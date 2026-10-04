@@ -4940,6 +4940,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'This action is irreversible. All your pets, health entries, weight records, notifications, and organisation memberships will be permanently deleted. Enter your password to confirm.';
 
   @override
+  String get accountDeletionLandingMessage =>
+      'Your account has been deleted. Remaining files and analytics data are still being removed.';
+
+  @override
   String get error => 'Error';
 
   @override

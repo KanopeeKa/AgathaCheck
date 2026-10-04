@@ -5,12 +5,13 @@
  */
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
 import {
+  assertPreErasureTokenAccountUnavailable,
   createPet,
   exportUserData,
+  pollErasureStatusCompleted,
   tryLogin,
 } from '../support/api';
-import { LandingPage } from '../pages/landing.page';
-import { expectHomeShellHidden } from '../support/flutter';
+import { expectHomeShellHidden, refreshFlutterAccessibility } from '../support/flutter';
 import { MyDetailsPage } from '../pages/my-details.page';
 
 test.describe('GDPR data rights', () => {
@@ -39,15 +40,44 @@ test.describe('GDPR data rights', () => {
 
     const myDetails = new MyDetailsPage(page);
     await myDetails.openFromUserMenu();
+
+    const deleteResponsePromise = page.waitForResponse(
+      (response) =>
+        response.request().method() === 'DELETE' &&
+        /\/auth\/me$/.test(response.url()) &&
+        response.status() < 400,
+    );
+
     await myDetails.deleteAccount(testUser.password);
 
-    const landing = new LandingPage(page);
-    await landing.goto();
+    const deleteResponse = await deleteResponsePromise;
+    const deleteBody = (await deleteResponse.json()) as {
+      message: string;
+      erasure?: { operation_id: string; status_token?: string };
+    };
+    expect(deleteBody.message).toBeTruthy();
+    expect(deleteBody.erasure?.operation_id).toBeTruthy();
+    expect(deleteBody.erasure?.status_token).toBeTruthy();
+
+    await refreshFlutterAccessibility(page);
+    await expect(
+      page.getByText(
+        /account has been deleted.*still being removed|compte a été supprimé.*encore en cours de suppression/i,
+      ),
+    ).toBeVisible({ timeout: 30_000 });
     await expect(page.getByRole('button', { name: 'Sign In', exact: true })).toBeVisible();
     await expectHomeShellHidden(page);
 
     const loginAttempt = await tryLogin(baseURL, testUser.email, testUser.password);
     expect(loginAttempt.ok).toBe(false);
     expect(loginAttempt.status).toBeGreaterThanOrEqual(400);
+
+    await assertPreErasureTokenAccountUnavailable(baseURL, testUser.accessToken);
+
+    await pollErasureStatusCompleted(
+      baseURL,
+      deleteBody.erasure!.operation_id,
+      deleteBody.erasure!.status_token!,
+    );
   });
 });
