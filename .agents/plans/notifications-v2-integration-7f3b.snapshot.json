@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "plan_id": "notifications-v2-integration-7f3b",
+  "approved_at": "2026-10-04T23:00:00Z",
+  "approved_by": "GitHub #1571 approve-autonomous + user chat 2026-10-04 standing grant (notifications v2 roadmap)",
+  "approved_until": "2026-10-06T23:00:00Z",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 1571,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Integration branch to main with pre-UAT",
+      "branch": "cursor/notifications-v2-integration-7f3b",
+      "allowed_paths": [
+        ".agents/plans/notifications-v2-*-7f3b.*",
+        "docs/domains/notifications/**",
+        "flutter_app/test/bdd/features/notifications.feature",
+        "flutter_app/test/bdd/features/notifications_v2.feature"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    }
+  ],
+  "content_hash": "sha256:5be8833e21e1d715a1a18d47c430f9e777e3430fa0f52fe754209b9a1ccca912"
+}
