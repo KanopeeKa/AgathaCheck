@@ -16,6 +16,7 @@
  * Scenario: Exporting health entries as CSV
  * Scenario: Multi-dose daily medication records one date from the agenda
  * Scenario: Care recorded late keeps the next date
+ * Scenario: Planned care entry saves with due date only
  */
 import { test, expect, loginAs, seedPetWithDueHealthEntry } from '../fixtures/auth.fixture';
 import { HealthDashboardPage } from '../pages/health-dashboard.page';
@@ -451,6 +452,34 @@ test.describe('Health tracking', () => {
       expect(open.map((row) => row.id)).toContain(evening.id);
       expect(open).toHaveLength(3);
     });
+  });
+
+  test('API rejects planned health entry with completed_on (R9)', async ({ testUser }) => {
+    const baseURL = (process.env.E2E_BASE_URL ?? 'http://localhost:3000').replace(
+      /\/$/,
+      '',
+    );
+    const pet = await createPet(baseURL, testUser.accessToken, 'PlanRejectPet');
+    const res = await fetch(`${baseURL}/backend/api/health-entries`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${testUser.accessToken}`,
+      },
+      body: JSON.stringify({
+        pet_id: pet.id,
+        name: 'Invalid Plan',
+        care_family: 'medication',
+        care_planning: 'planned',
+        frequency: 'monthly',
+        frequency_interval: 1,
+        next_due_date: '2026-12-01',
+        completed_on: '2026-11-15',
+      }),
+    });
+    expect(res.status).toBe(400);
+    const json = (await res.json()) as { code?: string };
+    expect(json.code).toBe('completed_on_not_allowed');
   });
 
   test('CSV export returns health entries as CSV data', async ({ page, testUser }) => {

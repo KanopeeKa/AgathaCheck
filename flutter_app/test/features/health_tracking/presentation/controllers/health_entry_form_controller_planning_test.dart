@@ -68,6 +68,22 @@ void main() {
       expect(state.frequency, HealthFrequency.once);
     });
 
+    test('switching to planned mode clears completed date', () {
+      const params = HealthEntryFormParams(
+        petId: 'pet-1',
+        initialPlanningMode: CarePlanningMode.unplanned,
+      );
+      final c = controller(params);
+      c.setCompletedOn(DateTime(2026, 9, 20));
+      c.setCarePlanning(CarePlanningMode.planned);
+      c.setDueDate(DateTime(2026, 10, 1));
+
+      final state = readState(params);
+      expect(state.carePlanning, CarePlanningMode.planned);
+      expect(state.completedOn, isNull);
+      expect(state.dueDate, DateTime(2026, 10, 1));
+    });
+
     test('switching to record mode clears schedule fields', () {
       const params = HealthEntryFormParams(petId: 'pet-1');
       final c = controller(params);
@@ -146,6 +162,25 @@ void main() {
       expect(c.markCompletedPromptIfNeeded(), isNull);
     });
 
+    test('loadEntry omits completed_on for planned entries', () async {
+      container = ProviderContainer(
+        overrides: [
+          healthRepositoryProvider.overrideWithValue(
+            _PlannedWithCompletedRepository(),
+          ),
+        ],
+      );
+
+      const params = HealthEntryFormParams(entryId: 'entry-2', petId: 'pet-1');
+      final c = controller(params);
+      final loaded = await c.loadEntry('entry-2');
+      final state = readState(params);
+
+      expect(loaded, isTrue);
+      expect(state.carePlanning, CarePlanningMode.planned);
+      expect(state.completedOn, isNull);
+    });
+
     test('loadEntry restores care planning from entry', () async {
       repository = _CapturingHealthRepository();
       container = ProviderContainer(
@@ -166,6 +201,29 @@ void main() {
       expect(state.completedOn, DateTime(2026, 9, 10));
     });
   });
+}
+
+class _PlannedWithCompletedRepository implements HealthRepository {
+  @override
+  Future<HealthEntry?> getEntry(String id) async => HealthEntry(
+    id: id,
+    petId: 'pet-1',
+    name: 'Vaccine',
+    type: HealthEntryType.preventive,
+    frequency: HealthFrequency.yearly,
+    frequencyInterval: 1,
+    startDate: DateTime(2026, 10, 1),
+    nextDueDate: DateTime(2026, 10, 1),
+    completedOn: DateTime(2026, 9, 1),
+    recurrenceAnchor: RecurrenceAnchor.fromDueDate,
+    careFamily: CareFamily.vaccination,
+    carePlanning: CarePlanningMode.planned,
+    careSetting: CareSetting.other,
+    careImportance: CareImportance.optional,
+  );
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 class _LoadingHealthRepository implements HealthRepository {

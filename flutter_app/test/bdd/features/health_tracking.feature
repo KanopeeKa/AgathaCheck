@@ -24,6 +24,18 @@ Feature: Health Tracking
     And "Heartworm Prevention" should be of type "Medication"
 
   @P1
+  Scenario: Planned care entry saves with due date only
+    When the user navigates to the health dashboard
+    And the user taps the "Add Entry" button
+    And the user selects type "Medication"
+    And the user enters entry name "Plan Only Med"
+    And the user selects pet "Bella"
+    And the user selects care planning "Plan this care"
+    And the user sets the next due date to "2026-11-01"
+    And the user saves the health entry
+    Then "Plan Only Med" should appear in the health dashboard
+
+  @P1
   Scenario: Creating a preventive entry
     When the user creates a health entry "Flea Treatment" of type "Preventive" for "Bella"
     Then "Flea Treatment" should appear under the "Preventives" tab

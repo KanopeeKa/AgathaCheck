@@ -234,9 +234,9 @@ Future<void> _fillMinimalAddForm(WidgetTester tester) async {
     find.byKey(const Key('health_name_field')),
     'Evening pill',
   );
-  final completedField = find.bySemanticsLabel(RegExp(r'Completed on:'));
-  await _scrollTo(tester, completedField);
-  await tester.tap(completedField);
+  final dueField = find.bySemanticsLabel(RegExp(r'Due date:'));
+  await _scrollTo(tester, dueField);
+  await tester.tap(dueField);
   await tester.pumpAndSettle();
   final ok = find.widgetWithText(TextButton, 'OK');
   if (ok.evaluate().isNotEmpty) {
@@ -498,7 +498,7 @@ void main() {
     await tester.pumpAndSettle();
 
     if (find.byType(AlertDialog).evaluate().isNotEmpty) {
-      await tester.tap(find.text('Keep active'));
+      await tester.tap(find.text('Keep Active'));
       await tester.pumpAndSettle();
     }
 
