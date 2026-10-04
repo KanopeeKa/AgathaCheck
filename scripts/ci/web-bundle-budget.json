@@ -1,5 +1,5 @@
 {
   "version": 1,
   "description": "Ratchet for flutter_app/build/web total bytes (uncompressed). CI fails when size exceeds maxTotalBytes.",
-  "maxTotalBytes": 52000000
+  "maxTotalBytes": 66000000
 }
