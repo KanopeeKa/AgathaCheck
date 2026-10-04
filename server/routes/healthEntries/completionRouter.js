@@ -5,6 +5,7 @@ import {
   reopenSeriesCommand,
 } from '../../lib/care/occurrence/index.js';
 import { careItemWire } from '../../lib/care/item/index.js';
+import { loadLinkedWeightsForOccurrences } from '../../lib/care/observations/weightFulfilmentService.js';
 import { extractUserId, historyToMap } from './shared.js';
 import { handleCommand } from './occurrencesRouter.js';
 
@@ -44,7 +45,17 @@ export function registerCompletionRoutes(router, pool) {
          ORDER BY COALESCE(ho.marked_at, ho.updated_at) DESC, ho.scheduled_date DESC`,
         [req.params.id]
       );
-      res.json(result.rows.map(historyToMap));
+      const completedIds = result.rows
+        .filter((r) => r.status === 'completed')
+        .map((r) => r.id);
+      const linkedWeights = await loadLinkedWeightsForOccurrences(pool, completedIds);
+      res.json(result.rows.map((row) => {
+        const mapped = historyToMap(row);
+        if (row.status === 'completed') {
+          mapped.linked_weight = linkedWeights.get(row.id) ?? null;
+        }
+        return mapped;
+      }));
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }
