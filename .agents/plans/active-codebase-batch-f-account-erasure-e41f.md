@@ -49,9 +49,9 @@ next_action: "continue phase 2 on branch cursor/active-codebase-f2-erasure-servi
 artifact_ref:
   branch: cursor/active-codebase-f2-erasure-service-e41f
   plan_path: .agents/plans/active-codebase-batch-f-account-erasure-e41f.md
-  plan_commit: 57932874a69e0a9ba9b7a2c12dc4bff284644461
+  plan_commit: e280b40050452919867016353dd68ade638e824f
   snapshot_path: .agents/plans/active-codebase-batch-f-account-erasure-e41f.snapshot.json
-  snapshot_commit: 57932874a69e0a9ba9b7a2c12dc4bff284644461
+  snapshot_commit: e280b40050452919867016353dd68ade638e824f
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
