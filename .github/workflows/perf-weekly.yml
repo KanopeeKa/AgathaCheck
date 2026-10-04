@@ -12,9 +12,14 @@ permissions:
 jobs:
   k6-api-smoke:
     name: k6 API smoke (localhost)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
-    continue-on-error: true
+    env:
+      PGUSER: user
+      PGPASSWORD: password
+      PGHOST: localhost
+      PGPORT: 5432
+      PGDATABASE: agatha_db
     steps:
       - uses: actions/checkout@v5
 
@@ -25,33 +30,20 @@ jobs:
           cache-dependency-path: server/package-lock.json
 
       - name: Install k6
-        run: |
-          sudo gpg -k
-          sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17A747611A8F3B9D8765C6E71DC9510970C21
-          echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
-          sudo apt-get update
-          sudo apt-get install -y k6
+        run: bash scripts/ci/install-k6-deb.sh
 
-      - name: Start PostgreSQL
-        run: sudo pg_ctlcluster 16 main start
-
-      - name: Migrate and start server
-        env:
-          PGUSER: user
-          PGPASSWORD: password
-          PGHOST: localhost
-          PGPORT: 5432
-          PGDATABASE: agatha_db
-        run: |
-          cd server && npm ci
-          node scripts/migrate.js up
-          node bin/start.js &
-          n=0
-          until curl -sf http://127.0.0.1:3000/backend/health; do
-            n=$((n + 1))
-            if [ "$n" -ge 30 ]; then exit 1; fi
-            sleep 2
-          done
+      - name: Start localhost stack
+        run: bash scripts/ci/weekly-localhost-stack.sh
 
       - name: Run k6 smoke
-        run: k6 run e2e/perf/api-smoke.k6.js
+        continue-on-error: true
+        run: k6 run --summary-export=k6-summary.json e2e/perf/api-smoke.k6.js
+
+      - name: Upload k6 summary
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: k6-smoke-summary
+          path: k6-summary.json
+          retention-days: 14
+          if-no-files-found: ignore

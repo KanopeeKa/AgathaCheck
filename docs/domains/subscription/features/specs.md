@@ -29,6 +29,10 @@ Entity: `flutter_app/lib/features/subscription/domain/entities/subscription_stat
 
 Billing provider under **product review** — EU-based solution may replace RevenueCat. Do not invest in RevenueCat sandbox E2E until architecture is decided (see [changes/deferred.md](../changes/deferred.md)).
 
+## Notifications
+
+Subscription notices (activated, renewal upcoming, payment issue, ended, trial ending) are specified in [Notifications v2 §3.5.2](/docs/domains/notifications/features/notifications-v2-spec.md) (A7–A11). They require a **server-side entitlement source** (provider webhook or server receipt validation) and are blocked until the billing provider is chosen. The client must not synthesise them from RevenueCat state.
+
 ## Tests
 
 - BDD: `subscriptions.feature` (11 scenarios) — documents intended journeys

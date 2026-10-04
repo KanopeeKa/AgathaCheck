@@ -68,6 +68,8 @@ discipline as `g0-contract-pack.md` so the two programs read consistently.
 
 ## 3. Notification model (D7–D11) — target shape
 
+> **Superseded in part (2026-10-04).** Kinds, chips, badge and the D10 deep-link pattern are replaced by [Notifications v2](/docs/domains/notifications/features/notifications-v2-spec.md); see [notification-decisions.md §C](/docs/domains/notifications/features/notification-decisions.md). This section remains the history of Phase 1–2.
+
 ### 3.1 Data model
 
 Extend `AppNotification` (`flutter_app/lib/features/notifications/domain/entities/app_notification.dart`) and its backend row with:

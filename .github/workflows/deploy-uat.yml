@@ -396,6 +396,7 @@ jobs:
           CPANEL_SERVER: ${{ secrets.UAT_SSH_HOST }}
           CPANEL_USER: ${{ secrets.UAT_SSH_USER }}
           CPANEL_TOKEN: ${{ secrets.UAT_CPANEL_API_TOKEN }}
+          SSH_PORT: ${{ secrets.UAT_SSH_PORT || 22 }}
           RUNNER_IP: ${{ steps.runner_ip.outputs.ipv4 }}
         run: bash scripts/o2switch-ssh-whitelist.sh add
 
@@ -505,6 +506,7 @@ jobs:
           CPANEL_SERVER: ${{ secrets.UAT_SSH_HOST }}
           CPANEL_USER: ${{ secrets.UAT_SSH_USER }}
           CPANEL_TOKEN: ${{ secrets.UAT_CPANEL_API_TOKEN }}
+          SSH_PORT: ${{ secrets.UAT_SSH_PORT || 22 }}
           RUNNER_IP: ${{ steps.runner_ip.outputs.ipv4 }}
         run: bash scripts/o2switch-ssh-whitelist.sh remove
 

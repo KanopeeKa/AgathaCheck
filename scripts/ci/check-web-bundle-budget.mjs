@@ -34,7 +34,22 @@ function main() {
     );
     process.exit(1);
   }
-  console.log(`check-web-bundle-budget: OK ${bytes} / ${max} bytes`);
+  console.log(`check-web-bundle-budget: OK total ${bytes} / ${max} bytes`);
+
+  const mainJs = path.join(webDir, 'main.dart.js');
+  const mainMjs = path.join(webDir, 'main.dart.mjs');
+  const mainPath = fs.existsSync(mainJs) ? mainJs : mainMjs;
+  if (budget.maxMainDartJsBytes && fs.existsSync(mainPath)) {
+    const mainBytes = fs.statSync(mainPath).size;
+    const mainMax = budget.maxMainDartJsBytes;
+    if (mainBytes > mainMax) {
+      console.error(
+        `check-web-bundle-budget: ${mainPath} ${mainBytes} bytes exceeds main.dart.js budget ${mainMax}`,
+      );
+      process.exit(1);
+    }
+    console.log(`check-web-bundle-budget: OK main ${mainBytes} / ${mainMax} bytes`);
+  }
 }
 
 main();
