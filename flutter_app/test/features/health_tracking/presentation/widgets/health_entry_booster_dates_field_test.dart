@@ -51,7 +51,10 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('health_entry_booster_2026-07-01')), findsOneWidget);
+    expect(
+      find.byKey(const Key('health_entry_booster_2026-07-01')),
+      findsOneWidget,
+    );
     expect(find.text('+ Add a booster date'), findsOneWidget);
   });
 }
