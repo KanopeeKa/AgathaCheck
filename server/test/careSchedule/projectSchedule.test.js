@@ -83,13 +83,13 @@ describe('projectSchedule', () => {
           recurrence_anchor: 'from_completion',
           next_due_date: '2026-08-14',
         }),
-        [],
+        [occurrence({ scheduled_date: '2026-08-14', status: 'pending' })],
         '2026-08-12',
         '2026-08-19'
       );
       expect(result.items).toHaveLength(1);
-      expect(result.items[0].certainty).toBe(CERTAINTY_CONDITIONAL_ON_FUTURE_COMPLETION);
-      expect(result.items[0].source).toBe('projected');
+      expect(result.items[0].certainty).toBe(CERTAINTY_COMPLETE);
+      expect(result.items[0].source).toBe('materialised');
     });
 
     it('marks materialised items as complete certainty regardless of anchor', () => {
@@ -139,7 +139,7 @@ describe('projectSchedule', () => {
           recurrence_anchor: 'from_completion',
           next_due_date: '2026-08-14',
         }),
-        [],
+        [occurrence({ scheduled_date: '2026-08-14', status: 'pending' })],
         '2026-08-12',
         '2026-08-19'
       );

@@ -114,17 +114,7 @@ function enrichRowContract(row, entry, constituents, context) {
       ),
     };
   } else {
-    const nextDue = dateToIsoDate(entry?.next_due_date);
-    if (nextDue && nextDue < startsOn) {
-      row.open_occurrence = {
-        occurrence_id: null,
-        scheduled_date: nextDue,
-        scheduled_time: null,
-        open_status: computeOpenStatus(nextDue, todayIso, startsOn, endsOn),
-      };
-    } else {
-      row.open_occurrence = null;
-    }
+    row.open_occurrence = null;
   }
 
   const inWindowItems = constituents.filter((item) =>

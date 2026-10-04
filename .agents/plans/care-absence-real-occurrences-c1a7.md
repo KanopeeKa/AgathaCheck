@@ -24,6 +24,17 @@ Absences use stored open occurrences (D-ACP-011): projection, away UI, and E2E m
 
 ```yaml
 autonomy: active
-current_phase: E1
-next_action: implement expandItemForWindow; PR to integration; babysit+
+current_phase: E2
+last_completed_phase: E1
+halt_reason: null
+next_action: "continue phase E2 on branch cursor/care-e2-projection-50b4"
+artifact_ref:
+  branch: cursor/care-e2-projection-50b4
+  plan_path: .agents/plans/care-absence-real-occurrences-c1a7.md
+  plan_commit: 8bd2f5d594c3bc3d8ec5ccb9555a1114f08d1593
+  snapshot_path: .agents/plans/care-absence-real-occurrences-c1a7.snapshot.json
+  snapshot_commit: 8bd2f5d594c3bc3d8ec5ccb9555a1114f08d1593
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1484"]
+merge_commits: {}
+debt_issue_refs: []
 ```
