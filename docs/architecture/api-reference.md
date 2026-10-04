@@ -66,13 +66,18 @@ Personal directory contacts (phase 1). Storage: migrations `072_*`–`074_*`. Sp
 
 | Method | Path | Authorization |
 |---|---|---|
-| GET | `/contacts` | authenticated — caller's personal directory; optional `?include_inactive=true` |
+| GET | `/contacts` | authenticated — caller's personal directory; optional `?include_inactive=true`; adds `directory`, `group`, `status`, `pets[]` (additive) |
+| GET | `/roster` | authenticated — hub read model: `households[]`, `contacts[]` (`ContactSummary`), `pending_invites[]` (pet share + absence carer invites created by viewer) |
+| GET | `/contacts/:id` | authenticated — enriched detail (`works_at`, `staff[]`, `usage_counts`, `linked_account`, `group`, `status`, `directory`; `household_note` ships in s5) |
+| GET | `/contacts/:id/related` | authenticated — related pets, care items as provider, absences as carer, `history_count` |
+| GET | `/contacts/by-legacy-vet/:vetId` | authenticated — `{ id }` for legacy vet deep links |
 | POST | `/contacts` | authenticated — body `{ kind, name, phone?, email?, address?, website?, works_at_contact_id?, roles?, private_note?, pet_links? }`; `kind` ∈ {`person`,`organisation`}; `roles` ⊆ sitter, walker, vet, vet_nurse, groomer, trainer, behaviourist, boarding, emergency_contact, other; optional `pet_links[]` = `{ pet_id, relationship_kind }` (attach in same transaction; slot kinds use replace semantics) |
-| GET | `/contacts/:id` | authenticated — owner of directory only |
 | PATCH | `/contacts/:id` | authenticated — partial update; `private_note` is per-caller only; **`kind` changes only when `kind` is sent** (rename alone does not re-infer kind) |
 | DELETE | `/contacts/:id` | authenticated — `409 contact_in_use` with `details.usages[]` when the contact is referenced (relationships, absence carers, care-item providers, pending carer invites, works-at). Unused vet-linked contacts delete and remove the linked `vets` row |
 
-Response contact shape: `{ id, directory_id, kind, name, phone, email, address, website, works_at_contact_id, linked_user_id, inactive_at, legacy_vet_id, roles[], private_note, created_at, updated_at }`.
+List/detail compat contact fields: `{ id, directory_id, kind, name, phone, email, address, website, works_at_contact_id, linked_user_id, inactive_at, legacy_vet_id, roles[], private_note, created_at, updated_at }` plus read-model fields above where applicable.
+
+`ContactSummary` (roster/list): `{ directory: { type, household_id }, group, status, pets[{ pet_id, pet_name, relationship_kind, is_primary }], works_at?, next_absence?, access? }`.
 
 People error bodies (additive): `{ error, code, details? }` with stable `code` values including `validation_failed`, `contact_not_found`, `forbidden`, `contact_in_use` (`details.usages[]`: `{ kind, id, label, pet_id?, active? }`), `slot_conflict`, `linked_identity_read_only`. Health entry writes validate `provider_contact_id` with the same attach rules as pet relationships (`400 validation_failed`). PATCH accepts `active: boolean` (sets `inactive_at` server-side); optional `inactive_at` is validated when sent. PATCH rejects name/email changes on contacts with `linked_user_id` → `409 linked_identity_read_only`.
 
@@ -92,9 +97,17 @@ Relationship rows include `sort_order` (default `0`). `relationship_kind` ∈ pr
 
 Vets API (`/api/vets`) is a **compat adapter**: response shapes unchanged; writes go through People contacts and a one-way projection to `vets` + `pets.vet_id`. Pet PATCH/create `vet_id` sets the `primary_vet` slot.
 
+#### Pet people (`/api/pets/:petId/people`)
+
+| Method | Path | Authorization |
+|---|---|---|
+| GET | `/api/pets/:petId/people` | record owner, co-parent, household Full access → `scope: full` (household members + all relationships); Can log care, carer share, absence guest → `scope: handover` (emergency/vet/provider contacts only); others → `403` |
+
+Response: `{ pet_id, pet_name, scope, owner, household_members[], relationships[] }` (`relationships` same shape as people-relationships list).
+
 #### Planned — `people-domain-refactor-7f3b` (partial)
 
-Shipped in server phases s1–s3: writer, access, usages, relationships + vet projection (this section). Still planned: `GET /api/people/roster`, enriched contact detail, `GET /api/people/contacts/:id/related`, `GET /api/people/contacts/by-legacy-vet/:vetId`, `GET /api/pets/:petId/people`, household removal preview and household email invites, `contact_id` on pet share invites. See [people-domain-refactor.md](/docs/domains/people/changes/people-domain-refactor.md) §3.6.
+Shipped in server phases s1–s4: writer, access, usages, relationships + vet projection, read models (this section). Still planned: household removal preview, household email invites, `contact_id` on pet share invites, `household_note` on detail. See [people-domain-refactor.md](/docs/domains/people/changes/people-domain-refactor.md) §3.6.
 
 ### Organizations (`/api/organizations`)
 | Method | Path | Authorization |

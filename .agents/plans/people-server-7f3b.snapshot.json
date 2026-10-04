@@ -2,7 +2,7 @@
   "schema_version": 1,
   "approved_at": "2026-10-04T17:40:08.000Z",
   "approved_until": "2026-10-06T17:40:08.000Z",
-  "content_hash": "sha256:db3062c9c1c480521d673933b74ffdbd2ffbefdf45d91345515ff5d29d2dc9a3",
+  "content_hash": "sha256:21145bb5e81af4c579e5ad2153857c93a7452b681eda48fd3e716c152ff4809d",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "control_issue": 1507,
@@ -182,13 +182,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1518",
+      "pr_head_sha": "154c8776"
     },
     {
       "id": "s5-households-api",
