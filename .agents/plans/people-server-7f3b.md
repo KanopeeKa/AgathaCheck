@@ -527,10 +527,10 @@ flutter_app/**
 
 ```yaml
 autonomy: active
-current_phase: s6-invites-api
-last_completed_phase: s5-households-api
+current_phase: s7-ship-main
+last_completed_phase: s6-invites-api
 halt_reason: null
-next_action: "continue phase s6-invites-api on branch cursor/people-server-s6-invites-7f3b"
+next_action: "continue phase s7-ship-main on integration branch after s6 PR merges"
 artifact_ref:
   branch: cursor/people-server-integration-7f3b
   plan_path: .agents/plans/people-server-7f3b.md

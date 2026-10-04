@@ -348,6 +348,209 @@
         }
       }
     },
+    "/households/{householdId}/invites": {
+      "post": {
+        "operationId": "createHouseholdInvite",
+        "parameters": [
+          {
+            "name": "householdId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["invitee_email"],
+                "properties": {
+                  "invitee_email": { "type": "string", "format": "email" },
+                  "access_tier": { "type": "string", "enum": ["full_access", "can_log_care"] },
+                  "is_organiser": { "type": "boolean" },
+                  "contact_id": { "type": "string", "format": "uuid" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Household invite created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["invite_id", "code", "expires_at"],
+                  "properties": {
+                    "invite_id": { "type": "string", "format": "uuid" },
+                    "code": { "type": "string" },
+                    "expires_at": { "type": "string", "format": "date-time" },
+                    "delivery": { "type": "object" }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+              }
+            }
+          },
+          "409": {
+            "description": "Member or pending invite conflict",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/households/invites/code/{code}": {
+      "get": {
+        "operationId": "getHouseholdInvitePreview",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Household invite preview",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HouseholdInvitePreview" }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+              }
+            }
+          },
+          "410": {
+            "description": "Invite no longer valid",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/households/invites/code/{code}/accept": {
+      "post": {
+        "operationId": "acceptHouseholdInviteByCode",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Invite accepted",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HouseholdInviteAcceptResult" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+              }
+            }
+          },
+          "409": {
+            "description": "Already a member",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/households/{householdId}/invites/{inviteId}": {
+      "delete": {
+        "operationId": "revokeHouseholdInvite",
+        "parameters": [
+          {
+            "name": "householdId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          },
+          {
+            "name": "inviteId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Invite revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["invite_id", "status"],
+                  "properties": {
+                    "invite_id": { "type": "string", "format": "uuid" },
+                    "status": { "type": "string", "enum": ["revoked"] }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+              }
+            }
+          }
+        }
+      }
+    },
     "/households/{householdId}/members/{userId}/removal-preview": {
       "get": {
         "operationId": "getHouseholdMemberRemovalPreview",
@@ -1352,6 +1555,41 @@
           "requires_successor": { "type": "boolean" },
           "target_access_tier": { "type": "string" },
           "target_is_organiser": { "type": "boolean" }
+        }
+      },
+      "HouseholdInvitePreview": {
+        "type": "object",
+        "required": [
+          "invite_id",
+          "code",
+          "household_id",
+          "household_name",
+          "inviter_name",
+          "access_tier",
+          "is_organiser",
+          "invitee_email",
+          "expires_at"
+        ],
+        "properties": {
+          "invite_id": { "type": "string", "format": "uuid" },
+          "code": { "type": "string" },
+          "household_id": { "type": "string", "format": "uuid" },
+          "household_name": { "type": "string" },
+          "inviter_name": { "type": "string" },
+          "access_tier": { "type": "string", "enum": ["full_access", "can_log_care"] },
+          "is_organiser": { "type": "boolean" },
+          "invitee_email": { "type": "string", "format": "email" },
+          "expires_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "HouseholdInviteAcceptResult": {
+        "type": "object",
+        "required": ["household_id", "status", "access_tier", "is_organiser"],
+        "properties": {
+          "household_id": { "type": "string", "format": "uuid" },
+          "status": { "type": "string", "enum": ["accepted"] },
+          "access_tier": { "type": "string", "enum": ["full_access", "can_log_care"] },
+          "is_organiser": { "type": "boolean" }
         }
       },
       "PeopleRoster": {

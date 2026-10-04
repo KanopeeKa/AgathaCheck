@@ -201,7 +201,7 @@ async function loadPendingInvites(pool, userId) {
   const invites = [];
 
   const shareResult = await pool.query(
-    `SELECT psi.id, psi.invitee_email, psi.created_at,
+    `SELECT psi.id, psi.invitee_email, psi.contact_id, psi.created_at,
             COALESCE(array_agg(psip.pet_id) FILTER (WHERE psip.pet_id IS NOT NULL), ARRAY[]::uuid[]) AS pet_ids
      FROM pet_share_invites psi
      LEFT JOIN pet_share_invite_pets psip ON psip.invite_id = psi.id
@@ -217,8 +217,29 @@ async function loadPendingInvites(pool, userId) {
       id: row.id,
       source: 'pet_share',
       email: row.invitee_email,
-      contact_id: null,
+      contact_id: row.contact_id,
       pet_ids: row.pet_ids || [],
+      created_at: timestampToIso(row.created_at),
+    });
+  }
+
+  const householdResult = await pool.query(
+    `SELECT id, invitee_email, contact_id, household_id, created_at
+     FROM household_invites
+     WHERE inviter_user_id = $1
+       AND status = 'pending'
+       AND expires_at > NOW()
+     ORDER BY created_at DESC`,
+    [userId],
+  );
+  for (const row of householdResult.rows) {
+    invites.push({
+      id: row.id,
+      source: 'household',
+      email: row.invitee_email,
+      contact_id: row.contact_id,
+      household_id: row.household_id,
+      pet_ids: [],
       created_at: timestampToIso(row.created_at),
     });
   }
