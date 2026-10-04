@@ -2,7 +2,7 @@
   "schema_version": 1,
   "approved_at": "2026-10-04T17:40:08.000Z",
   "approved_until": "2026-10-06T17:40:08.000Z",
-  "content_hash": "sha256:9d52b7a9b90771ff4a75550aef7a69da0b5b0bdcf0c878732b1715b229a747f5",
+  "content_hash": "sha256:a11934c3c559c52db601b7b9b657c3b71dea980404c6ca86c837b5511743fbe6",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "control_issue": 1507,
@@ -92,7 +92,9 @@
       "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1514",
+      "pr_head_sha": "69d9d7e8"
     },
     {
       "id": "s3-relationships",
