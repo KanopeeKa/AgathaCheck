@@ -145,6 +145,11 @@ beforeAll(async () => {
   for (const name of earlier) {
     await db.query('INSERT INTO _migrations (id, name) VALUES ($1, $2)', [randomUUID(), name]);
   }
+  const later = fs.readdirSync(migrationsDir)
+    .filter((name) => /^\d{3}_.+\.sql$/.test(name) && !name.includes('_down') && name > migrationName);
+  for (const name of later) {
+    await db.query('INSERT INTO _migrations (id, name) VALUES ($1, $2)', [randomUUID(), name]);
+  }
   const petId = randomUUID();
   const userId = randomUUID();
   await db.query(

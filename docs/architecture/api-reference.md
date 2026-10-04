@@ -226,7 +226,7 @@ POST/PUT accept optional `measurement_source`. Pet weight reference/context fiel
 | DELETE | `/links/:linkId` | Owner deletes any share link; foster may delete only links they created |
 | GET | `/hidden` | Hidden shared pets |
 | PUT | `/:petId/hide` | Hide or unhide a shared pet (`{ hidden: true\|false }`) |
-| POST | `/invites` | Email invite; body `{ invitee_email, pet_ids, role }` — up to 20 pets; returns `{ invite_id, code, included_pet_ids, excluded[], delivery }` |
+| POST | `/invites` | Email invite; body `{ invitee_email, pet_ids, role }` — up to 20 pets; returns `{ invite_id, code, included_pet_ids, excluded[], delivery }`; identical replay while a pending invite from the same inviter covers every requested pet returns **200** with the same ids and `replayed: true` (no new rows or notifications) |
 | GET | `/invites/code/:code` | Public invite preview (no inviter email) |
 | POST | `/invites/code/:code/accept` | Auth required; grants access per pet on invite |
 | POST | `/invites/:id/decline` | Auth required; notifies inviter |
@@ -487,9 +487,6 @@ These endpoints are placeholders. They return `501` with
 |---|---|---|
 | `POST /api/organizations/join/:code` | Join-by-code retired; use email invite + accept | — |
 
-Lifecycle stubs (acknowledge without full side effects):
-`DELETE /api/pets/:id/data`, `POST /api/pets/:id/passed-away` (use `DELETE`/`PUT /api/pets/:id` for real changes).
-
 **Roadmap:** `docs/domains/fostering/changes/org-fostering-strategy.md`
 
 ---
@@ -713,11 +710,12 @@ Implemented in `server/routes/sharing/petAccessRoutes.js` (mounted on `/api/pets
 
 ### Delete Pet Data
 
-- **DELETE** `/api/pets/{id}/data` — Deletes pet-related rows (health, weight, timeline, shares, etc.) and purges health/pet upload files. Pet profile row remains until `DELETE /api/pets/{id}`.
+- **DELETE** `/api/pets/{id}` — Deletes pet-related rows, the pet profile, and schedules durable `file_delete` cleanup jobs. Response (D13): `{ deleted, pet_id, rows_removed, files_scheduled, file_cleanup, files_removed }` where `files_removed` is a deprecated alias of `files_scheduled` and `file_cleanup` is `scheduled` or `none`.
+- **DELETE** `/api/pets/{id}/data` — Same transaction semantics as full delete but keeps the pet profile row. Response uses the same D13 shape as `DELETE /api/pets/{id}`.
 
 ### Mark Pet as Passed Away
 
-- **POST** `/api/pets/{id}/passed-away` — Notification-only: creates in-app notifications for collaborators. Response: `{ notification_sent, pet_id, notified_count, delivery_status }` where `notification_sent` is true only when at least one notification row was written (`delivery_status`: `delivered` | `no_recipients`). Does **not** persist `passedAway`; use `PUT /api/pets/{id}` with `passed_away: true` for that.
+- **POST** `/api/pets/{id}/passed-away` — Notification-only: creates in-app notifications for collaborators at most once per recipient (ledger: `pet_lifecycle_notifications`). Response: `{ notification_sent, pet_id, notified_count, already_notified_count, delivery_status }` where `delivery_status` is `delivered`, `already_notified`, or `no_recipients`. Does **not** persist `passedAway`; use `PUT /api/pets/{id}` with `passed_away: true` for that.
 
 
 

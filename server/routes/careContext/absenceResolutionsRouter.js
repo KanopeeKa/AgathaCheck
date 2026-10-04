@@ -10,9 +10,19 @@ import {
   validateResolutionPayload,
 } from '../../lib/care/absence/resolutionRepository.js';
 import { PET_ACCESS_ROLES, userCanManageCare } from '../../lib/petAccess.js';
+import { withTransaction } from '../../lib/db/withTransaction.js';
 import { extractUserId } from '../../lib/requireAuth.js';
 
 const PET_ACCESS_ROLES_SQL = PET_ACCESS_ROLES.map((role) => `'${role}'`).join(', ');
+
+class ResolutionRouteTxError extends Error {
+  constructor(status, body) {
+    super(body?.error || 'resolution failed');
+    this.name = 'ResolutionRouteTxError';
+    this.status = status;
+    this.body = body;
+  }
+}
 
 async function isCarerCandidate(pool, petId, carerUserId) {
   const result = await pool.query(
@@ -124,46 +134,42 @@ export function registerAbsenceResolutionsRoutes(router, pool, deps) {
         const review = careView.review_occurrence;
         const occurrenceId = item.occurrence_id || item.occurrenceId || review?.occurrence_id || null;
 
-        const client = await pool.connect();
         try {
-          await client.query('BEGIN');
-          if (decision === RESOLUTION_DECISION_MOVE_AFTER && !recordOnly) {
-            const applied = await applyMoveAfterAbsenceReturnInTx(client, {
-              entry,
-              entryId: healthEntryId,
-              userId,
-              req,
-              absenceId: absenceRow.id,
-              endsOn,
-              occurrenceId,
-            });
-            if (!applied.ok) {
-              await client.query('ROLLBACK');
-              const status = applied.status || 400;
-              return res.status(status).json({ error: applied.error || 'Could not postpone care' });
+          const resolution = await withTransaction(pool, async (client) => {
+            if (decision === RESOLUTION_DECISION_MOVE_AFTER && !recordOnly) {
+              const applied = await applyMoveAfterAbsenceReturnInTx(client, {
+                entry,
+                entryId: healthEntryId,
+                userId,
+                req,
+                absenceId: absenceRow.id,
+                endsOn,
+                occurrenceId,
+              });
+              if (!applied.ok) {
+                const status = applied.status || 400;
+                throw new ResolutionRouteTxError(status, {
+                  error: applied.error || 'Could not postpone care',
+                });
+              }
             }
-          }
 
-          const result = await upsertResolution(client, absenceRow.id, healthEntryId, item, {
-            startsOn,
-            endsOn,
-            projectionItems: projection.items,
+            const result = await upsertResolution(client, absenceRow.id, healthEntryId, item, {
+              startsOn,
+              endsOn,
+              projectionItems: projection.items,
+            });
+            if (!result.ok) {
+              throw new ResolutionRouteTxError(400, { error: result.error });
+            }
+            return result.resolution;
           });
-          if (!result.ok) {
-            await client.query('ROLLBACK');
-            return res.status(400).json({ error: result.error });
-          }
-          await client.query('COMMIT');
-          upserted.push(result.resolution);
+          upserted.push(resolution);
         } catch (err) {
-          try {
-            await client.query('ROLLBACK');
-          } catch {
-            // ignore
+          if (err instanceof ResolutionRouteTxError) {
+            return res.status(err.status).json(err.body);
           }
           throw err;
-        } finally {
-          client.release();
         }
       }
 

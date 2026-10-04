@@ -51,17 +51,17 @@ Pre-approved migrations (D9a): `cleanup_jobs` and `pet_lifecycle_notifications` 
 
 ```yaml
 autonomy: active
-current_phase: 1
-last_completed_phase: null
+current_phase: 5
+last_completed_phase: 4
 halt_reason: null
-next_action: "start phase 1: checkout cursor/active-codebase-e1-cleanup-jobs-e41f"
+next_action: "continue phase 5 on branch cursor/active-codebase-e-integration-e41f"
 artifact_ref:
-  branch: cursor/arch-e-bootstrap-26ff
+  branch: cursor/active-codebase-e-integration-e41f
   plan_path: .agents/plans/active-codebase-batch-e-backend-integrity-e41f.md
-  plan_commit: 2c11ea562380f58a5538a5c1328c9c7c2f328657
+  plan_commit: 456e9641510ece8d65b0c99d6ec7c7af0c35b00d
   snapshot_path: .agents/plans/active-codebase-batch-e-backend-integrity-e41f.snapshot.json
-  snapshot_commit: 2c11ea562380f58a5538a5c1328c9c7c2f328657
-open_prs: []
+  snapshot_commit: 456e9641510ece8d65b0c99d6ec7c7af0c35b00d
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1503"]
 merge_commits: {}
 debt_issue_refs: []
 ```

@@ -7,7 +7,8 @@ import {
   removeAccess,
   stopFollowing,
 } from '../../services/sharing/shareAccessService.js';
-import { extractUserId, withOptionalTransaction } from '../pets/shared.js';
+import { withTransaction } from '../../lib/db/withTransaction.js';
+import { extractUserId } from '../pets/shared.js';
 
 export function registerPetAccessRoutes(router, pool) {
   registerPetInviteListRoute(router, pool);
@@ -79,7 +80,7 @@ export function registerPetAccessRoutes(router, pool) {
     if (!actorId) return res.status(401).json({ error: 'Unauthorized' });
     const { id, targetUserId } = req.params;
     try {
-      await withOptionalTransaction(pool, async (db) => {
+      await withTransaction(pool, async (db) => {
         const result = await removeAccess(db, { actorId, petId: id, targetUserId });
         if (result.error) {
           const err = new Error(result.error);

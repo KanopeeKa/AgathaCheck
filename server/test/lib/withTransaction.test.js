@@ -1,4 +1,4 @@
-import { withTransaction } from '../../lib/db/withTransaction.js';
+import { TransactionAbortedError, withTransaction } from '../../lib/db/withTransaction.js';
 
 describe('withTransaction', () => {
   it('runs fn with a single checked-out client and commits on success', async () => {
@@ -6,7 +6,8 @@ describe('withTransaction', () => {
     const client = {
       query: async (sql) => {
         queryLog.push(String(sql).trim());
-        return { rows: [] };
+        const cmd = String(sql).trim();
+        return { rows: [], command: cmd };
       },
       release: jest.fn(),
     };
@@ -30,7 +31,8 @@ describe('withTransaction', () => {
     const client = {
       query: async (sql) => {
         queryLog.push(String(sql).trim());
-        return { rows: [] };
+        const cmd = String(sql).trim();
+        return { rows: [], command: cmd };
       },
       release: jest.fn(),
     };
@@ -71,5 +73,24 @@ describe('withTransaction', () => {
     await expect(
       withTransaction({ query: async () => ({ rows: [] }) }, async () => {}),
     ).rejects.toThrow('withTransaction requires a pg.Pool with connect()');
+  });
+
+  it('throws TransactionAbortedError when COMMIT is turned into ROLLBACK', async () => {
+    const client = {
+      query: async (sql) => {
+        const cmd = String(sql).trim();
+        if (cmd === 'COMMIT') {
+          return { rows: [], command: 'ROLLBACK' };
+        }
+        return { rows: [], command: cmd };
+      },
+      release: jest.fn(),
+    };
+    const pool = { connect: jest.fn(async () => client) };
+
+    await expect(
+      withTransaction(pool, async () => ({ ok: true })),
+    ).rejects.toBeInstanceOf(TransactionAbortedError);
+    expect(client.release).toHaveBeenCalledTimes(1);
   });
 });

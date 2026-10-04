@@ -439,26 +439,47 @@
       },
       "DeletePetResponse": {
         "type": "object",
-        "required": ["deleted"],
-        "additionalProperties": false,
-        "properties": {
-          "deleted": { "type": "boolean", "const": true }
-        }
-      },
-      "PetDataDeleteResponse": {
-        "type": "object",
-        "required": ["deleted", "pet_id", "rows_removed", "files_removed"],
+        "required": ["deleted", "pet_id", "rows_removed", "files_scheduled", "file_cleanup", "files_removed"],
         "additionalProperties": false,
         "properties": {
           "deleted": { "type": "boolean", "const": true },
           "pet_id": { "type": "string", "format": "uuid" },
           "rows_removed": { "type": "object", "additionalProperties": { "type": "integer" } },
-          "files_removed": { "type": "integer", "minimum": 0 }
+          "files_scheduled": { "type": "integer", "minimum": 0 },
+          "file_cleanup": { "type": "string", "enum": ["scheduled", "none"] },
+          "files_removed": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Deprecated alias of files_scheduled for installed clients."
+          }
+        }
+      },
+      "PetDataDeleteResponse": {
+        "type": "object",
+        "required": ["deleted", "pet_id", "rows_removed", "files_scheduled", "file_cleanup", "files_removed"],
+        "additionalProperties": false,
+        "properties": {
+          "deleted": { "type": "boolean", "const": true },
+          "pet_id": { "type": "string", "format": "uuid" },
+          "rows_removed": { "type": "object", "additionalProperties": { "type": "integer" } },
+          "files_scheduled": { "type": "integer", "minimum": 0 },
+          "file_cleanup": { "type": "string", "enum": ["scheduled", "none"] },
+          "files_removed": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Deprecated alias of files_scheduled for installed clients."
+          }
         }
       },
       "PassedAwayResponse": {
         "type": "object",
-        "required": ["notification_sent", "pet_id", "notified_count", "delivery_status"],
+        "required": [
+          "notification_sent",
+          "pet_id",
+          "notified_count",
+          "already_notified_count",
+          "delivery_status"
+        ],
         "additionalProperties": false,
         "properties": {
           "notification_sent": {
@@ -467,9 +488,10 @@
           },
           "pet_id": { "type": "string", "format": "uuid" },
           "notified_count": { "type": "integer", "minimum": 0 },
+          "already_notified_count": { "type": "integer", "minimum": 0 },
           "delivery_status": {
             "type": "string",
-            "enum": ["delivered", "no_recipients"]
+            "enum": ["delivered", "already_notified", "no_recipients"]
           }
         }
       },

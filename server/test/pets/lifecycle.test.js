@@ -48,18 +48,23 @@ describe('petDataLifecycle', () => {
         if (sql.includes('UPDATE pets')) {
           return { rows: [] };
         }
+        if (sql.includes('INSERT INTO cleanup_jobs')) {
+          return { rows: [{ id: 'job-1' }] };
+        }
         if (sql.includes('INSERT INTO audit_events')) {
-          return { rows: [] };
+          return { rows: [{ id: 'audit-1' }] };
         }
         return { rows: [] };
       });
 
       const result = await deleteAllPetData(pool, petId, { actorUserId: userId });
       expect(result.deleted).toBe(true);
+      expect(result.files_scheduled).toBe(1);
       expect(result.files_removed).toBe(1);
+      expect(result.file_cleanup).toBe('scheduled');
       expect(deletedTables.some((s) => s.includes('health_entries'))).toBe(true);
       expect(deletedTables.some((s) => s.includes('weight_entries'))).toBe(true);
-      expect(fs.existsSync(path.join(process.env.PRIVATE_HEALTH_UPLOAD_DIR, `${fileId}.png`))).toBe(false);
+      expect(fs.existsSync(path.join(process.env.PRIVATE_HEALTH_UPLOAD_DIR, `${fileId}.png`))).toBe(true);
 
       if (prevDir === undefined) delete process.env.PRIVATE_HEALTH_UPLOAD_DIR;
       else process.env.PRIVATE_HEALTH_UPLOAD_DIR = prevDir;
@@ -72,11 +77,17 @@ describe('petDataLifecycle', () => {
       const notifications = [];
       const pool = {
         query: async (sql, params) => {
+          if (sql === 'BEGIN' || sql === 'COMMIT' || sql === 'ROLLBACK') {
+            return { rows: [], command: sql };
+          }
           if (sql.includes('FROM pet_access pa')) {
             return { rows: [{ user_id: 'collab-1' }, { user_id: 'collab-2' }] };
           }
           if (sql.includes('FROM users WHERE id')) {
             return { rows: [{ first_name: 'Alice', last_name: 'Owner', email: 'a@example.com' }] };
+          }
+          if (sql.includes('INSERT INTO pet_lifecycle_notifications')) {
+            return { rows: [{ recipient_user_id: params?.[2] || 'collab' }] };
           }
           if (sql.includes('INSERT INTO notifications')) {
             notifications.push(params);
@@ -86,12 +97,20 @@ describe('petDataLifecycle', () => {
         },
       };
 
-      const count = await notifyPassedAwayCollaborators(pool, {
+      const poolWithConnect = {
+        connect: async () => ({
+          query: pool.query,
+          release: async () => {},
+        }),
+        query: pool.query,
+      };
+
+      const outcome = await notifyPassedAwayCollaborators(poolWithConnect, {
         petId,
         ownerId: userId,
         petName: 'Buddy',
       });
-      expect(count).toBe(2);
+      expect(outcome.notified_count).toBe(2);
       expect(notifications).toHaveLength(2);
     });
   });
@@ -135,7 +154,8 @@ describe('Pets lifecycle routes', () => {
       if (sql.includes('health_issue_documents')) return { rows: [] };
       if (sql.startsWith('DELETE FROM ')) return { rowCount: 1 };
       if (sql.includes('UPDATE pets')) return { rows: [] };
-      if (sql.includes('INSERT INTO audit_events')) return { rows: [] };
+      if (sql.includes('INSERT INTO cleanup_jobs')) return { rows: [{ id: 'job-1' }] };
+      if (sql.includes('INSERT INTO audit_events')) return { rows: [{ id: 'audit-1' }] };
       return { rows: [] };
     });
     const app = createApp(pool);
@@ -156,6 +176,12 @@ describe('Pets lifecycle routes', () => {
       if (sql.includes('FROM users WHERE id')) {
         return { rows: [{ first_name: 'Test', last_name: 'User', email: 'test@example.com' }] };
       }
+      if (sql === 'BEGIN' || sql === 'COMMIT' || sql === 'ROLLBACK') {
+        return { rows: [], command: sql };
+      }
+      if (sql.includes('INSERT INTO pet_lifecycle_notifications')) {
+        return { rows: [{ recipient_user_id: 'collab-1' }] };
+      }
       if (sql.includes('INSERT INTO notifications')) return { rows: [] };
       return { rows: [] };
     });
@@ -169,6 +195,7 @@ describe('Pets lifecycle routes', () => {
       notification_sent: true,
       pet_id: petId,
       notified_count: 1,
+      already_notified_count: 0,
       delivery_status: 'delivered',
     });
   });

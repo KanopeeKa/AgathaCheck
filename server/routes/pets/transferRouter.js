@@ -5,7 +5,8 @@ import { createNotification, userDisplayName } from '../../lib/notificationHelpe
 import { transferPetToOrganization } from '../../lib/orgPetTransfer.js';
 import { userOwnsPet } from '../../lib/petAccess.js';
 import { rejectFrozenShelterApi } from '../../lib/frozenDomains.js';
-import { extractUserId, petRowToMap, withOptionalTransaction } from './shared.js';
+import { withTransaction } from '../../lib/db/withTransaction.js';
+import { extractUserId, petRowToMap } from './shared.js';
 
 export function registerTransferRoutes(router, pool) {
   router.post('/:id/transfer-to-org', async (req, res) => {
@@ -38,28 +39,6 @@ export function registerTransferRoutes(router, pool) {
       res.status(500).json({ error: publicError(err) });
     }
   });
-
-  async function withOptionalTransaction(pool, fn) {
-    if (typeof pool.connect === 'function') {
-      const client = await pool.connect();
-      try {
-        await client.query('BEGIN');
-        const result = await fn(client);
-        await client.query('COMMIT');
-        return result;
-      } catch (err) {
-        try {
-          await client.query('ROLLBACK');
-        } catch (_) {
-          /* ignore */
-        }
-        throw err;
-      } finally {
-        client.release();
-      }
-    }
-    return fn(pool);
-  }
 
   router.post('/:id/transfer', async (req, res) => {
     const ownerId = extractUserId(req);
@@ -112,7 +91,7 @@ export function registerTransferRoutes(router, pool) {
       const ownerName = userDisplayName(ownerResult.rows[0] || {});
       const recipientName = userDisplayName(recipient);
 
-      const updatedPet = await withOptionalTransaction(pool, async (db) => {
+      const updatedPet = await withTransaction(pool, async (db) => {
         const updateResult = await db.query(
           'UPDATE pets SET user_id = $1, updated_at = NOW() WHERE id = $2 RETURNING *',
           [recipient.id, petId],

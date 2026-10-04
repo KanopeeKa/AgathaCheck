@@ -18,7 +18,9 @@ function buildMockPool() {
   const orgViewerAccess = new Set([`${orgId}:${orgViewerId}`]);
 
   const handler = async (sql, params) => {
-    if (sql === 'BEGIN' || sql === 'COMMIT' || sql === 'ROLLBACK') return { rows: [] };
+    if (sql === 'BEGIN') return { command: 'BEGIN', rows: [] };
+    if (sql === 'COMMIT') return { command: 'COMMIT', rows: [] };
+    if (sql === 'ROLLBACK') return { command: 'ROLLBACK', rows: [] };
 
     if (sql.includes('SELECT we.*') && sql.includes('FROM weight_entries we')) {
       return {
@@ -84,6 +86,10 @@ function buildMockPool() {
 
   return {
     query: handler,
+    connect: async () => ({
+      query: handler,
+      release: () => {},
+    }),
     end: async () => {},
   };
 }

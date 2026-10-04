@@ -32,6 +32,7 @@ export function registerInviteRoutes(router, pool) {
         included_pet_ids: result.included_pet_ids,
         excluded: result.excluded,
         delivery: result.delivery,
+        ...(result.replayed ? { replayed: true } : {}),
       });
     } catch (err) {
       return res.status(500).json({ error: publicError(err) });

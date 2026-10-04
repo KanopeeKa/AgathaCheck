@@ -28,7 +28,23 @@ function buildCreateInvitePool(overrides = {}) {
   };
 
   const query = async (sql, params) => {
-    if (sql === 'BEGIN' || sql === 'COMMIT' || sql === 'ROLLBACK') {
+    if (sql === 'BEGIN') {
+      return { command: 'BEGIN', rows: [] };
+    }
+    if (sql === 'COMMIT') {
+      return { command: 'COMMIT', rows: [] };
+    }
+    if (sql === 'ROLLBACK') {
+      return { command: 'ROLLBACK', rows: [] };
+    }
+    if (
+      sql.startsWith('SAVEPOINT')
+      || sql.startsWith('RELEASE SAVEPOINT')
+      || sql.includes('ROLLBACK TO SAVEPOINT')
+    ) {
+      return { rows: [] };
+    }
+    if (sql.includes('pg_advisory_xact_lock')) {
       return { rows: [] };
     }
     if (sql.includes('SELECT email FROM users WHERE id = $1')) {
@@ -62,7 +78,19 @@ function buildCreateInvitePool(overrides = {}) {
       const petId = params[0];
       const email = params[1];
       const existingId = state.pendingInvites.get(`${petId}:${email}`);
-      return { rows: existingId ? [{ id: existingId }] : [] };
+      return {
+        rows: existingId
+          ? [{
+            id: existingId,
+            inviter_user_id: inviterId,
+            role: 'carer',
+            code: 'pending01',
+          }]
+          : [],
+      };
+    }
+    if (sql.includes('SELECT pet_id FROM pet_share_invite_pets WHERE invite_id = $1')) {
+      return { rows: [] };
     }
     if (sql.includes('INSERT INTO pet_share_invites')) {
       state.insertedInvites.push({ params });
@@ -166,6 +194,32 @@ describe('POST /api/share/invites', () => {
     ]);
   });
 
+  it('retries invite code insert after unique violation without aborting the transaction', async () => {
+    let inviteInsertAttempts = 0;
+    const pool = buildCreateInvitePool();
+    const baseQuery = pool.query;
+    pool.query = async (sql, params) => {
+      if (sql.includes('INSERT INTO pet_share_invites')) {
+        inviteInsertAttempts += 1;
+        if (inviteInsertAttempts === 1) {
+          const err = new Error('duplicate code');
+          err.code = '23505';
+          throw err;
+        }
+      }
+      return baseQuery(sql, params);
+    };
+    pool.connect = async () => ({ query: pool.query, release: () => {} });
+    const app = createApp(pool);
+    const res = await request(app)
+      .post('/api/share/invites')
+      .set('Authorization', `Bearer ${inviterToken}`)
+      .send({ invitee_email: 'invitee@example.com', pet_ids: [pet1] });
+    expect(res.statusCode).toBe(201);
+    expect(inviteInsertAttempts).toBeGreaterThan(1);
+    expect(res.body.code).toBeTruthy();
+  });
+
   it('creates invite for existing member with notification delivery', async () => {
     const pool = buildCreateInvitePool();
     const app = createApp(pool);
@@ -185,9 +239,27 @@ describe('POST /api/share/invites', () => {
     expect(pool.state.notifications.length).toBeGreaterThan(0);
   });
 
-  it('returns 201 with invite when post-commit name lookup fails after commit (A02 fixed)', async () => {
-    let txDepth = 0;
+  it('returns 500 when in-transaction notification insert fails (D11)', async () => {
     const pool = buildCreateInvitePool();
+    const baseQuery = pool.query;
+    pool.query = async (sql, params) => {
+      if (sql.includes('INSERT INTO notifications')) {
+        throw new Error('notification insert failed');
+      }
+      return baseQuery(sql, params);
+    };
+    pool.connect = async () => ({ query: pool.query, release: () => {} });
+    const app = createApp(pool);
+    const res = await request(app)
+      .post('/api/share/invites')
+      .set('Authorization', `Bearer ${inviterToken}`)
+      .send({ invitee_email: 'invitee@example.com', pet_ids: [pet1] });
+    expect(res.statusCode).toBe(500);
+  });
+
+  it('returns 201 when post-commit inviter name lookup fails for new-user email', async () => {
+    let txDepth = 0;
+    const pool = buildCreateInvitePool({ state: { usersByEmail: {} } });
     const baseQuery = pool.query;
     pool.query = async (sql, params) => {
       if (sql === 'BEGIN') txDepth += 1;
@@ -205,13 +277,12 @@ describe('POST /api/share/invites', () => {
     const res = await request(app)
       .post('/api/share/invites')
       .set('Authorization', `Bearer ${inviterToken}`)
-      .send({ invitee_email: 'invitee@example.com', pet_ids: [pet1] });
+      .send({ invitee_email: 'newuser@example.com', pet_ids: [pet1] });
     expect(res.statusCode).toBe(201);
     expect(res.body.invite_id).toBeTruthy();
     expect(res.body.code).toBeTruthy();
-    expect(res.body.included_pet_ids).toEqual([pet1]);
     expect(pool.state.insertedInvites.length).toBe(1);
-    expect(res.body.delivery.delivery_error).toBe(true);
+    expect(res.body.delivery.email).toBe('failed');
   });
 
   it('creates invite for new user with skipped notification', async () => {
