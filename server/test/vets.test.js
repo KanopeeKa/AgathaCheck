@@ -1,6 +1,7 @@
 import request from 'supertest';
 import jwt from 'jsonwebtoken';
 import { createApp } from '../bin/server.js';
+import { createTransactionalMockPool } from './helpers/transactionMockPool.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'default_secret';
 const userId = 'test-user-id';
@@ -31,8 +32,7 @@ describe('Vets API', () => {
   let lastVetDeleteQuery;
 
   beforeAll(() => {
-    const mockPool = {
-      query: async (sql, params) => {
+    const mockPool = createTransactionalMockPool(async (sql, params) => {
         lastQuery = { sql, params };
 
         if (sql.includes('SELECT * FROM vets') && sql.includes('ORDER BY name')) {
@@ -124,9 +124,7 @@ describe('Vets API', () => {
         }
 
         return { rows: [] };
-      },
-      end: async () => {},
-    };
+    });
     app = createApp(mockPool);
   });
 

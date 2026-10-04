@@ -192,17 +192,17 @@ db/**
 ## Runtime state (agent-updated)
 
 ```yaml
-autonomy: halted
+autonomy: active
 current_phase: orchestrate
 last_completed_phase: null
-halt_reason: human_pause
-next_action: "human_pause: wait for CARE 2b + ARCH 3a on main, fresh approve-autonomous on #1460, then resume-plan and bootstrap people-server-7f3b"
+halt_reason: null
+next_action: "continue child plan people-server-7f3b"
 artifact_ref:
   branch: cursor/people-refactor-orchestrate-7f3b
   plan_path: .agents/plans/people-domain-refactor-7f3b.md
-  plan_commit: a436175f8c55caba2a8cd031b9450cef5f9ab6d5
+  plan_commit: 965da9abb2a07a93fe3c39cce78fafc58d62db86
   snapshot_path: .agents/plans/people-domain-refactor-7f3b.snapshot.json
-  snapshot_commit: a436175f8c55caba2a8cd031b9450cef5f9ab6d5
+  snapshot_commit: 965da9abb2a07a93fe3c39cce78fafc58d62db86
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
