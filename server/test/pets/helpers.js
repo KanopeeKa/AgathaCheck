@@ -198,5 +198,10 @@ export function createMockPool(queryHandler) {
       }
       return { rows: [] };
     });
-  return createTransactionalMockPool(handler);
+  return createTransactionalMockPool(async (sql, params) => {
+    if (sql.includes('SELECT 1 FROM users WHERE id')) {
+      return { rows: [{ '?column?': 1 }] };
+    }
+    return handler(sql, params);
+  });
 }

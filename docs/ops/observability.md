@@ -100,6 +100,16 @@ File-deletion and other durable cleanup work runs through the `cleanup_jobs` tab
 - **Scope:** API routes under `/api/`, `/backend/api/`, `/server/api/`
 - **Level:** `LOG_LEVEL` env (default `info` in production, `debug` otherwise)
 
+### Account existence check (post-erasure token rejection)
+
+Every request to `/api` or `/backend/api` that presents a **valid Bearer access JWT** runs one extra PostgreSQL query before route handlers:
+
+`SELECT 1 FROM users WHERE id = $1`
+
+Implemented in `server/lib/auth/accountExistence.js` and mounted from `server/bin/server.js`. Invalid or missing tokens skip the query so existing route-level 401 behaviour is unchanged. Erasure endpoints `DELETE /auth/me` and `GET /auth/erasure/:operationId` are exempt.
+
+Budget **+1 query per authenticated API request** when planning DB load and slow-query dashboards.
+
 ## PostHog (product analytics)
 
 - **Region:** EU (`https://eu.i.posthog.com`) by default

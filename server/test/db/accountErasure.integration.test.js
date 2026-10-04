@@ -202,7 +202,8 @@ describe('account erasure (real PG)', () => {
       .post('/api/auth/me/photo')
       .set('Authorization', `Bearer ${token}`)
       .send({});
-    expect(res.status).toBe(404);
+    expect(res.status).toBe(401);
+    expect(res.body.code).toBe('account_unavailable');
 
     const after = fs.readdirSync(photosDir).length;
     expect(after).toBe(before);

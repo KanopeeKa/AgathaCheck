@@ -118,13 +118,10 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "pending",
+      "status": "complete",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "debt_issue_refs": []
     },
     {
       "id": "4",
@@ -192,5 +189,5 @@
       "merge_commit": null
     }
   ],
-  "content_hash": "sha256:55e977d98f0a75c6e033b64a198b78855df15cbd17a97b7fcf553f8a60da8a65"
+  "content_hash": "sha256:6223fe1048326de96b5df4adc823dd08acd09a9c060ed938393c59ef9a14b59b"
 }

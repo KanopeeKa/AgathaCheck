@@ -30,6 +30,7 @@ import { createStaticUploadLimiter } from '../config/rateLimit.js';
 import { logPublicAccessModeOnce } from '../config/publicAccess.js';
 import { requestContextMiddleware } from '../middleware/requestContext.js';
 import { publicAccessGate } from '../middleware/publicAccessGate.js';
+import { createAccountExistenceMiddleware } from '../lib/auth/accountExistence.js';
 
 function getServerDir() {
   try {
@@ -76,6 +77,10 @@ export function createApp(customPool, comparePassword) {
     next();
   });
   app.use(bodyParser.json());
+
+  const accountExistenceMiddleware = createAccountExistenceMiddleware(pool);
+  app.use('/api', accountExistenceMiddleware);
+  app.use('/backend/api', accountExistenceMiddleware);
 
   const blockSensitiveUploadPaths = (req, res, next) => {
     const normalized = req.path.replace(/\\/g, '/');
