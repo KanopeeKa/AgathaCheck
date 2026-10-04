@@ -1,9 +1,12 @@
 /**
- * Notification kind / priority wire values and type→kind defaults (experience-program §3.1).
+ * Notification kind / priority wire values and type→kind defaults (Notifications v2 PR1+).
  */
 
 export const NOTIFICATION_KIND_CARE = 'care';
 export const NOTIFICATION_KIND_ADMINISTRATIVE = 'administrative';
+export const NOTIFICATION_KIND_RELATIONSHIP = 'relationship';
+export const NOTIFICATION_KIND_SUGGESTION = 'suggestion';
+export const NOTIFICATION_KIND_ACCOUNT = 'account';
 
 export const NOTIFICATION_PRIORITY_NORMAL = 'normal';
 export const NOTIFICATION_PRIORITY_URGENT = 'urgent';
@@ -16,7 +19,13 @@ export const NOTIFICATION_TYPE_PENDING_FOSTER_PLACEMENT_RECEIVED = 'pendingFoste
 export const NOTIFICATION_TYPE_PENDING_ADOPTION_PLACEMENT_RECEIVED = 'pendingAdoptionPlacementReceived';
 export const NOTIFICATION_TYPE_PENDING_CUSTODY_TRANSFER_RECEIVED = 'pendingCustodyTransferReceived';
 
-const VALID_KINDS = new Set([NOTIFICATION_KIND_CARE, NOTIFICATION_KIND_ADMINISTRATIVE]);
+const VALID_KINDS = new Set([
+  NOTIFICATION_KIND_CARE,
+  NOTIFICATION_KIND_ADMINISTRATIVE,
+  NOTIFICATION_KIND_RELATIONSHIP,
+  NOTIFICATION_KIND_SUGGESTION,
+  NOTIFICATION_KIND_ACCOUNT,
+]);
 const VALID_PRIORITIES = new Set([
   NOTIFICATION_PRIORITY_NORMAL,
   NOTIFICATION_PRIORITY_URGENT,

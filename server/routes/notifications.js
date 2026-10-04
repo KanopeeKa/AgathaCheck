@@ -13,6 +13,7 @@ import {
   normaliseKind,
   normalisePriority,
 } from '../lib/notificationKind.js';
+import { NOTIFICATION_INBOX_ACTIVE_WHERE } from '../lib/notificationHelper.js';
 
 function notificationToMap(row) {
   const petId = row.pet_id || null;
@@ -46,7 +47,10 @@ export default function notificationsRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      const result = await pool.query('SELECT * FROM notifications WHERE user_id = $1 ORDER BY created_at DESC', [userId]);
+      const result = await pool.query(
+        `SELECT * FROM notifications WHERE user_id = $1 AND ${NOTIFICATION_INBOX_ACTIVE_WHERE} ORDER BY created_at DESC`,
+        [userId],
+      );
       res.json(result.rows.map(notificationToMap));
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
@@ -58,7 +62,7 @@ export default function notificationsRoutes(pool) {
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
       const result = await pool.query(
-        'SELECT COUNT(*) as count FROM notifications WHERE user_id = $1 AND (is_read = false OR (is_read IS NULL AND read = false))',
+        `SELECT COUNT(*) as count FROM notifications WHERE user_id = $1 AND ${NOTIFICATION_INBOX_ACTIVE_WHERE} AND (is_read = false OR (is_read IS NULL AND read = false))`,
         [userId]
       );
       res.json({ unread_count: parseInt(result.rows[0].count, 10) });
