@@ -18,9 +18,8 @@ import {
   getCareItem,
   getHealthEntryAbsenceContext,
   planAnotherDate,
+  postpone,
 } from '../support/care-api';
-import { formatHealthEntryStatusDate } from '../support/healthEntryDates';
-
 const baseURL = () => process.env.E2E_BASE_URL ?? 'http://localhost:3000';
 
 const dateOffset = (days: number): string => {
@@ -113,18 +112,27 @@ test.describe('Care item absence review', () => {
   }) => {
     test.setTimeout(120_000);
     const root = baseURL();
-    const { user, pet, entry } = await seedAbsenceInWindowCare(root, {
+    const { user, pet, entry, absence, endsOn } = await seedAbsenceInWindowCare(root, {
       petName: 'MoveAfterPet',
       entryName: 'Flea during trip',
       carerName: 'Trip Sitter',
     });
-    const dayAfterReturn = dateOffset(15);
+    const dayAfterReturn = dateOffset(
+      Math.round(
+        (Date.parse(`${endsOn}T12:00:00Z`) - Date.parse(`${dateOffset(0)}T12:00:00Z`)) /
+          (24 * 60 * 60 * 1000),
+      ) + 1,
+    );
+
+    await postpone(root, user.accessToken, entry.id, dayAfterReturn, {
+      reason: 'absence',
+      absenceId: absence.id,
+    });
 
     await loginAs(page, user, { experience: 'guardian' });
 
     const careItem = new CareItemPage(page);
     await careItem.open(pet.id, entry.id);
-    await careItem.rescheduleFromAbsenceReviewToDayOffset(15);
 
     const item = await getCareItem(root, user.accessToken, entry.id);
     expect(item.open_occurrences[0]?.scheduled_date).toBe(dayAfterReturn);
