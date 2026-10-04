@@ -58,10 +58,10 @@ next_action: "continue phase 3 on branch cursor/active-codebase-e3-tx-consolidat
 artifact_ref:
   branch: cursor/active-codebase-e3-tx-consolidation-e41f
   plan_path: .agents/plans/active-codebase-batch-e-backend-integrity-e41f.md
-  plan_commit: 82c8e9fd3772aec6ab2f863d3e382b3d86084c39
+  plan_commit: 6f485070d78038b909a8aa3c25bdb140954a06b8
   snapshot_path: .agents/plans/active-codebase-batch-e-backend-integrity-e41f.snapshot.json
-  snapshot_commit: 82c8e9fd3772aec6ab2f863d3e382b3d86084c39
-open_prs: []
+  snapshot_commit: 6f485070d78038b909a8aa3c25bdb140954a06b8
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1500"]
 merge_commits: {}
 debt_issue_refs: []
 ```
