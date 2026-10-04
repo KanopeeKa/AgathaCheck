@@ -5,6 +5,8 @@ audience: both
 status: active
 last_updated: 2026-10-04
 tags: [domain, weight_tracking]
+domain: weight_tracking
+feature_id: weight-specs
 ---
 
 # Weight tracking — implementation specs

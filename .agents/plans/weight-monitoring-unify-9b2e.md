@@ -879,10 +879,10 @@ next_action: "bootstrap and gate child plan weight-unify-server-9b2e"
 artifact_ref:
   branch: cursor/weight-unify-w0-docs-9b2e
   plan_path: .agents/plans/weight-monitoring-unify-9b2e.md
-  plan_commit: 771c5cd2a7f205b216e7dba66d10c46992cea3fa
+  plan_commit: 4770c0e22b764dca5c3b1c203de7c72929c43c08
   snapshot_path: .agents/plans/weight-monitoring-unify-9b2e.snapshot.json
-  snapshot_commit: 771c5cd2a7f205b216e7dba66d10c46992cea3fa
-open_prs: []
+  snapshot_commit: 4770c0e22b764dca5c3b1c203de7c72929c43c08
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1552"]
 merge_commits: {}
 debt_issue_refs: []
 ```
