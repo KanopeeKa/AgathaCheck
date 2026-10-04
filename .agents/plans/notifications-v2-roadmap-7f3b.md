@@ -46,13 +46,13 @@ autonomy: active
 current_phase: orchestrate
 last_completed_phase: null
 halt_reason: null
-next_action: "bootstrap and gate child plan notifications-v2-pr2-7f3b"
+next_action: "bootstrap and gate child plan notifications-v2-pr4-7f3b"
 artifact_ref:
   branch: cursor/notifications-v2-integration-7f3b
   plan_path: .agents/plans/notifications-v2-roadmap-7f3b.md
-  plan_commit: ca1aa8e2c43ba8358dc860f4a281a49227d6c041
+  plan_commit: c52985534d7f919f0661fc7aeb51692aa90751f7
   snapshot_path: .agents/plans/notifications-v2-roadmap-7f3b.snapshot.json
-  snapshot_commit: ca1aa8e2c43ba8358dc860f4a281a49227d6c041
+  snapshot_commit: c52985534d7f919f0661fc7aeb51692aa90751f7
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

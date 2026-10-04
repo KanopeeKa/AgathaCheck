@@ -10281,6 +10281,30 @@ abstract class AppLocalizations {
   /// **'Urgent'**
   String get notificationUrgent;
 
+  /// No description provided for @notificationInlineRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get notificationInlineRetry;
+
+  /// No description provided for @notificationInlineActionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Try again.'**
+  String get notificationInlineActionFailed;
+
+  /// No description provided for @notificationAlreadyHandled.
+  ///
+  /// In en, this message translates to:
+  /// **'Already handled'**
+  String get notificationAlreadyHandled;
+
+  /// No description provided for @notificationInlineUndo.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get notificationInlineUndo;
+
   /// No description provided for @accountTitle.
   ///
   /// In en, this message translates to:
