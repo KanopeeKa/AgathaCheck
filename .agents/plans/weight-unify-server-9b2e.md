@@ -37,12 +37,12 @@ last_completed_phase: W3
 halt_reason: null
 next_action: "continue phase W4 on branch cursor/weight-unify-w4-e2e-9b2e"
 artifact_ref:
-  branch: cursor/weight-unify-server-integration-9b2e
+  branch: cursor/weight-unify-w4-e2e-9b2e
   plan_path: .agents/plans/weight-unify-server-9b2e.md
-  plan_commit: d31225075b2915539096921ea73b0501ce25e170
+  plan_commit: 895ca5c83d8902aeed9a693b98f5184ccbdbd622
   snapshot_path: .agents/plans/weight-unify-server-9b2e.snapshot.json
-  snapshot_commit: d31225075b2915539096921ea73b0501ce25e170
-open_prs: []
+  snapshot_commit: 895ca5c83d8902aeed9a693b98f5184ccbdbd622
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1575"]
 merge_commits: {}
 debt_issue_refs: []
 ```
