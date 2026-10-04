@@ -3,11 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/health_entry.dart';
-import '../providers/health_providers.dart';
-import '../providers/occurrence_providers.dart';
+import '../controllers/care_schedule_controller.dart';
+import 'care_schedule_command_feedback.dart';
 import 'health_issue_prompt/health_issue_linkage_flow.dart';
 import 'occurrence_add_details_sheet.dart';
-import 'pet_event_occurrence_actions.dart';
 
 /// Post-completion snackbar: Done · Add details · Undo (D-CIE-009).
 Future<void> showOccurrenceCompletionFeedback(
@@ -79,11 +78,17 @@ Future<void> _undoOccurrenceCompletion(
   String occurrenceId,
 ) async {
   try {
-    await ref
-        .read(healthRepositoryProvider)
+    final outcome = await ref
+        .read(careScheduleControllerProvider)
         .undoOccurrence(entry.id, occurrenceId);
-    PetEventOccurrenceActions.invalidateOccurrenceData(ref, entry.id);
-    await ref.read(healthEntriesNotifierProvider.notifier).refresh();
+    if (!context.mounted) return;
+    final l = AppLocalizations.of(context)!;
+    showCareScheduleCommandSnackBar(
+      context,
+      outcome: outcome,
+      successMessage: l.snackbarUndo,
+      failureMessage: l.undoCompleteFailed,
+    );
   } catch (_) {
     if (!context.mounted) return;
     final l = AppLocalizations.of(context)!;

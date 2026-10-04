@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/health_history_entry.dart';
+import '../controllers/care_schedule_controller.dart';
 import '../providers/health_providers.dart';
 import 'pet_event_lifecycle.dart';
 
@@ -80,7 +81,9 @@ class _PetEventPastIterationsSectionState
     await ref
         .read(healthEntriesNotifierProvider.notifier)
         .unmarkDone(widget.entry.id);
-    ref.invalidate(entryHistoryProvider(widget.entry.id));
+    ref
+        .read(careScheduleControllerProvider)
+        .invalidateEntryHistory(widget.entry.id);
   }
 }
 
