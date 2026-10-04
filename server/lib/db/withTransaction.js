@@ -1,7 +1,15 @@
 /**
  * Mandatory checked-out-client transaction runner.
  * Acquire once; begin/commit/rollback/release once. No pool.query fallback.
- *
+ */
+export class TransactionAbortedError extends Error {
+  constructor(message = 'Transaction was rolled back before commit') {
+    super(message);
+    this.name = 'TransactionAbortedError';
+  }
+}
+
+/**
  * @template T
  * @param {import('pg').Pool} pool
  * @param {(client: import('pg').PoolClient) => Promise<T>} fn
@@ -16,7 +24,10 @@ export async function withTransaction(pool, fn) {
   try {
     await client.query('BEGIN');
     const result = await fn(client);
-    await client.query('COMMIT');
+    const commitResult = await client.query('COMMIT');
+    if (commitResult.command !== 'COMMIT') {
+      throw new TransactionAbortedError();
+    }
     return result;
   } catch (err) {
     try {

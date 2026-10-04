@@ -1,19 +1,16 @@
 import { deleteAllPetData } from '../../lib/petDataLifecycle.js';
 import { petId, userId } from '../pets/helpers.js';
 
-/**
- * Batch B2 contract — deleteAllPetData uses one checked-out PoolClient (finding A01 fix).
- */
-describe('petDataLifecycle characterization', () => {
+describe('petDataLifecycle regression', () => {
   describe('deleteAllPetData transaction boundary', () => {
-    it('uses a single checked-out client for BEGIN through COMMIT', async () => {
+    it('uses a single checked-out client for BEGIN through COMMIT without pool.query', async () => {
       const queryLog = [];
       const client = {
         query: async (sql, params) => {
           queryLog.push({ client: 'checked-out', sql: String(sql).trim() });
 
           if (sql === 'BEGIN' || sql === 'COMMIT' || sql === 'ROLLBACK') {
-            return { rows: [] };
+            return { rows: [], command: sql };
           }
           if (sql.includes('SELECT photo_path FROM pets')) {
             return { rows: [{ photo_path: null }] };
@@ -24,6 +21,9 @@ describe('petDataLifecycle characterization', () => {
           if (sql.includes('FROM health_issue_documents')) {
             return { rows: [] };
           }
+          if (sql.includes('INSERT INTO cleanup_jobs')) {
+            return { rows: [{ id: 'job-1' }] };
+          }
           if (sql.startsWith('DELETE FROM ')) {
             return { rowCount: 1 };
           }
@@ -31,7 +31,7 @@ describe('petDataLifecycle characterization', () => {
             return { rows: [] };
           }
           if (sql.includes('INSERT INTO audit_events')) {
-            return { rows: [] };
+            return { rows: [{ id: 'audit-1' }] };
           }
           return { rows: [] };
         },
@@ -45,7 +45,7 @@ describe('petDataLifecycle characterization', () => {
         },
       };
 
-      await deleteAllPetData(pool, petId, { actorUserId: userId });
+      const result = await deleteAllPetData(pool, petId, { actorUserId: userId });
 
       expect(pool.connect).toHaveBeenCalledTimes(1);
       expect(client.release).toHaveBeenCalledTimes(1);
@@ -56,6 +56,13 @@ describe('petDataLifecycle characterization', () => {
       expect(firstDelete).toBeDefined();
       expect(commit).toBeDefined();
       expect(queryLog.every((q) => q.client === 'checked-out')).toBe(true);
+      expect(result).toMatchObject({
+        deleted: true,
+        pet_id: petId,
+        files_scheduled: 0,
+        file_cleanup: 'none',
+        files_removed: 0,
+      });
     });
   });
 });

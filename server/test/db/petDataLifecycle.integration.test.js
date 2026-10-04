@@ -5,6 +5,10 @@ import pg from 'pg';
 
 import { deleteAllPetData } from '../../lib/petDataLifecycle.js';
 import { withTransaction } from '../../lib/db/withTransaction.js';
+import {
+  applyCleanupJobsDown,
+  applyCleanupJobsMigration,
+} from './helpers/cleanupJobsSql.js';
 
 function createPool() {
   if (process.env.DATABASE_URL) {
@@ -27,6 +31,8 @@ describe('petDataLifecycle integration', () => {
     pool = createPool();
     try {
       await pool.query('SELECT 1');
+      await applyCleanupJobsDown(pool).catch(() => {});
+      await applyCleanupJobsMigration(pool);
       dbAvailable = true;
     } catch {
       dbAvailable = false;
@@ -63,6 +69,8 @@ describe('petDataLifecycle integration', () => {
 
     const result = await deleteAllPetData(pool, petId, { actorUserId: userId });
     expect(result.deleted).toBe(true);
+    expect(result.files_scheduled).toBe(0);
+    expect(result.file_cleanup).toBe('none');
     expect(result.rows_removed.weight_entries).toBeGreaterThanOrEqual(1);
 
     const remaining = await pool.query(

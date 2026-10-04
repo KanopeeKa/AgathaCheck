@@ -56,7 +56,7 @@ export function createTransactionalMockPool(queryHandler) {
       if (sql === 'BEGIN' || sql === 'COMMIT' || sql === 'ROLLBACK') {
         if (sql === 'BEGIN') txDepth += 1;
         if (sql === 'COMMIT' || sql === 'ROLLBACK') txDepth = Math.max(0, txDepth - 1);
-        return { rows: [] };
+        return { rows: [], command: sql };
       }
       return baseQuery(sql, params);
     },
