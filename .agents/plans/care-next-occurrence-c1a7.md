@@ -1341,6 +1341,20 @@ Recorded before C0 starts; every item below is approved with the phases (execute
 
 ---
 
+## Post–5b honest record — child D partial (2026-10-04, GOV)
+
+Slot **5b** closed when E+F landed on `main` ([#1499](https://github.com/KanopeeKa/AgathaCheck/pull/1499)). The roadmap is **complete**, but **R1–R12 and §18 are not all met**:
+
+| Area | Honest status |
+|------|----------------|
+| Child **`care-item-form-c1a7`** (landing 3b with C, PR [#1475](https://github.com/KanopeeKa/AgathaCheck/pull/1475)) | **Partial** — server + much of agenda/occurrence UI shipped; form/Care Item hero, booster / Plan another date, Advanced settings, pause-until UI, Plan/Record exclusivity (R9), and several UIR items remain for follow-up |
+| §18.14 out-of-scope items | Filed as debt [#1539](https://github.com/KanopeeKa/AgathaCheck/issues/1539)–[#1547](https://github.com/KanopeeKa/AgathaCheck/issues/1547) |
+| Occurrence-screen `decideDone` context ([#1476](https://github.com/KanopeeKa/AgathaCheck/issues/1476)) | **Open** after GOV repro (wire path includes `open_occurrences`; test fallback remains) |
+
+**Follow-up execute-plan:** `care-requirements-gap-close-c1a7` on `cursor/care-requirements-gap-close-integration-50b4` ([#1526](https://github.com/KanopeeKa/AgathaCheck/issues/1526)). Does **not** reopen this roadmap.
+
+---
+
 ## Runtime state
 
 ```yaml
@@ -1348,7 +1362,7 @@ autonomy: completed
 current_phase: null
 last_completed_phase: orchestrate
 halt_reason: null
-next_action: "roadmap complete"
+next_action: "requirements gap-close on integration — see care-requirements-gap-close-c1a7"
 artifact_ref:
   branch: main
   plan_path: .agents/plans/care-next-occurrence-c1a7.md
@@ -1357,5 +1371,5 @@ artifact_ref:
   snapshot_commit: e919a1cf035cb5fc84a5da6f8e14bc4ec9c91dac
 open_prs: []
 merge_commits: {}
-debt_issue_refs: []
+debt_issue_refs: [1539, 1540, 1541, 1542, 1543, 1544, 1545, 1546, 1547, 1476]
 ```

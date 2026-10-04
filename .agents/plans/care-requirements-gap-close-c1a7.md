@@ -233,18 +233,18 @@
 
 ## Stream E — Debt registry (GOV phase files these)
 
-| ID | Title |
-|----|-------|
-| DEBT-D-CAL | Calendar (D-CIE-033) |
-| DEBT-D-NOTIF | Notification deep link |
-| DEBT-D-FAM | Family completion requirements |
-| DEBT-D-RENAME | Table renames |
-| DEBT-D-FORM | Close when B1–B4 done |
-| DEBT-PRIV-DROP | Track until D1 merged |
-| DEBT-ARCH-CYCLE | Until C1 resolved |
-| DEBT-OPS-R11 | UAT live / cron / reset |
-| DEBT-DOC-STALE | Stale compat-route docs |
-| DEBT-1476 | After repro in GOV |
+| ID | Title | Issue |
+|----|-------|-------|
+| DEBT-D-CAL | Calendar (D-CIE-033) | [#1539](https://github.com/KanopeeKa/AgathaCheck/issues/1539) |
+| DEBT-D-NOTIF | Notification deep link | [#1540](https://github.com/KanopeeKa/AgathaCheck/issues/1540) |
+| DEBT-D-FAM | Family completion requirements | [#1541](https://github.com/KanopeeKa/AgathaCheck/issues/1541) |
+| DEBT-D-RENAME | Table renames | [#1542](https://github.com/KanopeeKa/AgathaCheck/issues/1542) |
+| DEBT-D-FORM | Close when B1–B4 done | [#1543](https://github.com/KanopeeKa/AgathaCheck/issues/1543) |
+| DEBT-PRIV-DROP | Track until D1 merged | [#1544](https://github.com/KanopeeKa/AgathaCheck/issues/1544) |
+| DEBT-ARCH-CYCLE | Until C1 resolved | [#1545](https://github.com/KanopeeKa/AgathaCheck/issues/1545) |
+| DEBT-OPS-R11 | UAT live / cron / reset | [#1546](https://github.com/KanopeeKa/AgathaCheck/issues/1546) |
+| DEBT-DOC-STALE | Stale compat-route docs | [#1547](https://github.com/KanopeeKa/AgathaCheck/issues/1547) |
+| DEBT-1476 | Occurrence detail decideDone context | [#1476](https://github.com/KanopeeKa/AgathaCheck/issues/1476) (open after GOV repro) |
 
 ---
 
@@ -315,19 +315,19 @@ flowchart TD
 
 ```yaml
 autonomy: active
-current_phase: A1
-last_completed_phase: null
+current_phase: GOV
+last_completed_phase: A2
 halt_reason: null
-next_action: "continue phase A1 on branch cursor/care-gap-a1-r9-50b4"
+next_action: "continue phase GOV on branch cursor/care-gap-gov-50b4"
 artifact_ref:
-  branch: cursor/care-requirements-gap-close-integration-50b4
+  branch: cursor/care-gap-gov-50b4
   plan_path: .agents/plans/care-requirements-gap-close-c1a7.md
-  plan_commit: 03341631d94d840da3b3ed5baa3d0a5a812134dc
+  plan_commit: c0121e6ed24f3361fb2c1ba69f01816b981ed786
   snapshot_path: .agents/plans/care-requirements-gap-close-c1a7.snapshot.json
-  snapshot_commit: 03341631d94d840da3b3ed5baa3d0a5a812134dc
-open_prs: []
+  snapshot_commit: c0121e6ed24f3361fb2c1ba69f01816b981ed786
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1551"]
 merge_commits: {}
-debt_issue_refs: []
+debt_issue_refs: [1539,1540,1541,1542,1543,1544,1545,1546,1547,1476]
 ```
 
 ---
