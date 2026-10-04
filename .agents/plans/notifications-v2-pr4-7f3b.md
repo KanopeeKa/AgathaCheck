@@ -31,10 +31,10 @@ next_action: "continue phase 1 on branch cursor/notifications-v2-pr4-7f3b"
 artifact_ref:
   branch: cursor/notifications-v2-pr4-7f3b
   plan_path: .agents/plans/notifications-v2-pr4-7f3b.md
-  plan_commit: bd9c76889755be1f5f731880216fd9f3cd48e555
+  plan_commit: 63007efa9fa094eb1ad45f78c396f1360e58613a
   snapshot_path: .agents/plans/notifications-v2-pr4-7f3b.snapshot.json
-  snapshot_commit: bd9c76889755be1f5f731880216fd9f3cd48e555
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1584"]
+  snapshot_commit: 63007efa9fa094eb1ad45f78c396f1360e58613a
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1585"]
 merge_commits: {}
 debt_issue_refs: []
 ```
