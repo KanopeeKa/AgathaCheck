@@ -277,19 +277,19 @@ around it; never classify a WAF block as a product failure.
 ## Runtime state (agent-updated)
 
 ```yaml
-autonomy: active
-current_phase: 7
-last_completed_phase: 6
+autonomy: completed
+current_phase: null
+last_completed_phase: 7
 halt_reason: null
-next_action: "continue phase 7 on branch claude/relaxed-einstein-jqecfg"
+next_action: "plan complete"
 artifact_ref:
-  branch: cursor/test-health-ci-phase7-edcb
+  branch: main
   plan_path: .agents/plans/test-health-ci-5f3a.md
-  plan_commit: bb5c35ce25ee13e45570bb777b70b4d9f89c3db9
+  plan_commit: c3c32a71d5f215df6dc94702055aabea23052171
   snapshot_path: .agents/plans/test-health-ci-5f3a.snapshot.json
-  snapshot_commit: bb5c35ce25ee13e45570bb777b70b4d9f89c3db9
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1513"]
-merge_commits: {"2":"e89d8c4d7d4ef905b616dd4881bfda87028ae14b","3":"e89d8c4d7d4ef905b616dd4881bfda87028ae14b","4":"a436175f8c55caba2a8cd031b9450cef5f9ab6d5","5":"8d9840eaabb6a2d772304490127861d679ec70fc","6":"a340e15670d8c185614f746c7ee213701b2d467d"}
+  snapshot_commit: c3c32a71d5f215df6dc94702055aabea23052171
+open_prs: []
+merge_commits: {"2":"e89d8c4d7d4ef905b616dd4881bfda87028ae14b","3":"e89d8c4d7d4ef905b616dd4881bfda87028ae14b","4":"a436175f8c55caba2a8cd031b9450cef5f9ab6d5","5":"8d9840eaabb6a2d772304490127861d679ec70fc","6":"a340e15670d8c185614f746c7ee213701b2d467d","7":"c3c32a71d5f215df6dc94702055aabea23052171"}
 debt_issue_refs: []
 ```
 
