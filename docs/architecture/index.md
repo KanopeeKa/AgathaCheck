@@ -10,7 +10,8 @@ tags: [architecture, index]
 
 Thin map for agents — read this **before** broad codebase search.  
 Full conventions: `docs/architecture/modularity.md`.  
-**Accepted architecture review (2026-09-22):** [active-codebase-review.md](reviews/active-codebase-review.md) — integrity fixes, module contracts, and delivery batches A → B → C.
+**Accepted architecture review (2026-09-22):** [active-codebase-review.md](reviews/active-codebase-review.md) — integrity fixes, module contracts, and delivery batches A → B → C.  
+**Architecture decisions (ADR):** [decisions/README.md](decisions/README.md) — platform boundaries (e.g. account erasure acceptance).
 
 ---
 

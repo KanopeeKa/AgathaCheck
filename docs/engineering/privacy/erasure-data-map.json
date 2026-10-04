@@ -1,0 +1,721 @@
+{
+  "schema_version": 1,
+  "description": "Machine-checkable account erasure inventory for PostgreSQL public schema. Sync scope (D15) is everything in bindings executed inside the acceptance transaction; async file and PostHog work uses cleanup_jobs.",
+  "bindings": [
+    {
+      "table": "adoption_journeys",
+      "column": "created_by",
+      "erasure_action": "set_null",
+      "reason": "ON DELETE SET NULL from users(id); attribution cleared when account removed.",
+      "pg_on_delete": "n",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "adoption_journeys",
+      "column": "foster_user_id",
+      "erasure_action": "set_null",
+      "reason": "ON DELETE SET NULL from users(id); attribution cleared when account removed.",
+      "pg_on_delete": "n",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "adoption_visits",
+      "column": "created_by",
+      "erasure_action": "set_null",
+      "reason": "ON DELETE SET NULL from users(id); attribution cleared when account removed.",
+      "pg_on_delete": "n",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "archived_pets",
+      "column": "transferred_to_user_id",
+      "erasure_action": "explicit_delete",
+      "reason": "No FK; set NULL when transferred-to account is erased.",
+      "discovery_source": "column"
+    },
+    {
+      "table": "archived_pets",
+      "column": "user_id",
+      "erasure_action": "set_null",
+      "reason": "ON DELETE SET NULL from users(id); attribution cleared when account removed.",
+      "pg_on_delete": "n",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "audit_events",
+      "column": "actor_user_id",
+      "erasure_action": "retained",
+      "reason": "Audit row kept; actor_user_id anonymised (NULL) and actor PII stripped in erasure transaction before user delete.",
+      "pg_on_delete": "n",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "care_milestone_presentations",
+      "column": "user_id",
+      "erasure_action": "cascade",
+      "reason": "ON DELETE CASCADE from users(id).",
+      "pg_on_delete": "c",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "care_schedule_events",
+      "column": "actor_user_id",
+      "erasure_action": "set_null",
+      "reason": "ON DELETE SET NULL from users(id); attribution cleared when account removed.",
+      "pg_on_delete": "n",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "custody_transfers",
+      "column": "from_user_id",
+      "erasure_action": "set_null",
+      "reason": "ON DELETE SET NULL from users(id); attribution cleared when account removed.",
+      "pg_on_delete": "n",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "custody_transfers",
+      "column": "requested_by_user_id",
+      "erasure_action": "cascade",
+      "reason": "ON DELETE CASCADE from users(id).",
+      "pg_on_delete": "c",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "custody_transfers",
+      "column": "responded_by_user_id",
+      "erasure_action": "set_null",
+      "reason": "ON DELETE SET NULL from users(id); attribution cleared when account removed.",
+      "pg_on_delete": "n",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "custody_transfers",
+      "column": "to_user_id",
+      "erasure_action": "set_null",
+      "reason": "ON DELETE SET NULL from users(id); attribution cleared when account removed.",
+      "pg_on_delete": "n",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "family_event_history",
+      "column": "marked_by_user_id",
+      "erasure_action": "set_null",
+      "reason": "ON DELETE SET NULL from users(id); attribution cleared when account removed.",
+      "pg_on_delete": "n",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "family_events",
+      "column": "assigned_to_user_id",
+      "erasure_action": "set_null",
+      "reason": "ON DELETE SET NULL from users(id); attribution cleared when account removed.",
+      "pg_on_delete": "n",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "family_events",
+      "column": "created_by",
+      "erasure_action": "set_null",
+      "reason": "ON DELETE SET NULL from users(id); attribution cleared when account removed.",
+      "pg_on_delete": "n",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "family_events",
+      "column": "user_id",
+      "erasure_action": "cascade",
+      "reason": "ON DELETE CASCADE from users(id).",
+      "pg_on_delete": "c",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "foster_placements",
+      "column": "created_by",
+      "erasure_action": "set_null",
+      "reason": "ON DELETE SET NULL from users(id); attribution cleared when account removed.",
+      "pg_on_delete": "n",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "foster_placements",
+      "column": "foster_user_id",
+      "erasure_action": "cascade",
+      "reason": "ON DELETE CASCADE from users(id).",
+      "pg_on_delete": "c",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "foster_profiles",
+      "column": "email",
+      "erasure_action": "explicit_delete",
+      "reason": "Foster profile email cleared when linked account is erased (user_id SET NULL).",
+      "discovery_source": "column"
+    },
+    {
+      "table": "foster_profiles",
+      "column": "user_id",
+      "erasure_action": "set_null",
+      "reason": "ON DELETE SET NULL from users(id); attribution cleared when account removed.",
+      "pg_on_delete": "n",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "foster_requests",
+      "column": "created_by",
+      "erasure_action": "set_null",
+      "reason": "ON DELETE SET NULL from users(id); attribution cleared when account removed.",
+      "pg_on_delete": "n",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "health_entries",
+      "column": "user_id",
+      "erasure_action": "cascade",
+      "reason": "ON DELETE CASCADE from users(id).",
+      "pg_on_delete": "c",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "health_entry_absence_resolutions",
+      "column": "carer_user_id",
+      "erasure_action": "set_null",
+      "reason": "ON DELETE SET NULL from users(id); attribution cleared when account removed.",
+      "pg_on_delete": "n",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "health_history",
+      "column": "marked_by_user_id",
+      "erasure_action": "set_null",
+      "reason": "ON DELETE SET NULL from users(id); attribution cleared when account removed.",
+      "pg_on_delete": "n",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "health_issue_events",
+      "column": "user_id",
+      "erasure_action": "cascade",
+      "reason": "ON DELETE CASCADE from users(id).",
+      "pg_on_delete": "c",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "health_issues",
+      "column": "user_id",
+      "erasure_action": "cascade",
+      "reason": "ON DELETE CASCADE from users(id).",
+      "pg_on_delete": "c",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "health_occurrences",
+      "column": "marked_by_user_id",
+      "erasure_action": "set_null",
+      "reason": "ON DELETE SET NULL from users(id); attribution cleared when account removed.",
+      "pg_on_delete": "n",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "health_occurrences",
+      "column": "performed_by_user_id",
+      "erasure_action": "set_null",
+      "reason": "ON DELETE SET NULL from users(id); attribution cleared when account removed.",
+      "pg_on_delete": "n",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "household_members",
+      "column": "user_id",
+      "erasure_action": "cascade",
+      "reason": "ON DELETE CASCADE from users(id).",
+      "pg_on_delete": "c",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "notification_preferences",
+      "column": "user_id",
+      "erasure_action": "cascade",
+      "reason": "ON DELETE CASCADE from users(id).",
+      "pg_on_delete": "c",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "notifications",
+      "column": "user_id",
+      "erasure_action": "cascade",
+      "reason": "ON DELETE CASCADE from users(id).",
+      "pg_on_delete": "c",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "org_connection_requests",
+      "column": "created_by",
+      "erasure_action": "cascade",
+      "reason": "ON DELETE CASCADE from users(id).",
+      "pg_on_delete": "c",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "org_foster_parents",
+      "column": "email",
+      "erasure_action": "explicit_delete",
+      "reason": "Contact email for rows tied to the erased user; deleted or redacted in erasure transaction scope.",
+      "discovery_source": "column"
+    },
+    {
+      "table": "org_foster_parents",
+      "column": "lawful_basis_attested_by",
+      "erasure_action": "set_null",
+      "reason": "ON DELETE SET NULL from users(id); attribution cleared when account removed.",
+      "pg_on_delete": "n",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "org_foster_parents",
+      "column": "user_id",
+      "erasure_action": "set_null",
+      "reason": "ON DELETE SET NULL from users(id); attribution cleared when account removed.",
+      "pg_on_delete": "n",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "org_pet_home_hidden",
+      "column": "user_id",
+      "erasure_action": "cascade",
+      "reason": "ON DELETE CASCADE from users(id).",
+      "pg_on_delete": "c",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "organization_permissions",
+      "column": "granted_by",
+      "erasure_action": "explicit_delete",
+      "reason": "ON DELETE NO ACTION; erasure service must clear or reassign before deleting users row.",
+      "pg_on_delete": "a",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "organization_permissions",
+      "column": "revoked_by",
+      "erasure_action": "explicit_delete",
+      "reason": "ON DELETE NO ACTION; erasure service must clear or reassign before deleting users row.",
+      "pg_on_delete": "a",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "organization_permissions",
+      "column": "user_id",
+      "erasure_action": "cascade",
+      "reason": "ON DELETE CASCADE from users(id).",
+      "pg_on_delete": "c",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "organization_users",
+      "column": "user_id",
+      "erasure_action": "cascade",
+      "reason": "ON DELETE CASCADE from users(id).",
+      "pg_on_delete": "c",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "organization_visibility_grants",
+      "column": "grantee_user_id",
+      "erasure_action": "cascade",
+      "reason": "ON DELETE CASCADE from users(id).",
+      "pg_on_delete": "c",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "organization_visibility_grants",
+      "column": "subject_user_id",
+      "erasure_action": "cascade",
+      "reason": "ON DELETE CASCADE from users(id).",
+      "pg_on_delete": "c",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "organizations",
+      "column": "email",
+      "erasure_action": "retained",
+      "reason": "Organisation contact email; not the erased account holder PII.",
+      "discovery_source": "column"
+    },
+    {
+      "table": "password_reset_tokens",
+      "column": "user_id",
+      "erasure_action": "cascade",
+      "reason": "ON DELETE CASCADE from users(id).",
+      "pg_on_delete": "c",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "people_contact_private_notes",
+      "column": "user_id",
+      "erasure_action": "cascade",
+      "reason": "ON DELETE CASCADE from users(id).",
+      "pg_on_delete": "c",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "people_contacts",
+      "column": "email",
+      "erasure_action": "explicit_delete",
+      "reason": "Contact email for rows tied to the erased user; deleted or redacted in erasure transaction scope.",
+      "discovery_source": "column"
+    },
+    {
+      "table": "people_contacts",
+      "column": "linked_user_id",
+      "erasure_action": "set_null",
+      "reason": "ON DELETE SET NULL from users(id); attribution cleared when account removed.",
+      "pg_on_delete": "n",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "people_directories",
+      "column": "owner_user_id",
+      "erasure_action": "cascade",
+      "reason": "ON DELETE CASCADE from users(id).",
+      "pg_on_delete": "c",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "pet_access_events",
+      "column": "subject_user_id",
+      "erasure_action": "set_null",
+      "reason": "ON DELETE SET NULL from users(id); attribution cleared when account removed.",
+      "pg_on_delete": "n",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "pet_access",
+      "column": "invited_by",
+      "erasure_action": "set_null",
+      "reason": "ON DELETE SET NULL from users(id); attribution cleared when account removed.",
+      "pg_on_delete": "n",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "pet_access",
+      "column": "user_id",
+      "erasure_action": "cascade",
+      "reason": "ON DELETE CASCADE from users(id).",
+      "pg_on_delete": "c",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "pet_activity_events",
+      "column": "actor_user_id",
+      "erasure_action": "set_null",
+      "reason": "ON DELETE SET NULL from users(id); attribution cleared when account removed.",
+      "pg_on_delete": "n",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "pet_lifecycle_notifications",
+      "column": "recipient_user_id",
+      "erasure_action": "cascade",
+      "reason": "ON DELETE CASCADE from users(id).",
+      "pg_on_delete": "c",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "pet_share_invites",
+      "column": "invitee_email",
+      "erasure_action": "explicit_delete",
+      "reason": "Invitee PII; row removed via inviter CASCADE or explicit invite purge during erasure.",
+      "discovery_source": "column"
+    },
+    {
+      "table": "pet_share_invites",
+      "column": "invitee_user_id",
+      "erasure_action": "set_null",
+      "reason": "ON DELETE SET NULL from users(id); attribution cleared when account removed.",
+      "pg_on_delete": "n",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "pet_share_invites",
+      "column": "inviter_user_id",
+      "erasure_action": "cascade",
+      "reason": "ON DELETE CASCADE from users(id).",
+      "pg_on_delete": "c",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "pet_share_links",
+      "column": "claimed_by",
+      "erasure_action": "set_null",
+      "reason": "ON DELETE SET NULL from users(id); attribution cleared when account removed.",
+      "pg_on_delete": "n",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "pet_share_links",
+      "column": "created_by",
+      "erasure_action": "cascade",
+      "reason": "ON DELETE CASCADE from users(id).",
+      "pg_on_delete": "c",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "pet_tags",
+      "column": "user_id",
+      "erasure_action": "cascade",
+      "reason": "ON DELETE CASCADE from users(id).",
+      "pg_on_delete": "c",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "pet_timeline_entries",
+      "column": "created_by",
+      "erasure_action": "set_null",
+      "reason": "ON DELETE SET NULL from users(id); attribution cleared when account removed.",
+      "pg_on_delete": "n",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "pets",
+      "column": "care_holder_user_id",
+      "erasure_action": "set_null",
+      "reason": "ON DELETE SET NULL from users(id); attribution cleared when account removed.",
+      "pg_on_delete": "n",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "pets",
+      "column": "user_id",
+      "erasure_action": "cascade",
+      "reason": "ON DELETE CASCADE from users(id).",
+      "pg_on_delete": "c",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "planned_absence_carer_invites",
+      "column": "invitee_email",
+      "erasure_action": "explicit_delete",
+      "reason": "Invitee PII; row removed via inviter CASCADE or explicit invite purge during erasure.",
+      "discovery_source": "column"
+    },
+    {
+      "table": "planned_absence_carer_invites",
+      "column": "invitee_user_id",
+      "erasure_action": "set_null",
+      "reason": "ON DELETE SET NULL from users(id); attribution cleared when account removed.",
+      "pg_on_delete": "n",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "planned_absence_carer_invites",
+      "column": "inviter_user_id",
+      "erasure_action": "cascade",
+      "reason": "ON DELETE CASCADE from users(id).",
+      "pg_on_delete": "c",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "planned_absence_guest_grants",
+      "column": "granted_by_user_id",
+      "erasure_action": "cascade",
+      "reason": "ON DELETE CASCADE from users(id).",
+      "pg_on_delete": "c",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "planned_absence_guest_grants",
+      "column": "grantee_user_id",
+      "erasure_action": "cascade",
+      "reason": "ON DELETE CASCADE from users(id).",
+      "pg_on_delete": "c",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "planned_absence_pets",
+      "column": "carer_user_id",
+      "erasure_action": "set_null",
+      "reason": "ON DELETE SET NULL from users(id); attribution cleared when account removed.",
+      "pg_on_delete": "n",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "planned_absences",
+      "column": "user_id",
+      "erasure_action": "cascade",
+      "reason": "ON DELETE CASCADE from users(id).",
+      "pg_on_delete": "c",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "prospects",
+      "column": "created_by",
+      "erasure_action": "set_null",
+      "reason": "ON DELETE SET NULL from users(id); attribution cleared when account removed.",
+      "pg_on_delete": "n",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "prospects",
+      "column": "email",
+      "erasure_action": "explicit_delete",
+      "reason": "Contact email for rows tied to the erased user; deleted or redacted in erasure transaction scope.",
+      "discovery_source": "column"
+    },
+    {
+      "table": "prospects",
+      "column": "lawful_basis_attested_by",
+      "erasure_action": "set_null",
+      "reason": "ON DELETE SET NULL from users(id); attribution cleared when account removed.",
+      "pg_on_delete": "n",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "prospects",
+      "column": "user_id",
+      "erasure_action": "set_null",
+      "reason": "ON DELETE SET NULL from users(id); attribution cleared when account removed.",
+      "pg_on_delete": "n",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "refresh_sessions",
+      "column": "user_id",
+      "erasure_action": "cascade",
+      "reason": "ON DELETE CASCADE from users(id).",
+      "pg_on_delete": "c",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "refresh_tokens",
+      "column": "user_id",
+      "erasure_action": "cascade",
+      "reason": "ON DELETE CASCADE from users(id).",
+      "pg_on_delete": "c",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "users",
+      "column": "email",
+      "erasure_action": "explicit_delete",
+      "reason": "Account credential and identity; removed with users row.",
+      "discovery_source": "column"
+    },
+    {
+      "table": "vets",
+      "column": "email",
+      "erasure_action": "explicit_delete",
+      "reason": "Contact email for rows tied to the erased user; deleted or redacted in erasure transaction scope.",
+      "discovery_source": "column"
+    },
+    {
+      "table": "vets",
+      "column": "user_id",
+      "erasure_action": "cascade",
+      "reason": "ON DELETE CASCADE from users(id).",
+      "pg_on_delete": "c",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "weight_entries",
+      "column": "user_id",
+      "erasure_action": "cascade",
+      "reason": "ON DELETE CASCADE from users(id).",
+      "pg_on_delete": "c",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "users",
+      "column": "id",
+      "erasure_action": "explicit_delete",
+      "reason": "Root account row; deleted in acceptance transaction after sessions revoked and cleanup jobs enqueued."
+    }
+  ],
+  "file_columns": [
+    {
+      "table": "pets",
+      "column": "photo_path",
+      "storage_kind": "uploads",
+      "reason": "Pet photo object storage; file_delete jobs after DB identifiers collected."
+    },
+    {
+      "table": "users",
+      "column": "photo_url",
+      "storage_kind": "uploads",
+      "reason": "Profile photo; file_delete job enqueued before users row delete."
+    },
+    {
+      "table": "health_event_photos",
+      "column": "url",
+      "storage_kind": "private_health",
+      "reason": "Health occurrence/entry photos; cascades with health data, files deleted asynchronously."
+    },
+    {
+      "table": "health_issue_documents",
+      "column": "url",
+      "storage_kind": "private_health",
+      "reason": "Issue attachments; cascades with health_issues, files deleted asynchronously."
+    },
+    {
+      "table": "organizations",
+      "column": "photo_url",
+      "storage_kind": "uploads",
+      "reason": "Org branding image when user is sole org admin is out of scope for user erasure; retained unless org deleted."
+    },
+    {
+      "table": "organizations",
+      "column": "logo_url",
+      "storage_kind": "uploads",
+      "reason": "Org logo; same retention as organizations.photo_url."
+    }
+  ],
+  "cleanup_jobs": {
+    "erasure_action": "explicit_delete",
+    "scope": "correlation_id",
+    "reason": "No FK to users; account erasure deletes or completes jobs where correlation_id matches account_erasure_operations.id or legacy user-scoped correlation. Completed jobs may be retained per housekeeping policy."
+  },
+  "planned_tables": [
+    {
+      "table": "people_contact_household_notes",
+      "column": "updated_by_user_id",
+      "erasure_action": "set_null",
+      "reason": "PEOPLE migration pending; ON DELETE SET NULL expected for attribution when household note survives.",
+      "status": "pending_migration"
+    },
+    {
+      "table": "people_contact_household_notes",
+      "column": "contact_id",
+      "erasure_action": "cascade",
+      "reason": "Notes cascade when people_contacts row removed via directory owner CASCADE.",
+      "status": "pending_migration"
+    },
+    {
+      "table": "household_invites",
+      "column": "inviter_user_id",
+      "erasure_action": "cascade",
+      "reason": "PEOPLE migration pending; inviter CASCADE expected (planned_absence_carer_invites pattern).",
+      "status": "pending_migration"
+    },
+    {
+      "table": "household_invites",
+      "column": "invitee_user_id",
+      "erasure_action": "set_null",
+      "reason": "Pending invitee link cleared when account erased.",
+      "status": "pending_migration"
+    },
+    {
+      "table": "household_invites",
+      "column": "invitee_email",
+      "erasure_action": "explicit_delete",
+      "reason": "Invitee email redacted or row deleted during erasure.",
+      "status": "pending_migration"
+    },
+    {
+      "table": "pet_share_invites",
+      "column": "contact_id",
+      "erasure_action": "set_null",
+      "reason": "PEOPLE share_invite_contact_link migration pending; contact link cleared, invite row removed via inviter CASCADE.",
+      "status": "pending_migration"
+    }
+  ]
+}
