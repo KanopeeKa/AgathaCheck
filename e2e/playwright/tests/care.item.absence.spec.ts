@@ -1,9 +1,11 @@
 /**
  * @bdd care_item_absence.feature
  * Scenario: In-window care can be rescheduled or skipped from occurrence review during planned absence
- * Scenario: Care item absence strip shows Keep with carer and Review date opens occurrence review
+ * Scenario: Care item absence strip shows Keep with carer and Review date opens the date directly
+ * Scenario: Moving care after the trip postpones it to the day after return
+ * Scenario: A date planned during the trip can be looked after by the carer
  */
-import { test, loginAs } from '../fixtures/auth.fixture';
+import { test, loginAs, expect } from '../fixtures/auth.fixture';
 import { CareItemPage } from '../pages/care-item.page';
 import {
   createHealthEntry,
@@ -12,6 +14,12 @@ import {
   signupUser,
   updatePlannedAbsence,
 } from '../support/api';
+import {
+  getCareItem,
+  getHealthEntryAbsenceContext,
+  planAnotherDate,
+} from '../support/care-api';
+import { formatHealthEntryStatusDate } from '../support/healthEntryDates';
 
 const baseURL = () => process.env.E2E_BASE_URL ?? 'http://localhost:3000';
 
@@ -52,7 +60,7 @@ async function seedAbsenceInWindowCare(
       },
     ],
   });
-  return { user, pet, entry, absence };
+  return { user, pet, entry, absence, startsOn, endsOn, inWindowDue };
 }
 
 test.describe('Care item absence review', () => {
@@ -77,13 +85,13 @@ test.describe('Care item absence review', () => {
     await careItem.expectAbsenceReviewActionsHidden();
   });
 
-  test('Care item absence strip shows Keep with carer and Review date opens occurrence review', async ({
+  test('Care item absence strip shows Keep with carer and Review date opens the date directly', async ({
     page,
   }) => {
     test.setTimeout(120_000);
     const root = baseURL();
     const carerName = 'Alex Carer';
-    const { user, pet, entry } = await seedAbsenceInWindowCare(root, {
+    const { user, pet, entry, inWindowDue } = await seedAbsenceInWindowCare(root, {
       petName: 'AbsenceStripPet',
       entryName: 'Strip Review Grooming',
       carerName,
@@ -97,5 +105,86 @@ test.describe('Care item absence review', () => {
     await careItem.expectAbsenceKeepWithCarer(carerName);
     await careItem.expectAbsenceReviewDateAction();
     await careItem.openAbsenceOccurrenceReview();
+    const statusDate = formatHealthEntryStatusDate(inWindowDue);
+    await expect(
+      page.getByText(statusDate, { exact: false }).first(),
+    ).toBeVisible({ timeout: 15_000 });
+  });
+
+  test('@smoke-uat Moving care after the trip postpones it to the day after return', async ({
+    page,
+  }) => {
+    test.setTimeout(120_000);
+    const root = baseURL();
+    const { user, pet, entry } = await seedAbsenceInWindowCare(root, {
+      petName: 'MoveAfterPet',
+      entryName: 'Flea during trip',
+      carerName: 'Trip Sitter',
+    });
+    const dayAfterReturn = dateOffset(15);
+
+    await loginAs(page, user, { experience: 'guardian' });
+
+    const careItem = new CareItemPage(page);
+    await careItem.open(pet.id, entry.id);
+    await careItem.rescheduleFromAbsenceReviewToDayOffset(15);
+
+    const item = await getCareItem(root, user.accessToken, entry.id);
+    expect(item.open_occurrences[0]?.scheduled_date).toBe(dayAfterReturn);
+    await careItem.expectOpenOccurrenceDateVisible(dayAfterReturn);
+  });
+
+  test('A date planned during the trip can be looked after by the carer', async ({ page }) => {
+    test.setTimeout(120_000);
+    const root = baseURL();
+    const carerName = 'Carol';
+    const user = await signupUser(root);
+    const pet = await createPet(root, user.accessToken, 'PlannedTripPet');
+    const startsOn = dateOffset(7);
+    const endsOn = dateOffset(14);
+    const beforeTripDue = dateOffset(3);
+    const duringTrip = dateOffset(10);
+    const entry = await createHealthEntry(root, user.accessToken, pet.id, {
+      name: 'Trip grooming',
+      nextDueDate: beforeTripDue,
+      frequency: 'weekly',
+      frequencyDays: 7,
+      careFamily: 'grooming',
+    });
+    const absence = await createPlannedAbsence(root, user.accessToken, {
+      startsOn,
+      endsOn,
+      petIds: [pet.id],
+    });
+    await updatePlannedAbsence(root, user.accessToken, absence.id, {
+      petCarers: [
+        {
+          petId: pet.id,
+          carerKind: 'note_only',
+          carerName,
+          carerNote: 'House key in lockbox',
+        },
+      ],
+    });
+    await planAnotherDate(root, user.accessToken, entry.id, duringTrip);
+
+    await loginAs(page, user, { experience: 'guardian' });
+
+    const careItem = new CareItemPage(page);
+    await careItem.open(pet.id, entry.id);
+    await careItem.expectAbsenceSectionVisible();
+    await careItem.tapAbsenceKeepWithCarer(carerName);
+
+    const context = await getHealthEntryAbsenceContext(root, user.accessToken, entry.id);
+    const slice = context.absences.find((a) => a.planned_absence_id === absence.id);
+    expect(slice?.planned_care?.looked_after_by?.carer_name).toBe(carerName);
+    expect(slice?.planned_care?.planned_dates).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          scheduled_date: duringTrip,
+          occurrence_id: expect.any(String),
+        }),
+      ]),
+    );
   });
 });
