@@ -1,0 +1,57 @@
+# Weekly k6 load smoke against localhost (advisory).
+name: Performance weekly (k6)
+
+on:
+  schedule:
+    - cron: '0 8 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  k6-api-smoke:
+    name: k6 API smoke (localhost)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+
+      - name: Install k6
+        run: |
+          sudo gpg -k
+          sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17A747611A8F3B9D8765C6E71DC9510970C21
+          echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+          sudo apt-get update
+          sudo apt-get install -y k6
+
+      - name: Start PostgreSQL
+        run: sudo pg_ctlcluster 16 main start
+
+      - name: Migrate and start server
+        env:
+          PGUSER: user
+          PGPASSWORD: password
+          PGHOST: localhost
+          PGPORT: 5432
+          PGDATABASE: agatha_db
+        run: |
+          cd server && npm ci
+          node scripts/migrate.js up
+          node bin/start.js &
+          n=0
+          until curl -sf http://127.0.0.1:3000/backend/health; do
+            n=$((n + 1))
+            if [ "$n" -ge 30 ]; then exit 1; fi
+            sleep 2
+          done
+
+      - name: Run k6 smoke
+        run: k6 run e2e/perf/api-smoke.k6.js

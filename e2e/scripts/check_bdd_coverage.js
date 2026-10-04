@@ -51,6 +51,16 @@ function loadManifest() {
   return manifest.bddFeaturePatterns || [];
 }
 
+function loadFrozenE2eSpecs() {
+  const frozenPath = path.join(REPO_ROOT, 'e2e', 'scripts', 'frozen-e2e-specs.mjs');
+  const text = fs.readFileSync(frozenPath, 'utf8');
+  const names = [];
+  for (const m of text.matchAll(/'([^']+\.spec\.ts)'/g)) {
+    names.push(m[1]);
+  }
+  return new Set(names);
+}
+
 function featureBaseName(filename) {
   return filename.replace(/\.feature$/, '');
 }
@@ -110,9 +120,12 @@ function activeFeatureScenarios(scenarios) {
 // Spec-file parsing: collect "Scenario:" titles from @bdd header block
 // ---------------------------------------------------------------------------
 
-function collectSpecScenarios(dir) {
+function collectSpecScenarios(dir, frozenSpecs) {
   const scenarios = [];
   for (const file of fs.readdirSync(dir).filter((f) => f.endsWith('.spec.ts'))) {
+    if (frozenSpecs.has(file)) {
+      continue;
+    }
     const text = fs.readFileSync(path.join(dir, file), 'utf8');
 
     const blockEnd = text.indexOf('*/');
@@ -154,10 +167,11 @@ function computeGate(activeTotal) {
 function main() {
   const { reportOnly } = parseArgs(process.argv);
   const frozenPatterns = loadManifest();
+  const frozenSpecs = loadFrozenE2eSpecs();
 
   const allFeatureScenarios = collectFeatureScenarios(FEATURES_DIR, frozenPatterns);
   const featureScenarios = activeFeatureScenarios(allFeatureScenarios);
-  const specScenarios = collectSpecScenarios(SPECS_DIR);
+  const specScenarios = collectSpecScenarios(SPECS_DIR, frozenSpecs);
   const mappedSet = buildMappedSet(featureScenarios, specScenarios);
 
   const frozenCount = allFeatureScenarios.length - featureScenarios.length;

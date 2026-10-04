@@ -530,13 +530,13 @@ autonomy: active
 current_phase: s7-ship-main
 last_completed_phase: s6-invites-api
 halt_reason: null
-next_action: "start phase s7-ship-main: checkout cursor/people-server-s7-ship-7f3b"
+next_action: "continue phase s7-ship-main on branch cursor/people-server-s7-ship-7f3b"
 artifact_ref:
-  branch: cursor/people-server-integration-7f3b
+  branch: cursor/people-server-s7-ship-7f3b
   plan_path: .agents/plans/people-server-7f3b.md
-  plan_commit: 8fb90b93fd539b02ab43de6bb1cf47a5b81e5494
+  plan_commit: 52de258f7d206e5c627c3da490c187130bda0c75
   snapshot_path: .agents/plans/people-server-7f3b.snapshot.json
-  snapshot_commit: 8fb90b93fd539b02ab43de6bb1cf47a5b81e5494
+  snapshot_commit: 52de258f7d206e5c627c3da490c187130bda0c75
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

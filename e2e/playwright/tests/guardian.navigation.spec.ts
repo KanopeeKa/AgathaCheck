@@ -1,9 +1,8 @@
 /**
  * @bdd guardian_dashboard.feature
- * Scenario: Pet Care compact bottom nav reaches Pets, Actions, and Fostering destinations
+ * Scenario: Pet Care compact bottom nav reaches Today, Pets, Care, and Account destinations
  * Scenario: Pet Care leading navigation rail reaches primary destinations at medium width
  * Scenario: Pet Care expanded sidebar reaches primary destinations at wide width
- * Scenario: Workspace toggle switches between Pet Care and Shelter when available
  * Scenario: Mobile Pet Care home shows one product brand in the app bar
  * Scenario: Tablet Pet Care home carries brand in the navigation rail only
  * Scenario: Desktop Pet Care home carries brand in the sidebar only

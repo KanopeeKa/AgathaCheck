@@ -419,6 +419,17 @@ Workflow: **E2E (Playwright)** — `.github/workflows/e2e.yml`
 | `Playwright E2E (localhost)` | No |
 | `Weekly E2E failed` (`notify-on-failure`) | No — warning on scheduled failure only |
 
+### Weekly security and performance (advisory)
+
+| Workflow | Schedule | Blocks merge? |
+|----------|----------|---------------|
+| `security-dast.yml` — ZAP baseline vs localhost stack | Mon 07:00 UTC | No (`continue-on-error`) |
+| `perf-weekly.yml` — k6 `e2e/perf/api-smoke.k6.js` vs localhost | Mon 08:00 UTC | No (`continue-on-error`) |
+| `audit-advisory.yml` — npm audit on `main` | Mon 06:00 UTC | No |
+
+Web release builds also run `scripts/ci/check-web-bundle-budget.mjs` (ratchet via
+`scripts/ci/web-bundle-budget.json`) inside `_reusable-build-web.yml`.
+
 ---
 
 ## 5. PROD deploy prerequisites

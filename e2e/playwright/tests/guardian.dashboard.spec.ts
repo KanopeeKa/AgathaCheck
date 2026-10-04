@@ -1,9 +1,8 @@
 /**
  * @bdd guardian_dashboard.feature
- * Scenario: Guardian Today prioritises pets and care
- * Scenario: Care preview separates Due and Soon
- * Scenario: My Pets preview is capped at four with an All Pets destination
+ * Scenario: Today orientation prioritises attention above the management sections
  * Scenario: Care preview orders overdue, due today, and upcoming items
+ * Scenario: My Pets preview is capped at four with an All Pets destination
  * Scenario: Care preview row opens the occurrence screen
  * Scenario: Care preview supports completion and undo
  * Scenario: Veterinary team preview reaches linked vet details

@@ -1,8 +1,6 @@
 /**
  * @bdd account_area.feature
- * Scenario: Guardian-only user always sees Shelter in workspace menu (D-v5-WORKSPACE-1)
- * Scenario: Org member always sees Shelter in workspace menu
- * Scenario: Login always lands on Pet Care home (D-v5-WORKSPACE-2)
+ * Scenario: Login restores last active guardian section
  */
 import { test, expect } from '../fixtures/auth.fixture';
 import { AccountPage } from '../pages/account.page';
