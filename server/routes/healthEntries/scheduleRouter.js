@@ -1,4 +1,5 @@
 import { normalizeCalendarDateInput } from '../../lib/calendarDate.js';
+import { syncResolutionAfterAbsencePostpone } from '../../lib/care/absence/syncResolutionAfterSchedule.js';
 import {
   adjustCadenceCommand,
   postponeCommand,
@@ -15,19 +16,33 @@ export function registerScheduleRoutes(router, pool) {
     const rawUntil = body.until ?? null;
     const until = rawUntil == null || rawUntil === '' ? null : normalizeCalendarDateInput(rawUntil);
     if (rawUntil && !until) return res.status(400).json({ error: 'Invalid until date' });
+    const absenceId = body.absence_id || body.absenceId || null;
+    const reason = body.reason || (until ? 'manual' : 'pause');
     return handleCommand(pool, req, res, {
       command: (ctx) => postponeCommand(ctx, {
         until,
-        reason: body.reason || (until ? 'manual' : 'pause'),
-        absenceId: body.absence_id || body.absenceId || null,
+        reason,
+        absenceId,
         occurrenceId: body.occurrence_id || body.occurrenceId || null,
       }),
       audit: () => ({
         action: until ? 'health_entry.postponed' : 'health_entry.paused',
-        metadata: { until, reason: body.reason || null },
+        metadata: { until, reason },
         activity: until ? 'postpone' : 'pause',
       }),
-      respond: async (out) => ({ body: await commandResponse(pool, out, req, { until: out.until }) }),
+      respond: async (out) => {
+        if (until && reason === 'absence' && absenceId) {
+          await syncResolutionAfterAbsencePostpone(pool, {
+            healthEntryId: req.params.id,
+            petId: out.entry.pet_id,
+            absenceId,
+            until,
+            lookedAfterBy: body.looked_after_by ?? body.lookedAfterBy ?? null,
+            absenceNote: body.absence_note ?? body.absenceNote ?? null,
+          });
+        }
+        return { body: await commandResponse(pool, out, req, { until: out.until }) };
+      },
     });
   });
 
