@@ -646,6 +646,13 @@ CREATE TABLE public.password_reset_tokens (
     used boolean DEFAULT false,
     created_at timestamp with time zone DEFAULT now()
 );
+CREATE TABLE public.people_contact_household_notes (
+    contact_id uuid NOT NULL,
+    household_id uuid NOT NULL,
+    note text DEFAULT ''::text NOT NULL,
+    updated_by_user_id uuid,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
 CREATE TABLE public.people_contact_private_notes (
     contact_id uuid NOT NULL,
     user_id uuid NOT NULL,
@@ -1081,6 +1088,8 @@ ALTER TABLE ONLY public.organizations
     ADD CONSTRAINT organizations_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.password_reset_tokens
     ADD CONSTRAINT password_reset_tokens_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.people_contact_household_notes
+    ADD CONSTRAINT people_contact_household_notes_pkey PRIMARY KEY (contact_id, household_id);
 ALTER TABLE ONLY public.people_contact_private_notes
     ADD CONSTRAINT people_contact_private_notes_pkey PRIMARY KEY (contact_id, user_id);
 ALTER TABLE ONLY public.people_contact_roles
@@ -1224,6 +1233,7 @@ CREATE INDEX idx_pa_carer_invites_absence ON public.planned_absence_carer_invite
 CREATE INDEX idx_pa_carer_invites_invitee_email ON public.planned_absence_carer_invites USING btree (lower((invitee_email)::text));
 CREATE INDEX idx_pa_guest_grants_grantee_active ON public.planned_absence_guest_grants USING btree (grantee_user_id) WHERE ((status)::text = 'active'::text);
 CREATE INDEX idx_pa_guest_grants_pet_active ON public.planned_absence_guest_grants USING btree (pet_id) WHERE ((status)::text = 'active'::text);
+CREATE INDEX idx_people_contact_household_notes_household ON public.people_contact_household_notes USING btree (household_id);
 CREATE INDEX idx_people_contacts_directory_id ON public.people_contacts USING btree (directory_id);
 CREATE INDEX idx_people_contacts_legacy_vet_id ON public.people_contacts USING btree (legacy_vet_id) WHERE (legacy_vet_id IS NOT NULL);
 CREATE INDEX idx_pet_access_events_pet_created ON public.pet_access_events USING btree (pet_id, created_at DESC);
@@ -1471,6 +1481,12 @@ ALTER TABLE ONLY public.organization_visibility_grants
     ADD CONSTRAINT organization_visibility_grants_subject_user_id_fkey FOREIGN KEY (subject_user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.password_reset_tokens
     ADD CONSTRAINT password_reset_tokens_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.people_contact_household_notes
+    ADD CONSTRAINT people_contact_household_notes_contact_id_fkey FOREIGN KEY (contact_id) REFERENCES public.people_contacts(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.people_contact_household_notes
+    ADD CONSTRAINT people_contact_household_notes_household_id_fkey FOREIGN KEY (household_id) REFERENCES public.households(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.people_contact_household_notes
+    ADD CONSTRAINT people_contact_household_notes_updated_by_user_id_fkey FOREIGN KEY (updated_by_user_id) REFERENCES public.users(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.people_contact_private_notes
     ADD CONSTRAINT people_contact_private_notes_contact_id_fkey FOREIGN KEY (contact_id) REFERENCES public.people_contacts(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.people_contact_private_notes

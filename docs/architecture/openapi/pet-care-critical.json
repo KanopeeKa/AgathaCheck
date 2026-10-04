@@ -348,6 +348,51 @@
         }
       }
     },
+    "/households/{householdId}/members/{userId}/removal-preview": {
+      "get": {
+        "operationId": "getHouseholdMemberRemovalPreview",
+        "parameters": [
+          {
+            "name": "householdId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Access the member keeps after household removal",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HouseholdMemberRemovalPreview" }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+              }
+            }
+          },
+          "404": {
+            "description": "Member not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+              }
+            }
+          }
+        }
+      }
+    },
     "/people/contacts": {
       "get": {
         "operationId": "listPeopleContacts",
@@ -1274,6 +1319,40 @@
             }
           }
         ]
+      },
+      "HouseholdApiError": {
+        "type": "object",
+        "required": ["error"],
+        "additionalProperties": true,
+        "properties": {
+          "error": { "type": "string" },
+          "code": {
+            "type": "string",
+            "enum": ["successor_required", "validation_failed"]
+          }
+        }
+      },
+      "HouseholdMemberRemovalPreview": {
+        "type": "object",
+        "required": [
+          "target_user_id",
+          "household_id",
+          "loses_household_access",
+          "remaining_access",
+          "requires_successor"
+        ],
+        "properties": {
+          "target_user_id": { "type": "string", "format": "uuid" },
+          "household_id": { "type": "string", "format": "uuid" },
+          "loses_household_access": { "type": "boolean" },
+          "remaining_access": {
+            "type": "array",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "requires_successor": { "type": "boolean" },
+          "target_access_tier": { "type": "string" },
+          "target_is_organiser": { "type": "boolean" }
+        }
       },
       "PeopleRoster": {
         "type": "object",

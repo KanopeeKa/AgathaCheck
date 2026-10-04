@@ -66,13 +66,13 @@ Personal directory contacts (phase 1). Storage: migrations `072_*`–`074_*`. Sp
 
 | Method | Path | Authorization |
 |---|---|---|
-| GET | `/contacts` | authenticated — caller's personal directory; optional `?include_inactive=true`; adds `directory`, `group`, `status`, `pets[]` (additive) |
+| GET | `/contacts` | authenticated — visible personal and household (Full access) directories; optional `?include_inactive=true`; adds `directory`, `group`, `status`, `pets[]` (additive) |
 | GET | `/roster` | authenticated — hub read model: `households[]`, `contacts[]` (`ContactSummary`), `pending_invites[]` (pet share + absence carer invites created by viewer) |
-| GET | `/contacts/:id` | authenticated — enriched detail (`works_at`, `staff[]`, `usage_counts`, `linked_account`, `group`, `status`, `directory`; `household_note` ships in s5) |
+| GET | `/contacts/:id` | authenticated — enriched detail (`works_at`, `staff[]`, `usage_counts`, `linked_account`, `group`, `status`, `directory`, `household_note` for household members; hidden from linked person — I10) |
 | GET | `/contacts/:id/related` | authenticated — related pets, care items as provider, absences as carer, `history_count` |
 | GET | `/contacts/by-legacy-vet/:vetId` | authenticated — `{ id }` for legacy vet deep links |
-| POST | `/contacts` | authenticated — body `{ kind, name, phone?, email?, address?, website?, works_at_contact_id?, roles?, private_note?, pet_links? }`; `kind` ∈ {`person`,`organisation`}; `roles` ⊆ sitter, walker, vet, vet_nurse, groomer, trainer, behaviourist, boarding, emergency_contact, other; optional `pet_links[]` = `{ pet_id, relationship_kind }` (attach in same transaction; slot kinds use replace semantics) |
-| PATCH | `/contacts/:id` | authenticated — partial update; `private_note` is per-caller only; **`kind` changes only when `kind` is sent** (rename alone does not re-infer kind) |
+| POST | `/contacts` | authenticated — body `{ kind, name, phone?, email?, address?, website?, works_at_contact_id?, roles?, private_note?, household_note?, pet_links?, household_id? }`; `kind` ∈ {`person`,`organisation`}; `roles` ⊆ sitter, walker, vet, vet_nurse, groomer, trainer, behaviourist, boarding, emergency_contact, other; optional `household_id` creates in that household directory (Full access / organiser only); optional `pet_links[]` = `{ pet_id, relationship_kind }` (attach in same transaction; slot kinds use replace semantics) |
+| PATCH | `/contacts/:id` | authenticated — partial update; `private_note` per-caller; `household_note` for household-directory contacts (members with edit access); **`kind` changes only when `kind` is sent** (rename alone does not re-infer kind) |
 | DELETE | `/contacts/:id` | authenticated — `409 contact_in_use` with `details.usages[]` when the contact is referenced (relationships, absence carers, care-item providers, pending carer invites, works-at). Unused vet-linked contacts delete and remove the linked `vets` row |
 
 List/detail compat contact fields: `{ id, directory_id, kind, name, phone, email, address, website, works_at_contact_id, linked_user_id, inactive_at, legacy_vet_id, roles[], private_note, created_at, updated_at }` plus read-model fields above where applicable.
@@ -105,9 +105,11 @@ Vets API (`/api/vets`) is a **compat adapter**: response shapes unchanged; write
 
 Response: `{ pet_id, pet_name, scope, owner, household_members[], relationships[] }` (`relationships` same shape as people-relationships list).
 
+**Personal data (ARCH F inventory):** `people_contact_household_notes` — household-scoped notes on directory contacts; deleted with contact or household; included in GDPR export scope for household members with edit access.
+
 #### Planned — `people-domain-refactor-7f3b` (partial)
 
-Shipped in server phases s1–s4: writer, access, usages, relationships + vet projection, read models (this section). Still planned: household removal preview, household email invites, `contact_id` on pet share invites, `household_note` on detail. See [people-domain-refactor.md](/docs/domains/people/changes/people-domain-refactor.md) §3.6.
+Shipped in server phases s1–s5: writer, access, usages, relationships + vet projection, read models, household directory notes, safe member removal (this section). Still planned: household email invites, `contact_id` on pet share invites. See [people-domain-refactor.md](/docs/domains/people/changes/people-domain-refactor.md) §3.6.
 
 ### Organizations (`/api/organizations`)
 | Method | Path | Authorization |
@@ -277,7 +279,8 @@ Share links are **single-use**: once accepted, the same link cannot be used by a
 | GET | `/:id` | Detail with `members` and `pets` (members only) |
 | PATCH | `/:id` | Rename (organisers) |
 | POST | `/:id/members` | Add member by `user_id`; body `{ access_tier?, is_organiser? }` |
-| DELETE | `/:id/members/:userId` | Leave or remove; body optional `{ remove_all_access_to_my_pets: true }` |
+| GET | `/:id/members/:userId/removal-preview` | Leave/remove preview (D16): `remaining_access[]` per pet (`source`: `direct_share` \| `absence`), `requires_successor` when last organiser leaves with other members |
+| DELETE | `/:id/members/:userId` | Leave or remove; body optional `{ remove_all_access_to_my_pets: true, successor_user_id? }`; last organiser with other members → `409 successor_required` without successor |
 | PUT | `/:id/pets` | Body `{ pet_ids: [] }` — record owner adds/removes their pets |
 
 Household `full_access` grants `userCanManageProfile` + `userCanManageCare` (not share/transfer/delete). `can_log_care` grants care management only. Effective access is the highest of household, direct share, and **absence guest grants** (time-bound, evaluated in the absence's `timezone`).

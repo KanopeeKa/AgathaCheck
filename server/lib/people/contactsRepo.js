@@ -29,6 +29,9 @@ import {
   upsertVetRowForContact,
 } from './vetProjection.js';
 import { applyPetLinksInTransaction } from './relationships.js';
+import { ensureHouseholdDirectory } from '../households/authz.js';
+import { canManageHouseholdDirectory } from '../households/memberRemoval.js';
+import { householdNoteForViewer, upsertHouseholdNote } from './householdNotes.js';
 
 /** Use existing PoolClient when caller already holds a transaction (e.g. planned absence PATCH). */
 async function runInTransaction(db, fn) {
@@ -102,7 +105,16 @@ export async function createPersonalContact(pool, userId, body) {
     throw new PeopleError(PEOPLE_ERROR_CODES.VALIDATION_FAILED, 400, 'works_at_contact_id not found');
   }
 
-  const directoryId = await ensurePersonalDirectorySql(pool, userId);
+  const householdId = body.household_id || body.householdId || null;
+  let directoryId;
+  if (householdId) {
+    if (!(await canManageHouseholdDirectory(pool, householdId, userId))) {
+      throw new PeopleError(PEOPLE_ERROR_CODES.FORBIDDEN, 403, 'Forbidden');
+    }
+    directoryId = await ensureHouseholdDirectory(pool, householdId);
+  } else {
+    directoryId = await ensurePersonalDirectorySql(pool, userId);
+  }
   const id = uuidv4();
 
   const petLinks = body.pet_links ?? body.petLinks ?? null;
@@ -125,6 +137,10 @@ export async function createPersonalContact(pool, userId, body) {
     const privateNote = body.private_note ?? body.privateNote;
     if (privateNote != null && String(privateNote).trim()) {
       await insertPrivateNote(client, id, userId, String(privateNote));
+    }
+    const householdNote = body.household_note ?? body.householdNote;
+    if (householdId && householdNote != null && String(householdNote).trim()) {
+      await upsertHouseholdNote(client, id, householdId, userId, String(householdNote));
     }
     if (petLinks?.length) {
       await applyPetLinksInTransaction(client, userId, id, petLinks);
@@ -196,6 +212,8 @@ export async function patchPersonalContact(pool, contactId, userId, body) {
   const website = body.website !== undefined ? (body.website || null) : existing.website;
   const worksAtResolved = worksAt !== undefined ? (worksAt || null) : existing.works_at_contact_id;
   const privateNote = body.private_note ?? body.privateNote;
+  const householdNote = body.household_note ?? body.householdNote;
+  const householdId = existing.directory_household_id ?? null;
 
   try {
     await runInTransaction(pool, async (client) => {
@@ -213,6 +231,9 @@ export async function patchPersonalContact(pool, contactId, userId, body) {
       if (privateNote !== undefined) {
         await upsertPrivateNote(client, contactId, userId, String(privateNote));
       }
+      if (householdId && householdNote !== undefined) {
+        await upsertHouseholdNote(client, contactId, householdId, userId, String(householdNote));
+      }
     });
   } catch (err) {
     if (err instanceof PeopleError) throw err;
@@ -223,6 +244,16 @@ export async function patchPersonalContact(pool, contactId, userId, body) {
   if (row?.roles?.includes('vet') || row?.legacy_vet_id) {
     await projectContact(pool, contactId, userId);
     row = await loadContactForViewer(pool, contactId, userId);
+  }
+  if (row) {
+    const note = await householdNoteForViewer(
+      pool,
+      contactId,
+      row.directory_household_id ?? null,
+      userId,
+      row.linked_user_id ?? null,
+    );
+    row.household_note = note;
   }
   return row;
 }
