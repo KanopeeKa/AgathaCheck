@@ -3,6 +3,13 @@
   "description": "Machine-checkable account erasure inventory for PostgreSQL public schema. Sync scope (D15) is everything in bindings executed inside the acceptance transaction; async file and PostHog work uses cleanup_jobs.",
   "bindings": [
     {
+      "table": "account_erasure_operations",
+      "column": "user_id",
+      "erasure_action": "retained",
+      "reason": "Durable erasure operation record; user_id is a tombstone reference without FK so status can be queried after the users row is deleted.",
+      "discovery_source": "column"
+    },
+    {
       "table": "adoption_journeys",
       "column": "created_by",
       "erasure_action": "set_null",
