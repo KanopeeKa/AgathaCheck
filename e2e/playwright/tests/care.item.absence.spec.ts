@@ -6,6 +6,7 @@
  * Scenario: A date planned during the trip can be looked after by the carer
  */
 import { test, loginAs, expect } from '../fixtures/auth.fixture';
+import { refreshFlutterAccessibility } from '../support/flutter';
 import { CareItemPage } from '../pages/care-item.page';
 import {
   createHealthEntry,

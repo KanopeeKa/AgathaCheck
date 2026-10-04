@@ -76,7 +76,10 @@ mixin _HealthRemoteOccurrenceMethods {
     );
     final now = DateTime.now();
     final missed = open
-        .where((o) => o.status == 'pending' && (o.missed || isOccurrenceMissed(o, now)))
+        .where(
+          (o) =>
+              o.status == 'pending' && (o.missed || isOccurrenceMissed(o, now)),
+        )
         .map((o) => o.id)
         .toList();
     if (missed.isEmpty) return 0;

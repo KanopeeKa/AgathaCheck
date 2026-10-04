@@ -211,87 +211,92 @@ class _OccurrenceRow extends ConsumerWidget {
           orElse: () => null,
         );
 
-    return Container(
-      key: Key('care_item_occurrence_row_${occurrence.id}'),
-      width: double.infinity,
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(CareSurfaceTokens.actionRadius),
-        border: Border.all(color: CareSurfaceTokens.moduleBorder()),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          CareItemStatusPill(label: pillLabel, tone: statusTone),
-          const SizedBox(height: 10),
-          Text(
-            dateLabel,
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w600,
-              color: muted
-                  ? colorScheme.onSurfaceVariant
-                  : colorScheme.onSurface,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            entry.name,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: colorScheme.onSurfaceVariant,
-            ),
-          ),
-          if (absenceLine != null) ...[
-            const SizedBox(height: 6),
+    return Semantics(
+      identifier: 'care_item_occurrence_row_${occurrence.id}',
+      child: Container(
+        key: Key('care_item_occurrence_row_${occurrence.id}'),
+        width: double.infinity,
+        margin: const EdgeInsets.only(bottom: 8),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(CareSurfaceTokens.actionRadius),
+          border: Border.all(color: CareSurfaceTokens.moduleBorder()),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            CareItemStatusPill(label: pillLabel, tone: statusTone),
+            const SizedBox(height: 10),
             Text(
-              absenceLine,
-              key: Key('care_item_occurrence_absence_${occurrence.id}'),
-              style: theme.textTheme.bodySmall?.copyWith(
+              dateLabel,
+              style: theme.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: muted
+                    ? colorScheme.onSurfaceVariant
+                    : colorScheme.onSurface,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              entry.name,
+              style: theme.textTheme.bodyMedium?.copyWith(
                 color: colorScheme.onSurfaceVariant,
               ),
             ),
+            if (absenceLine != null) ...[
+              const SizedBox(height: 6),
+              Text(
+                absenceLine,
+                key: Key('care_item_occurrence_absence_${occurrence.id}'),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+            if (!muted) ...[
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  FilledButton.icon(
+                    key: Key('care_item_occurrence_mark_done_${occurrence.id}'),
+                    onPressed: () => PetEventOccurrenceActions.markDone(
+                      context,
+                      ref,
+                      entry,
+                      occurrence,
+                    ),
+                    icon: const Icon(Icons.check, size: 18),
+                    label: Text(l.markAsDone),
+                  ),
+                  OutlinedButton(
+                    key: Key('care_item_occurrence_skip_${occurrence.id}'),
+                    onPressed: () => PetEventOccurrenceActions.skip(
+                      context,
+                      ref,
+                      entry,
+                      occurrence,
+                    ),
+                    child: Text(l.skipOccurrence),
+                  ),
+                  OutlinedButton(
+                    key: Key(
+                      'care_item_occurrence_reschedule_${occurrence.id}',
+                    ),
+                    onPressed: () => PetEventOccurrenceActions.changeDate(
+                      context,
+                      ref,
+                      entry,
+                      occurrence,
+                    ),
+                    child: Text(l.rescheduleActionLabel),
+                  ),
+                ],
+              ),
+            ],
           ],
-          if (!muted) ...[
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                FilledButton.icon(
-                  key: Key('care_item_occurrence_mark_done_${occurrence.id}'),
-                  onPressed: () => PetEventOccurrenceActions.markDone(
-                    context,
-                    ref,
-                    entry,
-                    occurrence,
-                  ),
-                  icon: const Icon(Icons.check, size: 18),
-                  label: Text(l.markAsDone),
-                ),
-                OutlinedButton(
-                  key: Key('care_item_occurrence_skip_${occurrence.id}'),
-                  onPressed: () => PetEventOccurrenceActions.skip(
-                    context,
-                    ref,
-                    entry,
-                    occurrence,
-                  ),
-                  child: Text(l.skipOccurrence),
-                ),
-                OutlinedButton(
-                  key: Key('care_item_occurrence_reschedule_${occurrence.id}'),
-                  onPressed: () => PetEventOccurrenceActions.changeDate(
-                    context,
-                    ref,
-                    entry,
-                    occurrence,
-                  ),
-                  child: Text(l.rescheduleActionLabel),
-                ),
-              ],
-            ),
-          ],
-        ],
+        ),
       ),
     );
   }
