@@ -6,12 +6,12 @@
   "approved_at": "2026-10-04T10:45:00Z",
   "approved_by": "user chat 2026-10-04 — /execute-plan resume; agreement on all phases E and F",
   "approved_until": "2026-10-06T10:45:00Z",
-  "autonomy": "active",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "claude/eager-edison-mf34j6",
   "control_issue": 1482,
   "artifact_branch_policy": "phase-branch",
-  "current_child_plan_id": "care-item-module-c1a7",
+  "current_child_plan_id": null,
   "child_plans": [
     {
       "plan_id": "care-occurrence-spec-c1a7",
@@ -40,14 +40,14 @@
     {
       "plan_id": "care-absence-real-occurrences-c1a7",
       "status": "merged",
-      "pr_url": null,
-      "merge_commit": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1499",
+      "merge_commit": "d755564eea09270a1c13305d448a993adc96b7b9"
     },
     {
       "plan_id": "care-item-module-c1a7",
-      "status": "pending",
-      "pr_url": null,
-      "merge_commit": null
+      "status": "merged",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1499",
+      "merge_commit": "d755564eea09270a1c13305d448a993adc96b7b9"
     }
   ],
   "phases": [
@@ -73,11 +73,13 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "governance",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
-      "status_detail": "Child E active",
-      "debt_issue_refs": []
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1499",
+      "pr_head_sha": "d755564eea09270a1c13305d448a993adc96b7b9"
     }
   ],
-  "content_hash": "sha256:14130e0530f51ecb0cc922d500f3551263aad9ece7670e556043200d580038c3"
+  "content_hash": "sha256:c022491d902f96cfac1d0d90b4ddce5835ab53bfa9963b56de25c41081a1b627"
 }
