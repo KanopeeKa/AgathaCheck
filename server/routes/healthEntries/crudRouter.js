@@ -29,6 +29,7 @@ import {
   sendCareCommandError,
 } from '../../lib/care/occurrence/index.js';
 import { careItemWire, careItemsWire } from './careItemWire.js';
+import { applyLateCompletionChoice, parseLateCompletionChoice } from './lateCompletionChoice.js';
 import { validateScheduleShape } from './scheduleValidation.js';
 import {
   SCHEDULE_POLICY_VERSION,
@@ -204,7 +205,9 @@ export function registerCrudRoutes(router, pool) {
         data,
         careFamily,
       });
-      const insertEntry = (db) => db.query(
+      const lateChoice = parseLateCompletionChoice(data);
+      if (lateChoice.error) return res.status(400).json({ error: lateChoice.error });
+      const insertRow = (db) => db.query(
         `INSERT INTO health_entries (id, pet_id, user_id, name, type, dosage, frequency, frequency_days, frequency_interval, start_date, next_due_date, completed_on, recurrence_anchor, repeat_end_date, notes, health_issue_id, remind_days_before, schedule_times, status, care_family, care_setting, care_planning, care_importance, importance_overridden, care_source, schedule_policy_version, provider_contact_id, provider_typed_name, care_blocks)
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29) RETURNING *`,
         [
@@ -234,6 +237,11 @@ export function registerCrudRoutes(router, pool) {
           JSON.stringify(careBlocks),
         ]
       );
+      const insertEntry = async (db) => {
+        const inserted = await insertRow(db);
+        await applyLateCompletionChoice(db, inserted.rows[0], lateChoice);
+        return inserted;
+      };
       const out = await runCareCommand(pool, {
         entryId: id,
         userId,
@@ -283,6 +291,8 @@ export function registerCrudRoutes(router, pool) {
       if (!typeRejection.ok) {
         return res.status(400).json({ error: typeRejection.error });
       }
+      const lateChoice = parseLateCompletionChoice(data);
+      if (lateChoice.error) return res.status(400).json({ error: lateChoice.error });
       const existingResult = await pool.query(
         'SELECT * FROM health_entries WHERE id = $1',
         [req.params.id],
@@ -441,7 +451,8 @@ export function registerCrudRoutes(router, pool) {
             req.params.id,
           ]
         );
-        return reconcileScheduleEdit({ ...ctx, entry: updated.rows[0] }, {
+        const edited = await applyLateCompletionChoice(ctx.db, updated.rows[0], lateChoice);
+        return reconcileScheduleEdit({ ...ctx, entry: edited }, {
           before: ctx.entry,
           requestedNextDate: nextDueDate,
         });

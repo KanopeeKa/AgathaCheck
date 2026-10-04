@@ -3,16 +3,30 @@
  * (D-CIE-028). List reads use one query for all open occurrences.
  */
 
-import { normalizePetHomeTimezone } from '../../lib/petHomeTimezone.js';
+import { normalizePetHomeTimezone, wallClockInTimeZone } from '../../lib/petHomeTimezone.js';
 import {
   careAsOfForZone,
   careItemReadAdditions,
+  listLastDoneByEntry,
   listOpenRows,
   listOpenRowsByEntry,
   resolveCareAsOf,
 } from '../../lib/care/occurrence/index.js';
 import { careClockFromRequest } from '../../lib/care/occurrence/careAsOf.js';
 import { healthEntryToMap } from './shared.js';
+
+/**
+ * `last_done { occurrence_id, completed_on, time }` — time is when it was
+ * marked, in the pet's home zone (agenda "Done · 08:12", D-CIE-025).
+ */
+function lastDoneToWire(row, timeZone) {
+  if (!row) return null;
+  return {
+    occurrence_id: row.id,
+    completed_on: row.completed_on,
+    time: row.marked_at ? wallClockInTimeZone(timeZone, new Date(row.marked_at)).nowTimeIso : null,
+  };
+}
 
 /**
  * @param {import('pg').Pool|import('pg').PoolClient} db
@@ -25,7 +39,12 @@ import { healthEntryToMap } from './shared.js';
 export async function careItemWire(db, entry, req, { openRows = null, asOf = null } = {}) {
   const clock = asOf || await resolveCareAsOf(db, entry, req);
   const rows = openRows || await listOpenRows(db, entry.id);
-  return { ...healthEntryToMap(entry), ...careItemReadAdditions(entry, rows, clock) };
+  const lastDone = (await listLastDoneByEntry(db, [entry.id])).get(entry.id);
+  return {
+    ...healthEntryToMap(entry),
+    ...careItemReadAdditions(entry, rows, clock),
+    last_done: lastDoneToWire(lastDone, clock.timeZone),
+  };
 }
 
 /**
@@ -34,7 +53,9 @@ export async function careItemWire(db, entry, req, { openRows = null, asOf = nul
  * @param {import('express').Request} req
  */
 export async function careItemsWire(db, entries, req) {
-  const openByEntry = await listOpenRowsByEntry(db, entries.map((e) => e.id));
+  const ids = entries.map((e) => e.id);
+  const openByEntry = await listOpenRowsByEntry(db, ids);
+  const lastDoneByEntry = await listLastDoneByEntry(db, ids);
   const clock = careClockFromRequest(req);
   const now = new Date();
   const byZone = new Map();
@@ -44,6 +65,7 @@ export async function careItemsWire(db, entries, req) {
     return {
       ...healthEntryToMap(entry),
       ...careItemReadAdditions(entry, openByEntry.get(entry.id) || [], byZone.get(zone)),
+      last_done: lastDoneToWire(lastDoneByEntry.get(entry.id), zone),
     };
   });
 }

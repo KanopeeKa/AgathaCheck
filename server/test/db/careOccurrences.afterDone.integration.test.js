@@ -8,7 +8,7 @@ import {
   careApi,
   createOwner,
   invariantViolations,
-  openHarness,
+  openStrictHarness,
   removeOwner,
 } from './helpers/careHarness.js';
 
@@ -17,8 +17,7 @@ let owner;
 let api;
 
 beforeAll(async () => {
-  harness = await openHarness();
-  if (!harness.pool) return;
+  harness = await openStrictHarness();
   owner = await createOwner(harness.pool);
   api = careApi(harness.app, owner);
 }, 30000);
@@ -46,7 +45,6 @@ function openDates(entry) {
 
 describe('after it\'s done (D-CSM-022)', () => {
   it('defaults parasite prevention to After it\'s done and medication to Fixed schedule (D-CSM-020)', async () => {
-    if (!harness.pool) return;
     const aid = await created(flea('2026-06-05'), '2026-06-01T09:00');
     expect(aid.recurrence_anchor).toBe('from_completion');
     const med = await created({ care_family: 'medication', frequency: 'daily', next_due_date: '2026-06-01' }, '2026-06-01T09:00');
@@ -54,7 +52,6 @@ describe('after it\'s done (D-CSM-022)', () => {
   });
 
   it('AID-1 marking done creates the next date in the same request', async () => {
-    if (!harness.pool) return;
     const entry = await created(flea('2026-06-05'), '2026-06-05T09:00');
     const occ = entry.open_occurrences[0];
     const res = await api.at('2026-06-05T10:00').complete(entry.id, occ.id, {});
@@ -66,7 +63,6 @@ describe('after it\'s done (D-CSM-022)', () => {
   });
 
   it('AID-2 overdue shows an estimated next date that moves with today', async () => {
-    if (!harness.pool) return;
     const entry = await created(flea('2026-06-05'), '2026-06-05T09:00');
     const res = await api.at('2026-06-07T09:00').get(entry.id);
     expect(res.body.open_occurrences[0].status).toBe('overdue');
@@ -74,7 +70,6 @@ describe('after it\'s done (D-CSM-022)', () => {
   });
 
   it('AID-3 / AID-4 done or skipped late count from the done date or today', async () => {
-    if (!harness.pool) return;
     const a = await created(flea('2026-06-05'), '2026-06-05T09:00');
     const done = await api.at('2026-06-07T09:00').complete(a.id, a.open_occurrences[0].id, { completed_on: '2026-06-06' });
     expect(done.body.next_due_date).toBe('2026-07-06');
@@ -85,7 +80,6 @@ describe('after it\'s done (D-CSM-022)', () => {
   });
 
   it('AID-8 several times of day need a fixed schedule', async () => {
-    if (!harness.pool) return;
     const res = await api.at('2026-06-01T09:00').create({
       ...flea('2026-06-05'), recurrence_anchor: 'from_completion', schedule_times: ['08:00', '18:00'],
     });
@@ -94,7 +88,6 @@ describe('after it\'s done (D-CSM-022)', () => {
   });
 
   it('AID-9 a date 200 days away is a real occurrence that can be marked done early', async () => {
-    if (!harness.pool) return;
     const entry = await created({ care_family: 'vaccination', frequency: 'yearly', next_due_date: '2026-12-18' }, '2026-06-01T09:00');
     expect(openDates(entry)).toEqual(['2026-12-18:computed:coming_up']);
     const res = await api.at('2026-06-01T10:00').complete(entry.id, entry.open_occurrences[0].id, {});
@@ -104,7 +97,6 @@ describe('after it\'s done (D-CSM-022)', () => {
   });
 
   it('FM-3 planned care with a completed date is rejected', async () => {
-    if (!harness.pool) return;
     const res = await api.at('2026-06-01T09:00').create({ ...flea('2026-06-05'), completed_on: '2026-06-01' });
     expect(res.statusCode).toBe(400);
     expect(res.body.code).toBe('completed_on_not_allowed');
@@ -113,7 +105,6 @@ describe('after it\'s done (D-CSM-022)', () => {
 
 describe('planned dates (D-CSM-025, D-CSM-021)', () => {
   it('PL-1 a booster planned at create is next after the first dose, then the yearly rule', async () => {
-    if (!harness.pool) return;
     const entry = await created({
       care_family: 'vaccination', frequency: 'yearly', next_due_date: '2026-06-01', planned_dates: ['2026-07-01'],
     }, '2026-06-01T09:00');
@@ -126,7 +117,6 @@ describe('planned dates (D-CSM-025, D-CSM-021)', () => {
   });
 
   it('PL-2 a late first dose keeps the booster unless a choice is sent (D-CSM-026 v4)', async () => {
-    if (!harness.pool) return;
     const booster = {
       care_family: 'vaccination', frequency: 'yearly', next_due_date: '2026-06-01', planned_dates: ['2026-07-01'],
     };
@@ -145,7 +135,6 @@ describe('planned dates (D-CSM-025, D-CSM-021)', () => {
   });
 
   it('PL-3 changing the computed date keeps one occurrence, now planned', async () => {
-    if (!harness.pool) return;
     const entry = await created(flea('2026-06-05'), '2026-06-01T09:00');
     const occ = entry.open_occurrences[0];
     const res = await api.at('2026-06-01T09:00').reschedule(entry.id, occ.id, { scheduled_date: '2026-06-20' });
@@ -156,7 +145,6 @@ describe('planned dates (D-CSM-025, D-CSM-021)', () => {
   });
 
   it('PL-4 planning another date near an open one warns and adds it', async () => {
-    if (!harness.pool) return;
     const entry = await created(flea('2026-06-05'), '2026-06-01T09:00');
     const res = await api.at('2026-06-01T09:00').plan(entry.id, { scheduled_date: '2026-06-08' });
     expect(res.statusCode).toBe(201);
@@ -165,7 +153,6 @@ describe('planned dates (D-CSM-025, D-CSM-021)', () => {
   });
 
   it('PL-5 / OR-3 marking the later date first keeps the earlier one open unless a choice is sent', async () => {
-    if (!harness.pool) return;
     const kept = await created(flea('2026-06-05'), '2026-06-01T09:00');
     const plannedKept = await api.at('2026-06-01T09:00').plan(kept.id, { scheduled_date: '2026-07-01' });
     const laterKept = plannedKept.body.entry.open_occurrences.find((o) => o.scheduled_date === '2026-07-01');
@@ -186,7 +173,6 @@ describe('planned dates (D-CSM-025, D-CSM-021)', () => {
 
 describe('postpone, pause, resume (D-CSM-028)', () => {
   it('PP-1 postponing moves the date; done counts from the done date', async () => {
-    if (!harness.pool) return;
     const entry = await created(flea('2026-06-05'), '2026-06-01T09:00');
     const res = await api.at('2026-06-01T09:00').postpone(entry.id, { until: '2026-06-20' });
     expect(res.statusCode).toBe(200);
@@ -196,7 +182,6 @@ describe('postpone, pause, resume (D-CSM-028)', () => {
   });
 
   it('PP-2 pause hides the item; resume defaults to the date it would have had', async () => {
-    if (!harness.pool) return;
     const entry = await created(flea('2026-06-05'), '2026-06-01T09:00');
     const paused = await api.at('2026-06-01T09:00').postpone(entry.id, { until: null });
     expect(paused.body.entry.status).toBe('paused');
@@ -209,14 +194,12 @@ describe('postpone, pause, resume (D-CSM-028)', () => {
   });
 
   it('PP-6 a past date is rejected', async () => {
-    if (!harness.pool) return;
     const entry = await created(flea('2026-06-05'), '2026-06-01T09:00');
     const res = await api.at('2026-06-10T09:00').postpone(entry.id, { until: '2026-06-01' });
     expect(res.statusCode).toBe(400);
   });
 
   it('PP-7 undo right after pause restores the item', async () => {
-    if (!harness.pool) return;
     const entry = await created(flea('2026-06-05'), '2026-06-01T09:00');
     await api.at('2026-06-01T09:00').postpone(entry.id, { until: null });
     const undone = await api.at('2026-06-01T09:05').undo(entry.id);
@@ -227,7 +210,6 @@ describe('postpone, pause, resume (D-CSM-028)', () => {
 
 describe('undo (D-CSM-029)', () => {
   it('UN-1 undo reopens the date and removes the new computed date', async () => {
-    if (!harness.pool) return;
     const entry = await created(flea('2026-06-05'), '2026-06-05T09:00');
     const occ = entry.open_occurrences[0];
     const done = await api.at('2026-06-05T10:00').complete(entry.id, occ.id, {});
@@ -238,7 +220,6 @@ describe('undo (D-CSM-029)', () => {
   });
 
   it('UN-2 a next date someone changed survives undo of the completion', async () => {
-    if (!harness.pool) return;
     const entry = await created(flea('2026-06-05'), '2026-06-05T09:00');
     const occ = entry.open_occurrences[0];
     const done = await api.at('2026-06-05T10:00').complete(entry.id, occ.id, {});
@@ -250,7 +231,6 @@ describe('undo (D-CSM-029)', () => {
   });
 
   it('LC-5 completing a date twice answers 409 occurrence_not_open', async () => {
-    if (!harness.pool) return;
     const entry = await created(flea('2026-06-05'), '2026-06-05T09:00');
     const occ = entry.open_occurrences[0];
     await api.at('2026-06-05T10:00').complete(entry.id, occ.id, {});
@@ -260,7 +240,6 @@ describe('undo (D-CSM-029)', () => {
   });
 
   it('CR-4 two carers completing the same date: one 200, one 409', async () => {
-    if (!harness.pool) return;
     const entry = await created(flea('2026-06-05'), '2026-06-05T09:00');
     const occ = entry.open_occurrences[0];
     const results = await Promise.all([
@@ -274,7 +253,6 @@ describe('undo (D-CSM-029)', () => {
 
 describe('lifecycle and compatibility routes', () => {
   it('once care finishes when done and gets a new date when reopened', async () => {
-    if (!harness.pool) return;
     const entry = await created({ care_family: 'other', frequency: 'once', next_due_date: '2026-06-05' }, '2026-06-01T09:00');
     expect(openDates(entry)).toEqual(['2026-06-05:planned:coming_up']);
     const done = await api.at('2026-06-05T09:00').complete(entry.id, entry.open_occurrences[0].id, {});
@@ -285,7 +263,6 @@ describe('lifecycle and compatibility routes', () => {
   });
 
   it('undoing the completion of one-off care makes it active again', async () => {
-    if (!harness.pool) return;
     const entry = await created({ care_family: 'other', frequency: 'once', next_due_date: '2026-06-05' }, '2026-06-01T09:00');
     const done = await api.at('2026-06-05T09:00').complete(entry.id, entry.open_occurrences[0].id, {});
     expect(done.body.entry.status).toBe('completed');
@@ -296,7 +273,6 @@ describe('lifecycle and compatibility routes', () => {
   });
 
   it('F7 reopening a closed series creates its next date at once', async () => {
-    if (!harness.pool) return;
     const entry = await created(flea('2026-06-05'), '2026-06-01T09:00');
     const closed = await api.at('2026-06-01T09:00').close(entry.id);
     expect(closed.body.status).toBe('completed');
@@ -307,7 +283,6 @@ describe('lifecycle and compatibility routes', () => {
   });
 
   it('mark-taken and ensure-open never fail for an active planned item', async () => {
-    if (!harness.pool) return;
     const entry = await created({ care_family: 'wellness_review', frequency: 'yearly', next_due_date: '2027-03-01' }, '2026-06-01T09:00');
     const ensured = await api.at('2026-06-01T09:00').ensureOpen(entry.id);
     expect(ensured.statusCode).toBe(200);
@@ -318,7 +293,6 @@ describe('lifecycle and compatibility routes', () => {
   });
 
   it('TS-4 editing the next date moves the open occurrence', async () => {
-    if (!harness.pool) return;
     const entry = await created(flea('2026-06-05'), '2026-06-01T09:00');
     const res = await api.at('2026-06-01T09:00').put(entry.id, {
       name: 'Flea', care_family: 'parasite_prevention', frequency: 'monthly', next_due_date: '2026-06-12',

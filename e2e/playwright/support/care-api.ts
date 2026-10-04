@@ -149,6 +149,30 @@ export async function getCareItem(baseURL: string, token: string, entryId: strin
   return res.body as unknown as CareItem;
 }
 
+export interface HealthEntryOccurrenceRow {
+  id: string;
+  health_entry_id: string;
+  scheduled_date: string;
+  scheduled_time: string | null;
+  status: string;
+  missed?: boolean;
+}
+
+/** Occurrence rows for an entry — respects [withCareClock] when set. */
+export async function listHealthEntryOccurrences(
+  baseURL: string,
+  token: string,
+  entryId: string,
+  options: { status?: 'open' | 'past' } = {},
+): Promise<HealthEntryOccurrenceRow[]> {
+  const qs = options.status ? `?status=${encodeURIComponent(options.status)}` : '';
+  const res = expectOk(
+    'listHealthEntryOccurrences',
+    await send(baseURL, token, 'GET', `/${entryId}/occurrences${qs}`),
+  );
+  return res.body as HealthEntryOccurrenceRow[];
+}
+
 /** Read the actual away-window projection, including materialised occurrence ids. */
 export async function getCarePeriodCoverage(
   baseURL: string,
@@ -224,6 +248,33 @@ export async function completeNextOccurrence(
     earlierChoice: 'keep',
   }));
   return res.body.entry as CareItem;
+}
+
+export async function getOccurrence(
+  baseURL: string,
+  token: string,
+  entryId: string,
+  occurrenceId: string,
+): Promise<Record<string, unknown>> {
+  const res = expectOk(
+    'getOccurrence',
+    await send(baseURL, token, 'GET', `/${entryId}/occurrences/${occurrenceId}`),
+  );
+  return res.body as Record<string, unknown>;
+}
+
+export async function patchOccurrence(
+  baseURL: string,
+  token: string,
+  entryId: string,
+  occurrenceId: string,
+  body: { completed_on: string },
+): Promise<Record<string, unknown>> {
+  const res = expectOk(
+    'patchOccurrence',
+    await send(baseURL, token, 'PATCH', `/${entryId}/occurrences/${occurrenceId}`, body),
+  );
+  return res.body as Record<string, unknown>;
 }
 
 export async function skipOccurrence(baseURL: string, token: string, entryId: string, occurrenceId: string) {

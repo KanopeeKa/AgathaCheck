@@ -233,6 +233,105 @@
           }
         }
       }
+    },
+    "/health-entries/{id}/occurrences/{occId}": {
+      "get": {
+        "operationId": "getOccurrence",
+        "description": "One occurrence for the occurrence screen (§18.7.1). Same access as the occurrence list.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/HealthEntryId"
+          },
+          {
+            "$ref": "#/components/parameters/OccurrenceId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The occurrence, its care item summary, the item's latest undoable action, and the weight saved with it (weigh-ins)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OccurrenceDetail"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Care item or occurrence not found, or not on that care item",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "patchOccurrence",
+        "description": "Edit a completed occurrence: notes and provider, or completed_on on its own (D-CSM-034). A completed_on change runs as one undoable care command.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/HealthEntryId"
+          },
+          {
+            "$ref": "#/components/parameters/OccurrenceId"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OccurrencePatch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated. With completed_on: the occurrence fields plus the care command response (moved_next_id, next_unchanged)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompletionDateResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "invalid_completed_on, completed_on_in_future, completed_on_before_start, completed_on_with_other_fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CareCommandError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Care item or completed occurrence not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "occurrence_not_completed — only a completed occurrence can change when it was done",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CareCommandError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -591,6 +690,44 @@
                 "type": "null"
               }
             ]
+          },
+          "last_done": {
+            "description": "Latest completion: occurrence, day, and when it was marked in the pet's home zone (agenda done-today rows)",
+            "oneOf": [
+              {
+                "type": "object",
+                "required": [
+                  "occurrence_id",
+                  "completed_on",
+                  "time"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "occurrence_id": {
+                    "type": "string"
+                  },
+                  "completed_on": {
+                    "oneOf": [
+                      {
+                        "$ref": "#/components/schemas/CalendarDate"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "time": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         }
       },
@@ -647,6 +784,276 @@
           },
           "code": {
             "type": "string"
+          }
+        }
+      },
+      "ApiError": {
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "additionalProperties": true,
+        "properties": {
+          "error": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          }
+        }
+      },
+      "OccurrenceDetail": {
+        "type": "object",
+        "required": [
+          "occurrence",
+          "entry",
+          "last_action"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "occurrence": {
+            "type": "object",
+            "required": [
+              "id",
+              "scheduled_date",
+              "status",
+              "occurrence_status"
+            ],
+            "additionalProperties": true,
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "scheduled_date": {
+                "$ref": "#/components/schemas/CalendarDate"
+              },
+              "scheduled_time": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "status": {
+                "enum": [
+                  "pending",
+                  "completed",
+                  "skipped"
+                ]
+              },
+              "occurrence_status": {
+                "description": "Open: coming_up, due, overdue, not_recorded. Closed: done, skipped, not_recorded",
+                "enum": [
+                  "coming_up",
+                  "due",
+                  "overdue",
+                  "not_recorded",
+                  "done",
+                  "skipped"
+                ]
+              },
+              "completed_on": {
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/CalendarDate"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "origin": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "close_reason": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            }
+          },
+          "entry": {
+            "type": "object",
+            "required": [
+              "id",
+              "pet_id",
+              "name",
+              "recurrence_anchor",
+              "status",
+              "as_of"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "pet_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "name": {
+                "type": "string"
+              },
+              "care_family": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "recurrence_anchor": {
+                "enum": [
+                  "from_completion",
+                  "from_due_date"
+                ]
+              },
+              "late_completion_choice": {
+                "enum": [
+                  "keep",
+                  "skip_next",
+                  "shift_following",
+                  null
+                ]
+              },
+              "status": {
+                "type": "string"
+              },
+              "as_of": {
+                "$ref": "#/components/schemas/CareAsOf"
+              }
+            }
+          },
+          "last_action": {
+            "oneOf": [
+              {
+                "type": "object",
+                "required": [
+                  "type",
+                  "occurrence_id"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "occurrence_id": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "linked_weight": {
+            "type": "object",
+            "required": [
+              "value",
+              "unit"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "value": {
+                "type": "number"
+              },
+              "unit": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "OccurrencePatch": {
+        "type": "object",
+        "additionalProperties": true,
+        "description": "Send completed_on alone, or notes / provider fields",
+        "properties": {
+          "completed_on": {
+            "$ref": "#/components/schemas/CalendarDate"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "provider_contact_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "provider_typed_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "CompletionDateResponse": {
+        "type": "object",
+        "required": [
+          "id",
+          "status",
+          "completed_on",
+          "occurrence",
+          "entry",
+          "next_due_date",
+          "undo_token",
+          "moved_next_id",
+          "next_unchanged"
+        ],
+        "additionalProperties": true,
+        "description": "Occurrence fields at the top level (as for a notes change) plus the care command response",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "const": "completed"
+          },
+          "completed_on": {
+            "$ref": "#/components/schemas/CalendarDate"
+          },
+          "occurrence": {
+            "type": "object"
+          },
+          "entry": {
+            "$ref": "#/components/schemas/CareItem"
+          },
+          "next_due_date": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/CalendarDate"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "undo_token": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "moved_next_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "After it's done: the computed next date this change re-dated"
+          },
+          "next_unchanged": {
+            "type": "boolean",
+            "description": "After it's done: the next date was moved by a person and stays"
           }
         }
       }

@@ -176,7 +176,7 @@ CREATE TABLE public.care_schedule_events (
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     payload jsonb,
     undone_at timestamp with time zone,
-    CONSTRAINT care_schedule_events_event_type_check CHECK (((event_type)::text = ANY ((ARRAY['rescheduled'::character varying, 'skipped'::character varying, 'paused'::character varying, 'resumed'::character varying, 'cadence_adjusted'::character varying, 'completed'::character varying, 'postponed'::character varying, 'materialised'::character varying, 'late_choice_applied'::character varying, 'not_recorded_closed'::character varying, 'schedule_scope_changed'::character varying, 'planned'::character varying, 'recorded'::character varying, 'stack_resolved'::character varying, 'undone'::character varying, 'schedule_changed'::character varying])::text[])))
+    CONSTRAINT care_schedule_events_event_type_check CHECK (((event_type)::text = ANY ((ARRAY['rescheduled'::character varying, 'skipped'::character varying, 'paused'::character varying, 'resumed'::character varying, 'cadence_adjusted'::character varying, 'completed'::character varying, 'postponed'::character varying, 'materialised'::character varying, 'late_choice_applied'::character varying, 'not_recorded_closed'::character varying, 'schedule_scope_changed'::character varying, 'planned'::character varying, 'recorded'::character varying, 'stack_resolved'::character varying, 'undone'::character varying, 'schedule_changed'::character varying, 'completion_date_changed'::character varying])::text[])))
 );
 CREATE TABLE public.custody_transfers (
     id uuid NOT NULL,

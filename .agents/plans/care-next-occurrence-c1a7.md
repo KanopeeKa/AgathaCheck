@@ -1043,7 +1043,7 @@ Context for every resolution: **there are no users yet** (pre-launch), so compat
 | RV-3 | Draft stack rule counted only overdue and not-recorded slots. For a Fixed schedule item without a time, yesterday's slot is Not recorded and today's is Due **all day**, so one tap would record **yesterday's** slot while today's stays due (double-dose risk) | Stack = two or more open slots that have **started** (§18.4, D-CIE-034) |
 | RV-4 | Completing a later After-it's-done date while an earlier one is open (409 `earlier_choice_required`) had no defined behaviour once every occurrence is actionable (R17) | DN-1c: the tick opens the Care Item view. The server keeps the earlier date open when no `earlier_choice` is sent (§18.3) |
 | RV-5 | Editing a completion date (D-CSM-034) is its own action, so it becomes the item's last action; "Undo" on that occurrence would undo the date edit, not the completion | The Undo button names what it reverses (§18.6.2); the next date to move is identified from the completion's ledger payload |
-| RV-6 | `health_history` has **no writers** on `main` (only `GET /:id/history` and the GDPR export read it): history in All care filters is already stale | Migration 084 and the reader switch are C0's first change; reserve **084** on the parallel-programmes board |
+| RV-6 | `health_history` has **no writers** on `main` (only `GET /:id/history` and the GDPR export read it): history in All care filters is already stale | Migration `*_drop_health_history` and the reader switch are C0's first change. Referenced by name; numbered at landing (`parallel-programmes.md` §5 rule 5) |
 | RV-7 | `server/lib/gdprUserExport.js` may belong to another programme; C0 + C4b make C+D large | Confirm ownership on the control issue before C0. C+D may land as **3b-i (C0 + C)** and **3b-ii (D)** if it grows beyond one reviewable PR; announce the split on the control issue |
 
 ### 18.3 D-CSM-026 / PL-5 revision — landed with A+B (2026-10-01)
@@ -1216,7 +1216,7 @@ Same authorization as `GET /:id/occurrences`. Response `{ occurrence, entry: { i
 
 #### 18.7.3 Drop `health_history` (D-CSM-035)
 
-- Migration `084_drop_health_history.sql` (reserve 084 on the board). Down recreates the empty table from `canonical.sql`; manifest and `canonical.sql` regenerated; backup docs checked.
+- Migration `<NNN>_drop_health_history.sql`, referenced by name and numbered at landing: the next free number on `main` when the C+D PR opens, renumbered on rebase if taken (`parallel-programmes.md` §5 rule 5). Down recreates the empty table from `canonical.sql`; manifest and `canonical.sql` regenerated; backup docs checked.
 - `GET /:id/history` reads closed occurrences (same wire fields). The GDPR export exports occurrences (owner of `gdprUserExport.js` confirmed first, RV-7).
 - Remaining readers removed: Flutter All care filters (F29), seeds, tests.
 - Reset: §6.3 (UAT and production).
@@ -1269,7 +1269,7 @@ Files ≤ 300 lines where possible, ≤ 500 always. `test/features/care_item/**`
 | OS-5 | Occurrence removed by undo while open | 404 state + link |
 | OS-6 | Coming-up occurrence | Done / Skip / Change date available (R17) |
 | CI-1 | Stack: Mark all as done | One `resolve-stack`; one Undo restores all |
-| HX-1 | After 084 | History from occurrences, same fields; GDPR export without `health_history` |
+| HX-1 | After `drop_health_history` | History from occurrences, same fields; GDPR export without `health_history` |
 | SH-1 | Every completion path | Never two modals at once |
 | CP-1 | ARB guard | No "dose"/"doses" in EN or FR |
 
@@ -1277,16 +1277,16 @@ Files ≤ 300 lines where possible, ≤ 500 always. `test/features/care_item/**`
 
 - **Client analytics** (consent-gated; fixed values only, no names, weights, notes or dates): `care_done_tapped`, `care_done_succeeded` (`status_before`, `schedule_type`, latency bucket), `care_done_failed` (`network` / `validation` / `conflict` / `not_open` / `unknown`), `care_done_undone`, `care_completion_date_changed` (shift bucket), `care_stack_resolved`, `occurrence_screen_opened` (`source`). Each with `family`, `surface`, `path` where relevant.
 - **Client diagnostics:** `CareCompletionService` maps errors to a sealed `CareCommandFailure`, logged via `developer.log` (`care.completion`) with error class and HTTP status only. No empty `catch (_)` in care completion code.
-- **Server:** audit metadata gains optional `source` / `path`; new audit `health_occurrence.completed_on_changed`; warn logs with request id for 400 and 409 `occurrence_not_open`; migration 084 logs the row count before the drop.
-- **Health check:** repair dry run after every reset (0 violations; `health_history` absent after 084).
+- **Server:** audit metadata gains optional `source` / `path`; new audit `health_occurrence.completed_on_changed`; warn logs with request id for 400 and 409 `occurrence_not_open`; migration `drop_health_history` logs the row count before the drop.
+- **Health check:** repair dry run after every reset (0 violations; `health_history` absent after `drop_health_history`).
 
 ### 18.11 Tests and documentation
 
 - **Flutter:** domain tests (`completion_requirements`, `leading_occurrence`, `stack_rule` incl. DN-1b), `care_completion_flow_test` (DN-*, SH-1 with a modal counter), `care_completion_service_test`, `care_item_row_test`, `occurrence_screen_test`, `occurrence_line_test`, ARB guard. Delete or rewrite the tests of removed widgets.
-- **Server:** GET occurrence (authz, 404, DTO), PATCH `completed_on` (OS-1…3b, validation, undo), history from occurrences, GDPR export, migration 084 up/down/idempotency; the property test gains the PATCH command; OpenAPI contract tests.
+- **Server:** GET occurrence (authz, 404, DTO), PATCH `completed_on` (OS-1…3b, validation, undo), history from occurrences, GDPR export, migration `drop_health_history` up/down/idempotency; the property test gains the PATCH command; OpenAPI contract tests.
 - **BDD (C6 / D4, scenarios land with their specs):** care_agenda "A care row opens its date, and the date links to the care item"; new @P1 "Care that needs a weight opens its date to enter the weight", "Several dates to sort out open the care item", "Upcoming care can be marked as done early"; care_schedules "Missed fixed-schedule care can be marked as done together on the care item", "Care older than three days can still be recorded from history", "Care done after its due date keeps the next planned date and offers to change it" (replaces the ask scenario), "A remembered choice is applied without asking again" (kept), new @P1 "Changing when care was done moves the next date of after-it's-done care"; health_tracking history scenario rewritten without `health_history`. The A+B scenario "A dose recorded late keeps the next dose" is reworded "Care recorded late keeps the next date" in C5.
 - **Playwright:** new `occurrence.page.ts`, `completion-date.sheet.ts`; not created: `record-earlier-doses.sheet.ts`, `next-date-choice.sheet.ts`; `care-agenda.page.ts` `stackRow(name).open()`, `openRow(name)` → `OccurrencePage`; `care-item.page.ts` `needsAttentionLines()`, `markAllDone()`, `skipAll()`; `support/api.ts` `getOccurrence`, `patchOccurrence`; axe on the occurrence screen and completion date sheet; weigh-in through the occurrence screen. The canary (§11.4) is unchanged.
-- **Docs:** `care-item-evolution.md` (D-CIE-029…034, amended D-CIE-009 / 017 / 026), `care-schedule-management.md` (D-CSM-034, 035, D-CSM-023 copy), `care-item-view-ui.md` (R3, occurrence screen, sheet inventory), `terminology.md` / `copy-tone.md` ("dose" retired), `api-reference.md` + OpenAPI, `uat-demo-data.md` (history from occurrences, reseed after 084), `docs/debt/debt.md` (calendar projection, notification deep link to the occurrence).
+- **Docs:** `care-item-evolution.md` (D-CIE-029…034, amended D-CIE-009 / 017 / 026), `care-schedule-management.md` (D-CSM-034, 035, D-CSM-023 copy), `care-item-view-ui.md` (R3, occurrence screen, sheet inventory), `terminology.md` / `copy-tone.md` ("dose" retired), `api-reference.md` + OpenAPI, `uat-demo-data.md` (history from occurrences, reseed after `drop_health_history`), `docs/debt/debt.md` (calendar projection, notification deep link to the occurrence).
 
 ### 18.12 Phase changes (amends §10)
 
@@ -1311,12 +1311,33 @@ Files ≤ 300 lines where possible, ≤ 500 always. `test/features/care_item/**`
 | Accidental tick on upcoming care moves an After-it's-done schedule | Early dialog (more than half an interval) + Undo |
 | Users expect the row to open the care item | › on the occurrence header; row label says "Opens this date"; `occurrence_screen_opened{source}` monitored |
 | Keep by default hides "Move this and following" | Change date → This and following on the waiting occurrence; remembered choice in Advanced settings |
-| Migration 084 is irreversible for data | Pre-launch; down recreates an empty table; UAT and production reset |
+| Migration `drop_health_history` is irreversible for data | Pre-launch; down recreates an empty table; UAT and production reset |
 | C+D grows | C0 and C4b are separate phases with exits; split into 3b-i / 3b-ii if needed (RV-7) |
 
 ### 18.14 Out of scope (each tracked as a debt issue)
 
 Calendar view and `GET /api/care-calendar` (D-CIE-033) · notification deep link to the occurrence · further family completion requirements · renaming `health_entries` / `health_occurrences`.
+
+
+### 18.15 Execution notes for C+D (2026-10-03)
+
+Recorded before C0 starts; every item below is approved with the phases (execute-plan, pause after C1 for an effort change only).
+
+| # | Note |
+|---|---|
+| EX-1 | Integration branch `claude/eager-edison-mf34j6` takes `main` by **merge** (never rebase or force-push), before C0 and before the C+D PR opens |
+| EX-2 | Migrations are referenced **by name** and numbered at landing (`parallel-programmes.md` §5 rule 5). C+D adds two: `*_care_completion_date_event` (adds `completion_date_changed` to `care_schedule_events_event_type_check`; needed by D-CSM-034 so the date change is an undoable ledger command) and `*_drop_health_history`. On the branch the first is `084_…`; renumber it if `main` takes 084 first |
+| EX-3 | **GDPR export ownership** asked on the ARCH control issue ([#1446 comment](https://github.com/KanopeeKa/AgathaCheck/issues/1446#issuecomment-5970721429)). Until it is answered, C0 ships the **reader switch only** (`GET /:id/history` from occurrences, D-CSM-035) and leaves the table and `gdprUserExport.js` untouched. `*_drop_health_history` + the export change land in the C+D PR once ARCH answers; if the answer has not come when C+D is ready, they move to E+F (landing 5b) and HX-1's export half moves with them |
+| EX-4 | `PATCH …/occurrences/:occId` takes `completed_on` **on its own** (400 `completed_on_with_other_fields` otherwise), so one request is one command and one Undo |
+| EX-5 | "Not before the start date" applies when the item has a `start_date`; items created with only a due date have no lower bound (a past treatment can be logged) |
+| EX-6 | Audit `source` / `path` accept short snake_case tags only (`^[a-z][a-z_]{0,31}$`); anything else is dropped, never stored |
+| EX-7 | C0 follow-ups folded in: `docs/ops/care-tick.md` uses typed cron fields (cPanel has no fifteen-minute common setting); unused `uuidv4` import removed from `completeWeightRouter.js`; the older care DB suites fail instead of skipping when PostgreSQL is not migrated (`openStrictHarness`) |
+| EX-8 | Order: C0 → C1 (pause, report) → C2–C5 → C4b → C6 → D2/D3 (+ D4). If the diff stops being one reviewable PR, land **3b-i (C0 + C)** and **3b-ii (D)** and announce it on the control issue (RV-7) |
+| EX-10 | C1 shape: `flutter_app/lib/features/care_item/` imports **no other feature** (core only). Its authenticated client comes from `careItemHttpClientProvider`, overridden in `lib/main.dart` (composition) with `authHttpClientProvider`; tests override it with a mock. `CareItemsController` (one list read, server-confirmed updates) and `CareCompletionService` (endpoint by family, never `next_choice` / `earlier_choice`, sealed failures, `developer.log('care.completion')`) are not wired to any screen until C3/C4. The optional warn-only `check_care_item_boundary.sh` is not added: `check_feature_imports.js` already blocks new edges |
+| EX-11 | C2 shape: `HealthEntry.schedule` (`CareItemSchedule`, parsed from the list/detail read) is the only status source for server data. The six old rules (F25) now go through it: `HealthEntry.isOverdue` / `isDueToday` (stacks and not recorded count as overdue), and `CareTemporalGroupingService.groupForSchedule` (agenda overdue → needs attention, today → today, due soon → upcoming; later dates and done-today rows do not change Care Status). Their device-clock fallbacks remain only for entries built without a server read (tests, local drafts) and are deleted in F2. New edges `health_tracking→care_item`, `pet_care→care_item` (and later consumers) are accepted exceptions: `care_item` is a leaf that imports core only, so it cannot join the import cycle. Server read additions gain `last_done { occurrence_id, completed_on, time }` for done-today rows |
+| EX-12 | C3–C4b shape: one agenda widget `pet_care/…/care_agenda/` (`CareAgendaCollection`, rows `CareAgendaRowTile`) on the dashboard (with the orientation line), the pet profile, the pet's All care and global All care; paused / ended / recorded-only items follow without a tick. Every Done goes through `CareCompletionFlow` (`care_item/presentation`): `decideDone` (DN-1…DN-8), at most one modal (date sheet or early dialog), one request, snackbar "{name} done · Undo" with "Next: …" / "Next stays … · Change" and Change date for a late Fixed-schedule completion; 409 → "Already updated". Rows open the occurrence screen (`/pet/:petId/events/:entryId/occurrences/:occurrenceId`, analytics-sensitive `occurrenceDetail`); stacks and done-today rows open the Care Item view. The Care Item view's Needs attention lists every open occurrence as a line with Mark all as done / Skip all for a stack (`resolve-stack`, one Undo). `careDataChangedProvider` (overridden in `main.dart`) reloads care data after occurrence-screen commands. Old optimistic rows, their tests and the unused `PetEventsPreviewSection` are deleted; the old completion helpers (`OccurrenceCareActions`, sheets) remain only behind the legacy dates section for entries without a schedule and are deleted in F2. New cross-feature imports of the shared agenda are accepted exceptions, consolidated in F1/F3. Live minutes: the agenda advances timed Due → Overdue each minute and reloads every 15 minutes |
+| EX-13 | D2/D3 shape: "If done after the due date" is a field under Schedule type (Keep · Skip the next date · Move this and following, the last for Fixed schedule only; Keep clears it). Server `POST`/`PUT /api/health-entries` accept `late_completion_choice` (400 otherwise). The Care Item view lists open occurrences as lines (§18.6.5) and History lines open their occurrence screen; the item menu (Edit, Pause/Resume, Archive/Restore) is unchanged |
+| EX-9 | Known red checks that are not CARE's: UAT live E2E in-host smoke (`node: command not found`, TEST [#1470](https://github.com/KanopeeKa/AgathaCheck/issues/1470)); production post-deploy smoke while production is in coming-soon mode |
 
 ---
 
@@ -1324,17 +1345,28 @@ Calendar view and `GET /api/care-calendar` (D-CIE-033) · notification deep link
 
 ```yaml
 autonomy: active
-current_phase: "A+B landing (2b)"
-last_completed_phase: "B10"
+current_phase: "landing 3b PR — babysit merge"
+last_completed_phase: "C6 + D4 + §18.11 follow-ups"
 halt_reason: null
-next_action: "Land PR #1448 (A+B) with the D-CSM-026 server fallback; reset UAT and production; install the care tick cron; then child C starting with C0 (§18.12)"
+next_action: "/babysit-uat on PR #1475 → merge → pre-UAT watch; then complete-plan"
 artifact_ref:
   branch: claude/eager-edison-mf34j6
   plan_path: .agents/plans/care-next-occurrence-c1a7.md
-  amendment: "§18 (v4, 2026-10-01)"
+  amendment: "§18 (v4, 2026-10-01); execution notes §18.15 (2026-10-03)"
   snapshot_path: null
   snapshot_commit: null
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1448"]
-merge_commits: {}
+open_prs: []
+merge_commits:
+  a_b: a3afd15
+  a_b_hotfix_1473: baf7f77
+phase_commits:
+  c0: d9e03b4
+  c1: f592202
+  c2: 48ef57c
+  c3_c4b: 66ee32e
+  c5: 7ca773c
+  d2_d3: fbdba57c
+pending_answers:
+  gdpr_export_owner: "https://github.com/KanopeeKa/AgathaCheck/issues/1446#issuecomment-5970721429"
 debt_issue_refs: []
 ```

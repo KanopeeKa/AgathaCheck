@@ -9,7 +9,7 @@ import { randomUUID } from 'crypto';
 import { afterAll, beforeAll, describe, expect, it } from '@jest/globals';
 import jwt from 'jsonwebtoken';
 
-import { careApi, createOwner, openHarness, removeOwner } from './helpers/careHarness.js';
+import { careApi, createOwner, openStrictHarness, removeOwner } from './helpers/careHarness.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'default_secret';
 
@@ -19,8 +19,7 @@ let coParent;
 let contactId;
 
 beforeAll(async () => {
-  harness = await openHarness();
-  if (!harness.pool) return;
+  harness = await openStrictHarness();
   owner = await createOwner(harness.pool);
   const directoryId = randomUUID();
   contactId = randomUUID();
@@ -62,7 +61,6 @@ afterAll(async () => {
 
 describe('provider snapshot on completion (I12)', () => {
   it('a co-parent completing care keeps the item\'s provider', async () => {
-    if (!harness.pool) return;
     const created = await careApi(harness.app, owner).at('2026-06-05T09:00').create({
       care_family: 'wellness_review',
       frequency: 'yearly',
@@ -86,7 +84,6 @@ describe('provider snapshot on completion (I12)', () => {
   });
 
   it('an override the completer cannot see falls back to the item\'s provider', async () => {
-    if (!harness.pool) return;
     const created = await careApi(harness.app, owner).at('2026-06-05T09:00').create({
       care_family: 'wellness_review',
       frequency: 'yearly',

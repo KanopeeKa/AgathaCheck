@@ -12,7 +12,7 @@ import {
   createOwner,
   invariantViolations,
   occurrenceRows,
-  openHarness,
+  openStrictHarness,
   removeOwner,
 } from './helpers/careHarness.js';
 
@@ -35,8 +35,7 @@ let owner;
 let api;
 
 beforeAll(async () => {
-  harness = await openHarness();
-  if (!harness.pool) return;
+  harness = await openStrictHarness();
   owner = await createOwner(harness.pool, { timeZone: 'Europe/Paris' });
   api = careApi(harness.app, owner);
 }, 30000);
@@ -50,7 +49,6 @@ afterAll(async () => {
 
 describe('care occurrence invariants under random commands (OR-4)', () => {
   it(`holds INV-1, INV-2, INV-5 over ${STEPS} random steps`, async () => {
-    if (!harness.pool) return;
     const random = rng(Number(process.env.CARE_PROPERTY_SEED || 20260929));
     const pick = (list) => list[Math.floor(random() * list.length)];
     let today = '2026-06-01';
@@ -85,7 +83,7 @@ describe('care occurrence invariants under random commands (OR-4)', () => {
       const occ = open.length ? pick(open) : null;
       const action = pick([
         'complete', 'complete', 'complete', 'skip', 'plan', 'reschedule', 'following',
-        'postpone', 'pause', 'resume', 'undo', 'tick', 'stack', 'record',
+        'postpone', 'pause', 'resume', 'undo', 'tick', 'stack', 'record', 'done_date',
       ]);
       let res = null;
       if (action === 'complete' && occ) {
@@ -126,6 +124,15 @@ describe('care occurrence invariants under random commands (OR-4)', () => {
         const rows = await occurrenceRows(harness.pool, id);
         const closed = rows.find((r) => r.close_reason === 'not_recorded');
         if (closed) res = await api.at(clock()).record(id, closed.id);
+      } else if (action === 'done_date') {
+        // Change when care was done (D-CSM-034): any recent date, refusals allowed.
+        const rows = await occurrenceRows(harness.pool, id);
+        const done = rows.filter((r) => r.status === 'completed');
+        if (done.length) {
+          res = await api.at(clock()).patchOccurrence(id, pick(done).id, {
+            completed_on: addDaysIso(today, -Math.floor(random() * 6)),
+          });
+        }
       }
       if (res && res.statusCode >= 500) {
         failures.push(`step ${step} ${action} ${id}: ${res.statusCode} ${JSON.stringify(res.body)}`);

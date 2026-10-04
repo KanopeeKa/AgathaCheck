@@ -23,6 +23,7 @@ export { CareCommandError } from './careCommandError.js';
 export { executeCareCommand } from './commandRunner.js';
 export { syncOpenOccurrences } from './syncOpenOccurrences.js';
 export {
+  listLastDoneByEntry,
   listOpenRows,
   listOpenRowsByEntry,
   normalizeOccurrenceRow,
@@ -30,6 +31,7 @@ export {
 } from './occurrenceRepository.js';
 export { careItemReadAdditions, openOccurrenceToWire } from './occurrenceDto.js';
 export { completeOccurrenceCommand, EARLIER_CHOICES } from './commands/complete.js';
+export { changeCompletionDateCommand } from './commands/completionDate.js';
 export { skipOccurrenceCommand } from './commands/skip.js';
 export { recordAsGivenCommand, resolveStackCommand } from './commands/stack.js';
 export {

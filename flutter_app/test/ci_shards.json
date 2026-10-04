@@ -30,6 +30,7 @@
       "id": "core",
       "roots": [
         "test/core",
+        "test/l10n",
         "test/features/people",
         "test/features/care_taxonomy",
         "test/features/sharing",
@@ -53,6 +54,7 @@
       "id": "pet-care",
       "roots": [
         "test/features/pet_care",
+        "test/features/care_item",
         "test/features/care_intelligence",
         "test/features/pet_tags"
       ]

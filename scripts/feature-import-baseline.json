@@ -46,10 +46,6 @@
     "R1|flutter_app/lib/features/pet_profile/presentation/screens/pet_weight_tracking_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
     "R1|flutter_app/lib/features/pet_profile/presentation/screens/widgets/manage_events_collection_filter.dart|flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_due_events_screen.dart",
     "R1|flutter_app/lib/features/pet_profile/presentation/screens/widgets/org_events_collection_filter.dart|flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_due_events_screen.dart",
-    "R1|flutter_app/lib/features/pet_profile/presentation/screens/widgets/pet_events_preview_section.dart|flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_upcoming_events_section.dart",
-    "R1|flutter_app/lib/features/pet_profile/presentation/screens/widgets/pet_events_preview_section.dart|flutter_app/lib/features/experience/presentation/widgets/pet_care_dashboard_section_header.dart",
-    "R1|flutter_app/lib/features/pet_profile/presentation/screens/widgets/pet_events_preview_section.dart|flutter_app/lib/features/experience/presentation/widgets/pet_care_illustrated_empty_state.dart",
-    "R1|flutter_app/lib/features/pet_profile/presentation/screens/widgets/pet_events_preview_section.dart|flutter_app/lib/features/experience/presentation/widgets/pet_care_preview/pet_care_preview_optimistic.dart",
     "R1|flutter_app/lib/features/pet_profile/presentation/widgets/all_care/all_care_list.dart|flutter_app/lib/features/experience/presentation/widgets/pet_care_illustrated_empty_state.dart",
     "R1|flutter_app/lib/features/pet_profile/presentation/widgets/pet_care_section/pet_care_section.dart|flutter_app/lib/features/experience/presentation/widgets/pet_care_dashboard_section_header.dart",
     "R1|flutter_app/lib/features/pet_profile/presentation/widgets/pet_care_section/pet_care_section.dart|flutter_app/lib/features/experience/presentation/widgets/pet_care_illustrated_empty_state.dart",
@@ -108,6 +104,9 @@
     "R3|flutter_app/lib/features/health_tracking/presentation/screens/care_item_detail/care_item_info_section.dart|flutter_app/lib/features/pet_care/presentation/widgets/care_surface/care_item_detail_row.dart",
     "R3|flutter_app/lib/features/health_tracking/presentation/screens/care_item_detail/care_item_info_section.dart|flutter_app/lib/features/pet_profile/presentation/widgets/care_family_icon.dart",
     "R3|flutter_app/lib/features/health_tracking/presentation/screens/care_item_detail/care_item_info_section.dart|flutter_app/lib/features/pet_profile/presentation/widgets/care_family_labels.dart",
+    "R3|flutter_app/lib/features/health_tracking/presentation/screens/care_item_detail/care_item_needs_attention_section.dart|flutter_app/lib/features/pet_care/presentation/widgets/care_surface/care_item_module.dart",
+    "R3|flutter_app/lib/features/health_tracking/presentation/screens/care_item_detail/care_item_needs_attention_section.dart|flutter_app/lib/features/pet_care/presentation/widgets/care_surface/care_item_section_header.dart",
+    "R3|flutter_app/lib/features/health_tracking/presentation/screens/care_item_detail/care_item_needs_attention_section.dart|flutter_app/lib/features/pet_care/presentation/widgets/care_surface/care_item_status_pill.dart",
     "R3|flutter_app/lib/features/health_tracking/presentation/screens/care_item_detail/care_item_schedule_section.dart|flutter_app/lib/features/pet_care/presentation/widgets/care_surface/care_item_module.dart",
     "R3|flutter_app/lib/features/health_tracking/presentation/screens/care_item_detail/care_item_schedule_section.dart|flutter_app/lib/features/pet_care/presentation/widgets/care_surface/care_item_section_header.dart",
     "R3|flutter_app/lib/features/health_tracking/presentation/screens/care_item_detail/care_item_schedule_section.dart|flutter_app/lib/features/pet_care/presentation/widgets/care_surface/care_item_stat_row.dart",
@@ -182,6 +181,11 @@
     "R3|flutter_app/lib/features/pet_care/presentation/providers/care_temporal_grouping_providers.dart|flutter_app/lib/features/health_tracking/presentation/providers/health_providers.dart",
     "R3|flutter_app/lib/features/pet_care/presentation/providers/pet_care_presentation_providers.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
     "R3|flutter_app/lib/features/pet_care/presentation/providers/pet_care_presentation_providers.dart|flutter_app/lib/features/care_intelligence/presentation/providers/care_recommendations_provider.dart",
+    "R3|flutter_app/lib/features/pet_care/presentation/widgets/care_agenda/care_agenda_collection.dart|flutter_app/lib/features/health_tracking/presentation/providers/health_providers.dart",
+    "R3|flutter_app/lib/features/pet_care/presentation/widgets/care_agenda/care_agenda_row_tile.dart|flutter_app/lib/features/health_tracking/presentation/widgets/health_entry_status.dart",
+    "R3|flutter_app/lib/features/pet_care/presentation/widgets/care_agenda/care_agenda_row_tile.dart|flutter_app/lib/features/health_tracking/presentation/widgets/pet_event_lifecycle.dart",
+    "R3|flutter_app/lib/features/pet_care/presentation/widgets/care_agenda/care_agenda_row_tile.dart|flutter_app/lib/features/pet_profile/presentation/widgets/care_family_icon.dart",
+    "R3|flutter_app/lib/features/pet_care/presentation/widgets/care_agenda/care_agenda_row_tile.dart|flutter_app/lib/features/pet_profile/presentation/widgets/care_family_labels.dart",
     "R3|flutter_app/lib/features/pet_care/presentation/widgets/care_surface/care_action_row.dart|flutter_app/lib/features/health_tracking/presentation/widgets/health_entry_status.dart",
     "R3|flutter_app/lib/features/pet_care/presentation/widgets/pet_care_dashboard_contextual_slot_section.dart|flutter_app/lib/features/care_intelligence/presentation/widgets/care_safeguard_card.dart",
     "R3|flutter_app/lib/features/pet_care/presentation/widgets/pet_care_dashboard_contextual_slot_section.dart|flutter_app/lib/features/care_intelligence/presentation/widgets/care_suggestion_card.dart",
@@ -218,24 +222,19 @@
     "R3|flutter_app/lib/features/pet_profile/presentation/screens/widgets/other_events_section.dart|flutter_app/lib/features/health_tracking/presentation/providers/health_providers.dart",
     "R3|flutter_app/lib/features/pet_profile/presentation/screens/widgets/pet_event_entry_list.dart|flutter_app/lib/features/health_tracking/presentation/widgets/health_entry_status.dart",
     "R3|flutter_app/lib/features/pet_profile/presentation/screens/widgets/pet_event_entry_list.dart|flutter_app/lib/features/health_tracking/presentation/widgets/health_entry_type_labels.dart",
-    "R3|flutter_app/lib/features/pet_profile/presentation/screens/widgets/pet_events_preview_section.dart|flutter_app/lib/features/health_tracking/presentation/providers/health_providers.dart",
-    "R3|flutter_app/lib/features/pet_profile/presentation/screens/widgets/pet_events_preview_section.dart|flutter_app/lib/features/health_tracking/presentation/widgets/care_event_row_context.dart",
-    "R3|flutter_app/lib/features/pet_profile/presentation/screens/widgets/pet_events_preview_section.dart|flutter_app/lib/features/pet_care/presentation/widgets/care_surface/care_collection_inset_list.dart",
     "R3|flutter_app/lib/features/pet_profile/presentation/screens/widgets/weight_chart.dart|flutter_app/lib/features/weight_tracking/presentation/providers/weight_providers.dart",
     "R3|flutter_app/lib/features/pet_profile/presentation/screens/widgets/weight_tracking_section.dart|flutter_app/lib/features/weight_tracking/presentation/providers/weight_providers.dart",
     "R3|flutter_app/lib/features/pet_profile/presentation/widgets/all_care/all_care_inactive_section.dart|flutter_app/lib/features/health_tracking/presentation/widgets/health_entry_status.dart",
     "R3|flutter_app/lib/features/pet_profile/presentation/widgets/all_care/all_care_inactive_section.dart|flutter_app/lib/features/health_tracking/presentation/widgets/pet_event_lifecycle.dart",
     "R3|flutter_app/lib/features/pet_profile/presentation/widgets/all_care/all_care_list.dart|flutter_app/lib/features/health_tracking/presentation/providers/health_providers.dart",
     "R3|flutter_app/lib/features/pet_profile/presentation/widgets/all_care/all_care_list.dart|flutter_app/lib/features/health_tracking/presentation/widgets/add_health_entry_navigation.dart",
-    "R3|flutter_app/lib/features/pet_profile/presentation/widgets/all_care/all_care_list.dart|flutter_app/lib/features/health_tracking/presentation/widgets/occurrence_care_actions.dart",
-    "R3|flutter_app/lib/features/pet_profile/presentation/widgets/all_care/all_care_list.dart|flutter_app/lib/features/pet_care/presentation/providers/care_temporal_grouping_providers.dart",
+    "R3|flutter_app/lib/features/pet_profile/presentation/widgets/all_care/all_care_list.dart|flutter_app/lib/features/pet_care/presentation/widgets/care_agenda/care_agenda_collection.dart",
     "R3|flutter_app/lib/features/pet_profile/presentation/widgets/organization_pets_section.dart|flutter_app/lib/features/sharing/presentation/providers/sharing_providers.dart",
     "R3|flutter_app/lib/features/pet_profile/presentation/widgets/pet_care_section/pet_care_action_row_builder.dart|flutter_app/lib/features/health_tracking/presentation/widgets/health_entry_status.dart",
     "R3|flutter_app/lib/features/pet_profile/presentation/widgets/pet_care_section/pet_care_action_row_builder.dart|flutter_app/lib/features/health_tracking/presentation/widgets/pet_event_lifecycle.dart",
     "R3|flutter_app/lib/features/pet_profile/presentation/widgets/pet_care_section/pet_care_action_row_builder.dart|flutter_app/lib/features/pet_care/presentation/widgets/care_surface/care_action_row.dart",
     "R3|flutter_app/lib/features/pet_profile/presentation/widgets/pet_care_section/pet_care_section.dart|flutter_app/lib/features/health_tracking/presentation/providers/health_providers.dart",
-    "R3|flutter_app/lib/features/pet_profile/presentation/widgets/pet_care_section/pet_care_section.dart|flutter_app/lib/features/pet_care/presentation/providers/care_temporal_grouping_providers.dart",
-    "R3|flutter_app/lib/features/pet_profile/presentation/widgets/pet_care_section/pet_care_section.dart|flutter_app/lib/features/pet_care/presentation/widgets/care_surface/care_collection_inset_list.dart",
+    "R3|flutter_app/lib/features/pet_profile/presentation/widgets/pet_care_section/pet_care_section.dart|flutter_app/lib/features/pet_care/presentation/widgets/care_agenda/care_agenda_collection.dart",
     "R3|flutter_app/lib/features/pet_profile/presentation/widgets/pet_care_section/pet_care_temporal_group_section.dart|flutter_app/lib/features/pet_care/presentation/widgets/care_surface/care_collection_inset_list.dart",
     "R3|flutter_app/lib/features/pet_profile/presentation/widgets/pet_care_section/pet_care_temporal_group_section.dart|flutter_app/lib/features/pet_care/presentation/widgets/care_surface/care_surface_tokens.dart",
     "R3|flutter_app/lib/features/pet_profile/presentation/widgets/pet_detail/pet_detail_profile_card.dart|flutter_app/lib/features/weight_tracking/presentation/providers/weight_providers.dart",
@@ -282,6 +281,7 @@
     "care_taxonomy->health_tracking",
     "care_taxonomy->pet_profile",
     "experience->auth",
+    "experience->care_item",
     "experience->health_tracking",
     "experience->notifications",
     "experience->people",
@@ -291,6 +291,7 @@
     "experience->sharing",
     "experience->vet",
     "health_tracking->auth",
+    "health_tracking->care_item",
     "health_tracking->care_taxonomy",
     "health_tracking->experience",
     "health_tracking->people",
@@ -306,12 +307,14 @@
     "people->vet",
     "pet_care->auth",
     "pet_care->care_intelligence",
+    "pet_care->care_item",
     "pet_care->experience",
     "pet_care->health_tracking",
     "pet_care->people",
     "pet_care->pet_profile",
     "pet_profile->auth",
     "pet_profile->care_intelligence",
+    "pet_profile->care_item",
     "pet_profile->care_taxonomy",
     "pet_profile->experience",
     "pet_profile->health_tracking",
@@ -333,5 +336,76 @@
     "vet->pet_profile",
     "weight_tracking->auth"
   ],
-  "exceptions": []
+  "exceptions": [
+    {
+      "identity": "R4|health_tracking->care_item",
+      "reason": "care-next-occurrence-c1a7 §7.3/§18.15 EX-11: features import the care_item leaf module (imports core only) through its barrel; a leaf cannot join the import cycle",
+      "accepted_on": "2026-10-03"
+    },
+    {
+      "identity": "R4|pet_care->care_item",
+      "reason": "care-next-occurrence-c1a7 §18.15 EX-11: the shared grouping service reads the care_item leaf module's agenda rule",
+      "accepted_on": "2026-10-03"
+    },
+    {
+      "identity": "R3|flutter_app/lib/features/health_tracking/presentation/screens/care_item_detail/care_item_needs_attention_section.dart|flutter_app/lib/features/pet_care/presentation/widgets/care_surface/care_item_module.dart",
+      "reason": "care-next-occurrence-c1a7 C3/C4 (§18.15 EX-12): the shared agenda and Care Item view lines replace rows that already crossed the same features (their R3 entries are resolved in this change); consolidated into features/care_item in F1/F3",
+      "accepted_on": "2026-10-03"
+    },
+    {
+      "identity": "R3|flutter_app/lib/features/health_tracking/presentation/screens/care_item_detail/care_item_needs_attention_section.dart|flutter_app/lib/features/pet_care/presentation/widgets/care_surface/care_item_section_header.dart",
+      "reason": "care-next-occurrence-c1a7 C3/C4 (§18.15 EX-12): the shared agenda and Care Item view lines replace rows that already crossed the same features (their R3 entries are resolved in this change); consolidated into features/care_item in F1/F3",
+      "accepted_on": "2026-10-03"
+    },
+    {
+      "identity": "R3|flutter_app/lib/features/health_tracking/presentation/screens/care_item_detail/care_item_needs_attention_section.dart|flutter_app/lib/features/pet_care/presentation/widgets/care_surface/care_item_status_pill.dart",
+      "reason": "care-next-occurrence-c1a7 C3/C4 (§18.15 EX-12): the shared agenda and Care Item view lines replace rows that already crossed the same features (their R3 entries are resolved in this change); consolidated into features/care_item in F1/F3",
+      "accepted_on": "2026-10-03"
+    },
+    {
+      "identity": "R3|flutter_app/lib/features/pet_care/presentation/widgets/care_agenda/care_agenda_collection.dart|flutter_app/lib/features/health_tracking/presentation/providers/health_providers.dart",
+      "reason": "care-next-occurrence-c1a7 C3/C4 (§18.15 EX-12): the shared agenda and Care Item view lines replace rows that already crossed the same features (their R3 entries are resolved in this change); consolidated into features/care_item in F1/F3",
+      "accepted_on": "2026-10-03"
+    },
+    {
+      "identity": "R3|flutter_app/lib/features/pet_care/presentation/widgets/care_agenda/care_agenda_row_tile.dart|flutter_app/lib/features/health_tracking/presentation/widgets/health_entry_status.dart",
+      "reason": "care-next-occurrence-c1a7 C3/C4 (§18.15 EX-12): the shared agenda and Care Item view lines replace rows that already crossed the same features (their R3 entries are resolved in this change); consolidated into features/care_item in F1/F3",
+      "accepted_on": "2026-10-03"
+    },
+    {
+      "identity": "R3|flutter_app/lib/features/pet_care/presentation/widgets/care_agenda/care_agenda_row_tile.dart|flutter_app/lib/features/health_tracking/presentation/widgets/pet_event_lifecycle.dart",
+      "reason": "care-next-occurrence-c1a7 C3/C4 (§18.15 EX-12): the shared agenda and Care Item view lines replace rows that already crossed the same features (their R3 entries are resolved in this change); consolidated into features/care_item in F1/F3",
+      "accepted_on": "2026-10-03"
+    },
+    {
+      "identity": "R3|flutter_app/lib/features/pet_care/presentation/widgets/care_agenda/care_agenda_row_tile.dart|flutter_app/lib/features/pet_profile/presentation/widgets/care_family_icon.dart",
+      "reason": "care-next-occurrence-c1a7 C3/C4 (§18.15 EX-12): the shared agenda and Care Item view lines replace rows that already crossed the same features (their R3 entries are resolved in this change); consolidated into features/care_item in F1/F3",
+      "accepted_on": "2026-10-03"
+    },
+    {
+      "identity": "R3|flutter_app/lib/features/pet_care/presentation/widgets/care_agenda/care_agenda_row_tile.dart|flutter_app/lib/features/pet_profile/presentation/widgets/care_family_labels.dart",
+      "reason": "care-next-occurrence-c1a7 C3/C4 (§18.15 EX-12): the shared agenda and Care Item view lines replace rows that already crossed the same features (their R3 entries are resolved in this change); consolidated into features/care_item in F1/F3",
+      "accepted_on": "2026-10-03"
+    },
+    {
+      "identity": "R3|flutter_app/lib/features/pet_profile/presentation/widgets/all_care/all_care_list.dart|flutter_app/lib/features/pet_care/presentation/widgets/care_agenda/care_agenda_collection.dart",
+      "reason": "care-next-occurrence-c1a7 C3/C4 (§18.15 EX-12): the shared agenda and Care Item view lines replace rows that already crossed the same features (their R3 entries are resolved in this change); consolidated into features/care_item in F1/F3",
+      "accepted_on": "2026-10-03"
+    },
+    {
+      "identity": "R3|flutter_app/lib/features/pet_profile/presentation/widgets/pet_care_section/pet_care_section.dart|flutter_app/lib/features/pet_care/presentation/widgets/care_agenda/care_agenda_collection.dart",
+      "reason": "care-next-occurrence-c1a7 C3/C4 (§18.15 EX-12): the shared agenda and Care Item view lines replace rows that already crossed the same features (their R3 entries are resolved in this change); consolidated into features/care_item in F1/F3",
+      "accepted_on": "2026-10-03"
+    },
+    {
+      "identity": "R4|experience->care_item",
+      "reason": "care-next-occurrence-c1a7 C3/C4 (§18.15 EX-12): the shared agenda and Care Item view lines replace rows that already crossed the same features (their R3 entries are resolved in this change); consolidated into features/care_item in F1/F3",
+      "accepted_on": "2026-10-03"
+    },
+    {
+      "identity": "R4|pet_profile->care_item",
+      "reason": "care-next-occurrence-c1a7 C3/C4 (§18.15 EX-12): the shared agenda and Care Item view lines replace rows that already crossed the same features (their R3 entries are resolved in this change); consolidated into features/care_item in F1/F3",
+      "accepted_on": "2026-10-03"
+    }
+  ]
 }

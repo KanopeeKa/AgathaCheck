@@ -44,11 +44,11 @@ Feature: Pet Care dashboard
 
   @implemented
   @P1
-  Scenario: Care preview row opens the event view screen
+  Scenario: Care preview row opens the occurrence screen
     Given I am signed in as a guardian with due care
     When I open a care preview item from the Pet Care dashboard
-    Then I should see the event view screen for that item
-    And snooze should be available on the event view screen only
+    Then I should see the occurrence screen for that date
+    And snooze should not appear on the occurrence screen
 
   @implemented
   @P1

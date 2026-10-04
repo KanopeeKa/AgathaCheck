@@ -143,6 +143,7 @@ class HealthEntryFormContent extends ConsumerWidget {
                   frequencyInterval: form.frequencyInterval,
                   repeatEndDate: form.repeatEndDate,
                   recurrenceAnchor: form.recurrenceAnchor,
+                  lateCompletionChoice: form.lateCompletionChoice,
                   controller: controller,
                 ),
                 if (form.frequency != HealthFrequency.once) ...[

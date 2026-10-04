@@ -115,6 +115,7 @@ mixin HealthEntryFormSubmitMixin
           nextDueDate: effectiveDue,
           completedOn: effectiveCompleted,
           recurrenceAnchor: state.recurrenceAnchor,
+          lateCompletionChoice: state.lateCompletionChoice,
           notes: state.notes.trim(),
           healthIssueId: state.selectedHealthIssueId,
           remindDaysBefore: effectiveRemindDaysBefore,
@@ -159,6 +160,7 @@ mixin HealthEntryFormSubmitMixin
                       ? (state.completedOn ?? effectiveStart)
                       : state.completedOn),
             recurrenceAnchor: state.recurrenceAnchor,
+            lateCompletionChoice: state.lateCompletionChoice,
             notes: state.notes.trim(),
             healthIssueId: state.selectedHealthIssueId,
             remindDaysBefore: effectiveRemindDaysBefore,

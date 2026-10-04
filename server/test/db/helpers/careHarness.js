@@ -45,6 +45,20 @@ export async function openHarness() {
 }
 
 /**
+ * Like `openHarness`, but a missing or unmigrated database fails the suite
+ * instead of skipping it: these suites run only in the PostgreSQL CI job.
+ *
+ * @returns {Promise<{ pool: import('pg').Pool, app: any }>}
+ */
+export async function openStrictHarness() {
+  const harness = await openHarness();
+  if (!harness.pool) {
+    throw new Error('Care DB integration tests require a migrated PostgreSQL (health_occurrences.origin)');
+  }
+  return harness;
+}
+
+/**
  * @param {import('pg').Pool} pool
  * @param {{ timeZone?: string }} [options]
  */
@@ -142,6 +156,15 @@ export function careApi(app, owner) {
     },
     past(id) {
       return send('get', `/${id}/occurrences?status=past`);
+    },
+    occurrence(id, occId) {
+      return send('get', `/${id}/occurrences/${occId}`);
+    },
+    patchOccurrence(id, occId, body) {
+      return send('patch', `/${id}/occurrences/${occId}`, body);
+    },
+    history(id) {
+      return send('get', `/${id}/history`);
     },
   };
 }

@@ -3,7 +3,7 @@ title: AgathaTrack copy and tone
 owner: Documentation Team
 audience: product, design, engineering, content
 status: active
-last_updated: 2026-09-09
+last_updated: 2026-10-03
 tags: [design, ui, ux, brand, copy]
 ---
 
@@ -235,6 +235,12 @@ Detailed behavioural rules: [`care-intelligence.md`](../domains/pet_care/feature
 - Keep the login path **role-neutral**. Do not ask users to choose audience type before sign-in. Care context belongs inside the authenticated experience.
 - Prefer short supporting copy over feature lists or role-based marketing gates. The form should make the next action obvious: sign in or create an account.
 - Preserve email/password, validation, localization, accessibility, and native web password-manager behaviour on web. See `.agents/memory/flutter-web-password-managers.md`.
+
+## Care agenda and occurrences
+
+- Prefer **date**, **occurrence**, and **Mark as done** — not **dose** (retired in EN/FR ARB for occurrence-first care).
+- Row accessibility: say whether the row **opens this date** or **opens the care item** (stacks, done today).
+- Snackbar: **{name} done · Undo**; optional **Next:** line; **Change date** when a late Fixed-schedule completion may need adjusting.
 
 ## Localization
 

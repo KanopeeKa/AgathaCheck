@@ -15,6 +15,8 @@ tags: [debt, deferred, tech-debt]
 
 | Domain | PR | Type | Priority | Description |
 |--------|-----|------|----------|-------------|
+| pet_care | care-next-occurrence | feature | P2 | Notification deep link opens the **occurrence screen** (not care item only) — §18.14; track with `occurrence_screen_opened{source: notification}` |
+| pet_care | care-next-occurrence | feature | P3 | Calendar view + `GET /api/care-calendar` (D-CIE-033) — occurrence-first agenda is interim projection |
 | pet_care | — | tech debt | P2 | `publicError(err, msg)` returns a string — add `sendPublicError(res, err, msg)` wrapper or ESLint ban on `publicError(res` (D-AWAY-013; AW-EMERGENCY fixed the two `careContext` call sites) |
 | pet_care | — | tech debt | P3 | `timestampToIso()` helper in `calendarDate.js` — adopt repo-wide (17 call sites across 10 files); AW-0 scopes to `plannedAbsence.js` only |
 | platform | — | tech debt | P1 | PostHog authorized URLs for prod (`https://prod.agathatrack.com`) |

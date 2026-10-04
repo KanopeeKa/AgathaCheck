@@ -14,13 +14,13 @@
  * Scenario: Due events appear on the pet list screen
  * Scenario: No due events shows all caught up
  * Scenario: Exporting health entries as CSV
- * Scenario: Multi-dose daily medication shows stack sheet for recording doses
- * Scenario: A dose recorded late keeps the next dose
+ * Scenario: Multi-dose daily medication records one date from the agenda
+ * Scenario: Care recorded late keeps the next date
  */
 import { test, expect, loginAs, seedPetWithDueHealthEntry } from '../fixtures/auth.fixture';
 import { HealthDashboardPage } from '../pages/health-dashboard.page';
-import { OccurrenceStackSheetPage } from '../pages/occurrence-stack-sheet.page';
 import { PetListPage } from '../pages/pet-list.page';
+import { CareAgendaPage } from '../pages/care-agenda.page';
 import { isLiveHostingTarget } from '../support/hosting';
 import {
   createPet,
@@ -32,7 +32,14 @@ import {
   getHealthEntries,
   exportHealthEntriesCsv,
 } from '../support/api';
-import { completeNextOccurrence, createCareItem, createPetInZone, undoLast } from '../support/care-api';
+import {
+  completeNextOccurrence,
+  createCareItem,
+  createPetInZone,
+  listHealthEntryOccurrences,
+  undoLast,
+  withCareClock,
+} from '../support/care-api';
 import { zoneAtMidAfternoon } from '../support/care-zone';
 
 test.describe('Health tracking', () => {
@@ -304,13 +311,7 @@ test.describe('Health tracking', () => {
 
   test('pet list shows "You\'re all caught up" when no entries are due', async ({ page, testUser }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
-    const pet = await createPet(baseURL, testUser.accessToken, 'Bella');
-    const futureDate = new Date();
-    futureDate.setDate(futureDate.getDate() + 30);
-    await createHealthEntry(baseURL, testUser.accessToken, pet.id, {
-      name: 'Future Treatment',
-      nextDueDate: futureDate.toISOString().slice(0, 10),
-    });
+    await createPet(baseURL, testUser.accessToken, 'Bella');
 
     await loginAs(page, testUser);
     const petList = new PetListPage(page);
@@ -321,24 +322,25 @@ test.describe('Health tracking', () => {
 
   // ── Wave D: Multi-dose occurrences ────────────────────────────────────────
 
-  test('multi-dose daily medication shows stack sheet and records one dose', async ({
+  test('multi-dose daily medication records one date from the agenda', async ({
     page,
     testUser,
   }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const today = '2026-06-15';
+    await withCareClock(`${today}T10:00`, page);
+    try {
     const pet = await createPet(baseURL, testUser.accessToken, 'Bella');
-    const today = new Date().toISOString().slice(0, 10);
     const entryName = 'Twice Daily Meds';
     const entry = await createCareItem(baseURL, testUser.accessToken, pet.id, {
       name: entryName,
       careFamily: 'medication',
       frequency: 'daily',
       dueDate: today,
-      // Late times so doses stay Due (not Overdue) regardless of CI run hour.
-      times: ['23:58', '23:59'],
+      times: ['08:00', '20:00'],
     });
 
-    const occurrencesBefore = await getHealthEntryOccurrences(
+    const occurrencesBefore = await listHealthEntryOccurrences(
       baseURL,
       testUser.accessToken,
       entry.id,
@@ -360,17 +362,15 @@ test.describe('Health tracking', () => {
     await dashboard.expectEntryVisible(entryName);
     await dashboard.clickMarkDoneForEntry(entry.id);
 
-    const stackSheet = new OccurrenceStackSheetPage(page);
-    await stackSheet.expectLoaded(entryName);
-    await stackSheet.expectDueTodayDoseCount(2, today);
-    await stackSheet.recordLatestDose();
+    const agenda = new CareAgendaPage(page);
+    await agenda.expectDoneSnackbar(entryName);
 
-    const occurrencesAfter = await getHealthEntryOccurrences(
+    const occurrencesAfter = await listHealthEntryOccurrences(
       baseURL,
       testUser.accessToken,
       entry.id,
     );
-    const pastOccurrences = await getHealthEntryOccurrences(
+    const pastOccurrences = await listHealthEntryOccurrences(
       baseURL,
       testUser.accessToken,
       entry.id,
@@ -378,6 +378,36 @@ test.describe('Health tracking', () => {
     );
     expect(occurrencesAfter.filter((row) => row.status === 'pending')).toHaveLength(3);
     expect(pastOccurrences.filter((row) => row.status === 'completed')).toHaveLength(1);
+    } finally {
+      await withCareClock(null, page);
+    }
+  });
+
+  test('multi-dose stack opens the care item view', async ({ page, testUser }) => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const today = '2026-06-15';
+    await withCareClock(`${today}T22:00`, page);
+    try {
+      const pet = await createPet(baseURL, testUser.accessToken, 'Bella');
+      const entry = await createCareItem(baseURL, testUser.accessToken, pet.id, {
+        name: 'Stack Meds',
+        careFamily: 'medication',
+        frequency: 'daily',
+        dueDate: today,
+        times: ['08:00', '20:00'],
+      });
+      await loginAs(page, testUser);
+      const petList = new PetListPage(page);
+      await petList.openHealthDashboard();
+      const dashboard = new HealthDashboardPage(page);
+      await dashboard.expectLoaded();
+      await dashboard.clickMarkDoneForEntry(entry.id);
+      await expect(
+        page.locator('[flt-semantics-identifier="care_item_needs_attention_section"]'),
+      ).toBeVisible({ timeout: 30_000 });
+    } finally {
+      await withCareClock(null, page);
+    }
   });
 
   test.describe('dose recorded late', () => {
@@ -386,7 +416,7 @@ test.describe('Health tracking', () => {
     const lateDose = zoneAtMidAfternoon();
     test.use({ timezoneId: lateDose.timeZone });
 
-    test('a twice-daily dose recorded late keeps the evening dose', async ({ page, testUser }) => {
+    test('a twice-daily date recorded late keeps the evening date', async ({ page, testUser }) => {
       // D-CSM-026 (revised 2026-10-01): the app sends no next-date choice; the
       // server keeps the waiting 18:00 dose instead of refusing the completion.
       const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
@@ -412,9 +442,8 @@ test.describe('Health tracking', () => {
       await dashboard.expectEntryVisible(entryName);
       await dashboard.clickMarkDoneForEntry(entry.id);
 
-      const stackSheet = new OccurrenceStackSheetPage(page);
-      await stackSheet.expectLoaded(entryName);
-      await stackSheet.recordLatestOverdueDoseToday();
+      const agenda = new CareAgendaPage(page);
+      await agenda.expectDoneSnackbar(entryName);
 
       const open = await getHealthEntryOccurrences(baseURL, testUser.accessToken, entry.id);
       const past = await getHealthEntryOccurrences(baseURL, testUser.accessToken, entry.id, { status: 'past' });

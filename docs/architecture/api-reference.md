@@ -3,7 +3,7 @@ title: API reference (docs index)
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-09-15
+last_updated: 2026-10-03
 tags: [api, reference]
 ---
 # Agatha Track API — Endpoint Reference
@@ -162,11 +162,18 @@ Returns upcoming active absences for the entry's pet with per-absence `affected`
 | Method | Path | Notes |
 |---|---|---|
 | GET | `/:id/occurrences` | Query `status=open` (default) or `status=past`; optional `as_of` calendar day; rows include `origin`, `close_reason` |
+| GET | `/:id/occurrences/:occId` | One occurrence for the occurrence screen: `{ occurrence (+ occurrence_status: coming_up \| due \| overdue \| not_recorded \| done \| skipped), entry { id, pet_id, name, care_family, recurrence_anchor, late_completion_choice, status, as_of }, last_action \| null, linked_weight? }`; 404 when not on that item |
+| PATCH | `/:id/occurrences/:occId` | Completed occurrences only. Body `{ completed_on }` alone — changes when it was done (D-CSM-034): 200 occurrence fields + `{ occurrence, entry, next_due_date, undo_token, moved_next_id, next_unchanged }`; **400** `invalid_completed_on` / `completed_on_in_future` / `completed_on_before_start` / `completed_on_with_other_fields`; **409** `occurrence_not_completed`. Or `{ notes?, provider_contact_id?, provider_typed_name? }` |
+| GET | `/:id/history` | Closed occurrences (completed, skipped), newest first: `{ id, health_entry_id, status, notes, due_date, completed_on, changed_at, marked_by_user_id, marked_by_name }` (D-CSM-035) |
 | POST | `/:id/occurrences/:occId/complete` | Body `{ completed_on?, notes?, next_choice?: 'keep' \| 'skip_next' \| 'shift_following', remember_choice?, earlier_choice?: 'complete' \| 'skip' \| 'keep' }`; 200 `{ occurrence, next_due_date, entry, undo_token, next_choice_applied }`. Never asks (D-CSM-026, revised 2026-10-01): no `next_choice` → the remembered choice if it fits, otherwise `keep`; no `earlier_choice` → `keep`. **400 `next_choice_not_available`** when an explicit choice doesn't fit (nothing saved); **409 `occurrence_not_open`** |
 | POST | `/:id/occurrences/:occId/skip` | Body `{ notes? }`; same response shape as complete; ledger `skipped` |
 | POST | `/:id/occurrences` | Plan another date — body `{ scheduled_date, scheduled_time? }`; `planned` occurrence; `warnings[]` when within half an interval of another open date (D-CSM-025) |
 | POST | `/:id/occurrences/:occId/record` | Record a Not recorded slot as given — body `{ completed_on }` (D-CSM-023) |
 | POST | `/:id/occurrences/resolve-stack` | Record earlier doses — body `{ given: [ids], not_given: [ids] }` |
+
+**If done after the due date (D-CSM-026 v4):** `POST /` and `PUT /:id` accept `late_completion_choice` (`keep` · `skip_next` · `shift_following` · `null`); any other value → 400. Completion applies it when no `next_choice` is sent.
+
+**Audit tags:** occurrence commands accept optional body fields `source` and `path` (short snake_case tags such as `agenda` / `one_tap`); they are copied to the audit metadata and never stored elsewhere. Refused commands (400, 409) are logged at warn with the request id.
 
 Weight monitoring rhythms: generic complete and `mark-taken` return `400` — use `POST /api/pets/:petId/care-rhythms/:entryId/occurrences/:occurrenceId/complete-weight` (see Care progression below). Deleting the weight entry of a weigh-in undoes that completion (D-CSM-029).
 
@@ -179,7 +186,6 @@ Weight monitoring rhythms: generic complete and `mark-taken` return `400` — us
 | POST | `/:id/pause` | = `postpone { until: null, reason: 'pause' }` |
 | POST | `/:id/occurrences/skip-missed` | Body `{ as_of? }`; wrapper over `resolve-stack` |
 | POST | `/:id/undo-complete`, `/:id/occurrences/:occId/undo` | Replaced by `POST /:id/schedule/undo` |
-| GET | `/:id/history` | Read-only legacy `health_history` rows (no new writes after CSM-7) |
 
 **Removed (CSM-7):** `POST /:id/skip`, `POST /:id/unskip` — use occurrence skip APIs.
 

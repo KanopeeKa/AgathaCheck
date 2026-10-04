@@ -1,4 +1,5 @@
 import 'care_item_blocks.dart';
+import '../../../care_item/care_item.dart';
 import 'recurrence_anchor.dart';
 import '../../../care_taxonomy/domain/care_importance.dart';
 import '../../../care_taxonomy/domain/care_planning_mode.dart';
@@ -57,6 +58,8 @@ class HealthEntry {
     this.providerContactId,
     this.providerTypedName,
     this.careBlocks = const CareItemBlocks(),
+    this.schedule,
+    this.lateCompletionChoice,
     this.createdAt,
     this.updatedAt,
   });
@@ -151,6 +154,14 @@ class HealthEntry {
   /// Category block fields for this care item (D-CIE-019).
   final CareItemBlocks careBlocks;
 
+  /// Open occurrences, status and "today" from the server (D-CIE-028); null
+  /// for entries built locally. When present it is the only status source.
+  final CareItemSchedule? schedule;
+
+  /// "If done after the due date": `keep`, `skip_next`, `shift_following`,
+  /// or null (keep). Set only in Advanced settings (D-CSM-026 v4).
+  final String? lateCompletionChoice;
+
   /// When this entry was created.
   final DateTime? createdAt;
 
@@ -168,9 +179,18 @@ class HealthEntry {
     return false;
   }
 
-  /// Whether this entry is overdue (before today, not including today).
+  /// The occurrence this entry's rows represent (§18.5).
+  OpenOccurrence? get leadingOpenOccurrence =>
+      schedule == null ? null : leadingOccurrence(schedule!);
+
+  /// Whether this entry needs attention: overdue, not recorded, or a stack.
   bool get isOverdue {
     if (isCompleted) return false;
+    final s = schedule;
+    if (s != null) {
+      final leading = leadingOccurrence(s);
+      return leading != null && (isPastDue(leading.status) || isStack(s));
+    }
     if (nextDueDate == null) return false;
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
@@ -182,8 +202,13 @@ class HealthEntry {
     return dueDay.isBefore(today);
   }
 
-  /// Whether this entry is due today.
+  /// Whether this entry is due today (the pet's today when the server sent it).
   bool get isDueToday {
+    final s = schedule;
+    if (s != null) {
+      final leading = leadingOccurrence(s);
+      return leading != null && leading.date == s.asOf.date;
+    }
     if (nextDueDate == null) return false;
     final now = DateTime.now();
     return nextDueDate!.year == now.year &&
@@ -242,6 +267,9 @@ class HealthEntry {
     String? providerTypedName,
     bool clearProvider = false,
     CareItemBlocks? careBlocks,
+    CareItemSchedule? schedule,
+    String? lateCompletionChoice,
+    bool clearLateCompletionChoice = false,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -292,6 +320,10 @@ class HealthEntry {
           ? null
           : (providerTypedName ?? this.providerTypedName),
       careBlocks: careBlocks ?? this.careBlocks,
+      schedule: schedule ?? this.schedule,
+      lateCompletionChoice: clearLateCompletionChoice
+          ? null
+          : (lateCompletionChoice ?? this.lateCompletionChoice),
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );

@@ -75,6 +75,33 @@ export async function listOpenRowsByEntry(db, entryIds) {
 }
 
 /**
+ * Latest completed occurrence per item (agenda "done today", list reads).
+ *
+ * @param {import('pg').Pool|import('pg').PoolClient} db
+ * @param {string[]} entryIds
+ * @returns {Promise<Map<string, { id: string, completed_on: string|null, marked_at: Date|null }>>}
+ */
+export async function listLastDoneByEntry(db, entryIds) {
+  const map = new Map();
+  if (entryIds.length === 0) return map;
+  const result = await db.query(
+    `SELECT DISTINCT ON (health_entry_id) health_entry_id, id, completed_on, marked_at
+     FROM health_occurrences
+     WHERE health_entry_id = ANY($1::uuid[]) AND status = 'completed'
+     ORDER BY health_entry_id, completed_on DESC NULLS LAST, marked_at DESC NULLS LAST`,
+    [entryIds],
+  );
+  for (const row of result.rows) {
+    map.set(row.health_entry_id, {
+      id: row.id,
+      completed_on: row.completed_on ? dateToIsoDate(row.completed_on) : null,
+      marked_at: row.marked_at || null,
+    });
+  }
+  return map;
+}
+
+/**
  * @param {import('pg').PoolClient} db
  * @param {string} entryId
  * @param {string} occurrenceId
@@ -374,6 +401,25 @@ export async function updateCompletedDetails(db, {
     params,
   );
   return result.rows[0] || null;
+}
+
+/**
+ * Change when a completed occurrence was done (D-CSM-034). Completed rows only.
+ *
+ * @param {import('pg').PoolClient} db
+ * @param {{ entryId: string, occurrenceId: string, completedOn: string, completionTiming: string }} params
+ * @returns {Promise<object|null>}
+ */
+export async function updateCompletedOn(db, {
+  entryId, occurrenceId, completedOn, completionTiming,
+}) {
+  const result = await db.query(
+    `UPDATE health_occurrences SET completed_on = $1, completion_timing = $2, updated_at = NOW()
+     WHERE id = $3 AND health_entry_id = $4 AND status = 'completed'
+     RETURNING *`,
+    [completedOn, completionTiming, occurrenceId, entryId],
+  );
+  return normalizeOccurrenceRow(result.rows[0] || null);
 }
 
 /**

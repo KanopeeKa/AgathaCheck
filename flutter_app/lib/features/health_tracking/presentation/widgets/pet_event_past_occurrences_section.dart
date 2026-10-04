@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/router/shell_return_navigation.dart';
+
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/health_occurrence.dart';
 import 'care_event_status_line.dart';
@@ -13,10 +15,14 @@ class PetEventPastOccurrencesSection extends ConsumerStatefulWidget {
     super.key,
     required this.entryId,
     required this.muted,
+    this.petId,
   });
 
   final String entryId;
   final bool muted;
+
+  /// When set, each line opens its occurrence screen (§18.6.5 History).
+  final String? petId;
 
   @override
   ConsumerState<PetEventPastOccurrencesSection> createState() =>
@@ -61,6 +67,7 @@ class _PetEventPastOccurrencesSectionState
                         _PastOccurrenceCard(
                           occurrence: occ,
                           muted: widget.muted,
+                          petId: widget.petId,
                         ),
                     ],
                   ),
@@ -74,10 +81,15 @@ class _PetEventPastOccurrencesSectionState
 }
 
 class _PastOccurrenceCard extends StatelessWidget {
-  const _PastOccurrenceCard({required this.occurrence, required this.muted});
+  const _PastOccurrenceCard({
+    required this.occurrence,
+    required this.muted,
+    this.petId,
+  });
 
   final HealthOccurrence occurrence;
   final bool muted;
+  final String? petId;
 
   @override
   Widget build(BuildContext context) {
@@ -93,7 +105,7 @@ class _PastOccurrenceCard extends StatelessWidget {
         ? l.doneOn(dateFormat.format(occurrence.completedOn!))
         : scheduled;
 
-    return Card(
+    final card = Card(
       key: Key('pet_event_past_occurrence_${occurrence.id}'),
       margin: const EdgeInsets.only(bottom: 8),
       elevation: 0,
@@ -121,6 +133,17 @@ class _PastOccurrenceCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+    final petId = this.petId;
+    if (petId == null) return card;
+    return InkWell(
+      onTap: () => openOccurrenceScreen(
+        context,
+        petId: petId,
+        entryId: occurrence.entryId,
+        occurrenceId: occurrence.id,
+      ),
+      child: card,
     );
   }
 }

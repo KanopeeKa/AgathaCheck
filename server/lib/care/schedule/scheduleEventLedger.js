@@ -20,6 +20,7 @@ export const SCHEDULE_EVENT_SCOPE_CHANGED = 'schedule_scope_changed';
 export const SCHEDULE_EVENT_SCHEDULE_CHANGED = 'schedule_changed';
 export const SCHEDULE_EVENT_NOT_RECORDED_CLOSED = 'not_recorded_closed';
 export const SCHEDULE_EVENT_UNDONE = 'undone';
+export const SCHEDULE_EVENT_COMPLETION_DATE_CHANGED = 'completion_date_changed';
 
 /** Events a person can undo as a whole command (D-CSM-029). */
 export const UNDOABLE_EVENT_TYPES = [
@@ -33,6 +34,7 @@ export const UNDOABLE_EVENT_TYPES = [
   SCHEDULE_EVENT_POSTPONED,
   SCHEDULE_EVENT_PAUSED,
   SCHEDULE_EVENT_RESUMED,
+  SCHEDULE_EVENT_COMPLETION_DATE_CHANGED,
 ];
 
 /**

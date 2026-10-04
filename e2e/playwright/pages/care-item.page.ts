@@ -161,6 +161,34 @@ export class CareItemPage {
     await refreshFlutterAccessibility(this.page);
   }
 
+  async expectNeedsAttentionVisible(): Promise<void> {
+    await expect(
+      this.page.locator('[flt-semantics-identifier="care_item_needs_attention_section"]').or(
+        this.page.getByText(/Needs attention|À traiter/i),
+      ),
+    ).toBeVisible({ timeout: 30_000 });
+  }
+
+  async markAllDone(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    await this.page
+      .locator('[flt-semantics-identifier="care_item_mark_all_done"]')
+      .or(this.page.getByRole('button', { name: /Mark all as done|Tout marquer comme fait/i }))
+      .first()
+      .click();
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async skipAll(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    await this.page
+      .locator('[flt-semantics-identifier="care_item_skip_all"]')
+      .or(this.page.getByRole('button', { name: /Skip all|Tout ignorer/i }))
+      .first()
+      .click();
+    await refreshFlutterAccessibility(this.page);
+  }
+
   async expectAbsenceReviewActionsHidden(): Promise<void> {
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);

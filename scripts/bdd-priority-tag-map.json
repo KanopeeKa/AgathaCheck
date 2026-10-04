@@ -97,8 +97,9 @@
     "Exporting health entries as PDF": "P2",
     "Filtering health entries by organisation": "P2",
     "Unified event edit route redirects legacy paths": "P1",
-    "Multi-dose daily medication shows stack sheet for recording doses": "P1",
-    "A dose recorded late keeps the next dose": "P1"
+    "Multi-dose daily medication records one date from the agenda": "P1",
+    "Care recorded late keeps the next date": "P1",
+    "Multi-dose stack opens the care item view": "P1"
   },
   "notifications.feature": {
     "Notification generated for overdue health entry": "P1",
@@ -305,7 +306,7 @@
     "My Pets preview is capped at four with an All Pets destination": "P0",
     "Care preview orders overdue, due today, and upcoming items": "P0",
     "Care preview supports completion and undo": "P0",
-    "Care preview row opens the event view screen": "P1",
+    "Care preview row opens the occurrence screen": "P1",
     "Veterinary team preview reaches linked vet details": "P1",
     "Empty Pet Care dashboard shows first-use guidance without false alerts": "P1",
     "Pending foster placement surfaces as a notification, not a dashboard banner": "P1",
@@ -407,5 +408,18 @@
   "organisation_member_privacy.feature": {
     "Member updates privacy settings from Account": "P1",
     "Profile Leave navigates to Account org settings": "P1"
+  },
+  "care_agenda.feature": {
+    "A care row opens its date, and the date links to the care item": "P1",
+    "Care that needs a weight opens its date to enter the weight": "P1",
+    "Several dates to sort out open the care item": "P1",
+    "Upcoming care can be marked as done early": "P1"
+  },
+  "care_schedules.feature": {
+    "Missed fixed-schedule care can be marked as done together on the care item": "P1",
+    "Care older than three days can still be recorded from history": "P1",
+    "Care done after its due date keeps the next planned date and offers to change it": "P1",
+    "A remembered choice is applied without asking again": "P1",
+    "Changing when care was done moves the next date of after-it's-done care": "P1"
   }
 }

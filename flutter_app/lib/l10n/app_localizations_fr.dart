@@ -5080,7 +5080,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get scheduleAtSpecificTimesHint =>
-      'Si désactivé, les doses sont suivies comme événements toute la journée.';
+      'Si désactivé, les soins sont suivis comme événements toute la journée.';
 
   @override
   String get addAnotherScheduleTime => 'Ajouter une autre heure par jour';
@@ -6324,11 +6324,6 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String dueEventRowMarkDoneLabel(String name) {
-    return 'Marquer $name comme fait';
-  }
-
-  @override
   String dueEventRowUndoLabel(String name) {
     return 'Annuler la complétion de $name';
   }
@@ -6361,7 +6356,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String occurrenceStackSheetTitle(String name) {
-    return 'Enregistrer les doses pour $name';
+    return 'Enregistrer les dates précédentes pour $name';
   }
 
   @override
@@ -6374,11 +6369,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get occurrenceZoneComingUp => 'À venir';
 
   @override
-  String get occurrenceRecordHead => 'Enregistrer la dose la plus récente';
+  String get occurrenceRecordHead => 'Enregistrer la date la plus récente';
 
   @override
   String get occurrenceSkipEarlierMissed =>
-      'Ignorer les doses en retard antérieures lors de l\'enregistrement';
+      'Ignorer les dates en retard antérieures lors de l\'enregistrement';
 
   @override
   String get occurrenceReviewEach => 'Voir dans l\'événement';
@@ -6426,10 +6421,10 @@ class AppLocalizationsFr extends AppLocalizations {
       'Impossible d\'enregistrer les détails. Réessayez.';
 
   @override
-  String get careCategoryBlockProductDoseTitle => 'Produit et dose';
+  String get careCategoryBlockProductDoseTitle => 'Produit et quantité';
 
   @override
-  String get careCategoryBlockAddProductDose => 'Ajouter les détails de dose';
+  String get careCategoryBlockAddProductDose => 'Ajouter le produit';
 
   @override
   String get careCategoryBlockProductName => 'Nom du produit';
@@ -6441,10 +6436,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careCategoryBlockStrength => 'Concentration';
 
   @override
-  String get careCategoryBlockDoseAmount => 'Quantité de dose';
+  String get careCategoryBlockDoseAmount => 'Quantité';
 
   @override
-  String get careCategoryBlockDoseUnit => 'Unité de dose';
+  String get careCategoryBlockDoseUnit => 'Unité';
 
   @override
   String get careCategoryBlockRouteMethod => 'Voie ou mode';
@@ -6907,7 +6902,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get awayPlanningIndeterminatePending =>
-      'En attente d\'une dose précédente';
+      'En attente d\'une date précédente';
 
   @override
   String get awayPlanningIndeterminateChain =>
@@ -7333,4 +7328,185 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get peopleSaveValidationError =>
       'Vérifiez les informations et réessayez.';
+
+  @override
+  String get careAgendaToday => 'Aujourd\'hui';
+
+  @override
+  String get careAgendaDueSoon => 'Bientôt';
+
+  @override
+  String careAgendaUpcoming(int count) {
+    return 'À venir ($count)';
+  }
+
+  @override
+  String get careAgendaTodaysList => 'Liste du jour';
+
+  @override
+  String get careAgendaMorning => 'Matin';
+
+  @override
+  String get careAgendaAfternoon => 'Après-midi';
+
+  @override
+  String get careAgendaEvening => 'Soir';
+
+  @override
+  String get careAgendaAnytime => 'À tout moment';
+
+  @override
+  String get careAgendaNothingDueToday => 'Rien à faire aujourd\'hui';
+
+  @override
+  String careAgendaOrientation(int overdue, int today) {
+    return '$overdue en retard · $today à faire aujourd\'hui';
+  }
+
+  @override
+  String get careAgendaShowUpcoming => 'Afficher les soins à venir';
+
+  @override
+  String get careAgendaHideUpcoming => 'Masquer les soins à venir';
+
+  @override
+  String careStackCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count non enregistrés',
+      one: '1 non enregistré',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String careDoneAt(String time) {
+    return 'Fait · $time';
+  }
+
+  @override
+  String get careStatusNotRecorded => 'Non enregistré';
+
+  @override
+  String get careStatusComingUp => 'À venir';
+
+  @override
+  String get careStatusDue => 'À faire';
+
+  @override
+  String careMarkDoneLabel(String name) {
+    return 'Marquer $name comme fait';
+  }
+
+  @override
+  String careDoneSnackbar(String name) {
+    return '$name · fait';
+  }
+
+  @override
+  String careNextDate(String date) {
+    return 'Prochaine : $date';
+  }
+
+  @override
+  String careNextStays(String dateOrTime) {
+    return 'Prochaine inchangée : $dateOrTime';
+  }
+
+  @override
+  String get careAlreadyUpdated => 'Déjà mis à jour';
+
+  @override
+  String get careMarkAllDone => 'Tout marquer comme fait';
+
+  @override
+  String get careSkipAll => 'Tout ignorer';
+
+  @override
+  String get careRecordAsDone => 'Enregistrer comme fait';
+
+  @override
+  String get occurrenceAboutItem => 'À propos de ce soin';
+
+  @override
+  String get occurrenceGone => 'Cette date n\'existe plus';
+
+  @override
+  String get careRowOpensDate => 'Ouvre cette date.';
+
+  @override
+  String get careRowOpensItem => 'Ouvre le soin.';
+
+  @override
+  String get careChangeDate => 'Changer la date';
+
+  @override
+  String get careUndoDateChange => 'Annuler le changement de date';
+
+  @override
+  String get careCommandFailed => 'Enregistrement impossible. Réessayez.';
+
+  @override
+  String get careRetry => 'Réessayer';
+
+  @override
+  String careEarlyCompletionBody(String date) {
+    return 'Prévu le $date. Le marquer comme fait aujourd\'hui ?';
+  }
+
+  @override
+  String get careNextStaysChange => 'Modifier';
+
+  @override
+  String get careSkip => 'Ignorer';
+
+  @override
+  String get careWeightRequiredHint =>
+      'Saisissez le poids pour le marquer comme fait';
+
+  @override
+  String get careWeightFieldLabel => 'Poids (kg)';
+
+  @override
+  String get careCompletedOnLabel => 'Quand a-t-il été fait ?';
+
+  @override
+  String get careDateSaved => 'Date enregistrée';
+
+  @override
+  String careSkipped(String name) {
+    return '$name ignoré';
+  }
+
+  @override
+  String careRecorded(String name) {
+    return '$name enregistré comme fait';
+  }
+
+  @override
+  String get careOccurrenceLoadError => 'Impossible de charger cette date.';
+
+  @override
+  String get careNewDateTitle => 'Nouvelle date';
+
+  @override
+  String get careDateMoved => 'Date modifiée';
+
+  @override
+  String careEstimatedNext(String date) {
+    return 'Prochaine estimée : $date';
+  }
+
+  @override
+  String get careIfDoneLateTitle => 'Si c\'est fait après la date prévue';
+
+  @override
+  String get careIfDoneLateKeep => 'Garder la prochaine date';
+
+  @override
+  String get careIfDoneLateSkip => 'Ignorer la prochaine date';
+
+  @override
+  String get careIfDoneLateShift => 'Décaler celle-ci et les suivantes';
 }

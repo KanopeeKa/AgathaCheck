@@ -1,6 +1,7 @@
 import { publicError } from '../../config/security.js';
 import { normalizeCalendarDateInput } from '../../lib/calendarDate.js';
 import { logAuditEventSafe } from '../../lib/audit.js';
+import { logger } from '../../lib/logger.js';
 import { recordPetActivityForPet } from '../../lib/petActivity.js';
 import { userCanManageHealthEntry } from '../../lib/petAccess.js';
 import {
@@ -27,6 +28,19 @@ import {
 } from './weightOccurrenceCompletion.js';
 
 const PAST_STATUSES = new Set(['overdue', 'not_recorded']);
+const CLIENT_TAG = /^[a-z][a-z_]{0,31}$/;
+
+/**
+ * Optional client `source` / `path` for audit metadata (§18.10): short
+ * snake_case tags only, never free text.
+ */
+function clientTags(req) {
+  const body = req.body || {};
+  const tags = {};
+  if (typeof body.source === 'string' && CLIENT_TAG.test(body.source)) tags.source = body.source;
+  if (typeof body.path === 'string' && CLIENT_TAG.test(body.path)) tags.path = body.path;
+  return tags;
+}
 
 export async function loadEntry(pool, entryId, userId) {
   if (!(await userCanManageHealthEntry(pool, entryId, userId))) {
@@ -58,7 +72,7 @@ function logOccurrenceAction(pool, req, { userId, entry, action, metadata = {}, 
     resourceType: 'health_entry',
     resourceId: entry.id,
     petId: entry.pet_id,
-    metadata,
+    metadata: { ...metadata, ...clientTags(req) },
     req,
   });
   if (activity) {
@@ -90,7 +104,15 @@ async function handleCommand(pool, req, res, { command, respond, audit, guard })
     const { status = 200, body } = await respond(out);
     return res.status(status).json(body);
   } catch (err) {
-    if (sendCareCommandError(res, err)) return undefined;
+    if (sendCareCommandError(res, err)) {
+      logger.warn({
+        requestId: req.requestId || req.headers?.['x-request-id'] || null,
+        status: err.status,
+        code: err.code,
+        route: req.route?.path || null,
+      }, 'care command refused');
+      return undefined;
+    }
     return res.status(500).json({ error: publicError(err) });
   }
 }

@@ -20,6 +20,7 @@ const TEST_CLOCK_ENVS = new Set(['development', 'test', 'ci']);
 export function isCareTestClockEnabled() {
   const appEnv = process.env.APP_ENV;
   if (appEnv) return TEST_CLOCK_ENVS.has(appEnv);
+  if (process.env.E2E === '1') return true;
   return process.env.NODE_ENV === 'test';
 }
 

@@ -98,6 +98,7 @@ abstract final class AppColorTokens {
 
   // Semantic
   static const Color info = Color(0xFF5C7EA6);
+  static const Color infoLight = Color(0xFFE9EFF6);
   static const Color success = Color(0xFF2B7A2E);
   static const Color successLight = Color(0xFFE8F5E9);
   static const Color warning = Color(0xFFD6A63A);

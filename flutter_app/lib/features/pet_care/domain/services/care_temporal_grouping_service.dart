@@ -1,4 +1,5 @@
 import '../../../../core/utils/calendar_date.dart';
+import '../../../care_item/care_item.dart';
 import '../../../health_tracking/domain/entities/health_entry.dart';
 import '../../../health_tracking/presentation/widgets/pet_event_lifecycle.dart';
 import '../../../health_tracking/domain/entities/health_occurrence.dart';
@@ -18,6 +19,8 @@ class CareTemporalGroupingService {
   /// Returns null when the entry is completed, has no due date, or is outside the
   /// reminder horizon.
   CareTemporalGroup? groupForEntry(HealthEntry entry, DateTime now) {
+    final schedule = entry.schedule;
+    if (schedule != null) return groupForSchedule(schedule);
     if (!_entryAffectsGrouping(entry, now)) return null;
 
     final today = calendarDateOnly(now);
@@ -28,6 +31,28 @@ class CareTemporalGroupingService {
     final daysUntilDue = dueDay.difference(today).inDays;
     if (daysUntilDue <= entry.remindDaysBefore) {
       return CareTemporalGroup.upcoming;
+    }
+    return null;
+  }
+
+  /// Server-backed entries use the agenda rule (D-CIE-025): overdue, not
+  /// recorded and stacks need attention; due today is today; due soon (next
+  /// seven days) is upcoming. Later dates and done-today rows do not affect
+  /// Care Status.
+  CareTemporalGroup? groupForSchedule(CareItemSchedule schedule) {
+    final rows = buildCareAgenda([schedule], (s) => s).rows;
+    for (final row in rows) {
+      switch (row.section) {
+        case CareAgendaSection.overdue:
+          return CareTemporalGroup.needsAttention;
+        case CareAgendaSection.today:
+          return CareTemporalGroup.today;
+        case CareAgendaSection.dueSoon:
+          return CareTemporalGroup.upcoming;
+        case CareAgendaSection.upcoming:
+        case CareAgendaSection.doneToday:
+          continue;
+      }
     }
     return null;
   }

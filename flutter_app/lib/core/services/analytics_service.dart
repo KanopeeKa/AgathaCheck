@@ -7,6 +7,7 @@ import 'posthog_analytics_client.dart';
 const sensitiveAnalyticsScreens = {
   'healthDashboard',
   'healthEntryForm',
+  'occurrenceDetail',
   'otherEventForm',
   'organizationPersonDetail',
   'myDetails',

@@ -60,6 +60,7 @@ class HealthEntryFormState {
     this.dueDate,
     this.completedOn,
     this.recurrenceAnchor = RecurrenceAnchor.fromCompletion,
+    this.lateCompletionChoice,
     this.repeatEndDate,
     this.isLoading = false,
     this.isEdit = false,
@@ -96,6 +97,9 @@ class HealthEntryFormState {
   final DateTime? dueDate;
   final DateTime? completedOn;
   final RecurrenceAnchor recurrenceAnchor;
+
+  /// If done after the due date (D2): null = Keep.
+  final String? lateCompletionChoice;
   final DateTime? repeatEndDate;
   final bool isLoading;
   final bool isEdit;
@@ -175,6 +179,7 @@ class HealthEntryFormState {
         dueDate == other.dueDate &&
         completedOn == other.completedOn &&
         recurrenceAnchor == other.recurrenceAnchor &&
+        lateCompletionChoice == other.lateCompletionChoice &&
         repeatEndDate == other.repeatEndDate &&
         remindDaysBefore == other.remindDaysBefore &&
         selectedHealthIssueId == other.selectedHealthIssueId &&
@@ -203,6 +208,8 @@ class HealthEntryFormState {
     DateTime? dueDate,
     DateTime? completedOn,
     RecurrenceAnchor? recurrenceAnchor,
+    String? lateCompletionChoice,
+    bool clearLateCompletionChoice = false,
     DateTime? repeatEndDate,
     bool? isLoading,
     bool? isEdit,
@@ -246,6 +253,9 @@ class HealthEntryFormState {
       dueDate: clearDueDate ? null : (dueDate ?? this.dueDate),
       completedOn: clearCompletedOn ? null : (completedOn ?? this.completedOn),
       recurrenceAnchor: recurrenceAnchor ?? this.recurrenceAnchor,
+      lateCompletionChoice: clearLateCompletionChoice
+          ? null
+          : (lateCompletionChoice ?? this.lateCompletionChoice),
       repeatEndDate: clearRepeatEndDate
           ? null
           : (repeatEndDate ?? this.repeatEndDate),

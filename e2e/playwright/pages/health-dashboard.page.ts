@@ -142,11 +142,11 @@ export class HealthDashboardPage {
     await this.openEntryForEdit(name);
   }
 
-  /** Tap the list-row Done control (opens stack sheet for multi-dose entries). */
+  /** Tap the agenda row Done control (§18.6.1). */
   async clickMarkDoneForEntry(entryId: string): Promise<void> {
     await refreshFlutterAccessibility(this.page);
     await this.page
-      .locator(`[flt-semantics-identifier="care_event_row_done_${entryId}"]`)
+      .locator(`[flt-semantics-identifier="pet_care_action_done_${entryId}"]`)
       .click();
   }
 

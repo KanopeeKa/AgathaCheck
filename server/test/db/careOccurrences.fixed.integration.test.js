@@ -9,7 +9,7 @@ import {
   createOwner,
   invariantViolations,
   occurrenceRows,
-  openHarness,
+  openStrictHarness,
   removeOwner,
 } from './helpers/careHarness.js';
 
@@ -18,8 +18,7 @@ let owner;
 let api;
 
 beforeAll(async () => {
-  harness = await openHarness();
-  if (!harness.pool) return;
+  harness = await openStrictHarness();
   owner = await createOwner(harness.pool, { timeZone: 'Europe/Paris' });
   api = careApi(harness.app, owner);
 }, 30000);
@@ -50,7 +49,6 @@ async function tick(clock) {
 
 describe('fixed schedule (D-CSM-023)', () => {
   it('FX-1 twice daily stores today and tomorrow', async () => {
-    if (!harness.pool) return;
     const entry = await created(twiceDaily('2026-06-05'), '2026-06-05T07:00');
     expect(entry.recurrence_anchor).toBe('from_due_date');
     expect(entry.schedule_anchor_date).toBe('2026-06-05');
@@ -61,7 +59,6 @@ describe('fixed schedule (D-CSM-023)', () => {
   });
 
   it('FX-2 / FX-3 overdue until the next dose, then not recorded', async () => {
-    if (!harness.pool) return;
     const entry = await created(twiceDaily('2026-06-05'), '2026-06-05T07:00');
     const noon = await api.at('2026-06-05T12:00').get(entry.id);
     expect(noon.body.open_occurrences[0].status).toBe('overdue');
@@ -70,7 +67,6 @@ describe('fixed schedule (D-CSM-023)', () => {
   });
 
   it('FX-4 / FX-5 the stack keeps three days, older doses close as not recorded', async () => {
-    if (!harness.pool) return;
     const entry = await created(twiceDaily('2026-06-01'), '2026-06-01T07:00');
     await tick('2026-06-03T12:00');
     const wed = await api.at('2026-06-03T12:00').get(entry.id);
@@ -83,7 +79,6 @@ describe('fixed schedule (D-CSM-023)', () => {
   });
 
   it('FX-6 a closed not recorded dose can be recorded as given', async () => {
-    if (!harness.pool) return;
     const entry = await created(twiceDaily('2026-06-01'), '2026-06-01T07:00');
     await tick('2026-06-06T09:00');
     const rows = await occurrenceRows(harness.pool, entry.id);
@@ -97,7 +92,6 @@ describe('fixed schedule (D-CSM-023)', () => {
   });
 
   it('FX-12 record earlier doses: given and not given', async () => {
-    if (!harness.pool) return;
     const entry = await created(twiceDaily('2026-06-01'), '2026-06-01T07:00');
     const read = await api.at('2026-06-02T19:00').get(entry.id);
     const stack = read.body.open_occurrences.filter((o) => o.status === 'not_recorded');
@@ -111,7 +105,6 @@ describe('fixed schedule (D-CSM-023)', () => {
   });
 
   it('ME-1 a monthly schedule anchored on the 31st clamps to month ends', async () => {
-    if (!harness.pool) return;
     const entry = await created({
       care_family: 'weight_monitoring', recurrence_anchor: 'from_due_date', frequency: 'monthly', next_due_date: '2027-01-31',
     }, '2027-01-31T09:00');
@@ -127,14 +120,12 @@ describe('next-date choice (D-CSM-026)', () => {
   const weeklyMonday = { care_family: 'medication', frequency: 'weekly', next_due_date: '2026-06-01', name: 'Injection' };
 
   it('FX-7 done two days late does not ask', async () => {
-    if (!harness.pool) return;
     const entry = await created(weeklyMonday, '2026-06-01T07:00');
     const res = await api.at('2026-06-03T09:00').complete(entry.id, entry.open_occurrences[0].id, {});
     expect(res.statusCode).toBe(200);
   });
 
   it('FX-8 done on Saturday keeps the next date unless a choice is sent (D-CSM-026 v4)', async () => {
-    if (!harness.pool) return;
     const kept = await created(weeklyMonday, '2026-06-01T07:00');
     const keep = await api.at('2026-06-06T09:00').complete(kept.id, kept.open_occurrences[0].id, {});
     expect(keep.statusCode).toBe(200);
@@ -151,7 +142,6 @@ describe('next-date choice (D-CSM-026)', () => {
   });
 
   it('LC-1 a remembered choice is applied without asking', async () => {
-    if (!harness.pool) return;
     const entry = await created(weeklyMonday, '2026-06-01T07:00');
     const res = await api.at('2026-06-06T09:00').complete(entry.id, entry.open_occurrences[0].id, {
       next_choice: 'skip_next', remember_choice: true,
@@ -165,7 +155,6 @@ describe('next-date choice (D-CSM-026)', () => {
   });
 
   it('LC-3 twice daily recorded at 15:00 with no choice keeps the 18:00 dose', async () => {
-    if (!harness.pool) return;
     const entry = await created(twiceDaily('2026-06-05'), '2026-06-05T07:00');
     const [morning, evening] = entry.open_occurrences;
     const res = await api.at('2026-06-05T15:00').complete(entry.id, morning.id, {});
@@ -178,7 +167,6 @@ describe('next-date choice (D-CSM-026)', () => {
   });
 
   it('LC-3b a remembered choice that does not fit this case falls back to keep', async () => {
-    if (!harness.pool) return;
     const entry = await created(twiceDaily('2026-06-05'), '2026-06-05T07:00');
     await harness.pool.query(
       "UPDATE health_entries SET late_completion_choice = 'shift_following' WHERE id = $1",
@@ -193,7 +181,6 @@ describe('next-date choice (D-CSM-026)', () => {
   });
 
   it('LC-3c an explicit choice that does not fit this case is refused and saves nothing', async () => {
-    if (!harness.pool) return;
     const entry = await created(twiceDaily('2026-06-05'), '2026-06-05T07:00');
     const morning = entry.open_occurrences[0];
     const res = await api.at('2026-06-05T15:00').complete(entry.id, morning.id, { next_choice: 'shift_following' });
@@ -204,7 +191,6 @@ describe('next-date choice (D-CSM-026)', () => {
   });
 
   it('LC-4 skip next is undone as a whole', async () => {
-    if (!harness.pool) return;
     const entry = await created(twiceDaily('2026-06-05'), '2026-06-05T07:00');
     const [morning, evening] = entry.open_occurrences;
     const done = await api.at('2026-06-05T15:00').complete(entry.id, morning.id, { next_choice: 'skip_next' });
@@ -220,7 +206,6 @@ describe('next-date choice (D-CSM-026)', () => {
 
 describe('change date, postpone, type switch', () => {
   it('this date only keeps the series; this and following moves it', async () => {
-    if (!harness.pool) return;
     const entry = await created({ care_family: 'medication', frequency: 'weekly', next_due_date: '2026-06-08' }, '2026-06-01T07:00');
     const only = await api.at('2026-06-01T07:00').reschedule(entry.id, entry.open_occurrences[0].id, { scheduled_date: '2026-06-10' });
     expect(only.statusCode).toBe(200);
@@ -237,7 +222,6 @@ describe('change date, postpone, type switch', () => {
   });
 
   it('PP-3 postponing a fixed schedule pauses until the date, then the tick resumes it', async () => {
-    if (!harness.pool) return;
     const entry = await created({ care_family: 'medication', frequency: 'daily', next_due_date: '2026-06-05' }, '2026-06-05T07:00');
     const res = await api.at('2026-06-05T07:00').postpone(entry.id, { until: '2026-06-10' });
     expect(res.body.entry.status).toBe('paused');
@@ -249,7 +233,6 @@ describe('change date, postpone, type switch', () => {
   });
 
   it('TS-1 switching to after it\'s done closes the stack and computes from the last dose', async () => {
-    if (!harness.pool) return;
     const entry = await created({ care_family: 'medication', frequency: 'daily', next_due_date: '2026-06-01', name: 'Switch' }, '2026-06-01T07:00');
     await api.at('2026-06-01T09:00').complete(entry.id, entry.open_occurrences[0].id, {});
     const res = await api.at('2026-06-03T09:00').put(entry.id, {
@@ -267,7 +250,6 @@ describe('change date, postpone, type switch', () => {
 
 describe('care tick (D-CSM-031)', () => {
   it('CR-1 overlapping ticks never duplicate slots', async () => {
-    if (!harness.pool) return;
     const entry = await created(twiceDaily('2026-06-01'), '2026-06-01T07:00');
     await Promise.all([tick('2026-06-02T09:00'), tick('2026-06-02T09:00'), tick('2026-06-02T09:00')]);
     const rows = await occurrenceRows(harness.pool, entry.id);
@@ -277,7 +259,6 @@ describe('care tick (D-CSM-031)', () => {
   });
 
   it('CR-7 running the tick twice at the same moment is idempotent', async () => {
-    if (!harness.pool) return;
     const entry = await created(twiceDaily('2026-10-20'), '2026-10-20T07:00');
     await tick('2026-10-25T02:30');
     const first = await occurrenceRows(harness.pool, entry.id);

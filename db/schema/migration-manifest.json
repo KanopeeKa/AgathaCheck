@@ -89,7 +89,8 @@
     "080_care_provider_used.sql",
     "081_health_entry_absence_resolutions.sql",
     "082_health_entry_care_blocks.sql",
-    "083_care_occurrence_model.sql"
+    "083_care_occurrence_model.sql",
+    "084_care_completion_date_event.sql"
   ],
   "code_migrations": [
     "016_migrate_family_events_placements.sql",

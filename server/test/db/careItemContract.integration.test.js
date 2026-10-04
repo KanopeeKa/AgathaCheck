@@ -5,7 +5,7 @@ import { afterAll, beforeAll, describe, expect, it } from '@jest/globals';
 
 import { assertMatchesSchema } from '../../lib/openapi/assertDto.js';
 import { loadPetCareCriticalSpec, responseSchema } from '../../lib/openapi/petCareCriticalSpec.js';
-import { careApi, createOwner, openHarness, removeOwner } from './helpers/careHarness.js';
+import { careApi, createOwner, openStrictHarness, removeOwner } from './helpers/careHarness.js';
 
 const spec = loadPetCareCriticalSpec();
 let harness;
@@ -19,8 +19,7 @@ function assertResponse(pathKey, method, status, body) {
 }
 
 beforeAll(async () => {
-  harness = await openHarness();
-  if (!harness.pool) return;
+  harness = await openStrictHarness();
   owner = await createOwner(harness.pool, { timeZone: 'Europe/Paris' });
   api = careApi(harness.app, owner);
 }, 30000);
@@ -34,7 +33,6 @@ afterAll(async () => {
 
 describe('care item contract', () => {
   it('GET /health-entries/:id matches CareItem, including a twice-daily stack', async () => {
-    if (!harness.pool) return;
     const created = await api.at('2026-06-01T07:00').create({
       care_family: 'medication', frequency: 'daily', next_due_date: '2026-06-01', schedule_times: ['08:00', '18:00'],
     });
@@ -46,7 +44,6 @@ describe('care item contract', () => {
   });
 
   it('complete matches CareCommandResponse with no choice sent, and a refused choice matches CareCommandError', async () => {
-    if (!harness.pool) return;
     const created = await api.at('2026-06-01T07:00').create({
       care_family: 'medication', frequency: 'daily', next_due_date: '2026-06-01', schedule_times: ['08:00', '18:00'],
     });
@@ -58,5 +55,28 @@ describe('care item contract', () => {
     expect(done.statusCode).toBe(200);
     expect(done.body.next_choice_applied).toBe('keep');
     assertResponse('/health-entries/{id}/occurrences/{occId}/complete', 'post', 200, done.body);
+  });
+});
+
+describe('If done after the due date (D2, D-CSM-026 v4)', () => {
+  it('create and edit store the remembered choice; an unknown value is refused', async () => {
+    const created = await api.at('2026-06-01T07:00').create({
+      care_family: 'medication', frequency: 'daily', next_due_date: '2026-06-01',
+      schedule_times: ['08:00', '18:00'], late_completion_choice: 'skip_next',
+    });
+    expect(created.statusCode).toBe(201);
+    expect(created.body.late_completion_choice).toBe('skip_next');
+    assertResponse('/health-entries/{id}', 'get', 200, created.body);
+
+    const base = {
+      name: 'Care', care_family: 'medication', frequency: 'daily', next_due_date: '2026-06-01',
+      schedule_times: ['08:00', '18:00'], recurrence_anchor: 'from_due_date',
+    };
+    const cleared = await api.at('2026-06-01T07:05').put(created.body.id, { ...base, late_completion_choice: null });
+    expect(cleared.statusCode).toBe(200);
+    expect(cleared.body.late_completion_choice).toBeNull();
+
+    const refused = await api.at('2026-06-01T07:06').put(created.body.id, { ...base, late_completion_choice: 'ask' });
+    expect(refused.statusCode).toBe(400);
   });
 });

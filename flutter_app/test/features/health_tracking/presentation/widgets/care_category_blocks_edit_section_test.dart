@@ -51,7 +51,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
-      find.byKey(const Key('care_block_add_Product and dose')),
+      find.byKey(const Key('care_block_add_Product and amount')),
       findsOneWidget,
     );
   });

@@ -117,24 +117,25 @@ Pet-scoped care surfaces use `viewAllCare` / `allCareTitle`; global surfaces kee
 
 ## Care timing vocabulary (care occurrences, 2026-09-29)
 
-Canonical in [care-item-evolution.md](../domains/pet_care/features/care-item-evolution.md) (D-CIE-024 … D-CIE-027) and [CSM decisions](../domains/pet_care/changes/care-schedule-management-decisions.md) (D-CSM-019 … D-CSM-033). "Occurrence" is an internal word and never appears in UI (D-CIE-001).
+Canonical in [care-item-evolution.md](../domains/pet_care/features/care-item-evolution.md) (D-CIE-024 … D-CIE-027) and [CSM decisions](../domains/pet_care/changes/care-schedule-management-decisions.md) (D-CSM-019 … D-CSM-035). "Occurrence" is an internal word and never appears in UI (D-CIE-001).
 
 | Term (EN) | FR (proposed) | Meaning | Do not say |
 |-----------|---------------|---------|-----------|
 | **Overdue** | En retard | Past its day or time and not done. The same at every priority | Late, Missed |
-| **Not recorded** / **3 doses not recorded** | Non noté / 3 doses non notées | Fixed schedule: the next dose is already due and this one has no record. Assumes the care was probably given | Missed, Forgotten |
+| **Not recorded** / **3 not recorded** | Non enregistré / 3 non enregistrés | Fixed schedule: the next date is already due and this one has no record. Assumes the care was probably given | Missed, Forgotten, dose(s) |
 | **Done** | Fait | Recorded as done | Completed (in chips) |
 | **Fixed schedule** | Calendrier fixe | Dates follow the calendar, whatever happens to each date | Fixed dates, From due date |
 | **After it's done** | Après l'avoir fait | The next date counts from the day it is done | From completion, Counts from when it's done |
 | **Schedule type** | Type de calendrier | Setting that holds the two values above | Next due date (title) |
-| **If done after the due date** | Si c'est fait après la date prévue | Remembered choice: Ask me / Keep the next date / Skip the next date / Move this and following | Late behaviour, Late leeway |
-| **Plan another date** | Prévoir une autre date | Add a date (booster, booked visit, extra dose). **Change date** moves one | Add occurrence |
+| **If done after the due date** | Si c'est fait après la date prévue | Remembered choice: Keep the next date / Skip the next date / Move this and following (no Ask me, D-CSM-026 v4) | Late behaviour, Late leeway |
+| **Plan another date** | Prévoir une autre date | Add a date (booster, booked visit, an extra one). **Change date** moves one | Add occurrence |
 | **Postpone until** | Reporter au | Move care to a later date; without a date it is **Pause** | Snooze |
-| **Record earlier doses** · **Given** / **Not given** (medication) · **Done** / **Not done** (other care) | Noter les doses précédentes · Donnée / Pas donnée · Fait / Pas fait | Review of the Not recorded stack | Skipped (for Not given) |
-| **Record as given** | Noter comme donnée | From History, for a dose closed as Not recorded | Reopen |
+| **Mark all as done** · **Skip all** | Tout marquer comme fait · Tout ignorer | Care Item view actions for a Not recorded stack (§18.6.5) | Record earlier doses, Review |
+| **Record as done** | Enregistrer comme fait | On a date closed as Not recorded | Reopen, Record as given |
 | **Estimated next** | Prochaine date estimée | Display-only line on overdue After-it's-done care | Next due (it is not actionable) |
 | **Today** · **Due soon** · **Upcoming** · **Today's list** | Aujourd'hui · Bientôt · À venir plus tard · La liste du jour | Agenda sections (D-CIE-025) | Due and Overdue, Coming soon |
 | **Nothing due today** | Rien à faire aujourd'hui | Empty Today, followed by Due soon / Upcoming | All caught up! (no praise) |
+| **Done** (button) · **Mark {name} as done** · **{name} done** | Fait · Marquer {name} comme fait · {name} · fait | The tick, its label, and the confirmation (D-CIE-032). "Dose" is retired in every family | Mark as taken, dose |
 
 ## Known terminology debt (active code)
 

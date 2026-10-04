@@ -8952,7 +8952,7 @@ abstract class AppLocalizations {
   /// No description provided for @scheduleAtSpecificTimesHint.
   ///
   /// In en, this message translates to:
-  /// **'When off, doses are tracked as all-day events.'**
+  /// **'When off, care is tracked as all-day events.'**
   String get scheduleAtSpecificTimesHint;
 
   /// No description provided for @addAnotherScheduleTime.
@@ -11079,12 +11079,6 @@ abstract class AppLocalizations {
   /// **'View {name}'**
   String dueEventRowViewPetContextLabel(String name);
 
-  /// No description provided for @dueEventRowMarkDoneLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Mark {name} as done'**
-  String dueEventRowMarkDoneLabel(String name);
-
   /// No description provided for @dueEventRowUndoLabel.
   ///
   /// In en, this message translates to:
@@ -11130,7 +11124,7 @@ abstract class AppLocalizations {
   /// No description provided for @occurrenceStackSheetTitle.
   ///
   /// In en, this message translates to:
-  /// **'Record doses for {name}'**
+  /// **'Record earlier dates for {name}'**
   String occurrenceStackSheetTitle(String name);
 
   /// No description provided for @occurrenceZoneMissed.
@@ -11154,13 +11148,13 @@ abstract class AppLocalizations {
   /// No description provided for @occurrenceRecordHead.
   ///
   /// In en, this message translates to:
-  /// **'Record latest dose'**
+  /// **'Record the latest date'**
   String get occurrenceRecordHead;
 
   /// No description provided for @occurrenceSkipEarlierMissed.
   ///
   /// In en, this message translates to:
-  /// **'Skip earlier overdue doses when recording'**
+  /// **'Skip earlier overdue dates when recording'**
   String get occurrenceSkipEarlierMissed;
 
   /// No description provided for @occurrenceReviewEach.
@@ -11244,13 +11238,13 @@ abstract class AppLocalizations {
   /// No description provided for @careCategoryBlockProductDoseTitle.
   ///
   /// In en, this message translates to:
-  /// **'Product and dose'**
+  /// **'Product and amount'**
   String get careCategoryBlockProductDoseTitle;
 
   /// No description provided for @careCategoryBlockAddProductDose.
   ///
   /// In en, this message translates to:
-  /// **'Add dose details'**
+  /// **'Add product details'**
   String get careCategoryBlockAddProductDose;
 
   /// No description provided for @careCategoryBlockProductName.
@@ -11274,13 +11268,13 @@ abstract class AppLocalizations {
   /// No description provided for @careCategoryBlockDoseAmount.
   ///
   /// In en, this message translates to:
-  /// **'Dose amount'**
+  /// **'Amount'**
   String get careCategoryBlockDoseAmount;
 
   /// No description provided for @careCategoryBlockDoseUnit.
   ///
   /// In en, this message translates to:
-  /// **'Dose unit'**
+  /// **'Unit'**
   String get careCategoryBlockDoseUnit;
 
   /// No description provided for @careCategoryBlockRouteMethod.
@@ -11995,7 +11989,7 @@ abstract class AppLocalizations {
   /// No description provided for @awayPlanningIndeterminatePending.
   ///
   /// In en, this message translates to:
-  /// **'Waiting on a prior dose'**
+  /// **'Waiting on an earlier date'**
   String get awayPlanningIndeterminatePending;
 
   /// No description provided for @awayPlanningIndeterminateChain.
@@ -12717,6 +12711,306 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Check the details and try again.'**
   String get peopleSaveValidationError;
+
+  /// No description provided for @careAgendaToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get careAgendaToday;
+
+  /// No description provided for @careAgendaDueSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Due soon'**
+  String get careAgendaDueSoon;
+
+  /// No description provided for @careAgendaUpcoming.
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming ({count})'**
+  String careAgendaUpcoming(int count);
+
+  /// No description provided for @careAgendaTodaysList.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s list'**
+  String get careAgendaTodaysList;
+
+  /// No description provided for @careAgendaMorning.
+  ///
+  /// In en, this message translates to:
+  /// **'Morning'**
+  String get careAgendaMorning;
+
+  /// No description provided for @careAgendaAfternoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Afternoon'**
+  String get careAgendaAfternoon;
+
+  /// No description provided for @careAgendaEvening.
+  ///
+  /// In en, this message translates to:
+  /// **'Evening'**
+  String get careAgendaEvening;
+
+  /// No description provided for @careAgendaAnytime.
+  ///
+  /// In en, this message translates to:
+  /// **'Anytime'**
+  String get careAgendaAnytime;
+
+  /// No description provided for @careAgendaNothingDueToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing due today'**
+  String get careAgendaNothingDueToday;
+
+  /// No description provided for @careAgendaOrientation.
+  ///
+  /// In en, this message translates to:
+  /// **'{overdue} overdue · {today} due today'**
+  String careAgendaOrientation(int overdue, int today);
+
+  /// No description provided for @careAgendaShowUpcoming.
+  ///
+  /// In en, this message translates to:
+  /// **'Show upcoming care'**
+  String get careAgendaShowUpcoming;
+
+  /// No description provided for @careAgendaHideUpcoming.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide upcoming care'**
+  String get careAgendaHideUpcoming;
+
+  /// No description provided for @careStackCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 not recorded} other{{count} not recorded}}'**
+  String careStackCount(int count);
+
+  /// No description provided for @careDoneAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Done · {time}'**
+  String careDoneAt(String time);
+
+  /// No description provided for @careStatusNotRecorded.
+  ///
+  /// In en, this message translates to:
+  /// **'Not recorded'**
+  String get careStatusNotRecorded;
+
+  /// No description provided for @careStatusComingUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming up'**
+  String get careStatusComingUp;
+
+  /// No description provided for @careStatusDue.
+  ///
+  /// In en, this message translates to:
+  /// **'Due'**
+  String get careStatusDue;
+
+  /// No description provided for @careMarkDoneLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark {name} as done'**
+  String careMarkDoneLabel(String name);
+
+  /// No description provided for @careDoneSnackbar.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} done'**
+  String careDoneSnackbar(String name);
+
+  /// No description provided for @careNextDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Next: {date}'**
+  String careNextDate(String date);
+
+  /// No description provided for @careNextStays.
+  ///
+  /// In en, this message translates to:
+  /// **'Next stays {dateOrTime}'**
+  String careNextStays(String dateOrTime);
+
+  /// No description provided for @careAlreadyUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Already updated'**
+  String get careAlreadyUpdated;
+
+  /// No description provided for @careMarkAllDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark all as done'**
+  String get careMarkAllDone;
+
+  /// No description provided for @careSkipAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip all'**
+  String get careSkipAll;
+
+  /// No description provided for @careRecordAsDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Record as done'**
+  String get careRecordAsDone;
+
+  /// No description provided for @occurrenceAboutItem.
+  ///
+  /// In en, this message translates to:
+  /// **'About this care item'**
+  String get occurrenceAboutItem;
+
+  /// No description provided for @occurrenceGone.
+  ///
+  /// In en, this message translates to:
+  /// **'This date no longer exists'**
+  String get occurrenceGone;
+
+  /// No description provided for @careRowOpensDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens this date.'**
+  String get careRowOpensDate;
+
+  /// No description provided for @careRowOpensItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens the care item.'**
+  String get careRowOpensItem;
+
+  /// No description provided for @careChangeDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Change date'**
+  String get careChangeDate;
+
+  /// No description provided for @careUndoDateChange.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo date change'**
+  String get careUndoDateChange;
+
+  /// No description provided for @careCommandFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save. Try again.'**
+  String get careCommandFailed;
+
+  /// No description provided for @careRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get careRetry;
+
+  /// No description provided for @careEarlyCompletionBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Planned for {date}. Mark it as done today?'**
+  String careEarlyCompletionBody(String date);
+
+  /// No description provided for @careNextStaysChange.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get careNextStaysChange;
+
+  /// No description provided for @careSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get careSkip;
+
+  /// No description provided for @careWeightRequiredHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the weight to mark it as done'**
+  String get careWeightRequiredHint;
+
+  /// No description provided for @careWeightFieldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight (kg)'**
+  String get careWeightFieldLabel;
+
+  /// No description provided for @careCompletedOnLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'When was this done?'**
+  String get careCompletedOnLabel;
+
+  /// No description provided for @careDateSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Date saved'**
+  String get careDateSaved;
+
+  /// No description provided for @careSkipped.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} skipped'**
+  String careSkipped(String name);
+
+  /// No description provided for @careRecorded.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} recorded as done'**
+  String careRecorded(String name);
+
+  /// No description provided for @careOccurrenceLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load this date.'**
+  String get careOccurrenceLoadError;
+
+  /// No description provided for @careNewDateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New date'**
+  String get careNewDateTitle;
+
+  /// No description provided for @careDateMoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Date changed'**
+  String get careDateMoved;
+
+  /// No description provided for @careEstimatedNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated next: {date}'**
+  String careEstimatedNext(String date);
+
+  /// No description provided for @careIfDoneLateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'If done after the due date'**
+  String get careIfDoneLateTitle;
+
+  /// No description provided for @careIfDoneLateKeep.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep the next date'**
+  String get careIfDoneLateKeep;
+
+  /// No description provided for @careIfDoneLateSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip the next date'**
+  String get careIfDoneLateSkip;
+
+  /// No description provided for @careIfDoneLateShift.
+  ///
+  /// In en, this message translates to:
+  /// **'Move this and following'**
+  String get careIfDoneLateShift;
 }
 
 class _AppLocalizationsDelegate

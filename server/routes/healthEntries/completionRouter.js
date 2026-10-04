@@ -115,12 +115,15 @@ export function registerCompletionRoutes(router, pool) {
         return res.status(404).json({ error: 'Entry not found' });
       }
       const result = await pool.query(
-        `SELECT hh.*,
+        `SELECT ho.id, ho.health_entry_id, ho.status, ho.notes, ho.completed_on,
+          ho.marked_by_user_id,
+          ho.scheduled_date AS due_date,
+          COALESCE(ho.marked_at, ho.updated_at) AS changed_at,
           TRIM(COALESCE(u.first_name, '') || ' ' || COALESCE(u.last_name, '')) AS marked_by_name
-         FROM health_history hh
-         LEFT JOIN users u ON u.id = hh.marked_by_user_id
-         WHERE hh.health_entry_id = $1 AND hh.status IN ('completed', 'skipped')
-         ORDER BY hh.changed_at DESC`,
+         FROM health_occurrences ho
+         LEFT JOIN users u ON u.id = ho.marked_by_user_id
+         WHERE ho.health_entry_id = $1 AND ho.status IN ('completed', 'skipped')
+         ORDER BY COALESCE(ho.marked_at, ho.updated_at) DESC, ho.scheduled_date DESC`,
         [req.params.id]
       );
       res.json(result.rows.map(historyToMap));

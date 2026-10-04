@@ -3,7 +3,7 @@ title: Care Item view — UI modules
 owner: Design Team
 audience: both
 status: active
-last_updated: 2026-09-29
+last_updated: 2026-10-03
 tags: [design, pet-care, care-item]
 ---
 
@@ -40,7 +40,7 @@ Document hex values only in [`tokens.md`](./tokens.md) when promoted globally; C
 ## Module map (mobile order)
 
 1. **Pet context** — existing `PetEventPetCard` inside `CareItemModule` (compact).
-2. **Needs attention (hero)** — status pill + display date (`headlineSmall`) + care name secondary + **one** `FilledButton` (**Mark as done**, or **Review** for a Not recorded stack) + outlined **Change date**; occurrence menu (Skip, Postpone, Plan another date, Add note, Looked after by); occurrence rows inset inside module. Paused: "Paused since …" / "Paused until …" + Resume.
+2. **Needs attention (hero)** — lists every **open occurrence** as a line (date · status · trailing Done). **Stack** (≥2 started open dates on Fixed schedule): all lines + **Mark all as done** / **Skip all** (one `resolve-stack`, one Undo). **Single** leading open slot: outlined **Change date** (reschedule sheet). Row tap opens the **occurrence screen**; Done follows `decideDone` (one tap unless weight/date/early dialog). Paused: "Paused since …" / "Paused until …" + Resume.
 3. **Absence** — module or callout; resolution actions inside module body.
 4. **Schedule** — header row with **Edit schedule** trailing; body = stat grid (Frequency · Type · Reminder) + prose lines (next date, flexibility).
 5. **Details** — definition-list rows; **no duplicate recurrence** (schedule owns rhythm).
@@ -82,7 +82,7 @@ Same component on the dashboard (all pets) and the pet profile (one pet); All ca
 |------|-------------|
 | Sections | **Today** · **Due soon** · **Upcoming** as `Semantics(header: true)` headings; Upcoming collapsed with a count and an expanded/collapsed state |
 | Today | Overdue rows first; then **Morning / Afternoon / Evening / Anytime** sub-headings only when ≥ 2 groups have rows, otherwise one **Today's list** heading; done-today rows last, quiet (check + time) |
-| Row | `CareActionRow` in `CareCollectionInsetList` (`system.md` §8.1): pet avatar (dashboard only) · name · `CareItemStatusPill` + date/time · **one** trailing button (Mark as done / Review). ≥ 56 visual height, whole row tappable, trailing button ≥ 48dp; merged label "Buddy, Flea treatment, Overdue, 5 June" |
+| Row (R3) | `CareActionRow` in `CareCollectionInsetList`: pet avatar (dashboard only) · name · status + date/time · **one** trailing Done. Non-stack row opens the **occurrence screen** (`care_agenda_row_<entryId>`); stack or done-today opens the **Care Item** view (`care_agenda_stack_<entryId>`). Semantics ids stable for E2E |
 | Status pill | Tones: coming up (neutral text) · due (warning) · overdue (error + urgency icon) · **notRecorded** (info + icon — new tone) · done (success + check) · skipped (neutral) · paused (neutral + pause icon). Colour never alone |
 | Feedback | Button shows progress; the row changes only after the server responds; snackbar "Done · Undo" from the server result. No optimistic completion |
 | Orientation | Dashboard line "2 overdue · 3 due today"; zero → "Nothing due today" |
@@ -97,8 +97,8 @@ Same component on the dashboard (all pets) and the pet profile (one pet); All ca
 | Sheet | Layout |
 |-------|--------|
 | **When was this done?** (overdue) | Today · On the scheduled date · Choose another date; step 1 of the completion sheet |
-| **Next date choice** (D-CSM-026) | Radio group: Keep {date} (pre-selected) · Skip {date} · Move this and following by {N}; checkbox "Remember my choice for this care item"; one primary **Save**; dismiss = Keep. Step 2 of the completion sheet when step 1 was shown |
-| **Record earlier doses** | Per dose **Given / Not given** (medication) or **Done / Not done** (other care); footer "All given" / "None given" with the safe action first |
+| **Next date choice** | Retired from the completion sheet — server applies remembered **If done after the due date** (Advanced settings) or keeps the waiting date (D-CSM-026) |
+| **Record earlier doses** | Retired — stacks resolve on the Care Item view (`Mark all as done` / `Skip all`) |
 | **Early completion** | Dialog "Planned for 12 Mar. Mark it as done today?" · **Cancel** first · Mark as done |
 | **Change date** | Date picker + radio **This date only** (default) / **This and following** (Fixed schedule) + preview of the next two dates + existing warnings |
 | **Postpone until** | Date field + "No end date (pause)" switch + one-line consequence per schedule type |

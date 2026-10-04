@@ -484,10 +484,10 @@ describe('Health Entries API', () => {
           return { rows: [] };
         }
 
-        if (sql.includes('SELECT hh.*') || sql.includes('SELECT * FROM health_history')) {
+        if (sql.includes('ho.scheduled_date AS due_date')) {
           return {
             rows: [{
-              id: 'hh-1',
+              id: 'occ-done-1',
               health_entry_id: params[0],
               status: 'completed',
               notes: '',

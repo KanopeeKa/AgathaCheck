@@ -5,6 +5,7 @@ import '../../../../../l10n/app_localizations.dart';
 import '../../controllers/health_entry_form_controller.dart';
 import '../../../domain/entities/health_entry.dart';
 import '../../../domain/entities/recurrence_anchor.dart';
+import '../late_completion_choice_field.dart';
 import '../recurrence_anchor_toggle.dart';
 import 'health_entry_frequency_labels.dart';
 
@@ -17,6 +18,7 @@ class HealthEntryFrequencySection extends StatelessWidget {
     required this.repeatEndDate,
     required this.recurrenceAnchor,
     required this.controller,
+    this.lateCompletionChoice,
   });
 
   final HealthFrequency frequency;
@@ -24,6 +26,7 @@ class HealthEntryFrequencySection extends StatelessWidget {
   final DateTime? repeatEndDate;
   final RecurrenceAnchor recurrenceAnchor;
   final HealthEntryFormController controller;
+  final String? lateCompletionChoice;
 
   @override
   Widget build(BuildContext context) {
@@ -121,6 +124,12 @@ class HealthEntryFrequencySection extends StatelessWidget {
           RecurrenceAnchorToggle(
             value: recurrenceAnchor,
             onChanged: controller.setRecurrenceAnchor,
+          ),
+          const SizedBox(height: 16),
+          LateCompletionChoiceField(
+            value: lateCompletionChoice,
+            allowShift: recurrenceAnchor == RecurrenceAnchor.fromDueDate,
+            onChanged: controller.setLateCompletionChoice,
           ),
         ],
       ],

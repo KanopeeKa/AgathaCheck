@@ -20,6 +20,7 @@ import '../../widgets/pet_event_past_occurrences_section.dart';
 import '../../widgets/pet_event_pet_card.dart';
 import 'care_item_absence_section.dart';
 import 'care_item_dates_section.dart';
+import 'care_item_needs_attention_section.dart';
 import 'care_item_established_section.dart';
 import 'care_item_info_section.dart';
 import 'care_item_schedule_section.dart';
@@ -60,8 +61,15 @@ class CareItemDetailBody extends ConsumerWidget {
     final petModule = CareItemModule(
       child: PetEventPetCard(pet: pet, embedded: true),
     );
+    final schedule = entry.schedule;
     final needsSection = showNeedsAttention
-        ? CareItemDatesSection(entry: entry, muted: muted)
+        ? (schedule != null && !entry.isPaused
+              ? CareItemNeedsAttentionSection(
+                  entry: entry,
+                  schedule: schedule,
+                  muted: muted,
+                )
+              : CareItemDatesSection(entry: entry, muted: muted))
         : _ClosedNeedsAttentionModule(history: history, muted: muted);
     final absenceSection = CareItemAbsenceSection(entry: entry, muted: muted);
     final scheduleSection = CareItemScheduleSection(
@@ -272,6 +280,7 @@ class _HistoryModule extends StatelessWidget {
                 showDividerBefore: true,
                 child: PetEventPastOccurrencesSection(
                   entryId: entry.id,
+                  petId: entry.petId,
                   muted: muted,
                 ),
               ),
