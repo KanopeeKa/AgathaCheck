@@ -1,3 +1,4 @@
+import fs from 'fs';
 import path from 'path';
 import multer from 'multer';
 import { v4 as uuidv4 } from 'uuid';
@@ -56,6 +57,20 @@ function savePetPhoto(file) {
   return `/uploads/pet_photos/${filename}`;
 }
 
+function removePetPhotoFromDisk(photoPath) {
+  if (!photoPath || typeof photoPath !== 'string') return;
+  const prefix = '/uploads/pet_photos/';
+  if (!photoPath.startsWith(prefix)) return;
+  const filename = path.basename(photoPath);
+  if (!filename || filename.includes('..')) return;
+  const filePath = path.join(petPhotoUploadDir(), filename);
+  try {
+    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+  } catch {
+    // best-effort compensation
+  }
+}
+
 function handlePetPhotoUpload(req, res, next) {
   petPhotoUpload.single('photo')(req, res, (err) => {
     if (!err) return next();
@@ -77,13 +92,15 @@ export function registerPhotoRoutes(router, pool) {
     if (!req.file) {
       return res.status(400).json({ error: 'Photo file is required' });
     }
+    let photoPath;
     try {
-      const photoPath = savePetPhoto(req.file);
+      photoPath = savePetPhoto(req.file);
       const result = await pool.query(
         'UPDATE pets SET photo_path = $1, updated_at = NOW() WHERE id = $2 RETURNING *',
         [photoPath, id],
       );
       if (result.rows.length === 0) {
+        removePetPhotoFromDisk(photoPath);
         return res.status(404).json({ error: 'Pet not found' });
       }
       const pet = result.rows[0];
@@ -109,6 +126,7 @@ export function registerPhotoRoutes(router, pool) {
         pet: petRowToMap(pet),
       });
     } catch (err) {
+      if (photoPath) removePetPhotoFromDisk(photoPath);
       res.status(500).json({
         error: publicError(err, 'Photo upload failed', `Photo upload failed: ${err.message}`),
       });

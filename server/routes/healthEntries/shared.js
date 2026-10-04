@@ -14,6 +14,7 @@ import {
   HEALTH_DOCUMENT_EXTENSIONS,
   HEALTH_DOCUMENT_MIME_TYPES,
   MAX_HEALTH_DOCUMENT_BYTES,
+  buildHealthFileApiPath,
   privateHealthDir,
   removePrivateHealthFile,
   savePrivateHealthFile,
@@ -51,6 +52,35 @@ export function saveHealthDocument(file, id) {
 /** Best-effort removal of a persisted health document by its API or legacy URL path. */
 export function removeHealthDocumentFromDisk(url) {
   removePrivateHealthFile(url);
+}
+
+/**
+ * Insert a health_event_photos row; remove the on-disk file when the DB write fails.
+ * @param {import('pg').Pool} pool
+ */
+export async function insertHealthEventPhoto(pool, {
+  photoId,
+  entryId,
+  occurrenceId,
+  file,
+  bodyUrl,
+}) {
+  let url;
+  try {
+    url = file
+      ? saveHealthDocument(file, photoId)
+      : (bodyUrl || buildHealthFileApiPath(photoId));
+    const result = await pool.query(
+      `INSERT INTO health_event_photos
+         (id, health_entry_id, url, health_occurrence_id)
+       VALUES ($1, $2, $3, $4) RETURNING *`,
+      [photoId, entryId, url, occurrenceId],
+    );
+    return result.rows[0];
+  } catch (err) {
+    if (url) removeHealthDocumentFromDisk(url);
+    throw err;
+  }
 }
 
 export function handleDocumentUpload(req, res, next) {

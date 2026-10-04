@@ -3,12 +3,11 @@ import { v4 as uuidv4 } from 'uuid';
 import { publicError } from '../../config/security.js';
 import { hasPetCapability, PET_CAPABILITIES } from '../../lib/petCapabilityPolicy.js';
 import { recordPetActivityForPet } from '../../lib/petActivity.js';
-import { buildHealthFileApiPath } from '../../lib/privateHealthStorage.js';
 import {
   extractUserId,
   handleDocumentUpload,
+  insertHealthEventPhoto,
   removeHealthDocumentFromDisk,
-  saveHealthDocument,
 } from './shared.js';
 
 export function registerDocumentsRoutes(router, pool) {
@@ -77,22 +76,20 @@ export function registerDocumentsRoutes(router, pool) {
         }
       }
       const id = uuidv4();
-      const url = req.file
-        ? saveHealthDocument(req.file, id)
-        : req.body?.url || buildHealthFileApiPath(id);
-      const result = await pool.query(
-        `INSERT INTO health_event_photos
-           (id, health_entry_id, url, health_occurrence_id)
-         VALUES ($1, $2, $3, $4) RETURNING *`,
-        [id, req.params.id, url, occurrenceId],
-      );
+      const row = await insertHealthEventPhoto(pool, {
+        photoId: id,
+        entryId: req.params.id,
+        occurrenceId,
+        file: req.file,
+        bodyUrl: req.body?.url,
+      });
       recordPetActivityForPet(pool, {
         petId: entryRow.rows[0]?.pet_id,
         actorUserId: userId,
         eventType: 'document_upload',
         metadata: { document_count: 1 },
       });
-      res.status(201).json(result.rows[0]);
+      res.status(201).json(row);
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }

@@ -100,7 +100,9 @@
         "server/lib/privateHealthStorage.js",
         "server/routes/pets/photoRouter.js",
         "server/routes/healthEntries/shared.js",
+        "server/routes/healthEntries/documentsRouter.js",
         "server/test/auth/accountExistence*.test.js",
+        "server/test/db/accountExistence*.test.js",
         "server/test/db/erasureRace*.test.js",
         "docs/ops/observability.md"
       ],
@@ -118,13 +120,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1516",
+      "pr_head_sha": "d5f666cc"
     },
     {
       "id": "4",
@@ -192,5 +193,5 @@
       "merge_commit": null
     }
   ],
-  "content_hash": "sha256:55e977d98f0a75c6e033b64a198b78855df15cbd17a97b7fcf553f8a60da8a65"
+  "content_hash": "sha256:59fcc0c6a7c6d76dcfb008b5130d0f942d182534c1e26390602538972ec86bd9"
 }
