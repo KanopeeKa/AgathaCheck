@@ -1,6 +1,15 @@
+---
+title: Bug spec — Not recorded stale open / TZ DATE shift
+owner: Product / Agent
+audience: both
+status: active
+last_updated: 2026-10-05
+tags: [pet_care, care_planning, bugs]
+---
+
 # Bug spec — "This date is no longer open" on Not recorded doses
 
-Status: analysis only, no code yet. UAT care tick suspended 2026-10-05 until §8 ships. ·
+Status: analysis + remediation plan. UAT care tick suspended 2026-10-05 until §8 ships. ·
 Surface: server (`server/lib/care/occurrence/**`, `server/routes/healthEntries/occurrencesRouter.js`,
 DB connection setup) + Flutter (`flutter_app/lib/features/care_item/**`) + data (§9)
 

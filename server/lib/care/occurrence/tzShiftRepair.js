@@ -173,9 +173,7 @@ export async function repairTzShift(pool, { apply = false, todayIso = null } = {
     } else {
       const client = await pool.connect();
       try {
-        await client.query('BEGIN');
         await run(client);
-        await client.query('ROLLBACK');
       } finally {
         client.release();
       }

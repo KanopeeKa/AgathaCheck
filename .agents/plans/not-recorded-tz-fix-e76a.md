@@ -108,12 +108,12 @@ last_completed_phase: 1
 halt_reason: null
 next_action: "continue phase 2 on branch cursor/tz-data-repair-ops-e76a"
 artifact_ref:
-  branch: cursor/not-recorded-tz-fix-integration-e76a
+  branch: cursor/tz-data-repair-ops-e76a
   plan_path: .agents/plans/not-recorded-tz-fix-e76a.md
-  plan_commit: 98ee5d57c00fbfa8a47da9d84ae1265ed66841a4
+  plan_commit: 106e3f50c45e7007da833208be344a3fd6fc8cd7
   snapshot_path: .agents/plans/not-recorded-tz-fix-e76a.snapshot.json
-  snapshot_commit: 98ee5d57c00fbfa8a47da9d84ae1265ed66841a4
-open_prs: []
+  snapshot_commit: 106e3f50c45e7007da833208be344a3fd6fc8cd7
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1578"]
 merge_commits: {}
 debt_issue_refs: []
 ```
