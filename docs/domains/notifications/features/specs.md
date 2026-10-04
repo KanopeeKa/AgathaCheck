@@ -3,21 +3,23 @@ title: Notifications specs
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-22
+last_updated: 2026-10-04
 tags: [domain,notifications,specs]
 domain: notifications
 ---
 
 # Notifications specs
 
+> **Target model: [Notifications v2](notifications-v2-spec.md)** (accepted 2026-10-04). The axes below show v2. Rows marked *today* describe the code until the named PR lands.
+
 ## Axes (orthogonal)
 
 | Field | Values | Notes |
 |-------|--------|-------|
-| `kind` | `care` \| `administrative` | Set at creation — drives filter chips (D7) |
-| `scope` | `guardian` \| `organization` | Grouping label (“From: org name”), not separate routes |
-| `priority` | `normal` \| `urgent` | Urgent for agreement withdrawal etc. (D11) |
-| `resolvedAt` | nullable timestamp | Administrative items with referenced objects only (D9) |
+| `kind` | `relationship` \| `administrative` \| `suggestion` \| `account` | Set at creation from the type→kind map (v2 §3.4). Drives the **Activity** (relationship, administrative, account) and **For you** (suggestion) tabs. *Today:* `care \| administrative` with chips, until PR1/PR2 |
+| `scope` | `pet_care` \| `organization` (`guardian` accepted as a legacy alias on the wire) | Grouping label (“From: org name”), not separate routes |
+| `priority` | `normal` \| `urgent` | Urgent for agreement withdrawal and subscription payment issues (D11, A9) |
+| `resolvedAt` | nullable timestamp | Items referencing an open object: administrative, relationship invites, account A1/A9 (D9 as extended by v2) |
 
 Wire enums: `flutter_app/lib/features/notifications/domain/entities/notification_kind.dart`
 
@@ -33,7 +35,7 @@ Notification rows served via `notification_remote_datasource`; preferences entit
 
 ## Tests
 
-- BDD: `flutter_app/test/bdd/features/notifications.feature`
+- BDD: `flutter_app/test/bdd/features/notifications.feature`; v2 scenarios go in `notifications_v2.feature`, and care-in-inbox scenarios are tagged `@legacy` in PR1 (v2 §12)
 - Extend scenarios when panel filter chips and administrative resolved semantics ship (program-contract §6.1)
 - UAT live E2E: call `refreshByRemount()` after API seed when due events are missing on home — see [.agents/memory/uat-live-e2e-triage.md](/.agents/memory/uat-live-e2e-triage.md).
 

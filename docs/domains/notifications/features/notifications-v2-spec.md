@@ -2,7 +2,7 @@
 title: Notifications v2 — Activity & Agatha Suggestions (functional spec)
 owner: Product
 audience: both
-status: proposed (rev 2.2)
+status: accepted (rev 2.3)
 last_updated: 2026-10-04
 tags: [domain,notifications,spec,suggestions,sharing]
 domain: notifications
@@ -11,7 +11,7 @@ feature_id: notifications-v2
 
 # Notifications v2 — Activity & Agatha Suggestions
 
-> **Status: proposed, rev 2.2** (adds account security and subscription, §3.5). Moves to `accepted` only once the documentation checklist (AC-MG-5) is merged. Functional spec only. Implementation follows the rollout in §12, with one atomic PR
+> **Status: accepted 2026-10-04, rev 2.3.** Documentation aligned (AC-MG-5). Billing provider: undecided, so PR8 is blocked. Sign-in location: not now (N13). Moves to `accepted` only once the documentation checklist (AC-MG-5) is merged. Functional spec only. Implementation follows the rollout in §12, with one atomic PR
 > per outcome. Rev 2 incorporates the design review; the changes are summarised in §15. Once accepted, the decisions in
 > §0 take effect.
 
@@ -423,7 +423,7 @@ All other types are never grouped, including every needs-response, mandatory, ur
 | FR-SG-1 | Suggestions MUST be generated server-side by a scheduled job (at least daily) and on relevant data changes (e.g. new weight entry). They are persisted as `kind=suggestion` rows. |
 | FR-SG-2 | Each suggestion has: `type`, `pet_id`, `headline`, `rationale` (one sentence), `evidence` (structured: data points and window), `primary_action` (deep link + label), `confidence` (0–1), `expires_at`, `dedupe_key`. |
 | FR-SG-3 | Only suggestions with confidence ≥ the configured threshold (default 0.7) are created. |
-| FR-SG-4 | Recipients: S1–S6 → pet owner and Full-access members. S7 → **record owner only** (N7). Can-log-care and view-only members never receive suggestions. Org/foster pets follow scope rules. |
+| FR-SG-4 | Recipients: S1–S6 → record owner, co-parents (People D26) and Full-access members. S7 → **record owner only** (N7). Can-log-care and view-only members never receive suggestions. Org/foster pets follow scope rules. |
 | FR-SG-5 | A `dedupe_key` (e.g. `weight_trend:<pet>:<window>`) MUST prevent the same suggestion from being active twice. A refreshed signal updates the existing row rather than creating a new one. |
 | FR-SG-6 | From PR5, `care_recommendations_provider` and the pet-profile suggestion cards (`care_suggestion_card`, `care_family_suggestion_banner`) read the **same API** as For you, filtered by pet. Dismissing a card in one place dismisses it everywhere. No suggestion is computed only on the client. Until PR5, profile cards stay as they are and For you shows its empty state; the two never run side by side. |
 | FR-SG-7 | S6's `dedupe_key` reuses the existing care-family banner's grouping key, so that users who dismissed the banner before PR5 do not see the same suggestion again. |
@@ -551,7 +551,7 @@ The notification settings screen shows a matrix of **category × channel**:
 | NFR-5 i18n | All strings EN/FR, with plural-aware grouping text. Dates are formatted per locale. Calendar dates follow `docs/architecture/calendar-dates.md`. |
 | NFR-6 Security | All list/action endpoints authorise on the recipient. Inline actions re-check access server-side (never trust the row). Suggestion evidence is only returned to users who still have access to the pet. |
 | NFR-7 Observability | Metrics: rows created per kind/type, inbox opens, inline action success/failure, suggestion funnel (created → seen → acted / dismissed / not relevant / expired), digest sends and opens. |
-| NFR-8 Data retention | Inbox rows are archived at 90 days and hard-deleted at 365 days, for every kind (N9). Suggestion feedback is kept 365 days. Org/foster evidence (approvals, withdrawals, custody) MUST already be in `audit_events` / pet reports when the row is created. Inbox deletion never removes compliance evidence (N5). |
+| NFR-8 Data retention | Inbox rows are archived at 90 days and hard-deleted at 365 days, for every kind (N9). **Hard-delete is blocked** until `audit_events` covers the org/sharing/foster routes (open debt, `docs/debt/debt.md`). Until then, archive only. Suggestion feedback is kept 365 days. Org/foster evidence (approvals, withdrawals, custody) MUST already be in `audit_events` / pet reports when the row is created. Inbox deletion never removes compliance evidence (N5). |
 | NFR-9 Modularity | New UI/server modules respect the 500-line limit (`node scripts/check_file_size.js`). |
 
 ### 10.1 Success metrics
@@ -760,15 +760,15 @@ Written in Given/When/Then form so they can be turned into BDD scenarios with mi
 - **AC-MG-3** — A client at the previous release receives no unknown kinds (or parses them safely) and does not crash.
 - **AC-MG-4** — `migrate down` removes the v2 schema additions and restores the old type→kind map. A backup is taken before `up`, and the restore runbook exists in `docs/ops`.
 - **AC-MG-5** — The documentation checklist is complete before this spec is marked `accepted`:
-  - [ ] `notification-decisions.md`: a "Notifications v2 supersession" subsection mirroring §0 (D7, D8, D9, D10, N1–N9).
-  - [ ] `features/specs.md`: axes table updated (kinds, `pet_care` scope wording, tabs instead of chips).
-  - [ ] `features/journeys.md`: care-in-inbox, chips and combined badge journeys rewritten.
-  - [ ] `cross-domain/changes/program-contract.md` §3: a footnote pointing to this spec over the old diagram.
-  - [ ] Help/FAQ l10n strings (EN/FR) on reminders, snooze and "in-app notifications for due items" updated.
-  - [ ] `changes/deferred.md`: quiet hours, R13 request flow, a "dot only for needs-response" badge option, S7 recipients revisit, approximate sign-in location (pending DPIA), and A4/A5 (pending the email-change feature).
-  - [ ] `docs/domains/subscription`: link to A7–A11 and the server-entitlement prerequisite.
-  - [ ] People domain docs: cross-link noting that ownership transfer is immediate in the API (no accept step), so R13 stays future. The contradiction is tracked on the People backlog.
-  - [ ] `changes/plans.md`: the link points to the accepted revision.
+  - [x] `notification-decisions.md`: a "Notifications v2 supersession" subsection mirroring §0 (D7, D8, D9, D10, N1–N9).
+  - [x] `features/specs.md`: axes table updated (kinds, `pet_care` scope wording, tabs instead of chips).
+  - [x] `features/journeys.md`: care-in-inbox, chips and combined badge journeys rewritten.
+  - [x] `cross-domain/changes/program-contract.md` §3: a footnote pointing to this spec over the old diagram.
+  - [x] Help/FAQ l10n strings: new copy drafted in Appendix A. The `.arb` files change **in PR2**, together with the behaviour, so the live FAQ never describes features that haven't shipped.
+  - [x] `changes/deferred.md`: quiet hours, R13 request flow, a "dot only for needs-response" badge option, S7 recipients revisit, approximate sign-in location (pending DPIA), and A4/A5 (pending the email-change feature).
+  - [x] `docs/domains/subscription`: link to A7–A11 and the server-entitlement prerequisite.
+  - [x] People domain docs: cross-link noting that ownership transfer is immediate in the API (no accept step), so R13 stays future. The contradiction is tracked on the People backlog.
+  - [x] `changes/plans.md`: the link points to the accepted revision.
 - **AC-MG-6** — Given `householdInviteReceived` and `shareInviteAccepted` rows (today wrongly defaulted to `care`), then after migration both are `relationship` and visible in Activity.
 
 ### 13.15a Account security (AC-ACS)
@@ -859,3 +859,23 @@ Still open (non-blocking): whether to add a "dot only for needs-response" badge 
 |---|---|
 | Account notifications added to scope (user decision) | New `account` kind (N10); security A1–A6 and subscription A7–A11 (§3.5); N11–N13; settings, badge matrix, rollout PR7/PR8, AC-ACS / AC-SUB, AC-TH-3. |
 | Code-grounded constraints | Email change is not built (A4/A5 are conditional); no device data on sessions (new `device_label`, N13); logout revokes all sessions (it must not trigger A3); subscriptions are client-side RevenueCat (PR8 is blocked on a server entitlement source). |
+
+### Rev 2.3
+
+| Change | Detail |
+|---|---|
+| Accepted | User confirmed: PR8 blocked on the billing provider; no sign-in location for now. |
+| Docs aligned | Decisions, specs, journeys, program contract, deferred/debt, plans, People, Subscription. |
+| Suggestion recipients | Co-parents (People D26) added to S1–S6. |
+| Retention | Hard-delete blocked until `audit_events` covers org/sharing/foster (N5 depends on it). |
+| FAQ | Draft copy in Appendix A; `.arb` files change in PR2. |
+
+## Appendix A — FAQ copy (ships in PR2)
+
+| Key | EN | FR |
+|---|---|---|
+| `faqNotificationsA1` | Your inbox (bell icon) shows two things. **Activity**: people and account updates, such as someone sharing a pet with you, invites to answer, household changes, sign-ins from a new device, and subscription updates. **For you**: Agatha's suggestions for your pets. Care reminders are in **Actions** and are sent as reminders on your device. | Votre boîte de réception (icône cloche) contient deux onglets. **Activité** : les mises à jour liées aux personnes et à votre compte, par exemple un animal partagé avec vous, des invitations à accepter, des changements dans le foyer, une connexion depuis un nouvel appareil ou votre abonnement. **Pour vous** : les suggestions d'Agatha pour vos animaux. Les rappels de soins se trouvent dans **Soins** et vous sont envoyés comme rappels sur votre appareil. |
+| `faqNotificationsA2` | Go to Account → Notification settings. For each category you can choose in-app, push and email. Security notices (new sign-in, password change, access removed) are always sent. | Allez dans Compte → Paramètres de notification. Pour chaque catégorie, choisissez entre l'application, les notifications push et l'e-mail. Les alertes de sécurité (nouvelle connexion, mot de passe modifié, accès retiré) sont toujours envoyées. |
+| `faqNotificationsA3` | Yes. Muting a pet stops its care reminders, Agatha's suggestions and people-update pushes for that pet. Security notices are never muted. | Oui. Mettre un animal en sourdine arrête ses rappels de soins, les suggestions d'Agatha et les notifications push liées aux personnes pour cet animal. Les alertes de sécurité ne sont jamais mises en sourdine. |
+| `faqNotificationsQ4` / `A4` | Snoozing applies to **care reminders** (Actions), not to inbox items: *keep the current text*, but change "notifications" to "care reminders". | Le report s'applique aux **rappels de soins** (Soins) : *garder le texte actuel*, en remplaçant « notifications » par « rappels de soins ». |
+| New `faqNotificationsQ5` / `A5` | **What are Agatha's suggestions?** Ideas based on what you log, such as a missing reminder or a weight trend. Each one explains why it was shown. Dismiss a suggestion or mark it "Not relevant" to see fewer like it. Agatha isn't a vet. | **Que sont les suggestions d'Agatha ?** Des idées basées sur ce que vous enregistrez, comme un rappel manquant ou une évolution du poids. Chacune explique pourquoi elle apparaît. Ignorez une suggestion ou marquez-la « Pas pertinent » pour en voir moins. Agatha n'est pas vétérinaire. |

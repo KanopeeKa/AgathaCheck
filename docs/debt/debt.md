@@ -45,7 +45,8 @@ tags: [debt, deferred, tech-debt]
 | shelter | — | tech debt | P3 | Help FAQ copy still references legacy nav chrome — update after shell migration |
 | fostering | — | tech debt | P2 | Extend `audit_events` to foster placement routes |
 | sharing | — | tech debt | P2 | Extend `audit_events` to share-link routes |
-| notifications | — | tech debt | P2 | Automated notification row retention (90-day policy documented, not coded) |
+| notifications | — | tech debt | P2 | Automated notification row retention (90-day policy documented, not coded) — v2 PR1 implements archive; hard-delete blocked on `audit_events` coverage (N5) |
+| notifications | v2 PR8 | blocked | P2 | Subscription notices A7–A11 need a server entitlement source; blocked on billing-provider decision |
 | subscription | — | deferred decision | P2 | `subscriptions.feature` Playwright E2E — billing provider TBD (not RevenueCat) |
 | subscription | — | tech debt | P3 | RevenueCat UAT sandbox wiring — blocked on billing provider decision |
 | pet_profile | — | tech debt | P4 | Rename `pet_profile_app` package (large cosmetic rename) |
