@@ -10215,6 +10215,24 @@ abstract class AppLocalizations {
   /// **'Organisation'**
   String get notificationKindOrganisation;
 
+  /// No description provided for @notificationInboxTabActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity'**
+  String get notificationInboxTabActivity;
+
+  /// No description provided for @notificationInboxTabForYou.
+  ///
+  /// In en, this message translates to:
+  /// **'For you'**
+  String get notificationInboxTabForYou;
+
+  /// No description provided for @notificationNeedsResponse.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs your response'**
+  String get notificationNeedsResponse;
+
   /// No description provided for @notificationActionNeeded.
   ///
   /// In en, this message translates to:

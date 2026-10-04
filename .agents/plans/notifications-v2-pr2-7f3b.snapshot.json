@@ -37,13 +37,11 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "merge_commit": null,
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:2775c539343292360b28e98beefa6f4902e176f9e254bfe6482c3a3417085374"
+  "content_hash": "sha256:f76ca9bef926e18a08cf40e3f169299d14f7b890b741205faf6b5c3211c9b765"
 }

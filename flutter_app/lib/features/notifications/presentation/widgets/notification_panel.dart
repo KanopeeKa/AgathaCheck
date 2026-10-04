@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/theme/experience_colors.dart';
+import '../../domain/services/notification_inbox_v2_rules.dart';
+import '../widgets/notification_inbox_tab_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/app_notification.dart';
-import '../../domain/entities/notification_kind.dart';
 import '../../domain/entities/notification_scope.dart';
 import '../providers/notification_providers.dart';
 import '../utils/notification_navigation.dart';
@@ -14,8 +14,7 @@ import '../widgets/notification_tile.dart';
 
 /// Full-height right slide-over notification panel (opened via bell → endDrawer).
 ///
-/// Kind-filter chips (All / Care / Organisation) sit above a date-grouped list.
-/// "Action needed" chip appears on administrative rows with open referenced objects.
+/// Notifications v2: Activity / For you tabs and calm badge rules (§5.4).
 class NotificationPanel extends ConsumerStatefulWidget {
   const NotificationPanel({super.key});
 
@@ -24,7 +23,7 @@ class NotificationPanel extends ConsumerStatefulWidget {
 }
 
 class _NotificationPanelState extends ConsumerState<NotificationPanel> {
-  NotificationKind? _selectedKind; // null = All
+  NotificationInboxTab _selectedTab = NotificationInboxTab.activity;
 
   @override
   void initState() {
@@ -38,8 +37,18 @@ class _NotificationPanelState extends ConsumerState<NotificationPanel> {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final xp = context.experienceColors;
     final notificationsAsync = ref.watch(notificationsProvider);
+    final prefs = ref.watch(notificationPreferencesProvider).valueOrNull;
+    final mutedIds = prefs?.mutedPetIds.toSet() ?? {};
+    final visible = notificationsAsync.valueOrNull
+            ?.where(
+              (n) =>
+                  n.petId == null ||
+                  n.petId!.isEmpty ||
+                  !mutedIds.contains(n.petId),
+            )
+            .toList() ??
+        const <AppNotification>[];
 
     return Drawer(
       width: _panelWidth(context),
@@ -48,11 +57,13 @@ class _NotificationPanelState extends ConsumerState<NotificationPanel> {
           child: Column(
             children: [
               _PanelHeader(l: l, theme: theme, onMarkAllRead: _markAllRead),
-              _KindFilterChips(
-                l: l,
-                xp: xp,
-                selected: _selectedKind,
-                onSelected: (kind) => setState(() => _selectedKind = kind),
+              NotificationInboxTabBar(
+                selected: _selectedTab,
+                onSelected: (tab) => setState(() => _selectedTab = tab),
+                activityIndicatorCount:
+                    NotificationInboxV2Rules.activityTabIndicatorCount(visible),
+                forYouShowDot:
+                    NotificationInboxV2Rules.forYouTabShowDot(visible),
               ),
               const Divider(height: 1),
               Expanded(
@@ -66,8 +77,10 @@ class _NotificationPanelState extends ConsumerState<NotificationPanel> {
                     onRetry: () =>
                         ref.read(notificationsProvider.notifier).refresh(),
                   ),
-                  data: (all) =>
-                      _NotificationList(all: all, selectedKind: _selectedKind),
+                  data: (all) => _NotificationList(
+                    all: all,
+                    selectedTab: _selectedTab,
+                  ),
                 ),
               ),
             ],
@@ -166,103 +179,11 @@ Widget _headerIconButton({
   );
 }
 
-class _KindFilterChips extends StatelessWidget {
-  const _KindFilterChips({
-    required this.l,
-    required this.xp,
-    required this.selected,
-    required this.onSelected,
-  });
-
-  final AppLocalizations l;
-  final ExperienceColors xp;
-  final NotificationKind? selected;
-  final void Function(NotificationKind?) onSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      child: Wrap(
-        spacing: 8,
-        children: [
-          _FilterChip(
-            label: l.notificationKindAll,
-            selected: selected == null,
-            color: Colors.grey.shade600,
-            onTap: () => onSelected(null),
-          ),
-          _FilterChip(
-            label: l.notificationKindCare,
-            selected: selected == NotificationKind.care,
-            color: xp.petCarePrimary,
-            onTap: () => onSelected(NotificationKind.care),
-          ),
-          _FilterChip(
-            label: l.notificationKindOrganisation,
-            selected: selected == NotificationKind.administrative,
-            color: xp.organizationPrimary,
-            onTap: () => onSelected(NotificationKind.administrative),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _FilterChip extends StatelessWidget {
-  const _FilterChip({
-    required this.label,
-    required this.selected,
-    required this.color,
-    required this.onTap,
-  });
-
-  final String label;
-  final bool selected;
-  final Color color;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Semantics(
-      button: true,
-      selected: selected,
-      label: label,
-      child: ExcludeSemantics(
-        child: Material(
-          color: selected ? color.withAlpha(40) : Colors.transparent,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-            side: selected
-                ? BorderSide(color: color, width: 1.5)
-                : BorderSide.none,
-          ),
-          child: InkWell(
-            onTap: onTap,
-            borderRadius: BorderRadius.circular(8),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              child: Text(
-                label,
-                style: TextStyle(
-                  color: selected ? color : null,
-                  fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class _NotificationList extends ConsumerWidget {
-  const _NotificationList({required this.all, required this.selectedKind});
+  const _NotificationList({required this.all, required this.selectedTab});
 
   final List<AppNotification> all;
-  final NotificationKind? selectedKind;
+  final NotificationInboxTab selectedTab;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -278,7 +199,7 @@ class _NotificationList extends ConsumerWidget {
               n.petId!.isEmpty ||
               !mutedIds.contains(n.petId),
         )
-        .where((n) => selectedKind == null || n.kind == selectedKind)
+        .where((n) => NotificationInboxV2Rules.belongsToTab(n, selectedTab))
         .toList();
 
     if (filtered.isEmpty) {
@@ -293,12 +214,10 @@ class _NotificationList extends ConsumerWidget {
             ),
             const SizedBox(height: 12),
             Text(l.noNotifications, style: theme.textTheme.bodyLarge),
-            if (selectedKind != null) ...[
+            if (selectedTab == NotificationInboxTab.forYou) ...[
               const SizedBox(height: 4),
               Text(
-                selectedKind == NotificationKind.care
-                    ? l.notificationKindCare
-                    : l.notificationKindOrganisation,
+                l.notificationInboxTabForYou,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
@@ -309,15 +228,30 @@ class _NotificationList extends ConsumerWidget {
       );
     }
 
-    final pinned = selectedKind == NotificationKind.administrative
-        ? filtered.where(_isUrgentAdministrative).toList()
+    final needsResponse = filtered
+        .where(NotificationInboxV2Rules.needsResponse)
+        .where((n) => !NotificationInboxV2Rules.isUrgent(n))
+        .toList();
+    final needsResponseIds =
+        needsResponse.map((notification) => notification.id).toSet();
+
+    final pinnedUrgent = selectedTab == NotificationInboxTab.activity
+        ? filtered
+            .where(
+              (n) =>
+                  NotificationInboxV2Rules.isUrgent(n) &&
+                  !needsResponseIds.contains(n.id),
+            )
+            .toList()
         : const <AppNotification>[];
-    final pinnedIds = pinned.map((notification) => notification.id).toSet();
+    final pinnedIds = {
+      ...needsResponseIds,
+      ...pinnedUrgent.map((n) => n.id),
+    };
+
     final grouped = groupNotificationsByDate(
       context,
-      filtered
-          .where((notification) => !pinnedIds.contains(notification.id))
-          .toList(),
+      filtered.where((notification) => !pinnedIds.contains(notification.id)).toList(),
     );
 
     return RefreshIndicator(
@@ -325,7 +259,7 @@ class _NotificationList extends ConsumerWidget {
       child: ListView(
         padding: const EdgeInsets.symmetric(vertical: 8),
         children: [
-          if (pinned.isNotEmpty) ...[
+          if (pinnedUrgent.isNotEmpty) ...[
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
               child: Text(
@@ -336,7 +270,19 @@ class _NotificationList extends ConsumerWidget {
                 ),
               ),
             ),
-            ...pinned.map((notification) => _tile(context, ref, notification)),
+            ...pinnedUrgent.map((notification) => _tile(context, ref, notification)),
+          ],
+          if (needsResponse.isNotEmpty) ...[
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+              child: Text(
+                l.notificationNeedsResponse,
+                style: theme.textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            ...needsResponse.map((notification) => _tile(context, ref, notification)),
           ],
           ...grouped.map(
             (group) => Column(
@@ -383,11 +329,7 @@ class _NotificationList extends ConsumerWidget {
 
   /// Administrative resolution is independent from a user's read state.
   bool _needsAction(AppNotification n) =>
-      n.kind == NotificationKind.administrative && n.resolvedAt == null;
-
-  bool _isUrgentAdministrative(AppNotification n) =>
-      n.kind == NotificationKind.administrative &&
-      n.priority == NotificationPriority.urgent;
+      NotificationInboxV2Rules.needsResponse(n);
 
   Future<void> _onTap(
     BuildContext context,

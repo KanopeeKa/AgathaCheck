@@ -5813,6 +5813,15 @@ class AppLocalizationsFr extends AppLocalizations {
   String get notificationKindOrganisation => 'Organisation';
 
   @override
+  String get notificationInboxTabActivity => 'Activité';
+
+  @override
+  String get notificationInboxTabForYou => 'Pour vous';
+
+  @override
+  String get notificationNeedsResponse => 'Réponse attendue';
+
+  @override
   String get notificationActionNeeded => 'Action requise';
 
   @override

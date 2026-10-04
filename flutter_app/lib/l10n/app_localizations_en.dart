@@ -5728,6 +5728,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notificationKindOrganisation => 'Organisation';
 
   @override
+  String get notificationInboxTabActivity => 'Activity';
+
+  @override
+  String get notificationInboxTabForYou => 'For you';
+
+  @override
+  String get notificationNeedsResponse => 'Needs your response';
+
+  @override
   String get notificationActionNeeded => 'Action needed';
 
   @override

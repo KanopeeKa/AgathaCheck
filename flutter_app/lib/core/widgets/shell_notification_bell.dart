@@ -11,20 +11,32 @@ class ShellNotificationBell extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
-    final combinedUnread = ref.watch(combinedUnreadNotificationCountProvider);
-    final bellTooltip = combinedUnread > 0
+    final indicator = ref.watch(notificationBellIndicatorProvider);
+    final count = indicator.numericCount;
+    final bellTooltip = count > 0
         ? l.drawerItemUnreadSemantics(
             l.notificationsBellTooltip,
-            combinedUnread,
+            count,
           )
+        : indicator.showDot
+        ? l.notificationsBellTooltip
         : l.notificationsBellTooltip;
-    final bellIcon = combinedUnread > 0
-        ? Badge(
-            isLabelVisible: true,
-            label: Text('$combinedUnread'),
-            child: const Icon(Icons.notifications_outlined),
-          )
-        : const Icon(Icons.notifications_outlined);
+    final Widget bellIcon;
+    if (count > 0) {
+      bellIcon = Badge(
+        isLabelVisible: true,
+        label: Text('$count'),
+        child: const Icon(Icons.notifications_outlined),
+      );
+    } else if (indicator.showDot) {
+      bellIcon = const Badge(
+        isLabelVisible: true,
+        smallSize: 8,
+        child: Icon(Icons.notifications_outlined),
+      );
+    } else {
+      bellIcon = const Icon(Icons.notifications_outlined);
+    }
 
     return Semantics(
       button: true,
