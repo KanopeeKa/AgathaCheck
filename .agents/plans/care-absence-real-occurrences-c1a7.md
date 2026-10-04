@@ -29,12 +29,12 @@ last_completed_phase: E2
 halt_reason: null
 next_action: "continue phase E3 on branch cursor/care-e3-postpone-50b4"
 artifact_ref:
-  branch: claude/eager-edison-mf34j6
+  branch: cursor/care-e3-postpone-50b4
   plan_path: .agents/plans/care-absence-real-occurrences-c1a7.md
-  plan_commit: c053b6965968c5c545cf1cab6507c956cf26d53d
+  plan_commit: 3c53f95ac5ad8bbd37c70edffdc68eb41d85da6a
   snapshot_path: .agents/plans/care-absence-real-occurrences-c1a7.snapshot.json
-  snapshot_commit: c053b6965968c5c545cf1cab6507c956cf26d53d
-open_prs: []
+  snapshot_commit: 3c53f95ac5ad8bbd37c70edffdc68eb41d85da6a
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1485"]
 merge_commits: {}
 debt_issue_refs: []
 ```
