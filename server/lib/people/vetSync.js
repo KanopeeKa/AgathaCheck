@@ -123,3 +123,14 @@ export async function syncVetRowFromContact(pool, contactRow, userId) {
 export async function deleteContactForVet(pool, vetId) {
   await deactivateOrDeleteContactForVet(pool, vetId);
 }
+
+/**
+ * Remove the legacy vets row when an unused vet-linked contact is deleted (B3).
+ * @param {import('pg').Pool|import('pg').PoolClient} client
+ * @param {string} legacyVetId
+ * @param {string} userId
+ */
+export async function deleteLegacyVetRowForContact(client, legacyVetId, userId) {
+  if (!legacyVetId || !userId) return;
+  await client.query('DELETE FROM vets WHERE id = $1 AND user_id = $2', [legacyVetId, userId]);
+}

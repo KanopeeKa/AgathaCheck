@@ -9,6 +9,7 @@ import {
 import { extractUserId } from '../../lib/requireAuth.js';
 import { dateToIsoDate } from '../../lib/calendarDate.js';
 import { healthEntryToMap as careItemHealthEntryToMap, normalizeHealthEntryTypeForRead } from '../../lib/care/item/index.js';
+import { validateProviderContactForPetWrite } from '../../lib/care/providerUsed.js';
 import { extensionForMime } from '../../lib/safeUpload.js';
 import {
   HEALTH_DOCUMENT_EXTENSIONS,
@@ -124,6 +125,51 @@ export function parseEntryProviderInput(data) {
   if (contactId === '') contactId = null;
   if (typedName === '') typedName = null;
   return { contactId, typedName };
+}
+
+/**
+ * Parse provider fields and enforce attach policy (B12).
+ * @param {import('pg').Pool} pool
+ * @param {string} userId
+ * @param {string} petId
+ * @param {object} data
+ * @param {object} [existing] health_entries row on update
+ */
+export async function resolveEntryProviderForWrite(pool, userId, petId, data, existing = null) {
+  const providerInput = parseEntryProviderInput(data);
+  if (providerInput.error) return { error: providerInput.error };
+  if (!existing) {
+    const providerContactId = providerInput.contactId ?? null;
+    const providerTypedName = providerInput.typedName ?? null;
+    const attachError = await validateProviderContactForPetWrite(
+      pool,
+      userId,
+      petId,
+      providerContactId,
+    );
+    if (attachError) return attachError;
+    return { providerContactId, providerTypedName };
+  }
+  let providerContactId = existing.provider_contact_id;
+  let providerTypedName = existing.provider_typed_name;
+  if (providerInput.contactId !== undefined) {
+    providerContactId = providerInput.contactId;
+    if (providerContactId) providerTypedName = null;
+  }
+  if (providerInput.typedName !== undefined) {
+    providerTypedName = providerInput.typedName;
+    if (providerTypedName) providerContactId = null;
+  }
+  if (providerInput.contactId !== undefined && providerContactId) {
+    const attachError = await validateProviderContactForPetWrite(
+      pool,
+      userId,
+      petId,
+      providerContactId,
+    );
+    if (attachError) return attachError;
+  }
+  return { providerContactId, providerTypedName };
 }
 
 export const healthEntryToMap = careItemHealthEntryToMap;

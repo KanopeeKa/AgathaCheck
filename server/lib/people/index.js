@@ -18,6 +18,7 @@ export {
   getPetOwnerUserId,
   contactInEditableDirectoriesForPet,
 } from './access.js';
+export { listUsages } from './usages.js';
 export {
   createPersonalContact,
   patchPersonalContact,
