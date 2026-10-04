@@ -315,16 +315,16 @@ flowchart TD
 
 ```yaml
 autonomy: active
-current_phase: C4
-last_completed_phase: C3
+current_phase: B2
+last_completed_phase: B1
 halt_reason: null
-next_action: "continue phase C4 on branch cursor/care-gap-c4-docs-50b4"
+next_action: "continue phase B2 on branch cursor/care-gap-b2-advanced-50b4"
 artifact_ref:
-  branch: cursor/care-gap-c4-docs-50b4
+  branch: cursor/care-requirements-gap-close-integration-50b4
   plan_path: .agents/plans/care-requirements-gap-close-c1a7.md
-  plan_commit: 0293539415a5a178ff0ba62d4e6e1df409bf9239
+  plan_commit: ffc5fa81758088635a5f0d1f9a31db2f1caa47f4
   snapshot_path: .agents/plans/care-requirements-gap-close-c1a7.snapshot.json
-  snapshot_commit: 0293539415a5a178ff0ba62d4e6e1df409bf9239
+  snapshot_commit: ffc5fa81758088635a5f0d1f9a31db2f1caa47f4
 open_prs: []
 merge_commits: {}
 debt_issue_refs: [1539,1540,1541,1542,1543,1544,1545,1546,1547,1476]
