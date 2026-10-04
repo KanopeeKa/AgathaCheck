@@ -156,6 +156,9 @@ jobs:
         if: steps.web_cache_restore.outputs.cache-hit == 'true'
         run: WEB_DIR=flutter_app/build/web bash scripts/ci/verify-web-artifact.sh
 
+      - name: Web bundle budget (ratchet)
+        run: node scripts/ci/check-web-bundle-budget.mjs
+
       - name: Save web build cache
         if: inputs.web_cache == 'save'
         uses: actions/cache/save@v5
