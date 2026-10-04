@@ -135,9 +135,12 @@ test.describe('Care item absence review', () => {
     const item = await getCareItem(root, user.accessToken, entry.id);
     const openOcc = item.open_occurrences[0];
     expect(openOcc?.scheduled_date).toBe(dayAfterReturn);
-    await expect(
-      page.locator(`[flt-semantics-identifier="care_item_occurrence_row_${openOcc?.id}"]`),
-    ).toBeVisible({ timeout: 30_000 });
+    await expect(async () => {
+      await refreshFlutterAccessibility(page);
+      await expect(
+        page.locator(`[flt-semantics-identifier="care_item_occurrence_row_${openOcc?.id}"]`),
+      ).toBeVisible();
+    }).toPass({ timeout: 45_000 });
   });
 
   test('A date planned during the trip can be looked after by the carer', async ({ page }) => {

@@ -206,6 +206,7 @@ class _OccurrenceLine extends ConsumerWidget {
       ?occurrence.time,
     ].join(' · ');
     return Semantics(
+      identifier: 'care_item_occurrence_row_${occurrence.id}',
       label: '$when, $label. ${l.careRowOpensDate}',
       button: true,
       child: InkWell(
