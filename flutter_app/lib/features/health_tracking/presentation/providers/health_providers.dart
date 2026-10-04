@@ -4,8 +4,10 @@ import '../../../auth/presentation/providers/auth_providers.dart';
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
 import '../../data/datasources/health_remote_datasource.dart';
 import '../../data/repositories/health_repository_impl.dart';
+import '../../domain/entities/command_outcome.dart';
 import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/health_history_entry.dart';
+import '../../domain/entities/health_occurrence.dart';
 import '../../domain/repositories/health_repository.dart';
 import '../../domain/usecases/create_health_entry.dart';
 import '../../domain/usecases/delete_health_entry.dart';
@@ -13,6 +15,8 @@ import '../../domain/usecases/get_entry_history.dart';
 import '../../domain/usecases/get_health_entries.dart';
 import '../../domain/usecases/update_health_entry.dart';
 import '../../../pet_care/domain/services/care_temporal_grouping_service.dart';
+
+part 'health_entries_store.dart';
 
 final healthRemoteDataSourceProvider = Provider<HealthRemoteDataSource>((ref) {
   final baseUrl = ref.watch(apiBaseUrlProvider);
@@ -66,73 +70,6 @@ final deleteHealthEntryProvider = Provider<DeleteHealthEntry>((ref) {
 final getEntryHistoryProvider = Provider<GetEntryHistory>((ref) {
   return GetEntryHistory(ref.watch(healthRepositoryProvider));
 });
-
-/// Manages the state of health entries with async loading.
-final healthEntriesNotifierProvider =
-    AsyncNotifierProvider<HealthEntriesNotifier, List<HealthEntry>>(
-      HealthEntriesNotifier.new,
-    );
-
-/// Notifier that manages loading, creating, updating, and deleting health entries.
-class HealthEntriesNotifier extends AsyncNotifier<List<HealthEntry>> {
-  @override
-  Future<List<HealthEntry>> build() async {
-    ref.watch(authProvider);
-    return ref.read(getHealthEntriesProvider).call();
-  }
-
-  /// Refreshes the list of health entries from the server.
-  Future<void> refresh() async {
-    state = const AsyncLoading<List<HealthEntry>>().copyWithPrevious(state);
-    state = await AsyncValue.guard(() => build());
-  }
-
-  /// Creates a new health entry and refreshes the list.
-  Future<void> create(HealthEntry entry) async {
-    await ref.read(createHealthEntryProvider).call(entry);
-    await refresh();
-  }
-
-  /// Updates an existing health entry and refreshes the list.
-  Future<void> updateEntry(HealthEntry entry) async {
-    await ref.read(updateHealthEntryProvider).call(entry);
-    await refresh();
-  }
-
-  /// Deletes a health entry by [id] and refreshes the list.
-  Future<void> delete(String id) async {
-    await ref.read(deleteHealthEntryProvider).call(id);
-    await refresh();
-  }
-
-  /// Closes an event (status completed, repeat end yesterday).
-  Future<void> closeEvent(String id) async {
-    await ref.read(healthRepositoryProvider).closeEvent(id);
-    await refresh();
-  }
-
-  /// Reopens a closed event (clears repeat end and next due date).
-  Future<void> reopenEvent(String id) async {
-    await ref.read(healthRepositoryProvider).reopenEvent(id);
-    await refresh();
-  }
-
-  Future<void> pauseCareItem(String id) async {
-    await ref.read(healthRepositoryProvider).pauseCareItem(id);
-    await refresh();
-  }
-
-  Future<void> resumeCareItem(String id) async {
-    await ref.read(healthRepositoryProvider).resumeCareItem(id);
-    await refresh();
-  }
-
-  /// Unmarks the last completed occurrence.
-  Future<void> unmarkDone(String id) async {
-    await ref.read(healthRepositoryProvider).unmarkDone(id);
-    await refresh();
-  }
-}
 
 /// Health entries for a specific pet, derived reactively from the global list
 /// ([healthEntriesNotifierProvider]) so it reflects creates/edits/deletes without

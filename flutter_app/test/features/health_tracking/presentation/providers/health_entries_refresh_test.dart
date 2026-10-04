@@ -22,6 +22,7 @@ class _SequenceHealthRepository implements HealthRepository {
 
   final List<List<HealthEntry>> _results;
   var callCount = 0;
+  var getEntriesThrows = false;
 
   @override
   Future<List<HealthEntry>> getEntries({
@@ -31,6 +32,9 @@ class _SequenceHealthRepository implements HealthRepository {
     final index = callCount.clamp(0, _results.length - 1);
     callCount++;
     await Future<void>.delayed(Duration.zero);
+    if (getEntriesThrows) {
+      throw Exception('refresh failed');
+    }
     return _results[index];
   }
 
@@ -68,6 +72,33 @@ void main() {
       await refreshFuture;
       expect(container.read(healthEntriesNotifierProvider).value!.length, 2);
       expect(repository.callCount, 2);
+    },
+  );
+
+  test(
+    'refresh keeps previous entries on failure (AsyncError copyWithPrevious)',
+    () async {
+      final repository = _SequenceHealthRepository([
+        [_entry('a')],
+      ]);
+      final container = ProviderContainer(
+        overrides: [
+          authProvider.overrideWith((ref) => FakeAuthNotifier()),
+          healthRepositoryProvider.overrideWithValue(repository),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await container.read(healthEntriesNotifierProvider.future);
+
+      repository.getEntriesThrows = true;
+      final notifier = container.read(healthEntriesNotifierProvider.notifier);
+      await notifier.refresh();
+
+      final after = container.read(healthEntriesNotifierProvider);
+      expect(after.hasError, isTrue);
+      expect(after.hasValue, isTrue);
+      expect(after.value!.map((e) => e.id), ['a']);
     },
   );
 }
