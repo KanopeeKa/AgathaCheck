@@ -28,6 +28,15 @@ const SQL_FILE_ALLOWLIST = new Set([
   'server/lib/households/authz.js',
 ]);
 
+/** ARCH account erasure scrubs linked contact/vet email — not People domain writes. */
+const PEOPLE_WRITE_ALLOWLIST = new Set([
+  'server/lib/account/accountErasureService.js',
+]);
+
+const VETS_WRITE_ALLOWLIST = new Set([
+  'server/lib/account/accountErasureService.js',
+]);
+
 const VETS_READ_ALLOWLIST = new Set([
   'server/routes/vets.js',
   'server/lib/people/vetProjection.js',
@@ -102,6 +111,7 @@ describe('People domain boundaries (s1)', () => {
     const violations = [];
     for (const rel of collectScanFiles()) {
       if (SQL_FILE_ALLOWLIST.has(rel)) continue;
+      if (PEOPLE_WRITE_ALLOWLIST.has(rel)) continue;
       const content = fs.readFileSync(path.join(repoRoot, rel), 'utf8');
       const matches = content.match(PEOPLE_WRITE_RE);
       if (matches?.length) violations.push({ file: rel, count: matches.length });
@@ -113,6 +123,7 @@ describe('People domain boundaries (s1)', () => {
     const hits = [];
     for (const rel of [...collectScanFiles(), ...walkJsFiles('server/lib/people', 'server/lib/people')]) {
       if (rel === 'server/lib/people/vetProjection.js') continue;
+      if (VETS_WRITE_ALLOWLIST.has(rel)) continue;
       if (rel.startsWith('server/test/')) continue;
       if (rel.startsWith('server/db/seeds/')) continue;
       if (rel.startsWith('server/scripts/')) continue;
