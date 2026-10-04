@@ -33,7 +33,7 @@
     },
     {
       "plan_id": "active-codebase-batch-g-client-authority-e41f",
-      "status": "pending",
+      "status": "in_progress",
       "pr_url": null,
       "merge_commit": null
     },
@@ -99,5 +99,5 @@
       "merge_commit": null
     }
   ],
-  "content_hash": "sha256:9bf2d584c11f717b0fe395c24fe343295b9d6cf3f6a44c0f6d0f45bcfd15710d"
+  "content_hash": "sha256:84ce3e4782df5affa59899ca087aa35c5d32a55fc15338a7390615b858e42fcf"
 }

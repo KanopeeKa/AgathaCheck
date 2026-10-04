@@ -740,11 +740,53 @@ abstract class AppLocalizations {
   /// **'All pets'**
   String get allPets;
 
-  /// No description provided for @petListStaleBannerMessage.
+  /// No description provided for @petListStaleBannerOffline.
   ///
   /// In en, this message translates to:
-  /// **'Showing saved pets while offline. Some details may be out of date.'**
-  String get petListStaleBannerMessage;
+  /// **'Offline — showing pets saved {relativeTime}'**
+  String petListStaleBannerOffline(String relativeTime);
+
+  /// No description provided for @petListCacheOutOfDateBannerMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved data may be out of date'**
+  String get petListCacheOutOfDateBannerMessage;
+
+  /// No description provided for @petListCacheRetrySemanticsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry loading pets'**
+  String get petListCacheRetrySemanticsLabel;
+
+  /// No description provided for @petCacheRelativeJustNow.
+  ///
+  /// In en, this message translates to:
+  /// **'just now'**
+  String get petCacheRelativeJustNow;
+
+  /// No description provided for @petCacheRelativeMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 minute ago} other{{count} minutes ago}}'**
+  String petCacheRelativeMinutes(int count);
+
+  /// No description provided for @petCacheRelativeHours.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 hour ago} other{{count} hours ago}}'**
+  String petCacheRelativeHours(int count);
+
+  /// No description provided for @petCacheRelativeDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 day ago} other{{count} days ago}}'**
+  String petCacheRelativeDays(int count);
+
+  /// No description provided for @careCommandSavedRefreshFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved — couldn\'t refresh. Pull to refresh.'**
+  String get careCommandSavedRefreshFailed;
 
   /// No description provided for @managePets.
   ///

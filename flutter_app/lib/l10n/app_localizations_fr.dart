@@ -359,8 +359,57 @@ class AppLocalizationsFr extends AppLocalizations {
   String get allPets => 'Tous les animaux';
 
   @override
-  String get petListStaleBannerMessage =>
-      'Animaux enregistrés affichés hors ligne. Certaines informations peuvent être obsolètes.';
+  String petListStaleBannerOffline(String relativeTime) {
+    return 'Hors ligne — animaux enregistrés $relativeTime';
+  }
+
+  @override
+  String get petListCacheOutOfDateBannerMessage =>
+      'Les données enregistrées peuvent être obsolètes';
+
+  @override
+  String get petListCacheRetrySemanticsLabel =>
+      'Réessayer de charger les animaux';
+
+  @override
+  String get petCacheRelativeJustNow => 'à l\'instant';
+
+  @override
+  String petCacheRelativeMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'il y a $count minutes',
+      one: 'il y a 1 minute',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String petCacheRelativeHours(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'il y a $count heures',
+      one: 'il y a 1 heure',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String petCacheRelativeDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'il y a $count jours',
+      one: 'il y a 1 jour',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get careCommandSavedRefreshFailed =>
+      'Enregistré — actualisation impossible. Tirez pour actualiser.';
 
   @override
   String get managePets => 'Gérer les animaux';
