@@ -9,8 +9,6 @@ import { dateToIsoDate } from '../../calendarDate.js';
 import { isEntrySeriesClosed, isOccurrenceDateWithinSeries } from '../../occurrenceLifecycle.js';
 import { advanceByFrequency } from '../../recurrenceHelper.js';
 import { scheduleTimesFromEntry } from '../../occurrenceScheduling.js';
-import { estimateOccurrences } from './estimateOccurrences.js';
-
 export const PROJECTION_STATUS_COMPLETE = 'complete';
 export const PROJECTION_STATUS_PARTIALLY_INDETERMINATE = 'partially_indeterminate';
 
@@ -293,88 +291,12 @@ export function expandItemForWindow(entry, occurrences, startsOn, endsOn, todayI
     return { items, uncertainties };
   }
 
-  const nextDue = dateToIsoDate(entry.next_due_date);
-  if (nextDue && isDateInCareWindow(nextDue, startsOn, endsOn)) {
-    for (const time of scheduleTimesFromEntry(entry)) {
-      const key = slotKey(nextDue, time);
-      if (!knownSlots.has(key)) {
-        items.push(buildItem(entry, nextDue, time, 'projected', 'pending'));
-        knownSlots.add(key);
-      }
-    }
-    const secondHop = advanceByFrequency(nextDue, entry);
-    if (
-      secondHop
-      && secondHop <= endsOn
-      && isOccurrenceDateWithinSeries(entry, secondHop)
-      && isDateInCareWindow(secondHop, startsOn, endsOn)
-    ) {
-      uncertainties.push({
-        health_entry_id: entry.id,
-        reason: UNCERTAINTY_REASON_FROM_COMPLETION_CHAIN,
-      });
-    }
-    return { items, uncertainties };
-  }
-
-  if (nextDue && nextDue < startsOn) {
-    const lastCompleted = lastCompletedDateFromOccurrences(occurrences, entry);
-    const estimate = estimateOccurrences({
-      entry,
-      openOccurrence: null,
-      lastCompletedOn: lastCompleted,
-      startsOn,
-      endsOn,
-      todayIso,
-    });
-    for (const dateIso of estimate.dates) {
-      for (const time of scheduleTimesFromEntry(entry)) {
-        const key = slotKey(dateIso, time);
-        if (!knownSlots.has(key)) {
-          items.push(buildItem(entry, dateIso, time, 'projected', 'pending'));
-          knownSlots.add(key);
-        }
-      }
-    }
-    if (estimate.dates.length > 0) {
-      if (estimate.dates.length >= 2) {
-        uncertainties.push({
-          health_entry_id: entry.id,
-          reason: UNCERTAINTY_REASON_FROM_COMPLETION_CHAIN,
-        });
-      }
-      return { items, uncertainties };
-    }
-    uncertainties.push({
-      health_entry_id: entry.id,
-      reason: UNCERTAINTY_REASON_FROM_COMPLETION_PENDING,
-    });
-  }
-
   return { items, uncertainties };
 }
 
 /** @deprecated Use expandItemForWindow — kept for care-period projection callers. */
 export function projectEntryForPeriod(entry, occurrences, startsOn, endsOn, todayIso) {
   return expandItemForWindow(entry, occurrences, startsOn, endsOn, todayIso);
-}
-
-/**
- * @param {object[]} occurrences
- * @param {object} entry
- * @returns {string|null}
- */
-function lastCompletedDateFromOccurrences(occurrences, entry) {
-  const closed = (occurrences || [])
-    .filter((row) => row.status === 'completed' || row.status === 'skipped')
-    .sort((a, b) => String(b.scheduled_date).localeCompare(String(a.scheduled_date)));
-  const row = closed[0];
-  if (!row) return null;
-  const anchor = entry.recurrence_anchor || 'from_completion';
-  if (anchor === 'from_due_date') {
-    return dateToIsoDate(row.scheduled_date);
-  }
-  return dateToIsoDate(row.completed_on || row.scheduled_date);
 }
 
 /**

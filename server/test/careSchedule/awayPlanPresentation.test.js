@@ -227,7 +227,17 @@ describe('awayPlan presentation', () => {
       const entries = [calendarEntry, chainEntry, onceEntryA, indeterminateEntry];
       const occurrencesByEntryId = new Map([
         [calendarEntry.id, []],
-        [chainEntry.id, []],
+        [
+          chainEntry.id,
+          [
+            occurrence({
+              id: 'occ-chain',
+              health_entry_id: chainEntry.id,
+              scheduled_date: '2026-08-14',
+              status: 'pending',
+            }),
+          ],
+        ],
         [onceEntryA.id, []],
         [indeterminateEntry.id, []],
       ]);

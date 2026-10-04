@@ -62,7 +62,7 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": []
@@ -173,5 +173,5 @@
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:11ecf5b9cd41fa78d515480b47af4ea6b7e8b29fcb78dfff35083c4b57226152"
+  "content_hash": "sha256:9bd6cf4e57dd790f4a4048ecadb17187cc1882c6afb49066278d2097c4582329"
 }
