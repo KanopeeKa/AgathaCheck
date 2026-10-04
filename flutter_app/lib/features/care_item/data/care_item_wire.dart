@@ -114,6 +114,9 @@ OccurrenceDetail occurrenceDetailFromJson(Map<String, dynamic> json) {
   final entry = json['entry'] as Map<String, dynamic>;
   final last = json['last_action'] as Map<String, dynamic>?;
   final weight = json['linked_weight'] as Map<String, dynamic>?;
+  final schedule = entry.containsKey('open_occurrences')
+      ? careItemScheduleFromJson(entry)
+      : null;
   return OccurrenceDetail(
     occurrence: CareOccurrence(
       id: occ['id'] as String,
@@ -135,6 +138,7 @@ OccurrenceDetail occurrenceDetailFromJson(Map<String, dynamic> json) {
       lateCompletionChoice: entry['late_completion_choice'] as String?,
       asOf: careAsOfFromJson(entry['as_of'] as Map<String, dynamic>),
     ),
+    schedule: schedule,
     lastAction: last == null
         ? null
         : CareLastAction(
