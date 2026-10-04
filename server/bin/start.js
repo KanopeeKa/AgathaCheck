@@ -1,7 +1,12 @@
 import '../config/loadEnv.js';
 import app from './server.js';
+import { kickCleanupJobs, startCleanupJobsRunner } from '../lib/jobs/cleanupJobsRunner.js';
+
+export { kickCleanupJobs };
 
 const port = process.env.PORT || 3000;
+const cleanupRunner = startCleanupJobsRunner(app.locals.pool);
+
 const server = app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
   console.log(`Database: ${process.env.PGDATABASE || 'agatha_db'} on ${process.env.PGHOST || 'localhost'}:${process.env.PGPORT || 5432}`);
@@ -14,6 +19,7 @@ async function shutdown(signal) {
   if (shuttingDown) return;
   shuttingDown = true;
   console.log(`Received ${signal}, shutting down gracefully...`);
+  cleanupRunner.stop();
   server.close(async () => {
     try {
       await app.locals.pool?.end();
