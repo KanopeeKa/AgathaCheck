@@ -54,14 +54,14 @@ autonomy: active
 current_phase: 4
 last_completed_phase: 3
 halt_reason: null
-next_action: "start phase 4: checkout cursor/active-codebase-e4-command-results-e41f"
+next_action: "continue phase 4 on branch cursor/active-codebase-e4-command-results-e41f"
 artifact_ref:
-  branch: cursor/active-codebase-e-integration-e41f
+  branch: cursor/active-codebase-e4-command-results-e41f
   plan_path: .agents/plans/active-codebase-batch-e-backend-integrity-e41f.md
-  plan_commit: 88a3e5ccaf53bfa06ebde14d8718a69d7b3d57ad
+  plan_commit: ec4899e9316c19bd2462e1f6c575260502b69454
   snapshot_path: .agents/plans/active-codebase-batch-e-backend-integrity-e41f.snapshot.json
-  snapshot_commit: 88a3e5ccaf53bfa06ebde14d8718a69d7b3d57ad
-open_prs: []
+  snapshot_commit: ec4899e9316c19bd2462e1f6c575260502b69454
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1502"]
 merge_commits: {}
 debt_issue_refs: []
 ```
