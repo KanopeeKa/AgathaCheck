@@ -3,7 +3,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { logAuditEventSafe } from '../../audit.js';
 import { accessiblePetSql } from '../../petAccess.js';
 import { recordPetActivityForPet } from '../../petActivity.js';
-import { normalizeCalendarDateInput } from '../../calendarDate.js';
 import { withTransaction } from '../../db/withTransaction.js';
 import {
   getLatestWeightEntry,
@@ -17,15 +16,17 @@ import {
 } from '../occurrence/careAsOf.js';
 import {
   CareCommandError,
+  changeCompletionDateCommand,
   completeOccurrenceCommand,
   runCareCommand,
   undoCompletionOfOccurrence,
 } from '../occurrence/index.js';
+import './weightObservationCompletionHooks.js';
 import {
   occurrenceToMap,
   resolveCompletedOn,
 } from '../item/index.js';
-import { dateToIsoDate } from '../../calendarDate.js';
+import { dateToIsoDate, normalizeCalendarDateInput } from '../../calendarDate.js';
 import { maybePersistWeightEstablishment } from '../progression/weightEstablishmentService.js';
 import { parseWeightInput } from './weightUnits.js';
 import {
@@ -145,6 +146,50 @@ export async function updateWeight(pool, params) {
     params.date,
     params.req,
   );
+  const previousDate = dateToIsoDate(existing.date);
+  const linkedOccurrenceId = existing.health_occurrence_id;
+
+  if (linkedOccurrenceId && dateVal !== previousDate) {
+    const careLink = await pool.query(
+      'SELECT health_entry_id FROM health_occurrences WHERE id = $1',
+      [linkedOccurrenceId],
+    );
+    const careEntryId = careLink.rows[0]?.health_entry_id;
+    if (!careEntryId) {
+      throw new WeightValidationError('linked weigh-in not found', { status: 409 });
+    }
+    let weightRow = null;
+    try {
+      const out = await runCareCommand(pool, {
+        entryId: careEntryId,
+        userId: params.userId,
+        req: params.req,
+        beforeCommand: async (db) => {
+          weightRow = await updateWeightEntry(db, {
+            id: params.entryId,
+            weightKg: parsed.kg,
+            date: previousDate,
+            notes: params.notes ?? '',
+            measurementSource: params.measurementSource,
+          });
+          if (weightRow) await refreshPetWeightCache(db, weightRow.pet_id);
+        },
+      }, (ctx) => changeCompletionDateCommand(ctx, {
+        occurrenceId: linkedOccurrenceId,
+        completedOn: dateVal,
+      }));
+      const refreshed = await findWeightEntryById(pool, params.entryId);
+      return { row: refreshed || weightRow, undoToken: out?.undoToken ?? null };
+    } catch (err) {
+      if (err instanceof CareCommandError) {
+        throw new WeightValidationError(err.message, {
+          status: err.status,
+          code: err.code,
+        });
+      }
+      throw err;
+    }
+  }
 
   const result = await withTransaction(pool, async (db) => {
     const row = await updateWeightEntry(db, {
@@ -158,7 +203,7 @@ export async function updateWeight(pool, params) {
     await refreshPetWeightCache(db, row.pet_id);
     return row;
   });
-  return result;
+  return { row: result, undoToken: null };
 }
 
 /**
@@ -178,6 +223,9 @@ export async function deleteWeight(pool, params) {
     )
     : { rows: [] };
   const careEntryId = linked.rows[0]?.health_entry_id;
+  const reopenedOccurrence = existing.health_occurrence_id && careEntryId
+    ? { entry_id: careEntryId, occurrence_id: existing.health_occurrence_id }
+    : null;
   if (careEntryId) {
     await runCareCommand(pool, {
       entryId: careEntryId,
@@ -196,7 +244,7 @@ export async function deleteWeight(pool, params) {
   return {
     found: true,
     petId: existing.pet_id,
-    reopenedOccurrenceId: existing.health_occurrence_id || null,
+    reopenedOccurrence,
   };
 }
 
@@ -416,15 +464,24 @@ export async function completeWeightOccurrence(pool, {
         await refreshPetWeightCache(db, petId);
         await maybePersistWeightEstablishment(db, { petId, healthEntryId: entryId });
       },
-    }, (ctx) => completeOccurrenceCommand(ctx, {
-      occurrenceId,
-      completedOn,
-      notes: payload.notes || '',
-      nextChoice: body.next_choice || body.nextChoice || null,
-      rememberChoice: Boolean(body.remember_choice ?? body.rememberChoice),
-      earlierChoice: body.earlier_choice || body.earlierChoice || null,
-      body,
-    }));
+    }, async (ctx) => {
+      const out = await completeOccurrenceCommand(ctx, {
+        occurrenceId,
+        completedOn,
+        notes: payload.notes || '',
+        nextChoice: body.next_choice || body.nextChoice || null,
+        rememberChoice: Boolean(body.remember_choice ?? body.rememberChoice),
+        earlierChoice: body.earlier_choice || body.earlierChoice || null,
+        body,
+      });
+      if (out?.event) {
+        out.event.extra = {
+          ...(out.event.extra || {}),
+          observation: { kind: 'numeric_weight', id: weightId, created: true },
+        };
+      }
+      return out;
+    });
     if (!out) {
       return { status: 404, body: { error: 'Occurrence not found' } };
     }

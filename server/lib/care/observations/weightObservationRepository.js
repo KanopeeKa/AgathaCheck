@@ -124,6 +124,57 @@ export async function updateWeightEntry(db, patch) {
  * @param {import('pg').Pool | import('pg').PoolClient} db
  * @param {string} id
  */
-export async function deleteWeightEntryById(db, id) {
+export async function deleteWeightEntryById(db, id, occurrenceId = null) {
+  if (occurrenceId) {
+    await db.query(
+      'DELETE FROM weight_entries WHERE id = $1 AND health_occurrence_id = $2',
+      [id, occurrenceId],
+    );
+    return;
+  }
   await db.query('DELETE FROM weight_entries WHERE id = $1', [id]);
+}
+
+/**
+ * @param {import('pg').Pool | import('pg').PoolClient} db
+ * @param {string|null} weightId when null, unlinks any row for the occurrence
+ * @param {string} occurrenceId
+ */
+export async function unlinkWeightFromOccurrence(db, weightId, occurrenceId) {
+  if (weightId) {
+    const result = await db.query(
+      `UPDATE weight_entries SET health_occurrence_id = NULL
+       WHERE id = $1 AND health_occurrence_id = $2
+       RETURNING id`,
+      [weightId, occurrenceId],
+    );
+    return result.rows[0] || null;
+  }
+  const result = await db.query(
+    `UPDATE weight_entries SET health_occurrence_id = NULL
+     WHERE health_occurrence_id = $1
+     RETURNING id`,
+    [occurrenceId],
+  );
+  return result.rows[0] || null;
+}
+
+/**
+ * @param {import('pg').Pool | import('pg').PoolClient} db
+ * @param {string} occurrenceId
+ * @param {string} dateIso YYYY-MM-DD
+ * @returns {Promise<{ date_before: Date|string }|null>}
+ */
+export async function updateWeightDateForOccurrence(db, occurrenceId, dateIso) {
+  const existing = await db.query(
+    'SELECT id, date FROM weight_entries WHERE health_occurrence_id = $1 LIMIT 1',
+    [occurrenceId],
+  );
+  if (!existing.rows[0]) return null;
+  const dateBefore = existing.rows[0].date;
+  await db.query(
+    'UPDATE weight_entries SET date = $1 WHERE health_occurrence_id = $2',
+    [dateIso, occurrenceId],
+  );
+  return { date_before: dateBefore };
 }
