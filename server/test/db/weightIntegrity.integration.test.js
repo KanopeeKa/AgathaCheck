@@ -1,11 +1,10 @@
 /**
  * W2 linked weigh-in integrity (§8.2 L-1 … L-12).
  */
-import { randomUUID } from 'crypto';
-
 import { afterAll, beforeAll, describe, expect, it } from '@jest/globals';
 import request from 'supertest';
 
+import { dateToIsoDate } from '../../lib/calendarDate.js';
 import {
   careApi,
   createOwner,
@@ -79,7 +78,7 @@ describe('W2 weigh-in integrity', () => {
     );
     expect(occRow.rows[0].status).toBe('pending');
     const pet = await harness.pool.query('SELECT weight FROM pets WHERE id = $1', [owner.petId]);
-    expect(Number(pet.rows[0].weight)).toBeNaN() || pet.rows[0].weight == null;
+    expect(pet.rows[0].weight).toBeNull();
 
     const again = await completeWeight(entry, occ.id, '2026-06-01T11:00', {
       weight: 11.1, unit: 'kg', date: '2026-06-01', completed_on: '2026-06-01',
@@ -90,29 +89,17 @@ describe('W2 weigh-in integrity', () => {
   it('L-2 legacy completed ledger without observation unlinks weight on undo', async () => {
     const entry = await createWeighIn('2026-06-10');
     const occ = entry.open_occurrences[0];
-    const weightId = randomUUID();
+    const done = await completeWeight(entry, occ.id, '2026-06-10T10:00', {
+      weight: 9.5, unit: 'kg', date: '2026-06-10', completed_on: '2026-06-10',
+    });
+    expect(done.statusCode).toBe(201);
+    const weightId = done.body.weight_entry.id;
+    const eventId = done.body.undo_token;
     await harness.pool.query(
-      `INSERT INTO weight_entries
-        (id, pet_id, user_id, weight, unit, date, notes, measurement_source, health_occurrence_id)
-       VALUES ($1, $2, $3, 9.5, 'kg', '2026-06-10', '', 'guardian', $4)`,
-      [weightId, owner.petId, owner.userId, occ.id],
-    );
-    await harness.pool.query(
-      `UPDATE health_occurrences SET status = 'completed', completed_on = '2026-06-10'
+      `UPDATE care_schedule_events
+       SET payload = payload - 'observation'
        WHERE id = $1`,
-      [occ.id],
-    );
-    const eventId = randomUUID();
-    await harness.pool.query(
-      `INSERT INTO care_schedule_events
-        (id, health_entry_id, health_occurrence_id, event_type, payload, occurred_at)
-       VALUES ($1, $2, $3, 'completed', $4::jsonb, NOW())`,
-      [
-        eventId,
-        entry.id,
-        occ.id,
-        JSON.stringify({ closed: [{ id: occ.id, status: 'completed' }], created: [] }),
-      ],
+      [eventId],
     );
     const undo = await api.at('2026-06-10T12:00').undo(entry.id, { undo_token: eventId });
     expect(undo.statusCode).toBe(200);
@@ -142,7 +129,7 @@ describe('W2 weigh-in integrity', () => {
       'SELECT completed_on, completion_timing FROM health_occurrences WHERE id = $1',
       [occ.id],
     );
-    expect(String(occRow.rows[0].completed_on).slice(0, 10)).toBe('2026-06-08');
+    expect(dateToIsoDate(occRow.rows[0].completed_on)).toBe('2026-06-08');
     expect(occRow.rows[0].completion_timing).toBeTruthy();
     const events = await harness.pool.query(
       `SELECT event_type FROM care_schedule_events
@@ -168,9 +155,9 @@ describe('W2 weigh-in integrity', () => {
       'SELECT completed_on FROM health_occurrences WHERE id = $1',
       [occ.id],
     );
-    expect(String(occRow.rows[0].completed_on).slice(0, 10)).toBe('2026-07-01');
+    expect(dateToIsoDate(occRow.rows[0].completed_on)).toBe('2026-07-01');
     const weight = await harness.pool.query('SELECT date FROM weight_entries WHERE id = $1', [weightId]);
-    expect(String(weight.rows[0].date).slice(0, 10)).toBe('2026-07-01');
+    expect(dateToIsoDate(weight.rows[0].date)).toBe('2026-07-01');
   });
 
   it('L-5 PUT linked weight rejects invalid dates', async () => {
@@ -204,11 +191,11 @@ describe('W2 weigh-in integrity', () => {
     });
     expect(patched.statusCode).toBe(200);
     const weight = await harness.pool.query('SELECT date FROM weight_entries WHERE id = $1', [weightId]);
-    expect(String(weight.rows[0].date).slice(0, 10)).toBe('2026-09-04');
+    expect(dateToIsoDate(weight.rows[0].date)).toBe('2026-09-04');
     const undo = await api.at('2026-09-04T10:05').undo(entry.id, { undo_token: patched.body.undo_token });
     expect(undo.statusCode).toBe(200);
     const weightAfter = await harness.pool.query('SELECT date FROM weight_entries WHERE id = $1', [weightId]);
-    expect(String(weightAfter.rows[0].date).slice(0, 10)).toBe('2026-09-01');
+    expect(dateToIsoDate(weightAfter.rows[0].date)).toBe('2026-09-01');
   });
 
   it('L-7 PUT linked weight value only does not add a care ledger event', async () => {

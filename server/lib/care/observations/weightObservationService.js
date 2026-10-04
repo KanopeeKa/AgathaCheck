@@ -140,14 +140,17 @@ export async function updateWeight(pool, params) {
   if (parsed.error) {
     throw new WeightValidationError(parsed.error);
   }
-  const dateVal = await resolveWeightDateForPet(
-    pool,
-    existing.pet_id,
-    params.date,
-    params.req,
-  );
   const previousDate = dateToIsoDate(existing.date);
   const linkedOccurrenceId = existing.health_occurrence_id;
+  const normalizedDate = normalizeCalendarDateInput(params.date) || previousDate;
+  const dateVal = linkedOccurrenceId && normalizedDate !== previousDate
+    ? normalizedDate
+    : await resolveWeightDateForPet(
+      pool,
+      existing.pet_id,
+      params.date,
+      params.req,
+    );
 
   if (linkedOccurrenceId && dateVal !== previousDate) {
     const careLink = await pool.query(
@@ -182,9 +185,10 @@ export async function updateWeight(pool, params) {
       return { row: refreshed || weightRow, undoToken: out?.undoToken ?? null };
     } catch (err) {
       if (err instanceof CareCommandError) {
-        throw new WeightValidationError(err.message, {
+        const body = err.toBody();
+        throw new WeightValidationError(body.error, {
           status: err.status,
-          code: err.code,
+          code: body.code,
         });
       }
       throw err;
