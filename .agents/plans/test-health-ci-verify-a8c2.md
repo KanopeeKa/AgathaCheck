@@ -218,17 +218,17 @@ tags: [execute-plan, test-health, verification]
 
 ```yaml
 autonomy: active
-current_phase: 1
-last_completed_phase: null
+current_phase: 2
+last_completed_phase: 1
 halt_reason: null
-next_action: "continue phase 1 on branch cursor/test-health-verify-uat-smoke-edcb"
+next_action: "start phase 2: checkout cursor/test-health-verify-weekly-jobs-edcb"
 artifact_ref:
-  branch: cursor/test-health-verify-uat-smoke-edcb
+  branch: cursor/test-health-ci-verify-integration-edcb
   plan_path: .agents/plans/test-health-ci-verify-a8c2.md
-  plan_commit: 43567b7e8288390d289d2344b144fe3329c49b44
+  plan_commit: e1ff09dd15c306de45825e0db6189c9404ea7e02
   snapshot_path: .agents/plans/test-health-ci-verify-a8c2.snapshot.json
-  snapshot_commit: 43567b7e8288390d289d2344b144fe3329c49b44
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1528"]
+  snapshot_commit: e1ff09dd15c306de45825e0db6189c9404ea7e02
+open_prs: []
 merge_commits: {}
 debt_issue_refs: []
 ```
