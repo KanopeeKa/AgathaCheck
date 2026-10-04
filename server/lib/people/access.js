@@ -1,16 +1,52 @@
 import { CO_PARENT_ROLE, userCanManageProfile } from '../petAccess.js';
+import { HOUSEHOLD_TIER_FULL } from '../households/constants.js';
+import { canManageHouseholdDirectory } from '../households/memberRemoval.js';
 import { getPersonalDirectoryId } from './directory.js';
 import { PeopleError, PEOPLE_ERROR_CODES } from './errors.js';
 
 /**
- * Directory ids the viewer may list (personal only until household directories in s5).
+ * Directory ids the viewer may list (personal + household directories with Full access).
  * @param {import('pg').Pool|import('pg').PoolClient} pool
  * @param {string} userId
  * @returns {Promise<string[]>}
  */
 export async function visibleDirectoryIds(pool, userId) {
-  const id = await getPersonalDirectoryId(pool, userId);
-  return id ? [id] : [];
+  const ids = [];
+  const personal = await getPersonalDirectoryId(pool, userId);
+  if (personal) ids.push(personal);
+
+  const householdDirs = await pool.query(
+    `SELECT pd.id
+     FROM people_directories pd
+     INNER JOIN household_members hm ON hm.household_id = pd.household_id
+     WHERE hm.user_id = $1
+       AND (hm.is_organiser = true OR hm.access_tier = $2)`,
+    [userId, HOUSEHOLD_TIER_FULL],
+  );
+  for (const row of householdDirs.rows) {
+    ids.push(row.id);
+  }
+  return ids;
+}
+
+/**
+ * @param {import('pg').Pool|import('pg').PoolClient} pool
+ * @param {string} contactId
+ * @returns {Promise<{ householdId: string|null, ownerUserId: string|null }>}
+ */
+async function getContactDirectoryContext(pool, contactId) {
+  const result = await pool.query(
+    `SELECT pd.household_id, pd.owner_user_id
+     FROM people_contacts pc
+     INNER JOIN people_directories pd ON pd.id = pc.directory_id
+     WHERE pc.id = $1`,
+    [contactId],
+  );
+  const row = result.rows[0];
+  return {
+    householdId: row?.household_id ?? null,
+    ownerUserId: row?.owner_user_id ?? null,
+  };
 }
 
 /**
@@ -35,8 +71,22 @@ async function isPersonalDirectoryOwner(pool, contactId, userId) {
  * @param {string} contactId
  * @param {string} viewerUserId
  */
+async function canViewHouseholdDirectoryContact(pool, contactId, viewerUserId) {
+  const { householdId } = await getContactDirectoryContext(pool, contactId);
+  if (!householdId) return false;
+  return canManageHouseholdDirectory(pool, householdId, viewerUserId);
+}
+
+/**
+ * @param {import('pg').Pool|import('pg').PoolClient} pool
+ * @param {string} contactId
+ * @param {string} viewerUserId
+ */
 export async function canViewContact(pool, contactId, viewerUserId) {
   if (await isPersonalDirectoryOwner(pool, contactId, viewerUserId)) {
+    return true;
+  }
+  if (await canViewHouseholdDirectoryContact(pool, contactId, viewerUserId)) {
     return true;
   }
   const related = await pool.query(
@@ -64,7 +114,12 @@ export async function canViewContact(pool, contactId, viewerUserId) {
  * @param {string} userId
  */
 export async function canEditContact(pool, contactId, userId) {
-  return isPersonalDirectoryOwner(pool, contactId, userId);
+  if (await isPersonalDirectoryOwner(pool, contactId, userId)) return true;
+  const { householdId } = await getContactDirectoryContext(pool, contactId);
+  if (householdId) {
+    return canManageHouseholdDirectory(pool, householdId, userId);
+  }
+  return false;
 }
 
 /**
@@ -78,23 +133,38 @@ export async function getPetOwnerUserId(pool, petId) {
 }
 
 /**
- * Contact in caller's directory or the pet record owner's personal directory.
+ * Contact in caller's directory, pet owner's personal directory, or the pet's household directory.
  * @param {import('pg').Pool|import('pg').PoolClient} pool
  * @param {string} contactId
  * @param {string} callerUserId
  * @param {string|null} petOwnerUserId
+ * @param {string|null} [petId]
  */
 export async function contactInEditableDirectoriesForPet(
   pool,
   contactId,
   callerUserId,
   petOwnerUserId,
+  petId = null,
 ) {
   if (await isPersonalDirectoryOwner(pool, contactId, callerUserId)) return true;
   if (petOwnerUserId && petOwnerUserId !== callerUserId) {
-    return isPersonalDirectoryOwner(pool, contactId, petOwnerUserId);
+    if (await isPersonalDirectoryOwner(pool, contactId, petOwnerUserId)) return true;
   }
-  return false;
+  if (!petId) return false;
+
+  const householdDir = await pool.query(
+    `SELECT pd.household_id
+     FROM people_directories pd
+     INNER JOIN household_pets hp ON hp.household_id = pd.household_id
+     INNER JOIN people_contacts pc ON pc.directory_id = pd.id
+     WHERE pc.id = $1 AND hp.pet_id = $2 AND pd.household_id IS NOT NULL
+     LIMIT 1`,
+    [contactId, petId],
+  );
+  const householdId = householdDir.rows[0]?.household_id;
+  if (!householdId) return false;
+  return canManageHouseholdDirectory(pool, householdId, callerUserId);
 }
 
 /**
@@ -107,7 +177,7 @@ export async function canAttachContactToPet(pool, userId, contactId, petId) {
   if (!(await userCanManageProfile(pool, petId, userId))) return false;
   const petOwnerId = await getPetOwnerUserId(pool, petId);
   if (!petOwnerId) return false;
-  return contactInEditableDirectoriesForPet(pool, contactId, userId, petOwnerId);
+  return contactInEditableDirectoriesForPet(pool, contactId, userId, petOwnerId, petId);
 }
 
 const HANDOVER_SLOT_KINDS = [

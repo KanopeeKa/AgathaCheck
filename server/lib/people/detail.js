@@ -22,6 +22,7 @@ import {
 } from './contactSummary.js';
 import { listUsages } from './usages.js';
 import { listForPet } from './relationships.js';
+import { householdNoteForViewer } from './householdNotes.js';
 
 async function loadContactRow(pool, contactId, viewerUserId) {
   const result = await pool.query(
@@ -124,11 +125,18 @@ export async function contactDetail(pool, userId, contactId) {
   const directory = directoryWire(row.directory_id, row.directory_household_id ?? null);
   const summaryFields = contactRowToSummary(row, { directory });
 
-  const [worksAt, staff, usages, linkedAccount] = await Promise.all([
+  const [worksAt, staff, usages, linkedAccount, householdNote] = await Promise.all([
     loadWorksAtDetail(pool, row.works_at_contact_id),
     row.kind === 'organisation' ? loadStaffContacts(pool, contactId) : Promise.resolve([]),
     listUsages(pool, contactId),
     row.linked_user_id ? loadLinkedAccount(pool, row.linked_user_id) : Promise.resolve(null),
+    householdNoteForViewer(
+      pool,
+      contactId,
+      row.directory_household_id ?? null,
+      userId,
+      row.linked_user_id ?? null,
+    ),
   ]);
 
   return {
@@ -139,7 +147,7 @@ export async function contactDetail(pool, userId, contactId) {
     works_at: worksAt,
     staff,
     usage_counts: usageCounts(usages),
-    household_note: null,
+    household_note: householdNote,
     linked_account: linkedAccount,
   };
 }

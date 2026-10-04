@@ -28,12 +28,19 @@ export async function userOwnsContact(pool, contactId, userId) {
  * @param {string} callerUserId
  * @param {string} petOwnerUserId
  */
-export async function contactUsableForPet(pool, contactId, callerUserId, petOwnerUserId) {
+export async function contactUsableForPet(
+  pool,
+  contactId,
+  callerUserId,
+  petOwnerUserId,
+  petId = null,
+) {
   return contactInEditableDirectoriesForPet(
     pool,
     contactId,
     callerUserId,
     petOwnerUserId,
+    petId,
   );
 }
 
