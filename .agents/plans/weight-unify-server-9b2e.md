@@ -9,7 +9,7 @@
 | **plan_id** | `weight-unify-server-9b2e` |
 | **parent** | `weight-monitoring-unify-9b2e` (roadmap; W0 runs there as a docs PR to `main` before this child) |
 | **base_branch** | `cursor/weight-unify-server-integration-9b2e` (create from a fresh `origin/main` at bootstrap) |
-| **control issue** | own issue, created at bootstrap under the roadmap's standing grant (roadmap §11.1); placeholder `999999` until then |
+| **control issue** | [#1557](https://github.com/KanopeeKa/AgathaCheck/issues/1557) (standing grant from roadmap #1537) |
 | **landing** | integration → `main` PR, `/babysit-uat` until pre-UAT green, then the landing broadcast (roadmap §10.4) |
 | **entry gate** | roadmap §10.1: W0 merged on `main`; PEOPLE `people-server-7f3b` not in progress; no ARCH PR open on the weight routes, `healthEntries` routes or `pets/coreRouter.js`; no other programme `main` PR open at landing |
 | **default_merge_mode** | `auto` |
