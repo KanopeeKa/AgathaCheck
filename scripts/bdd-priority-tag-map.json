@@ -74,6 +74,7 @@
   },
   "health_tracking.feature": {
     "Creating a medication entry": "P0",
+    "Planned care entry saves with due date only": "P1",
     "Creating a preventive entry": "P1",
     "Creating a vet visit entry": "P1",
     "Creating a procedure entry": "P1",
