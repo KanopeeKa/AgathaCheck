@@ -46,8 +46,10 @@ jobs:
           cd server && npm ci
           node scripts/migrate.js up
           node bin/start.js &
-          for i in $(seq 1 30); do
-            curl -sf http://127.0.0.1:3000/backend/health && break
+          n=0
+          until curl -sf http://127.0.0.1:3000/backend/health; do
+            n=$((n + 1))
+            if [ "$n" -ge 30 ]; then exit 1; fi
             sleep 2
           done
 
