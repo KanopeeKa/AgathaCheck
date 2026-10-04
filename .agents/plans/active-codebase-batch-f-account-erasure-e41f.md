@@ -42,17 +42,17 @@ Today's defect, for reference: `DELETE /api/auth/me` (`server/routes/auth/profil
 
 ```yaml
 autonomy: active
-current_phase: 1
-last_completed_phase: null
+current_phase: 2
+last_completed_phase: 1
 halt_reason: null
-next_action: "continue phase 1 on branch cursor/active-codebase-f1-erasure-data-map-e41f"
+next_action: "start phase 2: checkout cursor/active-codebase-f2-erasure-service-e41f"
 artifact_ref:
-  branch: cursor/active-codebase-f1-erasure-data-map-e41f
+  branch: cursor/active-codebase-f-integration-e41f
   plan_path: .agents/plans/active-codebase-batch-f-account-erasure-e41f.md
-  plan_commit: f19bc2ec9b4ca6fa64a91d0697fbf0a38f547b88
+  plan_commit: 54175b9365696d82eb9bfa7e83fb780687ac960e
   snapshot_path: .agents/plans/active-codebase-batch-f-account-erasure-e41f.snapshot.json
-  snapshot_commit: f19bc2ec9b4ca6fa64a91d0697fbf0a38f547b88
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1506"]
+  snapshot_commit: 54175b9365696d82eb9bfa7e83fb780687ac960e
+open_prs: []
 merge_commits: {}
 debt_issue_refs: []
 ```
