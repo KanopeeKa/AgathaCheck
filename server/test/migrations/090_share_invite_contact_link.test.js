@@ -5,14 +5,14 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const migrationPath = path.resolve(
   __dirname,
-  '../../../db/migrations/089_share_invite_contact_link.sql',
+  '../../../db/migrations/090_share_invite_contact_link.sql',
 );
 const downPath = path.resolve(
   __dirname,
-  '../../../db/migrations/089_share_invite_contact_link_down.sql',
+  '../../../db/migrations/090_share_invite_contact_link_down.sql',
 );
 
-describe('089_share_invite_contact_link migration', () => {
+describe('090_share_invite_contact_link migration', () => {
   const sql = fs.readFileSync(migrationPath, 'utf8');
   const downSql = fs.readFileSync(downPath, 'utf8');
 

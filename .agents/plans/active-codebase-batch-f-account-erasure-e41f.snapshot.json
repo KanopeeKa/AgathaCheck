@@ -2,13 +2,13 @@
   "schema_version": 1,
   "plan_id": "active-codebase-batch-f-account-erasure-e41f",
   "programme_ref": "docs/architecture/reviews/active-codebase-review.md",
-  "approved_at": null,
-  "approved_by": "standing grant — roadmap active-codebase-completion-e41f (pending approve-autonomous active-codebase-completion-e41f)",
-  "approved_until": null,
+  "approved_at": "2026-10-04T17:36:00Z",
+  "approved_by": "standing grant — roadmap active-codebase-completion-e41f (#1446); approve-autonomous active-codebase-batch-f-account-erasure-e41f (roadmap chain bootstrap)",
+  "approved_until": "2026-10-06T17:36:00Z",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/active-codebase-f-integration-e41f",
-  "control_issue": null,
+  "control_issue": 1505,
   "artifact_branch_policy": "phase-branch",
   "phases": [
     {
@@ -38,13 +38,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "governance",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1506",
+      "pr_head_sha": "fc886b3f"
     },
     {
       "id": "2",
@@ -82,13 +81,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1510",
+      "pr_head_sha": "d0142ff5"
     },
     {
       "id": "3",
@@ -102,7 +100,9 @@
         "server/lib/privateHealthStorage.js",
         "server/routes/pets/photoRouter.js",
         "server/routes/healthEntries/shared.js",
+        "server/routes/healthEntries/documentsRouter.js",
         "server/test/auth/accountExistence*.test.js",
+        "server/test/db/accountExistence*.test.js",
         "server/test/db/erasureRace*.test.js",
         "docs/ops/observability.md"
       ],
@@ -120,13 +120,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1516",
+      "pr_head_sha": "1f3f89b7"
     },
     {
       "id": "4",
@@ -135,6 +134,7 @@
       "allowed_paths": [
         ".agents/plans/active-codebase-batch-f-account-erasure-e41f.*",
         "flutter_app/lib/features/auth/presentation/screens/my_details_screen.dart",
+        "flutter_app/lib/features/auth/presentation/screens/landing_screen.dart",
         "flutter_app/lib/features/auth/data/auth_service.dart",
         "flutter_app/lib/l10n/app_en.arb",
         "flutter_app/lib/l10n/app_fr.arb",
@@ -159,13 +159,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "bdd-journey",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1519",
+      "pr_head_sha": "fecc8ea8"
     },
     {
       "id": "5",
@@ -185,14 +184,13 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1522",
+      "pr_head_sha": "1eb812db"
     }
   ],
-  "content_hash": null
+  "content_hash": "sha256:27ad70858dbb8285dc9b4aa1adbb840777c7409d293a43aa02c6d401832825bc"
 }

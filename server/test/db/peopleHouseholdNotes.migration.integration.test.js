@@ -25,7 +25,7 @@ afterAll(async () => {
   if (pool) await pool.end();
 });
 
-describe('088_people_household_notes migration (real PG)', () => {
+describe('089_people_household_notes migration (real PG)', () => {
   it('applies and rolls back cleanly', async () => {
     await applyPeopleHouseholdNotesDown(pool);
     await applyPeopleHouseholdNotesMigration(pool);

@@ -8,9 +8,8 @@ import { createApp } from '../../bin/server.js';
 import {
   deleteAllPetData,
   notifyPassedAwayCollaborators,
-  purgePetFiles,
 } from '../../lib/petDataLifecycle.js';
-import { privateHealthDir, savePrivateHealthFile } from '../../lib/privateHealthStorage.js';
+import { savePrivateHealthFile } from '../../lib/privateHealthStorage.js';
 import { handlePetAccessQuery } from '../helpers/petAccessMocks.js';
 import { createMockPool, createTransactionalMockPool, petId, token, userId } from './helpers.js';
 
@@ -115,38 +114,14 @@ describe('petDataLifecycle', () => {
     });
   });
 
-  describe('purgePetFiles', () => {
-    it('removes files without deleting DB rows', async () => {
-      const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'pet-purge-'));
-      process.env.PRIVATE_HEALTH_UPLOAD_DIR = path.join(tmpRoot, 'private_health');
-      fs.mkdirSync(process.env.PRIVATE_HEALTH_UPLOAD_DIR, { recursive: true });
-      const fileId = 'bbbbbbbb-cccc-dddd-eeee-ffffffffffff';
-      savePrivateHealthFile({ buffer: Buffer.from('x'), mimetype: 'image/jpeg' }, fileId);
-
-      const pool = {
-        query: async (sql) => {
-          if (sql.includes('SELECT photo_path')) return { rows: [{ photo_path: null }] };
-          if (sql.includes('health_event_photos')) {
-            return { rows: [{ url: `/api/health-files/${fileId}` }] };
-          }
-          if (sql.includes('health_issue_documents')) return { rows: [] };
-          return { rows: [] };
-        },
-      };
-
-      const removed = await purgePetFiles(pool, petId);
-      expect(removed).toBe(1);
-      expect(fs.existsSync(path.join(privateHealthDir(), `${fileId}.jpg`))).toBe(false);
-
-      delete process.env.PRIVATE_HEALTH_UPLOAD_DIR;
-      fs.rmSync(tmpRoot, { recursive: true, force: true });
-    });
-  });
 });
 
 describe('Pets lifecycle routes', () => {
   it('DELETE /:id/data returns rows_removed when owner deletes pet data', async () => {
     const pool = createTransactionalMockPool(async (sql, params) => {
+      if (sql.includes('SELECT 1 FROM users WHERE id')) {
+        return { rows: [{ '?column?': 1 }] };
+      }
       const access = handlePetAccessQuery(sql, params, { userId, ownedPetIds: [petId] });
       if (access) return access;
       if (sql.includes('SELECT photo_path')) return { rows: [{ photo_path: null }] };

@@ -40,7 +40,8 @@ Validate with `node scripts/validate_openapi.js`; Jest contract tests in
 | POST | `/change-password` | body `{ currentPassword, newPassword }` |
 | POST | `/forgot-password` | public; the reset `code` is returned/logged **only outside production** |
 | POST | `/reset-password` | public; body `{ email, code, new_password }` |
-| DELETE | `/me` | body `{ password }`; deletes account |
+| DELETE | `/me` | body `{ password }`; **202** erasure accepted (`message`, `erasure.operation_id`, `status_token` on first accept); idempotent **202** retry omits `status_token` |
+| GET | `/erasure/:operationId` | public to holder of `X-Erasure-Status-Token` (auth rate limit); erasure progress — see [account-erasure runbook](../ops/account-erasure.md) |
 | GET | `/me/export` | GDPR JSON export |
 
 ### Pets (`/api/pets`)

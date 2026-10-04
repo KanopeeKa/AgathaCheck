@@ -227,8 +227,12 @@ describe('Auth Routes — Profile', () => {
         .delete('/api/auth/me')
         .set('Authorization', `Bearer ${token}`)
         .send({ password: 'testpassword' });
-      expect(res.statusCode).toBe(200);
-      expect(res.body).toHaveProperty('message', 'Account deleted successfully');
+      expect(res.statusCode).toBe(202);
+      expect(typeof res.body.message).toBe('string');
+      expect(res.body.message.length).toBeGreaterThan(0);
+      expect(res.body.erasure).toMatchObject({ status: 'accepted' });
+      expect(res.body.erasure.operation_id).toBeTruthy();
+      expect(res.body.erasure.status_token).toBeTruthy();
     });
 
     it('should return 400 with incorrect password', async () => {

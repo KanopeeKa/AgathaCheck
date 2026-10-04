@@ -52,6 +52,81 @@
         }
       }
     },
+    "/auth/me": {
+      "delete": {
+        "operationId": "authDeleteAccount",
+        "description": "Accepts account erasure (202). Body requires password; may include confirm_household_pets.",
+        "responses": {
+          "202": {
+            "description": "Erasure accepted",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AccountErasureAcceptedResponse" }
+              }
+            }
+          },
+          "409": {
+            "description": "Household pets require confirmation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["error", "code"],
+                  "properties": {
+                    "error": { "type": "string" },
+                    "code": { "const": "household_pets_require_confirmation" },
+                    "pets": { "type": "array", "items": { "type": "object" } }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/erasure/{operationId}": {
+      "get": {
+        "operationId": "authErasureStatus",
+        "parameters": [
+          {
+            "name": "operationId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          },
+          {
+            "name": "X-Erasure-Status-Token",
+            "in": "header",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Erasure progress",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AccountErasureStatusResponse" }
+              }
+            }
+          },
+          "404": {
+            "description": "Unknown operation or invalid token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["error"],
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/pets": {
       "get": {
         "operationId": "listPets",
@@ -1007,6 +1082,53 @@
           "user": { "$ref": "#/components/schemas/User" },
           "access_token": { "type": "string" },
           "refresh_token": { "type": "string" }
+        }
+      },
+      "AccountErasureAcceptedResponse": {
+        "type": "object",
+        "required": ["message", "erasure"],
+        "additionalProperties": false,
+        "properties": {
+          "message": { "type": "string" },
+          "erasure": {
+            "type": "object",
+            "required": ["operation_id", "status"],
+            "properties": {
+              "operation_id": { "type": "string", "format": "uuid" },
+              "status": { "type": "string", "enum": ["accepted", "in_progress", "completed", "failed"] },
+              "status_token": { "type": "string", "description": "One-time token; omitted on idempotent retry" }
+            }
+          }
+        }
+      },
+      "AccountErasureStatusResponse": {
+        "type": "object",
+        "required": ["operation_id", "status", "steps"],
+        "additionalProperties": false,
+        "properties": {
+          "operation_id": { "type": "string", "format": "uuid" },
+          "status": { "type": "string", "enum": ["accepted", "in_progress", "completed", "failed"] },
+          "steps": {
+            "type": "object",
+            "required": ["database", "files", "analytics"],
+            "properties": {
+              "database": { "const": "completed" },
+              "files": {
+                "type": "object",
+                "required": ["total", "succeeded", "pending", "dead"],
+                "properties": {
+                  "total": { "type": "integer" },
+                  "succeeded": { "type": "integer" },
+                  "pending": { "type": "integer" },
+                  "dead": { "type": "integer" }
+                }
+              },
+              "analytics": {
+                "type": "string",
+                "enum": ["pending", "completed", "failed", "not_configured"]
+              }
+            }
+          }
         }
       },
       "Pet": {

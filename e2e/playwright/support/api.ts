@@ -216,11 +216,21 @@ export async function exportUserData(
   return res.json<UserDataExport>();
 }
 
+export interface DeleteAccountApiResult {
+  message: string;
+  httpStatus: number;
+  erasure?: {
+    operation_id: string;
+    status: string;
+    status_token?: string;
+  };
+}
+
 export async function deleteAccount(
   baseURL: string,
   token: string,
   password: string,
-): Promise<void> {
+): Promise<DeleteAccountApiResult> {
   const res = await apiFetch(apiUrl('/auth/me', baseURL), {
     method: 'DELETE',
     headers: {
@@ -229,10 +239,107 @@ export async function deleteAccount(
     },
     body: JSON.stringify({ password }),
   });
+  const bodyText = await res.text();
   if (!res.ok) {
-    const body = await res.text();
-    throw new Error(`deleteAccount failed (${res.status}): ${body}`);
+    throw new Error(`deleteAccount failed (${res.status}): ${bodyText}`);
   }
+  const json = parseJson<{
+    message: string;
+    erasure?: DeleteAccountApiResult['erasure'];
+  }>(bodyText);
+  return {
+    message: json.message,
+    httpStatus: res.status,
+    erasure: json.erasure,
+  };
+}
+
+const AUTH_API_PREFIXES = ['/api', '/backend/api'] as const;
+
+export async function getAuthMeOnPrefix(
+  baseURL: string,
+  apiPrefix: string,
+  token: string,
+): Promise<{ status: number; body: { code?: string; error?: string } }> {
+  const root = baseURL.replace(/\/$/, '');
+  const res = await apiFetch(`${root}${apiPrefix}/auth/me`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const text = await res.text();
+  let body: { code?: string; error?: string } = {};
+  try {
+    body = parseJson(text);
+  } catch {
+    body = { error: text };
+  }
+  return { status: res.status, body };
+}
+
+export async function assertPreErasureTokenAccountUnavailable(
+  baseURL: string,
+  token: string,
+): Promise<void> {
+  for (const prefix of AUTH_API_PREFIXES) {
+    const { status, body } = await getAuthMeOnPrefix(baseURL, prefix, token);
+    if (status !== 401 || body.code !== 'account_unavailable') {
+      throw new Error(
+        `expected 401 account_unavailable on ${prefix}, got ${status} ${JSON.stringify(body)}`,
+      );
+    }
+  }
+}
+
+export interface ErasureStatusResponse {
+  operation_id: string;
+  status: string;
+  steps: {
+    database: string;
+    files: { total: number; succeeded: number; pending: number; dead: number };
+    analytics: 'pending' | 'completed' | 'failed' | 'not_configured' | string;
+  };
+}
+
+export async function pollErasureStatusCompleted(
+  baseURL: string,
+  operationId: string,
+  statusToken: string,
+  timeoutMs = 60_000,
+): Promise<ErasureStatusResponse> {
+  const root = baseURL.replace(/\/$/, '');
+  const prefix = API_PREFIX;
+  const deadline = Date.now() + timeoutMs;
+  let lastBody: ErasureStatusResponse | null = null;
+
+  while (Date.now() < deadline) {
+    const res = await apiFetch(`${root}${prefix}/auth/erasure/${operationId}`, {
+      headers: { 'X-Erasure-Status-Token': statusToken },
+    });
+    if (res.ok) {
+      lastBody = await res.json<ErasureStatusResponse>();
+      if (lastBody.status === 'completed') {
+        const files = lastBody.steps.files;
+        if (files.dead > 0) {
+          throw new Error(`erasure file jobs dead: ${JSON.stringify(files)}`);
+        }
+        if (files.pending > 0) {
+          throw new Error(`erasure file jobs still pending: ${JSON.stringify(files)}`);
+        }
+        if (files.total > 0 && files.succeeded !== files.total) {
+          throw new Error(`erasure file jobs incomplete: ${JSON.stringify(files)}`);
+        }
+        const analytics = lastBody.steps.analytics;
+        if (analytics !== 'completed' && analytics !== 'not_configured') {
+          throw new Error(`unexpected analytics step: ${analytics}`);
+        }
+        return lastBody;
+      }
+    }
+    await new Promise((resolve) => setTimeout(resolve, 500));
+  }
+
+  throw new Error(
+    `erasure status did not reach completed within ${timeoutMs}ms (last=${JSON.stringify(lastBody)})`,
+  );
 }
 
 export async function tryLogin(

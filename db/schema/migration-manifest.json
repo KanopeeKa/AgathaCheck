@@ -93,10 +93,11 @@
     "084_care_completion_date_event.sql",
     "085_cleanup_jobs.sql",
     "086_pet_lifecycle_notifications.sql",
-    "087_people_relationship_slots.sql",
-    "088_people_household_notes.sql",
-    "089_share_invite_contact_link.sql",
-    "090_household_invites.sql"
+    "087_account_erasure_operations.sql",
+    "088_people_relationship_slots.sql",
+    "089_people_household_notes.sql",
+    "090_share_invite_contact_link.sql",
+    "091_household_invites.sql"
   ],
   "code_migrations": [
     "016_migrate_family_events_placements.sql",

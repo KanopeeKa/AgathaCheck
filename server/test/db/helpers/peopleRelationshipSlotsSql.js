@@ -6,14 +6,14 @@ const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../
 
 export function peopleRelationshipSlotsMigrationSql() {
   return fs.readFileSync(
-    path.join(repoRoot, 'db/migrations/087_people_relationship_slots.sql'),
+    path.join(repoRoot, 'db/migrations/088_people_relationship_slots.sql'),
     'utf8',
   );
 }
 
 export function peopleRelationshipSlotsDownSql() {
   return fs.readFileSync(
-    path.join(repoRoot, 'db/migrations/087_people_relationship_slots_down.sql'),
+    path.join(repoRoot, 'db/migrations/088_people_relationship_slots_down.sql'),
     'utf8',
   );
 }

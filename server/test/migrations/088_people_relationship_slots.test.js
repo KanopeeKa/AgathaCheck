@@ -5,14 +5,14 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const migrationPath = path.resolve(
   __dirname,
-  '../../../db/migrations/087_people_relationship_slots.sql',
+  '../../../db/migrations/088_people_relationship_slots.sql',
 );
 const downPath = path.resolve(
   __dirname,
-  '../../../db/migrations/087_people_relationship_slots_down.sql',
+  '../../../db/migrations/088_people_relationship_slots_down.sql',
 );
 
-describe('087_people_relationship_slots migration', () => {
+describe('088_people_relationship_slots migration', () => {
   const sql = fs.readFileSync(migrationPath, 'utf8');
   const downSql = fs.readFileSync(downPath, 'utf8');
 

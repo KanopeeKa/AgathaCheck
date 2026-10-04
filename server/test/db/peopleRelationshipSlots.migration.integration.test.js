@@ -25,7 +25,7 @@ afterAll(async () => {
   if (pool) await pool.end();
 });
 
-describe('087_people_relationship_slots migration (real PG)', () => {
+describe('088_people_relationship_slots migration (real PG)', () => {
   it('dedupes duplicate active primary_vet rows and enforces one active slot', async () => {
     await applyPeopleRelationshipSlotsDown(pool);
 

@@ -534,10 +534,10 @@ next_action: "continue phase s7-ship-main on branch cursor/people-server-s7-ship
 artifact_ref:
   branch: cursor/people-server-s7-ship-7f3b
   plan_path: .agents/plans/people-server-7f3b.md
-  plan_commit: 52de258f7d206e5c627c3da490c187130bda0c75
+  plan_commit: 476207a65bb3fce1c4a07ff5b6a76284d1a3efa5
   snapshot_path: .agents/plans/people-server-7f3b.snapshot.json
-  snapshot_commit: 52de258f7d206e5c627c3da490c187130bda0c75
-open_prs: []
+  snapshot_commit: 476207a65bb3fce1c4a07ff5b6a76284d1a3efa5
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1523"]
 merge_commits: {}
 debt_issue_refs: []
 ```
