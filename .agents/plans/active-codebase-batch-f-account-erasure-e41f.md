@@ -49,10 +49,10 @@ next_action: "continue phase 3 on branch cursor/active-codebase-f3-access-reject
 artifact_ref:
   branch: cursor/active-codebase-f3-access-rejection-e41f
   plan_path: .agents/plans/active-codebase-batch-f-account-erasure-e41f.md
-  plan_commit: ced3cb1dbd426dc9cf507d3f03ce17fa05db37bf
+  plan_commit: b745223948101200f2afde2c5a102eb4e5dcbe3c
   snapshot_path: .agents/plans/active-codebase-batch-f-account-erasure-e41f.snapshot.json
-  snapshot_commit: ced3cb1dbd426dc9cf507d3f03ce17fa05db37bf
-open_prs: []
+  snapshot_commit: b745223948101200f2afde2c5a102eb4e5dcbe3c
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1516"]
 merge_commits: {}
 debt_issue_refs: []
 ```

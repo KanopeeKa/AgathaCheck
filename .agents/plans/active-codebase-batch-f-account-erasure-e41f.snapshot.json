@@ -102,6 +102,7 @@
         "server/routes/healthEntries/shared.js",
         "server/routes/healthEntries/documentsRouter.js",
         "server/test/auth/accountExistence*.test.js",
+        "server/test/db/accountExistence*.test.js",
         "server/test/db/erasureRace*.test.js",
         "docs/ops/observability.md"
       ],
@@ -192,5 +193,5 @@
       "merge_commit": null
     }
   ],
-  "content_hash": "sha256:e7d933a2ffdbe3672cc14ebf94c616f807a12780779163617a1f381635d0f3e1"
+  "content_hash": "sha256:d8143efba5bd6fbc55bcc58a41bbf3f23f7f9fcbcbecb28190c2c47520d12142"
 }

@@ -9,9 +9,9 @@ import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from '@jest/globals';
 
 import { createApp } from '../../bin/server.js';
-import { applyAccountErasureMigration } from '../db/helpers/accountErasureSql.js';
-import { applyCleanupJobsMigration } from '../db/helpers/cleanupJobsSql.js';
-import { createDbPool } from '../db/helpers/careHarness.js';
+import { applyAccountErasureMigration } from './helpers/accountErasureSql.js';
+import { applyCleanupJobsMigration } from './helpers/cleanupJobsSql.js';
+import { createDbPool } from './helpers/careHarness.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'default_secret';
 
