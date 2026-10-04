@@ -122,9 +122,7 @@ void main() {
             ),
           ),
         ),
-        petListProvider.overrideWith(
-          () => _PetDetailPetListNotifier([pet]),
-        ),
+        petListProvider.overrideWith(() => _PetDetailPetListNotifier([pet])),
         allPetsIncludingOrgProvider.overrideWith((ref) async => [pet]),
         organizationListProvider.overrideWith(FakeOrganizationListNotifier.new),
         healthEntriesNotifierProvider.overrideWith(
@@ -247,7 +245,9 @@ void main() {
           petListFetchMetadataProvider.overrideWith(
             () => _StaleMetadataNotifier(),
           ),
-          organizationListProvider.overrideWith(FakeOrganizationListNotifier.new),
+          organizationListProvider.overrideWith(
+            FakeOrganizationListNotifier.new,
+          ),
           healthEntriesNotifierProvider.overrideWith(
             FakeHealthEntriesNotifier.new,
           ),

@@ -33,7 +33,9 @@ class PetListStaleBanner extends ConsumerWidget {
     final foreground = isInfo
         ? theme.colorScheme.onSecondaryContainer
         : theme.colorScheme.onErrorContainer;
-    final icon = isInfo ? Icons.cloud_off_outlined : Icons.warning_amber_outlined;
+    final icon = isInfo
+        ? Icons.cloud_off_outlined
+        : Icons.warning_amber_outlined;
 
     return Semantics(
       identifier: 'pet_list_stale_banner',
@@ -50,7 +52,9 @@ class PetListStaleBanner extends ConsumerWidget {
               Expanded(
                 child: Text(
                   message,
-                  style: theme.textTheme.bodyMedium?.copyWith(color: foreground),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: foreground,
+                  ),
                 ),
               ),
               if (!isInfo)
