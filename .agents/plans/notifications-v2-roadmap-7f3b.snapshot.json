@@ -11,19 +11,19 @@
   "base_branch": "main",
   "control_issue": 1571,
   "artifact_branch_policy": "phase-branch",
-  "current_child_plan_id": null,
+  "current_child_plan_id": "notifications-v2-pr2-7f3b",
   "child_plans": [
     {
       "plan_id": "notifications-v2-foundation-7f3b",
-      "status": "pending",
+      "status": "merged",
       "pr_url": null,
       "merge_commit": null
     },
     {
       "plan_id": "notifications-v2-pr1-7f3b",
-      "status": "pending",
-      "pr_url": null,
-      "merge_commit": null
+      "status": "merged",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1574",
+      "merge_commit": "ca1aa8e2"
     },
     {
       "plan_id": "notifications-v2-pr2-7f3b",
@@ -103,5 +103,5 @@
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:3907e4e7403101a28cd0b0d881deded774fcc1ed3645ffb22fb4e8d85db47633"
+  "content_hash": "sha256:90003fd1021073c5210e12e90e1b5333cb0159602704b05fe9237f66b9f90281"
 }

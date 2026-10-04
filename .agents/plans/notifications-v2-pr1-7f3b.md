@@ -79,18 +79,18 @@ infra/**
 ## Runtime
 
 ```yaml
-autonomy: active
-current_phase: 1
-last_completed_phase: null
+autonomy: completed
+current_phase: null
+last_completed_phase: 1
 halt_reason: null
-next_action: "continue phase 1 on branch cursor/notifications-v2-pr1-7f3b"
+next_action: "plan complete"
 artifact_ref:
-  branch: cursor/notifications-v2-pr1-7f3b
+  branch: cursor/notifications-v2-integration-7f3b
   plan_path: .agents/plans/notifications-v2-pr1-7f3b.md
-  plan_commit: 7cfba3b505dfaf413556fa6330802401d179a83a
+  plan_commit: ca1aa8e2c43ba8358dc860f4a281a49227d6c041
   snapshot_path: .agents/plans/notifications-v2-pr1-7f3b.snapshot.json
-  snapshot_commit: 7cfba3b505dfaf413556fa6330802401d179a83a
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1574"]
+  snapshot_commit: ca1aa8e2c43ba8358dc860f4a281a49227d6c041
+open_prs: []
 merge_commits: {}
 debt_issue_refs: []
 ```

@@ -4,7 +4,7 @@
   "approved_at": "2026-10-04T23:00:00Z",
   "approved_by": "GitHub #1571 approve-autonomous + user chat 2026-10-04 standing grant (notifications v2 roadmap)",
   "approved_until": "2026-10-06T23:00:00Z",
-  "autonomy": "active",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "cursor/notifications-v2-integration-7f3b",
   "control_issue": 1571,
@@ -45,13 +45,13 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1574",
-      "pr_head_sha": "7cfba3b505dfaf413556fa6330802401d179a83a"
+      "pr_head_sha": "ca1aa8e2c43ba8358dc860f4a281a49227d6c041"
     }
   ],
-  "content_hash": "sha256:3f4b02a720d416973466d18e4c9942f19e7b8d2dc0c48d82071c7a29904318ef"
+  "content_hash": "sha256:491d748401a720486f28d6f5e9eaa882bf46fa0955a453da0668a6bc84c2e766"
 }
