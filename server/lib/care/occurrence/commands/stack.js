@@ -6,7 +6,7 @@ import {
   SCHEDULE_EVENT_RECORDED,
   SCHEDULE_EVENT_STACK_RESOLVED,
 } from '../../schedule/scheduleEventLedger.js';
-import { badRequest, notOpen } from '../careCommandError.js';
+import { badRequest } from '../careCommandError.js';
 import { findOccurrence, markSkipped } from '../occurrenceRepository.js';
 import { closeAsDone } from './complete.js';
 
@@ -20,16 +20,19 @@ export async function resolveStackCommand(ctx, { given = [], notGiven = [], comp
   if (ids.length === 0) throw badRequest('nothing_to_record', 'given or not_given is required');
   if (new Set(ids).size !== ids.length) throw badRequest('duplicate_ids', 'An id appears twice');
   const byId = new Map(openRows.map((o) => [o.id, o]));
-  for (const id of ids) {
-    if (!byId.has(id)) throw notOpen();
+  const ignored = ids.filter((id) => !byId.has(id));
+  const openGiven = given.filter((id) => byId.has(id));
+  const openNotGiven = notGiven.filter((id) => byId.has(id));
+  if (openGiven.length === 0 && openNotGiven.length === 0) {
+    throw badRequest('nothing_to_update', 'Nothing in this list is still open');
   }
-  for (const id of given) {
+  for (const id of openGiven) {
     const row = byId.get(id);
     const completedOn = completedOnById[id] || (row.scheduled_date <= asOf.todayIso ? row.scheduled_date : asOf.todayIso);
     await closeAsDone(ctx, row, { completedOn });
     trace.closedRow(row);
   }
-  for (const id of notGiven) {
+  for (const id of openNotGiven) {
     const row = byId.get(id);
     await markSkipped(db, { entryId: entry.id, occurrenceId: id, closeReason: 'user', userId });
     trace.closedRow(row);
@@ -37,9 +40,13 @@ export async function resolveStackCommand(ctx, { given = [], notGiven = [], comp
   return {
     event: {
       type: SCHEDULE_EVENT_STACK_RESOLVED,
-      extra: { given, not_given: notGiven },
+      extra: { given: openGiven, not_given: openNotGiven, ignored },
     },
-    result: { given, notGiven },
+    result: {
+      given: openGiven,
+      notGiven: openNotGiven,
+      ignored,
+    },
   };
 }
 

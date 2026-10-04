@@ -30,6 +30,7 @@ import {
 } from '../../lib/care/occurrence/index.js';
 import {
   applyLateCompletionChoice,
+  careItemReadResponse,
   careItemWire,
   careItemsWire,
   parseLateCompletionChoice,
@@ -114,7 +115,7 @@ export function registerCrudRoutes(router, pool) {
         [req.params.id, userId]
       );
       if (result.rows.length === 0) return res.status(404).json({ error: 'Entry not found' });
-      res.json(await careItemWire(pool, result.rows[0], req));
+      res.json(await careItemReadResponse(pool, result.rows[0], req.params.id, req));
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }
