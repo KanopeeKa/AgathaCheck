@@ -86,8 +86,14 @@ describe('unauthenticated /api route matrix', () => {
           continue;
         }
 
-        if ([200, 201, 204].includes(res.statusCode)) {
-          failures.push(`${method} ${path} returned ${res.statusCode} without auth`);
+        const acceptable = [401, 403, 404];
+        if (['POST', 'PUT', 'PATCH'].includes(method)) {
+          acceptable.push(400);
+        }
+        if (!acceptable.includes(res.statusCode)) {
+          failures.push(
+            `${method} ${path} returned ${res.statusCode} without auth (expected ${acceptable.join(', ')})`,
+          );
         }
         if (res.statusCode >= 500) {
           failures.push(`${method} ${path} returned ${res.statusCode} (server error)`);

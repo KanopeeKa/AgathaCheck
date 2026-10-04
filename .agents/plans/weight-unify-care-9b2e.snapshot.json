@@ -1,0 +1,142 @@
+{
+  "schema_version": 1,
+  "plan_id": "weight-unify-care-9b2e",
+  "programme_ref": "docs/domains/weight_tracking/features/weight-monitoring-model.md",
+  "approved_at": "2026-10-04T21:35:55Z",
+  "approved_by": "standing grant — owner chat 2026-10-04 full programme W0 through child C; execute-plan delegated authority",
+  "approved_until": "2026-10-06T21:35:55Z",
+  "autonomy": "halted",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/weight-unify-care-integration-9b2e",
+  "control_issue": 999999,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "W8",
+      "title": "Occurrence screen: user unit, skip with a reason, completed and skipped views, weight refresh; legacy weigh-in path removed",
+      "branch": "cursor/weight-unify-w8-occurrence-9b2e",
+      "allowed_paths": [
+        ".agents/plans/weight-monitoring-unify-9b2e.*",
+        ".agents/plans/weight-unify-*-9b2e.*",
+        "flutter_app/lib/features/care_item/**",
+        "flutter_app/lib/features/health_tracking/**",
+        "flutter_app/lib/features/pet_profile/presentation/screens/widgets/add_weight_entry_sheet.dart",
+        "flutter_app/lib/features/pet_profile/presentation/controllers/weight_tracking_controller.dart",
+        "flutter_app/lib/features/weight_tracking/**",
+        "flutter_app/lib/core/weight/**",
+        "flutter_app/lib/l10n/**",
+        "scripts/feature-import-baseline.json",
+        "flutter_app/test/features/care_item/**",
+        "flutter_app/test/features/health_tracking/**",
+        "flutter_app/test/features/pet_profile/**",
+        "flutter_app/test/features/weight_tracking/**",
+        "flutter_app/test/core/**",
+        "flutter_app/test/ci_shards.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "e2e/**",
+        "db/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "W9",
+      "title": "Observation slot on the care item view and weight section",
+      "branch": "cursor/weight-unify-w9-care-view-9b2e",
+      "allowed_paths": [
+        ".agents/plans/weight-monitoring-unify-9b2e.*",
+        ".agents/plans/weight-unify-*-9b2e.*",
+        "flutter_app/lib/core/care/**",
+        "flutter_app/lib/main.dart",
+        "flutter_app/lib/features/weight_tracking/**",
+        "flutter_app/lib/features/health_tracking/presentation/screens/care_item_detail/**",
+        "flutter_app/lib/features/care_item/presentation/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/weight_tracking/**",
+        "flutter_app/test/features/health_tracking/**",
+        "flutter_app/test/features/care_item/**",
+        "flutter_app/test/core/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "e2e/**",
+        "db/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "W10",
+      "title": "BDD and Playwright for the care side; programme close-out",
+      "branch": "cursor/weight-unify-w10-e2e-9b2e",
+      "allowed_paths": [
+        ".agents/plans/weight-monitoring-unify-9b2e.*",
+        ".agents/plans/weight-unify-*-9b2e.*",
+        "flutter_app/test/bdd/features/weight_tracking.feature",
+        "e2e/playwright/tests/weight.*.spec.ts",
+        "e2e/playwright/pages/weight-*.page.ts",
+        "e2e/playwright/pages/occurrence*.page.ts",
+        "e2e/playwright/support/**",
+        "e2e/scripts/shard-files.mjs",
+        "e2e/scripts/spec-durations.json",
+        "docs/domains/weight_tracking/**",
+        "docs/agent-efficiency/parallel-programmes.md",
+        "flutter_app/lib/features/care_item/presentation/**",
+        "flutter_app/lib/features/weight_tracking/presentation/**",
+        "flutter_app/test/features/care_item/**",
+        "flutter_app/test/features/weight_tracking/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "db/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    }
+  ],
+  "content_hash": "sha256:1260519ac2093fa1d398e7ab5d55cb07099672119b1aab906cf5a1b6f941cef2"
+}

@@ -34,8 +34,12 @@ import { canManageHouseholdDirectory } from '../households/memberRemoval.js';
 import { householdNoteForViewer, upsertHouseholdNote } from './householdNotes.js';
 
 /** Use existing PoolClient when caller already holds a transaction (e.g. planned absence PATCH). */
+function isPgPool(db) {
+  return db != null && typeof db.connect === 'function' && typeof db.totalCount === 'number';
+}
+
 async function runInTransaction(db, fn) {
-  if (db && typeof db.connect === 'function') {
+  if (isPgPool(db)) {
     return withTransaction(db, fn);
   }
   return fn(db);

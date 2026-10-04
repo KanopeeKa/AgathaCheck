@@ -1,0 +1,148 @@
+{
+  "schema_version": 1,
+  "plan_id": "weight-unify-hub-9b2e",
+  "programme_ref": "docs/domains/weight_tracking/features/weight-monitoring-model.md",
+  "approved_at": "2026-10-04T21:35:55Z",
+  "approved_by": "standing grant — owner chat 2026-10-04 full programme W0 through child C; execute-plan delegated authority",
+  "approved_until": "2026-10-06T21:35:55Z",
+  "autonomy": "halted",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/weight-unify-hub-integration-9b2e",
+  "control_issue": 999999,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "W5",
+      "title": "Flutter foundations: core unit + preference + sync hooks, one weight cache, read-only pet weight",
+      "branch": "cursor/weight-unify-w5-foundations-9b2e",
+      "allowed_paths": [
+        ".agents/plans/weight-monitoring-unify-9b2e.*",
+        ".agents/plans/weight-unify-*-9b2e.*",
+        "flutter_app/lib/core/weight/**",
+        "flutter_app/lib/core/providers/pet_care_sync.dart",
+        "flutter_app/lib/core/providers/pet_weight_invalidation.dart",
+        "flutter_app/lib/main.dart",
+        "flutter_app/lib/app_pet_care_sync.dart",
+        "flutter_app/lib/features/weight_tracking/**",
+        "flutter_app/lib/features/auth/data/auth_service.dart",
+        "flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
+        "flutter_app/lib/features/pet_profile/**",
+        "flutter_app/lib/l10n/**",
+        "scripts/feature-import-baseline.json",
+        "docs/architecture/api-reference.md",
+        "flutter_app/test/features/weight_tracking/**",
+        "flutter_app/test/features/pet_profile/**",
+        "flutter_app/test/core/**",
+        "flutter_app/test/features/auth/**",
+        "flutter_app/test/ci_shards.json"
+      ],
+      "forbidden_paths": [
+        "flutter_app/lib/features/care_item/**",
+        "flutter_app/lib/features/health_tracking/**",
+        "e2e/**",
+        "db/**",
+        ".github/workflows/**",
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "W6",
+      "title": "Weight screen, Record weight sheet with Counts as, delete confirmation",
+      "branch": "cursor/weight-unify-w6-hub-9b2e",
+      "allowed_paths": [
+        ".agents/plans/weight-monitoring-unify-9b2e.*",
+        ".agents/plans/weight-unify-*-9b2e.*",
+        "flutter_app/lib/features/weight_tracking/**",
+        "flutter_app/lib/features/pet_profile/presentation/screens/**",
+        "flutter_app/lib/core/router/app_router.dart",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/lib/app_pet_care_sync.dart",
+        "flutter_app/lib/main.dart",
+        "scripts/feature-import-baseline.json",
+        "flutter_app/test/features/weight_tracking/**",
+        "flutter_app/test/features/pet_profile/**",
+        "flutter_app/test/core/**",
+        "flutter_app/test/features/auth/**",
+        "flutter_app/test/ci_shards.json"
+      ],
+      "forbidden_paths": [
+        "flutter_app/lib/features/care_item/**",
+        "flutter_app/lib/features/health_tracking/**",
+        "server/**",
+        "e2e/**",
+        "db/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "W7",
+      "title": "BDD and Playwright for the weight screen",
+      "branch": "cursor/weight-unify-w7-e2e-9b2e",
+      "allowed_paths": [
+        ".agents/plans/weight-monitoring-unify-9b2e.*",
+        ".agents/plans/weight-unify-*-9b2e.*",
+        "flutter_app/test/bdd/features/weight_tracking.feature",
+        "e2e/playwright/tests/weight.*.spec.ts",
+        "e2e/playwright/pages/weight-*.page.ts",
+        "e2e/playwright/support/**",
+        "e2e/scripts/shard-files.mjs",
+        "e2e/scripts/spec-durations.json",
+        "flutter_app/lib/features/weight_tracking/presentation/**",
+        "flutter_app/test/features/weight_tracking/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "db/**",
+        "flutter_app/lib/features/care_item/**",
+        "flutter_app/lib/features/health_tracking/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    }
+  ],
+  "content_hash": "sha256:7f6c3e5266faa5dfc5d4ebf936f8ac25a56aec073b4774b19521b88116e16ecc"
+}
