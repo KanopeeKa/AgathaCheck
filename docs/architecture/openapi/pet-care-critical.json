@@ -1858,17 +1858,59 @@
             "type": "object",
             "required": [
               "value",
-              "unit"
+              "unit",
+              "id",
+              "date",
+              "measurement_source"
             ],
             "additionalProperties": false,
             "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
               "value": {
                 "type": "number"
               },
               "unit": {
                 "type": "string"
+              },
+              "date": {
+                "$ref": "#/components/schemas/CalendarDate"
+              },
+              "measurement_source": {
+                "type": "string"
               }
             }
+          },
+          "skip_reason": {
+            "oneOf": [
+              {
+                "type": "object",
+                "required": [
+                  "code",
+                  "note"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "code": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "note": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         }
       },

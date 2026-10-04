@@ -77,7 +77,7 @@ export function createWeightEntriesWriteRouter(pool) {
         return res.status(400).json({ error: sourceResult.error });
       }
       const dateInput = normalizeCalendarDateInput(data.date || data.measured_at);
-      const row = await updateWeight(pool, {
+      const outcome = await updateWeight(pool, {
         entryId: req.params.id,
         userId,
         weight: data.weight,
@@ -87,7 +87,8 @@ export function createWeightEntriesWriteRouter(pool) {
         measurementSource: sourceResult.value,
         req,
       });
-      if (!row) return res.status(404).json({ error: 'Not found' });
+      if (!outcome?.row) return res.status(404).json({ error: 'Not found' });
+      const row = outcome.row;
       logAuditEventSafe(pool, {
         actorUserId: userId,
         action: 'weight_entry.updated',
@@ -97,7 +98,10 @@ export function createWeightEntriesWriteRouter(pool) {
         metadata: { weight: row.weight, unit: 'kg' },
         req,
       });
-      res.json(weightEntryToMap(row));
+      res.json({
+        ...weightEntryToMap(row),
+        ...(outcome.undoToken ? { undo_token: outcome.undoToken } : {}),
+      });
     } catch (err) {
       if (err instanceof WeightValidationError) {
         return res.status(err.status).json(err.body);
@@ -128,11 +132,14 @@ export function createWeightEntriesWriteRouter(pool) {
         resourceId: req.params.id,
         petId: outcome.petId || null,
         metadata: {
-          reopened_occurrence_id: outcome.reopenedOccurrenceId || null,
+          reopened_occurrence: outcome.reopenedOccurrence || null,
         },
         req,
       });
-      res.json({ deleted: true });
+      res.json({
+        deleted: true,
+        reopened_occurrence: outcome.reopenedOccurrence || null,
+      });
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }
