@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-import '../../../../../core/utils/calendar_date.dart';
-import '../../../../../l10n/app_localizations.dart';
-import '../../../../pet_care/presentation/widgets/care_surface/care_attention_callout.dart';
-import '../../../../pet_care/presentation/widgets/care_surface/care_item_module.dart';
-import '../../../../pet_care/presentation/widgets/care_surface/care_item_section_header.dart';
-import '../../../data/models/health_entry_absence_context_model.dart';
-import '../../../domain/entities/health_entry.dart';
-import '../../../domain/entities/health_occurrence.dart';
-import '../../providers/care_item_absence_providers.dart';
-import '../../providers/care_item_absence_resolution_sync.dart';
-import '../../providers/care_item_detail_refresh.dart';
-import '../../widgets/occurrence_review_flow.dart';
+import '../../../../core/utils/calendar_date.dart';
+import '../../../../l10n/app_localizations.dart';
+import '../../../pet_care/presentation/widgets/care_surface/care_attention_callout.dart';
+import '../../../pet_care/presentation/widgets/care_surface/care_item_module.dart';
+import '../../../pet_care/presentation/widgets/care_surface/care_item_section_header.dart';
+import '../../../health_tracking/data/models/health_entry_absence_context_model.dart';
+import '../../../health_tracking/domain/entities/health_entry.dart';
+import '../../../health_tracking/domain/entities/health_occurrence.dart';
+import '../../../health_tracking/presentation/providers/care_item_absence_providers.dart';
+import '../../../health_tracking/presentation/providers/care_item_absence_resolution_sync.dart';
+import '../../../health_tracking/presentation/providers/care_item_detail_refresh.dart';
+import '../../../health_tracking/presentation/widgets/occurrence_review_flow.dart';
 
 class CareItemAbsenceSection extends ConsumerWidget {
   const CareItemAbsenceSection({

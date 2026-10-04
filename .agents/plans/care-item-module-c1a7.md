@@ -18,7 +18,7 @@ Parent: `.agents/plans/care-next-occurrence-c1a7.md` §10, child F §795–804.
 ## Runtime state
 
 ```yaml
-autonomy: pending
-current_phase: null
-next_action: wait for child E merge to integration
+autonomy: active
+current_phase: F1
+next_action: merge F1 PR; start F2 on integration tip
 ```

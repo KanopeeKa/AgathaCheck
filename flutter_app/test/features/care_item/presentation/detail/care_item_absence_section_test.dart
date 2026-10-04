@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/features/health_tracking/data/models/health_entry_absence_context_model.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/care_item_absence_providers.dart';
-import 'package:pet_profile_app/features/health_tracking/presentation/screens/care_item_detail/care_item_absence_section.dart';
+import 'package:pet_profile_app/features/care_item/presentation/detail/care_item_absence_section.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 void main() {

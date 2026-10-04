@@ -10,7 +10,6 @@ import '../../features/auth/presentation/screens/my_details_screen.dart';
 import '../../features/care_taxonomy/domain/care_planning_mode.dart';
 import '../../features/health_tracking/domain/entities/health_entry.dart';
 import '../../features/health_tracking/presentation/screens/health_entry_form_screen.dart';
-import '../../features/health_tracking/presentation/screens/care_item_detail/care_item_detail_screen.dart';
 import '../../features/notifications/presentation/screens/notification_settings_screen.dart';
 import '../../features/notifications/presentation/screens/notifications_screen.dart';
 import '../../features/notifications/presentation/screens/pending_actions_screen.dart';

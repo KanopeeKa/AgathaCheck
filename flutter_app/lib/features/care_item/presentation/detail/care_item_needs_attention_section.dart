@@ -2,19 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-import '../../../../../core/providers/analytics_providers.dart';
-import '../../../../../core/router/shell_return_navigation.dart';
-import '../../../../../l10n/app_localizations.dart';
-import '../../../../care_item/care_item.dart';
-import '../../../../pet_care/presentation/widgets/care_surface/care_item_module.dart';
-import '../../../../pet_care/presentation/widgets/care_surface/care_item_section_header.dart';
-import '../../../../pet_care/presentation/widgets/care_surface/care_item_status_pill.dart';
-import '../../../../../core/widgets/care_mark_done_button.dart';
-import '../../../domain/entities/health_entry.dart';
-import '../../../domain/entities/health_occurrence.dart';
-import '../../providers/health_providers.dart';
-import '../../widgets/pet_event_occurrence_actions.dart';
-import '../../widgets/pet_event_view_providers.dart';
+import '../../../../core/providers/analytics_providers.dart';
+import '../../../../core/router/shell_return_navigation.dart';
+import '../../../../l10n/app_localizations.dart';
+import '../../care_item.dart';
+import '../../../pet_care/presentation/widgets/care_surface/care_item_module.dart';
+import '../../../pet_care/presentation/widgets/care_surface/care_item_section_header.dart';
+import '../../../pet_care/presentation/widgets/care_surface/care_item_status_pill.dart';
+import '../../../../core/widgets/care_mark_done_button.dart';
+import '../../../health_tracking/domain/entities/health_entry.dart';
+import '../../../health_tracking/domain/entities/health_occurrence.dart';
+import '../../../health_tracking/presentation/providers/health_providers.dart';
+import '../../../health_tracking/presentation/widgets/pet_event_occurrence_actions.dart';
+import '../../../health_tracking/presentation/widgets/pet_event_view_providers.dart';
 
 /// Needs attention on the Care Item view (§18.6.5): every open occurrence
 /// as a line (date, status, tick); a line opens its occurrence screen. A
