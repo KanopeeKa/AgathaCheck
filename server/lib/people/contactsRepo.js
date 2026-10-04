@@ -24,10 +24,11 @@ import {
 } from './contactsRepoSql.js';
 import { listUsages } from './usages.js';
 import {
-  deleteLegacyVetRowForContact,
-  ensureLegacyVetForContact,
-  syncVetRowFromContact,
-} from './vetSync.js';
+  deleteVetRowForContact,
+  projectContact,
+  upsertVetRowForContact,
+} from './vetProjection.js';
+import { applyPetLinksInTransaction } from './relationships.js';
 
 /** Use existing PoolClient when caller already holds a transaction (e.g. planned absence PATCH). */
 async function runInTransaction(db, fn) {
@@ -104,6 +105,8 @@ export async function createPersonalContact(pool, userId, body) {
   const directoryId = await ensurePersonalDirectorySql(pool, userId);
   const id = uuidv4();
 
+  const petLinks = body.pet_links ?? body.petLinks ?? null;
+
   await runInTransaction(pool, async (client) => {
     await insertContactRow(client, {
       id,
@@ -123,12 +126,16 @@ export async function createPersonalContact(pool, userId, body) {
     if (privateNote != null && String(privateNote).trim()) {
       await insertPrivateNote(client, id, userId, String(privateNote));
     }
+    if (petLinks?.length) {
+      await applyPetLinksInTransaction(client, userId, id, petLinks);
+    }
   });
 
   let row = await loadContactForViewer(pool, id, userId);
   if (row && roles.includes('vet')) {
-    await ensureLegacyVetForContact(pool, row, userId);
+    await upsertVetRowForContact(pool, row, userId);
     row = await loadContactForViewer(pool, id, userId);
+    await projectContact(pool, id, userId);
   }
   return row;
 }
@@ -213,12 +220,8 @@ export async function patchPersonalContact(pool, contactId, userId, body) {
   }
 
   let row = await loadContactForViewer(pool, contactId, userId);
-  if (row?.roles?.includes('vet')) {
-    await ensureLegacyVetForContact(pool, row, userId);
-    row = await loadContactForViewer(pool, contactId, userId);
-  }
-  if (row?.legacy_vet_id) {
-    await syncVetRowFromContact(pool, row, userId);
+  if (row?.roles?.includes('vet') || row?.legacy_vet_id) {
+    await projectContact(pool, contactId, userId);
     row = await loadContactForViewer(pool, contactId, userId);
   }
   return row;
@@ -241,7 +244,7 @@ export async function deletePersonalContact(pool, contactId, userId) {
   }
   await runInTransaction(pool, async (client) => {
     if (row.legacy_vet_id) {
-      await deleteLegacyVetRowForContact(client, row.legacy_vet_id, userId);
+      await deleteVetRowForContact(client, row.legacy_vet_id, userId);
     }
     await deleteContactRow(client, contactId);
   });

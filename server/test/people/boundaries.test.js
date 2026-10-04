@@ -8,6 +8,9 @@ const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../
 
 const PEOPLE_WRITE_RE = /(?:INSERT\s+INTO|UPDATE|DELETE\s+FROM)\s+people_(?:contacts|contact_roles|contact_private_notes|directories)\b/gi;
 
+const VETS_WRITE_RE = /(?:INSERT\s+INTO|UPDATE|DELETE\s+FROM)\s+vets\b/gi;
+const VETS_READ_RE = /\bFROM\s+vets\b/gi;
+
 const SCAN_ROOTS = [
   'server/routes',
   'server/lib',
@@ -23,6 +26,13 @@ const EXCLUDED_DIR_PREFIXES = [
 
 const SQL_FILE_ALLOWLIST = new Set([
   'server/lib/households/authz.js',
+]);
+
+const VETS_READ_ALLOWLIST = new Set([
+  'server/routes/vets.js',
+  'server/lib/people/vetProjection.js',
+  'server/lib/gdprUserExport.js',
+  'server/lib/orgPetShadow.js',
 ]);
 
 const IMPORT_ALLOWLIST = new Set([
@@ -97,6 +107,31 @@ describe('People domain boundaries (s1)', () => {
       if (matches?.length) violations.push({ file: rel, count: matches.length });
     }
     expect(violations).toEqual([]);
+  });
+
+  it('vets writes appear only in vetProjection.js', () => {
+    const hits = [];
+    for (const rel of [...collectScanFiles(), ...walkJsFiles('server/lib/people', 'server/lib/people')]) {
+      if (rel === 'server/lib/people/vetProjection.js') continue;
+      if (rel.startsWith('server/test/')) continue;
+      if (rel.startsWith('server/db/seeds/')) continue;
+      if (rel.startsWith('server/scripts/')) continue;
+      const content = fs.readFileSync(path.join(repoRoot, rel), 'utf8');
+      const matches = content.match(VETS_WRITE_RE);
+      if (matches?.length) hits.push(rel);
+    }
+    expect(hits).toEqual([]);
+  });
+
+  it('vets reads appear only in compat adapter and vetProjection', () => {
+    const hits = [];
+    for (const rel of collectScanFiles()) {
+      if (VETS_READ_ALLOWLIST.has(rel)) continue;
+      const content = fs.readFileSync(path.join(repoRoot, rel), 'utf8');
+      const matches = content.match(VETS_READ_RE);
+      if (matches?.length) hits.push(rel);
+    }
+    expect(hits).toEqual([]);
   });
 
   it('production code imports people only via index.js (allowlisted transitional)', () => {

@@ -34,3 +34,6 @@ export const RELATIONSHIP_KINDS = [
   'care_provider',
   'other',
 ];
+
+/** Slot kinds — at most one active row per pet (I4). */
+export const SLOT_RELATIONSHIP_KINDS = ['primary_vet', 'out_of_hours_vet'];

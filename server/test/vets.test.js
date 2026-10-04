@@ -30,6 +30,7 @@ describe('Vets API', () => {
   let lastQuery;
   let lastVetWriteQuery;
   let lastVetDeleteQuery;
+  let lastInsertedVet;
 
   beforeAll(() => {
     const mockPool = createTransactionalMockPool(async (sql, params) => {
@@ -53,42 +54,49 @@ describe('Vets API', () => {
 
         if (sql.includes('SELECT * FROM vets WHERE id') && params && params[1] === userId) {
           if (params[0] === 'nonexistent') return { rows: [] };
+          if (lastInsertedVet?.id === params[0]) {
+            return { rows: [lastInsertedVet] };
+          }
           return { rows: [makeVetRow({ id: params[0] })] };
         }
 
         if (sql.includes('INSERT INTO vets')) {
           lastVetWriteQuery = { sql, params };
-          return {
-            rows: [makeVetRow({
-              id: params[0],
-              name: params[2],
-              clinic: params[3],
-              phone: params[4],
-              email: params[5],
-              website: params[6] || '',
-              address: params[7] || '',
-              notes: params[8] || '',
-              organization_id: params[9] ?? null,
-            })],
-          };
+          lastInsertedVet = makeVetRow({
+            id: params[0],
+            name: params[2],
+            clinic: params[3],
+            phone: params[4],
+            email: params[5],
+            website: params[6] || '',
+            address: params[7] || '',
+            notes: params[8] || '',
+            organization_id: params[9] ?? null,
+          });
+          return { rows: [lastInsertedVet] };
         }
 
-        if (sql.includes('UPDATE vets SET')) {
+        if (sql.includes('UPDATE vets') && sql.includes('SET name')) {
           lastVetWriteQuery = { sql, params };
-          if (params[8] === 'nonexistent') return { rows: [] };
-          return {
-            rows: [makeVetRow({
-              id: params[8],
-              name: params[0],
-              clinic: params[1],
-              phone: params[2],
-              email: params[3],
-              website: params[4] || '',
-              address: params[5] || '',
-              notes: params[6] || '',
-              organization_id: params[7] ?? null,
-            })],
-          };
+          const vetId = sql.includes('notes = $7, organization_id = $8') ? params[8] : (
+            sql.includes('organization_id = COALESCE') ? params[7] : params[8]
+          );
+          if (vetId === 'nonexistent') return { rows: [] };
+          const orgId = sql.includes('notes = $7, organization_id = $8')
+            ? params[7]
+            : (sql.includes('organization_id = COALESCE') ? params[6] : (params[7] ?? null));
+          lastInsertedVet = makeVetRow({
+            id: vetId,
+            name: params[0],
+            clinic: params[1],
+            phone: params[2],
+            email: params[3],
+            website: params[4] || '',
+            address: params[5] || '',
+            notes: params[6] || '',
+            organization_id: orgId,
+          });
+          return { rows: [lastInsertedVet] };
         }
 
         if (sql.includes('SELECT id FROM vets WHERE id = $1 AND user_id = $2')) {

@@ -7,6 +7,7 @@ export {
   CONTACT_ROLES,
   RELATIONSHIP_KINDS,
   ROLE_GROUP,
+  SLOT_RELATIONSHIP_KINDS,
 } from './constants.js';
 export { inferContactKind, contactGroup } from './inference.js';
 export {
@@ -40,6 +41,23 @@ export {
   syncVetRowFromContact,
   deleteContactForVet,
 } from './vetSync.js';
+export {
+  listForPet,
+  setSlot,
+  add as addPetRelationship,
+  remove as removePetRelationship,
+  reorder as reorderPetRelationships,
+  replaceAll as replacePetRelationships,
+  setPrimaryVetFromLegacyVetId,
+} from './relationships.js';
+export {
+  projectPet,
+  projectContact,
+  rebuildAll,
+  createCompatVet,
+  updateCompatVet,
+  deleteCompatVet,
+} from './vetProjection.js';
 export { copyHouseholdContactsForPetLeave } from './contactCopyOnPetLeave.js';
 export {
   resolveCarerWrite,

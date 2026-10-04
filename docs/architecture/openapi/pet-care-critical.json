@@ -406,6 +406,133 @@
           }
         }
       }
+    },
+    "/pets/{petId}/people-relationships/slots/{kind}": {
+      "put": {
+        "operationId": "putPetPeopleRelationshipSlot",
+        "parameters": [
+          {
+            "name": "petId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          },
+          {
+            "name": "kind",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["primary_vet", "out_of_hours_vet"]
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "contact_id": { "type": "string", "format": "uuid", "nullable": true }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated relationship list for the pet",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/PetContactRelationship" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pets/{petId}/people-relationships": {
+      "post": {
+        "operationId": "postPetPeopleRelationship",
+        "parameters": [
+          {
+            "name": "petId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["contact_id", "relationship_kind"],
+                "properties": {
+                  "contact_id": { "type": "string", "format": "uuid" },
+                  "relationship_kind": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Relationship added",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/PetContactRelationship" }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "slot_conflict — use slots endpoint for primary_vet / out_of_hours_vet",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PeopleApiError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pets/{petId}/people-relationships/{relationshipId}": {
+      "delete": {
+        "operationId": "deletePetPeopleRelationship",
+        "parameters": [
+          {
+            "name": "petId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          },
+          {
+            "name": "relationshipId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Updated relationship list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/PetContactRelationship" }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -911,10 +1038,25 @@
               "contact_not_found",
               "forbidden",
               "contact_in_use",
+              "slot_conflict",
               "linked_identity_read_only"
             ]
           },
           "details": { "type": "object" }
+        }
+      },
+      "PetContactRelationship": {
+        "type": "object",
+        "required": ["id", "pet_id", "contact_id", "relationship_kind", "active"],
+        "additionalProperties": true,
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "pet_id": { "type": "string", "format": "uuid" },
+          "contact_id": { "type": "string", "format": "uuid" },
+          "relationship_kind": { "type": "string" },
+          "is_primary": { "type": "boolean" },
+          "active": { "type": "boolean" },
+          "sort_order": { "type": "integer" }
         }
       },
       "PeopleContact": {
