@@ -19,20 +19,21 @@ Parent: `.agents/plans/care-next-occurrence-c1a7.md` §10, child F §795–804.
 
 ```yaml
 autonomy: active
-current_phase: F5
-last_completed_phase: F4
+current_phase: F6
+last_completed_phase: F5
 halt_reason: null
-next_action: "continue phase F5 on branch cursor/care-f5-arch-index-50b4"
+next_action: "continue phase F6 on branch cursor/care-f6-e2e-regression-50b4"
 artifact_ref:
-  branch: cursor/care-f5-arch-index-50b4
+  branch: cursor/care-f6-e2e-regression-50b4
   plan_path: .agents/plans/care-item-module-c1a7.md
-  plan_commit: 552bd7b8e6baaff9c5b79218d0868154492465e6
+  plan_commit: pending
   snapshot_path: .agents/plans/care-item-module-c1a7.snapshot.json
-  snapshot_commit: 552bd7b8e6baaff9c5b79218d0868154492465e6
+  snapshot_commit: pending
 open_prs: []
 merge_commits:
   F2: fce0ce1e2146550fc085a00364693c9aa7c985f8
   F3: 83759d37b905ed8c22cbb28d56d978d4a33b7d53
   F4: 9850c118d5c7929056db1f779fbe0b5229e6942b
+  F5: 915be76802a7473a81e3002ec216cfd2ef3650f3
 debt_issue_refs: []
 ```
