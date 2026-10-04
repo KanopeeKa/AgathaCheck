@@ -322,10 +322,10 @@ next_action: "continue phase C4 on branch cursor/care-gap-c4-docs-50b4"
 artifact_ref:
   branch: cursor/care-gap-c4-docs-50b4
   plan_path: .agents/plans/care-requirements-gap-close-c1a7.md
-  plan_commit: 0293539415a5a178ff0ba62d4e6e1df409bf9239
+  plan_commit: b0bca912244e7a5ffc68a154ac107ed0662fe674
   snapshot_path: .agents/plans/care-requirements-gap-close-c1a7.snapshot.json
-  snapshot_commit: 0293539415a5a178ff0ba62d4e6e1df409bf9239
-open_prs: []
+  snapshot_commit: b0bca912244e7a5ffc68a154ac107ed0662fe674
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1561"]
 merge_commits: {}
 debt_issue_refs: [1539,1540,1541,1542,1543,1544,1545,1546,1547,1476]
 ```
