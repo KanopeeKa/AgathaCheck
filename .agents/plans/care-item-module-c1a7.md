@@ -19,17 +19,17 @@ Parent: `.agents/plans/care-next-occurrence-c1a7.md` §10, child F §795–804.
 
 ```yaml
 autonomy: active
-current_phase: F3
-last_completed_phase: F2
+current_phase: F2
+last_completed_phase: F1
 halt_reason: null
-next_action: "continue phase F3 on branch cursor/care-f2-compat-delete-50b4 or new F3 branch"
+next_action: "continue phase F2 on branch cursor/care-f2-compat-delete-50b4"
 artifact_ref:
-  branch: claude/eager-edison-mf34j6
+  branch: cursor/care-f2-compat-delete-50b4
   plan_path: .agents/plans/care-item-module-c1a7.md
-  plan_commit: 038123763257877a51498f9f9fa16fd1ee435c54
+  plan_commit: b8544d72e6baaff9c5b79218d0868154492465e6
   snapshot_path: .agents/plans/care-item-module-c1a7.snapshot.json
-  snapshot_commit: 038123763257877a51498f9f9fa16fd1ee435c54
-open_prs: []
+  snapshot_commit: b8544d72e6baaff9c5b79218d0868154492465e6
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1490"]
 merge_commits: {}
 debt_issue_refs: []
 ```
