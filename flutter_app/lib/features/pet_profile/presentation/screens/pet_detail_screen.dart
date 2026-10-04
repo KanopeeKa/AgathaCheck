@@ -11,6 +11,7 @@ import '../controllers/download_report_controller.dart';
 import '../providers/pet_detail_viewer_context_provider.dart';
 import '../providers/pet_providers.dart';
 import '../widgets/pet_detail/pet_detail_scroll_body.dart';
+import '../widgets/pet_list/pet_list_stale_banner.dart';
 
 class PetDetailScreen extends ConsumerStatefulWidget {
   const PetDetailScreen({super.key, required this.petId});
@@ -24,7 +25,7 @@ class PetDetailScreen extends ConsumerStatefulWidget {
 class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
   @override
   Widget build(BuildContext context) {
-    final petListAsync = ref.watch(allPetsIncludingOrgProvider);
+    final petListAsync = ref.watch(petListProvider);
     final l = AppLocalizations.of(context)!;
 
     return petListAsync.when(
@@ -92,6 +93,7 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
           contextualActions: contextualActions,
           child: CustomScrollView(
             slivers: [
+              const SliverToBoxAdapter(child: PetListStaleBanner()),
               SliverToBoxAdapter(
                 child: PetDetailScrollBody(
                   pet: pet,

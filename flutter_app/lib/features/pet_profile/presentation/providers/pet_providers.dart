@@ -12,6 +12,7 @@ import '../../domain/entities/pet.dart';
 import '../../domain/repositories/pet_repository.dart';
 import '../../domain/usecases/add_pet.dart';
 import '../../domain/usecases/delete_pet.dart';
+import '../../domain/entities/pet_cache_freshness.dart';
 import '../../domain/entities/pet_list_fetch_result.dart';
 import '../../domain/usecases/fetch_all_pets.dart';
 import '../../domain/usecases/get_all_pets.dart';
@@ -19,7 +20,21 @@ import '../../domain/usecases/update_pet.dart';
 
 export '../../../../core/providers/shared_preferences_provider.dart';
 
+/// Clears the previous user's pet cache when logging out or switching accounts.
+final _petCacheAuthLifecycleProvider = Provider<void>((ref) {
+  ref.listen(authProvider, (previous, next) {
+    final prevUserId = previous?.user?.id;
+    final nextUserId = next.user?.id;
+    if (prevUserId == null || prevUserId.isEmpty || prevUserId == nextUserId) {
+      return;
+    }
+    final prefs = ref.read(sharedPreferencesProvider);
+    PetLocalDataSourceImpl(prefs, userId: prevUserId).clearCache();
+  });
+});
+
 final petLocalDataSourceProvider = Provider<PetLocalDataSource>((ref) {
+  ref.watch(_petCacheAuthLifecycleProvider);
   final authState = ref.watch(authProvider);
   final userId = authState.user?.id;
   return PetLocalDataSourceImpl(
@@ -56,11 +71,17 @@ final fetchAllPetsUseCaseProvider = Provider<FetchAllPets>((ref) {
   return FetchAllPets(ref.watch(petRepositoryProvider));
 });
 
-/// Whether the current [petListProvider] data is stale offline cache (Package 7).
+/// Freshness metadata for the current [petListProvider] load (Package 7 / D18).
 class PetListFetchMetadata {
-  const PetListFetchMetadata({this.isStale = false});
+  const PetListFetchMetadata({
+    this.freshness = PetCacheFreshness.fresh,
+    this.fetchedAt,
+  });
 
-  final bool isStale;
+  final PetCacheFreshness freshness;
+  final DateTime? fetchedAt;
+
+  bool get isStale => freshness != PetCacheFreshness.fresh;
 }
 
 class PetListFetchMetadataNotifier extends Notifier<PetListFetchMetadata> {
@@ -71,7 +92,10 @@ class PetListFetchMetadataNotifier extends Notifier<PetListFetchMetadata> {
   }
 
   void apply(PetListFetchResult result) {
-    state = PetListFetchMetadata(isStale: result.isStale);
+    state = PetListFetchMetadata(
+      freshness: result.freshness,
+      fetchedAt: result.fetchedAt,
+    );
   }
 }
 

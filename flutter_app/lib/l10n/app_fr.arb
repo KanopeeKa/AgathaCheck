@@ -113,7 +113,42 @@
   "myFosteredPets": "Mes animaux en famille d'accueil",
   "noFosteredPets": "Vous n'accueillez aucun animal pour le moment.",
   "allPets": "Tous les animaux",
-  "petListStaleBannerMessage": "Animaux enregistrés affichés hors ligne. Certaines informations peuvent être obsolètes.",
+  "petListStaleBannerOffline": "Hors ligne — animaux enregistrés {relativeTime}",
+  "@petListStaleBannerOffline": {
+    "placeholders": {
+      "relativeTime": {
+        "type": "String"
+      }
+    }
+  },
+  "petListCacheOutOfDateBannerMessage": "Les données enregistrées peuvent être obsolètes",
+  "petListCacheRetrySemanticsLabel": "Réessayer de charger les animaux",
+  "petCacheRelativeJustNow": "à l'instant",
+  "petCacheRelativeMinutes": "{count, plural, =1{il y a 1 minute} other{il y a {count} minutes}}",
+  "@petCacheRelativeMinutes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "petCacheRelativeHours": "{count, plural, =1{il y a 1 heure} other{il y a {count} heures}}",
+  "@petCacheRelativeHours": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "petCacheRelativeDays": "{count, plural, =1{il y a 1 jour} other{il y a {count} jours}}",
+  "@petCacheRelativeDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "careCommandSavedRefreshFailed": "Enregistré — actualisation impossible. Tirez pour actualiser.",
   "managePets": "Gérer les animaux",
   "allCareTitle": "Tous les soins de {petName}",
   "viewAllCare": "Voir tous les soins",

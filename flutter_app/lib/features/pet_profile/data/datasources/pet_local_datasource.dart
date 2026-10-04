@@ -24,6 +24,15 @@ abstract class PetLocalDataSource {
 
   /// Deletes a pet model by [id] from local storage.
   Future<void> deletePet(String id);
+
+  /// UTC timestamp of the last successful remote pet-list sync for this user scope.
+  Future<DateTime?> getLastSyncedAt();
+
+  /// Persists [utc] as the last successful remote pet-list sync for this user scope.
+  Future<void> setLastSyncedAt(DateTime utc);
+
+  /// Clears pets and sync metadata for this user scope (logout / user switch).
+  Future<void> clearCache();
 }
 
 /// Implementation of [PetLocalDataSource] backed by SharedPreferences.
@@ -37,6 +46,10 @@ class PetLocalDataSourceImpl implements PetLocalDataSource {
   String get _storageKey => userId != null && userId!.isNotEmpty
       ? '${AppConstants.petsStorageKey}_$userId'
       : AppConstants.petsStorageKey;
+
+  String get _lastSyncedKey => userId != null && userId!.isNotEmpty
+      ? '${AppConstants.petsStorageKey}_last_synced_$userId'
+      : '${AppConstants.petsStorageKey}_last_synced';
 
   bool _migrated = false;
 
@@ -105,5 +118,26 @@ class PetLocalDataSourceImpl implements PetLocalDataSource {
     final pets = _loadPets();
     pets.removeWhere((p) => p.id == id);
     await _savePets(pets);
+  }
+
+  @override
+  Future<DateTime?> getLastSyncedAt() async {
+    _migrateIfNeeded();
+    final raw = _prefs.getString(_lastSyncedKey);
+    if (raw == null || raw.isEmpty) return null;
+    return DateTime.parse(raw).toUtc();
+  }
+
+  @override
+  Future<void> setLastSyncedAt(DateTime utc) async {
+    _migrateIfNeeded();
+    await _prefs.setString(_lastSyncedKey, utc.toUtc().toIso8601String());
+  }
+
+  @override
+  Future<void> clearCache() async {
+    _migrateIfNeeded();
+    await _prefs.remove(_storageKey);
+    await _prefs.remove(_lastSyncedKey);
   }
 }

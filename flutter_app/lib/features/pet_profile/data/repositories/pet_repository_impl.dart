@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 import '../../domain/entities/pet.dart';
+import '../../domain/entities/pet_cache_freshness.dart';
 import '../../domain/entities/pet_list_fetch_result.dart';
 import '../../domain/repositories/pet_repository.dart';
 import '../datasources/pet_local_datasource.dart';
@@ -67,6 +68,20 @@ class PetRepositoryImpl implements PetRepository {
     return merged;
   }
 
+  Future<PetListFetchResult> _cachedResult(List<PetModel> cached) async {
+    final lastSynced = await _localDataSource.getLastSyncedAt();
+    final freshness = classifyPetCacheFreshness(
+      fromRemoteThisCall: false,
+      lastSyncedAtUtc: lastSynced,
+    );
+    return PetListFetchResult(
+      pets: cached.map((m) => m.toEntity()).toList(),
+      source: PetListFetchSource.localCache,
+      freshness: freshness,
+      fetchedAt: lastSynced,
+    );
+  }
+
   @override
   Future<PetListFetchResult> fetchAllPets() async {
     if (remoteDataSource != null && token != null && token!.isNotEmpty) {
@@ -87,28 +102,20 @@ class PetRepositoryImpl implements PetRepository {
         if (cached.isEmpty) {
           rethrow;
         }
-        return PetListFetchResult(
-          pets: cached.map((m) => m.toEntity()).toList(),
-          source: PetListFetchSource.localCache,
-          isStale: true,
-          fetchedAt: DateTime.now().toUtc(),
-        );
+        return _cachedResult(cached);
       }
       final merged = await _mergeRemoteWithLocalPhotos(remotePets);
+      final syncedAt = DateTime.now().toUtc();
+      await _localDataSource.setLastSyncedAt(syncedAt);
       return PetListFetchResult(
         pets: merged.map((m) => m.toEntity()).toList(),
         source: PetListFetchSource.remote,
-        isStale: false,
-        fetchedAt: DateTime.now().toUtc(),
+        freshness: PetCacheFreshness.fresh,
+        fetchedAt: syncedAt,
       );
     }
     final models = await _localDataSource.getAllPets();
-    return PetListFetchResult(
-      pets: models.map((m) => m.toEntity()).toList(),
-      source: PetListFetchSource.localCache,
-      isStale: false,
-      fetchedAt: DateTime.now().toUtc(),
-    );
+    return _cachedResult(models);
   }
 
   @override
