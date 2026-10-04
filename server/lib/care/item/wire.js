@@ -7,6 +7,7 @@ import { normalizePetHomeTimezone, wallClockInTimeZone } from '../../petHomeTime
 import {
   careAsOfForZone,
   careItemReadAdditions,
+  filterOpenRowsForListRead,
   listLastDoneByEntry,
   listOpenRows,
   listOpenRowsByEntry,
@@ -62,9 +63,15 @@ export async function careItemsWire(db, entries, req) {
   return entries.map((entry) => {
     const zone = normalizePetHomeTimezone(entry.pet_home_timezone);
     if (!byZone.has(zone)) byZone.set(zone, careAsOfForZone(zone, clock, now));
+    const clock = byZone.get(zone);
+    const openRows = filterOpenRowsForListRead(
+      entry,
+      openByEntry.get(entry.id) || [],
+      clock,
+    );
     return {
       ...healthEntryToMap(entry),
-      ...careItemReadAdditions(entry, openByEntry.get(entry.id) || [], byZone.get(zone)),
+      ...careItemReadAdditions(entry, openRows, clock),
       last_done: lastDoneToWire(lastDoneByEntry.get(entry.id), zone),
     };
   });

@@ -13,6 +13,7 @@ import {
   resolveCareAsOfForRead,
   resolveStackCommand,
   runCareCommand,
+  syncCareItemForRead,
   sendCareCommandError,
   skipOccurrenceCommand,
   undoCommand,
@@ -160,8 +161,10 @@ export function registerOccurrenceRoutes(router, pool) {
       if (!entry) return res.status(404).json({ error: 'Entry not found' });
       const status = req.query.status || 'open';
       if (status === 'open') {
-        const asOf = await resolveCareAsOfForRead(pool, entry, req);
-        const rows = await listOpenRows(pool, entry.id);
+        const synced = await syncCareItemForRead(pool, entry.id, req);
+        if (!synced) return res.status(404).json({ error: 'Entry not found' });
+        const asOf = synced.asOf;
+        const rows = synced.openRows;
         const names = await pool.query(
           `SELECT ho.id, TRIM(COALESCE(u.first_name, '') || ' ' || COALESCE(u.last_name, '')) AS marked_by_name
            FROM health_occurrences ho LEFT JOIN users u ON u.id = ho.marked_by_user_id
@@ -298,7 +301,11 @@ export function registerOccurrenceRoutes(router, pool) {
         activity: 'record_doses',
       }),
       respond: async (out) => ({
-        body: await commandResponse(pool, out, req, { given: out.given, not_given: out.notGiven }),
+        body: await commandResponse(pool, out, req, {
+          given: out.given,
+          not_given: out.notGiven,
+          ignored: out.ignored,
+        }),
       }),
     });
   });

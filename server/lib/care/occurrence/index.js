@@ -8,8 +8,14 @@ import { withCareItemLock } from './careItemLock.js';
 import { resolveCareAsOf } from './careAsOf.js';
 import { executeCareCommand } from './commandRunner.js';
 import { CareCommandError } from './careCommandError.js';
+import { syncCareItemForRead } from './readSync.js';
 
 export { withCareItemLock } from './careItemLock.js';
+export {
+  filterOpenRowsForListRead,
+  syncCareItemForRead,
+  wouldAutoCloseAsNotRecorded,
+} from './readSync.js';
 export {
   CARE_TEST_CLOCK_HEADER,
   asOfToWire,
@@ -75,6 +81,8 @@ export { runCareTick } from './careTick.js';
 export async function runCareCommand(pool, {
   entryId, userId, req = null, asOf = null, beforeCommand = null, afterCommand = null, beforeLock = null,
 }, command) {
+  // Commit catch-up before the command txn so a refused action cannot roll closes back (FR-8).
+  await syncCareItemForRead(pool, entryId, req, asOf);
   return withCareItemLock(pool, entryId, async (db, entry) => {
     const clock = asOf || await resolveCareAsOf(db, entry, req);
     if (beforeCommand) await beforeCommand(db, entry);
