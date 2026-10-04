@@ -108,12 +108,12 @@ last_completed_phase: 3
 halt_reason: null
 next_action: "continue phase 4 on branch cursor/not-recorded-flutter-e76a"
 artifact_ref:
-  branch: cursor/not-recorded-tz-fix-integration-e76a
+  branch: cursor/not-recorded-flutter-e76a
   plan_path: .agents/plans/not-recorded-tz-fix-e76a.md
-  plan_commit: e36a69d78dbb3256a52a67110cebacfe0767081a
+  plan_commit: 5c98d42739116916345e2915dd80125cd95dffcc
   snapshot_path: .agents/plans/not-recorded-tz-fix-e76a.snapshot.json
-  snapshot_commit: e36a69d78dbb3256a52a67110cebacfe0767081a
-open_prs: []
+  snapshot_commit: 5c98d42739116916345e2915dd80125cd95dffcc
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1587"]
 merge_commits: {}
 debt_issue_refs: []
 ```
