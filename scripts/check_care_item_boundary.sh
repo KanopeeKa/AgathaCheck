@@ -82,9 +82,22 @@ def leaf_dart_files(root: Path) -> list[Path]:
     return sorted(out)
 
 
+APP_PACKAGE = "pet_profile_app"
+
+
 def resolve_uri(root: Path, importer: Path, uri: str) -> str | None:
-    if uri.startswith("package:") or uri.startswith("dart:"):
+    if uri.startswith("dart:"):
         return None
+    if uri.startswith("package:"):
+        rest = uri[len("package:") :]
+        pkg, _, subpath = rest.partition("/")
+        if pkg != APP_PACKAGE or not subpath:
+            return None
+        target = (root / "flutter_app" / "lib" / subpath).resolve()
+        try:
+            return rel_posix(target, root)
+        except ValueError:
+            return None
     target = (importer.parent / uri).resolve()
     try:
         return rel_posix(target, root)

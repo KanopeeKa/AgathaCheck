@@ -177,7 +177,7 @@ Returns upcoming active absences for the entry's pet with per-absence `affected`
 
 Weight monitoring rhythms: generic occurrence **complete** returns `400` — use `POST /api/pets/:petId/care-rhythms/:entryId/occurrences/:occurrenceId/complete-weight` (see Care progression below). Deleting the weight entry of a weigh-in undoes that completion (D-CSM-029).
 
-**Removed (D-CSM-033, child F):** `POST /:id/mark-taken`, `POST /:id/occurrences/ensure-open`, `POST /:id/pause`, `POST /:id/occurrences/skip-missed`, `POST /:id/undo-complete`, `POST /:id/occurrences/:occId/undo` — use occurrence commands and `POST /:id/schedule/undo`. Pause uses `POST /:id/postpone` with `until: null`.
+**Removed (D-CSM-033, child F):** `POST /:id/mark-taken`, `POST /:id/occurrences/ensure-open`, `POST /:id/pause`, `POST /:id/occurrences/skip-missed`, `POST /:id/undo-complete` — use occurrence commands and `POST /:id/schedule/undo`. Per-occurrence undo remains on `POST /:id/occurrences/:occId/undo` until the Flutter client migrates. Pause uses `POST /:id/postpone` with `until: null`.
 
 **Removed (CSM-7):** `POST /:id/skip`, `POST /:id/unskip` — use occurrence skip APIs.
 

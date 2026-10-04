@@ -1,5 +1,10 @@
 import { addCalendarDaysIso } from '../../calendarDate.js';
-import { postponeCommand, runCareCommand } from '../occurrence/index.js';
+import {
+  applyCareCommand,
+  postponeCommand,
+  resolveCareAsOf,
+  runCareCommand,
+} from '../occurrence/index.js';
 import { CareCommandError } from '../occurrence/careCommandError.js';
 
 /**
@@ -43,4 +48,28 @@ export async function applyMoveAfterAbsenceReturn(pool, {
     }
     throw err;
   }
+}
+
+/**
+ * Same as [applyMoveAfterAbsenceReturn] inside an open transaction (caller holds the lock).
+ *
+ * @param {import('pg').PoolClient} db
+ * @param {object} params
+ * @param {object} params.entry locked health_entries row
+ */
+export async function applyMoveAfterAbsenceReturnInTx(db, {
+  entry, entryId, userId, req = null, absenceId, endsOn, occurrenceId = null,
+}) {
+  const until = postponeUntilAfterReturn(endsOn);
+  const asOf = await resolveCareAsOf(db, entry, req);
+  const out = await applyCareCommand(db, { entryId, userId, asOf }, (ctx) => postponeCommand(ctx, {
+    until,
+    reason: 'absence',
+    absenceId,
+    occurrenceId,
+  }));
+  if (!out) {
+    return { ok: false, status: 404, error: 'Health entry not found' };
+  }
+  return { ok: true, until, undoToken: out.undoToken ?? null };
 }

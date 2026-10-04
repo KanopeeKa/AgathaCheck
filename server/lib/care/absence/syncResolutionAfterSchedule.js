@@ -1,24 +1,16 @@
-import { dateToIsoDate, todayCalendarIso } from '../../calendarDate.js';
+import { todayCalendarIso } from '../../calendarDate.js';
+import { CareCommandError } from '../occurrence/careCommandError.js';
 import { loadAwayPlanProjection } from '../awayPlan/loadAwayPlanProjection.js';
 import { RESOLUTION_DECISION_MOVE_AFTER } from './constants.js';
 import { inferResolutionDecisionAfterSchedule } from './inferResolutionDecision.js';
+import { loadAbsenceWindowForEntry } from './loadAbsenceWindowForEntry.js';
 import { upsertResolution } from './resolutionRepository.js';
 
-/**
- * @param {import('pg').Pool|import('pg').PoolClient} pool
- * @param {string} absenceId
- */
-async function loadAbsenceWindow(pool, absenceId) {
-  const result = await pool.query(
-    'SELECT starts_on, ends_on FROM planned_absences WHERE id = $1',
-    [absenceId],
-  );
-  const row = result.rows[0];
-  if (!row) return null;
-  const startsOn = dateToIsoDate(row.starts_on);
-  const endsOn = dateToIsoDate(row.ends_on);
-  if (!startsOn || !endsOn) return null;
-  return { startsOn, endsOn };
+function throwSyncError(result) {
+  if (result.ok) return;
+  const status = result.status || 400;
+  const code = status === 403 ? 'forbidden' : status === 404 ? 'absence_not_found' : 'invalid_resolution';
+  throw new CareCommandError(status, code, result.error || 'Could not sync absence resolution');
 }
 
 /**
@@ -82,14 +74,17 @@ export async function syncMoveAfterResolutionAfterAbsencePostpone(pool, params) 
 export async function syncResolutionAfterAbsencePostpone(pool, {
   healthEntryId,
   petId,
+  userId,
   absenceId,
   until,
   lookedAfterBy = null,
   absenceNote = null,
 }) {
   if (!absenceId || !until) return { ok: true, skipped: true };
-  const window = await loadAbsenceWindow(pool, absenceId);
-  if (!window) return { ok: false, error: 'Absence not found' };
+  const window = await loadAbsenceWindowForEntry(pool, { absenceId, petId, userId });
+  if (!window.ok) {
+    throwSyncError(window);
+  }
   const projection = await loadAwayPlanProjection(
     pool,
     petId,
@@ -97,7 +92,7 @@ export async function syncResolutionAfterAbsencePostpone(pool, {
     window.endsOn,
     todayCalendarIso(),
   );
-  return syncMoveAfterResolutionAfterAbsencePostpone(pool, {
+  const result = await syncMoveAfterResolutionAfterAbsencePostpone(pool, {
     absenceId,
     healthEntryId,
     startsOn: window.startsOn,
@@ -106,6 +101,10 @@ export async function syncResolutionAfterAbsencePostpone(pool, {
     lookedAfterBy,
     absenceNote,
   });
+  if (!result.ok) {
+    throwSyncError({ ok: false, status: 400, error: result.error });
+  }
+  return result;
 }
 
 /**
@@ -115,13 +114,16 @@ export async function syncResolutionAfterAbsencePostpone(pool, {
 export async function syncResolutionAfterAbsenceReschedule(pool, {
   healthEntryId,
   petId,
+  userId,
   absenceId,
   newScheduledDate,
   body = {},
 }) {
   if (!absenceId || !newScheduledDate) return { ok: true, skipped: true };
-  const window = await loadAbsenceWindow(pool, absenceId);
-  if (!window) return { ok: false, error: 'Absence not found' };
+  const window = await loadAbsenceWindowForEntry(pool, { absenceId, petId, userId });
+  if (!window.ok) {
+    throwSyncError(window);
+  }
   const projection = await loadAwayPlanProjection(
     pool,
     petId,
@@ -129,13 +131,17 @@ export async function syncResolutionAfterAbsenceReschedule(pool, {
     window.endsOn,
     todayCalendarIso(),
   );
-  return syncResolutionAfterSchedule(pool, {
+  const result = await syncResolutionAfterSchedule(pool, {
     absenceId,
     healthEntryId,
     newScheduledDate,
     startsOn: window.startsOn,
     endsOn: window.endsOn,
     projectionItems: projection.items,
-    body,
+    body: { record_only: true, recordOnly: true, ...body },
   });
+  if (!result.ok) {
+    throwSyncError({ ok: false, status: 400, error: result.error });
+  }
+  return result;
 }

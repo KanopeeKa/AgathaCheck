@@ -87,7 +87,7 @@ function logOccurrenceAction(pool, req, { userId, entry, action, metadata = {}, 
 /**
  * Parse, authorise, run one command, answer. Shared by every occurrence route.
  */
-async function handleCommand(pool, req, res, { command, respond, audit, guard }) {
+async function handleCommand(pool, req, res, { command, respond, audit, guard, afterCommand }) {
   const userId = extractUserId(req);
   if (!userId) return res.status(401).json({ error: 'Unauthorized' });
   try {
@@ -97,7 +97,14 @@ async function handleCommand(pool, req, res, { command, respond, audit, guard })
       const blocked = guard(entry);
       if (blocked) return res.status(400).json({ error: blocked });
     }
-    const out = await runCareCommand(pool, { entryId: entry.id, userId, req }, command);
+    const out = await runCareCommand(pool, {
+      entryId: entry.id,
+      userId,
+      req,
+      afterCommand: afterCommand
+        ? async (db, lockedEntry, cmdOut) => afterCommand(db, lockedEntry, cmdOut, { userId, req })
+        : null,
+    }, command);
     if (!out) return res.status(404).json({ error: 'Entry not found' });
     if (audit) logOccurrenceAction(pool, req, { userId, entry, ...audit(out) });
     const { status = 200, body } = await respond(out);

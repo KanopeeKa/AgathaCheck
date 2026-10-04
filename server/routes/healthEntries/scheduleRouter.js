@@ -30,19 +30,20 @@ export function registerScheduleRoutes(router, pool) {
         metadata: { until, reason },
         activity: until ? 'postpone' : 'pause',
       }),
-      respond: async (out) => {
+      afterCommand: async (db, entry, _out, { userId }) => {
         if (until && reason === 'absence' && absenceId) {
-          await syncResolutionAfterAbsencePostpone(pool, {
-            healthEntryId: req.params.id,
-            petId: out.entry.pet_id,
+          await syncResolutionAfterAbsencePostpone(db, {
+            healthEntryId: entry.id,
+            petId: entry.pet_id,
+            userId,
             absenceId,
             until,
             lookedAfterBy: body.looked_after_by ?? body.lookedAfterBy ?? null,
             absenceNote: body.absence_note ?? body.absenceNote ?? null,
           });
         }
-        return { body: await commandResponse(pool, out, req, { until: out.until }) };
       },
+      respond: async (out) => ({ body: await commandResponse(pool, out, req, { until: out.until }) }),
     });
   });
 

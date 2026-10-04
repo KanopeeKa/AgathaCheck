@@ -278,9 +278,7 @@ class _PlannedCareRow extends ConsumerWidget {
     );
     final inWindowLine = AwayPlanScheduleCopy.inWindowLine(l, item);
     final occurrenceId = item.resolvedOccurrenceId;
-    final viewLabel = occurrenceId != null
-        ? '${item.name}. $scheduleLine. $occurrenceId'
-        : '${item.name}. $scheduleLine';
+    final viewLabel = '${item.name}. $scheduleLine';
     final showSeeOptions = item.showsSeeOptionsOnAwayPlan;
 
     void openCare() {

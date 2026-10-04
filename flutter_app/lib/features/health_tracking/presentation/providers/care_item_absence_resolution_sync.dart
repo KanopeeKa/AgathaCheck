@@ -29,6 +29,7 @@ Future<void> syncAbsenceResolution({
     healthEntryId: healthEntryId,
     decision: decision,
     lookedAfterBy: lookedAfter,
+    recordOnly: true,
   );
 }
 

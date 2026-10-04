@@ -117,12 +117,9 @@ test.describe('Care item absence review', () => {
       entryName: 'Flea during trip',
       carerName: 'Trip Sitter',
     });
-    const dayAfterReturn = dateOffset(
-      Math.round(
-        (Date.parse(`${endsOn}T12:00:00Z`) - Date.parse(`${dateOffset(0)}T12:00:00Z`)) /
-          (24 * 60 * 60 * 1000),
-      ) + 1,
-    );
+    const end = new Date(`${endsOn}T12:00:00Z`);
+    end.setUTCDate(end.getUTCDate() + 1);
+    const dayAfterReturn = end.toISOString().slice(0, 10);
 
     await postpone(root, user.accessToken, entry.id, dayAfterReturn, {
       reason: 'absence',
@@ -135,8 +132,11 @@ test.describe('Care item absence review', () => {
     await careItem.open(pet.id, entry.id);
 
     const item = await getCareItem(root, user.accessToken, entry.id);
-    expect(item.open_occurrences[0]?.scheduled_date).toBe(dayAfterReturn);
-    await careItem.expectOpenOccurrenceDateVisible(dayAfterReturn);
+    const openOcc = item.open_occurrences[0];
+    expect(openOcc?.scheduled_date).toBe(dayAfterReturn);
+    await expect(
+      page.locator(`[flt-semantics-identifier="care_item_occurrence_row_${openOcc?.id}"]`),
+    ).toBeVisible({ timeout: 30_000 });
   });
 
   test('A date planned during the trip can be looked after by the carer', async ({ page }) => {

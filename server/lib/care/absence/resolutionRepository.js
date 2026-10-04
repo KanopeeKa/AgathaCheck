@@ -91,6 +91,23 @@ export function validateResolutionDecision(input) {
  *
  * @param {object} input
  */
+/**
+ * Validate decision + carer payload without writing.
+ *
+ * @param {object} body
+ */
+export function validateResolutionPayload(body) {
+  const decisionResult = validateResolutionDecision(body);
+  if (!decisionResult.ok) {
+    return decisionResult;
+  }
+  const lookedAfter = validateLookedAfterByInput(body);
+  if (!lookedAfter.ok) {
+    return lookedAfter;
+  }
+  return { ok: true, decision: decisionResult.decision, lookedAfter };
+}
+
 export function validateLookedAfterByInput(input) {
   const payload = input.looked_after_by ?? input.lookedAfterBy ?? input;
   if (payload == null || (typeof payload === 'object' && Object.keys(payload).length === 0)) {

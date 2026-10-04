@@ -116,7 +116,9 @@ test.describe('Care agenda (occurrence-first)', () => {
       await loginAs(page, testUser, { experience: 'guardian' });
       const dashboard = new GuardianDashboardPage(page);
       await dashboard.open();
+      await dashboard.openEvents();
       const agenda = new CareAgendaPage(page);
+      await agenda.showUpcomingCare();
       await agenda.expectRowVisible('Future Groom');
       await agenda.markDone(entry.id);
       await expect(
