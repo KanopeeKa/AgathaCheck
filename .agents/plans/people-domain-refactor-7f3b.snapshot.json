@@ -12,7 +12,7 @@
   "programme_ref": "docs/domains/people/changes/people-domain-refactor.md",
   "base_branch": "main",
   "approved_by": "user chat 2026-10-04: resume after CARE A+B (#1448) + ARCH E (#1503); renews #1460 grant",
-  "current_child_plan_id": "people-server-7f3b",
+  "current_child_plan_id": "people-client-core-7f3b",
   "phases": [
     {
       "id": "orchestrate",
@@ -61,13 +61,13 @@
     },
     {
       "plan_id": "people-server-7f3b",
-      "status": "in_progress",
-      "pr_url": null,
-      "merge_commit": null
+      "status": "merged",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1523",
+      "merge_commit": "4f3325d42bec9e56abd42f8d9d6b500f17e44314"
     },
     {
       "plan_id": "people-client-core-7f3b",
-      "status": "pending",
+      "status": "in_progress",
       "pr_url": null,
       "merge_commit": null
     },

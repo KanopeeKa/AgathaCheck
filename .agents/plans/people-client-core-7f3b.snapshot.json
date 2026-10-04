@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
-  "approved_at": "2026-09-29T00:00:00Z",
-  "approved_until": "2026-10-01T00:00:00Z",
-  "content_hash": "sha256:1afd6b0ae04ad6ec5ad4f128f0044e6df6bda09e09f858e608a438739d460bd2",
-  "autonomy": "halted",
+  "approved_at": "2026-10-04T22:45:00.000Z",
+  "approved_until": "2026-10-06T17:40:08.000Z",
+  "content_hash": "sha256:c5c979d5eea779770cea1c77be5c8a4720b5d04c6b7a47970389c888531aec29",
+  "autonomy": "active",
   "default_merge_mode": "auto",
-  "control_issue": 999999,
+  "control_issue": 1565,
   "artifact_branch_policy": "phase-branch",
   "plan_id": "people-client-core-7f3b",
   "base_branch": "cursor/people-client-core-integration-7f3b",
-  "approved_by": "DRAFT — bootstrapped under the standing grant of roadmap people-domain-refactor-7f3b when its entry gate is met (see people-client-core-7f3b.md)",
+  "approved_by": "standing grant — roadmap people-domain-refactor-7f3b #1460 (2026-10-04); entry gate met (people-server #1523, CARE C+D on main)",
   "phases": [
     {
       "id": "c1-flutter-core",
@@ -37,12 +37,9 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
       "debt_issue_refs": []
     },
     {
