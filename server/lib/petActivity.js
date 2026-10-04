@@ -4,6 +4,7 @@
  */
 import { v4 as uuidv4 } from 'uuid';
 
+import { withTransaction } from './db/withTransaction.js';
 import { logger } from './logger.js';
 
 export const PET_ACTIVITY_EVENT_TYPES = Object.freeze([
@@ -103,24 +104,6 @@ export function sanitizePetActivityMetadata(eventType, metadata = {}) {
   return safe;
 }
 
-async function runInTransaction(pool, fn) {
-  if (typeof pool.connect === 'function') {
-    const client = await pool.connect();
-    try {
-      await client.query('BEGIN');
-      const result = await fn(client);
-      await client.query('COMMIT');
-      return result;
-    } catch (err) {
-      await client.query('ROLLBACK');
-      throw err;
-    } finally {
-      client.release();
-    }
-  }
-  return fn(pool);
-}
-
 /**
  * Insert a product activity event and bump pets.last_activity_at in one transaction.
  * Returns event id, or null when required fields are missing.
@@ -139,7 +122,7 @@ export async function recordPetActivity(pool, event) {
   const eventId = uuidv4();
   const safeMetadata = sanitizePetActivityMetadata(eventType, metadata);
 
-  await runInTransaction(pool, async (db) => {
+  await withTransaction(pool, async (db) => {
     await db.query(
       `INSERT INTO pet_activity_events (
          id, pet_id, org_id, event_type, actor_user_id, occurred_at, metadata

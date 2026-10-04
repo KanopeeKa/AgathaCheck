@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 
-import { withOptionalTransaction } from '../../db/withOptionalTransaction.js';
+import { withTransaction } from '../../db/withTransaction.js';
 
 export const MILESTONE_POLICY_VERSION = '1.0.0';
 
@@ -283,7 +283,7 @@ export async function acknowledgeBundlePresented(pool, { petId, userId, bundleId
 
   const milestoneIds = milestonesResult.rows.map((row) => row.id);
 
-  await withOptionalTransaction(pool, async (client) => {
+  await withTransaction(pool, async (client) => {
     for (const milestoneId of milestoneIds) {
       await client.query(
         `INSERT INTO care_milestone_presentations (id, milestone_id, user_id)
