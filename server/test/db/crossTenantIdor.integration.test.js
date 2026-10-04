@@ -14,6 +14,7 @@ let app;
 let userA;
 let userB;
 let petA;
+let healthEntryA;
 
 beforeAll(async () => {
   pool = createDbPool();
