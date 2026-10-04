@@ -222,6 +222,24 @@ export class CareItemPage {
     await refreshFlutterAccessibility(this.page);
   }
 
+  async expandPastOccurrences(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    await this.page
+      .getByRole('button', { name: /Past dates|Dates passées/i })
+      .or(this.page.getByText(/^Past dates$|^Dates passées$/i))
+      .first()
+      .click();
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async openPastOccurrence(occurrenceId: string): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    await this.page.locator(`[flt-semantics-identifier="pet_event_past_occurrence_${occurrenceId}"]`).or(
+      this.page.locator(`[key="pet_event_past_occurrence_${occurrenceId}"]`),
+    ).first().click();
+    await refreshFlutterAccessibility(this.page);
+  }
+
   async expectAbsenceReviewActionsHidden(): Promise<void> {
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);

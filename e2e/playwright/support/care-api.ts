@@ -120,6 +120,8 @@ export async function createCareItem(
     plannedDates?: string[];
     dosage?: string;
     remindDaysBefore?: number;
+    lateCompletionChoice?: 'keep' | 'skip_next' | 'shift_following' | null;
+    startDate?: string;
   },
 ): Promise<CareItem> {
   const body: Record<string, unknown> = {
@@ -140,6 +142,10 @@ export async function createCareItem(
   if (options.scheduleType) body.recurrence_anchor = options.scheduleType;
   if (options.plannedDates) body.planned_dates = options.plannedDates;
   if (options.remindDaysBefore != null) body.remind_days_before = options.remindDaysBefore;
+  if (options.lateCompletionChoice !== undefined) {
+    body.late_completion_choice = options.lateCompletionChoice;
+  }
+  if (options.startDate) body.start_date = options.startDate;
   const res = expectOk('createCareItem', await send(baseURL, token, 'POST', '', body));
   return res.body as unknown as CareItem;
 }
@@ -277,8 +283,77 @@ export async function patchOccurrence(
   return res.body as Record<string, unknown>;
 }
 
+/** Run a completion so catch-up sync closes aged fixed-schedule slots as not recorded. */
+export async function syncCareItemCatchUp(
+  baseURL: string,
+  token: string,
+  entryId: string,
+): Promise<CareItem> {
+  const item = await getCareItem(baseURL, token, entryId);
+  const open = item.open_occurrences.find((o) => o.status === 'overdue' || o.status === 'due');
+  if (!open) return item;
+  const res = expectOk(
+    'syncCareItemCatchUp',
+    await completeOccurrence(baseURL, token, entryId, open.id, {
+      nextChoice: 'keep',
+      earlierChoice: 'keep',
+    }),
+  );
+  return res.body.entry as CareItem;
+}
+
+export async function listPastOccurrences(
+  baseURL: string,
+  token: string,
+  entryId: string,
+): Promise<HealthEntryOccurrenceRow[]> {
+  return listHealthEntryOccurrences(baseURL, token, entryId, { status: 'past' });
+}
+
+/** Flea due 5 Jun, completed 10 Jun — next computed 10 Jul (C0 corpus). */
+export async function seedFleaDoneLate(
+  baseURL: string,
+  token: string,
+  petId: string,
+): Promise<{ entry: CareItem; completedOccurrenceId: string; nextOccurrenceId: string }> {
+  const entry = await createCareItem(baseURL, token, petId, {
+    name: 'Flea',
+    careFamily: 'parasite_prevention',
+    frequency: 'monthly',
+    dueDate: '2026-06-05',
+    startDate: '2026-06-05',
+  });
+  const first = entry.open_occurrences[0];
+  if (!first) throw new Error('seedFleaDoneLate: no open occurrence');
+  const done = await completeOccurrence(baseURL, token, entry.id, first.id, {
+    completedOn: '2026-06-10',
+  });
+  if (done.status >= 400) {
+    throw new Error(`seedFleaDoneLate complete failed: ${JSON.stringify(done.body)}`);
+  }
+  const refreshed = done.body.entry as CareItem;
+  const next = refreshed.open_occurrences[0];
+  if (!next) throw new Error('seedFleaDoneLate: no next occurrence');
+  return { entry: refreshed, completedOccurrenceId: first.id, nextOccurrenceId: next.id };
+}
+
 export async function skipOccurrence(baseURL: string, token: string, entryId: string, occurrenceId: string) {
   return expectOk('skipOccurrence', await send(baseURL, token, 'POST', `/${entryId}/occurrences/${occurrenceId}/skip`, {}));
+}
+
+export async function recordNotRecordedOccurrence(
+  baseURL: string,
+  token: string,
+  entryId: string,
+  occurrenceId: string,
+  completedOn: string,
+): Promise<CareCommandResult> {
+  return expectOk(
+    'recordNotRecordedOccurrence',
+    await send(baseURL, token, 'POST', `/${entryId}/occurrences/${occurrenceId}/record`, {
+      completed_on: completedOn,
+    }),
+  );
 }
 
 export async function recordEarlierDoses(
