@@ -264,7 +264,7 @@ jobs:
           PGPORT: 5432
           PGDATABASE: agatha_db
         working-directory: server
-        run: npx jest -c jest.config.active.cjs --env=node --runInBand --forceExit test/lib/pgDateParser.test.js test/db/pgDateParisTick.integration.test.js
+        run: npx jest -c jest.config.active.cjs --env=node --runInBand --forceExit test/db/pgDateParser.integration.test.js test/db/pgDateParisTick.integration.test.js
       - name: Write integration job summary
         if: always()
         run: |
