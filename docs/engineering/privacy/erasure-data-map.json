@@ -240,6 +240,29 @@
       "discovery_source": "foreign_key"
     },
     {
+      "table": "household_invites",
+      "column": "invitee_email",
+      "erasure_action": "explicit_delete",
+      "reason": "Invitee PII; row removed via inviter CASCADE or explicit invite purge during erasure.",
+      "discovery_source": "column"
+    },
+    {
+      "table": "household_invites",
+      "column": "invitee_user_id",
+      "erasure_action": "set_null",
+      "reason": "ON DELETE SET NULL from users(id); pending invitee link cleared when account erased.",
+      "pg_on_delete": "n",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "household_invites",
+      "column": "inviter_user_id",
+      "erasure_action": "cascade",
+      "reason": "ON DELETE CASCADE from users(id).",
+      "pg_on_delete": "c",
+      "discovery_source": "foreign_key"
+    },
+    {
       "table": "notification_preferences",
       "column": "user_id",
       "erasure_action": "cascade",
@@ -366,6 +389,22 @@
       "discovery_source": "foreign_key"
     },
     {
+      "table": "people_contact_household_notes",
+      "column": "contact_id",
+      "erasure_action": "cascade",
+      "reason": "ON DELETE CASCADE from people_contacts(id); notes removed with contact row.",
+      "pg_on_delete": "c",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "people_contact_household_notes",
+      "column": "updated_by_user_id",
+      "erasure_action": "set_null",
+      "reason": "ON DELETE SET NULL from users(id); attribution cleared when account removed.",
+      "pg_on_delete": "n",
+      "discovery_source": "foreign_key"
+    },
+    {
       "table": "people_contacts",
       "column": "email",
       "erasure_action": "explicit_delete",
@@ -449,6 +488,14 @@
       "erasure_action": "cascade",
       "reason": "ON DELETE CASCADE from users(id).",
       "pg_on_delete": "c",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "pet_share_invites",
+      "column": "contact_id",
+      "erasure_action": "set_null",
+      "reason": "ON DELETE SET NULL from people_contacts(id); invite survives with contact link cleared.",
+      "pg_on_delete": "n",
       "discovery_source": "foreign_key"
     },
     {
@@ -683,46 +730,11 @@
   },
   "planned_tables": [
     {
-      "table": "people_contact_household_notes",
+      "table": "people_contact_workplace_notes",
       "column": "updated_by_user_id",
       "erasure_action": "set_null",
-      "reason": "PEOPLE migration pending; ON DELETE SET NULL expected for attribution when household note survives.",
-      "status": "pending_migration"
-    },
-    {
-      "table": "people_contact_household_notes",
-      "column": "contact_id",
-      "erasure_action": "cascade",
-      "reason": "Notes cascade when people_contacts row removed via directory owner CASCADE.",
-      "status": "pending_migration"
-    },
-    {
-      "table": "household_invites",
-      "column": "inviter_user_id",
-      "erasure_action": "cascade",
-      "reason": "PEOPLE migration pending; inviter CASCADE expected (planned_absence_carer_invites pattern).",
-      "status": "pending_migration"
-    },
-    {
-      "table": "household_invites",
-      "column": "invitee_user_id",
-      "erasure_action": "set_null",
-      "reason": "Pending invitee link cleared when account erased.",
-      "status": "pending_migration"
-    },
-    {
-      "table": "household_invites",
-      "column": "invitee_email",
-      "erasure_action": "explicit_delete",
-      "reason": "Invitee email redacted or row deleted during erasure.",
-      "status": "pending_migration"
-    },
-    {
-      "table": "pet_share_invites",
-      "column": "contact_id",
-      "erasure_action": "set_null",
-      "reason": "PEOPLE share_invite_contact_link migration pending; contact link cleared, invite row removed via inviter CASCADE.",
-      "status": "pending_migration"
+      "reason": "Reserved for future workplace-directory notes (not migrated).",
+      "status": "not_started"
     }
   ]
 }
