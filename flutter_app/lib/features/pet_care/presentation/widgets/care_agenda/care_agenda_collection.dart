@@ -52,7 +52,8 @@ class _CareAgendaCollectionState extends ConsumerState<CareAgendaCollection> {
     _minute = Timer.periodic(const Duration(minutes: 1), (_) {
       if (!mounted) return;
       final elapsed = DateTime.now().difference(_readAt);
-      if (elapsed >= const Duration(minutes: 15) || _crossedPetHomeMidnight(elapsed)) {
+      if (elapsed >= const Duration(minutes: 15) ||
+          _crossedPetHomeMidnight(elapsed)) {
         _refresh();
       } else {
         setState(() {});
