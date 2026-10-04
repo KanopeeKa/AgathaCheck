@@ -2,13 +2,13 @@
   "schema_version": 1,
   "plan_id": "active-codebase-batch-g-client-authority-e41f",
   "programme_ref": "docs/architecture/reviews/active-codebase-review.md",
-  "approved_at": null,
-  "approved_by": "standing grant — roadmap active-codebase-completion-e41f (pending approve-autonomous active-codebase-completion-e41f)",
-  "approved_until": null,
+  "approved_at": "2026-10-04T21:16:51Z",
+  "approved_by": "standing grant — roadmap active-codebase-completion-e41f (#1446); approve-autonomous active-codebase-batch-g-client-authority-e41f (roadmap chain)",
+  "approved_until": "2026-10-06T21:16:51Z",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/active-codebase-g-integration-e41f",
-  "control_issue": null,
+  "control_issue": 1531,
   "artifact_branch_policy": "phase-branch",
   "phases": [
     {
@@ -187,5 +187,5 @@
       "merge_commit": null
     }
   ],
-  "content_hash": null
+  "content_hash": "sha256:5e15656bf06c0a83c0d4ee612664ca73610cedde63dee127ce2819e9b1170a59"
 }
