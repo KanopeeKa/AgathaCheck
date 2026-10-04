@@ -4,7 +4,7 @@
   "approved_at": "2026-10-04T10:45:00Z",
   "approved_by": "user chat 2026-10-04 — /execute-plan resume with agreement on all phases E and F (standing grant on care-next-occurrence-c1a7 landing 5b)",
   "approved_until": "2026-10-06T10:45:00Z",
-  "autonomy": "active",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "claude/eager-edison-mf34j6",
   "control_issue": 1480,
@@ -146,10 +146,11 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_head_sha": "b3ac9b81"
     },
     {
       "id": "E6",
@@ -173,11 +174,13 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "bdd-journey",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1488",
+      "pr_head_sha": "c24b92b3"
     }
   ],
-  "content_hash": "sha256:4f05042400e2550d0ddfaae8ce6472bf47dab2a134127f287fa6d0e74210a7e4"
+  "content_hash": "sha256:22d282f9eda457c1f069ea386dd3e2a11e3a77d363e3dbccd50af49b50d0dacd"
 }

@@ -23,17 +23,17 @@ Absences use stored open occurrences (D-ACP-011): projection, away UI, and E2E m
 ## Runtime state
 
 ```yaml
-autonomy: active
-current_phase: E5
-last_completed_phase: E4
+autonomy: completed
+current_phase: null
+last_completed_phase: E6
 halt_reason: null
-next_action: "continue phase E5 on branch cursor/care-e5-away-flutter-50b4"
+next_action: "plan complete"
 artifact_ref:
   branch: claude/eager-edison-mf34j6
   plan_path: .agents/plans/care-absence-real-occurrences-c1a7.md
-  plan_commit: e11ea1cea01426b71878753e23e0720432847bf9
+  plan_commit: c24b92b395b0b67bcb93079f73d090187fad1b67
   snapshot_path: .agents/plans/care-absence-real-occurrences-c1a7.snapshot.json
-  snapshot_commit: e11ea1cea01426b71878753e23e0720432847bf9
+  snapshot_commit: c24b92b395b0b67bcb93079f73d090187fad1b67
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

@@ -11,7 +11,7 @@
   "base_branch": "claude/eager-edison-mf34j6",
   "control_issue": 1482,
   "artifact_branch_policy": "phase-branch",
-  "current_child_plan_id": "care-absence-real-occurrences-c1a7",
+  "current_child_plan_id": "care-item-module-c1a7",
   "child_plans": [
     {
       "plan_id": "care-occurrence-spec-c1a7",
@@ -39,7 +39,7 @@
     },
     {
       "plan_id": "care-absence-real-occurrences-c1a7",
-      "status": "in_progress",
+      "status": "merged",
       "pr_url": null,
       "merge_commit": null
     },
@@ -79,5 +79,5 @@
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:585e9661bb30b5c60c21176721ed501abde84ff18c37df6fd1417c6434c618c1"
+  "content_hash": "sha256:14130e0530f51ecb0cc922d500f3551263aad9ece7670e556043200d580038c3"
 }
