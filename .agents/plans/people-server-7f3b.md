@@ -527,17 +527,17 @@ flutter_app/**
 
 ```yaml
 autonomy: active
-current_phase: s5-households-api
-last_completed_phase: s4-read-models
+current_phase: s6-invites-api
+last_completed_phase: s5-households-api
 halt_reason: null
-next_action: "continue phase s5-households-api on branch cursor/people-server-s5-households-7f3b"
+next_action: "start phase s6-invites-api: checkout cursor/people-server-s6-invites-7f3b"
 artifact_ref:
-  branch: cursor/people-server-s5-households-7f3b
+  branch: cursor/people-server-integration-7f3b
   plan_path: .agents/plans/people-server-7f3b.md
-  plan_commit: 2dcfeb6b16e84511a046b3fe31abcedddafd4fb0
+  plan_commit: aa0d3a2008a7f11adf24ce38952739eed9315e7b
   snapshot_path: .agents/plans/people-server-7f3b.snapshot.json
-  snapshot_commit: 2dcfeb6b16e84511a046b3fe31abcedddafd4fb0
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1520"]
+  snapshot_commit: aa0d3a2008a7f11adf24ce38952739eed9315e7b
+open_prs: []
 merge_commits: {}
 debt_issue_refs: []
 ```
