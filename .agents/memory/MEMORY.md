@@ -50,6 +50,7 @@ Institutional knowledge for cloud agents. Domain workflows live in **Skills** (`
 - [Flutter web password-manager autofill](flutter-web-password-managers.md) — CanvasKit paints fields on canvas so extensions (Proton Pass) can't autofill; fix is a native HTML form in index.html bridged to Dart.
 - [Tool-output token scrambling](tool-output-token-scrambling.md) — grep/bash can mangle source tokens in file content (e.g. weight→ln); read tool shows truth, edits use real tokens.
 - [Care item completion semantics](health-entry-completion.md) — occurrences are the source of truth; every active planned item always has a real open occurrence (D-CSM-019); Fixed schedule vs After it's done; complete never asks (missing choices fall back to the remembered choice or keep); `next_due_date` is a read-only cache.
+- [Care schedule status source (EX-11)](care-schedule-status-source.md) — production UI uses server `HealthEntry.schedule` (`CareItemSchedule` + `as_of`); device-clock `next_due_date` fallbacks are for tests and unsaved drafts only.
 - [Pet Care mobile completion](guardian-mobile-completion.md) — compact dashboard completion keeps a reversible list-level preview while the server remains authoritative (legacy filename).
 - [Care dose selection compatibility](care-dose-selection-compatibility.md) — pair single-date dashboard confirmation with same-day multi-dose selection when verifying legacy routing.
 - [Canonical product name](canonical-product-name.md) — use AgathaTrack in current product UI and copy; AgathaCheck is the legacy name.
