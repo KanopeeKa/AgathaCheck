@@ -26,9 +26,9 @@ next_action: "continue phase F5 on branch cursor/care-f5-arch-index-50b4"
 artifact_ref:
   branch: cursor/care-f5-arch-index-50b4
   plan_path: .agents/plans/care-item-module-c1a7.md
-  plan_commit: pending
+  plan_commit: 552bd7b8e6baaff9c5b79218d0868154492465e6
   snapshot_path: .agents/plans/care-item-module-c1a7.snapshot.json
-  snapshot_commit: pending
+  snapshot_commit: 552bd7b8e6baaff9c5b79218d0868154492465e6
 open_prs: []
 merge_commits:
   F2: fce0ce1e2146550fc085a00364693c9aa7c985f8
