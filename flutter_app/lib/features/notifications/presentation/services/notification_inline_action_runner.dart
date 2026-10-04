@@ -6,8 +6,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
-import '../../../organization/presentation/providers/foster_placements_providers.dart';
-import '../../../organization/presentation/providers/org_provider_custody.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../../sharing/domain/entities/invite_preview.dart';
 import '../../../sharing/domain/entities/pet_access.dart';
@@ -33,12 +31,6 @@ class NotificationInlineActionRunner {
         await _acceptShareInvite(context, notification);
       case NotificationInlineActionKind.householdInvite:
         _openInviteLanding(context, notification);
-      case NotificationInlineActionKind.fosterPlacement:
-        await _acceptFosterPlacement(notification);
-      case NotificationInlineActionKind.adoptionPlacement:
-        await _acceptAdoptionPlacement(notification);
-      case NotificationInlineActionKind.custodyTransfer:
-        await _acceptCustodyTransfer(notification);
     }
     await ref.read(notificationsProvider.notifier).refresh();
     ref.invalidate(petListProvider);
@@ -74,14 +66,11 @@ class NotificationInlineActionRunner {
     await done.future;
     if (undone || !context.mounted) return;
 
-    await _declineImmediate(context, notification);
+    await _declineImmediate(notification);
     await ref.read(notificationsProvider.notifier).refresh();
   }
 
-  Future<void> _declineImmediate(
-    BuildContext context,
-    AppNotification notification,
-  ) async {
+  Future<void> _declineImmediate(AppNotification notification) async {
     final kind = NotificationInlineActionSupport.kindFor(notification);
     if (kind == null) return;
 
@@ -89,13 +78,7 @@ class NotificationInlineActionRunner {
       case NotificationInlineActionKind.shareInvite:
         await _declineShareInvite(notification);
       case NotificationInlineActionKind.householdInvite:
-        _openInviteLanding(context, notification);
-      case NotificationInlineActionKind.fosterPlacement:
-        await _declineFosterPlacement(notification);
-      case NotificationInlineActionKind.adoptionPlacement:
-        await _declineAdoptionPlacement(notification);
-      case NotificationInlineActionKind.custodyTransfer:
-        await _declineCustodyTransfer(notification);
+        await _declineShareInvite(notification);
     }
   }
 
@@ -140,83 +123,6 @@ class NotificationInlineActionRunner {
     final preview = await repo.getInvitePreview(code);
     if (!preview.isPending) throw StaleNotificationException();
     await repo.declineInvite(preview.inviteId, token);
-  }
-
-  Future<void> _acceptFosterPlacement(AppNotification notification) async {
-    final placementId = await _resolveFosterPlacementId(notification);
-    await ref
-        .read(pendingFosterPlacementsProvider.notifier)
-        .accept(placementId);
-    ref.invalidate(notificationsProvider);
-  }
-
-  Future<void> _declineFosterPlacement(AppNotification notification) async {
-    final placementId = await _resolveFosterPlacementId(notification);
-    await ref
-        .read(pendingFosterPlacementsProvider.notifier)
-        .decline(placementId);
-    ref.invalidate(notificationsProvider);
-  }
-
-  Future<void> _acceptAdoptionPlacement(AppNotification notification) async {
-    final placementId = await _resolveAdoptionPlacementId(notification);
-    await ref
-        .read(pendingAdoptionPlacementsProvider.notifier)
-        .confirm(placementId);
-    ref.invalidate(notificationsProvider);
-  }
-
-  Future<void> _declineAdoptionPlacement(AppNotification notification) async {
-    final placementId = await _resolveAdoptionPlacementId(notification);
-    await ref
-        .read(pendingFosterPlacementsProvider.notifier)
-        .decline(placementId);
-    ref.invalidate(notificationsProvider);
-  }
-
-  Future<void> _acceptCustodyTransfer(AppNotification notification) async {
-    final transferId = await _resolveCustodyTransferId(notification);
-    await ref.read(pendingCustodyTransfersProvider.notifier).accept(transferId);
-  }
-
-  Future<void> _declineCustodyTransfer(AppNotification notification) async {
-    final transferId = await _resolveCustodyTransferId(notification);
-    await ref.read(pendingCustodyTransfersProvider.notifier).cancel(transferId);
-  }
-
-  Future<String> _resolveFosterPlacementId(AppNotification notification) async {
-    final petId = notification.petId;
-    if (petId == null || petId.isEmpty) {
-      throw Exception('Missing pet id');
-    }
-    final pending = await ref.read(pendingFosterPlacementsProvider.future);
-    final match = pending.where((p) => p.petId == petId).firstOrNull;
-    if (match == null) throw StaleNotificationException();
-    return match.id;
-  }
-
-  Future<String> _resolveAdoptionPlacementId(
-    AppNotification notification,
-  ) async {
-    final petId = notification.petId;
-    if (petId == null || petId.isEmpty) {
-      throw Exception('Missing pet id');
-    }
-    final pending = await ref.read(pendingAdoptionPlacementsProvider.future);
-    final match = pending.where((p) => p.petId == petId).firstOrNull;
-    if (match == null) throw StaleNotificationException();
-    return match.id;
-  }
-
-  Future<String> _resolveCustodyTransferId(AppNotification notification) async {
-    final petId = notification.petId;
-    if (petId == null || petId.isEmpty) {
-      throw Exception('Missing pet id');
-    }
-    final pending = await ref.read(pendingCustodyTransfersProvider.future);
-    final match = pending.where((p) => p.petId == petId).firstOrNull;
-    if (match == null) throw StaleNotificationException();
-    return match.id;
   }
 }
 
