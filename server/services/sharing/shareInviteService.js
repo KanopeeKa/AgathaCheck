@@ -30,6 +30,8 @@ import {
 } from '../../lib/notificationHelper.js';
 import { normalizeShareAccessRole } from '../../lib/petSharing/permissions.js';
 import { CARER_ROLE, CO_PARENT_ROLE, userCanSharePet } from '../../lib/petAccess.js';
+import { canEditContact } from '../../lib/people/access.js';
+import { tryLinkInviteContact } from '../../lib/people/inviteContactLink.js';
 import { sendTransactionalEmail } from '../mailService.js';
 import { ShareCommandResult } from './shareCommandResult.js';
 
@@ -160,6 +162,7 @@ async function insertInviteWithCodeRetry(client, {
   role,
   expiresAt,
   includedPetIds,
+  contactId,
 }) {
   let inviteId;
   let code;
@@ -177,6 +180,7 @@ async function insertInviteWithCodeRetry(client, {
         role,
         code,
         expiresAt,
+        contactId,
       });
       await insertInvitePets(client, inviteId, includedPetIds);
       await client.query(`RELEASE SAVEPOINT ${savepoint}`);
@@ -189,20 +193,45 @@ async function insertInviteWithCodeRetry(client, {
   throw new ShareCommandResult({ error: 'Could not generate invite code', status: 500 });
 }
 
+async function validateShareInviteContact(db, contactId, inviterUserId, inviteeEmail) {
+  if (!contactId) return null;
+  if (!(await canEditContact(db, contactId, inviterUserId))) {
+    return { error: 'Forbidden', status: 403 };
+  }
+  const contactResult = await db.query(
+    `SELECT email, inactive_at FROM people_contacts WHERE id = $1`,
+    [contactId],
+  );
+  const contact = contactResult.rows[0];
+  if (!contact || contact.inactive_at != null) {
+    return { error: 'Contact is not available', status: 400 };
+  }
+  const contactEmail = normalizeEmail(contact.email);
+  if (contactEmail && contactEmail !== normalizeEmail(inviteeEmail)) {
+    return { error: 'Contact email must match invitee_email', status: 400 };
+  }
+  return null;
+}
+
 export async function createShareInvite(pool, {
   inviterUserId,
   inviteeEmail: rawEmail,
   petIds: rawPetIds,
   role: rawRole,
   locale,
+  contactId: rawContactId,
 }) {
   const inviteeEmail = normalizeEmail(rawEmail);
   const petIds = [...new Set((rawPetIds || []).filter(Boolean))];
   const role = normalizeShareAccessRole(rawRole);
+  const contactId = rawContactId || null;
 
   if (!inviteeEmail) {
     return { error: 'invitee_email is required', status: 400 };
   }
+
+  const contactError = await validateShareInviteContact(pool, contactId, inviterUserId, inviteeEmail);
+  if (contactError) return contactError;
   if (petIds.length === 0 || petIds.length > MAX_PET_IDS) {
     return { error: 'pet_ids must contain between 1 and 20 items', status: 400 };
   }
@@ -259,6 +288,7 @@ export async function createShareInvite(pool, {
         role,
         expiresAt,
         includedPetIds,
+        contactId,
       });
 
       const delivery = { email: 'skipped', notification: false };
@@ -431,6 +461,11 @@ export async function acceptShareInvite(pool, {
       if (invite.status === 'pending') {
         await updateInviteStatus(client, invite.id, 'accepted');
       }
+
+      await tryLinkInviteContact(client, invite.contact_id, userId, {
+        inviteId: invite.id,
+        source: 'pet_share',
+      });
 
       const accepterName = userDisplayName(accepter);
       const petNames = invite.pets.map((p) => p.pet_name).filter(Boolean).join(', ') || 'pets';

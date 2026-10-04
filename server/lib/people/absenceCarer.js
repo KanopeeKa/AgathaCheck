@@ -1,16 +1,16 @@
-import { v4 as uuidv4 } from 'uuid';
-
 import {
   CARER_KIND_NOTE_ONLY,
   CARER_KIND_SHARED_USER,
-  formatCarerCandidateDisplayName,
 } from '../care/plannedAbsence.js';
 import { PET_ACCESS_ROLES } from '../petAccess.js';
 import {
   contactUsableForPet,
   getPetOwnerUserId,
 } from './authz.js';
-import { ensurePersonalDirectory } from './directory.js';
+import {
+  ensureLinkedUserContact,
+  ensureNoteOnlyContact,
+} from './contactsRepo.js';
 
 const PET_ACCESS_ROLES_SQL = PET_ACCESS_ROLES.map((role) => `'${role}'`).join(', ');
 
@@ -233,85 +233,6 @@ export async function resolveCarerWrite(pool, { declarerUserId, petId, item }) {
     carer_note: note == null || note === '' ? null : String(note),
     contact_id: contactId,
   };
-}
-
-/**
- * @param {import('pg').Pool|import('pg').PoolClient} pool
- * @param {string} ownerUserId
- * @param {string} linkedUserId
- */
-async function ensureLinkedUserContact(pool, ownerUserId, linkedUserId) {
-  const directoryId = await ensurePersonalDirectory(pool, ownerUserId);
-  const existing = await pool.query(
-    `SELECT id FROM people_contacts
-     WHERE directory_id = $1 AND linked_user_id = $2
-     LIMIT 1`,
-    [directoryId, linkedUserId],
-  );
-  if (existing.rows.length > 0) return existing.rows[0].id;
-
-  const userRow = await pool.query(
-    'SELECT id, first_name, last_name, email FROM users WHERE id = $1',
-    [linkedUserId],
-  );
-  const displayName = userRow.rows[0]
-    ? formatCarerCandidateDisplayName(userRow.rows[0])
-    : 'User';
-  const contactId = uuidv4();
-  await pool.query(
-    `INSERT INTO people_contacts (
-       id, directory_id, kind, name, linked_user_id, created_at, updated_at
-     ) VALUES ($1, $2, 'person', $3, $4, NOW(), NOW())`,
-    [contactId, directoryId, displayName, linkedUserId],
-  );
-  await pool.query(
-    `INSERT INTO people_contact_roles (contact_id, role) VALUES ($1, 'sitter')`,
-    [contactId],
-  );
-  return contactId;
-}
-
-/**
- * @param {import('pg').Pool|import('pg').PoolClient} pool
- * @param {string} ownerUserId
- * @param {string} name
- * @param {string|null} note
- */
-async function ensureNoteOnlyContact(pool, ownerUserId, name, note) {
-  const directoryId = await ensurePersonalDirectory(pool, ownerUserId);
-  const existing = await pool.query(
-    `SELECT pc.id
-     FROM people_contacts pc
-     INNER JOIN people_contact_private_notes pcpn
-       ON pcpn.contact_id = pc.id AND pcpn.user_id = $2
-     WHERE pc.directory_id = $1
-       AND pc.kind = 'person'
-       AND pc.name = $3
-       AND COALESCE(pcpn.note, '') = COALESCE($4, '')
-     LIMIT 1`,
-    [directoryId, ownerUserId, name, note ?? ''],
-  );
-  if (existing.rows.length > 0) return existing.rows[0].id;
-
-  const contactId = uuidv4();
-  await pool.query(
-    `INSERT INTO people_contacts (
-       id, directory_id, kind, name, created_at, updated_at
-     ) VALUES ($1, $2, 'person', $3, NOW(), NOW())`,
-    [contactId, directoryId, name],
-  );
-  await pool.query(
-    `INSERT INTO people_contact_roles (contact_id, role) VALUES ($1, 'sitter')`,
-    [contactId],
-  );
-  if (note) {
-    await pool.query(
-      `INSERT INTO people_contact_private_notes (contact_id, user_id, note, updated_at)
-       VALUES ($1, $2, $3, NOW())`,
-      [contactId, ownerUserId, note],
-    );
-  }
-  return contactId;
 }
 
 /**

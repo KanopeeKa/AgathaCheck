@@ -1,3 +1,4 @@
+import { canAttachContactToPet } from '../people/access.js';
 import { contactRowToMap, loadContactForViewer } from '../people/contactMapping.js';
 
 /**
@@ -68,9 +69,18 @@ export async function resolveProviderUsedForCompletion(pool, userId, entry, body
 
   let snapshot = null;
   if (bodyContact && bodyContact !== entry.provider_contact_id) {
-    const row = await loadContactForViewer(pool, bodyContact, userId);
-    if (row) {
-      return { contactId: bodyContact, typedName: null, snapshot: contactRowToProviderSnapshot(row) };
+    const petId = entry.pet_id;
+    const canOverride = petId
+      && await canAttachContactToPet(pool, userId, bodyContact, petId);
+    if (canOverride) {
+      const row = await loadAttachedContact(pool, bodyContact);
+      if (row) {
+        return {
+          contactId: bodyContact,
+          typedName: null,
+          snapshot: contactRowToProviderSnapshot(row),
+        };
+      }
     }
     contactId = entry.provider_contact_id || null;
     typedName = contactId ? null : (bodyTyped || entry.provider_typed_name || null);
@@ -93,10 +103,30 @@ export async function resolveProviderUsedForCompletion(pool, userId, entry, body
 /**
  * @param {import('pg').Pool|import('pg').PoolClient} pool
  * @param {string} userId
- * @param {object} body PATCH body
- * @returns {Promise<{ contactId?: string|null, typedName?: string|null, snapshot?: object|null, error?: string }|null>}
+ * @param {string} petId
+ * @param {string|null|undefined} contactId
+ * @returns {Promise<{ error: string, code: string }|null>}
  */
-export async function resolveProviderUsedPatch(pool, userId, body) {
+export async function validateProviderContactForPetWrite(pool, userId, petId, contactId) {
+  if (!contactId) return null;
+  const ok = await canAttachContactToPet(pool, userId, contactId, petId);
+  if (!ok) {
+    return {
+      error: 'Provider contact cannot be attached to this pet',
+      code: 'validation_failed',
+    };
+  }
+  return null;
+}
+
+/**
+ * @param {import('pg').Pool|import('pg').PoolClient} pool
+ * @param {string} userId
+ * @param {object} body PATCH body
+ * @param {string} [petId] required when setting provider_contact_id
+ * @returns {Promise<{ contactId?: string|null, typedName?: string|null, snapshot?: object|null, error?: string, code?: string }|null>}
+ */
+export async function resolveProviderUsedPatch(pool, userId, body, petId = null) {
   const hasContact = Object.prototype.hasOwnProperty.call(body, 'provider_contact_id')
     || Object.prototype.hasOwnProperty.call(body, 'providerContactId');
   const hasTyped = Object.prototype.hasOwnProperty.call(body, 'provider_typed_name')
@@ -119,8 +149,11 @@ export async function resolveProviderUsedPatch(pool, userId, body) {
 
   let snapshot = null;
   if (contactId) {
-    const row = await loadContactForViewer(pool, contactId, userId);
-    if (!row) return { error: 'Provider contact not found' };
+    if (!petId) return { error: 'Provider contact cannot be attached to this pet', code: 'validation_failed' };
+    const attachError = await validateProviderContactForPetWrite(pool, userId, petId, contactId);
+    if (attachError) return attachError;
+    const row = await loadAttachedContact(pool, contactId);
+    if (!row) return { error: 'Provider contact not found', code: 'validation_failed' };
     snapshot = contactRowToProviderSnapshot(row);
     typedName = null;
   } else if (typedName) {

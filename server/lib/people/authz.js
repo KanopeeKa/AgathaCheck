@@ -1,4 +1,8 @@
-import { getPersonalDirectoryId } from './directory.js';
+import {
+  canAttachContactToPet,
+  contactInEditableDirectoriesForPet,
+  getPetOwnerUserId,
+} from './access.js';
 
 /**
  * @param {import('pg').Pool|import('pg').PoolClient} pool
@@ -24,29 +28,20 @@ export async function userOwnsContact(pool, contactId, userId) {
  * @param {string} callerUserId
  * @param {string} petOwnerUserId
  */
-export async function contactUsableForPet(pool, contactId, callerUserId, petOwnerUserId) {
-  if (await userOwnsContact(pool, contactId, callerUserId)) return true;
-  if (petOwnerUserId && petOwnerUserId !== callerUserId) {
-    return userOwnsContact(pool, contactId, petOwnerUserId);
-  }
-  return false;
+export async function contactUsableForPet(
+  pool,
+  contactId,
+  callerUserId,
+  petOwnerUserId,
+  petId = null,
+) {
+  return contactInEditableDirectoriesForPet(
+    pool,
+    contactId,
+    callerUserId,
+    petOwnerUserId,
+    petId,
+  );
 }
 
-/**
- * @param {import('pg').Pool|import('pg').PoolClient} pool
- * @param {string} petId
- * @returns {Promise<string|null>}
- */
-export async function getPetOwnerUserId(pool, petId) {
-  const result = await pool.query('SELECT user_id FROM pets WHERE id = $1', [petId]);
-  return result.rows[0]?.user_id ?? null;
-}
-
-/**
- * @param {import('pg').Pool|import('pg').PoolClient} pool
- * @param {string} userId
- */
-export async function assertPersonalDirectoryOwner(pool, userId) {
-  const directoryId = await getPersonalDirectoryId(pool, userId);
-  return directoryId;
-}
+export { getPetOwnerUserId, canAttachContactToPet };

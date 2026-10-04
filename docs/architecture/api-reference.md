@@ -67,26 +67,50 @@ Personal directory contacts (phase 1). Storage: migrations `072_*`–`074_*`. Sp
 
 | Method | Path | Authorization |
 |---|---|---|
-| GET | `/contacts` | authenticated — caller's personal directory; optional `?include_inactive=true` |
-| POST | `/contacts` | authenticated — body `{ kind, name, phone?, email?, address?, website?, works_at_contact_id?, roles?, private_note? }`; `kind` ∈ {`person`,`organisation`}; `roles` ⊆ sitter, walker, vet, vet_nurse, groomer, trainer, behaviourist, boarding, emergency_contact, other |
-| GET | `/contacts/:id` | authenticated — owner of directory only |
-| PATCH | `/contacts/:id` | authenticated — partial update; `private_note` is per-caller only; **`kind` changes only when `kind` is sent** (rename alone does not re-infer kind) |
-| DELETE | `/contacts/:id` | authenticated — blocked when `legacy_vet_id` is set (delete vet instead) or pet relationship exists (`409`) |
+| GET | `/contacts` | authenticated — visible personal and household (Full access) directories; optional `?include_inactive=true`; adds `directory`, `group`, `status`, `pets[]` (additive) |
+| GET | `/roster` | authenticated — hub read model: `households[]`, `contacts[]` (`ContactSummary`), `pending_invites[]` (pet share, household, and absence carer invites created by viewer; optional `contact_id`, `household_id` on household rows) |
+| GET | `/contacts/:id` | authenticated — enriched detail (`works_at`, `staff[]`, `usage_counts`, `linked_account`, `group`, `status`, `directory`, `household_note` for household members; hidden from linked person — I10) |
+| GET | `/contacts/:id/related` | authenticated — related pets, care items as provider, absences as carer, `history_count` |
+| GET | `/contacts/by-legacy-vet/:vetId` | authenticated — `{ id }` for legacy vet deep links |
+| POST | `/contacts` | authenticated — body `{ kind, name, phone?, email?, address?, website?, works_at_contact_id?, roles?, private_note?, household_note?, pet_links?, household_id? }`; `kind` ∈ {`person`,`organisation`}; `roles` ⊆ sitter, walker, vet, vet_nurse, groomer, trainer, behaviourist, boarding, emergency_contact, other; optional `household_id` creates in that household directory (Full access / organiser only); optional `pet_links[]` = `{ pet_id, relationship_kind }` (attach in same transaction; slot kinds use replace semantics) |
+| PATCH | `/contacts/:id` | authenticated — partial update; `private_note` per-caller; `household_note` for household-directory contacts (members with edit access); **`kind` changes only when `kind` is sent** (rename alone does not re-infer kind) |
+| DELETE | `/contacts/:id` | authenticated — `409 contact_in_use` with `details.usages[]` when the contact is referenced (relationships, absence carers, care-item providers, pending carer invites, works-at). Unused vet-linked contacts delete and remove the linked `vets` row |
 
-Response contact shape: `{ id, directory_id, kind, name, phone, email, address, website, works_at_contact_id, linked_user_id, inactive_at, legacy_vet_id, roles[], private_note, created_at, updated_at }`.
+List/detail compat contact fields: `{ id, directory_id, kind, name, phone, email, address, website, works_at_contact_id, linked_user_id, inactive_at, legacy_vet_id, roles[], private_note, created_at, updated_at }` plus read-model fields above where applicable.
+
+`ContactSummary` (roster/list): `{ directory: { type, household_id }, group, status, pets[{ pet_id, pet_name, relationship_kind, is_primary }], works_at?, next_absence?, access? }`.
+
+People error bodies (additive): `{ error, code, details? }` with stable `code` values including `validation_failed`, `contact_not_found`, `forbidden`, `contact_in_use` (`details.usages[]`: `{ kind, id, label, pet_id?, active? }`), `slot_conflict`, `linked_identity_read_only`. Health entry writes validate `provider_contact_id` with the same attach rules as pet relationships (`400 validation_failed`). PATCH accepts `active: boolean` (sets `inactive_at` server-side); optional `inactive_at` is validated when sent. PATCH rejects name/email changes on contacts with `linked_user_id` → `409 linked_identity_read_only`.
 
 #### Pet contact relationships (`/api/pets/:petId/people-relationships`)
+
+Authoritative store for pet–contact links. `pet_contact_relationships` drives `pets.vet_id` and legacy `vets` rows via server-side projection (invariant I5).
 
 | Method | Path | Authorization |
 |---|---|---|
 | GET | `/api/pets/:petId/people-relationships` | `userCanManageProfile` (record owner or co-parent) |
-| PUT | `/api/pets/:petId/people-relationships` | same — replaces all relationships; body `{ relationships: [{ contact_id, relationship_kind, is_primary?, active? }] }`; `relationship_kind` ∈ primary_vet, out_of_hours_vet, emergency_contact, care_provider, other; contact must be in caller's or pet owner's personal directory |
+| PUT | `/api/pets/:petId/people-relationships` | same — replaces all relationships; body `{ relationships: [{ contact_id, relationship_kind, is_primary?, active? }] }`; re-projects `pets.vet_id` |
+| PUT | `/api/pets/:petId/people-relationships/slots/:kind` | same — `kind` ∈ `primary_vet`, `out_of_hours_vet`; body `{ contact_id }` or `{ contact_id: null }` to clear |
+| POST | `/api/pets/:petId/people-relationships` | same — add `emergency_contact`, `care_provider`, or `other`; body `{ contact_id, relationship_kind }`; slot kinds → `409 slot_conflict` |
+| DELETE | `/api/pets/:petId/people-relationships/:relationshipId` | same — removes one row; clears `pets.vet_id` when removing active `primary_vet` |
 
-Vets API (`/api/vets`) dual-writes linked `people_contacts` rows via `legacy_vet_id` until clients migrate.
+Relationship rows include `sort_order` (default `0`). `relationship_kind` ∈ primary_vet, out_of_hours_vet, emergency_contact, care_provider, other; contact must be attachable via `canAttachContactToPet`.
 
-#### Planned — `people-domain-refactor-7f3b` (not implemented)
+Vets API (`/api/vets`) is a **compat adapter**: response shapes unchanged; writes go through People contacts and a one-way projection to `vets` + `pets.vet_id`. Pet PATCH/create `vet_id` sets the `primary_vet` slot.
 
-Additive changes, listed in [people-domain-refactor.md](/docs/domains/people/changes/people-domain-refactor.md) §3.6: `GET /api/people/roster`, enriched contact detail, `GET /api/people/contacts/:id/related`, `GET /api/people/contacts/by-legacy-vet/:vetId`, `GET /api/pets/:petId/people`, slot/add/remove relationship endpoints, usage-aware `DELETE` (`409 contact_in_use`), household removal preview and household email invites, `contact_id` on pet share invites, and a `code` field on People error bodies. `/api/vets` becomes a compat adapter over a one-way projection. Each entry moves to the tables above in the PR that ships it.
+#### Pet people (`/api/pets/:petId/people`)
+
+| Method | Path | Authorization |
+|---|---|---|
+| GET | `/api/pets/:petId/people` | record owner, co-parent, household Full access → `scope: full` (household members + all relationships); Can log care, carer share, absence guest → `scope: handover` (emergency/vet/provider contacts only); others → `403` |
+
+Response: `{ pet_id, pet_name, scope, owner, household_members[], relationships[] }` (`relationships` same shape as people-relationships list).
+
+**Personal data (ARCH F inventory):** `people_contact_household_notes` — household-scoped notes on directory contacts; deleted with contact or household; included in GDPR export scope for household members with edit access.
+
+#### Planned — `people-domain-refactor-7f3b` (partial)
+
+Shipped in server phases s1–s6: writer, access, usages, relationships + vet projection, read models, household directory notes, safe member removal, household email invites, and optional `contact_id` on pet share invites (accept links `linked_user_id` when null). See [people-domain-refactor.md](/docs/domains/people/changes/people-domain-refactor.md) §3.6.
 
 ### Organizations (`/api/organizations`)
 | Method | Path | Authorization |
@@ -227,7 +251,7 @@ POST/PUT accept optional `measurement_source`. Pet weight reference/context fiel
 | DELETE | `/links/:linkId` | Owner deletes any share link; foster may delete only links they created |
 | GET | `/hidden` | Hidden shared pets |
 | PUT | `/:petId/hide` | Hide or unhide a shared pet (`{ hidden: true\|false }`) |
-| POST | `/invites` | Email invite; body `{ invitee_email, pet_ids, role }` — up to 20 pets; returns `{ invite_id, code, included_pet_ids, excluded[], delivery }`; identical replay while a pending invite from the same inviter covers every requested pet returns **200** with the same ids and `replayed: true` (no new rows or notifications) |
+| POST | `/invites` | Email invite; body `{ invitee_email, pet_ids, role, contact_id? }` (caller must be allowed to edit `contact_id`); up to 20 pets; returns `{ invite_id, code, included_pet_ids, excluded[], delivery }`; identical replay while a pending invite from the same inviter covers every requested pet returns **200** with the same ids and `replayed: true` (no new rows or notifications); accept links `people_contacts.linked_user_id` when null |
 | GET | `/invites/code/:code` | Public invite preview (no inviter email) |
 | POST | `/invites/code/:code/accept` | Auth required; grants access per pet on invite |
 | POST | `/invites/:id/decline` | Auth required; notifies inviter |
@@ -256,8 +280,14 @@ Share links are **single-use**: once accepted, the same link cannot be used by a
 | GET | `/:id` | Detail with `members` and `pets` (members only) |
 | PATCH | `/:id` | Rename (organisers) |
 | POST | `/:id/members` | Add member by `user_id`; body `{ access_tier?, is_organiser? }` |
-| DELETE | `/:id/members/:userId` | Leave or remove; body optional `{ remove_all_access_to_my_pets: true }` |
+| GET | `/:id/members/:userId/removal-preview` | Leave/remove preview (D16): `remaining_access[]` per pet (`source`: `direct_share` \| `absence`), `requires_successor` when last organiser leaves with other members |
+| DELETE | `/:id/members/:userId` | Leave or remove; body optional `{ remove_all_access_to_my_pets: true, successor_user_id? }`; last organiser with other members → `409 successor_required` without successor |
 | PUT | `/:id/pets` | Body `{ pet_ids: [] }` — record owner adds/removes their pets |
+| POST | `/:id/invites` | Organisers only — email invite; body `{ invitee_email, access_tier?, is_organiser?, contact_id? }`; 14-day expiry; rate-limited |
+| GET | `/invites/code/:code` | Public preview for household invite landing |
+| POST | `/invites/code/:code/accept` | Authenticated accept (adds membership) |
+| POST | `/invites/code/:code/decline` | Authenticated decline |
+| DELETE | `/:id/invites/:inviteId` | Revoke pending invite (organisers) |
 
 Household `full_access` grants `userCanManageProfile` + `userCanManageCare` (not share/transfer/delete). `can_log_care` grants care management only. Effective access is the highest of household, direct share, and **absence guest grants** (time-bound, evaluated in the absence's `timezone`).
 

@@ -2,7 +2,8 @@ import { DEMO_IDS } from '../demo-constants.js';
 import { calendarDaysFromToday, timestampFromNow } from '../helpers.js';
 import { createSeedCareItem, seedNow } from '../helpers/care-commands.js';
 import { seedPeopleVetClinicAndPerson } from '../helpers/people-vet-contact.js';
-import { syncPetPrimaryVetFromLegacyVetId } from '../../../lib/people/petVetLink.js';
+import { setPrimaryVetFromLegacyVetId } from '../../../lib/people/relationships.js';
+import { projectContact } from '../../../lib/people/vetProjection.js';
 
 export async function seedHealthCare(client) {
   await client.query(
@@ -43,13 +44,24 @@ export async function seedHealthCare(client) {
     address: '42 Demo Street, London',
     notes: 'Primary vet for Alice guardian pets',
   };
-  await seedPeopleVetClinicAndPerson(client, DEMO_IDS.alice, vetRow, {
-    personContactId: DEMO_IDS.aliceVetPersonContact,
-    personName: 'Dr. Sarah Mitchell',
-    organisationNote: 'Our regular veterinary clinic. Friendly team, good with both dogs and cats.',
-    personNote: '',
-  });
-  await syncPetPrimaryVetFromLegacyVetId(
+  const { organisationContactId, personContactId } = await seedPeopleVetClinicAndPerson(
+    client,
+    DEMO_IDS.alice,
+    vetRow,
+    {
+      personContactId: DEMO_IDS.aliceVetPersonContact,
+      personName: 'Dr. Sarah Mitchell',
+      organisationNote: 'Our regular veterinary clinic. Friendly team, good with both dogs and cats.',
+      personNote: '',
+    },
+  );
+  if (organisationContactId) {
+    await projectContact(client, organisationContactId, DEMO_IDS.alice);
+  }
+  if (personContactId) {
+    await projectContact(client, personContactId, DEMO_IDS.alice);
+  }
+  await setPrimaryVetFromLegacyVetId(
     client,
     DEMO_IDS.buddyPet,
     DEMO_IDS.aliceVet,

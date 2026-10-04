@@ -137,9 +137,12 @@ export function registerOccurrencePatchRoutes(router, pool) {
         return res.status(404).json({ error: 'Occurrence not found' });
       }
       const notes = typeof body.notes === 'string' ? body.notes : occ.notes || '';
-      const providerPatch = await resolveProviderUsedPatch(pool, userId, body);
+      const providerPatch = await resolveProviderUsedPatch(pool, userId, body, entry.pet_id);
       if (providerPatch?.error) {
-        return res.status(400).json({ error: providerPatch.error });
+        return res.status(400).json({
+          error: providerPatch.error,
+          ...(providerPatch.code ? { code: providerPatch.code } : {}),
+        });
       }
       const updatedRow = await updateCompletedDetails(pool, {
         entryId,

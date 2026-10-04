@@ -7,6 +7,7 @@ import {
 } from '../lib/email/locale.js';
 import { renderEmailLayout } from '../lib/email/layout.js';
 import { buildPasswordResetEmail } from '../lib/email/templates/passwordReset.js';
+import { buildHouseholdInvitationEmail } from '../lib/email/templates/householdInvitation.js';
 
 describe('email locale', () => {
   it('normalizes supported locales', () => {
@@ -82,6 +83,48 @@ describe('password reset email template', () => {
     const { html } = buildPasswordResetEmail({ locale: 'en', code: '<script>' });
     expect(html).not.toContain('<script>');
     expect(html).toContain('&lt;script&gt;');
+  });
+});
+
+describe('household invitation email template', () => {
+  const prevPublicUrl = process.env.APP_PUBLIC_URL;
+
+  beforeAll(() => {
+    process.env.APP_PUBLIC_URL = 'https://uat.agathatrack.com';
+  });
+
+  afterAll(() => {
+    if (prevPublicUrl === undefined) {
+      delete process.env.APP_PUBLIC_URL;
+    } else {
+      process.env.APP_PUBLIC_URL = prevPublicUrl;
+    }
+  });
+
+  it('builds English multipart content with household-invite landing URL', () => {
+    const { subject, text, html } = buildHouseholdInvitationEmail({
+      locale: 'en',
+      inviterName: 'Sam',
+      householdName: 'Morgan Home',
+      code: 'abc12345',
+    });
+    expect(subject).toContain('household');
+    expect(text).toContain('Morgan Home');
+    expect(text).toContain('https://uat.agathatrack.com/household-invite/abc12345');
+    expect(html).toContain('/household-invite/abc12345');
+    expect(text).toContain('14 days');
+  });
+
+  it('builds French multipart content', () => {
+    const { subject, text } = buildHouseholdInvitationEmail({
+      locale: 'fr',
+      inviterName: 'Sam',
+      householdName: 'Foyer',
+      code: 'xyz98765',
+    });
+    expect(subject).toContain('foyer');
+    expect(text).toContain('14 jours');
+    expect(text).toContain('/household-invite/xyz98765');
   });
 });
 

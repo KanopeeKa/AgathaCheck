@@ -407,6 +407,616 @@
           }
         }
       }
+    },
+    "/people/roster": {
+      "get": {
+        "operationId": "getPeopleRoster",
+        "responses": {
+          "200": {
+            "description": "People hub roster read model",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PeopleRoster" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/households/{householdId}/invites": {
+      "post": {
+        "operationId": "createHouseholdInvite",
+        "parameters": [
+          {
+            "name": "householdId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["invitee_email"],
+                "properties": {
+                  "invitee_email": { "type": "string", "format": "email" },
+                  "access_tier": { "type": "string", "enum": ["full_access", "can_log_care"] },
+                  "is_organiser": { "type": "boolean" },
+                  "contact_id": { "type": "string", "format": "uuid" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Household invite created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["invite_id", "code", "expires_at"],
+                  "properties": {
+                    "invite_id": { "type": "string", "format": "uuid" },
+                    "code": { "type": "string" },
+                    "expires_at": { "type": "string", "format": "date-time" },
+                    "delivery": { "type": "object" }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+              }
+            }
+          },
+          "409": {
+            "description": "Member or pending invite conflict",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/households/invites/code/{code}": {
+      "get": {
+        "operationId": "getHouseholdInvitePreview",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Household invite preview",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HouseholdInvitePreview" }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+              }
+            }
+          },
+          "410": {
+            "description": "Invite no longer valid",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/households/invites/code/{code}/accept": {
+      "post": {
+        "operationId": "acceptHouseholdInviteByCode",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Invite accepted",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HouseholdInviteAcceptResult" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+              }
+            }
+          },
+          "409": {
+            "description": "Already a member",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/households/{householdId}/invites/{inviteId}": {
+      "delete": {
+        "operationId": "revokeHouseholdInvite",
+        "parameters": [
+          {
+            "name": "householdId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          },
+          {
+            "name": "inviteId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Invite revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["invite_id", "status"],
+                  "properties": {
+                    "invite_id": { "type": "string", "format": "uuid" },
+                    "status": { "type": "string", "enum": ["revoked"] }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/households/{householdId}/members/{userId}/removal-preview": {
+      "get": {
+        "operationId": "getHouseholdMemberRemovalPreview",
+        "parameters": [
+          {
+            "name": "householdId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Access the member keeps after household removal",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HouseholdMemberRemovalPreview" }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+              }
+            }
+          },
+          "404": {
+            "description": "Member not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/people/contacts": {
+      "get": {
+        "operationId": "listPeopleContacts",
+        "responses": {
+          "200": {
+            "description": "Personal directory contacts with roster summary fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/PeopleContactSummary" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/people/contacts/by-legacy-vet/{vetId}": {
+      "get": {
+        "operationId": "getPeopleContactByLegacyVet",
+        "parameters": [
+          {
+            "name": "vetId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Mapped people contact id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["id"],
+                  "properties": {
+                    "id": { "type": "string", "format": "uuid" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "contact_not_found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PeopleApiError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/people/contacts/{id}": {
+      "get": {
+        "operationId": "getPeopleContactDetail",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Enriched contact detail",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PeopleContactDetail" }
+              }
+            }
+          },
+          "404": {
+            "description": "contact_not_found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PeopleApiError" }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "patchPeopleContact",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Updated contact",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PeopleContact" }
+              }
+            }
+          },
+          "400": {
+            "description": "validation_failed",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PeopleApiError" }
+              }
+            }
+          },
+          "409": {
+            "description": "linked_identity_read_only",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PeopleApiError" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deletePeopleContact",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Contact deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["message"],
+                  "properties": {
+                    "message": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "contact_in_use",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PeopleApiError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/people/contacts/{id}/related": {
+      "get": {
+        "operationId": "getPeopleContactRelatedCare",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Related care for a contact",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PeopleRelatedCare" }
+              }
+            }
+          },
+          "404": {
+            "description": "contact_not_found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PeopleApiError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pets/{petId}/people": {
+      "get": {
+        "operationId": "getPetPeople",
+        "parameters": [
+          {
+            "name": "petId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "People around a pet (scope-aware)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PetPeople" }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PeopleApiError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pets/{petId}/people-relationships/slots/{kind}": {
+      "put": {
+        "operationId": "putPetPeopleRelationshipSlot",
+        "parameters": [
+          {
+            "name": "petId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          },
+          {
+            "name": "kind",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["primary_vet", "out_of_hours_vet"]
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "contact_id": { "type": "string", "format": "uuid", "nullable": true }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated relationship list for the pet",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/PetContactRelationship" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pets/{petId}/people-relationships": {
+      "post": {
+        "operationId": "postPetPeopleRelationship",
+        "parameters": [
+          {
+            "name": "petId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["contact_id", "relationship_kind"],
+                "properties": {
+                  "contact_id": { "type": "string", "format": "uuid" },
+                  "relationship_kind": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Relationship added",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/PetContactRelationship" }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "slot_conflict — use slots endpoint for primary_vet / out_of_hours_vet",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PeopleApiError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pets/{petId}/people-relationships/{relationshipId}": {
+      "delete": {
+        "operationId": "deletePetPeopleRelationship",
+        "parameters": [
+          {
+            "name": "petId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          },
+          {
+            "name": "relationshipId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Updated relationship list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/PetContactRelationship" }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -943,6 +1553,201 @@
           },
           "code": {
             "type": "string"
+          }
+        }
+      },
+      "PeopleApiError": {
+        "type": "object",
+        "required": ["error", "code"],
+        "additionalProperties": true,
+        "properties": {
+          "error": { "type": "string" },
+          "code": {
+            "type": "string",
+            "enum": [
+              "validation_failed",
+              "contact_not_found",
+              "forbidden",
+              "contact_in_use",
+              "slot_conflict",
+              "linked_identity_read_only"
+            ]
+          },
+          "details": { "type": "object" }
+        }
+      },
+      "PetContactRelationship": {
+        "type": "object",
+        "required": ["id", "pet_id", "contact_id", "relationship_kind", "active"],
+        "additionalProperties": true,
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "pet_id": { "type": "string", "format": "uuid" },
+          "contact_id": { "type": "string", "format": "uuid" },
+          "relationship_kind": { "type": "string" },
+          "is_primary": { "type": "boolean" },
+          "active": { "type": "boolean" },
+          "sort_order": { "type": "integer" }
+        }
+      },
+      "PeopleContact": {
+        "type": "object",
+        "required": ["id", "kind", "name", "roles"],
+        "additionalProperties": true,
+        "properties": {
+          "id": { "type": "string" },
+          "kind": { "type": "string" },
+          "name": { "type": "string" },
+          "roles": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      },
+      "PeopleContactDirectory": {
+        "type": "object",
+        "required": ["type", "household_id"],
+        "properties": {
+          "type": { "type": "string", "enum": ["personal", "household"] },
+          "household_id": { "type": ["string", "null"], "format": "uuid" }
+        }
+      },
+      "PeopleContactSummary": {
+        "allOf": [
+          { "$ref": "#/components/schemas/PeopleContact" },
+          {
+            "type": "object",
+            "required": ["directory", "group", "status"],
+            "properties": {
+              "directory": { "$ref": "#/components/schemas/PeopleContactDirectory" },
+              "group": { "type": "string", "enum": ["carer", "professional"] },
+              "status": { "type": "string", "enum": ["active", "inactive"] },
+              "pets": { "type": "array", "items": { "type": "object" } }
+            }
+          }
+        ]
+      },
+      "PeopleContactDetail": {
+        "allOf": [
+          { "$ref": "#/components/schemas/PeopleContact" },
+          {
+            "type": "object",
+            "properties": {
+              "directory": { "$ref": "#/components/schemas/PeopleContactDirectory" },
+              "group": { "type": "string" },
+              "status": { "type": "string" },
+              "works_at": { "type": ["object", "null"] },
+              "staff": { "type": "array", "items": { "type": "object" } },
+              "usage_counts": { "type": "object" },
+              "household_note": { "type": ["string", "null"] },
+              "linked_account": { "type": ["object", "null"] }
+            }
+          }
+        ]
+      },
+      "HouseholdApiError": {
+        "type": "object",
+        "required": ["error"],
+        "additionalProperties": true,
+        "properties": {
+          "error": { "type": "string" },
+          "code": {
+            "type": "string",
+            "enum": ["successor_required", "validation_failed"]
+          }
+        }
+      },
+      "HouseholdMemberRemovalPreview": {
+        "type": "object",
+        "required": [
+          "target_user_id",
+          "household_id",
+          "loses_household_access",
+          "remaining_access",
+          "requires_successor"
+        ],
+        "properties": {
+          "target_user_id": { "type": "string", "format": "uuid" },
+          "household_id": { "type": "string", "format": "uuid" },
+          "loses_household_access": { "type": "boolean" },
+          "remaining_access": {
+            "type": "array",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "requires_successor": { "type": "boolean" },
+          "target_access_tier": { "type": "string" },
+          "target_is_organiser": { "type": "boolean" }
+        }
+      },
+      "HouseholdInvitePreview": {
+        "type": "object",
+        "required": [
+          "invite_id",
+          "code",
+          "household_id",
+          "household_name",
+          "inviter_name",
+          "access_tier",
+          "is_organiser",
+          "invitee_email",
+          "expires_at"
+        ],
+        "properties": {
+          "invite_id": { "type": "string", "format": "uuid" },
+          "code": { "type": "string" },
+          "household_id": { "type": "string", "format": "uuid" },
+          "household_name": { "type": "string" },
+          "inviter_name": { "type": "string" },
+          "access_tier": { "type": "string", "enum": ["full_access", "can_log_care"] },
+          "is_organiser": { "type": "boolean" },
+          "invitee_email": { "type": "string", "format": "email" },
+          "expires_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "HouseholdInviteAcceptResult": {
+        "type": "object",
+        "required": ["household_id", "status", "access_tier", "is_organiser"],
+        "properties": {
+          "household_id": { "type": "string", "format": "uuid" },
+          "status": { "type": "string", "enum": ["accepted"] },
+          "access_tier": { "type": "string", "enum": ["full_access", "can_log_care"] },
+          "is_organiser": { "type": "boolean" }
+        }
+      },
+      "PeopleRoster": {
+        "type": "object",
+        "required": ["households", "contacts", "pending_invites"],
+        "properties": {
+          "households": { "type": "array", "items": { "type": "object" } },
+          "contacts": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/PeopleContactSummary" }
+          },
+          "pending_invites": { "type": "array", "items": { "type": "object" } }
+        }
+      },
+      "PeopleRelatedCare": {
+        "type": "object",
+        "required": ["pets", "care_items", "absences", "history_count"],
+        "properties": {
+          "pets": { "type": "array", "items": { "type": "object" } },
+          "care_items": { "type": "array", "items": { "type": "object" } },
+          "absences": { "type": "array", "items": { "type": "object" } },
+          "history_count": { "type": "integer" }
+        }
+      },
+      "PetPeople": {
+        "type": "object",
+        "required": ["pet_id", "pet_name", "scope", "owner", "household_members", "relationships"],
+        "properties": {
+          "pet_id": { "type": "string", "format": "uuid" },
+          "pet_name": { "type": "string" },
+          "scope": { "type": "string", "enum": ["full", "handover"] },
+          "owner": { "type": "object" },
+          "household_members": { "type": "array", "items": { "type": "object" } },
+          "relationships": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/PetContactRelationship" }
           }
         }
       },

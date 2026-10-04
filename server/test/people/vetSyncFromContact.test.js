@@ -21,8 +21,10 @@ describe('syncVetRowFromContact', () => {
     await syncVetRowFromContact(
       pool,
       {
+        id: 'contact-1',
         legacy_vet_id: 'vet-1',
         kind: 'organisation',
+        roles: ['vet'],
         name: 'Happy Paws',
         phone: '555',
         email: 'a@b.com',
