@@ -210,31 +210,6 @@ async function runPetDataDeletionTransaction(client, petId, {
   return { rowsRemoved, filesScheduled: fileRefs.length };
 }
 
-function removePetUploadFromDisk(uploadPath) {
-  if (!uploadPath || typeof uploadPath !== 'string') return;
-  if (!uploadPath.startsWith('/uploads/')) return;
-  const relative = uploadPath.replace(/^\//, '');
-  const filePath = path.resolve(process.cwd(), relative);
-  try {
-    if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
-      fs.unlinkSync(filePath);
-    }
-  } catch {
-    // best-effort
-  }
-}
-
-function removeFileUrls(urls) {
-  for (const url of urls) {
-    if (!url || typeof url !== 'string') continue;
-    if (url.includes('/api/health-files/') || url.includes('/uploads/health')) {
-      removePrivateHealthFile(url);
-    } else if (url.startsWith('/uploads/')) {
-      removePetUploadFromDisk(url);
-    }
-  }
-}
-
 /**
  * Delete pet-related rows and schedule file cleanup jobs. Pet row remains for DELETE /:id.
  */
@@ -274,23 +249,6 @@ export async function deletePet(pool, petId, { actorUserId = null, req = null } 
 
 function scheduleFileCleanupAfterCommit() {
   kickCleanupJobs();
-}
-
-/** Purge on-disk files for a pet without deleting DB rows (used before account delete cascade). */
-export async function purgePetFiles(pool, petId) {
-  const fileUrls = await collectPetFileUrls(pool, petId);
-  removeFileUrls(fileUrls);
-  return fileUrls.length;
-}
-
-/** Purge files for every pet owned by a user before account deletion. */
-export async function purgeAllPetFilesForUser(pool, userId) {
-  const pets = await pool.query('SELECT id FROM pets WHERE user_id = $1', [userId]);
-  let filesRemoved = 0;
-  for (const row of pets.rows) {
-    filesRemoved += await purgePetFiles(pool, row.id);
-  }
-  return { pets_processed: pets.rows.length, files_removed: filesRemoved };
 }
 
 /**

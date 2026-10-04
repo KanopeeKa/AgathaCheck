@@ -1,11 +1,17 @@
+import fs from 'fs';
+import path from 'path';
+
 import { errorDetails } from '../../config/security.js';
+import {
+  acceptAccountErasure,
+  buildIdempotentErasureResponse,
+  findErasureOperationForUser,
+  getErasureStatus,
+} from '../../lib/account/accountErasureService.js';
 import { listFosterContactsForUser } from '../../lib/orgPeople.js';
 import { logAuditEventSafe } from '../../lib/audit.js';
-import { deletePostHogPerson } from '../../lib/posthogServer.js';
-import { purgeAllPetFilesForUser } from '../../lib/petDataLifecycle.js';
 import { listHouseholdDependentOwnedPets } from '../../lib/households/accountDeletionGuard.js';
 import { normalizeTimezoneInput } from '../../lib/timezone.js';
-import { revokeAllUserRefreshSessions } from '../../lib/refreshSessions.js';
 import {
   buildUserDataExport,
   exportAuditMetadata,
@@ -107,7 +113,13 @@ async function applyProfileUpdate(pool, userId, body, req) {
   return { ok: true, user: userRowToMap({ ...row, pinned_organization_id: effectivePin }) };
 }
 
-export function registerProfileRoutes(router, pool, { comparePassword }) {
+function uploadsPhotosDir() {
+  const dir = path.resolve(process.cwd(), 'uploads', 'photos');
+  fs.mkdirSync(dir, { recursive: true });
+  return dir;
+}
+
+export function registerProfileRoutes(router, pool, { comparePassword, authLimiter }) {
   router.get('/me', async (req, res) => {
     const token = extractToken(req);
     if (!token) {
@@ -188,12 +200,30 @@ export function registerProfileRoutes(router, pool, { comparePassword }) {
     try {
       const payload = verifyToken(token);
       const photoUrl = `/uploads/photos/${payload.id}_${Date.now()}.jpg`;
-      const result = await pool.query(
-        'UPDATE users SET photo_url = $1, updated_at = NOW() WHERE id = $2 RETURNING *',
-        [photoUrl, payload.id]
-      );
-      if (result.rows.length === 0) {
-        return res.status(404).json({ error: 'User not found' });
+      const relativePath = photoUrl.replace(/^\/uploads\//, '');
+      const filePath = path.join(uploadsPhotosDir(), path.basename(relativePath));
+      fs.writeFileSync(filePath, '');
+      let result;
+      try {
+        result = await pool.query(
+          'UPDATE users SET photo_url = $1, updated_at = NOW() WHERE id = $2 RETURNING *',
+          [photoUrl, payload.id],
+        );
+        if (result.rows.length === 0) {
+          try {
+            fs.unlinkSync(filePath);
+          } catch {
+            // best-effort compensation
+          }
+          return res.status(404).json({ error: 'User not found' });
+        }
+      } catch (err) {
+        try {
+          fs.unlinkSync(filePath);
+        } catch {
+          // best-effort compensation
+        }
+        throw err;
       }
       logAuditEventSafe(pool, {
         actorUserId: payload.id,
@@ -233,8 +263,15 @@ export function registerProfileRoutes(router, pool, { comparePassword }) {
           })),
         });
       }
-      const userResult = await pool.query('SELECT password_hash FROM users WHERE id = $1', [payload.id]);
+      const userResult = await pool.query(
+        'SELECT password_hash, email FROM users WHERE id = $1',
+        [payload.id],
+      );
       if (userResult.rows.length === 0) {
+        const existing = await findErasureOperationForUser(pool, payload.id);
+        if (existing) {
+          return res.status(202).json(buildIdempotentErasureResponse(existing));
+        }
         return res.status(404).json({ error: 'User not found' });
       }
       const valid = await comparePassword(password, userResult.rows[0].password_hash);
@@ -248,21 +285,30 @@ export function registerProfileRoutes(router, pool, { comparePassword }) {
         resourceId: payload.id,
         req,
       });
-      await revokeAllUserRefreshSessions(pool, payload.id);
-      const purgeResult = await purgeAllPetFilesForUser(pool, payload.id);
-      await deletePostHogPerson(payload.id);
-      await pool.query('DELETE FROM users WHERE id = $1', [payload.id]);
-      logAuditEventSafe(pool, {
-        actorType: 'system',
-        action: 'auth.account_deleted',
-        resourceType: 'user',
-        resourceId: payload.id,
+      const outcome = await acceptAccountErasure(pool, {
+        userId: payload.id,
+        userEmail: userResult.rows[0].email,
         req,
-        metadata: purgeResult,
       });
-      res.status(200).json({ message: 'Account deleted successfully' });
+      res.status(202).json(outcome);
     } catch (err) {
       return res.status(500).json({ error: 'Account deletion failed', ...errorDetails(err) });
+    }
+  });
+
+  router.get('/erasure/:operationId', authLimiter, async (req, res) => {
+    const statusToken = req.headers['x-erasure-status-token'];
+    if (!statusToken || typeof statusToken !== 'string') {
+      return res.status(404).json({ error: 'Not found' });
+    }
+    try {
+      const result = await getErasureStatus(pool, req.params.operationId, statusToken);
+      if (!result.ok) {
+        return res.status(404).json({ error: 'Not found' });
+      }
+      res.status(200).json(result.body);
+    } catch (err) {
+      return res.status(500).json({ error: 'Erasure status failed', ...errorDetails(err) });
     }
   });
 

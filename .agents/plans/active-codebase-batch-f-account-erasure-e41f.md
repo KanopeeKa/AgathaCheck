@@ -45,13 +45,13 @@ autonomy: active
 current_phase: 2
 last_completed_phase: 1
 halt_reason: null
-next_action: "start phase 2: checkout cursor/active-codebase-f2-erasure-service-e41f"
+next_action: "continue phase 2 on branch cursor/active-codebase-f2-erasure-service-e41f"
 artifact_ref:
-  branch: cursor/active-codebase-f-integration-e41f
+  branch: cursor/active-codebase-f2-erasure-service-e41f
   plan_path: .agents/plans/active-codebase-batch-f-account-erasure-e41f.md
-  plan_commit: 54175b9365696d82eb9bfa7e83fb780687ac960e
+  plan_commit: e280b40050452919867016353dd68ade638e824f
   snapshot_path: .agents/plans/active-codebase-batch-f-account-erasure-e41f.snapshot.json
-  snapshot_commit: 54175b9365696d82eb9bfa7e83fb780687ac960e
+  snapshot_commit: e280b40050452919867016353dd68ade638e824f
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

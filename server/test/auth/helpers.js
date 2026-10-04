@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
 
 import { hashRefreshToken } from '../../lib/refreshSessions.js';
+import { createTransactionalMockPool } from '../helpers/transactionMockPool.js';
 import { TOKEN_TYPE_ACCESS, TOKEN_TYPE_REFRESH } from '../../routes/auth/shared.js';
 
 export const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'default_secret';
@@ -76,7 +77,9 @@ export function buildMockPool(overrides = {}) {
     selectUserByEmail: async (sql, params) => ({ rows: [userRow] }),
     selectUserById: async (sql, params) => ({ rows: [userRow] }),
     selectUserExists: async (sql, params) => ({ rows: [{ id: userId }] }),
-    selectPasswordHash: async (sql, params) => ({ rows: [{ password_hash: userPasswordHash }] }),
+    selectPasswordHash: async (sql, params) => ({
+      rows: [{ password_hash: userPasswordHash, email: userEmail }],
+    }),
     updateUser: async (sql, params) => ({ rows: [{ ...userRow, ...overrides.updatedFields }] }),
     clearPinnedOrg: async (sql, params) => ({ rows: [] }),
     selectOrgMembership: async (sql, params) => ({ rows: [] }),
@@ -96,22 +99,57 @@ export function buildMockPool(overrides = {}) {
   const refreshSessions = new Map();
   const refreshSessionsByHash = new Map();
 
-  const pool = {
-    _refreshSessions: refreshSessions,
-    _refreshSessionsByHash: refreshSessionsByHash,
-    query: async (sql, params) => {
+  const baseQuery = async (sql, params) => {
       if (sql.includes('INSERT INTO users')) return handlers.insertUser(sql, params);
       if (sql.includes('SELECT * FROM users WHERE email')) return handlers.selectUserByEmail(sql, params);
       if (sql.includes('SELECT id FROM users WHERE id')) return handlers.selectUserExists(sql, params);
+      if (sql.includes('SELECT id, email FROM users WHERE id = $1 FOR UPDATE')) {
+        return { rows: [{ id: userId, email: userEmail }] };
+      }
+      if (sql.includes('SELECT photo_url FROM users WHERE id')) {
+        return { rows: [{ photo_url: userRow.photo_url }] };
+      }
+      if (sql.includes('SELECT id FROM pets WHERE user_id = $1 FOR UPDATE')) {
+        return { rows: [] };
+      }
+      if (sql.includes('SELECT photo_path FROM pets')) return { rows: [{ photo_path: null }] };
+      if (sql.includes('health_event_photos')) return { rows: [] };
+      if (sql.includes('health_issue_documents')) return { rows: [] };
+      if (sql.includes('INSERT INTO cleanup_jobs')) return { rows: [{ id: uuidv4() }] };
+      if (sql.includes('SELECT id FROM cleanup_jobs WHERE dedupe_key')) {
+        return { rows: [{ id: uuidv4() }] };
+      }
+      if (sql.includes('INSERT INTO account_erasure_operations')) return { rows: [{ id: uuidv4() }] };
+      if (sql.includes('FROM account_erasure_operations')) return { rows: [] };
+      if (sql.includes('FROM household_pets hp') && sql.includes('INNER JOIN pets')) {
+        return { rows: [] };
+      }
+      if (sql.includes('UPDATE org_foster_parents') && sql.includes('SET user_id')) {
+        return handlers.fallback(sql, params);
+      }
+      if (sql.startsWith('UPDATE archived_pets')
+        || sql.startsWith('UPDATE foster_profiles')
+        || sql.startsWith('UPDATE organization_permissions')
+        || sql.startsWith('UPDATE people_contacts')
+        || sql.startsWith('UPDATE prospects')
+        || sql.startsWith('UPDATE vets')
+        || sql.startsWith('UPDATE pet_share_invites')
+        || sql.startsWith('UPDATE planned_absence_carer_invites')
+        || sql.startsWith('UPDATE audit_events')
+        || sql.startsWith('UPDATE account_erasure_operations')) {
+        return { rows: [], rowCount: 1 };
+      }
       if (sql.includes('SELECT * FROM users WHERE id')) return handlers.selectUserById(sql, params);
-      if (sql.includes('SELECT password_hash FROM users WHERE id')) return handlers.selectPasswordHash(sql, params);
+      if (sql.includes('SELECT password_hash') && sql.includes('FROM users WHERE id')) {
+        return handlers.selectPasswordHash(sql, params);
+      }
       if (sql.includes('SELECT role FROM organization_users WHERE organization_id')) {
         return handlers.selectOrgMembership(sql, params);
       }
       if (sql.includes('UPDATE users SET pinned_organization_id = NULL')) return handlers.clearPinnedOrg(sql, params);
       if (sql.includes('UPDATE users SET password_hash')) return handlers.updatePasswordHash(sql, params);
       if (sql.includes('UPDATE users SET') && !sql.includes('password_hash')) return handlers.updateUser(sql, params);
-      if (sql.includes('DELETE FROM users')) return handlers.deleteUser(sql, params);
+      if (sql.includes('DELETE FROM users')) return { ...await handlers.deleteUser(sql, params), rowCount: 1 };
       if (sql.includes('SELECT * FROM pets')) return handlers.selectPets(sql, params);
       if (sql.includes('SELECT * FROM vets')) return handlers.selectVets(sql, params);
       if (sql.includes('FROM health_entries') || sql.includes('FROM health_issues')
@@ -173,10 +211,12 @@ export function buildMockPool(overrides = {}) {
         return { rows: [] };
       }
       return handlers.fallback(sql, params);
-    },
-    end: async () => {},
   };
 
+  const pool = createTransactionalMockPool(baseQuery);
+  pool._refreshSessions = refreshSessions;
+  pool._refreshSessionsByHash = refreshSessionsByHash;
+  pool.end = async () => {};
   return pool;
 }
 
