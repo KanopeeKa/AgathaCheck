@@ -169,9 +169,9 @@ class CareItemAbsenceSection extends ConsumerWidget {
     if (initialOccurrence == null) {
       if (!context.mounted) return;
       final l = AppLocalizations.of(context)!;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.careCompletionFailed)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.careCompletionFailed)));
       return;
     }
     await OccurrenceReviewFlow.open(

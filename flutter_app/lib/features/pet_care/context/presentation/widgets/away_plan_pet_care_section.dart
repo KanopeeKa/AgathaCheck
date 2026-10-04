@@ -231,10 +231,7 @@ class _PetCareBody extends StatelessWidget {
           AwayPlanCarerTasksSummary(absenceId: absenceId, petId: petId),
           const SizedBox(height: 8),
           ...result.plannedCareItems.map(
-            (item) => _PlannedCareRow(
-              petId: petId,
-              item: item,
-            ),
+            (item) => _PlannedCareRow(petId: petId, item: item),
           ),
           if (result.showsEstimateFootnote) ...[
             const SizedBox(height: 8),
@@ -296,11 +293,7 @@ class _PlannedCareRow extends ConsumerWidget {
           source: 'away_plan',
         );
       } else {
-        openPetEventView(
-          context,
-          petId: petId,
-          entryId: item.healthEntryId,
-        );
+        openPetEventView(context, petId: petId, entryId: item.healthEntryId);
       }
     }
 

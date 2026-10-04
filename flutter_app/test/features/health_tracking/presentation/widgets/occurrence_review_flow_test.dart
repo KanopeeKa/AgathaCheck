@@ -13,23 +13,20 @@ void main() {
     test('prefers occurrence matching preferred date', () {
       final head = parseCalendarDate('2026-10-27')!;
       final other = parseCalendarDate('2026-10-28')!;
-      final picked = OccurrenceReviewFlow.pickOccurrenceForReview(
-        [
-          HealthOccurrence(
-            id: 'b',
-            entryId: 'e1',
-            scheduledDate: other,
-            status: 'pending',
-          ),
-          HealthOccurrence(
-            id: 'a',
-            entryId: 'e1',
-            scheduledDate: head,
-            status: 'pending',
-          ),
-        ],
-        preferredDate: head,
-      );
+      final picked = OccurrenceReviewFlow.pickOccurrenceForReview([
+        HealthOccurrence(
+          id: 'b',
+          entryId: 'e1',
+          scheduledDate: other,
+          status: 'pending',
+        ),
+        HealthOccurrence(
+          id: 'a',
+          entryId: 'e1',
+          scheduledDate: head,
+          status: 'pending',
+        ),
+      ], preferredDate: head);
       expect(picked?.id, 'a');
     });
   });
