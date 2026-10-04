@@ -313,6 +313,9 @@ describe('Auth Routes — Profile', () => {
         foster_placements: [],
         org_foster_parent_records: [],
         health_history: [],
+        health_occurrences: [],
+        care_schedule_events: [],
+        health_entry_absence_resolutions: [],
         health_event_photos: [],
         health_issue_documents: [],
         health_issue_events: [],
@@ -328,6 +331,15 @@ describe('Auth Routes — Profile', () => {
           if (sql.includes('organizations o')) return { rows: exportSections.organizations };
           if (sql.includes('pet_access WHERE')) return { rows: exportSections.pet_access };
           if (sql.includes('pet_share_links')) return { rows: exportSections.pet_share_links };
+          if (sql.includes('FROM health_occurrences ho')) {
+            return { rows: exportSections.health_occurrences };
+          }
+          if (sql.includes('FROM care_schedule_events cse')) {
+            return { rows: exportSections.care_schedule_events };
+          }
+          if (sql.includes('FROM health_entry_absence_resolutions hear')) {
+            return { rows: exportSections.health_entry_absence_resolutions };
+          }
           return { rows: [] };
         },
       });

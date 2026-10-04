@@ -10,6 +10,9 @@ export async function buildUserDataExport(pool, userId) {
     healthEntriesResult,
     healthIssuesResult,
     healthHistoryResult,
+    healthOccurrencesResult,
+    careScheduleEventsResult,
+    healthEntryAbsenceResolutionsResult,
     healthEventPhotosResult,
     healthIssueDocumentsResult,
     healthIssueEventsResult,
@@ -32,6 +35,24 @@ export async function buildUserDataExport(pool, userId) {
     pool.query(
       `SELECT hh.* FROM health_history hh
        INNER JOIN health_entries he ON he.id = hh.health_entry_id
+       WHERE he.user_id = $1`,
+      [userId],
+    ),
+    pool.query(
+      `SELECT ho.* FROM health_occurrences ho
+       INNER JOIN health_entries he ON he.id = ho.health_entry_id
+       WHERE he.user_id = $1`,
+      [userId],
+    ),
+    pool.query(
+      `SELECT cse.* FROM care_schedule_events cse
+       INNER JOIN health_entries he ON he.id = cse.health_entry_id
+       WHERE he.user_id = $1`,
+      [userId],
+    ),
+    pool.query(
+      `SELECT hear.* FROM health_entry_absence_resolutions hear
+       INNER JOIN health_entries he ON he.id = hear.health_entry_id
        WHERE he.user_id = $1`,
       [userId],
     ),
@@ -87,6 +108,9 @@ export async function buildUserDataExport(pool, userId) {
     health_entries: healthEntriesResult.rows,
     health_issues: healthIssuesResult.rows,
     health_history: healthHistoryResult.rows,
+    health_occurrences: healthOccurrencesResult.rows,
+    care_schedule_events: careScheduleEventsResult.rows,
+    health_entry_absence_resolutions: healthEntryAbsenceResolutionsResult.rows,
     health_event_photos: healthEventPhotosResult.rows,
     health_issue_documents: healthIssueDocumentsResult.rows,
     health_issue_events: healthIssueEventsResult.rows,
@@ -109,6 +133,10 @@ export function exportAuditMetadata(exportData) {
     pet_count: exportData.pets.length,
     vet_count: exportData.vets.length,
     health_entry_count: exportData.health_entries.length,
+    health_occurrence_count: exportData.health_occurrences.length,
+    care_schedule_event_count: exportData.care_schedule_events.length,
+    health_entry_absence_resolution_count:
+      exportData.health_entry_absence_resolutions.length,
     health_issue_count: exportData.health_issues.length,
     weight_entry_count: exportData.weight_entries.length,
     notification_count: exportData.notifications.length,
