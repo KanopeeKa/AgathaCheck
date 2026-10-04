@@ -58,4 +58,46 @@ export class OccurrencePage {
     await done.first().click();
     await refreshFlutterAccessibility(this.page);
   }
+
+  async expectWeightRequiredBeforeDone(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    await expect(this.page.getByLabel(/Weight/i).first()).toBeVisible({ timeout: 15_000 });
+    const done = this.page.getByRole('button', { name: /^Done$|^Fait$/i });
+    await expect(done).toBeDisabled();
+  }
+
+  async fillWeight(value: string): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    const field = this.page.getByLabel(/Weight/i).first();
+    await field.fill(value);
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async expectDoneEnabled(): Promise<void> {
+    const done = this.page.getByRole('button', { name: /^Done$|^Fait$/i });
+    await expect(done).toBeEnabled({ timeout: 10_000 });
+  }
+
+  async expectRecordAsDoneVisible(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    await expect(
+      this.page
+        .locator('[flt-semantics-identifier="occurrence_record"]')
+        .or(this.page.getByRole('button', { name: /Record as done|Enregistrer comme fait/i })),
+    ).toBeVisible({ timeout: 15_000 });
+  }
+
+  async openCompletedOnEditor(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    await this.page.getByText(/Completed on|Complété le/i).first().click();
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async pickCalendarDay(day: number): Promise<void> {
+    const dialog = this.page.getByRole('dialog');
+    await expect(dialog).toBeVisible({ timeout: 15_000 });
+    await dialog.getByText(new RegExp(`^${day},\\s`)).first().click({ force: true });
+    await dialog.getByRole('button', { name: /^OK$|^Save$|Enregistrer/i }).first().click();
+    await refreshFlutterAccessibility(this.page);
+  }
 }

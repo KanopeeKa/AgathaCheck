@@ -3,14 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/utils/calendar_date.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../domain/entities/ensure_open_occurrence_result.dart';
 import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/health_occurrence.dart';
 import '../providers/care_item_detail_refresh.dart';
-import '../providers/health_providers.dart';
+import '../providers/occurrence_providers.dart';
 import 'occurrence_review_sheet.dart';
 
-/// Ensures an open occurrence exists, then shows the review sheet (D-CSM-018).
+/// Loads the open occurrence head when needed, then shows the review sheet.
 class OccurrenceReviewFlow {
   const OccurrenceReviewFlow._();
 
@@ -22,18 +21,15 @@ class OccurrenceReviewFlow {
     HealthOccurrence? initialOccurrence,
   }) async {
     HealthOccurrence? occurrence = initialOccurrence;
-    final needsEnsure = occurrence == null || occurrence.id.isEmpty;
+    final needsLoad = occurrence == null || occurrence.id.isEmpty;
 
-    if (needsEnsure) {
+    if (needsLoad) {
       try {
-        final result = await ref
-            .read(healthRepositoryProvider)
-            .ensureOpenOccurrence(
-              entry.id,
-              scheduledDate: occurrence?.scheduledDate,
-              reasonCode: absenceId != null ? 'absence_review' : null,
-            );
-        occurrence = pickOccurrenceForReview(result, entry.id);
+        final open = await ref.read(entryOccurrencesProvider(entry.id).future);
+        occurrence = pickOccurrenceForReview(
+          open,
+          preferredDate: occurrence?.scheduledDate,
+        );
         invalidateCareItemDetailData(ref, entry.id, absenceId: absenceId);
       } catch (_) {
         if (!context.mounted) return;
@@ -64,28 +60,26 @@ class OccurrenceReviewFlow {
     );
   }
 
-  /// Picks the pending row for the canonical head when ensure-open returns many.
+  /// Picks the pending row for the canonical head when many are open.
   @visibleForTesting
   static HealthOccurrence? pickOccurrenceForReview(
-    EnsureOpenOccurrenceResult result,
-    String entryId,
-  ) {
-    if (result.occurrences.isEmpty) return null;
-    final headWire = result.headDate != null
-        ? toCalendarDateString(result.headDate!)
-        : null;
-    if (headWire != null) {
-      for (final o in result.occurrences) {
-        if (toCalendarDateString(o.scheduledDate) == headWire) {
+    List<HealthOccurrence> occurrences, {
+    DateTime? preferredDate,
+  }) {
+    if (occurrences.isEmpty) return null;
+    if (preferredDate != null) {
+      final wire = toCalendarDateString(preferredDate);
+      for (final o in occurrences) {
+        if (o.isPending && toCalendarDateString(o.scheduledDate) == wire) {
           return o;
         }
       }
     }
-    final pending = result.occurrences.where((o) => o.isPending).toList();
+    final pending = occurrences.where((o) => o.isPending).toList();
     if (pending.isNotEmpty) {
       pending.sort((a, b) => a.scheduledDate.compareTo(b.scheduledDate));
       return pending.first;
     }
-    return result.occurrences.first;
+    return occurrences.first;
   }
 }

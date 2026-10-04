@@ -68,16 +68,18 @@ export { runCareTick } from './careTick.js';
  * @param {{ todayIso: string, nowTimeIso: string, timeZone: string }} [params.asOf] explicit clock
  * @param {(ctx: object) => Promise<{ event: object|null, result?: T }>} command
  * @param {(db: object, entry: object) => Promise<void>} [params.beforeCommand] same-transaction pre-step
+ * @param {(db: object, entry: object, commandOut: object) => Promise<void>} [params.afterCommand] same-transaction post-step
  * @param {(db: object) => Promise<void>} [params.beforeLock] same-transaction step before the row lock
  * @returns {Promise<(T & { entry: object, openOccurrences: object[], undoToken: string|null, asOf: object })|null>}
  */
 export async function runCareCommand(pool, {
-  entryId, userId, req = null, asOf = null, beforeCommand = null, beforeLock = null,
+  entryId, userId, req = null, asOf = null, beforeCommand = null, afterCommand = null, beforeLock = null,
 }, command) {
   return withCareItemLock(pool, entryId, async (db, entry) => {
     const clock = asOf || await resolveCareAsOf(db, entry, req);
     if (beforeCommand) await beforeCommand(db, entry);
     const out = await executeCareCommand({ db, entry, asOf: clock, userId }, command);
+    if (afterCommand) await afterCommand(db, entry, out);
     return { ...out, asOf: clock };
   }, { beforeLock });
 }

@@ -66,14 +66,35 @@ mixin _HealthRemoteOccurrenceMethods {
   }
 
   @override
-  Future<int> skipMissedOccurrences(String entryId) {
-    return postSkipMissedOccurrences(
+  Future<int> skipMissedOccurrences(String entryId) async {
+    final open = await fetchOpenOccurrences(
+      client: _occurrenceHttpClient,
+      baseUrl: _occurrenceBaseUrl,
+      headers: _occurrenceAuthHeaders(),
+      checkResponse: checkHealthRemoteResponse,
+      entryId: entryId,
+    );
+    final now = DateTime.now();
+    final missed = open
+        .where(
+          (o) =>
+              o.status == 'pending' && (o.missed || isOccurrenceMissed(o, now)),
+        )
+        .map((o) => o.id)
+        .toList();
+    if (missed.isEmpty) return 0;
+    final body = await postResolveStack(
       client: _occurrenceHttpClient,
       baseUrl: _occurrenceBaseUrl,
       headers: _occurrenceAuthHeaders(jsonBody: true),
       checkResponse: checkHealthRemoteResponse,
       entryId: entryId,
+      given: const [],
+      notGiven: missed,
     );
+    final notGiven = body['not_given'];
+    if (notGiven is List) return notGiven.length;
+    return missed.length;
   }
 
   @override
@@ -126,23 +147,6 @@ mixin _HealthRemoteOccurrenceMethods {
       checkResponse: checkHealthRemoteResponse,
       entryId: entryId,
       occurrenceId: occurrenceId,
-      scheduledDate: scheduledDate,
-      reasonCode: reasonCode,
-    );
-  }
-
-  @override
-  Future<EnsureOpenOccurrenceRemoteResult> ensureOpenOccurrence(
-    String entryId, {
-    DateTime? scheduledDate,
-    String? reasonCode,
-  }) {
-    return postEnsureOpenOccurrence(
-      client: _occurrenceHttpClient,
-      baseUrl: _occurrenceBaseUrl,
-      headers: _occurrenceAuthHeaders(jsonBody: true),
-      checkResponse: checkHealthRemoteResponse,
-      entryId: entryId,
       scheduledDate: scheduledDate,
       reasonCode: reasonCode,
     );

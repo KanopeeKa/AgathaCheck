@@ -175,17 +175,9 @@ Returns upcoming active absences for the entry's pet with per-absence `affected`
 
 **Audit tags:** occurrence commands accept optional body fields `source` and `path` (short snake_case tags such as `agenda` / `one_tap`); they are copied to the audit metadata and never stored elsewhere. Refused commands (400, 409) are logged at warn with the request id.
 
-Weight monitoring rhythms: generic complete and `mark-taken` return `400` — use `POST /api/pets/:petId/care-rhythms/:entryId/occurrences/:occurrenceId/complete-weight` (see Care progression below). Deleting the weight entry of a weigh-in undoes that completion (D-CSM-029).
+Weight monitoring rhythms: generic occurrence **complete** returns `400` — use `POST /api/pets/:petId/care-rhythms/:entryId/occurrences/:occurrenceId/complete-weight` (see Care progression below). Deleting the weight entry of a weigh-in undoes that completion (D-CSM-029).
 
-#### Compatibility and legacy paths (deleted when the new client ships, D-CSM-033)
-
-| Method | Path | Notes |
-|---|---|---|
-| POST | `/:id/mark-taken` | **Deprecated** — completes the most urgent open slot, materialising the canonical open head first when missing; never 400 for an active planned item; **no `health_history` write**; prefer occurrence complete |
-| POST | `/:id/occurrences/ensure-open` | Returns the current open occurrences with `created: false` (every active planned item already has one, D-CSM-019) |
-| POST | `/:id/pause` | = `postpone { until: null, reason: 'pause' }` |
-| POST | `/:id/occurrences/skip-missed` | Body `{ as_of? }`; wrapper over `resolve-stack` |
-| POST | `/:id/undo-complete`, `/:id/occurrences/:occId/undo` | Replaced by `POST /:id/schedule/undo` |
+**Removed (D-CSM-033, child F):** `POST /:id/mark-taken`, `POST /:id/occurrences/ensure-open`, `POST /:id/pause`, `POST /:id/occurrences/skip-missed`, `POST /:id/undo-complete` — use occurrence commands and `POST /:id/schedule/undo`. Per-occurrence undo remains on `POST /:id/occurrences/:occId/undo` until the Flutter client migrates. Pause uses `POST /:id/postpone` with `until: null`.
 
 **Removed (CSM-7):** `POST /:id/skip`, `POST /:id/unskip` — use occurrence skip APIs.
 
@@ -286,7 +278,7 @@ Server-authoritative Agatha suggestions (weight, dental, wellness rhythm familie
 | GET | `/care-progression` | Establishment + milestones read model (`HEALTH_VIEW`) |
 | POST | `/care-rhythms/:entryId/occurrences/:occurrenceId/complete-weight` | CP-2: transactional weight observation + occurrence complete for `weight_monitoring` rhythms (`WEIGHT_EDIT`); body `{ weight, unit?, date?, measurement_source?, notes? }`; idempotent retry with same payload returns `200` |
 
-Weight monitoring rhythms cannot use generic occurrence complete or mark-taken while pending — use `complete-weight`.
+Weight monitoring rhythms cannot use generic occurrence complete while pending — use `complete-weight`.
 
 ### Care-period projection (`/api/pets/:petId/care-period-projection`) — CC-2
 

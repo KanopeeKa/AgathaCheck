@@ -19,8 +19,7 @@ import {
 } from '../../lib/care/occurrence/index.js';
 import { markSkipped } from '../../lib/care/occurrence/occurrenceRepository.js';
 import { slotIsPastDue } from '../../lib/care/schedule/occurrenceStatus.js';
-import { occurrenceToMap } from '../../lib/occurrenceScheduling.js';
-import { commandResponse } from './careItemWire.js';
+import { commandResponse, occurrenceToMap } from '../../lib/care/item/index.js';
 import { extractUserId } from './shared.js';
 import {
   isWeightMonitoringEntry,
@@ -88,7 +87,7 @@ function logOccurrenceAction(pool, req, { userId, entry, action, metadata = {}, 
 /**
  * Parse, authorise, run one command, answer. Shared by every occurrence route.
  */
-async function handleCommand(pool, req, res, { command, respond, audit, guard }) {
+async function handleCommand(pool, req, res, { command, respond, audit, guard, afterCommand }) {
   const userId = extractUserId(req);
   if (!userId) return res.status(401).json({ error: 'Unauthorized' });
   try {
@@ -98,7 +97,14 @@ async function handleCommand(pool, req, res, { command, respond, audit, guard })
       const blocked = guard(entry);
       if (blocked) return res.status(400).json({ error: blocked });
     }
-    const out = await runCareCommand(pool, { entryId: entry.id, userId, req }, command);
+    const out = await runCareCommand(pool, {
+      entryId: entry.id,
+      userId,
+      req,
+      afterCommand: afterCommand
+        ? async (db, lockedEntry, cmdOut) => afterCommand(db, lockedEntry, cmdOut, { userId, req })
+        : null,
+    }, command);
     if (!out) return res.status(404).json({ error: 'Entry not found' });
     if (audit) logOccurrenceAction(pool, req, { userId, entry, ...audit(out) });
     const { status = 200, body } = await respond(out);
@@ -296,20 +302,6 @@ export function registerOccurrenceRoutes(router, pool) {
       }),
     });
   });
-
-  // Compatibility (deleted in child F): skip every past-due open date.
-  router.post('/:id/occurrences/skip-missed', (req, res) => handleCommand(pool, req, res, {
-    command: async (ctx) => {
-      const past = ctx.openRows.filter((row) => slotIsPastDue(
-        { date: row.scheduled_date, time: row.scheduled_time },
-        ctx.asOf,
-      )).map((row) => row.id);
-      if (past.length === 0) return { event: null, result: { given: [], notGiven: [] } };
-      return resolveStackCommand(ctx, { notGiven: past });
-    },
-    audit: (out) => ({ action: 'health_occurrence.skip_missed', metadata: { count: out.notGiven.length } }),
-    respond: async (out) => ({ body: { skipped: out.notGiven, count: out.notGiven.length } }),
-  }));
 
   // Compatibility (deleted in child F): per-occurrence undo.
   router.post('/:id/occurrences/:occId/undo', (req, res) => handleCommand(pool, req, res, {

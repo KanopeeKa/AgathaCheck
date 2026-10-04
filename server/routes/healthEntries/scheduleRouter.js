@@ -1,11 +1,12 @@
 import { normalizeCalendarDateInput } from '../../lib/calendarDate.js';
+import { syncResolutionAfterAbsencePostpone } from '../../lib/care/absence/syncResolutionAfterSchedule.js';
 import {
   adjustCadenceCommand,
   postponeCommand,
   resumeCommand,
   undoCommand,
 } from '../../lib/care/occurrence/index.js';
-import { commandResponse } from './careItemWire.js';
+import { commandResponse } from '../../lib/care/item/index.js';
 import { handleCommand } from './occurrencesRouter.js';
 
 /** Postpone until / Pause / Resume / cadence / whole-command undo (D-CSM-028, D-CSM-029). */
@@ -15,31 +16,36 @@ export function registerScheduleRoutes(router, pool) {
     const rawUntil = body.until ?? null;
     const until = rawUntil == null || rawUntil === '' ? null : normalizeCalendarDateInput(rawUntil);
     if (rawUntil && !until) return res.status(400).json({ error: 'Invalid until date' });
+    const absenceId = body.absence_id || body.absenceId || null;
+    const reason = body.reason || (until ? 'manual' : 'pause');
     return handleCommand(pool, req, res, {
       command: (ctx) => postponeCommand(ctx, {
         until,
-        reason: body.reason || (until ? 'manual' : 'pause'),
-        absenceId: body.absence_id || body.absenceId || null,
+        reason,
+        absenceId,
         occurrenceId: body.occurrence_id || body.occurrenceId || null,
       }),
       audit: () => ({
         action: until ? 'health_entry.postponed' : 'health_entry.paused',
-        metadata: { until, reason: body.reason || null },
+        metadata: { until, reason },
         activity: until ? 'postpone' : 'pause',
       }),
+      afterCommand: async (db, entry, _out, { userId }) => {
+        if (until && reason === 'absence' && absenceId) {
+          await syncResolutionAfterAbsencePostpone(db, {
+            healthEntryId: entry.id,
+            petId: entry.pet_id,
+            userId,
+            absenceId,
+            until,
+            lookedAfterBy: body.looked_after_by ?? body.lookedAfterBy ?? null,
+            absenceNote: body.absence_note ?? body.absenceNote ?? null,
+          });
+        }
+      },
       respond: async (out) => ({ body: await commandResponse(pool, out, req, { until: out.until }) }),
     });
   });
-
-  // Compatibility (deleted in child F): pause = postpone without a date.
-  router.post('/:id/pause', (req, res) => handleCommand(pool, req, res, {
-    command: (ctx) => postponeCommand(ctx, { until: null, reason: 'pause' }),
-    audit: () => ({ action: 'health_entry.paused', metadata: {} }),
-    respond: async (out) => {
-      const wire = await commandResponse(pool, out, req);
-      return { body: { ...wire.entry, entry: wire.entry, undo_token: wire.undo_token } };
-    },
-  }));
 
   router.post('/:id/resume', (req, res) => {
     const body = req.body || {};

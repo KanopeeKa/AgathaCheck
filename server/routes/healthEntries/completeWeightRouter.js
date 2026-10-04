@@ -12,7 +12,7 @@ import {
 import {
   occurrenceToMap,
   resolveCompletedOn,
-} from '../../lib/occurrenceScheduling.js';
+} from '../../lib/care/item/index.js';
 import { dateToIsoDate } from '../../lib/calendarDate.js';
 import { extractUserId } from '../pets/shared.js';
 import { loadOccurrence } from './occurrencesRouter.js';

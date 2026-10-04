@@ -45,6 +45,8 @@ If you are unsure whether `main` moved while you worked, run the fetch + rebase 
 
 For faster iteration during development, use `./scripts/pre-push-changed.sh` (runs a subset based on changed files). See `/pre-push-verify` skill and `docs/agent-efficiency/plans/agent-efficiency-plan.md`.
 
+Governance gates in `pre-push.sh` include `scripts/check_care_item_boundary.sh`, which keeps the `care_item` leaf module (application/domain/data and shared completion UI) from importing other Flutter features — see care-next-occurrence plan EX-10.
+
 Manual breakdown if needed:
 
 ```bash

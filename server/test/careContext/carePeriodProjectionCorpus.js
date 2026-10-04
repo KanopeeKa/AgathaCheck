@@ -170,13 +170,14 @@ export const corpusCases = [
           recurrence_anchor: 'from_completion',
           next_due_date: '2026-08-14',
         }),
-        [],
+        [occurrence({ scheduled_date: '2026-08-14', status: 'pending' })],
         '2026-08-12',
         '2026-08-19',
         '2026-08-01'
       );
       expect(r.items).toHaveLength(1);
       expect(r.items[0].scheduled_date).toBe('2026-08-14');
+      expect(r.items[0].source).toBe('materialised');
       expect(r.uncertainties[0].reason).toBe(UNCERTAINTY_REASON_FROM_COMPLETION_CHAIN);
     },
   },

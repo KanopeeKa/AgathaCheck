@@ -60,30 +60,6 @@ class MockHealthRemoteDataSource extends Mock
           as Future<void>;
 
   @override
-  Future<HealthEntryModel> markTaken(
-    String? id, {
-    String? notes,
-    DateTime? completedOn,
-  }) =>
-      super.noSuchMethod(
-            Invocation.method(
-              #markTaken,
-              [id],
-              {#notes: notes, #completedOn: completedOn},
-            ),
-            returnValue: Future.value(_fallbackModel),
-          )
-          as Future<HealthEntryModel>;
-
-  @override
-  Future<HealthEntryModel> undoComplete(String? id) =>
-      super.noSuchMethod(
-            Invocation.method(#undoComplete, [id]),
-            returnValue: Future.value(_fallbackModel),
-          )
-          as Future<HealthEntryModel>;
-
-  @override
   Future<List<HealthHistoryModel>> getHistory(String? entryId) =>
       super.noSuchMethod(
             Invocation.method(#getHistory, [entryId]),

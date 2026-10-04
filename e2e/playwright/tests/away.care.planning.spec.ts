@@ -2,7 +2,7 @@
  * @bdd away_care_planning.feature
  * Scenario: Pre-departure overdue care links to the pet profile instead of listing on the plan
  * Scenario: After-it's-done care shows an estimated date on the away plan
- * Scenario: Changing a care date from the care item updates the next dates
+ * Scenario: Changing a care date from the care item with This date only updates the next dates
  * Scenario: In-window care shows on the away plan during the absence
  * Scenario: Care done before the trip still appears on the away plan
  */
@@ -127,7 +127,9 @@ test.describe('Away care planning display', () => {
     await away.expectPlannedCareRowShowsEstimated(entry.id, 'Weekly Grooming');
   });
 
-  test('Changing a care date from the care item updates the next dates', async ({ page }) => {
+  test('Changing a care date from the care item with This date only updates the next dates', async ({
+    page,
+  }) => {
     const root = baseURL();
     const user = seededUser;
     const pet = await createPet(root, user.accessToken, 'ReschedulePet');

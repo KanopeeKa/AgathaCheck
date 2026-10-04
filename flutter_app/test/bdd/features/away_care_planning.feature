@@ -19,10 +19,10 @@ Feature: Away care planning display
     Then I should see an estimated date on the planned care row for that entry
 
   @P1
-  Scenario: Changing a care date from the care item updates the next dates
+  Scenario: Changing a care date from the care item with This date only updates the next dates
     Given I am signed in as a guardian with a calendar-based health entry
     And the entry has an open occurrence I can reschedule
-    When I change the occurrence date from the care item
+    When I change the occurrence date from the care item choosing This date only
     Then the care item should show updated next occurrence dates
 
   @P1

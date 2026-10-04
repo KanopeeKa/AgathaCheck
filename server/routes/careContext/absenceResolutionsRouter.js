@@ -1,10 +1,13 @@
 import { publicError } from '../../config/security.js';
 import { dateToIsoDate, todayCalendarIso } from '../../lib/calendarDate.js';
 import { loadAwayPlanProjection } from '../../lib/care/awayPlan/index.js';
-import { isCareItemAffectedByAbsence } from '../../lib/care/absence/affectedCareItem.js';
+import { buildAbsenceCareView } from '../../lib/care/absence/buildAbsenceCareView.js';
+import { RESOLUTION_DECISION_MOVE_AFTER } from '../../lib/care/absence/constants.js';
+import { applyMoveAfterAbsenceReturnInTx } from '../../lib/care/absence/postponeAfterAbsenceReturn.js';
 import {
   listResolutionsForAbsence,
   upsertResolution,
+  validateResolutionPayload,
 } from '../../lib/care/absence/resolutionRepository.js';
 import { PET_ACCESS_ROLES, userCanManageCare } from '../../lib/petAccess.js';
 import { extractUserId } from '../../lib/requireAuth.js';
@@ -101,22 +104,67 @@ export function registerAbsenceResolutionsRoutes(router, pool, deps) {
           endsOn,
           todayIso
         );
-        const plannedRow = (projection.planned_care_items || []).find(
-          (row) => row.health_entry_id === healthEntryId
-        );
-        if (!plannedRow || !isCareItemAffectedByAbsence(plannedRow)) {
+        const careView = buildAbsenceCareView({
+          projection,
+          healthEntryId,
+          startsOn,
+          endsOn,
+        });
+        if (!careView.affected) {
           return res.status(400).json({ error: 'Care item is not affected by this absence' });
         }
 
-        const result = await upsertResolution(pool, absenceRow.id, healthEntryId, item, {
-          startsOn,
-          endsOn,
-          projectionItems: projection.items,
-        });
-        if (!result.ok) {
-          return res.status(400).json({ error: result.error });
+        const validated = validateResolutionPayload(item);
+        if (!validated.ok) {
+          return res.status(400).json({ error: validated.error });
         }
-        upserted.push(result.resolution);
+
+        const decision = item.decision;
+        const recordOnly = item.record_only === true || item.recordOnly === true;
+        const review = careView.review_occurrence;
+        const occurrenceId = item.occurrence_id || item.occurrenceId || review?.occurrence_id || null;
+
+        const client = await pool.connect();
+        try {
+          await client.query('BEGIN');
+          if (decision === RESOLUTION_DECISION_MOVE_AFTER && !recordOnly) {
+            const applied = await applyMoveAfterAbsenceReturnInTx(client, {
+              entry,
+              entryId: healthEntryId,
+              userId,
+              req,
+              absenceId: absenceRow.id,
+              endsOn,
+              occurrenceId,
+            });
+            if (!applied.ok) {
+              await client.query('ROLLBACK');
+              const status = applied.status || 400;
+              return res.status(status).json({ error: applied.error || 'Could not postpone care' });
+            }
+          }
+
+          const result = await upsertResolution(client, absenceRow.id, healthEntryId, item, {
+            startsOn,
+            endsOn,
+            projectionItems: projection.items,
+          });
+          if (!result.ok) {
+            await client.query('ROLLBACK');
+            return res.status(400).json({ error: result.error });
+          }
+          await client.query('COMMIT');
+          upserted.push(result.resolution);
+        } catch (err) {
+          try {
+            await client.query('ROLLBACK');
+          } catch {
+            // ignore
+          }
+          throw err;
+        } finally {
+          client.release();
+        }
       }
 
       res.json({ resolutions: upserted });

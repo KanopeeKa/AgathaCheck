@@ -183,6 +183,14 @@ class PlannedCareItem {
     final flex = scheduleFlexibility;
     return flex == 'flexible' || flex == 'earlier_only';
   }
+
+  /// Real occurrence id for away-plan navigation (D-ACP-011 / child E5).
+  String? get resolvedOccurrenceId {
+    final fromOpen = openOccurrence?.occurrenceId;
+    if (fromOpen != null && fromOpen.isNotEmpty) return fromOpen;
+    if (occurrenceId != null && occurrenceId!.isNotEmpty) return occurrenceId;
+    return null;
+  }
 }
 
 class CarePeriodCoverageSummary {

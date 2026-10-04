@@ -23,4 +23,5 @@ export 'domain/occurrence_detail.dart';
 export 'domain/occurrence_status.dart';
 export 'domain/stack_rule.dart';
 export 'presentation/care_completion_flow.dart';
+export 'presentation/detail/care_item_detail_screen.dart';
 export 'presentation/occurrence/occurrence_screen.dart';

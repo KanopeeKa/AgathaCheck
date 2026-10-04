@@ -61,6 +61,28 @@ class HealthEntryAbsenceLookedAfterBy {
   }
 }
 
+class HealthEntryAbsenceReviewOccurrence {
+  const HealthEntryAbsenceReviewOccurrence({
+    required this.occurrenceId,
+    required this.scheduledDate,
+    this.scheduledTime,
+  });
+
+  final String occurrenceId;
+  final String scheduledDate;
+  final String? scheduledTime;
+
+  factory HealthEntryAbsenceReviewOccurrence.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    return HealthEntryAbsenceReviewOccurrence(
+      occurrenceId: json['occurrence_id'] as String? ?? '',
+      scheduledDate: json['scheduled_date'] as String? ?? '',
+      scheduledTime: json['scheduled_time'] as String?,
+    );
+  }
+}
+
 class HealthEntryAbsenceSlice {
   const HealthEntryAbsenceSlice({
     required this.plannedAbsenceId,
@@ -72,6 +94,7 @@ class HealthEntryAbsenceSlice {
     this.suggestedDecision,
     this.resolutionDecision,
     this.plannedCare,
+    this.reviewOccurrence,
     this.suggestedLookedAfterBy,
     this.petCarer,
   });
@@ -85,6 +108,7 @@ class HealthEntryAbsenceSlice {
   final String? suggestedDecision;
   final String? resolutionDecision;
   final PlannedCareItem? plannedCare;
+  final HealthEntryAbsenceReviewOccurrence? reviewOccurrence;
   final HealthEntryAbsenceLookedAfterBy? suggestedLookedAfterBy;
   final HealthEntryAbsenceLookedAfterBy? petCarer;
 
@@ -98,6 +122,7 @@ class HealthEntryAbsenceSlice {
   factory HealthEntryAbsenceSlice.fromJson(Map<String, dynamic> json) {
     final resolution = json['resolution'] as Map<String, dynamic>?;
     final plannedRaw = json['planned_care'] as Map<String, dynamic>?;
+    final reviewRaw = json['review_occurrence'] as Map<String, dynamic>?;
     final suggestedRaw =
         json['suggested_looked_after_by'] as Map<String, dynamic>?;
     final petCarerRaw = json['pet_carer'] as Map<String, dynamic>?;
@@ -113,6 +138,9 @@ class HealthEntryAbsenceSlice {
       resolutionDecision: resolution?['decision'] as String?,
       plannedCare: plannedRaw != null
           ? CarePeriodCoverageModel.plannedCareItemFromJson(plannedRaw)
+          : null,
+      reviewOccurrence: reviewRaw != null
+          ? HealthEntryAbsenceReviewOccurrence.fromJson(reviewRaw)
           : null,
       suggestedLookedAfterBy: suggestedRaw != null
           ? HealthEntryAbsenceLookedAfterBy.fromJson(suggestedRaw)

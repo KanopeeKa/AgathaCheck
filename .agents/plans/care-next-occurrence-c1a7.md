@@ -1345,10 +1345,13 @@ Recorded before C0 starts; every item below is approved with the phases (execute
 
 ```yaml
 autonomy: active
-current_phase: "landing 3b PR — babysit merge"
-last_completed_phase: "C6 + D4 + §18.11 follow-ups"
+current_phase: "landing 5b — child E (E1 expandItemForWindow)"
+last_completed_phase: "C+D landed (#1475, pre-UAT green after #1478)"
 halt_reason: null
-next_action: "/babysit-uat on PR #1475 → merge → pre-UAT watch; then complete-plan"
+next_action: "babysit+ PR E1 → integration; then E2"
+control_issue: 1482
+child_e_control_issue: 1480
+child_f_control_issue: 1481
 artifact_ref:
   branch: claude/eager-edison-mf34j6
   plan_path: .agents/plans/care-next-occurrence-c1a7.md
@@ -1359,6 +1362,8 @@ open_prs: []
 merge_commits:
   a_b: a3afd15
   a_b_hotfix_1473: baf7f77
+  c_d: ba625ff7
+  c_d_preuat_remedial: b13b832b
 phase_commits:
   c0: d9e03b4
   c1: f592202

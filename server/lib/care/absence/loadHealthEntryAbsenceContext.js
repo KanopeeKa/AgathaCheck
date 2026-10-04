@@ -1,17 +1,8 @@
 import { dateToIsoDate, todayCalendarIso } from '../../calendarDate.js';
 import { loadAwayPlanProjection } from '../awayPlan/loadAwayPlanProjection.js';
-import {
-  PLANNED_ABSENCE_STATUS_CANCELLED,
-  carerRowToMap,
-} from '../plannedAbsence.js';
-import { isCareItemAffectedByAbsence } from './affectedCareItem.js';
-import { deriveResolutionUiState } from './deriveResolutionState.js';
-import {
-  defaultSuggestedDecision,
-  loadResolutionsByEntryIds,
-  resolutionRowToMap,
-  suggestedLookedAfterFromPetCarer,
-} from './resolutionRepository.js';
+import { PLANNED_ABSENCE_STATUS_CANCELLED } from '../plannedAbsence.js';
+import { buildAbsenceCareView } from './buildAbsenceCareView.js';
+import { loadResolutionsByEntryIds } from './resolutionRepository.js';
 
 /**
  * @param {import('pg').Pool|import('pg').PoolClient} pool
@@ -45,19 +36,8 @@ export async function loadHealthEntryAbsenceContext(pool, entry, userId) {
       endsOn,
       todayIso
     );
-    const plannedRow = (projection.planned_care_items || []).find(
-      (row) => row.health_entry_id === entry.id
-    );
-    const affected = plannedRow ? isCareItemAffectedByAbsence(plannedRow) : false;
     const resolutionRows = await loadResolutionsByEntryIds(pool, absenceRow.id, [entry.id]);
     const resolutionDbRow = resolutionRows.get(entry.id) || null;
-    const uiState = plannedRow
-      ? deriveResolutionUiState(resolutionDbRow, plannedRow, {
-          startsOn,
-          endsOn,
-          projectionItems: projection.items,
-        })
-      : 'nothing_due';
 
     const petCarerResult = await pool.query(
       `SELECT carer_kind, carer_user_id, carer_name, carer_note, pet_id
@@ -66,21 +46,21 @@ export async function loadHealthEntryAbsenceContext(pool, entry, userId) {
       [absenceRow.id, entry.pet_id]
     );
     const petCarerRow = petCarerResult.rows[0] || null;
-    const suggestedLookedAfterBy = suggestedLookedAfterFromPetCarer(petCarerRow);
+
+    const careView = buildAbsenceCareView({
+      projection,
+      healthEntryId: entry.id,
+      startsOn,
+      endsOn,
+      resolutionDbRow,
+      petCarerRow,
+    });
 
     absences.push({
       planned_absence_id: absenceRow.id,
       starts_on: startsOn,
       ends_on: endsOn,
-      affected,
-      ui_state: uiState,
-      planned_care: plannedRow || null,
-      resolution: resolutionDbRow ? resolutionRowToMap(resolutionDbRow) : null,
-      suggested_looked_after_by: suggestedLookedAfterBy,
-      suggested_decision: affected && uiState === 'not_reviewed'
-        ? defaultSuggestedDecision()
-        : null,
-      pet_carer: petCarerRow ? carerRowToMap(petCarerRow) : null,
+      ...careView,
     });
   }
 

@@ -49,6 +49,17 @@ export class CareAgendaPage {
     await refreshFlutterAccessibility(this.page);
   }
 
+  async showUpcomingCare(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    const show = this.page.getByRole('button', {
+      name: /Show upcoming care|Afficher les soins à venir/i,
+    });
+    if (await show.isVisible({ timeout: 5_000 }).catch(() => false)) {
+      await show.click();
+      await refreshFlutterAccessibility(this.page);
+    }
+  }
+
   async markDone(entryId: string): Promise<void> {
     await refreshFlutterAccessibility(this.page);
     await this.doneButton(entryId).click();

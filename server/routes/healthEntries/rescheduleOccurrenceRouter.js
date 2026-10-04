@@ -1,7 +1,7 @@
 import { normalizeCalendarDateInput } from '../../lib/calendarDate.js';
+import { syncResolutionAfterAbsenceReschedule } from '../../lib/care/absence/syncResolutionAfterSchedule.js';
 import { changeDateCommand } from '../../lib/care/occurrence/index.js';
-import { occurrenceToMap } from '../../lib/occurrenceScheduling.js';
-import { commandResponse } from './careItemWire.js';
+import { commandResponse, occurrenceToMap } from '../../lib/care/item/index.js';
 import { handleCommand } from './occurrencesRouter.js';
 
 export function registerRescheduleOccurrenceRoutes(router, pool) {
@@ -12,6 +12,7 @@ export function registerRescheduleOccurrenceRoutes(router, pool) {
     if (!scheduledDate) {
       return res.status(400).json({ error: 'scheduled_date is required' });
     }
+    const absenceId = body.absence_id || body.absenceId || null;
     return handleCommand(pool, req, res, {
       command: (ctx) => changeDateCommand(ctx, {
         occurrenceId,
@@ -24,6 +25,21 @@ export function registerRescheduleOccurrenceRoutes(router, pool) {
         action: 'health_occurrence.rescheduled',
         metadata: { occurrence_id: occurrenceId, scheduled_date: scheduledDate, scope: out.scope },
       }),
+      afterCommand: async (db, entry, out, { userId }) => {
+        if (absenceId && out.occurrence?.scheduled_date) {
+          await syncResolutionAfterAbsenceReschedule(db, {
+            healthEntryId: entry.id,
+            petId: entry.pet_id,
+            userId,
+            absenceId,
+            newScheduledDate: out.occurrence.scheduled_date,
+            body: {
+              looked_after_by: body.looked_after_by ?? body.lookedAfterBy,
+              absence_note: body.absence_note ?? body.absenceNote,
+            },
+          });
+        }
+      },
       respond: async (out) => ({
         body: await commandResponse(pool, out, req, {
           occurrence: out.occurrence ? occurrenceToMap(out.occurrence) : null,

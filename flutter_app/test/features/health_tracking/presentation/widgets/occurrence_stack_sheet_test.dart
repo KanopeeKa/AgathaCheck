@@ -264,13 +264,10 @@ void main() {
           find.text('Record earlier dates for Morning meds'),
           findsNothing,
         );
-        expect(find.text('Mark as completed'), findsOneWidget);
-        await tester.tap(find.text('Mark Completed'));
-        await tester.pumpAndSettle();
 
         expect(result, isNotNull);
         expect(result!.completedOn, calendarDateOnly(DateTime.now()));
-        expect(result!.occurrenceId, isNull);
+        expect(result!.occurrenceId, 'today');
       },
     );
 
@@ -298,13 +295,10 @@ void main() {
           find.text('Record earlier dates for Morning meds'),
           findsNothing,
         );
-        expect(find.text('Mark as completed'), findsOneWidget);
         expect(find.text('Overdue'), findsNothing);
-        await tester.tap(find.text('Mark Completed'));
-        await tester.pumpAndSettle();
 
         expect(result, isNotNull);
-        expect(result!.occurrenceId, isNull);
+        expect(result!.occurrenceId, 'today-pending');
       },
     );
 

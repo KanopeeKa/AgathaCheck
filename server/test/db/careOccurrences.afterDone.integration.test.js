@@ -282,14 +282,13 @@ describe('lifecycle and compatibility routes', () => {
     expect(await invariantViolations(harness.pool, entry.id)).toEqual([]);
   });
 
-  it('mark-taken and ensure-open never fail for an active planned item', async () => {
+  it('active planned items always have an open occurrence for complete', async () => {
     const entry = await created({ care_family: 'wellness_review', frequency: 'yearly', next_due_date: '2027-03-01' }, '2026-06-01T09:00');
-    const ensured = await api.at('2026-06-01T09:00').ensureOpen(entry.id);
-    expect(ensured.statusCode).toBe(200);
-    expect(ensured.body.created).toBe(false);
-    const taken = await api.at('2026-06-01T09:00').markTaken(entry.id);
+    expect(entry.open_occurrences.length).toBeGreaterThanOrEqual(1);
+    const occId = entry.open_occurrences[0].id;
+    const taken = await api.at('2026-06-01T09:00').complete(entry.id, occId, {});
     expect(taken.statusCode).toBe(200);
-    expect(taken.body.next_due_date).toBe('2027-06-01');
+    expect(taken.body.entry.next_due_date).toBe('2027-06-01');
   });
 
   it('TS-4 editing the next date moves the open occurrence', async () => {

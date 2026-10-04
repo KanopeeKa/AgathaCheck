@@ -11,22 +11,8 @@ import '../../domain/usecases/create_health_entry.dart';
 import '../../domain/usecases/delete_health_entry.dart';
 import '../../domain/usecases/get_entry_history.dart';
 import '../../domain/usecases/get_health_entries.dart';
-import '../../domain/usecases/mark_entry_taken.dart';
 import '../../domain/usecases/update_health_entry.dart';
 import '../../../pet_care/domain/services/care_temporal_grouping_service.dart';
-import '../../../care_taxonomy/domain/care_family_definition.dart';
-import '../../../pet_profile/domain/entities/care_family.dart';
-import '../../../pet_profile/domain/services/care_entry_filter.dart';
-
-/// Optional family / filter-group selection for dashboard care lists.
-class HealthDashboardCareFilter {
-  const HealthDashboardCareFilter({this.filterGroup, this.family});
-
-  final CareFilterGroup? filterGroup;
-  final CareFamily? family;
-
-  static const all = HealthDashboardCareFilter();
-}
 
 final healthRemoteDataSourceProvider = Provider<HealthRemoteDataSource>((ref) {
   final baseUrl = ref.watch(apiBaseUrlProvider);
@@ -76,11 +62,6 @@ final deleteHealthEntryProvider = Provider<DeleteHealthEntry>((ref) {
   return DeleteHealthEntry(ref.watch(healthRepositoryProvider));
 });
 
-/// Provides the mark entry taken use case.
-final markEntryTakenProvider = Provider<MarkEntryTaken>((ref) {
-  return MarkEntryTaken(ref.watch(healthRepositoryProvider));
-});
-
 /// Provides the get entry history use case.
 final getEntryHistoryProvider = Provider<GetEntryHistory>((ref) {
   return GetEntryHistory(ref.watch(healthRepositoryProvider));
@@ -124,23 +105,6 @@ class HealthEntriesNotifier extends AsyncNotifier<List<HealthEntry>> {
     await refresh();
   }
 
-  /// Marks a health entry as taken and refreshes the list.
-  Future<void> markTaken(
-    String id, {
-    String notes = '',
-    DateTime? completedOn,
-  }) async {
-    await ref
-        .read(markEntryTakenProvider)
-        .call(id, notes: notes, completedOn: completedOn);
-    await refresh();
-  }
-
-  Future<void> undoComplete(String id) async {
-    await ref.read(healthRepositoryProvider).undoComplete(id);
-    await refresh();
-  }
-
   /// Closes an event (status completed, repeat end yesterday).
   Future<void> closeEvent(String id) async {
     await ref.read(healthRepositoryProvider).closeEvent(id);
@@ -170,31 +134,9 @@ class HealthEntriesNotifier extends AsyncNotifier<List<HealthEntry>> {
   }
 }
 
-/// Provides filtered entries by care family and filter group.
-final filteredHealthEntriesProvider =
-    Provider.family<AsyncValue<List<HealthEntry>>, HealthDashboardCareFilter>((
-      ref,
-      filter,
-    ) {
-      final entriesAsync = ref.watch(healthEntriesNotifierProvider);
-      return entriesAsync.whenData((entries) {
-        return entries.where((entry) {
-          if (filter.family != null &&
-              !matchesCareFamilyFilters(entry, {filter.family!})) {
-            return false;
-          }
-          if (filter.filterGroup != null &&
-              !matchesCareFilterGroupFilters(entry, {filter.filterGroup!})) {
-            return false;
-          }
-          return true;
-        }).toList();
-      });
-    });
-
 /// Health entries for a specific pet, derived reactively from the global list
-/// ([healthEntriesNotifierProvider]) so it reflects creates/edits/deletes and
-/// mark-taken without a separate fetch.
+/// ([healthEntriesNotifierProvider]) so it reflects creates/edits/deletes without
+/// a separate fetch.
 final petHealthEntriesByIdProvider =
     Provider.family<AsyncValue<List<HealthEntry>>, String>((ref, petId) {
       final entriesAsync = ref.watch(healthEntriesNotifierProvider);

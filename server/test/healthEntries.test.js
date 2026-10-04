@@ -574,15 +574,6 @@ describe('Health Entries API', () => {
       expect(res.statusCode).toBe(401);
     });
 
-    it('POST /api/health-entries/:id/mark-taken returns 401 without token', async () => {
-      const res = await request(app).post('/api/health-entries/he-1/mark-taken');
-      expect(res.statusCode).toBe(401);
-    });
-
-    it('POST /api/health-entries/:id/undo-complete returns 401 without token', async () => {
-      const res = await request(app).post('/api/health-entries/he-1/undo-complete');
-      expect(res.statusCode).toBe(401);
-    });
 
     it('POST /api/health-entries/:id/close returns 401 without token', async () => {
       const res = await request(app).post('/api/health-entries/he-1/close');

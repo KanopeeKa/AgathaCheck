@@ -62,30 +62,17 @@ void main() {
       await makeDatasource(client).updateEntry(entry);
     });
 
-    test('markTaken sends Authorization bearer header', () async {
+    test('unmarkDone posts schedule undo', () async {
       final client = MockClient((request) async {
         expect(
           request.url.toString(),
-          '$baseUrl/api/health-entries/he-1/mark-taken',
+          '$baseUrl/api/health-entries/he-1/schedule/undo',
         );
         expect(request.method, 'POST');
         expect(request.headers['Authorization'], 'Bearer $token');
-        return http.Response(json.encode(testEntryJson), 200);
+        return http.Response(json.encode({'entry': testEntryJson}), 200);
       });
-      await makeDatasource(client).markTaken('he-1');
-    });
-
-    test('undoComplete sends Authorization bearer header', () async {
-      final client = MockClient((request) async {
-        expect(
-          request.url.toString(),
-          '$baseUrl/api/health-entries/he-1/undo-complete',
-        );
-        expect(request.method, 'POST');
-        expect(request.headers['Authorization'], 'Bearer $token');
-        return http.Response(json.encode(testEntryJson), 200);
-      });
-      await makeDatasource(client).undoComplete('he-1');
+      await makeDatasource(client).unmarkDone('he-1');
     });
 
     test('deleteEntry sends Authorization bearer header', () async {
@@ -223,48 +210,6 @@ void main() {
         expect(result.occurrence.id, 'occ-1');
         expect(result.warnings, hasLength(1));
         expect(result.nextDueDate, DateTime(2026, 9, 10));
-      },
-    );
-
-    test(
-      'ensureOpenOccurrence posts ensure-open and parses response',
-      () async {
-        final occJson = {
-          'id': 'occ-new',
-          'health_entry_id': 'he-1',
-          'scheduled_date': '2026-10-27',
-          'status': 'pending',
-          'missed': false,
-        };
-        final client = MockClient((request) async {
-          expect(
-            request.url.toString(),
-            '$baseUrl/api/health-entries/he-1/occurrences/ensure-open',
-          );
-          expect(request.method, 'POST');
-          final body = json.decode(request.body) as Map<String, dynamic>;
-          expect(body['scheduled_date'], '2026-10-27');
-          expect(body['reason_code'], 'absence_review');
-          return http.Response(
-            json.encode({
-              'occurrences': [occJson],
-              'created': true,
-              'next_due_date': '2026-11-27',
-              'head_date': '2026-10-27',
-            }),
-            200,
-          );
-        });
-        final result = await makeDatasource(client).ensureOpenOccurrence(
-          'he-1',
-          scheduledDate: DateTime(2026, 10, 27),
-          reasonCode: 'absence_review',
-        );
-        expect(result.created, isTrue);
-        expect(result.occurrences, hasLength(1));
-        expect(result.occurrences.first.id, 'occ-new');
-        expect(result.headDate, DateTime(2026, 10, 27));
-        expect(result.nextDueDate, DateTime(2026, 11, 27));
       },
     );
 

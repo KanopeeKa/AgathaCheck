@@ -217,7 +217,7 @@ void main() {
     },
   );
 
-  testWidgets('planned care row tap navigates to petEventView with returnTo', (
+  testWidgets('planned care row tap opens occurrence screen when id present', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -238,6 +238,7 @@ void main() {
                   kind: PlannedCareKind.singleOnce,
                   healthEntryId: 'once-1',
                   name: 'Vet visit',
+                  occurrenceId: 'occ-42',
                   scheduledDate: '2026-10-03',
                 ),
               ],
@@ -262,16 +263,9 @@ void main() {
                 ),
               ),
               GoRoute(
-                path: '/pet/:petId',
-                name: 'petDetail',
-                builder: (_, state) =>
-                    Text('pet-detail-${state.pathParameters['petId']}'),
-              ),
-              GoRoute(
-                path: '/pet/:petId/events/:entryId',
-                name: 'petEventView',
+                path: '/pet/:petId/events/:entryId/occurrences/:occurrenceId',
                 builder: (_, state) => Text(
-                  'event-${state.pathParameters['entryId']}|'
+                  'occ-${state.pathParameters['occurrenceId']}|'
                   '${state.uri.queryParameters['returnTo'] ?? ''}',
                 ),
               ),
@@ -286,8 +280,81 @@ void main() {
     await tester.tap(find.text('Vet visit'));
     await tester.pumpAndSettle();
 
-    expect(find.text('event-once-1|/pc/away/abs-1'), findsOneWidget);
+    expect(find.text('occ-occ-42|/pc/away/abs-1'), findsOneWidget);
   });
+
+  testWidgets(
+    'planned care row tap navigates to petEventView when no occurrence id',
+    (tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            petByIdProvider('pet-1').overrideWith((ref) async => pet),
+            absenceCarePlanProvider(
+              'abs-1',
+            ).overrideWith((ref) async => _emptyCarePlan()),
+            carePeriodCoverageProvider((
+              petId: 'pet-1',
+              startsOn: '2026-10-01',
+              endsOn: '2026-10-05',
+            )).overrideWith(
+              (ref) async => _coverage(
+                plannedCareItems: [
+                  PlannedCareItem(
+                    kind: PlannedCareKind.singleOnce,
+                    healthEntryId: 'once-1',
+                    name: 'Vet visit',
+                    scheduledDate: '2026-10-03',
+                  ),
+                ],
+              ),
+            ),
+          ],
+          child: MaterialApp.router(
+            theme: AppTheme.lightTheme,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            routerConfig: GoRouter(
+              routes: [
+                GoRoute(
+                  path: '/pc/away/abs-1',
+                  builder: (_, __) => AwayPlanPetCareSection(
+                    absenceId: 'abs-1',
+                    petId: 'pet-1',
+                    petName: 'Luna',
+                    startsOn: '2026-10-01',
+                    endsOn: '2026-10-05',
+                    onRetry: () {},
+                  ),
+                ),
+                GoRoute(
+                  path: '/pet/:petId',
+                  name: 'petDetail',
+                  builder: (_, state) =>
+                      Text('pet-detail-${state.pathParameters['petId']}'),
+                ),
+                GoRoute(
+                  path: '/pet/:petId/events/:entryId',
+                  name: 'petEventView',
+                  builder: (_, state) => Text(
+                    'event-${state.pathParameters['entryId']}|'
+                    '${state.uri.queryParameters['returnTo'] ?? ''}',
+                  ),
+                ),
+              ],
+              initialLocation: '/pc/away/abs-1',
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Vet visit'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('event-once-1|/pc/away/abs-1'), findsOneWidget);
+    },
+  );
 
   testWidgets('pet header tap navigates to petDetail', (tester) async {
     await tester.pumpWidget(

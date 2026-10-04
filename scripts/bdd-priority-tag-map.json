@@ -33,8 +33,7 @@
   },
   "away_care_planning.feature": {
     "Pre-departure overdue care links to the pet profile instead of listing on the plan": "P1",
-    "Completion-based care shows an estimated date on the away plan": "P1",
-    "Changing a care date from the care item updates the next dates": "P1",
+    "Changing a care date from the care item with This date only updates the next dates": "P1",
     "In-window care shows on the away plan during the absence": "P1",
     "After-it's-done care shows an estimated date on the away plan": "P1",
     "Care done before the trip still appears on the away plan": "P1"
@@ -46,7 +45,9 @@
   },
   "care_item_absence.feature": {
     "In-window care can be rescheduled or skipped from occurrence review during planned absence": "P1",
-    "Care item absence strip shows Keep with carer and Review date opens occurrence review": "P1"
+    "Care item absence strip shows Keep with carer and Review date opens the date directly": "P1",
+    "Moving care after the trip postpones it to the day after return": "P1",
+    "A date planned during the trip can be looked after by the carer": "P1"
   },
   "pet_profiles.feature": {
     "Creating a new pet with required fields": "P0",

@@ -40,6 +40,7 @@ class HealthAbsenceContextRemote {
     required String decision,
     String? absenceNote,
     Map<String, dynamic>? lookedAfterBy,
+    bool recordOnly = false,
   }) async {
     final response = await _client.patch(
       Uri.parse('$baseUrl/api/planned-absences/$absenceId/resolutions'),
@@ -47,6 +48,7 @@ class HealthAbsenceContextRemote {
       body: json.encode({
         'health_entry_id': healthEntryId,
         'decision': decision,
+        if (recordOnly) 'record_only': true,
         if (absenceNote != null) 'absence_note': absenceNote,
         if (lookedAfterBy != null) 'looked_after_by': lookedAfterBy,
       }),
