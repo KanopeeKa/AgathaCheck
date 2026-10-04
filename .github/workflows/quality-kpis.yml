@@ -15,7 +15,6 @@ jobs:
     name: CI health KPIs (advisory)
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v5
         with:
@@ -26,6 +25,17 @@ jobs:
           node-version: '22'
 
       - name: Compute KPIs
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: node scripts/quality/ci-health-kpis.mjs --days 14
+        run: |
+          node scripts/quality/ci-health-kpis.mjs --days 14 | tee ci-health-kpis.md
+
+      - name: Upload KPI summary
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: ci-health-kpis
+          path: ci-health-kpis.md
+          retention-days: 14
+          if-no-files-found: ignore
