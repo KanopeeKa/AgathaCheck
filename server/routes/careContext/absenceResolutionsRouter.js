@@ -2,6 +2,9 @@ import { publicError } from '../../config/security.js';
 import { dateToIsoDate, todayCalendarIso } from '../../lib/calendarDate.js';
 import { loadAwayPlanProjection } from '../../lib/care/awayPlan/index.js';
 import { isCareItemAffectedByAbsence } from '../../lib/care/absence/affectedCareItem.js';
+import { RESOLUTION_DECISION_MOVE_AFTER } from '../../lib/care/absence/constants.js';
+import { buildReviewOccurrence } from '../../lib/care/absence/plannedDatesInTrip.js';
+import { applyMoveAfterAbsenceReturn } from '../../lib/care/absence/postponeAfterAbsenceReturn.js';
 import {
   listResolutionsForAbsence,
   upsertResolution,
@@ -106,6 +109,27 @@ export function registerAbsenceResolutionsRoutes(router, pool, deps) {
         );
         if (!plannedRow || !isCareItemAffectedByAbsence(plannedRow)) {
           return res.status(400).json({ error: 'Care item is not affected by this absence' });
+        }
+
+        const decision = item.decision;
+        const recordOnly = item.record_only === true || item.recordOnly === true;
+        if (decision === RESOLUTION_DECISION_MOVE_AFTER && !recordOnly) {
+          const review = buildReviewOccurrence(plannedRow);
+          const applied = await applyMoveAfterAbsenceReturn(pool, {
+            entryId: healthEntryId,
+            userId,
+            req,
+            absenceId: absenceRow.id,
+            endsOn,
+            occurrenceId: item.occurrence_id || item.occurrenceId || review?.occurrence_id || null,
+          });
+          if (!applied.ok) {
+            const status = applied.status || 400;
+            if (applied.body) {
+              return res.status(status).json(applied.body);
+            }
+            return res.status(status).json({ error: applied.error || 'Could not postpone care' });
+          }
         }
 
         const result = await upsertResolution(pool, absenceRow.id, healthEntryId, item, {

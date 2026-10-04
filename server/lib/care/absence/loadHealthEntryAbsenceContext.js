@@ -7,6 +7,10 @@ import {
 import { isCareItemAffectedByAbsence } from './affectedCareItem.js';
 import { deriveResolutionUiState } from './deriveResolutionState.js';
 import {
+  buildReviewOccurrence,
+  enrichPlannedCareForTrip,
+} from './plannedDatesInTrip.js';
+import {
   defaultSuggestedDecision,
   loadResolutionsByEntryIds,
   resolutionRowToMap,
@@ -67,6 +71,15 @@ export async function loadHealthEntryAbsenceContext(pool, entry, userId) {
     );
     const petCarerRow = petCarerResult.rows[0] || null;
     const suggestedLookedAfterBy = suggestedLookedAfterFromPetCarer(petCarerRow);
+    const plannedCare = enrichPlannedCareForTrip(
+      plannedRow,
+      projection.items,
+      entry.id,
+      startsOn,
+      endsOn,
+      resolutionDbRow,
+    );
+    const reviewOccurrence = buildReviewOccurrence(plannedCare);
 
     absences.push({
       planned_absence_id: absenceRow.id,
@@ -74,7 +87,8 @@ export async function loadHealthEntryAbsenceContext(pool, entry, userId) {
       ends_on: endsOn,
       affected,
       ui_state: uiState,
-      planned_care: plannedRow || null,
+      planned_care: plannedCare,
+      review_occurrence: reviewOccurrence,
       resolution: resolutionDbRow ? resolutionRowToMap(resolutionDbRow) : null,
       suggested_looked_after_by: suggestedLookedAfterBy,
       suggested_decision: affected && uiState === 'not_reviewed'
