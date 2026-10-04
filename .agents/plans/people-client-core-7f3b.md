@@ -603,11 +603,17 @@ server/**
 ## Runtime state (agent-updated)
 
 ```yaml
-autonomy: halted            # draft — bootstrapped by the roadmap when the entry gate is met
-current_phase: null
+autonomy: active
+current_phase: c1-flutter-core
 last_completed_phase: null
-halt_reason: "draft — waiting for people-server-7f3b and CARE C+D on main"
-next_action: "roadmap bootstraps after landing slot 4 once CARE C+D has landed"
+halt_reason: null
+next_action: "continue phase c1-flutter-core on branch cursor/people-client-c1-core-7f3b"
+artifact_ref:
+  branch: main
+  plan_path: .agents/plans/people-client-core-7f3b.md
+  plan_commit: bc59db3da0fe52896313906c089a14ff74fd4a4d
+  snapshot_path: .agents/plans/people-client-core-7f3b.snapshot.json
+  snapshot_commit: bc59db3da0fe52896313906c089a14ff74fd4a4d
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
