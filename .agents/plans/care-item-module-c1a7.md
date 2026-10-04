@@ -18,22 +18,18 @@ Parent: `.agents/plans/care-next-occurrence-c1a7.md` §10, child F §795–804.
 ## Runtime state
 
 ```yaml
-autonomy: active
-current_phase: F6
-last_completed_phase: F5
+autonomy: completed
+current_phase: null
+last_completed_phase: F6
 halt_reason: null
-next_action: "continue phase F6 on branch cursor/care-f6-e2e-regression-50b4"
+next_action: "plan complete"
 artifact_ref:
-  branch: cursor/care-f6-e2e-regression-50b4
+  branch: claude/eager-edison-mf34j6
   plan_path: .agents/plans/care-item-module-c1a7.md
-  plan_commit: pending
+  plan_commit: 5a0ff318add07e3ab284e705bbeb5aa5e42dc675
   snapshot_path: .agents/plans/care-item-module-c1a7.snapshot.json
-  snapshot_commit: pending
+  snapshot_commit: 5a0ff318add07e3ab284e705bbeb5aa5e42dc675
 open_prs: []
-merge_commits:
-  F2: fce0ce1e2146550fc085a00364693c9aa7c985f8
-  F3: 83759d37b905ed8c22cbb28d56d978d4a33b7d53
-  F4: 9850c118d5c7929056db1f779fbe0b5229e6942b
-  F5: 915be76802a7473a81e3002ec216cfd2ef3650f3
+merge_commits: {}
 debt_issue_refs: []
 ```

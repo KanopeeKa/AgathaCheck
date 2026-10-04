@@ -4,7 +4,7 @@
   "approved_at": "2026-10-04T10:45:00Z",
   "approved_by": "user chat 2026-10-04 — agreement on all phases E and F (care-next-occurrence landing 5b)",
   "approved_until": "2026-10-06T10:45:00Z",
-  "autonomy": "active",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "claude/eager-edison-mf34j6",
   "control_issue": 1481,
@@ -87,10 +87,12 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "governance",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1491",
+      "pr_head_sha": "83759d37"
     },
     {
       "id": "F4",
@@ -113,10 +115,12 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1495",
+      "pr_head_sha": "9850c118"
     },
     {
       "id": "F5",
@@ -135,10 +139,12 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "governance",
-      "status": "done",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1497",
+      "pr_head_sha": "915be768"
     },
     {
       "id": "F6",
@@ -160,11 +166,13 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "bdd-journey",
-      "status": "done",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1498",
+      "pr_head_sha": "5a0ff318"
     }
   ],
-  "content_hash": "sha256:4142cc78be03e59fe2f7964f546fe171e6e596887f324bd990ecf0223fd26eed"
+  "content_hash": "sha256:557ab845e9b4afd6ef13941dad2ed4944e315c72c27ff1e0ed9a2090f949c1d3"
 }
