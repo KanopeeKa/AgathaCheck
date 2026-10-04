@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "plan_id": "test-health-ci-5f3a",
-  "approved_at": "2026-09-30T00:00:00Z",
-  "approved_by": "user chat 2026-09-29: 'Go ahead, write up a plan such as execute-plan and then implement all of the above' (WAF: work around, never assume fixable; keep CI reasonably short)",
-  "approved_until": "2026-10-02T00:00:00Z",
-  "content_hash": "sha256:d48eedc96e44f809a6310f4cb5c0891af37f33000e4d6ef4fabd4927b84d0320",
+  "approved_at": "2026-10-04T00:00:00Z",
+  "approved_by": "user chat 2026-10-04: autonomous-approved on #1449; proceed with PRs through babysit+",
+  "approved_until": "2026-10-06T00:00:00Z",
+  "content_hash": "sha256:ea55c315bce5d64a5e0640abe16f750bad04ca27b7627867e970ceada9613625",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "main",
@@ -207,10 +207,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1511",
+      "pr_head_sha": "a13c751addecaea671ee2eda45c01fba5d4b5c9a"
     },
     {
       "id": "6",
@@ -245,10 +247,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "governance",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
-      "status_detail": null,
-      "debt_issue_refs": []
+      "status_detail": "PR #1470 @ a340e156",
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1470",
+      "merge_commit": "a340e15670d8c185614f746c7ee213701b2d467d"
     },
     {
       "id": "7",

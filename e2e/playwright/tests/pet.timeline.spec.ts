@@ -1,6 +1,5 @@
 /**
  * @bdd pet_timeline.feature
- * Scenario: Timeline screen shows a fostering session card
  * Scenario: Timeline screen shows date of birth and joined markers
  * Scenario: Guardian navigates to timeline from pet profile
  */

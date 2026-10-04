@@ -1,7 +1,6 @@
 /**
  * @bdd pet_profiles.feature
- * Scenario: Pet detail back navigation returns to All Pets
- * Scenario: Pet detail back navigation returns to Pet Care dashboard
+ * Scenario: Viewing pet details
  */
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
 import { createPet } from '../support/api';

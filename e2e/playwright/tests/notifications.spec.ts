@@ -16,7 +16,6 @@
  * Scenario: Tapping a due event notification navigates to view entry
  * Scenario: Care notification from bell panel returns to dashboard after back
  * Scenario: Tapping a pet notification without health entry navigates to pet detail
- * Scenario: Tapping an organisation notification navigates to org detail
  */
 import { execFileSync } from 'node:child_process';
 import { test, expect, loginAs } from '../fixtures/auth.fixture';

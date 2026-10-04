@@ -31,9 +31,7 @@ function runCheck(metrics) {
     fail(`${metrics.flutter.multiOwned} Flutter test file(s) owned by multiple shards`);
   }
   if (metrics.bdd.drift.length > 0) {
-    console.warn(
-      `::warning::${metrics.bdd.drift.length} active BDD @bdd title drift(s) — tracked in scorecard; phase 5 drives to 0`,
-    );
+    fail(`${metrics.bdd.drift.length} active BDD @bdd title drift(s) — fix headers or feature titles`);
   }
   if (metrics.preUat.shardOrphans > 0) {
     fail(`${metrics.preUat.shardOrphans} Playwright spec(s) missing from Pre-UAT shard manifest`);
