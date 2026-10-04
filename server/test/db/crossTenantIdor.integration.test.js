@@ -41,6 +41,13 @@ beforeAll(async () => {
     `INSERT INTO pets (id, user_id, name, species) VALUES ($1, $2, 'IdorPet', 'dog')`,
     [petA, userA],
   );
+  healthEntryA = randomUUID();
+  await pool.query(
+    `INSERT INTO health_entries
+       (id, pet_id, user_id, name, type, status, care_family, care_planning, care_importance, next_due_date)
+     VALUES ($1, $2, $3, 'IdorMeds', 'medication', 'active', 'wellness_review', 'planned', 'essential', '2030-01-01')`,
+    [healthEntryA, petA, userA],
+  );
 }, 60000);
 
 afterAll(async () => {
@@ -80,5 +87,38 @@ describe('cross-tenant IDOR (real PG)', () => {
     if (!pool) return;
     const res = await request(app).get(`/api/pets/${petA}`);
     expect(res.statusCode).toBe(401);
+  });
+
+  it('user B cannot update user A pet', async () => {
+    if (!pool) return;
+    const res = await request(app)
+      .patch(`/api/pets/${petA}`)
+      .set('Authorization', `Bearer ${tokenFor(userB, 'idor-b@example.com')}`)
+      .send({ name: 'Stolen' });
+    expect([403, 404]).toContain(res.statusCode);
+  });
+
+  it('user B cannot read user A health entry', async () => {
+    if (!pool) return;
+    const res = await request(app)
+      .get(`/api/health-entries/${healthEntryA}`)
+      .set('Authorization', `Bearer ${tokenFor(userB, 'idor-b@example.com')}`);
+    expect([403, 404]).toContain(res.statusCode);
+  });
+
+  it('user B cannot delete user A health entry', async () => {
+    if (!pool) return;
+    const res = await request(app)
+      .delete(`/api/health-entries/${healthEntryA}`)
+      .set('Authorization', `Bearer ${tokenFor(userB, 'idor-b@example.com')}`);
+    expect([403, 404]).toContain(res.statusCode);
+  });
+
+  it('user B cannot list share links for user A pet', async () => {
+    if (!pool) return;
+    const res = await request(app)
+      .get(`/api/pets/${petA}/share-links`)
+      .set('Authorization', `Bearer ${tokenFor(userB, 'idor-b@example.com')}`);
+    expect([403, 404]).toContain(res.statusCode);
   });
 });
