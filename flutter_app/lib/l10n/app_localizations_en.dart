@@ -7278,6 +7278,43 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careStatusNotRecorded => 'Not recorded';
 
   @override
+  String get careStatusNotRecordedOpen => 'Not recorded (open)';
+
+  @override
+  String get careStatusNotRecordedClosedMarker => 'closed';
+
+  @override
+  String get careClosedNotRecordedBody =>
+      'This dose was closed automatically. Record when it was given, or mark it as skipped if you chose not to give it.';
+
+  @override
+  String get careRecordAsGivenHint =>
+      'Choose the day it was given. Future dates are not allowed.';
+
+  @override
+  String get careConfirmSkipTitle => 'Mark as skipped?';
+
+  @override
+  String get careConfirmSkipBody =>
+      'This will record that you chose not to give this dose.';
+
+  @override
+  String get careConfirmSkipAction => 'Mark as skipped';
+
+  @override
+  String get careCompletedOnFuture => 'Choose today or an earlier date.';
+
+  @override
+  String careStackMarkedDonePartial(int changed, int ignored) {
+    return '$changed marked done · $ignored already closed';
+  }
+
+  @override
+  String careStackSkippedPartial(int changed, int ignored) {
+    return '$changed skipped · $ignored already closed';
+  }
+
+  @override
   String get careStatusComingUp => 'Coming up';
 
   @override

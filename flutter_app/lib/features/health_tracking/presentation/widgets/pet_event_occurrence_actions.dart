@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../data/datasources/health_occurrence_remote_datasource.dart';
 import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/health_occurrence.dart';
 import '../providers/health_providers.dart';
@@ -76,6 +77,17 @@ class PetEventOccurrenceActions {
         occurrenceId: occurrence.id,
       );
       invalidateOccurrenceData(ref, entry.id);
+    } on HealthOccurrenceHttpException catch (e) {
+      if (!context.mounted) return;
+      final l = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            e.alreadyUpdated ? l.careAlreadyUpdated : l.careCompletionFailed,
+          ),
+        ),
+      );
+      return;
     } catch (_) {
       if (!context.mounted) return;
       final l = AppLocalizations.of(context)!;
@@ -124,6 +136,17 @@ class PetEventOccurrenceActions {
           .read(healthRepositoryProvider)
           .skipOccurrence(entry.id, occurrence.id);
       invalidateOccurrenceData(ref, entry.id, absenceId: absenceId);
+    } on HealthOccurrenceHttpException catch (e) {
+      if (!context.mounted) return;
+      final l = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            e.alreadyUpdated ? l.careAlreadyUpdated : l.careCompletionFailed,
+          ),
+        ),
+      );
+      return;
     } catch (_) {
       if (!context.mounted) return;
       final l = AppLocalizations.of(context)!;

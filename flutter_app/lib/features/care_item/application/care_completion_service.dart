@@ -132,6 +132,22 @@ class CareCompletionService {
     });
   }
 
+  /// Turn a closed Not recorded dose into an intentional skip (FR-3, Q1).
+  Future<CareOutcome<CareCommandResult>> confirmSkip({
+    required String entryId,
+    required String occurrenceId,
+  }) {
+    return _run('confirm_skip', () async {
+      final body = await _remote.postOccurrenceAction(
+        entryId,
+        occurrenceId,
+        'confirm-skip',
+        const {},
+      );
+      return _commandResult(entryId, body);
+    });
+  }
+
   /// Record a closed Not recorded date as done (D-CSM-023).
   Future<CareOutcome<CareCommandResult>> recordAsDone({
     required String entryId,
@@ -237,7 +253,15 @@ class CareCompletionService {
       nextDueDate: parseCalendarDate(body['next_due_date']),
       movedNextId: body['moved_next_id'] as String?,
       nextUnchanged: body['next_unchanged'] == true,
+      resolvedGiven: _stringList(body['given']),
+      resolvedNotGiven: _stringList(body['not_given'] ?? body['notGiven']),
+      ignoredIds: _stringList(body['ignored']),
     );
+  }
+
+  List<String> _stringList(Object? raw) {
+    if (raw is! List) return const [];
+    return raw.map((e) => e.toString()).toList(growable: false);
   }
 
   Future<CareOutcome<T>> _run<T>(
@@ -281,6 +305,7 @@ class CareCompletionService {
 
 /// HTTP answer → failure (§18.10, DN-9).
 CareCommandFailure mapCareHttpFailure(CareHttpException e) {
+  if (_isAlreadyUpdated(e)) return const CareNotOpenFailure();
   if (e.statusCode == 400) return CareValidationFailure(e.code ?? 'invalid');
   if (e.statusCode == 404) return const CareNotOpenFailure(gone: true);
   if (e.statusCode == 409) {
@@ -289,4 +314,12 @@ CareCommandFailure mapCareHttpFailure(CareHttpException e) {
         : CareConflictFailure(e.code);
   }
   return CareUnknownFailure(e.statusCode);
+}
+
+/// Stale or empty bulk scope — show "Already updated", never raw JSON (FR-9).
+bool _isAlreadyUpdated(CareHttpException e) {
+  if (e.code == 'occurrence_not_open' || e.code == 'nothing_to_update') {
+    return e.statusCode == 409 || e.statusCode == 400;
+  }
+  return false;
 }

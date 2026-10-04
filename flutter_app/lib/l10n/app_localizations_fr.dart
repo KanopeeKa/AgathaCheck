@@ -7393,6 +7393,44 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careStatusNotRecorded => 'Non enregistré';
 
   @override
+  String get careStatusNotRecordedOpen => 'Non enregistré (ouvert)';
+
+  @override
+  String get careStatusNotRecordedClosedMarker => 'fermé';
+
+  @override
+  String get careClosedNotRecordedBody =>
+      'Cette dose a été fermée automatiquement. Indiquez quand elle a été donnée, ou marquez-la comme ignorée si vous avez choisi de ne pas la donner.';
+
+  @override
+  String get careRecordAsGivenHint =>
+      'Choisissez le jour où elle a été donnée. Les dates futures ne sont pas autorisées.';
+
+  @override
+  String get careConfirmSkipTitle => 'Marquer comme ignorée ?';
+
+  @override
+  String get careConfirmSkipBody =>
+      'Cela enregistre que vous avez choisi de ne pas donner cette dose.';
+
+  @override
+  String get careConfirmSkipAction => 'Marquer comme ignorée';
+
+  @override
+  String get careCompletedOnFuture =>
+      'Choisissez aujourd\'hui ou une date antérieure.';
+
+  @override
+  String careStackMarkedDonePartial(int changed, int ignored) {
+    return '$changed marqué(s) comme fait · $ignored déjà fermé(s)';
+  }
+
+  @override
+  String careStackSkippedPartial(int changed, int ignored) {
+    return '$changed ignoré(s) · $ignored déjà fermé(s)';
+  }
+
+  @override
   String get careStatusComingUp => 'À venir';
 
   @override

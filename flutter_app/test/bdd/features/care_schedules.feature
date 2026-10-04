@@ -36,6 +36,15 @@ Feature: Care schedules
     Then the next planned date should follow the remembered choice
 
   @P1
+  Scenario: Mark all as done on stale not recorded doses succeeds without error
+    Given "Bella" has a fixed daily medication "Weekly antibiotic course" with not recorded doses on "2026-09-30"
+    And the care test clock is "2026-10-04T12:00" in "Europe/Paris"
+    When the user opens the care item "Weekly antibiotic course"
+    And the user taps "Mark all as done" on the care item
+    Then the care item should show no error snackbar
+    And the not recorded doses for "2026-09-30" should be marked done
+
+  @P1
   Scenario: Changing when care was done moves the next date of after-it's-done care
     Given "Bella" has after-it's-done care "Flea" with a completed occurrence
     When the user changes when that occurrence was done

@@ -5,7 +5,9 @@ import 'package:intl/intl.dart';
 import '../../../../core/providers/analytics_providers.dart';
 import '../../../../core/router/shell_return_navigation.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../application/care_stack_feedback.dart';
 import '../../care_item.dart';
+import '../../domain/occurrence_display.dart';
 import '../../../pet_care/presentation/widgets/care_surface/care_item_module.dart';
 import '../../../pet_care/presentation/widgets/care_surface/care_item_section_header.dart';
 import '../../../pet_care/presentation/widgets/care_surface/care_item_status_pill.dart';
@@ -66,12 +68,21 @@ class _CareItemNeedsAttentionSectionState
     switch (outcome) {
       case CareSucceeded(:final value):
         ref.read(analyticsServiceProvider).capture('care_stack_resolved', {
-          'count': ids.length,
+          'count': value.stackChangedCount,
+          'ignored': value.ignoredIds.length,
           'done': done,
         });
         messenger.showSnackBar(
           SnackBar(
-            content: Text(l.careDoneSnackbar(_s.name)),
+            key: const Key('care_stack_snackbar'),
+            content: Text(
+              careStackSuccessMessage(
+                l,
+                done: done,
+                result: value,
+                itemName: _s.name,
+              ),
+            ),
             action: value.undoToken == null
                 ? null
                 : SnackBarAction(
@@ -189,25 +200,14 @@ class _OccurrenceLine extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final status = liveStatus(occurrence, schedule.asOf);
-    final (label, tone) = switch (status) {
-      CareOccurrenceStatus.overdue => (
-        l.urgencyOverdue,
-        CareItemStatusTone.overdue,
-      ),
-      CareOccurrenceStatus.notRecorded => (
-        l.careStatusNotRecorded,
-        CareItemStatusTone.notRecorded,
-      ),
-      CareOccurrenceStatus.due => (l.careStatusDue, CareItemStatusTone.due),
-      _ => (l.careStatusComingUp, CareItemStatusTone.neutral),
-    };
+    final pill = openOccurrencePillStyle(l, status);
     final when = [
       DateFormat.yMMMd().format(occurrence.date),
       ?occurrence.time,
     ].join(' · ');
     return Semantics(
       identifier: 'care_item_occurrence_row_${occurrence.id}',
-      label: '$when, $label. ${l.careRowOpensDate}',
+      label: '$when, ${pill.label}. ${l.careRowOpensDate}',
       button: true,
       child: InkWell(
         key: Key('care_item_occurrence_${occurrence.id}'),
@@ -224,7 +224,13 @@ class _OccurrenceLine extends ConsumerWidget {
             children: [
               Expanded(child: ExcludeSemantics(child: Text(when))),
               ExcludeSemantics(
-                child: CareItemStatusPill(label: label, tone: tone),
+                child: CareItemStatusPill(
+                  label: pill.label,
+                  tone: pill.tone,
+                  leadingIcon: status == CareOccurrenceStatus.notRecorded
+                      ? Icons.playlist_add_check_circle_outlined
+                      : null,
+                ),
               ),
               const SizedBox(width: 8),
               CareMarkDoneButton(

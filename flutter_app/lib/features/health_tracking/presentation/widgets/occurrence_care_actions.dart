@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../data/datasources/health_occurrence_remote_datasource.dart';
 import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/health_occurrence.dart';
 import '../../domain/occurrence_scheduling.dart';
@@ -128,6 +129,17 @@ class OccurrenceCareActions {
           occurrenceId: result.occurrenceId,
           skipEarlierMissed: result.skipEarlierMissed,
         );
+      } on HealthOccurrenceHttpException catch (e) {
+        if (!context.mounted) return;
+        final l = AppLocalizations.of(context)!;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              e.alreadyUpdated ? l.careAlreadyUpdated : l.careCompletionFailed,
+            ),
+          ),
+        );
+        return;
       } catch (_) {
         if (!context.mounted) return;
         final l = AppLocalizations.of(context)!;
