@@ -1,10 +1,4 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../../../auth/presentation/providers/auth_providers.dart';
-import '../../domain/entities/command_outcome.dart';
-import '../../domain/entities/health_entry.dart';
-import '../../domain/entities/health_occurrence.dart';
-import 'health_providers.dart';
+part of 'health_providers.dart';
 
 /// Manages the state of health entries with async loading.
 final healthEntriesNotifierProvider =
