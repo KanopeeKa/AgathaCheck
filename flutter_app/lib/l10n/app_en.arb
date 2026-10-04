@@ -2962,6 +2962,46 @@
   },
   "peopleStatusInactive": "Inactive",
   "peopleStatusActive": "Active",
+  "peopleStatusNeedsReview": "Needs review",
+  "peopleAccessUntil": "Access until {date}",
+  "@peopleAccessUntil": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "peopleCardLookingAfter": "Looking after pets · {startsOn}–{endsOn}",
+  "@peopleCardLookingAfter": {
+    "placeholders": {
+      "startsOn": { "type": "String" },
+      "endsOn": { "type": "String" }
+    }
+  },
+  "peopleActionCall": "Call",
+  "peopleActionMessage": "Message",
+  "peopleActionEmail": "Email",
+  "peopleActionDirections": "Directions",
+  "peoplePickerPlaceholder": "Choose someone",
+  "peoplePickerTitle": "Choose a contact",
+  "peoplePickerFieldLabel": "Contact",
+  "peoplePickerNone": "None",
+  "peoplePickerSearchHint": "Search people and roles",
+  "peoplePickerCurrentSelection": "Current selection",
+  "peoplePickerHouseholdMembersSection": "Household members",
+  "peoplePickerContactsSection": "Contacts",
+  "peoplePickerAddQuery": "Add \"{query}\"",
+  "@peoplePickerAddQuery": {
+    "placeholders": {
+      "query": { "type": "String" }
+    }
+  },
+  "peoplePickerUseWithoutSaving": "Use \"{query}\" without saving",
+  "@peoplePickerUseWithoutSaving": {
+    "placeholders": {
+      "query": { "type": "String" }
+    }
+  },
+  "peoplePickerQuickAddTitle": "Quick add contact",
+  "peoplePickerQuickAddSave": "Save contact",
   "peopleGroupCarers": "Trusted carers",
   "peopleGroupProfessionals": "Pet professionals",
   "peopleRelationshipPrimaryVet": "Primary vet",

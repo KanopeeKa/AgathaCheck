@@ -7413,6 +7413,71 @@ class AppLocalizationsEn extends AppLocalizations {
   String get peopleStatusActive => 'Active';
 
   @override
+  String get peopleStatusNeedsReview => 'Needs review';
+
+  @override
+  String peopleAccessUntil(String date) {
+    return 'Access until $date';
+  }
+
+  @override
+  String peopleCardLookingAfter(String startsOn, String endsOn) {
+    return 'Looking after pets · $startsOn–$endsOn';
+  }
+
+  @override
+  String get peopleActionCall => 'Call';
+
+  @override
+  String get peopleActionMessage => 'Message';
+
+  @override
+  String get peopleActionEmail => 'Email';
+
+  @override
+  String get peopleActionDirections => 'Directions';
+
+  @override
+  String get peoplePickerPlaceholder => 'Choose someone';
+
+  @override
+  String get peoplePickerTitle => 'Choose a contact';
+
+  @override
+  String get peoplePickerFieldLabel => 'Contact';
+
+  @override
+  String get peoplePickerNone => 'None';
+
+  @override
+  String get peoplePickerSearchHint => 'Search people and roles';
+
+  @override
+  String get peoplePickerCurrentSelection => 'Current selection';
+
+  @override
+  String get peoplePickerHouseholdMembersSection => 'Household members';
+
+  @override
+  String get peoplePickerContactsSection => 'Contacts';
+
+  @override
+  String peoplePickerAddQuery(String query) {
+    return 'Add \"$query\"';
+  }
+
+  @override
+  String peoplePickerUseWithoutSaving(String query) {
+    return 'Use \"$query\" without saving';
+  }
+
+  @override
+  String get peoplePickerQuickAddTitle => 'Quick add contact';
+
+  @override
+  String get peoplePickerQuickAddSave => 'Save contact';
+
+  @override
   String get peopleGroupCarers => 'Trusted carers';
 
   @override

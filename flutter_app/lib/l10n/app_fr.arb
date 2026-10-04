@@ -2787,6 +2787,46 @@
   },
   "peopleStatusInactive": "Inactif",
   "peopleStatusActive": "Actif",
+  "peopleStatusNeedsReview": "À vérifier",
+  "peopleAccessUntil": "Accès jusqu'au {date}",
+  "@peopleAccessUntil": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "peopleCardLookingAfter": "Garde des animaux · {startsOn}–{endsOn}",
+  "@peopleCardLookingAfter": {
+    "placeholders": {
+      "startsOn": { "type": "String" },
+      "endsOn": { "type": "String" }
+    }
+  },
+  "peopleActionCall": "Appeler",
+  "peopleActionMessage": "Message",
+  "peopleActionEmail": "E-mail",
+  "peopleActionDirections": "Itinéraire",
+  "peoplePickerPlaceholder": "Choisir quelqu'un",
+  "peoplePickerTitle": "Choisir un contact",
+  "peoplePickerFieldLabel": "Contact",
+  "peoplePickerNone": "Aucun",
+  "peoplePickerSearchHint": "Rechercher des personnes ou rôles",
+  "peoplePickerCurrentSelection": "Sélection actuelle",
+  "peoplePickerHouseholdMembersSection": "Membres du foyer",
+  "peoplePickerContactsSection": "Contacts",
+  "peoplePickerAddQuery": "Ajouter « {query} »",
+  "@peoplePickerAddQuery": {
+    "placeholders": {
+      "query": { "type": "String" }
+    }
+  },
+  "peoplePickerUseWithoutSaving": "Utiliser « {query} » sans enregistrer",
+  "@peoplePickerUseWithoutSaving": {
+    "placeholders": {
+      "query": { "type": "String" }
+    }
+  },
+  "peoplePickerQuickAddTitle": "Ajout rapide",
+  "peoplePickerQuickAddSave": "Enregistrer le contact",
   "peopleGroupCarers": "Aidants de confiance",
   "peopleGroupProfessionals": "Professionnels",
   "peopleRelationshipPrimaryVet": "Vétérinaire principal",
