@@ -22,7 +22,12 @@ import {
   updateContactRow,
   upsertPrivateNote,
 } from './contactsRepoSql.js';
-import { ensureLegacyVetForContact, syncVetRowFromContact } from './vetSync.js';
+import { listUsages } from './usages.js';
+import {
+  deleteLegacyVetRowForContact,
+  ensureLegacyVetForContact,
+  syncVetRowFromContact,
+} from './vetSync.js';
 
 /** Use existing PoolClient when caller already holds a transaction (e.g. planned absence PATCH). */
 async function runInTransaction(db, fn) {
@@ -225,28 +230,21 @@ export async function deletePersonalContact(pool, contactId, userId) {
   if (!row) {
     throw new PeopleError(PEOPLE_ERROR_CODES.CONTACT_NOT_FOUND, 404, 'Contact not found');
   }
-  if (row.legacy_vet_id) {
-    throw new PeopleError(
-      PEOPLE_ERROR_CODES.VALIDATION_FAILED,
-      400,
-      'Delete the linked vet record instead',
-    );
-  }
-  const inUse = await pool.query(
-    `SELECT 1 FROM pet_contact_relationships WHERE contact_id = $1
-     UNION ALL
-     SELECT 1 FROM planned_absence_pets WHERE contact_id = $1
-     LIMIT 1`,
-    [contactId],
-  );
-  if (inUse.rows.length > 0) {
+  const usages = await listUsages(pool, contactId);
+  if (usages.length > 0) {
     throw new PeopleError(
       PEOPLE_ERROR_CODES.CONTACT_IN_USE,
       409,
-      'Contact is linked to a pet relationship',
+      'Contact is in use',
+      { usages },
     );
   }
-  await deleteContactRow(pool, contactId);
+  await runInTransaction(pool, async (client) => {
+    if (row.legacy_vet_id) {
+      await deleteLegacyVetRowForContact(client, row.legacy_vet_id, userId);
+    }
+    await deleteContactRow(client, contactId);
+  });
 }
 
 export async function upsertContactFromVetFields(pool, fields, userId) {
