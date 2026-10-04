@@ -2,11 +2,11 @@
   "schema_version": 1,
   "plan_id": "weight-monitoring-unify-9b2e",
   "plan_kind": "roadmap",
-  "current_child_plan_id": null,
+  "current_child_plan_id": "weight-unify-server-9b2e",
   "child_plans": [
     {
       "plan_id": "weight-unify-server-9b2e",
-      "status": "pending",
+      "status": "in_progress",
       "pr_url": null,
       "merge_commit": null
     },
@@ -69,5 +69,5 @@
       "pr_head_sha": "8931363ffaa8c1bc15ee1b8054162f1e2cfcfff2"
     }
   ],
-  "content_hash": "sha256:6574a0e384779c221fb225598b87cfd90fadcc04cb858f6aa90a8806f5b9528f"
+  "content_hash": "sha256:910614ba26ba9793495ab0a68806928ffbdcc628f957ed904fdfae9086dbf036"
 }

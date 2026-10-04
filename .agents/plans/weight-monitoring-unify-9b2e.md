@@ -876,13 +876,13 @@ autonomy: active
 current_phase: null
 last_completed_phase: W0
 halt_reason: null
-next_action: "bootstrap and gate child plan weight-unify-server-9b2e"
+next_action: "continue child plan weight-unify-server-9b2e"
 artifact_ref:
-  branch: main
+  branch: cursor/weight-unify-server-integration-9b2e
   plan_path: .agents/plans/weight-monitoring-unify-9b2e.md
-  plan_commit: 8931363ffaa8c1bc15ee1b8054162f1e2cfcfff2
+  plan_commit: 5449a82aaf96d6ef30b45f5eb417eae84372751a
   snapshot_path: .agents/plans/weight-monitoring-unify-9b2e.snapshot.json
-  snapshot_commit: 8931363ffaa8c1bc15ee1b8054162f1e2cfcfff2
+  snapshot_commit: 5449a82aaf96d6ef30b45f5eb417eae84372751a
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

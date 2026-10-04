@@ -5,10 +5,10 @@
   "approved_at": "2026-10-04T21:35:55Z",
   "approved_by": "standing grant — owner chat 2026-10-04 full programme W0 through child C; execute-plan delegated authority",
   "approved_until": "2026-10-06T21:35:55Z",
-  "autonomy": "halted",
+  "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/weight-unify-server-integration-9b2e",
-  "control_issue": 999999,
+  "control_issue": 1557,
   "artifact_branch_policy": "phase-branch",
   "phases": [
     {
@@ -68,13 +68,10 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "debt_issue_refs": []
     },
     {
       "id": "W2",
@@ -212,5 +209,5 @@
       "merge_commit": null
     }
   ],
-  "content_hash": "sha256:27c9196709f5cc80bcc73f4cc5fbd604210de5670378f7cf1032a8f6b26461a5"
+  "content_hash": "sha256:4bfbb1b9e9b09f28a418b688e66a24e46e6feadc0403566287353b807fc15a8e"
 }

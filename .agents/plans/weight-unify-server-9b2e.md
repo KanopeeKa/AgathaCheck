@@ -31,17 +31,17 @@
 ## Runtime state (agent-updated)
 
 ```yaml
-autonomy: halted
-current_phase: null
+autonomy: active
+current_phase: W1
 last_completed_phase: null
-halt_reason: "draft — awaiting roadmap approval and W0 on main"
-next_action: "after W0 merges: check entry gate §10.1, create cursor/weight-unify-server-integration-9b2e from origin/main, init-control-issue weight-unify-server-9b2e, start W1"
+halt_reason: null
+next_action: "continue phase W1 on branch cursor/weight-unify-w1-service-9b2e"
 artifact_ref:
-  branch: null
+  branch: cursor/weight-unify-server-integration-9b2e
   plan_path: .agents/plans/weight-unify-server-9b2e.md
-  plan_commit: null
+  plan_commit: 5449a82aaf96d6ef30b45f5eb417eae84372751a
   snapshot_path: .agents/plans/weight-unify-server-9b2e.snapshot.json
-  snapshot_commit: null
+  snapshot_commit: 5449a82aaf96d6ef30b45f5eb417eae84372751a
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
