@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
-import '../../data/datasources/people_remote_datasource.dart';
+import '../../application/people_api_exception.dart';
 import '../../data/models/people_contact_model.dart';
 import '../../domain/entities/people_contact.dart';
 import '../providers/people_providers.dart';
@@ -121,7 +121,7 @@ class _PeopleAddPersonScreenState extends ConsumerState<PeopleAddPersonScreen> {
       } else {
         context.pop(true);
       }
-    } on HttpException catch (_) {
+    } on PeopleApiException catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
