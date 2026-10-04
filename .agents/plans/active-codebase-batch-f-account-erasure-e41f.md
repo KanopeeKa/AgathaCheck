@@ -49,10 +49,10 @@ next_action: "continue phase 5 on branch cursor/active-codebase-f-integration-e4
 artifact_ref:
   branch: cursor/active-codebase-f-integration-e41f
   plan_path: .agents/plans/active-codebase-batch-f-account-erasure-e41f.md
-  plan_commit: c9f8c5110d1bb925fbf3b5a77bc39e2bfc63fc16
+  plan_commit: 1eb812db43df55b0a0fd5908f872ce1a5e3d9151
   snapshot_path: .agents/plans/active-codebase-batch-f-account-erasure-e41f.snapshot.json
-  snapshot_commit: c9f8c5110d1bb925fbf3b5a77bc39e2bfc63fc16
-open_prs: []
+  snapshot_commit: 1eb812db43df55b0a0fd5908f872ce1a5e3d9151
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1522"]
 merge_commits: {}
 debt_issue_refs: []
 ```
