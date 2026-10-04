@@ -47,14 +47,14 @@ autonomy: active
 current_phase: 2
 last_completed_phase: 1
 halt_reason: null
-next_action: "start phase 2: checkout cursor/active-codebase-g2-health-store-e41f"
+next_action: "continue phase 2 on branch cursor/active-codebase-g2-health-store-e41f"
 artifact_ref:
-  branch: cursor/active-codebase-g1-pet-freshness-e41f
+  branch: cursor/active-codebase-g2-health-store-e41f
   plan_path: .agents/plans/active-codebase-batch-g-client-authority-e41f.md
-  plan_commit: 862293d992d57348cdfec2e9e3617c6a00ffe335
+  plan_commit: 2d0da129c35c777c5a39e6ac8e706e01c508a607
   snapshot_path: .agents/plans/active-codebase-batch-g-client-authority-e41f.snapshot.json
-  snapshot_commit: 862293d992d57348cdfec2e9e3617c6a00ffe335
-open_prs: []
+  snapshot_commit: 2d0da129c35c777c5a39e6ac8e706e01c508a607
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1560"]
 merge_commits: {}
 debt_issue_refs: []
 ```
