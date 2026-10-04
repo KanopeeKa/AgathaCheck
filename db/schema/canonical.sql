@@ -465,6 +465,23 @@ CREATE TABLE public.health_occurrences (
     CONSTRAINT health_occurrences_origin_check CHECK (((origin)::text = ANY ((ARRAY['schedule'::character varying, 'computed'::character varying, 'planned'::character varying])::text[]))),
     CONSTRAINT health_occurrences_status_check CHECK (((status)::text = ANY ((ARRAY['pending'::character varying, 'completed'::character varying, 'skipped'::character varying])::text[])))
 );
+CREATE TABLE public.household_invites (
+    id uuid NOT NULL,
+    household_id uuid NOT NULL,
+    inviter_user_id uuid NOT NULL,
+    invitee_email character varying(255) NOT NULL,
+    invitee_user_id uuid,
+    access_tier text NOT NULL,
+    is_organiser boolean DEFAULT false NOT NULL,
+    contact_id uuid,
+    code character varying(32) NOT NULL,
+    status character varying(20) DEFAULT 'pending'::character varying NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    responded_at timestamp with time zone,
+    expires_at timestamp with time zone NOT NULL,
+    CONSTRAINT household_invites_access_tier_check CHECK ((access_tier = ANY (ARRAY['full_access'::text, 'can_log_care'::text]))),
+    CONSTRAINT household_invites_status_check CHECK (((status)::text = ANY ((ARRAY['pending'::character varying, 'accepted'::character varying, 'declined'::character varying, 'revoked'::character varying, 'expired'::character varying])::text[])))
+);
 CREATE TABLE public.household_members (
     household_id uuid NOT NULL,
     user_id uuid NOT NULL,
@@ -753,6 +770,7 @@ CREATE TABLE public.pet_share_invites (
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     responded_at timestamp with time zone,
     expires_at timestamp with time zone NOT NULL,
+    contact_id uuid,
     CONSTRAINT pet_share_invites_role_check CHECK (((role)::text = ANY ((ARRAY['carer'::character varying, 'co_parent'::character varying])::text[]))),
     CONSTRAINT pet_share_invites_status_check CHECK (((status)::text = ANY ((ARRAY['pending'::character varying, 'accepted'::character varying, 'declined'::character varying, 'revoked'::character varying, 'expired'::character varying])::text[])))
 );
@@ -1050,6 +1068,10 @@ ALTER TABLE ONLY public.health_issues
     ADD CONSTRAINT health_issues_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.health_occurrences
     ADD CONSTRAINT health_occurrences_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.household_invites
+    ADD CONSTRAINT household_invites_code_key UNIQUE (code);
+ALTER TABLE ONLY public.household_invites
+    ADD CONSTRAINT household_invites_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.household_members
     ADD CONSTRAINT household_members_pkey PRIMARY KEY (household_id, user_id);
 ALTER TABLE ONLY public.household_pets
@@ -1214,6 +1236,10 @@ CREATE INDEX idx_health_occurrences_entry_series_slot ON public.health_occurrenc
 CREATE INDEX idx_health_occurrences_entry_status_date ON public.health_occurrences USING btree (health_entry_id, status, scheduled_date, scheduled_time);
 CREATE UNIQUE INDEX idx_health_occurrences_open_slot ON public.health_occurrences USING btree (health_entry_id, scheduled_date, COALESCE(scheduled_time, '00:00:00'::time without time zone)) WHERE ((status)::text = 'pending'::text);
 CREATE INDEX idx_health_occurrences_provider_contact_id ON public.health_occurrences USING btree (provider_contact_id) WHERE (provider_contact_id IS NOT NULL);
+CREATE INDEX idx_household_invites_contact_id ON public.household_invites USING btree (contact_id) WHERE (contact_id IS NOT NULL);
+CREATE INDEX idx_household_invites_household_id ON public.household_invites USING btree (household_id);
+CREATE INDEX idx_household_invites_invitee_email ON public.household_invites USING btree (lower((invitee_email)::text));
+CREATE INDEX idx_household_invites_invitee_user_id ON public.household_invites USING btree (invitee_user_id) WHERE (invitee_user_id IS NOT NULL);
 CREATE INDEX idx_household_members_user_id ON public.household_members USING btree (user_id);
 CREATE INDEX idx_household_pets_household_id ON public.household_pets USING btree (household_id);
 CREATE INDEX idx_notifications_user_id ON public.notifications USING btree (user_id);
@@ -1247,6 +1273,7 @@ CREATE INDEX idx_pet_contact_relationships_contact_id ON public.pet_contact_rela
 CREATE INDEX idx_pet_contact_relationships_pet_id ON public.pet_contact_relationships USING btree (pet_id);
 CREATE INDEX idx_pet_lifecycle_notifications_recipient ON public.pet_lifecycle_notifications USING btree (recipient_user_id);
 CREATE INDEX idx_pet_share_invite_pets_pet_id ON public.pet_share_invite_pets USING btree (pet_id);
+CREATE INDEX idx_pet_share_invites_contact_id ON public.pet_share_invites USING btree (contact_id) WHERE (contact_id IS NOT NULL);
 CREATE INDEX idx_pet_share_invites_invitee_email ON public.pet_share_invites USING btree (lower((invitee_email)::text));
 CREATE INDEX idx_pet_share_invites_invitee_user_id ON public.pet_share_invites USING btree (invitee_user_id) WHERE (invitee_user_id IS NOT NULL);
 CREATE INDEX idx_pet_share_links_code ON public.pet_share_links USING btree (code);
@@ -1421,6 +1448,14 @@ ALTER TABLE ONLY public.health_occurrences
     ADD CONSTRAINT health_occurrences_performed_by_user_id_fkey FOREIGN KEY (performed_by_user_id) REFERENCES public.users(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.health_occurrences
     ADD CONSTRAINT health_occurrences_provider_contact_id_fkey FOREIGN KEY (provider_contact_id) REFERENCES public.people_contacts(id) ON DELETE SET NULL;
+ALTER TABLE ONLY public.household_invites
+    ADD CONSTRAINT household_invites_contact_id_fkey FOREIGN KEY (contact_id) REFERENCES public.people_contacts(id) ON DELETE SET NULL;
+ALTER TABLE ONLY public.household_invites
+    ADD CONSTRAINT household_invites_household_id_fkey FOREIGN KEY (household_id) REFERENCES public.households(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.household_invites
+    ADD CONSTRAINT household_invites_invitee_user_id_fkey FOREIGN KEY (invitee_user_id) REFERENCES public.users(id) ON DELETE SET NULL;
+ALTER TABLE ONLY public.household_invites
+    ADD CONSTRAINT household_invites_inviter_user_id_fkey FOREIGN KEY (inviter_user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.household_members
     ADD CONSTRAINT household_members_household_id_fkey FOREIGN KEY (household_id) REFERENCES public.households(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.household_members
@@ -1535,6 +1570,8 @@ ALTER TABLE ONLY public.pet_share_invite_pets
     ADD CONSTRAINT pet_share_invite_pets_invite_id_fkey FOREIGN KEY (invite_id) REFERENCES public.pet_share_invites(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.pet_share_invite_pets
     ADD CONSTRAINT pet_share_invite_pets_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.pet_share_invites
+    ADD CONSTRAINT pet_share_invites_contact_id_fkey FOREIGN KEY (contact_id) REFERENCES public.people_contacts(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.pet_share_invites
     ADD CONSTRAINT pet_share_invites_invitee_user_id_fkey FOREIGN KEY (invitee_user_id) REFERENCES public.users(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.pet_share_invites

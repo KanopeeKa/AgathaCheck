@@ -527,16 +527,16 @@ flutter_app/**
 
 ```yaml
 autonomy: active
-current_phase: s6-invites-api
-last_completed_phase: s5-households-api
+current_phase: s7-ship-main
+last_completed_phase: s6-invites-api
 halt_reason: null
-next_action: "start phase s6-invites-api: checkout cursor/people-server-s6-invites-7f3b"
+next_action: "continue phase s7-ship-main on integration branch after s6 PR merges"
 artifact_ref:
   branch: cursor/people-server-integration-7f3b
   plan_path: .agents/plans/people-server-7f3b.md
-  plan_commit: aa0d3a2008a7f11adf24ce38952739eed9315e7b
+  plan_commit: 26818dbe03f9bd4851cc796bf82da2c2821e5469
   snapshot_path: .agents/plans/people-server-7f3b.snapshot.json
-  snapshot_commit: aa0d3a2008a7f11adf24ce38952739eed9315e7b
+  snapshot_commit: 26818dbe03f9bd4851cc796bf82da2c2821e5469
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

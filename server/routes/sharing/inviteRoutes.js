@@ -20,6 +20,7 @@ export function registerInviteRoutes(router, pool) {
         petIds: req.body?.pet_ids ?? req.body?.petIds,
         role: req.body?.role ?? req.body?.access_role ?? req.body?.accessRole,
         locale: req.body?.locale ?? req.headers['accept-language'],
+        contactId: req.body?.contact_id ?? req.body?.contactId,
       });
       if (result.error) {
         const body = { error: result.error };

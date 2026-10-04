@@ -2,7 +2,7 @@
   "schema_version": 1,
   "approved_at": "2026-10-04T17:40:08.000Z",
   "approved_until": "2026-10-06T17:40:08.000Z",
-  "content_hash": "sha256:217053bea6fa60bfedd02e3b564ee54f03b8b7441bb0393edb15ec585ba301e0",
+  "content_hash": "sha256:ba7cd38113d354256014d98392225b9b53bdde2ad9f081571e79f37775b9687b",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "control_issue": 1507,
@@ -277,13 +277,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1521",
+      "pr_head_sha": "941cdf4f"
     },
     {
       "id": "s7-ship-main",

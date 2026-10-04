@@ -67,7 +67,7 @@ Personal directory contacts (phase 1). Storage: migrations `072_*`–`074_*`. Sp
 | Method | Path | Authorization |
 |---|---|---|
 | GET | `/contacts` | authenticated — visible personal and household (Full access) directories; optional `?include_inactive=true`; adds `directory`, `group`, `status`, `pets[]` (additive) |
-| GET | `/roster` | authenticated — hub read model: `households[]`, `contacts[]` (`ContactSummary`), `pending_invites[]` (pet share + absence carer invites created by viewer) |
+| GET | `/roster` | authenticated — hub read model: `households[]`, `contacts[]` (`ContactSummary`), `pending_invites[]` (pet share, household, and absence carer invites created by viewer; optional `contact_id`, `household_id` on household rows) |
 | GET | `/contacts/:id` | authenticated — enriched detail (`works_at`, `staff[]`, `usage_counts`, `linked_account`, `group`, `status`, `directory`, `household_note` for household members; hidden from linked person — I10) |
 | GET | `/contacts/:id/related` | authenticated — related pets, care items as provider, absences as carer, `history_count` |
 | GET | `/contacts/by-legacy-vet/:vetId` | authenticated — `{ id }` for legacy vet deep links |
@@ -109,7 +109,7 @@ Response: `{ pet_id, pet_name, scope, owner, household_members[], relationships[
 
 #### Planned — `people-domain-refactor-7f3b` (partial)
 
-Shipped in server phases s1–s5: writer, access, usages, relationships + vet projection, read models, household directory notes, safe member removal (this section). Still planned: household email invites, `contact_id` on pet share invites. See [people-domain-refactor.md](/docs/domains/people/changes/people-domain-refactor.md) §3.6.
+Shipped in server phases s1–s6: writer, access, usages, relationships + vet projection, read models, household directory notes, safe member removal, household email invites, and optional `contact_id` on pet share invites (accept links `linked_user_id` when null). See [people-domain-refactor.md](/docs/domains/people/changes/people-domain-refactor.md) §3.6.
 
 ### Organizations (`/api/organizations`)
 | Method | Path | Authorization |
@@ -250,7 +250,7 @@ POST/PUT accept optional `measurement_source`. Pet weight reference/context fiel
 | DELETE | `/links/:linkId` | Owner deletes any share link; foster may delete only links they created |
 | GET | `/hidden` | Hidden shared pets |
 | PUT | `/:petId/hide` | Hide or unhide a shared pet (`{ hidden: true\|false }`) |
-| POST | `/invites` | Email invite; body `{ invitee_email, pet_ids, role }` — up to 20 pets; returns `{ invite_id, code, included_pet_ids, excluded[], delivery }`; identical replay while a pending invite from the same inviter covers every requested pet returns **200** with the same ids and `replayed: true` (no new rows or notifications) |
+| POST | `/invites` | Email invite; body `{ invitee_email, pet_ids, role, contact_id? }` (caller must be allowed to edit `contact_id`); up to 20 pets; returns `{ invite_id, code, included_pet_ids, excluded[], delivery }`; identical replay while a pending invite from the same inviter covers every requested pet returns **200** with the same ids and `replayed: true` (no new rows or notifications); accept links `people_contacts.linked_user_id` when null |
 | GET | `/invites/code/:code` | Public invite preview (no inviter email) |
 | POST | `/invites/code/:code/accept` | Auth required; grants access per pet on invite |
 | POST | `/invites/:id/decline` | Auth required; notifies inviter |
@@ -282,6 +282,11 @@ Share links are **single-use**: once accepted, the same link cannot be used by a
 | GET | `/:id/members/:userId/removal-preview` | Leave/remove preview (D16): `remaining_access[]` per pet (`source`: `direct_share` \| `absence`), `requires_successor` when last organiser leaves with other members |
 | DELETE | `/:id/members/:userId` | Leave or remove; body optional `{ remove_all_access_to_my_pets: true, successor_user_id? }`; last organiser with other members → `409 successor_required` without successor |
 | PUT | `/:id/pets` | Body `{ pet_ids: [] }` — record owner adds/removes their pets |
+| POST | `/:id/invites` | Organisers only — email invite; body `{ invitee_email, access_tier?, is_organiser?, contact_id? }`; 14-day expiry; rate-limited |
+| GET | `/invites/code/:code` | Public preview for household invite landing |
+| POST | `/invites/code/:code/accept` | Authenticated accept (adds membership) |
+| POST | `/invites/code/:code/decline` | Authenticated decline |
+| DELETE | `/:id/invites/:inviteId` | Revoke pending invite (organisers) |
 
 Household `full_access` grants `userCanManageProfile` + `userCanManageCare` (not share/transfer/delete). `can_log_care` grants care management only. Effective access is the highest of household, direct share, and **absence guest grants** (time-bound, evaluated in the absence's `timezone`).
 

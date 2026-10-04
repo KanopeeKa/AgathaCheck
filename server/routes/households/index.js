@@ -13,10 +13,13 @@ import {
   removeHouseholdMember,
   setHouseholdPets,
 } from '../../lib/households/householdService.js';
+import { registerHouseholdInviteRoutes } from './inviteRoutes.js';
 
 export default function householdsRoutes(pool) {
   const router = express.Router();
   router.use(createApiLimiter());
+
+  registerHouseholdInviteRoutes(router, pool);
 
   router.post('/', async (req, res) => {
     const userId = extractUserId(req);
