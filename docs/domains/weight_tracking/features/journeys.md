@@ -3,27 +3,24 @@ title: Weight tracking journeys
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-22
-tags: [domain,weight_tracking,journeys]
-domain: weight_tracking
+last_updated: 2026-10-04
+tags: [domain, weight_tracking]
 ---
 
-# Weight tracking journeys
+# Weight tracking — user journeys
 
-User-facing flows for recording and reviewing pet weight in AgathaTrack.
+## Record weight (hub)
 
-## Record weight entry
+Guardian opens **Weight tracking** for a pet → **Record weight** → enters value in preferred unit → when a weigh-in is due, chooses **Counts as** (default on for single match) → weight saved and optionally completes the occurrence.
 
-From a pet's weight section, guardians enter weight in kilograms, pick a calendar date (YYYY-MM-DD), and save. The entry appears in the pet's weight history and updates the current weight shown on the pet profile when it is the latest entry.
+## Record weight outside a routine
 
-## View weight history and chart
+Same sheet; turn off counts-as or pick **Don't count** when multiple routines match → standalone weight still appears on chart and history.
 
-Pet carers open the weight tracking section to see entries in chronological order and a line chart when at least two points exist. Editing weight from the pet profile form can create a same-day entry without notes.
+## Complete weigh-in from care
 
-## Edit and delete entries
+Occurrence screen: enter weight in user unit, or skip with reason. Linked weight visible on occurrence and in care item history (after WEIGHT C).
 
-Existing entries can be corrected (value, date, notes) or removed with confirmation. PDF pet reports use the latest entry as current weight.
+## Read-only profile weight
 
----
-
-*Stub seeded from weight_tracking.feature and architecture index — expand during domain migration.*
+Pet edit form shows latest weight + link to weight screen; weights are recorded on the hub or via deprecated API fields for legacy clients.

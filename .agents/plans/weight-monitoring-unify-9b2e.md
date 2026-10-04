@@ -871,17 +871,17 @@ Analysis in the session of 2026-10-04 (current-state audit, comparison with Appl
 ## Runtime state (agent-updated)
 
 ```yaml
-autonomy: halted
-current_phase: null
+autonomy: active
+current_phase: W0
 last_completed_phase: null
-halt_reason: "draft — awaiting control issue and approve-autonomous"
-next_action: "create the roadmap control issue (§11.1); owner posts approve-autonomous weight-monitoring-unify-9b2e; then run W0 (§10.0)"
+halt_reason: null
+next_action: "bootstrap and gate child plan weight-unify-server-9b2e"
 artifact_ref:
-  branch: claude/happy-bohr-jrnxlk
+  branch: cursor/weight-unify-w0-docs-9b2e
   plan_path: .agents/plans/weight-monitoring-unify-9b2e.md
-  plan_commit: null
+  plan_commit: 771c5cd2a7f205b216e7dba66d10c46992cea3fa
   snapshot_path: .agents/plans/weight-monitoring-unify-9b2e.snapshot.json
-  snapshot_commit: null
+  snapshot_commit: 771c5cd2a7f205b216e7dba66d10c46992cea3fa
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
