@@ -58,6 +58,45 @@ describe('People contacts API', () => {
           return { rows: [...contacts.values()] };
         }
 
+        if (sql.includes('pc.directory_id = ANY')) {
+          return { rows: [...contacts.values()] };
+        }
+
+        if (sql.includes('pet_contact_relationships pcr') && sql.includes('pcr.contact_id = ANY')) {
+          return { rows: [] };
+        }
+
+        if (sql.includes('FROM people_contacts pc') && sql.includes('INNER JOIN people_directories pd')
+          && sql.includes('WHERE pc.id = $1') && !sql.includes('pd.owner_user_id = $2')) {
+          const id = params[0];
+          const row = contacts.get(id);
+          if (!row) return { rows: [] };
+          return {
+            rows: [{
+              ...row,
+              directory_household_id: null,
+              owner_user_id: userId,
+            }],
+          };
+        }
+
+        if (sql.includes('FROM people_contacts pc') && sql.includes('pd.owner_user_id = $2')
+          && sql.includes('WHERE pc.id = $1') && sql.includes('SELECT 1')) {
+          return { rows: [{ '?column?': 1 }] };
+        }
+
+        if (sql.includes('health_occurrences')) {
+          return { rows: [{ count: 0 }] };
+        }
+
+        if (sql.includes('planned_absence_pets pap')) {
+          return { rows: [] };
+        }
+
+        if (sql.includes('health_entries he') && sql.includes('provider_contact_id')) {
+          return { rows: [] };
+        }
+
         if (sql.includes('INSERT INTO people_contacts')) {
           const id = params[0];
           const row = makeContactRow({

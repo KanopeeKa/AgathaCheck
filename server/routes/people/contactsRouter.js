@@ -5,13 +5,11 @@ import { extractUserId } from '../../lib/requireAuth.js';
 import {
   asPeopleError,
   canEditContact,
-  canViewContact,
   contactRowToMap,
   createPersonalContact,
   deletePersonalContact,
   ensurePersonalDirectory,
-  listContactsInDirectory,
-  loadContactForViewer,
+  listContactSummaries,
   patchPersonalContact,
 } from '../../lib/people/index.js';
 
@@ -28,11 +26,11 @@ export default function contactsRouter(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      const directoryId = await ensurePersonalDirectory(pool, userId);
+      await ensurePersonalDirectory(pool, userId);
       const includeInactive = req.query.include_inactive === 'true'
         || req.query.includeInactive === 'true';
-      const rows = await listContactsInDirectory(pool, directoryId, userId, includeInactive);
-      res.json(rows.map(contactRowToMap));
+      const summaries = await listContactSummaries(pool, userId, includeInactive);
+      res.json(summaries);
     } catch (err) {
       if (sendPeopleError(res, err)) return;
       res.status(500).json({ error: publicError(err) });
@@ -45,24 +43,6 @@ export default function contactsRouter(pool) {
     try {
       const row = await createPersonalContact(pool, userId, req.body || {});
       res.status(201).json(contactRowToMap(row));
-    } catch (err) {
-      if (sendPeopleError(res, err)) return;
-      res.status(500).json({ error: publicError(err) });
-    }
-  });
-
-  router.get('/:id', async (req, res) => {
-    const userId = extractUserId(req);
-    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    try {
-      if (!(await canViewContact(pool, req.params.id, userId))) {
-        return res.status(404).json({ error: 'Contact not found', code: 'contact_not_found' });
-      }
-      const row = await loadContactForViewer(pool, req.params.id, userId);
-      if (!row) {
-        return res.status(404).json({ error: 'Contact not found', code: 'contact_not_found' });
-      }
-      res.json(contactRowToMap(row));
     } catch (err) {
       if (sendPeopleError(res, err)) return;
       res.status(500).json({ error: publicError(err) });

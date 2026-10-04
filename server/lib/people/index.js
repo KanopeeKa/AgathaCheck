@@ -16,6 +16,7 @@ export {
   canEditContact,
   canAttachContactToPet,
   careHandoverScope,
+  careHandoverScopeForPet,
   getPetOwnerUserId,
   contactInEditableDirectoriesForPet,
 } from './access.js';
@@ -58,6 +59,13 @@ export {
   updateCompatVet,
   deleteCompatVet,
 } from './vetProjection.js';
+export { buildRoster, listContactSummaries } from './roster.js';
+export {
+  contactDetail,
+  relatedCare,
+  contactIdByLegacyVet,
+  petPeople,
+} from './detail.js';
 export { copyHouseholdContactsForPetLeave } from './contactCopyOnPetLeave.js';
 export {
   resolveCarerWrite,
