@@ -67,12 +67,12 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1536",
-      "pr_head_sha": "f8f635e85851f73044f1b1cbae530bad84ea1a00"
+      "pr_head_sha": "5d6bb39a"
     },
     {
       "id": "GOV",
@@ -97,12 +97,23 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "governance",
-      "status": "merged",
+      "status": "in_progress",
       "status_reason": null,
-      "status_detail": "Stream E debt filed; parent partial-D note; parallel-programmes §1",
-      "debt_issue_refs": [1539, 1540, 1541, 1542, 1543, 1544, 1545, 1546, 1547, 1476],
+      "status_detail": null,
+      "debt_issue_refs": [
+        1539,
+        1540,
+        1541,
+        1542,
+        1543,
+        1544,
+        1545,
+        1546,
+        1547,
+        1476
+      ],
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1551",
-      "pr_head_sha": "20079756"
+      "pr_head_sha": "c0121e6ed24f3361fb2c1ba69f01816b981ed786"
     },
     {
       "id": "C1",
@@ -350,5 +361,5 @@
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:870add3010d722d73da90bc7dd5c4cd3c96102f7301fce10ae38202dd9f0323f"
+  "content_hash": "sha256:a3bda738a021d2151bedfcae77748a9caeec1beb9eec668cbad56f40aefeec1f"
 }
