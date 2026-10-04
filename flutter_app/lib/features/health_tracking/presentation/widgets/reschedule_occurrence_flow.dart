@@ -198,11 +198,7 @@ class RescheduleOccurrenceFlow {
     try {
       final outcome = await ref
           .read(careScheduleControllerProvider)
-          .undoOccurrence(
-            entryId,
-            occurrenceId,
-            absenceId: absenceId,
-          );
+          .undoOccurrence(entryId, occurrenceId, absenceId: absenceId);
       if (!context.mounted) return;
       final l = AppLocalizations.of(context)!;
       showCareScheduleCommandSnackBar(

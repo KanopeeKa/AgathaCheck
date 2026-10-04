@@ -24,14 +24,16 @@ class WeightOccurrenceCareActions {
     required DateTime date,
     String notes = '',
   }) {
-    return ref.read(careScheduleControllerProvider).completeWeightOccurrence(
-      petId: entry.petId,
-      entryId: entry.id,
-      occurrenceId: occurrenceId,
-      weightKg: weightKg,
-      date: date,
-      notes: notes,
-    );
+    return ref
+        .read(careScheduleControllerProvider)
+        .completeWeightOccurrence(
+          petId: entry.petId,
+          entryId: entry.id,
+          occurrenceId: occurrenceId,
+          weightKg: weightKg,
+          date: date,
+          notes: notes,
+        );
   }
 
   /// Opens [AddWeightEntrySheet] bound to [occurrenceId]; returns true when saved.

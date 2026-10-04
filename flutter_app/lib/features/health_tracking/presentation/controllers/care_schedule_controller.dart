@@ -68,13 +68,15 @@ class CareScheduleController {
     String notes = '',
   }) {
     return _runGuarded(_occurrenceCommandKey(entryId, occurrenceId), () async {
-      await _ref.read(healthRepositoryProvider).completeOccurrence(
-        entryId,
-        occurrenceId,
-        notes: notes,
-        completedOn: completedOn,
-        skipEarlierMissed: skipEarlierMissed,
-      );
+      await _ref
+          .read(healthRepositoryProvider)
+          .completeOccurrence(
+            entryId,
+            occurrenceId,
+            notes: notes,
+            completedOn: completedOn,
+            skipEarlierMissed: skipEarlierMissed,
+          );
       return _reconcileAfterCommit(entryId);
     });
   }
@@ -86,11 +88,9 @@ class CareScheduleController {
     String notes = '',
   }) {
     return _runGuarded(_occurrenceCommandKey(entryId, occurrenceId), () async {
-      await _ref.read(healthRepositoryProvider).skipOccurrence(
-        entryId,
-        occurrenceId,
-        notes: notes,
-      );
+      await _ref
+          .read(healthRepositoryProvider)
+          .skipOccurrence(entryId, occurrenceId, notes: notes);
       return _reconcileAfterCommit(entryId, absenceId: absenceId);
     });
   }
@@ -108,10 +108,9 @@ class CareScheduleController {
     String? absenceId,
   }) {
     return _runGuarded(_occurrenceCommandKey(entryId, occurrenceId), () async {
-      await _ref.read(healthRepositoryProvider).undoOccurrence(
-        entryId,
-        occurrenceId,
-      );
+      await _ref
+          .read(healthRepositoryProvider)
+          .undoOccurrence(entryId, occurrenceId);
       return _reconcileAfterCommit(entryId, absenceId: absenceId);
     });
   }
@@ -125,12 +124,14 @@ class CareScheduleController {
     String? absenceId,
   }) {
     return _runGuarded(_occurrenceCommandKey(entryId, occurrenceId), () async {
-      final result = await _ref.read(healthRepositoryProvider).rescheduleOccurrence(
-        entryId,
-        occurrenceId,
-        scheduledDate,
-        reasonCode: reasonCode,
-      );
+      final result = await _ref
+          .read(healthRepositoryProvider)
+          .rescheduleOccurrence(
+            entryId,
+            occurrenceId,
+            scheduledDate,
+            reasonCode: reasonCode,
+          );
       final outcome = await _reconcileAfterCommit(
         entryId,
         absenceId: absenceId,
@@ -148,14 +149,16 @@ class CareScheduleController {
     String notes = '',
   }) {
     return _runGuarded(_occurrenceCommandKey(entryId, occurrenceId), () async {
-      await _ref.read(healthRepositoryProvider).completeWeightOccurrence(
-        petId: petId,
-        entryId: entryId,
-        occurrenceId: occurrenceId,
-        weightKg: weightKg,
-        date: date,
-        notes: notes,
-      );
+      await _ref
+          .read(healthRepositoryProvider)
+          .completeWeightOccurrence(
+            petId: petId,
+            entryId: entryId,
+            occurrenceId: occurrenceId,
+            weightKg: weightKg,
+            date: date,
+            notes: notes,
+          );
       return _reconcileAfterCommit(entryId);
     });
   }
@@ -168,29 +171,28 @@ class CareScheduleController {
     String? providerTypedName,
     List<({String name, Uint8List bytes})> pendingDocuments = const [],
   }) {
-    return _runGuarded(
-      'details:$entryId:$occurrenceId',
-      () async {
-        await _ref.read(healthRepositoryProvider).updateOccurrenceNotes(
-          entryId,
-          occurrenceId,
-          notes,
-          providerContactId: providerContactId,
-          providerTypedName: providerTypedName,
-        );
-        final dataSource = _ref.read(healthDataSourceProvider);
-        for (final doc in pendingDocuments) {
-          await dataSource.uploadPhoto(
+    return _runGuarded('details:$entryId:$occurrenceId', () async {
+      await _ref
+          .read(healthRepositoryProvider)
+          .updateOccurrenceNotes(
             entryId,
-            doc.bytes,
-            doc.name,
-            occurrenceId: occurrenceId,
+            occurrenceId,
+            notes,
+            providerContactId: providerContactId,
+            providerTypedName: providerTypedName,
           );
-        }
-        _ref.invalidate(healthEntryPhotosProvider(entryId));
-        return _reconcileAfterCommit(entryId);
-      },
-    );
+      final dataSource = _ref.read(healthDataSourceProvider);
+      for (final doc in pendingDocuments) {
+        await dataSource.uploadPhoto(
+          entryId,
+          doc.bytes,
+          doc.name,
+          occurrenceId: occurrenceId,
+        );
+      }
+      _ref.invalidate(healthEntryPhotosProvider(entryId));
+      return _reconcileAfterCommit(entryId);
+    });
   }
 
   Future<CommandOutcome> linkHealthIssue(

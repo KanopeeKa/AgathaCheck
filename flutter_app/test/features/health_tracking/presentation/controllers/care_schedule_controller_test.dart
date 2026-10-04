@@ -26,7 +26,10 @@ class _CareScheduleFakeRepository implements HealthRepository {
   Duration? completeDelay;
 
   @override
-  Future<List<HealthEntry>> getEntries({String? petId, HealthEntryType? type}) async {
+  Future<List<HealthEntry>> getEntries({
+    String? petId,
+    HealthEntryType? type,
+  }) async {
     if (failNextGetEntries) {
       failNextGetEntries = false;
       throw Exception('refresh failed');
@@ -111,18 +114,24 @@ void main() {
     await container.read(healthEntriesNotifierProvider.future);
   }
 
-  test('completeOccurrence returns refreshFailed after successful commit', () async {
-    await pumpStore();
-    repository.failNextGetEntries = true;
-    final outcome = await controller().completeOccurrence(
-      'e1',
-      'occ-1',
-      completedOn: DateTime(2025, 1, 2),
-    );
-    expect(outcome, const CommandOutcome(committed: true, refreshFailed: true));
-    expect(repository.completeCalls, 1);
-    expect(container.read(healthEntriesNotifierProvider).hasValue, isTrue);
-  });
+  test(
+    'completeOccurrence returns refreshFailed after successful commit',
+    () async {
+      await pumpStore();
+      repository.failNextGetEntries = true;
+      final outcome = await controller().completeOccurrence(
+        'e1',
+        'occ-1',
+        completedOn: DateTime(2025, 1, 2),
+      );
+      expect(
+        outcome,
+        const CommandOutcome(committed: true, refreshFailed: true),
+      );
+      expect(repository.completeCalls, 1);
+      expect(container.read(healthEntriesNotifierProvider).hasValue, isTrue);
+    },
+  );
 
   test('completeOccurrence throws when command fails', () async {
     await pumpStore();

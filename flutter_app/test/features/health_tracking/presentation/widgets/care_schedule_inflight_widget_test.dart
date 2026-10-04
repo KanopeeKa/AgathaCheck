@@ -92,11 +92,13 @@ class _InflightHarnessState extends ConsumerState<_InflightHarness> {
     return Scaffold(
       body: ElevatedButton(
         onPressed: () {
-          ref.read(careScheduleControllerProvider).completeOccurrence(
-            'e1',
-            'occ-1',
-            completedOn: DateTime(2025, 1, 2),
-          );
+          ref
+              .read(careScheduleControllerProvider)
+              .completeOccurrence(
+                'e1',
+                'occ-1',
+                completedOn: DateTime(2025, 1, 2),
+              );
         },
         child: const Text('Complete'),
       ),

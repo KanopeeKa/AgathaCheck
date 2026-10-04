@@ -5,7 +5,8 @@ import 'package:path/path.dart' as p;
 
 /// G.3-2: presentation widgets must not reach into health data layer directly.
 void main() {
-  final flutterRoot = Directory(p.join(Directory.current.path, 'lib')).existsSync()
+  final flutterRoot =
+      Directory(p.join(Directory.current.path, 'lib')).existsSync()
       ? Directory.current.path
       : p.join(Directory.current.path, 'flutter_app');
   final libRoot = p.join(flutterRoot, 'lib');
@@ -56,7 +57,8 @@ void main() {
     expect(
       violations,
       isEmpty,
-      reason: 'Move data access to CareScheduleController / providers:\n'
+      reason:
+          'Move data access to CareScheduleController / providers:\n'
           '${violations.join('\n')}',
     );
   });

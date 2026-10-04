@@ -93,12 +93,14 @@ class OccurrenceCareActions {
     if (id == null || id.isEmpty) {
       throw StateError('occurrenceId is required to complete care');
     }
-    return ref.read(careScheduleControllerProvider).completeOccurrence(
-      entry.id,
-      id,
-      completedOn: completedOn,
-      skipEarlierMissed: skipEarlierMissed,
-    );
+    return ref
+        .read(careScheduleControllerProvider)
+        .completeOccurrence(
+          entry.id,
+          id,
+          completedOn: completedOn,
+          skipEarlierMissed: skipEarlierMissed,
+        );
   }
 
   /// Skips every missed open occurrence for [entry].
