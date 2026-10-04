@@ -3,7 +3,7 @@ title: Architecture index
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-09-22
+last_updated: 2026-10-04
 tags: [architecture, index]
 ---
 # Architecture index (agent quick-reference)
@@ -83,7 +83,24 @@ Product domains are documented under [/docs/domains/](/docs/domains/). Each row 
 | BDD | `health_tracking.feature` |
 | E2E | `health.tracking.spec.ts` |
 
-**Semantics:** `.agents/memory/health-entry-completion.md` — completion from `next_due_date`.
+**Semantics:** `.agents/memory/health-entry-completion.md` — completion from `next_due_date`. Occurrence commands, agenda, and the Care Item detail route live in the **Care Item** component below (not in `health_tracking/`).
+
+### Care Item (component)
+
+One health entry as a care series: open occurrences, agenda row, occurrence screen, detail view, and server-confirmed completion. Programme: [`care-next-occurrence-c1a7`](../../.agents/plans/care-next-occurrence-c1a7.md) child F.
+
+| | Path |
+|---|------|
+| **Docs (product)** | [/docs/domains/pet_care/features/care-item-evolution.md](/docs/domains/pet_care/features/care-item-evolution.md) · [care-schedule-management.md](/docs/domains/pet_care/features/care-schedule-management.md) |
+| **Docs (UI)** | [care-item-view-ui.md](/docs/design/care-item-view-ui.md) |
+| Flutter (public API) | `flutter_app/lib/features/care_item/care_item.dart` — other features import **only** this barrel (`scripts/check_care_item_boundary.sh`, `scripts/check_feature_imports.js`) |
+| Flutter tests | `flutter_app/test/features/care_item/` |
+| Node libraries | `server/lib/care/` (`schedule/`, `occurrence/`, `absence/`, `awayPlan/`, …) |
+| Node routes | `server/routes/healthEntries/` → `/api/health-entries` occurrence + schedule commands |
+| Jest | `server/test/careSchedule/`, `server/test/healthEntries/`, `server/test/care/` |
+| OpenAPI / contract | `docs/architecture/openapi/pet-care-critical.json` · `server/test/openapi/petCareContract.test.js` |
+| BDD | `care_item_absence.feature` |
+| E2E | `care.agenda.spec.ts`, `care.item.absence.spec.ts` · page object `e2e/playwright/pages/care-item.page.ts` |
 
 ### Weight tracking
 
