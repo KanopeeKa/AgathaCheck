@@ -33,6 +33,7 @@ import {
   listOpenRows,
   markSkipped,
 } from './occurrenceRepository.js';
+import { wouldAutoCloseAsNotRecorded } from './readSync.js';
 
 /**
  * @param {object} entry
@@ -80,9 +81,7 @@ async function closeStackOutsideWindow(db, entry, asOf) {
   const open = await listOpenRows(db, entry.id);
   const closed = [];
   for (const row of open) {
-    if (row.scheduled_date >= windowStart) continue;
-    const next = nextSeriesSlotAfter({ entry, date: row.scheduled_date, time: row.scheduled_time });
-    if (!next || next.date > windowStart) continue;
+    if (!wouldAutoCloseAsNotRecorded(entry, row, asOf)) continue;
     const done = await markSkipped(db, {
       entryId: entry.id,
       occurrenceId: row.id,
