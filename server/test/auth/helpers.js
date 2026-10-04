@@ -124,9 +124,11 @@ export function buildMockPool(overrides = {}) {
       if (sql.includes('FROM household_pets hp') && sql.includes('INNER JOIN pets')) {
         return { rows: [] };
       }
+      if (sql.includes('UPDATE org_foster_parents') && sql.includes('SET user_id')) {
+        return handlers.fallback(sql, params);
+      }
       if (sql.startsWith('UPDATE archived_pets')
         || sql.startsWith('UPDATE foster_profiles')
-        || sql.startsWith('UPDATE org_foster_parents')
         || sql.startsWith('UPDATE organization_permissions')
         || sql.startsWith('UPDATE people_contacts')
         || sql.startsWith('UPDATE prospects')
