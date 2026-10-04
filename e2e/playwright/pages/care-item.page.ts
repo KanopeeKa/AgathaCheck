@@ -138,6 +138,39 @@ export class CareItemPage {
     await this.expectOccurrenceReviewSheet();
   }
 
+  async tapAbsenceKeepWithCarer(carerName?: string): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    const keep = semanticsKey(this.page, 'care_item_absence_keep_date').or(
+      carerName
+        ? this.page.getByRole('button', {
+            name: new RegExp(`Keep with ${carerName}`, 'i'),
+          })
+        : this.page.getByRole('button', { name: /^Keep with /i }),
+    );
+    await expect(keep.first()).toBeVisible({ timeout: 15_000 });
+    await keep.first().click();
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async openChangeDateFromOccurrenceReview(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    const changeDate = semanticsKey(this.page, 'occurrence_review_change_date').or(
+      this.page.getByRole('button', { name: /^Change date$|^Changer la date$/i }),
+    );
+    await expect(changeDate.first()).toBeVisible({ timeout: 15_000 });
+    await changeDate.first().click();
+    await expect(
+      this.page.getByText(/^Change date$|^Changer la date$/i).first(),
+    ).toBeVisible({ timeout: 15_000 });
+  }
+
+  async rescheduleFromAbsenceReviewToDayOffset(dayOffsetFromToday: number): Promise<void> {
+    await this.openAbsenceOccurrenceReview();
+    await this.openChangeDateFromOccurrenceReview();
+    await this.pickRescheduleDateInSheet(dayOffsetFromToday);
+    await this.confirmReschedule();
+  }
+
   async expectOccurrenceReviewSheet(): Promise<void> {
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);

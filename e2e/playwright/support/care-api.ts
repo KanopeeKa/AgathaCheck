@@ -338,3 +338,41 @@ export async function undoLast(baseURL: string, token: string, entryId: string, 
     undo_token: undoToken,
   }));
 }
+
+export interface HealthEntryAbsenceContext {
+  health_entry_id: string;
+  pet_id: string;
+  absences: Array<{
+    planned_absence_id: string;
+    starts_on: string;
+    ends_on: string;
+    planned_care?: {
+      planned_dates?: Array<{
+        scheduled_date: string;
+        occurrence_id: string | null;
+      }>;
+      looked_after_by?: {
+        carer_kind: string;
+        carer_name: string | null;
+      };
+    };
+  }>;
+}
+
+export async function getHealthEntryAbsenceContext(
+  baseURL: string,
+  token: string,
+  entryId: string,
+): Promise<HealthEntryAbsenceContext> {
+  const res = await apiFetch(
+    `${baseURL.replace(/\/$/, '')}${API_PREFIX}/health-entries/${entryId}/absence-context`,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    },
+  );
+  const text = await res.text();
+  if (!res.ok) {
+    throw new Error(`getHealthEntryAbsenceContext failed (${res.status}): ${text}`);
+  }
+  return JSON.parse(text) as HealthEntryAbsenceContext;
+}
