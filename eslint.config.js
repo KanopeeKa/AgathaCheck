@@ -2,7 +2,7 @@
 export default [
   {
     files: [
-      'server/routes/weightEntries.js',
+      'server/routes/weightEntries/**',
       'server/lib/petAccess.js',
       'server/lib/petCapabilityPolicy.js',
       'server/lib/openapi/**/*.js',

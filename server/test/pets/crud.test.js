@@ -12,7 +12,7 @@ describe('Pets API', () => {
           return { rows: [{ '?column?': 1 }] };
         }
         if (sql.includes('EXISTS') && sql.includes('AS is_foster') && sql.includes('WHERE p.id = $1')) return { rows: [row] };
-        return { rows: [] };
+        return null;
       }));
       const res = await request(app)
         .get(`/api/pets/${petId}`)
@@ -59,7 +59,7 @@ describe('Pets API', () => {
         if (sql.includes('UPDATE pets SET weight = (')) return { rows: [] };
         if (sql.includes('SELECT * FROM pets WHERE id = $1')) return { rows: [returnedRow] };
         if (sql.includes('INSERT INTO pets')) return { rows: [returnedRow] };
-        return { rows: [] };
+        return null;
       }));
       const res = await request(app)
         .post('/api/pets')
@@ -104,7 +104,7 @@ describe('Pets API', () => {
           capturedParams = params;
           return { rows: [returnedRow] };
         }
-        return { rows: [] };
+        return null;
       }));
       const res = await request(app)
         .post('/api/pets')
@@ -143,7 +143,7 @@ describe('Pets API', () => {
           capturedParams = params;
           return { rows: [returnedRow] };
         }
-        return { rows: [] };
+        return null;
       }));
       const res = await request(app)
         .post('/api/pets')
@@ -165,7 +165,7 @@ describe('Pets API', () => {
           capturedParams = params;
           return { rows: [returnedRow] };
         }
-        return { rows: [] };
+        return null;
       }));
       await request(app)
         .post('/api/pets')
@@ -186,7 +186,7 @@ describe('Pets API', () => {
           capturedParams = params;
           return { rows: [returnedRow] };
         }
-        return { rows: [] };
+        return null;
       }));
       await request(app)
         .post('/api/pets')
@@ -218,15 +218,12 @@ describe('Pets API', () => {
       const app = createApp(createMockPool(async (sql, params) => {
         const access = handlePetAccessQuery(sql, params, { userId, ownedPetIds: [petId] });
         if (access) return access;
-        if (sql.includes('SELECT organization_id FROM pets WHERE id = $1')) {
-          return { rows: [{ organization_id: 'org-uuid-1' }] };
-        }
         if (sql.includes('FROM weight_entries')) return { rows: [{ weight: 4.5 }] };
         if (sql.includes('INSERT INTO weight_entries')) return { rows: [] };
         if (sql.includes('UPDATE pets SET weight = (')) return { rows: [] };
         if (sql.includes('SELECT * FROM pets WHERE id = $1')) return { rows: [updatedRow] };
         if (sql.includes('UPDATE pets SET')) return { rows: [updatedRow] };
-        return { rows: [] };
+        return null;
       }));
       const res = await request(app)
         .put(`/api/pets/${petId}`)
@@ -276,11 +273,11 @@ describe('Pets API', () => {
         if (sql.includes('INSERT INTO weight_entries')) return { rows: [] };
         if (sql.includes('UPDATE pets SET weight = (')) return { rows: [] };
         if (sql.includes('SELECT * FROM pets WHERE id = $1')) return { rows: [updatedRow] };
-        if (sql.includes('UPDATE pets SET')) {
+        if (sql.includes('UPDATE pets SET name=$1')) {
           capturedParams = params;
           return { rows: [updatedRow] };
         }
-        return { rows: [] };
+        return null;
       }));
       const res = await request(app)
         .put(`/api/pets/${petId}`)
@@ -293,9 +290,9 @@ describe('Pets API', () => {
           weight_management_context: 'none',
         });
       expect(res.statusCode).toBe(200);
+      expect(capturedParams[17]).toBeNull();
       expect(capturedParams[18]).toBeNull();
-      expect(capturedParams[19]).toBeNull();
-      expect(capturedParams[20]).toBe('none');
+      expect(capturedParams[19]).toBe('none');
     });
 
     it('preserves existing photo when photoPath is omitted on update', async () => {
@@ -311,18 +308,18 @@ describe('Pets API', () => {
         if (sql.includes('INSERT INTO weight_entries')) return { rows: [] };
         if (sql.includes('UPDATE pets SET weight = (')) return { rows: [] };
         if (sql.includes('SELECT * FROM pets WHERE id = $1')) return { rows: [updatedRow] };
-        if (sql.includes('UPDATE pets SET')) {
+        if (sql.includes('UPDATE pets SET name=$1')) {
           capturedParams = params;
           return { rows: [updatedRow] };
         }
-        return { rows: [] };
+        return null;
       }));
       const res = await request(app)
         .put(`/api/pets/${petId}`)
         .set('Authorization', `Bearer ${token}`)
         .send({ name: 'Fluffy', species: 'cat' });
       expect(res.statusCode).toBe(200);
-      expect(capturedParams[13]).toBe('/uploads/fluffy.jpg');
+      expect(capturedParams[12]).toBe('/uploads/fluffy.jpg');
     });
 
     it('rejects inline base64 photo paths on update', async () => {
@@ -332,7 +329,7 @@ describe('Pets API', () => {
         if (sql.includes('SELECT organization_id, photo_path') && sql.includes('FROM pets')) {
           return { rows: [{ organization_id: null, photo_path: '/uploads/fluffy.jpg' }] };
         }
-        return { rows: [] };
+        return null;
       }));
       const res = await request(app)
         .put(`/api/pets/${petId}`)
@@ -353,15 +350,16 @@ describe('Pets API', () => {
         queries.push({ sql, params });
         const access = handlePetAccessQuery(sql, params, { userId, ownedPetIds: [petId] });
         if (access) return access;
-        if (sql.includes('SELECT organization_id FROM pets WHERE id = $1')) {
-          return { rows: [{ organization_id: null }] };
+        if (sql.includes('SELECT organization_id, photo_path')) {
+          return { rows: [{ organization_id: null, photo_path: null, weight_reference_value: null, weight_reference_authority: null, weight_management_context: 'none', home_timezone: 'UTC' }] };
         }
         if (sql.includes('FROM weight_entries')) return { rows: [{ weight: 4.5 }] };
+        if (sql.includes('SELECT home_timezone FROM pets')) return { rows: [{ home_timezone: 'UTC' }] };
         if (sql.includes('INSERT INTO weight_entries')) return { rows: [] };
         if (sql.includes('UPDATE pets SET weight = (')) return { rows: [] };
         if (sql.includes('SELECT * FROM pets WHERE id = $1')) return { rows: [updatedRow] };
         if (sql.includes('UPDATE pets SET')) return { rows: [updatedRow] };
-        return { rows: [] };
+        return null;
       }));
       const res = await request(app)
         .put(`/api/pets/${petId}`)
@@ -375,7 +373,7 @@ describe('Pets API', () => {
       expect(res.statusCode).toBe(200);
       const insert = queries.find((q) => q.sql.includes('INSERT INTO weight_entries'));
       expect(insert).toBeTruthy();
-      expect(insert.params[5]).toBe('2026-07-29');
+      expect(insert.params[4]).toBe('2026-07-29');
     });
 
     it('returns 404 when pet not found', async () => {
@@ -413,7 +411,7 @@ describe('Pets API', () => {
           return { rowCount: 1, rows: [] };
         }
         if (sql.includes('INSERT INTO audit_events')) return { rows: [{ id: 'audit-1' }] };
-        return { rows: [] };
+        return null;
       }));
       const res = await request(app)
         .delete(`/api/pets/${petId}`)

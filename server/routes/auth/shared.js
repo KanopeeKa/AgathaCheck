@@ -78,6 +78,7 @@ export function userRowToMap(row) {
     photo_url: row.photo_url || '',
     locale: row.locale || 'en',
     timezone: row.timezone || 'UTC',
+    weight_unit: row.weight_unit || 'kg',
     pinned_organization_id: row.pinned_organization_id || null,
     created_at: row.created_at,
     updated_at: row.updated_at,
