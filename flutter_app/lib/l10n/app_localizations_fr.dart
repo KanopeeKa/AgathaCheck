@@ -1279,10 +1279,10 @@ class AppLocalizationsFr extends AppLocalizations {
       'Indiquez une date d\'échéance, une date de fin, ou les deux';
 
   @override
-  String get recurrenceAnchorTitle => 'Prochaine échéance';
+  String get recurrenceAnchorTitle => 'Type de calendrier';
 
   @override
-  String get recurrenceFromCompletion => 'Depuis la complétion';
+  String get recurrenceFromCompletion => 'Après l\'avoir fait';
 
   @override
   String get recurrenceFromDueDate => 'Calendrier fixe';
@@ -1293,7 +1293,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get recurrenceAnchorInfoBody =>
-      'Exemple : tous les 7 jours. Vous terminez avec 1 jour de retard.\n• Depuis la complétion : prochaine échéance 7 jours après la validation.\n• Calendrier fixe : prochaine échéance dans 6 jours (7 jours après la date d\'échéance initiale).';
+      'Exemple : tous les 7 jours. Vous le marquez comme fait lorsqu\'il est en retard.\n• Après l\'avoir fait : la prochaine date est 7 jours après la validation.\n• Calendrier fixe : la prochaine date est 7 jours après la date d\'échéance initiale, même si vous le marquez tôt ou tard.';
+
+  @override
+  String get healthEntryFormAdvancedSettings => 'Paramètres avancés';
 
   @override
   String get markCompleteSheetTitle => 'Marquer comme terminé';

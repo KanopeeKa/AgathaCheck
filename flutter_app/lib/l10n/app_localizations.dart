@@ -2273,13 +2273,13 @@ abstract class AppLocalizations {
   /// No description provided for @recurrenceAnchorTitle.
   ///
   /// In en, this message translates to:
-  /// **'Next due date'**
+  /// **'Schedule type'**
   String get recurrenceAnchorTitle;
 
   /// No description provided for @recurrenceFromCompletion.
   ///
   /// In en, this message translates to:
-  /// **'From completion'**
+  /// **'After it\'s done'**
   String get recurrenceFromCompletion;
 
   /// No description provided for @recurrenceFromDueDate.
@@ -2297,8 +2297,14 @@ abstract class AppLocalizations {
   /// No description provided for @recurrenceAnchorInfoBody.
   ///
   /// In en, this message translates to:
-  /// **'Example: every 7 days. You complete it 1 day late.\n• From completion: next due 7 days after you mark it done.\n• Fixed schedule: next due 6 days from today (7 days after the original due date).'**
+  /// **'Example: every 7 days. You mark it done when it\'s Overdue.\n• After it\'s done: the next date is 7 days after you mark it done.\n• Fixed schedule: the next date is 7 days after the original due date, even if you mark it done early or late.'**
   String get recurrenceAnchorInfoBody;
+
+  /// No description provided for @healthEntryFormAdvancedSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced settings'**
+  String get healthEntryFormAdvancedSettings;
 
   /// No description provided for @markCompleteSheetTitle.
   ///

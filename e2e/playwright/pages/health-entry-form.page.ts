@@ -50,4 +50,21 @@ export class HealthEntryFormPage {
     await this.page.getByRole('button', { name: /Save changes|Save/i }).click();
     await this.page.getByRole('button', { name: 'Add Health Event' }).waitFor({ timeout: 30_000 });
   }
+
+  async selectCareFamily(label: string): Promise<void> {
+    await this.page.locator('flt-semantics[flt-semantics-identifier="care_family_picker"]').click();
+    await this.page.getByText(label, { exact: false }).first().click();
+  }
+
+  async expandAdvancedSettings(): Promise<void> {
+    await this.page.getByText('Advanced settings').click();
+  }
+
+  async selectScheduleType(label: string): Promise<void> {
+    await this.page.getByText(label, { exact: true }).click();
+  }
+
+  async expectScheduleTypeSelected(label: string): Promise<void> {
+    await expect(this.page.getByText(label, { exact: true }).first()).toBeVisible();
+  }
 }
