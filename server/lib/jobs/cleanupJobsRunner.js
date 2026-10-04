@@ -5,7 +5,7 @@ import {
   failCleanupJob,
 } from './cleanupJobsApi.js';
 import { runCleanupJobsHousekeeping } from './cleanupJobsHousekeeping.js';
-import { runFileDeleteJob } from './handlers/fileDelete.js';
+import { runFileDeleteJob, runPosthogPersonDeleteJob } from './handlers/index.js';
 
 const TABLE_MISSING = '42P01';
 
@@ -36,6 +36,19 @@ async function executeJob(db, job) {
     await failCleanupJob(db, job.id, job.lease_token, {
       retryable: Boolean(outcome.retryable),
       message: outcome.message || 'file_delete failed',
+    });
+    const row = await db.query('SELECT status FROM cleanup_jobs WHERE id = $1', [job.id]);
+    return row.rows[0]?.status;
+  }
+  if (job.job_type === 'posthog_person_delete') {
+    const outcome = await runPosthogPersonDeleteJob(job.payload);
+    if (!outcome.retryable && !outcome.message) {
+      await acknowledgeCleanupJob(db, job.id, job.lease_token);
+      return 'succeeded';
+    }
+    await failCleanupJob(db, job.id, job.lease_token, {
+      retryable: Boolean(outcome.retryable),
+      message: outcome.message || 'posthog_person_delete failed',
     });
     const row = await db.query('SELECT status FROM cleanup_jobs WHERE id = $1', [job.id]);
     return row.rows[0]?.status;

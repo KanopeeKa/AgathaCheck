@@ -1707,6 +1707,7 @@
   "deleteAccount": "Supprimer le compte",
   "deleteAccountSubtitle": "Supprimer définitivement votre compte et toutes vos données",
   "deleteAccountWarning": "Cette action est irréversible. Tous vos animaux, entrées de santé, relevés de poids, notifications et adhésions aux organisations seront définitivement supprimés. Entrez votre mot de passe pour confirmer.",
+  "accountDeletionLandingMessage": "Votre compte a été supprimé. Les fichiers restants et les données d'analyse sont encore en cours de suppression.",
   "error": "Erreur",
   "maxPhotosReached": "Maximum 4 documents par événement",
   "failedToLoadPhotos": "Échec du chargement des documents : {error}",

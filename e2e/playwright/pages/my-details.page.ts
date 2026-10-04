@@ -198,6 +198,7 @@ export class MyDetailsPage {
       .getByRole('button', { name: /Delete Account|Supprimer le compte/i, exact: true })
       .last()
       .click();
-    await this.page.waitForTimeout(2000);
+    await waitForFlutterRoutePattern(this.page, /\/landing/, 30_000);
+    await refreshFlutterAccessibility(this.page);
   }
 }
