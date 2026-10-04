@@ -221,14 +221,14 @@ autonomy: active
 current_phase: 1
 last_completed_phase: null
 halt_reason: null
-next_action: "start phase 1: checkout cursor/test-health-verify-uat-smoke-edcb"
+next_action: "continue phase 1 on branch cursor/test-health-verify-uat-smoke-edcb"
 artifact_ref:
-  branch: cursor/test-health-ci-verify-integration-edcb
+  branch: cursor/test-health-verify-uat-smoke-edcb
   plan_path: .agents/plans/test-health-ci-verify-a8c2.md
-  plan_commit: dcc4763690ee8dc21a8d50ed3bd51862b7001ffb
+  plan_commit: 43567b7e8288390d289d2344b144fe3329c49b44
   snapshot_path: .agents/plans/test-health-ci-verify-a8c2.snapshot.json
-  snapshot_commit: dcc4763690ee8dc21a8d50ed3bd51862b7001ffb
-open_prs: []
+  snapshot_commit: 43567b7e8288390d289d2344b144fe3329c49b44
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1528"]
 merge_commits: {}
 debt_issue_refs: []
 ```
