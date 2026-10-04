@@ -315,17 +315,17 @@ flowchart TD
 
 ```yaml
 autonomy: active
-current_phase: GOV
-last_completed_phase: A2
+current_phase: C2
+last_completed_phase: C1
 halt_reason: null
-next_action: "continue phase GOV on branch cursor/care-gap-gov-50b4"
+next_action: "continue phase C2 on branch cursor/care-gap-c2-deadcode-50b4"
 artifact_ref:
-  branch: cursor/care-gap-gov-50b4
+  branch: cursor/care-gap-c2-deadcode-50b4
   plan_path: .agents/plans/care-requirements-gap-close-c1a7.md
-  plan_commit: c0121e6ed24f3361fb2c1ba69f01816b981ed786
+  plan_commit: 018cbb0963382196fd6683f198f795b47602e78e
   snapshot_path: .agents/plans/care-requirements-gap-close-c1a7.snapshot.json
-  snapshot_commit: c0121e6ed24f3361fb2c1ba69f01816b981ed786
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1551"]
+  snapshot_commit: 018cbb0963382196fd6683f198f795b47602e78e
+open_prs: []
 merge_commits: {}
 debt_issue_refs: [1539,1540,1541,1542,1543,1544,1545,1546,1547,1476]
 ```
