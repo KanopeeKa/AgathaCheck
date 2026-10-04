@@ -37,12 +37,12 @@ last_completed_phase: null
 halt_reason: null
 next_action: "continue phase W1 on branch cursor/weight-unify-w1-service-9b2e"
 artifact_ref:
-  branch: cursor/weight-unify-server-integration-9b2e
+  branch: cursor/weight-unify-w1-service-9b2e
   plan_path: .agents/plans/weight-unify-server-9b2e.md
-  plan_commit: 5449a82aaf96d6ef30b45f5eb417eae84372751a
+  plan_commit: 373061cae4f5bf8c9dccb03d10e5dd9c54cd10e5
   snapshot_path: .agents/plans/weight-unify-server-9b2e.snapshot.json
-  snapshot_commit: 5449a82aaf96d6ef30b45f5eb417eae84372751a
-open_prs: []
+  snapshot_commit: 373061cae4f5bf8c9dccb03d10e5dd9c54cd10e5
+open_prs: [true]
 merge_commits: {}
 debt_issue_refs: []
 ```
