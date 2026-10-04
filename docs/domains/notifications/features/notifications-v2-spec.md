@@ -2,7 +2,7 @@
 title: Notifications v2 — Activity & Agatha Suggestions (functional spec)
 owner: Product
 audience: both
-status: proposed (rev 2.1)
+status: proposed (rev 2.2)
 last_updated: 2026-10-04
 tags: [domain,notifications,spec,suggestions,sharing]
 domain: notifications
@@ -11,7 +11,7 @@ feature_id: notifications-v2
 
 # Notifications v2 — Activity & Agatha Suggestions
 
-> **Status: proposed, rev 2.1.** Moves to `accepted` only once the documentation checklist (AC-MG-5) is merged. Functional spec only. Implementation follows the rollout in §12, with one atomic PR
+> **Status: proposed, rev 2.2** (adds account security and subscription, §3.5). Moves to `accepted` only once the documentation checklist (AC-MG-5) is merged. Functional spec only. Implementation follows the rollout in §12, with one atomic PR
 > per outcome. Rev 2 incorporates the design review; the changes are summarised in §15. Once accepted, the decisions in
 > §0 take effect.
 
@@ -35,6 +35,10 @@ Decision IDs **D12–D16** are already taken (roles and permissions), so new dec
 | **N7** | The S7 (absence coverage) suggestion goes to the record owner only. |
 | **N8** | The weekly digest by email is offered (and on by default) only to users with no push-capable device. |
 | **N9** | The inbox is not an audit log. A 90-day inbox archive is accepted for every kind. |
+| **N10** | New kind `account` covers account security and subscription. It appears in the Activity tab, under its own "Account" section label. |
+| **N11** | Security notices tell the user what happened and offer **"This was me" / "Secure my account"**. They never contain a sign-in link or a code (anti-phishing). |
+| **N12** | Subscription notices only cover **what the app store or billing provider doesn't already tell the user**: entitlement changes and payment problems that affect Agatha. No receipts. The design is independent of the billing provider (RevenueCat today, possibly an EU provider later). |
+| **N13** | "New device" detection stores only a coarse device label (OS + browser/app) and the first-seen time, with no IP and no location. Location is deferred pending a DPIA. |
 
 Accepting this spec includes the documentation checklist in AC-MG-5.
 
@@ -48,6 +52,7 @@ changes such as adding people or sharing a pet, and (b) Agatha Suggestions.*
 | Stop duplicating events | §4 (care reminders leave the inbox), FR-CR-1..5 | **Core** |
 | Relationships: adding people, sharing a pet | R1–R3, R5–R12 (§3.2), Activity tab, inline accept/decline | **Core** |
 | Agatha Suggestions | §7, For you tab, S1–S7 | **Core** (S7 → owner only) |
+| Account notifications: security & subscription | §3.5, A1–A11 | **Core** for security (A1–A6); subscription (A7–A11) is core but **gated on the billing-provider decision** |
 | Kept, not new: org/foster workflow items | `administrative` stays in Activity, unchanged. Removing it would drop actionable pending items (D10). | Preserved |
 | Kept, not new: ownership transfer, memorial | R14, R17. These already exist today as `general` notices and are reclassified, not invented. | Preserved |
 | Added for best-in-class UX (not in the brief) | Grouping (§6.4), weekly digest + email (§9.3), invite expiry/reminder (R4, R18), care assignment (R16, which depends on People D21), settings matrix beyond on/off | **Enhancement** |
@@ -56,9 +61,7 @@ changes such as adding people or sharing a pet, and (b) Agatha Suggestions.*
 but they ship in PR4/PR6 and can be cut or deferred **without affecting the core outcome**. Anything not traceable to
 this table is out of scope.
 
-Account-level events that are not relationships (sign-in from a new device, email/password change, subscription
-changes) are **not** in v2. They would be a natural next `relationship`-adjacent category; they are recorded in
-`changes/deferred.md`.
+Account-level events (security and subscription) are **in scope since rev 2.2** (§3.5).
 
 ## 1. Problem & intent
 
@@ -132,6 +135,7 @@ anywhere else in the app? If not, it is not an inbox notification.
 | `relationship` | Activity | People & access changes on pets, households, account. |
 | `administrative` | Activity | Existing org/foster workflow items (unchanged semantics, D9–D11). |
 | `suggestion` | For you | Agatha Suggestions. |
+| `account` | Activity ("Account" label) | Account security and subscription (§3.5, N10). |
 | `care` | — | **Retired for new rows.** Existing rows are archived (§11). The wire value is still parsed for backward compatibility and never shown. |
 
 `scope` (`pet_care` / `organization`) and `priority` (`normal` / `urgent`) remain orthogonal and unchanged.
@@ -188,6 +192,60 @@ current types, and appear in the Activity tab.
 
 Thresholds (`N`, `X`, percentages, windows) are configuration values owned by care intelligence, not by the client.
 They MUST be overridable per environment so UAT/E2E can trigger each type with seeded data (§13.15).
+
+### 3.5 Account catalogue (security & subscription)
+
+**What exists today**, checked against the code:
+
+- Password change and reset exist (`routes/auth/passwordRouter.js`), and both revoke all refresh sessions.
+- Refresh sessions have rotation and **reuse detection**, which revokes the whole session family (`lib/refreshSessions.js`).
+- Account erasure (`lib/account/accountErasureService.js`) and data export (`GET /me/export`) exist.
+- There is **no email-change flow**: `PUT/PATCH /me` does not update the email.
+- Refresh sessions store **no device information**, so "new device" detection needs a new `device_label` and first-seen data (N13).
+- Logout (`POST /logout`) revokes **all** sessions today. A normal logout MUST NOT trigger A6.
+- Subscriptions run **client-side via RevenueCat**, with no server webhook, and the billing provider is under review
+  (`docs/domains/subscription`). Subscription events need a server-side entitlement source first.
+
+#### 3.5.1 Security events
+
+| # | `type` | Trigger | Example copy | Needs response | Channels |
+|---|---|---|---|---|---|
+| A1 | `accountNewSignIn` | Login creating a session family from a device label not seen on this account in the last 90 days | New sign-in to your account: **Chrome on Windows**, today 14:02 | **Yes**: "This was me" / "Secure my account" | Inbox + email + push to *other* devices. **Mandatory.** |
+| A2 | `accountPasswordChanged` | Password changed or reset | Your password was changed | No (row offers "Secure my account" for 7 days) | Inbox + email. **Mandatory.** |
+| A3 | `accountSessionsRevoked` | Refresh-token **reuse detected** (possible stolen token). Not a normal logout or password change (A2 covers that). | For your security, we signed you out on all devices | No | Inbox + email. **Mandatory.** |
+| A4 | `accountEmailChangeRequested` *(when the email-change flow is built)* | Email change started | Sent to the **old** address: someone asked to change your email to f•••@g•••.com | Email only, with a "Cancel this change" link that cancels the change and doesn't sign anyone in | Email. **Mandatory.** |
+| A5 | `accountEmailChanged` *(when built)* | Email change confirmed | Your sign-in email is now f•••@g•••.com | No | Inbox + email to **both** addresses. **Mandatory.** |
+| A6 | `accountDeletionRequested` | Erasure started | Your account and data will be deleted. This can't be undone. | No | **Email only** (the account is going away). **Mandatory.** |
+
+**"Secure my account"** (A1, A2) is a single in-app flow: revoke all sessions except the current one → force a
+password change → show the list of recently seen device labels. It never asks for credentials in an email.
+
+#### 3.5.2 Subscription events (provider-agnostic, N12)
+
+| # | `type` | Trigger | Example copy | Needs response | Channels |
+|---|---|---|---|---|---|
+| A7 | `subscriptionActivated` | Entitlement becomes active (purchase, restore, family share) | **Unlimited** is active, enjoy unlimited pets and reports | No | Inbox |
+| A8 | `subscriptionRenewalUpcoming` | 7 days before an **annual** renewal (monthly: none) | Your Unlimited plan renews on 12 Nov | No (links to manage subscription) | Inbox + email |
+| A9 | `subscriptionPaymentIssue` | Billing retry / grace period started | We couldn't renew Unlimited. Update your payment method to keep your features. | **Yes**: "Update payment" deep-links to the store/provider management page | Inbox + email + push. **Urgent (D11).** |
+| A10 | `subscriptionEnded` | Entitlement lapsed (cancelled, expired, refunded) | Unlimited has ended. Your data is safe; here's what changes on Free. | No (links to the paywall and to "what changes") | Inbox + email |
+| A11 | `subscriptionTrialEnding` *(only if trials are offered)* | 3 days before a trial converts | Your free trial ends on 12 Nov | No | Inbox + push |
+
+Subscription notices are sent only to the **subscribing account**, never to co-carers. A10 MUST state that no data is
+deleted, and what Free limits apply.
+
+#### 3.5.3 Requirements
+
+| ID | Requirement |
+|---|---|
+| FR-ACC-1 | A1–A6 cannot be turned off (§8.3). They are excluded from grouping, mute, digests and rate limits. |
+| FR-ACC-2 | A1 counts in the bell number until the user answers. "This was me" resolves it. "Secure my account" resolves it after the flow completes. An unanswered A1 auto-resolves after 14 days. |
+| FR-ACC-3 | A1 is not sent for the very first sign-in after signup, or when the device label matches a label seen in the last 90 days. If the label cannot be determined, it is treated as "Unknown device" and A1 **is** sent. |
+| FR-ACC-4 | Security emails contain no sign-in links, codes or buttons that authenticate. They tell the user to open the app, or to reset the password from the sign-in screen (N11). A4's "Cancel this change" link is single-use, cancels only the change, and does not sign anyone in. |
+| FR-ACC-5 | Email addresses in notices are masked (`f•••@g•••.com`). Device labels are coarse (OS + browser/app family). No IP or location is stored or shown (N13). |
+| FR-ACC-6 | Subscription events are created from a **server-side entitlement source** (provider webhook or server receipt validation), and are idempotent per provider event id. Without one, A7–A11 are not emitted, and the client MUST NOT synthesise them. |
+| FR-ACC-7 | A9 is pinned as urgent until the entitlement recovers (auto-resolved → "Payment updated, you're all set") or ends (then A10). |
+| FR-ACC-8 | A8 and A10 copy follow consumer-law expectations (clear renewal date, amount if the provider gives it, how to cancel). Copy is reviewed alongside `assets/legal/`. |
+| FR-ACC-9 | Account rows are never shown to anyone except the account holder, and are deleted with the account (A6 is email only for this reason). |
 
 ### 3.4 Type → kind migration matrix
 
@@ -278,7 +336,8 @@ An item counts only while it is **unread, not archived, and not resolved**.
 | Item | Bell number | Bell dot | Activity tab indicator | For you tab indicator |
 |---|---|---|---|---|
 | Needs response (R1, R8, R18 bump, D10 pending) | ✔ counts | — | ✔ counts | — |
-| Urgent (D11), whether or not it needs a response | ✔ counts | — | ✔ counts | — |
+| Urgent (D11), whether or not it needs a response (includes A9) | ✔ counts | — | ✔ counts | — |
+| A1 new sign-in, unanswered | ✔ counts | — | ✔ counts | — |
 | Other relationship / administrative | — | ✔ if bell number = 0 | dot | — |
 | Suggestion in state `new` | — | ✔ if bell number = 0 | — | dot |
 | Resolved, archived, care reminder | — | — | — | — |
@@ -429,6 +488,8 @@ The notification settings screen shows a matrix of **category × channel**:
 | Access & membership changes (R2–R7, R9–R12, R14–R16) | always | on | off | — |
 | Organisation & foster (administrative) | always | on | per existing prefs | — |
 | Agatha Suggestions | on | **weekly digest** (off / weekly digest / instant) | off¹ | inbox + weekly digest |
+| Account security (A1–A6) | always | on (A1 always) | always | locked, mandatory |
+| Subscription (A7–A11) | always | A9/A11 on | A8–A10 on | — |
 | Care reminders | — (not in inbox) | existing reminder settings | existing | unchanged |
 
 ¹ Email digest defaults to **on** for users with no push-capable device (N8, FR-DG-5).
@@ -520,6 +581,9 @@ The notification settings screen shows a matrix of **category × channel**:
 | 4 | Inline actions + Needs your response *(core)*; grouping, R4/R18 *(enhancement)* | AC-IA-*, AC-GR-* |
 | 5 | Server-generated suggestions S1–S7, rate limits, cards, feedback | AC-SG-*, AC-FB-* |
 | 6 | Settings matrix, mandatory items *(core)*; email + weekly digest *(enhancement)* | AC-SE-*, AC-DG-* |
+| 7 | Account security A1–A3, A6: device label on sessions, "Secure my account" flow, security emails *(core)* | AC-ACS-* |
+| 8 | Subscription A7–A11 *(core, **blocked** until the billing provider is chosen and a server entitlement source exists)* | AC-SUB-* |
+| — | A4/A5 ship with the email-change feature (not yet built), using the rules in §3.5 | AC-ACS-8/9 |
 
 **BDD strategy.** PR1 creates `notifications_v2.feature`. In the same PR, scenarios in `notifications.feature` that
 assert care rows in the inbox or badge = unread count are tagged `@legacy` and excluded from the coverage gate.
@@ -527,6 +591,8 @@ Each later PR adds its v2 scenarios. PR6 deletes the `@legacy` scenarios. `check
 at any PR. If the net count drops in PR1, PR1 adds enough v2 scenarios (AC-CR, AC-MG) to compensate.
 
 **PR3 also includes:** the §3.4 type map, explicit `type` at every emitter, and the "no `general`" guard test.
+
+**PR7 is security-sensitive.** Read `.cursor/agent-kernel/protocols/security.md` and `data-lifecycle.md` first. A DPIA note is required for storing the device label (N13).
 
 **Size watch.** `notification_panel.dart` is split when tabs land in PR2 (tab shell, Activity list, For you list,
 row widgets), before inline actions are added in PR4.
@@ -698,15 +764,43 @@ Written in Given/When/Then form so they can be turned into BDD scenarios with mi
   - [ ] `features/journeys.md`: care-in-inbox, chips and combined badge journeys rewritten.
   - [ ] `cross-domain/changes/program-contract.md` §3: a footnote pointing to this spec over the old diagram.
   - [ ] Help/FAQ l10n strings (EN/FR) on reminders, snooze and "in-app notifications for due items" updated.
-  - [ ] `changes/deferred.md`: quiet hours, R13 request flow, a "dot only for needs-response" badge option, S7 recipients revisit, and non-relationship account events (sign-in, email change, subscription).
+  - [ ] `changes/deferred.md`: quiet hours, R13 request flow, a "dot only for needs-response" badge option, S7 recipients revisit, approximate sign-in location (pending DPIA), and A4/A5 (pending the email-change feature).
+  - [ ] `docs/domains/subscription`: link to A7–A11 and the server-entitlement prerequisite.
   - [ ] People domain docs: cross-link noting that ownership transfer is immediate in the API (no accept step), so R13 stays future. The contradiction is tracked on the People backlog.
   - [ ] `changes/plans.md`: the link points to the accepted revision.
 - **AC-MG-6** — Given `householdInviteReceived` and `shareInviteAccepted` rows (today wrongly defaulted to `care`), then after migration both are `relationship` and visible in Activity.
+
+### 13.15a Account security (AC-ACS)
+
+- **AC-ACS-1** — Given I have only signed in from "Safari on iOS", when I sign in from "Chrome on Windows", then I get an A1 row, an email, and a push on my iPhone. The row shows the device label and time, with no IP or location.
+- **AC-ACS-2** — Given A1, when I tap **This was me**, then it resolves and the bell number decrements.
+- **AC-ACS-3** — Given A1, when I tap **Secure my account**, then all other sessions are revoked, I must set a new password, and A1 resolves when the flow completes.
+- **AC-ACS-4** — Given I sign in again from "Chrome on Windows" within 90 days, then no A1 is sent. My very first sign-in after signup also sends no A1.
+- **AC-ACS-5** — Given I change my password, then I get A2 in the inbox and by email, and I cannot turn either off in settings.
+- **AC-ACS-6** — Given a revoked refresh token is replayed (reuse detection), then the session family is revoked and I get A3 by email and in the inbox. Given I simply log out, then no A3 is sent.
+- **AC-ACS-7** — Given any security email, then it contains no sign-in link, code or authenticating button. The email address is masked.
+- **AC-ACS-8** — *(When email change exists.)* Given I request an email change, then the old address gets A4 with a single-use "Cancel this change" link. Using that link cancels the change and does not sign anyone in.
+- **AC-ACS-9** — *(When email change exists.)* Given the change is confirmed, then both addresses get A5.
+- **AC-ACS-10** — Given I request account deletion, then I receive A6 by email only, and no inbox row is created.
+- **AC-ACS-11** — Given another member of Luna's care team, then they never see my account rows (API returns 404 by id).
+- **AC-ACS-12** — Given Luna is muted or suggestions are off, then account notices are unaffected.
+
+### 13.15b Subscription (AC-SUB) — run once a server entitlement source exists
+
+- **AC-SUB-1** — Given my purchase is confirmed by the server entitlement source, then I get A7 once. Replaying the same provider event creates no duplicate.
+- **AC-SUB-2** — Given an annual plan renewing on 12 Nov, then on 5 Nov I get A8 (inbox + email) with the date and how to cancel. A monthly plan gets no A8.
+- **AC-SUB-3** — Given a billing retry starts, then A9 is pinned as urgent, counts in the bell, and sends a push. **Update payment** opens the store/provider page.
+- **AC-SUB-4** — Given payment then succeeds, then A9 resolves to "Payment updated, you're all set" and the bell decrements. If the grace period ends instead, A9 resolves and A10 is created.
+- **AC-SUB-5** — Given my subscription ends, then A10 states that no data is deleted and lists the Free limits.
+- **AC-SUB-6** — Given co-carers on my pets, then they receive no subscription notices.
+- **AC-SUB-7** — Given no server entitlement source is configured, then no A7–A11 rows are ever created, and the client does not create them from RevenueCat state.
+- **AC-SUB-8** — Given trials are not offered, then A11 never fires.
 
 ### 13.15 Test hooks (AC-TH)
 
 - **AC-TH-1** — In UAT/test, the care-intelligence thresholds and the generation job can be overridden and triggered on demand (admin/test-only endpoint, disabled in production), so each S-type can be produced from seeded data.
 - **AC-TH-2** — The invite clock (day 7 and day 14) can be advanced in tests without real waiting.
+- **AC-TH-3** — Test-only endpoints can simulate provider subscription events (activate, renewal due, billing retry, recovery, expiry), and can set a session's device label.
 
 ## 14. Open questions — resolved
 
@@ -757,3 +851,10 @@ Still open (non-blocking): whether to add a "dot only for needs-response" badge 
 | PR3 scope label | R1–R12, R14–R17 (R13 future). |
 | Requirements drift check | New §0.1 traceability table with core/preserved/enhancement tiers and the scope rule. |
 | Status workflow | Accepted only after the AC-MG-5 docs PR. |
+
+### Rev 2.2
+
+| Change | Detail |
+|---|---|
+| Account notifications added to scope (user decision) | New `account` kind (N10); security A1–A6 and subscription A7–A11 (§3.5); N11–N13; settings, badge matrix, rollout PR7/PR8, AC-ACS / AC-SUB, AC-TH-3. |
+| Code-grounded constraints | Email change is not built (A4/A5 are conditional); no device data on sessions (new `device_label`, N13); logout revokes all sessions (it must not trigger A3); subscriptions are client-side RevenueCat (PR8 is blocked on a server entitlement source). |
