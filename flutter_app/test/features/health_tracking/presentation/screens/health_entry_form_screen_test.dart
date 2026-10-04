@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
+import 'package:pet_profile_app/features/health_tracking/domain/entities/command_outcome.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/repositories/health_repository.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/usecases/create_health_entry.dart';
@@ -70,8 +71,9 @@ class _TestHealthEntriesNotifier extends HealthEntriesNotifier {
   Future<List<HealthEntry>> build() async => [];
 
   @override
-  Future<void> updateEntry(HealthEntry entry) async {
+  Future<CommandOutcome> updateEntry(HealthEntry entry) async {
     lastUpdated = entry;
+    return const CommandOutcome(committed: true);
   }
 }
 
