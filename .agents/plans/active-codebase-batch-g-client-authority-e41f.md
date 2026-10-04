@@ -44,16 +44,16 @@ Finish Packages 7 and 8 (D2, D18, D19):
 
 ```yaml
 autonomy: active
-current_phase: "1"
+current_phase: 1
 last_completed_phase: null
 halt_reason: null
-next_action: "bootstrap: create integration branch + control issue, then phase 1"
+next_action: "continue phase 1 on branch cursor/active-codebase-g1-pet-freshness-e41f"
 artifact_ref:
-  branch: null
+  branch: cursor/active-codebase-g1-pet-freshness-e41f
   plan_path: .agents/plans/active-codebase-batch-g-client-authority-e41f.md
-  plan_commit: null
+  plan_commit: a781f83cc554dd44befdace959905a1b9f27f4dc
   snapshot_path: .agents/plans/active-codebase-batch-g-client-authority-e41f.snapshot.json
-  snapshot_commit: null
+  snapshot_commit: a781f83cc554dd44befdace959905a1b9f27f4dc
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
