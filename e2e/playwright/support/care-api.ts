@@ -149,6 +149,30 @@ export async function getCareItem(baseURL: string, token: string, entryId: strin
   return res.body as unknown as CareItem;
 }
 
+export interface HealthEntryOccurrenceRow {
+  id: string;
+  health_entry_id: string;
+  scheduled_date: string;
+  scheduled_time: string | null;
+  status: string;
+  missed?: boolean;
+}
+
+/** Occurrence rows for an entry — respects [withCareClock] when set. */
+export async function listHealthEntryOccurrences(
+  baseURL: string,
+  token: string,
+  entryId: string,
+  options: { status?: 'open' | 'past' } = {},
+): Promise<HealthEntryOccurrenceRow[]> {
+  const qs = options.status ? `?status=${encodeURIComponent(options.status)}` : '';
+  const res = expectOk(
+    'listHealthEntryOccurrences',
+    await send(baseURL, token, 'GET', `/${entryId}/occurrences${qs}`),
+  );
+  return res.body as HealthEntryOccurrenceRow[];
+}
+
 /** Read the actual away-window projection, including materialised occurrence ids. */
 export async function getCarePeriodCoverage(
   baseURL: string,

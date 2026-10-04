@@ -1613,13 +1613,13 @@ abstract class AppLocalizations {
   /// No description provided for @careSuggestionAccept.
   ///
   /// In en, this message translates to:
-  /// **'Add rhythm'**
+  /// **'Add routine'**
   String get careSuggestionAccept;
 
   /// No description provided for @careSuggestionRhythmAdded.
   ///
   /// In en, this message translates to:
-  /// **'{name} rhythm added'**
+  /// **'{name} routine added'**
   String careSuggestionRhythmAdded(String name);
 
   /// No description provided for @careSuggestionRespondFailed.
@@ -1637,7 +1637,7 @@ abstract class AppLocalizations {
   /// No description provided for @careSuggestionEditForbidden.
   ///
   /// In en, this message translates to:
-  /// **'You can view this pet\'s care but cannot add rhythms.'**
+  /// **'You can view this pet\'s care but cannot add routines.'**
   String get careSuggestionEditForbidden;
 
   /// No description provided for @careSuggestionDismiss.
@@ -1667,32 +1667,62 @@ abstract class AppLocalizations {
   /// No description provided for @careSuggestionGenericWhy.
   ///
   /// In en, this message translates to:
-  /// **'This recurring rhythm can help you stay organised between vet visits.'**
+  /// **'This recurring routine puts steady care on your calendar so important tasks are less likely to slip when life gets busy.'**
   String get careSuggestionGenericWhy;
 
   /// No description provided for @careSuggestionWeightMonitoringWhy.
   ///
   /// In en, this message translates to:
-  /// **'Regular weight checks help you notice gradual changes early.'**
+  /// **'Monthly weigh-ins build a simple record, making gradual weight changes easier to notice between vet visits.'**
   String get careSuggestionWeightMonitoringWhy;
 
   /// No description provided for @careSuggestionDentalWhy.
   ///
   /// In en, this message translates to:
-  /// **'A steady dental review rhythm keeps mouth care on your calendar.'**
+  /// **'An annual dental review gives you a set moment to check teeth and gums and note anything worth mentioning to your vet.'**
   String get careSuggestionDentalWhy;
 
   /// No description provided for @careSuggestionWellnessWhy.
   ///
   /// In en, this message translates to:
-  /// **'A yearly wellness review gives you a calm checkpoint for routine care.'**
+  /// **'A yearly wellness review is a calm checkpoint to confirm vaccines, parasite prevention, and day-to-day health still match your pet\'s needs.'**
   String get careSuggestionWellnessWhy;
 
-  /// No description provided for @careSuggestionCadenceSummary.
+  /// No description provided for @careSuggestionCadenceDaily.
   ///
   /// In en, this message translates to:
-  /// **'Every {interval} {frequency}'**
-  String careSuggestionCadenceSummary(int interval, String frequency);
+  /// **'{interval, plural, =1{Every day} other{Every {interval} days}}'**
+  String careSuggestionCadenceDaily(int interval);
+
+  /// No description provided for @careSuggestionCadenceWeekly.
+  ///
+  /// In en, this message translates to:
+  /// **'{interval, plural, =1{Every week} other{Every {interval} weeks}}'**
+  String careSuggestionCadenceWeekly(int interval);
+
+  /// No description provided for @careSuggestionCadenceMonthly.
+  ///
+  /// In en, this message translates to:
+  /// **'{interval, plural, =1{Every month} other{Every {interval} months}}'**
+  String careSuggestionCadenceMonthly(int interval);
+
+  /// No description provided for @careSuggestionCadenceYearly.
+  ///
+  /// In en, this message translates to:
+  /// **'{interval, plural, =1{Every year} other{Every {interval} years}}'**
+  String careSuggestionCadenceYearly(int interval);
+
+  /// No description provided for @careSuggestionWhyForPet.
+  ///
+  /// In en, this message translates to:
+  /// **'For {petName}'**
+  String careSuggestionWhyForPet(String petName);
+
+  /// No description provided for @careSuggestionWhyRoutineSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{routine} · {cadence}'**
+  String careSuggestionWhyRoutineSummary(String routine, String cadence);
 
   /// No description provided for @careSafeguardTitle.
   ///

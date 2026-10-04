@@ -1345,10 +1345,17 @@ Recorded before C0 starts; every item below is approved with the phases (execute
 
 ```yaml
 autonomy: active
+<<<<<<< HEAD
 current_phase: "landing 3b PR"
 last_completed_phase: "C6 + D4"
 halt_reason: null
 next_action: "Open integration → main PR; ./scripts/pre-push.sh; /babysit-uat"
+=======
+current_phase: "landing 3b PR — babysit merge"
+last_completed_phase: "C6 + D4 + §18.11 follow-ups"
+halt_reason: null
+next_action: "/babysit-uat on PR #1475 → merge → pre-UAT watch; then complete-plan"
+>>>>>>> origin/main
 artifact_ref:
   branch: claude/eager-edison-mf34j6
   plan_path: .agents/plans/care-next-occurrence-c1a7.md

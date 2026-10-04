@@ -20,11 +20,23 @@ export class CareAgendaPage {
   }
 
   /** Tap the row body (opens the occurrence screen). */
-  async openRow(entryId: string): Promise<void> {
+  async openRow(entryId: string, entryName?: string): Promise<void> {
     await refreshFlutterAccessibility(this.page);
-    await this.page
-      .locator(`[flt-semantics-identifier="care_agenda_row_${entryId}"]`)
-      .click();
+    const byId = this.page.locator(
+      `[flt-semantics-identifier="care_agenda_row_${entryId}"]`,
+    );
+    if ((await byId.count()) > 0) {
+      await byId.click();
+    } else if (entryName) {
+      const opensDate = /Opens this date|Ouvre cette date/i;
+      await this.page
+        .getByRole('button', { name: opensDate })
+        .filter({ hasText: new RegExp(escapeRegExp(entryName), 'i') })
+        .first()
+        .click();
+    } else {
+      await byId.click();
+    }
     await refreshFlutterAccessibility(this.page);
   }
 
@@ -49,7 +61,7 @@ export class CareAgendaPage {
       await expect(
         this.page.locator('[flt-semantics-identifier="care_done_snackbar"]').or(
           this.page.getByText(new RegExp(`${escapeRegExp(entryName)}.*done`, 'i')),
-        ),
+        ).first(),
       ).toBeVisible();
     }).toPass({ timeout: 45_000 });
   }

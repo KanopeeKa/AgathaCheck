@@ -324,8 +324,8 @@
   "careSourceAgathaAdjusted": "Adjusted with Agatha",
   "careSourceSystemDefault": "Default schedule",
   "careSuggestionTitle": "Suggested by Agatha",
-  "careSuggestionAccept": "Add rhythm",
-  "careSuggestionRhythmAdded": "{name} rhythm added",
+  "careSuggestionAccept": "Add routine",
+  "careSuggestionRhythmAdded": "{name} routine added",
   "@careSuggestionRhythmAdded": {
     "placeholders": {
       "name": { "type": "String" }
@@ -333,20 +333,40 @@
   },
   "careSuggestionRespondFailed": "Could not update this suggestion. Try again.",
   "careSafeguardDismissFailed": "Could not dismiss this. Try again.",
-  "careSuggestionEditForbidden": "You can view this pet's care but cannot add rhythms.",
+  "careSuggestionEditForbidden": "You can view this pet's care but cannot add routines.",
   "careSuggestionDismiss": "Dismiss",
   "careSuggestionNotRelevant": "Not relevant",
   "careSuggestionWhy": "Why?",
   "careSuggestionWhyTitle": "Why Agatha suggests this",
-  "careSuggestionGenericWhy": "This recurring rhythm can help you stay organised between vet visits.",
-  "careSuggestionWeightMonitoringWhy": "Regular weight checks help you notice gradual changes early.",
-  "careSuggestionDentalWhy": "A steady dental review rhythm keeps mouth care on your calendar.",
-  "careSuggestionWellnessWhy": "A yearly wellness review gives you a calm checkpoint for routine care.",
-  "careSuggestionCadenceSummary": "Every {interval} {frequency}",
-  "@careSuggestionCadenceSummary": {
+  "careSuggestionGenericWhy": "This recurring routine puts steady care on your calendar so important tasks are less likely to slip when life gets busy.",
+  "careSuggestionWeightMonitoringWhy": "Monthly weigh-ins build a simple record, making gradual weight changes easier to notice between vet visits.",
+  "careSuggestionDentalWhy": "An annual dental review gives you a set moment to check teeth and gums and note anything worth mentioning to your vet.",
+  "careSuggestionWellnessWhy": "A yearly wellness review is a calm checkpoint to confirm vaccines, parasite prevention, and day-to-day health still match your pet's needs.",
+  "careSuggestionCadenceDaily": "{interval, plural, =1{Every day} other{Every {interval} days}}",
+  "@careSuggestionCadenceDaily": {
+    "placeholders": { "interval": { "type": "int" } }
+  },
+  "careSuggestionCadenceWeekly": "{interval, plural, =1{Every week} other{Every {interval} weeks}}",
+  "@careSuggestionCadenceWeekly": {
+    "placeholders": { "interval": { "type": "int" } }
+  },
+  "careSuggestionCadenceMonthly": "{interval, plural, =1{Every month} other{Every {interval} months}}",
+  "@careSuggestionCadenceMonthly": {
+    "placeholders": { "interval": { "type": "int" } }
+  },
+  "careSuggestionCadenceYearly": "{interval, plural, =1{Every year} other{Every {interval} years}}",
+  "@careSuggestionCadenceYearly": {
+    "placeholders": { "interval": { "type": "int" } }
+  },
+  "careSuggestionWhyForPet": "For {petName}",
+  "@careSuggestionWhyForPet": {
+    "placeholders": { "petName": { "type": "String" } }
+  },
+  "careSuggestionWhyRoutineSummary": "{routine} · {cadence}",
+  "@careSuggestionWhyRoutineSummary": {
     "placeholders": {
-      "interval": { "type": "int" },
-      "frequency": { "type": "String" }
+      "routine": { "type": "String" },
+      "cadence": { "type": "String" }
     }
   },
   "careSafeguardTitle": "Worth checking with your vet",

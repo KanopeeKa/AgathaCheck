@@ -33,13 +33,19 @@ export const AREAS = {
   health: {
     paths: [
       'flutter_app/lib/features/health_tracking/',
+      'flutter_app/lib/features/care_item/',
       'flutter_app/lib/features/care_taxonomy/',
       'server/routes/healthEntries',
       'server/routes/healthIssues',
       'server/routes/healthFiles',
       'server/lib/care/',
     ],
-    specs: ['health.tracking.spec.ts', 'care.item.absence.spec.ts', 'guardian.dashboard.spec.ts'],
+    specs: [
+      'health.tracking.spec.ts',
+      'care.agenda.spec.ts',
+      'care.item.absence.spec.ts',
+      'guardian.dashboard.spec.ts',
+    ],
   },
   petCare: {
     paths: ['flutter_app/lib/features/pet_care/', 'server/routes/careContext/'],
@@ -48,6 +54,7 @@ export const AREAS = {
       'away.plan.detail.v2.spec.ts',
       'away.care.planning.spec.ts',
       'care.item.absence.spec.ts',
+      'care.agenda.spec.ts',
       'guardian.dashboard.spec.ts',
     ],
   },

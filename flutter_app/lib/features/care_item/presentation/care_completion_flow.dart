@@ -186,7 +186,7 @@ class CareCompletionFlow {
       final when = next.date == schedule.asOf.date && next.time != null
           ? next.time!
           : DateFormat.MMMd().format(next.date);
-      if (result.nextChoiceApplied != null) {
+      if (result.nextChoiceApplied == 'keep') {
         second = l.careNextStays(when);
         changeOccurrenceId ??= next.id;
       } else {

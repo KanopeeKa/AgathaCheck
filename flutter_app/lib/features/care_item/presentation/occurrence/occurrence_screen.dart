@@ -43,8 +43,15 @@ class _OccurrenceScreenState extends ConsumerState<OccurrenceScreen> {
     _load();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
+      final router = GoRouter.maybeOf(context);
+      if (router == null) return;
       final source =
-          GoRouterState.of(context).uri.queryParameters['source'] ?? 'unknown';
+          router
+              .routerDelegate
+              .currentConfiguration
+              .uri
+              .queryParameters['source'] ??
+          'unknown';
       ref.read(analyticsServiceProvider).capture('occurrence_screen_opened', {
         'source': source,
       });
@@ -81,7 +88,21 @@ class _OccurrenceScreenState extends ConsumerState<OccurrenceScreen> {
       identifier: 'occurrence_screen',
       child: Scaffold(
         key: const Key('occurrence_screen'),
-        appBar: AppBar(title: Text(title)),
+        appBar: AppBar(
+          title: Text(title),
+          leading: BackButton(
+            onPressed: () {
+              final router = GoRouter.maybeOf(context);
+              handleShellBack(
+                context,
+                returnTo: router == null
+                    ? null
+                    : shellReturnToFromState(GoRouterState.of(context)),
+                defaultPath: '/pet/${widget.petId}/events/${widget.entryId}',
+              );
+            },
+          ),
+        ),
         body: switch (outcome) {
           null => const Center(child: CircularProgressIndicator()),
           CareFailed(failure: CareNotOpenFailure(gone: true)) => _Message(
@@ -138,6 +159,7 @@ class _Header extends StatelessWidget {
     };
     final when = [DateFormat.yMMMd().format(occ.date), ?occ.time].join(' · ');
     return Semantics(
+      identifier: 'occurrence_about_item',
       header: true,
       child: InkWell(
         key: const Key('occurrence_about_item'),

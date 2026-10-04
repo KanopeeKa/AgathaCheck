@@ -134,7 +134,7 @@ server/scripts/seed.js   # CLI entry point
 
 Idempotent `INSERT … ON CONFLICT DO UPDATE` — safe to re-run without truncate. Care items are recreated (delete by fixed id, then create through the care commands), so their occurrences are always consistent.
 
-**Care is seeded through the app's commands only** (`server/db/seeds/helpers/care-commands.js`): create, record doses, mark done, plan another date, postpone. Seeds never write `health_occurrences` with SQL — `scripts/check_occurrence_writes.js` enforces it. Commands are replayed at past pet-home clocks (`Europe/Paris`), so time-dependent states come out right.
+**Care is seeded through the app's commands only** (`server/db/seeds/helpers/care-commands.js`): create, record completions per occurrence, mark done, plan another date, postpone. Seeds never write `health_occurrences` with SQL — `scripts/check_occurrence_writes.js` enforces it. History in the app comes from completed occurrences (not `health_history`). Commands are replayed at past pet-home clocks (`Europe/Paris`), so time-dependent states come out right.
 
 ---
 

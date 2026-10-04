@@ -36,10 +36,10 @@ import {
   completeNextOccurrence,
   createCareItem,
   createPetInZone,
+  listHealthEntryOccurrences,
   undoLast,
   withCareClock,
 } from '../support/care-api';
-import { refreshFlutterAccessibility } from '../support/flutter';
 import { zoneAtMidAfternoon } from '../support/care-zone';
 
 test.describe('Health tracking', () => {
@@ -311,13 +311,7 @@ test.describe('Health tracking', () => {
 
   test('pet list shows "You\'re all caught up" when no entries are due', async ({ page, testUser }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
-    const pet = await createPet(baseURL, testUser.accessToken, 'Bella');
-    const futureDate = new Date();
-    futureDate.setDate(futureDate.getDate() + 30);
-    await createHealthEntry(baseURL, testUser.accessToken, pet.id, {
-      name: 'Future Treatment',
-      nextDueDate: futureDate.toISOString().slice(0, 10),
-    });
+    await createPet(baseURL, testUser.accessToken, 'Bella');
 
     await loginAs(page, testUser);
     const petList = new PetListPage(page);
@@ -346,7 +340,7 @@ test.describe('Health tracking', () => {
       times: ['08:00', '20:00'],
     });
 
-    const occurrencesBefore = await getHealthEntryOccurrences(
+    const occurrencesBefore = await listHealthEntryOccurrences(
       baseURL,
       testUser.accessToken,
       entry.id,
@@ -371,12 +365,12 @@ test.describe('Health tracking', () => {
     const agenda = new CareAgendaPage(page);
     await agenda.expectDoneSnackbar(entryName);
 
-    const occurrencesAfter = await getHealthEntryOccurrences(
+    const occurrencesAfter = await listHealthEntryOccurrences(
       baseURL,
       testUser.accessToken,
       entry.id,
     );
-    const pastOccurrences = await getHealthEntryOccurrences(
+    const pastOccurrences = await listHealthEntryOccurrences(
       baseURL,
       testUser.accessToken,
       entry.id,

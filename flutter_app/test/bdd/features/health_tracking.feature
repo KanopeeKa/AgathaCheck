@@ -153,9 +153,9 @@ Feature: Health Tracking
 
   @P1
   Scenario: Viewing history for a health entry
-    Given "Bella" has a health entry "Heartworm" that has been marked taken 3 times
+    Given "Bella" has a health entry "Heartworm" with 3 completed occurrences
     When the user views the history for "Heartworm"
-    Then the user should see 3 history records with timestamps
+    Then the user should see 3 completed occurrence records
 
   # ── Health Issues ────────────────────────────────────────────
 

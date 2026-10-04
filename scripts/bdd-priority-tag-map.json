@@ -408,5 +408,18 @@
   "organisation_member_privacy.feature": {
     "Member updates privacy settings from Account": "P1",
     "Profile Leave navigates to Account org settings": "P1"
+  },
+  "care_agenda.feature": {
+    "A care row opens its date, and the date links to the care item": "P1",
+    "Care that needs a weight opens its date to enter the weight": "P1",
+    "Several dates to sort out open the care item": "P1",
+    "Upcoming care can be marked as done early": "P1"
+  },
+  "care_schedules.feature": {
+    "Missed fixed-schedule care can be marked as done together on the care item": "P1",
+    "Care older than three days can still be recorded from history": "P1",
+    "Care done after its due date keeps the next planned date and offers to change it": "P1",
+    "A remembered choice is applied without asking again": "P1",
+    "Changing when care was done moves the next date of after-it's-done care": "P1"
   }
 }

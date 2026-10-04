@@ -163,7 +163,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
-      find.text("You can view this pet's care but cannot add rhythms."),
+      find.text("You can view this pet's care but cannot add routines."),
       findsOneWidget,
     );
   });

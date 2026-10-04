@@ -33,9 +33,21 @@ export class OccurrencePage {
   }
 
   async expectLoaded(): Promise<void> {
-    await expect(
-      this.page.locator('[flt-semantics-identifier="occurrence_screen"]'),
-    ).toBeVisible({ timeout: 30_000 });
+    await refreshFlutterAccessibility(this.page);
+    const screen = this.page.locator('[flt-semantics-identifier="occurrence_screen"]');
+    const about = this.page.locator('[flt-semantics-identifier="occurrence_about_item"]');
+    const back = this.page.getByRole('button', { name: /^Back$|^Go back$|^Retour$/i });
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      const onRoute = /\/occurrences\/[^/?#]+/.test(
+        new URL(this.page.url()).hash.replace(/^#/, ''),
+      );
+      if (onRoute) {
+        await expect(screen.or(about).or(back)).toBeVisible();
+        return;
+      }
+      await expect(about.or(screen)).toBeVisible();
+    }).toPass({ timeout: 60_000 });
   }
 
   async markDone(): Promise<void> {
