@@ -193,6 +193,32 @@ current types, and appear in the Activity tab.
 Thresholds (`N`, `X`, percentages, windows) are configuration values owned by care intelligence, not by the client.
 They MUST be overridable per environment so UAT/E2E can trigger each type with seeded data (§13.15).
 
+### 3.4 Type → kind migration matrix
+
+Wire `type` values keep their current camelCase spelling (N3). Only the server's type→kind map
+(`server/lib/notificationKind.js`) changes. Every emitter MUST pass an explicit `type`; `general` is not allowed
+for new rows after PR3.
+
+| Current `type` (emitter) | Current kind | v2 kind | v2 `type` |
+|---|---|---|---|
+| `overdue`, `due_soon` (`checkDueNotifications.js`) | care | — (no inbox row; push only) | unchanged |
+| `shareInviteReceived` | administrative | relationship | unchanged |
+| `shareInviteAccepted`, `shareInviteDeclined` | care (not in admin set) | relationship | unchanged |
+| `householdInviteReceived` (`householdInviteService.js`) | care (not in admin set) | relationship | unchanged |
+| `absenceGuestGranted` | administrative | relationship | unchanged |
+| `general` — ownership transferred (`pets/transferRouter.js`) | care | relationship | `ownershipTransferCompleted` |
+| `general` — passed away (`petDataLifecycle.js`) | care | relationship | `petPassedAway` |
+| `general` — placements, adoption journeys, foster placements, org pets (`organizations/**`, `fosterPlacements.js`) | care | administrative | specific type per emitter, listed in PR3 |
+| `general` — share link accepted, "X is now following" (`services/sharing/shareLinkService.js`) | care | relationship | `shareInviteAccepted` (R2) |
+| `general` — "Stopped following" to owner (`services/sharing/shareAccessService.js`) | care | relationship | `shareMemberLeft` (R7) |
+| `general` — "Sharing ended" to removed user (`services/sharing/shareAccessService.js`) | care | relationship | `shareAccessRemoved` (R6, mandatory) |
+| `general` — care-intelligence evaluation harness | care | — (test only) | removed |
+| `fosterRequest*`, `fosterInvitation*`, `fosterApproval*`, `session*Soon`, `agreementWithdrawn`, `connectionRequestReceived`, `pending*Received`, `adminMessageReceived` | administrative | administrative | unchanged |
+
+The table is complete for the `type: 'general'` emitters on `main` at commit `4f3325d`+3 (transfer ×2, passed-away ×1, foster placements ×4, adoption journeys ×3, placement actions ×5, share access ×2, share link ×1). Legacy rows are classified by **emitter title** where `type` is `general`; the migration ships a fixture per emitter. PR3 MUST include a test that fails if any
+`createNotification` call omits `type` or uses `general`.
+
+
 ### 3.5 Account catalogue (security & subscription)
 
 **What exists today**, checked against the code:
@@ -246,31 +272,6 @@ deleted, and what Free limits apply.
 | FR-ACC-7 | A9 is pinned as urgent until the entitlement recovers (auto-resolved → "Payment updated, you're all set") or ends (then A10). |
 | FR-ACC-8 | A8 and A10 copy follow consumer-law expectations (clear renewal date, amount if the provider gives it, how to cancel). Copy is reviewed alongside `assets/legal/`. |
 | FR-ACC-9 | Account rows are never shown to anyone except the account holder, and are deleted with the account (A6 is email only for this reason). |
-
-### 3.4 Type → kind migration matrix
-
-Wire `type` values keep their current camelCase spelling (N3). Only the server's type→kind map
-(`server/lib/notificationKind.js`) changes. Every emitter MUST pass an explicit `type`; `general` is not allowed
-for new rows after PR3.
-
-| Current `type` (emitter) | Current kind | v2 kind | v2 `type` |
-|---|---|---|---|
-| `overdue`, `due_soon` (`checkDueNotifications.js`) | care | — (no inbox row; push only) | unchanged |
-| `shareInviteReceived` | administrative | relationship | unchanged |
-| `shareInviteAccepted`, `shareInviteDeclined` | care (not in admin set) | relationship | unchanged |
-| `householdInviteReceived` (`householdInviteService.js`) | care (not in admin set) | relationship | unchanged |
-| `absenceGuestGranted` | administrative | relationship | unchanged |
-| `general` — ownership transferred (`pets/transferRouter.js`) | care | relationship | `ownershipTransferCompleted` |
-| `general` — passed away (`petDataLifecycle.js`) | care | relationship | `petPassedAway` |
-| `general` — placements, adoption journeys, foster placements, org pets (`organizations/**`, `fosterPlacements.js`) | care | administrative | specific type per emitter, listed in PR3 |
-| `general` — share link accepted, "X is now following" (`services/sharing/shareLinkService.js`) | care | relationship | `shareInviteAccepted` (R2) |
-| `general` — "Stopped following" to owner (`services/sharing/shareAccessService.js`) | care | relationship | `shareMemberLeft` (R7) |
-| `general` — "Sharing ended" to removed user (`services/sharing/shareAccessService.js`) | care | relationship | `shareAccessRemoved` (R6, mandatory) |
-| `general` — care-intelligence evaluation harness | care | — (test only) | removed |
-| `fosterRequest*`, `fosterInvitation*`, `fosterApproval*`, `session*Soon`, `agreementWithdrawn`, `connectionRequestReceived`, `pending*Received`, `adminMessageReceived` | administrative | administrative | unchanged |
-
-The table is complete for the `type: 'general'` emitters on `main` at commit `4f3325d`+3 (transfer ×2, passed-away ×1, foster placements ×4, adoption journeys ×3, placement actions ×5, share access ×2, share link ×1). Legacy rows are classified by **emitter title** where `type` is `general`; the migration ships a fixture per emitter. PR3 MUST include a test that fails if any
-`createNotification` call omits `type` or uses `general`.
 
 ## 4. Care reminders after v2
 
