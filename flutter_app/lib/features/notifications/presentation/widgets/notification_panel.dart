@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
-import '../../domain/services/notification_inbox_v2_rules.dart';
-import '../widgets/notification_inbox_tab_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/app_notification.dart';
-import '../../domain/entities/notification_scope.dart';
+import '../../domain/services/notification_inbox_v2_rules.dart';
+import '../providers/notification_inbox_session.dart';
 import '../providers/notification_providers.dart';
 import '../utils/notification_navigation.dart';
-import '../widgets/notification_date_groups.dart';
-import '../widgets/notification_tile.dart';
+import 'notification_inbox_list.dart';
+import 'notification_inbox_tab_bar.dart';
+import 'notification_inbox_v2_explainer.dart';
 
 /// Full-height right slide-over notification panel (opened via bell → endDrawer).
 ///
@@ -23,8 +22,6 @@ class NotificationPanel extends ConsumerStatefulWidget {
 }
 
 class _NotificationPanelState extends ConsumerState<NotificationPanel> {
-  NotificationInboxTab _selectedTab = NotificationInboxTab.activity;
-
   @override
   void initState() {
     super.initState();
@@ -38,6 +35,7 @@ class _NotificationPanelState extends ConsumerState<NotificationPanel> {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final notificationsAsync = ref.watch(notificationsProvider);
+    final selectedTab = ref.watch(notificationInboxSessionTabProvider);
     final prefs = ref.watch(notificationPreferencesProvider).valueOrNull;
     final mutedIds = prefs?.mutedPetIds.toSet() ?? {};
     final visible = notificationsAsync.valueOrNull
@@ -58,12 +56,17 @@ class _NotificationPanelState extends ConsumerState<NotificationPanel> {
             children: [
               _PanelHeader(l: l, theme: theme, onMarkAllRead: _markAllRead),
               NotificationInboxTabBar(
-                selected: _selectedTab,
-                onSelected: (tab) => setState(() => _selectedTab = tab),
+                selected: selectedTab,
+                onSelected: (tab) => ref
+                    .read(notificationInboxSessionTabProvider.notifier)
+                    .state = tab,
                 activityIndicatorCount:
                     NotificationInboxV2Rules.activityTabIndicatorCount(visible),
                 forYouShowDot:
                     NotificationInboxV2Rules.forYouTabShowDot(visible),
+              ),
+              const NotificationInboxV2Explainer(
+                onOpenActions: _openActionsFromPanel,
               ),
               const Divider(height: 1),
               Expanded(
@@ -77,9 +80,10 @@ class _NotificationPanelState extends ConsumerState<NotificationPanel> {
                     onRetry: () =>
                         ref.read(notificationsProvider.notifier).refresh(),
                   ),
-                  data: (all) => _NotificationList(
-                    all: all,
-                    selectedTab: _selectedTab,
+                  data: (all) => NotificationInboxList(
+                    notifications: all,
+                    selectedTab: selectedTab,
+                    onNotificationTap: _onPanelNotificationTap,
                   ),
                 ),
               ),
@@ -88,6 +92,24 @@ class _NotificationPanelState extends ConsumerState<NotificationPanel> {
         ),
       ),
     );
+  }
+
+  static void _openActionsFromPanel(BuildContext context) {
+    Navigator.of(context).pop();
+    navigateToNotificationActions(context);
+  }
+
+  Future<void> _onPanelNotificationTap(
+    BuildContext context,
+    WidgetRef ref,
+    AppNotification n,
+  ) async {
+    if (!n.isRead) {
+      await ref.read(notificationsProvider.notifier).markAsRead(n.id);
+    }
+    if (!context.mounted) return;
+    Navigator.of(context).pop();
+    navigateFromNotification(context, n);
   }
 
   double _panelWidth(BuildContext context) {
@@ -131,217 +153,16 @@ class _PanelHeader extends StatelessWidget {
             ),
           ),
           Align(
-            alignment: AlignmentDirectional.centerEnd,
-            child: Wrap(
-              crossAxisAlignment: WrapCrossAlignment.center,
-              spacing: 4,
-              children: [
-                _headerIconButton(
-                  icon: Icons.settings_outlined,
-                  tooltip: l.notificationSettingsTooltip,
-                  onPressed: () {
-                    final router = GoRouter.of(context);
-                    Navigator.of(context).pop();
-                    router.push('/notifications/settings');
-                  },
-                ),
-                TextButton.icon(
-                  key: const Key('mark_all_read_button'),
-                  icon: const Icon(Icons.done_all, size: 18),
-                  label: Text(l.markAllRead),
-                  onPressed: onMarkAllRead,
-                ),
-                _headerIconButton(
-                  icon: Icons.close,
-                  tooltip: l.close,
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-              ],
+            alignment: Alignment.centerRight,
+            child: TextButton.icon(
+              onPressed: onMarkAllRead,
+              icon: const Icon(Icons.done_all, size: 18),
+              label: Text(l.markAllRead),
             ),
           ),
         ],
       ),
     );
-  }
-}
-
-Widget _headerIconButton({
-  required IconData icon,
-  required String tooltip,
-  required VoidCallback onPressed,
-}) {
-  return Semantics(
-    button: true,
-    label: tooltip,
-    child: ExcludeSemantics(
-      child: IconButton(icon: Icon(icon), onPressed: onPressed),
-    ),
-  );
-}
-
-class _NotificationList extends ConsumerWidget {
-  const _NotificationList({required this.all, required this.selectedTab});
-
-  final List<AppNotification> all;
-  final NotificationInboxTab selectedTab;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final prefs = ref.watch(notificationPreferencesProvider).valueOrNull;
-    final mutedIds = prefs?.mutedPetIds.toSet() ?? {};
-    final theme = Theme.of(context);
-    final l = AppLocalizations.of(context)!;
-
-    final filtered = all
-        .where(
-          (n) =>
-              n.petId == null ||
-              n.petId!.isEmpty ||
-              !mutedIds.contains(n.petId),
-        )
-        .where((n) => NotificationInboxV2Rules.belongsToTab(n, selectedTab))
-        .toList();
-
-    if (filtered.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.notifications_none,
-              size: 64,
-              color: theme.colorScheme.outline,
-            ),
-            const SizedBox(height: 12),
-            Text(l.noNotifications, style: theme.textTheme.bodyLarge),
-            if (selectedTab == NotificationInboxTab.forYou) ...[
-              const SizedBox(height: 4),
-              Text(
-                l.notificationInboxTabForYou,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ],
-          ],
-        ),
-      );
-    }
-
-    final needsResponse = filtered
-        .where(NotificationInboxV2Rules.needsResponse)
-        .where((n) => !NotificationInboxV2Rules.isUrgent(n))
-        .toList();
-    final needsResponseIds =
-        needsResponse.map((notification) => notification.id).toSet();
-
-    final pinnedUrgent = selectedTab == NotificationInboxTab.activity
-        ? filtered
-            .where(
-              (n) =>
-                  NotificationInboxV2Rules.isUrgent(n) &&
-                  !needsResponseIds.contains(n.id),
-            )
-            .toList()
-        : const <AppNotification>[];
-    final pinnedIds = {
-      ...needsResponseIds,
-      ...pinnedUrgent.map((n) => n.id),
-    };
-
-    final grouped = groupNotificationsByDate(
-      context,
-      filtered.where((notification) => !pinnedIds.contains(notification.id)).toList(),
-    );
-
-    return RefreshIndicator(
-      onRefresh: () => ref.read(notificationsProvider.notifier).refresh(),
-      child: ListView(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        children: [
-          if (pinnedUrgent.isNotEmpty) ...[
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-              child: Text(
-                l.notificationUrgent,
-                style: theme.textTheme.labelLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.error,
-                ),
-              ),
-            ),
-            ...pinnedUrgent.map((notification) => _tile(context, ref, notification)),
-          ],
-          if (needsResponse.isNotEmpty) ...[
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-              child: Text(
-                l.notificationNeedsResponse,
-                style: theme.textTheme.labelLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            ...needsResponse.map((notification) => _tile(context, ref, notification)),
-          ],
-          ...grouped.map(
-            (group) => Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-                  child: Text(
-                    group.label,
-                    style: theme.textTheme.labelLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ),
-                ...group.notifications.map(
-                  (notification) => _tile(context, ref, notification),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _tile(
-    BuildContext context,
-    WidgetRef ref,
-    AppNotification notification,
-  ) {
-    return NotificationTile(
-      notification: notification,
-      listScope: _scopeForNotification(notification),
-      showActionNeeded: _needsAction(notification),
-      onTap: () => _onTap(context, ref, notification),
-    );
-  }
-
-  NotificationScope _scopeForNotification(AppNotification n) =>
-      n.organizationId != null && n.organizationId!.isNotEmpty
-      ? NotificationScope.organization
-      : NotificationScope.guardian;
-
-  /// Administrative resolution is independent from a user's read state.
-  bool _needsAction(AppNotification n) =>
-      NotificationInboxV2Rules.needsResponse(n);
-
-  Future<void> _onTap(
-    BuildContext context,
-    WidgetRef ref,
-    AppNotification n,
-  ) async {
-    if (!n.isRead) {
-      await ref.read(notificationsProvider.notifier).markAsRead(n.id);
-    }
-    if (!context.mounted) return;
-    Navigator.of(context).pop();
-    navigateFromNotification(context, n);
   }
 }
 

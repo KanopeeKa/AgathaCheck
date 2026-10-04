@@ -160,4 +160,9 @@ class NotificationPreferencesNotifier
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() => _getRepo().updatePreferences(prefs));
   }
+
+  Future<void> dismissV2InboxExplainer() async {
+    await _getRepo().dismissV2InboxExplainer();
+    state = await AsyncValue.guard(() => _getRepo().getPreferences());
+  }
 }

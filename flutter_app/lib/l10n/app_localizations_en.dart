@@ -5737,6 +5737,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notificationNeedsResponse => 'Needs your response';
 
   @override
+  String get notificationInboxActivityEmpty =>
+      'Nothing new. When someone shares a pet or joins your household, you\'ll see it here.';
+
+  @override
+  String get notificationInboxForYouEmpty =>
+      'No suggestions right now. Agatha will let you know when something\'s worth a look.';
+
+  @override
+  String get notificationInboxV2Explainer =>
+      'Reminders now live in Actions. Your inbox is for people updates and Agatha\'s suggestions.';
+
+  @override
+  String get notificationInboxV2ExplainerActionsLink => 'Open Actions';
+
+  @override
   String get notificationActionNeeded => 'Action needed';
 
   @override

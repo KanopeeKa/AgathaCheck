@@ -14,6 +14,7 @@ abstract class NotificationRemoteDataSource {
     String token,
     NotificationPreferencesModel preferences,
   );
+  Future<void> dismissV2InboxExplainer(String token);
   Future<void> checkDueEntries(
     String token, {
     Map<String, String> petNames = const {},
@@ -84,6 +85,18 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
     return NotificationPreferencesModel.fromJson(
       json.decode(response.body) as Map<String, dynamic>,
     );
+  }
+
+  @override
+  Future<void> dismissV2InboxExplainer(String token) async {
+    final response = await _client.put(
+      Uri.parse('$baseUrl/api/notifications/preferences'),
+      headers: _headers(token),
+      body: json.encode({
+        'v2_explainer_dismissed_at': DateTime.now().toUtc().toIso8601String(),
+      }),
+    );
+    _checkResponse(response);
   }
 
   @override

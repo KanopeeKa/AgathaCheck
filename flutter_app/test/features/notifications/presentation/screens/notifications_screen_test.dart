@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:pet_profile_app/features/notifications/domain/entities/app_notification.dart';
+import 'package:pet_profile_app/features/notifications/domain/entities/notification_kind.dart';
 import 'package:pet_profile_app/features/notifications/domain/entities/notification_preferences.dart';
 import 'package:pet_profile_app/features/notifications/presentation/providers/notification_providers.dart';
 import 'package:pet_profile_app/features/notifications/presentation/screens/notifications_screen.dart';
@@ -23,6 +24,7 @@ AppNotification _sampleNotification({
   String? petName,
   String? healthEntryId,
   DateTime? createdAt,
+  NotificationKind kind = NotificationKind.relationship,
 }) {
   return AppNotification(
     id: id,
@@ -33,6 +35,7 @@ AppNotification _sampleNotification({
     title: title,
     message: message,
     type: NotificationType.dueSoon,
+    kind: kind,
     isRead: isRead,
     createdAt: createdAt ?? DateTime.now(),
   );
@@ -97,7 +100,8 @@ void main() {
     final context = tester.element(find.byType(NotificationsScreen));
     final l10n = AppLocalizations.of(context)!;
 
-    expect(find.text(l10n.noNotifications), findsOneWidget);
+    expect(find.text(l10n.noNotifications), findsNothing);
+    expect(find.text(l10n.notificationInboxActivityEmpty), findsOneWidget);
     expect(find.byKey(const Key('mark_all_read_button')), findsOneWidget);
   });
 
