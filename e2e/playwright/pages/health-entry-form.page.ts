@@ -52,12 +52,16 @@ export class HealthEntryFormPage {
   }
 
   async selectCareFamily(label: string): Promise<void> {
-    await this.page.locator('flt-semantics[flt-semantics-identifier="care_family_picker"]').click();
-    await this.page.getByText(label, { exact: false }).first().click();
+    await this.page
+      .locator('flt-semantics[flt-semantics-identifier="care_family_picker"]')
+      .click();
+    await this.page.getByText(label, { exact: true }).last().click();
   }
 
   async expandAdvancedSettings(): Promise<void> {
-    await this.page.getByText('Advanced settings').click();
+    await this.page
+      .locator('flt-semantics[flt-semantics-identifier="health_entry_advanced_settings"]')
+      .click();
   }
 
   async selectScheduleType(label: string): Promise<void> {

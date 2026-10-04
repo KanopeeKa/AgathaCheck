@@ -65,7 +65,7 @@ class CareSettingImportanceFields extends StatelessWidget {
               children: CareImportance.values.map((importance) {
                 return ChoiceChip(
                   key: Key('care_importance_${importance.wireValue}'),
-                    label: Text(healthEntryCareImportanceLabel(l10n, importance)),
+                  label: Text(healthEntryCareImportanceLabel(l10n, importance)),
                   selected: careImportance == importance,
                   onSelected: (_) => onCareImportanceChanged(importance),
                 );

@@ -3,6 +3,7 @@
  * Scenario: F42 expand Advanced and choose Fixed schedule
  */
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
+import { HealthDashboardPage } from '../pages/health-dashboard.page';
 import { HealthEntryFormPage } from '../pages/health-entry-form.page';
 import { createPet } from '../support/api';
 import { enableFlutterAccessibility } from '../support/flutter';
@@ -10,12 +11,14 @@ import { enableFlutterAccessibility } from '../support/flutter';
 test.describe('Care form Advanced settings (F42)', () => {
   test('expand Advanced and choose Fixed schedule', async ({ page, testUser }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
-    const pet = await createPet(baseURL, testUser.accessToken, 'Milo');
+    await createPet(baseURL, testUser.accessToken, 'Milo');
 
     await loginAs(page, testUser, { experience: 'guardian' });
     await enableFlutterAccessibility(page);
-    await page.goto(`${baseURL}/pet/${pet.id}/care/add`);
-    await page.waitForLoadState('networkidle');
+    await page.goto(`${baseURL}/pc/events`);
+    const dashboard = new HealthDashboardPage(page);
+    await dashboard.expectLoaded();
+    await dashboard.openAddEntry();
 
     const form = new HealthEntryFormPage(page);
     await form.expectLoaded();

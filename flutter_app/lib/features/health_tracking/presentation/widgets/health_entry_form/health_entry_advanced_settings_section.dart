@@ -79,9 +79,12 @@ class _HealthEntryAdvancedSettingsSectionState
     );
 
     return Semantics(
+      identifier: 'health_entry_advanced_settings',
       label: '${l.healthEntryFormAdvancedSettings}. $summary',
       child: Material(
-        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),
+        color: theme.colorScheme.surfaceContainerHighest.withValues(
+          alpha: 0.35,
+        ),
         borderRadius: BorderRadius.circular(8),
         child: ExpansionTile(
           key: const Key('health_entry_advanced_settings'),

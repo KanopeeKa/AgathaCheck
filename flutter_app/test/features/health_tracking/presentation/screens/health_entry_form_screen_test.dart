@@ -258,7 +258,10 @@ Future<void> _selectCareFamily(WidgetTester tester, String label) async {
 }
 
 Future<void> _expandAdvancedSettings(WidgetTester tester) async {
-  await _scrollTo(tester, find.byKey(const Key('health_entry_advanced_settings')));
+  await _scrollTo(
+    tester,
+    find.byKey(const Key('health_entry_advanced_settings')),
+  );
   await tester.tap(find.byKey(const Key('health_entry_advanced_settings')));
   await tester.pumpAndSettle();
 }
