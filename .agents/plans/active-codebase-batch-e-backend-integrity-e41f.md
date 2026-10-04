@@ -51,16 +51,16 @@ Pre-approved migrations (D9a): `cleanup_jobs` and `pet_lifecycle_notifications` 
 
 ```yaml
 autonomy: active
-current_phase: 1
-last_completed_phase: null
+current_phase: 2
+last_completed_phase: 1
 halt_reason: null
-next_action: "continue phase 1 on branch cursor/active-codebase-e1-cleanup-jobs-e41f"
+next_action: "continue phase 2 on branch cursor/active-codebase-e2-pet-lifecycle-e41f"
 artifact_ref:
-  branch: cursor/active-codebase-e1-cleanup-jobs-e41f
+  branch: cursor/active-codebase-e-integration-e41f
   plan_path: .agents/plans/active-codebase-batch-e-backend-integrity-e41f.md
-  plan_commit: 7ac684414c5b7b41aaa2586d4ce2f72c4bd99312
+  plan_commit: 2584114455f734034c17beb331ffe4905e7aa513
   snapshot_path: .agents/plans/active-codebase-batch-e-backend-integrity-e41f.snapshot.json
-  snapshot_commit: 7ac684414c5b7b41aaa2586d4ce2f72c4bd99312
+  snapshot_commit: 2584114455f734034c17beb331ffe4905e7aa513
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
