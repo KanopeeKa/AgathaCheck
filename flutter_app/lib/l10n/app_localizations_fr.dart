@@ -5018,6 +5018,10 @@ class AppLocalizationsFr extends AppLocalizations {
       'Cette action est irréversible. Tous vos animaux, entrées de santé, relevés de poids, notifications et adhésions aux organisations seront définitivement supprimés. Entrez votre mot de passe pour confirmer.';
 
   @override
+  String get accountDeletionLandingMessage =>
+      'Votre compte a été supprimé. Les fichiers restants et les données d\'analyse sont encore en cours de suppression.';
+
+  @override
   String get error => 'Erreur';
 
   @override

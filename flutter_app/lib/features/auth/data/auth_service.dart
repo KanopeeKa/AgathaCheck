@@ -79,6 +79,20 @@ class AuthResult {
   });
 }
 
+class DeleteAccountResult {
+  final String message;
+  final String? operationId;
+
+  /// `true` when the server returned HTTP 202 (async erasure accepted).
+  final bool accepted;
+
+  const DeleteAccountResult({
+    required this.message,
+    this.operationId,
+    required this.accepted,
+  });
+}
+
 class AuthService {
   final String baseUrl;
   final http.Client _client;
@@ -304,7 +318,7 @@ class AuthService {
     return data['message'] as String;
   }
 
-  Future<String> deleteAccount(
+  Future<DeleteAccountResult> deleteAccount(
     String accessToken, {
     required String password,
   }) async {
@@ -320,7 +334,13 @@ class AuthService {
     if (response.statusCode >= 400) {
       throw Exception(data['error'] ?? 'Account deletion failed');
     }
-    return data['message'] as String;
+    final erasure = data['erasure'] as Map<String, dynamic>?;
+    final operationId = erasure?['operation_id']?.toString();
+    return DeleteAccountResult(
+      message: data['message'] as String,
+      operationId: operationId,
+      accepted: response.statusCode == 202,
+    );
   }
 
   Future<Map<String, dynamic>> exportData(String accessToken) async {

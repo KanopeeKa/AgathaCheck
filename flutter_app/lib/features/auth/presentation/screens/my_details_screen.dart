@@ -14,7 +14,6 @@ import '../../../../core/utils/resolve_static_asset_url.dart';
 import '../../../../core/providers/locale_provider.dart';
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../data/auth_service.dart';
 import '../providers/auth_providers.dart';
 import '../widgets/profile_header_card.dart';
 import '../widgets/change_password_form.dart';
@@ -239,7 +238,7 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
     if (token == null) return;
 
     try {
-      final authService = AuthService();
+      final authService = ref.read(authServiceProvider);
       final data = await authService.exportData(token);
       final jsonStr = const JsonEncoder.withIndent('  ').convert(data);
       final bytes = utf8.encode(jsonStr);
@@ -302,11 +301,13 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
               try {
                 final token = ref.read(authProvider).accessToken;
                 if (token == null) return;
-                final authService = AuthService();
+                final authService = ref.read(authServiceProvider);
                 await authService.deleteAccount(token, password: password);
                 if (mounted) {
-                  ref.read(authProvider.notifier).logout();
-                  context.go('/landing');
+                  await ref.read(authProvider.notifier).logout();
+                  if (mounted) {
+                    context.go('/landing?accountDeleted=1');
+                  }
                 }
               } catch (e) {
                 if (mounted) {
