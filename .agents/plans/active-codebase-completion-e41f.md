@@ -202,13 +202,13 @@ autonomy: active
 current_phase: orchestrate
 last_completed_phase: null
 halt_reason: null
-next_action: "continue child plan active-codebase-batch-e-backend-integrity-e41f"
+next_action: "bootstrap and gate child plan active-codebase-batch-g-client-authority-e41f"
 artifact_ref:
-  branch: cursor/arch-e-bootstrap-26ff
+  branch: main
   plan_path: .agents/plans/active-codebase-completion-e41f.md
-  plan_commit: 2c11ea562380f58a5538a5c1328c9c7c2f328657
+  plan_commit: dcc4763690ee8dc21a8d50ed3bd51862b7001ffb
   snapshot_path: .agents/plans/active-codebase-completion-e41f.snapshot.json
-  snapshot_commit: 2c11ea562380f58a5538a5c1328c9c7c2f328657
+  snapshot_commit: dcc4763690ee8dc21a8d50ed3bd51862b7001ffb
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
