@@ -150,7 +150,6 @@
     "R3|flutter_app/lib/features/health_tracking/presentation/widgets/health_entry_card.dart|flutter_app/lib/features/pet_profile/presentation/widgets/care_family_icon.dart",
     "R3|flutter_app/lib/features/health_tracking/presentation/widgets/health_entry_card_pet_strip.dart|flutter_app/lib/features/pet_profile/presentation/utils/pet_accent_color.dart",
     "R3|flutter_app/lib/features/health_tracking/presentation/widgets/health_entry_card_pet_strip.dart|flutter_app/lib/features/pet_profile/presentation/widgets/pet_photo_image.dart",
-    "R3|flutter_app/lib/features/health_tracking/presentation/widgets/health_entry_form/health_entry_form_content.dart|flutter_app/lib/features/care_taxonomy/presentation/widgets/care_classification_section.dart",
     "R3|flutter_app/lib/features/health_tracking/presentation/widgets/health_entry_form/health_entry_form_content.dart|flutter_app/lib/features/pet_profile/presentation/providers/pet_providers.dart",
     "R3|flutter_app/lib/features/health_tracking/presentation/widgets/health_entry_form/health_entry_form_screen_body.dart|flutter_app/lib/features/pet_profile/presentation/providers/pet_providers.dart",
     "R3|flutter_app/lib/features/health_tracking/presentation/widgets/health_issue_card.dart|flutter_app/lib/features/pet_profile/presentation/controllers/health_issues_controller.dart",

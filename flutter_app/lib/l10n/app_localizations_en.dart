@@ -1267,10 +1267,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Enter a due date, a completed date, or both';
 
   @override
-  String get recurrenceAnchorTitle => 'Next due date';
+  String get recurrenceAnchorTitle => 'Schedule type';
 
   @override
-  String get recurrenceFromCompletion => 'From completion';
+  String get recurrenceFromCompletion => 'After it\'s done';
 
   @override
   String get recurrenceFromDueDate => 'Fixed schedule';
@@ -1280,7 +1280,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get recurrenceAnchorInfoBody =>
-      'Example: every 7 days. You complete it 1 day late.\n• From completion: next due 7 days after you mark it done.\n• Fixed schedule: next due 6 days from today (7 days after the original due date).';
+      'Example: every 7 days. You mark it done when it\'s Overdue.\n• After it\'s done: the next date is 7 days after you mark it done.\n• Fixed schedule: the next date is 7 days after the original due date, even if you mark it done early or late.';
+
+  @override
+  String get healthEntryFormAdvancedSettings => 'Advanced settings';
 
   @override
   String get markCompleteSheetTitle => 'Mark as completed';
