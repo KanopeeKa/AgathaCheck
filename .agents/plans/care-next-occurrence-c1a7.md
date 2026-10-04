@@ -1348,7 +1348,10 @@ autonomy: active
 current_phase: "landing 5b — child E (E1 expandItemForWindow)"
 last_completed_phase: "C+D landed (#1475, pre-UAT green after #1478)"
 halt_reason: null
-next_action: "phase(E1): expandItemForWindow on integration branch; then E2–E6, F1–F6"
+next_action: "babysit+ PR E1 → integration; then E2"
+control_issue: 1482
+child_e_control_issue: 1480
+child_f_control_issue: 1481
 artifact_ref:
   branch: claude/eager-edison-mf34j6
   plan_path: .agents/plans/care-next-occurrence-c1a7.md
