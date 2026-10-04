@@ -33,7 +33,7 @@ mixin HealthEntryFormSubmitMixin
           HealthEntrySubmitValidation.completedOnRequired,
         );
       }
-    } else if (state.dueDate == null && state.completedOn == null) {
+    } else if (state.dueDate == null) {
       return HealthEntrySubmitValidationFailed(
         HealthEntrySubmitValidation.dueOrCompletedRequired,
       );
@@ -81,7 +81,7 @@ mixin HealthEntryFormSubmitMixin
                     state.completedOn != null
                 ? null
                 : state.dueDate);
-      final effectiveCompleted = state.completedOn;
+      final effectiveCompleted = isRecord ? state.completedOn : null;
       final effectiveRemindDaysBefore = isRecord ? 0 : state.remindDaysBefore;
       final effectiveScheduleTimes = isRecord
           ? null
@@ -156,9 +156,9 @@ mixin HealthEntryFormSubmitMixin
                 : (markCompleted ? null : (state.dueDate ?? effectiveStart)),
             completedOn: isRecord
                 ? effectiveCompleted
-                : (markCompleted
+                : (markCompleted && !isRecord
                       ? (state.completedOn ?? effectiveStart)
-                      : state.completedOn),
+                      : null),
             recurrenceAnchor: state.recurrenceAnchor,
             lateCompletionChoice: state.lateCompletionChoice,
             notes: state.notes.trim(),

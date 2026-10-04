@@ -167,6 +167,7 @@ class HealthEntryFormContent extends ConsumerWidget {
                 onDueDateChanged: controller.setDueDate,
                 onCompletedOnChanged: controller.setCompletedOn,
                 showDueDate: form.isPlannedMode,
+                showCompletedOn: form.isRecordMode,
                 requireCompletedOn: form.isRecordMode,
               ),
               if (form.showReminders) ...[

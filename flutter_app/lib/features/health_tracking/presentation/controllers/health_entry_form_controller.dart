@@ -98,6 +98,7 @@ class HealthEntryFormController extends HealthEntryFormControllerBase
           ? (entry.frequencyDays ?? 1)
           : entry.frequencyInterval;
 
+      final planning = entry.carePlanning ?? CarePlanningMode.planned;
       state = state.copyWith(
         name: entry.name,
         dosage: dosage,
@@ -108,7 +109,9 @@ class HealthEntryFormController extends HealthEntryFormControllerBase
         frequencyInterval: frequencyInterval,
         startDate: entry.startDate,
         dueDate: entry.nextDueDate,
-        completedOn: entry.completedOn,
+        completedOn: planning == CarePlanningMode.unplanned
+            ? entry.completedOn
+            : null,
         recurrenceAnchor: entry.recurrenceAnchor,
         lateCompletionChoice: entry.lateCompletionChoice,
         repeatEndDate: entry.repeatEndDate,
@@ -124,7 +127,7 @@ class HealthEntryFormController extends HealthEntryFormControllerBase
         careSetting:
             entry.careSetting ??
             CareTaxonomy.defaultSettingFor(entry.careFamily),
-        carePlanning: entry.carePlanning ?? CarePlanningMode.planned,
+        carePlanning: planning,
         careImportance:
             entry.careImportance ??
             CareTaxonomy.defaultImportanceFor(entry.careFamily),
@@ -223,6 +226,7 @@ class HealthEntryFormController extends HealthEntryFormControllerBase
       remindDaysBefore: state.remindDaysBefore == 0
           ? 1
           : state.remindDaysBefore,
+      clearCompletedOn: true,
     );
   }
 
