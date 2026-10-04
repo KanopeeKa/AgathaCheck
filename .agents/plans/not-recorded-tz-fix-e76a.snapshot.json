@@ -1,0 +1,165 @@
+{
+  "schema_version": 1,
+  "plan_id": "not-recorded-tz-fix-e76a",
+  "approved_at": "2026-10-04T22:52:00Z",
+  "approved_by": "user-chat-2026-10-04-full-delegated-authority-not-recorded-programme",
+  "approved_until": "2026-10-06T22:52:00Z",
+  "content_hash": "sha256:052f946245b3ae235a7a1396f2beef12ad1e2247d00981255e1ac8ea2166974a",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/not-recorded-tz-fix-integration-e76a",
+  "control_issue": 1569,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "§8 DATE parser + Paris CI matrix",
+      "branch": "cursor/pg-date-tz-fix-e76a",
+      "allowed_paths": [
+        "server/lib/db/**",
+        "server/lib/calendarDate.js",
+        "server/bin/**",
+        "server/scripts/**",
+        "server/test/**",
+        "scripts/check_pg_pool_bootstrap.js",
+        "scripts/pre-push*.sh",
+        ".github/workflows/**",
+        "docs/architecture/api-reference.md",
+        "docs/domains/pet_care/changes/not-recorded-stale-open-bug-spec.md"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "2",
+      "title": "§9 ops tooling + spec merge",
+      "branch": "cursor/tz-data-repair-ops-e76a",
+      "allowed_paths": [
+        "server/scripts/ops/**",
+        "server/scripts/care/repair_tz_shift.js",
+        "server/test/**",
+        "docs/ops/care-tick.md",
+        "docs/domains/pet_care/changes/**"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "3",
+      "title": "Care read/sync + bulk (#1558 remediated)",
+      "branch": "cursor/not-recorded-stale-open-e76a",
+      "allowed_paths": [
+        "server/lib/care/**",
+        "server/routes/healthEntries/**",
+        "server/test/careSchedule/**",
+        "server/test/db/careOccurrences*.js",
+        "docs/architecture/api-reference.md",
+        "docs/domains/pet_care/changes/not-recorded-stale-open-bug-spec.md"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "4",
+      "title": "Flutter care UX (FR-3–9)",
+      "branch": "cursor/not-recorded-flutter-e76a",
+      "allowed_paths": [
+        "flutter_app/lib/features/care_item/**",
+        "flutter_app/lib/features/health_tracking/data/datasources/health_occurrence_remote_datasource.dart",
+        "flutter_app/test/features/care_item/**",
+        "flutter_app/test/bdd/features/care_schedules.feature",
+        "e2e/playwright/tests/**",
+        "flutter_app/lib/l10n/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "5",
+      "title": "Integration PR to main + babysit-uat",
+      "branch": "cursor/not-recorded-tz-fix-integration-e76a",
+      "allowed_paths": [
+        "**"
+      ],
+      "forbidden_paths": [],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "release-verification",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    }
+  ]
+}
