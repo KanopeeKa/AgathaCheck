@@ -4,7 +4,7 @@
   "approved_at": "2026-10-04T22:52:00Z",
   "approved_by": "user-chat-2026-10-04-full-delegated-authority-not-recorded-programme",
   "approved_until": "2026-10-06T22:52:00Z",
-  "content_hash": "sha256:22c8d1f246e4eb6dae5a4d808502b348251efab3132bcb2f071392f9b5cf4171",
+  "content_hash": "sha256:c13c4a18fe67be73d03ef25bdcef6940e815d7b0444c8c67502c1c2c038d201f",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/not-recorded-tz-fix-integration-e76a",
@@ -68,12 +68,10 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null
+      "debt_issue_refs": []
     },
     {
       "id": "3",

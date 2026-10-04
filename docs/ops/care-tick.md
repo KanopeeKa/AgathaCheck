@@ -3,7 +3,7 @@ title: Care tick — host cron runbook
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-10-03
+last_updated: 2026-10-05
 tags: [ops, cron, care, occurrences]
 ---
 # Care tick — host cron runbook
@@ -104,7 +104,35 @@ cd ~/uat.agathatrack.com/backend && ~/nodevenv/uat.agathatrack.com/backend/22/bi
 # checked N care items; 0 with violations (dry run)
 ```
 
+A healthy tick after the §8 DATE parser fix shows `created: 0` and `closed: 0` on most runs (only right after pet-home midnight may create or close doses). Repeated non-zero `created`/`closed` on the same items usually means the host TZ bug or duplicate slots — see [not-recorded stale-open spec](../domains/pet_care/changes/not-recorded-stale-open-bug-spec.md) §2.8 and §9.
+
 If the dry run reports violations (for example after restoring a backup), run it again with `--apply`, then the dry run again. A line with `care tick failed` in the log means the tick could not reach the database: check `.env`, then run step 2 by hand.
+
+## Read-only SQL on the host (DC-7)
+
+phpPgAdmin often logs in as a role that does **not** own application tables (`permission denied`). Use the backend `.env` instead:
+
+```bash
+cd ~/uat.agathatrack.com/backend
+echo "SELECT count(*) FROM health_occurrences WHERE close_reason = 'not_recorded';" \
+  | ~/nodevenv/uat.agathatrack.com/backend/22/bin/node scripts/ops/sql_readonly.js
+```
+
+The helper runs inside `BEGIN READ ONLY` and rejects `INSERT`/`UPDATE`/`DELETE`/`CREATE`/etc. on stdin.
+
+## TZ-shift repair (production only)
+
+UAT demo data: reset via **Actions → UAT reset demo data** after §8 deploy — do not run `repair_tz_shift.js` on UAT.
+
+Production (if DC-2 shows damage): suspend the cron, deploy §8, backup, then:
+
+```bash
+node scripts/care/repair_tz_shift.js              # dry-run (default)
+node scripts/care/repair_tz_shift.js --apply
+node scripts/care/repair_occurrences.js --dry-run
+```
+
+Full rules: [not-recorded stale-open spec](../domains/pet_care/changes/not-recorded-stale-open-bug-spec.md) §9.
 
 When `docs/ops/prod-backup-restore-plan.md` Step 3 (cron-as-code) lands, move these lines into its managed `# BEGIN agatha` / `# END agatha` block and delete the manual entries.
 

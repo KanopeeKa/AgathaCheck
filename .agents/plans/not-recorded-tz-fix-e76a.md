@@ -106,13 +106,13 @@ autonomy: active
 current_phase: 2
 last_completed_phase: 1
 halt_reason: null
-next_action: "start phase 2: checkout cursor/tz-data-repair-ops-e76a"
+next_action: "continue phase 2 on branch cursor/tz-data-repair-ops-e76a"
 artifact_ref:
-  branch: cursor/pg-date-tz-fix-e76a
+  branch: cursor/not-recorded-tz-fix-integration-e76a
   plan_path: .agents/plans/not-recorded-tz-fix-e76a.md
-  plan_commit: 7a309171ae83c4d55fa7d34f3ca396def4249449
+  plan_commit: 98ee5d57c00fbfa8a47da9d84ae1265ed66841a4
   snapshot_path: .agents/plans/not-recorded-tz-fix-e76a.snapshot.json
-  snapshot_commit: 7a309171ae83c4d55fa7d34f3ca396def4249449
+  snapshot_commit: 98ee5d57c00fbfa8a47da9d84ae1265ed66841a4
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
