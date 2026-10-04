@@ -193,14 +193,11 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:e4ffa8bd958c1bfe58d2c7941cf30329ee5c22f448b76dc1acfbc684062698d9"
+  "content_hash": "sha256:bfd0d3e259013f1c4975f634574698057dda4a30faa91f263bb9e368363b1325"
 }

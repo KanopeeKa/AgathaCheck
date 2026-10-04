@@ -54,13 +54,13 @@ autonomy: active
 current_phase: 5
 last_completed_phase: 4
 halt_reason: null
-next_action: "start phase 5: checkout cursor/active-codebase-e-integration-e41f"
+next_action: "continue phase 5 on branch cursor/active-codebase-e-integration-e41f"
 artifact_ref:
   branch: cursor/active-codebase-e-integration-e41f
   plan_path: .agents/plans/active-codebase-batch-e-backend-integrity-e41f.md
-  plan_commit: 9596c8977a7fbf48f1bdcd4d1777e7e03cba4cdf
+  plan_commit: 8c39c5c8879117679a32600050998f47348d9f12
   snapshot_path: .agents/plans/active-codebase-batch-e-backend-integrity-e41f.snapshot.json
-  snapshot_commit: 9596c8977a7fbf48f1bdcd4d1777e7e03cba4cdf
+  snapshot_commit: 8c39c5c8879117679a32600050998f47348d9f12
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
