@@ -18,7 +18,7 @@ test.describe('Care form Advanced settings (F42)', () => {
     await page.goto(`${baseURL}/pc/events`);
     const dashboard = new HealthDashboardPage(page);
     await dashboard.expectLoaded();
-    await dashboard.openAddEntry();
+    await dashboard.openAddHealthCareForm();
 
     const form = new HealthEntryFormPage(page);
     await form.expectLoaded();
