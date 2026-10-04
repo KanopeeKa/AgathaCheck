@@ -63,16 +63,16 @@ describe('Pet Care OpenAPI contract (F-14)', () => {
       createMockPool(async (sql, params) => {
         const access = handlePetAccessQuery(sql, params, { userId, ownedPetIds: [petId] });
         if (access) return access;
-        if (sql === 'BEGIN' || sql === 'COMMIT' || sql === 'ROLLBACK') return { rows: [] };
+        if (sql === 'BEGIN' || sql === 'COMMIT' || sql === 'ROLLBACK') {
+          return { rows: [], command: sql };
+        }
         if (sql.includes('SELECT photo_path FROM pets')) return { rows: [{ photo_path: null }] };
         if (sql.includes('FROM health_event_photos')) return { rows: [] };
         if (sql.includes('FROM health_issue_documents')) return { rows: [] };
-        if (sql.startsWith('DELETE FROM ')) return { rowCount: 0 };
-        if (sql.includes('UPDATE pets')) return { rows: [] };
-        if (sql.includes('DELETE FROM pets WHERE id = $1 AND user_id = $2')) {
-          return { rows: [] };
-        }
-        if (sql.includes('INSERT INTO audit_events')) return { rows: [] };
+        if (sql.includes('INSERT INTO cleanup_jobs')) return { rows: [{ id: 'job-1' }] };
+        if (sql.startsWith('DELETE FROM ')) return { rowCount: 1 };
+        if (sql.includes('DELETE FROM pets WHERE id = $1 AND user_id = $2')) return { rowCount: 1 };
+        if (sql.includes('INSERT INTO audit_events')) return { rows: [{ id: 'audit-1' }] };
         return { rows: [] };
       }),
     );
@@ -88,13 +88,16 @@ describe('Pet Care OpenAPI contract (F-14)', () => {
       createMockPool(async (sql, params) => {
         const access = handlePetAccessQuery(sql, params, { userId, ownedPetIds: [petId] });
         if (access) return access;
-        if (sql === 'BEGIN' || sql === 'COMMIT' || sql === 'ROLLBACK') return { rows: [] };
+        if (sql === 'BEGIN' || sql === 'COMMIT' || sql === 'ROLLBACK') {
+          return { rows: [], command: sql };
+        }
         if (sql.includes('SELECT photo_path FROM pets')) return { rows: [{ photo_path: null }] };
         if (sql.includes('FROM health_event_photos')) return { rows: [] };
         if (sql.includes('FROM health_issue_documents')) return { rows: [] };
+        if (sql.includes('INSERT INTO cleanup_jobs')) return { rows: [{ id: 'job-1' }] };
         if (sql.startsWith('DELETE FROM ')) return { rowCount: 1 };
         if (sql.includes('UPDATE pets')) return { rows: [] };
-        if (sql.includes('INSERT INTO audit_events')) return { rows: [] };
+        if (sql.includes('INSERT INTO audit_events')) return { rows: [{ id: 'audit-1' }] };
         return { rows: [] };
       }),
     );
@@ -113,9 +116,15 @@ describe('Pet Care OpenAPI contract (F-14)', () => {
         if (sql.includes('SELECT name FROM pets WHERE id = $1')) {
           return { rows: [{ name: 'Fluffy' }] };
         }
+        if (sql === 'BEGIN' || sql === 'COMMIT' || sql === 'ROLLBACK') {
+          return { rows: [], command: sql };
+        }
         if (sql.includes('FROM pet_access pa')) return { rows: [{ user_id: 'collab-1' }] };
         if (sql.includes('FROM users WHERE id')) {
           return { rows: [{ first_name: 'Test', last_name: 'User', email: 'test@example.com' }] };
+        }
+        if (sql.includes('INSERT INTO pet_lifecycle_notifications')) {
+          return { rows: [{ recipient_user_id: 'collab-1' }] };
         }
         if (sql.includes('INSERT INTO notifications')) return { rows: [] };
         return { rows: [] };

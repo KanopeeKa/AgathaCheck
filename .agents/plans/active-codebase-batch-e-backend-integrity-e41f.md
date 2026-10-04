@@ -56,12 +56,12 @@ last_completed_phase: 1
 halt_reason: null
 next_action: "continue phase 2 on branch cursor/active-codebase-e2-pet-lifecycle-e41f"
 artifact_ref:
-  branch: cursor/active-codebase-e-integration-e41f
+  branch: cursor/active-codebase-e2-pet-lifecycle-e41f
   plan_path: .agents/plans/active-codebase-batch-e-backend-integrity-e41f.md
-  plan_commit: 2584114455f734034c17beb331ffe4905e7aa513
+  plan_commit: 4a87924c2949268142539efde236895f09463802
   snapshot_path: .agents/plans/active-codebase-batch-e-backend-integrity-e41f.snapshot.json
-  snapshot_commit: 2584114455f734034c17beb331ffe4905e7aa513
-open_prs: []
+  snapshot_commit: 4a87924c2949268142539efde236895f09463802
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1496"]
 merge_commits: {}
 debt_issue_refs: []
 ```

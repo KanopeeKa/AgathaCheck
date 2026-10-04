@@ -19,7 +19,7 @@ import {
 } from '../../lib/petHomeTimezone.js';
 import { logAuditEventSafe } from '../../lib/audit.js';
 import { syncPetPrimaryVetFromLegacyVetId } from '../../lib/people/petVetLink.js';
-import { deleteAllPetData } from '../../lib/petDataLifecycle.js';
+import { deletePet, PetNotFoundError } from '../../lib/petDataLifecycle.js';
 import { recordPetActivityForPet } from '../../lib/petActivity.js';
 import {
   userCanAccessPet,
@@ -398,18 +398,12 @@ export function registerCoreRoutes(router, pool) {
       if (!(await userOwnsPet(pool, id, userId))) {
         return res.status(404).json({ error: 'Pet not found' });
       }
-      logAuditEventSafe(pool, {
-        actorUserId: userId,
-        action: 'pet.deleted',
-        resourceType: 'pet',
-        resourceId: id,
-        petId: id,
-        req,
-      });
-      await deleteAllPetData(pool, id, { actorUserId: userId, req });
-      await pool.query('DELETE FROM pets WHERE id = $1 AND user_id = $2', [id, userId]);
-      res.json({ deleted: true });
+      const result = await deletePet(pool, id, { actorUserId: userId, req });
+      res.json(result);
     } catch (err) {
+      if (err instanceof PetNotFoundError) {
+        return res.status(404).json({ error: 'Pet not found' });
+      }
       res.status(500).json({ error: publicError(err, 'Error deleting pet', `Error deleting pet: ${err.message}`) });
     }
   });

@@ -404,14 +404,22 @@ describe('Pets API', () => {
       const app = createApp(createMockPool(async (sql, params) => {
         const access = handlePetAccessQuery(sql, params, { userId, ownedPetIds: [petId] });
         if (access) return access;
-        if (sql.includes('DELETE FROM pets')) return { rows: [] };
+        if (sql.includes('SELECT photo_path FROM pets')) return { rows: [{ photo_path: null }] };
+        if (sql.includes('FROM health_event_photos')) return { rows: [] };
+        if (sql.includes('FROM health_issue_documents')) return { rows: [] };
+        if (sql.includes('INSERT INTO cleanup_jobs')) return { rows: [{ id: 'job-1' }] };
+        if (sql.startsWith('DELETE FROM ')) return { rowCount: 1, rows: [] };
+        if (sql.includes('DELETE FROM pets WHERE id = $1 AND user_id = $2')) {
+          return { rowCount: 1, rows: [] };
+        }
+        if (sql.includes('INSERT INTO audit_events')) return { rows: [{ id: 'audit-1' }] };
         return { rows: [] };
       }));
       const res = await request(app)
         .delete(`/api/pets/${petId}`)
         .set('Authorization', `Bearer ${token}`);
       expect(res.statusCode).toBe(200);
-      expect(res.body).toEqual({ deleted: true });
+      expect(res.body).toMatchObject({ deleted: true, pet_id: petId });
     });
 
     it('handles 500 on database error', async () => {
