@@ -6,9 +6,12 @@
  */
 
 import { dateToIsoDate } from '../../calendarDate.js';
-import { isEntrySeriesClosed, isOccurrenceDateWithinSeries } from '../../occurrenceLifecycle.js';
+import {
+  isEntrySeriesClosed,
+  isOccurrenceDateWithinSeries,
+} from '../item/seriesLifecycle.js';
 import { advanceByFrequency } from '../../recurrenceHelper.js';
-import { scheduleTimesFromEntry } from '../../occurrenceScheduling.js';
+import { scheduleTimesFromEntry } from '../item/scheduling.js';
 export const PROJECTION_STATUS_COMPLETE = 'complete';
 export const PROJECTION_STATUS_PARTIALLY_INDETERMINATE = 'partially_indeterminate';
 

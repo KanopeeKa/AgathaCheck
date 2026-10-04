@@ -14,8 +14,7 @@ import {
 } from '../../lib/care/occurrence/index.js';
 import { UNDOABLE_EVENT_TYPES } from '../../lib/care/schedule/scheduleEventLedger.js';
 import { resolveProviderUsedPatch } from '../../lib/care/providerUsed.js';
-import { occurrenceToMap } from '../../lib/occurrenceScheduling.js';
-import { careItemWire, commandResponse } from './careItemWire.js';
+import { careItemWire, commandResponse, occurrenceToMap } from '../../lib/care/item/index.js';
 import { extractUserId } from './shared.js';
 import { handleCommand, loadEntry, loadOccurrence } from './occurrencesRouter.js';
 

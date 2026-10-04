@@ -1,5 +1,5 @@
 export { SCHEDULE_POLICY_VERSION } from './schedulePolicy.js';
-export { resolveNextSeriesDate } from './advanceSeries.js';
+export { resolveNextSeriesDate } from './seriesDates.js';
 export * from './seriesDates.js';
 export {
   STACK_WINDOW_DAYS,

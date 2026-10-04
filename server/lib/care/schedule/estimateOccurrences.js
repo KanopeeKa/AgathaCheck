@@ -3,7 +3,7 @@
  */
 
 import { dateToIsoDate } from '../../calendarDate.js';
-import { isOccurrenceDateWithinSeries } from '../../occurrenceLifecycle.js';
+import { isOccurrenceDateWithinSeries } from '../item/seriesLifecycle.js';
 import { advanceByFrequency } from '../../recurrenceHelper.js';
 import { isDateInCareWindow } from './projectSchedule.js';
 

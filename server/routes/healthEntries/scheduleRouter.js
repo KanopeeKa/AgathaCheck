@@ -6,7 +6,7 @@ import {
   resumeCommand,
   undoCommand,
 } from '../../lib/care/occurrence/index.js';
-import { commandResponse } from './careItemWire.js';
+import { commandResponse } from '../../lib/care/item/index.js';
 import { handleCommand } from './occurrencesRouter.js';
 
 /** Postpone until / Pause / Resume / cadence / whole-command undo (D-CSM-028, D-CSM-029). */

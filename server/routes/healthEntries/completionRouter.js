@@ -4,7 +4,7 @@ import {
   closeSeriesCommand,
   reopenSeriesCommand,
 } from '../../lib/care/occurrence/index.js';
-import { careItemWire } from './careItemWire.js';
+import { careItemWire } from '../../lib/care/item/index.js';
 import { extractUserId, historyToMap } from './shared.js';
 import { handleCommand } from './occurrencesRouter.js';
 

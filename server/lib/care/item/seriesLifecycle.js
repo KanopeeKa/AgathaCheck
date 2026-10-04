@@ -3,7 +3,7 @@
  * `server/lib/care/occurrence/commands/lifecycle.js`.
  */
 
-import { dateToIsoDate, todayCalendarIso } from './calendarDate.js';
+import { dateToIsoDate, todayCalendarIso } from '../../calendarDate.js';
 
 function isOnceEntry(row) {
   return (row.frequency || 'once') === 'once';

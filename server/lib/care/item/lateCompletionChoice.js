@@ -2,7 +2,7 @@
  * "If done after the due date" (D-CSM-026 v4, D2): Keep · Skip the next date
  * · Move this and following, or unset (Keep). No "Ask me".
  */
-import { updateEntryFields } from '../../lib/care/occurrence/entryRepository.js';
+import { updateEntryFields } from '../occurrence/entryRepository.js';
 
 export const LATE_COMPLETION_CHOICES = ['keep', 'skip_next', 'shift_following'];
 

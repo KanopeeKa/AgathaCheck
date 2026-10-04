@@ -6,6 +6,9 @@
  * chained from a clamped date: 31 Jan → 28/29 Feb → 31 Mar.
  */
 
+import { dateToIsoDate } from '../../calendarDate.js';
+import { advanceByFrequency } from '../../recurrenceHelper.js';
+
 /**
  * @param {string} iso YYYY-MM-DD
  * @returns {{ y: number, m: number, d: number }}
@@ -244,4 +247,21 @@ export function seriesDateOnOrBefore(anchorIso, entry, targetIso) {
   if (targetIso < anchorIso) return null;
   const next = firstIndexOnOrAfter(anchorIso, entry, addDaysIso(targetIso, 1));
   return next === 0 ? null : addSteps(anchorIso, entry, next - 1);
+}
+
+/**
+ * Anchor-aware next series date after a calendar day is fully closed (Care Planner).
+ *
+ * @param {object} entry health_entries row
+ * @param {string} closedScheduledDate YYYY-MM-DD of the due day that closed
+ * @param {string|null|undefined} completedOn YYYY-MM-DD actual completion (last slot)
+ * @returns {string}
+ */
+export function resolveNextSeriesDate(entry, closedScheduledDate, completedOn) {
+  const anchor = entry.recurrence_anchor || 'from_completion';
+  const completedIso = dateToIsoDate(completedOn) || closedScheduledDate;
+  const base = anchor === 'from_due_date'
+    ? closedScheduledDate
+    : completedIso;
+  return advanceByFrequency(base, entry);
 }
