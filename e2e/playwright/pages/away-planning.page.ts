@@ -373,15 +373,37 @@ export class AwayPlanningPage {
   }
 
   async expectPlannedCareItemDetail(entryName: string): Promise<void> {
+    const back = this.page.getByRole('button', {
+      name: /^Back$|^Go back$|^Retour$/i,
+    });
+    const occurrenceScreen = this.page.locator(
+      '[flt-semantics-identifier="occurrence_screen"]',
+    );
+    const aboutItem = this.page.locator(
+      '[flt-semantics-identifier="occurrence_about_item"]',
+    );
+    const careActions = this.page.getByRole('button', {
+      name: /care item actions/i,
+    });
+
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      // Flutter web push from away plan may not update the hash route; assert detail UI.
-      await expect(this.page.getByRole('button', { name: /go back/i })).toBeVisible();
+      const hashPath = new URL(this.page.url()).hash.replace(/^#/, '');
+      const onOccurrenceRoute = /\/occurrences\/[^/?#]+/.test(hashPath);
+      const onOccurrenceUi =
+        onOccurrenceRoute ||
+        (await occurrenceScreen.isVisible().catch(() => false)) ||
+        (await aboutItem.isVisible().catch(() => false));
+
+      await expect(back.first()).toBeVisible();
       await expect(this.page.getByText(entryName, { exact: false }).first()).toBeVisible();
-      // Care item detail (D-CIE-017): lifecycle actions live in overflow menu, not inline Close event.
-      await expect(
-        this.page.getByRole('button', { name: /care item actions/i }),
-      ).toBeVisible();
+
+      if (onOccurrenceUi) {
+        // Away plan rows with a resolved occurrence open the occurrence screen (E5).
+        return;
+      }
+      // Care item detail (D-CIE-017): lifecycle actions live in overflow menu.
+      await expect(careActions).toBeVisible();
     }).toPass({ timeout: 45_000 });
   }
 
