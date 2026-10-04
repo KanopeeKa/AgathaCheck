@@ -3,82 +3,60 @@ title: Handover supplement — ARCH gates D–G (active-codebase-completion-e41f
 owner: Agent
 audience: agent
 status: active
-last_updated: 2026-09-30
+last_updated: 2026-10-04
 ---
 
 # Supplement: gates D–G only
 
-**Canonical procedure** remains [`.agents/plans/active-codebase-completion-e41f.handoff.md`](https://github.com/KanopeeKa/AgathaCheck/blob/claude/friendly-davinci-5zcxj2/.agents/plans/active-codebase-completion-e41f.handoff.md) on `claude/friendly-davinci-5zcxj2` (§0–§11). This file is a **delta** as of **2026-09-30 ~22:15 UTC** — do not duplicate the full playbook.
+**Canonical procedure:** [`.agents/plans/active-codebase-completion-e41f.handoff.md`](https://github.com/KanopeeKa/AgathaCheck/blob/claude/friendly-davinci-5zcxj2/.agents/plans/active-codebase-completion-e41f.handoff.md) on `claude/friendly-davinci-5zcxj2` (§0–§11). This file is a **delta** — do not duplicate the full playbook.
+
+**Also linked from:** [`.agents/plans/active-codebase-completion-e41f.md`](./active-codebase-completion-e41f.md) §Runtime state.
 
 ## Driver
 
-- **Cursor Cloud** is the sole ARCH execute-plan driver (Claude session ended; trigger `trig_01GH4Y6o9g1E9DrSSm5NKquv` deleted).
+- **Cursor Cloud** is the sole ARCH execute-plan driver (merge authority for programme PRs under execute-plan).
+- Roadmap autonomy renewed **2026-10-04** on [#1446](https://github.com/KanopeeKa/AgathaCheck/issues/1446) (`approve-autonomous active-codebase-completion-e41f`); snapshot `approved_until` **2026-10-06T13:40:59Z**.
 
 ## Gate D — landed
 
 | Item | Value |
 |------|--------|
-| PR | [#1467](https://github.com/KanopeeKa/AgathaCheck/pull/1467) |
-| Merge SHA | `ce702c0927134416858a5aa7cac17f45d7795289` |
-| Control issue | #1447 — closed (completed); runtime `complete-plan` run at D landing |
-| Roadmap | Child D **merged** in `.agents/plans/active-codebase-completion-e41f.snapshot.json`; `next_child_plan_id` = **E** |
+| PR | [#1467](https://github.com/KanopeeKa/AgathaCheck/pull/1467) @ `ce702c09` |
+| Bookkeeping | [#1471](https://github.com/KanopeeKa/AgathaCheck/pull/1471) |
+| Control issue | #1447 (closed) |
 
-**Pre-UAT on `ce702c09`:** workflow run [36781958843](https://github.com/KanopeeKa/AgathaCheck/actions/runs/36781958843) shows `BUILD_RESULT` and `E2E_RESULT` **success**, but the gate job exited because **`main` advanced to `a340e15` (#1470 TEST phase 6) during the run** (same pattern as #1459 run 565). Not a shard regression from Batch D. Wait for a **stable** `main` tip with green pre-UAT before the next ARCH landing.
+## Gate E — in progress (bootstrapped 2026-10-04)
 
-**Parallel landings while D was in flight:** #1459, PEOPLE hotfixes #1462/#1464, TEST #1468/#1470, CARE fixes on `main` — integration PR needed repeated `gh pr update-branch` + CI before squash-merge.
-
-## Gate E — not bootstrapped
-
-| Item | Detail |
+| Item | Value |
 |------|--------|
-| Slot | **3a** — after **CARE A+B** (#1448, `claude/eager-edison-mf34j6`) on `main` + green pre-UAT |
-| CARE today | #1448 still **draft**; CI was green before further CARE commits on `main` |
-| Approval | Roadmap window ends **2026-10-01T22:39:00Z**. **E will almost certainly start after that** → fresh `approve-autonomous active-codebase-completion-e41f` on **#1446**, re-stamp roadmap snapshot, `--fix-hash`, then bootstrap §6 of canonical handover |
-| Prep | Re-read `server/lib/care/**` and `server/routes/healthEntries/**` on `main` at bootstrap (CARE B engine + recent CARE fixes) |
+| Control issue | [#1492](https://github.com/KanopeeKa/AgathaCheck/issues/1492) |
+| Integration branch | `cursor/active-codebase-e-integration-e41f` (from current `main`) |
+| Landing slot | **3a** (`parallel-programmes.md`) |
+| Entry gates met | ARCH D on `main`; CARE **2b** [#1448](https://github.com/KanopeeKa/AgathaCheck/pull/1448) merged 2026-10-01; CARE **3b** [#1475](https://github.com/KanopeeKa/AgathaCheck/pull/1475) also on `main` |
+| Next work | Phase 1 → `cursor/active-codebase-e1-cleanup-jobs-e41f` (re-read `server/lib/care/**` and health entry routes on `main` before coding) |
+| PEOPLE boundary | `peopleRelationshipsRouter.js` is **not** in E paths (PEOPLE server s3); allowlist-only in E.3 transaction test until then |
+
+**Integration → `main` PR:** open only when no other programme landing is in flight and pre-UAT is green on the current `main` tip.
 
 ## Gate F — blocked
 
-| Item | Detail |
-|------|--------|
-| Slot | **5a** — after ARCH **E** and **PEOPLE server** (slot 4) |
-| PEOPLE server | Not on `main`; plans on `main` under `.agents/plans/people-server-7f3b.*` |
+Slot **5a** — after ARCH **E** and **PEOPLE server** (slot 4). Plans: `.agents/plans/people-server-7f3b.*`.
 
 ## Gate G — blocked
 
-| Item | Detail |
-|------|--------|
-| Slot | **7** — after **CARE E+F** (5b) |
-| Note | Re-baseline Package 8 against CARE F Care Item module before G.2/G.3 (canonical handover §5) |
+Slot **7** — after **CARE E+F** (5b). Re-baseline Package 8 against CARE F before G.2/G.3.
 
-## Coordination (busy `main`)
+## Coordination
 
-- **One landing at a time** + pre-UAT green on that merge SHA before opening the next integration → `main` PR.
-- **Slot 0c** PEOPLE hotfixes: #1462, #1464 landed; plan bookkeeping followed on `main`.
-- **TEST** slice 1 (#1455) landed early; shards and governance evolved on `main` while D was merging — D only **adds** governance steps; keep TEST-owned shard runner/manifest when resolving `pre-push.sh` conflicts.
-- Do **not** PR People refetch work from `cursor/preuat-fix-f04e19aa-e41f` — PEOPLE programme owns `features/people/**`.
+- One landing on `main` at a time; pre-UAT green on that merge SHA before the next.
+- Do **not** PR People refetch from `cursor/preuat-fix-f04e19aa-e41f` — PEOPLE owns `features/people/**`.
+- GitHub plan labels for long plan ids may exceed 50 characters; gate checks use `execute_plan_runtime.js gate … --labels` (see #1492: `execute-plan`, `autonomous-approved`).
 
-## Quick status commands
+## Quick status
 
 ```bash
 git fetch origin main
 node scripts/execute_plan_runtime.js roadmap-status active-codebase-completion-e41f
-gh pr view 1448 --json state,isDraft,mergeable
-gh run list --workflow pre-uat-e2e.yml --branch main --limit 3
+node scripts/execute_plan_runtime.js gate active-codebase-completion-e41f --labels execute-plan,plan:active-codebase-completion-e41f,autonomous-approved
+gh run list --workflow pre-uat-e2e.yml --branch main --limit 1
 ```
-
-## Plan runtime pins after bookkeeping
-
-**#1471** refreshes `artifact_ref` via `sync-runtime` on the bookkeeping branch. After it merges to `main`, optionally re-run on `main` so pins match the merge SHA:
-
-```bash
-node scripts/execute_plan_runtime.js sync-runtime active-codebase-completion-e41f --write
-node scripts/execute_plan_runtime.js sync-runtime active-codebase-batch-d-guardrails-e41f --write
-node scripts/validate_execute_plan_snapshot.js --fix-hash .agents/plans/active-codebase-completion-e41f.snapshot.json
-node scripts/validate_execute_plan_snapshot.js --fix-hash .agents/plans/active-codebase-batch-d-guardrails-e41f.snapshot.json
-```
-
-That refreshes `artifact_ref` to the current `main` SHA without changing autonomy or child status.
-
-## Bookkeeping
-
-Plan snapshot updates + this supplement + review status rows: merged via [#1471](https://github.com/KanopeeKa/AgathaCheck/pull/1471).
