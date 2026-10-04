@@ -12928,6 +12928,30 @@ abstract class AppLocalizations {
   /// **'Change'**
   String get careNextStaysChange;
 
+  /// No description provided for @carePlanAnotherDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan another date'**
+  String get carePlanAnotherDate;
+
+  /// No description provided for @careAddBoosterDate.
+  ///
+  /// In en, this message translates to:
+  /// **'+ Add a booster date'**
+  String get careAddBoosterDate;
+
+  /// No description provided for @careRemoveBoosterDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove booster date {date}'**
+  String careRemoveBoosterDate(String date);
+
+  /// No description provided for @careOccurrenceMenuTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'More actions for this date'**
+  String get careOccurrenceMenuTooltip;
+
   /// No description provided for @careSkip.
   ///
   /// In en, this message translates to:

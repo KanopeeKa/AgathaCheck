@@ -2880,6 +2880,17 @@
   "careEarlyCompletionBody": "Planned for {date}. Mark it as done today?",
   "@careEarlyCompletionBody": {"placeholders": {"date": {"type": "String"}}},
   "careNextStaysChange": "Change",
+  "carePlanAnotherDate": "Plan another date",
+  "careAddBoosterDate": "+ Add a booster date",
+  "careRemoveBoosterDate": "Remove booster date {date}",
+  "@careRemoveBoosterDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "careOccurrenceMenuTooltip": "More actions for this date",
   "careSkip": "Skip",
   "careWeightRequiredHint": "Enter the weight to mark it as done",
   "careWeightFieldLabel": "Weight (kg)",

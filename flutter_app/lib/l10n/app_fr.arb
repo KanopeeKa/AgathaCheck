@@ -2738,6 +2738,17 @@
   "careRetry": "Réessayer",
   "careEarlyCompletionBody": "Prévu le {date}. Le marquer comme fait aujourd'hui ?",
   "careNextStaysChange": "Modifier",
+  "carePlanAnotherDate": "Prévoir une autre date",
+  "careAddBoosterDate": "+ Ajouter une date de rappel",
+  "careRemoveBoosterDate": "Retirer la date de rappel {date}",
+  "@careRemoveBoosterDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "careOccurrenceMenuTooltip": "Autres actions pour cette date",
   "careSkip": "Ignorer",
   "careWeightRequiredHint": "Saisissez le poids pour le marquer comme fait",
   "careWeightFieldLabel": "Poids (kg)",

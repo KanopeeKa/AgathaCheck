@@ -202,6 +202,44 @@ export class CareItemPage {
     ).toBeVisible({ timeout: 30_000 });
   }
 
+  async markLeadingDone(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    await this.page
+      .locator('[flt-semantics-identifier^="care_item_mark_done_"]')
+      .or(
+        this.page.getByRole('button', {
+          name: /Mark .* as done|Marquer .* comme fait/i,
+        }),
+      )
+      .first()
+      .click();
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async planAnotherDateFromMenu(isoDate: string): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    const menu = this.page
+      .locator('[flt-semantics-identifier^="care_item_occurrence_menu_"]')
+      .first();
+    await menu.click();
+    await this.page
+      .getByRole('menuitem', { name: /Plan another date|Prévoir une autre date/i })
+      .click();
+    await expect(
+      this.page.locator('[flt-semantics-identifier="plan_another_date_sheet"]'),
+    ).toBeVisible({ timeout: 15_000 });
+    const [, month, day] = isoDate.split('-').map((v) => parseInt(v, 10));
+    await this.page.getByRole('button', { name: /New date|Nouvelle date/i }).click();
+    const dialog = this.page.getByRole('dialog');
+    await expect(dialog).toBeVisible({ timeout: 15_000 });
+    await dialog.getByText(new RegExp(`^${day},\\s`)).first().click({ force: true });
+    await dialog.getByRole('button', { name: /^OK$|^Save$|Enregistrer/i }).first().click();
+    await this.page
+      .locator('[flt-semantics-identifier="plan_another_date_confirm"]')
+      .click();
+    await refreshFlutterAccessibility(this.page);
+  }
+
   async markAllDone(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
     await this.page

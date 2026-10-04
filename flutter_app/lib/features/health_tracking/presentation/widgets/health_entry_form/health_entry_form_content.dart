@@ -21,6 +21,7 @@ import 'health_entry_remind_field.dart';
 import 'health_entry_schedule_times_section.dart';
 import 'care_planning_toggle.dart';
 import '../care_category_blocks/care_category_blocks_edit_section.dart';
+import 'health_entry_booster_dates_field.dart';
 import 'health_entry_text_fields.dart';
 
 /// Sectioned form fields for add/edit health entries.
@@ -170,6 +171,10 @@ class HealthEntryFormContent extends ConsumerWidget {
                 showCompletedOn: form.isRecordMode,
                 requireCompletedOn: form.isRecordMode,
               ),
+              if (form.showBoosterDatesField) ...[
+                const SizedBox(height: 12),
+                HealthEntryBoosterDatesField(params: params, form: form),
+              ],
               if (form.showReminders) ...[
                 const SizedBox(height: 16),
                 HealthEntryRemindField(

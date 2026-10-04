@@ -417,6 +417,9 @@
     "Several dates to sort out open the care item": "P1",
     "Upcoming care can be marked as done early": "P1"
   },
+  "care_booster.feature": {
+    "PL-1 first dose then booster then yearly recurrence": "P1"
+  },
   "care_schedules.feature": {
     "Missed fixed-schedule care can be marked as done together on the care item": "P1",
     "Care older than three days can still be recorded from history": "P1",

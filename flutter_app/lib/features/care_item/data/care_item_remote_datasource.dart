@@ -154,4 +154,17 @@ class CareItemRemoteDataSource {
       ),
     );
   }
+
+  Future<Map<String, dynamic>> postPlanAnotherDate(
+    String entryId,
+    Map<String, dynamic> body,
+  ) async {
+    return _decode(
+      await client.post(
+        _entries('/$entryId/occurrences'),
+        headers: _json,
+        body: json.encode(body),
+      ),
+    );
+  }
 }

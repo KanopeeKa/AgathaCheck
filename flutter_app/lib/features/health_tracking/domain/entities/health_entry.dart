@@ -58,6 +58,7 @@ class HealthEntry {
     this.providerContactId,
     this.providerTypedName,
     this.careBlocks = const CareItemBlocks(),
+    this.plannedDates,
     this.schedule,
     this.lateCompletionChoice,
     this.createdAt,
@@ -153,6 +154,9 @@ class HealthEntry {
 
   /// Category block fields for this care item (D-CIE-019).
   final CareItemBlocks careBlocks;
+
+  /// Extra planned dates at create (boosters, D-CSM-025). Not returned on reads.
+  final List<DateTime>? plannedDates;
 
   /// Open occurrences, status and "today" from the server (D-CIE-028); null
   /// for entries built locally. When present it is the only status source.
@@ -267,6 +271,7 @@ class HealthEntry {
     String? providerTypedName,
     bool clearProvider = false,
     CareItemBlocks? careBlocks,
+    List<DateTime>? plannedDates,
     CareItemSchedule? schedule,
     String? lateCompletionChoice,
     bool clearLateCompletionChoice = false,
@@ -320,6 +325,7 @@ class HealthEntry {
           ? null
           : (providerTypedName ?? this.providerTypedName),
       careBlocks: careBlocks ?? this.careBlocks,
+      plannedDates: plannedDates ?? this.plannedDates,
       schedule: schedule ?? this.schedule,
       lateCompletionChoice: clearLateCompletionChoice
           ? null
