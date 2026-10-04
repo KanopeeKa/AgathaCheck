@@ -43,24 +43,24 @@ Pre-approved migrations (D9a): `cleanup_jobs` and `pet_lifecycle_notifications` 
 
 | Field | Value |
 |-------|-------|
-| **approved_by** | standing grant — roadmap `active-codebase-completion-e41f` |
-| **approved_at / approved_until** | set at bootstrap (+48h) |
-| **control_issue** | set at bootstrap |
+| **approved_by** | standing grant — roadmap `active-codebase-completion-e41f` (#1446), approve-autonomous 2026-10-04 |
+| **approved_at / approved_until** | 2026-10-04T13:40:59Z / 2026-10-06T13:40:59Z |
+| **control_issue** | [#1492](https://github.com/KanopeeKa/AgathaCheck/issues/1492) |
 
 ## Runtime
 
 ```yaml
 autonomy: active
-current_phase: "1"
+current_phase: 1
 last_completed_phase: null
 halt_reason: null
-next_action: "bootstrap: create integration branch + control issue, then phase 1"
+next_action: "start phase 1: checkout cursor/active-codebase-e1-cleanup-jobs-e41f"
 artifact_ref:
-  branch: null
+  branch: cursor/arch-e-bootstrap-26ff
   plan_path: .agents/plans/active-codebase-batch-e-backend-integrity-e41f.md
-  plan_commit: null
+  plan_commit: 2c11ea562380f58a5538a5c1328c9c7c2f328657
   snapshot_path: .agents/plans/active-codebase-batch-e-backend-integrity-e41f.snapshot.json
-  snapshot_commit: null
+  snapshot_commit: 2c11ea562380f58a5538a5c1328c9c7c2f328657
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
