@@ -24,6 +24,10 @@ function makePool(handlers) {
     connect: async () => {
       const client = {
         query: async (sql, params) => {
+          const cmd = String(sql).trim();
+          if (cmd === 'BEGIN' || cmd === 'COMMIT' || cmd === 'ROLLBACK') {
+            return { rows: [], command: cmd };
+          }
           for (const handler of handlers) {
             const result = await handler(sql, params);
             if (result !== undefined) return result;

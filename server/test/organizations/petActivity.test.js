@@ -44,6 +44,10 @@ describe('petActivity', () => {
       const client = {
         query: jest.fn(async (sql, params) => {
           queries.push({ sql, params });
+          const cmd = String(sql).trim();
+          if (cmd === 'BEGIN' || cmd === 'COMMIT' || cmd === 'ROLLBACK') {
+            return { rows: [], command: cmd };
+          }
           return { rows: [{ id: params?.[0] }] };
         }),
         release: jest.fn(),
@@ -81,6 +85,10 @@ describe('petActivity', () => {
       const client = {
         query: jest.fn(async (sql) => {
           queries.push(sql);
+          const cmd = String(sql).trim();
+          if (cmd === 'BEGIN' || cmd === 'COMMIT' || cmd === 'ROLLBACK') {
+            return { rows: [], command: cmd };
+          }
           if (sql.includes('INSERT INTO pet_activity_events')) {
             throw new Error('insert failed');
           }
@@ -120,26 +128,16 @@ describe('petActivity', () => {
       expect(pool.connect).not.toHaveBeenCalled();
     });
 
-    it('works without pool.connect for test mock pools', async () => {
-      const queries = [];
-      const pool = {
-        query: jest.fn(async (sql, params) => {
-          queries.push({ sql, params });
-          return { rows: [] };
+    it('requires a pool with connect() for transactional writes', async () => {
+      const pool = { query: jest.fn(async () => ({ rows: [] })) };
+      await expect(
+        recordPetActivity(pool, {
+          petId: 'pet-1',
+          orgId: 'org-1',
+          eventType: 'document_upload',
+          metadata: { document_count: 1 },
         }),
-      };
-
-      const eventId = await recordPetActivity(pool, {
-        petId: 'pet-1',
-        orgId: 'org-1',
-        eventType: 'document_upload',
-        metadata: { document_count: 1 },
-      });
-
-      expect(eventId).toBeTruthy();
-      expect(queries).toHaveLength(2);
-      expect(queries[0].sql).toContain('INSERT INTO pet_activity_events');
-      expect(queries[1].sql).toContain('UPDATE pets SET last_activity_at');
+      ).rejects.toThrow('withTransaction requires a pg.Pool with connect()');
     });
   });
 
@@ -191,14 +189,25 @@ describe('petActivity', () => {
 
     it('records activity when pet belongs to an org', async () => {
       const queries = [];
-      const pool = {
+      const client = {
         query: jest.fn(async (sql, params) => {
           queries.push({ sql, params });
+          const cmd = String(sql).trim();
+          if (cmd === 'BEGIN' || cmd === 'COMMIT' || cmd === 'ROLLBACK') {
+            return { rows: [], command: cmd };
+          }
+          return { rows: [] };
+        }),
+        release: jest.fn(),
+      };
+      const pool = {
+        query: jest.fn(async (sql, params) => {
           if (sql.includes('SELECT organization_id')) {
             return { rows: [{ organization_id: 'org-1' }] };
           }
           return { rows: [] };
         }),
+        connect: jest.fn(async () => client),
       };
 
       await recordPetActivityForPet(pool, {

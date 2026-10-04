@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { publicError } from '../../config/security.js';
 import { todayCalendarIso } from '../../lib/calendarDate.js';
 import { loadAwayPlanReadinessForAbsence } from '../../lib/care/awayPlan/index.js';
-import { withOptionalTransaction } from '../../lib/db/withOptionalTransaction.js';
+import { withTransaction } from '../../lib/db/withTransaction.js';
 import {
   PLANNED_ABSENCE_PROVENANCE_USER_DECLARED,
   PLANNED_ABSENCE_STATUS_ACTIVE,
@@ -95,7 +95,7 @@ export function registerPlannedAbsenceRoutes(router, pool) {
       const id = uuidv4();
       const provenance = body.provenance || PLANNED_ABSENCE_PROVENANCE_USER_DECLARED;
       const creatorTimezone = await loadUserTimezone(pool, userId);
-      const row = await withOptionalTransaction(pool, async (client) => {
+      const row = await withTransaction(pool, async (client) => {
         const result = await client.query(
           `INSERT INTO planned_absences
              (id, user_id, starts_on, ends_on, provenance, source_ref, status, timezone)
@@ -221,7 +221,7 @@ export function registerPlannedAbsenceRoutes(router, pool) {
         return res.status(widenGate.status).json(widenGate.payload);
       }
 
-      const updated = await withOptionalTransaction(pool, async (client) => {
+      const updated = await withTransaction(pool, async (client) => {
         const setClauses = ['starts_on = $1::date', 'ends_on = $2::date', 'updated_at = NOW()'];
         const updateParams = [window.starts_on, window.ends_on];
         if (handoverNote !== undefined) {
