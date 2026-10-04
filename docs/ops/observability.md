@@ -89,6 +89,10 @@ Organisation v2 introduces a **product** activity layer for last-activity sortin
 - `last_activity_at` is updated in the **same transaction** as the event insert.
 - No backfill — see `docs/architecture/pet-activity-model.md`.
 
+## Background cleanup jobs
+
+File-deletion and other durable cleanup work runs through the `cleanup_jobs` table and in-process runner. Operations, SQL inspection, manual retry, and rollback rules: [cleanup-jobs.md](./cleanup-jobs.md).
+
 ## Structured application logs
 
 - **Library:** `pino` (`server/lib/logger.js`)
