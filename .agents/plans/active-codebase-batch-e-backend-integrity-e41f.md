@@ -56,11 +56,11 @@ last_completed_phase: null
 halt_reason: null
 next_action: "continue phase 1 on branch cursor/active-codebase-e1-cleanup-jobs-e41f"
 artifact_ref:
-  branch: cursor/active-codebase-e-integration-e41f
+  branch: cursor/active-codebase-e1-cleanup-jobs-e41f
   plan_path: .agents/plans/active-codebase-batch-e-backend-integrity-e41f.md
-  plan_commit: 14e4579c3d56e6caece1e8cf07c40448f124acb6
+  plan_commit: 7ac684414c5b7b41aaa2586d4ce2f72c4bd99312
   snapshot_path: .agents/plans/active-codebase-batch-e-backend-integrity-e41f.snapshot.json
-  snapshot_commit: 14e4579c3d56e6caece1e8cf07c40448f124acb6
+  snapshot_commit: 7ac684414c5b7b41aaa2586d4ce2f72c4bd99312
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
