@@ -4,18 +4,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/app_notification.dart';
 import '../../domain/entities/notification_scope.dart';
+import '../../domain/services/notification_inline_action_support.dart';
 import '../../domain/services/notification_inbox_v2_rules.dart';
 import '../providers/notification_providers.dart';
 import '../utils/notification_navigation.dart';
+import 'notification_inbox_row.dart'
+    show NotificationInboxRow, NotificationInboxTileTap;
 import 'notification_date_groups.dart';
 import 'notification_tile.dart';
-
-typedef NotificationInboxTileTap =
-    Future<void> Function(
-      BuildContext context,
-      WidgetRef ref,
-      AppNotification notification,
-    );
 
 /// Date-grouped inbox list with Activity pinned sections (FR-IN-3/4).
 class NotificationInboxList extends ConsumerWidget {
@@ -154,6 +150,14 @@ class NotificationInboxList extends ConsumerWidget {
   }
 
   Widget _tile(BuildContext context, WidgetRef ref, AppNotification n) {
+    final inline = NotificationInlineActionSupport.supportsInlineActions(n);
+    if (inline) {
+      return NotificationInboxRow(
+        notification: n,
+        listScope: listScope,
+        onNotificationTap: onNotificationTap,
+      );
+    }
     return NotificationTile(
       notification: n,
       listScope: listScope,

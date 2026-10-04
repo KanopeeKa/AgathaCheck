@@ -24,3 +24,9 @@ Feature: Notifications v2 inbox programme
     When the user marks that care done on time
     And the system checks for due care
     Then the check-due API should report zero inbox rows created
+
+  @P4 @bdd
+  Scenario: Pending share invite shows inline accept and decline in Activity
+    Given I have a pending share invite notification in Activity
+    When I open the notification inbox on Activity
+    Then I should see Accept and Decline actions on the invite row without opening it

@@ -5764,6 +5764,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notificationUrgent => 'Urgent';
 
   @override
+  String get notificationInlineRetry => 'Retry';
+
+  @override
+  String get notificationInlineActionFailed =>
+      'Something went wrong. Try again.';
+
+  @override
+  String get notificationAlreadyHandled => 'Already handled';
+
+  @override
+  String get notificationInlineUndo => 'Undo';
+
+  @override
   String get accountTitle => 'Account';
 
   @override
