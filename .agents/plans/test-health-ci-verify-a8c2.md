@@ -221,13 +221,13 @@ autonomy: active
 current_phase: 1
 last_completed_phase: null
 halt_reason: null
-next_action: "start phase 1: checkout cursor/test-health-verify-uat-smoke-edcb"
+next_action: "continue phase 1 on branch cursor/test-health-verify-uat-smoke-edcb"
 artifact_ref:
-  branch: cursor/test-health-ci-verify-integration-edcb
+  branch: cursor/test-health-verify-uat-smoke-edcb
   plan_path: .agents/plans/test-health-ci-verify-a8c2.md
-  plan_commit: dcc4763690ee8dc21a8d50ed3bd51862b7001ffb
+  plan_commit: a24451df4011d7892154dd7de952cb982e584b9c
   snapshot_path: .agents/plans/test-health-ci-verify-a8c2.snapshot.json
-  snapshot_commit: dcc4763690ee8dc21a8d50ed3bd51862b7001ffb
+  snapshot_commit: a24451df4011d7892154dd7de952cb982e584b9c
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

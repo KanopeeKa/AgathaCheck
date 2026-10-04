@@ -88,19 +88,38 @@ jobs:
           CPANEL_SERVER: ${{ secrets.UAT_SSH_HOST }}
           CPANEL_USER: ${{ secrets.UAT_SSH_USER }}
           CPANEL_TOKEN: ${{ secrets.UAT_CPANEL_API_TOKEN }}
+          SSH_PORT: ${{ secrets.UAT_SSH_PORT || 22 }}
           RUNNER_IP: ${{ steps.runner_ip.outputs.ipv4 }}
         run: bash scripts/o2switch-ssh-whitelist.sh add
 
-      - name: Wait for firewall
-        if: steps.whitelist_add.outcome == 'success'
+      - name: o2switch SSH whitelist — verify runner IP
+        id: whitelist_verify
+        if: >-
+          steps.ssh_ready.outputs.ready == 'true' &&
+          steps.whitelist_add.outcome == 'success'
+        env:
+          CPANEL_SERVER: ${{ secrets.UAT_SSH_HOST }}
+          CPANEL_USER: ${{ secrets.UAT_SSH_USER }}
+          CPANEL_TOKEN: ${{ secrets.UAT_CPANEL_API_TOKEN }}
+        run: |
+          bash scripts/o2switch-ssh-whitelist.sh list | grep -q "${{ steps.runner_ip.outputs.ipv4 }}"
+
+      - name: Wait for o2switch firewall to apply
+        if: >-
+          steps.ssh_ready.outputs.ready == 'true' &&
+          steps.whitelist_verify.outcome == 'success'
         run: sleep 30
 
       - name: Prepare in-host smoke script
-        if: steps.whitelist_add.outcome == 'success'
+        if: >-
+          steps.ssh_ready.outputs.ready == 'true' &&
+          steps.whitelist_verify.outcome == 'success'
         run: bash scripts/ci/prepare-uat-inhost-smoke.sh
 
       - name: Run in-host smoke via SSH
-        if: steps.whitelist_add.outcome == 'success'
+        if: >-
+          steps.ssh_ready.outputs.ready == 'true' &&
+          steps.whitelist_verify.outcome == 'success'
         uses: appleboy/ssh-action@2ead5e36573f08b82fbfce1504f1a4b05a647c6f # v1.2.2
         with:
           host: ${{ secrets.UAT_SSH_HOST }}
@@ -108,7 +127,7 @@ jobs:
           key: ${{ secrets.UAT_SSH_PRIVATE_KEY }}
           passphrase: ${{ secrets.UAT_SSH_PASSPHRASE }}
           port: ${{ secrets.UAT_SSH_PORT || 22 }}
-          timeout: 120s
+          timeout: 180s
           command_timeout: 10m
           script_path: .ci-uat-inhost-smoke.sh
 
@@ -119,15 +138,16 @@ jobs:
           CPANEL_SERVER: ${{ secrets.UAT_SSH_HOST }}
           CPANEL_USER: ${{ secrets.UAT_SSH_USER }}
           CPANEL_TOKEN: ${{ secrets.UAT_CPANEL_API_TOKEN }}
+          SSH_PORT: ${{ secrets.UAT_SSH_PORT || 22 }}
           RUNNER_IP: ${{ steps.runner_ip.outputs.ipv4 }}
         run: bash scripts/o2switch-ssh-whitelist.sh remove
 
       - name: Fail when loopback verification was required but not executed
         if: >-
           steps.ssh_ready.outputs.ready == 'true' &&
-          steps.whitelist_add.outcome != 'success'
+          steps.whitelist_verify.outcome != 'success'
         run: |
-          echo "::error::UAT_SSH_ENABLED=true but runner IP whitelist failed — in-host smoke did not run."
+          echo "::error::UAT_SSH_ENABLED=true but runner IP whitelist did not verify — in-host smoke did not run. Check UAT_SSH_PORT matches o2switch SshWhitelist port."
           exit 1
 
       - name: Verification skipped (SSH not enabled)
