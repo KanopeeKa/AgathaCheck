@@ -2,7 +2,7 @@
 title: Notifications v2 — Activity & Agatha Suggestions (functional spec)
 owner: Product
 audience: both
-status: proposed (rev 2 — review incorporated)
+status: proposed (rev 2.1)
 last_updated: 2026-10-04
 tags: [domain,notifications,spec,suggestions,sharing]
 domain: notifications
@@ -11,7 +11,7 @@ feature_id: notifications-v2
 
 # Notifications v2 — Activity & Agatha Suggestions
 
-> **Status: proposed, rev 2.** Functional spec only. Implementation follows the rollout in §12, with one atomic PR
+> **Status: proposed, rev 2.1.** Moves to `accepted` only once the documentation checklist (AC-MG-5) is merged. Functional spec only. Implementation follows the rollout in §12, with one atomic PR
 > per outcome. Rev 2 incorporates the design review; the changes are summarised in §15. Once accepted, the decisions in
 > §0 take effect.
 
@@ -37,6 +37,28 @@ Decision IDs **D12–D16** are already taken (roles and permissions), so new dec
 | **N9** | The inbox is not an audit log. A 90-day inbox archive is accepted for every kind. |
 
 Accepting this spec includes the documentation checklist in AC-MG-5.
+
+## 0.1 Traceability to the original request
+
+The brief: *stop notifications duplicating events, and refocus them on (a) account notifications, meaning relationship
+changes such as adding people or sharing a pet, and (b) Agatha Suggestions.*
+
+| Brief | Where it is met | Tier |
+|---|---|---|
+| Stop duplicating events | §4 (care reminders leave the inbox), FR-CR-1..5 | **Core** |
+| Relationships: adding people, sharing a pet | R1–R3, R5–R12 (§3.2), Activity tab, inline accept/decline | **Core** |
+| Agatha Suggestions | §7, For you tab, S1–S7 | **Core** (S7 → owner only) |
+| Kept, not new: org/foster workflow items | `administrative` stays in Activity, unchanged. Removing it would drop actionable pending items (D10). | Preserved |
+| Kept, not new: ownership transfer, memorial | R14, R17. These already exist today as `general` notices and are reclassified, not invented. | Preserved |
+| Added for best-in-class UX (not in the brief) | Grouping (§6.4), weekly digest + email (§9.3), invite expiry/reminder (R4, R18), care assignment (R16, which depends on People D21), settings matrix beyond on/off | **Enhancement** |
+
+**Scope rule.** PR1–PR3 and PR5 deliver the brief. The enhancements are specified so they don't need redesign later,
+but they ship in PR4/PR6 and can be cut or deferred **without affecting the core outcome**. Anything not traceable to
+this table is out of scope.
+
+Account-level events that are not relationships (sign-in from a new device, email/password change, subscription
+changes) are **not** in v2. They would be a natural next `relationship`-adjacent category; they are recorded in
+`changes/deferred.md`.
 
 ## 1. Problem & intent
 
@@ -183,10 +205,13 @@ for new rows after PR3.
 | `general` — ownership transferred (`pets/transferRouter.js`) | care | relationship | `ownershipTransferCompleted` |
 | `general` — passed away (`petDataLifecycle.js`) | care | relationship | `petPassedAway` |
 | `general` — placements, adoption journeys, foster placements, org pets (`organizations/**`, `fosterPlacements.js`) | care | administrative | specific type per emitter, listed in PR3 |
+| `general` — share link accepted, "X is now following" (`services/sharing/shareLinkService.js`) | care | relationship | `shareInviteAccepted` (R2) |
+| `general` — "Stopped following" to owner (`services/sharing/shareAccessService.js`) | care | relationship | `shareMemberLeft` (R7) |
+| `general` — "Sharing ended" to removed user (`services/sharing/shareAccessService.js`) | care | relationship | `shareAccessRemoved` (R6, mandatory) |
 | `general` — care-intelligence evaluation harness | care | — (test only) | removed |
 | `fosterRequest*`, `fosterInvitation*`, `fosterApproval*`, `session*Soon`, `agreementWithdrawn`, `connectionRequestReceived`, `pending*Received`, `adminMessageReceived` | administrative | administrative | unchanged |
 
-The table is complete for the emitters on `main` at the time of writing. PR3 MUST include a test that fails if any
+The table is complete for the `type: 'general'` emitters on `main` at commit `4f3325d`+3 (transfer ×2, passed-away ×1, foster placements ×4, adoption journeys ×3, placement actions ×5, share access ×2, share link ×1). Legacy rows are classified by **emitter title** where `type` is `general`; the migration ships a fixture per emitter. PR3 MUST include a test that fails if any
 `createNotification` call omits `type` or uses `general`.
 
 ## 4. Care reminders after v2
@@ -303,8 +328,8 @@ Activity count = needs response + urgent.
 
 | ID | Requirement |
 |---|---|
-| FR-GR-1 | Non-actionable rows of the same `type` and the same subject (pet or household) within a 24 h window MUST collapse into one row: "**Paul** and **2 others** now have access to **Luna**". |
-| FR-GR-2 | A grouped row expands on tap to list each member event, each with its own timestamp. |
+| FR-GR-1 | Rows whose `type` is on the allowlist in §6.4.1, with the same subject (pet or household), within the rolling 24 h window MUST collapse into one row using that type's headline template, e.g. "**Paul** and **2 others** accepted your invites to **Luna**". |
+| FR-GR-2 | Tapping a **grouped** row expands it in place, without navigating. Each member line has its own timestamp and is itself tappable to navigate to its target (FR-AR-4). FR-AR-4's tap-to-navigate applies to single rows and to member lines, never to the group header. |
 | FR-GR-3 | Needs-response, mandatory and urgent items are NEVER grouped. |
 | FR-GR-4 | A grouped row counts as **one** item for the dot/indicator. It is unread while any member is unread. Opening or expanding the group marks **all** members read in a single request. |
 
@@ -338,7 +363,7 @@ All other types are never grouped, including every needs-response, mandatory, ur
 | FR-SG-1 | Suggestions MUST be generated server-side by a scheduled job (at least daily) and on relevant data changes (e.g. new weight entry). They are persisted as `kind=suggestion` rows. |
 | FR-SG-2 | Each suggestion has: `type`, `pet_id`, `headline`, `rationale` (one sentence), `evidence` (structured: data points and window), `primary_action` (deep link + label), `confidence` (0–1), `expires_at`, `dedupe_key`. |
 | FR-SG-3 | Only suggestions with confidence ≥ the configured threshold (default 0.7) are created. |
-| FR-SG-4 | Recipient: pet owner and Full-access members. Can-log-care members only get S7-type items addressed to them. Org/foster pets follow scope rules. |
+| FR-SG-4 | Recipients: S1–S6 → pet owner and Full-access members. S7 → **record owner only** (N7). Can-log-care and view-only members never receive suggestions. Org/foster pets follow scope rules. |
 | FR-SG-5 | A `dedupe_key` (e.g. `weight_trend:<pet>:<window>`) MUST prevent the same suggestion from being active twice. A refreshed signal updates the existing row rather than creating a new one. |
 | FR-SG-6 | From PR5, `care_recommendations_provider` and the pet-profile suggestion cards (`care_suggestion_card`, `care_family_suggestion_banner`) read the **same API** as For you, filtered by pet. Dismissing a card in one place dismisses it everywhere. No suggestion is computed only on the client. Until PR5, profile cards stay as they are and For you shows its empty state; the two never run side by side. |
 | FR-SG-7 | S6's `dedupe_key` reuses the existing care-family banner's grouping key, so that users who dismissed the banner before PR5 do not see the same suggestion again. |
@@ -400,11 +425,13 @@ The notification settings screen shows a matrix of **category × channel**:
 
 | Category | In-app inbox | Push | Email | Default |
 |---|---|---|---|---|
-| Invites & requests (R1, R8, R13) | always | on | on | — |
+| Invites & requests (R1, R8, R18; R13 when built) | always | on | on | — |
 | Access & membership changes (R2–R7, R9–R12, R14–R16) | always | on | off | — |
 | Organisation & foster (administrative) | always | on | per existing prefs | — |
-| Agatha Suggestions | on | **weekly digest** (off / weekly digest / instant) | off | inbox + weekly digest |
+| Agatha Suggestions | on | **weekly digest** (off / weekly digest / instant) | off¹ | inbox + weekly digest |
 | Care reminders | — (not in inbox) | existing reminder settings | existing | unchanged |
+
+¹ Email digest defaults to **on** for users with no push-capable device (N8, FR-DG-5).
 
 ### 8.2 Requirements
 
@@ -430,7 +457,7 @@ The notification settings screen shows a matrix of **category × channel**:
 
 | ID | Requirement |
 |---|---|
-| FR-PU-1 | Relationship pushes are sent at most once per event, and grouped per FR-GR-1 if several arrive within 2 minutes ("Paul and 2 others joined…"). |
+| FR-PU-1 | Relationship pushes are sent at most once per event, and, for allowlisted types only (§6.4.1), grouped if several arrive within 2 minutes ("Paul and 2 others joined…"). |
 | FR-PU-2 | v2 has **no in-app quiet-hours setting** (none exists today). We rely on OS Focus / Do Not Disturb. Relationship and suggestion pushes are sent with a non-time-sensitive interruption level; urgent (D11) pushes are sent as time-sensitive. An in-app quiet-hours setting is deferred to `changes/deferred.md`. |
 | FR-PU-3 | Tapping a push opens the specific row's target and marks the row read. |
 
@@ -487,12 +514,12 @@ The notification settings screen shows a matrix of **category × channel**:
 
 | PR | Outcome | Verifiable by |
 |---|---|---|
-| 1 | Stop creating `care` inbox rows. Archive existing ones. Client parses new kinds safely. | AC-CR-*, AC-MG-* |
+| 1 | Stop creating `overdue`/`due_soon` inbox rows. Migration: archive existing `overdue`/`due_soon` rows **only**, and backfill-reclassify every other legacy row per §3.4 (no blanket archive). Client parses new kinds safely. Doc checklist AC-MG-5 lands before this PR. | AC-CR-*, AC-MG-* |
 | 2 | Two-tab inbox (Activity / For you), empty states, explainer, badge rules | AC-IN-*, AC-BG-* |
-| 3 | Relationship catalogue R1–R16 generated server-side, with privacy rules | AC-AC-*, AC-PR-* |
-| 4 | Inline actions + Needs your response + grouping | AC-IA-*, AC-GR-* |
+| 3 | Relationship emitters per §3.2 (R1–R12, R14–R17; R13 excluded as future), the §3.4 type→kind map for new rows, explicit `type` everywhere, and privacy rules | AC-AC-*, AC-PR-* |
+| 4 | Inline actions + Needs your response *(core)*; grouping, R4/R18 *(enhancement)* | AC-IA-*, AC-GR-* |
 | 5 | Server-generated suggestions S1–S7, rate limits, cards, feedback | AC-SG-*, AC-FB-* |
-| 6 | Settings matrix, mandatory items, push/email/digest | AC-SE-*, AC-DG-* |
+| 6 | Settings matrix, mandatory items *(core)*; email + weekly digest *(enhancement)* | AC-SE-*, AC-DG-* |
 
 **BDD strategy.** PR1 creates `notifications_v2.feature`. In the same PR, scenarios in `notifications.feature` that
 assert care rows in the inbox or badge = unread count are tagged `@legacy` and excluded from the coverage gate.
@@ -593,7 +620,7 @@ Written in Given/When/Then form so they can be turned into BDD scenarios with mi
 
 ### 13.8 Read / resolved / archive (AC-ST)
 
-- **AC-ST-1** — When I tap a row, then it is marked read and I navigate to its target.
+- **AC-ST-1** — When I tap a single (non-grouped) row, then it is marked read and I navigate to its target. When I tap a group header, then it expands without navigating (AC-GR-2).
 - **AC-ST-2** — When I tap **Mark all as read** on Activity, then all Activity rows become read, pending items stay in **Needs your response** (still unresolved), and For you is unaffected.
 - **AC-ST-3** — When I swipe a row to archive, then it disappears with a 5 s **Undo** snackbar. The overflow menu offers the same action on web.
 - **AC-ST-4** — Given a non-pending row older than 90 days, then it is no longer listed.
@@ -660,7 +687,8 @@ Written in Given/When/Then form so they can be turned into BDD scenarios with mi
 
 ### 13.14 Migration (AC-MG)
 
-- **AC-MG-1** — After migration, `care` rows are archived and counted 0 in the badge, and the row count is unchanged (nothing deleted).
+- **AC-MG-1** — After migration, `overdue`/`due_soon` rows are archived and counted 0 in the badge. Every other legacy row is reclassified per §3.4. The total row count is unchanged (nothing deleted).
+- **AC-MG-7** — Given legacy rows from each `general` emitter in §3.4 (one fixture each), then after migration each has the v2 kind/type listed in the matrix.
 - **AC-MG-2** — Pre-existing share/household/transfer rows show in Activity with the `relationship` treatment.
 - **AC-MG-3** — A client at the previous release receives no unknown kinds (or parses them safely) and does not crash.
 - **AC-MG-4** — `migrate down` removes the v2 schema additions and restores the old type→kind map. A backup is taken before `up`, and the restore runbook exists in `docs/ops`.
@@ -670,7 +698,9 @@ Written in Given/When/Then form so they can be turned into BDD scenarios with mi
   - [ ] `features/journeys.md`: care-in-inbox, chips and combined badge journeys rewritten.
   - [ ] `cross-domain/changes/program-contract.md` §3: a footnote pointing to this spec over the old diagram.
   - [ ] Help/FAQ l10n strings (EN/FR) on reminders, snooze and "in-app notifications for due items" updated.
-  - [ ] `changes/deferred.md`: quiet hours, R13 request flow, and a "dot only for needs-response" badge option.
+  - [ ] `changes/deferred.md`: quiet hours, R13 request flow, a "dot only for needs-response" badge option, S7 recipients revisit, and non-relationship account events (sign-in, email change, subscription).
+  - [ ] People domain docs: cross-link noting that ownership transfer is immediate in the API (no accept step), so R13 stays future. The contradiction is tracked on the People backlog.
+  - [ ] `changes/plans.md`: the link points to the accepted revision.
 - **AC-MG-6** — Given `householdInviteReceived` and `shareInviteAccepted` rows (today wrongly defaulted to `care`), then after migration both are `relationship` and visible in Activity.
 
 ### 13.15 Test hooks (AC-TH)
@@ -712,3 +742,18 @@ Still open (non-blocking): whether to add a "dot only for needs-response" badge 
 | Test hooks | §13.15. |
 | Doc drift | AC-MG-5 checklist. |
 | Decision ID collision | New decisions use N1–N9 (D12–D16 are taken by roles). |
+
+### Rev 2.1
+
+| Review point | Change |
+|---|---|
+| FR-SG-4 contradicted N7 | S7 → record owner only; S1–S6 → owner + Full access. |
+| Missing `general` emitters (sharing services on `main`) | Three rows added to §3.4; emitter counts pinned; AC-MG-7 fixture per emitter. |
+| §12 PR1 said "archive existing" | Selective archive + backfill reclassification moved into PR1; PR3 covers new-row emitters. |
+| AC-MG-1 stale | Aligned with FR-MG-2; AC-MG-7 added. |
+| Grouped row: expand vs navigate | FR-GR-2 / AC-ST-1: the group header expands, member lines navigate. |
+| FR-GR-1 / FR-PU-1 wording | Point to the §6.4.1 allowlist and templates. |
+| §8.1 R13 / N8 | R13 marked "when built"; footnote for N8. |
+| PR3 scope label | R1–R12, R14–R17 (R13 future). |
+| Requirements drift check | New §0.1 traceability table with core/preserved/enhancement tiers and the scope rule. |
+| Status workflow | Accepted only after the AC-MG-5 docs PR. |
