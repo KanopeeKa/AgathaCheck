@@ -11,7 +11,7 @@
   "base_branch": "main",
   "control_issue": 1446,
   "artifact_branch_policy": "phase-branch",
-  "current_child_plan_id": "active-codebase-batch-e-backend-integrity-e41f",
+  "current_child_plan_id": "active-codebase-batch-g-client-authority-e41f",
   "child_plans": [
     {
       "plan_id": "active-codebase-batch-d-guardrails-e41f",
@@ -27,7 +27,7 @@
     },
     {
       "plan_id": "active-codebase-batch-f-account-erasure-e41f",
-      "status": "pending",
+      "status": "merged",
       "pr_url": null,
       "merge_commit": null
     },
@@ -99,5 +99,5 @@
       "merge_commit": null
     }
   ],
-  "content_hash": "sha256:c85e21ae21ea5b66e6e18c55d832399c18c6f319c95250634f825a2fa8d85c4c"
+  "content_hash": "sha256:9bf2d584c11f717b0fe395c24fe343295b9d6cf3f6a44c0f6d0f45bcfd15710d"
 }
