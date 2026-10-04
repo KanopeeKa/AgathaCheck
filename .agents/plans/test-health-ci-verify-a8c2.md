@@ -221,13 +221,13 @@ autonomy: active
 current_phase: 2
 last_completed_phase: 1
 halt_reason: null
-next_action: "start phase 2: checkout cursor/test-health-verify-weekly-jobs-edcb"
+next_action: "continue phase 2 on branch cursor/test-health-verify-weekly-jobs-edcb"
 artifact_ref:
-  branch: cursor/test-health-ci-verify-integration-edcb
+  branch: cursor/test-health-verify-weekly-jobs-edcb
   plan_path: .agents/plans/test-health-ci-verify-a8c2.md
-  plan_commit: e1ff09dd15c306de45825e0db6189c9404ea7e02
+  plan_commit: ac93b740f9d03f58515c7ca5e80281f1b537baf9
   snapshot_path: .agents/plans/test-health-ci-verify-a8c2.snapshot.json
-  snapshot_commit: e1ff09dd15c306de45825e0db6189c9404ea7e02
+  snapshot_commit: ac93b740f9d03f58515c7ca5e80281f1b537baf9
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
