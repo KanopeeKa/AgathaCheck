@@ -604,16 +604,16 @@ server/**
 
 ```yaml
 autonomy: active
-current_phase: c1-flutter-core
-last_completed_phase: null
+current_phase: c2-components
+last_completed_phase: c1-flutter-core
 halt_reason: null
-next_action: "continue phase c1-flutter-core on branch cursor/people-client-c1-core-7f3b"
+next_action: "start phase c2-components: checkout cursor/people-client-c2-components-7f3b"
 artifact_ref:
-  branch: cursor/people-client-c1-core-7f3b
+  branch: cursor/people-client-core-integration-7f3b
   plan_path: .agents/plans/people-client-core-7f3b.md
-  plan_commit: fe4f41c0151d332c5b5d0b285814323fd19e805b
+  plan_commit: d520eabc72a7c69d14dab5db49dcdc51c204ce2f
   snapshot_path: .agents/plans/people-client-core-7f3b.snapshot.json
-  snapshot_commit: fe4f41c0151d332c5b5d0b285814323fd19e805b
+  snapshot_commit: d520eabc72a7c69d14dab5db49dcdc51c204ce2f
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
