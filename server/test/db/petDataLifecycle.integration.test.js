@@ -1,8 +1,7 @@
 import { randomUUID } from 'crypto';
 
 import { describe, expect, it, beforeAll, afterAll } from '@jest/globals';
-import pg from 'pg';
-
+import { createAppPool } from '../../lib/db/createPool.js';
 import { deleteAllPetData } from '../../lib/petDataLifecycle.js';
 import { withTransaction } from '../../lib/db/withTransaction.js';
 import {
@@ -11,16 +10,7 @@ import {
 } from './helpers/cleanupJobsSql.js';
 
 function createPool() {
-  if (process.env.DATABASE_URL) {
-    return new pg.Pool({ connectionString: process.env.DATABASE_URL });
-  }
-  return new pg.Pool({
-    user: process.env.PGUSER || 'user',
-    password: process.env.PGPASSWORD || 'password',
-    host: process.env.PGHOST || 'localhost',
-    port: process.env.PGPORT || 5432,
-    database: process.env.PGDATABASE || 'agatha_db',
-  });
+  return createAppPool();
 }
 
 describe('petDataLifecycle integration', () => {
