@@ -5,7 +5,7 @@ import 'package:pet_profile_app/features/health_tracking/data/models/health_entr
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/care_item_absence_providers.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/recurrence_anchor.dart';
-import 'package:pet_profile_app/features/health_tracking/presentation/screens/care_item_detail/care_item_schedule_section.dart';
+import 'package:pet_profile_app/features/care_item/presentation/detail/care_item_schedule_section.dart';
 import 'package:pet_profile_app/features/pet_care/presentation/widgets/care_surface/care_item_stat_row.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 

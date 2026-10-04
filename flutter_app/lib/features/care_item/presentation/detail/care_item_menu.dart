@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../l10n/app_localizations.dart';
-import '../../../domain/entities/health_entry.dart';
+import '../../../../l10n/app_localizations.dart';
+import '../../../health_tracking/domain/entities/health_entry.dart';
 
 /// Care item overflow menu (D-CIE-017): Edit, Pause/Resume, Archive/Restore.
 class CareItemMenu extends StatelessWidget {

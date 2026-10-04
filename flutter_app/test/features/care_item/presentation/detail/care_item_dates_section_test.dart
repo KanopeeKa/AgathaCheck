@@ -5,7 +5,7 @@ import 'package:pet_profile_app/core/utils/calendar_date.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_occurrence.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/occurrence_providers.dart';
-import 'package:pet_profile_app/features/health_tracking/presentation/screens/care_item_detail/care_item_dates_section.dart';
+import 'package:pet_profile_app/features/care_item/presentation/detail/care_item_dates_section.dart';
 import 'package:pet_profile_app/features/pet_care/presentation/widgets/care_surface/care_item_status_pill.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 

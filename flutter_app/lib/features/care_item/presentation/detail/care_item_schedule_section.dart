@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../../core/utils/calendar_date.dart';
-import '../../../../../l10n/app_localizations.dart';
-import '../../../../pet_care/presentation/widgets/care_surface/care_item_module.dart';
-import '../../../../pet_care/presentation/widgets/care_surface/care_item_section_header.dart';
-import '../../../../pet_care/presentation/widgets/care_surface/care_item_stat_row.dart';
-import '../../../domain/entities/health_entry.dart';
-import '../../../domain/entities/recurrence_anchor.dart';
-import '../../widgets/health_entry_form/health_entry_frequency_labels.dart';
-import '../../widgets/health_entry_type_labels.dart';
-import '../../providers/care_item_absence_providers.dart';
-import '../../providers/care_item_absence_resolution_sync.dart';
-import '../../widgets/pet_event_lifecycle.dart';
+import '../../../../core/utils/calendar_date.dart';
+import '../../../../l10n/app_localizations.dart';
+import '../../../pet_care/presentation/widgets/care_surface/care_item_module.dart';
+import '../../../pet_care/presentation/widgets/care_surface/care_item_section_header.dart';
+import '../../../pet_care/presentation/widgets/care_surface/care_item_stat_row.dart';
+import '../../../health_tracking/domain/entities/health_entry.dart';
+import '../../../health_tracking/domain/entities/recurrence_anchor.dart';
+import '../../../health_tracking/presentation/widgets/health_entry_form/health_entry_frequency_labels.dart';
+import '../../../health_tracking/presentation/widgets/health_entry_type_labels.dart';
+import '../../../health_tracking/presentation/providers/care_item_absence_providers.dart';
+import '../../../health_tracking/presentation/providers/care_item_absence_resolution_sync.dart';
+import '../../../health_tracking/presentation/widgets/pet_event_lifecycle.dart';
 
 /// Schedule summary (spec §Schedule) — stat grid + prose; edit via header action.
 class CareItemScheduleSection extends ConsumerWidget {

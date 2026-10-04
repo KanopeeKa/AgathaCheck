@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../l10n/app_localizations.dart';
-import '../../../../pet_profile/domain/entities/pet.dart';
+import '../../../../l10n/app_localizations.dart';
+import '../../../pet_profile/domain/entities/pet.dart';
 
 /// Established badge and plain-language confirmation on Care Item detail.
 class CareItemEstablishedSection extends StatelessWidget {
