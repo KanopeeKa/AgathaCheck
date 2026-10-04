@@ -14,6 +14,18 @@ export const PET_COLOR_PALETTE = [
 export const petId = '123e4567-e89b-12d3-a456-426614174000';
 export const petId2 = '223e4567-e89b-12d3-a456-426614174001';
 
+/** Mirrors server/lib/petDataLifecycle.js PET_DATA_TABLES for mock DELETE routing. */
+const PET_DATA_TABLES = [
+  'weight_entries',
+  'health_issues',
+  'health_entries',
+  'pet_timeline_entries',
+  'pet_activity_events',
+  'family_events',
+  'notifications',
+  'pet_share_links',
+];
+
 export function makePetRow(overrides = {}) {
   return {
     id: petId,
@@ -56,7 +68,7 @@ export function createTransactionalMockPool(queryHandler) {
       if (sql === 'BEGIN' || sql === 'COMMIT' || sql === 'ROLLBACK') {
         if (sql === 'BEGIN') txDepth += 1;
         if (sql === 'COMMIT' || sql === 'ROLLBACK') txDepth = Math.max(0, txDepth - 1);
-        return { rows: [] };
+        return { rows: [], command: sql };
       }
       return baseQuery(sql, params);
     },
@@ -76,6 +88,41 @@ export function createMockPool(queryHandler) {
   const handler = queryHandler || (async (sql, params) => {
       const access = handlePetAccessQuery(sql, params, { userId, ownedPetIds: [petId, petId2] });
       if (access) return access;
+
+      if (sql.includes('SELECT photo_path FROM pets')) {
+        return { rows: [{ photo_path: null }] };
+      }
+      if (sql.includes('FROM health_event_photos')) {
+        return { rows: [] };
+      }
+      if (sql.includes('FROM health_issue_documents')) {
+        return { rows: [] };
+      }
+      if (sql.includes('INSERT INTO cleanup_jobs')) {
+        return { rows: [{ id: 'job-1' }] };
+      }
+      if (
+        sql.startsWith('DELETE FROM ')
+        && sql.includes('pet_id = $1')
+        && PET_DATA_TABLES.some((table) => sql.includes(`DELETE FROM ${table}`))
+      ) {
+        return { rowCount: 0, rows: [] };
+      }
+      if (sql.includes('UPDATE pets') && sql.includes('photo_path = NULL')) {
+        return { rowCount: 1, rows: [] };
+      }
+      if (sql.includes('DELETE FROM pets WHERE id = $1 AND user_id = $2')) {
+        return { rowCount: 1, rows: [] };
+      }
+      if (sql.includes('DELETE FROM pets WHERE id = $1')) {
+        return { rowCount: 1, rows: [] };
+      }
+      if (sql.includes('INSERT INTO audit_events')) {
+        return { rows: [{ id: 'audit-1' }] };
+      }
+      if (sql.includes('INSERT INTO pet_lifecycle_notifications')) {
+        return { rows: [{ recipient_user_id: 'collab-1' }] };
+      }
 
       if (sql.includes('SELECT 1 FROM pets WHERE id = $1 AND user_id = $2')) {
         return { rows: [{ '?column?': 1 }] };

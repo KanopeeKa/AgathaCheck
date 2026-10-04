@@ -116,10 +116,16 @@ describe('People contacts API', () => {
 
         return { rows: [] };
     };
+    const clientQuery = async (sql, params) => {
+      if (sql === 'BEGIN' || sql === 'COMMIT' || sql === 'ROLLBACK') {
+        return { rows: [], command: sql };
+      }
+      return queryImpl(sql, params);
+    };
     const mockPool = {
-      query: queryImpl,
+      query: clientQuery,
       connect: async () => ({
-        query: queryImpl,
+        query: clientQuery,
         release: () => {},
       }),
       end: async () => {},

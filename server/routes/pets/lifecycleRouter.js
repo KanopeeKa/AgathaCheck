@@ -34,16 +34,17 @@ export function registerLifecycleRoutes(router, pool) {
         req.body?.pet_name
         || (await pool.query('SELECT name FROM pets WHERE id = $1', [petId])).rows[0]?.name
         || null;
-      const notifiedCount = await notifyPassedAwayCollaborators(pool, {
+      const outcome = await notifyPassedAwayCollaborators(pool, {
         petId,
         ownerId: userId,
         petName,
       });
       res.status(200).json({
-        notification_sent: notifiedCount > 0,
+        notification_sent: outcome.notified_count > 0,
         pet_id: petId,
-        notified_count: notifiedCount,
-        delivery_status: notifiedCount > 0 ? 'delivered' : 'no_recipients',
+        notified_count: outcome.notified_count,
+        already_notified_count: outcome.already_notified_count,
+        delivery_status: outcome.delivery_status,
       });
     } catch (err) {
       res.status(500).json({ error: publicError(err) });

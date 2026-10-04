@@ -65,21 +65,27 @@ describe('Pets API', () => {
     });
 
     it('DELETE /api/pets/:id scopes the delete to the authenticated user', async () => {
-      let capturedParams;
-      const app = createApp(createMockPool(async (sql, params) => {
-        const access = handlePetAccessQuery(sql, params, { userId, ownedPetIds: [petId] });
-        if (access) return access;
-        if (sql.includes('DELETE FROM pets')) {
-          capturedParams = params;
-          return { rows: [] };
+      let ownershipParams;
+      const pool = createMockPool();
+      const wrapQuery = (queryFn) => async (sql, params) => {
+        if (typeof sql === 'string' && sql.includes('SELECT 1 FROM pets WHERE id = $1 AND user_id = $2')) {
+          ownershipParams = params;
         }
-        return { rows: [] };
-      }));
-      await request(app)
+        return queryFn(sql, params);
+      };
+      pool.query = wrapQuery(pool.query.bind(pool));
+      const origConnect = pool.connect.bind(pool);
+      pool.connect = async () => {
+        const client = await origConnect();
+        client.query = wrapQuery(client.query.bind(client));
+        return client;
+      };
+      const res = await request(createApp(pool))
         .delete(`/api/pets/${petId}`)
         .set('Authorization', `Bearer ${token}`);
-      expect(capturedParams[0]).toBe(petId);
-      expect(capturedParams[1]).toBe(userId);
+      expect(res.statusCode).toBe(200);
+      expect(ownershipParams[0]).toBe(petId);
+      expect(ownershipParams[1]).toBe(userId);
     });
   });
 });
