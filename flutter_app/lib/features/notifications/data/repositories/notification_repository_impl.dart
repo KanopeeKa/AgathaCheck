@@ -40,6 +40,7 @@ class NotificationRepositoryImpl implements NotificationRepository {
       notifyDueSoon: model.notifyDueSoon,
       notifyCompleted: model.notifyCompleted,
       mutedPetIds: model.mutedPetIds,
+      v2ExplainerDismissedAt: model.v2ExplainerDismissedAt,
     );
   }
 
@@ -54,6 +55,7 @@ class NotificationRepositoryImpl implements NotificationRepository {
       notifyDueSoon: preferences.notifyDueSoon,
       notifyCompleted: preferences.notifyCompleted,
       mutedPetIds: preferences.mutedPetIds,
+      v2ExplainerDismissedAt: preferences.v2ExplainerDismissedAt,
     );
     final result = await _dataSource.updatePreferences(_tokenGetter(), model);
     return NotificationPreferences(
@@ -63,7 +65,13 @@ class NotificationRepositoryImpl implements NotificationRepository {
       notifyDueSoon: result.notifyDueSoon,
       notifyCompleted: result.notifyCompleted,
       mutedPetIds: result.mutedPetIds,
+      v2ExplainerDismissedAt: result.v2ExplainerDismissedAt,
     );
+  }
+
+  @override
+  Future<void> dismissV2InboxExplainer() async {
+    await _dataSource.dismissV2InboxExplainer(_tokenGetter());
   }
 
   @override

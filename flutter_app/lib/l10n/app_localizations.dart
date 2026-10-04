@@ -10215,6 +10215,48 @@ abstract class AppLocalizations {
   /// **'Organisation'**
   String get notificationKindOrganisation;
 
+  /// No description provided for @notificationInboxTabActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity'**
+  String get notificationInboxTabActivity;
+
+  /// No description provided for @notificationInboxTabForYou.
+  ///
+  /// In en, this message translates to:
+  /// **'For you'**
+  String get notificationInboxTabForYou;
+
+  /// No description provided for @notificationNeedsResponse.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs your response'**
+  String get notificationNeedsResponse;
+
+  /// No description provided for @notificationInboxActivityEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing new. When someone shares a pet or joins your household, you\'ll see it here.'**
+  String get notificationInboxActivityEmpty;
+
+  /// No description provided for @notificationInboxForYouEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No suggestions right now. Agatha will let you know when something\'s worth a look.'**
+  String get notificationInboxForYouEmpty;
+
+  /// No description provided for @notificationInboxV2Explainer.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminders now live in Actions. Your inbox is for people updates and Agatha\'s suggestions.'**
+  String get notificationInboxV2Explainer;
+
+  /// No description provided for @notificationInboxV2ExplainerActionsLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Actions'**
+  String get notificationInboxV2ExplainerActionsLink;
+
   /// No description provided for @notificationActionNeeded.
   ///
   /// In en, this message translates to:

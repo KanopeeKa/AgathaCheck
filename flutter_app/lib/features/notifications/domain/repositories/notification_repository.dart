@@ -10,5 +10,6 @@ abstract class NotificationRepository {
   Future<NotificationPreferences> updatePreferences(
     NotificationPreferences preferences,
   );
+  Future<void> dismissV2InboxExplainer();
   Future<void> checkDueEntries({Map<String, String> petNames = const {}});
 }

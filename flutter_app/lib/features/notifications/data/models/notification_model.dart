@@ -108,6 +108,7 @@ class NotificationPreferencesModel {
   final bool notifyDueSoon;
   final bool notifyCompleted;
   final List<String> mutedPetIds;
+  final DateTime? v2ExplainerDismissedAt;
 
   const NotificationPreferencesModel({
     this.emailRemindersEnabled = false,
@@ -116,6 +117,7 @@ class NotificationPreferencesModel {
     this.notifyDueSoon = true,
     this.notifyCompleted = true,
     this.mutedPetIds = const [],
+    this.v2ExplainerDismissedAt,
   });
 
   factory NotificationPreferencesModel.fromJson(Map<String, dynamic> json) {
@@ -130,6 +132,9 @@ class NotificationPreferencesModel {
               ?.map((e) => e.toString())
               .toList() ??
           const [],
+      v2ExplainerDismissedAt: json['v2_explainer_dismissed_at'] != null
+          ? DateTime.tryParse(json['v2_explainer_dismissed_at'].toString())
+          : null,
     );
   }
 
@@ -141,6 +146,10 @@ class NotificationPreferencesModel {
       'notify_due_soon': notifyDueSoon,
       'notify_completed': notifyCompleted,
       'muted_pet_ids': mutedPetIds,
+      if (v2ExplainerDismissedAt != null)
+        'v2_explainer_dismissed_at': v2ExplainerDismissedAt!
+            .toUtc()
+            .toIso8601String(),
     };
   }
 }

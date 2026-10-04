@@ -5,6 +5,10 @@ import '../../../../core/router/shell_return_navigation.dart';
 import '../../domain/entities/app_notification.dart';
 import '../../domain/entities/notification_kind.dart';
 
+void navigateToNotificationActions(BuildContext context) {
+  context.go('/pc/events');
+}
+
 /// Navigates from a notification tap to the appropriate destination.
 ///
 /// Care notifications with a health entry open the view-entry screen.

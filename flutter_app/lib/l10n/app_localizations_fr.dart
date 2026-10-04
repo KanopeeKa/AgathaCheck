@@ -5813,6 +5813,30 @@ class AppLocalizationsFr extends AppLocalizations {
   String get notificationKindOrganisation => 'Organisation';
 
   @override
+  String get notificationInboxTabActivity => 'Activité';
+
+  @override
+  String get notificationInboxTabForYou => 'Pour vous';
+
+  @override
+  String get notificationNeedsResponse => 'Réponse attendue';
+
+  @override
+  String get notificationInboxActivityEmpty =>
+      'Rien de nouveau pour l\'instant. Quand quelqu\'un partage un animal ou rejoint votre foyer, vous le verrez ici.';
+
+  @override
+  String get notificationInboxForYouEmpty =>
+      'Pas de suggestion pour l\'instant. Agatha vous préviendra quand quelque chose mérite un coup d\'œil.';
+
+  @override
+  String get notificationInboxV2Explainer =>
+      'Les rappels sont dans Actions. Votre boîte de réception regroupe les nouvelles des personnes et les suggestions d\'Agatha.';
+
+  @override
+  String get notificationInboxV2ExplainerActionsLink => 'Ouvrir Actions';
+
+  @override
   String get notificationActionNeeded => 'Action requise';
 
   @override

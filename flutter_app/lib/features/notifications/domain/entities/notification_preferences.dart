@@ -6,6 +6,7 @@ class NotificationPreferences {
     this.notifyDueSoon = true,
     this.notifyCompleted = true,
     this.mutedPetIds = const [],
+    this.v2ExplainerDismissedAt,
   });
 
   final bool emailRemindersEnabled;
@@ -14,6 +15,7 @@ class NotificationPreferences {
   final bool notifyDueSoon;
   final bool notifyCompleted;
   final List<String> mutedPetIds;
+  final DateTime? v2ExplainerDismissedAt;
 
   NotificationPreferences copyWith({
     bool? emailRemindersEnabled,
@@ -22,6 +24,7 @@ class NotificationPreferences {
     bool? notifyDueSoon,
     bool? notifyCompleted,
     List<String>? mutedPetIds,
+    DateTime? v2ExplainerDismissedAt,
   }) {
     return NotificationPreferences(
       emailRemindersEnabled:
@@ -31,6 +34,8 @@ class NotificationPreferences {
       notifyDueSoon: notifyDueSoon ?? this.notifyDueSoon,
       notifyCompleted: notifyCompleted ?? this.notifyCompleted,
       mutedPetIds: mutedPetIds ?? this.mutedPetIds,
+      v2ExplainerDismissedAt:
+          v2ExplainerDismissedAt ?? this.v2ExplainerDismissedAt,
     );
   }
 }
