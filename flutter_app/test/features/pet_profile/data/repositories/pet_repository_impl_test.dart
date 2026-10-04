@@ -9,6 +9,7 @@ import 'package:pet_profile_app/features/pet_profile/data/datasources/pet_remote
 import 'package:pet_profile_app/features/pet_profile/data/models/pet_model.dart';
 import 'package:pet_profile_app/features/pet_profile/data/repositories/pet_repository_impl.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
+import 'package:pet_profile_app/features/pet_profile/domain/entities/pet_cache_freshness.dart';
 
 @GenerateNiceMocks([MockSpec<PetLocalDataSource>()])
 import 'pet_repository_impl_test.mocks.dart';
@@ -468,10 +469,84 @@ void main() {
           final result = await repo.fetchAllPets();
 
           expect(result.isStale, isTrue);
+          expect(result.freshness, PetCacheFreshness.unknown);
           expect(result.pets.single.id, 'test-id');
           expect(result.source.name, 'localCache');
+          expect(result.fetchedAt, isNull);
         },
       );
+
+      test(
+        'cached fetchedAt uses persisted lastSyncedAt not DateTime.now()',
+        () async {
+          final syncedAt = DateTime.utc(2020, 6, 1, 8, 30);
+          await local.setLastSyncedAt(syncedAt);
+          await local.addPet(testModel);
+          final remote = FakeRemoteDataSource(
+            fetchException: ClientException(
+              'Connection failed',
+              Uri.parse('http://localhost/api/pets/all'),
+            ),
+          );
+          final repo = PetRepositoryImpl(
+            local,
+            remoteDataSource: remote,
+            token: 'tok',
+          );
+
+          final before = DateTime.now().toUtc();
+          final result = await repo.fetchAllPets();
+          final after = DateTime.now().toUtc();
+
+          expect(result.fetchedAt, syncedAt);
+          expect(result.freshness, PetCacheFreshness.expired);
+          expect(
+            result.fetchedAt!.isBefore(before) ||
+                result.fetchedAt!.isAtSameMomentAs(before),
+            isTrue,
+          );
+          expect(result.fetchedAt!.isBefore(after), isTrue);
+        },
+      );
+
+      test('successful remote fetch persists lastSyncedAt UTC', () async {
+        final remote = FakeRemoteDataSource(remotePets: [testModel]);
+        final repo = PetRepositoryImpl(
+          local,
+          remoteDataSource: remote,
+          token: 'tok',
+        );
+
+        final result = await repo.fetchAllPets();
+
+        expect(result.freshness, PetCacheFreshness.fresh);
+        final stored = await local.getLastSyncedAt();
+        expect(stored, isNotNull);
+        expect(stored!.toUtc(), result.fetchedAt);
+      });
+
+      test('local-only path never reports fresh or isStale false', () async {
+        await local.setLastSyncedAt(DateTime.utc(2026, 1, 1));
+        await local.addPet(testModel);
+        final repo = PetRepositoryImpl(local);
+
+        final result = await repo.fetchAllPets();
+
+        expect(result.freshness, isNot(PetCacheFreshness.fresh));
+        expect(result.isStale, isTrue);
+      });
+    });
+
+    test('user B never reads user A pets or lastSyncedAt metadata', () async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      final userA = PetLocalDataSourceImpl(prefs, userId: 'user-a');
+      final userB = PetLocalDataSourceImpl(prefs, userId: 'user-b');
+      await userA.addPet(testModel);
+      await userA.setLastSyncedAt(DateTime.utc(2026, 2, 1));
+
+      expect(await userB.getAllPets(), isEmpty);
+      expect(await userB.getLastSyncedAt(), isNull);
     });
   });
 }

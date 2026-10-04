@@ -13,6 +13,7 @@ import 'package:pet_profile_app/features/health_tracking/presentation/providers/
 import 'package:pet_profile_app/features/notifications/presentation/providers/notification_providers.dart';
 import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
+import 'package:pet_profile_app/features/pet_profile/domain/entities/pet_cache_freshness.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/screens/pet_detail_screen.dart';
 import 'package:pet_profile_app/features/sharing/domain/entities/household_pet_access.dart';
@@ -27,6 +28,21 @@ import 'package:pet_profile_app/features/weight_tracking/presentation/providers/
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import '../../../../helpers/fakes.dart';
+
+class _PetDetailPetListNotifier extends PetListNotifier {
+  _PetDetailPetListNotifier(this.pets);
+
+  final List<Pet> pets;
+
+  @override
+  Future<List<Pet>> build() async => pets;
+}
+
+class _StaleMetadataNotifier extends PetListFetchMetadataNotifier {
+  @override
+  PetListFetchMetadata build() =>
+      const PetListFetchMetadata(freshness: PetCacheFreshness.stale);
+}
 
 class _FakeSharingRepository implements SharingRepository {
   @override
@@ -105,6 +121,9 @@ void main() {
               orgMembershipCount: 0,
             ),
           ),
+        ),
+        petListProvider.overrideWith(
+          () => _PetDetailPetListNotifier([pet]),
         ),
         allPetsIncludingOrgProvider.overrideWith((ref) async => [pet]),
         organizationListProvider.overrideWith(FakeOrganizationListNotifier.new),
@@ -205,6 +224,68 @@ void main() {
     expect(find.byKey(const Key('pet_profile_weight_insight')), findsOneWidget);
     expect(find.text('Care Rhythms'), findsNothing);
     expect(find.text('Time to Follow Up'), findsNothing);
+  });
+
+  testWidgets('shows stale cache banner when pet list metadata is stale', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authProvider.overrideWith((ref) => FakeAuthNotifier()),
+          experienceEligibilityProvider.overrideWith(
+            (ref) => AsyncValue.data(
+              ExperienceEligibilityRules.compute(
+                pets: [ownedPet],
+                orgMembershipCount: 0,
+              ),
+            ),
+          ),
+          petListProvider.overrideWith(
+            () => _PetDetailPetListNotifier([ownedPet]),
+          ),
+          petListFetchMetadataProvider.overrideWith(
+            () => _StaleMetadataNotifier(),
+          ),
+          organizationListProvider.overrideWith(FakeOrganizationListNotifier.new),
+          healthEntriesNotifierProvider.overrideWith(
+            FakeHealthEntriesNotifier.new,
+          ),
+          combinedUnreadNotificationCountProvider.overrideWith((ref) => 0),
+          guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
+          orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
+          apiBaseUrlProvider.overrideWithValue('http://test.local'),
+          sharingRepositoryProvider.overrideWith(
+            (ref) => _FakeSharingRepository(),
+          ),
+          petShareLinksNotifierProvider('pet-1').overrideWith(
+            (ref) =>
+                PetShareLinksNotifier(ref, 'pet-1')
+                  ..state = const AsyncValue.data([]),
+          ),
+          vetListProvider.overrideWith(FakeVetListNotifier.new),
+          latestWeightProvider.overrideWith((ref, arg) => null),
+        ],
+        child: MaterialApp.router(
+          theme: AppTheme.lightTheme,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          routerConfig: GoRouter(
+            initialLocation: '/pet/pet-1',
+            routes: [
+              GoRoute(
+                path: '/pet/:petId',
+                builder: (context, state) =>
+                    PetDetailScreen(petId: state.pathParameters['petId']!),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('Offline'), findsOneWidget);
   });
 
   testWidgets('export menu item opens section picker dialog', (tester) async {
