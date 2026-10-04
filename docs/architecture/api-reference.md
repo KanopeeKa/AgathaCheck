@@ -227,8 +227,11 @@ Weight monitoring rhythms: generic occurrence **complete** returns `400` — use
 `DELETE /:issueId/events/:entryId` (events verify issue ownership).
 
 ### Weight entries (`/api/weight-entries`)
-`GET /` (optional `?pet_id=`), `GET /latest?pet_id=`, `POST /` (verifies pet
-ownership), `PUT /:id`, `DELETE /:id`. `PUT` on a weight linked to a completed
+`GET /` (optional `?pet_id=`), `GET /latest?pet_id=`, `GET /fulfilment-candidates?pet_id=&date=`,
+`GET /overview?pet_id=`, `POST /` (optional `fulfils_occurrence_id`), `POST /:id/fulfil`
+(`{ occurrence_id }`), `PUT /:id`, `DELETE /:id`. List rows add `fulfils` when linked.
+`POST /` with fulfilment returns `fulfilment: { entry_id, occurrence, next_due_date, undo_token }`.
+`PUT` on a weight linked to a completed
 weigh-in whose **date** changes runs the care completion-date command in the
 same transaction (weight value/notes/source update in `beforeCommand`); response
 includes `undo_token` when a ledger event was written. `DELETE` response adds

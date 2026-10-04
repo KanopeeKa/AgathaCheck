@@ -1,14 +1,30 @@
+import { dateToIsoDate } from '../../calendarDate.js';
+
+const FULFILS_JOIN = `
+  LEFT JOIN health_occurrences ho_f ON ho_f.id = we.health_occurrence_id
+  LEFT JOIN health_entries he_f ON he_f.id = ho_f.health_entry_id`;
+
 const LIST_BY_PET_SQL = `
-  SELECT we.*, p.name AS pet_name
+  SELECT we.*, p.name AS pet_name,
+    he_f.id AS fulfils_entry_id,
+    he_f.name AS fulfils_entry_name,
+    ho_f.id AS fulfils_occurrence_id,
+    ho_f.scheduled_date AS fulfils_scheduled_date
   FROM weight_entries we
   JOIN pets p ON we.pet_id = p.id
+  ${FULFILS_JOIN}
   WHERE we.pet_id = $1 AND {{ACCESS_SQL}}
   ORDER BY we.date DESC, we.created_at DESC`;
 
 const LIST_ALL_SQL = `
-  SELECT we.*, p.name AS pet_name
+  SELECT we.*, p.name AS pet_name,
+    he_f.id AS fulfils_entry_id,
+    he_f.name AS fulfils_entry_name,
+    ho_f.id AS fulfils_occurrence_id,
+    ho_f.scheduled_date AS fulfils_scheduled_date
   FROM weight_entries we
   JOIN pets p ON we.pet_id = p.id
+  ${FULFILS_JOIN}
   WHERE {{ACCESS_SQL}}
   ORDER BY we.date DESC, we.created_at DESC`;
 
@@ -165,6 +181,101 @@ export async function unlinkWeightFromOccurrence(db, weightId, occurrenceId) {
  * @param {string} dateIso YYYY-MM-DD
  * @returns {Promise<{ date_before: Date|string }|null>}
  */
+/**
+ * @param {import('pg').Pool | import('pg').PoolClient} db
+ * @param {string} weightId
+ * @param {string} occurrenceId
+ */
+export async function linkWeightToOccurrence(db, weightId, occurrenceId) {
+  const result = await db.query(
+    `UPDATE weight_entries
+     SET health_occurrence_id = $2
+     WHERE id = $1 AND health_occurrence_id IS NULL
+     RETURNING id`,
+    [weightId, occurrenceId],
+  );
+  return result.rows[0] || null;
+}
+
+/**
+ * @param {import('pg').Pool | import('pg').PoolClient} db
+ * @param {string} petId
+ */
+export async function loadFulfilmentContext(db, petId) {
+  const itemsResult = await db.query(
+    `SELECT * FROM health_entries
+     WHERE pet_id = $1 AND care_family = 'weight_monitoring' AND status = 'active'`,
+    [petId],
+  );
+  const items = itemsResult.rows;
+  const entryIds = items.map((r) => r.id);
+  const pendingByEntry = new Map();
+  const latestCompletedOnByEntry = new Map();
+  if (entryIds.length > 0) {
+    const pendingResult = await db.query(
+      `SELECT * FROM health_occurrences
+       WHERE health_entry_id = ANY($1::uuid[]) AND status = 'pending'
+       ORDER BY scheduled_date ASC, scheduled_time ASC NULLS FIRST`,
+      [entryIds],
+    );
+    for (const row of pendingResult.rows) {
+      const list = pendingByEntry.get(row.health_entry_id) || [];
+      list.push(row);
+      pendingByEntry.set(row.health_entry_id, list);
+    }
+    const doneResult = await db.query(
+      `SELECT DISTINCT ON (health_entry_id) health_entry_id, completed_on
+       FROM health_occurrences
+       WHERE health_entry_id = ANY($1::uuid[]) AND status = 'completed'
+       ORDER BY health_entry_id, completed_on DESC NULLS LAST`,
+      [entryIds],
+    );
+    for (const row of doneResult.rows) {
+      latestCompletedOnByEntry.set(
+        row.health_entry_id,
+        row.completed_on ? dateToIsoDate(row.completed_on) : null,
+      );
+    }
+  }
+  return { items, pendingByEntry, latestCompletedOnByEntry };
+}
+
+/**
+ * @param {import('pg').Pool | import('pg').PoolClient} db
+ * @param {string} petId
+ */
+export async function loadWeightOverviewContext(db, petId) {
+  const petResult = await db.query(
+    `SELECT id, weight_reference_value, weight_reference_authority, weight_management_context
+     FROM pets WHERE id = $1`,
+    [petId],
+  );
+  const itemsResult = await db.query(
+    `SELECT * FROM health_entries
+     WHERE pet_id = $1 AND care_family = 'weight_monitoring'
+       AND status IN ('active', 'paused')
+     ORDER BY name`,
+    [petId],
+  );
+  const items = itemsResult.rows;
+  const entryIds = items.map((r) => r.id);
+  const pendingByEntry = new Map();
+  if (entryIds.length > 0) {
+    const pendingResult = await db.query(
+      `SELECT * FROM health_occurrences
+       WHERE health_entry_id = ANY($1::uuid[]) AND status = 'pending'
+       ORDER BY scheduled_date ASC, scheduled_time ASC NULLS FIRST`,
+      [entryIds],
+    );
+    for (const row of pendingResult.rows) {
+      const list = pendingByEntry.get(row.health_entry_id) || [];
+      list.push(row);
+      pendingByEntry.set(row.health_entry_id, list);
+    }
+  }
+  return { pet: petResult.rows[0] || null, items, pendingByEntry };
+}
+
 export async function updateWeightDateForOccurrence(db, occurrenceId, dateIso) {
   const existing = await db.query(
     'SELECT id, date FROM weight_entries WHERE health_occurrence_id = $1 LIMIT 1',
