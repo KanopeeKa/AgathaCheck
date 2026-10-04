@@ -26,9 +26,9 @@ next_action: "continue phase F4 on branch cursor/care-f4-server-module-50b4"
 artifact_ref:
   branch: cursor/care-f4-server-module-50b4
   plan_path: .agents/plans/care-item-module-c1a7.md
-  plan_commit: 552bd7b8e6baaff9c5b79218d0868154492465e6
+  plan_commit: pending
   snapshot_path: .agents/plans/care-item-module-c1a7.snapshot.json
-  snapshot_commit: 552bd7b8e6baaff9c5b79218d0868154492465e6
+  snapshot_commit: pending
 open_prs: []
 merge_commits:
   F2: fce0ce1e2146550fc085a00364693c9aa7c985f8
