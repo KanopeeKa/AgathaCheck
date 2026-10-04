@@ -527,10 +527,10 @@ flutter_app/**
 
 ```yaml
 autonomy: active
-current_phase: s3-relationships
-last_completed_phase: s2-usages-provider
+current_phase: s4-read-models
+last_completed_phase: s3-relationships
 halt_reason: null
-next_action: "continue phase s3-relationships on branch cursor/people-server-s3-relationships-7f3b"
+next_action: "start phase s4-read-models on branch cursor/people-server-s4-read-models-7f3b"
 artifact_ref:
   branch: cursor/people-server-integration-7f3b
   plan_path: .agents/plans/people-server-7f3b.md

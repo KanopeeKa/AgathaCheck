@@ -67,27 +67,34 @@ Personal directory contacts (phase 1). Storage: migrations `072_*`–`074_*`. Sp
 | Method | Path | Authorization |
 |---|---|---|
 | GET | `/contacts` | authenticated — caller's personal directory; optional `?include_inactive=true` |
-| POST | `/contacts` | authenticated — body `{ kind, name, phone?, email?, address?, website?, works_at_contact_id?, roles?, private_note? }`; `kind` ∈ {`person`,`organisation`}; `roles` ⊆ sitter, walker, vet, vet_nurse, groomer, trainer, behaviourist, boarding, emergency_contact, other |
+| POST | `/contacts` | authenticated — body `{ kind, name, phone?, email?, address?, website?, works_at_contact_id?, roles?, private_note?, pet_links? }`; `kind` ∈ {`person`,`organisation`}; `roles` ⊆ sitter, walker, vet, vet_nurse, groomer, trainer, behaviourist, boarding, emergency_contact, other; optional `pet_links[]` = `{ pet_id, relationship_kind }` (attach in same transaction; slot kinds use replace semantics) |
 | GET | `/contacts/:id` | authenticated — owner of directory only |
 | PATCH | `/contacts/:id` | authenticated — partial update; `private_note` is per-caller only; **`kind` changes only when `kind` is sent** (rename alone does not re-infer kind) |
 | DELETE | `/contacts/:id` | authenticated — `409 contact_in_use` with `details.usages[]` when the contact is referenced (relationships, absence carers, care-item providers, pending carer invites, works-at). Unused vet-linked contacts delete and remove the linked `vets` row |
 
 Response contact shape: `{ id, directory_id, kind, name, phone, email, address, website, works_at_contact_id, linked_user_id, inactive_at, legacy_vet_id, roles[], private_note, created_at, updated_at }`.
 
-People error bodies (additive): `{ error, code, details? }` with stable `code` values including `validation_failed`, `contact_not_found`, `forbidden`, `contact_in_use` (`details.usages[]`: `{ kind, id, label, pet_id?, active? }`), `linked_identity_read_only`. Health entry writes validate `provider_contact_id` with the same attach rules as pet relationships (`400 validation_failed`). PATCH accepts `active: boolean` (sets `inactive_at` server-side); optional `inactive_at` is validated when sent. PATCH rejects name/email changes on contacts with `linked_user_id` → `409 linked_identity_read_only`.
+People error bodies (additive): `{ error, code, details? }` with stable `code` values including `validation_failed`, `contact_not_found`, `forbidden`, `contact_in_use` (`details.usages[]`: `{ kind, id, label, pet_id?, active? }`), `slot_conflict`, `linked_identity_read_only`. Health entry writes validate `provider_contact_id` with the same attach rules as pet relationships (`400 validation_failed`). PATCH accepts `active: boolean` (sets `inactive_at` server-side); optional `inactive_at` is validated when sent. PATCH rejects name/email changes on contacts with `linked_user_id` → `409 linked_identity_read_only`.
 
 #### Pet contact relationships (`/api/pets/:petId/people-relationships`)
+
+Authoritative store for pet–contact links. `pet_contact_relationships` drives `pets.vet_id` and legacy `vets` rows via server-side projection (invariant I5).
 
 | Method | Path | Authorization |
 |---|---|---|
 | GET | `/api/pets/:petId/people-relationships` | `userCanManageProfile` (record owner or co-parent) |
-| PUT | `/api/pets/:petId/people-relationships` | same — replaces all relationships; body `{ relationships: [{ contact_id, relationship_kind, is_primary?, active? }] }`; `relationship_kind` ∈ primary_vet, out_of_hours_vet, emergency_contact, care_provider, other; contact must be in caller's or pet owner's personal directory |
+| PUT | `/api/pets/:petId/people-relationships` | same — replaces all relationships; body `{ relationships: [{ contact_id, relationship_kind, is_primary?, active? }] }`; re-projects `pets.vet_id` |
+| PUT | `/api/pets/:petId/people-relationships/slots/:kind` | same — `kind` ∈ `primary_vet`, `out_of_hours_vet`; body `{ contact_id }` or `{ contact_id: null }` to clear |
+| POST | `/api/pets/:petId/people-relationships` | same — add `emergency_contact`, `care_provider`, or `other`; body `{ contact_id, relationship_kind }`; slot kinds → `409 slot_conflict` |
+| DELETE | `/api/pets/:petId/people-relationships/:relationshipId` | same — removes one row; clears `pets.vet_id` when removing active `primary_vet` |
 
-Vets API (`/api/vets`) dual-writes linked `people_contacts` rows via `legacy_vet_id` until clients migrate.
+Relationship rows include `sort_order` (default `0`). `relationship_kind` ∈ primary_vet, out_of_hours_vet, emergency_contact, care_provider, other; contact must be attachable via `canAttachContactToPet`.
 
-#### Planned — `people-domain-refactor-7f3b` (not implemented)
+Vets API (`/api/vets`) is a **compat adapter**: response shapes unchanged; writes go through People contacts and a one-way projection to `vets` + `pets.vet_id`. Pet PATCH/create `vet_id` sets the `primary_vet` slot.
 
-Additive changes, listed in [people-domain-refactor.md](/docs/domains/people/changes/people-domain-refactor.md) §3.6: `GET /api/people/roster`, enriched contact detail, `GET /api/people/contacts/:id/related`, `GET /api/people/contacts/by-legacy-vet/:vetId`, `GET /api/pets/:petId/people`, slot/add/remove relationship endpoints, usage-aware `DELETE` (`409 contact_in_use`), household removal preview and household email invites, `contact_id` on pet share invites, and a `code` field on People error bodies. `/api/vets` becomes a compat adapter over a one-way projection. Each entry moves to the tables above in the PR that ships it.
+#### Planned — `people-domain-refactor-7f3b` (partial)
+
+Shipped in server phases s1–s3: writer, access, usages, relationships + vet projection (this section). Still planned: `GET /api/people/roster`, enriched contact detail, `GET /api/people/contacts/:id/related`, `GET /api/people/contacts/by-legacy-vet/:vetId`, `GET /api/pets/:petId/people`, household removal preview and household email invites, `contact_id` on pet share invites. See [people-domain-refactor.md](/docs/domains/people/changes/people-domain-refactor.md) §3.6.
 
 ### Organizations (`/api/organizations`)
 | Method | Path | Authorization |

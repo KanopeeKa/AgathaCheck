@@ -720,6 +720,7 @@ CREATE TABLE public.pet_contact_relationships (
     relationship_kind text NOT NULL,
     is_primary boolean DEFAULT false NOT NULL,
     active boolean DEFAULT true NOT NULL,
+    sort_order smallint DEFAULT 0 NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     CONSTRAINT pet_contact_relationships_relationship_kind_check CHECK ((relationship_kind = ANY (ARRAY['primary_vet'::text, 'out_of_hours_vet'::text, 'emergency_contact'::text, 'care_provider'::text, 'other'::text])))
@@ -1232,6 +1233,8 @@ CREATE INDEX idx_pet_activity_events_org_id ON public.pet_activity_events USING 
 CREATE INDEX idx_pet_activity_events_pet_id ON public.pet_activity_events USING btree (pet_id);
 CREATE INDEX idx_pet_contact_relationships_contact_id ON public.pet_contact_relationships USING btree (contact_id);
 CREATE INDEX idx_pet_contact_relationships_pet_id ON public.pet_contact_relationships USING btree (pet_id);
+CREATE UNIQUE INDEX idx_pet_contact_rel_one_active_primary_vet ON public.pet_contact_relationships USING btree (pet_id) WHERE ((active = true) AND (relationship_kind = 'primary_vet'::text));
+CREATE UNIQUE INDEX idx_pet_contact_rel_one_active_out_of_hours_vet ON public.pet_contact_relationships USING btree (pet_id) WHERE ((active = true) AND (relationship_kind = 'out_of_hours_vet'::text));
 CREATE INDEX idx_pet_lifecycle_notifications_recipient ON public.pet_lifecycle_notifications USING btree (recipient_user_id);
 CREATE INDEX idx_pet_share_invite_pets_pet_id ON public.pet_share_invite_pets USING btree (pet_id);
 CREATE INDEX idx_pet_share_invites_invitee_email ON public.pet_share_invites USING btree (lower((invitee_email)::text));
