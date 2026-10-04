@@ -142,6 +142,8 @@
     "Editing a weight entry": "P1",
     "Deleting a weight entry": "P1",
     "Selecting weight unit": "P1",
+    "A weight recorded with a weigh-in choice completes that weigh-in": "P1",
+    "Undoing a weigh-in removes the weight it created": "P1",
     "Empty weight history": "P0"
   },
   "sharing.feature": {

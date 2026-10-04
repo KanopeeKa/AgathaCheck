@@ -11,6 +11,8 @@
  * Scenario: Selecting weight unit
  * Scenario: Empty weight history
  * Scenario: PDF pet report shows latest weight as current weight
+ * Scenario: A weight recorded with a weigh-in choice completes that weigh-in
+ * Scenario: Undoing a weigh-in removes the weight it created
  */
 import { readFileSync } from 'node:fs';
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
@@ -24,6 +26,12 @@ import {
   deleteWeightEntry,
   signupUser,
 } from '../support/api';
+import {
+  createCareItem,
+  getOccurrence,
+  undoLast,
+  withCareClock,
+} from '../support/care-api';
 import { PetListPage } from '../pages/pet-list.page';
 import { PetDetailPage } from '../pages/pet-detail.page';
 import { WeightTrackingPage } from '../pages/weight-tracking.page';
@@ -269,6 +277,91 @@ test.describe('Weight tracking', () => {
 
     const weightPage = new WeightTrackingPage(page);
     await weightPage.expectUnitSelectorVisible();
+  });
+
+  // ── Weigh-in fulfilment (W4 server landing) ─────────────────────────────────
+
+  test('A weight recorded with a weigh-in choice completes that weigh-in', async ({ testUser }) => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const dueDate = '2026-11-01';
+    const recordedDate = '2026-11-05';
+    const careClock = `${recordedDate}T10:00`;
+
+    const pet = await createPet(baseURL, testUser.accessToken, 'Bella');
+    await withCareClock(`${dueDate}T09:00`);
+    const routine = await createCareItem(baseURL, testUser.accessToken, pet.id, {
+      name: 'Monthly weigh-in',
+      careFamily: 'weight_monitoring',
+      frequency: 'monthly',
+      dueDate,
+      scheduleType: 'from_due_date',
+      startDate: dueDate,
+    });
+    const occurrenceId = routine.open_occurrences[0]?.id;
+    expect(occurrenceId).toBeTruthy();
+
+    await withCareClock(careClock);
+    const created = await createWeightEntry(baseURL, testUser.accessToken, pet.id, {
+      weight: 10.5,
+      date: recordedDate,
+      fulfilsOccurrenceId: occurrenceId,
+      careAsOf: careClock,
+    });
+    expect(created.health_occurrence_id).toBe(occurrenceId);
+    expect(created.fulfilment?.undo_token).toBeTruthy();
+
+    const occDetail = await getOccurrence(baseURL, testUser.accessToken, routine.id, occurrenceId!);
+    const occ = occDetail.occurrence as { status?: string };
+    expect(occ.status).toBe('completed');
+
+    const entries = await getWeightEntries(baseURL, testUser.accessToken, pet.id);
+    const linked = entries.find((e) => e.id === created.id);
+    expect(linked?.weight).toBeCloseTo(10.5, 1);
+    expect(linked?.date).toBe(recordedDate);
+
+    await withCareClock(null);
+  });
+
+  test('Undoing a weigh-in removes the weight it created', async ({ testUser }) => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const dueDate = '2026-12-01';
+    const recordedDate = '2026-12-03';
+    const careClock = `${recordedDate}T10:00`;
+
+    const pet = await createPet(baseURL, testUser.accessToken, 'Bella');
+    await withCareClock(`${dueDate}T09:00`);
+    const routine = await createCareItem(baseURL, testUser.accessToken, pet.id, {
+      name: 'Weigh-in undo',
+      careFamily: 'weight_monitoring',
+      frequency: 'monthly',
+      dueDate,
+      scheduleType: 'from_due_date',
+      startDate: dueDate,
+    });
+    const occurrenceId = routine.open_occurrences[0]?.id;
+    expect(occurrenceId).toBeTruthy();
+
+    await withCareClock(careClock);
+    const created = await createWeightEntry(baseURL, testUser.accessToken, pet.id, {
+      weight: 9.8,
+      date: recordedDate,
+      fulfilsOccurrenceId: occurrenceId,
+      careAsOf: careClock,
+    });
+    const undoToken = created.fulfilment?.undo_token;
+    expect(undoToken).toBeTruthy();
+
+    await withCareClock(`${recordedDate}T10:30`);
+    await undoLast(baseURL, testUser.accessToken, routine.id, undoToken);
+
+    const entries = await getWeightEntries(baseURL, testUser.accessToken, pet.id);
+    expect(entries.find((e) => e.id === created.id)).toBeUndefined();
+
+    const occDetail = await getOccurrence(baseURL, testUser.accessToken, routine.id, occurrenceId!);
+    const occ = occDetail.occurrence as { status?: string };
+    expect(occ.status).toBe('pending');
+
+    await withCareClock(null);
   });
 
   test('PDF pet report shows latest weight as current weight', async ({ page, testUser }) => {
