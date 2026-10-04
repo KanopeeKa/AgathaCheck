@@ -155,6 +155,13 @@ describe('Health Entries API', () => {
           };
         }
 
+        if (sql.includes('SELECT * FROM health_entries WHERE id = $1 FOR UPDATE')) {
+          if (lastInsertedEntry && lastInsertedEntry.id === params[0]) {
+            return { rows: [lastInsertedEntry] };
+          }
+          return { rows: [makeHealthRow({ id: params[0] })] };
+        }
+
         if (sql.includes('SELECT * FROM health_entries WHERE id')) {
           if (params && params[0] === 'nonexistent') return { rows: [] };
           if (params && params[0] === 'he-uncat') {
@@ -978,8 +985,10 @@ describe('Health Entries API', () => {
       const insertParams = queryLog.find(q => q.sql.includes('INSERT INTO health_entries')).params;
       expect(insertParams[9]).toBe('2026-06-30');
       expect(insertParams[10]).toBe('2026-06-30');
-      const occurrenceInsert = queryLog.find(q => q.sql.includes('INSERT INTO health_occurrences'));
-      expect(occurrenceInsert.params[2]).toBe('2026-06-30');
+      const occurrenceDates = queryLog
+        .filter((q) => q.sql.includes('INSERT INTO health_occurrences') && q.params[1] === res.body.id)
+        .map((q) => q.params[2]);
+      expect(occurrenceDates).toContain('2026-06-30');
     });
 
     it('accepts camelCase field aliases', async () => {
