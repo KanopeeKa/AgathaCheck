@@ -33,10 +33,7 @@ void main() {
 
     test('returns non-accepted result for HTTP 200 legacy response', () async {
       final client = MockClient((request) async {
-        return http.Response(
-          json.encode({'message': 'Account deleted'}),
-          200,
-        );
+        return http.Response(json.encode({'message': 'Account deleted'}), 200);
       });
       final service = AuthService(baseUrl: 'http://test', client: client);
 
@@ -49,7 +46,10 @@ void main() {
 
     test('throws on HTTP 400', () async {
       final client = MockClient((request) async {
-        return http.Response(json.encode({'error': 'Password is incorrect'}), 400);
+        return http.Response(
+          json.encode({'error': 'Password is incorrect'}),
+          400,
+        );
       });
       final service = AuthService(baseUrl: 'http://test', client: client);
 
