@@ -80,6 +80,23 @@ Feature: Weight Tracking
     When the user views the weight tracking section
     Then the user should be able to choose between kg and lbs
 
+  # ── Weigh-in fulfilment (server) ─────────────────────────────
+
+  @P1
+  Scenario: A weight recorded with a weigh-in choice completes that weigh-in
+    Given a weigh-in routine is due today for "Bella"
+    When the user records a weight of 10.5 kg that fulfils that weigh-in
+    Then the weigh-in occurrence should be completed
+    And "Bella" should have a weight entry of 10.5 kg linked to that weigh-in
+
+  @P1
+  Scenario: Undoing a weigh-in removes the weight it created
+    Given a weigh-in routine is due today for "Bella"
+    And the user has recorded a weight that fulfils that weigh-in
+    When the user undoes that weigh-in completion
+    Then the weigh-in occurrence should be open again
+    And the weight entry created for that weigh-in should no longer exist
+
   # ── No Weight Entries ────────────────────────────────────────
 
   @P0
