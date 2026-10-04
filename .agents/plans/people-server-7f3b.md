@@ -527,10 +527,10 @@ flutter_app/**
 
 ```yaml
 autonomy: active
-current_phase: s4-read-models
-last_completed_phase: s3-relationships
+current_phase: s5-households-api
+last_completed_phase: s4-read-models
 halt_reason: null
-next_action: "continue phase s4-read-models on branch cursor/people-server-s4-read-models-7f3b"
+next_action: "continue phase s5-households-api on branch cursor/people-server-s5-households-7f3b"
 artifact_ref:
   branch: cursor/people-server-integration-7f3b
   plan_path: .agents/plans/people-server-7f3b.md
