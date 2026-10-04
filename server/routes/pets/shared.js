@@ -102,24 +102,3 @@ export async function userInOrg(pool, orgId, userId) {
   return result.rows.length > 0;
 }
 
-export async function withOptionalTransaction(pool, fn) {
-  if (typeof pool.connect === 'function') {
-    const client = await pool.connect();
-    try {
-      await client.query('BEGIN');
-      const result = await fn(client);
-      await client.query('COMMIT');
-      return result;
-    } catch (err) {
-      try {
-        await client.query('ROLLBACK');
-      } catch (_) {
-        /* ignore */
-      }
-      throw err;
-    } finally {
-      client.release();
-    }
-  }
-  return fn(pool);
-}
