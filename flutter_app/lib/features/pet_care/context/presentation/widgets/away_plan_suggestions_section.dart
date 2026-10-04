@@ -5,8 +5,7 @@ import '../../../../../core/theme/app_color_tokens.dart';
 import '../../../../../core/utils/calendar_date.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../health_tracking/domain/entities/health_occurrence.dart';
-import '../../../../health_tracking/presentation/providers/health_providers.dart';
-import '../../../../health_tracking/presentation/widgets/reschedule_occurrence_flow.dart';
+import '../../../../health_tracking/presentation/controllers/care_schedule_controller.dart';
 import '../../domain/entities/absence_care_plan.dart';
 import '../../domain/entities/care_period_coverage.dart';
 import '../away_plan_planner_copy.dart';
@@ -144,7 +143,7 @@ class _AwayPlanSuggestionsBody extends ConsumerWidget {
     CarePlannerSuggestion suggestion,
   ) async {
     final entry = await ref
-        .read(healthRepositoryProvider)
+        .read(careScheduleControllerProvider)
         .getEntry(suggestion.healthEntryId);
     if (entry == null || !context.mounted) return;
 
@@ -159,16 +158,15 @@ class _AwayPlanSuggestionsBody extends ConsumerWidget {
     );
 
     try {
-      final result = await ref
-          .read(healthRepositoryProvider)
+      final command = await ref
+          .read(careScheduleControllerProvider)
           .rescheduleOccurrence(
             entry.id,
             occurrence.id,
             newDate,
             reasonCode: 'away_planner',
+            absenceId: absenceId,
           );
-      RescheduleOccurrenceFlow.invalidateAfterReschedule(ref, entry.id);
-      await ref.read(healthEntriesNotifierProvider.notifier).refresh();
       ref.invalidate(absenceCarePlanProvider(absenceId));
       ref.invalidate(
         carePeriodCoverageProvider((
@@ -178,17 +176,23 @@ class _AwayPlanSuggestionsBody extends ConsumerWidget {
         )),
       );
 
-      if (!context.mounted) return;
+      if (!context.mounted || command == null) return;
       final l = AppLocalizations.of(context)!;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l.occurrenceRescheduled),
-          action: SnackBarAction(
-            label: l.snackbarUndo,
-            onPressed: () => _undo(context, ref, entry.id, occurrence.id),
+      if (command.outcome.refreshFailed) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l.careCommandSavedRefreshFailed)),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l.occurrenceRescheduled),
+            action: SnackBarAction(
+              label: l.snackbarUndo,
+              onPressed: () => _undo(context, ref, entry.id, occurrence.id),
+            ),
           ),
-        ),
-      );
+        );
+      }
     } catch (_) {
       if (!context.mounted) return;
       final l = AppLocalizations.of(context)!;
@@ -207,10 +211,8 @@ class _AwayPlanSuggestionsBody extends ConsumerWidget {
   ) async {
     try {
       await ref
-          .read(healthRepositoryProvider)
-          .undoOccurrence(entryId, occurrenceId);
-      RescheduleOccurrenceFlow.invalidateAfterReschedule(ref, entryId);
-      await ref.read(healthEntriesNotifierProvider.notifier).refresh();
+          .read(careScheduleControllerProvider)
+          .undoOccurrence(entryId, occurrenceId, absenceId: absenceId);
       ref.invalidate(absenceCarePlanProvider(absenceId));
       ref.invalidate(
         carePeriodCoverageProvider((
