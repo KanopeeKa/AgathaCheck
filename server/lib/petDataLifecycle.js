@@ -9,13 +9,7 @@ import { logAuditEvent } from './audit.js';
 import { withTransaction } from './db/withTransaction.js';
 import { enqueueCleanupJob } from './jobs/cleanupJobsApi.js';
 import { kickCleanupJobs } from './jobs/cleanupJobsRunner.js';
-import {
-  defaultKindForType,
-  normaliseKind,
-  normalisePriority,
-  NOTIFICATION_PRIORITY_NORMAL,
-} from './notificationKind.js';
-import { userDisplayName } from './notificationHelper.js';
+import { createNotification, userDisplayName } from './notificationHelper.js';
 import {
   PET_ACCESS_ROLES,
   FOSTER_PET_ACCESS_ROLE,
@@ -39,6 +33,17 @@ const PET_DATA_TABLES = [
 ];
 
 const PASSED_AWAY_EVENT = 'passed_away';
+
+export class PetNotFoundError extends Error {
+  constructor() {
+    super('Pet not found');
+    this.name = 'PetNotFoundError';
+  }
+}
+
+function uploadsRootDir() {
+  return path.resolve(process.cwd(), 'uploads');
+}
 
 async function collectPetFileUrls(db, petId) {
   const urls = [];
@@ -72,30 +77,36 @@ async function collectPetFileUrls(db, petId) {
   return urls;
 }
 
-function fileRefFromUrl(url) {
+/** @internal Exported for regression tests (legacy health file scheduling). */
+export function fileRefFromUrl(url) {
   if (!url || typeof url !== 'string') return null;
 
   const healthFileId = parseHealthFileIdFromUrl(url);
   if (healthFileId) {
     const resolved = resolvePrivateHealthFile(healthFileId);
     if (resolved?.filePath) {
-      const root = privateHealthDir();
-      const rel = path.relative(root, resolved.filePath);
-      if (rel && !rel.startsWith('..') && !path.isAbsolute(rel)) {
-        const relativePath = rel.split(path.sep).join('/');
+      const privateRoot = privateHealthDir();
+      const relPrivate = path.relative(privateRoot, resolved.filePath);
+      if (relPrivate && !relPrivate.startsWith('..') && !path.isAbsolute(relPrivate)) {
+        const relativePath = relPrivate.split(path.sep).join('/');
         return {
           storage: 'private_health',
           relative_path: relativePath,
           dedupeKey: `file:private_health:${relativePath}`,
         };
       }
+      const uploadsRoot = uploadsRootDir();
+      const relUploads = path.relative(uploadsRoot, resolved.filePath);
+      if (relUploads && !relUploads.startsWith('..') && !path.isAbsolute(relUploads)) {
+        const relativePath = relUploads.split(path.sep).join('/');
+        return {
+          storage: 'uploads',
+          relative_path: relativePath,
+          dedupeKey: `file:uploads:${relativePath}`,
+        };
+      }
     }
-    const fallbackName = `${healthFileId}.jpg`;
-    return {
-      storage: 'private_health',
-      relative_path: fallbackName,
-      dedupeKey: `file:private_health:${fallbackName}`,
-    };
+    return null;
   }
 
   if (url.startsWith('/uploads/')) {
@@ -149,6 +160,7 @@ function buildDeleteResponse(petId, rowsRemoved, filesScheduled) {
 
 async function runPetDataDeletionTransaction(client, petId, {
   actorUserId = null,
+  ownerUserId = null,
   req = null,
   auditAction = null,
   deletePetRow = false,
@@ -163,9 +175,13 @@ async function runPetDataDeletionTransaction(client, petId, {
   }
 
   if (deletePetRow) {
-    const del = await client.query('DELETE FROM pets WHERE id = $1', [petId]);
+    const scopedOwnerId = ownerUserId ?? actorUserId;
+    const del = await client.query(
+      'DELETE FROM pets WHERE id = $1 AND user_id = $2',
+      [petId, scopedOwnerId],
+    );
     if ((del.rowCount ?? 0) === 0) {
-      throw new Error('pet not found');
+      throw new PetNotFoundError();
     }
   } else {
     await client.query(
@@ -244,6 +260,7 @@ export async function deletePet(pool, petId, { actorUserId = null, req = null } 
   const outcome = await withTransaction(pool, async (client) =>
     runPetDataDeletionTransaction(client, petId, {
       actorUserId,
+      ownerUserId: actorUserId,
       req,
       auditAction: 'pet.deleted',
       deletePetRow: true,
@@ -274,38 +291,6 @@ export async function purgeAllPetFilesForUser(pool, userId) {
     filesRemoved += await purgePetFiles(pool, row.id);
   }
   return { pets_processed: pets.rows.length, files_removed: filesRemoved };
-}
-
-async function insertPassedAwayNotification(client, {
-  userId,
-  petId,
-  petName,
-  title,
-  message,
-}) {
-  const kind = normaliseKind(defaultKindForType('general'));
-  const priority = normalisePriority(NOTIFICATION_PRIORITY_NORMAL);
-  await client.query(
-    `INSERT INTO notifications (
-       id, user_id, pet_id, pet_name, health_entry_id, organization_id,
-       title, message, type, kind, priority, resolved_at
-     )
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
-    [
-      uuidv4(),
-      userId,
-      petId,
-      petName,
-      null,
-      null,
-      title,
-      message,
-      'general',
-      kind,
-      priority,
-      null,
-    ],
-  );
 }
 
 /**
@@ -355,12 +340,13 @@ export async function notifyPassedAwayCollaborators(pool, {
         alreadyNotifiedCount += 1;
         continue;
       }
-      await insertPassedAwayNotification(client, {
+      await createNotification(client, {
         userId: row.user_id,
         petId,
         petName: displayPetName,
         title: 'In loving memory',
         message: `${ownerName} marked ${displayPetName} as passed away.`,
+        type: 'general',
       });
       notifiedCount += 1;
     }

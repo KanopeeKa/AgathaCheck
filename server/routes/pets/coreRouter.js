@@ -19,7 +19,7 @@ import {
 } from '../../lib/petHomeTimezone.js';
 import { logAuditEventSafe } from '../../lib/audit.js';
 import { syncPetPrimaryVetFromLegacyVetId } from '../../lib/people/petVetLink.js';
-import { deletePet } from '../../lib/petDataLifecycle.js';
+import { deletePet, PetNotFoundError } from '../../lib/petDataLifecycle.js';
 import { recordPetActivityForPet } from '../../lib/petActivity.js';
 import {
   userCanAccessPet,
@@ -401,6 +401,9 @@ export function registerCoreRoutes(router, pool) {
       const result = await deletePet(pool, id, { actorUserId: userId, req });
       res.json(result);
     } catch (err) {
+      if (err instanceof PetNotFoundError) {
+        return res.status(404).json({ error: 'Pet not found' });
+      }
       res.status(500).json({ error: publicError(err, 'Error deleting pet', `Error deleting pet: ${err.message}`) });
     }
   });

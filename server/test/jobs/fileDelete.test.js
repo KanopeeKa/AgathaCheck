@@ -94,21 +94,21 @@ describe('file_delete handler', () => {
     if (process.platform === 'win32') return;
     if (typeof process.getuid === 'function' && process.getuid() === 0) return;
     await withUploadsRoot(async (uploads) => {
-      // Unlink needs write on the parent directory; file mode alone is not enough on Linux CI.
       const sub = path.join(uploads, 'lockeddir');
-      fs.mkdirSync(sub, { mode: 0o555 });
+      fs.mkdirSync(sub);
       const file = path.join(sub, 'locked.txt');
       fs.writeFileSync(file, 'x', { mode: 0o644 });
-      const outcome = await runFileDeleteJob({
-        storage: 'uploads',
-        relative_path: 'lockeddir/locked.txt',
-      });
-      fs.chmodSync(sub, 0o755);
-      if (!outcome.retryable && !fs.existsSync(file)) {
-        return; // host allows unlink despite restrictive directory mode
+      fs.chmodSync(sub, 0o555);
+      try {
+        const outcome = await runFileDeleteJob({
+          storage: 'uploads',
+          relative_path: 'lockeddir/locked.txt',
+        });
+        expect(outcome.retryable).toBe(true);
+        expect(fs.existsSync(file)).toBe(true);
+      } finally {
+        fs.chmodSync(sub, 0o755);
       }
-      expect(outcome.retryable).toBe(true);
-      expect(fs.existsSync(file)).toBe(true);
     });
   });
 

@@ -25,7 +25,7 @@ export async function withTransaction(pool, fn) {
     await client.query('BEGIN');
     const result = await fn(client);
     const commitResult = await client.query('COMMIT');
-    if (commitResult.command !== 'COMMIT') {
+    if (commitResult?.command !== 'COMMIT') {
       throw new TransactionAbortedError();
     }
     return result;

@@ -111,6 +111,9 @@ export function createMockPool(queryHandler) {
       if (sql.includes('UPDATE pets') && sql.includes('photo_path = NULL')) {
         return { rowCount: 1, rows: [] };
       }
+      if (sql.includes('DELETE FROM pets WHERE id = $1 AND user_id = $2')) {
+        return { rowCount: 1, rows: [] };
+      }
       if (sql.includes('DELETE FROM pets WHERE id = $1')) {
         return { rowCount: 1, rows: [] };
       }

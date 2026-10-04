@@ -71,7 +71,7 @@ describe('Pet Care OpenAPI contract (F-14)', () => {
         if (sql.includes('FROM health_issue_documents')) return { rows: [] };
         if (sql.includes('INSERT INTO cleanup_jobs')) return { rows: [{ id: 'job-1' }] };
         if (sql.startsWith('DELETE FROM ')) return { rowCount: 1 };
-        if (sql.includes('DELETE FROM pets WHERE id = $1')) return { rowCount: 1 };
+        if (sql.includes('DELETE FROM pets WHERE id = $1 AND user_id = $2')) return { rowCount: 1 };
         if (sql.includes('INSERT INTO audit_events')) return { rows: [{ id: 'audit-1' }] };
         return { rows: [] };
       }),

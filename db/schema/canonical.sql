@@ -178,6 +178,26 @@ CREATE TABLE public.care_schedule_events (
     undone_at timestamp with time zone,
     CONSTRAINT care_schedule_events_event_type_check CHECK (((event_type)::text = ANY ((ARRAY['rescheduled'::character varying, 'skipped'::character varying, 'paused'::character varying, 'resumed'::character varying, 'cadence_adjusted'::character varying, 'completed'::character varying, 'postponed'::character varying, 'materialised'::character varying, 'late_choice_applied'::character varying, 'not_recorded_closed'::character varying, 'schedule_scope_changed'::character varying, 'planned'::character varying, 'recorded'::character varying, 'stack_resolved'::character varying, 'undone'::character varying, 'schedule_changed'::character varying, 'completion_date_changed'::character varying])::text[])))
 );
+CREATE TABLE public.cleanup_jobs (
+    id uuid NOT NULL,
+    job_type character varying(64) NOT NULL,
+    dedupe_key character varying(255) NOT NULL,
+    correlation_id uuid,
+    payload jsonb DEFAULT '{}'::jsonb,
+    status character varying(20) DEFAULT 'pending'::character varying NOT NULL,
+    attempts integer DEFAULT 0 NOT NULL,
+    max_attempts integer DEFAULT 8 NOT NULL,
+    next_attempt_at timestamp with time zone DEFAULT now() NOT NULL,
+    lease_token uuid,
+    lease_expires_at timestamp with time zone,
+    last_error_redacted text,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    completed_at timestamp with time zone,
+    CONSTRAINT cleanup_jobs_attempts_check CHECK ((attempts >= 0)),
+    CONSTRAINT cleanup_jobs_max_attempts_check CHECK ((max_attempts > 0)),
+    CONSTRAINT cleanup_jobs_status_check CHECK (((status)::text = ANY ((ARRAY['pending'::character varying, 'running'::character varying, 'succeeded'::character varying, 'retryable'::character varying, 'dead'::character varying])::text[])))
+);
 CREATE TABLE public.custody_transfers (
     id uuid NOT NULL,
     pet_id uuid NOT NULL,
@@ -704,6 +724,12 @@ CREATE TABLE public.pet_contact_relationships (
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     CONSTRAINT pet_contact_relationships_relationship_kind_check CHECK ((relationship_kind = ANY (ARRAY['primary_vet'::text, 'out_of_hours_vet'::text, 'emergency_contact'::text, 'care_provider'::text, 'other'::text])))
 );
+CREATE TABLE public.pet_lifecycle_notifications (
+    pet_id uuid NOT NULL,
+    event text NOT NULL,
+    recipient_user_id uuid NOT NULL,
+    notified_at timestamp with time zone DEFAULT now() NOT NULL
+);
 CREATE TABLE public.pet_share_invite_pets (
     invite_id uuid NOT NULL,
     pet_id uuid NOT NULL
@@ -960,6 +986,10 @@ ALTER TABLE ONLY public.care_safeguards
     ADD CONSTRAINT care_safeguards_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.care_schedule_events
     ADD CONSTRAINT care_schedule_events_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.cleanup_jobs
+    ADD CONSTRAINT cleanup_jobs_dedupe_key_key UNIQUE (dedupe_key);
+ALTER TABLE ONLY public.cleanup_jobs
+    ADD CONSTRAINT cleanup_jobs_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.custody_transfers
     ADD CONSTRAINT custody_transfers_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.document_templates
@@ -1068,6 +1098,8 @@ ALTER TABLE ONLY public.pet_activity_events
     ADD CONSTRAINT pet_activity_events_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.pet_contact_relationships
     ADD CONSTRAINT pet_contact_relationships_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.pet_lifecycle_notifications
+    ADD CONSTRAINT pet_lifecycle_notifications_pkey PRIMARY KEY (pet_id, event, recipient_user_id);
 ALTER TABLE ONLY public.pet_share_invite_pets
     ADD CONSTRAINT pet_share_invite_pets_pkey PRIMARY KEY (invite_id, pet_id);
 ALTER TABLE ONLY public.pet_share_invites
@@ -1142,6 +1174,8 @@ CREATE INDEX idx_care_milestones_pet_id ON public.care_milestones USING btree (p
 CREATE INDEX idx_care_schedule_events_entry_occurred ON public.care_schedule_events USING btree (health_entry_id, occurred_at DESC);
 CREATE UNIQUE INDEX idx_care_schedule_events_idempotency ON public.care_schedule_events USING btree (idempotency_key) WHERE (idempotency_key IS NOT NULL);
 CREATE INDEX idx_care_schedule_events_occurrence ON public.care_schedule_events USING btree (health_occurrence_id) WHERE (health_occurrence_id IS NOT NULL);
+CREATE INDEX idx_cleanup_jobs_correlation_id ON public.cleanup_jobs USING btree (correlation_id) WHERE (correlation_id IS NOT NULL);
+CREATE INDEX idx_cleanup_jobs_status_next_attempt ON public.cleanup_jobs USING btree (status, next_attempt_at);
 CREATE INDEX idx_custody_transfers_pet_status ON public.custody_transfers USING btree (pet_id, status);
 CREATE INDEX idx_custody_transfers_to_org ON public.custody_transfers USING btree (to_org_id, status);
 CREATE INDEX idx_document_templates_org_type ON public.document_templates USING btree (organization_id, template_type);
@@ -1198,6 +1232,7 @@ CREATE INDEX idx_pet_activity_events_org_id ON public.pet_activity_events USING 
 CREATE INDEX idx_pet_activity_events_pet_id ON public.pet_activity_events USING btree (pet_id);
 CREATE INDEX idx_pet_contact_relationships_contact_id ON public.pet_contact_relationships USING btree (contact_id);
 CREATE INDEX idx_pet_contact_relationships_pet_id ON public.pet_contact_relationships USING btree (pet_id);
+CREATE INDEX idx_pet_lifecycle_notifications_recipient ON public.pet_lifecycle_notifications USING btree (recipient_user_id);
 CREATE INDEX idx_pet_share_invite_pets_pet_id ON public.pet_share_invite_pets USING btree (pet_id);
 CREATE INDEX idx_pet_share_invites_invitee_email ON public.pet_share_invites USING btree (lower((invitee_email)::text));
 CREATE INDEX idx_pet_share_invites_invitee_user_id ON public.pet_share_invites USING btree (invitee_user_id) WHERE (invitee_user_id IS NOT NULL);
@@ -1473,6 +1508,10 @@ ALTER TABLE ONLY public.pet_contact_relationships
     ADD CONSTRAINT pet_contact_relationships_contact_id_fkey FOREIGN KEY (contact_id) REFERENCES public.people_contacts(id) ON DELETE RESTRICT;
 ALTER TABLE ONLY public.pet_contact_relationships
     ADD CONSTRAINT pet_contact_relationships_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.pet_lifecycle_notifications
+    ADD CONSTRAINT pet_lifecycle_notifications_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.pet_lifecycle_notifications
+    ADD CONSTRAINT pet_lifecycle_notifications_recipient_user_id_fkey FOREIGN KEY (recipient_user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.pet_share_invite_pets
     ADD CONSTRAINT pet_share_invite_pets_invite_id_fkey FOREIGN KEY (invite_id) REFERENCES public.pet_share_invites(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.pet_share_invite_pets

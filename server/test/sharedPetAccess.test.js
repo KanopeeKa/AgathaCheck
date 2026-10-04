@@ -35,7 +35,7 @@ function buildMockPool() {
     if (sql.includes('INSERT INTO audit_events')) {
       return { rows: [{ id: 'audit-1' }] };
     }
-    if (sql.includes('DELETE FROM pets WHERE id = $1')) {
+    if (sql.includes('DELETE FROM pets WHERE id = $1 AND user_id = $2')) {
       return { rowCount: 1, rows: [] };
     }
 
