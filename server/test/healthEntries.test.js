@@ -10,6 +10,13 @@ const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'defa
 const userId = 'test-user-id';
 const token = jwt.sign({ id: userId, email: 'test@example.com' }, JWT_SECRET, { expiresIn: '1h' });
 
+function stubAccountExistenceQuery(sql) {
+  if (sql.includes('SELECT 1 FROM users WHERE id')) {
+    return { rows: [{ '?column?': 1 }] };
+  }
+  return null;
+}
+
 function makeHealthRow(overrides = {}) {
   return {
     id: 'he-1',
@@ -69,6 +76,10 @@ describe('Health Entries API', () => {
 
         const access = handlePetAccessQuery(sql, params, { userId, ownedPetIds: ['pet-1', 'pet-2'] });
         if (access) return access;
+
+        if (sql.includes('SELECT 1 FROM users WHERE id')) {
+          return { rows: [{ '?column?': 1 }] };
+        }
 
         const manageEntry = handleManageEntryQuery(sql, params, { tableName: 'health_entries he' });
         if (manageEntry) return manageEntry;
@@ -665,12 +676,16 @@ describe('Health Entries API', () => {
 
     it('escapes commas/quotes and neutralizes formula injection', async () => {
       const pool = {
-        query: async () => ({
-          rows: [makeHealthRow({
-            name: 'Med, "special"',
-            notes: '=cmd|/c calc',
-          })],
-        }),
+        query: async (sql) => {
+          const existence = stubAccountExistenceQuery(sql);
+          if (existence) return existence;
+          return {
+            rows: [makeHealthRow({
+              name: 'Med, "special"',
+              notes: '=cmd|/c calc',
+            })],
+          };
+        },
         end: async () => {},
       };
       const a = createApp(pool);
@@ -686,13 +701,17 @@ describe('Health Entries API', () => {
 
     it('serializes calendar date columns as YYYY-MM-DD', async () => {
       const pool = {
-        query: async () => ({
-          rows: [makeHealthRow({
-            start_date: new Date('2025-01-01T00:00:00.000Z'),
-            next_due_date: new Date('2026-02-01T00:00:00.000Z'),
-            completed_on: null,
-          })],
-        }),
+        query: async (sql) => {
+          const existence = stubAccountExistenceQuery(sql);
+          if (existence) return existence;
+          return {
+            rows: [makeHealthRow({
+              start_date: new Date('2025-01-01T00:00:00.000Z'),
+              next_due_date: new Date('2026-02-01T00:00:00.000Z'),
+              completed_on: null,
+            })],
+          };
+        },
         end: async () => {},
       };
       const a = createApp(pool);
@@ -728,6 +747,8 @@ describe('Health Entries API', () => {
     it('returns null care_family when uncategorised in the database', async () => {
       const pool = {
         query: async (sql, params) => {
+          const existence = stubAccountExistenceQuery(sql);
+          if (existence) return existence;
           const access = handlePetAccessQuery(sql, params, { userId, ownedPetIds: ['pet-1'] });
           if (access) return access;
           const manageEntry = handleManageEntryQuery(sql, params, { tableName: 'health_entries he' });
@@ -757,6 +778,8 @@ describe('Health Entries API', () => {
       for (const legacyType of ['family_event', 'procedure']) {
         const pool = {
           query: async (sql, params) => {
+            const existence = stubAccountExistenceQuery(sql);
+            if (existence) return existence;
             const access = handlePetAccessQuery(sql, params, { userId, ownedPetIds: ['pet-1'] });
             if (access) return access;
             const manageEntry = handleManageEntryQuery(sql, params, { tableName: 'health_entries he' });
@@ -858,6 +881,8 @@ describe('Health Entries API', () => {
     it('exposes legacy dosage as product dose on read for medication', async () => {
       const pool = {
         query: async (sql, params) => {
+          const existence = stubAccountExistenceQuery(sql);
+          if (existence) return existence;
           const access = handlePetAccessQuery(sql, params, { userId, ownedPetIds: ['pet-1'] });
           if (access) return access;
           const manageEntry = handleManageEntryQuery(sql, params, { tableName: 'health_entries he' });

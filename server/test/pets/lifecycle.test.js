@@ -119,6 +119,9 @@ describe('petDataLifecycle', () => {
 describe('Pets lifecycle routes', () => {
   it('DELETE /:id/data returns rows_removed when owner deletes pet data', async () => {
     const pool = createTransactionalMockPool(async (sql, params) => {
+      if (sql.includes('SELECT 1 FROM users WHERE id')) {
+        return { rows: [{ '?column?': 1 }] };
+      }
       const access = handlePetAccessQuery(sql, params, { userId, ownedPetIds: [petId] });
       if (access) return access;
       if (sql.includes('SELECT photo_path')) return { rows: [{ photo_path: null }] };

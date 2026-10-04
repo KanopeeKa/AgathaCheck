@@ -102,6 +102,7 @@ export function buildMockPool(overrides = {}) {
   const baseQuery = async (sql, params) => {
       if (sql.includes('INSERT INTO users')) return handlers.insertUser(sql, params);
       if (sql.includes('SELECT * FROM users WHERE email')) return handlers.selectUserByEmail(sql, params);
+      if (sql.includes('SELECT 1 FROM users WHERE id')) return handlers.selectUserExists(sql, params);
       if (sql.includes('SELECT id FROM users WHERE id')) return handlers.selectUserExists(sql, params);
       if (sql.includes('SELECT id, email FROM users WHERE id = $1 FOR UPDATE')) {
         return { rows: [{ id: userId, email: userEmail }] };
