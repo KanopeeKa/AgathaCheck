@@ -1,6 +1,10 @@
 import { v4 as uuidv4 } from 'uuid';
 
-import { ensurePersonalDirectory } from './directory.js';
+import {
+  deactivateOrDeleteContactForVet,
+  linkContactLegacyVet,
+  upsertContactFromVetFields,
+} from './contactsRepo.js';
 
 function vetToContactFields(vetRow) {
   const clinic = (vetRow.clinic || '').trim();
@@ -27,79 +31,13 @@ function vetToContactFields(vetRow) {
  */
 export async function upsertContactFromVet(pool, vetRow, userId) {
   if (!vetRow?.id || !userId) return null;
-  const directoryId = await ensurePersonalDirectory(pool, userId);
   const fields = vetToContactFields(vetRow);
-
-  const existing = await pool.query(
-    'SELECT id FROM people_contacts WHERE legacy_vet_id = $1',
-    [vetRow.id],
-  );
-
-  let contactId;
-  if (existing.rows.length > 0) {
-    contactId = existing.rows[0].id;
-    // Do not overwrite kind or private notes — People may have edited them.
-    await pool.query(
-      `UPDATE people_contacts
-       SET name = $1, phone = $2, email = $3, website = $4, address = $5,
-           updated_at = NOW()
-       WHERE id = $6`,
-      [
-        fields.name,
-        fields.phone,
-        fields.email,
-        fields.website,
-        fields.address,
-        contactId,
-      ],
-    );
-  } else {
-    contactId = uuidv4();
-    await pool.query(
-      `INSERT INTO people_contacts (
-         id, directory_id, kind, name, phone, email, address, website,
-         legacy_vet_id, created_at, updated_at
-       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), NOW())`,
-      [
-        contactId,
-        directoryId,
-        fields.kind,
-        fields.name,
-        fields.phone,
-        fields.email,
-        fields.address,
-        fields.website,
-        vetRow.id,
-      ],
-    );
-    await pool.query(
-      'INSERT INTO people_contact_roles (contact_id, role) VALUES ($1, $2) ON CONFLICT DO NOTHING',
-      [contactId, 'vet'],
-    );
-    if (fields.privateNote) {
-      await pool.query(
-        `INSERT INTO people_contact_private_notes (contact_id, user_id, note, updated_at)
-         VALUES ($1, $2, $3, NOW())
-         ON CONFLICT (contact_id, user_id)
-         DO UPDATE SET note = EXCLUDED.note, updated_at = NOW()`,
-        [contactId, userId, fields.privateNote],
-      );
-    }
-  }
-
-  return contactId;
+  return upsertContactFromVetFields(pool, {
+    ...fields,
+    legacy_vet_id: vetRow.id,
+  }, userId);
 }
 
-/**
- * @param {import('pg').Pool|import('pg').PoolClient} pool
- * @param {string} vetId
- */
-/**
- * Push People contact fields onto the linked legacy vets row.
- * @param {import('pg').Pool|import('pg').PoolClient} pool
- * @param {object} contactRow loadContactForViewer row
- * @param {string} userId
- */
 /**
  * When a People contact is created with role vet, ensure a legacy vets row exists.
  * @param {import('pg').Pool|import('pg').PoolClient} pool
@@ -136,14 +74,17 @@ export async function ensureLegacyVetForContact(pool, contactRow, userId) {
     ],
   );
 
-  await pool.query(
-    'UPDATE people_contacts SET legacy_vet_id = $1, updated_at = NOW() WHERE id = $2',
-    [vetId, contactRow.id],
-  );
+  await linkContactLegacyVet(pool, contactRow.id, vetId);
 
   return vetId;
 }
 
+/**
+ * Push People contact fields onto the linked legacy vets row.
+ * @param {import('pg').Pool|import('pg').PoolClient} pool
+ * @param {object} contactRow loadContactForViewer row
+ * @param {string} userId
+ */
 export async function syncVetRowFromContact(pool, contactRow, userId) {
   const legacyVetId = contactRow.legacy_vet_id;
   if (!legacyVetId || !userId) return;
@@ -180,23 +121,5 @@ export async function syncVetRowFromContact(pool, contactRow, userId) {
 }
 
 export async function deleteContactForVet(pool, vetId) {
-  if (!vetId) return;
-  const contact = await pool.query(
-    'SELECT id FROM people_contacts WHERE legacy_vet_id = $1',
-    [vetId],
-  );
-  if (contact.rows.length === 0) return;
-  const contactId = contact.rows[0].id;
-  const inUse = await pool.query(
-    'SELECT 1 FROM pet_contact_relationships WHERE contact_id = $1 LIMIT 1',
-    [contactId],
-  );
-  if (inUse.rows.length > 0) {
-    await pool.query(
-      'UPDATE people_contacts SET inactive_at = NOW(), updated_at = NOW() WHERE id = $1',
-      [contactId],
-    );
-    return;
-  }
-  await pool.query('DELETE FROM people_contacts WHERE id = $1', [contactId]);
+  await deactivateOrDeleteContactForVet(pool, vetId);
 }

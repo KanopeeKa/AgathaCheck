@@ -1,5 +1,19 @@
 export const CONTACT_KINDS = ['person', 'organisation'];
 
+/** Maps each role to roster section group (server-derived). */
+export const ROLE_GROUP = {
+  sitter: 'carer',
+  walker: 'carer',
+  emergency_contact: 'carer',
+  vet: 'professional',
+  vet_nurse: 'professional',
+  groomer: 'professional',
+  trainer: 'professional',
+  behaviourist: 'professional',
+  boarding: 'professional',
+  other: 'carer',
+};
+
 export const CONTACT_ROLES = [
   'sitter',
   'walker',

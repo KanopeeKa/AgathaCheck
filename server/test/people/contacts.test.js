@@ -92,11 +92,14 @@ describe('People contacts API', () => {
         }
 
         if (sql.includes('UPDATE people_contacts SET')) {
-          const contactId = params[8];
+          const contactId = params[10] ?? params[8];
           const row = contacts.get(contactId);
           if (!row) return { rows: [] };
-          row.kind = params[0];
-          row.name = params[1];
+          if (params[0] != null) row.kind = params[0];
+          if (params[1] != null) row.name = params[1];
+          if (params[7] !== undefined) {
+            row.inactive_at = params[7];
+          }
           contacts.set(contactId, row);
           return { rows: [row] };
         }
@@ -206,6 +209,33 @@ describe('People contacts API', () => {
     expect(res.statusCode).toBe(200);
     expect(res.body.kind).toBe('organisation');
     expect(res.body.name).toBe('Greenhill Animal Hospital');
+  });
+
+  it('PATCH linked contact name returns 409 linked_identity_read_only', async () => {
+    contacts.set(
+      'contact-linked',
+      makeContactRow({
+        id: 'contact-linked',
+        linked_user_id: 'user-linked',
+        name: 'Linked User',
+        email: 'linked@example.com',
+      }),
+    );
+    const res = await request(app)
+      .patch('/api/people/contacts/contact-linked')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ name: 'Changed' });
+    expect(res.statusCode).toBe(409);
+    expect(res.body.code).toBe('linked_identity_read_only');
+  });
+
+  it('PATCH validation errors include code', async () => {
+    const res = await request(app)
+      .patch('/api/people/contacts/contact-1')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ name: '' });
+    expect(res.statusCode).toBe(400);
+    expect(res.body.code).toBe('validation_failed');
   });
 
   it('DELETE /api/people/contacts/:id removes contact', async () => {
