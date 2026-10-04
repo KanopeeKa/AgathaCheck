@@ -15,6 +15,8 @@ import '../../../health_tracking/domain/entities/health_occurrence.dart';
 import '../../../health_tracking/presentation/providers/health_providers.dart';
 import '../../../health_tracking/presentation/widgets/pet_event_occurrence_actions.dart';
 import '../../../health_tracking/presentation/widgets/pet_event_view_providers.dart';
+import '../sheets/plan_another_date_sheet.dart';
+import 'care_occurrence_menu.dart';
 
 /// Needs attention on the Care Item view (§18.6.5): every open occurrence
 /// as a line (date, status, tick); a line opens its occurrence screen. A
@@ -93,6 +95,52 @@ class _CareItemNeedsAttentionSectionState
     }
   }
 
+  Future<void> _occurrenceMenuAction(
+    BuildContext context,
+    WidgetRef ref,
+    OpenOccurrence occurrence,
+    CareOccurrenceMenuAction action,
+  ) async {
+    final l = AppLocalizations.of(context)!;
+    final service = ref.read(careCompletionServiceProvider);
+    switch (action) {
+      case CareOccurrenceMenuAction.skip:
+        final outcome = await service.skip(
+          entryId: _s.entryId,
+          occurrenceId: occurrence.id,
+        );
+        await _refresh();
+        if (!context.mounted) return;
+        if (outcome is CareFailed) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(l.careCommandFailed)),
+          );
+        }
+      case CareOccurrenceMenuAction.postpone:
+        await ref
+            .read(healthEntriesNotifierProvider.notifier)
+            .pauseCareItem(_s.entryId);
+        PetEventOccurrenceActions.invalidateOccurrenceData(ref, _s.entryId);
+        await _refresh();
+      case CareOccurrenceMenuAction.planAnother:
+        final added = await showPlanAnotherDateSheet(
+          context,
+          ref,
+          entryId: _s.entryId,
+          initialDate: occurrence.date,
+        );
+        if (added == true) await _refresh();
+      case CareOccurrenceMenuAction.addNote:
+        openOccurrenceScreen(
+          context,
+          petId: widget.entry.petId,
+          entryId: widget.entry.id,
+          occurrenceId: occurrence.id,
+          source: 'care_item',
+        );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
@@ -131,6 +179,20 @@ class _CareItemNeedsAttentionSectionState
               ),
             if (!stack && leading != null && !widget.muted) ...[
               const SizedBox(height: 12),
+              FilledButton(
+                key: Key('care_item_mark_done_${leading.id}'),
+                onPressed: _busy
+                    ? null
+                    : () => ref.read(careCompletionFlowProvider).done(
+                          context,
+                          schedule: _s,
+                          occurrence: leading,
+                          onChanged: _refresh,
+                          source: CareCommandSource.careItem,
+                        ),
+                child: Text(l.careMarkDoneLabel(_s.name)),
+              ),
+              const SizedBox(height: 8),
               OutlinedButton(
                 key: Key('care_item_occurrence_reschedule_${leading.id}'),
                 onPressed: () => PetEventOccurrenceActions.changeDate(
@@ -146,6 +208,20 @@ class _CareItemNeedsAttentionSectionState
                   ),
                 ),
                 child: Text(l.rescheduleActionLabel),
+              ),
+              const SizedBox(height: 8),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: CareOccurrenceMenu(
+                  occurrence: leading,
+                  muted: _busy,
+                  onSelected: (action) => _occurrenceMenuAction(
+                    context,
+                    ref,
+                    leading,
+                    action,
+                  ),
+                ),
               ),
             ],
             if (stack && !widget.muted) ...[

@@ -42,6 +42,7 @@ class HealthEntryModel extends HealthEntry {
     super.providerContactId,
     super.providerTypedName,
     super.careBlocks,
+    super.plannedDates,
     super.schedule,
     super.lateCompletionChoice,
     super.createdAt,
@@ -140,6 +141,7 @@ class HealthEntryModel extends HealthEntry {
       providerContactId: entry.providerContactId,
       providerTypedName: entry.providerTypedName,
       careBlocks: entry.careBlocks,
+      plannedDates: entry.plannedDates,
       schedule: entry.schedule,
       lateCompletionChoice: entry.lateCompletionChoice,
       createdAt: entry.createdAt,
@@ -180,6 +182,8 @@ class HealthEntryModel extends HealthEntry {
       if (providerTypedName != null && providerTypedName!.isNotEmpty)
         'provider_typed_name': providerTypedName,
       if (!careBlocks.isEmpty) 'care_blocks': careBlocks.toJson(),
+      if (plannedDates != null && plannedDates!.isNotEmpty)
+        'planned_dates': plannedDates!.map(toCalendarDateString).toList(),
     };
   }
 

@@ -7463,6 +7463,20 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careNextStaysChange => 'Modifier';
 
   @override
+  String get carePlanAnotherDate => 'Prévoir une autre date';
+
+  @override
+  String get careAddBoosterDate => '+ Ajouter une date de rappel';
+
+  @override
+  String careRemoveBoosterDate(String date) {
+    return 'Retirer la date de rappel $date';
+  }
+
+  @override
+  String get careOccurrenceMenuTooltip => 'Autres actions pour cette date';
+
+  @override
   String get careSkip => 'Ignorer';
 
   @override

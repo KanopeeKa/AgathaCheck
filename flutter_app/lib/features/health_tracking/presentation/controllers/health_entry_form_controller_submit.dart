@@ -173,6 +173,9 @@ mixin HealthEntryFormSubmitMixin
             providerContactId: state.providerContactId,
             providerTypedName: state.providerTypedName,
             careBlocks: blocksForWrite,
+            plannedDates: state.boosterPlannedDates.isEmpty
+                ? null
+                : List<DateTime>.from(state.boosterPlannedDates),
           );
           final created = await createUseCase.call(entry);
           createdEntryIds.add(created.id);

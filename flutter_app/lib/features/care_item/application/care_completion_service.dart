@@ -166,6 +166,21 @@ class CareCompletionService {
     });
   }
 
+  /// Add a planned occurrence (D-CSM-025).
+  Future<CareOutcome<CareCommandResult>> planAnotherDate({
+    required String entryId,
+    required DateTime date,
+    String? time,
+  }) {
+    return _run('plan_date', () async {
+      final body = await _remote.postPlanAnotherDate(entryId, {
+        'scheduled_date': toCalendarDateString(date),
+        if (time != null && time.isNotEmpty) 'scheduled_time': time,
+      });
+      return _commandResult(entryId, body);
+    });
+  }
+
   /// Stack bulk action (§18.6.5): [given] closes as done on each slot's own
   /// date, [notGiven] as skipped; one command, one Undo.
   Future<CareOutcome<CareCommandResult>> resolveStack({

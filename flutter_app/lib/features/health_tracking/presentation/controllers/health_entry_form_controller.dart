@@ -359,6 +359,25 @@ class HealthEntryFormController extends HealthEntryFormControllerBase
     state = state.copyWith(completedOn: prompt.dueOnly);
   }
 
+  void addBoosterDate(DateTime date) {
+    final day = calendarDateOnly(date);
+    if (state.boosterPlannedDates.any((d) => calendarDateOnly(d) == day)) {
+      return;
+    }
+    state = state.copyWith(
+      boosterPlannedDates: [...state.boosterPlannedDates, day],
+    );
+  }
+
+  void removeBoosterDate(DateTime date) {
+    final day = calendarDateOnly(date);
+    state = state.copyWith(
+      boosterPlannedDates: state.boosterPlannedDates
+          .where((d) => calendarDateOnly(d) != day)
+          .toList(growable: false),
+    );
+  }
+
   Future<HealthEntrySubmitOutcome> submit({
     bool markCompleted = false,
     bool skipMarkCompletedCheck = false,

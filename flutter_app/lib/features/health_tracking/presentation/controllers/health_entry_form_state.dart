@@ -85,6 +85,7 @@ class HealthEntryFormState {
     this.providerContactId,
     this.providerTypedName,
     this.careBlocks = const CareItemBlocks(),
+    this.boosterPlannedDates = const [],
   }) : startDate = startDate ?? DateTime.now();
 
   final String name;
@@ -124,6 +125,7 @@ class HealthEntryFormState {
   final String? providerContactId;
   final String? providerTypedName;
   final CareItemBlocks careBlocks;
+  final List<DateTime> boosterPlannedDates;
 
   int get totalPhotoCount => photos.length + pendingPhotos.length;
 
@@ -159,6 +161,12 @@ class HealthEntryFormState {
   bool get showScheduleSection => isPlannedMode;
 
   bool get showReminders => isPlannedMode;
+
+  bool get showBoosterDatesField =>
+      !isEdit &&
+      isPlannedMode &&
+      careFamily == CareFamily.vaccination &&
+      frequency != HealthFrequency.once;
 
   List<HealthEntryType> get selectableTypes {
     if (allowedTypes != null && allowedTypes!.isNotEmpty) {
@@ -234,6 +242,7 @@ class HealthEntryFormState {
     String? providerContactId,
     String? providerTypedName,
     CareItemBlocks? careBlocks,
+    List<DateTime>? boosterPlannedDates,
     bool clearProviderContactId = false,
     bool clearProviderTypedName = false,
     bool clearDueDate = false,
@@ -292,6 +301,7 @@ class HealthEntryFormState {
           ? null
           : (providerTypedName ?? this.providerTypedName),
       careBlocks: careBlocks ?? this.careBlocks,
+      boosterPlannedDates: boosterPlannedDates ?? this.boosterPlannedDates,
     );
   }
 }

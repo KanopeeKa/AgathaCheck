@@ -7348,6 +7348,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careNextStaysChange => 'Change';
 
   @override
+  String get carePlanAnotherDate => 'Plan another date';
+
+  @override
+  String get careAddBoosterDate => '+ Add a booster date';
+
+  @override
+  String careRemoveBoosterDate(String date) {
+    return 'Remove booster date $date';
+  }
+
+  @override
+  String get careOccurrenceMenuTooltip => 'More actions for this date';
+
+  @override
   String get careSkip => 'Skip';
 
   @override
