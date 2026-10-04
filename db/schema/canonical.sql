@@ -27,6 +27,18 @@ CREATE TABLE public._migrations (
     name character varying(255) NOT NULL,
     applied_at timestamp with time zone DEFAULT now()
 );
+CREATE TABLE public.account_erasure_operations (
+    id uuid NOT NULL,
+    user_id uuid NOT NULL,
+    status character varying(20) DEFAULT 'accepted'::character varying NOT NULL,
+    status_token_hash character varying(64) NOT NULL,
+    requested_at timestamp with time zone DEFAULT now() NOT NULL,
+    db_erased_at timestamp with time zone,
+    completed_at timestamp with time zone,
+    failed_at timestamp with time zone,
+    last_error_redacted text,
+    CONSTRAINT account_erasure_operations_status_check CHECK (((status)::text = ANY ((ARRAY['accepted'::character varying, 'in_progress'::character varying, 'completed'::character varying, 'failed'::character varying])::text[])))
+);
 CREATE TABLE public.adoption_journeys (
     id uuid NOT NULL,
     organization_id uuid NOT NULL,
@@ -960,6 +972,8 @@ CREATE TABLE public.weight_entries (
 );
 ALTER TABLE ONLY public._migrations
     ADD CONSTRAINT _migrations_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.account_erasure_operations
+    ADD CONSTRAINT account_erasure_operations_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.adoption_journeys
     ADD CONSTRAINT adoption_journeys_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.adoption_visits
@@ -1152,6 +1166,8 @@ CREATE UNIQUE INDEX care_recommendations_pet_family_key_idx ON public.care_recom
 CREATE INDEX care_recommendations_pet_status_idx ON public.care_recommendations USING btree (pet_id, status);
 CREATE UNIQUE INDEX care_safeguards_pet_key_idx ON public.care_safeguards USING btree (pet_id, safeguard_key);
 CREATE INDEX care_safeguards_pet_status_idx ON public.care_safeguards USING btree (pet_id, status);
+CREATE INDEX idx_account_erasure_operations_status ON public.account_erasure_operations USING btree (status);
+CREATE UNIQUE INDEX idx_account_erasure_operations_user_id ON public.account_erasure_operations USING btree (user_id);
 CREATE UNIQUE INDEX idx_adoption_journeys_one_open_per_session ON public.adoption_journeys USING btree (fostering_session_id) WHERE ((status)::text = ANY ((ARRAY['awaiting_foster_confirmation'::character varying, 'pending_conditions'::character varying])::text[]));
 CREATE INDEX idx_adoption_journeys_org_id ON public.adoption_journeys USING btree (organization_id);
 CREATE INDEX idx_adoption_journeys_session_id ON public.adoption_journeys USING btree (fostering_session_id);
