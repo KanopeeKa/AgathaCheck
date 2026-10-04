@@ -97,10 +97,10 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "governance",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
-      "status_detail": null,
-      "debt_issue_refs": []
+      "status_detail": "Stream E debt filed; parent partial-D note; parallel-programmes §1",
+      "debt_issue_refs": [1539, 1540, 1541, 1542, 1543, 1544, 1545, 1546, 1547, 1476]
     },
     {
       "id": "C1",
