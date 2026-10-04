@@ -19,18 +19,19 @@ Parent: `.agents/plans/care-next-occurrence-c1a7.md` §10, child F §795–804.
 
 ```yaml
 autonomy: active
-current_phase: F3
-last_completed_phase: F2
+current_phase: F4
+last_completed_phase: F3
 halt_reason: null
-next_action: "continue phase F3 on branch cursor/care-f3-boundary-gate-50b4"
+next_action: "continue phase F4 on branch cursor/care-f4-server-module-50b4"
 artifact_ref:
-  branch: cursor/care-f3-boundary-gate-50b4
+  branch: cursor/care-f4-server-module-50b4
   plan_path: .agents/plans/care-item-module-c1a7.md
-  plan_commit: fce0ce1e2146550fc085a00364693c9aa7c985f8
+  plan_commit: pending
   snapshot_path: .agents/plans/care-item-module-c1a7.snapshot.json
-  snapshot_commit: fce0ce1e2146550fc085a00364693c9aa7c985f8
+  snapshot_commit: pending
 open_prs: []
 merge_commits:
   F2: fce0ce1e2146550fc085a00364693c9aa7c985f8
+  F3: 83759d37b905ed8c22cbb28d56d978d4a33b7d53
 debt_issue_refs: []
 ```

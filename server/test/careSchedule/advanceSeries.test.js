@@ -1,6 +1,6 @@
 import { describe, expect, it } from '@jest/globals';
 
-import { resolveNextSeriesDate } from '../../lib/care/schedule/advanceSeries.js';
+import { resolveNextSeriesDate } from '../../lib/care/schedule/seriesDates.js';
 
 function makeEntry(overrides = {}) {
   return {

@@ -3,7 +3,7 @@
  * (D-CIE-028). List reads use one query for all open occurrences.
  */
 
-import { normalizePetHomeTimezone, wallClockInTimeZone } from '../../lib/petHomeTimezone.js';
+import { normalizePetHomeTimezone, wallClockInTimeZone } from '../../petHomeTimezone.js';
 import {
   careAsOfForZone,
   careItemReadAdditions,
@@ -11,9 +11,9 @@ import {
   listOpenRows,
   listOpenRowsByEntry,
   resolveCareAsOf,
-} from '../../lib/care/occurrence/index.js';
-import { careClockFromRequest } from '../../lib/care/occurrence/careAsOf.js';
-import { healthEntryToMap } from './shared.js';
+} from '../occurrence/index.js';
+import { careClockFromRequest } from '../occurrence/careAsOf.js';
+import { healthEntryToMap } from './entryMap.js';
 
 /**
  * `last_done { occurrence_id, completed_on, time }` — time is when it was

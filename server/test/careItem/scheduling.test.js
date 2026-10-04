@@ -1,17 +1,15 @@
 import { describe, expect, it } from '@jest/globals';
 
-import { addCalendarDaysIso } from '../lib/calendarDate.js';
-import {
-  isOccurrenceMissed,
-  normalizeTime,
-  scheduleTimesFromEntry,
-} from '../lib/occurrenceScheduling.js';
+import { addCalendarDaysIso } from '../../lib/calendarDate.js';
 import {
   isEntrySeriesClosed,
   isOccurrenceDateWithinSeries,
-} from '../lib/occurrenceLifecycle.js';
+  isOccurrenceMissed,
+  normalizeTime,
+  scheduleTimesFromEntry,
+} from '../../lib/care/item/index.js';
 
-describe('occurrenceScheduling helpers', () => {
+describe('care item scheduling helpers', () => {
   it('scheduleTimesFromEntry returns [null] for all-day', () => {
     expect(scheduleTimesFromEntry({})).toEqual([null]);
     expect(scheduleTimesFromEntry({ schedule_times: null })).toEqual([null]);

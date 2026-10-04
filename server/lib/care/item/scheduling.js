@@ -1,16 +1,16 @@
 /**
- * Health occurrence helpers — pure predicates and wire maps.
- * Occurrence writes live in `server/lib/care/occurrence/` (D-CSM-019, D-CSM-033).
+ * Care item occurrence wire maps and schedule input helpers (pure).
+ * Occurrence writes live in `server/lib/care/occurrence/`.
  */
 
 import {
   dateToIsoDate,
   normalizeCalendarDateInput,
   todayCalendarIso,
-} from './calendarDate.js';
+} from '../../calendarDate.js';
+import { normalizeTime, scheduleTimesFromEntry } from '../schedule/scheduleTimes.js';
 
-export { normalizeTime, scheduleTimesFromEntry } from './care/schedule/scheduleTimes.js';
-import { normalizeTime, scheduleTimesFromEntry } from './care/schedule/scheduleTimes.js';
+export { normalizeTime, scheduleTimesFromEntry };
 
 /**
  * @param {object} row health_entries row

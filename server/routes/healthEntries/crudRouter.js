@@ -21,15 +21,19 @@ import {
   parseEntryProviderInput,
 } from './shared.js';
 import { recordPetActivityForPet } from '../../lib/petActivity.js';
-import { parseScheduleTimesInput } from '../../lib/occurrenceScheduling.js';
+import { parseScheduleTimesInput } from '../../lib/care/item/index.js';
 import {
   createInitialOccurrences,
   reconcileScheduleEdit,
   runCareCommand,
   sendCareCommandError,
 } from '../../lib/care/occurrence/index.js';
-import { careItemWire, careItemsWire } from './careItemWire.js';
-import { applyLateCompletionChoice, parseLateCompletionChoice } from './lateCompletionChoice.js';
+import {
+  applyLateCompletionChoice,
+  careItemWire,
+  careItemsWire,
+  parseLateCompletionChoice,
+} from '../../lib/care/item/index.js';
 import { validateScheduleShape } from './scheduleValidation.js';
 import {
   SCHEDULE_POLICY_VERSION,

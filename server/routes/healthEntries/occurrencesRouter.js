@@ -19,8 +19,7 @@ import {
 } from '../../lib/care/occurrence/index.js';
 import { markSkipped } from '../../lib/care/occurrence/occurrenceRepository.js';
 import { slotIsPastDue } from '../../lib/care/schedule/occurrenceStatus.js';
-import { occurrenceToMap } from '../../lib/occurrenceScheduling.js';
-import { commandResponse } from './careItemWire.js';
+import { commandResponse, occurrenceToMap } from '../../lib/care/item/index.js';
 import { extractUserId } from './shared.js';
 import {
   isWeightMonitoringEntry,

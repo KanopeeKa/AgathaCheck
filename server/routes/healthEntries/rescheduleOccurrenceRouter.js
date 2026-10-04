@@ -1,8 +1,7 @@
 import { normalizeCalendarDateInput } from '../../lib/calendarDate.js';
 import { syncResolutionAfterAbsenceReschedule } from '../../lib/care/absence/syncResolutionAfterSchedule.js';
 import { changeDateCommand } from '../../lib/care/occurrence/index.js';
-import { occurrenceToMap } from '../../lib/occurrenceScheduling.js';
-import { commandResponse } from './careItemWire.js';
+import { commandResponse, occurrenceToMap } from '../../lib/care/item/index.js';
 import { handleCommand } from './occurrencesRouter.js';
 
 export function registerRescheduleOccurrenceRoutes(router, pool) {
