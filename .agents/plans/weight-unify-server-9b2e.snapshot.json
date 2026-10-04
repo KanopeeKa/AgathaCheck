@@ -5,7 +5,7 @@
   "approved_at": "2026-10-04T21:35:55Z",
   "approved_by": "standing grant — owner chat 2026-10-04 full programme W0 through child C; execute-plan delegated authority",
   "approved_until": "2026-10-06T21:35:55Z",
-  "autonomy": "active",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "cursor/weight-unify-server-integration-9b2e",
   "control_issue": 1557,
@@ -208,5 +208,5 @@
       "pr_head_sha": "b2d02dbfe9c24c3787837308c5427677beb9d23f"
     }
   ],
-  "content_hash": "sha256:83f9e2133307e30d8ecbfae20a887bdc084db247a6bbe95535ab91334054dd98"
+  "content_hash": "sha256:fd63580a85eb3734995628ff925a372167af69987db8930494cdcfdcc53872bd"
 }

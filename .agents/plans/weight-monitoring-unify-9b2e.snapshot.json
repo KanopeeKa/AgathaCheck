@@ -2,13 +2,13 @@
   "schema_version": 1,
   "plan_id": "weight-monitoring-unify-9b2e",
   "plan_kind": "roadmap",
-  "current_child_plan_id": "weight-unify-server-9b2e",
+  "current_child_plan_id": "weight-unify-hub-9b2e",
   "child_plans": [
     {
       "plan_id": "weight-unify-server-9b2e",
-      "status": "in_progress",
-      "pr_url": null,
-      "merge_commit": null
+      "status": "merged",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1577",
+      "merge_commit": "b3fa80de8735d636836e2a02124cf8b9d29cf2e9"
     },
     {
       "plan_id": "weight-unify-hub-9b2e",
@@ -69,5 +69,5 @@
       "pr_head_sha": "8931363ffaa8c1bc15ee1b8054162f1e2cfcfff2"
     }
   ],
-  "content_hash": "sha256:910614ba26ba9793495ab0a68806928ffbdcc628f957ed904fdfae9086dbf036"
+  "content_hash": "sha256:41f5a598217e7e7f157355ae2c549a23173d1c477f9a67524d8d5dd4081aa7b2"
 }
