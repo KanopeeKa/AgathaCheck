@@ -1,11 +1,26 @@
 # Notifications v2 — PR1 bootstrap
 #
-# PR1 acceptance is covered by:
-# - server/test/checkDueNotifications.inbox.test.js (no overdue/due_soon inbox inserts)
-# - server/test/notificationsV2Migration.test.js (092 migration)
-# - flutter_app/test/features/notifications/domain/notification_kind_test.dart
-#
-# Inbox UI and indicator BDD scenarios land in PR2+.
+# Active scenarios below keep @bdd title parity while legacy care-inbox scenarios
+# in notifications.feature remain @legacy.
 
 @notifications-v2
 Feature: Notifications v2 inbox programme
+
+  @P1
+  Scenario: Notification generated for overdue health entry
+    Given a pet "Bella" has a health entry "Vaccination" that is overdue
+    When the system checks for due entries
+    Then the check-due API should report zero inbox rows created
+
+  @P1
+  Scenario: Notification generated for entry due soon
+    Given a pet "Bella" has a health entry "Flea Treatment" due tomorrow
+    When the system checks for due entries
+    Then the check-due API should report zero inbox rows created
+
+  @P1
+  Scenario: A reminder is created again after care is done on time
+    Given a pet "Bella" has weekly care due today with a seven-day reminder
+    When the user marks that care done on time
+    And the system checks for due care
+    Then the check-due API should report zero inbox rows created

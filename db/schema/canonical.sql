@@ -536,7 +536,8 @@ CREATE TABLE public.notifications (
     kind character varying(16) DEFAULT 'care'::character varying NOT NULL,
     priority character varying(8) DEFAULT 'normal'::character varying NOT NULL,
     resolved_at timestamp with time zone,
-    CONSTRAINT notifications_kind_check CHECK (((kind)::text = ANY ((ARRAY['care'::character varying, 'administrative'::character varying])::text[]))),
+    archived_at timestamp with time zone,
+    CONSTRAINT notifications_kind_check CHECK (((kind)::text = ANY ((ARRAY['care'::character varying, 'administrative'::character varying, 'relationship'::character varying, 'suggestion'::character varying, 'account'::character varying])::text[]))),
     CONSTRAINT notifications_priority_check CHECK (((priority)::text = ANY ((ARRAY['normal'::character varying, 'urgent'::character varying])::text[])))
 );
 CREATE TABLE public.org_connection_requests (
@@ -1259,6 +1260,7 @@ CREATE INDEX idx_household_invites_invitee_user_id ON public.household_invites U
 CREATE INDEX idx_household_members_user_id ON public.household_members USING btree (user_id);
 CREATE INDEX idx_household_pets_household_id ON public.household_pets USING btree (household_id);
 CREATE INDEX idx_notifications_user_id ON public.notifications USING btree (user_id);
+CREATE INDEX idx_notifications_user_inbox_active ON public.notifications USING btree (user_id, created_at DESC) WHERE (archived_at IS NULL);
 CREATE INDEX idx_org_connection_requests_target ON public.org_connection_requests USING btree (target_org_id, status);
 CREATE INDEX idx_org_connections_high ON public.org_connections USING btree (org_high_id);
 CREATE INDEX idx_org_connections_low ON public.org_connections USING btree (org_low_id);
