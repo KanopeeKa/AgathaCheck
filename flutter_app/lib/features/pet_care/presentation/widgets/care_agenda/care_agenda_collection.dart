@@ -51,7 +51,9 @@ class _CareAgendaCollectionState extends ConsumerState<CareAgendaCollection> {
     super.initState();
     _minute = Timer.periodic(const Duration(minutes: 1), (_) {
       if (!mounted) return;
-      if (DateTime.now().difference(_readAt) >= const Duration(minutes: 15)) {
+      final elapsed = DateTime.now().difference(_readAt);
+      if (elapsed >= const Duration(minutes: 15) ||
+          _crossedPetHomeMidnight(elapsed)) {
         _refresh();
       } else {
         setState(() {});
@@ -73,8 +75,22 @@ class _CareAgendaCollectionState extends ConsumerState<CareAgendaCollection> {
     super.dispose();
   }
 
-  Future<void> _refresh() =>
-      ref.read(healthEntriesNotifierProvider.notifier).refresh();
+  Future<void> _refresh() async {
+    await ref.read(healthEntriesNotifierProvider.notifier).refresh();
+    if (mounted) _readAt = DateTime.now();
+  }
+
+  /// Pet-home midnight crossed since [_readAt] (D-CIE-028 / review #1477).
+  bool _crossedPetHomeMidnight(Duration elapsed) {
+    if (elapsed <= Duration.zero) return false;
+    final minutes = elapsed.inMinutes;
+    for (final entry in widget.entries) {
+      final asOf = entry.schedule?.asOf;
+      if (asOf == null) continue;
+      if (asOf.minutes + minutes >= 24 * 60) return true;
+    }
+    return false;
+  }
 
   void _open(CareAgendaRow<HealthEntry> row) {
     final entry = row.item;

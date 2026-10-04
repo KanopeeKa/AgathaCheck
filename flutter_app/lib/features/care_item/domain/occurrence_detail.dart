@@ -1,3 +1,4 @@
+import 'care_item_schedule.dart';
 import 'care_occurrence.dart';
 
 /// One occurrence for the occurrence screen (§18.7.1, D-CIE-029).
@@ -5,12 +6,16 @@ class OccurrenceDetail {
   const OccurrenceDetail({
     required this.occurrence,
     required this.item,
+    this.schedule,
     this.lastAction,
     this.linkedWeight,
   });
 
   final CareOccurrence occurrence;
   final CareItemSummary item;
+
+  /// Full item schedule (open occurrences, interval) for [decideDone] on this screen.
+  final CareItemSchedule? schedule;
 
   /// The item's latest undoable action, for "Undo" on this occurrence.
   final CareLastAction? lastAction;

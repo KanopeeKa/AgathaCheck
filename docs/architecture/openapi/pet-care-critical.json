@@ -877,55 +877,7 @@
             }
           },
           "entry": {
-            "type": "object",
-            "required": [
-              "id",
-              "pet_id",
-              "name",
-              "recurrence_anchor",
-              "status",
-              "as_of"
-            ],
-            "additionalProperties": false,
-            "properties": {
-              "id": {
-                "type": "string",
-                "format": "uuid"
-              },
-              "pet_id": {
-                "type": "string",
-                "format": "uuid"
-              },
-              "name": {
-                "type": "string"
-              },
-              "care_family": {
-                "type": [
-                  "string",
-                  "null"
-                ]
-              },
-              "recurrence_anchor": {
-                "enum": [
-                  "from_completion",
-                  "from_due_date"
-                ]
-              },
-              "late_completion_choice": {
-                "enum": [
-                  "keep",
-                  "skip_next",
-                  "shift_following",
-                  null
-                ]
-              },
-              "status": {
-                "type": "string"
-              },
-              "as_of": {
-                "$ref": "#/components/schemas/CareAsOf"
-              }
-            }
+            "$ref": "#/components/schemas/CareItem"
           },
           "last_action": {
             "oneOf": [

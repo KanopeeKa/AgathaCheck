@@ -86,6 +86,11 @@ describe('GET one occurrence (§18.7.1)', () => {
       status: 'active',
       as_of: { date: '2026-06-07', time: '09:00', timezone: 'Europe/Paris' },
     });
+    expect(res.body.entry.open_occurrences).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: occ.id, scheduled_date: '2026-06-05' }),
+      ]),
+    );
     expect(res.body.last_action).toBeNull();
     expect(res.body.linked_weight).toBeUndefined();
   });

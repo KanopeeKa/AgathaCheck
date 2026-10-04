@@ -59,8 +59,10 @@ class _OccurrenceBlocksState extends ConsumerState<OccurrenceBlocks> {
     weightValue: double.tryParse(_weight.text.replaceAll(',', '.')),
   );
 
-  /// The occurrence as an open slot for the Done rule.
+  /// Server schedule when available; otherwise a single-slot fallback for tests.
   CareItemSchedule get _schedule {
+    final fromServer = _d.schedule;
+    if (fromServer != null) return fromServer;
     final open = OpenOccurrence(
       id: _occ.id,
       date: _occ.date,
@@ -78,6 +80,20 @@ class _OccurrenceBlocksState extends ConsumerState<OccurrenceBlocks> {
       openOccurrences: [open],
       asOf: _d.item.asOf,
       lateCompletionChoice: _d.item.lateCompletionChoice,
+    );
+  }
+
+  OpenOccurrence get _targetOccurrence {
+    final id = _occ.id;
+    return _schedule.openOccurrences.firstWhere(
+      (o) => o.id == id,
+      orElse: () => OpenOccurrence(
+        id: _occ.id,
+        date: _occ.date,
+        time: _occ.time,
+        status: _occ.status,
+        origin: _occ.origin,
+      ),
     );
   }
 
@@ -132,7 +148,7 @@ class _OccurrenceBlocksState extends ConsumerState<OccurrenceBlocks> {
         .done(
           context,
           schedule: _schedule,
-          occurrence: _schedule.openOccurrences.single,
+          occurrence: _targetOccurrence,
           onChanged: widget.onChanged,
           source: CareCommandSource.occurrence,
           onOccurrenceScreen: true,
