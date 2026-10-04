@@ -106,14 +106,14 @@ autonomy: active
 current_phase: 2
 last_completed_phase: 1
 halt_reason: null
-next_action: "start phase 2: checkout cursor/tz-data-repair-ops-e76a"
+next_action: "continue phase 2 on branch cursor/tz-data-repair-ops-e76a"
 artifact_ref:
-  branch: cursor/pg-date-tz-fix-e76a
+  branch: cursor/tz-data-repair-ops-e76a
   plan_path: .agents/plans/not-recorded-tz-fix-e76a.md
-  plan_commit: 7a309171ae83c4d55fa7d34f3ca396def4249449
+  plan_commit: 106e3f50c45e7007da833208be344a3fd6fc8cd7
   snapshot_path: .agents/plans/not-recorded-tz-fix-e76a.snapshot.json
-  snapshot_commit: 7a309171ae83c4d55fa7d34f3ca396def4249449
-open_prs: []
+  snapshot_commit: 106e3f50c45e7007da833208be344a3fd6fc8cd7
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1578"]
 merge_commits: {}
 debt_issue_refs: []
 ```
