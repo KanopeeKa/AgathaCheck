@@ -29,10 +29,7 @@ void main() {
 
     final roundTrip = ContactSummaryDto.toJson(entity);
     expect(roundTrip['roles'], ['sitter', 'other']);
-    expect(
-      (roundTrip['pets'] as List).first['relationship_kind'],
-      'other',
-    );
+    expect((roundTrip['pets'] as List).first['relationship_kind'], 'other');
   });
 
   test('ContactDetailDto maps detail fields', () {

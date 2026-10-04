@@ -21,7 +21,9 @@ bool isVetTeamCandidate(ContactSummary contact) {
       (r) => r == ContactRole.vet || r == ContactRole.vetNurse,
     );
   }
-  if (contact.roles.any((r) => r == ContactRole.vet || r == ContactRole.vetNurse)) {
+  if (contact.roles.any(
+    (r) => r == ContactRole.vet || r == ContactRole.vetNurse,
+  )) {
     return true;
   }
   return contact.pets.any(
@@ -45,8 +47,10 @@ List<ContactSummary> rankVetTeamContacts(
   DeskRankingContext ctx, {
   int limit = 2,
 }) {
-  final candidates =
-      contacts.where(isVetTeamCandidate).where((c) => !c.isInactive).toList();
+  final candidates = contacts
+      .where(isVetTeamCandidate)
+      .where((c) => !c.isInactive)
+      .toList();
   candidates.sort((a, b) {
     final scoreDiff = _vetTeamScore(b, ctx).compareTo(_vetTeamScore(a, ctx));
     if (scoreDiff != 0) return scoreDiff;

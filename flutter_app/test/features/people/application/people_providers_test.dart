@@ -71,12 +71,7 @@ class FakePeopleRepository implements PeopleRepository {
 
   @override
   Future<RelatedCare> fetchRelatedCare(String id) async =>
-      const RelatedCare(
-        pets: [],
-        careItems: [],
-        absences: [],
-        historyCount: 0,
-      );
+      const RelatedCare(pets: [], careItems: [], absences: [], historyCount: 0);
 
   @override
   Future<Roster> fetchRoster({bool includeInactive = false}) async => Roster(
@@ -91,8 +86,10 @@ class FakePeopleRepository implements PeopleRepository {
   }) async => [_summary];
 
   @override
-  Future<ContactDetail> patchContact(String id, Map<String, dynamic> patch) async =>
-      _detail;
+  Future<ContactDetail> patchContact(
+    String id,
+    Map<String, dynamic> patch,
+  ) async => _detail;
 
   @override
   Future<String?> contactIdForLegacyVet(String vetId) async => null;
@@ -109,7 +106,9 @@ void main() {
     final container = ProviderContainer(
       overrides: [
         peopleRepositoryProvider.overrideWithValue(fake),
-        householdsRepositoryProvider.overrideWithValue(FakeHouseholdsRepository()),
+        householdsRepositoryProvider.overrideWithValue(
+          FakeHouseholdsRepository(),
+        ),
       ],
     );
     addTearDown(container.dispose);
@@ -121,35 +120,44 @@ void main() {
     expect(fake.detailFetchCount, 1);
   });
 
-  test('peopleCommands invalidates roster, detail, relatedCare, petPeople', () async {
-    final fake = FakePeopleRepository();
-    final container = ProviderContainer(
-      overrides: [
-        peopleRepositoryProvider.overrideWithValue(fake),
-        householdsRepositoryProvider.overrideWithValue(FakeHouseholdsRepository()),
-      ],
-    );
-    addTearDown(container.dispose);
+  test(
+    'peopleCommands invalidates roster, detail, relatedCare, petPeople',
+    () async {
+      final fake = FakePeopleRepository();
+      final container = ProviderContainer(
+        overrides: [
+          peopleRepositoryProvider.overrideWithValue(fake),
+          householdsRepositoryProvider.overrideWithValue(
+            FakeHouseholdsRepository(),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
 
-    await container.read(rosterProvider.future);
-    await container.read(personDetailProvider('c1').future);
-    await container.read(relatedCareProvider('c1').future);
-    await container.read(petPeopleProvider('p1').future);
+      await container.read(rosterProvider.future);
+      await container.read(personDetailProvider('c1').future);
+      await container.read(relatedCareProvider('c1').future);
+      await container.read(petPeopleProvider('p1').future);
 
-    await container.read(peopleCommandsProvider).afterPetLinkChange('c1', 'p1');
+      await container
+          .read(peopleCommandsProvider)
+          .afterPetLinkChange('c1', 'p1');
 
-    expect(container.read(rosterProvider).isRefreshing, isFalse);
-    expect(container.read(personDetailProvider('c1')).isLoading, isTrue);
-    expect(container.read(relatedCareProvider('c1')).isLoading, isTrue);
-    expect(container.read(petPeopleProvider('p1')).isLoading, isTrue);
-  });
+      expect(container.read(rosterProvider).isRefreshing, isFalse);
+      expect(container.read(personDetailProvider('c1')).isLoading, isTrue);
+      expect(container.read(relatedCareProvider('c1')).isLoading, isTrue);
+      expect(container.read(petPeopleProvider('p1')).isLoading, isTrue);
+    },
+  );
 
   test('legacy detail provider does not mutate contacts list', () async {
     final fake = FakePeopleRepository();
     final container = ProviderContainer(
       overrides: [
         peopleRepositoryProvider.overrideWithValue(fake),
-        householdsRepositoryProvider.overrideWithValue(FakeHouseholdsRepository()),
+        householdsRepositoryProvider.overrideWithValue(
+          FakeHouseholdsRepository(),
+        ),
       ],
     );
     addTearDown(container.dispose);

@@ -116,10 +116,7 @@ class ContactSummaryDto {
     'linked_user_id': summary.linkedUserId,
     'pets': summary.pets.map(ContactPetLinkDto.toJson).toList(),
     if (summary.worksAt != null)
-      'works_at': {
-        'id': summary.worksAt!.id,
-        'name': summary.worksAt!.name,
-      },
+      'works_at': {'id': summary.worksAt!.id, 'name': summary.worksAt!.name},
     if (summary.nextAbsence != null)
       'next_absence': {
         'absence_id': summary.nextAbsence!.absenceId,

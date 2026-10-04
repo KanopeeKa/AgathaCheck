@@ -7,11 +7,7 @@ import 'dto/people_dtos.dart';
 import 'people_api_exception.dart';
 
 class PeopleApi {
-  PeopleApi({
-    required this.baseUrl,
-    required this.client,
-    this.token,
-  });
+  PeopleApi({required this.baseUrl, required this.client, this.token});
 
   final String baseUrl;
   final http.Client client;
@@ -26,17 +22,26 @@ class PeopleApi {
     return Uri.parse('$baseUrl$path').replace(queryParameters: query);
   }
 
-  Future<Map<String, dynamic>> getJson(String path, {Map<String, String>? query}) async {
+  Future<Map<String, dynamic>> getJson(
+    String path, {
+    Map<String, String>? query,
+  }) async {
     final response = await client.get(_uri(path, query), headers: _headers);
     return _decodeObject(response);
   }
 
-  Future<List<dynamic>> getJsonList(String path, {Map<String, String>? query}) async {
+  Future<List<dynamic>> getJsonList(
+    String path, {
+    Map<String, String>? query,
+  }) async {
     final response = await client.get(_uri(path, query), headers: _headers);
     return _decodeList(response);
   }
 
-  Future<Map<String, dynamic>> postJson(String path, Map<String, dynamic> body) async {
+  Future<Map<String, dynamic>> postJson(
+    String path,
+    Map<String, dynamic> body,
+  ) async {
     final response = await client.post(
       _uri(path),
       headers: _headers,

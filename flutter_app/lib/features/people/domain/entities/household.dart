@@ -24,13 +24,8 @@ class Household {
   }
 
   @override
-  int get hashCode => Object.hash(
-    id,
-    name,
-    myTier,
-    myIsOrganiser,
-    Object.hashAll(members),
-  );
+  int get hashCode =>
+      Object.hash(id, name, myTier, myIsOrganiser, Object.hashAll(members));
 }
 
 class HouseholdMember {

@@ -5,10 +5,7 @@ import '../enums/contact_status.dart';
 import '../enums/relationship_kind.dart';
 
 class ContactDirectoryRef {
-  const ContactDirectoryRef({
-    required this.type,
-    this.householdId,
-  });
+  const ContactDirectoryRef({required this.type, this.householdId});
 
   final String type;
   final String? householdId;
@@ -49,8 +46,7 @@ class ContactPetLink {
   }
 
   @override
-  int get hashCode =>
-      Object.hash(petId, petName, relationshipKind, isPrimary);
+  int get hashCode => Object.hash(petId, petName, relationshipKind, isPrimary);
 }
 
 class ContactWorksAt {
@@ -96,11 +92,7 @@ class ContactNextAbsence {
 }
 
 class ContactAccessLine {
-  const ContactAccessLine({
-    required this.role,
-    this.petId,
-    this.expiresAt,
-  });
+  const ContactAccessLine({required this.role, this.petId, this.expiresAt});
 
   final String role;
   final String? petId;

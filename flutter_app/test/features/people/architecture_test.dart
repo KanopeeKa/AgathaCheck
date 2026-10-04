@@ -59,7 +59,9 @@ void main() {
     );
     final violations = <String>[];
 
-    for (final entity in Directory(presentationRoot).listSync(recursive: true)) {
+    for (final entity in Directory(
+      presentationRoot,
+    ).listSync(recursive: true)) {
       if (entity is! File || !entity.path.endsWith('.dart')) continue;
       final rel = p.relative(entity.path, from: repoRoot).replaceAll('\\', '/');
       final content = entity.readAsStringSync();

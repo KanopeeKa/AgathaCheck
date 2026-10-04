@@ -27,8 +27,7 @@ class ContactStaffMember {
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, name, kind, Object.hashAll(roles));
+  int get hashCode => Object.hash(id, name, kind, Object.hashAll(roles));
 }
 
 class LinkedAccount {

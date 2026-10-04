@@ -53,10 +53,9 @@ List<RosterSection> buildRosterSections(Roster roster) {
   final activeContacts = roster.contacts
       .where((c) => c.status == ContactStatus.active)
       .toList();
-  final carers = activeContacts
-      .where((c) => c.group == ContactGroup.carer)
-      .toList()
-    ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+  final carers =
+      activeContacts.where((c) => c.group == ContactGroup.carer).toList()
+        ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
   if (carers.isNotEmpty) {
     sections.add(
       RosterSection(
@@ -67,10 +66,9 @@ List<RosterSection> buildRosterSections(Roster roster) {
     );
   }
 
-  final professionals = activeContacts
-      .where((c) => c.group == ContactGroup.professional)
-      .toList()
-    ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+  final professionals =
+      activeContacts.where((c) => c.group == ContactGroup.professional).toList()
+        ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
   if (professionals.isNotEmpty) {
     sections.add(
       RosterSection(
@@ -91,10 +89,9 @@ List<RosterSection> buildRosterSections(Roster roster) {
     );
   }
 
-  final inactive = roster.contacts
-      .where((c) => c.status == ContactStatus.inactive)
-      .toList()
-    ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+  final inactive =
+      roster.contacts.where((c) => c.status == ContactStatus.inactive).toList()
+        ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
   if (inactive.isNotEmpty) {
     sections.add(
       RosterSection(

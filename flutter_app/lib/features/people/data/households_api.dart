@@ -7,11 +7,7 @@ import '../domain/repositories/people_repository.dart';
 import 'dto/people_dtos.dart';
 
 class HouseholdsApi {
-  HouseholdsApi({
-    required this.baseUrl,
-    required this.client,
-    this.token,
-  });
+  HouseholdsApi({required this.baseUrl, required this.client, this.token});
 
   final String baseUrl;
   final http.Client client;
@@ -21,7 +17,8 @@ class HouseholdsApi {
     final response = await client.get(
       Uri.parse('$baseUrl/api/households'),
       headers: {
-        if (token != null && token!.isNotEmpty) 'Authorization': 'Bearer $token',
+        if (token != null && token!.isNotEmpty)
+          'Authorization': 'Bearer $token',
       },
     );
     if (response.statusCode >= 400) {

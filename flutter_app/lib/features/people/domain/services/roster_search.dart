@@ -55,8 +55,10 @@ List<ContactSummary> searchContacts(
 ) {
   final filtered = filterContactsByQuery(contacts, query);
   filtered.sort((a, b) {
-    final scoreDiff =
-        contactSearchScore(b, query).compareTo(contactSearchScore(a, query));
+    final scoreDiff = contactSearchScore(
+      b,
+      query,
+    ).compareTo(contactSearchScore(a, query));
     if (scoreDiff != 0) return scoreDiff;
     return a.name.toLowerCase().compareTo(b.name.toLowerCase());
   });

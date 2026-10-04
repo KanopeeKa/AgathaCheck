@@ -60,7 +60,10 @@ class PeopleRepositoryImpl implements PeopleRepository {
   }
 
   @override
-  Future<ContactDetail> patchContact(String id, Map<String, dynamic> patch) async {
+  Future<ContactDetail> patchContact(
+    String id,
+    Map<String, dynamic> patch,
+  ) async {
     final json = await _api.patchJson('/api/people/contacts/$id', patch);
     return ContactDetailDto.fromJson(json);
   }
@@ -72,7 +75,9 @@ class PeopleRepositoryImpl implements PeopleRepository {
 
   @override
   Future<String?> contactIdForLegacyVet(String vetId) async {
-    final json = await _api.getJson('/api/people/contacts/by-legacy-vet/$vetId');
+    final json = await _api.getJson(
+      '/api/people/contacts/by-legacy-vet/$vetId',
+    );
     return json['id']?.toString();
   }
 }
