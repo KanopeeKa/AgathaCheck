@@ -604,10 +604,10 @@ server/**
 
 ```yaml
 autonomy: active
-current_phase: c2-components
-last_completed_phase: c1-flutter-core
+current_phase: c3-hub
+last_completed_phase: c2-components
 halt_reason: null
-next_action: "continue phase c2-components on branch cursor/people-client-c2-components-7f3b"
+next_action: "start phase c3-hub on branch cursor/people-client-c3-hub-7f3b"
 artifact_ref:
   branch: cursor/people-client-core-integration-7f3b
   plan_path: .agents/plans/people-client-core-7f3b.md

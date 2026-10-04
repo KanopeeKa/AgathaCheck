@@ -12628,6 +12628,120 @@ abstract class AppLocalizations {
   /// **'Active'**
   String get peopleStatusActive;
 
+  /// No description provided for @peopleStatusNeedsReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs review'**
+  String get peopleStatusNeedsReview;
+
+  /// No description provided for @peopleAccessUntil.
+  ///
+  /// In en, this message translates to:
+  /// **'Access until {date}'**
+  String peopleAccessUntil(String date);
+
+  /// No description provided for @peopleCardLookingAfter.
+  ///
+  /// In en, this message translates to:
+  /// **'Looking after pets · {startsOn}–{endsOn}'**
+  String peopleCardLookingAfter(String startsOn, String endsOn);
+
+  /// No description provided for @peopleActionCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Call'**
+  String get peopleActionCall;
+
+  /// No description provided for @peopleActionMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get peopleActionMessage;
+
+  /// No description provided for @peopleActionEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get peopleActionEmail;
+
+  /// No description provided for @peopleActionDirections.
+  ///
+  /// In en, this message translates to:
+  /// **'Directions'**
+  String get peopleActionDirections;
+
+  /// No description provided for @peoplePickerPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose someone'**
+  String get peoplePickerPlaceholder;
+
+  /// No description provided for @peoplePickerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a contact'**
+  String get peoplePickerTitle;
+
+  /// No description provided for @peoplePickerFieldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact'**
+  String get peoplePickerFieldLabel;
+
+  /// No description provided for @peoplePickerNone.
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get peoplePickerNone;
+
+  /// No description provided for @peoplePickerSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search people and roles'**
+  String get peoplePickerSearchHint;
+
+  /// No description provided for @peoplePickerCurrentSelection.
+  ///
+  /// In en, this message translates to:
+  /// **'Current selection'**
+  String get peoplePickerCurrentSelection;
+
+  /// No description provided for @peoplePickerHouseholdMembersSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Household members'**
+  String get peoplePickerHouseholdMembersSection;
+
+  /// No description provided for @peoplePickerContactsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Contacts'**
+  String get peoplePickerContactsSection;
+
+  /// No description provided for @peoplePickerAddQuery.
+  ///
+  /// In en, this message translates to:
+  /// **'Add \"{query}\"'**
+  String peoplePickerAddQuery(String query);
+
+  /// No description provided for @peoplePickerUseWithoutSaving.
+  ///
+  /// In en, this message translates to:
+  /// **'Use \"{query}\" without saving'**
+  String peoplePickerUseWithoutSaving(String query);
+
+  /// No description provided for @peoplePickerQuickAddTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick add contact'**
+  String get peoplePickerQuickAddTitle;
+
+  /// No description provided for @peoplePickerQuickAddSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save contact'**
+  String get peoplePickerQuickAddSave;
+
   /// No description provided for @peopleGroupCarers.
   ///
   /// In en, this message translates to:

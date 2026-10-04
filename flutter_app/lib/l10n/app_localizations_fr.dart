@@ -7282,6 +7282,71 @@ class AppLocalizationsFr extends AppLocalizations {
   String get peopleStatusActive => 'Actif';
 
   @override
+  String get peopleStatusNeedsReview => 'À vérifier';
+
+  @override
+  String peopleAccessUntil(String date) {
+    return 'Accès jusqu\'au $date';
+  }
+
+  @override
+  String peopleCardLookingAfter(String startsOn, String endsOn) {
+    return 'Garde des animaux · $startsOn–$endsOn';
+  }
+
+  @override
+  String get peopleActionCall => 'Appeler';
+
+  @override
+  String get peopleActionMessage => 'Message';
+
+  @override
+  String get peopleActionEmail => 'E-mail';
+
+  @override
+  String get peopleActionDirections => 'Itinéraire';
+
+  @override
+  String get peoplePickerPlaceholder => 'Choisir quelqu\'un';
+
+  @override
+  String get peoplePickerTitle => 'Choisir un contact';
+
+  @override
+  String get peoplePickerFieldLabel => 'Contact';
+
+  @override
+  String get peoplePickerNone => 'Aucun';
+
+  @override
+  String get peoplePickerSearchHint => 'Rechercher des personnes ou rôles';
+
+  @override
+  String get peoplePickerCurrentSelection => 'Sélection actuelle';
+
+  @override
+  String get peoplePickerHouseholdMembersSection => 'Membres du foyer';
+
+  @override
+  String get peoplePickerContactsSection => 'Contacts';
+
+  @override
+  String peoplePickerAddQuery(String query) {
+    return 'Ajouter « $query »';
+  }
+
+  @override
+  String peoplePickerUseWithoutSaving(String query) {
+    return 'Utiliser « $query » sans enregistrer';
+  }
+
+  @override
+  String get peoplePickerQuickAddTitle => 'Ajout rapide';
+
+  @override
+  String get peoplePickerQuickAddSave => 'Enregistrer le contact';
+
+  @override
   String get peopleGroupCarers => 'Aidants de confiance';
 
   @override
