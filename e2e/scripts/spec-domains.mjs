@@ -109,7 +109,7 @@ export const AREAS = {
       'server/routes/vets',
       'server/lib/people/',
     ],
-    specs: ['people-hub.spec.ts', 'veterinarian.spec.ts'],
+    specs: ['people-hub.spec.ts', 'people.detail-navigation.spec.ts', 'veterinarian.spec.ts'],
   },
   help: {
     paths: ['flutter_app/lib/features/help/', 'flutter_app/lib/features/about/'],
