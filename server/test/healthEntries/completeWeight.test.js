@@ -154,15 +154,19 @@ describe('POST /api/pets/:petId/care-rhythms/:entryId/occurrences/:occurrenceId/
           return { rows: linkedWeight ? [linkedWeight] : [] };
         }
 
+        if (sql.includes('SELECT home_timezone FROM pets WHERE id = $1')) {
+          return { rows: [{ home_timezone: 'UTC' }] };
+        }
+
         if (sql.includes('INSERT INTO weight_entries')) {
           linkedWeight = makeWeightEntryRow({
             id: params[0],
             weight: params[3],
-            unit: params[4],
-            date: new Date(params[5]),
-            notes: params[6],
-            measurement_source: params[7],
-            health_occurrence_id: params[8],
+            unit: 'kg',
+            date: new Date(params[4]),
+            notes: params[5],
+            measurement_source: params[6],
+            health_occurrence_id: params[7],
           });
           return { rows: [linkedWeight] };
         }
@@ -275,6 +279,17 @@ describe('POST /api/pets/:petId/care-rhythms/:entryId/occurrences/:occurrenceId/
     expect(res.statusCode).toBe(500);
     expect(occurrence.status).toBe('pending');
     expect(linkedWeight).toBeNull();
+  });
+
+  it('U-5 complete-weight with unit lb stores weight in kg', async () => {
+    const res = await request(app)
+      .post(path)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ ...payload, weight: 10, unit: 'lb' });
+    expect(res.statusCode).toBe(201);
+    expect(res.body.weight_entry.unit).toBe('kg');
+    expect(linkedWeight.weight).toBeCloseTo(4.5359237, 5);
+    expect(occurrence.status).toBe('completed');
   });
 
   it('creates linked weight and completes occurrence atomically', async () => {

@@ -8,7 +8,7 @@ import { Pool } from 'pg';
 import petsRoutes from '../routes/pets.js';
 import authRoutes from '../routes/auth.js';
 import notificationsRoutes from '../routes/notifications.js';
-import weightEntriesRoutes from '../routes/weightEntries.js';
+import weightEntriesRoutes from '../routes/weightEntries/index.js';
 import healthEntriesRoutes from '../routes/healthEntries.js';
 import healthIssuesRoutes from '../routes/healthIssues.js';
 import organizationsRoutes from '../routes/organizations.js';

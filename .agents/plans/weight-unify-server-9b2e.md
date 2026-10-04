@@ -9,7 +9,7 @@
 | **plan_id** | `weight-unify-server-9b2e` |
 | **parent** | `weight-monitoring-unify-9b2e` (roadmap; W0 runs there as a docs PR to `main` before this child) |
 | **base_branch** | `cursor/weight-unify-server-integration-9b2e` (create from a fresh `origin/main` at bootstrap) |
-| **control issue** | own issue, created at bootstrap under the roadmap's standing grant (roadmap §11.1); placeholder `999999` until then |
+| **control issue** | [#1557](https://github.com/KanopeeKa/AgathaCheck/issues/1557) (standing grant from roadmap #1537) |
 | **landing** | integration → `main` PR, `/babysit-uat` until pre-UAT green, then the landing broadcast (roadmap §10.4) |
 | **entry gate** | roadmap §10.1: W0 merged on `main`; PEOPLE `people-server-7f3b` not in progress; no ARCH PR open on the weight routes, `healthEntries` routes or `pets/coreRouter.js`; no other programme `main` PR open at landing |
 | **default_merge_mode** | `auto` |
@@ -37,12 +37,12 @@ last_completed_phase: null
 halt_reason: null
 next_action: "continue phase W1 on branch cursor/weight-unify-w1-service-9b2e"
 artifact_ref:
-  branch: cursor/weight-unify-server-integration-9b2e
+  branch: cursor/weight-unify-w1-service-9b2e
   plan_path: .agents/plans/weight-unify-server-9b2e.md
-  plan_commit: 5449a82aaf96d6ef30b45f5eb417eae84372751a
+  plan_commit: 373061cae4f5bf8c9dccb03d10e5dd9c54cd10e5
   snapshot_path: .agents/plans/weight-unify-server-9b2e.snapshot.json
-  snapshot_commit: 5449a82aaf96d6ef30b45f5eb417eae84372751a
-open_prs: []
+  snapshot_commit: 373061cae4f5bf8c9dccb03d10e5dd9c54cd10e5
+open_prs: [true]
 merge_commits: {}
 debt_issue_refs: []
 ```

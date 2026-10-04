@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 
 import { dateToIsoDate, normalizeCalendarDateInput, todayCalendarIso } from '../../lib/calendarDate.js';
+import { parseWeightInput } from '../../lib/care/observations/weightUnits.js';
 import { validateMeasurementSource } from '../careIntelligence/provenance.js';
 
 export const WEIGHT_GENERIC_COMPLETE_ERROR =
@@ -11,16 +12,9 @@ export function isWeightMonitoringEntry(entry) {
 }
 
 export function parseWeightObservationBody(body = {}) {
-  const rawWeight = body.weight;
-  if (rawWeight === undefined || rawWeight === null || rawWeight === '') {
-    return { error: 'weight is required' };
-  }
-  const weightVal = typeof rawWeight === 'number' ? rawWeight : parseFloat(String(rawWeight));
-  if (!Number.isFinite(weightVal)) {
-    return { error: 'weight must be a number' };
-  }
-  if (weightVal <= 0) {
-    return { error: 'weight must be positive' };
+  const parsed = parseWeightInput({ weight: body.weight, unit: body.unit });
+  if (parsed.error) {
+    return { error: parsed.error };
   }
   const dateVal = normalizeCalendarDateInput(body.date || body.measured_at)
     || todayCalendarIso();
@@ -31,8 +25,8 @@ export function parseWeightObservationBody(body = {}) {
   }
   return {
     value: {
-      weight: weightVal,
-      unit: body.unit || 'kg',
+      weight: parsed.kg,
+      unit: 'kg',
       date: dateVal,
       measurement_source: sourceResult.value,
       notes: String(body.notes || '').trim(),

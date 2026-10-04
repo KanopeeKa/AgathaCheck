@@ -25,7 +25,17 @@ import {
   verifyToken,
 } from './shared.js';
 
-const PROFILE_FIELDS = ['first_name', 'last_name', 'category', 'bio', 'locale', 'photo_url', 'timezone'];
+const PROFILE_FIELDS = [
+  'first_name',
+  'last_name',
+  'category',
+  'bio',
+  'locale',
+  'photo_url',
+  'timezone',
+  'weight_unit',
+];
+const WEIGHT_UNITS = new Set(['kg', 'lb']);
 
 async function validatePinnedOrganizationUpdate(pool, userId, value) {
   if (value === null) {
@@ -72,6 +82,16 @@ async function applyProfileUpdate(pool, userId, body, req) {
         }
         updates.push(`${field} = $${idx}`);
         values.push(tz);
+        idx++;
+        continue;
+      }
+      if (field === 'weight_unit') {
+        const unit = String(body[field] || '').trim().toLowerCase();
+        if (!WEIGHT_UNITS.has(unit)) {
+          return { ok: false, status: 400, error: 'weight_unit must be kg or lb' };
+        }
+        updates.push(`${field} = $${idx}`);
+        values.push(unit);
         idx++;
         continue;
       }
