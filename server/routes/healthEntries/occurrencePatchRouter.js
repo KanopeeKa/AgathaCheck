@@ -6,7 +6,6 @@
 import { publicError } from '../../config/security.js';
 import { normalizeCalendarDateInput } from '../../lib/calendarDate.js';
 import {
-  asOfToWire,
   changeCompletionDateCommand,
   normalizeOccurrenceRow,
   openOccurrenceToWire,
@@ -16,7 +15,7 @@ import {
 import { UNDOABLE_EVENT_TYPES } from '../../lib/care/schedule/scheduleEventLedger.js';
 import { resolveProviderUsedPatch } from '../../lib/care/providerUsed.js';
 import { occurrenceToMap } from '../../lib/occurrenceScheduling.js';
-import { commandResponse } from './careItemWire.js';
+import { careItemWire, commandResponse } from './careItemWire.js';
 import { extractUserId } from './shared.js';
 import { handleCommand, loadEntry, loadOccurrence } from './occurrencesRouter.js';
 
@@ -93,18 +92,10 @@ export function registerOccurrencePatchRoutes(router, pool) {
       const occ = await loadOccurrence(pool, entry.id, req.params.occId);
       if (!occ) return res.status(404).json({ error: 'Occurrence not found', code: 'occurrence_not_found' });
       const asOf = await resolveCareAsOfForRead(pool, entry, req);
+      const entryWire = await careItemWire(pool, entry, req, { asOf });
       const body = {
         occurrence: { ...occurrenceToMap(occ), occurrence_status: occurrenceStatusFor(occ, entry, asOf) },
-        entry: {
-          id: entry.id,
-          pet_id: entry.pet_id,
-          name: entry.name || '',
-          care_family: entry.care_family ?? null,
-          recurrence_anchor: entry.recurrence_anchor || 'from_completion',
-          late_completion_choice: entry.late_completion_choice ?? null,
-          status: entry.status || 'active',
-          as_of: asOfToWire(asOf),
-        },
+        entry: entryWire,
         last_action: await lastAction(pool, entry.id),
       };
       const weight = await linkedWeight(pool, occ.id);
