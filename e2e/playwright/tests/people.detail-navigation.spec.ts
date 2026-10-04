@@ -2,36 +2,21 @@
  * @bdd people.feature
  * Scenario: Back from person detail returns to People hub
  */
-import { test, expect } from '../fixtures/auth.fixture';
+import { test, expect, loginAs } from '../fixtures/auth.fixture';
 import { GuardianDashboardPage } from '../pages/guardian-dashboard.page';
 import { VetListPage } from '../pages/vet-list.page';
-import { LandingPage } from '../pages/landing.page';
 import { createPet, createVetFull, signupUser, updatePetVet } from '../support/api';
 import {
   enableFlutterAccessibility,
-  reachAuthenticatedHome,
   refreshFlutterAccessibility,
   waitForFlutterRoutePattern,
 } from '../support/flutter';
-import { prepareLiveApiAccess } from '../support/waf';
 
 const baseURL = () => process.env.E2E_BASE_URL ?? 'http://localhost:3000';
-
-async function loginGuardian(
-  page: import('@playwright/test').Page,
-  email: string,
-  password: string,
-): Promise<void> {
-  const landing = new LandingPage(page);
-  await landing.goto();
-  await landing.login(email, password);
-  await reachAuthenticatedHome(page);
-}
 
 test.describe('People detail back navigation @people', () => {
   test('@P2 back from person detail returns to People hub', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 });
-    await prepareLiveApiAccess(page, baseURL());
     const user = await signupUser(baseURL());
     const vet = await createVetFull(baseURL(), user.accessToken, { name: 'BackNav Vet' });
     const pet = await createPet(baseURL(), user.accessToken, 'BackNavPet');
@@ -40,7 +25,11 @@ test.describe('People detail back navigation @people', () => {
       species: 'Dog',
       vetId: vet.id,
     });
-    await loginGuardian(page, user.email, user.password);
+    await loginAs(page, {
+      email: user.email,
+      password: user.password,
+      accessToken: user.accessToken,
+    });
 
     const dashboard = new GuardianDashboardPage(page);
     await dashboard.openBottomNavTab('People');
