@@ -16,8 +16,8 @@ import 'package:pet_profile_app/features/experience/presentation/screens/pet_car
 import 'package:pet_profile_app/features/pet_care/context/presentation/away_planning_dashboard_tile_state.dart';
 import 'package:pet_profile_app/features/pet_care/context/presentation/providers/care_context_providers.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
-import 'package:pet_profile_app/features/people/domain/entities/people_contact.dart';
-import 'package:pet_profile_app/features/people/presentation/providers/people_providers.dart';
+import 'package:pet_profile_app/features/people/application/people_providers.dart';
+import 'package:pet_profile_app/features/people/domain/entities/roster.dart';
 import 'package:pet_profile_app/features/sharing/presentation/providers/household_providers.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
@@ -43,7 +43,15 @@ void main() {
       overrides: [
         authProvider.overrideWith((ref) => FakeAuthNotifier()),
         petListProvider.overrideWith(() => TestPetListNotifier(list)),
-        peopleContactsProvider.overrideWith(_TestPeopleContactsNotifier.new),
+        rosterProvider.overrideWith(
+          () => _TestRosterNotifier(
+            const Roster(
+              households: [],
+              contacts: [],
+              pendingInvites: [],
+            ),
+          ),
+        ),
         householdListProvider.overrideWith((ref) async => []),
         healthEntriesNotifierProvider.overrideWith(
           () => resolvedHealthNotifier,
@@ -181,8 +189,17 @@ void main() {
         )
         .dy;
     final awayY = tester.getTopLeft(find.text('AWAY PLANNING')).dy;
-    final careY = tester.getTopLeft(find.text('CARE ACTIONS')).dy;
-    final peopleY = tester.getTopLeft(find.text('CONTACTS')).dy;
+    final wideRow = find.byKey(const Key('pet_care_desk_secondary_sections_wide'));
+    final careY = tester
+        .getTopLeft(
+          find.descendant(of: wideRow, matching: find.text('CARE ACTIONS')),
+        )
+        .dy;
+    final peopleY = tester
+        .getTopLeft(
+          find.descendant(of: wideRow, matching: find.text('CONTACTS')),
+        )
+        .dy;
 
     expect(careY, peopleY);
     expect(awayY, greaterThan(rowBottom));
@@ -329,9 +346,13 @@ void main() {
   );
 }
 
-class _TestPeopleContactsNotifier extends PeopleContactsNotifier {
+class _TestRosterNotifier extends RosterNotifier {
+  _TestRosterNotifier(this.roster);
+
+  final Roster roster;
+
   @override
-  Future<List<PeopleContact>> build() async => const [];
+  Future<Roster> build() async => roster;
 }
 
 class _LoadingHealthEntriesNotifier extends HealthEntriesNotifier {
