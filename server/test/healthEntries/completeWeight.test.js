@@ -66,29 +66,36 @@ describe('POST /api/pets/:petId/care-rhythms/:entryId/occurrences/:occurrenceId/
   let occurrence;
   let entry;
   let txDepth;
-  let failPostCommitEstablishment;
+  let failEstablishmentInTransaction;
 
   beforeAll(() => {
     linkedWeight = null;
     occurrence = makeOccurrenceRow();
     entry = makeHealthEntryRow();
     txDepth = 0;
-    failPostCommitEstablishment = false;
+    failEstablishmentInTransaction = false;
 
     const mockPool = {
       query: async (sql, params) => {
-        if (sql === 'BEGIN' || sql === 'COMMIT' || sql === 'ROLLBACK') {
-          if (sql === 'BEGIN') txDepth += 1;
-          if (sql === 'COMMIT' || sql === 'ROLLBACK') txDepth = Math.max(0, txDepth - 1);
-          return { rows: [] };
+        if (sql === 'BEGIN') {
+          txDepth += 1;
+          return { command: 'BEGIN', rows: [] };
+        }
+        if (sql === 'COMMIT') {
+          txDepth = Math.max(0, txDepth - 1);
+          return { command: 'COMMIT', rows: [] };
+        }
+        if (sql === 'ROLLBACK') {
+          txDepth = Math.max(0, txDepth - 1);
+          return { command: 'ROLLBACK', rows: [] };
         }
 
         if (
-          failPostCommitEstablishment
-          && txDepth === 0
-          && sql.includes('care_establishments')
+          failEstablishmentInTransaction
+          && txDepth > 0
+          && sql.includes('INSERT INTO weight_entries')
         ) {
-          throw new Error('characterization: post-commit establishment failure');
+          throw new Error('characterization: in-transaction weight insert failure');
         }
 
         const access = handlePetAccessQuery(sql, params, {
@@ -242,7 +249,7 @@ describe('POST /api/pets/:petId/care-rhythms/:entryId/occurrences/:occurrenceId/
     occurrence = makeOccurrenceRow();
     entry = makeHealthEntryRow();
     txDepth = 0;
-    failPostCommitEstablishment = false;
+    failEstablishmentInTransaction = false;
   });
 
   const path = `/api/pets/${petId}/care-rhythms/${entryId}/occurrences/${occurrenceId}/complete-weight`;
@@ -259,17 +266,15 @@ describe('POST /api/pets/:petId/care-rhythms/:entryId/occurrences/:occurrenceId/
     expect(res.statusCode).toBe(401);
   });
 
-  it('returns 201 with committed result when post-commit establishment fails (A02 fixed)', async () => {
-    failPostCommitEstablishment = true;
+  it('returns 500 and rolls back when weight insert fails in the transaction (D12)', async () => {
+    failEstablishmentInTransaction = true;
     const res = await request(app)
       .post(path)
       .set('Authorization', `Bearer ${token}`)
       .send(payload);
-    expect(res.statusCode).toBe(201);
-    expect(res.body.weight_entry.health_occurrence_id).toBe(occurrenceId);
-    expect(res.body.occurrence.status).toBe('completed');
-    expect(occurrence.status).toBe('completed');
-    expect(linkedWeight).not.toBeNull();
+    expect(res.statusCode).toBe(500);
+    expect(occurrence.status).toBe('pending');
+    expect(linkedWeight).toBeNull();
   });
 
   it('creates linked weight and completes occurrence atomically', async () => {

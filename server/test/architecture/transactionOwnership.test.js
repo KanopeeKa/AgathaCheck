@@ -11,14 +11,6 @@ function normalizeRelPath(relativePath) {
   return relativePath.replace(/^server\//, '').replace(/\\/g, '/');
 }
 
-/** Phase 4 — replay-safe commands (removed in E.4-10). */
-const PHASE4_TEMPORARY_ALLOWLIST = new Set([
-  'services/sharing/shareInviteService.js',
-  'services/sharing/shareLinkService.js',
-  'routes/healthEntries/completeWeightRouter.js',
-  'routes/weightEntries.js',
-]);
-
 /** PEOPLE server s3 — remove when people-server-7f3b lands. */
 const PEOPLE_TEMPORARY_ALLOWLIST = new Set([
   'routes/pets/peopleRelationshipsRouter.js',
@@ -37,7 +29,6 @@ const ALWAYS_ALLOWED = new Set([
   'lib/db/withTransaction.js',
   'lib/fosterInvite.js',
   'lib/orgPermissions.js',
-  ...PHASE4_TEMPORARY_ALLOWLIST,
   ...PEOPLE_TEMPORARY_ALLOWLIST,
   ...CARE_OCCURRENCE_TRANSACTION_DEFERRED,
 ]);

@@ -16,7 +16,9 @@ import {
   loadShareLinkForAccept,
   updatePetAccessHidden,
 } from '../../db/sharing/shareLinkQueries.js';
+import { withTransaction } from '../../lib/db/withTransaction.js';
 import { createNotification, userDisplayName } from '../../lib/notificationHelper.js';
+import { ShareCommandResult } from './shareCommandResult.js';
 import {
   isShareLinkExpired,
   normalizeShareExpiryDays,
@@ -116,88 +118,80 @@ export async function getPreview(pool, code) {
 }
 
 export async function acceptLink(pool, { userId, code }) {
-  const client = await pool.connect();
   try {
-    await client.query('BEGIN');
+    return await withTransaction(pool, async (client) => {
+      const link = await loadShareLinkForAccept(client, code);
+      if (!link) {
+        throw new ShareCommandResult({ error: 'Share link not found or expired', status: 404 });
+      }
+      const blocked = shareLinkBlockedResponse(link);
+      if (blocked) {
+        throw new ShareCommandResult(blocked);
+      }
+      if (link.owner_id === userId) {
+        throw new ShareCommandResult({ error: 'You already own this pet', status: 400 });
+      }
 
-    const link = await loadShareLinkForAccept(client, code);
-    if (!link) {
-      await client.query('ROLLBACK');
-      return { error: 'Share link not found or expired', status: 404 };
-    }
-    const blocked = shareLinkBlockedResponse(link);
-    if (blocked) {
-      await client.query('ROLLBACK');
-      return blocked;
-    }
-    if (link.owner_id === userId) {
-      await client.query('ROLLBACK');
-      return { error: 'You already own this pet', status: 400 };
-    }
-
-    const existingRole = await findPetAccessRole(client, link.pet_id, userId);
-    if (existingRole) {
-      await client.query('COMMIT');
-      return {
-        pet_id: link.pet_id,
-        access_role: PET_ACCESS_ROLES.includes(existingRole) ? existingRole : existingRole,
-        status: existingRole,
-      };
-    }
-
-    if (link.status === 'active') {
-      if (link.claimed_by === userId) {
-        await client.query('COMMIT');
-        const grantedRole = link.access_role || CARER_ROLE;
+      const existingRole = await findPetAccessRole(client, link.pet_id, userId);
+      if (existingRole) {
         return {
           pet_id: link.pet_id,
-          access_role: grantedRole,
-          status: grantedRole,
+          access_role: PET_ACCESS_ROLES.includes(existingRole) ? existingRole : existingRole,
+          status: existingRole,
         };
       }
-      await client.query('ROLLBACK');
-      return { error: 'This share link has already been used', status: 410 };
-    }
 
-    const accessId = uuidv4();
-    const grantedRole = link.access_role || CARER_ROLE;
-    await insertPetAccessFromLink(client, {
-      id: accessId,
-      petId: link.pet_id,
-      userId,
-      role: grantedRole,
-      invitedBy: link.created_by,
-      shareLinkId: link.id,
+      if (link.status === 'active') {
+        if (link.claimed_by === userId) {
+          const grantedRole = link.access_role || CARER_ROLE;
+          return {
+            pet_id: link.pet_id,
+            access_role: grantedRole,
+            status: grantedRole,
+          };
+        }
+        throw new ShareCommandResult({ error: 'This share link has already been used', status: 410 });
+      }
+
+      const accessId = uuidv4();
+      const grantedRole = link.access_role || CARER_ROLE;
+      await insertPetAccessFromLink(client, {
+        id: accessId,
+        petId: link.pet_id,
+        userId,
+        role: grantedRole,
+        invitedBy: link.created_by,
+        shareLinkId: link.id,
+      });
+
+      await activateShareLink(client, link.id, userId);
+
+      const accepter = await findAccepterUser(client, userId);
+      const accepterName = userDisplayName(accepter);
+
+      await createNotification(client, {
+        userId: link.owner_id,
+        petId: link.pet_id,
+        petName: link.pet_name,
+        title: 'Share accepted',
+        message: `${accepterName} is now following ${link.pet_name}. You can remove them at any time from the Sharing section.`,
+        type: 'general',
+      });
+
+      return {
+        pet_id: link.pet_id,
+        access_role: grantedRole,
+        status: grantedRole,
+      };
     });
-
-    await activateShareLink(client, link.id, userId);
-
-    const accepter = await findAccepterUser(client, userId);
-    const accepterName = userDisplayName(accepter);
-
-    await createNotification(client, {
-      userId: link.owner_id,
-      petId: link.pet_id,
-      petName: link.pet_name,
-      title: 'Share accepted',
-      message: `${accepterName} is now following ${link.pet_name}. You can remove them at any time from the Sharing section.`,
-      type: 'general',
-    });
-
-    await client.query('COMMIT');
-    return {
-      pet_id: link.pet_id,
-      access_role: grantedRole,
-      status: grantedRole,
-    };
   } catch (err) {
-    await client.query('ROLLBACK');
+    if (err instanceof ShareCommandResult) {
+      return err.payload;
+    }
     if (err.code === '23505') {
       return { error: 'You already have access to this pet', status: 409 };
     }
     throw err;
-  } finally {
-    client.release();
   }
 }
 

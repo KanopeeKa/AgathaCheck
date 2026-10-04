@@ -160,6 +160,8 @@ export async function completeWeightOccurrence(pool, {
           ],
         );
         weightRow = weightResult.rows[0];
+        await refreshPetWeightCache(db, petId);
+        await maybePersistWeightEstablishment(db, { petId, healthEntryId: entryId });
       },
     }, (ctx) => completeOccurrenceCommand(ctx, {
       occurrenceId,
@@ -241,8 +243,7 @@ function runPostCommitWeightCompletionSideEffects(pool, {
   userId,
   req,
 }) {
-  Promise.resolve()
-    .then(() => refreshPetWeightCache(pool, petId))
+  void Promise.resolve()
     .then(() => {
       logAuditEventSafe(pool, {
         actorUserId: userId,
@@ -256,16 +257,22 @@ function runPostCommitWeightCompletionSideEffects(pool, {
         },
         req,
       });
-      recordPetActivityForPet(pool, {
+      return recordPetActivityForPet(pool, {
         petId,
         actorUserId: userId,
         eventType: 'health_log',
         metadata: { action: 'complete_weight_occurrence', entry_type: entry.type },
       });
-      return maybePersistWeightEstablishment(pool, { petId, healthEntryId: entryId });
     })
-    .catch(() => {
-      // Best-effort after commit — response already reflects committed state.
+    .catch((err) => {
+      console.warn('weight completion post-commit side effect failed', {
+        action: 'complete_weight_occurrence',
+        petId,
+        entryId,
+        occurrenceId,
+        weightId,
+        userId,
+      }, err);
     });
 }
 

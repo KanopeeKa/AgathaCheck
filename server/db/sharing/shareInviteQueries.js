@@ -17,8 +17,13 @@ export async function findInviterEmail(db, userId) {
 }
 
 export async function findPendingInviteForPetAndEmail(db, petId, email) {
+  const row = await findPendingInviteDetailsForPetAndEmail(db, petId, email);
+  return row ? { id: row.id } : null;
+}
+
+export async function findPendingInviteDetailsForPetAndEmail(db, petId, email) {
   const result = await db.query(
-    `SELECT psi.id
+    `SELECT psi.id, psi.inviter_user_id, psi.role, psi.code
      FROM pet_share_invites psi
      INNER JOIN pet_share_invite_pets psip ON psip.invite_id = psi.id
      WHERE psip.pet_id = $1
@@ -29,6 +34,14 @@ export async function findPendingInviteForPetAndEmail(db, petId, email) {
     [petId, email],
   );
   return result.rows[0] || null;
+}
+
+export async function loadInvitePetIds(db, inviteId) {
+  const result = await db.query(
+    'SELECT pet_id FROM pet_share_invite_pets WHERE invite_id = $1 ORDER BY pet_id',
+    [inviteId],
+  );
+  return result.rows.map((row) => row.pet_id);
 }
 
 export async function findExistingAccessForEmail(db, petId, email, userId = null) {
