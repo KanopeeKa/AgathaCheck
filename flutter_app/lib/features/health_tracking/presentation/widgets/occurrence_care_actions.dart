@@ -8,7 +8,6 @@ import '../../domain/occurrence_scheduling.dart';
 import '../providers/health_providers.dart';
 import '../providers/occurrence_providers.dart';
 import 'health_issue_prompt/health_issue_linkage_flow.dart';
-import 'mark_complete_sheet.dart';
 import 'occurrence_completion_date_flow.dart';
 import 'occurrence_completion_feedback.dart';
 import 'occurrence_stack_sheet.dart';
@@ -32,9 +31,7 @@ class OccurrenceCareActions {
     try {
       occurrences = await ref.read(entryOccurrencesProvider(entry.id).future);
     } catch (_) {
-      final completedOn = await showMarkCompleteSheet(context);
-      if (completedOn == null || !context.mounted) return null;
-      return OccurrenceMarkDoneResult(completedOn: completedOn);
+      return null;
     }
 
     final now = DateTime.now();
@@ -72,12 +69,17 @@ class OccurrenceCareActions {
       );
     }
 
-    final completedOn = await showMarkCompleteSheet(context);
+    final head = summary.leadingOccurrence;
+    if (head == null) return null;
+    final completedOn = await resolveCompletedOnForOccurrence(context, head);
     if (completedOn == null || !context.mounted) return null;
-    return OccurrenceMarkDoneResult(completedOn: completedOn);
+    return OccurrenceMarkDoneResult(
+      completedOn: completedOn,
+      occurrenceId: head.id,
+    );
   }
 
-  /// Persists completion via occurrence API or legacy mark-taken.
+  /// Persists completion via the occurrence complete API.
   static Future<void> persistCompletion(
     WidgetRef ref,
     HealthEntry entry,
@@ -85,23 +87,20 @@ class OccurrenceCareActions {
     String? occurrenceId,
     bool skipEarlierMissed = false,
   }) async {
-    if (occurrenceId != null) {
-      await ref
-          .read(healthRepositoryProvider)
-          .completeOccurrence(
-            entry.id,
-            occurrenceId,
-            completedOn: completedOn,
-            skipEarlierMissed: skipEarlierMissed,
-          );
-      ref.invalidate(entryOccurrencesProvider(entry.id));
-      await ref.read(healthEntriesNotifierProvider.notifier).refresh();
-      return;
+    final id = occurrenceId;
+    if (id == null || id.isEmpty) {
+      throw StateError('occurrenceId is required to complete care');
     }
-
     await ref
-        .read(healthEntriesNotifierProvider.notifier)
-        .markTaken(entry.id, completedOn: completedOn);
+        .read(healthRepositoryProvider)
+        .completeOccurrence(
+          entry.id,
+          id,
+          completedOn: completedOn,
+          skipEarlierMissed: skipEarlierMissed,
+        );
+    ref.invalidate(entryOccurrencesProvider(entry.id));
+    await ref.read(healthEntriesNotifierProvider.notifier).refresh();
   }
 
   /// Skips every missed open occurrence for [entry].

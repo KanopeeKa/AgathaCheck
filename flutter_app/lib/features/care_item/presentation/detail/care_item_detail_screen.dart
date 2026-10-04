@@ -14,7 +14,7 @@ import '../../../health_tracking/presentation/widgets/pet_event_close_confirm_di
 import '../../../health_tracking/presentation/widgets/pet_event_view_providers.dart';
 import '../../../health_tracking/presentation/widgets/pet_event_lifecycle.dart';
 import '../../../health_tracking/presentation/widgets/pet_event_occurrence_actions.dart';
-import '../../../health_tracking/presentation/widgets/pet_event_view_body.dart' show showPetEventHistory;
+import '../widgets/care_item_history.dart';
 import 'care_item_detail_body.dart';
 import 'care_item_menu.dart';
 

@@ -48,14 +48,32 @@ Future<HealthEntryModel> pauseCareItemRemote({
   required String entryId,
 }) async {
   final response = await client.post(
-    Uri.parse('$baseUrl/api/health-entries/$entryId/pause'),
+    Uri.parse('$baseUrl/api/health-entries/$entryId/postpone'),
     headers: headers,
     body: json.encode({}),
   );
   checkResponse(response);
-  return HealthEntryModel.fromJson(
-    json.decode(response.body) as Map<String, dynamic>,
+  final decoded = json.decode(response.body) as Map<String, dynamic>;
+  final entry = decoded['entry'] as Map<String, dynamic>? ?? decoded;
+  return HealthEntryModel.fromJson(entry);
+}
+
+Future<HealthEntryModel> undoScheduleRemote({
+  required http.Client client,
+  required String baseUrl,
+  required Map<String, String> headers,
+  required void Function(http.Response response) checkResponse,
+  required String entryId,
+}) async {
+  final response = await client.post(
+    Uri.parse('$baseUrl/api/health-entries/$entryId/schedule/undo'),
+    headers: headers,
+    body: json.encode({}),
   );
+  checkResponse(response);
+  final decoded = json.decode(response.body) as Map<String, dynamic>;
+  final entry = decoded['entry'] as Map<String, dynamic>? ?? decoded;
+  return HealthEntryModel.fromJson(entry);
 }
 
 Future<HealthEntryModel> resumeCareItemRemote({

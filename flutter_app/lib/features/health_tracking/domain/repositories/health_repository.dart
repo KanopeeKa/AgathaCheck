@@ -1,7 +1,6 @@
 import '../entities/health_entry.dart';
 import '../entities/health_history_entry.dart';
 import '../entities/health_occurrence.dart';
-import '../entities/ensure_open_occurrence_result.dart';
 import '../entities/reschedule_occurrence_result.dart';
 
 /// Abstract repository for health tracking operations.
@@ -24,15 +23,6 @@ abstract class HealthRepository {
   /// Deletes a health entry by [id].
   Future<void> deleteEntry(String id);
 
-  /// Marks a health entry as taken and advances the next due date.
-  Future<HealthEntry> markTaken(
-    String id, {
-    String notes = '',
-    DateTime? completedOn,
-  });
-
-  Future<HealthEntry> undoComplete(String id);
-
   /// Closes an event series (status completed, repeat end yesterday).
   Future<HealthEntry> closeEvent(String id);
 
@@ -43,7 +33,7 @@ abstract class HealthRepository {
 
   Future<HealthEntry> resumeCareItem(String id);
 
-  /// Unmarks the last completed occurrence (alias for undoComplete).
+  /// Undoes the last schedule command on the entry.
   Future<HealthEntry> unmarkDone(String id);
 
   /// Retrieves the history of administrations for a health entry.
@@ -86,12 +76,6 @@ abstract class HealthRepository {
     String entryId,
     String occurrenceId,
     DateTime scheduledDate, {
-    String? reasonCode,
-  });
-
-  Future<EnsureOpenOccurrenceResult> ensureOpenOccurrence(
-    String entryId, {
-    DateTime? scheduledDate,
     String? reasonCode,
   });
 
