@@ -57,7 +57,13 @@ class _FakeCareIntelligenceRepository implements CareIntelligenceRepository {
   }
 }
 
-CareRecommendation get _recommendation => CareRecommendation(
+CareRecommendation get _recommendation =>
+    _recommendationWith(frequency: 'monthly');
+
+CareRecommendation _recommendationWith({
+  required String frequency,
+  int interval = 1,
+}) => CareRecommendation(
   id: 'rec-1',
   petId: 'pet-1',
   careFamily: CareFamily.weightMonitoring,
@@ -66,8 +72,8 @@ CareRecommendation get _recommendation => CareRecommendation(
   engineVersion: '1.0.0',
   knowledgeVersion: '1.0.0',
   suggestedName: 'Weight check',
-  suggestedFrequency: 'monthly',
-  suggestedFrequencyInterval: 1,
+  suggestedFrequency: frequency,
+  suggestedFrequencyInterval: interval,
   rationaleKey: 'careSuggestionWeightMonitoringWhy',
 );
 
@@ -136,7 +142,7 @@ void main() {
     await tester.pump(const Duration(milliseconds: 100));
     await tester.pumpAndSettle();
 
-    expect(find.text('Weight check rhythm added'), findsOneWidget);
+    expect(find.text('Weight check routine added'), findsOneWidget);
   });
 
   testWidgets('accept shows error snackbar when respond fails', (tester) async {
@@ -219,7 +225,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
-      find.text("You can view this pet's care but cannot add rhythms."),
+      find.text("You can view this pet's care but cannot add routines."),
       findsOneWidget,
     );
   });
@@ -246,13 +252,13 @@ void main() {
       );
       expect(
         groupSemantics.getSemanticsData().label,
-        'Suggested by Agatha\nWeight check\nEvery 1 monthly',
+        'Suggested by Agatha\nWeight check\nEvery month',
       );
 
       final acceptSemantics = tester.getSemantics(
         find.byKey(const Key('care_suggestion_accept_rec-1')),
       );
-      expect(acceptSemantics.getSemanticsData().label, 'Add rhythm');
+      expect(acceptSemantics.getSemanticsData().label, 'Add routine');
       expect(
         acceptSemantics.getSemanticsData().hasAction(SemanticsAction.tap),
         isTrue,
@@ -268,4 +274,124 @@ void main() {
       );
     },
   );
+
+  testWidgets('shows an identity row when the host supplies an avatar', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        viewerContext: _viewerContext(canEditHealth: true),
+        repository: _FakeCareIntelligenceRepository(),
+        child: CareSuggestionCard(
+          petId: 'pet-1',
+          recommendation: _recommendation,
+          petName: 'Luna',
+          petAvatar: SizedBox(key: Key('pet_avatar'), width: 32, height: 32),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Luna'), findsOneWidget);
+    expect(find.byKey(const Key('pet_avatar')), findsOneWidget);
+  });
+
+  testWidgets('omits the identity row without an avatar', (tester) async {
+    await tester.pumpWidget(
+      _wrap(
+        viewerContext: _viewerContext(canEditHealth: true),
+        repository: _FakeCareIntelligenceRepository(),
+        child: CareSuggestionCard(
+          petId: 'pet-1',
+          recommendation: _recommendation,
+          petName: 'Luna',
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Luna'), findsNothing);
+  });
+
+  testWidgets('cadence line is localized and pluralized', (tester) async {
+    await tester.pumpWidget(
+      _wrap(
+        viewerContext: _viewerContext(canEditHealth: true),
+        repository: _FakeCareIntelligenceRepository(),
+        child: CareSuggestionCard(
+          petId: 'pet-1',
+          recommendation: _recommendationWith(frequency: 'weekly', interval: 3),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Every 3 weeks'), findsOneWidget);
+  });
+
+  testWidgets('cadence line is omitted for an unknown frequency', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        viewerContext: _viewerContext(canEditHealth: true),
+        repository: _FakeCareIntelligenceRepository(),
+        child: CareSuggestionCard(
+          petId: 'pet-1',
+          recommendation: _recommendationWith(frequency: 'fortnightly'),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('fortnightly'), findsNothing);
+    expect(find.text('Weight check'), findsOneWidget);
+  });
+
+  testWidgets('why sheet names the pet, routine, and cadence', (tester) async {
+    await tester.pumpWidget(
+      _wrap(
+        viewerContext: _viewerContext(canEditHealth: true),
+        repository: _FakeCareIntelligenceRepository(),
+        child: CareSuggestionCard(
+          petId: 'pet-1',
+          recommendation: _recommendation,
+          petName: 'Luna',
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Why?'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('For Luna'), findsOneWidget);
+    expect(find.text('Weight check · Every month'), findsOneWidget);
+    expect(
+      find.textContaining('Monthly weigh-ins build a simple record'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('why sheet omits the pet line when the pet is unknown', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        viewerContext: _viewerContext(canEditHealth: true),
+        repository: _FakeCareIntelligenceRepository(),
+        child: CareSuggestionCard(
+          petId: 'pet-1',
+          recommendation: _recommendation,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Why?'));
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('For '), findsNothing);
+    expect(find.text('Weight check · Every month'), findsOneWidget);
+  });
 }

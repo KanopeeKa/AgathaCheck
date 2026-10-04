@@ -857,11 +857,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careSuggestionTitle => 'Suggested by Agatha';
 
   @override
-  String get careSuggestionAccept => 'Add rhythm';
+  String get careSuggestionAccept => 'Add routine';
 
   @override
   String careSuggestionRhythmAdded(String name) {
-    return '$name rhythm added';
+    return '$name routine added';
   }
 
   @override
@@ -873,7 +873,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careSuggestionEditForbidden =>
-      'You can view this pet\'s care but cannot add rhythms.';
+      'You can view this pet\'s care but cannot add routines.';
 
   @override
   String get careSuggestionDismiss => 'Dismiss';
@@ -889,23 +889,72 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careSuggestionGenericWhy =>
-      'This recurring rhythm can help you stay organised between vet visits.';
+      'This recurring routine puts steady care on your calendar so important tasks are less likely to slip when life gets busy.';
 
   @override
   String get careSuggestionWeightMonitoringWhy =>
-      'Regular weight checks help you notice gradual changes early.';
+      'Monthly weigh-ins build a simple record, making gradual weight changes easier to notice between vet visits.';
 
   @override
   String get careSuggestionDentalWhy =>
-      'A steady dental review rhythm keeps mouth care on your calendar.';
+      'An annual dental review gives you a set moment to check teeth and gums and note anything worth mentioning to your vet.';
 
   @override
   String get careSuggestionWellnessWhy =>
-      'A yearly wellness review gives you a calm checkpoint for routine care.';
+      'A yearly wellness review is a calm checkpoint to confirm vaccines, parasite prevention, and day-to-day health still match your pet\'s needs.';
 
   @override
-  String careSuggestionCadenceSummary(int interval, String frequency) {
-    return 'Every $interval $frequency';
+  String careSuggestionCadenceDaily(int interval) {
+    String _temp0 = intl.Intl.pluralLogic(
+      interval,
+      locale: localeName,
+      other: 'Every $interval days',
+      one: 'Every day',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String careSuggestionCadenceWeekly(int interval) {
+    String _temp0 = intl.Intl.pluralLogic(
+      interval,
+      locale: localeName,
+      other: 'Every $interval weeks',
+      one: 'Every week',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String careSuggestionCadenceMonthly(int interval) {
+    String _temp0 = intl.Intl.pluralLogic(
+      interval,
+      locale: localeName,
+      other: 'Every $interval months',
+      one: 'Every month',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String careSuggestionCadenceYearly(int interval) {
+    String _temp0 = intl.Intl.pluralLogic(
+      interval,
+      locale: localeName,
+      other: 'Every $interval years',
+      one: 'Every year',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String careSuggestionWhyForPet(String petName) {
+    return 'For $petName';
+  }
+
+  @override
+  String careSuggestionWhyRoutineSummary(String routine, String cadence) {
+    return '$routine · $cadence';
   }
 
   @override

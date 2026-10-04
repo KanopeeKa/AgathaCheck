@@ -33,6 +33,7 @@ class PetProfileCareSuggestionSection extends ConsumerWidget {
           return CareSuggestionCard(
             petId: petId,
             recommendation: recommendation,
+            petName: petName,
           );
         }
 
