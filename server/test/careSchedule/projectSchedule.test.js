@@ -7,6 +7,7 @@ import {
   PROJECTION_STATUS_PARTIALLY_INDETERMINATE,
   UNCERTAINTY_REASON_FROM_COMPLETION_CHAIN,
   UNCERTAINTY_REASON_FROM_COMPLETION_PENDING,
+  expandItemForWindow,
   isDateInCareWindow,
   projectEntryForPeriod,
   projectSchedule,
@@ -233,6 +234,17 @@ describe('projectSchedule', () => {
       expect(items).toHaveLength(1);
       expect(uncertainties).toHaveLength(0);
       expect(items[0].certainty).toBe(CERTAINTY_COMPLETE);
+    });
+
+    it('expandItemForWindow matches projectEntryForPeriod', () => {
+      const row = entry({
+        frequency: 'monthly',
+        recurrence_anchor: 'from_due_date',
+        next_due_date: '2026-08-14',
+      });
+      const occs = [];
+      const args = [row, occs, '2026-08-12', '2026-08-19', '2026-08-01'];
+      expect(expandItemForWindow(...args)).toEqual(projectEntryForPeriod(...args));
     });
 
     it('materialises once-frequency open occurrence before the absence window', () => {

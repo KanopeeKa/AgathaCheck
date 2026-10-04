@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "plan_id": "care-next-occurrence-c1a7",
+  "plan_kind": "roadmap",
+  "programme_ref": "docs/agent-efficiency/parallel-programmes.md",
+  "approved_at": "2026-10-04T10:45:00Z",
+  "approved_by": "user chat 2026-10-04 — /execute-plan resume; agreement on all phases E and F",
+  "approved_until": "2026-10-06T10:45:00Z",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "claude/eager-edison-mf34j6",
+  "control_issue": 1482,
+  "artifact_branch_policy": "phase-branch",
+  "current_child_plan_id": "care-absence-real-occurrences-c1a7",
+  "child_plans": [
+    {
+      "plan_id": "care-occurrence-spec-c1a7",
+      "status": "merged",
+      "pr_url": null,
+      "merge_commit": null
+    },
+    {
+      "plan_id": "care-occurrence-engine-c1a7",
+      "status": "merged",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1448",
+      "merge_commit": "a3afd15"
+    },
+    {
+      "plan_id": "care-agenda-c1a7",
+      "status": "merged",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1475",
+      "merge_commit": "ba625ff7"
+    },
+    {
+      "plan_id": "care-item-form-c1a7",
+      "status": "merged",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1475",
+      "merge_commit": "ba625ff7"
+    },
+    {
+      "plan_id": "care-absence-real-occurrences-c1a7",
+      "status": "in_progress",
+      "pr_url": null,
+      "merge_commit": null
+    },
+    {
+      "plan_id": "care-item-module-c1a7",
+      "status": "pending",
+      "pr_url": null,
+      "merge_commit": null
+    }
+  ],
+  "phases": [
+    {
+      "id": "orchestrate",
+      "title": "Roadmap E+F landing 5b",
+      "branch": "cursor/care-ef-integration-sync-50b4",
+      "allowed_paths": [
+        ".agents/plans/care-next-occurrence-c1a7.*",
+        ".agents/plans/care-absence-real-occurrences-c1a7.*",
+        ".agents/plans/care-item-module-c1a7.*"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": "Child E active",
+      "debt_issue_refs": []
+    }
+  ],
+  "content_hash": "sha256:585e9661bb30b5c60c21176721ed501abde84ff18c37df6fd1417c6434c618c1"
+}

@@ -1,0 +1,175 @@
+{
+  "schema_version": 1,
+  "plan_id": "care-absence-real-occurrences-c1a7",
+  "approved_at": "2026-10-04T10:45:00Z",
+  "approved_by": "user chat 2026-10-04 — /execute-plan resume with agreement on all phases E and F (standing grant on care-next-occurrence-c1a7 landing 5b)",
+  "approved_until": "2026-10-06T10:45:00Z",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "claude/eager-edison-mf34j6",
+  "control_issue": 1480,
+  "artifact_branch_policy": "phase-branch",
+  "programme_ref": ".agents/plans/care-next-occurrence-c1a7.md",
+  "phases": [
+    {
+      "id": "E1",
+      "title": "expandItemForWindow",
+      "branch": "cursor/care-e1-expand-item-50b4",
+      "allowed_paths": [
+        ".agents/plans/care-absence-real-occurrences-c1a7.*",
+        ".agents/plans/care-next-occurrence-c1a7.md",
+        "server/lib/care/schedule/**",
+        "server/lib/care/planner/**",
+        "server/test/careSchedule/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "E2",
+      "title": "Projection stack on real occurrences",
+      "branch": "cursor/care-e2-projection-50b4",
+      "allowed_paths": [
+        ".agents/plans/care-absence-real-occurrences-c1a7.*",
+        "server/lib/care/**",
+        "server/routes/careContext/**",
+        "server/test/careSchedule/**",
+        "server/test/careContext/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "E3",
+      "title": "Postpone + review date + trip context",
+      "branch": "cursor/care-e3-postpone-50b4",
+      "allowed_paths": [
+        ".agents/plans/care-absence-real-occurrences-c1a7.*",
+        "server/lib/care/**",
+        "server/routes/healthEntries/**",
+        "server/test/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "E4",
+      "title": "buildAbsenceCareView",
+      "branch": "cursor/care-e4-absence-view-50b4",
+      "allowed_paths": [
+        ".agents/plans/care-absence-real-occurrences-c1a7.*",
+        "server/lib/care/**",
+        "server/routes/careContext/**",
+        "server/test/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "E5",
+      "title": "Flutter away rows + occurrence ids",
+      "branch": "cursor/care-e5-away-flutter-50b4",
+      "allowed_paths": [
+        ".agents/plans/care-absence-real-occurrences-c1a7.*",
+        "flutter_app/lib/features/pet_care/context/**",
+        "flutter_app/lib/features/care_item/**",
+        "flutter_app/test/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "E6",
+      "title": "Corpus + absence E2E",
+      "branch": "cursor/care-e6-absence-e2e-50b4",
+      "allowed_paths": [
+        ".agents/plans/care-absence-real-occurrences-c1a7.*",
+        "e2e/**",
+        "flutter_app/test/bdd/**",
+        "server/test/careContext/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    }
+  ],
+  "content_hash": "sha256:b66635b135aefff0b62ad67bf421b09e87e014daa48cb9038587078813b2b533"
+}
