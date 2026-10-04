@@ -11,8 +11,6 @@
  * Scenario: Unified event edit route redirects legacy paths
  * Scenario: Undoing a completed entry
  * Scenario: Filtering entries by type using tabs
- * Scenario: Due events appear on the pet list screen
- * Scenario: No due events shows all caught up
  * Scenario: Exporting health entries as CSV
  * Scenario: Multi-dose daily medication records one date from the agenda
  * Scenario: Care recorded late keeps the next date
@@ -285,38 +283,6 @@ test.describe('Health tracking', () => {
     await dashboard.expectLoaded();
     // Guardian /pc/events is a due-events inbox (no type tabs); due medication rows surface directly.
     await dashboard.expectEntryVisible('Heartworm');
-  });
-
-  // ── Wave C: Pet list due events ───────────────────────────────────────────
-
-  test('due events section appears on pet list when an entry is due or overdue', async ({ page, testUser }) => {
-    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
-    const today = new Date().toISOString().slice(0, 10);
-    const { entry } = await seedPetWithDueHealthEntry(baseURL, testUser, {
-      petName: 'Bella',
-      entryName: 'Flea Prevention',
-      dueDate: today,
-    });
-
-    const apiEntries = await getHealthEntries(baseURL, testUser.accessToken);
-    expect(apiEntries.some((row) => row.name === entry.name)).toBe(true);
-
-    await loginAs(page, testUser, { experience: 'guardian' });
-    const petList = new PetListPage(page);
-    await petList.expectLoaded();
-    await petList.expectPetVisible('Bella');
-
-    await petList.refreshByRemount({ experience: 'guardian' });
-    await petList.expectDueEntryOnHome(entry.name);
-  });
-
-  test('pet list shows "You\'re all caught up" when no entries are due', async ({ page, testUser }) => {
-    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
-    await createPet(baseURL, testUser.accessToken, 'Bella');
-
-    await loginAs(page, testUser);
-    const petList = new PetListPage(page);
-    await petList.expectNoDueEventsOnHome();
   });
 
   // ── Wave C: CSV export ────────────────────────────────────────────────────

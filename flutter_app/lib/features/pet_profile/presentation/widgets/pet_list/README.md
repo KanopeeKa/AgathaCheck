@@ -6,7 +6,6 @@ size target (~300 lines). Each file owns one list-dashboard section.
 | Widget | File |
 |--------|------|
 | `PetListSectionHeader` | `pet_list_section_header.dart` |
-| `DueEventsSection` | `due_events_section.dart` |
 | `PendingSharesSection` / `PendingShareCard` | `pending_shares_section.dart` |
 | `PendingFosterPlacementsSection` | `pending_foster_placements_section.dart` |
 | `PendingAdoptionPlacementsSection` | `pending_adoption_placements_section.dart` |

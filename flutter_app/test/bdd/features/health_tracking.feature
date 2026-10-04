@@ -183,21 +183,6 @@ Feature: Health Tracking
     When the user creates a health entry "Pain Medication" linked to "Arthritis"
     Then "Pain Medication" should display the health issue name "Arthritis"
 
-  # ── Due Events on Pet List ──────────────────────────────────
-
-  @P1
-  Scenario: Due events appear on the pet list screen
-    Given "Bella" has a health entry due today
-    When the user views the pet list
-    Then a "Due and Overdue" section should be visible
-    And the due entry for "Bella" should be listed
-
-  @P1
-  Scenario: No due events shows all caught up
-    Given no health entries are due or overdue
-    When the user views the pet list
-    Then a "You're all caught up" message should appear
-
   # ── CSV Export ───────────────────────────────────────────────
 
   @P2
