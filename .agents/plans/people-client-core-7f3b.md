@@ -607,13 +607,13 @@ autonomy: active
 current_phase: c2-components
 last_completed_phase: c1-flutter-core
 halt_reason: null
-next_action: "start phase c2-components: checkout cursor/people-client-c2-components-7f3b"
+next_action: "continue phase c2-components on branch cursor/people-client-c2-components-7f3b"
 artifact_ref:
   branch: cursor/people-client-core-integration-7f3b
   plan_path: .agents/plans/people-client-core-7f3b.md
-  plan_commit: d520eabc72a7c69d14dab5db49dcdc51c204ce2f
+  plan_commit: 38f53e88d3908d3d7e99a3ff8b2a68b31e3cda63
   snapshot_path: .agents/plans/people-client-core-7f3b.snapshot.json
-  snapshot_commit: d520eabc72a7c69d14dab5db49dcdc51c204ce2f
+  snapshot_commit: 38f53e88d3908d3d7e99a3ff8b2a68b31e3cda63
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
