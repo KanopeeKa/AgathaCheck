@@ -4,10 +4,7 @@
 /// [refreshFailed] is true when reconciliation refresh failed after commit;
 /// callers should treat the command as saved and surface a non-blocking refresh hint.
 class CommandOutcome {
-  const CommandOutcome({
-    required this.committed,
-    this.refreshFailed = false,
-  });
+  const CommandOutcome({required this.committed, this.refreshFailed = false});
 
   final bool committed;
   final bool refreshFailed;

@@ -26,10 +26,7 @@ class _StaleResurrectRepository implements HealthRepository {
     _getEntriesCallCount++;
     if (_getEntriesCallCount == 2) {
       await _staleGate.future;
-      return [
-        testHealthEntry('keep'),
-        testHealthEntry('deleted'),
-      ];
+      return [testHealthEntry('keep'), testHealthEntry('deleted')];
     }
     return List<HealthEntry>.from(entries);
   }

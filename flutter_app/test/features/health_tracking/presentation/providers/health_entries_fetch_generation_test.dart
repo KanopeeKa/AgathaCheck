@@ -17,10 +17,7 @@ class _OutOfOrderFetchRepository implements HealthRepository {
   var _index = 0;
 
   @override
-  Future<List<HealthEntry>> getEntries({
-    String? petId,
-    HealthEntryType? type,
-  }) {
+  Future<List<HealthEntry>> getEntries({String? petId, HealthEntryType? type}) {
     final handler = _handlers[_index.clamp(0, _handlers.length - 1)];
     _index++;
     return handler();
@@ -31,40 +28,43 @@ class _OutOfOrderFetchRepository implements HealthRepository {
 }
 
 void main() {
-  test('overlapping fetches drop superseded generations (newest wins)', () async {
-    final slowCompleter = Completer<List<HealthEntry>>();
-    final repository = _OutOfOrderFetchRepository([
-      () async => [testHealthEntry('initial')],
-      () => slowCompleter.future,
-      () async => [testHealthEntry('newest')],
-    ]);
+  test(
+    'overlapping fetches drop superseded generations (newest wins)',
+    () async {
+      final slowCompleter = Completer<List<HealthEntry>>();
+      final repository = _OutOfOrderFetchRepository([
+        () async => [testHealthEntry('initial')],
+        () => slowCompleter.future,
+        () async => [testHealthEntry('newest')],
+      ]);
 
-    final container = ProviderContainer(
-      overrides: [
-        authProvider.overrideWith((ref) => FakeAuthNotifier()),
-        healthRepositoryProvider.overrideWithValue(repository),
-      ],
-    );
-    addTearDown(container.dispose);
+      final container = ProviderContainer(
+        overrides: [
+          authProvider.overrideWith((ref) => FakeAuthNotifier()),
+          healthRepositoryProvider.overrideWithValue(repository),
+        ],
+      );
+      addTearDown(container.dispose);
 
-    await container.read(healthEntriesNotifierProvider.future);
+      await container.read(healthEntriesNotifierProvider.future);
 
-    final notifier = container.read(healthEntriesNotifierProvider.notifier);
-    final slowRefresh = notifier.refresh();
-    final fastRefresh = notifier.refresh();
+      final notifier = container.read(healthEntriesNotifierProvider.notifier);
+      final slowRefresh = notifier.refresh();
+      final fastRefresh = notifier.refresh();
 
-    await fastRefresh;
-    expect(
-      container.read(healthEntriesNotifierProvider).value!.single.id,
-      'newest',
-    );
+      await fastRefresh;
+      expect(
+        container.read(healthEntriesNotifierProvider).value!.single.id,
+        'newest',
+      );
 
-    slowCompleter.complete([testHealthEntry('stale')]);
-    await slowRefresh;
+      slowCompleter.complete([testHealthEntry('stale')]);
+      await slowRefresh;
 
-    expect(
-      container.read(healthEntriesNotifierProvider).value!.single.id,
-      'newest',
-    );
-  });
+      expect(
+        container.read(healthEntriesNotifierProvider).value!.single.id,
+        'newest',
+      );
+    },
+  );
 }

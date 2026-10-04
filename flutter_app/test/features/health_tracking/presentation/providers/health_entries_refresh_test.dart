@@ -75,27 +75,30 @@ void main() {
     },
   );
 
-  test('refresh keeps previous entries on failure (AsyncError copyWithPrevious)', () async {
-    final repository = _SequenceHealthRepository([
-      [_entry('a')],
-    ]);
-    final container = ProviderContainer(
-      overrides: [
-        authProvider.overrideWith((ref) => FakeAuthNotifier()),
-        healthRepositoryProvider.overrideWithValue(repository),
-      ],
-    );
-    addTearDown(container.dispose);
+  test(
+    'refresh keeps previous entries on failure (AsyncError copyWithPrevious)',
+    () async {
+      final repository = _SequenceHealthRepository([
+        [_entry('a')],
+      ]);
+      final container = ProviderContainer(
+        overrides: [
+          authProvider.overrideWith((ref) => FakeAuthNotifier()),
+          healthRepositoryProvider.overrideWithValue(repository),
+        ],
+      );
+      addTearDown(container.dispose);
 
-    await container.read(healthEntriesNotifierProvider.future);
+      await container.read(healthEntriesNotifierProvider.future);
 
-    repository.getEntriesThrows = true;
-    final notifier = container.read(healthEntriesNotifierProvider.notifier);
-    await notifier.refresh();
+      repository.getEntriesThrows = true;
+      final notifier = container.read(healthEntriesNotifierProvider.notifier);
+      await notifier.refresh();
 
-    final after = container.read(healthEntriesNotifierProvider);
-    expect(after.hasError, isTrue);
-    expect(after.hasValue, isTrue);
-    expect(after.value!.map((e) => e.id), ['a']);
-  });
+      final after = container.read(healthEntriesNotifierProvider);
+      expect(after.hasError, isTrue);
+      expect(after.hasValue, isTrue);
+      expect(after.value!.map((e) => e.id), ['a']);
+    },
+  );
 }

@@ -27,24 +27,30 @@ void main() {
     await container.read(healthEntriesNotifierProvider.future);
   }
 
-  test('CRUD commands return refreshFailed without throwing after commit', () async {
-    await pumpNotifier();
-    final notifier = container.read(healthEntriesNotifierProvider.notifier);
-    repository.failNextGetEntries = true;
+  test(
+    'CRUD commands return refreshFailed without throwing after commit',
+    () async {
+      await pumpNotifier();
+      final notifier = container.read(healthEntriesNotifierProvider.notifier);
+      repository.failNextGetEntries = true;
 
-    final created = await notifier.create(testHealthEntry('new'));
-    expect(created, const CommandOutcome(committed: true, refreshFailed: true));
-    expect(repository.createCallCount, 1);
-    expect(container.read(healthEntriesNotifierProvider).hasValue, isTrue);
+      final created = await notifier.create(testHealthEntry('new'));
+      expect(
+        created,
+        const CommandOutcome(committed: true, refreshFailed: true),
+      );
+      expect(repository.createCallCount, 1);
+      expect(container.read(healthEntriesNotifierProvider).hasValue, isTrue);
 
-    repository.failNextGetEntries = true;
-    final updated = await notifier.updateEntry(testHealthEntry('e1'));
-    expect(updated.refreshFailed, isTrue);
+      repository.failNextGetEntries = true;
+      final updated = await notifier.updateEntry(testHealthEntry('e1'));
+      expect(updated.refreshFailed, isTrue);
 
-    repository.failNextGetEntries = true;
-    final deleted = await notifier.delete('e1');
-    expect(deleted.refreshFailed, isTrue);
-  });
+      repository.failNextGetEntries = true;
+      final deleted = await notifier.delete('e1');
+      expect(deleted.refreshFailed, isTrue);
+    },
+  );
 
   test('command failure still throws before refresh', () async {
     await pumpNotifier();
@@ -54,21 +60,23 @@ void main() {
     expect(repository.getEntriesCallCount, 1);
   });
 
-  test('markTaken and undoComplete report refreshFailed after successful commit',
-      () async {
-    await pumpNotifier();
-    final notifier = container.read(healthEntriesNotifierProvider.notifier);
-    repository.failNextGetEntries = true;
+  test(
+    'markTaken and undoComplete report refreshFailed after successful commit',
+    () async {
+      await pumpNotifier();
+      final notifier = container.read(healthEntriesNotifierProvider.notifier);
+      repository.failNextGetEntries = true;
 
-    final taken = await notifier.markTaken('e1');
-    expect(taken.refreshFailed, isTrue);
-    expect(repository.completeOccurrenceCallCount, 1);
+      final taken = await notifier.markTaken('e1');
+      expect(taken.refreshFailed, isTrue);
+      expect(repository.completeOccurrenceCallCount, 1);
 
-    repository.failNextGetEntries = true;
-    final undone = await notifier.undoComplete('e1');
-    expect(undone.refreshFailed, isTrue);
-    expect(repository.unmarkDoneCallCount, 1);
-  });
+      repository.failNextGetEntries = true;
+      final undone = await notifier.undoComplete('e1');
+      expect(undone.refreshFailed, isTrue);
+      expect(repository.unmarkDoneCallCount, 1);
+    },
+  );
 
   test('event lifecycle commands survive refresh failure', () async {
     await pumpNotifier();

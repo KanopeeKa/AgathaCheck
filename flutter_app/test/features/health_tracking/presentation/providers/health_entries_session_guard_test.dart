@@ -17,10 +17,7 @@ class _DelayedLogoutRepository implements HealthRepository {
   var _callCount = 0;
 
   @override
-  Future<List<HealthEntry>> getEntries({
-    String? petId,
-    HealthEntryType? type,
-  }) {
+  Future<List<HealthEntry>> getEntries({String? petId, HealthEntryType? type}) {
     _callCount++;
     if (_callCount == 1) {
       return _staleCompleter.future;
@@ -63,36 +60,41 @@ void main() {
     expect(async.valueOrNull, isNull);
   });
 
-  test('user switch clears in-flight data before the next user loads', () async {
-    final repository = FakeHealthRepository(entries: [testHealthEntry('user-a')]);
-    final container = ProviderContainer(
-      overrides: [
-        authProvider.overrideWith((ref) => FakeAuthNotifier()),
-        healthRepositoryProvider.overrideWithValue(repository),
-      ],
-    );
-    addTearDown(container.dispose);
+  test(
+    'user switch clears in-flight data before the next user loads',
+    () async {
+      final repository = FakeHealthRepository(
+        entries: [testHealthEntry('user-a')],
+      );
+      final container = ProviderContainer(
+        overrides: [
+          authProvider.overrideWith((ref) => FakeAuthNotifier()),
+          healthRepositoryProvider.overrideWithValue(repository),
+        ],
+      );
+      addTearDown(container.dispose);
 
-    await container.read(healthEntriesNotifierProvider.future);
-    expect(
-      container.read(healthEntriesNotifierProvider).value!.single.id,
-      'user-a',
-    );
+      await container.read(healthEntriesNotifierProvider.future);
+      expect(
+        container.read(healthEntriesNotifierProvider).value!.single.id,
+        'user-a',
+      );
 
-    repository.entries = [testHealthEntry('user-b')];
-    container.read(authProvider.notifier).state = loggedInAuthState.copyWith(
-      user: AuthUser(
-        id: 'other-user',
-        email: 'other@example.com',
-        firstName: 'Other',
-        lastName: 'User',
-      ),
-    );
+      repository.entries = [testHealthEntry('user-b')];
+      container.read(authProvider.notifier).state = loggedInAuthState.copyWith(
+        user: AuthUser(
+          id: 'other-user',
+          email: 'other@example.com',
+          firstName: 'Other',
+          lastName: 'User',
+        ),
+      );
 
-    await container.read(healthEntriesNotifierProvider.future);
-    expect(
-      container.read(healthEntriesNotifierProvider).value!.single.id,
-      'user-b',
-    );
-  });
+      await container.read(healthEntriesNotifierProvider.future);
+      expect(
+        container.read(healthEntriesNotifierProvider).value!.single.id,
+        'user-b',
+      );
+    },
+  );
 }
