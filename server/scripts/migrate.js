@@ -19,7 +19,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
-import pg from 'pg';
+import { createAppPool } from '../lib/db/createPool.js';
 import { v4 as uuidv4 } from 'uuid';
 import { migrateFamilyEventsPlacements } from './migrations/016_migrate_family_events_placements.js';
 import { migrateFosterProfiles } from './migrations/023_foster_profiles.js';
@@ -39,7 +39,6 @@ import { migratePlannedAbsenceCarerContacts } from './migrations/075_planned_abs
 import { migrateCareOccurrenceModel } from './migrations/083_care_occurrence_model.js';
 import { maybeAutoSeedMigrationLedger } from './lib/migration-ledger.js';
 
-const { Pool } = pg;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -53,17 +52,7 @@ dotenv.config();
 // the discrete PG* vars. This keeps the migration runner connecting the same
 // way the running app does, in every environment.
 function createPool() {
-  const databaseUrl = process.env.DATABASE_URL;
-  if (databaseUrl) {
-    return new Pool({ connectionString: databaseUrl });
-  }
-  return new Pool({
-    user: process.env.PGUSER || 'user',
-    password: process.env.PGPASSWORD || 'password',
-    host: process.env.PGHOST || 'localhost',
-    port: process.env.PGPORT || 5432,
-    database: process.env.PGDATABASE || 'agatha_db',
-  });
+  return createAppPool();
 }
 
 function resolveMigrationsDir() {

@@ -1,10 +1,17 @@
 import '../config/loadEnv.js';
 import app from './server.js';
+import { verifyPgDateParser } from '../lib/db/createPool.js';
 import { kickCleanupJobs, startCleanupJobsRunner } from '../lib/jobs/cleanupJobsRunner.js';
 
 export { kickCleanupJobs };
 
 const port = process.env.PORT || 3000;
+try {
+  await verifyPgDateParser(app.locals.pool);
+} catch (err) {
+  console.error('PG DATE startup check failed:', err.message);
+  process.exit(1);
+}
 const cleanupRunner = startCleanupJobsRunner(app.locals.pool);
 
 const server = app.listen(port, () => {

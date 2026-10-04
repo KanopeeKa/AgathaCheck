@@ -5,6 +5,7 @@ import bodyParser from 'body-parser';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { Pool } from 'pg';
+import { createAppPool, verifyPgDateParser } from '../lib/db/createPool.js';
 import petsRoutes from '../routes/pets.js';
 import authRoutes from '../routes/auth.js';
 import notificationsRoutes from '../routes/notifications.js';
@@ -44,21 +45,7 @@ function getServerDir() {
 }
 
 function createPool() {
-  const databaseUrl = process.env.DATABASE_URL;
-  const pool = databaseUrl
-    ? new Pool({ connectionString: databaseUrl })
-    : new Pool({
-        user: process.env.PGUSER || 'user',
-        password: process.env.PGPASSWORD || 'password',
-        host: process.env.PGHOST || 'localhost',
-        port: process.env.PGPORT || 5432,
-        database: process.env.PGDATABASE || 'agatha_db',
-      });
-  // Calendar DATE/TIMESTAMPTZ round-trips must not depend on the host TZ.
-  pool.on('connect', (client) => {
-    client.query("SET TIME ZONE 'UTC'").catch(() => {});
-  });
-  return pool;
+  return createAppPool();
 }
 
 export function createApp(customPool, comparePassword) {

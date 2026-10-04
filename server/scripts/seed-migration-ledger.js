@@ -6,31 +6,20 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
-import pg from 'pg';
+import { createAppPool } from '../lib/db/createPool.js';
 import {
   loadManifest,
   resolveManifestPath,
   seedMigrationLedger,
 } from './lib/migration-ledger.js';
 
-const { Pool } = pg;
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 dotenv.config();
 
 function createPool() {
-  const databaseUrl = process.env.DATABASE_URL;
-  if (databaseUrl) {
-    return new Pool({ connectionString: databaseUrl });
-  }
-  return new Pool({
-    user: process.env.PGUSER || 'user',
-    password: process.env.PGPASSWORD || 'password',
-    host: process.env.PGHOST || 'localhost',
-    port: process.env.PGPORT || 5432,
-    database: process.env.PGDATABASE || 'agatha_db',
-  });
+  return createAppPool();
 }
 
 async function main() {

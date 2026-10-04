@@ -11,31 +11,23 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
-import pg from 'pg';
 
+import { createAppPool, nodeProcessTimeZone, verifyPgDateParser } from '../../lib/db/createPool.js';
 import { runCareTick } from '../../lib/care/occurrence/careTick.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 dotenv.config();
 
-function createPool() {
-  if (process.env.DATABASE_URL) {
-    return new pg.Pool({ connectionString: process.env.DATABASE_URL });
-  }
-  return new pg.Pool({
-    user: process.env.PGUSER || 'user',
-    password: process.env.PGPASSWORD || 'password',
-    host: process.env.PGHOST || 'localhost',
-    port: Number(process.env.PGPORT || 5432),
-    database: process.env.PGDATABASE || 'agatha_db',
-  });
-}
-
-const pool = createPool();
+const pool = createAppPool();
 try {
+  await verifyPgDateParser(pool);
   const stats = await runCareTick(pool);
-  console.log(JSON.stringify({ at: new Date().toISOString(), ...stats }));
+  console.log(JSON.stringify({
+    at: new Date().toISOString(),
+    tz: nodeProcessTimeZone(),
+    ...stats,
+  }));
 } catch (err) {
   console.error('care tick failed', err);
   process.exitCode = 1;

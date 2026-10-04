@@ -10,8 +10,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 import { afterAll, beforeAll, describe, expect, it } from '@jest/globals';
-import pg from 'pg';
-
+import { createAppPool } from '../../lib/db/createPool.js';
 import { createDbPool } from './helpers/careHarness.js';
 import { migrateCareOccurrenceModel } from '../../scripts/migrations/083_care_occurrence_model.js';
 
@@ -110,7 +109,7 @@ beforeAll(async () => {
       database: process.env.PGDATABASE || 'agatha_db',
       options: dbOptions,
     };
-  db = new pg.Pool(config);
+  db = createAppPool(config);
   expect((await db.query('SELECT current_schema() AS schema')).rows[0].schema).toBe(schema);
 
   for (const table of ['pets', 'health_entries', 'health_occurrences', 'care_schedule_events']) {

@@ -7,23 +7,12 @@
  *     node scripts/audit-retention.js
  */
 import '../config/loadEnv.js';
-import { Pool } from 'pg';
-
+import { createAppPool } from '../lib/db/createPool.js';
 import { runAuditRetention } from '../lib/auditRetention.js';
 import { logger } from '../lib/logger.js';
 
 function createPool() {
-  const databaseUrl = process.env.DATABASE_URL;
-  if (databaseUrl) {
-    return new Pool({ connectionString: databaseUrl });
-  }
-  return new Pool({
-    user: process.env.PGUSER || 'user',
-    password: process.env.PGPASSWORD || 'password',
-    host: process.env.PGHOST || 'localhost',
-    port: process.env.PGPORT || 5432,
-    database: process.env.PGDATABASE || 'agatha_db',
-  });
+  return createAppPool();
 }
 
 async function main() {
