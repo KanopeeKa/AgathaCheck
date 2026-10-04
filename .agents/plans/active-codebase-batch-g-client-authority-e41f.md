@@ -47,13 +47,13 @@ autonomy: active
 current_phase: 3
 last_completed_phase: 2
 halt_reason: null
-next_action: "start phase 3: checkout cursor/active-codebase-g3-care-schedule-controller-e41f"
+next_action: "continue phase 3 on branch cursor/active-codebase-g3-care-schedule-controller-e41f"
 artifact_ref:
-  branch: cursor/active-codebase-g-integration-e41f
+  branch: cursor/active-codebase-g3-care-schedule-controller-e41f
   plan_path: .agents/plans/active-codebase-batch-g-client-authority-e41f.md
-  plan_commit: 421cdbefa259fc8d9317a6549a8d1c31f66210de
+  plan_commit: 57d5efeccb2520d79db6c6ee9ab74a0d08df7dee
   snapshot_path: .agents/plans/active-codebase-batch-g-client-authority-e41f.snapshot.json
-  snapshot_commit: 421cdbefa259fc8d9317a6549a8d1c31f66210de
+  snapshot_commit: 57d5efeccb2520d79db6c6ee9ab74a0d08df7dee
 open_prs: []
 merge_commits: {"2":"dba43f7da365f0aa59e05ee1c47b1334089e33d4"}
 debt_issue_refs: []
