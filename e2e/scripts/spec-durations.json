@@ -23,6 +23,7 @@
     "help.faq.spec.ts": 172,
     "notifications.spec.ts": 227,
     "people-hub.spec.ts": 31,
+    "people.detail-navigation.spec.ts": 45,
     "pet.detail-navigation.spec.ts": 42,
     "pet.profiles.spec.ts": 418,
     "pet.timeline.spec.ts": 35,
