@@ -966,7 +966,9 @@ CREATE TABLE public.users (
     created_at timestamp with time zone DEFAULT now(),
     updated_at timestamp with time zone DEFAULT now(),
     pinned_organization_id uuid,
-    timezone character varying(64) DEFAULT 'UTC'::character varying NOT NULL
+    timezone character varying(64) DEFAULT 'UTC'::character varying NOT NULL,
+    weight_unit character varying(2) DEFAULT 'kg'::character varying NOT NULL,
+    CONSTRAINT users_weight_unit_check CHECK (((weight_unit)::text = ANY ((ARRAY['kg'::character varying, 'lb'::character varying])::text[])))
 );
 CREATE TABLE public.vets (
     id uuid NOT NULL,
@@ -987,14 +989,15 @@ CREATE TABLE public.weight_entries (
     pet_id uuid NOT NULL,
     user_id uuid NOT NULL,
     weight double precision NOT NULL,
-    unit character varying(10) DEFAULT 'kg'::character varying,
-    date date,
+    unit character varying(10) DEFAULT 'kg'::character varying NOT NULL,
+    date date NOT NULL,
     notes text DEFAULT ''::text,
     measured_at timestamp with time zone DEFAULT now(),
     created_at timestamp with time zone DEFAULT now(),
     measurement_source character varying(50) DEFAULT 'guardian'::character varying NOT NULL,
     health_occurrence_id uuid,
-    CONSTRAINT weight_entries_measurement_source_check CHECK (((measurement_source)::text = ANY ((ARRAY['guardian'::character varying, 'clinic'::character varying, 'device'::character varying, 'imported'::character varying])::text[])))
+    CONSTRAINT weight_entries_measurement_source_check CHECK (((measurement_source)::text = ANY ((ARRAY['guardian'::character varying, 'clinic'::character varying, 'device'::character varying, 'imported'::character varying])::text[]))),
+    CONSTRAINT weight_entries_unit_kg_check CHECK (((unit)::text = 'kg'::text))
 );
 ALTER TABLE ONLY public._migrations
     ADD CONSTRAINT _migrations_pkey PRIMARY KEY (id);

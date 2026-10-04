@@ -57,13 +57,47 @@ export function makePetRow(overrides = {}) {
 
 export { createTransactionalMockPool } from '../helpers/transactionMockPool.js';
 
-export function createMockPool(queryHandler) {
-  const handler = queryHandler || (async (sql, params) => {
+async function defaultPetPoolHandler(sql, params) {
       const access = handlePetAccessQuery(sql, params, { userId, ownedPetIds: [petId, petId2] });
       if (access) return access;
 
       if (sql.includes('SELECT photo_path FROM pets')) {
         return { rows: [{ photo_path: null }] };
+      }
+      if (sql.includes('SELECT organization_id, photo_path') && sql.includes('FROM pets')) {
+        return {
+          rows: [{
+            organization_id: null,
+            photo_path: null,
+            weight_reference_value: null,
+            weight_reference_authority: null,
+            weight_management_context: 'none',
+            home_timezone: 'UTC',
+          }],
+        };
+      }
+      if (sql.includes('SELECT home_timezone FROM pets')) {
+        return { rows: [{ home_timezone: 'UTC' }] };
+      }
+      if (sql.includes('UPDATE pets SET weight = (')) {
+        return { rows: [] };
+      }
+      if (sql.includes('FROM weight_entries') && sql.includes('ORDER BY date DESC')) {
+        return { rows: [] };
+      }
+      if (sql.includes('INSERT INTO weight_entries')) {
+        return {
+          rows: [{
+            id: params?.[0] || 'we-new',
+            pet_id: params?.[1],
+            user_id: params?.[2],
+            weight: params?.[3],
+            unit: 'kg',
+            date: params?.[4],
+            notes: params?.[5] || '',
+            measurement_source: params?.[6] || 'guardian',
+          }],
+        };
       }
       if (sql.includes('FROM health_event_photos')) {
         return { rows: [] };
@@ -197,7 +231,16 @@ export function createMockPool(queryHandler) {
         return { rows: [{ first_name: 'Test', last_name: 'User', email: 'test@example.com' }] };
       }
       return { rows: [] };
-    });
+}
+
+export function createMockPool(queryHandler) {
+  const handler = queryHandler
+    ? async (sql, params) => {
+      const custom = await queryHandler(sql, params);
+      if (custom != null) return custom;
+      return defaultPetPoolHandler(sql, params);
+    }
+    : defaultPetPoolHandler;
   return createTransactionalMockPool(async (sql, params) => {
     if (sql.includes('SELECT 1 FROM users WHERE id')) {
       return { rows: [{ '?column?': 1 }] };

@@ -1,29 +1,9 @@
 import { publicError } from '../../config/security.js';
-import { logAuditEventSafe } from '../../lib/audit.js';
-import { recordPetActivityForPet } from '../../lib/petActivity.js';
 import { hasPetCapability, PET_CAPABILITIES } from '../../lib/petCapabilityPolicy.js';
-import { accessiblePetSql, userCanManageHealthEntry } from '../../lib/petAccess.js';
-import { refreshPetWeightCache } from '../../lib/petWeightSync.js';
-import {
-  CareCommandError,
-  completeOccurrenceCommand,
-  runCareCommand,
-} from '../../lib/care/occurrence/index.js';
-import {
-  occurrenceToMap,
-  resolveCompletedOn,
-} from '../../lib/care/item/index.js';
-import { dateToIsoDate } from '../../lib/calendarDate.js';
+import { userCanManageHealthEntry } from '../../lib/petAccess.js';
+import { completeWeightOccurrence as completeWeightOccurrenceService } from '../../lib/care/observations/weightObservationService.js';
 import { extractUserId } from '../pets/shared.js';
 import { loadOccurrence } from './occurrencesRouter.js';
-import { maybePersistWeightEstablishment } from '../../lib/care/progression/weightEstablishmentService.js';
-import {
-  isWeightMonitoringEntry,
-  newWeightEntryId,
-  parseWeightObservationBody,
-  weightEntryToCompletionMap,
-  weightPayloadsSemanticallyEqual,
-} from './weightOccurrenceCompletion.js';
 
 async function loadEntryForPet(pool, entryId, petId, userId) {
   if (!(await userCanManageHealthEntry(pool, entryId, userId))) {
@@ -37,245 +17,6 @@ async function loadEntryForPet(pool, entryId, petId, userId) {
   return result.rows[0] || null;
 }
 
-async function findLinkedWeight(pool, occurrenceId) {
-  const result = await pool.query(
-    `SELECT * FROM weight_entries WHERE health_occurrence_id = $1 LIMIT 1`,
-    [occurrenceId],
-  );
-  return result.rows[0] || null;
-}
-
-function buildCompletionResponse(weightRow, occurrenceRow, nextDueDate) {
-  return {
-    weight_entry: weightEntryToCompletionMap(weightRow),
-    occurrence: occurrenceToMap(occurrenceRow),
-    next_due_date: dateToIsoDate(nextDueDate),
-  };
-}
-
-/**
- * Transactional weight observation + occurrence completion (CP-2).
- */
-export async function completeWeightOccurrence(pool, {
-  petId,
-  entryId,
-  occurrenceId,
-  userId,
-  body,
-  req,
-}) {
-  if (!(await hasPetCapability(pool, userId, petId, PET_CAPABILITIES.WEIGHT_EDIT))) {
-    return { status: 403, body: { error: 'Forbidden' } };
-  }
-
-  const petResult = await pool.query(
-    `SELECT p.id FROM pets p
-     WHERE p.id = $1 AND ${accessiblePetSql('p', '$2')}`,
-    [petId, userId],
-  );
-  if (petResult.rows.length === 0) {
-    return { status: 404, body: { error: 'Pet not found' } };
-  }
-
-  const entry = await loadEntryForPet(pool, entryId, petId, userId);
-  if (!entry) {
-    return { status: 404, body: { error: 'Entry not found' } };
-  }
-  if (!isWeightMonitoringEntry(entry)) {
-    return { status: 400, body: { error: 'Entry is not a weight monitoring rhythm' } };
-  }
-
-  const parsed = parseWeightObservationBody(body);
-  if (parsed.error) {
-    return { status: 400, body: { error: parsed.error } };
-  }
-  const payload = parsed.value;
-
-  const occ = await loadOccurrence(pool, entryId, occurrenceId);
-  if (!occ) {
-    return { status: 404, body: { error: 'Occurrence not found' } };
-  }
-
-  const existingWeight = await findLinkedWeight(pool, occurrenceId);
-  if (existingWeight) {
-    if (weightPayloadsSemanticallyEqual(existingWeight, payload)) {
-      const refreshedEntry = await pool.query(
-        'SELECT next_due_date FROM health_entries WHERE id = $1',
-        [entryId],
-      );
-      runPostCommitWeightCompletionSideEffects(pool, {
-        petId,
-        entryId,
-        entry,
-        occurrenceId,
-        weightId: existingWeight.id,
-        userId,
-        req,
-      });
-      return {
-        status: 200,
-        body: buildCompletionResponse(
-          existingWeight,
-          occ,
-          refreshedEntry.rows[0]?.next_due_date,
-        ),
-      };
-    }
-    return {
-      status: 409,
-      body: { error: 'Occurrence already linked to a different weight observation' },
-    };
-  }
-
-  if (occ.status !== 'pending') {
-    return { status: 404, body: { error: 'Occurrence not found' } };
-  }
-
-  const completedOn = resolveCompletedOn(body.completed_on || body.completedOn || payload.date);
-  const weightId = newWeightEntryId();
-  let committedResponse;
-
-  try {
-    let weightRow = null;
-    const out = await runCareCommand(pool, {
-      entryId,
-      userId,
-      req,
-      beforeCommand: async (db) => {
-        const weightResult = await db.query(
-          `INSERT INTO weight_entries
-            (id, pet_id, user_id, weight, unit, date, notes, measurement_source, health_occurrence_id)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-           RETURNING *`,
-          [
-            weightId,
-            petId,
-            userId,
-            payload.weight,
-            payload.unit,
-            payload.date,
-            payload.notes,
-            payload.measurement_source,
-            occurrenceId,
-          ],
-        );
-        weightRow = weightResult.rows[0];
-        await refreshPetWeightCache(db, petId);
-        await maybePersistWeightEstablishment(db, { petId, healthEntryId: entryId });
-      },
-    }, (ctx) => completeOccurrenceCommand(ctx, {
-      occurrenceId,
-      completedOn,
-      notes: payload.notes || '',
-      nextChoice: body.next_choice || body.nextChoice || null,
-      rememberChoice: Boolean(body.remember_choice ?? body.rememberChoice),
-      earlierChoice: body.earlier_choice || body.earlierChoice || null,
-      body,
-    }));
-    if (!out) {
-      return { status: 404, body: { error: 'Occurrence not found' } };
-    }
-    committedResponse = {
-      status: 201,
-      body: {
-        ...buildCompletionResponse(weightRow, out.occurrence, out.entry.next_due_date),
-        next_choice_applied: out.appliedChoice ?? null,
-        undo_token: out.undoToken,
-      },
-    };
-  } catch (err) {
-    if (err instanceof CareCommandError) {
-      return { status: err.status, body: err.toBody() };
-    }
-    if (err.code === '23505') {
-      const linked = await findLinkedWeight(pool, occurrenceId);
-      if (linked && weightPayloadsSemanticallyEqual(linked, payload)) {
-        const refreshedEntry = await pool.query(
-          'SELECT next_due_date FROM health_entries WHERE id = $1',
-          [entryId],
-        );
-        const idempotentResponse = {
-          status: 200,
-          body: buildCompletionResponse(
-            linked,
-            occ,
-            refreshedEntry.rows[0]?.next_due_date,
-          ),
-        };
-        runPostCommitWeightCompletionSideEffects(pool, {
-          petId,
-          entryId,
-          entry,
-          occurrenceId,
-          weightId: linked.id,
-          userId,
-          req,
-        });
-        return idempotentResponse;
-      }
-      return {
-        status: 409,
-        body: { error: 'Occurrence already linked to a different weight observation' },
-      };
-    }
-    throw err;
-  }
-
-  runPostCommitWeightCompletionSideEffects(pool, {
-    petId,
-    entryId,
-    entry,
-    occurrenceId,
-    weightId,
-    userId,
-    req,
-  });
-
-  return committedResponse;
-}
-
-function runPostCommitWeightCompletionSideEffects(pool, {
-  petId,
-  entryId,
-  entry,
-  occurrenceId,
-  weightId,
-  userId,
-  req,
-}) {
-  void Promise.resolve()
-    .then(() => {
-      logAuditEventSafe(pool, {
-        actorUserId: userId,
-        action: 'weight_occurrence.completed',
-        resourceType: 'health_entry',
-        resourceId: entryId,
-        petId,
-        metadata: {
-          occurrence_id: occurrenceId,
-          weight_entry_id: weightId,
-        },
-        req,
-      });
-      return recordPetActivityForPet(pool, {
-        petId,
-        actorUserId: userId,
-        eventType: 'health_log',
-        metadata: { action: 'complete_weight_occurrence', entry_type: entry.type },
-      });
-    })
-    .catch((err) => {
-      console.warn('weight completion post-commit side effect failed', {
-        action: 'complete_weight_occurrence',
-        petId,
-        entryId,
-        occurrenceId,
-        weightId,
-        userId,
-      }, err);
-    });
-}
-
 /**
  * POST /api/pets/:petId/care-rhythms/:entryId/occurrences/:occurrenceId/complete-weight
  */
@@ -286,13 +27,17 @@ export function registerCompleteWeightRoutes(router, pool) {
       const userId = extractUserId(req);
       if (!userId) return res.status(401).json({ error: 'Unauthorized' });
       try {
-        const result = await completeWeightOccurrence(pool, {
+        const result = await completeWeightOccurrenceService(pool, {
           petId: req.params.id,
           entryId: req.params.entryId,
           occurrenceId: req.params.occurrenceId,
           userId,
           body: req.body || {},
           req,
+          loadOccurrence,
+          loadEntryForPet,
+          hasPetWeightEdit: (db, uid, pid) =>
+            hasPetCapability(db, uid, pid, PET_CAPABILITIES.WEIGHT_EDIT),
         });
         return res.status(result.status).json(result.body);
       } catch (err) {
@@ -300,4 +45,15 @@ export function registerCompleteWeightRoutes(router, pool) {
       }
     },
   );
+}
+
+/** @deprecated Import from weightObservationService — kept for tests that import this symbol. */
+export async function completeWeightOccurrence(pool, params) {
+  return completeWeightOccurrenceService(pool, {
+    ...params,
+    loadOccurrence: params.loadOccurrence || loadOccurrence,
+    loadEntryForPet: params.loadEntryForPet || loadEntryForPet,
+    hasPetWeightEdit: params.hasPetWeightEdit
+      || ((db, uid, pid) => hasPetCapability(db, uid, pid, PET_CAPABILITIES.WEIGHT_EDIT)),
+  });
 }

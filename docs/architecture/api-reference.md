@@ -187,11 +187,11 @@ Returns upcoming active absences for the entry's pet with per-absence `affected`
 | Method | Path | Notes |
 |---|---|---|
 | GET | `/:id/occurrences` | Query `status=open` (default) or `status=past`; optional `as_of` calendar day; rows include `origin`, `close_reason` |
-| GET | `/:id/occurrences/:occId` | One occurrence for the occurrence screen: `{ occurrence (+ occurrence_status: coming_up \| due \| overdue \| not_recorded \| done \| skipped), entry` (same read additions as `GET /:id`, including `open_occurrences[]` and frequency fields for `decideDone`), `last_action \| null`, `linked_weight? }`; 404 when not on that item |
+| GET | `/:id/occurrences/:occId` | One occurrence for the occurrence screen: `{ occurrence (+ occurrence_status: …), entry` (same read additions as `GET /:id`), `last_action \| null`, optional `linked_weight { id, value, unit, date, measurement_source }`, optional `skip_reason { code, note } \| null` (latest non-undone skip ledger row); 404 when not on that item |
 | PATCH | `/:id/occurrences/:occId` | Completed occurrences only. Body `{ completed_on }` alone — changes when it was done (D-CSM-034): 200 occurrence fields + `{ occurrence, entry, next_due_date, undo_token, moved_next_id, next_unchanged }`; **400** `invalid_completed_on` / `completed_on_in_future` / `completed_on_before_start` / `completed_on_with_other_fields`; **409** `occurrence_not_completed`. Or `{ notes?, provider_contact_id?, provider_typed_name? }` |
-| GET | `/:id/history` | Closed occurrences (completed, skipped), newest first: `{ id, health_entry_id, status, notes, due_date, completed_on, changed_at, marked_by_user_id, marked_by_name }` (D-CSM-035) |
+| GET | `/:id/history` | Closed occurrences (completed, skipped), newest first: `{ id, health_entry_id, status, notes, due_date, completed_on, changed_at, marked_by_user_id, marked_by_name, linked_weight? }` — completed `weight_monitoring` rows add `linked_weight: { value, unit, date } \| null` (W3) |
 | POST | `/:id/occurrences/:occId/complete` | Body `{ completed_on?, notes?, next_choice?: 'keep' \| 'skip_next' \| 'shift_following', remember_choice?, earlier_choice?: 'complete' \| 'skip' \| 'keep' }`; 200 `{ occurrence, next_due_date, entry, undo_token, next_choice_applied }`. Never asks (D-CSM-026, revised 2026-10-01): no `next_choice` → the remembered choice if it fits, otherwise `keep`; no `earlier_choice` → `keep`. **400 `next_choice_not_available`** when an explicit choice doesn't fit (nothing saved); **409 `occurrence_not_open`** |
-| POST | `/:id/occurrences/:occId/skip` | Body `{ notes? }`; same response shape as complete; ledger `skipped` |
+| POST | `/:id/occurrences/:occId/skip` | Body `{ notes?, reason_code? }`; same response shape as complete; ledger `skipped` with `reason_code` / `reason_note`. For `weight_monitoring`, when `reason_code` is sent it must be one of `could_not_weigh`, `pet_unsettled`, `vet_will_weigh`, `other` (**400** `invalid_skip_reason`); weigh-in skip notes longer than 500 chars → **400** `skip_note_too_long` |
 | POST | `/:id/occurrences` | Plan another date — body `{ scheduled_date, scheduled_time? }`; `planned` occurrence; `warnings[]` when within half an interval of another open date (D-CSM-025) |
 | POST | `/:id/occurrences/:occId/record` | Record a Not recorded slot as given — body `{ completed_on }` (D-CSM-023) |
 | POST | `/:id/occurrences/resolve-stack` | Record earlier doses — body `{ given: [ids], not_given: [ids] }` |
@@ -227,8 +227,21 @@ Weight monitoring rhythms: generic occurrence **complete** returns `400` — use
 `DELETE /:issueId/events/:entryId` (events verify issue ownership).
 
 ### Weight entries (`/api/weight-entries`)
-`GET /` (optional `?pet_id=`), `GET /latest?pet_id=`, `POST /` (verifies pet
-ownership), `PUT /:id`, `DELETE /:id`.
+`GET /` (optional `?pet_id=`), `GET /latest?pet_id=`, `GET /fulfilment-candidates?pet_id=&date=`,
+`GET /overview?pet_id=`, `POST /` (optional `fulfils_occurrence_id`), `POST /:id/fulfil`
+(`{ occurrence_id }`), `PUT /:id`, `DELETE /:id`. List rows add `fulfils` when linked.
+`POST /` with fulfilment returns `fulfilment: { entry_id, occurrence, next_due_date, undo_token }`.
+`PUT` on a weight linked to a completed
+weigh-in whose **date** changes runs the care completion-date command in the
+same transaction (weight value/notes/source update in `beforeCommand`); response
+includes `undo_token` when a ledger event was written. `DELETE` response adds
+`reopened_occurrence: { entry_id, occurrence_id } | null` when a linked weigh-in
+was reopened.
+
+**Storage and units (W1):** weights are stored in **kg** only (`unit` is always `kg` on
+responses). POST/PUT (and weigh-in `complete-weight`) accept optional `unit: 'kg' | 'lb'`;
+the server converts lb with `0.45359237 kg/lb`. `date` must be on or before today in the
+pet's home calendar (`400` `date_in_future` when later).
 
 Responses include optional `health_occurrence_id` when the observation completed a
 care rhythm occurrence (CP-2). Deleting a linked weight entry re-opens the occurrence
@@ -237,6 +250,11 @@ to `pending` and refreshes the rhythm `next_due_date`.
 D0 provenance: responses include `measurement_source` (`guardian`|`clinic`|`device`|`imported`).
 POST/PUT accept optional `measurement_source`. Pet weight reference/context fields live on `PUT /api/pets/:id`
 (`weight_reference_value`, `weight_reference_authority`, `weight_management_context`) — see [d0-provenance-contract.md](../domains/pet_care/changes/d0-provenance-contract.md).
+
+**Deprecated pet payload fields:** `POST /api/pets` and `PUT /api/pets/:id` still accept
+`weight` / `weightEntryDate` for installed clients; values are recorded as standalone weights
+through the shared observation service (never linked to a weigh-in). Non-positive or non-numeric
+`weight` → `400` `invalid_weight`. Prefer `/api/weight-entries` for new clients.
 
 ### Notifications (`/api/notifications`)
 `GET /`, `GET /unread-count`, `PUT|POST /:id/read`, `PUT|POST /read-all`,
@@ -353,7 +371,7 @@ Raw `items[]` entries may include `window_relation: before_window` on materialis
 
 Declarer-scoped absence context (not visible to collaborators in V1): `GET /`, `POST /`, `GET /:id`, `PATCH /:id`, `POST /:id/cancel`.
 
-**Timezone (D24)** — `users.timezone` is set at signup/login (optional body) or via `PATCH /api/auth/me`. Each absence stores `timezone` copied from the declarer's account at `POST` create (later account timezone changes do not alter existing absences). Access windows for guest grants use whole calendar days `starts_on`…`ends_on` inclusive in that absence timezone.
+**Timezone (D24)** — `users.timezone` is set at signup/login (optional body) or via `PATCH /api/auth/me`. **`weight_unit`** (`kg` default, or `lb`) is readable on `GET /api/auth/me` and writable via `PATCH /api/auth/me` (invalid values → `400`). Each absence stores `timezone` copied from the declarer's account at `POST` create (later account timezone changes do not alter existing absences). Access windows for guest grants use whole calendar days `starts_on`…`ends_on` inclusive in that absence timezone.
 
 **Guest access (People phase 4)** — time-bound `can_log_care` via absence guest grants (evaluated at read time alongside household + direct share):
 

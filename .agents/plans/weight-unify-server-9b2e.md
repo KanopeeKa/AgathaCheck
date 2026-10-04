@@ -9,7 +9,7 @@
 | **plan_id** | `weight-unify-server-9b2e` |
 | **parent** | `weight-monitoring-unify-9b2e` (roadmap; W0 runs there as a docs PR to `main` before this child) |
 | **base_branch** | `cursor/weight-unify-server-integration-9b2e` (create from a fresh `origin/main` at bootstrap) |
-| **control issue** | own issue, created at bootstrap under the roadmap's standing grant (roadmap §11.1); placeholder `999999` until then |
+| **control issue** | [#1557](https://github.com/KanopeeKa/AgathaCheck/issues/1557) (standing grant from roadmap #1537) |
 | **landing** | integration → `main` PR, `/babysit-uat` until pre-UAT green, then the landing broadcast (roadmap §10.4) |
 | **entry gate** | roadmap §10.1: W0 merged on `main`; PEOPLE `people-server-7f3b` not in progress; no ARCH PR open on the weight routes, `healthEntries` routes or `pets/coreRouter.js`; no other programme `main` PR open at landing |
 | **default_merge_mode** | `auto` |
@@ -31,17 +31,17 @@
 ## Runtime state (agent-updated)
 
 ```yaml
-autonomy: halted
+autonomy: active
 current_phase: null
-last_completed_phase: null
-halt_reason: "draft — awaiting roadmap approval and W0 on main"
-next_action: "after W0 merges: check entry gate §10.1, create cursor/weight-unify-server-integration-9b2e from origin/main, init-control-issue weight-unify-server-9b2e, start W1"
+last_completed_phase: W4
+halt_reason: null
+next_action: "plan complete"
 artifact_ref:
-  branch: null
+  branch: cursor/weight-unify-server-integration-9b2e
   plan_path: .agents/plans/weight-unify-server-9b2e.md
-  plan_commit: null
+  plan_commit: b2d02dbfe9c24c3787837308c5427677beb9d23f
   snapshot_path: .agents/plans/weight-unify-server-9b2e.snapshot.json
-  snapshot_commit: null
+  snapshot_commit: b2d02dbfe9c24c3787837308c5427677beb9d23f
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

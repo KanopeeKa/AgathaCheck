@@ -19,6 +19,13 @@ export const CIM_SUGGESTION_CARE_FAMILIES = new Set([
   'wellness_review',
 ]);
 
+/** Skip reason codes for weigh-in routines (D-WM-015). */
+export const SKIP_REASON_CODES = {
+  weight_monitoring: ['could_not_weigh', 'pet_unsettled', 'vet_will_weigh', 'other'],
+};
+
+export const WEIGHT_MONITORING_SKIP_NOTE_MAX_LENGTH = 500;
+
 export const CARE_SOURCES = new Set([
   'guardian_defined',
   'vet_instruction',

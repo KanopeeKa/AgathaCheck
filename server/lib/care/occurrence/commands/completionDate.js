@@ -16,6 +16,8 @@ import {
   SCHEDULE_EVENT_COMPLETED,
   SCHEDULE_EVENT_COMPLETION_DATE_CHANGED,
 } from '../../schedule/scheduleEventLedger.js';
+import { runObservationCompletionDateHooks } from '../../observations/observationCompletionHooks.js';
+import { refreshPetWeightCache } from '../../../petWeightSync.js';
 import { CareCommandError, badRequest } from '../careCommandError.js';
 import {
   findOccurrence,
@@ -82,6 +84,11 @@ export async function changeCompletionDateCommand(ctx, { occurrenceId, completed
     completionTiming: deriveCompletionTiming(row.scheduled_date, completedOn),
   });
 
+  const observationExtra = await runObservationCompletionDateHooks(ctx, occurrenceId, completedOn);
+  if (observationExtra?.weight_date_before && entry.pet_id) {
+    await refreshPetWeightCache(db, entry.pet_id);
+  }
+
   let movedNextId = null;
   let nextUnchanged = false;
   if (!isFixedSchedule(entry)) {
@@ -114,7 +121,11 @@ export async function changeCompletionDateCommand(ctx, { occurrenceId, completed
       occurrenceId,
       fromDate: fromIso,
       toDate: completedOn,
-      extra: { moved_computed_id: movedNextId, next_unchanged: nextUnchanged },
+      extra: {
+        moved_computed_id: movedNextId,
+        next_unchanged: nextUnchanged,
+        ...observationExtra,
+      },
     },
     result: { occurrence: updated, movedNextId, nextUnchanged },
   };
