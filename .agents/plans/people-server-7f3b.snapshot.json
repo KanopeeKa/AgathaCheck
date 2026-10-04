@@ -2,7 +2,7 @@
   "schema_version": 1,
   "approved_at": "2026-10-04T17:40:08.000Z",
   "approved_until": "2026-10-06T17:40:08.000Z",
-  "content_hash": "sha256:94cda01e10fedf929d9abef0c7134db81957227b43d7b2227667358c850d4cd8",
+  "content_hash": "sha256:db3062c9c1c480521d673933b74ffdbd2ffbefdf45d91345515ff5d29d2dc9a3",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "control_issue": 1507,
@@ -138,12 +138,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1515",
-      "pr_head_sha": "c3554bd0"
+      "pr_head_sha": "f1a1316f"
     },
     {
       "id": "s4-read-models",

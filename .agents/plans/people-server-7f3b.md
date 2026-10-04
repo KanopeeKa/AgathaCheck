@@ -530,13 +530,13 @@ autonomy: active
 current_phase: s4-read-models
 last_completed_phase: s3-relationships
 halt_reason: null
-next_action: "start phase s4-read-models on branch cursor/people-server-s4-read-models-7f3b"
+next_action: "start phase s4-read-models: checkout cursor/people-server-s4-read-models-7f3b"
 artifact_ref:
   branch: cursor/people-server-integration-7f3b
   plan_path: .agents/plans/people-server-7f3b.md
-  plan_commit: 3fc29bc9b05eee15f7ad780da7f166d494c5d8d9
+  plan_commit: 6d3f61d237f36d99117b3799bdac1c6a206e5d06
   snapshot_path: .agents/plans/people-server-7f3b.snapshot.json
-  snapshot_commit: 3fc29bc9b05eee15f7ad780da7f166d494c5d8d9
+  snapshot_commit: 6d3f61d237f36d99117b3799bdac1c6a206e5d06
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
