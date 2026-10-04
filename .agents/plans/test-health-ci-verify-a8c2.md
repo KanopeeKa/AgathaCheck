@@ -218,16 +218,16 @@ tags: [execute-plan, test-health, verification]
 
 ```yaml
 autonomy: active
-current_phase: 2
-last_completed_phase: 1
+current_phase: 8
+last_completed_phase: 7
 halt_reason: null
-next_action: "continue phase 2 on branch cursor/test-health-verify-weekly-jobs-edcb"
+next_action: "continue phase 8 on branch cursor/test-health-verify-memory-gov-edcb"
 artifact_ref:
-  branch: cursor/test-health-verify-weekly-jobs-edcb
+  branch: cursor/test-health-verify-memory-gov-edcb
   plan_path: .agents/plans/test-health-ci-verify-a8c2.md
-  plan_commit: ac93b740f9d03f58515c7ca5e80281f1b537baf9
+  plan_commit: d9c82f4e020e9a3a45cdf6e2cb0232cd645228a9
   snapshot_path: .agents/plans/test-health-ci-verify-a8c2.snapshot.json
-  snapshot_commit: ac93b740f9d03f58515c7ca5e80281f1b537baf9
+  snapshot_commit: d9c82f4e020e9a3a45cdf6e2cb0232cd645228a9
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
