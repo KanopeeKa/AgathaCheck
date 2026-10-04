@@ -100,17 +100,6 @@ void main() {
     });
   });
 
-  group('markTaken', () {
-    test('delegates to data source with notes', () async {
-      when(
-        mockDataSource.markTaken('test-1', notes: 'Done'),
-      ).thenAnswer((_) async => testModel);
-
-      final result = await repository.markTaken('test-1', notes: 'Done');
-      expect(result.name, 'Heartgard');
-    });
-  });
-
   group('getHistory', () {
     test('returns history from data source', () async {
       final historyModel = HealthHistoryModel(

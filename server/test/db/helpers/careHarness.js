@@ -148,12 +148,6 @@ export function careApi(app, owner) {
     reopen(id) {
       return send('post', `/${id}/reopen`, {});
     },
-    markTaken(id, body = {}) {
-      return send('post', `/${id}/mark-taken`, body);
-    },
-    ensureOpen(id) {
-      return send('post', `/${id}/occurrences/ensure-open`, {});
-    },
     past(id) {
       return send('get', `/${id}/occurrences?status=past`);
     },

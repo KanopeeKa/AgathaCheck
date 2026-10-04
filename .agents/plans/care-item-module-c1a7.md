@@ -19,10 +19,10 @@ Parent: `.agents/plans/care-next-occurrence-c1a7.md` §10, child F §795–804.
 
 ```yaml
 autonomy: active
-current_phase: F2
-last_completed_phase: F1
+current_phase: F3
+last_completed_phase: F2
 halt_reason: null
-next_action: "continue phase F2 on branch cursor/care-f2-compat-delete-50b4"
+next_action: "continue phase F3 on branch cursor/care-f2-compat-delete-50b4 or new F3 branch"
 artifact_ref:
   branch: claude/eager-edison-mf34j6
   plan_path: .agents/plans/care-item-module-c1a7.md

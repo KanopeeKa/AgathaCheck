@@ -1,7 +1,6 @@
 import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/health_history_entry.dart';
 import '../../domain/entities/health_occurrence.dart';
-import '../../domain/entities/ensure_open_occurrence_result.dart';
 import '../../domain/entities/reschedule_occurrence_result.dart';
 import '../../domain/repositories/health_repository.dart';
 import '../datasources/health_remote_datasource.dart';
@@ -17,7 +16,6 @@ class HealthRepositoryImpl implements HealthRepository {
 
   @override
   Future<List<HealthEntry>> getEntries({String? petId, HealthEntryType? type}) {
-    // Use the canonical API string, not enum.name (minified in release builds).
     return dataSource.getEntries(
       petId: petId,
       type: type == null ? null : HealthEntryModel.typeToApi(type),
@@ -42,20 +40,6 @@ class HealthRepositoryImpl implements HealthRepository {
   @override
   Future<void> deleteEntry(String id) {
     return dataSource.deleteEntry(id);
-  }
-
-  @override
-  Future<HealthEntry> markTaken(
-    String id, {
-    String notes = '',
-    DateTime? completedOn,
-  }) {
-    return dataSource.markTaken(id, notes: notes, completedOn: completedOn);
-  }
-
-  @override
-  Future<HealthEntry> undoComplete(String id) {
-    return dataSource.undoComplete(id);
   }
 
   @override
@@ -173,25 +157,6 @@ class HealthRepositoryImpl implements HealthRepository {
       occurrence: result.occurrence,
       warnings: result.warnings,
       nextDueDate: result.nextDueDate,
-    );
-  }
-
-  @override
-  Future<EnsureOpenOccurrenceResult> ensureOpenOccurrence(
-    String entryId, {
-    DateTime? scheduledDate,
-    String? reasonCode,
-  }) async {
-    final result = await dataSource.ensureOpenOccurrence(
-      entryId,
-      scheduledDate: scheduledDate,
-      reasonCode: reasonCode,
-    );
-    return EnsureOpenOccurrenceResult(
-      occurrences: result.occurrences,
-      created: result.created,
-      nextDueDate: result.nextDueDate,
-      headDate: result.headDate,
     );
   }
 

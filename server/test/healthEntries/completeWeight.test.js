@@ -346,32 +346,4 @@ describe('weight monitoring generic completion blocks', () => {
     expect(res.body.error).toMatch(/weight observation/i);
   });
 
-  it('POST mark-taken returns 400 for weight_monitoring with pending occurrence', async () => {
-    const mockPool = {
-      query: async (sql, params) => {
-        const access = handlePetAccessQuery(sql, params, { userId, ownedPetIds: [petId] });
-        if (access) return access;
-        const manageEntry = handleManageEntryQuery(sql, params, { tableName: 'health_entries he' });
-        if (manageEntry) return manageEntry;
-        if (
-          sql.includes('SELECT he.* FROM health_entries he WHERE he.id = $1')
-          || sql.includes('SELECT * FROM health_entries WHERE id = $1')
-        ) {
-          return { rows: [makeHealthEntryRow()] };
-        }
-        if (sql.includes('health_occurrences WHERE health_entry_id = $1 AND status = \'pending\'')) {
-          return { rows: [{ id: occurrenceId }] };
-        }
-        return { rows: [] };
-      },
-      end: async () => {},
-    };
-    const app = createApp(mockPool);
-    const res = await request(app)
-      .post(`/api/health-entries/${entryId}/mark-taken`)
-      .set('Authorization', `Bearer ${token}`)
-      .send({});
-    expect(res.statusCode).toBe(400);
-    expect(res.body.error).toMatch(/weight observation/i);
-  });
 });

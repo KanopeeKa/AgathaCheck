@@ -297,20 +297,6 @@ export function registerOccurrenceRoutes(router, pool) {
     });
   });
 
-  // Compatibility (deleted in child F): skip every past-due open date.
-  router.post('/:id/occurrences/skip-missed', (req, res) => handleCommand(pool, req, res, {
-    command: async (ctx) => {
-      const past = ctx.openRows.filter((row) => slotIsPastDue(
-        { date: row.scheduled_date, time: row.scheduled_time },
-        ctx.asOf,
-      )).map((row) => row.id);
-      if (past.length === 0) return { event: null, result: { given: [], notGiven: [] } };
-      return resolveStackCommand(ctx, { notGiven: past });
-    },
-    audit: (out) => ({ action: 'health_occurrence.skip_missed', metadata: { count: out.notGiven.length } }),
-    respond: async (out) => ({ body: { skipped: out.notGiven, count: out.notGiven.length } }),
-  }));
-
   // Compatibility (deleted in child F): per-occurrence undo.
   router.post('/:id/occurrences/:occId/undo', (req, res) => handleCommand(pool, req, res, {
     command: (ctx) => undoCommand(ctx, {}),

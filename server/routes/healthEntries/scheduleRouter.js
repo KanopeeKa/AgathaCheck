@@ -46,16 +46,6 @@ export function registerScheduleRoutes(router, pool) {
     });
   });
 
-  // Compatibility (deleted in child F): pause = postpone without a date.
-  router.post('/:id/pause', (req, res) => handleCommand(pool, req, res, {
-    command: (ctx) => postponeCommand(ctx, { until: null, reason: 'pause' }),
-    audit: () => ({ action: 'health_entry.paused', metadata: {} }),
-    respond: async (out) => {
-      const wire = await commandResponse(pool, out, req);
-      return { body: { ...wire.entry, entry: wire.entry, undo_token: wire.undo_token } };
-    },
-  }));
-
   router.post('/:id/resume', (req, res) => {
     const body = req.body || {};
     const date = normalizeCalendarDateInput(body.date || body.resume_on || body.resumeOn);

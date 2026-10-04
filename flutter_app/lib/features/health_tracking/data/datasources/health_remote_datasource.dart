@@ -8,16 +8,15 @@ import '../models/health_event_photo.dart';
 import '../models/health_entry_model.dart';
 import '../models/health_history_model.dart';
 import '../models/health_occurrence_model.dart';
+import '../../domain/occurrence_scheduling.dart';
 import 'health_occurrence_remote_datasource.dart'
     show
-        EnsureOpenOccurrenceRemoteResult,
         RescheduleOccurrenceRemoteResult,
         fetchOpenOccurrences,
         fetchPastOccurrences,
         postCompleteOccurrence,
-        postEnsureOpenOccurrence,
         postRescheduleOccurrence,
-        postSkipMissedOccurrences,
+        postResolveStack,
         postSkipOccurrence,
         postUndoOccurrence,
         patchOccurrenceNotes;
@@ -36,12 +35,6 @@ abstract class HealthRemoteDataSource {
   Future<HealthEntryModel> createEntry(HealthEntryModel entry);
   Future<HealthEntryModel> updateEntry(HealthEntryModel entry);
   Future<void> deleteEntry(String id);
-  Future<HealthEntryModel> markTaken(
-    String id, {
-    String notes = '',
-    DateTime? completedOn,
-  });
-  Future<HealthEntryModel> undoComplete(String id);
   Future<HealthEntryModel> closeEvent(String id);
   Future<HealthEntryModel> reopenEvent(String id);
   Future<HealthEntryModel> pauseCareItem(String id);
@@ -88,11 +81,6 @@ abstract class HealthRemoteDataSource {
     String entryId,
     String occurrenceId,
     DateTime scheduledDate, {
-    String? reasonCode,
-  });
-  Future<EnsureOpenOccurrenceRemoteResult> ensureOpenOccurrence(
-    String entryId, {
-    DateTime? scheduledDate,
     String? reasonCode,
   });
   Future<void> completeWeightOccurrence({
@@ -213,40 +201,6 @@ class HealthRemoteDataSourceImpl
   }
 
   @override
-  Future<HealthEntryModel> markTaken(
-    String id, {
-    String notes = '',
-    DateTime? completedOn,
-  }) async {
-    final body = <String, dynamic>{'notes': notes};
-    if (completedOn != null) {
-      body['completed_on'] = toCalendarDateString(completedOn);
-    }
-    final response = await _client.post(
-      Uri.parse('$baseUrl/api/health-entries/$id/mark-taken'),
-      headers: _authHeaders(jsonBody: true),
-      body: json.encode(body),
-    );
-    checkHealthRemoteResponse(response);
-    return HealthEntryModel.fromJson(
-      json.decode(response.body) as Map<String, dynamic>,
-    );
-  }
-
-  @override
-  Future<HealthEntryModel> undoComplete(String id) async {
-    final response = await _client.post(
-      Uri.parse('$baseUrl/api/health-entries/$id/undo-complete'),
-      headers: _authHeaders(jsonBody: true),
-      body: json.encode({}),
-    );
-    checkHealthRemoteResponse(response);
-    return HealthEntryModel.fromJson(
-      json.decode(response.body) as Map<String, dynamic>,
-    );
-  }
-
-  @override
   Future<HealthEntryModel> closeEvent(String id) {
     return closeEventRemote(
       client: _client,
@@ -291,7 +245,15 @@ class HealthRemoteDataSourceImpl
   }
 
   @override
-  Future<HealthEntryModel> unmarkDone(String id) => undoComplete(id);
+  Future<HealthEntryModel> unmarkDone(String id) {
+    return undoScheduleRemote(
+      client: _client,
+      baseUrl: baseUrl,
+      headers: _authHeaders(jsonBody: true),
+      checkResponse: checkHealthRemoteResponse,
+      entryId: id,
+    );
+  }
 
   @override
   Future<List<HealthHistoryModel>> getHistory(String entryId) async {

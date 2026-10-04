@@ -98,21 +98,22 @@ Future<HealthOccurrenceModel> postSkipOccurrence({
   );
 }
 
-Future<int> postSkipMissedOccurrences({
+Future<Map<String, dynamic>> postResolveStack({
   required http.Client client,
   required String baseUrl,
   required Map<String, String> headers,
   required void Function(http.Response response) checkResponse,
   required String entryId,
+  required List<String> given,
+  required List<String> notGiven,
 }) async {
   final response = await client.post(
-    Uri.parse('$baseUrl/api/health-entries/$entryId/occurrences/skip-missed'),
+    Uri.parse('$baseUrl/api/health-entries/$entryId/occurrences/resolve-stack'),
     headers: headers,
-    body: json.encode({}),
+    body: json.encode({'given': given, 'not_given': notGiven}),
   );
   checkResponse(response);
-  final decoded = json.decode(response.body) as Map<String, dynamic>;
-  return decoded['count'] as int? ?? 0;
+  return json.decode(response.body) as Map<String, dynamic>;
 }
 
 class RescheduleOccurrenceRemoteResult {
@@ -187,61 +188,6 @@ Future<HealthOccurrenceModel> postUndoOccurrence({
   checkResponse(response);
   return HealthOccurrenceModel.fromJson(
     json.decode(response.body) as Map<String, dynamic>,
-  );
-}
-
-class EnsureOpenOccurrenceRemoteResult {
-  const EnsureOpenOccurrenceRemoteResult({
-    required this.occurrences,
-    required this.created,
-    this.nextDueDate,
-    this.headDate,
-  });
-
-  final List<HealthOccurrenceModel> occurrences;
-  final bool created;
-  final DateTime? nextDueDate;
-  final DateTime? headDate;
-}
-
-Future<EnsureOpenOccurrenceRemoteResult> postEnsureOpenOccurrence({
-  required http.Client client,
-  required String baseUrl,
-  required Map<String, String> headers,
-  required void Function(http.Response response) checkResponse,
-  required String entryId,
-  DateTime? scheduledDate,
-  String? reasonCode,
-}) async {
-  final body = <String, dynamic>{};
-  if (scheduledDate != null) {
-    body['scheduled_date'] = toCalendarDateString(scheduledDate);
-  }
-  if (reasonCode != null && reasonCode.isNotEmpty) {
-    body['reason_code'] = reasonCode;
-  }
-  final response = await client.post(
-    Uri.parse('$baseUrl/api/health-entries/$entryId/occurrences/ensure-open'),
-    headers: headers,
-    body: json.encode(body),
-  );
-  checkResponse(response);
-  final decoded = json.decode(response.body) as Map<String, dynamic>;
-  final occurrencesRaw = decoded['occurrences'];
-  final occurrences = occurrencesRaw is List
-      ? occurrencesRaw
-            .whereType<Map>()
-            .map(
-              (e) =>
-                  HealthOccurrenceModel.fromJson(Map<String, dynamic>.from(e)),
-            )
-            .toList()
-      : <HealthOccurrenceModel>[];
-  return EnsureOpenOccurrenceRemoteResult(
-    occurrences: occurrences,
-    created: decoded['created'] as bool? ?? false,
-    nextDueDate: parseCalendarDate(decoded['next_due_date']),
-    headDate: parseCalendarDate(decoded['head_date']),
   );
 }
 
