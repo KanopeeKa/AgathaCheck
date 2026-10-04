@@ -24,6 +24,14 @@ import {
 } from './contactsRepoSql.js';
 import { ensureLegacyVetForContact, syncVetRowFromContact } from './vetSync.js';
 
+/** Use existing PoolClient when caller already holds a transaction (e.g. planned absence PATCH). */
+async function runInTransaction(db, fn) {
+  if (db && typeof db.connect === 'function') {
+    return withTransaction(db, fn);
+  }
+  return fn(db);
+}
+
 export {
   ensurePersonalDirectorySql as ensurePersonalDirectory,
   linkContactLegacyVet,
@@ -91,7 +99,7 @@ export async function createPersonalContact(pool, userId, body) {
   const directoryId = await ensurePersonalDirectorySql(pool, userId);
   const id = uuidv4();
 
-  await withTransaction(pool, async (client) => {
+  await runInTransaction(pool, async (client) => {
     await insertContactRow(client, {
       id,
       directory_id: directoryId,
@@ -178,7 +186,7 @@ export async function patchPersonalContact(pool, contactId, userId, body) {
   const privateNote = body.private_note ?? body.privateNote;
 
   try {
-    await withTransaction(pool, async (client) => {
+    await runInTransaction(pool, async (client) => {
       await updateContactRow(client, contactId, {
         kind,
         name,
@@ -255,7 +263,7 @@ export async function upsertContactFromVetFields(pool, fields, userId) {
   }
 
   const contactId = uuidv4();
-  await withTransaction(pool, async (client) => {
+  await runInTransaction(pool, async (client) => {
     await insertContactRow(client, {
       id: contactId,
       directory_id: directoryId,
@@ -293,7 +301,7 @@ export async function ensureLinkedUserContact(pool, ownerUserId, linkedUserId) {
     ? formatCarerCandidateDisplayName(userRow.rows[0])
     : 'User';
   const contactId = uuidv4();
-  await withTransaction(pool, async (client) => {
+  await runInTransaction(pool, async (client) => {
     await insertContactRow(client, {
       id: contactId,
       directory_id: directoryId,
@@ -323,7 +331,7 @@ export async function ensureNoteOnlyContact(pool, ownerUserId, name, note) {
   if (existing.rows.length > 0) return existing.rows[0].id;
 
   const contactId = uuidv4();
-  await withTransaction(pool, async (client) => {
+  await runInTransaction(pool, async (client) => {
     await insertContactRow(client, {
       id: contactId,
       directory_id: directoryId,

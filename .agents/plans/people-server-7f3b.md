@@ -526,17 +526,11 @@ flutter_app/**
 ## Runtime state (agent-updated)
 
 ```yaml
-autonomy: active
-current_phase: s2-usages-provider
-last_completed_phase: s1-writer-access
-halt_reason: null
-next_action: "phase s2-usages-provider on cursor/people-server-s2-usages-7f3b"
-artifact_ref:
-  branch: cursor/people-refactor-orchestrate-7f3b
-  plan_path: .agents/plans/people-server-7f3b.md
-  plan_commit: 965da9abb2a07a93fe3c39cce78fafc58d62db86
-  snapshot_path: .agents/plans/people-server-7f3b.snapshot.json
-  snapshot_commit: 965da9abb2a07a93fe3c39cce78fafc58d62db86
+autonomy: halted            # draft — bootstrapped by the roadmap when the entry gate is met
+current_phase: null
+last_completed_phase: null
+halt_reason: "draft — waiting for CARE A+B and ARCH E on main"
+next_action: "roadmap bootstraps at landing slot 4"
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
