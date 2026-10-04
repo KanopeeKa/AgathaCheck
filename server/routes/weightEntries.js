@@ -6,6 +6,7 @@ import { publicError } from '../config/security.js';
 import { logAuditEventSafe } from '../lib/audit.js';
 import { extractUserId } from '../lib/requireAuth.js';
 import { dateToIsoDate, normalizeCalendarDateInput, todayCalendarIso } from '../lib/calendarDate.js';
+import { withTransaction } from '../lib/db/withTransaction.js';
 import { refreshPetWeightCache } from '../lib/petWeightSync.js';
 import {
   runCareCommand,
@@ -130,11 +131,14 @@ export default function weightEntriesRoutes(pool) {
       if (!sourceResult.ok) {
         return res.status(400).json({ error: sourceResult.error });
       }
-      const result = await pool.query(
-        'INSERT INTO weight_entries (id, pet_id, user_id, weight, unit, date, notes, measurement_source) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
-        [id, petId, userId, weightVal, data.unit || 'kg', dateVal, data.notes || '', sourceResult.value]
-      );
-      await refreshPetWeightCache(pool, petId);
+      const result = await withTransaction(pool, async (db) => {
+        const insertResult = await db.query(
+          'INSERT INTO weight_entries (id, pet_id, user_id, weight, unit, date, notes, measurement_source) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
+          [id, petId, userId, weightVal, data.unit || 'kg', dateVal, data.notes || '', sourceResult.value],
+        );
+        await refreshPetWeightCache(db, petId);
+        return insertResult;
+      });
       logAuditEventSafe(pool, {
         actorUserId: userId,
         action: 'weight_entry.created',
@@ -170,13 +174,19 @@ export default function weightEntriesRoutes(pool) {
       if (!sourceResult.ok) {
         return res.status(400).json({ error: sourceResult.error });
       }
-      const result = await pool.query(
-        'UPDATE weight_entries SET weight = $1, unit = $2, date = $3, notes = $4, measurement_source = $5 WHERE id = $6 RETURNING *',
-        [weightVal, data.unit || 'kg', dateVal, data.notes || '', sourceResult.value, req.params.id]
-      );
-      if (result.rows.length === 0) return res.status(404).json({ error: 'Not found' });
+      const result = await withTransaction(pool, async (db) => {
+        const updateResult = await db.query(
+          'UPDATE weight_entries SET weight = $1, unit = $2, date = $3, notes = $4, measurement_source = $5 WHERE id = $6 RETURNING *',
+          [weightVal, data.unit || 'kg', dateVal, data.notes || '', sourceResult.value, req.params.id],
+        );
+        if (updateResult.rows.length === 0) {
+          return null;
+        }
+        await refreshPetWeightCache(db, updateResult.rows[0].pet_id);
+        return updateResult;
+      });
+      if (!result || result.rows.length === 0) return res.status(404).json({ error: 'Not found' });
       const row = result.rows[0];
-      await refreshPetWeightCache(pool, row.pet_id);
       logAuditEventSafe(pool, {
         actorUserId: userId,
         action: 'weight_entry.updated',

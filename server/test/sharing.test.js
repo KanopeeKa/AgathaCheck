@@ -16,8 +16,14 @@ const pastExpiry = new Date(Date.now() - 60 * 1000);
 function buildMockPool(overrides = {}) {
   const queries = [];
   const defaultHandler = async (sql, params) => {
-    if (sql === 'BEGIN' || sql === 'COMMIT' || sql === 'ROLLBACK') {
-      return { rows: [] };
+    if (sql === 'BEGIN') {
+      return { command: 'BEGIN', rows: [] };
+    }
+    if (sql === 'COMMIT') {
+      return { command: 'COMMIT', rows: [] };
+    }
+    if (sql === 'ROLLBACK') {
+      return { command: 'ROLLBACK', rows: [] };
     }
     if (sql.includes('INSERT INTO pet_share_links')) {
       return { rows: [] };

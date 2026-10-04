@@ -95,8 +95,14 @@ describe('Weight Entries API', () => {
           return { rows: [{ pet_id: 'pet-1' }] };
         }
 
-        if (sql === 'BEGIN' || sql === 'COMMIT' || sql === 'ROLLBACK') {
-          return { rows: [] };
+        if (sql === 'BEGIN') {
+          return { command: 'BEGIN', rows: [] };
+        }
+        if (sql === 'COMMIT') {
+          return { command: 'COMMIT', rows: [] };
+        }
+        if (sql === 'ROLLBACK') {
+          return { command: 'ROLLBACK', rows: [] };
         }
 
         if (sql.includes('UPDATE health_occurrences SET status = \'pending\'')) {
@@ -425,7 +431,9 @@ describe('Weight Entries API', () => {
       const mockPool = {
         query: async (sql, params) => {
           queries.push({ sql, params });
-          if (sql === 'BEGIN' || sql === 'COMMIT' || sql === 'ROLLBACK') return { rows: [] };
+          if (sql === 'BEGIN') return { command: 'BEGIN', rows: [] };
+          if (sql === 'COMMIT') return { command: 'COMMIT', rows: [] };
+          if (sql === 'ROLLBACK') return { command: 'ROLLBACK', rows: [] };
           const access = handlePetAccessQuery(sql, params, {
             userId,
             ownedPetIds: ['pet-1'],
@@ -478,7 +486,9 @@ describe('Weight Entries API', () => {
           if (sql.includes('SELECT pet_id, health_occurrence_id FROM weight_entries WHERE id = $1')) {
             return { rows: [{ pet_id: 'pet-1', health_occurrence_id: null }] };
           }
-          if (sql === 'BEGIN' || sql === 'COMMIT' || sql === 'ROLLBACK') return { rows: [] };
+          if (sql === 'BEGIN') return { command: 'BEGIN', rows: [] };
+          if (sql === 'COMMIT') return { command: 'COMMIT', rows: [] };
+          if (sql === 'ROLLBACK') return { command: 'ROLLBACK', rows: [] };
           if (sql.includes('UPDATE pets SET weight = (')) return { rows: [] };
           if (sql.includes('DELETE FROM weight_entries')) return { rows: [] };
           return { rows: [] };
@@ -526,6 +536,9 @@ describe('Weight Entries API', () => {
       const auditInserts = [];
       const mockPool = {
         query: async (sql, params) => {
+          if (sql === 'BEGIN') return { command: 'BEGIN', rows: [] };
+          if (sql === 'COMMIT') return { command: 'COMMIT', rows: [] };
+          if (sql === 'ROLLBACK') return { command: 'ROLLBACK', rows: [] };
           const access = handlePetAccessQuery(sql, params, {
             userId,
             ownedPetIds: ['pet-1'],
@@ -543,6 +556,10 @@ describe('Weight Entries API', () => {
           }
           return { rows: [] };
         },
+        connect: async () => ({
+          query: async (sql, params) => mockPool.query(sql, params),
+          release: () => {},
+        }),
         end: async () => {},
       };
       const auditApp = createApp(mockPool);
@@ -558,6 +575,9 @@ describe('Weight Entries API', () => {
       const auditInserts = [];
       const mockPool = {
         query: async (sql, params) => {
+          if (sql === 'BEGIN') return { command: 'BEGIN', rows: [] };
+          if (sql === 'COMMIT') return { command: 'COMMIT', rows: [] };
+          if (sql === 'ROLLBACK') return { command: 'ROLLBACK', rows: [] };
           if (sql.includes('SELECT pet_id FROM weight_entries WHERE id = $1')) {
             return { rows: [{ pet_id: 'pet-1' }] };
           }
@@ -567,7 +587,7 @@ describe('Weight Entries API', () => {
           });
           if (access) return access;
           if (sql.includes('UPDATE weight_entries')) {
-            return { rows: [makeWeightRow({ id: params[4], pet_id: 'pet-1', weight: params[0] })] };
+            return { rows: [makeWeightRow({ id: params[5], pet_id: 'pet-1', weight: params[0] })] };
           }
           if (sql.includes('UPDATE pets SET weight = (')) return { rows: [] };
           if (sql.includes('INSERT INTO audit_events')) {
@@ -576,6 +596,10 @@ describe('Weight Entries API', () => {
           }
           return { rows: [] };
         },
+        connect: async () => ({
+          query: async (sql, params) => mockPool.query(sql, params),
+          release: () => {},
+        }),
         end: async () => {},
       };
       const auditApp = createApp(mockPool);
@@ -591,7 +615,9 @@ describe('Weight Entries API', () => {
       const auditInserts = [];
       const mockPool = {
         query: async (sql, params) => {
-          if (sql === 'BEGIN' || sql === 'COMMIT' || sql === 'ROLLBACK') return { rows: [] };
+          if (sql === 'BEGIN') return { command: 'BEGIN', rows: [] };
+          if (sql === 'COMMIT') return { command: 'COMMIT', rows: [] };
+          if (sql === 'ROLLBACK') return { command: 'ROLLBACK', rows: [] };
           if (sql.includes('SELECT pet_id, health_occurrence_id FROM weight_entries WHERE id = $1')) {
             return { rows: [{ pet_id: 'pet-1', health_occurrence_id: null }] };
           }

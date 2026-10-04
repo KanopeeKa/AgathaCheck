@@ -226,7 +226,7 @@ POST/PUT accept optional `measurement_source`. Pet weight reference/context fiel
 | DELETE | `/links/:linkId` | Owner deletes any share link; foster may delete only links they created |
 | GET | `/hidden` | Hidden shared pets |
 | PUT | `/:petId/hide` | Hide or unhide a shared pet (`{ hidden: true\|false }`) |
-| POST | `/invites` | Email invite; body `{ invitee_email, pet_ids, role }` — up to 20 pets; returns `{ invite_id, code, included_pet_ids, excluded[], delivery }` |
+| POST | `/invites` | Email invite; body `{ invitee_email, pet_ids, role }` — up to 20 pets; returns `{ invite_id, code, included_pet_ids, excluded[], delivery }`; identical replay while a pending invite from the same inviter covers every requested pet returns **200** with the same ids and `replayed: true` (no new rows or notifications) |
 | GET | `/invites/code/:code` | Public invite preview (no inviter email) |
 | POST | `/invites/code/:code/accept` | Auth required; grants access per pet on invite |
 | POST | `/invites/:id/decline` | Auth required; notifies inviter |

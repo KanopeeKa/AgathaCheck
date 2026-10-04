@@ -41,8 +41,14 @@ function buildAcceptDeclinePool(overrides = {}) {
   };
 
   const query = async (sql, params) => {
-    if (sql === 'BEGIN' || sql === 'COMMIT' || sql === 'ROLLBACK') {
-      return { rows: [] };
+    if (sql === 'BEGIN') {
+      return { command: 'BEGIN', rows: [] };
+    }
+    if (sql === 'COMMIT') {
+      return { command: 'COMMIT', rows: [] };
+    }
+    if (sql === 'ROLLBACK') {
+      return { command: 'ROLLBACK', rows: [] };
     }
     if (sql.includes('FROM pet_share_invites psi') && sql.includes('FOR UPDATE')) {
       const { pets, ...inviteRow } = state.invite;
