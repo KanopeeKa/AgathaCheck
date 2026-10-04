@@ -218,8 +218,8 @@ never on PRs.
 
 **Exit criteria:**
 
-- [ ] Active drift = 0; frozen spec titles not reported
-- [ ] Every uncovered active scenario has a recorded decision
+- [x] Active drift = 0; frozen spec titles not reported
+- [x] Every uncovered active scenario has a recorded decision
 
 ### Phase 6 — WAF-proof UAT verification
 
@@ -278,10 +278,10 @@ around it; never classify a WAF block as a product failure.
 
 ```yaml
 autonomy: active
-current_phase: 6
-last_completed_phase: 4
+current_phase: 5
+last_completed_phase: 6
 halt_reason: null
-next_action: "continue phase 6 on branch claude/relaxed-einstein-jqecfg"
+next_action: "phase 5 BDD hygiene PR → phase 7 security/perf"
 artifact_ref:
   branch: cursor/test-health-ci-phase6-edcb
   plan_path: .agents/plans/test-health-ci-5f3a.md
