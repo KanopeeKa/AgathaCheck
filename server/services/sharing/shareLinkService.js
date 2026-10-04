@@ -17,6 +17,9 @@ import {
   updatePetAccessHidden,
 } from '../../db/sharing/shareLinkQueries.js';
 import { withTransaction } from '../../lib/db/withTransaction.js';
+import {
+  NOTIFICATION_TYPE_SHARE_LINK_FOLLOWED,
+} from '../../lib/notificationKind.js';
 import { createNotification, userDisplayName } from '../../lib/notificationHelper.js';
 import { ShareCommandResult } from './shareCommandResult.js';
 import {
@@ -175,7 +178,7 @@ export async function acceptLink(pool, { userId, code }) {
         petName: link.pet_name,
         title: 'Share accepted',
         message: `${accepterName} is now following ${link.pet_name}. You can remove them at any time from the Sharing section.`,
-        type: 'general',
+        type: NOTIFICATION_TYPE_SHARE_LINK_FOLLOWED,
       });
 
       return {

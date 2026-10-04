@@ -11,6 +11,10 @@ import {
   updateAccessRole,
 } from '../../db/sharing/shareAccessQueries.js';
 import { listPendingInvitesForPet } from '../../db/sharing/shareInviteQueries.js';
+import {
+  NOTIFICATION_TYPE_SHARE_ACCESS_REMOVED,
+  NOTIFICATION_TYPE_SHARE_MEMBER_LEFT,
+} from '../../lib/notificationKind.js';
 import { createNotification, userDisplayName } from '../../lib/notificationHelper.js';
 import {
   CARER_ROLE,
@@ -174,7 +178,7 @@ export async function stopFollowing(pool, userId, petId) {
     petName: pet.name,
     title: 'Stopped following',
     message: `${followerName} stopped following ${pet.name}.`,
-    type: 'general',
+    type: NOTIFICATION_TYPE_SHARE_MEMBER_LEFT,
   });
 
   return { message: 'Stopped following pet' };
@@ -260,7 +264,7 @@ export async function removeAccess(pool, { actorId, petId, targetUserId }) {
     petName,
     title: 'Sharing ended',
     message: `${actorName} stopped sharing ${petName} with you.`,
-    type: 'general',
+    type: NOTIFICATION_TYPE_SHARE_ACCESS_REMOVED,
   });
 
   return { message: 'Access removed' };

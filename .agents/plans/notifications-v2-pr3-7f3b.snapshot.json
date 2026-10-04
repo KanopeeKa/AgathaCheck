@@ -15,12 +15,21 @@
       "title": "PR3 relationship emitters",
       "branch": "cursor/notifications-v2-pr3-7f3b",
       "allowed_paths": [
+        "server/lib/notificationKind.js",
+        "server/lib/notificationHelper.js",
+        "server/lib/households/**",
+        "server/lib/petDataLifecycle.js",
+        "server/lib/fosterInvite.js",
+        "server/lib/fosterAgreementWithdrawal.js",
+        "server/lib/custodyTransfers.js",
+        "server/lib/people/**",
+        "server/services/sharing/**",
+        "server/routes/**",
+        "server/test/**",
         "flutter_app/lib/features/notifications/**",
         "flutter_app/test/features/notifications/**",
         "flutter_app/lib/l10n/**",
         "flutter_app/test/bdd/features/notifications_v2.feature",
-        "server/routes/**",
-        "server/test/**",
         ".agents/plans/notifications-v2-pr3-7f3b.*"
       ],
       "forbidden_paths": [
@@ -37,13 +46,13 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "merge_commit": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_head_sha": "6efb943323f06f52e47371cf6a1e39646d8a6a05",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1583"
     }
   ],
-  "content_hash": "sha256:61ae9c23d95cf146ccefa2a8d7231fe2ac61689d0a0b4e0bfa97805adfeba6e6"
+  "content_hash": "sha256:9f1954e50cf1b240bbcfc1f15e7376725a9fa30c7db43ecb2f907f2e09d55457"
 }
