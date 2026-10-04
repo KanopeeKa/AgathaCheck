@@ -1,0 +1,348 @@
+{
+  "schema_version": 1,
+  "plan_id": "care-requirements-gap-close-c1a7",
+  "programme_ref": ".agents/plans/care-next-occurrence-c1a7.md",
+  "approved_at": "2026-10-04T21:05:00Z",
+  "approved_by": "user chat 2026-10-04 — approved plan with 10 amendments; execute-plan on integration branch with full autonomy",
+  "approved_until": "2026-10-06T21:05:00Z",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/care-requirements-gap-close-integration-50b4",
+  "control_issue": 1526,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "A1",
+      "title": "R9 Plan/Record exclusivity + E2E",
+      "branch": "cursor/care-gap-a1-r9-50b4",
+      "allowed_paths": [
+        ".agents/plans/care-requirements-gap-close-c1a7.*",
+        "flutter_app/lib/features/health_tracking/presentation/**",
+        "flutter_app/lib/features/health_tracking/domain/**",
+        "flutter_app/test/features/health_tracking/**",
+        "e2e/playwright/tests/care*.spec.ts",
+        "e2e/playwright/pages/**",
+        "flutter_app/test/bdd/features/care*.feature",
+        "docs/domains/pet_care/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "A2",
+      "title": "GDPR export CARE tables",
+      "branch": "cursor/care-gap-a2-gdpr-50b4",
+      "allowed_paths": [
+        ".agents/plans/care-requirements-gap-close-c1a7.*",
+        "server/lib/gdprUserExport.js",
+        "server/test/**/gdpr*",
+        "server/test/auth/**",
+        "e2e/playwright/tests/gdpr.data-rights.spec.ts"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "db/migrations/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "GOV",
+      "title": "Governance + debt filing",
+      "branch": "cursor/care-gap-gov-50b4",
+      "allowed_paths": [
+        ".agents/plans/care-next-occurrence-c1a7.*",
+        ".agents/plans/care-item-module-c1a7.*",
+        ".agents/plans/care-requirements-gap-close-c1a7.*",
+        "docs/agent-efficiency/parallel-programmes.md"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "C1",
+      "title": "care_item import decision (pre-B)",
+      "branch": "cursor/care-gap-c1-import-50b4",
+      "allowed_paths": [
+        ".agents/plans/care-requirements-gap-close-c1a7.*",
+        "scripts/check_feature_imports.js",
+        "scripts/feature-import-baseline.json",
+        "flutter_app/lib/features/care_item/**",
+        "docs/architecture/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": "Blocks B1/B2 until merged",
+      "debt_issue_refs": []
+    },
+    {
+      "id": "C2",
+      "title": "F2 dead-code cleanup",
+      "branch": "cursor/care-gap-c2-deadcode-50b4",
+      "allowed_paths": [
+        ".agents/plans/care-requirements-gap-close-c1a7.*",
+        "flutter_app/lib/**",
+        "flutter_app/test/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "C3",
+      "title": "Undo ledger consistency test",
+      "branch": "cursor/care-gap-c3-undo-50b4",
+      "allowed_paths": [
+        ".agents/plans/care-requirements-gap-close-c1a7.*",
+        "server/test/**",
+        "e2e/playwright/tests/care*.spec.ts",
+        "docs/domains/pet_care/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "C4",
+      "title": "EX-11 fallback documentation",
+      "branch": "cursor/care-gap-c4-docs-50b4",
+      "allowed_paths": [
+        ".agents/plans/care-next-occurrence-c1a7.md",
+        ".agents/plans/care-requirements-gap-close-c1a7.*",
+        ".agents/memory/MEMORY.md"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "B1",
+      "title": "R8 booster + Plan another date + UIR-21",
+      "branch": "cursor/care-gap-b1-r8-hero-50b4",
+      "allowed_paths": [
+        ".agents/plans/care-requirements-gap-close-c1a7.*",
+        "flutter_app/lib/features/care_item/**",
+        "flutter_app/lib/features/health_tracking/**",
+        "flutter_app/test/**",
+        "e2e/playwright/**",
+        "flutter_app/test/bdd/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": "Requires C1 merged",
+      "debt_issue_refs": []
+    },
+    {
+      "id": "B2",
+      "title": "D2 Advanced settings + schedule copy",
+      "branch": "cursor/care-gap-b2-advanced-50b4",
+      "allowed_paths": [
+        ".agents/plans/care-requirements-gap-close-c1a7.*",
+        "flutter_app/lib/features/health_tracking/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/**",
+        "e2e/playwright/**",
+        "flutter_app/test/bdd/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "B3",
+      "title": "A11y + BDD orphan cleanup",
+      "branch": "cursor/care-gap-b3-a11y-50b4",
+      "allowed_paths": [
+        ".agents/plans/care-requirements-gap-close-c1a7.*",
+        "e2e/playwright/tests/care.a11y.spec.ts",
+        "e2e/scripts/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "B4",
+      "title": "R7 pause-until + resume UI + E2E",
+      "branch": "cursor/care-gap-b4-pause-50b4",
+      "allowed_paths": [
+        ".agents/plans/care-requirements-gap-close-c1a7.*",
+        "flutter_app/lib/features/health_tracking/**",
+        "flutter_app/lib/features/care_item/**",
+        "flutter_app/test/**",
+        "e2e/playwright/**",
+        "flutter_app/test/bdd/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "D1",
+      "title": "drop_health_history + erasure alignment",
+      "branch": "cursor/care-gap-d1-drop-history-50b4",
+      "allowed_paths": [
+        ".agents/plans/care-requirements-gap-close-c1a7.*",
+        "db/migrations/*drop_health_history*",
+        "db/schema/**",
+        "server/lib/gdprUserExport.js",
+        "server/lib/account/**",
+        "server/test/**",
+        "docs/engineering/privacy/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": "Requires A2; coordinate #1510",
+      "debt_issue_refs": []
+    }
+  ],
+  "content_hash": "sha256:146b5d39ec212da2bf6b407eca660d348750225571d3f38f5a17fb7c05487ca1"
+}
