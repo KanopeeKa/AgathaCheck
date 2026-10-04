@@ -95,17 +95,17 @@ db/migrations/**
 
 ```yaml
 autonomy: active
-current_phase: 1
-last_completed_phase: null
+current_phase: 2
+last_completed_phase: 1
 halt_reason: null
-next_action: "continue phase 1 on branch cursor/notifications-v2-spec-231-7f3b"
+next_action: "continue phase 2 on branch cursor/notifications-v2-spec-231-7f3b"
 artifact_ref:
-  branch: main
+  branch: cursor/notifications-v2-spec-231-7f3b
   plan_path: .agents/plans/notifications-v2-foundation-7f3b.md
-  plan_commit: 6f4b43687cdf91ecdcd25231758c6f352a06f9cd
+  plan_commit: ecae60fd7637eec2860b204dc50abb39e082ac5c
   snapshot_path: .agents/plans/notifications-v2-foundation-7f3b.snapshot.json
-  snapshot_commit: 6f4b43687cdf91ecdcd25231758c6f352a06f9cd
-open_prs: []
+  snapshot_commit: ecae60fd7637eec2860b204dc50abb39e082ac5c
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1572"]
 merge_commits: {}
 debt_issue_refs: []
 ```
