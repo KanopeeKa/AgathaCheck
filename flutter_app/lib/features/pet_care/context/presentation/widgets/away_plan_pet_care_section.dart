@@ -231,7 +231,10 @@ class _PetCareBody extends StatelessWidget {
           AwayPlanCarerTasksSummary(absenceId: absenceId, petId: petId),
           const SizedBox(height: 8),
           ...result.plannedCareItems.map(
-            (item) => _PlannedCareRow(petId: petId, item: item),
+            (item) => _PlannedCareRow(
+              petId: petId,
+              item: item,
+            ),
           ),
           if (result.showsEstimateFootnote) ...[
             const SizedBox(height: 8),
@@ -277,8 +280,29 @@ class _PlannedCareRow extends ConsumerWidget {
       colorScheme,
     );
     final inWindowLine = AwayPlanScheduleCopy.inWindowLine(l, item);
-    final viewLabel = '${item.name}. $scheduleLine';
+    final occurrenceId = item.resolvedOccurrenceId;
+    final viewLabel = occurrenceId != null
+        ? '${item.name}. $scheduleLine. $occurrenceId'
+        : '${item.name}. $scheduleLine';
     final showSeeOptions = item.showsSeeOptionsOnAwayPlan;
+
+    void openCare() {
+      if (occurrenceId != null) {
+        openOccurrenceScreen(
+          context,
+          petId: petId,
+          entryId: item.healthEntryId,
+          occurrenceId: occurrenceId,
+          source: 'away_plan',
+        );
+      } else {
+        openPetEventView(
+          context,
+          petId: petId,
+          entryId: item.healthEntryId,
+        );
+      }
+    }
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
@@ -292,11 +316,7 @@ class _PlannedCareRow extends ConsumerWidget {
             child: Material(
               color: Colors.transparent,
               child: InkWell(
-                onTap: () => openPetEventView(
-                  context,
-                  petId: petId,
-                  entryId: item.healthEntryId,
-                ),
+                onTap: openCare,
                 borderRadius: BorderRadius.circular(8),
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(
@@ -360,11 +380,7 @@ class _PlannedCareRow extends ConsumerWidget {
               alignment: Alignment.centerLeft,
               child: TextButton(
                 key: Key('away_plan_see_options_${item.healthEntryId}'),
-                onPressed: () => openPetEventView(
-                  context,
-                  petId: petId,
-                  entryId: item.healthEntryId,
-                ),
+                onPressed: openCare,
                 child: Text(l.awayPlanningSeeOptions),
               ),
             ),

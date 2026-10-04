@@ -70,6 +70,48 @@ void main() {
     });
   });
 
+  testWidgets('open skips ensure-open when initial occurrence id is set', (
+    tester,
+  ) async {
+    final entry = HealthEntry(
+      id: 'entry-1',
+      petId: 'pet-1',
+      name: 'Med',
+      type: HealthEntryType.medication,
+      frequency: HealthFrequency.monthly,
+      startDate: DateTime(2026, 1, 1),
+      nextDueDate: DateTime(2026, 10, 27),
+    );
+    final scheduled = parseCalendarDate('2026-10-27')!;
+    final repository = _EnsureTestRepository(
+      onEnsure: (_, {scheduledDate, reasonCode}) async {
+        throw StateError('ensure-open should not run');
+      },
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [healthRepositoryProvider.overrideWithValue(repository)],
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: _OpenReviewHarness(
+            entry: entry,
+            scheduled: scheduled,
+            occurrenceId: 'occ-known',
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('review'));
+    await tester.pumpAndSettle();
+
+    expect(repository.ensureCallCount, 0);
+    final l = await AppLocalizations.delegate.load(const Locale('en'));
+    expect(find.text(l.careItemOccurrenceReviewTitle), findsOneWidget);
+  });
+
   testWidgets('open calls ensure-open when occurrence id is missing', (
     tester,
   ) async {
@@ -127,10 +169,15 @@ void main() {
 }
 
 class _OpenReviewHarness extends ConsumerWidget {
-  const _OpenReviewHarness({required this.entry, required this.scheduled});
+  const _OpenReviewHarness({
+    required this.entry,
+    required this.scheduled,
+    this.occurrenceId = '',
+  });
 
   final HealthEntry entry;
   final DateTime scheduled;
+  final String occurrenceId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -143,7 +190,7 @@ class _OpenReviewHarness extends ConsumerWidget {
             entry,
             absenceId: 'abs-1',
             initialOccurrence: HealthOccurrence(
-              id: '',
+              id: occurrenceId,
               entryId: entry.id,
               scheduledDate: scheduled,
               status: 'pending',

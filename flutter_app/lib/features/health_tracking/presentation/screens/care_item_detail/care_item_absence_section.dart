@@ -9,6 +9,7 @@ import '../../../../pet_care/presentation/widgets/care_surface/care_item_module.
 import '../../../../pet_care/presentation/widgets/care_surface/care_item_section_header.dart';
 import '../../../data/models/health_entry_absence_context_model.dart';
 import '../../../domain/entities/health_entry.dart';
+import '../../../domain/entities/health_occurrence.dart';
 import '../../providers/care_item_absence_providers.dart';
 import '../../providers/care_item_absence_resolution_sync.dart';
 import '../../providers/care_item_detail_refresh.dart';
@@ -149,11 +150,36 @@ class CareItemAbsenceSection extends ConsumerWidget {
     WidgetRef ref,
     HealthEntryAbsenceSlice slice,
   ) async {
+    final review = slice.reviewOccurrence;
+    HealthOccurrence? initialOccurrence;
+    if (review != null &&
+        review.occurrenceId.isNotEmpty &&
+        review.scheduledDate.isNotEmpty) {
+      final scheduled = parseCalendarDate(review.scheduledDate);
+      if (scheduled != null) {
+        initialOccurrence = HealthOccurrence(
+          id: review.occurrenceId,
+          entryId: entry.id,
+          scheduledDate: scheduled,
+          scheduledTime: review.scheduledTime,
+          status: 'pending',
+        );
+      }
+    }
+    if (initialOccurrence == null) {
+      if (!context.mounted) return;
+      final l = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l.careCompletionFailed)),
+      );
+      return;
+    }
     await OccurrenceReviewFlow.open(
       context,
       ref,
       entry,
       absenceId: slice.plannedAbsenceId,
+      initialOccurrence: initialOccurrence,
     );
     if (context.mounted) {
       invalidateCareItemDetailData(

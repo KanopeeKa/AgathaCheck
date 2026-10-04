@@ -29,7 +29,7 @@ class RescheduleOccurrenceFlow {
     required String endsOn,
     required String absenceId,
   }) async {
-    final occId = item.openOccurrence?.occurrenceId ?? item.occurrenceId;
+    final occId = item.resolvedOccurrenceId;
     final sched = item.openOccurrence?.scheduledDate ?? item.scheduledDate;
     if (occId == null || sched == null) return;
 
