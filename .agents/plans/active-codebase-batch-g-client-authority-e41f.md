@@ -44,18 +44,18 @@ Finish Packages 7 and 8 (D2, D18, D19):
 
 ```yaml
 autonomy: active
-current_phase: 2
-last_completed_phase: 1
+current_phase: 3
+last_completed_phase: 2
 halt_reason: null
-next_action: "continue phase 2 on branch cursor/active-codebase-g2-health-store-e41f"
+next_action: "start phase 3: checkout cursor/active-codebase-g3-care-schedule-controller-e41f"
 artifact_ref:
-  branch: cursor/active-codebase-g2-health-store-e41f
+  branch: cursor/active-codebase-g-integration-e41f
   plan_path: .agents/plans/active-codebase-batch-g-client-authority-e41f.md
-  plan_commit: 2d0da129c35c777c5a39e6ac8e706e01c508a607
+  plan_commit: 421cdbefa259fc8d9317a6549a8d1c31f66210de
   snapshot_path: .agents/plans/active-codebase-batch-g-client-authority-e41f.snapshot.json
-  snapshot_commit: 2d0da129c35c777c5a39e6ac8e706e01c508a607
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1560"]
-merge_commits: {}
+  snapshot_commit: 421cdbefa259fc8d9317a6549a8d1c31f66210de
+open_prs: []
+merge_commits: {"2":"dba43f7da365f0aa59e05ee1c47b1334089e33d4"}
 debt_issue_refs: []
 ```
 
