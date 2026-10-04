@@ -31,17 +31,17 @@
 ## Runtime state (agent-updated)
 
 ```yaml
-autonomy: active
+autonomy: completed
 current_phase: null
 last_completed_phase: W4
 halt_reason: null
 next_action: "plan complete"
 artifact_ref:
-  branch: cursor/weight-unify-server-integration-9b2e
+  branch: main
   plan_path: .agents/plans/weight-unify-server-9b2e.md
-  plan_commit: b2d02dbfe9c24c3787837308c5427677beb9d23f
+  plan_commit: b3fa80de8735d636836e2a02124cf8b9d29cf2e9
   snapshot_path: .agents/plans/weight-unify-server-9b2e.snapshot.json
-  snapshot_commit: b2d02dbfe9c24c3787837308c5427677beb9d23f
+  snapshot_commit: b3fa80de8735d636836e2a02124cf8b9d29cf2e9
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
