@@ -1,0 +1,242 @@
+{
+  "schema_version": 1,
+  "plan_id": "test-health-ci-verify-a8c2",
+  "approved_at": "2026-10-04T21:05:00Z",
+  "approved_by": "User chat 2026-10-04: execute-plan with integration branch + full autonomy (no per-phase confirmation); verification programme after test-health-ci-5f3a per agreed order.",
+  "approved_until": "2026-10-06T21:05:00Z",
+  "content_hash": "sha256:036b631fd6d3933ab5be2f4fb35d2f7301f0c8d0ee5851281198c0f6a5639771",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/test-health-ci-verify-integration-edcb",
+  "control_issue": 1525,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "UAT in-host smoke fix",
+      "branch": "cursor/test-health-verify-uat-smoke-edcb",
+      "allowed_paths": [
+        ".github/workflows/uat-live-e2e.yml",
+        ".github/workflows/deploy-uat.yml",
+        "server/scripts/uat-inhost-smoke*.mjs",
+        "server/scripts/**",
+        "scripts/ci/**",
+        "docs/e2e/**",
+        "docs/pipelines/**",
+        ".agents/plans/test-health-ci-verify-a8c2.*"
+      ],
+      "forbidden_paths": [
+        "flutter_app/lib/**",
+        "db/migrations/**",
+        "server/routes/**",
+        "server/config/security.js"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2",
+      "title": "Weekly KPI / ZAP / k6 jobs operational",
+      "branch": "cursor/test-health-verify-weekly-jobs-edcb",
+      "allowed_paths": [
+        ".github/workflows/security-dast.yml",
+        ".github/workflows/perf-weekly.yml",
+        ".github/workflows/quality-kpis.yml",
+        "e2e/perf/**",
+        "e2e/scripts/bootstrap-db.sh",
+        "scripts/ci/**",
+        "docs/pipelines/ci-cd-gates.md",
+        ".agents/plans/test-health-ci-verify-a8c2.*"
+      ],
+      "forbidden_paths": [
+        "server/routes/**",
+        "flutter_app/lib/**",
+        "db/migrations/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "3",
+      "title": "People back-navigation journey test",
+      "branch": "cursor/test-health-verify-back-nav-edcb",
+      "allowed_paths": [
+        "e2e/playwright/**",
+        "e2e/scripts/**",
+        "flutter_app/test/bdd/features/**",
+        "docs/quality/**",
+        ".agents/plans/test-health-ci-verify-a8c2.*"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "db/migrations/**",
+        "flutter_app/lib/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "4",
+      "title": "main.dart.js bundle budget",
+      "branch": "cursor/test-health-verify-js-budget-edcb",
+      "allowed_paths": [
+        "scripts/ci/web-bundle-budget.json",
+        "scripts/ci/check-web-bundle-budget.mjs",
+        ".github/workflows/_reusable-build-web.yml",
+        "docs/pipelines/**",
+        ".agents/plans/test-health-ci-verify-a8c2.*"
+      ],
+      "forbidden_paths": [
+        "server/routes/**",
+        "flutter_app/lib/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "5",
+      "title": "Unauthenticated routes expect 401/403",
+      "branch": "cursor/test-health-verify-auth-matrix-edcb",
+      "allowed_paths": [
+        "server/test/unauthenticatedApiRouteMatrix.test.js",
+        "server/test/helpers/expressRouteInventory.js",
+        ".agents/plans/test-health-ci-verify-a8c2.*"
+      ],
+      "forbidden_paths": [
+        "server/routes/**",
+        "server/config/security.js",
+        "flutter_app/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "6",
+      "title": "IDOR probe expansion",
+      "branch": "cursor/test-health-verify-idor-edcb",
+      "allowed_paths": [
+        "server/test/db/**",
+        "server/test/helpers/**",
+        ".agents/plans/test-health-ci-verify-a8c2.*"
+      ],
+      "forbidden_paths": [
+        "server/routes/**",
+        "db/migrations/**",
+        "flutter_app/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "7",
+      "title": "Schema equivalence isolated database",
+      "branch": "cursor/test-health-verify-schema-db-edcb",
+      "allowed_paths": [
+        "server/test/db/schemaEquivalence.integration.test.js",
+        "server/jest.config*.cjs",
+        "scripts/db/**",
+        "e2e/scripts/bootstrap-db.sh",
+        ".agents/plans/test-health-ci-verify-a8c2.*"
+      ],
+      "forbidden_paths": [
+        "server/routes/**",
+        "db/migrations/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "8",
+      "title": "Agent memory (#1470) governance",
+      "branch": "cursor/test-health-verify-memory-gov-edcb",
+      "allowed_paths": [
+        ".agents/memory/**",
+        "docs/agent-efficiency/**",
+        ".agents/plans/test-health-ci-verify-a8c2.*"
+      ],
+      "forbidden_paths": [
+        "server/routes/**",
+        "flutter_app/lib/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    }
+  ]
+}
