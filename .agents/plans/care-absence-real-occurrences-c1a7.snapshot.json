@@ -128,7 +128,7 @@
     {
       "id": "E5",
       "title": "Flutter away rows + occurrence ids",
-      "branch": "cursor/care-e5-away-flutter-50b4",
+      "branch": "cursor/care-e5-flutter-away-50b4",
       "allowed_paths": [
         ".agents/plans/care-absence-real-occurrences-c1a7.*",
         "flutter_app/lib/features/pet_care/context/**",
