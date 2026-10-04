@@ -112,9 +112,9 @@ class _CareItemNeedsAttentionSectionState
         await _refresh();
         if (!context.mounted) return;
         if (outcome is CareFailed) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l.careCommandFailed)),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l.careCommandFailed)));
         }
       case CareOccurrenceMenuAction.postpone:
         await ref
@@ -183,13 +183,15 @@ class _CareItemNeedsAttentionSectionState
                 key: Key('care_item_mark_done_${leading.id}'),
                 onPressed: _busy
                     ? null
-                    : () => ref.read(careCompletionFlowProvider).done(
-                          context,
-                          schedule: _s,
-                          occurrence: leading,
-                          onChanged: _refresh,
-                          source: CareCommandSource.careItem,
-                        ),
+                    : () => ref
+                          .read(careCompletionFlowProvider)
+                          .done(
+                            context,
+                            schedule: _s,
+                            occurrence: leading,
+                            onChanged: _refresh,
+                            source: CareCommandSource.careItem,
+                          ),
                 child: Text(l.careMarkDoneLabel(_s.name)),
               ),
               const SizedBox(height: 8),
@@ -215,12 +217,8 @@ class _CareItemNeedsAttentionSectionState
                 child: CareOccurrenceMenu(
                   occurrence: leading,
                   muted: _busy,
-                  onSelected: (action) => _occurrenceMenuAction(
-                    context,
-                    ref,
-                    leading,
-                    action,
-                  ),
+                  onSelected: (action) =>
+                      _occurrenceMenuAction(context, ref, leading, action),
                 ),
               ),
             ],

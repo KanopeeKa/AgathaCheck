@@ -17,10 +17,8 @@ Future<bool?> showPlanAnotherDateSheet(
   return showModalBottomSheet<bool>(
     context: context,
     isScrollControlled: true,
-    builder: (ctx) => PlanAnotherDateSheet(
-      entryId: entryId,
-      initialDate: initialDate,
-    ),
+    builder: (ctx) =>
+        PlanAnotherDateSheet(entryId: entryId, initialDate: initialDate),
   );
 }
 
