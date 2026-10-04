@@ -527,16 +527,16 @@ flutter_app/**
 
 ```yaml
 autonomy: active
-current_phase: s2-usages-provider
-last_completed_phase: s1-writer-access
+current_phase: s3-relationships
+last_completed_phase: s2-usages-provider
 halt_reason: null
-next_action: "continue phase s2-usages-provider on branch cursor/people-server-s2-usages-7f3b"
+next_action: "start phase s3-relationships: checkout cursor/people-server-s3-relationships-7f3b"
 artifact_ref:
   branch: cursor/people-server-integration-7f3b
   plan_path: .agents/plans/people-server-7f3b.md
-  plan_commit: db991e761a6e542eec5722fd57d243b5ab3b9a11
+  plan_commit: 0ad9564c30504f19b3e8e37688a8387926f2cc23
   snapshot_path: .agents/plans/people-server-7f3b.snapshot.json
-  snapshot_commit: db991e761a6e542eec5722fd57d243b5ab3b9a11
+  snapshot_commit: 0ad9564c30504f19b3e8e37688a8387926f2cc23
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
