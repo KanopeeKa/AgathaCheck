@@ -51,10 +51,10 @@ next_action: "continue phase 2 on branch cursor/active-codebase-g2-health-store-
 artifact_ref:
   branch: cursor/active-codebase-g2-health-store-e41f
   plan_path: .agents/plans/active-codebase-batch-g-client-authority-e41f.md
-  plan_commit: d87b13ad22334233792c157bb22a9287be74e03f
+  plan_commit: 2d0da129c35c777c5a39e6ac8e706e01c508a607
   snapshot_path: .agents/plans/active-codebase-batch-g-client-authority-e41f.snapshot.json
-  snapshot_commit: d87b13ad22334233792c157bb22a9287be74e03f
-open_prs: []
+  snapshot_commit: 2d0da129c35c777c5a39e6ac8e706e01c508a607
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1560"]
 merge_commits: {}
 debt_issue_refs: []
 ```
