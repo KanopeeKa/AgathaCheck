@@ -41,6 +41,9 @@ describe('notificationKind', () => {
   it('normalises invalid kind and priority wire values', () => {
     expect(normaliseKind(null)).toBe(NOTIFICATION_KIND_CARE);
     expect(normaliseKind('administrative')).toBe('administrative');
+    expect(normaliseKind('relationship')).toBe('relationship');
+    expect(normaliseKind('suggestion')).toBe('suggestion');
+    expect(normaliseKind('account')).toBe('account');
     expect(normaliseKind('bogus')).toBe(NOTIFICATION_KIND_CARE);
     expect(normalisePriority('urgent')).toBe(NOTIFICATION_PRIORITY_URGENT);
     expect(normalisePriority('bogus')).toBe(NOTIFICATION_PRIORITY_NORMAL);

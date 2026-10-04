@@ -7,6 +7,9 @@ import {
   NOTIFICATION_PRIORITY_NORMAL,
 } from './notificationKind.js';
 
+/** SQL fragment: active (non-archived) inbox rows for list/count queries. */
+export const NOTIFICATION_INBOX_ACTIVE_WHERE = 'archived_at IS NULL';
+
 /**
  * Insert an in-app notification for a user.
  */

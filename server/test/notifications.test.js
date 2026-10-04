@@ -124,12 +124,21 @@ describe('Notifications API', () => {
 
   describe('GET /api/notifications', () => {
     it('returns mapped notifications array', async () => {
-      const res = await request(app)
+      const queries = [];
+      const pool = buildMockPool({
+        query: async (sql, params) => {
+          queries.push(String(sql));
+          return buildMockPool().query(sql, params);
+        },
+      });
+      const a = createApp(pool);
+      const res = await request(a)
         .get('/api/notifications')
         .set('Authorization', `Bearer ${token}`);
       expect(res.statusCode).toBe(200);
       expect(Array.isArray(res.body)).toBe(true);
       expect(res.body.length).toBe(2);
+      expect(queries.some((q) => q.includes('archived_at IS NULL'))).toBe(true);
     });
 
     it('maps all notification fields correctly', async () => {
@@ -323,14 +332,14 @@ describe('Notifications API', () => {
   });
 
   describe('POST /check-due', () => {
-    it('returns checked true', async () => {
+    it('returns checked true and zero created (v2 inbox)', async () => {
       const res = await request(app)
         .post('/api/notifications/check-due')
         .set('Authorization', `Bearer ${token}`)
         .send({});
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty('checked', true);
-      expect(res.body).toHaveProperty('created');
+      expect(res.body).toHaveProperty('created', 0);
     });
   });
 

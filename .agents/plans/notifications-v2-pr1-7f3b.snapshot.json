@@ -45,13 +45,11 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "merge_commit": null,
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:9763c2a9e267b66b459db3c977092c1063f88581ffe47724d4b5441ed0a2bdbd"
+  "content_hash": "sha256:8d320e6f4eed5cd616ec094668a31e5b2ad88f6273b756ee1b242791abf4f692"
 }
