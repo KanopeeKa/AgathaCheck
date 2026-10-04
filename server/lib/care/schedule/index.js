@@ -53,6 +53,7 @@ export {
   UNCERTAINTY_REASON_FROM_COMPLETION_CHAIN,
   UNCERTAINTY_REASON_FROM_COMPLETION_PENDING,
   isDateInCareWindow,
+  expandItemForWindow,
   loadAndProjectSchedule,
   projectCareForPeriod,
   projectEntryForPeriod,

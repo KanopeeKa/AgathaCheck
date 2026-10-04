@@ -158,6 +158,8 @@ function maybeMaterialiseBeforeWindowOpen(entry, occurrences, startsOn, items, k
 }
 
 /**
+ * Expand one care item into projected/materialised slots for an absence window (child E1).
+ *
  * @param {object} entry
  * @param {object[]} occurrences all occurrences for this entry (in-window + pending)
  * @param {string} startsOn
@@ -165,7 +167,7 @@ function maybeMaterialiseBeforeWindowOpen(entry, occurrences, startsOn, items, k
  * @param {string} todayIso
  * @returns {{ items: object[], uncertainties: object[] }}
  */
-export function projectEntryForPeriod(entry, occurrences, startsOn, endsOn, todayIso) {
+export function expandItemForWindow(entry, occurrences, startsOn, endsOn, todayIso) {
   const items = [];
   const uncertainties = [];
   const knownSlots = new Set();
@@ -352,6 +354,11 @@ export function projectEntryForPeriod(entry, occurrences, startsOn, endsOn, toda
   return { items, uncertainties };
 }
 
+/** @deprecated Use expandItemForWindow — kept for care-period projection callers. */
+export function projectEntryForPeriod(entry, occurrences, startsOn, endsOn, todayIso) {
+  return expandItemForWindow(entry, occurrences, startsOn, endsOn, todayIso);
+}
+
 /**
  * @param {object[]} occurrences
  * @param {object} entry
@@ -383,7 +390,7 @@ export function projectSchedule(entries, occurrencesByEntryId, startsOn, endsOn,
 
   for (const entry of entries) {
     const occurrences = occurrencesByEntryId.get(entry.id) || [];
-    const { items, uncertainties } = projectEntryForPeriod(
+    const { items, uncertainties } = expandItemForWindow(
       entry,
       occurrences,
       startsOn,

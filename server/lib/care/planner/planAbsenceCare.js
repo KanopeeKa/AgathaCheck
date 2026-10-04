@@ -5,7 +5,7 @@
 import { addCalendarDaysIso } from '../../calendarDate.js';
 import { RECURRENCE_ANCHOR_FROM_DUE_DATE } from '../schedule/recurrenceAnchorDefaults.js';
 import { estimateOccurrences } from '../schedule/estimateOccurrences.js';
-import { isDateInCareWindow, projectEntryForPeriod } from '../schedule/projectSchedule.js';
+import { expandItemForWindow, isDateInCareWindow } from '../schedule/projectSchedule.js';
 import { resolveScheduleFlexibility } from '../schedule/index.js';
 import { candidateMoves } from './candidateMoves.js';
 
@@ -48,7 +48,7 @@ export function countInWindowOccurrences({
   const anchor = entry.recurrence_anchor || 'from_completion';
   if (anchor === RECURRENCE_ANCHOR_FROM_DUE_DATE) {
     const occRows = occurrencesForProjection(occurrences, openOccurrence);
-    const { items } = projectEntryForPeriod(entry, occRows, startsOn, endsOn, today);
+    const { items } = expandItemForWindow(entry, occRows, startsOn, endsOn, today);
     return items.filter((item) => isDateInCareWindow(item.scheduled_date, startsOn, endsOn)).length;
   }
 
