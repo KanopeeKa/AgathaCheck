@@ -88,6 +88,8 @@ flowchart TD
 
 **Ops requirement:** loopback verification runs only when the **UAT** GitHub Environment has `UAT_SSH_ENABLED=true` and SSH secrets configured. If the variable is unset/false, the workflow completes with a **notice** (verification skipped) — not a product pass. When SSH is enabled, whitelist or smoke failure **fails** the job.
 
+**SSH port:** `UAT_SSH_PORT` (secret, default 22) must match the port used for `appleboy/ssh-action` **and** the o2switch `SshWhitelist` API (`SSH_PORT` in CI). Whitelisting port 22 while SSH listens on a custom port causes dial timeouts from GitHub runners.
+
 **Triggers after deploy:** any successful **Deploy UAT** completion (tag promote, `workflow_dispatch` replay, or `workflow_run`) starts in-host smoke via `workflow_run` — manual deploys are included.
 
 **Concurrency:** `uat-live-e2e.yml` uses the same concurrency group id as `deploy-uat` (`deploy-uat`) so post-deploy verification does not overlap deploy SSH; rare overlap between cron and a deploy-triggered run is still possible and is accepted (low frequency).
