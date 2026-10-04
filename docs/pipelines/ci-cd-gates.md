@@ -3,7 +3,7 @@ title: CI/CD gates
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-22
+last_updated: 2026-10-04
 tags: [ci, gates, pipeline]
 ---
 # CI/CD gate contract
@@ -421,11 +421,17 @@ Workflow: **E2E (Playwright)** — `.github/workflows/e2e.yml`
 
 ### Weekly security and performance (advisory)
 
-| Workflow | Schedule | Blocks merge? |
-|----------|----------|---------------|
-| `security-dast.yml` — ZAP baseline vs localhost stack | Mon 07:00 UTC | No (`continue-on-error`) |
-| `perf-weekly.yml` — k6 `e2e/perf/api-smoke.k6.js` vs localhost | Mon 08:00 UTC | No (`continue-on-error`) |
-| `audit-advisory.yml` — npm audit on `main` | Mon 06:00 UTC | No |
+Stack boot for ZAP/k6 matches PR CI: `scripts/ci/weekly-localhost-stack.sh` runs
+`e2e/scripts/bootstrap-db.sh` on `ubuntu-24.04` (PostgreSQL via `pg_ctlcluster`) before
+starting the Node server. **Setup steps fail the job**; scan steps use step-level
+`continue-on-error` so a red finding or threshold breach does not mask a broken stack.
+
+| Workflow | Schedule | Blocks merge? | Artifacts (14-day retention) |
+|----------|----------|---------------|------------------------------|
+| `quality-kpis.yml` — PR CI / Pre-UAT KPIs + remedial commit share | Mon 07:00 UTC | No | `ci-health-kpis` (`ci-health-kpis.md`) — **Platform / release** reviews weekly |
+| `security-dast.yml` — ZAP baseline vs localhost stack | Mon 07:00 UTC | No | `zap-baseline-report` (`report_html.html`) — **Security** reviews findings |
+| `perf-weekly.yml` — k6 `e2e/perf/api-smoke.k6.js` vs localhost | Mon 08:00 UTC | No | `k6-smoke-summary` (`k6-summary.json`) — **Platform / release** reviews p95 & error rate |
+| `audit-advisory.yml` — npm audit on `main` | Mon 06:00 UTC | No | — (opens debt issue on high+) |
 
 Web release builds also run `scripts/ci/check-web-bundle-budget.mjs` (ratchet via
 `scripts/ci/web-bundle-budget.json`) inside `_reusable-build-web.yml`.
