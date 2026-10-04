@@ -873,17 +873,17 @@ Analysis in the session of 2026-10-04 (current-state audit, comparison with Appl
 
 ```yaml
 autonomy: active
-current_phase: W0
-last_completed_phase: null
+current_phase: null
+last_completed_phase: W0
 halt_reason: null
 next_action: "bootstrap and gate child plan weight-unify-server-9b2e"
 artifact_ref:
-  branch: cursor/weight-unify-w0-docs-9b2e
+  branch: main
   plan_path: .agents/plans/weight-monitoring-unify-9b2e.md
-  plan_commit: 990b9d8bcaa5cadff66fb0662f2a5fe0420b9e82
+  plan_commit: 8931363ffaa8c1bc15ee1b8054162f1e2cfcfff2
   snapshot_path: .agents/plans/weight-monitoring-unify-9b2e.snapshot.json
-  snapshot_commit: 990b9d8bcaa5cadff66fb0662f2a5fe0420b9e82
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1552"]
+  snapshot_commit: 8931363ffaa8c1bc15ee1b8054162f1e2cfcfff2
+open_prs: []
 merge_commits: {}
 debt_issue_refs: []
 ```
