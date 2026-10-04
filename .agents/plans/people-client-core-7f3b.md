@@ -604,10 +604,10 @@ server/**
 
 ```yaml
 autonomy: active
-current_phase: c1-flutter-core
-last_completed_phase: null
+current_phase: c2-components
+last_completed_phase: c1-flutter-core
 halt_reason: null
-next_action: "continue phase c1-flutter-core on branch cursor/people-client-c1-core-7f3b"
+next_action: "continue phase c2-components on branch cursor/people-client-c2-components-7f3b"
 artifact_ref:
   branch: main
   plan_path: .agents/plans/people-client-core-7f3b.md

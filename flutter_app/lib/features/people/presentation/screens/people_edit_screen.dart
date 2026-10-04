@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/widgets/form/app_form_discard_dialog.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../data/datasources/people_remote_datasource.dart';
+import '../../application/people_api_exception.dart';
 import '../../data/models/people_contact_model.dart';
 import '../../domain/entities/people_contact.dart';
 import '../providers/people_providers.dart';
@@ -90,7 +90,7 @@ class _PeopleEditScreenState extends ConsumerState<PeopleEditScreen> {
           .read(peopleContactsProvider.notifier)
           .updateContactPatch(base.id, patch);
       if (mounted) context.pop(true);
-    } on HttpException catch (e) {
+    } on PeopleApiException catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
@@ -172,7 +172,7 @@ class _PeopleEditScreenState extends ConsumerState<PeopleEditScreen> {
           .read(peopleContactsProvider.notifier)
           .deleteContact(widget.personId);
       if (mounted) context.go('/pc/people');
-    } on HttpException catch (e) {
+    } on PeopleApiException catch (e) {
       final status = _peopleApiStatusCode(e);
       final message = status == 400 || status == 409
           ? l.peopleRemoveVetLinkedError
@@ -389,12 +389,9 @@ class _PeopleEditScreenState extends ConsumerState<PeopleEditScreen> {
   }
 }
 
-int? _peopleApiStatusCode(HttpException e) {
-  final match = RegExp(r'People API (\d+):').firstMatch(e.message);
-  return match != null ? int.tryParse(match.group(1)!) : null;
-}
+int? _peopleApiStatusCode(PeopleApiException e) => e.statusCode;
 
-String _saveErrorMessage(BuildContext context, HttpException e) {
+String _saveErrorMessage(BuildContext context, PeopleApiException e) {
   final l = AppLocalizations.of(context)!;
   final status = _peopleApiStatusCode(e);
   if (status == 400) {

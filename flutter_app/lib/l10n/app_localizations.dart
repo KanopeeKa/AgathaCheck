@@ -12622,6 +12622,54 @@ abstract class AppLocalizations {
   /// **'Inactive'**
   String get peopleStatusInactive;
 
+  /// No description provided for @peopleStatusActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get peopleStatusActive;
+
+  /// No description provided for @peopleGroupCarers.
+  ///
+  /// In en, this message translates to:
+  /// **'Trusted carers'**
+  String get peopleGroupCarers;
+
+  /// No description provided for @peopleGroupProfessionals.
+  ///
+  /// In en, this message translates to:
+  /// **'Pet professionals'**
+  String get peopleGroupProfessionals;
+
+  /// No description provided for @peopleRelationshipPrimaryVet.
+  ///
+  /// In en, this message translates to:
+  /// **'Primary vet'**
+  String get peopleRelationshipPrimaryVet;
+
+  /// No description provided for @peopleRelationshipOutOfHoursVet.
+  ///
+  /// In en, this message translates to:
+  /// **'Out-of-hours vet'**
+  String get peopleRelationshipOutOfHoursVet;
+
+  /// No description provided for @peopleRelationshipEmergencyContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency contact'**
+  String get peopleRelationshipEmergencyContact;
+
+  /// No description provided for @peopleRelationshipCareProvider.
+  ///
+  /// In en, this message translates to:
+  /// **'Provides care'**
+  String get peopleRelationshipCareProvider;
+
+  /// No description provided for @peopleRelationshipOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other link'**
+  String get peopleRelationshipOther;
+
   /// No description provided for @peopleDangerZoneTitle.
   ///
   /// In en, this message translates to:
