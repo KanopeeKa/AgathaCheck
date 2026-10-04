@@ -4,20 +4,23 @@ import {
   enableFlutterAccessibility,
   flutterGotoUrl,
   refreshFlutterAccessibility,
-  semanticsByName,
   waitForFlutterRoutePattern,
 } from '../support/flutter';
 
 const suggestionTitleRe = /Suggested by Agatha|Suggestion d'Agatha|Suggéré par Agatha/i;
-const addRhythmRe = /^Add rhythm$|^Ajouter le rythme$/i;
+const addRoutineRe = /^(Add routine|Add rhythm)$|^(Ajouter la routine|Ajouter le rythme)$/i;
 const notRelevantRe = /^Not relevant$|^Pas pertinent$/i;
 const dismissRe = /^Dismiss$|^Ignorer$/i;
+const whyRe = /^Why\?$|^Pourquoi\s*\?$/i;
 
 export class CareSuggestionPage {
   constructor(private readonly page: Page) {}
 
-  private suggestionCard() {
-    return semanticsByName(this.page, suggestionTitleRe);
+  private suggestionCardRoot() {
+    return this.page
+      .getByRole('group', { name: suggestionTitleRe })
+      .filter({ has: this.page.getByRole('button', { name: addRoutineRe }) })
+      .first();
   }
 
   async openPetDetail(petId: string): Promise<void> {
@@ -38,26 +41,26 @@ export class CareSuggestionPage {
     const { expect } = await import('@playwright/test');
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      const card = this.suggestionCard();
-      await card.waitFor({ state: 'visible', timeout: 2_000 });
-      await card.getByRole('button', { name: addRhythmRe }).waitFor({ timeout: 2_000 });
+      const card = this.suggestionCardRoot();
+      await expect(card).toBeVisible();
+      await expect(card.getByRole('button', { name: addRoutineRe })).toBeVisible();
     }).toPass({ timeout });
   }
 
   async readVisibleSuggestionRhythmPattern(): Promise<RegExp> {
     await refreshFlutterAccessibility(this.page);
+    const card = this.suggestionCardRoot();
     const label =
-      (await this.page
-        .getByRole('group', { name: suggestionTitleRe })
-        .first()
-        .evaluate((el) => el.getAttribute('aria-label') || '')) || '';
+      (await card.getAttribute('aria-label')) ||
+      (await card.evaluate((el) => el.getAttribute('aria-label') || ''));
     const match = label.match(
-      /(?:Suggested by Agatha|Suggestion d'Agatha)\s+(.+?)\s+(?:Every|Tous les)/i,
+      /(?:Suggested by Agatha|Suggestion d'Agatha|Suggéré par Agatha)\s+(.+?)\s+Every/i,
     );
-    if (!match?.[1]) {
-      throw new Error(`Could not parse suggestion rhythm from group label: ${label}`);
+    const routineName = match?.[1]?.trim() ?? '';
+    if (!routineName) {
+      throw new Error(`Could not parse suggestion routine from group label: ${label}`);
     }
-    const escaped = match[1].replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const escaped = routineName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     return new RegExp(escaped, 'i');
   }
 
@@ -89,7 +92,7 @@ export class CareSuggestionPage {
 
   async acceptSuggestion(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
-    await this.suggestionCard().getByRole('button', { name: addRhythmRe }).click();
+    await this.suggestionCardRoot().getByRole('button', { name: addRoutineRe }).click();
   }
 
   async expectSuggestionNotInEvents(timeout = 5_000): Promise<void> {
@@ -102,8 +105,9 @@ export class CareSuggestionPage {
 
   async expectAcceptAndNotRelevantVisible(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
-    const card = this.suggestionCard();
-    await card.getByRole('button', { name: addRhythmRe }).waitFor({ timeout: 15_000 });
+    const card = this.suggestionCardRoot();
+    await card.getByRole('button', { name: addRoutineRe }).waitFor({ timeout: 15_000 });
+    await card.getByRole('button', { name: whyRe }).waitFor({ timeout: 15_000 });
     await card.getByRole('button', { name: notRelevantRe }).waitFor({ timeout: 15_000 });
     await card.getByRole('button', { name: dismissRe }).waitFor({ timeout: 15_000 });
   }
