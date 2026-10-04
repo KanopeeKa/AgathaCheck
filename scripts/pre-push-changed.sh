@@ -122,6 +122,7 @@ run_governance() {
   node scripts/check_file_size.js
   node scripts/check_hardcoded_shell_return_to.js
   bash scripts/check_frozen_domain_boundaries.sh
+  bash scripts/check_care_item_boundary.sh
   node scripts/check_feature_imports.js
   node --test scripts/check_feature_imports.test.js
   node scripts/validate_execute_plan_snapshot.js .agents/plans/_example.snapshot.json
