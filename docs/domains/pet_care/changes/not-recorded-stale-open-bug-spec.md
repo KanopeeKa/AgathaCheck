@@ -185,8 +185,11 @@ prints the rows. It is not in the repo; §9 asks for a committed equivalent.
    ```bash
    cd ~/uat.agathatrack.com/backend && ~/nodevenv/uat.agathatrack.com/backend/22/bin/node scripts/care/care_tick.js
    ```
-   If this prints `"closed": 2` (or more) and the Sep 30 rows disappear from the app, the tick
-   code works and only the cron entry is broken.
+   - **Before §8 ships, on a Paris host:** expect non-zero `created` and `closed` on every run,
+     with the same rows reappearing in the app (§2.8). This is the loop, not a broken cron.
+   - **After §8 and §9:** the first run after pet-home midnight may close and create slots. Any
+     later run that day should print `created: 0, closed: 0`. If the cron log has no new lines
+     but this manual run works, only the cron entry is broken.
 4. **Database evidence** (psql / phpPgAdmin):
    ```sql
    -- Last automatic Not recorded closes, all items
@@ -265,6 +268,14 @@ observable (log line per run plus a monitoring check, §5 group H).
 
 Default fixture unless stated: Fixed schedule, daily, 08:00 and 20:00, pet-home zone
 Europe/Paris, today = 2026-10-04 12:00 (window start 2026-10-01). **Tick not run** unless stated.
+
+**All dates in §5, §8 and §9 are true dates as stored in the database, on a correctly configured
+server (§8 shipped).** They are not the shifted labels the app showed on the hosts before §8. In
+the report (§1), the label "Sep 30" was the stored date Oct 1, and "Oct 6/Oct 7" were Oct 7/Oct 8.
+The §5 fixtures use stored Sep 30 dates on purpose: those slots really are outside the window.
+
+**Precondition:** every integration test that runs the occurrence sync (groups A, B, E, G, H) runs
+under both `TZ=UTC` and `TZ=Europe/Paris` once §8 ships (AC-TZ2).
 
 ### A. Read / command consistency (FR-1, FR-8, FR-10)
 
@@ -361,6 +372,9 @@ Europe/Paris, today = 2026-10-04 12:00 (window start 2026-10-01). **Tick not run
   on read and on command.
 - **AC-G4** Paused item, or an item with an Absence: reads do not auto-close doses the absence
   postponed. Track §2.7 separately, but no new 409s may appear here.
+  *Known limitation:* while §2.7 is open, Not recorded status and auto-close still ignore the
+  Absence (`nextSeriesSlotAfter`). §8 alone does not satisfy AC-G4; it is fully met only when the
+  §2.7 ticket lands.
 - **AC-G5** After It's Done (non-Fixed) items are unaffected: no auto-close, existing behaviour
   unchanged.
 - **AC-G6** Finished item (end date passed): closed doses show as closed, and no actions except
@@ -413,6 +427,13 @@ PR 1 + 2 are drafted as KanopeeKa/AgathaCheck#1558. Before merge, it needs:
   view would feed the §2.8 loop.
 - Fix the `clock` temporal-dead-zone error in `careItemsWire`
   (`server/lib/care/item/wire.js`). Today it makes `GET /api/health-entries` answer 500.
+  - **Repro:** the new `const clock = byZone.get(zone);` inside the `entries.map` callback is
+    declared *after* the line `byZone.set(zone, careAsOfForZone(zone, clock, now))`, which reads
+    `clock`. That inner `clock` shadows the outer one for the whole callback, so the read throws
+    `ReferenceError: Cannot access 'clock' before initialization` for any non-empty list.
+  - **CI evidence** (head `bc5298c`): `sharedPetAccess.test.js › allows shared user to list
+    health entries` expects 200 and gets 500.
+  - **Fix:** rename the inner variable (e.g. `asOf`).
 - Return 409 (not 400) when nothing in a bulk request is still open (AC-E4).
 - Make `closeStackOutsideWindow` use `wouldAutoCloseAsNotRecorded`, so the rule exists in one
   place.
@@ -449,7 +470,14 @@ care tick, and every script under `server/scripts/**` and `server/db/**` that op
   `res.json(row)` that sends a raw `DATE`.
 - After TZ-1 these receive strings. Update each one, or confirm it already accepts strings.
   `dateToIsoDate` already does.
-- List the findings in the PR description.
+- **Deliverable:** an inventory table in the PR description, one row per `DATE` column:
+  `table.column` · server read sites · server write sites · API fields that expose it · Flutter
+  model/parser that consumes it · change made (or "no change: already string-safe"). Columns no
+  code reads as a `Date` still get a row, so the audit is visibly complete.
+- **Deliverable:** rewrite the header comment and `dateToIsoDate` in `server/lib/calendarDate.js`.
+  Today they say node-pg reads `DATE` as *midnight UTC*, which is false: it is *local* midnight.
+  After TZ-1 the `Date` branch only serves non-pg inputs. The comment must say so, so nobody
+  "fixes" the wrong layer again.
 
 **TZ-5 — Writes never depend on the zone.** `DATE` parameters are always passed as `YYYY-MM-DD`
 strings, never JS `Date` objects (node-pg serialises a `Date` in local time with an offset).
@@ -466,12 +494,18 @@ The audit in TZ-4 covers the write paths too.
 
 **TZ-7 — Loud on a broken host.** At start-up the server and the tick run `SELECT
 '2026-09-30'::date` and verify the value is the string `2026-09-30`; otherwise they log an error
-and exit non-zero. The tick log line also carries `tz` (the process zone) for diagnosis.
+and exit non-zero. The tick log line also carries `tz`: the process zone as reported by
+`Intl.DateTimeFormat().resolvedOptions().timeZone` (e.g. `"tz":"Europe/Paris"`), not
+`process.env.TZ`, which is usually unset on the hosts.
 
 **TZ-8 — No API contract change beyond the fix.** Fields that were sent as `YYYY-MM-DD` stay
 `YYYY-MM-DD`, now with the correct day. A field that was sent as a full ISO timestamp because a
-raw `DATE` went through `res.json` becomes `YYYY-MM-DD`. List such fields in the PR, and check the
-Flutter parser for each one.
+raw `DATE` went through `res.json` becomes `YYYY-MM-DD`. List such fields in the PR (the TZ-4
+inventory covers it), and check the Flutter parser for each one.
+
+Contract changes from the other PRs are documented in the API reference in the same PR as the
+server change. In particular, PR 2 (§7) answers **409** `occurrence_not_open` when nothing in a
+bulk request is still open (AC-E4), where #1558 currently answers 400 `nothing_to_update`.
 
 **TZ-9 — Process time zone is not the fix.** Setting `TZ=UTC` on the hosts may be added as
 defence in depth, but correctness must not depend on it: cron, cPanel Node apps and future hosts
@@ -485,7 +519,8 @@ each set their own environment.
   `TZ=Europe/Paris` in CI, as an extra job or matrix entry alongside UTC.
 - **AC-TZ3** Under `TZ=Europe/Paris`, with the §2.8 fixture (twice-daily item, today 2026-10-04,
   Oct 1 rows pending): two consecutive ticks give `created: 0, closed: 0` on the second run. The
-  Oct 1 rows stay open (they are inside the window), and no duplicate slot exists.
+  Oct 1 rows stay open (they are inside the window), and no duplicate slot exists. The second run
+  also writes **no** `care_schedule_events` row: count ledger events, not only occurrence rows.
 - **AC-TZ4** Under `TZ=Europe/Paris`, a weekly Fixed-schedule item anchored on a Wednesday only
   ever has slots on Wednesdays.
 - **AC-TZ5** Under `TZ=Europe/Paris`, completing an open dose from the Care Item view succeeds
@@ -498,6 +533,13 @@ each set their own environment.
   passes on the repo after the change.
 - **AC-TZ9** Starting the server or the tick with a deliberately broken parser (test only) logs
   the TZ-7 error and exits non-zero.
+- **AC-TZ11** Regression guard: a test creates a pool **without** the shared module under
+  `TZ=Europe/Paris` and asserts that a `DATE` reads back shifted. It then asserts the shared
+  `createPool()` reads it correctly. If node-pg ever changes its default, the first assertion
+  fails and tells us.
+- **AC-TZ12** Flutter: every model that reads a `DATE`-backed field parses a plain `YYYY-MM-DD`
+  string and does not depend on a timestamp form (`…T…Z`). Covered by a model test per field in
+  the TZ-4 inventory that previously received a timestamp.
 - **AC-TZ10** `repair_occurrences --dry-run` reports INV-6 on a DB containing a duplicate slot,
   and reports 0 after §9.
 
@@ -525,8 +567,8 @@ each set their own environment.
 run **Actions → UAT reset demo data** (`scripts/db/uat-refresh-demo.sh`), as already documented.
 No cleanup script is needed for UAT.
 
-**DC-2 — Measure production before deciding.** With the read-only helper (DC-7), run on
-production:
+**DC-2 — Measure production before deciding.** First confirm production's zone (the `date` /
+`Intl…timeZone` check from §2.8). Then, with the read-only helper (DC-7), run on production:
 - the duplicate-slot query (§3);
 - the `not_recorded_closed` count for the last 24 h;
 - a count of rows per table created or updated since 2026-10-01 in tables with `DATE` columns.
@@ -592,7 +634,9 @@ also have been a genuine change.
 **DC-8 — Runbook order, per host:**
 1. Keep the care tick cron suspended (done on UAT 2026-10-05; suspend on production if affected).
 2. Deploy §8 and confirm the TZ-7 start-up check passes in the app log.
-3. Run DC-2 and decide: reset (DC-1) or repair (DC-3).
+   **Gate:** do not deploy PR 1 (#1558, read-sync) to a host before this step passes there.
+3. Run DC-2 and decide: reset (DC-1) or repair (DC-3). **Gate (production):** the zone check in
+   DC-2 is done and recorded before any reset or repair.
 4. If repairing: take a backup (`pg_dump`, or the phpPgAdmin export per `docs/ops/care-tick.md`),
    run `--dry-run`, review the report, run `--apply`, then `--dry-run` again (expect no changes).
 5. `repair_occurrences.js --dry-run` → `0 with violations` (including INV-6).
@@ -601,7 +645,8 @@ also have been a genuine change.
 
 ### 9.3 Acceptance criteria
 
-- **AC-DC1** On a copy of the UAT data (before reset), `--dry-run` reports for items `…0020` and
+- **AC-DC1** *(CI fixture, not an ops step: on UAT itself the procedure is reset, DC-1.)* On a
+  snapshot fixture reproducing the UAT data before reset, `--dry-run` reports for items `…0020` and
   `…0112`: 23 deletions each per looping slot, the pending row kept, no reopen needed.
 - **AC-DC2** After `--apply`, the duplicate-slot query returns no rows. A second `--apply`
   reports no changes.
