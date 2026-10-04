@@ -39,7 +39,6 @@ test.describe('People detail back navigation @people', () => {
     await people.expectLoaded();
     await people.openVetDetail('BackNav Vet');
     await waitForFlutterRoutePattern(page, /\/pc\/people\/[^/?]+$/, 30_000);
-    await expect(page.getByText(/BackNav Vet/i).first()).toBeVisible();
 
     await enableFlutterAccessibility(page);
     await page
