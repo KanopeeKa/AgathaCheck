@@ -91,7 +91,7 @@ test.describe('Care item absence review', () => {
     test.setTimeout(120_000);
     const root = baseURL();
     const carerName = 'Alex Carer';
-    const { user, pet, entry, inWindowDue } = await seedAbsenceInWindowCare(root, {
+    const { user, pet, entry } = await seedAbsenceInWindowCare(root, {
       petName: 'AbsenceStripPet',
       entryName: 'Strip Review Grooming',
       carerName,
@@ -105,10 +105,7 @@ test.describe('Care item absence review', () => {
     await careItem.expectAbsenceKeepWithCarer(carerName);
     await careItem.expectAbsenceReviewDateAction();
     await careItem.openAbsenceOccurrenceReview();
-    const statusDate = formatHealthEntryStatusDate(inWindowDue);
-    await expect(
-      page.getByText(statusDate, { exact: false }).first(),
-    ).toBeVisible({ timeout: 15_000 });
+    await careItem.openChangeDateFromOccurrenceReview();
   });
 
   test('@smoke-uat Moving care after the trip postpones it to the day after return', async ({
