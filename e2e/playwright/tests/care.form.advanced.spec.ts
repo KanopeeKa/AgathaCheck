@@ -22,7 +22,9 @@ test.describe('Care form Advanced settings (F42)', () => {
 
     const form = new HealthEntryFormPage(page);
     await form.expectLoaded();
+    await form.selectPet('Milo');
     await form.selectCareFamily('Medication');
+    await form.setFrequency('Day');
     await form.expandAdvancedSettings();
     await form.selectScheduleType('Fixed schedule');
     await form.expectScheduleTypeSelected('Fixed schedule');

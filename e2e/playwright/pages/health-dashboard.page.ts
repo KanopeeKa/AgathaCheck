@@ -97,11 +97,6 @@ export class HealthDashboardPage {
     await this.waitForDashboardSettled();
   }
 
-  async openAddEntry(): Promise<void> {
-    await this.openAddEntryPicker();
-    await this.page.locator('input[aria-label*="Entry Name"]').first().waitFor({ timeout: 30_000 });
-  }
-
   /** Opens the add-event sheet then the unified health/care form (Pet Care `/pc/events`). */
   async openAddHealthCareForm(): Promise<void> {
     await this.openAddEntryPicker();
@@ -109,6 +104,10 @@ export class HealthDashboardPage {
       .getByText(/Add health entry|Ajouter un événement de santé/i)
       .click();
     await this.page.locator('input[aria-label*="Entry Name"]').first().waitFor({ timeout: 30_000 });
+  }
+
+  async openAddEntry(): Promise<void> {
+    await this.openAddHealthCareForm();
   }
 
   private async openAddEntryPicker(): Promise<void> {
