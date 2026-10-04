@@ -70,9 +70,11 @@ Personal directory contacts (phase 1). Storage: migrations `072_*`–`074_*`. Sp
 | POST | `/contacts` | authenticated — body `{ kind, name, phone?, email?, address?, website?, works_at_contact_id?, roles?, private_note? }`; `kind` ∈ {`person`,`organisation`}; `roles` ⊆ sitter, walker, vet, vet_nurse, groomer, trainer, behaviourist, boarding, emergency_contact, other |
 | GET | `/contacts/:id` | authenticated — owner of directory only |
 | PATCH | `/contacts/:id` | authenticated — partial update; `private_note` is per-caller only; **`kind` changes only when `kind` is sent** (rename alone does not re-infer kind) |
-| DELETE | `/contacts/:id` | authenticated — blocked when `legacy_vet_id` is set (delete vet instead) or pet relationship exists (`409`) |
+| DELETE | `/contacts/:id` | authenticated — blocked when `legacy_vet_id` is set (delete vet instead) or pet relationship exists (`409 contact_in_use`) |
 
 Response contact shape: `{ id, directory_id, kind, name, phone, email, address, website, works_at_contact_id, linked_user_id, inactive_at, legacy_vet_id, roles[], private_note, created_at, updated_at }`.
+
+People error bodies (additive): `{ error, code, details? }` with stable `code` values including `validation_failed`, `contact_not_found`, `forbidden`, `contact_in_use`, `linked_identity_read_only`. PATCH accepts `active: boolean` (sets `inactive_at` server-side); optional `inactive_at` is validated when sent. PATCH rejects name/email changes on contacts with `linked_user_id` → `409 linked_identity_read_only`.
 
 #### Pet contact relationships (`/api/pets/:petId/people-relationships`)
 

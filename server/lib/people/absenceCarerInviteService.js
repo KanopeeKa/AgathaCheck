@@ -9,6 +9,7 @@ import {
   GUEST_GRANT_REVOKED,
   userCanGrantAbsenceGuestForPet,
 } from './absenceGuestGrants.js';
+import { linkContactToUser as linkContactToUserRepo } from './contactsRepo.js';
 
 const PLANNED_ABSENCE_STATUS_ACTIVE = 'active';
 const PLANNED_ABSENCE_STATUS_CANCELLED = 'cancelled';
@@ -259,12 +260,7 @@ async function notifyAbsenceOwnerGrant(pool, {
 }
 
 async function linkContactToUser(pool, contactId, userId) {
-  await pool.query(
-    `UPDATE people_contacts
-     SET linked_user_id = $2, updated_at = NOW()
-     WHERE id = $1 AND linked_user_id IS NULL`,
-    [contactId, userId],
-  );
+  await linkContactToUserRepo(pool, contactId, userId);
 }
 
 export async function acceptAbsenceCarerInvite(pool, {

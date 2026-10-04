@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid';
+import { ensurePersonalDirectory as ensurePersonalDirectoryRepo } from './contactsRepo.js';
 
 /**
  * @param {import('pg').Pool|import('pg').PoolClient} pool
@@ -6,22 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
  * @returns {Promise<string>} directory id
  */
 export async function ensurePersonalDirectory(pool, userId) {
-  const existing = await pool.query(
-    'SELECT id FROM people_directories WHERE owner_user_id = $1',
-    [userId],
-  );
-  if (existing.rows.length > 0) return existing.rows[0].id;
-
-  const id = uuidv4();
-  const inserted = await pool.query(
-    `INSERT INTO people_directories (id, owner_user_id, created_at, updated_at)
-     VALUES ($1, $2, NOW(), NOW())
-     ON CONFLICT (owner_user_id) WHERE (owner_user_id IS NOT NULL) DO UPDATE
-       SET updated_at = people_directories.updated_at
-     RETURNING id`,
-    [id, userId],
-  );
-  return inserted.rows[0].id;
+  return ensurePersonalDirectoryRepo(pool, userId);
 }
 
 /**

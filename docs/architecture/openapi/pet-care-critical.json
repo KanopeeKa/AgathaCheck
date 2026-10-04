@@ -332,6 +332,45 @@
           }
         }
       }
+    },
+    "/people/contacts/{id}": {
+      "patch": {
+        "operationId": "patchPeopleContact",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Updated contact",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PeopleContact" }
+              }
+            }
+          },
+          "400": {
+            "description": "validation_failed",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PeopleApiError" }
+              }
+            }
+          },
+          "409": {
+            "description": "linked_identity_read_only",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PeopleApiError" }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -821,6 +860,39 @@
           },
           "code": {
             "type": "string"
+          }
+        }
+      },
+      "PeopleApiError": {
+        "type": "object",
+        "required": ["error", "code"],
+        "additionalProperties": true,
+        "properties": {
+          "error": { "type": "string" },
+          "code": {
+            "type": "string",
+            "enum": [
+              "validation_failed",
+              "contact_not_found",
+              "forbidden",
+              "contact_in_use",
+              "linked_identity_read_only"
+            ]
+          },
+          "details": { "type": "object" }
+        }
+      },
+      "PeopleContact": {
+        "type": "object",
+        "required": ["id", "kind", "name", "roles"],
+        "additionalProperties": true,
+        "properties": {
+          "id": { "type": "string" },
+          "kind": { "type": "string" },
+          "name": { "type": "string" },
+          "roles": {
+            "type": "array",
+            "items": { "type": "string" }
           }
         }
       },
