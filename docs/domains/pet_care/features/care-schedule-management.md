@@ -136,8 +136,10 @@ All routes mount under `/api/health-entries` and `/backend/api/health-entries`. 
 | POST | `/:id/postpone` | `{ until: date \| null, reason: 'pause' \| 'absence' \| 'manual', absence_id? }` | Ledger `postponed`; 400 for a past date |
 | POST | `/:id/resume` | `{ date?, reason_note? }` | `status = active`; without `date`, the default date (D-CSM-028); **no catch-up** |
 | POST | `/:id/adjust-cadence` | `{ effective_from, frequency?, frequency_interval?, recurrence_anchor?, reason_note? }` | Series-forward rule change; ledger `cadence_adjusted`; past occurrences immutable |
-| POST | `/:id/schedule/undo` | — | Reverses the last command as a whole (D-CSM-029) |
+| POST | `/:id/schedule/undo` | Optional `{ undo_token }` | Reverses the **latest** ledger command when `undo_token` is omitted; with `undo_token`, reverses that specific command (D-CSM-029) |
 | GET | `/:id/schedule-explain` | Query: optional window | Structured schedule facts for CIM |
+
+**Undo route parity (C3):** `POST …/schedule/undo` and the compatibility route `POST …/occurrences/:occId/undo` both call the same ledger reversal. After a single completion they restore the same open occurrence. After a **multi-step** sequence (for example complete then reschedule the next date), `schedule/undo` without a token reverses only the **most recent** command (the reschedule), while per-occurrence undo targets the **completion** event for that occurrence id. Prefer `schedule/undo` with the `undo_token` from the command response in new clients.
 
 **Compatibility routes (deleted when the new client ships, D-CSM-033):** `POST /:id/mark-taken` (completes the most urgent open slot; never 400 for an active planned item), `POST /:id/occurrences/ensure-open` (returns the open occurrences, `created: false`), `POST /:id/pause` (= postpone `until: null`), `POST /:id/occurrences/skip-missed`, `POST /:id/undo-complete`, `POST /:id/occurrences/:occId/undo`.
 
