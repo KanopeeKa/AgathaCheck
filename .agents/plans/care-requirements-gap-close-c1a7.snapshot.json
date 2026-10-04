@@ -37,7 +37,7 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "bdd-journey",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": []
@@ -344,5 +344,5 @@
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:146b5d39ec212da2bf6b407eca660d348750225571d3f38f5a17fb7c05487ca1"
+  "content_hash": "sha256:ccdc69e7d13b7f96796c46ae919f3ed0274d996bd4dee5f0cee8a812beb0af18"
 }

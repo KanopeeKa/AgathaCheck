@@ -318,13 +318,13 @@ autonomy: active
 current_phase: A1
 last_completed_phase: null
 halt_reason: null
-next_action: "start phase A1: checkout cursor/care-gap-a1-r9-50b4"
+next_action: "continue phase A1 on branch cursor/care-gap-a1-r9-50b4"
 artifact_ref:
   branch: cursor/care-requirements-gap-close-integration-50b4
   plan_path: .agents/plans/care-requirements-gap-close-c1a7.md
-  plan_commit: c052ba5519008149e58c34661b470f291c93ac75
+  plan_commit: 03341631d94d840da3b3ed5baa3d0a5a812134dc
   snapshot_path: .agents/plans/care-requirements-gap-close-c1a7.snapshot.json
-  snapshot_commit: c052ba5519008149e58c34661b470f291c93ac75
+  snapshot_commit: 03341631d94d840da3b3ed5baa3d0a5a812134dc
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
