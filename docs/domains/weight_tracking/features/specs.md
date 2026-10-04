@@ -3,26 +3,25 @@ title: Weight tracking specs
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-22
-tags: [domain,weight_tracking,specs]
+last_updated: 2026-10-04
+tags: [domain, weight_tracking]
 domain: weight_tracking
+feature_id: weight-specs
 ---
 
-# Weight tracking specs
+# Weight tracking — implementation specs
 
-## Data model
+See [weight-monitoring-model.md](weight-monitoring-model.md) for rules. API shapes and phase delivery: `.agents/plans/weight-monitoring-unify-9b2e.md`.
 
-- Weight entries belong to a pet; stored via server/routes/weightEntries.js.
-- Weight is numeric (kg); date is a calendar day on the wire (see /docs/architecture/calendar-dates.md).
-- Sort order for history: chronological by entry date.
+## Server (target after WEIGHT A)
 
-## Profile integration
+- Shared service: `server/lib/care/observations/weightObservationService.js`
+- Fulfilment rule: `weightFulfilment.js` (CSM half-interval windows)
+- Endpoints: list/latest, overview, fulfilment-candidates, fulfil, auth `weight_unit`
+- Observation hooks: care engine does not SQL `weight_entries` directly (§5.5b)
 
-- Latest entry drives pet detail current weight and PDF report current weight.
-- Editing pet weight on the profile form may create a same-day entry with no notes (see BDD P2 scenarios).
+## Flutter (target after WEIGHT B/C)
 
-## API & tests
-
-- Jest: server/test/weightEntries.test.js
-- BDD: flutter_app/test/bdd/features/weight_tracking.feature
-- E2E: e2e/playwright/tests/weight.tracking.spec.ts
+- Hub: `WeightHubScreen`, record sheet with counts-as UX
+- User unit preference via profile API
+- Care item observation slot (`numeric_weight`) and history weight rows (WEIGHT C)

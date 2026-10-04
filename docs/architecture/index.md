@@ -107,7 +107,7 @@ One health entry as a care series: open occurrences, agenda row, occurrence scre
 
 | | Path |
 |---|------|
-| **Docs** | [/docs/domains/weight_tracking/README.md](/docs/domains/weight_tracking/README.md) |
+| **Docs** | [/docs/domains/weight_tracking/README.md](/docs/domains/weight_tracking/README.md) · [weight-monitoring-model.md](/docs/domains/weight_tracking/features/weight-monitoring-model.md) |
 | Flutter | `flutter_app/lib/features/weight_tracking/` |
 | Node routes | `server/routes/weightEntries.js` |
 | Jest | `weightEntries.test.js` |
