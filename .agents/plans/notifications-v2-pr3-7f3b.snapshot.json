@@ -15,12 +15,21 @@
       "title": "PR3 relationship emitters",
       "branch": "cursor/notifications-v2-pr3-7f3b",
       "allowed_paths": [
+        "server/lib/notificationKind.js",
+        "server/lib/notificationHelper.js",
+        "server/lib/households/**",
+        "server/lib/petDataLifecycle.js",
+        "server/lib/fosterInvite.js",
+        "server/lib/fosterAgreementWithdrawal.js",
+        "server/lib/custodyTransfers.js",
+        "server/lib/people/**",
+        "server/services/sharing/**",
+        "server/routes/**",
+        "server/test/**",
         "flutter_app/lib/features/notifications/**",
         "flutter_app/test/features/notifications/**",
         "flutter_app/lib/l10n/**",
         "flutter_app/test/bdd/features/notifications_v2.feature",
-        "server/routes/**",
-        "server/test/**",
         ".agents/plans/notifications-v2-pr3-7f3b.*"
       ],
       "forbidden_paths": [
@@ -37,13 +46,11 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "merge_commit": null,
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:61ae9c23d95cf146ccefa2a8d7231fe2ac61689d0a0b4e0bfa97805adfeba6e6"
+  "content_hash": "sha256:0eb2bca11cc43d05c7f166b51d62f6867bb9cff4d2963d1fda4989f1ddd80937"
 }

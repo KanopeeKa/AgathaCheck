@@ -1,5 +1,5 @@
 /**
- * Notification kind / priority wire values and type→kind defaults (Notifications v2 PR1+).
+ * Notification kind / priority wire values and type→kind defaults (Notifications v2 PR3+).
  */
 
 export const NOTIFICATION_KIND_CARE = 'care';
@@ -14,6 +14,12 @@ export const NOTIFICATION_PRIORITY_URGENT = 'urgent';
 export const NOTIFICATION_TYPE_SHARE_INVITE_RECEIVED = 'shareInviteReceived';
 export const NOTIFICATION_TYPE_SHARE_INVITE_ACCEPTED = 'shareInviteAccepted';
 export const NOTIFICATION_TYPE_SHARE_INVITE_DECLINED = 'shareInviteDeclined';
+export const NOTIFICATION_TYPE_SHARE_LINK_FOLLOWED = 'shareLinkFollowed';
+export const NOTIFICATION_TYPE_SHARE_MEMBER_LEFT = 'shareMemberLeft';
+export const NOTIFICATION_TYPE_SHARE_ACCESS_REMOVED = 'shareAccessRemoved';
+export const NOTIFICATION_TYPE_OWNERSHIP_TRANSFER_COMPLETED = 'ownershipTransferCompleted';
+export const NOTIFICATION_TYPE_PET_PASSED_AWAY = 'petPassedAway';
+export const NOTIFICATION_TYPE_HOUSEHOLD_INVITE_RECEIVED = 'householdInviteReceived';
 export const NOTIFICATION_TYPE_ABSENCE_GUEST_GRANTED = 'absenceGuestGranted';
 export const NOTIFICATION_TYPE_PENDING_FOSTER_PLACEMENT_RECEIVED = 'pendingFosterPlacementReceived';
 export const NOTIFICATION_TYPE_PENDING_ADOPTION_PLACEMENT_RECEIVED = 'pendingAdoptionPlacementReceived';
@@ -31,6 +37,19 @@ const VALID_PRIORITIES = new Set([
   NOTIFICATION_PRIORITY_URGENT,
 ]);
 
+const RELATIONSHIP_TYPES = new Set([
+  NOTIFICATION_TYPE_SHARE_INVITE_RECEIVED,
+  NOTIFICATION_TYPE_SHARE_INVITE_ACCEPTED,
+  NOTIFICATION_TYPE_SHARE_INVITE_DECLINED,
+  NOTIFICATION_TYPE_SHARE_LINK_FOLLOWED,
+  NOTIFICATION_TYPE_SHARE_MEMBER_LEFT,
+  NOTIFICATION_TYPE_SHARE_ACCESS_REMOVED,
+  NOTIFICATION_TYPE_OWNERSHIP_TRANSFER_COMPLETED,
+  NOTIFICATION_TYPE_PET_PASSED_AWAY,
+  NOTIFICATION_TYPE_HOUSEHOLD_INVITE_RECEIVED,
+  NOTIFICATION_TYPE_ABSENCE_GUEST_GRANTED,
+]);
+
 const ADMINISTRATIVE_TYPES = new Set([
   'fosterRequestReceived',
   'fosterRequestResponded',
@@ -41,16 +60,27 @@ const ADMINISTRATIVE_TYPES = new Set([
   'sessionEndingSoon',
   'agreementWithdrawn',
   'connectionRequestReceived',
-  NOTIFICATION_TYPE_SHARE_INVITE_RECEIVED,
-  NOTIFICATION_TYPE_ABSENCE_GUEST_GRANTED,
   NOTIFICATION_TYPE_PENDING_FOSTER_PLACEMENT_RECEIVED,
   NOTIFICATION_TYPE_PENDING_ADOPTION_PLACEMENT_RECEIVED,
   NOTIFICATION_TYPE_PENDING_CUSTODY_TRANSFER_RECEIVED,
   'adminMessageReceived',
+  'fosterPlacementAccepted',
+  'fosterPlacementDeclined',
+  'fosterSessionEndingAwaitingReturn',
+  'fosterPeriodEnded',
+  'adoptionReadyToConfirm',
+  'adoptionConfirmedOrg',
+  'adoptionCompleteOwner',
+  'adoptionCancelled',
+  'adoptionJourneyUpdate',
+  'placementActionUpdate',
 ]);
 
 /** Map notification `type` to kind at creation time. */
 export function defaultKindForType(type = 'general') {
+  if (RELATIONSHIP_TYPES.has(type)) {
+    return NOTIFICATION_KIND_RELATIONSHIP;
+  }
   if (ADMINISTRATIVE_TYPES.has(type)) {
     return NOTIFICATION_KIND_ADMINISTRATIVE;
   }
@@ -69,4 +99,16 @@ export function normalisePriority(value) {
 
 export function isAdministrativeType(type) {
   return ADMINISTRATIVE_TYPES.has(type);
+}
+
+export function isRelationshipType(type) {
+  return RELATIONSHIP_TYPES.has(type);
+}
+
+export function assertAllowedNotificationType(type) {
+  if (String(type || '').toLowerCase() === 'general') {
+    throw new Error(
+      'createNotification: type "general" is not allowed for new inbox rows (notifications v2 PR3)',
+    );
+  }
 }

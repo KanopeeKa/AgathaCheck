@@ -11,7 +11,9 @@ import {
   NOTIFICATION_PRIORITY_URGENT,
   NOTIFICATION_TYPE_PENDING_FOSTER_PLACEMENT_RECEIVED,
   NOTIFICATION_TYPE_SHARE_INVITE_RECEIVED,
+  NOTIFICATION_TYPE_SHARE_LINK_FOLLOWED,
   NOTIFICATION_KIND_ADMINISTRATIVE,
+  NOTIFICATION_KIND_RELATIONSHIP,
 } from '../lib/notificationKind.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -31,11 +33,16 @@ describe('notificationKind', () => {
     }
   });
 
-  it('maps pending inbox types to administrative kind', () => {
+  it('maps pending foster inbox types to administrative kind', () => {
     expect(defaultKindForType(NOTIFICATION_TYPE_PENDING_FOSTER_PLACEMENT_RECEIVED))
       .toBe(NOTIFICATION_KIND_ADMINISTRATIVE);
+  });
+
+  it('maps relationship share types to relationship kind', () => {
     expect(defaultKindForType(NOTIFICATION_TYPE_SHARE_INVITE_RECEIVED))
-      .toBe(NOTIFICATION_KIND_ADMINISTRATIVE);
+      .toBe(NOTIFICATION_KIND_RELATIONSHIP);
+    expect(defaultKindForType(NOTIFICATION_TYPE_SHARE_LINK_FOLLOWED))
+      .toBe(NOTIFICATION_KIND_RELATIONSHIP);
   });
 
   it('normalises invalid kind and priority wire values', () => {

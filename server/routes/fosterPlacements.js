@@ -179,7 +179,7 @@ export default function fosterPlacementsRoutes(pool) {
           petName,
           title: 'Foster placement accepted',
           message: `${fosterName} accepted the foster placement for ${petName}.`,
-          type: 'general',
+          type: 'fosterPlacementAccepted',
         });
       }
 
@@ -247,7 +247,7 @@ export default function fosterPlacementsRoutes(pool) {
           petName,
           title: 'Foster placement declined',
           message: `${fosterName} declined the foster placement for ${petName}.`,
-          type: 'general',
+          type: 'fosterPlacementDeclined',
         });
       }
 
@@ -327,7 +327,7 @@ export default function fosterPlacementsRoutes(pool) {
           petName: pet.name,
           title: 'Adoption confirmed',
           message: `${fosterName} adopted ${pet.name}. The pet has left organisation custody.`,
-          type: 'general',
+          type: 'adoptionConfirmedOrg',
         });
       }
 
@@ -337,7 +337,7 @@ export default function fosterPlacementsRoutes(pool) {
         petName: pet.name,
         title: 'Adoption complete',
         message: `You are now the owner of ${pet.name}.`,
-        type: 'general',
+        type: 'adoptionCompleteOwner',
       });
 
       await resolveAdministrativeNotifications(client, {
