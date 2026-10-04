@@ -44,10 +44,10 @@ Finish Packages 7 and 8 (D2, D18, D19):
 
 ```yaml
 autonomy: active
-current_phase: 3
-last_completed_phase: 2
+current_phase: 4
+last_completed_phase: 3
 halt_reason: null
-next_action: "continue phase 3 on branch cursor/active-codebase-g3-care-schedule-controller-e41f"
+next_action: "continue phase 4 on branch cursor/active-codebase-g4-offline-e2e-e41f"
 artifact_ref:
   branch: cursor/active-codebase-g3-care-schedule-controller-e41f
   plan_path: .agents/plans/active-codebase-batch-g-client-authority-e41f.md

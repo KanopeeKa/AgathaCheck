@@ -194,8 +194,7 @@
     "R3|flutter_app/lib/features/pet_care/context/presentation/widgets/away_plan_pet_care_section.dart|flutter_app/lib/features/health_tracking/presentation/widgets/care_event_status_line.dart",
     "R3|flutter_app/lib/features/pet_care/context/presentation/widgets/away_plan_pet_care_section.dart|flutter_app/lib/features/pet_profile/presentation/providers/pet_providers.dart",
     "R3|flutter_app/lib/features/pet_care/context/presentation/widgets/away_plan_pet_care_section.dart|flutter_app/lib/features/pet_profile/presentation/widgets/care_family_icon.dart",
-    "R3|flutter_app/lib/features/pet_care/context/presentation/widgets/away_plan_suggestions_section.dart|flutter_app/lib/features/health_tracking/presentation/providers/health_providers.dart",
-    "R3|flutter_app/lib/features/pet_care/context/presentation/widgets/away_plan_suggestions_section.dart|flutter_app/lib/features/health_tracking/presentation/widgets/reschedule_occurrence_flow.dart",
+    "R3|flutter_app/lib/features/pet_care/context/presentation/widgets/away_plan_suggestions_section.dart|flutter_app/lib/features/health_tracking/presentation/controllers/care_schedule_controller.dart",
     "R3|flutter_app/lib/features/pet_care/domain/services/care_temporal_grouping_service.dart|flutter_app/lib/features/health_tracking/presentation/widgets/pet_event_lifecycle.dart",
     "R3|flutter_app/lib/features/pet_care/presentation/providers/care_temporal_grouping_providers.dart|flutter_app/lib/features/health_tracking/presentation/providers/health_providers.dart",
     "R3|flutter_app/lib/features/pet_care/presentation/providers/pet_care_presentation_providers.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
@@ -621,6 +620,11 @@
     {
       "identity": "R3|flutter_app/lib/features/care_item/presentation/widgets/care_item_history.dart|flutter_app/lib/features/health_tracking/presentation/widgets/pet_event_administration_history_dialog.dart",
       "reason": "F2 care_item_history delegates to health_tracking history UI",
+      "accepted_on": "2026-10-04"
+    },
+    {
+      "identity": "R3|flutter_app/lib/features/pet_care/context/presentation/widgets/away_plan_suggestions_section.dart|flutter_app/lib/features/health_tracking/presentation/controllers/care_schedule_controller.dart",
+      "reason": "G.3: away plan reschedule via CareScheduleController",
       "accepted_on": "2026-10-04"
     }
   ]

@@ -7,7 +7,9 @@ import 'package:pet_profile_app/features/health_tracking/domain/entities/health_
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_occurrence.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/repositories/health_repository.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/occurrence_scheduling.dart';
+import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
+import '../../../../helpers/fakes.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/occurrence_providers.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/widgets/occurrence_care_actions.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/widgets/occurrence_stack_sheet.dart';
@@ -65,6 +67,7 @@ Widget _buildCareActionsHarness({
 }) {
   return ProviderScope(
     overrides: [
+      authProvider.overrideWith((ref) => FakeAuthNotifier()),
       entryOccurrencesProvider(
         _entry.id,
       ).overrideWith((ref) async => occurrences),

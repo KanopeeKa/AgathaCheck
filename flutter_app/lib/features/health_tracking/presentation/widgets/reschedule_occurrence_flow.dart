@@ -2,22 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../l10n/app_localizations.dart';
-import '../../../pet_care/context/presentation/providers/care_context_providers.dart';
 import '../../../../core/utils/calendar_date.dart';
 import '../../../pet_care/context/domain/entities/care_period_coverage.dart';
 import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/health_occurrence.dart';
 import '../../domain/services/reschedule_occurrence_preview.dart';
+import '../controllers/care_schedule_controller.dart';
 import '../providers/care_item_absence_providers.dart';
 import '../providers/care_item_absence_resolution_sync.dart';
-import '../providers/care_item_detail_refresh.dart';
-import '../providers/health_providers.dart';
-import '../providers/occurrence_providers.dart';
-import 'pet_event_view_providers.dart';
+import '../providers/pet_event_view_providers.dart';
+import 'care_schedule_command_feedback.dart';
 import 'reschedule_occurrence_sheet.dart';
 import 'reschedule_warning_copy.dart';
 
-/// Shared reschedule + invalidation + undo snackbar (R-C5, R-C7).
+/// Shared reschedule + undo snackbar (R-C5, R-C7).
 class RescheduleOccurrenceFlow {
   const RescheduleOccurrenceFlow._();
 
@@ -34,7 +32,7 @@ class RescheduleOccurrenceFlow {
     if (occId == null || sched == null) return;
 
     final entry = await ref
-        .read(healthRepositoryProvider)
+        .read(careScheduleControllerProvider)
         .getEntry(item.healthEntryId);
     if (entry == null || !context.mounted) return;
 
@@ -101,14 +99,17 @@ class RescheduleOccurrenceFlow {
     final scheduledDate = calendarDateOnly(newDate);
 
     try {
-      final result = await ref
-          .read(healthRepositoryProvider)
+      final command = await ref
+          .read(careScheduleControllerProvider)
           .rescheduleOccurrence(
             entry.id,
             occurrence.id,
             scheduledDate,
             reasonCode: reasonCode,
+            absenceId: absenceId,
           );
+      if (command == null || !context.mounted) return;
+
       if (absenceId != null && absenceId.isNotEmpty) {
         await _syncResolutionAfterReschedule(
           ref,
@@ -119,50 +120,43 @@ class RescheduleOccurrenceFlow {
           )!,
         );
       }
-      invalidateCareItemDetailData(ref, entry.id, absenceId: absenceId);
 
       if (!context.mounted) return;
       final l = AppLocalizations.of(context)!;
-      final warningText = rescheduleWarningMessages(l, result.warnings);
-      final message = warningText.isNotEmpty
+      final warningText = rescheduleWarningMessages(l, command.result.warnings);
+      final successMessage = warningText.isNotEmpty
           ? warningText.join('\n')
           : l.occurrenceRescheduled;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(message),
-          action: SnackBarAction(
-            label: l.snackbarUndo,
-            onPressed: () => _undoReschedule(
-              context,
-              ref,
-              entry.id,
-              occurrence.id,
-              absenceId: absenceId,
+      if (command.outcome.refreshFailed) {
+        showCareScheduleCommandSnackBar(
+          context,
+          outcome: command.outcome,
+          successMessage: successMessage,
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(successMessage),
+            action: SnackBarAction(
+              label: l.snackbarUndo,
+              onPressed: () => _undoReschedule(
+                context,
+                ref,
+                entry.id,
+                occurrence.id,
+                absenceId: absenceId,
+              ),
             ),
           ),
-        ),
-      );
+        );
+      }
     } catch (_) {
       if (!context.mounted) return;
       final l = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(l.careCompletionFailed)));
-    }
-  }
-
-  static void invalidateAfterReschedule(
-    WidgetRef ref,
-    String entryId, {
-    String? absenceId,
-  }) {
-    ref.invalidate(entryOccurrencesProvider(entryId));
-    ref.invalidate(entryPastOccurrencesProvider(entryId));
-    ref.invalidate(entryHistoryProvider(entryId));
-    ref.invalidate(carePeriodCoverageProvider);
-    if (absenceId != null && absenceId.isNotEmpty) {
-      ref.invalidate(absenceCarePlanProvider(absenceId));
     }
   }
 
@@ -202,10 +196,20 @@ class RescheduleOccurrenceFlow {
     String? absenceId,
   }) async {
     try {
-      await ref
-          .read(healthRepositoryProvider)
-          .undoOccurrence(entryId, occurrenceId);
-      invalidateCareItemDetailData(ref, entryId, absenceId: absenceId);
+      final outcome = await ref
+          .read(careScheduleControllerProvider)
+          .undoOccurrence(
+            entryId,
+            occurrenceId,
+            absenceId: absenceId,
+          );
+      if (!context.mounted) return;
+      final l = AppLocalizations.of(context)!;
+      showCareScheduleCommandSnackBar(
+        context,
+        outcome: outcome,
+        successMessage: l.snackbarUndo,
+      );
     } catch (_) {
       if (!context.mounted) return;
       final l = AppLocalizations.of(context)!;

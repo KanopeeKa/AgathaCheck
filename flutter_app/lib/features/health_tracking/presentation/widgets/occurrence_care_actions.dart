@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../domain/entities/command_outcome.dart';
 import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/health_occurrence.dart';
 import '../../domain/occurrence_scheduling.dart';
-import '../providers/health_providers.dart';
+import '../controllers/care_schedule_controller.dart';
 import '../providers/occurrence_providers.dart';
+import 'care_schedule_command_feedback.dart';
 import 'health_issue_prompt/health_issue_linkage_flow.dart';
 import 'occurrence_completion_date_flow.dart';
 import 'occurrence_completion_feedback.dart';
@@ -79,8 +81,8 @@ class OccurrenceCareActions {
     );
   }
 
-  /// Persists completion via the occurrence complete API.
-  static Future<void> persistCompletion(
+  /// Persists completion via [CareScheduleController].
+  static Future<CommandOutcome?> persistCompletion(
     WidgetRef ref,
     HealthEntry entry,
     DateTime completedOn, {
@@ -91,23 +93,22 @@ class OccurrenceCareActions {
     if (id == null || id.isEmpty) {
       throw StateError('occurrenceId is required to complete care');
     }
-    await ref
-        .read(healthRepositoryProvider)
-        .completeOccurrence(
-          entry.id,
-          id,
-          completedOn: completedOn,
-          skipEarlierMissed: skipEarlierMissed,
-        );
-    ref.invalidate(entryOccurrencesProvider(entry.id));
-    await ref.read(healthEntriesNotifierProvider.notifier).refresh();
+    return ref.read(careScheduleControllerProvider).completeOccurrence(
+      entry.id,
+      id,
+      completedOn: completedOn,
+      skipEarlierMissed: skipEarlierMissed,
+    );
   }
 
   /// Skips every missed open occurrence for [entry].
-  static Future<void> skipAllMissed(WidgetRef ref, HealthEntry entry) async {
-    await ref.read(healthRepositoryProvider).skipMissedOccurrences(entry.id);
-    ref.invalidate(entryOccurrencesProvider(entry.id));
-    await ref.read(healthEntriesNotifierProvider.notifier).refresh();
+  static Future<CommandOutcome?> skipAllMissed(
+    WidgetRef ref,
+    HealthEntry entry,
+  ) async {
+    return ref
+        .read(careScheduleControllerProvider)
+        .skipAllMissedOccurrences(entry.id);
   }
 
   /// Direct mark-done with snackbar (pet due sections without optimistic state).
@@ -121,13 +122,21 @@ class OccurrenceCareActions {
 
     if (!result.alreadyPersisted) {
       try {
-        await persistCompletion(
+        final outcome = await persistCompletion(
           ref,
           entry,
           result.completedOn,
           occurrenceId: result.occurrenceId,
           skipEarlierMissed: result.skipEarlierMissed,
         );
+        if (!context.mounted) return;
+        final l = AppLocalizations.of(context)!;
+        showCareScheduleCommandSnackBar(
+          context,
+          outcome: outcome,
+          successMessage: l.markCompletedAction,
+        );
+        if (outcome == null) return;
       } catch (_) {
         if (!context.mounted) return;
         final l = AppLocalizations.of(context)!;

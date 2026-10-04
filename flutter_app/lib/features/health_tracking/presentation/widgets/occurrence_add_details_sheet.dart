@@ -6,10 +6,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/health_entry.dart';
 import '../controllers/health_entry_form_constants.dart';
-import '../providers/health_providers.dart';
+import '../controllers/care_schedule_controller.dart';
 import '../utils/health_document_picker.dart';
 import 'care_provider_field.dart';
-import 'pet_event_occurrence_actions.dart';
+import 'care_schedule_command_feedback.dart';
 
 /// Optional note and occurrence-scoped documents after mark done.
 Future<void> showOccurrenceAddDetailsSheet(
@@ -105,30 +105,26 @@ class _OccurrenceAddDetailsSheetState
     final l = AppLocalizations.of(context)!;
     try {
       final notes = _notesController.text.trim();
-      await ref
-          .read(healthRepositoryProvider)
-          .updateOccurrenceNotes(
+      final outcome = await ref
+          .read(careScheduleControllerProvider)
+          .updateOccurrenceDetails(
             widget.entry.id,
             widget.occurrenceId,
-            notes,
+            notes: notes,
             providerContactId: _providerContactId,
             providerTypedName: _providerTypedName,
+            pendingDocuments: _pendingDocs
+                .map((d) => (name: d.name, bytes: d.bytes))
+                .toList(),
           );
-      final ds = ref.read(healthDataSourceProvider);
-      for (final doc in _pendingDocs) {
-        await ds.uploadPhoto(
-          widget.entry.id,
-          doc.bytes,
-          doc.name,
-          occurrenceId: widget.occurrenceId,
-        );
-      }
-      PetEventOccurrenceActions.invalidateOccurrenceData(ref, widget.entry.id);
       if (!mounted) return;
       Navigator.pop(context);
-      ScaffoldMessenger.of(
+      showCareScheduleCommandSnackBar(
         context,
-      ).showSnackBar(SnackBar(content: Text(l.careDetailsSaved)));
+        outcome: outcome,
+        successMessage: l.careDetailsSaved,
+        failureMessage: l.careDetailsSaveFailed,
+      );
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(
