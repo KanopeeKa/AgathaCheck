@@ -149,11 +149,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "bdd-journey",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1580"
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1580",
+      "merge_commit": "3ba6a3fb96bb417d4b268229bfe66759b5df19f4"
     },
     {
       "id": "5",
@@ -173,14 +174,11 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:2aececbbf5bfcd72c1d97390c93b3de7bd6699f02a1ebfde324260e3a63d29b8"
+  "content_hash": "sha256:583b2911995b00fed53ebfca54bca4eff1b38a55f74461a37899a4165058ebf9"
 }
