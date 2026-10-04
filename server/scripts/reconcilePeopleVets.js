@@ -4,17 +4,10 @@
  *
  * Usage: node server/scripts/reconcilePeopleVets.js
  */
-import pg from 'pg';
-
+import { createAppPool } from '../lib/db/createPool.js';
 import { rebuildAll } from '../lib/people/vetProjection.js';
 
-const pool = new pg.Pool({
-  user: process.env.PGUSER || 'user',
-  password: process.env.PGPASSWORD || 'password',
-  host: process.env.PGHOST || 'localhost',
-  port: Number(process.env.PGPORT || 5432),
-  database: process.env.PGDATABASE || 'agatha_db',
-});
+const pool = createAppPool();
 
 async function main() {
   const client = await pool.connect();

@@ -98,3 +98,22 @@ Eliminate the o2switch `Europe/Paris` node-pg `DATE` shift (§2.8 / §8), repair
 node scripts/execute_plan_runtime.js gate not-recorded-tz-fix-e76a
 node scripts/execute_plan_runtime.js current-phase not-recorded-tz-fix-e76a
 ```
+
+## Runtime state (agent-updated)
+
+```yaml
+autonomy: active
+current_phase: "1"
+last_completed_phase: null
+halt_reason: null
+next_action: "implement phase 1 on cursor/pg-date-tz-fix-e76a"
+artifact_ref:
+  branch: cursor/pg-date-tz-fix-e76a
+  plan_path: .agents/plans/not-recorded-tz-fix-e76a.md
+  plan_commit: null
+  snapshot_path: .agents/plans/not-recorded-tz-fix-e76a.snapshot.json
+  snapshot_commit: null
+open_prs: []
+merge_commits: {}
+debt_issue_refs: []
+```

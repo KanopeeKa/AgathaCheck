@@ -5,25 +5,16 @@
 import { randomUUID } from 'crypto';
 
 import jwt from 'jsonwebtoken';
-import pg from 'pg';
 import request from 'supertest';
 
 import { createApp } from '../../../bin/server.js';
+import { createAppPool } from '../../../lib/db/createPool.js';
 import { dateToIsoDate } from '../../../lib/calendarDate.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'default_secret';
 
 export function createDbPool() {
-  if (process.env.DATABASE_URL) {
-    return new pg.Pool({ connectionString: process.env.DATABASE_URL });
-  }
-  return new pg.Pool({
-    user: process.env.PGUSER || 'user',
-    password: process.env.PGPASSWORD || 'password',
-    host: process.env.PGHOST || 'localhost',
-    port: Number(process.env.PGPORT || 5432),
-    database: process.env.PGDATABASE || 'agatha_db',
-  });
+  return createAppPool();
 }
 
 /**
