@@ -29,8 +29,14 @@ function buildMockPool() {
     if (sql.includes('UPDATE pets') && sql.includes('photo_path = NULL')) {
       return { rows: [] };
     }
+    if (sql.includes('INSERT INTO cleanup_jobs')) {
+      return { rows: [{ id: 'job-1' }] };
+    }
     if (sql.includes('INSERT INTO audit_events')) {
-      return { rows: [] };
+      return { rows: [{ id: 'audit-1' }] };
+    }
+    if (sql.includes('DELETE FROM pets WHERE id = $1')) {
+      return { rowCount: 1, rows: [] };
     }
 
     if (sql.includes('SELECT we.*') && sql.includes('FROM weight_entries we')) {
