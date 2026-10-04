@@ -103,16 +103,16 @@ node scripts/execute_plan_runtime.js current-phase not-recorded-tz-fix-e76a
 
 ```yaml
 autonomy: active
-current_phase: "1"
-last_completed_phase: null
+current_phase: 2
+last_completed_phase: 1
 halt_reason: null
-next_action: "implement phase 1 on cursor/pg-date-tz-fix-e76a"
+next_action: "start phase 2: checkout cursor/tz-data-repair-ops-e76a"
 artifact_ref:
   branch: cursor/pg-date-tz-fix-e76a
   plan_path: .agents/plans/not-recorded-tz-fix-e76a.md
-  plan_commit: null
+  plan_commit: 7a309171ae83c4d55fa7d34f3ca396def4249449
   snapshot_path: .agents/plans/not-recorded-tz-fix-e76a.snapshot.json
-  snapshot_commit: null
+  snapshot_commit: 7a309171ae83c4d55fa7d34f3ca396def4249449
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
