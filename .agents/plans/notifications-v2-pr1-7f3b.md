@@ -83,14 +83,14 @@ autonomy: active
 current_phase: 1
 last_completed_phase: null
 halt_reason: null
-next_action: "implement PR1 on cursor/notifications-v2-pr1-7f3b → open PR to integration"
+next_action: "continue phase 1 on branch cursor/notifications-v2-pr1-7f3b"
 artifact_ref:
   branch: cursor/notifications-v2-pr1-7f3b
   plan_path: .agents/plans/notifications-v2-pr1-7f3b.md
-  plan_commit: pending
+  plan_commit: 7cfba3b505dfaf413556fa6330802401d179a83a
   snapshot_path: .agents/plans/notifications-v2-pr1-7f3b.snapshot.json
-  snapshot_commit: pending
-open_prs: []
+  snapshot_commit: 7cfba3b505dfaf413556fa6330802401d179a83a
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1574"]
 merge_commits: {}
 debt_issue_refs: []
 ```
