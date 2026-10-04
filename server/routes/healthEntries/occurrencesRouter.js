@@ -162,9 +162,8 @@ export function registerOccurrenceRoutes(router, pool) {
       const status = req.query.status || 'open';
       if (status === 'open') {
         const synced = await syncCareItemForRead(pool, entry.id, req);
-        if (!synced) return res.status(404).json({ error: 'Entry not found' });
-        const asOf = synced.asOf;
-        const rows = synced.openRows;
+        const asOf = synced?.asOf ?? await resolveCareAsOfForRead(pool, entry, req);
+        const rows = synced?.openRows ?? await listOpenRows(pool, entry.id);
         const names = await pool.query(
           `SELECT ho.id, TRIM(COALESCE(u.first_name, '') || ' ' || COALESCE(u.last_name, '')) AS marked_by_name
            FROM health_occurrences ho LEFT JOIN users u ON u.id = ho.marked_by_user_id

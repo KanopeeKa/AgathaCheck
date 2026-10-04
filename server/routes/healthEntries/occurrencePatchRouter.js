@@ -10,12 +10,11 @@ import {
   normalizeOccurrenceRow,
   openOccurrenceToWire,
   resolveCareAsOfForRead,
-  syncCareItemForRead,
   updateCompletedDetails,
 } from '../../lib/care/occurrence/index.js';
 import { UNDOABLE_EVENT_TYPES } from '../../lib/care/schedule/scheduleEventLedger.js';
 import { resolveProviderUsedPatch } from '../../lib/care/providerUsed.js';
-import { careItemWire, commandResponse, occurrenceToMap } from '../../lib/care/item/index.js';
+import { careItemReadResponse, commandResponse, occurrenceToMap } from '../../lib/care/item/index.js';
 import { extractUserId } from './shared.js';
 import { handleCommand, loadEntry, loadOccurrence } from './occurrencesRouter.js';
 
@@ -91,13 +90,8 @@ export function registerOccurrencePatchRoutes(router, pool) {
       if (!entry) return res.status(404).json({ error: 'Entry not found' });
       const occ = await loadOccurrence(pool, entry.id, req.params.occId);
       if (!occ) return res.status(404).json({ error: 'Occurrence not found', code: 'occurrence_not_found' });
-      const synced = await syncCareItemForRead(pool, entry.id, req);
-      if (!synced) return res.status(404).json({ error: 'Entry not found' });
-      const asOf = synced.asOf;
-      const entryWire = await careItemWire(pool, entry, req, {
-        openRows: synced.openRows,
-        asOf,
-      });
+      const entryWire = await careItemReadResponse(pool, entry, entry.id, req);
+      const asOf = entryWire.as_of;
       const body = {
         occurrence: { ...occurrenceToMap(occ), occurrence_status: occurrenceStatusFor(occ, entry, asOf) },
         entry: entryWire,
