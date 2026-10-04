@@ -609,11 +609,11 @@ last_completed_phase: null
 halt_reason: null
 next_action: "continue phase c1-flutter-core on branch cursor/people-client-c1-core-7f3b"
 artifact_ref:
-  branch: main
+  branch: cursor/people-client-c1-core-7f3b
   plan_path: .agents/plans/people-client-core-7f3b.md
-  plan_commit: bc59db3da0fe52896313906c089a14ff74fd4a4d
+  plan_commit: fe4f41c0151d332c5b5d0b285814323fd19e805b
   snapshot_path: .agents/plans/people-client-core-7f3b.snapshot.json
-  snapshot_commit: bc59db3da0fe52896313906c089a14ff74fd4a4d
+  snapshot_commit: fe4f41c0151d332c5b5d0b285814323fd19e805b
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

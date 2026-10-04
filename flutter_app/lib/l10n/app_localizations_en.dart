@@ -7410,6 +7410,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get peopleStatusInactive => 'Inactive';
 
   @override
+  String get peopleStatusActive => 'Active';
+
+  @override
+  String get peopleGroupCarers => 'Trusted carers';
+
+  @override
+  String get peopleGroupProfessionals => 'Pet professionals';
+
+  @override
+  String get peopleRelationshipPrimaryVet => 'Primary vet';
+
+  @override
+  String get peopleRelationshipOutOfHoursVet => 'Out-of-hours vet';
+
+  @override
+  String get peopleRelationshipEmergencyContact => 'Emergency contact';
+
+  @override
+  String get peopleRelationshipCareProvider => 'Provides care';
+
+  @override
+  String get peopleRelationshipOther => 'Other link';
+
+  @override
   String get peopleDangerZoneTitle => 'Danger zone';
 
   @override

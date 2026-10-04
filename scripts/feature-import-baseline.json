@@ -166,7 +166,7 @@
     "R3|flutter_app/lib/features/notifications/presentation/screens/pending_actions_screen.dart|flutter_app/lib/features/pet_profile/presentation/widgets/pet_list/pending_foster_placements_section.dart",
     "R3|flutter_app/lib/features/notifications/presentation/widgets/notification_tile.dart|flutter_app/lib/features/pet_profile/presentation/providers/pet_providers.dart",
     "R3|flutter_app/lib/features/notifications/presentation/widgets/notification_tile.dart|flutter_app/lib/features/pet_profile/presentation/utils/pet_accent_color.dart",
-    "R3|flutter_app/lib/features/people/presentation/providers/people_providers.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
+    "R3|flutter_app/lib/features/people/application/people_providers.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
     "R3|flutter_app/lib/features/people/presentation/screens/people_detail_screen.dart|flutter_app/lib/features/pet_profile/presentation/providers/pet_providers.dart",
     "R3|flutter_app/lib/features/people/presentation/screens/people_detail_screen.dart|flutter_app/lib/features/vet/presentation/widgets/vet_team_initials_avatar.dart",
     "R3|flutter_app/lib/features/people/presentation/screens/people_detail_screen.dart|flutter_app/lib/features/vet/presentation/widgets/vet_team_pet_row.dart",
@@ -631,6 +631,11 @@
       "identity": "R4|weight_tracking->experience",
       "reason": "W6 weight hub relocated from pet_profile; experience shell matches pet_detail_screen pattern (roadmap §6.3)",
       "accepted_on": "2026-10-05"
+    },
+    {
+      "identity": "R3|flutter_app/lib/features/people/application/people_providers.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
+      "reason": "People application wires authHttpClientProvider",
+      "accepted_on": "2026-10-04"
     }
   ]
 }

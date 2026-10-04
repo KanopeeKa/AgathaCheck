@@ -1,0 +1,28 @@
+library;
+
+export 'application/legacy_people_providers.dart';
+export 'application/people_commands.dart';
+export 'application/people_providers.dart';
+export 'data/people_api_exception.dart';
+export 'domain/entities/contact_detail.dart';
+export 'domain/entities/contact_summary.dart';
+export 'domain/entities/contact_usage.dart';
+export 'domain/entities/household.dart';
+export 'domain/entities/household_invite.dart';
+export 'domain/entities/people_contact.dart';
+export 'domain/entities/people_legacy_mapping.dart';
+export 'domain/entities/person.dart';
+export 'domain/entities/pet_people.dart';
+export 'domain/entities/person_roster_entry.dart';
+export 'domain/entities/related_care.dart';
+export 'domain/entities/roster.dart';
+export 'domain/enums/contact_group.dart';
+export 'domain/enums/contact_kind.dart';
+export 'domain/enums/contact_role.dart';
+export 'domain/enums/contact_status.dart';
+export 'domain/enums/relationship_kind.dart';
+export 'domain/repositories/people_repository.dart';
+export 'domain/services/desk_ranking.dart';
+export 'domain/services/roster_search.dart';
+export 'domain/services/roster_sections.dart';
+export 'presentation/labels/people_labels.dart';

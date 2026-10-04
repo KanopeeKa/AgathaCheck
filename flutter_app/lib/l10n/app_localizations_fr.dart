@@ -7526,6 +7526,30 @@ class AppLocalizationsFr extends AppLocalizations {
   String get peopleStatusInactive => 'Inactif';
 
   @override
+  String get peopleStatusActive => 'Actif';
+
+  @override
+  String get peopleGroupCarers => 'Aidants de confiance';
+
+  @override
+  String get peopleGroupProfessionals => 'Professionnels';
+
+  @override
+  String get peopleRelationshipPrimaryVet => 'Vétérinaire principal';
+
+  @override
+  String get peopleRelationshipOutOfHoursVet => 'Vétérinaire de garde';
+
+  @override
+  String get peopleRelationshipEmergencyContact => 'Contact d\'urgence';
+
+  @override
+  String get peopleRelationshipCareProvider => 'Fournit des soins';
+
+  @override
+  String get peopleRelationshipOther => 'Autre lien';
+
+  @override
   String get peopleDangerZoneTitle => 'Zone sensible';
 
   @override
