@@ -14,7 +14,10 @@ import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 import 'global_events_list.dart';
 export 'global_events_list.dart' show GlobalEventsList;
 export 'package:pet_profile_app/features/pet_profile/pet_profile.dart'
-    show OrgGlobalEventsFilters, PetCareEventsCohortFilter, PetCareGlobalEventsFilters;
+    show
+        OrgGlobalEventsFilters,
+        PetCareEventsCohortFilter,
+        PetCareGlobalEventsFilters;
 
 // ---------------------------------------------------------------------------
 // Provider
