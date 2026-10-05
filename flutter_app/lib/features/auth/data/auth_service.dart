@@ -17,6 +17,7 @@ class AuthUser {
   final String? photoUrl;
   final String? pinnedOrganizationId;
   final String? timezone;
+  final String? weightUnit;
   final String? createdAt;
   final String? updatedAt;
 
@@ -30,6 +31,7 @@ class AuthUser {
     this.photoUrl,
     this.pinnedOrganizationId,
     this.timezone,
+    this.weightUnit = 'kg',
     this.createdAt,
     this.updatedAt,
   });
@@ -45,6 +47,7 @@ class AuthUser {
       photoUrl: json['photo_url']?.toString(),
       pinnedOrganizationId: json['pinned_organization_id']?.toString(),
       timezone: json['timezone']?.toString(),
+      weightUnit: json['weight_unit']?.toString() ?? 'kg',
       createdAt: json['created_at']?.toString(),
       updatedAt: json['updated_at']?.toString(),
     );
@@ -207,6 +210,7 @@ class AuthService {
     String? bio,
     String? locale,
     String? timezone,
+    String? weightUnit,
     String? pinnedOrganizationId,
     bool updatePinnedOrganizationId = false,
   }) async {
@@ -217,6 +221,7 @@ class AuthService {
     if (bio != null) body['bio'] = bio;
     if (locale != null) body['locale'] = locale;
     if (timezone != null) body['timezone'] = timezone;
+    if (weightUnit != null) body['weight_unit'] = weightUnit;
     if (updatePinnedOrganizationId) {
       body['pinned_organization_id'] = pinnedOrganizationId;
     }

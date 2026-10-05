@@ -1,63 +1,44 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../data/datasources/weight_remote_datasource.dart';
+import '../../../../core/providers/pet_care_sync.dart';
+import '../../../../core/weight/weight_unit.dart';
+import '../../../../core/weight/weight_unit_preference.dart';
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
-import 'package:pet_profile_app/core/providers/pet_weight_invalidation.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
+import '../../data/datasources/weight_remote_datasource.dart';
 import '../../data/repositories/weight_repository_impl.dart';
-import '../../domain/weight_entry_sort.dart';
 import '../../domain/entities/weight_entry.dart';
 import '../../domain/repositories/weight_repository.dart';
+import '../../domain/weight_entry_sort.dart';
 
-enum WeightUnit { kg, lb }
+export '../../../../core/weight/weight_unit.dart';
 
-const double _kgToLb = 2.20462;
+/// Stub for W6 (`GET /api/weight-entries/overview`).
+final weightOverviewProvider = FutureProvider.autoDispose
+    .family<Object?, String>((ref, petId) async => null);
 
-double convertWeight(double kg, WeightUnit unit) {
-  return unit == WeightUnit.lb ? kg * _kgToLb : kg;
-}
+/// Query key for fulfilment candidates (W6).
+typedef WeightFulfilmentQuery = ({String petId, DateTime date});
 
-double convertToKg(double value, WeightUnit unit) {
-  return unit == WeightUnit.lb ? value / _kgToLb : value;
-}
+/// Stub for W6 (`GET /api/weight-entries/fulfilment-candidates`).
+final weightFulfilmentCandidatesProvider = FutureProvider.autoDispose
+    .family<Object?, WeightFulfilmentQuery>((ref, query) async => null);
 
-String weightUnitLabel(WeightUnit unit) {
-  return unit == WeightUnit.kg ? 'kg' : 'lb';
-}
+@Deprecated(
+  'Use weightUnitPreferenceProvider (per user, not per pet). Removed in W8.',
+)
+final weightUnitProvider = Provider.family<WeightUnit, String>((ref, petId) {
+  return ref.watch(weightUnitPreferenceProvider);
+});
 
-final weightUnitProvider =
-    StateNotifierProvider.family<WeightUnitNotifier, WeightUnit, String>(
-      (ref, petId) => WeightUnitNotifier(petId),
-    );
+@Deprecated('Use toDisplay from core/weight/weight_unit.dart')
+double convertWeight(double kg, WeightUnit unit) => toDisplay(kg, unit);
 
-class WeightUnitNotifier extends StateNotifier<WeightUnit> {
-  WeightUnitNotifier(this._petId) : super(WeightUnit.kg) {
-    _load();
-  }
+@Deprecated('Use toKg from core/weight/weight_unit.dart')
+double convertToKg(double value, WeightUnit unit) => toKg(value, unit);
 
-  final String _petId;
-
-  Future<void> _load() async {
-    final prefs = await SharedPreferences.getInstance();
-    final stored = prefs.getString('pet_${_petId}_weightUnit');
-    if (stored == 'lb') {
-      state = WeightUnit.lb;
-    }
-  }
-
-  Future<void> setUnit(WeightUnit unit) async {
-    state = unit;
-    final prefs = await SharedPreferences.getInstance();
-    // Persist the canonical 'lb'/'kg' value, not enum.name: enum names are
-    // minified in release builds, so `.name` would never round-trip with the
-    // `== 'lb'` check in _load() and the unit would always reset to kg.
-    await prefs.setString(
-      'pet_${_petId}_weightUnit',
-      unit == WeightUnit.lb ? 'lb' : 'kg',
-    );
-  }
-}
+@Deprecated('Use unitLabel from core/weight/weight_unit.dart')
+String weightUnitLabel(WeightUnit unit) => unitLabel(unit);
 
 final weightRemoteDataSourceProvider = Provider<WeightRemoteDataSource>((ref) {
   final baseUrl = ref.watch(apiBaseUrlProvider);
@@ -70,28 +51,6 @@ final weightRemoteDataSourceProvider = Provider<WeightRemoteDataSource>((ref) {
 final weightRepositoryProvider = Provider<WeightRepository>((ref) {
   final dataSource = ref.watch(weightRemoteDataSourceProvider);
   return WeightRepositoryImpl(dataSource);
-});
-
-final weightEntriesProvider = FutureProvider.family<List<WeightEntry>, String>((
-  ref,
-  petId,
-) async {
-  final repo = ref.watch(weightRepositoryProvider);
-  final auth = ref.watch(authProvider);
-  final token = auth.accessToken;
-  if (token == null) return [];
-  return sortWeightEntriesNewestFirst(await repo.getEntries(petId, token));
-});
-
-final latestWeightProvider = FutureProvider.family<WeightEntry?, String>((
-  ref,
-  petId,
-) async {
-  final repo = ref.watch(weightRepositoryProvider);
-  final auth = ref.watch(authProvider);
-  final token = auth.accessToken;
-  if (token == null) return null;
-  return repo.getLatestWeight(petId, token);
 });
 
 class WeightEntriesNotifier
@@ -107,12 +66,18 @@ class WeightEntriesNotifier
 
   String? get _token => ref.read(authProvider).accessToken;
 
+  Future<void> _afterWrite() async {
+    final sync = ref.read(petCareSyncProvider);
+    await sync.weightChanged(arg);
+    await sync.careChanged(arg);
+  }
+
   Future<void> addEntry(WeightEntry entry) async {
     final repo = ref.read(weightRepositoryProvider);
     final token = _token;
     if (token == null) return;
     await repo.createEntry(entry, token);
-    invalidatePetWeightData(ref, arg);
+    await _afterWrite();
     state = AsyncValue.data(
       sortWeightEntriesNewestFirst(await repo.getEntries(arg, token)),
     );
@@ -123,7 +88,7 @@ class WeightEntriesNotifier
     final token = _token;
     if (token == null) return;
     await repo.deleteEntry(id, token);
-    invalidatePetWeightData(ref, arg);
+    await _afterWrite();
     state = AsyncValue.data(
       sortWeightEntriesNewestFirst(await repo.getEntries(arg, token)),
     );
@@ -133,7 +98,6 @@ class WeightEntriesNotifier
     final repo = ref.read(weightRepositoryProvider);
     final token = _token;
     if (token == null) return;
-    ref.invalidate(latestWeightProvider(arg));
     state = AsyncValue.data(
       sortWeightEntriesNewestFirst(await repo.getEntries(arg, token)),
     );

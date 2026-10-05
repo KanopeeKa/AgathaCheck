@@ -24,10 +24,16 @@ import 'package:pet_profile_app/features/sharing/domain/repositories/sharing_rep
 import 'package:pet_profile_app/features/sharing/presentation/providers/sharing_providers.dart';
 import 'package:pet_profile_app/features/sharing/presentation/screens/share_pet_screen.dart';
 import 'package:pet_profile_app/features/vet/presentation/providers/vet_providers.dart';
+import 'package:pet_profile_app/features/weight_tracking/domain/entities/weight_entry.dart';
 import 'package:pet_profile_app/features/weight_tracking/presentation/providers/weight_providers.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import '../../../../helpers/fakes.dart';
+
+class _EmptyWeightEntriesNotifier extends WeightEntriesNotifier {
+  @override
+  Future<List<WeightEntry>> build(String arg) async => [];
+}
 
 class _PetDetailPetListNotifier extends PetListNotifier {
   _PetDetailPetListNotifier(this.pets);
@@ -141,7 +147,9 @@ void main() {
                 ..state = const AsyncValue.data([]),
         ),
         vetListProvider.overrideWith(FakeVetListNotifier.new),
-        latestWeightProvider.overrideWith((ref, arg) => null),
+        weightEntriesNotifierProvider.overrideWith(
+          () => _EmptyWeightEntriesNotifier(),
+        ),
       ],
       child: MaterialApp.router(
         theme: AppTheme.lightTheme,
@@ -264,7 +272,9 @@ void main() {
                   ..state = const AsyncValue.data([]),
           ),
           vetListProvider.overrideWith(FakeVetListNotifier.new),
-          latestWeightProvider.overrideWith((ref, arg) => null),
+          weightEntriesNotifierProvider.overrideWith(
+            () => _EmptyWeightEntriesNotifier(),
+          ),
         ],
         child: MaterialApp.router(
           theme: AppTheme.lightTheme,

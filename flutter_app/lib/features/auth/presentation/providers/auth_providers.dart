@@ -193,6 +193,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     String? bio,
     String? locale,
     String? timezone,
+    String? weightUnit,
   }) async {
     if (state.accessToken == null) return;
     state = state.copyWith(isLoading: true, clearError: true);
@@ -205,6 +206,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         bio: bio,
         locale: locale,
         timezone: timezone,
+        weightUnit: weightUnit,
       );
       state = state.copyWith(user: user, isLoading: false);
     } catch (e) {

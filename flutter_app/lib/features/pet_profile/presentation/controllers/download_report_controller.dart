@@ -11,6 +11,7 @@ import '../../domain/entities/pet_report_supplement.dart';
 import '../../../sharing/presentation/providers/sharing_providers.dart';
 import '../../../vet/domain/entities/vet.dart';
 import '../providers/pet_vet_contacts_provider.dart';
+import '../../../../core/weight/weight_unit_preference.dart';
 import '../../../weight_tracking/presentation/providers/weight_providers.dart';
 import '../../data/services/pdf_saver.dart' as pdf_saver;
 import '../../data/services/pet_report_service.dart';
@@ -56,7 +57,7 @@ class DownloadReportController {
             );
 
       final weightEntries = await ref.read(
-        weightEntriesProvider(pet.id).future,
+        weightEntriesNotifierProvider(pet.id).future,
       );
       await ref.read(healthEntriesNotifierProvider.future);
       final healthEntries =
@@ -69,7 +70,7 @@ class DownloadReportController {
           .where((n) => n.petId == pet.id)
           .toList();
       final accessList = await ref.read(petAccessProvider(pet.id).future);
-      final unit = ref.read(weightUnitProvider(pet.id));
+      final unit = ref.read(weightUnitPreferenceProvider);
 
       const familyEventsList = <PetReportFamilyEvent>[];
       const fosterPlacements = <PetReportFosterPlacement>[];

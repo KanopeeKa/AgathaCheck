@@ -1136,6 +1136,30 @@ abstract class AppLocalizations {
   /// **'Weight chart showing {count} entries'**
   String weightChartLabel(int count);
 
+  /// No description provided for @weightRecordAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Record weight'**
+  String get weightRecordAction;
+
+  /// No description provided for @weightTodayFieldLabelUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight today ({unit})'**
+  String weightTodayFieldLabelUnit(String unit);
+
+  /// No description provided for @petProfileWeightRow.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight {weight} · recorded {date}'**
+  String petProfileWeightRow(String weight, String date);
+
+  /// No description provided for @petProfileNoWeightRecorded.
+  ///
+  /// In en, this message translates to:
+  /// **'No weight recorded yet'**
+  String get petProfileNoWeightRecorded;
+
   /// No description provided for @healthEvents.
   ///
   /// In en, this message translates to:
