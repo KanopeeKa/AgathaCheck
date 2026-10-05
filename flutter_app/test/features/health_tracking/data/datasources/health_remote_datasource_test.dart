@@ -31,19 +31,19 @@ void main() {
     return ds;
   }
 
-  group('auth header attachment', () {
-    test('getEntries sends Authorization bearer header', () async {
+  group('transport headers (AuthHttpClient owns Authorization)', () {
+    test('getEntries does not attach Authorization in the data layer', () async {
       final client = MockClient((request) async {
-        expect(request.headers['Authorization'], 'Bearer $token');
+        expect(request.headers.containsKey('Authorization'), isFalse);
         return http.Response(json.encode([testEntryJson]), 200);
       });
       await makeDatasource(client).getEntries();
     });
 
-    test('createEntry sends Authorization and JSON content type', () async {
+    test('createEntry sends JSON content type without Authorization', () async {
       final client = MockClient((request) async {
         expect(request.method, 'POST');
-        expect(request.headers['Authorization'], 'Bearer $token');
+        expect(request.headers.containsKey('Authorization'), isFalse);
         expect(request.headers['Content-Type'], contains('application/json'));
         return http.Response(json.encode(testEntryJson), 200);
       });
@@ -51,10 +51,10 @@ void main() {
       await makeDatasource(client).createEntry(entry);
     });
 
-    test('updateEntry sends Authorization and JSON content type', () async {
+    test('updateEntry sends JSON content type without Authorization', () async {
       final client = MockClient((request) async {
         expect(request.method, 'PUT');
-        expect(request.headers['Authorization'], 'Bearer $token');
+        expect(request.headers.containsKey('Authorization'), isFalse);
         expect(request.headers['Content-Type'], contains('application/json'));
         return http.Response(json.encode(testEntryJson), 200);
       });
@@ -62,156 +62,136 @@ void main() {
       await makeDatasource(client).updateEntry(entry);
     });
 
-    test('unmarkDone posts schedule undo', () async {
+    test('unmarkDone posts schedule undo without Authorization', () async {
       final client = MockClient((request) async {
         expect(
           request.url.toString(),
           '$baseUrl/api/health-entries/he-1/schedule/undo',
         );
         expect(request.method, 'POST');
-        expect(request.headers['Authorization'], 'Bearer $token');
+        expect(request.headers.containsKey('Authorization'), isFalse);
         return http.Response(json.encode({'entry': testEntryJson}), 200);
       });
       await makeDatasource(client).unmarkDone('he-1');
     });
 
-    test('deleteEntry sends Authorization bearer header', () async {
+    test('deleteEntry omits Authorization header', () async {
       final client = MockClient((request) async {
         expect(request.method, 'DELETE');
-        expect(request.headers['Authorization'], 'Bearer $token');
+        expect(request.headers.containsKey('Authorization'), isFalse);
         return http.Response('', 200);
       });
       await makeDatasource(client).deleteEntry('he-1');
     });
 
-    test('getEntry sends Authorization bearer header', () async {
+    test('getEntry omits Authorization header', () async {
       final client = MockClient((request) async {
         expect(request.method, 'GET');
-        expect(request.headers['Authorization'], 'Bearer $token');
+        expect(request.headers.containsKey('Authorization'), isFalse);
         return http.Response(json.encode(testEntryJson), 200);
       });
       await makeDatasource(client).getEntry('he-1');
     });
 
-    test('getHistory sends Authorization bearer header', () async {
+    test('getHistory omits Authorization header', () async {
       final client = MockClient((request) async {
         expect(
           request.url.toString(),
           '$baseUrl/api/health-entries/he-1/history',
         );
-        expect(request.headers['Authorization'], 'Bearer $token');
+        expect(request.headers.containsKey('Authorization'), isFalse);
         return http.Response(json.encode([]), 200);
       });
       await makeDatasource(client).getHistory('he-1');
     });
 
-    test('exportCsv sends Authorization bearer header', () async {
+    test('exportCsv omits Authorization header', () async {
       final client = MockClient((request) async {
-        expect(request.headers['Authorization'], 'Bearer $token');
+        expect(request.headers.containsKey('Authorization'), isFalse);
         return http.Response('id,name\n', 200);
       });
       await makeDatasource(client).exportCsv();
     });
 
-    test('getPhotos sends Authorization bearer header', () async {
+    test('getPhotos omits Authorization header', () async {
       final client = MockClient((request) async {
         expect(
           request.url.toString(),
           '$baseUrl/api/health-entries/he-1/photos',
         );
-        expect(request.headers['Authorization'], 'Bearer $token');
+        expect(request.headers.containsKey('Authorization'), isFalse);
         return http.Response(json.encode([]), 200);
       });
       await makeDatasource(client).getPhotos('he-1');
     });
 
-    test(
-      'uploadPhoto multipart request carries Authorization header',
-      () async {
-        final client = MockClient((request) async {
-          expect(request.method, 'POST');
-          expect(request.headers['Authorization'], 'Bearer $token');
-          return http.Response(
-            json.encode({'id': 1, 'event_id': 'he-1', 'photo_path': '/p.jpg'}),
-            200,
-          );
-        });
-        await makeDatasource(
-          client,
-        ).uploadPhoto('he-1', Uint8List.fromList([1, 2, 3]), 'p.jpg');
-      },
-    );
+    test('uploadPhoto multipart omits Authorization header', () async {
+      final client = MockClient((request) async {
+        expect(request.method, 'POST');
+        expect(request.headers.containsKey('Authorization'), isFalse);
+        return http.Response(
+          json.encode({'id': 1, 'event_id': 'he-1', 'photo_path': '/p.jpg'}),
+          200,
+        );
+      });
+      await makeDatasource(
+        client,
+      ).uploadPhoto('he-1', Uint8List.fromList([1, 2, 3]), 'p.jpg');
+    });
 
-    test('deletePhoto sends Authorization bearer header', () async {
+    test('deletePhoto omits Authorization header', () async {
       final client = MockClient((request) async {
         expect(request.method, 'DELETE');
-        expect(request.headers['Authorization'], 'Bearer $token');
+        expect(request.headers.containsKey('Authorization'), isFalse);
         return http.Response('', 200);
       });
       await makeDatasource(client).deletePhoto('he-1', '1');
     });
+  });
 
-    test('omits Authorization header when no token is set', () async {
+  group('occurrence transport', () {
+    test('rescheduleOccurrence posts scheduled_date and parses response', () async {
+      final occJson = {
+        'id': 'occ-1',
+        'health_entry_id': 'he-1',
+        'scheduled_date': '2026-09-10',
+        'status': 'pending',
+        'missed': false,
+      };
       final client = MockClient((request) async {
-        expect(request.headers.containsKey('Authorization'), isFalse);
-        return http.Response(json.encode([testEntryJson]), 200);
-      });
-      await makeDatasource(client, authToken: null).getEntries();
-    });
-
-    test('omits Authorization header when token is empty', () async {
-      final client = MockClient((request) async {
-        expect(request.headers.containsKey('Authorization'), isFalse);
-        return http.Response(json.encode([testEntryJson]), 200);
-      });
-      await makeDatasource(client, authToken: '').getEntries();
-    });
-
-    test(
-      'rescheduleOccurrence posts scheduled_date and parses response',
-      () async {
-        final occJson = {
-          'id': 'occ-1',
-          'health_entry_id': 'he-1',
-          'scheduled_date': '2026-09-10',
-          'status': 'pending',
-          'missed': false,
-        };
-        final client = MockClient((request) async {
-          expect(
-            request.url.toString(),
-            '$baseUrl/api/health-entries/he-1/occurrences/occ-1/reschedule',
-          );
-          expect(request.method, 'POST');
-          final body = json.decode(request.body) as Map<String, dynamic>;
-          expect(body['scheduled_date'], '2026-09-10');
-          expect(body['reason_code'], 'away_planner');
-          return http.Response(
-            json.encode({
-              'occurrence': occJson,
-              'warnings': [
-                {
-                  'code': 'interval_changed',
-                  'previous_gap_days': 40,
-                  'usual_gap_days': 30,
-                },
-              ],
-              'next_due_date': '2026-09-10',
-            }),
-            200,
-          );
-        });
-        final result = await makeDatasource(client).rescheduleOccurrence(
-          'he-1',
-          'occ-1',
-          DateTime(2026, 9, 10),
-          reasonCode: 'away_planner',
+        expect(
+          request.url.toString(),
+          '$baseUrl/api/health-entries/he-1/occurrences/occ-1/reschedule',
         );
-        expect(result.occurrence.id, 'occ-1');
-        expect(result.warnings, hasLength(1));
-        expect(result.nextDueDate, DateTime(2026, 9, 10));
-      },
-    );
+        expect(request.method, 'POST');
+        final body = json.decode(request.body) as Map<String, dynamic>;
+        expect(body['scheduled_date'], '2026-09-10');
+        expect(body['reason_code'], 'away_planner');
+        return http.Response(
+          json.encode({
+            'occurrence': occJson,
+            'warnings': [
+              {
+                'code': 'interval_changed',
+                'previous_gap_days': 40,
+                'usual_gap_days': 30,
+              },
+            ],
+            'next_due_date': '2026-09-10',
+          }),
+          200,
+        );
+      });
+      final result = await makeDatasource(client).rescheduleOccurrence(
+        'he-1',
+        'occ-1',
+        DateTime(2026, 9, 10),
+        reasonCode: 'away_planner',
+      );
+      expect(result.occurrence.id, 'occ-1');
+      expect(result.warnings, hasLength(1));
+      expect(result.nextDueDate, DateTime(2026, 9, 10));
+    });
 
     test('getOpenOccurrences fetches pending occurrences', () async {
       final occJson = {
@@ -227,7 +207,7 @@ void main() {
           request.url.toString(),
           '$baseUrl/api/health-entries/he-1/occurrences?status=open',
         );
-        expect(request.headers['Authorization'], 'Bearer $token');
+        expect(request.headers.containsKey('Authorization'), isFalse);
         return http.Response(json.encode([occJson]), 200);
       });
       final list = await makeDatasource(client).getOpenOccurrences('he-1');

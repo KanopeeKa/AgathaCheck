@@ -32,7 +32,6 @@ class HealthIssueRemoteDataSourceImpl implements HealthIssueRemoteDataSource {
 
   Map<String, String> _headers(String token) => {
     'Content-Type': 'application/json',
-    'Authorization': 'Bearer $token',
   };
 
   @override
@@ -134,7 +133,6 @@ class HealthIssueRemoteDataSourceImpl implements HealthIssueRemoteDataSource {
       'POST',
       Uri.parse('$baseUrl/api/health-issues/$issueId/documents'),
     );
-    request.headers['Authorization'] = 'Bearer $token';
     request.files.add(
       http.MultipartFile.fromBytes(
         'photo',

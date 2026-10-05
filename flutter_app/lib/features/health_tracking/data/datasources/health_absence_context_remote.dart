@@ -11,15 +11,13 @@ class HealthAbsenceContextRemote {
 
   final String baseUrl;
   final http.Client _client;
+
+  /// Unused — [AuthHttpClient] injects bearer tokens. Kept for callers not yet migrated.
   String? authToken;
 
   Map<String, String> _headers({bool jsonBody = false}) {
     final headers = <String, String>{};
     if (jsonBody) headers['Content-Type'] = 'application/json';
-    final token = authToken;
-    if (token != null && token.isNotEmpty) {
-      headers['Authorization'] = 'Bearer $token';
-    }
     return headers;
   }
 

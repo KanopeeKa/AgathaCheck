@@ -1,11 +1,11 @@
 import 'package:image_picker/image_picker.dart';
 
-import '../../data/datasources/health_remote_datasource.dart';
+import '../../domain/entities/health_entry_photo.dart';
+import '../../domain/entities/health_document.dart';
 import '../providers/health_providers.dart';
 import 'health_entry_form_constants.dart';
 import 'health_entry_form_controller_base.dart';
 import 'health_entry_form_outcomes.dart';
-import 'health_entry_form_state.dart';
 
 mixin HealthEntryFormPhotoMixin on HealthEntryFormControllerBase {
   HealthDocumentValidationError? validateDocument(
@@ -23,6 +23,16 @@ mixin HealthEntryFormPhotoMixin on HealthEntryFormControllerBase {
   }
 
   bool canAddPhoto() => state.totalPhotoCount < healthEntryMaxPhotos;
+
+  HealthEntryPhoto _toEventPhoto(HealthDocument doc) {
+    return HealthEntryPhoto(
+      id: doc.id,
+      eventId: doc.healthEntryId ?? entryId ?? '',
+      photoPath: doc.url,
+      caption: doc.caption,
+      occurrenceId: doc.occurrenceId,
+    );
+  }
 
   Future<HealthDocumentValidationError?> addDocument(
     XFile picked, {
@@ -42,8 +52,8 @@ mixin HealthEntryFormPhotoMixin on HealthEntryFormControllerBase {
       state = state.copyWith(isUploadingPhoto: true);
       try {
         final bytes = await picked.readAsBytes();
-        final ds = formRef.read(healthDataSourceProvider);
-        await ds.uploadPhoto(entryId!, bytes, picked.name);
+        final repo = formRef.read(healthDocumentsRepositoryProvider);
+        await repo.uploadEntryDocument(entryId!, bytes, picked.name);
         await loadPhotos();
       } finally {
         state = state.copyWith(isUploadingPhoto: false);
@@ -61,15 +71,17 @@ mixin HealthEntryFormPhotoMixin on HealthEntryFormControllerBase {
 
   Future<void> loadPhotos() async {
     if (entryId == null) return;
-    final ds = formRef.read(healthDataSourceProvider);
-    final photos = await ds.getPhotos(entryId!);
-    state = state.copyWith(photos: photos);
+    final repo = formRef.read(healthDocumentsRepositoryProvider);
+    final photos = await repo.listEntryDocuments(entryId!);
+    state = state.copyWith(
+      photos: photos.map(_toEventPhoto).toList(),
+    );
   }
 
-  Future<void> deletePhoto(EventPhoto photo) async {
+  Future<void> deletePhoto(HealthEntryPhoto photo) async {
     if (entryId == null) return;
-    final ds = formRef.read(healthDataSourceProvider);
-    await ds.deletePhoto(entryId!, photo.id);
+    final repo = formRef.read(healthDocumentsRepositoryProvider);
+    await repo.removeEntryDocument(entryId!, photo.id);
     await loadPhotos();
   }
 
@@ -78,10 +90,10 @@ mixin HealthEntryFormPhotoMixin on HealthEntryFormControllerBase {
     List<XFile> files,
   ) async {
     if (files.isEmpty) return;
-    final ds = formRef.read(healthDataSourceProvider);
+    final repo = formRef.read(healthDocumentsRepositoryProvider);
     for (final file in files) {
       final bytes = await file.readAsBytes();
-      await ds.uploadPhoto(entryId, bytes, file.name);
+      await repo.uploadEntryDocument(entryId, bytes, file.name);
     }
   }
 
