@@ -1853,6 +1853,30 @@
       "date": { "type": "String" }
     }
   },
+  "careItemPausedUntil": "En pause jusqu'au {date}",
+  "@careItemPausedUntil": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "carePostponeSheetTitle": "Mettre en pause",
+  "carePostponeNoEndDate": "Sans date de fin (pause)",
+  "carePostponeUntilLabel": "Pause jusqu'au",
+  "carePostponePauseConsequence": "Les rappels s'arrêtent jusqu'à la reprise.",
+  "carePostponeUntilAfterDoneConsequence": "La date ouverte est reportée au {date}.",
+  "@carePostponeUntilAfterDoneConsequence": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "carePostponeUntilFixedConsequence": "Les soins restent en pause jusqu'au {date}, puis reprennent automatiquement.",
+  "@carePostponeUntilFixedConsequence": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "careResumeSheetTitle": "Reprendre",
+  "careResumeDefaultHint": "C'est la date qu'elle aurait eue.",
   "careItemEstablishedBody": "Fait partie des soins réguliers de {petName}.",
   "@careItemEstablishedBody": {
     "placeholders": {

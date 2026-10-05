@@ -167,4 +167,30 @@ class CareItemRemoteDataSource {
       ),
     );
   }
+
+  Future<Map<String, dynamic>> postPostpone(
+    String entryId,
+    Map<String, dynamic> body,
+  ) async {
+    return _decode(
+      await client.post(
+        _entries('/$entryId/postpone'),
+        headers: _json,
+        body: json.encode(body),
+      ),
+    );
+  }
+
+  Future<Map<String, dynamic>> postResume(
+    String entryId,
+    Map<String, dynamic> body,
+  ) async {
+    return _decode(
+      await client.post(
+        _entries('/$entryId/resume'),
+        headers: _json,
+        body: json.encode(body),
+      ),
+    );
+  }
 }

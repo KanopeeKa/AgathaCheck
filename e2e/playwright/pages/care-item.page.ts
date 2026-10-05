@@ -194,6 +194,86 @@ export class CareItemPage {
     await refreshFlutterAccessibility(this.page);
   }
 
+  async openItemMenu(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    const menu = this.page
+      .locator('[flt-semantics-identifier="care_item_menu"]')
+      .or(
+        this.page.getByRole('button', {
+          name: /^Care item actions$|^Actions sur le soin$/i,
+        }),
+      );
+    await expect(menu.first()).toBeVisible({ timeout: 30_000 });
+    await menu.first().click();
+  }
+
+  async pauseFromItemMenu(options: { noEndDate?: boolean; untilIso?: string } = {}): Promise<void> {
+    await this.openItemMenu();
+    await this.page
+      .getByRole('menuitem', { name: /^Pause$|^Mettre en pause$/i })
+      .click();
+    await expect(
+      this.page.locator('[flt-semantics-identifier="postpone_sheet"]'),
+    ).toBeVisible({ timeout: 15_000 });
+    const noEnd = options.noEndDate ?? true;
+    if (!noEnd && options.untilIso) {
+      const switchTile = this.page.locator('[flt-semantics-identifier="postpone_no_end_date"]');
+      const isOn = await switchTile.getByRole('switch').isChecked().catch(() => true);
+      if (isOn) {
+        await switchTile.click();
+      }
+      await this.page.locator('[flt-semantics-identifier="postpone_until_picker"]').click();
+      const [, , day] = options.untilIso.split('-').map((v) => parseInt(v, 10));
+      const dialog = this.page.getByRole('dialog');
+      await expect(dialog).toBeVisible({ timeout: 15_000 });
+      await dialog.getByText(new RegExp(`^${day},\\s`)).first().click({ force: true });
+      await dialog.getByRole('button', { name: /^OK$|^Save$|Enregistrer/i }).first().click();
+    }
+    await this.page
+      .locator('[flt-semantics-identifier="postpone_confirm"]')
+      .or(this.page.getByRole('button', { name: /^Pause$|^Mettre en pause$/i }).last())
+      .click();
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async expectPausedBanner(): Promise<void> {
+    await expect(
+      this.page.locator('[flt-semantics-identifier="care_item_paused_banner"]').or(
+        this.page.getByText(/Paused since|Paused until|En pause/i),
+      ).first(),
+    ).toBeVisible({ timeout: 30_000 });
+  }
+
+  async resumeFromItemMenu(expectedIso?: string): Promise<void> {
+    await this.openItemMenu();
+    await this.page
+      .getByRole('menuitem', { name: /^Resume$|^Reprendre$/i })
+      .click();
+    await expect(
+      this.page.locator('[flt-semantics-identifier="resume_date_sheet"]'),
+    ).toBeVisible({ timeout: 15_000 });
+    if (expectedIso) {
+      await expect(
+        this.page
+          .locator('[flt-semantics-identifier="resume_date_picker"]')
+          .or(this.page.getByRole('button', { name: /New date|Nouvelle date/i }).locator('..')),
+      ).toContainText(expectedIso);
+    }
+    const resumeResponse = this.page.waitForResponse(
+      (res) => res.url().includes('/health-entries/') && res.url().endsWith('/resume') && res.request().method() === 'POST',
+      { timeout: 30_000 },
+    );
+    await this.page
+      .locator('[flt-semantics-identifier="resume_confirm"]')
+      .or(this.page.getByRole('button', { name: /^Resume$|^Reprendre$/i }).last())
+      .click();
+    const res = await resumeResponse;
+    if (!res.ok()) {
+      throw new Error(`resume failed (${res.status()}): ${await res.text()}`);
+    }
+    await refreshFlutterAccessibility(this.page);
+  }
+
   async expectNeedsAttentionVisible(): Promise<void> {
     await expect(
       this.page.locator('[flt-semantics-identifier="care_item_needs_attention_section"]').or(

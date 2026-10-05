@@ -166,6 +166,35 @@ class CareCompletionService {
     });
   }
 
+  /// Pause or postpone until (D-CSM-028).
+  Future<CareOutcome<CareCommandResult>> pausePostpone({
+    required String entryId,
+    DateTime? until,
+  }) {
+    return _run('pause', () async {
+      final body = <String, dynamic>{'reason': 'pause'};
+      if (until != null) {
+        body['until'] = toCalendarDateString(until);
+      }
+      final decoded = await _remote.postPostpone(entryId, body);
+      return _commandResult(entryId, decoded);
+    });
+  }
+
+  /// Resume on [resumeOn], or the server default when null (D-CSM-028).
+  Future<CareOutcome<CareCommandResult>> resumeSeries({
+    required String entryId,
+    DateTime? resumeOn,
+  }) {
+    return _run('resume', () async {
+      final body = resumeOn == null
+          ? <String, dynamic>{}
+          : {'date': toCalendarDateString(resumeOn)};
+      final decoded = await _remote.postResume(entryId, body);
+      return _commandResult(entryId, decoded);
+    });
+  }
+
   /// Add a planned occurrence (D-CSM-025).
   Future<CareOutcome<CareCommandResult>> planAnotherDate({
     required String entryId,
