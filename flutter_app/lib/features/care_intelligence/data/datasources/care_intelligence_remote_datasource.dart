@@ -33,6 +33,7 @@ class CareIntelligenceRemoteDataSource {
   Future<List<CareRecommendationModel>> fetchRecommendations(
     String petId,
   ) async {
+    // Evaluates rules, syncs inbox, and returns pending rows (not inbox-only).
     final response = await _client.get(
       Uri.parse('$baseUrl/api/pets/$petId/care-recommendations'),
       headers: _headers(),

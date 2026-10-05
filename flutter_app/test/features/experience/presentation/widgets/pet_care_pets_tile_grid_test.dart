@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/core/theme/app_theme.dart';
-import 'package:pet_profile_app/features/experience/presentation/widgets/pet_care_dashboard_section_header.dart';
-import 'package:pet_profile_app/features/experience/presentation/widgets/pet_care_pets_tile_grid.dart';
-import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
+import 'package:pet_profile_app/core/widgets/pet_care_dashboard_section_header.dart';
+import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/utils/pet_tile_dimensions.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/widgets/unified_pet_tile.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';

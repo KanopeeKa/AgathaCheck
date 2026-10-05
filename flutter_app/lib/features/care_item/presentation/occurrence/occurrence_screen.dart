@@ -10,7 +10,19 @@ import '../../application/care_command_outcome.dart';
 import '../../application/care_item_providers.dart';
 import '../../domain/occurrence_detail.dart';
 import '../../domain/occurrence_display.dart';
+import 'package:pet_profile_app/features/pet_care/pet_care.dart';
 import 'occurrence_blocks.dart';
+import 'occurrence_screen_menu.dart';
+import 'occurrence_screen_menu_actions.dart';
+
+CareItemStatusTone _occurrencePillTone(OccurrencePillTone tone) =>
+    switch (tone) {
+      OccurrencePillTone.overdue => CareItemStatusTone.overdue,
+      OccurrencePillTone.due => CareItemStatusTone.due,
+      OccurrencePillTone.closedNotRecorded =>
+        CareItemStatusTone.notRecordedClosed,
+      OccurrencePillTone.neutral => CareItemStatusTone.neutral,
+    };
 
 /// One occurrence, every status (D-CIE-029, §18.6.4). Loads
 /// `GET …/occurrences/:occId`; actions reload it after the server confirms.
@@ -80,16 +92,30 @@ class _OccurrenceScreenState extends ConsumerState<OccurrenceScreen> {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final outcome = _outcome;
-    final title = switch (outcome) {
-      CareSucceeded(:final value) => value.item.name,
-      _ => '',
+    final OccurrenceDetail? loadedDetail = switch (outcome) {
+      CareSucceeded(:final value) => value,
+      _ => null,
     };
+    final title = loadedDetail?.item.name ?? '';
     return Semantics(
       identifier: 'occurrence_screen',
       child: Scaffold(
         key: const Key('occurrence_screen'),
         appBar: AppBar(
           title: Text(title),
+          actions: [
+            if (loadedDetail != null)
+              OccurrenceScreenMenu(
+                occurrenceId: widget.occurrenceId,
+                onSelected: (action) => handleOccurrenceScreenMenuAction(
+                  context,
+                  ref,
+                  loadedDetail,
+                  action,
+                  _changed,
+                ),
+              ),
+          ],
           leading: BackButton(
             onPressed: () {
               final router = GoRouter.maybeOf(context);
@@ -149,11 +175,14 @@ class _Header extends StatelessWidget {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final occ = detail.occurrence;
-    final status = occurrenceStatusLine(l, occ);
+    final pill = occ.isClosedNotRecorded
+        ? closedNotRecordedPillStyle(l)
+        : openOccurrencePillStyle(l, occ.status);
     final when = [DateFormat.yMMMd().format(occ.date), ?occ.time].join(' · ');
     return Semantics(
       identifier: 'occurrence_about_item',
       header: true,
+      label: '${detail.item.name}. ${pill.label}. $when',
       child: InkWell(
         key: const Key('occurrence_about_item'),
         onTap: onOpenItem,
@@ -167,10 +196,23 @@ class _Header extends StatelessWidget {
                   children: [
                     Text(detail.item.name, style: theme.textTheme.titleLarge),
                     const SizedBox(height: 4),
-                    Text(
-                      '$status · $when',
-                      key: const Key('occurrence_status'),
-                      style: theme.textTheme.bodyMedium,
+                    Row(
+                      children: [
+                        CareItemStatusPill(
+                          key: const Key('occurrence_status'),
+                          label: pill.label,
+                          tone: _occurrencePillTone(pill.tone),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            when,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

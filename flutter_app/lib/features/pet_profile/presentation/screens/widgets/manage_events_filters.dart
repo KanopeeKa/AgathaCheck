@@ -1,11 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pet_profile_app/core/utils/calendar_date.dart';
-import 'package:pet_profile_app/features/care_taxonomy/domain/care_family_definition.dart';
-import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
-import 'package:pet_profile_app/features/health_tracking/domain/entities/health_history_entry.dart';
-import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
-import 'package:pet_profile_app/features/health_tracking/presentation/widgets/health_entry_status.dart';
-import 'package:pet_profile_app/features/health_tracking/presentation/widgets/pet_event_lifecycle.dart';
+import '../../../../care_taxonomy/care_taxonomy.dart';
+import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/care_family.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/services/care_entry_filter.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';

@@ -3,37 +3,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/care_item/care_item.dart';
-import '../../features/auth/presentation/providers/auth_providers.dart';
-import '../../features/auth/presentation/screens/forgot_password_screen.dart';
-import '../../features/auth/presentation/screens/landing_screen.dart';
-import '../../features/auth/presentation/screens/my_details_screen.dart';
-import '../../features/care_taxonomy/domain/care_planning_mode.dart';
-import '../../features/health_tracking/domain/entities/health_entry.dart';
-import '../../features/health_tracking/presentation/screens/health_entry_form_screen.dart';
-import '../../features/notifications/presentation/screens/notification_settings_screen.dart';
-import '../../features/notifications/presentation/screens/notifications_screen.dart';
-import '../../features/notifications/presentation/screens/pending_actions_screen.dart';
+import '../../features/auth/auth.dart';
+import '../../features/care_taxonomy/care_taxonomy.dart';
+import '../../features/health_tracking/health_tracking.dart';
+import '../../features/notifications/notifications.dart';
 import 'pet_care_route_redirects.dart';
-import '../../features/pet_profile/domain/entities/care_family.dart';
-import '../../features/pet_profile/presentation/screens/pet_detail_screen.dart';
-import '../../features/pet_profile/presentation/screens/pet_health_issues_screen.dart';
-import '../../features/pet_profile/presentation/screens/pet_manage_events_screen.dart';
-import '../../features/pet_profile/presentation/screens/pet_form_screen.dart';
-import '../../features/pet_profile/presentation/screens/pet_timeline_screen.dart';
+import '../../features/pet_profile/pet_profile.dart';
 import '../../features/weight_tracking/weight_tracking.dart';
-import '../../features/pet_profile/presentation/widgets/pet_edit_permission_guard.dart';
-import '../../features/experience/presentation/screens/pet_care/pet_care_desk_preview_screen.dart';
-import '../../features/pet_care/context/presentation/screens/absence_invite_landing_screen.dart';
+import '../../features/experience/experience.dart';
+import '../../features/pet_care/pet_care.dart';
 import '../../features/people/people.dart';
-import '../../features/sharing/presentation/screens/invite_landing_screen.dart';
-import '../../features/sharing/presentation/screens/share_pet_screen.dart';
-import '../../features/sharing/presentation/screens/shared_pet_screen.dart';
-import '../../features/about/presentation/screens/about_screen.dart';
-import '../../features/about/presentation/screens/legal_document_screen.dart';
-import '../../features/about/presentation/screens/legal_documents_screen.dart';
-import '../../features/about/domain/legal_document_id.dart';
-import '../../features/help/presentation/screens/help_screen.dart';
-import '../../features/subscription/presentation/screens/paywall_screen.dart';
+import '../../features/sharing/sharing.dart';
+import '../../features/about/about.dart';
+import '../../features/help/help.dart';
+import '../../features/subscription/subscription.dart';
 import '../widgets/consent_banner.dart';
 import '../providers/analytics_providers.dart';
 import 'experience_routes.dart';
@@ -170,6 +153,14 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/my-details',
         name: 'myDetails',
         builder: (context, state) => const MyDetailsScreen(),
+      ),
+      GoRoute(
+        path: '/secure-account',
+        name: 'secureAccount',
+        builder: (context, state) {
+          final notificationId = state.uri.queryParameters['notificationId'];
+          return SecureAccountScreen(notificationId: notificationId);
+        },
       ),
       GoRoute(
         path: '/help',

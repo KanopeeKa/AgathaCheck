@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../../core/router/shell_return_navigation.dart';
-import '../../../sharing/presentation/providers/sharing_providers.dart';
+import 'package:pet_profile_app/features/sharing/sharing.dart';
 import '../../domain/entities/pet.dart';
 import '../widgets/pet_card.dart';
 

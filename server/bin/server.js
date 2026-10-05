@@ -1,4 +1,5 @@
 import '../config/loadEnv.js';
+import '../lib/care/observations/weightObservationCompletionHooks.js';
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';

@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../core/widgets/app_logo_title.dart';
-import '../../../../auth/presentation/providers/auth_providers.dart';
+import 'package:pet_profile_app/features/auth/auth.dart';
 import '../../data/datasources/care_context_remote_datasource.dart';
 import '../providers/care_context_providers.dart';
 

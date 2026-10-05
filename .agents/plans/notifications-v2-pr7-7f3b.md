@@ -42,3 +42,22 @@ docs/domains/notifications/features/notifications-v2-spec.md
 **Scope:** A1–A3, A6; FR-IA inline for A1; badge matrix A1; emails N11; no A4/A5 until email-change feature.
 
 **Exit:** AC-ACS-* (excluding A4/A5); PR merged to integration.
+
+## Runtime
+
+```yaml
+autonomy: halted
+current_phase: 2
+last_completed_phase: 1
+halt_reason: drift
+next_action: "resume phase 2 (drift)"
+artifact_ref:
+  branch: cursor/notifications-v2-pr7-7f3b
+  plan_path: .agents/plans/notifications-v2-pr7-7f3b.md
+  plan_commit: 77a97a221a7048e34d4afb0ee4f8486abfc3c1d4
+  snapshot_path: .agents/plans/notifications-v2-pr7-7f3b.snapshot.json
+  snapshot_commit: 77a97a221a7048e34d4afb0ee4f8486abfc3c1d4
+open_prs: []
+merge_commits: {"1":"7b00f5a5"}
+debt_issue_refs: []
+```

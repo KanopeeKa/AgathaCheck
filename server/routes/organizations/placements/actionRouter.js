@@ -83,7 +83,7 @@ export function registerPlacementActionRoutes(router, pool) {
           petName,
           title: 'Foster session ending',
           message: `The foster session for ${petName} is awaiting return confirmation.`,
-          type: 'general',
+          type: 'fosterSessionEndingAwaitingReturn',
         });
 
         const detail = await loadPlacementDetail(pool, placementId);
@@ -118,7 +118,7 @@ export function registerPlacementActionRoutes(router, pool) {
         petName,
         title: 'Foster period ended',
         message: `The foster period for ${petName} has ended.`,
-        type: 'general',
+        type: 'adoptionReadyToConfirm',
       });
 
       res.json(placementToMap(updateResult.rows[0], { pet_name: petName }));
@@ -169,7 +169,7 @@ export function registerPlacementActionRoutes(router, pool) {
         message: adoptionConditions
           ? `${petName} is ready for adoption once pre-adoption conditions are met.`
           : `Please confirm adoption of ${petName}.`,
-        type: 'general',
+        type: 'adoptionReadyToConfirm',
       });
 
       res.json(placementWithJourneyResponse(result.placement, result.journey));
@@ -204,7 +204,7 @@ export function registerPlacementActionRoutes(router, pool) {
         petName,
         title: 'Adoption ready to confirm',
         message: `Pre-adoption conditions for ${petName} are complete. Please confirm adoption.`,
-        type: 'general',
+        type: 'adoptionReadyToConfirm',
       });
 
       res.json(placementWithJourneyResponse(result.placement, result.journey));
@@ -252,7 +252,7 @@ export function registerPlacementActionRoutes(router, pool) {
         petName,
         title: 'Adoption cancelled',
         message: `The adoption process for ${petName} was cancelled. The pet returns to organisation custody.`,
-        type: 'general',
+        type: 'adoptionCancelled',
       });
 
       const detail = await loadPlacementDetail(pool, placementId);

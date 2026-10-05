@@ -85,14 +85,20 @@ test.describe('Notifications', () => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const user = await signupUser(baseURL, { firstName: 'Olivia', lastName: 'Overdue' });
 
-    const { notification, entry } = await seedOverdueNotification(baseURL, user.accessToken, {
-      petName: 'Bella',
-      entryName: 'Vaccination',
+    const pet = await createPet(baseURL, user.accessToken, 'Bella');
+    const pastDate = new Date();
+    pastDate.setDate(pastDate.getDate() - 7);
+    const entry = await createHealthEntry(baseURL, user.accessToken, pet.id, {
+      name: 'Vaccination',
+      nextDueDate: pastDate.toISOString().slice(0, 10),
     });
 
-    expect(notification.type).toBe('overdue');
-    expect(notification.health_entry_id).toBe(entry.id);
-    expect(notification.title).toMatch(/Vaccination|Bella/i);
+    await triggerCheckDueNotifications(baseURL, user.accessToken);
+    const notifications = await getNotifications(baseURL, user.accessToken);
+    const overdueInbox = notifications.filter(
+      (n: TestNotification) => n.health_entry_id === entry.id && n.type === 'overdue',
+    );
+    expect(overdueInbox).toHaveLength(0);
   });
 
   test('notification generated for entry due soon', async () => {
@@ -110,12 +116,11 @@ test.describe('Notifications', () => {
 
     await triggerCheckDueNotifications(baseURL, user.accessToken);
     const notifications = await getNotifications(baseURL, user.accessToken);
-    const dueSoon = notifications.find(
+    const dueSoon = notifications.filter(
       (n: TestNotification) => n.health_entry_id === entry.id && n.type === 'due_soon',
     );
 
-    expect(dueSoon).toBeTruthy();
-    expect(dueSoon!.title).toMatch(/Flea Treatment|Bella/i);
+    expect(dueSoon).toHaveLength(0);
   });
 
   test('A reminder is created again after care is done on time', async ({ page, testUser }) => {
@@ -142,11 +147,11 @@ test.describe('Notifications', () => {
       expect(next.next_due_date).toBe(nextWeek.toISOString().slice(0, 10));
       expect(next.open_occurrences[0]?.scheduled_date).toBe(next.next_due_date);
 
-      await checkCareReminders(baseURL, testUser.accessToken);
+      const checkDue = await checkCareReminders(baseURL, testUser.accessToken);
+      expect(checkDue).toEqual({ checked: true, created: 0 });
       const reminders = (await getNotifications(baseURL, testUser.accessToken))
         .filter((n) => n.health_entry_id === entry.id && n.type === 'due_soon');
-      expect(reminders).toHaveLength(1);
-      expect(reminders[0].message).toContain(next.next_due_date!);
+      expect(reminders).toHaveLength(0);
     } finally {
       await withCareClock(null, page);
     }
@@ -167,7 +172,8 @@ test.describe('Notifications', () => {
     const notifications = new NotificationsPage(page);
     await notifications.openFromPetList();
 
-    await notifications.expectEmptyState();
+    // v2: login emits an Activity sign-in notice; For you stays empty for new users.
+    await notifications.expectForYouEmptyState();
 
     await refreshFlutterAccessibility(page);
     await checkA11y(page, 'notifications empty state');
@@ -208,8 +214,9 @@ test.describe('Notifications', () => {
       entryName: 'Deworming',
     });
     backdateNotification(second.notification.id, 1);
-
+    // v2 pins unread administrative rows under "Needs your response" — read so date groups show.
     await loginAs(page, user);
+    await markAllNotificationsRead(baseURL, user.accessToken);
     const petList = new PetListPage(page);
     await petList.expectLoaded();
 
@@ -249,16 +256,18 @@ test.describe('Notifications', () => {
       entryName: 'Vaccination',
     });
 
-    const unreadCount = await getUnreadNotificationCount(baseURL, user.accessToken);
-    expect(unreadCount).toBeGreaterThan(0);
+    expect(
+      await getUnreadNotificationCount(baseURL, user.accessToken),
+    ).toBeGreaterThan(0);
 
     await loginAs(page, user);
     const petList = new PetListPage(page);
     await petList.expectLoaded();
 
-    // Badge count should appear near the bell icon.
+    const unreadAfterLogin = await getUnreadNotificationCount(baseURL, user.accessToken);
+    expect(unreadAfterLogin).toBeGreaterThan(0);
     const notificationsPage = new NotificationsPage(page);
-    await notificationsPage.expectBadgeVisible(unreadCount);
+    await notificationsPage.expectBadgeVisible(unreadAfterLogin);
   });
 
   test('badge disappears after all notifications are marked read via API', async ({ page }) => {

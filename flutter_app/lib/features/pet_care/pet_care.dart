@@ -1,0 +1,32 @@
+/// Public API for Pet Care temporal grouping, agenda widgets, and absence flows.
+library;
+
+export 'context/domain/entities/care_period_coverage.dart';
+export 'context/presentation/screens/absence_invite_landing_screen.dart';
+export 'context/presentation/screens/planned_absence_edit_screen.dart';
+export 'context/presentation/screens/planned_absence_flow_screen.dart';
+export 'context/presentation/screens/planned_absence_hub_screen.dart';
+export 'context/presentation/screens/planned_absence_plan_screen.dart';
+export 'domain/care_temporal_group.dart';
+export 'domain/models/care_temporal_buckets.dart';
+export 'domain/services/care_temporal_grouping_service.dart';
+export 'presentation/providers/care_temporal_grouping_providers.dart';
+export 'presentation/providers/pet_care_presentation_providers.dart';
+export 'presentation/widgets/care_agenda/care_agenda_collection.dart';
+export 'presentation/widgets/care_milestone_moment_card.dart';
+export 'presentation/widgets/care_surface/care_action_row.dart';
+export 'presentation/widgets/care_surface/care_attention_callout.dart';
+export 'presentation/widgets/care_surface/care_collection_inset_list.dart';
+export 'presentation/widgets/care_surface/care_destination_row.dart';
+export 'presentation/widgets/care_surface/care_insight_tile.dart';
+export 'presentation/widgets/care_surface/care_item_detail_row.dart';
+export 'presentation/widgets/care_surface/care_item_module.dart';
+export 'presentation/widgets/care_surface/care_item_section_header.dart';
+export 'presentation/widgets/care_surface/care_item_stat_row.dart';
+export 'presentation/widgets/care_surface/care_item_status_pill.dart';
+export 'presentation/widgets/care_surface/care_surface_tokens.dart';
+export 'context/presentation/widgets/planned_absence_entry_tile.dart';
+export 'presentation/widgets/care_agenda/care_agenda_inset_items.dart';
+export 'presentation/widgets/pet_care_dashboard_contextual_slot_section.dart';
+export 'context/presentation/providers/care_context_providers.dart';
+export 'core/care_family_capabilities.dart';

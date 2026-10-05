@@ -3,28 +3,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/providers/analytics_providers.dart';
+import '../../../../core/widgets/app_undo_snackbar.dart';
 import '../../../../core/router/shell_return_navigation.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../application/care_stack_feedback.dart';
 import '../../care_item.dart';
 import '../../domain/occurrence_display.dart';
-import '../../../pet_care/presentation/widgets/care_surface/care_item_module.dart';
-import '../../../pet_care/presentation/widgets/care_surface/care_item_section_header.dart';
-import '../../../pet_care/presentation/widgets/care_surface/care_item_status_pill.dart';
+import 'package:pet_profile_app/features/pet_care/pet_care.dart';
 import '../../../../core/widgets/care_mark_done_button.dart';
-import '../../../health_tracking/domain/entities/health_entry.dart';
-import '../../../health_tracking/domain/entities/health_occurrence.dart';
-import '../../../health_tracking/presentation/providers/health_providers.dart';
-import '../../../health_tracking/presentation/widgets/pet_event_occurrence_actions.dart';
-import '../../../health_tracking/presentation/widgets/pet_event_view_providers.dart';
-import '../sheets/plan_another_date_sheet.dart';
-import '../sheets/postpone_sheet.dart';
-import 'care_occurrence_menu.dart';
+import '../../../health_tracking/health_tracking.dart';
 
 CareItemStatusTone _pillTone(OccurrencePillTone tone) => switch (tone) {
   OccurrencePillTone.overdue => CareItemStatusTone.overdue,
   OccurrencePillTone.due => CareItemStatusTone.due,
-  OccurrencePillTone.notRecorded => CareItemStatusTone.notRecorded,
+  OccurrencePillTone.closedNotRecorded => CareItemStatusTone.notRecordedClosed,
   OccurrencePillTone.neutral => CareItemStatusTone.neutral,
 };
 
@@ -82,87 +74,37 @@ class _CareItemNeedsAttentionSectionState
           'ignored': value.ignoredIds.length,
           'done': done,
         });
-        messenger.showSnackBar(
-          SnackBar(
-            key: const Key('care_stack_snackbar'),
-            content: Text(
-              careStackSuccessMessage(
-                l,
-                done: done,
-                result: value,
-                itemName: _s.name,
-              ),
-            ),
-            action: value.undoToken == null
-                ? null
-                : SnackBarAction(
-                    label: l.snackbarUndo,
-                    onPressed: () async {
-                      await service.undo(
-                        entryId: _s.entryId,
-                        undoToken: value.undoToken,
-                      );
-                      await _refresh();
-                    },
-                  ),
+        final message = Text(
+          careStackSuccessMessage(
+            l,
+            done: done,
+            result: value,
+            itemName: _s.name,
           ),
         );
+        if (value.undoToken == null) {
+          messenger.showAppSnackBar(
+            snackBarKey: const Key('care_stack_snackbar'),
+            content: message,
+          );
+        } else {
+          messenger.showUndoSnackBar(
+            snackBarKey: const Key('care_stack_snackbar'),
+            content: message,
+            undoLabel: l.snackbarUndo,
+            onUndo: () async {
+              await service.undo(
+                entryId: _s.entryId,
+                undoToken: value.undoToken,
+              );
+              await _refresh();
+            },
+          );
+        }
       case CareFailed(failure: CareNotOpenFailure()):
         messenger.showSnackBar(SnackBar(content: Text(l.careAlreadyUpdated)));
       case CareFailed():
         messenger.showSnackBar(SnackBar(content: Text(l.careCommandFailed)));
-    }
-  }
-
-  Future<void> _occurrenceMenuAction(
-    BuildContext context,
-    WidgetRef ref,
-    OpenOccurrence occurrence,
-    CareOccurrenceMenuAction action,
-  ) async {
-    final l = AppLocalizations.of(context)!;
-    final service = ref.read(careCompletionServiceProvider);
-    switch (action) {
-      case CareOccurrenceMenuAction.skip:
-        final outcome = await service.skip(
-          entryId: _s.entryId,
-          occurrenceId: occurrence.id,
-        );
-        await _refresh();
-        if (!context.mounted) return;
-        if (outcome is CareFailed) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(l.careCommandFailed)));
-        }
-      case CareOccurrenceMenuAction.postpone:
-        final fixed = _s.isFixedSchedule;
-        final paused = await showPostponeSheet(
-          context,
-          ref,
-          entryId: _s.entryId,
-          isFixedSchedule: fixed,
-        );
-        if (paused == true) {
-          PetEventOccurrenceActions.invalidateOccurrenceData(ref, _s.entryId);
-          await _refresh();
-        }
-      case CareOccurrenceMenuAction.planAnother:
-        final added = await showPlanAnotherDateSheet(
-          context,
-          ref,
-          entryId: _s.entryId,
-          initialDate: occurrence.date,
-        );
-        if (added == true) await _refresh();
-      case CareOccurrenceMenuAction.addNote:
-        openOccurrenceScreen(
-          context,
-          petId: widget.entry.petId,
-          entryId: widget.entry.id,
-          occurrenceId: occurrence.id,
-          source: 'care_item',
-        );
     }
   }
 
@@ -236,16 +178,6 @@ class _CareItemNeedsAttentionSectionState
                 ),
                 child: Text(l.rescheduleActionLabel),
               ),
-              const SizedBox(height: 8),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: CareOccurrenceMenu(
-                  occurrence: leading,
-                  muted: _busy,
-                  onSelected: (action) =>
-                      _occurrenceMenuAction(context, ref, leading, action),
-                ),
-              ),
             ],
             if (stack && !widget.muted) ...[
               const SizedBox(height: 12),
@@ -315,9 +247,6 @@ class _OccurrenceLine extends ConsumerWidget {
                 child: CareItemStatusPill(
                   label: pill.label,
                   tone: _pillTone(pill.tone),
-                  leadingIcon: status == CareOccurrenceStatus.notRecorded
-                      ? Icons.playlist_add_check_circle_outlined
-                      : null,
                 ),
               ),
               const SizedBox(width: 8),

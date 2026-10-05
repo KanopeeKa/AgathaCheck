@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../health_tracking/domain/entities/health_entry.dart';
-import '../../../../pet_care/domain/care_temporal_group.dart';
-import '../../../../pet_care/presentation/widgets/care_surface/care_collection_inset_list.dart';
-import '../../../../pet_care/presentation/widgets/care_surface/care_surface_tokens.dart';
+import '../../../../health_tracking/health_tracking.dart';
+import 'package:pet_profile_app/features/pet_care/pet_care.dart';
 import 'pet_care_action_row_builder.dart';
 import 'pet_care_temporal_group_labels.dart';
 

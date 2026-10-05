@@ -17,6 +17,11 @@ export function registerObservationCompletionHook(hook) {
   hooks.push(hook);
 }
 
+/** @internal test / startup guard */
+export function observationCompletionHookCount() {
+  return hooks.length;
+}
+
 /**
  * @param {object} ctx
  * @param {object} event care_schedule_events row being undone

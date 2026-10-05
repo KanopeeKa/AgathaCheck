@@ -2,11 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../l10n/app_localizations.dart';
-import '../../../care_taxonomy/domain/care_importance.dart';
-import '../../../care_taxonomy/domain/care_planning_mode.dart';
-import '../../../care_taxonomy/domain/care_setting.dart';
-import '../../../pet_profile/domain/entities/care_family.dart';
-import '../../../pet_profile/domain/services/care_family_write.dart';
+import '../../../care_taxonomy/care_taxonomy.dart';
+import '../../../pet_profile/pet_profile.dart';
 import '../../data/datasources/health_remote_datasource.dart';
 import '../../domain/entities/care_item_blocks.dart';
 import '../../domain/entities/health_entry.dart';

@@ -1,8 +1,5 @@
 import 'dart:typed_data';
 
-import '../domain/entities/auth_result.dart';
-import '../domain/entities/auth_user.dart';
-import '../domain/entities/delete_account_result.dart';
 import '../domain/repositories/auth_repository.dart';
 import 'auth_service.dart';
 
@@ -81,6 +78,19 @@ class AuthRepositoryImpl implements AuthRepository {
     accessToken,
     currentPassword: currentPassword,
     newPassword: newPassword,
+  );
+
+  @override
+  Future<String> secureAccount(
+    String accessToken, {
+    required String currentPassword,
+    required String newPassword,
+    String? notificationId,
+  }) => _service.secureAccount(
+    accessToken,
+    currentPassword: currentPassword,
+    newPassword: newPassword,
+    notificationId: notificationId,
   );
 
   @override

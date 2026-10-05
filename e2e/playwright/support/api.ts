@@ -1715,12 +1715,33 @@ export async function seedOverdueNotification(
     nextDueDate: overdueDate,
   });
   await triggerCheckDueNotifications(baseURL, token);
-  const notifications = await getNotifications(baseURL, token);
-  const notification = notifications.find(
+  const notificationsAfterScan = await getNotifications(baseURL, token);
+  const autoOverdue = notificationsAfterScan.find(
     (n: TestNotification) => n.health_entry_id === entry.id && n.type === 'overdue',
   );
+  if (autoOverdue) {
+    return { notification: autoOverdue, pet, entry };
+  }
+
+  // Notifications v2: due/overdue scans no longer insert inbox rows — seed one for E2E.
+  const user = await getCurrentUser(baseURL, token);
+  const id = randomUUID();
+  const title = `${entryName} for ${petName}`;
+  const message = `${entryName} is overdue for ${petName}`;
+  const host = process.env.PGHOST ?? 'localhost';
+  const port = process.env.PGPORT ?? '5432';
+  const pgUser = process.env.PGUSER ?? 'user';
+  const password = process.env.PGPASSWORD ?? 'password';
+  const database = process.env.PGDATABASE ?? 'agatha_db';
+  const esc = (s: string) => s.replace(/'/g, "''");
+  execSync(
+    `PGPASSWORD='${password}' psql -h '${host}' -p '${port}' -U '${pgUser}' -d '${database}' -c "INSERT INTO notifications (id, user_id, pet_id, pet_name, health_entry_id, title, message, type, kind, priority, is_read, read) VALUES ('${id}', '${user.id}', '${pet.id}', '${esc(petName)}', '${entry.id}', '${esc(title)}', '${esc(message)}', 'adminMessageReceived', 'administrative', 'normal', false, false)"`,
+    { stdio: 'pipe' },
+  );
+  const notifications = await getNotifications(baseURL, token);
+  const notification = notifications.find((n: TestNotification) => n.id === id);
   if (!notification) {
-    throw new Error(`No overdue notification generated for entry: ${entryName}`);
+    throw new Error(`No inbox notification seeded for entry: ${entryName}`);
   }
   return { notification, pet, entry };
 }
@@ -1744,7 +1765,7 @@ export async function seedPetOnlyNotification(
   const database = process.env.PGDATABASE ?? 'agatha_db';
   const esc = (s: string) => s.replace(/'/g, "''");
   execSync(
-    `PGPASSWORD='${password}' psql -h '${host}' -p '${port}' -U '${pgUser}' -d '${database}' -c "INSERT INTO notifications (id, user_id, pet_id, pet_name, title, message, type, kind, priority, is_read, read) VALUES ('${id}', '${user.id}', '${pet.id}', '${esc(petName)}', '${esc(title)}', '${esc(message)}', 'general', 'care', 'normal', false, false)"`,
+    `PGPASSWORD='${password}' psql -h '${host}' -p '${port}' -U '${pgUser}' -d '${database}' -c "INSERT INTO notifications (id, user_id, pet_id, pet_name, title, message, type, kind, priority, is_read, read) VALUES ('${id}', '${user.id}', '${pet.id}', '${esc(petName)}', '${esc(title)}', '${esc(message)}', 'adminMessageReceived', 'administrative', 'normal', false, false)"`,
     { stdio: 'pipe' },
   );
   const notifications = await getNotifications(baseURL, token);

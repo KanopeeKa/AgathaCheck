@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/providers/api_base_url_provider.dart';
-import '../../../auth/presentation/providers/auth_providers.dart';
+import 'package:pet_profile_app/features/auth/auth.dart';
 import '../../data/datasources/pet_timeline_remote_datasource.dart';
 import '../../domain/entities/pet_timeline_segment.dart';
 import '../widgets/pet_timeline/pet_timeline_display_options.dart';

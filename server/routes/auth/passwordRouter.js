@@ -7,6 +7,7 @@ import { resolveEmailLocale } from '../../lib/email/locale.js';
 import { isSmtpConfigured } from '../../config/mail.js';
 import { sendPasswordResetEmail } from '../../services/mailService.js';
 import { logAuditEventSafe } from '../../lib/audit.js';
+import { emitAccountPasswordChanged } from '../../lib/account/accountSecurityNotifications.js';
 import { revokeAllUserRefreshSessions } from '../../lib/refreshSessions.js';
 import { asyncHandler } from '../../lib/http/asyncHandler.js';
 import { NotFoundError, ValidationError } from '../../lib/http/errors.js';
@@ -27,7 +28,9 @@ export function registerPasswordRoutes(router, pool, { comparePassword, authLimi
         if (!isStrongPassword(newPassword)) {
           throw new ValidationError(`Password must be at least ${MIN_PASSWORD_LENGTH} characters.`);
         }
-        const userResult = await pool.query('SELECT password_hash FROM users WHERE id = $1', [userId]);
+        const userResult = await pool.query('SELECT password_hash, email FROM users WHERE id = $1', [
+          userId,
+        ]);
         if (userResult.rows.length === 0) {
           throw new NotFoundError('User not found');
         }
@@ -40,6 +43,10 @@ export function registerPasswordRoutes(router, pool, { comparePassword, authLimi
           newHash,
           userId,
         ]);
+        await emitAccountPasswordChanged(pool, {
+          userId,
+          email: userResult.rows[0].email,
+        });
         await revokeAllUserRefreshSessions(pool, userId);
         logAuditEventSafe(pool, {
           actorUserId: userId,
@@ -132,11 +139,18 @@ export function registerPasswordRoutes(router, pool, { comparePassword, authLimi
           throw new ValidationError('Invalid or expired reset code');
         }
         const { id: tokenId, user_id: resetUserId } = result.rows[0];
+        const emailRow = await pool.query('SELECT email FROM users WHERE id = $1', [resetUserId]);
         const newHash = await bcrypt.hash(new_password, 10);
         await pool.query('UPDATE users SET password_hash = $1, updated_at = NOW() WHERE id = $2', [
           newHash,
           resetUserId,
         ]);
+        if (emailRow.rows[0]?.email) {
+          await emitAccountPasswordChanged(pool, {
+            userId: resetUserId,
+            email: emailRow.rows[0].email,
+          });
+        }
         await revokeAllUserRefreshSessions(pool, resetUserId);
         await pool.query('UPDATE password_reset_tokens SET used = true WHERE id = $1', [tokenId]);
         logAuditEventSafe(pool, {

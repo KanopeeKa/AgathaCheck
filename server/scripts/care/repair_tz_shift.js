@@ -2,14 +2,50 @@
 /**
  * §9 TZ-shift data repair (DC-3). Default --dry-run; --apply writes.
  */
+import { normalizeCalendarDateInput } from '../../lib/calendarDate.js';
 import { createAppPool } from '../../lib/db/createPool.js';
 import { assertPgDateWireFormat } from '../../lib/db/pgTypes.js';
+import { reportD5DateEdits } from '../../lib/care/repair/d5DateReport.js';
+import {
+  assertTzShiftApplyAllowed,
+  tzShiftApplyRefusalReason,
+} from '../../lib/care/repair/tzShiftApplyGate.js';
 import { repairTzShift } from '../../lib/care/repair/tzShiftRepair.js';
 import { loadBackendEnv } from '../lib/loadBackendEnv.js';
 
 loadBackendEnv();
 
 const apply = process.argv.includes('--apply');
+
+function parseAsOfDate() {
+  const eq = process.argv.find((a) => a.startsWith('--as-of-date='));
+  if (eq) return normalizeCalendarDateInput(eq.slice('--as-of-date='.length));
+  const idx = process.argv.indexOf('--as-of-date');
+  if (idx >= 0 && process.argv[idx + 1]) {
+    return normalizeCalendarDateInput(process.argv[idx + 1]);
+  }
+  return null;
+}
+
+const todayIso = parseAsOfDate();
+
+function parseSinceDate() {
+  const eq = process.argv.find((a) => a.startsWith('--since='));
+  if (eq) return normalizeCalendarDateInput(eq.slice('--since='.length));
+  const idx = process.argv.indexOf('--since');
+  if (idx >= 0 && process.argv[idx + 1]) {
+    return normalizeCalendarDateInput(process.argv[idx + 1]);
+  }
+  return '2026-10-01';
+}
+
+if (apply) {
+  const envRefusal = tzShiftApplyRefusalReason();
+  if (envRefusal) {
+    console.error(envRefusal);
+    process.exit(1);
+  }
+}
 
 const pool = createAppPool();
 const client = await pool.connect();
@@ -19,7 +55,27 @@ try {
   client.release();
 }
 
-const reports = await repairTzShift(pool, { apply });
+if (process.argv.includes('--report-d5')) {
+  const rows = await reportD5DateEdits(pool, { updatedSinceIso: parseSinceDate() });
+  console.log(JSON.stringify({ mode: 'report-d5', count: rows.length, rows }, null, 2));
+  await pool.end();
+  process.exit(0);
+}
+
+let reports;
+if (apply) {
+  const preview = await repairTzShift(pool, { apply: false, todayIso });
+  try {
+    assertTzShiftApplyAllowed(preview);
+  } catch (err) {
+    console.error(err.message);
+    await pool.end();
+    process.exit(1);
+  }
+  reports = await repairTzShift(pool, { apply: true, todayIso });
+} else {
+  reports = await repairTzShift(pool, { apply: false, todayIso });
+}
 console.log(
   JSON.stringify(
     {

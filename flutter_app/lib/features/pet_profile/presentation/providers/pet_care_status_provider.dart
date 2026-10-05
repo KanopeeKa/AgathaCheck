@@ -1,8 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../health_tracking/domain/entities/health_entry.dart';
-import '../../../health_tracking/presentation/providers/health_providers.dart';
+import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import '../../domain/entities/care_status.dart';
 import '../../domain/services/care_status_service.dart';
 

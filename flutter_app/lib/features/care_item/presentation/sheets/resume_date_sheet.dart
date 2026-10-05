@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../core/utils/calendar_date.dart';
 import '../../../../core/utils/calendar_date_picker.dart';
@@ -13,12 +14,16 @@ Future<bool?> showResumeDateSheet(
   WidgetRef ref, {
   required String entryId,
   required DateTime suggestedDate,
+  required DateTime asOf,
 }) {
   return showModalBottomSheet<bool>(
     context: context,
     isScrollControlled: true,
-    builder: (ctx) =>
-        ResumeDateSheet(entryId: entryId, suggestedDate: suggestedDate),
+    builder: (ctx) => ResumeDateSheet(
+      entryId: entryId,
+      suggestedDate: suggestedDate,
+      asOf: asOf,
+    ),
   );
 }
 
@@ -27,10 +32,12 @@ class ResumeDateSheet extends ConsumerStatefulWidget {
     super.key,
     required this.entryId,
     required this.suggestedDate,
+    required this.asOf,
   });
 
   final String entryId;
   final DateTime suggestedDate;
+  final DateTime asOf;
 
   @override
   ConsumerState<ResumeDateSheet> createState() => _ResumeDateSheetState();
@@ -91,12 +98,12 @@ class _ResumeDateSheetState extends ConsumerState<ResumeDateSheet> {
               key: const Key('resume_date_picker'),
               contentPadding: EdgeInsets.zero,
               title: Text(l.careNewDateTitle),
-              subtitle: Text(_date.toIso8601String().substring(0, 10)),
+              subtitle: Text(DateFormat.yMMMd().format(_date)),
               trailing: const Icon(Icons.edit_calendar_outlined),
               onTap: _busy
                   ? null
                   : () async {
-                      final today = calendarDateOnly(DateTime.now());
+                      final today = calendarDateOnly(widget.asOf);
                       final picked = await showCalendarDatePicker(
                         context: context,
                         initialDate: _date,

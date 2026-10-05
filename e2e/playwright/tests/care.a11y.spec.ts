@@ -4,6 +4,7 @@
 import { test, loginAs } from '../fixtures/auth.fixture';
 import { CareAgendaPage } from '../pages/care-agenda.page';
 import { CareItemPage } from '../pages/care-item.page';
+import { OccurrencePage } from '../pages/occurrence.page';
 import { CompletionDateSheetPage } from '../pages/completion-date.sheet';
 import { GuardianDashboardPage } from '../pages/guardian-dashboard.page';
 import { HealthDashboardPage } from '../pages/health-dashboard.page';
@@ -155,9 +156,10 @@ test.describe('Care accessibility', () => {
       await loginAs(page, testUser, { experience: 'guardian' });
       const careItem = new CareItemPage(page);
       await careItem.open(pet.id, entry.id);
-      await refreshFlutterAccessibility(page);
-      const menu = page.locator('[flt-semantics-identifier^="care_item_occurrence_menu_"]').first();
-      await menu.click();
+      const occurrenceId = entry.open_occurrences[0]!.id;
+      const occurrence = new OccurrencePage(page);
+      await occurrence.open(pet.id, entry.id, occurrenceId);
+      await occurrence.openScreenMenu();
       await page.getByRole('menuitem', { name: /Plan another date|Prévoir une autre date/i }).click();
       await page
         .locator('[flt-semantics-identifier="plan_another_date_sheet"]')

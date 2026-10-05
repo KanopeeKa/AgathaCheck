@@ -1,20 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../experience/domain/entities/app_experience.dart';
-import '../../../experience/domain/services/experience_eligibility.dart';
-import '../../domain/entities/pet.dart';
+import '../../../../core/experience/app_experience.dart';
 import '../../domain/services/pet_detail_actions.dart';
 import '../providers/pet_providers.dart';
 
 AppExperience _resolveExperience(AsyncValue petsAsync) {
-  final pets = petsAsync.valueOrNull as List<Pet>? ?? [];
-
-  final eligibility = ExperienceEligibilityRules.compute(
-    pets: pets,
-    orgMembershipCount: 0,
-  );
-
-  return eligibility.resolveAutoExperience() ?? AppExperience.petCare;
+  // Pet detail is guardian-shell scoped; org membership is not resolved here.
+  return AppExperience.petCare;
 }
 
 /// Resolved pet-detail policy for [petId], or restricted context while inputs load.

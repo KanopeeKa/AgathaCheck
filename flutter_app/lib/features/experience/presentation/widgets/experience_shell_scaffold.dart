@@ -8,7 +8,8 @@ import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../core/widgets/shell_notification_bell.dart';
 import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../notifications/presentation/widgets/notification_panel.dart';
+import '../../../notifications/notifications.dart';
+import '../services/notification_inline_action_runner.dart';
 import '../../domain/entities/app_experience.dart';
 import '../config/drawer_menu_config.dart';
 import '../utils/experience_theme.dart';
@@ -223,7 +224,16 @@ class ExperienceShellScaffold extends ConsumerWidget {
                 actions: trailingActions,
               ),
         drawer: hideSectionDrawer ? null : const ExperienceSectionDrawer(),
-        endDrawer: const NotificationPanel(),
+        endDrawer: Consumer(
+          builder: (context, ref, _) => ProviderScope(
+            overrides: [
+              notificationInlineActionsProvider.overrideWithValue(
+                NotificationInlineActionRunner(ref),
+              ),
+            ],
+            child: const NotificationPanel(),
+          ),
+        ),
         floatingActionButton: floatingActionButton,
         body: usesLeadingNav
             ? Row(

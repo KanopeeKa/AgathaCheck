@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../pet_profile/presentation/providers/pet_providers.dart';
+import '../../../pet_profile/pet_profile.dart';
 
 class AddPersonPetOption {
   const AddPersonPetOption({required this.id, required this.name});

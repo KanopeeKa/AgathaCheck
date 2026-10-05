@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/branding/logo_assets.dart';
 import '../../../../core/theme/app_color_tokens.dart';
-import '../../../auth/domain/entities/auth_user.dart';
+import '../../../auth/auth.dart';
 import '../../domain/entities/app_experience.dart';
 import '../../domain/entities/drawer_menu_item.dart';
 

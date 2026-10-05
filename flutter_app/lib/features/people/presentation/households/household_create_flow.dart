@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../l10n/app_localizations.dart';
-import '../../../pet_profile/domain/entities/pet.dart';
-import '../../../pet_profile/presentation/providers/pet_providers.dart';
+import '../../../pet_profile/pet_profile.dart';
 import '../../application/people_commands.dart';
 
 Future<String?> showCreateHouseholdFlow(BuildContext context) {

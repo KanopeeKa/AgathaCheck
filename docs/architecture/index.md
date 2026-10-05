@@ -215,6 +215,31 @@ One health entry as a care series: open occurrences, agenda row, occurrence scre
 
 ---
 
+## Feature public APIs (Flutter)
+
+Each active feature documents its entrypoint and public surface in `flutter_app/lib/features/<feature>/README.md`. Import **`features/<feature>/<feature>.dart`** from other features (enforced by `check_feature_imports.js` R6).
+
+| Feature | Entrypoint | Component README |
+|---------|------------|------------------|
+| about | `about/about.dart` | [README](../../flutter_app/lib/features/about/README.md) |
+| auth | `auth/auth.dart` | [README](../../flutter_app/lib/features/auth/README.md) |
+| care_intelligence | `care_intelligence/care_intelligence.dart` | [README](../../flutter_app/lib/features/care_intelligence/README.md) |
+| care_taxonomy | `care_taxonomy/care_taxonomy.dart` | [README](../../flutter_app/lib/features/care_taxonomy/README.md) |
+| experience | `experience/experience.dart` | [README](../../flutter_app/lib/features/experience/README.md) |
+| health_tracking | `health_tracking/health_tracking.dart` | [README](../../flutter_app/lib/features/health_tracking/README.md) |
+| help | `help/help.dart` | [README](../../flutter_app/lib/features/help/README.md) |
+| notifications | `notifications/notifications.dart` | [README](../../flutter_app/lib/features/notifications/README.md) |
+| people | `people/people.dart` | [README](../../flutter_app/lib/features/people/README.md) |
+| pet_care | `pet_care/pet_care.dart` | [README](../../flutter_app/lib/features/pet_care/README.md) |
+| pet_profile | `pet_profile/pet_profile.dart` | [README](../../flutter_app/lib/features/pet_profile/README.md) |
+| pet_tags | `pet_tags/pet_tags.dart` | [README](../../flutter_app/lib/features/pet_tags/README.md) |
+| sharing | `sharing/sharing.dart` | [README](../../flutter_app/lib/features/sharing/README.md) |
+| subscription | `subscription/subscription.dart` | [README](../../flutter_app/lib/features/subscription/README.md) |
+| vet | `vet/vet.dart` | [README](../../flutter_app/lib/features/vet/README.md) |
+| weight_tracking | `weight_tracking/weight_tracking.dart` | [README](../../flutter_app/lib/features/weight_tracking/README.md) |
+
+---
+
 ## Agent workflow shortcuts
 
 | Task | Start here |

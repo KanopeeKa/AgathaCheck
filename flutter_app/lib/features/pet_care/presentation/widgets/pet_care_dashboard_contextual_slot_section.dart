@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../care_intelligence/presentation/widgets/care_safeguard_card.dart';
-import '../../../care_intelligence/presentation/widgets/care_suggestion_card.dart';
-import '../../../pet_profile/domain/entities/pet.dart';
+import 'package:pet_profile_app/features/care_intelligence/care_intelligence.dart';
+import '../../../pet_profile/pet_profile.dart';
 import '../providers/pet_care_presentation_providers.dart';
 import 'care_milestone_moment_card.dart';
 

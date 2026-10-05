@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/core/theme/app_theme.dart';
-import 'package:pet_profile_app/core/theme/app_color_tokens.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:pet_profile_app/features/experience/presentation/widgets/pet_care_shell_home_content.dart';
 import 'package:pet_profile_app/features/experience/presentation/widgets/pet_care_operations_desk_layout.dart';

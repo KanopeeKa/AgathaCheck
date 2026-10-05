@@ -275,7 +275,7 @@ void main() {
     });
 
     test('default constructor has correct defaults', () {
-      const model = NotificationPreferencesModel();
+      final model = NotificationPreferencesModel();
 
       expect(model.emailRemindersEnabled, isFalse);
       expect(model.reminderDaysBefore, 1);

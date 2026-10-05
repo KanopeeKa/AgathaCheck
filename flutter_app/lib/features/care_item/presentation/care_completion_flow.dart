@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/providers/analytics_providers.dart';
+import '../../../core/widgets/app_undo_snackbar.dart';
 import '../../../core/providers/pet_care_sync.dart';
 import '../../../core/router/shell_return_navigation.dart';
 import '../../../l10n/app_localizations.dart';
@@ -205,60 +206,65 @@ class CareCompletionFlow {
     }
     final undoToken = result.undoToken;
     messenger.hideCurrentSnackBar();
-    messenger.showSnackBar(
-      SnackBar(
-        key: const Key('care_done_snackbar'),
-        content: Semantics(
-          identifier: 'care_done_snackbar',
-          container: true,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(l.careDoneSnackbar(schedule.name)),
-              if (second != null) Text(second),
-              if (changeOccurrenceId != null)
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: TextButton(
-                    key: const Key('care_done_change_date'),
-                    onPressed: () {
-                      messenger.hideCurrentSnackBar();
-                      openOccurrenceScreen(
-                        context,
-                        petId: schedule.petId,
-                        entryId: schedule.entryId,
-                        occurrenceId: changeOccurrenceId!,
-                        focus: 'date',
-                        source: _analyticsSource(source),
-                      );
-                    },
-                    child: Text(l.careChangeDate),
-                  ),
-                ),
-            ],
-          ),
-        ),
-        action: undoToken == null
-            ? null
-            : SnackBarAction(
-                key: const Key('care_done_undo'),
-                label: l.snackbarUndo,
-                onPressed: () async {
-                  final undone = await _service.undo(
+    final doneContent = Semantics(
+      identifier: 'care_done_snackbar',
+      container: true,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(l.careDoneSnackbar(schedule.name)),
+          if (second != null) Text(second),
+          if (changeOccurrenceId != null)
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton(
+                key: const Key('care_done_change_date'),
+                onPressed: () {
+                  messenger.hideCurrentSnackBar();
+                  openOccurrenceScreen(
+                    context,
+                    petId: schedule.petId,
                     entryId: schedule.entryId,
-                    undoToken: undoToken,
+                    occurrenceId: changeOccurrenceId!,
+                    focus: 'date',
+                    source: _analyticsSource(source),
                   );
-                  if (undone is CareSucceeded) {
-                    _track('care_done_undone', {
-                      'family': schedule.careFamily ?? 'unknown',
-                    });
-                    _refreshWeightIfWeighIn(schedule);
-                  }
-                  await onChanged();
                 },
+                child: Text(l.careChangeDate),
               ),
+            ),
+        ],
       ),
+    );
+    if (undoToken == null) {
+      messenger.showAppSnackBar(
+        snackBarKey: const Key('care_done_snackbar'),
+        content: doneContent,
+      );
+      return;
+    }
+    messenger.showUndoSnackBar(
+      snackBarKey: const Key('care_done_snackbar'),
+      content: doneContent,
+      undoLabel: l.snackbarUndo,
+      undoActionKey: const Key('care_done_undo'),
+      duration: changeOccurrenceId != null
+          ? const Duration(seconds: 15)
+          : kUndoSnackBarDuration,
+      onUndo: () async {
+        final undone = await _service.undo(
+          entryId: schedule.entryId,
+          undoToken: undoToken,
+        );
+        if (undone is CareSucceeded) {
+          _track('care_done_undone', {
+            'family': schedule.careFamily ?? 'unknown',
+          });
+          _refreshWeightIfWeighIn(schedule);
+        }
+        await onChanged();
+      },
     );
   }
 

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
-import '../../../pet_profile/domain/entities/pet.dart';
+import '../../../pet_profile/pet_profile.dart';
 
 /// Bottom sheet: Health / Other entry types (no weight — D17 scrap).
 Future<void> showGuardianAddEventPickerSheet(

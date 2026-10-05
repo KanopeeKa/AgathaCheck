@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../../core/theme/app_color_tokens.dart';
 import '../../../../../core/utils/constants.dart';
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../pet_care/presentation/widgets/care_surface/care_collection_inset_list.dart';
+import 'package:pet_profile_app/features/pet_care/pet_care.dart';
 import '../../../domain/entities/pet.dart';
 import '../../controllers/chip_reminder_controller.dart';
 import '../../controllers/neuter_reminder_controller.dart';

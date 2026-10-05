@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/widgets/app_undo_snackbar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/utils/calendar_date.dart';
-import '../../../pet_care/context/domain/entities/care_period_coverage.dart';
+import '../../../pet_care/pet_care.dart';
 import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/health_occurrence.dart';
 import '../../domain/services/reschedule_occurrence_preview.dart';
@@ -135,19 +136,15 @@ class RescheduleOccurrenceFlow {
           successMessage: successMessage,
         );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(successMessage),
-            action: SnackBarAction(
-              label: l.snackbarUndo,
-              onPressed: () => _undoReschedule(
-                context,
-                ref,
-                entry.id,
-                occurrence.id,
-                absenceId: absenceId,
-              ),
-            ),
+        ScaffoldMessenger.of(context).showUndoSnackBar(
+          content: Text(successMessage),
+          undoLabel: l.snackbarUndo,
+          onUndo: () => _undoReschedule(
+            context,
+            ref,
+            entry.id,
+            occurrence.id,
+            absenceId: absenceId,
           ),
         );
       }

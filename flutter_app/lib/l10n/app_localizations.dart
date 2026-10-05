@@ -1202,6 +1202,18 @@ abstract class AppLocalizations {
   /// **'Couldn\'t check for a due weigh-in.'**
   String get weightCheckFailed;
 
+  /// No description provided for @weightCheckFailedWontCount.
+  ///
+  /// In en, this message translates to:
+  /// **'You can still save this weight. It won\'t count as a weigh-in unless you use Count as a weigh-in later.'**
+  String get weightCheckFailedWontCount;
+
+  /// No description provided for @weightCheckTimedOut.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t confirm a due weigh-in in time. You can save this weight; it won\'t count as a weigh-in unless you turn on Count as.'**
+  String get weightCheckTimedOut;
+
   /// No description provided for @weightCheckRetry.
   ///
   /// In en, this message translates to:
@@ -9642,7 +9654,7 @@ abstract class AppLocalizations {
   /// No description provided for @carePostponeSheetTitle.
   ///
   /// In en, this message translates to:
-  /// **'Pause'**
+  /// **'Postpone until'**
   String get carePostponeSheetTitle;
 
   /// No description provided for @carePostponeNoEndDate.
@@ -9654,8 +9666,20 @@ abstract class AppLocalizations {
   /// No description provided for @carePostponeUntilLabel.
   ///
   /// In en, this message translates to:
-  /// **'Pause until'**
+  /// **'Postpone until'**
   String get carePostponeUntilLabel;
+
+  /// No description provided for @carePostponeConfirmPause.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get carePostponeConfirmPause;
+
+  /// No description provided for @carePostponeConfirmUntil.
+  ///
+  /// In en, this message translates to:
+  /// **'Postpone until'**
+  String get carePostponeConfirmUntil;
 
   /// No description provided for @carePostponePauseConsequence.
   ///
@@ -10581,6 +10605,300 @@ abstract class AppLocalizations {
   /// **'Organisation'**
   String get notificationKindOrganisation;
 
+  /// No description provided for @notificationInboxTabActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity'**
+  String get notificationInboxTabActivity;
+
+  /// No description provided for @notificationInboxTabForYou.
+  ///
+  /// In en, this message translates to:
+  /// **'For you'**
+  String get notificationInboxTabForYou;
+
+  /// No description provided for @notificationNeedsResponse.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs your response'**
+  String get notificationNeedsResponse;
+
+  /// No description provided for @notificationInboxActivityEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing new. When someone shares a pet or joins your household, you\'ll see it here.'**
+  String get notificationInboxActivityEmpty;
+
+  /// No description provided for @notificationInboxForYouEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No suggestions right now. Agatha will let you know when something\'s worth a look.'**
+  String get notificationInboxForYouEmpty;
+
+  /// No description provided for @notificationInboxV2Explainer.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminders now live in Actions. Your inbox is for people updates and Agatha\'s suggestions.'**
+  String get notificationInboxV2Explainer;
+
+  /// No description provided for @notificationInboxV2ExplainerActionsLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Actions'**
+  String get notificationInboxV2ExplainerActionsLink;
+
+  /// No description provided for @notificationInboxForYouSuggestionsOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Agatha Suggestions are off. Turn them on here when you want Agatha to look for care insights again.'**
+  String get notificationInboxForYouSuggestionsOff;
+
+  /// No description provided for @notificationSettingsMatrixTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Inbox & delivery'**
+  String get notificationSettingsMatrixTitle;
+
+  /// No description provided for @notificationSettingsMatrixHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose how each category reaches you. In-app items always appear in your inbox when enabled.'**
+  String get notificationSettingsMatrixHelp;
+
+  /// No description provided for @notificationSettingsColumnCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get notificationSettingsColumnCategory;
+
+  /// No description provided for @notificationSettingsColumnInbox.
+  ///
+  /// In en, this message translates to:
+  /// **'In-app'**
+  String get notificationSettingsColumnInbox;
+
+  /// No description provided for @notificationSettingsColumnPush.
+  ///
+  /// In en, this message translates to:
+  /// **'Push'**
+  String get notificationSettingsColumnPush;
+
+  /// No description provided for @notificationSettingsColumnEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get notificationSettingsColumnEmail;
+
+  /// No description provided for @notificationSettingsCategoryInvites.
+  ///
+  /// In en, this message translates to:
+  /// **'Invites & requests'**
+  String get notificationSettingsCategoryInvites;
+
+  /// No description provided for @notificationSettingsCategoryAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Access & membership'**
+  String get notificationSettingsCategoryAccess;
+
+  /// No description provided for @notificationSettingsCategoryOrg.
+  ///
+  /// In en, this message translates to:
+  /// **'Organisation & foster'**
+  String get notificationSettingsCategoryOrg;
+
+  /// No description provided for @notificationSettingsCategorySuggestions.
+  ///
+  /// In en, this message translates to:
+  /// **'Agatha Suggestions'**
+  String get notificationSettingsCategorySuggestions;
+
+  /// No description provided for @notificationSettingsCategoryAccountSecurity.
+  ///
+  /// In en, this message translates to:
+  /// **'Account security'**
+  String get notificationSettingsCategoryAccountSecurity;
+
+  /// No description provided for @notificationSettingsCategorySubscription.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription'**
+  String get notificationSettingsCategorySubscription;
+
+  /// No description provided for @notificationSettingsInboxAlways.
+  ///
+  /// In en, this message translates to:
+  /// **'Always'**
+  String get notificationSettingsInboxAlways;
+
+  /// No description provided for @notificationSettingsMandatoryLock.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent for your account\'s security'**
+  String get notificationSettingsMandatoryLock;
+
+  /// No description provided for @notificationSettingsPushOsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Push is off for Agatha in your device settings. Open your device settings to allow notifications.'**
+  String get notificationSettingsPushOsHint;
+
+  /// No description provided for @notificationSettingsAgathaComputationHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Turning Agatha Suggestions off stops them being computed on our servers, not only hidden in the app.'**
+  String get notificationSettingsAgathaComputationHelp;
+
+  /// No description provided for @notificationSettingsSuggestionTypesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggestion types'**
+  String get notificationSettingsSuggestionTypesTitle;
+
+  /// No description provided for @notificationSettingsSuggestionS1.
+  ///
+  /// In en, this message translates to:
+  /// **'Missing recurring care'**
+  String get notificationSettingsSuggestionS1;
+
+  /// No description provided for @notificationSettingsSuggestionS2.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight trends'**
+  String get notificationSettingsSuggestionS2;
+
+  /// No description provided for @notificationSettingsSuggestionS3.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeated symptoms'**
+  String get notificationSettingsSuggestionS3;
+
+  /// No description provided for @notificationSettingsSuggestionS4.
+  ///
+  /// In en, this message translates to:
+  /// **'Overdue patterns'**
+  String get notificationSettingsSuggestionS4;
+
+  /// No description provided for @notificationSettingsSuggestionS5.
+  ///
+  /// In en, this message translates to:
+  /// **'Stale records'**
+  String get notificationSettingsSuggestionS5;
+
+  /// No description provided for @notificationSettingsSuggestionS6.
+  ///
+  /// In en, this message translates to:
+  /// **'Care routines'**
+  String get notificationSettingsSuggestionS6;
+
+  /// No description provided for @notificationSettingsSuggestionS7.
+  ///
+  /// In en, this message translates to:
+  /// **'Share coverage'**
+  String get notificationSettingsSuggestionS7;
+
+  /// No description provided for @notificationSettingsPushModeOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get notificationSettingsPushModeOff;
+
+  /// No description provided for @notificationSettingsPushModeWeekly.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly'**
+  String get notificationSettingsPushModeWeekly;
+
+  /// No description provided for @notificationSettingsPushModeInstant.
+  ///
+  /// In en, this message translates to:
+  /// **'Instant'**
+  String get notificationSettingsPushModeInstant;
+
+  /// No description provided for @notificationSettingsCareRemindersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Care reminders'**
+  String get notificationSettingsCareRemindersTitle;
+
+  /// No description provided for @notificationSettingsCareRemindersHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Care reminders are not in your inbox. They use push, email, and local alerts via these settings.'**
+  String get notificationSettingsCareRemindersHelp;
+
+  /// No description provided for @notificationSettingsCareRemindersLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Care reminder settings'**
+  String get notificationSettingsCareRemindersLink;
+
+  /// No description provided for @notificationSettingsCareRemindersLinkHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Push and email for health schedules (not shown in the inbox matrix).'**
+  String get notificationSettingsCareRemindersLinkHelp;
+
+  /// No description provided for @notificationSettingsOverdueHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Get notified when health entries are overdue'**
+  String get notificationSettingsOverdueHelp;
+
+  /// No description provided for @notificationSettingsDueSoonHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Get notified when health entries are coming up'**
+  String get notificationSettingsDueSoonHelp;
+
+  /// No description provided for @notificationSettingsCompletedHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Get notified when health entries are completed'**
+  String get notificationSettingsCompletedHelp;
+
+  /// No description provided for @notificationSettingsEmailRemindersHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Receive email reminders for upcoming health entries'**
+  String get notificationSettingsEmailRemindersHelp;
+
+  /// No description provided for @notificationSettingsMutedPetsHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Muted pets skip suggestion generation and non-mandatory relationship push. Inbox rows still appear.'**
+  String get notificationSettingsMutedPetsHelp;
+
+  /// No description provided for @notificationSettingsNoPets.
+  ///
+  /// In en, this message translates to:
+  /// **'No pets found.'**
+  String get notificationSettingsNoPets;
+
+  /// No description provided for @notificationSettingsPetMuted.
+  ///
+  /// In en, this message translates to:
+  /// **'Muted'**
+  String get notificationSettingsPetMuted;
+
+  /// No description provided for @notificationSettingsPetActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get notificationSettingsPetActive;
+
+  /// No description provided for @notificationSettingsDecreaseDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Decrease reminder days'**
+  String get notificationSettingsDecreaseDays;
+
+  /// No description provided for @notificationSettingsIncreaseDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Increase reminder days'**
+  String get notificationSettingsIncreaseDays;
+
   /// No description provided for @notificationActionNeeded.
   ///
   /// In en, this message translates to:
@@ -10604,6 +10922,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Urgent'**
   String get notificationUrgent;
+
+  /// No description provided for @notificationInlineRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get notificationInlineRetry;
+
+  /// No description provided for @notificationInlineActionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Try again.'**
+  String get notificationInlineActionFailed;
+
+  /// No description provided for @notificationAlreadyHandled.
+  ///
+  /// In en, this message translates to:
+  /// **'Already handled'**
+  String get notificationAlreadyHandled;
+
+  /// No description provided for @notificationInlineUndo.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get notificationInlineUndo;
+
+  /// No description provided for @notificationAccountThisWasMe.
+  ///
+  /// In en, this message translates to:
+  /// **'This was me'**
+  String get notificationAccountThisWasMe;
+
+  /// No description provided for @notificationAccountSecureMyAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Secure my account'**
+  String get notificationAccountSecureMyAccount;
+
+  /// No description provided for @secureAccountTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Secure my account'**
+  String get secureAccountTitle;
+
+  /// No description provided for @secureAccountIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'ll sign out your other devices, then you\'ll set a new password. This device stays signed in.'**
+  String get secureAccountIntro;
+
+  /// No description provided for @secureAccountSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Secure account'**
+  String get secureAccountSubmit;
+
+  /// No description provided for @secureAccountSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account is secured.'**
+  String get secureAccountSuccess;
 
   /// No description provided for @accountTitle.
   ///

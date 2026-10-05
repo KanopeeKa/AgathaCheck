@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../core/widgets/branded_logo.dart';
-import '../../../../features/experience/domain/entities/app_experience.dart';
+import 'package:pet_profile_app/core/experience/app_experience.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../providers/auth_providers.dart';
 

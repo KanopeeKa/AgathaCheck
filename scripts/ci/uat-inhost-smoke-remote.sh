@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
-# Run in-host loopback smoke on the UAT server (bundled for appleboy script_path).
+# Run in-host loopback smoke on the UAT server (body only — lib inlined by prepare-uat-inhost-smoke.sh).
 set -euo pipefail
+
+HOME="$(uat_nm_home_dir)"
+export HOME
 
 SITE_ROOT="${UAT_SITE_ROOT:-${HOME}/uat.agathatrack.com}"
 APPDIR="${SITE_ROOT}/backend"
+export UAT_APP_DIR="$APPDIR"
 
 echo "UAT_INHOST_SMOKE_BEGIN"
 echo "site_root=${SITE_ROOT}"
@@ -16,8 +20,15 @@ fi
 
 cd "$APPDIR"
 
+if ! uat_nm_use_node; then
+  echo "::error::node not found in PATH or CloudLinux nodevenv — cannot run in-host smoke"
+  echo "Expected: ~/nodevenv/uat.agathatrack.com/backend/<version>/bin/node"
+  exit 1
+fi
+echo "node_bin=${UAT_NODE_BIN}"
+
 echo "=== Migration status (fail on pending) ==="
-status_out="$(node scripts/migrate.js status 2>&1)" || {
+status_out="$("$UAT_NODE_BIN" scripts/migrate.js status 2>&1)" || {
   echo "$status_out"
   echo "::error::migrate.js status failed"
   exit 1
@@ -28,12 +39,12 @@ if grep -qE '\[PENDING\]| [1-9][0-9]* pending' <<<"$status_out"; then
   exit 1
 fi
 
-PORT="$(node -e "const n=require('net').createServer();n.listen(0,'127.0.0.1',()=>{console.log(n.address().port);n.close()});")"
+PORT="$("$UAT_NODE_BIN" -e "const n=require('net').createServer();n.listen(0,'127.0.0.1',()=>{console.log(n.address().port);n.close()});")"
 export PORT
 export HOST=127.0.0.1
 
 echo "=== Start loopback server on 127.0.0.1:${PORT} ==="
-node bin/start.js &
+"$UAT_NODE_BIN" bin/start.js &
 SERVER_PID=$!
 cleanup() {
   if kill -0 "$SERVER_PID" 2>/dev/null; then
@@ -56,6 +67,6 @@ for attempt in $(seq 1 45); do
 done
 
 echo "=== In-host API smoke ==="
-node scripts/uat-inhost-smoke.mjs --base-url "http://127.0.0.1:${PORT}" --skip-migrations
+"$UAT_NODE_BIN" scripts/uat-inhost-smoke.mjs --base-url "http://127.0.0.1:${PORT}" --skip-migrations
 
 echo "UAT_INHOST_SMOKE_END"

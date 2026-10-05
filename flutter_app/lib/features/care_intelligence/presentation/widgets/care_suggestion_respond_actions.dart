@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../l10n/app_localizations.dart';
-import '../../../health_tracking/presentation/providers/health_providers.dart';
-import '../../../pet_care/presentation/providers/pet_care_presentation_providers.dart';
-import '../../../pet_profile/domain/services/pet_detail_actions.dart';
-import '../../../pet_profile/presentation/providers/pet_detail_viewer_context_provider.dart';
+import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
+import 'package:pet_profile_app/features/pet_care/pet_care.dart';
+import '../../../pet_profile/pet_profile.dart';
 import '../../data/care_intelligence_exception.dart';
 import '../../domain/entities/care_recommendation.dart';
 import '../providers/care_recommendations_provider.dart';
@@ -30,13 +29,16 @@ class CareSuggestionRespondActions {
 
     onLoadingChanged(true);
     try {
+      final apiId = switch (action) {
+        CareRecommendationResponseAction.accept ||
+        CareRecommendationResponseAction.adjust =>
+          recommendation.healthEntryId ?? recommendation.id,
+        CareRecommendationResponseAction.dismiss ||
+        CareRecommendationResponseAction.notRelevant => recommendation.id,
+      };
       await ref
           .read(careIntelligenceRepositoryProvider)
-          .respond(
-            petId: petId,
-            recommendationId: recommendation.id,
-            action: action,
-          );
+          .respond(petId: petId, recommendationId: apiId, action: action);
       ref.invalidate(petCareRecommendationsProvider(petId));
       ref.invalidate(petProfileCareSuggestionProvider(petId));
       ref.invalidate(petProfileCareMilestoneProvider(petId));

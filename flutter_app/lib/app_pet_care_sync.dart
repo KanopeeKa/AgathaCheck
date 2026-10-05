@@ -1,9 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/providers/pet_care_sync.dart';
-import 'features/care_item/application/care_item_providers.dart';
-import 'features/pet_profile/presentation/providers/pet_providers.dart';
-import 'features/weight_tracking/presentation/providers/weight_providers.dart';
+import 'package:pet_profile_app/features/care_item/care_item.dart';
+import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
+import 'package:pet_profile_app/features/weight_tracking/weight_tracking.dart';
 
 /// Composition-root [PetCareSync] (roadmap §6.1).
 class AppPetCareSync implements PetCareSync {

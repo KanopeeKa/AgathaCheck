@@ -4,12 +4,10 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../../core/utils/calendar_date.dart';
-import '../../../../../core/weight/weight_unit.dart';
 import '../../../../../core/weight/weight_unit_preference.dart';
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../pet_care/presentation/widgets/care_surface/care_insight_tile.dart';
-import '../../../../weight_tracking/domain/weight_entry_sort.dart';
-import '../../../../weight_tracking/presentation/providers/weight_providers.dart';
+import 'package:pet_profile_app/features/pet_care/pet_care.dart';
+import '../../../../weight_tracking/weight_tracking.dart';
 import '../../../data/services/pet_report_profile_section.dart';
 import '../../../domain/entities/pet.dart';
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../pet_profile/domain/entities/pet.dart';
+import '../../../pet_profile/pet_profile.dart';
 import '../../domain/entities/health_entry.dart';
 import '../providers/occurrence_providers.dart';
 import 'care_event_row.dart';

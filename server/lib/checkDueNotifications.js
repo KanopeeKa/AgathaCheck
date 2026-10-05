@@ -1,5 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
-
 import { accessiblePetSql, petNotificationRecipientIds } from './petAccess.js';
 import { dateToIsoDate } from './calendarDate.js';
 import { careAsOfForZone } from './care/occurrence/careAsOf.js';
@@ -55,36 +53,12 @@ async function loadUserPrefs(pool, userId) {
   return parsePrefs(result.rows);
 }
 
-async function hasRecentUnread(pool, userId, healthEntryId, type) {
-  const result = await pool.query(
-    `SELECT 1 FROM notifications
-     WHERE user_id = $1 AND health_entry_id = $2 AND type = $3
-       AND COALESCE(is_read, read, false) = false
-     LIMIT 1`,
-    [userId, healthEntryId, type]
-  );
-  return result.rows.length > 0;
-}
-
-async function insertDueNotification(pool, {
-  userId, petId, petName, healthEntryId, title, message, type,
-}) {
-  if (await hasRecentUnread(pool, userId, healthEntryId, type)) return false;
-  await pool.query(
-    `INSERT INTO notifications (id, user_id, pet_id, pet_name, health_entry_id, title, message, type)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-    [uuidv4(), userId, petId, petName, healthEntryId, title, message, type]
-  );
-  return true;
-}
-
 /**
- * Scan health entries for pets the caller can access and create due/overdue
- * notifications for every owner and collaborator on each affected pet.
+ * Scan health entries for pets the caller can access.
  *
- * `next_due_date` is the earliest real open occurrence (D-CSM-019), so
- * reminders never fire on an estimated date. Paused items are skipped and
- * "today" is each pet's home calendar day (D-CIE-005).
+ * Notifications v2 (FR-CR-1): due/overdue reminders MUST NOT create inbox rows.
+ * This endpoint still runs the scan so clients can refresh care state; push/local
+ * reminders are handled outside the inbox pipeline.
  *
  * @param {import('pg').Pool} pool
  * @param {string} userId
@@ -106,7 +80,6 @@ export async function checkDueNotifications(pool, userId, petNamesFromClient = {
   );
 
   const todayByZone = new Map();
-  let created = 0;
 
   for (const entry of entries.rows) {
     const dueIso = dateToIsoDate(entry.next_due_date);
@@ -114,7 +87,6 @@ export async function checkDueNotifications(pool, userId, petNamesFromClient = {
     const zone = normalizePetHomeTimezone(entry.pet_home_timezone);
     if (!todayByZone.has(zone)) todayByZone.set(zone, careAsOfForZone(zone, clock).todayIso);
     const todayIso = todayByZone.get(zone);
-    const petName = petNamesFromClient[entry.pet_id] || entry.pet_name || 'Pet';
     const recipients = await petNotificationRecipientIds(pool, entry.pet_id);
 
     for (const recipientId of recipients) {
@@ -125,32 +97,12 @@ export async function checkDueNotifications(pool, userId, petNamesFromClient = {
       const daysUntilDue = daysBetweenCalendarDates(todayIso, dueIso);
 
       if (daysUntilDue < 0 && prefs.notifyOverdue) {
-        const title = `${petName}: overdue`;
-        const message = `"${entry.name}" was due on ${dueIso}.`;
-        if (await insertDueNotification(pool, {
-          userId: recipientId,
-          petId: entry.pet_id,
-          petName,
-          healthEntryId: entry.id,
-          title,
-          message,
-          type: 'overdue',
-        })) created += 1;
+        // Inbox row intentionally not created (v2).
       } else if (daysUntilDue >= 0 && daysUntilDue <= remindBefore && prefs.notifyDueSoon) {
-        const title = `${petName}: due soon`;
-        const message = `"${entry.name}" is due on ${dueIso}.`;
-        if (await insertDueNotification(pool, {
-          userId: recipientId,
-          petId: entry.pet_id,
-          petName,
-          healthEntryId: entry.id,
-          title,
-          message,
-          type: 'due_soon',
-        })) created += 1;
+        // Inbox row intentionally not created (v2).
       }
     }
   }
 
-  return { checked: true, created };
+  return { checked: true, created: 0 };
 }

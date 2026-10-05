@@ -4,10 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../../core/utils/calendar_date.dart';
-import '../../../../../core/weight/weight_unit.dart';
 import '../../../../../core/weight/weight_unit_preference.dart';
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../weight_tracking/domain/weight_entry_sort.dart';
 import '../../../../weight_tracking/weight_tracking.dart';
 import '../../controllers/pet_form_controller.dart';
 import 'pet_form_labeled_field.dart';

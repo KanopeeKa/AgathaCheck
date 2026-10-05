@@ -1,4 +1,4 @@
-import '../../../sharing/domain/entities/pet_access.dart';
+import '../../../sharing/sharing.dart';
 
 /// Represents a pet entity in the domain layer.
 ///

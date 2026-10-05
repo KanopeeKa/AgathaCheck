@@ -3,7 +3,7 @@
  */
 import fs from 'fs';
 import path from 'path';
-import { v4 as uuidv4 } from 'uuid';
+import { NOTIFICATION_TYPE_PET_PASSED_AWAY } from './notificationKind.js';
 
 import { logAuditEvent } from './audit.js';
 import { withTransaction } from './db/withTransaction.js';
@@ -304,7 +304,7 @@ export async function notifyPassedAwayCollaborators(pool, {
         petName: displayPetName,
         title: 'In loving memory',
         message: `${ownerName} marked ${displayPetName} as passed away.`,
-        type: 'general',
+        type: NOTIFICATION_TYPE_PET_PASSED_AWAY,
       });
       notifiedCount += 1;
     }

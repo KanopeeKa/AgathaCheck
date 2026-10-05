@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../pet_profile/domain/entities/pet.dart';
-import '../../../pet_profile/presentation/providers/pet_providers.dart';
+import '../../../pet_profile/pet_profile.dart';
 import '../../data/experience_preferences_store.dart';
 import '../../data/pet_care_onboarding_store.dart';
 import '../../data/org_onboarding_store.dart';

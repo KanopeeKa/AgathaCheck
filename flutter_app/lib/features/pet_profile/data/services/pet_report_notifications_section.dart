@@ -2,7 +2,7 @@ import '../../../../core/theme/pdf_report_tokens.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:intl/intl.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../notifications/domain/entities/app_notification.dart';
+import '../../../notifications/notifications.dart';
 
 class PetNotificationsSectionBuilder {
   static List<pw.Widget> build(

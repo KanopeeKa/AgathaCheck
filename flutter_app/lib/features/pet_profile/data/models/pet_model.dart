@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import '../../../sharing/domain/entities/pet_access.dart';
+import '../../../sharing/sharing.dart';
 import '../../domain/entities/pet.dart';
 import '../../../../core/utils/calendar_date.dart';
 import '../utils/pet_profile_normalize.dart';

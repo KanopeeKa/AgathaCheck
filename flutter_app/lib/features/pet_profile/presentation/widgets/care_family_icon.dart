@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_color_tokens.dart';
 import '../../domain/entities/care_family.dart';
 import '../../domain/services/care_family_inference.dart';
-import '../../../health_tracking/domain/entities/health_entry.dart';
+import '../../../health_tracking/health_tracking.dart';
 import 'care_family_custom_glyph.dart';
 
 /// Care-family icon chip — shape-first, unified ink (Option A).

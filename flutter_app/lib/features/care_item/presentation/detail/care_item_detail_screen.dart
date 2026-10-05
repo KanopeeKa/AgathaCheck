@@ -4,18 +4,10 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/utils/calendar_date.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../experience/domain/entities/app_experience.dart';
-import '../../../experience/presentation/widgets/experience_shell_scaffold.dart';
-import '../../../pet_profile/presentation/providers/care_progression_providers.dart';
-import '../../../pet_profile/presentation/providers/pet_providers.dart';
-import '../../../pet_profile/presentation/widgets/care_establishment_helpers.dart';
-import '../../../health_tracking/presentation/providers/health_providers.dart';
-import '../../../health_tracking/presentation/providers/occurrence_providers.dart';
-import '../../../health_tracking/presentation/widgets/pet_event_close_confirm_dialog.dart';
-import '../../../health_tracking/presentation/widgets/pet_event_view_providers.dart';
-import '../../../health_tracking/domain/entities/recurrence_anchor.dart';
-import '../../../health_tracking/presentation/widgets/pet_event_lifecycle.dart';
-import '../../../health_tracking/presentation/widgets/pet_event_occurrence_actions.dart';
+import 'package:pet_profile_app/core/experience/app_experience.dart';
+import 'package:pet_profile_app/core/router/experience_shell_scaffold.dart';
+import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
+import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import '../widgets/care_item_history.dart';
 import '../sheets/postpone_sheet.dart';
 import '../sheets/resume_date_sheet.dart';
@@ -129,11 +121,14 @@ class CareItemDetailScreen extends ConsumerWidget {
               final fixed =
                   entry.schedule?.isFixedSchedule ??
                   entry.recurrenceAnchor == RecurrenceAnchor.fromDueDate;
+              final asOf =
+                  entry.schedule?.asOf.date ?? calendarDateOnly(DateTime.now());
               final ok = await showPostponeSheet(
                 context,
                 ref,
                 entryId: entryId,
                 isFixedSchedule: fixed,
+                asOf: asOf,
               );
               if (ok == true) {
                 PetEventOccurrenceActions.invalidateOccurrenceData(
@@ -154,11 +149,15 @@ class CareItemDetailScreen extends ConsumerWidget {
                   freshEntry.schedule?.resumeDefaultDate ??
                   freshEntry.schedule?.asOf.date ??
                   calendarDateOnly(DateTime.now());
+              final asOf =
+                  freshEntry.schedule?.asOf.date ??
+                  calendarDateOnly(DateTime.now());
               final ok = await showResumeDateSheet(
                 context,
                 ref,
                 entryId: entryId,
                 suggestedDate: suggested,
+                asOf: asOf,
               );
               if (ok == true) {
                 PetEventOccurrenceActions.invalidateOccurrenceData(

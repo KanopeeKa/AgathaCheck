@@ -2,7 +2,7 @@ import '../../../../core/theme/pdf_report_tokens.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:intl/intl.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../health_tracking/domain/entities/health_entry.dart';
+import '../../../health_tracking/health_tracking.dart';
 
 class PetHealthSectionBuilder {
   static List<pw.Widget> build(

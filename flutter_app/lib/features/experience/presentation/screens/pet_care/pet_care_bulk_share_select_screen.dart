@@ -3,14 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../health_tracking/presentation/providers/health_providers.dart';
-import '../../../../pet_profile/domain/entities/pet.dart';
-import '../../../../pet_profile/presentation/controllers/pet_list_controller.dart';
-import '../../../../pet_profile/presentation/providers/pet_providers.dart';
+import '../../../../health_tracking/health_tracking.dart';
 import '../../widgets/experience_shell_scaffold.dart';
-import '../../widgets/pet_care_pets_tile_grid.dart';
+import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 import '../../../domain/entities/app_experience.dart';
-import 'pet_care_dashboard_helpers.dart';
 
 /// Multi-select screen for bulk-sharing owned guardian pets.
 class PetCareBulkShareSelectScreen extends ConsumerStatefulWidget {

@@ -1,10 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../auth/presentation/providers/auth_providers.dart';
+import 'package:pet_profile_app/features/auth/auth.dart';
 import '../../../../core/providers/api_base_url_provider.dart';
-import '../../../care_intelligence/domain/entities/care_recommendation.dart';
-import '../../../care_intelligence/domain/entities/care_safeguard.dart';
-import '../../../care_intelligence/presentation/providers/care_recommendations_provider.dart';
+import 'package:pet_profile_app/features/care_intelligence/care_intelligence.dart';
 import '../../progression/data/datasources/care_progression_moments_remote_datasource.dart';
 import '../../progression/data/repositories/care_progression_moments_repository_impl.dart';
 import '../../progression/domain/entities/care_pending_moment.dart';
@@ -148,7 +146,7 @@ final petDashboardCareContextualSlotProvider =
 
       if (loading) return const AsyncLoading();
       if (error != null) {
-        return AsyncError(error!, stackTrace ?? StackTrace.empty);
+        return AsyncError(error, stackTrace ?? StackTrace.empty);
       }
 
       final activeSafeguard = policy.dashboardSafeguard(safeguardsByPetId);

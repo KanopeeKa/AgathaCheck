@@ -5,7 +5,7 @@ import '../../../../core/utils/calendar_date.dart';
 import '../../../../core/weight/weight_unit.dart';
 import '../../../../core/weight/weight_unit_preference.dart';
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
-import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
+import 'package:pet_profile_app/features/auth/auth.dart';
 import '../../data/datasources/weight_remote_datasource.dart';
 import '../../data/repositories/weight_repository_impl.dart';
 import '../../domain/entities/weight_entry.dart';
@@ -107,6 +107,7 @@ class WeightEntriesNotifier
   Future<WeightSaveOutcome> saveEntry({
     required WeightEntry entry,
     String? fulfilsOccurrenceId,
+    bool isUpdate = false,
   }) async {
     final repo = ref.read(weightRepositoryProvider);
     final token = _token;
@@ -121,16 +122,12 @@ class WeightEntriesNotifier
         fulfilsOccurrenceId,
         token,
       );
+    } else if (isUpdate) {
+      final updated = await repo.updateEntry(normalized, token);
+      outcome = WeightSaveOutcome(entry: updated);
     } else {
-      final knownIds = (state.valueOrNull ?? []).map((e) => e.id).toSet();
-      final isNew = normalized.id.isEmpty || !knownIds.contains(normalized.id);
-      if (isNew) {
-        final created = await repo.createEntry(normalized, token);
-        outcome = WeightSaveOutcome(entry: created);
-      } else {
-        final updated = await repo.updateEntry(normalized, token);
-        outcome = WeightSaveOutcome(entry: updated);
-      }
+      final created = await repo.createEntry(normalized, token);
+      outcome = WeightSaveOutcome(entry: created);
     }
     await _afterWrite();
     await _refreshList();

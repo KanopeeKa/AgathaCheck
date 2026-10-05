@@ -75,3 +75,22 @@ infra/**
 - [ ] PR merged to integration branch
 
 **Router:** R2 — protocols: api-contract, authorization, security, testing, migrations.
+
+## Runtime
+
+```yaml
+autonomy: completed
+current_phase: null
+last_completed_phase: 1
+halt_reason: null
+next_action: "plan complete"
+artifact_ref:
+  branch: cursor/notifications-v2-integration-7f3b
+  plan_path: .agents/plans/notifications-v2-pr1-7f3b.md
+  plan_commit: ca1aa8e2c43ba8358dc860f4a281a49227d6c041
+  snapshot_path: .agents/plans/notifications-v2-pr1-7f3b.snapshot.json
+  snapshot_commit: ca1aa8e2c43ba8358dc860f4a281a49227d6c041
+open_prs: []
+merge_commits: {}
+debt_issue_refs: []
+```

@@ -6,7 +6,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../data/care_intelligence_exception.dart';
 import '../../domain/entities/care_safeguard.dart';
 import '../providers/care_recommendations_provider.dart';
-import '../../../pet_care/presentation/providers/pet_care_presentation_providers.dart';
+import 'package:pet_profile_app/features/pet_care/pet_care.dart';
 import 'cim_evidence_view.dart';
 
 /// Calm info-blue safeguard card (Phase E).

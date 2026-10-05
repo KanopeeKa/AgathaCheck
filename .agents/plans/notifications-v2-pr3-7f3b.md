@@ -16,3 +16,22 @@
 **Scope:** R1–R12, R14–R17 emitters; explicit types; AC-AC-16 guard; privacy FR-PR-*; co-parent suggestion recipients unchanged until PR5.
 
 **Exit:** AC-AC-*, AC-PR-*; PR merged to integration.
+
+## Runtime
+
+```yaml
+autonomy: completed
+current_phase: null
+last_completed_phase: 1
+halt_reason: null
+next_action: "plan complete"
+artifact_ref:
+  branch: cursor/notifications-v2-integration-7f3b
+  plan_path: .agents/plans/notifications-v2-pr3-7f3b.md
+  plan_commit: c52985534d7f919f0661fc7aeb51692aa90751f7
+  snapshot_path: .agents/plans/notifications-v2-pr3-7f3b.snapshot.json
+  snapshot_commit: c52985534d7f919f0661fc7aeb51692aa90751f7
+open_prs: []
+merge_commits: {}
+debt_issue_refs: []
+```

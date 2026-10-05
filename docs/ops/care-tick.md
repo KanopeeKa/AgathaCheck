@@ -50,6 +50,8 @@ psql ${DATABASE_URL:+"$DATABASE_URL"} -c "SELECT count(*) AS users FROM users;" 
 "$NODE" scripts/care/repair_occurrences.js --dry-run          # checked 0 care items; 0 with violations
 ```
 
+Do **not** run `repair_tz_shift.js --apply` after this reset (or on UAT): the script refuses `--apply` when the dry-run reports no repair work, and always refuses it when `APP_ENV=uat` (DC-1).
+
 Migrations insert no reference rows, so an empty database is valid. Then sign up again in the app.
 
 If `pg_dump` or `psql` is missing on the host, take the backup from cPanel → **Databases → phpPgAdmin → Export** and run the count there; the truncate step needs only node.
@@ -122,13 +124,16 @@ The helper runs inside `BEGIN READ ONLY` and rejects `INSERT`/`UPDATE`/`DELETE`/
 
 ## TZ-shift repair (production only)
 
-UAT demo data: reset via **Actions → UAT reset demo data** after §8 deploy — do not run `repair_tz_shift.js` on UAT.
+UAT demo data: reset via **Actions → UAT reset demo data** after §8 deploy — do not run `repair_tz_shift.js --apply` on UAT (the script exits with an error if you try).
 
-Production (if DC-2 shows damage): suspend the cron, deploy §8, backup, then:
+If DC-2 chose **reset** (empty DB or Oct 2026 wipe, DC-1): run `repair_occurrences.js --dry-run` only — never `--apply` on `repair_tz_shift.js` (a clean dry-run is refused).
+
+Production (if DC-2 shows damage and you are **repairing**, not resetting): suspend the cron, deploy §8, backup, then:
 
 ```bash
 node scripts/care/repair_tz_shift.js              # dry-run (default)
-node scripts/care/repair_tz_shift.js --apply
+node scripts/care/repair_tz_shift.js --apply      # only when dry-run shows work; not after reset
+node scripts/care/repair_tz_shift.js --as-of-date=2026-10-05   # explicit calendar day (else pet home TZ)
 node scripts/care/repair_occurrences.js --dry-run
 ```
 

@@ -1,11 +1,8 @@
 import 'care_item_blocks.dart';
 import '../../../care_item/care_item.dart';
 import 'recurrence_anchor.dart';
-import '../../../care_taxonomy/domain/care_importance.dart';
-import '../../../care_taxonomy/domain/care_planning_mode.dart';
-import '../../../care_taxonomy/domain/care_setting.dart';
-import '../../../pet_profile/domain/entities/care_family.dart';
-import '../../../pet_profile/domain/entities/care_source.dart';
+import '../../../care_taxonomy/care_taxonomy.dart';
+import '../../../pet_profile/pet_profile.dart';
 
 /// Represents a health tracking entry in the domain layer.
 ///

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import '../../../../../core/router/shell_return_navigation.dart';
 import '../../../../../core/utils/calendar_date.dart';
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../pet_profile/domain/entities/pet.dart';
+import '../../../../pet_profile/pet_profile.dart';
 import '../../domain/entities/planned_absence.dart';
 
 class PlannedAbsenceHubCard extends StatelessWidget {

@@ -3,11 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../experience/domain/entities/app_experience.dart';
-import '../../../../experience/presentation/widgets/experience_shell_scaffold.dart';
-import '../../../../pet_profile/domain/entities/pet.dart';
-import '../../../../pet_profile/presentation/controllers/pet_list_controller.dart';
-import '../../../../pet_profile/presentation/providers/pet_providers.dart';
+import 'package:pet_profile_app/core/experience/app_experience.dart';
+import 'package:pet_profile_app/core/router/experience_shell_scaffold.dart';
+import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 import '../../domain/entities/planned_absence.dart';
 import '../planned_absence_date_rules.dart';
 import '../providers/care_context_providers.dart';

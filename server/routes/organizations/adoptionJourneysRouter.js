@@ -103,7 +103,7 @@ export function registerAdoptionJourneysRoutes(router, pool) {
         message: adoptionConditions
           ? `${petName} is ready for adoption once pre-adoption conditions are met.`
           : `Please confirm adoption of ${petName}.`,
-        type: 'general',
+        type: 'adoptionReadyToConfirm',
       });
 
       res.json(placementWithJourneyResponse(result.placement, result.journey));
@@ -149,7 +149,7 @@ export function registerAdoptionJourneysRoutes(router, pool) {
         message: adoptionConditions
           ? `${petName} is ready for adoption once pre-adoption conditions are met.`
           : `Please confirm adoption of ${petName}.`,
-        type: 'general',
+        type: 'adoptionReadyToConfirm',
       });
 
       res.json(placementWithJourneyResponse(result.placement, result.journey));
@@ -183,7 +183,7 @@ export function registerAdoptionJourneysRoutes(router, pool) {
         petName,
         title: 'Adoption ready to confirm',
         message: `Pre-adoption conditions for ${petName} are complete. Please confirm adoption.`,
-        type: 'general',
+        type: 'adoptionReadyToConfirm',
       });
 
       res.json(placementWithJourneyResponse(result.placement, result.journey));

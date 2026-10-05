@@ -209,7 +209,10 @@ export async function getCarePeriodCoverage(
 }
 
 /** Trigger a reminder scan with the same pinned care clock as the care commands. */
-export async function checkCareReminders(baseURL: string, token: string): Promise<void> {
+export async function checkCareReminders(
+  baseURL: string,
+  token: string,
+): Promise<{ checked: boolean; created: number }> {
   const res = await apiFetch(`${baseURL.replace(/\/$/, '')}${API_PREFIX}/notifications/check-due`, {
     method: 'POST',
     headers: {
@@ -219,7 +222,9 @@ export async function checkCareReminders(baseURL: string, token: string): Promis
     },
     body: JSON.stringify({}),
   });
-  if (!res.ok) throw new Error(`checkCareReminders failed (${res.status}): ${await res.text()}`);
+  const text = await res.text();
+  if (!res.ok) throw new Error(`checkCareReminders failed (${res.status}): ${text}`);
+  return JSON.parse(text) as { checked: boolean; created: number };
 }
 
 /** Complete one open date; returns the raw result so tests can assert a 409. */

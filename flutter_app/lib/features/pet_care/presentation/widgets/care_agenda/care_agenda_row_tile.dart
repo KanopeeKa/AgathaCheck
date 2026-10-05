@@ -2,12 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../care_item/care_item.dart';
-import '../../../../health_tracking/domain/entities/health_entry.dart';
-import '../../../../health_tracking/presentation/widgets/health_entry_status.dart';
-import '../../../../health_tracking/presentation/widgets/pet_event_lifecycle.dart';
-import '../../../../pet_profile/domain/services/care_family_inference.dart';
-import '../../../../pet_profile/presentation/widgets/care_family_icon.dart';
-import '../../../../pet_profile/presentation/widgets/care_family_labels.dart';
+import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
+import '../../../../pet_profile/pet_profile.dart';
 import '../care_surface/care_action_row.dart';
 
 /// Status words and chips for one agenda row (D-CIE-024, §18.6.3).
@@ -23,8 +19,8 @@ String careAgendaStatusText(
   final occ = row.occurrence;
   if (occ == null) return '';
   final word = switch (row.status) {
-    CareOccurrenceStatus.overdue => l.urgencyOverdue,
-    CareOccurrenceStatus.notRecorded => l.careStatusNotRecorded,
+    CareOccurrenceStatus.overdue ||
+    CareOccurrenceStatus.notRecorded => l.urgencyOverdue,
     CareOccurrenceStatus.due => l.careStatusDue,
     _ => l.careStatusComingUp,
   };
@@ -40,10 +36,10 @@ HealthEntryStatusTreatment careAgendaStatusTreatment(
   if (row.section == CareAgendaSection.doneToday) {
     return completedStatusTreatment();
   }
-  if (row.isStack) return notRecordedStatusTreatment();
+  if (row.isStack) return overdueStatusTreatment(colorScheme);
   return switch (row.status) {
-    CareOccurrenceStatus.overdue => overdueStatusTreatment(colorScheme),
-    CareOccurrenceStatus.notRecorded => notRecordedStatusTreatment(),
+    CareOccurrenceStatus.overdue ||
+    CareOccurrenceStatus.notRecorded => overdueStatusTreatment(colorScheme),
     CareOccurrenceStatus.due => dueTodayStatusTreatment(),
     _ => comingUpStatusTreatment(colorScheme),
   };

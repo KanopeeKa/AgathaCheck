@@ -3,9 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../core/theme/app_color_tokens.dart';
 import '../../../../../core/utils/calendar_date.dart';
+import '../../../../../core/widgets/app_undo_snackbar.dart';
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../health_tracking/domain/entities/health_occurrence.dart';
-import '../../../../health_tracking/presentation/controllers/care_schedule_controller.dart';
+import '../../../../health_tracking/health_tracking.dart';
 import '../../domain/entities/absence_care_plan.dart';
 import '../../domain/entities/care_period_coverage.dart';
 import '../away_plan_planner_copy.dart';
@@ -183,14 +183,10 @@ class _AwayPlanSuggestionsBody extends ConsumerWidget {
           SnackBar(content: Text(l.careCommandSavedRefreshFailed)),
         );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l.occurrenceRescheduled),
-            action: SnackBarAction(
-              label: l.snackbarUndo,
-              onPressed: () => _undo(context, ref, entry.id, occurrence.id),
-            ),
-          ),
+        ScaffoldMessenger.of(context).showUndoSnackBar(
+          content: Text(l.occurrenceRescheduled),
+          undoLabel: l.snackbarUndo,
+          onUndo: () => _undo(context, ref, entry.id, occurrence.id),
         );
       }
     } catch (_) {

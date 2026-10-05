@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../l10n/app_localizations.dart';
-import '../../../pet_profile/domain/entities/care_family.dart';
-import '../../../pet_profile/presentation/widgets/care_family_labels.dart';
+import '../../../pet_profile/pet_profile.dart';
 
 /// Dismissible suggestion for assigning a care family on legacy uncategorised edits.
 class CareFamilySuggestionBanner extends StatelessWidget {

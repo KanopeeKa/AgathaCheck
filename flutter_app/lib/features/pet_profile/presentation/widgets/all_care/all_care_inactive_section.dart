@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../health_tracking/domain/entities/health_entry.dart';
-import '../../../../health_tracking/presentation/widgets/health_entry_status.dart';
-import '../../../../health_tracking/presentation/widgets/pet_event_lifecycle.dart';
+import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import '../pet_care_section/pet_care_action_row_builder.dart';
 
 /// Care items outside the agenda (paused, ended, recorded only): no tick;

@@ -2,6 +2,7 @@ import { describe, expect, it } from '@jest/globals';
 
 import {
   addMonthsClamped,
+  isCalendarDateOnSeries,
   seriesDateAfter,
   seriesDatesBetween,
 } from '../../lib/care/schedule/seriesDates.js';
@@ -268,5 +269,14 @@ describe('next-date choice (D-CSM-026)', () => {
       asOf: { todayIso: '2026-06-06', nowTimeIso: '10:00' },
     });
     expect(waiting.id).toBe('d');
+  });
+});
+
+describe('isCalendarDateOnSeries (repair D3)', () => {
+  it('weekly anchor only allows that weekday', () => {
+    const entry = { frequency: 'weekly', schedule_anchor_date: '2026-06-03' };
+    expect(isCalendarDateOnSeries(entry, '2026-06-03')).toBe(true);
+    expect(isCalendarDateOnSeries(entry, '2026-06-10')).toBe(true);
+    expect(isCalendarDateOnSeries(entry, '2026-06-04')).toBe(false);
   });
 });

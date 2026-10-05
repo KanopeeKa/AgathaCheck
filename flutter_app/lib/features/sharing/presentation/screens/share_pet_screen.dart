@@ -3,10 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
-import '../../../experience/domain/entities/app_experience.dart';
-import '../../../experience/presentation/widgets/experience_shell_scaffold.dart';
-import '../../../pet_profile/domain/entities/pet.dart';
-import '../../../pet_profile/domain/entities/pet_viewer_role.dart';
+import 'package:pet_profile_app/core/experience/app_experience.dart';
+import 'package:pet_profile_app/core/router/experience_shell_scaffold.dart';
+import '../../../pet_profile/pet_profile.dart';
 import '../../domain/entities/pet_access.dart';
 import '../../domain/entities/share_invite.dart';
 import '../pet_sharing_panel.dart';

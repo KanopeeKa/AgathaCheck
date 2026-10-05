@@ -1,5 +1,4 @@
-import '../../../../care_taxonomy/domain/care_importance.dart';
-import '../../../../care_taxonomy/domain/care_setting.dart';
+import '../../../../care_taxonomy/care_taxonomy.dart';
 import 'health_entry_care_classification_labels.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../domain/entities/health_entry.dart';

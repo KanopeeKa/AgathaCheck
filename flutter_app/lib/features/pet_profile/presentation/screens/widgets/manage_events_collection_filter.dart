@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pet_profile_app/core/widgets/collection_filter/collection_filter.dart';
-import 'package:pet_profile_app/features/care_taxonomy/domain/care_family_definition.dart';
-import 'package:pet_profile_app/features/experience/presentation/screens/pet_care/pet_care_due_events_screen.dart';
+import '../../../../care_taxonomy/care_taxonomy.dart';
+import 'pet_care_global_events_filters.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/care_family.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/services/care_family_write.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';

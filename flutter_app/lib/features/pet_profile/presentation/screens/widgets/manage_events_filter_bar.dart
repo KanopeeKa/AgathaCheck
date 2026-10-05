@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pet_profile_app/features/care_taxonomy/domain/care_family_definition.dart';
+import '../../../../care_taxonomy/care_taxonomy.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/care_family.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/services/care_family_write.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/widgets/care_family_labels.dart';
