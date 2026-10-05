@@ -609,12 +609,12 @@ last_completed_phase: c8-e2e-core
 halt_reason: null
 next_action: "continue phase c9-ship-main on branch cursor/people-client-c9-ship-7f3b"
 artifact_ref:
-  branch: cursor/people-client-c9-ship-7f3b
+  branch: cursor/people-client-core-integration-7f3b
   plan_path: .agents/plans/people-client-core-7f3b.md
-  plan_commit: 5f2285b7ad4a84e3e3470b67721e017a1005a8ce
+  plan_commit: b3e88ce780a3c22c8f04adbc5a74337cb0d4d60a
   snapshot_path: .agents/plans/people-client-core-7f3b.snapshot.json
-  snapshot_commit: 5f2285b7ad4a84e3e3470b67721e017a1005a8ce
-open_prs: []
+  snapshot_commit: b3e88ce780a3c22c8f04adbc5a74337cb0d4d60a
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1625"]
 merge_commits: {"c5-edit":"29779e5a681cfc0a264429861b48fc8f3904f548","c6-add":"6cbf95d5ee9a2bbc3753d494a80b35ece44b0fde","c7-households-ui":"0d52b94f19f4011f483386ecebde0e471a0980b9","c8-e2e-core":"5f2285b7ad4a84e3e3470b67721e017a1005a8ce"}
 debt_issue_refs: []
 ```
