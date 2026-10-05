@@ -206,14 +206,18 @@ class _CarerPickerRosterNotifier extends RosterNotifier {
 }
 
 Future<void> _pickCarerContact(WidgetTester tester) async {
-  await tester.tap(find.bySemanticsIdentifier('people_picker_field_away_plan_carer'));
+  await tester.tap(
+    find.bySemanticsIdentifier('people_picker_field_away_plan_carer'),
+  );
   await tester.pumpAndSettle();
   await tester.tap(find.byKey(const Key('people_picker_option_contact-1')));
   await tester.pumpAndSettle();
 }
 
 Future<void> _clearCarerContact(WidgetTester tester) async {
-  await tester.tap(find.bySemanticsIdentifier('people_picker_field_away_plan_carer'));
+  await tester.tap(
+    find.bySemanticsIdentifier('people_picker_field_away_plan_carer'),
+  );
   await tester.pumpAndSettle();
   await tester.tap(find.byKey(const Key('people_picker_option_none')));
   await tester.pumpAndSettle();
@@ -224,7 +228,9 @@ Widget buildScreen(_FakeCareContextRepository repo, {PlannedAbsence? detail}) {
     overrides: [
       careContextRepositoryProvider.overrideWith((ref) => repo),
       peopleRepositoryProvider.overrideWithValue(FakePeopleRepository()),
-      householdsRepositoryProvider.overrideWithValue(FakeHouseholdsRepository()),
+      householdsRepositoryProvider.overrideWithValue(
+        FakeHouseholdsRepository(),
+      ),
       rosterProvider.overrideWith(_CarerPickerRosterNotifier.new),
       plannedAbsenceDetailProvider(
         'abs-1',
@@ -236,21 +242,21 @@ Widget buildScreen(_FakeCareContextRepository repo, {PlannedAbsence? detail}) {
     ],
     child: peopleTestApp(
       child: MaterialApp.router(
-      theme: AppTheme.lightTheme,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      routerConfig: GoRouter(
-        routes: [
-          GoRoute(
-            path: '/pc/away/:id',
-            builder: (_, state) => PlannedAbsencePlanScreen(
-              absenceId: state.pathParameters['id']!,
+        theme: AppTheme.lightTheme,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        routerConfig: GoRouter(
+          routes: [
+            GoRoute(
+              path: '/pc/away/:id',
+              builder: (_, state) => PlannedAbsencePlanScreen(
+                absenceId: state.pathParameters['id']!,
+              ),
             ),
-          ),
-        ],
-        initialLocation: '/pc/away/abs-1',
+          ],
+          initialLocation: '/pc/away/abs-1',
+        ),
       ),
-    ),
     ),
   );
 }

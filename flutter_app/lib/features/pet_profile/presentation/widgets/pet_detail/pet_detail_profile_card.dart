@@ -269,5 +269,4 @@ class PetDetailProfileCard extends ConsumerWidget {
       ),
     );
   }
-
 }

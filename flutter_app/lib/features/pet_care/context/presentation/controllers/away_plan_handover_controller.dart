@@ -54,9 +54,7 @@ class AwayPlanHandoverController {
       );
       final petPeople = await ref.read(petPeopleProvider(petId).future);
       if (petPeople != null) {
-        emergencyLines.addAll(
-          AwayPlanCopy.handoverContactLines(l, petPeople),
-        );
+        emergencyLines.addAll(AwayPlanCopy.handoverContactLines(l, petPeople));
       }
       final carer = absence.petCarers.firstWhere(
         (row) => row.petId == petId,

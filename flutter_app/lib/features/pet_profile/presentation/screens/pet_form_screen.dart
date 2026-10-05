@@ -367,8 +367,9 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
               var selectedId = primaryVetRelationship(petPeople)?.contactId;
               if (selectedId == null && pet.vetId != null) {
                 try {
-                  final contacts =
-                      await ref.read(peopleContactsProvider.future);
+                  final contacts = await ref.read(
+                    peopleContactsProvider.future,
+                  );
                   selectedId = contacts
                       .where((c) => c.legacyVetId == pet.vetId)
                       .map((c) => c.id)

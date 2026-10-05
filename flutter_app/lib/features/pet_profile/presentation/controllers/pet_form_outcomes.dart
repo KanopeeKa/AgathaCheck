@@ -58,22 +58,24 @@ class PetFormSubmitDeps {
             String? photoPath,
             String? organizationId,
           }) async {
-            return ref.read(petListProvider.notifier).addPet(
-              name: name,
-              species: species,
-              breed: breed,
-              dateOfBirth: dateOfBirth,
-              weight: weight,
-              gender: gender,
-              bio: bio,
-              insurance: insurance,
-              neuteredDate: neuteredDate,
-              neuterDismissed: neuterDismissed,
-              chipId: chipId,
-              chipDismissed: chipDismissed,
-              photoPath: photoPath,
-              organizationId: organizationId,
-            );
+            return ref
+                .read(petListProvider.notifier)
+                .addPet(
+                  name: name,
+                  species: species,
+                  breed: breed,
+                  dateOfBirth: dateOfBirth,
+                  weight: weight,
+                  gender: gender,
+                  bio: bio,
+                  insurance: insurance,
+                  neuteredDate: neuteredDate,
+                  neuterDismissed: neuterDismissed,
+                  chipId: chipId,
+                  chipDismissed: chipDismissed,
+                  photoPath: photoPath,
+                  organizationId: organizationId,
+                );
           },
       updatePet: (pet) => ref.read(petListProvider.notifier).updatePet(pet),
     );
@@ -100,22 +102,24 @@ class PetFormSubmitDeps {
             String? photoPath,
             String? organizationId,
           }) async {
-            return ref.read(petListProvider.notifier).addPet(
-              name: name,
-              species: species,
-              breed: breed,
-              dateOfBirth: dateOfBirth,
-              weight: weight,
-              gender: gender,
-              bio: bio,
-              insurance: insurance,
-              neuteredDate: neuteredDate,
-              neuterDismissed: neuterDismissed,
-              chipId: chipId,
-              chipDismissed: chipDismissed,
-              photoPath: photoPath,
-              organizationId: organizationId,
-            );
+            return ref
+                .read(petListProvider.notifier)
+                .addPet(
+                  name: name,
+                  species: species,
+                  breed: breed,
+                  dateOfBirth: dateOfBirth,
+                  weight: weight,
+                  gender: gender,
+                  bio: bio,
+                  insurance: insurance,
+                  neuteredDate: neuteredDate,
+                  neuterDismissed: neuterDismissed,
+                  chipId: chipId,
+                  chipDismissed: chipDismissed,
+                  photoPath: photoPath,
+                  organizationId: organizationId,
+                );
           },
       updatePet: (pet) => ref.read(petListProvider.notifier).updatePet(pet),
     );
