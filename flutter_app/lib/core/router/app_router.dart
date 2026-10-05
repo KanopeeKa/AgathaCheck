@@ -23,6 +23,7 @@ import '../../features/pet_profile/presentation/screens/pet_weight_tracking_scre
 import '../../features/pet_profile/presentation/widgets/pet_edit_permission_guard.dart';
 import '../../features/experience/presentation/screens/pet_care/pet_care_desk_preview_screen.dart';
 import '../../features/pet_care/context/presentation/screens/absence_invite_landing_screen.dart';
+import '../../features/people/people.dart';
 import '../../features/sharing/presentation/screens/invite_landing_screen.dart';
 import '../../features/sharing/presentation/screens/share_pet_screen.dart';
 import '../../features/sharing/presentation/screens/shared_pet_screen.dart';
@@ -121,6 +122,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         if (path == '/forgot-password') return null;
         if (path.startsWith('/shared/')) return null;
         if (path.startsWith('/invite/')) return null;
+        if (path.startsWith('/household-invite/')) return null;
         if (isPublicOrganizationProfilePath(path)) return null;
         if (LegalDocumentId.publicRoutes.contains(path)) return null;
         if (path.startsWith('/legal/')) return null;
@@ -422,6 +424,14 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final code = state.pathParameters['code']!;
           return AbsenceInviteLandingScreen(inviteCode: code);
+        },
+      ),
+      GoRoute(
+        path: '/household-invite/:code',
+        name: 'householdInviteLanding',
+        builder: (context, state) {
+          final code = state.pathParameters['code']!;
+          return HouseholdInviteLandingScreen(inviteCode: code);
         },
       ),
       ...buildFrozenDomainRedirectRoutes(),

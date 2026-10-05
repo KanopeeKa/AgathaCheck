@@ -18,7 +18,6 @@ import 'package:pet_profile_app/features/pet_care/context/presentation/providers
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
 import 'package:pet_profile_app/features/people/application/people_providers.dart';
 import 'package:pet_profile_app/features/people/domain/entities/roster.dart';
-import 'package:pet_profile_app/features/sharing/presentation/providers/household_providers.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import '../../../../helpers/fakes.dart';
@@ -48,7 +47,7 @@ void main() {
             const Roster(households: [], contacts: [], pendingInvites: []),
           ),
         ),
-        householdListProvider.overrideWith((ref) async => []),
+        peopleHouseholdsProvider.overrideWith((ref) async => []),
         healthEntriesNotifierProvider.overrideWith(
           () => resolvedHealthNotifier,
         ),

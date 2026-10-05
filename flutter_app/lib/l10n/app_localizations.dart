@@ -13342,6 +13342,144 @@ abstract class AppLocalizations {
   /// **'Household name'**
   String get peopleAddHouseholdName;
 
+  /// No description provided for @peopleHouseholdPetReviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pets in this household'**
+  String get peopleHouseholdPetReviewTitle;
+
+  /// No description provided for @peopleHouseholdPetReviewBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose which of your pets belong in this household. You can change this later.'**
+  String get peopleHouseholdPetReviewBody;
+
+  /// No description provided for @peopleHouseholdMembersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Members'**
+  String get peopleHouseholdMembersTitle;
+
+  /// No description provided for @peopleHouseholdPetsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pets'**
+  String get peopleHouseholdPetsTitle;
+
+  /// No description provided for @peopleHouseholdPetOwnerYou.
+  ///
+  /// In en, this message translates to:
+  /// **'You own this pet'**
+  String get peopleHouseholdPetOwnerYou;
+
+  /// No description provided for @peopleHouseholdPetOtherOwner.
+  ///
+  /// In en, this message translates to:
+  /// **'Owned by another household member'**
+  String get peopleHouseholdPetOtherOwner;
+
+  /// No description provided for @peopleHouseholdPendingInvitesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending invites'**
+  String get peopleHouseholdPendingInvitesTitle;
+
+  /// No description provided for @peopleHouseholdRevokeInvite.
+  ///
+  /// In en, this message translates to:
+  /// **'Revoke'**
+  String get peopleHouseholdRevokeInvite;
+
+  /// No description provided for @peopleHouseholdInviteMemberTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite member'**
+  String get peopleHouseholdInviteMemberTitle;
+
+  /// No description provided for @peopleHouseholdInviteMemberAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite member'**
+  String get peopleHouseholdInviteMemberAction;
+
+  /// No description provided for @peopleHouseholdInviteTierLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Access'**
+  String get peopleHouseholdInviteTierLabel;
+
+  /// No description provided for @peopleHouseholdInviteOrganiserLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Household organiser'**
+  String get peopleHouseholdInviteOrganiserLabel;
+
+  /// No description provided for @peopleHouseholdInviteAdultConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'They are 18 or over'**
+  String get peopleHouseholdInviteAdultConfirm;
+
+  /// No description provided for @peopleHouseholdInviteSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation sent'**
+  String get peopleHouseholdInviteSent;
+
+  /// No description provided for @peopleHouseholdRenameTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Rename household'**
+  String get peopleHouseholdRenameTitle;
+
+  /// No description provided for @peopleHouseholdLeaveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave household?'**
+  String get peopleHouseholdLeaveTitle;
+
+  /// No description provided for @peopleHouseholdLeaveBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You will lose household access. Other access may remain.'**
+  String get peopleHouseholdLeaveBody;
+
+  /// No description provided for @peopleHouseholdLeaveAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave household'**
+  String get peopleHouseholdLeaveAction;
+
+  /// No description provided for @peopleHouseholdSuccessorLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Successor organiser'**
+  String get peopleHouseholdSuccessorLabel;
+
+  /// No description provided for @peopleHouseholdInviteLandingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Join {householdName}?'**
+  String peopleHouseholdInviteLandingTitle(String householdName);
+
+  /// No description provided for @peopleHouseholdInviteLandingBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{inviterName} invited you as {tier}.'**
+  String peopleHouseholdInviteLandingBody(String inviterName, String tier);
+
+  /// No description provided for @peopleHouseholdInviteAccept.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept invitation'**
+  String get peopleHouseholdInviteAccept;
+
+  /// No description provided for @peopleHouseholdInviteDecline.
+  ///
+  /// In en, this message translates to:
+  /// **'Decline'**
+  String get peopleHouseholdInviteDecline;
+
   /// No description provided for @peopleAddPetsEmpty.
   ///
   /// In en, this message translates to:

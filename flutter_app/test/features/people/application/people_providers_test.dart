@@ -5,6 +5,7 @@ import 'package:pet_profile_app/features/people/application/people_providers.dar
 import 'package:pet_profile_app/features/people/domain/entities/contact_detail.dart';
 import 'package:pet_profile_app/features/people/domain/entities/contact_summary.dart';
 import 'package:pet_profile_app/features/people/domain/entities/household.dart';
+import 'package:pet_profile_app/features/people/domain/entities/household_invite_preview.dart';
 import 'package:pet_profile_app/features/people/domain/entities/pet_people.dart';
 import 'package:pet_profile_app/features/people/domain/entities/related_care.dart';
 import 'package:pet_profile_app/features/people/domain/entities/roster.dart';
@@ -127,31 +128,89 @@ class FakePeopleRepository implements PeopleRepository {
 }
 
 class FakeHouseholdsRepository implements HouseholdsRepository {
-  @override
-  Future<List<Household>> listHouseholds() async => const [];
+  Household? detail;
+  String lastInviteEmail = '';
+  bool inviteRevoked = false;
+  bool renamed = false;
+  List<String> lastPetIds = const [];
 
   @override
-  Future<Household> createHousehold(String name) async => Household(
-    id: 'hh-1',
-    name: name,
-    myTier: 'full_access',
-    myIsOrganiser: true,
-    members: const [],
-  );
+  Future<List<Household>> listHouseholds() async =>
+      detail == null ? const [] : [detail!];
+
+  @override
+  Future<Household> fetchHouseholdDetail(String householdId) async {
+    return detail ??
+        Household(
+          id: householdId,
+          name: 'Home',
+          myTier: 'full_access',
+          myIsOrganiser: true,
+          members: const [],
+        );
+  }
+
+  @override
+  Future<Household> createHousehold(
+    String name, {
+    List<String> petIds = const [],
+  }) async {
+    detail = Household(
+      id: 'hh-1',
+      name: name,
+      myTier: 'full_access',
+      myIsOrganiser: true,
+      members: const [],
+      pets: petIds
+          .map((id) => HouseholdPet(petId: id, name: id, ownerUserId: 'u1'))
+          .toList(),
+    );
+    return detail!;
+  }
+
+  @override
+  Future<Household> renameHousehold({
+    required String householdId,
+    required String name,
+  }) async {
+    renamed = true;
+    detail = Household(
+      id: householdId,
+      name: name,
+      myTier: detail?.myTier ?? 'full_access',
+      myIsOrganiser: detail?.myIsOrganiser ?? true,
+      members: detail?.members ?? const [],
+      pets: detail?.pets ?? const [],
+    );
+    return detail!;
+  }
+
+  @override
+  Future<void> setHouseholdPets({
+    required String householdId,
+    required List<String> petIds,
+  }) async {
+    lastPetIds = petIds;
+  }
 
   @override
   Future<void> createHouseholdInvite({
     required String householdId,
     required String inviteeEmail,
-    required String contactId,
+    String? contactId,
     String accessTier = 'full_access',
-  }) async {}
+    bool isOrganiser = false,
+  }) async {
+    lastInviteEmail = inviteeEmail;
+  }
 
   @override
   Future<void> revokeHouseholdInvite({
     required String householdId,
     required String inviteId,
-  }) async {}
+  }) async {
+    inviteRevoked = true;
+  }
 
   @override
   Future<HouseholdMemberRemovalPreview> fetchMemberRemovalPreview({
@@ -169,6 +228,26 @@ class FakeHouseholdsRepository implements HouseholdsRepository {
     bool removeAllAccessToMyPets = false,
     String? successorUserId,
   }) async {}
+
+  @override
+  Future<HouseholdInvitePreview> fetchHouseholdInvitePreview(String code) async {
+    return HouseholdInvitePreview(
+      inviteId: 'inv-1',
+      code: code,
+      householdId: 'hh-1',
+      householdName: 'Home',
+      inviterName: 'Alex',
+      accessTier: 'full_access',
+      isOrganiser: false,
+      inviteeEmail: 'guest@example.com',
+    );
+  }
+
+  @override
+  Future<void> acceptHouseholdInvite(String code) async {}
+
+  @override
+  Future<void> declineHouseholdInvite(String code) async {}
 }
 
 void main() {
