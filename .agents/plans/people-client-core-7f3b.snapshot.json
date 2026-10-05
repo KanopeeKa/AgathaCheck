@@ -2,7 +2,7 @@
   "schema_version": 1,
   "approved_at": "2026-10-04T22:45:00.000Z",
   "approved_until": "2026-10-06T17:40:08.000Z",
-  "content_hash": "sha256:59e5eeb91d93ce0fdc67e2309fc72a5b6c7cebd9bc7a6da4ddd5e7443e23749a",
+  "content_hash": "sha256:fca29cc94b235c7548247e13b245a38a8a92d9ce707410aa19596b80a0743b8d",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "control_issue": 1565,
@@ -241,12 +241,13 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1607",
-      "pr_head_sha": "100cb068"
+      "pr_head_sha": "184efaa1",
+      "merge_commit": "6cbf95d5ee9a2bbc3753d494a80b35ece44b0fde"
     },
     {
       "id": "c7-households-ui",
