@@ -72,10 +72,11 @@
       "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1612",
+      "pr_head_sha": "77a97a22",
       "merge_commit": null,
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:82b187a87aa3cd50d2c84acc39db3164cf9aa9f62207e01403a6295d4d0a822b"
+  "content_hash": "sha256:c06862b7abf4db5612b0d59594529040a3129f716f9a8bdef9db7ae8202a936d"
 }

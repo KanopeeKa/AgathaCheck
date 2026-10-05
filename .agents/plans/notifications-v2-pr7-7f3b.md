@@ -46,18 +46,18 @@ docs/domains/notifications/features/notifications-v2-spec.md
 ## Runtime
 
 ```yaml
-autonomy: active
-current_phase: 1
-last_completed_phase: null
-halt_reason: null
-next_action: "continue phase 1 on branch cursor/notifications-v2-pr7-arch-7f3b"
+autonomy: halted
+current_phase: 2
+last_completed_phase: 1
+halt_reason: drift
+next_action: "resume phase 2 (drift)"
 artifact_ref:
-  branch: cursor/notifications-v2-pr7-arch-7f3b
+  branch: cursor/notifications-v2-pr7-7f3b
   plan_path: .agents/plans/notifications-v2-pr7-7f3b.md
-  plan_commit: 4eca46303fd05abee1898e9622d3ff53fd75fd1f
+  plan_commit: 77a97a221a7048e34d4afb0ee4f8486abfc3c1d4
   snapshot_path: .agents/plans/notifications-v2-pr7-7f3b.snapshot.json
-  snapshot_commit: 4eca46303fd05abee1898e9622d3ff53fd75fd1f
+  snapshot_commit: 77a97a221a7048e34d4afb0ee4f8486abfc3c1d4
 open_prs: []
-merge_commits: {}
+merge_commits: {"1":"7b00f5a5"}
 debt_issue_refs: []
 ```
