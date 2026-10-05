@@ -27,7 +27,9 @@ class ContactInitialsAvatar extends StatelessWidget {
       foregroundColor: onColor,
       child: Text(
         initials,
-        style: theme.textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
+        style: theme.textTheme.labelLarge?.copyWith(
+          fontWeight: FontWeight.w700,
+        ),
       ),
     );
   }

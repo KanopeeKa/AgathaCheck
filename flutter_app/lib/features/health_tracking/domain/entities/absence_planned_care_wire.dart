@@ -91,4 +91,12 @@ class PlannedCareItem {
   final PlannedCareInWindow? inWindow;
   final bool isPaused;
   final String? scheduleFlexibility;
+
+  /// Real occurrence id for away-plan navigation (matches pet_care PlannedCareItem).
+  String? get resolvedOccurrenceId {
+    final fromOpen = openOccurrence?.occurrenceId;
+    if (fromOpen != null && fromOpen.isNotEmpty) return fromOpen;
+    if (occurrenceId != null && occurrenceId!.isNotEmpty) return occurrenceId;
+    return null;
+  }
 }

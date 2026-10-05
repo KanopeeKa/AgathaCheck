@@ -31,6 +31,7 @@ export 'presentation/sheets/completion_date_sheet.dart';
 export 'presentation/sheets/early_completion_dialog.dart';
 export 'presentation/sheets/plan_another_date_sheet.dart';
 export 'presentation/sheets/postpone_sheet.dart';
-export 'presentation/sheets/record_as_given_sheet.dart' show showRecordAsGivenSheet;
+export 'presentation/sheets/record_as_given_sheet.dart'
+    show showRecordAsGivenSheet;
 export 'presentation/sheets/resume_date_sheet.dart';
 export 'presentation/sheets/skip_weigh_in_sheet.dart';
