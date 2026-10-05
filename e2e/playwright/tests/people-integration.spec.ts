@@ -16,7 +16,6 @@ import { CareItemPage } from '../pages/care-item.page';
 import { HealthDashboardPage } from '../pages/health-dashboard.page';
 import { HealthEntryFormPage } from '../pages/health-entry-form.page';
 import { PeoplePage } from '../pages/people.page';
-import { PetListPage } from '../pages/pet-list.page';
 import {
   addPetPeopleRelationship,
   createHealthEntry,
@@ -196,7 +195,7 @@ test.describe('People client integration journeys', () => {
     const root = baseURL();
     const user = await signupUser(root);
     const pet = await createPet(root, user.accessToken, 'Buddy', 'Dog');
-    const primaryVet = await createVetFull(root, user.accessToken, {
+    await createVetFull(root, user.accessToken, {
       name: 'Handover Primary Vet',
       phone: '555-0301',
     });
@@ -207,7 +206,7 @@ test.describe('People client integration journeys', () => {
     );
     await setPetPeopleSlot(root, user.accessToken, pet.id, 'primary_vet', primaryContactId);
 
-    const oohVet = await createVetFull(root, user.accessToken, {
+    await createVetFull(root, user.accessToken, {
       name: 'Handover Night Vet',
       phone: '555-0302',
     });
