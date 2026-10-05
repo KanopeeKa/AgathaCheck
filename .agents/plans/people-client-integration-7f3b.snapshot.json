@@ -2,7 +2,7 @@
   "schema_version": 1,
   "approved_at": "2026-10-05T12:45:00.000Z",
   "approved_until": "2026-10-07T12:45:00.000Z",
-  "content_hash": "sha256:459c8c5cc4c47da89dde9755c69989f4ae5913dd7363affec058eb72e19ac890",
+  "content_hash": "sha256:f704946afaac69df2b21b6c2bfa94d9e5337e0c994081064a7cbb4e0e1224f2f",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "control_issue": 1630,
