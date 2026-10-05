@@ -19,6 +19,7 @@ class AppFormActionsBar extends StatelessWidget {
 
   final bool isLoading;
   final bool isDirty;
+
   /// When set, overrides the default `!isLoading && (dirty or !requireDirtyToSave)`.
   final bool? canSave;
   final VoidCallback onSave;
@@ -32,8 +33,7 @@ class AppFormActionsBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final canSave =
-        this.canSave ??
-        (!isLoading && (!requireDirtyToSave || isDirty));
+        this.canSave ?? (!isLoading && (!requireDirtyToSave || isDirty));
 
     return Row(
       children: [
