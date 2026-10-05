@@ -46,6 +46,7 @@ export const AREAS = {
       'care.schedules.spec.ts',
       'care.item.booster.spec.ts',
       'care.form.advanced.spec.ts',
+      'care.a11y.spec.ts',
       'care.item.absence.spec.ts',
       'guardian.dashboard.spec.ts',
     ],
