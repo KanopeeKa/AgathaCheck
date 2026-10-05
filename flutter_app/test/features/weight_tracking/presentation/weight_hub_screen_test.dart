@@ -6,6 +6,8 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
+import 'package:pet_profile_app/core/weight/weight_unit.dart';
+import 'package:pet_profile_app/core/weight/weight_unit_preference.dart';
 import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:pet_profile_app/features/experience/domain/services/experience_eligibility.dart';
@@ -14,13 +16,15 @@ import 'package:pet_profile_app/features/notifications/presentation/providers/no
 import 'package:pet_profile_app/features/organization/domain/entities/organization.dart';
 import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
-import 'package:pet_profile_app/features/pet_profile/presentation/screens/pet_weight_tracking_screen.dart';
-import 'package:pet_profile_app/features/pet_profile/presentation/screens/widgets/weight_chart.dart';
 import 'package:pet_profile_app/features/weight_tracking/domain/entities/weight_entry.dart';
+import 'package:pet_profile_app/features/weight_tracking/domain/entities/weight_fulfils.dart';
+import 'package:pet_profile_app/features/weight_tracking/domain/entities/weight_overview.dart';
 import 'package:pet_profile_app/features/weight_tracking/presentation/providers/weight_providers.dart';
+import 'package:pet_profile_app/features/weight_tracking/presentation/screens/weight_hub_screen.dart';
+import 'package:pet_profile_app/features/weight_tracking/presentation/widgets/weight_chart.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
-import '../../../../helpers/fakes.dart';
+import '../../../helpers/fakes.dart';
 
 class _FakeWeightEntriesNotifier extends WeightEntriesNotifier {
   _FakeWeightEntriesNotifier(this._entries);
@@ -36,8 +40,41 @@ class _EmptyOrgListNotifier extends OrganizationListNotifier {
   Future<List<Organization>> build() async => [];
 }
 
-WeightEntry _entry(String id, DateTime date, double weight) =>
-    WeightEntry(id: id, petId: 'pet-1', date: date, weight: weight);
+WeightEntry _entry(
+  String id,
+  DateTime date,
+  double weight, {
+  WeightFulfils? fulfils,
+  String source = 'guardian',
+}) => WeightEntry(
+  id: id,
+  petId: 'pet-1',
+  date: date,
+  weight: weight,
+  fulfils: fulfils,
+  measurementSource: source,
+);
+
+WeightOverview _overviewWithRoutines(int count) {
+  final routines = List.generate(
+    count,
+    (i) => WeightRoutine(
+      entryId: 'care-$i',
+      name: 'Routine $i',
+      status: 'active',
+      next: WeightRoutineNext(
+        occurrenceId: 'occ-$i',
+        scheduledDate: DateTime(2026, 5, 10 + i),
+        status: 'due',
+      ),
+    ),
+  );
+  return WeightOverview(
+    petId: 'pet-1',
+    routines: routines,
+    reference: const WeightReference(valueKg: 10, authority: 'vet_target'),
+  );
+}
 
 void main() {
   setUp(() {
@@ -47,6 +84,8 @@ void main() {
   Widget buildApp({
     required List<WeightEntry> entries,
     required String initialLocation,
+    WeightOverview? overview,
+    List<Override> extraOverrides = const [],
   }) {
     final router = GoRouter(
       initialLocation: initialLocation,
@@ -58,7 +97,7 @@ void main() {
         GoRoute(
           path: '/pet/:petId/weight',
           builder: (context, state) =>
-              PetWeightTrackingScreen(petId: state.pathParameters['petId']!),
+              WeightHubScreen(petId: state.pathParameters['petId']!),
         ),
       ],
     );
@@ -66,7 +105,6 @@ void main() {
     return ProviderScope(
       overrides: [
         authProvider.overrideWith((ref) => FakeAuthNotifier()),
-        // removed resolvedExperienceProvider mock
         experienceEligibilityProvider.overrideWith(
           (ref) => AsyncValue.data(
             ExperienceEligibilityRules.compute(
@@ -83,6 +121,11 @@ void main() {
         weightEntriesNotifierProvider.overrideWith(
           () => _FakeWeightEntriesNotifier(entries),
         ),
+        weightOverviewProvider.overrideWith(
+          (ref, petId) async =>
+              overview ?? WeightOverview(petId: petId, routines: []),
+        ),
+        ...extraOverrides,
       ],
       child: MaterialApp.router(
         theme: AppTheme.lightTheme,
@@ -92,6 +135,53 @@ void main() {
       ),
     );
   }
+
+  testWidgets('FW-6 hub shows summary, chart, routines and history chips', (
+    tester,
+  ) async {
+    final fulfils = WeightFulfils(
+      entryId: 'care-1',
+      entryName: 'Weekly weigh-in',
+      occurrenceId: 'occ-1',
+      scheduledDate: DateTime(2026, 4, 1),
+    );
+    final entries = [
+      _entry('w2', DateTime(2026, 2, 1), 11.5, fulfils: fulfils),
+      _entry('w1', DateTime(2026, 1, 1), 10.0, source: 'clinic'),
+    ];
+    await tester.pumpWidget(
+      buildApp(
+        entries: entries,
+        initialLocation: '/pet/pet-1/weight',
+        overview: _overviewWithRoutines(2),
+      ),
+    );
+    await tester.pump();
+    await tester.pump();
+
+    expect(find.byKey(const Key('weight_hub_summary')), findsOneWidget);
+    expect(find.byType(WeightChart), findsOneWidget);
+    expect(find.byKey(const Key('weight_hub_routines')), findsOneWidget);
+    expect(find.text('Routine 0'), findsOneWidget);
+    expect(find.text('Routine 1'), findsOneWidget);
+    expect(find.text('Counts as Weekly weigh-in'), findsOneWidget);
+    expect(find.text('From the vet'), findsOneWidget);
+    expect(find.textContaining('Target'), findsOneWidget);
+  });
+
+  testWidgets('FW-6 routines card empty state', (tester) async {
+    await tester.pumpWidget(
+      buildApp(
+        entries: [_entry('w1', DateTime(2026, 1, 1), 10)],
+        initialLocation: '/pet/pet-1/weight',
+        overview: const WeightOverview(petId: 'pet-1', routines: []),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.text('No weigh-in routine'), findsOneWidget);
+    expect(find.text('Set up a weigh-in routine'), findsOneWidget);
+  });
 
   testWidgets('shows title, back navigation, and empty state', (tester) async {
     await tester.pumpWidget(
@@ -135,34 +225,44 @@ void main() {
     expect(find.byType(WeightChart), findsOneWidget);
     expect(find.byType(LineChart), findsOneWidget);
     expect(find.byTooltip('Delete weight entry'), findsNWidgets(3));
-    expect(find.byKey(const Key('weight_tracking_add_footer')), findsOneWidget);
   });
 
-  testWidgets('hides the chart but lists a single entry', (tester) async {
-    final entries = [_entry('w1', DateTime(2026, 1, 1), 10.0)];
+  testWidgets('FW-12 unit switch calls setWeightUnitPreferenceProvider', (
+    tester,
+  ) async {
+    WeightUnit? saved;
     await tester.pumpWidget(
-      buildApp(entries: entries, initialLocation: '/pet/pet-1/weight'),
+      buildApp(
+        entries: [
+          _entry('w1', DateTime(2026, 1, 1), 10),
+          _entry('w2', DateTime(2026, 2, 1), 11),
+        ],
+        initialLocation: '/pet/pet-1/weight',
+        extraOverrides: [
+          weightUnitPreferenceProvider.overrideWith((ref) => WeightUnit.kg),
+          setWeightUnitPreferenceProvider.overrideWith((ref) {
+            return (unit) async {
+              saved = unit;
+            };
+          }),
+        ],
+      ),
     );
     await tester.pump();
+    await tester.tap(find.text('lb'));
     await tester.pump();
-
-    expect(find.byType(WeightChart), findsNothing);
-    expect(find.byTooltip('Delete weight entry'), findsOneWidget);
+    expect(saved, WeightUnit.lb);
   });
 
-  testWidgets('footer add button opens the entry sheet', (tester) async {
+  testWidgets('footer opens record weight sheet', (tester) async {
     await tester.pumpWidget(
       buildApp(entries: const [], initialLocation: '/pet/pet-1/weight'),
     );
     await tester.pump();
-    await tester.pump();
 
-    await tester.ensureVisible(
-      find.byKey(const Key('weight_tracking_add_footer')),
-    );
     await tester.tap(find.byKey(const Key('weight_tracking_add_footer')));
     await tester.pumpAndSettle();
 
-    expect(find.text('Save'), findsOneWidget);
+    expect(find.text('Record weight'), findsWidgets);
   });
 }
