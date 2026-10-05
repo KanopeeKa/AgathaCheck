@@ -34,8 +34,8 @@ class CareItemStatusPill extends StatelessWidget {
         AppColorTokens.info,
       ),
       CareItemStatusTone.notRecordedClosed => (
-        AppColorTokens.infoLight,
-        AppColorTokens.info,
+        theme.colorScheme.surfaceContainerHighest,
+        theme.colorScheme.onSurfaceVariant,
       ),
       CareItemStatusTone.neutral => (
         theme.colorScheme.surfaceContainerHighest,
@@ -69,7 +69,7 @@ class CareItemStatusPill extends StatelessWidget {
   }
 }
 
-/// `notRecorded` uses info tokens, not error (D-CIE-024, UIR-3).
+/// Open past-due slots use [overdue]. Auto-closed Not recorded uses [notRecordedClosed].
 enum CareItemStatusTone {
   neutral,
   due,

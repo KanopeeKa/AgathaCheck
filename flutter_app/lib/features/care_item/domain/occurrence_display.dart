@@ -2,7 +2,7 @@ import '../../../l10n/app_localizations.dart';
 import 'care_occurrence.dart';
 import 'occurrence_detail.dart';
 
-enum OccurrencePillTone { overdue, due, notRecorded, neutral }
+enum OccurrencePillTone { overdue, due, closedNotRecorded, neutral }
 
 class OccurrencePillStyle {
   const OccurrencePillStyle({required this.label, required this.tone});
@@ -22,8 +22,8 @@ OccurrencePillStyle openOccurrencePillStyle(
       tone: OccurrencePillTone.overdue,
     ),
     CareOccurrenceStatus.notRecorded => OccurrencePillStyle(
-      label: l.careStatusNotRecordedOpen,
-      tone: OccurrencePillTone.notRecorded,
+      label: l.urgencyOverdue,
+      tone: OccurrencePillTone.overdue,
     ),
     CareOccurrenceStatus.due => OccurrencePillStyle(
       label: l.careStatusDue,
@@ -36,6 +36,15 @@ OccurrencePillStyle openOccurrencePillStyle(
   };
 }
 
+/// Status pill for a closed Not recorded dose (grey, not actionable as overdue).
+OccurrencePillStyle closedNotRecordedPillStyle(AppLocalizations l) {
+  return OccurrencePillStyle(
+    label:
+        '${l.careStatusNotRecorded} (${l.careStatusNotRecordedClosedMarker})',
+    tone: OccurrencePillTone.closedNotRecorded,
+  );
+}
+
 /// Screen reader label for a closed Not recorded care (AC-C7).
 String closedNotRecordedSemantics(AppLocalizations l) =>
     '${l.careStatusNotRecorded}, ${l.careStatusNotRecordedClosedMarker}';
@@ -43,11 +52,11 @@ String closedNotRecordedSemantics(AppLocalizations l) =>
 /// Status line on the occurrence screen header.
 String occurrenceStatusLine(AppLocalizations l, CareOccurrence occ) {
   if (occ.isClosedNotRecorded) {
-    return '${l.careStatusNotRecorded} (${l.careStatusNotRecordedClosedMarker})';
+    return closedNotRecordedPillStyle(l).label;
   }
   return switch (occ.status) {
     CareOccurrenceStatus.overdue => l.urgencyOverdue,
-    CareOccurrenceStatus.notRecorded => l.careStatusNotRecordedOpen,
+    CareOccurrenceStatus.notRecorded => l.urgencyOverdue,
     CareOccurrenceStatus.due => l.careStatusDue,
     CareOccurrenceStatus.done => l.done,
     CareOccurrenceStatus.skipped => l.careSkip,

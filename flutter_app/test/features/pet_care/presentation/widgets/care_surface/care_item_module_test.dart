@@ -55,6 +55,28 @@ void main() {
       );
       expect(find.text('Overdue'), findsOneWidget);
     });
+
+    testWidgets('closed not recorded uses neutral surface tokens', (tester) async {
+      await tester.pumpWidget(
+        _host(
+          const CareItemStatusPill(
+            label: 'Not recorded (closed)',
+            tone: CareItemStatusTone.notRecordedClosed,
+          ),
+        ),
+      );
+      final theme = Theme.of(
+        tester.element(find.byType(CareItemStatusPill)),
+      );
+      final pill = tester.widget<Container>(
+        find.descendant(
+          of: find.byType(CareItemStatusPill),
+          matching: find.byType(Container),
+        ).first,
+      );
+      final decoration = pill.decoration! as BoxDecoration;
+      expect(decoration.color, theme.colorScheme.surfaceContainerHighest);
+    });
   });
 
   group('CareItemStatRow', () {

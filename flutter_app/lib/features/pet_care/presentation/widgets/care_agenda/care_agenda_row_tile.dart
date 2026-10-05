@@ -19,8 +19,8 @@ String careAgendaStatusText(
   final occ = row.occurrence;
   if (occ == null) return '';
   final word = switch (row.status) {
-    CareOccurrenceStatus.overdue => l.urgencyOverdue,
-    CareOccurrenceStatus.notRecorded => l.careStatusNotRecorded,
+    CareOccurrenceStatus.overdue ||
+    CareOccurrenceStatus.notRecorded => l.urgencyOverdue,
     CareOccurrenceStatus.due => l.careStatusDue,
     _ => l.careStatusComingUp,
   };
@@ -36,10 +36,10 @@ HealthEntryStatusTreatment careAgendaStatusTreatment(
   if (row.section == CareAgendaSection.doneToday) {
     return completedStatusTreatment();
   }
-  if (row.isStack) return notRecordedStatusTreatment();
+  if (row.isStack) return overdueStatusTreatment(colorScheme);
   return switch (row.status) {
-    CareOccurrenceStatus.overdue => overdueStatusTreatment(colorScheme),
-    CareOccurrenceStatus.notRecorded => notRecordedStatusTreatment(),
+    CareOccurrenceStatus.overdue ||
+    CareOccurrenceStatus.notRecorded => overdueStatusTreatment(colorScheme),
     CareOccurrenceStatus.due => dueTodayStatusTreatment(),
     _ => comingUpStatusTreatment(colorScheme),
   };
