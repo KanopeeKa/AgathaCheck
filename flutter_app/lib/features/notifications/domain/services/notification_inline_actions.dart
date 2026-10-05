@@ -13,6 +13,16 @@ abstract class NotificationInlineActions {
     BuildContext context,
     AppNotification notification,
   );
+
+  Future<void> confirmAccountSignInWasMe(
+    BuildContext context,
+    AppNotification notification,
+  );
+
+  Future<void> startSecureAccountFlow(
+    BuildContext context,
+    AppNotification notification,
+  );
 }
 
 /// Invite no longer pending (inline action should show already-handled UX).

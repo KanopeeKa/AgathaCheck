@@ -20,6 +20,25 @@ void main() {
     expect(NotificationInlineActionSupport.supportsInlineActions(n), isTrue);
   });
 
+  test('account new sign-in rows support inline actions', () {
+    final n = AppNotification(
+      id: '2',
+      userId: 'u',
+      title: 'Sign-in',
+      message: 'Chrome on Windows',
+      type: NotificationType.general,
+      wireType: 'accountNewSignIn',
+      kind: NotificationKind.account,
+      isRead: false,
+      createdAt: DateTime(2026, 1, 1),
+    );
+    expect(NotificationInlineActionSupport.supportsInlineActions(n), isTrue);
+    expect(
+      NotificationInlineActionSupport.kindFor(n),
+      NotificationInlineActionKind.accountNewSignIn,
+    );
+  });
+
   test('read rows do not show inline actions', () {
     final n = AppNotification(
       id: '1',

@@ -952,6 +952,14 @@ CREATE TABLE public.refresh_sessions (
     expires_at timestamp with time zone NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL
 );
+CREATE TABLE public.account_device_labels (
+    id uuid NOT NULL,
+    user_id uuid NOT NULL,
+    label text NOT NULL,
+    first_seen_at timestamp with time zone DEFAULT now() NOT NULL,
+    last_seen_at timestamp with time zone DEFAULT now() NOT NULL,
+    session_family_id uuid
+);
 CREATE TABLE public.refresh_tokens (
     id uuid NOT NULL,
     user_id uuid NOT NULL,
@@ -1188,6 +1196,8 @@ ALTER TABLE ONLY public.prospects
     ADD CONSTRAINT prospects_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.refresh_sessions
     ADD CONSTRAINT refresh_sessions_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.account_device_labels
+    ADD CONSTRAINT account_device_labels_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.refresh_tokens
     ADD CONSTRAINT refresh_tokens_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.refresh_tokens
@@ -1311,6 +1321,8 @@ CREATE INDEX idx_planned_absence_pets_pet ON public.planned_absence_pets USING b
 CREATE INDEX idx_planned_absences_user_starts ON public.planned_absences USING btree (user_id, starts_on);
 CREATE INDEX idx_prospects_email_lower ON public.prospects USING btree (lower((email)::text)) WHERE (email IS NOT NULL);
 CREATE INDEX idx_prospects_org_id ON public.prospects USING btree (organization_id);
+CREATE INDEX idx_account_device_labels_user_last_seen ON public.account_device_labels USING btree (user_id, last_seen_at DESC);
+CREATE UNIQUE INDEX idx_account_device_labels_user_label ON public.account_device_labels USING btree (user_id, label);
 CREATE INDEX idx_refresh_sessions_family_id ON public.refresh_sessions USING btree (family_id);
 CREATE UNIQUE INDEX idx_refresh_sessions_token_hash ON public.refresh_sessions USING btree (token_hash);
 CREATE INDEX idx_refresh_sessions_user_id ON public.refresh_sessions USING btree (user_id);
@@ -1670,6 +1682,8 @@ ALTER TABLE ONLY public.refresh_sessions
     ADD CONSTRAINT refresh_sessions_rotated_from_fkey FOREIGN KEY (rotated_from) REFERENCES public.refresh_sessions(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.refresh_sessions
     ADD CONSTRAINT refresh_sessions_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.account_device_labels
+    ADD CONSTRAINT account_device_labels_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.refresh_tokens
     ADD CONSTRAINT refresh_tokens_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.users

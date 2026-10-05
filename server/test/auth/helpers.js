@@ -191,12 +191,30 @@ export function buildMockPool(overrides = {}) {
         return { rows: row ? [row] : [] };
       }
       if (sql.includes('UPDATE refresh_sessions') && sql.includes('WHERE user_id = $1')) {
+        if (sql.includes('family_id <> $2')) {
+          for (const row of refreshSessions.values()) {
+            if (
+              row.user_id === params[0]
+              && row.family_id !== params[1]
+              && !row.revoked_at
+            ) {
+              row.revoked_at = new Date();
+            }
+          }
+          return { rows: [] };
+        }
         for (const row of refreshSessions.values()) {
           if (row.user_id === params[0] && !row.revoked_at) {
             row.revoked_at = new Date();
           }
         }
         return { rows: [] };
+      }
+      if (sql.includes('account_device_labels')) {
+        return handlers.fallback(sql, params);
+      }
+      if (sql.includes('INSERT INTO notifications')) {
+        return handlers.fallback(sql, params);
       }
       if (sql.includes('UPDATE refresh_sessions') && sql.includes('WHERE family_id = $1')) {
         for (const row of refreshSessions.values()) {

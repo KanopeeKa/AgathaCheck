@@ -23,4 +23,16 @@ class _UnconfiguredNotificationInlineActions
     BuildContext context,
     AppNotification notification,
   ) async {}
+
+  @override
+  Future<void> confirmAccountSignInWasMe(
+    BuildContext context,
+    AppNotification notification,
+  ) async {}
+
+  @override
+  Future<void> startSecureAccountFlow(
+    BuildContext context,
+    AppNotification notification,
+  ) async {}
 }

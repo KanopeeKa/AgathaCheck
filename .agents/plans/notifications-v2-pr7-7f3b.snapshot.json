@@ -33,7 +33,7 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "governance",
-      "status": "in_progress",
+      "status": "done",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": []
@@ -68,7 +68,7 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "pending",
+      "status": "done",
       "status_reason": null,
       "status_detail": null,
       "pr_url": null,

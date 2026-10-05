@@ -14,4 +14,8 @@ abstract class NotificationRepository {
   Future<void> checkDueEntries({Map<String, String> petNames = const {}});
   Future<void> markSuggestionsSeen({String? petId});
   Future<void> submitSuggestionFeedback(String notificationId, String action);
+  Future<void> submitAccountSecurityFeedback(
+    String notificationId,
+    String action,
+  );
 }

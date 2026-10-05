@@ -1,7 +1,14 @@
 import '../entities/app_notification.dart';
 import 'notification_inbox_v2_rules.dart';
 
-enum NotificationInlineActionKind { shareInvite, householdInvite }
+enum NotificationInlineActionKind { shareInvite, householdInvite, accountNewSignIn }
+
+class InlineActionLabels {
+  const InlineActionLabels({required this.decline, required this.accept});
+
+  final String decline;
+  final String accept;
+}
 
 /// Wire types that support Accept / Decline inline controls (PR4 core).
 ///
@@ -18,6 +25,7 @@ class NotificationInlineActionSupport {
   static const _handlers = <String, NotificationInlineActionKind>{
     'shareInviteReceived': NotificationInlineActionKind.shareInvite,
     'householdInviteReceived': NotificationInlineActionKind.householdInvite,
+    'accountNewSignIn': NotificationInlineActionKind.accountNewSignIn,
   };
 
   static NotificationInlineActionKind? kindFor(AppNotification notification) =>

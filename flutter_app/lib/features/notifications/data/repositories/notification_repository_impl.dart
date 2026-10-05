@@ -106,4 +106,16 @@ class NotificationRepositoryImpl implements NotificationRepository {
       action,
     );
   }
+
+  @override
+  Future<void> submitAccountSecurityFeedback(
+    String notificationId,
+    String action,
+  ) async {
+    await _dataSource.submitAccountSecurityFeedback(
+      _tokenGetter(),
+      notificationId,
+      action,
+    );
+  }
 }

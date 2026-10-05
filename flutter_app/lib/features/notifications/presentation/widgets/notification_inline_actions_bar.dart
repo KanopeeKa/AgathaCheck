@@ -11,6 +11,8 @@ class NotificationInlineActionsBar extends StatelessWidget {
     required this.onAccept,
     required this.onDecline,
     required this.onRetry,
+    this.declineLabel,
+    this.acceptLabel,
   });
 
   final bool busy;
@@ -18,6 +20,8 @@ class NotificationInlineActionsBar extends StatelessWidget {
   final VoidCallback onAccept;
   final VoidCallback onDecline;
   final VoidCallback onRetry;
+  final String? declineLabel;
+  final String? acceptLabel;
 
   static const _minTap = 48.0;
 
@@ -52,7 +56,7 @@ class NotificationInlineActionsBar extends StatelessWidget {
               Expanded(
                 child: Semantics(
                   button: true,
-                  label: l.declineShare,
+                  label: declineLabel ?? l.declineShare,
                   child: SizedBox(
                     height: _minTap,
                     child: OutlinedButton(
@@ -63,7 +67,7 @@ class NotificationInlineActionsBar extends StatelessWidget {
                               height: 18,
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
-                          : Text(l.declineShare),
+                          : Text(declineLabel ?? l.declineShare),
                     ),
                   ),
                 ),
@@ -72,12 +76,12 @@ class NotificationInlineActionsBar extends StatelessWidget {
               Expanded(
                 child: Semantics(
                   button: true,
-                  label: l.acceptShare,
+                  label: acceptLabel ?? l.acceptShare,
                   child: SizedBox(
                     height: _minTap,
                     child: FilledButton(
                       onPressed: busy ? null : onAccept,
-                      child: Text(l.acceptShare),
+                      child: Text(acceptLabel ?? l.acceptShare),
                     ),
                   ),
                 ),

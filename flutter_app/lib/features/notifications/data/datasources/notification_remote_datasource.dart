@@ -25,6 +25,11 @@ abstract class NotificationRemoteDataSource {
     String notificationId,
     String action,
   );
+  Future<void> submitAccountSecurityFeedback(
+    String token,
+    String notificationId,
+    String action,
+  );
 }
 
 class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
@@ -155,6 +160,22 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
     final response = await _client.post(
       Uri.parse(
         '$baseUrl/api/notifications/$notificationId/suggestion-feedback',
+      ),
+      headers: _headers(token),
+      body: json.encode({'action': action}),
+    );
+    _checkResponse(response);
+  }
+
+  @override
+  Future<void> submitAccountSecurityFeedback(
+    String token,
+    String notificationId,
+    String action,
+  ) async {
+    final response = await _client.post(
+      Uri.parse(
+        '$baseUrl/api/notifications/$notificationId/account-security-feedback',
       ),
       headers: _headers(token),
       body: json.encode({'action': action}),

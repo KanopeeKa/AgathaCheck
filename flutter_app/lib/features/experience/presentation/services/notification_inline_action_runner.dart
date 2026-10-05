@@ -34,9 +34,34 @@ class NotificationInlineActionRunner implements NotificationInlineActions {
         await _acceptShareInvite(context, notification);
       case NotificationInlineActionKind.householdInvite:
         _openInviteLanding(context, notification);
+      case NotificationInlineActionKind.accountNewSignIn:
+        await startSecureAccountFlow(context, notification);
     }
     await _ref.read(notificationsProvider.notifier).refresh();
     _ref.invalidate(petListProvider);
+  }
+
+  @override
+  Future<void> confirmAccountSignInWasMe(
+    BuildContext context,
+    AppNotification notification,
+  ) async {
+    final token = _ref.read(authProvider).accessToken;
+    if (token == null) throw Exception('Not authenticated');
+    await _ref
+        .read(notificationsProvider.notifier)
+        .submitAccountSecurityFeedback(notification.id, 'this_was_me');
+    await _ref.read(notificationsProvider.notifier).refresh();
+  }
+
+  @override
+  Future<void> startSecureAccountFlow(
+    BuildContext context,
+    AppNotification notification,
+  ) async {
+    if (!context.mounted) return;
+    final id = Uri.encodeComponent(notification.id);
+    context.push('/secure-account?notificationId=$id');
   }
 
   @override
