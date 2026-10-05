@@ -64,9 +64,9 @@ class _PetPeopleBody extends StatelessWidget {
             children: [
               Text(
                 l.peopleAroundPetTitle(people.petName),
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
               ),
               const SizedBox(height: 4),
               Text(
@@ -124,7 +124,6 @@ class _PetPeopleBody extends StatelessWidget {
       ],
     );
   }
-
 }
 
 class _PeopleGroup extends StatelessWidget {

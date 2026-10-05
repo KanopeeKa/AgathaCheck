@@ -85,12 +85,7 @@ class PetEmergencyManageSheet extends ConsumerWidget {
                   petId: people.petId,
                   canMoveUp: i > 0,
                   canMoveDown: i < emergencies.length - 1,
-                  onMove: (delta) => _moveEmergency(
-                    ref,
-                    emergencies,
-                    i,
-                    delta,
-                  ),
+                  onMove: (delta) => _moveEmergency(ref, emergencies, i, delta),
                 ),
             ],
           ),
@@ -111,11 +106,13 @@ class PetEmergencyManageSheet extends ConsumerWidget {
     final item = ordered.removeAt(index);
     ordered.insert(nextIndex, item);
     final contactId = emergencies[index].contactId;
-    await ref.read(peopleCommandsProvider).reorderEmergencyContacts(
-      contactId: contactId,
-      petId: people.petId,
-      orderedRelationshipIds: ordered,
-    );
+    await ref
+        .read(peopleCommandsProvider)
+        .reorderEmergencyContacts(
+          contactId: contactId,
+          petId: people.petId,
+          orderedRelationshipIds: ordered,
+        );
   }
 }
 
@@ -159,11 +156,13 @@ class _EmergencyManageRow extends ConsumerWidget {
             key: Key('pet_emergency_remove_${relationship.id}'),
             tooltip: l.delete,
             onPressed: () async {
-              await ref.read(peopleCommandsProvider).removePetRelationship(
-                contactId: relationship.contactId,
-                petId: petId,
-                relationshipId: relationship.id,
-              );
+              await ref
+                  .read(peopleCommandsProvider)
+                  .removePetRelationship(
+                    contactId: relationship.contactId,
+                    petId: petId,
+                    relationshipId: relationship.id,
+                  );
             },
             icon: const Icon(Icons.close),
           ),

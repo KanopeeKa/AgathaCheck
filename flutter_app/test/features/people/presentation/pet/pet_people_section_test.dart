@@ -43,9 +43,7 @@ Widget _wrap({
     overrides: [
       peopleRepositoryProvider.overrideWithValue(repository),
       petPeopleProvider.overrideWith((ref, petId) async => people),
-      peopleCommandsProvider.overrideWith(
-        (ref) => PeopleCommands(ref),
-      ),
+      peopleCommandsProvider.overrideWith((ref) => PeopleCommands(ref)),
     ],
     child: peopleTestApp(
       child: SingleChildScrollView(
@@ -85,7 +83,10 @@ void main() {
     expect(find.text('At home'), findsOneWidget);
     expect(find.text('Sam'), findsOneWidget);
     expect(find.text('Greenhill Vet'), findsWidgets);
-    expect(find.byKey(const Key('pet_emergency_manage_button')), findsOneWidget);
+    expect(
+      find.byKey(const Key('pet_emergency_manage_button')),
+      findsOneWidget,
+    );
     expect(
       find.bySemanticsIdentifier('pet_emergency_call_primary_vet'),
       findsOneWidget,
@@ -171,7 +172,9 @@ void main() {
     expect(find.text('Night Vet'), findsWidgets);
   });
 
-  testWidgets('setPetSlot clears out-of-hours vet via commands', (tester) async {
+  testWidgets('setPetSlot clears out-of-hours vet via commands', (
+    tester,
+  ) async {
     final tracking = _TrackingPeopleRepository();
     final people = _samplePeople(
       relationships: [
@@ -188,16 +191,20 @@ void main() {
       ],
     );
 
-    await tester.pumpWidget(_wrap(people: people, canManage: true, repo: tracking));
+    await tester.pumpWidget(
+      _wrap(people: people, canManage: true, repo: tracking),
+    );
     final container = ProviderScope.containerOf(
       tester.element(find.byType(PetPeopleSection)),
     );
-    await container.read(peopleCommandsProvider).setPetSlot(
-      contactId: 'vet-ooh',
-      petId: 'p1',
-      slotKind: RelationshipKind.outOfHoursVet,
-      slotContactId: null,
-    );
+    await container
+        .read(peopleCommandsProvider)
+        .setPetSlot(
+          contactId: 'vet-ooh',
+          petId: 'p1',
+          slotKind: RelationshipKind.outOfHoursVet,
+          slotContactId: null,
+        );
     expect(tracking.lastSlotKind, RelationshipKind.outOfHoursVet);
     expect(tracking.lastSlotContactId, isNull);
   });

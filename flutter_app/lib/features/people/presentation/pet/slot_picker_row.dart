@@ -107,12 +107,7 @@ class SlotPickerRow extends ConsumerWidget {
           );
           return;
         }
-        final ok = await _confirmReplaceSlot(
-          context,
-          ref,
-          l,
-          contact.id,
-        );
+        final ok = await _confirmReplaceSlot(context, ref, l, contact.id);
         if (!ok) return;
         await commands.setPetSlot(
           contactId: contact.id,
