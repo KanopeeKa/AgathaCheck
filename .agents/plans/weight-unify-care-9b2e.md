@@ -31,17 +31,17 @@
 
 ```yaml
 autonomy: active
-current_phase: W8
-last_completed_phase: null
+current_phase: W9
+last_completed_phase: W8
 halt_reason: null
-next_action: "continue phase W8 on branch cursor/weight-unify-w8-occurrence-9b2e"
+next_action: "start phase W9: checkout cursor/weight-unify-w9-care-view-9b2e"
 artifact_ref:
   branch: cursor/weight-unify-w8-occurrence-9b2e
   plan_path: .agents/plans/weight-unify-care-9b2e.md
-  plan_commit: 371eca417049db5b55e2b2b6397d09d86fd31df5
+  plan_commit: de382f1397d6d16469bbb8eb6e96bacba4b6ebed
   snapshot_path: .agents/plans/weight-unify-care-9b2e.snapshot.json
-  snapshot_commit: 371eca417049db5b55e2b2b6397d09d86fd31df5
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1621"]
+  snapshot_commit: de382f1397d6d16469bbb8eb6e96bacba4b6ebed
+open_prs: []
 merge_commits: {}
 debt_issue_refs: []
 ```
