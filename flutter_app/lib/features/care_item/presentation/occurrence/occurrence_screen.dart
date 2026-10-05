@@ -13,12 +13,14 @@ import '../../domain/occurrence_display.dart';
 import 'package:pet_profile_app/features/pet_care/pet_care.dart';
 import 'occurrence_blocks.dart';
 
-CareItemStatusTone _occurrencePillTone(OccurrencePillTone tone) => switch (tone) {
-  OccurrencePillTone.overdue => CareItemStatusTone.overdue,
-  OccurrencePillTone.due => CareItemStatusTone.due,
-  OccurrencePillTone.closedNotRecorded => CareItemStatusTone.notRecordedClosed,
-  OccurrencePillTone.neutral => CareItemStatusTone.neutral,
-};
+CareItemStatusTone _occurrencePillTone(OccurrencePillTone tone) =>
+    switch (tone) {
+      OccurrencePillTone.overdue => CareItemStatusTone.overdue,
+      OccurrencePillTone.due => CareItemStatusTone.due,
+      OccurrencePillTone.closedNotRecorded =>
+        CareItemStatusTone.notRecordedClosed,
+      OccurrencePillTone.neutral => CareItemStatusTone.neutral,
+    };
 
 /// One occurrence, every status (D-CIE-029, §18.6.4). Loads
 /// `GET …/occurrences/:occId`; actions reload it after the server confirms.
