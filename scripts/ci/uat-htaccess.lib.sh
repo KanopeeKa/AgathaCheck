@@ -15,14 +15,15 @@ uat_htaccess_has_spa_backend_exclusion() {
   [[ -f "$f" ]] && grep -qE 'RewriteCond[[:space:]]+%\{REQUEST_URI\}[[:space:]]+!\^/backend' "$f" 2>/dev/null
 }
 
-# Extract CloudLinux Passenger + env blocks from an existing .htaccess.
+# Extract CloudLinux Passenger block only (never ENV VARS — secrets live in backend/.env).
+# Stopping only at ENV VARS END swallowed the rest of the file when that block was absent.
 uat_extract_cloudlinux_blocks() {
   local f="$1"
   [[ -f "$f" ]] || return 0
   awk '
     /CLOUDLINUX PASSENGER CONFIGURATION BEGIN/ { show=1 }
     show { print }
-    /CLOUDLINUX ENV VARS CONFIGURATION END/ { show=0 }
+    /CLOUDLINUX PASSENGER CONFIGURATION END/ { show=0 }
   ' "$f" 2>/dev/null || true
 }
 
