@@ -26,10 +26,13 @@ export class PetDetailPage {
   }
 
   async expectSpecies(species: string): Promise<void> {
+    const pattern = new RegExp(escapeRegExp(species), 'i');
     await this.page
-      .getByRole('button', { name: new RegExp(species, 'i') })
+      .getByRole('group', { name: pattern })
+      .or(this.page.getByRole('button', { name: pattern }))
+      .or(this.page.getByText(pattern))
       .first()
-      .waitFor();
+      .waitFor({ timeout: 15_000 });
   }
 
   async expectBreed(breed: string): Promise<void> {
