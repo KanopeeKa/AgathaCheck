@@ -339,17 +339,17 @@ server/**
 
 ```yaml
 autonomy: active
-current_phase: i1-consumers
-last_completed_phase: null
+current_phase: i2-pet-people
+last_completed_phase: i1-consumers
 halt_reason: null
-next_action: "continue phase i1-consumers on branch cursor/people-integration-i1-consumers-7f3b"
+next_action: "start phase i2-pet-people: checkout cursor/people-integration-i2-pet-people-7f3b"
 artifact_ref:
   branch: cursor/people-integration-i1-consumers-7f3b
   plan_path: .agents/plans/people-client-integration-7f3b.md
-  plan_commit: c7a16b918c00aa91f879de6f89b9305b6952c2b4
+  plan_commit: 719133901583ac9ce0623c2f81b2a52ada396cdb
   snapshot_path: .agents/plans/people-client-integration-7f3b.snapshot.json
-  snapshot_commit: c7a16b918c00aa91f879de6f89b9305b6952c2b4
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1638"]
+  snapshot_commit: 719133901583ac9ce0623c2f81b2a52ada396cdb
+open_prs: []
 merge_commits: {}
 debt_issue_refs: []
 ```
