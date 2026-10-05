@@ -1,4 +1,4 @@
-/// Public API for the pet_profile feature.
+/// Public API for pet profiles (list, form, and shared widgets).
 ///
 /// Import this file to access all pet profile functionality
 /// from outside the feature module.

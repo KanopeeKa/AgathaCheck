@@ -125,7 +125,7 @@ test('stale entries fail until --update-baseline shrinks the baseline', () => {
   assert.equal(stale.code, 1);
   assert.match(stale.out, /RESOLVED R2\|flutter_app\/lib\/features\/health_tracking\/domain\/entry\.dart/);
   assert.equal(run(root, '--update-baseline').code, 0);
-  assert.equal(baseline(root).violations.length, before - 1);
+  assert.equal(baseline(root).violations.length, before - 2);
   assert.equal(run(root).code, 0);
 });
 
@@ -146,8 +146,14 @@ test('--accept-new records the reason for each accepted identity', () => {
   const data = baseline(root);
   assert.ok(data.edges.includes('vet->pet_profile'));
   assert.deepEqual(
-    data.exceptions.map((x) => [x.identity, x.reason]),
-    [['R4|vet->pet_profile', 'approved in #123']],
+    data.exceptions.map((x) => [x.identity, x.reason]).sort((a, b) => a[0].localeCompare(b[0])),
+    [
+      ['R4|vet->pet_profile', 'approved in #123'],
+      [
+        'R6|flutter_app/lib/features/vet/domain/vet.dart|flutter_app/lib/features/pet_profile/domain/pet.dart',
+        'approved in #123',
+      ],
+    ],
   );
   assert.equal(run(root).code, 0);
 });
@@ -169,4 +175,31 @@ test('frozen roots, removed surfaces and generated files are ignored; part direc
 test('stronglyConnected reports only multi-feature components', () => {
   const comps = stronglyConnected(['a->b', 'b->a', 'b->c', 'c->d']);
   assert.deepEqual(comps, [['a', 'b']]);
+});
+
+test('R6: cross-feature import must target the feature entrypoint', () => {
+  const root = initRepo();
+  write(root, `${LIB}/pet_profile/domain/reader.dart`,
+    "import 'package:fixture_app/features/vet/domain/vet.dart';\n");
+  const res = run(root);
+  assert.equal(res.code, 1);
+  assert.match(res.out, /NEW R6\|flutter_app\/lib\/features\/pet_profile\/domain\/reader\.dart/);
+});
+
+test('R6: entrypoint import replaces baselined data-layer cross-import', () => {
+  const root = initRepo();
+  write(root, `${LIB}/health_tracking/domain/entry.dart`, "import '../../vet/vet.dart';\n");
+  const stale = run(root);
+  assert.equal(stale.code, 1);
+  assert.match(stale.out, /RESOLVED R6\|flutter_app\/lib\/features\/health_tracking\/domain\/entry\.dart/);
+  assert.equal(run(root, '--update-baseline').code, 0);
+  assert.equal(run(root).code, 0);
+});
+
+test('R7: entrypoint must not export data layer', () => {
+  const root = initRepo();
+  write(root, `${LIB}/vet/vet.dart`, "export 'data/vet_store.dart';\n");
+  const res = run(root);
+  assert.equal(res.code, 1);
+  assert.match(res.out, /NEW R7\|flutter_app\/lib\/features\/vet\/vet\.dart\|flutter_app\/lib\/features\/vet\/data\/vet_store\.dart/);
 });

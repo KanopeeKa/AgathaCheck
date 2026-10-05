@@ -49,14 +49,14 @@ autonomy: active
 current_phase: 1
 last_completed_phase: null
 halt_reason: null
-next_action: "start phase 1: checkout cursor/active-codebase-i1-1-entrypoints-e41f"
+next_action: "continue phase 1 on branch cursor/active-codebase-i1-1-entrypoints-e41f"
 artifact_ref:
-  branch: cursor/active-codebase-i1-integration-e41f
+  branch: cursor/active-codebase-i1-1-entrypoints-e41f
   plan_path: .agents/plans/active-codebase-batch-i1-public-apis-e41f.md
-  plan_commit: f7b6eea627ab201e78db5f6b7ac1010d5f296055
+  plan_commit: 15473310aee7836482113fa732603881ecb2cdb5
   snapshot_path: .agents/plans/active-codebase-batch-i1-public-apis-e41f.snapshot.json
-  snapshot_commit: f7b6eea627ab201e78db5f6b7ac1010d5f296055
-open_prs: []
+  snapshot_commit: 15473310aee7836482113fa732603881ecb2cdb5
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1622"]
 merge_commits: {}
 debt_issue_refs: []
 ```
@@ -105,9 +105,9 @@ docs
 
 **Acceptance criteria:**
 
-- [ ] **I1.1-1** Each of the 16 active features has `lib/features/<feature>/<feature>.dart` (D20). It exports only domain models and ports, query/command providers meant for other features, and explicitly listed UI entrypoints. It exports nothing under `data/**` (checker rule).
-- [ ] **I1.1-2** Each feature has a `README.md` following the review's Appendix C template: purpose and non-goals, owned state and data, the public entrypoint, a public-surface table (symbol, kind, reason), allowed and forbidden dependencies, side effects, cache/freshness policy, permissions, tests, owner and last-reviewed date. `docs/architecture/index.md` links all of them.
-- [ ] **I1.1-3** The checker gains **R6 `non-public-cross-feature-import`**: a cross-feature import must target the target feature's entrypoint file. This applies to `experience` and `core/router` too (D5: Experience consumes public APIs). It also gains **R7 `entrypoint-exports-data`**. Every current R6 violation is baselined by identity; R7 starts at 0. Fixture tests cover both rules.
+- [x] **I1.1-1** Each of the 16 active features has `lib/features/<feature>/<feature>.dart` (D20). It exports only domain models and ports, query/command providers meant for other features, and explicitly listed UI entrypoints. It exports nothing under `data/**` (checker rule).
+- [x] **I1.1-2** Each feature has a `README.md` following the review's Appendix C template: purpose and non-goals, owned state and data, the public entrypoint, a public-surface table (symbol, kind, reason), allowed and forbidden dependencies, side effects, cache/freshness policy, permissions, tests, owner and last-reviewed date. `docs/architecture/index.md` links all of them.
+- [x] **I1.1-3** The checker gains **R6 `non-public-cross-feature-import`**: a cross-feature import must target the target feature's entrypoint file. This applies to `experience` and `core/router` too (D5: Experience consumes public APIs). It also gains **R7 `entrypoint-exports-data`**. Every current R6 violation is baselined by identity; R7 starts at 0. Fixture tests cover both rules.
 - [ ] **I1.1-4** No runtime behaviour change: Flutter analyze and tests are green.
 
 ---

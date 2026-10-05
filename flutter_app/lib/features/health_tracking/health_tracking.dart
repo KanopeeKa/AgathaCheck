@@ -1,3 +1,6 @@
+/// Public API for health tracking (entries, issues, documents).
+library;
+
 export 'domain/entities/health_entry.dart';
 export 'domain/entities/health_history_entry.dart';
 export 'domain/repositories/health_repository.dart';
@@ -6,10 +9,6 @@ export 'domain/usecases/delete_health_entry.dart';
 export 'domain/usecases/get_entry_history.dart';
 export 'domain/usecases/get_health_entries.dart';
 export 'domain/usecases/update_health_entry.dart';
-export 'data/models/health_entry_model.dart';
-export 'data/models/health_history_model.dart';
-export 'data/datasources/health_remote_datasource.dart';
-export 'data/repositories/health_repository_impl.dart';
 export 'presentation/providers/health_providers.dart';
 export 'presentation/screens/health_entry_form_screen.dart';
 export 'presentation/widgets/health_entry_card.dart';
