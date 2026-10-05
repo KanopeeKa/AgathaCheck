@@ -10,6 +10,14 @@
       "discovery_source": "column"
     },
     {
+      "table": "account_device_labels",
+      "column": "user_id",
+      "erasure_action": "delete",
+      "reason": "ON DELETE CASCADE from users(id); coarse device labels removed with account (PR7).",
+      "pg_on_delete": "c",
+      "discovery_source": "foreign_key"
+    },
+    {
       "table": "adoption_journeys",
       "column": "created_by",
       "erasure_action": "set_null",
