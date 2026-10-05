@@ -249,6 +249,15 @@ ci_scope_emit_json() {
 
   export CI_SCOPE_ALL_SHARDS_JSON="$all_shards"
   unset CI_SCOPE_E2E_SELECTION_JSON
+  if [[ -z "${CI_SCOPE_E2E_SELECTION_FILE:-}" && -n "${CI_SCOPE_E2E_SELECTION:-}" ]]; then
+    if ((${#CI_SCOPE_E2E_SELECTION} <= 32000)); then
+      export CI_SCOPE_E2E_SELECTION_JSON="$CI_SCOPE_E2E_SELECTION"
+    else
+      CI_SCOPE_E2E_SELECTION_FILE="$(mktemp)"
+      printf '%s' "$CI_SCOPE_E2E_SELECTION" >"$CI_SCOPE_E2E_SELECTION_FILE"
+      export CI_SCOPE_E2E_SELECTION_FILE
+    fi
+  fi
   python3 - "$scope" "$CI_SCOPE_FORCE_FULL" "$CI_SCOPE_ESCAPE_FULL" "$run_analyze" "$run_stack" "$run_backend" "$run_e2e_audit" "$run_integration" \
     "$run_web" <<'PY'
 import json, os, sys
