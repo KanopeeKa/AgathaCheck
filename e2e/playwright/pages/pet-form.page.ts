@@ -5,8 +5,8 @@ import {
   enableFlutterAccessibility,
   fillLabelledField,
   postPetMutationShellLocator,
+  escapeRegExp,
   refreshFlutterAccessibility,
-  selectDropdownOption,
   semanticsByName,
   waitForHomeAfterMutation,
 } from '../support/flutter';
@@ -229,7 +229,18 @@ export class PetFormPage {
   }
 
   async selectVeterinarian(vetName: string): Promise<void> {
-    await selectDropdownOption(this.page, 'Veterinarians', vetName);
+    const field = this.page.locator(
+      '[flt-semantics-identifier="people_picker_field_pet_primary_vet"]',
+    );
+    await field.scrollIntoViewIfNeeded();
+    await field.click();
+    await refreshFlutterAccessibility(this.page);
+    const option = semanticsByName(
+      this.page,
+      new RegExp(escapeRegExp(vetName), 'i'),
+    ).first();
+    await option.waitFor({ state: 'visible', timeout: 15_000 });
+    await option.click();
     await refreshFlutterAccessibility(this.page);
   }
 }

@@ -24,7 +24,14 @@
  */
 import path from 'node:path';
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
-import { createPet, createVet, getAllPets, getPet } from '../support/api';
+import {
+  createPet,
+  createVet,
+  getAllPets,
+  getPeopleContactIdForVetName,
+  getPet,
+  getPetPeopleRelationships,
+} from '../support/api';
 import { PetFormPage } from '../pages/pet-form.page';
 import { PetDetailPage } from '../pages/pet-detail.page';
 import { PetListPage } from '../pages/pet-list.page';
@@ -446,7 +453,20 @@ test.describe('Pet profiles', () => {
     await editForm.save();
 
     await detail.expectLoaded('Bella');
-    const updated = await getPetRecord(baseURL, testUser.accessToken, pet.id);
-    expect(updated.vetId).toBeTruthy();
+    await detail.expectLinkedVet('Dr. Jones');
+    const vetContactId = await getPeopleContactIdForVetName(
+      baseURL,
+      testUser.accessToken,
+      'Dr. Jones',
+    );
+    const relationships = await getPetPeopleRelationships(
+      baseURL,
+      testUser.accessToken,
+      pet.id,
+    );
+    const primaryVet = relationships.find(
+      (r) => r.relationship_kind === 'primary_vet' && r.active,
+    );
+    expect(primaryVet?.contact_id).toBe(vetContactId);
   });
 });
