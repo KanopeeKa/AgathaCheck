@@ -121,12 +121,16 @@ class WeightEntriesNotifier
         fulfilsOccurrenceId,
         token,
       );
-    } else if (normalized.id.isEmpty) {
-      final created = await repo.createEntry(normalized, token);
-      outcome = WeightSaveOutcome(entry: created);
     } else {
-      final updated = await repo.updateEntry(normalized, token);
-      outcome = WeightSaveOutcome(entry: updated);
+      final knownIds = (state.valueOrNull ?? []).map((e) => e.id).toSet();
+      final isNew = normalized.id.isEmpty || !knownIds.contains(normalized.id);
+      if (isNew) {
+        final created = await repo.createEntry(normalized, token);
+        outcome = WeightSaveOutcome(entry: created);
+      } else {
+        final updated = await repo.updateEntry(normalized, token);
+        outcome = WeightSaveOutcome(entry: updated);
+      }
     }
     await _afterWrite();
     await _refreshList();
