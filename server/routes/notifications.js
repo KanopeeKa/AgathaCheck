@@ -14,8 +14,13 @@ import {
   normalisePriority,
 } from '../lib/notificationKind.js';
 import { NOTIFICATION_INBOX_ACTIVE_WHERE } from '../lib/notificationHelper.js';
+import {
+  applySuggestionFeedback,
+  markSuggestionsSeen,
+  SUGGESTION_INBOX_ACTIVE_WHERE,
+} from './notifications/suggestionInbox.js';
 
-function notificationToMap(row) {
+export function notificationToMap(row) {
   const petId = row.pet_id || null;
   const healthEntryId = row.health_entry_id || null;
   return {
@@ -36,6 +41,15 @@ function notificationToMap(row) {
       : null,
     is_read: row.is_read ?? row.read ?? false,
     created_at: row.created_at ? row.created_at.toISOString?.() || String(row.created_at) : null,
+    suggestion_dedupe_key: row.suggestion_dedupe_key || null,
+    suggestion_state: row.suggestion_state || null,
+    suggestion_confidence: row.suggestion_confidence != null
+      ? Number(row.suggestion_confidence)
+      : null,
+    suggestion_expires_at: row.suggestion_expires_at
+      ? row.suggestion_expires_at.toISOString?.() || String(row.suggestion_expires_at)
+      : null,
+    suggestion_payload: row.suggestion_payload ?? null,
   };
 }
 
@@ -47,11 +61,53 @@ export default function notificationsRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
+      const petId = (req.query.pet_id || '').trim() || null;
+      const params = [userId];
+      let petFilter = '';
+      if (petId) {
+        petFilter = ' AND pet_id = $2';
+        params.push(petId);
+      }
       const result = await pool.query(
-        `SELECT * FROM notifications WHERE user_id = $1 AND ${NOTIFICATION_INBOX_ACTIVE_WHERE} ORDER BY created_at DESC`,
-        [userId],
+        `SELECT * FROM notifications WHERE user_id = $1 AND ${NOTIFICATION_INBOX_ACTIVE_WHERE}${petFilter} ORDER BY created_at DESC`,
+        params,
       );
       res.json(result.rows.map(notificationToMap));
+    } catch (err) {
+      res.status(500).json({ error: publicError(err) });
+    }
+  });
+
+  router.get('/suggestions', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    try {
+      const petId = (req.query.pet_id || '').trim() || null;
+      const params = [userId];
+      let petFilter = '';
+      if (petId) {
+        petFilter = ' AND pet_id = $2';
+        params.push(petId);
+      }
+      const result = await pool.query(
+        `SELECT * FROM notifications
+         WHERE user_id = $1 AND ${SUGGESTION_INBOX_ACTIVE_WHERE}${petFilter}
+         ORDER BY created_at DESC`,
+        params,
+      );
+      res.json(result.rows.map(notificationToMap));
+    } catch (err) {
+      res.status(500).json({ error: publicError(err) });
+    }
+  });
+
+  router.post('/suggestions/seen', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    try {
+      const petId = (req.body?.pet_id || req.query?.pet_id || '').trim() || null;
+      await markSuggestionsSeen(pool, userId, { petId });
+      res.json({ success: true });
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }
@@ -160,6 +216,25 @@ export default function notificationsRoutes(pool) {
         }
       }
       res.json(data);
+    } catch (err) {
+      res.status(500).json({ error: publicError(err) });
+    }
+  });
+
+  router.post('/:id/suggestion-feedback', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    try {
+      const outcome = await applySuggestionFeedback(
+        pool,
+        userId,
+        req.params.id,
+        req.body?.action,
+      );
+      if (outcome.error) {
+        return res.status(outcome.status).json({ error: outcome.error });
+      }
+      res.json(notificationToMap(outcome.notification));
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }
