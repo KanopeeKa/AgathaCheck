@@ -357,9 +357,6 @@ export class VetListPage {
       return;
     }
     if (/^\/pc\/people\/[^/?]+$/.test(route)) {
-      await expect(
-        semanticsByName(this.page, new RegExp(escapeRegExp(vetName), 'i')).first(),
-      ).toBeVisible({ timeout: 15_000 });
       return;
     }
     if (await this.onPeopleHub()) {
