@@ -13120,6 +13120,60 @@ abstract class AppLocalizations {
   /// **'Pet professionals'**
   String get peopleGroupProfessionals;
 
+  /// No description provided for @peopleHubSelectSomeone.
+  ///
+  /// In en, this message translates to:
+  /// **'Select someone to see their details'**
+  String get peopleHubSelectSomeone;
+
+  /// No description provided for @peopleHubSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search people, roles, pets…'**
+  String get peopleHubSearchHint;
+
+  /// No description provided for @peoplePendingInvitesSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending invites'**
+  String get peoplePendingInvitesSection;
+
+  /// No description provided for @peopleInactiveSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Inactive ({count})'**
+  String peopleInactiveSection(int count);
+
+  /// No description provided for @peopleFilterGroupLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Group'**
+  String get peopleFilterGroupLabel;
+
+  /// No description provided for @peopleFilterPetLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Pet'**
+  String get peopleFilterPetLabel;
+
+  /// No description provided for @peopleMemberYou.
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get peopleMemberYou;
+
+  /// No description provided for @peoplePendingInviteLine.
+  ///
+  /// In en, this message translates to:
+  /// **'{email} · Invited'**
+  String peoplePendingInviteLine(String email);
+
+  /// No description provided for @peopleHouseholdMemberPets.
+  ///
+  /// In en, this message translates to:
+  /// **'Owns {owns} · Shares {shares}'**
+  String peopleHouseholdMemberPets(String owns, String shares);
+
   /// No description provided for @peopleRelationshipPrimaryVet.
   ///
   /// In en, this message translates to:

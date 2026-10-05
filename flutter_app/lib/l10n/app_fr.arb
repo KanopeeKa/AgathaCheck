@@ -2829,6 +2829,31 @@
   "peoplePickerQuickAddSave": "Enregistrer le contact",
   "peopleGroupCarers": "Aidants de confiance",
   "peopleGroupProfessionals": "Professionnels",
+  "peopleHubSelectSomeone": "Sélectionnez quelqu'un pour voir ses détails",
+  "peopleHubSearchHint": "Rechercher personnes, rôles, animaux…",
+  "peoplePendingInvitesSection": "Invitations en attente",
+  "peopleInactiveSection": "Inactifs ({count})",
+  "@peopleInactiveSection": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "peopleFilterGroupLabel": "Groupe",
+  "peopleFilterPetLabel": "Animal",
+  "peopleMemberYou": "Vous",
+  "peoplePendingInviteLine": "{email} · Invité",
+  "@peoplePendingInviteLine": {
+    "placeholders": {
+      "email": { "type": "String" }
+    }
+  },
+  "peopleHouseholdMemberPets": "Possède {owns} · Partage {shares}",
+  "@peopleHouseholdMemberPets": {
+    "placeholders": {
+      "owns": { "type": "String" },
+      "shares": { "type": "String" }
+    }
+  },
   "peopleRelationshipPrimaryVet": "Vétérinaire principal",
   "peopleRelationshipOutOfHoursVet": "Vétérinaire de garde",
   "peopleRelationshipEmergencyContact": "Contact d'urgence",

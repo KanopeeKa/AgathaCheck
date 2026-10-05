@@ -7600,6 +7600,40 @@ class AppLocalizationsFr extends AppLocalizations {
   String get peopleGroupProfessionals => 'Professionnels';
 
   @override
+  String get peopleHubSelectSomeone =>
+      'Sélectionnez quelqu\'un pour voir ses détails';
+
+  @override
+  String get peopleHubSearchHint => 'Rechercher personnes, rôles, animaux…';
+
+  @override
+  String get peoplePendingInvitesSection => 'Invitations en attente';
+
+  @override
+  String peopleInactiveSection(int count) {
+    return 'Inactifs ($count)';
+  }
+
+  @override
+  String get peopleFilterGroupLabel => 'Groupe';
+
+  @override
+  String get peopleFilterPetLabel => 'Animal';
+
+  @override
+  String get peopleMemberYou => 'Vous';
+
+  @override
+  String peoplePendingInviteLine(String email) {
+    return '$email · Invité';
+  }
+
+  @override
+  String peopleHouseholdMemberPets(String owns, String shares) {
+    return 'Possède $owns · Partage $shares';
+  }
+
+  @override
   String get peopleRelationshipPrimaryVet => 'Vétérinaire principal';
 
   @override

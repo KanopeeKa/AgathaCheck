@@ -607,14 +607,14 @@ autonomy: active
 current_phase: c3-hub
 last_completed_phase: c2-components
 halt_reason: null
-next_action: "start phase c3-hub on branch cursor/people-client-c3-hub-7f3b"
+next_action: "continue phase c3-hub on branch cursor/people-client-c3-hub-7f3b"
 artifact_ref:
-  branch: cursor/people-client-core-integration-7f3b
+  branch: cursor/people-client-c3-hub-7f3b
   plan_path: .agents/plans/people-client-core-7f3b.md
-  plan_commit: 38f53e88d3908d3d7e99a3ff8b2a68b31e3cda63
+  plan_commit: 0855f889d10408d1bc113834984482d357b6404e
   snapshot_path: .agents/plans/people-client-core-7f3b.snapshot.json
-  snapshot_commit: 38f53e88d3908d3d7e99a3ff8b2a68b31e3cda63
-open_prs: []
+  snapshot_commit: 0855f889d10408d1bc113834984482d357b6404e
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1588"]
 merge_commits: {}
 debt_issue_refs: []
 ```

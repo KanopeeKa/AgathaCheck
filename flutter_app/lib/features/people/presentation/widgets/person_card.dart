@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/contact_summary.dart';
+import '../hub/hub_highlighted_text.dart';
 import '../labels/people_labels.dart';
 import 'person_avatar.dart';
 import 'person_card_lines.dart';
@@ -21,6 +22,7 @@ class PersonCard extends StatelessWidget {
     this.accessUntil,
     this.showChevron = true,
     this.photoUrl,
+    this.highlightQuery,
   });
 
   final ContactSummary contact;
@@ -33,6 +35,7 @@ class PersonCard extends StatelessWidget {
   final DateTime? accessUntil;
   final bool showChevron;
   final String? photoUrl;
+  final String? highlightQuery;
 
   @override
   Widget build(BuildContext context) {
@@ -100,6 +103,7 @@ class PersonCard extends StatelessWidget {
                         pets: pets,
                         contextText: contextText,
                         compact: compact,
+                        highlightQuery: highlightQuery,
                       ),
                     ),
                     if (chipKind != null)
@@ -146,6 +150,7 @@ class _Body extends StatelessWidget {
     required this.pets,
     required this.contextText,
     required this.compact,
+    this.highlightQuery,
   });
 
   final ContactSummary contact;
@@ -153,6 +158,7 @@ class _Body extends StatelessWidget {
   final String pets;
   final String? contextText;
   final bool compact;
+  final String? highlightQuery;
 
   @override
   Widget build(BuildContext context) {
@@ -160,10 +166,10 @@ class _Body extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          contact.name,
+        HubHighlightedText(
+          text: contact.name,
+          query: highlightQuery ?? '',
           maxLines: compact ? 1 : 2,
-          overflow: TextOverflow.ellipsis,
           style: theme.textTheme.titleSmall?.copyWith(
             fontWeight: FontWeight.w600,
           ),
