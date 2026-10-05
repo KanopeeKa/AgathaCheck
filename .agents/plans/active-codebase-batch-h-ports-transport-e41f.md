@@ -47,17 +47,17 @@ No wire change. Every 401, 403 and 404 stays the same.
 
 ```yaml
 autonomy: active
-current_phase: 2
-last_completed_phase: 1
+current_phase: 1
+last_completed_phase: null
 halt_reason: null
-next_action: "continue phase 2 on branch cursor/active-codebase-h2-health-documents-e41f"
+next_action: "continue phase 1 on branch cursor/active-codebase-h1-auth-ports-e41f"
 artifact_ref:
   branch: cursor/active-codebase-h1-auth-ports-e41f
   plan_path: .agents/plans/active-codebase-batch-h-ports-transport-e41f.md
-  plan_commit: 907d676ae4333863236680af5cc537e08f33bf65
+  plan_commit: fabb95c21d7b92a088ced2fcb9d974036a69d2f5
   snapshot_path: .agents/plans/active-codebase-batch-h-ports-transport-e41f.snapshot.json
-  snapshot_commit: 907d676ae4333863236680af5cc537e08f33bf65
-open_prs: []
+  snapshot_commit: fabb95c21d7b92a088ced2fcb9d974036a69d2f5
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1605"]
 merge_commits: {}
 debt_issue_refs: []
 ```

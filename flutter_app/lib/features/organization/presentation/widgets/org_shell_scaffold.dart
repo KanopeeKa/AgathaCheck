@@ -50,7 +50,6 @@ class OrgShellScaffold extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final resolvedOrg = _resolveOrganization(ref);
     final location = _resolveCurrentLocation(context);
 
     return ExperienceShellScaffold(
