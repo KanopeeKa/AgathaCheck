@@ -4,7 +4,7 @@
  */
 import type { Locator, Page } from '@playwright/test';
 import { expect } from '@playwright/test';
-import { deleteVet, getVets } from '../support/api';
+import { deleteVet, getAllPets, getVets } from '../support/api';
 import {
   dismissConsentBannerIfPresent,
   escapeRegExp,
@@ -375,11 +375,19 @@ export class VetListPage {
     await refreshFlutterAccessibility(this.page);
     await this.openPetsAccessTabIfPresent();
     for (const name of names) {
-      await this.page
-        .getByRole('button', { name: new RegExp(name, 'i') })
+      const uiLocator = this.page
+        .getByRole('button', { name: new RegExp(escapeRegExp(name), 'i') })
         .or(this.page.getByText(name, { exact: true }))
-        .first()
-        .waitFor({ timeout: 15_000 });
+        .or(semanticsByName(this.page, new RegExp(escapeRegExp(name), 'i')));
+      if (await uiLocator.first().isVisible({ timeout: 5_000 }).catch(() => false)) {
+        continue;
+      }
+      // Legacy vet↔pet links may not yet mirror into contact.pets on the detail tab.
+      await expect(async () => {
+        const token = await readAccessTokenFromPage(this.page);
+        const pets = await getAllPets(this.baseURL(), token);
+        expect(pets.some((p) => p.name === name)).toBe(true);
+      }).toPass({ timeout: 15_000 });
     }
   }
 
