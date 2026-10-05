@@ -604,8 +604,8 @@ server/**
 
 ```yaml
 autonomy: active
-current_phase: c5-edit
-last_completed_phase: c4-detail
+current_phase: c6-add
+last_completed_phase: c5-edit
 halt_reason: null
 next_action: "continue phase c5-edit on branch cursor/people-client-c5-edit-7f3b"
 artifact_ref:
