@@ -16,6 +16,7 @@ class WeightEntry {
   final String id;
   final String petId;
   final DateTime date;
+
   /// Stored in kg.
   final double weight;
   final String notes;

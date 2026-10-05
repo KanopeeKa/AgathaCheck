@@ -147,7 +147,9 @@ void main() {
                 ..state = const AsyncValue.data([]),
         ),
         vetListProvider.overrideWith(FakeVetListNotifier.new),
-        weightEntriesNotifierProvider.overrideWith(() => _EmptyWeightEntriesNotifier()),
+        weightEntriesNotifierProvider.overrideWith(
+          () => _EmptyWeightEntriesNotifier(),
+        ),
       ],
       child: MaterialApp.router(
         theme: AppTheme.lightTheme,
@@ -270,7 +272,9 @@ void main() {
                   ..state = const AsyncValue.data([]),
           ),
           vetListProvider.overrideWith(FakeVetListNotifier.new),
-          weightEntriesNotifierProvider.overrideWith(() => _EmptyWeightEntriesNotifier()),
+          weightEntriesNotifierProvider.overrideWith(
+            () => _EmptyWeightEntriesNotifier(),
+          ),
         ],
         child: MaterialApp.router(
           theme: AppTheme.lightTheme,

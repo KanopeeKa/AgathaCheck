@@ -14,9 +14,8 @@ import '../../domain/weight_entry_sort.dart';
 export '../../../../core/weight/weight_unit.dart';
 
 /// Stub for W6 (`GET /api/weight-entries/overview`).
-final weightOverviewProvider = FutureProvider.autoDispose.family<Object?, String>(
-  (ref, petId) async => null,
-);
+final weightOverviewProvider = FutureProvider.autoDispose
+    .family<Object?, String>((ref, petId) async => null);
 
 /// Query key for fulfilment candidates (W6).
 typedef WeightFulfilmentQuery = ({String petId, DateTime date});
@@ -25,7 +24,9 @@ typedef WeightFulfilmentQuery = ({String petId, DateTime date});
 final weightFulfilmentCandidatesProvider = FutureProvider.autoDispose
     .family<Object?, WeightFulfilmentQuery>((ref, query) async => null);
 
-@Deprecated('Use weightUnitPreferenceProvider (per user, not per pet). Removed in W8.')
+@Deprecated(
+  'Use weightUnitPreferenceProvider (per user, not per pet). Removed in W8.',
+)
 final weightUnitProvider = Provider.family<WeightUnit, String>((ref, petId) {
   return ref.watch(weightUnitPreferenceProvider);
 });

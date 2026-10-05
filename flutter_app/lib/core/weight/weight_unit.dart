@@ -21,8 +21,7 @@ WeightUnit weightUnitFromWire(String? wire) {
   return WeightUnit.kg;
 }
 
-String weightUnitToWire(WeightUnit unit) =>
-    unit == WeightUnit.lb ? 'lb' : 'kg';
+String weightUnitToWire(WeightUnit unit) => unit == WeightUnit.lb ? 'lb' : 'kg';
 
 /// One decimal place plus unit label (e.g. `12.5 kg`).
 String formatWeight(double kg, WeightUnit unit) {

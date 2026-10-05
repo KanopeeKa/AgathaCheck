@@ -180,24 +180,27 @@ void main() {
       expect(model, isA<WeightEntry>());
     });
 
-    test('FW-2 fromJson parses health_occurrence_id, measurement_source, fulfils', () {
-      final model = WeightEntryModel.fromJson({
-        ...fullJson,
-        'health_occurrence_id': 'occ-9',
-        'measurement_source': 'clinic',
-        'fulfils': {
-          'entry_id': 'entry-1',
-          'entry_name': 'Weekly weigh-in',
-          'occurrence_id': 'occ-9',
-          'scheduled_date': '2025-06-14',
-        },
-      });
+    test(
+      'FW-2 fromJson parses health_occurrence_id, measurement_source, fulfils',
+      () {
+        final model = WeightEntryModel.fromJson({
+          ...fullJson,
+          'health_occurrence_id': 'occ-9',
+          'measurement_source': 'clinic',
+          'fulfils': {
+            'entry_id': 'entry-1',
+            'entry_name': 'Weekly weigh-in',
+            'occurrence_id': 'occ-9',
+            'scheduled_date': '2025-06-14',
+          },
+        });
 
-      expect(model.healthOccurrenceId, 'occ-9');
-      expect(model.measurementSource, 'clinic');
-      expect(model.fulfils?.entryName, 'Weekly weigh-in');
-      expect(model.fulfils?.scheduledDate.day, 14);
-    });
+        expect(model.healthOccurrenceId, 'occ-9');
+        expect(model.measurementSource, 'clinic');
+        expect(model.fulfils?.entryName, 'Weekly weigh-in');
+        expect(model.fulfils?.scheduledDate.day, 14);
+      },
+    );
 
     test('FW-2 fromJson converts lb row to kg storage', () {
       final model = WeightEntryModel.fromJson({

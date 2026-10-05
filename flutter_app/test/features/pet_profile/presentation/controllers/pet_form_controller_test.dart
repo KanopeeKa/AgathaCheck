@@ -204,28 +204,31 @@ void main() {
       expect(repository.added.single.organizationId, 'org-1');
     });
 
-    test('FW-5 edit keeps cached weight on pet without reading form weight', () async {
-      final existing = Pet(
-        id: 'pet-1',
-        name: 'Rex',
-        species: 'dog',
-        weight: 9.0,
-      );
-      repository = RecordingPetRepository(initial: [existing]);
-      container.dispose();
-      container = makeContainer(repo: repository);
-      controller = PetFormController();
-      deps = makeDeps(repository);
-      controller.state = controller.state.copyWith(
-        name: 'Rex',
-        selectedSpecies: 'dog',
-        weight: '99',
-      );
+    test(
+      'FW-5 edit keeps cached weight on pet without reading form weight',
+      () async {
+        final existing = Pet(
+          id: 'pet-1',
+          name: 'Rex',
+          species: 'dog',
+          weight: 9.0,
+        );
+        repository = RecordingPetRepository(initial: [existing]);
+        container.dispose();
+        container = makeContainer(repo: repository);
+        controller = PetFormController();
+        deps = makeDeps(repository);
+        controller.state = controller.state.copyWith(
+          name: 'Rex',
+          selectedSpecies: 'dog',
+          weight: '99',
+        );
 
-      await controller.submit(deps, isEditing: true, petId: 'pet-1');
+        await controller.submit(deps, isEditing: true, petId: 'pet-1');
 
-      expect(repository.updated.single.weight, 9.0);
-    });
+        expect(repository.updated.single.weight, 9.0);
+      },
+    );
 
     test('updates an existing pet', () async {
       final existing = Pet(
