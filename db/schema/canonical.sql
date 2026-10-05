@@ -1014,6 +1014,8 @@ ALTER TABLE ONLY public._migrations
     ADD CONSTRAINT _migrations_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.account_erasure_operations
     ADD CONSTRAINT account_erasure_operations_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.account_device_labels
+    ADD CONSTRAINT account_device_labels_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.adoption_journeys
     ADD CONSTRAINT adoption_journeys_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.adoption_visits
@@ -1196,8 +1198,6 @@ ALTER TABLE ONLY public.prospects
     ADD CONSTRAINT prospects_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.refresh_sessions
     ADD CONSTRAINT refresh_sessions_pkey PRIMARY KEY (id);
-ALTER TABLE ONLY public.account_device_labels
-    ADD CONSTRAINT account_device_labels_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.refresh_tokens
     ADD CONSTRAINT refresh_tokens_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.refresh_tokens
