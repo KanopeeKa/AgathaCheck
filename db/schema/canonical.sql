@@ -1321,8 +1321,8 @@ CREATE INDEX idx_planned_absence_pets_pet ON public.planned_absence_pets USING b
 CREATE INDEX idx_planned_absences_user_starts ON public.planned_absences USING btree (user_id, starts_on);
 CREATE INDEX idx_prospects_email_lower ON public.prospects USING btree (lower((email)::text)) WHERE (email IS NOT NULL);
 CREATE INDEX idx_prospects_org_id ON public.prospects USING btree (organization_id);
-CREATE INDEX idx_account_device_labels_user_last_seen ON public.account_device_labels USING btree (user_id, last_seen_at DESC);
 CREATE UNIQUE INDEX idx_account_device_labels_user_label ON public.account_device_labels USING btree (user_id, label);
+CREATE INDEX idx_account_device_labels_user_last_seen ON public.account_device_labels USING btree (user_id, last_seen_at DESC);
 CREATE INDEX idx_refresh_sessions_family_id ON public.refresh_sessions USING btree (family_id);
 CREATE UNIQUE INDEX idx_refresh_sessions_token_hash ON public.refresh_sessions USING btree (token_hash);
 CREATE INDEX idx_refresh_sessions_user_id ON public.refresh_sessions USING btree (user_id);
