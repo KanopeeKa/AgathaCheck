@@ -85,7 +85,13 @@ export class NotificationsPage {
           /Reminders now live in Actions|Les rappels sont dans Actions|Nothing new\.|Rien de nouveau/i,
         ),
       )
-      .or(this.page.getByText(/^Activity$|^Activité$|^For you$|^Pour vous$/i));
+      .or(this.page.getByRole('button', { name: /Activity|Activité|For you|Pour vous/i }));
+  }
+
+  private inboxTabButton(tab: 'activity' | 'forYou') {
+    const pattern =
+      tab === 'activity' ? /Activity|Activité/i : /For you|Pour vous/i;
+    return this.page.getByRole('button', { name: pattern }).first();
   }
 
   /** Navigate to the notifications screen from the pet list or experience shell.
@@ -140,11 +146,16 @@ export class NotificationsPage {
       if (await legacyAll.isVisible().catch(() => false)) {
         return;
       }
-      await this.page
-        .getByText(/^Activity$|^Activité$|^For you$|^Pour vous$/i)
-        .first()
-        .waitFor({ timeout: 5_000 });
+      await this.inboxTabButton('activity').waitFor({ timeout: 5_000 });
+      await this.inboxTabButton('forYou').waitFor({ timeout: 5_000 });
     }).toPass({ timeout: 30_000 });
+    await this.waitForNotificationListSettled();
+  }
+
+  async selectInboxTab(tab: 'activity' | 'forYou'): Promise<void> {
+    await this.inboxTabButton(tab).click();
+    await refreshFlutterAccessibility(this.page);
+    await this.page.waitForTimeout(400);
     await this.waitForNotificationListSettled();
   }
 
@@ -166,6 +177,14 @@ export class NotificationsPage {
       await refreshFlutterAccessibility(this.page);
       await this.emptyStateLocator().first().waitFor({ timeout: 3_000 });
     }).toPass({ timeout: 15_000 });
+  }
+
+  /** For you tab empty copy (Activity may show account sign-in after login). */
+  async expectForYouEmptyState(): Promise<void> {
+    await this.selectInboxTab('forYou');
+    await expect(
+      this.page.getByText(/No suggestions right now|Pas de suggestion pour l'instant/i).first(),
+    ).toBeVisible({ timeout: 15_000 });
   }
 
   async expectNotificationVisible(titleText: string): Promise<void> {

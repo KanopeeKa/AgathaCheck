@@ -172,7 +172,8 @@ test.describe('Notifications', () => {
     const notifications = new NotificationsPage(page);
     await notifications.openFromPetList();
 
-    await notifications.expectEmptyState();
+    // v2: login emits an Activity sign-in notice; For you stays empty for new users.
+    await notifications.expectForYouEmptyState();
 
     await refreshFlutterAccessibility(page);
     await checkA11y(page, 'notifications empty state');
