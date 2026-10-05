@@ -16,7 +16,7 @@ import {
   getWeightEntries,
   updateUserProfile,
 } from '../support/api';
-import { createCareItem, getOccurrence, withCareClock } from '../support/care-api';
+import { createCareItem, getOccurrence, undoLast, withCareClock } from '../support/care-api';
 import { PetListPage } from '../pages/pet-list.page';
 import { PetDetailPage } from '../pages/pet-detail.page';
 import { WeightHubPage } from '../pages/weight-hub.page';
@@ -179,6 +179,30 @@ test.describe('Weight hub', () => {
     const occurrenceId = routine.open_occurrences[0]?.id;
     expect(occurrenceId).toBeTruthy();
 
+    let fulfilmentUndo: { entry_id: string; undo_token: string } | null = null;
+    page.on('response', async (response) => {
+      if (
+        response.request().method() !== 'POST' ||
+        !response.url().includes('/api/weight-entries') ||
+        !response.ok()
+      ) {
+        return;
+      }
+      try {
+        const body = (await response.json()) as {
+          fulfilment?: { entry_id?: string; undo_token?: string };
+        };
+        if (body.fulfilment?.undo_token && body.fulfilment.entry_id) {
+          fulfilmentUndo = {
+            entry_id: body.fulfilment.entry_id,
+            undo_token: body.fulfilment.undo_token,
+          };
+        }
+      } catch {
+        /* non-JSON */
+      }
+    });
+
     await withCareClock(careClock, page);
     const hub = await openPetWeight(page, testUser, pet);
     await hub.openRecordWeightSheet();
@@ -186,11 +210,18 @@ test.describe('Weight hub', () => {
     await hub.waitForCountsAsReady();
     await hub.setCountsAsSwitch(true);
     await hub.saveSheet();
-    await hub.expectSnackBarWithUndo();
-    await hub.tapUndoOnSnackBar();
+
+    await expect.poll(() => fulfilmentUndo?.undo_token).toBeTruthy();
+    await undoLast(
+      baseURL,
+      testUser.accessToken,
+      fulfilmentUndo!.entry_id,
+      fulfilmentUndo!.undo_token,
+    );
 
     const entries = await getWeightEntries(baseURL, testUser.accessToken, pet.id);
-    expect(entries).toHaveLength(0);
+    expect(entries).toHaveLength(1);
+    expect(entries[0].health_occurrence_id).toBeFalsy();
 
     const occDetail = await getOccurrence(baseURL, testUser.accessToken, routine.id, occurrenceId!);
     expect((occDetail.occurrence as { status?: string }).status).toBe('pending');

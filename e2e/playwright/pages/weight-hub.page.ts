@@ -88,22 +88,32 @@ export class WeightHubPage {
     const save = this.page.getByRole('button', { name: /^Save$|^Enregistrer$/i });
     await expect(save).toBeEnabled({ timeout: 15_000 });
     await save.click();
-    await this.page.waitForTimeout(800);
+    await this.page
+      .getByRole('button', { name: /^Save$|^Enregistrer$/i })
+      .waitFor({ state: 'hidden', timeout: 15_000 })
+      .catch(() => undefined);
+    await this.page.waitForTimeout(400);
     await refreshFlutterAccessibility(this.page);
   }
 
   async tapUndoOnSnackBar(): Promise<void> {
-    await this.page.getByRole('button', { name: /^Undo$|^Annuler$/i }).click();
+    const undo = this.page
+      .locator('[flt-semantics-identifier="weight_fulfil_undo"]')
+      .or(this.page.getByRole('button', { name: /^Undo$|^Annuler$/i }));
+    await undo.first().click();
     await this.page.waitForTimeout(800);
     await refreshFlutterAccessibility(this.page);
   }
 
   async expectSnackBarWithUndo(): Promise<void> {
-    await this.page
-      .getByText(/Saved · counted as|Enregistré · compte comme/i)
-      .first()
-      .waitFor({ timeout: 15_000 });
-    await this.page.getByRole('button', { name: /^Undo$|^Annuler$/i }).waitFor();
+    const snackbar = this.page
+      .locator('[flt-semantics-identifier="weight_fulfil_snackbar"]')
+      .or(this.page.getByText(/Saved · counted as|Enregistré · compte comme/i));
+    await expect(snackbar.first()).toBeVisible({ timeout: 45_000 });
+    const undo = this.page
+      .locator('[flt-semantics-identifier="weight_fulfil_undo"]')
+      .or(this.page.getByRole('button', { name: /^Undo$|^Annuler$/i }));
+    await expect(undo.first()).toBeVisible({ timeout: 10_000 });
   }
 
   async openHistoryEntry(weight: number, unit = 'kg'): Promise<void> {
@@ -130,18 +140,32 @@ export class WeightHubPage {
 
   async clickDeleteOnEntryRow(weight: number, unit = 'kg'): Promise<void> {
     await this.openHub();
-    const label = `${weight.toFixed(1)} ${unit}`;
-    await this.page.getByText(label, { exact: false }).first().waitFor();
-    await this.page
-      .getByRole('button', { name: /Delete weight entry|Supprimer l'entrée de poids/i })
-      .first()
-      .click();
+    const weightPattern = new RegExp(
+      `${weight.toFixed(1).replace('.', '\\.')}\\s*${unit}`,
+      'i',
+    );
+    const row = this.page
+      .getByRole('button', { name: weightPattern })
+      .filter({
+        has: this.page.getByRole('button', {
+          name: /Delete weight entry|Supprimer l'entrée de poids/i,
+        }),
+      })
+      .first();
+    await row.scrollIntoViewIfNeeded();
+    await row.getByRole('button', {
+      name: /Delete weight entry|Supprimer l'entrée de poids/i,
+    }).click();
   }
 
   async expectLinkedDeleteConfirmation(routineName: string | RegExp): Promise<void> {
     const pattern =
       routineName instanceof RegExp ? routineName : new RegExp(routineName, 'i');
-    await this.page.getByRole('dialog').waitFor({ timeout: 10_000 });
+    await this.page
+      .getByRole('alertdialog')
+      .or(this.page.getByRole('dialog'))
+      .first()
+      .waitFor({ timeout: 10_000 });
     await expect(
       this.page.getByText(/counted as|comptait comme/i).filter({ hasText: pattern }),
     ).toBeVisible();

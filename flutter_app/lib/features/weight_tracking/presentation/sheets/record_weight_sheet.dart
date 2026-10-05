@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../../main.dart' show rootScaffoldMessengerKey;
 import '../../../../core/utils/calendar_date.dart';
 import '../../../../core/utils/calendar_date_picker.dart';
 import '../../../../core/weight/weight_unit.dart';
@@ -28,15 +29,24 @@ Future<void> showRecordWeightSheet(
   return showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
-    builder: (ctx) => _RecordWeightSheetBody(petId: petId, editing: editing),
+    builder: (ctx) => _RecordWeightSheetBody(
+      petId: petId,
+      editing: editing,
+      snackBarHostContext: context,
+    ),
   );
 }
 
 class _RecordWeightSheetBody extends ConsumerStatefulWidget {
-  const _RecordWeightSheetBody({required this.petId, this.editing});
+  const _RecordWeightSheetBody({
+    required this.petId,
+    this.editing,
+    required this.snackBarHostContext,
+  });
 
   final String petId;
   final WeightEntry? editing;
+  final BuildContext snackBarHostContext;
 
   @override
   ConsumerState<_RecordWeightSheetBody> createState() =>
@@ -157,9 +167,11 @@ class _RecordWeightSheetBodyState
           .saveEntry(entry: entry, fulfilsOccurrenceId: fulfilsId);
 
       if (!mounted) return;
-      final messenger = ScaffoldMessenger.of(context);
+      final messenger = rootScaffoldMessengerKey.currentState;
+      if (messenger != null) {
+        _showSaveSnackBar(messenger, l, outcome);
+      }
       Navigator.pop(context);
-      _showSaveSnackBar(messenger, l, outcome);
     } on WeightApiException catch (e) {
       if (e.code == 'fulfilment_not_eligible') {
         setState(() {
@@ -202,9 +214,11 @@ class _RecordWeightSheetBodyState
           .read(weightEntriesNotifierProvider(widget.petId).notifier)
           .fulfilExisting(widget.editing!.id, occurrenceId);
       if (!mounted) return;
-      final messenger = ScaffoldMessenger.of(context);
+      final messenger = rootScaffoldMessengerKey.currentState;
+      if (messenger != null) {
+        _showSaveSnackBar(messenger, l, outcome);
+      }
       Navigator.pop(context);
-      _showSaveSnackBar(messenger, l, outcome);
     } on WeightApiException catch (e) {
       if (e.code == 'fulfilment_not_eligible') {
         setState(() => _fulfilmentError = l.weightFulfilmentStale);
@@ -223,26 +237,37 @@ class _RecordWeightSheetBodyState
     final routineName =
         fulfilment?.routineName ?? outcome.entry.fulfils?.entryName;
 
-    if (fulfilment != null && routineName != null) {
+    if (routineName != null &&
+        (fulfilment != null || outcome.entry.fulfils != null)) {
       messenger.showSnackBar(
         SnackBar(
-          content: Text(l.weightSavedCountedAs(routineName)),
-          action: SnackBarAction(
-            label: l.snackbarUndo,
-            onPressed: () async {
-              await ref
-                  .read(weightEntriesNotifierProvider(widget.petId).notifier)
-                  .undoFulfilment(
-                    careEntryId: fulfilment.careEntryId,
-                    undoToken: fulfilment.undoToken,
-                  );
-              if (context.mounted) {
-                messenger.showSnackBar(
-                  SnackBar(content: Text(l.weightWeighInUndone)),
-                );
-              }
-            },
+          key: const Key('weight_fulfil_snackbar'),
+          content: Semantics(
+            identifier: 'weight_fulfil_snackbar',
+            container: true,
+            child: Text(l.weightSavedCountedAs(routineName)),
           ),
+          action: fulfilment == null
+              ? null
+              : SnackBarAction(
+                  key: const Key('weight_fulfil_undo'),
+                  label: l.snackbarUndo,
+                  onPressed: () async {
+                    await ref
+                        .read(
+                          weightEntriesNotifierProvider(widget.petId).notifier,
+                        )
+                        .undoFulfilment(
+                          careEntryId: fulfilment.careEntryId,
+                          undoToken: fulfilment.undoToken,
+                        );
+                    if (context.mounted) {
+                      messenger.showSnackBar(
+                        SnackBar(content: Text(l.weightWeighInUndone)),
+                      );
+                    }
+                  },
+                ),
         ),
       );
     } else {
