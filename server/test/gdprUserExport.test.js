@@ -61,4 +61,14 @@ describe('gdprUserExport', () => {
     expect(audit.care_schedule_event_count).toBe(2);
     expect(audit.health_entry_absence_resolution_count).toBe(0);
   });
+
+  it('does not query retired health_history', async () => {
+    const pool = poolReturning({});
+    const data = await buildUserDataExport(pool, userId);
+    expect(data).not.toHaveProperty('health_history');
+    const historyQuery = pool.query.mock.calls.find(([sql]) =>
+      sql.includes('health_history'),
+    );
+    expect(historyQuery).toBeUndefined();
+  });
 });
