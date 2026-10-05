@@ -1126,13 +1126,44 @@ export interface TestPeopleContact {
   name: string;
   phone?: string | null;
   legacy_vet_id?: string | null;
+  kind?: string | null;
+  inactive_at?: string | null;
+  status?: string | null;
+}
+
+export async function createPeopleContact(
+  baseURL: string,
+  token: string,
+  body: {
+    name: string;
+    kind?: string;
+    roles?: string[];
+    email?: string;
+    phone?: string;
+  },
+): Promise<TestPeopleContact> {
+  const res = await apiFetch(apiUrl('/people/contacts', baseURL), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`createPeopleContact failed (${res.status}): ${text}`);
+  }
+  return res.json<TestPeopleContact>();
 }
 
 export async function getPeopleContacts(
   baseURL: string,
   token: string,
+  options: { includeInactive?: boolean } = {},
 ): Promise<TestPeopleContact[]> {
-  const res = await apiFetch(apiUrl('/people/contacts', baseURL), {
+  const query = options.includeInactive ? '?include_inactive=true' : '';
+  const res = await apiFetch(apiUrl(`/people/contacts${query}`, baseURL), {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) {
@@ -3082,6 +3113,121 @@ export async function seedDualRoleUser(
 }
 
 /** Alice super-user + Bob member of the same org (BDD Background). */
+export interface TestHousehold {
+  id: string;
+  name: string;
+}
+
+export interface HouseholdInviteResult {
+  invite_id: string;
+  code: string;
+  expires_at?: string;
+}
+
+export async function getHouseholdDetail(
+  baseURL: string,
+  token: string,
+  householdId: string,
+): Promise<{ members: { display_name?: string; user_id: string }[] }> {
+  const res = await apiFetch(apiUrl(`/households/${householdId}`, baseURL), {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`getHouseholdDetail failed (${res.status}): ${body}`);
+  }
+  return res.json();
+}
+
+export async function createHousehold(
+  baseURL: string,
+  token: string,
+  name: string,
+  petIds: string[] = [],
+): Promise<TestHousehold> {
+  const res = await apiFetch(apiUrl('/households', baseURL), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      name,
+      ...(petIds.length > 0 ? { pet_ids: petIds } : {}),
+    }),
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`createHousehold failed (${res.status}): ${body}`);
+  }
+  return res.json<TestHousehold>();
+}
+
+export async function createHouseholdInvite(
+  baseURL: string,
+  token: string,
+  householdId: string,
+  inviteeEmail: string,
+  options: { accessTier?: string; isOrganiser?: boolean } = {},
+): Promise<HouseholdInviteResult> {
+  const res = await apiFetch(apiUrl(`/households/${householdId}/invites`, baseURL), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      invitee_email: inviteeEmail,
+      access_tier: options.accessTier ?? 'can_log_care',
+      is_organiser: options.isOrganiser ?? false,
+    }),
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`createHouseholdInvite failed (${res.status}): ${body}`);
+  }
+  return res.json<HouseholdInviteResult>();
+}
+
+export async function acceptHouseholdInviteByCode(
+  baseURL: string,
+  token: string,
+  code: string,
+): Promise<void> {
+  const res = await apiFetch(apiUrl(`/households/invites/code/${code}/accept`, baseURL), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({}),
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`acceptHouseholdInviteByCode failed (${res.status}): ${body}`);
+  }
+}
+
+export async function patchPeopleContact(
+  baseURL: string,
+  token: string,
+  contactId: string,
+  body: Record<string, unknown>,
+): Promise<void> {
+  const res = await apiFetch(apiUrl(`/people/contacts/${contactId}`, baseURL), {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`patchPeopleContact failed (${res.status}): ${text}`);
+  }
+}
+
 export async function seedHappyPawsClinic(baseURL: string): Promise<{
   alice: TestUser;
   bob: TestUser;
