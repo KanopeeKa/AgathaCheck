@@ -124,16 +124,12 @@ class CareCompletionService {
     String? notes,
   }) {
     return _run('skip', () async {
-      final body = await _remote.postOccurrenceAction(
-        entryId,
-        occurrenceId,
-        'skip',
-        {
-          if (reasonCode != null && reasonCode.isNotEmpty)
-            'reason_code': reasonCode,
-          if (notes != null && notes.isNotEmpty) 'notes': notes,
-        },
-      );
+      final body = await _remote
+          .postOccurrenceAction(entryId, occurrenceId, 'skip', {
+            if (reasonCode != null && reasonCode.isNotEmpty)
+              'reason_code': reasonCode,
+            if (notes != null && notes.isNotEmpty) 'notes': notes,
+          });
       return _commandResult(entryId, body);
     });
   }

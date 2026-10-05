@@ -112,11 +112,7 @@ class CareLastAction {
 }
 
 class LinkedWeight {
-  const LinkedWeight({
-    required this.value,
-    required this.unit,
-    this.date,
-  });
+  const LinkedWeight({required this.value, required this.unit, this.date});
 
   /// Stored weight in kg (API `value` with `unit: kg`).
   final double value;
