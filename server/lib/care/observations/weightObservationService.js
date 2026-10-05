@@ -466,6 +466,8 @@ export async function completeWeightOccurrence(pool, {
           healthOccurrenceId: occurrenceId,
         });
         await refreshPetWeightCache(db, petId);
+      },
+      afterCommand: async (db) => {
         await maybePersistWeightEstablishment(db, { petId, healthEntryId: entryId });
       },
     }, async (ctx) => {
