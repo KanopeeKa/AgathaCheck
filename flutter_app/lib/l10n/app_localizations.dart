@@ -10557,6 +10557,42 @@ abstract class AppLocalizations {
   /// **'Undo'**
   String get notificationInlineUndo;
 
+  /// No description provided for @notificationAccountThisWasMe.
+  ///
+  /// In en, this message translates to:
+  /// **'This was me'**
+  String get notificationAccountThisWasMe;
+
+  /// No description provided for @notificationAccountSecureMyAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Secure my account'**
+  String get notificationAccountSecureMyAccount;
+
+  /// No description provided for @secureAccountTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Secure my account'**
+  String get secureAccountTitle;
+
+  /// No description provided for @secureAccountIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'ll sign out your other devices, then you\'ll set a new password. This device stays signed in.'**
+  String get secureAccountIntro;
+
+  /// No description provided for @secureAccountSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Secure account'**
+  String get secureAccountSubmit;
+
+  /// No description provided for @secureAccountSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account is secured.'**
+  String get secureAccountSuccess;
+
   /// No description provided for @accountTitle.
   ///
   /// In en, this message translates to:

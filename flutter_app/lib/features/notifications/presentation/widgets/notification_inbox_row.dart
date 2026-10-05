@@ -96,9 +96,23 @@ class _NotificationInboxRowState extends ConsumerState<NotificationInboxRow> {
     }
   }
 
+  InlineActionLabels _inlineLabels(AppLocalizations l) {
+    final kind = NotificationInlineActionSupport.kindFor(widget.notification);
+    if (kind == NotificationInlineActionKind.accountNewSignIn) {
+      return InlineActionLabels(
+        decline: l.notificationAccountThisWasMe,
+        accept: l.notificationAccountSecureMyAccount,
+      );
+    }
+    return InlineActionLabels(decline: l.declineShare, accept: l.acceptShare);
+  }
+
   @override
   Widget build(BuildContext context) {
     final runner = ref.read(notificationInlineActionsProvider);
+    final l = AppLocalizations.of(context)!;
+    final labels = _inlineLabels(l);
+    final kind = NotificationInlineActionSupport.kindFor(widget.notification);
     final needsResponse = NotificationInboxV2Rules.needsResponse(
       widget.notification,
     );
@@ -116,12 +130,29 @@ class _NotificationInboxRowState extends ConsumerState<NotificationInboxRow> {
           NotificationInlineActionsBar(
             busy: _busy,
             errorMessage: _errorMessage,
-            onAccept: () =>
-                _runInline(() => runner.accept(context, widget.notification)),
-            onDecline: () => _runInline(
-              () =>
-                  runner.declineWithUndoSnackBar(context, widget.notification),
-            ),
+            declineLabel: labels.decline,
+            acceptLabel: labels.accept,
+            onAccept: () => _runInline(() {
+              if (kind == NotificationInlineActionKind.accountNewSignIn) {
+                return runner.startSecureAccountFlow(
+                  context,
+                  widget.notification,
+                );
+              }
+              return runner.accept(context, widget.notification);
+            }),
+            onDecline: () => _runInline(() {
+              if (kind == NotificationInlineActionKind.accountNewSignIn) {
+                return runner.confirmAccountSignInWasMe(
+                  context,
+                  widget.notification,
+                );
+              }
+              return runner.declineWithUndoSnackBar(
+                context,
+                widget.notification,
+              );
+            }),
             onRetry: () => setState(() => _errorMessage = null),
           ),
       ],

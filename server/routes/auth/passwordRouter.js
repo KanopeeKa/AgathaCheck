@@ -8,6 +8,7 @@ import { resolveEmailLocale } from '../../lib/email/locale.js';
 import { isSmtpConfigured } from '../../config/mail.js';
 import { sendPasswordResetEmail } from '../../services/mailService.js';
 import { logAuditEventSafe } from '../../lib/audit.js';
+import { emitAccountPasswordChanged } from '../../lib/account/accountSecurityNotifications.js';
 import { revokeAllUserRefreshSessions } from '../../lib/refreshSessions.js';
 import { extractToken, FORGOT_PASSWORD_MESSAGE, isProduction, verifyAccessToken } from './shared.js';
 
@@ -26,7 +27,10 @@ export function registerPasswordRoutes(router, pool, { comparePassword, authLimi
       if (!isStrongPassword(newPassword)) {
         return res.status(400).json({ error: `Password must be at least ${MIN_PASSWORD_LENGTH} characters.` });
       }
-      const userResult = await pool.query('SELECT password_hash FROM users WHERE id = $1', [payload.id]);
+      const userResult = await pool.query(
+        'SELECT password_hash, email FROM users WHERE id = $1',
+        [payload.id],
+      );
       if (userResult.rows.length === 0) {
         return res.status(404).json({ error: 'User not found' });
       }
@@ -36,6 +40,10 @@ export function registerPasswordRoutes(router, pool, { comparePassword, authLimi
       }
       const newHash = await bcrypt.hash(newPassword, 10);
       await pool.query('UPDATE users SET password_hash = $1, updated_at = NOW() WHERE id = $2', [newHash, payload.id]);
+      await emitAccountPasswordChanged(pool, {
+        userId: payload.id,
+        email: userResult.rows[0].email,
+      });
       await revokeAllUserRefreshSessions(pool, payload.id);
       logAuditEventSafe(pool, {
         actorUserId: payload.id,
@@ -122,8 +130,15 @@ export function registerPasswordRoutes(router, pool, { comparePassword, authLimi
         return res.status(400).json({ error: 'Invalid or expired reset code' });
       }
       const { id: tokenId, user_id: userId } = result.rows[0];
+      const emailRow = await pool.query('SELECT email FROM users WHERE id = $1', [userId]);
       const newHash = await bcrypt.hash(new_password, 10);
       await pool.query('UPDATE users SET password_hash = $1, updated_at = NOW() WHERE id = $2', [newHash, userId]);
+      if (emailRow.rows[0]?.email) {
+        await emitAccountPasswordChanged(pool, {
+          userId,
+          email: emailRow.rows[0].email,
+        });
+      }
       await revokeAllUserRefreshSessions(pool, userId);
       await pool.query('UPDATE password_reset_tokens SET used = true WHERE id = $1', [tokenId]);
       logAuditEventSafe(pool, {

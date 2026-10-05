@@ -80,6 +80,11 @@ class NotificationsNotifier extends AsyncNotifier<List<AppNotification>> {
     await _getRepo().submitSuggestionFeedback(id, action);
     await refresh();
   }
+
+  Future<void> submitAccountSecurityFeedback(String id, String action) async {
+    await _getRepo().submitAccountSecurityFeedback(id, action);
+    await refresh();
+  }
 }
 
 final unreadNotificationCountProvider = Provider<int>((ref) {

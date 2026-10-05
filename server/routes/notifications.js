@@ -21,6 +21,7 @@ import {
   getNotificationPreferences,
   patchNotificationPreferences,
 } from './notifications/preferencesHandlers.js';
+import { registerAccountSecurityFeedbackRoutes } from './notifications/accountSecurityFeedback.js';
 
 export function notificationToMap(row) {
   const petId = row.pet_id || null;
@@ -204,6 +205,8 @@ export default function notificationsRoutes(pool) {
   router.get('/preferences', handlePreferencesGet);
   router.put('/preferences', handlePreferencesPatch);
   router.patch('/preferences', handlePreferencesPatch);
+
+  registerAccountSecurityFeedbackRoutes(router, pool);
 
   router.post('/:id/suggestion-feedback', async (req, res) => {
     const userId = extractUserId(req);

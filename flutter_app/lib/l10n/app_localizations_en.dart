@@ -5915,6 +5915,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notificationInlineUndo => 'Undo';
 
   @override
+  String get notificationAccountThisWasMe => 'This was me';
+
+  @override
+  String get notificationAccountSecureMyAccount => 'Secure my account';
+
+  @override
+  String get secureAccountTitle => 'Secure my account';
+
+  @override
+  String get secureAccountIntro =>
+      'We\'ll sign out your other devices, then you\'ll set a new password. This device stays signed in.';
+
+  @override
+  String get secureAccountSubmit => 'Secure account';
+
+  @override
+  String get secureAccountSuccess => 'Your account is secured.';
+
+  @override
   String get accountTitle => 'Account';
 
   @override

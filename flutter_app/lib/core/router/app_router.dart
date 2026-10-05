@@ -7,6 +7,7 @@ import '../../features/auth/presentation/providers/auth_providers.dart';
 import '../../features/auth/presentation/screens/forgot_password_screen.dart';
 import '../../features/auth/presentation/screens/landing_screen.dart';
 import '../../features/auth/presentation/screens/my_details_screen.dart';
+import '../../features/auth/presentation/screens/secure_account_screen.dart';
 import '../../features/care_taxonomy/domain/care_planning_mode.dart';
 import '../../features/health_tracking/domain/entities/health_entry.dart';
 import '../../features/health_tracking/presentation/screens/health_entry_form_screen.dart';
@@ -165,6 +166,14 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/my-details',
         name: 'myDetails',
         builder: (context, state) => const MyDetailsScreen(),
+      ),
+      GoRoute(
+        path: '/secure-account',
+        name: 'secureAccount',
+        builder: (context, state) {
+          final notificationId = state.uri.queryParameters['notificationId'];
+          return SecureAccountScreen(notificationId: notificationId);
+        },
       ),
       GoRoute(
         path: '/help',

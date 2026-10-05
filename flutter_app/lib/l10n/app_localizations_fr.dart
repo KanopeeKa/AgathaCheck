@@ -6004,6 +6004,25 @@ class AppLocalizationsFr extends AppLocalizations {
   String get notificationInlineUndo => 'Annuler';
 
   @override
+  String get notificationAccountThisWasMe => 'C\'était moi';
+
+  @override
+  String get notificationAccountSecureMyAccount => 'Sécuriser mon compte';
+
+  @override
+  String get secureAccountTitle => 'Sécuriser mon compte';
+
+  @override
+  String get secureAccountIntro =>
+      'Nous vous déconnecterons sur vos autres appareils, puis vous choisirez un nouveau mot de passe. Cet appareil reste connecté.';
+
+  @override
+  String get secureAccountSubmit => 'Sécuriser le compte';
+
+  @override
+  String get secureAccountSuccess => 'Votre compte est sécurisé.';
+
+  @override
   String get accountTitle => 'Compte';
 
   @override

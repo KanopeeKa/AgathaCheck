@@ -25,6 +25,18 @@ export const NOTIFICATION_TYPE_PENDING_FOSTER_PLACEMENT_RECEIVED = 'pendingFoste
 export const NOTIFICATION_TYPE_PENDING_ADOPTION_PLACEMENT_RECEIVED = 'pendingAdoptionPlacementReceived';
 export const NOTIFICATION_TYPE_PENDING_CUSTODY_TRANSFER_RECEIVED = 'pendingCustodyTransferReceived';
 
+export const NOTIFICATION_TYPE_ACCOUNT_NEW_SIGN_IN = 'accountNewSignIn';
+export const NOTIFICATION_TYPE_ACCOUNT_PASSWORD_CHANGED = 'accountPasswordChanged';
+export const NOTIFICATION_TYPE_ACCOUNT_SESSIONS_REVOKED = 'accountSessionsRevoked';
+export const NOTIFICATION_TYPE_ACCOUNT_DELETION_REQUESTED = 'accountDeletionRequested';
+
+const ACCOUNT_TYPES = new Set([
+  NOTIFICATION_TYPE_ACCOUNT_NEW_SIGN_IN,
+  NOTIFICATION_TYPE_ACCOUNT_PASSWORD_CHANGED,
+  NOTIFICATION_TYPE_ACCOUNT_SESSIONS_REVOKED,
+  NOTIFICATION_TYPE_ACCOUNT_DELETION_REQUESTED,
+]);
+
 const VALID_KINDS = new Set([
   NOTIFICATION_KIND_CARE,
   NOTIFICATION_KIND_ADMINISTRATIVE,
@@ -78,6 +90,9 @@ const ADMINISTRATIVE_TYPES = new Set([
 
 /** Map notification `type` to kind at creation time. */
 export function defaultKindForType(type = 'general') {
+  if (ACCOUNT_TYPES.has(type)) {
+    return NOTIFICATION_KIND_ACCOUNT;
+  }
   if (RELATIONSHIP_TYPES.has(type)) {
     return NOTIFICATION_KIND_RELATIONSHIP;
   }
