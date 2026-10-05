@@ -42,3 +42,22 @@ docs/domains/notifications/features/notifications-v2-spec.md
 **Scope:** A1–A3, A6; FR-IA inline for A1; badge matrix A1; emails N11; no A4/A5 until email-change feature.
 
 **Exit:** AC-ACS-* (excluding A4/A5); PR merged to integration.
+
+## Runtime
+
+```yaml
+autonomy: active
+current_phase: 1
+last_completed_phase: null
+halt_reason: null
+next_action: "continue phase 1 on branch cursor/notifications-v2-pr7-arch-7f3b"
+artifact_ref:
+  branch: cursor/notifications-v2-pr7-arch-7f3b
+  plan_path: .agents/plans/notifications-v2-pr7-7f3b.md
+  plan_commit: 4eca46303fd05abee1898e9622d3ff53fd75fd1f
+  snapshot_path: .agents/plans/notifications-v2-pr7-7f3b.snapshot.json
+  snapshot_commit: 4eca46303fd05abee1898e9622d3ff53fd75fd1f
+open_prs: []
+merge_commits: {}
+debt_issue_refs: []
+```

@@ -33,11 +33,9 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "governance",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "merge_commit": null,
       "debt_issue_refs": []
     },
     {
@@ -78,5 +76,5 @@
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:6b976559b51462339cbafd7e8472448d74ea787351ccec3930a5de399febecd1"
+  "content_hash": "sha256:e9039ad8163c02125b2bf908ea81eea26870f9fe9d5b4825485dbccb3fb799f1"
 }
