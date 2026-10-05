@@ -2,7 +2,7 @@
   "schema_version": 1,
   "approved_at": "2026-10-04T22:45:00.000Z",
   "approved_until": "2026-10-06T17:40:08.000Z",
-  "content_hash": "sha256:0ea6c8b529f743aee6f095552c468c73ed70459329d78835d897e77de5aa701d",
+  "content_hash": "sha256:59e5eeb91d93ce0fdc67e2309fc72a5b6c7cebd9bc7a6da4ddd5e7443e23749a",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "control_issue": 1565,
@@ -244,7 +244,9 @@
       "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1607",
+      "pr_head_sha": "100cb068"
     },
     {
       "id": "c7-households-ui",
