@@ -34,7 +34,7 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "governance",
-      "status": "in_progress",
+      "status": "pending",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
@@ -71,13 +71,10 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "debt_issue_refs": []
     },
     {
       "id": "3",
@@ -181,5 +178,5 @@
       "merge_commit": null
     }
   ],
-  "content_hash": "sha256:58fba99c7b86cf00e7169acc042cfe71c6b798f7f455dd0383994f52c02f4f25"
+  "content_hash": "sha256:0bbfd00021640e29c963c13b580a8ee6764ac5bffb88148f6d5d9556f651a32b"
 }

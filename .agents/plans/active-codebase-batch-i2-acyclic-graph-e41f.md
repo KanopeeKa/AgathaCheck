@@ -42,16 +42,16 @@ Package 9, second half (D5, D21). Take the active Flutter feature graph from one
 
 ```yaml
 autonomy: active
-current_phase: 1
+current_phase: 2
 last_completed_phase: null
 halt_reason: null
-next_action: "continue phase 1 on branch cursor/active-codebase-i2-1-layering-adr-e41f"
+next_action: "continue phase 2 on branch cursor/active-codebase-i2-2-pet-profile-cut-e41f"
 artifact_ref:
-  branch: cursor/active-codebase-i2-1-layering-adr-e41f
+  branch: cursor/active-codebase-i2-2-pet-profile-cut-e41f
   plan_path: .agents/plans/active-codebase-batch-i2-acyclic-graph-e41f.md
-  plan_commit: a419d3a489555a8029843de11259797c77c76049
+  plan_commit: 016c55d620bacc0c18ab298e0fa024dd478f60aa
   snapshot_path: .agents/plans/active-codebase-batch-i2-acyclic-graph-e41f.snapshot.json
-  snapshot_commit: a419d3a489555a8029843de11259797c77c76049
+  snapshot_commit: 016c55d620bacc0c18ab298e0fa024dd478f60aa
 open_prs: [true]
 merge_commits: {}
 debt_issue_refs: []
