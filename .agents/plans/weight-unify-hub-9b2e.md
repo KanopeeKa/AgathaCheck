@@ -36,13 +36,13 @@ autonomy: active
 current_phase: W6
 last_completed_phase: W5
 halt_reason: null
-next_action: "phase W6 on branch cursor/weight-unify-w6-hub-9b2e"
+next_action: "continue phase W6 on branch cursor/weight-unify-w6-hub-9b2e"
 artifact_ref:
   branch: cursor/weight-unify-hub-integration-9b2e
   plan_path: .agents/plans/weight-unify-hub-9b2e.md
-  plan_commit: 0130080cfed758b0d195df89a5f2a1f6201ca2b0
+  plan_commit: b0730951103df917281e7451b7a0e115959b344b
   snapshot_path: .agents/plans/weight-unify-hub-9b2e.snapshot.json
-  snapshot_commit: 0130080cfed758b0d195df89a5f2a1f6201ca2b0
+  snapshot_commit: b0730951103df917281e7451b7a0e115959b344b
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
