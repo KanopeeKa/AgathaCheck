@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/router/shell_return_navigation.dart';
-import '../../../../l10n/app_localizations.dart';
-import '../../../health_tracking/health_tracking.dart';
-import '../../domain/care_item_schedule.dart';
-import '../../domain/care_occurrence.dart';
-import '../../domain/occurrence_display.dart';
-import '../../domain/stack_rule.dart';
-import 'care_item_attention_occurrence_row.dart';
+import 'package:pet_profile_app/core/router/shell_return_navigation.dart';
+import 'package:pet_profile_app/features/care_item/domain/care_item_schedule.dart';
+import 'package:pet_profile_app/features/care_item/domain/care_occurrence.dart';
+import 'package:pet_profile_app/features/care_item/domain/occurrence_display.dart';
+import 'package:pet_profile_app/features/care_item/domain/stack_rule.dart';
+import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import 'package:pet_profile_app/features/pet_care/pet_care.dart';
+import 'package:pet_profile_app/l10n/app_localizations.dart';
+
+import 'care_item_attention_occurrence_row.dart';
 
 /// Upcoming-group row: opens occurrence screen only (FR-9).
 class CareItemUpcomingOccurrenceRow extends StatelessWidget {

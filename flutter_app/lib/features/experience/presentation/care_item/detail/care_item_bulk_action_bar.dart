@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../l10n/app_localizations.dart';
+import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 /// Count-labelled bulk Mark done / Skip pair (FR-13, FR-15).
 class CareItemBulkActionBar extends StatelessWidget {

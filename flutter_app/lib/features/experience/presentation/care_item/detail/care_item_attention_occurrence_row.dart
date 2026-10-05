@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-import '../../../../core/router/shell_return_navigation.dart';
-import '../../../../core/widgets/care_mark_done_button.dart';
-import '../../../../core/widgets/care_skip_button.dart';
-import '../../../../l10n/app_localizations.dart';
-import '../../care_item.dart';
-import '../../domain/occurrence_display.dart';
-import '../../../health_tracking/health_tracking.dart';
+import 'package:pet_profile_app/core/router/shell_return_navigation.dart';
+import 'package:pet_profile_app/core/widgets/care_mark_done_button.dart';
+import 'package:pet_profile_app/core/widgets/care_skip_button.dart';
+import 'package:pet_profile_app/features/care_item/care_item.dart';
+import 'package:pet_profile_app/features/care_item/domain/occurrence_display.dart';
+import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import 'package:pet_profile_app/features/pet_care/pet_care.dart';
+import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 CareItemStatusTone careItemStatusToneForPill(OccurrencePillTone tone) =>
     switch (tone) {

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 
-import '../../../../l10n/app_localizations.dart';
-import '../../../health_tracking/health_tracking.dart';
-import '../../domain/care_item_schedule.dart';
-import '../../domain/care_occurrence.dart';
-import 'care_item_upcoming_occurrence_row.dart';
+import 'package:pet_profile_app/features/care_item/domain/care_item_schedule.dart';
+import 'package:pet_profile_app/features/care_item/domain/care_occurrence.dart';
+import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import 'package:pet_profile_app/features/pet_care/pet_care.dart';
+import 'package:pet_profile_app/l10n/app_localizations.dart';
+
+import 'care_item_upcoming_occurrence_row.dart';
 
 /// Upcoming occurrences capped at 3 with expand control (FR-4).
 class CareItemUpcomingGroup extends StatefulWidget {

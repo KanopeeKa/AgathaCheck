@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../l10n/app_localizations.dart';
-import '../../domain/occurrence_detail.dart';
-import '../sheets/plan_another_date_sheet.dart';
-import '../sheets/postpone_sheet.dart';
+import 'package:pet_profile_app/features/care_item/domain/occurrence_detail.dart';
+import 'package:pet_profile_app/features/care_item/presentation/sheets/plan_another_date_sheet.dart';
+import 'package:pet_profile_app/features/care_item/presentation/sheets/postpone_sheet.dart';
+import 'package:pet_profile_app/l10n/app_localizations.dart';
 import 'occurrence_screen_menu.dart';
 
 Future<void> handleOccurrenceScreenMenuAction(
