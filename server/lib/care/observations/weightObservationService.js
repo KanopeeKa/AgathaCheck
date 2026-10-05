@@ -41,7 +41,7 @@ import {
   parseWeightObservationBody,
   weightEntryToCompletionMap,
   weightPayloadsSemanticallyEqual,
-} from '../../../routes/healthEntries/weightOccurrenceCompletion.js';
+} from './weightOccurrenceCompletion.js';
 
 export class WeightValidationError extends Error {
   /**

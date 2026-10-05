@@ -16,10 +16,12 @@ class RecordWeightCountsAsSection extends StatelessWidget {
     required this.onSwitchChanged,
     required this.onRadioChanged,
     required this.onRetry,
+    this.candidatesTimedOut = false,
     super.key,
   });
 
   final AsyncValue<WeightFulfilmentCandidates> candidatesAsync;
+  final bool candidatesTimedOut;
   final String? selectedOccurrenceId;
   final bool switchOn;
   final ValueChanged<bool> onSwitchChanged;
@@ -33,24 +35,36 @@ class RecordWeightCountsAsSection extends StatelessWidget {
     final l = AppLocalizations.of(context)!;
 
     return candidatesAsync.when(
-      loading: () => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        child: Row(
-          children: [
-            const SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(strokeWidth: 2),
+      loading: () {
+        if (candidatesTimedOut) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Text(
+              l.weightCheckTimedOut,
+              style: Theme.of(context).textTheme.bodyMedium,
             ),
-            const SizedBox(width: 12),
-            Expanded(child: Text(l.weightCheckingWeighIn)),
-          ],
-        ),
-      ),
+          );
+        }
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Row(
+            children: [
+              const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+              const SizedBox(width: 12),
+              Expanded(child: Text(l.weightCheckingWeighIn)),
+            ],
+          ),
+        );
+      },
       error: (_, __) => Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(l.weightCheckFailed),
+          Text(l.weightCheckFailedWontCount),
           TextButton(onPressed: onRetry, child: Text(l.weightCheckRetry)),
         ],
       ),

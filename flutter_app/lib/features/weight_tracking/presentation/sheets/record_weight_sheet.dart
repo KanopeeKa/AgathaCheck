@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../../core/providers/analytics_providers.dart';
 import '../../../../main.dart' show rootScaffoldMessengerKey;
 import '../../../../core/utils/calendar_date.dart';
 import '../../../../core/utils/calendar_date_picker.dart';
@@ -164,9 +165,14 @@ class _RecordWeightSheetBodyState
     try {
       final outcome = await ref
           .read(weightEntriesNotifierProvider(widget.petId).notifier)
-          .saveEntry(entry: entry, fulfilsOccurrenceId: fulfilsId);
+          .saveEntry(
+            entry: entry,
+            fulfilsOccurrenceId: fulfilsId,
+            isUpdate: _isEdit,
+          );
 
       if (!mounted) return;
+      await _trackSaveAnalytics(fulfilsId);
       final messenger = rootScaffoldMessengerKey.currentState;
       if (messenger != null) {
         _showSaveSnackBar(messenger, l, outcome);
@@ -225,6 +231,20 @@ class _RecordWeightSheetBodyState
       }
     } finally {
       if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  Future<void> _trackSaveAnalytics(String? fulfilsId) async {
+    if (_isEdit) return;
+    final analytics = ref.read(analyticsServiceProvider);
+    final candidates = _createCandidates?.valueOrNull;
+    if (fulfilsId != null && fulfilsId.isNotEmpty) {
+      await analytics.capture('weight_save_fulfilled');
+    } else if (candidates != null && candidates.candidates.isNotEmpty) {
+      await analytics.capture('weight_save_not_counted');
+    }
+    if (_checkTimedOut && (fulfilsId == null || fulfilsId.isEmpty)) {
+      await analytics.capture('weight_fulfil_check_timed_out');
     }
   }
 
@@ -388,6 +408,7 @@ class _RecordWeightSheetBodyState
                 candidatesAsync: createCandidates,
                 selectedOccurrenceId: _radioSelection,
                 switchOn: _switchOn,
+                candidatesTimedOut: _checkTimedOut,
                 onSwitchChanged: (v) => setState(() => _switchOn = v),
                 onRadioChanged: (v) => setState(() => _radioSelection = v),
                 onRetry: () {
