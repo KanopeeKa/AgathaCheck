@@ -409,8 +409,13 @@ class _RecordWeightSheetBodyState
             ],
             const SizedBox(height: 16),
             AppFormActionsBar(
-              isLoading: _saving || !_saveEnabled(createCandidates),
+              isLoading:
+                  _saving ||
+                  (!_isEdit &&
+                      (createCandidates?.isLoading ?? false) &&
+                      !_checkTimedOut),
               isDirty: _weightController.text.trim().isNotEmpty,
+              canSave: _saveEnabled(createCandidates),
               requireDirtyToSave: true,
               onCancel: () => Navigator.pop(context),
               saveLabel: l.save,
