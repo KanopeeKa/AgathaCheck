@@ -24,6 +24,7 @@ class _RecordingNotifier extends WeightEntriesNotifier {
   Future<WeightSaveOutcome> saveEntry({
     required WeightEntry entry,
     String? fulfilsOccurrenceId,
+    bool isUpdate = false,
   }) async {
     if (throwFulfilmentConflict && fulfilsOccurrenceId != null) {
       throw WeightApiException(409, 'fulfilment_not_eligible');

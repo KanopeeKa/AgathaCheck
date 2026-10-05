@@ -21,6 +21,8 @@ class SharePetOwnerBody extends ConsumerWidget {
     required this.pendingInvites,
     required this.canTransferOwnership,
     required this.onInviteSent,
+    this.prefillEmail,
+    this.contactId,
   });
 
   final Pet pet;
@@ -30,6 +32,8 @@ class SharePetOwnerBody extends ConsumerWidget {
   final List<ShareInvite> pendingInvites;
   final bool canTransferOwnership;
   final VoidCallback onInviteSent;
+  final String? prefillEmail;
+  final String? contactId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -43,11 +47,16 @@ class SharePetOwnerBody extends ConsumerWidget {
         ShareInviteForm(
           petCount: allPetIds.length,
           isSending: shareState.isSendingInvite,
+          initialEmail: prefillEmail,
           onSubmit: (email, role) async {
             try {
               await ref
                   .read(sharePetNotifierProvider(allPetIds).notifier)
-                  .sendInvite(inviteeEmail: email, role: role);
+                  .sendInvite(
+                    inviteeEmail: email,
+                    role: role,
+                    contactId: contactId,
+                  );
               if (context.mounted) {
                 ScaffoldMessenger.of(
                   context,

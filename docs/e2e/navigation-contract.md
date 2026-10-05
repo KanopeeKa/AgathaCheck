@@ -249,6 +249,21 @@ Entry helpers:
 
 Action buttons use `Key('session_action_<action_key>')` (e.g. `session_action_confirm_foster_start`).
 
+## People (person components and picker)
+
+Stable semantics identifiers for Playwright (`enableFlutterAccessibility()` first). Prefer `page.getByRole` with these identifiers via Flutter semantics `identifier`.
+
+| Locator | When |
+|---------|------|
+| `people_card_<id>` | Person row/card for contact id |
+| `people_picker_field_<purpose>` | Picker field (`purpose` matches caller, e.g. `works_at`) |
+| `people_picker_option_<id>` | Selectable row in picker sheet (`none` for explicit none) |
+| `people_picker_add` | **Add "{query}"** quick-add row |
+| `people_action_call` | Contact action bar — call |
+| `people_action_message` | Contact action bar — message |
+| `people_action_email` | Contact action bar — email |
+| `people_action_directions` | Contact action bar — directions |
+
 ## TODO (next candidates)
 
 - `pet-list.openVets`, `help.goBack`, `notifications.expectBadgeVisible` throw paths

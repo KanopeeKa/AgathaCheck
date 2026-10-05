@@ -12,8 +12,8 @@ PORT="${PORT:-3000}"
 BASE_URL="http://127.0.0.1:${PORT}"
 MAX_ATTEMPTS="${MAX_ATTEMPTS:-30}"
 
-echo "==> Start PostgreSQL (pg_ctlcluster 16 main)"
-sudo pg_ctlcluster 16 main start
+echo "==> Start PostgreSQL (docker, same contract as PR E2E)"
+bash "${ROOT}/scripts/ci/start-postgres-ci.sh"
 
 echo "==> Install server dependencies"
 cd "${ROOT}/server"

@@ -656,6 +656,14 @@ class AppLocalizationsFr extends AppLocalizations {
       'Impossible de vérifier s\'il y a une pesée prévue.';
 
   @override
+  String get weightCheckFailedWontCount =>
+      'Vous pouvez quand même enregistrer ce poids. Il ne comtera pas comme pesée prévue tant que vous n\'utilisez pas « Compter comme pesée ».';
+
+  @override
+  String get weightCheckTimedOut =>
+      'Nous n\'avons pas pu confirmer une pesée prévue à temps. Vous pouvez enregistrer ce poids ; il ne comtera pas comme pesée prévue tant que l\'option n\'est pas activée.';
+
+  @override
   String get weightCheckRetry => 'Réessayer';
 
   @override
@@ -7687,6 +7695,99 @@ class AppLocalizationsFr extends AppLocalizations {
       'Ce contact reste visible où il est déjà lié, mais n\'apparaît plus dans les listes de choix.';
 
   @override
+  String get peopleReactivate => 'Réactiver';
+
+  @override
+  String get peopleEditSectionIdentity => 'Identité';
+
+  @override
+  String get peopleEditSectionContact => 'Coordonnées';
+
+  @override
+  String get peopleEditSectionNotes => 'Notes';
+
+  @override
+  String get peopleEditLinkedReadOnlyHelper =>
+      'Le nom et l\'e-mail sont gérés par le compte lié.';
+
+  @override
+  String get peopleEditLinkedReadOnlyError =>
+      'Le nom et l\'e-mail ne peuvent pas être modifiés pour un compte lié.';
+
+  @override
+  String get peopleNameRequired => 'Le nom est obligatoire';
+
+  @override
+  String get peopleEmailInvalid => 'Saisissez une adresse e-mail valide';
+
+  @override
+  String get peopleUsagesDialogTitle => 'Contact encore utilisé';
+
+  @override
+  String get peopleUsagesDialogBody =>
+      'Ce contact est utilisé aux endroits ci-dessous. Remplacez-le ou marquez-le inactif.';
+
+  @override
+  String get peopleUsagesReplace => 'Remplacer…';
+
+  @override
+  String get peopleUsagesBlockedDelete =>
+      'Retirez les usages ci-dessous ou marquez inactif.';
+
+  @override
+  String get peopleReplaceSlotTitle => 'Remplacer le vétérinaire ?';
+
+  @override
+  String peopleReplaceSlotBody(String name, String petName) {
+    return 'Remplacer $name comme vétérinaire de $petName ?';
+  }
+
+  @override
+  String get peopleReplaceSlotConfirm => 'Remplacer';
+
+  @override
+  String get peopleEditSetPrimaryVet => 'Définir comme vétérinaire principal';
+
+  @override
+  String get peopleEditSetOutOfHoursVet => 'Définir comme vétérinaire de garde';
+
+  @override
+  String get peopleEditRemovePetLink => 'Retirer le lien avec l\'animal';
+
+  @override
+  String get peopleEditEmergencyOrderTitle => 'Ordre des contacts d\'urgence';
+
+  @override
+  String get peopleMemberRemovalTitle => 'Retirer du foyer ?';
+
+  @override
+  String get peopleMemberRemovalBody =>
+      'La personne perdra l\'accès au foyer. D\'autres accès peuvent rester.';
+
+  @override
+  String get peopleMemberRemovalRemaining => 'Accès conservés :';
+
+  @override
+  String get peopleMemberRemovalHouseholdOnly => 'Retirer du foyer seulement';
+
+  @override
+  String get peopleMemberRemovalAllAccess => 'Retirer tout accès à mes animaux';
+
+  @override
+  String get peopleMemberRemovalAction => 'Retirer du foyer';
+
+  @override
+  String get peopleRevokeInviteTitle => 'Révoquer l\'invitation ?';
+
+  @override
+  String peopleRevokeInviteBody(String email) {
+    return 'Révoquer l\'invitation pour $email ?';
+  }
+
+  @override
+  String get peopleRevokeInviteConfirm => 'Révoquer l\'invitation';
+
+  @override
   String get peopleSaveError => 'Impossible d\'enregistrer. Réessayez.';
 
   @override
@@ -7722,6 +7823,203 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get peopleStatusInactive => 'Inactif';
+
+  @override
+  String get peopleStatusActive => 'Actif';
+
+  @override
+  String get peopleStatusNeedsReview => 'À vérifier';
+
+  @override
+  String peopleAccessUntil(String date) {
+    return 'Accès jusqu\'au $date';
+  }
+
+  @override
+  String peopleCardLookingAfter(String startsOn, String endsOn) {
+    return 'Garde des animaux · $startsOn–$endsOn';
+  }
+
+  @override
+  String get peopleActionCall => 'Appeler';
+
+  @override
+  String get peopleActionMessage => 'Message';
+
+  @override
+  String get peopleActionEmail => 'E-mail';
+
+  @override
+  String get peopleActionDirections => 'Itinéraire';
+
+  @override
+  String get peoplePickerPlaceholder => 'Choisir quelqu\'un';
+
+  @override
+  String get peoplePickerTitle => 'Choisir un contact';
+
+  @override
+  String get peoplePickerFieldLabel => 'Contact';
+
+  @override
+  String get peoplePickerNone => 'Aucun';
+
+  @override
+  String get peoplePickerSearchHint => 'Rechercher des personnes ou rôles';
+
+  @override
+  String get peoplePickerCurrentSelection => 'Sélection actuelle';
+
+  @override
+  String get peoplePickerHouseholdMembersSection => 'Membres du foyer';
+
+  @override
+  String get peoplePickerContactsSection => 'Contacts';
+
+  @override
+  String peoplePickerAddQuery(String query) {
+    return 'Ajouter « $query »';
+  }
+
+  @override
+  String peoplePickerUseWithoutSaving(String query) {
+    return 'Utiliser « $query » sans enregistrer';
+  }
+
+  @override
+  String get peoplePickerQuickAddTitle => 'Ajout rapide';
+
+  @override
+  String get peoplePickerQuickAddSave => 'Enregistrer le contact';
+
+  @override
+  String get peopleGroupCarers => 'Aidants de confiance';
+
+  @override
+  String get peopleGroupProfessionals => 'Professionnels';
+
+  @override
+  String get peopleHubSelectSomeone =>
+      'Sélectionnez quelqu\'un pour voir ses détails';
+
+  @override
+  String get peopleHubSearchHint => 'Rechercher personnes, rôles, animaux…';
+
+  @override
+  String get peoplePendingInvitesSection => 'Invitations en attente';
+
+  @override
+  String peopleInactiveSection(int count) {
+    return 'Inactifs ($count)';
+  }
+
+  @override
+  String get peopleFilterGroupLabel => 'Groupe';
+
+  @override
+  String get peopleFilterPetLabel => 'Animal';
+
+  @override
+  String get peopleMemberYou => 'Vous';
+
+  @override
+  String peoplePendingInviteLine(String email) {
+    return '$email · Invité';
+  }
+
+  @override
+  String peopleHouseholdMemberPets(String owns, String shares) {
+    return 'Possède $owns · Partage $shares';
+  }
+
+  @override
+  String get peopleRelationshipPrimaryVet => 'Vétérinaire principal';
+
+  @override
+  String get peopleRelationshipOutOfHoursVet => 'Vétérinaire de garde';
+
+  @override
+  String get peopleRelationshipEmergencyContact => 'Contact d\'urgence';
+
+  @override
+  String get peopleRelationshipCareProvider => 'Fournit des soins';
+
+  @override
+  String get peopleRelationshipOther => 'Autre lien';
+
+  @override
+  String get peopleDetailTabOverview => 'Vue d\'ensemble';
+
+  @override
+  String get peopleDetailTabPetsAccess => 'Animaux et accès';
+
+  @override
+  String get peopleDetailTabRelatedCare => 'Soins liés';
+
+  @override
+  String get peopleDetailTabNotes => 'Notes';
+
+  @override
+  String get peopleDetailLinkedAccount => 'Compte AgathaTrack';
+
+  @override
+  String get peopleDetailNextUpTitle => 'À venir';
+
+  @override
+  String peopleDetailStaffAt(String name) {
+    return 'Personnes chez $name';
+  }
+
+  @override
+  String get peopleDetailNotesPreviewTitle => 'Notes';
+
+  @override
+  String get peopleDetailLinkToPet => 'Lier à un animal';
+
+  @override
+  String get peopleDetailLinkPetTitle => 'Lier à un animal';
+
+  @override
+  String get peopleDetailLinkPetChooseKind => 'Quel lien ?';
+
+  @override
+  String peopleDetailRelatedCareHistory(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count visites passées',
+      one: '1 visite passée',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get peopleDetailHouseholdNoteLabel => 'Note du foyer';
+
+  @override
+  String get peopleDetailHouseholdNoteHelper => 'Visible par votre foyer.';
+
+  @override
+  String get peopleDetailSaveNotes => 'Enregistrer';
+
+  @override
+  String get peopleDetailNotesSaved => 'Notes enregistrées';
+
+  @override
+  String get peopleDetailAccessCoParent => 'Co-parent';
+
+  @override
+  String get peopleDetailAccessCanLogCare => 'Peut enregistrer les soins';
+
+  @override
+  String get peopleDetailPendingInviteBody =>
+      'En attente d\'acceptation de l\'invitation.';
+
+  @override
+  String get peopleDetailPendingPets => 'Animaux dans cette invitation';
+
+  @override
+  String get peopleDetailRevokeInEdit => 'Pour révoquer, ouvrez Modifier.';
 
   @override
   String get peopleDangerZoneTitle => 'Zone sensible';
@@ -7773,6 +8071,157 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get peopleAddRolesRequired =>
       'Choisissez au moins un rôle pour continuer.';
+
+  @override
+  String get peopleAddStepWhoTitle => 'Qui souhaitez-vous ajouter ?';
+
+  @override
+  String peopleAddStepProgress(int step) {
+    return 'Étape $step sur 5';
+  }
+
+  @override
+  String get peopleAddTileHousehold => 'Quelqu\'un à la maison';
+
+  @override
+  String get peopleAddTileHouseholdHelper =>
+      'Une personne qui partage le quotidien de vos animaux.';
+
+  @override
+  String get peopleAddTileCarer => 'Quelqu\'un qui les garde';
+
+  @override
+  String get peopleAddTileCarerHelper =>
+      'Un proche, un ami ou un pet-sitter qui s\'en occupe ponctuellement.';
+
+  @override
+  String get peopleAddTileProfessional => 'Un pro pour vos animaux';
+
+  @override
+  String get peopleAddTileProfessionalHelper =>
+      'Vétérinaire, toilettage, promenade, éducation…';
+
+  @override
+  String get peopleAddTileOrganisation => 'Un établissement';
+
+  @override
+  String get peopleAddTileOrganisationHelper =>
+      'Clinique, salon de toilettage, pension, garderie…';
+
+  @override
+  String get peopleAddStepAbout => 'À propos';
+
+  @override
+  String get peopleAddStepPets => 'Quels animaux ?';
+
+  @override
+  String get peopleAddStepReview => 'Vérification';
+
+  @override
+  String get peopleAddNext => 'Continuer';
+
+  @override
+  String get peopleAddBack => 'Retour';
+
+  @override
+  String get peopleAddOpenExisting => 'Ouvrir';
+
+  @override
+  String get peopleAddAppAccessShare => 'Partager des animaux dans l\'app';
+
+  @override
+  String get peopleAddAppAccessAbsence => 'Inviter pour une absence';
+
+  @override
+  String get peopleAddAppAccessHousehold => 'Inviter dans un foyer';
+
+  @override
+  String get peopleAddHouseholdName => 'Nom du foyer';
+
+  @override
+  String get peopleHouseholdPetReviewTitle => 'Animaux du foyer';
+
+  @override
+  String get peopleHouseholdPetReviewBody =>
+      'Choisissez les animaux qui appartiennent à ce foyer. Vous pourrez modifier plus tard.';
+
+  @override
+  String get peopleHouseholdMembersTitle => 'Membres';
+
+  @override
+  String get peopleHouseholdPetsTitle => 'Animaux';
+
+  @override
+  String get peopleHouseholdPetOwnerYou => 'Cet animal est à vous';
+
+  @override
+  String get peopleHouseholdPetOtherOwner => 'Appartient à un autre membre';
+
+  @override
+  String get peopleHouseholdPendingInvitesTitle => 'Invitations en attente';
+
+  @override
+  String get peopleHouseholdRevokeInvite => 'Révoquer';
+
+  @override
+  String get peopleHouseholdInviteMemberTitle => 'Inviter un membre';
+
+  @override
+  String get peopleHouseholdInviteMemberAction => 'Inviter un membre';
+
+  @override
+  String get peopleHouseholdInviteTierLabel => 'Accès';
+
+  @override
+  String get peopleHouseholdInviteOrganiserLabel => 'Organisateur du foyer';
+
+  @override
+  String get peopleHouseholdInviteAdultConfirm =>
+      'La personne a 18 ans ou plus';
+
+  @override
+  String get peopleHouseholdInviteSent => 'Invitation envoyée';
+
+  @override
+  String get peopleHouseholdRenameTitle => 'Renommer le foyer';
+
+  @override
+  String get peopleHouseholdLeaveTitle => 'Quitter le foyer ?';
+
+  @override
+  String get peopleHouseholdLeaveBody =>
+      'Vous perdrez l\'accès au foyer. D\'autres accès peuvent rester.';
+
+  @override
+  String get peopleHouseholdLeaveAction => 'Quitter le foyer';
+
+  @override
+  String get peopleHouseholdSuccessorLabel => 'Organisateur successeur';
+
+  @override
+  String peopleHouseholdInviteLandingTitle(String householdName) {
+    return 'Rejoindre $householdName ?';
+  }
+
+  @override
+  String peopleHouseholdInviteLandingBody(String inviterName, String tier) {
+    return '$inviterName vous a invité·e en tant que $tier.';
+  }
+
+  @override
+  String get peopleHouseholdInviteAccept => 'Accepter l\'invitation';
+
+  @override
+  String get peopleHouseholdInviteDecline => 'Refuser';
+
+  @override
+  String get peopleAddPetsEmpty => 'Aucun animal à lier pour l\'instant.';
+
+  @override
+  String get peopleAddPetLinkKind => 'Rôle pour cet animal';
+
+  @override
+  String get peopleAddEmergencyContact => 'Contact d\'urgence pour cet animal';
 
   @override
   String get peopleSaveValidationError =>
@@ -7967,7 +8416,32 @@ class AppLocalizationsFr extends AppLocalizations {
       'Saisissez le poids pour le marquer comme fait';
 
   @override
-  String get careWeightFieldLabel => 'Poids (kg)';
+  String careWeightFieldLabelUnit(String unit) {
+    return 'Poids ($unit)';
+  }
+
+  @override
+  String get careSkipWeighInTitle => 'Ignorer cette pesée prévue ?';
+
+  @override
+  String get careSkipReasonOptional => 'Raison (facultatif)';
+
+  @override
+  String get careSkipReasonCouldNotWeigh => 'Pesée impossible';
+
+  @override
+  String get careSkipReasonPetUnsettled => 'Animal trop agité';
+
+  @override
+  String get careSkipReasonVetWillWeigh => 'Le vétérinaire pèsera';
+
+  @override
+  String get careSkipReasonOther => 'Autre';
+
+  @override
+  String careSkippedWithReason(String reason) {
+    return 'Ignorée · $reason';
+  }
 
   @override
   String get careCompletedOnLabel => 'Quand a-t-il été fait ?';

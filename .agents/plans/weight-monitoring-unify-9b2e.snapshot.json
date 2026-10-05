@@ -2,7 +2,7 @@
   "schema_version": 1,
   "plan_id": "weight-monitoring-unify-9b2e",
   "plan_kind": "roadmap",
-  "current_child_plan_id": "weight-unify-care-9b2e",
+  "current_child_plan_id": null,
   "child_plans": [
     {
       "plan_id": "weight-unify-server-9b2e",
@@ -13,21 +13,21 @@
     {
       "plan_id": "weight-unify-hub-9b2e",
       "status": "merged",
-      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1599",
-      "merge_commit": "e311d0e7c8ab907b6a2ac595cbf255daba1fea9b"
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1603",
+      "merge_commit": "f7b6eea627ab201e78db5f6b7ac1010d5f296055"
     },
     {
       "plan_id": "weight-unify-care-9b2e",
-      "status": "pending",
-      "pr_url": null,
-      "merge_commit": null
+      "status": "merged",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1627",
+      "merge_commit": "171e707544c34ffb0404d1afe3b6da7797a98b5c"
     }
   ],
   "programme_ref": "docs/domains/weight_tracking/features/weight-monitoring-model.md",
   "approved_at": "2026-10-04T21:35:55Z",
   "approved_by": "standing grant — owner chat 2026-10-04 full programme W0 through child C; execute-plan delegated authority",
   "approved_until": "2026-10-06T21:35:55Z",
-  "autonomy": "active",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "main",
   "control_issue": 1537,
@@ -69,5 +69,5 @@
       "pr_head_sha": "8931363ffaa8c1bc15ee1b8054162f1e2cfcfff2"
     }
   ],
-  "content_hash": "sha256:01a164079ed69871e2eec0066814f7339effe9b0c4a94478a2747773497f533b"
+  "content_hash": "sha256:d0bd79120dd08f958818f4464fcadd65e30c84977a9e14b59c23bb96953ae37d"
 }

@@ -3,7 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../people/domain/entities/people_contact.dart';
+import '../../../../people/domain/entities/contact_summary.dart';
+import '../../../../people/domain/entities/people_legacy_mapping.dart';
+import '../../../../people/presentation/add/add_person_entry.dart';
+import '../../../../people/presentation/add/add_person_route_args.dart';
 import '../../controllers/pet_form_controller.dart';
 import '../../providers/pet_vet_contacts_provider.dart';
 
@@ -94,9 +97,16 @@ class PetFormVetSection extends ConsumerWidget {
           ],
           onChanged: (value) async {
             if (value == createNewVetSentinel) {
-              final created = await context.push<PeopleContact?>(
-                '/pc/people/new?roles=vet&pop=1',
+              final summary = await context.push<ContactSummary>(
+                '/pc/people/new',
+                extra: const AddPersonRouteArgs(
+                  initialEntry: AddPersonEntry.professional,
+                  popResultOnSave: true,
+                ),
               );
+              final created = summary != null
+                  ? peopleContactFromSummary(summary)
+                  : null;
               final vetId = created?.legacyVetId;
               if (vetId != null && vetId.isNotEmpty) {
                 onVetSelected(vetId);

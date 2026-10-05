@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/router/shell_return_navigation.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../pet_profile/domain/entities/care_family.dart';
 import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/health_occurrence.dart';
 import '../controllers/care_schedule_controller.dart';
@@ -11,7 +13,6 @@ import 'occurrence_care_actions.dart';
 import 'occurrence_completion_date_flow.dart';
 import 'occurrence_completion_feedback.dart';
 import 'reschedule_occurrence_flow.dart';
-import 'weight_occurrence_care_actions.dart';
 
 /// Occurrence mutations from the event-view workbench.
 class PetEventOccurrenceActions {
@@ -31,32 +32,13 @@ class PetEventOccurrenceActions {
     HealthEntry entry,
     HealthOccurrence occurrence,
   ) async {
-    if (WeightOccurrenceCareActions.isWeightRhythm(entry)) {
-      try {
-        final saved =
-            await WeightOccurrenceCareActions.showWeightEntrySheetForOccurrence(
-              context,
-              ref,
-              entry,
-              occurrence.id,
-            );
-        if (!saved || !context.mounted) return;
-      } catch (_) {
-        if (!context.mounted) return;
-        final l = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(l.careCompletionFailed)));
-        return;
-      }
-
-      if (!context.mounted) return;
-      await showOccurrenceCompletionFeedback(
+    if (entry.careFamily == CareFamily.weightMonitoring) {
+      openOccurrenceScreen(
         context,
-        ref,
-        entry: entry,
+        petId: entry.petId,
+        entryId: entry.id,
         occurrenceId: occurrence.id,
-        promptHealthIssue: false,
+        focus: 'weight',
       );
       return;
     }

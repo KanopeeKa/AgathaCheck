@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/care/care_item_observation_section.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../pet_care/core/care_family_capabilities.dart';
 import '../../../pet_care/presentation/widgets/care_surface/care_collection_inset_list.dart';
 import '../../../pet_care/presentation/widgets/care_surface/care_item_module.dart';
 import '../../../pet_care/presentation/widgets/care_surface/care_item_section_header.dart';
@@ -89,16 +91,33 @@ class CareItemDetailBody extends ConsumerWidget {
       onSeeHistory: onSeeHistory,
     );
 
+    final observationSlot = _CareItemObservationSlot(
+      petId: petId,
+      entry: entry,
+    );
+
     Widget sideScheduleAbsenceColumn() {
       if (absenceBeforeSchedule) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [absenceSection, _sectionGap, scheduleSection],
+          children: [
+            absenceSection,
+            _sectionGap,
+            scheduleSection,
+            _sectionGap,
+            observationSlot,
+          ],
         );
       }
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [scheduleSection, _sectionGap, absenceSection],
+        children: [
+          scheduleSection,
+          _sectionGap,
+          observationSlot,
+          _sectionGap,
+          absenceSection,
+        ],
       );
     }
 
@@ -352,6 +371,51 @@ class _ClosedNeedsAttentionModule extends StatelessWidget {
                 color: colorScheme.onSurfaceVariant,
               ),
             ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CareItemObservationSlot extends ConsumerWidget {
+  const _CareItemObservationSlot({required this.petId, required this.entry});
+
+  final String petId;
+  final HealthEntry entry;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final family = entry.careFamily;
+    if (family == null) return const SizedBox.shrink();
+
+    final caps = CareFamilyCapabilityPolicy.forFamily(family);
+    if (caps == null || !caps.supportsObservations) {
+      return const SizedBox.shrink();
+    }
+
+    final kind = caps.observationKind;
+    if (kind == null) return const SizedBox.shrink();
+
+    final section = ref.watch(careItemObservationSectionProvider)(
+      context,
+      petId: petId,
+      entryId: entry.id,
+      observationKind: kind,
+    );
+    if (section == null) return const SizedBox.shrink();
+
+    final l = AppLocalizations.of(context)!;
+    return CareItemModule(
+      semanticLabel: l.weight,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          CareItemSectionHeader(
+            title: l.weight,
+            icon: Icons.monitor_weight_outlined,
+          ),
+          const SizedBox(height: 12),
+          section,
         ],
       ),
     );

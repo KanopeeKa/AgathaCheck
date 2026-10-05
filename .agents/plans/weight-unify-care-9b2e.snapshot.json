@@ -5,10 +5,10 @@
   "approved_at": "2026-10-04T21:35:55Z",
   "approved_by": "standing grant — owner chat 2026-10-04 full programme W0 through child C; execute-plan delegated authority",
   "approved_until": "2026-10-06T21:35:55Z",
-  "autonomy": "halted",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "cursor/weight-unify-care-integration-9b2e",
-  "control_issue": 999999,
+  "control_issue": 1618,
   "artifact_branch_policy": "phase-branch",
   "phases": [
     {
@@ -47,13 +47,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1621",
+      "pr_head_sha": "de382f13"
     },
     {
       "id": "W9",
@@ -87,13 +86,11 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1624"
     },
     {
       "id": "W10",
@@ -129,14 +126,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "bdd-journey",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1626"
     }
   ],
-  "content_hash": "sha256:1260519ac2093fa1d398e7ab5d55cb07099672119b1aab906cf5a1b6f941cef2"
+  "content_hash": "sha256:8bfe691111d4f2828c43a1b007be37333e287caedd82b87e6c12f3676fb2d9a2"
 }

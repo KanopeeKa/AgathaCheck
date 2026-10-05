@@ -14,10 +14,10 @@
     "R1|flutter_app/lib/features/auth/presentation/widgets/landing/landing_logo.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
     "R1|flutter_app/lib/features/care_item/presentation/detail/care_item_detail_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
     "R1|flutter_app/lib/features/care_item/presentation/detail/care_item_detail_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
-    "R1|flutter_app/lib/features/people/presentation/screens/people_detail_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R1|flutter_app/lib/features/people/presentation/screens/people_detail_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
-    "R1|flutter_app/lib/features/people/presentation/screens/people_list_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R1|flutter_app/lib/features/people/presentation/screens/people_list_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
+    "R1|flutter_app/lib/features/people/presentation/detail/person_detail_shell.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
+    "R1|flutter_app/lib/features/people/presentation/detail/person_detail_shell.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
+    "R1|flutter_app/lib/features/people/presentation/hub/people_hub_layout.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
+    "R1|flutter_app/lib/features/people/presentation/hub/people_hub_layout.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
     "R1|flutter_app/lib/features/pet_care/context/presentation/screens/planned_absence_flow_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
     "R1|flutter_app/lib/features/pet_care/context/presentation/screens/planned_absence_flow_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
     "R1|flutter_app/lib/features/pet_care/context/presentation/screens/planned_absence_hub_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
@@ -51,8 +51,6 @@
     "R1|flutter_app/lib/features/pet_profile/presentation/widgets/pet_list/guardian_passed_away_section.dart|flutter_app/lib/features/experience/presentation/widgets/pet_care_pets_tile_grid.dart",
     "R1|flutter_app/lib/features/pet_tags/presentation/screens/manage_pet_tags_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
     "R1|flutter_app/lib/features/pet_tags/presentation/screens/manage_pet_tags_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
-    "R1|flutter_app/lib/features/sharing/presentation/screens/households_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R1|flutter_app/lib/features/sharing/presentation/screens/households_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
     "R1|flutter_app/lib/features/sharing/presentation/screens/share_pet_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
     "R1|flutter_app/lib/features/sharing/presentation/screens/share_pet_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
     "R1|flutter_app/lib/features/vet/presentation/screens/vet_list_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
@@ -153,9 +151,6 @@
     "R3|flutter_app/lib/features/health_tracking/presentation/widgets/health_issue_linked_events_strip.dart|flutter_app/lib/features/pet_profile/presentation/controllers/health_issues_controller.dart",
     "R3|flutter_app/lib/features/health_tracking/presentation/widgets/pet_event_pet_card.dart|flutter_app/lib/features/pet_profile/presentation/widgets/pet_detail/pet_info_chip.dart",
     "R3|flutter_app/lib/features/health_tracking/presentation/widgets/pet_event_pet_card.dart|flutter_app/lib/features/pet_profile/presentation/widgets/pet_photo_image.dart",
-    "R3|flutter_app/lib/features/health_tracking/presentation/widgets/weight_occurrence_care_actions.dart|flutter_app/lib/features/pet_profile/presentation/controllers/weight_tracking_controller.dart",
-    "R3|flutter_app/lib/features/health_tracking/presentation/widgets/weight_occurrence_care_actions.dart|flutter_app/lib/features/pet_profile/presentation/screens/widgets/add_weight_entry_sheet.dart",
-    "R3|flutter_app/lib/features/health_tracking/presentation/widgets/weight_occurrence_care_actions.dart|flutter_app/lib/features/weight_tracking/presentation/providers/weight_providers.dart",
     "R3|flutter_app/lib/features/notifications/presentation/providers/notification_providers.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
     "R3|flutter_app/lib/features/notifications/presentation/providers/notification_providers.dart|flutter_app/lib/features/pet_profile/presentation/providers/pet_providers.dart",
     "R3|flutter_app/lib/features/notifications/presentation/screens/notification_settings_screen.dart|flutter_app/lib/features/pet_profile/presentation/providers/pet_providers.dart",
@@ -166,11 +161,12 @@
     "R3|flutter_app/lib/features/notifications/presentation/screens/pending_actions_screen.dart|flutter_app/lib/features/pet_profile/presentation/widgets/pet_list/pending_foster_placements_section.dart",
     "R3|flutter_app/lib/features/notifications/presentation/widgets/notification_tile.dart|flutter_app/lib/features/pet_profile/presentation/providers/pet_providers.dart",
     "R3|flutter_app/lib/features/notifications/presentation/widgets/notification_tile.dart|flutter_app/lib/features/pet_profile/presentation/utils/pet_accent_color.dart",
-    "R3|flutter_app/lib/features/people/presentation/providers/people_providers.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
-    "R3|flutter_app/lib/features/people/presentation/screens/people_detail_screen.dart|flutter_app/lib/features/pet_profile/presentation/providers/pet_providers.dart",
-    "R3|flutter_app/lib/features/people/presentation/screens/people_detail_screen.dart|flutter_app/lib/features/vet/presentation/widgets/vet_team_initials_avatar.dart",
-    "R3|flutter_app/lib/features/people/presentation/screens/people_detail_screen.dart|flutter_app/lib/features/vet/presentation/widgets/vet_team_pet_row.dart",
-    "R3|flutter_app/lib/features/people/presentation/screens/people_list_screen.dart|flutter_app/lib/features/sharing/presentation/providers/household_providers.dart",
+    "R3|flutter_app/lib/features/people/application/people_providers.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
+    "R3|flutter_app/lib/features/people/presentation/add/add_person_flow.dart|flutter_app/lib/features/sharing/presentation/providers/share_pet_providers.dart",
+    "R3|flutter_app/lib/features/people/presentation/add/add_person_providers.dart|flutter_app/lib/features/pet_profile/presentation/providers/pet_providers.dart",
+    "R3|flutter_app/lib/features/people/presentation/households/household_create_flow.dart|flutter_app/lib/features/pet_profile/presentation/providers/pet_providers.dart",
+    "R3|flutter_app/lib/features/people/presentation/households/household_detail_page.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
+    "R3|flutter_app/lib/features/people/presentation/households/household_detail_page.dart|flutter_app/lib/features/pet_profile/presentation/providers/pet_providers.dart",
     "R3|flutter_app/lib/features/people/presentation/widgets/people_directory_card.dart|flutter_app/lib/features/vet/presentation/widgets/vet_team_initials_avatar.dart",
     "R3|flutter_app/lib/features/pet_care/context/presentation/away_plan_schedule_copy.dart|flutter_app/lib/features/health_tracking/presentation/widgets/care_event_status_line.dart",
     "R3|flutter_app/lib/features/pet_care/context/presentation/away_plan_schedule_copy.dart|flutter_app/lib/features/health_tracking/presentation/widgets/health_entry_form/health_entry_frequency_labels.dart",
@@ -210,7 +206,6 @@
     "R3|flutter_app/lib/features/pet_profile/presentation/controllers/health_issues_controller.dart|flutter_app/lib/features/health_tracking/presentation/providers/health_issue_providers.dart",
     "R3|flutter_app/lib/features/pet_profile/presentation/controllers/health_issues_controller.dart|flutter_app/lib/features/health_tracking/presentation/providers/health_providers.dart",
     "R3|flutter_app/lib/features/pet_profile/presentation/controllers/health_issues_controller.dart|flutter_app/lib/features/health_tracking/presentation/utils/health_document_picker.dart",
-    "R3|flutter_app/lib/features/pet_profile/presentation/controllers/weight_tracking_controller.dart|flutter_app/lib/features/weight_tracking/presentation/providers/weight_providers.dart",
     "R3|flutter_app/lib/features/pet_profile/presentation/providers/care_progression_providers.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
     "R3|flutter_app/lib/features/pet_profile/presentation/providers/pet_care_status_provider.dart|flutter_app/lib/features/health_tracking/presentation/providers/health_providers.dart",
     "R3|flutter_app/lib/features/pet_profile/presentation/providers/pet_providers.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
@@ -223,7 +218,6 @@
     "R3|flutter_app/lib/features/pet_profile/presentation/screens/pet_list_screen.dart|flutter_app/lib/features/health_tracking/presentation/widgets/events_nav_icon_button.dart",
     "R3|flutter_app/lib/features/pet_profile/presentation/screens/pet_list_screen.dart|flutter_app/lib/features/notifications/presentation/providers/notification_providers.dart",
     "R3|flutter_app/lib/features/pet_profile/presentation/screens/pet_manage_events_screen.dart|flutter_app/lib/features/health_tracking/presentation/widgets/add_health_entry_navigation.dart",
-    "R3|flutter_app/lib/features/pet_profile/presentation/screens/widgets/add_weight_entry_sheet.dart|flutter_app/lib/features/weight_tracking/presentation/providers/weight_providers.dart",
     "R3|flutter_app/lib/features/pet_profile/presentation/screens/widgets/event_list_card.dart|flutter_app/lib/features/health_tracking/presentation/widgets/health_entry_status.dart",
     "R3|flutter_app/lib/features/pet_profile/presentation/screens/widgets/event_list_card.dart|flutter_app/lib/features/health_tracking/presentation/widgets/health_entry_type_labels.dart",
     "R3|flutter_app/lib/features/pet_profile/presentation/screens/widgets/health_events_section.dart|flutter_app/lib/features/health_tracking/presentation/providers/health_providers.dart",
@@ -255,14 +249,14 @@
     "R3|flutter_app/lib/features/pet_profile/presentation/widgets/pet_detail/pet_profile_health_history_section.dart|flutter_app/lib/features/pet_care/presentation/widgets/care_surface/care_destination_row.dart",
     "R3|flutter_app/lib/features/pet_profile/presentation/widgets/pet_detail/pet_profile_weight_insight_section.dart|flutter_app/lib/features/pet_care/presentation/widgets/care_surface/care_insight_tile.dart",
     "R3|flutter_app/lib/features/pet_profile/presentation/widgets/pet_detail/pet_profile_weight_insight_section.dart|flutter_app/lib/features/weight_tracking/presentation/providers/weight_providers.dart",
+    "R3|flutter_app/lib/features/pet_profile/presentation/widgets/pet_form/pet_form_vet_section.dart|flutter_app/lib/features/people/presentation/add/add_person_entry.dart",
+    "R3|flutter_app/lib/features/pet_profile/presentation/widgets/pet_form/pet_form_vet_section.dart|flutter_app/lib/features/people/presentation/add/add_person_route_args.dart",
     "R3|flutter_app/lib/features/pet_profile/presentation/widgets/pet_form/pet_form_weight_context_section.dart|flutter_app/lib/features/care_intelligence/presentation/widgets/weight_management_context_selector.dart",
     "R3|flutter_app/lib/features/pet_tags/presentation/providers/pet_tag_providers.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
-    "R3|flutter_app/lib/features/sharing/presentation/providers/household_providers.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
     "R3|flutter_app/lib/features/sharing/presentation/providers/share_pet_providers.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
     "R3|flutter_app/lib/features/sharing/presentation/providers/share_pet_providers.dart|flutter_app/lib/features/pet_profile/presentation/providers/pet_providers.dart",
     "R3|flutter_app/lib/features/sharing/presentation/providers/sharing_providers.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
     "R3|flutter_app/lib/features/sharing/presentation/providers/sharing_providers.dart|flutter_app/lib/features/pet_profile/presentation/providers/pet_providers.dart",
-    "R3|flutter_app/lib/features/sharing/presentation/screens/households_screen.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
     "R3|flutter_app/lib/features/sharing/presentation/screens/invite_landing_screen.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
     "R3|flutter_app/lib/features/sharing/presentation/screens/invite_landing_screen.dart|flutter_app/lib/features/pet_profile/presentation/providers/pet_providers.dart",
     "R3|flutter_app/lib/features/sharing/presentation/screens/shared_pet_screen.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
@@ -306,7 +300,6 @@
     "health_tracking->people",
     "health_tracking->pet_care",
     "health_tracking->pet_profile",
-    "health_tracking->weight_tracking",
     "notifications->auth",
     "notifications->pet_profile",
     "people->auth",
@@ -630,6 +623,41 @@
     {
       "identity": "R4|weight_tracking->experience",
       "reason": "W6 weight hub relocated from pet_profile; experience shell matches pet_detail_screen pattern (roadmap §6.3)",
+      "accepted_on": "2026-10-05"
+    },
+    {
+      "identity": "R3|flutter_app/lib/features/people/application/people_providers.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
+      "reason": "People application wires authHttpClientProvider",
+      "accepted_on": "2026-10-04"
+    },
+    {
+      "identity": "R3|flutter_app/lib/features/people/presentation/add/add_person_flow.dart|flutter_app/lib/features/sharing/presentation/providers/share_pet_providers.dart",
+      "reason": "people-client-core-7f3b phase c6-add: share handoff + pet list for add flow (execute-plan #1565)",
+      "accepted_on": "2026-10-05"
+    },
+    {
+      "identity": "R3|flutter_app/lib/features/people/presentation/add/add_person_providers.dart|flutter_app/lib/features/pet_profile/presentation/providers/pet_providers.dart",
+      "reason": "people-client-core-7f3b phase c6-add: share handoff + pet list for add flow (execute-plan #1565)",
+      "accepted_on": "2026-10-05"
+    },
+    {
+      "identity": "R4|people->pet_profile",
+      "reason": "people-client-core-7f3b phase c6-add: share handoff + pet list for add flow (execute-plan #1565)",
+      "accepted_on": "2026-10-05"
+    },
+    {
+      "identity": "R4|people->sharing",
+      "reason": "people-client-core-7f3b phase c6-add: share handoff + pet list for add flow (execute-plan #1565)",
+      "accepted_on": "2026-10-05"
+    },
+    {
+      "identity": "R3|flutter_app/lib/features/pet_profile/presentation/widgets/pet_form/pet_form_vet_section.dart|flutter_app/lib/features/people/presentation/add/add_person_entry.dart",
+      "reason": "c6-add: pet form vet quick-add uses AddPersonRouteArgs",
+      "accepted_on": "2026-10-05"
+    },
+    {
+      "identity": "R3|flutter_app/lib/features/pet_profile/presentation/widgets/pet_form/pet_form_vet_section.dart|flutter_app/lib/features/people/presentation/add/add_person_route_args.dart",
+      "reason": "c6-add: pet form vet quick-add uses AddPersonRouteArgs",
       "accepted_on": "2026-10-05"
     }
   ]

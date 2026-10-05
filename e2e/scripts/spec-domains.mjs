@@ -108,7 +108,7 @@ export const AREAS = {
   },
   weight: {
     paths: ['flutter_app/lib/features/weight_tracking/', 'server/routes/weightEntries'],
-    specs: ['weight.tracking.spec.ts', 'weight.hub.spec.ts'],
+    specs: ['weight.tracking.spec.ts', 'weight.hub.spec.ts', 'weight.care.spec.ts'],
   },
   people: {
     paths: [
@@ -119,7 +119,7 @@ export const AREAS = {
       'server/routes/vets',
       'server/lib/people/',
     ],
-    specs: ['people-hub.spec.ts', 'people.detail-navigation.spec.ts', 'veterinarian.spec.ts'],
+    specs: ['people-core.spec.ts', 'veterinarian.spec.ts'],
   },
   help: {
     paths: ['flutter_app/lib/features/help/', 'flutter_app/lib/features/about/'],

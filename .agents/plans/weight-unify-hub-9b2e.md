@@ -38,11 +38,11 @@ last_completed_phase: W7
 halt_reason: null
 next_action: "plan complete"
 artifact_ref:
-  branch: cursor/weight-unify-hub-integration-9b2e
+  branch: main
   plan_path: .agents/plans/weight-unify-hub-9b2e.md
-  plan_commit: e311d0e7c8ab907b6a2ac595cbf255daba1fea9b
+  plan_commit: f7b6eea627ab201e78db5f6b7ac1010d5f296055
   snapshot_path: .agents/plans/weight-unify-hub-9b2e.snapshot.json
-  snapshot_commit: e311d0e7c8ab907b6a2ac595cbf255daba1fea9b
+  snapshot_commit: f7b6eea627ab201e78db5f6b7ac1010d5f296055
 open_prs: []
 merge_commits: {"W5":"b0730951103df917281e7451b7a0e115959b344b"}
 debt_issue_refs: []

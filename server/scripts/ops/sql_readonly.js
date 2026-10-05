@@ -3,7 +3,11 @@
  * Read-only SQL helper for host ops (DC-7). SQL from stdin; uses backend .env.
  */
 import { createInterface } from 'node:readline';
+
 import { createAppPool } from '../../lib/db/createPool.js';
+import { loadBackendEnv } from '../lib/loadBackendEnv.js';
+
+loadBackendEnv();
 
 const WRITE_RE = /\b(INSERT|UPDATE|DELETE|DROP|ALTER|CREATE|TRUNCATE|GRANT|REVOKE)\b/i;
 

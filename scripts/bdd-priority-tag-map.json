@@ -165,6 +165,9 @@
     "Choosing which weigh-in a weight counts as": "P1",
     "Undoing a weight that counted as a weigh-in": "P1",
     "Deleting a weight that counted as a weigh-in asks for confirmation": "P1",
+    "Skipping a weigh-in with a reason": "P1",
+    "Completing a weigh-in in pounds": "P1",
+    "Care item view shows the weight section": "P2",
     "Weight unit preference follows the user": "P1",
     "Weight screen suggests a weigh-in routine when there is none": "P2"
   },
@@ -255,10 +258,15 @@
     "Receiving org returns a transferred pet to the sending org": "P1"
   },
   "people.feature": {
-    "Pet parent opens People from Account": "P2",
-    "Today desk shows Vet team sub-block": "P2",
-    "People directory card opens person detail": "P2",
-    "Back from person detail returns to People hub": "P2"
+    "Open Contacts from bottom navigation and see household, carers and professionals sections": "P1",
+    "Search by role and filter to professionals; /pc/vets lands on the professionals filter": "P1",
+    "Desktop: select a person, the detail shows in the pane, and search is kept": "P1",
+    "Add a pet professional as Buddy's primary vet; Buddy appears on their Pets & access tab": "P1",
+    "Add a trusted carer and share Buddy with Can log care; a pending invite shows in the roster": "P1",
+    "Edit a contact's roles and name; its kind is unchanged": "P1",
+    "Removing a contact in use lists where it's used; mark it inactive; it shows as Inactive": "P1",
+    "Create a household, invite a member by email (accepted via API helper), then remove them with the remaining-access preview": "P1",
+    "Today desk Vet team and Trusted carers cards open person detail": "P1"
   },
   "veterinarian_management.feature": {
     "Creating a veterinarian with all details": "P1",

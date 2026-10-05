@@ -11,7 +11,7 @@ const ROUTES_IMPORT_RE_ALT = /require\s*\(\s*['"][^'"]*\/routes\//;
 
 /** Pre-existing; I2.4 extends this test to cover all lib → routes imports. */
 const DEFERRED_ROUTE_IMPORT_VIOLATIONS = new Set([
-  'lib/care/observations/weightObservationService.js',
+  'lib/care/observations/weightOccurrenceCompletion.js',
 ]);
 
 function posixRelative(filePath) {
