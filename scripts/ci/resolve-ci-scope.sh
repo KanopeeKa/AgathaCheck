@@ -31,7 +31,17 @@ else
   paths="$(printf '%s\n' "${changed[@]}")"
 fi
 
-ci_scope_classify_paths "$paths"
+# Large integration PRs can exceed ARG_MAX during scope emit; run the full stack instead.
+if ((${#changed[@]} > 400)); then
+  ci_scope_reset
+  CI_SCOPE_FORCE_FULL=true
+  CI_SCOPE_ESCAPE_FULL=true
+  CI_SCOPE_HAS_FLUTTER=true
+  CI_SCOPE_HAS_SERVER_TEST=true
+  CI_SCOPE_HAS_E2E=true
+else
+  ci_scope_classify_paths "$paths"
+fi
 
 if [[ "$FORCE_FULL_INPUT" == "true" ]]; then
   CI_SCOPE_ESCAPE_FULL=true
@@ -53,10 +63,13 @@ fi
 CI_SCOPE_E2E_SELECTION='{}'
 if ci_scope_run_web_build; then
   ui_paths="$(printf '%s\n' "${changed[@]}" | grep -v '^server/' || true)"
-  if ! CI_SCOPE_E2E_SELECTION="$(printf '%s\n' "$ui_paths" | node "$ROOT/e2e/scripts/select-affected-specs.mjs")"; then
+  e2e_specs_input="$(mktemp)"
+  printf '%s\n' "$ui_paths" >"$e2e_specs_input"
+  if ! CI_SCOPE_E2E_SELECTION="$(node "$ROOT/e2e/scripts/select-affected-specs.mjs" <"$e2e_specs_input")"; then
     echo "::warning::select-affected-specs.mjs failed — PR runs the @smoke-ci canary only"
     CI_SCOPE_E2E_SELECTION='{}'
   fi
+  rm -f "$e2e_specs_input"
 fi
 export CI_SCOPE_E2E_SELECTION
 
