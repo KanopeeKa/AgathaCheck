@@ -110,10 +110,10 @@ next_action: "continue phase 5 on branch cursor/not-recorded-tz-fix-integration-
 artifact_ref:
   branch: cursor/not-recorded-tz-fix-integration-e76a
   plan_path: .agents/plans/not-recorded-tz-fix-e76a.md
-  plan_commit: fa5f1a71b6182f5006f696c965c3a6f64527e9ba
+  plan_commit: 57fd9ec1ff26eea01bb55729375b2a9a96ca5da5
   snapshot_path: .agents/plans/not-recorded-tz-fix-e76a.snapshot.json
-  snapshot_commit: fa5f1a71b6182f5006f696c965c3a6f64527e9ba
-open_prs: []
+  snapshot_commit: 57fd9ec1ff26eea01bb55729375b2a9a96ca5da5
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1602"]
 merge_commits: {}
 debt_issue_refs: []
 ```

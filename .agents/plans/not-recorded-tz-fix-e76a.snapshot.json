@@ -4,7 +4,7 @@
   "approved_at": "2026-10-04T22:52:00Z",
   "approved_by": "user-chat-2026-10-04-full-delegated-authority-not-recorded-programme",
   "approved_until": "2026-10-06T22:52:00Z",
-  "content_hash": "sha256:effca2f355256597c2b59b54c216e71ad3e74ba0e385ebd9e4f19f650e9ffd31",
+  "content_hash": "sha256:a7ebac1188479a5890b95505c296226d7fda0855dbd25dda7511593241e41147",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/not-recorded-tz-fix-integration-e76a",
@@ -157,7 +157,9 @@
       "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1602",
+      "pr_head_sha": "57fd9ec1ff26eea01bb55729375b2a9a96ca5da5"
     }
   ]
 }
