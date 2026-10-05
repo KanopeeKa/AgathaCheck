@@ -27,6 +27,14 @@ CREATE TABLE public._migrations (
     name character varying(255) NOT NULL,
     applied_at timestamp with time zone DEFAULT now()
 );
+CREATE TABLE public.account_device_labels (
+    id uuid NOT NULL,
+    user_id uuid NOT NULL,
+    label text NOT NULL,
+    first_seen_at timestamp with time zone DEFAULT now() NOT NULL,
+    last_seen_at timestamp with time zone DEFAULT now() NOT NULL,
+    session_family_id uuid
+);
 CREATE TABLE public.account_erasure_operations (
     id uuid NOT NULL,
     user_id uuid NOT NULL,
@@ -951,14 +959,6 @@ CREATE TABLE public.refresh_sessions (
     revoked_at timestamp with time zone,
     expires_at timestamp with time zone NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL
-);
-CREATE TABLE public.account_device_labels (
-    id uuid NOT NULL,
-    user_id uuid NOT NULL,
-    label text NOT NULL,
-    first_seen_at timestamp with time zone DEFAULT now() NOT NULL,
-    last_seen_at timestamp with time zone DEFAULT now() NOT NULL,
-    session_family_id uuid
 );
 CREATE TABLE public.refresh_tokens (
     id uuid NOT NULL,
