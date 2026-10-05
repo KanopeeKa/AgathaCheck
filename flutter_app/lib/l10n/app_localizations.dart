@@ -13588,6 +13588,144 @@ abstract class AppLocalizations {
   /// **'Choose at least one role to continue.'**
   String get peopleAddRolesRequired;
 
+  /// No description provided for @peopleAddStepWhoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Who would you like to add?'**
+  String get peopleAddStepWhoTitle;
+
+  /// No description provided for @peopleAddStepProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {step} of 5'**
+  String peopleAddStepProgress(int step);
+
+  /// No description provided for @peopleAddTileHousehold.
+  ///
+  /// In en, this message translates to:
+  /// **'Someone at home'**
+  String get peopleAddTileHousehold;
+
+  /// No description provided for @peopleAddTileHouseholdHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Lives with you and shares your pets\' everyday life.'**
+  String get peopleAddTileHouseholdHelper;
+
+  /// No description provided for @peopleAddTileCarer.
+  ///
+  /// In en, this message translates to:
+  /// **'A trusted carer'**
+  String get peopleAddTileCarer;
+
+  /// No description provided for @peopleAddTileCarerHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'A friend, relative or pet sitter who sometimes looks after them.'**
+  String get peopleAddTileCarerHelper;
+
+  /// No description provided for @peopleAddTileProfessional.
+  ///
+  /// In en, this message translates to:
+  /// **'A pet professional'**
+  String get peopleAddTileProfessional;
+
+  /// No description provided for @peopleAddTileProfessionalHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Vet, groomer, walker, trainer…'**
+  String get peopleAddTileProfessionalHelper;
+
+  /// No description provided for @peopleAddTileOrganisation.
+  ///
+  /// In en, this message translates to:
+  /// **'An organisation'**
+  String get peopleAddTileOrganisation;
+
+  /// No description provided for @peopleAddTileOrganisationHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Clinic, grooming salon, boarding, daycare…'**
+  String get peopleAddTileOrganisationHelper;
+
+  /// No description provided for @peopleAddStepAbout.
+  ///
+  /// In en, this message translates to:
+  /// **'About them'**
+  String get peopleAddStepAbout;
+
+  /// No description provided for @peopleAddStepPets.
+  ///
+  /// In en, this message translates to:
+  /// **'Which pets?'**
+  String get peopleAddStepPets;
+
+  /// No description provided for @peopleAddStepReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Review'**
+  String get peopleAddStepReview;
+
+  /// No description provided for @peopleAddNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get peopleAddNext;
+
+  /// No description provided for @peopleAddBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get peopleAddBack;
+
+  /// No description provided for @peopleAddOpenExisting.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get peopleAddOpenExisting;
+
+  /// No description provided for @peopleAddAppAccessShare.
+  ///
+  /// In en, this message translates to:
+  /// **'Share pets in the app'**
+  String get peopleAddAppAccessShare;
+
+  /// No description provided for @peopleAddAppAccessAbsence.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite for an absence'**
+  String get peopleAddAppAccessAbsence;
+
+  /// No description provided for @peopleAddAppAccessHousehold.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite to a household'**
+  String get peopleAddAppAccessHousehold;
+
+  /// No description provided for @peopleAddHouseholdName.
+  ///
+  /// In en, this message translates to:
+  /// **'Household name'**
+  String get peopleAddHouseholdName;
+
+  /// No description provided for @peopleAddPetsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No pets to link yet.'**
+  String get peopleAddPetsEmpty;
+
+  /// No description provided for @peopleAddPetLinkKind.
+  ///
+  /// In en, this message translates to:
+  /// **'How they help with this pet'**
+  String get peopleAddPetLinkKind;
+
+  /// No description provided for @peopleAddEmergencyContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency contact for this pet'**
+  String get peopleAddEmergencyContact;
+
   /// No description provided for @peopleSaveValidationError.
   ///
   /// In en, this message translates to:

@@ -114,9 +114,13 @@ List<RouteBase> buildExperienceRoutes() {
                 final extra = state.extra;
                 List<String> petIds = const [];
                 String? initialPetId;
+                String? prefillEmail;
+                String? contactId;
                 if (extra is SharePetRouteArgs) {
                   petIds = extra.petIds;
                   initialPetId = extra.initialPetId;
+                  prefillEmail = extra.prefillEmail;
+                  contactId = extra.contactId;
                 } else if (extra is List<String>) {
                   petIds = extra;
                 } else if (extra is List) {
@@ -125,6 +129,8 @@ List<RouteBase> buildExperienceRoutes() {
                 return SharePetScreen(
                   initialPetIds: petIds,
                   initialPetId: initialPetId,
+                  prefillEmail: prefillEmail,
+                  contactId: contactId,
                 );
               },
             ),

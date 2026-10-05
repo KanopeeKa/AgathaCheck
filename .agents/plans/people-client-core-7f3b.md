@@ -609,12 +609,12 @@ last_completed_phase: c5-edit
 halt_reason: null
 next_action: "continue phase c6-add on branch cursor/people-client-c6-add-7f3b"
 artifact_ref:
-  branch: cursor/people-client-core-integration-7f3b
+  branch: cursor/people-client-c6-add-7f3b
   plan_path: .agents/plans/people-client-core-7f3b.md
-  plan_commit: 29779e5a681cfc0a264429861b48fc8f3904f548
+  plan_commit: 100cb068b327fb7bb3529d62ecb0ad45045d8f68
   snapshot_path: .agents/plans/people-client-core-7f3b.snapshot.json
-  snapshot_commit: 29779e5a681cfc0a264429861b48fc8f3904f548
-open_prs: []
+  snapshot_commit: 100cb068b327fb7bb3529d62ecb0ad45045d8f68
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1607"]
 merge_commits: {"c5-edit":"29779e5a681cfc0a264429861b48fc8f3904f548"}
 debt_issue_refs: []
 ```

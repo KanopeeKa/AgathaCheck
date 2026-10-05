@@ -22,6 +22,8 @@ class SharePetScreen extends ConsumerStatefulWidget {
     this.petId,
     this.initialPetIds = const [],
     this.initialPetId,
+    this.prefillEmail,
+    this.contactId,
   });
 
   /// Single-pet route: `/pet/:petId/share`.
@@ -32,6 +34,9 @@ class SharePetScreen extends ConsumerStatefulWidget {
 
   /// Optional initial selection within [initialPetIds].
   final String? initialPetId;
+
+  final String? prefillEmail;
+  final String? contactId;
 
   @override
   ConsumerState<SharePetScreen> createState() => _SharePetScreenState();
@@ -125,6 +130,8 @@ class _SharePetScreenState extends ConsumerState<SharePetScreen> {
                     const [],
                 accessList:
                     shareState.accessByPet[selectedId]?.access ?? const [],
+                prefillEmail: widget.prefillEmail,
+                contactId: widget.contactId,
               ),
             ],
           );
@@ -142,6 +149,8 @@ class _SharePetBody extends ConsumerWidget {
     required this.shareNotifier,
     required this.pendingInvites,
     required this.accessList,
+    this.prefillEmail,
+    this.contactId,
   });
 
   final Pet pet;
@@ -150,6 +159,8 @@ class _SharePetBody extends ConsumerWidget {
   final SharePetNotifier shareNotifier;
   final List<ShareInvite> pendingInvites;
   final List<PetAccess> accessList;
+  final String? prefillEmail;
+  final String? contactId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -182,6 +193,8 @@ class _SharePetBody extends ConsumerWidget {
             pendingInvites: pendingInvites,
             canTransferOwnership: canTransfer,
             onInviteSent: () => shareNotifier.refresh(),
+            prefillEmail: prefillEmail,
+            contactId: contactId,
           ),
         );
       case PetViewerRole.organization:

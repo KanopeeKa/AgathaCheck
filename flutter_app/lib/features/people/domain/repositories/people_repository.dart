@@ -81,6 +81,15 @@ class HouseholdRemainingAccess {
 abstract class HouseholdsRepository {
   Future<List<Household>> listHouseholds();
 
+  Future<Household> createHousehold(String name);
+
+  Future<void> createHouseholdInvite({
+    required String householdId,
+    required String inviteeEmail,
+    required String contactId,
+    String accessTier = 'full_access',
+  });
+
   Future<void> revokeHouseholdInvite({
     required String householdId,
     required String inviteId,
