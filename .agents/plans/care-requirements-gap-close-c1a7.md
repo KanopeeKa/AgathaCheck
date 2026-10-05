@@ -315,10 +315,10 @@ flowchart TD
 
 ```yaml
 autonomy: active
-current_phase: B4
-last_completed_phase: B3
+current_phase: D1
+last_completed_phase: B4
 halt_reason: null
-next_action: "continue phase B4 on branch cursor/care-gap-b4-pause-50b4"
+next_action: "continue phase D1 on branch cursor/care-gap-d1-drop-history-50b4"
 artifact_ref:
   branch: cursor/care-requirements-gap-close-integration-50b4
   plan_path: .agents/plans/care-requirements-gap-close-c1a7.md
