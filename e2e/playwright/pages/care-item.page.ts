@@ -314,6 +314,21 @@ export class CareItemPage {
     ).toBeVisible({ timeout: 30_000 });
   }
 
+  async expectBulkStackDoneSnackbar(count: number): Promise<void> {
+    const en = count === 1 ? '1 marked done' : `${count} marked done`;
+    const fr =
+      count === 1 ? '1 marqué comme fait' : `${count} marqués comme faits`;
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await expect(
+        this.page
+          .locator('[flt-semantics-identifier="care_stack_snackbar"]')
+          .or(this.page.getByText(new RegExp(`^${en}$|^${fr}$`, 'i')))
+          .first(),
+      ).toBeVisible();
+    }).toPass({ timeout: 45_000 });
+  }
+
   async markLeadingDone(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
     await this.page
