@@ -42,17 +42,17 @@ Package 9, second half (D5, D21). Take the active Flutter feature graph from one
 
 ```yaml
 autonomy: active
-current_phase: "1"
+current_phase: 1
 last_completed_phase: null
 halt_reason: null
-next_action: "bootstrap: create integration branch + control issue, then phase 1"
+next_action: "continue phase 1 on branch cursor/active-codebase-i2-1-layering-adr-e41f"
 artifact_ref:
-  branch: null
+  branch: cursor/active-codebase-i2-1-layering-adr-e41f
   plan_path: .agents/plans/active-codebase-batch-i2-acyclic-graph-e41f.md
-  plan_commit: null
+  plan_commit: a419d3a489555a8029843de11259797c77c76049
   snapshot_path: .agents/plans/active-codebase-batch-i2-acyclic-graph-e41f.snapshot.json
-  snapshot_commit: null
-open_prs: []
+  snapshot_commit: a419d3a489555a8029843de11259797c77c76049
+open_prs: [true]
 merge_commits: {}
 debt_issue_refs: []
 ```
@@ -94,9 +94,9 @@ docs
 
 **Acceptance criteria:**
 
-- [ ] **I2.1-1** ADR `docs/architecture/decisions/000N-feature-layering.md` sets the target layer order, derived from the metrics run at the batch base. Proposed order, bottom to top: `core` → `auth` → `care_taxonomy` → `pet_profile` (domain, data, list, form only; D21) → {`vet`, `people`, `pet_tags`, `sharing`, `notifications`, `weight_tracking`, `health_tracking`} → {`care_intelligence`, `pet_care`} → `experience` (composition), with `subscription`, `about` and `help` as leaves. Every allowed direction is stated explicitly.
-- [ ] **I2.1-2** A cut list names every current feature edge that points against the layer order (edge, files, directives, planned remedy: move to owner, move composition to `experience`, or invert with a callback or port), with each assigned to phase 2 or 3.
-- [ ] **I2.1-3** The ADR records D21: multi-feature pet-profile surfaces move into `experience`, and `pet_profile` keeps no dependency on `health_tracking`, `weight_tracking`, `pet_care`, `sharing`, `vet`, `notifications` or `care_intelligence`.
+- [x] **I2.1-1** ADR `docs/architecture/decisions/0002-feature-layering.md` sets the target layer order, derived from the metrics run at the batch base. Proposed order, bottom to top: `core` → `auth` → `care_taxonomy` → `pet_profile` (domain, data, list, form only; D21) → {`vet`, `people`, `pet_tags`, `sharing`, `notifications`, `weight_tracking`, `health_tracking`} → {`care_intelligence`, `pet_care`} → `experience` (composition), with `subscription`, `about` and `help` as leaves. Every allowed direction is stated explicitly.
+- [x] **I2.1-2** A cut list names every current feature edge that points against the layer order (edge, files, directives, planned remedy: move to owner, move composition to `experience`, or invert with a callback or port), with each assigned to phase 2 or 3.
+- [x] **I2.1-3** The ADR records D21: multi-feature pet-profile surfaces move into `experience`, and `pet_profile` keeps no dependency on `health_tracking`, `weight_tracking`, `pet_care`, `sharing`, `vet`, `notifications` or `care_intelligence`.
 
 ---
 
