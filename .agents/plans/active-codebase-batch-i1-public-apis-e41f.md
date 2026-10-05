@@ -46,17 +46,17 @@ Active features (16): `about`, `auth`, `care_intelligence`, `care_taxonomy`, `ex
 
 ```yaml
 autonomy: active
-current_phase: 3
-last_completed_phase: 2
+current_phase: 2
+last_completed_phase: 1
 halt_reason: null
-next_action: "continue phase 3 on branch cursor/active-codebase-i1-3-private-edges-e41f"
+next_action: "continue phase 2 on branch cursor/active-codebase-i1-2-experience-edges-e41f"
 artifact_ref:
   branch: cursor/active-codebase-i1-2-experience-edges-e41f
   plan_path: .agents/plans/active-codebase-batch-i1-public-apis-e41f.md
-  plan_commit: b1b78cd7c41154cc412d68db8f7cfaea97c9dfb5
+  plan_commit: d23f582e38285e576c984a6df460d8f52335b6a7
   snapshot_path: .agents/plans/active-codebase-batch-i1-public-apis-e41f.snapshot.json
-  snapshot_commit: b1b78cd7c41154cc412d68db8f7cfaea97c9dfb5
-open_prs: []
+  snapshot_commit: d23f582e38285e576c984a6df460d8f52335b6a7
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1635"]
 merge_commits: {}
 debt_issue_refs: []
 ```
