@@ -32,6 +32,8 @@ class NotificationInlineActionRunner implements NotificationInlineActions {
         _openInviteLanding(context, notification);
       case NotificationInlineActionKind.accountNewSignIn:
         await startSecureAccountFlow(context, notification);
+      case NotificationInlineActionKind.accountPasswordChanged:
+        await startSecureAccountFlow(context, notification);
     }
     await _ref.read(notificationsProvider.notifier).refresh();
     _ref.invalidate(petListProvider);
@@ -107,6 +109,8 @@ class NotificationInlineActionRunner implements NotificationInlineActions {
       case NotificationInlineActionKind.householdInvite:
         await _declineShareInvite(notification);
       case NotificationInlineActionKind.accountNewSignIn:
+        return;
+      case NotificationInlineActionKind.accountPasswordChanged:
         return;
     }
   }
