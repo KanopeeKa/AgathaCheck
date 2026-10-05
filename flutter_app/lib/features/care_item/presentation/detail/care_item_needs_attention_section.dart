@@ -19,7 +19,7 @@ import 'care_occurrence_menu.dart';
 CareItemStatusTone _pillTone(OccurrencePillTone tone) => switch (tone) {
   OccurrencePillTone.overdue => CareItemStatusTone.overdue,
   OccurrencePillTone.due => CareItemStatusTone.due,
-  OccurrencePillTone.notRecorded => CareItemStatusTone.notRecorded,
+  OccurrencePillTone.closedNotRecorded => CareItemStatusTone.notRecordedClosed,
   OccurrencePillTone.neutral => CareItemStatusTone.neutral,
 };
 
@@ -312,9 +312,6 @@ class _OccurrenceLine extends ConsumerWidget {
                 child: CareItemStatusPill(
                   label: pill.label,
                   tone: _pillTone(pill.tone),
-                  leadingIcon: status == CareOccurrenceStatus.notRecorded
-                      ? Icons.playlist_add_check_circle_outlined
-                      : null,
                 ),
               ),
               const SizedBox(width: 8),
