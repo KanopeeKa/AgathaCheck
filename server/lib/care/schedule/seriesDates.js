@@ -186,6 +186,33 @@ export function seriesDateOnOrAfter(anchorIso, entry, targetIso) {
 }
 
 /**
+ * Anchor for fixed-series slot checks (repair D3/D4).
+ *
+ * @param {object} entry
+ * @returns {string|null}
+ */
+export function resolveSeriesAnchor(entry) {
+  return dateToIsoDate(entry.schedule_anchor_date)
+    || dateToIsoDate(entry.next_due_date)
+    || dateToIsoDate(entry.start_date);
+}
+
+/**
+ * Whether `calendarIso` is a valid series date for `entry` from its anchor.
+ *
+ * @param {object} entry
+ * @param {string} calendarIso YYYY-MM-DD
+ * @returns {boolean}
+ */
+export function isCalendarDateOnSeries(entry, calendarIso) {
+  const anchor = resolveSeriesAnchor(entry);
+  if (!anchor || !calendarIso) return true;
+  if (!seriesStep(entry)) return calendarIso === anchor;
+  if (calendarIso < anchor) return false;
+  return seriesDateOnOrAfter(anchor, entry, calendarIso) === calendarIso;
+}
+
+/**
  * First series date strictly after `targetIso`.
  *
  * @param {string} anchorIso
