@@ -5,7 +5,8 @@
 library;
 
 export 'domain/entities/pet.dart';
-export 'domain/entities/pet_access_role.dart' show PetProfileAccessRole, PetProfileAccessRoleWire;
+export 'domain/entities/pet_access_role.dart'
+    show PetProfileAccessRole, PetProfileAccessRoleWire;
 export 'domain/entities/pet_report_supplement.dart';
 export 'domain/repositories/pet_repository.dart';
 export 'domain/usecases/add_pet.dart';
