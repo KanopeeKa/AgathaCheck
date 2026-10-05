@@ -202,13 +202,13 @@ autonomy: active
 current_phase: orchestrate
 last_completed_phase: null
 halt_reason: null
-next_action: "continue child plan active-codebase-batch-h-ports-transport-e41f"
+next_action: "bootstrap and gate child plan active-codebase-batch-i1-public-apis-e41f"
 artifact_ref:
-  branch: main
+  branch: cursor/active-codebase-h-integration-e41f
   plan_path: .agents/plans/active-codebase-completion-e41f.md
-  plan_commit: 171e75124ca2692e5148f837d124bf0d9df7718b
+  plan_commit: 0e6657dfa5f86900f0f58d661adfadbece682994
   snapshot_path: .agents/plans/active-codebase-completion-e41f.snapshot.json
-  snapshot_commit: 171e75124ca2692e5148f837d124bf0d9df7718b
+  snapshot_commit: 0e6657dfa5f86900f0f58d661adfadbece682994
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
