@@ -57,8 +57,6 @@ class OrgShellScaffold extends ConsumerWidget {
       experience: AppExperience.organization,
       currentLocation: location,
       screenTitle: title,
-      orgNavVariant: navVariant,
-      organization: resolvedOrg ?? organization,
       contextualActions: [...contextualActions, ...trailingActions],
       backPath: backPath,
       onBackPressed: onBack,
