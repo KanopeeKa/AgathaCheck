@@ -32,7 +32,7 @@ Living metrics for Agatha Track quality. Update when CI or test counts change ma
 | BDD title drift (active) | 0 | `generate-scorecard-metrics.mjs --check` |
 | BDD uncovered (active) | 36 | informational |
 | Pre-UAT shard orphans | 0 | `validate-shard-manifest.mjs` |
-| @smoke-ci / @smoke-uat / @smoke-a11y | 6 / 10 / 4 | `check-smoke-tags.mjs` |
+| @smoke-ci / @smoke-uat / @smoke-a11y | 6 / 12 / 4 | `check-smoke-tags.mjs` |
 | Flutter domain coverage gate | **70%** | `check_domain_coverage.js` |
 <!-- scorecard-metrics:end -->
 

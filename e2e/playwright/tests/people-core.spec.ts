@@ -38,7 +38,7 @@ import { prepareLiveApiAccess } from '../support/waf';
 const baseURL = () => process.env.E2E_BASE_URL ?? 'http://localhost:3000';
 
 test.describe('People core journeys @people', () => {
-  test('@smoke-ci @P1 open Contacts from bottom navigation and see roster sections', async ({
+  test('@smoke-ci @smoke-uat @P1 open Contacts from bottom navigation and see roster sections', async ({
     page,
   }) => {
     await page.setViewportSize({ width: 375, height: 812 });
@@ -219,7 +219,7 @@ test.describe('People core journeys @people', () => {
     }).toPass({ timeout: 30_000 });
   });
 
-  test('@smoke-ci @P1 desk vet and carer cards open person detail', async ({ page }) => {
+  test('@smoke-ci @smoke-uat @P1 desk vet and carer cards open person detail', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 });
     await prepareLiveApiAccess(page, baseURL());
     const user = await signupUser(baseURL());
