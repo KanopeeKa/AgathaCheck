@@ -108,6 +108,8 @@ class NotificationInlineActionRunner implements NotificationInlineActions {
         await _declineShareInvite(notification);
       case NotificationInlineActionKind.householdInvite:
         await _declineShareInvite(notification);
+      case NotificationInlineActionKind.accountNewSignIn:
+        return;
     }
   }
 

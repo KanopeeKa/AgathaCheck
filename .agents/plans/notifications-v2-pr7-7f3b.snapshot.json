@@ -33,10 +33,11 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "governance",
-      "status": "done",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "merge_commit": "7b00f5a5"
     },
     {
       "id": "2",
@@ -68,7 +69,7 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "done",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
       "pr_url": null,
@@ -76,5 +77,5 @@
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:e9039ad8163c02125b2bf908ea81eea26870f9fe9d5b4825485dbccb3fb799f1"
+  "content_hash": "sha256:82b187a87aa3cd50d2c84acc39db3164cf9aa9f62207e01403a6295d4d0a822b"
 }
