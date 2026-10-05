@@ -47,10 +47,10 @@ No wire change. Every 401, 403 and 404 stays the same.
 
 ```yaml
 autonomy: active
-current_phase: 2
-last_completed_phase: 1
+current_phase: 3
+last_completed_phase: 2
 halt_reason: null
-next_action: "continue phase 2 on branch cursor/active-codebase-h2-health-documents-e41f"
+next_action: "continue phase 3 on branch cursor/active-codebase-h3-error-boundary-e41f"
 artifact_ref:
   branch: cursor/active-codebase-h-integration-e41f
   plan_path: .agents/plans/active-codebase-batch-h-ports-transport-e41f.md
@@ -157,10 +157,10 @@ file-split
 
 **Acceptance criteria:**
 
-- [ ] **H.2-1** A `HealthDocumentsRepository` port (upload and remove for health-entry photos and health-issue documents, returning a typed `HealthDocument` with id and url, with typed failures) lives in `health_tracking/domain`. Its implementation in `data/` uses the injected authenticated HTTP client, and its provider lives in `health_tracking/application/`.
-- [ ] **H.2-2** The duplicate datasource providers `healthRemoteDataSourceProvider` and `healthDataSourceProvider` are consolidated into one. The health data layer never builds `Authorization` headers by hand (grep test).
-- [ ] **H.2-3** The five presentation files listed use the port and no longer import `health_tracking/data/**`. The other `health_tracking/presentation → data` imports (15 files in total on 2026-09-30, these five included; re-count at bootstrap) may not grow: a test pins the remaining list, and it only shrinks.
-- [ ] **H.2-4** Tests cover upload success; upload failure (4xx, 5xx and network, each mapped to a typed error); delete success and failure; and 401 → refresh → replay through the client.
+- [x] **H.2-1** A `HealthDocumentsRepository` port (upload and remove for health-entry photos and health-issue documents, returning a typed `HealthDocument` with id and url, with typed failures) lives in `health_tracking/domain`. Its implementation in `data/` uses the injected authenticated HTTP client, and its provider lives in `health_tracking/application/`.
+- [x] **H.2-2** The duplicate datasource providers `healthRemoteDataSourceProvider` and `healthDataSourceProvider` are consolidated into one. The health data layer never builds `Authorization` headers by hand (grep test).
+- [x] **H.2-3** The five presentation files listed use the port and no longer import `health_tracking/data/**`. The other `health_tracking/presentation → data` imports (15 files in total on 2026-09-30, these five included; re-count at bootstrap) may not grow: a test pins the remaining list, and it only shrinks.
+- [x] **H.2-4** Tests cover upload success; upload failure (4xx, 5xx and network, each mapped to a typed error); delete success and failure; and 401 → refresh → replay through the client.
 
 ---
 

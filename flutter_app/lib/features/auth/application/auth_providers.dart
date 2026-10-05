@@ -289,7 +289,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
       return state.accessToken;
     } catch (_) {
       try {
-        final newAccess = await _authRepository.refreshToken(state.refreshToken!);
+        final newAccess = await _authRepository.refreshToken(
+          state.refreshToken!,
+        );
         await _sessionStore.writeAccessToken(newAccess);
         final user = await _authRepository.getMe(newAccess);
         final refreshToken = kIsWeb

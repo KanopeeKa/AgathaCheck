@@ -12,10 +12,7 @@ abstract class AuthRepository {
     String lastName = '',
   });
 
-  Future<AuthResult> login({
-    required String email,
-    required String password,
-  });
+  Future<AuthResult> login({required String email, required String password});
 
   Future<String> refreshToken(String refreshToken);
 
