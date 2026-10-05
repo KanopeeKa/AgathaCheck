@@ -30,13 +30,13 @@ autonomy: active
 current_phase: 1
 last_completed_phase: null
 halt_reason: null
-next_action: "babysit-uat PR #1617"
+next_action: "continue phase 1 on branch cursor/notifications-v2-integration-7f3b"
 artifact_ref:
   branch: cursor/notifications-v2-integration-7f3b
   plan_path: .agents/plans/notifications-v2-integration-7f3b.md
-  plan_commit: 243ce37d01337a149db7d5c7b6de1925672acaec
+  plan_commit: 8e790cb634ef578a7ede81ab72c2e4ca41a6d1e3
   snapshot_path: .agents/plans/notifications-v2-integration-7f3b.snapshot.json
-  snapshot_commit: 243ce37d01337a149db7d5c7b6de1925672acaec
+  snapshot_commit: 8e790cb634ef578a7ede81ab72c2e4ca41a6d1e3
 open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1617"]
 merge_commits: {}
 debt_issue_refs: []
