@@ -2,7 +2,7 @@
   "schema_version": 1,
   "approved_at": "2026-10-05T12:45:00.000Z",
   "approved_until": "2026-10-07T12:45:00.000Z",
-  "content_hash": "sha256:85ff82cc05ca0c8dd27ca7d7378257bbd16aed3875b86ad94a40a0bf03901b6f",
+  "content_hash": "sha256:df84a0fffa5bb81fa35d6a17b283834295ac8290ab239b98f394d487ef8f0619",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "control_issue": 1630,
@@ -97,7 +97,8 @@
       "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_head_sha": "14af4717"
     },
     {
       "id": "i3-retire-legacy",
