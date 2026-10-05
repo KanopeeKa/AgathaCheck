@@ -393,20 +393,20 @@ class _PausedAttentionBanner extends StatelessWidget {
     return Semantics(
       identifier: 'care_item_paused_banner',
       child: Container(
-      key: const Key('care_item_paused_banner'),
-      width: double.infinity,
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(CareSurfaceTokens.actionRadius),
-        border: Border.all(color: CareSurfaceTokens.moduleBorder()),
-      ),
-      child: Text(
-        line,
-        style: theme.textTheme.bodyMedium?.copyWith(
-          color: muted ? colorScheme.onSurfaceVariant : colorScheme.onSurface,
-          fontWeight: FontWeight.w600,
+        key: const Key('care_item_paused_banner'),
+        width: double.infinity,
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(CareSurfaceTokens.actionRadius),
+          border: Border.all(color: CareSurfaceTokens.moduleBorder()),
         ),
-      ),
+        child: Text(
+          line,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: muted ? colorScheme.onSurfaceVariant : colorScheme.onSurface,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ),
     );
   }

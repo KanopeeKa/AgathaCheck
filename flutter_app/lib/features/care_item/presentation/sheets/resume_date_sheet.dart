@@ -17,10 +17,8 @@ Future<bool?> showResumeDateSheet(
   return showModalBottomSheet<bool>(
     context: context,
     isScrollControlled: true,
-    builder: (ctx) => ResumeDateSheet(
-      entryId: entryId,
-      suggestedDate: suggestedDate,
-    ),
+    builder: (ctx) =>
+        ResumeDateSheet(entryId: entryId, suggestedDate: suggestedDate),
   );
 }
 
@@ -52,10 +50,9 @@ class _ResumeDateSheetState extends ConsumerState<ResumeDateSheet> {
     if (_busy) return;
     setState(() => _busy = true);
     final l = AppLocalizations.of(context)!;
-    final outcome = await ref.read(careCompletionServiceProvider).resumeSeries(
-          entryId: widget.entryId,
-          resumeOn: _date,
-        );
+    final outcome = await ref
+        .read(careCompletionServiceProvider)
+        .resumeSeries(entryId: widget.entryId, resumeOn: _date);
     if (!mounted) return;
     setState(() => _busy = false);
     switch (outcome) {
@@ -81,10 +78,7 @@ class _ResumeDateSheetState extends ConsumerState<ResumeDateSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              l.careResumeSheetTitle,
-              style: theme.textTheme.titleLarge,
-            ),
+            Text(l.careResumeSheetTitle, style: theme.textTheme.titleLarge),
             const SizedBox(height: 8),
             Text(
               l.careResumeDefaultHint,

@@ -136,7 +136,10 @@ class CareItemDetailScreen extends ConsumerWidget {
                 isFixedSchedule: fixed,
               );
               if (ok == true) {
-                PetEventOccurrenceActions.invalidateOccurrenceData(ref, entryId);
+                PetEventOccurrenceActions.invalidateOccurrenceData(
+                  ref,
+                  entryId,
+                );
                 ref.invalidate(petHealthEntryByIdProvider);
               }
             }
@@ -158,7 +161,10 @@ class CareItemDetailScreen extends ConsumerWidget {
                 suggestedDate: suggested,
               );
               if (ok == true) {
-                PetEventOccurrenceActions.invalidateOccurrenceData(ref, entryId);
+                PetEventOccurrenceActions.invalidateOccurrenceData(
+                  ref,
+                  entryId,
+                );
                 ref.invalidate(petHealthEntryByIdProvider);
               }
             }

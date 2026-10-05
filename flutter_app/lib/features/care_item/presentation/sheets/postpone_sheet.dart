@@ -68,7 +68,9 @@ class _PostponeSheetState extends ConsumerState<PostponeSheet> {
     if (_busy) return;
     setState(() => _busy = true);
     final l = AppLocalizations.of(context)!;
-    final outcome = await ref.read(careCompletionServiceProvider).pausePostpone(
+    final outcome = await ref
+        .read(careCompletionServiceProvider)
+        .pausePostpone(
           entryId: widget.entryId,
           until: _noEndDate ? null : _until,
         );
@@ -97,10 +99,7 @@ class _PostponeSheetState extends ConsumerState<PostponeSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              l.carePostponeSheetTitle,
-              style: theme.textTheme.titleLarge,
-            ),
+            Text(l.carePostponeSheetTitle, style: theme.textTheme.titleLarge),
             const SizedBox(height: 12),
             SwitchListTile(
               key: const Key('postpone_no_end_date'),
@@ -110,8 +109,8 @@ class _PostponeSheetState extends ConsumerState<PostponeSheet> {
               onChanged: _busy
                   ? null
                   : (v) => setState(() {
-                        _noEndDate = v;
-                      }),
+                      _noEndDate = v;
+                    }),
             ),
             if (!_noEndDate)
               ListTile(
