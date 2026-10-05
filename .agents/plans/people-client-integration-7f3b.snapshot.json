@@ -2,7 +2,7 @@
   "schema_version": 1,
   "approved_at": "2026-10-05T12:45:00.000Z",
   "approved_until": "2026-10-07T12:45:00.000Z",
-  "content_hash": "sha256:66e498e813b651b532e5580af2ce2c9038c34535bb16eb9bf21bb02af37658e1",
+  "content_hash": "sha256:c6686508a918f747d1e63d4feaf7eb4c6107fc65050f7b9981e13d4bf9950be7",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "control_issue": 1630,
@@ -142,7 +142,11 @@
       "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": ["https://github.com/KanopeeKa/AgathaCheck/issues/1653"]
+      "debt_issue_refs": [
+        "https://github.com/KanopeeKa/AgathaCheck/issues/1653"
+      ],
+      "pr_head_sha": "b8c626b8",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1654"
     },
     {
       "id": "i4-e2e-integration",
