@@ -3073,6 +3073,39 @@
   "peopleRelationshipEmergencyContact": "Emergency contact",
   "peopleRelationshipCareProvider": "Provides care",
   "peopleRelationshipOther": "Other link",
+  "peopleAroundPetTitle": "People around {petName}",
+  "@peopleAroundPetTitle": {
+    "placeholders": {
+      "petName": { "type": "String" }
+    }
+  },
+  "peoplePetOwnerQuiet": "{petName} · {ownerName}'s pet",
+  "@peoplePetOwnerQuiet": {
+    "placeholders": {
+      "petName": { "type": "String" },
+      "ownerName": { "type": "String" }
+    }
+  },
+  "peopleGroupAtHome": "At home",
+  "peoplePetEmergencyCardTitle": "Emergency",
+  "peoplePetEmergencyManage": "Manage",
+  "peoplePetEmergencyManageTitle": "Emergency contacts",
+  "peoplePetAddPrimaryVet": "Add {petName}'s vet",
+  "@peoplePetAddPrimaryVet": {
+    "placeholders": {
+      "petName": { "type": "String" }
+    }
+  },
+  "peoplePetAddOutOfHoursVet": "Add {petName}'s out-of-hours vet",
+  "@peoplePetAddOutOfHoursVet": {
+    "placeholders": {
+      "petName": { "type": "String" }
+    }
+  },
+  "peoplePetAddEmergencyContact": "Add emergency contact",
+  "peoplePetEmptyAtHome": "No household members for this pet yet.",
+  "peopleReorderUp": "Move up",
+  "peopleReorderDown": "Move down",
   "peopleDetailTabOverview": "Overview",
   "peopleDetailTabPetsAccess": "Pets & access",
   "peopleDetailTabRelatedCare": "Related care",

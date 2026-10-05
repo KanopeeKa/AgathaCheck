@@ -152,7 +152,7 @@ flutter_app/lib/features/organization/**
 
 **Exit criteria:**
 
-- [ ] Widget tests: owner vs Can log care, set/clear out-of-hours vet, add/reorder emergency contacts, call only with a phone
+- [x] Widget tests: owner vs Can log care, set/clear out-of-hours vet, add/reorder emergency contacts, call only with a phone
 - [ ] `--e2e-shards` (from `shard-files.mjs --summary`) green
 
 ---

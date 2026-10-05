@@ -7742,6 +7742,51 @@ class AppLocalizationsFr extends AppLocalizations {
   String get peopleRelationshipOther => 'Autre lien';
 
   @override
+  String peopleAroundPetTitle(String petName) {
+    return 'Autour de $petName';
+  }
+
+  @override
+  String peoplePetOwnerQuiet(String petName, String ownerName) {
+    return '$petName · l\'animal de $ownerName';
+  }
+
+  @override
+  String get peopleGroupAtHome => 'À la maison';
+
+  @override
+  String get peoplePetEmergencyCardTitle => 'Urgences';
+
+  @override
+  String get peoplePetEmergencyManage => 'Gérer';
+
+  @override
+  String get peoplePetEmergencyManageTitle => 'Contacts d\'urgence';
+
+  @override
+  String peoplePetAddPrimaryVet(String petName) {
+    return 'Ajouter le vétérinaire de $petName';
+  }
+
+  @override
+  String peoplePetAddOutOfHoursVet(String petName) {
+    return 'Ajouter le vétérinaire de garde de $petName';
+  }
+
+  @override
+  String get peoplePetAddEmergencyContact => 'Ajouter un contact d\'urgence';
+
+  @override
+  String get peoplePetEmptyAtHome =>
+      'Aucun membre du foyer pour cet animal pour l\'instant.';
+
+  @override
+  String get peopleReorderUp => 'Monter';
+
+  @override
+  String get peopleReorderDown => 'Descendre';
+
+  @override
   String get peopleDetailTabOverview => 'Vue d\'ensemble';
 
   @override

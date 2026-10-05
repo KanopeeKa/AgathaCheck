@@ -5,8 +5,6 @@ import '../../../../../core/utils/calendar_date.dart';
 import '../../../../../core/theme/experience_colors.dart';
 import '../../../../../core/utils/constants.dart';
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../people/people.dart';
-import 'pet_detail_primary_vet_field.dart';
 import '../../../../weight_tracking/presentation/providers/weight_providers.dart';
 import '../../../domain/entities/pet.dart';
 import '../../../domain/services/pet_detail_actions.dart';
@@ -15,7 +13,8 @@ import 'pet_info_chip.dart';
 import 'pet_photo.dart';
 
 /// The header card on the pet detail screen: photo, name, quick-info chips,
-/// assigned vet selector, and optional bio / neuter / chip / insurance rows.
+/// and optional bio / neuter / chip / insurance rows. Vet and emergency
+/// contacts live in the People around section below this card.
 ///
 /// The photo column width is computed from a [LayoutBuilder] so the card
 /// stays usable at 320 logical px without horizontal overflow.
@@ -34,16 +33,9 @@ class PetDetailProfileCard extends ConsumerWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    final petPeopleAsync = ref.watch(petPeopleProvider(pet.id));
-    final primaryVetId = primaryVetRelationship(
-      petPeopleAsync.valueOrNull,
-    )?.contactId;
-
     final displayWeight = pet.weight;
     final l = AppLocalizations.of(context)!;
     final canEdit = viewerContext.can(PetDetailAction.editProfile);
-    final canAssignVet = viewerContext.can(PetDetailAction.assignVet);
-
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Card(
@@ -167,12 +159,6 @@ class PetDetailProfileCard extends ConsumerWidget {
                                 ),
                             ],
                           ),
-                          const SizedBox(height: 10),
-                          if (canAssignVet)
-                            PetDetailPrimaryVetField(
-                              petId: pet.id,
-                              currentContactId: primaryVetId,
-                            ),
                           if (pet.bio.isNotEmpty) ...[
                             const SizedBox(height: 12),
                             Text(
