@@ -12910,6 +12910,66 @@ abstract class AppLocalizations {
   /// **'Not recorded'**
   String get careStatusNotRecorded;
 
+  /// No description provided for @careStatusNotRecordedOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Not recorded (open)'**
+  String get careStatusNotRecordedOpen;
+
+  /// No description provided for @careStatusNotRecordedClosedMarker.
+  ///
+  /// In en, this message translates to:
+  /// **'closed'**
+  String get careStatusNotRecordedClosedMarker;
+
+  /// No description provided for @careClosedNotRecordedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This scheduled care was closed automatically. Record when it was given, or mark it as skipped if you chose not to give it.'**
+  String get careClosedNotRecordedBody;
+
+  /// No description provided for @careRecordAsGivenHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the day it was given. Future dates are not allowed.'**
+  String get careRecordAsGivenHint;
+
+  /// No description provided for @careConfirmSkipTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as skipped?'**
+  String get careConfirmSkipTitle;
+
+  /// No description provided for @careConfirmSkipBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This will record that you chose not to give this scheduled care.'**
+  String get careConfirmSkipBody;
+
+  /// No description provided for @careConfirmSkipAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as skipped'**
+  String get careConfirmSkipAction;
+
+  /// No description provided for @careCompletedOnFuture.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose today or an earlier date.'**
+  String get careCompletedOnFuture;
+
+  /// No description provided for @careStackMarkedDonePartial.
+  ///
+  /// In en, this message translates to:
+  /// **'{changed} marked done · {ignored} already closed'**
+  String careStackMarkedDonePartial(int changed, int ignored);
+
+  /// No description provided for @careStackSkippedPartial.
+  ///
+  /// In en, this message translates to:
+  /// **'{changed} skipped · {ignored} already closed'**
+  String careStackSkippedPartial(int changed, int ignored);
+
   /// No description provided for @careStatusComingUp.
   ///
   /// In en, this message translates to:

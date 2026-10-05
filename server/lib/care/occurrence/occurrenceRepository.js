@@ -205,6 +205,27 @@ export async function insertOpenOccurrence(db, {
  * @param {object} params
  * @returns {Promise<object|null>}
  */
+/**
+ * Reclassify an auto-closed Not recorded dose as an intentional skip (FR-3, AC-C5).
+ *
+ * @param {import('pg').PoolClient} db
+ * @param {object} params
+ * @returns {Promise<object|null>}
+ */
+export async function confirmNotRecordedAsSkipped(db, {
+  entryId, occurrenceId, userId = null, markedAt = new Date(),
+}) {
+  const result = await db.query(
+    `UPDATE health_occurrences SET close_reason = 'user',
+       marked_at = $1, marked_by_user_id = $2, updated_at = NOW()
+     WHERE id = $3 AND health_entry_id = $4
+       AND status = 'skipped' AND close_reason = 'not_recorded'
+     RETURNING *`,
+    [markedAt, userId, occurrenceId, entryId],
+  );
+  return normalizeOccurrenceRow(result.rows[0] || null);
+}
+
 export async function markSkipped(db, {
   entryId, occurrenceId, closeReason, userId = null, notes = null, markedAt = new Date(),
 }) {

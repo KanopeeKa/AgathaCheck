@@ -1,5 +1,5 @@
 import { describe, expect, it, beforeAll } from '@jest/globals';
-import pg from 'pg';
+import { createAppPool } from '../../../lib/db/createPool.js';
 import { evaluateWeightEstablishment } from '../../../lib/care/progression/weightEstablishmentPolicy.js';
 import { DEMO_IDS } from '../../../db/seeds/demo-constants.js';
 import {
@@ -9,16 +9,7 @@ import {
 import { seedGuardian } from '../../../db/seeds/scenarios/guardian.js';
 
 function createPool() {
-  if (process.env.DATABASE_URL) {
-    return new pg.Pool({ connectionString: process.env.DATABASE_URL });
-  }
-  return new pg.Pool({
-    user: process.env.PGUSER || 'user',
-    password: process.env.PGPASSWORD || 'password',
-    host: process.env.PGHOST || 'localhost',
-    port: process.env.PGPORT || 5432,
-    database: process.env.PGDATABASE || 'agatha_db',
-  });
+  return createAppPool();
 }
 
 const CARE_FIXTURE_ENTRY_IDS = [DEMO_IDS.careFixtureWeightEntry];

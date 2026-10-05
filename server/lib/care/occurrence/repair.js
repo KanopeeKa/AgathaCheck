@@ -25,11 +25,44 @@ export function invariantViolationsFor(entry, open) {
 }
 
 /**
+ * INV-6: at most one schedule-origin row per series slot (duplicate loop guard).
+ *
+ * @param {import('pg').Pool|import('pg').PoolClient} db
+ * @returns {Promise<{ health_entry_id: string, slot_date: string, scheduled_time: string|null, count: string }[]>}
+ */
+export async function findDuplicateScheduleSlots(db) {
+  const { rows } = await db.query(
+    `SELECT health_entry_id,
+            COALESCE(series_date, scheduled_date)::text AS slot_date,
+            scheduled_time::text AS scheduled_time,
+            COUNT(*)::text AS count
+     FROM health_occurrences
+     WHERE origin = 'schedule'
+     GROUP BY health_entry_id, COALESCE(series_date, scheduled_date), scheduled_time
+     HAVING COUNT(*) > 1
+     ORDER BY health_entry_id, slot_date, scheduled_time`,
+  );
+  return rows;
+}
+
+/**
  * @param {import('pg').Pool} pool
  * @param {{ apply?: boolean }} [options]
  * @returns {Promise<{ checked: number, violations: { id: string, name: string, codes: string[] }[], repaired: number }>}
  */
 export async function repairOccurrences(pool, { apply = false } = {}) {
+  const dupes = await findDuplicateScheduleSlots(pool);
+  if (dupes.length > 0) {
+    return {
+      checked: 0,
+      violations: dupes.map((row) => ({
+        id: row.health_entry_id,
+        name: `duplicate slot ${row.slot_date} ${row.scheduled_time ?? ''}`.trim(),
+        codes: ['INV-6'],
+      })),
+      repaired: 0,
+    };
+  }
   const entries = await pool.query(
     `SELECT * FROM health_entries
      WHERE COALESCE(care_planning, 'planned') <> 'unplanned'

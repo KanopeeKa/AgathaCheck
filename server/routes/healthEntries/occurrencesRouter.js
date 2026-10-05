@@ -8,11 +8,13 @@ import {
   completeOccurrenceCommand,
   listOpenRows,
   openOccurrenceToWire,
+  confirmSkipCommand,
   planAnotherDateCommand,
   recordAsGivenCommand,
   resolveCareAsOfForRead,
   resolveStackCommand,
   runCareCommand,
+  syncCareItemForRead,
   sendCareCommandError,
   skipOccurrenceCommand,
   undoCommand,
@@ -161,8 +163,9 @@ export function registerOccurrenceRoutes(router, pool) {
       if (!entry) return res.status(404).json({ error: 'Entry not found' });
       const status = req.query.status || 'open';
       if (status === 'open') {
-        const asOf = await resolveCareAsOfForRead(pool, entry, req);
-        const rows = await listOpenRows(pool, entry.id);
+        const synced = await syncCareItemForRead(pool, entry.id, req);
+        const asOf = synced?.asOf ?? await resolveCareAsOfForRead(pool, entry, req);
+        const rows = synced?.openRows ?? await listOpenRows(pool, entry.id);
         const names = await pool.query(
           `SELECT ho.id, TRIM(COALESCE(u.first_name, '') || ' ' || COALESCE(u.last_name, '')) AS marked_by_name
            FROM health_occurrences ho LEFT JOIN users u ON u.id = ho.marked_by_user_id
@@ -298,6 +301,22 @@ export function registerOccurrenceRoutes(router, pool) {
     });
   });
 
+  router.post('/:id/occurrences/:occId/confirm-skip', (req, res) => {
+    const occurrenceId = req.params.occId;
+    return handleCommand(pool, req, res, {
+      guard: weightGuard,
+      command: (ctx) => confirmSkipCommand(ctx, { occurrenceId }),
+      audit: () => ({
+        action: 'health_occurrence.confirm_skipped',
+        metadata: { occurrence_id: occurrenceId },
+        activity: 'skip',
+      }),
+      respond: async (out) => ({
+        body: await commandResponse(pool, out, req, { occurrence: occurrenceToMap(out.occurrence) }),
+      }),
+    });
+  });
+
   router.post('/:id/occurrences/resolve-stack', (req, res) => {
     const body = req.body || {};
     const given = Array.isArray(body.given) ? body.given : [];
@@ -311,7 +330,11 @@ export function registerOccurrenceRoutes(router, pool) {
         activity: 'record_doses',
       }),
       respond: async (out) => ({
-        body: await commandResponse(pool, out, req, { given: out.given, not_given: out.notGiven }),
+        body: await commandResponse(pool, out, req, {
+          given: out.given,
+          not_given: out.notGiven,
+          ignored: out.ignored,
+        }),
       }),
     });
   });

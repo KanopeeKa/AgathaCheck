@@ -1,6 +1,5 @@
 import { describe, expect, it, beforeAll } from '@jest/globals';
-import pg from 'pg';
-
+import { createAppPool } from '../../../lib/db/createPool.js';
 import { DEMO_IDS } from '../../../db/seeds/demo-constants.js';
 import { seedGuardian } from '../../../db/seeds/scenarios/guardian.js';
 import {
@@ -22,16 +21,7 @@ import {
 } from '../../../lib/care/awayPlan/readiness.js';
 
 function createPool() {
-  if (process.env.DATABASE_URL) {
-    return new pg.Pool({ connectionString: process.env.DATABASE_URL });
-  }
-  return new pg.Pool({
-    user: process.env.PGUSER || 'user',
-    password: process.env.PGPASSWORD || 'password',
-    host: process.env.PGHOST || 'localhost',
-    port: process.env.PGPORT || 5432,
-    database: process.env.PGDATABASE || 'agatha_db',
-  });
+  return createAppPool();
 }
 
 describe('away-planning seed facts', () => {
