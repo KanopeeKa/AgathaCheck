@@ -187,6 +187,20 @@ function buildMappedSet(featureScenarios, specScenarios) {
   return mapped;
 }
 
+/** Feature scenarios that count toward the gate (excludes header-only phantom coverage). */
+function gatedFeatureScenarios(featureScenarios, specScenarios, mappedSet) {
+  const headerOnlyKeys = new Set(
+    specScenarios
+      .filter((s) => s.headerOnly)
+      .map((s) => normalize(s.title)),
+  );
+  return featureScenarios.filter((f) => {
+    const key = normalize(f.title);
+    if (mappedSet.has(key)) return true;
+    return !headerOnlyKeys.has(key);
+  });
+}
+
 function computeGate(activeTotal) {
   return Math.max(1, Math.floor(activeTotal * GATE_RATIO));
 }
@@ -204,18 +218,26 @@ function main() {
   const featureScenarios = activeFeatureScenarios(allFeatureScenarios);
   const specScenarios = collectSpecScenarios(SPECS_DIR, frozenSpecs);
   const mappedSet = buildMappedSet(featureScenarios, specScenarios);
+  const gatedFeatures = gatedFeatureScenarios(
+    featureScenarios,
+    specScenarios,
+    mappedSet,
+  );
 
   const frozenCount = allFeatureScenarios.length - featureScenarios.length;
   const total = featureScenarios.length;
+  const gatedTotal = gatedFeatures.length;
+  const headerOnlyPhantom = total - gatedTotal;
   const mapped = mappedSet.size;
-  const gate = computeGate(total);
-  const pct = total > 0 ? ((mapped / total) * 100).toFixed(1) : '0.0';
+  const gate = computeGate(gatedTotal);
+  const pct =
+    gatedTotal > 0 ? ((mapped / gatedTotal) * 100).toFixed(1) : '0.0';
 
   console.log(
-    `BDD scenario coverage: ${pct}% (${mapped}/${total} active scenarios mapped; ${frozenCount} frozen excluded)`,
+    `BDD scenario coverage: ${pct}% (${mapped}/${gatedTotal} gated scenarios mapped; ${headerOnlyPhantom} header-only phantom excluded; ${frozenCount} frozen excluded)`,
   );
   console.log(
-    `Gate: ${gate} mapped scenarios (${((gate / total) * 100).toFixed(0)}% of ${total} active)`,
+    `Gate: ${gate} mapped scenarios (${((gate / gatedTotal) * 100).toFixed(0)}% of ${gatedTotal} gated)`,
   );
 
   const featureNorm = new Set(featureScenarios.map((s) => normalize(s.title)));

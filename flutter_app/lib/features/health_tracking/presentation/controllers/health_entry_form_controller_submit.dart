@@ -1,5 +1,6 @@
 import 'package:image_picker/image_picker.dart';
 
+import '../../../care_taxonomy/care_taxonomy.dart';
 import '../../../pet_profile/pet_profile.dart';
 import '../../domain/entities/health_entry.dart';
 import '../providers/health_providers.dart';
