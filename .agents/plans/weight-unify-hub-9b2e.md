@@ -32,17 +32,17 @@
 ## Runtime state (agent-updated)
 
 ```yaml
-autonomy: active
-current_phase: W7
-last_completed_phase: W6
+autonomy: completed
+current_phase: null
+last_completed_phase: W7
 halt_reason: null
-next_action: "continue phase W7 on branch cursor/weight-unify-w7-e2e-9b2e"
+next_action: "plan complete"
 artifact_ref:
   branch: cursor/weight-unify-hub-integration-9b2e
   plan_path: .agents/plans/weight-unify-hub-9b2e.md
-  plan_commit: effe4eba3f50907fb978f3692e350ea722c89042
+  plan_commit: e311d0e7c8ab907b6a2ac595cbf255daba1fea9b
   snapshot_path: .agents/plans/weight-unify-hub-9b2e.snapshot.json
-  snapshot_commit: effe4eba3f50907fb978f3692e350ea722c89042
+  snapshot_commit: e311d0e7c8ab907b6a2ac595cbf255daba1fea9b
 open_prs: []
 merge_commits: {"W5":"b0730951103df917281e7451b7a0e115959b344b"}
 debt_issue_refs: []
