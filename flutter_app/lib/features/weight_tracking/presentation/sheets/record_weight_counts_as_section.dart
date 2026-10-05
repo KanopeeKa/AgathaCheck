@@ -65,6 +65,7 @@ class RecordWeightCountsAsSection extends StatelessWidget {
           );
           final status = careOccurrenceStatusLabel(l, c.status);
           return Semantics(
+            identifier: 'record_weight_counts_as',
             label: l.weightCountsAs(c.entryName),
             child: SwitchListTile(
               key: const Key('record_weight_counts_as'),

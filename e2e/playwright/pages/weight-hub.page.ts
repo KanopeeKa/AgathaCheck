@@ -39,7 +39,10 @@ export class WeightHubPage {
   }
 
   countsAsSwitch() {
-    return this.page.getByRole('switch', { name: /Counts as|Compte comme/i });
+    return this.page
+      .locator('[flt-semantics-identifier="record_weight_counts_as"]')
+      .getByRole('switch')
+      .or(this.page.getByRole('switch', { name: /Counts as|Compte comme/i }));
   }
 
   async waitForCountsAsReady(): Promise<void> {

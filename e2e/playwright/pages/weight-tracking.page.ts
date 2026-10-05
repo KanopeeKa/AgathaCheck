@@ -139,7 +139,9 @@ export class WeightTrackingPage {
 
   /** Click the Save button in the Add Weight Entry bottom-sheet. */
   async saveWeightEntry(): Promise<void> {
-    await this.page.getByRole('button', { name: /^Save$/i }).click();
+    const save = this.page.getByRole('button', { name: /^Save$|^Enregistrer$/i });
+    await expect(save).toBeEnabled({ timeout: 20_000 });
+    await save.click();
     await this.page.waitForTimeout(800);
     await refreshFlutterAccessibility(this.page);
   }
