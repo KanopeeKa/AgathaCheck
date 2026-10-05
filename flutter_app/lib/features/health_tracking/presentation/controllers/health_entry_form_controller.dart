@@ -57,7 +57,7 @@ class HealthEntryFormController extends HealthEntryFormControllerBase
         params.initialPlanningMode ?? CarePlanningMode.planned;
     final isRecord = initialPlanning == CarePlanningMode.unplanned;
 
-    return HealthEntryFormState(
+    var state = HealthEntryFormState(
       type: type,
       isEdit: params.entryId != null,
       selectedPetIds: selectedPetIds,
@@ -66,6 +66,17 @@ class HealthEntryFormController extends HealthEntryFormControllerBase
       remindDaysBefore: isRecord ? 0 : 1,
       completedOn: isRecord ? calendarDateOnly(DateTime.now()) : null,
     );
+
+    final initialFamily = params.initialCareFamily;
+    if (initialFamily != null) {
+      state = state.copyWith(
+        careFamily: initialFamily,
+        careSetting: CareTaxonomy.defaultSettingFor(initialFamily),
+        careImportance: CareTaxonomy.defaultImportanceFor(initialFamily),
+        careFamilyPickerRevealed: true,
+      );
+    }
+    return state;
   }
 
   @override
