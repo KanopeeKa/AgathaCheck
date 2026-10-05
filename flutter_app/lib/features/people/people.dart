@@ -36,4 +36,6 @@ export 'presentation/widgets/person_avatar.dart';
 export 'presentation/widgets/person_card.dart';
 export 'presentation/widgets/person_skeleton.dart';
 export 'presentation/widgets/person_status_chip.dart';
-export 'presentation/widgets/role_chips.dart';
+export 'presentation/desk/people_desk_module.dart';
+export 'presentation/hub/people_hub_route.dart';
+export 'presentation/routes/people_routes.dart';

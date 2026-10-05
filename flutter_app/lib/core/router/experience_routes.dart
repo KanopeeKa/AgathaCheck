@@ -5,9 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/experience/domain/entities/app_experience.dart';
 import '../../l10n/app_localizations.dart';
 import '../../features/experience/presentation/screens/account_screen.dart';
-import '../../features/people/presentation/screens/people_add_person_screen.dart';
-import '../../features/people/presentation/screens/people_edit_screen.dart';
-import '../../features/people/presentation/screens/people_hub_screen.dart';
+import '../../features/people/presentation/routes/people_routes.dart';
 import '../../features/experience/presentation/screens/experience_chooser_screen.dart';
 import '../../features/experience/presentation/screens/experience_home_screens.dart';
 import '../../features/experience/presentation/screens/experience_resolve_screen.dart';
@@ -137,49 +135,7 @@ List<RouteBase> buildExperienceRoutes() {
           name: 'petCareEvents',
           builder: (context, state) => const _PetCareEventsScreen(),
         ),
-        GoRoute(
-          path: '/pc/people',
-          name: 'petCarePeople',
-          builder: (context, state) =>
-              PeopleHubScreen(selectedPersonId: peoplePersonIdFromState(state)),
-          routes: [
-            GoRoute(
-              path: 'new',
-              name: 'petCarePeopleNew',
-              builder: (context, state) {
-                final rolesParam = state.uri.queryParameters['roles'];
-                final roles = rolesParam == null
-                    ? const <String>{}
-                    : rolesParam
-                          .split(',')
-                          .map((e) => e.trim())
-                          .where((e) => e.isNotEmpty)
-                          .toSet();
-                final pop = state.uri.queryParameters['pop'] == '1';
-                return PeopleAddPersonScreen(
-                  initialRoles: roles,
-                  popResultOnSave: pop,
-                );
-              },
-            ),
-            GoRoute(
-              path: ':personId',
-              name: 'petCarePeopleDetail',
-              builder: (context, state) => PeopleHubScreen(
-                selectedPersonId: state.pathParameters['personId'],
-              ),
-              routes: [
-                GoRoute(
-                  path: 'edit',
-                  name: 'petCarePeopleEdit',
-                  builder: (context, state) => PeopleEditScreen(
-                    personId: state.pathParameters['personId']!,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
+        buildPeopleHubShellRoute(),
         ...buildAwayPlanningRoutes(),
         GoRoute(
           path: '/pc/fostering',

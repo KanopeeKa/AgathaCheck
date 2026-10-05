@@ -2858,6 +2858,31 @@
   "peoplePickerQuickAddSave": "Save contact",
   "peopleGroupCarers": "Trusted carers",
   "peopleGroupProfessionals": "Pet professionals",
+  "peopleHubSelectSomeone": "Select someone to see their details",
+  "peopleHubSearchHint": "Search people, roles, pets…",
+  "peoplePendingInvitesSection": "Pending invites",
+  "peopleInactiveSection": "Inactive ({count})",
+  "@peopleInactiveSection": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "peopleFilterGroupLabel": "Group",
+  "peopleFilterPetLabel": "Pet",
+  "peopleMemberYou": "You",
+  "peoplePendingInviteLine": "{email} · Invited",
+  "@peoplePendingInviteLine": {
+    "placeholders": {
+      "email": { "type": "String" }
+    }
+  },
+  "peopleHouseholdMemberPets": "Owns {owns} · Shares {shares}",
+  "@peopleHouseholdMemberPets": {
+    "placeholders": {
+      "owns": { "type": "String" },
+      "shares": { "type": "String" }
+    }
+  },
   "peopleRelationshipPrimaryVet": "Primary vet",
   "peopleRelationshipOutOfHoursVet": "Out-of-hours vet",
   "peopleRelationshipEmergencyContact": "Emergency contact",
