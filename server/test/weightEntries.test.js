@@ -58,6 +58,10 @@ describe('Weight Entries API', () => {
           return { rows: [makeWeightRow(), makeWeightRow({ id: 'we-2', weight: 5.0 })] };
         }
 
+        if (sql.includes('SELECT home_timezone FROM pets')) {
+          return { rows: [{ home_timezone: 'UTC' }] };
+        }
+
         if (sql.includes('INSERT INTO weight_entries')) {
           return {
             rows: [makeWeightRow({
@@ -65,9 +69,9 @@ describe('Weight Entries API', () => {
               pet_id: params[1],
               user_id: params[2],
               weight: params[3],
-              unit: params[4],
-              date: params[5],
-              notes: params[6] || '',
+              unit: 'kg',
+              date: params[4],
+              notes: params[5] || '',
               pet_name: null,
             })],
           };
@@ -80,10 +84,23 @@ describe('Weight Entries API', () => {
               id: params[4],
               pet_id: 'pet-1',
               weight: params[0],
-              unit: params[1],
-              date: params[2],
-              notes: params[3] || '',
+              unit: 'kg',
+              date: params[1],
+              notes: params[2] || '',
             })],
+          };
+        }
+
+        if (sql.includes('SELECT * FROM weight_entries WHERE id = $1')) {
+          return {
+            rows: [{
+              id: params[0],
+              pet_id: 'pet-1',
+              health_occurrence_id: null,
+              weight: 4.5,
+              unit: 'kg',
+              date: new Date('2026-03-26'),
+            }],
           };
         }
 
@@ -266,7 +283,7 @@ describe('Weight Entries API', () => {
         .send(entry);
       expect(res.statusCode).toBe(201);
       const insert = [...allQueries].reverse().find((q) => q.sql.includes('INSERT INTO weight_entries'));
-      expect(insert.params[4]).toBe('kg');
+      expect(insert.sql).toContain("'kg'");
     });
 
     it('normalizes ISO timestamps to date-only on create', async () => {
@@ -279,7 +296,7 @@ describe('Weight Entries API', () => {
           date: '2026-04-01T00:00:00.000Z',
         });
       const insert = [...allQueries].reverse().find((q) => q.sql.includes('INSERT INTO weight_entries'));
-      expect(insert.params[5]).toBe('2026-04-01');
+      expect(insert.params[4]).toBe('2026-04-01');
     });
 
     it('scopes create by authenticated user_id', async () => {
@@ -339,7 +356,7 @@ describe('Weight Entries API', () => {
         .set('Authorization', `Bearer ${token}`)
         .send({ pet_id: 'pet-1', weight: 'not-a-number' });
       expect(res.statusCode).toBe(400);
-      expect(res.body.error).toMatch(/weight must be a number/i);
+      expect(res.body.error).toMatch(/weight is required/i);
     });
 
     it('returns 400 when weight is zero or negative', async () => {
@@ -395,7 +412,7 @@ describe('Weight Entries API', () => {
         .send({ weight: 5 });
       const update = [...allQueries].reverse().find((q) => q.sql.includes('UPDATE weight_entries'));
       expect(update.sql).toContain('UPDATE weight_entries');
-      expect(update.params[5]).toBe('we-1');
+      expect(update.params[4]).toBe('we-1');
     });
 
     it('returns 400 when weight is invalid on update', async () => {
@@ -404,7 +421,7 @@ describe('Weight Entries API', () => {
         .set('Authorization', `Bearer ${token}`)
         .send({ weight: 'bad' });
       expect(res.statusCode).toBe(400);
-      expect(res.body.error).toMatch(/weight must be a number/i);
+      expect(res.body.error).toMatch(/weight is required/i);
     });
   });
 
@@ -441,6 +458,9 @@ describe('Weight Entries API', () => {
           if (access) return access;
           const manageWeight = handleManageEntryQuery(sql, params, { tableName: 'weight_entries we' });
           if (manageWeight) return manageWeight;
+          if (sql.includes('SELECT * FROM weight_entries WHERE id = $1')) {
+            return { rows: [{ id: params[0], pet_id: 'pet-1', health_occurrence_id: 'occ-linked' }] };
+          }
           if (sql.includes('SELECT pet_id, health_occurrence_id FROM weight_entries WHERE id = $1')) {
             return { rows: [{ pet_id: 'pet-1', health_occurrence_id: 'occ-linked' }] };
           }
@@ -483,6 +503,9 @@ describe('Weight Entries API', () => {
           if (access) return access;
           const manageWeight = handleManageEntryQuery(sql, params, { tableName: 'weight_entries we' });
           if (manageWeight) return manageWeight;
+          if (sql.includes('SELECT * FROM weight_entries WHERE id = $1')) {
+            return { rows: [{ id: params[0], pet_id: 'pet-1', health_occurrence_id: null }] };
+          }
           if (sql.includes('SELECT pet_id, health_occurrence_id FROM weight_entries WHERE id = $1')) {
             return { rows: [{ pet_id: 'pet-1', health_occurrence_id: null }] };
           }
@@ -578,8 +601,14 @@ describe('Weight Entries API', () => {
           if (sql === 'BEGIN') return { command: 'BEGIN', rows: [] };
           if (sql === 'COMMIT') return { command: 'COMMIT', rows: [] };
           if (sql === 'ROLLBACK') return { command: 'ROLLBACK', rows: [] };
+          if (sql.includes('SELECT * FROM weight_entries WHERE id = $1')) {
+            return { rows: [{ id: params[0], pet_id: 'pet-1', weight: 4.5, unit: 'kg', date: '2026-03-26' }] };
+          }
           if (sql.includes('SELECT pet_id FROM weight_entries WHERE id = $1')) {
             return { rows: [{ pet_id: 'pet-1' }] };
+          }
+          if (sql.includes('SELECT home_timezone FROM pets')) {
+            return { rows: [{ home_timezone: 'UTC' }] };
           }
           const access = handlePetAccessQuery(sql, params, {
             userId,
@@ -618,6 +647,9 @@ describe('Weight Entries API', () => {
           if (sql === 'BEGIN') return { command: 'BEGIN', rows: [] };
           if (sql === 'COMMIT') return { command: 'COMMIT', rows: [] };
           if (sql === 'ROLLBACK') return { command: 'ROLLBACK', rows: [] };
+          if (sql.includes('SELECT * FROM weight_entries WHERE id = $1')) {
+            return { rows: [{ id: params[0], pet_id: 'pet-1', health_occurrence_id: null }] };
+          }
           if (sql.includes('SELECT pet_id, health_occurrence_id FROM weight_entries WHERE id = $1')) {
             return { rows: [{ pet_id: 'pet-1', health_occurrence_id: null }] };
           }

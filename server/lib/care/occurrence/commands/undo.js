@@ -13,6 +13,7 @@ import {
 } from '../../schedule/scheduleEventLedger.js';
 import { CareCommandError, badRequest } from '../careCommandError.js';
 import { updateEntryFields } from '../entryRepository.js';
+import { runObservationUndoHooks } from '../../observations/observationCompletionHooks.js';
 import {
   deleteOpenOccurrences,
   findOccurrence,
@@ -65,6 +66,7 @@ async function reverse(ctx, event, { restoreEntry }) {
   if (payload.entry_before && restoreEntry) {
     await updateEntryFields(db, entry.id, payload.entry_before);
   }
+  await runObservationUndoHooks(ctx, event);
   return restored;
 }
 

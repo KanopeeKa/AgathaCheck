@@ -2,11 +2,23 @@ import { describe, it, expect } from '@jest/globals';
 
 import { upsertContactFromVet } from '../../lib/people/vetSync.js';
 
+function wrapPool(queryImpl) {
+  const clientQuery = async (sql, params) => {
+    if (sql === 'BEGIN' || sql === 'COMMIT' || sql === 'ROLLBACK') {
+      return { rows: [], command: sql };
+    }
+    return queryImpl(sql, params);
+  };
+  return {
+    query: clientQuery,
+    connect: async () => ({ query: clientQuery, release: () => {} }),
+  };
+}
+
 describe('upsertContactFromVet', () => {
   it('does not overwrite private note when contact already exists', async () => {
     const noteUpserts = [];
-    const pool = {
-      query: async (sql) => {
+    const pool = wrapPool(async (sql, params) => {
         if (sql.includes('people_directories')) {
           return { rows: [{ id: 'dir-1' }] };
         }
@@ -21,8 +33,7 @@ describe('upsertContactFromVet', () => {
           return { rows: [] };
         }
         return { rows: [] };
-      },
-    };
+    });
 
     await upsertContactFromVet(
       pool,
@@ -44,8 +55,7 @@ describe('upsertContactFromVet', () => {
 
   it('sets private note on first insert from vet', async () => {
     const noteUpserts = [];
-    const pool = {
-      query: async (sql, params) => {
+    const pool = wrapPool(async (sql, params) => {
         if (sql.includes('people_directories')) {
           return { rows: [{ id: 'dir-1' }] };
         }
@@ -63,8 +73,7 @@ describe('upsertContactFromVet', () => {
           return { rows: [] };
         }
         return { rows: [] };
-      },
-    };
+    });
 
     await upsertContactFromVet(
       pool,
@@ -76,11 +85,11 @@ describe('upsertContactFromVet', () => {
         email: '',
         address: '',
         website: '',
-        notes: '',
+        notes: 'Reception note',
       },
       'user-1',
     );
 
-    expect(noteUpserts.length).toBe(0);
+    expect(noteUpserts.length).toBe(1);
   });
 });

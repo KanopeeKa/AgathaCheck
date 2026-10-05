@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "plan_id": "weight-monitoring-unify-9b2e",
+  "plan_kind": "roadmap",
+  "current_child_plan_id": "weight-unify-hub-9b2e",
+  "child_plans": [
+    {
+      "plan_id": "weight-unify-server-9b2e",
+      "status": "merged",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1577",
+      "merge_commit": "b3fa80de8735d636836e2a02124cf8b9d29cf2e9"
+    },
+    {
+      "plan_id": "weight-unify-hub-9b2e",
+      "status": "pending",
+      "pr_url": null,
+      "merge_commit": null
+    },
+    {
+      "plan_id": "weight-unify-care-9b2e",
+      "status": "pending",
+      "pr_url": null,
+      "merge_commit": null
+    }
+  ],
+  "programme_ref": "docs/domains/weight_tracking/features/weight-monitoring-model.md",
+  "approved_at": "2026-10-04T21:35:55Z",
+  "approved_by": "standing grant — owner chat 2026-10-04 full programme W0 through child C; execute-plan delegated authority",
+  "approved_until": "2026-10-06T21:35:55Z",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 1537,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "W0",
+      "title": "Canonical weight-monitoring spec, domain docs, programme coordination",
+      "branch": "cursor/weight-unify-w0-docs-9b2e",
+      "allowed_paths": [
+        ".agents/plans/weight-monitoring-unify-9b2e.*",
+        ".agents/plans/weight-unify-*-9b2e.*",
+        "docs/domains/weight_tracking/**",
+        "docs/domains/pet_care/features/care-progression.md",
+        "docs/domains/pet_care/features/care-item-evolution.md",
+        "docs/agent-efficiency/parallel-programmes.md",
+        "docs/architecture/index.md",
+        ".agents/plans/README.md"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/**",
+        "e2e/**",
+        "db/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1552",
+      "pr_head_sha": "8931363ffaa8c1bc15ee1b8054162f1e2cfcfff2"
+    }
+  ],
+  "content_hash": "sha256:41f5a598217e7e7f157355ae2c549a23173d1c477f9a67524d8d5dd4081aa7b2"
+}

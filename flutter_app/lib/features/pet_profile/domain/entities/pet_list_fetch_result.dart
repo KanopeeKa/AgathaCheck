@@ -1,4 +1,5 @@
 import 'pet.dart';
+import 'pet_cache_freshness.dart';
 
 /// Where the pet list payload came from after a [PetRepository.fetchAllPets] call.
 enum PetListFetchSource { remote, localCache }
@@ -8,14 +9,18 @@ class PetListFetchResult {
   const PetListFetchResult({
     required this.pets,
     required this.source,
-    required this.isStale,
+    required this.freshness,
     this.fetchedAt,
   });
 
   final List<Pet> pets;
   final PetListFetchSource source;
-  final bool isStale;
+  final PetCacheFreshness freshness;
   final DateTime? fetchedAt;
 
-  bool get isFromRemote => source == PetListFetchSource.remote && !isStale;
+  bool get isStale => freshness != PetCacheFreshness.fresh;
+
+  bool get isFromRemote =>
+      source == PetListFetchSource.remote &&
+      freshness == PetCacheFreshness.fresh;
 }

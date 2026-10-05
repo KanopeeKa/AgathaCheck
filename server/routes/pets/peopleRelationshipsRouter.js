@@ -1,36 +1,20 @@
-import { v4 as uuidv4 } from 'uuid';
-
 import { publicError } from '../../config/security.js';
 import { userCanManageProfile } from '../../lib/petAccess.js';
 import { RELATIONSHIP_KINDS } from '../../lib/people/constants.js';
+import { asPeopleError } from '../../lib/people/errors.js';
 import {
-  contactUsableForPet,
-  getPetOwnerUserId,
-} from '../../lib/people/authz.js';
+  add,
+  listForPet,
+  remove,
+  replaceAll,
+  setSlot,
+} from '../../lib/people/relationships.js';
 import { extractUserId } from './shared.js';
 
-function relationshipRowToMap(row) {
-  return {
-    id: row.id,
-    pet_id: row.pet_id,
-    contact_id: row.contact_id,
-    relationship_kind: row.relationship_kind,
-    is_primary: row.is_primary === true || row.is_primary === 't',
-    active: row.active === true || row.active === 't',
-    contact: row.contact_name
-      ? {
-        id: row.contact_id,
-        kind: row.contact_kind,
-        name: row.contact_name,
-        phone: row.contact_phone ?? null,
-        inactive_at: row.contact_inactive_at
-          ? row.contact_inactive_at.toISOString?.() || String(row.contact_inactive_at)
-          : null,
-      }
-      : null,
-    created_at: row.created_at,
-    updated_at: row.updated_at,
-  };
+function sendPeopleError(res, err) {
+  const pe = asPeopleError(err);
+  if (pe) return res.status(pe.status).json(pe.toJson());
+  return null;
 }
 
 function normalizeRelationships(body) {
@@ -64,20 +48,59 @@ export function registerPeopleRelationshipsRoutes(router, pool) {
       if (!(await userCanManageProfile(pool, petId, userId))) {
         return res.status(403).json({ error: 'Forbidden' });
       }
-      const result = await pool.query(
-        `SELECT pcr.*,
-          pc.kind AS contact_kind,
-          pc.name AS contact_name,
-          pc.phone AS contact_phone,
-          pc.inactive_at AS contact_inactive_at
-         FROM pet_contact_relationships pcr
-         INNER JOIN people_contacts pc ON pc.id = pcr.contact_id
-         WHERE pcr.pet_id = $1
-         ORDER BY pcr.relationship_kind, pc.name`,
-        [petId],
-      );
-      res.json(result.rows.map(relationshipRowToMap));
+      const rows = await listForPet(pool, petId);
+      res.json(rows);
     } catch (err) {
+      if (sendPeopleError(res, err)) return;
+      res.status(500).json({ error: publicError(err) });
+    }
+  });
+
+  router.put('/:petId/people-relationships/slots/:kind', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    const { petId, kind } = req.params;
+    try {
+      if (!(await userCanManageProfile(pool, petId, userId))) {
+        return res.status(403).json({ error: 'Forbidden' });
+      }
+      const contactId = req.body?.contact_id ?? req.body?.contactId ?? null;
+      const rows = await setSlot(pool, petId, kind, contactId, userId);
+      res.json(rows);
+    } catch (err) {
+      if (sendPeopleError(res, err)) return;
+      res.status(500).json({ error: publicError(err) });
+    }
+  });
+
+  router.post('/:petId/people-relationships', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    const { petId } = req.params;
+    try {
+      if (!(await userCanManageProfile(pool, petId, userId))) {
+        return res.status(403).json({ error: 'Forbidden' });
+      }
+      const rows = await add(pool, petId, req.body || {}, userId);
+      res.status(201).json(rows);
+    } catch (err) {
+      if (sendPeopleError(res, err)) return;
+      res.status(500).json({ error: publicError(err) });
+    }
+  });
+
+  router.delete('/:petId/people-relationships/:relationshipId', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    const { petId, relationshipId } = req.params;
+    try {
+      if (!(await userCanManageProfile(pool, petId, userId))) {
+        return res.status(403).json({ error: 'Forbidden' });
+      }
+      const rows = await remove(pool, petId, relationshipId, userId);
+      res.json(rows);
+    } catch (err) {
+      if (sendPeopleError(res, err)) return;
       res.status(500).json({ error: publicError(err) });
     }
   });
@@ -93,62 +116,10 @@ export function registerPeopleRelationshipsRoutes(router, pool) {
       const parsed = normalizeRelationships(req.body || {});
       if (parsed.error) return res.status(400).json({ error: parsed.error });
 
-      const petOwnerId = await getPetOwnerUserId(pool, petId);
-      if (!petOwnerId) return res.status(404).json({ error: 'Pet not found' });
-
-      for (const rel of parsed.relationships) {
-        const ok = await contactUsableForPet(pool, rel.contact_id, userId, petOwnerId);
-        if (!ok) {
-          return res.status(400).json({ error: 'Contact not found' });
-        }
-      }
-
-      const client = await pool.connect();
-      let result;
-      try {
-        await client.query('BEGIN');
-        await client.query('DELETE FROM pet_contact_relationships WHERE pet_id = $1', [petId]);
-
-        for (const rel of parsed.relationships) {
-          const relId = rel.id || uuidv4();
-          await client.query(
-            `INSERT INTO pet_contact_relationships (
-               id, pet_id, contact_id, relationship_kind, is_primary, active,
-               created_at, updated_at
-             ) VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())`,
-            [
-              relId,
-              petId,
-              rel.contact_id,
-              rel.relationship_kind,
-              rel.is_primary,
-              rel.active,
-            ],
-          );
-        }
-
-        result = await client.query(
-          `SELECT pcr.*,
-            pc.kind AS contact_kind,
-            pc.name AS contact_name,
-            pc.phone AS contact_phone,
-            pc.inactive_at AS contact_inactive_at
-           FROM pet_contact_relationships pcr
-           INNER JOIN people_contacts pc ON pc.id = pcr.contact_id
-           WHERE pcr.pet_id = $1
-           ORDER BY pcr.relationship_kind, pc.name`,
-          [petId],
-        );
-        await client.query('COMMIT');
-      } catch (txErr) {
-        await client.query('ROLLBACK');
-        throw txErr;
-      } finally {
-        client.release();
-      }
-
-      res.json(result.rows.map(relationshipRowToMap));
+      const rows = await replaceAll(pool, petId, parsed.relationships, userId);
+      res.json(rows);
     } catch (err) {
+      if (sendPeopleError(res, err)) return;
       res.status(500).json({ error: publicError(err) });
     }
   });

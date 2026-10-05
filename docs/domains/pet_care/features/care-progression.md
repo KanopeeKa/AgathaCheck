@@ -194,6 +194,7 @@ rhythm occurrence completed (health_occurrences)
 Rules:
 
 - A weight-rhythm occurrence is **not** completed without a real weight entry.
+- **WEIGHT programme (2026-10):** a weight recorded on the hub (or legacy paths) may **count as** a pending weigh-in through explicit user fulfilment (`fulfils_occurrence_id`); undo and completion-date rules keep the link consistent. See [weight-monitoring-model.md](../../weight_tracking/features/weight-monitoring-model.md).
 - Accepting an Agatha weight-rhythm suggestion creates the **rhythm only** — it does not invent an observation. The UI may offer “Record weight now” as a follow-up.
 - **Standalone** weight entries (`health_occurrence_id = null`) remain allowed.
 - **Skip** on a weight occurrence is allowed (existing occurrence model) but skipped occurrences **do not count** toward Establishment.

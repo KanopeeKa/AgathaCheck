@@ -123,7 +123,13 @@ describe('GET one occurrence (§18.7.1)', () => {
     const res = await api.at('2026-06-01T10:05').occurrence(entry.id, occ.id);
     expect(res.statusCode).toBe(200);
     assertResponse('get', 200, res.body);
-    expect(res.body.linked_weight).toEqual({ value: 12.4, unit: 'kg' });
+    expect(res.body.linked_weight).toMatchObject({
+      value: 12.4,
+      unit: 'kg',
+      id: expect.any(String),
+      date: '2026-06-01',
+      measurement_source: 'guardian',
+    });
   });
 
   it('answers 404 for an unknown occurrence, one on another item, or another person\'s item', async () => {

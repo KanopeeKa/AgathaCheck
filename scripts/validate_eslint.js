@@ -13,7 +13,7 @@ const REPO_ROOT = path.resolve(__dirname, '..');
 const ESLINT_BIN = path.join(REPO_ROOT, 'server/node_modules/eslint/bin/eslint.js');
 
 const LINT_PATHS = [
-  'server/routes/weightEntries.js',
+  'server/routes/weightEntries/**',
   'server/lib/petAccess.js',
   'server/lib/petCapabilityPolicy.js',
   'server/lib/openapi',

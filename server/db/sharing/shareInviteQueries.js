@@ -67,12 +67,13 @@ export async function insertInvite(db, {
   role,
   code,
   expiresAt,
+  contactId = null,
 }) {
   await db.query(
     `INSERT INTO pet_share_invites (
-       id, inviter_user_id, invitee_email, invitee_user_id, role, code, status, expires_at
-     ) VALUES ($1, $2, LOWER($3), $4, $5, $6, 'pending', $7)`,
-    [id, inviterUserId, inviteeEmail, inviteeUserId, role, code, expiresAt],
+       id, inviter_user_id, invitee_email, invitee_user_id, role, code, status, expires_at, contact_id
+     ) VALUES ($1, $2, LOWER($3), $4, $5, $6, 'pending', $7, $8)`,
+    [id, inviterUserId, inviteeEmail, inviteeUserId, role, code, expiresAt, contactId],
   );
 }
 

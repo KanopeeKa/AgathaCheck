@@ -6,7 +6,7 @@
  */
 import pg from 'pg';
 
-import { reconcilePeopleVets } from '../lib/people/petVetLink.js';
+import { rebuildAll } from '../lib/people/vetProjection.js';
 
 const pool = new pg.Pool({
   user: process.env.PGUSER || 'user',
@@ -20,7 +20,7 @@ async function main() {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
-    await reconcilePeopleVets(client);
+    await rebuildAll(client);
     await client.query('COMMIT');
     console.log('reconcilePeopleVets: OK');
   } catch (err) {

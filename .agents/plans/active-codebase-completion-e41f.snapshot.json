@@ -11,7 +11,7 @@
   "base_branch": "main",
   "control_issue": 1446,
   "artifact_branch_policy": "phase-branch",
-  "current_child_plan_id": "active-codebase-batch-e-backend-integrity-e41f",
+  "current_child_plan_id": "active-codebase-batch-h-ports-transport-e41f",
   "child_plans": [
     {
       "plan_id": "active-codebase-batch-d-guardrails-e41f",
@@ -27,15 +27,15 @@
     },
     {
       "plan_id": "active-codebase-batch-f-account-erasure-e41f",
-      "status": "pending",
+      "status": "merged",
       "pr_url": null,
       "merge_commit": null
     },
     {
       "plan_id": "active-codebase-batch-g-client-authority-e41f",
-      "status": "pending",
-      "pr_url": null,
-      "merge_commit": null
+      "status": "merged",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1584",
+      "merge_commit": "0130080cfed758b0d195df89a5f2a1f6201ca2b0"
     },
     {
       "plan_id": "active-codebase-batch-h-ports-transport-e41f",
@@ -99,5 +99,5 @@
       "merge_commit": null
     }
   ],
-  "content_hash": "sha256:c85e21ae21ea5b66e6e18c55d832399c18c6f319c95250634f825a2fa8d85c4c"
+  "content_hash": "sha256:084f547edc5c27de28be8b1df9bb9fa09e9f416568a3ba2ff716079d74daff68"
 }

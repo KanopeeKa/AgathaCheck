@@ -17,6 +17,7 @@ export function contactRowToMap(row) {
     legacy_vet_id: row.legacy_vet_id ?? null,
     roles: Array.isArray(row.roles) ? row.roles : [],
     private_note: row.private_note ?? '',
+    household_note: row.household_note !== undefined ? row.household_note : undefined,
     created_at: row.created_at,
     updated_at: row.updated_at,
   };
@@ -30,6 +31,7 @@ export function contactRowToMap(row) {
 export async function loadContactForViewer(pool, contactId, viewerUserId) {
   const result = await pool.query(
     `SELECT pc.*,
+      pd.household_id AS directory_household_id,
       COALESCE(
         (SELECT array_agg(pcr.role ORDER BY pcr.role)
          FROM people_contact_roles pcr WHERE pcr.contact_id = pc.id),
@@ -40,7 +42,19 @@ export async function loadContactForViewer(pool, contactId, viewerUserId) {
      INNER JOIN people_directories pd ON pd.id = pc.directory_id
      LEFT JOIN people_contact_private_notes pcpn
        ON pcpn.contact_id = pc.id AND pcpn.user_id = $2
-     WHERE pc.id = $1 AND pd.owner_user_id = $2`,
+     WHERE pc.id = $1
+       AND (
+         pd.owner_user_id = $2
+         OR (
+           pd.household_id IS NOT NULL
+           AND EXISTS (
+             SELECT 1 FROM household_members hm
+             WHERE hm.household_id = pd.household_id
+               AND hm.user_id = $2
+               AND (hm.is_organiser = true OR hm.access_tier = 'full_access')
+           )
+         )
+       )`,
     [contactId, viewerUserId],
   );
   return result.rows[0] ?? null;

@@ -20,6 +20,7 @@ import {
 import { markSkipped } from '../../lib/care/occurrence/occurrenceRepository.js';
 import { slotIsPastDue } from '../../lib/care/schedule/occurrenceStatus.js';
 import { commandResponse, occurrenceToMap } from '../../lib/care/item/index.js';
+import { validateSkipReasonForFamily } from '../../lib/care/capabilities.js';
 import { extractUserId } from './shared.js';
 import {
   isWeightMonitoringEntry,
@@ -229,9 +230,21 @@ export function registerOccurrenceRoutes(router, pool) {
     });
   });
 
-  router.post('/:id/occurrences/:occId/skip', (req, res) => {
+  router.post('/:id/occurrences/:occId/skip', async (req, res) => {
     const body = req.body || {};
     const occurrenceId = req.params.occId;
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    const entry = await loadEntry(pool, req.params.id, userId);
+    if (!entry) return res.status(404).json({ error: 'Entry not found' });
+    const skipCheck = validateSkipReasonForFamily(
+      entry.care_family,
+      body.reason_code || body.reasonCode || null,
+      body.notes || '',
+    );
+    if (!skipCheck.ok) {
+      return res.status(skipCheck.status).json(skipCheck.body);
+    }
     return handleCommand(pool, req, res, {
       command: (ctx) => skipOccurrenceCommand(ctx, {
         occurrenceId,

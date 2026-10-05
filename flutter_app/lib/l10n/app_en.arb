@@ -116,7 +116,42 @@
   "myFosteredPets": "My Fostered Pets",
   "noFosteredPets": "You are not fostering any pets yet.",
   "allPets": "All pets",
-  "petListStaleBannerMessage": "Showing saved pets while offline. Some details may be out of date.",
+  "petListStaleBannerOffline": "Offline — showing pets saved {relativeTime}",
+  "@petListStaleBannerOffline": {
+    "placeholders": {
+      "relativeTime": {
+        "type": "String"
+      }
+    }
+  },
+  "petListCacheOutOfDateBannerMessage": "Saved data may be out of date",
+  "petListCacheRetrySemanticsLabel": "Retry loading pets",
+  "petCacheRelativeJustNow": "just now",
+  "petCacheRelativeMinutes": "{count, plural, =1{1 minute ago} other{{count} minutes ago}}",
+  "@petCacheRelativeMinutes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "petCacheRelativeHours": "{count, plural, =1{1 hour ago} other{{count} hours ago}}",
+  "@petCacheRelativeHours": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "petCacheRelativeDays": "{count, plural, =1{1 day ago} other{{count} days ago}}",
+  "@petCacheRelativeDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "careCommandSavedRefreshFailed": "Saved — couldn't refresh. Pull to refresh.",
   "managePets": "Manage pets",
   "allCareTitle": "All care",
   "viewAllCare": "View all care",

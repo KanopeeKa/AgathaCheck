@@ -58,6 +58,45 @@ describe('People contacts API', () => {
           return { rows: [...contacts.values()] };
         }
 
+        if (sql.includes('pc.directory_id = ANY')) {
+          return { rows: [...contacts.values()] };
+        }
+
+        if (sql.includes('pet_contact_relationships pcr') && sql.includes('pcr.contact_id = ANY')) {
+          return { rows: [] };
+        }
+
+        if (sql.includes('FROM people_contacts pc') && sql.includes('INNER JOIN people_directories pd')
+          && sql.includes('WHERE pc.id = $1') && !sql.includes('pd.owner_user_id = $2')) {
+          const id = params[0];
+          const row = contacts.get(id);
+          if (!row) return { rows: [] };
+          return {
+            rows: [{
+              ...row,
+              directory_household_id: null,
+              owner_user_id: userId,
+            }],
+          };
+        }
+
+        if (sql.includes('FROM people_contacts pc') && sql.includes('pd.owner_user_id = $2')
+          && sql.includes('WHERE pc.id = $1') && sql.includes('SELECT 1')) {
+          return { rows: [{ '?column?': 1 }] };
+        }
+
+        if (sql.includes('health_occurrences')) {
+          return { rows: [{ count: 0 }] };
+        }
+
+        if (sql.includes('planned_absence_pets pap')) {
+          return { rows: [] };
+        }
+
+        if (sql.includes('health_entries he') && sql.includes('provider_contact_id')) {
+          return { rows: [] };
+        }
+
         if (sql.includes('INSERT INTO people_contacts')) {
           const id = params[0];
           const row = makeContactRow({
@@ -92,11 +131,14 @@ describe('People contacts API', () => {
         }
 
         if (sql.includes('UPDATE people_contacts SET')) {
-          const contactId = params[8];
+          const contactId = params[10] ?? params[8];
           const row = contacts.get(contactId);
           if (!row) return { rows: [] };
-          row.kind = params[0];
-          row.name = params[1];
+          if (params[0] != null) row.kind = params[0];
+          if (params[1] != null) row.name = params[1];
+          if (params[7] !== undefined) {
+            row.inactive_at = params[7];
+          }
           contacts.set(contactId, row);
           return { rows: [row] };
         }
@@ -206,6 +248,33 @@ describe('People contacts API', () => {
     expect(res.statusCode).toBe(200);
     expect(res.body.kind).toBe('organisation');
     expect(res.body.name).toBe('Greenhill Animal Hospital');
+  });
+
+  it('PATCH linked contact name returns 409 linked_identity_read_only', async () => {
+    contacts.set(
+      'contact-linked',
+      makeContactRow({
+        id: 'contact-linked',
+        linked_user_id: 'user-linked',
+        name: 'Linked User',
+        email: 'linked@example.com',
+      }),
+    );
+    const res = await request(app)
+      .patch('/api/people/contacts/contact-linked')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ name: 'Changed' });
+    expect(res.statusCode).toBe(409);
+    expect(res.body.code).toBe('linked_identity_read_only');
+  });
+
+  it('PATCH validation errors include code', async () => {
+    const res = await request(app)
+      .patch('/api/people/contacts/contact-1')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ name: '' });
+    expect(res.statusCode).toBe(400);
+    expect(res.body.code).toBe('validation_failed');
   });
 
   it('DELETE /api/people/contacts/:id removes contact', async () => {

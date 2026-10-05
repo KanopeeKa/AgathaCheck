@@ -67,26 +67,50 @@ Personal directory contacts (phase 1). Storage: migrations `072_*`–`074_*`. Sp
 
 | Method | Path | Authorization |
 |---|---|---|
-| GET | `/contacts` | authenticated — caller's personal directory; optional `?include_inactive=true` |
-| POST | `/contacts` | authenticated — body `{ kind, name, phone?, email?, address?, website?, works_at_contact_id?, roles?, private_note? }`; `kind` ∈ {`person`,`organisation`}; `roles` ⊆ sitter, walker, vet, vet_nurse, groomer, trainer, behaviourist, boarding, emergency_contact, other |
-| GET | `/contacts/:id` | authenticated — owner of directory only |
-| PATCH | `/contacts/:id` | authenticated — partial update; `private_note` is per-caller only; **`kind` changes only when `kind` is sent** (rename alone does not re-infer kind) |
-| DELETE | `/contacts/:id` | authenticated — blocked when `legacy_vet_id` is set (delete vet instead) or pet relationship exists (`409`) |
+| GET | `/contacts` | authenticated — visible personal and household (Full access) directories; optional `?include_inactive=true`; adds `directory`, `group`, `status`, `pets[]` (additive) |
+| GET | `/roster` | authenticated — hub read model: `households[]`, `contacts[]` (`ContactSummary`), `pending_invites[]` (pet share, household, and absence carer invites created by viewer; optional `contact_id`, `household_id` on household rows) |
+| GET | `/contacts/:id` | authenticated — enriched detail (`works_at`, `staff[]`, `usage_counts`, `linked_account`, `group`, `status`, `directory`, `household_note` for household members; hidden from linked person — I10) |
+| GET | `/contacts/:id/related` | authenticated — related pets, care items as provider, absences as carer, `history_count` |
+| GET | `/contacts/by-legacy-vet/:vetId` | authenticated — `{ id }` for legacy vet deep links |
+| POST | `/contacts` | authenticated — body `{ kind, name, phone?, email?, address?, website?, works_at_contact_id?, roles?, private_note?, household_note?, pet_links?, household_id? }`; `kind` ∈ {`person`,`organisation`}; `roles` ⊆ sitter, walker, vet, vet_nurse, groomer, trainer, behaviourist, boarding, emergency_contact, other; optional `household_id` creates in that household directory (Full access / organiser only); optional `pet_links[]` = `{ pet_id, relationship_kind }` (attach in same transaction; slot kinds use replace semantics) |
+| PATCH | `/contacts/:id` | authenticated — partial update; `private_note` per-caller; `household_note` for household-directory contacts (members with edit access); **`kind` changes only when `kind` is sent** (rename alone does not re-infer kind) |
+| DELETE | `/contacts/:id` | authenticated — `409 contact_in_use` with `details.usages[]` when the contact is referenced (relationships, absence carers, care-item providers, pending carer invites, works-at). Unused vet-linked contacts delete and remove the linked `vets` row |
 
-Response contact shape: `{ id, directory_id, kind, name, phone, email, address, website, works_at_contact_id, linked_user_id, inactive_at, legacy_vet_id, roles[], private_note, created_at, updated_at }`.
+List/detail compat contact fields: `{ id, directory_id, kind, name, phone, email, address, website, works_at_contact_id, linked_user_id, inactive_at, legacy_vet_id, roles[], private_note, created_at, updated_at }` plus read-model fields above where applicable.
+
+`ContactSummary` (roster/list): `{ directory: { type, household_id }, group, status, pets[{ pet_id, pet_name, relationship_kind, is_primary }], works_at?, next_absence?, access? }`.
+
+People error bodies (additive): `{ error, code, details? }` with stable `code` values including `validation_failed`, `contact_not_found`, `forbidden`, `contact_in_use` (`details.usages[]`: `{ kind, id, label, pet_id?, active? }`), `slot_conflict`, `linked_identity_read_only`. Health entry writes validate `provider_contact_id` with the same attach rules as pet relationships (`400 validation_failed`). PATCH accepts `active: boolean` (sets `inactive_at` server-side); optional `inactive_at` is validated when sent. PATCH rejects name/email changes on contacts with `linked_user_id` → `409 linked_identity_read_only`.
 
 #### Pet contact relationships (`/api/pets/:petId/people-relationships`)
+
+Authoritative store for pet–contact links. `pet_contact_relationships` drives `pets.vet_id` and legacy `vets` rows via server-side projection (invariant I5).
 
 | Method | Path | Authorization |
 |---|---|---|
 | GET | `/api/pets/:petId/people-relationships` | `userCanManageProfile` (record owner or co-parent) |
-| PUT | `/api/pets/:petId/people-relationships` | same — replaces all relationships; body `{ relationships: [{ contact_id, relationship_kind, is_primary?, active? }] }`; `relationship_kind` ∈ primary_vet, out_of_hours_vet, emergency_contact, care_provider, other; contact must be in caller's or pet owner's personal directory |
+| PUT | `/api/pets/:petId/people-relationships` | same — replaces all relationships; body `{ relationships: [{ contact_id, relationship_kind, is_primary?, active? }] }`; re-projects `pets.vet_id` |
+| PUT | `/api/pets/:petId/people-relationships/slots/:kind` | same — `kind` ∈ `primary_vet`, `out_of_hours_vet`; body `{ contact_id }` or `{ contact_id: null }` to clear |
+| POST | `/api/pets/:petId/people-relationships` | same — add `emergency_contact`, `care_provider`, or `other`; body `{ contact_id, relationship_kind }`; slot kinds → `409 slot_conflict` |
+| DELETE | `/api/pets/:petId/people-relationships/:relationshipId` | same — removes one row; clears `pets.vet_id` when removing active `primary_vet` |
 
-Vets API (`/api/vets`) dual-writes linked `people_contacts` rows via `legacy_vet_id` until clients migrate.
+Relationship rows include `sort_order` (default `0`). `relationship_kind` ∈ primary_vet, out_of_hours_vet, emergency_contact, care_provider, other; contact must be attachable via `canAttachContactToPet`.
 
-#### Planned — `people-domain-refactor-7f3b` (not implemented)
+Vets API (`/api/vets`) is a **compat adapter**: response shapes unchanged; writes go through People contacts and a one-way projection to `vets` + `pets.vet_id`. Pet PATCH/create `vet_id` sets the `primary_vet` slot.
 
-Additive changes, listed in [people-domain-refactor.md](/docs/domains/people/changes/people-domain-refactor.md) §3.6: `GET /api/people/roster`, enriched contact detail, `GET /api/people/contacts/:id/related`, `GET /api/people/contacts/by-legacy-vet/:vetId`, `GET /api/pets/:petId/people`, slot/add/remove relationship endpoints, usage-aware `DELETE` (`409 contact_in_use`), household removal preview and household email invites, `contact_id` on pet share invites, and a `code` field on People error bodies. `/api/vets` becomes a compat adapter over a one-way projection. Each entry moves to the tables above in the PR that ships it.
+#### Pet people (`/api/pets/:petId/people`)
+
+| Method | Path | Authorization |
+|---|---|---|
+| GET | `/api/pets/:petId/people` | record owner, co-parent, household Full access → `scope: full` (household members + all relationships); Can log care, carer share, absence guest → `scope: handover` (emergency/vet/provider contacts only); others → `403` |
+
+Response: `{ pet_id, pet_name, scope, owner, household_members[], relationships[] }` (`relationships` same shape as people-relationships list).
+
+**Personal data (ARCH F inventory):** `people_contact_household_notes` — household-scoped notes on directory contacts; deleted with contact or household; included in GDPR export scope for household members with edit access.
+
+#### Planned — `people-domain-refactor-7f3b` (partial)
+
+Shipped in server phases s1–s6: writer, access, usages, relationships + vet projection, read models, household directory notes, safe member removal, household email invites, and optional `contact_id` on pet share invites (accept links `linked_user_id` when null). See [people-domain-refactor.md](/docs/domains/people/changes/people-domain-refactor.md) §3.6.
 
 ### Organizations (`/api/organizations`)
 | Method | Path | Authorization |
@@ -163,11 +187,11 @@ Returns upcoming active absences for the entry's pet with per-absence `affected`
 | Method | Path | Notes |
 |---|---|---|
 | GET | `/:id/occurrences` | Query `status=open` (default) or `status=past`; optional `as_of` calendar day; rows include `origin`, `close_reason` |
-| GET | `/:id/occurrences/:occId` | One occurrence for the occurrence screen: `{ occurrence (+ occurrence_status: coming_up \| due \| overdue \| not_recorded \| done \| skipped), entry` (same read additions as `GET /:id`, including `open_occurrences[]` and frequency fields for `decideDone`), `last_action \| null`, `linked_weight? }`; 404 when not on that item |
+| GET | `/:id/occurrences/:occId` | One occurrence for the occurrence screen: `{ occurrence (+ occurrence_status: …), entry` (same read additions as `GET /:id`), `last_action \| null`, optional `linked_weight { id, value, unit, date, measurement_source }`, optional `skip_reason { code, note } \| null` (latest non-undone skip ledger row); 404 when not on that item |
 | PATCH | `/:id/occurrences/:occId` | Completed occurrences only. Body `{ completed_on }` alone — changes when it was done (D-CSM-034): 200 occurrence fields + `{ occurrence, entry, next_due_date, undo_token, moved_next_id, next_unchanged }`; **400** `invalid_completed_on` / `completed_on_in_future` / `completed_on_before_start` / `completed_on_with_other_fields`; **409** `occurrence_not_completed`. Or `{ notes?, provider_contact_id?, provider_typed_name? }` |
-| GET | `/:id/history` | Closed occurrences (completed, skipped), newest first: `{ id, health_entry_id, status, notes, due_date, completed_on, changed_at, marked_by_user_id, marked_by_name }` (D-CSM-035) |
+| GET | `/:id/history` | Closed occurrences (completed, skipped), newest first: `{ id, health_entry_id, status, notes, due_date, completed_on, changed_at, marked_by_user_id, marked_by_name, linked_weight? }` — completed `weight_monitoring` rows add `linked_weight: { value, unit, date } \| null` (W3) |
 | POST | `/:id/occurrences/:occId/complete` | Body `{ completed_on?, notes?, next_choice?: 'keep' \| 'skip_next' \| 'shift_following', remember_choice?, earlier_choice?: 'complete' \| 'skip' \| 'keep' }`; 200 `{ occurrence, next_due_date, entry, undo_token, next_choice_applied }`. Never asks (D-CSM-026, revised 2026-10-01): no `next_choice` → the remembered choice if it fits, otherwise `keep`; no `earlier_choice` → `keep`. **400 `next_choice_not_available`** when an explicit choice doesn't fit (nothing saved); **409 `occurrence_not_open`** |
-| POST | `/:id/occurrences/:occId/skip` | Body `{ notes? }`; same response shape as complete; ledger `skipped` |
+| POST | `/:id/occurrences/:occId/skip` | Body `{ notes?, reason_code? }`; same response shape as complete; ledger `skipped` with `reason_code` / `reason_note`. For `weight_monitoring`, when `reason_code` is sent it must be one of `could_not_weigh`, `pet_unsettled`, `vet_will_weigh`, `other` (**400** `invalid_skip_reason`); weigh-in skip notes longer than 500 chars → **400** `skip_note_too_long` |
 | POST | `/:id/occurrences` | Plan another date — body `{ scheduled_date, scheduled_time? }`; `planned` occurrence; `warnings[]` when within half an interval of another open date (D-CSM-025) |
 | POST | `/:id/occurrences/:occId/record` | Record a Not recorded slot as given — body `{ completed_on }` (D-CSM-023) |
 | POST | `/:id/occurrences/resolve-stack` | Record earlier doses — body `{ given: [ids], not_given: [ids] }` |
@@ -203,8 +227,21 @@ Weight monitoring rhythms: generic occurrence **complete** returns `400` — use
 `DELETE /:issueId/events/:entryId` (events verify issue ownership).
 
 ### Weight entries (`/api/weight-entries`)
-`GET /` (optional `?pet_id=`), `GET /latest?pet_id=`, `POST /` (verifies pet
-ownership), `PUT /:id`, `DELETE /:id`.
+`GET /` (optional `?pet_id=`), `GET /latest?pet_id=`, `GET /fulfilment-candidates?pet_id=&date=`,
+`GET /overview?pet_id=`, `POST /` (optional `fulfils_occurrence_id`), `POST /:id/fulfil`
+(`{ occurrence_id }`), `PUT /:id`, `DELETE /:id`. List rows add `fulfils` when linked.
+`POST /` with fulfilment returns `fulfilment: { entry_id, occurrence, next_due_date, undo_token }`.
+`PUT` on a weight linked to a completed
+weigh-in whose **date** changes runs the care completion-date command in the
+same transaction (weight value/notes/source update in `beforeCommand`); response
+includes `undo_token` when a ledger event was written. `DELETE` response adds
+`reopened_occurrence: { entry_id, occurrence_id } | null` when a linked weigh-in
+was reopened.
+
+**Storage and units (W1):** weights are stored in **kg** only (`unit` is always `kg` on
+responses). POST/PUT (and weigh-in `complete-weight`) accept optional `unit: 'kg' | 'lb'`;
+the server converts lb with `0.45359237 kg/lb`. `date` must be on or before today in the
+pet's home calendar (`400` `date_in_future` when later).
 
 Responses include optional `health_occurrence_id` when the observation completed a
 care rhythm occurrence (CP-2). Deleting a linked weight entry re-opens the occurrence
@@ -213,6 +250,11 @@ to `pending` and refreshes the rhythm `next_due_date`.
 D0 provenance: responses include `measurement_source` (`guardian`|`clinic`|`device`|`imported`).
 POST/PUT accept optional `measurement_source`. Pet weight reference/context fields live on `PUT /api/pets/:id`
 (`weight_reference_value`, `weight_reference_authority`, `weight_management_context`) — see [d0-provenance-contract.md](../domains/pet_care/changes/d0-provenance-contract.md).
+
+**Deprecated pet payload fields:** `POST /api/pets` and `PUT /api/pets/:id` still accept
+`weight` / `weightEntryDate` for installed clients; values are recorded as standalone weights
+through the shared observation service (never linked to a weigh-in). Non-positive or non-numeric
+`weight` → `400` `invalid_weight`. Prefer `/api/weight-entries` for new clients.
 
 ### Notifications (`/api/notifications`)
 `GET /`, `GET /unread-count`, `PUT|POST /:id/read`, `PUT|POST /read-all`,
@@ -227,7 +269,7 @@ POST/PUT accept optional `measurement_source`. Pet weight reference/context fiel
 | DELETE | `/links/:linkId` | Owner deletes any share link; foster may delete only links they created |
 | GET | `/hidden` | Hidden shared pets |
 | PUT | `/:petId/hide` | Hide or unhide a shared pet (`{ hidden: true\|false }`) |
-| POST | `/invites` | Email invite; body `{ invitee_email, pet_ids, role }` — up to 20 pets; returns `{ invite_id, code, included_pet_ids, excluded[], delivery }`; identical replay while a pending invite from the same inviter covers every requested pet returns **200** with the same ids and `replayed: true` (no new rows or notifications) |
+| POST | `/invites` | Email invite; body `{ invitee_email, pet_ids, role, contact_id? }` (caller must be allowed to edit `contact_id`); up to 20 pets; returns `{ invite_id, code, included_pet_ids, excluded[], delivery }`; identical replay while a pending invite from the same inviter covers every requested pet returns **200** with the same ids and `replayed: true` (no new rows or notifications); accept links `people_contacts.linked_user_id` when null |
 | GET | `/invites/code/:code` | Public invite preview (no inviter email) |
 | POST | `/invites/code/:code/accept` | Auth required; grants access per pet on invite |
 | POST | `/invites/:id/decline` | Auth required; notifies inviter |
@@ -256,8 +298,14 @@ Share links are **single-use**: once accepted, the same link cannot be used by a
 | GET | `/:id` | Detail with `members` and `pets` (members only) |
 | PATCH | `/:id` | Rename (organisers) |
 | POST | `/:id/members` | Add member by `user_id`; body `{ access_tier?, is_organiser? }` |
-| DELETE | `/:id/members/:userId` | Leave or remove; body optional `{ remove_all_access_to_my_pets: true }` |
+| GET | `/:id/members/:userId/removal-preview` | Leave/remove preview (D16): `remaining_access[]` per pet (`source`: `direct_share` \| `absence`), `requires_successor` when last organiser leaves with other members |
+| DELETE | `/:id/members/:userId` | Leave or remove; body optional `{ remove_all_access_to_my_pets: true, successor_user_id? }`; last organiser with other members → `409 successor_required` without successor |
 | PUT | `/:id/pets` | Body `{ pet_ids: [] }` — record owner adds/removes their pets |
+| POST | `/:id/invites` | Organisers only — email invite; body `{ invitee_email, access_tier?, is_organiser?, contact_id? }`; 14-day expiry; rate-limited |
+| GET | `/invites/code/:code` | Public preview for household invite landing |
+| POST | `/invites/code/:code/accept` | Authenticated accept (adds membership) |
+| POST | `/invites/code/:code/decline` | Authenticated decline |
+| DELETE | `/:id/invites/:inviteId` | Revoke pending invite (organisers) |
 
 Household `full_access` grants `userCanManageProfile` + `userCanManageCare` (not share/transfer/delete). `can_log_care` grants care management only. Effective access is the highest of household, direct share, and **absence guest grants** (time-bound, evaluated in the absence's `timezone`).
 
@@ -323,7 +371,7 @@ Raw `items[]` entries may include `window_relation: before_window` on materialis
 
 Declarer-scoped absence context (not visible to collaborators in V1): `GET /`, `POST /`, `GET /:id`, `PATCH /:id`, `POST /:id/cancel`.
 
-**Timezone (D24)** — `users.timezone` is set at signup/login (optional body) or via `PATCH /api/auth/me`. Each absence stores `timezone` copied from the declarer's account at `POST` create (later account timezone changes do not alter existing absences). Access windows for guest grants use whole calendar days `starts_on`…`ends_on` inclusive in that absence timezone.
+**Timezone (D24)** — `users.timezone` is set at signup/login (optional body) or via `PATCH /api/auth/me`. **`weight_unit`** (`kg` default, or `lb`) is readable on `GET /api/auth/me` and writable via `PATCH /api/auth/me` (invalid values → `400`). Each absence stores `timezone` copied from the declarer's account at `POST` create (later account timezone changes do not alter existing absences). Access windows for guest grants use whole calendar days `starts_on`…`ends_on` inclusive in that absence timezone.
 
 **Guest access (People phase 4)** — time-bound `can_log_care` via absence guest grants (evaluated at read time alongside household + direct share):
 

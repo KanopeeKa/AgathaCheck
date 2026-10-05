@@ -3,7 +3,13 @@
  * @see docs/domains/pet_care/features/care-progression.md
  */
 
-import { CARE_FAMILIES } from './enums.js';
+import {
+  CARE_FAMILIES,
+  SKIP_REASON_CODES,
+  WEIGHT_MONITORING_SKIP_NOTE_MAX_LENGTH,
+} from './enums.js';
+
+export { SKIP_REASON_CODES, WEIGHT_MONITORING_SKIP_NOTE_MAX_LENGTH };
 
 /** @typedef {'core' | 'optional_catalog' | 'device_backed' | 'partner_import'} EntitlementClass */
 
@@ -153,6 +159,34 @@ export class CareFamilyCapabilityPolicy {
     const normalized = String(species || '').toLowerCase();
     return caps.speciesApplicability.includes(normalized);
   }
+}
+
+/**
+ * @param {string} careFamily
+ * @param {string|null|undefined} reasonCode
+ * @param {string|null|undefined} notes
+ * @returns {{ ok: true } | { ok: false, status: number, body: object }}
+ */
+export function validateSkipReasonForFamily(careFamily, reasonCode, notes) {
+  const allowed = SKIP_REASON_CODES[careFamily];
+  if (!allowed || !reasonCode) {
+    return { ok: true };
+  }
+  if (!allowed.includes(reasonCode)) {
+    return {
+      ok: false,
+      status: 400,
+      body: { error: 'invalid skip reason', code: 'invalid_skip_reason' },
+    };
+  }
+  if (notes && String(notes).length > WEIGHT_MONITORING_SKIP_NOTE_MAX_LENGTH) {
+    return {
+      ok: false,
+      status: 400,
+      body: { error: 'skip note too long', code: 'skip_note_too_long' },
+    };
+  }
+  return { ok: true };
 }
 
 export { CAPABILITY_MATRIX };

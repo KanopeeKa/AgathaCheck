@@ -14,7 +14,7 @@ function authHeader() {
   return { Authorization: `Bearer ${token}` };
 }
 
-function handlePeopleCarerBackfillMocks(sql) {
+function handlePeopleCarerBackfillMocks(sql, params) {
   if (sql.includes('FROM people_directories WHERE owner_user_id')) {
     return { rows: [{ id: 'people-dir-1' }] };
   }
@@ -30,10 +30,19 @@ function handlePeopleCarerBackfillMocks(sql) {
     return { rows: [] };
   }
   if (sql.includes('INSERT INTO people_contacts')) {
-    return { rows: [] };
+    return { rows: [{ id: 'people-contact-1' }] };
   }
   if (sql.includes('INSERT INTO people_contact_roles')) {
     return { rows: [] };
+  }
+  if (sql.includes('people_contacts WHERE directory_id = $1 AND linked_user_id = $2')) {
+    return { rows: [] };
+  }
+  if (sql.includes('SELECT id, inactive_at FROM people_contacts WHERE id = ANY')) {
+    const ids = Array.isArray(params?.[0]) ? params[0] : [];
+    return {
+      rows: ids.map((id) => ({ id, inactive_at: null })),
+    };
   }
   if (sql.includes('INSERT INTO people_contact_private_notes')) {
     return { rows: [] };
@@ -50,12 +59,15 @@ function handlePeopleCarerBackfillMocks(sql) {
   if (sql.includes('FROM pets WHERE id = $1')) {
     return { rows: [{ user_id: userId }] };
   }
+  if (sql.includes('planned_absence_guest_grants')) {
+    return { rows: [] };
+  }
   return null;
 }
 
 function wrapPoolHandler(handler) {
   return async (sql, params) => {
-    const peopleMock = handlePeopleCarerBackfillMocks(sql);
+    const peopleMock = handlePeopleCarerBackfillMocks(sql, params);
     if (peopleMock) return peopleMock;
     return handler(sql, params);
   };
@@ -86,6 +98,7 @@ describe('planned absence carers', () => {
 
   it('PATCH assigns shared_user carer and bumps updated_at', async () => {
     let updatedAtBumped = false;
+    let assignedContactId = null;
     const app = createTransactionalTestApp(wrapPoolHandler(async (sql, params) => {
       if (sql.includes('FROM planned_absences WHERE id = $1 AND user_id = $2')) {
         return { rows: [absenceRow()] };
@@ -108,6 +121,12 @@ describe('planned absence carers', () => {
       if (sql.includes('UPDATE planned_absence_pets') && sql.includes('carer_kind')) {
         expect(params[0]).toBe('shared_user');
         expect(params[1]).toBe(carerUserId);
+        expect(params[2]).toBeNull();
+        expect(params[3]).toBeNull();
+        expect(params[4]).toMatch(
+          /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+        );
+        assignedContactId = params[4];
         return { rows: [] };
       }
       if (sql.includes('UPDATE planned_absences') && sql.includes('updated_at = NOW()')) {
@@ -131,6 +150,7 @@ describe('planned absence carers', () => {
             carer_user_id: carerUserId,
             carer_name: null,
             carer_note: null,
+            contact_id: assignedContactId,
           }],
         };
       }
@@ -159,17 +179,17 @@ describe('planned absence carers', () => {
 
     expect(res.statusCode).toBe(200);
     expect(updatedAtBumped).toBe(true);
-    expect(res.body.absence.pet_carers).toEqual([{
+    expect(res.body.absence.pet_carers[0]).toMatchObject({
       pet_id: petId,
       carer_kind: 'shared_user',
       carer_user_id: carerUserId,
       carer_name: 'Sarah M.',
       carer_note: null,
-      contact_id: null,
+      contact_id: assignedContactId,
       carer_state: 'set',
       carer_removed: false,
       pet_note: null,
-    }]);
+    });
   });
 
   it('PATCH assigns note_only carer without access implication', async () => {
@@ -196,6 +216,9 @@ describe('planned absence carers', () => {
         expect(params[1]).toBeNull();
         expect(params[2]).toBe('Tom');
         expect(params[3]).toBe('Neighbour');
+        expect(params[4]).toMatch(
+          /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+        );
         carerUpdated = true;
         return { rows: [] };
       }
@@ -360,6 +383,11 @@ describe('planned absence carers', () => {
         if (sql.includes('pet_note')) petNoteColumnTouched = true;
         expect(params[0]).toBe('shared_user');
         expect(params[1]).toBe(carerUserId);
+        expect(params[2]).toBeNull();
+        expect(params[3]).toBeNull();
+        expect(params[4]).toMatch(
+          /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+        );
         carerUpdated = true;
         return { rows: [] };
       }

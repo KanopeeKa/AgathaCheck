@@ -35,6 +35,7 @@ describe('Auth Routes — Profile', () => {
       expect(res.body).toHaveProperty('photo_url', 'http://example.com/photo.png');
       expect(res.body).toHaveProperty('locale', 'en');
       expect(res.body).toHaveProperty('timezone', 'UTC');
+      expect(res.body).toHaveProperty('weight_unit', 'kg');
       expect(res.body).toHaveProperty('pinned_organization_id', null);
     });
 
@@ -114,6 +115,32 @@ describe('Auth Routes — Profile', () => {
         .send({ locale: 'fr' });
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty('locale', 'fr');
+    });
+
+    it('U-6 PATCH /api/auth/me weight_unit lb then GET returns lb; st is 400', async () => {
+      const updatedRow = { ...userRow, weight_unit: 'lb' };
+      const pool = buildMockPool({
+        updateUser: async () => ({ rows: [updatedRow] }),
+        selectUserById: async () => ({ rows: [updatedRow] }),
+      });
+      const updateApp = createApp(pool, mockComparePassword);
+      const authToken = makeToken();
+      const patch = await request(updateApp)
+        .patch('/api/auth/me')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({ weight_unit: 'lb' });
+      expect(patch.statusCode).toBe(200);
+      expect(patch.body.weight_unit).toBe('lb');
+      const get = await request(updateApp)
+        .get('/api/auth/me')
+        .set('Authorization', `Bearer ${authToken}`);
+      expect(get.body.weight_unit).toBe('lb');
+      const bad = await request(updateApp)
+        .patch('/api/auth/me')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({ weight_unit: 'st' });
+      expect(bad.statusCode).toBe(400);
+      expect(bad.body.error).toBe('weight_unit must be kg or lb');
     });
 
     it('should update timezone via PATCH', async () => {

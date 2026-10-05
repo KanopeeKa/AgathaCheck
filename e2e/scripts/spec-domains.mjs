@@ -70,7 +70,13 @@ export const AREAS = {
   },
   petProfile: {
     paths: ['flutter_app/lib/features/pet_profile/', 'flutter_app/lib/features/pet_tags/', 'server/routes/pets', 'server/routes/petTags'],
-    specs: ['pet.profiles.spec.ts', 'pet.detail-navigation.spec.ts', 'pet.timeline.spec.ts', 'care-suggestion.spec.ts'],
+    specs: [
+      'pet.profiles.spec.ts',
+      'pet.detail-navigation.spec.ts',
+      'pet.timeline.spec.ts',
+      'pet.offline-cache.spec.ts',
+      'care-suggestion.spec.ts',
+    ],
   },
   experience: {
     paths: ['flutter_app/lib/features/experience/'],
@@ -113,7 +119,7 @@ export const AREAS = {
       'server/routes/vets',
       'server/lib/people/',
     ],
-    specs: ['people-hub.spec.ts', 'veterinarian.spec.ts'],
+    specs: ['people-hub.spec.ts', 'people.detail-navigation.spec.ts', 'veterinarian.spec.ts'],
   },
   help: {
     paths: ['flutter_app/lib/features/help/', 'flutter_app/lib/features/about/'],

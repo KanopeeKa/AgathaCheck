@@ -9,13 +9,17 @@ import {
   getHouseholdDetail,
   listHouseholdsForUser,
   patchHousehold,
+  getHouseholdMemberRemovalPreview,
   removeHouseholdMember,
   setHouseholdPets,
 } from '../../lib/households/householdService.js';
+import { registerHouseholdInviteRoutes } from './inviteRoutes.js';
 
 export default function householdsRoutes(pool) {
   const router = express.Router();
   router.use(createApiLimiter());
+
+  registerHouseholdInviteRoutes(router, pool);
 
   router.post('/', async (req, res) => {
     const userId = extractUserId(req);
@@ -76,6 +80,27 @@ export default function householdsRoutes(pool) {
     }
   });
 
+  router.get('/:id/members/:userId/removal-preview', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    try {
+      const result = await getHouseholdMemberRemovalPreview(
+        pool,
+        userId,
+        req.params.id,
+        req.params.userId,
+      );
+      if (result.error) {
+        const body = { error: result.error };
+        if (result.code) body.code = result.code;
+        return res.status(result.status).json(body);
+      }
+      return res.json(result);
+    } catch (err) {
+      return res.status(500).json({ error: publicError(err) });
+    }
+  });
+
   router.delete('/:id/members/:userId', async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
@@ -87,7 +112,11 @@ export default function householdsRoutes(pool) {
         req.params.userId,
         req.body || {},
       );
-      if (result.error) return res.status(result.status).json({ error: result.error });
+      if (result.error) {
+        const body = { error: result.error };
+        if (result.code) body.code = result.code;
+        return res.status(result.status).json(body);
+      }
       return res.json(result);
     } catch (err) {
       return res.status(500).json({ error: publicError(err) });

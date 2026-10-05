@@ -45,4 +45,28 @@ class MockPetLocalDataSource extends Mock implements PetLocalDataSource {
             returnValue: Future.value(),
           )
           as Future<void>;
+
+  @override
+  Future<DateTime?> getLastSyncedAt() =>
+      super.noSuchMethod(
+            Invocation.method(#getLastSyncedAt, []),
+            returnValue: Future.value(null),
+          )
+          as Future<DateTime?>;
+
+  @override
+  Future<void> setLastSyncedAt(DateTime? utc) =>
+      super.noSuchMethod(
+            Invocation.method(#setLastSyncedAt, [utc]),
+            returnValue: Future.value(),
+          )
+          as Future<void>;
+
+  @override
+  Future<void> clearCache() =>
+      super.noSuchMethod(
+            Invocation.method(#clearCache, []),
+            returnValue: Future.value(),
+          )
+          as Future<void>;
 }

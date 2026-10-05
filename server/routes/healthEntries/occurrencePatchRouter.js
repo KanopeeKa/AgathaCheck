@@ -4,7 +4,7 @@
  */
 
 import { publicError } from '../../config/security.js';
-import { normalizeCalendarDateInput } from '../../lib/calendarDate.js';
+import { dateToIsoDate, normalizeCalendarDateInput } from '../../lib/calendarDate.js';
 import {
   changeCompletionDateCommand,
   normalizeOccurrenceRow,
@@ -46,11 +46,33 @@ async function lastAction(pool, entryId) {
 
 async function linkedWeight(pool, occurrenceId) {
   const result = await pool.query(
-    'SELECT weight, unit FROM weight_entries WHERE health_occurrence_id = $1 LIMIT 1',
+    `SELECT id, weight, unit, date, measurement_source
+     FROM weight_entries WHERE health_occurrence_id = $1 LIMIT 1`,
     [occurrenceId],
   );
   const row = result.rows[0];
-  return row ? { value: Number(row.weight), unit: row.unit || 'kg' } : null;
+  if (!row) return null;
+  return {
+    id: row.id,
+    value: Number(row.weight),
+    unit: row.unit || 'kg',
+    date: dateToIsoDate(row.date),
+    measurement_source: row.measurement_source || 'guardian',
+  };
+}
+
+async function skipReasonForOccurrence(pool, entryId, occurrenceId) {
+  const result = await pool.query(
+    `SELECT reason_code, reason_note FROM care_schedule_events
+     WHERE health_entry_id = $1 AND health_occurrence_id = $2
+       AND event_type = 'skipped' AND undone_at IS NULL
+     ORDER BY occurred_at DESC, created_at DESC
+     LIMIT 1`,
+    [entryId, occurrenceId],
+  );
+  const row = result.rows[0];
+  if (!row?.reason_code) return null;
+  return { code: row.reason_code, note: row.reason_note || null };
 }
 
 function updateCompletedOn(pool, req, res, completedOn) {
@@ -99,6 +121,7 @@ export function registerOccurrencePatchRoutes(router, pool) {
       };
       const weight = await linkedWeight(pool, occ.id);
       if (weight) body.linked_weight = weight;
+      body.skip_reason = await skipReasonForOccurrence(pool, entry.id, occ.id);
       return res.json(body);
     } catch (err) {
       return res.status(500).json({ error: publicError(err) });
@@ -137,9 +160,12 @@ export function registerOccurrencePatchRoutes(router, pool) {
         return res.status(404).json({ error: 'Occurrence not found' });
       }
       const notes = typeof body.notes === 'string' ? body.notes : occ.notes || '';
-      const providerPatch = await resolveProviderUsedPatch(pool, userId, body);
+      const providerPatch = await resolveProviderUsedPatch(pool, userId, body, entry.pet_id);
       if (providerPatch?.error) {
-        return res.status(400).json({ error: providerPatch.error });
+        return res.status(400).json({
+          error: providerPatch.error,
+          ...(providerPatch.code ? { code: providerPatch.code } : {}),
+        });
       }
       const updatedRow = await updateCompletedDetails(pool, {
         entryId,

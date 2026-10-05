@@ -526,12 +526,18 @@ flutter_app/**
 ## Runtime state (agent-updated)
 
 ```yaml
-autonomy: halted            # draft — bootstrapped by the roadmap when the entry gate is met
-current_phase: null
-last_completed_phase: null
-halt_reason: "draft — waiting for CARE A+B and ARCH E on main"
-next_action: "roadmap bootstraps at landing slot 4"
-open_prs: []
+autonomy: active
+current_phase: s7-ship-main
+last_completed_phase: s6-invites-api
+halt_reason: null
+next_action: "continue phase s7-ship-main on branch cursor/people-server-s7-ship-7f3b"
+artifact_ref:
+  branch: cursor/people-server-s7-ship-7f3b
+  plan_path: .agents/plans/people-server-7f3b.md
+  plan_commit: 476207a65bb3fce1c4a07ff5b6a76284d1a3efa5
+  snapshot_path: .agents/plans/people-server-7f3b.snapshot.json
+  snapshot_commit: 476207a65bb3fce1c4a07ff5b6a76284d1a3efa5
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1523"]
 merge_commits: {}
 debt_issue_refs: []
 ```

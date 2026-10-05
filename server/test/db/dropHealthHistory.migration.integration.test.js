@@ -23,7 +23,7 @@ afterAll(async () => {
   if (pool) await pool.end();
 });
 
-describe('088_drop_health_history migration (real PG)', () => {
+describe('093_drop_health_history migration (real PG)', () => {
   it('applies up, down, and up again idempotently', async () => {
     await applyDropHealthHistoryMigration(pool);
 

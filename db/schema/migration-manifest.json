@@ -94,7 +94,12 @@
     "085_cleanup_jobs.sql",
     "086_pet_lifecycle_notifications.sql",
     "087_account_erasure_operations.sql",
-    "088_drop_health_history.sql"
+    "088_people_relationship_slots.sql",
+    "089_people_household_notes.sql",
+    "090_share_invite_contact_link.sql",
+    "091_household_invites.sql",
+    "092_weight_monitoring_unify.sql",
+    "093_drop_health_history.sql"
   ],
   "code_migrations": [
     "016_migrate_family_events_placements.sql",

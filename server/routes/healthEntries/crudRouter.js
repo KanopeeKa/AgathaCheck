@@ -18,7 +18,7 @@ import {
   csvCell,
   validateCareFamilyForWrite,
   validateCareSourceForWrite,
-  parseEntryProviderInput,
+  resolveEntryProviderForWrite,
 } from './shared.js';
 import { recordPetActivityForPet } from '../../lib/petActivity.js';
 import { parseScheduleTimesInput } from '../../lib/care/item/index.js';
@@ -199,12 +199,14 @@ export function registerCrudRoutes(router, pool) {
       if (!scheduleShape.ok) {
         return res.status(400).json({ error: scheduleShape.error, code: scheduleShape.code });
       }
-      const providerInput = parseEntryProviderInput(data);
-      if (providerInput.error) {
-        return res.status(400).json({ error: providerInput.error });
+      const providerResolved = await resolveEntryProviderForWrite(pool, userId, petId, data);
+      if (providerResolved.error) {
+        return res.status(400).json({
+          error: providerResolved.error,
+          ...(providerResolved.code ? { code: providerResolved.code } : {}),
+        });
       }
-      const providerContactId = providerInput.contactId ?? null;
-      const providerTypedName = providerInput.typedName ?? null;
+      const { providerContactId, providerTypedName } = providerResolved;
       const { careBlocks, dosage: resolvedDosage } = resolveCareBlocksForWrite({
         data,
         careFamily,
@@ -367,20 +369,20 @@ export function registerCrudRoutes(router, pool) {
       } catch (e) {
         return res.status(400).json({ error: e.message });
       }
-      const providerInput = parseEntryProviderInput(data);
-      if (providerInput.error) {
-        return res.status(400).json({ error: providerInput.error });
+      const providerResolved = await resolveEntryProviderForWrite(
+        pool,
+        userId,
+        existing.pet_id,
+        data,
+        existing,
+      );
+      if (providerResolved.error) {
+        return res.status(400).json({
+          error: providerResolved.error,
+          ...(providerResolved.code ? { code: providerResolved.code } : {}),
+        });
       }
-      let providerContactId = existing.provider_contact_id;
-      let providerTypedName = existing.provider_typed_name;
-      if (providerInput.contactId !== undefined) {
-        providerContactId = providerInput.contactId;
-        if (providerContactId) providerTypedName = null;
-      }
-      if (providerInput.typedName !== undefined) {
-        providerTypedName = providerInput.typedName;
-        if (providerTypedName) providerContactId = null;
-      }
+      const { providerContactId, providerTypedName } = providerResolved;
       const { careBlocks, dosage: resolvedDosage } = resolveCareBlocksForWrite({
         data,
         careFamily,

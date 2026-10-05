@@ -19,17 +19,32 @@ describe('PostgreSQL schema equivalence (migrations vs canonical.sql)', () => {
     }
     await harness.pool.end();
 
+    const isolatedDb = process.env.SCHEMA_EQUIV_DATABASE || 'agatha_schema_equiv_ci';
+    const pgEnv = {
+      ...process.env,
+      RESET_DB: 'true',
+      PGUSER: process.env.PGUSER || 'user',
+      PGPASSWORD: process.env.PGPASSWORD || 'password',
+      PGHOST: process.env.PGHOST || 'localhost',
+      PGPORT: process.env.PGPORT || '5432',
+      PGDATABASE: isolatedDb,
+    };
+    const prep = spawnSync(
+      'bash',
+      ['-c', `psql -v ON_ERROR_STOP=1 -tc "SELECT 1 FROM pg_database WHERE datname = '${isolatedDb}'" | grep -q 1 || createdb "${isolatedDb}"`],
+      { cwd: repoRoot, env: pgEnv, encoding: 'utf8' },
+    );
+    if (prep.status !== 0) {
+      // eslint-disable-next-line no-console
+      console.error(prep.stdout);
+      // eslint-disable-next-line no-console
+      console.error(prep.stderr);
+    }
+    expect(prep.status).toBe(0);
+
     const result = spawnSync('bash', [`${repoRoot}/scripts/db/check-schema-equivalence.sh`], {
       cwd: repoRoot,
-      env: {
-        ...process.env,
-        RESET_DB: 'true',
-        PGUSER: process.env.PGUSER || 'user',
-        PGPASSWORD: process.env.PGPASSWORD || 'password',
-        PGHOST: process.env.PGHOST || 'localhost',
-        PGPORT: process.env.PGPORT || '5432',
-        PGDATABASE: process.env.PGDATABASE || 'agatha_db',
-      },
+      env: pgEnv,
       encoding: 'utf8',
     });
 

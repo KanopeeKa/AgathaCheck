@@ -52,6 +52,10 @@
   "care_pause_resume.feature": {
     "PP-2 pause without end date then resume on the suggested date": "P1"
   },
+  "pet_offline_cache.feature": {
+    "Pet list shows saved pets with an offline banner when the network fails": "P1",
+    "Pet list does not show cached pets when the session is rejected": "P1"
+  },
   "pet_profiles.feature": {
     "Creating a new pet with required fields": "P0",
     "Creating a pet with all fields populated": "P1",
@@ -146,6 +150,8 @@
     "Editing a weight entry": "P1",
     "Deleting a weight entry": "P1",
     "Selecting weight unit": "P1",
+    "A weight recorded with a weigh-in choice completes that weigh-in": "P1",
+    "Undoing a weigh-in removes the weight it created": "P1",
     "Empty weight history": "P0"
   },
   "sharing.feature": {
@@ -237,7 +243,8 @@
   "people.feature": {
     "Pet parent opens People from Account": "P2",
     "Today desk shows Vet team sub-block": "P2",
-    "People directory card opens person detail": "P2"
+    "People directory card opens person detail": "P2",
+    "Back from person detail returns to People hub": "P2"
   },
   "veterinarian_management.feature": {
     "Creating a veterinarian with all details": "P1",

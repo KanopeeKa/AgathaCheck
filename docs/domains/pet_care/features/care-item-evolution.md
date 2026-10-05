@@ -98,7 +98,7 @@ Much of the target behaviour exists. This table maps each area to what is live.
 | Care setting | `care_setting`: home / vet / other, labelled "Where" | Preserve. Provider is new |
 | Priority | `care_importance`: Essential / Recommended / Optional | Preserve |
 | Treatment end, reason | "Repeats until" date; link to a health issue | Preserve |
-| Weight | Completing a weight check writes a weight entry linked to the occurrence. The target weight is on the pet | Preserve. Body condition score is new |
+| Weight | Completing a weigh-in writes one `weight_entries` row linked to the occurrence (`health_occurrence_id`). Standalone weights from the hub may count as a due weigh-in only through explicit server fulfilment (user confirms; never automatic). Display uses the guardian's `weight_unit`; storage is kg. Skip with reason when the pet can't be weighed | **Amends (WEIGHT):** see [weight-monitoring-model.md](../../weight_tracking/features/weight-monitoring-model.md). Body condition score remains new |
 | Documents | Care item documents, occurrence notes. No occurrence documents | Occurrence documents are new |
 | Lifecycle | Close and Reopen. Pause and resume exist in the API only, with no UI | UX change, Pause UI. **Amends (timing):** pause is Postpone until; resume asks the date (D-CSM-028) |
 | Future occurrences | Created by T−1 / rollover only; a next date more than a day away had no stored occurrence, so it could not be acted on (D-CSM-004, D-CSM-018) | **Amends (timing):** every active planned item always has a real open occurrence, created in the same request as the action that needs it (D-CSM-019). Fixed schedule also stores the next series date's doses (D-CSM-023) |
@@ -300,7 +300,7 @@ People tiers decide what each person sees.
 |---|---|---|
 | Coming up or Due | Done today, straight away | "Done · Add details · Undo" |
 | Overdue | Asks **When was this done?** Today · On the scheduled date (11 Sep) · Choose another date | "Done · Add details · Undo" |
-| Weight monitoring | The existing weight sheet, because the value is the point | — |
+| Weight monitoring | Opens the occurrence screen weight field (required weight in the user's unit) or skip-with-reason sheet; completion links one weight entry to the occurrence | **Amends (WEIGHT):** hub record sheet and fulfilment are separate; see weight-monitoring-model |
 | Well before its date (more than half an interval early) | Asks "Planned for 12 Mar. Mark it as done today?" (Cancel first) | "Done · Undo" (D-CSM-030) |
 | Done after its due date while another date is already planned | Asks what to do with that date (below) | "Done · Undo" |
 
@@ -484,7 +484,7 @@ Categories choose from five shared blocks. Every block field is optional, and co
 |---|---|---|
 | **Product and dose** | Product name, form, strength, dose (amount and unit), route or method (medication and parasite prevention only) | Amount given (defaults to the dose), product used if different |
 | **Visit** | Questions to ask (optional) | Summary, recommendations, follow-up date |
-| **Measurement** | — (the target weight stays on the pet) | Weight, saved as a weight entry; body condition score, 1–9 |
+| **Measurement** | — (target/reference weight stays on the pet profile) | Weight in the user's `weight_unit`, stored as kg in `weight_entries` and linked when completing a weigh-in; optional skip reasons (`could_not_weigh`, `pet_unsettled`, `vet_will_weigh`, `other`). Body condition score, 1–9 |
 | **Services** | Usual services (multi-select), style notes | Services done |
 | **Common** (all categories) | Instructions, notes, provider, documents | Performed by, provider used, note, photos and documents |
 
@@ -495,7 +495,7 @@ Categories choose from five shared blocks. Every block field is optional, and co
 | Parasite prevention | Product and dose | Targets: fleas, ticks, worms (multi-select). Optional reaction note |
 | Wellness review | Visit, Measurement | — |
 | Dental care | Product and dose (home care) or Visit (professional care) | Type: brushing, chew or product, professional check, professional clean |
-| Weight monitoring | Measurement | The target is the pet's weight reference |
+| Weight monitoring | Measurement | Weigh-in fulfilment and undo follow the unified weight model; history shows linked weights on completed rows (WEIGHT C) |
 | Grooming | Services | — |
 | Nail care | Services, with fewer options | Method; issue noticed (optional) |
 | Other care | Common only | — |
