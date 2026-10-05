@@ -2945,6 +2945,45 @@
   "peopleVetLinkedHelper": "Changes here also update this vet on your pets' profiles.",
   "peopleMarkInactive": "Mark inactive",
   "peopleMarkInactiveBody": "This contact stays visible where already linked, but won't appear in pickers.",
+  "peopleReactivate": "Reactivate",
+  "peopleEditSectionIdentity": "Identity",
+  "peopleEditSectionContact": "Contact details",
+  "peopleEditSectionNotes": "Notes",
+  "peopleEditLinkedReadOnlyHelper": "Name and email are managed by their linked account.",
+  "peopleEditLinkedReadOnlyError": "Name and email cannot be changed for a linked account.",
+  "peopleNameRequired": "Name is required",
+  "peopleEmailInvalid": "Enter a valid email address",
+  "peopleUsagesDialogTitle": "Contact still in use",
+  "peopleUsagesDialogBody": "This contact is used in the places below. Replace them or mark inactive instead.",
+  "peopleUsagesReplace": "Replace…",
+  "peopleUsagesBlockedDelete": "Remove the usages below or mark inactive instead.",
+  "peopleReplaceSlotTitle": "Replace vet slot?",
+  "peopleReplaceSlotBody": "Replace {name} as {petName}'s vet?",
+  "@peopleReplaceSlotBody": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "petName": { "type": "String" }
+    }
+  },
+  "peopleReplaceSlotConfirm": "Replace",
+  "peopleEditSetPrimaryVet": "Set as primary vet",
+  "peopleEditSetOutOfHoursVet": "Set as out-of-hours vet",
+  "peopleEditRemovePetLink": "Remove pet link",
+  "peopleEditEmergencyOrderTitle": "Emergency contact order",
+  "peopleMemberRemovalTitle": "Remove from household?",
+  "peopleMemberRemovalBody": "They will lose household access. Other access may remain.",
+  "peopleMemberRemovalRemaining": "Access that remains:",
+  "peopleMemberRemovalHouseholdOnly": "Remove from household only",
+  "peopleMemberRemovalAllAccess": "Remove all access to my pets",
+  "peopleMemberRemovalAction": "Remove from household",
+  "peopleRevokeInviteTitle": "Revoke invite?",
+  "peopleRevokeInviteBody": "Revoke the invite for {email}?",
+  "@peopleRevokeInviteBody": {
+    "placeholders": {
+      "email": { "type": "String" }
+    }
+  },
+  "peopleRevokeInviteConfirm": "Revoke invite",
   "peopleSaveError": "Could not save changes. Try again.",
   "peopleRemoveError": "Could not remove this contact.",
   "peopleRemoveVetLinkedError": "Remove the vet from your pets first, or mark this contact inactive.",
@@ -2961,6 +3000,110 @@
     }
   },
   "peopleStatusInactive": "Inactive",
+  "peopleStatusActive": "Active",
+  "peopleStatusNeedsReview": "Needs review",
+  "peopleAccessUntil": "Access until {date}",
+  "@peopleAccessUntil": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "peopleCardLookingAfter": "Looking after pets · {startsOn}–{endsOn}",
+  "@peopleCardLookingAfter": {
+    "placeholders": {
+      "startsOn": { "type": "String" },
+      "endsOn": { "type": "String" }
+    }
+  },
+  "peopleActionCall": "Call",
+  "peopleActionMessage": "Message",
+  "peopleActionEmail": "Email",
+  "peopleActionDirections": "Directions",
+  "peoplePickerPlaceholder": "Choose someone",
+  "peoplePickerTitle": "Choose a contact",
+  "peoplePickerFieldLabel": "Contact",
+  "peoplePickerNone": "None",
+  "peoplePickerSearchHint": "Search people and roles",
+  "peoplePickerCurrentSelection": "Current selection",
+  "peoplePickerHouseholdMembersSection": "Household members",
+  "peoplePickerContactsSection": "Contacts",
+  "peoplePickerAddQuery": "Add \"{query}\"",
+  "@peoplePickerAddQuery": {
+    "placeholders": {
+      "query": { "type": "String" }
+    }
+  },
+  "peoplePickerUseWithoutSaving": "Use \"{query}\" without saving",
+  "@peoplePickerUseWithoutSaving": {
+    "placeholders": {
+      "query": { "type": "String" }
+    }
+  },
+  "peoplePickerQuickAddTitle": "Quick add contact",
+  "peoplePickerQuickAddSave": "Save contact",
+  "peopleGroupCarers": "Trusted carers",
+  "peopleGroupProfessionals": "Pet professionals",
+  "peopleHubSelectSomeone": "Select someone to see their details",
+  "peopleHubSearchHint": "Search people, roles, pets…",
+  "peoplePendingInvitesSection": "Pending invites",
+  "peopleInactiveSection": "Inactive ({count})",
+  "@peopleInactiveSection": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "peopleFilterGroupLabel": "Group",
+  "peopleFilterPetLabel": "Pet",
+  "peopleMemberYou": "You",
+  "peoplePendingInviteLine": "{email} · Invited",
+  "@peoplePendingInviteLine": {
+    "placeholders": {
+      "email": { "type": "String" }
+    }
+  },
+  "peopleHouseholdMemberPets": "Owns {owns} · Shares {shares}",
+  "@peopleHouseholdMemberPets": {
+    "placeholders": {
+      "owns": { "type": "String" },
+      "shares": { "type": "String" }
+    }
+  },
+  "peopleRelationshipPrimaryVet": "Primary vet",
+  "peopleRelationshipOutOfHoursVet": "Out-of-hours vet",
+  "peopleRelationshipEmergencyContact": "Emergency contact",
+  "peopleRelationshipCareProvider": "Provides care",
+  "peopleRelationshipOther": "Other link",
+  "peopleDetailTabOverview": "Overview",
+  "peopleDetailTabPetsAccess": "Pets & access",
+  "peopleDetailTabRelatedCare": "Related care",
+  "peopleDetailTabNotes": "Notes",
+  "peopleDetailLinkedAccount": "Has an AgathaTrack account",
+  "peopleDetailNextUpTitle": "Next up",
+  "peopleDetailStaffAt": "People at {name}",
+  "@peopleDetailStaffAt": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "peopleDetailNotesPreviewTitle": "Notes",
+  "peopleDetailLinkToPet": "Link to a pet",
+  "peopleDetailLinkPetTitle": "Link to a pet",
+  "peopleDetailLinkPetChooseKind": "How are they linked?",
+  "peopleDetailRelatedCareHistory": "{count, plural, =1{1 past visit} other{{count} past visits}}",
+  "@peopleDetailRelatedCareHistory": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "peopleDetailHouseholdNoteLabel": "Household note",
+  "peopleDetailHouseholdNoteHelper": "Visible to your household.",
+  "peopleDetailSaveNotes": "Save",
+  "peopleDetailNotesSaved": "Notes saved",
+  "peopleDetailAccessCoParent": "Co-parent",
+  "peopleDetailAccessCanLogCare": "Can log care",
+  "peopleDetailPendingInviteBody": "Waiting for them to accept your invite.",
+  "peopleDetailPendingPets": "Pets in this invite",
+  "peopleDetailRevokeInEdit": "To revoke this invite, open Edit.",
   "peopleDangerZoneTitle": "Danger zone",
   "peopleRemoveContactTitle": "Remove contact?",
   "peopleRemoveContactBody": "Remove {name} from your directory? Care history on pets is kept.",
@@ -2981,6 +3124,62 @@
   "peopleAddAppAccessContinue": "Invite",
   "peopleAddPersonSave": "Save person",
   "peopleAddRolesRequired": "Choose at least one role to continue.",
+  "peopleAddStepWhoTitle": "Who would you like to add?",
+  "peopleAddStepProgress": "Step {step} of 5",
+  "@peopleAddStepProgress": {"placeholders": {"step": {"type": "int"}}},
+  "peopleAddTileHousehold": "Someone at home",
+  "peopleAddTileHouseholdHelper": "Lives with you and shares your pets' everyday life.",
+  "peopleAddTileCarer": "A trusted carer",
+  "peopleAddTileCarerHelper": "A friend, relative or pet sitter who sometimes looks after them.",
+  "peopleAddTileProfessional": "A pet professional",
+  "peopleAddTileProfessionalHelper": "Vet, groomer, walker, trainer…",
+  "peopleAddTileOrganisation": "An organisation",
+  "peopleAddTileOrganisationHelper": "Clinic, grooming salon, boarding, daycare…",
+  "peopleAddStepAbout": "About them",
+  "peopleAddStepPets": "Which pets?",
+  "peopleAddStepReview": "Review",
+  "peopleAddNext": "Continue",
+  "peopleAddBack": "Back",
+  "peopleAddOpenExisting": "Open",
+  "peopleAddAppAccessShare": "Share pets in the app",
+  "peopleAddAppAccessAbsence": "Invite for an absence",
+  "peopleAddAppAccessHousehold": "Invite to a household",
+  "peopleAddHouseholdName": "Household name",
+  "peopleHouseholdPetReviewTitle": "Pets in this household",
+  "peopleHouseholdPetReviewBody": "Choose which of your pets belong in this household. You can change this later.",
+  "peopleHouseholdMembersTitle": "Members",
+  "peopleHouseholdPetsTitle": "Pets",
+  "peopleHouseholdPetOwnerYou": "You own this pet",
+  "peopleHouseholdPetOtherOwner": "Owned by another household member",
+  "peopleHouseholdPendingInvitesTitle": "Pending invites",
+  "peopleHouseholdRevokeInvite": "Revoke",
+  "peopleHouseholdInviteMemberTitle": "Invite member",
+  "peopleHouseholdInviteMemberAction": "Invite member",
+  "peopleHouseholdInviteTierLabel": "Access",
+  "peopleHouseholdInviteOrganiserLabel": "Household organiser",
+  "peopleHouseholdInviteAdultConfirm": "They are 18 or over",
+  "peopleHouseholdInviteSent": "Invitation sent",
+  "peopleHouseholdRenameTitle": "Rename household",
+  "peopleHouseholdLeaveTitle": "Leave household?",
+  "peopleHouseholdLeaveBody": "You will lose household access. Other access may remain.",
+  "peopleHouseholdLeaveAction": "Leave household",
+  "peopleHouseholdSuccessorLabel": "Successor organiser",
+  "peopleHouseholdInviteLandingTitle": "Join {householdName}?",
+  "@peopleHouseholdInviteLandingTitle": {
+    "placeholders": { "householdName": { "type": "String" } }
+  },
+  "peopleHouseholdInviteLandingBody": "{inviterName} invited you as {tier}.",
+  "@peopleHouseholdInviteLandingBody": {
+    "placeholders": {
+      "inviterName": { "type": "String" },
+      "tier": { "type": "String" }
+    }
+  },
+  "peopleHouseholdInviteAccept": "Accept invitation",
+  "peopleHouseholdInviteDecline": "Decline",
+  "peopleAddPetsEmpty": "No pets to link yet.",
+  "peopleAddPetLinkKind": "How they help with this pet",
+  "peopleAddEmergencyContact": "Emergency contact for this pet",
   "peopleSaveValidationError": "Check the details and try again.",
   "careAgendaToday": "Today",
   "careAgendaDueSoon": "Due soon",

@@ -3,6 +3,9 @@ Feature: Veterinarian Management
   I want to manage my veterinarian contacts
   So that I can associate vets with my pets and access their details
 
+  # Legacy /pc/vets routes redirect to the People hub (professionals filter).
+  # Playwright uses e2e/playwright/pages/people.page.ts for list and form flows.
+
   Background:
     Given the user is logged in
 

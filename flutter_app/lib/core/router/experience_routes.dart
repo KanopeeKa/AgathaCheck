@@ -5,9 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/experience/domain/entities/app_experience.dart';
 import '../../l10n/app_localizations.dart';
 import '../../features/experience/presentation/screens/account_screen.dart';
-import '../../features/people/presentation/screens/people_add_person_screen.dart';
-import '../../features/people/presentation/screens/people_edit_screen.dart';
-import '../../features/people/presentation/screens/people_hub_screen.dart';
+import '../../features/people/presentation/routes/people_routes.dart';
 import '../../features/experience/presentation/screens/experience_chooser_screen.dart';
 import '../../features/experience/presentation/screens/experience_home_screens.dart';
 import '../../features/experience/presentation/screens/experience_resolve_screen.dart';
@@ -18,7 +16,6 @@ import 'away_routes.dart';
 import '../../features/experience/presentation/screens/pet_care/pet_care_all_pets_screen.dart';
 import '../../features/experience/presentation/screens/pet_care/pet_care_bulk_share_select_screen.dart';
 import '../../features/sharing/presentation/providers/share_pet_providers.dart';
-import '../../features/sharing/presentation/screens/households_screen.dart';
 import '../../features/sharing/presentation/screens/share_pet_screen.dart';
 import '../../features/experience/presentation/screens/pet_care/add_event_type_picker_sheet.dart';
 import '../../features/experience/presentation/screens/pet_care/pet_care_due_events_screen.dart';
@@ -107,7 +104,7 @@ List<RouteBase> buildExperienceRoutes() {
             GoRoute(
               path: 'households',
               name: 'petCareHouseholds',
-              builder: (context, state) => const HouseholdsScreen(),
+              redirect: (context, state) => '/pc/people/households',
             ),
             GoRoute(
               path: 'share',
@@ -116,9 +113,13 @@ List<RouteBase> buildExperienceRoutes() {
                 final extra = state.extra;
                 List<String> petIds = const [];
                 String? initialPetId;
+                String? prefillEmail;
+                String? contactId;
                 if (extra is SharePetRouteArgs) {
                   petIds = extra.petIds;
                   initialPetId = extra.initialPetId;
+                  prefillEmail = extra.prefillEmail;
+                  contactId = extra.contactId;
                 } else if (extra is List<String>) {
                   petIds = extra;
                 } else if (extra is List) {
@@ -127,6 +128,8 @@ List<RouteBase> buildExperienceRoutes() {
                 return SharePetScreen(
                   initialPetIds: petIds,
                   initialPetId: initialPetId,
+                  prefillEmail: prefillEmail,
+                  contactId: contactId,
                 );
               },
             ),
@@ -137,49 +140,7 @@ List<RouteBase> buildExperienceRoutes() {
           name: 'petCareEvents',
           builder: (context, state) => const _PetCareEventsScreen(),
         ),
-        GoRoute(
-          path: '/pc/people',
-          name: 'petCarePeople',
-          builder: (context, state) =>
-              PeopleHubScreen(selectedPersonId: peoplePersonIdFromState(state)),
-          routes: [
-            GoRoute(
-              path: 'new',
-              name: 'petCarePeopleNew',
-              builder: (context, state) {
-                final rolesParam = state.uri.queryParameters['roles'];
-                final roles = rolesParam == null
-                    ? const <String>{}
-                    : rolesParam
-                          .split(',')
-                          .map((e) => e.trim())
-                          .where((e) => e.isNotEmpty)
-                          .toSet();
-                final pop = state.uri.queryParameters['pop'] == '1';
-                return PeopleAddPersonScreen(
-                  initialRoles: roles,
-                  popResultOnSave: pop,
-                );
-              },
-            ),
-            GoRoute(
-              path: ':personId',
-              name: 'petCarePeopleDetail',
-              builder: (context, state) => PeopleHubScreen(
-                selectedPersonId: state.pathParameters['personId'],
-              ),
-              routes: [
-                GoRoute(
-                  path: 'edit',
-                  name: 'petCarePeopleEdit',
-                  builder: (context, state) => PeopleEditScreen(
-                    personId: state.pathParameters['personId']!,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
+        buildPeopleHubShellRoute(),
         ...buildAwayPlanningRoutes(),
         GoRoute(
           path: '/pc/fostering',
