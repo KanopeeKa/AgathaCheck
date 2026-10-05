@@ -177,6 +177,7 @@ function buildMappedSet(featureScenarios, specScenarios) {
   const mapped = new Set();
 
   for (const spec of specScenarios) {
+    if (spec.headerOnly) continue;
     const key = normalize(spec.title);
     if (featureNorm.has(key)) {
       mapped.add(key);
