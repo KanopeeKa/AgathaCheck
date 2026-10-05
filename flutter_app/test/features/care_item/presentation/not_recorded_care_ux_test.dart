@@ -9,7 +9,7 @@ import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/features/care_item/application/care_stack_feedback.dart';
 import 'package:pet_profile_app/features/care_item/care_item.dart';
 import 'package:pet_profile_app/features/care_item/data/care_item_wire.dart';
-import 'package:pet_profile_app/features/care_item/presentation/occurrence/occurrence_blocks.dart';
+import 'package:pet_profile_app/features/experience/presentation/care_item/occurrence/occurrence_blocks.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 void main() {

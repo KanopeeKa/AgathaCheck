@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/features/health_tracking/data/models/health_entry_model.dart';
-import 'package:pet_profile_app/features/pet_care/domain/care_temporal_group.dart';
-import 'package:pet_profile_app/features/pet_care/domain/services/care_temporal_grouping_service.dart';
+import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 
 /// Server-backed entries take status only from `open_occurrences` and
 /// `as_of` (C2: the six old due rules no longer read the device clock).

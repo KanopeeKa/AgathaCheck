@@ -10,6 +10,7 @@ import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/core/weight/weight_unit.dart';
 import 'package:pet_profile_app/core/weight/weight_unit_preference.dart';
 import 'package:pet_profile_app/features/care_item/care_item.dart';
+import 'package:pet_profile_app/features/experience/presentation/care_item/occurrence/occurrence_screen.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 class _RecordingPetCareSync implements PetCareSync {
