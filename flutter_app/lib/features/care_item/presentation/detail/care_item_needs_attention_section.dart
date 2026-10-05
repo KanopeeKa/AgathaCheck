@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/providers/analytics_providers.dart';
+import '../../../../core/widgets/app_undo_snackbar.dart';
 import '../../../../core/router/shell_return_navigation.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../application/care_stack_feedback.dart';
@@ -76,31 +77,33 @@ class _CareItemNeedsAttentionSectionState
           'ignored': value.ignoredIds.length,
           'done': done,
         });
-        messenger.showSnackBar(
-          SnackBar(
-            key: const Key('care_stack_snackbar'),
-            content: Text(
-              careStackSuccessMessage(
-                l,
-                done: done,
-                result: value,
-                itemName: _s.name,
-              ),
-            ),
-            action: value.undoToken == null
-                ? null
-                : SnackBarAction(
-                    label: l.snackbarUndo,
-                    onPressed: () async {
-                      await service.undo(
-                        entryId: _s.entryId,
-                        undoToken: value.undoToken,
-                      );
-                      await _refresh();
-                    },
-                  ),
+        final message = Text(
+          careStackSuccessMessage(
+            l,
+            done: done,
+            result: value,
+            itemName: _s.name,
           ),
         );
+        if (value.undoToken == null) {
+          messenger.showAppSnackBar(
+            snackBarKey: const Key('care_stack_snackbar'),
+            content: message,
+          );
+        } else {
+          messenger.showUndoSnackBar(
+            snackBarKey: const Key('care_stack_snackbar'),
+            content: message,
+            undoLabel: l.snackbarUndo,
+            onUndo: () async {
+              await service.undo(
+                entryId: _s.entryId,
+                undoToken: value.undoToken,
+              );
+              await _refresh();
+            },
+          );
+        }
       case CareFailed(failure: CareNotOpenFailure()):
         messenger.showSnackBar(SnackBar(content: Text(l.careAlreadyUpdated)));
       case CareFailed():

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/widgets/app_undo_snackbar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/health_entry.dart';
 import '../controllers/care_schedule_controller.dart';
@@ -22,6 +23,9 @@ Future<void> showOccurrenceCompletionFeedback(
 
   messenger.showSnackBar(
     SnackBar(
+      duration: kUndoSnackBarDuration,
+      persist: false,
+      showCloseIcon: true,
       content: Row(
         children: [
           Expanded(
@@ -58,7 +62,6 @@ Future<void> showOccurrenceCompletionFeedback(
           ),
         ],
       ),
-      duration: const Duration(seconds: 8),
     ),
   );
 
