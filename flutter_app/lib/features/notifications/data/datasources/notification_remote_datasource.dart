@@ -14,10 +14,22 @@ abstract class NotificationRemoteDataSource {
     String token,
     NotificationPreferencesModel preferences,
   );
+  Future<void> dismissV2InboxExplainer(String token);
   Future<void> checkDueEntries(
     String token, {
     Map<String, String> petNames = const {},
   });
+  Future<void> markSuggestionsSeen(String token, {String? petId});
+  Future<void> submitSuggestionFeedback(
+    String token,
+    String notificationId,
+    String action,
+  );
+  Future<void> submitAccountSecurityFeedback(
+    String token,
+    String notificationId,
+    String action,
+  );
 }
 
 class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
@@ -87,6 +99,18 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
   }
 
   @override
+  Future<void> dismissV2InboxExplainer(String token) async {
+    final response = await _client.put(
+      Uri.parse('$baseUrl/api/notifications/preferences'),
+      headers: _headers(token),
+      body: json.encode({
+        'v2_explainer_dismissed_at': DateTime.now().toUtc().toIso8601String(),
+      }),
+    );
+    _checkResponse(response);
+  }
+
+  @override
   Future<NotificationPreferencesModel> updatePreferences(
     String token,
     NotificationPreferencesModel preferences,
@@ -111,6 +135,50 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
       Uri.parse('$baseUrl/api/notifications/check-due'),
       headers: _headers(token),
       body: json.encode({'pet_names': petNames}),
+    );
+    _checkResponse(response);
+  }
+
+  @override
+  Future<void> markSuggestionsSeen(String token, {String? petId}) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/api/notifications/suggestions/seen'),
+      headers: _headers(token),
+      body: json.encode({
+        if (petId != null && petId.isNotEmpty) 'pet_id': petId,
+      }),
+    );
+    _checkResponse(response);
+  }
+
+  @override
+  Future<void> submitSuggestionFeedback(
+    String token,
+    String notificationId,
+    String action,
+  ) async {
+    final response = await _client.post(
+      Uri.parse(
+        '$baseUrl/api/notifications/$notificationId/suggestion-feedback',
+      ),
+      headers: _headers(token),
+      body: json.encode({'action': action}),
+    );
+    _checkResponse(response);
+  }
+
+  @override
+  Future<void> submitAccountSecurityFeedback(
+    String token,
+    String notificationId,
+    String action,
+  ) async {
+    final response = await _client.post(
+      Uri.parse(
+        '$baseUrl/api/notifications/$notificationId/account-security-feedback',
+      ),
+      headers: _headers(token),
+      body: json.encode({'action': action}),
     );
     _checkResponse(response);
   }

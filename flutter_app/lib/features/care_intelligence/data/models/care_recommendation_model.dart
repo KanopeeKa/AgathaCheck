@@ -41,8 +41,8 @@ class CareRecommendationModel {
           CareFamily.other,
       suggestionKey: json['suggestion_key'] as String,
       status: _statusFromWire(json['status'] as String?),
-      engineVersion: json['engine_version'] as String,
-      knowledgeVersion: json['knowledge_version'] as String,
+      engineVersion: json['engine_version'] as String? ?? '1.0.0',
+      knowledgeVersion: json['knowledge_version'] as String? ?? '1.0.0',
       suggestedName: json['suggested_name'] as String,
       suggestedFrequency: json['suggested_frequency'] as String,
       suggestedFrequencyInterval:
@@ -52,6 +52,40 @@ class CareRecommendationModel {
       respondedAt: json['responded_at'] != null
           ? DateTime.tryParse(json['responded_at'] as String)
           : null,
+    );
+  }
+
+  /// Maps inbox suggestion notifications (FR-SG-6 single API).
+  factory CareRecommendationModel.fromSuggestionNotificationJson(
+    Map<String, dynamic> json,
+  ) {
+    final payload = json['suggestion_payload'] is Map
+        ? Map<String, dynamic>.from(json['suggestion_payload'] as Map)
+        : <String, dynamic>{};
+    final petId = json['pet_id']?.toString() ?? '';
+    return CareRecommendationModel(
+      id: json['id']?.toString() ?? '',
+      petId: petId,
+      careFamily:
+          CareFamilyWire.fromWire(payload['care_family']?.toString()) ??
+          CareFamily.other,
+      suggestionKey: payload['suggestion_key']?.toString() ?? '',
+      status: CareRecommendationStatus.pending,
+      engineVersion: '1.0.0',
+      knowledgeVersion: '1.0.0',
+      suggestedName:
+          payload['suggested_name']?.toString() ??
+          json['title']?.toString() ??
+          'Suggestion',
+      suggestedFrequency:
+          payload['suggested_frequency']?.toString() ?? 'monthly',
+      suggestedFrequencyInterval:
+          (payload['suggested_frequency_interval'] as num?)?.toInt() ?? 1,
+      rationaleKey:
+          payload['rationale_key']?.toString() ??
+          json['message']?.toString() ??
+          'careSuggestionGenericWhy',
+      healthEntryId: payload['recommendation_id']?.toString(),
     );
   }
 

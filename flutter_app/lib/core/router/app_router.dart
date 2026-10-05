@@ -155,6 +155,14 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const MyDetailsScreen(),
       ),
       GoRoute(
+        path: '/secure-account',
+        name: 'secureAccount',
+        builder: (context, state) {
+          final notificationId = state.uri.queryParameters['notificationId'];
+          return SecureAccountScreen(notificationId: notificationId);
+        },
+      ),
+      GoRoute(
         path: '/help',
         name: 'help',
         builder: (context, state) => const HelpScreen(),

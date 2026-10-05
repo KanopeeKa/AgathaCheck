@@ -19,6 +19,7 @@ AppNotification _notification({
   required NotificationKind kind,
   NotificationPriority priority = NotificationPriority.normal,
   DateTime? createdAt,
+  String wireType = 'general',
 }) {
   return AppNotification(
     id: id,
@@ -26,6 +27,7 @@ AppNotification _notification({
     title: title,
     message: '$title message',
     type: NotificationType.general,
+    wireType: wireType,
     kind: kind,
     priority: priority,
     isRead: false,
@@ -42,7 +44,7 @@ Widget _panel(List<AppNotification> notifications) {
       ),
       notificationPreferencesProvider.overrideWith(
         () => TestNotificationPreferencesNotifier(
-          const NotificationPreferences(),
+          NotificationPreferences(v2ExplainerDismissedAt: _dismissedExplainer),
         ),
       ),
       petListProvider.overrideWith(() => TestPetListNotifier()),
@@ -56,47 +58,59 @@ Widget _panel(List<AppNotification> notifications) {
   );
 }
 
+final _dismissedExplainer = DateTime.utc(2026, 1, 1);
+
 void main() {
-  testWidgets(
-    'Organisation filter keeps administrative updates and pins urgent work',
-    (tester) async {
-      await tester.pumpWidget(
-        _panel([
-          _notification(
-            id: 'care',
-            title: 'Care reminder',
-            kind: NotificationKind.care,
-          ),
-          _notification(
-            id: 'admin',
-            title: 'Standard organisation update',
-            kind: NotificationKind.administrative,
-          ),
-          _notification(
-            id: 'urgent',
-            title: 'Urgent organisation update',
-            kind: NotificationKind.administrative,
-            priority: NotificationPriority.urgent,
-            createdAt: DateTime.now().subtract(const Duration(days: 2)),
-          ),
-        ]),
-      );
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.bySemanticsLabel('Organisation'));
-      await tester.pumpAndSettle();
-
-      expect(find.text('Care reminder'), findsNothing);
-      expect(find.text('Standard organisation update'), findsOneWidget);
-      expect(find.text('Urgent organisation update'), findsOneWidget);
-      expect(find.text('Action needed'), findsNWidgets(2));
-      expect(find.text('Urgent'), findsAtLeastNWidgets(2));
-      expect(
-        tester.getTopLeft(find.text('Urgent organisation update')).dy,
-        lessThan(
-          tester.getTopLeft(find.text('Standard organisation update')).dy,
+  testWidgets('shows Activity and For you tabs without legacy kind chips', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _panel([
+        _notification(
+          id: 'rel',
+          title: 'Invite pending',
+          kind: NotificationKind.relationship,
+          wireType: 'shareInviteReceived',
         ),
-      );
-    },
-  );
+      ]),
+    );
+    await tester.pumpAndSettle();
+
+    final context = tester.element(find.byType(NotificationPanel));
+    final l10n = AppLocalizations.of(context)!;
+
+    expect(find.text(l10n.notificationInboxTabActivity), findsOneWidget);
+    expect(find.text(l10n.notificationInboxTabForYou), findsOneWidget);
+    expect(find.text(l10n.notificationKindAll), findsNothing);
+    expect(find.text(l10n.notificationKindOrganisation), findsNothing);
+    expect(find.text('Invite pending'), findsOneWidget);
+  });
+
+  testWidgets('Activity tab pins urgent administrative items', (tester) async {
+    await tester.pumpWidget(
+      _panel([
+        _notification(
+          id: 'urgent',
+          title: 'Urgent organisation update',
+          kind: NotificationKind.administrative,
+          priority: NotificationPriority.urgent,
+          createdAt: DateTime.now().subtract(const Duration(days: 2)),
+        ),
+        _notification(
+          id: 'admin',
+          title: 'Standard organisation update',
+          kind: NotificationKind.administrative,
+        ),
+      ]),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Urgent organisation update'), findsOneWidget);
+    expect(find.text('Standard organisation update'), findsOneWidget);
+    expect(find.text('Urgent'), findsAtLeastNWidgets(1));
+    expect(
+      tester.getTopLeft(find.text('Urgent organisation update')).dy,
+      lessThan(tester.getTopLeft(find.text('Standard organisation update')).dy),
+    );
+  });
 }

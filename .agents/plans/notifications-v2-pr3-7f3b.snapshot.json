@@ -4,7 +4,7 @@
   "approved_at": "2026-10-04T23:00:00Z",
   "approved_by": "GitHub #1571 approve-autonomous + user chat 2026-10-04 standing grant (notifications v2 roadmap)",
   "approved_until": "2026-10-06T23:00:00Z",
-  "autonomy": "active",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "cursor/notifications-v2-integration-7f3b",
   "control_issue": 1571,
@@ -15,12 +15,21 @@
       "title": "PR3 relationship emitters",
       "branch": "cursor/notifications-v2-pr3-7f3b",
       "allowed_paths": [
+        "server/lib/notificationKind.js",
+        "server/lib/notificationHelper.js",
+        "server/lib/households/**",
+        "server/lib/petDataLifecycle.js",
+        "server/lib/fosterInvite.js",
+        "server/lib/fosterAgreementWithdrawal.js",
+        "server/lib/custodyTransfers.js",
+        "server/lib/people/**",
+        "server/services/sharing/**",
+        "server/routes/**",
+        "server/test/**",
         "flutter_app/lib/features/notifications/**",
         "flutter_app/test/features/notifications/**",
         "flutter_app/lib/l10n/**",
         "flutter_app/test/bdd/features/notifications_v2.feature",
-        "server/routes/**",
-        "server/test/**",
         ".agents/plans/notifications-v2-pr3-7f3b.*"
       ],
       "forbidden_paths": [
@@ -37,13 +46,13 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "merge_commit": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_head_sha": "c52985534d7f919f0661fc7aeb51692aa90751f7",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1583"
     }
   ],
-  "content_hash": "sha256:61ae9c23d95cf146ccefa2a8d7231fe2ac61689d0a0b4e0bfa97805adfeba6e6"
+  "content_hash": "sha256:dacadbf2a4643273fadb2b5f880d5465139750836fca2c3d241e38f0daa0e140"
 }

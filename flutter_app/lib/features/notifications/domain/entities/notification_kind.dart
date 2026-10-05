@@ -1,6 +1,9 @@
 enum NotificationKind {
   care,
-  administrative;
+  administrative,
+  relationship,
+  suggestion,
+  account;
 
   String get wireValue {
     switch (this) {
@@ -8,6 +11,12 @@ enum NotificationKind {
         return 'care';
       case NotificationKind.administrative:
         return 'administrative';
+      case NotificationKind.relationship:
+        return 'relationship';
+      case NotificationKind.suggestion:
+        return 'suggestion';
+      case NotificationKind.account:
+        return 'account';
     }
   }
 
@@ -15,9 +24,16 @@ enum NotificationKind {
     switch (value?.toLowerCase()) {
       case 'administrative':
         return NotificationKind.administrative;
+      case 'relationship':
+        return NotificationKind.relationship;
+      case 'suggestion':
+        return NotificationKind.suggestion;
+      case 'account':
+        return NotificationKind.account;
       case 'care':
-      default:
         return NotificationKind.care;
+      default:
+        return NotificationKind.administrative;
     }
   }
 }

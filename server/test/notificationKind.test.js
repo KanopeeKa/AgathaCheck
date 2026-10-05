@@ -11,7 +11,9 @@ import {
   NOTIFICATION_PRIORITY_URGENT,
   NOTIFICATION_TYPE_PENDING_FOSTER_PLACEMENT_RECEIVED,
   NOTIFICATION_TYPE_SHARE_INVITE_RECEIVED,
+  NOTIFICATION_TYPE_SHARE_LINK_FOLLOWED,
   NOTIFICATION_KIND_ADMINISTRATIVE,
+  NOTIFICATION_KIND_RELATIONSHIP,
 } from '../lib/notificationKind.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -31,16 +33,24 @@ describe('notificationKind', () => {
     }
   });
 
-  it('maps pending inbox types to administrative kind', () => {
+  it('maps pending foster inbox types to administrative kind', () => {
     expect(defaultKindForType(NOTIFICATION_TYPE_PENDING_FOSTER_PLACEMENT_RECEIVED))
       .toBe(NOTIFICATION_KIND_ADMINISTRATIVE);
+  });
+
+  it('maps relationship share types to relationship kind', () => {
     expect(defaultKindForType(NOTIFICATION_TYPE_SHARE_INVITE_RECEIVED))
-      .toBe(NOTIFICATION_KIND_ADMINISTRATIVE);
+      .toBe(NOTIFICATION_KIND_RELATIONSHIP);
+    expect(defaultKindForType(NOTIFICATION_TYPE_SHARE_LINK_FOLLOWED))
+      .toBe(NOTIFICATION_KIND_RELATIONSHIP);
   });
 
   it('normalises invalid kind and priority wire values', () => {
     expect(normaliseKind(null)).toBe(NOTIFICATION_KIND_CARE);
     expect(normaliseKind('administrative')).toBe('administrative');
+    expect(normaliseKind('relationship')).toBe('relationship');
+    expect(normaliseKind('suggestion')).toBe('suggestion');
+    expect(normaliseKind('account')).toBe('account');
     expect(normaliseKind('bogus')).toBe(NOTIFICATION_KIND_CARE);
     expect(normalisePriority('urgent')).toBe(NOTIFICATION_PRIORITY_URGENT);
     expect(normalisePriority('bogus')).toBe(NOTIFICATION_PRIORITY_NORMAL);

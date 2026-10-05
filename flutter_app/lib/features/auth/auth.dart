@@ -12,4 +12,5 @@ export 'presentation/screens/forgot_password_screen.dart';
 export 'presentation/screens/landing_screen.dart';
 export 'presentation/screens/login_screen.dart';
 export 'presentation/screens/my_details_screen.dart';
+export 'presentation/screens/secure_account_screen.dart';
 export 'presentation/screens/signup_screen.dart';

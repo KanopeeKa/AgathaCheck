@@ -42,15 +42,17 @@ Orchestrate Notifications v2 from **spec rev 2.3.1 on `main`** through **PR7** (
 ## Runtime
 
 ```yaml
-autonomy: pending
+autonomy: active
 current_phase: orchestrate
 last_completed_phase: null
 halt_reason: null
-next_action: "approve-autonomous + gate; run notifications-v2-foundation-7f3b"
+next_action: "bootstrap and gate child plan notifications-v2-pr5-7f3b"
 artifact_ref:
-  branch: null
+  branch: cursor/notifications-v2-integration-7f3b
   plan_path: .agents/plans/notifications-v2-roadmap-7f3b.md
+  plan_commit: b7839903f764ce41c036cc4733992ad57687ac01
   snapshot_path: .agents/plans/notifications-v2-roadmap-7f3b.snapshot.json
+  snapshot_commit: b7839903f764ce41c036cc4733992ad57687ac01
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

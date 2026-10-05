@@ -6,7 +6,9 @@ import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
 import '../../data/datasources/notification_remote_datasource.dart';
 import '../../data/repositories/notification_repository_impl.dart';
 import '../../domain/entities/app_notification.dart';
+import '../../domain/entities/notification_bell_indicator.dart';
 import '../../domain/entities/notification_scope.dart';
+import '../../domain/services/notification_inbox_v2_rules.dart';
 import '../../domain/services/notification_scope_rules.dart';
 import '../../domain/entities/notification_preferences.dart';
 import '../../domain/repositories/notification_repository.dart';
@@ -68,29 +70,54 @@ class NotificationsNotifier extends AsyncNotifier<List<AppNotification>> {
       await refresh();
     } catch (_) {}
   }
+
+  Future<void> markForYouSuggestionsSeen({String? petId}) async {
+    await _getRepo().markSuggestionsSeen(petId: petId);
+    await refresh();
+  }
+
+  Future<void> submitSuggestionFeedback(String id, String action) async {
+    await _getRepo().submitSuggestionFeedback(id, action);
+    await refresh();
+  }
+
+  Future<void> submitAccountSecurityFeedback(String id, String action) async {
+    await _getRepo().submitAccountSecurityFeedback(id, action);
+    await refresh();
+  }
 }
 
 final unreadNotificationCountProvider = Provider<int>((ref) {
-  return ref.watch(guardianUnreadNotificationCountProvider);
+  return ref.watch(notificationBellIndicatorProvider).numericCount;
 });
 
-/// Combined unread count across both kinds and all scopes, respecting muted pets.
-final combinedUnreadNotificationCountProvider = Provider<int>((ref) {
+final notificationBellIndicatorProvider = Provider<NotificationBellIndicator>((
+  ref,
+) {
   final notifs = ref.watch(notificationsProvider);
   final prefs = ref.watch(notificationPreferencesProvider).valueOrNull;
   final mutedIds = prefs?.mutedPetIds.toSet() ?? {};
-  return notifs.whenOrNull(
-        data: (list) => list
-            .where((n) => !n.isRead)
-            .where(
-              (n) =>
-                  n.petId == null ||
-                  n.petId!.isEmpty ||
-                  !mutedIds.contains(n.petId),
-            )
-            .length,
-      ) ??
-      0;
+  return notifs.when(
+    data: (list) {
+      final visible = list.where(
+        (n) =>
+            n.petId == null || n.petId!.isEmpty || !mutedIds.contains(n.petId),
+      );
+      return NotificationBellIndicator(
+        numericCount: NotificationInboxV2Rules.bellNumericCount(visible),
+        showDot: NotificationInboxV2Rules.bellShowDot(visible),
+      );
+    },
+    loading: () =>
+        const NotificationBellIndicator(numericCount: 0, showDot: false),
+    error: (_, __) =>
+        const NotificationBellIndicator(numericCount: 0, showDot: false),
+  );
+});
+
+/// Legacy combined unread count (pre-v2 tests); maps to bell numeric only.
+final combinedUnreadNotificationCountProvider = Provider<int>((ref) {
+  return ref.watch(notificationBellIndicatorProvider).numericCount;
 });
 
 final guardianUnreadNotificationCountProvider = Provider<int>((ref) {
@@ -129,7 +156,7 @@ class NotificationPreferencesNotifier
   Future<NotificationPreferences> build() async {
     final auth = ref.read(authProvider);
     if (!auth.isLoggedIn || auth.accessToken == null) {
-      return const NotificationPreferences();
+      return NotificationPreferences();
     }
     return _getRepo().getPreferences();
   }
@@ -146,5 +173,10 @@ class NotificationPreferencesNotifier
   Future<void> updatePreferences(NotificationPreferences prefs) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() => _getRepo().updatePreferences(prefs));
+  }
+
+  Future<void> dismissV2InboxExplainer() async {
+    await _getRepo().dismissV2InboxExplainer();
+    state = await AsyncValue.guard(() => _getRepo().getPreferences());
   }
 }

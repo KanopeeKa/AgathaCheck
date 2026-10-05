@@ -20,6 +20,7 @@ import {
   buildRecommendationInsertValues,
   evaluateCareRecommendationCandidates,
 } from './ruleEngine.js';
+import { syncPetRecommendationsToInbox } from '../notifications/suggestionInbox.js';
 
 async function loadPetContext(pool, userId, petId) {
   const petResult = await pool.query(
@@ -133,6 +134,7 @@ export function registerCareIntelligenceRoutes(router, pool) {
         existingRecommendations: context.existingRecommendations,
       });
       const pending = await syncPendingRecommendations(pool, petId, candidates);
+      await syncPetRecommendationsToInbox(pool, userId, petId);
       res.json(pending.map(recommendationToMap));
     } catch (err) {
       res.status(500).json({ error: publicError(err) });

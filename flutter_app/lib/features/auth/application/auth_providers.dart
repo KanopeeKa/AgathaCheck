@@ -282,6 +282,20 @@ class AuthNotifier extends StateNotifier<AuthState> {
     return msg;
   }
 
+  Future<String> secureAccount({
+    required String currentPassword,
+    required String newPassword,
+    String? notificationId,
+  }) async {
+    if (state.accessToken == null) throw Exception('Not authenticated');
+    return _authRepository.secureAccount(
+      state.accessToken!,
+      currentPassword: currentPassword,
+      newPassword: newPassword,
+      notificationId: notificationId,
+    );
+  }
+
   Future<String?> getValidAccessToken() async {
     if (state.accessToken == null || state.refreshToken == null) return null;
     try {

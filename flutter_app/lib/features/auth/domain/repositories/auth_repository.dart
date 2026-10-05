@@ -45,6 +45,13 @@ abstract class AuthRepository {
     required String newPassword,
   });
 
+  Future<String> secureAccount(
+    String accessToken, {
+    required String currentPassword,
+    required String newPassword,
+    String? notificationId,
+  });
+
   Future<String> forgotPassword({required String email});
 
   Future<String> resetPassword({

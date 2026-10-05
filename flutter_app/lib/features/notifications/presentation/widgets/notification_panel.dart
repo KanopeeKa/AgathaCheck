@@ -1,21 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
-import '../../../../core/theme/experience_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/app_notification.dart';
-import '../../domain/entities/notification_kind.dart';
-import '../../domain/entities/notification_scope.dart';
+import '../../domain/services/notification_inbox_v2_rules.dart';
+import '../providers/notification_inbox_session.dart';
 import '../providers/notification_providers.dart';
 import '../utils/notification_navigation.dart';
-import '../widgets/notification_date_groups.dart';
-import '../widgets/notification_tile.dart';
+import 'notification_inbox_list.dart';
+import 'notification_inbox_tab_bar.dart';
+import 'notification_inbox_v2_explainer.dart';
 
 /// Full-height right slide-over notification panel (opened via bell → endDrawer).
 ///
-/// Kind-filter chips (All / Care / Organisation) sit above a date-grouped list.
-/// "Action needed" chip appears on administrative rows with open referenced objects.
+/// Notifications v2: Activity / For you tabs and calm badge rules (§5.4).
 class NotificationPanel extends ConsumerStatefulWidget {
   const NotificationPanel({super.key});
 
@@ -24,8 +22,6 @@ class NotificationPanel extends ConsumerStatefulWidget {
 }
 
 class _NotificationPanelState extends ConsumerState<NotificationPanel> {
-  NotificationKind? _selectedKind; // null = All
-
   @override
   void initState() {
     super.initState();
@@ -38,8 +34,20 @@ class _NotificationPanelState extends ConsumerState<NotificationPanel> {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final xp = context.experienceColors;
     final notificationsAsync = ref.watch(notificationsProvider);
+    final selectedTab = ref.watch(notificationInboxSessionTabProvider);
+    final prefs = ref.watch(notificationPreferencesProvider).valueOrNull;
+    final mutedIds = prefs?.mutedPetIds.toSet() ?? {};
+    final visible =
+        notificationsAsync.valueOrNull
+            ?.where(
+              (n) =>
+                  n.petId == null ||
+                  n.petId!.isEmpty ||
+                  !mutedIds.contains(n.petId),
+            )
+            .toList() ??
+        const <AppNotification>[];
 
     return Drawer(
       width: _panelWidth(context),
@@ -48,11 +56,25 @@ class _NotificationPanelState extends ConsumerState<NotificationPanel> {
           child: Column(
             children: [
               _PanelHeader(l: l, theme: theme, onMarkAllRead: _markAllRead),
-              _KindFilterChips(
-                l: l,
-                xp: xp,
-                selected: _selectedKind,
-                onSelected: (kind) => setState(() => _selectedKind = kind),
+              NotificationInboxTabBar(
+                selected: selectedTab,
+                onSelected: (tab) {
+                  ref.read(notificationInboxSessionTabProvider.notifier).state =
+                      tab;
+                  if (tab == NotificationInboxTab.forYou) {
+                    ref
+                        .read(notificationsProvider.notifier)
+                        .markForYouSuggestionsSeen();
+                  }
+                },
+                activityIndicatorCount:
+                    NotificationInboxV2Rules.activityTabIndicatorCount(visible),
+                forYouShowDot: NotificationInboxV2Rules.forYouTabShowDot(
+                  visible,
+                ),
+              ),
+              const NotificationInboxV2Explainer(
+                onOpenActions: _openActionsFromPanel,
               ),
               const Divider(height: 1),
               Expanded(
@@ -66,8 +88,11 @@ class _NotificationPanelState extends ConsumerState<NotificationPanel> {
                     onRetry: () =>
                         ref.read(notificationsProvider.notifier).refresh(),
                   ),
-                  data: (all) =>
-                      _NotificationList(all: all, selectedKind: _selectedKind),
+                  data: (all) => NotificationInboxList(
+                    notifications: all,
+                    selectedTab: selectedTab,
+                    onNotificationTap: _onPanelNotificationTap,
+                  ),
                 ),
               ),
             ],
@@ -75,6 +100,24 @@ class _NotificationPanelState extends ConsumerState<NotificationPanel> {
         ),
       ),
     );
+  }
+
+  static void _openActionsFromPanel(BuildContext context) {
+    Navigator.of(context).pop();
+    navigateToNotificationActions(context);
+  }
+
+  Future<void> _onPanelNotificationTap(
+    BuildContext context,
+    WidgetRef ref,
+    AppNotification n,
+  ) async {
+    if (!n.isRead) {
+      await ref.read(notificationsProvider.notifier).markAsRead(n.id);
+    }
+    if (!context.mounted) return;
+    Navigator.of(context).pop();
+    navigateFromNotification(context, n);
   }
 
   double _panelWidth(BuildContext context) {
@@ -118,288 +161,16 @@ class _PanelHeader extends StatelessWidget {
             ),
           ),
           Align(
-            alignment: AlignmentDirectional.centerEnd,
-            child: Wrap(
-              crossAxisAlignment: WrapCrossAlignment.center,
-              spacing: 4,
-              children: [
-                _headerIconButton(
-                  icon: Icons.settings_outlined,
-                  tooltip: l.notificationSettingsTooltip,
-                  onPressed: () {
-                    final router = GoRouter.of(context);
-                    Navigator.of(context).pop();
-                    router.push('/notifications/settings');
-                  },
-                ),
-                TextButton.icon(
-                  key: const Key('mark_all_read_button'),
-                  icon: const Icon(Icons.done_all, size: 18),
-                  label: Text(l.markAllRead),
-                  onPressed: onMarkAllRead,
-                ),
-                _headerIconButton(
-                  icon: Icons.close,
-                  tooltip: l.close,
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-              ],
+            alignment: Alignment.centerRight,
+            child: TextButton.icon(
+              onPressed: onMarkAllRead,
+              icon: const Icon(Icons.done_all, size: 18),
+              label: Text(l.markAllRead),
             ),
           ),
         ],
       ),
     );
-  }
-}
-
-Widget _headerIconButton({
-  required IconData icon,
-  required String tooltip,
-  required VoidCallback onPressed,
-}) {
-  return Semantics(
-    button: true,
-    label: tooltip,
-    child: ExcludeSemantics(
-      child: IconButton(icon: Icon(icon), onPressed: onPressed),
-    ),
-  );
-}
-
-class _KindFilterChips extends StatelessWidget {
-  const _KindFilterChips({
-    required this.l,
-    required this.xp,
-    required this.selected,
-    required this.onSelected,
-  });
-
-  final AppLocalizations l;
-  final ExperienceColors xp;
-  final NotificationKind? selected;
-  final void Function(NotificationKind?) onSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      child: Wrap(
-        spacing: 8,
-        children: [
-          _FilterChip(
-            label: l.notificationKindAll,
-            selected: selected == null,
-            color: Colors.grey.shade600,
-            onTap: () => onSelected(null),
-          ),
-          _FilterChip(
-            label: l.notificationKindCare,
-            selected: selected == NotificationKind.care,
-            color: xp.petCarePrimary,
-            onTap: () => onSelected(NotificationKind.care),
-          ),
-          _FilterChip(
-            label: l.notificationKindOrganisation,
-            selected: selected == NotificationKind.administrative,
-            color: xp.organizationPrimary,
-            onTap: () => onSelected(NotificationKind.administrative),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _FilterChip extends StatelessWidget {
-  const _FilterChip({
-    required this.label,
-    required this.selected,
-    required this.color,
-    required this.onTap,
-  });
-
-  final String label;
-  final bool selected;
-  final Color color;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Semantics(
-      button: true,
-      selected: selected,
-      label: label,
-      child: ExcludeSemantics(
-        child: Material(
-          color: selected ? color.withAlpha(40) : Colors.transparent,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-            side: selected
-                ? BorderSide(color: color, width: 1.5)
-                : BorderSide.none,
-          ),
-          child: InkWell(
-            onTap: onTap,
-            borderRadius: BorderRadius.circular(8),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              child: Text(
-                label,
-                style: TextStyle(
-                  color: selected ? color : null,
-                  fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _NotificationList extends ConsumerWidget {
-  const _NotificationList({required this.all, required this.selectedKind});
-
-  final List<AppNotification> all;
-  final NotificationKind? selectedKind;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final prefs = ref.watch(notificationPreferencesProvider).valueOrNull;
-    final mutedIds = prefs?.mutedPetIds.toSet() ?? {};
-    final theme = Theme.of(context);
-    final l = AppLocalizations.of(context)!;
-
-    final filtered = all
-        .where(
-          (n) =>
-              n.petId == null ||
-              n.petId!.isEmpty ||
-              !mutedIds.contains(n.petId),
-        )
-        .where((n) => selectedKind == null || n.kind == selectedKind)
-        .toList();
-
-    if (filtered.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.notifications_none,
-              size: 64,
-              color: theme.colorScheme.outline,
-            ),
-            const SizedBox(height: 12),
-            Text(l.noNotifications, style: theme.textTheme.bodyLarge),
-            if (selectedKind != null) ...[
-              const SizedBox(height: 4),
-              Text(
-                selectedKind == NotificationKind.care
-                    ? l.notificationKindCare
-                    : l.notificationKindOrganisation,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ],
-          ],
-        ),
-      );
-    }
-
-    final pinned = selectedKind == NotificationKind.administrative
-        ? filtered.where(_isUrgentAdministrative).toList()
-        : const <AppNotification>[];
-    final pinnedIds = pinned.map((notification) => notification.id).toSet();
-    final grouped = groupNotificationsByDate(
-      context,
-      filtered
-          .where((notification) => !pinnedIds.contains(notification.id))
-          .toList(),
-    );
-
-    return RefreshIndicator(
-      onRefresh: () => ref.read(notificationsProvider.notifier).refresh(),
-      child: ListView(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        children: [
-          if (pinned.isNotEmpty) ...[
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-              child: Text(
-                l.notificationUrgent,
-                style: theme.textTheme.labelLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.error,
-                ),
-              ),
-            ),
-            ...pinned.map((notification) => _tile(context, ref, notification)),
-          ],
-          ...grouped.map(
-            (group) => Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-                  child: Text(
-                    group.label,
-                    style: theme.textTheme.labelLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ),
-                ...group.notifications.map(
-                  (notification) => _tile(context, ref, notification),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _tile(
-    BuildContext context,
-    WidgetRef ref,
-    AppNotification notification,
-  ) {
-    return NotificationTile(
-      notification: notification,
-      listScope: _scopeForNotification(notification),
-      showActionNeeded: _needsAction(notification),
-      onTap: () => _onTap(context, ref, notification),
-    );
-  }
-
-  NotificationScope _scopeForNotification(AppNotification n) =>
-      n.organizationId != null && n.organizationId!.isNotEmpty
-      ? NotificationScope.organization
-      : NotificationScope.guardian;
-
-  /// Administrative resolution is independent from a user's read state.
-  bool _needsAction(AppNotification n) =>
-      n.kind == NotificationKind.administrative && n.resolvedAt == null;
-
-  bool _isUrgentAdministrative(AppNotification n) =>
-      n.kind == NotificationKind.administrative &&
-      n.priority == NotificationPriority.urgent;
-
-  Future<void> _onTap(
-    BuildContext context,
-    WidgetRef ref,
-    AppNotification n,
-  ) async {
-    if (!n.isRead) {
-      await ref.read(notificationsProvider.notifier).markAsRead(n.id);
-    }
-    if (!context.mounted) return;
-    Navigator.of(context).pop();
-    navigateFromNotification(context, n);
   }
 }
 

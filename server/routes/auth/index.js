@@ -5,6 +5,7 @@ import { createApiLimiter, createAuthLimiter } from '../../config/rateLimit.js';
 import { registerSessionRoutes } from './sessionRouter.js';
 import { registerProfileRoutes } from './profileRouter.js';
 import { registerPasswordRoutes } from './passwordRouter.js';
+import { registerSecureAccountRoutes } from './secureAccountRouter.js';
 
 export default function authRoutes(pool, comparePassword) {
   const router = express.Router();
@@ -17,6 +18,7 @@ export default function authRoutes(pool, comparePassword) {
   registerSessionRoutes(router, pool, deps);
   registerProfileRoutes(router, pool, deps);
   registerPasswordRoutes(router, pool, deps);
+  registerSecureAccountRoutes(router, pool, deps);
 
   return router;
 }
