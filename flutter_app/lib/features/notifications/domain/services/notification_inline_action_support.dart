@@ -31,7 +31,8 @@ class NotificationInlineActionSupport {
     'shareInviteReceived': NotificationInlineActionKind.shareInvite,
     'householdInviteReceived': NotificationInlineActionKind.householdInvite,
     'accountNewSignIn': NotificationInlineActionKind.accountNewSignIn,
-    'accountPasswordChanged': NotificationInlineActionKind.accountPasswordChanged,
+    'accountPasswordChanged':
+        NotificationInlineActionKind.accountPasswordChanged,
   };
 
   static NotificationInlineActionKind? kindFor(AppNotification notification) =>
