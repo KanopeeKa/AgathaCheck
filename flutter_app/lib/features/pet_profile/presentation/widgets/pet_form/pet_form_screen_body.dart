@@ -18,6 +18,7 @@ class PetFormScreenBody extends StatelessWidget {
     required this.previewPet,
     required this.previewWeightLabel,
     required this.isEditing,
+    this.petId,
     required this.isLoading,
     required this.isShared,
     required this.passedAway,
@@ -53,6 +54,7 @@ class PetFormScreenBody extends StatelessWidget {
   final Pet previewPet;
   final String? previewWeightLabel;
   final bool isEditing;
+  final String? petId;
   final bool isLoading;
   final bool isShared;
   final bool passedAway;
@@ -127,6 +129,7 @@ class PetFormScreenBody extends StatelessWidget {
       controller: controller,
       layoutSize: layoutSize,
       isEditing: isEditing,
+      petId: petId,
       isLoading: isLoading,
       isShared: isShared,
       passedAway: passedAway,

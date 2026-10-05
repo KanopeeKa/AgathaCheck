@@ -2,6 +2,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/utils/calendar_date.dart';
 import '../../../weight_tracking/domain/entities/weight_entry.dart';
+import '../../../../core/weight/weight_unit.dart';
+import '../../../../core/weight/weight_unit_preference.dart';
 import '../../../weight_tracking/presentation/providers/weight_providers.dart';
 
 class WeightTrackingController {
@@ -21,7 +23,7 @@ class WeightTrackingController {
         .deleteEntry(entryId);
   }
 
-  void setWeightUnit(String petId, dynamic unit) {
-    ref.read(weightUnitProvider(petId).notifier).setUnit(unit);
+  Future<void> setWeightUnit(String petId, WeightUnit unit) {
+    return ref.read(setWeightUnitPreferenceProvider)(unit);
   }
 }

@@ -221,6 +221,10 @@
   "weightFormatHint": "Entrez un nombre supérieur à 0, par ex. 12,5",
   "deleteWeightEntry": "Supprimer l'entrée de poids",
   "weightChartLabel": "Graphique de poids avec {count} entrées",
+  "weightRecordAction": "Enregistrer le poids",
+  "weightTodayFieldLabelUnit": "Poids aujourd'hui ({unit})",
+  "petProfileWeightRow": "Poids {weight} · enregistré le {date}",
+  "petProfileNoWeightRecorded": "Aucun poids enregistré pour l'instant",
 
   "healthEvents": "Événements de santé",
   "otherEvents": "Autres événements",

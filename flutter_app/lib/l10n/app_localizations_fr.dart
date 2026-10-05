@@ -617,6 +617,23 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String get weightRecordAction => 'Enregistrer le poids';
+
+  @override
+  String weightTodayFieldLabelUnit(String unit) {
+    return 'Poids aujourd\'hui ($unit)';
+  }
+
+  @override
+  String petProfileWeightRow(String weight, String date) {
+    return 'Poids $weight · enregistré le $date';
+  }
+
+  @override
+  String get petProfileNoWeightRecorded =>
+      'Aucun poids enregistré pour l\'instant';
+
+  @override
   String get healthEvents => 'Événements de santé';
 
   @override

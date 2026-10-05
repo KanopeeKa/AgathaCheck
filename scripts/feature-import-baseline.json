@@ -66,8 +66,6 @@
     "R2|flutter_app/lib/features/pet_care/context/presentation/controllers/away_plan_handover_controller.dart|flutter_app/lib/features/pet_profile/data/services/pdf_saver.dart",
     "R2|flutter_app/lib/main.dart|flutter_app/lib/features/subscription/data/services/revenuecat_service.dart",
     "R3|flutter_app/lib/core/providers/analytics_providers.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
-    "R3|flutter_app/lib/core/providers/pet_weight_invalidation.dart|flutter_app/lib/features/pet_profile/presentation/providers/pet_providers.dart",
-    "R3|flutter_app/lib/core/providers/pet_weight_invalidation.dart|flutter_app/lib/features/weight_tracking/presentation/providers/weight_providers.dart",
     "R3|flutter_app/lib/core/widgets/authenticated_network_image.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
     "R3|flutter_app/lib/core/widgets/shell_notification_bell.dart|flutter_app/lib/features/notifications/presentation/providers/notification_providers.dart",
     "R3|flutter_app/lib/features/auth/presentation/widgets/landing/landing_operations_desk_page.dart|flutter_app/lib/features/about/presentation/widgets/legal_footer_links.dart",

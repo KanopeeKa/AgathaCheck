@@ -236,6 +236,17 @@
   "deleteWeightEntry": "Delete weight entry",
   "weightChartLabel": "Weight chart showing {count} entries",
   "@weightChartLabel": { "placeholders": { "count": { "type": "int" } } },
+  "weightRecordAction": "Record weight",
+  "weightTodayFieldLabelUnit": "Weight today ({unit})",
+  "@weightTodayFieldLabelUnit": { "placeholders": { "unit": { "type": "String" } } },
+  "petProfileWeightRow": "Weight {weight} · recorded {date}",
+  "@petProfileWeightRow": {
+    "placeholders": {
+      "weight": { "type": "String" },
+      "date": { "type": "String" }
+    }
+  },
+  "petProfileNoWeightRecorded": "No weight recorded yet",
 
   "healthEvents": "Health Events",
   "otherEvents": "Other events",

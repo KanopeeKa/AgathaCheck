@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../../core/utils/calendar_date.dart';
+import '../../../../../core/weight/weight_unit.dart';
+import '../../../../../core/weight/weight_unit_preference.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../pet_care/presentation/widgets/care_surface/care_insight_tile.dart';
 import '../../../../weight_tracking/domain/weight_entry_sort.dart';
@@ -25,9 +27,9 @@ class PetProfileWeightInsightSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
-    final unit = ref.watch(weightUnitProvider(petId));
-    final unitLabel = weightUnitLabel(unit);
-    final entriesAsync = ref.watch(weightEntriesProvider(petId));
+    final unit = ref.watch(weightUnitPreferenceProvider);
+    final unitText = unitLabel(unit);
+    final entriesAsync = ref.watch(weightEntriesNotifierProvider(petId));
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
@@ -56,7 +58,7 @@ class PetProfileWeightInsightSection extends ConsumerWidget {
           final summary = latestKg == null
               ? l.noWeightDataYet
               : l.weightInsightLastRecorded(
-                  '${convertWeight(latestKg, unit).toStringAsFixed(1)} $unitLabel',
+                  '${toDisplay(latestKg, unit).toStringAsFixed(1)} $unitText',
                   sorted.isNotEmpty
                       ? DateFormat.yMMMd().format(
                           calendarDateOnly(sorted.first.date),
