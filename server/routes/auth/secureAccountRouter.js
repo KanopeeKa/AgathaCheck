@@ -15,7 +15,8 @@ import {
   lookupRefreshSessionFromToken,
   revokeOtherUserRefreshSessions,
 } from '../../lib/refreshSessions.js';
-import { extractToken, verifyAccessToken } from './shared.js';
+import { verifyAccessToken } from '../../lib/auth/tokens.js';
+import { extractToken } from './shared.js';
 
 export function registerSecureAccountRoutes(router, pool, { comparePassword, authLimiter }) {
   router.post('/secure-account', authLimiter, async (req, res) => {

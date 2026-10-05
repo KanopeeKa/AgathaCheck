@@ -1,5 +1,5 @@
 import { isSmtpConfigured } from '../../config/mail.js';
-import { isProduction } from '../../routes/auth/shared.js';
+import { isProduction } from '../auth/runtime.js';
 import { sendTransactionalEmail } from '../../services/mailService.js';
 import {
   NOTIFICATION_KIND_ACCOUNT,
