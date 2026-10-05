@@ -189,7 +189,7 @@ class FakeNotificationPreferencesNotifier
     extends NotificationPreferencesNotifier {
   @override
   Future<NotificationPreferences> build() async =>
-      const NotificationPreferences();
+      NotificationPreferences();
 }
 
 class TestNotificationPreferencesNotifier

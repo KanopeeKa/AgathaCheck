@@ -5,6 +5,11 @@ import {
   NOTIFICATION_PRIORITY_NORMAL,
 } from '../../lib/notificationKind.js';
 import { CO_PARENT_ROLE } from '../../lib/petAccess.js';
+import {
+  isAgathaSuggestionsInAppEnabled,
+  isSuggestionTypeEnabled,
+  loadNotificationPreferences,
+} from '../../lib/notificationPreferences.js';
 
 export const SUGGESTION_TYPE_CARE_FAMILY = 'suggestionCareFamily';
 
@@ -124,6 +129,18 @@ export async function upsertSuggestionNotificationFromRecommendation(
   return inserted.rows[0];
 }
 
+export async function archiveActiveSuggestionsForUser(pool, userId) {
+  await pool.query(
+    `UPDATE notifications
+     SET archived_at = NOW(), suggestion_state = 'suppressed'
+     WHERE user_id = $1
+       AND kind = $2
+       AND archived_at IS NULL
+       AND (suggestion_state IS NULL OR suggestion_state IN ('new', 'seen'))`,
+    [userId, NOTIFICATION_KIND_SUGGESTION],
+  );
+}
+
 export async function syncPetRecommendationsToInbox(pool, userId, petId) {
   void userId;
   const petResult = await pool.query(
@@ -143,6 +160,12 @@ export async function syncPetRecommendationsToInbox(pool, userId, petId) {
   const recipientIds = await listSuggestionRecipientUserIds(pool, petId);
   const upserted = [];
   for (const recipientId of recipientIds) {
+    const prefs = await loadNotificationPreferences(pool, recipientId);
+    if (!isAgathaSuggestionsInAppEnabled(prefs)) continue;
+    const muted = prefs.muted_pet_ids || [];
+    if (muted.includes(String(petId))) continue;
+    if (!isSuggestionTypeEnabled(prefs, SUGGESTION_TYPE_CARE_FAMILY)) continue;
+
     for (const row of recsResult.rows) {
       const notification = await upsertSuggestionNotificationFromRecommendation(pool, {
         userId: recipientId,

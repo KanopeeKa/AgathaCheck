@@ -11,6 +11,7 @@ import '../utils/notification_navigation.dart';
 import 'notification_inbox_row.dart'
     show NotificationInboxRow, NotificationInboxTileTap;
 import 'notification_date_groups.dart';
+import 'notification_for_you_off_state.dart';
 import 'notification_suggestion_card.dart';
 import 'notification_tile.dart';
 
@@ -35,6 +36,12 @@ class NotificationInboxList extends ConsumerWidget {
     final mutedIds = prefs?.mutedPetIds.toSet() ?? {};
     final theme = Theme.of(context);
     final l = AppLocalizations.of(context)!;
+
+    if (selectedTab == NotificationInboxTab.forYou &&
+        prefs != null &&
+        !prefs.agathaSuggestionsInApp) {
+      return const NotificationForYouOffState();
+    }
 
     final filtered = notifications
         .where(

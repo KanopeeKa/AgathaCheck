@@ -151,7 +151,7 @@ class NotificationPreferencesNotifier
   Future<NotificationPreferences> build() async {
     final auth = ref.read(authProvider);
     if (!auth.isLoggedIn || auth.accessToken == null) {
-      return const NotificationPreferences();
+      return NotificationPreferences();
     }
     return _getRepo().getPreferences();
   }

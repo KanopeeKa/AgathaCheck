@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/theme/experience_colors.dart';
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/notification_preferences.dart';
+import '../../domain/entities/notification_settings_matrix.dart';
 import '../providers/notification_providers.dart';
-import '../../../pet_profile/presentation/providers/pet_providers.dart';
-import '../../../pet_profile/presentation/utils/pet_accent_color.dart';
+import '../widgets/notification_settings_care_reminders_section.dart';
+import '../widgets/notification_settings_matrix_section.dart';
+import '../widgets/notification_settings_muted_pets_section.dart';
+import '../widgets/notification_settings_push_hint.dart';
 
 class NotificationSettingsScreen extends ConsumerStatefulWidget {
   const NotificationSettingsScreen({super.key});
@@ -26,15 +28,19 @@ class _NotificationSettingsScreenState
   bool _notifyDueSoon = true;
   bool _notifyCompleted = true;
   List<String> _mutedPetIds = [];
+  bool _agathaInApp = true;
+  NotificationSettingsMatrix _matrix = NotificationSettingsMatrix.defaults();
+  Map<String, bool> _suggestionTypes = defaultSuggestionTypeToggles();
   bool _initialized = false;
   bool _saving = false;
+
+  final _careRemindersKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
     final prefsAsync = ref.watch(notificationPreferencesProvider);
-    final theme = Theme.of(context);
-    final xp = context.experienceColors;
     final l = AppLocalizations.of(context)!;
+    final pushDenied = NotificationSettingsPushHint.osPushDenied();
 
     prefsAsync.whenData((prefs) {
       if (!_initialized) {
@@ -44,6 +50,9 @@ class _NotificationSettingsScreenState
         _notifyDueSoon = prefs.notifyDueSoon;
         _notifyCompleted = prefs.notifyCompleted;
         _mutedPetIds = List<String>.from(prefs.mutedPetIds);
+        _agathaInApp = prefs.agathaSuggestionsInApp;
+        _matrix = prefs.settingsMatrix;
+        _suggestionTypes = Map<String, bool>.from(prefs.suggestionTypes);
         _initialized = true;
       }
     });
@@ -53,7 +62,7 @@ class _NotificationSettingsScreenState
         title: AppLogoTitle(title: l.notificationSettings),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          tooltip: 'Back to notifications',
+          tooltip: l.notificationSettingsTooltip,
           onPressed: () => context.pop(),
         ),
       ),
@@ -63,113 +72,52 @@ class _NotificationSettingsScreenState
         data: (_) => ListView(
           children: [
             const SizedBox(height: 8),
-            _SectionHeader(title: l.inAppNotifications, theme: theme),
-            SwitchListTile(
-              title: Text(l.overdueAlerts),
-              subtitle: const Text(
-                'Get notified when health entries are overdue',
-              ),
-              value: _notifyOverdue,
-              onChanged: (v) => setState(() => _notifyOverdue = v),
-              secondary: Icon(
-                Icons.warning_amber_rounded,
-                color: theme.colorScheme.error,
-              ),
+            NotificationSettingsPushHint(showHint: pushDenied),
+            NotificationSettingsMatrixSection(
+              matrix: _matrix,
+              suggestionTypes: _suggestionTypes,
+              agathaSuggestionsInApp: _agathaInApp,
+              pushOsDenied: pushDenied,
+              onMatrixChanged: (m) => setState(() => _matrix = m),
+              onSuggestionTypesChanged: (t) =>
+                  setState(() => _suggestionTypes = t),
+              onAgathaInAppChanged: (v) => setState(() => _agathaInApp = v),
             ),
-            SwitchListTile(
-              title: Text(l.dueSoonAlerts),
-              subtitle: const Text(
-                'Get notified when health entries are coming up',
-              ),
-              value: _notifyDueSoon,
-              onChanged: (v) => setState(() => _notifyDueSoon = v),
-              secondary: Icon(Icons.schedule, color: xp.warning),
-            ),
-            SwitchListTile(
-              title: Text(l.completedAlerts),
-              subtitle: const Text(
-                'Get notified when health entries are completed',
-              ),
-              value: _notifyCompleted,
-              onChanged: (v) => setState(() => _notifyCompleted = v),
-              secondary: Icon(Icons.check_circle, color: xp.success),
-            ),
-            const Divider(),
-            _SectionHeader(title: l.emailReminders, theme: theme),
-            SwitchListTile(
-              title: Text(l.emailReminders),
-              subtitle: const Text(
-                'Receive email reminders for upcoming health entries',
-              ),
-              value: _emailReminders,
-              onChanged: (v) => setState(() => _emailReminders = v),
-              secondary: Icon(
-                Icons.email_outlined,
-                color: theme.colorScheme.primary,
-              ),
-            ),
-            if (_emailReminders) ...[
-              ListTile(
-                title: Text(l.reminderDaysBefore),
-                subtitle: Text(
-                  '$_reminderDays ${l.day}${_reminderDays == 1 ? '' : 's'} before due date',
-                ),
-                leading: Icon(
-                  Icons.timer_outlined,
-                  color: theme.colorScheme.primary,
-                ),
-                trailing: SizedBox(
-                  width: 140,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.remove_circle_outline),
-                        tooltip: 'Decrease reminder days',
-                        onPressed: _reminderDays > 1
-                            ? () => setState(() => _reminderDays--)
-                            : null,
-                      ),
-                      Text(
-                        '$_reminderDays',
-                        style: theme.textTheme.titleMedium,
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.add_circle_outline),
-                        tooltip: 'Increase reminder days',
-                        onPressed: _reminderDays < 14
-                            ? () => setState(() => _reminderDays++)
-                            : null,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-            const Divider(),
-            _SectionHeader(title: l.mutedPets, theme: theme),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-              child: Text(
-                'Muted pets will not trigger any notifications.',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ),
-            _buildMutedPetsSection(theme),
-            const Divider(),
-            _SectionHeader(title: 'Local Notifications', theme: theme),
             ListTile(
-              leading: Icon(
-                Icons.phone_android,
-                color: theme.colorScheme.onSurfaceVariant,
+              leading: const Icon(Icons.health_and_safety_outlined),
+              title: Text(l.notificationSettingsCareRemindersLink),
+              subtitle: Text(l.notificationSettingsCareRemindersLinkHelp),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () {
+                Scrollable.ensureVisible(
+                  _careRemindersKey.currentContext!,
+                  duration: const Duration(milliseconds: 300),
+                );
+              },
+            ),
+            const Divider(),
+            KeyedSubtree(
+              key: _careRemindersKey,
+              child: NotificationSettingsCareRemindersSection(
+                emailReminders: _emailReminders,
+                reminderDays: _reminderDays,
+                notifyOverdue: _notifyOverdue,
+                notifyDueSoon: _notifyDueSoon,
+                notifyCompleted: _notifyCompleted,
+                onEmailRemindersChanged: (v) =>
+                    setState(() => _emailReminders = v),
+                onReminderDaysChanged: (v) => setState(() => _reminderDays = v),
+                onNotifyOverdueChanged: (v) =>
+                    setState(() => _notifyOverdue = v),
+                onNotifyDueSoonChanged: (v) => setState(() => _notifyDueSoon = v),
+                onNotifyCompletedChanged: (v) =>
+                    setState(() => _notifyCompleted = v),
               ),
-              title: const Text('Push Notifications'),
-              subtitle: const Text(
-                'Push notifications will be available in the native mobile app',
-              ),
-              enabled: false,
+            ),
+            const Divider(),
+            NotificationSettingsMutedPetsSection(
+              mutedPetIds: _mutedPetIds,
+              onMutedChanged: (ids) => setState(() => _mutedPetIds = ids),
             ),
             const SizedBox(height: 24),
             Padding(
@@ -187,68 +135,13 @@ class _NotificationSettingsScreenState
                         ),
                       )
                     : const Icon(Icons.save),
-                label: Text(_saving ? 'Saving...' : l.saveSettings),
+                label: Text(l.saveSettings),
               ),
             ),
             const SizedBox(height: 32),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildMutedPetsSection(ThemeData theme) {
-    final petsAsync = ref.watch(petListProvider);
-    final pets = petsAsync.valueOrNull ?? [];
-
-    if (pets.isEmpty) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        child: Text(
-          'No pets found.',
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-        ),
-      );
-    }
-
-    return Column(
-      children: pets.map((pet) {
-        final isMuted = _mutedPetIds.contains(pet.id);
-        final petColor = resolvePetAccentColor(context, pet);
-        return SwitchListTile(
-          title: Row(
-            children: [
-              Container(
-                width: 12,
-                height: 12,
-                decoration: BoxDecoration(
-                  color: petColor,
-                  shape: BoxShape.circle,
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(child: Text(pet.name)),
-            ],
-          ),
-          subtitle: Text(isMuted ? 'Muted' : 'Active'),
-          value: isMuted,
-          onChanged: (v) {
-            setState(() {
-              if (v) {
-                _mutedPetIds.add(pet.id);
-              } else {
-                _mutedPetIds.remove(pet.id);
-              }
-            });
-          },
-          secondary: Icon(
-            isMuted ? Icons.notifications_off : Icons.notifications_active,
-            color: isMuted ? theme.colorScheme.onSurfaceVariant : petColor,
-          ),
-        );
-      }).toList(),
     );
   }
 
@@ -265,43 +158,25 @@ class _NotificationSettingsScreenState
               notifyDueSoon: _notifyDueSoon,
               notifyCompleted: _notifyCompleted,
               mutedPetIds: _mutedPetIds,
+              agathaSuggestionsInApp: _agathaInApp,
+              settingsMatrix: _matrix,
+              suggestionTypes: _suggestionTypes,
             ),
           );
       if (mounted) {
         final l = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(l.settingsSaved)));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l.settingsSaved)),
+        );
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Failed to save: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to save: $e')),
+        );
       }
     } finally {
       if (mounted) setState(() => _saving = false);
     }
-  }
-}
-
-class _SectionHeader extends StatelessWidget {
-  const _SectionHeader({required this.title, required this.theme});
-
-  final String title;
-  final ThemeData theme;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-      child: Text(
-        title,
-        style: theme.textTheme.titleSmall?.copyWith(
-          color: theme.colorScheme.primary,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
   }
 }

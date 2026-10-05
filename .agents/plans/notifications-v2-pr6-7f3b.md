@@ -16,3 +16,5 @@
 **Scope:** FR-SE-*, FR-MD-*, FR-DG-* (enhancement cut if slip); delete `@legacy` BDD scenarios per spec §12.
 
 **Exit:** AC-SE-*, AC-DG-* (subset if enhancements cut); PR merged to integration.
+
+**Debt (PR7):** Weekly digest job (FR-DG-1..5) and relationship push/email enforcement at emit time (AC-SE-3/4/9 delivery) deferred — matrix persistence and Agatha generation gate land in PR6.

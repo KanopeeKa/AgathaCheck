@@ -37,12 +37,12 @@ void main() {
   });
 
   testWidgets('renders in-app notification toggles', (tester) async {
-    tester.view.physicalSize = const Size(800, 2400);
+    tester.view.physicalSize = const Size(1200, 3200);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
 
     await tester.pumpWidget(
-      _wrap(preferences: const NotificationPreferences()),
+      _wrap(preferences: NotificationPreferences()),
     );
     await tester.pumpAndSettle();
 
@@ -58,7 +58,7 @@ void main() {
   testWidgets('shows muted pets from the pet list', (tester) async {
     await tester.pumpWidget(
       _wrap(
-        preferences: const NotificationPreferences(mutedPetIds: ['bella']),
+        preferences: NotificationPreferences(mutedPetIds: ['bella']),
         pets: const [
           Pet(
             id: 'bella',
@@ -74,11 +74,11 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Bella'), findsOneWidget);
-    expect(find.text('Muted'), findsOneWidget);
+    expect(find.text('Muted'), findsWidgets);
   });
 
   testWidgets('save button persists updated preferences', (tester) async {
-    tester.view.physicalSize = const Size(800, 2400);
+    tester.view.physicalSize = const Size(1200, 3200);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
 
@@ -90,7 +90,7 @@ void main() {
           authProvider.overrideWith((ref) => FakeAuthNotifier()),
           notificationPreferencesProvider.overrideWith(() {
             notifier = TestNotificationPreferencesNotifier(
-              const NotificationPreferences(notifyCompleted: true),
+              NotificationPreferences(notifyCompleted: true),
             );
             return notifier;
           }),

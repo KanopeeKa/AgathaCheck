@@ -1,5 +1,7 @@
 import '../../domain/entities/app_notification.dart';
 import '../../domain/entities/notification_kind.dart';
+import '../../domain/entities/notification_settings_matrix.dart';
+import 'notification_preferences_matrix_codec.dart';
 
 class NotificationModel extends AppNotification {
   const NotificationModel({
@@ -123,8 +125,11 @@ class NotificationPreferencesModel {
   final bool notifyCompleted;
   final List<String> mutedPetIds;
   final DateTime? v2ExplainerDismissedAt;
+  final bool agathaSuggestionsInApp;
+  final NotificationSettingsMatrix settingsMatrix;
+  final Map<String, bool> suggestionTypes;
 
-  const NotificationPreferencesModel({
+  NotificationPreferencesModel({
     this.emailRemindersEnabled = false,
     this.reminderDaysBefore = 1,
     this.notifyOverdue = true,
@@ -132,15 +137,29 @@ class NotificationPreferencesModel {
     this.notifyCompleted = true,
     this.mutedPetIds = const [],
     this.v2ExplainerDismissedAt,
-  });
+    this.agathaSuggestionsInApp = true,
+    NotificationSettingsMatrix? settingsMatrix,
+    Map<String, bool>? suggestionTypes,
+  }) : settingsMatrix = settingsMatrix ?? NotificationSettingsMatrix.defaults(),
+       suggestionTypes = suggestionTypes ?? defaultSuggestionTypeToggles();
 
   factory NotificationPreferencesModel.fromJson(Map<String, dynamic> json) {
+    final matrix = parseSettingsMatrix(
+      json['settings_matrix'] as Map<String, dynamic>?,
+    );
+    final agathaInApp = json['agatha_suggestions_in_app'] != false &&
+        matrix
+            .channel(NotificationMatrixCategory.agathaSuggestions)
+            .inboxEnabled;
     return NotificationPreferencesModel(
-      emailRemindersEnabled: json['email_reminders_enabled'] == true,
+      emailRemindersEnabled: _parseBool(json['email_reminders_enabled']),
       reminderDaysBefore: (json['reminder_days_before'] as num?)?.toInt() ?? 1,
-      notifyOverdue: json['notify_overdue'] != false,
-      notifyDueSoon: json['notify_due_soon'] != false,
-      notifyCompleted: json['notify_completed'] != false,
+      notifyOverdue: json['notify_overdue'] != false &&
+          json['notify_overdue']?.toString() != 'false',
+      notifyDueSoon: json['notify_due_soon'] != false &&
+          json['notify_due_soon']?.toString() != 'false',
+      notifyCompleted: json['notify_completed'] != false &&
+          json['notify_completed']?.toString() != 'false',
       mutedPetIds:
           (json['muted_pet_ids'] as List<dynamic>?)
               ?.map((e) => e.toString())
@@ -149,10 +168,27 @@ class NotificationPreferencesModel {
       v2ExplainerDismissedAt: json['v2_explainer_dismissed_at'] != null
           ? DateTime.tryParse(json['v2_explainer_dismissed_at'].toString())
           : null,
+      agathaSuggestionsInApp: agathaInApp,
+      settingsMatrix: matrix,
+      suggestionTypes: parseSuggestionTypes(
+        json['suggestion_types'] as Map<String, dynamic>?,
+      ),
     );
   }
 
+  static bool _parseBool(Object? value) {
+    if (value == true) return true;
+    if (value == false) return false;
+    return value?.toString().toLowerCase() == 'true';
+  }
+
   Map<String, dynamic> toJson() {
+    final matrixJson = settingsMatrixToJson(settingsMatrix);
+    matrixJson[NotificationMatrixCategory.agathaSuggestions.wireKey] = {
+      ...matrixJson[NotificationMatrixCategory.agathaSuggestions.wireKey]
+          as Map<String, dynamic>,
+      'inbox': agathaSuggestionsInApp,
+    };
     return {
       'email_reminders_enabled': emailRemindersEnabled,
       'reminder_days_before': reminderDaysBefore,
@@ -160,6 +196,9 @@ class NotificationPreferencesModel {
       'notify_due_soon': notifyDueSoon,
       'notify_completed': notifyCompleted,
       'muted_pet_ids': mutedPetIds,
+      'agatha_suggestions_in_app': agathaSuggestionsInApp,
+      'settings_matrix': matrixJson,
+      'suggestion_types': suggestionTypesToJson(suggestionTypes),
       if (v2ExplainerDismissedAt != null)
         'v2_explainer_dismissed_at': v2ExplainerDismissedAt!
             .toUtc()
