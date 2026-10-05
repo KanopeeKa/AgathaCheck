@@ -53,13 +53,13 @@ class HealthRepositoryImpl implements HealthRepository {
   }
 
   @override
-  Future<HealthEntry> pauseCareItem(String id) {
-    return dataSource.pauseCareItem(id);
+  Future<HealthEntry> pauseCareItem(String id, {DateTime? until}) {
+    return dataSource.pauseCareItem(id, until: until);
   }
 
   @override
-  Future<HealthEntry> resumeCareItem(String id) {
-    return dataSource.resumeCareItem(id);
+  Future<HealthEntry> resumeCareItem(String id, {DateTime? resumeOn}) {
+    return dataSource.resumeCareItem(id, resumeOn: resumeOn);
   }
 
   @override

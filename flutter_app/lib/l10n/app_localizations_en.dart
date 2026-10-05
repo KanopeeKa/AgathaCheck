@@ -5218,6 +5218,39 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String careItemPausedUntil(String date) {
+    return 'Paused until $date';
+  }
+
+  @override
+  String get carePostponeSheetTitle => 'Pause';
+
+  @override
+  String get carePostponeNoEndDate => 'No end date (pause)';
+
+  @override
+  String get carePostponeUntilLabel => 'Pause until';
+
+  @override
+  String get carePostponePauseConsequence => 'Reminders stop until you resume.';
+
+  @override
+  String carePostponeUntilAfterDoneConsequence(String date) {
+    return 'The open date moves to $date.';
+  }
+
+  @override
+  String carePostponeUntilFixedConsequence(String date) {
+    return 'Care stays paused until $date, then resumes automatically.';
+  }
+
+  @override
+  String get careResumeSheetTitle => 'Resume';
+
+  @override
+  String get careResumeDefaultHint => 'This is when it would have been.';
+
+  @override
   String careItemEstablishedBody(String petName) {
     return 'Part of $petName\'s regular care.';
   }

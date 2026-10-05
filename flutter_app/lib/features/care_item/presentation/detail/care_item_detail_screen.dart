@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/utils/calendar_date.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../experience/domain/entities/app_experience.dart';
 import '../../../experience/presentation/widgets/experience_shell_scaffold.dart';
@@ -12,9 +13,12 @@ import '../../../health_tracking/presentation/providers/health_providers.dart';
 import '../../../health_tracking/presentation/providers/occurrence_providers.dart';
 import '../../../health_tracking/presentation/widgets/pet_event_close_confirm_dialog.dart';
 import '../../../health_tracking/presentation/widgets/pet_event_view_providers.dart';
+import '../../../health_tracking/domain/entities/recurrence_anchor.dart';
 import '../../../health_tracking/presentation/widgets/pet_event_lifecycle.dart';
 import '../../../health_tracking/presentation/widgets/pet_event_occurrence_actions.dart';
 import '../widgets/care_item_history.dart';
+import '../sheets/postpone_sheet.dart';
+import '../sheets/resume_date_sheet.dart';
 import 'care_item_detail_body.dart';
 import 'care_item_menu.dart';
 
@@ -122,19 +126,41 @@ class CareItemDetailScreen extends ConsumerWidget {
             }
 
             Future<void> onPause() async {
-              await ref
-                  .read(healthEntriesNotifierProvider.notifier)
-                  .pauseCareItem(entryId);
-              PetEventOccurrenceActions.invalidateOccurrenceData(ref, entryId);
-              ref.invalidate(petHealthEntryByIdProvider);
+              final fixed =
+                  entry.schedule?.isFixedSchedule ??
+                  entry.recurrenceAnchor == RecurrenceAnchor.fromDueDate;
+              final ok = await showPostponeSheet(
+                context,
+                ref,
+                entryId: entryId,
+                isFixedSchedule: fixed,
+              );
+              if (ok == true) {
+                PetEventOccurrenceActions.invalidateOccurrenceData(ref, entryId);
+                ref.invalidate(petHealthEntryByIdProvider);
+              }
             }
 
             Future<void> onResume() async {
-              await ref
-                  .read(healthEntriesNotifierProvider.notifier)
-                  .resumeCareItem(entryId);
-              PetEventOccurrenceActions.invalidateOccurrenceData(ref, entryId);
-              ref.invalidate(petHealthEntryByIdProvider);
+              await ref.read(healthEntriesNotifierProvider.notifier).refresh();
+              final freshEntry =
+                  await ref.read(healthRepositoryProvider).getEntry(entryId) ??
+                  entry;
+              if (!context.mounted) return;
+              final suggested =
+                  freshEntry.schedule?.resumeDefaultDate ??
+                  freshEntry.schedule?.asOf.date ??
+                  calendarDateOnly(DateTime.now());
+              final ok = await showResumeDateSheet(
+                context,
+                ref,
+                entryId: entryId,
+                suggestedDate: suggested,
+              );
+              if (ok == true) {
+                PetEventOccurrenceActions.invalidateOccurrenceData(ref, entryId);
+                ref.invalidate(petHealthEntryByIdProvider);
+              }
             }
 
             return ExperienceShellScaffold(

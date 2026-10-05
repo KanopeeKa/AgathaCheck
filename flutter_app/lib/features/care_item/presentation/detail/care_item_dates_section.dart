@@ -380,11 +380,19 @@ class _PausedAttentionBanner extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final since = entry.pausedSince;
-    final line = since != null
-        ? l.careItemPausedSince(DateFormat.yMMMd().format(since))
-        : l.careItemPausedStatus;
+    final until = entry.schedule?.pausedUntil;
+    final String line;
+    if (until != null) {
+      line = l.careItemPausedUntil(DateFormat.yMMMd().format(until));
+    } else if (since != null) {
+      line = l.careItemPausedSince(DateFormat.yMMMd().format(since));
+    } else {
+      line = l.careItemPausedStatus;
+    }
 
-    return Container(
+    return Semantics(
+      identifier: 'care_item_paused_banner',
+      child: Container(
       key: const Key('care_item_paused_banner'),
       width: double.infinity,
       padding: const EdgeInsets.all(12),
@@ -398,6 +406,7 @@ class _PausedAttentionBanner extends StatelessWidget {
           color: muted ? colorScheme.onSurfaceVariant : colorScheme.onSurface,
           fontWeight: FontWeight.w600,
         ),
+      ),
       ),
     );
   }

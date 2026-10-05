@@ -28,7 +28,9 @@ class CareItemMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
 
-    return PopupMenuButton<CareItemMenuAction>(
+    return Semantics(
+      identifier: 'care_item_menu',
+      child: PopupMenuButton<CareItemMenuAction>(
       key: const Key('care_item_menu'),
       tooltip: l.careItemMenuTooltip,
       onSelected: (action) {
@@ -82,6 +84,7 @@ class CareItemMenu extends StatelessWidget {
         }
         return items;
       },
+      ),
     );
   }
 }

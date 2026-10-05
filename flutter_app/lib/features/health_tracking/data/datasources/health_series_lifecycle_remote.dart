@@ -40,22 +40,31 @@ Future<HealthEntryModel> reopenEventRemote({
   );
 }
 
+HealthEntryModel _entryFromCommandBody(Map<String, dynamic> decoded) {
+  final entry = decoded['entry'] as Map<String, dynamic>? ?? decoded;
+  return HealthEntryModel.fromJson(entry);
+}
+
 Future<HealthEntryModel> pauseCareItemRemote({
   required http.Client client,
   required String baseUrl,
   required Map<String, String> headers,
   required void Function(http.Response response) checkResponse,
   required String entryId,
+  DateTime? until,
 }) async {
+  final body = <String, dynamic>{'reason': 'pause'};
+  if (until != null) {
+    body['until'] = until.toIso8601String().substring(0, 10);
+  }
   final response = await client.post(
     Uri.parse('$baseUrl/api/health-entries/$entryId/postpone'),
     headers: headers,
-    body: json.encode({}),
+    body: json.encode(body),
   );
   checkResponse(response);
   final decoded = json.decode(response.body) as Map<String, dynamic>;
-  final entry = decoded['entry'] as Map<String, dynamic>? ?? decoded;
-  return HealthEntryModel.fromJson(entry);
+  return _entryFromCommandBody(decoded);
 }
 
 Future<HealthEntryModel> undoScheduleRemote({
@@ -82,14 +91,19 @@ Future<HealthEntryModel> resumeCareItemRemote({
   required Map<String, String> headers,
   required void Function(http.Response response) checkResponse,
   required String entryId,
+  DateTime? resumeOn,
 }) async {
+  final body = resumeOn == null
+      ? <String, dynamic>{}
+      : <String, dynamic>{
+          'date': resumeOn.toIso8601String().substring(0, 10),
+        };
   final response = await client.post(
     Uri.parse('$baseUrl/api/health-entries/$entryId/resume'),
     headers: headers,
-    body: json.encode({}),
+    body: json.encode(body),
   );
   checkResponse(response);
-  return HealthEntryModel.fromJson(
-    json.decode(response.body) as Map<String, dynamic>,
-  );
+  final decoded = json.decode(response.body) as Map<String, dynamic>;
+  return _entryFromCommandBody(decoded);
 }

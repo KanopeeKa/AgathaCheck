@@ -16,6 +16,7 @@ import '../../../health_tracking/presentation/providers/health_providers.dart';
 import '../../../health_tracking/presentation/widgets/pet_event_occurrence_actions.dart';
 import '../../../health_tracking/presentation/widgets/pet_event_view_providers.dart';
 import '../sheets/plan_another_date_sheet.dart';
+import '../sheets/postpone_sheet.dart';
 import 'care_occurrence_menu.dart';
 
 /// Needs attention on the Care Item view (§18.6.5): every open occurrence
@@ -117,11 +118,17 @@ class _CareItemNeedsAttentionSectionState
           ).showSnackBar(SnackBar(content: Text(l.careCommandFailed)));
         }
       case CareOccurrenceMenuAction.postpone:
-        await ref
-            .read(healthEntriesNotifierProvider.notifier)
-            .pauseCareItem(_s.entryId);
-        PetEventOccurrenceActions.invalidateOccurrenceData(ref, _s.entryId);
-        await _refresh();
+        final fixed = _s.isFixedSchedule;
+        final paused = await showPostponeSheet(
+          context,
+          ref,
+          entryId: _s.entryId,
+          isFixedSchedule: fixed,
+        );
+        if (paused == true) {
+          PetEventOccurrenceActions.invalidateOccurrenceData(ref, _s.entryId);
+          await _refresh();
+        }
       case CareOccurrenceMenuAction.planAnother:
         final added = await showPlanAnotherDateSheet(
           context,

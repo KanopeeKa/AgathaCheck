@@ -9327,6 +9327,60 @@ abstract class AppLocalizations {
   /// **'Paused since {date}'**
   String careItemPausedSince(String date);
 
+  /// No description provided for @careItemPausedUntil.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused until {date}'**
+  String careItemPausedUntil(String date);
+
+  /// No description provided for @carePostponeSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get carePostponeSheetTitle;
+
+  /// No description provided for @carePostponeNoEndDate.
+  ///
+  /// In en, this message translates to:
+  /// **'No end date (pause)'**
+  String get carePostponeNoEndDate;
+
+  /// No description provided for @carePostponeUntilLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause until'**
+  String get carePostponeUntilLabel;
+
+  /// No description provided for @carePostponePauseConsequence.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminders stop until you resume.'**
+  String get carePostponePauseConsequence;
+
+  /// No description provided for @carePostponeUntilAfterDoneConsequence.
+  ///
+  /// In en, this message translates to:
+  /// **'The open date moves to {date}.'**
+  String carePostponeUntilAfterDoneConsequence(String date);
+
+  /// No description provided for @carePostponeUntilFixedConsequence.
+  ///
+  /// In en, this message translates to:
+  /// **'Care stays paused until {date}, then resumes automatically.'**
+  String carePostponeUntilFixedConsequence(String date);
+
+  /// No description provided for @careResumeSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume'**
+  String get careResumeSheetTitle;
+
+  /// No description provided for @careResumeDefaultHint.
+  ///
+  /// In en, this message translates to:
+  /// **'This is when it would have been.'**
+  String get careResumeDefaultHint;
+
   /// No description provided for @careItemEstablishedBody.
   ///
   /// In en, this message translates to:

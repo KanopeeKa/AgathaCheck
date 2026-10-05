@@ -37,8 +37,8 @@ abstract class HealthRemoteDataSource {
   Future<void> deleteEntry(String id);
   Future<HealthEntryModel> closeEvent(String id);
   Future<HealthEntryModel> reopenEvent(String id);
-  Future<HealthEntryModel> pauseCareItem(String id);
-  Future<HealthEntryModel> resumeCareItem(String id);
+  Future<HealthEntryModel> pauseCareItem(String id, {DateTime? until});
+  Future<HealthEntryModel> resumeCareItem(String id, {DateTime? resumeOn});
   Future<HealthEntryModel> unmarkDone(String id);
   Future<List<HealthHistoryModel>> getHistory(String entryId);
   Future<String> exportCsv({String? petId});
@@ -223,24 +223,26 @@ class HealthRemoteDataSourceImpl
   }
 
   @override
-  Future<HealthEntryModel> pauseCareItem(String id) {
+  Future<HealthEntryModel> pauseCareItem(String id, {DateTime? until}) {
     return pauseCareItemRemote(
       client: _client,
       baseUrl: baseUrl,
       headers: _authHeaders(jsonBody: true),
       checkResponse: checkHealthRemoteResponse,
       entryId: id,
+      until: until,
     );
   }
 
   @override
-  Future<HealthEntryModel> resumeCareItem(String id) {
+  Future<HealthEntryModel> resumeCareItem(String id, {DateTime? resumeOn}) {
     return resumeCareItemRemote(
       client: _client,
       baseUrl: baseUrl,
       headers: _authHeaders(jsonBody: true),
       checkResponse: checkHealthRemoteResponse,
       entryId: id,
+      resumeOn: resumeOn,
     );
   }
 
