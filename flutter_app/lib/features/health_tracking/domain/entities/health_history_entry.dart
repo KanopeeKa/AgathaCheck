@@ -55,10 +55,7 @@ class HealthHistoryEntry {
 
 /// Linked weight on a history row (`linked_weight` on the wire).
 class HealthHistoryLinkedWeight {
-  const HealthHistoryLinkedWeight({
-    required this.valueKg,
-    this.date,
-  });
+  const HealthHistoryLinkedWeight({required this.valueKg, this.date});
 
   final double valueKg;
   final DateTime? date;

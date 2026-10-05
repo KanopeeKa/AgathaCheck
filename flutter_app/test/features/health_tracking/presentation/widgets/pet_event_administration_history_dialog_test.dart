@@ -50,6 +50,9 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('12.4 kg'), findsOneWidget);
-    expect(find.byKey(const Key('history_row_linked_weight_h1')), findsOneWidget);
+    expect(
+      find.byKey(const Key('history_row_linked_weight_h1')),
+      findsOneWidget,
+    );
   });
 }

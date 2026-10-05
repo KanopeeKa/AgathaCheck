@@ -198,10 +198,7 @@ void main() {
 
     final context = tester.element(find.byType(HealthEntryFormScreen));
     final router = GoRouter.of(context);
-    expect(
-      router.state.uri.toString(),
-      weightMonitoringCareAddPath('pet-1'),
-    );
+    expect(router.state.uri.toString(), weightMonitoringCareAddPath('pet-1'));
   });
 
   testWidgets('FW-6 routines card empty state', (tester) async {

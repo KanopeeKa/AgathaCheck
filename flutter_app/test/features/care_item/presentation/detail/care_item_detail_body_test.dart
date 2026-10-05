@@ -85,84 +85,87 @@ void main() {
     );
   });
 
-  testWidgets('FW-17 weigh-in routine shows weight section; medication does not', (
+  testWidgets(
+    'FW-17 weigh-in routine shows weight section; medication does not',
+    (tester) async {
+      tester.view.physicalSize = const Size(400, 900);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      Widget buildFor(HealthEntry healthEntry) {
+        return ProviderScope(
+          overrides: [
+            apiBaseUrlProvider.overrideWithValue('http://test.local'),
+            careItemAbsenceContextProvider(healthEntry.id).overrideWith(
+              (ref) async => HealthEntryAbsenceContext(
+                healthEntryId: healthEntry.id,
+                petId: 'pet-1',
+                absences: [],
+              ),
+            ),
+            entryOccurrencesProvider(
+              healthEntry.id,
+            ).overrideWith((ref) async => []),
+            careItemObservationSectionProvider.overrideWith(
+              (ref) =>
+                  (
+                    context, {
+                    required petId,
+                    required entryId,
+                    required observationKind,
+                  }) {
+                    if (observationKind == 'numeric_weight') {
+                      return WeightCareItemSection(
+                        petId: petId,
+                        entryId: entryId,
+                      );
+                    }
+                    return null;
+                  },
+            ),
+            weightEntriesNotifierProvider.overrideWith(
+              () => _EmptyWeightEntriesNotifier(),
+            ),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(
+              body: CareItemDetailBody(
+                petId: 'pet-1',
+                entry: healthEntry,
+                pet: pet,
+                history: const <HealthHistoryEntry>[],
+                isClosed: false,
+                isEstablished: false,
+                onSeeHistory: () {},
+              ),
+            ),
+          ),
+        );
+      }
+
+      final weightEntry = HealthEntry(
+        id: 'weight-entry',
+        petId: 'pet-1',
+        name: 'Weekly weigh-in',
+        type: HealthEntryType.preventive,
+        frequency: HealthFrequency.monthly,
+        frequencyInterval: 1,
+        startDate: DateTime(2025, 1, 1),
+        nextDueDate: DateTime(2025, 6, 1),
+        careFamily: CareFamily.weightMonitoring,
+      );
+
+      await tester.pumpWidget(buildFor(weightEntry));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('weight_care_item_section')), findsOneWidget);
+    },
+  );
+
+  testWidgets('FW-17 medication care item hides weight section', (
     tester,
   ) async {
-    tester.view.physicalSize = const Size(400, 900);
-    tester.view.devicePixelRatio = 1.0;
-    addTearDown(tester.view.resetPhysicalSize);
-
-    Widget buildFor(HealthEntry healthEntry) {
-      return ProviderScope(
-        overrides: [
-          apiBaseUrlProvider.overrideWithValue('http://test.local'),
-          careItemAbsenceContextProvider(healthEntry.id).overrideWith(
-            (ref) async => HealthEntryAbsenceContext(
-              healthEntryId: healthEntry.id,
-              petId: 'pet-1',
-              absences: [],
-            ),
-          ),
-          entryOccurrencesProvider(healthEntry.id).overrideWith(
-            (ref) async => [],
-          ),
-          careItemObservationSectionProvider.overrideWith(
-            (ref) =>
-                (
-                  context, {
-                  required petId,
-                  required entryId,
-                  required observationKind,
-                }) {
-                  if (observationKind == 'numeric_weight') {
-                    return WeightCareItemSection(
-                      petId: petId,
-                      entryId: entryId,
-                    );
-                  }
-                  return null;
-                },
-          ),
-          weightEntriesNotifierProvider.overrideWith(
-            () => _EmptyWeightEntriesNotifier(),
-          ),
-        ],
-        child: MaterialApp(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: Scaffold(
-            body: CareItemDetailBody(
-              petId: 'pet-1',
-              entry: healthEntry,
-              pet: pet,
-              history: const <HealthHistoryEntry>[],
-              isClosed: false,
-              isEstablished: false,
-              onSeeHistory: () {},
-            ),
-          ),
-        ),
-      );
-    }
-
-    final weightEntry = HealthEntry(
-      id: 'weight-entry',
-      petId: 'pet-1',
-      name: 'Weekly weigh-in',
-      type: HealthEntryType.preventive,
-      frequency: HealthFrequency.monthly,
-      frequencyInterval: 1,
-      startDate: DateTime(2025, 1, 1),
-      nextDueDate: DateTime(2025, 6, 1),
-      careFamily: CareFamily.weightMonitoring,
-    );
-
-    await tester.pumpWidget(buildFor(weightEntry));
-    await tester.pumpAndSettle();
-    expect(find.byKey(const Key('weight_care_item_section')), findsOneWidget);
-  });
-
-  testWidgets('FW-17 medication care item hides weight section', (tester) async {
     tester.view.physicalSize = const Size(400, 900);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);

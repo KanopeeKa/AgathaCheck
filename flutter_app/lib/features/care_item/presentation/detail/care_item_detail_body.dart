@@ -91,7 +91,10 @@ class CareItemDetailBody extends ConsumerWidget {
       onSeeHistory: onSeeHistory,
     );
 
-    final observationSlot = _CareItemObservationSlot(petId: petId, entry: entry);
+    final observationSlot = _CareItemObservationSlot(
+      petId: petId,
+      entry: entry,
+    );
 
     Widget sideScheduleAbsenceColumn() {
       if (absenceBeforeSchedule) {

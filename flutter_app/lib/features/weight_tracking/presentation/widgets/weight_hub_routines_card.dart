@@ -33,8 +33,7 @@ class WeightHubRoutinesCard extends StatelessWidget {
             ? _NoRoutineBody(
                 l: l,
                 theme: theme,
-                onSetUp: () =>
-                    context.push(weightMonitoringCareAddPath(petId)),
+                onSetUp: () => context.push(weightMonitoringCareAddPath(petId)),
               )
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
