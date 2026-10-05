@@ -304,12 +304,15 @@ export class CareItemPage {
     await occurrencePage.planAnotherDateFromMenu(isoDate);
   }
 
-  async markAllDone(count = 2): Promise<void> {
+  async markAllDone(count?: number): Promise<void> {
     await refreshFlutterAccessibility(this.page);
-    const label = new RegExp(
-      `Mark ${count} as done|Marquer ${count} comme fait`,
-      'i',
-    );
+    const label =
+      count === undefined
+        ? /Mark \d+ as done|Marquer \d+ comme fait/i
+        : new RegExp(
+            `Mark ${count} as done|Marquer ${count} comme fait`,
+            'i',
+          );
     await this.page
       .locator('[flt-semantics-identifier="care_item_bulk_mark_done"]')
       .or(this.page.getByRole('button', { name: label }))

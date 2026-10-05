@@ -144,7 +144,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      await tester.tap(find.byIcon(Icons.check));
+      await tester.tap(find.byIcon(Icons.check_circle));
       await tester.pumpAndSettle();
       expect(marked, isTrue);
     });
