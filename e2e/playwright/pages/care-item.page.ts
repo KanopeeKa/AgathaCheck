@@ -308,7 +308,7 @@ export class CareItemPage {
     await expect(
       this.page.locator('[flt-semantics-identifier="plan_another_date_sheet"]'),
     ).toBeVisible({ timeout: 15_000 });
-    const [, month, day] = isoDate.split('-').map((v) => parseInt(v, 10));
+    const day = parseInt(isoDate.split('-')[2]!, 10);
     await this.page.getByRole('button', { name: /New date|Nouvelle date/i }).click();
     const dialog = this.page.getByRole('dialog');
     await expect(dialog).toBeVisible({ timeout: 15_000 });

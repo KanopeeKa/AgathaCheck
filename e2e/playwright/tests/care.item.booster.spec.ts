@@ -34,9 +34,6 @@ test.describe('Vaccination booster (PL-1)', () => {
       await careItem.open(pet.id, entry.id);
       await careItem.expectNeedsAttentionVisible();
 
-      const firstId = entry.open_occurrences.find(
-        (o) => o.scheduled_date === '2026-06-01',
-      )!.id;
       await careItem.markLeadingDone();
       let item = await getCareItem(baseURL, testUser.accessToken, entry.id);
       expect(item.open_occurrences).toHaveLength(1);

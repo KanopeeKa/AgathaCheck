@@ -2,7 +2,7 @@
  * @bdd care_form_advanced.feature
  * Scenario: F42 expand Advanced and choose Fixed schedule
  */
-import { test, expect, loginAs } from '../fixtures/auth.fixture';
+import { test, loginAs } from '../fixtures/auth.fixture';
 import { HealthDashboardPage } from '../pages/health-dashboard.page';
 import { HealthEntryFormPage } from '../pages/health-entry-form.page';
 import { createPet } from '../support/api';
