@@ -4,14 +4,14 @@ owner: Product / Documentation
 audience: both
 domain: people
 feature_id: people_care_team
-status: accepted
+status: implemented
 related_prs: []
 related_bdd: [away_planning.feature, away_plan_detail_v2.feature, sharing.feature, veterinarian_management.feature, notifications.feature]
 ---
 
 # People & Care Team — functional spec
 
-**Status:** agreed 2026-09-27. **Backend + contacts list** shipped (`people-care-team-a58d`); **5-tab nav + desk + list hub** shipped (`people-ui-hub-a58d`, [ui-hub-navigation.md](/docs/domains/people/changes/ui-hub-navigation.md)). **Hub remodel** (cards, detail, edit, unified add, tests) is `people-hub-remodel-a58d`. Wording: [vocabulary.md](/docs/domains/people/features/vocabulary.md).
+**Status:** implemented on `main` (2026-10-05). Backend (`people-server-7f3b`), client hub (`people-client-core-7f3b`), and cross-feature integration (`people-client-integration-7f3b`) — including People around {pet}, legacy vet client removal, and integration E2E. Wording: [terminology.md](/docs/design/terminology.md) § People directory; extended rows in [vocabulary.md](/docs/domains/people/features/vocabulary.md).
 
 ## Verdict
 

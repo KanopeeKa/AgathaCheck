@@ -3,7 +3,7 @@ title: AgathaTrack terminology
 owner: Documentation Team
 audience: product, design, engineering, content
 status: active
-last_updated: 2026-09-29
+last_updated: 2026-10-05
 tags: [design, brand, copy, l10n]
 ---
 
@@ -45,11 +45,23 @@ When multiple people are involved, use precise care-role language:
 | **Veterinary team** | Pet Care dashboard section and vet detail surfaces — the guardian's veterinary clinics (EN label; FR: *Équipe vétérinaire*). Not the same as **care team** (carers). |
 | **veterinary professional** / **vet** | Clinical context |
 
-### Planned: People & Care Team vocabulary
+### People directory (Contacts) — shipped 2026-10-05
 
-The EN/FR wording for the People directory, households and absence access is approved but **not shipped**. It lives in [`vocabulary.md`](../domains/people/features/vocabulary.md) until the feature ships. When it ships, the rows move into this file.
+EN/FR labels for the People hub, pet profile grouping, and Today desk (see [`people-client-integration-7f3b`](/.agents/plans/people-client-integration-7f3b.md)). **Carer** remains a relationship word; access levels use **Full access** and **Can log care**. Away Planning keeps **care team** / *équipe de soins* for absence carers only.
 
-From that point, **carer** becomes a relationship word only. Access levels get labels that describe capability: Full access and Can log care. Until then, the rows above describe shipped behaviour. Don't change shipped strings ad hoc.
+| Concept | English | French | Notes |
+| --- | --- | --- | --- |
+| Page title and nav label | Contacts | Autour de vos animaux | EN label; not "care team" (absence carers) |
+| Carers section (hub) | Trusted carers | Proches & pet-sitters | |
+| Professionals section (hub) | Pet professionals | Leurs pros | |
+| Today desk — vet sub-block | Vet team | Équipe véto | Hub list keeps **Pet professionals** |
+| Filters | All · Household · Carers · Professionals | Tous · Foyer · Proches · Pros | |
+| Pet profile section title | People around {pet} | Autour de {pet} | |
+| Pet profile — household group | At home | À la maison | One household per pet on profile |
+| Pet profile — carers group | Trusted carers | Proches & pet-sitters | |
+| Pet profile — professionals group | Pet professionals | Ses pros | |
+
+Additional rows (add flow, access labels, danger zone) remain in [`vocabulary.md`](../domains/people/features/vocabulary.md) until a follow-up terminology pass.
 
 ## Legal, technical, and permission terms
 

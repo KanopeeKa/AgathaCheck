@@ -23,7 +23,7 @@ Tracks planned and completed refactor / quality work. See also `docs/debt/refact
 | `people-hotfixes-7f3b` | B1, B2, B5, B7, B9, B13 fixed with regression tests | — (phase PRs → `main`) | docs PR (slot 0b) | planned |
 | `people-server-7f3b` | Single writer, access, usages, relationships + vet projection, read models, household directory, invites | `cursor/people-server-integration-7f3b` | CARE A+B, ARCH E | planned |
 | `people-client-core-7f3b` | Typed core, components, picker, hub, detail, edit, add, households UI, E2E | `cursor/people-client-core-integration-7f3b` | server child, CARE C+D | planned |
-| `people-client-integration-7f3b` | Consumers, People around {pet}, legacy deleted, E2E, docs | `cursor/people-client-integration-integration-7f3b` | client-core, CARE E+F, ARCH G | planned |
+| `people-client-integration-7f3b` | Consumers, People around {pet}, legacy deleted, E2E, docs | `cursor/people-client-integration-integration-7f3b` | client-core, CARE E+F, ARCH G | **shipped** (2026-10-05) |
 
 **Ownership notes:**
 
