@@ -73,9 +73,7 @@ mixin HealthEntryFormPhotoMixin on HealthEntryFormControllerBase {
     if (entryId == null) return;
     final repo = formRef.read(healthDocumentsRepositoryProvider);
     final photos = await repo.listEntryDocuments(entryId!);
-    state = state.copyWith(
-      photos: photos.map(_toEventPhoto).toList(),
-    );
+    state = state.copyWith(photos: photos.map(_toEventPhoto).toList());
   }
 
   Future<void> deletePhoto(HealthEntryPhoto photo) async {

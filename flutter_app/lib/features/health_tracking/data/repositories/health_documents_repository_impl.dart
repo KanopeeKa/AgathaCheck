@@ -9,10 +9,7 @@ import '../../domain/repositories/health_documents_repository.dart';
 import '../datasources/health_documents_remote.dart';
 
 class HealthDocumentsRepositoryImpl implements HealthDocumentsRepository {
-  HealthDocumentsRepositoryImpl({
-    required this.baseUrl,
-    required this.client,
-  });
+  HealthDocumentsRepositoryImpl({required this.baseUrl, required this.client});
 
   final String baseUrl;
   final http.Client client;

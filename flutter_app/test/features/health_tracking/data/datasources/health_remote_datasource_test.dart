@@ -32,13 +32,16 @@ void main() {
   }
 
   group('transport headers (AuthHttpClient owns Authorization)', () {
-    test('getEntries does not attach Authorization in the data layer', () async {
-      final client = MockClient((request) async {
-        expect(request.headers.containsKey('Authorization'), isFalse);
-        return http.Response(json.encode([testEntryJson]), 200);
-      });
-      await makeDatasource(client).getEntries();
-    });
+    test(
+      'getEntries does not attach Authorization in the data layer',
+      () async {
+        final client = MockClient((request) async {
+          expect(request.headers.containsKey('Authorization'), isFalse);
+          return http.Response(json.encode([testEntryJson]), 200);
+        });
+        await makeDatasource(client).getEntries();
+      },
+    );
 
     test('createEntry sends JSON content type without Authorization', () async {
       final client = MockClient((request) async {
@@ -150,48 +153,51 @@ void main() {
   });
 
   group('occurrence transport', () {
-    test('rescheduleOccurrence posts scheduled_date and parses response', () async {
-      final occJson = {
-        'id': 'occ-1',
-        'health_entry_id': 'he-1',
-        'scheduled_date': '2026-09-10',
-        'status': 'pending',
-        'missed': false,
-      };
-      final client = MockClient((request) async {
-        expect(
-          request.url.toString(),
-          '$baseUrl/api/health-entries/he-1/occurrences/occ-1/reschedule',
+    test(
+      'rescheduleOccurrence posts scheduled_date and parses response',
+      () async {
+        final occJson = {
+          'id': 'occ-1',
+          'health_entry_id': 'he-1',
+          'scheduled_date': '2026-09-10',
+          'status': 'pending',
+          'missed': false,
+        };
+        final client = MockClient((request) async {
+          expect(
+            request.url.toString(),
+            '$baseUrl/api/health-entries/he-1/occurrences/occ-1/reschedule',
+          );
+          expect(request.method, 'POST');
+          final body = json.decode(request.body) as Map<String, dynamic>;
+          expect(body['scheduled_date'], '2026-09-10');
+          expect(body['reason_code'], 'away_planner');
+          return http.Response(
+            json.encode({
+              'occurrence': occJson,
+              'warnings': [
+                {
+                  'code': 'interval_changed',
+                  'previous_gap_days': 40,
+                  'usual_gap_days': 30,
+                },
+              ],
+              'next_due_date': '2026-09-10',
+            }),
+            200,
+          );
+        });
+        final result = await makeDatasource(client).rescheduleOccurrence(
+          'he-1',
+          'occ-1',
+          DateTime(2026, 9, 10),
+          reasonCode: 'away_planner',
         );
-        expect(request.method, 'POST');
-        final body = json.decode(request.body) as Map<String, dynamic>;
-        expect(body['scheduled_date'], '2026-09-10');
-        expect(body['reason_code'], 'away_planner');
-        return http.Response(
-          json.encode({
-            'occurrence': occJson,
-            'warnings': [
-              {
-                'code': 'interval_changed',
-                'previous_gap_days': 40,
-                'usual_gap_days': 30,
-              },
-            ],
-            'next_due_date': '2026-09-10',
-          }),
-          200,
-        );
-      });
-      final result = await makeDatasource(client).rescheduleOccurrence(
-        'he-1',
-        'occ-1',
-        DateTime(2026, 9, 10),
-        reasonCode: 'away_planner',
-      );
-      expect(result.occurrence.id, 'occ-1');
-      expect(result.warnings, hasLength(1));
-      expect(result.nextDueDate, DateTime(2026, 9, 10));
-    });
+        expect(result.occurrence.id, 'occ-1');
+        expect(result.warnings, hasLength(1));
+        expect(result.nextDueDate, DateTime(2026, 9, 10));
+      },
+    );
 
     test('getOpenOccurrences fetches pending occurrences', () async {
       final occJson = {

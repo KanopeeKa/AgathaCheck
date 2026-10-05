@@ -9,7 +9,13 @@ void main() {
       Directory(p.join(Directory.current.path, 'lib')).existsSync()
       ? Directory.current.path
       : p.join(Directory.current.path, 'flutter_app');
-  final dataRoot = p.join(flutterRoot, 'lib', 'features', 'health_tracking', 'data');
+  final dataRoot = p.join(
+    flutterRoot,
+    'lib',
+    'features',
+    'health_tracking',
+    'data',
+  );
 
   test('health data layer does not build Authorization headers', () {
     final violations = <String>[];
