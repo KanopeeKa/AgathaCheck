@@ -11,7 +11,7 @@
   "base_branch": "main",
   "control_issue": 1571,
   "artifact_branch_policy": "phase-branch",
-  "current_child_plan_id": "notifications-v2-pr5-7f3b",
+  "current_child_plan_id": "notifications-v2-pr7-7f3b",
   "child_plans": [
     {
       "plan_id": "notifications-v2-foundation-7f3b",
