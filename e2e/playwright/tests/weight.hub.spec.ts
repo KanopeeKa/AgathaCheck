@@ -270,7 +270,7 @@ test.describe('Weight hub', () => {
     await createWeightEntry(baseURL, testUser.accessToken, pet.id, {
       weight: 22.0,
       unit: 'lb',
-      date: '2027-01-15',
+      date: careDueDateToday(),
     });
 
     const hub = await openPetWeight(page, testUser, pet);
