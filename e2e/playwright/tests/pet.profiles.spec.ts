@@ -455,7 +455,7 @@ test.describe('Pet profiles', () => {
     const editForm = new PetFormPage(page);
     await editForm.expectLoaded();
     await editForm.selectPrimaryVetContact(vetContactId);
-    await editForm.save();
+    await editForm.saveEditWithPeopleSlot(pet.id);
 
     await detail.expectLoaded('Bella');
     await detail.expectLinkedVet('Dr. Jones');
