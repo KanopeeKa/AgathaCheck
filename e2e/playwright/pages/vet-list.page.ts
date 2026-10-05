@@ -109,12 +109,17 @@ export class VetListPage {
   }
 
   async expectEmptyState(): Promise<void> {
-    await this.page
-      .getByText(
-        /no pet professionals yet|no veterinarians yet|add carers and pet professionals/i,
-      )
-      .first()
-      .waitFor({ timeout: 30_000 });
+    await this.page.goto(flutterGotoUrl('/pc/people?filter=professionals'));
+    await refreshFlutterAccessibility(this.page);
+    await waitForFlutterRoutePattern(this.page, /\/pc\/people(?:\?|$)/, 30_000);
+    await expect(async () => {
+      const token = await readAccessTokenFromPage(this.page);
+      expect((await getVets(this.baseURL(), token)).length).toBe(0);
+    }).toPass({ timeout: 15_000 });
+    const vetCards = this.page
+      .getByRole('button', { name: /Veterinarian:/i })
+      .or(this.page.getByRole('group', { name: /Veterinarian:/i }));
+    await expect(vetCards).toHaveCount(0, { timeout: 15_000 });
   }
 
   async openAddForm(): Promise<void> {
