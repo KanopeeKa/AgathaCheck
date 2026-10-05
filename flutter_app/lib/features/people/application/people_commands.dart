@@ -57,7 +57,10 @@ class PeopleCommands {
     await afterContactMutation(contactId);
   }
 
-  Future<void> patchContact(String contactId, Map<String, dynamic> patch) async {
+  Future<void> patchContact(
+    String contactId,
+    Map<String, dynamic> patch,
+  ) async {
     if (patch.isEmpty) return;
     await _repo.patchContact(contactId, patch);
     await afterContactMutation(contactId);

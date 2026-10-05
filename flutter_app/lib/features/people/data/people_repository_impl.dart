@@ -88,7 +88,10 @@ class PeopleRepositoryImpl implements PeopleRepository {
   }
 
   List<PetRelationship> _parseRelationshipList(List<dynamic> list) {
-    return list.whereType<Map<String, dynamic>>().map(_relationshipFromMap).toList();
+    return list
+        .whereType<Map<String, dynamic>>()
+        .map(_relationshipFromMap)
+        .toList();
   }
 
   PetRelationship _relationshipFromMap(Map<String, dynamic> r) {
@@ -102,16 +105,21 @@ class PeopleRepositoryImpl implements PeopleRepository {
       ),
       isPrimary: r['is_primary'] == true,
       active: r['active'] != false,
-      contactKind: contact?['kind']?.toString() ?? r['contact_kind']?.toString() ?? '',
-      contactName: contact?['name']?.toString() ?? r['contact_name']?.toString() ?? '',
-      contactPhone: contact?['phone']?.toString() ?? r['contact_phone']?.toString(),
+      contactKind:
+          contact?['kind']?.toString() ?? r['contact_kind']?.toString() ?? '',
+      contactName:
+          contact?['name']?.toString() ?? r['contact_name']?.toString() ?? '',
+      contactPhone:
+          contact?['phone']?.toString() ?? r['contact_phone']?.toString(),
       contactInactiveAt: null,
     );
   }
 
   @override
   Future<List<PetRelationship>> fetchPetRelationships(String petId) async {
-    final list = await _api.getJsonList('/api/pets/$petId/people-relationships');
+    final list = await _api.getJsonList(
+      '/api/pets/$petId/people-relationships',
+    );
     return _parseRelationshipList(list);
   }
 
