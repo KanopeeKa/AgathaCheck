@@ -75,7 +75,7 @@ void main() {
     for (var d = 0; d <= 2; d++) {
       expect(find.byKey(Key('care_item_occurrence_slot-$d')), findsOneWidget);
     }
-    expect(find.text('Not recorded (open)'), findsNWidgets(2));
+    expect(find.text('Overdue'), findsNWidgets(2));
     await tester.tap(find.byKey(const Key('care_item_mark_all_done')));
     await tester.pumpAndSettle();
     expect(requests, hasLength(1));

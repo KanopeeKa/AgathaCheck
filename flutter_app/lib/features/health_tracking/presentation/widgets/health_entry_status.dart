@@ -134,14 +134,14 @@ HealthEntryStatusTreatment dueTodayStatusTreatment() {
   );
 }
 
-/// Not recorded (D-CIE-024): info, not error — it assumes commitment (UIR-3).
-HealthEntryStatusTreatment notRecordedStatusTreatment() {
-  return const HealthEntryStatusTreatment(
+/// Closed Not recorded (auto-closed stack window): neutral, not overdue urgency.
+HealthEntryStatusTreatment notRecordedStatusTreatment(ColorScheme colorScheme) {
+  return HealthEntryStatusTreatment(
     kind: HealthEntryStatusKind.notRecorded,
     icon: Icons.history_toggle_off,
-    foregroundColor: AppColorTokens.body,
-    iconColor: AppColorTokens.info,
-    backgroundColor: AppColorTokens.infoLight,
+    foregroundColor: colorScheme.onSurfaceVariant,
+    iconColor: colorScheme.onSurfaceVariant,
+    backgroundColor: colorScheme.surfaceContainerHighest,
   );
 }
 
