@@ -35,7 +35,8 @@ mixin HealthEntryFormSubmitMixin
         );
       }
     } else if (state.dueDate == null) {
-      final finishedPlannedOnce = state.isEdit &&
+      final finishedPlannedOnce =
+          state.isEdit &&
           state.frequency == HealthFrequency.once &&
           state.carePlanning == CarePlanningMode.planned &&
           (state.completedOn != null || state.repeatEndDate != null);
