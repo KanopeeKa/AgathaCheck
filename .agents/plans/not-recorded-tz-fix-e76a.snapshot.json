@@ -4,7 +4,7 @@
   "approved_at": "2026-10-04T22:52:00Z",
   "approved_by": "user-chat-2026-10-04-full-delegated-authority-not-recorded-programme",
   "approved_until": "2026-10-06T22:52:00Z",
-  "content_hash": "sha256:fb48f48144f1fafd98305e8739b2e09be2edee3acf19dea5f19ec86f1ab7e337",
+  "content_hash": "sha256:effca2f355256597c2b59b54c216e71ad3e74ba0e385ebd9e4f19f650e9ffd31",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/not-recorded-tz-fix-integration-e76a",
@@ -131,12 +131,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1587",
-      "pr_head_sha": "5c98d427"
+      "pr_head_sha": "4ee926d8"
     },
     {
       "id": "5",
@@ -154,12 +154,10 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "release-verification",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null
+      "debt_issue_refs": []
     }
   ]
 }
