@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
-  "approved_at": "2026-09-29T00:00:00Z",
-  "approved_until": "2026-10-01T00:00:00Z",
+  "approved_at": "2026-10-05T12:45:00.000Z",
+  "approved_until": "2026-10-07T12:45:00.000Z",
   "content_hash": "sha256:459c8c5cc4c47da89dde9755c69989f4ae5913dd7363affec058eb72e19ac890",
-  "autonomy": "halted",
+  "autonomy": "active",
   "default_merge_mode": "auto",
-  "control_issue": 999999,
+  "control_issue": 1630,
   "artifact_branch_policy": "phase-branch",
   "plan_id": "people-client-integration-7f3b",
   "base_branch": "cursor/people-client-integration-integration-7f3b",
-  "approved_by": "DRAFT — bootstrapped under the standing grant of roadmap people-domain-refactor-7f3b when its entry gate is met (see people-client-integration-7f3b.md)",
+  "approved_by": "standing grant — roadmap people-domain-refactor-7f3b #1460 (2026-10-04); entry gate met (people-client-core #1625 @ 6a42aefb on main; CARE E+F + ARCH G per parallel-programmes slot 8)",
   "phases": [
     {
       "id": "i1-consumers",
