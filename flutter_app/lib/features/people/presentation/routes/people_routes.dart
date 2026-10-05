@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../hub/people_hub_layout.dart';
-import '../screens/people_add_person_screen.dart';
+import '../add/add_person_flow.dart';
+import '../add/add_person_route_args.dart';
 import '../detail/person_detail_page.dart';
 import '../edit/person_edit_page.dart';
 
@@ -22,19 +23,9 @@ RouteBase buildPeopleHubShellRoute() {
             path: 'new',
             name: 'petCarePeopleNew',
             builder: (context, state) {
-              final rolesParam = state.uri.queryParameters['roles'];
-              final roles = rolesParam == null
-                  ? const <String>{}
-                  : rolesParam
-                        .split(',')
-                        .map((e) => e.trim())
-                        .where((e) => e.isNotEmpty)
-                        .toSet();
-              final pop = state.uri.queryParameters['pop'] == '1';
-              return PeopleAddPersonScreen(
-                initialRoles: roles,
-                popResultOnSave: pop,
-              );
+              final extra = state.extra;
+              final args = extra is AddPersonRouteArgs ? extra : null;
+              return AddPersonFlow(args: args);
             },
           ),
           GoRoute(

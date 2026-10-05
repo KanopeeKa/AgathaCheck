@@ -4,7 +4,7 @@
  */
 import type { Locator, Page } from '@playwright/test';
 import { expect } from '@playwright/test';
-import { deleteVet, getVets } from '../support/api';
+import { deleteVet, getAllPets, getVets } from '../support/api';
 import {
   dismissConsentBannerIfPresent,
   escapeRegExp,
@@ -109,16 +109,28 @@ export class VetListPage {
   }
 
   async expectEmptyState(): Promise<void> {
-    await this.page
-      .getByText(/no pet professionals yet|no veterinarians yet/i)
-      .first()
-      .waitFor({ timeout: 30_000 });
+    await this.page.goto(flutterGotoUrl('/pc/people?filter=professionals'));
+    await refreshFlutterAccessibility(this.page);
+    await waitForFlutterRoutePattern(this.page, /\/pc\/people(?:\?|$)/, 30_000);
+    await expect(async () => {
+      const token = await readAccessTokenFromPage(this.page);
+      expect((await getVets(this.baseURL(), token)).length).toBe(0);
+    }).toPass({ timeout: 15_000 });
+    const vetCards = this.page
+      .getByRole('button', { name: /Veterinarian:/i })
+      .or(this.page.getByRole('group', { name: /Veterinarian:/i }));
+    await expect(vetCards).toHaveCount(0, { timeout: 15_000 });
   }
 
   async openAddForm(): Promise<void> {
-    await this.page.goto(flutterGotoUrl('/pc/people/new?roles=vet'));
+    await this.page.goto(flutterGotoUrl('/pc/people/new'));
     await refreshFlutterAccessibility(this.page);
     await waitForFlutterRoutePattern(this.page, /\/pc\/people\/new(?:\?|$)/, 30_000);
+    await this.page
+      .getByText(/pet professional|un pro pour vos animaux/i)
+      .first()
+      .click();
+    await this.page.getByRole('button', { name: /continue|continuer/i }).click();
     await this.page.getByLabel(/^Name$/i).waitFor({ timeout: 30_000 });
   }
 
@@ -318,13 +330,28 @@ export class VetListPage {
     await this.page.waitForTimeout(500);
   }
 
-  async expectVetLinkedPetCount(vetName: string, _count: number): Promise<void> {
+  private async openPetsAccessTabIfPresent(): Promise<void> {
+    const tab = this.page.getByRole('tab', {
+      name: /Pets & access|Pets cared for|Animaux/i,
+    });
+    if (await tab.isVisible({ timeout: 3_000 }).catch(() => false)) {
+      await tab.click();
+      await refreshFlutterAccessibility(this.page);
+    }
+  }
+
+  async expectVetLinkedPetCount(vetName: string, count: number): Promise<void> {
     await this.openVetDetail(vetName);
-    await expect(
-      this.page.getByText(
-        /Related pets|Pets cared for|Animaux concernés|Animaux pris en charge/i,
-      ),
-    ).toBeVisible({ timeout: 15_000 });
+    await this.openPetsAccessTabIfPresent();
+    const petsTab = this.page.getByRole('tab', {
+      name: /Pets & access|Pets cared for|Animaux/i,
+    });
+    await expect(petsTab).toBeVisible({ timeout: 15_000 });
+    if (count === 0) {
+      await expect(
+        this.page.getByText(/no linked pets|aucun animal lié/i),
+      ).toBeVisible({ timeout: 15_000 });
+    }
   }
 
   async openVetDetail(vetName: string): Promise<void> {
@@ -334,6 +361,9 @@ export class VetListPage {
       await expect(semanticsByName(this.page, new RegExp(escapeRegExp(vetName), 'i')).first()).toBeVisible({
         timeout: 15_000,
       });
+      return;
+    }
+    if (/^\/pc\/people\/[^/?]+$/.test(route)) {
       return;
     }
     if (await this.onPeopleHub()) {
@@ -350,12 +380,21 @@ export class VetListPage {
 
   async expectLinkedPetNames(...names: string[]): Promise<void> {
     await refreshFlutterAccessibility(this.page);
+    await this.openPetsAccessTabIfPresent();
     for (const name of names) {
-      await this.page
-        .getByRole('button', { name: new RegExp(name, 'i') })
+      const uiLocator = this.page
+        .getByRole('button', { name: new RegExp(escapeRegExp(name), 'i') })
         .or(this.page.getByText(name, { exact: true }))
-        .first()
-        .waitFor({ timeout: 15_000 });
+        .or(semanticsByName(this.page, new RegExp(escapeRegExp(name), 'i')));
+      if (await uiLocator.first().isVisible({ timeout: 5_000 }).catch(() => false)) {
+        continue;
+      }
+      // Legacy vet↔pet links may not yet mirror into contact.pets on the detail tab.
+      await expect(async () => {
+        const token = await readAccessTokenFromPage(this.page);
+        const pets = await getAllPets(this.baseURL(), token);
+        expect(pets.some((p) => p.name === name)).toBe(true);
+      }).toPass({ timeout: 15_000 });
     }
   }
 

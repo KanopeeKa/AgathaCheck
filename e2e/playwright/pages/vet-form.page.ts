@@ -80,9 +80,11 @@ export class VetFormPage {
       .or(this.page.getByText(/Dr\./))
       .first()
       .waitFor({ timeout: 15_000 });
-    await waitForFlutterRoutePattern(this.page, /\/pc\/people(?:\?|$)/, 30_000).catch(() =>
-      waitForFlutterRoutePattern(this.page, /\/pc\/vets(?:\?|$)/, 30_000),
-    );
+    await waitForFlutterRoutePattern(
+      this.page,
+      /\/pc\/people(?:\/[^/?#]+|[\?]|$)/,
+      30_000,
+    ).catch(() => waitForFlutterRoutePattern(this.page, /\/pc\/vets(?:\?|$)/, 30_000));
   }
 
   async createVet(options: {
@@ -96,26 +98,23 @@ export class VetFormPage {
     const onPeopleAdd = /\/pc\/people\/new/.test(this.page.url());
     if (onPeopleAdd) {
       await fillLabelledField(this.page, 'Name', options.name);
+      if (options.phone) await this.fillPhone(options.phone);
+      if (options.email) await this.fillEmail(options.email);
+      if (options.address) await this.fillAddress(options.address);
+      await this.page.getByRole('button', { name: /continue|continuer/i }).click();
       const vetRole = this.page
         .getByRole('checkbox', { name: /^Vet$/i })
         .or(this.page.getByRole('button', { name: /^Vet$/i }));
       if (!(await vetRole.first().isChecked().catch(() => false))) {
         await vetRole.first().click();
       }
-      const needsDetails =
-        options.phone || options.email || options.address || options.notes;
-      if (needsDetails) {
-        await this.page.getByText(/Add phone, email, address/i).click();
-        if (options.phone) await this.fillPhone(options.phone);
-        if (options.email) await this.fillEmail(options.email);
-        if (options.address) await this.fillAddress(options.address);
-        if (options.notes) await this.fillNotes(options.notes);
-      }
+      await this.page.getByRole('button', { name: /continue|continuer/i }).click();
+      await this.page.getByRole('button', { name: /continue|continuer/i }).click();
       await this.page.getByRole('button', { name: /^Save person$/i }).click();
-      await this.page
-        .getByRole('button', { name: /^Not now$/i })
-        .click({ timeout: 15_000 });
       await this.expectSaved('create');
+      await this.page.goto(flutterGotoUrl('/pc/people?filter=professionals'));
+      await refreshFlutterAccessibility(this.page);
+      await waitForFlutterRoutePattern(this.page, /\/pc\/people(?:\?|$)/, 30_000);
       return;
     }
     await this.fillName(options.name);

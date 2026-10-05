@@ -173,6 +173,8 @@
     "R3|flutter_app/lib/features/notifications/presentation/widgets/notification_tile.dart|flutter_app/lib/features/pet_profile/presentation/providers/pet_providers.dart",
     "R3|flutter_app/lib/features/notifications/presentation/widgets/notification_tile.dart|flutter_app/lib/features/pet_profile/presentation/utils/pet_accent_color.dart",
     "R3|flutter_app/lib/features/people/application/people_providers.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
+    "R3|flutter_app/lib/features/people/presentation/add/add_person_flow.dart|flutter_app/lib/features/sharing/presentation/providers/share_pet_providers.dart",
+    "R3|flutter_app/lib/features/people/presentation/add/add_person_providers.dart|flutter_app/lib/features/pet_profile/presentation/providers/pet_providers.dart",
     "R3|flutter_app/lib/features/people/presentation/widgets/people_directory_card.dart|flutter_app/lib/features/vet/presentation/widgets/vet_team_initials_avatar.dart",
     "R3|flutter_app/lib/features/pet_care/context/presentation/away_plan_schedule_copy.dart|flutter_app/lib/features/health_tracking/presentation/widgets/care_event_status_line.dart",
     "R3|flutter_app/lib/features/pet_care/context/presentation/away_plan_schedule_copy.dart|flutter_app/lib/features/health_tracking/presentation/widgets/health_entry_form/health_entry_frequency_labels.dart",
@@ -260,6 +262,8 @@
     "R3|flutter_app/lib/features/pet_profile/presentation/widgets/pet_detail/pet_profile_health_history_section.dart|flutter_app/lib/features/pet_care/presentation/widgets/care_surface/care_destination_row.dart",
     "R3|flutter_app/lib/features/pet_profile/presentation/widgets/pet_detail/pet_profile_weight_insight_section.dart|flutter_app/lib/features/pet_care/presentation/widgets/care_surface/care_insight_tile.dart",
     "R3|flutter_app/lib/features/pet_profile/presentation/widgets/pet_detail/pet_profile_weight_insight_section.dart|flutter_app/lib/features/weight_tracking/presentation/providers/weight_providers.dart",
+    "R3|flutter_app/lib/features/pet_profile/presentation/widgets/pet_form/pet_form_vet_section.dart|flutter_app/lib/features/people/presentation/add/add_person_entry.dart",
+    "R3|flutter_app/lib/features/pet_profile/presentation/widgets/pet_form/pet_form_vet_section.dart|flutter_app/lib/features/people/presentation/add/add_person_route_args.dart",
     "R3|flutter_app/lib/features/pet_profile/presentation/widgets/pet_form/pet_form_weight_context_section.dart|flutter_app/lib/features/care_intelligence/presentation/widgets/weight_management_context_selector.dart",
     "R3|flutter_app/lib/features/pet_profile/presentation/widgets/pet_list/due_events_section.dart|flutter_app/lib/features/health_tracking/presentation/providers/health_providers.dart",
     "R3|flutter_app/lib/features/pet_profile/presentation/widgets/pet_list/due_events_section.dart|flutter_app/lib/features/health_tracking/presentation/widgets/care_event_row_context.dart",
@@ -319,6 +323,8 @@
     "notifications->pet_profile",
     "people->auth",
     "people->experience",
+    "people->pet_profile",
+    "people->sharing",
     "people->vet",
     "pet_care->auth",
     "pet_care->care_intelligence",
@@ -621,6 +627,36 @@
       "identity": "R3|flutter_app/lib/features/people/application/people_providers.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
       "reason": "People application wires authHttpClientProvider",
       "accepted_on": "2026-10-04"
+    },
+    {
+      "identity": "R3|flutter_app/lib/features/people/presentation/add/add_person_flow.dart|flutter_app/lib/features/sharing/presentation/providers/share_pet_providers.dart",
+      "reason": "people-client-core-7f3b phase c6-add: share handoff + pet list for add flow (execute-plan #1565)",
+      "accepted_on": "2026-10-05"
+    },
+    {
+      "identity": "R3|flutter_app/lib/features/people/presentation/add/add_person_providers.dart|flutter_app/lib/features/pet_profile/presentation/providers/pet_providers.dart",
+      "reason": "people-client-core-7f3b phase c6-add: share handoff + pet list for add flow (execute-plan #1565)",
+      "accepted_on": "2026-10-05"
+    },
+    {
+      "identity": "R4|people->pet_profile",
+      "reason": "people-client-core-7f3b phase c6-add: share handoff + pet list for add flow (execute-plan #1565)",
+      "accepted_on": "2026-10-05"
+    },
+    {
+      "identity": "R4|people->sharing",
+      "reason": "people-client-core-7f3b phase c6-add: share handoff + pet list for add flow (execute-plan #1565)",
+      "accepted_on": "2026-10-05"
+    },
+    {
+      "identity": "R3|flutter_app/lib/features/pet_profile/presentation/widgets/pet_form/pet_form_vet_section.dart|flutter_app/lib/features/people/presentation/add/add_person_entry.dart",
+      "reason": "c6-add: pet form vet quick-add uses AddPersonRouteArgs",
+      "accepted_on": "2026-10-05"
+    },
+    {
+      "identity": "R3|flutter_app/lib/features/pet_profile/presentation/widgets/pet_form/pet_form_vet_section.dart|flutter_app/lib/features/people/presentation/add/add_person_route_args.dart",
+      "reason": "c6-add: pet form vet quick-add uses AddPersonRouteArgs",
+      "accepted_on": "2026-10-05"
     }
   ]
 }

@@ -1,34 +1,26 @@
-import '../../domain/entities/people_contact.dart';
+import '../../domain/entities/contact_summary.dart';
 
-List<PeopleContact> findDuplicateContacts({
-  required List<PeopleContact> directory,
+List<ContactSummary> findAddPersonDuplicates({
+  required List<ContactSummary> roster,
   required String name,
   String? phone,
   String? email,
   int limit = 3,
 }) {
   final nameTrim = name.trim().toLowerCase();
-  if (nameTrim.length < 2 &&
-      (phone?.trim().isEmpty ?? true) &&
-      (email?.trim().isEmpty ?? true)) {
-    return const [];
-  }
-
   final phoneDigits = _digitsOnly(phone);
   final emailNorm = email?.trim().toLowerCase() ?? '';
 
-  final matches = <PeopleContact>[];
-  for (final c in directory) {
+  if (nameTrim.length < 2 && phoneDigits.isEmpty && emailNorm.isEmpty) {
+    return const [];
+  }
+
+  final matches = <ContactSummary>[];
+  for (final c in roster) {
+    if (c.isInactive) continue;
     var score = 0;
     if (nameTrim.length >= 2 && c.name.toLowerCase().contains(nameTrim)) {
       score += 2;
-    }
-    if (phoneDigits.isNotEmpty && _digitsOnly(c.phone) == phoneDigits) {
-      score += 3;
-    }
-    if (emailNorm.isNotEmpty &&
-        (c.email?.trim().toLowerCase() ?? '') == emailNorm) {
-      score += 3;
     }
     if (score >= 2) matches.add(c);
   }

@@ -7505,6 +7505,81 @@ class AppLocalizationsEn extends AppLocalizations {
   String get peopleAddRolesRequired => 'Choose at least one role to continue.';
 
   @override
+  String get peopleAddStepWhoTitle => 'Who would you like to add?';
+
+  @override
+  String peopleAddStepProgress(int step) {
+    return 'Step $step of 5';
+  }
+
+  @override
+  String get peopleAddTileHousehold => 'Someone at home';
+
+  @override
+  String get peopleAddTileHouseholdHelper =>
+      'Lives with you and shares your pets\' everyday life.';
+
+  @override
+  String get peopleAddTileCarer => 'A trusted carer';
+
+  @override
+  String get peopleAddTileCarerHelper =>
+      'A friend, relative or pet sitter who sometimes looks after them.';
+
+  @override
+  String get peopleAddTileProfessional => 'A pet professional';
+
+  @override
+  String get peopleAddTileProfessionalHelper =>
+      'Vet, groomer, walker, trainer…';
+
+  @override
+  String get peopleAddTileOrganisation => 'An organisation';
+
+  @override
+  String get peopleAddTileOrganisationHelper =>
+      'Clinic, grooming salon, boarding, daycare…';
+
+  @override
+  String get peopleAddStepAbout => 'About them';
+
+  @override
+  String get peopleAddStepPets => 'Which pets?';
+
+  @override
+  String get peopleAddStepReview => 'Review';
+
+  @override
+  String get peopleAddNext => 'Continue';
+
+  @override
+  String get peopleAddBack => 'Back';
+
+  @override
+  String get peopleAddOpenExisting => 'Open';
+
+  @override
+  String get peopleAddAppAccessShare => 'Share pets in the app';
+
+  @override
+  String get peopleAddAppAccessAbsence => 'Invite for an absence';
+
+  @override
+  String get peopleAddAppAccessHousehold => 'Invite to a household';
+
+  @override
+  String get peopleAddHouseholdName => 'Household name';
+
+  @override
+  String get peopleAddPetsEmpty => 'No pets to link yet.';
+
+  @override
+  String get peopleAddPetLinkKind => 'How they help with this pet';
+
+  @override
+  String get peopleAddEmergencyContact => 'Emergency contact for this pet';
+
+  @override
   String get peopleSaveValidationError => 'Check the details and try again.';
 
   @override

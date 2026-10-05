@@ -131,6 +131,23 @@ class FakeHouseholdsRepository implements HouseholdsRepository {
   Future<List<Household>> listHouseholds() async => const [];
 
   @override
+  Future<Household> createHousehold(String name) async => Household(
+    id: 'hh-1',
+    name: name,
+    myTier: 'full_access',
+    myIsOrganiser: true,
+    members: const [],
+  );
+
+  @override
+  Future<void> createHouseholdInvite({
+    required String householdId,
+    required String inviteeEmail,
+    required String contactId,
+    String accessTier = 'full_access',
+  }) async {}
+
+  @override
   Future<void> revokeHouseholdInvite({
     required String householdId,
     required String inviteId,

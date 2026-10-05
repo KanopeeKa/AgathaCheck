@@ -2,8 +2,11 @@ import 'package:flutter/foundation.dart';
 
 import '../../application/people_api_exception.dart';
 import '../../domain/entities/contact_detail.dart';
+import '../../domain/entities/contact_summary.dart';
+import '../../domain/enums/contact_group.dart';
 import '../../domain/enums/contact_kind.dart';
 import '../../domain/enums/contact_role.dart';
+import '../../domain/enums/contact_status.dart';
 
 /// Shared form state for person add (c6) and edit (c5).
 class PersonFormController extends ChangeNotifier {
@@ -21,6 +24,22 @@ class PersonFormController extends ChangeNotifier {
       _worksAtContactId = initial.worksAtContactId;
 
   final ContactDetail _baseline;
+
+  /// Empty draft for the unified add-person flow.
+  static PersonFormController forNewContact({required ContactKind kind}) {
+    return PersonFormController(
+      initial: ContactDetail(
+        id: '',
+        directoryId: '',
+        directory: const ContactDirectoryRef(type: 'personal'),
+        kind: kind,
+        name: '',
+        roles: const [],
+        group: ContactGroup.carer,
+        status: ContactStatus.active,
+      ),
+    );
+  }
 
   ContactKind _kind;
   Set<ContactRole> _roles;

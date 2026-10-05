@@ -18,6 +18,39 @@ class HouseholdsApi {
     if (token != null && token!.isNotEmpty) 'Authorization': 'Bearer $token',
   };
 
+  Future<Household> createHousehold(String name) async {
+    final response = await client.post(
+      Uri.parse('$baseUrl/api/households'),
+      headers: _headers,
+      body: json.encode({'name': name}),
+    );
+    if (response.statusCode >= 400) {
+      throw Exception('Create household ${response.statusCode}');
+    }
+    final decoded = json.decode(response.body) as Map<String, dynamic>;
+    return HouseholdDto.fromJson(decoded);
+  }
+
+  Future<void> createInvite({
+    required String householdId,
+    required String inviteeEmail,
+    required String contactId,
+    String accessTier = 'full_access',
+  }) async {
+    final response = await client.post(
+      Uri.parse('$baseUrl/api/households/$householdId/invites'),
+      headers: _headers,
+      body: json.encode({
+        'invitee_email': inviteeEmail,
+        'access_tier': accessTier,
+        'contact_id': contactId,
+      }),
+    );
+    if (response.statusCode >= 400) {
+      throw Exception('Create household invite ${response.statusCode}');
+    }
+  }
+
   Future<List<Household>> listHouseholds() async {
     final response = await client.get(
       Uri.parse('$baseUrl/api/households'),
@@ -108,6 +141,22 @@ class HouseholdsRepositoryImpl implements HouseholdsRepository {
 
   @override
   Future<List<Household>> listHouseholds() => _api.listHouseholds();
+
+  @override
+  Future<Household> createHousehold(String name) => _api.createHousehold(name);
+
+  @override
+  Future<void> createHouseholdInvite({
+    required String householdId,
+    required String inviteeEmail,
+    required String contactId,
+    String accessTier = 'full_access',
+  }) => _api.createInvite(
+    householdId: householdId,
+    inviteeEmail: inviteeEmail,
+    contactId: contactId,
+    accessTier: accessTier,
+  );
 
   @override
   Future<void> revokeHouseholdInvite({
