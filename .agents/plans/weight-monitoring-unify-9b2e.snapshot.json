@@ -12,7 +12,7 @@
     },
     {
       "plan_id": "weight-unify-hub-9b2e",
-      "status": "pending",
+      "status": "in_progress",
       "pr_url": null,
       "merge_commit": null
     },
@@ -69,5 +69,5 @@
       "pr_head_sha": "8931363ffaa8c1bc15ee1b8054162f1e2cfcfff2"
     }
   ],
-  "content_hash": "sha256:41f5a598217e7e7f157355ae2c549a23173d1c477f9a67524d8d5dd4081aa7b2"
+  "content_hash": "sha256:c2a3e4a325bd85acaf472633caffa9cd789f6595515399d1946ed9f6296b1d24"
 }
