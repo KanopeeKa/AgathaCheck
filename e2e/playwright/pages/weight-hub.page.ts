@@ -65,12 +65,22 @@ export class WeightHubPage {
   async chooseWeighInRoutine(routineName: string | RegExp): Promise<void> {
     const pattern =
       routineName instanceof RegExp ? routineName : new RegExp(routineName, 'i');
-    await this.page.getByRole('radio', { name: pattern }).click();
+    await this.page
+      .getByRole('button', { name: pattern })
+      .or(this.page.getByRole('radio', { name: pattern }))
+      .first()
+      .click();
   }
 
   async chooseDontCountAsWeighIn(): Promise<void> {
     await this.page
-      .getByRole('radio', { name: /Don't count it as a weigh-in|Ne pas compter/i })
+      .getByRole('button', { name: /Don't count it as a weigh-in|Ne pas compter/i })
+      .or(
+        this.page.getByRole('radio', {
+          name: /Don't count it as a weigh-in|Ne pas compter/i,
+        }),
+      )
+      .first()
       .click();
   }
 
