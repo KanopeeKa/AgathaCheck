@@ -11,6 +11,7 @@ const SCAN_ROOTS = [
   path.join(ROOT, 'server', 'bin'),
   path.join(ROOT, 'server', 'scripts'),
   path.join(ROOT, 'server', 'db', 'seeds'),
+  path.join(ROOT, 'scripts', 'care'),
 ];
 const ALLOWED_FILE = path.join('server', 'lib', 'db', 'createPool.js');
 const POOL_RE = /\bnew\s+(?:pg\.)?Pool\s*\(/;
