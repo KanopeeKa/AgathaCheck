@@ -39,7 +39,7 @@
     },
     {
       "plan_id": "active-codebase-batch-h-ports-transport-e41f",
-      "status": "pending",
+      "status": "in_progress",
       "pr_url": null,
       "merge_commit": null
     },
@@ -99,5 +99,5 @@
       "merge_commit": null
     }
   ],
-  "content_hash": "sha256:084f547edc5c27de28be8b1df9bb9fa09e9f416568a3ba2ff716079d74daff68"
+  "content_hash": "sha256:c84251a8162db1e888be61d3355e16b0367f40e8668a3af5f97986405a5ccc38"
 }
