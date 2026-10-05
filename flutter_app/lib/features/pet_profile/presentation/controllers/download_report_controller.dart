@@ -8,7 +8,7 @@ import '../../../../core/branding/logo_assets.dart';
 import 'package:pet_profile_app/core/experience/app_experience.dart';
 import '../../domain/entities/pet_report_supplement.dart';
 import 'package:pet_profile_app/features/sharing/sharing.dart';
-import '../../../vet/domain/entities/vet.dart';
+import '../../../vet/vet.dart';
 import '../providers/pet_vet_contacts_provider.dart';
 import '../../../../core/weight/weight_unit_preference.dart';
 import 'package:pet_profile_app/features/weight_tracking/weight_tracking.dart';

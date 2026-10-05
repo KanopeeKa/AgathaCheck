@@ -8,7 +8,7 @@ import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../core/widgets/shell_notification_bell.dart';
 import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../notifications/presentation/widgets/notification_panel.dart';
+import '../../../notifications/notifications.dart';
 import '../../domain/entities/app_experience.dart';
 import '../config/drawer_menu_config.dart';
 import '../utils/experience_theme.dart';

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../health_tracking/domain/entities/health_entry.dart';
+import '../../../../health_tracking/health_tracking.dart';
 import 'package:pet_profile_app/features/pet_care/pet_care.dart';
 import 'pet_care_action_row_builder.dart';
 import 'pet_care_temporal_group_labels.dart';

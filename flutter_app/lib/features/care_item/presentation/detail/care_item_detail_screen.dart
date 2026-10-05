@@ -8,7 +8,6 @@ import 'package:pet_profile_app/core/experience/app_experience.dart';
 import 'package:pet_profile_app/core/router/experience_shell_scaffold.dart';
 import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
-import '../../../health_tracking/domain/entities/recurrence_anchor.dart';
 import '../widgets/care_item_history.dart';
 import '../sheets/postpone_sheet.dart';
 import '../sheets/resume_date_sheet.dart';

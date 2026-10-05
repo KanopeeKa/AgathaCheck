@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../pet_profile/domain/entities/care_family.dart';
-import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
+import '../../../pet_profile/pet_profile.dart';
 import 'package:pet_profile_app/features/weight_tracking/weight_tracking.dart';
 import '../../domain/entities/command_outcome.dart';
 import '../../domain/entities/health_entry.dart';

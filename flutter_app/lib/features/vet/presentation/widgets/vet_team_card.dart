@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../l10n/app_localizations.dart';
-import '../../../pet_profile/domain/entities/pet.dart';
+import '../../../pet_profile/pet_profile.dart';
 import '../../domain/entities/vet.dart';
 import '../utils/vet_accent.dart';
 import 'vet_team_initials_avatar.dart';

@@ -15,3 +15,7 @@ export 'presentation/screens/experience_settings_screen.dart';
 export 'presentation/screens/pet_care_onboarding_screen.dart';
 export 'presentation/screens/pet_care/pet_care_due_events_screen.dart';
 export 'presentation/widgets/experience_shell_scaffold.dart';
+export 'presentation/screens/pet_care/pet_care_desk_preview_screen.dart';
+export 'presentation/screens/pet_care/add_event_type_picker_sheet.dart';
+export 'presentation/screens/pet_care/pet_care_all_pets_screen.dart';
+export 'presentation/screens/pet_care/pet_care_bulk_share_select_screen.dart';

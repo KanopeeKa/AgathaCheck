@@ -1,5 +1,5 @@
-import '../../../health_tracking/domain/entities/health_entry.dart';
-import '../../../pet_care/domain/services/care_temporal_grouping_service.dart';
+import '../../../health_tracking/health_tracking.dart';
+import '../../../pet_care/pet_care.dart';
 import '../entities/care_status.dart';
 
 /// Deterministic pet-level Care Status from tracked health entries.

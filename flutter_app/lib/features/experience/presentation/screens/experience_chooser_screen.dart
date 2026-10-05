@@ -6,7 +6,7 @@ import '../../../../core/theme/experience_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/app_experience.dart';
 import '../../domain/services/pet_care_onboarding_rules.dart';
-import '../../../pet_profile/presentation/providers/pet_providers.dart';
+import '../../../pet_profile/pet_profile.dart';
 import '../providers/experience_providers.dart';
 
 /// Action-oriented first-time experience after sign-up or when account is empty.

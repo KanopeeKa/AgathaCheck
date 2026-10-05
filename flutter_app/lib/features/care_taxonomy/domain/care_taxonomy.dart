@@ -1,4 +1,4 @@
-import '../../pet_profile/domain/entities/care_family.dart';
+import '../../pet_profile/pet_profile.dart';
 import 'care_family_definition.dart';
 import 'care_importance.dart';
 import 'care_setting.dart';

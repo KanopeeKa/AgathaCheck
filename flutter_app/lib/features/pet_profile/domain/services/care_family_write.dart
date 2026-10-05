@@ -1,4 +1,4 @@
-import '../../../health_tracking/domain/entities/health_entry.dart';
+import '../../../health_tracking/health_tracking.dart';
 import '../entities/care_family.dart';
 
 /// Families guardians may pick when creating a recurring care rhythm manually.

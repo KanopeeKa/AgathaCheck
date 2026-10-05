@@ -5,9 +5,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../../../core/utils/calendar_date.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../health_tracking/domain/entities/health_issue.dart';
-import '../../../health_tracking/domain/entities/health_issue_document.dart';
-import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
+import '../../../health_tracking/health_tracking.dart';
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
 import 'package:pet_profile_app/core/utils/resolve_health_file_url.dart';
 

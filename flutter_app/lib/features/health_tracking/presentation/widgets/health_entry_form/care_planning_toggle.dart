@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../care_taxonomy/domain/care_planning_mode.dart';
+import '../../../../care_taxonomy/care_taxonomy.dart';
 
 /// Segmented control for planned vs record (unplanned) care entry modes.
 class CarePlanningToggle extends StatelessWidget {

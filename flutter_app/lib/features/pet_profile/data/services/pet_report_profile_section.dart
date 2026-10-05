@@ -3,8 +3,8 @@ import '../../../../core/utils/calendar_date.dart';
 import 'package:pdf/widgets.dart' as pw;
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/pet.dart';
-import '../../../vet/domain/entities/vet.dart';
-import '../../../weight_tracking/domain/entities/weight_entry.dart';
+import '../../../vet/vet.dart';
+import '../../../weight_tracking/weight_tracking.dart';
 
 class PetProfileSectionBuilder {
   static List<pw.Widget> build(

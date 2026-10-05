@@ -5,9 +5,7 @@ import 'package:intl/intl.dart';
 import '../../../../core/utils/calendar_date.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'package:pet_profile_app/features/pet_care/pet_care.dart';
-import '../../../health_tracking/domain/entities/health_occurrence.dart';
-import '../../../health_tracking/domain/occurrence_scheduling.dart';
-import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
+import '../../../health_tracking/health_tracking.dart';
 
 /// Upcoming and recent dates for a care item (spec §4.3 — **Needs attention** module).
 class CareItemDatesSection extends ConsumerWidget {

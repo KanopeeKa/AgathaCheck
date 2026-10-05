@@ -1,4 +1,4 @@
-import '../../../pet_profile/domain/entities/care_family.dart';
+import '../../../pet_profile/pet_profile.dart';
 
 enum CareRecommendationStatus {
   pending,

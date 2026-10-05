@@ -1,4 +1,4 @@
-import '../../../health_tracking/domain/entities/health_entry.dart';
+import '../../../health_tracking/health_tracking.dart';
 import '../entities/care_family.dart';
 
 /// Conservative backfill when persisted [CareFamily] is absent.

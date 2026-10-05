@@ -1,4 +1,4 @@
-import '../../../pet_profile/domain/entities/pet.dart';
+import '../../../pet_profile/pet_profile.dart';
 import 'package:pet_profile_app/core/experience/app_experience.dart';
 
 /// Whether the signed-in user may open each experience shell.

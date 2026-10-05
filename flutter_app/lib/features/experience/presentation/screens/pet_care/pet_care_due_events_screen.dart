@@ -2,12 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../health_tracking/domain/entities/health_entry.dart';
-import '../../../../health_tracking/domain/entities/health_history_entry.dart';
-import '../../../../health_tracking/presentation/providers/health_providers.dart';
-import '../../../../pet_profile/presentation/screens/widgets/pet_event_entry_list.dart';
+import '../../../../health_tracking/health_tracking.dart';
+import '../../../../pet_profile/pet_profile.dart';
 
-import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 import 'global_events_list.dart';
 export 'global_events_list.dart' show GlobalEventsList;
 export 'package:pet_profile_app/features/pet_profile/pet_profile.dart'

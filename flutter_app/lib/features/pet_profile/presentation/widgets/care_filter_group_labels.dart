@@ -1,5 +1,5 @@
 import '../../../../l10n/app_localizations.dart';
-import '../../../care_taxonomy/domain/care_family_definition.dart';
+import '../../../care_taxonomy/care_taxonomy.dart';
 
 String careFilterGroupLabel(AppLocalizations l10n, CareFilterGroup group) {
   return switch (group) {

@@ -4,12 +4,9 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../../core/router/shell_return_navigation.dart';
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../pet_profile/domain/entities/pet.dart';
-import '../../../../pet_profile/presentation/providers/pet_providers.dart';
-import '../../../../auth/presentation/providers/auth_providers.dart';
-import '../../../../vet/domain/entities/vet.dart';
-import '../../../../vet/presentation/providers/vet_providers.dart';
-import '../../../../vet/presentation/widgets/vet_team_card.dart';
+import '../../../../pet_profile/pet_profile.dart';
+import '../../../../auth/auth.dart';
+import '../../../../vet/vet.dart';
 import 'package:pet_profile_app/core/widgets/pet_care_dashboard_section_header.dart';
 import 'package:pet_profile_app/core/widgets/pet_care_illustrated_empty_state.dart';
 

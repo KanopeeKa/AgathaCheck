@@ -2,11 +2,8 @@ import '../../../care_item/care_item.dart';
 import '../../domain/entities/care_item_blocks.dart';
 import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/recurrence_anchor.dart';
-import '../../../care_taxonomy/domain/care_importance.dart';
-import '../../../care_taxonomy/domain/care_planning_mode.dart';
-import '../../../care_taxonomy/domain/care_setting.dart';
-import '../../../pet_profile/domain/entities/care_family.dart';
-import '../../../pet_profile/domain/entities/care_source.dart';
+import '../../../care_taxonomy/care_taxonomy.dart';
+import '../../../pet_profile/pet_profile.dart';
 import '../../../../core/utils/calendar_date.dart';
 
 /// Data model for [HealthEntry] with JSON serialization.

@@ -5,8 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/utils/calendar_date.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'package:pet_profile_app/features/pet_care/pet_care.dart';
-import '../../../health_tracking/domain/entities/recurrence_anchor.dart';
-import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
+import '../../../health_tracking/health_tracking.dart';
 
 /// Schedule summary (spec §Schedule) — stat grid + prose; edit via header action.
 class CareItemScheduleSection extends ConsumerWidget {

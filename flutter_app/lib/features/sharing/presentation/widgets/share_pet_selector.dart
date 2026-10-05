@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../pet_profile/domain/entities/pet.dart';
+import '../../../pet_profile/pet_profile.dart';
 import '../../../../l10n/app_localizations.dart';
 
 /// Horizontal pet chips when sharing multiple pets.

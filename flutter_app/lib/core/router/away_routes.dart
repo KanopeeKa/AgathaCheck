@@ -1,9 +1,6 @@
 import 'package:go_router/go_router.dart';
 
-import '../../features/pet_care/context/presentation/screens/planned_absence_edit_screen.dart';
-import '../../features/pet_care/context/presentation/screens/planned_absence_flow_screen.dart';
-import '../../features/pet_care/context/presentation/screens/planned_absence_hub_screen.dart';
-import '../../features/pet_care/context/presentation/screens/planned_absence_plan_screen.dart';
+import '../../features/pet_care/pet_care.dart';
 
 List<RouteBase> buildAwayPlanningRoutes() {
   return [

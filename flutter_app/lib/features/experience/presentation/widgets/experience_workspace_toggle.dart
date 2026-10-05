@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-
 /// Frozen MVP: Pet Care-only — workspace switcher removed (D-MVP-1).
 class ExperienceWorkspaceToggle extends ConsumerWidget {
   const ExperienceWorkspaceToggle({

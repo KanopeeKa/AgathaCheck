@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../domain/services/experience_eligibility.dart';
-import '../../../pet_profile/presentation/providers/pet_providers.dart';
+import '../../../pet_profile/pet_profile.dart';
 import '../providers/experience_providers.dart';
 
 /// Loads eligibility after login and routes to the Pet Care home (D-v5-WORKSPACE-2).

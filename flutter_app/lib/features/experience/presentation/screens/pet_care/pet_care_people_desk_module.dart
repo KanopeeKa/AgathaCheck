@@ -3,15 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../auth/presentation/providers/auth_providers.dart';
-import '../../../../people/domain/entities/people_contact.dart';
-import '../../../../people/domain/entities/person_roster_entry.dart';
-import '../../../../people/presentation/providers/people_providers.dart';
-import '../../../../people/presentation/utils/people_contact_role_labels.dart';
-import '../../../../people/presentation/widgets/people_directory_card.dart';
-import '../../../../pet_profile/domain/entities/pet.dart';
-import '../../../../pet_profile/presentation/providers/pet_providers.dart';
-import '../../../../sharing/presentation/providers/household_providers.dart';
+import '../../../../auth/auth.dart';
+import '../../../../people/people.dart';
+import '../../../../pet_profile/pet_profile.dart';
+import '../../../../sharing/sharing.dart';
 import 'package:pet_profile_app/core/widgets/pet_care_dashboard_section_header.dart';
 import 'package:pet_profile_app/core/widgets/pet_care_illustrated_empty_state.dart';
 
