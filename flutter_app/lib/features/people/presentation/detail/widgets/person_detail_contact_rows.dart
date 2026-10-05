@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../../l10n/app_localizations.dart';
+import '../../../../../l10n/app_localizations.dart';
 
-/// Contact information rows with dedicated action buttons (call, email, maps, web).
-class PeopleContactCoordinatesSection extends StatelessWidget {
-  const PeopleContactCoordinatesSection({
+/// Label/value contact rows with tap-to-act and copy on long-press.
+class PersonDetailContactRows extends StatelessWidget {
+  const PersonDetailContactRows({
     super.key,
     required this.phone,
     required this.email,
@@ -35,7 +35,7 @@ class PeopleContactCoordinatesSection extends StatelessWidget {
     }) {
       if (value.trim().isEmpty) return;
       rows.add(
-        _CoordinateRow(
+        _ContactRow(
           icon: icon,
           label: label,
           value: value.trim(),
@@ -55,7 +55,7 @@ class PeopleContactCoordinatesSection extends StatelessWidget {
         value: phoneVal,
         onAction: () => _launchTel(context, phoneVal, l),
         actionIcon: Icons.call_outlined,
-        actionTooltip: l.adminContactsCall,
+        actionTooltip: l.peopleActionCall,
       );
     }
 
@@ -67,7 +67,7 @@ class PeopleContactCoordinatesSection extends StatelessWidget {
         value: emailVal,
         onAction: () => _launchMail(context, emailVal, l),
         actionIcon: Icons.mail_outline,
-        actionTooltip: l.vetEmail,
+        actionTooltip: l.peopleActionEmail,
       );
     }
 
@@ -79,7 +79,7 @@ class PeopleContactCoordinatesSection extends StatelessWidget {
         value: addressVal,
         onAction: () => _launchMaps(context, addressVal, l),
         actionIcon: Icons.directions_outlined,
-        actionTooltip: l.peopleOpenDirections,
+        actionTooltip: l.peopleActionDirections,
       );
     }
 
@@ -90,7 +90,6 @@ class PeopleContactCoordinatesSection extends StatelessWidget {
         label: l.peopleWebsiteLabel,
         value: websiteVal,
         onAction: () => _launchWebsite(context, websiteVal, l),
-        actionIcon: Icons.open_in_new,
         actionTooltip: l.peopleOpenWebsite,
       );
     }
@@ -138,9 +137,7 @@ class PeopleContactCoordinatesSection extends StatelessWidget {
     AppLocalizations l,
   ) async {
     final uri = Uri(scheme: 'tel', path: phone.replaceAll(' ', ''));
-    if (!await launchUrl(uri)) {
-      await _copyToClipboard(context, phone, l);
-    }
+    if (!await launchUrl(uri)) await _copyToClipboard(context, phone, l);
   }
 
   static Future<void> _launchMail(
@@ -149,9 +146,7 @@ class PeopleContactCoordinatesSection extends StatelessWidget {
     AppLocalizations l,
   ) async {
     final uri = Uri(scheme: 'mailto', path: email);
-    if (!await launchUrl(uri)) {
-      await _copyToClipboard(context, email, l);
-    }
+    if (!await launchUrl(uri)) await _copyToClipboard(context, email, l);
   }
 
   static Future<void> _launchMaps(
@@ -184,8 +179,8 @@ class PeopleContactCoordinatesSection extends StatelessWidget {
   }
 }
 
-class _CoordinateRow extends StatelessWidget {
-  const _CoordinateRow({
+class _ContactRow extends StatelessWidget {
+  const _ContactRow({
     required this.icon,
     required this.label,
     required this.value,
@@ -208,34 +203,38 @@ class _CoordinateRow extends StatelessWidget {
     final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, size: 22, color: theme.colorScheme.onSurfaceVariant),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(label, style: theme.textTheme.labelMedium),
-                const SizedBox(height: 2),
-                SelectableText(
-                  value,
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    color: theme.colorScheme.primary,
+      child: InkWell(
+        onLongPress: onCopy,
+        onTap: onAction,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(icon, size: 22, color: theme.colorScheme.onSurfaceVariant),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(label, style: theme.textTheme.labelMedium),
+                  const SizedBox(height: 2),
+                  SelectableText(
+                    value,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      color: theme.colorScheme.primary,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          if (onAction != null)
-            IconButton(
-              tooltip: actionTooltip,
-              onPressed: onAction,
-              icon: Icon(actionIcon),
-              style: IconButton.styleFrom(minimumSize: const Size(48, 48)),
-            ),
-        ],
+            if (onAction != null)
+              IconButton(
+                tooltip: actionTooltip,
+                onPressed: onAction,
+                icon: Icon(actionIcon),
+                style: IconButton.styleFrom(minimumSize: const Size(48, 48)),
+              ),
+          ],
+        ),
       ),
     );
   }

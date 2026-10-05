@@ -2888,6 +2888,37 @@
   "peopleRelationshipEmergencyContact": "Emergency contact",
   "peopleRelationshipCareProvider": "Provides care",
   "peopleRelationshipOther": "Other link",
+  "peopleDetailTabOverview": "Overview",
+  "peopleDetailTabPetsAccess": "Pets & access",
+  "peopleDetailTabRelatedCare": "Related care",
+  "peopleDetailTabNotes": "Notes",
+  "peopleDetailLinkedAccount": "Has an AgathaTrack account",
+  "peopleDetailNextUpTitle": "Next up",
+  "peopleDetailStaffAt": "People at {name}",
+  "@peopleDetailStaffAt": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "peopleDetailNotesPreviewTitle": "Notes",
+  "peopleDetailLinkToPet": "Link to a pet",
+  "peopleDetailLinkPetTitle": "Link to a pet",
+  "peopleDetailLinkPetChooseKind": "How are they linked?",
+  "peopleDetailRelatedCareHistory": "{count, plural, =1{1 past visit} other{{count} past visits}}",
+  "@peopleDetailRelatedCareHistory": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "peopleDetailHouseholdNoteLabel": "Household note",
+  "peopleDetailHouseholdNoteHelper": "Visible to your household.",
+  "peopleDetailSaveNotes": "Save",
+  "peopleDetailNotesSaved": "Notes saved",
+  "peopleDetailAccessCoParent": "Co-parent",
+  "peopleDetailAccessCanLogCare": "Can log care",
+  "peopleDetailPendingInviteBody": "Waiting for them to accept your invite.",
+  "peopleDetailPendingPets": "Pets in this invite",
+  "peopleDetailRevokeInEdit": "To revoke this invite, open Edit.",
   "peopleDangerZoneTitle": "Danger zone",
   "peopleRemoveContactTitle": "Remove contact?",
   "peopleRemoveContactBody": "Remove {name} from your directory? Care history on pets is kept.",

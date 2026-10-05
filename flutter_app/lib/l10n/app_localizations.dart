@@ -12838,6 +12838,132 @@ abstract class AppLocalizations {
   /// **'Other link'**
   String get peopleRelationshipOther;
 
+  /// No description provided for @peopleDetailTabOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Overview'**
+  String get peopleDetailTabOverview;
+
+  /// No description provided for @peopleDetailTabPetsAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Pets & access'**
+  String get peopleDetailTabPetsAccess;
+
+  /// No description provided for @peopleDetailTabRelatedCare.
+  ///
+  /// In en, this message translates to:
+  /// **'Related care'**
+  String get peopleDetailTabRelatedCare;
+
+  /// No description provided for @peopleDetailTabNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get peopleDetailTabNotes;
+
+  /// No description provided for @peopleDetailLinkedAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Has an AgathaTrack account'**
+  String get peopleDetailLinkedAccount;
+
+  /// No description provided for @peopleDetailNextUpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Next up'**
+  String get peopleDetailNextUpTitle;
+
+  /// No description provided for @peopleDetailStaffAt.
+  ///
+  /// In en, this message translates to:
+  /// **'People at {name}'**
+  String peopleDetailStaffAt(String name);
+
+  /// No description provided for @peopleDetailNotesPreviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get peopleDetailNotesPreviewTitle;
+
+  /// No description provided for @peopleDetailLinkToPet.
+  ///
+  /// In en, this message translates to:
+  /// **'Link to a pet'**
+  String get peopleDetailLinkToPet;
+
+  /// No description provided for @peopleDetailLinkPetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Link to a pet'**
+  String get peopleDetailLinkPetTitle;
+
+  /// No description provided for @peopleDetailLinkPetChooseKind.
+  ///
+  /// In en, this message translates to:
+  /// **'How are they linked?'**
+  String get peopleDetailLinkPetChooseKind;
+
+  /// No description provided for @peopleDetailRelatedCareHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 past visit} other{{count} past visits}}'**
+  String peopleDetailRelatedCareHistory(int count);
+
+  /// No description provided for @peopleDetailHouseholdNoteLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Household note'**
+  String get peopleDetailHouseholdNoteLabel;
+
+  /// No description provided for @peopleDetailHouseholdNoteHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Visible to your household.'**
+  String get peopleDetailHouseholdNoteHelper;
+
+  /// No description provided for @peopleDetailSaveNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get peopleDetailSaveNotes;
+
+  /// No description provided for @peopleDetailNotesSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes saved'**
+  String get peopleDetailNotesSaved;
+
+  /// No description provided for @peopleDetailAccessCoParent.
+  ///
+  /// In en, this message translates to:
+  /// **'Co-parent'**
+  String get peopleDetailAccessCoParent;
+
+  /// No description provided for @peopleDetailAccessCanLogCare.
+  ///
+  /// In en, this message translates to:
+  /// **'Can log care'**
+  String get peopleDetailAccessCanLogCare;
+
+  /// No description provided for @peopleDetailPendingInviteBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for them to accept your invite.'**
+  String get peopleDetailPendingInviteBody;
+
+  /// No description provided for @peopleDetailPendingPets.
+  ///
+  /// In en, this message translates to:
+  /// **'Pets in this invite'**
+  String get peopleDetailPendingPets;
+
+  /// No description provided for @peopleDetailRevokeInEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'To revoke this invite, open Edit.'**
+  String get peopleDetailRevokeInEdit;
+
   /// No description provided for @peopleDangerZoneTitle.
   ///
   /// In en, this message translates to:

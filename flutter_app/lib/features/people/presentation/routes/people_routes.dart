@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../hub/people_hub_layout.dart';
 import '../screens/people_add_person_screen.dart';
-import '../screens/people_detail_screen.dart';
+import '../detail/person_detail_page.dart';
 import '../screens/people_edit_screen.dart';
 
 RouteBase buildPeopleHubShellRoute() {
@@ -47,7 +47,7 @@ RouteBase buildPeopleHubShellRoute() {
             name: 'petCarePeopleDetail',
             builder: (context, state) {
               final personId = state.pathParameters['personId']!;
-              return PeopleDetailScreen(
+              return PersonDetailPage(
                 personId: personId,
                 embedded: peopleDetailShouldEmbed(context),
               );
