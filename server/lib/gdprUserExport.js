@@ -9,7 +9,6 @@ export async function buildUserDataExport(pool, userId) {
     vetsResult,
     healthEntriesResult,
     healthIssuesResult,
-    healthHistoryResult,
     healthOccurrencesResult,
     careScheduleEventsResult,
     healthEntryAbsenceResolutionsResult,
@@ -32,12 +31,6 @@ export async function buildUserDataExport(pool, userId) {
     pool.query('SELECT * FROM vets WHERE user_id = $1', [userId]),
     pool.query('SELECT * FROM health_entries WHERE user_id = $1', [userId]),
     pool.query('SELECT * FROM health_issues WHERE user_id = $1', [userId]),
-    pool.query(
-      `SELECT hh.* FROM health_history hh
-       INNER JOIN health_entries he ON he.id = hh.health_entry_id
-       WHERE he.user_id = $1`,
-      [userId],
-    ),
     pool.query(
       `SELECT ho.* FROM health_occurrences ho
        INNER JOIN health_entries he ON he.id = ho.health_entry_id
@@ -107,7 +100,6 @@ export async function buildUserDataExport(pool, userId) {
     vets: vetsResult.rows,
     health_entries: healthEntriesResult.rows,
     health_issues: healthIssuesResult.rows,
-    health_history: healthHistoryResult.rows,
     health_occurrences: healthOccurrencesResult.rows,
     care_schedule_events: careScheduleEventsResult.rows,
     health_entry_absence_resolutions: healthEntryAbsenceResolutionsResult.rows,

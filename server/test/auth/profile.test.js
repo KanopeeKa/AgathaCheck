@@ -312,7 +312,6 @@ describe('Auth Routes — Profile', () => {
         family_events: [],
         foster_placements: [],
         org_foster_parent_records: [],
-        health_history: [],
         health_occurrences: [],
         care_schedule_events: [],
         health_entry_absence_resolutions: [],
