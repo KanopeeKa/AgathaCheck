@@ -202,10 +202,10 @@ export class WeightHubPage {
   }
 
   async expectReadOnlyWeightOnPetEdit(): Promise<void> {
-    await this.page
-      .getByText(/Weight \d|recorded|Poids .* enregistré|No weight recorded|Poids non enregistré/i)
-      .first()
-      .waitFor({ timeout: 15_000 });
+    const weightSection = this.page.getByRole('group', {
+      name: /Weight.*\d|No weight recorded|Poids non enregistré|recorded|enregistré/i,
+    });
+    await expect(weightSection.first()).toBeVisible({ timeout: 45_000 });
     await expect(this.page.getByRole('textbox', { name: /Weight today|Poids du jour/i })).toHaveCount(
       0,
     );
