@@ -3,24 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-import '../../../../core/providers/analytics_providers.dart';
-import '../../../../core/utils/calendar_date_picker.dart';
-import '../../../../core/weight/weight_unit.dart';
-import '../../../../core/weight/weight_unit_preference.dart';
-import '../../../../l10n/app_localizations.dart';
-import '../../application/care_command_outcome.dart';
-import '../../application/care_completion_service.dart';
-import '../../application/care_item_providers.dart';
-import '../../application/care_weigh_in_refresh.dart';
-import '../../domain/care_item_schedule.dart';
-import '../../domain/care_occurrence.dart';
-import '../../domain/completion_requirements.dart';
-import '../../domain/occurrence_detail.dart';
-import '../../domain/weigh_in_skip_reason.dart';
-import '../care_completion_flow.dart';
-import '../sheets/record_as_given_sheet.dart';
-import '../sheets/skip_weigh_in_sheet.dart';
-import '../../domain/occurrence_display.dart';
+import 'package:pet_profile_app/core/providers/analytics_providers.dart';
+import 'package:pet_profile_app/core/utils/calendar_date_picker.dart';
+import 'package:pet_profile_app/core/weight/weight_unit.dart';
+import 'package:pet_profile_app/core/weight/weight_unit_preference.dart';
+import 'package:pet_profile_app/l10n/app_localizations.dart';
+import 'package:pet_profile_app/features/care_item/care_item.dart';
 
 /// Primary and secondary actions for one occurrence (§18.6.4): open →
 /// required inputs, "When was this done?", Done, Skip, Change date;

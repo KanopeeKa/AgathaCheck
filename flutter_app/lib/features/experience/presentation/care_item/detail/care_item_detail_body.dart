@@ -3,11 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-import '../../../../core/care/care_item_observation_section.dart';
-import '../../../../l10n/app_localizations.dart';
-import '../../../pet_care/pet_care.dart';
-import '../../../pet_profile/pet_profile.dart';
-import '../../../health_tracking/health_tracking.dart';
+import 'package:pet_profile_app/core/care/care_item_observation_section.dart';
+import 'package:pet_profile_app/l10n/app_localizations.dart';
+import 'package:pet_profile_app/features/pet_care/pet_care.dart';
+import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
+import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import 'care_item_absence_section.dart';
 import 'care_item_dates_section.dart';
 import 'care_item_needs_attention_section.dart';

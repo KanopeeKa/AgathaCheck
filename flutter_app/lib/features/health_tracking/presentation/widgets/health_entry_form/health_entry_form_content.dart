@@ -8,6 +8,7 @@ import '../../../../../l10n/app_localizations.dart';
 import 'health_entry_advanced_settings_section.dart';
 import 'health_entry_care_family_section.dart';
 import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
+import '../../providers/care_provider_contacts_provider.dart';
 import '../../../domain/entities/health_entry.dart';
 import '../../controllers/health_entry_form_controller.dart';
 import '../entry_due_completed_row.dart';
@@ -51,6 +52,8 @@ class HealthEntryFormContent extends ConsumerWidget {
       healthEntryFormControllerProvider(params).notifier,
     );
     final petListAsync = ref.watch(petListProvider);
+    final providerContactsAsync = ref.watch(careProviderContactOptionsProvider);
+    final providerContacts = providerContactsAsync.valueOrNull ?? const [];
     final theme = Theme.of(context);
 
     return Form(
@@ -216,6 +219,9 @@ class HealthEntryFormContent extends ConsumerWidget {
               onPickGallery: documents.pickDocument,
               onDeletePhoto: documents.deletePhoto,
               onRemovePendingPhoto: controller.removePendingPhoto,
+              providerContacts: providerContacts,
+              providerContactsLoading: providerContactsAsync.isLoading,
+              providerContactsError: providerContactsAsync.hasError,
             ),
           ],
           if (includeActionsBar) ...[const SizedBox(height: 24), actionsBar],

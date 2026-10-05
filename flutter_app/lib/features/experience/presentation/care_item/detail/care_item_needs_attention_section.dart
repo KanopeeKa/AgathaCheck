@@ -2,18 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-import '../../../../core/providers/analytics_providers.dart';
-import '../../../../core/widgets/app_undo_snackbar.dart';
-import '../../../../core/router/shell_return_navigation.dart';
-import '../../../../l10n/app_localizations.dart';
-import '../../application/care_stack_feedback.dart';
-import '../../care_item.dart';
-import '../../domain/occurrence_display.dart';
+import 'package:pet_profile_app/core/providers/analytics_providers.dart';
+import 'package:pet_profile_app/core/widgets/app_undo_snackbar.dart';
+import 'package:pet_profile_app/core/router/shell_return_navigation.dart';
+import 'package:pet_profile_app/l10n/app_localizations.dart';
+import 'package:pet_profile_app/features/care_item/care_item.dart';
 import 'package:pet_profile_app/features/pet_care/pet_care.dart';
-import '../../../../core/widgets/care_mark_done_button.dart';
-import '../../../health_tracking/health_tracking.dart';
-import '../sheets/plan_another_date_sheet.dart';
-import '../sheets/postpone_sheet.dart';
+import 'package:pet_profile_app/core/widgets/care_mark_done_button.dart';
+import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import 'care_occurrence_menu.dart';
 
 CareItemStatusTone _pillTone(OccurrencePillTone tone) => switch (tone) {

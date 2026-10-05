@@ -6,6 +6,7 @@ import '../../features/experience/experience.dart';
 import '../../l10n/app_localizations.dart';
 import '../../features/people/people.dart';
 import 'away_routes.dart';
+import 'share_pet_route_args.dart';
 import '../../features/sharing/sharing.dart';
 import '../../features/pet_tags/pet_tags.dart';
 import '../../features/pet_profile/pet_profile.dart';

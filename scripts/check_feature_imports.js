@@ -9,8 +9,10 @@
  *   R3 cross-feature-presentation anything outside feature X imports features/X/presentation/**
  *                                 (composition layer exempt: features/experience/**, core/router/**, lib/*.dart)
  *   R4 new-feature-edge           a feature → feature edge that is not in the baseline edge list
+ *   R5 feature-cycle              any multi-feature strongly connected component (not baselined)
  *   R6 non-public-cross-feature-import  cross-feature import/export must target features/<name>/<name>.dart
  *   R7 entrypoint-exports-data    feature entrypoint must not export features/<name>/data/**
+ *   R8 layer-order                feature edge violates ADR 0002 layer direction (not baselined)
  *
  * Usage:
  *   node scripts/check_feature_imports.js                     # check against baseline
@@ -31,9 +33,45 @@ const RULES = {
   R2: 'cross-feature-data',
   R3: 'cross-feature-presentation',
   R4: 'new-feature-edge',
+  R5: 'feature-cycle',
   R6: 'non-public-cross-feature-import',
   R7: 'entrypoint-exports-data',
+  R8: 'layer-order',
 };
+
+/** ADR 0002 layer indices (higher may import lower). */
+const FEATURE_LAYER = {
+  auth: 1,
+  care_taxonomy: 2,
+  care_item: 2,
+  pet_profile: 3,
+  vet: 4,
+  people: 4,
+  pet_tags: 4,
+  sharing: 4,
+  notifications: 4,
+  weight_tracking: 4,
+  health_tracking: 4,
+  care_intelligence: 5,
+  pet_care: 5,
+  experience: 6,
+  subscription: 7,
+  about: 7,
+  help: 7,
+};
+
+const D21_FORBIDDEN_FROM_PET_PROFILE = new Set([
+  'health_tracking',
+  'weight_tracking',
+  'pet_care',
+  'sharing',
+  'vet',
+  'notifications',
+  'care_intelligence',
+  'people',
+]);
+
+const NON_BASELINABLE_RULES = new Set(['R5', 'R8']);
 
 const LIB = 'flutter_app/lib';
 const DIRECTIVE = /^\s*(?:import|export|part)\s+['"]([^'"]+)['"]/gm;
@@ -263,8 +301,37 @@ function headSha(root) {
   }
 }
 
+function layerOrderViolation(fromFeature, toFeature) {
+  const fromLayer = FEATURE_LAYER[fromFeature];
+  const toLayer = FEATURE_LAYER[toFeature];
+  if (fromLayer === undefined || toLayer === undefined) return false;
+  // Domain → experience is enforced as R1, not a duplicate R8 failure.
+  if (toFeature === 'experience' && fromFeature && fromFeature !== 'experience') return false;
+  if (fromFeature === 'experience') return toLayer >= 6 && toFeature !== 'experience';
+  if (fromLayer === 7) return toFeature !== 'auth';
+  if (fromFeature === 'care_item') return true;
+  if (fromFeature === 'pet_profile' && D21_FORBIDDEN_FROM_PET_PROFILE.has(toFeature)) return true;
+  if (fromLayer === 4 && toLayer === 4 && fromFeature !== toFeature) return true;
+  if (fromLayer === 5 && toLayer === 5 && fromFeature !== toFeature) return true;
+  if (fromLayer < toLayer) return true;
+  return false;
+}
+
+function featureCycleViolations(edgeKeys) {
+  return stronglyConnected(edgeKeys).map((comp) => `R5|scc|${comp.join(',')}`);
+}
+
+function layerOrderViolations(edgeKeys) {
+  return edgeKeys
+    .filter((key) => {
+      const [from, to] = key.split('->');
+      return layerOrderViolation(from, to);
+    })
+    .map((key) => `R8|${key}`);
+}
+
 function countByRule(ids) {
-  const counts = { R1: 0, R2: 0, R3: 0, R6: 0, R7: 0 };
+  const counts = { R1: 0, R2: 0, R3: 0, R5: 0, R6: 0, R7: 0, R8: 0 };
   for (const id of ids) {
     const key = id.split('|')[0];
     if (counts[key] !== undefined) counts[key] += 1;
@@ -277,11 +344,11 @@ function writeBaseline(file, data) {
   fs.writeFileSync(file, `${JSON.stringify(data, null, 2)}\n`);
 }
 
-function printSummary(current, edgeKeys) {
-  const counts = countByRule(current.violations);
+function printSummary(current, edgeKeys, structural = []) {
+  const counts = countByRule([...current.violations, ...structural]);
   console.log(
     `check_feature_imports: R1=${counts.R1} R2=${counts.R2} R3=${counts.R3} ` +
-      `R6=${counts.R6} R7=${counts.R7} ` +
+      `R5=${counts.R5} R6=${counts.R6} R7=${counts.R7} R8=${counts.R8} ` +
       `feature edges=${edgeKeys.length}`,
   );
   const sccs = stronglyConnected(edgeKeys);
@@ -292,9 +359,10 @@ function main() {
   const opts = parseArgs(process.argv);
   const current = scan(opts.root);
   const edgeKeys = [...current.edges.keys()].sort();
+  const structural = [...featureCycleViolations(edgeKeys), ...layerOrderViolations(edgeKeys)];
 
   if (opts.mode === 'summary') {
-    printSummary(current, edgeKeys);
+    printSummary(current, edgeKeys, structural);
     return 0;
   }
   if (opts.mode === 'init') {
@@ -312,7 +380,7 @@ function main() {
       edges: edgeKeys,
       exceptions: [],
     });
-    printSummary(current, edgeKeys);
+    printSummary(current, edgeKeys, structural);
     console.log(`check_feature_imports: wrote ${path.relative(opts.root, opts.baseline)}`);
     return 0;
   }
@@ -331,7 +399,18 @@ function main() {
   const staleEdges = baseline.edges.filter((e) => !current.edges.has(e));
 
   if (opts.mode === 'update' || opts.mode === 'accept') {
+    if (structural.length) {
+      console.error('check_feature_imports: R5/R8 structural violations must be fixed before baseline changes');
+      structural.forEach((id) => console.error(`  ${id}`));
+      return 1;
+    }
     const added = opts.mode === 'accept' ? [...newViolations, ...newEdges] : [];
+    const nonBaselinable = added.filter((id) => NON_BASELINABLE_RULES.has(id.split('|')[0]));
+    if (nonBaselinable.length) {
+      console.error('check_feature_imports: R5/R8 cannot be baselined — fix the graph/layers');
+      nonBaselinable.forEach((id) => console.error(`  ${id}`));
+      return 1;
+    }
     if (opts.mode === 'update' && (newViolations.length || newEdges.length)) {
       console.error('check_feature_imports: new violations present — fix them; --update-baseline only removes entries');
       [...newViolations, ...newEdges].forEach((id) => console.error(`  NEW ${id}`));
@@ -356,8 +435,13 @@ function main() {
     return 0;
   }
 
-  printSummary(current, edgeKeys);
+  printSummary(current, edgeKeys, structural);
   let failed = false;
+  if (structural.length) {
+    failed = true;
+    console.error('check_feature_imports: structural violations (R5 cycles / R8 layer order):');
+    structural.forEach((id) => console.error(`  NEW ${id}`));
+  }
   if (newViolations.length || newEdges.length) {
     failed = true;
     console.error('check_feature_imports: new cross-feature import violations (see docs/architecture/modularity.md):');
@@ -389,6 +473,9 @@ module.exports = {
   classify,
   classifyRules,
   stronglyConnected,
+  featureCycleViolations,
+  layerOrderViolation,
+  layerOrderViolations,
   resolveSpec,
   isEntrypoint,
   entrypointRel,

@@ -9,5 +9,5 @@ export 'presentation/providers/care_recommendations_provider.dart';
 export 'presentation/widgets/care_safeguard_card.dart';
 export 'presentation/widgets/care_suggestion_card.dart';
 export 'presentation/widgets/pet_profile_care_safeguard_section.dart';
-export 'presentation/widgets/pet_profile_care_suggestion_section.dart';
+export 'presentation/pet_care_presentation_policy.dart';
 export 'presentation/widgets/weight_management_context_selector.dart';

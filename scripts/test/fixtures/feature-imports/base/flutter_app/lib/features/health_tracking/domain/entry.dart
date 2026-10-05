@@ -1,2 +1,2 @@
-// Baselined R2: relative import of another feature data layer.
-import '../../vet/data/vet_store.dart';
+// R2 cross-feature data violation is injected in dedicated tests.
+library;

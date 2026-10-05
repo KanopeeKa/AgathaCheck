@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../l10n/app_localizations.dart';
-import 'package:pet_profile_app/features/vet/vet.dart';
+import 'package:pet_profile_app/core/widgets/contact_initials_avatar.dart';
 import '../../domain/entities/person_roster_entry.dart';
 
 /// Directory card aligned with [VetTeamCard] styling for People hub and desk.
@@ -59,7 +59,7 @@ class PeopleDirectoryCard extends StatelessWidget {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    VetTeamInitialsAvatar(
+                    ContactInitialsAvatar(
                       name: entry.displayName,
                       organizationId: null,
                     ),

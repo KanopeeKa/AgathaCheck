@@ -1,2 +1,9 @@
-// Baselined R1: domain feature imports the Experience shell.
-import 'package:fixture_app/features/experience/presentation/shell.dart';
+// Placeholder screen for fixture tests (R1 violation is injected per test).
+import 'package:flutter/material.dart';
+
+class PetProfilePlaceholder extends StatelessWidget {
+  const PetProfilePlaceholder({super.key});
+
+  @override
+  Widget build(BuildContext context) => const SizedBox.shrink();
+}

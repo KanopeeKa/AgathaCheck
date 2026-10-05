@@ -1,27 +1,39 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../l10n/app_localizations.dart';
-import 'package:pet_profile_app/features/people/people.dart';
+
+/// Lightweight contact row for the care provider picker (no People feature import).
+class CareProviderContactOption {
+  const CareProviderContactOption({required this.id, required this.name});
+
+  final String id;
+  final String name;
+}
 
 /// Default provider on a care item: contact picker or interim typed name (D-CIE-016).
-class CareProviderField extends ConsumerStatefulWidget {
+class CareProviderField extends StatefulWidget {
   const CareProviderField({
     super.key,
     this.contactId,
     this.typedName,
     required this.onChanged,
+    this.contacts = const [],
+    this.contactsLoading = false,
+    this.contactsError = false,
   });
 
   final String? contactId;
   final String? typedName;
   final void Function({String? contactId, String? typedName}) onChanged;
+  final List<CareProviderContactOption> contacts;
+  final bool contactsLoading;
+  final bool contactsError;
 
   @override
-  ConsumerState<CareProviderField> createState() => _CareProviderFieldState();
+  State<CareProviderField> createState() => _CareProviderFieldState();
 }
 
-class _CareProviderFieldState extends ConsumerState<CareProviderField> {
+class _CareProviderFieldState extends State<CareProviderField> {
   late final TextEditingController _typedController;
   bool _useTyped = false;
 
@@ -41,7 +53,6 @@ class _CareProviderFieldState extends ConsumerState<CareProviderField> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    final contactsAsync = ref.watch(peopleContactsProvider);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -76,29 +87,22 @@ class _CareProviderFieldState extends ConsumerState<CareProviderField> {
             onChanged: (v) =>
                 widget.onChanged(contactId: null, typedName: v.trim()),
           )
+        else if (widget.contactsLoading)
+          const LinearProgressIndicator()
+        else if (widget.contactsError)
+          Text(l.careProviderContactsUnavailable)
         else
-          contactsAsync.when(
-            data: (contacts) {
-              return DropdownButtonFormField<String?>(
-                initialValue: widget.contactId,
-                decoration: InputDecoration(
-                  labelText: l.careProviderChooseContact,
-                ),
-                items: [
-                  DropdownMenuItem<String?>(value: null, child: Text(l.none)),
-                  ...contacts.map(
-                    (c) => DropdownMenuItem<String?>(
-                      value: c.id,
-                      child: Text(c.name),
-                    ),
-                  ),
-                ],
-                onChanged: (id) =>
-                    widget.onChanged(contactId: id, typedName: null),
-              );
-            },
-            loading: () => const LinearProgressIndicator(),
-            error: (_, __) => Text(l.careProviderContactsUnavailable),
+          DropdownButtonFormField<String?>(
+            initialValue: widget.contactId,
+            decoration: InputDecoration(labelText: l.careProviderChooseContact),
+            items: [
+              DropdownMenuItem<String?>(value: null, child: Text(l.none)),
+              ...widget.contacts.map(
+                (c) =>
+                    DropdownMenuItem<String?>(value: c.id, child: Text(c.name)),
+              ),
+            ],
+            onChanged: (id) => widget.onChanged(contactId: id, typedName: null),
           ),
       ],
     );

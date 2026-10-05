@@ -2,8 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:pet_profile_app/features/care_intelligence/domain/entities/care_recommendation.dart';
 import 'package:pet_profile_app/features/care_intelligence/domain/entities/care_safeguard.dart';
-import 'package:pet_profile_app/features/pet_care/presentation/pet_care_presentation_policy.dart';
-import 'package:pet_profile_app/features/pet_care/progression/domain/entities/care_pending_moment.dart';
+import 'package:pet_profile_app/features/care_intelligence/presentation/pet_care_presentation_policy.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/care_family.dart';
 
 CareRecommendation _rec({
@@ -42,21 +41,6 @@ CareSafeguard _safeguard({
   );
 }
 
-CarePendingMoment _moment({
-  required String petId,
-  String bundleId = 'bundle-1',
-  bool includesFirstCare = false,
-}) {
-  return CarePendingMoment(
-    petId: petId,
-    bundleId: bundleId,
-    primaryMilestoneType: 'weight_monitoring_established',
-    includesFirstCare: includesFirstCare,
-    achievedAt: DateTime.utc(2026, 9, 9),
-    milestones: const [],
-  );
-}
-
 void main() {
   const policy = PetCarePresentationPolicy();
 
@@ -91,45 +75,7 @@ void main() {
     expect(rec, isNull);
   });
 
-  test('profileMilestoneMoment suppressed when safeguard active', () {
-    final moment = policy.profileMilestoneMoment(
-      _moment(petId: 'pet-1'),
-      activeSafeguard: _safeguard(id: 'sg-1'),
-    );
-    expect(moment, isNull);
-  });
-
-  test('profileMilestoneMoment suppressed when suggestion active', () {
-    final moment = policy.profileMilestoneMoment(
-      _moment(petId: 'pet-1'),
-      activeSuggestion: _rec(id: 'pending'),
-    );
-    expect(moment, isNull);
-  });
-
-  test('profileMilestoneMoment shown when no safeguard or suggestion', () {
-    final input = _moment(petId: 'pet-1', bundleId: 'bundle-a');
-    final moment = policy.profileMilestoneMoment(input);
-    expect(moment?.bundleId, 'bundle-a');
-  });
-
-  test('dashboardMilestoneMoment returns at most one moment across pets', () {
-    final moment = policy.dashboardMilestoneMoment({
-      'pet-1': null,
-      'pet-2': _moment(petId: 'pet-2', bundleId: 'bundle-b'),
-      'pet-3': _moment(petId: 'pet-3', bundleId: 'bundle-c'),
-    });
-    expect(moment?.bundleId, 'bundle-b');
-  });
-
-  test('dashboardMilestoneMoment suppressed when suggestion active', () {
-    final moment = policy.dashboardMilestoneMoment({
-      'pet-1': _moment(petId: 'pet-1'),
-    }, activeSuggestion: _rec(id: 'pending'));
-    expect(moment, isNull);
-  });
-
-  test('dashboardSafeguard beats milestone and suggestion', () {
+  test('dashboardSafeguard suppresses dashboard suggestion', () {
     final safeguard = policy.dashboardSafeguard({
       'pet-2': [_safeguard(id: 'sg-2', petId: 'pet-2')],
     });
@@ -138,13 +84,7 @@ void main() {
     final suggestion = policy.dashboardSuggestion({
       'pet-1': [_rec(id: 'pending')],
     }, activeSafeguard: safeguard);
-    final moment = policy.dashboardMilestoneMoment(
-      {'pet-1': _moment(petId: 'pet-1')},
-      activeSafeguard: safeguard,
-      activeSuggestion: suggestion,
-    );
     expect(suggestion, isNull);
-    expect(moment, isNull);
   });
 
   test('profileSafeguard returns first active safeguard', () {

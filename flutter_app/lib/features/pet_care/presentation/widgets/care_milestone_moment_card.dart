@@ -46,7 +46,6 @@ class _CareMilestoneMomentCardState
             bundleId: widget.moment.bundleId,
           );
       ref.invalidate(petPendingCareMomentsProvider(widget.petId));
-      ref.invalidate(petProfileCareMilestoneProvider(widget.petId));
     } catch (_) {
       _acknowledged = false;
     }

@@ -4,23 +4,15 @@ import '../../../../core/utils/calendar_date.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/health_history_entry.dart';
+import '../../domain/health_entry_series_closed.dart';
 import 'health_entry_form/health_entry_frequency_labels.dart';
+
+export '../../domain/health_entry_series_closed.dart'
+    show isHealthEntrySeriesClosedAt;
 
 /// Whether the event series is closed (W15 close or one-time completed).
 bool isHealthEntrySeriesClosed(HealthEntry entry) {
   return isHealthEntrySeriesClosedAt(entry, DateTime.now());
-}
-
-/// Closed-series check using an explicit evaluation instant (tests, grouping).
-bool isHealthEntrySeriesClosedAt(HealthEntry entry, DateTime now) {
-  if (entry.status == 'completed') return true;
-  if (entry.frequency == HealthFrequency.once) {
-    return entry.isCompleted;
-  }
-  if (entry.repeatEndDate == null) return false;
-  final today = calendarDateOnly(now);
-  final end = calendarDateOnly(entry.repeatEndDate!);
-  return end.isBefore(today);
 }
 
 /// Whether closing the event will also close associated occurrences.
