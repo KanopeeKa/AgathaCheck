@@ -3,7 +3,6 @@ import { expect } from '@playwright/test';
 import {
   dismissConsentBannerIfPresent,
   expectAppBarTitle,
-  filterChipByName,
   flutterGotoUrl,
   flutterRoutePath,
   isExperienceShellVisible,
@@ -22,26 +21,36 @@ import {
 export class NotificationsPage {
   constructor(private readonly page: Page) {}
 
-  /** Empty-state copy — Flutter web often merges drawer body text into the group name. */
+  /** Empty-state copy — v2 Activity/For you tabs; legacy full-screen used "No notifications". */
   private emptyStateLocator() {
     return this.page
-      .getByText(/No notifications|Aucune notification/i)
+      .getByText(
+        /No notifications|Aucune notification|Nothing new\.|Rien de nouveau|No suggestions right now|Pas de suggestion/i,
+      )
       .or(
         this.page.getByRole('group', {
-          name: /No notifications|Aucune notification/i,
+          name: /No notifications|Aucune notification|Nothing new|Rien de nouveau/i,
         }),
       )
       .or(
         this.page.getByRole('region', {
-          name: /No notifications|Aucune notification/i,
+          name: /No notifications|Aucune notification|Nothing new|Rien de nouveau/i,
         }),
       );
   }
 
-  /** Notification rows — tile semantics: "Care, Overdue, {title}, …" (v2 panel). */
+  /** v2 inbox tabs (replaced legacy All / Care / Organisation kind chips). */
+  private inboxTabLocator(label: RegExp) {
+    return this.page
+      .getByRole('button', { name: label })
+      .or(this.page.getByRole('tab', { name: label }))
+      .first();
+  }
+
+  /** Notification rows — tile semantics include kind, type label, and title. */
   private notificationRowLocator() {
     return this.page.getByRole('button', {
-      name: /(?:Care|Organisation|Soins).*(?:Overdue|Due Soon|Reminder|Completed|General|En retard|Bientôt)/i,
+      name: /(?:Care|Organisation|Soins).*(?:Overdue|Due Soon|Reminder|Completed|General|En retard|Bientôt|Action needed|Unread|Lu|Read)/i,
     });
   }
 
@@ -98,14 +107,17 @@ export class NotificationsPage {
 
   /** Wait for the notification panel slide-over to be visible. */
   async expectPanelLoaded(): Promise<void> {
-    // Kind-filter chips live only inside the endDrawer — unlike a generic Close
-    // button they cannot false-positive from unrelated page chrome (PR #397 gap).
+    // v2 tabs + mark-all live only inside the endDrawer (no legacy kind chips).
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      const allChip = filterChipByName(this.page, /^All$|^Tout$/i).and(
+      const activityTab = this.inboxTabLocator(/^Activity$|^Activité$/i).and(
         this.page.locator(':visible'),
       );
-      await allChip.waitFor({ timeout: 5_000 });
+      await activityTab.waitFor({ timeout: 5_000 });
+      const forYouTab = this.inboxTabLocator(/^For you$|^Pour vous$/i).and(
+        this.page.locator(':visible'),
+      );
+      await forYouTab.waitFor({ timeout: 5_000 });
       const markAll = this.page
         .getByRole('button', { name: /Mark all as read|Tout marquer comme lu/i })
         .or(
