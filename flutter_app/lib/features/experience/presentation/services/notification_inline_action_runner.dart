@@ -6,20 +6,23 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
+import '../../../notifications/domain/entities/app_notification.dart';
+import '../../../notifications/domain/services/notification_inline_action_support.dart';
+import '../../../notifications/domain/services/notification_inline_actions.dart'
+    show NotificationInlineActions, StaleNotificationException;
+import '../../../notifications/presentation/providers/notification_providers.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../../sharing/domain/entities/invite_preview.dart';
 import '../../../sharing/domain/entities/pet_access.dart';
 import '../../../sharing/presentation/providers/sharing_providers.dart';
-import '../../domain/entities/app_notification.dart';
-import '../../domain/services/notification_inline_action_support.dart';
-import '../providers/notification_providers.dart';
 
-/// Executes inline Accept / Decline for needs-response notifications (PR4).
-class NotificationInlineActionRunner {
-  NotificationInlineActionRunner(this.ref);
+/// Experience-layer implementation of [NotificationInlineActions] (PR4).
+class NotificationInlineActionRunner implements NotificationInlineActions {
+  NotificationInlineActionRunner(this._ref);
 
-  final WidgetRef ref;
+  final WidgetRef _ref;
 
+  @override
   Future<void> accept(
     BuildContext context,
     AppNotification notification,
@@ -32,10 +35,11 @@ class NotificationInlineActionRunner {
       case NotificationInlineActionKind.householdInvite:
         _openInviteLanding(context, notification);
     }
-    await ref.read(notificationsProvider.notifier).refresh();
-    ref.invalidate(petListProvider);
+    await _ref.read(notificationsProvider.notifier).refresh();
+    _ref.invalidate(petListProvider);
   }
 
+  @override
   Future<void> declineWithUndoSnackBar(
     BuildContext context,
     AppNotification notification,
@@ -67,7 +71,7 @@ class NotificationInlineActionRunner {
     if (undone || !context.mounted) return;
 
     await _declineImmediate(notification);
-    await ref.read(notificationsProvider.notifier).refresh();
+    await _ref.read(notificationsProvider.notifier).refresh();
   }
 
   Future<void> _declineImmediate(AppNotification notification) async {
@@ -90,7 +94,7 @@ class NotificationInlineActionRunner {
     if (code == null || code.isEmpty) {
       throw Exception('Missing invite code');
     }
-    final repo = ref.read(sharingRepositoryProvider);
+    final repo = _ref.read(sharingRepositoryProvider);
     final preview = await repo.getInvitePreview(code);
     if (!preview.isPending) {
       throw StaleNotificationException();
@@ -103,7 +107,7 @@ class NotificationInlineActionRunner {
     );
     if (confirmed != true || !context.mounted) return;
 
-    final token = ref.read(authProvider).accessToken;
+    final token = _ref.read(authProvider).accessToken;
     if (token == null) throw Exception('Not authenticated');
     await repo.acceptInviteByCode(code, token);
   }
@@ -117,16 +121,14 @@ class NotificationInlineActionRunner {
   Future<void> _declineShareInvite(AppNotification notification) async {
     final code = notification.healthEntryId;
     if (code == null || code.isEmpty) throw Exception('Missing invite code');
-    final token = ref.read(authProvider).accessToken;
+    final token = _ref.read(authProvider).accessToken;
     if (token == null) throw Exception('Not authenticated');
-    final repo = ref.read(sharingRepositoryProvider);
+    final repo = _ref.read(sharingRepositoryProvider);
     final preview = await repo.getInvitePreview(code);
     if (!preview.isPending) throw StaleNotificationException();
     await repo.declineInvite(preview.inviteId, token);
   }
 }
-
-class StaleNotificationException implements Exception {}
 
 class _ShareInviteConfirmSheet extends StatelessWidget {
   const _ShareInviteConfirmSheet({required this.preview});
