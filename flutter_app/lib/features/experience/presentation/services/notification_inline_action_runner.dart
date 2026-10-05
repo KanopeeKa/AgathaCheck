@@ -9,6 +9,7 @@ import 'package:pet_profile_app/features/notifications/notifications.dart';
 import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 import 'package:pet_profile_app/features/sharing/sharing.dart';
 
+import '../../../../core/widgets/app_undo_snackbar.dart';
 import '../../../../l10n/app_localizations.dart';
 
 /// Experience-layer implementation of [NotificationInlineActions] (PR4).
@@ -72,7 +73,9 @@ class NotificationInlineActionRunner implements NotificationInlineActions {
     messenger.showSnackBar(
       SnackBar(
         content: Text(l.declineShare),
-        duration: const Duration(seconds: 5),
+        duration: kUndoSnackBarDuration,
+        persist: false,
+        showCloseIcon: true,
         action: SnackBarAction(
           label: l.notificationInlineUndo,
           onPressed: () {
@@ -83,7 +86,7 @@ class NotificationInlineActionRunner implements NotificationInlineActions {
       ),
     );
     unawaited(
-      Future<void>.delayed(const Duration(seconds: 5)).then((_) {
+      Future<void>.delayed(kUndoSnackBarDuration).then((_) {
         if (!done.isCompleted) done.complete();
       }),
     );
