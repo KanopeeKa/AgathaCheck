@@ -17,7 +17,7 @@ class PetFormSubmitDeps {
 
   final List<Pet> Function() readPets;
   final WeightUnit Function() readWeightUnit;
-  final Future<void> Function({
+  final Future<String> Function({
     required String name,
     required String species,
     String breed,
@@ -31,7 +31,6 @@ class PetFormSubmitDeps {
     String chipId,
     bool chipDismissed,
     String? photoPath,
-    String? vetId,
     String? organizationId,
   })
   addPet;
@@ -57,28 +56,24 @@ class PetFormSubmitDeps {
             String chipId = '',
             bool chipDismissed = false,
             String? photoPath,
-            String? vetId,
             String? organizationId,
           }) async {
-            await ref
-                .read(petListProvider.notifier)
-                .addPet(
-                  name: name,
-                  species: species,
-                  breed: breed,
-                  dateOfBirth: dateOfBirth,
-                  weight: weight,
-                  gender: gender,
-                  bio: bio,
-                  insurance: insurance,
-                  neuteredDate: neuteredDate,
-                  neuterDismissed: neuterDismissed,
-                  chipId: chipId,
-                  chipDismissed: chipDismissed,
-                  photoPath: photoPath,
-                  vetId: vetId,
-                  organizationId: organizationId,
-                );
+            return ref.read(petListProvider.notifier).addPet(
+              name: name,
+              species: species,
+              breed: breed,
+              dateOfBirth: dateOfBirth,
+              weight: weight,
+              gender: gender,
+              bio: bio,
+              insurance: insurance,
+              neuteredDate: neuteredDate,
+              neuterDismissed: neuterDismissed,
+              chipId: chipId,
+              chipDismissed: chipDismissed,
+              photoPath: photoPath,
+              organizationId: organizationId,
+            );
           },
       updatePet: (pet) => ref.read(petListProvider.notifier).updatePet(pet),
     );
@@ -103,28 +98,24 @@ class PetFormSubmitDeps {
             String chipId = '',
             bool chipDismissed = false,
             String? photoPath,
-            String? vetId,
             String? organizationId,
           }) async {
-            await ref
-                .read(petListProvider.notifier)
-                .addPet(
-                  name: name,
-                  species: species,
-                  breed: breed,
-                  dateOfBirth: dateOfBirth,
-                  weight: weight,
-                  gender: gender,
-                  bio: bio,
-                  insurance: insurance,
-                  neuteredDate: neuteredDate,
-                  neuterDismissed: neuterDismissed,
-                  chipId: chipId,
-                  chipDismissed: chipDismissed,
-                  photoPath: photoPath,
-                  vetId: vetId,
-                  organizationId: organizationId,
-                );
+            return ref.read(petListProvider.notifier).addPet(
+              name: name,
+              species: species,
+              breed: breed,
+              dateOfBirth: dateOfBirth,
+              weight: weight,
+              gender: gender,
+              bio: bio,
+              insurance: insurance,
+              neuteredDate: neuteredDate,
+              neuterDismissed: neuterDismissed,
+              chipId: chipId,
+              chipDismissed: chipDismissed,
+              photoPath: photoPath,
+              organizationId: organizationId,
+            );
           },
       updatePet: (pet) => ref.read(petListProvider.notifier).updatePet(pet),
     );

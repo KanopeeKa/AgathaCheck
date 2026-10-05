@@ -45,6 +45,4 @@ abstract class CareContextRepository {
   Future<PlannedAbsence> cancelPlannedAbsence(String absenceId);
 
   Future<Map<String, String>> getAbsenceResolutionNotes(String absenceId);
-
-  Future<List<Map<String, dynamic>>> getPetPeopleRelationships(String petId);
 }

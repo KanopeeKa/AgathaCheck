@@ -7,6 +7,7 @@ import '../../../../core/utils/calendar_date_picker.dart';
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/pet.dart';
+import '../../../people/people.dart';
 import '../controllers/pet_form_controller.dart';
 import '../controllers/pet_form_error_messages.dart';
 import '../controllers/pet_form_outcomes.dart';
@@ -39,7 +40,6 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
   final _insuranceController = TextEditingController();
   final _chipIdController = TextEditingController();
 
-  String? _selectedVetId;
   DateTime? _neuteredDate;
   bool? _isNeutered;
   bool _passedAway = false;
@@ -173,7 +173,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
     super.dispose();
   }
 
-  void _populateForm(Pet pet) {
+  void _populateForm(Pet pet, {String? primaryVetContactId}) {
     _suppressDirty = true;
     _nameController.text = pet.name;
     _breedController.text = pet.breed;
@@ -181,7 +181,6 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
     _bioController.text = pet.bio;
     _insuranceController.text = pet.insurance;
     _chipIdController.text = pet.chipId;
-    _selectedVetId = pet.vetId;
     _neuteredDate = pet.neuteredDate;
     _isNeutered = pet.neuteredDate != null
         ? true
@@ -192,6 +191,11 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
     _isShared = pet.isShared;
 
     _controller.populateForm(pet);
+    if (primaryVetContactId != null) {
+      _controller.state = _controller.state.copyWith(
+        selectedPrimaryVetContactId: primaryVetContactId,
+      );
+    }
     _controller.captureBaseline();
     _suppressDirty = false;
   }
@@ -279,6 +283,19 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
     );
   }
 
+  Future<void> _savePrimaryVetSlotIfNeeded(String petId) async {
+    final selected = _controller.state.selectedPrimaryVetContactId;
+    final baseline = _controller.baselinePrimaryVetContactId;
+    if (selected == baseline) return;
+    final commands = ref.read(peopleCommandsProvider);
+    await commands.setPetSlot(
+      contactId: selected ?? baseline ?? '',
+      petId: petId,
+      slotKind: RelationshipKind.primaryVet,
+      slotContactId: selected,
+    );
+  }
+
   Future<void> _savePet() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -306,7 +323,12 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(petFormSubmitErrorMessage(l, kind))),
           );
-        case PetFormSubmitSuccess():
+        case PetFormSubmitSuccess(:final petId):
+          final targetPetId = petId ?? widget.petId;
+          if (targetPetId != null) {
+            await _savePrimaryVetSlotIfNeeded(targetPetId);
+          }
+          if (!mounted) return;
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(SnackBar(content: Text(l.petFormPetSaved)));
@@ -334,9 +356,32 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
         ),
         data: (pet) {
           if (pet != null && !_isInitialized) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
+            WidgetsBinding.instance.addPostFrameCallback((_) async {
+              PetPeople? petPeople;
+              try {
+                petPeople = ref.read(petPeopleProvider(pet.id)).valueOrNull;
+                petPeople ??= await ref.read(petPeopleProvider(pet.id).future);
+              } catch (_) {
+                petPeople = null;
+              }
+              var selectedId = primaryVetRelationship(petPeople)?.contactId;
+              if (selectedId == null && pet.vetId != null) {
+                try {
+                  final contacts =
+                      await ref.read(peopleContactsProvider.future);
+                  selectedId = contacts
+                      .where((c) => c.legacyVetId == pet.vetId)
+                      .map((c) => c.id)
+                      .firstOrNull;
+                } catch (_) {
+                  selectedId = ref.read(
+                    peopleContactIdForLegacyVetProvider(pet.vetId!),
+                  );
+                }
+              }
+              if (!mounted) return;
               setState(() {
-                _populateForm(pet);
+                _populateForm(pet, primaryVetContactId: selectedId);
                 _isInitialized = true;
               });
             });
@@ -391,7 +436,8 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
           bioController: _bioController,
           insuranceController: _insuranceController,
           chipIdController: _chipIdController,
-          selectedVetId: _selectedVetId,
+          selectedPrimaryVetContactId:
+              _controller.state.selectedPrimaryVetContactId,
           neuteredDate: _neuteredDate,
           isNeutered: _isNeutered,
           onChangePhoto: _pickImage,
@@ -418,8 +464,10 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
             _controller.state = _controller.state.copyWith(neuteredDate: null);
             _markDirty();
           },
-          onVetSelected: (value) {
-            setState(() => _selectedVetId = value);
+          onPrimaryVetContactIdChanged: (value) {
+            _controller.state = _controller.state.copyWith(
+              selectedPrimaryVetContactId: value,
+            );
             _markDirty();
           },
           onSave: _savePet,

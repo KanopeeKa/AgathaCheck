@@ -95,9 +95,9 @@ flutter_app/lib/features/organization/**
 
 **Exit criteria:**
 
-- [ ] B7 regression (report vet coordinates) and B8 regression (inactive not offered; unknown current renders) kept green in their new locations
-- [ ] Widget tests for each migrated field (selection, clear, quick add, typed name for provider)
-- [ ] No file in pet_profile, health_tracking or pet_care imports People internals; `--e2e-shards` (from `shard-files.mjs --summary`) green
+- [x] B7 regression (report vet coordinates) and B8 regression (inactive not offered; unknown current renders) kept green in their new locations
+- [x] Widget tests for each migrated field (selection, clear, quick add, typed name for provider)
+- [x] No file in pet_profile, health_tracking or pet_care imports People internals; `--e2e-shards` (from `shard-files.mjs --summary`) green
 
 ---
 
@@ -339,10 +339,10 @@ server/**
 
 ```yaml
 autonomy: active
-current_phase: i1-consumers
-last_completed_phase: null
+current_phase: i2-pet-people
+last_completed_phase: i1-consumers
 halt_reason: null
-next_action: "continue phase i1-consumers on branch cursor/people-integration-i1-consumers-7f3b"
+next_action: "start phase i2-pet-people on branch cursor/people-integration-i2-pet-people-7f3b"
 artifact_ref:
   branch: cursor/people-client-integration-integration-7f3b
   plan_path: .agents/plans/people-client-integration-7f3b.md

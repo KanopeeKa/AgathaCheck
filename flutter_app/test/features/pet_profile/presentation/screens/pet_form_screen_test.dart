@@ -10,7 +10,14 @@ import 'package:pet_profile_app/features/organization/presentation/providers/org
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/screens/pet_form_screen.dart';
+import 'package:pet_profile_app/features/people/application/people_providers.dart';
+import 'package:pet_profile_app/features/people/domain/entities/contact_summary.dart';
 import 'package:pet_profile_app/features/people/domain/entities/people_contact.dart';
+import 'package:pet_profile_app/features/people/domain/entities/roster.dart';
+import 'package:pet_profile_app/features/people/domain/enums/contact_group.dart';
+import 'package:pet_profile_app/features/people/domain/enums/contact_kind.dart';
+import 'package:pet_profile_app/features/people/domain/enums/contact_role.dart';
+import 'package:pet_profile_app/features/people/domain/enums/contact_status.dart';
 import 'package:pet_profile_app/features/people/presentation/providers/people_providers.dart';
 import 'package:pet_profile_app/features/vet/domain/entities/vet.dart';
 import 'package:pet_profile_app/features/vet/presentation/providers/vet_providers.dart';
@@ -46,6 +53,26 @@ class _VetsNotifier extends VetListNotifier {
       address: '1 Vet Road',
     ),
   ];
+}
+
+class _PeopleVetRosterNotifier extends RosterNotifier {
+  @override
+  Future<Roster> build() async => Roster(
+    households: const [],
+    contacts: [
+      ContactSummary(
+        id: 'contact-1',
+        directory: const ContactDirectoryRef(type: 'personal'),
+        kind: ContactKind.person,
+        name: 'Dr Smith',
+        roles: const [ContactRole.vet],
+        group: ContactGroup.professional,
+        status: ContactStatus.active,
+        legacyVetId: 'vet-1',
+      ),
+    ],
+    pendingInvites: const [],
+  );
 }
 
 class _PeopleVetContactsNotifier extends PeopleContactsNotifier {
@@ -116,6 +143,8 @@ Widget _wrap(Pet pet) {
       petListProvider.overrideWith(() => _ExistingPetNotifier(pet)),
       vetListProvider.overrideWith(_VetsNotifier.new),
       peopleContactsProvider.overrideWith(_PeopleVetContactsNotifier.new),
+      petPeopleProvider.overrideWith((ref, petId) async => null),
+      rosterProvider.overrideWith(_PeopleVetRosterNotifier.new),
       apiBaseUrlProvider.overrideWithValue('http://test.local'),
       weightEntriesNotifierProvider.overrideWith(
         () => _EmptyWeightEntriesNotifier(),
@@ -161,8 +190,7 @@ void main() {
     );
 
     await tester.pumpWidget(_wrap(pet));
-    await tester.pump();
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     expect(find.text('Edit Bella'), findsOneWidget);
     expect(find.text('Basic details'), findsOneWidget);
@@ -191,15 +219,14 @@ void main() {
       find.text(formatCalendarDateMedium(DateTime(2021, 6, 20))),
       findsOneWidget,
     );
-    expect(find.text('Dr Smith'), findsOneWidget);
+    expect(find.text('Dr Smith'), findsWidgets);
   });
 
   testWidgets('save is disabled until the form is dirty', (tester) async {
     final pet = Pet(id: 'pet-1', name: 'Bella', species: 'Dog');
 
     await tester.pumpWidget(_wrap(pet));
-    await tester.pump();
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     expect(_saveButton(tester).onPressed, isNull);
 

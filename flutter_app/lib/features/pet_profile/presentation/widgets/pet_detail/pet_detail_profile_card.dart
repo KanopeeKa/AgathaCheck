@@ -5,11 +5,11 @@ import '../../../../../core/utils/calendar_date.dart';
 import '../../../../../core/theme/experience_colors.dart';
 import '../../../../../core/utils/constants.dart';
 import '../../../../../l10n/app_localizations.dart';
-import '../../providers/pet_vet_contacts_provider.dart';
+import '../../../../people/people.dart';
+import 'pet_detail_primary_vet_field.dart';
 import '../../../../weight_tracking/presentation/providers/weight_providers.dart';
 import '../../../domain/entities/pet.dart';
 import '../../../domain/services/pet_detail_actions.dart';
-import '../../providers/pet_providers.dart';
 import '../../utils/pet_responsibility_label.dart';
 import 'pet_info_chip.dart';
 import 'pet_photo.dart';
@@ -34,9 +34,10 @@ class PetDetailProfileCard extends ConsumerWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    final vetsAsync = ref.watch(petVetOptionsProvider);
-    final vets = vetsAsync.valueOrNull ?? [];
-    final assignedVet = findPetVetOption(vets, pet.vetId);
+    final petPeopleAsync = ref.watch(petPeopleProvider(pet.id));
+    final primaryVetId = primaryVetRelationship(
+      petPeopleAsync.valueOrNull,
+    )?.contactId;
 
     final displayWeight = pet.weight;
     final l = AppLocalizations.of(context)!;
@@ -160,13 +161,9 @@ class PetDetailProfileCard extends ConsumerWidget {
                           ),
                           const SizedBox(height: 10),
                           if (canAssignVet)
-                            _buildVetRow(
-                              context,
-                              ref,
-                              assignedVet,
-                              vets,
-                              theme,
-                              colorScheme,
+                            PetDetailPrimaryVetField(
+                              petId: pet.id,
+                              currentContactId: primaryVetId,
                             ),
                           if (pet.bio.isNotEmpty) ...[
                             const SizedBox(height: 12),
@@ -273,115 +270,4 @@ class PetDetailProfileCard extends ConsumerWidget {
     );
   }
 
-  Widget _buildVetRow(
-    BuildContext context,
-    WidgetRef ref,
-    PetVetOption? assignedVet,
-    List<PetVetOption> vets,
-    ThemeData theme,
-    ColorScheme colorScheme,
-  ) {
-    final l = AppLocalizations.of(context)!;
-    if (vets.isEmpty) {
-      return Semantics(
-        label: l.addVetFirst,
-        button: true,
-        child: GestureDetector(
-          onTap: () => GoRouter.of(context).go('/pc/people/new'),
-          child: Row(
-            children: [
-              Icon(
-                Icons.local_hospital,
-                size: 16,
-                color: colorScheme.onSurfaceVariant,
-              ),
-              const SizedBox(width: 6),
-              Flexible(
-                child: Text(
-                  l.noVetAssigned,
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 4),
-              Flexible(
-                child: Text(
-                  '— ${l.addVet}',
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.primary,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    return Row(
-      children: [
-        Icon(
-          Icons.local_hospital,
-          size: 16,
-          color: assignedVet != null
-              ? colorScheme.primary
-              : colorScheme.onSurfaceVariant,
-        ),
-        const SizedBox(width: 6),
-        Expanded(
-          child: PopupMenuButton<String?>(
-            tooltip: l.selectVeterinarian,
-            padding: EdgeInsets.zero,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  assignedVet != null
-                      ? assignedVet.displayName
-                      : l.noVetAssigned,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: assignedVet != null
-                        ? colorScheme.primary
-                        : colorScheme.onSurfaceVariant,
-                    fontWeight: assignedVet != null
-                        ? FontWeight.w500
-                        : FontWeight.normal,
-                  ),
-                ),
-                const SizedBox(width: 4),
-                Icon(
-                  Icons.arrow_drop_down,
-                  size: 20,
-                  color: colorScheme.onSurfaceVariant,
-                ),
-              ],
-            ),
-            onSelected: (vetId) async {
-              final updated = vetId == null
-                  ? pet.copyWith(clearVetId: true)
-                  : pet.copyWith(vetId: vetId);
-              await ref.read(petListProvider.notifier).updatePet(updated);
-            },
-            itemBuilder: (context) => [
-              if (assignedVet != null)
-                PopupMenuItem<String?>(value: null, child: Text(l.removeVet)),
-              ...vets.map(
-                (vet) => PopupMenuItem<String?>(
-                  value: vet.vetId,
-                  enabled: assignedVet?.vetId != vet.vetId,
-                  child: Text(vet.displayName),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
 }
