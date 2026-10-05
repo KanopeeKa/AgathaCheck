@@ -5520,13 +5520,19 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get carePostponeSheetTitle => 'Mettre en pause';
+  String get carePostponeSheetTitle => 'Reporter jusqu\'au';
 
   @override
   String get carePostponeNoEndDate => 'Sans date de fin (pause)';
 
   @override
-  String get carePostponeUntilLabel => 'Pause jusqu\'au';
+  String get carePostponeUntilLabel => 'Reporter jusqu\'au';
+
+  @override
+  String get carePostponeConfirmPause => 'Mettre en pause';
+
+  @override
+  String get carePostponeConfirmUntil => 'Reporter jusqu\'au';
 
   @override
   String get carePostponePauseConsequence =>
