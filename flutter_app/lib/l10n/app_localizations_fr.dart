@@ -617,6 +617,167 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String get weightRecordAction => 'Enregistrer le poids';
+
+  @override
+  String get weightRecordSheetTitle => 'Enregistrer le poids';
+
+  @override
+  String get weightEditSheetTitle => 'Modifier le poids';
+
+  @override
+  String weightFieldLabelUnit(String unit) {
+    return 'Poids ($unit)';
+  }
+
+  @override
+  String weightCountsAs(String routine) {
+    return 'Compte comme $routine';
+  }
+
+  @override
+  String get weightCountsAsChoiceHelp => 'Choisissez la pesée prévue concernée';
+
+  @override
+  String get weightDontCount => 'Ne pas la compter comme pesée prévue';
+
+  @override
+  String get weightCountAsWeighInAction => 'Compter comme pesée prévue';
+
+  @override
+  String get weightFulfilmentStale =>
+      'Cette pesée prévue ne peut plus recevoir ce poids. Vérifiez puis enregistrez à nouveau.';
+
+  @override
+  String get weightCheckingWeighIn => 'Recherche d\'une pesée prévue…';
+
+  @override
+  String get weightCheckFailed =>
+      'Impossible de vérifier s\'il y a une pesée prévue.';
+
+  @override
+  String get weightCheckRetry => 'Réessayer';
+
+  @override
+  String get weightSaved => 'Poids enregistré';
+
+  @override
+  String weightSavedCountedAs(String routine) {
+    return 'Enregistré · compté comme $routine';
+  }
+
+  @override
+  String get weightWeighInUndone => 'Pesée prévue annulée';
+
+  @override
+  String weightLinkedEditInfo(String routine, String date) {
+    return 'Compte comme $routine ($date). Changer la date modifie aussi la date de la pesée prévue.';
+  }
+
+  @override
+  String get weightDateInFuture => 'La date ne peut pas être dans le futur';
+
+  @override
+  String get weightDateBeforeRoutineStart =>
+      'La date ne peut pas être antérieure au début de la routine';
+
+  @override
+  String get weightDeleteTitle => 'Supprimer ce poids ?';
+
+  @override
+  String get weightDeleteBody => 'Cette action est définitive.';
+
+  @override
+  String weightDeleteLinkedBody(String routine, String date) {
+    return 'Il comptait comme $routine le $date. Le supprimer marque cette pesée prévue comme non faite.';
+  }
+
+  @override
+  String weightDeletedReopened(String routine) {
+    return 'Poids supprimé · $routine est de nouveau à faire';
+  }
+
+  @override
+  String weightSinceChange(String change, String date) {
+    return '$change depuis le $date';
+  }
+
+  @override
+  String weightRecordedOn(String date) {
+    return 'Relevé le $date';
+  }
+
+  @override
+  String weightTargetLine(String weight, String authority) {
+    return 'Objectif $weight · $authority';
+  }
+
+  @override
+  String get weightAuthorityVet => 'fixé par le vétérinaire';
+
+  @override
+  String get weightAuthorityGuardian => 'votre référence';
+
+  @override
+  String get weightAuthorityBaseline => 'poids habituel';
+
+  @override
+  String get weightLegendWeighIn => 'Pesée prévue';
+
+  @override
+  String get weightLegendOther => 'Autre pesée';
+
+  @override
+  String get weightRoutinesTitle => 'Routine de pesée';
+
+  @override
+  String get weightNoRoutineTitle => 'Aucune routine de pesée';
+
+  @override
+  String get weightNoRoutineBody =>
+      'Une pesée régulière aide à repérer les changements tôt.';
+
+  @override
+  String get weightSetUpRoutine => 'Créer une routine de pesée';
+
+  @override
+  String weightNextWeighIn(String date, String status) {
+    return 'Prochaine pesée $date · $status';
+  }
+
+  @override
+  String get weightRoutinePaused => 'En pause';
+
+  @override
+  String get weightSourceClinic => 'Chez le vétérinaire';
+
+  @override
+  String get weightSourceDevice => 'Depuis une balance';
+
+  @override
+  String get weightSourceImported => 'Importé';
+
+  @override
+  String get weightSeeAll => 'Voir tous les poids';
+
+  @override
+  String get weightNoneRecordedYet => 'Aucun poids enregistré';
+
+  @override
+  String weightTodayFieldLabelUnit(String unit) {
+    return 'Poids aujourd\'hui ($unit)';
+  }
+
+  @override
+  String petProfileWeightRow(String weight, String date) {
+    return 'Poids $weight · enregistré le $date';
+  }
+
+  @override
+  String get petProfileNoWeightRecorded =>
+      'Aucun poids enregistré pour l\'instant';
+
+  @override
   String get healthEvents => 'Événements de santé';
 
   @override

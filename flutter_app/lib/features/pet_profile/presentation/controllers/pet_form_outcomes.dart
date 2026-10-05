@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/weight/weight_unit.dart';
+import '../../../../core/weight/weight_unit_preference.dart';
 import '../../domain/entities/pet.dart';
 import '../providers/pet_providers.dart';
 
@@ -7,12 +9,14 @@ import '../providers/pet_providers.dart';
 class PetFormSubmitDeps {
   const PetFormSubmitDeps({
     required this.readPets,
+    required this.readWeightUnit,
     required this.addPet,
     required this.updatePet,
     this.invalidateOrgPets,
   });
 
   final List<Pet> Function() readPets;
+  final WeightUnit Function() readWeightUnit;
   final Future<void> Function({
     required String name,
     required String species,
@@ -37,6 +41,7 @@ class PetFormSubmitDeps {
   factory PetFormSubmitDeps.fromWidgetRef(WidgetRef ref) {
     return PetFormSubmitDeps(
       readPets: () => ref.read(petListProvider).valueOrNull ?? [],
+      readWeightUnit: () => ref.read(weightUnitPreferenceProvider),
       addPet:
           ({
             required String name,
@@ -82,6 +87,7 @@ class PetFormSubmitDeps {
   factory PetFormSubmitDeps.fromRef(Ref ref) {
     return PetFormSubmitDeps(
       readPets: () => ref.read(petListProvider).valueOrNull ?? [],
+      readWeightUnit: () => ref.read(weightUnitPreferenceProvider),
       addPet:
           ({
             required String name,

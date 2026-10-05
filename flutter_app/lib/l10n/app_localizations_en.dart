@@ -607,6 +607,165 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get weightRecordAction => 'Record weight';
+
+  @override
+  String get weightRecordSheetTitle => 'Record weight';
+
+  @override
+  String get weightEditSheetTitle => 'Edit weight';
+
+  @override
+  String weightFieldLabelUnit(String unit) {
+    return 'Weight ($unit)';
+  }
+
+  @override
+  String weightCountsAs(String routine) {
+    return 'Counts as $routine';
+  }
+
+  @override
+  String get weightCountsAsChoiceHelp => 'Choose which weigh-in this counts as';
+
+  @override
+  String get weightDontCount => 'Don\'t count it as a weigh-in';
+
+  @override
+  String get weightCountAsWeighInAction => 'Count as a weigh-in';
+
+  @override
+  String get weightFulfilmentStale =>
+      'That weigh-in can\'t take this weight any more. Check and save again.';
+
+  @override
+  String get weightCheckingWeighIn => 'Checking for a due weigh-in…';
+
+  @override
+  String get weightCheckFailed => 'Couldn\'t check for a due weigh-in.';
+
+  @override
+  String get weightCheckRetry => 'Retry';
+
+  @override
+  String get weightSaved => 'Weight saved';
+
+  @override
+  String weightSavedCountedAs(String routine) {
+    return 'Saved · counted as $routine';
+  }
+
+  @override
+  String get weightWeighInUndone => 'Weigh-in undone';
+
+  @override
+  String weightLinkedEditInfo(String routine, String date) {
+    return 'Counts as $routine ($date). Changing the date also changes when the weigh-in was done.';
+  }
+
+  @override
+  String get weightDateInFuture => 'The date can\'t be in the future';
+
+  @override
+  String get weightDateBeforeRoutineStart =>
+      'The date can\'t be before the routine started';
+
+  @override
+  String get weightDeleteTitle => 'Delete this weight?';
+
+  @override
+  String get weightDeleteBody => 'This can\'t be undone.';
+
+  @override
+  String weightDeleteLinkedBody(String routine, String date) {
+    return 'It counted as $routine on $date. Deleting it marks that weigh-in as not done.';
+  }
+
+  @override
+  String weightDeletedReopened(String routine) {
+    return 'Weight deleted · $routine is due again';
+  }
+
+  @override
+  String weightSinceChange(String change, String date) {
+    return '$change since $date';
+  }
+
+  @override
+  String weightRecordedOn(String date) {
+    return 'Recorded $date';
+  }
+
+  @override
+  String weightTargetLine(String weight, String authority) {
+    return 'Target $weight · $authority';
+  }
+
+  @override
+  String get weightAuthorityVet => 'set by the vet';
+
+  @override
+  String get weightAuthorityGuardian => 'your reference';
+
+  @override
+  String get weightAuthorityBaseline => 'usual weight';
+
+  @override
+  String get weightLegendWeighIn => 'Weigh-in';
+
+  @override
+  String get weightLegendOther => 'Other weight';
+
+  @override
+  String get weightRoutinesTitle => 'Weigh-in routine';
+
+  @override
+  String get weightNoRoutineTitle => 'No weigh-in routine';
+
+  @override
+  String get weightNoRoutineBody =>
+      'A regular weigh-in helps spot changes early.';
+
+  @override
+  String get weightSetUpRoutine => 'Set up a weigh-in routine';
+
+  @override
+  String weightNextWeighIn(String date, String status) {
+    return 'Next weigh-in $date · $status';
+  }
+
+  @override
+  String get weightRoutinePaused => 'Paused';
+
+  @override
+  String get weightSourceClinic => 'From the vet';
+
+  @override
+  String get weightSourceDevice => 'From a scale';
+
+  @override
+  String get weightSourceImported => 'Imported';
+
+  @override
+  String get weightSeeAll => 'See all weights';
+
+  @override
+  String get weightNoneRecordedYet => 'No weight recorded yet';
+
+  @override
+  String weightTodayFieldLabelUnit(String unit) {
+    return 'Weight today ($unit)';
+  }
+
+  @override
+  String petProfileWeightRow(String weight, String date) {
+    return 'Weight $weight · recorded $date';
+  }
+
+  @override
+  String get petProfileNoWeightRecorded => 'No weight recorded yet';
+
+  @override
   String get healthEvents => 'Health Events';
 
   @override

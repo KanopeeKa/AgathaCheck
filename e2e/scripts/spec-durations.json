@@ -30,6 +30,7 @@
     "pet.timeline.spec.ts": 35,
     "sharing.spec.ts": 92,
     "veterinarian.spec.ts": 170,
-    "weight.tracking.spec.ts": 163
+    "weight.tracking.spec.ts": 163,
+    "weight.hub.spec.ts": 240
   }
 }

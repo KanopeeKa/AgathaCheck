@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:image_picker/image_picker.dart';
 
+import '../../../../core/weight/weight_unit.dart';
 import '../../data/utils/pet_photo_bytes.dart';
 import '../../domain/entities/pet.dart';
 import 'pet_form_error_messages.dart';
@@ -98,12 +99,14 @@ class PetFormController {
       );
     }
 
-    final weightError = _validateWeight(isEditing: isEditing);
-    if (weightError != null) {
-      return PetFormSubmitValidationFailed(weightError);
+    if (!isEditing) {
+      final weightError = _validateWeight(isEditing: false);
+      if (weightError != null) {
+        return PetFormSubmitValidationFailed(weightError);
+      }
     }
 
-    final weight = _parsedWeight(isEditing: isEditing);
+    final weight = _parsedWeight(isEditing: isEditing, deps: deps);
 
     try {
       if (isEditing) {
@@ -127,7 +130,6 @@ class PetFormController {
           species: state.selectedSpecies,
           breed: state.breed.trim(),
           dateOfBirth: state.dateOfBirth,
-          weight: weight,
           gender: state.selectedGender,
           bio: state.bio.trim(),
           insurance: state.insurance.trim(),
@@ -182,23 +184,26 @@ class PetFormController {
   }
 
   PetFormSubmitValidation? _validateWeight({required bool isEditing}) {
-    final weightStr = isEditing ? state.weight.trim() : state.newWeight.trim();
+    if (isEditing) return null;
+    final weightStr = state.newWeight.trim();
     if (weightStr.isEmpty) return null;
 
     final parsed = double.tryParse(weightStr);
     if (parsed == null) return PetFormSubmitValidation.invalidWeight;
-    if (isEditing) {
-      if (parsed < 0) return PetFormSubmitValidation.invalidWeight;
-    } else if (parsed <= 0) {
-      return PetFormSubmitValidation.invalidWeight;
-    }
+    if (parsed <= 0) return PetFormSubmitValidation.invalidWeight;
     return null;
   }
 
-  double? _parsedWeight({required bool isEditing}) {
-    final weightStr = isEditing ? state.weight.trim() : state.newWeight.trim();
+  double? _parsedWeight({
+    required bool isEditing,
+    required PetFormSubmitDeps deps,
+  }) {
+    if (isEditing) return null;
+    final weightStr = state.newWeight.trim();
     if (weightStr.isEmpty) return null;
-    return double.tryParse(weightStr);
+    final parsed = double.tryParse(weightStr);
+    if (parsed == null) return null;
+    return toKg(parsed, deps.readWeightUnit());
   }
 
   double? _parsedReferenceValue() {

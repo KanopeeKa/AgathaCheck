@@ -36,7 +36,7 @@ export class WeightTrackingPage {
       .or(this.page.getByRole('banner', { name: /Weight Tracking|Suivi du poids/i }))
       .or(
         this.page.getByRole('button', {
-          name: /Add weight entry|Ajouter une entrée de poids/i,
+          name: /Add weight entry|Record weight|Ajouter une entrée de poids|Enregistrer le poids/i,
         }),
       );
   }
@@ -117,7 +117,9 @@ export class WeightTrackingPage {
   async openAddWeightSheet(): Promise<void> {
     await this.openSection();
     const addButton = this.page
-      .getByRole('button', { name: /Add weight entry|Ajouter une entrée de poids/i })
+      .getByRole('button', {
+        name: /Add weight entry|Record weight|Ajouter une entrée de poids|Enregistrer le poids/i,
+      })
       .first();
     await addButton.click();
     await this.page
@@ -137,7 +139,9 @@ export class WeightTrackingPage {
 
   /** Click the Save button in the Add Weight Entry bottom-sheet. */
   async saveWeightEntry(): Promise<void> {
-    await this.page.getByRole('button', { name: /^Save$/i }).click();
+    const save = this.page.getByRole('button', { name: /^Save$|^Enregistrer$/i });
+    await expect(save).toBeEnabled({ timeout: 20_000 });
+    await save.click();
     await this.page.waitForTimeout(800);
     await refreshFlutterAccessibility(this.page);
   }
@@ -151,19 +155,22 @@ export class WeightTrackingPage {
     await this.waitForWeightDataSettled();
     const label = `${weight.toFixed(1)} ${unit}`;
     const pattern = new RegExp(label.replace('.', '\\.'), 'i');
-    await this.page
+    const row = this.page
       .getByRole('group', { name: pattern })
-      .or(this.page.getByText(label, { exact: false }))
-      .first()
-      .waitFor({ timeout: 15_000 });
+      .or(this.page.getByText(pattern))
+      .first();
+    await row.scrollIntoViewIfNeeded();
+    await row.waitFor({ timeout: 15_000 });
   }
 
   /** Count weight entry rows visible on the weight screen. */
   async expectWeightEntryCount(count: number): Promise<void> {
     await this.openSection();
     await this.waitForWeightDataSettled();
-    const entries = this.page.getByRole('group', { name: /^\d+\.\d+ (kg|lb)/ });
-    await expect(entries).toHaveCount(count, { timeout: 15_000 });
+    const deleteButtons = this.page.getByRole('button', {
+      name: /Delete weight entry|Supprimer l'entrée de poids/i,
+    });
+    await expect(deleteButtons).toHaveCount(count, { timeout: 15_000 });
   }
 
   /** Expect the kg / lb unit segmented control to be present. */

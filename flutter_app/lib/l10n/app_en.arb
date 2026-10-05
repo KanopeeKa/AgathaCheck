@@ -236,6 +236,92 @@
   "deleteWeightEntry": "Delete weight entry",
   "weightChartLabel": "Weight chart showing {count} entries",
   "@weightChartLabel": { "placeholders": { "count": { "type": "int" } } },
+  "weightRecordAction": "Record weight",
+  "weightRecordSheetTitle": "Record weight",
+  "weightEditSheetTitle": "Edit weight",
+  "weightFieldLabelUnit": "Weight ({unit})",
+  "@weightFieldLabelUnit": { "placeholders": { "unit": { "type": "String" } } },
+  "weightCountsAs": "Counts as {routine}",
+  "@weightCountsAs": { "placeholders": { "routine": { "type": "String" } } },
+  "weightCountsAsChoiceHelp": "Choose which weigh-in this counts as",
+  "weightDontCount": "Don't count it as a weigh-in",
+  "weightCountAsWeighInAction": "Count as a weigh-in",
+  "weightFulfilmentStale": "That weigh-in can't take this weight any more. Check and save again.",
+  "weightCheckingWeighIn": "Checking for a due weigh-in…",
+  "weightCheckFailed": "Couldn't check for a due weigh-in.",
+  "weightCheckRetry": "Retry",
+  "weightSaved": "Weight saved",
+  "weightSavedCountedAs": "Saved · counted as {routine}",
+  "@weightSavedCountedAs": { "placeholders": { "routine": { "type": "String" } } },
+  "weightWeighInUndone": "Weigh-in undone",
+  "weightLinkedEditInfo": "Counts as {routine} ({date}). Changing the date also changes when the weigh-in was done.",
+  "@weightLinkedEditInfo": {
+    "placeholders": {
+      "routine": { "type": "String" },
+      "date": { "type": "String" }
+    }
+  },
+  "weightDateInFuture": "The date can't be in the future",
+  "weightDateBeforeRoutineStart": "The date can't be before the routine started",
+  "weightDeleteTitle": "Delete this weight?",
+  "weightDeleteBody": "This can't be undone.",
+  "weightDeleteLinkedBody": "It counted as {routine} on {date}. Deleting it marks that weigh-in as not done.",
+  "@weightDeleteLinkedBody": {
+    "placeholders": {
+      "routine": { "type": "String" },
+      "date": { "type": "String" }
+    }
+  },
+  "weightDeletedReopened": "Weight deleted · {routine} is due again",
+  "@weightDeletedReopened": { "placeholders": { "routine": { "type": "String" } } },
+  "weightSinceChange": "{change} since {date}",
+  "@weightSinceChange": {
+    "placeholders": {
+      "change": { "type": "String" },
+      "date": { "type": "String" }
+    }
+  },
+  "weightRecordedOn": "Recorded {date}",
+  "@weightRecordedOn": { "placeholders": { "date": { "type": "String" } } },
+  "weightTargetLine": "Target {weight} · {authority}",
+  "@weightTargetLine": {
+    "placeholders": {
+      "weight": { "type": "String" },
+      "authority": { "type": "String" }
+    }
+  },
+  "weightAuthorityVet": "set by the vet",
+  "weightAuthorityGuardian": "your reference",
+  "weightAuthorityBaseline": "usual weight",
+  "weightLegendWeighIn": "Weigh-in",
+  "weightLegendOther": "Other weight",
+  "weightRoutinesTitle": "Weigh-in routine",
+  "weightNoRoutineTitle": "No weigh-in routine",
+  "weightNoRoutineBody": "A regular weigh-in helps spot changes early.",
+  "weightSetUpRoutine": "Set up a weigh-in routine",
+  "weightNextWeighIn": "Next weigh-in {date} · {status}",
+  "@weightNextWeighIn": {
+    "placeholders": {
+      "date": { "type": "String" },
+      "status": { "type": "String" }
+    }
+  },
+  "weightRoutinePaused": "Paused",
+  "weightSourceClinic": "From the vet",
+  "weightSourceDevice": "From a scale",
+  "weightSourceImported": "Imported",
+  "weightSeeAll": "See all weights",
+  "weightNoneRecordedYet": "No weight recorded yet",
+  "weightTodayFieldLabelUnit": "Weight today ({unit})",
+  "@weightTodayFieldLabelUnit": { "placeholders": { "unit": { "type": "String" } } },
+  "petProfileWeightRow": "Weight {weight} · recorded {date}",
+  "@petProfileWeightRow": {
+    "placeholders": {
+      "weight": { "type": "String" },
+      "date": { "type": "String" }
+    }
+  },
+  "petProfileNoWeightRecorded": "No weight recorded yet",
 
   "healthEvents": "Health Events",
   "otherEvents": "Other events",

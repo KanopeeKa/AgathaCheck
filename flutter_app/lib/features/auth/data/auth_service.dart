@@ -129,6 +129,7 @@ class AuthService implements AuthRepository {
     String? bio,
     String? locale,
     String? timezone,
+    String? weightUnit,
     String? pinnedOrganizationId,
     bool updatePinnedOrganizationId = false,
   }) async {
@@ -139,6 +140,7 @@ class AuthService implements AuthRepository {
     if (bio != null) body['bio'] = bio;
     if (locale != null) body['locale'] = locale;
     if (timezone != null) body['timezone'] = timezone;
+    if (weightUnit != null) body['weight_unit'] = weightUnit;
     if (updatePinnedOrganizationId) {
       body['pinned_organization_id'] = pinnedOrganizationId;
     }

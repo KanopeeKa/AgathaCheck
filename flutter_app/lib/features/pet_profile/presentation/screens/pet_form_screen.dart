@@ -378,6 +378,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
           previewPet: _previewPet(),
           previewWeightLabel: _previewWeightLabel(),
           isEditing: _isEditing,
+          petId: widget.petId,
           isLoading: _isLoading,
           isShared: _isShared,
           passedAway: _passedAway,

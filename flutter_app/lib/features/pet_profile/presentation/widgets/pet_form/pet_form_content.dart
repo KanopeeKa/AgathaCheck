@@ -26,6 +26,7 @@ class PetFormContent extends StatelessWidget {
     required this.controller,
     required this.layoutSize,
     required this.isEditing,
+    this.petId,
     required this.isLoading,
     required this.isShared,
     required this.passedAway,
@@ -59,6 +60,7 @@ class PetFormContent extends StatelessWidget {
   final PetFormController controller;
   final PetFormLayoutSize layoutSize;
   final bool isEditing;
+  final String? petId;
   final bool isLoading;
   final bool isShared;
   final bool passedAway;
@@ -231,8 +233,8 @@ class PetFormContent extends StatelessWidget {
 
     final weightField = PetFormWeightSection(
       isEditing: isEditing,
+      petId: petId,
       showWeightInput: showWeightInput,
-      weightController: weightController,
       newWeightController: newWeightController,
       controller: controller,
       onShowWeightInput: onShowWeightInput,
@@ -283,8 +285,8 @@ class PetFormContent extends StatelessWidget {
   List<Widget> _healthDetailsChildren(BuildContext context) {
     final weightField = PetFormWeightSection(
       isEditing: isEditing,
+      petId: petId,
       showWeightInput: showWeightInput,
-      weightController: weightController,
       newWeightController: newWeightController,
       controller: controller,
       onShowWeightInput: onShowWeightInput,

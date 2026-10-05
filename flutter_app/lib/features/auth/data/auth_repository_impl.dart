@@ -49,6 +49,7 @@ class AuthRepositoryImpl implements AuthRepository {
     String? bio,
     String? locale,
     String? timezone,
+    String? weightUnit,
     String? pinnedOrganizationId,
     bool updatePinnedOrganizationId = false,
   }) => _service.updateMe(
@@ -59,6 +60,7 @@ class AuthRepositoryImpl implements AuthRepository {
     bio: bio,
     locale: locale,
     timezone: timezone,
+    weightUnit: weightUnit,
     pinnedOrganizationId: pinnedOrganizationId,
     updatePinnedOrganizationId: updatePinnedOrganizationId,
   );

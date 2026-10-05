@@ -28,6 +28,7 @@ abstract class AuthRepository {
     String? bio,
     String? locale,
     String? timezone,
+    String? weightUnit,
     String? pinnedOrganizationId,
     bool updatePinnedOrganizationId = false,
   });
