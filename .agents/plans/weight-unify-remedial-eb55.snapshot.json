@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "plan_id": "weight-unify-remedial-eb55",
+  "programme_ref": "docs/domains/weight_tracking/features/weight-monitoring-model.md",
+  "approved_at": "2026-10-05T12:55:00Z",
+  "approved_by": "User chat 2026-10-05 execute-plan remedial — fix review findings without asking",
+  "approved_until": "2026-10-07T12:55:00Z",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/weight-unify-remedial-integration-eb55",
+  "control_issue": 1634,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "R1",
+      "title": "Server establishment timing, F-23, hook registration",
+      "branch": "cursor/weight-remedial-establish-eb55",
+      "allowed_paths": [
+        ".agents/plans/weight-unify-remedial-eb55.*",
+        "server/lib/care/observations/**",
+        "server/lib/care/occurrence/**",
+        "server/test/db/weightFulfilment.integration.test.js",
+        "server/test/care/**",
+        "server/test/architecture/**",
+        "server/bin/**",
+        "server/bin/server.js"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "e2e/**",
+        "db/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending"
+    },
+    {
+      "id": "R2",
+      "title": "Flutter save mode, counts-as UX, analytics",
+      "branch": "cursor/weight-remedial-flutter-eb55",
+      "allowed_paths": [
+        ".agents/plans/weight-unify-remedial-eb55.*",
+        "flutter_app/lib/features/weight_tracking/**",
+        "flutter_app/lib/features/care_item/presentation/sheets/skip_weigh_in_sheet.dart",
+        "flutter_app/lib/core/services/analytics_service.dart",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/weight_tracking/**",
+        "flutter_app/test/features/care_item/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "e2e/**",
+        "db/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending"
+    },
+    {
+      "id": "R3",
+      "title": "Move weight completion helpers from routes to lib",
+      "branch": "cursor/weight-remedial-layer-eb55",
+      "allowed_paths": [
+        ".agents/plans/weight-unify-remedial-eb55.*",
+        "server/lib/care/observations/**",
+        "server/routes/healthEntries/**",
+        "server/test/**"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "e2e/**",
+        "db/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending"
+    },
+    {
+      "id": "R4",
+      "title": "Programme bookkeeping docs",
+      "branch": "cursor/weight-remedial-docs-eb55",
+      "allowed_paths": [
+        ".agents/plans/weight-unify-remedial-eb55.*",
+        ".agents/plans/weight-monitoring-unify-9b2e.*",
+        "docs/agent-efficiency/parallel-programmes.md",
+        "docs/design/terminology.md"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending"
+    }
+  ],
+  "content_hash": "sha256:4b4e9c2d89b98f5c7d4c1780d0ebf624a44fc6602ecd1416ce68acb1533e12ff"
+}
