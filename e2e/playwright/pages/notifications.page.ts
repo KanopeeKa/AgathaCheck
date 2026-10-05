@@ -2,6 +2,7 @@ import type { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
 import {
   dismissConsentBannerIfPresent,
+  escapeRegExp,
   expectAppBarTitle,
   flutterGotoUrl,
   flutterRoutePath,
