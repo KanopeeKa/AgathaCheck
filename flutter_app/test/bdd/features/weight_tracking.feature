@@ -162,3 +162,22 @@ Feature: Weight Tracking
     Given "Bella" has no weigh-in routine
     When the user views "Bella"'s weight tracking section
     Then the user should see a prompt to set up a weigh-in routine
+
+  @P1
+  Scenario: Skipping a weigh-in with a reason
+    Given "Bella" has a weigh-in routine due today
+    When the user skips the weigh-in with reason "Couldn't weigh" and note "Too wiggly"
+    Then the weigh-in occurrence should be skipped with that reason
+
+  @P1
+  Scenario: Completing a weigh-in in pounds
+    Given the user's weight unit preference is pounds
+    And "Bella" has a weigh-in routine due today
+    When the user completes the weigh-in with weight 22.0 lb
+    Then the weigh-in should be completed with a linked weight entry in pounds
+
+  @P2
+  Scenario: Care item view shows the weight section
+    Given "Bella" has a weigh-in routine
+    When the user opens that care item
+    Then the care item should show the weight section with a link to all weights

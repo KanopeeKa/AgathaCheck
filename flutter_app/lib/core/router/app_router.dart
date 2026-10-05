@@ -14,6 +14,7 @@ import '../../features/notifications/presentation/screens/notification_settings_
 import '../../features/notifications/presentation/screens/notifications_screen.dart';
 import '../../features/notifications/presentation/screens/pending_actions_screen.dart';
 import 'pet_care_route_redirects.dart';
+import '../../features/pet_profile/domain/entities/care_family.dart';
 import '../../features/pet_profile/presentation/screens/pet_detail_screen.dart';
 import '../../features/pet_profile/presentation/screens/pet_health_issues_screen.dart';
 import '../../features/pet_profile/presentation/screens/pet_manage_events_screen.dart';
@@ -71,6 +72,7 @@ HealthEntryFormScreen _buildCareAddScreen(
 }) {
   final resolvedPetId = petId ?? state.pathParameters['petId'];
   final typeParam = state.uri.queryParameters['type'];
+  final familyParam = state.uri.queryParameters['family'];
   final planningParam = state.uri.queryParameters['planning'];
   final initialType = typeParam != null
       ? HealthEntryType.values.where((t) => t.name == typeParam).firstOrNull
@@ -83,6 +85,7 @@ HealthEntryFormScreen _buildCareAddScreen(
     initialType: initialType,
     allowedTypes: resolvedPetId != null ? kAllPetEventTypes : null,
     initialPlanningMode: initialPlanningMode,
+    initialCareFamily: CareFamilyWire.fromWire(familyParam),
   );
 }
 

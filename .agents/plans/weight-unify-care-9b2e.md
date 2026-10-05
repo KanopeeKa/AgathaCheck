@@ -30,17 +30,17 @@
 ## Runtime state (agent-updated)
 
 ```yaml
-autonomy: halted
-current_phase: null
-last_completed_phase: null
-halt_reason: "draft — waits for child B landing"
-next_action: "after child B lands: check entry gate §10.3, re-read §6.6 paths on main, create cursor/weight-unify-care-integration-9b2e, init-control-issue weight-unify-care-9b2e, start W8"
+autonomy: active
+current_phase: W9
+last_completed_phase: W8
+halt_reason: null
+next_action: "start phase W9: checkout cursor/weight-unify-w9-care-view-9b2e"
 artifact_ref:
-  branch: null
+  branch: cursor/weight-unify-w8-occurrence-9b2e
   plan_path: .agents/plans/weight-unify-care-9b2e.md
-  plan_commit: null
+  plan_commit: de382f1397d6d16469bbb8eb6e96bacba4b6ebed
   snapshot_path: .agents/plans/weight-unify-care-9b2e.snapshot.json
-  snapshot_commit: null
+  snapshot_commit: de382f1397d6d16469bbb8eb6e96bacba4b6ebed
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
