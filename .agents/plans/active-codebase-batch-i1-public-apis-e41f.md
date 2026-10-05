@@ -46,17 +46,17 @@ Active features (16): `about`, `auth`, `care_intelligence`, `care_taxonomy`, `ex
 
 ```yaml
 autonomy: active
-current_phase: 3
-last_completed_phase: 2
+current_phase: 4
+last_completed_phase: 3
 halt_reason: null
-next_action: "continue phase 3 on branch cursor/active-codebase-i1-3-private-edges-e41f"
+next_action: "continue phase 4 on branch cursor/active-codebase-i1-4-entrypoint-imports-e41f"
 artifact_ref:
-  branch: cursor/active-codebase-i1-3-private-edges-e41f
+  branch: cursor/active-codebase-i1-4-entrypoint-imports-e41f
   plan_path: .agents/plans/active-codebase-batch-i1-public-apis-e41f.md
-  plan_commit: 30f39716b185f06b1e29d7ea50f1e2aa3691996d
+  plan_commit: 61992e0d10fec76cf65e6e5b2d6c9e117b189223
   snapshot_path: .agents/plans/active-codebase-batch-i1-public-apis-e41f.snapshot.json
-  snapshot_commit: 30f39716b185f06b1e29d7ea50f1e2aa3691996d
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1640"]
+  snapshot_commit: 61992e0d10fec76cf65e6e5b2d6c9e117b189223
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1642"]
 merge_commits: {}
 debt_issue_refs: []
 ```
@@ -249,7 +249,7 @@ docs
 
 **Acceptance criteria:**
 
-- [ ] **I1.4-1** Checker R6 reports **0**, so every cross-feature import targets an entrypoint. The feature-import baseline contains no R1, R2, R3, R6 or R7 identities.
+- [x] **I1.4-1** Checker R6 reports **0**, so every cross-feature import targets an entrypoint. The feature-import baseline contains no R1, R2, R3, R6 or R7 identities.
 - [ ] **I1.4-2** Each entrypoint's export list equals its README public-surface table (a checker or test compares them).
 - [ ] **I1.4-3** `architecture-metrics.py` is re-run, and the edge, directive and SCC figures are recorded in the baseline history table. The edge count must not be higher than at the batch start.
 

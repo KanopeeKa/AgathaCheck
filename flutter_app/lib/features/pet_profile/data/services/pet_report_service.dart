@@ -9,13 +9,12 @@ import 'package:intl/intl.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/pet.dart';
-import '../../../health_tracking/domain/entities/health_entry.dart';
-import '../../../health_tracking/domain/entities/health_issue.dart';
-import '../../../notifications/domain/entities/app_notification.dart';
+import '../../../health_tracking/health_tracking.dart';
+import '../../../notifications/notifications.dart';
 import '../../domain/entities/pet_report_supplement.dart';
-import '../../../sharing/domain/entities/pet_access.dart';
-import '../../../weight_tracking/domain/entities/weight_entry.dart';
-import '../../../vet/domain/entities/vet.dart';
+import '../../../sharing/sharing.dart';
+import '../../../weight_tracking/weight_tracking.dart';
+import '../../../vet/vet.dart';
 import 'pet_report_profile_section.dart';
 import 'pet_report_weight_section.dart';
 import 'pet_report_health_section.dart';

@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/theme/experience_colors.dart';
 import '../../../../core/utils/constants.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../pet_profile/presentation/providers/pet_providers.dart';
+import '../../../pet_profile/pet_profile.dart';
 import '../providers/experience_providers.dart';
 
 /// Guided wizard for new guardians: add first pet.

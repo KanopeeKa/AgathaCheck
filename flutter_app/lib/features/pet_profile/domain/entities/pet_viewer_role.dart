@@ -1,5 +1,5 @@
 import 'package:pet_profile_app/core/experience/app_experience.dart';
-import '../../../sharing/domain/entities/pet_access.dart';
+import '../../../sharing/sharing.dart';
 import 'pet.dart';
 
 /// How the current user relates to a pet on the detail screen.

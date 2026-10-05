@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 
 import '../branding/logo_assets.dart';
-import '../../features/experience/domain/entities/app_experience.dart';
+import '../../features/experience/experience.dart';
 import 'web_image.dart';
 
 /// Canonical AgathaTrack logo image.

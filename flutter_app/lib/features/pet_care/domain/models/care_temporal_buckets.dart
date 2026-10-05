@@ -1,4 +1,4 @@
-import '../../../health_tracking/domain/entities/health_entry.dart';
+import '../../../health_tracking/health_tracking.dart';
 import '../care_temporal_group.dart';
 
 /// Grouped open care entries for one pet or a dashboard pet set.

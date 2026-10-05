@@ -7,8 +7,7 @@ import '../../../../../core/utils/calendar_date.dart';
 import '../../../../../core/weight/weight_unit_preference.dart';
 import '../../../../../l10n/app_localizations.dart';
 import 'package:pet_profile_app/features/pet_care/pet_care.dart';
-import '../../../../weight_tracking/domain/weight_entry_sort.dart';
-import 'package:pet_profile_app/features/weight_tracking/weight_tracking.dart';
+import '../../../../weight_tracking/weight_tracking.dart';
 import '../../../data/services/pet_report_profile_section.dart';
 import '../../../domain/entities/pet.dart';
 

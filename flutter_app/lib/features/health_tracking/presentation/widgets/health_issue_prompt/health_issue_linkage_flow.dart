@@ -5,8 +5,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../../../../core/utils/calendar_date.dart';
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../care_taxonomy/domain/care_planning_mode.dart';
-import '../../../../care_taxonomy/domain/care_setting.dart';
+import '../../../../care_taxonomy/care_taxonomy.dart';
 import '../../../domain/entities/health_entry.dart';
 import '../../../domain/entities/health_issue.dart';
 import '../../controllers/care_schedule_controller.dart';

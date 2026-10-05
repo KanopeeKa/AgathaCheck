@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/utils/calendar_date.dart';
-import '../../../pet_care/context/domain/entities/care_period_coverage.dart';
+import '../../../pet_care/pet_care.dart';
 import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/health_occurrence.dart';
 import '../../domain/services/reschedule_occurrence_preview.dart';

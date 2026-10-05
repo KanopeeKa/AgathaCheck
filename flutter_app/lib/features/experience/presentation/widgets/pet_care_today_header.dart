@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../l10n/app_localizations.dart';
-import '../../../health_tracking/domain/entities/health_entry.dart';
+import '../../../health_tracking/health_tracking.dart';
 import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 
 /// Compact orientation layer for the Guardian dashboard. This is deliberately

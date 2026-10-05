@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../care_item/care_item.dart';
 import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
-import '../../../../pet_profile/domain/services/care_family_inference.dart';
-import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
+import '../../../../pet_profile/pet_profile.dart';
 import '../care_surface/care_action_row.dart';
 
 /// Status words and chips for one agenda row (D-CIE-024, §18.6.3).

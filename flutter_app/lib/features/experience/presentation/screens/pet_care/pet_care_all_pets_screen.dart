@@ -3,11 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../pet_profile/presentation/screens/pet_list_screen.dart';
-import '../../../../pet_profile/presentation/widgets/pet_list/pet_list_stale_banner.dart';
-import '../../../../pet_tags/domain/services/pet_tag_filter.dart';
-import '../../../../pet_tags/presentation/providers/pet_tag_providers.dart';
-import '../../../../pet_tags/presentation/widgets/pet_tag_filter_bar.dart';
+import '../../../../pet_profile/pet_profile.dart';
+import '../../../../pet_tags/pet_tags.dart';
 import '../../widgets/experience_shell_scaffold.dart';
 import '../../widgets/pet_care_bottom_action_bar.dart';
 import '../../../domain/entities/app_experience.dart';

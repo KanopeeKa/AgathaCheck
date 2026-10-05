@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import 'package:pet_profile_app/features/pet_care/pet_care.dart';
-import '../../../pet_profile/domain/entities/pet.dart';
+import '../../../pet_profile/pet_profile.dart';
 import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import 'care_item_absence_section.dart';
 import 'care_item_dates_section.dart';

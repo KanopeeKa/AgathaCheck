@@ -1,8 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:pet_profile_app/features/auth/auth.dart';
-import '../../../pet_profile/domain/entities/pet_viewer_role.dart';
-import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
+import '../../../pet_profile/pet_profile.dart';
 import '../../domain/entities/pet_access.dart';
 import '../../domain/entities/pet_share_access.dart';
 import '../../domain/entities/share_invite.dart';

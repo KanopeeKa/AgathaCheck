@@ -10,3 +10,5 @@ export 'presentation/screens/people_edit_screen.dart';
 export 'presentation/screens/people_hub_screen.dart';
 export 'presentation/screens/people_legacy_vet_redirect_screen.dart';
 export 'presentation/screens/people_list_screen.dart';
+export 'presentation/utils/people_contact_role_labels.dart';
+export 'presentation/widgets/people_directory_card.dart';

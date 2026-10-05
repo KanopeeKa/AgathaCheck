@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../pet_care/context/presentation/widgets/planned_absence_entry_tile.dart';
+import '../../../../pet_care/pet_care.dart';
 import 'package:pet_profile_app/core/widgets/pet_care_dashboard_section_header.dart';
 
 /// Guardian dashboard away-planning preview between care actions and vets.

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../care_item/care_item.dart';
-import '../../../../health_tracking/domain/entities/health_entry.dart';
+import '../../../../health_tracking/health_tracking.dart';
 import '../care_surface/care_collection_inset_list.dart';
 import '../care_surface/care_surface_tokens.dart';
 

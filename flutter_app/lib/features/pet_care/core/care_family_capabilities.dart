@@ -1,4 +1,4 @@
-import 'package:pet_profile_app/features/pet_profile/domain/entities/care_family.dart';
+import '../../pet_profile/pet_profile.dart';
 
 /// Entitlement class hooks for future paywall runtime (documentation only in V1).
 enum CareEntitlementClass { core, optionalCatalog, deviceBacked, partnerImport }

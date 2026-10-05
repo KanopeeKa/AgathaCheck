@@ -1,12 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/utils/calendar_date.dart';
-import '../../../care_taxonomy/domain/care_importance.dart';
-import '../../../care_taxonomy/domain/care_planning_mode.dart';
-import '../../../care_taxonomy/domain/care_setting.dart';
-import '../../../care_taxonomy/domain/care_taxonomy.dart';
-import '../../../pet_profile/domain/entities/care_family.dart';
-import '../../../pet_profile/domain/services/care_family_write.dart';
+import '../../../care_taxonomy/care_taxonomy.dart';
+import '../../../pet_profile/pet_profile.dart';
 import '../../domain/entities/care_item_blocks.dart';
 import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/recurrence_anchor.dart';

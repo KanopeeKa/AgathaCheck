@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
-import '../../../pet_profile/domain/entities/care_family.dart';
+import '../../../pet_profile/pet_profile.dart';
 import '../../domain/care_importance.dart';
 import '../../domain/care_setting.dart';
 import 'care_classification_labels.dart';

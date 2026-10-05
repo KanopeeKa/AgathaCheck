@@ -1,5 +1,5 @@
-import '../../../../health_tracking/domain/entities/health_entry.dart';
-import '../../../../pet_care/domain/models/care_temporal_buckets.dart';
+import '../../../../health_tracking/health_tracking.dart';
+import '../../../../pet_care/pet_care.dart';
 
 /// Removes optimistically completed items from temporal buckets for display.
 CareTemporalBuckets filterOptimisticallyCompletedBuckets(

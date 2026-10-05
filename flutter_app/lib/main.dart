@@ -14,13 +14,12 @@ import 'core/theme/app_theme.dart';
 import 'core/utils/constants.dart';
 import 'core/weight/weight_unit_preference.dart';
 import 'core/widgets/consent_banner.dart';
-import 'features/auth/presentation/providers/auth_providers.dart';
-import 'features/care_item/application/care_item_providers.dart';
-import 'features/care_item/care_item.dart';
-import 'features/health_tracking/presentation/providers/health_providers.dart';
-import 'features/pet_profile/presentation/providers/pet_providers.dart';
+import 'package:pet_profile_app/features/auth/auth.dart';
+import 'package:pet_profile_app/features/care_item/care_item.dart';
+import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
+import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 import 'features/subscription/subscription.dart';
-import 'features/weight_tracking/presentation/providers/weight_providers.dart';
+import 'package:pet_profile_app/features/weight_tracking/weight_tracking.dart';
 
 /// Global messenger so session-expiry notices can be shown from anywhere,
 /// independent of the currently routed screen.

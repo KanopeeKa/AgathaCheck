@@ -1,4 +1,4 @@
-import '../../../pet_profile/domain/entities/pet.dart';
+import '../../../pet_profile/pet_profile.dart';
 import '../entities/app_notification.dart';
 import '../entities/notification_scope.dart';
 

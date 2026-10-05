@@ -7,7 +7,7 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:intl/intl.dart';
 
 import '../../../../l10n/app_localizations.dart';
-import '../../../pet_profile/domain/entities/pet.dart';
+import '../../../pet_profile/pet_profile.dart';
 import '../../domain/entities/health_entry.dart';
 
 class EventsPdfService {

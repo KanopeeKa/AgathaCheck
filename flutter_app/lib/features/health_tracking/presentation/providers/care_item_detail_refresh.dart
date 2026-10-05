@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../pet_care/context/presentation/providers/care_context_providers.dart';
+import '../../../pet_care/pet_care.dart';
 import 'care_item_absence_providers.dart';
 import 'health_providers.dart';
 import 'occurrence_providers.dart';

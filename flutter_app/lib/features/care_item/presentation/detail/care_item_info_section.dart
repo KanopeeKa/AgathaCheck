@@ -4,9 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'package:pet_profile_app/features/people/people.dart';
 import 'package:pet_profile_app/features/pet_care/pet_care.dart';
-import '../../../pet_profile/domain/services/care_family_inference.dart';
-import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
-import '../../../health_tracking/domain/entities/health_entry.dart';
+import '../../../pet_profile/pet_profile.dart';
+import '../../../health_tracking/health_tracking.dart';
 
 /// Care item identity rows inside the Details module (schedule owns recurrence).
 class CareItemInfoSection extends ConsumerWidget {

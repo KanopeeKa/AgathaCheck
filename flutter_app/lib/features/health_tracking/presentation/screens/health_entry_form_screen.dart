@@ -9,7 +9,7 @@ import '../../../../core/widgets/form/app_form_breakpoints.dart';
 import '../../../../core/widgets/form/app_form_discard_dialog.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
-import '../../../care_taxonomy/domain/care_planning_mode.dart';
+import '../../../care_taxonomy/care_taxonomy.dart';
 import '../../domain/entities/health_entry.dart';
 import '../controllers/health_entry_form_controller.dart';
 import '../controllers/health_entry_form_outcomes.dart';
