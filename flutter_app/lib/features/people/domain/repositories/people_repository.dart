@@ -4,6 +4,7 @@ import '../entities/household.dart';
 import '../entities/pet_people.dart';
 import '../entities/related_care.dart';
 import '../entities/roster.dart';
+import '../enums/relationship_kind.dart';
 
 abstract class PeopleRepository {
   Future<Roster> fetchRoster({bool includeInactive = false});
@@ -23,6 +24,12 @@ abstract class PeopleRepository {
   Future<ContactDetail> patchContact(String id, Map<String, dynamic> patch);
 
   Future<void> deleteContact(String id);
+
+  Future<void> addContactPetRelationship({
+    required String petId,
+    required String contactId,
+    required RelationshipKind relationshipKind,
+  });
 
   Future<String?> contactIdForLegacyVet(String vetId);
 }

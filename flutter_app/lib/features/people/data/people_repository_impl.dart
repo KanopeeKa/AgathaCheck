@@ -3,6 +3,7 @@ import '../domain/entities/contact_summary.dart';
 import '../domain/entities/pet_people.dart';
 import '../domain/entities/related_care.dart';
 import '../domain/entities/roster.dart';
+import '../domain/enums/relationship_kind.dart';
 import '../domain/repositories/people_repository.dart';
 import 'dto/people_dtos.dart';
 import 'people_api.dart';
@@ -71,6 +72,18 @@ class PeopleRepositoryImpl implements PeopleRepository {
   @override
   Future<void> deleteContact(String id) async {
     await _api.delete('/api/people/contacts/$id');
+  }
+
+  @override
+  Future<void> addContactPetRelationship({
+    required String petId,
+    required String contactId,
+    required RelationshipKind relationshipKind,
+  }) async {
+    await _api.postJson('/api/pets/$petId/people-relationships', {
+      'contact_id': contactId,
+      'relationship_kind': relationshipKind.wireValue,
+    });
   }
 
   @override

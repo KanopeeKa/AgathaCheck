@@ -12,6 +12,7 @@ import 'package:pet_profile_app/features/people/domain/enums/contact_group.dart'
 import 'package:pet_profile_app/features/people/domain/enums/contact_kind.dart';
 import 'package:pet_profile_app/features/people/domain/enums/contact_role.dart';
 import 'package:pet_profile_app/features/people/domain/enums/contact_status.dart';
+import 'package:pet_profile_app/features/people/domain/enums/relationship_kind.dart';
 import 'package:pet_profile_app/features/people/domain/repositories/people_repository.dart';
 import 'package:pet_profile_app/features/people/application/legacy_people_providers.dart';
 import 'package:pet_profile_app/features/people/application/people_commands.dart';
@@ -90,6 +91,13 @@ class FakePeopleRepository implements PeopleRepository {
     String id,
     Map<String, dynamic> patch,
   ) async => _detail;
+
+  @override
+  Future<void> addContactPetRelationship({
+    required String petId,
+    required String contactId,
+    required RelationshipKind relationshipKind,
+  }) async {}
 
   @override
   Future<String?> contactIdForLegacyVet(String vetId) async => null;

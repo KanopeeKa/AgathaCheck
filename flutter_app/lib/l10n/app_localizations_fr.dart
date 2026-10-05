@@ -7649,6 +7649,80 @@ class AppLocalizationsFr extends AppLocalizations {
   String get peopleRelationshipOther => 'Autre lien';
 
   @override
+  String get peopleDetailTabOverview => 'Vue d\'ensemble';
+
+  @override
+  String get peopleDetailTabPetsAccess => 'Animaux et accès';
+
+  @override
+  String get peopleDetailTabRelatedCare => 'Soins liés';
+
+  @override
+  String get peopleDetailTabNotes => 'Notes';
+
+  @override
+  String get peopleDetailLinkedAccount => 'Compte AgathaTrack';
+
+  @override
+  String get peopleDetailNextUpTitle => 'À venir';
+
+  @override
+  String peopleDetailStaffAt(String name) {
+    return 'Personnes chez $name';
+  }
+
+  @override
+  String get peopleDetailNotesPreviewTitle => 'Notes';
+
+  @override
+  String get peopleDetailLinkToPet => 'Lier à un animal';
+
+  @override
+  String get peopleDetailLinkPetTitle => 'Lier à un animal';
+
+  @override
+  String get peopleDetailLinkPetChooseKind => 'Quel lien ?';
+
+  @override
+  String peopleDetailRelatedCareHistory(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count visites passées',
+      one: '1 visite passée',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get peopleDetailHouseholdNoteLabel => 'Note du foyer';
+
+  @override
+  String get peopleDetailHouseholdNoteHelper => 'Visible par votre foyer.';
+
+  @override
+  String get peopleDetailSaveNotes => 'Enregistrer';
+
+  @override
+  String get peopleDetailNotesSaved => 'Notes enregistrées';
+
+  @override
+  String get peopleDetailAccessCoParent => 'Co-parent';
+
+  @override
+  String get peopleDetailAccessCanLogCare => 'Peut enregistrer les soins';
+
+  @override
+  String get peopleDetailPendingInviteBody =>
+      'En attente d\'acceptation de l\'invitation.';
+
+  @override
+  String get peopleDetailPendingPets => 'Animaux dans cette invitation';
+
+  @override
+  String get peopleDetailRevokeInEdit => 'Pour révoquer, ouvrez Modifier.';
+
+  @override
   String get peopleDangerZoneTitle => 'Zone sensible';
 
   @override

@@ -7532,6 +7532,80 @@ class AppLocalizationsEn extends AppLocalizations {
   String get peopleRelationshipOther => 'Other link';
 
   @override
+  String get peopleDetailTabOverview => 'Overview';
+
+  @override
+  String get peopleDetailTabPetsAccess => 'Pets & access';
+
+  @override
+  String get peopleDetailTabRelatedCare => 'Related care';
+
+  @override
+  String get peopleDetailTabNotes => 'Notes';
+
+  @override
+  String get peopleDetailLinkedAccount => 'Has an AgathaTrack account';
+
+  @override
+  String get peopleDetailNextUpTitle => 'Next up';
+
+  @override
+  String peopleDetailStaffAt(String name) {
+    return 'People at $name';
+  }
+
+  @override
+  String get peopleDetailNotesPreviewTitle => 'Notes';
+
+  @override
+  String get peopleDetailLinkToPet => 'Link to a pet';
+
+  @override
+  String get peopleDetailLinkPetTitle => 'Link to a pet';
+
+  @override
+  String get peopleDetailLinkPetChooseKind => 'How are they linked?';
+
+  @override
+  String peopleDetailRelatedCareHistory(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count past visits',
+      one: '1 past visit',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get peopleDetailHouseholdNoteLabel => 'Household note';
+
+  @override
+  String get peopleDetailHouseholdNoteHelper => 'Visible to your household.';
+
+  @override
+  String get peopleDetailSaveNotes => 'Save';
+
+  @override
+  String get peopleDetailNotesSaved => 'Notes saved';
+
+  @override
+  String get peopleDetailAccessCoParent => 'Co-parent';
+
+  @override
+  String get peopleDetailAccessCanLogCare => 'Can log care';
+
+  @override
+  String get peopleDetailPendingInviteBody =>
+      'Waiting for them to accept your invite.';
+
+  @override
+  String get peopleDetailPendingPets => 'Pets in this invite';
+
+  @override
+  String get peopleDetailRevokeInEdit => 'To revoke this invite, open Edit.';
+
+  @override
   String get peopleDangerZoneTitle => 'Danger zone';
 
   @override
