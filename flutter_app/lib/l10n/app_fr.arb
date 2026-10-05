@@ -1940,9 +1940,11 @@
       "date": { "type": "String" }
     }
   },
-  "carePostponeSheetTitle": "Mettre en pause",
+  "carePostponeSheetTitle": "Reporter jusqu'au",
   "carePostponeNoEndDate": "Sans date de fin (pause)",
-  "carePostponeUntilLabel": "Pause jusqu'au",
+  "carePostponeUntilLabel": "Reporter jusqu'au",
+  "carePostponeConfirmPause": "Mettre en pause",
+  "carePostponeConfirmUntil": "Reporter jusqu'au",
   "carePostponePauseConsequence": "Les rappels s'arrêtent jusqu'à la reprise.",
   "carePostponeUntilAfterDoneConsequence": "La date ouverte est reportée au {date}.",
   "@carePostponeUntilAfterDoneConsequence": {

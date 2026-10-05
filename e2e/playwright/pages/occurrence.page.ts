@@ -155,6 +155,35 @@ export class OccurrencePage {
     await refreshFlutterAccessibility(this.page);
   }
 
+  async openScreenMenu(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    const menu = this.page
+      .locator('[flt-semantics-identifier^="occurrence_screen_menu_"]')
+      .first();
+    await menu.click();
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async planAnotherDateFromMenu(isoDate: string): Promise<void> {
+    await this.openScreenMenu();
+    await this.page
+      .getByRole('menuitem', { name: /Plan another date|Prévoir une autre date/i })
+      .click();
+    await expect(
+      this.page.locator('[flt-semantics-identifier="plan_another_date_sheet"]'),
+    ).toBeVisible({ timeout: 15_000 });
+    const day = parseInt(isoDate.split('-')[2]!, 10);
+    await this.page.getByRole('button', { name: /New date|Nouvelle date/i }).click();
+    const dialog = this.page.getByRole('dialog');
+    await expect(dialog).toBeVisible({ timeout: 15_000 });
+    await dialog.getByText(new RegExp(`^${day},\\s`)).first().click({ force: true });
+    await dialog.getByRole('button', { name: /^OK$|^Save$|Enregistrer/i }).first().click();
+    await this.page
+      .locator('[flt-semantics-identifier="plan_another_date_confirm"]')
+      .click();
+    await refreshFlutterAccessibility(this.page);
+  }
+
   async pickCalendarDay(day: number): Promise<void> {
     const dialog = this.page.getByRole('dialog');
     await expect(dialog).toBeVisible({ timeout: 15_000 });

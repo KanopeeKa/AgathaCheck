@@ -2061,9 +2061,11 @@
       "date": { "type": "String" }
     }
   },
-  "carePostponeSheetTitle": "Pause",
+  "carePostponeSheetTitle": "Postpone until",
   "carePostponeNoEndDate": "No end date (pause)",
-  "carePostponeUntilLabel": "Pause until",
+  "carePostponeUntilLabel": "Postpone until",
+  "carePostponeConfirmPause": "Pause",
+  "carePostponeConfirmUntil": "Postpone until",
   "carePostponePauseConsequence": "Reminders stop until you resume.",
   "carePostponeUntilAfterDoneConsequence": "The open date moves to {date}.",
   "@carePostponeUntilAfterDoneConsequence": {

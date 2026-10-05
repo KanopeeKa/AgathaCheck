@@ -14,6 +14,7 @@ Future<bool?> showPostponeSheet(
   WidgetRef ref, {
   required String entryId,
   required bool isFixedSchedule,
+  required DateTime asOf,
   DateTime? initialUntil,
 }) {
   return showModalBottomSheet<bool>(
@@ -22,6 +23,7 @@ Future<bool?> showPostponeSheet(
     builder: (ctx) => PostponeSheet(
       entryId: entryId,
       isFixedSchedule: isFixedSchedule,
+      asOf: asOf,
       initialUntil: initialUntil,
     ),
   );
@@ -32,11 +34,13 @@ class PostponeSheet extends ConsumerStatefulWidget {
     super.key,
     required this.entryId,
     required this.isFixedSchedule,
+    required this.asOf,
     this.initialUntil,
   });
 
   final String entryId;
   final bool isFixedSchedule;
+  final DateTime asOf;
   final DateTime? initialUntil;
 
   @override
@@ -51,7 +55,7 @@ class _PostponeSheetState extends ConsumerState<PostponeSheet> {
   @override
   void initState() {
     super.initState();
-    final today = calendarDateOnly(DateTime.now());
+    final today = calendarDateOnly(widget.asOf);
     _noEndDate = widget.initialUntil == null;
     _until = widget.initialUntil ?? today;
   }
@@ -91,6 +95,10 @@ class _PostponeSheetState extends ConsumerState<PostponeSheet> {
     final l = AppLocalizations.of(context)!;
     final bottom = MediaQuery.viewInsetsOf(context).bottom;
     final theme = Theme.of(context);
+    final today = calendarDateOnly(widget.asOf);
+    final confirmLabel = _noEndDate
+        ? l.carePostponeConfirmPause
+        : l.carePostponeConfirmUntil;
     return Semantics(
       identifier: 'postpone_sheet',
       child: Padding(
@@ -117,12 +125,11 @@ class _PostponeSheetState extends ConsumerState<PostponeSheet> {
                 key: const Key('postpone_until_picker'),
                 contentPadding: EdgeInsets.zero,
                 title: Text(l.carePostponeUntilLabel),
-                subtitle: Text(_until.toIso8601String().substring(0, 10)),
+                subtitle: Text(DateFormat.yMMMd().format(_until)),
                 trailing: const Icon(Icons.edit_calendar_outlined),
                 onTap: _busy
                     ? null
                     : () async {
-                        final today = calendarDateOnly(DateTime.now());
                         final picked = await showCalendarDatePicker(
                           context: context,
                           initialDate: _until.isBefore(today) ? today : _until,
@@ -144,7 +151,7 @@ class _PostponeSheetState extends ConsumerState<PostponeSheet> {
             FilledButton(
               key: const Key('postpone_confirm'),
               onPressed: _busy ? null : _submit,
-              child: Text(l.careItemMenuPause),
+              child: Text(confirmLabel),
             ),
           ],
         ),

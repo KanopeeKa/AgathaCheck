@@ -121,11 +121,14 @@ class CareItemDetailScreen extends ConsumerWidget {
               final fixed =
                   entry.schedule?.isFixedSchedule ??
                   entry.recurrenceAnchor == RecurrenceAnchor.fromDueDate;
+              final asOf =
+                  entry.schedule?.asOf.date ?? calendarDateOnly(DateTime.now());
               final ok = await showPostponeSheet(
                 context,
                 ref,
                 entryId: entryId,
                 isFixedSchedule: fixed,
+                asOf: asOf,
               );
               if (ok == true) {
                 PetEventOccurrenceActions.invalidateOccurrenceData(
@@ -146,11 +149,15 @@ class CareItemDetailScreen extends ConsumerWidget {
                   freshEntry.schedule?.resumeDefaultDate ??
                   freshEntry.schedule?.asOf.date ??
                   calendarDateOnly(DateTime.now());
+              final asOf =
+                  freshEntry.schedule?.asOf.date ??
+                  calendarDateOnly(DateTime.now());
               final ok = await showResumeDateSheet(
                 context,
                 ref,
                 entryId: entryId,
                 suggestedDate: suggested,
+                asOf: asOf,
               );
               if (ok == true) {
                 PetEventOccurrenceActions.invalidateOccurrenceData(

@@ -12,7 +12,11 @@ void main() {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
-            body: PostponeSheet(entryId: 'entry-1', isFixedSchedule: false),
+            body: PostponeSheet(
+              entryId: 'entry-1',
+              isFixedSchedule: false,
+              asOf: DateTime(2026, 8, 1),
+            ),
           ),
         ),
       ),
