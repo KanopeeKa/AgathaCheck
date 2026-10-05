@@ -36,7 +36,7 @@ export class WeightTrackingPage {
       .or(this.page.getByRole('banner', { name: /Weight Tracking|Suivi du poids/i }))
       .or(
         this.page.getByRole('button', {
-          name: /Add weight entry|Record weight|Ajouter une entrée de poids|Enregistrer le poids/i,
+          name: /Record weight|Enregistrer le poids/i,
         }),
       );
   }
@@ -118,7 +118,7 @@ export class WeightTrackingPage {
     await this.openSection();
     const addButton = this.page
       .getByRole('button', {
-        name: /Add weight entry|Record weight|Ajouter une entrée de poids|Enregistrer le poids/i,
+        name: /Record weight|Enregistrer le poids/i,
       })
       .first();
     await addButton.click();
