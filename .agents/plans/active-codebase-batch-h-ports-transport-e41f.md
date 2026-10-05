@@ -47,16 +47,16 @@ No wire change. Every 401, 403 and 404 stays the same.
 
 ```yaml
 autonomy: active
-current_phase: "1"
+current_phase: 1
 last_completed_phase: null
 halt_reason: null
-next_action: "bootstrap: create integration branch + control issue, then phase 1"
+next_action: "continue phase 1 on branch cursor/active-codebase-h1-auth-ports-e41f"
 artifact_ref:
-  branch: null
+  branch: cursor/active-codebase-h1-auth-ports-e41f
   plan_path: .agents/plans/active-codebase-batch-h-ports-transport-e41f.md
-  plan_commit: null
+  plan_commit: 907d676ae4333863236680af5cc537e08f33bf65
   snapshot_path: .agents/plans/active-codebase-batch-h-ports-transport-e41f.snapshot.json
-  snapshot_commit: null
+  snapshot_commit: 907d676ae4333863236680af5cc537e08f33bf65
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
