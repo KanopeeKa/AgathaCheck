@@ -159,27 +159,4 @@ class HealthRepositoryImpl implements HealthRepository {
       nextDueDate: result.nextDueDate,
     );
   }
-
-  @override
-  Future<void> completeWeightOccurrence({
-    required String petId,
-    required String entryId,
-    required String occurrenceId,
-    required double weightKg,
-    required DateTime date,
-    String notes = '',
-    String unit = 'kg',
-    String measurementSource = 'guardian',
-  }) {
-    return dataSource.completeWeightOccurrence(
-      petId: petId,
-      entryId: entryId,
-      occurrenceId: occurrenceId,
-      weightKg: weightKg,
-      date: date,
-      notes: notes,
-      unit: unit,
-      measurementSource: measurementSource,
-    );
-  }
 }

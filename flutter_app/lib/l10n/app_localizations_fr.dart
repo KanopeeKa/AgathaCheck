@@ -7769,7 +7769,32 @@ class AppLocalizationsFr extends AppLocalizations {
       'Saisissez le poids pour le marquer comme fait';
 
   @override
-  String get careWeightFieldLabel => 'Poids (kg)';
+  String careWeightFieldLabelUnit(String unit) {
+    return 'Poids ($unit)';
+  }
+
+  @override
+  String get careSkipWeighInTitle => 'Ignorer cette pesée prévue ?';
+
+  @override
+  String get careSkipReasonOptional => 'Raison (facultatif)';
+
+  @override
+  String get careSkipReasonCouldNotWeigh => 'Pesée impossible';
+
+  @override
+  String get careSkipReasonPetUnsettled => 'Animal trop agité';
+
+  @override
+  String get careSkipReasonVetWillWeigh => 'Le vétérinaire pèsera';
+
+  @override
+  String get careSkipReasonOther => 'Autre';
+
+  @override
+  String careSkippedWithReason(String reason) {
+    return 'Ignorée · $reason';
+  }
 
   @override
   String get careCompletedOnLabel => 'Quand a-t-il été fait ?';

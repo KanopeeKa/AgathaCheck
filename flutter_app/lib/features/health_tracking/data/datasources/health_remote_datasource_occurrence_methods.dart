@@ -151,31 +151,4 @@ mixin _HealthRemoteOccurrenceMethods {
       reasonCode: reasonCode,
     );
   }
-
-  @override
-  Future<void> completeWeightOccurrence({
-    required String petId,
-    required String entryId,
-    required String occurrenceId,
-    required double weightKg,
-    required DateTime date,
-    String notes = '',
-    String unit = 'kg',
-    String measurementSource = 'guardian',
-  }) {
-    return completeWeightOccurrenceRemote(
-      client: _occurrenceHttpClient,
-      baseUrl: _occurrenceBaseUrl,
-      headers: _occurrenceAuthHeaders(jsonBody: true),
-      checkResponse: checkHealthRemoteResponse,
-      petId: petId,
-      entryId: entryId,
-      occurrenceId: occurrenceId,
-      weightKg: weightKg,
-      date: date,
-      notes: notes,
-      unit: unit,
-      measurementSource: measurementSource,
-    );
-  }
 }

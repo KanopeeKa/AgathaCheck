@@ -140,29 +140,6 @@ class CareScheduleController {
     });
   }
 
-  Future<CommandOutcome?> completeWeightOccurrence({
-    required String petId,
-    required String entryId,
-    required String occurrenceId,
-    required double weightKg,
-    required DateTime date,
-    String notes = '',
-  }) {
-    return _runGuarded(_occurrenceCommandKey(entryId, occurrenceId), () async {
-      await _ref
-          .read(healthRepositoryProvider)
-          .completeWeightOccurrence(
-            petId: petId,
-            entryId: entryId,
-            occurrenceId: occurrenceId,
-            weightKg: weightKg,
-            date: date,
-            notes: notes,
-          );
-      return _reconcileAfterCommit(entryId);
-    });
-  }
-
   Future<CommandOutcome?> updateOccurrenceDetails(
     String entryId,
     String occurrenceId, {

@@ -78,15 +78,4 @@ abstract class HealthRepository {
     DateTime scheduledDate, {
     String? reasonCode,
   });
-
-  Future<void> completeWeightOccurrence({
-    required String petId,
-    required String entryId,
-    required String occurrenceId,
-    required double weightKg,
-    required DateTime date,
-    String notes = '',
-    String unit = 'kg',
-    String measurementSource = 'guardian',
-  });
 }
