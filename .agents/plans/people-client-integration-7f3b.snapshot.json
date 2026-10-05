@@ -2,7 +2,7 @@
   "schema_version": 1,
   "approved_at": "2026-10-05T12:45:00.000Z",
   "approved_until": "2026-10-07T12:45:00.000Z",
-  "content_hash": "sha256:6e260eeaad27065447cfae3c22db24d7bd80a800ae6a08ae746f0f87a3bb5366",
+  "content_hash": "sha256:fdc5401411aded39c7b0e008ec5f75b840a7c9a5a86f007d387f73df3fc68ae4",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "control_issue": 1630,
@@ -179,12 +179,9 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "bdd-journey",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
       "debt_issue_refs": []
     },
     {
