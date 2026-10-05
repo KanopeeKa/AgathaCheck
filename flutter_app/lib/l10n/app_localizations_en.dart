@@ -7648,7 +7648,32 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careWeightRequiredHint => 'Enter the weight to mark it as done';
 
   @override
-  String get careWeightFieldLabel => 'Weight (kg)';
+  String careWeightFieldLabelUnit(String unit) {
+    return 'Weight ($unit)';
+  }
+
+  @override
+  String get careSkipWeighInTitle => 'Skip this weigh-in?';
+
+  @override
+  String get careSkipReasonOptional => 'Reason (optional)';
+
+  @override
+  String get careSkipReasonCouldNotWeigh => 'Couldn\'t weigh';
+
+  @override
+  String get careSkipReasonPetUnsettled => 'Pet too unsettled';
+
+  @override
+  String get careSkipReasonVetWillWeigh => 'Vet will weigh';
+
+  @override
+  String get careSkipReasonOther => 'Other';
+
+  @override
+  String careSkippedWithReason(String reason) {
+    return 'Skipped · $reason';
+  }
 
   @override
   String get careCompletedOnLabel => 'When was this done?';

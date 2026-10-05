@@ -111,6 +111,26 @@ void main() {
     });
   });
 
+  group('skip', () {
+    test('weigh-in skip can send reason_code and notes', () async {
+      final recorder = RecordingClient(
+        (_) => jsonResponse(commandJson()),
+      );
+      await serviceFor(recorder).skip(
+        entryId: 'entry-1',
+        occurrenceId: 'occ-1',
+        reasonCode: 'could_not_weigh',
+        notes: 'Too wiggly',
+      );
+      expect(
+        recorder.requests.single.url.path,
+        endsWith('/occurrences/occ-1/skip'),
+      );
+      expect(recorder.body(0)['reason_code'], 'could_not_weigh');
+      expect(recorder.body(0)['notes'], 'Too wiggly');
+    });
+  });
+
   group('failures (§18.10, DN-9)', () {
     Future<CareCommandFailure> failWith(http.Response response) async {
       final outcome = await serviceFor(

@@ -1,5 +1,6 @@
 import 'care_item_schedule.dart';
 import 'care_occurrence.dart';
+import 'weigh_in_skip_reason.dart';
 
 /// One occurrence for the occurrence screen (§18.7.1, D-CIE-029).
 class OccurrenceDetail {
@@ -9,6 +10,7 @@ class OccurrenceDetail {
     this.schedule,
     this.lastAction,
     this.linkedWeight,
+    this.skipReason,
   });
 
   final CareOccurrence occurrence;
@@ -22,6 +24,9 @@ class OccurrenceDetail {
 
   /// The weight saved with a weigh-in.
   final LinkedWeight? linkedWeight;
+
+  /// Present when a weigh-in was skipped with an optional reason.
+  final OccurrenceSkipReason? skipReason;
 
   /// Undo is offered on this occurrence only when the item's last action is
   /// on it (§18.6.4).
@@ -107,8 +112,14 @@ class CareLastAction {
 }
 
 class LinkedWeight {
-  const LinkedWeight({required this.value, required this.unit});
+  const LinkedWeight({
+    required this.value,
+    required this.unit,
+    this.date,
+  });
 
+  /// Stored weight in kg (API `value` with `unit: kg`).
   final double value;
   final String unit;
+  final DateTime? date;
 }

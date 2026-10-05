@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/providers/analytics_providers.dart';
+import '../../../core/providers/pet_care_sync.dart';
 import '../../../core/router/shell_return_navigation.dart';
 import '../../../l10n/app_localizations.dart';
 import '../application/care_command_outcome.dart';
@@ -27,10 +28,18 @@ class CareCompletionFlow {
   CareCompletionFlow(
     this._service, {
     void Function(String, Map<String, Object>)? track,
-  }) : _track = track ?? ((_, _) {});
+    PetCareSync? petCareSync,
+  })  : _track = track ?? ((_, _) {}),
+        _petCareSync = petCareSync;
 
   final CareCompletionService _service;
   final void Function(String event, Map<String, Object> properties) _track;
+  final PetCareSync? _petCareSync;
+
+  void _refreshWeightIfWeighIn(CareItemSchedule schedule) {
+    if (schedule.careFamily != kWeightMonitoringFamily) return;
+    _petCareSync?.weightChanged(schedule.petId);
+  }
 
   /// Entries with a request in flight (double taps are ignored).
   static final Set<String> _busy = {};
@@ -132,6 +141,7 @@ class CareCompletionFlow {
 
     switch (outcome) {
       case CareSucceeded(:final value):
+        _refreshWeightIfWeighIn(schedule);
         _track('care_done_succeeded', {
           ...props,
           'status_before': target.status.name,
@@ -243,6 +253,7 @@ class CareCompletionFlow {
                     _track('care_done_undone', {
                       'family': schedule.careFamily ?? 'unknown',
                     });
+                    _refreshWeightIfWeighIn(schedule);
                   }
                   await onChanged();
                 },
@@ -290,8 +301,10 @@ String _analyticsSource(CareCommandSource source) =>
 
 final careCompletionFlowProvider = Provider<CareCompletionFlow>((ref) {
   final analytics = ref.watch(analyticsServiceProvider);
+  final sync = ref.watch(petCareSyncProvider);
   return CareCompletionFlow(
     ref.watch(careCompletionServiceProvider),
     track: (event, properties) => analytics.capture(event, properties),
+    petCareSync: sync,
   );
 });

@@ -13390,11 +13390,53 @@ abstract class AppLocalizations {
   /// **'Enter the weight to mark it as done'**
   String get careWeightRequiredHint;
 
-  /// No description provided for @careWeightFieldLabel.
+  /// No description provided for @careWeightFieldLabelUnit.
   ///
   /// In en, this message translates to:
-  /// **'Weight (kg)'**
-  String get careWeightFieldLabel;
+  /// **'Weight ({unit})'**
+  String careWeightFieldLabelUnit(String unit);
+
+  /// No description provided for @careSkipWeighInTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip this weigh-in?'**
+  String get careSkipWeighInTitle;
+
+  /// No description provided for @careSkipReasonOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason (optional)'**
+  String get careSkipReasonOptional;
+
+  /// No description provided for @careSkipReasonCouldNotWeigh.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t weigh'**
+  String get careSkipReasonCouldNotWeigh;
+
+  /// No description provided for @careSkipReasonPetUnsettled.
+  ///
+  /// In en, this message translates to:
+  /// **'Pet too unsettled'**
+  String get careSkipReasonPetUnsettled;
+
+  /// No description provided for @careSkipReasonVetWillWeigh.
+  ///
+  /// In en, this message translates to:
+  /// **'Vet will weigh'**
+  String get careSkipReasonVetWillWeigh;
+
+  /// No description provided for @careSkipReasonOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get careSkipReasonOther;
+
+  /// No description provided for @careSkippedWithReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Skipped · {reason}'**
+  String careSkippedWithReason(String reason);
 
   /// No description provided for @careCompletedOnLabel.
   ///

@@ -2,6 +2,7 @@ import '../../../core/utils/calendar_date.dart';
 import '../domain/care_item_schedule.dart';
 import '../domain/care_occurrence.dart';
 import '../domain/occurrence_detail.dart';
+import '../domain/weigh_in_skip_reason.dart';
 
 /// Parsers for care item wire shapes (`api-reference.md` § Occurrence APIs).
 
@@ -114,6 +115,7 @@ OccurrenceDetail occurrenceDetailFromJson(Map<String, dynamic> json) {
   final entry = json['entry'] as Map<String, dynamic>;
   final last = json['last_action'] as Map<String, dynamic>?;
   final weight = json['linked_weight'] as Map<String, dynamic>?;
+  final skipRaw = json['skip_reason'] as Map<String, dynamic>?;
   final schedule = entry.containsKey('open_occurrences')
       ? careItemScheduleFromJson(entry)
       : null;
@@ -151,6 +153,13 @@ OccurrenceDetail occurrenceDetailFromJson(Map<String, dynamic> json) {
         : LinkedWeight(
             value: (weight['value'] as num).toDouble(),
             unit: weight['unit'] as String? ?? 'kg',
+            date: parseCalendarDate(weight['date']),
+          ),
+    skipReason: skipRaw == null
+        ? null
+        : OccurrenceSkipReason(
+            code: skipRaw['code'] as String?,
+            note: skipRaw['note'] as String?,
           ),
   );
 }

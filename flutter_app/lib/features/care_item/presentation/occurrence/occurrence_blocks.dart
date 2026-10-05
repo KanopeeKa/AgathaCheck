@@ -1,19 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/providers/analytics_providers.dart';
 import '../../../../core/utils/calendar_date_picker.dart';
+import '../../../../core/weight/weight_unit.dart';
+import '../../../../core/weight/weight_unit_preference.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../application/care_command_outcome.dart';
 import '../../application/care_completion_service.dart';
 import '../../application/care_item_providers.dart';
+import '../../application/care_weigh_in_refresh.dart';
 import '../../domain/care_item_schedule.dart';
 import '../../domain/care_occurrence.dart';
 import '../../domain/completion_requirements.dart';
 import '../../domain/occurrence_detail.dart';
+import '../../domain/weigh_in_skip_reason.dart';
 import '../care_completion_flow.dart';
 import '../sheets/record_as_given_sheet.dart';
+import '../sheets/skip_weigh_in_sheet.dart';
 import '../../domain/occurrence_display.dart';
 
 /// Primary and secondary actions for one occurrence (§18.6.4): open →
@@ -57,9 +63,13 @@ class _OccurrenceBlocksState extends ConsumerState<OccurrenceBlocks> {
     super.dispose();
   }
 
-  CompletionInputs get _inputs => CompletionInputs(
-    weightValue: double.tryParse(_weight.text.replaceAll(',', '.')),
-  );
+  CompletionInputs get _inputs {
+    final pref = ref.read(weightUnitPreferenceProvider);
+    return CompletionInputs(
+      weightValue: double.tryParse(_weight.text.replaceAll(',', '.')),
+      weightUnit: weightUnitToWire(pref),
+    );
+  }
 
   /// Server schedule when available; otherwise a single-slot fallback for tests.
   CareItemSchedule get _schedule {
@@ -134,6 +144,11 @@ class _OccurrenceBlocksState extends ConsumerState<OccurrenceBlocks> {
     if (!mounted) return;
     switch (outcome) {
       case CareSucceeded():
+        refreshWeightAfterWeighInCommand(
+          ref,
+          careFamily: _d.item.careFamily,
+          petId: _d.item.petId,
+        );
         _snack(success);
       case CareFailed(failure: CareNotOpenFailure()):
         _snack(l.careAlreadyUpdated);
@@ -191,6 +206,7 @@ class _OccurrenceBlocksState extends ConsumerState<OccurrenceBlocks> {
       _d.item.careFamily,
     ).contains(CompletionRequirement.weight);
     final missing = missingRequirements(_d.item.careFamily, _inputs);
+    final weightUnit = ref.watch(weightUnitPreferenceProvider);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -209,7 +225,7 @@ class _OccurrenceBlocksState extends ConsumerState<OccurrenceBlocks> {
             autofocus: widget.focus == 'weight',
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             decoration: InputDecoration(
-              labelText: l.careWeightFieldLabel,
+              labelText: l.careWeightFieldLabelUnit(unitLabel(weightUnit)),
               helperText: missing.isEmpty ? null : l.careWeightRequiredHint,
             ),
           ),
@@ -236,6 +252,18 @@ class _OccurrenceBlocksState extends ConsumerState<OccurrenceBlocks> {
                 onPressed: _busy
                     ? null
                     : () => _guard(() async {
+                        if (_d.item.careFamily == kWeightMonitoringFamily) {
+                          final skip = await showSkipWeighInSheet(context);
+                          if (skip == null) return;
+                          final outcome = await _service.skip(
+                            entryId: _d.item.id,
+                            occurrenceId: _occ.id,
+                            reasonCode: skip.reasonCode,
+                            notes: skip.notes,
+                          );
+                          await _report(outcome, l.careSkipped(_d.item.name));
+                          return;
+                        }
                         final outcome = await _service.skip(
                           entryId: _d.item.id,
                           occurrenceId: _occ.id,
@@ -282,16 +310,32 @@ class _OccurrenceBlocksState extends ConsumerState<OccurrenceBlocks> {
   Widget _completed(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final weight = _d.linkedWeight;
+    final displayUnit = ref.watch(weightUnitPreferenceProvider);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (weight != null)
+        if (weight != null) ...[
           ListTile(
             key: const Key('occurrence_linked_weight'),
             contentPadding: EdgeInsets.zero,
             title: Text(l.weight),
-            subtitle: Text('${weight.value} ${weight.unit}'),
+            subtitle: Text(
+              [
+                formatWeight(weight.value, displayUnit),
+                if (weight.date != null)
+                  l.weightRecordedOn(DateFormat.yMMMd().format(weight.date!)),
+              ].join(' · '),
+            ),
           ),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton(
+              key: const Key('occurrence_see_all_weights'),
+              onPressed: () => context.push('/pet/${_d.item.petId}/weight'),
+              child: Text(l.weightSeeAll),
+            ),
+          ),
+        ],
         _dateField(
           context,
           onTap: () => _guard(() async {
@@ -401,9 +445,31 @@ class _OccurrenceBlocksState extends ConsumerState<OccurrenceBlocks> {
 
   Widget _closedSkipped(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    return Text(
-      l.careSkipped(_d.item.name),
-      style: Theme.of(context).textTheme.bodyMedium,
+    final skip = _d.skipReason;
+    final isWeighIn = _d.item.careFamily == kWeightMonitoringFamily;
+    final reasonLabel = isWeighIn
+        ? weighInSkipReasonLabel(l, skip?.code)
+        : null;
+    final text = reasonLabel != null
+        ? l.careSkippedWithReason(reasonLabel)
+        : l.careSkipped(_d.item.name);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          text,
+          key: const Key('occurrence_skipped_status'),
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+        if (isWeighIn && skip?.note != null && skip!.note!.isNotEmpty) ...[
+          const SizedBox(height: 8),
+          Text(
+            skip.note!,
+            key: const Key('occurrence_skipped_note'),
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+        ],
+      ],
     );
   }
 }

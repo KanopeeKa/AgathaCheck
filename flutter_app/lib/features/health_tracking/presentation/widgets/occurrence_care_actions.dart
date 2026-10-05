@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/router/shell_return_navigation.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../pet_profile/domain/entities/care_family.dart';
 import '../../domain/entities/command_outcome.dart';
 import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/health_occurrence.dart';
@@ -13,11 +15,13 @@ import 'health_issue_prompt/health_issue_linkage_flow.dart';
 import 'occurrence_completion_date_flow.dart';
 import 'occurrence_completion_feedback.dart';
 import 'occurrence_stack_sheet.dart';
-import 'weight_occurrence_care_actions.dart';
 
 /// Occurrence-aware mark-done, stack sheet, and bulk skip helpers for list surfaces.
 class OccurrenceCareActions {
   const OccurrenceCareActions._();
+
+  static bool _isWeightMonitoring(HealthEntry entry) =>
+      entry.careFamily == CareFamily.weightMonitoring;
 
   /// Shows stack sheet or mark-complete sheet; returns null when dismissed.
   static Future<OccurrenceMarkDoneResult?> showMarkDoneFlow(
@@ -25,8 +29,8 @@ class OccurrenceCareActions {
     WidgetRef ref,
     HealthEntry entry,
   ) async {
-    if (WeightOccurrenceCareActions.isWeightRhythm(entry)) {
-      return _showWeightMarkDoneFlow(context, ref, entry);
+    if (_isWeightMonitoring(entry)) {
+      return _openWeightOccurrenceScreen(context, ref, entry);
     }
 
     List<HealthOccurrence> occurrences;
@@ -171,7 +175,7 @@ class OccurrenceCareActions {
     );
   }
 
-  static Future<OccurrenceMarkDoneResult?> _showWeightMarkDoneFlow(
+  static Future<OccurrenceMarkDoneResult?> _openWeightOccurrenceScreen(
     BuildContext context,
     WidgetRef ref,
     HealthEntry entry,
@@ -188,7 +192,7 @@ class OccurrenceCareActions {
     if (summary.openCount == 0) return null;
 
     if (_shouldShowOccurrenceStack(occurrences, summary, now)) {
-      final stackResult = await showOccurrenceStackSheet(
+      await showOccurrenceStackSheet(
         context,
         entry: entry,
         occurrences: occurrences,
@@ -196,44 +200,31 @@ class OccurrenceCareActions {
           if (skipEarlierMissed) {
             await skipAllMissed(ref, entry);
           }
-          final saved =
-              await WeightOccurrenceCareActions.showWeightEntrySheetForOccurrence(
-                context,
-                ref,
-                entry,
-                occurrenceId,
-              );
-          if (!saved) {
-            throw StateError('weight entry dismissed');
-          }
+          if (!context.mounted) return;
+          openOccurrenceScreen(
+            context,
+            petId: entry.petId,
+            entryId: entry.id,
+            occurrenceId: occurrenceId,
+            focus: 'weight',
+          );
         },
         onSkipAllMissed: () async {
           await skipAllMissed(ref, entry);
         },
       );
-      if (stackResult == null || !context.mounted) return null;
-      return OccurrenceMarkDoneResult(
-        completedOn: stackResult.completedOn,
-        occurrenceId: stackResult.occurrenceId,
-        skipEarlierMissed: stackResult.skipEarlierMissed,
-        alreadyPersisted: true,
-      );
+      return null;
     }
 
-    final occurrenceId = occurrences.first.id;
-    final saved =
-        await WeightOccurrenceCareActions.showWeightEntrySheetForOccurrence(
-          context,
-          ref,
-          entry,
-          occurrenceId,
-        );
-    if (!saved || !context.mounted) return null;
-    return OccurrenceMarkDoneResult(
-      completedOn: DateTime.now(),
-      occurrenceId: occurrenceId,
-      alreadyPersisted: true,
+    if (!context.mounted) return null;
+    openOccurrenceScreen(
+      context,
+      petId: entry.petId,
+      entryId: entry.id,
+      occurrenceId: occurrences.first.id,
+      focus: 'weight',
     );
+    return null;
   }
 
   static bool _shouldShowOccurrenceStack(
