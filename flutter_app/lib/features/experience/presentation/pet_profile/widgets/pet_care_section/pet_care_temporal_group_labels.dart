@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:pet_profile_app/l10n/app_localizations.dart';
-import 'package:pet_profile_app/features/pet_care/pet_care.dart';
+import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 
 String petCareTemporalGroupLabel(
   AppLocalizations l10n,

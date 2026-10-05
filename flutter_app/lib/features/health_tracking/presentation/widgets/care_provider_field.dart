@@ -94,20 +94,15 @@ class _CareProviderFieldState extends State<CareProviderField> {
         else
           DropdownButtonFormField<String?>(
             initialValue: widget.contactId,
-            decoration: InputDecoration(
-              labelText: l.careProviderChooseContact,
-            ),
+            decoration: InputDecoration(labelText: l.careProviderChooseContact),
             items: [
               DropdownMenuItem<String?>(value: null, child: Text(l.none)),
               ...widget.contacts.map(
-                (c) => DropdownMenuItem<String?>(
-                  value: c.id,
-                  child: Text(c.name),
-                ),
+                (c) =>
+                    DropdownMenuItem<String?>(value: c.id, child: Text(c.name)),
               ),
             ],
-            onChanged: (id) =>
-                widget.onChanged(contactId: id, typedName: null),
+            onChanged: (id) => widget.onChanged(contactId: id, typedName: null),
           ),
       ],
     );

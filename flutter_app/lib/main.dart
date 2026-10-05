@@ -79,9 +79,7 @@ Future<void> main() async {
           return contactsAsync.when(
             data: (contacts) => AsyncData(
               contacts
-                  .map(
-                    (c) => CareProviderContactOption(id: c.id, name: c.name),
-                  )
+                  .map((c) => CareProviderContactOption(id: c.id, name: c.name))
                   .toList(growable: false),
             ),
             loading: () => const AsyncLoading(),
