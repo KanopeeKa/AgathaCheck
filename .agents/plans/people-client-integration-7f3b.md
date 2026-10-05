@@ -346,9 +346,9 @@ next_action: "continue phase i5-ship-main on branch cursor/people-integration-i5
 artifact_ref:
   branch: cursor/people-integration-i5-ship-7f3b
   plan_path: .agents/plans/people-client-integration-7f3b.md
-  plan_commit: c10756484ae19aeb53660f131607c6fa534f0adf
+  plan_commit: ad2ba850448f63f7c704494ab257a7268f2dcdb8
   snapshot_path: .agents/plans/people-client-integration-7f3b.snapshot.json
-  snapshot_commit: c10756484ae19aeb53660f131607c6fa534f0adf
+  snapshot_commit: ad2ba850448f63f7c704494ab257a7268f2dcdb8
 open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1677"]
 merge_commits: {"i1-consumers":"6ba0a1cfce392dd92f2b3c492928ddbf105c73a2","i2-pet-people":"c64057378bcf851a2d2d3cb880573e4d3084b6b8"}
 debt_issue_refs: ["https://github.com/KanopeeKa/AgathaCheck/issues/1653"]
