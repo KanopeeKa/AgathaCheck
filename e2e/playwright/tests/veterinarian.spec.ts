@@ -22,8 +22,7 @@ import {
 } from '../support/api';
 import { checkA11y } from '../support/axe';
 import { PetListPage } from '../pages/pet-list.page';
-import { VetListPage } from '../pages/vet-list.page';
-import { VetFormPage } from '../pages/vet-form.page';
+import { PeoplePage } from '../pages/people.page';
 import { dashboardSectionGroup } from '../support/flutter';
 
 test.describe('Veterinarian management', () => {
@@ -33,11 +32,11 @@ test.describe('Veterinarian management', () => {
     const petList = await loginAs(page, testUser);
     await petList.openVets();
 
-    const vetList = new VetListPage(page);
+    const vetList = new PeoplePage(page);
     await vetList.expectLoaded();
     await vetList.openAddForm();
 
-    const vetForm = new VetFormPage(page);
+    const vetForm = new PeoplePage(page);
     await vetForm.createVet({ name: 'Dr. Smith' });
 
     await vetList.expectLoaded();
@@ -55,10 +54,10 @@ test.describe('Veterinarian management', () => {
     const petList = await loginAs(page, testUser);
     await petList.openVets();
 
-    const vetList = new VetListPage(page);
+    const vetList = new PeoplePage(page);
     await vetList.openAddForm();
 
-    const vetForm = new VetFormPage(page);
+    const vetForm = new PeoplePage(page);
     await vetForm.createVet({ name: 'Dr. Jones' });
 
     await vetList.expectLoaded();
@@ -78,7 +77,7 @@ test.describe('Veterinarian management', () => {
     const petList = await loginAs(page, user);
     await petList.openVets();
 
-    const vetList = new VetListPage(page);
+    const vetList = new PeoplePage(page);
     await vetList.expectLoaded();
     await vetList.expectVetVisible('Dr. Smith');
     await vetList.expectVetVisible('Dr. Jones');
@@ -104,7 +103,7 @@ test.describe('Veterinarian management', () => {
     const petList = await loginAs(page, user);
     await petList.openVets();
 
-    const vetList = new VetListPage(page);
+    const vetList = new PeoplePage(page);
     await vetList.expectLoaded();
     await vetList.expectVetLinkedPetCount('Dr. Smith', 2);
     await vetList.openVetDetail('Dr. Smith');
@@ -115,7 +114,7 @@ test.describe('Veterinarian management', () => {
     const petList = await loginAs(page, testUser);
     await petList.openVets();
 
-    const vetList = new VetListPage(page);
+    const vetList = new PeoplePage(page);
     await vetList.expectLoaded();
     await vetList.expectEmptyState();
   });
@@ -131,11 +130,11 @@ test.describe('Veterinarian management', () => {
     const petList = await loginAs(page, user);
     await petList.openVets();
 
-    const vetList = new VetListPage(page);
+    const vetList = new PeoplePage(page);
     await vetList.expectLoaded();
     await vetList.openVetDetail('Dr. Smith');
 
-    const vetForm = new VetFormPage(page);
+    const vetForm = new PeoplePage(page);
     // People hub: edit form can hang on GET /contacts/:id; persist phone via API after opening detail.
     await vetForm.updatePhone('555-5678', { vetName: 'Dr. Smith' });
 
@@ -162,7 +161,7 @@ test.describe('Veterinarian management', () => {
     const petList = await loginAs(page, user);
     await petList.openVets();
 
-    const vetList = new VetListPage(page);
+    const vetList = new PeoplePage(page);
     await vetList.expectLoaded();
     await vetList.clickDeleteVet('Dr. Smith');
     await vetList.confirmDeletion();
@@ -181,7 +180,7 @@ test.describe('Veterinarian management', () => {
     const petList = await loginAs(page, user);
     await petList.openVets();
 
-    const vetList = new VetListPage(page);
+    const vetList = new PeoplePage(page);
     await vetList.expectLoaded();
     await vetList.clickDeleteVet('Dr. Smith');
     await vetList.cancelDeletion();
@@ -197,7 +196,7 @@ test.describe('Veterinarian management', () => {
     const petList = await loginAs(page, testUser);
     await petList.openVets();
 
-    const vetList = new VetListPage(page);
+    const vetList = new PeoplePage(page);
     await vetList.expectLoaded();
     await vetList.goBack();
 
@@ -211,7 +210,7 @@ test.describe('Veterinarian management', () => {
     const petList = new PetListPage(page);
     await petList.openVets();
 
-    const vetList = new VetListPage(page);
+    const vetList = new PeoplePage(page);
     await vetList.expectLoaded();
   });
 });

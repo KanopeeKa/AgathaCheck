@@ -1,13 +1,15 @@
 /**
- * Veterinarian list screen (`/pc/vets`, `/o/vets`).
- * Maps to: flutter_app/test/bdd/features/veterinarian_management.feature
+ * People hub, detail, add/edit flows, and legacy vet redirects.
+ * Maps to: people.feature, veterinarian_management.feature
  */
 import type { Locator, Page } from '@playwright/test';
 import { expect } from '@playwright/test';
-import { deleteVet, getAllPets, getVets } from '../support/api';
+import { deleteVet, getAllPets, getVets, updateVetDetails } from '../support/api';
 import {
   dismissConsentBannerIfPresent,
   escapeRegExp,
+  fillLabelledField,
+  fillTextbox,
   flutterGotoUrl,
   flutterRoutePath,
   refreshFlutterAccessibility,
@@ -16,7 +18,7 @@ import {
 } from '../support/flutter';
 import { readAccessTokenFromPage } from '../support/ui-auth';
 
-export class VetListPage {
+export class PeoplePage {
   /** People hub: legacy vets delete via API (contact DELETE is blocked when linked). */
   private vetDeleteCandidate: string | null = null;
 
@@ -461,5 +463,329 @@ export class VetListPage {
       }
       await expect(phoneLocator.first()).toBeVisible({ timeout: 15_000 });
     }).toPass({ timeout: 45_000 });
+  }
+
+  // ── Hub roster (people.feature c8) ─────────────────────────────────────
+
+  async expectHubSectionHeadings(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    await expect(
+      this.page.getByRole('group', { name: /^Trusted carers$/i }).first(),
+    ).toBeVisible({ timeout: 15_000 });
+    await expect(
+      this.page.getByRole('group', { name: /^Pet professionals$/i }).first(),
+    ).toBeVisible();
+    const householdGroup = this.page.getByRole('group', { name: /^Households$/i });
+    if (await householdGroup.first().isVisible({ timeout: 2_000 }).catch(() => false)) {
+      await expect(householdGroup.first()).toBeVisible();
+    }
+  }
+
+  async searchHub(query: string): Promise<void> {
+    const field = this.page
+      .getByRole('textbox', { name: /search people/i })
+      .or(this.page.getByLabel(/search people/i))
+      .or(this.page.locator('[data-flutter-key="people_list_search"]'));
+    await field.first().click();
+    await field.first().fill('');
+    await field.first().pressSequentially(query, { delay: 40 });
+    await refreshFlutterAccessibility(this.page);
+    await expect(async () => {
+      const url = this.page.url();
+      expect(url).toMatch(new RegExp(`[?&#]q=${escapeRegExp(query)}`, 'i'));
+    }).toPass({ timeout: 15_000 });
+  }
+
+  async filterGroupProfessionals(): Promise<void> {
+    await this.page.goto(flutterGotoUrl('/pc/people?filter=professionals'));
+    await waitForFlutterRoutePattern(this.page, /\/pc\/people(?:\?|$)/, 30_000);
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async openLegacyVetsList(): Promise<void> {
+    await this.page.goto(flutterGotoUrl('/pc/vets'));
+    await waitForFlutterRoutePattern(this.page, /\/pc\/people(?:\?|$)/, 30_000);
+    await refreshFlutterAccessibility(this.page);
+    expect(this.page.url()).toMatch(/filter=professionals/);
+  }
+
+  async openFirstPersonCard(): Promise<void> {
+    const card = this.page.locator('[flt-semantics-identifier^="people_card_"]').first();
+    await expect(card).toBeVisible({ timeout: 30_000 });
+    await card.click();
+    await waitForFlutterRoutePattern(this.page, /\/pc\/people\/[^/?]+/, 30_000);
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async expectDetailShowsName(name: string): Promise<void> {
+    await expect(
+      semanticsByName(this.page, new RegExp(escapeRegExp(name), 'i')).first(),
+    ).toBeVisible({ timeout: 30_000 });
+  }
+
+  async expectSearchFieldValue(query: string): Promise<void> {
+    const field = this.page
+      .getByRole('textbox', { name: /search people/i })
+      .or(this.page.getByLabel(/search people/i))
+      .or(this.page.locator('[data-flutter-key="people_list_search"]'));
+    await expect(field.first()).toHaveValue(query, { timeout: 10_000 });
+  }
+
+  async openPetsAccessTab(): Promise<void> {
+    const tab = this.page.getByRole('tab', {
+      name: /Pets & access|Pets cared for|Animaux/i,
+    });
+    await tab.click();
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async expectPetOnPetsAccessTab(petName: string): Promise<void> {
+    await this.openPetsAccessTab();
+    await expect(
+      this.page.getByText(new RegExp(escapeRegExp(petName), 'i')).first(),
+    ).toBeVisible({ timeout: 15_000 });
+  }
+
+  async expectPendingInviteInRoster(email: string): Promise<void> {
+    await expect(
+      this.page.getByText(new RegExp(escapeRegExp(email), 'i')).first(),
+    ).toBeVisible({ timeout: 30_000 });
+  }
+
+  async openEditForPerson(name: string): Promise<void> {
+    await this.clickEditVet(name);
+  }
+
+  async openDangerZoneMarkInactive(): Promise<void> {
+    await this.page.getByRole('button', { name: /^Mark inactive$/i }).click();
+    await this.page.getByRole('button', { name: /^Mark inactive$/i }).last().click();
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async expectInactiveBadgeVisible(): Promise<void> {
+    await expect(this.page.getByText(/^Inactive$/i).first()).toBeVisible({ timeout: 15_000 });
+  }
+
+  async openHouseholdsIndex(): Promise<void> {
+    await this.page.goto(flutterGotoUrl('/pc/people/households'));
+    await waitForFlutterRoutePattern(this.page, /\/pc\/people\/households(?:\?|$)/, 30_000);
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async createHouseholdViaUi(name: string): Promise<void> {
+    await this.page.getByRole('button', { name: /^Create household$/i }).click();
+    await fillLabelledField(this.page, 'Household name', name);
+    await this.page.getByRole('button', { name: /^Continue$/i }).click();
+    await this.page.getByRole('button', { name: /^Create household$/i }).click();
+    await waitForFlutterRoutePattern(this.page, /\/pc\/people\/households\/[^/?]+/, 45_000);
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async inviteHouseholdMemberByEmail(email: string): Promise<void> {
+    await this.page.locator('[data-flutter-key="household_invite_member"]').click().catch(() =>
+      this.page.getByRole('button', { name: /^Invite member$/i }).click(),
+    );
+    await this.page.locator('[data-flutter-key="household_invite_email"]').fill(email);
+    const adult = this.page.getByRole('checkbox', { name: /adult|18/i });
+    if (await adult.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      await adult.click();
+    }
+    await this.page.locator('[data-flutter-key="household_invite_submit"]').click();
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async removeHouseholdMember(displayName: string): Promise<void> {
+    const namePattern = new RegExp(escapeRegExp(displayName), 'i');
+    const memberTile = this.page.locator('flt-semantics').filter({ hasText: namePattern }).first();
+    await memberTile.scrollIntoViewIfNeeded();
+    await memberTile
+      .locator('..')
+      .getByRole('button')
+      .last()
+      .click();
+    await expect(
+      this.page.getByText(/remaining access|other access|lose household/i).first(),
+    ).toBeVisible({ timeout: 15_000 });
+    await this.page.getByRole('button', { name: /^Remove from household$/i }).click();
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  // ── Add / edit form (from retired vet-form.page.ts) ─────────────────────
+
+  async expectFormLoaded(): Promise<void> {
+    await this.page
+      .getByLabel(/^Name$/i)
+      .or(this.page.getByRole('textbox', { name: 'Name *' }))
+      .first()
+      .waitFor({ timeout: 30_000 });
+  }
+
+  async fillName(name: string): Promise<void> {
+    await fillLabelledField(this.page, 'Name', name);
+  }
+
+  async fillPhone(phone: string): Promise<void> {
+    await fillTextbox(this.page, 'Phone', phone);
+  }
+
+  async fillEmail(email: string): Promise<void> {
+    await fillTextbox(this.page, 'Email', email);
+  }
+
+  async fillAddress(address: string): Promise<void> {
+    await fillTextbox(this.page, 'Address', address);
+  }
+
+  async fillNotes(notes: string): Promise<void> {
+    await fillTextbox(this.page, 'Notes', notes);
+  }
+
+  async saveForm(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    const onPeopleEdit = /\/pc\/people\/[^/]+\/edit/.test(this.page.url());
+    if (onPeopleEdit) {
+      const save = this.page.getByRole('button', { name: 'Save', exact: true });
+      await expect(save).toBeEnabled({ timeout: 20_000 });
+      await save.click();
+      return;
+    }
+    await this.page
+      .getByRole('button', {
+        name: /^(Add Vet|Save changes|Save|Save person)$/i,
+      })
+      .click();
+  }
+
+  async expectFormSaved(mode: 'create' | 'edit' = 'create'): Promise<void> {
+    if (mode === 'edit' && /\/pc\/people\/[^/]+\/edit/.test(this.page.url())) {
+      await expect(async () => {
+        expect(this.page.url()).not.toMatch(/\/edit(?:\?|$)/);
+      }).toPass({ timeout: 30_000 });
+      await refreshFlutterAccessibility(this.page);
+      return;
+    }
+    const text = mode === 'create' ? 'Vet added' : 'Vet updated';
+    await this.page
+      .getByText(text)
+      .or(this.page.getByRole('button', { name: /Veterinarian:/i }))
+      .or(this.page.getByRole('group', { name: /Veterinarian:/i }))
+      .or(this.page.getByText(/^Contacts$|^People$|^Personnes$|^Autour de vos animaux$/i))
+      .or(this.page.getByText(/Dr\./))
+      .first()
+      .waitFor({ timeout: 15_000 });
+    await waitForFlutterRoutePattern(
+      this.page,
+      /\/pc\/people(?:\/[^/?#]+|[\?]|$)/,
+      30_000,
+    ).catch(() => waitForFlutterRoutePattern(this.page, /\/pc\/vets(?:\?|$)/, 30_000));
+  }
+
+  async createVet(options: {
+    name: string;
+    phone?: string;
+    email?: string;
+    address?: string;
+    notes?: string;
+  }): Promise<void> {
+    await this.expectFormLoaded();
+    const onPeopleAdd = /\/pc\/people\/new/.test(this.page.url());
+    if (onPeopleAdd) {
+      await fillLabelledField(this.page, 'Name', options.name);
+      if (options.phone) await this.fillPhone(options.phone);
+      if (options.email) await this.fillEmail(options.email);
+      if (options.address) await this.fillAddress(options.address);
+      await this.page.getByRole('button', { name: /continue|continuer/i }).click();
+      const vetRole = this.page
+        .getByRole('checkbox', { name: /^Vet$/i })
+        .or(this.page.getByRole('button', { name: /^Vet$/i }));
+      if (!(await vetRole.first().isChecked().catch(() => false))) {
+        await vetRole.first().click();
+      }
+      await this.page.getByRole('button', { name: /continue|continuer/i }).click();
+      await this.page.getByRole('button', { name: /continue|continuer/i }).click();
+      await this.page.getByRole('button', { name: /^Save person$/i }).click();
+      await this.expectFormSaved('create');
+      await this.page.goto(flutterGotoUrl('/pc/people?filter=professionals'));
+      await refreshFlutterAccessibility(this.page);
+      await waitForFlutterRoutePattern(this.page, /\/pc\/people(?:\?|$)/, 30_000);
+      return;
+    }
+    await this.fillName(options.name);
+    if (options.phone) await this.fillPhone(options.phone);
+    if (options.email) await this.fillEmail(options.email);
+    if (options.address) await this.fillAddress(options.address);
+    if (options.notes) await this.fillNotes(options.notes);
+    await this.saveForm();
+    await this.expectFormSaved('create');
+  }
+
+  async updatePhone(newPhone: string, options?: { vetName: string }): Promise<void> {
+    const vetName = options?.vetName;
+    if (vetName) {
+      const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+      const token = await readAccessTokenFromPage(this.page);
+      const matches = (await getVets(baseURL, token)).filter((v) => v.name === vetName);
+      if (matches.length !== 1) {
+        throw new Error(
+          `updatePhone: expected exactly one vet named "${vetName}", found ${matches.length}`,
+        );
+      }
+      const vet = matches[0];
+      await updateVetDetails(baseURL, token, vet.id, {
+        name: vet.name,
+        phone: newPhone,
+      });
+      await this.page.goto(flutterGotoUrl('/pc/people?filter=professionals'));
+      await refreshFlutterAccessibility(this.page);
+      await waitForFlutterRoutePattern(this.page, /\/pc\/people(?:\?|$)/, 30_000);
+      return;
+    }
+    await this.expectFormLoaded();
+    await fillTextbox(this.page, 'Phone', newPhone);
+    await this.saveForm();
+    await this.expectFormSaved('edit');
+  }
+
+  async startAddProfessional(): Promise<void> {
+    await this.openAddForm();
+  }
+
+  async startAddCarer(): Promise<void> {
+    await this.page.goto(flutterGotoUrl('/pc/people/new'));
+    await refreshFlutterAccessibility(this.page);
+    await waitForFlutterRoutePattern(this.page, /\/pc\/people\/new(?:\?|$)/, 30_000);
+    await this.page
+      .locator('[data-flutter-key="people_add_tile_carer"]')
+      .click()
+      .catch(() => this.page.getByText(/trusted carer|pet sitter/i).first().click());
+    await this.page.getByRole('button', { name: /continue|continuer/i }).click();
+    await this.expectFormLoaded();
+  }
+
+  async advanceAddFlowSteps(count: number): Promise<void> {
+    for (let i = 0; i < count; i += 1) {
+      await this.page.getByRole('button', { name: /continue|continuer/i }).click();
+      await refreshFlutterAccessibility(this.page);
+    }
+  }
+
+  async selectAddFlowPet(petName: string, options?: { primaryVet?: boolean }): Promise<void> {
+    const row = this.page.getByRole('checkbox', { name: new RegExp(escapeRegExp(petName), 'i') });
+    await row.first().click();
+    if (options?.primaryVet) {
+      const primary = this.page.getByRole('checkbox', { name: /primary vet/i });
+      if (await primary.first().isVisible({ timeout: 2_000 }).catch(() => false)) {
+        await primary.first().click();
+      }
+    }
+  }
+
+  async finishAddPersonWithShare(email: string): Promise<void> {
+    await this.page.getByRole('radio', { name: /share pets|invite to share/i }).click();
+    await fillTextbox(this.page, 'Email', email);
+    await this.page.getByRole('button', { name: /continue|continuer/i }).click();
+    await this.page.getByRole('button', { name: /^Save person$/i }).click();
+    await this.expectFormSaved('create');
+    await this.expectLoaded();
   }
 }
