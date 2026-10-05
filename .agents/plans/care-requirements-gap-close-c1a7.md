@@ -327,12 +327,14 @@ artifact_ref:
   snapshot_commit: 2055717ed2024d00c3746430e7d2263970b51750
 open_prs: []
 merge_commits: {"B3":"974ac3484ed8def2654fd260996bf1b05a25ed96","B4":"c97e70cfbe76c5b9ef67c1c1a030a5ea89fc43c8"}
-debt_issue_refs: [1539,1540,1541,1542,1543,1544,1545,1546,1547,1476]
+debt_issue_refs: [1539,1540,1541,1542,1545,1546,1547,1476]
+remedial_plan: care-gap-close-remedial-50b4 (#1646, PR #1650)
+closed_in_remedial: [1543,1544]
 ```
 
 ---
 
 ## Related
 
-- Parent landing #1499 · Remedial #1501 · Erasure #1510 · GDPR thread #1446
+- Parent landing #1499 · Post-merge remedial `care-gap-close-remedial-50b4` (#1646, PR #1650) · Erasure #1510 · GDPR thread #1446
 - Review amendments: owner chat 2026-10-04 (10 items)
