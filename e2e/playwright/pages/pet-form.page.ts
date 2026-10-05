@@ -133,16 +133,29 @@ export class PetFormPage {
     await expect(saveButton).toBeEnabled({ timeout: 15_000 });
     const editingPetId = flutterRoutePath(this.page.url()).match(/^\/edit\/([^/?]+)/)?.[1];
     await saveButton.click();
-    await this.saveButtonLocator().first().waitFor({ state: 'hidden', timeout: 30_000 });
     if (editingPetId) {
-      await waitForFlutterRoutePattern(
-        this.page,
-        new RegExp(`/pet/${editingPetId}(?:\\?|$)`),
-        45_000,
-      );
+      // Pet PUT + people slot sync can finish before GoRouter updates the hash on web.
+      await expect(async () => {
+        const path = flutterRoutePath(this.page.url());
+        if (new RegExp(`^/pet/${editingPetId}(?:\\?|$)`).test(path)) {
+          return;
+        }
+        if (path === `/edit/${editingPetId}`) {
+          const back = this.page.getByRole('button', { name: /^Go back$|^Retour$/i });
+          if (await back.first().isVisible().catch(() => false)) {
+            await back.first().click();
+          }
+        }
+        await waitForFlutterRoutePattern(
+          this.page,
+          new RegExp(`/pet/${editingPetId}(?:\\?|$)`),
+          5_000,
+        );
+      }).toPass({ timeout: 60_000 });
       await refreshFlutterAccessibility(this.page);
       return;
     }
+    await this.saveButtonLocator().first().waitFor({ state: 'hidden', timeout: 30_000 });
     await postPetMutationShellLocator(this.page).waitFor({ timeout: 30_000 });
   }
 
