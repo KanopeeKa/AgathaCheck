@@ -110,7 +110,9 @@ export class VetListPage {
 
   async expectEmptyState(): Promise<void> {
     await this.page
-      .getByText(/no pet professionals yet|no veterinarians yet/i)
+      .getByText(
+        /no pet professionals yet|no veterinarians yet|add carers and pet professionals/i,
+      )
       .first()
       .waitFor({ timeout: 30_000 });
   }
