@@ -14,11 +14,11 @@ import '../../../../pet_profile/presentation/utils/pet_tile_dimensions.dart';
 import '../../../../pet_profile/presentation/widgets/pet_tile_status_line.dart';
 import '../../../../pet_profile/presentation/widgets/unified_pet_tile.dart';
 import '../../widgets/pet_care_dashboard_ambient_deco.dart';
-import '../../widgets/pet_care_dashboard_section_header.dart';
+import 'package:pet_profile_app/core/widgets/pet_care_dashboard_section_header.dart';
 import '../../widgets/horizontal_carousel_controls.dart';
-import '../../widgets/pet_care_illustrated_empty_state.dart';
+import 'package:pet_profile_app/core/widgets/pet_care_illustrated_empty_state.dart';
 import '../../widgets/pet_care_shell_shared_pet_card.dart';
-import 'pet_care_dashboard_helpers.dart';
+import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 
 /// Guardian dashboard pets: owned, fostered, and shared subgroups.
 class PetCareMyPetsSection extends ConsumerWidget {

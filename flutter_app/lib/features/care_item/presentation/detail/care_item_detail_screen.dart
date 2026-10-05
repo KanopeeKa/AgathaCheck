@@ -4,8 +4,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/utils/calendar_date.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../experience/domain/entities/app_experience.dart';
-import '../../../experience/presentation/widgets/experience_shell_scaffold.dart';
+import 'package:pet_profile_app/core/experience/app_experience.dart';
+import 'package:pet_profile_app/core/router/experience_shell_scaffold.dart';
 import '../../../pet_profile/presentation/providers/care_progression_providers.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../../pet_profile/presentation/widgets/care_establishment_helpers.dart';

@@ -6,7 +6,7 @@ import '../../../health_tracking/presentation/providers/health_issue_providers.d
 import '../../../health_tracking/presentation/providers/health_providers.dart';
 import '../../../notifications/presentation/providers/notification_providers.dart';
 import '../../../../core/branding/logo_assets.dart';
-import '../../../experience/domain/entities/app_experience.dart';
+import 'package:pet_profile_app/core/experience/app_experience.dart';
 import '../../domain/entities/pet_report_supplement.dart';
 import '../../../sharing/presentation/providers/sharing_providers.dart';
 import '../../../vet/domain/entities/vet.dart';

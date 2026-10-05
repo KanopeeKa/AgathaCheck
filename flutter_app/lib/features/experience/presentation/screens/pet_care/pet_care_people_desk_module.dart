@@ -12,8 +12,8 @@ import '../../../../people/presentation/widgets/people_directory_card.dart';
 import '../../../../pet_profile/domain/entities/pet.dart';
 import '../../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../../../sharing/presentation/providers/household_providers.dart';
-import '../../widgets/pet_care_dashboard_section_header.dart';
-import '../../widgets/pet_care_illustrated_empty_state.dart';
+import 'package:pet_profile_app/core/widgets/pet_care_dashboard_section_header.dart';
+import 'package:pet_profile_app/core/widgets/pet_care_illustrated_empty_state.dart';
 
 /// Today dashboard People module — top professionals, carers, household rail.
 class PetCarePeopleDeskModule extends ConsumerWidget {

@@ -6,7 +6,7 @@ import '../../../health_tracking/presentation/providers/health_providers.dart';
 import '../../../health_tracking/presentation/widgets/care_event_row_pet_avatar.dart';
 import '../../../pet_profile/domain/entities/pet.dart';
 import '../../../pet_profile/presentation/controllers/pet_list_controller.dart';
-import '../screens/pet_care/pet_care_dashboard_helpers.dart';
+import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 import '../screens/pet_care/add_event_type_picker_sheet.dart';
 import '../screens/pet_care/pet_care_my_pets_section.dart';
 import '../screens/pet_care/pet_care_people_desk_module.dart';

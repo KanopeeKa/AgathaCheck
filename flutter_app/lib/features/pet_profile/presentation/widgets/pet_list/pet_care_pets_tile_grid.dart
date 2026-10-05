@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 
-import '../../../../l10n/app_localizations.dart';
-import '../../../pet_profile/domain/entities/pet.dart';
-import '../../../pet_profile/domain/entities/care_status.dart';
-import '../../../pet_profile/presentation/utils/pet_tile_dimensions.dart';
-import '../../../pet_profile/presentation/widgets/pet_card.dart'
-    show sortPetsByCreatedAt;
-import '../../../pet_profile/presentation/widgets/pet_tile_status_line.dart';
-import '../../../pet_profile/presentation/widgets/unified_pet_tile.dart';
-import '../screens/pet_care/pet_care_dashboard_helpers.dart';
+import 'package:pet_profile_app/l10n/app_localizations.dart';
+import '../../../domain/entities/care_status.dart';
+import '../../../domain/entities/pet.dart';
+import '../../utils/pet_care_dashboard_helpers.dart';
+import '../../utils/pet_tile_dimensions.dart';
+import '../pet_card.dart' show sortPetsByCreatedAt;
+import '../pet_tile_status_line.dart';
+import '../unified_pet_tile.dart';
 
 /// Dashboard-aligned unified pet tiles in a responsive wrap grid for guardian list screens.
 class PetCarePetsTileGrid extends StatelessWidget {
