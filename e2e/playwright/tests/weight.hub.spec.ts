@@ -21,6 +21,11 @@ import { PetListPage } from '../pages/pet-list.page';
 import { PetDetailPage } from '../pages/pet-detail.page';
 import { WeightHubPage } from '../pages/weight-hub.page';
 
+/** Calendar day for care clock + weight sheet default date (UTC, matches CI). */
+function careDueDateToday(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
 async function openPetWeight(
   page: import('@playwright/test').Page,
   testUser: { accessToken: string },
@@ -40,7 +45,7 @@ test.describe('Weight hub', () => {
     testUser,
   }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
-    const dueDate = '2027-04-10';
+    const dueDate = careDueDateToday();
     const careClock = `${dueDate}T10:00`;
 
     const pet = await createPet(baseURL, testUser.accessToken, 'Bella');
@@ -76,7 +81,7 @@ test.describe('Weight hub', () => {
 
   test('Recording a weight without counting it as a weigh-in', async ({ page, testUser }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
-    const dueDate = '2027-05-12';
+    const dueDate = careDueDateToday();
     const careClock = `${dueDate}T11:00`;
 
     const pet = await createPet(baseURL, testUser.accessToken, 'Bella');
@@ -113,7 +118,7 @@ test.describe('Weight hub', () => {
 
   test('Choosing which weigh-in a weight counts as', async ({ page, testUser }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
-    const dueDate = '2027-06-01';
+    const dueDate = careDueDateToday();
     const careClock = `${dueDate}T12:00`;
 
     const pet = await createPet(baseURL, testUser.accessToken, 'Bella');
@@ -158,7 +163,7 @@ test.describe('Weight hub', () => {
 
   test('Undoing a weight that counted as a weigh-in', async ({ page, testUser }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
-    const dueDate = '2027-07-20';
+    const dueDate = careDueDateToday();
     const careClock = `${dueDate}T10:00`;
 
     const pet = await createPet(baseURL, testUser.accessToken, 'Bella');
@@ -198,7 +203,7 @@ test.describe('Weight hub', () => {
     testUser,
   }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
-    const dueDate = '2027-08-05';
+    const dueDate = careDueDateToday();
     const careClock = `${dueDate}T10:00`;
 
     const pet = await createPet(baseURL, testUser.accessToken, 'Bella');

@@ -71,12 +71,11 @@ test.describe('Weight tracking', () => {
     await weightPage.openAddWeightSheet();
     await weightPage.fillWeightForm('25.5');
     await weightPage.saveWeightEntry();
+    await weightPage.expectWeightEntryVisible(25.5, 'kg');
 
-    // Verify via API that the entry was persisted.
     const entries = await getWeightEntries(baseURL, testUser.accessToken, pet.id);
     expect(entries.length).toBeGreaterThan(0);
     expect(entries[0].weight).toBeCloseTo(25.5, 1);
-    expect(entries[0].unit).toBe('kg');
   });
 
   test('adding multiple weight entries via API all appear in history', async ({ page, testUser }) => {
