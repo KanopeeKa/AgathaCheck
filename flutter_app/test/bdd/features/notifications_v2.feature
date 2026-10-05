@@ -25,7 +25,7 @@ Feature: Notifications v2 inbox programme
     And the system checks for due care
     Then the check-due API should report zero inbox rows created
 
-  @P4 @bdd
+  @P1
   Scenario: Pending share invite shows inline accept and decline in Activity
     Given I have a pending share invite notification in Activity
     When I open the notification inbox on Activity

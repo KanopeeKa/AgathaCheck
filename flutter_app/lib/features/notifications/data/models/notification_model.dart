@@ -18,6 +18,11 @@ class NotificationModel extends AppNotification {
     super.resolvedAt,
     required super.isRead,
     required super.createdAt,
+    super.suggestionDedupeKey,
+    super.suggestionState,
+    super.suggestionConfidence,
+    super.suggestionExpiresAt,
+    super.suggestionPayload,
   });
 
   factory NotificationModel.fromJson(Map<String, dynamic> json) {
@@ -45,6 +50,15 @@ class NotificationModel extends AppNotification {
       createdAt:
           DateTime.tryParse(json['created_at']?.toString() ?? '') ??
           DateTime.now(),
+      suggestionDedupeKey: json['suggestion_dedupe_key']?.toString(),
+      suggestionState: json['suggestion_state']?.toString(),
+      suggestionConfidence: (json['suggestion_confidence'] as num?)?.toDouble(),
+      suggestionExpiresAt: json['suggestion_expires_at'] != null
+          ? DateTime.tryParse(json['suggestion_expires_at'].toString())
+          : null,
+      suggestionPayload: json['suggestion_payload'] is Map
+          ? Map<String, dynamic>.from(json['suggestion_payload'] as Map)
+          : null,
     );
   }
 

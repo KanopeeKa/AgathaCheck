@@ -5,9 +5,10 @@ import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/app_notification.dart';
 import '../../domain/entities/notification_scope.dart';
 import '../../domain/services/notification_inline_action_support.dart';
+import '../../domain/services/notification_inline_actions.dart';
 import '../../domain/services/notification_inbox_v2_rules.dart';
+import '../providers/notification_inline_actions_provider.dart';
 import '../providers/notification_providers.dart';
-import '../services/notification_inline_action_runner.dart';
 import '../utils/notification_navigation.dart';
 import 'notification_inline_actions_bar.dart';
 import 'notification_tile.dart';
@@ -97,7 +98,7 @@ class _NotificationInboxRowState extends ConsumerState<NotificationInboxRow> {
 
   @override
   Widget build(BuildContext context) {
-    final runner = NotificationInlineActionRunner(ref);
+    final runner = ref.read(notificationInlineActionsProvider);
     final needsResponse = NotificationInboxV2Rules.needsResponse(
       widget.notification,
     );

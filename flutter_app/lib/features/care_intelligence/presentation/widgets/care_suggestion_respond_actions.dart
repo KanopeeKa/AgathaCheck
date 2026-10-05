@@ -30,13 +30,16 @@ class CareSuggestionRespondActions {
 
     onLoadingChanged(true);
     try {
+      final apiId = switch (action) {
+        CareRecommendationResponseAction.accept ||
+        CareRecommendationResponseAction.adjust =>
+          recommendation.healthEntryId ?? recommendation.id,
+        CareRecommendationResponseAction.dismiss ||
+        CareRecommendationResponseAction.notRelevant => recommendation.id,
+      };
       await ref
           .read(careIntelligenceRepositoryProvider)
-          .respond(
-            petId: petId,
-            recommendationId: recommendation.id,
-            action: action,
-          );
+          .respond(petId: petId, recommendationId: apiId, action: action);
       ref.invalidate(petCareRecommendationsProvider(petId));
       ref.invalidate(petProfileCareSuggestionProvider(petId));
       ref.invalidate(petProfileCareMilestoneProvider(petId));

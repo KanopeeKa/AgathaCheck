@@ -537,6 +537,11 @@ CREATE TABLE public.notifications (
     priority character varying(8) DEFAULT 'normal'::character varying NOT NULL,
     resolved_at timestamp with time zone,
     archived_at timestamp with time zone,
+    suggestion_dedupe_key character varying(255),
+    suggestion_state character varying(32) DEFAULT 'new'::character varying,
+    suggestion_confidence numeric(4,3),
+    suggestion_expires_at timestamp with time zone,
+    suggestion_payload jsonb,
     CONSTRAINT notifications_kind_check CHECK (((kind)::text = ANY ((ARRAY['care'::character varying, 'administrative'::character varying, 'relationship'::character varying, 'suggestion'::character varying, 'account'::character varying])::text[]))),
     CONSTRAINT notifications_priority_check CHECK (((priority)::text = ANY ((ARRAY['normal'::character varying, 'urgent'::character varying])::text[])))
 );
@@ -1259,6 +1264,7 @@ CREATE INDEX idx_household_invites_invitee_email ON public.household_invites USI
 CREATE INDEX idx_household_invites_invitee_user_id ON public.household_invites USING btree (invitee_user_id) WHERE (invitee_user_id IS NOT NULL);
 CREATE INDEX idx_household_members_user_id ON public.household_members USING btree (user_id);
 CREATE INDEX idx_household_pets_household_id ON public.household_pets USING btree (household_id);
+CREATE UNIQUE INDEX idx_notifications_suggestion_dedupe_active ON public.notifications USING btree (user_id, suggestion_dedupe_key) WHERE (((kind)::text = 'suggestion'::text) AND (archived_at IS NULL) AND ((suggestion_state)::text = ANY ((ARRAY['new'::character varying, 'seen'::character varying])::text[])));
 CREATE INDEX idx_notifications_user_id ON public.notifications USING btree (user_id);
 CREATE INDEX idx_notifications_user_inbox_active ON public.notifications USING btree (user_id, created_at DESC) WHERE (archived_at IS NULL);
 CREATE INDEX idx_org_connection_requests_target ON public.org_connection_requests USING btree (target_org_id, status);

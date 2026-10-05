@@ -19,6 +19,12 @@ abstract class NotificationRemoteDataSource {
     String token, {
     Map<String, String> petNames = const {},
   });
+  Future<void> markSuggestionsSeen(String token, {String? petId});
+  Future<void> submitSuggestionFeedback(
+    String token,
+    String notificationId,
+    String action,
+  );
 }
 
 class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
@@ -124,6 +130,34 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
       Uri.parse('$baseUrl/api/notifications/check-due'),
       headers: _headers(token),
       body: json.encode({'pet_names': petNames}),
+    );
+    _checkResponse(response);
+  }
+
+  @override
+  Future<void> markSuggestionsSeen(String token, {String? petId}) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/api/notifications/suggestions/seen'),
+      headers: _headers(token),
+      body: json.encode({
+        if (petId != null && petId.isNotEmpty) 'pet_id': petId,
+      }),
+    );
+    _checkResponse(response);
+  }
+
+  @override
+  Future<void> submitSuggestionFeedback(
+    String token,
+    String notificationId,
+    String action,
+  ) async {
+    final response = await _client.post(
+      Uri.parse(
+        '$baseUrl/api/notifications/$notificationId/suggestion-feedback',
+      ),
+      headers: _headers(token),
+      body: json.encode({'action': action}),
     );
     _checkResponse(response);
   }

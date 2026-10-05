@@ -80,4 +80,21 @@ class NotificationRepositoryImpl implements NotificationRepository {
   }) async {
     await _dataSource.checkDueEntries(_tokenGetter(), petNames: petNames);
   }
+
+  @override
+  Future<void> markSuggestionsSeen({String? petId}) async {
+    await _dataSource.markSuggestionsSeen(_tokenGetter(), petId: petId);
+  }
+
+  @override
+  Future<void> submitSuggestionFeedback(
+    String notificationId,
+    String action,
+  ) async {
+    await _dataSource.submitSuggestionFeedback(
+      _tokenGetter(),
+      notificationId,
+      action,
+    );
+  }
 }

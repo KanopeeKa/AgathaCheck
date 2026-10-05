@@ -98,7 +98,8 @@
     "089_people_household_notes.sql",
     "090_share_invite_contact_link.sql",
     "091_household_invites.sql",
-    "092_notifications_v2_pr1.sql"
+    "092_notifications_v2_pr1.sql",
+    "093_notifications_v2_suggestion_fields.sql"
   ],
   "code_migrations": [
     "016_migrate_family_events_placements.sql",
