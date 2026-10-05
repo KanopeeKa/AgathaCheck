@@ -23,6 +23,8 @@ import 'experience_shell_chrome_bar.dart';
 import 'shelter_bottom_navigation.dart';
 import 'shelter_navigation_rail.dart';
 import 'shelter_navigation_sidebar.dart';
+import '../../../organization/domain/entities/organization.dart';
+import '../../../organization/presentation/widgets/org_shell_app_bar_title.dart';
 
 /// Shell scaffold shared by guardian and organisation experience screens.
 ///
@@ -45,6 +47,8 @@ class ExperienceShellScaffold extends ConsumerWidget {
     this.backButtonKey,
     this.scaffoldKey,
     this.floatingActionButton,
+    this.orgNavVariant,
+    this.organization,
   });
 
   final AppExperience experience;
@@ -72,6 +76,10 @@ class ExperienceShellScaffold extends ConsumerWidget {
   final GlobalKey<ScaffoldState>? scaffoldKey;
 
   final Widget? floatingActionButton;
+
+  /// Organisation deep routes: custom app-bar title (logo / org thumbnail).
+  final OrgNavTitleVariant? orgNavVariant;
+  final Organization? organization;
 
   static const _toolbarHeight = 64.0;
 
@@ -156,6 +164,12 @@ class ExperienceShellScaffold extends ConsumerWidget {
         !usesDesktopContentHeader && !usesCompactShellWithoutHamburger;
     final titleWidget = !showTitle
         ? const SizedBox.shrink()
+        : isOrg && orgNavVariant != null && screenTitle != null
+        ? OrgShellAppBarTitle(
+            title: screenTitle!,
+            variant: orgNavVariant!,
+            organization: organization,
+          )
         : usesDesktopContentHeader
         ? Align(
             alignment: Alignment.centerLeft,
