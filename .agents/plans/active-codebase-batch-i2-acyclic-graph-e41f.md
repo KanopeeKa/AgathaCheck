@@ -45,13 +45,13 @@ autonomy: active
 current_phase: 3
 last_completed_phase: 2
 halt_reason: null
-next_action: "start phase 3: checkout cursor/active-codebase-i2-3-cycle-cuts-e41f"
+next_action: "continue phase 3 on branch cursor/active-codebase-i2-3-cycle-cuts-e41f"
 artifact_ref:
-  branch: cursor/active-codebase-i2-integration-e41f
+  branch: cursor/active-codebase-i2-3-cycle-cuts-e41f
   plan_path: .agents/plans/active-codebase-batch-i2-acyclic-graph-e41f.md
-  plan_commit: 5836cb6b3404031be8f7e3d171511225dbe4d81b
+  plan_commit: 2bc491061236f7b38cd6c0b24965ef9aa413dda1
   snapshot_path: .agents/plans/active-codebase-batch-i2-acyclic-graph-e41f.snapshot.json
-  snapshot_commit: 5836cb6b3404031be8f7e3d171511225dbe4d81b
+  snapshot_commit: 2bc491061236f7b38cd6c0b24965ef9aa413dda1
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
