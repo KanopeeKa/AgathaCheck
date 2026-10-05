@@ -157,13 +157,15 @@ test.describe('Experience navigation', () => {
       entryName: 'Flea treatment',
     });
 
-    const unreadCount = await getUnreadNotificationCount(baseURL(), user.accessToken);
-    expect(unreadCount).toBeGreaterThanOrEqual(3);
+    const seededUnread = await getUnreadNotificationCount(baseURL(), user.accessToken);
+    expect(seededUnread).toBeGreaterThanOrEqual(3);
 
     await loginFromLanding(page, user.email, user.password);
     await waitForFlutterRoutePattern(page, /\/pc\/home/, 60_000);
+    const unreadAfterLogin = await getUnreadNotificationCount(baseURL(), user.accessToken);
+    expect(unreadAfterLogin).toBeGreaterThanOrEqual(seededUnread);
     const notificationsPage = new NotificationsPage(page);
-    await notificationsPage.expectBadgeVisible(unreadCount);
+    await notificationsPage.expectBadgeVisible(unreadAfterLogin);
   });
 
   test('workspace toggle is hidden in Pet Care MVP', async ({

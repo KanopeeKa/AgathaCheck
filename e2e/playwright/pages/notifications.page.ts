@@ -3,11 +3,11 @@ import { expect } from '@playwright/test';
 import {
   dismissConsentBannerIfPresent,
   expectAppBarTitle,
-  filterChipByName,
   flutterGotoUrl,
   flutterRoutePath,
   isExperienceShellVisible,
   refreshFlutterAccessibility,
+  waitForFlutterRoutePattern,
 } from '../support/flutter';
 
 /**
@@ -22,26 +22,28 @@ import {
 export class NotificationsPage {
   constructor(private readonly page: Page) {}
 
-  /** Empty-state copy — Flutter web often merges drawer body text into the group name. */
+  /** Empty-state copy — v2 Activity/For you tabs; legacy full-screen used "No notifications". */
   private emptyStateLocator() {
     return this.page
-      .getByText(/No notifications|Aucune notification/i)
+      .getByText(
+        /No notifications|Aucune notification|Nothing new\.|Rien de nouveau|No suggestions right now|Pas de suggestion/i,
+      )
       .or(
         this.page.getByRole('group', {
-          name: /No notifications|Aucune notification/i,
+          name: /No notifications|Aucune notification|Nothing new|Rien de nouveau/i,
         }),
       )
       .or(
         this.page.getByRole('region', {
-          name: /No notifications|Aucune notification/i,
+          name: /No notifications|Aucune notification|Nothing new|Rien de nouveau/i,
         }),
       );
   }
 
-  /** Notification rows — tile semantics: "Care, Overdue, {title}, …" (v2 panel). */
+  /** Notification rows — tile semantics include kind, type label, and title. */
   private notificationRowLocator() {
     return this.page.getByRole('button', {
-      name: /(?:Care|Organisation|Soins).*(?:Overdue|Due Soon|Reminder|Completed|General|En retard|Bientôt)/i,
+      name: /(?:Care|Organisation|Soins).*(?:Overdue|Due Soon|Reminder|Completed|General|En retard|Bientôt|Action needed|Unread|Lu|Read)/i,
     });
   }
 
@@ -52,14 +54,44 @@ export class NotificationsPage {
       .or(this.page.getByRole('button', { name: /retry|try again|réessayer/i }));
   }
 
+  private notificationBellLocator() {
+    return this.page
+      .locator('[flt-semantics-identifier="experience_notification_bell"]')
+      .or(this.page.getByRole('button', { name: /open notifications|ouvrir les notifications/i }))
+      .first();
+  }
+
   /** Open the notification panel via the bell button in the experience shell. */
   async openPanelViaBell(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
-    const bell = this.page.getByRole('button', { name: /open notifications/i });
-    await bell.waitFor({ timeout: 15_000 });
-    await bell.click();
-    await refreshFlutterAccessibility(this.page);
+    const bell = this.notificationBellLocator();
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await bell.waitFor({ timeout: 5_000 });
+      await bell.click();
+      await this.page.waitForTimeout(400);
+      await refreshFlutterAccessibility(this.page);
+      await this.panelChromeLocator().first().waitFor({ timeout: 3_000 });
+    }).toPass({ timeout: 30_000 });
     await this.expectPanelLoaded();
+  }
+
+  /** Drawer-only chrome: mark-all, v2 explainer, inbox tabs, or Activity empty copy. */
+  private panelChromeLocator() {
+    return this.page
+      .getByRole('button', { name: /Mark all as read|Tout marquer comme lu/i })
+      .or(
+        this.page.getByText(
+          /Reminders now live in Actions|Les rappels sont dans Actions|Nothing new\.|Rien de nouveau/i,
+        ),
+      )
+      .or(this.page.getByRole('button', { name: /Activity|Activité|For you|Pour vous/i }));
+  }
+
+  private inboxTabButton(tab: 'activity' | 'forYou') {
+    const pattern =
+      tab === 'activity' ? /Activity|Activité/i : /For you|Pour vous/i;
+    return this.page.getByRole('button', { name: pattern }).first();
   }
 
   /** Navigate to the notifications screen from the pet list or experience shell.
@@ -67,6 +99,12 @@ export class NotificationsPage {
   async openFromPetList(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
     if (await isExperienceShellVisible(this.page)) {
+      const path = flutterRoutePath(this.page.url());
+      if (!/^\/pc\/home(?:\?|$)/.test(path)) {
+        await this.page.goto(flutterGotoUrl('/pc/home'));
+        await refreshFlutterAccessibility(this.page);
+        await waitForFlutterRoutePattern(this.page, /\/pc\/home(?:\?|$)/, 30_000);
+      }
       await this.openPanelViaBell();
       return;
     }
@@ -98,24 +136,26 @@ export class NotificationsPage {
 
   /** Wait for the notification panel slide-over to be visible. */
   async expectPanelLoaded(): Promise<void> {
-    // Kind-filter chips live only inside the endDrawer — unlike a generic Close
-    // button they cannot false-positive from unrelated page chrome (PR #397 gap).
+    // v2 panel chrome lives only inside the endDrawer (no legacy All/Care chips).
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      const allChip = filterChipByName(this.page, /^All$|^Tout$/i).and(
-        this.page.locator(':visible'),
-      );
-      await allChip.waitFor({ timeout: 5_000 });
-      const markAll = this.page
-        .getByRole('button', { name: /Mark all as read|Tout marquer comme lu/i })
-        .or(
-          this.page.getByRole('checkbox', {
-            name: /Mark all as read|Tout marquer comme lu/i,
-          }),
-        )
+      await this.panelChromeLocator().first().waitFor({ timeout: 8_000 });
+      const legacyAll = this.page
+        .getByRole('button', { name: /^All$|^Tout$/i })
         .and(this.page.locator(':visible'));
-      await markAll.waitFor({ timeout: 5_000 });
-    }).toPass({ timeout: 25_000 });
+      if (await legacyAll.isVisible().catch(() => false)) {
+        return;
+      }
+      await this.inboxTabButton('activity').waitFor({ timeout: 5_000 });
+      await this.inboxTabButton('forYou').waitFor({ timeout: 5_000 });
+    }).toPass({ timeout: 30_000 });
+    await this.waitForNotificationListSettled();
+  }
+
+  async selectInboxTab(tab: 'activity' | 'forYou'): Promise<void> {
+    await this.inboxTabButton(tab).click();
+    await refreshFlutterAccessibility(this.page);
+    await this.page.waitForTimeout(400);
     await this.waitForNotificationListSettled();
   }
 
@@ -139,6 +179,14 @@ export class NotificationsPage {
     }).toPass({ timeout: 15_000 });
   }
 
+  /** For you tab empty copy (Activity may show account sign-in after login). */
+  async expectForYouEmptyState(): Promise<void> {
+    await this.selectInboxTab('forYou');
+    await expect(
+      this.page.getByText(/No suggestions right now|Pas de suggestion pour l'instant/i).first(),
+    ).toBeVisible({ timeout: 15_000 });
+  }
+
   async expectNotificationVisible(titleText: string): Promise<void> {
     await this.page
       .getByText(titleText, { exact: false })
@@ -149,15 +197,18 @@ export class NotificationsPage {
   /** Assert date-group section headers (e.g. Today, Yesterday). */
   async expectDateGroupLabels(labels: string[]): Promise<void> {
     await this.waitForNotificationListSettled();
-    await expect(async () => {
-      await refreshFlutterAccessibility(this.page);
-      const panelText = await this.page.evaluate(() => document.body.innerText);
-      for (const label of labels) {
-        if (!new RegExp(`\\b${label}\\b`, 'i').test(panelText)) {
-          throw new Error(`Date group header not found: ${label}`);
-        }
-      }
-    }).toPass({ timeout: 30_000 });
+    await refreshFlutterAccessibility(this.page);
+    for (const label of labels) {
+      const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const pattern = new RegExp(`^${escaped}$`, 'i');
+      await expect(
+        this.page
+          .getByRole('group', { name: pattern })
+          .or(this.page.getByText(pattern))
+          .or(this.page.getByRole('button', { name: new RegExp(`^${escaped}\\b`, 'i') }))
+          .first(),
+      ).toBeVisible({ timeout: 30_000 });
+    }
   }
 
   /** Assert a pet name appears in the notification list (colour strip is visual-only). */
@@ -179,11 +230,8 @@ export class NotificationsPage {
   }
 
   async openSettings(): Promise<void> {
-    const settingsBtn = this.page
-      .getByRole('button', { name: /notification settings|paramètres de notification/i })
-      .and(this.page.locator(':visible'));
-    await settingsBtn.waitFor({ timeout: 15_000 });
-    await settingsBtn.click();
+    // v2 bell panel has no settings control — route is still /notifications/settings.
+    await this.page.goto(flutterGotoUrl('/notifications/settings'));
     await refreshFlutterAccessibility(this.page);
     await expectAppBarTitle(
       this.page,
