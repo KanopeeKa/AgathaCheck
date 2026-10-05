@@ -90,7 +90,7 @@ export async function createWeightEntryAndSyncPet(db, {
  */
 export function resolveWeightEntryDateFromBody(body) {
   const fromBody = body?.weightEntryDate ?? body?.weight_entry_date;
-  return normalizeCalendarDateInput(fromBody) || todayCalendarIso();
+  return normalizeCalendarDateInput(fromBody) || null;
 }
 
 /**
