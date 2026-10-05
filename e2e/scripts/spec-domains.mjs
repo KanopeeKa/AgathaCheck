@@ -104,7 +104,7 @@ export const AREAS = {
   },
   weight: {
     paths: ['flutter_app/lib/features/weight_tracking/', 'server/routes/weightEntries'],
-    specs: ['weight.tracking.spec.ts'],
+    specs: ['weight.tracking.spec.ts', 'weight.hub.spec.ts'],
   },
   people: {
     paths: [
