@@ -3,7 +3,7 @@ title: People domain
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-09-28
+last_updated: 2026-10-05
 tags: [domain, people, households]
 ---
 
@@ -26,22 +26,22 @@ Part of the AgathaTrack domain-first documentation tree. Cross-cutting architect
 
 ## Implementation status (Guardian / Pet Care)
 
-State at `main` before slot **4** landing (2026-10-04). Gaps and the target are in [changes/people-domain-refactor.md](changes/people-domain-refactor.md) (§4 gap analysis, §1 bugs B1–B13).
+State after **`people-client-core-7f3b`** lands on `main` (slot **5c**, 2026-10-05). Remaining cross-feature adapter work is **`people-client-integration-7f3b`**. Gaps vs the target doc: [changes/people-domain-refactor.md](changes/people-domain-refactor.md) (§4 gap analysis).
 
 | Capability | Status | Notes |
 |------------|--------|-------|
-| Contacts API (personal + household directory) | **Landing slot 4** | `people-server-7f3b` on integration branch — writer, usages, roster/detail, household notes |
-| Pet relationships API | **Landing slot 4** | Slots, vet projection, compat `/api/vets` and `pets.vet_id` unchanged on wire |
-| Vets ↔ People | **Landing slot 4** | One-way projection from relationships (`vetProjection.js`); legacy vet endpoints retained |
+| Contacts API (personal + household directory) | Shipped | `people-server-7f3b` ([#1523](https://github.com/KanopeeKa/AgathaCheck/pull/1523)) |
+| Pet relationships API | Shipped | Slots, vet projection; compat `/api/vets` and `pets.vet_id` on wire |
+| Vets ↔ People | Shipped | Projection from relationships; legacy vet routes redirect to People |
 | Fifth nav tab `/pc/people` (EN label **Contacts**) | Shipped | `people-ui-hub-a58d` |
-| Today desk module | Shipped, partial | Raw role labels (B5), ranking rules not implemented, rail shows households not members → hotfix h2, client-core c3 |
-| Hub list | Shipped, partial | Directory cards; name-only search; household sections are empty placeholders; desktop list–detail broken (B4) → client-core c3 |
-| Person detail `/pc/people/:id` | Shipped, partial | One page, no tabs, linked pets for vets only → client-core c4 |
-| Person edit + danger zone | Shipped, partial | Roles and kind not editable; no reactivate → client-core c5 |
-| Add person | Shipped, partial | Single screen, 4 of 10 roles, no pet linking, generic invite hand-off → client-core c6 |
-| Households | **Landing slot 4** (server) | Member removal preview, household notes, email invites (`household_invites`); UI still minimal → client-core c7 |
+| Today desk module | Shipped | Desk ranking + person cards; opens People detail (`people-client-core-7f3b` c3/c8) |
+| Hub list | Shipped | Sections, search, filters, desktop list–detail (`c3`); E2E in `people-core.spec.ts` (`c8`) |
+| Person detail `/pc/people/:id` | Shipped | Tabs, pets & access, relationships (`c4`) |
+| Person edit + danger zone | Shipped | Roles, kind rules, usages, inactive (`c5`) |
+| Add person | Shipped | Five-step flow + share handoff (`c6`) |
+| Households | Shipped | People routes `/pc/people/households`; Sharing household UI removed (`c7`) |
 | Absence guest access | Shipped | `people-care-team-a58d` p4 |
-| **Refactor** | Planned | Roadmap [`people-domain-refactor-7f3b`](/.agents/plans/people-domain-refactor-7f3b.md), landing order in [parallel-programmes.md](/docs/agent-efficiency/parallel-programmes.md). The hub remodel plan (`people-hub-remodel-a58d`) is closed; delivery of its remaining scope moves to the refactor |
+| **Refactor (client adapters)** | In progress | Roadmap [`people-domain-refactor-7f3b`](/.agents/plans/people-domain-refactor-7f3b.md); next child **`people-client-integration-7f3b`** |
 
 ## Domains this changes
 
@@ -71,6 +71,6 @@ State at `main` before slot **4** landing (2026-10-04). Gaps and the target are 
 |-------|----------|
 | Widget | `flutter_app/test/features/people/**` |
 | BDD | `flutter_app/test/bdd/features/people.feature` |
-| Playwright | `e2e/playwright/tests/guardian.navigation.spec.ts`, `guardian.dashboard.spec.ts`, vet redirect specs |
+| Playwright | `e2e/playwright/tests/people-core.spec.ts`, `veterinarian.spec.ts` (page object `people.page.ts`) |
 
-BDD and Playwright scenarios are expanded in `people-hub-remodel-a58d` phase **p4-tests-e2e**.
+Nine People journeys are mapped in `people.feature` and `people-core.spec.ts` (`people-client-core-7f3b` **c8**).

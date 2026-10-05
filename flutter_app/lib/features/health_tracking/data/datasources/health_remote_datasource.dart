@@ -20,7 +20,6 @@ import 'health_occurrence_remote_datasource.dart'
         postUndoOccurrence,
         patchOccurrenceNotes;
 import 'health_entry_photos_remote.dart';
-import 'health_weight_completion_remote.dart';
 import 'health_series_lifecycle_remote.dart';
 import 'health_remote_response.dart';
 
@@ -81,16 +80,6 @@ abstract class HealthRemoteDataSource {
     String occurrenceId,
     DateTime scheduledDate, {
     String? reasonCode,
-  });
-  Future<void> completeWeightOccurrence({
-    required String petId,
-    required String entryId,
-    required String occurrenceId,
-    required double weightKg,
-    required DateTime date,
-    String notes = '',
-    String unit = 'kg',
-    String measurementSource = 'guardian',
   });
 }
 

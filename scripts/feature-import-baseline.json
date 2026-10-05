@@ -36,7 +36,6 @@
     "health_tracking->people",
     "health_tracking->pet_care",
     "health_tracking->pet_profile",
-    "health_tracking->weight_tracking",
     "notifications->auth",
     "notifications->pet_profile",
     "people->auth",

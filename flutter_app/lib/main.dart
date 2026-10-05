@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app_pet_care_sync.dart';
+import 'core/care/care_item_observation_section.dart';
 import 'core/providers/analytics_providers.dart';
 import 'core/providers/locale_provider.dart';
 import 'core/providers/pet_care_sync.dart';
@@ -18,7 +19,7 @@ import 'package:pet_profile_app/features/auth/auth.dart';
 import 'package:pet_profile_app/features/care_item/care_item.dart';
 import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
-import 'features/subscription/subscription.dart';
+import 'package:pet_profile_app/features/subscription/subscription.dart';
 import 'package:pet_profile_app/features/weight_tracking/weight_tracking.dart';
 
 /// Global messenger so session-expiry notices can be shown from anywhere,
@@ -58,6 +59,20 @@ Future<void> main() async {
           },
         ),
         petCareSyncProvider.overrideWith((ref) => AppPetCareSync(ref)),
+        careItemObservationSectionProvider.overrideWith(
+          (ref) =>
+              (
+                context, {
+                required petId,
+                required entryId,
+                required observationKind,
+              }) {
+                if (observationKind == 'numeric_weight') {
+                  return WeightCareItemSection(petId: petId, entryId: entryId);
+                }
+                return null;
+              },
+        ),
       ],
       child: const PetProfileApp(),
     ),

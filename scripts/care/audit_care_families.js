@@ -4,20 +4,12 @@
  *
  * Usage: node scripts/care/audit_care_families.js [--json]
  */
-import pg from 'pg';
-import dotenv from 'dotenv';
+import { createAppPool } from '../../server/lib/db/createPool.js';
+import { loadBackendEnv } from '../../server/scripts/lib/loadBackendEnv.js';
 
-dotenv.config({ path: 'server/.env' });
-dotenv.config();
+loadBackendEnv();
 
-const pool = new pg.Pool({
-  connectionString: process.env.DATABASE_URL,
-  user: process.env.PGUSER || 'user',
-  password: process.env.PGPASSWORD || 'password',
-  host: process.env.PGHOST || 'localhost',
-  port: Number(process.env.PGPORT || 5432),
-  database: process.env.PGDATABASE || 'agatha_db',
-});
+const pool = createAppPool();
 
 async function main() {
   const recurringNullFamily = await pool.query(`

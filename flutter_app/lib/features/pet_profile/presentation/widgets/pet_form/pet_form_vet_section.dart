@@ -94,9 +94,16 @@ class PetFormVetSection extends ConsumerWidget {
           ],
           onChanged: (value) async {
             if (value == createNewVetSentinel) {
-              final created = await context.push<PeopleContact?>(
-                '/pc/people/new?roles=vet&pop=1',
+              final summary = await context.push<ContactSummary>(
+                '/pc/people/new',
+                extra: const AddPersonRouteArgs(
+                  initialEntry: AddPersonEntry.professional,
+                  popResultOnSave: true,
+                ),
               );
+              final created = summary != null
+                  ? peopleContactFromSummary(summary)
+                  : null;
               final vetId = created?.legacyVetId;
               if (vetId != null && vetId.isNotEmpty) {
                 onVetSelected(vetId);

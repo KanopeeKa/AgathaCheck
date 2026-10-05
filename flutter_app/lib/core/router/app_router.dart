@@ -12,6 +12,7 @@ import '../../features/pet_profile/pet_profile.dart';
 import '../../features/weight_tracking/weight_tracking.dart';
 import '../../features/experience/experience.dart';
 import '../../features/pet_care/pet_care.dart';
+import '../../features/people/people.dart';
 import '../../features/sharing/sharing.dart';
 import '../../features/about/about.dart';
 import '../../features/help/help.dart';
@@ -54,6 +55,7 @@ HealthEntryFormScreen _buildCareAddScreen(
 }) {
   final resolvedPetId = petId ?? state.pathParameters['petId'];
   final typeParam = state.uri.queryParameters['type'];
+  final familyParam = state.uri.queryParameters['family'];
   final planningParam = state.uri.queryParameters['planning'];
   final initialType = typeParam != null
       ? HealthEntryType.values.where((t) => t.name == typeParam).firstOrNull
@@ -66,6 +68,7 @@ HealthEntryFormScreen _buildCareAddScreen(
     initialType: initialType,
     allowedTypes: resolvedPetId != null ? kAllPetEventTypes : null,
     initialPlanningMode: initialPlanningMode,
+    initialCareFamily: CareFamilyWire.fromWire(familyParam),
   );
 }
 
@@ -105,6 +108,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         if (path == '/forgot-password') return null;
         if (path.startsWith('/shared/')) return null;
         if (path.startsWith('/invite/')) return null;
+        if (path.startsWith('/household-invite/')) return null;
         if (isPublicOrganizationProfilePath(path)) return null;
         if (LegalDocumentId.publicRoutes.contains(path)) return null;
         if (path.startsWith('/legal/')) return null;
@@ -406,6 +410,14 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final code = state.pathParameters['code']!;
           return AbsenceInviteLandingScreen(inviteCode: code);
+        },
+      ),
+      GoRoute(
+        path: '/household-invite/:code',
+        name: 'householdInviteLanding',
+        builder: (context, state) {
+          final code = state.pathParameters['code']!;
+          return HouseholdInviteLandingScreen(inviteCode: code);
         },
       ),
       ...buildFrozenDomainRedirectRoutes(),

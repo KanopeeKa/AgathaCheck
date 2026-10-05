@@ -10,6 +10,7 @@ import '../../../../core/widgets/form/app_form_discard_dialog.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
 import '../../../care_taxonomy/care_taxonomy.dart';
+import '../../../pet_profile/pet_profile.dart';
 import '../../domain/entities/health_entry.dart';
 import '../controllers/health_entry_form_controller.dart';
 import '../controllers/health_entry_form_outcomes.dart';
@@ -50,6 +51,7 @@ class HealthEntryFormScreen extends ConsumerStatefulWidget {
     this.initialType,
     this.allowedTypes,
     this.initialPlanningMode,
+    this.initialCareFamily,
   });
 
   final String? entryId;
@@ -61,6 +63,9 @@ class HealthEntryFormScreen extends ConsumerStatefulWidget {
 
   /// Initial planning mode for add flows (`planned` default, `unplanned` for record).
   final CarePlanningMode? initialPlanningMode;
+
+  /// Preselects a care family on add (e.g. weight hub → weigh-in routine).
+  final CareFamily? initialCareFamily;
 
   @override
   ConsumerState<HealthEntryFormScreen> createState() =>
@@ -81,6 +86,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
       initialType: widget.initialType,
       allowedTypes: widget.allowedTypes,
       initialPlanningMode: widget.initialPlanningMode,
+      initialCareFamily: widget.initialCareFamily,
     );
     if (widget.entryId != null) {
       Future.microtask(() async {

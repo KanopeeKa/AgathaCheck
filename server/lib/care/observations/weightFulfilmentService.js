@@ -218,6 +218,8 @@ export async function recordWeightWithFulfilment(pool, params) {
           healthOccurrenceId: params.occurrenceId,
         });
         await refreshPetWeightCache(db, params.petId);
+      },
+      afterCommand: async (db) => {
         await maybePersistWeightEstablishment(db, {
           petId: params.petId,
           healthEntryId: targetEntry.id,
@@ -319,6 +321,8 @@ export async function fulfilExistingWeight(pool, params) {
           throw new FulfilmentError('already_linked');
         }
         await refreshPetWeightCache(db, existing.pet_id);
+      },
+      afterCommand: async (db) => {
         await maybePersistWeightEstablishment(db, {
           petId: existing.pet_id,
           healthEntryId: targetEntry.id,

@@ -6,7 +6,7 @@ import '../../../health_tracking/health_tracking.dart';
 import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 import '../screens/pet_care/add_event_type_picker_sheet.dart';
 import '../screens/pet_care/pet_care_my_pets_section.dart';
-import '../screens/pet_care/pet_care_people_desk_module.dart';
+import '../../../people/people.dart';
 import '../screens/pet_care/pet_care_planned_absence_section.dart';
 import '../screens/pet_care/pet_care_upcoming_events_section.dart';
 import '../../../pet_care/pet_care.dart';
@@ -103,7 +103,7 @@ class PetCareShellHomeContent extends ConsumerWidget {
                       onAddEvent: () =>
                           showAddEventTypePickerSheet(context, pets: shellPets),
                     ),
-                    vetsSection: const PetCarePeopleDeskModule(),
+                    vetsSection: const PeopleDeskModule(),
                   ),
                 ],
               ),

@@ -232,6 +232,8 @@
   "weightFulfilmentStale": "Cette pesée prévue ne peut plus recevoir ce poids. Vérifiez puis enregistrez à nouveau.",
   "weightCheckingWeighIn": "Recherche d'une pesée prévue…",
   "weightCheckFailed": "Impossible de vérifier s'il y a une pesée prévue.",
+  "weightCheckFailedWontCount": "Vous pouvez quand même enregistrer ce poids. Il ne comtera pas comme pesée prévue tant que vous n'utilisez pas « Compter comme pesée ».",
+  "weightCheckTimedOut": "Nous n'avons pas pu confirmer une pesée prévue à temps. Vous pouvez enregistrer ce poids ; il ne comtera pas comme pesée prévue tant que l'option n'est pas activée.",
   "weightCheckRetry": "Réessayer",
   "weightSaved": "Poids enregistré",
   "weightSavedCountedAs": "Enregistré · compté comme {routine}",
@@ -2770,6 +2772,45 @@
   "peopleVetLinkedHelper": "Les modifications mettent aussi à jour ce vétérinaire sur les fiches de vos animaux.",
   "peopleMarkInactive": "Marquer inactif",
   "peopleMarkInactiveBody": "Ce contact reste visible où il est déjà lié, mais n'apparaît plus dans les listes de choix.",
+  "peopleReactivate": "Réactiver",
+  "peopleEditSectionIdentity": "Identité",
+  "peopleEditSectionContact": "Coordonnées",
+  "peopleEditSectionNotes": "Notes",
+  "peopleEditLinkedReadOnlyHelper": "Le nom et l'e-mail sont gérés par le compte lié.",
+  "peopleEditLinkedReadOnlyError": "Le nom et l'e-mail ne peuvent pas être modifiés pour un compte lié.",
+  "peopleNameRequired": "Le nom est obligatoire",
+  "peopleEmailInvalid": "Saisissez une adresse e-mail valide",
+  "peopleUsagesDialogTitle": "Contact encore utilisé",
+  "peopleUsagesDialogBody": "Ce contact est utilisé aux endroits ci-dessous. Remplacez-le ou marquez-le inactif.",
+  "peopleUsagesReplace": "Remplacer…",
+  "peopleUsagesBlockedDelete": "Retirez les usages ci-dessous ou marquez inactif.",
+  "peopleReplaceSlotTitle": "Remplacer le vétérinaire ?",
+  "peopleReplaceSlotBody": "Remplacer {name} comme vétérinaire de {petName} ?",
+  "@peopleReplaceSlotBody": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "petName": { "type": "String" }
+    }
+  },
+  "peopleReplaceSlotConfirm": "Remplacer",
+  "peopleEditSetPrimaryVet": "Définir comme vétérinaire principal",
+  "peopleEditSetOutOfHoursVet": "Définir comme vétérinaire de garde",
+  "peopleEditRemovePetLink": "Retirer le lien avec l'animal",
+  "peopleEditEmergencyOrderTitle": "Ordre des contacts d'urgence",
+  "peopleMemberRemovalTitle": "Retirer du foyer ?",
+  "peopleMemberRemovalBody": "La personne perdra l'accès au foyer. D'autres accès peuvent rester.",
+  "peopleMemberRemovalRemaining": "Accès conservés :",
+  "peopleMemberRemovalHouseholdOnly": "Retirer du foyer seulement",
+  "peopleMemberRemovalAllAccess": "Retirer tout accès à mes animaux",
+  "peopleMemberRemovalAction": "Retirer du foyer",
+  "peopleRevokeInviteTitle": "Révoquer l'invitation ?",
+  "peopleRevokeInviteBody": "Révoquer l'invitation pour {email} ?",
+  "@peopleRevokeInviteBody": {
+    "placeholders": {
+      "email": { "type": "String" }
+    }
+  },
+  "peopleRevokeInviteConfirm": "Révoquer l'invitation",
   "peopleSaveError": "Impossible d'enregistrer. Réessayez.",
   "peopleRemoveError": "Impossible de retirer ce contact.",
   "peopleRemoveVetLinkedError": "Retirez d'abord ce vétérinaire de vos animaux, ou marquez le contact inactif.",
@@ -2786,6 +2827,100 @@
     }
   },
   "peopleStatusInactive": "Inactif",
+  "peopleStatusActive": "Actif",
+  "peopleStatusNeedsReview": "À vérifier",
+  "peopleAccessUntil": "Accès jusqu'au {date}",
+  "@peopleAccessUntil": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "peopleCardLookingAfter": "Garde des animaux · {startsOn}–{endsOn}",
+  "@peopleCardLookingAfter": {
+    "placeholders": {
+      "startsOn": { "type": "String" },
+      "endsOn": { "type": "String" }
+    }
+  },
+  "peopleActionCall": "Appeler",
+  "peopleActionMessage": "Message",
+  "peopleActionEmail": "E-mail",
+  "peopleActionDirections": "Itinéraire",
+  "peoplePickerPlaceholder": "Choisir quelqu'un",
+  "peoplePickerTitle": "Choisir un contact",
+  "peoplePickerFieldLabel": "Contact",
+  "peoplePickerNone": "Aucun",
+  "peoplePickerSearchHint": "Rechercher des personnes ou rôles",
+  "peoplePickerCurrentSelection": "Sélection actuelle",
+  "peoplePickerHouseholdMembersSection": "Membres du foyer",
+  "peoplePickerContactsSection": "Contacts",
+  "peoplePickerAddQuery": "Ajouter « {query} »",
+  "@peoplePickerAddQuery": {
+    "placeholders": {
+      "query": { "type": "String" }
+    }
+  },
+  "peoplePickerUseWithoutSaving": "Utiliser « {query} » sans enregistrer",
+  "@peoplePickerUseWithoutSaving": {
+    "placeholders": {
+      "query": { "type": "String" }
+    }
+  },
+  "peoplePickerQuickAddTitle": "Ajout rapide",
+  "peoplePickerQuickAddSave": "Enregistrer le contact",
+  "peopleGroupCarers": "Aidants de confiance",
+  "peopleGroupProfessionals": "Professionnels",
+  "peopleHubSelectSomeone": "Sélectionnez quelqu'un pour voir ses détails",
+  "peopleHubSearchHint": "Rechercher personnes, rôles, animaux…",
+  "peoplePendingInvitesSection": "Invitations en attente",
+  "peopleInactiveSection": "Inactifs ({count})",
+  "@peopleInactiveSection": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "peopleFilterGroupLabel": "Groupe",
+  "peopleFilterPetLabel": "Animal",
+  "peopleMemberYou": "Vous",
+  "peoplePendingInviteLine": "{email} · Invité",
+  "@peoplePendingInviteLine": {
+    "placeholders": {
+      "email": { "type": "String" }
+    }
+  },
+  "peopleHouseholdMemberPets": "Possède {owns} · Partage {shares}",
+  "@peopleHouseholdMemberPets": {
+    "placeholders": {
+      "owns": { "type": "String" },
+      "shares": { "type": "String" }
+    }
+  },
+  "peopleRelationshipPrimaryVet": "Vétérinaire principal",
+  "peopleRelationshipOutOfHoursVet": "Vétérinaire de garde",
+  "peopleRelationshipEmergencyContact": "Contact d'urgence",
+  "peopleRelationshipCareProvider": "Fournit des soins",
+  "peopleRelationshipOther": "Autre lien",
+  "peopleDetailTabOverview": "Vue d'ensemble",
+  "peopleDetailTabPetsAccess": "Animaux et accès",
+  "peopleDetailTabRelatedCare": "Soins liés",
+  "peopleDetailTabNotes": "Notes",
+  "peopleDetailLinkedAccount": "Compte AgathaTrack",
+  "peopleDetailNextUpTitle": "À venir",
+  "peopleDetailStaffAt": "Personnes chez {name}",
+  "peopleDetailNotesPreviewTitle": "Notes",
+  "peopleDetailLinkToPet": "Lier à un animal",
+  "peopleDetailLinkPetTitle": "Lier à un animal",
+  "peopleDetailLinkPetChooseKind": "Quel lien ?",
+  "peopleDetailRelatedCareHistory": "{count, plural, =1{1 visite passée} other{{count} visites passées}}",
+  "peopleDetailHouseholdNoteLabel": "Note du foyer",
+  "peopleDetailHouseholdNoteHelper": "Visible par votre foyer.",
+  "peopleDetailSaveNotes": "Enregistrer",
+  "peopleDetailNotesSaved": "Notes enregistrées",
+  "peopleDetailAccessCoParent": "Co-parent",
+  "peopleDetailAccessCanLogCare": "Peut enregistrer les soins",
+  "peopleDetailPendingInviteBody": "En attente d'acceptation de l'invitation.",
+  "peopleDetailPendingPets": "Animaux dans cette invitation",
+  "peopleDetailRevokeInEdit": "Pour révoquer, ouvrez Modifier.",
   "peopleDangerZoneTitle": "Zone sensible",
   "peopleRemoveContactTitle": "Retirer ce contact ?",
   "peopleRemoveContactBody": "Retirer {name} de votre répertoire ? L'historique de soins sur les animaux est conservé.",
@@ -2806,6 +2941,62 @@
   "peopleAddAppAccessContinue": "Inviter",
   "peopleAddPersonSave": "Enregistrer",
   "peopleAddRolesRequired": "Choisissez au moins un rôle pour continuer.",
+  "peopleAddStepWhoTitle": "Qui souhaitez-vous ajouter ?",
+  "peopleAddStepProgress": "Étape {step} sur 5",
+  "@peopleAddStepProgress": {"placeholders": {"step": {"type": "int"}}},
+  "peopleAddTileHousehold": "Quelqu'un à la maison",
+  "peopleAddTileHouseholdHelper": "Une personne qui partage le quotidien de vos animaux.",
+  "peopleAddTileCarer": "Quelqu'un qui les garde",
+  "peopleAddTileCarerHelper": "Un proche, un ami ou un pet-sitter qui s'en occupe ponctuellement.",
+  "peopleAddTileProfessional": "Un pro pour vos animaux",
+  "peopleAddTileProfessionalHelper": "Vétérinaire, toilettage, promenade, éducation…",
+  "peopleAddTileOrganisation": "Un établissement",
+  "peopleAddTileOrganisationHelper": "Clinique, salon de toilettage, pension, garderie…",
+  "peopleAddStepAbout": "À propos",
+  "peopleAddStepPets": "Quels animaux ?",
+  "peopleAddStepReview": "Vérification",
+  "peopleAddNext": "Continuer",
+  "peopleAddBack": "Retour",
+  "peopleAddOpenExisting": "Ouvrir",
+  "peopleAddAppAccessShare": "Partager des animaux dans l'app",
+  "peopleAddAppAccessAbsence": "Inviter pour une absence",
+  "peopleAddAppAccessHousehold": "Inviter dans un foyer",
+  "peopleAddHouseholdName": "Nom du foyer",
+  "peopleHouseholdPetReviewTitle": "Animaux du foyer",
+  "peopleHouseholdPetReviewBody": "Choisissez les animaux qui appartiennent à ce foyer. Vous pourrez modifier plus tard.",
+  "peopleHouseholdMembersTitle": "Membres",
+  "peopleHouseholdPetsTitle": "Animaux",
+  "peopleHouseholdPetOwnerYou": "Cet animal est à vous",
+  "peopleHouseholdPetOtherOwner": "Appartient à un autre membre",
+  "peopleHouseholdPendingInvitesTitle": "Invitations en attente",
+  "peopleHouseholdRevokeInvite": "Révoquer",
+  "peopleHouseholdInviteMemberTitle": "Inviter un membre",
+  "peopleHouseholdInviteMemberAction": "Inviter un membre",
+  "peopleHouseholdInviteTierLabel": "Accès",
+  "peopleHouseholdInviteOrganiserLabel": "Organisateur du foyer",
+  "peopleHouseholdInviteAdultConfirm": "La personne a 18 ans ou plus",
+  "peopleHouseholdInviteSent": "Invitation envoyée",
+  "peopleHouseholdRenameTitle": "Renommer le foyer",
+  "peopleHouseholdLeaveTitle": "Quitter le foyer ?",
+  "peopleHouseholdLeaveBody": "Vous perdrez l'accès au foyer. D'autres accès peuvent rester.",
+  "peopleHouseholdLeaveAction": "Quitter le foyer",
+  "peopleHouseholdSuccessorLabel": "Organisateur successeur",
+  "peopleHouseholdInviteLandingTitle": "Rejoindre {householdName} ?",
+  "@peopleHouseholdInviteLandingTitle": {
+    "placeholders": { "householdName": { "type": "String" } }
+  },
+  "peopleHouseholdInviteLandingBody": "{inviterName} vous a invité·e en tant que {tier}.",
+  "@peopleHouseholdInviteLandingBody": {
+    "placeholders": {
+      "inviterName": { "type": "String" },
+      "tier": { "type": "String" }
+    }
+  },
+  "peopleHouseholdInviteAccept": "Accepter l'invitation",
+  "peopleHouseholdInviteDecline": "Refuser",
+  "peopleAddPetsEmpty": "Aucun animal à lier pour l'instant.",
+  "peopleAddPetLinkKind": "Rôle pour cet animal",
+  "peopleAddEmergencyContact": "Contact d'urgence pour cet animal",
   "peopleSaveValidationError": "Vérifiez les informations et réessayez.",
   "careAgendaToday": "Aujourd'hui",
   "careAgendaDueSoon": "Bientôt",
@@ -2865,7 +3056,16 @@
   "careOccurrenceMenuTooltip": "Autres actions pour cette date",
   "careSkip": "Ignorer",
   "careWeightRequiredHint": "Saisissez le poids pour le marquer comme fait",
-  "careWeightFieldLabel": "Poids (kg)",
+  "careWeightFieldLabelUnit": "Poids ({unit})",
+  "@careWeightFieldLabelUnit": { "placeholders": { "unit": { "type": "String" } } },
+  "careSkipWeighInTitle": "Ignorer cette pesée prévue ?",
+  "careSkipReasonOptional": "Raison (facultatif)",
+  "careSkipReasonCouldNotWeigh": "Pesée impossible",
+  "careSkipReasonPetUnsettled": "Animal trop agité",
+  "careSkipReasonVetWillWeigh": "Le vétérinaire pèsera",
+  "careSkipReasonOther": "Autre",
+  "careSkippedWithReason": "Ignorée · {reason}",
+  "@careSkippedWithReason": { "placeholders": { "reason": { "type": "String" } } },
   "careCompletedOnLabel": "Quand a-t-il été fait ?",
   "careDateSaved": "Date enregistrée",
   "careSkipped": "{name} ignoré",

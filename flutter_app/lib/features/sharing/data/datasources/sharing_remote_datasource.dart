@@ -242,6 +242,7 @@ class SharingRemoteDataSource {
     required String role,
     required String token,
     String? locale,
+    String? contactId,
   }) async {
     final response = await _client.post(
       Uri.parse('$baseUrl/api/share/invites'),
@@ -255,6 +256,7 @@ class SharingRemoteDataSource {
         'pet_ids': petIds,
         'role': role,
         if (locale != null) 'locale': locale,
+        if (contactId != null) 'contact_id': contactId,
       }),
     );
     if (response.statusCode >= 400) {

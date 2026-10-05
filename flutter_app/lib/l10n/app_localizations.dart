@@ -1202,6 +1202,18 @@ abstract class AppLocalizations {
   /// **'Couldn\'t check for a due weigh-in.'**
   String get weightCheckFailed;
 
+  /// No description provided for @weightCheckFailedWontCount.
+  ///
+  /// In en, this message translates to:
+  /// **'You can still save this weight. It won\'t count as a weigh-in unless you use Count as a weigh-in later.'**
+  String get weightCheckFailedWontCount;
+
+  /// No description provided for @weightCheckTimedOut.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t confirm a due weigh-in in time. You can save this weight; it won\'t count as a weigh-in unless you turn on Count as.'**
+  String get weightCheckTimedOut;
+
   /// No description provided for @weightCheckRetry.
   ///
   /// In en, this message translates to:
@@ -12922,6 +12934,174 @@ abstract class AppLocalizations {
   /// **'This contact stays visible where already linked, but won\'t appear in pickers.'**
   String get peopleMarkInactiveBody;
 
+  /// No description provided for @peopleReactivate.
+  ///
+  /// In en, this message translates to:
+  /// **'Reactivate'**
+  String get peopleReactivate;
+
+  /// No description provided for @peopleEditSectionIdentity.
+  ///
+  /// In en, this message translates to:
+  /// **'Identity'**
+  String get peopleEditSectionIdentity;
+
+  /// No description provided for @peopleEditSectionContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact details'**
+  String get peopleEditSectionContact;
+
+  /// No description provided for @peopleEditSectionNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get peopleEditSectionNotes;
+
+  /// No description provided for @peopleEditLinkedReadOnlyHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Name and email are managed by their linked account.'**
+  String get peopleEditLinkedReadOnlyHelper;
+
+  /// No description provided for @peopleEditLinkedReadOnlyError.
+  ///
+  /// In en, this message translates to:
+  /// **'Name and email cannot be changed for a linked account.'**
+  String get peopleEditLinkedReadOnlyError;
+
+  /// No description provided for @peopleNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Name is required'**
+  String get peopleNameRequired;
+
+  /// No description provided for @peopleEmailInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid email address'**
+  String get peopleEmailInvalid;
+
+  /// No description provided for @peopleUsagesDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact still in use'**
+  String get peopleUsagesDialogTitle;
+
+  /// No description provided for @peopleUsagesDialogBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This contact is used in the places below. Replace them or mark inactive instead.'**
+  String get peopleUsagesDialogBody;
+
+  /// No description provided for @peopleUsagesReplace.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace…'**
+  String get peopleUsagesReplace;
+
+  /// No description provided for @peopleUsagesBlockedDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove the usages below or mark inactive instead.'**
+  String get peopleUsagesBlockedDelete;
+
+  /// No description provided for @peopleReplaceSlotTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace vet slot?'**
+  String get peopleReplaceSlotTitle;
+
+  /// No description provided for @peopleReplaceSlotBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace {name} as {petName}\'s vet?'**
+  String peopleReplaceSlotBody(String name, String petName);
+
+  /// No description provided for @peopleReplaceSlotConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace'**
+  String get peopleReplaceSlotConfirm;
+
+  /// No description provided for @peopleEditSetPrimaryVet.
+  ///
+  /// In en, this message translates to:
+  /// **'Set as primary vet'**
+  String get peopleEditSetPrimaryVet;
+
+  /// No description provided for @peopleEditSetOutOfHoursVet.
+  ///
+  /// In en, this message translates to:
+  /// **'Set as out-of-hours vet'**
+  String get peopleEditSetOutOfHoursVet;
+
+  /// No description provided for @peopleEditRemovePetLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove pet link'**
+  String get peopleEditRemovePetLink;
+
+  /// No description provided for @peopleEditEmergencyOrderTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency contact order'**
+  String get peopleEditEmergencyOrderTitle;
+
+  /// No description provided for @peopleMemberRemovalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from household?'**
+  String get peopleMemberRemovalTitle;
+
+  /// No description provided for @peopleMemberRemovalBody.
+  ///
+  /// In en, this message translates to:
+  /// **'They will lose household access. Other access may remain.'**
+  String get peopleMemberRemovalBody;
+
+  /// No description provided for @peopleMemberRemovalRemaining.
+  ///
+  /// In en, this message translates to:
+  /// **'Access that remains:'**
+  String get peopleMemberRemovalRemaining;
+
+  /// No description provided for @peopleMemberRemovalHouseholdOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from household only'**
+  String get peopleMemberRemovalHouseholdOnly;
+
+  /// No description provided for @peopleMemberRemovalAllAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove all access to my pets'**
+  String get peopleMemberRemovalAllAccess;
+
+  /// No description provided for @peopleMemberRemovalAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from household'**
+  String get peopleMemberRemovalAction;
+
+  /// No description provided for @peopleRevokeInviteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Revoke invite?'**
+  String get peopleRevokeInviteTitle;
+
+  /// No description provided for @peopleRevokeInviteBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Revoke the invite for {email}?'**
+  String peopleRevokeInviteBody(String email);
+
+  /// No description provided for @peopleRevokeInviteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Revoke invite'**
+  String get peopleRevokeInviteConfirm;
+
   /// No description provided for @peopleSaveError.
   ///
   /// In en, this message translates to:
@@ -12987,6 +13167,348 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Inactive'**
   String get peopleStatusInactive;
+
+  /// No description provided for @peopleStatusActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get peopleStatusActive;
+
+  /// No description provided for @peopleStatusNeedsReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs review'**
+  String get peopleStatusNeedsReview;
+
+  /// No description provided for @peopleAccessUntil.
+  ///
+  /// In en, this message translates to:
+  /// **'Access until {date}'**
+  String peopleAccessUntil(String date);
+
+  /// No description provided for @peopleCardLookingAfter.
+  ///
+  /// In en, this message translates to:
+  /// **'Looking after pets · {startsOn}–{endsOn}'**
+  String peopleCardLookingAfter(String startsOn, String endsOn);
+
+  /// No description provided for @peopleActionCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Call'**
+  String get peopleActionCall;
+
+  /// No description provided for @peopleActionMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get peopleActionMessage;
+
+  /// No description provided for @peopleActionEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get peopleActionEmail;
+
+  /// No description provided for @peopleActionDirections.
+  ///
+  /// In en, this message translates to:
+  /// **'Directions'**
+  String get peopleActionDirections;
+
+  /// No description provided for @peoplePickerPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose someone'**
+  String get peoplePickerPlaceholder;
+
+  /// No description provided for @peoplePickerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a contact'**
+  String get peoplePickerTitle;
+
+  /// No description provided for @peoplePickerFieldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact'**
+  String get peoplePickerFieldLabel;
+
+  /// No description provided for @peoplePickerNone.
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get peoplePickerNone;
+
+  /// No description provided for @peoplePickerSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search people and roles'**
+  String get peoplePickerSearchHint;
+
+  /// No description provided for @peoplePickerCurrentSelection.
+  ///
+  /// In en, this message translates to:
+  /// **'Current selection'**
+  String get peoplePickerCurrentSelection;
+
+  /// No description provided for @peoplePickerHouseholdMembersSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Household members'**
+  String get peoplePickerHouseholdMembersSection;
+
+  /// No description provided for @peoplePickerContactsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Contacts'**
+  String get peoplePickerContactsSection;
+
+  /// No description provided for @peoplePickerAddQuery.
+  ///
+  /// In en, this message translates to:
+  /// **'Add \"{query}\"'**
+  String peoplePickerAddQuery(String query);
+
+  /// No description provided for @peoplePickerUseWithoutSaving.
+  ///
+  /// In en, this message translates to:
+  /// **'Use \"{query}\" without saving'**
+  String peoplePickerUseWithoutSaving(String query);
+
+  /// No description provided for @peoplePickerQuickAddTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick add contact'**
+  String get peoplePickerQuickAddTitle;
+
+  /// No description provided for @peoplePickerQuickAddSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save contact'**
+  String get peoplePickerQuickAddSave;
+
+  /// No description provided for @peopleGroupCarers.
+  ///
+  /// In en, this message translates to:
+  /// **'Trusted carers'**
+  String get peopleGroupCarers;
+
+  /// No description provided for @peopleGroupProfessionals.
+  ///
+  /// In en, this message translates to:
+  /// **'Pet professionals'**
+  String get peopleGroupProfessionals;
+
+  /// No description provided for @peopleHubSelectSomeone.
+  ///
+  /// In en, this message translates to:
+  /// **'Select someone to see their details'**
+  String get peopleHubSelectSomeone;
+
+  /// No description provided for @peopleHubSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search people, roles, pets…'**
+  String get peopleHubSearchHint;
+
+  /// No description provided for @peoplePendingInvitesSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending invites'**
+  String get peoplePendingInvitesSection;
+
+  /// No description provided for @peopleInactiveSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Inactive ({count})'**
+  String peopleInactiveSection(int count);
+
+  /// No description provided for @peopleFilterGroupLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Group'**
+  String get peopleFilterGroupLabel;
+
+  /// No description provided for @peopleFilterPetLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Pet'**
+  String get peopleFilterPetLabel;
+
+  /// No description provided for @peopleMemberYou.
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get peopleMemberYou;
+
+  /// No description provided for @peoplePendingInviteLine.
+  ///
+  /// In en, this message translates to:
+  /// **'{email} · Invited'**
+  String peoplePendingInviteLine(String email);
+
+  /// No description provided for @peopleHouseholdMemberPets.
+  ///
+  /// In en, this message translates to:
+  /// **'Owns {owns} · Shares {shares}'**
+  String peopleHouseholdMemberPets(String owns, String shares);
+
+  /// No description provided for @peopleRelationshipPrimaryVet.
+  ///
+  /// In en, this message translates to:
+  /// **'Primary vet'**
+  String get peopleRelationshipPrimaryVet;
+
+  /// No description provided for @peopleRelationshipOutOfHoursVet.
+  ///
+  /// In en, this message translates to:
+  /// **'Out-of-hours vet'**
+  String get peopleRelationshipOutOfHoursVet;
+
+  /// No description provided for @peopleRelationshipEmergencyContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency contact'**
+  String get peopleRelationshipEmergencyContact;
+
+  /// No description provided for @peopleRelationshipCareProvider.
+  ///
+  /// In en, this message translates to:
+  /// **'Provides care'**
+  String get peopleRelationshipCareProvider;
+
+  /// No description provided for @peopleRelationshipOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other link'**
+  String get peopleRelationshipOther;
+
+  /// No description provided for @peopleDetailTabOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Overview'**
+  String get peopleDetailTabOverview;
+
+  /// No description provided for @peopleDetailTabPetsAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Pets & access'**
+  String get peopleDetailTabPetsAccess;
+
+  /// No description provided for @peopleDetailTabRelatedCare.
+  ///
+  /// In en, this message translates to:
+  /// **'Related care'**
+  String get peopleDetailTabRelatedCare;
+
+  /// No description provided for @peopleDetailTabNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get peopleDetailTabNotes;
+
+  /// No description provided for @peopleDetailLinkedAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Has an AgathaTrack account'**
+  String get peopleDetailLinkedAccount;
+
+  /// No description provided for @peopleDetailNextUpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Next up'**
+  String get peopleDetailNextUpTitle;
+
+  /// No description provided for @peopleDetailStaffAt.
+  ///
+  /// In en, this message translates to:
+  /// **'People at {name}'**
+  String peopleDetailStaffAt(String name);
+
+  /// No description provided for @peopleDetailNotesPreviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get peopleDetailNotesPreviewTitle;
+
+  /// No description provided for @peopleDetailLinkToPet.
+  ///
+  /// In en, this message translates to:
+  /// **'Link to a pet'**
+  String get peopleDetailLinkToPet;
+
+  /// No description provided for @peopleDetailLinkPetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Link to a pet'**
+  String get peopleDetailLinkPetTitle;
+
+  /// No description provided for @peopleDetailLinkPetChooseKind.
+  ///
+  /// In en, this message translates to:
+  /// **'How are they linked?'**
+  String get peopleDetailLinkPetChooseKind;
+
+  /// No description provided for @peopleDetailRelatedCareHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 past visit} other{{count} past visits}}'**
+  String peopleDetailRelatedCareHistory(int count);
+
+  /// No description provided for @peopleDetailHouseholdNoteLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Household note'**
+  String get peopleDetailHouseholdNoteLabel;
+
+  /// No description provided for @peopleDetailHouseholdNoteHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Visible to your household.'**
+  String get peopleDetailHouseholdNoteHelper;
+
+  /// No description provided for @peopleDetailSaveNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get peopleDetailSaveNotes;
+
+  /// No description provided for @peopleDetailNotesSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes saved'**
+  String get peopleDetailNotesSaved;
+
+  /// No description provided for @peopleDetailAccessCoParent.
+  ///
+  /// In en, this message translates to:
+  /// **'Co-parent'**
+  String get peopleDetailAccessCoParent;
+
+  /// No description provided for @peopleDetailAccessCanLogCare.
+  ///
+  /// In en, this message translates to:
+  /// **'Can log care'**
+  String get peopleDetailAccessCanLogCare;
+
+  /// No description provided for @peopleDetailPendingInviteBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for them to accept your invite.'**
+  String get peopleDetailPendingInviteBody;
+
+  /// No description provided for @peopleDetailPendingPets.
+  ///
+  /// In en, this message translates to:
+  /// **'Pets in this invite'**
+  String get peopleDetailPendingPets;
+
+  /// No description provided for @peopleDetailRevokeInEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'To revoke this invite, open Edit.'**
+  String get peopleDetailRevokeInEdit;
 
   /// No description provided for @peopleDangerZoneTitle.
   ///
@@ -13077,6 +13599,282 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Choose at least one role to continue.'**
   String get peopleAddRolesRequired;
+
+  /// No description provided for @peopleAddStepWhoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Who would you like to add?'**
+  String get peopleAddStepWhoTitle;
+
+  /// No description provided for @peopleAddStepProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {step} of 5'**
+  String peopleAddStepProgress(int step);
+
+  /// No description provided for @peopleAddTileHousehold.
+  ///
+  /// In en, this message translates to:
+  /// **'Someone at home'**
+  String get peopleAddTileHousehold;
+
+  /// No description provided for @peopleAddTileHouseholdHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Lives with you and shares your pets\' everyday life.'**
+  String get peopleAddTileHouseholdHelper;
+
+  /// No description provided for @peopleAddTileCarer.
+  ///
+  /// In en, this message translates to:
+  /// **'A trusted carer'**
+  String get peopleAddTileCarer;
+
+  /// No description provided for @peopleAddTileCarerHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'A friend, relative or pet sitter who sometimes looks after them.'**
+  String get peopleAddTileCarerHelper;
+
+  /// No description provided for @peopleAddTileProfessional.
+  ///
+  /// In en, this message translates to:
+  /// **'A pet professional'**
+  String get peopleAddTileProfessional;
+
+  /// No description provided for @peopleAddTileProfessionalHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Vet, groomer, walker, trainer…'**
+  String get peopleAddTileProfessionalHelper;
+
+  /// No description provided for @peopleAddTileOrganisation.
+  ///
+  /// In en, this message translates to:
+  /// **'An organisation'**
+  String get peopleAddTileOrganisation;
+
+  /// No description provided for @peopleAddTileOrganisationHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Clinic, grooming salon, boarding, daycare…'**
+  String get peopleAddTileOrganisationHelper;
+
+  /// No description provided for @peopleAddStepAbout.
+  ///
+  /// In en, this message translates to:
+  /// **'About them'**
+  String get peopleAddStepAbout;
+
+  /// No description provided for @peopleAddStepPets.
+  ///
+  /// In en, this message translates to:
+  /// **'Which pets?'**
+  String get peopleAddStepPets;
+
+  /// No description provided for @peopleAddStepReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Review'**
+  String get peopleAddStepReview;
+
+  /// No description provided for @peopleAddNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get peopleAddNext;
+
+  /// No description provided for @peopleAddBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get peopleAddBack;
+
+  /// No description provided for @peopleAddOpenExisting.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get peopleAddOpenExisting;
+
+  /// No description provided for @peopleAddAppAccessShare.
+  ///
+  /// In en, this message translates to:
+  /// **'Share pets in the app'**
+  String get peopleAddAppAccessShare;
+
+  /// No description provided for @peopleAddAppAccessAbsence.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite for an absence'**
+  String get peopleAddAppAccessAbsence;
+
+  /// No description provided for @peopleAddAppAccessHousehold.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite to a household'**
+  String get peopleAddAppAccessHousehold;
+
+  /// No description provided for @peopleAddHouseholdName.
+  ///
+  /// In en, this message translates to:
+  /// **'Household name'**
+  String get peopleAddHouseholdName;
+
+  /// No description provided for @peopleHouseholdPetReviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pets in this household'**
+  String get peopleHouseholdPetReviewTitle;
+
+  /// No description provided for @peopleHouseholdPetReviewBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose which of your pets belong in this household. You can change this later.'**
+  String get peopleHouseholdPetReviewBody;
+
+  /// No description provided for @peopleHouseholdMembersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Members'**
+  String get peopleHouseholdMembersTitle;
+
+  /// No description provided for @peopleHouseholdPetsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pets'**
+  String get peopleHouseholdPetsTitle;
+
+  /// No description provided for @peopleHouseholdPetOwnerYou.
+  ///
+  /// In en, this message translates to:
+  /// **'You own this pet'**
+  String get peopleHouseholdPetOwnerYou;
+
+  /// No description provided for @peopleHouseholdPetOtherOwner.
+  ///
+  /// In en, this message translates to:
+  /// **'Owned by another household member'**
+  String get peopleHouseholdPetOtherOwner;
+
+  /// No description provided for @peopleHouseholdPendingInvitesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending invites'**
+  String get peopleHouseholdPendingInvitesTitle;
+
+  /// No description provided for @peopleHouseholdRevokeInvite.
+  ///
+  /// In en, this message translates to:
+  /// **'Revoke'**
+  String get peopleHouseholdRevokeInvite;
+
+  /// No description provided for @peopleHouseholdInviteMemberTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite member'**
+  String get peopleHouseholdInviteMemberTitle;
+
+  /// No description provided for @peopleHouseholdInviteMemberAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite member'**
+  String get peopleHouseholdInviteMemberAction;
+
+  /// No description provided for @peopleHouseholdInviteTierLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Access'**
+  String get peopleHouseholdInviteTierLabel;
+
+  /// No description provided for @peopleHouseholdInviteOrganiserLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Household organiser'**
+  String get peopleHouseholdInviteOrganiserLabel;
+
+  /// No description provided for @peopleHouseholdInviteAdultConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'They are 18 or over'**
+  String get peopleHouseholdInviteAdultConfirm;
+
+  /// No description provided for @peopleHouseholdInviteSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation sent'**
+  String get peopleHouseholdInviteSent;
+
+  /// No description provided for @peopleHouseholdRenameTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Rename household'**
+  String get peopleHouseholdRenameTitle;
+
+  /// No description provided for @peopleHouseholdLeaveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave household?'**
+  String get peopleHouseholdLeaveTitle;
+
+  /// No description provided for @peopleHouseholdLeaveBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You will lose household access. Other access may remain.'**
+  String get peopleHouseholdLeaveBody;
+
+  /// No description provided for @peopleHouseholdLeaveAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave household'**
+  String get peopleHouseholdLeaveAction;
+
+  /// No description provided for @peopleHouseholdSuccessorLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Successor organiser'**
+  String get peopleHouseholdSuccessorLabel;
+
+  /// No description provided for @peopleHouseholdInviteLandingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Join {householdName}?'**
+  String peopleHouseholdInviteLandingTitle(String householdName);
+
+  /// No description provided for @peopleHouseholdInviteLandingBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{inviterName} invited you as {tier}.'**
+  String peopleHouseholdInviteLandingBody(String inviterName, String tier);
+
+  /// No description provided for @peopleHouseholdInviteAccept.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept invitation'**
+  String get peopleHouseholdInviteAccept;
+
+  /// No description provided for @peopleHouseholdInviteDecline.
+  ///
+  /// In en, this message translates to:
+  /// **'Decline'**
+  String get peopleHouseholdInviteDecline;
+
+  /// No description provided for @peopleAddPetsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No pets to link yet.'**
+  String get peopleAddPetsEmpty;
+
+  /// No description provided for @peopleAddPetLinkKind.
+  ///
+  /// In en, this message translates to:
+  /// **'How they help with this pet'**
+  String get peopleAddPetLinkKind;
+
+  /// No description provided for @peopleAddEmergencyContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency contact for this pet'**
+  String get peopleAddEmergencyContact;
 
   /// No description provided for @peopleSaveValidationError.
   ///
@@ -13390,11 +14188,53 @@ abstract class AppLocalizations {
   /// **'Enter the weight to mark it as done'**
   String get careWeightRequiredHint;
 
-  /// No description provided for @careWeightFieldLabel.
+  /// No description provided for @careWeightFieldLabelUnit.
   ///
   /// In en, this message translates to:
-  /// **'Weight (kg)'**
-  String get careWeightFieldLabel;
+  /// **'Weight ({unit})'**
+  String careWeightFieldLabelUnit(String unit);
+
+  /// No description provided for @careSkipWeighInTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip this weigh-in?'**
+  String get careSkipWeighInTitle;
+
+  /// No description provided for @careSkipReasonOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason (optional)'**
+  String get careSkipReasonOptional;
+
+  /// No description provided for @careSkipReasonCouldNotWeigh.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t weigh'**
+  String get careSkipReasonCouldNotWeigh;
+
+  /// No description provided for @careSkipReasonPetUnsettled.
+  ///
+  /// In en, this message translates to:
+  /// **'Pet too unsettled'**
+  String get careSkipReasonPetUnsettled;
+
+  /// No description provided for @careSkipReasonVetWillWeigh.
+  ///
+  /// In en, this message translates to:
+  /// **'Vet will weigh'**
+  String get careSkipReasonVetWillWeigh;
+
+  /// No description provided for @careSkipReasonOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get careSkipReasonOther;
+
+  /// No description provided for @careSkippedWithReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Skipped · {reason}'**
+  String careSkippedWithReason(String reason);
 
   /// No description provided for @careCompletedOnLabel.
   ///

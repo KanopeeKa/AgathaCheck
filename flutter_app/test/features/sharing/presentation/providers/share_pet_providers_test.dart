@@ -36,6 +36,7 @@ class _FakeSharingRepository implements SharingRepository {
 
   @override
   Future<CreateShareInviteResult> createInvite({
+    String? contactId,
     required String inviteeEmail,
     required List<String> petIds,
     required String role,

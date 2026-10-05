@@ -9,10 +9,17 @@ import 'sharing_providers.dart';
 
 /// Route extra for bulk share: pet IDs or [SharePetRouteArgs].
 class SharePetRouteArgs {
-  const SharePetRouteArgs({required this.petIds, this.initialPetId});
+  const SharePetRouteArgs({
+    required this.petIds,
+    this.initialPetId,
+    this.prefillEmail,
+    this.contactId,
+  });
 
   final List<String> petIds;
   final String? initialPetId;
+  final String? prefillEmail;
+  final String? contactId;
 }
 
 class SharePetState {
@@ -108,6 +115,7 @@ class SharePetNotifier extends StateNotifier<SharePetState> {
     required String inviteeEmail,
     required PetAccessRole role,
     String? locale,
+    String? contactId,
   }) async {
     state = state.copyWith(isSendingInvite: true, clearError: true);
     try {
@@ -120,6 +128,7 @@ class SharePetNotifier extends StateNotifier<SharePetState> {
         role: role.toWire(),
         token: token,
         locale: locale,
+        contactId: contactId,
       );
       await refresh();
       state = state.copyWith(isSendingInvite: false);

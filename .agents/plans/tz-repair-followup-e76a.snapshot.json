@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "plan_id": "tz-repair-followup-e76a",
+  "approved_at": "2026-10-05T12:36:00Z",
+  "approved_by": "user-chat-2026-10-05-continue-execute-plan-tz-repair-followup-full",
+  "approved_until": "2026-10-07T12:36:00Z",
+  "content_hash": "sha256:3ad6ad65e480550fa69827df7e4323d1700c3ebc04ac8147f394d2ca87a1e2d6",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/tz-repair-followup-integration-e76a",
+  "control_issue": 1628,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Repair todayIso from pet home TZ",
+      "branch": "cursor/tz-repair-asof-e76a",
+      "allowed_paths": [
+        "server/lib/care/repair/**",
+        "server/scripts/care/repair_tz_shift.js",
+        "server/test/**",
+        "docs/ops/care-tick.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null
+    },
+    {
+      "id": "2",
+      "title": "D3/D4/D5 repair scope",
+      "branch": "cursor/tz-repair-d3-d5-e76a",
+      "allowed_paths": [
+        "server/lib/care/repair/**",
+        "server/scripts/care/**",
+        "server/test/db/**",
+        "server/test/careSchedule/**",
+        "docs/domains/pet_care/changes/not-recorded-stale-open-bug-spec.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null
+    },
+    {
+      "id": "3",
+      "title": "AC-TZ2 Paris CI matrix",
+      "branch": "cursor/tz-paris-ci-e76a",
+      "allowed_paths": [
+        ".github/workflows/**",
+        "scripts/pre-push*.sh",
+        "server/test/**"
+      ],
+      "forbidden_paths": [],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null
+    },
+    {
+      "id": "4",
+      "title": "Pool bootstrap + TZ-4 doc",
+      "branch": "cursor/tz-pool-audit-e76a",
+      "allowed_paths": [
+        "scripts/check_pg_pool_bootstrap.js",
+        "scripts/care/**",
+        "docs/ops/**",
+        "docs/architecture/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null
+    },
+    {
+      "id": "5",
+      "title": "Integration PR to main + babysit-uat",
+      "branch": "cursor/tz-repair-followup-integration-e76a",
+      "allowed_paths": [
+        "**"
+      ],
+      "forbidden_paths": [],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "merge_method": "squash",
+      "exit_checklist": "release-verification",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null
+    }
+  ]
+}

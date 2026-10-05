@@ -90,7 +90,7 @@ List<RouteBase> buildExperienceRoutes() {
             GoRoute(
               path: 'households',
               name: 'petCareHouseholds',
-              builder: (context, state) => const HouseholdsScreen(),
+              redirect: (context, state) => '/pc/people/households',
             ),
             GoRoute(
               path: 'share',
@@ -99,9 +99,13 @@ List<RouteBase> buildExperienceRoutes() {
                 final extra = state.extra;
                 List<String> petIds = const [];
                 String? initialPetId;
+                String? prefillEmail;
+                String? contactId;
                 if (extra is SharePetRouteArgs) {
                   petIds = extra.petIds;
                   initialPetId = extra.initialPetId;
+                  prefillEmail = extra.prefillEmail;
+                  contactId = extra.contactId;
                 } else if (extra is List<String>) {
                   petIds = extra;
                 } else if (extra is List) {
@@ -110,6 +114,8 @@ List<RouteBase> buildExperienceRoutes() {
                 return SharePetScreen(
                   initialPetIds: petIds,
                   initialPetId: initialPetId,
+                  prefillEmail: prefillEmail,
+                  contactId: contactId,
                 );
               },
             ),
@@ -120,49 +126,7 @@ List<RouteBase> buildExperienceRoutes() {
           name: 'petCareEvents',
           builder: (context, state) => const _PetCareEventsScreen(),
         ),
-        GoRoute(
-          path: '/pc/people',
-          name: 'petCarePeople',
-          builder: (context, state) =>
-              PeopleHubScreen(selectedPersonId: peoplePersonIdFromState(state)),
-          routes: [
-            GoRoute(
-              path: 'new',
-              name: 'petCarePeopleNew',
-              builder: (context, state) {
-                final rolesParam = state.uri.queryParameters['roles'];
-                final roles = rolesParam == null
-                    ? const <String>{}
-                    : rolesParam
-                          .split(',')
-                          .map((e) => e.trim())
-                          .where((e) => e.isNotEmpty)
-                          .toSet();
-                final pop = state.uri.queryParameters['pop'] == '1';
-                return PeopleAddPersonScreen(
-                  initialRoles: roles,
-                  popResultOnSave: pop,
-                );
-              },
-            ),
-            GoRoute(
-              path: ':personId',
-              name: 'petCarePeopleDetail',
-              builder: (context, state) => PeopleHubScreen(
-                selectedPersonId: state.pathParameters['personId'],
-              ),
-              routes: [
-                GoRoute(
-                  path: 'edit',
-                  name: 'petCarePeopleEdit',
-                  builder: (context, state) => PeopleEditScreen(
-                    personId: state.pathParameters['personId']!,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
+        buildPeopleHubShellRoute(),
         ...buildAwayPlanningRoutes(),
         GoRoute(
           path: '/pc/fostering',
