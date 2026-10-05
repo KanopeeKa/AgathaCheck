@@ -323,11 +323,22 @@ export class VetListPage {
     await this.page.waitForTimeout(500);
   }
 
+  private async openPetsAccessTabIfPresent(): Promise<void> {
+    const tab = this.page.getByRole('tab', {
+      name: /Pets & access|Pets cared for|Animaux/i,
+    });
+    if (await tab.isVisible({ timeout: 3_000 }).catch(() => false)) {
+      await tab.click();
+      await refreshFlutterAccessibility(this.page);
+    }
+  }
+
   async expectVetLinkedPetCount(vetName: string, _count: number): Promise<void> {
     await this.openVetDetail(vetName);
+    await this.openPetsAccessTabIfPresent();
     await expect(
       this.page.getByText(
-        /Related pets|Pets cared for|Animaux concernés|Animaux pris en charge/i,
+        /Related pets|Pets cared for|Pets & access|Animaux concernés|Animaux pris en charge/i,
       ),
     ).toBeVisible({ timeout: 15_000 });
   }
@@ -355,6 +366,7 @@ export class VetListPage {
 
   async expectLinkedPetNames(...names: string[]): Promise<void> {
     await refreshFlutterAccessibility(this.page);
+    await this.openPetsAccessTabIfPresent();
     for (const name of names) {
       await this.page
         .getByRole('button', { name: new RegExp(name, 'i') })
