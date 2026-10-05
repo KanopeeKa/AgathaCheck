@@ -42,9 +42,9 @@ Orchestrate Notifications v2 from **spec rev 2.3.1 on `main`** through **PR7** (
 ## Runtime
 
 ```yaml
-autonomy: active
-current_phase: orchestrate
-last_completed_phase: null
+autonomy: completed
+current_phase: null
+last_completed_phase: orchestrate
 halt_reason: null
 next_action: "roadmap complete"
 artifact_ref:

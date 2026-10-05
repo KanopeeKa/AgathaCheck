@@ -6,7 +6,7 @@
   "approved_at": "2026-10-04T23:00:00Z",
   "approved_by": "GitHub #1571 approve-autonomous + user chat 2026-10-04 standing grant (notifications v2 roadmap)",
   "approved_until": "2026-10-06T23:00:00Z",
-  "autonomy": "active",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "main",
   "control_issue": 1571,
@@ -95,13 +95,11 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "governance",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "merge_commit": null,
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:6ce02d03bd3b29613ce9de806e07953fccc2f66a9b844e301b9675ba9fc7ab3e"
+  "content_hash": "sha256:4739812383dfd725c7f3051deb5114ba22148d851265007d13ac0789ba2c4ffc"
 }
