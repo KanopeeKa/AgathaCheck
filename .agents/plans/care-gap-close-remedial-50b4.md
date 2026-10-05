@@ -51,13 +51,23 @@ Close resolved debt issues, fix stale plan/memory/docs from findings 9.
 
 ```yaml
 autonomy: active
-current_phase: R1
-last_completed_phase: null
+current_phase: null
+last_completed_phase: R5
 halt_reason: null
-next_action: implement R1
+next_action: "plan complete"
 artifact_ref:
-  branch: cursor/care-remedial-r1-occurrence-menus-50b4
+  branch: cursor/care-remedial-r5-bookkeeping-50b4
   plan_path: .agents/plans/care-gap-close-remedial-50b4.md
+  plan_commit: 9c1693a55225a849c5f2468faa45f0831d00f11a
   snapshot_path: .agents/plans/care-gap-close-remedial-50b4.snapshot.json
+  snapshot_commit: 9c1693a55225a849c5f2468faa45f0831d00f11a
 open_prs: []
+merge_commits: {"R1":"6ee50f1fe057e8f3ad7de288decd90c6ea791725","R2":"6ee50f1fe057e8f3ad7de288decd90c6ea791725","R3":"6ee50f1fe057e8f3ad7de288decd90c6ea791725","R4":"6ee50f1fe057e8f3ad7de288decd90c6ea791725","R5":"6ee50f1fe057e8f3ad7de288decd90c6ea791725"}
+debt_issue_refs: []
 ```
+
+## Related
+
+- Parent programme: `care-requirements-gap-close-c1a7` (integration #1527 → main)
+- Control issue: #1646
+- Implementation PR: [#1650](https://github.com/KanopeeKa/AgathaCheck/pull/1650)
