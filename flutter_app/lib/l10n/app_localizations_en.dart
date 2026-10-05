@@ -5438,13 +5438,19 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get carePostponeSheetTitle => 'Pause';
+  String get carePostponeSheetTitle => 'Postpone until';
 
   @override
   String get carePostponeNoEndDate => 'No end date (pause)';
 
   @override
-  String get carePostponeUntilLabel => 'Pause until';
+  String get carePostponeUntilLabel => 'Postpone until';
+
+  @override
+  String get carePostponeConfirmPause => 'Pause';
+
+  @override
+  String get carePostponeConfirmUntil => 'Postpone until';
 
   @override
   String get carePostponePauseConsequence => 'Reminders stop until you resume.';

@@ -20,19 +20,26 @@ Future<void> handleOccurrenceScreenMenuAction(
   switch (action) {
     case OccurrenceScreenMenuAction.postpone:
       final fixed = detail.item.isFixedSchedule;
+      final asOf = detail.item.asOf.date;
       final paused = await showPostponeSheet(
         context,
         ref,
         entryId: entryId,
         isFixedSchedule: fixed,
+        asOf: asOf,
       );
       if (paused == true) await onChanged();
     case OccurrenceScreenMenuAction.planAnother:
+      final asOf = detail.item.asOf.date;
+      final reserved =
+          detail.schedule?.openOccurrences.map((o) => o.date) ??
+          [occurrence.date];
       final added = await showPlanAnotherDateSheet(
         context,
         ref,
         entryId: entryId,
-        initialDate: occurrence.date,
+        asOf: asOf,
+        reservedDates: reserved,
       );
       if (added == true) await onChanged();
     case OccurrenceScreenMenuAction.addNote:

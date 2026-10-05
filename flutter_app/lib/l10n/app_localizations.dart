@@ -9654,7 +9654,7 @@ abstract class AppLocalizations {
   /// No description provided for @carePostponeSheetTitle.
   ///
   /// In en, this message translates to:
-  /// **'Pause'**
+  /// **'Postpone until'**
   String get carePostponeSheetTitle;
 
   /// No description provided for @carePostponeNoEndDate.
@@ -9666,8 +9666,20 @@ abstract class AppLocalizations {
   /// No description provided for @carePostponeUntilLabel.
   ///
   /// In en, this message translates to:
-  /// **'Pause until'**
+  /// **'Postpone until'**
   String get carePostponeUntilLabel;
+
+  /// No description provided for @carePostponeConfirmPause.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get carePostponeConfirmPause;
+
+  /// No description provided for @carePostponeConfirmUntil.
+  ///
+  /// In en, this message translates to:
+  /// **'Postpone until'**
+  String get carePostponeConfirmUntil;
 
   /// No description provided for @carePostponePauseConsequence.
   ///
