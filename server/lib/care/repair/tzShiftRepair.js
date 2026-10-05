@@ -5,6 +5,11 @@
 import { dateToIsoDate } from '../../calendarDate.js';
 import { loadPetHomeTimezone } from '../../petHomeTimezone.js';
 import { isFixedSchedule, nextSeriesSlotAfter, stackWindowStart } from '../schedule/fixedSlots.js';
+import {
+  isCalendarDateOnSeries,
+  resolveSeriesAnchor,
+  seriesStep,
+} from '../schedule/seriesDates.js';
 import { insertCareScheduleEvent } from '../schedule/scheduleEventLedger.js';
 import { withCareItemLock } from '../occurrence/careItemLock.js';
 import {
@@ -168,6 +173,37 @@ export async function repairTzShift(pool, {
             await deleteNotRecordedScheduleOccurrence(db, entry.id, row.id);
           }
         }
+      }
+      const deletedSet = new Set(report.deleted);
+      for (const row of rows) {
+        if (deletedSet.has(row.id)) continue;
+        const seriesDate = dateToIsoDate(row.series_date) || dateToIsoDate(row.scheduled_date);
+        if (!seriesDate || isCalendarDateOnSeries(entry, seriesDate)) continue;
+        if (personActedOn(row)) {
+          report.flagged.push({ id: row.id, reason: 'off_series_person_acted' });
+          continue;
+        }
+        if (row.close_reason !== 'not_recorded' || row.marked_by_user_id) {
+          report.flagged.push({ id: row.id, reason: 'off_series_not_safe' });
+          continue;
+        }
+        if (await hasDependentRows(db, row.id)) {
+          report.flagged.push({ id: row.id, reason: 'off_series_has_dependent_rows' });
+          continue;
+        }
+        report.deleted.push(row.id);
+        deletedSet.add(row.id);
+        if (apply) {
+          await deleteNotRecordedScheduleOccurrence(db, entry.id, row.id);
+        }
+      }
+      const anchor = resolveSeriesAnchor(entry);
+      if (anchor && seriesStep(entry) && !isCalendarDateOnSeries(entry, anchor)) {
+        report.flagged.push({
+          id: entry.id,
+          reason: 'suspect_schedule_anchor_date',
+          value: anchor,
+        });
       }
       const reopenIds = planWronglyClosedReopens({
         entry,
