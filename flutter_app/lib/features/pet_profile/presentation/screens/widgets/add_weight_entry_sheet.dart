@@ -10,9 +10,11 @@ import '../../../../weight_tracking/domain/entities/weight_entry.dart';
 import '../../../../weight_tracking/presentation/providers/weight_providers.dart';
 import '../../controllers/weight_tracking_controller.dart';
 
+@Deprecated('Removed in weight-unify-care W8')
 typedef WeightEntrySaveCallback =
     Future<void> Function(double weightKg, DateTime date, String notes);
 
+@Deprecated('Removed in weight-unify-care W8')
 Future<void> showAddWeightEntrySheet({
   required BuildContext context,
   required String petId,

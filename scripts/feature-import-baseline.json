@@ -40,8 +40,6 @@
     "R1|flutter_app/lib/features/pet_profile/presentation/screens/pet_manage_events_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
     "R1|flutter_app/lib/features/pet_profile/presentation/screens/pet_timeline_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
     "R1|flutter_app/lib/features/pet_profile/presentation/screens/pet_timeline_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
-    "R1|flutter_app/lib/features/pet_profile/presentation/screens/pet_weight_tracking_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R1|flutter_app/lib/features/pet_profile/presentation/screens/pet_weight_tracking_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
     "R1|flutter_app/lib/features/pet_profile/presentation/screens/widgets/manage_events_collection_filter.dart|flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_due_events_screen.dart",
     "R1|flutter_app/lib/features/pet_profile/presentation/screens/widgets/org_events_collection_filter.dart|flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_due_events_screen.dart",
     "R1|flutter_app/lib/features/pet_profile/presentation/widgets/all_care/all_care_list.dart|flutter_app/lib/features/experience/presentation/widgets/pet_care_illustrated_empty_state.dart",
@@ -58,6 +56,8 @@
     "R1|flutter_app/lib/features/sharing/presentation/screens/share_pet_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
     "R1|flutter_app/lib/features/sharing/presentation/screens/share_pet_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
     "R1|flutter_app/lib/features/vet/presentation/screens/vet_list_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
+    "R1|flutter_app/lib/features/weight_tracking/presentation/screens/weight_hub_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
+    "R1|flutter_app/lib/features/weight_tracking/presentation/screens/weight_hub_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
     "R2|flutter_app/lib/core/services/analytics_service.dart|flutter_app/lib/features/auth/data/auth_service.dart",
     "R2|flutter_app/lib/features/care_item/presentation/detail/care_item_absence_section.dart|flutter_app/lib/features/health_tracking/data/models/health_entry_absence_context_model.dart",
     "R2|flutter_app/lib/features/care_item/presentation/detail/care_item_dates_section.dart|flutter_app/lib/features/health_tracking/data/models/health_entry_absence_context_model.dart",
@@ -238,8 +238,6 @@
     "R3|flutter_app/lib/features/pet_profile/presentation/screens/widgets/other_events_section.dart|flutter_app/lib/features/health_tracking/presentation/providers/health_providers.dart",
     "R3|flutter_app/lib/features/pet_profile/presentation/screens/widgets/pet_event_entry_list.dart|flutter_app/lib/features/health_tracking/presentation/widgets/health_entry_status.dart",
     "R3|flutter_app/lib/features/pet_profile/presentation/screens/widgets/pet_event_entry_list.dart|flutter_app/lib/features/health_tracking/presentation/widgets/health_entry_type_labels.dart",
-    "R3|flutter_app/lib/features/pet_profile/presentation/screens/widgets/weight_chart.dart|flutter_app/lib/features/weight_tracking/presentation/providers/weight_providers.dart",
-    "R3|flutter_app/lib/features/pet_profile/presentation/screens/widgets/weight_tracking_section.dart|flutter_app/lib/features/weight_tracking/presentation/providers/weight_providers.dart",
     "R3|flutter_app/lib/features/pet_profile/presentation/widgets/all_care/all_care_inactive_section.dart|flutter_app/lib/features/health_tracking/presentation/widgets/health_entry_status.dart",
     "R3|flutter_app/lib/features/pet_profile/presentation/widgets/all_care/all_care_inactive_section.dart|flutter_app/lib/features/health_tracking/presentation/widgets/pet_event_lifecycle.dart",
     "R3|flutter_app/lib/features/pet_profile/presentation/widgets/all_care/all_care_list.dart|flutter_app/lib/features/health_tracking/presentation/providers/health_providers.dart",
@@ -352,7 +350,8 @@
     "vet->auth",
     "vet->experience",
     "vet->pet_profile",
-    "weight_tracking->auth"
+    "weight_tracking->auth",
+    "weight_tracking->experience"
   ],
   "exceptions": [
     {
@@ -624,6 +623,21 @@
       "identity": "R3|flutter_app/lib/features/pet_care/context/presentation/widgets/away_plan_suggestions_section.dart|flutter_app/lib/features/health_tracking/presentation/controllers/care_schedule_controller.dart",
       "reason": "G.3: away plan reschedule via CareScheduleController",
       "accepted_on": "2026-10-04"
+    },
+    {
+      "identity": "R1|flutter_app/lib/features/weight_tracking/presentation/screens/weight_hub_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
+      "reason": "W6 weight hub relocated from pet_profile; experience shell matches pet_detail_screen pattern (roadmap §6.3)",
+      "accepted_on": "2026-10-05"
+    },
+    {
+      "identity": "R1|flutter_app/lib/features/weight_tracking/presentation/screens/weight_hub_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
+      "reason": "W6 weight hub relocated from pet_profile; experience shell matches pet_detail_screen pattern (roadmap §6.3)",
+      "accepted_on": "2026-10-05"
+    },
+    {
+      "identity": "R4|weight_tracking->experience",
+      "reason": "W6 weight hub relocated from pet_profile; experience shell matches pet_detail_screen pattern (roadmap §6.3)",
+      "accepted_on": "2026-10-05"
     }
   ]
 }

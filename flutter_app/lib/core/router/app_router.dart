@@ -19,7 +19,7 @@ import '../../features/pet_profile/presentation/screens/pet_health_issues_screen
 import '../../features/pet_profile/presentation/screens/pet_manage_events_screen.dart';
 import '../../features/pet_profile/presentation/screens/pet_form_screen.dart';
 import '../../features/pet_profile/presentation/screens/pet_timeline_screen.dart';
-import '../../features/pet_profile/presentation/screens/pet_weight_tracking_screen.dart';
+import '../../features/weight_tracking/weight_tracking.dart';
 import '../../features/pet_profile/presentation/widgets/pet_edit_permission_guard.dart';
 import '../../features/experience/presentation/screens/pet_care/pet_care_desk_preview_screen.dart';
 import '../../features/pet_care/context/presentation/screens/absence_invite_landing_screen.dart';
@@ -287,7 +287,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'petWeightTracking',
         builder: (context, state) {
           final petId = state.pathParameters['petId']!;
-          return PetWeightTrackingScreen(petId: petId);
+          return WeightHubScreen(petId: petId);
         },
       ),
       GoRoute(
