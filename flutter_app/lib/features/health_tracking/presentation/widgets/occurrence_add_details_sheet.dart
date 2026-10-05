@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../providers/care_provider_contacts_provider.dart';
 import '../../domain/entities/health_entry.dart';
 import '../controllers/health_entry_form_constants.dart';
 import '../controllers/care_schedule_controller.dart';
@@ -138,6 +139,8 @@ class _OccurrenceAddDetailsSheetState
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
+    final providerContactsAsync = ref.watch(careProviderContactOptionsProvider);
+    final providerContacts = providerContactsAsync.valueOrNull ?? const [];
     return Padding(
       padding: EdgeInsets.only(
         left: 16,
@@ -169,6 +172,9 @@ class _OccurrenceAddDetailsSheetState
                 _providerTypedName = typedName;
               });
             },
+            contacts: providerContacts,
+            contactsLoading: providerContactsAsync.isLoading,
+            contactsError: providerContactsAsync.hasError,
           ),
           const SizedBox(height: 12),
           OutlinedButton.icon(

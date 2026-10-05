@@ -3,8 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
-import 'package:pet_profile_app/features/pet_care/pet_care.dart';
-import '../../../pet_profile/pet_profile.dart';
+import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 import '../../data/care_intelligence_exception.dart';
 import '../../domain/entities/care_recommendation.dart';
 import '../providers/care_recommendations_provider.dart';
@@ -41,7 +40,6 @@ class CareSuggestionRespondActions {
           .respond(petId: petId, recommendationId: apiId, action: action);
       ref.invalidate(petCareRecommendationsProvider(petId));
       ref.invalidate(petProfileCareSuggestionProvider(petId));
-      ref.invalidate(petProfileCareMilestoneProvider(petId));
       ref.invalidate(healthEntriesNotifierProvider);
 
       if (!context.mounted) return;

@@ -1,9 +1,11 @@
 import '../../../../core/utils/calendar_date.dart';
 import '../../../care_item/care_item.dart';
-import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import '../../../pet_profile/pet_profile.dart';
 import '../care_temporal_group.dart';
+import '../../domain/entities/health_entry.dart';
+import '../../domain/entities/health_occurrence.dart';
 import '../models/care_temporal_buckets.dart';
+import '../occurrence_missed.dart';
 
 /// Single authority for care temporal grouping across profile, All care, and dashboard.
 ///

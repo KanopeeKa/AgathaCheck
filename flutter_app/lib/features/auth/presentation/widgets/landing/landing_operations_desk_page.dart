@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../../core/theme/app_color_tokens.dart';
 import '../../../../../l10n/app_localizations.dart';
-import 'package:pet_profile_app/features/about/about.dart';
+import 'package:pet_profile_app/core/widgets/legal_footer_links.dart';
 import 'landing_branding_section.dart';
 
 /// Responsive public-auth composition. Authentication state is intentionally

@@ -1,6 +1,9 @@
 /// Public API for health tracking (entries, issues, documents).
 library;
 
+export 'domain/care_temporal_group.dart';
+export 'domain/models/care_temporal_buckets.dart';
+export 'domain/services/care_temporal_grouping_service.dart';
 export 'domain/entities/health_entry.dart';
 export 'domain/entities/health_entry_absence_context.dart';
 export 'domain/entities/health_history_entry.dart';
@@ -18,6 +21,8 @@ export 'presentation/controllers/health_entry_form_constants.dart';
 export 'presentation/providers/care_item_absence_providers.dart';
 export 'presentation/providers/care_item_absence_resolution_sync.dart';
 export 'presentation/providers/care_item_detail_refresh.dart';
+export 'presentation/providers/care_provider_contacts_provider.dart';
+export 'presentation/widgets/care_provider_field.dart';
 export 'presentation/providers/health_issue_providers.dart';
 export 'presentation/providers/occurrence_providers.dart';
 export 'presentation/utils/health_document_picker.dart';
@@ -49,10 +54,8 @@ export 'domain/occurrence_missed.dart';
 export 'domain/entities/health_issue.dart';
 export 'domain/entities/health_issue_document.dart';
 export 'presentation/widgets/care_family/care_family_icon.dart';
-export 'presentation/widgets/care_family/care_establishment_helpers.dart';
 export 'domain/services/care_family/care_family_inference.dart';
 export 'domain/services/care_family/care_family_write.dart';
 export 'domain/services/care_family/care_entry_filter.dart';
-export 'domain/services/care_family/care_status_service.dart';
 export 'presentation/controllers/health_issues_controller.dart';
 export 'presentation/controllers/health_events_controller.dart';

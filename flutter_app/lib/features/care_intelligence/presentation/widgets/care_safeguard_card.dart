@@ -6,7 +6,6 @@ import '../../../../l10n/app_localizations.dart';
 import '../../data/care_intelligence_exception.dart';
 import '../../domain/entities/care_safeguard.dart';
 import '../providers/care_recommendations_provider.dart';
-import 'package:pet_profile_app/features/pet_care/pet_care.dart';
 import 'cim_evidence_view.dart';
 
 /// Calm info-blue safeguard card (Phase E).
@@ -42,7 +41,6 @@ class _CareSafeguardCardState extends ConsumerState<CareSafeguardCard> {
       ref.invalidate(petCareSafeguardsProvider(widget.petId));
       ref.invalidate(petProfileCareSafeguardProvider(widget.petId));
       ref.invalidate(petProfileCareSuggestionProvider(widget.petId));
-      ref.invalidate(petProfileCareMilestoneProvider(widget.petId));
     } catch (error) {
       if (!mounted) return;
       final l = AppLocalizations.of(context)!;

@@ -1,4 +1,4 @@
-import 'package:pet_profile_app/features/pet_care/pet_care.dart';
+import 'absence_planned_care_wire.dart';
 
 class HealthEntryAbsenceContext {
   const HealthEntryAbsenceContext({

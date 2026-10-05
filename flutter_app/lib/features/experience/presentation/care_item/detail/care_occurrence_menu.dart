@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../../l10n/app_localizations.dart';
-import '../../domain/care_occurrence.dart';
+import 'package:pet_profile_app/l10n/app_localizations.dart';
+import 'package:pet_profile_app/features/care_item/care_item.dart';
 
 enum CareOccurrenceMenuAction { skip, postpone, planAnother, addNote }
 

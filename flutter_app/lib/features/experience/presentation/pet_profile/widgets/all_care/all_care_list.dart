@@ -7,7 +7,6 @@ import 'package:pet_profile_app/features/care_item/care_item.dart';
 import 'package:pet_profile_app/core/widgets/pet_care_illustrated_empty_state.dart';
 import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import 'package:pet_profile_app/features/pet_care/pet_care.dart';
-import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import '../../widgets/pet_list/home_event_actions.dart';
 import 'all_care_inactive_section.dart';
 

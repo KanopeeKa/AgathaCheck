@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:pet_profile_app/features/care_intelligence/care_intelligence.dart';
-import '../../../pet_profile/pet_profile.dart';
-import '../providers/pet_care_presentation_providers.dart';
-import 'care_milestone_moment_card.dart';
+import 'package:pet_profile_app/features/pet_care/pet_care.dart';
+import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
+import 'pet_care_dashboard_contextual_providers.dart';
 
 /// Dashboard contextual card slot (max one item across pets).
 class PetCareDashboardContextualSlotSection extends ConsumerWidget {
@@ -58,7 +58,6 @@ class PetCareDashboardContextualSlotSection extends ConsumerWidget {
     );
   }
 
-  String _petName(List<Pet> pets, String petId) {
-    return pets.where((pet) => pet.id == petId).firstOrNull?.name ?? '';
-  }
+  String _petName(List<Pet> pets, String petId) =>
+      pets.where((p) => p.id == petId).firstOrNull?.name ?? '';
 }

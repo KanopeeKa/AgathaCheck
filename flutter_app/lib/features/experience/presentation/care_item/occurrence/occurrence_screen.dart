@@ -3,13 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-import '../../../../core/providers/analytics_providers.dart';
-import '../../../../core/router/shell_return_navigation.dart';
-import '../../../../l10n/app_localizations.dart';
-import '../../application/care_command_outcome.dart';
-import '../../application/care_item_providers.dart';
-import '../../domain/occurrence_detail.dart';
-import '../../domain/occurrence_display.dart';
+import 'package:pet_profile_app/core/providers/analytics_providers.dart';
+import 'package:pet_profile_app/core/router/shell_return_navigation.dart';
+import 'package:pet_profile_app/l10n/app_localizations.dart';
+import 'package:pet_profile_app/features/care_item/care_item.dart';
 import 'package:pet_profile_app/features/pet_care/pet_care.dart';
 import 'occurrence_blocks.dart';
 

@@ -7,7 +7,11 @@ const path = require('node:path');
 const { spawnSync } = require('node:child_process');
 const { test } = require('node:test');
 
-const { stronglyConnected } = require('./check_feature_imports');
+const {
+  stronglyConnected,
+  featureCycleViolations,
+  layerOrderViolation,
+} = require('./check_feature_imports');
 
 const SCRIPT = path.join(__dirname, 'check_feature_imports.js');
 const FIXTURE = path.join(__dirname, 'test/fixtures/feature-imports/base');
@@ -58,15 +62,13 @@ const LIB = 'flutter_app/lib/features';
 test('init baselines existing violations by identity and passes', () => {
   const root = initRepo();
   const data = baseline(root);
-  assert.ok(data.violations.includes(
-    `R1|${LIB}/pet_profile/presentation/profile.dart|${LIB}/experience/presentation/shell.dart`,
-  ));
-  assert.ok(data.edges.includes('pet_profile->experience'));
   assert.equal(run(root).code, 0);
 });
 
 test('R1: a domain feature importing experience fails', () => {
   const root = initRepo();
+  write(root, `${LIB}/pet_profile/presentation/profile.dart`,
+    "import 'package:fixture_app/features/experience/presentation/shell.dart';\n");
   write(root, `${LIB}/vet/presentation/vet_card.dart`,
     "import 'package:fixture_app/features/experience/presentation/shell.dart';\n");
   const res = run(root);
@@ -76,6 +78,7 @@ test('R1: a domain feature importing experience fails', () => {
 
 test('R2: a relative import of another feature data layer fails', () => {
   const root = initRepo();
+  write(root, `${LIB}/health_tracking/domain/entry.dart`, "import '../../vet/data/vet_store.dart';\n");
   write(root, `${LIB}/pet_profile/domain/reader.dart`, "import '../../vet/data/vet_store.dart';\n");
   const res = run(root);
   assert.equal(res.code, 1);
@@ -108,9 +111,12 @@ test('R4: a new feature edge fails even without a layer violation', () => {
 
 test('swapping one baselined violation for a different one still fails', () => {
   const root = initRepo();
-  remove(root, `${LIB}/pet_profile/presentation/profile.dart`);
+  write(root, `${LIB}/pet_profile/presentation/profile.dart`,
+    "import 'package:fixture_app/features/experience/presentation/shell.dart';\n");
+  assert.equal(run(root, '--accept-new', 'fixture R1').code, 0);
   write(root, `${LIB}/pet_profile/presentation/other.dart`,
     "import 'package:fixture_app/features/experience/presentation/shell.dart';\n");
+  remove(root, `${LIB}/pet_profile/presentation/profile.dart`);
   const res = run(root);
   assert.equal(res.code, 1);
   assert.match(res.out, /NEW R1\|flutter_app\/lib\/features\/pet_profile\/presentation\/other\.dart/);
@@ -119,13 +125,16 @@ test('swapping one baselined violation for a different one still fails', () => {
 
 test('stale entries fail until --update-baseline shrinks the baseline', () => {
   const root = initRepo();
-  const before = baseline(root).violations.length;
-  write(root, `${LIB}/health_tracking/domain/entry.dart`, '// no cross-feature imports\n');
+  write(root, `${LIB}/vet/domain/vet.dart`,
+    "import 'package:fixture_app/features/pet_profile/domain/pet.dart';\n");
+  assert.equal(run(root, '--accept-new', 'fixture edge').code, 0);
+  const before = baseline(root).edges.length;
+  write(root, `${LIB}/vet/domain/vet.dart`, '// resolved\n');
   const stale = run(root);
   assert.equal(stale.code, 1);
-  assert.match(stale.out, /RESOLVED R2\|flutter_app\/lib\/features\/health_tracking\/domain\/entry\.dart/);
+  assert.match(stale.out, /RESOLVED R4\|vet->pet_profile/);
   assert.equal(run(root, '--update-baseline').code, 0);
-  assert.equal(baseline(root).violations.length, before - 2);
+  assert.equal(baseline(root).edges.length, before - 1);
   assert.equal(run(root).code, 0);
 });
 
@@ -188,12 +197,45 @@ test('R6: cross-feature import must target the feature entrypoint', () => {
 
 test('R6: entrypoint import replaces baselined data-layer cross-import', () => {
   const root = initRepo();
-  write(root, `${LIB}/health_tracking/domain/entry.dart`, "import '../../vet/vet.dart';\n");
+  write(root, `${LIB}/health_tracking/domain/reader.dart`,
+    "import '../../pet_profile/data/pet_store.dart';\n");
+  assert.equal(run(root, '--accept-new', 'fixture R2').code, 0);
+  write(root, `${LIB}/health_tracking/domain/reader.dart`,
+    "import '../../pet_profile/pet_profile.dart';\n");
   const stale = run(root);
   assert.equal(stale.code, 1);
-  assert.match(stale.out, /RESOLVED R6\|flutter_app\/lib\/features\/health_tracking\/domain\/entry\.dart/);
+  assert.match(stale.out, /RESOLVED R2\|flutter_app\/lib\/features\/health_tracking\/domain\/reader\.dart/);
   assert.equal(run(root, '--update-baseline').code, 0);
   assert.equal(run(root).code, 0);
+});
+
+test('R5: two-feature cycle is reported and cannot be accepted', () => {
+  const root = initRepo();
+  write(root, `${LIB}/vet/vet.dart`,
+    "import 'package:fixture_app/features/pet_profile/pet_profile.dart';\n");
+  write(root, `${LIB}/pet_profile/pet_profile.dart`,
+    "export 'domain/pet.dart';\nimport 'package:fixture_app/features/vet/vet.dart';\n");
+  const res = run(root);
+  assert.equal(res.code, 1);
+  assert.match(res.out, /NEW R5\|scc\|pet_profile,vet/);
+  const accept = run(root, '--accept-new', 'nope');
+  assert.equal(accept.code, 1);
+  assert.match(accept.out, /structural violations must be fixed/);
+});
+
+test('R8: up-stack feature edge fails layer order', () => {
+  const root = initRepo();
+  write(root, `${LIB}/care_taxonomy/domain/tax.dart`,
+    "import 'package:fixture_app/features/pet_profile/pet_profile.dart';\n");
+  const res = run(root);
+  assert.equal(res.code, 1);
+  assert.match(res.out, /NEW R8\|care_taxonomy->pet_profile/);
+});
+
+test('stronglyConnected and layerOrderViolation helpers', () => {
+  assert.equal(layerOrderViolation('care_taxonomy', 'pet_profile'), true);
+  assert.equal(layerOrderViolation('pet_profile', 'care_taxonomy'), false);
+  assert.deepEqual(featureCycleViolations(['a->b', 'b->a']), ['R5|scc|a,b']);
 });
 
 test('R7: entrypoint must not export data layer', () => {

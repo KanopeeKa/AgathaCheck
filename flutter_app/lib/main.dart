@@ -21,6 +21,7 @@ import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 import 'package:pet_profile_app/features/subscription/subscription.dart';
 import 'package:pet_profile_app/features/weight_tracking/weight_tracking.dart';
+import 'package:pet_profile_app/features/people/people.dart';
 
 /// Global messenger so session-expiry notices can be shown from anywhere,
 /// independent of the currently routed screen.
@@ -73,6 +74,20 @@ Future<void> main() async {
                 return null;
               },
         ),
+        careProviderContactOptionsProvider.overrideWith((ref) {
+          final contactsAsync = ref.watch(peopleContactsProvider);
+          return contactsAsync.when(
+            data: (contacts) => AsyncData(
+              contacts
+                  .map(
+                    (c) => CareProviderContactOption(id: c.id, name: c.name),
+                  )
+                  .toList(growable: false),
+            ),
+            loading: () => const AsyncLoading(),
+            error: (e, st) => AsyncError(e, st),
+          );
+        }),
       ],
       child: const PetProfileApp(),
     ),

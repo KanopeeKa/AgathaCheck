@@ -18,6 +18,9 @@ export 'presentation/widgets/experience_shell_scaffold.dart';
 export 'presentation/screens/pet_care/pet_care_desk_preview_screen.dart';
 export 'presentation/screens/pet_care/add_event_type_picker_sheet.dart';
 export 'presentation/screens/pet_care/pet_care_all_pets_screen.dart';
+export 'presentation/care_item/detail/care_item_detail_screen.dart';
+export 'presentation/screens/pet_care/pet_care_dashboard_contextual_slot_section.dart';
+export 'presentation/pet_profile/widgets/pet_profile_care_suggestion_section.dart';
 export 'presentation/screens/pet_care/pet_care_bulk_share_select_screen.dart';
 // D21 — composed pet profile surfaces
 export 'presentation/pet_profile/screens/pet_list_screen.dart';

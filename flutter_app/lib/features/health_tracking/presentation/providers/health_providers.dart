@@ -11,7 +11,7 @@ import '../../domain/usecases/delete_health_entry.dart';
 import '../../domain/usecases/get_entry_history.dart';
 import '../../domain/usecases/get_health_entries.dart';
 import '../../domain/usecases/update_health_entry.dart';
-import '../../../pet_care/pet_care.dart';
+import '../../domain/services/care_temporal_grouping_service.dart';
 
 export '../../application/health_data_providers.dart';
 export '../../application/health_documents_providers.dart';

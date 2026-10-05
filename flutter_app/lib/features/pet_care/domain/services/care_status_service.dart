@@ -1,6 +1,7 @@
 import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
-import 'package:pet_profile_app/features/pet_care/pet_care.dart';
+
+import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 
 /// Deterministic pet-level Care Status from tracked health entries.
 class CareStatusService {

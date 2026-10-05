@@ -7,20 +7,7 @@ import '../../domain/entities/pet_share_access.dart';
 import '../../domain/entities/share_invite.dart';
 import 'sharing_providers.dart';
 
-/// Route extra for bulk share: pet IDs or [SharePetRouteArgs].
-class SharePetRouteArgs {
-  const SharePetRouteArgs({
-    required this.petIds,
-    this.initialPetId,
-    this.prefillEmail,
-    this.contactId,
-  });
-
-  final List<String> petIds;
-  final String? initialPetId;
-  final String? prefillEmail;
-  final String? contactId;
-}
+import 'package:pet_profile_app/core/router/share_pet_route_args.dart';
 
 class SharePetState {
   const SharePetState({

@@ -10,6 +10,7 @@ import '../screens/pet_care/pet_care_my_pets_section.dart';
 import '../../../people/people.dart';
 import '../screens/pet_care/pet_care_planned_absence_section.dart';
 import '../screens/pet_care/pet_care_upcoming_events_section.dart';
+import '../screens/pet_care/pet_care_dashboard_contextual_slot_section.dart';
 import '../../../pet_care/pet_care.dart';
 import 'pet_care_operations_desk_layout.dart';
 
