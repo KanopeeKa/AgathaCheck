@@ -141,9 +141,7 @@ class PersonEditDangerZone extends ConsumerWidget {
       await ref.read(peopleCommandsProvider).deleteContact(detail.id);
       if (context.mounted) context.go('/pc/people');
     } on PeopleApiException catch (e) {
-      if (e.statusCode == 409 &&
-          e.usages.isNotEmpty &&
-          context.mounted) {
+      if (e.statusCode == 409 && e.usages.isNotEmpty && context.mounted) {
         await showContactUsagesDialog(
           context,
           usages: e.usages,

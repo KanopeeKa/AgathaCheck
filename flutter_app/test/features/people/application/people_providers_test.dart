@@ -108,22 +108,19 @@ class FakePeopleRepository implements PeopleRepository {
     required String petId,
     required RelationshipKind slotKind,
     required String? contactId,
-  }) async =>
-      const [];
+  }) async => const [];
 
   @override
   Future<List<PetRelationship>> removePetRelationship({
     required String petId,
     required String relationshipId,
-  }) async =>
-      const [];
+  }) async => const [];
 
   @override
   Future<List<PetRelationship>> replacePetRelationships(
     String petId,
     List<Map<String, dynamic>> relationships,
-  ) async =>
-      const [];
+  ) async => const [];
 
   @override
   Future<String?> contactIdForLegacyVet(String vetId) async => null;
@@ -143,11 +140,10 @@ class FakeHouseholdsRepository implements HouseholdsRepository {
   Future<HouseholdMemberRemovalPreview> fetchMemberRemovalPreview({
     required String householdId,
     required String memberUserId,
-  }) async =>
-      const HouseholdMemberRemovalPreview(
-        remainingAccess: [],
-        requiresSuccessor: false,
-      );
+  }) async => const HouseholdMemberRemovalPreview(
+    remainingAccess: [],
+    requiresSuccessor: false,
+  );
 
   @override
   Future<void> removeHouseholdMember({

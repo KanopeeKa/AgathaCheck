@@ -56,9 +56,8 @@ RouteBase buildPeopleHubShellRoute() {
               GoRoute(
                 path: 'edit',
                 name: 'petCarePeopleEdit',
-                builder: (context, state) => PersonEditPage(
-                  personId: state.pathParameters['personId']!,
-                ),
+                builder: (context, state) =>
+                    PersonEditPage(personId: state.pathParameters['personId']!),
               ),
             ],
           ),
