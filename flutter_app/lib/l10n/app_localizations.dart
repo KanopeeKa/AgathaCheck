@@ -1202,6 +1202,18 @@ abstract class AppLocalizations {
   /// **'Couldn\'t check for a due weigh-in.'**
   String get weightCheckFailed;
 
+  /// No description provided for @weightCheckFailedWontCount.
+  ///
+  /// In en, this message translates to:
+  /// **'You can still save this weight. It won\'t count as a weigh-in unless you use Count as a weigh-in later.'**
+  String get weightCheckFailedWontCount;
+
+  /// No description provided for @weightCheckTimedOut.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t confirm a due weigh-in in time. You can save this weight; it won\'t count as a weigh-in unless you turn on Count as.'**
+  String get weightCheckTimedOut;
+
   /// No description provided for @weightCheckRetry.
   ///
   /// In en, this message translates to:

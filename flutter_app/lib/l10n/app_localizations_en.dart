@@ -645,6 +645,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get weightCheckFailed => 'Couldn\'t check for a due weigh-in.';
 
   @override
+  String get weightCheckFailedWontCount =>
+      'You can still save this weight. It won\'t count as a weigh-in unless you use Count as a weigh-in later.';
+
+  @override
+  String get weightCheckTimedOut =>
+      'We couldn\'t confirm a due weigh-in in time. You can save this weight; it won\'t count as a weigh-in unless you turn on Count as.';
+
+  @override
   String get weightCheckRetry => 'Retry';
 
   @override
