@@ -1,6 +1,10 @@
 import { describe, expect, it } from '@jest/globals';
 
-import { planWronglyClosedReopens, pickKeeper } from '../../lib/care/repair/tzShiftRepair.js';
+import {
+  planWronglyClosedReopens,
+  pickKeeper,
+  repairTodayIsoForZone,
+} from '../../lib/care/repair/tzShiftRepair.js';
 
 const dailyEntry = {
   care_planning: 'planned',
@@ -22,6 +26,19 @@ function row(id, overrides = {}) {
     ...overrides,
   };
 }
+
+describe('repairTodayIsoForZone', () => {
+  it('uses pet home calendar day, not UTC midnight', () => {
+    const instant = new Date('2026-06-01T22:30:00.000Z');
+    expect(repairTodayIsoForZone('Europe/Paris', { instant })).toBe('2026-06-02');
+    expect(repairTodayIsoForZone('UTC', { instant })).toBe('2026-06-01');
+  });
+
+  it('honours --as-of-date override', () => {
+    expect(repairTodayIsoForZone('Europe/Paris', { overrideTodayIso: '2026-09-15' }))
+      .toBe('2026-09-15');
+  });
+});
 
 describe('planWronglyClosedReopens (D2)', () => {
   it('does not reopen rows slated for D1 deletion', () => {

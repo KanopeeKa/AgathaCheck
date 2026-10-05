@@ -5,6 +5,11 @@
 import { dateToIsoDate } from '../../calendarDate.js';
 import { loadPetHomeTimezone } from '../../petHomeTimezone.js';
 import { isFixedSchedule, nextSeriesSlotAfter, stackWindowStart } from '../schedule/fixedSlots.js';
+import {
+  isCalendarDateOnSeries,
+  resolveSeriesAnchor,
+  seriesStep,
+} from '../schedule/seriesDates.js';
 import { insertCareScheduleEvent } from '../schedule/scheduleEventLedger.js';
 import { withCareItemLock } from '../occurrence/careItemLock.js';
 import {
@@ -93,11 +98,26 @@ async function hasDependentRows(db, occurrenceId) {
 }
 
 /**
- * @param {import('pg').Pool} pool
- * @param {{ apply?: boolean, todayIso?: string }} [options]
+ * Calendar "today" for repair decisions (pet home zone, not UTC).
+ *
+ * @param {string} timeZone IANA zone
+ * @param {{ overrideTodayIso?: string|null, instant?: Date }} [options]
+ * @returns {string}
  */
-export async function repairTzShift(pool, { apply = false, todayIso = null } = {}) {
-  const today = todayIso || new Date().toISOString().slice(0, 10);
+export function repairTodayIsoForZone(timeZone, { overrideTodayIso = null, instant = new Date() } = {}) {
+  if (overrideTodayIso) return overrideTodayIso;
+  return careAsOfForZone(timeZone, null, instant).todayIso;
+}
+
+/**
+ * @param {import('pg').Pool} pool
+ * @param {{ apply?: boolean, todayIso?: string|null, asOfInstant?: Date }} [options]
+ */
+export async function repairTzShift(pool, {
+  apply = false,
+  todayIso: todayIsoOverride = null,
+  asOfInstant = new Date(),
+} = {}) {
   const entries = await pool.query(
     `SELECT * FROM health_entries
      WHERE COALESCE(care_planning, 'planned') <> 'unplanned'
@@ -114,6 +134,13 @@ export async function repairTzShift(pool, { apply = false, todayIso = null } = {
       ledgerTrimmed: 0,
     };
     const run = async (db) => {
+      const zone = await loadPetHomeTimezone(db, entry.pet_id);
+      const today = repairTodayIsoForZone(zone, {
+        overrideTodayIso: todayIsoOverride,
+        instant: asOfInstant,
+      });
+      report.todayIso = today;
+      report.timeZone = zone;
       const rows = (await db.query(
         `SELECT * FROM health_occurrences WHERE health_entry_id = $1 AND origin = 'schedule'`,
         [entry.id],
@@ -147,6 +174,37 @@ export async function repairTzShift(pool, { apply = false, todayIso = null } = {
           }
         }
       }
+      const deletedSet = new Set(report.deleted);
+      for (const row of rows) {
+        if (deletedSet.has(row.id)) continue;
+        const seriesDate = dateToIsoDate(row.series_date) || dateToIsoDate(row.scheduled_date);
+        if (!seriesDate || isCalendarDateOnSeries(entry, seriesDate)) continue;
+        if (personActedOn(row)) {
+          report.flagged.push({ id: row.id, reason: 'off_series_person_acted' });
+          continue;
+        }
+        if (row.close_reason !== 'not_recorded' || row.marked_by_user_id) {
+          report.flagged.push({ id: row.id, reason: 'off_series_not_safe' });
+          continue;
+        }
+        if (await hasDependentRows(db, row.id)) {
+          report.flagged.push({ id: row.id, reason: 'off_series_has_dependent_rows' });
+          continue;
+        }
+        report.deleted.push(row.id);
+        deletedSet.add(row.id);
+        if (apply) {
+          await deleteNotRecordedScheduleOccurrence(db, entry.id, row.id);
+        }
+      }
+      const anchor = resolveSeriesAnchor(entry);
+      if (anchor && seriesStep(entry) && !isCalendarDateOnSeries(entry, anchor)) {
+        report.flagged.push({
+          id: entry.id,
+          reason: 'suspect_schedule_anchor_date',
+          value: anchor,
+        });
+      }
       const reopenIds = planWronglyClosedReopens({
         entry,
         rows,
@@ -179,8 +237,7 @@ export async function repairTzShift(pool, { apply = false, todayIso = null } = {
             );
           }
         }
-        const zone = await loadPetHomeTimezone(db, entry.pet_id);
-        const asOf = careAsOfForZone(zone, null, new Date());
+        const asOf = careAsOfForZone(zone, null, asOfInstant);
         asOf.todayIso = today;
         await syncOpenOccurrences(db, entry, asOf);
         await insertCareScheduleEvent(db, {
