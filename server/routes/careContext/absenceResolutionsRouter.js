@@ -1,4 +1,4 @@
-import { publicError } from '../../config/security.js';
+import { asyncHandler } from '../../lib/http/asyncHandler.js';
 import { dateToIsoDate, todayCalendarIso } from '../../lib/calendarDate.js';
 import { loadAwayPlanProjection } from '../../lib/care/awayPlan/index.js';
 import { buildAbsenceCareView } from '../../lib/care/absence/buildAbsenceCareView.js';
@@ -45,7 +45,7 @@ async function isCarerCandidate(pool, petId, carerUserId) {
  * }} deps
  */
 export function registerAbsenceResolutionsRoutes(router, pool, deps) {
-  router.get('/:id/resolutions', async (req, res) => {
+  router.get('/:id/resolutions', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
@@ -54,11 +54,11 @@ export function registerAbsenceResolutionsRoutes(router, pool, deps) {
       const resolutions = await listResolutionsForAbsence(pool, row.id);
       res.json({ resolutions });
     } catch (err) {
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 
-  router.patch('/:id/resolutions', async (req, res) => {
+  router.patch('/:id/resolutions', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     const body = req.body || {};
@@ -175,7 +175,7 @@ export function registerAbsenceResolutionsRoutes(router, pool, deps) {
 
       res.json({ resolutions: upserted });
     } catch (err) {
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 }

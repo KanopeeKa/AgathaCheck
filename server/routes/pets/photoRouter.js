@@ -1,9 +1,9 @@
+import { asyncHandler } from '../../lib/http/asyncHandler.js';
 import fs from 'fs';
 import path from 'path';
 import multer from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 
-import { publicError } from '../../config/security.js';
 import { logAuditEventSafe } from '../../lib/audit.js';
 import { recordPetActivityForPet } from '../../lib/petActivity.js';
 import { hasPetCapability, PET_CAPABILITIES } from '../../lib/petCapabilityPolicy.js';
@@ -82,7 +82,7 @@ function handlePetPhotoUpload(req, res, next) {
 }
 
 export function registerPhotoRoutes(router, pool) {
-  router.post('/:id/photo', handlePetPhotoUpload, async (req, res) => {
+  router.post('/:id/photo', handlePetPhotoUpload, asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     const { id } = req.params;
@@ -127,9 +127,9 @@ export function registerPhotoRoutes(router, pool) {
       });
     } catch (err) {
       if (photoPath) removePetPhotoFromDisk(photoPath);
-      res.status(500).json({
-        error: publicError(err, 'Photo upload failed', `Photo upload failed: ${err.message}`),
-      });
+      err.exposeProdMessage = 'Photo upload failed';
+      err.exposeDevMessage = `Photo upload failed: ${err.message}`;
+      throw err;
     }
-  });
+  }));
 }

@@ -1,4 +1,4 @@
-import { publicError } from '../../config/security.js';
+import { asyncHandler } from '../../lib/http/asyncHandler.js';
 import { userCanManageProfile } from '../../lib/petAccess.js';
 import { RELATIONSHIP_KINDS } from '../../lib/people/constants.js';
 import { asPeopleError } from '../../lib/people/errors.js';
@@ -40,7 +40,7 @@ function normalizeRelationships(body) {
 }
 
 export function registerPeopleRelationshipsRoutes(router, pool) {
-  router.get('/:petId/people-relationships', async (req, res) => {
+  router.get('/:petId/people-relationships', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     const { petId } = req.params;
@@ -52,11 +52,11 @@ export function registerPeopleRelationshipsRoutes(router, pool) {
       res.json(rows);
     } catch (err) {
       if (sendPeopleError(res, err)) return;
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 
-  router.put('/:petId/people-relationships/slots/:kind', async (req, res) => {
+  router.put('/:petId/people-relationships/slots/:kind', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     const { petId, kind } = req.params;
@@ -69,11 +69,11 @@ export function registerPeopleRelationshipsRoutes(router, pool) {
       res.json(rows);
     } catch (err) {
       if (sendPeopleError(res, err)) return;
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 
-  router.post('/:petId/people-relationships', async (req, res) => {
+  router.post('/:petId/people-relationships', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     const { petId } = req.params;
@@ -85,11 +85,11 @@ export function registerPeopleRelationshipsRoutes(router, pool) {
       res.status(201).json(rows);
     } catch (err) {
       if (sendPeopleError(res, err)) return;
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 
-  router.delete('/:petId/people-relationships/:relationshipId', async (req, res) => {
+  router.delete('/:petId/people-relationships/:relationshipId', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     const { petId, relationshipId } = req.params;
@@ -101,11 +101,11 @@ export function registerPeopleRelationshipsRoutes(router, pool) {
       res.json(rows);
     } catch (err) {
       if (sendPeopleError(res, err)) return;
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 
-  router.put('/:petId/people-relationships', async (req, res) => {
+  router.put('/:petId/people-relationships', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     const { petId } = req.params;
@@ -120,7 +120,7 @@ export function registerPeopleRelationshipsRoutes(router, pool) {
       res.json(rows);
     } catch (err) {
       if (sendPeopleError(res, err)) return;
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 }
