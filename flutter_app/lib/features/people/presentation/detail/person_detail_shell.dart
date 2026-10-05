@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../experience/domain/entities/app_experience.dart';
-import '../../../experience/presentation/widgets/experience_shell_scaffold.dart';
+import 'package:pet_profile_app/core/experience/app_experience.dart';
+import 'package:pet_profile_app/core/router/experience_shell_scaffold.dart';
 
 class PersonDetailShell extends StatelessWidget {
   const PersonDetailShell({

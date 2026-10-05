@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:pet_profile_app/features/health_tracking/presentation/widgets/care_event_row.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/screens/widgets/manage_events_filters.dart';
 
 import 'pet_care_events_test_helpers.dart';

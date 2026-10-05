@@ -10,9 +10,7 @@ import '../../../core/providers/shared_preferences_provider.dart';
 import '../data/auth_repository_impl.dart';
 import '../data/auth_service.dart';
 import '../data/token_store.dart';
-import '../domain/entities/auth_user.dart';
 import '../domain/repositories/auth_repository.dart';
-import '../domain/repositories/session_store.dart';
 
 final authServiceProvider = Provider<AuthService>((ref) {
   final baseUrl = ref.watch(apiBaseUrlProvider);

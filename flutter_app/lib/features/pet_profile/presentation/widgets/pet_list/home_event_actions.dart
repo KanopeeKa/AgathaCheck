@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../core/router/shell_return_navigation.dart';
-import '../../../../health_tracking/domain/entities/health_entry.dart';
+import '../../../../health_tracking/health_tracking.dart';
 
 /// Shared navigation helpers for due event cards.
 class HomeEventActions {

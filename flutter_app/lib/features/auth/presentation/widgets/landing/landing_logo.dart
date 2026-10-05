@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../core/widgets/branded_logo.dart';
-import '../../../../../features/experience/domain/entities/app_experience.dart';
+import 'package:pet_profile_app/core/experience/app_experience.dart';
 
 Widget buildLandingLogo(ThemeData theme, {required double size}) {
   return BrandedLogo(

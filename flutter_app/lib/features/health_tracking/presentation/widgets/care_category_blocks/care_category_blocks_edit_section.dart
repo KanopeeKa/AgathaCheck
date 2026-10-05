@@ -3,9 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../core/widgets/form/app_form_labeled_field.dart';
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../pet_profile/domain/entities/care_family.dart';
-import '../../../../pet_profile/domain/entities/pet.dart';
-import '../../../../pet_profile/presentation/providers/pet_providers.dart';
+import '../../../../pet_profile/pet_profile.dart';
 import '../../../domain/entities/care_item_blocks.dart';
 import 'collapsible_care_block_tile.dart';
 

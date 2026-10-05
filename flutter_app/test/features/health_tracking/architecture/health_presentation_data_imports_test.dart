@@ -18,7 +18,6 @@ void main() {
   );
 
   const pinnedRelativePaths = {
-    'controllers/health_entry_form_controller.dart',
     'controllers/health_entry_form_state.dart',
     'providers/care_item_absence_providers.dart',
     'providers/care_item_absence_resolution_sync.dart',

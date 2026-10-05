@@ -2,27 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../features/experience/domain/entities/app_experience.dart';
+import '../../features/experience/experience.dart';
 import '../../l10n/app_localizations.dart';
-import '../../features/experience/presentation/screens/account_screen.dart';
-import '../../features/people/presentation/routes/people_routes.dart';
-import '../../features/experience/presentation/screens/experience_chooser_screen.dart';
-import '../../features/experience/presentation/screens/experience_home_screens.dart';
-import '../../features/experience/presentation/screens/experience_resolve_screen.dart';
-import '../../features/experience/presentation/screens/experience_settings_screen.dart';
-import '../../features/experience/presentation/screens/pet_care_onboarding_screen.dart';
-import '../../features/experience/presentation/widgets/experience_shell_scaffold.dart';
+import '../../features/people/people.dart';
 import 'away_routes.dart';
-import '../../features/experience/presentation/screens/pet_care/pet_care_all_pets_screen.dart';
-import '../../features/experience/presentation/screens/pet_care/pet_care_bulk_share_select_screen.dart';
-import '../../features/sharing/presentation/providers/share_pet_providers.dart';
-import '../../features/sharing/presentation/screens/share_pet_screen.dart';
-import '../../features/experience/presentation/screens/pet_care/add_event_type_picker_sheet.dart';
-import '../../features/experience/presentation/screens/pet_care/pet_care_due_events_screen.dart';
-import '../../features/pet_tags/presentation/screens/manage_pet_tags_screen.dart';
-import '../../features/pet_profile/domain/entities/pet.dart';
-import '../../features/pet_profile/presentation/controllers/pet_list_controller.dart';
-import '../../features/pet_profile/presentation/providers/pet_providers.dart';
+import '../../features/sharing/sharing.dart';
+import '../../features/pet_tags/pet_tags.dart';
+import '../../features/pet_profile/pet_profile.dart';
 
 /// Maps legacy `/g/*` paths to `/pc/*` equivalents.
 String? legacyPetCareRedirectForPath(String path) {

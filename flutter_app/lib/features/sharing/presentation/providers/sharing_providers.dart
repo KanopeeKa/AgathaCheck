@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/providers/api_base_url_provider.dart';
-import '../../../auth/presentation/providers/auth_providers.dart';
-import '../../../pet_profile/presentation/providers/pet_providers.dart';
+import 'package:pet_profile_app/features/auth/auth.dart';
+import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 import '../../data/datasources/sharing_remote_datasource.dart';
 import '../../data/repositories/sharing_repository_impl.dart';
 import '../../domain/entities/household_pet_access.dart';

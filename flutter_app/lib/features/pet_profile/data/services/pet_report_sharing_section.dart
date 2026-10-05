@@ -1,7 +1,7 @@
 import '../../../../core/theme/pdf_report_tokens.dart';
 import 'package:pdf/widgets.dart' as pw;
 import '../../../../l10n/app_localizations.dart';
-import '../../../sharing/domain/entities/pet_access.dart';
+import '../../../sharing/sharing.dart';
 
 class PetSharingSectionBuilder {
   static List<pw.Widget> build(List<PetAccess> accessList, AppLocalizations l) {

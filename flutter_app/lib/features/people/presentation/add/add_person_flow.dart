@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/widgets/form/app_form_breakpoints.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../sharing/presentation/providers/share_pet_providers.dart';
+import '../../../sharing/sharing.dart';
 import '../../application/people_api_exception.dart';
 import '../../application/people_commands.dart';
 import '../../application/people_providers.dart';

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../../../../core/router/shell_return_navigation.dart';
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../experience/presentation/screens/pet_care/pet_care_dashboard_helpers.dart';
-import '../../../../experience/presentation/widgets/pet_care_pets_tile_grid.dart';
+import '../../utils/pet_care_dashboard_helpers.dart';
+import 'pet_care_pets_tile_grid.dart';
 import '../../../domain/entities/pet.dart';
 import '../../controllers/pet_list_controller.dart';
 import 'guardian_passed_away_section.dart';

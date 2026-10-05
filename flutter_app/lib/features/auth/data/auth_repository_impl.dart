@@ -1,8 +1,5 @@
 import 'dart:typed_data';
 
-import '../domain/entities/auth_result.dart';
-import '../domain/entities/auth_user.dart';
-import '../domain/entities/delete_account_result.dart';
 import '../domain/repositories/auth_repository.dart';
 import 'auth_service.dart';
 

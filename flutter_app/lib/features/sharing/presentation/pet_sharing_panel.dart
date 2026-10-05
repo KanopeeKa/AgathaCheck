@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../pet_profile/domain/entities/pet.dart';
+import '../../pet_profile/pet_profile.dart';
 import '../../sharing/domain/entities/pet_access.dart';
 import '../../../l10n/app_localizations.dart';
 import 'providers/sharing_providers.dart';

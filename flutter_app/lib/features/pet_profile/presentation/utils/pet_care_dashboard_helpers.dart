@@ -1,13 +1,10 @@
-import '../../../../pet_profile/domain/entities/pet.dart';
-import '../../../../sharing/domain/entities/pet_access.dart';
-import '../../../../pet_profile/domain/entities/care_status.dart';
-import '../../../../pet_profile/presentation/controllers/pet_list_controller.dart';
-import '../../../../pet_profile/presentation/widgets/pet_card.dart'
-    show sortPetsByCreatedAt;
-import '../../../../pet_profile/presentation/widgets/pet_tile_status_line.dart';
-import '../../../../health_tracking/domain/entities/health_entry.dart';
-import '../../../../pet_care/domain/care_temporal_group.dart';
-import '../../../../pet_care/domain/services/care_temporal_grouping_service.dart';
+import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
+import 'package:pet_profile_app/features/pet_care/pet_care.dart';
+import 'package:pet_profile_app/features/sharing/sharing.dart';
+import '../../domain/entities/care_status.dart';
+import '../../domain/entities/pet.dart';
+import '../controllers/pet_list_controller.dart';
+import '../widgets/pet_card.dart' show sortPetsByCreatedAt;
 
 /// Relationship wording is intentionally a presentation concern. Eligibility
 /// remains owned by [PetListController].

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../branding/logo_assets.dart';
-import '../../features/experience/domain/entities/app_experience.dart';
+import '../../features/experience/experience.dart';
 
 /// A reusable AppBar title widget that displays the AgathaTrack logo
 /// followed by the screen title text.

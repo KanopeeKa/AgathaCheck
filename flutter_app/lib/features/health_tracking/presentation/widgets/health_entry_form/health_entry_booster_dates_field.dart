@@ -6,7 +6,6 @@ import '../../../../../core/utils/calendar_date.dart';
 import '../../../../../core/utils/calendar_date_picker.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../controllers/health_entry_form_controller.dart';
-import '../../controllers/health_entry_form_state.dart';
 
 /// Vaccination booster dates at create (UIR-15, D-CSM-025).
 class HealthEntryBoosterDatesField extends ConsumerWidget {

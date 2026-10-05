@@ -247,9 +247,20 @@ ci_scope_emit_json() {
   run_integration="$(ci_scope_bool ci_scope_run_integration)"
   all_shards="$(ci_scope_all_shards_json)"
 
+  export CI_SCOPE_ALL_SHARDS_JSON="$all_shards"
+  unset CI_SCOPE_E2E_SELECTION_JSON
+  if [[ -z "${CI_SCOPE_E2E_SELECTION_FILE:-}" && -n "${CI_SCOPE_E2E_SELECTION:-}" ]]; then
+    if ((${#CI_SCOPE_E2E_SELECTION} <= 32000)); then
+      export CI_SCOPE_E2E_SELECTION_JSON="$CI_SCOPE_E2E_SELECTION"
+    else
+      CI_SCOPE_E2E_SELECTION_FILE="$(mktemp)"
+      printf '%s' "$CI_SCOPE_E2E_SELECTION" >"$CI_SCOPE_E2E_SELECTION_FILE"
+      export CI_SCOPE_E2E_SELECTION_FILE
+    fi
+  fi
   python3 - "$scope" "$CI_SCOPE_FORCE_FULL" "$CI_SCOPE_ESCAPE_FULL" "$run_analyze" "$run_stack" "$run_backend" "$run_e2e_audit" "$run_integration" \
-    "$all_shards" "$run_web" "${CI_SCOPE_E2E_SELECTION:-}" <<'PY'
-import json, sys
+    "$run_web" <<'PY'
+import json, os, sys
 
 (
     scope,
@@ -260,10 +271,15 @@ import json, sys
     run_backend,
     run_e2e_audit,
     run_integration,
-    all_shards,
     run_web,
-    e2e_selection,
-) = sys.argv[1:12]
+) = sys.argv[1:10]
+all_shards = os.environ.get("CI_SCOPE_ALL_SHARDS_JSON", "[]")
+_e2e_file = os.environ.get("CI_SCOPE_E2E_SELECTION_FILE", "")
+if _e2e_file and os.path.isfile(_e2e_file):
+    with open(_e2e_file, encoding="utf-8") as _f:
+        e2e_selection = _f.read()
+else:
+    e2e_selection = os.environ.get("CI_SCOPE_E2E_SELECTION_JSON", "")
 
 def b(v):
     return v == "true"

@@ -9,7 +9,6 @@ import '../../../../core/providers/analytics_providers.dart';
 import '../../../../main.dart' show rootScaffoldMessengerKey;
 import '../../../../core/utils/calendar_date.dart';
 import '../../../../core/utils/calendar_date_picker.dart';
-import '../../../../core/weight/weight_unit.dart';
 import '../../../../core/weight/weight_unit_preference.dart';
 import '../../../../core/widgets/form/app_form_actions_bar.dart';
 import '../../../../core/widgets/form/app_form_labeled_field.dart';

@@ -1,5 +1,4 @@
-import '../../care_intelligence/domain/entities/care_recommendation.dart';
-import '../../care_intelligence/domain/entities/care_safeguard.dart';
+import '../../care_intelligence/care_intelligence.dart';
 import '../progression/domain/entities/care_pending_moment.dart';
 
 /// Centralised arbitration for contextual Pet Care surfaces (profile + dashboard).

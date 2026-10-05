@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../pet_care/domain/care_temporal_group.dart';
+import '../../../../pet_care/pet_care.dart';
 
 String petCareTemporalGroupLabel(
   AppLocalizations l10n,

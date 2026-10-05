@@ -4,17 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:pet_profile_app/features/auth/auth.dart';
+import 'package:pet_profile_app/features/notifications/notifications.dart';
+import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
+import 'package:pet_profile_app/features/sharing/sharing.dart';
+
 import '../../../../l10n/app_localizations.dart';
-import '../../../auth/presentation/providers/auth_providers.dart';
-import '../../../notifications/domain/entities/app_notification.dart';
-import '../../../notifications/domain/services/notification_inline_action_support.dart';
-import '../../../notifications/domain/services/notification_inline_actions.dart'
-    show NotificationInlineActions, StaleNotificationException;
-import '../../../notifications/presentation/providers/notification_providers.dart';
-import '../../../pet_profile/presentation/providers/pet_providers.dart';
-import '../../../sharing/domain/entities/invite_preview.dart';
-import '../../../sharing/domain/entities/pet_access.dart';
-import '../../../sharing/presentation/providers/sharing_providers.dart';
 
 /// Experience-layer implementation of [NotificationInlineActions] (PR4).
 class NotificationInlineActionRunner implements NotificationInlineActions {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../health_tracking/presentation/widgets/health_entry_status.dart';
+import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import '../../../../../core/widgets/care_mark_done_button.dart';
 import 'care_surface_tokens.dart';
 

@@ -2,7 +2,7 @@ import '../../../../core/theme/pdf_report_tokens.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:intl/intl.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../weight_tracking/domain/entities/weight_entry.dart';
+import '../../../weight_tracking/weight_tracking.dart';
 
 class PetWeightSectionBuilder {
   static final DateFormat _chartDateFormat = DateFormat('dd/MMM/yy');

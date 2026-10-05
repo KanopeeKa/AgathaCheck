@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../../../care_taxonomy/domain/care_importance.dart';
-import '../../../../care_taxonomy/domain/care_setting.dart';
+import '../../../../care_taxonomy/care_taxonomy.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../data/datasources/health_remote_datasource.dart';
 import '../../../domain/entities/health_entry.dart';

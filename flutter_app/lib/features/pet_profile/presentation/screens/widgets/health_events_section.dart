@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
+import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import '../../widgets/pet_list/home_event_actions.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 

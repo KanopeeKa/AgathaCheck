@@ -1,6 +1,5 @@
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../care_taxonomy/domain/care_importance.dart';
-import '../../../../care_taxonomy/domain/care_setting.dart';
+import '../../../../care_taxonomy/care_taxonomy.dart';
 
 String healthEntryCareSettingLabel(AppLocalizations l10n, CareSetting setting) {
   return switch (setting) {

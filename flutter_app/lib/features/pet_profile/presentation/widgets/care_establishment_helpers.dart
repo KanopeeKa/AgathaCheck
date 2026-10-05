@@ -1,6 +1,6 @@
-import '../../../health_tracking/domain/entities/health_entry.dart';
+import '../../../health_tracking/health_tracking.dart';
 import '../../domain/entities/care_establishment.dart';
-import '../../../pet_care/core/care_family_capabilities.dart';
+import '../../../pet_care/pet_care.dart';
 
 /// Health entry ids with server-reported establishment for eligible care families.
 Set<String> establishedRhythmEntryIds(

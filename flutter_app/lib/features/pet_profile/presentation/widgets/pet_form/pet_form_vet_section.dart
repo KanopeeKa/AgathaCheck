@@ -3,10 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../people/domain/entities/contact_summary.dart';
-import '../../../../people/domain/entities/people_legacy_mapping.dart';
-import '../../../../people/presentation/add/add_person_entry.dart';
-import '../../../../people/presentation/add/add_person_route_args.dart';
+import '../../../../people/people.dart';
 import '../../controllers/pet_form_controller.dart';
 import '../../providers/pet_vet_contacts_provider.dart';
 

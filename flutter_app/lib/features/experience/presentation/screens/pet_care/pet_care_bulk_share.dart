@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../sharing/presentation/providers/sharing_providers.dart';
+import '../../../../sharing/sharing.dart';
 
 /// Shows the standard single-pet share link dialog (reused by bulk share).
 Future<void> showPetShareLinkDialog(

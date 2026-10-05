@@ -1,10 +1,7 @@
 import '../../../../core/utils/calendar_date.dart';
 import '../../../care_item/care_item.dart';
-import '../../../health_tracking/domain/entities/health_entry.dart';
-import '../../../health_tracking/presentation/widgets/pet_event_lifecycle.dart';
-import '../../../health_tracking/domain/entities/health_occurrence.dart';
-import '../../../health_tracking/domain/occurrence_missed.dart';
-import '../../../pet_profile/domain/entities/care_status.dart';
+import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
+import '../../../pet_profile/pet_profile.dart';
 import '../care_temporal_group.dart';
 import '../models/care_temporal_buckets.dart';
 

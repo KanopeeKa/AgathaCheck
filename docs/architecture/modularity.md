@@ -84,8 +84,11 @@ test/features/<feature>/   # Mirror lib structure
 | R2 `cross-feature-data` | Code outside feature X imports `features/X/data/**`. Use X's domain port or provider instead. |
 | R3 `cross-feature-presentation` | Code outside feature X imports `features/X/presentation/**`. |
 | R4 `new-feature-edge` | A feature → feature import edge appears that is not in the baseline edge list. |
+| R6 `non-public-cross-feature-import` | A cross-feature `import`/`export`/`part` must target `features/<name>/<name>.dart` only (includes `experience` and `core/router/**` — no R3-style exemption). |
+| R7 `entrypoint-exports-data` | An **active** feature entrypoint (`about`, `auth`, … — see architecture index) must not `export` anything under that feature's `data/**`. |
 
-**Composition entrypoints (D5):** `lib/features/experience/**`, `lib/core/router/**` and the root wiring files `lib/*.dart` may import other features' presentation (R3 exempt). They are still subject to R2. There is no blanket `core/**` exemption.
+
+**Composition entrypoints (D5):** `lib/features/experience/**`, `lib/core/router/**` and the root wiring files `lib/*.dart` may import other features' presentation (R3 exempt). They are still subject to R2 and **R6**. There is no blanket `core/**` exemption.
 
 **Scope:** active Dart files only. Generated files (`*.g.dart`, `*.freezed.dart`, `*.mocks.dart`, `lib/l10n/`), the frozen `sourceRoots` and `activeSurfacesToRemove` from `docs/engineering/frozen-domains/manifest.json` are skipped. Every run also prints the feature-level strongly connected components (informational until the no-cycle rule lands).
 

@@ -1,6 +1,6 @@
 import 'package:go_router/go_router.dart';
 
-import '../../features/people/presentation/screens/people_legacy_vet_redirect_screen.dart';
+import '../../features/people/people.dart';
 
 List<RouteBase> buildVetExperienceRoutes() {
   return [

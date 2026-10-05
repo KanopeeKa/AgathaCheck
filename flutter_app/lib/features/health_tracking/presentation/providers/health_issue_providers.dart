@@ -6,7 +6,7 @@ import '../../application/health_documents_providers.dart';
 import '../../domain/entities/health_document.dart';
 import '../../domain/entities/health_issue.dart';
 import '../../domain/entities/health_issue_document.dart';
-import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
+import 'package:pet_profile_app/features/auth/auth.dart';
 
 final petHealthIssuesProvider =
     FutureProvider.family<List<HealthIssue>, String>((ref, petId) {

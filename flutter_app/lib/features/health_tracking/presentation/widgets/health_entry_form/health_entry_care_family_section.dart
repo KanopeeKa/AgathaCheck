@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../pet_profile/domain/entities/care_family.dart';
+import '../../../../pet_profile/pet_profile.dart';
 import '../care_family_picker_field.dart';
 import '../care_family_suggestion_banner.dart';
 

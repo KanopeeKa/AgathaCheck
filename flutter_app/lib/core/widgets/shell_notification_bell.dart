@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../l10n/app_localizations.dart';
-import '../../features/notifications/presentation/providers/notification_providers.dart';
+import 'package:pet_profile_app/features/notifications/notifications.dart';
 
 /// Notification bell with unread badge for experience/org shells.
 class ShellNotificationBell extends ConsumerWidget {

@@ -9,6 +9,8 @@
  *   R3 cross-feature-presentation anything outside feature X imports features/X/presentation/**
  *                                 (composition layer exempt: features/experience/**, core/router/**, lib/*.dart)
  *   R4 new-feature-edge           a feature → feature edge that is not in the baseline edge list
+ *   R6 non-public-cross-feature-import  cross-feature import/export must target features/<name>/<name>.dart
+ *   R7 entrypoint-exports-data    feature entrypoint must not export features/<name>/data/**
  *
  * Usage:
  *   node scripts/check_feature_imports.js                     # check against baseline
@@ -29,12 +31,34 @@ const RULES = {
   R2: 'cross-feature-data',
   R3: 'cross-feature-presentation',
   R4: 'new-feature-edge',
+  R6: 'non-public-cross-feature-import',
+  R7: 'entrypoint-exports-data',
 };
 
 const LIB = 'flutter_app/lib';
 const DIRECTIVE = /^\s*(?:import|export|part)\s+['"]([^'"]+)['"]/gm;
 const GENERATED_SUFFIXES = ['.g.dart', '.freezed.dart', '.mocks.dart'];
 const COMPOSITION_PREFIXES = [`${LIB}/features/experience/`, `${LIB}/core/router/`];
+
+/** D20 active features (I1); R7 applies only to these entrypoints (care_item is separate). */
+const ACTIVE_FEATURE_ENTRYPOINTS = new Set([
+  'about',
+  'auth',
+  'care_intelligence',
+  'care_taxonomy',
+  'experience',
+  'health_tracking',
+  'help',
+  'notifications',
+  'people',
+  'pet_care',
+  'pet_profile',
+  'pet_tags',
+  'sharing',
+  'subscription',
+  'vet',
+  'weight_tracking',
+]);
 
 function parseArgs(argv) {
   const opts = { root: path.resolve(__dirname, '..'), baseline: null, mode: 'check', reason: null };
@@ -109,16 +133,56 @@ function isComposition(rel) {
   return path.posix.dirname(rel) === LIB;
 }
 
-function classify(importer, target) {
+function entrypointRel(feature) {
+  return `${LIB}/features/${feature}/${feature}.dart`;
+}
+
+function isEntrypoint(rel) {
+  const f = featureOf(rel);
+  return Boolean(f && rel === entrypointRel(f));
+}
+
+/** Layer rules (R1–R3) plus R6 entrypoint rule; multiple violations per edge are allowed. */
+function classifyRules(importer, target) {
   const targetFeature = featureOf(target);
-  if (!targetFeature) return null;
+  if (!targetFeature) return [];
   const importerFeature = featureOf(importer);
-  if (importerFeature === targetFeature) return null;
-  if (targetFeature === 'experience' && importerFeature && importerFeature !== 'experience') return 'R1';
+  if (importerFeature === targetFeature) return [];
+  const rules = [];
+  if (!isEntrypoint(target)) rules.push('R6');
+  if (targetFeature === 'experience' && importerFeature && importerFeature !== 'experience') {
+    rules.push('R1');
+    return rules;
+  }
   const layer = target.split('/')[4];
-  if (layer === 'data') return 'R2';
-  if (layer === 'presentation' && !isComposition(importer)) return 'R3';
-  return null;
+  if (layer === 'data') rules.push('R2');
+  if (layer === 'presentation' && !isComposition(importer)) rules.push('R3');
+  return rules;
+}
+
+function classify(importer, target) {
+  const rules = classifyRules(importer, target);
+  return rules.find((r) => r !== 'R6') || null;
+}
+
+function scanEntrypointDataExports(root, pkg, files) {
+  const out = [];
+  for (const rel of files) {
+    if (!isEntrypoint(rel)) continue;
+    const ownerFeature = featureOf(rel);
+    if (!ACTIVE_FEATURE_ENTRYPOINTS.has(ownerFeature)) continue;
+    const text = fs.readFileSync(path.join(root, rel), 'utf8');
+    for (const match of text.matchAll(DIRECTIVE)) {
+      if (!/^\s*export\s/.test(match[0])) continue;
+      const target = resolveSpec(match[1], rel, pkg);
+      if (!target || !target.startsWith(`${LIB}/`)) continue;
+      const owner = featureOf(rel);
+      if (owner && featureOf(target) === owner && target.split('/')[4] === 'data') {
+        out.push(`R7|${rel}|${target}`);
+      }
+    }
+  }
+  return out.sort();
 }
 
 function scan(root) {
@@ -136,8 +200,9 @@ function scan(root) {
     for (const match of text.matchAll(DIRECTIVE)) {
       const target = resolveSpec(match[1], importer, pkg);
       if (!target || !target.startsWith(`${LIB}/`)) continue;
-      const rule = classify(importer, target);
-      if (rule) violations.add(`${rule}|${importer}|${target}`);
+      for (const rule of classifyRules(importer, target)) {
+        violations.add(`${rule}|${importer}|${target}`);
+      }
       const from = featureOf(importer);
       const to = featureOf(target);
       if (from && to && from !== to) {
@@ -146,6 +211,7 @@ function scan(root) {
       }
     }
   }
+  for (const id of scanEntrypointDataExports(root, pkg, files)) violations.add(id);
   return { violations: [...violations].sort(), edges };
 }
 
@@ -198,8 +264,11 @@ function headSha(root) {
 }
 
 function countByRule(ids) {
-  const counts = { R1: 0, R2: 0, R3: 0 };
-  for (const id of ids) counts[id.split('|')[0]] += 1;
+  const counts = { R1: 0, R2: 0, R3: 0, R6: 0, R7: 0 };
+  for (const id of ids) {
+    const key = id.split('|')[0];
+    if (counts[key] !== undefined) counts[key] += 1;
+  }
   return counts;
 }
 
@@ -212,6 +281,7 @@ function printSummary(current, edgeKeys) {
   const counts = countByRule(current.violations);
   console.log(
     `check_feature_imports: R1=${counts.R1} R2=${counts.R2} R3=${counts.R3} ` +
+      `R6=${counts.R6} R7=${counts.R7} ` +
       `feature edges=${edgeKeys.length}`,
   );
   const sccs = stronglyConnected(edgeKeys);
@@ -314,4 +384,12 @@ if (require.main === module) {
   }
 }
 
-module.exports = { scan, classify, stronglyConnected, resolveSpec };
+module.exports = {
+  scan,
+  classify,
+  classifyRules,
+  stronglyConnected,
+  resolveSpec,
+  isEntrypoint,
+  entrypointRel,
+};

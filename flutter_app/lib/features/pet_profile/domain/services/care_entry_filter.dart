@@ -1,6 +1,5 @@
-import '../../../care_taxonomy/domain/care_family_definition.dart';
-import '../../../care_taxonomy/domain/care_taxonomy.dart';
-import '../../../health_tracking/domain/entities/health_entry.dart';
+import '../../../care_taxonomy/care_taxonomy.dart';
+import '../../../health_tracking/health_tracking.dart';
 import '../entities/care_family.dart';
 import 'care_family_write.dart';
 

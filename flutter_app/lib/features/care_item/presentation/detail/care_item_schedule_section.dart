@@ -4,16 +4,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/utils/calendar_date.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../pet_care/presentation/widgets/care_surface/care_item_module.dart';
-import '../../../pet_care/presentation/widgets/care_surface/care_item_section_header.dart';
-import '../../../pet_care/presentation/widgets/care_surface/care_item_stat_row.dart';
-import '../../../health_tracking/domain/entities/health_entry.dart';
-import '../../../health_tracking/domain/entities/recurrence_anchor.dart';
-import '../../../health_tracking/presentation/widgets/health_entry_form/health_entry_frequency_labels.dart';
-import '../../../health_tracking/presentation/widgets/health_entry_type_labels.dart';
-import '../../../health_tracking/presentation/providers/care_item_absence_providers.dart';
-import '../../../health_tracking/presentation/providers/care_item_absence_resolution_sync.dart';
-import '../../../health_tracking/presentation/widgets/pet_event_lifecycle.dart';
+import 'package:pet_profile_app/features/pet_care/pet_care.dart';
+import '../../../health_tracking/health_tracking.dart';
 
 /// Schedule summary (spec §Schedule) — stat grid + prose; edit via header action.
 class CareItemScheduleSection extends ConsumerWidget {

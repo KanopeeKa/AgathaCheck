@@ -4,7 +4,7 @@ import 'package:uuid/uuid.dart';
 import '../../../../core/providers/shared_preferences_provider.dart';
 import '../../../../core/providers/pet_care_sync.dart';
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
-import '../../../auth/presentation/providers/auth_providers.dart';
+import 'package:pet_profile_app/features/auth/auth.dart';
 import '../../data/datasources/pet_local_datasource.dart';
 import '../../data/datasources/pet_remote_datasource.dart';
 import '../../data/repositories/pet_repository_impl.dart';

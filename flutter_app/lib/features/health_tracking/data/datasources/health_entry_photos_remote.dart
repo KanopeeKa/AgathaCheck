@@ -3,7 +3,6 @@ import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
 
-import 'health_remote_response.dart';
 import '../models/health_event_photo.dart';
 
 Future<List<EventPhoto>> fetchHealthEntryPhotos({

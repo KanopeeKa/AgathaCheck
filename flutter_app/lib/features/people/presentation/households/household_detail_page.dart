@@ -3,9 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
-import '../../../auth/presentation/providers/auth_providers.dart';
-import '../../../pet_profile/domain/entities/pet.dart';
-import '../../../pet_profile/presentation/providers/pet_providers.dart';
+import '../../../auth/auth.dart';
+import '../../../pet_profile/pet_profile.dart';
 import '../../application/people_commands.dart';
 import '../../application/people_providers.dart';
 import '../../domain/entities/household.dart';

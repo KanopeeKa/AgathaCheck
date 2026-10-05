@@ -1,5 +1,4 @@
-import '../../../../care_taxonomy/domain/care_planning_mode.dart';
-import '../../../../care_taxonomy/domain/care_setting.dart';
+import '../../../../care_taxonomy/care_taxonomy.dart';
 
 /// Whether to show the §10.1 unplanned vet save health-issue prompt.
 bool shouldPromptUnplannedVetSave({

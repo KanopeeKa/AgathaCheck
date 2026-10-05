@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../../core/router/shell_return_navigation.dart';
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../pet_profile/domain/entities/pet.dart';
+import '../../../../pet_profile/pet_profile.dart';
 
 /// Bottom sheet: Events / Weight entry — routes to existing entry forms.
 Future<void> showAddEventTypePickerSheet(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../pet_profile/domain/entities/pet.dart';
+import '../../../pet_profile/pet_profile.dart';
 
 /// Shared-pet wrapper for the guardian shell — swipe-to-hide removed per UX review.
 class PetCareShellSharedPetCard extends StatelessWidget {

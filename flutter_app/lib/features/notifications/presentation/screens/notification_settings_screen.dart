@@ -6,13 +6,12 @@ import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/notification_preferences.dart';
 import '../../domain/entities/notification_settings_matrix.dart';
-import '../../../pet_profile/presentation/providers/pet_providers.dart';
-import '../../../pet_profile/presentation/utils/pet_accent_color.dart';
 import '../providers/notification_providers.dart';
 import '../widgets/notification_settings_care_reminders_section.dart';
 import '../widgets/notification_settings_matrix_section.dart';
 import '../widgets/notification_settings_muted_pets_section.dart';
 import '../widgets/notification_settings_push_hint.dart';
+import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 
 class NotificationSettingsScreen extends ConsumerStatefulWidget {
   const NotificationSettingsScreen({super.key});

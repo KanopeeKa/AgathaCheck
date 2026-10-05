@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/utils/calendar_date.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../health_tracking/domain/entities/health_entry.dart';
-import '../../../health_tracking/presentation/widgets/care_event_status_line.dart';
-import '../../../health_tracking/presentation/widgets/health_entry_form/health_entry_frequency_labels.dart';
-import '../../../health_tracking/presentation/widgets/health_entry_status.dart'
+import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
+import 'package:pet_profile_app/features/health_tracking/health_tracking.dart'
     as entry_status;
 import '../domain/entities/care_period_coverage.dart';
 

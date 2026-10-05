@@ -4,10 +4,10 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../care_item/care_item.dart';
-import '../../../../experience/presentation/widgets/pet_care_dashboard_section_header.dart';
-import '../../../../experience/presentation/widgets/pet_care_illustrated_empty_state.dart';
-import '../../../../health_tracking/presentation/providers/health_providers.dart';
-import '../../../../pet_care/presentation/widgets/care_agenda/care_agenda_collection.dart';
+import 'package:pet_profile_app/core/widgets/pet_care_dashboard_section_header.dart';
+import 'package:pet_profile_app/core/widgets/pet_care_illustrated_empty_state.dart';
+import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
+import 'package:pet_profile_app/features/pet_care/pet_care.dart';
 import '../../../domain/entities/pet.dart';
 
 /// Pet-scoped `{Pet}'s care` section: the agenda (D-CIE-025) for one pet.

@@ -4,7 +4,6 @@ import 'package:pet_profile_app/features/auth/presentation/providers/auth_provid
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_issue.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/repositories/health_issue_repository.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/controllers/care_schedule_controller.dart';
-import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_issue_providers.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
 
 import '../../../../helpers/fakes.dart';

@@ -3,8 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/providers/api_base_url_provider.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../pet_profile/domain/entities/pet.dart';
-import '../../../pet_profile/presentation/widgets/pet_photo_image.dart';
+import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 import '../../domain/entities/health_entry.dart';
 
 /// Lightweight circular pet photo for [CareEventRow] leading slot.

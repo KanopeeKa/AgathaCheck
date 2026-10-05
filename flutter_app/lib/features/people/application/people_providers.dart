@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/providers/api_base_url_provider.dart';
-import '../../auth/presentation/providers/auth_providers.dart';
+import '../../auth/auth.dart';
 import '../data/households_api.dart';
 import '../data/people_api.dart';
 import '../data/people_api_exception.dart';

@@ -4,8 +4,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/widgets/screen_overflow_actions.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../experience/domain/entities/app_experience.dart';
-import '../../../experience/presentation/widgets/experience_shell_scaffold.dart';
+import 'package:pet_profile_app/core/experience/app_experience.dart';
+import 'package:pet_profile_app/core/router/experience_shell_scaffold.dart';
 import '../../domain/services/pet_detail_actions.dart';
 import '../controllers/download_report_controller.dart';
 import '../providers/pet_detail_viewer_context_provider.dart';

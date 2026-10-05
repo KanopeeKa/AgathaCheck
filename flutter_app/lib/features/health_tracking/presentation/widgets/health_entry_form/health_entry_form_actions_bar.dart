@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../../core/widgets/form/app_form_actions_bar.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../controllers/health_entry_form_controller.dart';
-import '../../controllers/health_entry_form_state.dart';
 
 class HealthEntryFormActionsBar extends ConsumerWidget {
   const HealthEntryFormActionsBar({

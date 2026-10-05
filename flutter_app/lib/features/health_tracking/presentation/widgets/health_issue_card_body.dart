@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/utils/calendar_date.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/health_issue.dart';
-import '../../../pet_profile/presentation/controllers/health_issues_controller.dart';
+import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 import 'entry_date_picker_field.dart';
 import 'health_issue_documents_strip.dart';
 import 'health_issue_linked_events_strip.dart';

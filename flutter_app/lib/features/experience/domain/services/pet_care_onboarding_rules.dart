@@ -1,4 +1,4 @@
-import '../../../pet_profile/domain/entities/pet.dart';
+import '../../../pet_profile/pet_profile.dart';
 
 /// Pure rules for when guardian onboarding should appear.
 class PetCareOnboardingRules {

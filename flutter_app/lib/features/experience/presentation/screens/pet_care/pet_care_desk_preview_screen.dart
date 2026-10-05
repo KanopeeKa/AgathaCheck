@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../../core/theme/app_color_tokens.dart';
 import '../../../../../core/widgets/dashboard_section.dart';
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../pet_profile/domain/entities/pet.dart';
-import '../../../../pet_profile/presentation/controllers/pet_list_controller.dart';
+import '../../../../pet_profile/pet_profile.dart';
 import 'pet_care_my_pets_section.dart';
 import '../../widgets/pet_care_operations_desk_layout.dart';
 

@@ -5,7 +5,7 @@ import '../../../../core/utils/calendar_date.dart';
 import '../../../../core/weight/weight_unit.dart';
 import '../../../../core/weight/weight_unit_preference.dart';
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
-import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
+import 'package:pet_profile_app/features/auth/auth.dart';
 import '../../data/datasources/weight_remote_datasource.dart';
 import '../../data/repositories/weight_repository_impl.dart';
 import '../../domain/entities/weight_entry.dart';
