@@ -26,7 +26,7 @@ Part of the AgathaTrack domain-first documentation tree. Cross-cutting architect
 
 ## Implementation status (Guardian / Pet Care)
 
-State after **`people-client-core-7f3b`** lands on `main` (slot **5c**, 2026-10-05). Remaining cross-feature adapter work is **`people-client-integration-7f3b`**. Gaps vs the target doc: [changes/people-domain-refactor.md](changes/people-domain-refactor.md) (§4 gap analysis).
+**Shipped** on `main` (2026-10-05): `people-server-7f3b`, `people-client-core-7f3b`, and **`people-client-integration-7f3b`** (consumers, People around {pet}, legacy client removal, integration E2E). Follow-up debt: sunset `vets` table / `pets.vet_id` ([#1653](https://github.com/KanopeeKa/AgathaCheck/issues/1653)). Residual gaps vs the target doc: [changes/people-domain-refactor.md](changes/people-domain-refactor.md) (§4).
 
 | Capability | Status | Notes |
 |------------|--------|-------|
@@ -41,7 +41,10 @@ State after **`people-client-core-7f3b`** lands on `main` (slot **5c**, 2026-10-
 | Add person | Shipped | Five-step flow + share handoff (`c6`) |
 | Households | Shipped | People routes `/pc/people/households`; Sharing household UI removed (`c7`) |
 | Absence guest access | Shipped | `people-care-team-a58d` p4 |
-| **Refactor (client adapters)** | In progress | Roadmap [`people-domain-refactor-7f3b`](/.agents/plans/people-domain-refactor-7f3b.md); next child **`people-client-integration-7f3b`** |
+| Pet profile / care / away consumers (People façade) | Shipped | `people-client-integration-7f3b` i1 |
+| People around {pet} + emergency card | Shipped | `people-client-integration-7f3b` i2 |
+| Legacy vet client + directory adapters removed | Shipped | `people-client-integration-7f3b` i3 |
+| Integration E2E (5 journeys) | Shipped | `people-integration.spec.ts` (`people-client-integration-7f3b` i4) |
 
 ## Domains this changes
 
@@ -58,8 +61,8 @@ State after **`people-client-core-7f3b`** lands on `main` (slot **5c**, 2026-10-
 | Concern | Path |
 |---------|------|
 | People feature (Flutter) | `flutter_app/lib/features/people/` |
-| Today desk module | `flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_people_desk_module.dart` |
-| Card pattern reference | `flutter_app/lib/features/vet/presentation/widgets/vet_team_card.dart` |
+| Today desk module | `flutter_app/lib/features/people/presentation/desk/people_desk_module.dart` |
+| Pet profile — People around {pet} | `flutter_app/lib/features/people/presentation/pet/` |
 | Sharing / invites | `flutter_app/lib/features/sharing/` |
 | People API | `server/routes/people/` |
 | Pet access roles | `server/lib/petAccess.js`, `server/routes/sharing/` |
@@ -71,6 +74,6 @@ State after **`people-client-core-7f3b`** lands on `main` (slot **5c**, 2026-10-
 |-------|----------|
 | Widget | `flutter_app/test/features/people/**` |
 | BDD | `flutter_app/test/bdd/features/people.feature` |
-| Playwright | `e2e/playwright/tests/people-core.spec.ts`, `veterinarian.spec.ts` (page object `people.page.ts`) |
+| Playwright | `people-core.spec.ts`, `people-integration.spec.ts`, `veterinarian.spec.ts` (`people.page.ts`) |
 
-Nine People journeys are mapped in `people.feature` and `people-core.spec.ts` (`people-client-core-7f3b` **c8**).
+Hub journeys: `people.feature` + `people-core.spec.ts` (**c8**). Cross-feature integration: five scenarios in `people-integration.spec.ts` (**i4**).

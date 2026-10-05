@@ -1,18 +1,21 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../../people/people.dart';
 import '../../domain/entities/pet.dart';
-import '../providers/pet_vet_contacts_provider.dart';
 
 class PetProfileController {
   final WidgetRef ref;
   PetProfileController(this.ref);
 
-  List<PetVetOption> getVets() {
-    final vetsAsync = ref.watch(petVetOptionsProvider);
-    return vetsAsync.valueOrNull ?? [];
+  String? primaryVetContactId(Pet pet) {
+    final petPeople = ref.watch(petPeopleProvider(pet.id)).valueOrNull;
+    return primaryVetRelationship(petPeople)?.contactId;
   }
 
-  PetVetOption? getAssignedVet(Pet pet) {
-    return findPetVetOption(getVets(), pet.vetId);
+  String? primaryVetDisplayName(Pet pet) {
+    final contactId = primaryVetContactId(pet);
+    if (contactId == null) return null;
+    return ref.watch(personSummaryProvider(contactId))?.name;
   }
 
   double? getDisplayWeight(Pet pet) => pet.weight;

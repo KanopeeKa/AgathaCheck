@@ -56,7 +56,10 @@ Pet responses include `homeTimezone` / `home_timezone` (IANA, default `UTC`). `P
 Private per-user labels. `GET /` returns `[{ id, name, pet_ids, created_at, updated_at }]`.  
 `POST /` body `{ name }`, `PATCH /:id` body `{ name }`, `DELETE /:id`.
 
-### Vets (`/api/vets`)
+### Vets (`/api/vets`) — **deprecated**
+
+Legacy compat adapter only; prefer People contacts and pet relationship slots. Scheduled for removal after minimum-client-version sunset (see control issue #1630).
+
 `GET /`, `POST /`, `PUT /:id`, `DELETE /:id` — all scoped to the user.
 
 ### People (`/api/people`)

@@ -8,8 +8,7 @@ import '../../../../core/branding/logo_assets.dart';
 import 'package:pet_profile_app/core/experience/app_experience.dart';
 import '../../domain/entities/pet_report_supplement.dart';
 import 'package:pet_profile_app/features/sharing/sharing.dart';
-import '../../../vet/vet.dart';
-import '../providers/pet_vet_contacts_provider.dart';
+import 'package:pet_profile_app/features/people/people.dart';
 import '../../../../core/weight/weight_unit_preference.dart';
 import 'package:pet_profile_app/features/weight_tracking/weight_tracking.dart';
 import '../../../../core/files/pdf_saver.dart' as pdf_saver;
@@ -42,18 +41,15 @@ class DownloadReportController {
     );
 
     try {
-      final vetOptions = ref.read(petVetOptionsProvider).valueOrNull ?? [];
-      final vetOption = findPetVetOption(vetOptions, pet.vetId);
-      final assignedVet = vetOption == null
-          ? null
-          : Vet(
-              id: vetOption.vetId,
-              name: vetOption.displayName,
-              phone: vetOption.phone ?? '',
-              email: vetOption.email ?? '',
-              address: vetOption.address ?? '',
-              website: vetOption.website ?? '',
-            );
+      final petPeople = await ref.read(petPeopleProvider(pet.id).future);
+      final primaryRel = primaryVetRelationship(petPeople);
+      ContactDetail? primaryContact;
+      if (primaryRel != null) {
+        primaryContact = await ref.read(
+          personDetailProvider(primaryRel.contactId).future,
+        );
+      }
+      final assignedVet = petReportVetFromContactDetail(primaryContact);
 
       final weightEntries = await ref.read(
         weightEntriesNotifierProvider(pet.id).future,

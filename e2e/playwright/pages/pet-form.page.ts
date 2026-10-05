@@ -5,9 +5,11 @@ import {
   enableFlutterAccessibility,
   fillLabelledField,
   postPetMutationShellLocator,
+  escapeRegExp,
+  flutterRoutePath,
   refreshFlutterAccessibility,
-  selectDropdownOption,
   semanticsByName,
+  waitForFlutterRoutePattern,
   waitForHomeAfterMutation,
 } from '../support/flutter';
 
@@ -134,6 +136,47 @@ export class PetFormPage {
     await postPetMutationShellLocator(this.page).waitFor({ timeout: 30_000 });
   }
 
+  /** Edit save that assigns a people slot (primary vet) — web hash may stay on `/edit` until back. */
+  async saveEditWithPeopleSlot(petId: string): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    const saveButton = this.saveButtonLocator().first();
+    await expect(saveButton).toBeEnabled({ timeout: 15_000 });
+    await saveButton.click();
+    await expect(async () => {
+      const path = flutterRoutePath(this.page.url());
+      if (new RegExp(`^/pet/${petId}(?:\\?|$)`).test(path)) {
+        return;
+      }
+      if (path === `/edit/${petId}`) {
+        const back = this.page.getByRole('button', { name: /^Go back$|^Retour$/i });
+        if (await back.first().isVisible().catch(() => false)) {
+          await back.first().click();
+        }
+      }
+      await waitForFlutterRoutePattern(
+        this.page,
+        new RegExp(`/pet/${petId}(?:\\?|$)`),
+        5_000,
+      );
+    }).toPass({ timeout: 60_000 });
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async selectPrimaryVetContact(contactId: string): Promise<void> {
+    const field = this.page.locator(
+      '[flt-semantics-identifier="people_picker_field_pet_primary_vet"]',
+    );
+    await field.scrollIntoViewIfNeeded();
+    await field.click();
+    await refreshFlutterAccessibility(this.page);
+    const option = this.page.locator(
+      `[flt-semantics-identifier="people_picker_option_${contactId}"]`,
+    );
+    await option.waitFor({ state: 'visible', timeout: 15_000 });
+    await option.click();
+    await refreshFlutterAccessibility(this.page);
+  }
+
   async cancel(): Promise<void> {
     // Prefer AppBar back — sticky Cancel collides with dialog Cancel in the a11y tree.
     const back = this.page
@@ -229,7 +272,18 @@ export class PetFormPage {
   }
 
   async selectVeterinarian(vetName: string): Promise<void> {
-    await selectDropdownOption(this.page, 'Veterinarians', vetName);
+    const field = this.page.locator(
+      '[flt-semantics-identifier="people_picker_field_pet_primary_vet"]',
+    );
+    await field.scrollIntoViewIfNeeded();
+    await field.click();
+    await refreshFlutterAccessibility(this.page);
+    const option = semanticsByName(
+      this.page,
+      new RegExp(escapeRegExp(vetName), 'i'),
+    ).first();
+    await option.waitFor({ state: 'visible', timeout: 15_000 });
+    await option.click();
     await refreshFlutterAccessibility(this.page);
   }
 }

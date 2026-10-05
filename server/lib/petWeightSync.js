@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 
 import { recordWeightFromPetPayload } from './care/observations/weightObservationService.js';
-import { normalizeCalendarDateInput, todayCalendarIso } from './calendarDate.js';
+import { normalizeCalendarDateInput } from './calendarDate.js';
 
 const LATEST_WEIGHT_ENTRY_SQL = `
   SELECT id, weight, unit, date, notes, created_at

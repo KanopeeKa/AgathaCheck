@@ -39,7 +39,7 @@ class PetFormContent extends StatelessWidget {
     required this.bioController,
     required this.insuranceController,
     required this.chipIdController,
-    required this.selectedVetId,
+    required this.selectedPrimaryVetContactId,
     required this.neuteredDate,
     required this.isNeutered,
     required this.onMarkDirty,
@@ -48,7 +48,7 @@ class PetFormContent extends StatelessWidget {
     required this.onNeuteredChanged,
     required this.onPickNeuteredDate,
     required this.onClearNeuteredDate,
-    required this.onVetSelected,
+    required this.onPrimaryVetContactIdChanged,
     required this.onOwnershipChanged,
     required this.onDelete,
     required this.onPassedAway,
@@ -73,7 +73,7 @@ class PetFormContent extends StatelessWidget {
   final TextEditingController bioController;
   final TextEditingController insuranceController;
   final TextEditingController chipIdController;
-  final String? selectedVetId;
+  final String? selectedPrimaryVetContactId;
   final DateTime? neuteredDate;
   final bool? isNeutered;
   final VoidCallback onMarkDirty;
@@ -82,7 +82,7 @@ class PetFormContent extends StatelessWidget {
   final ValueChanged<bool?> onNeuteredChanged;
   final VoidCallback onPickNeuteredDate;
   final VoidCallback onClearNeuteredDate;
-  final ValueChanged<String?> onVetSelected;
+  final ValueChanged<String?> onPrimaryVetContactIdChanged;
   final ValueChanged<String?> onOwnershipChanged;
   final VoidCallback onDelete;
   final VoidCallback onPassedAway;
@@ -137,9 +137,8 @@ class PetFormContent extends StatelessWidget {
             title: l.petFormCareAndRecords,
             children: [
               PetFormVetSection(
-                selectedVetId: selectedVetId,
-                controller: controller,
-                onVetSelected: onVetSelected,
+                selectedPrimaryVetContactId: selectedPrimaryVetContactId,
+                onPrimaryVetContactIdChanged: onPrimaryVetContactIdChanged,
               ),
               const SizedBox(height: 16),
               PetFormInsuranceSection(

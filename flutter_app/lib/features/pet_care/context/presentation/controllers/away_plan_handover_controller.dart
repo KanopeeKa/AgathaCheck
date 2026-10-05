@@ -3,9 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../core/utils/calendar_date.dart';
 import '../../../../../l10n/app_localizations.dart';
+import 'package:pet_profile_app/features/people/people.dart';
 import '../../../../../core/files/pdf_saver.dart' as pdf_saver;
 import '../../data/services/away_plan_handover_service.dart';
 import '../../domain/entities/away_plan_readiness.dart';
+import '../../domain/entities/care_period_coverage.dart';
 import '../../domain/entities/planned_absence.dart';
 import '../../domain/entities/planned_absence_pet_carer.dart';
 import '../away_plan_copy.dart';
@@ -50,10 +52,10 @@ class AwayPlanHandoverController {
         startsOn: absence.startsOn,
         endsOn: absence.endsOn,
       );
-      final relationships = await repository.getPetPeopleRelationships(petId);
-      emergencyLines.addAll(
-        AwayPlanCopy.handoverContactLines(l, relationships),
-      );
+      final petPeople = await ref.read(petPeopleProvider(petId).future);
+      if (petPeople != null) {
+        emergencyLines.addAll(AwayPlanCopy.handoverContactLines(l, petPeople));
+      }
       final carer = absence.petCarers.firstWhere(
         (row) => row.petId == petId,
         orElse: () => PlannedAbsencePetCarer(petId: petId),

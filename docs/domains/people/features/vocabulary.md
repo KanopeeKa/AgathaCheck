@@ -11,15 +11,9 @@ related_bdd: []
 
 # People & Care Team — vocabulary (EN/FR)
 
-**Status:** approved 2026-09-27; **partially shipped** (nav, hub sections). Rows below remain source of truth until merged into [terminology.md](/docs/design/terminology.md) per ship checklist.
+**Status:** shipped 2026-10-05 for hub, nav, pet profile grouping, and Today desk labels — see [terminology.md](/docs/design/terminology.md) § People directory (Contacts). Rows below cover add flow, access labels, and danger zone until a follow-up terminology merge.
 
-When this feature ships, the implementing PR must:
-
-- move the shipped rows into [terminology.md](/docs/design/terminology.md), with one ARB key per label, following the D38 table pattern
-- localise enum labels (see `.agents/memory/localization-enum-labels.md`)
-- then delete this file
-
-Until then, don't change shipped strings ad hoc.
+Don't change shipped strings ad hoc.
 
 **Wire values don't change.** The API, database and logs keep `co_parent` and `carer`. Only the UI labels change: Co-parent, Full access, Can log care. Don't rename the enums.
 

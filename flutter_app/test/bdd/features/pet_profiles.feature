@@ -171,3 +171,20 @@ Feature: Pet Profiles
     When the user edits "Bella" and selects "Dr. Jones" as the vet
     And the user saves the pet
     Then "Bella" should be linked to "Dr. Jones"
+
+  # ── People around {pet} (integration) ───────────────────────
+
+  @P1
+  Scenario: Buddy's emergency card shows the primary vet set from Contacts, with a call action
+    Given I am logged in with a pet named Buddy
+    And Buddy's primary vet is set from Contacts with a phone number
+    When I view Buddy's pet profile
+    Then I see the primary vet on Buddy's emergency card
+    And I see a call action for the primary vet
+
+  @P1
+  Scenario: Set Buddy's out-of-hours vet from People around Buddy
+    Given I am logged in with a pet named Buddy
+    And an out-of-hours vet exists in Contacts
+    When I set the out-of-hours vet from People around Buddy
+    Then Buddy's emergency card shows the out-of-hours vet

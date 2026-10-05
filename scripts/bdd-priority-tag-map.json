@@ -24,7 +24,8 @@
     "Away planning hub lists a saved upcoming absence": "P1",
     "Away plan page shows who is caring for each pet": "P1",
     "Guardian assigns a shared carer on the away plan page": "P2",
-    "Guardian assigns a contact carer on the away plan page": "P2"
+    "Guardian assigns a contact carer on the away plan page": "P2",
+    "Assign an absence carer with the picker; the handover lists emergency contacts and vets": "P1"
   },
   "away_plan_detail_v2.feature": {
     "Away plan page hides coverage headers when carers and care are reassured": "P1",
@@ -77,7 +78,9 @@
     "Showing identification reminder for pet without ID": "P2",
     "No identification reminder for pet with ID": "P2",
     "Adding a photo to a pet profile": "P1",
-    "Linking a veterinarian to a pet": "P1"
+    "Linking a veterinarian to a pet": "P1",
+    "Buddy's emergency card shows the primary vet set from Contacts, with a call action": "P1",
+    "Set Buddy's out-of-hours vet from People around Buddy": "P1"
   },
   "health_tracking.feature": {
     "Creating a medication entry": "P0",
@@ -108,7 +111,9 @@
     "Unified event edit route redirects legacy paths": "P1",
     "Multi-dose daily medication records one date from the agenda": "P1",
     "Care recorded late keeps the next date": "P1",
-    "Multi-dose stack opens the care item view": "P1"
+    "Multi-dose stack opens the care item view": "P1",
+    "Pick a care provider and add a new one inline from the Care Item form": "P1",
+    "An inactive contact isn't offered in the care provider picker but stays visible on items already using it": "P1"
   },
   "notifications.feature": {
     "Notification generated for overdue health entry": "P1",

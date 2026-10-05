@@ -13,7 +13,7 @@ class PetProfileCard extends ConsumerWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final controller = PetProfileController(ref);
-    final assignedVet = controller.getAssignedVet(pet);
+    final assignedVetName = controller.primaryVetDisplayName(pet);
     final displayWeight = controller.getDisplayWeight(pet);
 
     return Padding(
@@ -39,11 +39,11 @@ class PetProfileCard extends ConsumerWidget {
                               style: theme.textTheme.headlineSmall,
                             ),
                           ),
-                          if (assignedVet != null)
+                          if (assignedVetName != null)
                             Padding(
                               padding: const EdgeInsets.only(left: 8),
                               child: Tooltip(
-                                message: assignedVet.displayName,
+                                message: assignedVetName,
                                 child: const Icon(
                                   Icons.local_hospital,
                                   size: 20,

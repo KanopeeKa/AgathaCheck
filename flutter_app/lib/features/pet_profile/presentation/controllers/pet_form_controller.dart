@@ -20,6 +20,9 @@ class PetFormController {
   bool get isDirty =>
       _baseline != null && !_state.matchesEditableFields(_baseline!);
 
+  String? get baselinePrimaryVetContactId =>
+      _baseline?.selectedPrimaryVetContactId;
+
   void captureBaseline() => _baseline = _state;
 
   void populateForm(Pet pet) {
@@ -33,7 +36,7 @@ class PetFormController {
       selectedSpecies: pet.species,
       selectedGender: pet.gender,
       photoBase64: pet.photoPath,
-      selectedVetId: pet.vetId,
+      selectedPrimaryVetContactId: null,
       existingColorValue: pet.colorValue,
       dateOfBirth: pet.dateOfBirth,
       neuteredDate: pet.neuteredDate,
@@ -138,7 +141,6 @@ class PetFormController {
           chipId: state.chipId.trim(),
           chipDismissed: state.chipDismissed,
           photoPath: state.photoBase64,
-          vetId: state.selectedVetId,
           passedAway: state.passedAway,
           organizationId: state.selectedOrgId,
           weightReferenceValue: referenceValue,
@@ -146,7 +148,6 @@ class PetFormController {
           weightManagementContext: state.weightManagementContext,
           clearWeightReferenceValue: referenceValue == null,
           clearWeightReferenceAuthority: state.weightReferenceAuthority == null,
-          clearVetId: state.selectedVetId == null,
           clearGender: state.selectedGender == null,
           clearNeuteredDate: state.neuteredDate == null,
           clearDateOfBirth: state.dateOfBirth == null,
@@ -155,7 +156,7 @@ class PetFormController {
         return PetFormSubmitSuccess(petId: petId, orgId: state.selectedOrgId);
       }
 
-      await deps.addPet(
+      final newPetId = await deps.addPet(
         name: state.name.trim(),
         species: state.selectedSpecies,
         breed: state.breed.trim(),
@@ -169,7 +170,6 @@ class PetFormController {
         chipId: state.chipId.trim(),
         chipDismissed: state.chipDismissed,
         photoPath: state.photoBase64,
-        vetId: state.selectedVetId,
         organizationId: state.selectedOrgId,
       );
 
@@ -177,7 +177,7 @@ class PetFormController {
       if (orgId != null) {
         deps.invalidateOrgPets?.call(orgId);
       }
-      return PetFormSubmitSuccess(orgId: orgId);
+      return PetFormSubmitSuccess(petId: newPetId, orgId: orgId);
     } catch (e) {
       return PetFormSubmitError(petFormSubmitErrorKindFrom(e), debugDetail: e);
     }
@@ -228,7 +228,7 @@ class PetFormState {
   final String? selectedGender;
   final String? photoBase64;
   final String? pendingPhotoFilename;
-  final String? selectedVetId;
+  final String? selectedPrimaryVetContactId;
   final int? existingColorValue;
   final DateTime? dateOfBirth;
   final DateTime? neuteredDate;
@@ -255,7 +255,7 @@ class PetFormState {
     this.selectedGender,
     this.photoBase64,
     this.pendingPhotoFilename,
-    this.selectedVetId,
+    this.selectedPrimaryVetContactId,
     this.existingColorValue,
     this.dateOfBirth,
     this.neuteredDate,
@@ -281,7 +281,7 @@ class PetFormState {
         selectedSpecies == other.selectedSpecies &&
         selectedGender == other.selectedGender &&
         photoBase64 == other.photoBase64 &&
-        selectedVetId == other.selectedVetId &&
+        selectedPrimaryVetContactId == other.selectedPrimaryVetContactId &&
         dateOfBirth == other.dateOfBirth &&
         neuteredDate == other.neuteredDate &&
         isNeutered == other.isNeutered &&
@@ -306,7 +306,7 @@ class PetFormState {
     String? selectedGender,
     String? photoBase64,
     String? pendingPhotoFilename,
-    String? selectedVetId,
+    String? selectedPrimaryVetContactId,
     int? existingColorValue,
     DateTime? dateOfBirth,
     DateTime? neuteredDate,
@@ -334,7 +334,8 @@ class PetFormState {
       selectedGender: selectedGender ?? this.selectedGender,
       photoBase64: photoBase64 ?? this.photoBase64,
       pendingPhotoFilename: pendingPhotoFilename ?? this.pendingPhotoFilename,
-      selectedVetId: selectedVetId ?? this.selectedVetId,
+      selectedPrimaryVetContactId:
+          selectedPrimaryVetContactId ?? this.selectedPrimaryVetContactId,
       existingColorValue: existingColorValue ?? this.existingColorValue,
       dateOfBirth: dateOfBirth ?? this.dateOfBirth,
       neuteredDate: neuteredDate ?? this.neuteredDate,

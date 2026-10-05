@@ -61,7 +61,7 @@ List<RouteBase> _vetLegacyRoutes() {
       name: 'petCareEditVet',
       builder: (context, state) {
         final vetId = state.pathParameters['id']!;
-        return PeopleLegacyVetRedirectScreen(vetId: vetId, edit: true);
+        return LegacyVetContactRedirectScreen(vetId: vetId, edit: true);
       },
     ),
     GoRoute(
@@ -69,7 +69,7 @@ List<RouteBase> _vetLegacyRoutes() {
       name: 'petCareVetDetail',
       builder: (context, state) {
         final vetId = state.pathParameters['id']!;
-        return PeopleLegacyVetRedirectScreen(vetId: vetId);
+        return LegacyVetContactRedirectScreen(vetId: vetId);
       },
     ),
   ];

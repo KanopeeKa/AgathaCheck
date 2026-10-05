@@ -3,13 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
 import 'package:pet_profile_app/features/care_item/presentation/detail/care_item_info_section.dart';
-import 'package:pet_profile_app/features/people/domain/entities/people_contact.dart';
-import 'package:pet_profile_app/features/people/presentation/providers/people_providers.dart';
+import 'package:pet_profile_app/features/people/application/people_providers.dart';
+import 'package:pet_profile_app/features/people/domain/entities/roster.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
-class _EmptyPeopleContactsNotifier extends PeopleContactsNotifier {
+class _EmptyRosterNotifier extends RosterNotifier {
   @override
-  Future<List<PeopleContact>> build() async => [];
+  Future<Roster> build() async =>
+      const Roster(households: [], contacts: [], pendingInvites: []);
 }
 
 void main() {
@@ -30,9 +31,7 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [
-          peopleContactsProvider.overrideWith(_EmptyPeopleContactsNotifier.new),
-        ],
+        overrides: [rosterProvider.overrideWith(_EmptyRosterNotifier.new)],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,

@@ -5,17 +5,16 @@ import '../../../../../core/utils/calendar_date.dart';
 import '../../../../../core/theme/experience_colors.dart';
 import '../../../../../core/utils/constants.dart';
 import '../../../../../l10n/app_localizations.dart';
-import '../../providers/pet_vet_contacts_provider.dart';
 import 'package:pet_profile_app/features/weight_tracking/weight_tracking.dart';
 import '../../../domain/entities/pet.dart';
 import '../../../domain/services/pet_detail_actions.dart';
-import '../../providers/pet_providers.dart';
 import '../../utils/pet_responsibility_label.dart';
 import 'pet_info_chip.dart';
 import 'pet_photo.dart';
 
 /// The header card on the pet detail screen: photo, name, quick-info chips,
-/// assigned vet selector, and optional bio / neuter / chip / insurance rows.
+/// and optional bio / neuter / chip / insurance rows. Vet and emergency
+/// contacts live in the People around section below this card.
 ///
 /// The photo column width is computed from a [LayoutBuilder] so the card
 /// stays usable at 320 logical px without horizontal overflow.
@@ -34,15 +33,9 @@ class PetDetailProfileCard extends ConsumerWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    final vetsAsync = ref.watch(petVetOptionsProvider);
-    final vets = vetsAsync.valueOrNull ?? [];
-    final assignedVet = findPetVetOption(vets, pet.vetId);
-
     final displayWeight = pet.weight;
     final l = AppLocalizations.of(context)!;
     final canEdit = viewerContext.can(PetDetailAction.editProfile);
-    final canAssignVet = viewerContext.can(PetDetailAction.assignVet);
-
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Card(
@@ -118,12 +111,16 @@ class PetDetailProfileCard extends ConsumerWidget {
                             spacing: 8,
                             runSpacing: 8,
                             children: [
-                              PetInfoChipWidget(
-                                iconWidget: AppConstants.speciesIconWidget(
-                                  pet.species,
-                                  size: 18,
-                                ),
+                              Semantics(
+                                identifier: 'pet_detail_species_chip',
                                 label: pet.species,
+                                child: PetInfoChipWidget(
+                                  iconWidget: AppConstants.speciesIconWidget(
+                                    pet.species,
+                                    size: 18,
+                                  ),
+                                  label: pet.species,
+                                ),
                               ),
                               if (pet.breed.isNotEmpty)
                                 PetInfoChip(icon: Icons.pets, label: pet.breed),
@@ -135,9 +132,13 @@ class PetDetailProfileCard extends ConsumerWidget {
                                   label: pet.gender!,
                                 ),
                               if (pet.ageDisplay != null)
-                                PetInfoChip(
-                                  icon: Icons.cake,
+                                Semantics(
+                                  identifier: 'pet_detail_age_chip',
                                   label: pet.ageDisplay!,
+                                  child: PetInfoChip(
+                                    icon: Icons.cake,
+                                    label: pet.ageDisplay!,
+                                  ),
                                 ),
                               if (displayWeight != null)
                                 Consumer(
@@ -158,16 +159,6 @@ class PetDetailProfileCard extends ConsumerWidget {
                                 ),
                             ],
                           ),
-                          const SizedBox(height: 10),
-                          if (canAssignVet)
-                            _buildVetRow(
-                              context,
-                              ref,
-                              assignedVet,
-                              vets,
-                              theme,
-                              colorScheme,
-                            ),
                           if (pet.bio.isNotEmpty) ...[
                             const SizedBox(height: 12),
                             Text(
@@ -270,118 +261,6 @@ class PetDetailProfileCard extends ConsumerWidget {
           },
         ),
       ),
-    );
-  }
-
-  Widget _buildVetRow(
-    BuildContext context,
-    WidgetRef ref,
-    PetVetOption? assignedVet,
-    List<PetVetOption> vets,
-    ThemeData theme,
-    ColorScheme colorScheme,
-  ) {
-    final l = AppLocalizations.of(context)!;
-    if (vets.isEmpty) {
-      return Semantics(
-        label: l.addVetFirst,
-        button: true,
-        child: GestureDetector(
-          onTap: () => GoRouter.of(context).go('/pc/people/new'),
-          child: Row(
-            children: [
-              Icon(
-                Icons.local_hospital,
-                size: 16,
-                color: colorScheme.onSurfaceVariant,
-              ),
-              const SizedBox(width: 6),
-              Flexible(
-                child: Text(
-                  l.noVetAssigned,
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 4),
-              Flexible(
-                child: Text(
-                  '— ${l.addVet}',
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.primary,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    return Row(
-      children: [
-        Icon(
-          Icons.local_hospital,
-          size: 16,
-          color: assignedVet != null
-              ? colorScheme.primary
-              : colorScheme.onSurfaceVariant,
-        ),
-        const SizedBox(width: 6),
-        Expanded(
-          child: PopupMenuButton<String?>(
-            tooltip: l.selectVeterinarian,
-            padding: EdgeInsets.zero,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  assignedVet != null
-                      ? assignedVet.displayName
-                      : l.noVetAssigned,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: assignedVet != null
-                        ? colorScheme.primary
-                        : colorScheme.onSurfaceVariant,
-                    fontWeight: assignedVet != null
-                        ? FontWeight.w500
-                        : FontWeight.normal,
-                  ),
-                ),
-                const SizedBox(width: 4),
-                Icon(
-                  Icons.arrow_drop_down,
-                  size: 20,
-                  color: colorScheme.onSurfaceVariant,
-                ),
-              ],
-            ),
-            onSelected: (vetId) async {
-              final updated = vetId == null
-                  ? pet.copyWith(clearVetId: true)
-                  : pet.copyWith(vetId: vetId);
-              await ref.read(petListProvider.notifier).updatePet(updated);
-            },
-            itemBuilder: (context) => [
-              if (assignedVet != null)
-                PopupMenuItem<String?>(value: null, child: Text(l.removeVet)),
-              ...vets.map(
-                (vet) => PopupMenuItem<String?>(
-                  value: vet.vetId,
-                  enabled: assignedVet?.vetId != vet.vetId,
-                  child: Text(vet.displayName),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
     );
   }
 }

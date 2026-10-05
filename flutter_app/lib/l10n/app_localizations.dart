@@ -13750,6 +13750,78 @@ abstract class AppLocalizations {
   /// **'Other link'**
   String get peopleRelationshipOther;
 
+  /// No description provided for @peopleAroundPetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'People around {petName}'**
+  String peopleAroundPetTitle(String petName);
+
+  /// No description provided for @peoplePetOwnerQuiet.
+  ///
+  /// In en, this message translates to:
+  /// **'{petName} · {ownerName}\'s pet'**
+  String peoplePetOwnerQuiet(String petName, String ownerName);
+
+  /// No description provided for @peopleGroupAtHome.
+  ///
+  /// In en, this message translates to:
+  /// **'At home'**
+  String get peopleGroupAtHome;
+
+  /// No description provided for @peoplePetEmergencyCardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency'**
+  String get peoplePetEmergencyCardTitle;
+
+  /// No description provided for @peoplePetEmergencyManage.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage'**
+  String get peoplePetEmergencyManage;
+
+  /// No description provided for @peoplePetEmergencyManageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency contacts'**
+  String get peoplePetEmergencyManageTitle;
+
+  /// No description provided for @peoplePetAddPrimaryVet.
+  ///
+  /// In en, this message translates to:
+  /// **'Add {petName}\'s vet'**
+  String peoplePetAddPrimaryVet(String petName);
+
+  /// No description provided for @peoplePetAddOutOfHoursVet.
+  ///
+  /// In en, this message translates to:
+  /// **'Add {petName}\'s out-of-hours vet'**
+  String peoplePetAddOutOfHoursVet(String petName);
+
+  /// No description provided for @peoplePetAddEmergencyContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Add emergency contact'**
+  String get peoplePetAddEmergencyContact;
+
+  /// No description provided for @peoplePetEmptyAtHome.
+  ///
+  /// In en, this message translates to:
+  /// **'No household members for this pet yet.'**
+  String get peoplePetEmptyAtHome;
+
+  /// No description provided for @peopleReorderUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Move up'**
+  String get peopleReorderUp;
+
+  /// No description provided for @peopleReorderDown.
+  ///
+  /// In en, this message translates to:
+  /// **'Move down'**
+  String get peopleReorderDown;
+
   /// No description provided for @peopleDetailTabOverview.
   ///
   /// In en, this message translates to:

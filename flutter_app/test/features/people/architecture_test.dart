@@ -3,16 +3,6 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 
-/// Temporary allowlist until people-client-integration-7f3b migrates callers.
-const _externalAllowlist = <String>{
-  'flutter_app/lib/core/router/experience_routes.dart',
-  'flutter_app/lib/core/router/vet_routes.dart',
-  'flutter_app/lib/features/pet_profile/presentation/providers/pet_vet_contacts_provider.dart',
-  'flutter_app/lib/features/pet_profile/presentation/widgets/pet_form/pet_form_vet_section.dart',
-  'flutter_app/lib/features/health_tracking/presentation/widgets/care_provider_field.dart',
-  'flutter_app/lib/features/pet_care/context/presentation/widgets/away_plan_carer_edit_dialog.dart',
-};
-
 void main() {
   test('outside people/, only people.dart may import features/people/*', () {
     final repoRoot = p.normalize(p.join(Directory.current.path, '..'));
@@ -31,7 +21,6 @@ void main() {
       for (final match in importRe.allMatches(content)) {
         final target = match.group(1)!;
         if (target.endsWith('people.dart')) continue;
-        if (_externalAllowlist.contains(rel)) continue;
         violations.add('$rel → $target');
       }
     }

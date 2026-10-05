@@ -216,7 +216,10 @@ run_flutter() {
         fi
       fi
       if [[ "$f" =~ flutter_app/test/features/([^/]+)/ ]]; then
-        test_dirs+=("test/features/${BASH_REMATCH[1]}")
+        local td="test/features/${BASH_REMATCH[1]}"
+        if [[ -d "$td" ]]; then
+          test_dirs+=("$td")
+        fi
       fi
     done <<< "$CHANGED"
     if [[ ${#test_dirs[@]} -gt 0 ]]; then

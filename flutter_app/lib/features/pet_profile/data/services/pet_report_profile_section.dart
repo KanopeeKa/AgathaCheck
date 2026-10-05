@@ -3,13 +3,13 @@ import '../../../../core/utils/calendar_date.dart';
 import 'package:pdf/widgets.dart' as pw;
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/pet.dart';
-import '../../../vet/vet.dart';
-import '../../../weight_tracking/weight_tracking.dart';
+import 'package:pet_profile_app/features/people/people.dart';
+import 'package:pet_profile_app/features/weight_tracking/weight_tracking.dart';
 
 class PetProfileSectionBuilder {
   static List<pw.Widget> build(
     Pet pet,
-    Vet? vet,
+    PetReportVetDetails? vet,
     List<WeightEntry> weightEntries,
     String weightUnit,
     AppLocalizations l,

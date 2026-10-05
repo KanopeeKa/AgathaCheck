@@ -19,7 +19,6 @@
       "id": "experience",
       "roots": [
         "test/features/experience",
-        "test/features/vet",
         "test/features/weight_tracking",
         "test/features/help",
         "test/features/about",

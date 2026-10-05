@@ -53,3 +53,12 @@ Feature: Away Planning
     And I have a saved planned absence for that pet
     When I assign the collaborator as carer on the away plan page
     Then I should see the collaborator's name in who is caring
+
+  @P1
+  Scenario: Assign an absence carer with the picker; the handover lists emergency contacts and vets
+    Given I am logged in with a pet named Buddy
+    And Buddy has veterinary contacts for handover
+    And I have a planned absence including Buddy
+    When I assign a trusted carer with the away plan picker
+    And I download Buddy's handover plan
+    Then the handover lists Buddy's emergency contacts and vets

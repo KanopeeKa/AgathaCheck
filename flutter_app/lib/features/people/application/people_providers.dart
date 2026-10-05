@@ -122,3 +122,10 @@ final householdDetailProvider = FutureProvider.autoDispose
         return listed.where((h) => h.id == householdId).firstOrNull;
       }
     });
+
+/// Resolves a legacy `vets` row id to a People contact id (deep links).
+final legacyVetContactIdProvider = FutureProvider.autoDispose
+    .family<String?, String>((ref, vetId) async {
+      final repo = ref.watch(peopleRepositoryProvider);
+      return repo.contactIdForLegacyVet(vetId);
+    });

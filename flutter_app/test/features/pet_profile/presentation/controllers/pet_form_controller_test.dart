@@ -44,7 +44,7 @@ void main() {
       expect(state.selectedSpecies, 'dog');
       expect(state.selectedGender, 'male');
       expect(state.photoBase64, 'base64data');
-      expect(state.selectedVetId, 'vet-1');
+      expect(state.selectedPrimaryVetContactId, isNull);
       expect(state.existingColorValue, 0xFF7E57C2);
       expect(state.dateOfBirth, DateTime(2020, 1, 1));
       expect(state.neuteredDate, DateTime(2021, 6, 1));
@@ -129,7 +129,6 @@ void main() {
               String chipId = '',
               bool chipDismissed = false,
               String? photoPath,
-              String? vetId,
               String? organizationId,
             }) async {
               await repo.addPet(
@@ -148,10 +147,10 @@ void main() {
                   chipId: chipId,
                   chipDismissed: chipDismissed,
                   photoPath: photoPath,
-                  vetId: vetId,
                   organizationId: organizationId,
                 ),
               );
+              return 'new-pet';
             },
         updatePet: (pet) => repo.updatePet(pet),
       );

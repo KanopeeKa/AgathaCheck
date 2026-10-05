@@ -5,12 +5,12 @@ import '../enums/relationship_kind.dart';
 
 class DeskRankingContext {
   const DeskRankingContext({
-    this.linkedPetCountByLegacyVetId = const {},
+    this.linkedPetCountByVetRecordId = const {},
     this.linkedPetCountByContactId = const {},
     this.primaryVetContactIds = const {},
   });
 
-  final Map<String, int> linkedPetCountByLegacyVetId;
+  final Map<String, int> linkedPetCountByVetRecordId;
   final Map<String, int> linkedPetCountByContactId;
   final Set<String> primaryVetContactIds;
 }
@@ -35,7 +35,8 @@ bool isVetTeamCandidate(ContactSummary contact) {
 
 int _vetTeamScore(ContactSummary contact, DeskRankingContext ctx) {
   var score = 0;
-  score += ctx.linkedPetCountByLegacyVetId[contact.legacyVetId ?? ''] ?? 0;
+  score +=
+      ctx.linkedPetCountByVetRecordId[contact.linkedVetRecordId ?? ''] ?? 0;
   score += ctx.linkedPetCountByContactId[contact.id] ?? 0;
   if (ctx.primaryVetContactIds.contains(contact.id)) score += 10;
   if (contact.pets.any((p) => p.isPrimary)) score += 5;

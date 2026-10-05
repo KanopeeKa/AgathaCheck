@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../l10n/app_localizations.dart';
-import 'package:pet_profile_app/features/people/people.dart';
+import '../../../people/people.dart';
 
 /// Default provider on a care item: contact picker or interim typed name (D-CIE-016).
-class CareProviderField extends ConsumerStatefulWidget {
+class CareProviderField extends ConsumerWidget {
   const CareProviderField({
     super.key,
     this.contactId,
@@ -18,30 +18,11 @@ class CareProviderField extends ConsumerStatefulWidget {
   final void Function({String? contactId, String? typedName}) onChanged;
 
   @override
-  ConsumerState<CareProviderField> createState() => _CareProviderFieldState();
-}
-
-class _CareProviderFieldState extends ConsumerState<CareProviderField> {
-  late final TextEditingController _typedController;
-  bool _useTyped = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _useTyped = widget.typedName != null && widget.typedName!.isNotEmpty;
-    _typedController = TextEditingController(text: widget.typedName ?? '');
-  }
-
-  @override
-  void dispose() {
-    _typedController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
-    final contactsAsync = ref.watch(peopleContactsProvider);
+    final selected = contactId == null
+        ? null
+        : ref.watch(personSummaryProvider(contactId!));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -51,55 +32,38 @@ class _CareProviderFieldState extends ConsumerState<CareProviderField> {
           style: Theme.of(context).textTheme.titleSmall,
         ),
         const SizedBox(height: 8),
-        SwitchListTile(
-          contentPadding: EdgeInsets.zero,
-          title: Text(l.careProviderUseTypedName),
-          value: _useTyped,
-          onChanged: (v) {
-            setState(() {
-              _useTyped = v;
-              if (v) {
-                widget.onChanged(
-                  contactId: null,
-                  typedName: _typedController.text.trim(),
-                );
-              } else {
-                widget.onChanged(contactId: widget.contactId, typedName: null);
-              }
-            });
+        PeoplePickerField(
+          purpose: 'care_provider',
+          query: PeopleQuery(
+            allowTypedName: true,
+            allowNone: true,
+            currentId: contactId,
+          ),
+          value: typedName != null && typedName!.isNotEmpty
+              ? ContactSummary(
+                  id: '__typed__',
+                  directory: const ContactDirectoryRef(type: 'personal'),
+                  kind: ContactKind.person,
+                  name: typedName!,
+                  roles: const [],
+                  group: ContactGroup.professional,
+                  status: ContactStatus.active,
+                )
+              : selected,
+          placeholder: l.careProviderChooseContact,
+          onChanged: (PeoplePickerResult? result) {
+            switch (result) {
+              case PeoplePickerContactResult(:final contact):
+                onChanged(contactId: contact.id, typedName: null);
+              case PeoplePickerTypedNameResult(:final name):
+                onChanged(contactId: null, typedName: name);
+              case PeoplePickerNoneResult():
+                onChanged(contactId: null, typedName: null);
+              case null:
+                break;
+            }
           },
         ),
-        if (_useTyped)
-          TextField(
-            controller: _typedController,
-            decoration: InputDecoration(labelText: l.careProviderTypedName),
-            onChanged: (v) =>
-                widget.onChanged(contactId: null, typedName: v.trim()),
-          )
-        else
-          contactsAsync.when(
-            data: (contacts) {
-              return DropdownButtonFormField<String?>(
-                initialValue: widget.contactId,
-                decoration: InputDecoration(
-                  labelText: l.careProviderChooseContact,
-                ),
-                items: [
-                  DropdownMenuItem<String?>(value: null, child: Text(l.none)),
-                  ...contacts.map(
-                    (c) => DropdownMenuItem<String?>(
-                      value: c.id,
-                      child: Text(c.name),
-                    ),
-                  ),
-                ],
-                onChanged: (id) =>
-                    widget.onChanged(contactId: id, typedName: null),
-              );
-            },
-            loading: () => const LinearProgressIndicator(),
-            error: (_, __) => Text(l.careProviderContactsUnavailable),
-          ),
       ],
     );
   }
