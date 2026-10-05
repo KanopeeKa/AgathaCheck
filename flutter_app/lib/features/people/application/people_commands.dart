@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../domain/entities/household.dart';
 import '../domain/enums/relationship_kind.dart';
 import '../domain/repositories/people_repository.dart';
 import 'people_api_exception.dart';
@@ -123,6 +124,55 @@ class PeopleCommands {
     await afterPetLinkChange(contactId, petId);
   }
 
+  Future<Household> createHousehold(
+    String name, {
+    List<String> petIds = const [],
+  }) async {
+    final household = await _households.createHousehold(name, petIds: petIds);
+    await _invalidateHouseholds();
+    return household;
+  }
+
+  Future<Household> renameHousehold({
+    required String householdId,
+    required String name,
+  }) async {
+    final household = await _households.renameHousehold(
+      householdId: householdId,
+      name: name,
+    );
+    await _invalidateHouseholds();
+    return household;
+  }
+
+  Future<void> setHouseholdPets({
+    required String householdId,
+    required List<String> petIds,
+  }) async {
+    await _households.setHouseholdPets(
+      householdId: householdId,
+      petIds: petIds,
+    );
+    await _invalidateHouseholds();
+  }
+
+  Future<void> createHouseholdInvite({
+    required String householdId,
+    required String inviteeEmail,
+    String? contactId,
+    String accessTier = 'full_access',
+    bool isOrganiser = false,
+  }) async {
+    await _households.createHouseholdInvite(
+      householdId: householdId,
+      inviteeEmail: inviteeEmail,
+      contactId: contactId,
+      accessTier: accessTier,
+      isOrganiser: isOrganiser,
+    );
+    await refreshRoster();
+  }
+
   Future<void> revokeHouseholdInvite({
     required String householdId,
     required String inviteId,
@@ -131,6 +181,20 @@ class PeopleCommands {
       householdId: householdId,
       inviteId: inviteId,
     );
+    await refreshRoster();
+  }
+
+  Future<void> acceptHouseholdInvite(String code) async {
+    await _households.acceptHouseholdInvite(code);
+    await _invalidateHouseholds();
+  }
+
+  Future<void> declineHouseholdInvite(String code) async {
+    await _households.declineHouseholdInvite(code);
+  }
+
+  Future<void> _invalidateHouseholds() async {
+    _ref.invalidate(peopleHouseholdsProvider);
     await refreshRoster();
   }
 

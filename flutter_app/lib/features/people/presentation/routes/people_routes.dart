@@ -6,6 +6,8 @@ import '../add/add_person_flow.dart';
 import '../add/add_person_route_args.dart';
 import '../detail/person_detail_page.dart';
 import '../edit/person_edit_page.dart';
+import '../households/household_detail_page.dart';
+import '../households/households_page.dart';
 
 RouteBase buildPeopleHubShellRoute() {
   return ShellRoute(
@@ -31,7 +33,18 @@ RouteBase buildPeopleHubShellRoute() {
           GoRoute(
             path: 'households',
             name: 'petCarePeopleHouseholds',
-            redirect: (context, state) => '/pc/pets/households',
+            builder: (context, state) =>
+                HouseholdsPage(embedded: peopleDetailShouldEmbed(context)),
+            routes: [
+              GoRoute(
+                path: ':householdId',
+                name: 'petCarePeopleHouseholdDetail',
+                builder: (context, state) => HouseholdDetailPage(
+                  householdId: state.pathParameters['householdId']!,
+                  embedded: peopleDetailShouldEmbed(context),
+                ),
+              ),
+            ],
           ),
           GoRoute(
             path: ':personId',

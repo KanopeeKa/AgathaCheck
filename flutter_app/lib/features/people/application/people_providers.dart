@@ -108,15 +108,17 @@ final peopleHouseholdsProvider = FutureProvider<List<Household>>((ref) async {
   return repo.listHouseholds();
 });
 
-final householdDetailProvider = Provider.family<Household?, String>((
-  ref,
-  householdId,
-) {
-  final roster = ref.watch(rosterProvider).valueOrNull;
-  if (roster == null) return null;
-  for (final h in roster.households) {
-    if (h.id == householdId) return h;
-  }
-  final asyncHouseholds = ref.watch(peopleHouseholdsProvider).valueOrNull;
-  return asyncHouseholds?.where((h) => h.id == householdId).firstOrNull;
-});
+final householdDetailProvider = FutureProvider.autoDispose
+    .family<Household?, String>((ref, householdId) async {
+      final repo = ref.watch(householdsRepositoryProvider);
+      try {
+        return await repo.fetchHouseholdDetail(householdId);
+      } catch (_) {
+        final roster = ref.read(rosterProvider).valueOrNull;
+        for (final h in roster?.households ?? const <Household>[]) {
+          if (h.id == householdId) return h;
+        }
+        final listed = await ref.read(peopleHouseholdsProvider.future);
+        return listed.where((h) => h.id == householdId).firstOrNull;
+      }
+    });

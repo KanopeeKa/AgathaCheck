@@ -1,3 +1,26 @@
+class HouseholdPet {
+  const HouseholdPet({
+    required this.petId,
+    required this.name,
+    required this.ownerUserId,
+  });
+
+  final String petId;
+  final String name;
+  final String ownerUserId;
+
+  @override
+  bool operator ==(Object other) {
+    return other is HouseholdPet &&
+        other.petId == petId &&
+        other.name == name &&
+        other.ownerUserId == ownerUserId;
+  }
+
+  @override
+  int get hashCode => Object.hash(petId, name, ownerUserId);
+}
+
 class Household {
   const Household({
     required this.id,
@@ -5,6 +28,7 @@ class Household {
     required this.myTier,
     required this.myIsOrganiser,
     required this.members,
+    this.pets = const [],
   });
 
   final String id;
@@ -12,6 +36,7 @@ class Household {
   final String myTier;
   final bool myIsOrganiser;
   final List<HouseholdMember> members;
+  final List<HouseholdPet> pets;
 
   @override
   bool operator ==(Object other) {
@@ -20,12 +45,19 @@ class Household {
         other.name == name &&
         other.myTier == myTier &&
         other.myIsOrganiser == myIsOrganiser &&
-        _listEq(other.members, members);
+        _listEq(other.members, members) &&
+        _listEq(other.pets, pets);
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, name, myTier, myIsOrganiser, Object.hashAll(members));
+  int get hashCode => Object.hash(
+    id,
+    name,
+    myTier,
+    myIsOrganiser,
+    Object.hashAll(members),
+    Object.hashAll(pets),
+  );
 }
 
 class HouseholdMember {
