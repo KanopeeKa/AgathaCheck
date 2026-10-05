@@ -314,19 +314,19 @@ flowchart TD
 ## Runtime state
 
 ```yaml
-autonomy: active
-current_phase: D1
-last_completed_phase: B4
+autonomy: completed
+current_phase: null
+last_completed_phase: D1
 halt_reason: null
-next_action: "continue phase D1 on branch cursor/care-gap-d1-drop-history-50b4"
+next_action: "plan complete"
 artifact_ref:
   branch: cursor/care-requirements-gap-close-integration-50b4
   plan_path: .agents/plans/care-requirements-gap-close-c1a7.md
-  plan_commit: 974ac3484ed8def2654fd260996bf1b05a25ed96
+  plan_commit: 2055717ed2024d00c3746430e7d2263970b51750
   snapshot_path: .agents/plans/care-requirements-gap-close-c1a7.snapshot.json
-  snapshot_commit: 974ac3484ed8def2654fd260996bf1b05a25ed96
+  snapshot_commit: 2055717ed2024d00c3746430e7d2263970b51750
 open_prs: []
-merge_commits: {}
+merge_commits: {"B3":"974ac3484ed8def2654fd260996bf1b05a25ed96","B4":"c97e70cfbe76c5b9ef67c1c1a030a5ea89fc43c8"}
 debt_issue_refs: [1539,1540,1541,1542,1543,1544,1545,1546,1547,1476]
 ```
 

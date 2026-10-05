@@ -5,7 +5,7 @@
   "approved_at": "2026-10-04T21:05:00Z",
   "approved_by": "user chat 2026-10-04 — approved plan with 10 amendments; execute-plan on integration branch with full autonomy",
   "approved_until": "2026-10-06T21:05:00Z",
-  "autonomy": "active",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "cursor/care-requirements-gap-close-integration-50b4",
   "control_issue": 1526,
@@ -373,11 +373,14 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
-      "status_detail": "Requires A2; coordinate #1510",
-      "debt_issue_refs": []
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1597",
+      "pr_head_sha": "6c206a9c",
+      "merge_commit": "2055717ed2024d00c3746430e7d2263970b51750"
     }
   ],
-  "content_hash": "sha256:f9130982956631749164165139ecf2f90f59d33943963489ce2aa915c403284d"
+  "content_hash": "sha256:288f0c896590d681d0625674c96ed274fef400cef517b6fc79126c65bf577207"
 }
