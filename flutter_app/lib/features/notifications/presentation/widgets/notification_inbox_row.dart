@@ -104,10 +104,7 @@ class _NotificationInboxRowState extends ConsumerState<NotificationInboxRow> {
         accept: l.notificationAccountSecureMyAccount,
       );
     }
-    return InlineActionLabels(
-      decline: l.declineShare,
-      accept: l.acceptShare,
-    );
+    return InlineActionLabels(decline: l.declineShare, accept: l.acceptShare);
   }
 
   @override

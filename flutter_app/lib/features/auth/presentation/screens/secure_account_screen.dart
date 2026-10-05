@@ -35,7 +35,9 @@ class _SecureAccountScreenState extends ConsumerState<SecureAccountScreen> {
       _error = null;
     });
     try {
-      await ref.read(authProvider.notifier).secureAccount(
+      await ref
+          .read(authProvider.notifier)
+          .secureAccount(
             currentPassword: _currentController.text,
             newPassword: _newController.text,
             notificationId: widget.notificationId,

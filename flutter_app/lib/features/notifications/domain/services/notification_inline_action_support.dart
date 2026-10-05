@@ -1,7 +1,11 @@
 import '../entities/app_notification.dart';
 import 'notification_inbox_v2_rules.dart';
 
-enum NotificationInlineActionKind { shareInvite, householdInvite, accountNewSignIn }
+enum NotificationInlineActionKind {
+  shareInvite,
+  householdInvite,
+  accountNewSignIn,
+}
 
 class InlineActionLabels {
   const InlineActionLabels({required this.decline, required this.accept});
