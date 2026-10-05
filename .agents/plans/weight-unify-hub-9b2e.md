@@ -33,17 +33,17 @@
 
 ```yaml
 autonomy: active
-current_phase: W6
-last_completed_phase: W5
+current_phase: W7
+last_completed_phase: W6
 halt_reason: null
-next_action: "continue phase W6 on branch cursor/weight-unify-w6-hub-9b2e"
+next_action: "continue phase W7 on branch cursor/weight-unify-w7-e2e-9b2e"
 artifact_ref:
   branch: cursor/weight-unify-hub-integration-9b2e
   plan_path: .agents/plans/weight-unify-hub-9b2e.md
-  plan_commit: b0730951103df917281e7451b7a0e115959b344b
+  plan_commit: effe4eba3f50907fb978f3692e350ea722c89042
   snapshot_path: .agents/plans/weight-unify-hub-9b2e.snapshot.json
-  snapshot_commit: b0730951103df917281e7451b7a0e115959b344b
+  snapshot_commit: effe4eba3f50907fb978f3692e350ea722c89042
 open_prs: []
-merge_commits: {}
+merge_commits: {"W5":"b0730951103df917281e7451b7a0e115959b344b"}
 debt_issue_refs: []
 ```
