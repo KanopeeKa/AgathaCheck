@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-import 'package:pet_profile_app/core/theme/app_color_tokens.dart';
 import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/organization.dart';
 import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
+import 'package:pet_profile_app/features/experience/presentation/widgets/experience_shell_chrome_bar.dart';
 import 'package:pet_profile_app/features/organization/presentation/screens/organization_list_screen.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
@@ -61,8 +61,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      final scaffold = tester.widget<Scaffold>(find.byType(Scaffold).first);
-      expect(scaffold.backgroundColor, AppColorTokens.organizationLight);
+      expect(find.byType(ExperienceContentChromeBar), findsOneWidget);
 
       expect(find.byKey(const Key('org_create_button')), findsNothing);
       expect(find.byKey(const Key('org_membership_grid')), findsOneWidget);

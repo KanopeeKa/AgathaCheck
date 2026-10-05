@@ -138,7 +138,8 @@ DeskRankingContext _deskContextFromRoster(Roster roster) {
     }
     final vetRecordId = contact.linkedVetRecordId;
     if (vetRecordId != null && vetRecordId.isNotEmpty) {
-      byLegacy[vetRecordId] = (byLegacy[vetRecordId] ?? 0) + contact.pets.length;
+      byLegacy[vetRecordId] =
+          (byLegacy[vetRecordId] ?? 0) + contact.pets.length;
     }
     if (contact.pets.any((p) => p.isPrimary)) {
       primaryVets.add(contact.id);

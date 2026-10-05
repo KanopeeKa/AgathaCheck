@@ -35,7 +35,8 @@ bool isVetTeamCandidate(ContactSummary contact) {
 
 int _vetTeamScore(ContactSummary contact, DeskRankingContext ctx) {
   var score = 0;
-  score += ctx.linkedPetCountByVetRecordId[contact.linkedVetRecordId ?? ''] ?? 0;
+  score +=
+      ctx.linkedPetCountByVetRecordId[contact.linkedVetRecordId ?? ''] ?? 0;
   score += ctx.linkedPetCountByContactId[contact.id] ?? 0;
   if (ctx.primaryVetContactIds.contains(contact.id)) score += 10;
   if (contact.pets.any((p) => p.isPrimary)) score += 5;

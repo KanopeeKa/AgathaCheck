@@ -31,9 +31,7 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [
-          rosterProvider.overrideWith(_EmptyRosterNotifier.new),
-        ],
+        overrides: [rosterProvider.overrideWith(_EmptyRosterNotifier.new)],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,

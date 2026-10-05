@@ -46,8 +46,6 @@ class _LegacyVetContactRedirectScreenState
   @override
   Widget build(BuildContext context) {
     ref.watch(legacyVetContactIdProvider(widget.vetId));
-    return const Scaffold(
-      body: Center(child: CircularProgressIndicator()),
-    );
+    return const Scaffold(body: Center(child: CircularProgressIndicator()));
   }
 }
