@@ -308,8 +308,8 @@ export class CareItemPage {
 
   async expectNeedsAttentionVisible(): Promise<void> {
     await expect(
-      this.page.locator('[flt-semantics-identifier="care_item_needs_attention_section"]').or(
-        this.page.getByText(/Needs attention|À traiter/i),
+      this.page.locator(
+        '[flt-semantics-identifier="care_item_needs_attention_section"]',
       ),
     ).toBeVisible({ timeout: 30_000 });
   }
