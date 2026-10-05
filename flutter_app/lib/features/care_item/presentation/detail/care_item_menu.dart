@@ -101,4 +101,11 @@ class CareItemMenu extends StatelessWidget {
   }
 }
 
-enum CareItemMenuAction { edit, pause, resume, archive, restore, planAnotherDate }
+enum CareItemMenuAction {
+  edit,
+  pause,
+  resume,
+  archive,
+  restore,
+  planAnotherDate,
+}

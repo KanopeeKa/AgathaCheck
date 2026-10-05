@@ -7,10 +7,7 @@ import '../../../../core/widgets/care_mark_done_button.dart';
 import '../../../../core/widgets/care_skip_button.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../care_item.dart';
-import '../../domain/care_item_schedule.dart';
-import '../../domain/care_occurrence.dart';
 import '../../domain/occurrence_display.dart';
-import '../../domain/occurrence_status.dart';
 import '../../../health_tracking/health_tracking.dart';
 import 'package:pet_profile_app/features/pet_care/pet_care.dart';
 

@@ -62,12 +62,14 @@ autonomy: active
 current_phase: 1
 last_completed_phase: null
 halt_reason: null
-next_action: "implement phase 1 on cursor/care-item-bulk-scope-0f49"
+next_action: "continue phase 1 on branch cursor/care-item-bulk-scope-0f49"
 artifact_ref:
   branch: cursor/care-item-bulk-scope-0f49
   plan_path: .agents/plans/care-item-bulk-scope.md
+  plan_commit: 3da86fac53ef9b841412a325daf54463ce4318f7
   snapshot_path: .agents/plans/care-item-bulk-scope.snapshot.json
-open_prs: []
+  snapshot_commit: 3da86fac53ef9b841412a325daf54463ce4318f7
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1671"]
 merge_commits: {}
 debt_issue_refs: []
 ```
