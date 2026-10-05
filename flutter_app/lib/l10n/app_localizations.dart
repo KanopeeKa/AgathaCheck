@@ -1142,6 +1142,246 @@ abstract class AppLocalizations {
   /// **'Record weight'**
   String get weightRecordAction;
 
+  /// No description provided for @weightRecordSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Record weight'**
+  String get weightRecordSheetTitle;
+
+  /// No description provided for @weightEditSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit weight'**
+  String get weightEditSheetTitle;
+
+  /// No description provided for @weightFieldLabelUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight ({unit})'**
+  String weightFieldLabelUnit(String unit);
+
+  /// No description provided for @weightCountsAs.
+  ///
+  /// In en, this message translates to:
+  /// **'Counts as {routine}'**
+  String weightCountsAs(String routine);
+
+  /// No description provided for @weightCountsAsChoiceHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose which weigh-in this counts as'**
+  String get weightCountsAsChoiceHelp;
+
+  /// No description provided for @weightDontCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t count it as a weigh-in'**
+  String get weightDontCount;
+
+  /// No description provided for @weightCountAsWeighInAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Count as a weigh-in'**
+  String get weightCountAsWeighInAction;
+
+  /// No description provided for @weightFulfilmentStale.
+  ///
+  /// In en, this message translates to:
+  /// **'That weigh-in can\'t take this weight any more. Check and save again.'**
+  String get weightFulfilmentStale;
+
+  /// No description provided for @weightCheckingWeighIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking for a due weigh-in…'**
+  String get weightCheckingWeighIn;
+
+  /// No description provided for @weightCheckFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t check for a due weigh-in.'**
+  String get weightCheckFailed;
+
+  /// No description provided for @weightCheckRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get weightCheckRetry;
+
+  /// No description provided for @weightSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight saved'**
+  String get weightSaved;
+
+  /// No description provided for @weightSavedCountedAs.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved · counted as {routine}'**
+  String weightSavedCountedAs(String routine);
+
+  /// No description provided for @weightWeighInUndone.
+  ///
+  /// In en, this message translates to:
+  /// **'Weigh-in undone'**
+  String get weightWeighInUndone;
+
+  /// No description provided for @weightLinkedEditInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Counts as {routine} ({date}). Changing the date also changes when the weigh-in was done.'**
+  String weightLinkedEditInfo(String routine, String date);
+
+  /// No description provided for @weightDateInFuture.
+  ///
+  /// In en, this message translates to:
+  /// **'The date can\'t be in the future'**
+  String get weightDateInFuture;
+
+  /// No description provided for @weightDateBeforeRoutineStart.
+  ///
+  /// In en, this message translates to:
+  /// **'The date can\'t be before the routine started'**
+  String get weightDateBeforeRoutineStart;
+
+  /// No description provided for @weightDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this weight?'**
+  String get weightDeleteTitle;
+
+  /// No description provided for @weightDeleteBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This can\'t be undone.'**
+  String get weightDeleteBody;
+
+  /// No description provided for @weightDeleteLinkedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'It counted as {routine} on {date}. Deleting it marks that weigh-in as not done.'**
+  String weightDeleteLinkedBody(String routine, String date);
+
+  /// No description provided for @weightDeletedReopened.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight deleted · {routine} is due again'**
+  String weightDeletedReopened(String routine);
+
+  /// No description provided for @weightSinceChange.
+  ///
+  /// In en, this message translates to:
+  /// **'{change} since {date}'**
+  String weightSinceChange(String change, String date);
+
+  /// No description provided for @weightRecordedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Recorded {date}'**
+  String weightRecordedOn(String date);
+
+  /// No description provided for @weightTargetLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Target {weight} · {authority}'**
+  String weightTargetLine(String weight, String authority);
+
+  /// No description provided for @weightAuthorityVet.
+  ///
+  /// In en, this message translates to:
+  /// **'set by the vet'**
+  String get weightAuthorityVet;
+
+  /// No description provided for @weightAuthorityGuardian.
+  ///
+  /// In en, this message translates to:
+  /// **'your reference'**
+  String get weightAuthorityGuardian;
+
+  /// No description provided for @weightAuthorityBaseline.
+  ///
+  /// In en, this message translates to:
+  /// **'usual weight'**
+  String get weightAuthorityBaseline;
+
+  /// No description provided for @weightLegendWeighIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Weigh-in'**
+  String get weightLegendWeighIn;
+
+  /// No description provided for @weightLegendOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other weight'**
+  String get weightLegendOther;
+
+  /// No description provided for @weightRoutinesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Weigh-in routine'**
+  String get weightRoutinesTitle;
+
+  /// No description provided for @weightNoRoutineTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No weigh-in routine'**
+  String get weightNoRoutineTitle;
+
+  /// No description provided for @weightNoRoutineBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A regular weigh-in helps spot changes early.'**
+  String get weightNoRoutineBody;
+
+  /// No description provided for @weightSetUpRoutine.
+  ///
+  /// In en, this message translates to:
+  /// **'Set up a weigh-in routine'**
+  String get weightSetUpRoutine;
+
+  /// No description provided for @weightNextWeighIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Next weigh-in {date} · {status}'**
+  String weightNextWeighIn(String date, String status);
+
+  /// No description provided for @weightRoutinePaused.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused'**
+  String get weightRoutinePaused;
+
+  /// No description provided for @weightSourceClinic.
+  ///
+  /// In en, this message translates to:
+  /// **'From the vet'**
+  String get weightSourceClinic;
+
+  /// No description provided for @weightSourceDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'From a scale'**
+  String get weightSourceDevice;
+
+  /// No description provided for @weightSourceImported.
+  ///
+  /// In en, this message translates to:
+  /// **'Imported'**
+  String get weightSourceImported;
+
+  /// No description provided for @weightSeeAll.
+  ///
+  /// In en, this message translates to:
+  /// **'See all weights'**
+  String get weightSeeAll;
+
+  /// No description provided for @weightNoneRecordedYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No weight recorded yet'**
+  String get weightNoneRecordedYet;
+
   /// No description provided for @weightTodayFieldLabelUnit.
   ///
   /// In en, this message translates to:

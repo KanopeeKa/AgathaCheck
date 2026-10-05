@@ -6,6 +6,7 @@ import '../../../../core/weight/weight_unit.dart';
 import '../../../../core/weight/weight_unit_preference.dart';
 import '../../../weight_tracking/presentation/providers/weight_providers.dart';
 
+@Deprecated('Removed in weight-unify-care W8')
 class WeightTrackingController {
   final WidgetRef ref;
   WeightTrackingController(this.ref);
