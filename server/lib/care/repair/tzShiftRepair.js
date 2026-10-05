@@ -40,12 +40,43 @@ function wouldCloseAsNotRecorded(entry, row, todayIso) {
   return true;
 }
 
-function pickKeeper(rows) {
+export function pickKeeper(rows) {
   const acted = rows.find(personActedOn);
   if (acted) return acted;
   const pending = rows.find((r) => r.status === 'pending');
   if (pending) return pending;
   return rows.slice().sort((a, b) => String(a.id).localeCompare(String(b.id)))[0];
+}
+
+/**
+ * D2: at most one reopen per slot; never ids slated for deletion (DC-4 §3).
+ *
+ * @param {object} params
+ * @param {object} params.entry
+ * @param {object[]} params.rows all schedule rows for the item (pre-repair snapshot)
+ * @param {string[]} params.deletedIds D1 deletions (dry-run or applied)
+ * @param {string} params.todayIso
+ * @returns {string[]}
+ */
+export function planWronglyClosedReopens({ entry, rows, deletedIds, todayIso }) {
+  const deleted = new Set(deletedIds);
+  const bySlot = new Map();
+  for (const row of rows) {
+    if (deleted.has(row.id)) continue;
+    const key = slotKey(row);
+    if (!bySlot.has(key)) bySlot.set(key, []);
+    bySlot.get(key).push(row);
+  }
+  const reopened = [];
+  for (const [, surviving] of bySlot) {
+    if (surviving.some((r) => r.status === 'pending')) continue;
+    const candidate = pickKeeper(surviving);
+    if (personActedOn(candidate)) continue;
+    if (candidate.close_reason !== 'not_recorded') continue;
+    if (wouldCloseAsNotRecorded(entry, candidate, todayIso)) continue;
+    reopened.push(candidate.id);
+  }
+  return reopened;
 }
 
 async function hasDependentRows(db, occurrenceId) {
@@ -116,19 +147,16 @@ export async function repairTzShift(pool, { apply = false, todayIso = null } = {
           }
         }
       }
-      for (const row of rows) {
-        if (personActedOn(row)) continue;
-        if (row.close_reason !== 'not_recorded') continue;
-        if (!wouldCloseAsNotRecorded(entry, row, today)) {
-          const pendingExists = rows.some(
-            (r) => r.status === 'pending' && slotKey(r) === slotKey(row),
-          );
-          if (!pendingExists) {
-            report.reopened.push(row.id);
-            if (apply) {
-              await reopenClosedOccurrence(db, row.id);
-            }
-          }
+      const reopenIds = planWronglyClosedReopens({
+        entry,
+        rows,
+        deletedIds: report.deleted,
+        todayIso: today,
+      });
+      report.reopened.push(...reopenIds);
+      if (apply) {
+        for (const id of reopenIds) {
+          await reopenClosedOccurrence(db, id);
         }
       }
       if (apply && (report.deleted.length || report.reopened.length)) {

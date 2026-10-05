@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "plan_id": "tz-repair-followup-e76a",
+  "approved_at": null,
+  "approved_by": null,
+  "approved_until": null,
+  "content_hash": null,
+  "autonomy": "draft",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": null,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Repair todayIso from pet home TZ",
+      "branch": "cursor/tz-repair-asof-e76a",
+      "allowed_paths": [
+        "server/lib/care/repair/**",
+        "server/scripts/care/repair_tz_shift.js",
+        "server/test/**",
+        "docs/ops/care-tick.md"
+      ],
+      "forbidden_paths": [".github/workflows/**"],
+      "allowed_exceptions": ["tests", "docs"],
+      "spawn_allowed": false,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending"
+    },
+    {
+      "id": "2",
+      "title": "D3/D4/D5 repair scope",
+      "branch": "cursor/tz-repair-d3-d5-e76a",
+      "allowed_paths": [
+        "server/lib/care/repair/**",
+        "server/scripts/care/**",
+        "server/test/db/**",
+        "server/test/careSchedule/**",
+        "docs/domains/pet_care/changes/not-recorded-stale-open-bug-spec.md"
+      ],
+      "forbidden_paths": [".github/workflows/**"],
+      "allowed_exceptions": ["tests", "docs"],
+      "spawn_allowed": false,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending"
+    },
+    {
+      "id": "3",
+      "title": "AC-TZ2 Paris CI matrix",
+      "branch": "cursor/tz-paris-ci-e76a",
+      "allowed_paths": [
+        ".github/workflows/**",
+        "scripts/pre-push*.sh",
+        "server/test/**"
+      ],
+      "forbidden_paths": [],
+      "allowed_exceptions": ["tests"],
+      "spawn_allowed": false,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending"
+    },
+    {
+      "id": "4",
+      "title": "Pool bootstrap + TZ-4 doc",
+      "branch": "cursor/tz-pool-audit-e76a",
+      "allowed_paths": [
+        "scripts/check_pg_pool_bootstrap.js",
+        "scripts/care/**",
+        "docs/ops/**",
+        "docs/architecture/**"
+      ],
+      "forbidden_paths": [".github/workflows/**"],
+      "allowed_exceptions": ["tests", "docs"],
+      "spawn_allowed": false,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending"
+    }
+  ]
+}

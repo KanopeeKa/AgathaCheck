@@ -5,6 +5,9 @@
 import { createAppPool } from '../../lib/db/createPool.js';
 import { assertPgDateWireFormat } from '../../lib/db/pgTypes.js';
 import { repairTzShift } from '../../lib/care/repair/tzShiftRepair.js';
+import { loadBackendEnv } from '../lib/loadBackendEnv.js';
+
+loadBackendEnv();
 
 const apply = process.argv.includes('--apply');
 
