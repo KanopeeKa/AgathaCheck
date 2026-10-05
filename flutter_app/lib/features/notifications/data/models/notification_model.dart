@@ -57,9 +57,7 @@ class NotificationModel extends AppNotification {
           ? DateTime.tryParse(json['suggestion_expires_at'].toString())
           : null,
       suggestionPayload: json['suggestion_payload'] is Map
-          ? Map<String, dynamic>.from(
-              json['suggestion_payload'] as Map,
-            )
+          ? Map<String, dynamic>.from(json['suggestion_payload'] as Map)
           : null,
     );
   }

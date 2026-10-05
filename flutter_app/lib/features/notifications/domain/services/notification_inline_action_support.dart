@@ -1,10 +1,7 @@
 import '../entities/app_notification.dart';
 import 'notification_inbox_v2_rules.dart';
 
-enum NotificationInlineActionKind {
-  shareInvite,
-  householdInvite,
-}
+enum NotificationInlineActionKind { shareInvite, householdInvite }
 
 /// Wire types that support Accept / Decline inline controls (PR4 core).
 ///

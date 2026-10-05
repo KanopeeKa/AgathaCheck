@@ -139,7 +139,9 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
     final response = await _client.post(
       Uri.parse('$baseUrl/api/notifications/suggestions/seen'),
       headers: _headers(token),
-      body: json.encode({if (petId != null && petId.isNotEmpty) 'pet_id': petId}),
+      body: json.encode({
+        if (petId != null && petId.isNotEmpty) 'pet_id': petId,
+      }),
     );
     _checkResponse(response);
   }
@@ -151,7 +153,9 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
     String action,
   ) async {
     final response = await _client.post(
-      Uri.parse('$baseUrl/api/notifications/$notificationId/suggestion-feedback'),
+      Uri.parse(
+        '$baseUrl/api/notifications/$notificationId/suggestion-feedback',
+      ),
       headers: _headers(token),
       body: json.encode({'action': action}),
     );

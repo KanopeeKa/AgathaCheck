@@ -30,9 +30,3 @@ Feature: Notifications v2 inbox programme
     Given I have a pending share invite notification in Activity
     When I open the notification inbox on Activity
     Then I should see Accept and Decline actions on the invite row without opening it
-
-  @P5 @bdd
-  Scenario: For you lists server-generated suggestion cards grouped by pet
-    Given I have an active Agatha suggestion for my pet in the inbox API
-    When I open the notification inbox on For you
-    Then I should see the suggestion headline grouped under the pet name

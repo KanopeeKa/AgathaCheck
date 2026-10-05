@@ -17,20 +17,20 @@ Living metrics for Agatha Track quality. Update when CI or test counts change ma
 ## Live metrics
 
 <!-- scorecard-metrics:begin -->
-**Auto-generated block** — refresh with `node scripts/quality/generate-scorecard-metrics.mjs --write-scorecard` (2026-10-04).
+**Auto-generated block** — refresh with `node scripts/quality/generate-scorecard-metrics.mjs --write-scorecard` (2026-10-05).
 
 | Metric | Value | Enforced by |
 |--------|------:|-------------|
-| Flutter unit/widget (active CI) | 287 | 6 shards (`ci_shards.json`) |
+| Flutter unit/widget (active CI) | 289 | 6 shards (`ci_shards.json`) |
 | Flutter frozen / excluded tests | 62 / 1 | frozen-domains manifest |
 | Flutter unowned tests | 0 | `flutter-shards.mjs check` |
 | Flutter integration flows | 1 | `flutter-integration` job |
-| Jest (active / frozen) | 210 / 46 | `jest.config.active.cjs` |
+| Jest (active / frozen) | 212 / 46 | `jest.config.active.cjs` |
 | Playwright (active / frozen) | 27 / 21 | `shard-files.mjs` + frozen list |
-| BDD active scenarios | 205 (21 frozen excluded) | `check_bdd_coverage.js` |
-| BDD mapped (active) | 82.0% (168/205) | gate **139/205 (68%)** |
+| BDD active scenarios | 206 (21 frozen excluded) | `check_bdd_coverage.js` |
+| BDD mapped (active) | 81.6% (168/206) | gate **140/206 (68%)** |
 | BDD title drift (active) | 0 | `generate-scorecard-metrics.mjs --check` |
-| BDD uncovered (active) | 37 | informational |
+| BDD uncovered (active) | 38 | informational |
 | Pre-UAT shard orphans | 0 | `validate-shard-manifest.mjs` |
 | @smoke-ci / @smoke-uat / @smoke-a11y | 4 / 10 / 4 | `check-smoke-tags.mjs` |
 | Flutter domain coverage gate | **70%** | `check_domain_coverage.js` |

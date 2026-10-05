@@ -36,16 +36,11 @@ class CareSuggestionRespondActions {
         CareRecommendationResponseAction.adjust =>
           recommendation.healthEntryId ?? recommendation.id,
         CareRecommendationResponseAction.dismiss ||
-        CareRecommendationResponseAction.notRelevant =>
-          recommendation.id,
+        CareRecommendationResponseAction.notRelevant => recommendation.id,
       };
       await ref
           .read(careIntelligenceRepositoryProvider)
-          .respond(
-            petId: petId,
-            recommendationId: apiId,
-            action: action,
-          );
+          .respond(petId: petId, recommendationId: apiId, action: action);
       ref.invalidate(petCareRecommendationsProvider(petId));
       ref.invalidate(petProfileCareSuggestionProvider(petId));
       ref.invalidate(petProfileCareMilestoneProvider(petId));

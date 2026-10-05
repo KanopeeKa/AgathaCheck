@@ -77,7 +77,8 @@ class CareRecommendationModel {
           payload['suggested_name']?.toString() ??
           json['title']?.toString() ??
           'Suggestion',
-      suggestedFrequency: payload['suggested_frequency']?.toString() ?? 'monthly',
+      suggestedFrequency:
+          payload['suggested_frequency']?.toString() ?? 'monthly',
       suggestedFrequencyInterval:
           (payload['suggested_frequency_interval'] as num?)?.toInt() ?? 1,
       rationaleKey:

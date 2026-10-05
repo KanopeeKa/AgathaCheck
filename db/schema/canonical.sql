@@ -1264,9 +1264,9 @@ CREATE INDEX idx_household_invites_invitee_email ON public.household_invites USI
 CREATE INDEX idx_household_invites_invitee_user_id ON public.household_invites USING btree (invitee_user_id) WHERE (invitee_user_id IS NOT NULL);
 CREATE INDEX idx_household_members_user_id ON public.household_members USING btree (user_id);
 CREATE INDEX idx_household_pets_household_id ON public.household_pets USING btree (household_id);
+CREATE UNIQUE INDEX idx_notifications_suggestion_dedupe_active ON public.notifications USING btree (user_id, suggestion_dedupe_key) WHERE (((kind)::text = 'suggestion'::text) AND (archived_at IS NULL) AND ((suggestion_state)::text = ANY ((ARRAY['new'::character varying, 'seen'::character varying])::text[])));
 CREATE INDEX idx_notifications_user_id ON public.notifications USING btree (user_id);
 CREATE INDEX idx_notifications_user_inbox_active ON public.notifications USING btree (user_id, created_at DESC) WHERE (archived_at IS NULL);
-CREATE UNIQUE INDEX idx_notifications_suggestion_dedupe_active ON public.notifications USING btree (user_id, suggestion_dedupe_key) WHERE (((kind)::text = 'suggestion'::text) AND (archived_at IS NULL) AND ((suggestion_state)::text = ANY ((ARRAY['new'::character varying, 'seen'::character varying])::text[])));
 CREATE INDEX idx_org_connection_requests_target ON public.org_connection_requests USING btree (target_org_id, status);
 CREATE INDEX idx_org_connections_high ON public.org_connections USING btree (org_high_id);
 CREATE INDEX idx_org_connections_low ON public.org_connections USING btree (org_low_id);

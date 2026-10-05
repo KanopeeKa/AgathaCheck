@@ -83,7 +83,5 @@ class NotificationInboxV2Rules {
   ) => bellNumericCount(notifications);
 
   static bool forYouTabShowDot(Iterable<AppNotification> notifications) =>
-      notifications.any(
-        (n) => isForYouKind(n.kind) && (n.isSuggestionUnread),
-      );
+      notifications.any((n) => isForYouKind(n.kind) && (n.isSuggestionUnread));
 }

@@ -99,7 +99,9 @@ class CareIntelligenceRemoteDataSource {
       final body = json.decode(response.body) as Map<String, dynamic>;
       final notification =
           body['notification'] as Map<String, dynamic>? ?? body;
-      return CareRecommendationModel.fromSuggestionNotificationJson(notification);
+      return CareRecommendationModel.fromSuggestionNotificationJson(
+        notification,
+      );
     }
     final response = await _client.post(
       Uri.parse(
