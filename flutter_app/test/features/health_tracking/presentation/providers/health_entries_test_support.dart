@@ -99,13 +99,13 @@ class FakeHealthRepository implements HealthRepository {
   }
 
   @override
-  Future<HealthEntry> pauseCareItem(String id) async {
+  Future<HealthEntry> pauseCareItem(String id, {DateTime? until}) async {
     pauseCallCount++;
     return entries.firstWhere((e) => e.id == id);
   }
 
   @override
-  Future<HealthEntry> resumeCareItem(String id) async {
+  Future<HealthEntry> resumeCareItem(String id, {DateTime? resumeOn}) async {
     resumeCallCount++;
     return entries.firstWhere((e) => e.id == id);
   }
