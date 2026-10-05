@@ -67,11 +67,18 @@ class _AddPersonFlowState extends ConsumerState<AddPersonFlow> {
         householdId = await _resolveHouseholdId();
       }
       final body = _controller.buildCreateBody(householdId: householdId);
-      final detail = await ref.read(peopleRepositoryProvider).createContact(body);
-      await ref.read(peopleCommandsProvider).afterContactMutation(
-        detail.id,
-        petIds: _controller.pets.where((p) => p.selected).map((p) => p.petId).toList(),
-      );
+      final detail = await ref
+          .read(peopleRepositoryProvider)
+          .createContact(body);
+      await ref
+          .read(peopleCommandsProvider)
+          .afterContactMutation(
+            detail.id,
+            petIds: _controller.pets
+                .where((p) => p.selected)
+                .map((p) => p.petId)
+                .toList(),
+          );
       if (!mounted) return;
       await _afterSave(detail);
     } on PeopleApiException catch (e) {
@@ -82,9 +89,9 @@ class _AddPersonFlowState extends ConsumerState<AddPersonFlow> {
       }
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.peopleSaveError)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.peopleSaveError)));
       }
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -92,11 +99,15 @@ class _AddPersonFlowState extends ConsumerState<AddPersonFlow> {
   }
 
   Future<String?> _resolveHouseholdId() async {
-    final households = await ref.read(householdsRepositoryProvider).listHouseholds();
+    final households = await ref
+        .read(householdsRepositoryProvider)
+        .listHouseholds();
     if (households.isNotEmpty) return households.first.id;
     final name = _controller.householdName;
     if (name == null || name.isEmpty) return null;
-    final created = await ref.read(householdsRepositoryProvider).createHousehold(name);
+    final created = await ref
+        .read(householdsRepositoryProvider)
+        .createHousehold(name);
     return created.id;
   }
 
@@ -106,7 +117,10 @@ class _AddPersonFlowState extends ConsumerState<AddPersonFlow> {
     final email = _controller.form.email.trim();
 
     if (access == AddPersonAppAccessChoice.sharePets && email.isNotEmpty) {
-      final petIds = _controller.pets.where((p) => p.selected).map((p) => p.petId).toList();
+      final petIds = _controller.pets
+          .where((p) => p.selected)
+          .map((p) => p.petId)
+          .toList();
       if (petIds.isNotEmpty && mounted) {
         context.push(
           '/pc/pets/share',
@@ -120,14 +134,17 @@ class _AddPersonFlowState extends ConsumerState<AddPersonFlow> {
       }
     }
 
-    if (access == AddPersonAppAccessChoice.householdInvite && email.isNotEmpty) {
+    if (access == AddPersonAppAccessChoice.householdInvite &&
+        email.isNotEmpty) {
       final householdId = await _resolveHouseholdId();
       if (householdId != null) {
-        await ref.read(householdsRepositoryProvider).createHouseholdInvite(
-          householdId: householdId,
-          inviteeEmail: email,
-          contactId: detail.id,
-        );
+        await ref
+            .read(householdsRepositoryProvider)
+            .createHouseholdInvite(
+              householdId: householdId,
+              inviteeEmail: email,
+              contactId: detail.id,
+            );
       }
     }
 
@@ -185,7 +202,8 @@ class _AddPersonFlowState extends ConsumerState<AddPersonFlow> {
   }
 
   void _handleNext() {
-    final onLast = _controller.stepIndex >= AddPersonFlowController.stepCount - 1;
+    final onLast =
+        _controller.stepIndex >= AddPersonFlowController.stepCount - 1;
     if (onLast) {
       _save();
       return;
@@ -214,7 +232,8 @@ class _AddPersonFlowBody extends StatelessWidget {
     final l = AppLocalizations.of(context)!;
     final step = controller.stepIndex + 1;
     final entry = controller.entry;
-    final isLast = controller.stepIndex >= AddPersonFlowController.stepCount - 1;
+    final isLast =
+        controller.stepIndex >= AddPersonFlowController.stepCount - 1;
 
     return Column(
       children: [
@@ -240,7 +259,8 @@ class _AddPersonFlowBody extends StatelessWidget {
                   TextButton(onPressed: onBack, child: Text(l.peopleAddBack)),
                 const Spacer(),
                 FilledButton(
-                  onPressed: saving || entry == null && controller.stepIndex == 0
+                  onPressed:
+                      saving || entry == null && controller.stepIndex == 0
                       ? null
                       : onNext,
                   child: saving
@@ -249,9 +269,7 @@ class _AddPersonFlowBody extends StatelessWidget {
                           width: 20,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : Text(
-                          isLast ? l.peopleAddPersonSave : l.peopleAddNext,
-                        ),
+                      : Text(isLast ? l.peopleAddPersonSave : l.peopleAddNext),
                 ),
               ],
             ),

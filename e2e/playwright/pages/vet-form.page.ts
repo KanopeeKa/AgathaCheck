@@ -80,9 +80,11 @@ export class VetFormPage {
       .or(this.page.getByText(/Dr\./))
       .first()
       .waitFor({ timeout: 15_000 });
-    await waitForFlutterRoutePattern(this.page, /\/pc\/people(?:\?|$)/, 30_000).catch(() =>
-      waitForFlutterRoutePattern(this.page, /\/pc\/vets(?:\?|$)/, 30_000),
-    );
+    await waitForFlutterRoutePattern(
+      this.page,
+      /\/pc\/people(?:\/[^/?#]+|[\?]|$)/,
+      30_000,
+    ).catch(() => waitForFlutterRoutePattern(this.page, /\/pc\/vets(?:\?|$)/, 30_000));
   }
 
   async createVet(options: {

@@ -20,9 +20,6 @@ class AddPersonPetSelection {
     final kind = emergencyContact
         ? RelationshipKind.emergencyContact
         : relationshipKind;
-    return {
-      'pet_id': petId,
-      'relationship_kind': kind.wireValue,
-    };
+    return {'pet_id': petId, 'relationship_kind': kind.wireValue};
   }
 }

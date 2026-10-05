@@ -298,12 +298,7 @@ class AddPersonStepPets extends ConsumerWidget {
         if (controller.pets.isEmpty && petNames.isNotEmpty) {
           controller.setPets(
             petNames
-                .map(
-                  (p) => AddPersonPetSelection(
-                    petId: p.id,
-                    petName: p.name,
-                  ),
-                )
+                .map((p) => AddPersonPetSelection(petId: p.id, petName: p.name))
                 .toList(),
           );
         }
@@ -317,7 +312,10 @@ class AddPersonStepPets extends ConsumerWidget {
             ),
             const SizedBox(height: 12),
             if (selections.isEmpty)
-              Text(l.peopleAddPetsEmpty, style: Theme.of(context).textTheme.bodySmall)
+              Text(
+                l.peopleAddPetsEmpty,
+                style: Theme.of(context).textTheme.bodySmall,
+              )
             else
               for (final pet in selections)
                 _PetRow(
@@ -362,18 +360,17 @@ class _PetRow extends StatelessWidget {
             child: DropdownButtonFormField<RelationshipKind>(
               initialValue: selection.relationshipKind,
               decoration: InputDecoration(labelText: l.peopleAddPetLinkKind),
-              items: const [
-                RelationshipKind.primaryVet,
-                RelationshipKind.outOfHoursVet,
-                RelationshipKind.careProvider,
-              ]
-                  .map(
-                    (k) => DropdownMenuItem(
-                      value: k,
-                      child: Text(k.label(l)),
-                    ),
-                  )
-                  .toList(),
+              items:
+                  const [
+                        RelationshipKind.primaryVet,
+                        RelationshipKind.outOfHoursVet,
+                        RelationshipKind.careProvider,
+                      ]
+                      .map(
+                        (k) =>
+                            DropdownMenuItem(value: k, child: Text(k.label(l))),
+                      )
+                      .toList(),
               onChanged: (v) {
                 if (v != null) {
                   selection.relationshipKind = v;

@@ -11,9 +11,7 @@ List<ContactSummary> findAddPersonDuplicates({
   final phoneDigits = _digitsOnly(phone);
   final emailNorm = email?.trim().toLowerCase() ?? '';
 
-  if (nameTrim.length < 2 &&
-      phoneDigits.isEmpty &&
-      emailNorm.isEmpty) {
+  if (nameTrim.length < 2 && phoneDigits.isEmpty && emailNorm.isEmpty) {
     return const [];
   }
 

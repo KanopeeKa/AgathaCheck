@@ -17,7 +17,8 @@ import 'package:pet_profile_app/features/people/presentation/add/add_person_prov
 import 'package:pet_profile_app/features/people/presentation/edit/person_form_controller.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
-import '../../application/people_providers_test.dart' show FakeHouseholdsRepository, FakePeopleRepository;
+import '../../application/people_providers_test.dart'
+    show FakeHouseholdsRepository, FakePeopleRepository;
 
 void main() {
   group('AddPersonEntry', () {
@@ -43,10 +44,7 @@ void main() {
       final form = PersonFormController.forNewContact(kind: ContactKind.person);
       form.setName('Jamie');
       form.toggleRole(ContactRole.vet);
-      final body = buildAddPersonCreateBody(
-        form: form,
-        pets: [],
-      );
+      final body = buildAddPersonCreateBody(form: form, pets: []);
       expect(body['kind'], 'person');
       expect(body['name'], 'Jamie');
       expect(body['roles'], ['vet']);
@@ -78,7 +76,10 @@ void main() {
     await tester.tap(find.text('Continue'));
     await tester.pumpAndSettle();
 
-    await tester.enterText(find.byKey(const Key('people_add_name_field')), 'Dr. Ada');
+    await tester.enterText(
+      find.byKey(const Key('people_add_name_field')),
+      'Dr. Ada',
+    );
     await tester.tap(find.text('Continue'));
     await tester.pumpAndSettle();
 
