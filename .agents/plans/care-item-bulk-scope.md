@@ -66,9 +66,9 @@ next_action: "continue phase 1 on branch cursor/care-item-bulk-scope-0f49"
 artifact_ref:
   branch: cursor/care-item-bulk-scope-0f49
   plan_path: .agents/plans/care-item-bulk-scope.md
-  plan_commit: 3da86fac53ef9b841412a325daf54463ce4318f7
+  plan_commit: 4999d6dd8fd84ff90c91fa6157c67e7a7563ea45
   snapshot_path: .agents/plans/care-item-bulk-scope.snapshot.json
-  snapshot_commit: 3da86fac53ef9b841412a325daf54463ce4318f7
+  snapshot_commit: 4999d6dd8fd84ff90c91fa6157c67e7a7563ea45
 open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1671"]
 merge_commits: {}
 debt_issue_refs: []
