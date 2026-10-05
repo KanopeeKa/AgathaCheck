@@ -19,7 +19,9 @@ void main() {
     final server = _Server();
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [careItemHttpClientProvider.overrideWithValue(server.client)],
+        overrides: [
+          careItemHttpClientProvider.overrideWithValue(server.client),
+        ],
         child: MaterialApp(
           theme: AppTheme.lightTheme,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -75,18 +77,21 @@ void main() {
     expect(message, '2 marked done · 1 already closed');
   });
 
-  test('occurrence detail parses scheduled_date as YYYY-MM-DD calendar day', () {
-    final d = occurrenceDetailFromJson(
-      detail(
-        status: 'skipped',
-        occStatus: 'not_recorded',
-        closeReason: 'not_recorded',
-        scheduledDate: '2026-09-30',
-      ),
-    );
-    expect(d.occurrence.date, DateTime(2026, 9, 30));
-    expect(d.occurrence.isClosedNotRecorded, isTrue);
-  });
+  test(
+    'occurrence detail parses scheduled_date as YYYY-MM-DD calendar day',
+    () {
+      final d = occurrenceDetailFromJson(
+        detail(
+          status: 'skipped',
+          occStatus: 'not_recorded',
+          closeReason: 'not_recorded',
+          scheduledDate: '2026-09-30',
+        ),
+      );
+      expect(d.occurrence.date, DateTime(2026, 9, 30));
+      expect(d.occurrence.isClosedNotRecorded, isTrue);
+    },
+  );
 }
 
 class _Server {

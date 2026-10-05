@@ -7400,7 +7400,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careClosedNotRecordedBody =>
-      'Cette dose a été fermée automatiquement. Indiquez quand elle a été donnée, ou marquez-la comme ignorée si vous avez choisi de ne pas la donner.';
+      'Ce soin planifié a été fermé automatiquement. Indiquez quand il a été donné, ou marquez-le comme ignoré si vous avez choisi de ne pas le donner.';
 
   @override
   String get careRecordAsGivenHint =>
@@ -7411,7 +7411,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careConfirmSkipBody =>
-      'Cela enregistre que vous avez choisi de ne pas donner cette dose.';
+      'Cela enregistre que vous avez choisi de ne pas donner ce soin planifié.';
 
   @override
   String get careConfirmSkipAction => 'Marquer comme ignorée';

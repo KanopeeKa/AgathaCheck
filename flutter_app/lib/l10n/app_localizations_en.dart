@@ -7285,7 +7285,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careClosedNotRecordedBody =>
-      'This dose was closed automatically. Record when it was given, or mark it as skipped if you chose not to give it.';
+      'This scheduled care was closed automatically. Record when it was given, or mark it as skipped if you chose not to give it.';
 
   @override
   String get careRecordAsGivenHint =>
@@ -7296,7 +7296,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careConfirmSkipBody =>
-      'This will record that you chose not to give this dose.';
+      'This will record that you chose not to give this scheduled care.';
 
   @override
   String get careConfirmSkipAction => 'Mark as skipped';

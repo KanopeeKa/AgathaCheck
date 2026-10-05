@@ -1,13 +1,14 @@
 import '../../../l10n/app_localizations.dart';
-import '../../pet_care/presentation/widgets/care_surface/care_item_status_pill.dart';
 import 'care_occurrence.dart';
 import 'occurrence_detail.dart';
+
+enum OccurrencePillTone { overdue, due, notRecorded, neutral }
 
 class OccurrencePillStyle {
   const OccurrencePillStyle({required this.label, required this.tone});
 
   final String label;
-  final CareItemStatusTone tone;
+  final OccurrencePillTone tone;
 }
 
 /// Status pill label and tone for an open occurrence row (FR-4).
@@ -18,24 +19,24 @@ OccurrencePillStyle openOccurrencePillStyle(
   return switch (status) {
     CareOccurrenceStatus.overdue => OccurrencePillStyle(
       label: l.urgencyOverdue,
-      tone: CareItemStatusTone.overdue,
+      tone: OccurrencePillTone.overdue,
     ),
     CareOccurrenceStatus.notRecorded => OccurrencePillStyle(
       label: l.careStatusNotRecordedOpen,
-      tone: CareItemStatusTone.notRecorded,
+      tone: OccurrencePillTone.notRecorded,
     ),
     CareOccurrenceStatus.due => OccurrencePillStyle(
       label: l.careStatusDue,
-      tone: CareItemStatusTone.due,
+      tone: OccurrencePillTone.due,
     ),
     _ => OccurrencePillStyle(
       label: l.careStatusComingUp,
-      tone: CareItemStatusTone.neutral,
+      tone: OccurrencePillTone.neutral,
     ),
   };
 }
 
-/// Screen reader label for a closed Not recorded dose (AC-C7).
+/// Screen reader label for a closed Not recorded care (AC-C7).
 String closedNotRecordedSemantics(AppLocalizations l) =>
     '${l.careStatusNotRecorded}, ${l.careStatusNotRecordedClosedMarker}';
 

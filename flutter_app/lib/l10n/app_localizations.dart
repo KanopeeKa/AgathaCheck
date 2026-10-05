@@ -12823,7 +12823,7 @@ abstract class AppLocalizations {
   /// No description provided for @careClosedNotRecordedBody.
   ///
   /// In en, this message translates to:
-  /// **'This dose was closed automatically. Record when it was given, or mark it as skipped if you chose not to give it.'**
+  /// **'This scheduled care was closed automatically. Record when it was given, or mark it as skipped if you chose not to give it.'**
   String get careClosedNotRecordedBody;
 
   /// No description provided for @careRecordAsGivenHint.
@@ -12841,7 +12841,7 @@ abstract class AppLocalizations {
   /// No description provided for @careConfirmSkipBody.
   ///
   /// In en, this message translates to:
-  /// **'This will record that you chose not to give this dose.'**
+  /// **'This will record that you chose not to give this scheduled care.'**
   String get careConfirmSkipBody;
 
   /// No description provided for @careConfirmSkipAction.

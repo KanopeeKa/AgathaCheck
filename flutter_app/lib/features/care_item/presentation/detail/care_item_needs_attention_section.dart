@@ -18,6 +18,13 @@ import '../../../health_tracking/presentation/providers/health_providers.dart';
 import '../../../health_tracking/presentation/widgets/pet_event_occurrence_actions.dart';
 import '../../../health_tracking/presentation/widgets/pet_event_view_providers.dart';
 
+CareItemStatusTone _pillTone(OccurrencePillTone tone) => switch (tone) {
+  OccurrencePillTone.overdue => CareItemStatusTone.overdue,
+  OccurrencePillTone.due => CareItemStatusTone.due,
+  OccurrencePillTone.notRecorded => CareItemStatusTone.notRecorded,
+  OccurrencePillTone.neutral => CareItemStatusTone.neutral,
+};
+
 /// Needs attention on the Care Item view (§18.6.5): every open occurrence
 /// as a line (date, status, tick); a line opens its occurrence screen. A
 /// stack adds Mark all as done / Skip all (one command, one Undo). The
@@ -226,7 +233,7 @@ class _OccurrenceLine extends ConsumerWidget {
               ExcludeSemantics(
                 child: CareItemStatusPill(
                   label: pill.label,
-                  tone: pill.tone,
+                  tone: _pillTone(pill.tone),
                   leadingIcon: status == CareOccurrenceStatus.notRecorded
                       ? Icons.playlist_add_check_circle_outlined
                       : null,
