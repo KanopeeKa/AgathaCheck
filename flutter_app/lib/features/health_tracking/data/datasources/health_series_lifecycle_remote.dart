@@ -95,9 +95,7 @@ Future<HealthEntryModel> resumeCareItemRemote({
 }) async {
   final body = resumeOn == null
       ? <String, dynamic>{}
-      : <String, dynamic>{
-          'date': resumeOn.toIso8601String().substring(0, 10),
-        };
+      : <String, dynamic>{'date': resumeOn.toIso8601String().substring(0, 10)};
   final response = await client.post(
     Uri.parse('$baseUrl/api/health-entries/$entryId/resume'),
     headers: headers,

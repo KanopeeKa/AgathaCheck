@@ -49,6 +49,9 @@
     "Moving care after the trip postpones it to the day after return": "P1",
     "A date planned during the trip can be looked after by the carer": "P1"
   },
+  "care_pause_resume.feature": {
+    "PP-2 pause without end date then resume on the suggested date": "P1"
+  },
   "pet_profiles.feature": {
     "Creating a new pet with required fields": "P0",
     "Creating a pet with all fields populated": "P1",

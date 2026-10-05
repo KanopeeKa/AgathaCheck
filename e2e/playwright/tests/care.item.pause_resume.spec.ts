@@ -12,7 +12,7 @@ import {
 import { createPet } from '../support/api';
 
 test.describe('Care item pause and resume (PP-2)', () => {
-  test('@smoke-ci @smoke-uat pause without end date then resume on suggested date', async ({
+  test('@smoke-ci @smoke-uat PP-2 pause without end date then resume on the suggested date', async ({
     page,
     testUser,
   }) => {
