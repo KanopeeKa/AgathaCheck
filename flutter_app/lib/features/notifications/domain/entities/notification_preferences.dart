@@ -1,5 +1,7 @@
+import 'notification_settings_matrix.dart';
+
 class NotificationPreferences {
-  const NotificationPreferences({
+  NotificationPreferences({
     this.emailRemindersEnabled = false,
     this.reminderDaysBefore = 1,
     this.notifyOverdue = true,
@@ -7,7 +9,11 @@ class NotificationPreferences {
     this.notifyCompleted = true,
     this.mutedPetIds = const [],
     this.v2ExplainerDismissedAt,
-  });
+    this.agathaSuggestionsInApp = true,
+    NotificationSettingsMatrix? settingsMatrix,
+    Map<String, bool>? suggestionTypes,
+  }) : settingsMatrix = settingsMatrix ?? NotificationSettingsMatrix.defaults(),
+       suggestionTypes = suggestionTypes ?? defaultSuggestionTypeToggles();
 
   final bool emailRemindersEnabled;
   final int reminderDaysBefore;
@@ -16,6 +22,9 @@ class NotificationPreferences {
   final bool notifyCompleted;
   final List<String> mutedPetIds;
   final DateTime? v2ExplainerDismissedAt;
+  final bool agathaSuggestionsInApp;
+  final NotificationSettingsMatrix settingsMatrix;
+  final Map<String, bool> suggestionTypes;
 
   NotificationPreferences copyWith({
     bool? emailRemindersEnabled,
@@ -25,6 +34,9 @@ class NotificationPreferences {
     bool? notifyCompleted,
     List<String>? mutedPetIds,
     DateTime? v2ExplainerDismissedAt,
+    bool? agathaSuggestionsInApp,
+    NotificationSettingsMatrix? settingsMatrix,
+    Map<String, bool>? suggestionTypes,
   }) {
     return NotificationPreferences(
       emailRemindersEnabled:
@@ -36,6 +48,10 @@ class NotificationPreferences {
       mutedPetIds: mutedPetIds ?? this.mutedPetIds,
       v2ExplainerDismissedAt:
           v2ExplainerDismissedAt ?? this.v2ExplainerDismissedAt,
+      agathaSuggestionsInApp:
+          agathaSuggestionsInApp ?? this.agathaSuggestionsInApp,
+      settingsMatrix: settingsMatrix ?? this.settingsMatrix,
+      suggestionTypes: suggestionTypes ?? this.suggestionTypes,
     );
   }
 }

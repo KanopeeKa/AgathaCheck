@@ -186,9 +186,8 @@ void main() {
             return notifier;
           }),
           notificationPreferencesProvider.overrideWith(
-            () => TestNotificationPreferencesNotifier(
-              const NotificationPreferences(),
-            ),
+            () =>
+                TestNotificationPreferencesNotifier(NotificationPreferences()),
           ),
           petListProvider.overrideWith(() => TestPetListNotifier()),
         ],

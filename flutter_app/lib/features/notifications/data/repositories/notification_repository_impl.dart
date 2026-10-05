@@ -41,6 +41,9 @@ class NotificationRepositoryImpl implements NotificationRepository {
       notifyCompleted: model.notifyCompleted,
       mutedPetIds: model.mutedPetIds,
       v2ExplainerDismissedAt: model.v2ExplainerDismissedAt,
+      agathaSuggestionsInApp: model.agathaSuggestionsInApp,
+      settingsMatrix: model.settingsMatrix,
+      suggestionTypes: model.suggestionTypes,
     );
   }
 
@@ -56,6 +59,9 @@ class NotificationRepositoryImpl implements NotificationRepository {
       notifyCompleted: preferences.notifyCompleted,
       mutedPetIds: preferences.mutedPetIds,
       v2ExplainerDismissedAt: preferences.v2ExplainerDismissedAt,
+      agathaSuggestionsInApp: preferences.agathaSuggestionsInApp,
+      settingsMatrix: preferences.settingsMatrix,
+      suggestionTypes: preferences.suggestionTypes,
     );
     final result = await _dataSource.updatePreferences(_tokenGetter(), model);
     return NotificationPreferences(
@@ -66,6 +72,9 @@ class NotificationRepositoryImpl implements NotificationRepository {
       notifyCompleted: result.notifyCompleted,
       mutedPetIds: result.mutedPetIds,
       v2ExplainerDismissedAt: result.v2ExplainerDismissedAt,
+      agathaSuggestionsInApp: result.agathaSuggestionsInApp,
+      settingsMatrix: result.settingsMatrix,
+      suggestionTypes: result.suggestionTypes,
     );
   }
 

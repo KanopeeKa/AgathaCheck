@@ -1,6 +1,4 @@
 import express from 'express';
-import { v4 as uuidv4 } from 'uuid';
-
 import { createApiLimiter } from '../config/rateLimit.js';
 import { publicError } from '../config/security.js';
 import { extractUserId } from '../lib/requireAuth.js';
@@ -19,6 +17,10 @@ import {
   markSuggestionsSeen,
   SUGGESTION_INBOX_ACTIVE_WHERE,
 } from './notifications/suggestionInbox.js';
+import {
+  getNotificationPreferences,
+  patchNotificationPreferences,
+} from './notifications/preferencesHandlers.js';
 
 export function notificationToMap(row) {
   const petId = row.pet_id || null;
@@ -177,49 +179,31 @@ export default function notificationsRoutes(pool) {
     }
   });
 
-  router.get('/preferences', async (req, res) => {
+  const handlePreferencesGet = async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      const result = await pool.query('SELECT * FROM notification_preferences WHERE user_id = $1', [userId]);
-      const prefs = {};
-      for (const row of result.rows) {
-        prefs[row.preference] = row.value;
-      }
+      const prefs = await getNotificationPreferences(pool, userId);
       res.json(prefs);
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }
-  });
+  };
 
-  router.put('/preferences', async (req, res) => {
+  const handlePreferencesPatch = async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      const data = req.body;
-      for (const [preference, value] of Object.entries(data)) {
-        const existing = await pool.query(
-          'SELECT id FROM notification_preferences WHERE user_id = $1 AND preference = $2',
-          [userId, preference]
-        );
-        if (existing.rows.length > 0) {
-          await pool.query(
-            'UPDATE notification_preferences SET value = $1 WHERE user_id = $2 AND preference = $3',
-            [String(value), userId, preference]
-          );
-        } else {
-          const id = uuidv4();
-          await pool.query(
-            'INSERT INTO notification_preferences (id, user_id, preference, value) VALUES ($1, $2, $3, $4)',
-            [id, userId, preference, String(value)]
-          );
-        }
-      }
-      res.json(data);
+      const prefs = await patchNotificationPreferences(pool, userId, req.body);
+      res.json(prefs);
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }
-  });
+  };
+
+  router.get('/preferences', handlePreferencesGet);
+  router.put('/preferences', handlePreferencesPatch);
+  router.patch('/preferences', handlePreferencesPatch);
 
   router.post('/:id/suggestion-feedback', async (req, res) => {
     const userId = extractUserId(req);

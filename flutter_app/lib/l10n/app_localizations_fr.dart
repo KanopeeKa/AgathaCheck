@@ -5837,6 +5837,148 @@ class AppLocalizationsFr extends AppLocalizations {
   String get notificationInboxV2ExplainerActionsLink => 'Ouvrir Actions';
 
   @override
+  String get notificationInboxForYouSuggestionsOff =>
+      'Les suggestions Agatha sont désactivées. Réactivez-les ici pour qu\'Agatha repère à nouveau des pistes de soins.';
+
+  @override
+  String get notificationSettingsMatrixTitle => 'Boîte de réception et envoi';
+
+  @override
+  String get notificationSettingsMatrixHelp =>
+      'Choisissez comment chaque catégorie vous contacte. Les éléments in-app apparaissent dans la boîte de réception lorsqu\'ils sont activés.';
+
+  @override
+  String get notificationSettingsColumnCategory => 'Catégorie';
+
+  @override
+  String get notificationSettingsColumnInbox => 'In-app';
+
+  @override
+  String get notificationSettingsColumnPush => 'Push';
+
+  @override
+  String get notificationSettingsColumnEmail => 'E-mail';
+
+  @override
+  String get notificationSettingsCategoryInvites => 'Invitations et demandes';
+
+  @override
+  String get notificationSettingsCategoryAccess => 'Accès et appartenance';
+
+  @override
+  String get notificationSettingsCategoryOrg =>
+      'Organisation et famille d\'accueil';
+
+  @override
+  String get notificationSettingsCategorySuggestions => 'Suggestions Agatha';
+
+  @override
+  String get notificationSettingsCategoryAccountSecurity =>
+      'Sécurité du compte';
+
+  @override
+  String get notificationSettingsCategorySubscription => 'Abonnement';
+
+  @override
+  String get notificationSettingsInboxAlways => 'Toujours';
+
+  @override
+  String get notificationSettingsMandatoryLock =>
+      'Envoyé pour la sécurité de votre compte';
+
+  @override
+  String get notificationSettingsPushOsHint =>
+      'Les notifications push sont désactivées pour Agatha dans les réglages de l\'appareil. Ouvrez les réglages pour les autoriser.';
+
+  @override
+  String get notificationSettingsAgathaComputationHelp =>
+      'Désactiver les suggestions Agatha arrête leur calcul sur nos serveurs, pas seulement leur affichage dans l\'app.';
+
+  @override
+  String get notificationSettingsSuggestionTypesTitle => 'Types de suggestions';
+
+  @override
+  String get notificationSettingsSuggestionS1 => 'Soins récurrents manquants';
+
+  @override
+  String get notificationSettingsSuggestionS2 => 'Tendances de poids';
+
+  @override
+  String get notificationSettingsSuggestionS3 => 'Symptômes répétés';
+
+  @override
+  String get notificationSettingsSuggestionS4 => 'Retards récurrents';
+
+  @override
+  String get notificationSettingsSuggestionS5 => 'Données anciennes';
+
+  @override
+  String get notificationSettingsSuggestionS6 => 'Routines de soins';
+
+  @override
+  String get notificationSettingsSuggestionS7 => 'Couverture de partage';
+
+  @override
+  String get notificationSettingsPushModeOff => 'Désactivé';
+
+  @override
+  String get notificationSettingsPushModeWeekly => 'Hebdomadaire';
+
+  @override
+  String get notificationSettingsPushModeInstant => 'Instantané';
+
+  @override
+  String get notificationSettingsCareRemindersTitle => 'Rappels de soins';
+
+  @override
+  String get notificationSettingsCareRemindersHelp =>
+      'Les rappels de soins ne sont pas dans la boîte de réception. Ils passent par push, e-mail et alertes locales via ces réglages.';
+
+  @override
+  String get notificationSettingsCareRemindersLink =>
+      'Réglages des rappels de soins';
+
+  @override
+  String get notificationSettingsCareRemindersLinkHelp =>
+      'Push et e-mail pour les plannings de santé (hors matrice inbox).';
+
+  @override
+  String get notificationSettingsOverdueHelp =>
+      'Être prévenu quand une entrée santé est en retard';
+
+  @override
+  String get notificationSettingsDueSoonHelp =>
+      'Être prévenu quand une entrée santé approche';
+
+  @override
+  String get notificationSettingsCompletedHelp =>
+      'Être prévenu quand une entrée santé est terminée';
+
+  @override
+  String get notificationSettingsEmailRemindersHelp =>
+      'Recevoir des rappels par e-mail pour les échéances à venir';
+
+  @override
+  String get notificationSettingsMutedPetsHelp =>
+      'Les animaux en sourdine n\'ont plus de suggestions ni de push relationnels (sauf obligatoires). Les lignes inbox restent visibles.';
+
+  @override
+  String get notificationSettingsNoPets => 'Aucun animal trouvé.';
+
+  @override
+  String get notificationSettingsPetMuted => 'En sourdine';
+
+  @override
+  String get notificationSettingsPetActive => 'Actif';
+
+  @override
+  String get notificationSettingsDecreaseDays => 'Réduire les jours de rappel';
+
+  @override
+  String get notificationSettingsIncreaseDays =>
+      'Augmenter les jours de rappel';
+
+  @override
   String get notificationActionNeeded => 'Action requise';
 
   @override
