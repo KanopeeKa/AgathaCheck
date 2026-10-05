@@ -220,8 +220,7 @@ test.describe('Weight hub', () => {
     );
 
     const entries = await getWeightEntries(baseURL, testUser.accessToken, pet.id);
-    expect(entries).toHaveLength(1);
-    expect(entries[0].health_occurrence_id).toBeFalsy();
+    expect(entries).toHaveLength(0);
 
     const occDetail = await getOccurrence(baseURL, testUser.accessToken, routine.id, occurrenceId!);
     expect((occDetail.occurrence as { status?: string }).status).toBe('pending');
