@@ -9,7 +9,6 @@ import 'package:pet_profile_app/features/auth/presentation/providers/auth_provid
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
 import 'package:pet_profile_app/features/notifications/presentation/providers/notification_providers.dart';
 import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
-import 'package:pet_profile_app/features/vet/presentation/providers/vet_providers.dart';
 import 'package:pet_profile_app/features/experience/data/pet_care_onboarding_store.dart';
 import 'package:pet_profile_app/features/experience/data/org_onboarding_store.dart';
 import 'package:pet_profile_app/features/experience/domain/services/experience_eligibility.dart';
@@ -63,7 +62,6 @@ void main() {
       authOverride,
       petsOverride,
       fakePetRepositoryOverride,
-      vetListProvider.overrideWith(FakeVetListNotifier.new),
       organizationListProvider.overrideWith(FakeOrganizationListNotifier.new),
       pendingOrgInvitesProvider.overrideWith(
         _EmptyPendingOrgInvitesNotifier.new,

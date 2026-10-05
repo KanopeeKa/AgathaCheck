@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "plan_id": "notifications-v2-pr7-closeout-7f3b",
+  "approved_at": "2026-10-05T18:20:00Z",
+  "approved_by": "User chat 2026-10-05: wrap up PR7 follow-ups in small plan then /execute-plan (standing grant from notifications v2 programme)",
+  "approved_until": "2026-10-07T18:20:00Z",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 1664,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "PR7 closeout (A2 inline, AC-ACS tests, push debt)",
+      "branch": "cursor/notifications-v2-pr7-closeout-7f3b",
+      "allowed_paths": [
+        "server/lib/account/**",
+        "server/routes/notifications/**",
+        "server/test/account/**",
+        "flutter_app/lib/features/notifications/**",
+        "flutter_app/lib/features/experience/presentation/services/notification_inline_action_runner.dart",
+        "flutter_app/test/features/notifications/**",
+        "flutter_app/test/bdd/features/notifications_v2.feature",
+        "docs/domains/notifications/changes/deferred.md",
+        ".agents/plans/notifications-v2-pr7-closeout-7f3b.*"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**",
+        "db/migrations/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1665",
+      "pr_head_sha": "79286ead"
+    }
+  ],
+  "content_hash": "sha256:4d2cf3ecb332266759c19e51e723029adf575a106019f55b726b69b1e8160704"
+}

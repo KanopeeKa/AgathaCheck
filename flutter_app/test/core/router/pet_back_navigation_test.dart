@@ -10,7 +10,6 @@ import 'package:pet_profile_app/features/health_tracking/presentation/providers/
 import 'package:pet_profile_app/features/notifications/presentation/providers/notification_providers.dart';
 import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
-import 'package:pet_profile_app/features/vet/presentation/providers/vet_providers.dart';
 import 'package:pet_profile_app/features/weight_tracking/domain/entities/weight_entry.dart';
 import 'package:pet_profile_app/features/weight_tracking/presentation/providers/weight_providers.dart';
 import 'package:pet_profile_app/features/experience/presentation/pet_profile/screens/pet_detail_screen.dart';
@@ -60,7 +59,6 @@ Widget _app({required GoRouter router}) {
       combinedUnreadNotificationCountProvider.overrideWith((ref) => 0),
       guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
       orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
-      vetListProvider.overrideWith(FakeVetListNotifier.new),
       apiBaseUrlProvider.overrideWithValue('http://test.local'),
       weightEntriesNotifierProvider.overrideWith(
         () => _EmptyWeightEntriesNotifier(),

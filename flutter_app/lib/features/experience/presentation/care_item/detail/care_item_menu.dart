@@ -14,6 +14,7 @@ class CareItemMenu extends StatelessWidget {
     required this.onResume,
     required this.onArchive,
     required this.onRestore,
+    this.onPlanAnotherDate,
   });
 
   final HealthEntry entry;
@@ -23,6 +24,7 @@ class CareItemMenu extends StatelessWidget {
   final VoidCallback onResume;
   final VoidCallback onArchive;
   final VoidCallback onRestore;
+  final VoidCallback? onPlanAnotherDate;
 
   @override
   Widget build(BuildContext context) {
@@ -45,12 +47,22 @@ class CareItemMenu extends StatelessWidget {
               onArchive();
             case CareItemMenuAction.restore:
               onRestore();
+            case CareItemMenuAction.planAnotherDate:
+              onPlanAnotherDate?.call();
           }
         },
         itemBuilder: (context) {
           final items = <PopupMenuEntry<CareItemMenuAction>>[
             PopupMenuItem(value: CareItemMenuAction.edit, child: Text(l.edit)),
           ];
+          if (onPlanAnotherDate != null && !isClosed && !entry.isPaused) {
+            items.add(
+              PopupMenuItem(
+                value: CareItemMenuAction.planAnotherDate,
+                child: Text(l.carePlanAnotherDate),
+              ),
+            );
+          }
           if (!isClosed && !entry.isPaused && entry.status == 'active') {
             items.add(
               PopupMenuItem(
@@ -89,4 +101,11 @@ class CareItemMenu extends StatelessWidget {
   }
 }
 
-enum CareItemMenuAction { edit, pause, resume, archive, restore }
+enum CareItemMenuAction {
+  edit,
+  pause,
+  resume,
+  archive,
+  restore,
+  planAnotherDate,
+}

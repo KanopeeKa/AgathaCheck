@@ -52,7 +52,6 @@ List<RouteBase> buildOrgManagementRoutes() {
             experience: AppExperience.organization,
             currentLocation: state.uri.path,
             screenTitle: l.organisationsDashboardTitle,
-            orgNavVariant: OrgNavTitleVariant.dashboard,
             contextualActions: [
               IconButton(
                 key: const Key('org_nav_create'),

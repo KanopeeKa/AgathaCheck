@@ -2,12 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../../l10n/app_localizations.dart';
 
-/// Shared "Mark as done" action for care rows.
+/// Shared Mark done action for care rows (care-item-bulk-scope-spec FR-18).
 ///
-/// Dark filled square (theme `primary`) with a white tick (`onPrimary`), a
-/// 40dp visual inside a 48dp touch target. Used by the dashboard Care preview,
-/// All Actions, the pet screen Care section and All Care so every surface
-/// shows the same control. A null [onPressed] renders the disabled state.
+/// Round filled control with [Icons.check_circle], 40dp visual inside 48dp touch.
 class CareMarkDoneButton extends StatelessWidget {
   const CareMarkDoneButton({
     super.key,
@@ -41,10 +38,10 @@ class CareMarkDoneButton extends StatelessWidget {
       excludeSemantics: true,
       onTap: onPressed,
       child: Tooltip(
-        message: l.markAsDone,
+        message: semanticLabel ?? l.markAsDone,
         child: IconButton.filled(
           onPressed: onPressed,
-          icon: const Icon(Icons.check),
+          icon: const Icon(Icons.check_circle),
           iconSize: iconSize,
           padding: EdgeInsets.zero,
           style: IconButton.styleFrom(
@@ -60,9 +57,7 @@ class CareMarkDoneButton extends StatelessWidget {
             minimumSize: const Size.square(visualSize),
             tapTargetSize: MaterialTapTargetSize.padded,
             visualDensity: VisualDensity.standard,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
+            shape: const CircleBorder(),
           ),
         ),
       ),

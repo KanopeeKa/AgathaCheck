@@ -95,9 +95,9 @@ flutter_app/lib/features/organization/**
 
 **Exit criteria:**
 
-- [ ] B7 regression (report vet coordinates) and B8 regression (inactive not offered; unknown current renders) kept green in their new locations
-- [ ] Widget tests for each migrated field (selection, clear, quick add, typed name for provider)
-- [ ] No file in pet_profile, health_tracking or pet_care imports People internals; `--e2e-shards` (from `shard-files.mjs --summary`) green
+- [x] B7 regression (report vet coordinates) and B8 regression (inactive not offered; unknown current renders) kept green in their new locations
+- [x] Widget tests for each migrated field (selection, clear, quick add, typed name for provider)
+- [x] No file in pet_profile, health_tracking or pet_care imports People internals; `--e2e-shards` (from `shard-files.mjs --summary`) green
 
 ---
 
@@ -152,7 +152,7 @@ flutter_app/lib/features/organization/**
 
 **Exit criteria:**
 
-- [ ] Widget tests: owner vs Can log care, set/clear out-of-hours vet, add/reorder emergency contacts, call only with a phone
+- [x] Widget tests: owner vs Can log care, set/clear out-of-hours vet, add/reorder emergency contacts, call only with a phone
 - [ ] `--e2e-shards` (from `shard-files.mjs --summary`) green
 
 ---
@@ -216,8 +216,8 @@ server/routes/organizations/**
 
 **Exit criteria:**
 
-- [ ] `features/vet/` gone; `legacyVetId` absent from `flutter_app/lib`; both architecture tests pass with empty allowlists
-- [ ] Legacy vet route tests (resolved and unresolved) pass; analyze, Flutter tests and Jest green; sunset debt issue linked on the control issue
+- [x] `features/vet/` gone; `legacyVetId` absent from `flutter_app/lib`; both architecture tests pass with empty allowlists
+- [x] Legacy vet route tests (resolved and unresolved) pass; analyze, Flutter tests and Jest green; sunset debt issue linked on the control issue
 
 ---
 
@@ -338,12 +338,18 @@ server/**
 ## Runtime state (agent-updated)
 
 ```yaml
-autonomy: halted            # draft — bootstrapped by the roadmap when the entry gate is met
-current_phase: null
-last_completed_phase: null
-halt_reason: "draft — waiting for people-client-core-7f3b, CARE E+F and ARCH G on main"
-next_action: "roadmap bootstraps at landing slot 8"
-open_prs: []
-merge_commits: {}
-debt_issue_refs: []
+autonomy: active
+current_phase: i5-ship-main
+last_completed_phase: i4-e2e-integration
+halt_reason: null
+next_action: "continue phase i5-ship-main on branch cursor/people-integration-i5-ship-7f3b"
+artifact_ref:
+  branch: cursor/people-integration-i5-ship-7f3b
+  plan_path: .agents/plans/people-client-integration-7f3b.md
+  plan_commit: ad2ba850448f63f7c704494ab257a7268f2dcdb8
+  snapshot_path: .agents/plans/people-client-integration-7f3b.snapshot.json
+  snapshot_commit: ad2ba850448f63f7c704494ab257a7268f2dcdb8
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1677"]
+merge_commits: {"i1-consumers":"6ba0a1cfce392dd92f2b3c492928ddbf105c73a2","i2-pet-people":"c64057378bcf851a2d2d3cb880573e4d3084b6b8"}
+debt_issue_refs: ["https://github.com/KanopeeKa/AgathaCheck/issues/1653"]
 ```

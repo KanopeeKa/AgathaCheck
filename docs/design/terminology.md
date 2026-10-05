@@ -3,7 +3,7 @@ title: AgathaTrack terminology
 owner: Documentation Team
 audience: product, design, engineering, content
 status: active
-last_updated: 2026-09-29
+last_updated: 2026-10-05
 tags: [design, brand, copy, l10n]
 ---
 
@@ -45,11 +45,23 @@ When multiple people are involved, use precise care-role language:
 | **Veterinary team** | Pet Care dashboard section and vet detail surfaces — the guardian's veterinary clinics (EN label; FR: *Équipe vétérinaire*). Not the same as **care team** (carers). |
 | **veterinary professional** / **vet** | Clinical context |
 
-### Planned: People & Care Team vocabulary
+### People directory (Contacts) — shipped 2026-10-05
 
-The EN/FR wording for the People directory, households and absence access is approved but **not shipped**. It lives in [`vocabulary.md`](../domains/people/features/vocabulary.md) until the feature ships. When it ships, the rows move into this file.
+EN/FR labels for the People hub, pet profile grouping, and Today desk (see [`people-client-integration-7f3b`](/.agents/plans/people-client-integration-7f3b.md)). **Carer** remains a relationship word; access levels use **Full access** and **Can log care**. Away Planning keeps **care team** / *équipe de soins* for absence carers only.
 
-From that point, **carer** becomes a relationship word only. Access levels get labels that describe capability: Full access and Can log care. Until then, the rows above describe shipped behaviour. Don't change shipped strings ad hoc.
+| Concept | English | French | Notes |
+| --- | --- | --- | --- |
+| Page title and nav label | Contacts | Autour de vos animaux | EN label; not "care team" (absence carers) |
+| Carers section (hub) | Trusted carers | Proches & pet-sitters | |
+| Professionals section (hub) | Pet professionals | Leurs pros | |
+| Today desk — vet sub-block | Vet team | Équipe véto | Hub list keeps **Pet professionals** |
+| Filters | All · Household · Carers · Professionals | Tous · Foyer · Proches · Pros | |
+| Pet profile section title | People around {pet} | Autour de {pet} | |
+| Pet profile — household group | At home | À la maison | One household per pet on profile |
+| Pet profile — carers group | Trusted carers | Proches & pet-sitters | |
+| Pet profile — professionals group | Pet professionals | Ses pros | |
+
+Additional rows (add flow, access labels, danger zone) remain in [`vocabulary.md`](../domains/people/features/vocabulary.md) until a follow-up terminology pass.
 
 ## Legal, technical, and permission terms
 
@@ -130,7 +142,9 @@ Canonical in [care-item-evolution.md](../domains/pet_care/features/care-item-evo
 | **If done after the due date** | Si c'est fait après la date prévue | Remembered choice: Keep the next date / Skip the next date / Move this and following (no Ask me, D-CSM-026 v4) | Late behaviour, Late leeway |
 | **Plan another date** | Prévoir une autre date | Add a date (booster, booked visit, an extra one). **Change date** moves one | Add occurrence |
 | **Postpone until** | Reporter au | Move care to a later date; without a date it is **Pause** | Snooze |
-| **Mark all as done** · **Skip all** | Tout marquer comme fait · Tout ignorer | Care Item view actions for a Not recorded stack (§18.6.5) | Record earlier doses, Review |
+| **Mark {count} as done** · **Skip {count}** | Marquer {count} comme faits · Ignorer {count} | Care Item bulk actions (scoped count; see care-item-bulk-scope-spec) | Record earlier care, Review |
+| **Later today** | Plus tard aujourd'hui | Upcoming-group pill when due later the same day | — |
+| **Show {count} more** / **Show less** | Afficher {count} de plus / Afficher moins | Expand collapsed upcoming rows on Care Item | — |
 | **Record as done** | Enregistrer comme fait | On a date closed as Not recorded | Reopen, Record as given |
 | **Estimated next** | Prochaine date estimée | Display-only line on overdue After-it's-done care | Next due (it is not actionable) |
 | **Today** · **Due soon** · **Upcoming** · **Today's list** | Aujourd'hui · Bientôt · À venir plus tard · La liste du jour | Agenda sections (D-CIE-025) | Due and Overdue, Coming soon |

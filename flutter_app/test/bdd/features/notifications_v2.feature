@@ -3,6 +3,9 @@
 # Active scenarios below keep @bdd title parity while legacy care-inbox scenarios
 # in notifications.feature remain @legacy.
 
+# AC-ACS server coverage: see server/test/account/accountSecurityNotifications.test.js
+# (AC-ACS-1 push to other devices deferred — docs/domains/notifications/changes/deferred.md)
+
 @notifications-v2
 Feature: Notifications v2 inbox programme
 

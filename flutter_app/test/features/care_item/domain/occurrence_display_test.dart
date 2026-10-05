@@ -12,10 +12,10 @@ void main() {
     l = await AppLocalizations.delegate.load(const Locale('en'));
   });
 
-  test('open not_recorded shows as Overdue', () {
+  test('open not_recorded shows Not recorded (open) pill', () {
     final pill = openOccurrencePillStyle(l, CareOccurrenceStatus.notRecorded);
-    expect(pill.label, l.urgencyOverdue);
-    expect(pill.tone, OccurrencePillTone.overdue);
+    expect(pill.label, l.careStatusNotRecordedOpen);
+    expect(pill.tone, OccurrencePillTone.notRecorded);
   });
 
   test('closed not recorded pill is neutral grey tone', () {

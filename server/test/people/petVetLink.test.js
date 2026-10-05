@@ -1,13 +1,11 @@
 import { describe, it, expect } from '@jest/globals';
 
-import {
-  reconcilePeopleVets,
-  syncPetPrimaryVetFromLegacyVetId,
-} from '../../lib/people/petVetLink.js';
+import { reconcilePeopleVets } from '../../lib/people/petVetLink.js';
+import { setPrimaryVetFromLegacyVetId } from '../../lib/people/relationships.js';
 import { createTransactionalMockPool } from '../helpers/transactionMockPool.js';
 
 describe('petVetLink', () => {
-  it('syncPetPrimaryVetFromLegacyVetId deactivates prior primary_vet when vet cleared', async () => {
+  it('setPrimaryVetFromLegacyVetId deactivates prior primary_vet when vet cleared', async () => {
     const queries = [];
     const pool = createTransactionalMockPool(async (sql, params) => {
       queries.push({ sql, params });
@@ -17,7 +15,7 @@ describe('petVetLink', () => {
       return { rows: [] };
     });
 
-    await syncPetPrimaryVetFromLegacyVetId(pool, 'pet-1', null, 'user-1');
+    await setPrimaryVetFromLegacyVetId(pool, 'pet-1', null, 'user-1');
 
     expect(queries.some((q) => q.sql.includes('UPDATE pet_contact_relationships'))).toBe(
       true,

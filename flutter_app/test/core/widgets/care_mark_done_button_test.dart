@@ -55,10 +55,10 @@ void main() {
       final colorScheme = AppTheme.lightTheme.colorScheme;
       expect(_fillColor(tester), colorScheme.primary);
 
-      final icon = tester.widget<Icon>(find.byIcon(Icons.check));
-      expect(icon.icon, Icons.check);
+      final icon = tester.widget<Icon>(find.byIcon(Icons.check_circle));
+      expect(icon.icon, Icons.check_circle);
       final iconColor = IconTheme.of(
-        tester.element(find.byIcon(Icons.check)),
+        tester.element(find.byIcon(Icons.check_circle)),
       ).color;
       expect(iconColor, colorScheme.onPrimary);
       expect(colorScheme.onPrimary, Colors.white);

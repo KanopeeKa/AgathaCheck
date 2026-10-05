@@ -26,7 +26,7 @@ class PetFormScreenBody extends StatelessWidget {
     required this.bioController,
     required this.insuranceController,
     required this.chipIdController,
-    required this.selectedVetId,
+    required this.selectedPrimaryVetContactId,
     required this.neuteredDate,
     required this.isNeutered,
     required this.onChangePhoto,
@@ -37,7 +37,7 @@ class PetFormScreenBody extends StatelessWidget {
     required this.onNeuteredChanged,
     required this.onPickNeuteredDate,
     required this.onClearNeuteredDate,
-    required this.onVetSelected,
+    required this.onPrimaryVetContactIdChanged,
     required this.onSave,
     required this.onCancel,
     required this.onDelete,
@@ -62,7 +62,7 @@ class PetFormScreenBody extends StatelessWidget {
   final TextEditingController bioController;
   final TextEditingController insuranceController;
   final TextEditingController chipIdController;
-  final String? selectedVetId;
+  final String? selectedPrimaryVetContactId;
   final DateTime? neuteredDate;
   final bool? isNeutered;
   final VoidCallback onChangePhoto;
@@ -73,7 +73,7 @@ class PetFormScreenBody extends StatelessWidget {
   final ValueChanged<bool?> onNeuteredChanged;
   final VoidCallback onPickNeuteredDate;
   final VoidCallback onClearNeuteredDate;
-  final ValueChanged<String?> onVetSelected;
+  final ValueChanged<String?> onPrimaryVetContactIdChanged;
   final VoidCallback onSave;
   final VoidCallback onCancel;
   final VoidCallback onDelete;
@@ -137,7 +137,7 @@ class PetFormScreenBody extends StatelessWidget {
       bioController: bioController,
       insuranceController: insuranceController,
       chipIdController: chipIdController,
-      selectedVetId: selectedVetId,
+      selectedPrimaryVetContactId: selectedPrimaryVetContactId,
       neuteredDate: neuteredDate,
       isNeutered: isNeutered,
       onMarkDirty: onMarkDirty,
@@ -146,7 +146,7 @@ class PetFormScreenBody extends StatelessWidget {
       onNeuteredChanged: onNeuteredChanged,
       onPickNeuteredDate: onPickNeuteredDate,
       onClearNeuteredDate: onClearNeuteredDate,
-      onVetSelected: onVetSelected,
+      onPrimaryVetContactIdChanged: onPrimaryVetContactIdChanged,
       onOwnershipChanged: onOwnershipChanged,
       onDelete: onDelete,
       onPassedAway: onPassedAway,

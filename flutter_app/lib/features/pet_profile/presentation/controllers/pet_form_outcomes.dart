@@ -17,7 +17,7 @@ class PetFormSubmitDeps {
 
   final List<Pet> Function() readPets;
   final WeightUnit Function() readWeightUnit;
-  final Future<void> Function({
+  final Future<String> Function({
     required String name,
     required String species,
     String breed,
@@ -31,7 +31,6 @@ class PetFormSubmitDeps {
     String chipId,
     bool chipDismissed,
     String? photoPath,
-    String? vetId,
     String? organizationId,
   })
   addPet;
@@ -57,10 +56,9 @@ class PetFormSubmitDeps {
             String chipId = '',
             bool chipDismissed = false,
             String? photoPath,
-            String? vetId,
             String? organizationId,
           }) async {
-            await ref
+            return ref
                 .read(petListProvider.notifier)
                 .addPet(
                   name: name,
@@ -76,7 +74,6 @@ class PetFormSubmitDeps {
                   chipId: chipId,
                   chipDismissed: chipDismissed,
                   photoPath: photoPath,
-                  vetId: vetId,
                   organizationId: organizationId,
                 );
           },
@@ -103,10 +100,9 @@ class PetFormSubmitDeps {
             String chipId = '',
             bool chipDismissed = false,
             String? photoPath,
-            String? vetId,
             String? organizationId,
           }) async {
-            await ref
+            return ref
                 .read(petListProvider.notifier)
                 .addPet(
                   name: name,
@@ -122,7 +118,6 @@ class PetFormSubmitDeps {
                   chipId: chipId,
                   chipDismissed: chipDismissed,
                   photoPath: photoPath,
-                  vetId: vetId,
                   organizationId: organizationId,
                 );
           },

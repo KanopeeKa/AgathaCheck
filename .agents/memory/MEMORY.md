@@ -37,7 +37,7 @@ Institutional knowledge for cloud agents. Domain workflows live in **Skills** (`
 - True North: `docs/design/true-north.md`
 - Copy tone: `docs/design/copy-tone.md`
 - Terminology: `docs/design/terminology.md`
-- People directory and households (spec agreed, not implemented): `docs/domains/people/README.md`, with planned EN/FR wording in `docs/domains/people/features/vocabulary.md`
+- **People (Contacts) shipped (2026-10-05):** typed `features/people` façade, boundary architecture tests, pet relationships as source of truth; legacy `features/vet` client removed; integration E2E in `people-integration.spec.ts`. Docs: `docs/domains/people/README.md`, labels in `docs/design/terminology.md` § People directory.
 - Principles (visual, deep only): `docs/design/principles.md`
 - Frozen Shelter branding: `docs/engineering/frozen-domains/shelter-branding.md`
 - Theme: `flutter_app/lib/core/theme/app_theme.dart` → `docs/design/tokens.md` (Phase 0)
@@ -51,6 +51,7 @@ Institutional knowledge for cloud agents. Domain workflows live in **Skills** (`
 - [Tool-output token scrambling](tool-output-token-scrambling.md) — grep/bash can mangle source tokens in file content (e.g. weight→ln); read tool shows truth, edits use real tokens.
 - [Care item completion semantics](health-entry-completion.md) — occurrences are the source of truth; every active planned item always has a real open occurrence (D-CSM-019); Fixed schedule vs After it's done; complete never asks (missing choices fall back to the remembered choice or keep); `next_due_date` is a read-only cache.
 - [Care schedule status source (EX-11)](care-schedule-status-source.md) — production UI uses server `HealthEntry.schedule` (`CareItemSchedule` + `as_of`); device-clock `next_due_date` fallbacks are for tests and unsaved drafts only.
+- **Gap-close remedial (2026-10-05):** Post-review plan `care-gap-close-remedial-50b4` landed in [#1650](https://github.com/KanopeeKa/AgathaCheck/pull/1650) — occurrence screen ⋯ menu for Postpone / Plan another date (v4 §18.6.4), care sheets pass `as_of` + default plan-another date, finished one-off planned edits preserve `completed_on`, BDD gate excludes header-only mappings. Open follow-up: #1476 (decideDone schedule context).
 - [Pet Care mobile completion](guardian-mobile-completion.md) — compact dashboard completion keeps a reversible list-level preview while the server remains authoritative (legacy filename).
 - [Care dose selection compatibility](care-dose-selection-compatibility.md) — pair single-date dashboard confirmation with same-day multi-dose selection when verifying legacy routing.
 - [Canonical product name](canonical-product-name.md) — use AgathaTrack in current product UI and copy; AgathaCheck is the legacy name.

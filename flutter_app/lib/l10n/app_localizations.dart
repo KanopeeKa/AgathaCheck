@@ -9654,7 +9654,7 @@ abstract class AppLocalizations {
   /// No description provided for @carePostponeSheetTitle.
   ///
   /// In en, this message translates to:
-  /// **'Pause'**
+  /// **'Postpone until'**
   String get carePostponeSheetTitle;
 
   /// No description provided for @carePostponeNoEndDate.
@@ -9666,8 +9666,20 @@ abstract class AppLocalizations {
   /// No description provided for @carePostponeUntilLabel.
   ///
   /// In en, this message translates to:
-  /// **'Pause until'**
+  /// **'Postpone until'**
   String get carePostponeUntilLabel;
+
+  /// No description provided for @carePostponeConfirmPause.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get carePostponeConfirmPause;
+
+  /// No description provided for @carePostponeConfirmUntil.
+  ///
+  /// In en, this message translates to:
+  /// **'Postpone until'**
+  String get carePostponeConfirmUntil;
 
   /// No description provided for @carePostponePauseConsequence.
   ///
@@ -13738,6 +13750,78 @@ abstract class AppLocalizations {
   /// **'Other link'**
   String get peopleRelationshipOther;
 
+  /// No description provided for @peopleAroundPetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'People around {petName}'**
+  String peopleAroundPetTitle(String petName);
+
+  /// No description provided for @peoplePetOwnerQuiet.
+  ///
+  /// In en, this message translates to:
+  /// **'{petName} · {ownerName}\'s pet'**
+  String peoplePetOwnerQuiet(String petName, String ownerName);
+
+  /// No description provided for @peopleGroupAtHome.
+  ///
+  /// In en, this message translates to:
+  /// **'At home'**
+  String get peopleGroupAtHome;
+
+  /// No description provided for @peoplePetEmergencyCardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency'**
+  String get peoplePetEmergencyCardTitle;
+
+  /// No description provided for @peoplePetEmergencyManage.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage'**
+  String get peoplePetEmergencyManage;
+
+  /// No description provided for @peoplePetEmergencyManageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency contacts'**
+  String get peoplePetEmergencyManageTitle;
+
+  /// No description provided for @peoplePetAddPrimaryVet.
+  ///
+  /// In en, this message translates to:
+  /// **'Add {petName}\'s vet'**
+  String peoplePetAddPrimaryVet(String petName);
+
+  /// No description provided for @peoplePetAddOutOfHoursVet.
+  ///
+  /// In en, this message translates to:
+  /// **'Add {petName}\'s out-of-hours vet'**
+  String peoplePetAddOutOfHoursVet(String petName);
+
+  /// No description provided for @peoplePetAddEmergencyContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Add emergency contact'**
+  String get peoplePetAddEmergencyContact;
+
+  /// No description provided for @peoplePetEmptyAtHome.
+  ///
+  /// In en, this message translates to:
+  /// **'No household members for this pet yet.'**
+  String get peoplePetEmptyAtHome;
+
+  /// No description provided for @peopleReorderUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Move up'**
+  String get peopleReorderUp;
+
+  /// No description provided for @peopleReorderDown.
+  ///
+  /// In en, this message translates to:
+  /// **'Move down'**
+  String get peopleReorderDown;
+
   /// No description provided for @peopleDetailTabOverview.
   ///
   /// In en, this message translates to:
@@ -14439,6 +14523,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Skip all'**
   String get careSkipAll;
+
+  /// No description provided for @careBulkMarkDoneCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Mark 1 as done} other{Mark {count} as done}}'**
+  String careBulkMarkDoneCount(int count);
+
+  /// No description provided for @careBulkSkipCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Skip 1} other{Skip {count}}}'**
+  String careBulkSkipCount(int count);
+
+  /// No description provided for @careBulkMarkedDoneCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 marked done} other{{count} marked done}}'**
+  String careBulkMarkedDoneCount(int count);
+
+  /// No description provided for @careBulkSkippedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 skipped} other{{count} skipped}}'**
+  String careBulkSkippedCount(int count);
+
+  /// No description provided for @occurrenceLaterToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Later today'**
+  String get occurrenceLaterToday;
+
+  /// No description provided for @careShowCountMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Show {count} more'**
+  String careShowCountMore(int count);
+
+  /// No description provided for @careShowLess.
+  ///
+  /// In en, this message translates to:
+  /// **'Show less'**
+  String get careShowLess;
+
+  /// No description provided for @careMarkDateTimeDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark {when} as done'**
+  String careMarkDateTimeDone(String when);
+
+  /// No description provided for @careSkipDateTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip {when}'**
+  String careSkipDateTime(String when);
 
   /// No description provided for @careRecordAsDone.
   ///

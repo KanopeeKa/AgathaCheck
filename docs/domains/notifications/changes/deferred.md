@@ -20,6 +20,7 @@ Open rows: [/docs/debt/debt.md](/docs/debt/debt.md) (filter **Domain = notificat
 | "Dot only for needs-response" badge option | Not needed yet | "Inbox opens without action" metric |
 | S7 recipients beyond the record owner | N7 | Co-parents report coverage gaps |
 | Approximate sign-in location on A1 | Needs DPIA (N13); user decision 2026-10-04: not now | DPIA done + product ask |
+| A1 push to other session families | No server push token registry yet; `accountSecurityPush.js` logs only | Push token store + FR-BG-6 refresh payload |
 | A4/A5 email-change notices | No email-change flow yet | Email-change feature scheduled |
 | Subscription notices A7–A11 (PR8) | No server entitlement source; billing provider undecided | Provider chosen |
 | Inbox row hard-delete at 365 days | `audit_events` doesn't yet cover org/sharing/foster (N5) | Audit debt row closed |

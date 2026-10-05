@@ -23,7 +23,6 @@ import 'package:pet_profile_app/features/sharing/domain/entities/share_link.dart
 import 'package:pet_profile_app/features/sharing/domain/repositories/sharing_repository.dart';
 import 'package:pet_profile_app/features/sharing/presentation/providers/sharing_providers.dart';
 import 'package:pet_profile_app/features/sharing/presentation/screens/share_pet_screen.dart';
-import 'package:pet_profile_app/features/vet/presentation/providers/vet_providers.dart';
 import 'package:pet_profile_app/features/weight_tracking/domain/entities/weight_entry.dart';
 import 'package:pet_profile_app/features/weight_tracking/presentation/providers/weight_providers.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
@@ -146,7 +145,6 @@ void main() {
               PetShareLinksNotifier(ref, 'pet-1')
                 ..state = const AsyncValue.data([]),
         ),
-        vetListProvider.overrideWith(FakeVetListNotifier.new),
         weightEntriesNotifierProvider.overrideWith(
           () => _EmptyWeightEntriesNotifier(),
         ),
@@ -271,7 +269,6 @@ void main() {
                 PetShareLinksNotifier(ref, 'pet-1')
                   ..state = const AsyncValue.data([]),
           ),
-          vetListProvider.overrideWith(FakeVetListNotifier.new),
           weightEntriesNotifierProvider.overrideWith(
             () => _EmptyWeightEntriesNotifier(),
           ),

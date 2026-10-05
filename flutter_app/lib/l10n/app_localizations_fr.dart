@@ -5520,13 +5520,19 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get carePostponeSheetTitle => 'Mettre en pause';
+  String get carePostponeSheetTitle => 'Reporter jusqu\'au';
 
   @override
   String get carePostponeNoEndDate => 'Sans date de fin (pause)';
 
   @override
-  String get carePostponeUntilLabel => 'Pause jusqu\'au';
+  String get carePostponeUntilLabel => 'Reporter jusqu\'au';
+
+  @override
+  String get carePostponeConfirmPause => 'Mettre en pause';
+
+  @override
+  String get carePostponeConfirmUntil => 'Reporter jusqu\'au';
 
   @override
   String get carePostponePauseConsequence =>
@@ -7948,6 +7954,51 @@ class AppLocalizationsFr extends AppLocalizations {
   String get peopleRelationshipOther => 'Autre lien';
 
   @override
+  String peopleAroundPetTitle(String petName) {
+    return 'Autour de $petName';
+  }
+
+  @override
+  String peoplePetOwnerQuiet(String petName, String ownerName) {
+    return '$petName · l\'animal de $ownerName';
+  }
+
+  @override
+  String get peopleGroupAtHome => 'À la maison';
+
+  @override
+  String get peoplePetEmergencyCardTitle => 'Urgences';
+
+  @override
+  String get peoplePetEmergencyManage => 'Gérer';
+
+  @override
+  String get peoplePetEmergencyManageTitle => 'Contacts d\'urgence';
+
+  @override
+  String peoplePetAddPrimaryVet(String petName) {
+    return 'Ajouter le vétérinaire de $petName';
+  }
+
+  @override
+  String peoplePetAddOutOfHoursVet(String petName) {
+    return 'Ajouter le vétérinaire de garde de $petName';
+  }
+
+  @override
+  String get peoplePetAddEmergencyContact => 'Ajouter un contact d\'urgence';
+
+  @override
+  String get peoplePetEmptyAtHome =>
+      'Aucun membre du foyer pour cet animal pour l\'instant.';
+
+  @override
+  String get peopleReorderUp => 'Monter';
+
+  @override
+  String get peopleReorderDown => 'Descendre';
+
+  @override
   String get peopleDetailTabOverview => 'Vue d\'ensemble';
 
   @override
@@ -8358,6 +8409,71 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careSkipAll => 'Tout ignorer';
+
+  @override
+  String careBulkMarkDoneCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Marquer $count comme faits',
+      one: 'Marquer 1 comme fait',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String careBulkSkipCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Ignorer $count',
+      one: 'Ignorer 1',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String careBulkMarkedDoneCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count marqués comme faits',
+      one: '1 marqué comme fait',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String careBulkSkippedCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ignorés',
+      one: '1 ignoré',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get occurrenceLaterToday => 'Plus tard aujourd\'hui';
+
+  @override
+  String careShowCountMore(int count) {
+    return 'Afficher $count de plus';
+  }
+
+  @override
+  String get careShowLess => 'Afficher moins';
+
+  @override
+  String careMarkDateTimeDone(String when) {
+    return 'Marquer $when comme fait';
+  }
+
+  @override
+  String careSkipDateTime(String when) {
+    return 'Ignorer $when';
+  }
 
   @override
   String get careRecordAsDone => 'Enregistrer comme fait';

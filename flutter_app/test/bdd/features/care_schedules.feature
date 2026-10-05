@@ -11,7 +11,7 @@ Feature: Care schedules
   Scenario: Missed fixed-schedule care can be marked as done together on the care item
     Given "Bella" has a daily medication "Stack Meds" with two overdue dates today
     When the user opens the care item "Stack Meds"
-    And the user taps "Mark all as done" on the care item
+    And the user taps "Mark 2 as done" on the care item
     Then every overdue date for "Stack Meds" should be recorded
 
   @P1

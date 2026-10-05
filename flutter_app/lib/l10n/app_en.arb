@@ -2061,9 +2061,11 @@
       "date": { "type": "String" }
     }
   },
-  "carePostponeSheetTitle": "Pause",
+  "carePostponeSheetTitle": "Postpone until",
   "carePostponeNoEndDate": "No end date (pause)",
-  "carePostponeUntilLabel": "Pause until",
+  "carePostponeUntilLabel": "Postpone until",
+  "carePostponeConfirmPause": "Pause",
+  "carePostponeConfirmUntil": "Postpone until",
   "carePostponePauseConsequence": "Reminders stop until you resume.",
   "carePostponeUntilAfterDoneConsequence": "The open date moves to {date}.",
   "@carePostponeUntilAfterDoneConsequence": {
@@ -3134,6 +3136,39 @@
   "peopleRelationshipEmergencyContact": "Emergency contact",
   "peopleRelationshipCareProvider": "Provides care",
   "peopleRelationshipOther": "Other link",
+  "peopleAroundPetTitle": "People around {petName}",
+  "@peopleAroundPetTitle": {
+    "placeholders": {
+      "petName": { "type": "String" }
+    }
+  },
+  "peoplePetOwnerQuiet": "{petName} · {ownerName}'s pet",
+  "@peoplePetOwnerQuiet": {
+    "placeholders": {
+      "petName": { "type": "String" },
+      "ownerName": { "type": "String" }
+    }
+  },
+  "peopleGroupAtHome": "At home",
+  "peoplePetEmergencyCardTitle": "Emergency",
+  "peoplePetEmergencyManage": "Manage",
+  "peoplePetEmergencyManageTitle": "Emergency contacts",
+  "peoplePetAddPrimaryVet": "Add {petName}'s vet",
+  "@peoplePetAddPrimaryVet": {
+    "placeholders": {
+      "petName": { "type": "String" }
+    }
+  },
+  "peoplePetAddOutOfHoursVet": "Add {petName}'s out-of-hours vet",
+  "@peoplePetAddOutOfHoursVet": {
+    "placeholders": {
+      "petName": { "type": "String" }
+    }
+  },
+  "peoplePetAddEmergencyContact": "Add emergency contact",
+  "peoplePetEmptyAtHome": "No household members for this pet yet.",
+  "peopleReorderUp": "Move up",
+  "peopleReorderDown": "Move down",
   "peopleDetailTabOverview": "Overview",
   "peopleDetailTabPetsAccess": "Pets & access",
   "peopleDetailTabRelatedCare": "Related care",
@@ -3286,6 +3321,22 @@
   "careAlreadyUpdated": "Already updated",
   "careMarkAllDone": "Mark all as done",
   "careSkipAll": "Skip all",
+  "careBulkMarkDoneCount": "{count, plural, =1{Mark 1 as done} other{Mark {count} as done}}",
+  "@careBulkMarkDoneCount": {"placeholders": {"count": {"type": "int"}}},
+  "careBulkSkipCount": "{count, plural, =1{Skip 1} other{Skip {count}}}",
+  "@careBulkSkipCount": {"placeholders": {"count": {"type": "int"}}},
+  "careBulkMarkedDoneCount": "{count, plural, =1{1 marked done} other{{count} marked done}}",
+  "@careBulkMarkedDoneCount": {"placeholders": {"count": {"type": "int"}}},
+  "careBulkSkippedCount": "{count, plural, =1{1 skipped} other{{count} skipped}}",
+  "@careBulkSkippedCount": {"placeholders": {"count": {"type": "int"}}},
+  "occurrenceLaterToday": "Later today",
+  "careShowCountMore": "Show {count} more",
+  "@careShowCountMore": {"placeholders": {"count": {"type": "int"}}},
+  "careShowLess": "Show less",
+  "careMarkDateTimeDone": "Mark {when} as done",
+  "@careMarkDateTimeDone": {"placeholders": {"when": {"type": "String"}}},
+  "careSkipDateTime": "Skip {when}",
+  "@careSkipDateTime": {"placeholders": {"when": {"type": "String"}}},
   "careRecordAsDone": "Record as done",
   "occurrenceAboutItem": "About this care item",
   "occurrenceGone": "This date no longer exists",

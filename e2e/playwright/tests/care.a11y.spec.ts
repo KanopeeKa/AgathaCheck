@@ -156,8 +156,7 @@ test.describe('Care accessibility', () => {
       const careItem = new CareItemPage(page);
       await careItem.open(pet.id, entry.id);
       await refreshFlutterAccessibility(page);
-      const menu = page.locator('[flt-semantics-identifier^="care_item_occurrence_menu_"]').first();
-      await menu.click();
+      await page.locator('[flt-semantics-identifier="care_item_menu"]').click();
       await page.getByRole('menuitem', { name: /Plan another date|Prévoir une autre date/i }).click();
       await page
         .locator('[flt-semantics-identifier="plan_another_date_sheet"]')

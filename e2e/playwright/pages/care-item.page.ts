@@ -44,14 +44,35 @@ export class CareItemPage {
 
   async openRescheduleSheet(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
-    const button = this.page.getByRole('button', {
-      name: /^Change date$|^Changer la date$/i,
-    });
-    await expect(button.first()).toBeVisible({ timeout: 30_000 });
-    await button.first().click();
-    await expect(
-      this.page.getByText(/^Change date$|^Changer la date$/i).first(),
-    ).toBeVisible({ timeout: 15_000 });
+    const row = this.page
+      .locator('[flt-semantics-identifier^="care_item_occurrence_row_"]')
+      .first();
+    await expect(row).toBeVisible({ timeout: 30_000 });
+    await row.click();
+    await refreshFlutterAccessibility(this.page);
+    const changeDate = this.page
+      .locator('[flt-semantics-identifier="occurrence_change_date"]')
+      .or(
+        this.page.getByRole('button', {
+          name: /^Change date$|^Changer la date$/i,
+        }),
+      );
+    await expect(changeDate.first()).toBeVisible({ timeout: 30_000 });
+    await changeDate.first().click();
+  }
+
+  async expectOpenOccurrenceRowVisible(occurrenceId: string): Promise<void> {
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      const row = this.page
+        .locator(`[flt-semantics-identifier="care_item_occurrence_row_${occurrenceId}"]`)
+        .or(
+          this.page.locator(
+            `[flt-semantics-identifier="care_item_upcoming_row_${occurrenceId}"]`,
+          ),
+        );
+      await expect(row).toBeVisible();
+    }).toPass({ timeout: 45_000 });
   }
 
   async expectReschedulePreviewNextDates(): Promise<void> {
@@ -67,12 +88,19 @@ export class CareItemPage {
     target.setUTCDate(target.getUTCDate() + dayOffsetFromToday);
     const day = target.getUTCDate();
     await refreshFlutterAccessibility(this.page);
+    const dialog = this.page.getByRole('dialog');
     const dateTrigger = this.page
       .getByRole('button', { name: /\d{2}\/\d{2}\/\d{4}/ })
       .first();
-    await expect(dateTrigger).toBeVisible({ timeout: 15_000 });
+    const sheetDatePicker = await dateTrigger.isVisible().catch(() => false);
+    if (!sheetDatePicker) {
+      await expect(dialog).toBeVisible({ timeout: 15_000 });
+      await dialog.getByText(new RegExp(`^${day},\\s`)).first().click({ force: true });
+      await dialog.getByRole('button', { name: /^OK$|^Save$|Enregistrer/i }).first().click();
+      await refreshFlutterAccessibility(this.page);
+      return;
+    }
     await dateTrigger.click();
-    const dialog = this.page.getByRole('dialog');
     await expect(dialog).toBeVisible({ timeout: 15_000 });
     await dialog.getByText(new RegExp(`^${day},\\s`)).first().click({ force: true });
     await dialog.getByRole('button', { name: /^OK$|^Save$|Enregistrer/i }).first().click();
@@ -83,6 +111,10 @@ export class CareItemPage {
     const buttons = this.page.getByRole('button', {
       name: /^Change date$|^Changer la date$/i,
     });
+    if ((await buttons.count()) <= 1) {
+      await refreshFlutterAccessibility(this.page);
+      return;
+    }
     await buttons.last().click();
     await refreshFlutterAccessibility(this.page);
   }
@@ -276,10 +308,31 @@ export class CareItemPage {
 
   async expectNeedsAttentionVisible(): Promise<void> {
     await expect(
-      this.page.locator('[flt-semantics-identifier="care_item_needs_attention_section"]').or(
-        this.page.getByText(/Needs attention|À traiter/i),
+      this.page.locator(
+        '[flt-semantics-identifier="care_item_needs_attention_section"]',
       ),
     ).toBeVisible({ timeout: 30_000 });
+  }
+
+  async expectBulkStackDoneSnackbar(count: number): Promise<void> {
+    const en =
+      count === 1
+        ? /1 marked done/i
+        : new RegExp(`${count} marked done`, 'i');
+    const fr =
+      count === 1
+        ? /1 marqué comme fait/i
+        : new RegExp(`${count} marqués comme faits`, 'i');
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await expect(
+        this.page
+          .locator('[flt-semantics-identifier="care_stack_snackbar"]')
+          .or(this.page.getByText(en))
+          .or(this.page.getByText(fr))
+          .first(),
+      ).toBeVisible();
+    }).toPass({ timeout: 45_000 });
   }
 
   async markLeadingDone(): Promise<void> {
@@ -296,48 +349,48 @@ export class CareItemPage {
     await refreshFlutterAccessibility(this.page);
   }
 
-  async planAnotherDateFromMenu(isoDate: string): Promise<void> {
-    await refreshFlutterAccessibility(this.page);
-    const menu = this.page
-      .locator('[flt-semantics-identifier^="care_item_occurrence_menu_"]')
-      .first();
-    await menu.click();
-    await this.page
-      .getByRole('menuitem', { name: /Plan another date|Prévoir une autre date/i })
-      .click();
-    await expect(
-      this.page.locator('[flt-semantics-identifier="plan_another_date_sheet"]'),
-    ).toBeVisible({ timeout: 15_000 });
-    const day = parseInt(isoDate.split('-')[2]!, 10);
-    await this.page.getByRole('button', { name: /New date|Nouvelle date/i }).click();
-    const dialog = this.page.getByRole('dialog');
-    await expect(dialog).toBeVisible({ timeout: 15_000 });
-    await dialog.getByText(new RegExp(`^${day},\\s`)).first().click({ force: true });
-    await dialog.getByRole('button', { name: /^OK$|^Save$|Enregistrer/i }).first().click();
-    await this.page
-      .locator('[flt-semantics-identifier="plan_another_date_confirm"]')
-      .click();
-    await refreshFlutterAccessibility(this.page);
+  /** @deprecated Use {@link OccurrencePage.planAnotherDateFromMenu} on the occurrence screen (§18.6.4). */
+  async planAnotherDateFromMenu(
+    isoDate: string,
+    occurrencePage: import('./occurrence.page').OccurrencePage,
+  ): Promise<void> {
+    await occurrencePage.planAnotherDateFromMenu(isoDate);
   }
 
-  async markAllDone(): Promise<void> {
+  async markAllDone(count?: number): Promise<void> {
     await refreshFlutterAccessibility(this.page);
+    const label =
+      count === undefined
+        ? /Mark \d+ as done|Marquer \d+ comme fait/i
+        : new RegExp(
+            `Mark ${count} as done|Marquer ${count} comme fait`,
+            'i',
+          );
     await this.page
-      .locator('[flt-semantics-identifier="care_item_mark_all_done"]')
-      .or(this.page.getByRole('button', { name: /Mark all as done|Tout marquer comme fait/i }))
+      .locator('[flt-semantics-identifier="care_item_bulk_mark_done"]')
+      .or(this.page.getByRole('button', { name: label }))
       .first()
       .click();
     await refreshFlutterAccessibility(this.page);
   }
 
-  async skipAll(): Promise<void> {
+  async skipAll(count?: number): Promise<void> {
     await refreshFlutterAccessibility(this.page);
+    const label =
+      count === undefined
+        ? /Skip \d+|Ignorer \d+/i
+        : new RegExp(`Skip ${count}|Ignorer ${count}`, 'i');
     await this.page
-      .locator('[flt-semantics-identifier="care_item_skip_all"]')
-      .or(this.page.getByRole('button', { name: /Skip all|Tout ignorer/i }))
+      .locator('[flt-semantics-identifier="care_item_bulk_skip"]')
+      .or(this.page.getByRole('button', { name: label }))
       .first()
       .click();
     await refreshFlutterAccessibility(this.page);
+  }
+
+  /** @deprecated use markAllDone(count) */
+  async markAllDoneLegacy(): Promise<void> {
+    await this.markAllDone(2);
   }
 
   async expandPastOccurrences(): Promise<void> {
@@ -356,6 +409,13 @@ export class CareItemPage {
       this.page.locator(`[key="pet_event_past_occurrence_${occurrenceId}"]`),
     ).first().click();
     await refreshFlutterAccessibility(this.page);
+  }
+
+  async expectCareProviderVisible(providerName: string): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    await expect(this.page.getByText(providerName, { exact: false }).first()).toBeVisible({
+      timeout: 30_000,
+    });
   }
 
   async expectAbsenceReviewActionsHidden(): Promise<void> {

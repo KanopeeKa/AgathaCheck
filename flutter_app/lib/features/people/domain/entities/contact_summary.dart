@@ -124,7 +124,7 @@ class ContactSummary {
     this.worksAt,
     this.nextAbsence,
     this.access,
-    this.legacyVetId,
+    this.linkedVetRecordId,
     this.inactiveAt,
   });
 
@@ -140,7 +140,7 @@ class ContactSummary {
   final ContactWorksAt? worksAt;
   final ContactNextAbsence? nextAbsence;
   final ContactAccessLine? access;
-  final String? legacyVetId;
+  final String? linkedVetRecordId;
   final DateTime? inactiveAt;
 
   bool get isInactive => status == ContactStatus.inactive;
@@ -160,7 +160,7 @@ class ContactSummary {
         other.worksAt == worksAt &&
         other.nextAbsence == nextAbsence &&
         other.access == access &&
-        other.legacyVetId == legacyVetId &&
+        other.linkedVetRecordId == linkedVetRecordId &&
         other.inactiveAt == inactiveAt;
   }
 
@@ -178,7 +178,7 @@ class ContactSummary {
     worksAt,
     nextAbsence,
     access,
-    legacyVetId,
+    linkedVetRecordId,
     inactiveAt,
   );
 }

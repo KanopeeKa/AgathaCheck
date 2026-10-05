@@ -11,6 +11,9 @@ import { createNotification } from '../notificationHelper.js';
 import { maskEmailForNotice } from './maskEmail.js';
 import { sendAccountSecurityPushToOtherDevices } from './accountSecurityPush.js';
 
+/** FR-ACC / spec §3.5 — A2 optional inline Secure my account window. */
+export const ACCOUNT_PASSWORD_CHANGED_INLINE_DAYS = 7;
+
 function formatSignInTime(date) {
   return date.toISOString().replace('T', ' ').slice(0, 16);
 }
@@ -125,9 +128,16 @@ async function sendAccountSecurityEmail(to, subject, text, html) {
  * @param {string} notificationId
  * @param {'this_was_me' | 'start_secure_flow'} action
  */
+function isWithinPasswordChangedInlineWindow(createdAt) {
+  if (!createdAt) return false;
+  const created = createdAt instanceof Date ? createdAt : new Date(createdAt);
+  const ageMs = Date.now() - created.getTime();
+  return ageMs >= 0 && ageMs <= ACCOUNT_PASSWORD_CHANGED_INLINE_DAYS * 24 * 60 * 60 * 1000;
+}
+
 export async function applyAccountSecurityFeedback(pool, userId, notificationId, action) {
   const result = await pool.query(
-    `SELECT id, type, kind, resolved_at
+    `SELECT id, type, kind, resolved_at, created_at
        FROM notifications
       WHERE id = $1 AND user_id = $2 AND archived_at IS NULL`,
     [notificationId, userId],
@@ -145,6 +155,14 @@ export async function applyAccountSecurityFeedback(pool, userId, notificationId,
   ]);
   if (!allowedTypes.has(row.type)) {
     return { status: 400, error: 'Notification does not support this action' };
+  }
+  if (row.type === NOTIFICATION_TYPE_ACCOUNT_PASSWORD_CHANGED) {
+    if (action === 'this_was_me') {
+      return { status: 400, error: 'Action not supported for this notification' };
+    }
+    if (!isWithinPasswordChangedInlineWindow(row.created_at)) {
+      return { status: 400, error: 'Secure my account is no longer available for this notice' };
+    }
   }
   if (action === 'this_was_me') {
     if (!row.resolved_at) {
@@ -168,19 +186,37 @@ export async function applyAccountSecurityFeedback(pool, userId, notificationId,
  * @param {string | null} notificationId
  */
 export async function resolveAccountNewSignInNotifications(pool, userId, notificationId = null) {
+  await resolveAccountSecurityNotificationsOnSecureAccount(pool, userId, notificationId);
+}
+
+/**
+ * Resolve triggering A1/A2 rows after secure-account completes (AC-ACS-3).
+ * @param {import('pg').Pool} pool
+ * @param {string} userId
+ * @param {string | null} notificationId
+ */
+export async function resolveAccountSecurityNotificationsOnSecureAccount(
+  pool,
+  userId,
+  notificationId = null,
+) {
+  const types = [
+    NOTIFICATION_TYPE_ACCOUNT_NEW_SIGN_IN,
+    NOTIFICATION_TYPE_ACCOUNT_PASSWORD_CHANGED,
+  ];
   if (notificationId) {
     await pool.query(
       `UPDATE notifications
           SET resolved_at = NOW()
-        WHERE id = $1 AND user_id = $2 AND type = $3 AND resolved_at IS NULL`,
-      [notificationId, userId, NOTIFICATION_TYPE_ACCOUNT_NEW_SIGN_IN],
+        WHERE id = $1 AND user_id = $2 AND type = ANY($3::text[]) AND resolved_at IS NULL`,
+      [notificationId, userId, types],
     );
     return;
   }
   await pool.query(
     `UPDATE notifications
         SET resolved_at = NOW()
-      WHERE user_id = $1 AND type = $2 AND resolved_at IS NULL`,
-    [userId, NOTIFICATION_TYPE_ACCOUNT_NEW_SIGN_IN],
+      WHERE user_id = $1 AND type = ANY($2::text[]) AND resolved_at IS NULL`,
+    [userId, types],
   );
 }

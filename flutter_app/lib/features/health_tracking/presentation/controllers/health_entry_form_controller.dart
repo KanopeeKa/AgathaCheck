@@ -115,7 +115,9 @@ class HealthEntryFormController extends HealthEntryFormControllerBase
         dueDate: entry.nextDueDate,
         completedOn: planning == CarePlanningMode.unplanned
             ? entry.completedOn
-            : null,
+            : (entry.nextDueDate == null && entry.completedOn != null
+                  ? entry.completedOn
+                  : null),
         recurrenceAnchor: entry.recurrenceAnchor,
         lateCompletionChoice: entry.lateCompletionChoice,
         repeatEndDate: entry.repeatEndDate,

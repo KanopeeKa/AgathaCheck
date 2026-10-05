@@ -251,13 +251,14 @@ or skip control. A closed Not recorded dose shows only the actions from FR-3. Th
 Needs attention section lists only open doses; closed ones either appear in a clearly labelled
 "Closed / not recorded" group or not at all (*see §6 Q3*).
 
-**FR-6 — Bulk actions act on what is still open.** **Mark all as done** and **Skip all** apply to
-every dose that is open *at the time the server runs the command* and in the bulk scope (§6 Q4).
-Doses already closed are ignored, not errors. The command fails only when nothing in scope is
+**FR-6 — Bulk actions act on what is still open.** The bulk Mark done / Skip actions (labelled
+with their count; see `care-item-bulk-scope-spec.md`) apply to every occurrence that is open *at
+the time the server runs the command* and in the bulk scope (§6 Q4 — started only).
+Occurrences already closed are ignored, not errors. The command fails only when nothing in scope is
 open, and it is still atomic: all of the open ones change, or none do.
 
 **FR-7 — Truthful feedback.** After a bulk action the snackbar says what actually happened, e.g.
-"2 doses marked done" or "2 marked done · 1 was already closed". One Undo reverts exactly the doses
+"{count} marked done" or "2 marked done · 1 was already closed". One Undo reverts exactly the occurrences
 this command changed, not the auto-closes.
 
 **FR-8 — Self-healing after a conflict.** When a command is rejected because the state moved, the
@@ -343,13 +344,13 @@ under both `TZ=UTC` and `TZ=Europe/Paris` once §8 ships (AC-TZ2).
 
 ### E. Bulk actions (FR-6, FR-7)
 
-- **AC-E1** Given 2 open started doses and 4 Coming up, **Mark all as done** marks the 2 started
-  doses Done (each with its own scheduled date as completion date) and leaves Coming up untouched
+- **AC-E1** Given 2 open started occurrences and 4 Coming up, **Mark 2 as done** marks the 2 started
+  occurrences Done (each with its own scheduled date as completion date) and leaves Coming up untouched
   *(scope per Q4)*.
-- **AC-E2** Given 3 doses in scope where 1 was closed after the screen loaded, **Mark all as done**
-  succeeds for the 2 still open. The snackbar says "2 marked done · 1 was already closed", and no
+- **AC-E2** Given 3 occurrences in scope where 1 was closed after the screen loaded, **Mark 3 as done**
+  succeeds for the 2 still open. The snackbar says "2 marked done · 1 already closed", and no
   error is shown.
-- **AC-E3** Same as E2 for **Skip all**.
+- **AC-E3** Same as E2 for **Skip 3** (count-labelled skip bulk).
 - **AC-E4** Given every dose in scope is already closed, the command returns a "nothing to update"
   result. The app shows "Already updated" and refreshes; no raw error appears.
 - **AC-E5** Undo after a partial bulk action reverts only the doses that action changed. Doses
@@ -419,7 +420,7 @@ under both `TZ=UTC` and `TZ=Europe/Paris` once §8 ships (AC-TZ2).
 | Q1 | Can a closed Not recorded dose be turned into an intentional **Skip**? | Yes. It's cheap (one new command), and history then shows the dose as a deliberate skip rather than "not recorded". |
 | Q2 | Should **Reopen** exist for a closed Not recorded dose? | No. Record as given + Mark as skipped cover the outcomes, and reopen conflicts with the 3-day rule. |
 | Q3 | Should closed Not recorded doses appear in Needs attention? | Only inside the 3-day window, in a separate "Not recorded" group with Record as given. Older ones go to history. |
-| Q4 | Bulk scope: "all open" or "all open **and started**"? | Started only. Marking future (Coming up) doses done is almost always wrong. Make the button label explicit if needed ("Mark past doses as done"). |
+| Q4 | Bulk scope: "all open" or "all open **and started**"? | **Decided:** started only, labelled with the count (`care-item-bulk-scope-spec.md`). |
 | Q5 | Fix FR-1 by running the catch-up on read (writes under lock) or by filtering on read (pure, the tick commits later)? | Run the catch-up under the item lock on single-item reads; filter on list reads. This is an engineering decision to confirm in the PR. |
 
 ## 7. Suggested delivery (atomic PRs)

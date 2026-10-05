@@ -62,6 +62,20 @@ void main() {
     expect(recordPost.url.path, endsWith('/occurrences/occ-1/record'));
   });
 
+  test('full bulk stack snackbar uses count', () async {
+    final l = await AppLocalizations.delegate.load(const Locale('en'));
+    final message = careStackSuccessMessage(
+      l,
+      done: true,
+      result: const CareCommandResult(
+        entryId: 'e',
+        resolvedGiven: ['a', 'b', 'c'],
+      ),
+      itemName: 'Meds',
+    );
+    expect(message, '3 marked done');
+  });
+
   test('partial bulk stack snackbar lists ignored count', () async {
     final l = await AppLocalizations.delegate.load(const Locale('en'));
     final message = careStackSuccessMessage(

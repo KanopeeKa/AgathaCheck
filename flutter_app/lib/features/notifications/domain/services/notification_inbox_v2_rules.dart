@@ -32,6 +32,15 @@ class NotificationInboxV2Rules {
     }
   }
 
+  static const accountPasswordChangedInlineDays = 7;
+
+  static bool _accountPasswordChangedNeedsResponse(AppNotification n) {
+    if (n.wireType != 'accountPasswordChanged') return false;
+    final age = DateTime.now().difference(n.createdAt);
+    return !age.isNegative &&
+        age <= const Duration(days: accountPasswordChangedInlineDays);
+  }
+
   static bool needsResponse(AppNotification n) {
     if (n.isRead) return false;
     if (n.kind == NotificationKind.administrative && n.resolvedAt == null) {
@@ -41,7 +50,8 @@ class NotificationInboxV2Rules {
       return _relationshipNeedsResponseWireType(n.wireType);
     }
     if (n.kind == NotificationKind.account && n.resolvedAt == null) {
-      return n.wireType == 'accountNewSignIn';
+      if (n.wireType == 'accountNewSignIn') return true;
+      return _accountPasswordChangedNeedsResponse(n);
     }
     return false;
   }

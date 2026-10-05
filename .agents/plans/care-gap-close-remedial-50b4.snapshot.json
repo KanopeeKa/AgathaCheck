@@ -1,0 +1,157 @@
+{
+  "schema_version": 1,
+  "plan_id": "care-gap-close-remedial-50b4",
+  "programme_ref": ".agents/plans/care-requirements-gap-close-c1a7.md",
+  "approved_at": "2026-10-05T14:59:47Z",
+  "approved_by": "User chat 2026-10-05 — create plan and implement as /execute-plan full autonomy",
+  "approved_until": "2026-10-07T14:59:47Z",
+  "autonomy": "completed",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 1646,
+  "artifact_branch_policy": "phase-branch",
+  "content_hash": "sha256:f359c756803d79b80404c40356f4560faa5723075aef75469f2442a7b5b12291",
+  "phases": [
+    {
+      "id": "R1",
+      "title": "Occurrence screen menus (v4)",
+      "branch": "cursor/care-remedial-r1-occurrence-menus-50b4",
+      "allowed_paths": [
+        ".agents/plans/care-gap-close-remedial-50b4.*",
+        "flutter_app/lib/features/care_item/presentation/**",
+        "flutter_app/test/features/care_item/**",
+        "e2e/playwright/pages/care-item.page.ts",
+        "e2e/playwright/pages/occurrence.page.ts",
+        "e2e/playwright/tests/care*.spec.ts",
+        "docs/design/care-item-view-ui.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "merge_mode": "auto",
+      "exit_checklist": "bdd-journey",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1650",
+      "pr_head_sha": "6ee50f1fe057e8f3ad7de288decd90c6ea791725",
+      "merge_commit": "6ee50f1fe057e8f3ad7de288decd90c6ea791725"
+    },
+    {
+      "id": "R2",
+      "title": "Care action sheets (default date, as_of, copy)",
+      "branch": "cursor/care-remedial-r2-sheets-50b4",
+      "allowed_paths": [
+        ".agents/plans/care-gap-close-remedial-50b4.*",
+        "flutter_app/lib/features/care_item/presentation/sheets/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/care_item/**",
+        "e2e/playwright/tests/care*.spec.ts",
+        "docs/design/terminology.md"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "merge_mode": "auto",
+      "exit_checklist": "bdd-journey",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1650",
+      "pr_head_sha": "6ee50f1fe057e8f3ad7de288decd90c6ea791725",
+      "merge_commit": "6ee50f1fe057e8f3ad7de288decd90c6ea791725"
+    },
+    {
+      "id": "R3",
+      "title": "Finished planned item edit save",
+      "branch": "cursor/care-remedial-r3-plan-edit-50b4",
+      "allowed_paths": [
+        ".agents/plans/care-gap-close-remedial-50b4.*",
+        "flutter_app/lib/features/health_tracking/presentation/controllers/**",
+        "flutter_app/test/features/health_tracking/**",
+        "e2e/playwright/tests/care*.spec.ts"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "merge_mode": "auto",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1650",
+      "pr_head_sha": "6ee50f1fe057e8f3ad7de288decd90c6ea791725",
+      "merge_commit": "6ee50f1fe057e8f3ad7de288decd90c6ea791725"
+    },
+    {
+      "id": "R4",
+      "title": "BDD gate excludes header-only mappings",
+      "branch": "cursor/care-remedial-r4-bdd-gate-50b4",
+      "allowed_paths": [
+        ".agents/plans/care-gap-close-remedial-50b4.*",
+        "e2e/scripts/check_bdd_coverage.js",
+        "e2e/scripts/**",
+        "docs/quality/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "merge_mode": "auto",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1650",
+      "pr_head_sha": "6ee50f1fe057e8f3ad7de288decd90c6ea791725",
+      "merge_commit": "6ee50f1fe057e8f3ad7de288decd90c6ea791725"
+    },
+    {
+      "id": "R5",
+      "title": "Debt and doc bookkeeping",
+      "branch": "cursor/care-remedial-r5-bookkeeping-50b4",
+      "allowed_paths": [
+        ".agents/plans/care-gap-close-remedial-50b4.*",
+        ".agents/plans/care-requirements-gap-close-c1a7.*",
+        ".agents/memory/**",
+        "docs/domains/pet_care/**",
+        "docs/architecture/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "merge_mode": "auto",
+      "exit_checklist": "governance",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1650",
+      "pr_head_sha": "6ee50f1fe057e8f3ad7de288decd90c6ea791725",
+      "merge_commit": "6ee50f1fe057e8f3ad7de288decd90c6ea791725"
+    }
+  ]
+}

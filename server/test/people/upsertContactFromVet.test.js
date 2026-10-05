@@ -1,6 +1,6 @@
 import { describe, it, expect } from '@jest/globals';
 
-import { upsertContactFromVet } from '../../lib/people/vetSync.js';
+import { upsertContactFromVet } from '../../lib/people/vetProjection.js';
 
 function wrapPool(queryImpl) {
   const clientQuery = async (sql, params) => {
