@@ -27,7 +27,7 @@ void main() {
           roles: const [ContactRole.vet],
           group: ContactGroup.professional,
           status: ContactStatus.active,
-          legacyVetId: 'legacy-v1',
+          linkedVetRecordId: 'legacy-v1',
           pets: const [
             ContactPetLink(
               petId: 'pet-1',

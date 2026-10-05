@@ -136,16 +136,16 @@ DeskRankingContext _deskContextFromRoster(Roster roster) {
     if (contact.pets.isNotEmpty) {
       byContact[contact.id] = contact.pets.length;
     }
-    final legacy = contact.legacyVetId;
-    if (legacy != null && legacy.isNotEmpty) {
-      byLegacy[legacy] = (byLegacy[legacy] ?? 0) + contact.pets.length;
+    final vetRecordId = contact.linkedVetRecordId;
+    if (vetRecordId != null && vetRecordId.isNotEmpty) {
+      byLegacy[vetRecordId] = (byLegacy[vetRecordId] ?? 0) + contact.pets.length;
     }
     if (contact.pets.any((p) => p.isPrimary)) {
       primaryVets.add(contact.id);
     }
   }
   return DeskRankingContext(
-    linkedPetCountByLegacyVetId: byLegacy,
+    linkedPetCountByVetRecordId: byLegacy,
     linkedPetCountByContactId: byContact,
     primaryVetContactIds: primaryVets,
   );

@@ -1,6 +1,5 @@
 library;
 
-export 'application/legacy_people_providers.dart';
 export 'application/people_commands.dart';
 export 'application/people_providers.dart';
 export 'data/people_api_exception.dart';
@@ -9,11 +8,9 @@ export 'domain/entities/contact_summary.dart';
 export 'domain/entities/contact_usage.dart';
 export 'domain/entities/household.dart';
 export 'domain/entities/household_invite.dart';
-export 'domain/entities/people_contact.dart';
-export 'domain/entities/people_legacy_mapping.dart';
 export 'domain/entities/person.dart';
 export 'domain/entities/pet_people.dart';
-export 'domain/entities/person_roster_entry.dart';
+export 'domain/entities/pet_report_vet_details.dart';
 export 'domain/entities/related_care.dart';
 export 'domain/entities/roster.dart';
 export 'domain/enums/contact_group.dart';
@@ -45,4 +42,5 @@ export 'presentation/widgets/person_status_chip.dart';
 export 'presentation/desk/people_desk_module.dart';
 export 'presentation/hub/people_hub_route.dart';
 export 'presentation/routes/people_routes.dart';
+export 'presentation/screens/legacy_vet_contact_redirect_screen.dart';
 export 'presentation/households/household_invite_landing_screen.dart';

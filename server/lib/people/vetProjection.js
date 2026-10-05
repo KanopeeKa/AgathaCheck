@@ -437,6 +437,21 @@ export async function deleteLegacyVetRowForContact(client, legacyVetId, userId) 
 }
 
 /**
+ * Create or update people_contact linked to a vet row (seeds / one-off repair only).
+ * @param {import('pg').Pool|import('pg').PoolClient} pool
+ * @param {object} vetRow vets RETURNING row
+ * @param {string} userId
+ */
+export async function upsertContactFromVet(pool, vetRow, userId) {
+  if (!vetRow?.id || !userId) return null;
+  const fields = vetToContactFields(vetRow);
+  return upsertContactFromVetFields(pool, {
+    ...fields,
+    legacy_vet_id: vetRow.id,
+  }, userId);
+}
+
+/**
  * Compat adapter: legacy vet id → people contact id (reads vets table).
  */
 export async function contactIdForLegacyVet(pool, vetId, userId) {

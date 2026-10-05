@@ -10,7 +10,6 @@ import '../../../experience/domain/entities/app_experience.dart';
 import '../../domain/entities/pet_report_supplement.dart';
 import '../../../sharing/presentation/providers/sharing_providers.dart';
 import '../../../people/people.dart';
-import '../../../vet/domain/entities/vet.dart';
 import '../../../../core/weight/weight_unit_preference.dart';
 import '../../../weight_tracking/presentation/providers/weight_providers.dart';
 import '../../data/services/pdf_saver.dart' as pdf_saver;
@@ -51,7 +50,7 @@ class DownloadReportController {
           personDetailProvider(primaryRel.contactId).future,
         );
       }
-      final assignedVet = vetFromContactDetail(primaryContact);
+      final assignedVet = petReportVetFromContactDetail(primaryContact);
 
       final weightEntries = await ref.read(
         weightEntriesNotifierProvider(pet.id).future,

@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 
 import { ensurePersonalDirectory } from '../../../lib/people/directory.js';
-import { upsertContactFromVet } from '../../../lib/people/vetSync.js';
+import { upsertContactFromVet } from '../../../lib/people/vetProjection.js';
 
 /**
  * Seed a clinic organisation contact (from legacy vet row) plus an optional

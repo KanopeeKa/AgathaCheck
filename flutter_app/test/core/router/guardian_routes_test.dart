@@ -41,7 +41,6 @@ import 'package:pet_profile_app/features/sharing/presentation/providers/sharing_
 import 'package:pet_profile_app/features/subscription/data/services/revenuecat_service.dart';
 import 'package:pet_profile_app/features/subscription/domain/entities/subscription_status.dart';
 import 'package:pet_profile_app/features/subscription/presentation/providers/subscription_providers.dart';
-import 'package:pet_profile_app/features/vet/presentation/providers/vet_providers.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import '../../helpers/fakes.dart';
@@ -107,7 +106,6 @@ List<Override> _guardianShellOverrides({
     petListProvider.overrideWith(
       () => petsLoading ? _LoadingPetListNotifier() : TestPetListNotifier(pets),
     ),
-    vetListProvider.overrideWith(FakeVetListNotifier.new),
     organizationListProvider.overrideWith(FakeOrganizationListNotifier.new),
     healthEntriesNotifierProvider.overrideWith(
       () => FakeHealthEntriesNotifier(),

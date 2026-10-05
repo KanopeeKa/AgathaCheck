@@ -142,7 +142,7 @@
       "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": ["https://github.com/KanopeeKa/AgathaCheck/issues/1653"]
     },
     {
       "id": "i4-e2e-integration",

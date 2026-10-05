@@ -11,7 +11,7 @@ import 'package:pet_profile_app/features/people/domain/entities/contact_summary.
 import 'package:pet_profile_app/features/people/domain/services/pet_people_slots.dart';
 
 void main() {
-  test('vetFromContactDetail includes contact coordinates (B7)', () {
+  test('petReportVetFromContactDetail includes contact coordinates (B7)', () {
     final detail = ContactDetail(
       id: 'c1',
       directoryId: 'd1',
@@ -25,14 +25,13 @@ void main() {
       email: 'desk@greenhill.example',
       address: '1 High Street',
       website: 'https://greenhill.example',
-      legacyVetId: 'vet-1',
+      linkedVetRecordId: 'vet-1',
     );
-    final vet = vetFromContactDetail(detail);
+    final vet = petReportVetFromContactDetail(detail);
     expect(vet, isNotNull);
     expect(vet!.phone, '555-0100');
     expect(vet.email, 'desk@greenhill.example');
     expect(vet.address, '1 High Street');
-    expect(vet.website, 'https://greenhill.example');
   });
 
   test('primaryVetRelationship returns active primary vet row', () {

@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 
-import { syncPetPrimaryVetFromLegacyVetId } from '../../lib/people/petVetLink.js';
-import { upsertContactFromVet } from '../../lib/people/vetSync.js';
+import { setPrimaryVetFromLegacyVetId } from '../../lib/people/relationships.js';
+import { upsertContactFromVet } from '../../lib/people/vetProjection.js';
 
 /**
  * Backfill personal directories, vet contacts, and primary_vet relationships.
@@ -47,7 +47,7 @@ export async function backfillPeopleFromVets(client) {
   );
 
   for (const pet of pets.rows) {
-    await syncPetPrimaryVetFromLegacyVetId(
+    await setPrimaryVetFromLegacyVetId(
       client,
       pet.pet_id,
       pet.vet_id,

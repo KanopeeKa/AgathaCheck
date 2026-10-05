@@ -19,7 +19,7 @@ ContactSummary _contact({
   List<ContactRole> roles = const [ContactRole.sitter],
   List<ContactPetLink> pets = const [],
   ContactNextAbsence? nextAbsence,
-  String? legacyVetId,
+  String? linkedVetRecordId,
 }) {
   return ContactSummary(
     id: id,
@@ -31,7 +31,7 @@ ContactSummary _contact({
     status: status,
     pets: pets,
     nextAbsence: nextAbsence,
-    legacyVetId: legacyVetId,
+    linkedVetRecordId: linkedVetRecordId,
   );
 }
 
@@ -97,19 +97,19 @@ void main() {
         name: 'Low',
         group: ContactGroup.professional,
         roles: const [ContactRole.vet],
-        legacyVetId: 'v1',
+        linkedVetRecordId: 'v1',
       ),
       _contact(
         id: '2',
         name: 'High',
         group: ContactGroup.professional,
         roles: const [ContactRole.vet],
-        legacyVetId: 'v2',
+        linkedVetRecordId: 'v2',
       ),
     ];
     final ranked = rankVetTeamContacts(
       contacts,
-      const DeskRankingContext(linkedPetCountByLegacyVetId: {'v2': 2, 'v1': 0}),
+      const DeskRankingContext(linkedPetCountByVetRecordId: {'v2': 2, 'v1': 0}),
     );
     expect(ranked.first.id, '2');
   });
