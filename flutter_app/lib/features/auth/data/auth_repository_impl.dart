@@ -18,19 +18,15 @@ class AuthRepositoryImpl implements AuthRepository {
     required String password,
     String firstName = '',
     String lastName = '',
-  }) =>
-      _service.signup(
-        email: email,
-        password: password,
-        firstName: firstName,
-        lastName: lastName,
-      );
+  }) => _service.signup(
+    email: email,
+    password: password,
+    firstName: firstName,
+    lastName: lastName,
+  );
 
   @override
-  Future<AuthResult> login({
-    required String email,
-    required String password,
-  }) =>
+  Future<AuthResult> login({required String email, required String password}) =>
       _service.login(email: email, password: password);
 
   @override
@@ -55,38 +51,35 @@ class AuthRepositoryImpl implements AuthRepository {
     String? timezone,
     String? pinnedOrganizationId,
     bool updatePinnedOrganizationId = false,
-  }) =>
-      _service.updateMe(
-        accessToken,
-        firstName: firstName,
-        lastName: lastName,
-        category: category,
-        bio: bio,
-        locale: locale,
-        timezone: timezone,
-        pinnedOrganizationId: pinnedOrganizationId,
-        updatePinnedOrganizationId: updatePinnedOrganizationId,
-      );
+  }) => _service.updateMe(
+    accessToken,
+    firstName: firstName,
+    lastName: lastName,
+    category: category,
+    bio: bio,
+    locale: locale,
+    timezone: timezone,
+    pinnedOrganizationId: pinnedOrganizationId,
+    updatePinnedOrganizationId: updatePinnedOrganizationId,
+  );
 
   @override
   Future<AuthUser> uploadPhoto(
     String accessToken,
     Uint8List bytes,
     String filename,
-  ) =>
-      _service.uploadPhoto(accessToken, bytes, filename);
+  ) => _service.uploadPhoto(accessToken, bytes, filename);
 
   @override
   Future<String> changePassword(
     String accessToken, {
     required String currentPassword,
     required String newPassword,
-  }) =>
-      _service.changePassword(
-        accessToken,
-        currentPassword: currentPassword,
-        newPassword: newPassword,
-      );
+  }) => _service.changePassword(
+    accessToken,
+    currentPassword: currentPassword,
+    newPassword: newPassword,
+  );
 
   @override
   Future<String> forgotPassword({required String email}) =>
@@ -97,19 +90,17 @@ class AuthRepositoryImpl implements AuthRepository {
     required String email,
     required String code,
     required String newPassword,
-  }) =>
-      _service.resetPassword(
-        email: email,
-        code: code,
-        newPassword: newPassword,
-      );
+  }) => _service.resetPassword(
+    email: email,
+    code: code,
+    newPassword: newPassword,
+  );
 
   @override
   Future<DeleteAccountResult> deleteAccount(
     String accessToken, {
     required String password,
-  }) =>
-      _service.deleteAccount(accessToken, password: password);
+  }) => _service.deleteAccount(accessToken, password: password);
 
   @override
   Future<Map<String, dynamic>> exportData(String accessToken) =>

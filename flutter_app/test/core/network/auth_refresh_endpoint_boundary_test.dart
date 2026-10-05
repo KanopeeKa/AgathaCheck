@@ -11,13 +11,9 @@ void main() {
       : p.join(Directory.current.path, 'flutter_app');
   final libRoot = p.join(flutterRoot, 'lib');
 
-  const allowedRelativePaths = {
-    'features/auth/data/auth_service.dart',
-  };
+  const allowedRelativePaths = {'features/auth/data/auth_service.dart'};
 
-  final refreshPatterns = <RegExp>[
-    RegExp(r'/api/auth/refresh'),
-  ];
+  final refreshPatterns = <RegExp>[RegExp(r'/api/auth/refresh')];
 
   test('refresh endpoint is only referenced from AuthService transport', () {
     final violations = <String>[];
