@@ -2,7 +2,7 @@
   "schema_version": 1,
   "approved_at": "2026-10-05T12:45:00.000Z",
   "approved_until": "2026-10-07T12:45:00.000Z",
-  "content_hash": "sha256:df84a0fffa5bb81fa35d6a17b283834295ac8290ab239b98f394d487ef8f0619",
+  "content_hash": "sha256:069a6e468cd7d8205eb5fed7288a12532dd2eb88368c3f80b9d1ef658e3e4f17",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "control_issue": 1630,
@@ -98,7 +98,8 @@
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_head_sha": "14af4717"
+      "pr_head_sha": "ba91009e",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1652"
     },
     {
       "id": "i3-retire-legacy",

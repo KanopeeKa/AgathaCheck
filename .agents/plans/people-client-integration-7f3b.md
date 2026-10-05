@@ -346,10 +346,10 @@ next_action: "continue phase i2-pet-people on branch cursor/people-integration-i
 artifact_ref:
   branch: cursor/people-integration-i2-pet-people-7f3b
   plan_path: .agents/plans/people-client-integration-7f3b.md
-  plan_commit: 14af47173995c330fc0e95eabfc13a4fa0bac701
+  plan_commit: ba91009ee2f9b8d203b901df2e29f720c17f69bb
   snapshot_path: .agents/plans/people-client-integration-7f3b.snapshot.json
-  snapshot_commit: 14af47173995c330fc0e95eabfc13a4fa0bac701
-open_prs: []
+  snapshot_commit: ba91009ee2f9b8d203b901df2e29f720c17f69bb
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1652"]
 merge_commits: {"i1-consumers":"6ba0a1cfce392dd92f2b3c492928ddbf105c73a2"}
 debt_issue_refs: []
 ```
