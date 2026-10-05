@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "plan_id": "care-item-bulk-scope",
+  "approved_at": "2026-10-05T18:45:00Z",
+  "approved_by": "user-chat-2026-10-05-execute-plan-care-item-bulk-scope-handoff",
+  "approved_until": "2026-10-07T18:45:00Z",
+  "content_hash": "sha256:7e02608546c112d01039d7a8347fae75686f8204d4b7fbead5965c7790f176b3",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 1668,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Care Item bulk scope UI",
+      "branch": "cursor/care-item-bulk-scope-0f49",
+      "allowed_paths": [
+        "flutter_app/lib/features/care_item/**",
+        "flutter_app/lib/core/widgets/care_mark_done_button.dart",
+        "flutter_app/lib/core/widgets/care_skip_button.dart",
+        "flutter_app/l10n/**",
+        "flutter_app/test/features/care_item/**",
+        "flutter_app/test/core/widgets/care_mark_done_button_test.dart",
+        "flutter_app/test/bdd/features/care_schedules.feature",
+        "flutter_app/test/bdd/features/health_tracking.feature",
+        "docs/domains/pet_care/changes/care-item-bulk-scope-spec.md",
+        "docs/domains/pet_care/changes/not-recorded-stale-open-bug-spec.md",
+        "docs/design/terminology.md",
+        "e2e/playwright/pages/care-item.page.ts",
+        "e2e/playwright/tests/**",
+        ".agents/plans/care-item-bulk-scope.md",
+        ".agents/plans/care-item-bulk-scope.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1671",
+      "pr_head_sha": "4999d6dd8fd84ff90c91fa6157c67e7a7563ea45"
+    }
+  ]
+}

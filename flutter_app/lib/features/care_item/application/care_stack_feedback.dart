@@ -11,7 +11,10 @@ String careStackSuccessMessage(
   final changed = result.stackChangedCount;
   final ignored = result.ignoredIds.length;
   if (ignored == 0) {
-    return done ? l.careDoneSnackbar(itemName) : l.careSkipped(itemName);
+    final changed = result.stackChangedCount;
+    return done
+        ? l.careBulkMarkedDoneCount(changed)
+        : l.careBulkSkippedCount(changed);
   }
   return done
       ? l.careStackMarkedDonePartial(changed, ignored)
