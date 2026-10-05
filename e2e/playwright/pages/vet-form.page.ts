@@ -112,6 +112,9 @@ export class VetFormPage {
       await this.page.getByRole('button', { name: /continue|continuer/i }).click();
       await this.page.getByRole('button', { name: /^Save person$/i }).click();
       await this.expectSaved('create');
+      await this.page.goto(flutterGotoUrl('/pc/people?filter=professionals'));
+      await refreshFlutterAccessibility(this.page);
+      await waitForFlutterRoutePattern(this.page, /\/pc\/people(?:\?|$)/, 30_000);
       return;
     }
     await this.fillName(options.name);
