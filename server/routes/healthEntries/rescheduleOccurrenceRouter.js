@@ -1,3 +1,4 @@
+import { asyncHandler } from '../../lib/http/asyncHandler.js';
 import { normalizeCalendarDateInput } from '../../lib/calendarDate.js';
 import { syncResolutionAfterAbsenceReschedule } from '../../lib/care/absence/syncResolutionAfterSchedule.js';
 import { changeDateCommand } from '../../lib/care/occurrence/index.js';
@@ -5,7 +6,7 @@ import { commandResponse, occurrenceToMap } from '../../lib/care/item/index.js';
 import { handleCommand } from './occurrencesRouter.js';
 
 export function registerRescheduleOccurrenceRoutes(router, pool) {
-  router.post('/:id/occurrences/:occId/reschedule', (req, res) => {
+  router.post('/:id/occurrences/:occId/reschedule', asyncHandler(async (req, res) => {
     const body = req.body || {};
     const occurrenceId = req.params.occId;
     const scheduledDate = normalizeCalendarDateInput(body.scheduled_date || body.scheduledDate);
@@ -48,5 +49,5 @@ export function registerRescheduleOccurrenceRoutes(router, pool) {
         }),
       }),
     });
-  });
+  }));
 }

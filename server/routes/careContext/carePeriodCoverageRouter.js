@@ -1,4 +1,4 @@
-import { publicError } from '../../config/security.js';
+import { asyncHandler } from '../../lib/http/asyncHandler.js';
 import { loadAwayPlanProjection } from '../../lib/care/awayPlan/index.js';
 import { evaluateCarePeriodCoverage } from '../../lib/care/carePeriodCoverage.js';
 import { validateAbsenceDateWindow } from '../../lib/care/plannedAbsence.js';
@@ -7,7 +7,7 @@ import { userCanManagePet } from '../../lib/petAccess.js';
 import { extractUserId } from '../../lib/requireAuth.js';
 
 export function registerCarePeriodCoverageRoutes(router, pool) {
-  router.get('/:petId/care-period-coverage', async (req, res) => {
+  router.get('/:petId/care-period-coverage', asyncHandler(async (req, res) => {
     try {
       const userId = extractUserId(req);
       if (!userId) {
@@ -39,7 +39,7 @@ export function registerCarePeriodCoverageRoutes(router, pool) {
         coverage,
       });
     } catch (err) {
-      return res.status(500).json({ error: publicError(err, 'Failed to load care-period coverage') });
+      throw err;
     }
-  });
+  }));
 }

@@ -1,7 +1,7 @@
+import { asyncHandler } from '../../lib/http/asyncHandler.js';
 import express from 'express';
 import { v4 as uuidv4 } from 'uuid';
 
-import { publicError } from '../../config/security.js';
 import { logAuditEventSafe } from '../../lib/audit.js';
 import { extractUserId } from '../../lib/requireAuth.js';
 import { normalizeCalendarDateInput } from '../../lib/calendarDate.js';
@@ -24,7 +24,7 @@ import { fulfilmentToMap, weightEntryToMap } from './wire.js';
 export function createWeightEntriesWriteRouter(pool) {
   const router = express.Router();
 
-  router.post('/', async (req, res) => {
+  router.post('/', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
@@ -104,11 +104,11 @@ export function createWeightEntriesWriteRouter(pool) {
       if (err instanceof WeightValidationError) {
         return res.status(err.status).json(err.body);
       }
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 
-  router.post('/:id/fulfil', async (req, res) => {
+  router.post('/:id/fulfil', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
@@ -147,11 +147,11 @@ export function createWeightEntriesWriteRouter(pool) {
       if (err instanceof WeightValidationError) {
         return res.status(err.status).json(err.body);
       }
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 
-  router.put('/:id', async (req, res) => {
+  router.put('/:id', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
@@ -194,11 +194,11 @@ export function createWeightEntriesWriteRouter(pool) {
       if (err instanceof WeightValidationError) {
         return res.status(err.status).json(err.body);
       }
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 
-  router.delete('/:id', async (req, res) => {
+  router.delete('/:id', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
@@ -229,9 +229,9 @@ export function createWeightEntriesWriteRouter(pool) {
         reopened_occurrence: outcome.reopenedOccurrence || null,
       });
     } catch (err) {
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 
   return router;
 }

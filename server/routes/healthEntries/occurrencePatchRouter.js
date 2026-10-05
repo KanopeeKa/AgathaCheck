@@ -3,7 +3,7 @@
  * completed one — notes, provider, and when it was done (D-CSM-034).
  */
 
-import { publicError } from '../../config/security.js';
+import { asyncHandler } from '../../lib/http/asyncHandler.js';
 import { dateToIsoDate, normalizeCalendarDateInput } from '../../lib/calendarDate.js';
 import {
   changeCompletionDateCommand,
@@ -104,7 +104,7 @@ function updateCompletedOn(pool, req, res, completedOn) {
 }
 
 export function registerOccurrencePatchRoutes(router, pool) {
-  router.get('/:id/occurrences/:occId', async (req, res) => {
+  router.get('/:id/occurrences/:occId', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
@@ -124,11 +124,11 @@ export function registerOccurrencePatchRoutes(router, pool) {
       body.skip_reason = await skipReasonForOccurrence(pool, entry.id, occ.id);
       return res.json(body);
     } catch (err) {
-      return res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 
-  router.patch('/:id/occurrences/:occId', async (req, res) => {
+  router.patch('/:id/occurrences/:occId', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     const body = req.body || {};
@@ -179,7 +179,7 @@ export function registerOccurrencePatchRoutes(router, pool) {
       updatedRow.marked_by_name = occ.marked_by_name || null;
       return res.json(occurrenceToMap(updatedRow));
     } catch (err) {
-      return res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 }

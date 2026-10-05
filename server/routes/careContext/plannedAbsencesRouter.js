@@ -1,6 +1,6 @@
+import { asyncHandler } from '../../lib/http/asyncHandler.js';
 import { v4 as uuidv4 } from 'uuid';
 
-import { publicError } from '../../config/security.js';
 import { todayCalendarIso } from '../../lib/calendarDate.js';
 import { loadAwayPlanReadinessForAbsence } from '../../lib/care/awayPlan/index.js';
 import { withTransaction } from '../../lib/db/withTransaction.js';
@@ -44,7 +44,7 @@ import {
 export function registerPlannedAbsenceRoutes(router, pool) {
   registerPlannedAbsenceCarerInviteRoutes(router, pool);
 
-  router.get('/', async (req, res) => {
+  router.get('/', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     const scopeResult = parseListScope(req);
@@ -70,11 +70,11 @@ export function registerPlannedAbsenceRoutes(router, pool) {
       });
       res.json(items);
     } catch (err) {
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 
-  router.post('/', async (req, res) => {
+  router.post('/', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     const body = req.body || {};
@@ -121,9 +121,9 @@ export function registerPlannedAbsenceRoutes(router, pool) {
         overlap_warnings: overlapWarnings,
       });
     } catch (err) {
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 
   registerPlannedAbsenceHandoverRoutes(router, pool, {
     loadAbsenceForUser,
@@ -140,7 +140,7 @@ export function registerPlannedAbsenceRoutes(router, pool) {
     loadAbsencePets,
   });
 
-  router.get('/:id/readiness', async (req, res) => {
+  router.get('/:id/readiness', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
@@ -150,11 +150,11 @@ export function registerPlannedAbsenceRoutes(router, pool) {
       const readiness = await loadAwayPlanReadinessForAbsence(pool, row, petRows);
       res.json(readiness);
     } catch (err) {
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 
-  router.get('/:id', async (req, res) => {
+  router.get('/:id', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
@@ -163,11 +163,11 @@ export function registerPlannedAbsenceRoutes(router, pool) {
       const petRows = await loadAbsencePets(pool, row.id);
       res.json(absenceResponse(row, petRows));
     } catch (err) {
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 
-  router.patch('/:id', async (req, res) => {
+  router.patch('/:id', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     const body = req.body || {};
@@ -266,11 +266,11 @@ export function registerPlannedAbsenceRoutes(router, pool) {
       if (err.status) {
         return res.status(err.status).json({ error: err.message });
       }
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 
-  router.post('/:id/cancel', async (req, res) => {
+  router.post('/:id/cancel', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
@@ -290,7 +290,7 @@ export function registerPlannedAbsenceRoutes(router, pool) {
       const petRows = await loadAbsencePets(pool, req.params.id);
       res.json(absenceResponse(result.rows[0], petRows));
     } catch (err) {
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 }

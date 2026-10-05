@@ -1,6 +1,5 @@
+import { asyncHandler } from '../../lib/http/asyncHandler.js';
 import { v4 as uuidv4 } from 'uuid';
-
-import { publicError } from '../../config/security.js';
 import { normalizeCalendarDateInput } from '../../lib/calendarDate.js';
 import {
   normalizeGender,
@@ -81,11 +80,10 @@ import {
 } from './shared.js';
 
 export function registerCoreRoutes(router, pool) {
-  router.get('/all', async (req, res) => {
+  router.get('/all', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    try {
-      const result = await pool.query(
+    const result = await pool.query(
         `SELECT p.*, false AS is_shared, false AS is_foster, o.name AS organization_name,
                 ${FOSTER_PLACEMENT_SELECT_SQL},
                 ${PET_PARENT_NAME_SELECT_SQL},
@@ -144,31 +142,24 @@ export function registerCoreRoutes(router, pool) {
          ORDER BY created_at`,
         [userId, PET_ACCESS_ROLES, FOSTER_PET_ACCESS_ROLE, OPEN_PLACEMENT_STATUSES]
       );
-      const pets = result.rows.map(petRowToMap);
-      await autoAssignColors(pool, pets);
-      res.json(pets);
-    } catch (err) {
-      res.status(500).json({ error: publicError(err, 'Error fetching pets', `Error fetching pets: ${err.message}`) });
-    }
-  });
+    const pets = result.rows.map(petRowToMap);
+    await autoAssignColors(pool, pets);
+    res.json(pets);
+  }, { prodMessage: 'Error fetching pets', devMessage: (err) => `Error fetching pets: ${err.message}` }));
 
-  router.get('/', async (req, res) => {
+  router.get('/', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    try {
-      const result = await pool.query(
-        'SELECT * FROM pets WHERE user_id = $1 ORDER BY created_at',
-        [userId]
-      );
-      const pets = result.rows.map(petRowToMap);
-      await autoAssignColors(pool, pets);
-      res.json(pets);
-    } catch (err) {
-      res.status(500).json({ error: publicError(err, 'Error fetching pets', `Error fetching pets: ${err.message}`) });
-    }
-  });
+    const result = await pool.query(
+      'SELECT * FROM pets WHERE user_id = $1 ORDER BY created_at',
+      [userId]
+    );
+    const pets = result.rows.map(petRowToMap);
+    await autoAssignColors(pool, pets);
+    res.json(pets);
+  }, { prodMessage: 'Error fetching pets', devMessage: (err) => `Error fetching pets: ${err.message}` }));
 
-  router.get('/:id', async (req, res) => {
+  router.get('/:id', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     const { id } = req.params;
@@ -176,8 +167,7 @@ export function registerCoreRoutes(router, pool) {
     if (!uuidRegex.test(id)) {
       return res.status(400).json({ error: 'Invalid pet ID' });
     }
-    try {
-      if (!(await userCanAccessPet(pool, id, userId))) {
+    if (!(await userCanAccessPet(pool, id, userId))) {
         return res.status(404).json({ error: 'Pet not found' });
       }
       const result = await pool.query(
@@ -206,21 +196,18 @@ export function registerCoreRoutes(router, pool) {
          WHERE p.id = $1`,
         [id, userId, FOSTER_PET_ACCESS_ROLE, PET_ACCESS_ROLES]
       );
-      if (result.rows.length === 0) {
-        return res.status(404).json({ error: 'Pet not found' });
-      }
-      res.json(petRowToMap(result.rows[0]));
-    } catch (err) {
-      res.status(500).json({ error: publicError(err, 'Error fetching pet', `Error fetching pet: ${err.message}`) });
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Pet not found' });
     }
-  });
+    res.json(petRowToMap(result.rows[0]));
+  }, { prodMessage: 'Error fetching pet', devMessage: (err) => `Error fetching pet: ${err.message}` }));
 
-  router.post('/', async (req, res) => {
+  router.post('/', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     if (rejectFrozenOrganizationIdOnPetWrite(req, res)) return;
     try {
-      const id = req.body.id || uuidv4();
+    const id = req.body.id || uuidv4();
       const {
         name, breed = '', age, weight,
         bio = '', insurance = '',
@@ -288,16 +275,16 @@ export function registerCoreRoutes(router, pool) {
         metadata: { species: syncedPet.species },
         req,
       });
-      res.status(201).json(petRowToMap(syncedPet));
+    res.status(201).json(petRowToMap(syncedPet));
     } catch (err) {
       if (err.status && err.body) {
         return res.status(err.status).json(err.body);
       }
-      res.status(500).json({ error: publicError(err, 'Error creating pet', `Error creating pet: ${err.message}`) });
+      throw err;
     }
-  });
+  }, { prodMessage: 'Error creating pet', devMessage: (err) => `Error creating pet: ${err.message}` }));
 
-  router.put('/:id', async (req, res) => {
+  router.put('/:id', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     if (rejectFrozenOrganizationIdOnPetWrite(req, res)) return;
@@ -432,30 +419,23 @@ export function registerCoreRoutes(router, pool) {
           metadata: { field_count: Object.keys(req.body || {}).length },
         });
       }
-      res.json(petRowToMap(syncedPet));
+    res.json(petRowToMap(syncedPet));
     } catch (err) {
       if (err.status && err.body) {
         return res.status(err.status).json(err.body);
       }
-      res.status(500).json({ error: publicError(err, 'Error updating pet', `Error updating pet: ${err.message}`) });
+      throw err;
     }
-  });
+  }, { prodMessage: 'Error updating pet', devMessage: (err) => `Error updating pet: ${err.message}` }));
 
-  router.delete('/:id', async (req, res) => {
+  router.delete('/:id', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    try {
-      const { id } = req.params;
-      if (!(await userOwnsPet(pool, id, userId))) {
-        return res.status(404).json({ error: 'Pet not found' });
-      }
-      const result = await deletePet(pool, id, { actorUserId: userId, req });
-      res.json(result);
-    } catch (err) {
-      if (err instanceof PetNotFoundError) {
-        return res.status(404).json({ error: 'Pet not found' });
-      }
-      res.status(500).json({ error: publicError(err, 'Error deleting pet', `Error deleting pet: ${err.message}`) });
+    const { id } = req.params;
+    if (!(await userOwnsPet(pool, id, userId))) {
+      return res.status(404).json({ error: 'Pet not found' });
     }
-  });
+    const result = await deletePet(pool, id, { actorUserId: userId, req });
+    res.json(result);
+  }, { prodMessage: 'Error deleting pet', devMessage: (err) => `Error deleting pet: ${err.message}` }));
 }

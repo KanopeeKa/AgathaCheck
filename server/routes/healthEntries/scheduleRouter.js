@@ -1,3 +1,4 @@
+import { asyncHandler } from '../../lib/http/asyncHandler.js';
 import { normalizeCalendarDateInput } from '../../lib/calendarDate.js';
 import { syncResolutionAfterAbsencePostpone } from '../../lib/care/absence/syncResolutionAfterSchedule.js';
 import {
@@ -11,7 +12,7 @@ import { handleCommand } from './occurrencesRouter.js';
 
 /** Postpone until / Pause / Resume / cadence / whole-command undo (D-CSM-028, D-CSM-029). */
 export function registerScheduleRoutes(router, pool) {
-  router.post('/:id/postpone', (req, res) => {
+  router.post('/:id/postpone', asyncHandler(async (req, res) => {
     const body = req.body || {};
     const rawUntil = body.until ?? null;
     const until = rawUntil == null || rawUntil === '' ? null : normalizeCalendarDateInput(rawUntil);
@@ -45,9 +46,9 @@ export function registerScheduleRoutes(router, pool) {
       },
       respond: async (out) => ({ body: await commandResponse(pool, out, req, { until: out.until }) }),
     });
-  });
+  }));
 
-  router.post('/:id/resume', (req, res) => {
+  router.post('/:id/resume', asyncHandler(async (req, res) => {
     const body = req.body || {};
     const date = normalizeCalendarDateInput(body.date || body.resume_on || body.resumeOn);
     return handleCommand(pool, req, res, {
@@ -61,9 +62,9 @@ export function registerScheduleRoutes(router, pool) {
         return { body: { ...wire.entry, ...wire } };
       },
     });
-  });
+  }));
 
-  router.post('/:id/adjust-cadence', (req, res) => {
+  router.post('/:id/adjust-cadence', asyncHandler(async (req, res) => {
     const body = req.body || {};
     return handleCommand(pool, req, res, {
       command: (ctx) => adjustCadenceCommand(ctx, {
@@ -82,9 +83,9 @@ export function registerScheduleRoutes(router, pool) {
       }),
       respond: async (out) => ({ body: await commandResponse(pool, out, req) }),
     });
-  });
+  }));
 
-  router.post('/:id/schedule/undo', (req, res) => {
+  router.post('/:id/schedule/undo', asyncHandler(async (req, res) => {
     const body = req.body || {};
     return handleCommand(pool, req, res, {
       command: (ctx) => undoCommand(ctx, { undoToken: body.undo_token || body.undoToken || null }),
@@ -104,5 +105,5 @@ export function registerScheduleRoutes(router, pool) {
         }),
       }),
     });
-  });
+  }));
 }

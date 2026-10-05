@@ -34,6 +34,7 @@ import {
   createAccountExistenceMiddleware,
   installTestAccountExistencePoolCompat,
 } from '../lib/auth/accountExistence.js';
+import { createApiErrorMiddleware } from '../lib/http/errorMiddleware.js';
 
 function getServerDir() {
   try {
@@ -159,6 +160,8 @@ export function createApp(customPool, comparePassword) {
   app.use('/backend/api/share', sharingRoutes(pool));
   app.use('/backend/api/households', householdsRoutes(pool));
   app.use('/backend/api/pet-tags', petTagsRoutes(pool));
+
+  app.use(createApiErrorMiddleware());
 
   app.get('/health', (req, res) => {
     res.status(200).json({ status: 'OK' });

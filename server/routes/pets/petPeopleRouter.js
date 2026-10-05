@@ -1,4 +1,4 @@
-import { publicError } from '../../config/security.js';
+import { asyncHandler } from '../../lib/http/asyncHandler.js';
 import { asPeopleError, petPeople } from '../../lib/people/index.js';
 import { extractUserId } from './shared.js';
 
@@ -9,7 +9,7 @@ function sendPeopleError(res, err) {
 }
 
 export function registerPetPeopleRoutes(router, pool) {
-  router.get('/:petId/people', async (req, res) => {
+  router.get('/:petId/people', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     const { petId } = req.params;
@@ -21,7 +21,7 @@ export function registerPetPeopleRoutes(router, pool) {
       res.json(result);
     } catch (err) {
       if (sendPeopleError(res, err)) return;
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 }

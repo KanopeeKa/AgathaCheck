@@ -1,4 +1,4 @@
-import { publicError } from '../../config/security.js';
+import { asyncHandler } from '../../lib/http/asyncHandler.js';
 import { userCanManageHealthEntry } from '../../lib/petAccess.js';
 import {
   closeSeriesCommand,
@@ -26,7 +26,7 @@ export function registerCompletionRoutes(router, pool) {
     respond: async (out) => ({ body: await entryBody(pool, out, req) }),
   }));
 
-  router.get('/:id/history', async (req, res) => {
+  router.get('/:id/history', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
@@ -57,7 +57,7 @@ export function registerCompletionRoutes(router, pool) {
         return mapped;
       }));
     } catch (err) {
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 }

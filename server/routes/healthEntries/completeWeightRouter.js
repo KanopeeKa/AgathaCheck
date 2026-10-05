@@ -1,4 +1,4 @@
-import { publicError } from '../../config/security.js';
+import { asyncHandler } from '../../lib/http/asyncHandler.js';
 import { hasPetCapability, PET_CAPABILITIES } from '../../lib/petCapabilityPolicy.js';
 import { userCanManageHealthEntry } from '../../lib/petAccess.js';
 import { completeWeightOccurrence as completeWeightOccurrenceService } from '../../lib/care/observations/weightObservationService.js';
@@ -23,27 +23,23 @@ async function loadEntryForPet(pool, entryId, petId, userId) {
 export function registerCompleteWeightRoutes(router, pool) {
   router.post(
     '/:id/care-rhythms/:entryId/occurrences/:occurrenceId/complete-weight',
-    async (req, res) => {
+    asyncHandler(async (req, res) => {
       const userId = extractUserId(req);
       if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-      try {
-        const result = await completeWeightOccurrenceService(pool, {
-          petId: req.params.id,
-          entryId: req.params.entryId,
-          occurrenceId: req.params.occurrenceId,
-          userId,
-          body: req.body || {},
-          req,
-          loadOccurrence,
-          loadEntryForPet,
-          hasPetWeightEdit: (db, uid, pid) =>
-            hasPetCapability(db, uid, pid, PET_CAPABILITIES.WEIGHT_EDIT),
-        });
-        return res.status(result.status).json(result.body);
-      } catch (err) {
-        return res.status(500).json({ error: publicError(err) });
-      }
-    },
+      const result = await completeWeightOccurrenceService(pool, {
+        petId: req.params.id,
+        entryId: req.params.entryId,
+        occurrenceId: req.params.occurrenceId,
+        userId,
+        body: req.body || {},
+        req,
+        loadOccurrence,
+        loadEntryForPet,
+        hasPetWeightEdit: (db, uid, pid) =>
+          hasPetCapability(db, uid, pid, PET_CAPABILITIES.WEIGHT_EDIT),
+      });
+      return res.status(result.status).json(result.body);
+    }),
   );
 }
 

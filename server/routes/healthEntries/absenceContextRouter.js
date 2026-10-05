@@ -1,10 +1,10 @@
-import { publicError } from '../../config/security.js';
+import { asyncHandler } from '../../lib/http/asyncHandler.js';
 import { loadHealthEntryAbsenceContext } from '../../lib/care/absence/loadHealthEntryAbsenceContext.js';
 import { userCanManageHealthEntry } from '../../lib/petAccess.js';
 import { extractUserId } from './shared.js';
 
 export function registerAbsenceContextRoutes(router, pool) {
-  router.get('/:id/absence-context', async (req, res) => {
+  router.get('/:id/absence-context', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
@@ -20,7 +20,7 @@ export function registerAbsenceContextRoutes(router, pool) {
       const context = await loadHealthEntryAbsenceContext(pool, entry, userId);
       res.json(context);
     } catch (err) {
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 }

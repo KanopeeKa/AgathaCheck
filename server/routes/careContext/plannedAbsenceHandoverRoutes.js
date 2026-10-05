@@ -1,4 +1,4 @@
-import { publicError } from '../../config/security.js';
+import { asyncHandler } from '../../lib/http/asyncHandler.js';
 import { extractUserId } from '../../lib/requireAuth.js';
 import { absenceResponse } from './plannedAbsenceHandoverFields.js';
 
@@ -11,7 +11,7 @@ import { absenceResponse } from './plannedAbsenceHandoverFields.js';
  * }} deps
  */
 export function registerPlannedAbsenceHandoverRoutes(router, pool, deps) {
-  router.post('/:id/record-handover-download', async (req, res) => {
+  router.post('/:id/record-handover-download', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
@@ -30,7 +30,7 @@ export function registerPlannedAbsenceHandoverRoutes(router, pool, deps) {
       const petRows = await deps.loadAbsencePets(pool, req.params.id);
       res.json(absenceResponse(result.rows[0], petRows));
     } catch (err) {
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 }
