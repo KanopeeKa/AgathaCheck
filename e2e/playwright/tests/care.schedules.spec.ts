@@ -95,16 +95,18 @@ test.describe('Care schedules', () => {
       await dashboard.open();
       const agenda = new CareAgendaPage(page);
       await agenda.markDone(entry.id);
+      const changeDate = page
+        .locator('[flt-semantics-identifier="care_done_snackbar"]')
+        .getByRole('button', { name: /Change date|Changer la date/i });
       const sheet = new CompletionDateSheetPage(page);
-      try {
-        await sheet.expectLoaded();
+      const sheetVisible = await page
+        .getByText(/When was this done\?|Quand cela a été fait/i)
+        .isVisible({ timeout: 2_000 })
+        .catch(() => false);
+      if (sheetVisible) {
         await sheet.chooseToday();
-      } catch {
-        // After-it's-done date sheet not shown for fixed daily slots.
       }
-      await expect(page.getByRole('button', { name: /Change date|Changer la date/i })).toBeVisible({
-        timeout: 15_000,
-      });
+      await expect(changeDate).toBeVisible({ timeout: 15_000 });
       const item = await getCareItem(baseURL, testUser.accessToken, entry.id);
       const evening = item.open_occurrences.find((o) => o.scheduled_time === '18:00');
       expect(evening).toBeTruthy();

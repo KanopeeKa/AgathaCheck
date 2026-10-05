@@ -249,6 +249,9 @@ class CareCompletionFlow {
       content: doneContent,
       undoLabel: l.snackbarUndo,
       undoActionKey: const Key('care_done_undo'),
+      duration: changeOccurrenceId != null
+          ? const Duration(seconds: 15)
+          : kUndoSnackBarDuration,
       onUndo: () async {
         final undone = await _service.undo(
           entryId: schedule.entryId,
