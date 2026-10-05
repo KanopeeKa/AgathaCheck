@@ -1,27 +1,12 @@
+import 'dart:typed_data';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../data/datasources/health_issue_remote_datasource.dart';
-import '../../data/repositories/health_issue_repository_impl.dart';
+import '../../application/health_documents_providers.dart';
+import '../../domain/entities/health_document.dart';
 import '../../domain/entities/health_issue.dart';
 import '../../domain/entities/health_issue_document.dart';
-import '../../domain/repositories/health_issue_repository.dart';
-import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
-
-final healthIssueDataSourceProvider = Provider<HealthIssueRemoteDataSource>((
-  ref,
-) {
-  final baseUrl = ref.watch(apiBaseUrlProvider);
-  return HealthIssueRemoteDataSourceImpl(
-    baseUrl: baseUrl,
-    client: ref.watch(authHttpClientProvider),
-  );
-});
-
-final healthIssueRepositoryProvider = Provider<HealthIssueRepository>((ref) {
-  final dataSource = ref.watch(healthIssueDataSourceProvider);
-  return HealthIssueRepositoryImpl(dataSource);
-});
 
 final petHealthIssuesProvider =
     FutureProvider.family<List<HealthIssue>, String>((ref, petId) {
@@ -30,13 +15,22 @@ final petHealthIssuesProvider =
       return ref.read(healthIssueRepositoryProvider).getIssues(petId, token);
     });
 
+HealthIssueDocument _mapHealthDocumentToIssue(HealthDocument doc) {
+  return HealthIssueDocument(
+    id: doc.id,
+    healthIssueId: doc.healthIssueId ?? '',
+    url: doc.url,
+  );
+}
+
 final healthIssueDocumentsProvider = FutureProvider.autoDispose
     .family<List<HealthIssueDocument>, String>((ref, issueId) async {
       final token = ref.watch(authProvider).accessToken;
       if (token == null) return [];
-      return ref
-          .read(healthIssueRepositoryProvider)
-          .getDocuments(issueId, token);
+      final docs = await ref
+          .read(healthDocumentsRepositoryProvider)
+          .listIssueDocuments(issueId);
+      return docs.map(_mapHealthDocumentToIssue).toList();
     });
 
 class HealthIssueNotifier
@@ -100,21 +94,24 @@ class HealthIssueNotifier
     String filename,
     String mimeType,
   ) async {
-    final token = _token;
-    if (token == null) throw Exception('Not authenticated');
+    if (_token == null) throw Exception('Not authenticated');
     final doc = await ref
-        .read(healthIssueRepositoryProvider)
-        .uploadDocument(issueId, bytes, filename, mimeType, token);
+        .read(healthDocumentsRepositoryProvider)
+        .uploadIssueDocument(
+          issueId,
+          Uint8List.fromList(bytes),
+          filename,
+          mimeType,
+        );
     ref.invalidate(healthIssueDocumentsProvider(issueId));
-    return doc;
+    return _mapHealthDocumentToIssue(doc);
   }
 
   Future<void> deleteDocument(String issueId, String documentId) async {
-    final token = _token;
-    if (token == null) return;
+    if (_token == null) return;
     await ref
-        .read(healthIssueRepositoryProvider)
-        .deleteDocument(issueId, documentId, token);
+        .read(healthDocumentsRepositoryProvider)
+        .removeIssueDocument(issueId, documentId);
     ref.invalidate(healthIssueDocumentsProvider(issueId));
   }
 }

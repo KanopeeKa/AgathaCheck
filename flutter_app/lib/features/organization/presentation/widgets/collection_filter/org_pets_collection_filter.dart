@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/widgets/collection_filter/collection_filter.dart';
-import '../../../../l10n/app_localizations.dart';
+import '../../../../../core/widgets/collection_filter/collection_filter.dart';
+import '../../../../../l10n/app_localizations.dart';
 import '../../utils/org_pets_care_utils.dart';
 
 abstract final class OrgPetsCollectionFilterIds {

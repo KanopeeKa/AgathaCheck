@@ -1,6 +1,6 @@
+import { asyncHandler } from '../../lib/http/asyncHandler.js';
 import { v4 as uuidv4 } from 'uuid';
 
-import { publicError } from '../../config/security.js';
 import { createNotification, userDisplayName } from '../../lib/notificationHelper.js';
 import { transferPetToOrganization } from '../../lib/orgPetTransfer.js';
 import { userOwnsPet } from '../../lib/petAccess.js';
@@ -9,7 +9,7 @@ import { withTransaction } from '../../lib/db/withTransaction.js';
 import { extractUserId, petRowToMap } from './shared.js';
 
 export function registerTransferRoutes(router, pool) {
-  router.post('/:id/transfer-to-org', async (req, res) => {
+  router.post('/:id/transfer-to-org', asyncHandler(async (req, res) => {
     if (rejectFrozenShelterApi(res)) return;
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
@@ -36,11 +36,11 @@ export function registerTransferRoutes(router, pool) {
       if (err.statusCode === 404) return res.status(404).json({ error: err.message });
       if (err.statusCode === 400) return res.status(400).json({ error: err.message });
       if (err.statusCode === 403) return res.status(403).json({ error: err.message });
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 
-  router.post('/:id/transfer', async (req, res) => {
+  router.post('/:id/transfer', asyncHandler(async (req, res) => {
     const ownerId = extractUserId(req);
     if (!ownerId) return res.status(401).json({ error: 'Unauthorized' });
     const petId = req.params.id;
@@ -158,7 +158,7 @@ export function registerTransferRoutes(router, pool) {
         pet: petRowToMap(updatedPet),
       });
     } catch (err) {
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 }

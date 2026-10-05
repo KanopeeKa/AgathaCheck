@@ -1,6 +1,6 @@
+import { asyncHandler } from '../../lib/http/asyncHandler.js';
 import { v4 as uuidv4 } from 'uuid';
 
-import { publicError } from '../../config/security.js';
 import { dateToIsoDate, normalizeCalendarDateInput } from '../../lib/calendarDate.js';
 import { hasPetCapability, PET_CAPABILITIES } from '../../lib/petCapabilityPolicy.js';
 import { rejectFrozenShelterApi } from '../../lib/frozenDomains.js';
@@ -35,7 +35,7 @@ export function registerFamilyEventsRoutes(router, pool) {
     return hasPetCapability(pool, userId, petId, PET_CAPABILITIES.PROFILE_EDIT);
   }
 
-  router.get('/:id/family-events', async (req, res) => {
+  router.get('/:id/family-events', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     const petId = req.params.id;
@@ -55,11 +55,11 @@ export function registerFamilyEventsRoutes(router, pool) {
       );
       res.status(200).json(result.rows.map(familyEventToMap));
     } catch (err) {
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 
-  router.post('/:id/family-events', async (req, res) => {
+  router.post('/:id/family-events', asyncHandler(async (req, res) => {
     if (rejectFrozenShelterApi(res)) return;
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
@@ -115,11 +115,11 @@ export function registerFamilyEventsRoutes(router, pool) {
       }
       res.status(201).json(familyEventToMap(row));
     } catch (err) {
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 
-  router.put('/:id/family-events/:eventId', async (req, res) => {
+  router.put('/:id/family-events/:eventId', asyncHandler(async (req, res) => {
     if (rejectFrozenShelterApi(res)) return;
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
@@ -182,11 +182,11 @@ export function registerFamilyEventsRoutes(router, pool) {
       }
       res.json(familyEventToMap(row));
     } catch (err) {
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 
-  router.post('/:id/family-events/:eventId/mark-complete', async (req, res) => {
+  router.post('/:id/family-events/:eventId/mark-complete', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     const { id: petId, eventId } = req.params;
@@ -224,11 +224,11 @@ export function registerFamilyEventsRoutes(router, pool) {
       row.assigned_email = '';
       res.json(familyEventToMap(row));
     } catch (err) {
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 
-  router.get('/:id/family-events/:eventId/history', async (req, res) => {
+  router.get('/:id/family-events/:eventId/history', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     const { id: petId, eventId } = req.params;
@@ -256,11 +256,11 @@ export function registerFamilyEventsRoutes(router, pool) {
         notes: r.notes || '',
       })));
     } catch (err) {
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 
-  router.delete('/:id/family-events/:eventId', async (req, res) => {
+  router.delete('/:id/family-events/:eventId', asyncHandler(async (req, res) => {
     if (rejectFrozenShelterApi(res)) return;
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
@@ -276,7 +276,7 @@ export function registerFamilyEventsRoutes(router, pool) {
       if (result.rows.length === 0) return res.status(404).json({ error: 'Event not found' });
       res.json({ deleted: true });
     } catch (err) {
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 }

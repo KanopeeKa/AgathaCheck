@@ -47,18 +47,18 @@ No wire change. Every 401, 403 and 404 stays the same.
 
 ```yaml
 autonomy: active
-current_phase: "1"
-last_completed_phase: null
+current_phase: 5
+last_completed_phase: 4
 halt_reason: null
-next_action: "bootstrap: create integration branch + control issue, then phase 1"
+next_action: "continue phase 5 on branch cursor/active-codebase-h-integration-e41f"
 artifact_ref:
-  branch: null
+  branch: cursor/active-codebase-h-integration-e41f
   plan_path: .agents/plans/active-codebase-batch-h-ports-transport-e41f.md
-  plan_commit: null
+  plan_commit: 3869f33f72c56445b5fdf2f60c8c9213cde69236
   snapshot_path: .agents/plans/active-codebase-batch-h-ports-transport-e41f.snapshot.json
-  snapshot_commit: null
-open_prs: []
-merge_commits: {}
+  snapshot_commit: 3869f33f72c56445b5fdf2f60c8c9213cde69236
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1615"]
+merge_commits: {"1":"0a60ce7fd6dca1780aee3f895c63f66cadafa476","2":"77c6f4b841bb4f2b52ce61b769da642539d67c5a","3":"8520c3875592d14c308a5d56b407f75bded1a02a","4":"9666610fd33b4747739e9e3db83ae25685dd5a43"}
 debt_issue_refs: []
 ```
 
@@ -106,10 +106,10 @@ file-split
 
 **Acceptance criteria:**
 
-- [ ] **H.1-1** `AuthRepository` (login, register, refresh, logout, deleteAccount, exportData, profile read/update, password change) and `SessionStore` (read, write, clear tokens) live in `features/auth/domain`. The implementations wrap `AuthService` and `TokenStore` in `features/auth/data`. The port providers live in `features/auth/application` (convention: `docs/architecture/modularity.md` §Feature ports and transport). `AuthNotifier` depends only on the ports, through those providers, and its state machine and public API are unchanged.
-- [ ] **H.1-2** No presentation file constructs `AuthService()` (today: `my_details_screen.dart:242` and `:305`), and no file outside `features/auth/data` and `features/auth/application` imports `features/auth/data/**`. Today that also means the four cross-feature importers in `allowed_paths` (`analytics_service.dart`, `account_screen.dart`, `experience_drawer_identity_header.dart`, `shelter_pinned_org_provider.dart`); re-list them with `grep -rn "auth/data/" flutter_app/lib` at bootstrap and update `allowed_paths` before stamping. The feature-import baseline shrinks accordingly.
-- [ ] **H.1-3** Tests with fakes cover login, logout, session restore and delete-account (F.4 behaviour). `auth_refresh_test.dart` (single-flight refresh plus request replay) passes unchanged.
-- [ ] **H.1-4** `AuthHttpClient` stays the only refresh authority. A grep-based test fails if any new file under `flutter_app/lib` calls the refresh endpoint directly.
+- [x] **H.1-1** `AuthRepository` (login, register, refresh, logout, deleteAccount, exportData, profile read/update, password change) and `SessionStore` (read, write, clear tokens) live in `features/auth/domain`. The implementations wrap `AuthService` and `TokenStore` in `features/auth/data`. The port providers live in `features/auth/application` (convention: `docs/architecture/modularity.md` §Feature ports and transport). `AuthNotifier` depends only on the ports, through those providers, and its state machine and public API are unchanged.
+- [x] **H.1-2** No presentation file constructs `AuthService()` (today: `my_details_screen.dart:242` and `:305`), and no file outside `features/auth/data` and `features/auth/application` imports `features/auth/data/**`. Today that also means the four cross-feature importers in `allowed_paths` (`analytics_service.dart`, `account_screen.dart`, `experience_drawer_identity_header.dart`, `shelter_pinned_org_provider.dart`); re-list them with `grep -rn "auth/data/" flutter_app/lib` at bootstrap and update `allowed_paths` before stamping. The feature-import baseline shrinks accordingly.
+- [x] **H.1-3** Tests with fakes cover login, logout, session restore and delete-account (F.4 behaviour). `auth_refresh_test.dart` (single-flight refresh plus request replay) passes unchanged.
+- [x] **H.1-4** `AuthHttpClient` stays the only refresh authority. A grep-based test fails if any new file under `flutter_app/lib` calls the refresh endpoint directly.
 
 ---
 
@@ -157,10 +157,10 @@ file-split
 
 **Acceptance criteria:**
 
-- [ ] **H.2-1** A `HealthDocumentsRepository` port (upload and remove for health-entry photos and health-issue documents, returning a typed `HealthDocument` with id and url, with typed failures) lives in `health_tracking/domain`. Its implementation in `data/` uses the injected authenticated HTTP client, and its provider lives in `health_tracking/application/`.
-- [ ] **H.2-2** The duplicate datasource providers `healthRemoteDataSourceProvider` and `healthDataSourceProvider` are consolidated into one. The health data layer never builds `Authorization` headers by hand (grep test).
-- [ ] **H.2-3** The five presentation files listed use the port and no longer import `health_tracking/data/**`. The other `health_tracking/presentation → data` imports (15 files in total on 2026-09-30, these five included; re-count at bootstrap) may not grow: a test pins the remaining list, and it only shrinks.
-- [ ] **H.2-4** Tests cover upload success; upload failure (4xx, 5xx and network, each mapped to a typed error); delete success and failure; and 401 → refresh → replay through the client.
+- [x] **H.2-1** A `HealthDocumentsRepository` port (upload and remove for health-entry photos and health-issue documents, returning a typed `HealthDocument` with id and url, with typed failures) lives in `health_tracking/domain`. Its implementation in `data/` uses the injected authenticated HTTP client, and its provider lives in `health_tracking/application/`.
+- [x] **H.2-2** The duplicate datasource providers `healthRemoteDataSourceProvider` and `healthDataSourceProvider` are consolidated into one. The health data layer never builds `Authorization` headers by hand (grep test).
+- [x] **H.2-3** The five presentation files listed use the port and no longer import `health_tracking/data/**`. The other `health_tracking/presentation → data` imports (15 files in total on 2026-09-30, these five included; re-count at bootstrap) may not grow: a test pins the remaining list, and it only shrinks.
+- [x] **H.2-4** Tests cover upload success; upload failure (4xx, 5xx and network, each mapped to a typed error); delete success and failure; and 401 → refresh → replay through the client.
 
 ---
 
@@ -208,10 +208,10 @@ docs
 
 **Acceptance criteria:**
 
-- [ ] **H.3-1** `server/lib/http/` provides typed errors (`ValidationError` 400, `UnauthenticatedError` 401, `ForbiddenError` 403, `NotFoundError` 404, `ConflictError` 409, `TransientError` 503), an Express 4-compatible `asyncHandler(fn)`, and a terminal error middleware. The middleware is registered after the routers on **both** prefixes, maps typed errors, redacts all others via `publicError`, includes `request_id`, and logs once.
-- [ ] **H.3-2** Test: a handler that throws or rejects unexpectedly returns 500 JSON `{ error, request_id }` with no raw message in production mode, and never leaves the request hanging.
-- [ ] **H.3-3** Every router in the listed directories uses `asyncHandler`. Per-route `try/catch` blocks that only map to 500 are removed. Existing route tests (status matrices 400/401/403/404/409) pass **unchanged**.
-- [ ] **H.3-4** The existing security test is extended so that no 5xx body contains `err.message` or a stack in production mode for any migrated router.
+- [x] **H.3-1** `server/lib/http/` provides typed errors (`ValidationError` 400, `UnauthenticatedError` 401, `ForbiddenError` 403, `NotFoundError` 404, `ConflictError` 409, `TransientError` 503), an Express 4-compatible `asyncHandler(fn)`, and a terminal error middleware. The middleware is registered after the routers on **both** prefixes, maps typed errors, redacts all others via `publicError`, includes `request_id`, and logs once.
+- [x] **H.3-2** Test: a handler that throws or rejects unexpectedly returns 500 JSON `{ error, request_id }` with no raw message in production mode, and never leaves the request hanging.
+- [x] **H.3-3** Every router in the listed directories uses `asyncHandler`. Per-route `try/catch` blocks that only map to 500 are removed. Existing route tests (status matrices 400/401/403/404/409) pass **unchanged**.
+- [x] **H.3-4** The existing security test is extended so that no 5xx body contains `err.message` or a stack in production mode for any migrated router.
 
 ---
 
@@ -255,10 +255,10 @@ docs
 
 **Acceptance criteria:**
 
-- [ ] **H.4-1** Token sign/verify helpers move from `server/routes/auth/shared.js` to `server/lib/auth/tokens.js`. A new architecture test, `server/test/architecture/serverDirection.test.js`, fails if `server/lib/**` or `server/services/**` imports `server/routes/**`. Today there are 3 violations (`authCookies.js`, `refreshSessions.js`, `requireAuth.js`); afterwards there are 0.
-- [ ] **H.4-2** Authenticated endpoints in `profileRouter`, `passwordRouter` and `sessionRouter` use `requireAuth` (principal on `req`). Unauthenticated-by-design flows (login, register, refresh, forgot and reset password) are unchanged. The deprecated `verifyToken` alias is removed.
-- [ ] **H.4-3** Auth routers use `asyncHandler` and typed errors. A table-driven test records the 401/403/404/409 matrix for **every** auth endpoint on both prefixes, and the matrix is unchanged from before the phase (snapshot the matrix first, then refactor).
-- [ ] **H.4-4** Session v2 tests (refresh rotation, reuse detection), the F.3 account-existence tests and the GDPR export tests pass unchanged.
+- [x] **H.4-1** Token sign/verify helpers move from `server/routes/auth/shared.js` to `server/lib/auth/tokens.js`. A new architecture test, `server/test/architecture/serverDirection.test.js`, fails if `server/lib/**` or `server/services/**` imports `server/routes/**`. Today there are 3 violations (`authCookies.js`, `refreshSessions.js`, `requireAuth.js`); afterwards there are 0.
+- [x] **H.4-2** Authenticated endpoints in `profileRouter`, `passwordRouter` and `sessionRouter` use `requireAuth` (principal on `req`). Unauthenticated-by-design flows (login, register, refresh, forgot and reset password) are unchanged. The deprecated `verifyToken` alias is removed.
+- [x] **H.4-3** Auth routers use `asyncHandler` and typed errors. A table-driven test records the 401/403/404/409 matrix for **every** auth endpoint on both prefixes, and the matrix is unchanged from before the phase (snapshot the matrix first, then refactor).
+- [x] **H.4-4** Session v2 tests (refresh rotation, reuse detection), the F.3 account-existence tests and the GDPR export tests pass unchanged.
 
 ---
 

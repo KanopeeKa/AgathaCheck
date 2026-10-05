@@ -2,28 +2,21 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// Persists the auth tokens. Abstracted so mobile can use the platform secure
-/// store (iOS Keychain / Android Keystore) while web and tests use
-/// SharedPreferences.
-abstract class TokenStore {
-  Future<String?> readAccessToken();
-  Future<String?> readRefreshToken();
-  Future<void> writeAccessToken(String token);
-  Future<void> writeTokens(String access, String refresh);
-  Future<void> clear();
-}
+import '../domain/repositories/session_store.dart';
+
+export '../domain/repositories/session_store.dart'
+    show SessionStore, kHttpOnlyRefreshSentinel;
+
+/// Legacy name for [SessionStore] — implementations live in this file.
+typedef TokenStore = SessionStore;
 
 const _accessTokenKey = 'auth_access_token';
 const _refreshTokenKey = 'auth_refresh_token';
 
-/// Returned by [WebTokenStore.readRefreshToken] when the refresh token lives in
-/// an HttpOnly cookie and is not readable from Dart.
-const kHttpOnlyRefreshSentinel = '__http_only_refresh__';
-
 /// SharedPreferences-backed store (web/dev/tests). Tokens live in plaintext
 /// local storage — acceptable on web (no OS keychain) but not on mobile, where
 /// [SecureTokenStore] is used instead.
-class PrefsTokenStore implements TokenStore {
+class PrefsTokenStore implements SessionStore {
   PrefsTokenStore(this._prefs);
   final SharedPreferences _prefs;
 
@@ -51,7 +44,7 @@ class PrefsTokenStore implements TokenStore {
 }
 
 /// Web-only store: access token in memory; refresh token in HttpOnly cookie.
-class WebTokenStore implements TokenStore {
+class WebTokenStore implements SessionStore {
   WebTokenStore(this._prefs);
 
   final SharedPreferences _prefs;
@@ -132,7 +125,7 @@ Future<void> migrateLegacyTokensFromPrefs({
 
 /// flutter_secure_storage-backed store for mobile (iOS Keychain / Android
 /// EncryptedSharedPreferences/Keystore).
-class SecureTokenStore implements TokenStore {
+class SecureTokenStore implements SessionStore {
   SecureTokenStore(this._storage, {SharedPreferences? legacyPrefs})
     : _legacyPrefs = legacyPrefs;
 
@@ -193,7 +186,7 @@ class SecureTokenStore implements TokenStore {
 
 /// Picks the right store for the platform: secure storage on Android/iOS,
 /// in-memory access + HttpOnly cookie refresh on web, SharedPreferences elsewhere.
-TokenStore createTokenStore(SharedPreferences prefs) {
+SessionStore createTokenStore(SharedPreferences prefs) {
   if (kIsWeb) {
     return WebTokenStore(prefs);
   }

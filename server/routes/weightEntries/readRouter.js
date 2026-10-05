@@ -1,6 +1,6 @@
+import { asyncHandler } from '../../lib/http/asyncHandler.js';
 import express from 'express';
 
-import { publicError } from '../../config/security.js';
 import { extractUserId } from '../../lib/requireAuth.js';
 import { normalizeCalendarDateInput } from '../../lib/calendarDate.js';
 import {
@@ -26,7 +26,7 @@ import { weightEntryToMap } from './wire.js';
 export function createWeightEntriesReadRouter(pool) {
   const router = express.Router();
 
-  router.get('/', async (req, res) => {
+  router.get('/', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
@@ -44,11 +44,11 @@ export function createWeightEntriesReadRouter(pool) {
       );
       res.json(result.rows.map(weightEntryToMap));
     } catch (err) {
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 
-  router.get('/fulfilment-candidates', async (req, res) => {
+  router.get('/fulfilment-candidates', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
@@ -80,11 +80,11 @@ export function createWeightEntriesReadRouter(pool) {
       const payload = await findFulfilmentCandidates(pool, { petId, dateIso, asOf });
       res.json(payload);
     } catch (err) {
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 
-  router.get('/overview', async (req, res) => {
+  router.get('/overview', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
@@ -98,11 +98,11 @@ export function createWeightEntriesReadRouter(pool) {
       const payload = await loadWeightOverview(pool, petId, req);
       res.json(payload);
     } catch (err) {
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 
-  router.get('/latest', async (req, res) => {
+  router.get('/latest', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
@@ -122,9 +122,9 @@ export function createWeightEntriesReadRouter(pool) {
       if (!row) return res.status(404).json({ error: 'No weight entries found' });
       res.json(weightEntryToMap(row));
     } catch (err) {
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 
   return router;
 }

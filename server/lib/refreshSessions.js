@@ -1,7 +1,7 @@
 import { createHash } from 'crypto';
 import { v4 as uuidv4 } from 'uuid';
 
-import { signAccessToken, signRefreshToken, verifyRefreshToken } from '../routes/auth/shared.js';
+import { signAccessToken, signRefreshToken, verifyRefreshToken } from './auth/tokens.js';
 
 export class RefreshSessionError extends Error {
   constructor(message, code = 'invalid') {

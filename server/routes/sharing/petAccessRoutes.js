@@ -1,4 +1,4 @@
-import { publicError } from '../../config/security.js';
+import { asyncHandler } from '../../lib/http/asyncHandler.js';
 import { registerPetInviteListRoute } from './inviteRoutes.js';
 import {
   changeRole,
@@ -13,7 +13,7 @@ import { extractUserId } from '../pets/shared.js';
 export function registerPetAccessRoutes(router, pool) {
   registerPetInviteListRoute(router, pool);
 
-  router.get('/:id/share-links', async (req, res) => {
+  router.get('/:id/share-links', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     const { id } = req.params;
@@ -22,11 +22,11 @@ export function registerPetAccessRoutes(router, pool) {
       if (result.error) return res.status(result.status).json({ error: result.error });
       return res.json(result.links);
     } catch (err) {
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 
-  router.delete('/:id/follow', async (req, res) => {
+  router.delete('/:id/follow', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     const { id } = req.params;
@@ -35,11 +35,11 @@ export function registerPetAccessRoutes(router, pool) {
       if (result.error) return res.status(result.status).json({ error: result.error });
       return res.json({ message: result.message });
     } catch (err) {
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 
-  router.get('/:id/access', async (req, res) => {
+  router.get('/:id/access', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     const { id } = req.params;
@@ -52,11 +52,11 @@ export function registerPetAccessRoutes(router, pool) {
         access_events: result.access_events || [],
       });
     } catch (err) {
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 
-  router.put('/:id/access/:targetUserId/role', async (req, res) => {
+  router.put('/:id/access/:targetUserId/role', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     const { id, targetUserId } = req.params;
@@ -71,11 +71,11 @@ export function registerPetAccessRoutes(router, pool) {
       if (result.error) return res.status(result.status).json({ error: result.error });
       return res.json({ user_id: result.user_id, role: result.role });
     } catch (err) {
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 
-  router.delete('/:id/access/:targetUserId', async (req, res) => {
+  router.delete('/:id/access/:targetUserId', asyncHandler(async (req, res) => {
     const actorId = extractUserId(req);
     if (!actorId) return res.status(401).json({ error: 'Unauthorized' });
     const { id, targetUserId } = req.params;
@@ -93,7 +93,7 @@ export function registerPetAccessRoutes(router, pool) {
       if (err.status === 404) {
         return res.status(404).json({ error: 'Access not found' });
       }
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 }

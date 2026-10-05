@@ -1,4 +1,4 @@
-import { publicError } from '../../config/security.js';
+import { asyncHandler } from '../../lib/http/asyncHandler.js';
 import { normalizeCalendarDateInput } from '../../lib/calendarDate.js';
 import { logAuditEventSafe } from '../../lib/audit.js';
 import { logger } from '../../lib/logger.js';
@@ -122,7 +122,7 @@ async function handleCommand(pool, req, res, { command, respond, audit, guard, a
       }, 'care command refused');
       return undefined;
     }
-    return res.status(500).json({ error: publicError(err) });
+    throw err;
   }
 }
 
@@ -155,11 +155,10 @@ function withEarlierPastDueSkipped(occurrenceId, run) {
 }
 
 export function registerOccurrenceRoutes(router, pool) {
-  router.get('/:id/occurrences', async (req, res) => {
+  router.get('/:id/occurrences', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    try {
-      const entry = await loadEntry(pool, req.params.id, userId);
+    const entry = await loadEntry(pool, req.params.id, userId);
       if (!entry) return res.status(404).json({ error: 'Entry not found' });
       const status = req.query.status || 'open';
       if (status === 'open') {
@@ -198,12 +197,9 @@ export function registerOccurrenceRoutes(router, pool) {
         [entry.id]
       );
       return res.json(result.rows.map(occurrenceToMap));
-    } catch (err) {
-      return res.status(500).json({ error: publicError(err) });
-    }
-  });
+  }));
 
-  router.post('/:id/occurrences/:occId/complete', (req, res) => {
+  router.post('/:id/occurrences/:occId/complete', asyncHandler(async (req, res) => {
     const body = req.body || {};
     const occurrenceId = req.params.occId;
     const run = (ctx) => completeOccurrenceCommand(ctx, {
@@ -231,9 +227,9 @@ export function registerOccurrenceRoutes(router, pool) {
         }),
       }),
     });
-  });
+  }));
 
-  router.post('/:id/occurrences/:occId/skip', async (req, res) => {
+  router.post('/:id/occurrences/:occId/skip', asyncHandler(async (req, res) => {
     const body = req.body || {};
     const occurrenceId = req.params.occId;
     const userId = extractUserId(req);
@@ -260,9 +256,9 @@ export function registerOccurrenceRoutes(router, pool) {
         return { body: { ...occurrence, ...(await commandResponse(pool, out, req, { occurrence })) } };
       },
     });
-  });
+  }));
 
-  router.post('/:id/occurrences', (req, res) => {
+  router.post('/:id/occurrences', asyncHandler(async (req, res) => {
     const body = req.body || {};
     return handleCommand(pool, req, res, {
       command: (ctx) => planAnotherDateCommand(ctx, {
@@ -283,9 +279,9 @@ export function registerOccurrenceRoutes(router, pool) {
         }),
       }),
     });
-  });
+  }));
 
-  router.post('/:id/occurrences/:occId/record', (req, res) => {
+  router.post('/:id/occurrences/:occId/record', asyncHandler(async (req, res) => {
     const body = req.body || {};
     const occurrenceId = req.params.occId;
     return handleCommand(pool, req, res, {
@@ -299,9 +295,9 @@ export function registerOccurrenceRoutes(router, pool) {
         body: await commandResponse(pool, out, req, { occurrence: occurrenceToMap(out.occurrence) }),
       }),
     });
-  });
+  }));
 
-  router.post('/:id/occurrences/:occId/confirm-skip', (req, res) => {
+  router.post('/:id/occurrences/:occId/confirm-skip', asyncHandler(async (req, res) => {
     const occurrenceId = req.params.occId;
     return handleCommand(pool, req, res, {
       guard: weightGuard,
@@ -315,9 +311,9 @@ export function registerOccurrenceRoutes(router, pool) {
         body: await commandResponse(pool, out, req, { occurrence: occurrenceToMap(out.occurrence) }),
       }),
     });
-  });
+  }));
 
-  router.post('/:id/occurrences/resolve-stack', (req, res) => {
+  router.post('/:id/occurrences/resolve-stack', asyncHandler(async (req, res) => {
     const body = req.body || {};
     const given = Array.isArray(body.given) ? body.given : [];
     const notGiven = Array.isArray(body.not_given ?? body.notGiven) ? (body.not_given ?? body.notGiven) : [];
@@ -337,10 +333,10 @@ export function registerOccurrenceRoutes(router, pool) {
         }),
       }),
     });
-  });
+  }));
 
   // Compatibility (deleted in child F): per-occurrence undo.
-  router.post('/:id/occurrences/:occId/undo', (req, res) => handleCommand(pool, req, res, {
+  router.post('/:id/occurrences/:occId/undo', asyncHandler(async (req, res) => handleCommand(pool, req, res, {
     command: (ctx) => undoCommand(ctx, {}),
     audit: (out) => ({
       action: 'health_occurrence.undone',
@@ -349,7 +345,7 @@ export function registerOccurrenceRoutes(router, pool) {
     respond: async (out) => ({
       body: out.occurrence ? occurrenceToMap(out.occurrence) : { undone: out.undoneType },
     }),
-  }));
+  })));
 }
 
 export { handleCommand, logOccurrenceAction };

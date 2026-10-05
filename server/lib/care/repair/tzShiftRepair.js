@@ -7,6 +7,10 @@ import { loadPetHomeTimezone } from '../../petHomeTimezone.js';
 import { isFixedSchedule, nextSeriesSlotAfter, stackWindowStart } from '../schedule/fixedSlots.js';
 import { insertCareScheduleEvent } from '../schedule/scheduleEventLedger.js';
 import { withCareItemLock } from '../occurrence/careItemLock.js';
+import {
+  deleteNotRecordedScheduleOccurrence,
+  reopenClosedOccurrence,
+} from '../occurrence/occurrenceRepository.js';
 import { syncOpenOccurrences } from '../occurrence/syncOpenOccurrences.js';
 import { careAsOfForZone } from '../occurrence/careAsOf.js';
 
@@ -108,7 +112,7 @@ export async function repairTzShift(pool, { apply = false, todayIso = null } = {
           }
           report.deleted.push(row.id);
           if (apply) {
-            await db.query('DELETE FROM health_occurrences WHERE id = $1', [row.id]);
+            await deleteNotRecordedScheduleOccurrence(db, entry.id, row.id);
           }
         }
       }
@@ -122,12 +126,7 @@ export async function repairTzShift(pool, { apply = false, todayIso = null } = {
           if (!pendingExists) {
             report.reopened.push(row.id);
             if (apply) {
-              await db.query(
-                `UPDATE health_occurrences
-                 SET status = 'pending', close_reason = NULL, marked_at = NULL, marked_by_user_id = NULL
-                 WHERE id = $1`,
-                [row.id],
-              );
+              await reopenClosedOccurrence(db, row.id);
             }
           }
         }

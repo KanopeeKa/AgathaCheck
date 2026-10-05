@@ -38,11 +38,19 @@ PetTileStatusLineData resolveOrgPetTileStatusLine({
     }
   }
 
+  if (includeAttentionReason && attentionReason != null) {
+    final label = switch (attentionReason) {
+      OrgPetAttentionReason.notInFoster => l.orgPetsNeedAttentionNotInFoster,
+      OrgPetAttentionReason.fosterFinishingSoon =>
+        l.orgPetsNeedAttentionFosterFinishingSoon,
+    };
+    return PetTileStatusLineData(label: label);
+  }
+
   return resolvePetTileStatusLine(
     l: l,
     pet: pet,
     context: PetTileContext.shelter,
-    attentionReason: includeAttentionReason ? attentionReason : null,
   );
 }
 

@@ -21,11 +21,11 @@ Living metrics for Agatha Track quality. Update when CI or test counts change ma
 
 | Metric | Value | Enforced by |
 |--------|------:|-------------|
-| Flutter unit/widget (active CI) | 308 | 6 shards (`ci_shards.json`) |
+| Flutter unit/widget (active CI) | 313 | 6 shards (`ci_shards.json`) |
 | Flutter frozen / excluded tests | 62 / 1 | frozen-domains manifest |
 | Flutter unowned tests | 0 | `flutter-shards.mjs check` |
 | Flutter integration flows | 1 | `flutter-integration` job |
-| Jest (active / frozen) | 228 / 46 | `jest.config.active.cjs` |
+| Jest (active / frozen) | 232 / 46 | `jest.config.active.cjs` |
 | Playwright (active / frozen) | 32 / 21 | `shard-files.mjs` + frozen list |
 | BDD active scenarios | 211 (18 frozen excluded) | `check_bdd_coverage.js` |
 | BDD mapped (active) | 82.5% (174/211) | gate **143/211 (68%)** |
