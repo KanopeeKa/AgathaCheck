@@ -73,9 +73,20 @@ elif ci_scope_run_web_build; then
   fi
   rm -f "$e2e_specs_input"
 fi
-export CI_SCOPE_E2E_SELECTION
+# Keep large JSON off the process environment (ARG_MAX); emit reads via file when set.
+if ((${#CI_SCOPE_E2E_SELECTION} > 32000)); then
+  CI_SCOPE_E2E_SELECTION='{}'
+fi
+CI_SCOPE_E2E_SELECTION_FILE=""
+if ((${#CI_SCOPE_E2E_SELECTION} > 0)); then
+  CI_SCOPE_E2E_SELECTION_FILE="$(mktemp)"
+  printf '%s' "$CI_SCOPE_E2E_SELECTION" >"$CI_SCOPE_E2E_SELECTION_FILE"
+fi
+export CI_SCOPE_E2E_SELECTION_FILE
 
 json="$(ci_scope_emit_json)"
+rm -f "${CI_SCOPE_E2E_SELECTION_FILE:-}"
+unset CI_SCOPE_E2E_SELECTION_FILE
 scope_name="$(python3 -c 'import json,sys; print(json.load(sys.stdin)["scope"])' <<<"$json")"
 run_analyze="$(python3 -c 'import json,sys; print("true" if json.load(sys.stdin)["run_flutter_analyze"] else "false")' <<<"$json")"
 run_stack="$(python3 -c 'import json,sys; print("true" if json.load(sys.stdin)["run_flutter_stack"] else "false")' <<<"$json")"
