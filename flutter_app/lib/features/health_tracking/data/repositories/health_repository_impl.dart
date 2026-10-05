@@ -159,5 +159,4 @@ class HealthRepositoryImpl implements HealthRepository {
       nextDueDate: result.nextDueDate,
     );
   }
-
 }

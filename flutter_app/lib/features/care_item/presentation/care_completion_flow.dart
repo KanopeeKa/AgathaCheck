@@ -29,8 +29,8 @@ class CareCompletionFlow {
     this._service, {
     void Function(String, Map<String, Object>)? track,
     PetCareSync? petCareSync,
-  })  : _track = track ?? ((_, _) {}),
-        _petCareSync = petCareSync;
+  }) : _track = track ?? ((_, _) {}),
+       _petCareSync = petCareSync;
 
   final CareCompletionService _service;
   final void Function(String event, Map<String, Object> properties) _track;

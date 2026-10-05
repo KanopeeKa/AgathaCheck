@@ -35,32 +35,32 @@ Map<String, dynamic> detail({
   Map<String, dynamic>? skipReason,
 }) {
   final payload = {
-  'occurrence': {
-    'id': 'occ-1',
-    'scheduled_date': '2026-06-10',
-    'scheduled_time': null,
-    'status': status,
-    'occurrence_status': occStatus,
-    'completed_on': completedOn,
-    'close_reason': closeReason,
-    'origin': 'computed',
-    'notes': '',
-  },
-  'entry': {
-    'id': 'entry-1',
-    'pet_id': 'pet-1',
-    'name': 'Flea',
-    'care_family': family,
-    'recurrence_anchor': 'from_completion',
-    'late_completion_choice': null,
-    'status': 'active',
-    'as_of': {
-      'date': '2026-06-10',
-      'time': '09:00',
-      'timezone': 'Europe/Paris',
+    'occurrence': {
+      'id': 'occ-1',
+      'scheduled_date': '2026-06-10',
+      'scheduled_time': null,
+      'status': status,
+      'occurrence_status': occStatus,
+      'completed_on': completedOn,
+      'close_reason': closeReason,
+      'origin': 'computed',
+      'notes': '',
     },
-  },
-  'last_action': lastAction,
+    'entry': {
+      'id': 'entry-1',
+      'pet_id': 'pet-1',
+      'name': 'Flea',
+      'care_family': family,
+      'recurrence_anchor': 'from_completion',
+      'late_completion_choice': null,
+      'status': 'active',
+      'as_of': {
+        'date': '2026-06-10',
+        'time': '09:00',
+        'timezone': 'Europe/Paris',
+      },
+    },
+    'last_action': lastAction,
   };
   if (linkedWeight != null) payload['linked_weight'] = linkedWeight;
   if (skipReason != null) payload['skip_reason'] = skipReason;
@@ -225,7 +225,11 @@ void main() {
   ) async {
     final server = _Server([
       detail(family: 'weight_monitoring'),
-      detail(status: 'skipped', occStatus: 'skipped', family: 'weight_monitoring'),
+      detail(
+        status: 'skipped',
+        occStatus: 'skipped',
+        family: 'weight_monitoring',
+      ),
     ]);
     await tester.pumpWidget(_wrap(server));
     await tester.pumpAndSettle();
@@ -234,9 +238,14 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('skip_weigh_in_sheet')), findsOneWidget);
 
-    await tester.tap(find.byKey(const Key('skip_weigh_in_reason_could_not_weigh')));
+    await tester.tap(
+      find.byKey(const Key('skip_weigh_in_reason_could_not_weigh')),
+    );
     await tester.pump();
-    await tester.enterText(find.byKey(const Key('skip_weigh_in_note')), 'Wiggly');
+    await tester.enterText(
+      find.byKey(const Key('skip_weigh_in_note')),
+      'Wiggly',
+    );
     await tester.tap(find.byKey(const Key('skip_weigh_in_confirm')));
     await tester.pumpAndSettle();
 
@@ -273,11 +282,7 @@ void main() {
         occStatus: 'done',
         completedOn: '2026-06-10',
         family: 'weight_monitoring',
-        linkedWeight: const {
-          'value': 10.0,
-          'unit': 'kg',
-          'date': '2026-06-10',
-        },
+        linkedWeight: const {'value': 10.0, 'unit': 'kg', 'date': '2026-06-10'},
       ),
     ]);
     await tester.pumpWidget(
@@ -301,10 +306,7 @@ void main() {
         status: 'skipped',
         occStatus: 'skipped',
         family: 'weight_monitoring',
-        skipReason: const {
-          'code': 'could_not_weigh',
-          'note': 'Too wiggly',
-        },
+        skipReason: const {'code': 'could_not_weigh', 'note': 'Too wiggly'},
       ),
     ]);
     await tester.pumpWidget(_wrap(server));
@@ -331,9 +333,7 @@ void main() {
       _wrap(
         server,
         focus: 'weight',
-        extraOverrides: [
-          petCareSyncProvider.overrideWith((ref) => sync),
-        ],
+        extraOverrides: [petCareSyncProvider.overrideWith((ref) => sync)],
       ),
     );
     await tester.pumpAndSettle();

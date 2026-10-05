@@ -113,9 +113,7 @@ void main() {
 
   group('skip', () {
     test('weigh-in skip can send reason_code and notes', () async {
-      final recorder = RecordingClient(
-        (_) => jsonResponse(commandJson()),
-      );
+      final recorder = RecordingClient((_) => jsonResponse(commandJson()));
       await serviceFor(recorder).skip(
         entryId: 'entry-1',
         occurrenceId: 'occ-1',
