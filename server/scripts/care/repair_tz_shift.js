@@ -6,6 +6,10 @@ import { normalizeCalendarDateInput } from '../../lib/calendarDate.js';
 import { createAppPool } from '../../lib/db/createPool.js';
 import { assertPgDateWireFormat } from '../../lib/db/pgTypes.js';
 import { reportD5DateEdits } from '../../lib/care/repair/d5DateReport.js';
+import {
+  assertTzShiftApplyAllowed,
+  tzShiftApplyRefusalReason,
+} from '../../lib/care/repair/tzShiftApplyGate.js';
 import { repairTzShift } from '../../lib/care/repair/tzShiftRepair.js';
 import { loadBackendEnv } from '../lib/loadBackendEnv.js';
 
@@ -35,6 +39,14 @@ function parseSinceDate() {
   return '2026-10-01';
 }
 
+if (apply) {
+  const envRefusal = tzShiftApplyRefusalReason();
+  if (envRefusal) {
+    console.error(envRefusal);
+    process.exit(1);
+  }
+}
+
 const pool = createAppPool();
 const client = await pool.connect();
 try {
@@ -50,7 +62,20 @@ if (process.argv.includes('--report-d5')) {
   process.exit(0);
 }
 
-const reports = await repairTzShift(pool, { apply, todayIso });
+let reports;
+if (apply) {
+  const preview = await repairTzShift(pool, { apply: false, todayIso });
+  try {
+    assertTzShiftApplyAllowed(preview);
+  } catch (err) {
+    console.error(err.message);
+    await pool.end();
+    process.exit(1);
+  }
+  reports = await repairTzShift(pool, { apply: true, todayIso });
+} else {
+  reports = await repairTzShift(pool, { apply: false, todayIso });
+}
 console.log(
   JSON.stringify(
     {

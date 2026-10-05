@@ -588,6 +588,7 @@ Otherwise apply DC-3 to DC-6.
 **DC-3 — Repair script, dry run by default.**
 `server/scripts/care/repair_tz_shift.js`:
 - `--dry-run` is the default. `--apply` writes.
+- `--apply` is refused on `APP_ENV=uat` (DC-1) and when the dry-run reports no repair work (reset / empty DB after DC-1).
 - One transaction per care item, under `withCareItemLock`.
 - Idempotent: a second `--apply` changes nothing.
 - Prints a per-item report: rows deleted, reopened and flagged.
