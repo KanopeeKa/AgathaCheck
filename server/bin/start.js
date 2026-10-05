@@ -6,10 +6,27 @@ import { kickCleanupJobs, startCleanupJobsRunner } from '../lib/jobs/cleanupJobs
 export { kickCleanupJobs };
 
 const port = process.env.PORT || 3000;
+const PG_STARTUP_TIMEOUT_MS = 10_000;
+
+function withTimeout(promise, ms, label) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => {
+      setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms);
+    }),
+  ]);
+}
 
 async function startServer() {
+  const entry = process.env.PASSENGER_APP_ENV || process.env.PHUSION_PASSENGER ? 'passenger' : 'cli';
+  console.log(`[startup] node=${process.version} pid=${process.pid} cwd=${process.cwd()} entry=${entry}`);
+
   try {
-    await verifyPgDateParser(app.locals.pool);
+    await withTimeout(
+      verifyPgDateParser(app.locals.pool),
+      PG_STARTUP_TIMEOUT_MS,
+      'PG startup check',
+    );
   } catch (err) {
     console.error('PG DATE startup check failed:', err.message);
     process.exit(1);

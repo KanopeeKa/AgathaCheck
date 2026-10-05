@@ -48,6 +48,11 @@ jobs:
         working-directory: server
         run: npm ci
 
+      - name: cPanel Passenger startup entry check
+        run: |
+          node scripts/check_cpanel_startup_entry.js
+          node --test scripts/check_cpanel_startup_entry.test.js
+
       - name: Run PR startup smoke
         env:
           PGUSER: user

@@ -20,6 +20,10 @@ export function assertPassengerRequireSafe(startPath = START_PATH) {
     throw new Error(`check_cpanel_startup_entry: missing ${path.relative(ROOT, startPath)}`);
   }
 
+  // require() runs module evaluation synchronously until the first await in the graph.
+  // process.exit(0) immediately after require() avoids leaving a listening server or
+  // waiting on verifyPgDateParser (async). PORT/PG* are set so a future sync listen
+  // cannot bind production port 3000 during the probe.
   const probe = `
 const { createRequire } = require('node:module');
 const startPath = ${JSON.stringify(startPath)};
@@ -29,9 +33,9 @@ try {
 } catch (err) {
   if (err && err.code === 'ERR_REQUIRE_ASYNC_MODULE') {
     console.error(
-      'bin/start.js uses top-level await; cPanel Passenger require() cannot load it. ' +
-      'Use async function + startServer().catch() instead.',
+      'bin/start.js or a module it imports uses top-level await; cPanel Passenger require() cannot load it.',
     );
+    if (err.message) console.error(err.message);
     process.exit(2);
   }
   console.error(err && err.stack ? err.stack : err);
@@ -40,15 +44,27 @@ try {
 process.exit(0);
 `;
 
-  const result = spawnSync(process.execPath, ['-e', probe], {
-    cwd: SERVER_DIR,
-    env: { ...process.env, NODE_ENV: 'test' },
-    encoding: 'utf8',
-    timeout: 15_000,
-  });
+  const result = spawnSync(
+    process.execPath,
+    ['--experimental-print-required-tla', '-e', probe],
+    {
+      cwd: SERVER_DIR,
+      env: {
+        ...process.env,
+        NODE_ENV: 'test',
+        PORT: '0',
+        PGCONNECT_TIMEOUT: '1',
+        PGHOST: '127.0.0.1',
+        PGPORT: '1',
+      },
+      encoding: 'utf8',
+      timeout: 15_000,
+    },
+  );
 
   if (result.status === 2) {
-    throw new Error(result.stderr || 'ERR_REQUIRE_ASYNC_MODULE');
+    const detail = (result.stderr || result.stdout || '').trim();
+    throw new Error(detail || 'ERR_REQUIRE_ASYNC_MODULE');
   }
   if (result.status !== 0) {
     const detail = (result.stderr || result.stdout || '').trim();
