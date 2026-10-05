@@ -62,9 +62,56 @@ class PeopleApi {
     return _decodeObject(response);
   }
 
+  Future<List<dynamic>> putJsonList(
+    String path,
+    Map<String, dynamic> body,
+  ) async {
+    final response = await client.put(
+      _uri(path),
+      headers: _headers,
+      body: json.encode(body),
+    );
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      final decoded = json.decode(response.body);
+      if (decoded is List<dynamic>) return decoded;
+      throw PeopleApiException(
+        code: 'invalid_response',
+        statusCode: response.statusCode,
+      );
+    }
+    throw _exceptionFromResponse(response);
+  }
+
+  Future<List<dynamic>> putJsonListRaw(String path, Object body) async {
+    final response = await client.put(
+      _uri(path),
+      headers: _headers,
+      body: json.encode(body),
+    );
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      final decoded = json.decode(response.body);
+      if (decoded is List<dynamic>) return decoded;
+      throw PeopleApiException(
+        code: 'invalid_response',
+        statusCode: response.statusCode,
+      );
+    }
+    throw _exceptionFromResponse(response);
+  }
+
   Future<void> delete(String path) async {
     final response = await client.delete(_uri(path), headers: _headers);
     if (response.statusCode >= 200 && response.statusCode < 300) return;
+    throw _exceptionFromResponse(response);
+  }
+
+  Future<List<dynamic>> deleteJsonList(String path) async {
+    final response = await client.delete(_uri(path), headers: _headers);
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      final decoded = json.decode(response.body);
+      if (decoded is List<dynamic>) return decoded;
+      return const [];
+    }
     throw _exceptionFromResponse(response);
   }
 

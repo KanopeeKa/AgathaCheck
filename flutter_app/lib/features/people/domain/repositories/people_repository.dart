@@ -31,9 +31,70 @@ abstract class PeopleRepository {
     required RelationshipKind relationshipKind,
   });
 
+  Future<List<PetRelationship>> fetchPetRelationships(String petId);
+
+  Future<List<PetRelationship>> setPetRelationshipSlot({
+    required String petId,
+    required RelationshipKind slotKind,
+    required String? contactId,
+  });
+
+  Future<List<PetRelationship>> removePetRelationship({
+    required String petId,
+    required String relationshipId,
+  });
+
+  Future<List<PetRelationship>> replacePetRelationships(
+    String petId,
+    List<Map<String, dynamic>> relationships,
+  );
+
   Future<String?> contactIdForLegacyVet(String vetId);
+}
+
+class HouseholdMemberRemovalPreview {
+  const HouseholdMemberRemovalPreview({
+    required this.remainingAccess,
+    required this.requiresSuccessor,
+  });
+
+  final List<HouseholdRemainingAccess> remainingAccess;
+  final bool requiresSuccessor;
+}
+
+class HouseholdRemainingAccess {
+  const HouseholdRemainingAccess({
+    required this.petId,
+    required this.petName,
+    required this.source,
+    this.role,
+    this.until,
+  });
+
+  final String petId;
+  final String petName;
+  final String source;
+  final String? role;
+  final String? until;
 }
 
 abstract class HouseholdsRepository {
   Future<List<Household>> listHouseholds();
+
+  Future<void> revokeHouseholdInvite({
+    required String householdId,
+    required String inviteId,
+  });
+
+  Future<HouseholdMemberRemovalPreview> fetchMemberRemovalPreview({
+    required String householdId,
+    required String memberUserId,
+  });
+
+  Future<void> removeHouseholdMember({
+    required String householdId,
+    required String memberUserId,
+    bool removeAllAccessToMyPets,
+    String? successorUserId,
+  });
 }

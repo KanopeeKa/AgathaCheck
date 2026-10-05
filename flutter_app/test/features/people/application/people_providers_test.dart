@@ -100,12 +100,62 @@ class FakePeopleRepository implements PeopleRepository {
   }) async {}
 
   @override
+  Future<List<PetRelationship>> fetchPetRelationships(String petId) async =>
+      const [];
+
+  @override
+  Future<List<PetRelationship>> setPetRelationshipSlot({
+    required String petId,
+    required RelationshipKind slotKind,
+    required String? contactId,
+  }) async =>
+      const [];
+
+  @override
+  Future<List<PetRelationship>> removePetRelationship({
+    required String petId,
+    required String relationshipId,
+  }) async =>
+      const [];
+
+  @override
+  Future<List<PetRelationship>> replacePetRelationships(
+    String petId,
+    List<Map<String, dynamic>> relationships,
+  ) async =>
+      const [];
+
+  @override
   Future<String?> contactIdForLegacyVet(String vetId) async => null;
 }
 
 class FakeHouseholdsRepository implements HouseholdsRepository {
   @override
   Future<List<Household>> listHouseholds() async => const [];
+
+  @override
+  Future<void> revokeHouseholdInvite({
+    required String householdId,
+    required String inviteId,
+  }) async {}
+
+  @override
+  Future<HouseholdMemberRemovalPreview> fetchMemberRemovalPreview({
+    required String householdId,
+    required String memberUserId,
+  }) async =>
+      const HouseholdMemberRemovalPreview(
+        remainingAccess: [],
+        requiresSuccessor: false,
+      );
+
+  @override
+  Future<void> removeHouseholdMember({
+    required String householdId,
+    required String memberUserId,
+    bool removeAllAccessToMyPets = false,
+    String? successorUserId,
+  }) async {}
 }
 
 void main() {

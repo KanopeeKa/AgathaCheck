@@ -7,6 +7,7 @@ import '../domain/enums/relationship_kind.dart';
 import '../domain/repositories/people_repository.dart';
 import 'dto/people_dtos.dart';
 import 'people_api.dart';
+import 'people_api_exception.dart';
 
 class PeopleRepositoryImpl implements PeopleRepository {
   PeopleRepositoryImpl(this._api);
@@ -84,6 +85,70 @@ class PeopleRepositoryImpl implements PeopleRepository {
       'contact_id': contactId,
       'relationship_kind': relationshipKind.wireValue,
     });
+  }
+
+  List<PetRelationship> _parseRelationshipList(List<dynamic> list) {
+    return list.whereType<Map<String, dynamic>>().map(_relationshipFromMap).toList();
+  }
+
+  PetRelationship _relationshipFromMap(Map<String, dynamic> r) {
+    final contact = r['contact'] as Map<String, dynamic>?;
+    return PetRelationship(
+      id: r['id']?.toString() ?? '',
+      petId: r['pet_id']?.toString() ?? '',
+      contactId: r['contact_id']?.toString() ?? '',
+      relationshipKind: RelationshipKind.fromWire(
+        r['relationship_kind']?.toString(),
+      ),
+      isPrimary: r['is_primary'] == true,
+      active: r['active'] != false,
+      contactKind: contact?['kind']?.toString() ?? r['contact_kind']?.toString() ?? '',
+      contactName: contact?['name']?.toString() ?? r['contact_name']?.toString() ?? '',
+      contactPhone: contact?['phone']?.toString() ?? r['contact_phone']?.toString(),
+      contactInactiveAt: null,
+    );
+  }
+
+  @override
+  Future<List<PetRelationship>> fetchPetRelationships(String petId) async {
+    final list = await _api.getJsonList('/api/pets/$petId/people-relationships');
+    return _parseRelationshipList(list);
+  }
+
+  @override
+  Future<List<PetRelationship>> setPetRelationshipSlot({
+    required String petId,
+    required RelationshipKind slotKind,
+    required String? contactId,
+  }) async {
+    final list = await _api.putJsonList(
+      '/api/pets/$petId/people-relationships/slots/${slotKind.wireValue}',
+      contactId == null ? {} : {'contact_id': contactId},
+    );
+    return _parseRelationshipList(list);
+  }
+
+  @override
+  Future<List<PetRelationship>> removePetRelationship({
+    required String petId,
+    required String relationshipId,
+  }) async {
+    final list = await _api.deleteJsonList(
+      '/api/pets/$petId/people-relationships/$relationshipId',
+    );
+    return _parseRelationshipList(list);
+  }
+
+  @override
+  Future<List<PetRelationship>> replacePetRelationships(
+    String petId,
+    List<Map<String, dynamic>> relationships,
+  ) async {
+    final list = await _api.putJsonList(
+      '/api/pets/$petId/people-relationships',
+      {'relationships': relationships},
+    );
+    return _parseRelationshipList(list);
   }
 
   @override

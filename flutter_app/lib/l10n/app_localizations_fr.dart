@@ -7242,6 +7242,99 @@ class AppLocalizationsFr extends AppLocalizations {
       'Ce contact reste visible où il est déjà lié, mais n\'apparaît plus dans les listes de choix.';
 
   @override
+  String get peopleReactivate => 'Réactiver';
+
+  @override
+  String get peopleEditSectionIdentity => 'Identité';
+
+  @override
+  String get peopleEditSectionContact => 'Coordonnées';
+
+  @override
+  String get peopleEditSectionNotes => 'Notes';
+
+  @override
+  String get peopleEditLinkedReadOnlyHelper =>
+      'Le nom et l\'e-mail sont gérés par le compte lié.';
+
+  @override
+  String get peopleEditLinkedReadOnlyError =>
+      'Le nom et l\'e-mail ne peuvent pas être modifiés pour un compte lié.';
+
+  @override
+  String get peopleNameRequired => 'Le nom est obligatoire';
+
+  @override
+  String get peopleEmailInvalid => 'Saisissez une adresse e-mail valide';
+
+  @override
+  String get peopleUsagesDialogTitle => 'Contact encore utilisé';
+
+  @override
+  String get peopleUsagesDialogBody =>
+      'Ce contact est utilisé aux endroits ci-dessous. Remplacez-le ou marquez-le inactif.';
+
+  @override
+  String get peopleUsagesReplace => 'Remplacer…';
+
+  @override
+  String get peopleUsagesBlockedDelete =>
+      'Retirez les usages ci-dessous ou marquez inactif.';
+
+  @override
+  String get peopleReplaceSlotTitle => 'Remplacer le vétérinaire ?';
+
+  @override
+  String peopleReplaceSlotBody(String name, String petName) {
+    return 'Remplacer $name comme vétérinaire de $petName ?';
+  }
+
+  @override
+  String get peopleReplaceSlotConfirm => 'Remplacer';
+
+  @override
+  String get peopleEditSetPrimaryVet => 'Définir comme vétérinaire principal';
+
+  @override
+  String get peopleEditSetOutOfHoursVet => 'Définir comme vétérinaire de garde';
+
+  @override
+  String get peopleEditRemovePetLink => 'Retirer le lien avec l\'animal';
+
+  @override
+  String get peopleEditEmergencyOrderTitle => 'Ordre des contacts d\'urgence';
+
+  @override
+  String get peopleMemberRemovalTitle => 'Retirer du foyer ?';
+
+  @override
+  String get peopleMemberRemovalBody =>
+      'La personne perdra l\'accès au foyer. D\'autres accès peuvent rester.';
+
+  @override
+  String get peopleMemberRemovalRemaining => 'Accès conservés :';
+
+  @override
+  String get peopleMemberRemovalHouseholdOnly => 'Retirer du foyer seulement';
+
+  @override
+  String get peopleMemberRemovalAllAccess => 'Retirer tout accès à mes animaux';
+
+  @override
+  String get peopleMemberRemovalAction => 'Retirer du foyer';
+
+  @override
+  String get peopleRevokeInviteTitle => 'Révoquer l\'invitation ?';
+
+  @override
+  String peopleRevokeInviteBody(String email) {
+    return 'Révoquer l\'invitation pour $email ?';
+  }
+
+  @override
+  String get peopleRevokeInviteConfirm => 'Révoquer l\'invitation';
+
+  @override
   String get peopleSaveError => 'Impossible d\'enregistrer. Réessayez.';
 
   @override
