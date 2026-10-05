@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
   "plan_id": "tz-repair-followup-e76a",
-  "approved_at": null,
-  "approved_by": null,
-  "approved_until": null,
-  "content_hash": null,
-  "autonomy": "draft",
+  "approved_at": "2026-10-05T12:36:00Z",
+  "approved_by": "user-chat-2026-10-05-continue-execute-plan-tz-repair-followup-full",
+  "approved_until": "2026-10-07T12:36:00Z",
+  "content_hash": "sha256:30aca88e20a07516f26ad65f5c71d010fb18ea65800e076ee88af81af46e412c",
+  "autonomy": "active",
   "default_merge_mode": "auto",
-  "base_branch": "main",
-  "control_issue": null,
+  "base_branch": "cursor/tz-repair-followup-integration-e76a",
+  "control_issue": 1628,
   "artifact_branch_policy": "phase-branch",
   "phases": [
     {
@@ -21,8 +21,13 @@
         "server/test/**",
         "docs/ops/care-tick.md"
       ],
-      "forbidden_paths": [".github/workflows/**"],
-      "allowed_exceptions": ["tests", "docs"],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
       "spawn_allowed": false,
       "merge_method": "squash",
       "exit_checklist": "default",
@@ -39,8 +44,13 @@
         "server/test/careSchedule/**",
         "docs/domains/pet_care/changes/not-recorded-stale-open-bug-spec.md"
       ],
-      "forbidden_paths": [".github/workflows/**"],
-      "allowed_exceptions": ["tests", "docs"],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
       "spawn_allowed": false,
       "merge_method": "squash",
       "exit_checklist": "default",
@@ -56,7 +66,9 @@
         "server/test/**"
       ],
       "forbidden_paths": [],
-      "allowed_exceptions": ["tests"],
+      "allowed_exceptions": [
+        "tests"
+      ],
       "spawn_allowed": false,
       "merge_method": "squash",
       "exit_checklist": "default",
@@ -72,11 +84,33 @@
         "docs/ops/**",
         "docs/architecture/**"
       ],
-      "forbidden_paths": [".github/workflows/**"],
-      "allowed_exceptions": ["tests", "docs"],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
       "spawn_allowed": false,
       "merge_method": "squash",
       "exit_checklist": "default",
+      "status": "pending"
+    },
+    {
+      "id": "5",
+      "title": "Integration PR to main + babysit-uat",
+      "branch": "cursor/tz-repair-followup-integration-e76a",
+      "allowed_paths": [
+        "**"
+      ],
+      "forbidden_paths": [],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "merge_method": "squash",
+      "exit_checklist": "release-verification",
       "status": "pending"
     }
   ]
