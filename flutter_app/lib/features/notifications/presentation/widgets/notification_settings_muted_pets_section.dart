@@ -1,26 +1,36 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../pet_profile/presentation/providers/pet_providers.dart';
-import '../../../pet_profile/presentation/utils/pet_accent_color.dart';
 import '../../../../l10n/app_localizations.dart';
 
-class NotificationSettingsMutedPetsSection extends ConsumerWidget {
+/// Pet row data for mute toggles (built by the settings screen).
+class NotificationSettingsPetMuteRow {
+  const NotificationSettingsPetMuteRow({
+    required this.id,
+    required this.name,
+    required this.accentColor,
+  });
+
+  final String id;
+  final String name;
+  final Color accentColor;
+}
+
+class NotificationSettingsMutedPetsSection extends StatelessWidget {
   const NotificationSettingsMutedPetsSection({
     super.key,
+    required this.pets,
     required this.mutedPetIds,
     required this.onMutedChanged,
   });
 
+  final List<NotificationSettingsPetMuteRow> pets;
   final List<String> mutedPetIds;
   final void Function(List<String> ids) onMutedChanged;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l = AppLocalizations.of(context)!;
-    final petsAsync = ref.watch(petListProvider);
-    final pets = petsAsync.valueOrNull ?? [];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -57,7 +67,6 @@ class NotificationSettingsMutedPetsSection extends ConsumerWidget {
         else
           ...pets.map((pet) {
             final isMuted = mutedPetIds.contains(pet.id);
-            final petColor = resolvePetAccentColor(context, pet);
             return SwitchListTile(
               title: Row(
                 children: [
@@ -65,7 +74,7 @@ class NotificationSettingsMutedPetsSection extends ConsumerWidget {
                     width: 12,
                     height: 12,
                     decoration: BoxDecoration(
-                      color: petColor,
+                      color: pet.accentColor,
                       shape: BoxShape.circle,
                     ),
                   ),
@@ -90,7 +99,9 @@ class NotificationSettingsMutedPetsSection extends ConsumerWidget {
               },
               secondary: Icon(
                 isMuted ? Icons.notifications_off : Icons.notifications_active,
-                color: isMuted ? theme.colorScheme.onSurfaceVariant : petColor,
+                color: isMuted
+                    ? theme.colorScheme.onSurfaceVariant
+                    : pet.accentColor,
               ),
             );
           }),

@@ -6,6 +6,8 @@ import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/notification_preferences.dart';
 import '../../domain/entities/notification_settings_matrix.dart';
+import '../../../pet_profile/presentation/providers/pet_providers.dart';
+import '../../../pet_profile/presentation/utils/pet_accent_color.dart';
 import '../providers/notification_providers.dart';
 import '../widgets/notification_settings_care_reminders_section.dart';
 import '../widgets/notification_settings_matrix_section.dart';
@@ -56,6 +58,17 @@ class _NotificationSettingsScreenState
         _initialized = true;
       }
     });
+
+    final pets = ref.watch(petListProvider).valueOrNull ?? [];
+    final petMuteRows = pets
+        .map(
+          (pet) => NotificationSettingsPetMuteRow(
+            id: pet.id,
+            name: pet.name,
+            accentColor: resolvePetAccentColor(context, pet),
+          ),
+        )
+        .toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -109,13 +122,15 @@ class _NotificationSettingsScreenState
                 onReminderDaysChanged: (v) => setState(() => _reminderDays = v),
                 onNotifyOverdueChanged: (v) =>
                     setState(() => _notifyOverdue = v),
-                onNotifyDueSoonChanged: (v) => setState(() => _notifyDueSoon = v),
+                onNotifyDueSoonChanged: (v) =>
+                    setState(() => _notifyDueSoon = v),
                 onNotifyCompletedChanged: (v) =>
                     setState(() => _notifyCompleted = v),
               ),
             ),
             const Divider(),
             NotificationSettingsMutedPetsSection(
+              pets: petMuteRows,
               mutedPetIds: _mutedPetIds,
               onMutedChanged: (ids) => setState(() => _mutedPetIds = ids),
             ),
@@ -165,15 +180,15 @@ class _NotificationSettingsScreenState
           );
       if (mounted) {
         final l = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.settingsSaved)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.settingsSaved)));
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to save: $e')));
       }
     } finally {
       if (mounted) setState(() => _saving = false);
