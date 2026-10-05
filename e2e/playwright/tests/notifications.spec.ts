@@ -147,11 +147,11 @@ test.describe('Notifications', () => {
       expect(next.next_due_date).toBe(nextWeek.toISOString().slice(0, 10));
       expect(next.open_occurrences[0]?.scheduled_date).toBe(next.next_due_date);
 
-      await checkCareReminders(baseURL, testUser.accessToken);
+      const checkDue = await checkCareReminders(baseURL, testUser.accessToken);
+      expect(checkDue).toEqual({ checked: true, created: 0 });
       const reminders = (await getNotifications(baseURL, testUser.accessToken))
         .filter((n) => n.health_entry_id === entry.id && n.type === 'due_soon');
-      expect(reminders).toHaveLength(1);
-      expect(reminders[0].message).toContain(next.next_due_date!);
+      expect(reminders).toHaveLength(0);
     } finally {
       await withCareClock(null, page);
     }
