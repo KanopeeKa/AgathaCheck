@@ -1214,6 +1214,8 @@ CREATE UNIQUE INDEX care_recommendations_pet_family_key_idx ON public.care_recom
 CREATE INDEX care_recommendations_pet_status_idx ON public.care_recommendations USING btree (pet_id, status);
 CREATE UNIQUE INDEX care_safeguards_pet_key_idx ON public.care_safeguards USING btree (pet_id, safeguard_key);
 CREATE INDEX care_safeguards_pet_status_idx ON public.care_safeguards USING btree (pet_id, status);
+CREATE UNIQUE INDEX idx_account_device_labels_user_label ON public.account_device_labels USING btree (user_id, label);
+CREATE INDEX idx_account_device_labels_user_last_seen ON public.account_device_labels USING btree (user_id, last_seen_at DESC);
 CREATE INDEX idx_account_erasure_operations_status ON public.account_erasure_operations USING btree (status);
 CREATE UNIQUE INDEX idx_account_erasure_operations_user_id ON public.account_erasure_operations USING btree (user_id);
 CREATE UNIQUE INDEX idx_adoption_journeys_one_open_per_session ON public.adoption_journeys USING btree (fostering_session_id) WHERE ((status)::text = ANY ((ARRAY['awaiting_foster_confirmation'::character varying, 'pending_conditions'::character varying])::text[]));
@@ -1321,8 +1323,6 @@ CREATE INDEX idx_planned_absence_pets_pet ON public.planned_absence_pets USING b
 CREATE INDEX idx_planned_absences_user_starts ON public.planned_absences USING btree (user_id, starts_on);
 CREATE INDEX idx_prospects_email_lower ON public.prospects USING btree (lower((email)::text)) WHERE (email IS NOT NULL);
 CREATE INDEX idx_prospects_org_id ON public.prospects USING btree (organization_id);
-CREATE UNIQUE INDEX idx_account_device_labels_user_label ON public.account_device_labels USING btree (user_id, label);
-CREATE INDEX idx_account_device_labels_user_last_seen ON public.account_device_labels USING btree (user_id, last_seen_at DESC);
 CREATE INDEX idx_refresh_sessions_family_id ON public.refresh_sessions USING btree (family_id);
 CREATE UNIQUE INDEX idx_refresh_sessions_token_hash ON public.refresh_sessions USING btree (token_hash);
 CREATE INDEX idx_refresh_sessions_user_id ON public.refresh_sessions USING btree (user_id);
@@ -1332,6 +1332,8 @@ CREATE UNIQUE INDEX idx_weight_entries_health_occurrence_id ON public.weight_ent
 CREATE UNIQUE INDEX people_directories_household_unique ON public.people_directories USING btree (household_id) WHERE (household_id IS NOT NULL);
 CREATE UNIQUE INDEX people_directories_owner_user_unique ON public.people_directories USING btree (owner_user_id) WHERE (owner_user_id IS NOT NULL);
 CREATE TRIGGER trg_clear_pinned_org_on_membership_loss AFTER DELETE OR UPDATE OF role ON public.organization_users FOR EACH ROW EXECUTE FUNCTION public.clear_pinned_org_on_membership_loss();
+ALTER TABLE ONLY public.account_device_labels
+    ADD CONSTRAINT account_device_labels_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.adoption_journeys
     ADD CONSTRAINT adoption_journeys_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.users(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.adoption_journeys
@@ -1682,8 +1684,6 @@ ALTER TABLE ONLY public.refresh_sessions
     ADD CONSTRAINT refresh_sessions_rotated_from_fkey FOREIGN KEY (rotated_from) REFERENCES public.refresh_sessions(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.refresh_sessions
     ADD CONSTRAINT refresh_sessions_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
-ALTER TABLE ONLY public.account_device_labels
-    ADD CONSTRAINT account_device_labels_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.refresh_tokens
     ADD CONSTRAINT refresh_tokens_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.users
