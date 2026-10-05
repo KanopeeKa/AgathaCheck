@@ -102,18 +102,18 @@ node scripts/execute_plan_runtime.js current-phase not-recorded-tz-fix-e76a
 ## Runtime state (agent-updated)
 
 ```yaml
-autonomy: active
-current_phase: 5
-last_completed_phase: 4
+autonomy: completed
+current_phase: null
+last_completed_phase: 5
 halt_reason: null
-next_action: "continue phase 5 on branch cursor/not-recorded-tz-fix-integration-e76a"
+next_action: "plan complete"
 artifact_ref:
   branch: cursor/not-recorded-tz-fix-integration-e76a
   plan_path: .agents/plans/not-recorded-tz-fix-e76a.md
-  plan_commit: 57fd9ec1ff26eea01bb55729375b2a9a96ca5da5
+  plan_commit: 3ec0060d46dacc73bb0ba54e123c1c8fe58d3d33
   snapshot_path: .agents/plans/not-recorded-tz-fix-e76a.snapshot.json
-  snapshot_commit: 57fd9ec1ff26eea01bb55729375b2a9a96ca5da5
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1602"]
+  snapshot_commit: 3ec0060d46dacc73bb0ba54e123c1c8fe58d3d33
+open_prs: []
 merge_commits: {}
 debt_issue_refs: []
 ```
