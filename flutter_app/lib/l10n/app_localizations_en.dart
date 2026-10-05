@@ -352,8 +352,56 @@ class AppLocalizationsEn extends AppLocalizations {
   String get allPets => 'All pets';
 
   @override
-  String get petListStaleBannerMessage =>
-      'Showing saved pets while offline. Some details may be out of date.';
+  String petListStaleBannerOffline(String relativeTime) {
+    return 'Offline — showing pets saved $relativeTime';
+  }
+
+  @override
+  String get petListCacheOutOfDateBannerMessage =>
+      'Saved data may be out of date';
+
+  @override
+  String get petListCacheRetrySemanticsLabel => 'Retry loading pets';
+
+  @override
+  String get petCacheRelativeJustNow => 'just now';
+
+  @override
+  String petCacheRelativeMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count minutes ago',
+      one: '1 minute ago',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String petCacheRelativeHours(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count hours ago',
+      one: '1 hour ago',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String petCacheRelativeDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days ago',
+      one: '1 day ago',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get careCommandSavedRefreshFailed =>
+      'Saved — couldn\'t refresh. Pull to refresh.';
 
   @override
   String get managePets => 'Manage pets';
@@ -557,6 +605,165 @@ class AppLocalizationsEn extends AppLocalizations {
   String weightChartLabel(int count) {
     return 'Weight chart showing $count entries';
   }
+
+  @override
+  String get weightRecordAction => 'Record weight';
+
+  @override
+  String get weightRecordSheetTitle => 'Record weight';
+
+  @override
+  String get weightEditSheetTitle => 'Edit weight';
+
+  @override
+  String weightFieldLabelUnit(String unit) {
+    return 'Weight ($unit)';
+  }
+
+  @override
+  String weightCountsAs(String routine) {
+    return 'Counts as $routine';
+  }
+
+  @override
+  String get weightCountsAsChoiceHelp => 'Choose which weigh-in this counts as';
+
+  @override
+  String get weightDontCount => 'Don\'t count it as a weigh-in';
+
+  @override
+  String get weightCountAsWeighInAction => 'Count as a weigh-in';
+
+  @override
+  String get weightFulfilmentStale =>
+      'That weigh-in can\'t take this weight any more. Check and save again.';
+
+  @override
+  String get weightCheckingWeighIn => 'Checking for a due weigh-in…';
+
+  @override
+  String get weightCheckFailed => 'Couldn\'t check for a due weigh-in.';
+
+  @override
+  String get weightCheckRetry => 'Retry';
+
+  @override
+  String get weightSaved => 'Weight saved';
+
+  @override
+  String weightSavedCountedAs(String routine) {
+    return 'Saved · counted as $routine';
+  }
+
+  @override
+  String get weightWeighInUndone => 'Weigh-in undone';
+
+  @override
+  String weightLinkedEditInfo(String routine, String date) {
+    return 'Counts as $routine ($date). Changing the date also changes when the weigh-in was done.';
+  }
+
+  @override
+  String get weightDateInFuture => 'The date can\'t be in the future';
+
+  @override
+  String get weightDateBeforeRoutineStart =>
+      'The date can\'t be before the routine started';
+
+  @override
+  String get weightDeleteTitle => 'Delete this weight?';
+
+  @override
+  String get weightDeleteBody => 'This can\'t be undone.';
+
+  @override
+  String weightDeleteLinkedBody(String routine, String date) {
+    return 'It counted as $routine on $date. Deleting it marks that weigh-in as not done.';
+  }
+
+  @override
+  String weightDeletedReopened(String routine) {
+    return 'Weight deleted · $routine is due again';
+  }
+
+  @override
+  String weightSinceChange(String change, String date) {
+    return '$change since $date';
+  }
+
+  @override
+  String weightRecordedOn(String date) {
+    return 'Recorded $date';
+  }
+
+  @override
+  String weightTargetLine(String weight, String authority) {
+    return 'Target $weight · $authority';
+  }
+
+  @override
+  String get weightAuthorityVet => 'set by the vet';
+
+  @override
+  String get weightAuthorityGuardian => 'your reference';
+
+  @override
+  String get weightAuthorityBaseline => 'usual weight';
+
+  @override
+  String get weightLegendWeighIn => 'Weigh-in';
+
+  @override
+  String get weightLegendOther => 'Other weight';
+
+  @override
+  String get weightRoutinesTitle => 'Weigh-in routine';
+
+  @override
+  String get weightNoRoutineTitle => 'No weigh-in routine';
+
+  @override
+  String get weightNoRoutineBody =>
+      'A regular weigh-in helps spot changes early.';
+
+  @override
+  String get weightSetUpRoutine => 'Set up a weigh-in routine';
+
+  @override
+  String weightNextWeighIn(String date, String status) {
+    return 'Next weigh-in $date · $status';
+  }
+
+  @override
+  String get weightRoutinePaused => 'Paused';
+
+  @override
+  String get weightSourceClinic => 'From the vet';
+
+  @override
+  String get weightSourceDevice => 'From a scale';
+
+  @override
+  String get weightSourceImported => 'Imported';
+
+  @override
+  String get weightSeeAll => 'See all weights';
+
+  @override
+  String get weightNoneRecordedYet => 'No weight recorded yet';
+
+  @override
+  String weightTodayFieldLabelUnit(String unit) {
+    return 'Weight today ($unit)';
+  }
+
+  @override
+  String petProfileWeightRow(String weight, String date) {
+    return 'Weight $weight · recorded $date';
+  }
+
+  @override
+  String get petProfileNoWeightRecorded => 'No weight recorded yet';
 
   @override
   String get healthEvents => 'Health Events';
@@ -1267,10 +1474,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Enter a due date, a completed date, or both';
 
   @override
-  String get recurrenceAnchorTitle => 'Next due date';
+  String get recurrenceAnchorTitle => 'Schedule type';
 
   @override
-  String get recurrenceFromCompletion => 'From completion';
+  String get recurrenceFromCompletion => 'After it\'s done';
 
   @override
   String get recurrenceFromDueDate => 'Fixed schedule';
@@ -1280,7 +1487,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get recurrenceAnchorInfoBody =>
-      'Example: every 7 days. You complete it 1 day late.\n• From completion: next due 7 days after you mark it done.\n• Fixed schedule: next due 6 days from today (7 days after the original due date).';
+      'Example: every 7 days. You mark it done when it\'s Overdue.\n• After it\'s done: the next date is 7 days after you mark it done.\n• Fixed schedule: the next date is 7 days after the original due date, even if you mark it done early or late.';
+
+  @override
+  String get healthEntryFormAdvancedSettings => 'Advanced settings';
 
   @override
   String get markCompleteSheetTitle => 'Mark as completed';
@@ -5215,6 +5425,39 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String careItemPausedUntil(String date) {
+    return 'Paused until $date';
+  }
+
+  @override
+  String get carePostponeSheetTitle => 'Pause';
+
+  @override
+  String get carePostponeNoEndDate => 'No end date (pause)';
+
+  @override
+  String get carePostponeUntilLabel => 'Pause until';
+
+  @override
+  String get carePostponePauseConsequence => 'Reminders stop until you resume.';
+
+  @override
+  String carePostponeUntilAfterDoneConsequence(String date) {
+    return 'The open date moves to $date.';
+  }
+
+  @override
+  String carePostponeUntilFixedConsequence(String date) {
+    return 'Care stays paused until $date, then resumes automatically.';
+  }
+
+  @override
+  String get careResumeSheetTitle => 'Resume';
+
+  @override
+  String get careResumeDefaultHint => 'This is when it would have been.';
+
+  @override
   String careItemEstablishedBody(String petName) {
     return 'Part of $petName\'s regular care.';
   }
@@ -7472,6 +7715,43 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careStatusNotRecorded => 'Not recorded';
 
   @override
+  String get careStatusNotRecordedOpen => 'Not recorded (open)';
+
+  @override
+  String get careStatusNotRecordedClosedMarker => 'closed';
+
+  @override
+  String get careClosedNotRecordedBody =>
+      'This scheduled care was closed automatically. Record when it was given, or mark it as skipped if you chose not to give it.';
+
+  @override
+  String get careRecordAsGivenHint =>
+      'Choose the day it was given. Future dates are not allowed.';
+
+  @override
+  String get careConfirmSkipTitle => 'Mark as skipped?';
+
+  @override
+  String get careConfirmSkipBody =>
+      'This will record that you chose not to give this scheduled care.';
+
+  @override
+  String get careConfirmSkipAction => 'Mark as skipped';
+
+  @override
+  String get careCompletedOnFuture => 'Choose today or an earlier date.';
+
+  @override
+  String careStackMarkedDonePartial(int changed, int ignored) {
+    return '$changed marked done · $ignored already closed';
+  }
+
+  @override
+  String careStackSkippedPartial(int changed, int ignored) {
+    return '$changed skipped · $ignored already closed';
+  }
+
+  @override
   String get careStatusComingUp => 'Coming up';
 
   @override
@@ -7540,6 +7820,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careNextStaysChange => 'Change';
+
+  @override
+  String get carePlanAnotherDate => 'Plan another date';
+
+  @override
+  String get careAddBoosterDate => '+ Add a booster date';
+
+  @override
+  String careRemoveBoosterDate(String date) {
+    return 'Remove booster date $date';
+  }
+
+  @override
+  String get careOccurrenceMenuTooltip => 'More actions for this date';
 
   @override
   String get careSkip => 'Skip';

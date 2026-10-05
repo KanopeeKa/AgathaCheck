@@ -740,11 +740,53 @@ abstract class AppLocalizations {
   /// **'All pets'**
   String get allPets;
 
-  /// No description provided for @petListStaleBannerMessage.
+  /// No description provided for @petListStaleBannerOffline.
   ///
   /// In en, this message translates to:
-  /// **'Showing saved pets while offline. Some details may be out of date.'**
-  String get petListStaleBannerMessage;
+  /// **'Offline — showing pets saved {relativeTime}'**
+  String petListStaleBannerOffline(String relativeTime);
+
+  /// No description provided for @petListCacheOutOfDateBannerMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved data may be out of date'**
+  String get petListCacheOutOfDateBannerMessage;
+
+  /// No description provided for @petListCacheRetrySemanticsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry loading pets'**
+  String get petListCacheRetrySemanticsLabel;
+
+  /// No description provided for @petCacheRelativeJustNow.
+  ///
+  /// In en, this message translates to:
+  /// **'just now'**
+  String get petCacheRelativeJustNow;
+
+  /// No description provided for @petCacheRelativeMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 minute ago} other{{count} minutes ago}}'**
+  String petCacheRelativeMinutes(int count);
+
+  /// No description provided for @petCacheRelativeHours.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 hour ago} other{{count} hours ago}}'**
+  String petCacheRelativeHours(int count);
+
+  /// No description provided for @petCacheRelativeDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 day ago} other{{count} days ago}}'**
+  String petCacheRelativeDays(int count);
+
+  /// No description provided for @careCommandSavedRefreshFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved — couldn\'t refresh. Pull to refresh.'**
+  String get careCommandSavedRefreshFailed;
 
   /// No description provided for @managePets.
   ///
@@ -1093,6 +1135,270 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Weight chart showing {count} entries'**
   String weightChartLabel(int count);
+
+  /// No description provided for @weightRecordAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Record weight'**
+  String get weightRecordAction;
+
+  /// No description provided for @weightRecordSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Record weight'**
+  String get weightRecordSheetTitle;
+
+  /// No description provided for @weightEditSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit weight'**
+  String get weightEditSheetTitle;
+
+  /// No description provided for @weightFieldLabelUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight ({unit})'**
+  String weightFieldLabelUnit(String unit);
+
+  /// No description provided for @weightCountsAs.
+  ///
+  /// In en, this message translates to:
+  /// **'Counts as {routine}'**
+  String weightCountsAs(String routine);
+
+  /// No description provided for @weightCountsAsChoiceHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose which weigh-in this counts as'**
+  String get weightCountsAsChoiceHelp;
+
+  /// No description provided for @weightDontCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t count it as a weigh-in'**
+  String get weightDontCount;
+
+  /// No description provided for @weightCountAsWeighInAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Count as a weigh-in'**
+  String get weightCountAsWeighInAction;
+
+  /// No description provided for @weightFulfilmentStale.
+  ///
+  /// In en, this message translates to:
+  /// **'That weigh-in can\'t take this weight any more. Check and save again.'**
+  String get weightFulfilmentStale;
+
+  /// No description provided for @weightCheckingWeighIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking for a due weigh-in…'**
+  String get weightCheckingWeighIn;
+
+  /// No description provided for @weightCheckFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t check for a due weigh-in.'**
+  String get weightCheckFailed;
+
+  /// No description provided for @weightCheckRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get weightCheckRetry;
+
+  /// No description provided for @weightSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight saved'**
+  String get weightSaved;
+
+  /// No description provided for @weightSavedCountedAs.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved · counted as {routine}'**
+  String weightSavedCountedAs(String routine);
+
+  /// No description provided for @weightWeighInUndone.
+  ///
+  /// In en, this message translates to:
+  /// **'Weigh-in undone'**
+  String get weightWeighInUndone;
+
+  /// No description provided for @weightLinkedEditInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Counts as {routine} ({date}). Changing the date also changes when the weigh-in was done.'**
+  String weightLinkedEditInfo(String routine, String date);
+
+  /// No description provided for @weightDateInFuture.
+  ///
+  /// In en, this message translates to:
+  /// **'The date can\'t be in the future'**
+  String get weightDateInFuture;
+
+  /// No description provided for @weightDateBeforeRoutineStart.
+  ///
+  /// In en, this message translates to:
+  /// **'The date can\'t be before the routine started'**
+  String get weightDateBeforeRoutineStart;
+
+  /// No description provided for @weightDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this weight?'**
+  String get weightDeleteTitle;
+
+  /// No description provided for @weightDeleteBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This can\'t be undone.'**
+  String get weightDeleteBody;
+
+  /// No description provided for @weightDeleteLinkedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'It counted as {routine} on {date}. Deleting it marks that weigh-in as not done.'**
+  String weightDeleteLinkedBody(String routine, String date);
+
+  /// No description provided for @weightDeletedReopened.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight deleted · {routine} is due again'**
+  String weightDeletedReopened(String routine);
+
+  /// No description provided for @weightSinceChange.
+  ///
+  /// In en, this message translates to:
+  /// **'{change} since {date}'**
+  String weightSinceChange(String change, String date);
+
+  /// No description provided for @weightRecordedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Recorded {date}'**
+  String weightRecordedOn(String date);
+
+  /// No description provided for @weightTargetLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Target {weight} · {authority}'**
+  String weightTargetLine(String weight, String authority);
+
+  /// No description provided for @weightAuthorityVet.
+  ///
+  /// In en, this message translates to:
+  /// **'set by the vet'**
+  String get weightAuthorityVet;
+
+  /// No description provided for @weightAuthorityGuardian.
+  ///
+  /// In en, this message translates to:
+  /// **'your reference'**
+  String get weightAuthorityGuardian;
+
+  /// No description provided for @weightAuthorityBaseline.
+  ///
+  /// In en, this message translates to:
+  /// **'usual weight'**
+  String get weightAuthorityBaseline;
+
+  /// No description provided for @weightLegendWeighIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Weigh-in'**
+  String get weightLegendWeighIn;
+
+  /// No description provided for @weightLegendOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other weight'**
+  String get weightLegendOther;
+
+  /// No description provided for @weightRoutinesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Weigh-in routine'**
+  String get weightRoutinesTitle;
+
+  /// No description provided for @weightNoRoutineTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No weigh-in routine'**
+  String get weightNoRoutineTitle;
+
+  /// No description provided for @weightNoRoutineBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A regular weigh-in helps spot changes early.'**
+  String get weightNoRoutineBody;
+
+  /// No description provided for @weightSetUpRoutine.
+  ///
+  /// In en, this message translates to:
+  /// **'Set up a weigh-in routine'**
+  String get weightSetUpRoutine;
+
+  /// No description provided for @weightNextWeighIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Next weigh-in {date} · {status}'**
+  String weightNextWeighIn(String date, String status);
+
+  /// No description provided for @weightRoutinePaused.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused'**
+  String get weightRoutinePaused;
+
+  /// No description provided for @weightSourceClinic.
+  ///
+  /// In en, this message translates to:
+  /// **'From the vet'**
+  String get weightSourceClinic;
+
+  /// No description provided for @weightSourceDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'From a scale'**
+  String get weightSourceDevice;
+
+  /// No description provided for @weightSourceImported.
+  ///
+  /// In en, this message translates to:
+  /// **'Imported'**
+  String get weightSourceImported;
+
+  /// No description provided for @weightSeeAll.
+  ///
+  /// In en, this message translates to:
+  /// **'See all weights'**
+  String get weightSeeAll;
+
+  /// No description provided for @weightNoneRecordedYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No weight recorded yet'**
+  String get weightNoneRecordedYet;
+
+  /// No description provided for @weightTodayFieldLabelUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight today ({unit})'**
+  String weightTodayFieldLabelUnit(String unit);
+
+  /// No description provided for @petProfileWeightRow.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight {weight} · recorded {date}'**
+  String petProfileWeightRow(String weight, String date);
+
+  /// No description provided for @petProfileNoWeightRecorded.
+  ///
+  /// In en, this message translates to:
+  /// **'No weight recorded yet'**
+  String get petProfileNoWeightRecorded;
 
   /// No description provided for @healthEvents.
   ///
@@ -2273,13 +2579,13 @@ abstract class AppLocalizations {
   /// No description provided for @recurrenceAnchorTitle.
   ///
   /// In en, this message translates to:
-  /// **'Next due date'**
+  /// **'Schedule type'**
   String get recurrenceAnchorTitle;
 
   /// No description provided for @recurrenceFromCompletion.
   ///
   /// In en, this message translates to:
-  /// **'From completion'**
+  /// **'After it\'s done'**
   String get recurrenceFromCompletion;
 
   /// No description provided for @recurrenceFromDueDate.
@@ -2297,8 +2603,14 @@ abstract class AppLocalizations {
   /// No description provided for @recurrenceAnchorInfoBody.
   ///
   /// In en, this message translates to:
-  /// **'Example: every 7 days. You complete it 1 day late.\n• From completion: next due 7 days after you mark it done.\n• Fixed schedule: next due 6 days from today (7 days after the original due date).'**
+  /// **'Example: every 7 days. You mark it done when it\'s Overdue.\n• After it\'s done: the next date is 7 days after you mark it done.\n• Fixed schedule: the next date is 7 days after the original due date, even if you mark it done early or late.'**
   String get recurrenceAnchorInfoBody;
+
+  /// No description provided for @healthEntryFormAdvancedSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced settings'**
+  String get healthEntryFormAdvancedSettings;
 
   /// No description provided for @markCompleteSheetTitle.
   ///
@@ -9321,6 +9633,60 @@ abstract class AppLocalizations {
   /// **'Paused since {date}'**
   String careItemPausedSince(String date);
 
+  /// No description provided for @careItemPausedUntil.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused until {date}'**
+  String careItemPausedUntil(String date);
+
+  /// No description provided for @carePostponeSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get carePostponeSheetTitle;
+
+  /// No description provided for @carePostponeNoEndDate.
+  ///
+  /// In en, this message translates to:
+  /// **'No end date (pause)'**
+  String get carePostponeNoEndDate;
+
+  /// No description provided for @carePostponeUntilLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause until'**
+  String get carePostponeUntilLabel;
+
+  /// No description provided for @carePostponePauseConsequence.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminders stop until you resume.'**
+  String get carePostponePauseConsequence;
+
+  /// No description provided for @carePostponeUntilAfterDoneConsequence.
+  ///
+  /// In en, this message translates to:
+  /// **'The open date moves to {date}.'**
+  String carePostponeUntilAfterDoneConsequence(String date);
+
+  /// No description provided for @carePostponeUntilFixedConsequence.
+  ///
+  /// In en, this message translates to:
+  /// **'Care stays paused until {date}, then resumes automatically.'**
+  String carePostponeUntilFixedConsequence(String date);
+
+  /// No description provided for @careResumeSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume'**
+  String get careResumeSheetTitle;
+
+  /// No description provided for @careResumeDefaultHint.
+  ///
+  /// In en, this message translates to:
+  /// **'This is when it would have been.'**
+  String get careResumeDefaultHint;
+
   /// No description provided for @careItemEstablishedBody.
   ///
   /// In en, this message translates to:
@@ -13162,6 +13528,66 @@ abstract class AppLocalizations {
   /// **'Not recorded'**
   String get careStatusNotRecorded;
 
+  /// No description provided for @careStatusNotRecordedOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Not recorded (open)'**
+  String get careStatusNotRecordedOpen;
+
+  /// No description provided for @careStatusNotRecordedClosedMarker.
+  ///
+  /// In en, this message translates to:
+  /// **'closed'**
+  String get careStatusNotRecordedClosedMarker;
+
+  /// No description provided for @careClosedNotRecordedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This scheduled care was closed automatically. Record when it was given, or mark it as skipped if you chose not to give it.'**
+  String get careClosedNotRecordedBody;
+
+  /// No description provided for @careRecordAsGivenHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the day it was given. Future dates are not allowed.'**
+  String get careRecordAsGivenHint;
+
+  /// No description provided for @careConfirmSkipTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as skipped?'**
+  String get careConfirmSkipTitle;
+
+  /// No description provided for @careConfirmSkipBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This will record that you chose not to give this scheduled care.'**
+  String get careConfirmSkipBody;
+
+  /// No description provided for @careConfirmSkipAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as skipped'**
+  String get careConfirmSkipAction;
+
+  /// No description provided for @careCompletedOnFuture.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose today or an earlier date.'**
+  String get careCompletedOnFuture;
+
+  /// No description provided for @careStackMarkedDonePartial.
+  ///
+  /// In en, this message translates to:
+  /// **'{changed} marked done · {ignored} already closed'**
+  String careStackMarkedDonePartial(int changed, int ignored);
+
+  /// No description provided for @careStackSkippedPartial.
+  ///
+  /// In en, this message translates to:
+  /// **'{changed} skipped · {ignored} already closed'**
+  String careStackSkippedPartial(int changed, int ignored);
+
   /// No description provided for @careStatusComingUp.
   ///
   /// In en, this message translates to:
@@ -13281,6 +13707,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Change'**
   String get careNextStaysChange;
+
+  /// No description provided for @carePlanAnotherDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan another date'**
+  String get carePlanAnotherDate;
+
+  /// No description provided for @careAddBoosterDate.
+  ///
+  /// In en, this message translates to:
+  /// **'+ Add a booster date'**
+  String get careAddBoosterDate;
+
+  /// No description provided for @careRemoveBoosterDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove booster date {date}'**
+  String careRemoveBoosterDate(String date);
+
+  /// No description provided for @careOccurrenceMenuTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'More actions for this date'**
+  String get careOccurrenceMenuTooltip;
 
   /// No description provided for @careSkip.
   ///

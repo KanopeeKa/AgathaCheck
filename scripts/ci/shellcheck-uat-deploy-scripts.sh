@@ -39,3 +39,5 @@ printf '  %s\n' "${FILES[@]}"
 # -x follows shellcheck source= directives; exclude SC1091 (not following in CI without full paths).
 shellcheck -x -e SC1091 -S warning "${FILES[@]}"
 echo "Shellcheck passed."
+
+bash "${ROOT}/scripts/ci/test-uat-htaccess-extract.sh"

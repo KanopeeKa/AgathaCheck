@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/core/utils/calendar_date.dart';
+import 'package:pet_profile_app/core/weight/weight_unit.dart';
 import 'package:pet_profile_app/features/weight_tracking/data/models/weight_entry_model.dart';
 import 'package:pet_profile_app/features/weight_tracking/domain/entities/weight_entry.dart';
 
@@ -177,6 +178,42 @@ void main() {
     test('is a WeightEntry', () {
       final model = WeightEntryModel.fromJson(fullJson);
       expect(model, isA<WeightEntry>());
+    });
+
+    test(
+      'FW-2 fromJson parses health_occurrence_id, measurement_source, fulfils',
+      () {
+        final model = WeightEntryModel.fromJson({
+          ...fullJson,
+          'health_occurrence_id': 'occ-9',
+          'measurement_source': 'clinic',
+          'fulfils': {
+            'entry_id': 'entry-1',
+            'entry_name': 'Weekly weigh-in',
+            'occurrence_id': 'occ-9',
+            'scheduled_date': '2025-06-14',
+          },
+        });
+
+        expect(model.healthOccurrenceId, 'occ-9');
+        expect(model.measurementSource, 'clinic');
+        expect(model.fulfils?.entryName, 'Weekly weigh-in');
+        expect(model.fulfils?.scheduledDate.day, 14);
+      },
+    );
+
+    test('FW-2 fromJson converts lb row to kg storage', () {
+      final model = WeightEntryModel.fromJson({
+        ...fullJson,
+        'unit': 'lb',
+        'weight': 22.0,
+      });
+      expect(model.weight, closeTo(toKg(22.0, WeightUnit.lb), 0.0001));
+    });
+
+    test('toJson sends unit kg explicitly', () {
+      final model = WeightEntryModel.fromJson(fullJson);
+      expect(model.toJson()['unit'], 'kg');
     });
   });
 }

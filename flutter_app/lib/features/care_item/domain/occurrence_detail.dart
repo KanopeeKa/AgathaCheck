@@ -39,6 +39,7 @@ class CareOccurrence {
     this.time,
     this.completedOn,
     this.notes = '',
+    this.closeReason,
   });
 
   final String id;
@@ -55,7 +56,20 @@ class CareOccurrence {
   final DateTime? completedOn;
   final String notes;
 
+  /// `user`, `not_recorded`, … when closed on the server.
+  final String? closeReason;
+
   bool get isDone => status == CareOccurrenceStatus.done;
+
+  /// Auto-closed after the stack window (FR-4, AC-C1).
+  bool get isClosedNotRecorded =>
+      !isOpen &&
+      status == CareOccurrenceStatus.notRecorded &&
+      closeReason == 'not_recorded';
+
+  /// Open slot whose next dose has started (still actionable).
+  bool get isOpenNotRecorded =>
+      isOpen && status == CareOccurrenceStatus.notRecorded;
 }
 
 /// The care item fields the occurrence screen needs.

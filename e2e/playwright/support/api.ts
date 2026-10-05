@@ -161,6 +161,7 @@ export async function updateUserProfile(
     category: string;
     bio: string;
     locale: string;
+    weight_unit: 'kg' | 'lb';
   }>,
 ): Promise<TestUser> {
   const res = await apiFetch(apiUrl('/auth/me', baseURL), {
@@ -1653,6 +1654,15 @@ export interface TestWeightEntry {
   created_at: string | null;
 }
 
+export interface TestWeightFulfilment {
+  undo_token?: string;
+}
+
+export type TestWeightEntryCreateResult = TestWeightEntry & {
+  health_occurrence_id?: string | null;
+  fulfilment?: TestWeightFulfilment;
+};
+
 export async function createWeightEntry(
   baseURL: string,
   token: string,
@@ -1662,28 +1672,38 @@ export async function createWeightEntry(
     unit?: 'kg' | 'lb';
     date?: string;
     notes?: string;
+    fulfilsOccurrenceId?: string;
+    careAsOf?: string;
   },
-): Promise<TestWeightEntry> {
+): Promise<TestWeightEntryCreateResult> {
   const date = options.date ?? new Date().toISOString().slice(0, 10);
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${token}`,
+  };
+  if (options.careAsOf) {
+    headers['X-Care-As-Of'] = options.careAsOf;
+  }
+  const body: Record<string, unknown> = {
+    pet_id: petId,
+    weight: options.weight,
+    unit: options.unit ?? 'kg',
+    date,
+    notes: options.notes ?? '',
+  };
+  if (options.fulfilsOccurrenceId) {
+    body.fulfils_occurrence_id = options.fulfilsOccurrenceId;
+  }
   const res = await apiFetch(apiUrl('/weight-entries', baseURL), {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({
-      pet_id: petId,
-      weight: options.weight,
-      unit: options.unit ?? 'kg',
-      date,
-      notes: options.notes ?? '',
-    }),
+    headers,
+    body: JSON.stringify(body),
   });
   if (!res.ok) {
     const body = await res.text();
     throw new Error(`createWeightEntry failed (${res.status}): ${body}`);
   }
-  return res.json<TestWeightEntry>();
+  return res.json<TestWeightEntryCreateResult>();
 }
 
 export async function getWeightEntries(

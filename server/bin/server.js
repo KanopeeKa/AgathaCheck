@@ -5,10 +5,11 @@ import bodyParser from 'body-parser';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { Pool } from 'pg';
+import { createAppPool, verifyPgDateParser } from '../lib/db/createPool.js';
 import petsRoutes from '../routes/pets.js';
 import authRoutes from '../routes/auth.js';
 import notificationsRoutes from '../routes/notifications.js';
-import weightEntriesRoutes from '../routes/weightEntries.js';
+import weightEntriesRoutes from '../routes/weightEntries/index.js';
 import healthEntriesRoutes from '../routes/healthEntries.js';
 import healthIssuesRoutes from '../routes/healthIssues.js';
 import organizationsRoutes from '../routes/organizations.js';
@@ -34,6 +35,7 @@ import {
   createAccountExistenceMiddleware,
   installTestAccountExistencePoolCompat,
 } from '../lib/auth/accountExistence.js';
+import { createApiErrorMiddleware } from '../lib/http/errorMiddleware.js';
 
 function getServerDir() {
   try {
@@ -44,21 +46,7 @@ function getServerDir() {
 }
 
 function createPool() {
-  const databaseUrl = process.env.DATABASE_URL;
-  const pool = databaseUrl
-    ? new Pool({ connectionString: databaseUrl })
-    : new Pool({
-        user: process.env.PGUSER || 'user',
-        password: process.env.PGPASSWORD || 'password',
-        host: process.env.PGHOST || 'localhost',
-        port: process.env.PGPORT || 5432,
-        database: process.env.PGDATABASE || 'agatha_db',
-      });
-  // Calendar DATE/TIMESTAMPTZ round-trips must not depend on the host TZ.
-  pool.on('connect', (client) => {
-    client.query("SET TIME ZONE 'UTC'").catch(() => {});
-  });
-  return pool;
+  return createAppPool();
 }
 
 export function createApp(customPool, comparePassword) {
@@ -159,6 +147,8 @@ export function createApp(customPool, comparePassword) {
   app.use('/backend/api/share', sharingRoutes(pool));
   app.use('/backend/api/households', householdsRoutes(pool));
   app.use('/backend/api/pet-tags', petTagsRoutes(pool));
+
+  app.use(createApiErrorMiddleware());
 
   app.get('/health', (req, res) => {
     res.status(200).json({ status: 'OK' });

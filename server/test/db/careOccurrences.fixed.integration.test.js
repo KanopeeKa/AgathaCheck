@@ -91,6 +91,18 @@ describe('fixed schedule (D-CSM-023)', () => {
     expect(after.status).toBe('completed');
   });
 
+  it('FX-6b a closed not recorded dose can be confirmed as skipped', async () => {
+    const entry = await created(twiceDaily('2026-06-01'), '2026-06-01T07:00');
+    await tick('2026-06-06T09:00');
+    const rows = await occurrenceRows(harness.pool, entry.id);
+    const old = rows.find((r) => r.close_reason === 'not_recorded');
+    const res = await api.at('2026-06-06T09:00').confirmSkip(entry.id, old.id);
+    expect(res.statusCode).toBe(200);
+    expect(res.body.occurrence).toMatchObject({ status: 'skipped', close_reason: 'user' });
+    const after = (await occurrenceRows(harness.pool, entry.id)).find((r) => r.id === old.id);
+    expect(after).toMatchObject({ status: 'skipped', close_reason: 'user' });
+  });
+
   it('FX-12 record earlier doses: given and not given', async () => {
     const entry = await created(twiceDaily('2026-06-01'), '2026-06-01T07:00');
     const read = await api.at('2026-06-02T19:00').get(entry.id);

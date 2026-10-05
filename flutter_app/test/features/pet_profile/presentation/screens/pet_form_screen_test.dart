@@ -14,10 +14,17 @@ import 'package:pet_profile_app/features/people/domain/entities/people_contact.d
 import 'package:pet_profile_app/features/people/presentation/providers/people_providers.dart';
 import 'package:pet_profile_app/features/vet/domain/entities/vet.dart';
 import 'package:pet_profile_app/features/vet/presentation/providers/vet_providers.dart';
+import 'package:pet_profile_app/features/weight_tracking/domain/entities/weight_entry.dart';
+import 'package:pet_profile_app/features/weight_tracking/presentation/providers/weight_providers.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import '../../../../helpers/fakes.dart';
 import '../providers/pet_list_notifier_test.dart';
+
+class _EmptyWeightEntriesNotifier extends WeightEntriesNotifier {
+  @override
+  Future<List<WeightEntry>> build(String arg) async => [];
+}
 
 class _ExistingPetNotifier extends PetListNotifier {
   _ExistingPetNotifier(this.pet);
@@ -110,6 +117,9 @@ Widget _wrap(Pet pet) {
       vetListProvider.overrideWith(_VetsNotifier.new),
       peopleContactsProvider.overrideWith(_PeopleVetContactsNotifier.new),
       apiBaseUrlProvider.overrideWithValue('http://test.local'),
+      weightEntriesNotifierProvider.overrideWith(
+        () => _EmptyWeightEntriesNotifier(),
+      ),
     ],
     child: const MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -162,7 +172,8 @@ void main() {
     expect(find.text('Change photo'), findsOneWidget);
     expect(_fieldText(tester, const Key('pet_name_field')), 'Bella');
     expect(_fieldText(tester, const Key('pet_breed_field')), 'Collie');
-    expect(_fieldText(tester, const Key('pet_weight_field')), '12.5');
+    expect(find.byKey(const Key('pet_weight_readonly')), findsOneWidget);
+    expect(find.text('Record weight'), findsOneWidget);
     expect(_fieldText(tester, const Key('pet_bio_field')), 'Loves long walks');
     expect(
       _fieldText(tester, const Key('pet_insurance_field')),

@@ -13,6 +13,8 @@ import '../../domain/care_occurrence.dart';
 import '../../domain/completion_requirements.dart';
 import '../../domain/occurrence_detail.dart';
 import '../care_completion_flow.dart';
+import '../sheets/record_as_given_sheet.dart';
+import '../../domain/occurrence_display.dart';
 
 /// Primary and secondary actions for one occurrence (§18.6.4): open →
 /// required inputs, "When was this done?", Done, Skip, Change date;
@@ -135,6 +137,12 @@ class _OccurrenceBlocksState extends ConsumerState<OccurrenceBlocks> {
         _snack(success);
       case CareFailed(failure: CareNotOpenFailure()):
         _snack(l.careAlreadyUpdated);
+      case CareFailed(failure: CareValidationFailure(:final code)):
+        _snack(
+          code == 'completed_on_in_future'
+              ? l.careCompletedOnFuture
+              : l.careCommandFailed,
+        );
       case CareFailed():
         _snack(l.careCommandFailed);
     }
@@ -161,7 +169,8 @@ class _OccurrenceBlocksState extends ConsumerState<OccurrenceBlocks> {
   Widget build(BuildContext context) {
     if (_occ.isOpen) return _open(context);
     if (_occ.isDone) return _completed(context);
-    return _closed(context);
+    if (_occ.isClosedNotRecorded) return _closedNotRecorded(context);
+    return _closedSkipped(context);
   }
 
   Widget _dateField(BuildContext context, {required VoidCallback onTap}) {
@@ -320,33 +329,81 @@ class _OccurrenceBlocksState extends ConsumerState<OccurrenceBlocks> {
     );
   }
 
-  Widget _closed(BuildContext context) {
+  Widget _closedNotRecorded(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        _dateField(
-          context,
-          onTap: () async {
-            final picked = await _pick(first: _occ.date);
-            if (picked != null) setState(() => _date = picked);
-          },
-        ),
-        FilledButton(
-          key: const Key('occurrence_record'),
-          onPressed: _busy
-              ? null
-              : () => _guard(() async {
-                  final outcome = await _service.recordAsDone(
-                    entryId: _d.item.id,
-                    occurrenceId: _occ.id,
-                    completedOn: _date,
-                  );
-                  await _report(outcome, l.careRecorded(_d.item.name));
-                }),
-          child: Text(l.careRecordAsDone),
-        ),
-      ],
+    return Semantics(
+      label: closedNotRecordedSemantics(l),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            l.careClosedNotRecordedBody,
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          const SizedBox(height: 12),
+          FilledButton(
+            key: const Key('occurrence_record'),
+            onPressed: _busy
+                ? null
+                : () => _guard(() async {
+                    final picked = await showRecordAsGivenSheet(
+                      context,
+                      occurrence: _occ,
+                      today: _d.item.asOf.date,
+                    );
+                    if (picked == null) return;
+                    final outcome = await _service.recordAsDone(
+                      entryId: _d.item.id,
+                      occurrenceId: _occ.id,
+                      completedOn: picked,
+                    );
+                    await _report(outcome, l.careRecorded(_d.item.name));
+                  }),
+            child: Text(l.careRecordAsDone),
+          ),
+          const SizedBox(height: 8),
+          OutlinedButton(
+            key: const Key('occurrence_confirm_skip'),
+            onPressed: _busy
+                ? null
+                : () => _guard(() async {
+                    final ok = await showDialog<bool>(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: Text(l.careConfirmSkipTitle),
+                        content: Text(l.careConfirmSkipBody),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx, false),
+                            child: Text(l.cancel),
+                          ),
+                          FilledButton(
+                            key: const Key('occurrence_confirm_skip_ok'),
+                            onPressed: () => Navigator.pop(ctx, true),
+                            child: Text(l.careConfirmSkipAction),
+                          ),
+                        ],
+                      ),
+                    );
+                    if (ok != true) return;
+                    final outcome = await _service.confirmSkip(
+                      entryId: _d.item.id,
+                      occurrenceId: _occ.id,
+                    );
+                    await _report(outcome, l.careSkipped(_d.item.name));
+                  }),
+            child: Text(l.careConfirmSkipAction),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _closedSkipped(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    return Text(
+      l.careSkipped(_d.item.name),
+      style: Theme.of(context).textTheme.bodyMedium,
     );
   }
 }

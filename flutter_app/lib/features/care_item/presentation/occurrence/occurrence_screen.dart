@@ -8,8 +8,8 @@ import '../../../../core/router/shell_return_navigation.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../application/care_command_outcome.dart';
 import '../../application/care_item_providers.dart';
-import '../../domain/care_occurrence.dart';
 import '../../domain/occurrence_detail.dart';
+import '../../domain/occurrence_display.dart';
 import 'occurrence_blocks.dart';
 
 /// One occurrence, every status (D-CIE-029, §18.6.4). Loads
@@ -149,14 +149,7 @@ class _Header extends StatelessWidget {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final occ = detail.occurrence;
-    final status = switch (occ.status) {
-      CareOccurrenceStatus.overdue => l.urgencyOverdue,
-      CareOccurrenceStatus.notRecorded => l.careStatusNotRecorded,
-      CareOccurrenceStatus.due => l.careStatusDue,
-      CareOccurrenceStatus.done => l.done,
-      CareOccurrenceStatus.skipped => l.careSkip,
-      _ => l.careStatusComingUp,
-    };
+    final status = occurrenceStatusLine(l, occ);
     final when = [DateFormat.yMMMd().format(occ.date), ?occ.time].join(' · ');
     return Semantics(
       identifier: 'occurrence_about_item',

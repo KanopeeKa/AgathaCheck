@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 
+import { recordWeightFromPetPayload } from './care/observations/weightObservationService.js';
 import { normalizeCalendarDateInput, todayCalendarIso } from './calendarDate.js';
 
 const LATEST_WEIGHT_ENTRY_SQL = `
@@ -105,19 +106,14 @@ export async function maybeCreateWeightEntryFromPetPayload(db, {
   weight,
   date,
 }) {
-  if (weight == null || weight === '') return;
-  const weightVal = typeof weight === 'number' ? weight : parseFloat(weight);
-  if (Number.isNaN(weightVal)) return;
-
-  const latest = await getLatestWeightEntry(db, petId);
-  if (!weightsDiffer(weightVal, latest?.weight)) return;
-
-  await createWeightEntryAndSyncPet(db, {
+  const result = await recordWeightFromPetPayload(db, {
     petId,
     userId,
-    weight: weightVal,
-    date: date || todayCalendarIso(),
-    notes: '',
-    unit: 'kg',
+    weight,
+    date,
+    req: null,
   });
+  if (!result.ok && result.body?.code === 'invalid_weight') {
+    return;
+  }
 }

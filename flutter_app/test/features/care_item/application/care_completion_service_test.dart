@@ -131,6 +131,13 @@ void main() {
       },
     );
 
+    test('400 nothing_to_update → not open (AC-E4)', () async {
+      final f = await failWith(
+        jsonResponse({'error': 'x', 'code': 'nothing_to_update'}, 400),
+      );
+      expect(f, isA<CareNotOpenFailure>());
+    });
+
     test('404 → occurrence gone', () async {
       final f = await failWith(
         jsonResponse({'error': 'Occurrence not found'}, 404),

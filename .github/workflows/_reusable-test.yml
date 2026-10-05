@@ -255,6 +255,16 @@ jobs:
           PGDATABASE: agatha_db
         working-directory: server
         run: npx jest -c jest.config.active.cjs --env=node --runInBand --forceExit test/db
+      - name: PG DATE parser and Paris tick convergence
+        env:
+          TZ: Europe/Paris
+          PGUSER: user
+          PGPASSWORD: password
+          PGHOST: localhost
+          PGPORT: 5432
+          PGDATABASE: agatha_db
+        working-directory: server
+        run: npx jest -c jest.config.active.cjs --env=node --runInBand --forceExit test/db/pgDateParser.integration.test.js test/db/pgDateParisTick.integration.test.js
       - name: Write integration job summary
         if: always()
         run: |

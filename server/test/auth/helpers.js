@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { hashRefreshToken } from '../../lib/refreshSessions.js';
 import { createTransactionalMockPool } from '../helpers/transactionMockPool.js';
-import { TOKEN_TYPE_ACCESS, TOKEN_TYPE_REFRESH } from '../../routes/auth/shared.js';
+import { TOKEN_TYPE_ACCESS, TOKEN_TYPE_REFRESH } from '../../lib/auth/tokens.js';
 
 export const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'default_secret';
 
@@ -21,6 +21,7 @@ export const userRow = {
   photo_url: 'http://example.com/photo.png',
   locale: 'en',
   timezone: 'UTC',
+  weight_unit: 'kg',
   pinned_organization_id: null,
   created_at: '2024-01-01T00:00:00Z',
   updated_at: '2024-01-01T00:00:00Z',
@@ -154,7 +155,7 @@ export function buildMockPool(overrides = {}) {
       if (sql.includes('SELECT * FROM pets')) return handlers.selectPets(sql, params);
       if (sql.includes('SELECT * FROM vets')) return handlers.selectVets(sql, params);
       if (sql.includes('FROM health_entries') || sql.includes('FROM health_issues')
-        || sql.includes('FROM health_history') || sql.includes('FROM health_event_photos')
+        || sql.includes('FROM health_event_photos')
         || sql.includes('FROM health_issue_documents') || sql.includes('FROM health_issue_events') || sql.includes('FROM weight_entries')
         || sql.includes('FROM notifications') || sql.includes('FROM notification_preferences')
         || sql.includes('FROM organization_users') || sql.includes('FROM organizations o')

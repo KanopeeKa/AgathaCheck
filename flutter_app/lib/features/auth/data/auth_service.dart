@@ -4,96 +4,18 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
 
+import '../domain/entities/auth_result.dart';
+import '../domain/entities/auth_user.dart';
+import '../domain/entities/delete_account_result.dart';
+import '../domain/repositories/auth_repository.dart';
+import '../domain/repositories/session_store.dart';
 import 'auth_client_stub.dart' if (dart.library.html) 'auth_client_web.dart';
-import 'token_store.dart';
 
-class AuthUser {
-  final String id;
-  final String email;
-  final String? firstName;
-  final String? lastName;
-  final String? category;
-  final String? bio;
-  final String? photoUrl;
-  final String? pinnedOrganizationId;
-  final String? timezone;
-  final String? createdAt;
-  final String? updatedAt;
+export '../domain/entities/auth_result.dart';
+export '../domain/entities/auth_user.dart';
+export '../domain/entities/delete_account_result.dart';
 
-  AuthUser({
-    required this.id,
-    required this.email,
-    this.firstName,
-    this.lastName,
-    this.category,
-    this.bio,
-    this.photoUrl,
-    this.pinnedOrganizationId,
-    this.timezone,
-    this.createdAt,
-    this.updatedAt,
-  });
-
-  factory AuthUser.fromJson(Map<String, dynamic> json) {
-    return AuthUser(
-      id: json['id']?.toString() ?? '',
-      email: json['email']?.toString() ?? '',
-      firstName: json['first_name']?.toString(),
-      lastName: json['last_name']?.toString(),
-      category: json['category']?.toString(),
-      bio: json['bio']?.toString(),
-      photoUrl: json['photo_url']?.toString(),
-      pinnedOrganizationId: json['pinned_organization_id']?.toString(),
-      timezone: json['timezone']?.toString(),
-      createdAt: json['created_at']?.toString(),
-      updatedAt: json['updated_at']?.toString(),
-    );
-  }
-
-  String get displayName {
-    final full = '${firstName ?? ''} ${lastName ?? ''}'.trim();
-    if (full.isNotEmpty) return full;
-    return email;
-  }
-
-  String get initials {
-    if ((firstName?.isNotEmpty ?? false) && (lastName?.isNotEmpty ?? false)) {
-      return '${firstName![0]}${lastName![0]}'.toUpperCase();
-    }
-    final dn = displayName;
-    if (dn.length >= 2) return dn.substring(0, 2).toUpperCase();
-    if (dn.isNotEmpty) return dn[0].toUpperCase();
-    return '';
-  }
-}
-
-class AuthResult {
-  final AuthUser user;
-  final String accessToken;
-  final String refreshToken;
-
-  AuthResult({
-    required this.user,
-    required this.accessToken,
-    required this.refreshToken,
-  });
-}
-
-class DeleteAccountResult {
-  final String message;
-  final String? operationId;
-
-  /// `true` when the server returned HTTP 202 (async erasure accepted).
-  final bool accepted;
-
-  const DeleteAccountResult({
-    required this.message,
-    this.operationId,
-    required this.accepted,
-  });
-}
-
-class AuthService {
+class AuthService implements AuthRepository {
   final String baseUrl;
   final http.Client _client;
 
@@ -207,6 +129,7 @@ class AuthService {
     String? bio,
     String? locale,
     String? timezone,
+    String? weightUnit,
     String? pinnedOrganizationId,
     bool updatePinnedOrganizationId = false,
   }) async {
@@ -217,6 +140,7 @@ class AuthService {
     if (bio != null) body['bio'] = bio;
     if (locale != null) body['locale'] = locale;
     if (timezone != null) body['timezone'] = timezone;
+    if (weightUnit != null) body['weight_unit'] = weightUnit;
     if (updatePinnedOrganizationId) {
       body['pinned_organization_id'] = pinnedOrganizationId;
     }

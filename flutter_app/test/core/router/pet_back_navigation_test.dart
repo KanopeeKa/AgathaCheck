@@ -11,6 +11,7 @@ import 'package:pet_profile_app/features/notifications/presentation/providers/no
 import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
 import 'package:pet_profile_app/features/vet/presentation/providers/vet_providers.dart';
+import 'package:pet_profile_app/features/weight_tracking/domain/entities/weight_entry.dart';
 import 'package:pet_profile_app/features/weight_tracking/presentation/providers/weight_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/screens/pet_detail_screen.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
@@ -18,6 +19,11 @@ import 'package:pet_profile_app/l10n/app_localizations.dart';
 import '../../helpers/fakes.dart';
 
 const _pet = Pet(id: 'pet-nav-1', name: 'Buddy', species: 'Dog');
+
+class _EmptyWeightEntriesNotifier extends WeightEntriesNotifier {
+  @override
+  Future<List<WeightEntry>> build(String arg) async => [];
+}
 
 class _AllPetsStub extends StatelessWidget {
   const _AllPetsStub();
@@ -47,6 +53,7 @@ Widget _app({required GoRouter router}) {
   return ProviderScope(
     overrides: [
       authProvider.overrideWith((ref) => FakeAuthNotifier()),
+      petListProvider.overrideWith(() => TestPetListNotifier([_pet])),
       allPetsIncludingOrgProvider.overrideWith((ref) async => [_pet]),
       organizationListProvider.overrideWith(FakeOrganizationListNotifier.new),
       healthEntriesNotifierProvider.overrideWith(FakeHealthEntriesNotifier.new),
@@ -55,7 +62,9 @@ Widget _app({required GoRouter router}) {
       orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
       vetListProvider.overrideWith(FakeVetListNotifier.new),
       apiBaseUrlProvider.overrideWithValue('http://test.local'),
-      latestWeightProvider.overrideWith((ref, arg) => null),
+      weightEntriesNotifierProvider.overrideWith(
+        () => _EmptyWeightEntriesNotifier(),
+      ),
     ],
     child: MaterialApp.router(
       localizationsDelegates: AppLocalizations.localizationsDelegates,

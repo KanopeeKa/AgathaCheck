@@ -5,6 +5,38 @@ import 'package:http/http.dart' as http;
 import '../../../../core/utils/calendar_date.dart';
 import '../models/health_occurrence_model.dart';
 
+/// Thrown for care occurrence HTTP errors; never show [message] raw to users (FR-9).
+class HealthOccurrenceHttpException implements Exception {
+  const HealthOccurrenceHttpException(
+    this.statusCode, {
+    this.code,
+    this.message,
+  });
+
+  final int statusCode;
+  final String? code;
+  final String? message;
+
+  bool get alreadyUpdated =>
+      code == 'occurrence_not_open' || code == 'nothing_to_update';
+}
+
+void _checkOccurrenceResponse(http.Response response) {
+  if (response.statusCode < 400) return;
+  Map<String, dynamic>? body;
+  try {
+    final decoded = json.decode(response.body);
+    if (decoded is Map<String, dynamic>) body = decoded;
+  } on FormatException {
+    body = null;
+  }
+  throw HealthOccurrenceHttpException(
+    response.statusCode,
+    code: body?['code'] as String?,
+    message: body?['error'] as String?,
+  );
+}
+
 Future<List<HealthOccurrenceModel>> fetchOpenOccurrences({
   required http.Client client,
   required String baseUrl,
@@ -70,7 +102,7 @@ Future<HealthOccurrenceModel> postCompleteOccurrence({
     headers: headers,
     body: json.encode(body),
   );
-  checkResponse(response);
+  _checkOccurrenceResponse(response);
   final decoded = json.decode(response.body) as Map<String, dynamic>;
   final occurrence = decoded['occurrence'] as Map<String, dynamic>? ?? decoded;
   return HealthOccurrenceModel.fromJson(occurrence);
@@ -92,7 +124,7 @@ Future<HealthOccurrenceModel> postSkipOccurrence({
     headers: headers,
     body: json.encode({'notes': notes}),
   );
-  checkResponse(response);
+  _checkOccurrenceResponse(response);
   return HealthOccurrenceModel.fromJson(
     json.decode(response.body) as Map<String, dynamic>,
   );
@@ -112,7 +144,7 @@ Future<Map<String, dynamic>> postResolveStack({
     headers: headers,
     body: json.encode({'given': given, 'not_given': notGiven}),
   );
-  checkResponse(response);
+  _checkOccurrenceResponse(response);
   return json.decode(response.body) as Map<String, dynamic>;
 }
 

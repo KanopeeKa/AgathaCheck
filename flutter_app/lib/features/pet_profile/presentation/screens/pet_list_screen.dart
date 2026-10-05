@@ -17,7 +17,6 @@ import '../widgets/personal_pets_section.dart';
 import '../widgets/fostered_pets_section.dart';
 import '../widgets/organization_pets_section.dart';
 import '../widgets/passed_away_pets_section.dart';
-import '../widgets/pet_list/due_events_section.dart';
 import '../widgets/pet_list/pending_custody_transfers_section.dart';
 import '../widgets/pet_list/pending_adoption_placements_section.dart';
 import '../widgets/pet_list/pending_foster_placements_section.dart';
@@ -195,7 +194,6 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
               PendingAdoptionPlacementsSection(),
               const PendingCustodyTransfersSection(),
             ],
-            if (!widget.embeddedInShell) DueEventsSection(pets: allPets),
             if (_controller.orgFilter == null ||
                 _controller.orgFilter == '_personal') ...[
               if (personalActive.isNotEmpty ||

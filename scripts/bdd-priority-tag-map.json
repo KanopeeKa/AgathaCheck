@@ -49,6 +49,13 @@
     "Moving care after the trip postpones it to the day after return": "P1",
     "A date planned during the trip can be looked after by the carer": "P1"
   },
+  "care_pause_resume.feature": {
+    "PP-2 pause without end date then resume on the suggested date": "P1"
+  },
+  "pet_offline_cache.feature": {
+    "Pet list shows saved pets with an offline banner when the network fails": "P1",
+    "Pet list does not show cached pets when the session is rejected": "P1"
+  },
   "pet_profiles.feature": {
     "Creating a new pet with required fields": "P0",
     "Creating a pet with all fields populated": "P1",
@@ -74,6 +81,7 @@
   },
   "health_tracking.feature": {
     "Creating a medication entry": "P0",
+    "Planned care entry saves with due date only": "P1",
     "Creating a preventive entry": "P1",
     "Creating a vet visit entry": "P1",
     "Creating a procedure entry": "P1",
@@ -143,12 +151,22 @@
     "Viewing weight entries as a list": "P1",
     "Viewing weight chart": "P1",
     "Viewing latest weight on pet profile": "P2",
-    "Editing pet weight from profile creates a weight entry for today": "P2",
+    "Pet profile weight is read-only and links to the weight screen": "P2",
+    "Profile updates from older apps still record the weight": "P2",
     "PDF pet report shows latest weight as current weight": "P2",
     "Editing a weight entry": "P1",
     "Deleting a weight entry": "P1",
     "Selecting weight unit": "P1",
-    "Empty weight history": "P0"
+    "A weight recorded with a weigh-in choice completes that weigh-in": "P1",
+    "Undoing a weigh-in removes the weight it created": "P1",
+    "Empty weight history": "P0",
+    "Recording a weight that counts as the due weigh-in": "P0",
+    "Recording a weight without counting it as a weigh-in": "P1",
+    "Choosing which weigh-in a weight counts as": "P1",
+    "Undoing a weight that counted as a weigh-in": "P1",
+    "Deleting a weight that counted as a weigh-in asks for confirmation": "P1",
+    "Weight unit preference follows the user": "P1",
+    "Weight screen suggests a weigh-in routine when there is none": "P2"
   },
   "sharing.feature": {
     "Creating a share link for a pet": "P0",
@@ -422,6 +440,12 @@
     "Care that needs a weight opens its date to enter the weight": "P1",
     "Several dates to sort out open the care item": "P1",
     "Upcoming care can be marked as done early": "P1"
+  },
+  "care_booster.feature": {
+    "PL-1 first dose then booster then yearly recurrence": "P1"
+  },
+  "care_form_advanced.feature": {
+    "F42 expand Advanced and choose Fixed schedule": "P1"
   },
   "care_schedules.feature": {
     "Missed fixed-schedule care can be marked as done together on the care item": "P1",

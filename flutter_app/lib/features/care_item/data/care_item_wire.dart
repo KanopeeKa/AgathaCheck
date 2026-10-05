@@ -127,6 +127,7 @@ OccurrenceDetail occurrenceDetailFromJson(Map<String, dynamic> json) {
       isOpen: occ['status'] == 'pending',
       completedOn: parseCalendarDate(occ['completed_on']),
       notes: occ['notes'] as String? ?? '',
+      closeReason: occ['close_reason'] as String?,
     ),
     item: CareItemSummary(
       id: entry['id'] as String,

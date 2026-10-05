@@ -1,63 +1,67 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../data/datasources/weight_remote_datasource.dart';
+import '../../../../core/providers/pet_care_sync.dart';
+import '../../../../core/utils/calendar_date.dart';
+import '../../../../core/weight/weight_unit.dart';
+import '../../../../core/weight/weight_unit_preference.dart';
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
-import 'package:pet_profile_app/core/providers/pet_weight_invalidation.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
+import '../../data/datasources/weight_remote_datasource.dart';
 import '../../data/repositories/weight_repository_impl.dart';
-import '../../domain/weight_entry_sort.dart';
 import '../../domain/entities/weight_entry.dart';
+import '../../domain/entities/weight_fulfilment_candidates.dart';
+import '../../domain/entities/weight_overview.dart';
+import '../../domain/entities/weight_write_outcomes.dart';
 import '../../domain/repositories/weight_repository.dart';
+import '../../domain/weight_entry_sort.dart';
 
-enum WeightUnit { kg, lb }
+export '../../../../core/weight/weight_unit.dart';
 
-const double _kgToLb = 2.20462;
+/// Query key for fulfilment candidates.
+typedef WeightFulfilmentQuery = ({String petId, DateTime date});
 
-double convertWeight(double kg, WeightUnit unit) {
-  return unit == WeightUnit.lb ? kg * _kgToLb : kg;
-}
+final weightOverviewProvider = FutureProvider.autoDispose
+    .family<WeightOverview, String>((ref, petId) async {
+      final repo = ref.read(weightRepositoryProvider);
+      final token = ref.read(authProvider).accessToken;
+      if (token == null) {
+        throw StateError('Not signed in');
+      }
+      return repo.getOverview(petId, token);
+    });
 
-double convertToKg(double value, WeightUnit unit) {
-  return unit == WeightUnit.lb ? value / _kgToLb : value;
-}
+final weightFulfilmentCandidatesProvider = FutureProvider.autoDispose
+    .family<WeightFulfilmentCandidates, WeightFulfilmentQuery>((
+      ref,
+      query,
+    ) async {
+      final repo = ref.read(weightRepositoryProvider);
+      final token = ref.read(authProvider).accessToken;
+      if (token == null) {
+        throw StateError('Not signed in');
+      }
+      return repo.getFulfilmentCandidates(
+        query.petId,
+        calendarDateOnly(query.date),
+        token,
+      );
+    });
 
-String weightUnitLabel(WeightUnit unit) {
-  return unit == WeightUnit.kg ? 'kg' : 'lb';
-}
+@Deprecated(
+  'Use weightUnitPreferenceProvider (per user, not per pet). Removed in W8.',
+)
+final weightUnitProvider = Provider.family<WeightUnit, String>((ref, petId) {
+  return ref.watch(weightUnitPreferenceProvider);
+});
 
-final weightUnitProvider =
-    StateNotifierProvider.family<WeightUnitNotifier, WeightUnit, String>(
-      (ref, petId) => WeightUnitNotifier(petId),
-    );
+@Deprecated('Use toDisplay from core/weight/weight_unit.dart')
+double convertWeight(double kg, WeightUnit unit) => toDisplay(kg, unit);
 
-class WeightUnitNotifier extends StateNotifier<WeightUnit> {
-  WeightUnitNotifier(this._petId) : super(WeightUnit.kg) {
-    _load();
-  }
+@Deprecated('Use toKg from core/weight/weight_unit.dart')
+double convertToKg(double value, WeightUnit unit) => toKg(value, unit);
 
-  final String _petId;
-
-  Future<void> _load() async {
-    final prefs = await SharedPreferences.getInstance();
-    final stored = prefs.getString('pet_${_petId}_weightUnit');
-    if (stored == 'lb') {
-      state = WeightUnit.lb;
-    }
-  }
-
-  Future<void> setUnit(WeightUnit unit) async {
-    state = unit;
-    final prefs = await SharedPreferences.getInstance();
-    // Persist the canonical 'lb'/'kg' value, not enum.name: enum names are
-    // minified in release builds, so `.name` would never round-trip with the
-    // `== 'lb'` check in _load() and the unit would always reset to kg.
-    await prefs.setString(
-      'pet_${_petId}_weightUnit',
-      unit == WeightUnit.lb ? 'lb' : 'kg',
-    );
-  }
-}
+@Deprecated('Use unitLabel from core/weight/weight_unit.dart')
+String weightUnitLabel(WeightUnit unit) => unitLabel(unit);
 
 final weightRemoteDataSourceProvider = Provider<WeightRemoteDataSource>((ref) {
   final baseUrl = ref.watch(apiBaseUrlProvider);
@@ -70,28 +74,6 @@ final weightRemoteDataSourceProvider = Provider<WeightRemoteDataSource>((ref) {
 final weightRepositoryProvider = Provider<WeightRepository>((ref) {
   final dataSource = ref.watch(weightRemoteDataSourceProvider);
   return WeightRepositoryImpl(dataSource);
-});
-
-final weightEntriesProvider = FutureProvider.family<List<WeightEntry>, String>((
-  ref,
-  petId,
-) async {
-  final repo = ref.watch(weightRepositoryProvider);
-  final auth = ref.watch(authProvider);
-  final token = auth.accessToken;
-  if (token == null) return [];
-  return sortWeightEntriesNewestFirst(await repo.getEntries(petId, token));
-});
-
-final latestWeightProvider = FutureProvider.family<WeightEntry?, String>((
-  ref,
-  petId,
-) async {
-  final repo = ref.watch(weightRepositoryProvider);
-  final auth = ref.watch(authProvider);
-  final token = auth.accessToken;
-  if (token == null) return null;
-  return repo.getLatestWeight(petId, token);
 });
 
 class WeightEntriesNotifier
@@ -107,36 +89,96 @@ class WeightEntriesNotifier
 
   String? get _token => ref.read(authProvider).accessToken;
 
-  Future<void> addEntry(WeightEntry entry) async {
+  Future<void> _afterWrite() async {
+    final sync = ref.read(petCareSyncProvider);
+    await sync.weightChanged(arg);
+    await sync.careChanged(arg);
+  }
+
+  Future<void> _refreshList() async {
     final repo = ref.read(weightRepositoryProvider);
     final token = _token;
     if (token == null) return;
-    await repo.createEntry(entry, token);
-    invalidatePetWeightData(ref, arg);
     state = AsyncValue.data(
       sortWeightEntriesNewestFirst(await repo.getEntries(arg, token)),
     );
   }
 
-  Future<void> deleteEntry(String id) async {
+  Future<WeightSaveOutcome> saveEntry({
+    required WeightEntry entry,
+    String? fulfilsOccurrenceId,
+  }) async {
     final repo = ref.read(weightRepositoryProvider);
     final token = _token;
-    if (token == null) return;
-    await repo.deleteEntry(id, token);
-    invalidatePetWeightData(ref, arg);
-    state = AsyncValue.data(
-      sortWeightEntriesNewestFirst(await repo.getEntries(arg, token)),
-    );
+    if (token == null) {
+      throw StateError('Not signed in');
+    }
+    final normalized = entry.copyWith(date: calendarDateOnly(entry.date));
+    final WeightSaveOutcome outcome;
+    if (fulfilsOccurrenceId != null && fulfilsOccurrenceId.isNotEmpty) {
+      outcome = await repo.createEntryWithFulfilment(
+        normalized,
+        fulfilsOccurrenceId,
+        token,
+      );
+    } else {
+      final knownIds = (state.valueOrNull ?? []).map((e) => e.id).toSet();
+      final isNew = normalized.id.isEmpty || !knownIds.contains(normalized.id);
+      if (isNew) {
+        final created = await repo.createEntry(normalized, token);
+        outcome = WeightSaveOutcome(entry: created);
+      } else {
+        final updated = await repo.updateEntry(normalized, token);
+        outcome = WeightSaveOutcome(entry: updated);
+      }
+    }
+    await _afterWrite();
+    await _refreshList();
+    return outcome;
+  }
+
+  Future<WeightSaveOutcome> fulfilExisting(
+    String weightEntryId,
+    String occurrenceId,
+  ) async {
+    final repo = ref.read(weightRepositoryProvider);
+    final token = _token;
+    if (token == null) throw StateError('Not signed in');
+    final outcome = await repo.fulfilEntry(weightEntryId, occurrenceId, token);
+    await _afterWrite();
+    await _refreshList();
+    return outcome;
+  }
+
+  Future<WeightDeleteOutcome> deleteEntry(String id) async {
+    final repo = ref.read(weightRepositoryProvider);
+    final token = _token;
+    if (token == null) throw StateError('Not signed in');
+    final outcome = await repo.deleteEntry(id, token);
+    await _afterWrite();
+    await _refreshList();
+    return outcome;
+  }
+
+  Future<void> undoFulfilment({
+    required String careEntryId,
+    required String undoToken,
+  }) async {
+    final repo = ref.read(weightRepositoryProvider);
+    final token = _token;
+    if (token == null) throw StateError('Not signed in');
+    await repo.scheduleUndo(careEntryId, undoToken, token);
+    await _afterWrite();
+    await _refreshList();
+  }
+
+  @Deprecated('Use saveEntry')
+  Future<void> addEntry(WeightEntry entry) async {
+    await saveEntry(entry: entry);
   }
 
   Future<void> refresh() async {
-    final repo = ref.read(weightRepositoryProvider);
-    final token = _token;
-    if (token == null) return;
-    ref.invalidate(latestWeightProvider(arg));
-    state = AsyncValue.data(
-      sortWeightEntriesNewestFirst(await repo.getEntries(arg, token)),
-    );
+    await _refreshList();
   }
 }
 

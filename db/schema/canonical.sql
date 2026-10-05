@@ -421,16 +421,6 @@ CREATE TABLE public.health_event_photos (
     created_at timestamp with time zone DEFAULT now(),
     health_occurrence_id uuid
 );
-CREATE TABLE public.health_history (
-    id uuid NOT NULL,
-    health_entry_id uuid NOT NULL,
-    status character varying(50) NOT NULL,
-    notes text DEFAULT ''::text,
-    changed_at timestamp with time zone DEFAULT now(),
-    due_date date,
-    completed_on date,
-    marked_by_user_id uuid
-);
 CREATE TABLE public.health_issue_documents (
     id uuid NOT NULL,
     health_issue_id uuid NOT NULL,
@@ -980,7 +970,9 @@ CREATE TABLE public.users (
     created_at timestamp with time zone DEFAULT now(),
     updated_at timestamp with time zone DEFAULT now(),
     pinned_organization_id uuid,
-    timezone character varying(64) DEFAULT 'UTC'::character varying NOT NULL
+    timezone character varying(64) DEFAULT 'UTC'::character varying NOT NULL,
+    weight_unit character varying(2) DEFAULT 'kg'::character varying NOT NULL,
+    CONSTRAINT users_weight_unit_check CHECK (((weight_unit)::text = ANY ((ARRAY['kg'::character varying, 'lb'::character varying])::text[])))
 );
 CREATE TABLE public.vets (
     id uuid NOT NULL,
@@ -1001,14 +993,15 @@ CREATE TABLE public.weight_entries (
     pet_id uuid NOT NULL,
     user_id uuid NOT NULL,
     weight double precision NOT NULL,
-    unit character varying(10) DEFAULT 'kg'::character varying,
-    date date,
+    unit character varying(10) DEFAULT 'kg'::character varying NOT NULL,
+    date date NOT NULL,
     notes text DEFAULT ''::text,
     measured_at timestamp with time zone DEFAULT now(),
     created_at timestamp with time zone DEFAULT now(),
     measurement_source character varying(50) DEFAULT 'guardian'::character varying NOT NULL,
     health_occurrence_id uuid,
-    CONSTRAINT weight_entries_measurement_source_check CHECK (((measurement_source)::text = ANY ((ARRAY['guardian'::character varying, 'clinic'::character varying, 'device'::character varying, 'imported'::character varying])::text[])))
+    CONSTRAINT weight_entries_measurement_source_check CHECK (((measurement_source)::text = ANY ((ARRAY['guardian'::character varying, 'clinic'::character varying, 'device'::character varying, 'imported'::character varying])::text[]))),
+    CONSTRAINT weight_entries_unit_kg_check CHECK (((unit)::text = 'kg'::text))
 );
 ALTER TABLE ONLY public._migrations
     ADD CONSTRAINT _migrations_pkey PRIMARY KEY (id);
@@ -1088,8 +1081,6 @@ ALTER TABLE ONLY public.health_entry_absence_resolutions
     ADD CONSTRAINT health_entry_absence_resolutions_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.health_event_photos
     ADD CONSTRAINT health_event_photos_pkey PRIMARY KEY (id);
-ALTER TABLE ONLY public.health_history
-    ADD CONSTRAINT health_history_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.health_issue_documents
     ADD CONSTRAINT health_issue_documents_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.health_issue_events
@@ -1464,10 +1455,6 @@ ALTER TABLE ONLY public.health_event_photos
     ADD CONSTRAINT health_event_photos_health_entry_id_fkey FOREIGN KEY (health_entry_id) REFERENCES public.health_entries(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.health_event_photos
     ADD CONSTRAINT health_event_photos_health_occurrence_id_fkey FOREIGN KEY (health_occurrence_id) REFERENCES public.health_occurrences(id) ON DELETE SET NULL;
-ALTER TABLE ONLY public.health_history
-    ADD CONSTRAINT health_history_health_entry_id_fkey FOREIGN KEY (health_entry_id) REFERENCES public.health_entries(id) ON DELETE CASCADE;
-ALTER TABLE ONLY public.health_history
-    ADD CONSTRAINT health_history_marked_by_user_id_fkey FOREIGN KEY (marked_by_user_id) REFERENCES public.users(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.health_issue_documents
     ADD CONSTRAINT health_issue_documents_health_issue_id_fkey FOREIGN KEY (health_issue_id) REFERENCES public.health_issues(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.health_issue_events

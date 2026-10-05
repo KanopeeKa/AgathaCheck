@@ -18,8 +18,11 @@ RESET_DB=false bash "${ROOT}/scripts/db/check-schema-equivalence.sh"
 echo "==> Bootstrap path equivalence (legacy vs canonical+ledger)"
 RESET_DB=false bash "${ROOT}/scripts/db/check-bootstrap-paths-equivalence.sh"
 
+echo "==> cPanel Passenger-style startup (require bin/start.js)"
+node "${ROOT}/scripts/check_cpanel_startup_entry.js"
+
 cd "${ROOT}/server"
-node bin/start.js >"$SERVER_LOG" 2>&1 &
+node "${ROOT}/scripts/ci/passenger-require-start.cjs" >"$SERVER_LOG" 2>&1 &
 SERVER_PID=$!
 
 print_server_log_tail() {

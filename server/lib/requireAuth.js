@@ -1,8 +1,8 @@
 /**
- * Central JWT auth helpers for Pet Care routes (F-08).
- * Replaces duplicated extractUserId copies across route files.
+ * Central JWT auth helpers for Pet Care routes (F-08) and auth routers (H.4).
  */
-import { verifyAccessToken } from '../routes/auth/shared.js';
+import { errorDetails } from '../config/security.js';
+import { verifyAccessToken, extractToken } from './auth/tokens.js';
 
 /**
  * @param {string | undefined} authHeader
@@ -28,19 +28,44 @@ export function extractUserId(req) {
 }
 
 /**
- * Express middleware — sets req.userId or responds 401.
- * @param {import('express').Request} req
- * @param {import('express').Response} res
- * @param {import('express').NextFunction} next
+ * @param {{ invalidTokenAsServerError?: string }} [options]
  */
-export function requireAuth(req, res, next) {
-  const userId = extractUserId(req);
-  if (!userId) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
-  req.userId = userId;
-  return next();
+export function createRequireAuth(options = {}) {
+  const { invalidTokenAsServerError } = options;
+
+  return function requireAuthMiddleware(req, res, next) {
+    const token = extractToken(req);
+    if (!token) {
+      return res.status(401).json({ error: 'Missing or invalid Authorization header' });
+    }
+    try {
+      const payload = verifyAccessToken(token);
+      if (!payload?.id) {
+        const err = new Error('missing subject');
+        if (invalidTokenAsServerError) {
+          err.exposeProdMessage = invalidTokenAsServerError;
+          return next(err);
+        }
+        return res.status(401).json({
+          error: 'Invalid or expired token',
+          ...errorDetails(err),
+        });
+      }
+      req.principal = { id: payload.id, email: payload.email };
+      req.userId = payload.id;
+      return next();
+    } catch (err) {
+      if (invalidTokenAsServerError) {
+        err.exposeProdMessage = invalidTokenAsServerError;
+        return next(err);
+      }
+      return res.status(401).json({ error: 'Invalid or expired token', ...errorDetails(err) });
+    }
+  };
 }
+
+/** Default principal middleware for auth routes (401 on invalid bearer). */
+export const requireAuth = createRequireAuth();
 
 /**
  * @param {import('express').Request} req

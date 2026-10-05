@@ -1,4 +1,4 @@
-import { isProduction } from '../routes/auth/shared.js';
+import { isProduction } from './auth/runtime.js';
 
 export const REFRESH_COOKIE_NAME = 'refresh_token';
 

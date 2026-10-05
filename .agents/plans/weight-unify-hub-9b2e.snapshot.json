@@ -5,10 +5,10 @@
   "approved_at": "2026-10-04T21:35:55Z",
   "approved_by": "standing grant — owner chat 2026-10-04 full programme W0 through child C; execute-plan delegated authority",
   "approved_until": "2026-10-06T21:35:55Z",
-  "autonomy": "halted",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "cursor/weight-unify-hub-integration-9b2e",
-  "control_issue": 999999,
+  "control_issue": 1589,
   "artifact_branch_policy": "phase-branch",
   "phases": [
     {
@@ -53,13 +53,13 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1591",
+      "pr_head_sha": "494f5955",
+      "merge_commit": "b0730951103df917281e7451b7a0e115959b344b"
     },
     {
       "id": "W6",
@@ -97,13 +97,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1594",
+      "pr_head_sha": "b59f1a9a"
     },
     {
       "id": "W7",
@@ -135,14 +134,13 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "bdd-journey",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1596",
+      "pr_head_sha": "e311d0e7c8ab907b6a2ac595cbf255daba1fea9b"
     }
   ],
-  "content_hash": "sha256:7f6c3e5266faa5dfc5d4ebf936f8ac25a56aec073b4774b19521b88116e16ecc"
+  "content_hash": "sha256:faa7452d44c29be483c53c9edd8863076f7edeb175dc136d9a56f061670301d8"
 }

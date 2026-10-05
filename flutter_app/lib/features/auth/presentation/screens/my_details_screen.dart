@@ -238,8 +238,8 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
     if (token == null) return;
 
     try {
-      final authService = ref.read(authServiceProvider);
-      final data = await authService.exportData(token);
+      final authRepository = ref.read(authRepositoryProvider);
+      final data = await authRepository.exportData(token);
       final jsonStr = const JsonEncoder.withIndent('  ').convert(data);
       final bytes = utf8.encode(jsonStr);
 
@@ -301,8 +301,8 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
               try {
                 final token = ref.read(authProvider).accessToken;
                 if (token == null) return;
-                final authService = ref.read(authServiceProvider);
-                await authService.deleteAccount(token, password: password);
+                final authRepository = ref.read(authRepositoryProvider);
+                await authRepository.deleteAccount(token, password: password);
                 if (mounted) {
                   await ref.read(authProvider.notifier).logout();
                   if (mounted) {

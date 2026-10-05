@@ -97,7 +97,20 @@ export class HealthDashboardPage {
     await this.waitForDashboardSettled();
   }
 
+  /** Opens the add-event sheet then the unified health/care form (Pet Care `/pc/events`). */
+  async openAddHealthCareForm(): Promise<void> {
+    await this.openAddEntryPicker();
+    await this.page
+      .getByText(/Add health entry|Ajouter un événement de santé/i)
+      .click();
+    await this.page.locator('input[aria-label*="Entry Name"]').first().waitFor({ timeout: 30_000 });
+  }
+
   async openAddEntry(): Promise<void> {
+    await this.openAddHealthCareForm();
+  }
+
+  private async openAddEntryPicker(): Promise<void> {
     const fab = this.page
       .getByRole('button', { name: /Add Health Event|Add an event|Ajouter un événement/i })
       .first();
@@ -106,7 +119,10 @@ export class HealthDashboardPage {
       throw new Error('Add Health Event button not found');
     }
     await this.page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
-    await this.page.locator('input[aria-label*="Entry Name"]').first().waitFor({ timeout: 30_000 });
+    await this.page
+      .getByText(/Add an event|Ajouter un événement/i)
+      .first()
+      .waitFor({ timeout: 15_000 });
   }
 
   async returnToDashboard(): Promise<void> {

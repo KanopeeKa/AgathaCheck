@@ -43,19 +43,19 @@ Finish Packages 7 and 8 (D2, D18, D19):
 ## Runtime
 
 ```yaml
-autonomy: active
-current_phase: "1"
-last_completed_phase: null
+autonomy: completed
+current_phase: null
+last_completed_phase: 5
 halt_reason: null
-next_action: "bootstrap: create integration branch + control issue, then phase 1"
+next_action: "plan complete"
 artifact_ref:
-  branch: null
+  branch: main
   plan_path: .agents/plans/active-codebase-batch-g-client-authority-e41f.md
-  plan_commit: null
+  plan_commit: 0130080cfed758b0d195df89a5f2a1f6201ca2b0
   snapshot_path: .agents/plans/active-codebase-batch-g-client-authority-e41f.snapshot.json
-  snapshot_commit: null
+  snapshot_commit: 0130080cfed758b0d195df89a5f2a1f6201ca2b0
 open_prs: []
-merge_commits: {}
+merge_commits: {"2":"dba43f7da365f0aa59e05ee1c47b1334089e33d4","3":"a0a57b37d773c481e9bb6fbc39e02fc27944bd37","4":"3ba6a3fb96bb417d4b268229bfe66759b5df19f4","5":"0130080cfed758b0d195df89a5f2a1f6201ca2b0"}
 debt_issue_refs: []
 ```
 

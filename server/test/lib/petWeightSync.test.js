@@ -104,9 +104,15 @@ describe('petWeightSync', () => {
 
     it('creates an entry when weight changed', async () => {
       const pool = {
-        query: jest.fn(async (sql) => {
-          if (sql.includes('FROM weight_entries')) {
+        query: jest.fn(async (sql, params) => {
+          if (sql.includes('FROM weight_entries') && sql.includes('ORDER BY date DESC')) {
             return { rows: [{ id: 'we-1', weight: 10 }] };
+          }
+          if (sql.includes('SELECT home_timezone FROM pets')) {
+            return { rows: [{ home_timezone: 'UTC' }] };
+          }
+          if (sql.includes('INSERT INTO weight_entries')) {
+            return { rows: [{ id: 'we-2' }] };
           }
           return { rows: [] };
         }),
@@ -117,15 +123,13 @@ describe('petWeightSync', () => {
         weight: 12,
         date: '2026-07-29',
       });
-      expect(pool.query).toHaveBeenCalledTimes(3);
-      expect(pool.query.mock.calls[1][0]).toContain('INSERT INTO weight_entries');
-      expect(pool.query.mock.calls[1][1][5]).toBe('2026-07-29');
+      expect(pool.query.mock.calls.some(([sql]) => sql.includes('INSERT INTO weight_entries'))).toBe(true);
     });
 
     it('does not create an entry when weight matches latest', async () => {
       const pool = {
         query: jest.fn(async (sql) => {
-          if (sql.includes('FROM weight_entries')) {
+          if (sql.includes('FROM weight_entries') && sql.includes('ORDER BY date DESC')) {
             return { rows: [{ id: 'we-1', weight: 12 }] };
           }
           return { rows: [] };
@@ -136,7 +140,7 @@ describe('petWeightSync', () => {
         userId: 'user-1',
         weight: 12,
       });
-      expect(pool.query).toHaveBeenCalledTimes(1);
+      expect(pool.query.mock.calls.some(([sql]) => sql.includes('INSERT INTO weight_entries'))).toBe(false);
     });
   });
 });

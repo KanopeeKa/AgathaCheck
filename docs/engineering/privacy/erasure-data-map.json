@@ -200,14 +200,6 @@
       "discovery_source": "foreign_key"
     },
     {
-      "table": "health_history",
-      "column": "marked_by_user_id",
-      "erasure_action": "set_null",
-      "reason": "ON DELETE SET NULL from users(id); attribution cleared when account removed.",
-      "pg_on_delete": "n",
-      "discovery_source": "foreign_key"
-    },
-    {
       "table": "health_issue_events",
       "column": "user_id",
       "erasure_action": "cascade",

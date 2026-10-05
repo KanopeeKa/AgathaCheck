@@ -13,7 +13,7 @@ import '../../../../helpers/fakes.dart';
 
 class MutableAuthNotifier extends AuthNotifier {
   MutableAuthNotifier()
-    : super(FakeAuthService(), PrefsTokenStore(FakePrefs())) {
+    : super(FakeAuthRepository(), PrefsTokenStore(FakePrefs())) {
     state = const AuthState();
   }
 

@@ -116,7 +116,42 @@
   "myFosteredPets": "My Fostered Pets",
   "noFosteredPets": "You are not fostering any pets yet.",
   "allPets": "All pets",
-  "petListStaleBannerMessage": "Showing saved pets while offline. Some details may be out of date.",
+  "petListStaleBannerOffline": "Offline — showing pets saved {relativeTime}",
+  "@petListStaleBannerOffline": {
+    "placeholders": {
+      "relativeTime": {
+        "type": "String"
+      }
+    }
+  },
+  "petListCacheOutOfDateBannerMessage": "Saved data may be out of date",
+  "petListCacheRetrySemanticsLabel": "Retry loading pets",
+  "petCacheRelativeJustNow": "just now",
+  "petCacheRelativeMinutes": "{count, plural, =1{1 minute ago} other{{count} minutes ago}}",
+  "@petCacheRelativeMinutes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "petCacheRelativeHours": "{count, plural, =1{1 hour ago} other{{count} hours ago}}",
+  "@petCacheRelativeHours": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "petCacheRelativeDays": "{count, plural, =1{1 day ago} other{{count} days ago}}",
+  "@petCacheRelativeDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "careCommandSavedRefreshFailed": "Saved — couldn't refresh. Pull to refresh.",
   "managePets": "Manage pets",
   "allCareTitle": "All care",
   "viewAllCare": "View all care",
@@ -201,6 +236,92 @@
   "deleteWeightEntry": "Delete weight entry",
   "weightChartLabel": "Weight chart showing {count} entries",
   "@weightChartLabel": { "placeholders": { "count": { "type": "int" } } },
+  "weightRecordAction": "Record weight",
+  "weightRecordSheetTitle": "Record weight",
+  "weightEditSheetTitle": "Edit weight",
+  "weightFieldLabelUnit": "Weight ({unit})",
+  "@weightFieldLabelUnit": { "placeholders": { "unit": { "type": "String" } } },
+  "weightCountsAs": "Counts as {routine}",
+  "@weightCountsAs": { "placeholders": { "routine": { "type": "String" } } },
+  "weightCountsAsChoiceHelp": "Choose which weigh-in this counts as",
+  "weightDontCount": "Don't count it as a weigh-in",
+  "weightCountAsWeighInAction": "Count as a weigh-in",
+  "weightFulfilmentStale": "That weigh-in can't take this weight any more. Check and save again.",
+  "weightCheckingWeighIn": "Checking for a due weigh-in…",
+  "weightCheckFailed": "Couldn't check for a due weigh-in.",
+  "weightCheckRetry": "Retry",
+  "weightSaved": "Weight saved",
+  "weightSavedCountedAs": "Saved · counted as {routine}",
+  "@weightSavedCountedAs": { "placeholders": { "routine": { "type": "String" } } },
+  "weightWeighInUndone": "Weigh-in undone",
+  "weightLinkedEditInfo": "Counts as {routine} ({date}). Changing the date also changes when the weigh-in was done.",
+  "@weightLinkedEditInfo": {
+    "placeholders": {
+      "routine": { "type": "String" },
+      "date": { "type": "String" }
+    }
+  },
+  "weightDateInFuture": "The date can't be in the future",
+  "weightDateBeforeRoutineStart": "The date can't be before the routine started",
+  "weightDeleteTitle": "Delete this weight?",
+  "weightDeleteBody": "This can't be undone.",
+  "weightDeleteLinkedBody": "It counted as {routine} on {date}. Deleting it marks that weigh-in as not done.",
+  "@weightDeleteLinkedBody": {
+    "placeholders": {
+      "routine": { "type": "String" },
+      "date": { "type": "String" }
+    }
+  },
+  "weightDeletedReopened": "Weight deleted · {routine} is due again",
+  "@weightDeletedReopened": { "placeholders": { "routine": { "type": "String" } } },
+  "weightSinceChange": "{change} since {date}",
+  "@weightSinceChange": {
+    "placeholders": {
+      "change": { "type": "String" },
+      "date": { "type": "String" }
+    }
+  },
+  "weightRecordedOn": "Recorded {date}",
+  "@weightRecordedOn": { "placeholders": { "date": { "type": "String" } } },
+  "weightTargetLine": "Target {weight} · {authority}",
+  "@weightTargetLine": {
+    "placeholders": {
+      "weight": { "type": "String" },
+      "authority": { "type": "String" }
+    }
+  },
+  "weightAuthorityVet": "set by the vet",
+  "weightAuthorityGuardian": "your reference",
+  "weightAuthorityBaseline": "usual weight",
+  "weightLegendWeighIn": "Weigh-in",
+  "weightLegendOther": "Other weight",
+  "weightRoutinesTitle": "Weigh-in routine",
+  "weightNoRoutineTitle": "No weigh-in routine",
+  "weightNoRoutineBody": "A regular weigh-in helps spot changes early.",
+  "weightSetUpRoutine": "Set up a weigh-in routine",
+  "weightNextWeighIn": "Next weigh-in {date} · {status}",
+  "@weightNextWeighIn": {
+    "placeholders": {
+      "date": { "type": "String" },
+      "status": { "type": "String" }
+    }
+  },
+  "weightRoutinePaused": "Paused",
+  "weightSourceClinic": "From the vet",
+  "weightSourceDevice": "From a scale",
+  "weightSourceImported": "Imported",
+  "weightSeeAll": "See all weights",
+  "weightNoneRecordedYet": "No weight recorded yet",
+  "weightTodayFieldLabelUnit": "Weight today ({unit})",
+  "@weightTodayFieldLabelUnit": { "placeholders": { "unit": { "type": "String" } } },
+  "petProfileWeightRow": "Weight {weight} · recorded {date}",
+  "@petProfileWeightRow": {
+    "placeholders": {
+      "weight": { "type": "String" },
+      "date": { "type": "String" }
+    }
+  },
+  "petProfileNoWeightRecorded": "No weight recorded yet",
 
   "healthEvents": "Health Events",
   "otherEvents": "Other events",
@@ -486,11 +607,12 @@
   "dueDate": "Due date",
   "completedOn": "Completed on",
   "dueOrCompletedRequired": "Enter a due date, a completed date, or both",
-  "recurrenceAnchorTitle": "Next due date",
-  "recurrenceFromCompletion": "From completion",
+  "recurrenceAnchorTitle": "Schedule type",
+  "recurrenceFromCompletion": "After it's done",
   "recurrenceFromDueDate": "Fixed schedule",
   "recurrenceAnchorInfoTitle": "How does scheduling work?",
-  "recurrenceAnchorInfoBody": "Example: every 7 days. You complete it 1 day late.\n• From completion: next due 7 days after you mark it done.\n• Fixed schedule: next due 6 days from today (7 days after the original due date).",
+  "recurrenceAnchorInfoBody": "Example: every 7 days. You mark it done when it's Overdue.\n• After it's done: the next date is 7 days after you mark it done.\n• Fixed schedule: the next date is 7 days after the original due date, even if you mark it done early or late.",
+  "healthEntryFormAdvancedSettings": "Advanced settings",
   "markCompleteSheetTitle": "Mark as completed",
   "markCompleteSheetSubtitle": "When did this actually happen?",
   "eventHistoryLine": "Due {due}, completed {completed}, recorded {recorded} by {user}",
@@ -1931,6 +2053,30 @@
       "date": { "type": "String" }
     }
   },
+  "careItemPausedUntil": "Paused until {date}",
+  "@careItemPausedUntil": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "carePostponeSheetTitle": "Pause",
+  "carePostponeNoEndDate": "No end date (pause)",
+  "carePostponeUntilLabel": "Pause until",
+  "carePostponePauseConsequence": "Reminders stop until you resume.",
+  "carePostponeUntilAfterDoneConsequence": "The open date moves to {date}.",
+  "@carePostponeUntilAfterDoneConsequence": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "carePostponeUntilFixedConsequence": "Care stays paused until {date}, then resumes automatically.",
+  "@carePostponeUntilFixedConsequence": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "careResumeSheetTitle": "Resume",
+  "careResumeDefaultHint": "This is when it would have been.",
   "careItemEstablishedBody": "Part of {petName}'s regular care.",
   "@careItemEstablishedBody": {
     "placeholders": {
@@ -2914,6 +3060,18 @@
   "careDoneAt": "Done · {time}",
   "@careDoneAt": {"placeholders": {"time": {"type": "String"}}},
   "careStatusNotRecorded": "Not recorded",
+  "careStatusNotRecordedOpen": "Not recorded (open)",
+  "careStatusNotRecordedClosedMarker": "closed",
+  "careClosedNotRecordedBody": "This scheduled care was closed automatically. Record when it was given, or mark it as skipped if you chose not to give it.",
+  "careRecordAsGivenHint": "Choose the day it was given. Future dates are not allowed.",
+  "careConfirmSkipTitle": "Mark as skipped?",
+  "careConfirmSkipBody": "This will record that you chose not to give this scheduled care.",
+  "careConfirmSkipAction": "Mark as skipped",
+  "careCompletedOnFuture": "Choose today or an earlier date.",
+  "careStackMarkedDonePartial": "{changed} marked done · {ignored} already closed",
+  "@careStackMarkedDonePartial": {"placeholders": {"changed": {"type": "int"}, "ignored": {"type": "int"}}},
+  "careStackSkippedPartial": "{changed} skipped · {ignored} already closed",
+  "@careStackSkippedPartial": {"placeholders": {"changed": {"type": "int"}, "ignored": {"type": "int"}}},
   "careStatusComingUp": "Coming up",
   "careStatusDue": "Due",
   "careMarkDoneLabel": "Mark {name} as done",
@@ -2939,6 +3097,17 @@
   "careEarlyCompletionBody": "Planned for {date}. Mark it as done today?",
   "@careEarlyCompletionBody": {"placeholders": {"date": {"type": "String"}}},
   "careNextStaysChange": "Change",
+  "carePlanAnotherDate": "Plan another date",
+  "careAddBoosterDate": "+ Add a booster date",
+  "careRemoveBoosterDate": "Remove booster date {date}",
+  "@careRemoveBoosterDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "careOccurrenceMenuTooltip": "More actions for this date",
   "careSkip": "Skip",
   "careWeightRequiredHint": "Enter the weight to mark it as done",
   "careWeightFieldLabel": "Weight (kg)",

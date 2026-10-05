@@ -23,4 +23,5 @@ export {
   resolveCompletedOn,
   scheduleTimesFromEntry,
 } from './scheduling.js';
+export { careItemReadResponse } from './readResponse.js';
 export { careItemWire, careItemsWire, commandResponse } from './wire.js';

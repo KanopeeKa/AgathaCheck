@@ -1,6 +1,6 @@
+import { asyncHandler } from '../../lib/http/asyncHandler.js';
 import { v4 as uuidv4 } from 'uuid';
 
-import { publicError } from '../../config/security.js';
 import { assertAtLeastOneDate } from '../../lib/recurrenceHelper.js';
 import { dateToIsoDate, normalizeCalendarDateInput } from '../../lib/calendarDate.js';
 import {
@@ -30,6 +30,7 @@ import {
 } from '../../lib/care/occurrence/index.js';
 import {
   applyLateCompletionChoice,
+  careItemReadResponse,
   careItemWire,
   careItemsWire,
   parseLateCompletionChoice,
@@ -42,7 +43,7 @@ import {
 import { resolveCareBlocksForWrite } from '../../lib/care/categoryBlocks/index.js';
 
 export function registerCrudRoutes(router, pool) {
-  router.get('/', async (req, res) => {
+  router.get('/', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
@@ -70,11 +71,11 @@ export function registerCrudRoutes(router, pool) {
       }
       res.json(await careItemsWire(pool, result.rows, req));
     } catch (err) {
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 
-  router.get('/export', async (req, res) => {
+  router.get('/export', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
@@ -99,11 +100,11 @@ export function registerCrudRoutes(router, pool) {
       res.setHeader('Content-Type', 'text/csv');
       res.send(csv);
     } catch (err) {
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 
-  router.get('/:id', async (req, res) => {
+  router.get('/:id', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
@@ -114,13 +115,13 @@ export function registerCrudRoutes(router, pool) {
         [req.params.id, userId]
       );
       if (result.rows.length === 0) return res.status(404).json({ error: 'Entry not found' });
-      res.json(await careItemWire(pool, result.rows[0], req));
+      res.json(await careItemReadResponse(pool, result.rows[0], req.params.id, req));
     } catch (err) {
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 
-  router.post('/', async (req, res) => {
+  router.post('/', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
@@ -271,11 +272,11 @@ export function registerCrudRoutes(router, pool) {
       }));
     } catch (err) {
       if (sendCareCommandError(res, err)) return;
-      res.status(500).json({ error: publicError(err, 'Error creating entry', `Error creating entry: ${err.message}`) });
+      throw err;
     }
-  });
+  }));
 
-  router.put('/:id', async (req, res) => {
+  router.put('/:id', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
@@ -475,11 +476,11 @@ export function registerCrudRoutes(router, pool) {
       res.json(await careItemWire(pool, entry, req, { openRows: out.openOccurrences, asOf: out.asOf }));
     } catch (err) {
       if (sendCareCommandError(res, err)) return;
-      res.status(500).json({ error: publicError(err, 'Error updating entry', `Error updating entry: ${err.message}`) });
+      throw err;
     }
-  });
+  }));
 
-  router.delete('/:id', async (req, res) => {
+  router.delete('/:id', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
@@ -489,7 +490,7 @@ export function registerCrudRoutes(router, pool) {
       await pool.query('DELETE FROM health_entries WHERE id = $1', [req.params.id]);
       res.json({ deleted: true });
     } catch (err) {
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 }

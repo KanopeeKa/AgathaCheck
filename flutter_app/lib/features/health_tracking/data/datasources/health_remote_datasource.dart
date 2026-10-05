@@ -37,8 +37,8 @@ abstract class HealthRemoteDataSource {
   Future<void> deleteEntry(String id);
   Future<HealthEntryModel> closeEvent(String id);
   Future<HealthEntryModel> reopenEvent(String id);
-  Future<HealthEntryModel> pauseCareItem(String id);
-  Future<HealthEntryModel> resumeCareItem(String id);
+  Future<HealthEntryModel> pauseCareItem(String id, {DateTime? until});
+  Future<HealthEntryModel> resumeCareItem(String id, {DateTime? resumeOn});
   Future<HealthEntryModel> unmarkDone(String id);
   Future<List<HealthHistoryModel>> getHistory(String entryId);
   Future<String> exportCsv({String? petId});
@@ -107,17 +107,14 @@ class HealthRemoteDataSourceImpl
   final String baseUrl;
   final http.Client _client;
 
+  /// Unused — [AuthHttpClient] injects bearer tokens. Kept for callers not yet migrated.
   String? authToken;
 
-  /// Builds request headers, attaching the bearer token when available.
+  /// Builds request headers. Bearer auth is injected by [AuthHttpClient].
   /// Pass [jsonBody] for requests that send a JSON body.
   Map<String, String> _authHeaders({bool jsonBody = false}) {
     final headers = <String, String>{};
     if (jsonBody) headers['Content-Type'] = 'application/json';
-    final token = authToken;
-    if (token != null && token.isNotEmpty) {
-      headers['Authorization'] = 'Bearer $token';
-    }
     return headers;
   }
 
@@ -223,24 +220,26 @@ class HealthRemoteDataSourceImpl
   }
 
   @override
-  Future<HealthEntryModel> pauseCareItem(String id) {
+  Future<HealthEntryModel> pauseCareItem(String id, {DateTime? until}) {
     return pauseCareItemRemote(
       client: _client,
       baseUrl: baseUrl,
       headers: _authHeaders(jsonBody: true),
       checkResponse: checkHealthRemoteResponse,
       entryId: id,
+      until: until,
     );
   }
 
   @override
-  Future<HealthEntryModel> resumeCareItem(String id) {
+  Future<HealthEntryModel> resumeCareItem(String id, {DateTime? resumeOn}) {
     return resumeCareItemRemote(
       client: _client,
       baseUrl: baseUrl,
       headers: _authHeaders(jsonBody: true),
       checkResponse: checkHealthRemoteResponse,
       entryId: id,
+      resumeOn: resumeOn,
     );
   }
 

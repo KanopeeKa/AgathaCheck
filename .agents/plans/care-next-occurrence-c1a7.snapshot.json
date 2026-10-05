@@ -34,6 +34,9 @@
     {
       "plan_id": "care-item-form-c1a7",
       "status": "merged",
+      "delivery_status": "partial",
+      "follow_up_plan_id": "care-requirements-gap-close-c1a7",
+      "debt_issue_refs": [1543, 1539, 1540, 1541, 1542, 1546, 1547, 1476],
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1475",
       "merge_commit": "ba625ff7"
     },
@@ -76,7 +79,7 @@
       "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": [],
+      "debt_issue_refs": [1539, 1540, 1541, 1542, 1543, 1544, 1545, 1546, 1547, 1476],
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1499",
       "pr_head_sha": "d755564eea09270a1c13305d448a993adc96b7b9"
     }

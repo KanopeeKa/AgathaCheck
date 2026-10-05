@@ -1,10 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
+import 'package:pet_profile_app/features/pet_profile/domain/entities/pet_cache_freshness.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet_list_fetch_result.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/repositories/pet_repository.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/usecases/get_all_pets.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
-import 'package:pet_profile_app/features/auth/data/auth_service.dart';
+import 'package:pet_profile_app/features/auth/domain/entities/auth_user.dart';
+import 'package:pet_profile_app/features/auth/domain/repositories/auth_repository.dart';
 import 'package:pet_profile_app/features/auth/data/token_store.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
@@ -28,7 +30,7 @@ class FakePetRepository implements PetRepository {
   Future<PetListFetchResult> fetchAllPets() async => const PetListFetchResult(
     pets: <Pet>[],
     source: PetListFetchSource.remote,
-    isStale: false,
+    freshness: PetCacheFreshness.fresh,
   );
   @override
   Future<Pet?> getPetById(String id) async => null;
@@ -70,7 +72,7 @@ class FakePrefs implements SharedPreferences {
   noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
-class FakeAuthService implements AuthService {
+class FakeAuthRepository implements AuthRepository {
   @override
   Future<AuthUser> getMe(String accessToken) async => mockUser;
   @override
@@ -80,7 +82,8 @@ class FakeAuthService implements AuthService {
 }
 
 class FakeAuthNotifier extends AuthNotifier {
-  FakeAuthNotifier() : super(FakeAuthService(), PrefsTokenStore(FakePrefs())) {
+  FakeAuthNotifier()
+    : super(FakeAuthRepository(), PrefsTokenStore(FakePrefs())) {
     state = loggedInAuthState;
   }
 }

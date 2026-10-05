@@ -44,7 +44,11 @@ export const AREAS = {
       'health.tracking.spec.ts',
       'care.agenda.spec.ts',
       'care.schedules.spec.ts',
+      'care.item.booster.spec.ts',
+      'care.form.advanced.spec.ts',
+      'care.a11y.spec.ts',
       'care.item.absence.spec.ts',
+      'care.item.pause_resume.spec.ts',
       'guardian.dashboard.spec.ts',
     ],
   },
@@ -66,7 +70,13 @@ export const AREAS = {
   },
   petProfile: {
     paths: ['flutter_app/lib/features/pet_profile/', 'flutter_app/lib/features/pet_tags/', 'server/routes/pets', 'server/routes/petTags'],
-    specs: ['pet.profiles.spec.ts', 'pet.detail-navigation.spec.ts', 'pet.timeline.spec.ts', 'care-suggestion.spec.ts'],
+    specs: [
+      'pet.profiles.spec.ts',
+      'pet.detail-navigation.spec.ts',
+      'pet.timeline.spec.ts',
+      'pet.offline-cache.spec.ts',
+      'care-suggestion.spec.ts',
+    ],
   },
   experience: {
     paths: ['flutter_app/lib/features/experience/'],
@@ -98,7 +108,7 @@ export const AREAS = {
   },
   weight: {
     paths: ['flutter_app/lib/features/weight_tracking/', 'server/routes/weightEntries'],
-    specs: ['weight.tracking.spec.ts'],
+    specs: ['weight.tracking.spec.ts', 'weight.hub.spec.ts'],
   },
   people: {
     paths: [

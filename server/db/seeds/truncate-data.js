@@ -7,10 +7,9 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
-import pg from 'pg';
+import { createAppPool } from '../../lib/db/createPool.js';
 import { assertNonProduction } from '../../scripts/lib/guard-non-prod.js';
 
-const { Pool } = pg;
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
@@ -19,17 +18,7 @@ dotenv.config();
 const PRESERVED_TABLES = new Set(['_migrations']);
 
 function createPool() {
-  const databaseUrl = process.env.DATABASE_URL;
-  if (databaseUrl) {
-    return new Pool({ connectionString: databaseUrl });
-  }
-  return new Pool({
-    user: process.env.PGUSER || 'user',
-    password: process.env.PGPASSWORD || 'password',
-    host: process.env.PGHOST || 'localhost',
-    port: process.env.PGPORT || 5432,
-    database: process.env.PGDATABASE || 'agatha_db',
-  });
+  return createAppPool();
 }
 
 export async function listApplicationTables(client) {

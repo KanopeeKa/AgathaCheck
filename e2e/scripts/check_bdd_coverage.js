@@ -131,15 +131,45 @@ function collectSpecScenarios(dir, frozenSpecs) {
     const blockEnd = text.indexOf('*/');
     if (blockEnd === -1) continue;
     const header = text.slice(0, blockEnd);
+    const body = text.slice(blockEnd + 2);
 
     for (const line of header.split('\n')) {
       const m = line.match(/\*\s*Scenario:\s*(.+)/);
       if (m) {
-        scenarios.push({ title: m[1].trim(), file });
+        scenarios.push({
+          title: m[1].trim(),
+          file,
+          headerOnly: isHeaderOnlyBddMapping(m[1].trim(), body),
+        });
       }
     }
   }
   return scenarios;
+}
+
+const TEST_TITLE_RE = /\btest(?:\.(?:only|skip|fixme))?\s*\(\s*(['"`])([\s\S]*?)\1/g;
+
+function collectTestTitles(specBody) {
+  const titles = [];
+  for (const match of specBody.matchAll(TEST_TITLE_RE)) {
+    titles.push(match[2]);
+  }
+  return titles;
+}
+
+/** @bdd Scenario with no Playwright test title that plausibly implements it (F6 orphan cleanup). */
+function isHeaderOnlyBddMapping(scenarioTitle, specBody) {
+  const keywords = normalize(scenarioTitle)
+    .split(' ')
+    .filter((w) => w.length > 3);
+  if (keywords.length === 0) return false;
+  const needed = Math.min(3, keywords.length);
+  const tests = collectTestTitles(specBody);
+  return !tests.some((testTitle) => {
+    const normTest = normalize(testTitle);
+    const hits = keywords.filter((w) => normTest.includes(w)).length;
+    return hits >= needed;
+  });
 }
 
 function buildMappedSet(featureScenarios, specScenarios) {
@@ -188,6 +218,16 @@ function main() {
   );
 
   const featureNorm = new Set(featureScenarios.map((s) => normalize(s.title)));
+  const headerOnly = specScenarios.filter((s) => s.headerOnly);
+  if (headerOnly.length > 0) {
+    console.log(
+      `\n@bdd header-only mappings (no matching Playwright test title; add a test or remove the header line) (${headerOnly.length}):`,
+    );
+    for (const s of headerOnly) {
+      console.log(`  [${path.basename(s.file)}] ${s.title}`);
+    }
+  }
+
   const unmatchedSpec = specScenarios.filter((s) => !featureNorm.has(normalize(s.title)));
   if (unmatchedSpec.length > 0) {
     console.log('\nSpec scenarios with no matching active feature scenario (possible title drift):');

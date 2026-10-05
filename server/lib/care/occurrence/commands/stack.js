@@ -4,10 +4,15 @@
 
 import {
   SCHEDULE_EVENT_RECORDED,
+  SCHEDULE_EVENT_SKIPPED,
   SCHEDULE_EVENT_STACK_RESOLVED,
 } from '../../schedule/scheduleEventLedger.js';
-import { badRequest, notOpen } from '../careCommandError.js';
-import { findOccurrence, markSkipped } from '../occurrenceRepository.js';
+import { badRequest } from '../careCommandError.js';
+import {
+  confirmNotRecordedAsSkipped,
+  findOccurrence,
+  markSkipped,
+} from '../occurrenceRepository.js';
 import { closeAsDone } from './complete.js';
 
 /**
@@ -20,16 +25,19 @@ export async function resolveStackCommand(ctx, { given = [], notGiven = [], comp
   if (ids.length === 0) throw badRequest('nothing_to_record', 'given or not_given is required');
   if (new Set(ids).size !== ids.length) throw badRequest('duplicate_ids', 'An id appears twice');
   const byId = new Map(openRows.map((o) => [o.id, o]));
-  for (const id of ids) {
-    if (!byId.has(id)) throw notOpen();
+  const ignored = ids.filter((id) => !byId.has(id));
+  const openGiven = given.filter((id) => byId.has(id));
+  const openNotGiven = notGiven.filter((id) => byId.has(id));
+  if (openGiven.length === 0 && openNotGiven.length === 0) {
+    throw badRequest('nothing_to_update', 'Nothing in this list is still open');
   }
-  for (const id of given) {
+  for (const id of openGiven) {
     const row = byId.get(id);
     const completedOn = completedOnById[id] || (row.scheduled_date <= asOf.todayIso ? row.scheduled_date : asOf.todayIso);
     await closeAsDone(ctx, row, { completedOn });
     trace.closedRow(row);
   }
-  for (const id of notGiven) {
+  for (const id of openNotGiven) {
     const row = byId.get(id);
     await markSkipped(db, { entryId: entry.id, occurrenceId: id, closeReason: 'user', userId });
     trace.closedRow(row);
@@ -37,9 +45,13 @@ export async function resolveStackCommand(ctx, { given = [], notGiven = [], comp
   return {
     event: {
       type: SCHEDULE_EVENT_STACK_RESOLVED,
-      extra: { given, not_given: notGiven },
+      extra: { given: openGiven, not_given: openNotGiven, ignored },
     },
-    result: { given, notGiven },
+    result: {
+      given: openGiven,
+      notGiven: openNotGiven,
+      ignored,
+    },
   };
 }
 
@@ -47,6 +59,36 @@ export async function resolveStackCommand(ctx, { given = [], notGiven = [], comp
  * @param {object} ctx
  * @param {{ occurrenceId: string, completedOn?: string|null }} params
  */
+/**
+ * @param {object} ctx
+ * @param {{ occurrenceId: string }} params
+ */
+export async function confirmSkipCommand(ctx, { occurrenceId }) {
+  const { db, entry, trace, userId } = ctx;
+  const row = await findOccurrence(db, entry.id, occurrenceId);
+  if (!row || row.status !== 'skipped' || row.close_reason !== 'not_recorded') {
+    throw badRequest('not_a_not_recorded_dose', 'Only a dose closed as Not recorded can be confirmed as skipped');
+  }
+  const skipped = await confirmNotRecordedAsSkipped(db, {
+    entryId: entry.id,
+    occurrenceId,
+    userId,
+  });
+  if (!skipped) {
+    throw badRequest('not_a_not_recorded_dose', 'Only a dose closed as Not recorded can be confirmed as skipped');
+  }
+  trace.closedRow(row);
+  return {
+    event: {
+      type: SCHEDULE_EVENT_SKIPPED,
+      occurrenceId,
+      fromDate: row.scheduled_date,
+      reasonNote: 'confirm_skip',
+    },
+    result: { occurrence: skipped },
+  };
+}
+
 export async function recordAsGivenCommand(ctx, { occurrenceId, completedOn = null }) {
   const { db, entry, trace, asOf } = ctx;
   const row = await findOccurrence(db, entry.id, occurrenceId);

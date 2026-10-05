@@ -2,19 +2,19 @@
   "schema_version": 1,
   "plan_id": "weight-monitoring-unify-9b2e",
   "plan_kind": "roadmap",
-  "current_child_plan_id": null,
+  "current_child_plan_id": "weight-unify-care-9b2e",
   "child_plans": [
     {
       "plan_id": "weight-unify-server-9b2e",
-      "status": "pending",
-      "pr_url": null,
-      "merge_commit": null
+      "status": "merged",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1577",
+      "merge_commit": "b3fa80de8735d636836e2a02124cf8b9d29cf2e9"
     },
     {
       "plan_id": "weight-unify-hub-9b2e",
-      "status": "pending",
-      "pr_url": null,
-      "merge_commit": null
+      "status": "merged",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1599",
+      "merge_commit": "e311d0e7c8ab907b6a2ac595cbf255daba1fea9b"
     },
     {
       "plan_id": "weight-unify-care-9b2e",
@@ -61,12 +61,13 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "governance",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1552"
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1552",
+      "pr_head_sha": "8931363ffaa8c1bc15ee1b8054162f1e2cfcfff2"
     }
   ],
-  "content_hash": "sha256:e57a5b0de8e90be66d3381f1265422a88a19f3bfcb6df0da75ed8a518ea6e88e"
+  "content_hash": "sha256:01a164079ed69871e2eec0066814f7339effe9b0c4a94478a2747773497f533b"
 }

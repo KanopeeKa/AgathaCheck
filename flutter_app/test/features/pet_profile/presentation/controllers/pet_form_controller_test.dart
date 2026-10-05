@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pet_profile_app/core/weight/weight_unit.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/controllers/pet_form_controller.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/controllers/pet_form_outcomes.dart';
@@ -112,6 +113,7 @@ void main() {
     PetFormSubmitDeps makeDeps(RecordingPetRepository repo) {
       return PetFormSubmitDeps(
         readPets: () => repo.initial,
+        readWeightUnit: () => WeightUnit.kg,
         addPet:
             ({
               required String name,
@@ -201,6 +203,32 @@ void main() {
       expect(repository.added.single.name, 'Bella');
       expect(repository.added.single.organizationId, 'org-1');
     });
+
+    test(
+      'FW-5 edit keeps cached weight on pet without reading form weight',
+      () async {
+        final existing = Pet(
+          id: 'pet-1',
+          name: 'Rex',
+          species: 'dog',
+          weight: 9.0,
+        );
+        repository = RecordingPetRepository(initial: [existing]);
+        container.dispose();
+        container = makeContainer(repo: repository);
+        controller = PetFormController();
+        deps = makeDeps(repository);
+        controller.state = controller.state.copyWith(
+          name: 'Rex',
+          selectedSpecies: 'dog',
+          weight: '99',
+        );
+
+        await controller.submit(deps, isEditing: true, petId: 'pet-1');
+
+        expect(repository.updated.single.weight, 9.0);
+      },
+    );
 
     test('updates an existing pet', () async {
       final existing = Pet(

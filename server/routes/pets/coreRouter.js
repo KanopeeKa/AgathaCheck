@@ -1,14 +1,15 @@
+import { asyncHandler } from '../../lib/http/asyncHandler.js';
 import { v4 as uuidv4 } from 'uuid';
-
-import { publicError } from '../../config/security.js';
 import { normalizeCalendarDateInput } from '../../lib/calendarDate.js';
 import {
   normalizeGender,
   normalizeSpecies,
   sanitizePhotoPathForWrite,
 } from '../../lib/petProfileNormalize.js';
+import { parseWeightInput } from '../../lib/care/observations/weightUnits.js';
+import { recordWeightFromPetPayload } from '../../lib/care/observations/weightObservationService.js';
+import { withTransaction } from '../../lib/db/withTransaction.js';
 import {
-  maybeCreateWeightEntryFromPetPayload,
   refreshPetWeightCache,
   resolveWeightEntryDateFromBody,
 } from '../../lib/petWeightSync.js';
@@ -21,6 +22,40 @@ import { logAuditEventSafe } from '../../lib/audit.js';
 import { setPrimaryVetFromLegacyVetId } from '../../lib/people/relationships.js';
 import { deletePet, PetNotFoundError } from '../../lib/petDataLifecycle.js';
 import { recordPetActivityForPet } from '../../lib/petActivity.js';
+
+function rejectInvalidPetWeight(weight, res) {
+  if (weight == null || weight === '') return false;
+  const parsed = parseWeightInput({ weight, unit: 'kg' });
+  if (parsed.error) {
+    res.status(400).json({
+      error: 'weight must be a positive number',
+      code: 'invalid_weight',
+    });
+    return true;
+  }
+  return false;
+}
+
+async function applyPetWeightFromPayload(db, { petId, userId, weight, body, req }) {
+  if (weight == null || weight === '') {
+    await refreshPetWeightCache(db, petId);
+    return null;
+  }
+  const result = await recordWeightFromPetPayload(db, {
+    petId,
+    userId,
+    weight,
+    date: resolveWeightEntryDateFromBody(body),
+    req,
+  });
+  if (!result.ok) {
+    const err = new Error('pet weight payload rejected');
+    err.status = result.status;
+    err.body = result.body;
+    throw err;
+  }
+  return result;
+}
 import {
   userCanAccessPet,
   userOwnsPet,
@@ -45,11 +80,10 @@ import {
 } from './shared.js';
 
 export function registerCoreRoutes(router, pool) {
-  router.get('/all', async (req, res) => {
+  router.get('/all', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    try {
-      const result = await pool.query(
+    const result = await pool.query(
         `SELECT p.*, false AS is_shared, false AS is_foster, o.name AS organization_name,
                 ${FOSTER_PLACEMENT_SELECT_SQL},
                 ${PET_PARENT_NAME_SELECT_SQL},
@@ -108,31 +142,24 @@ export function registerCoreRoutes(router, pool) {
          ORDER BY created_at`,
         [userId, PET_ACCESS_ROLES, FOSTER_PET_ACCESS_ROLE, OPEN_PLACEMENT_STATUSES]
       );
-      const pets = result.rows.map(petRowToMap);
-      await autoAssignColors(pool, pets);
-      res.json(pets);
-    } catch (err) {
-      res.status(500).json({ error: publicError(err, 'Error fetching pets', `Error fetching pets: ${err.message}`) });
-    }
-  });
+    const pets = result.rows.map(petRowToMap);
+    await autoAssignColors(pool, pets);
+    res.json(pets);
+  }, { prodMessage: 'Error fetching pets', devMessage: (err) => `Error fetching pets: ${err.message}` }));
 
-  router.get('/', async (req, res) => {
+  router.get('/', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    try {
-      const result = await pool.query(
-        'SELECT * FROM pets WHERE user_id = $1 ORDER BY created_at',
-        [userId]
-      );
-      const pets = result.rows.map(petRowToMap);
-      await autoAssignColors(pool, pets);
-      res.json(pets);
-    } catch (err) {
-      res.status(500).json({ error: publicError(err, 'Error fetching pets', `Error fetching pets: ${err.message}`) });
-    }
-  });
+    const result = await pool.query(
+      'SELECT * FROM pets WHERE user_id = $1 ORDER BY created_at',
+      [userId]
+    );
+    const pets = result.rows.map(petRowToMap);
+    await autoAssignColors(pool, pets);
+    res.json(pets);
+  }, { prodMessage: 'Error fetching pets', devMessage: (err) => `Error fetching pets: ${err.message}` }));
 
-  router.get('/:id', async (req, res) => {
+  router.get('/:id', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     const { id } = req.params;
@@ -140,8 +167,7 @@ export function registerCoreRoutes(router, pool) {
     if (!uuidRegex.test(id)) {
       return res.status(400).json({ error: 'Invalid pet ID' });
     }
-    try {
-      if (!(await userCanAccessPet(pool, id, userId))) {
+    if (!(await userCanAccessPet(pool, id, userId))) {
         return res.status(404).json({ error: 'Pet not found' });
       }
       const result = await pool.query(
@@ -170,21 +196,18 @@ export function registerCoreRoutes(router, pool) {
          WHERE p.id = $1`,
         [id, userId, FOSTER_PET_ACCESS_ROLE, PET_ACCESS_ROLES]
       );
-      if (result.rows.length === 0) {
-        return res.status(404).json({ error: 'Pet not found' });
-      }
-      res.json(petRowToMap(result.rows[0]));
-    } catch (err) {
-      res.status(500).json({ error: publicError(err, 'Error fetching pet', `Error fetching pet: ${err.message}`) });
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Pet not found' });
     }
-  });
+    res.json(petRowToMap(result.rows[0]));
+  }, { prodMessage: 'Error fetching pet', devMessage: (err) => `Error fetching pet: ${err.message}` }));
 
-  router.post('/', async (req, res) => {
+  router.post('/', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     if (rejectFrozenOrganizationIdOnPetWrite(req, res)) return;
     try {
-      const id = req.body.id || uuidv4();
+    const id = req.body.id || uuidv4();
       const {
         name, breed = '', age, weight,
         bio = '', insurance = '',
@@ -204,35 +227,38 @@ export function registerCoreRoutes(router, pool) {
       if (organization_id && !(await userInOrg(pool, organization_id, userId))) {
         return res.status(403).json({ error: 'Not a member of this organization' });
       }
+      if (rejectInvalidPetWeight(weight, res)) return;
       const homeTimezone = resolveDefaultHomeTimezoneForCreate(req);
-      const result = await pool.query(
-        `INSERT INTO pets (id, user_id, name, species, breed, age, date_of_birth, weight, gender,
-          bio, insurance, neutered_date, neuter_dismissed, chip_id, chip_dismissed,
-          photo_path, vet_id, color_index, passed_away, organization_id, home_timezone)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21)
-         ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, species = EXCLUDED.species, breed = EXCLUDED.breed,
-          age = EXCLUDED.age, date_of_birth = EXCLUDED.date_of_birth, weight = EXCLUDED.weight, gender = EXCLUDED.gender,
-          bio = EXCLUDED.bio, insurance = EXCLUDED.insurance, neutered_date = EXCLUDED.neutered_date,
-          neuter_dismissed = EXCLUDED.neuter_dismissed, chip_id = EXCLUDED.chip_id, chip_dismissed = EXCLUDED.chip_dismissed,
-          photo_path = EXCLUDED.photo_path, vet_id = EXCLUDED.vet_id, color_index = EXCLUDED.color_index,
-          passed_away = EXCLUDED.passed_away, organization_id = EXCLUDED.organization_id,
-          home_timezone = EXCLUDED.home_timezone, updated_at = NOW()
-         WHERE pets.user_id = $2 RETURNING *`,
-        [id, userId, name, species, breed, age, dateOfBirth, weight, gender,
-         bio, insurance, neuteredDate, neuterDismissed, chipId, chipDismissed,
-         photoPath, vetId || null, colorValue != null ? colorValue : null,
-         passedAway, organization_id || null, homeTimezone]
-      );
-      const pet = result.rows[0];
-      await maybeCreateWeightEntryFromPetPayload(pool, {
-        petId: pet.id,
-        userId,
-        weight,
-        date: resolveWeightEntryDateFromBody(req.body),
+      const syncedPet = await withTransaction(pool, async (db) => {
+        const result = await db.query(
+          `INSERT INTO pets (id, user_id, name, species, breed, age, date_of_birth, weight, gender,
+            bio, insurance, neutered_date, neuter_dismissed, chip_id, chip_dismissed,
+            photo_path, vet_id, color_index, passed_away, organization_id, home_timezone)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21)
+           ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, species = EXCLUDED.species, breed = EXCLUDED.breed,
+            age = EXCLUDED.age, date_of_birth = EXCLUDED.date_of_birth, gender = EXCLUDED.gender,
+            bio = EXCLUDED.bio, insurance = EXCLUDED.insurance, neutered_date = EXCLUDED.neutered_date,
+            neuter_dismissed = EXCLUDED.neuter_dismissed, chip_id = EXCLUDED.chip_id, chip_dismissed = EXCLUDED.chip_dismissed,
+            photo_path = EXCLUDED.photo_path, vet_id = EXCLUDED.vet_id, color_index = EXCLUDED.color_index,
+            passed_away = EXCLUDED.passed_away, organization_id = EXCLUDED.organization_id,
+            home_timezone = EXCLUDED.home_timezone, updated_at = NOW()
+           WHERE pets.user_id = $2 RETURNING *`,
+          [id, userId, name, species, breed, age, dateOfBirth, null, gender,
+           bio, insurance, neuteredDate, neuterDismissed, chipId, chipDismissed,
+           photoPath, vetId || null, colorValue != null ? colorValue : null,
+           passedAway, organization_id || null, homeTimezone],
+        );
+        const pet = result.rows[0];
+        await applyPetWeightFromPayload(db, {
+          petId: pet.id,
+          userId,
+          weight,
+          body: req.body,
+          req,
+        });
+        const refreshed = await db.query('SELECT * FROM pets WHERE id = $1', [pet.id]);
+        return refreshed.rows[0] || pet;
       });
-      await refreshPetWeightCache(pool, pet.id);
-      const refreshed = await pool.query('SELECT * FROM pets WHERE id = $1', [pet.id]);
-      const syncedPet = refreshed.rows[0] || pet;
       await setPrimaryVetFromLegacyVetId(
         pool,
         syncedPet.id,
@@ -243,19 +269,22 @@ export function registerCoreRoutes(router, pool) {
         actorUserId: userId,
         action: 'pet.created',
         resourceType: 'pet',
-        resourceId: pet.id,
-        petId: pet.id,
-        orgId: pet.organization_id || null,
-        metadata: { species: pet.species },
+        resourceId: syncedPet.id,
+        petId: syncedPet.id,
+        orgId: syncedPet.organization_id || null,
+        metadata: { species: syncedPet.species },
         req,
       });
-      res.status(201).json(petRowToMap(syncedPet));
+    res.status(201).json(petRowToMap(syncedPet));
     } catch (err) {
-      res.status(500).json({ error: publicError(err, 'Error creating pet', `Error creating pet: ${err.message}`) });
+      if (err.status && err.body) {
+        return res.status(err.status).json(err.body);
+      }
+      throw err;
     }
-  });
+  }, { prodMessage: 'Error creating pet', devMessage: (err) => `Error creating pet: ${err.message}` }));
 
-  router.put('/:id', async (req, res) => {
+  router.put('/:id', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     if (rejectFrozenOrganizationIdOnPetWrite(req, res)) return;
@@ -330,36 +359,42 @@ export function registerCoreRoutes(router, pool) {
         if (!ctxResult.ok) return res.status(400).json({ error: ctxResult.error });
         weightManagementContext = ctxResult.value;
       }
+      if (rejectInvalidPetWeight(weight, res)) return;
       const homeTimezoneParsed = parseHomeTimezoneBody(req.body);
       const homeTimezone = homeTimezoneParsed
         ?? normalizePetHomeTimezone(existingRow.home_timezone);
-      const result = await pool.query(
-        `UPDATE pets SET name=$1, species=$2, breed=$3, age=$4, date_of_birth=$5, weight=$6, gender=$7,
-          bio=$8, insurance=$9, neutered_date=$10, neuter_dismissed=$11, chip_id=$12, chip_dismissed=$13,
-          photo_path=$14, vet_id=$15, color_index=$16, passed_away=$17, organization_id=$18,
-          weight_reference_value=$19, weight_reference_authority=$20, weight_management_context=$21,
-          home_timezone=$22, updated_at=NOW()
-         WHERE id=$23 RETURNING *`,
-        [name, species, breed, age, dateOfBirth, weight, gender,
-         bio, insurance, neuteredDate, neuterDismissed, chipId, chipDismissed,
-         photoPath, vetId || null, colorValue != null ? colorValue : null,
-         passedAway, organization_id || null,
-         weightReferenceValue, weightReferenceAuthority, weightManagementContext,
-         homeTimezone, id]
-      );
-      if (result.rows.length === 0) {
+      const syncedPet = await withTransaction(pool, async (db) => {
+        const result = await db.query(
+          `UPDATE pets SET name=$1, species=$2, breed=$3, age=$4, date_of_birth=$5, gender=$6,
+            bio=$7, insurance=$8, neutered_date=$9, neuter_dismissed=$10, chip_id=$11, chip_dismissed=$12,
+            photo_path=$13, vet_id=$14, color_index=$15, passed_away=$16, organization_id=$17,
+            weight_reference_value=$18, weight_reference_authority=$19, weight_management_context=$20,
+            home_timezone=$21, updated_at=NOW()
+           WHERE id=$22 RETURNING *`,
+          [name, species, breed, age, dateOfBirth, gender,
+           bio, insurance, neuteredDate, neuterDismissed, chipId, chipDismissed,
+           photoPath, vetId || null, colorValue != null ? colorValue : null,
+           passedAway, organization_id || null,
+           weightReferenceValue, weightReferenceAuthority, weightManagementContext,
+           homeTimezone, id],
+        );
+        if (result.rows.length === 0) {
+          return null;
+        }
+        const pet = result.rows[0];
+        await applyPetWeightFromPayload(db, {
+          petId: id,
+          userId,
+          weight,
+          body: req.body,
+          req,
+        });
+        const refreshed = await db.query('SELECT * FROM pets WHERE id = $1', [id]);
+        return refreshed.rows[0] || pet;
+      });
+      if (!syncedPet) {
         return res.status(404).json({ error: 'Pet not found' });
       }
-      const pet = result.rows[0];
-      await maybeCreateWeightEntryFromPetPayload(pool, {
-        petId: id,
-        userId,
-        weight,
-        date: resolveWeightEntryDateFromBody(req.body),
-      });
-      await refreshPetWeightCache(pool, id);
-      const refreshed = await pool.query('SELECT * FROM pets WHERE id = $1', [id]);
-      const syncedPet = refreshed.rows[0] || pet;
       if (
         Object.prototype.hasOwnProperty.call(req.body, 'vetId')
         || Object.prototype.hasOwnProperty.call(req.body, 'vet_id')
@@ -373,7 +408,7 @@ export function registerCoreRoutes(router, pool) {
         resourceType: 'pet',
         resourceId: id,
         petId: id,
-        orgId: pet.organization_id || null,
+        orgId: syncedPet.organization_id || null,
         req,
       });
       if (syncedPet.organization_id) {
@@ -384,27 +419,23 @@ export function registerCoreRoutes(router, pool) {
           metadata: { field_count: Object.keys(req.body || {}).length },
         });
       }
-      res.json(petRowToMap(syncedPet));
+    res.json(petRowToMap(syncedPet));
     } catch (err) {
-      res.status(500).json({ error: publicError(err, 'Error updating pet', `Error updating pet: ${err.message}`) });
+      if (err.status && err.body) {
+        return res.status(err.status).json(err.body);
+      }
+      throw err;
     }
-  });
+  }, { prodMessage: 'Error updating pet', devMessage: (err) => `Error updating pet: ${err.message}` }));
 
-  router.delete('/:id', async (req, res) => {
+  router.delete('/:id', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    try {
-      const { id } = req.params;
-      if (!(await userOwnsPet(pool, id, userId))) {
-        return res.status(404).json({ error: 'Pet not found' });
-      }
-      const result = await deletePet(pool, id, { actorUserId: userId, req });
-      res.json(result);
-    } catch (err) {
-      if (err instanceof PetNotFoundError) {
-        return res.status(404).json({ error: 'Pet not found' });
-      }
-      res.status(500).json({ error: publicError(err, 'Error deleting pet', `Error deleting pet: ${err.message}`) });
+    const { id } = req.params;
+    if (!(await userOwnsPet(pool, id, userId))) {
+      return res.status(404).json({ error: 'Pet not found' });
     }
-  });
+    const result = await deletePet(pool, id, { actorUserId: userId, req });
+    res.json(result);
+  }, { prodMessage: 'Error deleting pet', devMessage: (err) => `Error deleting pet: ${err.message}` }));
 }

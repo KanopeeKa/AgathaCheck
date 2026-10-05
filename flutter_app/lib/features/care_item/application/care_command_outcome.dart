@@ -70,10 +70,24 @@ class CareCommandResult {
     this.nextDueDate,
     this.movedNextId,
     this.nextUnchanged = false,
+    this.resolvedGiven = const [],
+    this.resolvedNotGiven = const [],
+    this.ignoredIds = const [],
   });
 
   final String entryId;
   final String? occurrenceId;
+
+  /// `resolve-stack`: ids marked done in this command.
+  final List<String> resolvedGiven;
+
+  /// `resolve-stack`: ids marked skipped in this command.
+  final List<String> resolvedNotGiven;
+
+  /// `resolve-stack`: requested ids that were no longer open.
+  final List<String> ignoredIds;
+
+  int get stackChangedCount => resolvedGiven.length + resolvedNotGiven.length;
 
   /// The care item after the command, when the route returns it (the weight
   /// route does not; reload the item then).

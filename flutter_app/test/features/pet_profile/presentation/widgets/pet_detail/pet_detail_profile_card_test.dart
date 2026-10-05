@@ -7,11 +7,17 @@ import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/services/pet_detail_actions.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/widgets/pet_detail/pet_detail_profile_card.dart';
 import 'package:pet_profile_app/features/vet/presentation/providers/vet_providers.dart';
+import 'package:pet_profile_app/features/weight_tracking/domain/entities/weight_entry.dart';
 import 'package:pet_profile_app/features/weight_tracking/presentation/providers/weight_providers.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../../helpers/fakes.dart';
+
+class _EmptyWeightEntriesNotifier extends WeightEntriesNotifier {
+  @override
+  Future<List<WeightEntry>> build(String arg) async => [];
+}
 
 Widget _wrap(Pet pet, {PetDetailContext? viewerContext}) {
   final ctx =
@@ -24,7 +30,9 @@ Widget _wrap(Pet pet, {PetDetailContext? viewerContext}) {
     overrides: [
       apiBaseUrlProvider.overrideWithValue('http://test.local'),
       vetListProvider.overrideWith(FakeVetListNotifier.new),
-      latestWeightProvider.overrideWith((ref, arg) => null),
+      weightEntriesNotifierProvider.overrideWith(
+        () => _EmptyWeightEntriesNotifier(),
+      ),
     ],
     child: MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,

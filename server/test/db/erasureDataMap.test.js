@@ -69,6 +69,21 @@ describe('erasure data map (real PG)', () => {
     }
   });
 
+  it('documents CARE occurrence ledger tables (#1510)', () => {
+    const map = loadErasureDataMap();
+    const bindings = map.bindings || [];
+    const find = (table, column) =>
+      bindings.find((row) => row.table === table && row.column === column);
+
+    expect(find('health_occurrences', 'marked_by_user_id')?.erasure_action).toBe('set_null');
+    expect(find('health_occurrences', 'performed_by_user_id')?.erasure_action).toBe('set_null');
+    expect(find('care_schedule_events', 'actor_user_id')?.erasure_action).toBe('set_null');
+    expect(find('health_entry_absence_resolutions', 'carer_user_id')?.erasure_action).toBe(
+      'set_null',
+    );
+    expect(bindings.some((row) => row.table === 'health_history')).toBe(false);
+  });
+
   it('lists cleanup_jobs handling and users root row', () => {
     const map = loadErasureDataMap();
     expect(map.cleanup_jobs?.erasure_action).toBeTruthy();

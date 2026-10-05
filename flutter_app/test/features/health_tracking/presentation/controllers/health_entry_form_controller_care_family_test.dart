@@ -73,7 +73,7 @@ void main() {
     );
 
     controller.setName('Evening pill');
-    controller.setCompletedOn(DateTime(2025, 9, 1));
+    controller.setDueDate(DateTime(2025, 9, 1));
 
     final blocked = await controller.submit();
     expect(blocked, isA<HealthEntrySubmitValidationFailed>());

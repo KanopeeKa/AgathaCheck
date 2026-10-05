@@ -5,22 +5,22 @@ import 'package:image_picker/image_picker.dart';
 import '../../../../../core/widgets/form/app_form_destructive_button.dart';
 import '../../../../../core/widgets/form/app_form_section.dart';
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../care_taxonomy/presentation/widgets/care_classification_section.dart';
+import 'health_entry_advanced_settings_section.dart';
+import 'health_entry_care_family_section.dart';
 import '../../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../../domain/entities/health_entry.dart';
 import '../../controllers/health_entry_form_controller.dart';
 import '../../controllers/health_entry_form_state.dart';
-import '../care_provider_field.dart';
 import '../entry_due_completed_row.dart';
 import 'health_entry_document_handler.dart';
 import 'health_entry_frequency_section.dart';
 import 'health_entry_health_issue_dropdown.dart';
 import 'health_entry_pet_selector.dart';
-import 'health_entry_photos_section.dart';
 import 'health_entry_remind_field.dart';
 import 'health_entry_schedule_times_section.dart';
 import 'care_planning_toggle.dart';
 import '../care_category_blocks/care_category_blocks_edit_section.dart';
+import 'health_entry_booster_dates_field.dart';
 import 'health_entry_text_fields.dart';
 
 /// Sectioned form fields for add/edit health entries.
@@ -95,18 +95,14 @@ class HealthEntryFormContent extends ConsumerWidget {
                 ),
               ],
               const SizedBox(height: 16),
-              CareClassificationSection(
+              HealthEntryCareFamilySection(
                 isEdit: form.isEdit,
                 careFamily: form.careFamily,
-                careSetting: form.careSetting,
-                careImportance: form.careImportance,
                 careFamilyRequiredError: form.careFamilyRequiredError(l),
                 showCareFamilySuggestion: form.showCareFamilySuggestion,
                 showCareFamilyPicker: form.showCareFamilyPicker,
                 suggestedCareFamily: form.suggestedCareFamilyForType(),
                 onCareFamilyChanged: controller.setCareFamily,
-                onCareSettingChanged: controller.setCareSetting,
-                onCareImportanceChanged: controller.setCareImportance,
                 onAcceptSuggestion: controller.acceptCareFamilySuggestion,
                 onChooseDifferentSuggestion: controller.revealCareFamilyPicker,
                 onDismissSuggestion: controller.dismissCareFamilySuggestion,
@@ -142,8 +138,6 @@ class HealthEntryFormContent extends ConsumerWidget {
                   frequency: form.frequency,
                   frequencyInterval: form.frequencyInterval,
                   repeatEndDate: form.repeatEndDate,
-                  recurrenceAnchor: form.recurrenceAnchor,
-                  lateCompletionChoice: form.lateCompletionChoice,
                   controller: controller,
                 ),
                 if (form.frequency != HealthFrequency.once) ...[
@@ -167,8 +161,13 @@ class HealthEntryFormContent extends ConsumerWidget {
                 onDueDateChanged: controller.setDueDate,
                 onCompletedOnChanged: controller.setCompletedOn,
                 showDueDate: form.isPlannedMode,
+                showCompletedOn: form.isRecordMode,
                 requireCompletedOn: form.isRecordMode,
               ),
+              if (form.showBoosterDatesField) ...[
+                const SizedBox(height: 12),
+                HealthEntryBoosterDatesField(params: params, form: form),
+              ],
               if (form.showReminders) ...[
                 const SizedBox(height: 16),
                 HealthEntryRemindField(
@@ -197,25 +196,29 @@ class HealthEntryFormContent extends ConsumerWidget {
                 notes: form.notes,
                 onChanged: controller.setNotes,
               ),
-              const SizedBox(height: 16),
-              CareProviderField(
-                contactId: form.providerContactId,
-                typedName: form.providerTypedName,
-                onChanged: controller.setProvider,
-              ),
-              const SizedBox(height: 16),
-              HealthEntryPhotosSection(
-                photos: form.photos,
-                pendingPhotos: form.pendingPhotos,
-                isUploading: form.isUploadingPhoto,
-                baseUrl: baseUrl,
-                onPickCamera: () => documents.pickPhoto(ImageSource.camera),
-                onPickGallery: documents.pickDocument,
-                onDelete: documents.deletePhoto,
-                onRemovePending: controller.removePendingPhoto,
-              ),
             ],
           ),
+          if (form.careFamily != null || form.isEdit) ...[
+            const SizedBox(height: 16),
+            HealthEntryAdvancedSettingsSection(
+              careSetting: form.careSetting,
+              careImportance: form.careImportance,
+              frequency: form.frequency,
+              recurrenceAnchor: form.recurrenceAnchor,
+              lateCompletionChoice: form.lateCompletionChoice,
+              providerContactId: form.providerContactId,
+              providerTypedName: form.providerTypedName,
+              photos: form.photos,
+              pendingPhotos: form.pendingPhotos,
+              isUploadingPhoto: form.isUploadingPhoto,
+              baseUrl: baseUrl,
+              controller: controller,
+              onPickCamera: () => documents.pickPhoto(ImageSource.camera),
+              onPickGallery: documents.pickDocument,
+              onDeletePhoto: documents.deletePhoto,
+              onRemovePendingPhoto: controller.removePendingPhoto,
+            ),
+          ],
           if (includeActionsBar) ...[const SizedBox(height: 24), actionsBar],
           if (form.isEdit && onDelete != null) ...[
             const SizedBox(height: 24),

@@ -93,6 +93,7 @@ One health entry as a care series: open occurrences, agenda row, occurrence scre
 | | Path |
 |---|------|
 | **Docs (product)** | [/docs/domains/pet_care/features/care-item-evolution.md](/docs/domains/pet_care/features/care-item-evolution.md) · [care-schedule-management.md](/docs/domains/pet_care/features/care-schedule-management.md) |
+| **Docs (modularity)** | [care-item-cross-feature-imports.md](care-item-cross-feature-imports.md) — C1 defer (#1545) |
 | **Docs (UI)** | [care-item-view-ui.md](/docs/design/care-item-view-ui.md) |
 | Flutter (public API) | `flutter_app/lib/features/care_item/care_item.dart` — other features import **only** this barrel (`scripts/check_care_item_boundary.sh`, `scripts/check_feature_imports.js`) |
 | Flutter tests | `flutter_app/test/features/care_item/` |

@@ -1,4 +1,4 @@
-import { publicError } from '../../config/security.js';
+import { asyncHandler } from '../../lib/http/asyncHandler.js';
 import { extractUserId } from '../../lib/requireAuth.js';
 import {
   acceptAbsenceCarerInvite,
@@ -9,7 +9,7 @@ import {
 } from '../../lib/people/absenceCarerInviteService.js';
 
 export function registerPlannedAbsenceCarerInviteRoutes(router, pool) {
-  router.post('/:id/carer-invites', async (req, res) => {
+  router.post('/:id/carer-invites', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
@@ -30,21 +30,21 @@ export function registerPlannedAbsenceCarerInviteRoutes(router, pool) {
         expires_at: result.expires_at,
       });
     } catch (err) {
-      return res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 
-  router.get('/carer-invites/code/:code', async (req, res) => {
+  router.get('/carer-invites/code/:code', asyncHandler(async (req, res) => {
     try {
       const result = await getAbsenceCarerInvitePreview(pool, req.params.code);
       if (result.error) return res.status(result.status).json({ error: result.error });
       return res.json(result);
     } catch (err) {
-      return res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 
-  router.post('/carer-invites/code/:code/accept', async (req, res) => {
+  router.post('/carer-invites/code/:code/accept', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
@@ -56,11 +56,11 @@ export function registerPlannedAbsenceCarerInviteRoutes(router, pool) {
       if (result.error) return res.status(result.status).json({ error: result.error });
       return res.json(result);
     } catch (err) {
-      return res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 
-  router.post('/carer-invites/:inviteId/accept', async (req, res) => {
+  router.post('/carer-invites/:inviteId/accept', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
@@ -72,11 +72,11 @@ export function registerPlannedAbsenceCarerInviteRoutes(router, pool) {
       if (result.error) return res.status(result.status).json({ error: result.error });
       return res.json(result);
     } catch (err) {
-      return res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 
-  router.delete('/carer-invites/:inviteId', async (req, res) => {
+  router.delete('/carer-invites/:inviteId', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
@@ -87,11 +87,11 @@ export function registerPlannedAbsenceCarerInviteRoutes(router, pool) {
       if (result.error) return res.status(result.status).json({ error: result.error });
       return res.json(result);
     } catch (err) {
-      return res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 
-  router.delete('/guest-grants/:grantId', async (req, res) => {
+  router.delete('/guest-grants/:grantId', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
@@ -102,7 +102,7 @@ export function registerPlannedAbsenceCarerInviteRoutes(router, pool) {
       if (result.error) return res.status(result.status).json({ error: result.error });
       return res.json(result);
     } catch (err) {
-      return res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 }

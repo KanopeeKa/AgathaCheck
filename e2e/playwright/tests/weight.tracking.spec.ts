@@ -5,12 +5,14 @@
  * Scenario: Viewing weight entries as a list
  * Scenario: Viewing weight chart
  * Scenario: Viewing latest weight on pet profile
- * Scenario: Editing pet weight from profile creates a weight entry for today
+ * Scenario: Profile updates from older apps still record the weight
  * Scenario: Editing a weight entry
  * Scenario: Deleting a weight entry
  * Scenario: Selecting weight unit
  * Scenario: Empty weight history
  * Scenario: PDF pet report shows latest weight as current weight
+ * Scenario: A weight recorded with a weigh-in choice completes that weigh-in
+ * Scenario: Undoing a weigh-in removes the weight it created
  */
 import { readFileSync } from 'node:fs';
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
@@ -20,13 +22,19 @@ import {
   getWeightEntries,
   getLatestWeightEntry,
   updatePetProfile,
-  updateWeightEntry,
   deleteWeightEntry,
   signupUser,
 } from '../support/api';
+import {
+  createCareItem,
+  getOccurrence,
+  undoLast,
+  withCareClock,
+} from '../support/care-api';
 import { PetListPage } from '../pages/pet-list.page';
 import { PetDetailPage } from '../pages/pet-detail.page';
 import { WeightTrackingPage } from '../pages/weight-tracking.page';
+import { WeightHubPage } from '../pages/weight-hub.page';
 
 test.describe('Weight tracking', () => {
   // ── Empty state ───────────────────────────────────────────────────────────
@@ -63,12 +71,11 @@ test.describe('Weight tracking', () => {
     await weightPage.openAddWeightSheet();
     await weightPage.fillWeightForm('25.5');
     await weightPage.saveWeightEntry();
+    await weightPage.expectWeightEntryVisible(25.5, 'kg');
 
-    // Verify via API that the entry was persisted.
     const entries = await getWeightEntries(baseURL, testUser.accessToken, pet.id);
     expect(entries.length).toBeGreaterThan(0);
     expect(entries[0].weight).toBeCloseTo(25.5, 1);
-    expect(entries[0].unit).toBe('kg');
   });
 
   test('adding multiple weight entries via API all appear in history', async ({ page, testUser }) => {
@@ -166,9 +173,7 @@ test.describe('Weight tracking', () => {
     await weightPage.expectWeightEntryVisible(25.0);
   });
 
-  test('editing pet weight via API creates a weight entry for today with no notes', async ({
-    testUser,
-  }) => {
+  test('Profile updates from older apps still record the weight', async ({ testUser }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const pet = await createPet(baseURL, testUser.accessToken, 'Bella');
 
@@ -195,26 +200,15 @@ test.describe('Weight tracking', () => {
 
   // ── Editing weight entries ────────────────────────────────────────────────
 
-  test('editing a weight entry via API updates the stored value', async ({ page, testUser }) => {
+  test('Editing a weight entry', async ({ page, testUser }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const pet = await createPet(baseURL, testUser.accessToken, 'Bella');
 
-    const entry = await createWeightEntry(baseURL, testUser.accessToken, pet.id, {
+    await createWeightEntry(baseURL, testUser.accessToken, pet.id, {
       weight: 25.0,
       date: '2025-06-01',
     });
 
-    await updateWeightEntry(baseURL, testUser.accessToken, entry.id, {
-      weight: 25.5,
-      date: '2025-06-01',
-    });
-
-    const entries = await getWeightEntries(baseURL, testUser.accessToken, pet.id);
-    const updated = entries.find((e) => e.id === entry.id);
-    expect(updated).toBeTruthy();
-    expect(updated!.weight).toBeCloseTo(25.5, 1);
-
-    // Confirm the UI shows the updated weight.
     await loginAs(page, testUser);
     const petList = new PetListPage(page);
     await petList.openPet(pet.name, pet.id);
@@ -222,8 +216,11 @@ test.describe('Weight tracking', () => {
     const petDetail = new PetDetailPage(page);
     await petDetail.expectLoaded(pet.name);
 
-    const weightPage = new WeightTrackingPage(page);
-    await weightPage.expectWeightEntryVisible(25.5);
+    const hub = new WeightHubPage(page);
+    await hub.openHistoryEntry(25.0);
+    await hub.fillWeight('25.5');
+    await hub.saveSheet();
+    await hub.expectWeightDisplayed(25.5);
   });
 
   // ── Deleting weight entries ───────────────────────────────────────────────
@@ -259,6 +256,10 @@ test.describe('Weight tracking', () => {
   test('weight tracking section exposes kg and lb unit selectors', async ({ page, testUser }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const pet = await createPet(baseURL, testUser.accessToken, 'Bella');
+    await createWeightEntry(baseURL, testUser.accessToken, pet.id, {
+      weight: 10.0,
+      date: '2025-06-01',
+    });
 
     await loginAs(page, testUser);
     const petList = new PetListPage(page);
@@ -269,6 +270,91 @@ test.describe('Weight tracking', () => {
 
     const weightPage = new WeightTrackingPage(page);
     await weightPage.expectUnitSelectorVisible();
+  });
+
+  // ── Weigh-in fulfilment (W4 server landing) ─────────────────────────────────
+
+  test('A weight recorded with a weigh-in choice completes that weigh-in', async ({ testUser }) => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const dueDate = '2026-11-01';
+    const recordedDate = '2026-11-05';
+    const careClock = `${recordedDate}T10:00`;
+
+    const pet = await createPet(baseURL, testUser.accessToken, 'Bella');
+    await withCareClock(`${dueDate}T09:00`);
+    const routine = await createCareItem(baseURL, testUser.accessToken, pet.id, {
+      name: 'Monthly weigh-in',
+      careFamily: 'weight_monitoring',
+      frequency: 'monthly',
+      dueDate,
+      scheduleType: 'from_due_date',
+      startDate: dueDate,
+    });
+    const occurrenceId = routine.open_occurrences[0]?.id;
+    expect(occurrenceId).toBeTruthy();
+
+    await withCareClock(careClock);
+    const created = await createWeightEntry(baseURL, testUser.accessToken, pet.id, {
+      weight: 10.5,
+      date: recordedDate,
+      fulfilsOccurrenceId: occurrenceId,
+      careAsOf: careClock,
+    });
+    expect(created.health_occurrence_id).toBe(occurrenceId);
+    expect(created.fulfilment?.undo_token).toBeTruthy();
+
+    const occDetail = await getOccurrence(baseURL, testUser.accessToken, routine.id, occurrenceId!);
+    const occ = occDetail.occurrence as { status?: string };
+    expect(occ.status).toBe('completed');
+
+    const entries = await getWeightEntries(baseURL, testUser.accessToken, pet.id);
+    const linked = entries.find((e) => e.id === created.id);
+    expect(linked?.weight).toBeCloseTo(10.5, 1);
+    expect(linked?.date).toBe(recordedDate);
+
+    await withCareClock(null);
+  });
+
+  test('Undoing a weigh-in removes the weight it created', async ({ testUser }) => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const dueDate = '2026-12-01';
+    const recordedDate = '2026-12-03';
+    const careClock = `${recordedDate}T10:00`;
+
+    const pet = await createPet(baseURL, testUser.accessToken, 'Bella');
+    await withCareClock(`${dueDate}T09:00`);
+    const routine = await createCareItem(baseURL, testUser.accessToken, pet.id, {
+      name: 'Weigh-in undo',
+      careFamily: 'weight_monitoring',
+      frequency: 'monthly',
+      dueDate,
+      scheduleType: 'from_due_date',
+      startDate: dueDate,
+    });
+    const occurrenceId = routine.open_occurrences[0]?.id;
+    expect(occurrenceId).toBeTruthy();
+
+    await withCareClock(careClock);
+    const created = await createWeightEntry(baseURL, testUser.accessToken, pet.id, {
+      weight: 9.8,
+      date: recordedDate,
+      fulfilsOccurrenceId: occurrenceId,
+      careAsOf: careClock,
+    });
+    const undoToken = created.fulfilment?.undo_token;
+    expect(undoToken).toBeTruthy();
+
+    await withCareClock(`${recordedDate}T10:30`);
+    await undoLast(baseURL, testUser.accessToken, routine.id, undoToken);
+
+    const entries = await getWeightEntries(baseURL, testUser.accessToken, pet.id);
+    expect(entries.find((e) => e.id === created.id)).toBeUndefined();
+
+    const occDetail = await getOccurrence(baseURL, testUser.accessToken, routine.id, occurrenceId!);
+    const occ = occDetail.occurrence as { status?: string };
+    expect(occ.status).toBe('pending');
+
+    await withCareClock(null);
   });
 
   test('PDF pet report shows latest weight as current weight', async ({ page, testUser }) => {

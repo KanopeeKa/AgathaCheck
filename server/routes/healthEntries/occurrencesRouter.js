@@ -1,4 +1,4 @@
-import { publicError } from '../../config/security.js';
+import { asyncHandler } from '../../lib/http/asyncHandler.js';
 import { normalizeCalendarDateInput } from '../../lib/calendarDate.js';
 import { logAuditEventSafe } from '../../lib/audit.js';
 import { logger } from '../../lib/logger.js';
@@ -8,11 +8,13 @@ import {
   completeOccurrenceCommand,
   listOpenRows,
   openOccurrenceToWire,
+  confirmSkipCommand,
   planAnotherDateCommand,
   recordAsGivenCommand,
   resolveCareAsOfForRead,
   resolveStackCommand,
   runCareCommand,
+  syncCareItemForRead,
   sendCareCommandError,
   skipOccurrenceCommand,
   undoCommand,
@@ -20,6 +22,7 @@ import {
 import { markSkipped } from '../../lib/care/occurrence/occurrenceRepository.js';
 import { slotIsPastDue } from '../../lib/care/schedule/occurrenceStatus.js';
 import { commandResponse, occurrenceToMap } from '../../lib/care/item/index.js';
+import { validateSkipReasonForFamily } from '../../lib/care/capabilities.js';
 import { extractUserId } from './shared.js';
 import {
   isWeightMonitoringEntry,
@@ -119,7 +122,7 @@ async function handleCommand(pool, req, res, { command, respond, audit, guard, a
       }, 'care command refused');
       return undefined;
     }
-    return res.status(500).json({ error: publicError(err) });
+    throw err;
   }
 }
 
@@ -152,16 +155,16 @@ function withEarlierPastDueSkipped(occurrenceId, run) {
 }
 
 export function registerOccurrenceRoutes(router, pool) {
-  router.get('/:id/occurrences', async (req, res) => {
+  router.get('/:id/occurrences', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    try {
-      const entry = await loadEntry(pool, req.params.id, userId);
+    const entry = await loadEntry(pool, req.params.id, userId);
       if (!entry) return res.status(404).json({ error: 'Entry not found' });
       const status = req.query.status || 'open';
       if (status === 'open') {
-        const asOf = await resolveCareAsOfForRead(pool, entry, req);
-        const rows = await listOpenRows(pool, entry.id);
+        const synced = await syncCareItemForRead(pool, entry.id, req);
+        const asOf = synced?.asOf ?? await resolveCareAsOfForRead(pool, entry, req);
+        const rows = synced?.openRows ?? await listOpenRows(pool, entry.id);
         const names = await pool.query(
           `SELECT ho.id, TRIM(COALESCE(u.first_name, '') || ' ' || COALESCE(u.last_name, '')) AS marked_by_name
            FROM health_occurrences ho LEFT JOIN users u ON u.id = ho.marked_by_user_id
@@ -194,12 +197,9 @@ export function registerOccurrenceRoutes(router, pool) {
         [entry.id]
       );
       return res.json(result.rows.map(occurrenceToMap));
-    } catch (err) {
-      return res.status(500).json({ error: publicError(err) });
-    }
-  });
+  }));
 
-  router.post('/:id/occurrences/:occId/complete', (req, res) => {
+  router.post('/:id/occurrences/:occId/complete', asyncHandler(async (req, res) => {
     const body = req.body || {};
     const occurrenceId = req.params.occId;
     const run = (ctx) => completeOccurrenceCommand(ctx, {
@@ -227,11 +227,23 @@ export function registerOccurrenceRoutes(router, pool) {
         }),
       }),
     });
-  });
+  }));
 
-  router.post('/:id/occurrences/:occId/skip', (req, res) => {
+  router.post('/:id/occurrences/:occId/skip', asyncHandler(async (req, res) => {
     const body = req.body || {};
     const occurrenceId = req.params.occId;
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    const entry = await loadEntry(pool, req.params.id, userId);
+    if (!entry) return res.status(404).json({ error: 'Entry not found' });
+    const skipCheck = validateSkipReasonForFamily(
+      entry.care_family,
+      body.reason_code || body.reasonCode || null,
+      body.notes || '',
+    );
+    if (!skipCheck.ok) {
+      return res.status(skipCheck.status).json(skipCheck.body);
+    }
     return handleCommand(pool, req, res, {
       command: (ctx) => skipOccurrenceCommand(ctx, {
         occurrenceId,
@@ -244,9 +256,9 @@ export function registerOccurrenceRoutes(router, pool) {
         return { body: { ...occurrence, ...(await commandResponse(pool, out, req, { occurrence })) } };
       },
     });
-  });
+  }));
 
-  router.post('/:id/occurrences', (req, res) => {
+  router.post('/:id/occurrences', asyncHandler(async (req, res) => {
     const body = req.body || {};
     return handleCommand(pool, req, res, {
       command: (ctx) => planAnotherDateCommand(ctx, {
@@ -267,9 +279,9 @@ export function registerOccurrenceRoutes(router, pool) {
         }),
       }),
     });
-  });
+  }));
 
-  router.post('/:id/occurrences/:occId/record', (req, res) => {
+  router.post('/:id/occurrences/:occId/record', asyncHandler(async (req, res) => {
     const body = req.body || {};
     const occurrenceId = req.params.occId;
     return handleCommand(pool, req, res, {
@@ -283,9 +295,25 @@ export function registerOccurrenceRoutes(router, pool) {
         body: await commandResponse(pool, out, req, { occurrence: occurrenceToMap(out.occurrence) }),
       }),
     });
-  });
+  }));
 
-  router.post('/:id/occurrences/resolve-stack', (req, res) => {
+  router.post('/:id/occurrences/:occId/confirm-skip', asyncHandler(async (req, res) => {
+    const occurrenceId = req.params.occId;
+    return handleCommand(pool, req, res, {
+      guard: weightGuard,
+      command: (ctx) => confirmSkipCommand(ctx, { occurrenceId }),
+      audit: () => ({
+        action: 'health_occurrence.confirm_skipped',
+        metadata: { occurrence_id: occurrenceId },
+        activity: 'skip',
+      }),
+      respond: async (out) => ({
+        body: await commandResponse(pool, out, req, { occurrence: occurrenceToMap(out.occurrence) }),
+      }),
+    });
+  }));
+
+  router.post('/:id/occurrences/resolve-stack', asyncHandler(async (req, res) => {
     const body = req.body || {};
     const given = Array.isArray(body.given) ? body.given : [];
     const notGiven = Array.isArray(body.not_given ?? body.notGiven) ? (body.not_given ?? body.notGiven) : [];
@@ -298,13 +326,17 @@ export function registerOccurrenceRoutes(router, pool) {
         activity: 'record_doses',
       }),
       respond: async (out) => ({
-        body: await commandResponse(pool, out, req, { given: out.given, not_given: out.notGiven }),
+        body: await commandResponse(pool, out, req, {
+          given: out.given,
+          not_given: out.notGiven,
+          ignored: out.ignored,
+        }),
       }),
     });
-  });
+  }));
 
   // Compatibility (deleted in child F): per-occurrence undo.
-  router.post('/:id/occurrences/:occId/undo', (req, res) => handleCommand(pool, req, res, {
+  router.post('/:id/occurrences/:occId/undo', asyncHandler(async (req, res) => handleCommand(pool, req, res, {
     command: (ctx) => undoCommand(ctx, {}),
     audit: (out) => ({
       action: 'health_occurrence.undone',
@@ -313,7 +345,7 @@ export function registerOccurrenceRoutes(router, pool) {
     respond: async (out) => ({
       body: out.occurrence ? occurrenceToMap(out.occurrence) : { undone: out.undoneType },
     }),
-  }));
+  })));
 }
 
 export { handleCommand, logOccurrenceAction };

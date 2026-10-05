@@ -3,13 +3,14 @@
  * completed one — notes, provider, and when it was done (D-CSM-034).
  */
 
-import { publicError } from '../../config/security.js';
-import { normalizeCalendarDateInput } from '../../lib/calendarDate.js';
+import { asyncHandler } from '../../lib/http/asyncHandler.js';
+import { dateToIsoDate, normalizeCalendarDateInput } from '../../lib/calendarDate.js';
 import {
   changeCompletionDateCommand,
   normalizeOccurrenceRow,
   openOccurrenceToWire,
   resolveCareAsOfForRead,
+  syncCareItemForRead,
   updateCompletedDetails,
 } from '../../lib/care/occurrence/index.js';
 import { UNDOABLE_EVENT_TYPES } from '../../lib/care/schedule/scheduleEventLedger.js';
@@ -46,11 +47,33 @@ async function lastAction(pool, entryId) {
 
 async function linkedWeight(pool, occurrenceId) {
   const result = await pool.query(
-    'SELECT weight, unit FROM weight_entries WHERE health_occurrence_id = $1 LIMIT 1',
+    `SELECT id, weight, unit, date, measurement_source
+     FROM weight_entries WHERE health_occurrence_id = $1 LIMIT 1`,
     [occurrenceId],
   );
   const row = result.rows[0];
-  return row ? { value: Number(row.weight), unit: row.unit || 'kg' } : null;
+  if (!row) return null;
+  return {
+    id: row.id,
+    value: Number(row.weight),
+    unit: row.unit || 'kg',
+    date: dateToIsoDate(row.date),
+    measurement_source: row.measurement_source || 'guardian',
+  };
+}
+
+async function skipReasonForOccurrence(pool, entryId, occurrenceId) {
+  const result = await pool.query(
+    `SELECT reason_code, reason_note FROM care_schedule_events
+     WHERE health_entry_id = $1 AND health_occurrence_id = $2
+       AND event_type = 'skipped' AND undone_at IS NULL
+     ORDER BY occurred_at DESC, created_at DESC
+     LIMIT 1`,
+    [entryId, occurrenceId],
+  );
+  const row = result.rows[0];
+  if (!row?.reason_code) return null;
+  return { code: row.reason_code, note: row.reason_note || null };
 }
 
 function updateCompletedOn(pool, req, res, completedOn) {
@@ -82,30 +105,39 @@ function updateCompletedOn(pool, req, res, completedOn) {
 }
 
 export function registerOccurrencePatchRoutes(router, pool) {
-  router.get('/:id/occurrences/:occId', async (req, res) => {
+  router.get('/:id/occurrences/:occId', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
       const entry = await loadEntry(pool, req.params.id, userId);
       if (!entry) return res.status(404).json({ error: 'Entry not found' });
-      const occ = await loadOccurrence(pool, entry.id, req.params.occId);
+      let occ = await loadOccurrence(pool, entry.id, req.params.occId);
       if (!occ) return res.status(404).json({ error: 'Occurrence not found', code: 'occurrence_not_found' });
-      const asOf = await resolveCareAsOfForRead(pool, entry, req);
-      const entryWire = await careItemWire(pool, entry, req, { asOf });
+      const synced = await syncCareItemForRead(pool, entry.id, req);
+      const freshEntry = synced?.entry ?? entry;
+      const asOf = synced?.asOf ?? await resolveCareAsOfForRead(pool, freshEntry, req);
+      if (synced) {
+        occ = await loadOccurrence(pool, entry.id, req.params.occId) ?? occ;
+      }
+      const entryWire = await careItemWire(pool, freshEntry, req, {
+        openRows: synced?.openRows,
+        asOf,
+      });
       const body = {
-        occurrence: { ...occurrenceToMap(occ), occurrence_status: occurrenceStatusFor(occ, entry, asOf) },
+        occurrence: { ...occurrenceToMap(occ), occurrence_status: occurrenceStatusFor(occ, freshEntry, asOf) },
         entry: entryWire,
         last_action: await lastAction(pool, entry.id),
       };
       const weight = await linkedWeight(pool, occ.id);
       if (weight) body.linked_weight = weight;
+      body.skip_reason = await skipReasonForOccurrence(pool, entry.id, occ.id);
       return res.json(body);
     } catch (err) {
-      return res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 
-  router.patch('/:id/occurrences/:occId', async (req, res) => {
+  router.patch('/:id/occurrences/:occId', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     const body = req.body || {};
@@ -156,7 +188,7 @@ export function registerOccurrencePatchRoutes(router, pool) {
       updatedRow.marked_by_name = occ.marked_by_name || null;
       return res.json(occurrenceToMap(updatedRow));
     } catch (err) {
-      return res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 }
