@@ -7620,6 +7620,81 @@ class AppLocalizationsFr extends AppLocalizations {
       'Choisissez au moins un rôle pour continuer.';
 
   @override
+  String get peopleAddStepWhoTitle => 'Qui souhaitez-vous ajouter ?';
+
+  @override
+  String peopleAddStepProgress(int step) {
+    return 'Étape $step sur 5';
+  }
+
+  @override
+  String get peopleAddTileHousehold => 'Quelqu\'un à la maison';
+
+  @override
+  String get peopleAddTileHouseholdHelper =>
+      'Une personne qui partage le quotidien de vos animaux.';
+
+  @override
+  String get peopleAddTileCarer => 'Quelqu\'un qui les garde';
+
+  @override
+  String get peopleAddTileCarerHelper =>
+      'Un proche, un ami ou un pet-sitter qui s\'en occupe ponctuellement.';
+
+  @override
+  String get peopleAddTileProfessional => 'Un pro pour vos animaux';
+
+  @override
+  String get peopleAddTileProfessionalHelper =>
+      'Vétérinaire, toilettage, promenade, éducation…';
+
+  @override
+  String get peopleAddTileOrganisation => 'Un établissement';
+
+  @override
+  String get peopleAddTileOrganisationHelper =>
+      'Clinique, salon de toilettage, pension, garderie…';
+
+  @override
+  String get peopleAddStepAbout => 'À propos';
+
+  @override
+  String get peopleAddStepPets => 'Quels animaux ?';
+
+  @override
+  String get peopleAddStepReview => 'Vérification';
+
+  @override
+  String get peopleAddNext => 'Continuer';
+
+  @override
+  String get peopleAddBack => 'Retour';
+
+  @override
+  String get peopleAddOpenExisting => 'Ouvrir';
+
+  @override
+  String get peopleAddAppAccessShare => 'Partager des animaux dans l\'app';
+
+  @override
+  String get peopleAddAppAccessAbsence => 'Inviter pour une absence';
+
+  @override
+  String get peopleAddAppAccessHousehold => 'Inviter dans un foyer';
+
+  @override
+  String get peopleAddHouseholdName => 'Nom du foyer';
+
+  @override
+  String get peopleAddPetsEmpty => 'Aucun animal à lier pour l\'instant.';
+
+  @override
+  String get peopleAddPetLinkKind => 'Rôle pour cet animal';
+
+  @override
+  String get peopleAddEmergencyContact => 'Contact d\'urgence pour cet animal';
+
+  @override
   String get peopleSaveValidationError =>
       'Vérifiez les informations et réessayez.';
 

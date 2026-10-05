@@ -45,6 +45,7 @@ abstract class SharingRepository {
     required String role,
     required String token,
     String? locale,
+    String? contactId,
   });
 
   Future<List<PetShareAccess>> listAccessForPets(

@@ -110,6 +110,7 @@ class SharingRepositoryImpl implements SharingRepository {
     required String role,
     required String token,
     String? locale,
+    String? contactId,
   }) {
     return _dataSource.createInvite(
       inviteeEmail: inviteeEmail,
@@ -117,6 +118,7 @@ class SharingRepositoryImpl implements SharingRepository {
       role: role,
       token: token,
       locale: locale,
+      contactId: contactId,
     );
   }
 

@@ -116,9 +116,14 @@ export class VetListPage {
   }
 
   async openAddForm(): Promise<void> {
-    await this.page.goto(flutterGotoUrl('/pc/people/new?roles=vet'));
+    await this.page.goto(flutterGotoUrl('/pc/people/new'));
     await refreshFlutterAccessibility(this.page);
     await waitForFlutterRoutePattern(this.page, /\/pc\/people\/new(?:\?|$)/, 30_000);
+    await this.page
+      .getByText(/pet professional|un pro pour vos animaux/i)
+      .first()
+      .click();
+    await this.page.getByRole('button', { name: /continue|continuer/i }).click();
     await this.page.getByLabel(/^Name$/i).waitFor({ timeout: 30_000 });
   }
 

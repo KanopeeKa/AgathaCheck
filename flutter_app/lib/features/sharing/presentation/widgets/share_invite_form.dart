@@ -9,11 +9,13 @@ class ShareInviteForm extends StatefulWidget {
     required this.onSubmit,
     required this.isSending,
     this.petCount = 1,
+    this.initialEmail,
   });
 
   final Future<void> Function(String email, PetAccessRole role) onSubmit;
   final bool isSending;
   final int petCount;
+  final String? initialEmail;
 
   @override
   State<ShareInviteForm> createState() => _ShareInviteFormState();
@@ -21,8 +23,14 @@ class ShareInviteForm extends StatefulWidget {
 
 class _ShareInviteFormState extends State<ShareInviteForm> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
+  late final TextEditingController _emailController;
   PetAccessRole _role = PetAccessRole.carer;
+
+  @override
+  void initState() {
+    super.initState();
+    _emailController = TextEditingController(text: widget.initialEmail ?? '');
+  }
 
   @override
   void dispose() {
