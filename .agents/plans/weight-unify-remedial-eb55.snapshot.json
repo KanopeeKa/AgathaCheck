@@ -36,7 +36,7 @@
       "spawn_allowed": false,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null
     },
@@ -64,7 +64,9 @@
       "spawn_allowed": false,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending"
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null
     },
     {
       "id": "R3",
@@ -87,7 +89,9 @@
       "spawn_allowed": false,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending"
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null
     },
     {
       "id": "R4",
@@ -110,8 +114,10 @@
       "spawn_allowed": false,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending"
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null
     }
   ],
-  "content_hash": "sha256:cf7e3708d6b414ee403c6a7a6d7bc452342fe41e4b8cf4aaa73f3206c3d3b7f6"
+  "content_hash": "sha256:d176cf61a31ac250e1ea56b4678b9a12883f6a10ccbd7ac794b066ca8d862d2b"
 }
