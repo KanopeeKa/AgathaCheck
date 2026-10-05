@@ -604,17 +604,17 @@ server/**
 
 ```yaml
 autonomy: active
-current_phase: c3-hub
-last_completed_phase: c2-components
+current_phase: c4-detail
+last_completed_phase: c3-hub
 halt_reason: null
-next_action: "continue phase c3-hub on branch cursor/people-client-c3-hub-7f3b"
+next_action: "continue phase c4-detail on branch cursor/people-client-c4-detail-7f3b"
 artifact_ref:
-  branch: cursor/people-client-c3-hub-7f3b
+  branch: cursor/people-client-c4-detail-7f3b
   plan_path: .agents/plans/people-client-core-7f3b.md
-  plan_commit: 0855f889d10408d1bc113834984482d357b6404e
+  plan_commit: cfdb1bc51e0303650a6a711f2f2419b415c755a3
   snapshot_path: .agents/plans/people-client-core-7f3b.snapshot.json
-  snapshot_commit: 0855f889d10408d1bc113834984482d357b6404e
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1588"]
+  snapshot_commit: cfdb1bc51e0303650a6a711f2f2419b415c755a3
+open_prs: []
 merge_commits: {}
 debt_issue_refs: []
 ```
