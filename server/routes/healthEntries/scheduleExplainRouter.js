@@ -1,4 +1,4 @@
-import { publicError } from '../../config/security.js';
+import { asyncHandler } from '../../lib/http/asyncHandler.js';
 import { normalizeCalendarDateInput } from '../../lib/calendarDate.js';
 import { explainGap } from '../../lib/care/schedule/explainGap.js';
 import { userCanManageHealthEntry } from '../../lib/petAccess.js';
@@ -24,7 +24,7 @@ function dateWindowFromRequest(req) {
 }
 
 export function registerScheduleExplainRoutes(router, pool) {
-  router.get('/:id/schedule-explain', async (req, res) => {
+  router.get('/:id/schedule-explain', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
@@ -34,7 +34,7 @@ export function registerScheduleExplainRoutes(router, pool) {
       const result = await explainGap(pool, { entry, fromDate, toDate });
       res.json(result);
     } catch (err) {
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 }

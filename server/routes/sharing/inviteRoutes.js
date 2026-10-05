@@ -1,4 +1,4 @@
-import { publicError } from '../../config/security.js';
+import { asyncHandler } from '../../lib/http/asyncHandler.js';
 import { extractUserId } from '../../lib/requireAuth.js';
 import { listPendingInvitesForPetAccess } from '../../services/sharing/shareAccessService.js';
 import {
@@ -10,7 +10,7 @@ import {
 } from '../../services/sharing/shareInviteService.js';
 
 export function registerInviteRoutes(router, pool) {
-  router.post('/invites', async (req, res) => {
+  router.post('/invites', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
@@ -36,21 +36,21 @@ export function registerInviteRoutes(router, pool) {
         ...(result.replayed ? { replayed: true } : {}),
       });
     } catch (err) {
-      return res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 
-  router.get('/invites/code/:code', async (req, res) => {
+  router.get('/invites/code/:code', asyncHandler(async (req, res) => {
     try {
       const result = await getInvitePreview(pool, req.params.code);
       if (result.error) return res.status(result.status).json({ error: result.error });
       return res.json(result);
     } catch (err) {
-      return res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 
-  router.post('/invites/:inviteId/accept', async (req, res) => {
+  router.post('/invites/:inviteId/accept', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
@@ -62,11 +62,11 @@ export function registerInviteRoutes(router, pool) {
       if (result.error) return res.status(result.status).json({ error: result.error });
       return res.json(result);
     } catch (err) {
-      return res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 
-  router.post('/invites/code/:code/accept', async (req, res) => {
+  router.post('/invites/code/:code/accept', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
@@ -78,11 +78,11 @@ export function registerInviteRoutes(router, pool) {
       if (result.error) return res.status(result.status).json({ error: result.error });
       return res.json(result);
     } catch (err) {
-      return res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 
-  router.post('/invites/:inviteId/decline', async (req, res) => {
+  router.post('/invites/:inviteId/decline', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
@@ -94,11 +94,11 @@ export function registerInviteRoutes(router, pool) {
       if (result.error) return res.status(result.status).json({ error: result.error });
       return res.json(result);
     } catch (err) {
-      return res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 
-  router.delete('/invites/:inviteId', async (req, res) => {
+  router.delete('/invites/:inviteId', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
@@ -109,13 +109,13 @@ export function registerInviteRoutes(router, pool) {
       if (result.error) return res.status(result.status).json({ error: result.error });
       return res.json(result);
     } catch (err) {
-      return res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 }
 
 export function registerPetInviteListRoute(router, pool) {
-  router.get('/:id/invites', async (req, res) => {
+  router.get('/:id/invites', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
@@ -123,7 +123,7 @@ export function registerPetInviteListRoute(router, pool) {
       if (result.error) return res.status(result.status).json({ error: result.error });
       return res.json(result.invites);
     } catch (err) {
-      return res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 }

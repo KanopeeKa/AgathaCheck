@@ -1,4 +1,4 @@
-import { publicError } from '../../config/security.js';
+import { asyncHandler } from '../../lib/http/asyncHandler.js';
 import { loadAwayPlanProjection } from '../../lib/care/awayPlan/index.js';
 import { validateAbsenceDateWindow } from '../../lib/care/plannedAbsence.js';
 import { todayCalendarIso } from '../../lib/calendarDate.js';
@@ -6,7 +6,7 @@ import { userCanManagePet } from '../../lib/petAccess.js';
 import { extractUserId } from '../../lib/requireAuth.js';
 
 export function registerCarePeriodProjectionRoutes(router, pool) {
-  router.get('/:petId/care-period-projection', async (req, res) => {
+  router.get('/:petId/care-period-projection', asyncHandler(async (req, res) => {
     try {
       const userId = extractUserId(req);
       if (!userId) {
@@ -34,7 +34,7 @@ export function registerCarePeriodProjectionRoutes(router, pool) {
 
       return res.json(projection);
     } catch (err) {
-      return res.status(500).json({ error: publicError(err, 'Failed to load care-period projection') });
+      throw err;
     }
-  });
+  }));
 }

@@ -52,12 +52,12 @@ last_completed_phase: 2
 halt_reason: null
 next_action: "continue phase 3 on branch cursor/active-codebase-h3-error-boundary-e41f"
 artifact_ref:
-  branch: cursor/active-codebase-h-integration-e41f
+  branch: cursor/active-codebase-h3-error-boundary-e41f
   plan_path: .agents/plans/active-codebase-batch-h-ports-transport-e41f.md
-  plan_commit: 77c6f4b841bb4f2b52ce61b769da642539d67c5a
+  plan_commit: 6155305e2cf8f9bd6c2129c8e2cd81bf95f8f5d7
   snapshot_path: .agents/plans/active-codebase-batch-h-ports-transport-e41f.snapshot.json
-  snapshot_commit: 77c6f4b841bb4f2b52ce61b769da642539d67c5a
-open_prs: []
+  snapshot_commit: 6155305e2cf8f9bd6c2129c8e2cd81bf95f8f5d7
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1611"]
 merge_commits: {"1":"0a60ce7fd6dca1780aee3f895c63f66cadafa476","2":"77c6f4b841bb4f2b52ce61b769da642539d67c5a"}
 debt_issue_refs: []
 ```
@@ -208,10 +208,10 @@ docs
 
 **Acceptance criteria:**
 
-- [ ] **H.3-1** `server/lib/http/` provides typed errors (`ValidationError` 400, `UnauthenticatedError` 401, `ForbiddenError` 403, `NotFoundError` 404, `ConflictError` 409, `TransientError` 503), an Express 4-compatible `asyncHandler(fn)`, and a terminal error middleware. The middleware is registered after the routers on **both** prefixes, maps typed errors, redacts all others via `publicError`, includes `request_id`, and logs once.
-- [ ] **H.3-2** Test: a handler that throws or rejects unexpectedly returns 500 JSON `{ error, request_id }` with no raw message in production mode, and never leaves the request hanging.
-- [ ] **H.3-3** Every router in the listed directories uses `asyncHandler`. Per-route `try/catch` blocks that only map to 500 are removed. Existing route tests (status matrices 400/401/403/404/409) pass **unchanged**.
-- [ ] **H.3-4** The existing security test is extended so that no 5xx body contains `err.message` or a stack in production mode for any migrated router.
+- [x] **H.3-1** `server/lib/http/` provides typed errors (`ValidationError` 400, `UnauthenticatedError` 401, `ForbiddenError` 403, `NotFoundError` 404, `ConflictError` 409, `TransientError` 503), an Express 4-compatible `asyncHandler(fn)`, and a terminal error middleware. The middleware is registered after the routers on **both** prefixes, maps typed errors, redacts all others via `publicError`, includes `request_id`, and logs once.
+- [x] **H.3-2** Test: a handler that throws or rejects unexpectedly returns 500 JSON `{ error, request_id }` with no raw message in production mode, and never leaves the request hanging.
+- [x] **H.3-3** Every router in the listed directories uses `asyncHandler`. Per-route `try/catch` blocks that only map to 500 are removed. Existing route tests (status matrices 400/401/403/404/409) pass **unchanged**.
+- [x] **H.3-4** The existing security test is extended so that no 5xx body contains `err.message` or a stack in production mode for any migrated router.
 
 ---
 

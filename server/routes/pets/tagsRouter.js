@@ -1,4 +1,4 @@
-import { publicError } from '../../config/security.js';
+import { asyncHandler } from '../../lib/http/asyncHandler.js';
 import {
   assignTagToPet,
   TagNotFoundError,
@@ -7,7 +7,7 @@ import {
 import { extractUserId } from './shared.js';
 
 export function registerPetTagsRoutes(router, pool) {
-  router.post('/:petId/tags', async (req, res) => {
+  router.post('/:petId/tags', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     const { petId } = req.params;
@@ -22,11 +22,11 @@ export function registerPetTagsRoutes(router, pool) {
       if (err instanceof TagNotFoundError) {
         return res.status(404).json({ error: err.message });
       }
-      res.status(500).json({ error: publicError(err, 'Error assigning pet tag') });
+      throw err;
     }
-  });
+  }));
 
-  router.delete('/:petId/tags/:tagId', async (req, res) => {
+  router.delete('/:petId/tags/:tagId', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     const { petId, tagId } = req.params;
@@ -37,7 +37,7 @@ export function registerPetTagsRoutes(router, pool) {
       if (err instanceof TagNotFoundError) {
         return res.status(404).json({ error: err.message });
       }
-      res.status(500).json({ error: publicError(err, 'Error unassigning pet tag') });
+      throw err;
     }
-  });
+  }));
 }
