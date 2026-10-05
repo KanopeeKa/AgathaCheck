@@ -4,7 +4,6 @@
 import { test, loginAs } from '../fixtures/auth.fixture';
 import { CareAgendaPage } from '../pages/care-agenda.page';
 import { CareItemPage } from '../pages/care-item.page';
-import { OccurrencePage } from '../pages/occurrence.page';
 import { CompletionDateSheetPage } from '../pages/completion-date.sheet';
 import { GuardianDashboardPage } from '../pages/guardian-dashboard.page';
 import { HealthDashboardPage } from '../pages/health-dashboard.page';
