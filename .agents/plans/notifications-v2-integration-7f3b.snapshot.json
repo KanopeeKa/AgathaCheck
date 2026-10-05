@@ -32,12 +32,14 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "bdd-journey",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_head_sha": "93308603b79487f1d205882c5539fb7ea68bcb4c"
+      "pr_head_sha": "1faa2589",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1617",
+      "merge_commit": "57f7152cace37d7e319700ddcac74fcaa5ae835b"
     }
   ],
-  "content_hash": "sha256:c59642049bfe6aefa7b1c6eeaa143c309ad173f8b1ff328f3a0dc686e3d3a7b5"
+  "content_hash": "sha256:bb4e5d79b54b3d7cecb9c93601cb3c8cd90ee8135d44cd4fa91e23b6dabc7e19"
 }
