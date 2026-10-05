@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../../../core/utils/calendar_date.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/weight_overview.dart';
+import '../navigation/weight_care_add_navigation.dart';
 import '../utils/weight_hub_labels.dart';
 
 class WeightHubRoutinesCard extends StatelessWidget {
@@ -32,7 +33,8 @@ class WeightHubRoutinesCard extends StatelessWidget {
             ? _NoRoutineBody(
                 l: l,
                 theme: theme,
-                onSetUp: () => context.push('/pet/$petId/care/add'),
+                onSetUp: () =>
+                    context.push(weightMonitoringCareAddPath(petId)),
               )
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,

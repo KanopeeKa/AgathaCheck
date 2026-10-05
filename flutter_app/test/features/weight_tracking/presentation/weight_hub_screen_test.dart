@@ -21,6 +21,9 @@ import 'package:pet_profile_app/features/weight_tracking/domain/entities/weight_
 import 'package:pet_profile_app/features/weight_tracking/domain/entities/weight_overview.dart';
 import 'package:pet_profile_app/features/weight_tracking/presentation/providers/weight_providers.dart';
 import 'package:pet_profile_app/features/weight_tracking/presentation/screens/weight_hub_screen.dart';
+import 'package:pet_profile_app/features/health_tracking/presentation/screens/health_entry_form_screen.dart';
+import 'package:pet_profile_app/features/pet_profile/domain/entities/care_family.dart';
+import 'package:pet_profile_app/features/weight_tracking/presentation/navigation/weight_care_add_navigation.dart';
 import 'package:pet_profile_app/features/weight_tracking/presentation/widgets/weight_chart.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
@@ -99,6 +102,15 @@ void main() {
           builder: (context, state) =>
               WeightHubScreen(petId: state.pathParameters['petId']!),
         ),
+        GoRoute(
+          path: '/pet/:petId/care/add',
+          builder: (context, state) => HealthEntryFormScreen(
+            petId: state.pathParameters['petId'],
+            initialCareFamily: CareFamilyWire.fromWire(
+              state.uri.queryParameters['family'],
+            ),
+          ),
+        ),
       ],
     );
 
@@ -167,6 +179,29 @@ void main() {
     expect(find.text('Counts as Weekly weigh-in'), findsOneWidget);
     expect(find.text('From the vet'), findsOneWidget);
     expect(find.textContaining('Target'), findsOneWidget);
+  });
+
+  testWidgets('FW-20 set up weigh-in routine opens care add with family', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      buildApp(
+        entries: [_entry('w1', DateTime(2026, 1, 1), 10)],
+        initialLocation: '/pet/pet-1/weight',
+        overview: const WeightOverview(petId: 'pet-1', routines: []),
+      ),
+    );
+    await tester.pump();
+
+    await tester.tap(find.text('Set up a weigh-in routine'));
+    await tester.pumpAndSettle();
+
+    final context = tester.element(find.byType(HealthEntryFormScreen));
+    final router = GoRouter.of(context);
+    expect(
+      router.state.uri.toString(),
+      weightMonitoringCareAddPath('pet-1'),
+    );
   });
 
   testWidgets('FW-6 routines card empty state', (tester) async {

@@ -11,6 +11,7 @@ class HealthHistoryEntry {
     this.markedByName,
     this.notes = '',
     this.status = 'completed',
+    this.linkedWeight,
   });
 
   final String id;
@@ -32,6 +33,9 @@ class HealthHistoryEntry {
   /// History row status: `completed`, `skipped`, or `undone`.
   final String status;
 
+  /// Weight recorded with a completed weigh-in occurrence (kg value).
+  final HealthHistoryLinkedWeight? linkedWeight;
+
   bool get isSkipped => status == 'skipped';
   bool get isCompleted => status == 'completed';
 
@@ -47,4 +51,15 @@ class HealthHistoryEntry {
 
   @override
   int get hashCode => id.hashCode;
+}
+
+/// Linked weight on a history row (`linked_weight` on the wire).
+class HealthHistoryLinkedWeight {
+  const HealthHistoryLinkedWeight({
+    required this.valueKg,
+    this.date,
+  });
+
+  final double valueKg;
+  final DateTime? date;
 }
