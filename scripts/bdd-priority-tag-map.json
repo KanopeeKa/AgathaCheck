@@ -134,7 +134,8 @@
   "notifications_v2.feature": {
     "Notification generated for overdue health entry": "P1",
     "Notification generated for entry due soon": "P1",
-    "A reminder is created again after care is done on time": "P1"
+    "A reminder is created again after care is done on time": "P1",
+    "Pending share invite shows inline accept and decline in Activity": "P1"
   },
   "weight_tracking.feature": {
     "Adding a weight entry": "P0",
