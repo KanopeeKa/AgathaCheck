@@ -173,13 +173,12 @@ class CareItemDetailScreen extends ConsumerWidget {
             Future<void> onPlanAnotherDate() async {
               final schedule = entry.schedule;
               if (schedule == null) return;
-              final leading = leadingOccurrence(schedule);
-              if (leading == null) return;
               final added = await showPlanAnotherDateSheet(
                 context,
                 ref,
                 entryId: entryId,
-                initialDate: leading.date,
+                asOf: schedule.asOf.date,
+                reservedDates: schedule.openOccurrences.map((o) => o.date),
               );
               if (added == true) {
                 PetEventOccurrenceActions.invalidateOccurrenceData(
