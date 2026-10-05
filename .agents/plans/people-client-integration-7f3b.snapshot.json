@@ -2,7 +2,7 @@
   "schema_version": 1,
   "approved_at": "2026-10-05T12:45:00.000Z",
   "approved_until": "2026-10-07T12:45:00.000Z",
-  "content_hash": "sha256:fdc5401411aded39c7b0e008ec5f75b840a7c9a5a86f007d387f73df3fc68ae4",
+  "content_hash": "sha256:38f3aaf621f3eb4c18df81204309330b398b259c507d8799dfd72a648d59c7ad",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "control_issue": 1630,
@@ -182,7 +182,9 @@
       "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1674",
+      "pr_head_sha": "57a44d6f"
     },
     {
       "id": "i5-ship-main",
