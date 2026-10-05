@@ -49,7 +49,7 @@ autonomy: active
 current_phase: 3
 last_completed_phase: 2
 halt_reason: null
-next_action: "continue phase 2 on branch cursor/active-codebase-i1-2-experience-edges-e41f"
+next_action: "continue phase 3 on branch cursor/active-codebase-i1-3-private-edges-e41f"
 artifact_ref:
   branch: cursor/active-codebase-i1-2-experience-edges-e41f
   plan_path: .agents/plans/active-codebase-batch-i1-public-apis-e41f.md
