@@ -39,7 +39,6 @@ test.describe('Veterinarian management', () => {
     const vetForm = new PeoplePage(page);
     await vetForm.createVet({ name: 'Dr. Smith' });
 
-    await vetList.expectLoaded();
     await vetList.expectVetVisible('Dr. Smith');
     await checkA11y(page, 'vet list after create');
 

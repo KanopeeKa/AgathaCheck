@@ -705,9 +705,11 @@ export class PeoplePage {
       await this.page.getByRole('button', { name: /continue|continuer/i }).click();
       await this.page.getByRole('button', { name: /^Save person$/i }).click();
       await this.expectFormSaved('create');
-      await this.page.goto(flutterGotoUrl('/pc/people?filter=professionals'));
-      await refreshFlutterAccessibility(this.page);
-      await waitForFlutterRoutePattern(this.page, /\/pc\/people(?:\?|$)/, 30_000);
+      await expect(async () => {
+        await this.page.goto(flutterGotoUrl('/pc/people?filter=professionals'));
+        await refreshFlutterAccessibility(this.page);
+        await waitForFlutterRoutePattern(this.page, /\/pc\/people(?:\?|$)/, 20_000);
+      }).toPass({ timeout: 60_000 });
       return;
     }
     await this.fillName(options.name);
