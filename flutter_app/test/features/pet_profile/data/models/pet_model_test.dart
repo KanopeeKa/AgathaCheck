@@ -162,7 +162,7 @@ void main() {
         'pet_parent_name': 'Alice',
       };
       final model = PetModel.fromJson(json);
-      expect(model.accessRole, PetAccessRole.coParent);
+      expect(model.accessRole, PetProfileAccessRole.coParent);
       expect(model.petParentName, 'Alice');
     });
 

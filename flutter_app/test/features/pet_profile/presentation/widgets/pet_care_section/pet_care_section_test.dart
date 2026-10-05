@@ -12,7 +12,7 @@ import 'package:pet_profile_app/features/health_tracking/domain/entities/health_
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/care_progression_providers.dart';
-import 'package:pet_profile_app/features/pet_profile/presentation/widgets/pet_care_section/pet_care_section.dart';
+import 'package:pet_profile_app/features/experience/presentation/pet_profile/widgets/pet_care_section/pet_care_section.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import '../../../../../helpers/care_schedule_entries.dart';

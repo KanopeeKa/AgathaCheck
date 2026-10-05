@@ -3,7 +3,7 @@ import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
 import 'package:pet_profile_app/features/pet_care/domain/care_temporal_group.dart';
 import 'package:pet_profile_app/features/pet_care/domain/services/care_temporal_grouping_service.dart';
-import 'package:pet_profile_app/features/pet_profile/domain/services/care_status_service.dart';
+import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 
 HealthEntry _entry(String id, String petId, DateTime dueDate) => HealthEntry(
   id: id,

@@ -1,5 +1,5 @@
 import 'package:pet_profile_app/core/experience/app_experience.dart';
-import '../../../sharing/sharing.dart';
+import 'pet_access_role.dart';
 import 'pet.dart';
 
 /// How the current user relates to a pet on the detail screen.
@@ -20,7 +20,7 @@ class PetViewerRoleResolver {
     required AppExperience experience,
   }) {
     if (pet.isFoster) return PetViewerRole.fosterCarer;
-    if (pet.accessRole == PetAccessRole.coParent) {
+    if (pet.accessRole == PetProfileAccessRole.coParent) {
       return PetViewerRole.coParent;
     }
     if (pet.isShared) return PetViewerRole.sharedCarer;

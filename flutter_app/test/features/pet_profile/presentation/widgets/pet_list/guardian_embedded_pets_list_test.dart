@@ -4,7 +4,7 @@ import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/sharing/domain/entities/pet_access.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/controllers/pet_list_controller.dart';
-import 'package:pet_profile_app/features/pet_profile/presentation/widgets/pet_list/guardian_embedded_pets_list.dart';
+import 'package:pet_profile_app/features/experience/presentation/pet_profile/widgets/pet_list/guardian_embedded_pets_list.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/widgets/pet_list/pet_list_section_header.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/widgets/unified_pet_tile.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
@@ -20,7 +20,7 @@ void main() {
         name: 'Shared',
         species: 'Dog',
         isShared: true,
-        accessRole: PetAccessRole.carer,
+        accessRole: PetProfileAccessRole.carer,
         petParentName: 'Alex',
       ),
       const Pet(

@@ -2,8 +2,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/features/care_taxonomy/domain/care_family_definition.dart';
 import 'package:pet_profile_app/features/experience/presentation/screens/pet_care/pet_care_due_events_screen.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/care_family.dart';
-import 'package:pet_profile_app/features/pet_profile/presentation/screens/widgets/manage_events_collection_filter.dart';
-import 'package:pet_profile_app/features/pet_profile/presentation/screens/widgets/manage_events_filters.dart';
+import 'package:pet_profile_app/features/experience/presentation/pet_profile/screens/widgets/manage_events_collection_filter.dart';
+import 'package:pet_profile_app/features/experience/presentation/pet_profile/screens/widgets/manage_events_filters.dart';
 
 void main() {
   test('default global filters are due and overdue only', () {

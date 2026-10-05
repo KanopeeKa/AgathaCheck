@@ -95,7 +95,7 @@ void main() {
         species: 'Dog',
         breed: '',
         isShared: true,
-        accessRole: PetAccessRole.carer,
+        accessRole: PetProfileAccessRole.carer,
       ),
     ];
 
@@ -118,7 +118,7 @@ void main() {
         species: 'Dog',
         breed: '',
         isShared: true,
-        accessRole: PetAccessRole.coParent,
+        accessRole: PetProfileAccessRole.coParent,
       ),
     ];
 
@@ -205,7 +205,7 @@ void main() {
       name: 'Shared pet',
       species: 'Cat',
       isShared: true,
-      accessRole: PetAccessRole.carer,
+      accessRole: PetProfileAccessRole.carer,
     );
     await tester.pumpWidget(
       buildSection(
@@ -230,7 +230,7 @@ void main() {
         species: 'Cat',
         breed: '',
         isShared: true,
-        accessRole: PetAccessRole.carer,
+        accessRole: PetProfileAccessRole.carer,
       ),
     ];
 
