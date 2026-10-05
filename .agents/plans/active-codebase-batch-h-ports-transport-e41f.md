@@ -47,10 +47,10 @@ No wire change. Every 401, 403 and 404 stays the same.
 
 ```yaml
 autonomy: active
-current_phase: 1
-last_completed_phase: null
+current_phase: 2
+last_completed_phase: 1
 halt_reason: null
-next_action: "continue phase 1 on branch cursor/active-codebase-h1-auth-ports-e41f"
+next_action: "continue phase 2 on branch cursor/active-codebase-h2-health-documents-e41f"
 artifact_ref:
   branch: cursor/active-codebase-h1-auth-ports-e41f
   plan_path: .agents/plans/active-codebase-batch-h-ports-transport-e41f.md
@@ -106,10 +106,10 @@ file-split
 
 **Acceptance criteria:**
 
-- [ ] **H.1-1** `AuthRepository` (login, register, refresh, logout, deleteAccount, exportData, profile read/update, password change) and `SessionStore` (read, write, clear tokens) live in `features/auth/domain`. The implementations wrap `AuthService` and `TokenStore` in `features/auth/data`. The port providers live in `features/auth/application` (convention: `docs/architecture/modularity.md` §Feature ports and transport). `AuthNotifier` depends only on the ports, through those providers, and its state machine and public API are unchanged.
-- [ ] **H.1-2** No presentation file constructs `AuthService()` (today: `my_details_screen.dart:242` and `:305`), and no file outside `features/auth/data` and `features/auth/application` imports `features/auth/data/**`. Today that also means the four cross-feature importers in `allowed_paths` (`analytics_service.dart`, `account_screen.dart`, `experience_drawer_identity_header.dart`, `shelter_pinned_org_provider.dart`); re-list them with `grep -rn "auth/data/" flutter_app/lib` at bootstrap and update `allowed_paths` before stamping. The feature-import baseline shrinks accordingly.
-- [ ] **H.1-3** Tests with fakes cover login, logout, session restore and delete-account (F.4 behaviour). `auth_refresh_test.dart` (single-flight refresh plus request replay) passes unchanged.
-- [ ] **H.1-4** `AuthHttpClient` stays the only refresh authority. A grep-based test fails if any new file under `flutter_app/lib` calls the refresh endpoint directly.
+- [x] **H.1-1** `AuthRepository` (login, register, refresh, logout, deleteAccount, exportData, profile read/update, password change) and `SessionStore` (read, write, clear tokens) live in `features/auth/domain`. The implementations wrap `AuthService` and `TokenStore` in `features/auth/data`. The port providers live in `features/auth/application` (convention: `docs/architecture/modularity.md` §Feature ports and transport). `AuthNotifier` depends only on the ports, through those providers, and its state machine and public API are unchanged.
+- [x] **H.1-2** No presentation file constructs `AuthService()` (today: `my_details_screen.dart:242` and `:305`), and no file outside `features/auth/data` and `features/auth/application` imports `features/auth/data/**`. Today that also means the four cross-feature importers in `allowed_paths` (`analytics_service.dart`, `account_screen.dart`, `experience_drawer_identity_header.dart`, `shelter_pinned_org_provider.dart`); re-list them with `grep -rn "auth/data/" flutter_app/lib` at bootstrap and update `allowed_paths` before stamping. The feature-import baseline shrinks accordingly.
+- [x] **H.1-3** Tests with fakes cover login, logout, session restore and delete-account (F.4 behaviour). `auth_refresh_test.dart` (single-flight refresh plus request replay) passes unchanged.
+- [x] **H.1-4** `AuthHttpClient` stays the only refresh authority. A grep-based test fails if any new file under `flutter_app/lib` calls the refresh endpoint directly.
 
 ---
 

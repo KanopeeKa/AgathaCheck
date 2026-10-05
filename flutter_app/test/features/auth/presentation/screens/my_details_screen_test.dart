@@ -24,7 +24,7 @@ void main() {
             sharedPreferencesProvider.overrideWithValue(prefs),
             authProvider.overrideWith((ref) {
               final notifier = AuthNotifier(
-                FakeAuthService(),
+                FakeAuthRepository(),
                 PrefsTokenStore(prefs),
               );
               notifier.state = const AuthState();

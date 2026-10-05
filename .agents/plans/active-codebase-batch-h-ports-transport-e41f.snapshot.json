@@ -41,9 +41,9 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "in_progress",
+      "status": "done",
       "status_reason": null,
-      "status_detail": null,
+      "status_detail": "H.1-1 through H.1-4; pre-push-changed green on branch",
       "debt_issue_refs": []
     },
     {

@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../auth/data/auth_service.dart';
+import '../../../auth/domain/entities/auth_user.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../domain/entities/organization.dart';
 import '../providers/organization_providers.dart';
