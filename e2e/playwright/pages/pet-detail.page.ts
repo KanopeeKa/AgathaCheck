@@ -26,9 +26,13 @@ export class PetDetailPage {
   }
 
   async expectSpecies(species: string): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
     const pattern = new RegExp(escapeRegExp(species), 'i');
-    await this.page
-      .getByRole('group', { name: pattern })
+    const speciesChip = this.page.locator(
+      '[flt-semantics-identifier="pet_detail_species_chip"]',
+    );
+    await speciesChip
+      .or(this.page.getByRole('group', { name: pattern }))
       .or(this.page.getByRole('button', { name: pattern }))
       .or(this.page.getByText(pattern))
       .first()

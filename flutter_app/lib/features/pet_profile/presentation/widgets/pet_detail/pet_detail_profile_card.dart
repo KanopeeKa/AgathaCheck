@@ -119,12 +119,16 @@ class PetDetailProfileCard extends ConsumerWidget {
                             spacing: 8,
                             runSpacing: 8,
                             children: [
-                              PetInfoChipWidget(
-                                iconWidget: AppConstants.speciesIconWidget(
-                                  pet.species,
-                                  size: 18,
-                                ),
+                              Semantics(
+                                identifier: 'pet_detail_species_chip',
                                 label: pet.species,
+                                child: PetInfoChipWidget(
+                                  iconWidget: AppConstants.speciesIconWidget(
+                                    pet.species,
+                                    size: 18,
+                                  ),
+                                  label: pet.species,
+                                ),
                               ),
                               if (pet.breed.isNotEmpty)
                                 PetInfoChip(icon: Icons.pets, label: pet.breed),
