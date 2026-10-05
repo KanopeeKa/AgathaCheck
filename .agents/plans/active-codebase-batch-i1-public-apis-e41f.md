@@ -105,9 +105,9 @@ docs
 
 **Acceptance criteria:**
 
-- [ ] **I1.1-1** Each of the 16 active features has `lib/features/<feature>/<feature>.dart` (D20). It exports only domain models and ports, query/command providers meant for other features, and explicitly listed UI entrypoints. It exports nothing under `data/**` (checker rule).
-- [ ] **I1.1-2** Each feature has a `README.md` following the review's Appendix C template: purpose and non-goals, owned state and data, the public entrypoint, a public-surface table (symbol, kind, reason), allowed and forbidden dependencies, side effects, cache/freshness policy, permissions, tests, owner and last-reviewed date. `docs/architecture/index.md` links all of them.
-- [ ] **I1.1-3** The checker gains **R6 `non-public-cross-feature-import`**: a cross-feature import must target the target feature's entrypoint file. This applies to `experience` and `core/router` too (D5: Experience consumes public APIs). It also gains **R7 `entrypoint-exports-data`**. Every current R6 violation is baselined by identity; R7 starts at 0. Fixture tests cover both rules.
+- [x] **I1.1-1** Each of the 16 active features has `lib/features/<feature>/<feature>.dart` (D20). It exports only domain models and ports, query/command providers meant for other features, and explicitly listed UI entrypoints. It exports nothing under `data/**` (checker rule).
+- [x] **I1.1-2** Each feature has a `README.md` following the review's Appendix C template: purpose and non-goals, owned state and data, the public entrypoint, a public-surface table (symbol, kind, reason), allowed and forbidden dependencies, side effects, cache/freshness policy, permissions, tests, owner and last-reviewed date. `docs/architecture/index.md` links all of them.
+- [x] **I1.1-3** The checker gains **R6 `non-public-cross-feature-import`**: a cross-feature import must target the target feature's entrypoint file. This applies to `experience` and `core/router` too (D5: Experience consumes public APIs). It also gains **R7 `entrypoint-exports-data`**. Every current R6 violation is baselined by identity; R7 starts at 0. Fixture tests cover both rules.
 - [ ] **I1.1-4** No runtime behaviour change: Flutter analyze and tests are green.
 
 ---
