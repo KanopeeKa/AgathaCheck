@@ -17,11 +17,12 @@ extension AppUndoSnackBar on ScaffoldMessengerState {
     required VoidCallback onUndo,
     Key? snackBarKey,
     Key? undoActionKey,
+    Duration? duration,
   }) {
     showSnackBar(
       SnackBar(
         key: snackBarKey,
-        duration: kUndoSnackBarDuration,
+        duration: duration ?? kUndoSnackBarDuration,
         persist: false,
         showCloseIcon: true,
         content: content,
