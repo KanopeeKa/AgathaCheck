@@ -4,7 +4,7 @@
   "approved_at": "2026-10-04T23:00:00Z",
   "approved_by": "GitHub #1571 approve-autonomous + user chat 2026-10-04 standing grant (notifications v2 roadmap)",
   "approved_until": "2026-10-06T23:00:00Z",
-  "autonomy": "active",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "main",
   "control_issue": 1571,
@@ -41,5 +41,5 @@
       "merge_commit": "57f7152cace37d7e319700ddcac74fcaa5ae835b"
     }
   ],
-  "content_hash": "sha256:bb4e5d79b54b3d7cecb9c93601cb3c8cd90ee8135d44cd4fa91e23b6dabc7e19"
+  "content_hash": "sha256:135c9c1a5304fcc25d319e7e75aa304f126d2a5547d53214e9a772df06801f8c"
 }

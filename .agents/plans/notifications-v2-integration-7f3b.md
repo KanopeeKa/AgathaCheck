@@ -26,7 +26,7 @@
 ## Runtime
 
 ```yaml
-autonomy: active
+autonomy: completed
 current_phase: null
 last_completed_phase: 1
 halt_reason: null
@@ -34,9 +34,9 @@ next_action: "plan complete"
 artifact_ref:
   branch: cursor/notifications-v2-integration-7f3b
   plan_path: .agents/plans/notifications-v2-integration-7f3b.md
-  plan_commit: 1faa2589e00bcff43deb77b93c7f8601a4336d37
+  plan_commit: 61a39527011c99297174f7f64fd09f93c493eb11
   snapshot_path: .agents/plans/notifications-v2-integration-7f3b.snapshot.json
-  snapshot_commit: 1faa2589e00bcff43deb77b93c7f8601a4336d37
+  snapshot_commit: 61a39527011c99297174f7f64fd09f93c493eb11
 open_prs: []
 merge_commits: {"1":"57f7152cace37d7e319700ddcac74fcaa5ae835b"}
 debt_issue_refs: []
