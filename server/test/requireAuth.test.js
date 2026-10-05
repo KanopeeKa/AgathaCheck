@@ -36,12 +36,13 @@ describe('requireAuth', () => {
     expect(extractUserId(req)).toBe(userId);
   });
 
-  it('requireAuth middleware sets req.userId and calls next', () => {
+  it('requireAuth middleware sets req.principal, req.userId and calls next', () => {
     const req = { headers: { Authorization: `Bearer ${token}` } };
     const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
     const next = jest.fn();
     requireAuth(req, res, next);
     expect(req.userId).toBe(userId);
+    expect(req.principal).toEqual({ id: userId, email: 'a@example.com' });
     expect(next).toHaveBeenCalled();
     expect(res.status).not.toHaveBeenCalled();
   });
@@ -52,7 +53,9 @@ describe('requireAuth', () => {
     const next = jest.fn();
     requireAuth(req, res, next);
     expect(res.status).toHaveBeenCalledWith(401);
-    expect(res.json).toHaveBeenCalledWith({ error: 'Unauthorized' });
+    expect(res.json).toHaveBeenCalledWith({
+      error: 'Missing or invalid Authorization header',
+    });
     expect(next).not.toHaveBeenCalled();
   });
 
