@@ -32,13 +32,11 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "bdd-journey",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "merge_commit": null,
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:5be8833e21e1d715a1a18d47c430f9e777e3430fa0f52fe754209b9a1ccca912"
+  "content_hash": "sha256:4f05033fb4c528d49976e2c21a9261a3693f360bca2374bdbbbdcf83d77613dc"
 }
