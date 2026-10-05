@@ -103,17 +103,17 @@ node scripts/execute_plan_runtime.js current-phase not-recorded-tz-fix-e76a
 
 ```yaml
 autonomy: active
-current_phase: 3
-last_completed_phase: 2
+current_phase: 4
+last_completed_phase: 3
 halt_reason: null
-next_action: "continue phase 3 on branch cursor/not-recorded-stale-open-e76a"
+next_action: "continue phase 4 on branch cursor/not-recorded-flutter-e76a"
 artifact_ref:
-  branch: cursor/not-recorded-stale-open-e76a
+  branch: cursor/not-recorded-flutter-e76a
   plan_path: .agents/plans/not-recorded-tz-fix-e76a.md
-  plan_commit: 63a556aec4258cb68bffbab2ea24814162371aeb
+  plan_commit: 5c98d42739116916345e2915dd80125cd95dffcc
   snapshot_path: .agents/plans/not-recorded-tz-fix-e76a.snapshot.json
-  snapshot_commit: 63a556aec4258cb68bffbab2ea24814162371aeb
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1558"]
+  snapshot_commit: 5c98d42739116916345e2915dd80125cd95dffcc
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1587"]
 merge_commits: {}
 debt_issue_refs: []
 ```

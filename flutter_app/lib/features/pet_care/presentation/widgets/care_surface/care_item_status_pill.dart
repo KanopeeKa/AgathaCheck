@@ -8,10 +8,14 @@ class CareItemStatusPill extends StatelessWidget {
     super.key,
     required this.label,
     this.tone = CareItemStatusTone.neutral,
+    this.leadingIcon,
   });
 
   final String label;
   final CareItemStatusTone tone;
+
+  /// Extra cue when colour alone is not enough (FR-4, AC-C1).
+  final IconData? leadingIcon;
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +33,10 @@ class CareItemStatusPill extends StatelessWidget {
         AppColorTokens.infoLight,
         AppColorTokens.info,
       ),
+      CareItemStatusTone.notRecordedClosed => (
+        AppColorTokens.infoLight,
+        AppColorTokens.info,
+      ),
       CareItemStatusTone.neutral => (
         theme.colorScheme.surfaceContainerHighest,
         theme.colorScheme.onSurfaceVariant,
@@ -41,16 +49,31 @@ class CareItemStatusPill extends StatelessWidget {
         color: background,
         borderRadius: BorderRadius.circular(999),
       ),
-      child: Text(
-        label,
-        style: theme.textTheme.labelMedium?.copyWith(
-          color: foreground,
-          fontWeight: FontWeight.w600,
-        ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (leadingIcon != null) ...[
+            Icon(leadingIcon, size: 14, color: foreground),
+            const SizedBox(width: 4),
+          ],
+          Text(
+            label,
+            style: theme.textTheme.labelMedium?.copyWith(
+              color: foreground,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
 /// `notRecorded` uses info tokens, not error (D-CIE-024, UIR-3).
-enum CareItemStatusTone { neutral, due, overdue, notRecorded }
+enum CareItemStatusTone {
+  neutral,
+  due,
+  overdue,
+  notRecorded,
+  notRecordedClosed,
+}

@@ -14,6 +14,7 @@ Map<String, dynamic> detail({
   String occStatus = 'due',
   String family = 'parasite_prevention',
   String? completedOn,
+  String? closeReason,
   Map<String, dynamic>? lastAction,
 }) => {
   'occurrence': {
@@ -23,6 +24,7 @@ Map<String, dynamic> detail({
     'status': status,
     'occurrence_status': occStatus,
     'completed_on': completedOn,
+    'close_reason': closeReason,
     'origin': 'computed',
     'notes': '',
   },
@@ -140,13 +142,21 @@ void main() {
 
   testWidgets('closed not recorded: Record as done', (tester) async {
     final server = _Server([
-      detail(status: 'skipped', occStatus: 'not_recorded'),
+      detail(
+        status: 'skipped',
+        occStatus: 'not_recorded',
+        closeReason: 'not_recorded',
+      ),
     ]);
     await tester.pumpWidget(_wrap(server));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('occurrence_record')));
     await tester.pumpAndSettle();
-    final post = server.requests.firstWhere((r) => r.method == 'POST');
+    await tester.tap(find.byKey(const Key('record_as_given_confirm')));
+    await tester.pumpAndSettle();
+    final post = server.requests.firstWhere(
+      (r) => r.method == 'POST' && r.url.path.endsWith('/record'),
+    );
     expect(post.url.path, endsWith('/occurrences/occ-1/record'));
   });
 
