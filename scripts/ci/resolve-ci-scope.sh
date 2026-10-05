@@ -61,7 +61,9 @@ fi
 # Affected Playwright specs for PR E2E (bounded budget; server-only paths excluded so
 # backend PRs keep their short tier — Pre-UAT covers them post-merge).
 CI_SCOPE_E2E_SELECTION='{}'
-if ci_scope_run_web_build; then
+if [[ "$CI_SCOPE_ESCAPE_FULL" == true ]] || ((${#changed[@]} > 400)); then
+  CI_SCOPE_E2E_SELECTION='{}'
+elif ci_scope_run_web_build; then
   ui_paths="$(printf '%s\n' "${changed[@]}" | grep -v '^server/' || true)"
   e2e_specs_input="$(mktemp)"
   printf '%s\n' "$ui_paths" >"$e2e_specs_input"

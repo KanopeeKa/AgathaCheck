@@ -247,9 +247,11 @@ ci_scope_emit_json() {
   run_integration="$(ci_scope_bool ci_scope_run_integration)"
   all_shards="$(ci_scope_all_shards_json)"
 
+  export CI_SCOPE_ALL_SHARDS_JSON="$all_shards"
+  export CI_SCOPE_E2E_SELECTION_JSON="${CI_SCOPE_E2E_SELECTION:-}"
   python3 - "$scope" "$CI_SCOPE_FORCE_FULL" "$CI_SCOPE_ESCAPE_FULL" "$run_analyze" "$run_stack" "$run_backend" "$run_e2e_audit" "$run_integration" \
-    "$all_shards" "$run_web" "${CI_SCOPE_E2E_SELECTION:-}" <<'PY'
-import json, sys
+    "$run_web" <<'PY'
+import json, os, sys
 
 (
     scope,
@@ -260,10 +262,10 @@ import json, sys
     run_backend,
     run_e2e_audit,
     run_integration,
-    all_shards,
     run_web,
-    e2e_selection,
-) = sys.argv[1:12]
+) = sys.argv[1:10]
+all_shards = os.environ.get("CI_SCOPE_ALL_SHARDS_JSON", "[]")
+e2e_selection = os.environ.get("CI_SCOPE_E2E_SELECTION_JSON", "")
 
 def b(v):
     return v == "true"
