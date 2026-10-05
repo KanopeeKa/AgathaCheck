@@ -230,11 +230,8 @@ export class NotificationsPage {
   }
 
   async openSettings(): Promise<void> {
-    const settingsBtn = this.page
-      .getByRole('button', { name: /notification settings|paramètres de notification/i })
-      .and(this.page.locator(':visible'));
-    await settingsBtn.waitFor({ timeout: 15_000 });
-    await settingsBtn.click();
+    // v2 bell panel has no settings control — route is still /notifications/settings.
+    await this.page.goto(flutterGotoUrl('/notifications/settings'));
     await refreshFlutterAccessibility(this.page);
     await expectAppBarTitle(
       this.page,
