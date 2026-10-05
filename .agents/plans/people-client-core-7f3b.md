@@ -607,13 +607,13 @@ autonomy: active
 current_phase: c5-edit
 last_completed_phase: c4-detail
 halt_reason: null
-next_action: "start phase c5-edit: checkout cursor/people-client-c5-edit-7f3b"
+next_action: "continue phase c5-edit on branch cursor/people-client-c5-edit-7f3b"
 artifact_ref:
-  branch: cursor/people-client-core-integration-7f3b
+  branch: cursor/people-client-c5-edit-7f3b
   plan_path: .agents/plans/people-client-core-7f3b.md
-  plan_commit: 7db003368e6188bf1032e818955f7188dca8c5cb
+  plan_commit: f5342a5b7550223a76154607e5e9125a7121f98a
   snapshot_path: .agents/plans/people-client-core-7f3b.snapshot.json
-  snapshot_commit: 7db003368e6188bf1032e818955f7188dca8c5cb
+  snapshot_commit: f5342a5b7550223a76154607e5e9125a7121f98a
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

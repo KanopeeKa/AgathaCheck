@@ -2,7 +2,7 @@
   "schema_version": 1,
   "approved_at": "2026-10-04T22:45:00.000Z",
   "approved_until": "2026-10-06T17:40:08.000Z",
-  "content_hash": "sha256:9497c63765dc811cca09926db4227ba0e5c2368f4ccd012531f4ee63c4e63cbe",
+  "content_hash": "sha256:fcc9b0eda1292d93eaddfeaf4686725a8daf066a1f72d1b3071c1a0cca0651cf",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "control_issue": 1565,
@@ -194,12 +194,9 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
       "debt_issue_refs": []
     },
     {
