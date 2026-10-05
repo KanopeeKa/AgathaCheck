@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../domain/entities/household.dart';
+import '../domain/entities/pet_people.dart';
 import '../domain/enums/relationship_kind.dart';
 import '../domain/repositories/people_repository.dart';
 import 'people_api_exception.dart';
@@ -108,21 +109,40 @@ class PeopleCommands {
     required List<String> orderedRelationshipIds,
   }) async {
     final all = await _repo.fetchPetRelationships(petId);
-    final payload = all
-        .where((r) => r.active)
-        .map(
-          (r) => {
-            'id': r.id,
-            'contact_id': r.contactId,
-            'relationship_kind': r.relationshipKind.wireValue,
-            'is_primary': r.isPrimary,
-            'active': r.active,
-          },
-        )
-        .toList();
+    final byId = {for (final r in all.where((r) => r.active)) r.id: r};
+    final emergencies = <PetRelationship>[];
+    for (final id in orderedRelationshipIds) {
+      final row = byId[id];
+      if (row != null &&
+          row.relationshipKind == RelationshipKind.emergencyContact) {
+        emergencies.add(row);
+      }
+    }
+    for (final row in all) {
+      if (!row.active) continue;
+      if (row.relationshipKind != RelationshipKind.emergencyContact) continue;
+      if (emergencies.any((e) => e.id == row.id)) continue;
+      emergencies.add(row);
+    }
+    final payload = <Map<String, dynamic>>[];
+    for (final row in all.where((r) => r.active)) {
+      if (row.relationshipKind == RelationshipKind.emergencyContact) continue;
+      payload.add(_relationshipWire(row));
+    }
+    for (final row in emergencies) {
+      payload.add(_relationshipWire(row));
+    }
     await _repo.replacePetRelationships(petId, payload);
     await afterPetLinkChange(contactId, petId);
   }
+
+  Map<String, dynamic> _relationshipWire(PetRelationship r) => {
+    'id': r.id,
+    'contact_id': r.contactId,
+    'relationship_kind': r.relationshipKind.wireValue,
+    'is_primary': r.isPrimary,
+    'active': r.active,
+  };
 
   Future<Household> createHousehold(
     String name, {

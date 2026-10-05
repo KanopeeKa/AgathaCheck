@@ -2,7 +2,7 @@
   "schema_version": 1,
   "approved_at": "2026-10-05T12:45:00.000Z",
   "approved_until": "2026-10-07T12:45:00.000Z",
-  "content_hash": "sha256:eb805ae4b78871c9f65a377be5c77f81db1fb767ac63f45ebde6c3997b14fa81",
+  "content_hash": "sha256:069a6e468cd7d8205eb5fed7288a12532dd2eb88368c3f80b9d1ef658e3e4f17",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "control_issue": 1630,
@@ -59,7 +59,8 @@
       "status_detail": null,
       "debt_issue_refs": [],
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1638",
-      "pr_head_sha": "71913390"
+      "pr_head_sha": "71913390",
+      "merge_commit": "6ba0a1cfce392dd92f2b3c492928ddbf105c73a2"
     },
     {
       "id": "i2-pet-people",
@@ -93,13 +94,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_head_sha": "ba91009e",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1652"
     },
     {
       "id": "i3-retire-legacy",

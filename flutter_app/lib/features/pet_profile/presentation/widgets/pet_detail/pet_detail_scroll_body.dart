@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../people/people.dart';
 import '../../../../care_intelligence/presentation/widgets/pet_profile_care_safeguard_section.dart';
 import '../../../../care_intelligence/presentation/widgets/pet_profile_care_suggestion_section.dart';
 import '../../../domain/entities/pet.dart';
@@ -31,8 +32,15 @@ class PetDetailScrollBody extends StatelessWidget {
       builder: (context, constraints) {
         final useSidebar = constraints.maxWidth >= _desktopBreakpoint;
 
+        final canManagePeople = viewerContext.can(PetDetailAction.assignVet);
+
         final primaryColumn = <Widget>[
           PetDetailProfileCard(pet: pet, viewerContext: viewerContext),
+          PetPeopleSection(
+            petId: pet.id,
+            petName: pet.name,
+            canManage: canManagePeople,
+          ),
           PetProfileCompletenessPrompt(pet: pet),
           PetProfileCareSafeguardSection(petId: pet.id, petName: pet.name),
           PetCareSection(petId: pet.id, pet: pet),
