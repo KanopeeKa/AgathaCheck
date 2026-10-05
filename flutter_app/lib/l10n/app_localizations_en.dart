@@ -7814,6 +7814,82 @@ class AppLocalizationsEn extends AppLocalizations {
   String get peopleAddHouseholdName => 'Household name';
 
   @override
+  String get peopleHouseholdPetReviewTitle => 'Pets in this household';
+
+  @override
+  String get peopleHouseholdPetReviewBody =>
+      'Choose which of your pets belong in this household. You can change this later.';
+
+  @override
+  String get peopleHouseholdMembersTitle => 'Members';
+
+  @override
+  String get peopleHouseholdPetsTitle => 'Pets';
+
+  @override
+  String get peopleHouseholdPetOwnerYou => 'You own this pet';
+
+  @override
+  String get peopleHouseholdPetOtherOwner =>
+      'Owned by another household member';
+
+  @override
+  String get peopleHouseholdPendingInvitesTitle => 'Pending invites';
+
+  @override
+  String get peopleHouseholdRevokeInvite => 'Revoke';
+
+  @override
+  String get peopleHouseholdInviteMemberTitle => 'Invite member';
+
+  @override
+  String get peopleHouseholdInviteMemberAction => 'Invite member';
+
+  @override
+  String get peopleHouseholdInviteTierLabel => 'Access';
+
+  @override
+  String get peopleHouseholdInviteOrganiserLabel => 'Household organiser';
+
+  @override
+  String get peopleHouseholdInviteAdultConfirm => 'They are 18 or over';
+
+  @override
+  String get peopleHouseholdInviteSent => 'Invitation sent';
+
+  @override
+  String get peopleHouseholdRenameTitle => 'Rename household';
+
+  @override
+  String get peopleHouseholdLeaveTitle => 'Leave household?';
+
+  @override
+  String get peopleHouseholdLeaveBody =>
+      'You will lose household access. Other access may remain.';
+
+  @override
+  String get peopleHouseholdLeaveAction => 'Leave household';
+
+  @override
+  String get peopleHouseholdSuccessorLabel => 'Successor organiser';
+
+  @override
+  String peopleHouseholdInviteLandingTitle(String householdName) {
+    return 'Join $householdName?';
+  }
+
+  @override
+  String peopleHouseholdInviteLandingBody(String inviterName, String tier) {
+    return '$inviterName invited you as $tier.';
+  }
+
+  @override
+  String get peopleHouseholdInviteAccept => 'Accept invitation';
+
+  @override
+  String get peopleHouseholdInviteDecline => 'Decline';
+
+  @override
   String get peopleAddPetsEmpty => 'No pets to link yet.';
 
   @override

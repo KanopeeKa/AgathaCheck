@@ -210,31 +210,79 @@ class ContactUsageDto {
 
 class HouseholdDto {
   static Household fromJson(Map<String, dynamic> json) {
-    final members = (json['members'] as List? ?? [])
+    final pets = (json['pets'] as List? ?? [])
         .whereType<Map<String, dynamic>>()
         .map(
-          (m) => HouseholdMember(
-            userId: m['user_id']?.toString() ?? '',
-            displayName: m['display_name']?.toString() ?? '',
-            firstName: m['first_name']?.toString() ?? '',
-            tier: m['tier']?.toString() ?? '',
-            isOrganiser: m['is_organiser'] == true,
-            isYou: m['is_you'] == true,
-            ownsPetIds: (m['owns_pet_ids'] as List? ?? [])
-                .map((e) => e.toString())
-                .toList(),
-            sharesPetIds: (m['shares_pet_ids'] as List? ?? [])
-                .map((e) => e.toString())
-                .toList(),
+          (p) => HouseholdPet(
+            petId: p['pet_id']?.toString() ?? '',
+            name: p['name']?.toString() ?? '',
+            ownerUserId: p['owner_user_id']?.toString() ?? '',
           ),
         )
+        .toList();
+    final members = (json['members'] as List? ?? [])
+        .whereType<Map<String, dynamic>>()
+        .map((m) => _memberFromJson(m, pets))
         .toList();
     return Household(
       id: json['id']?.toString() ?? '',
       name: json['name']?.toString() ?? '',
-      myTier: json['my_tier']?.toString() ?? '',
+      myTier:
+          json['my_tier']?.toString() ??
+          json['my_access_tier']?.toString() ??
+          '',
       myIsOrganiser: json['my_is_organiser'] == true,
       members: members,
+      pets: pets,
+    );
+  }
+
+  static HouseholdMember _memberFromJson(
+    Map<String, dynamic> m,
+    List<HouseholdPet> pets,
+  ) {
+    if (m['display_name'] != null) {
+      return HouseholdMember(
+        userId: m['user_id']?.toString() ?? '',
+        displayName: m['display_name']?.toString() ?? '',
+        firstName: m['first_name']?.toString() ?? '',
+        tier: m['tier']?.toString() ?? '',
+        isOrganiser: m['is_organiser'] == true,
+        isYou: m['is_you'] == true,
+        ownsPetIds: (m['owns_pet_ids'] as List? ?? [])
+            .map((e) => e.toString())
+            .toList(),
+        sharesPetIds: (m['shares_pet_ids'] as List? ?? [])
+            .map((e) => e.toString())
+            .toList(),
+      );
+    }
+    final user = m['user'] as Map<String, dynamic>?;
+    final firstName =
+        user?['first_name']?.toString() ?? m['first_name']?.toString() ?? '';
+    final lastName = user?['last_name']?.toString() ?? '';
+    final displayName = [
+      firstName,
+      lastName,
+    ].where((s) => s.isNotEmpty).join(' ').trim();
+    final userId = m['user_id']?.toString() ?? '';
+    final owns = pets
+        .where((p) => p.ownerUserId == userId)
+        .map((p) => p.petId)
+        .toList();
+    final shares = pets
+        .where((p) => p.ownerUserId != userId)
+        .map((p) => p.petId)
+        .toList();
+    return HouseholdMember(
+      userId: userId,
+      displayName: displayName.isEmpty ? 'Member' : displayName,
+      firstName: firstName,
+      tier: m['tier']?.toString() ?? m['access_tier']?.toString() ?? '',
+      isOrganiser: m['is_organiser'] == true,
+      isYou: m['is_you'] == true,
+      ownsPetIds: owns,
+      sharesPetIds: shares,
     );
   }
 }

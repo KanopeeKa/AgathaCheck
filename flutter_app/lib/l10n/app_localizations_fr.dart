@@ -7933,6 +7933,82 @@ class AppLocalizationsFr extends AppLocalizations {
   String get peopleAddHouseholdName => 'Nom du foyer';
 
   @override
+  String get peopleHouseholdPetReviewTitle => 'Animaux du foyer';
+
+  @override
+  String get peopleHouseholdPetReviewBody =>
+      'Choisissez les animaux qui appartiennent à ce foyer. Vous pourrez modifier plus tard.';
+
+  @override
+  String get peopleHouseholdMembersTitle => 'Membres';
+
+  @override
+  String get peopleHouseholdPetsTitle => 'Animaux';
+
+  @override
+  String get peopleHouseholdPetOwnerYou => 'Cet animal est à vous';
+
+  @override
+  String get peopleHouseholdPetOtherOwner => 'Appartient à un autre membre';
+
+  @override
+  String get peopleHouseholdPendingInvitesTitle => 'Invitations en attente';
+
+  @override
+  String get peopleHouseholdRevokeInvite => 'Révoquer';
+
+  @override
+  String get peopleHouseholdInviteMemberTitle => 'Inviter un membre';
+
+  @override
+  String get peopleHouseholdInviteMemberAction => 'Inviter un membre';
+
+  @override
+  String get peopleHouseholdInviteTierLabel => 'Accès';
+
+  @override
+  String get peopleHouseholdInviteOrganiserLabel => 'Organisateur du foyer';
+
+  @override
+  String get peopleHouseholdInviteAdultConfirm =>
+      'La personne a 18 ans ou plus';
+
+  @override
+  String get peopleHouseholdInviteSent => 'Invitation envoyée';
+
+  @override
+  String get peopleHouseholdRenameTitle => 'Renommer le foyer';
+
+  @override
+  String get peopleHouseholdLeaveTitle => 'Quitter le foyer ?';
+
+  @override
+  String get peopleHouseholdLeaveBody =>
+      'Vous perdrez l\'accès au foyer. D\'autres accès peuvent rester.';
+
+  @override
+  String get peopleHouseholdLeaveAction => 'Quitter le foyer';
+
+  @override
+  String get peopleHouseholdSuccessorLabel => 'Organisateur successeur';
+
+  @override
+  String peopleHouseholdInviteLandingTitle(String householdName) {
+    return 'Rejoindre $householdName ?';
+  }
+
+  @override
+  String peopleHouseholdInviteLandingBody(String inviterName, String tier) {
+    return '$inviterName vous a invité·e en tant que $tier.';
+  }
+
+  @override
+  String get peopleHouseholdInviteAccept => 'Accepter l\'invitation';
+
+  @override
+  String get peopleHouseholdInviteDecline => 'Refuser';
+
+  @override
   String get peopleAddPetsEmpty => 'Aucun animal à lier pour l\'instant.';
 
   @override

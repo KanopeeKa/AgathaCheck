@@ -3145,6 +3145,38 @@
   "peopleAddAppAccessAbsence": "Invite for an absence",
   "peopleAddAppAccessHousehold": "Invite to a household",
   "peopleAddHouseholdName": "Household name",
+  "peopleHouseholdPetReviewTitle": "Pets in this household",
+  "peopleHouseholdPetReviewBody": "Choose which of your pets belong in this household. You can change this later.",
+  "peopleHouseholdMembersTitle": "Members",
+  "peopleHouseholdPetsTitle": "Pets",
+  "peopleHouseholdPetOwnerYou": "You own this pet",
+  "peopleHouseholdPetOtherOwner": "Owned by another household member",
+  "peopleHouseholdPendingInvitesTitle": "Pending invites",
+  "peopleHouseholdRevokeInvite": "Revoke",
+  "peopleHouseholdInviteMemberTitle": "Invite member",
+  "peopleHouseholdInviteMemberAction": "Invite member",
+  "peopleHouseholdInviteTierLabel": "Access",
+  "peopleHouseholdInviteOrganiserLabel": "Household organiser",
+  "peopleHouseholdInviteAdultConfirm": "They are 18 or over",
+  "peopleHouseholdInviteSent": "Invitation sent",
+  "peopleHouseholdRenameTitle": "Rename household",
+  "peopleHouseholdLeaveTitle": "Leave household?",
+  "peopleHouseholdLeaveBody": "You will lose household access. Other access may remain.",
+  "peopleHouseholdLeaveAction": "Leave household",
+  "peopleHouseholdSuccessorLabel": "Successor organiser",
+  "peopleHouseholdInviteLandingTitle": "Join {householdName}?",
+  "@peopleHouseholdInviteLandingTitle": {
+    "placeholders": { "householdName": { "type": "String" } }
+  },
+  "peopleHouseholdInviteLandingBody": "{inviterName} invited you as {tier}.",
+  "@peopleHouseholdInviteLandingBody": {
+    "placeholders": {
+      "inviterName": { "type": "String" },
+      "tier": { "type": "String" }
+    }
+  },
+  "peopleHouseholdInviteAccept": "Accept invitation",
+  "peopleHouseholdInviteDecline": "Decline",
   "peopleAddPetsEmpty": "No pets to link yet.",
   "peopleAddPetLinkKind": "How they help with this pet",
   "peopleAddEmergencyContact": "Emergency contact for this pet",

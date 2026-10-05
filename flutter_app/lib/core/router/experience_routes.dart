@@ -16,7 +16,6 @@ import 'away_routes.dart';
 import '../../features/experience/presentation/screens/pet_care/pet_care_all_pets_screen.dart';
 import '../../features/experience/presentation/screens/pet_care/pet_care_bulk_share_select_screen.dart';
 import '../../features/sharing/presentation/providers/share_pet_providers.dart';
-import '../../features/sharing/presentation/screens/households_screen.dart';
 import '../../features/sharing/presentation/screens/share_pet_screen.dart';
 import '../../features/experience/presentation/screens/pet_care/add_event_type_picker_sheet.dart';
 import '../../features/experience/presentation/screens/pet_care/pet_care_due_events_screen.dart';
@@ -105,7 +104,7 @@ List<RouteBase> buildExperienceRoutes() {
             GoRoute(
               path: 'households',
               name: 'petCareHouseholds',
-              builder: (context, state) => const HouseholdsScreen(),
+              redirect: (context, state) => '/pc/people/households',
             ),
             GoRoute(
               path: 'share',

@@ -2960,6 +2960,38 @@
   "peopleAddAppAccessAbsence": "Inviter pour une absence",
   "peopleAddAppAccessHousehold": "Inviter dans un foyer",
   "peopleAddHouseholdName": "Nom du foyer",
+  "peopleHouseholdPetReviewTitle": "Animaux du foyer",
+  "peopleHouseholdPetReviewBody": "Choisissez les animaux qui appartiennent à ce foyer. Vous pourrez modifier plus tard.",
+  "peopleHouseholdMembersTitle": "Membres",
+  "peopleHouseholdPetsTitle": "Animaux",
+  "peopleHouseholdPetOwnerYou": "Cet animal est à vous",
+  "peopleHouseholdPetOtherOwner": "Appartient à un autre membre",
+  "peopleHouseholdPendingInvitesTitle": "Invitations en attente",
+  "peopleHouseholdRevokeInvite": "Révoquer",
+  "peopleHouseholdInviteMemberTitle": "Inviter un membre",
+  "peopleHouseholdInviteMemberAction": "Inviter un membre",
+  "peopleHouseholdInviteTierLabel": "Accès",
+  "peopleHouseholdInviteOrganiserLabel": "Organisateur du foyer",
+  "peopleHouseholdInviteAdultConfirm": "La personne a 18 ans ou plus",
+  "peopleHouseholdInviteSent": "Invitation envoyée",
+  "peopleHouseholdRenameTitle": "Renommer le foyer",
+  "peopleHouseholdLeaveTitle": "Quitter le foyer ?",
+  "peopleHouseholdLeaveBody": "Vous perdrez l'accès au foyer. D'autres accès peuvent rester.",
+  "peopleHouseholdLeaveAction": "Quitter le foyer",
+  "peopleHouseholdSuccessorLabel": "Organisateur successeur",
+  "peopleHouseholdInviteLandingTitle": "Rejoindre {householdName} ?",
+  "@peopleHouseholdInviteLandingTitle": {
+    "placeholders": { "householdName": { "type": "String" } }
+  },
+  "peopleHouseholdInviteLandingBody": "{inviterName} vous a invité·e en tant que {tier}.",
+  "@peopleHouseholdInviteLandingBody": {
+    "placeholders": {
+      "inviterName": { "type": "String" },
+      "tier": { "type": "String" }
+    }
+  },
+  "peopleHouseholdInviteAccept": "Accepter l'invitation",
+  "peopleHouseholdInviteDecline": "Refuser",
   "peopleAddPetsEmpty": "Aucun animal à lier pour l'instant.",
   "peopleAddPetLinkKind": "Rôle pour cet animal",
   "peopleAddEmergencyContact": "Contact d'urgence pour cet animal",

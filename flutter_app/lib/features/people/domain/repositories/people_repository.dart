@@ -1,6 +1,7 @@
 import '../entities/contact_detail.dart';
 import '../entities/contact_summary.dart';
 import '../entities/household.dart';
+import '../entities/household_invite_preview.dart';
 import '../entities/pet_people.dart';
 import '../entities/related_care.dart';
 import '../entities/roster.dart';
@@ -81,13 +82,29 @@ class HouseholdRemainingAccess {
 abstract class HouseholdsRepository {
   Future<List<Household>> listHouseholds();
 
-  Future<Household> createHousehold(String name);
+  Future<Household> fetchHouseholdDetail(String householdId);
+
+  Future<Household> createHousehold(
+    String name, {
+    List<String> petIds = const [],
+  });
+
+  Future<Household> renameHousehold({
+    required String householdId,
+    required String name,
+  });
+
+  Future<void> setHouseholdPets({
+    required String householdId,
+    required List<String> petIds,
+  });
 
   Future<void> createHouseholdInvite({
     required String householdId,
     required String inviteeEmail,
-    required String contactId,
+    String? contactId,
     String accessTier = 'full_access',
+    bool isOrganiser = false,
   });
 
   Future<void> revokeHouseholdInvite({
@@ -106,4 +123,10 @@ abstract class HouseholdsRepository {
     bool removeAllAccessToMyPets,
     String? successorUserId,
   });
+
+  Future<HouseholdInvitePreview> fetchHouseholdInvitePreview(String code);
+
+  Future<void> acceptHouseholdInvite(String code);
+
+  Future<void> declineHouseholdInvite(String code);
 }
