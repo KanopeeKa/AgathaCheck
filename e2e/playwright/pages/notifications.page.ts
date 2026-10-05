@@ -197,15 +197,17 @@ export class NotificationsPage {
   /** Assert date-group section headers (e.g. Today, Yesterday). */
   async expectDateGroupLabels(labels: string[]): Promise<void> {
     await this.waitForNotificationListSettled();
-    await expect(async () => {
-      await refreshFlutterAccessibility(this.page);
-      const panelText = await this.page.evaluate(() => document.body.innerText);
-      for (const label of labels) {
-        if (!new RegExp(`\\b${label}\\b`, 'i').test(panelText)) {
-          throw new Error(`Date group header not found: ${label}`);
-        }
-      }
-    }).toPass({ timeout: 30_000 });
+    await refreshFlutterAccessibility(this.page);
+    for (const label of labels) {
+      const pattern = new RegExp(`^${escapeRegExp(label)}$`, 'i');
+      await expect(
+        this.page
+          .getByRole('group', { name: pattern })
+          .or(this.page.getByText(pattern))
+          .or(this.page.getByRole('button', { name: new RegExp(`^${escapeRegExp(label)}\\b`, 'i') }))
+          .first(),
+      ).toBeVisible({ timeout: 30_000 });
+    }
   }
 
   /** Assert a pet name appears in the notification list (colour strip is visual-only). */
