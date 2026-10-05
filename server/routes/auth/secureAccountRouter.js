@@ -9,7 +9,7 @@ import {
 } from '../../lib/authCookies.js';
 import {
   emitAccountPasswordChanged,
-  resolveAccountNewSignInNotifications,
+  resolveAccountSecurityNotificationsOnSecureAccount,
 } from '../../lib/account/accountSecurityNotifications.js';
 import {
   lookupRefreshSessionFromToken,
@@ -67,7 +67,7 @@ export function registerSecureAccountRoutes(router, pool, { comparePassword, aut
         [newHash, accessPayload.id],
       );
 
-      await resolveAccountNewSignInNotifications(
+      await resolveAccountSecurityNotificationsOnSecureAccount(
         pool,
         accessPayload.id,
         notificationId || null,

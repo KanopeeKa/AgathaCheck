@@ -1,7 +1,8 @@
 import { logger } from '../logger.js';
 
 /**
- * Push A1 to other session families (FR-ACC / arch). No device token store yet — log + no-op.
+ * Push A1 to other session families (FR-ACC / arch).
+ * Deferred: no push token registry on server yet — see deferred.md.
  * @param {{ userId: string, title: string, body: string, excludeSessionFamilyId?: string | null }} params
  */
 export async function sendAccountSecurityPushToOtherDevices(params) {

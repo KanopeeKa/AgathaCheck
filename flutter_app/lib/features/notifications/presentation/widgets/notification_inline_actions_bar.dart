@@ -13,6 +13,7 @@ class NotificationInlineActionsBar extends StatelessWidget {
     required this.onRetry,
     this.declineLabel,
     this.acceptLabel,
+    this.showDeclineButton = true,
   });
 
   final bool busy;
@@ -22,6 +23,7 @@ class NotificationInlineActionsBar extends StatelessWidget {
   final VoidCallback onRetry;
   final String? declineLabel;
   final String? acceptLabel;
+  final bool showDeclineButton;
 
   static const _minTap = 48.0;
 
@@ -53,26 +55,28 @@ class NotificationInlineActionsBar extends StatelessWidget {
           ],
           Row(
             children: [
-              Expanded(
-                child: Semantics(
-                  button: true,
-                  label: declineLabel ?? l.declineShare,
-                  child: SizedBox(
-                    height: _minTap,
-                    child: OutlinedButton(
-                      onPressed: busy ? null : onDecline,
-                      child: busy
-                          ? const SizedBox(
-                              width: 18,
-                              height: 18,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : Text(declineLabel ?? l.declineShare),
+              if (showDeclineButton) ...[
+                Expanded(
+                  child: Semantics(
+                    button: true,
+                    label: declineLabel ?? l.declineShare,
+                    child: SizedBox(
+                      height: _minTap,
+                      child: OutlinedButton(
+                        onPressed: busy ? null : onDecline,
+                        child: busy
+                            ? const SizedBox(
+                                width: 18,
+                                height: 18,
+                                child: CircularProgressIndicator(strokeWidth: 2),
+                              )
+                            : Text(declineLabel ?? l.declineShare),
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 8),
+                const SizedBox(width: 8),
+              ],
               Expanded(
                 child: Semantics(
                   button: true,

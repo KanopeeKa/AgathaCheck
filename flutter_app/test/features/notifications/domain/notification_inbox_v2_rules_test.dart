@@ -10,6 +10,7 @@ AppNotification _n({
   bool isRead = false,
   NotificationPriority priority = NotificationPriority.normal,
   DateTime? resolvedAt,
+  DateTime? createdAt,
 }) {
   return AppNotification(
     id: 'id-$wireType-$isRead',
@@ -22,7 +23,7 @@ AppNotification _n({
     priority: priority,
     resolvedAt: resolvedAt,
     isRead: isRead,
-    createdAt: DateTime.utc(2026, 1, 1),
+    createdAt: createdAt ?? DateTime.utc(2026, 1, 1),
   );
 }
 
@@ -62,6 +63,16 @@ void main() {
       final list = [_n(kind: NotificationKind.suggestion)];
       expect(NotificationInboxV2Rules.bellNumericCount(list), 0);
       expect(NotificationInboxV2Rules.bellShowDot(list), true);
+    });
+    test('account password changed within 7 days needs response', () {
+      final list = [
+        _n(
+          kind: NotificationKind.account,
+          wireType: 'accountPasswordChanged',
+          createdAt: DateTime.now().subtract(const Duration(days: 1)),
+        ),
+      ];
+      expect(NotificationInboxV2Rules.bellNumericCount(list), 1);
     });
   });
 }

@@ -104,7 +104,18 @@ class _NotificationInboxRowState extends ConsumerState<NotificationInboxRow> {
         accept: l.notificationAccountSecureMyAccount,
       );
     }
+    if (kind == NotificationInlineActionKind.accountPasswordChanged) {
+      return InlineActionLabels(
+        decline: '',
+        accept: l.notificationAccountSecureMyAccount,
+      );
+    }
     return InlineActionLabels(decline: l.declineShare, accept: l.acceptShare);
+  }
+
+  bool get _showDeclineInline {
+    final kind = NotificationInlineActionSupport.kindFor(widget.notification);
+    return kind != NotificationInlineActionKind.accountPasswordChanged;
   }
 
   @override
@@ -132,8 +143,10 @@ class _NotificationInboxRowState extends ConsumerState<NotificationInboxRow> {
             errorMessage: _errorMessage,
             declineLabel: labels.decline,
             acceptLabel: labels.accept,
+            showDeclineButton: _showDeclineInline,
             onAccept: () => _runInline(() {
-              if (kind == NotificationInlineActionKind.accountNewSignIn) {
+              if (kind == NotificationInlineActionKind.accountNewSignIn ||
+                  kind == NotificationInlineActionKind.accountPasswordChanged) {
                 return runner.startSecureAccountFlow(
                   context,
                   widget.notification,
