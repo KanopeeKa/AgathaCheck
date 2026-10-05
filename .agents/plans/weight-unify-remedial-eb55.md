@@ -35,5 +35,16 @@ Address the post-programme review on `main`: fix establishment evaluation orderi
 ```yaml
 autonomy: active
 current_phase: R1
-next_action: implement R1
+last_completed_phase: null
+halt_reason: null
+next_action: "continue phase R1 on branch cursor/weight-remedial-establish-eb55"
+artifact_ref:
+  branch: cursor/weight-remedial-establish-eb55
+  plan_path: .agents/plans/weight-unify-remedial-eb55.md
+  plan_commit: fbbe58aa02f799d035ceb63ed57814ddf17d9016
+  snapshot_path: .agents/plans/weight-unify-remedial-eb55.snapshot.json
+  snapshot_commit: fbbe58aa02f799d035ceb63ed57814ddf17d9016
+open_prs: []
+merge_commits: {}
+debt_issue_refs: []
 ```

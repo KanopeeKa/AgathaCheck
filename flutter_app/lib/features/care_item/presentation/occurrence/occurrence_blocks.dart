@@ -261,6 +261,10 @@ class _OccurrenceBlocksState extends ConsumerState<OccurrenceBlocks> {
                             reasonCode: skip.reasonCode,
                             notes: skip.notes,
                           );
+                          await ref.read(analyticsServiceProvider).capture(
+                            'weigh_in_skipped',
+                            {'reason_code': skip.reasonCode ?? ''},
+                          );
                           await _report(outcome, l.careSkipped(_d.item.name));
                           return;
                         }

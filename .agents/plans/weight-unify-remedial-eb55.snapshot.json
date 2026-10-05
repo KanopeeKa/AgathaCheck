@@ -36,7 +36,9 @@
       "spawn_allowed": false,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending"
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null
     },
     {
       "id": "R2",
@@ -111,5 +113,5 @@
       "status": "pending"
     }
   ],
-  "content_hash": "sha256:4b4e9c2d89b98f5c7d4c1780d0ebf624a44fc6602ecd1416ce68acb1533e12ff"
+  "content_hash": "sha256:cf7e3708d6b414ee403c6a7a6d7bc452342fe41e4b8cf4aaa73f3206c3d3b7f6"
 }
