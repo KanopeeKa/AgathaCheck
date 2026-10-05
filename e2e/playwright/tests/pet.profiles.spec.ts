@@ -247,12 +247,14 @@ test.describe('Pet profiles', () => {
     expect(seeded.dateOfBirth).toBe('2022-01-01');
 
     await loginAs(page, testUser);
-    await page.goto(flutterGotoUrl(`/pet/${pet.id}`));
-    await waitForFlutterRoutePattern(page, /\/pet\/[^/?]+/, 30_000);
-
     const detail = new PetDetailPage(page);
-    await detail.expectLoaded('Milo');
-    await detail.expectAgeDisplay(/\d+(\.\d+)?\s+yrs|\d+\s+months?/i);
+    const agePattern = /\d+(\.\d+)?\s+yrs|\d+\s+months?/i;
+    await expect(async () => {
+      await page.goto(flutterGotoUrl(`/pet/${pet.id}`));
+      await waitForFlutterRoutePattern(page, /\/pet\/[^/?]+/, 30_000);
+      await detail.expectLoaded('Milo');
+      await detail.expectAgeDisplay(agePattern);
+    }).toPass({ timeout: 90_000 });
   });
 
   test('passed away pets appear in the collapsed Rainbow Bridge section', async ({

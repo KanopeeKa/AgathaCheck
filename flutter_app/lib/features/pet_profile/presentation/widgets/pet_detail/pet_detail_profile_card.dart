@@ -140,9 +140,13 @@ class PetDetailProfileCard extends ConsumerWidget {
                                   label: pet.gender!,
                                 ),
                               if (pet.ageDisplay != null)
-                                PetInfoChip(
-                                  icon: Icons.cake,
+                                Semantics(
+                                  identifier: 'pet_detail_age_chip',
                                   label: pet.ageDisplay!,
+                                  child: PetInfoChip(
+                                    icon: Icons.cake,
+                                    label: pet.ageDisplay!,
+                                  ),
                                 ),
                               if (displayWeight != null)
                                 Consumer(

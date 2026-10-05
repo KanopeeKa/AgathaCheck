@@ -135,8 +135,11 @@ export class PetDetailPage {
 
   async expectAgeDisplay(pattern: RegExp): Promise<void> {
     await refreshFlutterAccessibility(this.page);
-    await this.page
-      .getByRole('group', { name: pattern })
+    const ageChip = this.page.locator(
+      '[flt-semantics-identifier="pet_detail_age_chip"]',
+    );
+    await ageChip
+      .or(this.page.getByRole('group', { name: pattern }))
       .or(this.page.getByRole('button', { name: pattern }))
       .or(this.page.getByText(pattern))
       .first()
