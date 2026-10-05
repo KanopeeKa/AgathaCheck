@@ -73,7 +73,7 @@ class NotificationInboxV2Rules {
       (n) => isActivityKind(n.kind) && !n.isRead,
     );
     final hasUnreadSuggestions = notifications.any(
-      (n) => isForYouKind(n.kind) && !n.isRead,
+      (n) => isForYouKind(n.kind) && n.isSuggestionUnread,
     );
     return hasOtherUnreadActivity || hasUnreadSuggestions;
   }
@@ -83,5 +83,7 @@ class NotificationInboxV2Rules {
   ) => bellNumericCount(notifications);
 
   static bool forYouTabShowDot(Iterable<AppNotification> notifications) =>
-      notifications.any((n) => isForYouKind(n.kind) && !n.isRead);
+      notifications.any(
+        (n) => isForYouKind(n.kind) && (n.isSuggestionUnread),
+      );
 }

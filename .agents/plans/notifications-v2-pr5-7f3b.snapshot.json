@@ -17,10 +17,16 @@
       "allowed_paths": [
         "flutter_app/lib/features/notifications/**",
         "flutter_app/test/features/notifications/**",
+        "flutter_app/lib/features/care_intelligence/**",
+        "flutter_app/test/features/care_intelligence/**",
         "flutter_app/lib/l10n/**",
         "flutter_app/test/bdd/features/notifications_v2.feature",
         "server/routes/**",
+        "server/lib/notificationKind.js",
+        "server/lib/notificationHelper.js",
         "server/test/**",
+        "db/migrations/**",
+        "db/schema/**",
         ".agents/plans/notifications-v2-pr5-7f3b.*"
       ],
       "forbidden_paths": [

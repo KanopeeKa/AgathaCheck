@@ -9,6 +9,7 @@ import '../../../pet_profile/presentation/providers/pet_detail_viewer_context_pr
 import '../../data/care_intelligence_exception.dart';
 import '../../domain/entities/care_recommendation.dart';
 import '../providers/care_recommendations_provider.dart';
+import '../../../notifications/presentation/providers/notification_providers.dart';
 
 /// Accept / dismiss / not-relevant handlers for [CareSuggestionCard].
 class CareSuggestionRespondActions {
@@ -30,17 +31,26 @@ class CareSuggestionRespondActions {
 
     onLoadingChanged(true);
     try {
+      final apiId = switch (action) {
+        CareRecommendationResponseAction.accept ||
+        CareRecommendationResponseAction.adjust =>
+          recommendation.healthEntryId ?? recommendation.id,
+        CareRecommendationResponseAction.dismiss ||
+        CareRecommendationResponseAction.notRelevant =>
+          recommendation.id,
+      };
       await ref
           .read(careIntelligenceRepositoryProvider)
           .respond(
             petId: petId,
-            recommendationId: recommendation.id,
+            recommendationId: apiId,
             action: action,
           );
       ref.invalidate(petCareRecommendationsProvider(petId));
       ref.invalidate(petProfileCareSuggestionProvider(petId));
       ref.invalidate(petProfileCareMilestoneProvider(petId));
       ref.invalidate(healthEntriesNotifierProvider);
+      ref.invalidate(notificationsProvider);
 
       if (!context.mounted) return;
       final l = AppLocalizations.of(context)!;

@@ -11,6 +11,7 @@ import '../utils/notification_navigation.dart';
 import 'notification_inbox_row.dart'
     show NotificationInboxRow, NotificationInboxTileTap;
 import 'notification_date_groups.dart';
+import 'notification_suggestion_card.dart';
 import 'notification_tile.dart';
 
 /// Date-grouped inbox list with Activity pinned sections (FR-IN-3/4).
@@ -90,6 +91,13 @@ class NotificationInboxList extends ConsumerWidget {
               .toList()
         : const <AppNotification>[];
     final pinnedIds = {...needsResponseIds, ...pinnedUrgent.map((n) => n.id)};
+
+    if (selectedTab == NotificationInboxTab.forYou) {
+      return RefreshIndicator(
+        onRefresh: () => ref.read(notificationsProvider.notifier).refresh(),
+        child: _forYouSuggestionsList(context, ref, filtered, theme),
+      );
+    }
 
     final grouped = groupNotificationsByDate(
       context,
@@ -173,6 +181,53 @@ class NotificationInboxList extends ConsumerWidget {
         if (!context.mounted) return;
         navigateFromNotification(context, n);
       },
+    );
+  }
+
+  Widget _forYouSuggestionsList(
+    BuildContext context,
+    WidgetRef ref,
+    List<AppNotification> suggestions,
+    ThemeData theme,
+  ) {
+    final byPet = <String, List<AppNotification>>{};
+    for (final n in suggestions) {
+      final key = n.petId ?? '';
+      byPet.putIfAbsent(key, () => []).add(n);
+    }
+    final petKeys = byPet.keys.toList()
+      ..sort((a, b) {
+        final aName = byPet[a]?.first.petName ?? '';
+        final bName = byPet[b]?.first.petName ?? '';
+        return aName.compareTo(bName);
+      });
+
+    return ListView(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      children: [
+        for (final petKey in petKeys) ...[
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+            child: Text(
+              formatPetGroupHeader(byPet[petKey]?.first.petName),
+              style: theme.textTheme.labelLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          ...byPet[petKey]!.map(
+            (n) => NotificationSuggestionCard(
+              notification: n,
+              onOpenPet: () {
+                final petId = n.petId;
+                if (petId != null && petId.isNotEmpty) {
+                  navigateFromNotification(context, n);
+                }
+              },
+            ),
+          ),
+        ],
+      ],
     );
   }
 }

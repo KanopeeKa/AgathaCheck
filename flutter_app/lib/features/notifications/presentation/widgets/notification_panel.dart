@@ -58,11 +58,15 @@ class _NotificationPanelState extends ConsumerState<NotificationPanel> {
               _PanelHeader(l: l, theme: theme, onMarkAllRead: _markAllRead),
               NotificationInboxTabBar(
                 selected: selectedTab,
-                onSelected: (tab) =>
+                onSelected: (tab) {
+                  ref.read(notificationInboxSessionTabProvider.notifier).state =
+                      tab;
+                  if (tab == NotificationInboxTab.forYou) {
                     ref
-                            .read(notificationInboxSessionTabProvider.notifier)
-                            .state =
-                        tab,
+                        .read(notificationsProvider.notifier)
+                        .markForYouSuggestionsSeen();
+                  }
+                },
                 activityIndicatorCount:
                     NotificationInboxV2Rules.activityTabIndicatorCount(visible),
                 forYouShowDot: NotificationInboxV2Rules.forYouTabShowDot(

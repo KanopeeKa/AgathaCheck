@@ -70,6 +70,16 @@ class NotificationsNotifier extends AsyncNotifier<List<AppNotification>> {
       await refresh();
     } catch (_) {}
   }
+
+  Future<void> markForYouSuggestionsSeen({String? petId}) async {
+    await _getRepo().markSuggestionsSeen(petId: petId);
+    await refresh();
+  }
+
+  Future<void> submitSuggestionFeedback(String id, String action) async {
+    await _getRepo().submitSuggestionFeedback(id, action);
+    await refresh();
+  }
 }
 
 final unreadNotificationCountProvider = Provider<int>((ref) {

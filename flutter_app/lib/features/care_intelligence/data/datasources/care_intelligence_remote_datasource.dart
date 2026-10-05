@@ -34,13 +34,17 @@ class CareIntelligenceRemoteDataSource {
     String petId,
   ) async {
     final response = await _client.get(
-      Uri.parse('$baseUrl/api/pets/$petId/care-recommendations'),
+      Uri.parse('$baseUrl/api/notifications/suggestions?pet_id=$petId'),
       headers: _headers(),
     );
     _check(response);
     final list = json.decode(response.body) as List<dynamic>;
     return list
-        .map((e) => CareRecommendationModel.fromJson(e as Map<String, dynamic>))
+        .map(
+          (e) => CareRecommendationModel.fromSuggestionNotificationJson(
+            e as Map<String, dynamic>,
+          ),
+        )
         .toList();
   }
 
@@ -79,6 +83,24 @@ class CareIntelligenceRemoteDataSource {
     required CareRecommendationResponseAction action,
     Map<String, dynamic>? adjust,
   }) async {
+    if (action == CareRecommendationResponseAction.dismiss ||
+        action == CareRecommendationResponseAction.notRelevant) {
+      final feedbackAction = action == CareRecommendationResponseAction.dismiss
+          ? 'dismiss'
+          : 'not_relevant';
+      final response = await _client.post(
+        Uri.parse(
+          '$baseUrl/api/notifications/$recommendationId/suggestion-feedback',
+        ),
+        headers: _headers(jsonBody: true),
+        body: json.encode({'action': feedbackAction}),
+      );
+      _check(response);
+      final body = json.decode(response.body) as Map<String, dynamic>;
+      final notification =
+          body['notification'] as Map<String, dynamic>? ?? body;
+      return CareRecommendationModel.fromSuggestionNotificationJson(notification);
+    }
     final response = await _client.post(
       Uri.parse(
         '$baseUrl/api/pets/$petId/care-recommendations/$recommendationId/respond',
