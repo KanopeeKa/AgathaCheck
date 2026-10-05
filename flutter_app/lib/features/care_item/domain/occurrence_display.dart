@@ -2,7 +2,7 @@ import '../../../l10n/app_localizations.dart';
 import 'care_occurrence.dart';
 import 'occurrence_detail.dart';
 
-enum OccurrencePillTone { overdue, due, closedNotRecorded, neutral }
+enum OccurrencePillTone { overdue, due, notRecorded, closedNotRecorded, neutral }
 
 class OccurrencePillStyle {
   const OccurrencePillStyle({required this.label, required this.tone});
@@ -22,8 +22,8 @@ OccurrencePillStyle openOccurrencePillStyle(
       tone: OccurrencePillTone.overdue,
     ),
     CareOccurrenceStatus.notRecorded => OccurrencePillStyle(
-      label: l.urgencyOverdue,
-      tone: OccurrencePillTone.overdue,
+      label: l.careStatusNotRecordedOpen,
+      tone: OccurrencePillTone.notRecorded,
     ),
     CareOccurrenceStatus.due => OccurrencePillStyle(
       label: l.careStatusDue,
@@ -34,6 +34,23 @@ OccurrencePillStyle openOccurrencePillStyle(
       tone: OccurrencePillTone.neutral,
     ),
   };
+}
+
+/// Status pill for an upcoming-group row (Later today vs Coming up).
+OccurrencePillStyle upcomingOccurrencePillStyle(
+  AppLocalizations l, {
+  required bool laterToday,
+}) {
+  if (laterToday) {
+    return OccurrencePillStyle(
+      label: l.occurrenceLaterToday,
+      tone: OccurrencePillTone.neutral,
+    );
+  }
+  return OccurrencePillStyle(
+    label: l.occurrenceZoneComingUp,
+    tone: OccurrencePillTone.neutral,
+  );
 }
 
 /// Status pill for a closed Not recorded dose (grey, not actionable as overdue).

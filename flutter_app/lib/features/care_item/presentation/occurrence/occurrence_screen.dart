@@ -19,6 +19,7 @@ CareItemStatusTone _occurrencePillTone(OccurrencePillTone tone) =>
     switch (tone) {
       OccurrencePillTone.overdue => CareItemStatusTone.overdue,
       OccurrencePillTone.due => CareItemStatusTone.due,
+      OccurrencePillTone.notRecorded => CareItemStatusTone.notRecorded,
       OccurrencePillTone.closedNotRecorded =>
         CareItemStatusTone.notRecordedClosed,
       OccurrencePillTone.neutral => CareItemStatusTone.neutral,

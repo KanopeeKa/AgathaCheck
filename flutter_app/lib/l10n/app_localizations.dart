@@ -14452,6 +14452,60 @@ abstract class AppLocalizations {
   /// **'Skip all'**
   String get careSkipAll;
 
+  /// No description provided for @careBulkMarkDoneCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Mark 1 as done} other{Mark {count} as done}}'**
+  String careBulkMarkDoneCount(int count);
+
+  /// No description provided for @careBulkSkipCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Skip 1} other{Skip {count}}}'**
+  String careBulkSkipCount(int count);
+
+  /// No description provided for @careBulkMarkedDoneCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 marked done} other{{count} marked done}}'**
+  String careBulkMarkedDoneCount(int count);
+
+  /// No description provided for @careBulkSkippedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 skipped} other{{count} skipped}}'**
+  String careBulkSkippedCount(int count);
+
+  /// No description provided for @occurrenceLaterToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Later today'**
+  String get occurrenceLaterToday;
+
+  /// No description provided for @careShowCountMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Show {count} more'**
+  String careShowCountMore(int count);
+
+  /// No description provided for @careShowLess.
+  ///
+  /// In en, this message translates to:
+  /// **'Show less'**
+  String get careShowLess;
+
+  /// No description provided for @careMarkDateTimeDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark {when} as done'**
+  String careMarkDateTimeDone(String when);
+
+  /// No description provided for @careSkipDateTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip {when}'**
+  String careSkipDateTime(String when);
+
   /// No description provided for @careRecordAsDone.
   ///
   /// In en, this message translates to:

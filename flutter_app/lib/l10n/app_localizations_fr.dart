@@ -8366,6 +8366,71 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careSkipAll => 'Tout ignorer';
 
   @override
+  String careBulkMarkDoneCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Marquer $count comme faits',
+      one: 'Marquer 1 comme fait',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String careBulkSkipCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Ignorer $count',
+      one: 'Ignorer 1',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String careBulkMarkedDoneCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count marqués comme faits',
+      one: '1 marqué comme fait',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String careBulkSkippedCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ignorés',
+      one: '1 ignoré',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get occurrenceLaterToday => 'Plus tard aujourd\'hui';
+
+  @override
+  String careShowCountMore(int count) {
+    return 'Afficher $count de plus';
+  }
+
+  @override
+  String get careShowLess => 'Afficher moins';
+
+  @override
+  String careMarkDateTimeDone(String when) {
+    return 'Marquer $when comme fait';
+  }
+
+  @override
+  String careSkipDateTime(String when) {
+    return 'Ignorer $when';
+  }
+
+  @override
   String get careRecordAsDone => 'Enregistrer comme fait';
 
   @override

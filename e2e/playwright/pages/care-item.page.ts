@@ -304,24 +304,34 @@ export class CareItemPage {
     await occurrencePage.planAnotherDateFromMenu(isoDate);
   }
 
-  async markAllDone(): Promise<void> {
+  async markAllDone(count = 2): Promise<void> {
     await refreshFlutterAccessibility(this.page);
+    const label = new RegExp(
+      `Mark ${count} as done|Marquer ${count} comme fait`,
+      'i',
+    );
     await this.page
-      .locator('[flt-semantics-identifier="care_item_mark_all_done"]')
-      .or(this.page.getByRole('button', { name: /Mark all as done|Tout marquer comme fait/i }))
+      .locator('[flt-semantics-identifier="care_item_bulk_mark_done"]')
+      .or(this.page.getByRole('button', { name: label }))
       .first()
       .click();
     await refreshFlutterAccessibility(this.page);
   }
 
-  async skipAll(): Promise<void> {
+  async skipAll(count = 2): Promise<void> {
     await refreshFlutterAccessibility(this.page);
+    const label = new RegExp(`Skip ${count}|Ignorer ${count}`, 'i');
     await this.page
-      .locator('[flt-semantics-identifier="care_item_skip_all"]')
-      .or(this.page.getByRole('button', { name: /Skip all|Tout ignorer/i }))
+      .locator('[flt-semantics-identifier="care_item_bulk_skip"]')
+      .or(this.page.getByRole('button', { name: label }))
       .first()
       .click();
     await refreshFlutterAccessibility(this.page);
+  }
+
+  /** @deprecated use markAllDone(count) */
+  async markAllDoneLegacy(): Promise<void> {
+    await this.markAllDone(2);
   }
 
   async expandPastOccurrences(): Promise<void> {
