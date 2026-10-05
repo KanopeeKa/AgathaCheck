@@ -49,10 +49,10 @@ next_action: "continue phase 3 on branch cursor/active-codebase-i2-3-cycle-cuts-
 artifact_ref:
   branch: cursor/active-codebase-i2-3-cycle-cuts-e41f
   plan_path: .agents/plans/active-codebase-batch-i2-acyclic-graph-e41f.md
-  plan_commit: 2bc491061236f7b38cd6c0b24965ef9aa413dda1
+  plan_commit: 6ce818ddecf9fd80db55c51b54428480f78104db
   snapshot_path: .agents/plans/active-codebase-batch-i2-acyclic-graph-e41f.snapshot.json
-  snapshot_commit: 2bc491061236f7b38cd6c0b24965ef9aa413dda1
-open_prs: []
+  snapshot_commit: 6ce818ddecf9fd80db55c51b54428480f78104db
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1678"]
 merge_commits: {}
 debt_issue_refs: []
 ```
