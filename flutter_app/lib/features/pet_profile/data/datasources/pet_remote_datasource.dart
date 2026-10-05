@@ -58,8 +58,17 @@ class PetRemoteDataSourceImpl implements PetRemoteDataSource {
     }
   }
 
-  Map<String, dynamic> _petPayload(PetModel pet) {
+  Map<String, dynamic> _petCreatePayload(PetModel pet) {
     final payload = pet.toJson(includeWeightEntryDate: true);
+    if (isPendingPetPhotoUpload(pet.photoPath)) {
+      payload.remove('photoPath');
+    }
+    return payload;
+  }
+
+  Map<String, dynamic> _petUpdatePayload(PetModel pet) {
+    final payload = pet.toJson(includeWeightEntryDate: false);
+    payload.remove('weight');
     if (isPendingPetPhotoUpload(pet.photoPath)) {
       payload.remove('photoPath');
     }
@@ -107,7 +116,7 @@ class PetRemoteDataSourceImpl implements PetRemoteDataSource {
     final response = await _client.post(
       Uri.parse('$baseUrl/api/pets'),
       headers: _headers(token),
-      body: json.encode(_petPayload(pet)),
+      body: json.encode(_petCreatePayload(pet)),
     );
     if (response.statusCode >= 400) {
       throw _errorFromResponse(response, 'Failed to save pet');
@@ -122,7 +131,7 @@ class PetRemoteDataSourceImpl implements PetRemoteDataSource {
     final response = await _client.put(
       Uri.parse('$baseUrl/api/pets/${pet.id}'),
       headers: _headers(token),
-      body: json.encode(_petPayload(pet)),
+      body: json.encode(_petUpdatePayload(pet)),
     );
     if (response.statusCode >= 400) {
       throw _errorFromResponse(response, 'Failed to update pet');

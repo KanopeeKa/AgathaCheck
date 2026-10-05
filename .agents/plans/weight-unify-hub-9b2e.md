@@ -33,10 +33,10 @@
 
 ```yaml
 autonomy: active
-current_phase: W5
-last_completed_phase: null
+current_phase: W6
+last_completed_phase: W5
 halt_reason: null
-next_action: "continue phase W5 on branch cursor/weight-unify-w5-foundations-9b2e"
+next_action: "phase W6 on branch cursor/weight-unify-w6-hub-9b2e"
 artifact_ref:
   branch: cursor/weight-unify-hub-integration-9b2e
   plan_path: .agents/plans/weight-unify-hub-9b2e.md

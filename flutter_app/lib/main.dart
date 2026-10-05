@@ -4,18 +4,24 @@ import 'l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'app_pet_care_sync.dart';
 import 'core/providers/analytics_providers.dart';
 import 'core/providers/locale_provider.dart';
+import 'core/providers/pet_care_sync.dart';
 import 'core/router/app_router.dart';
 import 'core/services/consent_service.dart';
 import 'core/theme/app_theme.dart';
 import 'core/utils/constants.dart';
+import 'core/weight/weight_unit.dart';
+import 'core/weight/weight_unit_preference.dart';
 import 'core/widgets/consent_banner.dart';
 import 'features/auth/presentation/providers/auth_providers.dart';
+import 'features/care_item/application/care_item_providers.dart';
 import 'features/care_item/care_item.dart';
 import 'features/health_tracking/presentation/providers/health_providers.dart';
 import 'features/pet_profile/presentation/providers/pet_providers.dart';
 import 'features/subscription/data/services/revenuecat_service.dart';
+import 'features/weight_tracking/presentation/providers/weight_providers.dart';
 
 /// Global messenger so session-expiry notices can be shown from anywhere,
 /// independent of the currently routed screen.
@@ -36,9 +42,24 @@ Future<void> main() async {
           (ref) => ref.watch(authHttpClientProvider),
         ),
         careDataChangedProvider.overrideWith(
-          (ref) =>
-              () => ref.read(healthEntriesNotifierProvider.notifier).refresh(),
+          (ref) => () async {
+            await ref.read(healthEntriesNotifierProvider.notifier).refresh();
+            ref.invalidate(weightEntriesNotifierProvider);
+            ref.invalidate(weightOverviewProvider);
+            ref.invalidate(weightFulfilmentCandidatesProvider);
+          },
         ),
+        weightUnitPreferenceProvider.overrideWith(
+          (ref) => weightUnitFromWire(ref.watch(authProvider).user?.weightUnit),
+        ),
+        setWeightUnitPreferenceProvider.overrideWith(
+          (ref) => (unit) async {
+            await ref
+                .read(authProvider.notifier)
+                .updateProfile(weightUnit: weightUnitToWire(unit));
+          },
+        ),
+        petCareSyncProvider.overrideWith((ref) => AppPetCareSync(ref)),
       ],
       child: const PetProfileApp(),
     ),
