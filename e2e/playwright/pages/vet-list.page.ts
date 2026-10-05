@@ -333,14 +333,18 @@ export class VetListPage {
     }
   }
 
-  async expectVetLinkedPetCount(vetName: string, _count: number): Promise<void> {
+  async expectVetLinkedPetCount(vetName: string, count: number): Promise<void> {
     await this.openVetDetail(vetName);
     await this.openPetsAccessTabIfPresent();
-    await expect(
-      this.page.getByText(
-        /Related pets|Pets cared for|Pets & access|Animaux concernés|Animaux pris en charge/i,
-      ),
-    ).toBeVisible({ timeout: 15_000 });
+    const petsTab = this.page.getByRole('tab', {
+      name: /Pets & access|Pets cared for|Animaux/i,
+    });
+    await expect(petsTab).toBeVisible({ timeout: 15_000 });
+    if (count === 0) {
+      await expect(
+        this.page.getByText(/no linked pets|aucun animal lié/i),
+      ).toBeVisible({ timeout: 15_000 });
+    }
   }
 
   async openVetDetail(vetName: string): Promise<void> {
