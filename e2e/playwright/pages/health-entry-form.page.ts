@@ -80,14 +80,15 @@ export class HealthEntryFormPage {
   }
 
   async expandAdvancedSettings(): Promise<void> {
-    const tile = this.page.locator(
-      'flt-semantics[flt-semantics-identifier="health_entry_advanced_settings"]',
-    );
-    if ((await tile.count()) > 0) {
-      await tile.click();
-      return;
-    }
-    await this.page.getByText(/Advanced settings/i).click();
+    const tile = this.page
+      .getByRole('button', { name: /^Advanced settings/i })
+      .or(
+        this.page.locator(
+          'flt-semantics[flt-semantics-identifier="health_entry_advanced_settings"]',
+        ),
+      );
+    await tile.first().scrollIntoViewIfNeeded();
+    await tile.first().click({ force: true });
   }
 
   async selectScheduleType(label: string): Promise<void> {
@@ -96,5 +97,19 @@ export class HealthEntryFormPage {
 
   async expectScheduleTypeSelected(label: string): Promise<void> {
     await expect(this.page.getByText(label, { exact: true }).first()).toBeVisible();
+  }
+
+  async openCareProviderPicker(): Promise<void> {
+    await this.expandAdvancedSettings();
+    await this.page
+      .locator('[flt-semantics-identifier="people_picker_field_care_provider"]')
+      .scrollIntoViewIfNeeded();
+    await this.page.locator('[flt-semantics-identifier="people_picker_field_care_provider"]').click();
+  }
+
+  async expectCareProviderFieldShows(name: string): Promise<void> {
+    await expect(
+      this.page.locator('[flt-semantics-identifier="people_picker_field_care_provider"]'),
+    ).toContainText(name, { timeout: 15_000 });
   }
 }

@@ -206,3 +206,21 @@ Feature: Health Tracking
     Given the user has pets in "Happy Paws Clinic" and personal pets
     When the user selects the "Happy Paws Clinic" filter chip
     Then only health entries for pets in "Happy Paws Clinic" should be displayed
+
+  # ── Care provider (People integration) ───────────────────────
+
+  @P1
+  Scenario: Pick a care provider and add a new one inline from the Care Item form
+    Given I am logged in with a pet named Buddy
+    And a care provider exists in Contacts
+    When I pick the care provider on a new care item
+    And I add another care provider inline from the picker
+    Then the care item form shows the new care provider
+
+  @P1
+  Scenario: An inactive contact isn't offered in the care provider picker but stays visible on items already using it
+    Given I am logged in with a pet named Buddy
+    And a care item uses a contact that is then marked inactive
+    When I open the care provider picker on a new care item
+    Then the inactive contact is not offered in the picker
+    And the existing care item still shows the inactive provider

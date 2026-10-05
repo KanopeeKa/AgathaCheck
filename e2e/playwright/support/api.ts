@@ -1182,6 +1182,54 @@ export type PetPeopleRelationship = {
   active: boolean;
 };
 
+export async function addPetPeopleRelationship(
+  baseURL: string,
+  token: string,
+  petId: string,
+  contactId: string,
+  relationshipKind: 'emergency_contact' | 'care_provider' | 'other',
+): Promise<void> {
+  const res = await apiFetch(apiUrl(`/pets/${petId}/people-relationships`, baseURL), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      contact_id: contactId,
+      relationship_kind: relationshipKind,
+    }),
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`addPetPeopleRelationship failed (${res.status}): ${body}`);
+  }
+}
+
+export async function setPetPeopleSlot(
+  baseURL: string,
+  token: string,
+  petId: string,
+  kind: 'primary_vet' | 'out_of_hours_vet',
+  contactId: string | null,
+): Promise<void> {
+  const res = await apiFetch(
+    apiUrl(`/pets/${petId}/people-relationships/slots/${kind}`, baseURL),
+    {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ contact_id: contactId }),
+    },
+  );
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`setPetPeopleSlot failed (${res.status}): ${body}`);
+  }
+}
+
 export async function getPetPeopleRelationships(
   baseURL: string,
   token: string,
@@ -1345,6 +1393,8 @@ export async function getHealthEntry(
   name: string;
   dosage?: string | null;
   next_due_date?: string | null;
+  provider_contact_id?: string | null;
+  provider_typed_name?: string | null;
 }> {
   const res = await apiFetch(apiUrl(`/health-entries/${entryId}`, baseURL), {
     headers: { Authorization: `Bearer ${token}` },
@@ -1359,6 +1409,8 @@ export async function getHealthEntry(
     name: string;
     dosage?: string | null;
     next_due_date?: string | null;
+    provider_contact_id?: string | null;
+    provider_typed_name?: string | null;
   }>();
 }
 
@@ -1375,6 +1427,8 @@ export async function createHealthEntry(
     frequencyDays?: number;
     scheduleTimes?: string[];
     careFamily?: string;
+    providerContactId?: string;
+    providerTypedName?: string;
   },
 ): Promise<TestHealthEntry> {
   const frequency = options.frequency ?? 'monthly';
@@ -1390,6 +1444,12 @@ export async function createHealthEntry(
     status: 'active',
     care_family: careFamily,
   };
+  if (options.providerContactId) {
+    body.provider_contact_id = options.providerContactId;
+  }
+  if (options.providerTypedName) {
+    body.provider_typed_name = options.providerTypedName;
+  }
   if (options.scheduleTimes != null) {
     body.schedule_times = options.scheduleTimes;
   }

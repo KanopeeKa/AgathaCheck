@@ -788,4 +788,134 @@ export class PeoplePage {
     await this.expectFormSaved('create');
     await this.expectLoaded();
   }
+
+  // ── People picker (shared across pet profile, care, away plan) ───────────
+
+  async openPeoplePickerField(purpose: string): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    const field = this.page.locator(
+      `[flt-semantics-identifier="people_picker_field_${purpose}"]`,
+    );
+    await field.scrollIntoViewIfNeeded();
+    await field.click();
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async searchPeoplePicker(query: string): Promise<void> {
+    const field = this.page
+      .getByRole('textbox')
+      .filter({ hasNot: this.page.locator('[aria-label*="Entry Name"]') })
+      .last();
+    await field.fill('');
+    await field.pressSequentially(query, { delay: 30 });
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async selectPeoplePickerByName(name: string): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    await this.page
+      .getByRole('button', { name: new RegExp(escapeRegExp(name), 'i') })
+      .first()
+      .click();
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async selectPeoplePickerOption(optionId: string, nameHint?: string): Promise<void> {
+    const option = this.page.locator(
+      `[flt-semantics-identifier="people_picker_option_${optionId}"]`,
+    );
+    if (await option.isVisible({ timeout: 3_000 }).catch(() => false)) {
+      await option.click();
+    } else if (nameHint) {
+      await this.selectPeoplePickerByName(nameHint);
+    } else {
+      await expect(option).toBeVisible({ timeout: 15_000 });
+      await option.click();
+    }
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async expectPeoplePickerOptionHidden(optionId: string): Promise<void> {
+    await expect(
+      this.page.locator(`[flt-semantics-identifier="people_picker_option_${optionId}"]`),
+    ).toHaveCount(0, { timeout: 10_000 });
+  }
+
+  async quickAddContactFromPicker(name: string, phone?: string): Promise<void> {
+    await this.page.locator('[flt-semantics-identifier="people_picker_add"]').click();
+    await refreshFlutterAccessibility(this.page);
+    await fillLabelledField(this.page, 'Name', name);
+    if (phone) {
+      await fillTextbox(this.page, 'Phone', phone);
+    }
+    await this.page.getByRole('button', { name: /^Save contact$/i }).click();
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async useTypedNameInPicker(name: string): Promise<void> {
+    await this.searchPeoplePicker(name);
+    await this.page.locator('[flt-semantics-identifier="people_picker_typed_name"]').click();
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  // ── Pet profile: People around {pet} / emergency card ────────────────────
+
+  async expectPeopleAroundPetSection(petName: string): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    const section = this.page
+      .getByText(new RegExp(`People around ${escapeRegExp(petName)}`, 'i'))
+      .or(this.page.getByText(/^Emergency$/i));
+    await section.first().scrollIntoViewIfNeeded();
+    await expect(section.first()).toBeVisible({ timeout: 30_000 });
+  }
+
+  async expectEmergencyCardShowsContact(name: string): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    const pattern = new RegExp(escapeRegExp(name), 'i');
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      const card = this.page.getByRole('group', { name: /Emergency/i });
+      await expect(card.or(this.page.getByText(pattern)).first()).toBeVisible();
+    }).toPass({ timeout: 45_000 });
+  }
+
+  async expectEmergencyPrimaryVetCallAction(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    const call = this.page
+      .locator('[flt-semantics-identifier="pet_emergency_call_primary_vet"]')
+      .or(this.page.getByRole('button', { name: /^Call$/i }));
+    await expect(call.first()).toBeVisible({ timeout: 15_000 });
+  }
+
+  async openPetEmergencyManage(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    const manage = this.page
+      .locator('[data-flutter-key="pet_emergency_manage_button"]')
+      .or(this.page.getByRole('button', { name: /^Manage$/i }));
+    await manage.first().click();
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async setPetSlotFromManageSheet(
+    slotPurpose: 'pet_slot_out_of_hours_vet' | 'pet_slot_primary_vet',
+    contactId: string,
+    searchHint?: string,
+  ): Promise<void> {
+    const slotKind = slotPurpose.replace('pet_slot_', '');
+    await this.openPeoplePickerField(slotPurpose);
+    const slotSave = this.page.waitForResponse(
+      (res) =>
+        res.url().includes(`/people-relationships/slots/${slotKind}`) &&
+        res.request().method() === 'PUT' &&
+        res.ok(),
+    );
+    await this.selectPeoplePickerOption(contactId, searchHint);
+    const replaceConfirm = this.page.getByRole('button', { name: /^Replace$/i });
+    if (await replaceConfirm.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      await replaceConfirm.click();
+    }
+    await slotSave;
+    await this.page.keyboard.press('Escape');
+    await refreshFlutterAccessibility(this.page);
+  }
 }

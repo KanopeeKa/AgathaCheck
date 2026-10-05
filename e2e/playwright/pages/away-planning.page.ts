@@ -166,6 +166,46 @@ export class AwayPlanningPage {
     ).toBeVisible({ timeout: 30_000 });
   }
 
+  async openCarerEditDialog(petId: string, petName: string): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    const edit = this.page.getByRole('button', {
+      name: new RegExp(`Edit carer for ${petName}`, 'i'),
+    });
+    await expect(edit).toBeVisible({ timeout: 30_000 });
+    await edit.click();
+    await refreshFlutterAccessibility(this.page);
+    await expect(
+      this.page.locator('[flt-semantics-identifier="people_picker_field_away_plan_carer"]'),
+    ).toBeVisible({ timeout: 15_000 });
+  }
+
+  async saveCarerEditDialog(): Promise<void> {
+    await this.page
+      .getByRole('button', { name: /^Save carer$/i })
+      .or(this.page.locator('[data-flutter-key="away_plan_carer_edit_save"]'))
+      .click();
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async assignContactCarer(petId: string, petName: string, contactId: string): Promise<void> {
+    await this.openCarerEditDialog(petId, petName);
+    await this.page.locator('[flt-semantics-identifier="people_picker_field_away_plan_carer"]').click();
+    await refreshFlutterAccessibility(this.page);
+    await this.page
+      .locator(`[flt-semantics-identifier="people_picker_option_${contactId}"]`)
+      .click();
+    await refreshFlutterAccessibility(this.page);
+    await this.saveCarerEditDialog();
+  }
+
+  async downloadPetHandover(petName: string) {
+    const downloadPromise = this.page.waitForEvent('download', { timeout: 60_000 });
+    await this.page
+      .getByRole('button', { name: new RegExp(`Download plan for ${petName}`, 'i') })
+      .click();
+    return downloadPromise;
+  }
+
   async expectPetCarerRow(
     petId: string,
     petName: string,

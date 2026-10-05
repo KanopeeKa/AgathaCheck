@@ -382,8 +382,9 @@ class PetPeopleDto {
           .toList(),
       relationships: (json['relationships'] as List? ?? [])
           .whereType<Map<String, dynamic>>()
-          .map(
-            (r) => PetRelationship(
+          .map((r) {
+            final contact = r['contact'] as Map<String, dynamic>?;
+            return PetRelationship(
               id: r['id']?.toString() ?? '',
               petId: r['pet_id']?.toString() ?? '',
               contactId: r['contact_id']?.toString() ?? '',
@@ -392,14 +393,24 @@ class PetPeopleDto {
               ),
               isPrimary: r['is_primary'] == true,
               active: r['active'] != false,
-              contactKind: r['contact_kind']?.toString() ?? '',
-              contactName: r['contact_name']?.toString() ?? '',
-              contactPhone: r['contact_phone']?.toString(),
+              contactKind:
+                  r['contact_kind']?.toString() ??
+                  contact?['kind']?.toString() ??
+                  '',
+              contactName:
+                  r['contact_name']?.toString() ??
+                  contact?['name']?.toString() ??
+                  '',
+              contactPhone:
+                  r['contact_phone']?.toString() ??
+                  contact?['phone']?.toString(),
               contactInactiveAt: r['contact_inactive_at'] != null
                   ? DateTime.tryParse(r['contact_inactive_at'].toString())
+                  : contact?['inactive_at'] != null
+                  ? DateTime.tryParse(contact!['inactive_at'].toString())
                   : null,
-            ),
-          )
+            );
+          })
           .toList(),
     );
   }

@@ -358,6 +358,13 @@ export class CareItemPage {
     await refreshFlutterAccessibility(this.page);
   }
 
+  async expectCareProviderVisible(providerName: string): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    await expect(this.page.getByText(providerName, { exact: false }).first()).toBeVisible({
+      timeout: 30_000,
+    });
+  }
+
   async expectAbsenceReviewActionsHidden(): Promise<void> {
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
