@@ -156,9 +156,7 @@ class PersonDetailContactView extends ConsumerWidget {
             ],
           ),
           Expanded(
-            child: TabBarView(
-              children: [for (final tab in tabs) tab.body],
-            ),
+            child: TabBarView(children: [for (final tab in tabs) tab.body]),
           ),
         ],
       ),

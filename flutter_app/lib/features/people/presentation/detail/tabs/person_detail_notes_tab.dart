@@ -124,13 +124,15 @@ class _PersonDetailNotesTabState extends ConsumerState<PersonDetailNotesTab> {
     setState(() => _saving = true);
     final l = AppLocalizations.of(context)!;
     try {
-      await ref.read(peopleCommandsProvider).saveContactNotes(
-        widget.contactId,
-        privateNote: _privateController.text,
-        householdNote: widget.showHouseholdNote
-            ? _householdController.text
-            : null,
-      );
+      await ref
+          .read(peopleCommandsProvider)
+          .saveContactNotes(
+            widget.contactId,
+            privateNote: _privateController.text,
+            householdNote: widget.showHouseholdNote
+                ? _householdController.text
+                : null,
+          );
       if (mounted) {
         ScaffoldMessenger.of(
           context,

@@ -40,8 +40,7 @@ class PersonDetailPetsAccessTab extends ConsumerWidget {
             ),
           )
         else
-          for (final pet in pets)
-            _PetAccessRow(pet: pet, access: access, l: l),
+          for (final pet in pets) _PetAccessRow(pet: pet, access: access, l: l),
         if (allowLink) ...[
           const SizedBox(height: 16),
           OutlinedButton.icon(
@@ -83,7 +82,9 @@ class _PetAccessRow extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CircleAvatar(child: Text(pet.petName.isNotEmpty ? pet.petName[0] : '?')),
+          CircleAvatar(
+            child: Text(pet.petName.isNotEmpty ? pet.petName[0] : '?'),
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(

@@ -77,10 +77,7 @@ ContactDetail _vetDetail() => const ContactDetail(
   email: 'desk@greenhill.example',
 );
 
-Widget _detailApp({
-  required Widget child,
-  required List<Override> overrides,
-}) {
+Widget _detailApp({required Widget child, required List<Override> overrides}) {
   return ProviderScope(
     overrides: overrides,
     child: MaterialApp(
@@ -154,9 +151,7 @@ void main() {
             GlobalWidgetsLocalizations.delegate,
           ],
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const Scaffold(
-            body: PersonDetailPage(personId: 'carer-1'),
-          ),
+          home: const Scaffold(body: PersonDetailPage(personId: 'carer-1')),
         ),
       ),
     );
@@ -179,7 +174,9 @@ void main() {
     expect(container.read(personDetailProvider('carer-1')).isLoading, isTrue);
   });
 
-  testWidgets('pending invite variant shows single-page status', (tester) async {
+  testWidgets('pending invite variant shows single-page status', (
+    tester,
+  ) async {
     final roster = sampleHubRoster();
     await tester.pumpWidget(
       _detailApp(
@@ -221,7 +218,10 @@ void main() {
       contacts: [
         ContactSummary(
           id: 'contact-member',
-          directory: const ContactDirectoryRef(type: 'household', householdId: 'hh-1'),
+          directory: const ContactDirectoryRef(
+            type: 'household',
+            householdId: 'hh-1',
+          ),
           kind: ContactKind.person,
           name: 'Morgan Lee',
           roles: const [],

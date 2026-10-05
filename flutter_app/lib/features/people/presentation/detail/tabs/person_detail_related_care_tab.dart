@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../l10n/app_localizations.dart';
 import '../../../application/people_providers.dart';
+
 class PersonDetailRelatedCareTab extends ConsumerWidget {
   const PersonDetailRelatedCareTab({super.key, required this.contactId});
 
@@ -37,10 +38,7 @@ class PersonDetailRelatedCareTab extends ConsumerWidget {
           padding: const EdgeInsets.all(16),
           children: [
             for (final item in related.careItems)
-              ListTile(
-                title: Text(item.name),
-                subtitle: Text(item.petId),
-              ),
+              ListTile(title: Text(item.name), subtitle: Text(item.petId)),
             for (final absence in related.absences)
               ListTile(
                 title: Text(
@@ -51,7 +49,9 @@ class PersonDetailRelatedCareTab extends ConsumerWidget {
             if (related.historyCount > 0)
               Padding(
                 padding: const EdgeInsets.only(top: 8),
-                child: Text(l.peopleDetailRelatedCareHistory(related.historyCount)),
+                child: Text(
+                  l.peopleDetailRelatedCareHistory(related.historyCount),
+                ),
               ),
           ],
         );

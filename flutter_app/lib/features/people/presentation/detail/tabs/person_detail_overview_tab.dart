@@ -50,22 +50,22 @@ class PersonDetailOverviewTab extends StatelessWidget {
             ),
           ),
         ],
-        if (detail.kind == ContactKind.organisation && detail.staff.isNotEmpty)
-          ...[
-            const SizedBox(height: 20),
-            Text(
-              l.peopleDetailStaffAt(detail.name),
-              style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
+        if (detail.kind == ContactKind.organisation &&
+            detail.staff.isNotEmpty) ...[
+          const SizedBox(height: 20),
+          Text(
+            l.peopleDetailStaffAt(detail.name),
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w700,
             ),
-            const SizedBox(height: 8),
-            for (final member in detail.staff)
-              ListTile(
-                title: Text(member.name),
-                subtitle: Text(contactRolesLine(l, member.roles)),
-              ),
-          ],
+          ),
+          const SizedBox(height: 8),
+          for (final member in detail.staff)
+            ListTile(
+              title: Text(member.name),
+              subtitle: Text(contactRolesLine(l, member.roles)),
+            ),
+        ],
         if (_hasNotesPreview) ...[
           const SizedBox(height: 20),
           Text(

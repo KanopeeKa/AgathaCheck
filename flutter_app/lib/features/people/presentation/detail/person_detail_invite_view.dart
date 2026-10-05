@@ -61,9 +61,7 @@ class PersonDetailInviteView extends StatelessWidget {
             )
           else
             for (final petId in invite.petIds)
-              ListTile(
-                title: Text(rosterPetName(roster, petId) ?? petId),
-              ),
+              ListTile(title: Text(rosterPetName(roster, petId) ?? petId)),
           const SizedBox(height: 16),
           Text(
             l.peopleDetailRevokeInEdit,

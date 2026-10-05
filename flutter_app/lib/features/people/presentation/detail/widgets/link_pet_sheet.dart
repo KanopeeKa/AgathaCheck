@@ -18,11 +18,8 @@ Future<void> showLinkPetSheet({
   await showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
-    builder: (ctx) => _LinkPetSheetBody(
-      ref: ref,
-      contactId: contactId,
-      pets: pets,
-    ),
+    builder: (ctx) =>
+        _LinkPetSheetBody(ref: ref, contactId: contactId, pets: pets),
   );
 }
 
@@ -57,9 +54,9 @@ class _LinkPetSheetBodyState extends State<_LinkPetSheetBody> {
           children: [
             Text(
               l.peopleDetailLinkPetTitle,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 12),
             for (final pet in widget.pets)
@@ -77,17 +74,18 @@ class _LinkPetSheetBodyState extends State<_LinkPetSheetBody> {
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
-              children: [
-                RelationshipKind.careProvider,
-                RelationshipKind.emergencyContact,
-                RelationshipKind.other,
-              ].map((kind) {
-                return FilterChip(
-                  label: Text(kind.label(l)),
-                  selected: _selectedKind == kind,
-                  onSelected: (_) => setState(() => _selectedKind = kind),
-                );
-              }).toList(),
+              children:
+                  [
+                    RelationshipKind.careProvider,
+                    RelationshipKind.emergencyContact,
+                    RelationshipKind.other,
+                  ].map((kind) {
+                    return FilterChip(
+                      label: Text(kind.label(l)),
+                      selected: _selectedKind == kind,
+                      onSelected: (_) => setState(() => _selectedKind = kind),
+                    );
+                  }).toList(),
             ),
             const SizedBox(height: 16),
             FilledButton(
