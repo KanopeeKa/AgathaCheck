@@ -98,8 +98,20 @@ export class WeightHubPage {
 
   async openHistoryEntry(weight: number, unit = 'kg'): Promise<void> {
     await this.openHub();
-    const label = `${weight.toFixed(1)} ${unit}`;
-    await this.page.getByText(label, { exact: false }).first().click();
+    const weightPattern = new RegExp(
+      `${weight.toFixed(1).replace('.', '\\.')}\\s*${unit}`,
+      'i',
+    );
+    const row = this.page
+      .getByRole('button', { name: weightPattern })
+      .filter({
+        has: this.page.getByRole('button', {
+          name: /Delete weight entry|Supprimer l'entrée de poids/i,
+        }),
+      })
+      .first();
+    await row.scrollIntoViewIfNeeded();
+    await row.click();
     await this.page
       .getByRole('textbox', { name: /Weight|Poids/i })
       .first()

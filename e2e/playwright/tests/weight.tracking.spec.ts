@@ -256,6 +256,10 @@ test.describe('Weight tracking', () => {
   test('weight tracking section exposes kg and lb unit selectors', async ({ page, testUser }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const pet = await createPet(baseURL, testUser.accessToken, 'Bella');
+    await createWeightEntry(baseURL, testUser.accessToken, pet.id, {
+      weight: 10.0,
+      date: '2025-06-01',
+    });
 
     await loginAs(page, testUser);
     const petList = new PetListPage(page);

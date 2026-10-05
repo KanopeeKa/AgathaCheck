@@ -155,19 +155,22 @@ export class WeightTrackingPage {
     await this.waitForWeightDataSettled();
     const label = `${weight.toFixed(1)} ${unit}`;
     const pattern = new RegExp(label.replace('.', '\\.'), 'i');
-    await this.page
+    const row = this.page
       .getByRole('group', { name: pattern })
-      .or(this.page.getByText(label, { exact: false }))
-      .first()
-      .waitFor({ timeout: 15_000 });
+      .or(this.page.getByText(pattern))
+      .first();
+    await row.scrollIntoViewIfNeeded();
+    await row.waitFor({ timeout: 15_000 });
   }
 
   /** Count weight entry rows visible on the weight screen. */
   async expectWeightEntryCount(count: number): Promise<void> {
     await this.openSection();
     await this.waitForWeightDataSettled();
-    const entries = this.page.getByRole('group', { name: /^\d+\.\d+ (kg|lb)/ });
-    await expect(entries).toHaveCount(count, { timeout: 15_000 });
+    const deleteButtons = this.page.getByRole('button', {
+      name: /Delete weight entry|Supprimer l'entrée de poids/i,
+    });
+    await expect(deleteButtons).toHaveCount(count, { timeout: 15_000 });
   }
 
   /** Expect the kg / lb unit segmented control to be present. */
