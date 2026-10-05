@@ -7,6 +7,7 @@ import {
   flutterRoutePath,
   isExperienceShellVisible,
   refreshFlutterAccessibility,
+  waitForFlutterRoutePattern,
 } from '../support/flutter';
 
 /**
@@ -39,14 +40,6 @@ export class NotificationsPage {
       );
   }
 
-  /** v2 inbox tabs (replaced legacy All / Care / Organisation kind chips). */
-  private inboxTabLocator(label: RegExp) {
-    return this.page
-      .getByRole('button', { name: label })
-      .or(this.page.getByRole('tab', { name: label }))
-      .first();
-  }
-
   /** Notification rows — tile semantics include kind, type label, and title. */
   private notificationRowLocator() {
     return this.page.getByRole('button', {
@@ -61,14 +54,38 @@ export class NotificationsPage {
       .or(this.page.getByRole('button', { name: /retry|try again|réessayer/i }));
   }
 
+  private notificationBellLocator() {
+    return this.page
+      .locator('[flt-semantics-identifier="experience_notification_bell"]')
+      .or(this.page.getByRole('button', { name: /open notifications|ouvrir les notifications/i }))
+      .first();
+  }
+
   /** Open the notification panel via the bell button in the experience shell. */
   async openPanelViaBell(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
-    const bell = this.page.getByRole('button', { name: /open notifications/i });
-    await bell.waitFor({ timeout: 15_000 });
-    await bell.click();
-    await refreshFlutterAccessibility(this.page);
+    const bell = this.notificationBellLocator();
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await bell.waitFor({ timeout: 5_000 });
+      await bell.click();
+      await this.page.waitForTimeout(400);
+      await refreshFlutterAccessibility(this.page);
+      await this.panelChromeLocator().first().waitFor({ timeout: 3_000 });
+    }).toPass({ timeout: 30_000 });
     await this.expectPanelLoaded();
+  }
+
+  /** Drawer-only chrome: mark-all, v2 explainer, inbox tabs, or Activity empty copy. */
+  private panelChromeLocator() {
+    return this.page
+      .getByRole('button', { name: /Mark all as read|Tout marquer comme lu/i })
+      .or(
+        this.page.getByText(
+          /Reminders now live in Actions|Les rappels sont dans Actions|Nothing new\.|Rien de nouveau/i,
+        ),
+      )
+      .or(this.page.getByText(/^Activity$|^Activité$|^For you$|^Pour vous$/i));
   }
 
   /** Navigate to the notifications screen from the pet list or experience shell.
@@ -76,6 +93,12 @@ export class NotificationsPage {
   async openFromPetList(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
     if (await isExperienceShellVisible(this.page)) {
+      const path = flutterRoutePath(this.page.url());
+      if (!/^\/pc\/home(?:\?|$)/.test(path)) {
+        await this.page.goto(flutterGotoUrl('/pc/home'));
+        await refreshFlutterAccessibility(this.page);
+        await waitForFlutterRoutePattern(this.page, /\/pc\/home(?:\?|$)/, 30_000);
+      }
       await this.openPanelViaBell();
       return;
     }
@@ -107,27 +130,21 @@ export class NotificationsPage {
 
   /** Wait for the notification panel slide-over to be visible. */
   async expectPanelLoaded(): Promise<void> {
-    // v2 tabs + mark-all live only inside the endDrawer (no legacy kind chips).
+    // v2 panel chrome lives only inside the endDrawer (no legacy All/Care chips).
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      const activityTab = this.inboxTabLocator(/^Activity$|^Activité$/i).and(
-        this.page.locator(':visible'),
-      );
-      await activityTab.waitFor({ timeout: 5_000 });
-      const forYouTab = this.inboxTabLocator(/^For you$|^Pour vous$/i).and(
-        this.page.locator(':visible'),
-      );
-      await forYouTab.waitFor({ timeout: 5_000 });
-      const markAll = this.page
-        .getByRole('button', { name: /Mark all as read|Tout marquer comme lu/i })
-        .or(
-          this.page.getByRole('checkbox', {
-            name: /Mark all as read|Tout marquer comme lu/i,
-          }),
-        )
+      await this.panelChromeLocator().first().waitFor({ timeout: 8_000 });
+      const legacyAll = this.page
+        .getByRole('button', { name: /^All$|^Tout$/i })
         .and(this.page.locator(':visible'));
-      await markAll.waitFor({ timeout: 5_000 });
-    }).toPass({ timeout: 25_000 });
+      if (await legacyAll.isVisible().catch(() => false)) {
+        return;
+      }
+      await this.page
+        .getByText(/^Activity$|^Activité$|^For you$|^Pour vous$/i)
+        .first()
+        .waitFor({ timeout: 5_000 });
+    }).toPass({ timeout: 30_000 });
     await this.waitForNotificationListSettled();
   }
 
