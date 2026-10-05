@@ -339,17 +339,17 @@ server/**
 
 ```yaml
 autonomy: active
-current_phase: i2-pet-people
-last_completed_phase: i1-consumers
+current_phase: i3-retire-legacy
+last_completed_phase: i2-pet-people
 halt_reason: null
-next_action: "continue phase i2-pet-people on branch cursor/people-integration-i2-pet-people-7f3b"
+next_action: "continue phase i3-retire-legacy on branch cursor/people-integration-i3-retire-7f3b"
 artifact_ref:
-  branch: cursor/people-integration-i2-pet-people-7f3b
+  branch: cursor/people-client-integration-integration-7f3b
   plan_path: .agents/plans/people-client-integration-7f3b.md
-  plan_commit: ba91009ee2f9b8d203b901df2e29f720c17f69bb
+  plan_commit: c64057378bcf851a2d2d3cb880573e4d3084b6b8
   snapshot_path: .agents/plans/people-client-integration-7f3b.snapshot.json
-  snapshot_commit: ba91009ee2f9b8d203b901df2e29f720c17f69bb
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1652"]
-merge_commits: {"i1-consumers":"6ba0a1cfce392dd92f2b3c492928ddbf105c73a2"}
+  snapshot_commit: c64057378bcf851a2d2d3cb880573e4d3084b6b8
+open_prs: []
+merge_commits: {"i1-consumers":"6ba0a1cfce392dd92f2b3c492928ddbf105c73a2","i2-pet-people":"c64057378bcf851a2d2d3cb880573e4d3084b6b8"}
 debt_issue_refs: []
 ```

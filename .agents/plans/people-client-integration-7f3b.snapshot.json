@@ -2,7 +2,7 @@
   "schema_version": 1,
   "approved_at": "2026-10-05T12:45:00.000Z",
   "approved_until": "2026-10-07T12:45:00.000Z",
-  "content_hash": "sha256:069a6e468cd7d8205eb5fed7288a12532dd2eb88368c3f80b9d1ef658e3e4f17",
+  "content_hash": "sha256:66e498e813b651b532e5580af2ce2c9038c34535bb16eb9bf21bb02af37658e1",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "control_issue": 1630,
@@ -94,12 +94,13 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_head_sha": "ba91009e",
-      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1652"
+      "pr_head_sha": "ba292916",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1652",
+      "merge_commit": "c64057378bcf851a2d2d3cb880573e4d3084b6b8"
     },
     {
       "id": "i3-retire-legacy",
@@ -138,12 +139,9 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
       "debt_issue_refs": []
     },
     {
