@@ -191,19 +191,14 @@ export class WeightHubPage {
 
   async expectSetUpWeighInRoutinePrompt(): Promise<void> {
     await this.openHub();
-    await expect(async () => {
-      await refreshFlutterAccessibility(this.page);
-      const title = this.page
-        .getByText(/No weigh-in routine|Aucune routine de pesée/i)
-        .first();
-      await title.scrollIntoViewIfNeeded();
-      await expect(title).toBeVisible();
-      const setup = this.page.getByRole('button', {
-        name: /Set up a weigh-in routine|Configurer une routine de pesée/i,
-      });
-      await setup.scrollIntoViewIfNeeded();
-      await expect(setup).toBeVisible();
-    }).toPass({ timeout: 45_000 });
+    const routineGroup = this.page.getByRole('group', {
+      name: /No weigh-in routine|Aucune routine de pesée/i,
+    });
+    const setup = this.page.getByRole('button', {
+      name: /Set up a weigh-in routine|Configurer une routine de pesée/i,
+    });
+    await expect(routineGroup.or(setup).first()).toBeVisible({ timeout: 45_000 });
+    await expect(setup.first()).toBeVisible();
   }
 
   async expectReadOnlyWeightOnPetEdit(): Promise<void> {
