@@ -134,7 +134,7 @@ export class PetDetailPage {
   }
 
   async expectAgeDisplay(pattern: RegExp): Promise<void> {
-    await enableFlutterAccessibility(this.page);
+    await refreshFlutterAccessibility(this.page);
     await this.page
       .getByRole('group', { name: pattern })
       .or(this.page.getByRole('button', { name: pattern }))
