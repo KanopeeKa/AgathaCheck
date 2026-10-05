@@ -615,6 +615,6 @@ artifact_ref:
   snapshot_path: .agents/plans/people-client-core-7f3b.snapshot.json
   snapshot_commit: a4152e495ca56729ee23d821a9db272de27316ed
 open_prs: []
-merge_commits: {"c5-edit":"29779e5a681cfc0a264429861b48fc8f3904f548","c6-add":"6cbf95d5ee9a2bbc3753d494a80b35ece44b0fde","c7-households-ui":"pending-push"}
+merge_commits: {"c5-edit":"29779e5a681cfc0a264429861b48fc8f3904f548","c6-add":"6cbf95d5ee9a2bbc3753d494a80b35ece44b0fde"}
 debt_issue_refs: []
 ```
