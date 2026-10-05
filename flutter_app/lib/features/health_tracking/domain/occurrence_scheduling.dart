@@ -1,5 +1,5 @@
 import 'services/care_temporal_grouping_service.dart';
-import '../care_temporal_group.dart';
+import 'care_temporal_group.dart';
 import 'entities/health_occurrence.dart';
 import 'occurrence_missed.dart';
 

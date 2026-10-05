@@ -4,6 +4,7 @@ import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 import 'package:pet_profile_app/features/care_intelligence/care_intelligence.dart';
 import 'package:pet_profile_app/features/pet_tags/pet_tags.dart';
 import '../pet_care_section/pet_care_section.dart';
+import '../pet_profile_care_suggestion_section.dart';
 import 'pet_detail_profile_card.dart';
 import 'pet_profile_completeness_prompt.dart';
 import 'pet_profile_health_history_section.dart';

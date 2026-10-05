@@ -5,6 +5,7 @@ import '../care_temporal_group.dart';
 import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/health_occurrence.dart';
 import '../models/care_temporal_buckets.dart';
+import '../health_entry_series_closed.dart';
 import '../occurrence_missed.dart';
 
 /// Single authority for care temporal grouping across profile, All care, and dashboard.

@@ -10,6 +10,7 @@ export 'context/presentation/screens/planned_absence_plan_screen.dart';
 export 'domain/services/care_establishment_helpers.dart';
 export 'domain/services/care_status_service.dart';
 export 'presentation/providers/care_temporal_grouping_providers.dart';
+export 'progression/domain/entities/care_pending_moment.dart';
 export 'presentation/providers/pet_care_presentation_providers.dart';
 export 'presentation/widgets/care_agenda/care_agenda_collection.dart';
 export 'presentation/widgets/care_milestone_moment_card.dart';

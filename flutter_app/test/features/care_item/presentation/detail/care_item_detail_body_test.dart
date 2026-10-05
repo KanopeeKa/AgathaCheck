@@ -8,7 +8,7 @@ import 'package:pet_profile_app/features/health_tracking/presentation/providers/
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/occurrence_providers.dart';
 import 'package:pet_profile_app/core/care/care_item_observation_section.dart';
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
-import 'package:pet_profile_app/features/care_item/presentation/detail/care_item_detail_body.dart';
+import 'package:pet_profile_app/features/experience/presentation/care_item/detail/care_item_detail_body.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/care_family.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/weight_tracking/domain/entities/weight_entry.dart';

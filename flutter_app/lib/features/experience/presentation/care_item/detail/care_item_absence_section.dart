@@ -130,7 +130,7 @@ class CareItemAbsenceSection extends ConsumerWidget {
       decision: 'keep_date',
       lookedAfterBy: lookedAfter,
     );
-    invalidateCareItemDetailData(
+    _invalidateCareItemDetailWithAbsence(
       ref,
       entry.id,
       absenceId: slice.plannedAbsenceId,
@@ -174,11 +174,23 @@ class CareItemAbsenceSection extends ConsumerWidget {
       initialOccurrence: initialOccurrence,
     );
     if (context.mounted) {
-      invalidateCareItemDetailData(
+      _invalidateCareItemDetailWithAbsence(
         ref,
         entry.id,
         absenceId: slice.plannedAbsenceId,
       );
     }
   }
+}
+
+void _invalidateCareItemDetailWithAbsence(
+  WidgetRef ref,
+  String entryId, {
+  String? absenceId,
+}) {
+  invalidateCareItemDetailData(ref, entryId);
+  if (absenceId != null && absenceId.isNotEmpty) {
+    ref.invalidate(absenceCarePlanProvider(absenceId));
+  }
+  ref.invalidate(carePeriodCoverageProvider);
 }
