@@ -48,23 +48,25 @@ class _HouseholdInviteMemberSheetState
     if (email.isEmpty || !_adultConfirmed) return;
     setState(() => _busy = true);
     try {
-      await ref.read(peopleCommandsProvider).createHouseholdInvite(
-        householdId: widget.householdId,
-        inviteeEmail: email,
-        accessTier: _organiser ? 'full_access' : _tier,
-        isOrganiser: _organiser,
-      );
+      await ref
+          .read(peopleCommandsProvider)
+          .createHouseholdInvite(
+            householdId: widget.householdId,
+            inviteeEmail: email,
+            accessTier: _organiser ? 'full_access' : _tier,
+            isOrganiser: _organiser,
+          );
       if (mounted) Navigator.pop(context);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.peopleHouseholdInviteSent)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.peopleHouseholdInviteSent)));
       }
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.peopleSaveError)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.peopleSaveError)));
       }
     } finally {
       if (mounted) setState(() => _busy = false);

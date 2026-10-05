@@ -59,7 +59,9 @@ class _HouseholdInviteLandingScreenState
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.peopleSaveError)),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.peopleSaveError),
+          ),
         );
       }
     } finally {
@@ -77,7 +79,9 @@ class _HouseholdInviteLandingScreenState
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.peopleSaveError)),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.peopleSaveError),
+          ),
         );
       }
     } finally {
@@ -92,9 +96,7 @@ class _HouseholdInviteLandingScreenState
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     if (_notFound || _preview == null) {
-      return Scaffold(
-        body: Center(child: Text(l.shareInviteNotFound)),
-      );
+      return Scaffold(body: Center(child: Text(l.shareInviteNotFound)));
     }
     final preview = _preview!;
     final tier = householdTierLabel(
@@ -116,7 +118,9 @@ class _HouseholdInviteLandingScreenState
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               const SizedBox(height: 12),
-              Text(l.peopleHouseholdInviteLandingBody(preview.inviterName, tier)),
+              Text(
+                l.peopleHouseholdInviteLandingBody(preview.inviterName, tier),
+              ),
               const Spacer(),
               FilledButton(
                 key: const Key('household_invite_accept'),

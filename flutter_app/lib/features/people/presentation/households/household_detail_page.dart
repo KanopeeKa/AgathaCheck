@@ -108,16 +108,15 @@ class _HouseholdDetailBodyState extends ConsumerState<_HouseholdDetailBody> {
     if (name == null || name.isEmpty) return;
     setState(() => _busy = true);
     try {
-      await ref.read(peopleCommandsProvider).renameHousehold(
-        householdId: widget.household.id,
-        name: name,
-      );
+      await ref
+          .read(peopleCommandsProvider)
+          .renameHousehold(householdId: widget.household.id, name: name);
       ref.invalidate(householdDetailProvider(widget.household.id));
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.peopleSaveError)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.peopleSaveError)));
       }
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -134,16 +133,18 @@ class _HouseholdDetailBodyState extends ConsumerState<_HouseholdDetailBody> {
     }
     setState(() => _busy = true);
     try {
-      await ref.read(peopleCommandsProvider).setHouseholdPets(
-        householdId: widget.household.id,
-        petIds: current.toList(),
-      );
+      await ref
+          .read(peopleCommandsProvider)
+          .setHouseholdPets(
+            householdId: widget.household.id,
+            petIds: current.toList(),
+          );
       ref.invalidate(householdDetailProvider(widget.household.id));
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.peopleSaveError)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.peopleSaveError)));
       }
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -154,15 +155,17 @@ class _HouseholdDetailBodyState extends ConsumerState<_HouseholdDetailBody> {
     final l = AppLocalizations.of(context)!;
     setState(() => _busy = true);
     try {
-      await ref.read(peopleCommandsProvider).revokeHouseholdInvite(
-        householdId: widget.household.id,
-        inviteId: invite.id,
-      );
+      await ref
+          .read(peopleCommandsProvider)
+          .revokeHouseholdInvite(
+            householdId: widget.household.id,
+            inviteId: invite.id,
+          );
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.peopleSaveError)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.peopleSaveError)));
       }
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -176,15 +179,17 @@ class _HouseholdDetailBodyState extends ConsumerState<_HouseholdDetailBody> {
     final l = AppLocalizations.of(context)!;
     HouseholdMemberRemovalPreview? preview;
     try {
-      preview = await ref.read(peopleCommandsProvider).memberRemovalPreview(
-        householdId: widget.household.id,
-        memberUserId: member.userId,
-      );
+      preview = await ref
+          .read(peopleCommandsProvider)
+          .memberRemovalPreview(
+            householdId: widget.household.id,
+            memberUserId: member.userId,
+          );
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.peopleRemoveError)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.peopleRemoveError)));
       }
       return;
     }
@@ -203,13 +208,15 @@ class _HouseholdDetailBodyState extends ConsumerState<_HouseholdDetailBody> {
 
     setState(() => _busy = true);
     try {
-      await ref.read(peopleCommandsProvider).removeHouseholdMember(
-        householdId: widget.household.id,
-        memberUserId: member.userId,
-        removeAllAccessToMyPets:
-            result.choice == HouseholdRemovalChoice.allAccess,
-        successorUserId: result.successorUserId,
-      );
+      await ref
+          .read(peopleCommandsProvider)
+          .removeHouseholdMember(
+            householdId: widget.household.id,
+            memberUserId: member.userId,
+            removeAllAccessToMyPets:
+                result.choice == HouseholdRemovalChoice.allAccess,
+            successorUserId: result.successorUserId,
+          );
       if (removingSelf && mounted) {
         context.go('/pc/people/households');
       } else {
@@ -217,9 +224,9 @@ class _HouseholdDetailBodyState extends ConsumerState<_HouseholdDetailBody> {
       }
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.peopleRemoveError)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.peopleRemoveError)));
       }
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -266,7 +273,10 @@ class _HouseholdDetailBodyState extends ConsumerState<_HouseholdDetailBody> {
           ),
         ),
         const SizedBox(height: 24),
-        Text(l.peopleHouseholdMembersTitle, style: Theme.of(context).textTheme.titleMedium),
+        Text(
+          l.peopleHouseholdMembersTitle,
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
         const SizedBox(height: 8),
         for (final member in household.members)
           ListTile(
@@ -322,15 +332,16 @@ class _HouseholdDetailBodyState extends ConsumerState<_HouseholdDetailBody> {
             ),
         ],
         const SizedBox(height: 24),
-        Text(l.peopleHouseholdPetsTitle, style: Theme.of(context).textTheme.titleMedium),
+        Text(
+          l.peopleHouseholdPetsTitle,
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
         const SizedBox(height: 8),
         for (final pet in myPets)
           CheckboxListTile(
             key: Key('household_pet_${pet.id}'),
             value: household.pets.any((p) => p.petId == pet.id),
-            onChanged: _busy
-                ? null
-                : (v) => _togglePet(pet.id, v == true),
+            onChanged: _busy ? null : (v) => _togglePet(pet.id, v == true),
             title: Text(pet.name),
             subtitle: Text(l.peopleHouseholdPetOwnerYou),
           ),

@@ -23,10 +23,7 @@ Future<HouseholdRemovalResult?> showHouseholdMemberRemovalDialog({
 }
 
 class HouseholdRemovalResult {
-  const HouseholdRemovalResult({
-    required this.choice,
-    this.successorUserId,
-  });
+  const HouseholdRemovalResult({required this.choice, this.successorUserId});
 
   final HouseholdRemovalChoice choice;
   final String? successorUserId;

@@ -230,7 +230,9 @@ class FakeHouseholdsRepository implements HouseholdsRepository {
   }) async {}
 
   @override
-  Future<HouseholdInvitePreview> fetchHouseholdInvitePreview(String code) async {
+  Future<HouseholdInvitePreview> fetchHouseholdInvitePreview(
+    String code,
+  ) async {
     return HouseholdInvitePreview(
       inviteId: 'inv-1',
       code: code,

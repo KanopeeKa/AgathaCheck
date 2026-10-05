@@ -21,7 +21,8 @@ class _CreateHouseholdDialog extends ConsumerStatefulWidget {
       _CreateHouseholdDialogState();
 }
 
-class _CreateHouseholdDialogState extends ConsumerState<_CreateHouseholdDialog> {
+class _CreateHouseholdDialogState
+    extends ConsumerState<_CreateHouseholdDialog> {
   final _nameController = TextEditingController();
   final Set<String> _selectedPetIds = {};
   bool _busy = false;
@@ -45,7 +46,9 @@ class _CreateHouseholdDialogState extends ConsumerState<_CreateHouseholdDialog> 
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.peopleSaveError)),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.peopleSaveError),
+          ),
         );
       }
     } finally {

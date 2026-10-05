@@ -128,10 +128,7 @@ class PeopleCommands {
     String name, {
     List<String> petIds = const [],
   }) async {
-    final household = await _households.createHousehold(
-      name,
-      petIds: petIds,
-    );
+    final household = await _households.createHousehold(name, petIds: petIds);
     await _invalidateHouseholds();
     return household;
   }

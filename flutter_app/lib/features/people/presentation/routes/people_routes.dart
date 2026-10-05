@@ -33,9 +33,8 @@ RouteBase buildPeopleHubShellRoute() {
           GoRoute(
             path: 'households',
             name: 'petCarePeopleHouseholds',
-            builder: (context, state) => HouseholdsPage(
-              embedded: peopleDetailShouldEmbed(context),
-            ),
+            builder: (context, state) =>
+                HouseholdsPage(embedded: peopleDetailShouldEmbed(context)),
             routes: [
               GoRoute(
                 path: ':householdId',
