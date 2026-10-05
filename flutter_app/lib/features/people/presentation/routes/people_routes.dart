@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../hub/people_hub_layout.dart';
 import '../screens/people_add_person_screen.dart';
 import '../detail/person_detail_page.dart';
-import '../screens/people_edit_screen.dart';
+import '../edit/person_edit_page.dart';
 
 RouteBase buildPeopleHubShellRoute() {
   return ShellRoute(
@@ -56,9 +56,8 @@ RouteBase buildPeopleHubShellRoute() {
               GoRoute(
                 path: 'edit',
                 name: 'petCarePeopleEdit',
-                builder: (context, state) => PeopleEditScreen(
-                  personId: state.pathParameters['personId']!,
-                ),
+                builder: (context, state) =>
+                    PersonEditPage(personId: state.pathParameters['personId']!),
               ),
             ],
           ),

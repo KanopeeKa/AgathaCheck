@@ -12922,6 +12922,174 @@ abstract class AppLocalizations {
   /// **'This contact stays visible where already linked, but won\'t appear in pickers.'**
   String get peopleMarkInactiveBody;
 
+  /// No description provided for @peopleReactivate.
+  ///
+  /// In en, this message translates to:
+  /// **'Reactivate'**
+  String get peopleReactivate;
+
+  /// No description provided for @peopleEditSectionIdentity.
+  ///
+  /// In en, this message translates to:
+  /// **'Identity'**
+  String get peopleEditSectionIdentity;
+
+  /// No description provided for @peopleEditSectionContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact details'**
+  String get peopleEditSectionContact;
+
+  /// No description provided for @peopleEditSectionNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get peopleEditSectionNotes;
+
+  /// No description provided for @peopleEditLinkedReadOnlyHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Name and email are managed by their linked account.'**
+  String get peopleEditLinkedReadOnlyHelper;
+
+  /// No description provided for @peopleEditLinkedReadOnlyError.
+  ///
+  /// In en, this message translates to:
+  /// **'Name and email cannot be changed for a linked account.'**
+  String get peopleEditLinkedReadOnlyError;
+
+  /// No description provided for @peopleNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Name is required'**
+  String get peopleNameRequired;
+
+  /// No description provided for @peopleEmailInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid email address'**
+  String get peopleEmailInvalid;
+
+  /// No description provided for @peopleUsagesDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact still in use'**
+  String get peopleUsagesDialogTitle;
+
+  /// No description provided for @peopleUsagesDialogBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This contact is used in the places below. Replace them or mark inactive instead.'**
+  String get peopleUsagesDialogBody;
+
+  /// No description provided for @peopleUsagesReplace.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace…'**
+  String get peopleUsagesReplace;
+
+  /// No description provided for @peopleUsagesBlockedDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove the usages below or mark inactive instead.'**
+  String get peopleUsagesBlockedDelete;
+
+  /// No description provided for @peopleReplaceSlotTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace vet slot?'**
+  String get peopleReplaceSlotTitle;
+
+  /// No description provided for @peopleReplaceSlotBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace {name} as {petName}\'s vet?'**
+  String peopleReplaceSlotBody(String name, String petName);
+
+  /// No description provided for @peopleReplaceSlotConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace'**
+  String get peopleReplaceSlotConfirm;
+
+  /// No description provided for @peopleEditSetPrimaryVet.
+  ///
+  /// In en, this message translates to:
+  /// **'Set as primary vet'**
+  String get peopleEditSetPrimaryVet;
+
+  /// No description provided for @peopleEditSetOutOfHoursVet.
+  ///
+  /// In en, this message translates to:
+  /// **'Set as out-of-hours vet'**
+  String get peopleEditSetOutOfHoursVet;
+
+  /// No description provided for @peopleEditRemovePetLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove pet link'**
+  String get peopleEditRemovePetLink;
+
+  /// No description provided for @peopleEditEmergencyOrderTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency contact order'**
+  String get peopleEditEmergencyOrderTitle;
+
+  /// No description provided for @peopleMemberRemovalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from household?'**
+  String get peopleMemberRemovalTitle;
+
+  /// No description provided for @peopleMemberRemovalBody.
+  ///
+  /// In en, this message translates to:
+  /// **'They will lose household access. Other access may remain.'**
+  String get peopleMemberRemovalBody;
+
+  /// No description provided for @peopleMemberRemovalRemaining.
+  ///
+  /// In en, this message translates to:
+  /// **'Access that remains:'**
+  String get peopleMemberRemovalRemaining;
+
+  /// No description provided for @peopleMemberRemovalHouseholdOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from household only'**
+  String get peopleMemberRemovalHouseholdOnly;
+
+  /// No description provided for @peopleMemberRemovalAllAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove all access to my pets'**
+  String get peopleMemberRemovalAllAccess;
+
+  /// No description provided for @peopleMemberRemovalAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from household'**
+  String get peopleMemberRemovalAction;
+
+  /// No description provided for @peopleRevokeInviteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Revoke invite?'**
+  String get peopleRevokeInviteTitle;
+
+  /// No description provided for @peopleRevokeInviteBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Revoke the invite for {email}?'**
+  String peopleRevokeInviteBody(String email);
+
+  /// No description provided for @peopleRevokeInviteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Revoke invite'**
+  String get peopleRevokeInviteConfirm;
+
   /// No description provided for @peopleSaveError.
   ///
   /// In en, this message translates to:

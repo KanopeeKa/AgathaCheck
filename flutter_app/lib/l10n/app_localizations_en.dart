@@ -7374,6 +7374,99 @@ class AppLocalizationsEn extends AppLocalizations {
       'This contact stays visible where already linked, but won\'t appear in pickers.';
 
   @override
+  String get peopleReactivate => 'Reactivate';
+
+  @override
+  String get peopleEditSectionIdentity => 'Identity';
+
+  @override
+  String get peopleEditSectionContact => 'Contact details';
+
+  @override
+  String get peopleEditSectionNotes => 'Notes';
+
+  @override
+  String get peopleEditLinkedReadOnlyHelper =>
+      'Name and email are managed by their linked account.';
+
+  @override
+  String get peopleEditLinkedReadOnlyError =>
+      'Name and email cannot be changed for a linked account.';
+
+  @override
+  String get peopleNameRequired => 'Name is required';
+
+  @override
+  String get peopleEmailInvalid => 'Enter a valid email address';
+
+  @override
+  String get peopleUsagesDialogTitle => 'Contact still in use';
+
+  @override
+  String get peopleUsagesDialogBody =>
+      'This contact is used in the places below. Replace them or mark inactive instead.';
+
+  @override
+  String get peopleUsagesReplace => 'Replace…';
+
+  @override
+  String get peopleUsagesBlockedDelete =>
+      'Remove the usages below or mark inactive instead.';
+
+  @override
+  String get peopleReplaceSlotTitle => 'Replace vet slot?';
+
+  @override
+  String peopleReplaceSlotBody(String name, String petName) {
+    return 'Replace $name as $petName\'s vet?';
+  }
+
+  @override
+  String get peopleReplaceSlotConfirm => 'Replace';
+
+  @override
+  String get peopleEditSetPrimaryVet => 'Set as primary vet';
+
+  @override
+  String get peopleEditSetOutOfHoursVet => 'Set as out-of-hours vet';
+
+  @override
+  String get peopleEditRemovePetLink => 'Remove pet link';
+
+  @override
+  String get peopleEditEmergencyOrderTitle => 'Emergency contact order';
+
+  @override
+  String get peopleMemberRemovalTitle => 'Remove from household?';
+
+  @override
+  String get peopleMemberRemovalBody =>
+      'They will lose household access. Other access may remain.';
+
+  @override
+  String get peopleMemberRemovalRemaining => 'Access that remains:';
+
+  @override
+  String get peopleMemberRemovalHouseholdOnly => 'Remove from household only';
+
+  @override
+  String get peopleMemberRemovalAllAccess => 'Remove all access to my pets';
+
+  @override
+  String get peopleMemberRemovalAction => 'Remove from household';
+
+  @override
+  String get peopleRevokeInviteTitle => 'Revoke invite?';
+
+  @override
+  String peopleRevokeInviteBody(String email) {
+    return 'Revoke the invite for $email?';
+  }
+
+  @override
+  String get peopleRevokeInviteConfirm => 'Revoke invite';
+
+  @override
   String get peopleSaveError => 'Could not save changes. Try again.';
 
   @override
