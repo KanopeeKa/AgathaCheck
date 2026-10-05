@@ -2,7 +2,7 @@
   "schema_version": 1,
   "approved_at": "2026-10-04T22:45:00.000Z",
   "approved_until": "2026-10-06T17:40:08.000Z",
-  "content_hash": "sha256:146a2ab8ec3db97bbb207cd500bbcee9c0e422c7b38391e8addf43f2996e5600",
+  "content_hash": "sha256:c28845cbd4c563f635d9203848c6c6ac8498b93ae6191bcbe7619489009411eb",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "control_issue": 1565,
@@ -323,12 +323,13 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "bdd-journey",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_head_sha": "48939adb",
-      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1623"
+      "pr_head_sha": "4ca2cff0",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1623",
+      "merge_commit": "5f2285b7ad4a84e3e3470b67721e017a1005a8ce"
     },
     {
       "id": "c9-ship-main",
@@ -351,12 +352,9 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
       "debt_issue_refs": []
     }
   ]

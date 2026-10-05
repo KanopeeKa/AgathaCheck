@@ -604,17 +604,17 @@ server/**
 
 ```yaml
 autonomy: active
-current_phase: c8-e2e-core
-last_completed_phase: c7-households-ui
+current_phase: c9-ship-main
+last_completed_phase: c8-e2e-core
 halt_reason: null
-next_action: "continue phase c8-e2e-core on branch cursor/people-client-c8-e2e-7f3b"
+next_action: "continue phase c9-ship-main on branch cursor/people-client-c9-ship-7f3b"
 artifact_ref:
-  branch: cursor/people-client-c8-e2e-7f3b
+  branch: cursor/people-client-c9-ship-7f3b
   plan_path: .agents/plans/people-client-core-7f3b.md
-  plan_commit: 48939adb614c0f61f8cbbf5ef7ec2fc496d2eddd
+  plan_commit: 5f2285b7ad4a84e3e3470b67721e017a1005a8ce
   snapshot_path: .agents/plans/people-client-core-7f3b.snapshot.json
-  snapshot_commit: 48939adb614c0f61f8cbbf5ef7ec2fc496d2eddd
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1623"]
-merge_commits: {"c5-edit":"29779e5a681cfc0a264429861b48fc8f3904f548","c6-add":"6cbf95d5ee9a2bbc3753d494a80b35ece44b0fde","c7-households-ui":"0d52b94f19f4011f483386ecebde0e471a0980b9"}
+  snapshot_commit: 5f2285b7ad4a84e3e3470b67721e017a1005a8ce
+open_prs: []
+merge_commits: {"c5-edit":"29779e5a681cfc0a264429861b48fc8f3904f548","c6-add":"6cbf95d5ee9a2bbc3753d494a80b35ece44b0fde","c7-households-ui":"0d52b94f19f4011f483386ecebde0e471a0980b9","c8-e2e-core":"5f2285b7ad4a84e3e3470b67721e017a1005a8ce"}
 debt_issue_refs: []
 ```
