@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { dateToIsoDate, normalizeCalendarDateInput, todayCalendarIso } from '../../calendarDate.js';
 import { parseWeightInput } from './weightUnits.js';
-import { validateMeasurementSource } from '../../../routes/careIntelligence/provenance.js';
+import { validateMeasurementSource } from '../../careIntelligence/provenance.js';
 
 export const WEIGHT_GENERIC_COMPLETE_ERROR =
   'Weight monitoring occurrences require a weight observation to complete';

@@ -2,7 +2,7 @@ import express from 'express';
 import { createApiLimiter } from '../../config/rateLimit.js';
 import { registerTransferRoutes } from './transferRouter.js';
 import { registerFamilyEventsRoutes } from './familyEventsRouter.js';
-import { registerPetAccessRoutes } from '../sharing/petAccessRoutes.js';
+import { registerPetAccessRoutes } from '../sharing/index.js';
 import { registerCarerCandidatesRoutes } from './carerCandidatesRouter.js';
 import { registerPeopleRelationshipsRoutes } from './peopleRelationshipsRouter.js';
 import { registerPetPeopleRoutes } from './petPeopleRouter.js';

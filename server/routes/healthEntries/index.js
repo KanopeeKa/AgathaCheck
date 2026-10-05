@@ -11,6 +11,8 @@ import { registerRescheduleOccurrenceRoutes } from './rescheduleOccurrenceRouter
 import { registerScheduleExplainRoutes } from './scheduleExplainRouter.js';
 import { registerScheduleRoutes } from './scheduleRouter.js';
 
+export { registerCompleteWeightRoutes } from './completeWeightRouter.js';
+
 export default function healthEntriesRoutes(pool) {
   const router = express.Router();
   router.use(createApiLimiter());

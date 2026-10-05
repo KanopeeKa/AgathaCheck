@@ -1,6 +1,4 @@
-import { PET_ACCESS_ROLES } from '../../lib/petAccess.js';
-
-const PET_ACCESS_ROLES_SQL = PET_ACCESS_ROLES.map((role) => `'${role}'`).join(', ');
+import { PET_ACCESS_ROLES_SQL } from './accessRoleLiterals.js';
 
 export async function listShareLinksForPet(db, petId, { createdBy } = {}) {
   const params = [petId];

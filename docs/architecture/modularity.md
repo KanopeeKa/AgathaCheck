@@ -53,6 +53,18 @@ server/test/<domain>/
 - Mount order: **static paths before `/:id`** (invites, join, etc. before param routes).
 - Keep `/api/...` and `/backend/api/...` dual mount in `server.js` only.
 
+### Server ownership
+
+| Layer | Responsibility |
+|---|---|
+| `server/routes/**` | HTTP translation: auth extraction, status codes, request/response mapping. Compose sub-routers from the area `index.js`. |
+| `server/services/**` and `server/lib/**` | Application orchestration, domain rules, and **transaction boundaries** (`withTransaction`). |
+| `server/db/**` | Persistence helpers: SQL and row mapping; accept a query client (`pool` or transaction client). No imports from `lib/`, `services/`, or `routes/`. |
+
+Cross-area route imports must target only the other area's `index.js` or `shared.js` (not sibling `*Router.js` files). Shared enums and inbox helpers belong in `server/lib/`, not under `routes/`.
+
+Simple CRUD may stay in route modules when no separate use-case layer helps, but **never** call `pool.connect()` in routes — use `withTransaction` (enforced by `server/test/architecture/serverDirection.test.js` and `transactionOwnership.test.js`).
+
 ---
 
 ## Flutter
