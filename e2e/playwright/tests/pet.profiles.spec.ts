@@ -246,8 +246,9 @@ test.describe('Pet profiles', () => {
     const seeded = await getPetRecord(baseURL, testUser.accessToken, pet.id);
     expect(seeded.dateOfBirth).toBe('2022-01-01');
 
-    const petList = await loginAs(page, testUser);
-    await petList.openPet('Milo', pet.id);
+    await loginAs(page, testUser);
+    await page.goto(flutterGotoUrl(`/pet/${pet.id}`));
+    await waitForFlutterRoutePattern(page, /\/pet\/[^/?]+/, 30_000);
 
     const detail = new PetDetailPage(page);
     await detail.expectLoaded('Milo');
