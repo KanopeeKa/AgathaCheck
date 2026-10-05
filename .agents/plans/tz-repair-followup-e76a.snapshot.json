@@ -4,7 +4,7 @@
   "approved_at": "2026-10-05T12:36:00Z",
   "approved_by": "user-chat-2026-10-05-continue-execute-plan-tz-repair-followup-full",
   "approved_until": "2026-10-07T12:36:00Z",
-  "content_hash": "sha256:6bd2414c590bd1046a66033e332008234bbc561a4192ee4d80c510cb0d1ac210",
+  "content_hash": "sha256:3ad6ad65e480550fa69827df7e4323d1700c3ebc04ac8147f394d2ca87a1e2d6",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/tz-repair-followup-integration-e76a",
@@ -31,7 +31,7 @@
       "spawn_allowed": false,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null
     },
@@ -56,7 +56,9 @@
       "spawn_allowed": false,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending"
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null
     },
     {
       "id": "3",
@@ -74,7 +76,9 @@
       "spawn_allowed": false,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending"
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null
     },
     {
       "id": "4",
@@ -96,7 +100,9 @@
       "spawn_allowed": false,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending"
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null
     },
     {
       "id": "5",
@@ -113,7 +119,9 @@
       "spawn_allowed": false,
       "merge_method": "squash",
       "exit_checklist": "release-verification",
-      "status": "pending"
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null
     }
   ]
 }
