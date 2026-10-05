@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test';
+import { expect, type Page } from '@playwright/test';
 import { fillLabelledField } from '../support/flutter';
 
 /**
@@ -16,6 +16,13 @@ export class HealthEntryFormPage {
   }
 
   async selectPet(petName: string): Promise<void> {
+    const checkbox = this.page.getByRole('checkbox', {
+      name: new RegExp(petName, 'i'),
+    });
+    if (await checkbox.count()) {
+      await checkbox.first().click();
+      return;
+    }
     await this.page
       .locator('flt-semantics')
       .filter({ hasText: petName })
@@ -49,5 +56,45 @@ export class HealthEntryFormPage {
   async saveEdit(): Promise<void> {
     await this.page.getByRole('button', { name: /Save changes|Save/i }).click();
     await this.page.getByRole('button', { name: 'Add Health Event' }).waitFor({ timeout: 30_000 });
+  }
+
+  async selectCareFamily(label: string): Promise<void> {
+    const picker = this.page.locator(
+      'flt-semantics[flt-semantics-identifier="care_family_picker"]',
+    );
+    if ((await picker.count()) === 0) {
+      await this.page.getByRole('button', { name: /Care category/i }).click();
+    } else {
+      await picker.click();
+    }
+    await this.page
+      .getByRole('menuitem', { name: label, exact: true })
+      .click();
+  }
+
+  async setFrequency(label: string): Promise<void> {
+    await this.page.getByRole('button', { name: /^Frequency /i }).click();
+    await this.page
+      .getByRole('menuitem', { name: label, exact: true })
+      .click();
+  }
+
+  async expandAdvancedSettings(): Promise<void> {
+    const tile = this.page.locator(
+      'flt-semantics[flt-semantics-identifier="health_entry_advanced_settings"]',
+    );
+    if ((await tile.count()) > 0) {
+      await tile.click();
+      return;
+    }
+    await this.page.getByText(/Advanced settings/i).click();
+  }
+
+  async selectScheduleType(label: string): Promise<void> {
+    await this.page.getByText(label, { exact: true }).click();
+  }
+
+  async expectScheduleTypeSelected(label: string): Promise<void> {
+    await expect(this.page.getByText(label, { exact: true }).first()).toBeVisible();
   }
 }

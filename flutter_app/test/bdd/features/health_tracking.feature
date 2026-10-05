@@ -24,6 +24,18 @@ Feature: Health Tracking
     And "Heartworm Prevention" should be of type "Medication"
 
   @P1
+  Scenario: Planned care entry saves with due date only
+    When the user navigates to the health dashboard
+    And the user taps the "Add Entry" button
+    And the user selects type "Medication"
+    And the user enters entry name "Plan Only Med"
+    And the user selects pet "Bella"
+    And the user selects care planning "Plan this care"
+    And the user sets the next due date to "2026-11-01"
+    And the user saves the health entry
+    Then "Plan Only Med" should appear in the health dashboard
+
+  @P1
   Scenario: Creating a preventive entry
     When the user creates a health entry "Flea Treatment" of type "Preventive" for "Bella"
     Then "Flea Treatment" should appear under the "Preventives" tab
@@ -170,21 +182,6 @@ Feature: Health Tracking
     Given "Bella" has a health issue "Arthritis"
     When the user creates a health entry "Pain Medication" linked to "Arthritis"
     Then "Pain Medication" should display the health issue name "Arthritis"
-
-  # ── Due Events on Pet List ──────────────────────────────────
-
-  @P1
-  Scenario: Due events appear on the pet list screen
-    Given "Bella" has a health entry due today
-    When the user views the pet list
-    Then a "Due and Overdue" section should be visible
-    And the due entry for "Bella" should be listed
-
-  @P1
-  Scenario: No due events shows all caught up
-    Given no health entries are due or overdue
-    When the user views the pet list
-    Then a "You're all caught up" message should appear
 
   # ── CSV Export ───────────────────────────────────────────────
 

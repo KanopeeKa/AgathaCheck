@@ -159,15 +159,17 @@ class HealthEntriesNotifier extends AsyncNotifier<List<HealthEntry>> {
     );
   }
 
-  Future<CommandOutcome> pauseCareItem(String id) {
+  Future<CommandOutcome> pauseCareItem(String id, {DateTime? until}) {
     return _runCommittedCommand(
-      () => ref.read(healthRepositoryProvider).pauseCareItem(id),
+      () => ref.read(healthRepositoryProvider).pauseCareItem(id, until: until),
     );
   }
 
-  Future<CommandOutcome> resumeCareItem(String id) {
+  Future<CommandOutcome> resumeCareItem(String id, {DateTime? resumeOn}) {
     return _runCommittedCommand(
-      () => ref.read(healthRepositoryProvider).resumeCareItem(id),
+      () => ref
+          .read(healthRepositoryProvider)
+          .resumeCareItem(id, resumeOn: resumeOn),
     );
   }
 

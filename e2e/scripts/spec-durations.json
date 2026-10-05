@@ -13,6 +13,7 @@
     "care-suggestion.spec.ts": 56,
     "care.agenda.spec.ts": 90,
     "care.schedules.spec.ts": 90,
+    "care.a11y.spec.ts": 75,
     "care.item.absence.spec.ts": 44,
     "experience.navigation.spec.ts": 138,
     "gdpr.data-rights.spec.ts": 43,

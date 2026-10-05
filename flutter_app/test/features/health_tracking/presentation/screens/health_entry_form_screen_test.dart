@@ -236,9 +236,9 @@ Future<void> _fillMinimalAddForm(WidgetTester tester) async {
     find.byKey(const Key('health_name_field')),
     'Evening pill',
   );
-  final completedField = find.bySemanticsLabel(RegExp(r'Completed on:'));
-  await _scrollTo(tester, completedField);
-  await tester.tap(completedField);
+  final dueField = find.bySemanticsLabel(RegExp(r'Due date:'));
+  await _scrollTo(tester, dueField);
+  await tester.tap(dueField);
   await tester.pumpAndSettle();
   final ok = find.widgetWithText(TextButton, 'OK');
   if (ok.evaluate().isNotEmpty) {
@@ -256,6 +256,15 @@ Future<void> _selectCareFamily(WidgetTester tester, String label) async {
   final option = find.text(label).last;
   await _scrollTo(tester, option);
   await tester.tap(option);
+  await tester.pumpAndSettle();
+}
+
+Future<void> _expandAdvancedSettings(WidgetTester tester) async {
+  await _scrollTo(
+    tester,
+    find.byKey(const Key('health_entry_advanced_settings')),
+  );
+  await tester.tap(find.byKey(const Key('health_entry_advanced_settings')));
   await tester.pumpAndSettle();
 }
 
@@ -327,7 +336,11 @@ void main() {
     expect(find.text('At least one pet must be selected'), findsOneWidget);
     expect(find.text('Select All'), findsOneWidget);
     expect(find.text('Clear'), findsOneWidget);
-    // The upload hint matches the accepted picker formats.
+    // Classification and frequency are localized (not enum.label English).
+    expect(find.text('Care category'), findsOneWidget);
+    await _selectCareFamily(tester, 'Medication');
+    await _expandAdvancedSettings(tester);
+    // Documents and where/priority live under Advanced settings (D-CIE-027).
     expect(find.text('Documents'), findsOneWidget);
     expect(
       find.text('up to 4 documents (jpg, png, pdf), max 2 MB'),
@@ -335,10 +348,9 @@ void main() {
     );
     expect(healthDocumentAllowedExtensions, ['jpg', 'jpeg', 'png', 'pdf']);
     expect(healthDocumentMaxBytes, 2 * 1024 * 1024);
-    // Classification section and frequency are localized (not enum.label English).
-    expect(find.text('Care category'), findsOneWidget);
     expect(find.text('Where'), findsOneWidget);
     expect(find.text('Priority'), findsOneWidget);
+    expect(find.text('Advanced settings'), findsOneWidget);
     expect(find.text('Does not repeat'), findsOneWidget);
     expect(find.byKey(const Key('care_planning_toggle')), findsOneWidget);
     expect(find.text('Plan this care'), findsOneWidget);
@@ -394,13 +406,15 @@ void main() {
     await tester.pump();
 
     expect(find.text('Ajouter un événement de santé'), findsOneWidget);
-    expect(find.text('Documents'), findsOneWidget);
     expect(find.text('Sélectionner les animaux'), findsOneWidget);
     expect(find.text('Tout sélectionner'), findsOneWidget);
-    // Classification section localized in French too.
     expect(find.text('Catégorie de soins'), findsOneWidget);
+    await _selectCareFamily(tester, 'Médicament');
+    await _expandAdvancedSettings(tester);
+    expect(find.text('Documents'), findsOneWidget);
     expect(find.text('Où'), findsOneWidget);
     expect(find.text('Priorité'), findsOneWidget);
+    expect(find.text('Paramètres avancés'), findsOneWidget);
     expect(find.text('Ne se répète pas'), findsOneWidget);
   });
 
@@ -449,6 +463,7 @@ void main() {
     expect(find.text('Administration History'), findsNothing);
     expect(find.byKey(const Key('delete_health_entry_button')), findsOneWidget);
     expect(find.byType(DropdownButtonFormField<HealthEntryType>), findsNothing);
+    await _expandAdvancedSettings(tester);
     expect(find.byKey(const Key('care_setting_picker')), findsOneWidget);
     expect(find.byKey(const Key('care_importance_optional')), findsOneWidget);
   });
@@ -500,7 +515,7 @@ void main() {
     await tester.pumpAndSettle();
 
     if (find.byType(AlertDialog).evaluate().isNotEmpty) {
-      await tester.tap(find.text('Keep active'));
+      await tester.tap(find.text('Keep Active'));
       await tester.pumpAndSettle();
     }
 

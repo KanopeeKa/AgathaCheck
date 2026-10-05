@@ -2315,13 +2315,13 @@ abstract class AppLocalizations {
   /// No description provided for @recurrenceAnchorTitle.
   ///
   /// In en, this message translates to:
-  /// **'Next due date'**
+  /// **'Schedule type'**
   String get recurrenceAnchorTitle;
 
   /// No description provided for @recurrenceFromCompletion.
   ///
   /// In en, this message translates to:
-  /// **'From completion'**
+  /// **'After it\'s done'**
   String get recurrenceFromCompletion;
 
   /// No description provided for @recurrenceFromDueDate.
@@ -2339,8 +2339,14 @@ abstract class AppLocalizations {
   /// No description provided for @recurrenceAnchorInfoBody.
   ///
   /// In en, this message translates to:
-  /// **'Example: every 7 days. You complete it 1 day late.\n• From completion: next due 7 days after you mark it done.\n• Fixed schedule: next due 6 days from today (7 days after the original due date).'**
+  /// **'Example: every 7 days. You mark it done when it\'s Overdue.\n• After it\'s done: the next date is 7 days after you mark it done.\n• Fixed schedule: the next date is 7 days after the original due date, even if you mark it done early or late.'**
   String get recurrenceAnchorInfoBody;
+
+  /// No description provided for @healthEntryFormAdvancedSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced settings'**
+  String get healthEntryFormAdvancedSettings;
 
   /// No description provided for @markCompleteSheetTitle.
   ///
@@ -9363,6 +9369,60 @@ abstract class AppLocalizations {
   /// **'Paused since {date}'**
   String careItemPausedSince(String date);
 
+  /// No description provided for @careItemPausedUntil.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused until {date}'**
+  String careItemPausedUntil(String date);
+
+  /// No description provided for @carePostponeSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get carePostponeSheetTitle;
+
+  /// No description provided for @carePostponeNoEndDate.
+  ///
+  /// In en, this message translates to:
+  /// **'No end date (pause)'**
+  String get carePostponeNoEndDate;
+
+  /// No description provided for @carePostponeUntilLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause until'**
+  String get carePostponeUntilLabel;
+
+  /// No description provided for @carePostponePauseConsequence.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminders stop until you resume.'**
+  String get carePostponePauseConsequence;
+
+  /// No description provided for @carePostponeUntilAfterDoneConsequence.
+  ///
+  /// In en, this message translates to:
+  /// **'The open date moves to {date}.'**
+  String carePostponeUntilAfterDoneConsequence(String date);
+
+  /// No description provided for @carePostponeUntilFixedConsequence.
+  ///
+  /// In en, this message translates to:
+  /// **'Care stays paused until {date}, then resumes automatically.'**
+  String carePostponeUntilFixedConsequence(String date);
+
+  /// No description provided for @careResumeSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume'**
+  String get careResumeSheetTitle;
+
+  /// No description provided for @careResumeDefaultHint.
+  ///
+  /// In en, this message translates to:
+  /// **'This is when it would have been.'**
+  String get careResumeDefaultHint;
+
   /// No description provided for @careItemEstablishedBody.
   ///
   /// In en, this message translates to:
@@ -12969,6 +13029,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Change'**
   String get careNextStaysChange;
+
+  /// No description provided for @carePlanAnotherDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan another date'**
+  String get carePlanAnotherDate;
+
+  /// No description provided for @careAddBoosterDate.
+  ///
+  /// In en, this message translates to:
+  /// **'+ Add a booster date'**
+  String get careAddBoosterDate;
+
+  /// No description provided for @careRemoveBoosterDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove booster date {date}'**
+  String careRemoveBoosterDate(String date);
+
+  /// No description provided for @careOccurrenceMenuTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'More actions for this date'**
+  String get careOccurrenceMenuTooltip;
 
   /// No description provided for @careSkip.
   ///

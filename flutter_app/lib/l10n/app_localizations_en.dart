@@ -1315,10 +1315,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Enter a due date, a completed date, or both';
 
   @override
-  String get recurrenceAnchorTitle => 'Next due date';
+  String get recurrenceAnchorTitle => 'Schedule type';
 
   @override
-  String get recurrenceFromCompletion => 'From completion';
+  String get recurrenceFromCompletion => 'After it\'s done';
 
   @override
   String get recurrenceFromDueDate => 'Fixed schedule';
@@ -1328,7 +1328,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get recurrenceAnchorInfoBody =>
-      'Example: every 7 days. You complete it 1 day late.\n• From completion: next due 7 days after you mark it done.\n• Fixed schedule: next due 6 days from today (7 days after the original due date).';
+      'Example: every 7 days. You mark it done when it\'s Overdue.\n• After it\'s done: the next date is 7 days after you mark it done.\n• Fixed schedule: the next date is 7 days after the original due date, even if you mark it done early or late.';
+
+  @override
+  String get healthEntryFormAdvancedSettings => 'Advanced settings';
 
   @override
   String get markCompleteSheetTitle => 'Mark as completed';
@@ -5263,6 +5266,39 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String careItemPausedUntil(String date) {
+    return 'Paused until $date';
+  }
+
+  @override
+  String get carePostponeSheetTitle => 'Pause';
+
+  @override
+  String get carePostponeNoEndDate => 'No end date (pause)';
+
+  @override
+  String get carePostponeUntilLabel => 'Pause until';
+
+  @override
+  String get carePostponePauseConsequence => 'Reminders stop until you resume.';
+
+  @override
+  String carePostponeUntilAfterDoneConsequence(String date) {
+    return 'The open date moves to $date.';
+  }
+
+  @override
+  String carePostponeUntilFixedConsequence(String date) {
+    return 'Care stays paused until $date, then resumes automatically.';
+  }
+
+  @override
+  String get careResumeSheetTitle => 'Resume';
+
+  @override
+  String get careResumeDefaultHint => 'This is when it would have been.';
+
+  @override
   String careItemEstablishedBody(String petName) {
     return 'Part of $petName\'s regular care.';
   }
@@ -7394,6 +7430,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careNextStaysChange => 'Change';
+
+  @override
+  String get carePlanAnotherDate => 'Plan another date';
+
+  @override
+  String get careAddBoosterDate => '+ Add a booster date';
+
+  @override
+  String careRemoveBoosterDate(String date) {
+    return 'Remove booster date $date';
+  }
+
+  @override
+  String get careOccurrenceMenuTooltip => 'More actions for this date';
 
   @override
   String get careSkip => 'Skip';

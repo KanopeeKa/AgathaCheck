@@ -29,9 +29,9 @@ abstract class HealthRepository {
   /// Reopens a closed event (clears repeat end and next due date).
   Future<HealthEntry> reopenEvent(String id);
 
-  Future<HealthEntry> pauseCareItem(String id);
+  Future<HealthEntry> pauseCareItem(String id, {DateTime? until});
 
-  Future<HealthEntry> resumeCareItem(String id);
+  Future<HealthEntry> resumeCareItem(String id, {DateTime? resumeOn});
 
   /// Undoes the last schedule command on the entry.
   Future<HealthEntry> unmarkDone(String id);

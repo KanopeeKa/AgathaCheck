@@ -1334,10 +1334,24 @@ Recorded before C0 starts; every item below is approved with the phases (execute
 | EX-7 | C0 follow-ups folded in: `docs/ops/care-tick.md` uses typed cron fields (cPanel has no fifteen-minute common setting); unused `uuidv4` import removed from `completeWeightRouter.js`; the older care DB suites fail instead of skipping when PostgreSQL is not migrated (`openStrictHarness`) |
 | EX-8 | Order: C0 → C1 (pause, report) → C2–C5 → C4b → C6 → D2/D3 (+ D4). If the diff stops being one reviewable PR, land **3b-i (C0 + C)** and **3b-ii (D)** and announce it on the control issue (RV-7) |
 | EX-10 | C1 shape: `flutter_app/lib/features/care_item/` imports **no other feature** (core only). Its authenticated client comes from `careItemHttpClientProvider`, overridden in `lib/main.dart` (composition) with `authHttpClientProvider`; tests override it with a mock. `CareItemsController` (one list read, server-confirmed updates) and `CareCompletionService` (endpoint by family, never `next_choice` / `earlier_choice`, sealed failures, `developer.log('care.completion')`) are not wired to any screen until C3/C4. The optional warn-only `check_care_item_boundary.sh` is not added: `check_feature_imports.js` already blocks new edges |
-| EX-11 | C2 shape: `HealthEntry.schedule` (`CareItemSchedule`, parsed from the list/detail read) is the only status source for server data. The six old rules (F25) now go through it: `HealthEntry.isOverdue` / `isDueToday` (stacks and not recorded count as overdue), and `CareTemporalGroupingService.groupForSchedule` (agenda overdue → needs attention, today → today, due soon → upcoming; later dates and done-today rows do not change Care Status). Their device-clock fallbacks remain only for entries built without a server read (tests, local drafts) and are deleted in F2. New edges `health_tracking→care_item`, `pet_care→care_item` (and later consumers) are accepted exceptions: `care_item` is a leaf that imports core only, so it cannot join the import cycle. Server read additions gain `last_done { occurrence_id, completed_on, time }` for done-today rows |
+| EX-11 | C2 shape: `HealthEntry.schedule` (`CareItemSchedule`, parsed from the list/detail read) is the only status source for server data. The six old rules (F25) now go through it: `HealthEntry.isOverdue` / `isDueToday` (stacks and not recorded count as overdue), and `CareTemporalGroupingService.groupForSchedule` (agenda overdue → needs attention, today → today, due soon → upcoming; later dates and done-today rows do not change Care Status). Device-clock fallbacks on `isOverdue` / `isDueToday` when `schedule == null` are **tests and local drafts only** — production Pet Care must not show care status from `next_due_date` + device clock (see `.agents/memory/care-schedule-status-source.md`). Dead optimistic preview widgets were removed in gap-close C2; do not reintroduce client-side status inference on server-backed rows. New edges `health_tracking→care_item`, `pet_care→care_item` (and later consumers) are accepted exceptions: `care_item` is a leaf that imports core only, so it cannot join the import cycle. Server read additions gain `last_done { occurrence_id, completed_on, time }` for done-today rows |
 | EX-12 | C3–C4b shape: one agenda widget `pet_care/…/care_agenda/` (`CareAgendaCollection`, rows `CareAgendaRowTile`) on the dashboard (with the orientation line), the pet profile, the pet's All care and global All care; paused / ended / recorded-only items follow without a tick. Every Done goes through `CareCompletionFlow` (`care_item/presentation`): `decideDone` (DN-1…DN-8), at most one modal (date sheet or early dialog), one request, snackbar "{name} done · Undo" with "Next: …" / "Next stays … · Change" and Change date for a late Fixed-schedule completion; 409 → "Already updated". Rows open the occurrence screen (`/pet/:petId/events/:entryId/occurrences/:occurrenceId`, analytics-sensitive `occurrenceDetail`); stacks and done-today rows open the Care Item view. The Care Item view's Needs attention lists every open occurrence as a line with Mark all as done / Skip all for a stack (`resolve-stack`, one Undo). `careDataChangedProvider` (overridden in `main.dart`) reloads care data after occurrence-screen commands. Old optimistic rows, their tests and the unused `PetEventsPreviewSection` are deleted; the old completion helpers (`OccurrenceCareActions`, sheets) remain only behind the legacy dates section for entries without a schedule and are deleted in F2. New cross-feature imports of the shared agenda are accepted exceptions, consolidated in F1/F3. Live minutes: the agenda advances timed Due → Overdue each minute and reloads every 15 minutes |
 | EX-13 | D2/D3 shape: "If done after the due date" is a field under Schedule type (Keep · Skip the next date · Move this and following, the last for Fixed schedule only; Keep clears it). Server `POST`/`PUT /api/health-entries` accept `late_completion_choice` (400 otherwise). The Care Item view lists open occurrences as lines (§18.6.5) and History lines open their occurrence screen; the item menu (Edit, Pause/Resume, Archive/Restore) is unchanged |
 | EX-9 | Known red checks that are not CARE's: UAT live E2E in-host smoke (`node: command not found`, TEST [#1470](https://github.com/KanopeeKa/AgathaCheck/issues/1470)); production post-deploy smoke while production is in coming-soon mode |
+
+---
+
+## Post–5b honest record — child D partial (2026-10-04, GOV)
+
+Slot **5b** closed when E+F landed on `main` ([#1499](https://github.com/KanopeeKa/AgathaCheck/pull/1499)). The roadmap is **complete**, but **R1–R12 and §18 are not all met**:
+
+| Area | Honest status |
+|------|----------------|
+| Child **`care-item-form-c1a7`** (landing 3b with C, PR [#1475](https://github.com/KanopeeKa/AgathaCheck/pull/1475)) | **Partial** — server + much of agenda/occurrence UI shipped; form/Care Item hero, booster / Plan another date, Advanced settings, pause-until UI, Plan/Record exclusivity (R9), and several UIR items remain for follow-up |
+| §18.14 out-of-scope items | Filed as debt [#1539](https://github.com/KanopeeKa/AgathaCheck/issues/1539)–[#1547](https://github.com/KanopeeKa/AgathaCheck/issues/1547) |
+| Occurrence-screen `decideDone` context ([#1476](https://github.com/KanopeeKa/AgathaCheck/issues/1476)) | **Open** after GOV repro (wire path includes `open_occurrences`; test fallback remains) |
+
+**Follow-up execute-plan:** `care-requirements-gap-close-c1a7` on `cursor/care-requirements-gap-close-integration-50b4` ([#1526](https://github.com/KanopeeKa/AgathaCheck/issues/1526)). Does **not** reopen this roadmap.
 
 ---
 
@@ -1348,7 +1362,7 @@ autonomy: completed
 current_phase: null
 last_completed_phase: orchestrate
 halt_reason: null
-next_action: "roadmap complete"
+next_action: "requirements gap-close on integration — see care-requirements-gap-close-c1a7"
 artifact_ref:
   branch: main
   plan_path: .agents/plans/care-next-occurrence-c1a7.md
@@ -1357,5 +1371,5 @@ artifact_ref:
   snapshot_commit: e919a1cf035cb5fc84a5da6f8e14bc4ec9c91dac
 open_prs: []
 merge_commits: {}
-debt_issue_refs: []
+debt_issue_refs: [1539, 1540, 1541, 1542, 1543, 1544, 1545, 1546, 1547, 1476]
 ```

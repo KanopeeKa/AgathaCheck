@@ -142,6 +142,9 @@ export function careApi(app, owner) {
     undo(id, body = {}) {
       return send('post', `/${id}/schedule/undo`, body);
     },
+    undoOccurrence(id, occId, body = {}) {
+      return send('post', `/${id}/occurrences/${occId}/undo`, body);
+    },
     close(id) {
       return send('post', `/${id}/close`, {});
     },

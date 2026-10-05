@@ -49,6 +49,9 @@
     "Moving care after the trip postpones it to the day after return": "P1",
     "A date planned during the trip can be looked after by the carer": "P1"
   },
+  "care_pause_resume.feature": {
+    "PP-2 pause without end date then resume on the suggested date": "P1"
+  },
   "pet_offline_cache.feature": {
     "Pet list shows saved pets with an offline banner when the network fails": "P1",
     "Pet list does not show cached pets when the session is rejected": "P1"
@@ -78,6 +81,7 @@
   },
   "health_tracking.feature": {
     "Creating a medication entry": "P0",
+    "Planned care entry saves with due date only": "P1",
     "Creating a preventive entry": "P1",
     "Creating a vet visit entry": "P1",
     "Creating a procedure entry": "P1",
@@ -422,6 +426,12 @@
     "Care that needs a weight opens its date to enter the weight": "P1",
     "Several dates to sort out open the care item": "P1",
     "Upcoming care can be marked as done early": "P1"
+  },
+  "care_booster.feature": {
+    "PL-1 first dose then booster then yearly recurrence": "P1"
+  },
+  "care_form_advanced.feature": {
+    "F42 expand Advanced and choose Fixed schedule": "P1"
   },
   "care_schedules.feature": {
     "Missed fixed-schedule care can be marked as done together on the care item": "P1",

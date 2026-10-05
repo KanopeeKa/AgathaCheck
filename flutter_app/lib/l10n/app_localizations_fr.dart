@@ -1328,10 +1328,10 @@ class AppLocalizationsFr extends AppLocalizations {
       'Indiquez une date d\'échéance, une date de fin, ou les deux';
 
   @override
-  String get recurrenceAnchorTitle => 'Prochaine échéance';
+  String get recurrenceAnchorTitle => 'Type de calendrier';
 
   @override
-  String get recurrenceFromCompletion => 'Depuis la complétion';
+  String get recurrenceFromCompletion => 'Après l\'avoir fait';
 
   @override
   String get recurrenceFromDueDate => 'Calendrier fixe';
@@ -1342,7 +1342,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get recurrenceAnchorInfoBody =>
-      'Exemple : tous les 7 jours. Vous terminez avec 1 jour de retard.\n• Depuis la complétion : prochaine échéance 7 jours après la validation.\n• Calendrier fixe : prochaine échéance dans 6 jours (7 jours après la date d\'échéance initiale).';
+      'Exemple : tous les 7 jours. Vous le marquez comme fait lorsqu\'il est en retard.\n• Après l\'avoir fait : la prochaine date est 7 jours après la validation.\n• Calendrier fixe : la prochaine date est 7 jours après la date d\'échéance initiale, même si vous le marquez tôt ou tard.';
+
+  @override
+  String get healthEntryFormAdvancedSettings => 'Paramètres avancés';
 
   @override
   String get markCompleteSheetTitle => 'Marquer comme terminé';
@@ -5343,6 +5346,40 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String careItemPausedUntil(String date) {
+    return 'En pause jusqu\'au $date';
+  }
+
+  @override
+  String get carePostponeSheetTitle => 'Mettre en pause';
+
+  @override
+  String get carePostponeNoEndDate => 'Sans date de fin (pause)';
+
+  @override
+  String get carePostponeUntilLabel => 'Pause jusqu\'au';
+
+  @override
+  String get carePostponePauseConsequence =>
+      'Les rappels s\'arrêtent jusqu\'à la reprise.';
+
+  @override
+  String carePostponeUntilAfterDoneConsequence(String date) {
+    return 'La date ouverte est reportée au $date.';
+  }
+
+  @override
+  String carePostponeUntilFixedConsequence(String date) {
+    return 'Les soins restent en pause jusqu\'au $date, puis reprennent automatiquement.';
+  }
+
+  @override
+  String get careResumeSheetTitle => 'Reprendre';
+
+  @override
+  String get careResumeDefaultHint => 'C\'est la date qu\'elle aurait eue.';
+
+  @override
   String careItemEstablishedBody(String petName) {
     return 'Fait partie des soins réguliers de $petName.';
   }
@@ -7510,6 +7547,20 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careNextStaysChange => 'Modifier';
+
+  @override
+  String get carePlanAnotherDate => 'Prévoir une autre date';
+
+  @override
+  String get careAddBoosterDate => '+ Ajouter une date de rappel';
+
+  @override
+  String careRemoveBoosterDate(String date) {
+    return 'Retirer la date de rappel $date';
+  }
+
+  @override
+  String get careOccurrenceMenuTooltip => 'Autres actions pour cette date';
 
   @override
   String get careSkip => 'Ignorer';

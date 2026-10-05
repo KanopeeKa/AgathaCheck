@@ -27,7 +27,9 @@ export class OccurrencePage {
       60_000,
     );
     await refreshFlutterAccessibility(this.page);
-    await expect(this.page.getByRole('button', { name: /go back/i })).toBeVisible({
+    await expect(
+      this.page.getByRole('button', { name: /^Back$|^Go back$|^Retour$/i }),
+    ).toBeVisible({
       timeout: 60_000,
     });
   }

@@ -14,6 +14,7 @@ class EntryDueCompletedRow extends StatelessWidget {
     this.dueLabel,
     this.completedLabel,
     this.showDueDate = true,
+    this.showCompletedOn = true,
     this.requireCompletedOn = false,
   });
 
@@ -24,13 +25,14 @@ class EntryDueCompletedRow extends StatelessWidget {
   final String? dueLabel;
   final String? completedLabel;
   final bool showDueDate;
+  final bool showCompletedOn;
   final bool requireCompletedOn;
 
   String? _validate(AppLocalizations l) {
     if (requireCompletedOn && completedOn == null) {
       return l.completedOnRequired;
     }
-    if (showDueDate && dueDate == null && completedOn == null) {
+    if (showDueDate && dueDate == null) {
       return l.dueOrCompletedRequired;
     }
     if (!showDueDate && completedOn == null) {
@@ -59,16 +61,17 @@ class EntryDueCompletedRow extends StatelessWidget {
                   allowClear: true,
                 ),
               ),
-              const SizedBox(width: 12),
+              if (showCompletedOn) const SizedBox(width: 12),
             ],
-            Expanded(
-              child: EntryDatePickerField(
-                label: completedLabel ?? l.completedOn,
-                date: completedOn,
-                onChanged: onCompletedOnChanged,
-                allowClear: !requireCompletedOn,
+            if (showCompletedOn)
+              Expanded(
+                child: EntryDatePickerField(
+                  label: completedLabel ?? l.completedOn,
+                  date: completedOn,
+                  onChanged: onCompletedOnChanged,
+                  allowClear: !requireCompletedOn,
+                ),
               ),
-            ),
           ],
         ),
         if (error != null)
