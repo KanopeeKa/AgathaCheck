@@ -214,8 +214,9 @@ test.describe('Notifications', () => {
       entryName: 'Deworming',
     });
     backdateNotification(second.notification.id, 1);
-
+    // v2 pins unread administrative rows under "Needs your response" — read so date groups show.
     await loginAs(page, user);
+    await markAllNotificationsRead(baseURL, user.accessToken);
     const petList = new PetListPage(page);
     await petList.expectLoaded();
 
