@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { hashRefreshToken } from '../../lib/refreshSessions.js';
 import { createTransactionalMockPool } from '../helpers/transactionMockPool.js';
-import { TOKEN_TYPE_ACCESS, TOKEN_TYPE_REFRESH } from '../../routes/auth/shared.js';
+import { TOKEN_TYPE_ACCESS, TOKEN_TYPE_REFRESH } from '../../lib/auth/tokens.js';
 
 export const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'default_secret';
 

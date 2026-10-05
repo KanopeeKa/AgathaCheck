@@ -47,18 +47,18 @@ No wire change. Every 401, 403 and 404 stays the same.
 
 ```yaml
 autonomy: active
-current_phase: 3
-last_completed_phase: 2
+current_phase: 5
+last_completed_phase: 4
 halt_reason: null
-next_action: "continue phase 3 on branch cursor/active-codebase-h3-error-boundary-e41f"
+next_action: "continue phase 5 on branch cursor/active-codebase-h-integration-e41f"
 artifact_ref:
-  branch: cursor/active-codebase-h3-error-boundary-e41f
+  branch: cursor/active-codebase-h4-auth-principal-e41f
   plan_path: .agents/plans/active-codebase-batch-h-ports-transport-e41f.md
-  plan_commit: 6155305e2cf8f9bd6c2129c8e2cd81bf95f8f5d7
+  plan_commit: null
   snapshot_path: .agents/plans/active-codebase-batch-h-ports-transport-e41f.snapshot.json
-  snapshot_commit: 6155305e2cf8f9bd6c2129c8e2cd81bf95f8f5d7
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1611"]
-merge_commits: {"1":"0a60ce7fd6dca1780aee3f895c63f66cadafa476","2":"77c6f4b841bb4f2b52ce61b769da642539d67c5a"}
+  snapshot_commit: null
+open_prs: []
+merge_commits: {"1":"0a60ce7fd6dca1780aee3f895c63f66cadafa476","2":"77c6f4b841bb4f2b52ce61b769da642539d67c5a","3":"8520c387"}
 debt_issue_refs: []
 ```
 
@@ -255,10 +255,10 @@ docs
 
 **Acceptance criteria:**
 
-- [ ] **H.4-1** Token sign/verify helpers move from `server/routes/auth/shared.js` to `server/lib/auth/tokens.js`. A new architecture test, `server/test/architecture/serverDirection.test.js`, fails if `server/lib/**` or `server/services/**` imports `server/routes/**`. Today there are 3 violations (`authCookies.js`, `refreshSessions.js`, `requireAuth.js`); afterwards there are 0.
-- [ ] **H.4-2** Authenticated endpoints in `profileRouter`, `passwordRouter` and `sessionRouter` use `requireAuth` (principal on `req`). Unauthenticated-by-design flows (login, register, refresh, forgot and reset password) are unchanged. The deprecated `verifyToken` alias is removed.
-- [ ] **H.4-3** Auth routers use `asyncHandler` and typed errors. A table-driven test records the 401/403/404/409 matrix for **every** auth endpoint on both prefixes, and the matrix is unchanged from before the phase (snapshot the matrix first, then refactor).
-- [ ] **H.4-4** Session v2 tests (refresh rotation, reuse detection), the F.3 account-existence tests and the GDPR export tests pass unchanged.
+- [x] **H.4-1** Token sign/verify helpers move from `server/routes/auth/shared.js` to `server/lib/auth/tokens.js`. A new architecture test, `server/test/architecture/serverDirection.test.js`, fails if `server/lib/**` or `server/services/**` imports `server/routes/**`. Today there are 3 violations (`authCookies.js`, `refreshSessions.js`, `requireAuth.js`); afterwards there are 0.
+- [x] **H.4-2** Authenticated endpoints in `profileRouter`, `passwordRouter` and `sessionRouter` use `requireAuth` (principal on `req`). Unauthenticated-by-design flows (login, register, refresh, forgot and reset password) are unchanged. The deprecated `verifyToken` alias is removed.
+- [x] **H.4-3** Auth routers use `asyncHandler` and typed errors. A table-driven test records the 401/403/404/409 matrix for **every** auth endpoint on both prefixes, and the matrix is unchanged from before the phase (snapshot the matrix first, then refactor).
+- [x] **H.4-4** Session v2 tests (refresh rotation, reuse detection), the F.3 account-existence tests and the GDPR export tests pass unchanged.
 
 ---
 
