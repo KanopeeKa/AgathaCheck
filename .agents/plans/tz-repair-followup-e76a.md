@@ -31,4 +31,23 @@ Close gaps from the post-merge ops audit (#1602 / host runbook): repair script t
 
 ## Autonomy
 
-Pending `approve-autonomous tz-repair-followup-e76a` on control issue (bootstrap via `init-control-issue`).
+**control_issue:** #1628 · **Grant:** user chat 2026-10-05 full autonomy
+
+## Runtime state (agent-updated)
+
+```yaml
+autonomy: active
+current_phase: 1
+last_completed_phase: null
+halt_reason: null
+next_action: "continue phase 1 on branch cursor/tz-repair-asof-e76a"
+artifact_ref:
+  branch: cursor/tz-repair-asof-e76a
+  plan_path: .agents/plans/tz-repair-followup-e76a.md
+  plan_commit: 13dc3e751ac8029f87d80dc7b9533ef0e0b339a2
+  snapshot_path: .agents/plans/tz-repair-followup-e76a.snapshot.json
+  snapshot_commit: 13dc3e751ac8029f87d80dc7b9533ef0e0b339a2
+open_prs: []
+merge_commits: {}
+debt_issue_refs: []
+```

@@ -129,6 +129,7 @@ Production (if DC-2 shows damage): suspend the cron, deploy §8, backup, then:
 ```bash
 node scripts/care/repair_tz_shift.js              # dry-run (default)
 node scripts/care/repair_tz_shift.js --apply
+node scripts/care/repair_tz_shift.js --as-of-date=2026-10-05   # explicit calendar day (else pet home TZ)
 node scripts/care/repair_occurrences.js --dry-run
 ```
 
