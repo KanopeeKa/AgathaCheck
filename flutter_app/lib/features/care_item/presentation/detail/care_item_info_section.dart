@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../l10n/app_localizations.dart';
-import '../../../people/domain/entities/people_contact.dart';
-import '../../../people/presentation/providers/people_providers.dart';
+import '../../../people/people.dart';
 import '../../../pet_care/presentation/widgets/care_surface/care_item_detail_row.dart';
 import '../../../pet_profile/domain/services/care_family_inference.dart';
 import '../../../pet_profile/presentation/widgets/care_family_icon.dart';
@@ -21,17 +20,14 @@ class CareItemInfoSection extends ConsumerWidget {
   final HealthEntry entry;
   final bool muted;
 
-  String? _providerLabel(AppLocalizations l, List<PeopleContact> contacts) {
+  String? _providerLabel(AppLocalizations l, Roster? roster) {
     if (entry.providerTypedName != null &&
         entry.providerTypedName!.trim().isNotEmpty) {
       return entry.providerTypedName!.trim();
     }
     final id = entry.providerContactId;
     if (id == null) return null;
-    for (final c in contacts) {
-      if (c.id == id) return c.name;
-    }
-    return l.notSet;
+    return roster?.summaryById(id)?.name ?? l.notSet;
   }
 
   @override
@@ -41,7 +37,7 @@ class CareItemInfoSection extends ConsumerWidget {
     final colorScheme = theme.colorScheme;
     final textColor = muted ? colorScheme.onSurfaceVariant : null;
     final family = entry.careFamily ?? inferCareFamily(entry);
-    final contactsAsync = ref.watch(peopleContactsProvider);
+    final rosterAsync = ref.watch(rosterProvider);
 
     return Column(
       key: const Key('care_item_info_section'),
@@ -69,10 +65,10 @@ class CareItemInfoSection extends ConsumerWidget {
           value: careFamilyLabel(l, family),
           muted: muted,
         ),
-        contactsAsync.when(
-          data: (contacts) => CareItemDetailRow(
+        rosterAsync.when(
+          data: (roster) => CareItemDetailRow(
             label: l.careProviderLabel,
-            value: _providerLabel(l, contacts) ?? l.notSet,
+            value: _providerLabel(l, roster) ?? l.notSet,
             muted: muted,
           ),
           loading: () => CareItemDetailRow(

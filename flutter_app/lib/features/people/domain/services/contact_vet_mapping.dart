@@ -1,15 +1,12 @@
-import '../../../vet/domain/entities/vet.dart';
 import '../entities/contact_detail.dart';
+import '../entities/pet_report_vet_details.dart';
 
-/// Maps a People contact to the legacy [Vet] shape used by pet PDF reports (B7).
-Vet? vetFromContactDetail(ContactDetail? detail) {
+PetReportVetDetails? petReportVetFromContactDetail(ContactDetail? detail) {
   if (detail == null) return null;
-  return Vet(
-    id: detail.legacyVetId ?? detail.id,
+  return PetReportVetDetails(
     name: detail.name,
     phone: detail.phone ?? '',
     email: detail.email ?? '',
     address: detail.address ?? '',
-    website: detail.website ?? '',
   );
 }

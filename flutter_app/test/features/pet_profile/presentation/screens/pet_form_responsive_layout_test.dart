@@ -11,17 +11,10 @@ import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_
 import 'package:pet_profile_app/features/people/application/people_providers.dart';
 import 'package:pet_profile_app/features/people/domain/entities/roster.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/screens/pet_form_screen.dart';
-import 'package:pet_profile_app/features/vet/domain/entities/vet.dart';
-import 'package:pet_profile_app/features/vet/presentation/providers/vet_providers.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import '../../../../helpers/fakes.dart';
 import '../providers/pet_list_notifier_test.dart';
-
-class _VetsNotifier extends VetListNotifier {
-  @override
-  Future<List<Vet>> build() async => const [];
-}
 
 class _OrgsNotifier extends OrganizationListNotifier {
   @override
@@ -46,7 +39,6 @@ Widget _wrapAddForm({double width = 320}) {
       authProvider.overrideWith((ref) => FakeAuthNotifier()),
       petRepositoryProvider.overrideWithValue(RecordingPetRepository()),
       organizationListProvider.overrideWith(_OrgsNotifier.new),
-      vetListProvider.overrideWith(_VetsNotifier.new),
       apiBaseUrlProvider.overrideWithValue('http://test.local'),
       allPetsIncludingOrgProvider.overrideWith((ref) async => <Pet>[]),
     ],
@@ -85,7 +77,6 @@ Widget _wrapEditForm({required double width}) {
   return ProviderScope(
     overrides: [
       petListProvider.overrideWith(() => _ExistingPetNotifier(pet)),
-      vetListProvider.overrideWith(_VetsNotifier.new),
       petPeopleProvider.overrideWith((ref, petId) async => null),
       rosterProvider.overrideWith(_EmptyRosterNotifier.new),
       apiBaseUrlProvider.overrideWithValue('http://test.local'),

@@ -99,7 +99,7 @@ class ContactDetail {
     this.worksAtContactId,
     this.linkedUserId,
     this.inactiveAt,
-    this.legacyVetId,
+    this.linkedVetRecordId,
     this.privateNote = '',
     this.householdNote,
     this.worksAt,
@@ -123,7 +123,7 @@ class ContactDetail {
   final String? worksAtContactId;
   final String? linkedUserId;
   final DateTime? inactiveAt;
-  final String? legacyVetId;
+  final String? linkedVetRecordId;
   final String privateNote;
   final String? householdNote;
   final ContactWorksAtDetail? worksAt;
@@ -140,7 +140,7 @@ class ContactDetail {
     group: group,
     status: status,
     linkedUserId: linkedUserId,
-    legacyVetId: legacyVetId,
+    linkedVetRecordId: linkedVetRecordId,
   );
 
   @override
@@ -161,7 +161,7 @@ class ContactDetail {
         other.worksAtContactId == worksAtContactId &&
         other.linkedUserId == linkedUserId &&
         other.inactiveAt == inactiveAt &&
-        other.legacyVetId == legacyVetId &&
+        other.linkedVetRecordId == linkedVetRecordId &&
         other.privateNote == privateNote &&
         other.householdNote == householdNote &&
         other.worksAt == worksAt &&
@@ -187,7 +187,7 @@ class ContactDetail {
     worksAtContactId,
     linkedUserId,
     inactiveAt,
-    legacyVetId,
+    linkedVetRecordId,
     privateNote,
     householdNote,
     worksAt,

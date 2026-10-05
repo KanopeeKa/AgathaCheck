@@ -36,12 +36,13 @@ import 'package:pet_profile_app/features/health_tracking/presentation/providers/
 import 'package:pet_profile_app/features/notifications/presentation/providers/notification_providers.dart';
 import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
+import 'package:pet_profile_app/features/people/application/people_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
+
 import 'package:pet_profile_app/features/sharing/presentation/providers/sharing_providers.dart';
 import 'package:pet_profile_app/features/subscription/data/services/revenuecat_service.dart';
 import 'package:pet_profile_app/features/subscription/domain/entities/subscription_status.dart';
 import 'package:pet_profile_app/features/subscription/presentation/providers/subscription_providers.dart';
-import 'package:pet_profile_app/features/vet/presentation/providers/vet_providers.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import '../../helpers/fakes.dart';
@@ -107,7 +108,6 @@ List<Override> _guardianShellOverrides({
     petListProvider.overrideWith(
       () => petsLoading ? _LoadingPetListNotifier() : TestPetListNotifier(pets),
     ),
-    vetListProvider.overrideWith(FakeVetListNotifier.new),
     organizationListProvider.overrideWith(FakeOrganizationListNotifier.new),
     healthEntriesNotifierProvider.overrideWith(
       () => FakeHealthEntriesNotifier(),
@@ -152,6 +152,25 @@ GoRouter _buildStubRouter({required String initialLocation}) {
       GoRoute(
         path: '/pc/home',
         builder: (_, __) => const Scaffold(body: Text('guardian-home')),
+      ),
+      GoRoute(
+        path: '/pc/people',
+        builder: (_, state) => Scaffold(
+          body: Text('people-filter-${state.uri.queryParameters['filter']}'),
+        ),
+      ),
+      GoRoute(
+        path: '/pc/people/:id',
+        builder: (_, state) =>
+            Scaffold(body: Text('people-${state.pathParameters['id']}')),
+        routes: [
+          GoRoute(
+            path: 'edit',
+            builder: (_, state) => Scaffold(
+              body: Text('people-edit-${state.pathParameters['id']}'),
+            ),
+          ),
+        ],
       ),
     ],
     errorBuilder: (_, state) => Scaffold(body: Text('not-found:${state.uri}')),
@@ -464,15 +483,37 @@ void main() {
       prefs = await SharedPreferences.getInstance();
     });
 
-    testWidgets('resolves vet detail without error page', (tester) async {
+    testWidgets('redirects legacy vet id to People contact detail', (
+      tester,
+    ) async {
       final router = _buildStubRouter(initialLocation: '/pc/vets/vet-1');
-      await tester.pumpWidget(_app(router: router, prefs: prefs));
-      await _settle(tester);
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            ..._guardianShellOverrides(prefs: prefs),
+            legacyVetContactIdProvider.overrideWith((ref, vetId) async {
+              expect(vetId, 'vet-1');
+              return 'contact-1';
+            }),
+          ],
+          child: MaterialApp.router(
+            routerConfig: router,
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: AppLocalizations.supportedLocales,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
 
       expect(find.textContaining('not-found:'), findsNothing);
       expect(
         router.routerDelegate.currentConfiguration.uri.path,
-        '/pc/vets/vet-1',
+        '/pc/people/contact-1',
       );
     });
   });
@@ -484,27 +525,70 @@ void main() {
       prefs = await SharedPreferences.getInstance();
     });
 
-    testWidgets('resolves vet edit without error page', (tester) async {
+    testWidgets('redirects legacy vet edit to People contact edit', (
+      tester,
+    ) async {
       final router = _buildStubRouter(initialLocation: '/pc/vets/edit/vet-99');
-      await tester.pumpWidget(_app(router: router, prefs: prefs));
-      await _settle(tester);
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            ..._guardianShellOverrides(prefs: prefs),
+            legacyVetContactIdProvider.overrideWith((ref, vetId) async {
+              expect(vetId, 'vet-99');
+              return 'contact-99';
+            }),
+          ],
+          child: MaterialApp.router(
+            routerConfig: router,
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: AppLocalizations.supportedLocales,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
 
       expect(find.textContaining('not-found:'), findsNothing);
       expect(
         router.routerDelegate.currentConfiguration.uri.path,
-        '/pc/vets/edit/vet-99',
+        '/pc/people/contact-99/edit',
       );
     });
 
-    testWidgets('preserves vet id in path', (tester) async {
+    testWidgets('falls back to professionals filter when contact missing', (
+      tester,
+    ) async {
       final router = _buildStubRouter(initialLocation: '/pc/vets/edit/vet-42');
-      await tester.pumpWidget(_app(router: router, prefs: prefs));
-      await _settle(tester);
-
-      expect(
-        router.routerDelegate.currentConfiguration.uri.path,
-        '/pc/vets/edit/vet-42',
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            ..._guardianShellOverrides(prefs: prefs),
+            legacyVetContactIdProvider.overrideWith((ref, vetId) async {
+              expect(vetId, 'vet-42');
+              return null;
+            }),
+          ],
+          child: MaterialApp.router(
+            routerConfig: router,
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: AppLocalizations.supportedLocales,
+          ),
+        ),
       );
+      await tester.pumpAndSettle();
+
+      final uri = router.routerDelegate.currentConfiguration.uri;
+      expect(uri.path, '/pc/people');
+      expect(uri.queryParameters['filter'], 'professionals');
     });
   });
 

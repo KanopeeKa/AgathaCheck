@@ -15,9 +15,6 @@ import 'package:pet_profile_app/features/people/domain/enums/contact_role.dart';
 import 'package:pet_profile_app/features/people/domain/enums/contact_status.dart';
 import 'package:pet_profile_app/features/people/domain/enums/relationship_kind.dart';
 import 'package:pet_profile_app/features/people/domain/repositories/people_repository.dart';
-import 'package:pet_profile_app/features/people/application/legacy_people_providers.dart';
-import 'package:pet_profile_app/features/people/application/people_commands.dart';
-import 'package:pet_profile_app/features/people/application/people_providers.dart';
 
 class FakePeopleRepository implements PeopleRepository {
   FakePeopleRepository();
@@ -301,23 +298,4 @@ void main() {
       expect(container.read(petPeopleProvider('p1')).isLoading, isTrue);
     },
   );
-
-  test('legacy detail provider does not mutate contacts list', () async {
-    final fake = FakePeopleRepository();
-    final container = ProviderContainer(
-      overrides: [
-        peopleRepositoryProvider.overrideWithValue(fake),
-        householdsRepositoryProvider.overrideWithValue(
-          FakeHouseholdsRepository(),
-        ),
-      ],
-    );
-    addTearDown(container.dispose);
-
-    await container.read(peopleContactsProvider.future);
-    final before = container.read(peopleContactsProvider).value!;
-    await container.read(peopleContactDetailProvider('c1').future);
-    final after = container.read(peopleContactsProvider).value!;
-    expect(after, before);
-  });
 }

@@ -98,7 +98,7 @@ class ContactSummaryDto {
       worksAt: worksAt,
       nextAbsence: nextAbsence,
       access: access,
-      legacyVetId: json['legacy_vet_id']?.toString(),
+      linkedVetRecordId: json['legacy_vet_id']?.toString(),
       inactiveAt: json['inactive_at'] != null
           ? DateTime.tryParse(json['inactive_at'].toString())
           : null,
@@ -124,7 +124,7 @@ class ContactSummaryDto {
         'ends_on': summary.nextAbsence!.endsOn,
         'pet_ids': summary.nextAbsence!.petIds,
       },
-    'legacy_vet_id': summary.legacyVetId,
+    'legacy_vet_id': summary.linkedVetRecordId,
   };
 }
 
@@ -187,7 +187,7 @@ class ContactDetailDto {
       inactiveAt: json['inactive_at'] != null
           ? DateTime.tryParse(json['inactive_at'].toString())
           : null,
-      legacyVetId: summary.legacyVetId,
+      linkedVetRecordId: summary.linkedVetRecordId,
       privateNote: json['private_note']?.toString() ?? '',
       householdNote: json['household_note']?.toString(),
       worksAt: worksAt,
