@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../care_item/care_item.dart';
-import '../../../../experience/presentation/widgets/pet_care_illustrated_empty_state.dart';
+import 'package:pet_profile_app/core/widgets/pet_care_illustrated_empty_state.dart';
 import '../../../../health_tracking/domain/entities/health_entry.dart';
 import '../../../../health_tracking/presentation/providers/health_providers.dart';
 import '../../../../health_tracking/presentation/widgets/add_health_entry_navigation.dart';

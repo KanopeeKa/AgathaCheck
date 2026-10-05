@@ -1,4 +1,4 @@
-import '../../../experience/domain/entities/app_experience.dart';
+import 'package:pet_profile_app/core/experience/app_experience.dart';
 import '../../../sharing/domain/entities/pet_access.dart';
 import 'pet.dart';
 

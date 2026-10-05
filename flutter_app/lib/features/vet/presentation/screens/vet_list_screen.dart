@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
-import '../../../experience/domain/entities/app_experience.dart';
+import 'package:pet_profile_app/core/experience/app_experience.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../providers/vet_providers.dart';
 import '../widgets/vet_compact_row.dart';

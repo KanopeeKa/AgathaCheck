@@ -5,8 +5,8 @@ import '../../../../core/router/shell_return_navigation.dart';
 import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../pet_profile/domain/entities/pet.dart';
-import 'pet_care_dashboard_section_header.dart';
-import 'pet_care_illustrated_empty_state.dart';
+import 'package:pet_profile_app/core/widgets/pet_care_dashboard_section_header.dart';
+import 'package:pet_profile_app/core/widgets/pet_care_illustrated_empty_state.dart';
 import 'pet_care_operations_desk_layout.dart';
 
 /// Guardian-facing summary of established foster relationships.

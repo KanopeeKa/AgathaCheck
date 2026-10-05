@@ -10,8 +10,8 @@ import '../../../../auth/presentation/providers/auth_providers.dart';
 import '../../../../vet/domain/entities/vet.dart';
 import '../../../../vet/presentation/providers/vet_providers.dart';
 import '../../../../vet/presentation/widgets/vet_team_card.dart';
-import '../../widgets/pet_care_dashboard_section_header.dart';
-import '../../widgets/pet_care_illustrated_empty_state.dart';
+import 'package:pet_profile_app/core/widgets/pet_care_dashboard_section_header.dart';
+import 'package:pet_profile_app/core/widgets/pet_care_illustrated_empty_state.dart';
 
 /// Care team dashboard section — warm clinic cards with linked-pet previews.
 class PetCareMyVetsSection extends ConsumerWidget {

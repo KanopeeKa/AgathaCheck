@@ -49,14 +49,14 @@ autonomy: active
 current_phase: 2
 last_completed_phase: 1
 halt_reason: null
-next_action: "start phase 2: checkout cursor/active-codebase-i1-2-experience-edges-e41f"
+next_action: "continue phase 2 on branch cursor/active-codebase-i1-2-experience-edges-e41f"
 artifact_ref:
-  branch: cursor/active-codebase-i1-integration-e41f
+  branch: cursor/active-codebase-i1-2-experience-edges-e41f
   plan_path: .agents/plans/active-codebase-batch-i1-public-apis-e41f.md
-  plan_commit: 22b34eec0e23a4347965b87eb8615f058aab088c
+  plan_commit: d23f582e38285e576c984a6df460d8f52335b6a7
   snapshot_path: .agents/plans/active-codebase-batch-i1-public-apis-e41f.snapshot.json
-  snapshot_commit: 22b34eec0e23a4347965b87eb8615f058aab088c
-open_prs: []
+  snapshot_commit: d23f582e38285e576c984a6df460d8f52335b6a7
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1635"]
 merge_commits: {}
 debt_issue_refs: []
 ```

@@ -11,8 +11,8 @@ import '../../../../pet_care/presentation/widgets/care_agenda/care_agenda_collec
 import '../../../../pet_care/presentation/widgets/care_agenda/care_agenda_inset_items.dart';
 import '../../../../pet_care/presentation/widgets/care_surface/care_collection_inset_list.dart';
 import '../../../../pet_profile/domain/entities/pet.dart';
-import '../../widgets/pet_care_dashboard_section_header.dart';
-import '../../widgets/pet_care_illustrated_empty_state.dart';
+import 'package:pet_profile_app/core/widgets/pet_care_dashboard_section_header.dart';
+import 'package:pet_profile_app/core/widgets/pet_care_illustrated_empty_state.dart';
 
 /// Guardian Care dashboard: the agenda for all pets (D-CIE-025) with the
 /// orientation line (UIR-17). Rows change only after the server confirms

@@ -8,56 +8,6 @@
     "R4": "new-feature-edge"
   },
   "violations": [
-    "R1|flutter_app/lib/features/auth/presentation/screens/forgot_password_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R1|flutter_app/lib/features/auth/presentation/screens/login_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R1|flutter_app/lib/features/auth/presentation/screens/signup_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R1|flutter_app/lib/features/auth/presentation/widgets/landing/landing_logo.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R1|flutter_app/lib/features/care_item/presentation/detail/care_item_detail_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R1|flutter_app/lib/features/care_item/presentation/detail/care_item_detail_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
-    "R1|flutter_app/lib/features/people/presentation/screens/people_detail_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R1|flutter_app/lib/features/people/presentation/screens/people_detail_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
-    "R1|flutter_app/lib/features/people/presentation/screens/people_list_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R1|flutter_app/lib/features/people/presentation/screens/people_list_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
-    "R1|flutter_app/lib/features/pet_care/context/presentation/screens/planned_absence_flow_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R1|flutter_app/lib/features/pet_care/context/presentation/screens/planned_absence_flow_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
-    "R1|flutter_app/lib/features/pet_care/context/presentation/screens/planned_absence_hub_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R1|flutter_app/lib/features/pet_care/context/presentation/screens/planned_absence_hub_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
-    "R1|flutter_app/lib/features/pet_care/context/presentation/screens/planned_absence_plan_placeholder_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R1|flutter_app/lib/features/pet_care/context/presentation/screens/planned_absence_plan_placeholder_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
-    "R1|flutter_app/lib/features/pet_care/context/presentation/screens/planned_absence_plan_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R1|flutter_app/lib/features/pet_care/context/presentation/screens/planned_absence_plan_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
-    "R1|flutter_app/lib/features/pet_profile/domain/entities/pet_viewer_role.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R1|flutter_app/lib/features/pet_profile/domain/services/pet_detail_actions.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R1|flutter_app/lib/features/pet_profile/presentation/controllers/download_report_controller.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R1|flutter_app/lib/features/pet_profile/presentation/providers/pet_detail_viewer_context_provider.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R1|flutter_app/lib/features/pet_profile/presentation/providers/pet_detail_viewer_context_provider.dart|flutter_app/lib/features/experience/domain/services/experience_eligibility.dart",
-    "R1|flutter_app/lib/features/pet_profile/presentation/screens/pet_detail_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R1|flutter_app/lib/features/pet_profile/presentation/screens/pet_detail_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
-    "R1|flutter_app/lib/features/pet_profile/presentation/screens/pet_health_issues_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R1|flutter_app/lib/features/pet_profile/presentation/screens/pet_health_issues_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
-    "R1|flutter_app/lib/features/pet_profile/presentation/screens/pet_list_screen.dart|flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_dashboard_helpers.dart",
-    "R1|flutter_app/lib/features/pet_profile/presentation/screens/pet_manage_events_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R1|flutter_app/lib/features/pet_profile/presentation/screens/pet_manage_events_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
-    "R1|flutter_app/lib/features/pet_profile/presentation/screens/pet_timeline_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R1|flutter_app/lib/features/pet_profile/presentation/screens/pet_timeline_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
-    "R1|flutter_app/lib/features/pet_profile/presentation/screens/widgets/manage_events_collection_filter.dart|flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_due_events_screen.dart",
-    "R1|flutter_app/lib/features/pet_profile/presentation/screens/widgets/org_events_collection_filter.dart|flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_due_events_screen.dart",
-    "R1|flutter_app/lib/features/pet_profile/presentation/widgets/all_care/all_care_list.dart|flutter_app/lib/features/experience/presentation/widgets/pet_care_illustrated_empty_state.dart",
-    "R1|flutter_app/lib/features/pet_profile/presentation/widgets/pet_care_section/pet_care_section.dart|flutter_app/lib/features/experience/presentation/widgets/pet_care_dashboard_section_header.dart",
-    "R1|flutter_app/lib/features/pet_profile/presentation/widgets/pet_care_section/pet_care_section.dart|flutter_app/lib/features/experience/presentation/widgets/pet_care_illustrated_empty_state.dart",
-    "R1|flutter_app/lib/features/pet_profile/presentation/widgets/pet_list/guardian_embedded_pets_list.dart|flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_dashboard_helpers.dart",
-    "R1|flutter_app/lib/features/pet_profile/presentation/widgets/pet_list/guardian_embedded_pets_list.dart|flutter_app/lib/features/experience/presentation/widgets/pet_care_pets_tile_grid.dart",
-    "R1|flutter_app/lib/features/pet_profile/presentation/widgets/pet_list/guardian_passed_away_section.dart|flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_dashboard_helpers.dart",
-    "R1|flutter_app/lib/features/pet_profile/presentation/widgets/pet_list/guardian_passed_away_section.dart|flutter_app/lib/features/experience/presentation/widgets/pet_care_pets_tile_grid.dart",
-    "R1|flutter_app/lib/features/pet_tags/presentation/screens/manage_pet_tags_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R1|flutter_app/lib/features/pet_tags/presentation/screens/manage_pet_tags_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
-    "R1|flutter_app/lib/features/sharing/presentation/screens/households_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R1|flutter_app/lib/features/sharing/presentation/screens/households_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
-    "R1|flutter_app/lib/features/sharing/presentation/screens/share_pet_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R1|flutter_app/lib/features/sharing/presentation/screens/share_pet_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
-    "R1|flutter_app/lib/features/vet/presentation/screens/vet_list_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R1|flutter_app/lib/features/weight_tracking/presentation/screens/weight_hub_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R1|flutter_app/lib/features/weight_tracking/presentation/screens/weight_hub_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
     "R2|flutter_app/lib/features/care_item/presentation/detail/care_item_absence_section.dart|flutter_app/lib/features/health_tracking/data/models/health_entry_absence_context_model.dart",
     "R2|flutter_app/lib/features/care_item/presentation/detail/care_item_dates_section.dart|flutter_app/lib/features/health_tracking/data/models/health_entry_absence_context_model.dart",
     "R2|flutter_app/lib/features/pet_care/context/presentation/controllers/away_plan_handover_controller.dart|flutter_app/lib/features/pet_profile/data/services/pdf_saver.dart",
@@ -278,7 +228,6 @@
     "R6|flutter_app/lib/app_pet_care_sync.dart|flutter_app/lib/features/care_item/application/care_item_providers.dart",
     "R6|flutter_app/lib/app_pet_care_sync.dart|flutter_app/lib/features/pet_profile/presentation/providers/pet_providers.dart",
     "R6|flutter_app/lib/app_pet_care_sync.dart|flutter_app/lib/features/weight_tracking/presentation/providers/weight_providers.dart",
-    "R6|flutter_app/lib/core/branding/logo_assets.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
     "R6|flutter_app/lib/core/providers/analytics_providers.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
     "R6|flutter_app/lib/core/router/app_router.dart|flutter_app/lib/features/about/domain/legal_document_id.dart",
     "R6|flutter_app/lib/core/router/app_router.dart|flutter_app/lib/features/about/presentation/screens/about_screen.dart",
@@ -339,10 +288,6 @@
     "R6|flutter_app/lib/core/widgets/authenticated_network_image.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
     "R6|flutter_app/lib/core/widgets/branded_logo.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
     "R6|flutter_app/lib/core/widgets/shell_notification_bell.dart|flutter_app/lib/features/notifications/presentation/providers/notification_providers.dart",
-    "R6|flutter_app/lib/features/auth/presentation/screens/forgot_password_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R6|flutter_app/lib/features/auth/presentation/screens/login_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R6|flutter_app/lib/features/auth/presentation/screens/signup_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R6|flutter_app/lib/features/auth/presentation/widgets/landing/landing_logo.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
     "R6|flutter_app/lib/features/auth/presentation/widgets/landing/landing_operations_desk_page.dart|flutter_app/lib/features/about/presentation/widgets/legal_footer_links.dart",
     "R6|flutter_app/lib/features/care_intelligence/data/models/care_recommendation_model.dart|flutter_app/lib/features/pet_profile/domain/entities/care_family.dart",
     "R6|flutter_app/lib/features/care_intelligence/domain/entities/care_recommendation.dart|flutter_app/lib/features/pet_profile/domain/entities/care_family.dart",
@@ -393,8 +338,6 @@
     "R6|flutter_app/lib/features/care_item/presentation/detail/care_item_detail_body.dart|flutter_app/lib/features/pet_care/presentation/widgets/care_surface/care_item_section_header.dart",
     "R6|flutter_app/lib/features/care_item/presentation/detail/care_item_detail_body.dart|flutter_app/lib/features/pet_care/presentation/widgets/care_surface/care_surface_tokens.dart",
     "R6|flutter_app/lib/features/care_item/presentation/detail/care_item_detail_body.dart|flutter_app/lib/features/pet_profile/domain/entities/pet.dart",
-    "R6|flutter_app/lib/features/care_item/presentation/detail/care_item_detail_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R6|flutter_app/lib/features/care_item/presentation/detail/care_item_detail_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
     "R6|flutter_app/lib/features/care_item/presentation/detail/care_item_detail_screen.dart|flutter_app/lib/features/health_tracking/domain/entities/recurrence_anchor.dart",
     "R6|flutter_app/lib/features/care_item/presentation/detail/care_item_detail_screen.dart|flutter_app/lib/features/health_tracking/presentation/providers/health_providers.dart",
     "R6|flutter_app/lib/features/care_item/presentation/detail/care_item_detail_screen.dart|flutter_app/lib/features/health_tracking/presentation/providers/occurrence_providers.dart",
@@ -471,15 +414,6 @@
     "R6|flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_bulk_share_select_screen.dart|flutter_app/lib/features/pet_profile/domain/entities/pet.dart",
     "R6|flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_bulk_share_select_screen.dart|flutter_app/lib/features/pet_profile/presentation/controllers/pet_list_controller.dart",
     "R6|flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_bulk_share_select_screen.dart|flutter_app/lib/features/pet_profile/presentation/providers/pet_providers.dart",
-    "R6|flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_dashboard_helpers.dart|flutter_app/lib/features/health_tracking/domain/entities/health_entry.dart",
-    "R6|flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_dashboard_helpers.dart|flutter_app/lib/features/pet_care/domain/care_temporal_group.dart",
-    "R6|flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_dashboard_helpers.dart|flutter_app/lib/features/pet_care/domain/services/care_temporal_grouping_service.dart",
-    "R6|flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_dashboard_helpers.dart|flutter_app/lib/features/pet_profile/domain/entities/care_status.dart",
-    "R6|flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_dashboard_helpers.dart|flutter_app/lib/features/pet_profile/domain/entities/pet.dart",
-    "R6|flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_dashboard_helpers.dart|flutter_app/lib/features/pet_profile/presentation/controllers/pet_list_controller.dart",
-    "R6|flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_dashboard_helpers.dart|flutter_app/lib/features/pet_profile/presentation/widgets/pet_card.dart",
-    "R6|flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_dashboard_helpers.dart|flutter_app/lib/features/pet_profile/presentation/widgets/pet_tile_status_line.dart",
-    "R6|flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_dashboard_helpers.dart|flutter_app/lib/features/sharing/domain/entities/pet_access.dart",
     "R6|flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_desk_preview_screen.dart|flutter_app/lib/features/pet_profile/domain/entities/pet.dart",
     "R6|flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_desk_preview_screen.dart|flutter_app/lib/features/pet_profile/presentation/controllers/pet_list_controller.dart",
     "R6|flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_due_events_screen.dart|flutter_app/lib/features/health_tracking/domain/entities/health_entry.dart",
@@ -522,12 +456,6 @@
     "R6|flutter_app/lib/features/experience/presentation/widgets/experience_drawer_identity_header.dart|flutter_app/lib/features/auth/domain/entities/auth_user.dart",
     "R6|flutter_app/lib/features/experience/presentation/widgets/experience_section_drawer.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
     "R6|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart|flutter_app/lib/features/notifications/presentation/widgets/notification_panel.dart",
-    "R6|flutter_app/lib/features/experience/presentation/widgets/pet_care_pets_tile_grid.dart|flutter_app/lib/features/pet_profile/domain/entities/care_status.dart",
-    "R6|flutter_app/lib/features/experience/presentation/widgets/pet_care_pets_tile_grid.dart|flutter_app/lib/features/pet_profile/domain/entities/pet.dart",
-    "R6|flutter_app/lib/features/experience/presentation/widgets/pet_care_pets_tile_grid.dart|flutter_app/lib/features/pet_profile/presentation/utils/pet_tile_dimensions.dart",
-    "R6|flutter_app/lib/features/experience/presentation/widgets/pet_care_pets_tile_grid.dart|flutter_app/lib/features/pet_profile/presentation/widgets/pet_card.dart",
-    "R6|flutter_app/lib/features/experience/presentation/widgets/pet_care_pets_tile_grid.dart|flutter_app/lib/features/pet_profile/presentation/widgets/pet_tile_status_line.dart",
-    "R6|flutter_app/lib/features/experience/presentation/widgets/pet_care_pets_tile_grid.dart|flutter_app/lib/features/pet_profile/presentation/widgets/unified_pet_tile.dart",
     "R6|flutter_app/lib/features/experience/presentation/widgets/pet_care_shell_home_content.dart|flutter_app/lib/features/health_tracking/presentation/providers/health_providers.dart",
     "R6|flutter_app/lib/features/experience/presentation/widgets/pet_care_shell_home_content.dart|flutter_app/lib/features/health_tracking/presentation/widgets/care_event_row_pet_avatar.dart",
     "R6|flutter_app/lib/features/experience/presentation/widgets/pet_care_shell_home_content.dart|flutter_app/lib/features/pet_care/presentation/widgets/pet_care_dashboard_contextual_slot_section.dart",
@@ -637,14 +565,10 @@
     "R6|flutter_app/lib/features/notifications/presentation/widgets/notification_tile.dart|flutter_app/lib/features/pet_profile/presentation/providers/pet_providers.dart",
     "R6|flutter_app/lib/features/notifications/presentation/widgets/notification_tile.dart|flutter_app/lib/features/pet_profile/presentation/utils/pet_accent_color.dart",
     "R6|flutter_app/lib/features/people/presentation/providers/people_providers.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
-    "R6|flutter_app/lib/features/people/presentation/screens/people_detail_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R6|flutter_app/lib/features/people/presentation/screens/people_detail_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
     "R6|flutter_app/lib/features/people/presentation/screens/people_detail_screen.dart|flutter_app/lib/features/pet_profile/domain/entities/pet.dart",
     "R6|flutter_app/lib/features/people/presentation/screens/people_detail_screen.dart|flutter_app/lib/features/pet_profile/presentation/providers/pet_providers.dart",
     "R6|flutter_app/lib/features/people/presentation/screens/people_detail_screen.dart|flutter_app/lib/features/vet/presentation/widgets/vet_team_initials_avatar.dart",
     "R6|flutter_app/lib/features/people/presentation/screens/people_detail_screen.dart|flutter_app/lib/features/vet/presentation/widgets/vet_team_pet_row.dart",
-    "R6|flutter_app/lib/features/people/presentation/screens/people_list_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R6|flutter_app/lib/features/people/presentation/screens/people_list_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
     "R6|flutter_app/lib/features/people/presentation/screens/people_list_screen.dart|flutter_app/lib/features/sharing/domain/entities/household_summary.dart",
     "R6|flutter_app/lib/features/people/presentation/screens/people_list_screen.dart|flutter_app/lib/features/sharing/presentation/providers/household_providers.dart",
     "R6|flutter_app/lib/features/people/presentation/widgets/people_directory_card.dart|flutter_app/lib/features/vet/presentation/widgets/vet_team_initials_avatar.dart",
@@ -655,19 +579,11 @@
     "R6|flutter_app/lib/features/pet_care/context/presentation/controllers/away_plan_handover_controller.dart|flutter_app/lib/features/pet_profile/data/services/pdf_saver.dart",
     "R6|flutter_app/lib/features/pet_care/context/presentation/providers/care_context_providers.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
     "R6|flutter_app/lib/features/pet_care/context/presentation/screens/absence_invite_landing_screen.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
-    "R6|flutter_app/lib/features/pet_care/context/presentation/screens/planned_absence_flow_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R6|flutter_app/lib/features/pet_care/context/presentation/screens/planned_absence_flow_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
     "R6|flutter_app/lib/features/pet_care/context/presentation/screens/planned_absence_flow_screen.dart|flutter_app/lib/features/pet_profile/domain/entities/pet.dart",
     "R6|flutter_app/lib/features/pet_care/context/presentation/screens/planned_absence_flow_screen.dart|flutter_app/lib/features/pet_profile/presentation/controllers/pet_list_controller.dart",
     "R6|flutter_app/lib/features/pet_care/context/presentation/screens/planned_absence_flow_screen.dart|flutter_app/lib/features/pet_profile/presentation/providers/pet_providers.dart",
-    "R6|flutter_app/lib/features/pet_care/context/presentation/screens/planned_absence_hub_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R6|flutter_app/lib/features/pet_care/context/presentation/screens/planned_absence_hub_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
     "R6|flutter_app/lib/features/pet_care/context/presentation/screens/planned_absence_hub_screen.dart|flutter_app/lib/features/pet_profile/domain/entities/pet.dart",
     "R6|flutter_app/lib/features/pet_care/context/presentation/screens/planned_absence_hub_screen.dart|flutter_app/lib/features/pet_profile/presentation/providers/pet_providers.dart",
-    "R6|flutter_app/lib/features/pet_care/context/presentation/screens/planned_absence_plan_placeholder_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R6|flutter_app/lib/features/pet_care/context/presentation/screens/planned_absence_plan_placeholder_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
-    "R6|flutter_app/lib/features/pet_care/context/presentation/screens/planned_absence_plan_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R6|flutter_app/lib/features/pet_care/context/presentation/screens/planned_absence_plan_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
     "R6|flutter_app/lib/features/pet_care/context/presentation/screens/planned_absence_plan_screen.dart|flutter_app/lib/features/pet_profile/presentation/providers/pet_providers.dart",
     "R6|flutter_app/lib/features/pet_care/context/presentation/widgets/away_plan_carer_edit_dialog.dart|flutter_app/lib/features/people/domain/entities/people_contact.dart",
     "R6|flutter_app/lib/features/pet_care/context/presentation/widgets/away_plan_carer_edit_dialog.dart|flutter_app/lib/features/people/presentation/providers/people_providers.dart",
@@ -725,7 +641,6 @@
     "R6|flutter_app/lib/features/pet_profile/data/services/pet_report_sharing_section.dart|flutter_app/lib/features/sharing/domain/entities/pet_access.dart",
     "R6|flutter_app/lib/features/pet_profile/data/services/pet_report_weight_section.dart|flutter_app/lib/features/weight_tracking/domain/entities/weight_entry.dart",
     "R6|flutter_app/lib/features/pet_profile/domain/entities/pet.dart|flutter_app/lib/features/sharing/domain/entities/pet_access.dart",
-    "R6|flutter_app/lib/features/pet_profile/domain/entities/pet_viewer_role.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
     "R6|flutter_app/lib/features/pet_profile/domain/entities/pet_viewer_role.dart|flutter_app/lib/features/sharing/domain/entities/pet_access.dart",
     "R6|flutter_app/lib/features/pet_profile/domain/services/care_entry_filter.dart|flutter_app/lib/features/care_taxonomy/domain/care_family_definition.dart",
     "R6|flutter_app/lib/features/pet_profile/domain/services/care_entry_filter.dart|flutter_app/lib/features/care_taxonomy/domain/care_taxonomy.dart",
@@ -734,8 +649,6 @@
     "R6|flutter_app/lib/features/pet_profile/domain/services/care_family_write.dart|flutter_app/lib/features/health_tracking/domain/entities/health_entry.dart",
     "R6|flutter_app/lib/features/pet_profile/domain/services/care_status_service.dart|flutter_app/lib/features/health_tracking/domain/entities/health_entry.dart",
     "R6|flutter_app/lib/features/pet_profile/domain/services/care_status_service.dart|flutter_app/lib/features/pet_care/domain/services/care_temporal_grouping_service.dart",
-    "R6|flutter_app/lib/features/pet_profile/domain/services/pet_detail_actions.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R6|flutter_app/lib/features/pet_profile/presentation/controllers/download_report_controller.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
     "R6|flutter_app/lib/features/pet_profile/presentation/controllers/download_report_controller.dart|flutter_app/lib/features/health_tracking/presentation/providers/health_issue_providers.dart",
     "R6|flutter_app/lib/features/pet_profile/presentation/controllers/download_report_controller.dart|flutter_app/lib/features/health_tracking/presentation/providers/health_providers.dart",
     "R6|flutter_app/lib/features/pet_profile/presentation/controllers/download_report_controller.dart|flutter_app/lib/features/notifications/presentation/providers/notification_providers.dart",
@@ -755,28 +668,17 @@
     "R6|flutter_app/lib/features/pet_profile/presentation/providers/care_progression_providers.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
     "R6|flutter_app/lib/features/pet_profile/presentation/providers/pet_care_status_provider.dart|flutter_app/lib/features/health_tracking/domain/entities/health_entry.dart",
     "R6|flutter_app/lib/features/pet_profile/presentation/providers/pet_care_status_provider.dart|flutter_app/lib/features/health_tracking/presentation/providers/health_providers.dart",
-    "R6|flutter_app/lib/features/pet_profile/presentation/providers/pet_detail_viewer_context_provider.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R6|flutter_app/lib/features/pet_profile/presentation/providers/pet_detail_viewer_context_provider.dart|flutter_app/lib/features/experience/domain/services/experience_eligibility.dart",
     "R6|flutter_app/lib/features/pet_profile/presentation/providers/pet_providers.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
     "R6|flutter_app/lib/features/pet_profile/presentation/providers/pet_timeline_providers.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
     "R6|flutter_app/lib/features/pet_profile/presentation/providers/pet_vet_contacts_provider.dart|flutter_app/lib/features/people/domain/entities/people_contact.dart",
     "R6|flutter_app/lib/features/pet_profile/presentation/providers/pet_vet_contacts_provider.dart|flutter_app/lib/features/people/presentation/providers/people_providers.dart",
-    "R6|flutter_app/lib/features/pet_profile/presentation/screens/pet_detail_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R6|flutter_app/lib/features/pet_profile/presentation/screens/pet_detail_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
-    "R6|flutter_app/lib/features/pet_profile/presentation/screens/pet_health_issues_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R6|flutter_app/lib/features/pet_profile/presentation/screens/pet_health_issues_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
     "R6|flutter_app/lib/features/pet_profile/presentation/screens/pet_health_issues_screen.dart|flutter_app/lib/features/health_tracking/presentation/providers/health_issue_providers.dart",
     "R6|flutter_app/lib/features/pet_profile/presentation/screens/pet_health_issues_screen.dart|flutter_app/lib/features/health_tracking/presentation/widgets/health_issue_card.dart",
     "R6|flutter_app/lib/features/pet_profile/presentation/screens/pet_list_screen.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
-    "R6|flutter_app/lib/features/pet_profile/presentation/screens/pet_list_screen.dart|flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_dashboard_helpers.dart",
     "R6|flutter_app/lib/features/pet_profile/presentation/screens/pet_list_screen.dart|flutter_app/lib/features/health_tracking/presentation/providers/health_providers.dart",
     "R6|flutter_app/lib/features/pet_profile/presentation/screens/pet_list_screen.dart|flutter_app/lib/features/health_tracking/presentation/widgets/events_nav_icon_button.dart",
     "R6|flutter_app/lib/features/pet_profile/presentation/screens/pet_list_screen.dart|flutter_app/lib/features/notifications/presentation/providers/notification_providers.dart",
-    "R6|flutter_app/lib/features/pet_profile/presentation/screens/pet_manage_events_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R6|flutter_app/lib/features/pet_profile/presentation/screens/pet_manage_events_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
     "R6|flutter_app/lib/features/pet_profile/presentation/screens/pet_manage_events_screen.dart|flutter_app/lib/features/health_tracking/presentation/widgets/add_health_entry_navigation.dart",
-    "R6|flutter_app/lib/features/pet_profile/presentation/screens/pet_timeline_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R6|flutter_app/lib/features/pet_profile/presentation/screens/pet_timeline_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
     "R6|flutter_app/lib/features/pet_profile/presentation/screens/widgets/add_weight_entry_sheet.dart|flutter_app/lib/features/weight_tracking/domain/entities/weight_entry.dart",
     "R6|flutter_app/lib/features/pet_profile/presentation/screens/widgets/add_weight_entry_sheet.dart|flutter_app/lib/features/weight_tracking/presentation/providers/weight_providers.dart",
     "R6|flutter_app/lib/features/pet_profile/presentation/screens/widgets/event_list_card.dart|flutter_app/lib/features/health_tracking/domain/entities/health_entry.dart",
@@ -787,7 +689,6 @@
     "R6|flutter_app/lib/features/pet_profile/presentation/screens/widgets/health_issues_section.dart|flutter_app/lib/features/health_tracking/domain/entities/health_issue.dart",
     "R6|flutter_app/lib/features/pet_profile/presentation/screens/widgets/health_issues_section.dart|flutter_app/lib/features/health_tracking/presentation/providers/health_issue_providers.dart",
     "R6|flutter_app/lib/features/pet_profile/presentation/screens/widgets/manage_events_collection_filter.dart|flutter_app/lib/features/care_taxonomy/domain/care_family_definition.dart",
-    "R6|flutter_app/lib/features/pet_profile/presentation/screens/widgets/manage_events_collection_filter.dart|flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_due_events_screen.dart",
     "R6|flutter_app/lib/features/pet_profile/presentation/screens/widgets/manage_events_filter_bar.dart|flutter_app/lib/features/care_taxonomy/domain/care_family_definition.dart",
     "R6|flutter_app/lib/features/pet_profile/presentation/screens/widgets/manage_events_filters.dart|flutter_app/lib/features/care_taxonomy/domain/care_family_definition.dart",
     "R6|flutter_app/lib/features/pet_profile/presentation/screens/widgets/manage_events_filters.dart|flutter_app/lib/features/health_tracking/domain/entities/health_entry.dart",
@@ -795,7 +696,6 @@
     "R6|flutter_app/lib/features/pet_profile/presentation/screens/widgets/manage_events_filters.dart|flutter_app/lib/features/health_tracking/presentation/providers/health_providers.dart",
     "R6|flutter_app/lib/features/pet_profile/presentation/screens/widgets/manage_events_filters.dart|flutter_app/lib/features/health_tracking/presentation/widgets/health_entry_status.dart",
     "R6|flutter_app/lib/features/pet_profile/presentation/screens/widgets/manage_events_filters.dart|flutter_app/lib/features/health_tracking/presentation/widgets/pet_event_lifecycle.dart",
-    "R6|flutter_app/lib/features/pet_profile/presentation/screens/widgets/org_events_collection_filter.dart|flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_due_events_screen.dart",
     "R6|flutter_app/lib/features/pet_profile/presentation/screens/widgets/other_events_section.dart|flutter_app/lib/features/health_tracking/presentation/providers/health_providers.dart",
     "R6|flutter_app/lib/features/pet_profile/presentation/screens/widgets/pet_event_entry_list.dart|flutter_app/lib/features/health_tracking/domain/entities/health_entry.dart",
     "R6|flutter_app/lib/features/pet_profile/presentation/screens/widgets/pet_event_entry_list.dart|flutter_app/lib/features/health_tracking/presentation/widgets/health_entry_status.dart",
@@ -803,7 +703,6 @@
     "R6|flutter_app/lib/features/pet_profile/presentation/widgets/all_care/all_care_inactive_section.dart|flutter_app/lib/features/health_tracking/domain/entities/health_entry.dart",
     "R6|flutter_app/lib/features/pet_profile/presentation/widgets/all_care/all_care_inactive_section.dart|flutter_app/lib/features/health_tracking/presentation/widgets/health_entry_status.dart",
     "R6|flutter_app/lib/features/pet_profile/presentation/widgets/all_care/all_care_inactive_section.dart|flutter_app/lib/features/health_tracking/presentation/widgets/pet_event_lifecycle.dart",
-    "R6|flutter_app/lib/features/pet_profile/presentation/widgets/all_care/all_care_list.dart|flutter_app/lib/features/experience/presentation/widgets/pet_care_illustrated_empty_state.dart",
     "R6|flutter_app/lib/features/pet_profile/presentation/widgets/all_care/all_care_list.dart|flutter_app/lib/features/health_tracking/domain/entities/health_entry.dart",
     "R6|flutter_app/lib/features/pet_profile/presentation/widgets/all_care/all_care_list.dart|flutter_app/lib/features/health_tracking/presentation/providers/health_providers.dart",
     "R6|flutter_app/lib/features/pet_profile/presentation/widgets/all_care/all_care_list.dart|flutter_app/lib/features/health_tracking/presentation/widgets/add_health_entry_navigation.dart",
@@ -819,8 +718,6 @@
     "R6|flutter_app/lib/features/pet_profile/presentation/widgets/pet_care_section/pet_care_action_row_builder.dart|flutter_app/lib/features/pet_care/presentation/widgets/care_surface/care_action_row.dart",
     "R6|flutter_app/lib/features/pet_profile/presentation/widgets/pet_care_section/pet_care_buckets_filter.dart|flutter_app/lib/features/health_tracking/domain/entities/health_entry.dart",
     "R6|flutter_app/lib/features/pet_profile/presentation/widgets/pet_care_section/pet_care_buckets_filter.dart|flutter_app/lib/features/pet_care/domain/models/care_temporal_buckets.dart",
-    "R6|flutter_app/lib/features/pet_profile/presentation/widgets/pet_care_section/pet_care_section.dart|flutter_app/lib/features/experience/presentation/widgets/pet_care_dashboard_section_header.dart",
-    "R6|flutter_app/lib/features/pet_profile/presentation/widgets/pet_care_section/pet_care_section.dart|flutter_app/lib/features/experience/presentation/widgets/pet_care_illustrated_empty_state.dart",
     "R6|flutter_app/lib/features/pet_profile/presentation/widgets/pet_care_section/pet_care_section.dart|flutter_app/lib/features/health_tracking/presentation/providers/health_providers.dart",
     "R6|flutter_app/lib/features/pet_profile/presentation/widgets/pet_care_section/pet_care_section.dart|flutter_app/lib/features/pet_care/presentation/widgets/care_agenda/care_agenda_collection.dart",
     "R6|flutter_app/lib/features/pet_profile/presentation/widgets/pet_care_section/pet_care_temporal_group_labels.dart|flutter_app/lib/features/pet_care/domain/care_temporal_group.dart",
@@ -841,14 +738,8 @@
     "R6|flutter_app/lib/features/pet_profile/presentation/widgets/pet_form/pet_form_weight_context_section.dart|flutter_app/lib/features/care_intelligence/domain/weight_provenance.dart",
     "R6|flutter_app/lib/features/pet_profile/presentation/widgets/pet_form/pet_form_weight_context_section.dart|flutter_app/lib/features/care_intelligence/presentation/widgets/weight_management_context_selector.dart",
     "R6|flutter_app/lib/features/pet_profile/presentation/widgets/pet_form/pet_form_weight_section.dart|flutter_app/lib/features/weight_tracking/domain/weight_entry_sort.dart",
-    "R6|flutter_app/lib/features/pet_profile/presentation/widgets/pet_list/guardian_embedded_pets_list.dart|flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_dashboard_helpers.dart",
-    "R6|flutter_app/lib/features/pet_profile/presentation/widgets/pet_list/guardian_embedded_pets_list.dart|flutter_app/lib/features/experience/presentation/widgets/pet_care_pets_tile_grid.dart",
-    "R6|flutter_app/lib/features/pet_profile/presentation/widgets/pet_list/guardian_passed_away_section.dart|flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_dashboard_helpers.dart",
-    "R6|flutter_app/lib/features/pet_profile/presentation/widgets/pet_list/guardian_passed_away_section.dart|flutter_app/lib/features/experience/presentation/widgets/pet_care_pets_tile_grid.dart",
     "R6|flutter_app/lib/features/pet_profile/presentation/widgets/pet_list/home_event_actions.dart|flutter_app/lib/features/health_tracking/domain/entities/health_entry.dart",
     "R6|flutter_app/lib/features/pet_tags/presentation/providers/pet_tag_providers.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
-    "R6|flutter_app/lib/features/pet_tags/presentation/screens/manage_pet_tags_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R6|flutter_app/lib/features/pet_tags/presentation/screens/manage_pet_tags_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
     "R6|flutter_app/lib/features/sharing/presentation/pet_sharing_panel.dart|flutter_app/lib/features/pet_profile/domain/entities/pet.dart",
     "R6|flutter_app/lib/features/sharing/presentation/providers/household_providers.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
     "R6|flutter_app/lib/features/sharing/presentation/providers/share_pet_providers.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
@@ -858,12 +749,8 @@
     "R6|flutter_app/lib/features/sharing/presentation/providers/sharing_providers.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
     "R6|flutter_app/lib/features/sharing/presentation/providers/sharing_providers.dart|flutter_app/lib/features/pet_profile/presentation/providers/pet_providers.dart",
     "R6|flutter_app/lib/features/sharing/presentation/screens/households_screen.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
-    "R6|flutter_app/lib/features/sharing/presentation/screens/households_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R6|flutter_app/lib/features/sharing/presentation/screens/households_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
     "R6|flutter_app/lib/features/sharing/presentation/screens/invite_landing_screen.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
     "R6|flutter_app/lib/features/sharing/presentation/screens/invite_landing_screen.dart|flutter_app/lib/features/pet_profile/presentation/providers/pet_providers.dart",
-    "R6|flutter_app/lib/features/sharing/presentation/screens/share_pet_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R6|flutter_app/lib/features/sharing/presentation/screens/share_pet_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
     "R6|flutter_app/lib/features/sharing/presentation/screens/share_pet_screen.dart|flutter_app/lib/features/pet_profile/domain/entities/pet.dart",
     "R6|flutter_app/lib/features/sharing/presentation/screens/share_pet_screen.dart|flutter_app/lib/features/pet_profile/domain/entities/pet_viewer_role.dart",
     "R6|flutter_app/lib/features/sharing/presentation/screens/shared_pet_screen.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
@@ -877,7 +764,6 @@
     "R6|flutter_app/lib/features/subscription/presentation/providers/subscription_providers.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
     "R6|flutter_app/lib/features/vet/presentation/providers/vet_providers.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
     "R6|flutter_app/lib/features/vet/presentation/screens/vet_detail_screen.dart|flutter_app/lib/features/pet_profile/presentation/providers/pet_providers.dart",
-    "R6|flutter_app/lib/features/vet/presentation/screens/vet_list_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
     "R6|flutter_app/lib/features/vet/presentation/screens/vet_list_screen.dart|flutter_app/lib/features/pet_profile/presentation/providers/pet_providers.dart",
     "R6|flutter_app/lib/features/vet/presentation/widgets/linked_pet_avatar_stack.dart|flutter_app/lib/features/pet_profile/domain/entities/pet.dart",
     "R6|flutter_app/lib/features/vet/presentation/widgets/linked_pet_avatar_stack.dart|flutter_app/lib/features/pet_profile/presentation/widgets/pet_photo_image.dart",
@@ -887,8 +773,6 @@
     "R6|flutter_app/lib/features/vet/presentation/widgets/vet_team_pet_row.dart|flutter_app/lib/features/pet_profile/domain/entities/pet.dart",
     "R6|flutter_app/lib/features/vet/presentation/widgets/vet_team_pet_row.dart|flutter_app/lib/features/pet_profile/presentation/widgets/pet_photo_image.dart",
     "R6|flutter_app/lib/features/weight_tracking/presentation/providers/weight_providers.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
-    "R6|flutter_app/lib/features/weight_tracking/presentation/screens/weight_hub_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-    "R6|flutter_app/lib/features/weight_tracking/presentation/screens/weight_hub_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
     "R6|flutter_app/lib/main.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
     "R6|flutter_app/lib/main.dart|flutter_app/lib/features/care_item/application/care_item_providers.dart",
     "R6|flutter_app/lib/main.dart|flutter_app/lib/features/health_tracking/presentation/providers/health_providers.dart",
@@ -898,12 +782,10 @@
   ],
   "edges": [
     "auth->about",
-    "auth->experience",
     "care_intelligence->auth",
     "care_intelligence->health_tracking",
     "care_intelligence->pet_care",
     "care_intelligence->pet_profile",
-    "care_item->experience",
     "care_item->health_tracking",
     "care_item->people",
     "care_item->pet_care",
@@ -930,14 +812,12 @@
     "notifications->auth",
     "notifications->pet_profile",
     "people->auth",
-    "people->experience",
     "people->pet_profile",
     "people->sharing",
     "people->vet",
     "pet_care->auth",
     "pet_care->care_intelligence",
     "pet_care->care_item",
-    "pet_care->experience",
     "pet_care->health_tracking",
     "pet_care->people",
     "pet_care->pet_profile",
@@ -945,7 +825,6 @@
     "pet_profile->care_intelligence",
     "pet_profile->care_item",
     "pet_profile->care_taxonomy",
-    "pet_profile->experience",
     "pet_profile->health_tracking",
     "pet_profile->notifications",
     "pet_profile->people",
@@ -955,16 +834,12 @@
     "pet_profile->vet",
     "pet_profile->weight_tracking",
     "pet_tags->auth",
-    "pet_tags->experience",
     "sharing->auth",
-    "sharing->experience",
     "sharing->pet_profile",
     "subscription->auth",
     "vet->auth",
-    "vet->experience",
     "vet->pet_profile",
-    "weight_tracking->auth",
-    "weight_tracking->experience"
+    "weight_tracking->auth"
   ],
   "exceptions": [
     {
@@ -1198,11 +1073,6 @@
       "accepted_on": "2026-10-04"
     },
     {
-      "identity": "R4|care_item->experience",
-      "reason": "care-item-module-c1a7 F1: Care Item detail consolidated under features/care_item/presentation/detail; cross-feature wiring baselined per care-next-occurrence EX-12 (F1/F3)",
-      "accepted_on": "2026-10-04"
-    },
-    {
       "identity": "R4|care_item->health_tracking",
       "reason": "care-item-module-c1a7 F1: Care Item detail consolidated under features/care_item/presentation/detail; cross-feature wiring baselined per care-next-occurrence EX-12 (F1/F3)",
       "accepted_on": "2026-10-04"
@@ -1238,21 +1108,6 @@
       "accepted_on": "2026-10-04"
     },
     {
-      "identity": "R1|flutter_app/lib/features/weight_tracking/presentation/screens/weight_hub_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-      "reason": "W6 weight hub relocated from pet_profile; experience shell matches pet_detail_screen pattern (roadmap §6.3)",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R1|flutter_app/lib/features/weight_tracking/presentation/screens/weight_hub_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
-      "reason": "W6 weight hub relocated from pet_profile; experience shell matches pet_detail_screen pattern (roadmap §6.3)",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R4|weight_tracking->experience",
-      "reason": "W6 weight hub relocated from pet_profile; experience shell matches pet_detail_screen pattern (roadmap §6.3)",
-      "accepted_on": "2026-10-05"
-    },
-    {
       "identity": "R6|flutter_app/lib/app_pet_care_sync.dart|flutter_app/lib/features/care_item/application/care_item_providers.dart",
       "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
       "accepted_on": "2026-10-05"
@@ -1264,11 +1119,6 @@
     },
     {
       "identity": "R6|flutter_app/lib/app_pet_care_sync.dart|flutter_app/lib/features/weight_tracking/presentation/providers/weight_providers.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/core/branding/logo_assets.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
       "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
       "accepted_on": "2026-10-05"
     },
@@ -1573,26 +1423,6 @@
       "accepted_on": "2026-10-05"
     },
     {
-      "identity": "R6|flutter_app/lib/features/auth/presentation/screens/forgot_password_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/auth/presentation/screens/login_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/auth/presentation/screens/signup_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/auth/presentation/widgets/landing/landing_logo.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
       "identity": "R6|flutter_app/lib/features/auth/presentation/widgets/landing/landing_operations_desk_page.dart|flutter_app/lib/features/about/presentation/widgets/legal_footer_links.dart",
       "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
       "accepted_on": "2026-10-05"
@@ -1839,16 +1669,6 @@
     },
     {
       "identity": "R6|flutter_app/lib/features/care_item/presentation/detail/care_item_detail_body.dart|flutter_app/lib/features/pet_profile/domain/entities/pet.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/care_item/presentation/detail/care_item_detail_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/care_item/presentation/detail/care_item_detail_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
       "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
       "accepted_on": "2026-10-05"
     },
@@ -2233,51 +2053,6 @@
       "accepted_on": "2026-10-05"
     },
     {
-      "identity": "R6|flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_dashboard_helpers.dart|flutter_app/lib/features/health_tracking/domain/entities/health_entry.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_dashboard_helpers.dart|flutter_app/lib/features/pet_care/domain/care_temporal_group.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_dashboard_helpers.dart|flutter_app/lib/features/pet_care/domain/services/care_temporal_grouping_service.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_dashboard_helpers.dart|flutter_app/lib/features/pet_profile/domain/entities/care_status.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_dashboard_helpers.dart|flutter_app/lib/features/pet_profile/domain/entities/pet.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_dashboard_helpers.dart|flutter_app/lib/features/pet_profile/presentation/controllers/pet_list_controller.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_dashboard_helpers.dart|flutter_app/lib/features/pet_profile/presentation/widgets/pet_card.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_dashboard_helpers.dart|flutter_app/lib/features/pet_profile/presentation/widgets/pet_tile_status_line.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_dashboard_helpers.dart|flutter_app/lib/features/sharing/domain/entities/pet_access.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
       "identity": "R6|flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_desk_preview_screen.dart|flutter_app/lib/features/pet_profile/domain/entities/pet.dart",
       "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
       "accepted_on": "2026-10-05"
@@ -2484,36 +2259,6 @@
     },
     {
       "identity": "R6|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart|flutter_app/lib/features/notifications/presentation/widgets/notification_panel.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/experience/presentation/widgets/pet_care_pets_tile_grid.dart|flutter_app/lib/features/pet_profile/domain/entities/care_status.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/experience/presentation/widgets/pet_care_pets_tile_grid.dart|flutter_app/lib/features/pet_profile/domain/entities/pet.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/experience/presentation/widgets/pet_care_pets_tile_grid.dart|flutter_app/lib/features/pet_profile/presentation/utils/pet_tile_dimensions.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/experience/presentation/widgets/pet_care_pets_tile_grid.dart|flutter_app/lib/features/pet_profile/presentation/widgets/pet_card.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/experience/presentation/widgets/pet_care_pets_tile_grid.dart|flutter_app/lib/features/pet_profile/presentation/widgets/pet_tile_status_line.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/experience/presentation/widgets/pet_care_pets_tile_grid.dart|flutter_app/lib/features/pet_profile/presentation/widgets/unified_pet_tile.dart",
       "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
       "accepted_on": "2026-10-05"
     },
@@ -3063,16 +2808,6 @@
       "accepted_on": "2026-10-05"
     },
     {
-      "identity": "R6|flutter_app/lib/features/people/presentation/screens/people_detail_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/people/presentation/screens/people_detail_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
       "identity": "R6|flutter_app/lib/features/people/presentation/screens/people_detail_screen.dart|flutter_app/lib/features/pet_profile/domain/entities/pet.dart",
       "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
       "accepted_on": "2026-10-05"
@@ -3089,16 +2824,6 @@
     },
     {
       "identity": "R6|flutter_app/lib/features/people/presentation/screens/people_detail_screen.dart|flutter_app/lib/features/vet/presentation/widgets/vet_team_pet_row.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/people/presentation/screens/people_list_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/people/presentation/screens/people_list_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
       "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
       "accepted_on": "2026-10-05"
     },
@@ -3153,16 +2878,6 @@
       "accepted_on": "2026-10-05"
     },
     {
-      "identity": "R6|flutter_app/lib/features/pet_care/context/presentation/screens/planned_absence_flow_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/pet_care/context/presentation/screens/planned_absence_flow_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
       "identity": "R6|flutter_app/lib/features/pet_care/context/presentation/screens/planned_absence_flow_screen.dart|flutter_app/lib/features/pet_profile/domain/entities/pet.dart",
       "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
       "accepted_on": "2026-10-05"
@@ -3178,42 +2893,12 @@
       "accepted_on": "2026-10-05"
     },
     {
-      "identity": "R6|flutter_app/lib/features/pet_care/context/presentation/screens/planned_absence_hub_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/pet_care/context/presentation/screens/planned_absence_hub_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
       "identity": "R6|flutter_app/lib/features/pet_care/context/presentation/screens/planned_absence_hub_screen.dart|flutter_app/lib/features/pet_profile/domain/entities/pet.dart",
       "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
       "accepted_on": "2026-10-05"
     },
     {
       "identity": "R6|flutter_app/lib/features/pet_care/context/presentation/screens/planned_absence_hub_screen.dart|flutter_app/lib/features/pet_profile/presentation/providers/pet_providers.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/pet_care/context/presentation/screens/planned_absence_plan_placeholder_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/pet_care/context/presentation/screens/planned_absence_plan_placeholder_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/pet_care/context/presentation/screens/planned_absence_plan_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/pet_care/context/presentation/screens/planned_absence_plan_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
       "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
       "accepted_on": "2026-10-05"
     },
@@ -3503,11 +3188,6 @@
       "accepted_on": "2026-10-05"
     },
     {
-      "identity": "R6|flutter_app/lib/features/pet_profile/domain/entities/pet_viewer_role.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
       "identity": "R6|flutter_app/lib/features/pet_profile/domain/entities/pet_viewer_role.dart|flutter_app/lib/features/sharing/domain/entities/pet_access.dart",
       "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
       "accepted_on": "2026-10-05"
@@ -3544,16 +3224,6 @@
     },
     {
       "identity": "R6|flutter_app/lib/features/pet_profile/domain/services/care_status_service.dart|flutter_app/lib/features/pet_care/domain/services/care_temporal_grouping_service.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/pet_profile/domain/services/pet_detail_actions.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/pet_profile/presentation/controllers/download_report_controller.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
       "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
       "accepted_on": "2026-10-05"
     },
@@ -3653,16 +3323,6 @@
       "accepted_on": "2026-10-05"
     },
     {
-      "identity": "R6|flutter_app/lib/features/pet_profile/presentation/providers/pet_detail_viewer_context_provider.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/pet_profile/presentation/providers/pet_detail_viewer_context_provider.dart|flutter_app/lib/features/experience/domain/services/experience_eligibility.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
       "identity": "R6|flutter_app/lib/features/pet_profile/presentation/providers/pet_providers.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
       "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
       "accepted_on": "2026-10-05"
@@ -3683,26 +3343,6 @@
       "accepted_on": "2026-10-05"
     },
     {
-      "identity": "R6|flutter_app/lib/features/pet_profile/presentation/screens/pet_detail_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/pet_profile/presentation/screens/pet_detail_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/pet_profile/presentation/screens/pet_health_issues_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/pet_profile/presentation/screens/pet_health_issues_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
       "identity": "R6|flutter_app/lib/features/pet_profile/presentation/screens/pet_health_issues_screen.dart|flutter_app/lib/features/health_tracking/presentation/providers/health_issue_providers.dart",
       "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
       "accepted_on": "2026-10-05"
@@ -3714,11 +3354,6 @@
     },
     {
       "identity": "R6|flutter_app/lib/features/pet_profile/presentation/screens/pet_list_screen.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/pet_profile/presentation/screens/pet_list_screen.dart|flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_dashboard_helpers.dart",
       "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
       "accepted_on": "2026-10-05"
     },
@@ -3738,27 +3373,7 @@
       "accepted_on": "2026-10-05"
     },
     {
-      "identity": "R6|flutter_app/lib/features/pet_profile/presentation/screens/pet_manage_events_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/pet_profile/presentation/screens/pet_manage_events_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
       "identity": "R6|flutter_app/lib/features/pet_profile/presentation/screens/pet_manage_events_screen.dart|flutter_app/lib/features/health_tracking/presentation/widgets/add_health_entry_navigation.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/pet_profile/presentation/screens/pet_timeline_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/pet_profile/presentation/screens/pet_timeline_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
       "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
       "accepted_on": "2026-10-05"
     },
@@ -3813,11 +3428,6 @@
       "accepted_on": "2026-10-05"
     },
     {
-      "identity": "R6|flutter_app/lib/features/pet_profile/presentation/screens/widgets/manage_events_collection_filter.dart|flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_due_events_screen.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
       "identity": "R6|flutter_app/lib/features/pet_profile/presentation/screens/widgets/manage_events_filter_bar.dart|flutter_app/lib/features/care_taxonomy/domain/care_family_definition.dart",
       "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
       "accepted_on": "2026-10-05"
@@ -3853,11 +3463,6 @@
       "accepted_on": "2026-10-05"
     },
     {
-      "identity": "R6|flutter_app/lib/features/pet_profile/presentation/screens/widgets/org_events_collection_filter.dart|flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_due_events_screen.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
       "identity": "R6|flutter_app/lib/features/pet_profile/presentation/screens/widgets/other_events_section.dart|flutter_app/lib/features/health_tracking/presentation/providers/health_providers.dart",
       "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
       "accepted_on": "2026-10-05"
@@ -3889,11 +3494,6 @@
     },
     {
       "identity": "R6|flutter_app/lib/features/pet_profile/presentation/widgets/all_care/all_care_inactive_section.dart|flutter_app/lib/features/health_tracking/presentation/widgets/pet_event_lifecycle.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/pet_profile/presentation/widgets/all_care/all_care_list.dart|flutter_app/lib/features/experience/presentation/widgets/pet_care_illustrated_empty_state.dart",
       "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
       "accepted_on": "2026-10-05"
     },
@@ -3969,16 +3569,6 @@
     },
     {
       "identity": "R6|flutter_app/lib/features/pet_profile/presentation/widgets/pet_care_section/pet_care_buckets_filter.dart|flutter_app/lib/features/pet_care/domain/models/care_temporal_buckets.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/pet_profile/presentation/widgets/pet_care_section/pet_care_section.dart|flutter_app/lib/features/experience/presentation/widgets/pet_care_dashboard_section_header.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/pet_profile/presentation/widgets/pet_care_section/pet_care_section.dart|flutter_app/lib/features/experience/presentation/widgets/pet_care_illustrated_empty_state.dart",
       "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
       "accepted_on": "2026-10-05"
     },
@@ -4083,42 +3673,12 @@
       "accepted_on": "2026-10-05"
     },
     {
-      "identity": "R6|flutter_app/lib/features/pet_profile/presentation/widgets/pet_list/guardian_embedded_pets_list.dart|flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_dashboard_helpers.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/pet_profile/presentation/widgets/pet_list/guardian_embedded_pets_list.dart|flutter_app/lib/features/experience/presentation/widgets/pet_care_pets_tile_grid.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/pet_profile/presentation/widgets/pet_list/guardian_passed_away_section.dart|flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_dashboard_helpers.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/pet_profile/presentation/widgets/pet_list/guardian_passed_away_section.dart|flutter_app/lib/features/experience/presentation/widgets/pet_care_pets_tile_grid.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
       "identity": "R6|flutter_app/lib/features/pet_profile/presentation/widgets/pet_list/home_event_actions.dart|flutter_app/lib/features/health_tracking/domain/entities/health_entry.dart",
       "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
       "accepted_on": "2026-10-05"
     },
     {
       "identity": "R6|flutter_app/lib/features/pet_tags/presentation/providers/pet_tag_providers.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/pet_tags/presentation/screens/manage_pet_tags_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/pet_tags/presentation/screens/manage_pet_tags_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
       "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
       "accepted_on": "2026-10-05"
     },
@@ -4168,32 +3728,12 @@
       "accepted_on": "2026-10-05"
     },
     {
-      "identity": "R6|flutter_app/lib/features/sharing/presentation/screens/households_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/sharing/presentation/screens/households_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
       "identity": "R6|flutter_app/lib/features/sharing/presentation/screens/invite_landing_screen.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
       "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
       "accepted_on": "2026-10-05"
     },
     {
       "identity": "R6|flutter_app/lib/features/sharing/presentation/screens/invite_landing_screen.dart|flutter_app/lib/features/pet_profile/presentation/providers/pet_providers.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/sharing/presentation/screens/share_pet_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/sharing/presentation/screens/share_pet_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
       "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
       "accepted_on": "2026-10-05"
     },
@@ -4263,11 +3803,6 @@
       "accepted_on": "2026-10-05"
     },
     {
-      "identity": "R6|flutter_app/lib/features/vet/presentation/screens/vet_list_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
       "identity": "R6|flutter_app/lib/features/vet/presentation/screens/vet_list_screen.dart|flutter_app/lib/features/pet_profile/presentation/providers/pet_providers.dart",
       "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
       "accepted_on": "2026-10-05"
@@ -4309,16 +3844,6 @@
     },
     {
       "identity": "R6|flutter_app/lib/features/weight_tracking/presentation/providers/weight_providers.dart|flutter_app/lib/features/auth/presentation/providers/auth_providers.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/weight_tracking/presentation/screens/weight_hub_screen.dart|flutter_app/lib/features/experience/domain/entities/app_experience.dart",
-      "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
-      "accepted_on": "2026-10-05"
-    },
-    {
-      "identity": "R6|flutter_app/lib/features/weight_tracking/presentation/screens/weight_hub_screen.dart|flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
       "reason": "I1 phase 1: baseline R6 non-public cross-feature imports",
       "accepted_on": "2026-10-05"
     },
