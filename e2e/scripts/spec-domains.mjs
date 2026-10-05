@@ -113,13 +113,12 @@ export const AREAS = {
   people: {
     paths: [
       'flutter_app/lib/features/people/',
-      'flutter_app/lib/features/vet/',
       'server/routes/people/',
       'server/routes/households/',
       'server/routes/vets',
       'server/lib/people/',
     ],
-    specs: ['people-core.spec.ts', 'veterinarian.spec.ts'],
+    specs: ['people-core.spec.ts', 'people-integration.spec.ts', 'veterinarian.spec.ts'],
   },
   help: {
     paths: ['flutter_app/lib/features/help/', 'flutter_app/lib/features/about/'],
