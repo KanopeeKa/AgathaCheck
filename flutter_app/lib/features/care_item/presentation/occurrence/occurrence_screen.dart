@@ -10,7 +10,7 @@ import '../../application/care_command_outcome.dart';
 import '../../application/care_item_providers.dart';
 import '../../domain/occurrence_detail.dart';
 import '../../domain/occurrence_display.dart';
-import 'package:pet_profile_app/features/pet_care/pet_care.dart';
+import '../widgets/care_item_status_pill.dart';
 import 'occurrence_blocks.dart';
 import 'occurrence_screen_menu.dart';
 import 'occurrence_screen_menu_actions.dart';
