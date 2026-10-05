@@ -54,10 +54,10 @@ next_action: "continue phase 5 on branch cursor/active-codebase-h-integration-e4
 artifact_ref:
   branch: cursor/active-codebase-h-integration-e41f
   plan_path: .agents/plans/active-codebase-batch-h-ports-transport-e41f.md
-  plan_commit: 9666610fd33b4747739e9e3db83ae25685dd5a43
+  plan_commit: 3869f33f72c56445b5fdf2f60c8c9213cde69236
   snapshot_path: .agents/plans/active-codebase-batch-h-ports-transport-e41f.snapshot.json
-  snapshot_commit: 9666610fd33b4747739e9e3db83ae25685dd5a43
-open_prs: []
+  snapshot_commit: 3869f33f72c56445b5fdf2f60c8c9213cde69236
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1615"]
 merge_commits: {"1":"0a60ce7fd6dca1780aee3f895c63f66cadafa476","2":"77c6f4b841bb4f2b52ce61b769da642539d67c5a","3":"8520c3875592d14c308a5d56b407f75bded1a02a","4":"9666610fd33b4747739e9e3db83ae25685dd5a43"}
 debt_issue_refs: []
 ```
