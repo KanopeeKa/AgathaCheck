@@ -76,6 +76,8 @@ test/features/<feature>/   # Mirror lib structure
 
 ## Cross-feature imports (D5/D6 gate)
 
+Target layer order and D21 pet-profile composition boundary: [ADR 0002](./decisions/0002-feature-layering.md) and the [feature layer cut list](../engineering/active-codebase-baseline/feature-layer-cut-list.md) (batch I2). Phase 3 adds checker rules R5 (no cycles) and R8 (layer order).
+
 `node scripts/check_feature_imports.js` blocks **new** cross-feature import violations in `flutter_app/lib`. It runs in `scripts/pre-push.sh`, `scripts/pre-push-changed.sh` and the CI governance job. Existing violations are recorded by **identity** (`rule|importer|target`, not counts) in `scripts/feature-import-baseline.json`, so removing one violation cannot hide a different new one.
 
 | Rule | Fails when |
