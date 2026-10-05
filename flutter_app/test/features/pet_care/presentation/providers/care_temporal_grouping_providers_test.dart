@@ -6,7 +6,7 @@ import 'package:pet_profile_app/features/pet_care/domain/care_temporal_group.dar
 import 'package:pet_profile_app/features/pet_care/domain/services/care_temporal_grouping_service.dart';
 import 'package:pet_profile_app/features/pet_care/presentation/providers/care_temporal_grouping_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/care_status.dart';
-import 'package:pet_profile_app/features/pet_profile/domain/services/care_status_service.dart';
+import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 
 class _FakeHealthEntriesNotifier extends HealthEntriesNotifier {
   _FakeHealthEntriesNotifier(this._entries);

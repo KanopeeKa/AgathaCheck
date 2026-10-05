@@ -1,0 +1,118 @@
+import 'package:flutter/material.dart';
+import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
+import '../../widgets/pet_list/home_event_actions.dart';
+import 'package:pet_profile_app/l10n/app_localizations.dart';
+
+import 'pet_event_entry_list.dart';
+
+class HealthEventsSection extends ConsumerStatefulWidget {
+  const HealthEventsSection({
+    required this.petId,
+    this.pet,
+    this.flat = false,
+    super.key,
+  });
+
+  final String petId;
+  final Pet? pet;
+
+  /// When true, renders a flat list (manage-events Edit tab).
+  final bool flat;
+
+  @override
+  ConsumerState<HealthEventsSection> createState() =>
+      _HealthEventsSectionState();
+}
+
+class _HealthEventsSectionState extends ConsumerState<HealthEventsSection> {
+  @override
+  Widget build(BuildContext context) {
+    final controller = HealthEventsController(ref);
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final l = AppLocalizations.of(context)!;
+    final entriesAsync = ref.watch(petHealthEventsByIdProvider(widget.petId));
+
+    final addButton = Tooltip(
+      message: l.addEntry,
+      child: FilledButton.tonalIcon(
+        key: const Key('add_health_event_button'),
+        onPressed: () => controller.onAddEntry(context, widget.petId),
+        icon: const Icon(Icons.add, size: 18),
+        label: Text(l.addEntry),
+      ),
+    );
+
+    final entriesList = entriesAsync.when(
+      loading: () => const Padding(
+        padding: EdgeInsets.all(16),
+        child: Center(child: CircularProgressIndicator()),
+      ),
+      error: (e, _) => Padding(
+        padding: const EdgeInsets.all(16),
+        child: Text(e.toString(), style: TextStyle(color: colorScheme.error)),
+      ),
+      data: (entries) => PetEventEntryList(
+        entries: entries,
+        petId: widget.petId,
+        onEntryTap: (entry) => HomeEventActions.viewEntry(context, entry),
+      ),
+    );
+
+    if (widget.flat) {
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.list_alt, color: colorScheme.primary),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    l.healthEvents,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                addButton,
+              ],
+            ),
+            const SizedBox(height: 8),
+            entriesList,
+          ],
+        ),
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Card(
+        clipBehavior: Clip.antiAlias,
+        child: ExpansionTile(
+          leading: Icon(Icons.list_alt, color: colorScheme.primary),
+          title: Text(
+            l.healthEvents,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [addButton],
+              ),
+            ),
+            entriesList,
+          ],
+        ),
+      ),
+    );
+  }
+}

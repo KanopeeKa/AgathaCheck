@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pet_profile_app/features/pet_profile/presentation/screens/widgets/manage_events_filters.dart';
+import 'package:pet_profile_app/features/experience/presentation/pet_profile/screens/widgets/manage_events_filters.dart';
 
 import 'pet_care_events_test_helpers.dart';
 import '../../../../../helpers/care_schedule_entries.dart';

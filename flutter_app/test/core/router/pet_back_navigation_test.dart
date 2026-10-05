@@ -13,7 +13,7 @@ import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_
 import 'package:pet_profile_app/features/vet/presentation/providers/vet_providers.dart';
 import 'package:pet_profile_app/features/weight_tracking/domain/entities/weight_entry.dart';
 import 'package:pet_profile_app/features/weight_tracking/presentation/providers/weight_providers.dart';
-import 'package:pet_profile_app/features/pet_profile/presentation/screens/pet_detail_screen.dart';
+import 'package:pet_profile_app/features/experience/presentation/pet_profile/screens/pet_detail_screen.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import '../../helpers/fakes.dart';

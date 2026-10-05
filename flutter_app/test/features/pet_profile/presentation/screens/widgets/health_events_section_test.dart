@@ -8,7 +8,7 @@ import 'package:pet_profile_app/features/health_tracking/presentation/providers/
 import 'package:pet_profile_app/features/health_tracking/presentation/screens/health_entry_form_screen.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
-import 'package:pet_profile_app/features/pet_profile/presentation/screens/widgets/health_events_section.dart';
+import 'package:pet_profile_app/features/experience/presentation/pet_profile/screens/widgets/health_events_section.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 class _TwoPetsNotifier extends PetListNotifier {

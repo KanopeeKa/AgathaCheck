@@ -3,8 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/core/theme/app_color_tokens.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/care_family.dart';
-import 'package:pet_profile_app/features/pet_profile/presentation/widgets/care_family_custom_glyph.dart';
-import 'package:pet_profile_app/features/pet_profile/presentation/widgets/care_family_icon.dart';
+import 'package:pet_profile_app/features/health_tracking/presentation/widgets/care_family/care_family_custom_glyph.dart';
+import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 
 void main() {
   group('CareFamilyIcon', () {

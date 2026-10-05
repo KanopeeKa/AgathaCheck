@@ -4,14 +4,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../health_tracking/health_tracking.dart';
 import '../../../../pet_profile/pet_profile.dart';
+import '../../pet_profile/screens/widgets/manage_events_filters.dart';
+import '../../pet_profile/screens/widgets/org_events_collection_filter.dart';
+import '../../pet_profile/screens/widgets/pet_care_global_events_filters.dart';
 
 import 'global_events_list.dart';
 export 'global_events_list.dart' show GlobalEventsList;
-export 'package:pet_profile_app/features/pet_profile/pet_profile.dart'
-    show
-        OrgGlobalEventsFilters,
-        PetCareEventsCohortFilter,
-        PetCareGlobalEventsFilters;
+export '../../pet_profile/screens/widgets/org_events_collection_filter.dart'
+    show OrgGlobalEventsFilters;
+export '../../pet_profile/screens/widgets/pet_care_global_events_filters.dart'
+    show PetCareEventsCohortFilter, PetCareGlobalEventsFilters;
 
 // ---------------------------------------------------------------------------
 // Provider

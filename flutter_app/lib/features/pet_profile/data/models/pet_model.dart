@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import '../../../sharing/sharing.dart';
+import '../../domain/entities/pet_access_role.dart';
 import '../../domain/entities/pet.dart';
 import '../../../../core/utils/calendar_date.dart';
 import '../utils/pet_profile_normalize.dart';
@@ -77,7 +77,7 @@ class PetModel {
           json['primary_holder_name'] as String? ??
           json['guardian_name'] as String?,
       accessRole: json['access_role'] != null
-          ? PetAccessRoleWire.fromWire(json['access_role']?.toString())
+          ? PetProfileAccessRoleWire.fromWire(json['access_role']?.toString())
           : null,
       createdAt: _parseTimestamp(json['createdAt'] ?? json['created_at']),
       weightReferenceValue: (json['weight_reference_value'] as num?)
@@ -153,7 +153,7 @@ class PetModel {
   final String? fosterPlacementStatus;
   final String? fosterName;
   final String? petParentName;
-  final PetAccessRole? accessRole;
+  final PetProfileAccessRole? accessRole;
   final DateTime? createdAt;
   final double? weightReferenceValue;
   final String? weightReferenceAuthority;

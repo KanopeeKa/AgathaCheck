@@ -8,7 +8,7 @@ import 'package:pet_profile_app/features/organization/domain/entities/organizati
 import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
-import 'package:pet_profile_app/features/pet_profile/presentation/screens/pet_form_screen.dart';
+import 'package:pet_profile_app/features/experience/presentation/pet_profile/screens/pet_form_screen.dart';
 import 'package:pet_profile_app/features/vet/domain/entities/vet.dart';
 import 'package:pet_profile_app/features/vet/presentation/providers/vet_providers.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';

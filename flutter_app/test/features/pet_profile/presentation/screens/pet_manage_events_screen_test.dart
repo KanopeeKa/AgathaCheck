@@ -12,8 +12,8 @@ import 'package:pet_profile_app/features/notifications/presentation/providers/no
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/care_progression_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
-import 'package:pet_profile_app/features/pet_profile/presentation/screens/pet_manage_events_screen.dart';
-import 'package:pet_profile_app/features/pet_profile/presentation/screens/widgets/manage_events_filters.dart';
+import 'package:pet_profile_app/features/experience/presentation/pet_profile/screens/pet_manage_events_screen.dart';
+import 'package:pet_profile_app/features/experience/presentation/pet_profile/screens/widgets/manage_events_filters.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import '../../../../helpers/fakes.dart';

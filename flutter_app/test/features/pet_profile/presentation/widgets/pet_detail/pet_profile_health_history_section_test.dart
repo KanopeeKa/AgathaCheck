@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pet_profile_app/core/theme/app_theme.dart';
-import 'package:pet_profile_app/features/pet_profile/presentation/widgets/pet_detail/pet_profile_health_history_section.dart';
+import 'package:pet_profile_app/features/experience/presentation/pet_profile/widgets/pet_detail/pet_profile_health_history_section.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 void main() {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../pet_profile/pet_profile.dart';
+import '../../domain/services/care_family/care_family_write.dart';
 
 /// Dropdown for explicit [care_family] on health entry writes (CP-0 / C2).
 class CareFamilyPickerField extends StatelessWidget {

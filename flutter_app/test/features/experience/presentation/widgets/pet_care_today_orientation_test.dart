@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
+import 'package:pet_profile_app/features/experience/presentation/pet_profile/utils/pet_care_dashboard_helpers.dart';
 import 'package:pet_profile_app/features/experience/presentation/widgets/pet_care_today_orientation.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';

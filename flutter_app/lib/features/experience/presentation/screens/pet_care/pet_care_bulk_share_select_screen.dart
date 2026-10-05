@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../health_tracking/health_tracking.dart';
 import '../../widgets/experience_shell_scaffold.dart';
-import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
+import '../../../experience.dart';
 import '../../../domain/entities/app_experience.dart';
 
 /// Multi-select screen for bulk-sharing owned guardian pets.
