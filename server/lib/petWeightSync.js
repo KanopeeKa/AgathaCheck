@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 
 import { recordWeightFromPetPayload } from './care/observations/weightObservationService.js';
-import { normalizeCalendarDateInput, todayCalendarIso } from './calendarDate.js';
+import { normalizeCalendarDateInput } from './calendarDate.js';
 
 const LATEST_WEIGHT_ENTRY_SQL = `
   SELECT id, weight, unit, date, notes, created_at
@@ -90,7 +90,10 @@ export async function createWeightEntryAndSyncPet(db, {
  */
 export function resolveWeightEntryDateFromBody(body) {
   const fromBody = body?.weightEntryDate ?? body?.weight_entry_date;
-  return normalizeCalendarDateInput(fromBody) || todayCalendarIso();
+  const normalized = normalizeCalendarDateInput(fromBody);
+  if (normalized) return normalized;
+  // Defer default calendar day to resolveWeightDateForPet (pet home timezone).
+  return undefined;
 }
 
 /**
