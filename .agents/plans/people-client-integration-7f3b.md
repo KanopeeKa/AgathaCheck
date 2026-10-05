@@ -342,14 +342,14 @@ autonomy: active
 current_phase: i2-pet-people
 last_completed_phase: i1-consumers
 halt_reason: null
-next_action: "start phase i2-pet-people: checkout cursor/people-integration-i2-pet-people-7f3b"
+next_action: "continue phase i2-pet-people on branch cursor/people-integration-i2-pet-people-7f3b"
 artifact_ref:
-  branch: cursor/people-integration-i1-consumers-7f3b
+  branch: cursor/people-client-integration-integration-7f3b
   plan_path: .agents/plans/people-client-integration-7f3b.md
-  plan_commit: 719133901583ac9ce0623c2f81b2a52ada396cdb
+  plan_commit: c4939698be8a384d2998cb5f71f7b3ffcadf593c
   snapshot_path: .agents/plans/people-client-integration-7f3b.snapshot.json
-  snapshot_commit: 719133901583ac9ce0623c2f81b2a52ada396cdb
+  snapshot_commit: c4939698be8a384d2998cb5f71f7b3ffcadf593c
 open_prs: []
-merge_commits: {}
+merge_commits: {"i1-consumers":"6ba0a1cfce392dd92f2b3c492928ddbf105c73a2"}
 debt_issue_refs: []
 ```
