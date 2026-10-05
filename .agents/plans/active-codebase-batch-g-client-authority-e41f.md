@@ -44,18 +44,18 @@ Finish Packages 7 and 8 (D2, D18, D19):
 
 ```yaml
 autonomy: active
-current_phase: "1"
-last_completed_phase: null
+current_phase: 5
+last_completed_phase: 4
 halt_reason: null
-next_action: "bootstrap: create integration branch + control issue, then phase 1"
+next_action: "continue phase 5 on branch cursor/active-codebase-g-integration-e41f"
 artifact_ref:
-  branch: null
+  branch: cursor/active-codebase-g-integration-e41f
   plan_path: .agents/plans/active-codebase-batch-g-client-authority-e41f.md
-  plan_commit: null
+  plan_commit: 2c03d182a2f501e5d6e6659893f612963aef2320
   snapshot_path: .agents/plans/active-codebase-batch-g-client-authority-e41f.snapshot.json
-  snapshot_commit: null
-open_prs: []
-merge_commits: {}
+  snapshot_commit: 2c03d182a2f501e5d6e6659893f612963aef2320
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1584"]
+merge_commits: {"2":"dba43f7da365f0aa59e05ee1c47b1334089e33d4","3":"a0a57b37d773c481e9bb6fbc39e02fc27944bd37","4":"3ba6a3fb96bb417d4b268229bfe66759b5df19f4"}
 debt_issue_refs: []
 ```
 

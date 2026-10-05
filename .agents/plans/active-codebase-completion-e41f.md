@@ -202,13 +202,13 @@ autonomy: active
 current_phase: orchestrate
 last_completed_phase: null
 halt_reason: null
-next_action: "bootstrap and gate child plan active-codebase-batch-g-client-authority-e41f"
+next_action: "continue child plan active-codebase-batch-g-client-authority-e41f"
 artifact_ref:
   branch: main
   plan_path: .agents/plans/active-codebase-completion-e41f.md
-  plan_commit: dcc4763690ee8dc21a8d50ed3bd51862b7001ffb
+  plan_commit: f882ca450498a175be3906eef07a6128aa03e237
   snapshot_path: .agents/plans/active-codebase-completion-e41f.snapshot.json
-  snapshot_commit: dcc4763690ee8dc21a8d50ed3bd51862b7001ffb
+  snapshot_commit: f882ca450498a175be3906eef07a6128aa03e237
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

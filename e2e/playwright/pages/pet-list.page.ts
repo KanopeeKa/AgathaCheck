@@ -490,6 +490,56 @@ export class PetListPage {
     await detail.expectPetVisible(petName);
   }
 
+  /** Full reload of guardian home to re-run [petListProvider] (offline journey). */
+  async reloadPetList(): Promise<void> {
+    await dismissConsentBannerIfPresent(this.page);
+    await this.page.reload();
+    await refreshFlutterAccessibility(this.page);
+    await waitForFlutterRoutePattern(this.page, /^\/pc\/home(?:\?|$)/, 45_000);
+    await skipGuardianOnboardingIfPresent(this.page);
+    await this.expectLoaded();
+  }
+
+  /** Retry after offline cache — banner Retry when shown, otherwise reload once network is back. */
+  async retryPetListLoad(): Promise<void> {
+    const retry = this.page.getByRole('button', { name: /^Retry$|^Réessayer$/i });
+    if (await retry.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      await retry.click();
+      await refreshFlutterAccessibility(this.page);
+      await this.expectLoaded();
+      return;
+    }
+    await this.reloadPetList();
+  }
+
+  async expectOfflineStaleBannerVisible(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    await expect(
+      this.page.locator('[flt-semantics-identifier="pet_list_stale_banner"]'),
+    ).toBeVisible({ timeout: 30_000 });
+    await expect(this.page.getByText(/Offline — showing pets saved/i)).toBeVisible();
+  }
+
+  async expectOfflineStaleBannerHidden(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    await expect(
+      this.page.locator('[flt-semantics-identifier="pet_list_stale_banner"]'),
+    ).toHaveCount(0, { timeout: 30_000 });
+    await expect(this.page.getByText(/Offline — showing pets saved/i)).toHaveCount(0);
+  }
+
+  async expectSessionRejected(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    const landing = this.page
+      .getByRole('button', { name: /Sign in|Log in|Se connecter/i })
+      .or(this.page.getByRole('link', { name: /Sign in|Log in|Se connecter/i }));
+    const expiredSnack = this.page.getByText(/Session expired/i);
+    const authFailure = this.page.getByText(/Unauthorized|PetRemoteException\(401\)/i);
+    await expect(landing.or(expiredSnack).or(authFailure).first()).toBeVisible({
+      timeout: 30_000,
+    });
+  }
+
   async goHome(options: { experience?: 'guardian' | 'organization' } = {}): Promise<void> {
     const route = flutterRoutePath(this.page.url());
     const useOrgHome =

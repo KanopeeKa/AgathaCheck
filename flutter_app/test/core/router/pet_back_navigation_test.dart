@@ -47,6 +47,7 @@ Widget _app({required GoRouter router}) {
   return ProviderScope(
     overrides: [
       authProvider.overrideWith((ref) => FakeAuthNotifier()),
+      petListProvider.overrideWith(() => TestPetListNotifier([_pet])),
       allPetsIncludingOrgProvider.overrideWith((ref) async => [_pet]),
       organizationListProvider.overrideWith(FakeOrganizationListNotifier.new),
       healthEntriesNotifierProvider.overrideWith(FakeHealthEntriesNotifier.new),

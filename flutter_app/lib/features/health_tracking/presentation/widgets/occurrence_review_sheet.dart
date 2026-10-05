@@ -7,7 +7,6 @@ import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/health_occurrence.dart';
 import '../providers/care_item_absence_providers.dart';
 import '../providers/care_item_absence_resolution_sync.dart';
-import '../providers/care_item_detail_refresh.dart';
 import 'pet_event_occurrence_actions.dart';
 import 'reschedule_occurrence_flow.dart';
 
@@ -123,6 +122,5 @@ class OccurrenceReviewSheet extends ConsumerWidget {
       healthEntryId: entry.id,
       decision: 'nothing_needed',
     );
-    invalidateCareItemDetailData(ref, entry.id, absenceId: absenceId);
   }
 }

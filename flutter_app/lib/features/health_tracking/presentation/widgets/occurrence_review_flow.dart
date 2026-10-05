@@ -5,7 +5,6 @@ import '../../../../core/utils/calendar_date.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/health_occurrence.dart';
-import '../providers/care_item_detail_refresh.dart';
 import '../providers/occurrence_providers.dart';
 import 'occurrence_review_sheet.dart';
 
@@ -30,7 +29,6 @@ class OccurrenceReviewFlow {
           open,
           preferredDate: occurrence?.scheduledDate,
         );
-        invalidateCareItemDetailData(ref, entry.id, absenceId: absenceId);
       } catch (_) {
         if (!context.mounted) return;
         final l = AppLocalizations.of(context)!;

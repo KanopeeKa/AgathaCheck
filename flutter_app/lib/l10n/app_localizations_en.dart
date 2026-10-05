@@ -352,8 +352,56 @@ class AppLocalizationsEn extends AppLocalizations {
   String get allPets => 'All pets';
 
   @override
-  String get petListStaleBannerMessage =>
-      'Showing saved pets while offline. Some details may be out of date.';
+  String petListStaleBannerOffline(String relativeTime) {
+    return 'Offline — showing pets saved $relativeTime';
+  }
+
+  @override
+  String get petListCacheOutOfDateBannerMessage =>
+      'Saved data may be out of date';
+
+  @override
+  String get petListCacheRetrySemanticsLabel => 'Retry loading pets';
+
+  @override
+  String get petCacheRelativeJustNow => 'just now';
+
+  @override
+  String petCacheRelativeMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count minutes ago',
+      one: '1 minute ago',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String petCacheRelativeHours(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count hours ago',
+      one: '1 hour ago',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String petCacheRelativeDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days ago',
+      one: '1 day ago',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get careCommandSavedRefreshFailed =>
+      'Saved — couldn\'t refresh. Pull to refresh.';
 
   @override
   String get managePets => 'Manage pets';

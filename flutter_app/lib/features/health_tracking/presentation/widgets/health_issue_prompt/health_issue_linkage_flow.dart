@@ -9,8 +9,9 @@ import '../../../../care_taxonomy/domain/care_planning_mode.dart';
 import '../../../../care_taxonomy/domain/care_setting.dart';
 import '../../../domain/entities/health_entry.dart';
 import '../../../domain/entities/health_issue.dart';
+import '../../controllers/care_schedule_controller.dart';
 import '../../providers/health_issue_providers.dart';
-import '../../providers/health_providers.dart';
+import '../care_schedule_command_feedback.dart';
 import 'health_issue_linkage_prompt.dart';
 import 'health_issue_prompt_eligibility.dart';
 
@@ -115,13 +116,16 @@ class HealthIssueLinkageFlow {
     if (!context.mounted || picked == null) return;
 
     try {
-      await ref
-          .read(healthIssueNotifierProvider(petId).notifier)
-          .linkEvent(picked.id, entryId);
+      final outcome = await ref
+          .read(careScheduleControllerProvider)
+          .linkHealthIssue(petId, picked.id, entryId);
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
+      showCareScheduleCommandSnackBar(
         context,
-      ).showSnackBar(SnackBar(content: Text(l.healthIssueLinked)));
+        outcome: outcome,
+        successMessage: l.healthIssueLinked,
+        failureMessage: l.healthIssueLinkFailed,
+      );
     } catch (_) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(
@@ -148,14 +152,16 @@ class HealthIssueLinkageFlow {
         description: draft.description,
         startDate: calendarDateOnly(DateTime.now()),
       );
-      await ref.read(healthIssueNotifierProvider(petId).notifier).create(issue);
-      await ref
-          .read(healthIssueNotifierProvider(petId).notifier)
-          .linkEvent(issue.id, entryId);
+      final outcome = await ref
+          .read(careScheduleControllerProvider)
+          .createAndLinkHealthIssue(petId, issue, entryId);
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
+      showCareScheduleCommandSnackBar(
         context,
-      ).showSnackBar(SnackBar(content: Text(l.healthIssueLinked)));
+        outcome: outcome,
+        successMessage: l.healthIssueLinked,
+        failureMessage: l.healthIssueLinkFailed,
+      );
     } catch (_) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(
