@@ -604,17 +604,17 @@ server/**
 
 ```yaml
 autonomy: active
-current_phase: c8-e2e-core
-last_completed_phase: c7-households-ui
+current_phase: c7-households-ui
+last_completed_phase: c6-add
 halt_reason: null
-next_action: "continue phase c8-e2e-core on branch cursor/people-client-c8-e2e-7f3b"
+next_action: "continue phase c7-households-ui on branch cursor/people-client-c7-households-7f3b"
 artifact_ref:
-  branch: cursor/people-client-core-integration-7f3b
+  branch: cursor/people-client-c7-households-7f3b
   plan_path: .agents/plans/people-client-core-7f3b.md
-  plan_commit: a4152e495ca56729ee23d821a9db272de27316ed
+  plan_commit: 1394eeedef2d048a33f80e64e7b3c83d94134416
   snapshot_path: .agents/plans/people-client-core-7f3b.snapshot.json
-  snapshot_commit: a4152e495ca56729ee23d821a9db272de27316ed
-open_prs: []
+  snapshot_commit: 1394eeedef2d048a33f80e64e7b3c83d94134416
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1613"]
 merge_commits: {"c5-edit":"29779e5a681cfc0a264429861b48fc8f3904f548","c6-add":"6cbf95d5ee9a2bbc3753d494a80b35ece44b0fde"}
 debt_issue_refs: []
 ```
