@@ -113,7 +113,6 @@ export const AREAS = {
   people: {
     paths: [
       'flutter_app/lib/features/people/',
-      'flutter_app/lib/features/vet/',
       'server/routes/people/',
       'server/routes/households/',
       'server/routes/vets',
