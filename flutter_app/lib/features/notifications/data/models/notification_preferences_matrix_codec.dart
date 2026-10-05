@@ -24,7 +24,9 @@ String suggestionPushModeWire(SuggestionPushMode mode) {
   }
 }
 
-NotificationCategoryChannels _parseCategoryChannels(Map<String, dynamic>? json) {
+NotificationCategoryChannels _parseCategoryChannels(
+  Map<String, dynamic>? json,
+) {
   if (json == null) {
     return const NotificationCategoryChannels();
   }
@@ -54,7 +56,8 @@ Map<String, dynamic> categoryChannelsToJson(NotificationCategoryChannels ch) {
 NotificationSettingsMatrix parseSettingsMatrix(Map<String, dynamic>? json) {
   final defaults = NotificationSettingsMatrix.defaults();
   if (json == null || json.isEmpty) return defaults;
-  final categories = <NotificationMatrixCategory, NotificationCategoryChannels>{};
+  final categories =
+      <NotificationMatrixCategory, NotificationCategoryChannels>{};
   for (final category in NotificationMatrixCategory.values) {
     final wire = category.wireKey;
     final raw = json[wire];

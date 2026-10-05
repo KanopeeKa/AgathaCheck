@@ -147,18 +147,22 @@ class NotificationPreferencesModel {
     final matrix = parseSettingsMatrix(
       json['settings_matrix'] as Map<String, dynamic>?,
     );
-    final agathaInApp = json['agatha_suggestions_in_app'] != false &&
+    final agathaInApp =
+        json['agatha_suggestions_in_app'] != false &&
         matrix
             .channel(NotificationMatrixCategory.agathaSuggestions)
             .inboxEnabled;
     return NotificationPreferencesModel(
       emailRemindersEnabled: _parseBool(json['email_reminders_enabled']),
       reminderDaysBefore: (json['reminder_days_before'] as num?)?.toInt() ?? 1,
-      notifyOverdue: json['notify_overdue'] != false &&
+      notifyOverdue:
+          json['notify_overdue'] != false &&
           json['notify_overdue']?.toString() != 'false',
-      notifyDueSoon: json['notify_due_soon'] != false &&
+      notifyDueSoon:
+          json['notify_due_soon'] != false &&
           json['notify_due_soon']?.toString() != 'false',
-      notifyCompleted: json['notify_completed'] != false &&
+      notifyCompleted:
+          json['notify_completed'] != false &&
           json['notify_completed']?.toString() != 'false',
       mutedPetIds:
           (json['muted_pet_ids'] as List<dynamic>?)

@@ -66,11 +66,10 @@ extension NotificationMatrixCategoryWire on NotificationMatrixCategory {
 }
 
 class NotificationSettingsMatrix {
-  const NotificationSettingsMatrix({
-    required this.categories,
-  });
+  const NotificationSettingsMatrix({required this.categories});
 
-  final Map<NotificationMatrixCategory, NotificationCategoryChannels> categories;
+  final Map<NotificationMatrixCategory, NotificationCategoryChannels>
+  categories;
 
   static NotificationSettingsMatrix defaults() {
     return NotificationSettingsMatrix(

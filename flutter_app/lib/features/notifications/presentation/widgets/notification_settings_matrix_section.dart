@@ -106,10 +106,37 @@ class _MatrixHeaderRow extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
       child: Row(
         children: [
-          Expanded(flex: 5, child: Text(l.notificationSettingsColumnCategory, style: labelStyle)),
-          Expanded(flex: 2, child: Text(l.notificationSettingsColumnInbox, style: labelStyle, textAlign: TextAlign.center)),
-          Expanded(flex: 2, child: Text(l.notificationSettingsColumnPush, style: labelStyle, textAlign: TextAlign.center)),
-          Expanded(flex: 2, child: Text(l.notificationSettingsColumnEmail, style: labelStyle, textAlign: TextAlign.center)),
+          Expanded(
+            flex: 5,
+            child: Text(
+              l.notificationSettingsColumnCategory,
+              style: labelStyle,
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Text(
+              l.notificationSettingsColumnInbox,
+              style: labelStyle,
+              textAlign: TextAlign.center,
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Text(
+              l.notificationSettingsColumnPush,
+              style: labelStyle,
+              textAlign: TextAlign.center,
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Text(
+              l.notificationSettingsColumnEmail,
+              style: labelStyle,
+              textAlign: TextAlign.center,
+            ),
+          ),
         ],
       ),
     );
@@ -188,7 +215,9 @@ class _CategoryMatrixRow extends StatelessWidget {
                             value: pushEnabled,
                             onChanged: pushOsDenied
                                 ? null
-                                : (v) => onChanged(channels.copyWith(pushEnabled: v)),
+                                : (v) => onChanged(
+                                    channels.copyWith(pushEnabled: v),
+                                  ),
                           ),
                   ),
                 ),
@@ -254,9 +283,7 @@ class _AgathaSuggestionsRow extends StatelessWidget {
                       value: agathaInApp,
                       onChanged: (v) {
                         onAgathaInAppChanged(v);
-                        onChannelsChanged(
-                          channels.copyWith(inboxEnabled: v),
-                        );
+                        onChannelsChanged(channels.copyWith(inboxEnabled: v));
                       },
                     ),
                   ),
@@ -353,7 +380,11 @@ class _SuggestionPushModeControl extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     if (pushOsDenied) {
-      return Icon(Icons.notifications_off, size: 18, color: Theme.of(context).disabledColor);
+      return Icon(
+        Icons.notifications_off,
+        size: 18,
+        color: Theme.of(context).disabledColor,
+      );
     }
     return PopupMenuButton<SuggestionPushMode>(
       tooltip: l.notificationSettingsColumnPush,
