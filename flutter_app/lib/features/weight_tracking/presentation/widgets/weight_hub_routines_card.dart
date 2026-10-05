@@ -20,6 +20,7 @@ class WeightHubRoutinesCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
     final routines = overview?.routines ?? [];
 
     return Card(
