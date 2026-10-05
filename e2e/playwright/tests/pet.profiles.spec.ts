@@ -439,6 +439,11 @@ test.describe('Pet profiles', () => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const pet = await createPet(baseURL, testUser.accessToken, 'Bella', 'Dog');
     await createVet(baseURL, testUser.accessToken, 'Dr. Jones');
+    const vetContactId = await getPeopleContactIdForVetName(
+      baseURL,
+      testUser.accessToken,
+      'Dr. Jones',
+    );
 
     const petList = await loginAs(page, testUser);
     await petList.openPet('Bella', pet.id);
@@ -449,16 +454,11 @@ test.describe('Pet profiles', () => {
 
     const editForm = new PetFormPage(page);
     await editForm.expectLoaded();
-    await editForm.selectVeterinarian('Dr. Jones');
+    await editForm.selectPrimaryVetContact(vetContactId);
     await editForm.save();
 
     await detail.expectLoaded('Bella');
     await detail.expectLinkedVet('Dr. Jones');
-    const vetContactId = await getPeopleContactIdForVetName(
-      baseURL,
-      testUser.accessToken,
-      'Dr. Jones',
-    );
     const relationships = await getPetPeopleRelationships(
       baseURL,
       testUser.accessToken,

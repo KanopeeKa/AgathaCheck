@@ -6,8 +6,10 @@ import {
   fillLabelledField,
   postPetMutationShellLocator,
   escapeRegExp,
+  flutterRoutePath,
   refreshFlutterAccessibility,
   semanticsByName,
+  waitForFlutterRoutePattern,
   waitForHomeAfterMutation,
 } from '../support/flutter';
 
@@ -129,9 +131,34 @@ export class PetFormPage {
     await refreshFlutterAccessibility(this.page);
     const saveButton = this.saveButtonLocator().first();
     await expect(saveButton).toBeEnabled({ timeout: 15_000 });
+    const editingPetId = flutterRoutePath(this.page.url()).match(/^\/edit\/([^/?]+)/)?.[1];
     await saveButton.click();
     await this.saveButtonLocator().first().waitFor({ state: 'hidden', timeout: 30_000 });
+    if (editingPetId) {
+      await waitForFlutterRoutePattern(
+        this.page,
+        new RegExp(`/pet/${editingPetId}(?:\\?|$)`),
+        45_000,
+      );
+      await refreshFlutterAccessibility(this.page);
+      return;
+    }
     await postPetMutationShellLocator(this.page).waitFor({ timeout: 30_000 });
+  }
+
+  async selectPrimaryVetContact(contactId: string): Promise<void> {
+    const field = this.page.locator(
+      '[flt-semantics-identifier="people_picker_field_pet_primary_vet"]',
+    );
+    await field.scrollIntoViewIfNeeded();
+    await field.click();
+    await refreshFlutterAccessibility(this.page);
+    const option = this.page.locator(
+      `[flt-semantics-identifier="people_picker_option_${contactId}"]`,
+    );
+    await option.waitFor({ state: 'visible', timeout: 15_000 });
+    await option.click();
+    await refreshFlutterAccessibility(this.page);
   }
 
   async cancel(): Promise<void> {
