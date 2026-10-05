@@ -85,9 +85,8 @@ describe('petWeightSync', () => {
       );
     });
 
-    it('falls back to today when absent', () => {
-      const result = resolveWeightEntryDateFromBody({});
-      expect(result).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    it('returns null when absent so pet home timezone defines today', () => {
+      expect(resolveWeightEntryDateFromBody({})).toBeNull();
     });
   });
 
