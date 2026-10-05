@@ -61,6 +61,20 @@ export class CareItemPage {
     await changeDate.first().click();
   }
 
+  async expectOpenOccurrenceRowVisible(occurrenceId: string): Promise<void> {
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      const row = this.page
+        .locator(`[flt-semantics-identifier="care_item_occurrence_row_${occurrenceId}"]`)
+        .or(
+          this.page.locator(
+            `[flt-semantics-identifier="care_item_upcoming_row_${occurrenceId}"]`,
+          ),
+        );
+      await expect(row).toBeVisible();
+    }).toPass({ timeout: 45_000 });
+  }
+
   async expectReschedulePreviewNextDates(): Promise<void> {
     await expect(
       this.page
