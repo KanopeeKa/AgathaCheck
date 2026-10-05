@@ -2,7 +2,8 @@
 Feature: People directory
   Personal directory of carers and pet professionals.
 
-  @smoke-ci @P1
+  @smoke-ci
+  @P1
   Scenario: Open Contacts from bottom navigation and see household, carers and professionals sections
     Given I am logged in as a pet parent
     When I open the People page from bottom navigation
@@ -54,7 +55,8 @@ Feature: People directory
     And the invitee accepts via the API helper
     Then I can remove the member and see the remaining-access preview
 
-  @smoke-ci @P1
+  @smoke-ci
+  @P1
   Scenario: Today desk Vet team and Trusted carers cards open person detail
     Given I am logged in with a vet linked to my pet
     When I open the Pet Care dashboard

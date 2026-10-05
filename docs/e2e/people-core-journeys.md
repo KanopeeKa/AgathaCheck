@@ -1,3 +1,11 @@
+---
+title: People core Playwright journeys
+owner: Documentation Team
+audience: agent
+status: active
+last_updated: 2026-10-05
+tags: [e2e, people]
+---
 # People core Playwright journeys (c8)
 
 - Page object: `e2e/playwright/pages/people.page.ts` (replaces `vet-list.page.ts` / `vet-form.page.ts`).
