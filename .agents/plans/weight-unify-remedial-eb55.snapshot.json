@@ -5,7 +5,7 @@
   "approved_at": "2026-10-05T12:55:00Z",
   "approved_by": "User chat 2026-10-05 execute-plan remedial — fix review findings without asking",
   "approved_until": "2026-10-07T12:55:00Z",
-  "autonomy": "active",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "cursor/weight-unify-remedial-integration-eb55",
   "control_issue": 1634,
@@ -119,5 +119,5 @@
       "status_detail": null
     }
   ],
-  "content_hash": "sha256:d176cf61a31ac250e1ea56b4678b9a12883f6a10ccbd7ac794b066ca8d862d2b"
+  "content_hash": "sha256:57d30da4b163ff7456e60b157d6fc560d37562bfa977f3b08a20c8495bd8ec06"
 }

@@ -33,17 +33,17 @@ Address the post-programme review on `main`: fix establishment evaluation orderi
 ## Runtime state
 
 ```yaml
-autonomy: active
+autonomy: completed
 current_phase: null
 last_completed_phase: R4
 halt_reason: null
 next_action: "plan complete"
 artifact_ref:
-  branch: cursor/weight-unify-remedial-integration-eb55
+  branch: main
   plan_path: .agents/plans/weight-unify-remedial-eb55.md
-  plan_commit: 07a6ff26299ab56ab05e28ca9e323205f3332832
+  plan_commit: 53f033008833cc1c0c0634c9551de23d99517f8d
   snapshot_path: .agents/plans/weight-unify-remedial-eb55.snapshot.json
-  snapshot_commit: 07a6ff26299ab56ab05e28ca9e323205f3332832
+  snapshot_commit: 53f033008833cc1c0c0634c9551de23d99517f8d
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
