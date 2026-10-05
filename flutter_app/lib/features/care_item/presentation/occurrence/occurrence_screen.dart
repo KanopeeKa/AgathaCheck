@@ -11,6 +11,8 @@ import '../../application/care_item_providers.dart';
 import '../../domain/occurrence_detail.dart';
 import '../../domain/occurrence_display.dart';
 import 'occurrence_blocks.dart';
+import 'occurrence_screen_menu.dart';
+import 'occurrence_screen_menu_actions.dart';
 
 /// One occurrence, every status (D-CIE-029, §18.6.4). Loads
 /// `GET …/occurrences/:occId`; actions reload it after the server confirms.
@@ -80,16 +82,30 @@ class _OccurrenceScreenState extends ConsumerState<OccurrenceScreen> {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final outcome = _outcome;
-    final title = switch (outcome) {
-      CareSucceeded(:final value) => value.item.name,
-      _ => '',
+    final OccurrenceDetail? loadedDetail = switch (outcome) {
+      CareSucceeded(:final value) => value,
+      _ => null,
     };
+    final title = loadedDetail?.item.name ?? '';
     return Semantics(
       identifier: 'occurrence_screen',
       child: Scaffold(
         key: const Key('occurrence_screen'),
         appBar: AppBar(
           title: Text(title),
+          actions: [
+            if (loadedDetail != null)
+              OccurrenceScreenMenu(
+                occurrenceId: widget.occurrenceId,
+                onSelected: (action) => handleOccurrenceScreenMenuAction(
+                  context,
+                  ref,
+                  loadedDetail,
+                  action,
+                  _changed,
+                ),
+              ),
+          ],
           leading: BackButton(
             onPressed: () {
               final router = GoRouter.maybeOf(context);
