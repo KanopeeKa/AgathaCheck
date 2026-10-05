@@ -161,6 +161,7 @@ export async function updateUserProfile(
     category: string;
     bio: string;
     locale: string;
+    weight_unit: 'kg' | 'lb';
   }>,
 ): Promise<TestUser> {
   const res = await apiFetch(apiUrl('/auth/me', baseURL), {
