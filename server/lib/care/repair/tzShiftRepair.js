@@ -6,9 +6,9 @@ import { dateToIsoDate } from '../../calendarDate.js';
 import { loadPetHomeTimezone } from '../../petHomeTimezone.js';
 import { isFixedSchedule, nextSeriesSlotAfter, stackWindowStart } from '../schedule/fixedSlots.js';
 import { insertCareScheduleEvent } from '../schedule/scheduleEventLedger.js';
-import { withCareItemLock } from './careItemLock.js';
-import { syncOpenOccurrences } from './syncOpenOccurrences.js';
-import { careAsOfForZone } from './careAsOf.js';
+import { withCareItemLock } from '../occurrence/careItemLock.js';
+import { syncOpenOccurrences } from '../occurrence/syncOpenOccurrences.js';
+import { careAsOfForZone } from '../occurrence/careAsOf.js';
 
 function slotKey(row) {
   const date = dateToIsoDate(row.series_date) || dateToIsoDate(row.scheduled_date);

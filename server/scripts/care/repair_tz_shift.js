@@ -4,7 +4,7 @@
  */
 import { createAppPool } from '../../lib/db/createPool.js';
 import { assertPgDateWireFormat } from '../../lib/db/pgTypes.js';
-import { repairTzShift } from '../../lib/care/occurrence/tzShiftRepair.js';
+import { repairTzShift } from '../../lib/care/repair/tzShiftRepair.js';
 
 const apply = process.argv.includes('--apply');
 
