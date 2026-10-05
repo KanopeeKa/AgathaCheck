@@ -151,6 +151,8 @@ run_governance() {
   node scripts/db/check-migration-manifest.js
   node scripts/check_occurrence_writes.js
   node scripts/check_pg_pool_bootstrap.js
+  node scripts/check_cpanel_startup_entry.js
+  node --test scripts/check_cpanel_startup_entry.test.js
   node e2e/scripts/check_bdd_coverage.js
   node e2e/scripts/check_test_quality.js --report-only
   node e2e/scripts/validate-shard-manifest.mjs --report-only

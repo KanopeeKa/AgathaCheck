@@ -100,6 +100,8 @@ Set **Fichier de démarrage** to **`bin/start.js`**.
 
 **Do not** point cPanel at `bin/server.js`: it only exports the Express app (ESM `export default`) and never calls `listen()`, so Passenger/nodevenv will hang or fail to spawn.
 
+**No top-level `await` in `bin/start.js`:** Passenger’s internal loader uses `require()` on the startup file. Top-level `await` makes Node throw `ERR_REQUIRE_ASYNC_MODULE` and the site returns a Passenger 500 (manual `node bin/start.js` in SSH still works). Use an `async function` plus `.catch()` instead. CI enforces this via `node scripts/check_cpanel_startup_entry.js`.
+
 **Production mode** in cPanel is fine with `bin/start.js` — it sets `NODE_ENV=production` for error redaction, JWT enforcement, and SMTP.
 
 ### 5. **Set Correct File Permissions**
