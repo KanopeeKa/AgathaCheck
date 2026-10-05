@@ -256,16 +256,18 @@ test.describe('Notifications', () => {
       entryName: 'Vaccination',
     });
 
-    const unreadCount = await getUnreadNotificationCount(baseURL, user.accessToken);
-    expect(unreadCount).toBeGreaterThan(0);
+    expect(
+      await getUnreadNotificationCount(baseURL, user.accessToken),
+    ).toBeGreaterThan(0);
 
     await loginAs(page, user);
     const petList = new PetListPage(page);
     await petList.expectLoaded();
 
-    // Badge count should appear near the bell icon.
+    const unreadAfterLogin = await getUnreadNotificationCount(baseURL, user.accessToken);
+    expect(unreadAfterLogin).toBeGreaterThan(0);
     const notificationsPage = new NotificationsPage(page);
-    await notificationsPage.expectBadgeVisible(unreadCount);
+    await notificationsPage.expectBadgeVisible(unreadAfterLogin);
   });
 
   test('badge disappears after all notifications are marked read via API', async ({ page }) => {

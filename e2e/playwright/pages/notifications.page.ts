@@ -2,7 +2,6 @@ import type { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
 import {
   dismissConsentBannerIfPresent,
-  escapeRegExp,
   expectAppBarTitle,
   flutterGotoUrl,
   flutterRoutePath,
@@ -200,12 +199,13 @@ export class NotificationsPage {
     await this.waitForNotificationListSettled();
     await refreshFlutterAccessibility(this.page);
     for (const label of labels) {
-      const pattern = new RegExp(`^${escapeRegExp(label)}$`, 'i');
+      const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const pattern = new RegExp(`^${escaped}$`, 'i');
       await expect(
         this.page
           .getByRole('group', { name: pattern })
           .or(this.page.getByText(pattern))
-          .or(this.page.getByRole('button', { name: new RegExp(`^${escapeRegExp(label)}\\b`, 'i') }))
+          .or(this.page.getByRole('button', { name: new RegExp(`^${escaped}\\b`, 'i') }))
           .first(),
       ).toBeVisible({ timeout: 30_000 });
     }
