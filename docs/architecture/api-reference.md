@@ -194,6 +194,7 @@ Returns upcoming active absences for the entry's pet with per-absence `affected`
 | POST | `/:id/occurrences/:occId/skip` | Body `{ notes?, reason_code? }`; same response shape as complete; ledger `skipped` with `reason_code` / `reason_note`. For `weight_monitoring`, when `reason_code` is sent it must be one of `could_not_weigh`, `pet_unsettled`, `vet_will_weigh`, `other` (**400** `invalid_skip_reason`); weigh-in skip notes longer than 500 chars → **400** `skip_note_too_long` |
 | POST | `/:id/occurrences` | Plan another date — body `{ scheduled_date, scheduled_time? }`; `planned` occurrence; `warnings[]` when within half an interval of another open date (D-CSM-025) |
 | POST | `/:id/occurrences/:occId/record` | Record a Not recorded slot as given — body `{ completed_on }` (D-CSM-023) |
+| POST | `/:id/occurrences/:occId/confirm-skip` | Confirm a Not recorded slot as intentionally skipped (`close_reason=user`) |
 | POST | `/:id/occurrences/resolve-stack` | Record earlier doses — body `{ given: [ids], not_given: [ids] }` |
 
 **If done after the due date (D-CSM-026 v4):** `POST /` and `PUT /:id` accept `late_completion_choice` (`keep` · `skip_next` · `shift_following` · `null`); any other value → 400. Completion applies it when no `next_choice` is sent.

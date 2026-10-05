@@ -121,6 +121,9 @@ export function careApi(app, owner) {
     record(id, occId, body = {}) {
       return send('post', `/${id}/occurrences/${occId}/record`, body);
     },
+    confirmSkip(id, occId) {
+      return send('post', `/${id}/occurrences/${occId}/confirm-skip`, {});
+    },
     resolveStack(id, body) {
       return send('post', `/${id}/occurrences/resolve-stack`, body);
     },

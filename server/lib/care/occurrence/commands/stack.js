@@ -4,10 +4,15 @@
 
 import {
   SCHEDULE_EVENT_RECORDED,
+  SCHEDULE_EVENT_SKIPPED,
   SCHEDULE_EVENT_STACK_RESOLVED,
 } from '../../schedule/scheduleEventLedger.js';
 import { badRequest } from '../careCommandError.js';
-import { findOccurrence, markSkipped } from '../occurrenceRepository.js';
+import {
+  confirmNotRecordedAsSkipped,
+  findOccurrence,
+  markSkipped,
+} from '../occurrenceRepository.js';
 import { closeAsDone } from './complete.js';
 
 /**
@@ -54,6 +59,36 @@ export async function resolveStackCommand(ctx, { given = [], notGiven = [], comp
  * @param {object} ctx
  * @param {{ occurrenceId: string, completedOn?: string|null }} params
  */
+/**
+ * @param {object} ctx
+ * @param {{ occurrenceId: string }} params
+ */
+export async function confirmSkipCommand(ctx, { occurrenceId }) {
+  const { db, entry, trace, userId } = ctx;
+  const row = await findOccurrence(db, entry.id, occurrenceId);
+  if (!row || row.status !== 'skipped' || row.close_reason !== 'not_recorded') {
+    throw badRequest('not_a_not_recorded_dose', 'Only a dose closed as Not recorded can be confirmed as skipped');
+  }
+  const skipped = await confirmNotRecordedAsSkipped(db, {
+    entryId: entry.id,
+    occurrenceId,
+    userId,
+  });
+  if (!skipped) {
+    throw badRequest('not_a_not_recorded_dose', 'Only a dose closed as Not recorded can be confirmed as skipped');
+  }
+  trace.closedRow(row);
+  return {
+    event: {
+      type: SCHEDULE_EVENT_SKIPPED,
+      occurrenceId,
+      fromDate: row.scheduled_date,
+      reasonNote: 'confirm_skip',
+    },
+    result: { occurrence: skipped },
+  };
+}
+
 export async function recordAsGivenCommand(ctx, { occurrenceId, completedOn = null }) {
   const { db, entry, trace, asOf } = ctx;
   const row = await findOccurrence(db, entry.id, occurrenceId);

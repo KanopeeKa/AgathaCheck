@@ -8,6 +8,7 @@ import {
   completeOccurrenceCommand,
   listOpenRows,
   openOccurrenceToWire,
+  confirmSkipCommand,
   planAnotherDateCommand,
   recordAsGivenCommand,
   resolveCareAsOfForRead,
@@ -294,6 +295,22 @@ export function registerOccurrenceRoutes(router, pool) {
         completedOn: normalizeCalendarDateInput(body.completed_on || body.completedOn),
       }),
       audit: () => ({ action: 'health_occurrence.recorded', metadata: { occurrence_id: occurrenceId } }),
+      respond: async (out) => ({
+        body: await commandResponse(pool, out, req, { occurrence: occurrenceToMap(out.occurrence) }),
+      }),
+    });
+  });
+
+  router.post('/:id/occurrences/:occId/confirm-skip', (req, res) => {
+    const occurrenceId = req.params.occId;
+    return handleCommand(pool, req, res, {
+      guard: weightGuard,
+      command: (ctx) => confirmSkipCommand(ctx, { occurrenceId }),
+      audit: () => ({
+        action: 'health_occurrence.confirm_skipped',
+        metadata: { occurrence_id: occurrenceId },
+        activity: 'skip',
+      }),
       respond: async (out) => ({
         body: await commandResponse(pool, out, req, { occurrence: occurrenceToMap(out.occurrence) }),
       }),
