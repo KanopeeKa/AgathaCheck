@@ -5,7 +5,7 @@
   "approved_at": "2026-10-05T07:26:00Z",
   "approved_by": "standing grant — roadmap active-codebase-completion-e41f (#1446); approve-autonomous active-codebase-batch-h-ports-transport-e41f (roadmap chain)",
   "approved_until": "2026-10-07T07:26:00Z",
-  "autonomy": "active",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "cursor/active-codebase-h-integration-e41f",
   "control_issue": 1601,
@@ -185,5 +185,5 @@
       "pr_head_sha": "86d87e1c19306feee4d8acb3203fb6db9157722a"
     }
   ],
-  "content_hash": "sha256:666fc1ab67ad22f276deec902adda4923b42de392d6e1a2098f70a0b04ff2504"
+  "content_hash": "sha256:2c3c664d72c0d51653133e8936afd8487a8b289712fc3744f536dd03ed62ce7f"
 }
