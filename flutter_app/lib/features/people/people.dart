@@ -42,3 +42,4 @@ export 'presentation/desk/people_desk_module.dart';
 export 'presentation/hub/people_hub_route.dart';
 export 'presentation/routes/people_routes.dart';
 export 'presentation/households/household_invite_landing_screen.dart';
+export 'presentation/screens/people_legacy_vet_redirect_screen.dart';
