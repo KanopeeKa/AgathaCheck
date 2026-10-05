@@ -42,18 +42,18 @@ Package 9, second half (D5, D21). Take the active Flutter feature graph from one
 
 ```yaml
 autonomy: active
-current_phase: 4
-last_completed_phase: 3
+current_phase: 5
+last_completed_phase: 4
 halt_reason: null
-next_action: "continue phase 4 on branch cursor/active-codebase-i2-4-server-direction-e41f"
+next_action: "continue phase 5 on branch cursor/active-codebase-i2-integration-e41f"
 artifact_ref:
-  branch: cursor/active-codebase-i2-4-server-direction-e41f
+  branch: cursor/active-codebase-i2-integration-e41f
   plan_path: .agents/plans/active-codebase-batch-i2-acyclic-graph-e41f.md
-  plan_commit: 05b34149192c5cdff2da926cc87a4d657bbe82e3
+  plan_commit: e3de9eacba0c44d711a445a219890c12cae44b33
   snapshot_path: .agents/plans/active-codebase-batch-i2-acyclic-graph-e41f.snapshot.json
-  snapshot_commit: 05b34149192c5cdff2da926cc87a4d657bbe82e3
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1679"]
-merge_commits: {"3":"7cebc902ce351815413987bca59e05c4cb042785"}
+  snapshot_commit: e3de9eacba0c44d711a445a219890c12cae44b33
+open_prs: []
+merge_commits: {"3":"7cebc902ce351815413987bca59e05c4cb042785","4":"e3de9eacba0c44d711a445a219890c12cae44b33"}
 debt_issue_refs: []
 ```
 
