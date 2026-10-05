@@ -69,12 +69,15 @@ class _CareItemNeedsAttentionSectionState
         messenger.showSnackBar(
           SnackBar(
             key: const Key('care_stack_snackbar'),
-            content: Text(
-              careStackSuccessMessage(
-                l,
-                done: done,
-                result: value,
-                itemName: _s.name,
+            content: Semantics(
+              identifier: 'care_stack_snackbar',
+              child: Text(
+                careStackSuccessMessage(
+                  l,
+                  done: done,
+                  result: value,
+                  itemName: _s.name,
+                ),
               ),
             ),
             action: value.undoToken == null

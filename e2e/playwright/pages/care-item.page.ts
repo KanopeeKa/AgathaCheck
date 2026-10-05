@@ -326,7 +326,11 @@ export class CareItemPage {
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
       await expect(
-        this.page.getByText(en).or(this.page.getByText(fr)).first(),
+        this.page
+          .locator('[flt-semantics-identifier="care_stack_snackbar"]')
+          .or(this.page.getByText(en))
+          .or(this.page.getByText(fr))
+          .first(),
       ).toBeVisible();
     }).toPass({ timeout: 45_000 });
   }
