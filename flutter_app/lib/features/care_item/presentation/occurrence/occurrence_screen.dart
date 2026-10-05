@@ -12,6 +12,8 @@ import '../../domain/occurrence_detail.dart';
 import '../../domain/occurrence_display.dart';
 import 'package:pet_profile_app/features/pet_care/pet_care.dart';
 import 'occurrence_blocks.dart';
+import 'occurrence_screen_menu.dart';
+import 'occurrence_screen_menu_actions.dart';
 
 CareItemStatusTone _occurrencePillTone(OccurrencePillTone tone) =>
     switch (tone) {
@@ -90,16 +92,30 @@ class _OccurrenceScreenState extends ConsumerState<OccurrenceScreen> {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final outcome = _outcome;
-    final title = switch (outcome) {
-      CareSucceeded(:final value) => value.item.name,
-      _ => '',
+    final OccurrenceDetail? loadedDetail = switch (outcome) {
+      CareSucceeded(:final value) => value,
+      _ => null,
     };
+    final title = loadedDetail?.item.name ?? '';
     return Semantics(
       identifier: 'occurrence_screen',
       child: Scaffold(
         key: const Key('occurrence_screen'),
         appBar: AppBar(
           title: Text(title),
+          actions: [
+            if (loadedDetail != null)
+              OccurrenceScreenMenu(
+                occurrenceId: widget.occurrenceId,
+                onSelected: (action) => handleOccurrenceScreenMenuAction(
+                  context,
+                  ref,
+                  loadedDetail,
+                  action,
+                  _changed,
+                ),
+              ),
+          ],
           leading: BackButton(
             onPressed: () {
               final router = GoRouter.maybeOf(context);

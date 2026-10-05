@@ -12,9 +12,6 @@ import '../../domain/occurrence_display.dart';
 import 'package:pet_profile_app/features/pet_care/pet_care.dart';
 import '../../../../core/widgets/care_mark_done_button.dart';
 import '../../../health_tracking/health_tracking.dart';
-import '../sheets/plan_another_date_sheet.dart';
-import '../sheets/postpone_sheet.dart';
-import 'care_occurrence_menu.dart';
 
 CareItemStatusTone _pillTone(OccurrencePillTone tone) => switch (tone) {
   OccurrencePillTone.overdue => CareItemStatusTone.overdue,
@@ -111,58 +108,6 @@ class _CareItemNeedsAttentionSectionState
     }
   }
 
-  Future<void> _occurrenceMenuAction(
-    BuildContext context,
-    WidgetRef ref,
-    OpenOccurrence occurrence,
-    CareOccurrenceMenuAction action,
-  ) async {
-    final l = AppLocalizations.of(context)!;
-    final service = ref.read(careCompletionServiceProvider);
-    switch (action) {
-      case CareOccurrenceMenuAction.skip:
-        final outcome = await service.skip(
-          entryId: _s.entryId,
-          occurrenceId: occurrence.id,
-        );
-        await _refresh();
-        if (!context.mounted) return;
-        if (outcome is CareFailed) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(l.careCommandFailed)));
-        }
-      case CareOccurrenceMenuAction.postpone:
-        final fixed = _s.isFixedSchedule;
-        final paused = await showPostponeSheet(
-          context,
-          ref,
-          entryId: _s.entryId,
-          isFixedSchedule: fixed,
-        );
-        if (paused == true) {
-          PetEventOccurrenceActions.invalidateOccurrenceData(ref, _s.entryId);
-          await _refresh();
-        }
-      case CareOccurrenceMenuAction.planAnother:
-        final added = await showPlanAnotherDateSheet(
-          context,
-          ref,
-          entryId: _s.entryId,
-          initialDate: occurrence.date,
-        );
-        if (added == true) await _refresh();
-      case CareOccurrenceMenuAction.addNote:
-        openOccurrenceScreen(
-          context,
-          petId: widget.entry.petId,
-          entryId: widget.entry.id,
-          occurrenceId: occurrence.id,
-          source: 'care_item',
-        );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
@@ -232,16 +177,6 @@ class _CareItemNeedsAttentionSectionState
                   ),
                 ),
                 child: Text(l.rescheduleActionLabel),
-              ),
-              const SizedBox(height: 8),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: CareOccurrenceMenu(
-                  occurrence: leading,
-                  muted: _busy,
-                  onSelected: (action) =>
-                      _occurrenceMenuAction(context, ref, leading, action),
-                ),
               ),
             ],
             if (stack && !widget.muted) ...[
