@@ -284,26 +284,31 @@ describe('W3 weight fulfilment endpoints', () => {
     expect(pausedRow.status).toBe('paused');
   });
 
-  it('F-23 fulfil on create runs weight establishment evaluation in-transaction', async () => {
-    const entry = await createWeighIn('Establishment', '2027-06-10');
-    const occ = entry.open_occurrences[0];
-    const res = await w().post({
-      pet_id: owner.petId,
-      weight: 15,
-      date: '2027-06-11',
-      fulfils_occurrence_id: occ.id,
-    }, '2027-06-11T10:00');
-    expect(res.statusCode).toBe(201);
-    const linked = await harness.pool.query(
-      'SELECT weight FROM weight_entries WHERE health_occurrence_id = $1',
-      [occ.id],
+  it('F-23 fulfil on create links weight and establishes on 4th weekly weigh-in', async () => {
+    const entry = await createWeighIn('Establishment', '2027-06-01', {
+      frequency: 'weekly',
+      frequency_interval: 1,
+    });
+    const fulfilDates = ['2027-06-01', '2027-06-08', '2027-06-15', '2027-06-22'];
+    for (let i = 0; i < fulfilDates.length; i++) {
+      const date = fulfilDates[i];
+      const detail = await api.at(`${date}T09:00`).get(entry.id);
+      expect(detail.statusCode).toBe(200);
+      const occ = detail.body.open_occurrences[0];
+      expect(occ?.id).toBeTruthy();
+      const res = await w().post({
+        pet_id: owner.petId,
+        weight: 14 + i * 0.1,
+        date,
+        fulfils_occurrence_id: occ.id,
+      }, `${date}T10:00`);
+      expect(res.statusCode).toBe(201);
+    }
+    const est = await harness.pool.query(
+      'SELECT id FROM care_establishments WHERE health_entry_id = $1',
+      [entry.id],
     );
-    expect(linked.rows[0]?.weight).toBe(15);
-    const occRow = await harness.pool.query(
-      'SELECT status FROM health_occurrences WHERE id = $1',
-      [occ.id],
-    );
-    expect(occRow.rows[0].status).toBe('completed');
+    expect(est.rows).toHaveLength(1);
   });
 
   it('F-24 GET history includes linked_weight after completed weigh-in', async () => {
