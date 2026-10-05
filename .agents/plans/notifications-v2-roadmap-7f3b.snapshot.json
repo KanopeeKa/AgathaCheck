@@ -45,15 +45,15 @@
     },
     {
       "plan_id": "notifications-v2-pr5-7f3b",
-      "status": "pending",
-      "pr_url": null,
-      "merge_commit": null
+      "status": "merged",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1600",
+      "merge_commit": "212676c6"
     },
     {
       "plan_id": "notifications-v2-pr6-7f3b",
-      "status": "pending",
-      "pr_url": null,
-      "merge_commit": null
+      "status": "merged",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1606",
+      "merge_commit": "37b2ca10"
     },
     {
       "plan_id": "notifications-v2-pr7-7f3b",
@@ -103,5 +103,5 @@
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:98b11b4de48736133f789a77767924b48a819f4a0703f08d0e6fec398126bd17"
+  "content_hash": "sha256:6da344ee0fe3bad53072a5e3ef707bae7eff5822d2de77c3f0b708c2f5801886"
 }
