@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/widgets/collection_filter/collection_filter.dart';
-import '../../../../l10n/app_localizations.dart';
+import '../../../../../core/widgets/collection_filter/collection_filter.dart';
+import '../../../../../l10n/app_localizations.dart';
 import '../../providers/manage_fosters_providers.dart';
 
 abstract final class ManageFostersCollectionFilterIds {

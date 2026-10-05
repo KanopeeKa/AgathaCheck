@@ -49,8 +49,8 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
     });
 
     try {
-      final authService = ref.read(authServiceProvider);
-      await authService.forgotPassword(email: _emailController.text.trim());
+      final authRepository = ref.read(authRepositoryProvider);
+      await authRepository.forgotPassword(email: _emailController.text.trim());
       if (!mounted) return;
       final l10n = AppLocalizations.of(context)!;
       setState(() {
@@ -74,8 +74,8 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
     });
 
     try {
-      final authService = ref.read(authServiceProvider);
-      final message = await authService.resetPassword(
+      final authRepository = ref.read(authRepositoryProvider);
+      final message = await authRepository.resetPassword(
         email: _emailController.text.trim(),
         code: _codeController.text.trim(),
         newPassword: _passwordController.text,

@@ -1,4 +1,4 @@
-import '../../features/auth/data/auth_service.dart';
+import '../../features/auth/domain/entities/auth_user.dart';
 import '../config/analytics_config.dart';
 import 'analytics_client.dart';
 import 'posthog_analytics_client.dart';
