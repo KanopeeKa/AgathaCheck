@@ -5,12 +5,12 @@
   "approved_at": "2026-10-05T14:59:47Z",
   "approved_by": "User chat 2026-10-05 — create plan and implement as /execute-plan full autonomy",
   "approved_until": "2026-10-07T14:59:47Z",
-  "autonomy": "active",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "main",
   "control_issue": 1646,
   "artifact_branch_policy": "phase-branch",
-  "content_hash": "sha256:f36d7138ad1b03148a3a0f7b8fa0e7f3355458a443eff47d0f5334021d9f9bfb",
+  "content_hash": "sha256:f359c756803d79b80404c40356f4560faa5723075aef75469f2442a7b5b12291",
   "phases": [
     {
       "id": "R1",
