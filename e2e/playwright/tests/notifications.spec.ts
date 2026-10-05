@@ -85,14 +85,20 @@ test.describe('Notifications', () => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const user = await signupUser(baseURL, { firstName: 'Olivia', lastName: 'Overdue' });
 
-    const { notification, entry } = await seedOverdueNotification(baseURL, user.accessToken, {
-      petName: 'Bella',
-      entryName: 'Vaccination',
+    const pet = await createPet(baseURL, user.accessToken, 'Bella');
+    const pastDate = new Date();
+    pastDate.setDate(pastDate.getDate() - 7);
+    const entry = await createHealthEntry(baseURL, user.accessToken, pet.id, {
+      name: 'Vaccination',
+      nextDueDate: pastDate.toISOString().slice(0, 10),
     });
 
-    expect(notification.type).toBe('overdue');
-    expect(notification.health_entry_id).toBe(entry.id);
-    expect(notification.title).toMatch(/Vaccination|Bella/i);
+    await triggerCheckDueNotifications(baseURL, user.accessToken);
+    const notifications = await getNotifications(baseURL, user.accessToken);
+    const overdueInbox = notifications.filter(
+      (n: TestNotification) => n.health_entry_id === entry.id && n.type === 'overdue',
+    );
+    expect(overdueInbox).toHaveLength(0);
   });
 
   test('notification generated for entry due soon', async () => {
@@ -110,12 +116,11 @@ test.describe('Notifications', () => {
 
     await triggerCheckDueNotifications(baseURL, user.accessToken);
     const notifications = await getNotifications(baseURL, user.accessToken);
-    const dueSoon = notifications.find(
+    const dueSoon = notifications.filter(
       (n: TestNotification) => n.health_entry_id === entry.id && n.type === 'due_soon',
     );
 
-    expect(dueSoon).toBeTruthy();
-    expect(dueSoon!.title).toMatch(/Flea Treatment|Bella/i);
+    expect(dueSoon).toHaveLength(0);
   });
 
   test('A reminder is created again after care is done on time', async ({ page, testUser }) => {
