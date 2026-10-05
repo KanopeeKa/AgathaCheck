@@ -20,7 +20,9 @@ void main() {
       ProviderScope(
         overrides: [
           apiBaseUrlProvider.overrideWithValue('http://test.local'),
-          weightEntriesNotifierProvider.overrideWith(() => _EmptyWeightEntriesNotifier()),
+          weightEntriesNotifierProvider.overrideWith(
+            () => _EmptyWeightEntriesNotifier(),
+          ),
         ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -33,6 +35,9 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.bySemanticsIdentifier('weight_care_item_section'), findsOneWidget);
+    expect(
+      find.bySemanticsIdentifier('weight_care_item_section'),
+      findsOneWidget,
+    );
   });
 }
