@@ -4,6 +4,8 @@ import 'package:pet_profile_app/features/experience/presentation/screens/pet_car
 import 'package:pet_profile_app/features/pet_profile/domain/entities/care_family.dart';
 import 'package:pet_profile_app/features/experience/presentation/pet_profile/screens/widgets/manage_events_collection_filter.dart';
 import 'package:pet_profile_app/features/experience/presentation/pet_profile/screens/widgets/manage_events_filters.dart';
+import 'package:pet_profile_app/features/experience/presentation/pet_profile/screens/widgets/org_events_collection_filter.dart';
+import 'package:pet_profile_app/features/experience/presentation/pet_profile/screens/widgets/pet_care_global_events_filters.dart';
 
 void main() {
   test('default global filters are due and overdue only', () {

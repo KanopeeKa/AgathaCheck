@@ -7,6 +7,11 @@ import '../../../../health_tracking/health_tracking.dart';
 import '../../../../care_item/care_item.dart';
 import '../../../../pet_care/pet_care.dart';
 import '../../../../pet_profile/pet_profile.dart';
+import '../../pet_profile/screens/widgets/manage_events_collection_filter.dart';
+import '../../pet_profile/screens/widgets/org_events_collection_filter.dart';
+import '../../pet_profile/screens/widgets/pet_care_global_events_filters.dart';
+import '../../pet_profile/widgets/pet_care_section/pet_care_action_row_builder.dart';
+import '../../pet_profile/widgets/pet_list/home_event_actions.dart';
 import 'pet_care_due_events_screen.dart';
 
 // ---------------------------------------------------------------------------

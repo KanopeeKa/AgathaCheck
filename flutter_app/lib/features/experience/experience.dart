@@ -36,3 +36,5 @@ export 'presentation/pet_profile/widgets/pet_list/home_event_actions.dart';
 export 'presentation/pet_profile/screens/widgets/pet_event_entry_list.dart';
 export 'presentation/pet_profile/screens/widgets/manage_events_filters.dart';
 export 'presentation/pet_profile/screens/widgets/health_events_section.dart';
+export 'package:pet_profile_app/features/pet_profile/pet_profile.dart'
+    show Pet, PetListController, PetListStaleBanner, petListProvider;

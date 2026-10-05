@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_color_tokens.dart';
 import '../../../health_tracking/health_tracking.dart';
 import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
+import '../pet_profile/utils/pet_care_dashboard_helpers.dart';
 import '../screens/pet_care/add_event_type_picker_sheet.dart';
 import '../screens/pet_care/pet_care_my_pets_section.dart';
 import '../../../people/people.dart';

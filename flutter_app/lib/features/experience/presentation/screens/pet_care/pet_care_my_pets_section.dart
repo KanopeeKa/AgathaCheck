@@ -7,6 +7,7 @@ import '../../../../../core/theme/app_color_tokens.dart';
 import '../../../../../core/widgets/dashboard_section.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../experience.dart';
+import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 import '../../widgets/pet_care_dashboard_ambient_deco.dart';
 import 'package:pet_profile_app/core/widgets/pet_care_dashboard_section_header.dart';
 import '../../widgets/horizontal_carousel_controls.dart';

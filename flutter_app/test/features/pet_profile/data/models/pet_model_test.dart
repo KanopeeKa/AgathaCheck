@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/core/utils/calendar_date.dart';
 import 'package:pet_profile_app/features/pet_profile/data/models/pet_model.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
+import 'package:pet_profile_app/features/pet_profile/domain/entities/pet_access_role.dart';
 import 'package:pet_profile_app/features/sharing/domain/entities/pet_access.dart';
 
 void main() {
