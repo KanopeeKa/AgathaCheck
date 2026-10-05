@@ -90,10 +90,7 @@ export async function createWeightEntryAndSyncPet(db, {
  */
 export function resolveWeightEntryDateFromBody(body) {
   const fromBody = body?.weightEntryDate ?? body?.weight_entry_date;
-  const normalized = normalizeCalendarDateInput(fromBody);
-  if (normalized) return normalized;
-  // Defer default calendar day to resolveWeightDateForPet (pet home timezone).
-  return undefined;
+  return normalizeCalendarDateInput(fromBody) || null;
 }
 
 /**

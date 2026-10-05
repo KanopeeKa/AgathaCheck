@@ -8285,6 +8285,71 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careSkipAll => 'Skip all';
 
   @override
+  String careBulkMarkDoneCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Mark $count as done',
+      one: 'Mark 1 as done',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String careBulkSkipCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Skip $count',
+      one: 'Skip 1',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String careBulkMarkedDoneCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count marked done',
+      one: '1 marked done',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String careBulkSkippedCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count skipped',
+      one: '1 skipped',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get occurrenceLaterToday => 'Later today';
+
+  @override
+  String careShowCountMore(int count) {
+    return 'Show $count more';
+  }
+
+  @override
+  String get careShowLess => 'Show less';
+
+  @override
+  String careMarkDateTimeDone(String when) {
+    return 'Mark $when as done';
+  }
+
+  @override
+  String careSkipDateTime(String when) {
+    return 'Skip $when';
+  }
+
+  @override
   String get careRecordAsDone => 'Record as done';
 
   @override

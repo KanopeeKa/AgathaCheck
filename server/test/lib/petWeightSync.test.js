@@ -85,8 +85,8 @@ describe('petWeightSync', () => {
       );
     });
 
-    it('returns undefined when absent so pet home timezone picks the day', () => {
-      expect(resolveWeightEntryDateFromBody({})).toBeUndefined();
+    it('returns null when absent so pet home timezone defines today', () => {
+      expect(resolveWeightEntryDateFromBody({})).toBeNull();
     });
   });
 

@@ -1,5 +1,6 @@
 import 'care_item_schedule.dart';
 import 'care_occurrence.dart';
+import 'occurrence_status.dart';
 
 /// Whether an open occurrence has started at [asOf] (D-CIE-034).
 ///
@@ -38,4 +39,37 @@ List<OpenOccurrence> startedOccurrences(
 bool isStack(CareItemSchedule schedule, {CareAsOf? asOf}) {
   if (!schedule.isFixedSchedule) return false;
   return startedOccurrences(schedule, asOf: asOf).length >= 2;
+}
+
+/// Attention vs upcoming groups for the Care Item Needs attention module.
+class OpenOccurrenceGroups {
+  const OpenOccurrenceGroups({required this.started, required this.upcoming});
+
+  final List<OpenOccurrence> started;
+  final List<OpenOccurrence> upcoming;
+}
+
+/// Splits [schedule.openOccurrences] by [occurrenceHasStarted] (care-item-bulk-scope-spec §4).
+OpenOccurrenceGroups partitionOpenOccurrences(
+  CareItemSchedule schedule, {
+  CareAsOf? asOf,
+}) {
+  final clock = asOf ?? schedule.asOf;
+  final started = <OpenOccurrence>[];
+  final upcoming = <OpenOccurrence>[];
+  for (final o in schedule.openOccurrences) {
+    if (occurrenceHasStarted(o, clock)) {
+      started.add(o);
+    } else {
+      upcoming.add(o);
+    }
+  }
+  return OpenOccurrenceGroups(started: started, upcoming: upcoming);
+}
+
+/// Upcoming row on the same calendar day as [asOf] whose time has not passed.
+bool isLaterTodayUpcoming(OpenOccurrence occurrence, CareAsOf asOf) {
+  if (occurrenceHasStarted(occurrence, asOf)) return false;
+  if (occurrence.date != asOf.date) return false;
+  return liveStatus(occurrence, asOf) == CareOccurrenceStatus.due;
 }

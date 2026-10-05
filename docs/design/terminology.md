@@ -142,7 +142,9 @@ Canonical in [care-item-evolution.md](../domains/pet_care/features/care-item-evo
 | **If done after the due date** | Si c'est fait après la date prévue | Remembered choice: Keep the next date / Skip the next date / Move this and following (no Ask me, D-CSM-026 v4) | Late behaviour, Late leeway |
 | **Plan another date** | Prévoir une autre date | Add a date (booster, booked visit, an extra one). **Change date** moves one | Add occurrence |
 | **Postpone until** | Reporter au | Move care to a later date; without a date it is **Pause** | Snooze |
-| **Mark all as done** · **Skip all** | Tout marquer comme fait · Tout ignorer | Care Item view actions for a Not recorded stack (§18.6.5) | Record earlier doses, Review |
+| **Mark {count} as done** · **Skip {count}** | Marquer {count} comme faits · Ignorer {count} | Care Item bulk actions (scoped count; see care-item-bulk-scope-spec) | Record earlier care, Review |
+| **Later today** | Plus tard aujourd'hui | Upcoming-group pill when due later the same day | — |
+| **Show {count} more** / **Show less** | Afficher {count} de plus / Afficher moins | Expand collapsed upcoming rows on Care Item | — |
 | **Record as done** | Enregistrer comme fait | On a date closed as Not recorded | Reopen, Record as given |
 | **Estimated next** | Prochaine date estimée | Display-only line on overdue After-it's-done care | Next due (it is not actionable) |
 | **Today** · **Due soon** · **Upcoming** · **Today's list** | Aujourd'hui · Bientôt · À venir plus tard · La liste du jour | Agenda sections (D-CIE-025) | Due and Overdue, Coming soon |

@@ -24,7 +24,7 @@ import {
 import { createPet } from '../support/api';
 
 test.describe('Care schedules', () => {
-  test('mark all as done clears overdue fixed-schedule stack', async ({ page, testUser }) => {
+  test('bulk mark done clears overdue fixed-schedule stack', async ({ page, testUser }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const today = '2026-06-15';
     await withCareClock(`${today}T22:00`, page);
@@ -40,9 +40,8 @@ test.describe('Care schedules', () => {
       await loginAs(page, testUser, { experience: 'guardian' });
       const careItem = new CareItemPage(page);
       await careItem.open(pet.id, entry.id);
-      await careItem.markAllDone();
-      const agenda = new CareAgendaPage(page);
-      await agenda.expectDoneSnackbar('Stack Meds');
+      await careItem.markAllDone(2);
+      await careItem.expectBulkStackDoneSnackbar(2);
       const item = await getCareItem(baseURL, testUser.accessToken, entry.id);
       expect(item.open_occurrences.length).toBeGreaterThan(0);
       expect(item.open_occurrences.every((o) => o.status === 'coming_up' || o.status === 'due')).toBe(

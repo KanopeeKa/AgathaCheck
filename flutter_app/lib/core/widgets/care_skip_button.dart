@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../../l10n/app_localizations.dart';
 
-/// Shared Mark done action for care rows (care-item-bulk-scope-spec FR-18).
-///
-/// Round filled control with [Icons.check_circle], 40dp visual inside 48dp touch.
-class CareMarkDoneButton extends StatelessWidget {
-  const CareMarkDoneButton({
+/// Shared Skip action for care occurrence rows (care-item-bulk-scope-spec FR-19).
+class CareSkipButton extends StatelessWidget {
+  const CareSkipButton({
     super.key,
     required this.onPressed,
     this.semanticLabel,
@@ -14,11 +12,7 @@ class CareMarkDoneButton extends StatelessWidget {
   });
 
   final VoidCallback? onPressed;
-
-  /// Screen-reader label; defaults to the localized "Mark as done".
   final String? semanticLabel;
-
-  /// Stable `flt-semantics-identifier` for E2E locators.
   final String? semanticsIdentifier;
 
   static const double visualSize = 40;
@@ -34,22 +28,18 @@ class CareMarkDoneButton extends StatelessWidget {
       button: true,
       enabled: onPressed != null,
       identifier: semanticsIdentifier,
-      label: semanticLabel ?? l.markAsDone,
+      label: semanticLabel ?? l.careSkip,
       excludeSemantics: true,
       onTap: onPressed,
       child: Tooltip(
-        message: semanticLabel ?? l.markAsDone,
-        child: IconButton.filled(
+        message: semanticLabel ?? l.careSkip,
+        child: IconButton.outlined(
           onPressed: onPressed,
-          icon: const Icon(Icons.check_circle),
+          icon: const Icon(Icons.skip_next),
           iconSize: iconSize,
           padding: EdgeInsets.zero,
           style: IconButton.styleFrom(
-            backgroundColor: colorScheme.primary,
-            foregroundColor: colorScheme.onPrimary,
-            disabledBackgroundColor: colorScheme.onSurface.withValues(
-              alpha: 0.12,
-            ),
+            foregroundColor: colorScheme.primary,
             disabledForegroundColor: colorScheme.onSurface.withValues(
               alpha: 0.38,
             ),

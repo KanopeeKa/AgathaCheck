@@ -10,19 +10,10 @@ import '../../application/care_command_outcome.dart';
 import '../../application/care_item_providers.dart';
 import '../../domain/occurrence_detail.dart';
 import '../../domain/occurrence_display.dart';
-import '../widgets/care_item_status_pill.dart';
+import '../widgets/care_item_occurrence_status_pill.dart';
 import 'occurrence_blocks.dart';
 import 'occurrence_screen_menu.dart';
 import 'occurrence_screen_menu_actions.dart';
-
-CareItemStatusTone _occurrencePillTone(OccurrencePillTone tone) =>
-    switch (tone) {
-      OccurrencePillTone.overdue => CareItemStatusTone.overdue,
-      OccurrencePillTone.due => CareItemStatusTone.due,
-      OccurrencePillTone.closedNotRecorded =>
-        CareItemStatusTone.notRecordedClosed,
-      OccurrencePillTone.neutral => CareItemStatusTone.neutral,
-    };
 
 /// One occurrence, every status (D-CIE-029, §18.6.4). Loads
 /// `GET …/occurrences/:occId`; actions reload it after the server confirms.
@@ -198,10 +189,9 @@ class _Header extends StatelessWidget {
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        CareItemStatusPill(
+                        CareItemOccurrenceStatusPill(
                           key: const Key('occurrence_status'),
-                          label: pill.label,
-                          tone: _occurrencePillTone(pill.tone),
+                          pill: pill,
                         ),
                         const SizedBox(width: 8),
                         Expanded(

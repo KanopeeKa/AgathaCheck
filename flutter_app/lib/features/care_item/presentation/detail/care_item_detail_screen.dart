@@ -10,9 +10,11 @@ import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import '../widgets/care_item_history.dart';
 import '../sheets/postpone_sheet.dart';
+import '../sheets/plan_another_date_sheet.dart';
 import '../sheets/resume_date_sheet.dart';
 import 'care_item_detail_body.dart';
 import 'care_item_menu.dart';
+import '../../domain/leading_occurrence.dart';
 
 /// Care Item detail at `/pet/:petId/events/:entryId`.
 class CareItemDetailScreen extends ConsumerWidget {
@@ -168,6 +170,25 @@ class CareItemDetailScreen extends ConsumerWidget {
               }
             }
 
+            Future<void> onPlanAnotherDate() async {
+              final schedule = entry.schedule;
+              if (schedule == null) return;
+              final added = await showPlanAnotherDateSheet(
+                context,
+                ref,
+                entryId: entryId,
+                asOf: schedule.asOf.date,
+                reservedDates: schedule.openOccurrences.map((o) => o.date),
+              );
+              if (added == true) {
+                PetEventOccurrenceActions.invalidateOccurrenceData(
+                  ref,
+                  entryId,
+                );
+                ref.invalidate(petHealthEntryByIdProvider);
+              }
+            }
+
             return ExperienceShellScaffold(
               experience: experience,
               currentLocation: GoRouterState.of(context).uri.path,
@@ -187,6 +208,9 @@ class CareItemDetailScreen extends ConsumerWidget {
                   onResume: onResume,
                   onArchive: onArchive,
                   onRestore: onRestore,
+                  onPlanAnotherDate: isClosed || entry.isPaused
+                      ? null
+                      : onPlanAnotherDate,
                 ),
               ],
               child: historyAsync.when(

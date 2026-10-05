@@ -22,31 +22,79 @@ class _Notifier extends HealthEntriesNotifier {
   Future<void> refresh() async {}
 }
 
+Future<void> _pumpSection(WidgetTester tester, HealthEntry entry) async {
+  await tester.pumpWidget(
+    ProviderScope(
+      overrides: [healthEntriesNotifierProvider.overrideWith(_Notifier.new)],
+      child: MaterialApp(
+        theme: AppTheme.lightTheme,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: SingleChildScrollView(
+            child: CareItemNeedsAttentionSection(
+              entry: entry,
+              schedule: entry.schedule!,
+              muted: false,
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+  await tester.pumpAndSettle();
+}
+
 void main() {
-  testWidgets('CI-1 a stack lists every slot and Mark all as done sends one '
-      'resolve-stack', (tester) async {
+  testWidgets('bulk Mark 3 as done sends resolve-stack for started only', (
+    tester,
+  ) async {
     final today = careToday();
     final entry = scheduledEntry(
       id: 'pill',
       name: 'Pill',
       fixed: true,
       frequency: HealthFrequency.daily,
+      asOfTime: '14:00',
       open: [
-        for (var d = 2; d >= 0; d--)
-          OpenOccurrence(
-            id: 'slot-$d',
-            date: today.subtract(Duration(days: d)),
-            status: d == 0
-                ? CareOccurrenceStatus.due
-                : CareOccurrenceStatus.notRecorded,
-            origin: CareOccurrenceOrigin.schedule,
-          ),
+        OpenOccurrence(
+          id: 'slot-2',
+          date: today.subtract(const Duration(days: 2)),
+          status: CareOccurrenceStatus.notRecorded,
+          origin: CareOccurrenceOrigin.schedule,
+        ),
+        OpenOccurrence(
+          id: 'slot-1',
+          date: today.subtract(const Duration(days: 1)),
+          status: CareOccurrenceStatus.overdue,
+          origin: CareOccurrenceOrigin.schedule,
+        ),
+        OpenOccurrence(
+          id: 'slot-0',
+          date: today,
+          time: '08:00',
+          status: CareOccurrenceStatus.due,
+          origin: CareOccurrenceOrigin.schedule,
+        ),
+        OpenOccurrence(
+          id: 'up-1',
+          date: today,
+          time: '20:00',
+          status: CareOccurrenceStatus.due,
+          origin: CareOccurrenceOrigin.schedule,
+        ),
       ],
     );
     final requests = <http.Request>[];
     final client = MockClient((r) async {
       requests.add(r);
-      return http.Response(json.encode({'undo_token': 'u'}), 200);
+      return http.Response(
+        json.encode({
+          'undo_token': 'u',
+          'given': ['slot-2', 'slot-1', 'slot-0'],
+        }),
+        200,
+      );
     });
     await tester.pumpWidget(
       ProviderScope(
@@ -72,24 +120,26 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    for (var d = 0; d <= 2; d++) {
-      expect(find.byKey(Key('care_item_occurrence_slot-$d')), findsOneWidget);
-    }
-    expect(find.text('Overdue'), findsNWidgets(2));
-    await tester.tap(find.byKey(const Key('care_item_mark_all_done')));
+    expect(find.text('Mark 3 as done'), findsOneWidget);
+    expect(find.text('Skip 3'), findsOneWidget);
+    expect(find.text('Coming up'), findsOneWidget);
+    expect(find.byKey(const Key('care_item_upcoming_up-1')), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('care_item_bulk_mark_done')));
     await tester.pumpAndSettle();
     expect(requests, hasLength(1));
     expect(requests.single.url.path, endsWith('/occurrences/resolve-stack'));
     final body = json.decode(requests.single.body) as Map<String, dynamic>;
     expect(body['given'], ['slot-2', 'slot-1', 'slot-0']);
-    expect(find.text('Undo'), findsOneWidget);
+    expect(find.text('3 marked done'), findsOneWidget);
   });
 
-  testWidgets('leading open slot shows Change date (UIR-21)', (tester) async {
+  testWidgets('single started row has no bulk bar', (tester) async {
     final today = careToday();
     final entry = scheduledEntry(
       id: 'groom',
       name: 'Grooming',
+      fixed: true,
       frequency: HealthFrequency.monthly,
       open: [
         OpenOccurrence(
@@ -100,26 +150,14 @@ void main() {
         ),
       ],
     );
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [healthEntriesNotifierProvider.overrideWith(_Notifier.new)],
-        child: MaterialApp(
-          theme: AppTheme.lightTheme,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: Scaffold(
-            body: CareItemNeedsAttentionSection(
-              entry: entry,
-              schedule: entry.schedule!,
-              muted: false,
-            ),
-          ),
-        ),
-      ),
-    );
-    await tester.pumpAndSettle();
+    await _pumpSection(tester, entry);
+    expect(find.byKey(const Key('care_item_bulk_mark_done')), findsNothing);
     expect(
-      find.byKey(const Key('care_item_occurrence_reschedule_slot-1')),
+      find.byKey(const Key('care_item_occurrence_done_slot-1')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const Key('care_item_occurrence_skip_slot-1')),
       findsOneWidget,
     );
   });
