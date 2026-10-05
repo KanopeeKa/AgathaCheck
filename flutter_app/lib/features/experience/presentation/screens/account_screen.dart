@@ -6,7 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/widgets/dashboard_section.dart';
 import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../auth/data/auth_service.dart';
+import '../../../auth/domain/entities/auth_user.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../config/drawer_menu_config.dart';
 import '../widgets/account_organisation_settings_section.dart';

@@ -1,4 +1,4 @@
-import { publicError } from '../../config/security.js';
+import { asyncHandler } from '../../lib/http/asyncHandler.js';
 import { extractUserId } from '../../lib/requireAuth.js';
 import { listAccessForPets } from '../../services/sharing/shareAccessService.js';
 
@@ -10,7 +10,7 @@ function parsePetIds(req) {
 }
 
 export function registerShareAccessAggregateRoutes(router, pool) {
-  router.get('/access', async (req, res) => {
+  router.get('/access', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     const petIds = parsePetIds(req);
@@ -21,7 +21,7 @@ export function registerShareAccessAggregateRoutes(router, pool) {
       const result = await listAccessForPets(pool, userId, petIds);
       return res.json(result);
     } catch (err) {
-      return res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 }

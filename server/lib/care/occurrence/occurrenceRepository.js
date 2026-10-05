@@ -480,3 +480,22 @@ export async function reopenClosedOccurrence(db, occurrenceId) {
   );
   return normalizeOccurrenceRow(result.rows[0] || null);
 }
+
+/**
+ * Data repair: remove a schedule-origin dose closed as Not recorded (tz-shift dedupe).
+ *
+ * @param {import('pg').PoolClient} db
+ * @param {string} entryId
+ * @param {string} occurrenceId
+ * @returns {Promise<string|null>} deleted id
+ */
+export async function deleteNotRecordedScheduleOccurrence(db, entryId, occurrenceId) {
+  const result = await db.query(
+    `DELETE FROM health_occurrences
+     WHERE id = $1 AND health_entry_id = $2 AND origin = 'schedule'
+       AND status = 'skipped' AND close_reason = 'not_recorded'
+     RETURNING id`,
+    [occurrenceId, entryId],
+  );
+  return result.rows[0]?.id ?? null;
+}

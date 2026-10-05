@@ -107,17 +107,14 @@ class HealthRemoteDataSourceImpl
   final String baseUrl;
   final http.Client _client;
 
+  /// Unused — [AuthHttpClient] injects bearer tokens. Kept for callers not yet migrated.
   String? authToken;
 
-  /// Builds request headers, attaching the bearer token when available.
+  /// Builds request headers. Bearer auth is injected by [AuthHttpClient].
   /// Pass [jsonBody] for requests that send a JSON body.
   Map<String, String> _authHeaders({bool jsonBody = false}) {
     final headers = <String, String>{};
     if (jsonBody) headers['Content-Type'] = 'application/json';
-    final token = authToken;
-    if (token != null && token.isNotEmpty) {
-      headers['Authorization'] = 'Bearer $token';
-    }
     return headers;
   }
 

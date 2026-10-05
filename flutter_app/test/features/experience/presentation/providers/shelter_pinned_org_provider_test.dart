@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pet_profile_app/features/auth/data/auth_service.dart';
+import 'package:pet_profile_app/features/auth/domain/entities/auth_user.dart';
 import 'package:pet_profile_app/features/auth/data/token_store.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:pet_profile_app/features/organization/presentation/providers/shelter_pinned_org_provider.dart';
@@ -28,7 +28,7 @@ class _PinnedOrgListNotifier extends OrganizationListNotifier {
 
 class _PinnedAuthNotifier extends AuthNotifier {
   _PinnedAuthNotifier({String? pinnedOrganizationId})
-    : super(FakeAuthService(), PrefsTokenStore(FakePrefs())) {
+    : super(FakeAuthRepository(), PrefsTokenStore(FakePrefs())) {
     state = AuthState(
       user: AuthUser(
         id: 'user-1',

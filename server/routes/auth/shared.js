@@ -1,7 +1,6 @@
-import jwt from 'jsonwebtoken';
-
-import { JWT_SECRET } from '../../config/jwtSecret.js';
 import { isActiveMember } from '../../lib/orgRoles.js';
+export { extractToken } from '../../lib/auth/tokens.js';
+export { isProduction } from '../../lib/auth/runtime.js';
 
 export const FORGOT_PASSWORD_MESSAGE = 'If that email exists, a reset code has been sent.';
 
@@ -9,62 +8,6 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-
 
 export function isValidUuid(value) {
   return typeof value === 'string' && UUID_RE.test(value);
-}
-
-export function isProduction() {
-  return process.env.NODE_ENV === 'production';
-}
-
-export const TOKEN_TYPE_ACCESS = 'access';
-export const TOKEN_TYPE_REFRESH = 'refresh';
-
-export function signAccessToken(id, email) {
-  return jwt.sign({ id, email, typ: TOKEN_TYPE_ACCESS }, JWT_SECRET, { expiresIn: '30m' });
-}
-
-export function signRefreshToken(id, email, sid) {
-  return jwt.sign({ id, email, typ: TOKEN_TYPE_REFRESH, sid }, JWT_SECRET, { expiresIn: '30d' });
-}
-
-export function verifyAccessToken(token) {
-  const payload = jwt.verify(token, JWT_SECRET);
-  if (payload.typ === TOKEN_TYPE_REFRESH) {
-    const err = new Error('Invalid token type');
-    err.name = 'JsonWebTokenError';
-    throw err;
-  }
-  if (payload.typ !== undefined && payload.typ !== TOKEN_TYPE_ACCESS) {
-    const err = new Error('Invalid token type');
-    err.name = 'JsonWebTokenError';
-    throw err;
-  }
-  return payload;
-}
-
-export function verifyRefreshToken(token) {
-  const payload = jwt.verify(token, JWT_SECRET);
-  if (payload.typ !== TOKEN_TYPE_REFRESH) {
-    const err = new Error('Invalid token type');
-    err.name = 'JsonWebTokenError';
-    throw err;
-  }
-  if (!payload.sid) {
-    const err = new Error('Invalid refresh token');
-    err.name = 'JsonWebTokenError';
-    throw err;
-  }
-  return payload;
-}
-
-/** @deprecated Use verifyAccessToken — kept for profile/password routes. */
-export function verifyToken(token) {
-  return verifyAccessToken(token);
-}
-
-export function extractToken(req) {
-  const auth = req.headers['authorization'] || req.headers['Authorization'];
-  if (!auth || !auth.startsWith('Bearer ')) return null;
-  return auth.substring(7);
 }
 
 export function userRowToMap(row) {

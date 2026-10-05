@@ -1,6 +1,6 @@
+import { asyncHandler } from '../../lib/http/asyncHandler.js';
 import { v4 as uuidv4 } from 'uuid';
 
-import { publicError } from '../../config/security.js';
 import { hasPetCapability, PET_CAPABILITIES } from '../../lib/petCapabilityPolicy.js';
 import { recordPetActivityForPet } from '../../lib/petActivity.js';
 import {
@@ -21,7 +21,7 @@ export function registerDocumentsRoutes(router, pool) {
     return hasPetCapability(pool, userId, petId, PET_CAPABILITIES.HEALTH_DOCUMENTS_MANAGE);
   }
 
-  router.get('/:id/photos', async (req, res) => {
+  router.get('/:id/photos', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
@@ -47,11 +47,11 @@ export function registerDocumentsRoutes(router, pool) {
         created_at: r.created_at,
       })));
     } catch (err) {
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 
-  router.post('/:id/photos', handleDocumentUpload, async (req, res) => {
+  router.post('/:id/photos', handleDocumentUpload, asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
@@ -91,11 +91,11 @@ export function registerDocumentsRoutes(router, pool) {
       });
       res.status(201).json(row);
     } catch (err) {
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 
-  router.delete('/:entryId/photos/:photoId', async (req, res) => {
+  router.delete('/:entryId/photos/:photoId', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
@@ -115,7 +115,7 @@ export function registerDocumentsRoutes(router, pool) {
       }
       res.json({ deleted: true });
     } catch (err) {
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 }

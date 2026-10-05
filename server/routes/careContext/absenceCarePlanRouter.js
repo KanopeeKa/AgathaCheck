@@ -1,4 +1,4 @@
-import { publicError } from '../../config/security.js';
+import { asyncHandler } from '../../lib/http/asyncHandler.js';
 import { extractUserId } from '../../lib/requireAuth.js';
 import { loadAbsenceCarePlan } from '../../lib/care/planner/index.js';
 
@@ -11,7 +11,7 @@ import { loadAbsenceCarePlan } from '../../lib/care/planner/index.js';
  * }} deps
  */
 export function registerAbsenceCarePlanRoutes(router, pool, deps) {
-  router.get('/:id/care-plan', async (req, res) => {
+  router.get('/:id/care-plan', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
@@ -21,7 +21,7 @@ export function registerAbsenceCarePlanRoutes(router, pool, deps) {
       const plan = await loadAbsenceCarePlan(pool, row, petRows);
       res.json(plan);
     } catch (err) {
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 }

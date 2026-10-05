@@ -1,4 +1,4 @@
-import { publicError } from '../../config/security.js';
+import { asyncHandler } from '../../lib/http/asyncHandler.js';
 import { hasPetCapability, PET_CAPABILITIES } from '../../lib/petCapabilityPolicy.js';
 import {
   deleteAllPetData,
@@ -7,7 +7,7 @@ import {
 import { extractUserId } from './shared.js';
 
 export function registerLifecycleRoutes(router, pool) {
-  router.delete('/:id/data', async (req, res) => {
+  router.delete('/:id/data', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     const petId = req.params.id;
@@ -18,11 +18,11 @@ export function registerLifecycleRoutes(router, pool) {
       const result = await deleteAllPetData(pool, petId, { actorUserId: userId, req });
       res.status(200).json(result);
     } catch (err) {
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 
-  router.post('/:id/passed-away', async (req, res) => {
+  router.post('/:id/passed-away', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     const petId = req.params.id;
@@ -47,7 +47,7 @@ export function registerLifecycleRoutes(router, pool) {
         delivery_status: outcome.delivery_status,
       });
     } catch (err) {
-      res.status(500).json({ error: publicError(err) });
+      throw err;
     }
-  });
+  }));
 }

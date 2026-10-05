@@ -1,9 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../auth/presentation/providers/auth_providers.dart';
-import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
-import '../../data/datasources/health_remote_datasource.dart';
-import '../../data/repositories/health_repository_impl.dart';
+import '../../application/health_data_providers.dart';
+import '../../application/health_documents_providers.dart';
 import '../../domain/entities/command_outcome.dart';
 import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/health_history_entry.dart';
@@ -16,35 +15,10 @@ import '../../domain/usecases/get_health_entries.dart';
 import '../../domain/usecases/update_health_entry.dart';
 import '../../../pet_care/domain/services/care_temporal_grouping_service.dart';
 
+export '../../application/health_data_providers.dart';
+export '../../application/health_documents_providers.dart';
+
 part 'health_entries_store.dart';
-
-final healthRemoteDataSourceProvider = Provider<HealthRemoteDataSource>((ref) {
-  final baseUrl = ref.watch(apiBaseUrlProvider);
-  final token = ref.watch(authProvider).accessToken;
-  final ds = HealthRemoteDataSourceImpl(
-    baseUrl: baseUrl,
-    client: ref.watch(authHttpClientProvider),
-  );
-  ds.authToken = token;
-  return ds;
-});
-
-final healthDataSourceProvider = Provider<HealthRemoteDataSourceImpl>((ref) {
-  final baseUrl = ref.watch(apiBaseUrlProvider);
-  final token = ref.watch(authProvider).accessToken;
-  final ds = HealthRemoteDataSourceImpl(
-    baseUrl: baseUrl,
-    client: ref.watch(authHttpClientProvider),
-  );
-  ds.authToken = token;
-  return ds;
-});
-
-/// Provides the health repository implementation.
-final healthRepositoryProvider = Provider<HealthRepository>((ref) {
-  final dataSource = ref.watch(healthRemoteDataSourceProvider);
-  return HealthRepositoryImpl(dataSource);
-});
 
 /// Provides the get health entries use case.
 final getHealthEntriesProvider = Provider<GetHealthEntries>((ref) {

@@ -50,15 +50,12 @@ class OrgShellScaffold extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final resolvedOrg = _resolveOrganization(ref);
     final location = _resolveCurrentLocation(context);
 
     return ExperienceShellScaffold(
       experience: AppExperience.organization,
       currentLocation: location,
       screenTitle: title,
-      orgNavVariant: navVariant,
-      organization: resolvedOrg ?? organization,
       contextualActions: [...contextualActions, ...trailingActions],
       backPath: backPath,
       onBackPressed: onBack,
