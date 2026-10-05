@@ -16,6 +16,7 @@ CareItemStatusTone _occurrencePillTone(OccurrencePillTone tone) =>
       OccurrencePillTone.due => CareItemStatusTone.due,
       OccurrencePillTone.closedNotRecorded =>
         CareItemStatusTone.notRecordedClosed,
+      OccurrencePillTone.notRecorded => CareItemStatusTone.notRecordedClosed,
       OccurrencePillTone.neutral => CareItemStatusTone.neutral,
     };
 

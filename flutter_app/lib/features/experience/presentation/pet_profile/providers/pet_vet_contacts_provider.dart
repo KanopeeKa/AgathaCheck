@@ -21,33 +21,27 @@ class PetVetOption {
   final String? website;
 }
 
-List<PetVetOption> petVetOptionsFromContacts(List<PeopleContact> contacts) {
-  final options = contacts
-      .where(
-        (c) =>
-            c.inactiveAt == null &&
-            c.roles.contains('vet') &&
-            c.legacyVetId != null &&
-            c.legacyVetId!.isNotEmpty,
-      )
-      .map(
-        (c) => PetVetOption(
-          vetId: c.legacyVetId!,
-          displayName: c.name,
-          phone: c.phone,
-          email: c.email,
-          address: c.address,
-          website: c.website,
-        ),
-      )
-      .toList();
+List<PetVetOption> petVetOptionsFromRoster(Roster? roster) {
+  if (roster == null) return const [];
+  final options = <PetVetOption>[];
+  for (final contact in roster.contacts) {
+    if (contact.isInactive) continue;
+    if (!contact.roles.contains(ContactRole.vet)) continue;
+    final vetId = contact.linkedVetRecordId;
+    if (vetId == null || vetId.isEmpty) continue;
+    options.add(
+      PetVetOption(
+        vetId: vetId,
+        displayName: contact.name,
+      ),
+    );
+  }
   options.sort((a, b) => a.displayName.compareTo(b.displayName));
   return options;
 }
 
 final petVetOptionsProvider = Provider<AsyncValue<List<PetVetOption>>>((ref) {
-  final contactsAsync = ref.watch(peopleContactsProvider);
-  return contactsAsync.whenData(petVetOptionsFromContacts);
+  return ref.watch(rosterProvider).whenData(petVetOptionsFromRoster);
 });
 
 PetVetOption? findPetVetOption(List<PetVetOption> options, String? vetId) {
