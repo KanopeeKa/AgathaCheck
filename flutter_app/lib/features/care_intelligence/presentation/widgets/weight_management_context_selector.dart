@@ -18,7 +18,7 @@ class WeightManagementContextSelector extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     return DropdownButtonFormField<ManagementContext>(
-      value: value,
+      initialValue: value,
       decoration: InputDecoration(
         labelText: l.weightManagementContextLabel,
         helperText: l.weightManagementContextHelper,

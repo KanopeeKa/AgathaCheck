@@ -4,9 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/providers/api_base_url_provider.dart';
 import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../pet_profile/domain/entities/pet.dart';
-import '../../../pet_profile/presentation/utils/pet_accent_color.dart';
-import '../../../pet_profile/presentation/widgets/pet_photo_image.dart';
+import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 import '../../domain/entities/health_entry.dart';
 
 class HealthEntryPetStrip extends ConsumerWidget {

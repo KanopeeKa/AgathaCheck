@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../core/widgets/form/app_form_breakpoints.dart';
-import '../../../../pet_profile/presentation/providers/pet_providers.dart';
+import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 import '../../controllers/health_entry_form_controller.dart';
-import '../../controllers/health_entry_form_state.dart';
 import 'health_entry_document_handler.dart';
 import 'health_entry_form_content.dart';
 import 'health_entry_form_preview_card.dart';

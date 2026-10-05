@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../l10n/app_localizations.dart';
-import '../../../health_tracking/presentation/providers/health_providers.dart';
-import '../../../health_tracking/presentation/widgets/pet_event_administration_history_dialog.dart';
+import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 
 Future<void> showPetEventHistory(
   BuildContext context,

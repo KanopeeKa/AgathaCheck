@@ -23,6 +23,8 @@ Pet Care temporal grouping, agenda presentation helpers, and planned-absence flo
 | `careTemporalGroupingProviders`, `petCarePresentationProviders` | providers | Desk modules |
 | Planned absence hub/flow/plan/edit screens | UI screens | Router (`away_routes`) |
 | `AbsenceInviteLandingScreen` | UI screen | Deep link landing |
+| `PlannedCareItem`, `CarePeriodCoverage` types | domain entities | Health absence context parsing |
+| Care surface widgets (`CareItemModule`, agenda helpers, …) | UI widgets | Care Item and Pet Profile modules |
 
 ## Dependencies
 

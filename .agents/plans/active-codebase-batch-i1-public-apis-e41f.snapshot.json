@@ -76,12 +76,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1635",
-      "pr_head_sha": "d23f582e38285e576c984a6df460d8f52335b6a7"
+      "pr_head_sha": "c17c38746e1d0495bc64fb9a9f48dc4465869d5d"
     },
     {
       "id": "3",
@@ -110,13 +110,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1640",
+      "pr_head_sha": "30f39716b185f06b1e29d7ea50f1e2aa3691996d"
     },
     {
       "id": "4",
@@ -179,5 +178,5 @@
       "merge_commit": null
     }
   ],
-  "content_hash": "sha256:31b1426a53ed6834c6ea98ae22d3b12c48b71811fb4a4265a01e64a7ca1cb4f8"
+  "content_hash": "sha256:dffca59ae5198d4f20ef3a78ddd6a7aa2b01e269cf1319598e80d856f73e5f79"
 }

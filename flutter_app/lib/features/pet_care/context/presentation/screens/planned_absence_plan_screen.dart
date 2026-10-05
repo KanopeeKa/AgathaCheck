@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../../l10n/app_localizations.dart';
 import 'package:pet_profile_app/core/experience/app_experience.dart';
 import 'package:pet_profile_app/core/router/experience_shell_scaffold.dart';
-import '../../../../pet_profile/presentation/providers/pet_providers.dart';
+import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 import '../providers/care_context_providers.dart';
 import '../controllers/away_plan_handover_controller.dart';
 import '../widgets/away_plan_carers_section.dart';

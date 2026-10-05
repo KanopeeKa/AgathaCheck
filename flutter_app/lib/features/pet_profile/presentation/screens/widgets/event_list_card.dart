@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
 import '../../widgets/pet_list/home_event_actions.dart';
-import 'package:pet_profile_app/features/health_tracking/domain/entities/health_history_entry.dart';
-import 'package:pet_profile_app/features/health_tracking/presentation/widgets/health_entry_status.dart';
-import 'package:pet_profile_app/features/health_tracking/presentation/widgets/health_entry_type_labels.dart';
+import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import 'manage_events_filters.dart';

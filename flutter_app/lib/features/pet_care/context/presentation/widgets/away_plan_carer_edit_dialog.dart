@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../people/domain/entities/people_contact.dart';
-import '../../../../people/presentation/providers/people_providers.dart';
+import 'package:pet_profile_app/features/people/people.dart';
 import '../../data/datasources/care_context_remote_datasource.dart';
 import '../../domain/entities/planned_absence_pet_carer.dart';
 import '../providers/care_context_providers.dart';

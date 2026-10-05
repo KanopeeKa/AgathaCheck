@@ -12,7 +12,6 @@ import 'core/router/app_router.dart';
 import 'core/services/consent_service.dart';
 import 'core/theme/app_theme.dart';
 import 'core/utils/constants.dart';
-import 'core/weight/weight_unit.dart';
 import 'core/weight/weight_unit_preference.dart';
 import 'core/widgets/consent_banner.dart';
 import 'features/auth/presentation/providers/auth_providers.dart';
@@ -20,7 +19,7 @@ import 'features/care_item/application/care_item_providers.dart';
 import 'features/care_item/care_item.dart';
 import 'features/health_tracking/presentation/providers/health_providers.dart';
 import 'features/pet_profile/presentation/providers/pet_providers.dart';
-import 'features/subscription/data/services/revenuecat_service.dart';
+import 'features/subscription/subscription.dart';
 import 'features/weight_tracking/presentation/providers/weight_providers.dart';
 
 /// Global messenger so session-expiry notices can be shown from anywhere,
@@ -32,7 +31,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final prefs = await SharedPreferences.getInstance();
 
-  await RevenueCatService().initialize();
+  await initializeSubscriptionSdk();
 
   runApp(
     ProviderScope(

@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/features/care_item/care_item.dart';
-import 'package:pet_profile_app/features/care_item/data/care_item_wire.dart';
 
 import '../application/care_api_fixtures.dart';
 

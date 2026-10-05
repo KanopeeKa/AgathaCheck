@@ -4,7 +4,6 @@ import '../../data/datasources/health_remote_datasource.dart';
 import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/health_occurrence.dart';
 import 'health_providers.dart';
-import 'occurrence_providers.dart';
 
 /// Single health entry for a pet, derived from the global entries list.
 final petHealthEntryByIdProvider =

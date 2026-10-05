@@ -70,7 +70,7 @@ class CarePeriodPetPreviewSection extends StatelessWidget {
             else if (_errorMessage != null)
               Builder(
                 builder: (context) {
-                  final message = _errorMessage!;
+                  final message = _errorMessage;
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

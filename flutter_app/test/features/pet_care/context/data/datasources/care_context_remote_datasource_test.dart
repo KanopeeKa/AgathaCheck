@@ -5,7 +5,6 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 
 import 'package:pet_profile_app/features/pet_care/context/data/datasources/care_context_remote_datasource.dart';
-import 'package:pet_profile_app/features/pet_care/context/domain/entities/carer_candidate.dart';
 import 'package:pet_profile_app/features/pet_care/context/domain/entities/planned_absence.dart';
 
 void main() {

@@ -5,7 +5,6 @@ import '../../domain/entities/care_status.dart';
 import '../../domain/entities/pet.dart';
 import '../controllers/pet_list_controller.dart';
 import '../widgets/pet_card.dart' show sortPetsByCreatedAt;
-import '../widgets/pet_tile_status_line.dart';
 
 /// Relationship wording is intentionally a presentation concern. Eligibility
 /// remains owned by [PetListController].

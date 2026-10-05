@@ -6,7 +6,7 @@ import '../../../../../core/theme/experience_colors.dart';
 import '../../../../../core/utils/constants.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../providers/pet_vet_contacts_provider.dart';
-import '../../../../weight_tracking/presentation/providers/weight_providers.dart';
+import 'package:pet_profile_app/features/weight_tracking/weight_tracking.dart';
 import '../../../domain/entities/pet.dart';
 import '../../../domain/services/pet_detail_actions.dart';
 import '../../providers/pet_providers.dart';

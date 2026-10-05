@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../care_intelligence/domain/weight_provenance.dart';
-import '../../../../care_intelligence/presentation/widgets/weight_management_context_selector.dart';
+import 'package:pet_profile_app/features/care_intelligence/care_intelligence.dart';
 import '../../controllers/pet_form_controller.dart';
 import 'pet_form_labeled_field.dart';
 
@@ -105,7 +104,7 @@ class _PetFormWeightContextSectionState
       label: l.weightReferenceAuthorityLabel,
       child: DropdownButtonFormField<String?>(
         key: const Key('pet_weight_reference_authority_field'),
-        value: state.weightReferenceAuthority,
+        initialValue: state.weightReferenceAuthority,
         decoration: const InputDecoration(),
         items: [
           DropdownMenuItem<String?>(

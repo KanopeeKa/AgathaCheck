@@ -5,8 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../core/router/shell_return_navigation.dart';
 import '../../../../care_item/care_item.dart';
-import '../../../../health_tracking/domain/entities/health_entry.dart';
-import '../../../../health_tracking/presentation/providers/health_providers.dart';
+import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import '../care_surface/care_collection_inset_list.dart';
 import 'care_agenda_inset_items.dart';
 import 'care_agenda_row_tile.dart';

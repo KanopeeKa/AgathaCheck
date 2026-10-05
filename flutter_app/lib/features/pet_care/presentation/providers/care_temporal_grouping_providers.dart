@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../health_tracking/presentation/providers/health_providers.dart';
+import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import '../../../pet_profile/domain/entities/care_status.dart';
 import '../../domain/models/care_temporal_buckets.dart';
 import '../../domain/services/care_temporal_grouping_service.dart';

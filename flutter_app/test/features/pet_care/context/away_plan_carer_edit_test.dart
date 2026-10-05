@@ -22,9 +22,8 @@ import 'package:go_router/go_router.dart';
 class _FakeCareContextRepository implements CareContextRepository {
   _FakeCareContextRepository({
     this.candidates = const [],
-    this.updateResult,
     this.updateThrows,
-  });
+  }) : updateResult = null;
 
   List<CarerCandidate> candidates;
   PlannedAbsence? Function(String absenceId)? updateResult;

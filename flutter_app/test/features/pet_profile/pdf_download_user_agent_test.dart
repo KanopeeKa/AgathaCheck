@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pet_profile_app/features/pet_profile/data/services/pdf_download_user_agent.dart';
+import 'package:pet_profile_app/core/files/pdf_download_user_agent.dart';
 
 void main() {
   test('opens PDF in new tab on mobile user agents', () {
