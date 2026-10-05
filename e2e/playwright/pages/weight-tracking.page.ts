@@ -36,7 +36,7 @@ export class WeightTrackingPage {
       .or(this.page.getByRole('banner', { name: /Weight Tracking|Suivi du poids/i }))
       .or(
         this.page.getByRole('button', {
-          name: /Add weight entry|Ajouter une entrée de poids/i,
+          name: /Add weight entry|Record weight|Ajouter une entrée de poids|Enregistrer le poids/i,
         }),
       );
   }
@@ -117,7 +117,9 @@ export class WeightTrackingPage {
   async openAddWeightSheet(): Promise<void> {
     await this.openSection();
     const addButton = this.page
-      .getByRole('button', { name: /Add weight entry|Ajouter une entrée de poids/i })
+      .getByRole('button', {
+        name: /Add weight entry|Record weight|Ajouter une entrée de poids|Enregistrer le poids/i,
+      })
       .first();
     await addButton.click();
     await this.page
@@ -137,7 +139,9 @@ export class WeightTrackingPage {
 
   /** Click the Save button in the Add Weight Entry bottom-sheet. */
   async saveWeightEntry(): Promise<void> {
-    await this.page.getByRole('button', { name: /^Save$/i }).click();
+    const save = this.page.getByRole('button', { name: /^Save$|^Enregistrer$/i });
+    await expect(save).toBeEnabled({ timeout: 20_000 });
+    await save.click();
     await this.page.waitForTimeout(800);
     await refreshFlutterAccessibility(this.page);
   }

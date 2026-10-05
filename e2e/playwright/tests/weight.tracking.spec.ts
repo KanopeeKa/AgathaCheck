@@ -5,7 +5,7 @@
  * Scenario: Viewing weight entries as a list
  * Scenario: Viewing weight chart
  * Scenario: Viewing latest weight on pet profile
- * Scenario: Editing pet weight from profile creates a weight entry for today
+ * Scenario: Profile updates from older apps still record the weight
  * Scenario: Editing a weight entry
  * Scenario: Deleting a weight entry
  * Scenario: Selecting weight unit
@@ -22,7 +22,6 @@ import {
   getWeightEntries,
   getLatestWeightEntry,
   updatePetProfile,
-  updateWeightEntry,
   deleteWeightEntry,
   signupUser,
 } from '../support/api';
@@ -35,6 +34,7 @@ import {
 import { PetListPage } from '../pages/pet-list.page';
 import { PetDetailPage } from '../pages/pet-detail.page';
 import { WeightTrackingPage } from '../pages/weight-tracking.page';
+import { WeightHubPage } from '../pages/weight-hub.page';
 
 test.describe('Weight tracking', () => {
   // ── Empty state ───────────────────────────────────────────────────────────
@@ -71,12 +71,11 @@ test.describe('Weight tracking', () => {
     await weightPage.openAddWeightSheet();
     await weightPage.fillWeightForm('25.5');
     await weightPage.saveWeightEntry();
+    await weightPage.expectWeightEntryVisible(25.5, 'kg');
 
-    // Verify via API that the entry was persisted.
     const entries = await getWeightEntries(baseURL, testUser.accessToken, pet.id);
     expect(entries.length).toBeGreaterThan(0);
     expect(entries[0].weight).toBeCloseTo(25.5, 1);
-    expect(entries[0].unit).toBe('kg');
   });
 
   test('adding multiple weight entries via API all appear in history', async ({ page, testUser }) => {
@@ -174,9 +173,7 @@ test.describe('Weight tracking', () => {
     await weightPage.expectWeightEntryVisible(25.0);
   });
 
-  test('editing pet weight via API creates a weight entry for today with no notes', async ({
-    testUser,
-  }) => {
+  test('Profile updates from older apps still record the weight', async ({ testUser }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const pet = await createPet(baseURL, testUser.accessToken, 'Bella');
 
@@ -203,26 +200,15 @@ test.describe('Weight tracking', () => {
 
   // ── Editing weight entries ────────────────────────────────────────────────
 
-  test('editing a weight entry via API updates the stored value', async ({ page, testUser }) => {
+  test('Editing a weight entry', async ({ page, testUser }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const pet = await createPet(baseURL, testUser.accessToken, 'Bella');
 
-    const entry = await createWeightEntry(baseURL, testUser.accessToken, pet.id, {
+    await createWeightEntry(baseURL, testUser.accessToken, pet.id, {
       weight: 25.0,
       date: '2025-06-01',
     });
 
-    await updateWeightEntry(baseURL, testUser.accessToken, entry.id, {
-      weight: 25.5,
-      date: '2025-06-01',
-    });
-
-    const entries = await getWeightEntries(baseURL, testUser.accessToken, pet.id);
-    const updated = entries.find((e) => e.id === entry.id);
-    expect(updated).toBeTruthy();
-    expect(updated!.weight).toBeCloseTo(25.5, 1);
-
-    // Confirm the UI shows the updated weight.
     await loginAs(page, testUser);
     const petList = new PetListPage(page);
     await petList.openPet(pet.name, pet.id);
@@ -230,8 +216,11 @@ test.describe('Weight tracking', () => {
     const petDetail = new PetDetailPage(page);
     await petDetail.expectLoaded(pet.name);
 
-    const weightPage = new WeightTrackingPage(page);
-    await weightPage.expectWeightEntryVisible(25.5);
+    const hub = new WeightHubPage(page);
+    await hub.openHistoryEntry(25.0);
+    await hub.fillWeight('25.5');
+    await hub.saveSheet();
+    await hub.expectWeightDisplayed(25.5);
   });
 
   // ── Deleting weight entries ───────────────────────────────────────────────
