@@ -1174,6 +1174,29 @@ export async function getPeopleContacts(
   return res.json<TestPeopleContact[]>();
 }
 
+export type PetPeopleRelationship = {
+  id: string;
+  contact_id: string;
+  relationship_kind: string;
+  is_primary: boolean;
+  active: boolean;
+};
+
+export async function getPetPeopleRelationships(
+  baseURL: string,
+  token: string,
+  petId: string,
+): Promise<PetPeopleRelationship[]> {
+  const res = await apiFetch(apiUrl(`/pets/${petId}/people-relationships`, baseURL), {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`getPetPeopleRelationships failed (${res.status}): ${body}`);
+  }
+  return res.json<PetPeopleRelationship[]>();
+}
+
 export async function getPeopleContactIdForVetName(
   baseURL: string,
   token: string,

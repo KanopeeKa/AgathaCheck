@@ -95,9 +95,9 @@ flutter_app/lib/features/organization/**
 
 **Exit criteria:**
 
-- [ ] B7 regression (report vet coordinates) and B8 regression (inactive not offered; unknown current renders) kept green in their new locations
-- [ ] Widget tests for each migrated field (selection, clear, quick add, typed name for provider)
-- [ ] No file in pet_profile, health_tracking or pet_care imports People internals; `--e2e-shards` (from `shard-files.mjs --summary`) green
+- [x] B7 regression (report vet coordinates) and B8 regression (inactive not offered; unknown current renders) kept green in their new locations
+- [x] Widget tests for each migrated field (selection, clear, quick add, typed name for provider)
+- [x] No file in pet_profile, health_tracking or pet_care imports People internals; `--e2e-shards` (from `shard-files.mjs --summary`) green
 
 ---
 
@@ -344,12 +344,12 @@ last_completed_phase: null
 halt_reason: null
 next_action: "continue phase i1-consumers on branch cursor/people-integration-i1-consumers-7f3b"
 artifact_ref:
-  branch: cursor/people-client-integration-integration-7f3b
+  branch: cursor/people-integration-i1-consumers-7f3b
   plan_path: .agents/plans/people-client-integration-7f3b.md
-  plan_commit: 7f683767089f01663def7f045f59011e99071c0a
+  plan_commit: c7a16b918c00aa91f879de6f89b9305b6952c2b4
   snapshot_path: .agents/plans/people-client-integration-7f3b.snapshot.json
-  snapshot_commit: 7f683767089f01663def7f045f59011e99071c0a
-open_prs: []
+  snapshot_commit: c7a16b918c00aa91f879de6f89b9305b6952c2b4
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1638"]
 merge_commits: {}
 debt_issue_refs: []
 ```

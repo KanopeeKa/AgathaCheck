@@ -2,7 +2,7 @@
   "schema_version": 1,
   "approved_at": "2026-10-05T12:45:00.000Z",
   "approved_until": "2026-10-07T12:45:00.000Z",
-  "content_hash": "sha256:6d7fb7da44d06d5e5317d8e27d44a120513423e0a2a1864dad3a7e6e74787b95",
+  "content_hash": "sha256:cdf316a286b72f21f79e64b07eecc7b3131e8dd00a44e322e88e6a6072087e88",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "control_issue": 1630,
@@ -57,7 +57,9 @@
       "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1638",
+      "pr_head_sha": "c7a16b91"
     },
     {
       "id": "i2-pet-people",

@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../people/domain/entities/people_contact.dart';
-import '../../../../people/presentation/providers/people_providers.dart';
+import '../../../../people/people.dart';
 import '../../data/datasources/care_context_remote_datasource.dart';
 import '../../domain/entities/planned_absence_pet_carer.dart';
 import '../providers/care_context_providers.dart';
@@ -30,8 +29,6 @@ class AwayPlanCarerEditDialog extends ConsumerStatefulWidget {
 
 class _AwayPlanCarerEditDialogState
     extends ConsumerState<AwayPlanCarerEditDialog> {
-  static const _clearContactId = '__clear__';
-
   String? _selectedContactId;
   late final TextEditingController _petNoteController;
   bool _saving = false;
@@ -52,21 +49,16 @@ class _AwayPlanCarerEditDialogState
   }
 
   bool get _canSave {
-    if (_selectedContactId == _clearContactId) return true;
-    return _selectedContactId != null && _selectedContactId!.isNotEmpty;
+    if (_selectedContactId != null && _selectedContactId!.isNotEmpty) {
+      return true;
+    }
+    return widget.currentCarer.contactId != null;
   }
 
   String? get _normalizedPetNote =>
       _petNoteController.text.trim().isEmpty ? null : _petNoteController.text;
 
   Map<String, dynamic> _payload() {
-    if (_selectedContactId == _clearContactId) {
-      return {
-        'pet_id': widget.petId,
-        'contact_id': null,
-        'pet_note': _normalizedPetNote,
-      };
-    }
     return {
       'pet_id': widget.petId,
       'contact_id': _selectedContactId,
@@ -91,7 +83,7 @@ class _AwayPlanCarerEditDialogState
     } on CareContextApiException catch (err) {
       if (!mounted) return;
       if (err.statusCode == 403) {
-        ref.invalidate(peopleContactsProvider);
+        ref.invalidate(rosterProvider);
         _showFailure(l.awayPlanningCarerEditSaveFailedForbidden);
       } else {
         _showFailure(l.awayPlanningCarerEditSaveFailed);
@@ -110,24 +102,12 @@ class _AwayPlanCarerEditDialogState
     ).showSnackBar(SnackBar(content: Text(message)));
   }
 
-  List<PeopleContact> _selectableContacts(List<PeopleContact> all) {
-    final active = all.where((c) => c.inactiveAt == null).toList();
-    final currentId = widget.currentCarer.contactId;
-    if (currentId != null &&
-        currentId.isNotEmpty &&
-        active.every((c) => c.id != currentId)) {
-      final legacy = all.where((c) => c.id == currentId);
-      if (legacy.isNotEmpty) {
-        return [legacy.first, ...active];
-      }
-    }
-    return active;
-  }
-
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    final contactsAsync = ref.watch(peopleContactsProvider);
+    final selected = _selectedContactId == null
+        ? null
+        : ref.watch(personSummaryProvider(_selectedContactId!));
 
     return AlertDialog(
       title: Text(l.awayPlanningCarerEditTitle(widget.petName)),
@@ -136,55 +116,27 @@ class _AwayPlanCarerEditDialogState
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            contactsAsync.when(
-              loading: () => Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Text(
-                  l.awayPlanningCarerEditCandidatesLoading,
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
+            PeoplePickerField(
+              purpose: 'away_plan_carer',
+              query: PeopleQuery(
+                groups: const {ContactGroup.carer},
+                includeHouseholdMembers: true,
+                allowNone: true,
+                currentId: widget.currentCarer.contactId,
               ),
-              error: (_, __) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Text(
-                  l.awayPlanningCarerEditCandidatesFailed,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.error,
-                  ),
-                ),
-              ),
-              data: (contacts) {
-                final selectable = _selectableContacts(contacts);
-                if (selectable.isEmpty) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: Text(
-                      l.awayPlanningCarerEditContactsEmpty,
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                  );
+              value: selected,
+              placeholder: l.awayPlanningCarerEditContactsEmpty,
+              quickAddGroup: ContactGroup.carer,
+              onChanged: (PeoplePickerResult? result) {
+                switch (result) {
+                  case PeoplePickerContactResult(:final contact):
+                    setState(() => _selectedContactId = contact.id);
+                  case PeoplePickerNoneResult():
+                    setState(() => _selectedContactId = null);
+                  case null:
+                  case PeoplePickerTypedNameResult():
+                    break;
                 }
-                return RadioGroup<String?>(
-                  groupValue: _selectedContactId,
-                  onChanged: (value) =>
-                      setState(() => _selectedContactId = value),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      for (final contact in selectable)
-                        RadioListTile<String?>(
-                          key: Key('away_plan_carer_contact_${contact.id}'),
-                          value: contact.id,
-                          title: Text(contact.name),
-                        ),
-                      RadioListTile<String?>(
-                        key: const Key('away_plan_carer_contact_clear'),
-                        value: _clearContactId,
-                        title: Text(l.awayPlanningCarerEditClear),
-                      ),
-                    ],
-                  ),
-                );
               },
             ),
             const SizedBox(height: 8),

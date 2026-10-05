@@ -24,7 +24,14 @@
  */
 import path from 'node:path';
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
-import { createPet, createVet, getAllPets, getPet } from '../support/api';
+import {
+  createPet,
+  createVet,
+  getAllPets,
+  getPeopleContactIdForVetName,
+  getPet,
+  getPetPeopleRelationships,
+} from '../support/api';
 import { PetFormPage } from '../pages/pet-form.page';
 import { PetDetailPage } from '../pages/pet-detail.page';
 import { PetListPage } from '../pages/pet-list.page';
@@ -246,12 +253,15 @@ test.describe('Pet profiles', () => {
     const seeded = await getPetRecord(baseURL, testUser.accessToken, pet.id);
     expect(seeded.dateOfBirth).toBe('2022-01-01');
 
-    const petList = await loginAs(page, testUser);
-    await petList.openPet('Milo', pet.id);
-
+    await loginAs(page, testUser);
     const detail = new PetDetailPage(page);
-    await detail.expectLoaded('Milo');
-    await detail.expectAgeDisplay(/\d+(\.\d+)?\s+yrs|\d+\s+months?/i);
+    const agePattern = /\d+(\.\d+)?\s+yrs|\d+\s+months?/i;
+    await expect(async () => {
+      await page.goto(flutterGotoUrl(`/pet/${pet.id}`));
+      await waitForFlutterRoutePattern(page, /\/pet\/[^/?]+/, 30_000);
+      await detail.expectLoaded('Milo');
+      await detail.expectAgeDisplay(agePattern);
+    }).toPass({ timeout: 90_000 });
   });
 
   test('passed away pets appear in the collapsed Rainbow Bridge section', async ({
@@ -429,6 +439,11 @@ test.describe('Pet profiles', () => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const pet = await createPet(baseURL, testUser.accessToken, 'Bella', 'Dog');
     await createVet(baseURL, testUser.accessToken, 'Dr. Jones');
+    const vetContactId = await getPeopleContactIdForVetName(
+      baseURL,
+      testUser.accessToken,
+      'Dr. Jones',
+    );
 
     const petList = await loginAs(page, testUser);
     await petList.openPet('Bella', pet.id);
@@ -439,11 +454,19 @@ test.describe('Pet profiles', () => {
 
     const editForm = new PetFormPage(page);
     await editForm.expectLoaded();
-    await editForm.selectVeterinarian('Dr. Jones');
-    await editForm.save();
+    await editForm.selectPrimaryVetContact(vetContactId);
+    await editForm.saveEditWithPeopleSlot(pet.id);
 
     await detail.expectLoaded('Bella');
-    const updated = await getPetRecord(baseURL, testUser.accessToken, pet.id);
-    expect(updated.vetId).toBeTruthy();
+    await detail.expectLinkedVet('Dr. Jones');
+    const relationships = await getPetPeopleRelationships(
+      baseURL,
+      testUser.accessToken,
+      pet.id,
+    );
+    const primaryVet = relationships.find(
+      (r) => r.relationship_kind === 'primary_vet' && r.active,
+    );
+    expect(primaryVet?.contact_id).toBe(vetContactId);
   });
 });

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../core/utils/calendar_date.dart';
 import '../../../../../l10n/app_localizations.dart';
+import '../../../../people/people.dart';
 import '../../../../pet_profile/data/services/pdf_saver.dart' as pdf_saver;
 import '../../data/services/away_plan_handover_service.dart';
 import '../../domain/entities/away_plan_readiness.dart';
@@ -51,10 +52,10 @@ class AwayPlanHandoverController {
         startsOn: absence.startsOn,
         endsOn: absence.endsOn,
       );
-      final relationships = await repository.getPetPeopleRelationships(petId);
-      emergencyLines.addAll(
-        AwayPlanCopy.handoverContactLines(l, relationships),
-      );
+      final petPeople = await ref.read(petPeopleProvider(petId).future);
+      if (petPeople != null) {
+        emergencyLines.addAll(AwayPlanCopy.handoverContactLines(l, petPeople));
+      }
       final carer = absence.petCarers.firstWhere(
         (row) => row.petId == petId,
         orElse: () => PlannedAbsencePetCarer(petId: petId),

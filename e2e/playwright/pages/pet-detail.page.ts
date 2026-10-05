@@ -26,10 +26,17 @@ export class PetDetailPage {
   }
 
   async expectSpecies(species: string): Promise<void> {
-    await this.page
-      .getByRole('button', { name: new RegExp(species, 'i') })
+    await refreshFlutterAccessibility(this.page);
+    const pattern = new RegExp(escapeRegExp(species), 'i');
+    const speciesChip = this.page.locator(
+      '[flt-semantics-identifier="pet_detail_species_chip"]',
+    );
+    await speciesChip
+      .or(this.page.getByRole('group', { name: pattern }))
+      .or(this.page.getByRole('button', { name: pattern }))
+      .or(this.page.getByText(pattern))
       .first()
-      .waitFor();
+      .waitFor({ timeout: 15_000 });
   }
 
   async expectBreed(breed: string): Promise<void> {
@@ -127,9 +134,12 @@ export class PetDetailPage {
   }
 
   async expectAgeDisplay(pattern: RegExp): Promise<void> {
-    await enableFlutterAccessibility(this.page);
-    await this.page
-      .getByRole('group', { name: pattern })
+    await refreshFlutterAccessibility(this.page);
+    const ageChip = this.page.locator(
+      '[flt-semantics-identifier="pet_detail_age_chip"]',
+    );
+    await ageChip
+      .or(this.page.getByRole('group', { name: pattern }))
       .or(this.page.getByRole('button', { name: pattern }))
       .or(this.page.getByText(pattern))
       .first()
