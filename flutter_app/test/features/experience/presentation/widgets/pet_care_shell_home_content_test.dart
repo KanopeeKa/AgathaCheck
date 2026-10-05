@@ -45,11 +45,7 @@ void main() {
         petListProvider.overrideWith(() => TestPetListNotifier(list)),
         rosterProvider.overrideWith(
           () => _TestRosterNotifier(
-            const Roster(
-              households: [],
-              contacts: [],
-              pendingInvites: [],
-            ),
+            const Roster(households: [], contacts: [], pendingInvites: []),
           ),
         ),
         householdListProvider.overrideWith((ref) async => []),
@@ -189,7 +185,9 @@ void main() {
         )
         .dy;
     final awayY = tester.getTopLeft(find.text('AWAY PLANNING')).dy;
-    final wideRow = find.byKey(const Key('pet_care_desk_secondary_sections_wide'));
+    final wideRow = find.byKey(
+      const Key('pet_care_desk_secondary_sections_wide'),
+    );
     final careY = tester
         .getTopLeft(
           find.descendant(of: wideRow, matching: find.text('CARE ACTIONS')),
