@@ -315,16 +315,18 @@ export class CareItemPage {
   }
 
   async expectBulkStackDoneSnackbar(count: number): Promise<void> {
-    const en = count === 1 ? '1 marked done' : `${count} marked done`;
+    const en =
+      count === 1
+        ? /1 marked done/i
+        : new RegExp(`${count} marked done`, 'i');
     const fr =
-      count === 1 ? '1 marqué comme fait' : `${count} marqués comme faits`;
+      count === 1
+        ? /1 marqué comme fait/i
+        : new RegExp(`${count} marqués comme faits`, 'i');
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
       await expect(
-        this.page
-          .locator('[flt-semantics-identifier="care_stack_snackbar"]')
-          .or(this.page.getByText(new RegExp(`^${en}$|^${fr}$`, 'i')))
-          .first(),
+        this.page.getByText(en).or(this.page.getByText(fr)).first(),
       ).toBeVisible();
     }).toPass({ timeout: 45_000 });
   }
