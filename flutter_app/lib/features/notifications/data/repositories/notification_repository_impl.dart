@@ -40,6 +40,10 @@ class NotificationRepositoryImpl implements NotificationRepository {
       notifyDueSoon: model.notifyDueSoon,
       notifyCompleted: model.notifyCompleted,
       mutedPetIds: model.mutedPetIds,
+      v2ExplainerDismissedAt: model.v2ExplainerDismissedAt,
+      agathaSuggestionsInApp: model.agathaSuggestionsInApp,
+      settingsMatrix: model.settingsMatrix,
+      suggestionTypes: model.suggestionTypes,
     );
   }
 
@@ -54,6 +58,10 @@ class NotificationRepositoryImpl implements NotificationRepository {
       notifyDueSoon: preferences.notifyDueSoon,
       notifyCompleted: preferences.notifyCompleted,
       mutedPetIds: preferences.mutedPetIds,
+      v2ExplainerDismissedAt: preferences.v2ExplainerDismissedAt,
+      agathaSuggestionsInApp: preferences.agathaSuggestionsInApp,
+      settingsMatrix: preferences.settingsMatrix,
+      suggestionTypes: preferences.suggestionTypes,
     );
     final result = await _dataSource.updatePreferences(_tokenGetter(), model);
     return NotificationPreferences(
@@ -63,7 +71,16 @@ class NotificationRepositoryImpl implements NotificationRepository {
       notifyDueSoon: result.notifyDueSoon,
       notifyCompleted: result.notifyCompleted,
       mutedPetIds: result.mutedPetIds,
+      v2ExplainerDismissedAt: result.v2ExplainerDismissedAt,
+      agathaSuggestionsInApp: result.agathaSuggestionsInApp,
+      settingsMatrix: result.settingsMatrix,
+      suggestionTypes: result.suggestionTypes,
     );
+  }
+
+  @override
+  Future<void> dismissV2InboxExplainer() async {
+    await _dataSource.dismissV2InboxExplainer(_tokenGetter());
   }
 
   @override
@@ -71,5 +88,34 @@ class NotificationRepositoryImpl implements NotificationRepository {
     Map<String, String> petNames = const {},
   }) async {
     await _dataSource.checkDueEntries(_tokenGetter(), petNames: petNames);
+  }
+
+  @override
+  Future<void> markSuggestionsSeen({String? petId}) async {
+    await _dataSource.markSuggestionsSeen(_tokenGetter(), petId: petId);
+  }
+
+  @override
+  Future<void> submitSuggestionFeedback(
+    String notificationId,
+    String action,
+  ) async {
+    await _dataSource.submitSuggestionFeedback(
+      _tokenGetter(),
+      notificationId,
+      action,
+    );
+  }
+
+  @override
+  Future<void> submitAccountSecurityFeedback(
+    String notificationId,
+    String action,
+  ) async {
+    await _dataSource.submitAccountSecurityFeedback(
+      _tokenGetter(),
+      notificationId,
+      action,
+    );
   }
 }

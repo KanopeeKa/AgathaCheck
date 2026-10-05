@@ -84,6 +84,19 @@ class AuthRepositoryImpl implements AuthRepository {
   );
 
   @override
+  Future<String> secureAccount(
+    String accessToken, {
+    required String currentPassword,
+    required String newPassword,
+    String? notificationId,
+  }) => _service.secureAccount(
+    accessToken,
+    currentPassword: currentPassword,
+    newPassword: newPassword,
+    notificationId: notificationId,
+  );
+
+  @override
   Future<String> forgotPassword({required String email}) =>
       _service.forgotPassword(email: email);
 

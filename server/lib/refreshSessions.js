@@ -52,7 +52,7 @@ export async function issueTokenPair(pool, userId, email) {
     familyId,
   });
   const accessToken = signAccessToken(userId, email);
-  return { accessToken, refreshToken };
+  return { accessToken, refreshToken, familyId, sessionId };
 }
 
 /**
@@ -67,6 +67,41 @@ export async function revokeAllUserRefreshSessions(pool, userId) {
         AND revoked_at IS NULL`,
     [userId],
   );
+}
+
+/**
+ * Revoke every refresh session for the user except the given session family.
+ * @param {import('pg').Pool} pool
+ * @param {string} userId
+ * @param {string} keepFamilyId
+ */
+export async function revokeOtherUserRefreshSessions(pool, userId, keepFamilyId) {
+  await pool.query(
+    `UPDATE refresh_sessions
+        SET revoked_at = NOW()
+      WHERE user_id = $1
+        AND family_id <> $2
+        AND revoked_at IS NULL`,
+    [userId, keepFamilyId],
+  );
+}
+
+/**
+ * @param {import('pg').Pool} pool
+ * @param {string} refreshToken
+ */
+export async function lookupRefreshSessionFromToken(pool, refreshToken) {
+  const payload = verifyRefreshToken(refreshToken);
+  const result = await pool.query(
+    `SELECT id, user_id, family_id, revoked_at, expires_at
+       FROM refresh_sessions
+      WHERE id = $1`,
+    [payload.sid],
+  );
+  if (result.rows.length === 0) return null;
+  const row = result.rows[0];
+  if (row.user_id !== payload.id) return null;
+  return { payload, session: row };
 }
 
 /**
@@ -143,5 +178,10 @@ export async function rotateRefreshToken(pool, refreshToken) {
   );
 
   const accessToken = signAccessToken(payload.id, payload.email);
-  return { accessToken, refreshToken: newRefreshToken };
+  return {
+    accessToken,
+    refreshToken: newRefreshToken,
+    familyId: session.family_id,
+    sessionId: newSessionId,
+  };
 }

@@ -27,6 +27,14 @@ CREATE TABLE public._migrations (
     name character varying(255) NOT NULL,
     applied_at timestamp with time zone DEFAULT now()
 );
+CREATE TABLE public.account_device_labels (
+    id uuid NOT NULL,
+    user_id uuid NOT NULL,
+    label text NOT NULL,
+    first_seen_at timestamp with time zone DEFAULT now() NOT NULL,
+    last_seen_at timestamp with time zone DEFAULT now() NOT NULL,
+    session_family_id uuid
+);
 CREATE TABLE public.account_erasure_operations (
     id uuid NOT NULL,
     user_id uuid NOT NULL,
@@ -526,7 +534,13 @@ CREATE TABLE public.notifications (
     kind character varying(16) DEFAULT 'care'::character varying NOT NULL,
     priority character varying(8) DEFAULT 'normal'::character varying NOT NULL,
     resolved_at timestamp with time zone,
-    CONSTRAINT notifications_kind_check CHECK (((kind)::text = ANY ((ARRAY['care'::character varying, 'administrative'::character varying])::text[]))),
+    archived_at timestamp with time zone,
+    suggestion_dedupe_key character varying(255),
+    suggestion_state character varying(32) DEFAULT 'new'::character varying,
+    suggestion_confidence numeric(4,3),
+    suggestion_expires_at timestamp with time zone,
+    suggestion_payload jsonb,
+    CONSTRAINT notifications_kind_check CHECK (((kind)::text = ANY ((ARRAY['care'::character varying, 'administrative'::character varying, 'relationship'::character varying, 'suggestion'::character varying, 'account'::character varying])::text[]))),
     CONSTRAINT notifications_priority_check CHECK (((priority)::text = ANY ((ARRAY['normal'::character varying, 'urgent'::character varying])::text[])))
 );
 CREATE TABLE public.org_connection_requests (
@@ -991,6 +1005,8 @@ CREATE TABLE public.weight_entries (
 );
 ALTER TABLE ONLY public._migrations
     ADD CONSTRAINT _migrations_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.account_device_labels
+    ADD CONSTRAINT account_device_labels_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.account_erasure_operations
     ADD CONSTRAINT account_erasure_operations_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.adoption_journeys
@@ -1189,6 +1205,8 @@ CREATE UNIQUE INDEX care_recommendations_pet_family_key_idx ON public.care_recom
 CREATE INDEX care_recommendations_pet_status_idx ON public.care_recommendations USING btree (pet_id, status);
 CREATE UNIQUE INDEX care_safeguards_pet_key_idx ON public.care_safeguards USING btree (pet_id, safeguard_key);
 CREATE INDEX care_safeguards_pet_status_idx ON public.care_safeguards USING btree (pet_id, status);
+CREATE UNIQUE INDEX idx_account_device_labels_user_label ON public.account_device_labels USING btree (user_id, label);
+CREATE INDEX idx_account_device_labels_user_last_seen ON public.account_device_labels USING btree (user_id, last_seen_at DESC);
 CREATE INDEX idx_account_erasure_operations_status ON public.account_erasure_operations USING btree (status);
 CREATE UNIQUE INDEX idx_account_erasure_operations_user_id ON public.account_erasure_operations USING btree (user_id);
 CREATE UNIQUE INDEX idx_adoption_journeys_one_open_per_session ON public.adoption_journeys USING btree (fostering_session_id) WHERE ((status)::text = ANY ((ARRAY['awaiting_foster_confirmation'::character varying, 'pending_conditions'::character varying])::text[]));
@@ -1249,7 +1267,9 @@ CREATE INDEX idx_household_invites_invitee_email ON public.household_invites USI
 CREATE INDEX idx_household_invites_invitee_user_id ON public.household_invites USING btree (invitee_user_id) WHERE (invitee_user_id IS NOT NULL);
 CREATE INDEX idx_household_members_user_id ON public.household_members USING btree (user_id);
 CREATE INDEX idx_household_pets_household_id ON public.household_pets USING btree (household_id);
+CREATE UNIQUE INDEX idx_notifications_suggestion_dedupe_active ON public.notifications USING btree (user_id, suggestion_dedupe_key) WHERE (((kind)::text = 'suggestion'::text) AND (archived_at IS NULL) AND ((suggestion_state)::text = ANY ((ARRAY['new'::character varying, 'seen'::character varying])::text[])));
 CREATE INDEX idx_notifications_user_id ON public.notifications USING btree (user_id);
+CREATE INDEX idx_notifications_user_inbox_active ON public.notifications USING btree (user_id, created_at DESC) WHERE (archived_at IS NULL);
 CREATE INDEX idx_org_connection_requests_target ON public.org_connection_requests USING btree (target_org_id, status);
 CREATE INDEX idx_org_connections_high ON public.org_connections USING btree (org_high_id);
 CREATE INDEX idx_org_connections_low ON public.org_connections USING btree (org_low_id);
@@ -1303,6 +1323,8 @@ CREATE UNIQUE INDEX idx_weight_entries_health_occurrence_id ON public.weight_ent
 CREATE UNIQUE INDEX people_directories_household_unique ON public.people_directories USING btree (household_id) WHERE (household_id IS NOT NULL);
 CREATE UNIQUE INDEX people_directories_owner_user_unique ON public.people_directories USING btree (owner_user_id) WHERE (owner_user_id IS NOT NULL);
 CREATE TRIGGER trg_clear_pinned_org_on_membership_loss AFTER DELETE OR UPDATE OF role ON public.organization_users FOR EACH ROW EXECUTE FUNCTION public.clear_pinned_org_on_membership_loss();
+ALTER TABLE ONLY public.account_device_labels
+    ADD CONSTRAINT account_device_labels_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.adoption_journeys
     ADD CONSTRAINT adoption_journeys_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.users(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.adoption_journeys

@@ -1,6 +1,4 @@
 import express from 'express';
-import { v4 as uuidv4 } from 'uuid';
-
 import { createApiLimiter } from '../config/rateLimit.js';
 import { publicError } from '../config/security.js';
 import { extractUserId } from '../lib/requireAuth.js';
@@ -13,8 +11,19 @@ import {
   normaliseKind,
   normalisePriority,
 } from '../lib/notificationKind.js';
+import { NOTIFICATION_INBOX_ACTIVE_WHERE } from '../lib/notificationHelper.js';
+import {
+  applySuggestionFeedback,
+  markSuggestionsSeen,
+  SUGGESTION_INBOX_ACTIVE_WHERE,
+} from './notifications/suggestionInbox.js';
+import {
+  getNotificationPreferences,
+  patchNotificationPreferences,
+} from './notifications/preferencesHandlers.js';
+import { registerAccountSecurityFeedbackRoutes } from './notifications/accountSecurityFeedback.js';
 
-function notificationToMap(row) {
+export function notificationToMap(row) {
   const petId = row.pet_id || null;
   const healthEntryId = row.health_entry_id || null;
   return {
@@ -35,6 +44,15 @@ function notificationToMap(row) {
       : null,
     is_read: row.is_read ?? row.read ?? false,
     created_at: row.created_at ? row.created_at.toISOString?.() || String(row.created_at) : null,
+    suggestion_dedupe_key: row.suggestion_dedupe_key || null,
+    suggestion_state: row.suggestion_state || null,
+    suggestion_confidence: row.suggestion_confidence != null
+      ? Number(row.suggestion_confidence)
+      : null,
+    suggestion_expires_at: row.suggestion_expires_at
+      ? row.suggestion_expires_at.toISOString?.() || String(row.suggestion_expires_at)
+      : null,
+    suggestion_payload: row.suggestion_payload ?? null,
   };
 }
 
@@ -46,8 +64,53 @@ export default function notificationsRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      const result = await pool.query('SELECT * FROM notifications WHERE user_id = $1 ORDER BY created_at DESC', [userId]);
+      const petId = (req.query.pet_id || '').trim() || null;
+      const params = [userId];
+      let petFilter = '';
+      if (petId) {
+        petFilter = ' AND pet_id = $2';
+        params.push(petId);
+      }
+      const result = await pool.query(
+        `SELECT * FROM notifications WHERE user_id = $1 AND ${NOTIFICATION_INBOX_ACTIVE_WHERE}${petFilter} ORDER BY created_at DESC`,
+        params,
+      );
       res.json(result.rows.map(notificationToMap));
+    } catch (err) {
+      res.status(500).json({ error: publicError(err) });
+    }
+  });
+
+  router.get('/suggestions', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    try {
+      const petId = (req.query.pet_id || '').trim() || null;
+      const params = [userId];
+      let petFilter = '';
+      if (petId) {
+        petFilter = ' AND pet_id = $2';
+        params.push(petId);
+      }
+      const result = await pool.query(
+        `SELECT * FROM notifications
+         WHERE user_id = $1 AND ${SUGGESTION_INBOX_ACTIVE_WHERE}${petFilter}
+         ORDER BY created_at DESC`,
+        params,
+      );
+      res.json(result.rows.map(notificationToMap));
+    } catch (err) {
+      res.status(500).json({ error: publicError(err) });
+    }
+  });
+
+  router.post('/suggestions/seen', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    try {
+      const petId = (req.body?.pet_id || req.query?.pet_id || '').trim() || null;
+      await markSuggestionsSeen(pool, userId, { petId });
+      res.json({ success: true });
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }
@@ -58,7 +121,7 @@ export default function notificationsRoutes(pool) {
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
       const result = await pool.query(
-        'SELECT COUNT(*) as count FROM notifications WHERE user_id = $1 AND (is_read = false OR (is_read IS NULL AND read = false))',
+        `SELECT COUNT(*) as count FROM notifications WHERE user_id = $1 AND ${NOTIFICATION_INBOX_ACTIVE_WHERE} AND (is_read = false OR (is_read IS NULL AND read = false))`,
         [userId]
       );
       res.json({ unread_count: parseInt(result.rows[0].count, 10) });
@@ -117,45 +180,48 @@ export default function notificationsRoutes(pool) {
     }
   });
 
-  router.get('/preferences', async (req, res) => {
+  const handlePreferencesGet = async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      const result = await pool.query('SELECT * FROM notification_preferences WHERE user_id = $1', [userId]);
-      const prefs = {};
-      for (const row of result.rows) {
-        prefs[row.preference] = row.value;
-      }
+      const prefs = await getNotificationPreferences(pool, userId);
       res.json(prefs);
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }
-  });
+  };
 
-  router.put('/preferences', async (req, res) => {
+  const handlePreferencesPatch = async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      const data = req.body;
-      for (const [preference, value] of Object.entries(data)) {
-        const existing = await pool.query(
-          'SELECT id FROM notification_preferences WHERE user_id = $1 AND preference = $2',
-          [userId, preference]
-        );
-        if (existing.rows.length > 0) {
-          await pool.query(
-            'UPDATE notification_preferences SET value = $1 WHERE user_id = $2 AND preference = $3',
-            [String(value), userId, preference]
-          );
-        } else {
-          const id = uuidv4();
-          await pool.query(
-            'INSERT INTO notification_preferences (id, user_id, preference, value) VALUES ($1, $2, $3, $4)',
-            [id, userId, preference, String(value)]
-          );
-        }
+      const prefs = await patchNotificationPreferences(pool, userId, req.body);
+      res.json(prefs);
+    } catch (err) {
+      res.status(500).json({ error: publicError(err) });
+    }
+  };
+
+  router.get('/preferences', handlePreferencesGet);
+  router.put('/preferences', handlePreferencesPatch);
+  router.patch('/preferences', handlePreferencesPatch);
+
+  registerAccountSecurityFeedbackRoutes(router, pool);
+
+  router.post('/:id/suggestion-feedback', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    try {
+      const outcome = await applySuggestionFeedback(
+        pool,
+        userId,
+        req.params.id,
+        req.body?.action,
+      );
+      if (outcome.error) {
+        return res.status(outcome.status).json({ error: outcome.error });
       }
-      res.json(data);
+      res.json(notificationToMap(outcome.notification));
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }

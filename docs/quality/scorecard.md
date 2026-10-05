@@ -21,16 +21,16 @@ Living metrics for Agatha Track quality. Update when CI or test counts change ma
 
 | Metric | Value | Enforced by |
 |--------|------:|-------------|
-| Flutter unit/widget (active CI) | 337 | 6 shards (`ci_shards.json`) |
+| Flutter unit/widget (active CI) | 340 | 6 shards (`ci_shards.json`) |
 | Flutter frozen / excluded tests | 62 / 1 | frozen-domains manifest |
 | Flutter unowned tests | 0 | `flutter-shards.mjs check` |
 | Flutter integration flows | 1 | `flutter-integration` job |
-| Jest (active / frozen) | 235 / 46 | `jest.config.active.cjs` |
+| Jest (active / frozen) | 242 / 46 | `jest.config.active.cjs` |
 | Playwright (active / frozen) | 33 / 21 | `shard-files.mjs` + frozen list |
-| BDD active scenarios | 227 (18 frozen excluded) | `check_bdd_coverage.js` |
-| BDD mapped (active) | 84.1% (191/227) | gate **154/227 (68%)** |
+| BDD active scenarios | 228 (21 frozen excluded) | `check_bdd_coverage.js` |
+| BDD mapped (active) | 83.8% (191/228) | gate **155/228 (68%)** |
 | BDD title drift (active) | 0 | `generate-scorecard-metrics.mjs --check` |
-| BDD uncovered (active) | 36 | informational |
+| BDD uncovered (active) | 37 | informational |
 | Pre-UAT shard orphans | 0 | `validate-shard-manifest.mjs` |
 | @smoke-ci / @smoke-uat / @smoke-a11y | 7 / 14 / 10 | `check-smoke-tags.mjs` |
 | Flutter domain coverage gate | **70%** | `check_domain_coverage.js` |

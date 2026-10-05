@@ -5,7 +5,11 @@ import {
   normalisePriority,
   NOTIFICATION_KIND_ADMINISTRATIVE,
   NOTIFICATION_PRIORITY_NORMAL,
+  assertAllowedNotificationType,
 } from './notificationKind.js';
+
+/** SQL fragment: active (non-archived) inbox rows for list/count queries. */
+export const NOTIFICATION_INBOX_ACTIVE_WHERE = 'archived_at IS NULL';
 
 /**
  * Insert an in-app notification for a user.
@@ -23,6 +27,7 @@ export async function createNotification(pool, {
   priority = NOTIFICATION_PRIORITY_NORMAL,
   resolvedAt = null,
 }) {
+  assertAllowedNotificationType(type);
   const resolvedKind = normaliseKind(kind ?? defaultKindForType(type));
   const resolvedPriority = normalisePriority(priority);
   await pool.query(

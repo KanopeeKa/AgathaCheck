@@ -51,11 +51,19 @@ function buildMockPool(overrides = {}) {
     if (sql.includes('UPDATE notifications SET is_read')) {
       return { rows: [] };
     }
+    if (sql.includes('SELECT preference, value FROM notification_preferences')) {
+      return {
+        rows: [
+          { preference: 'email_reminders_enabled', value: 'true' },
+          { preference: 'notify_overdue', value: 'true' },
+        ],
+      };
+    }
     if (sql.includes('SELECT * FROM notification_preferences')) {
       return {
         rows: [
-          { preference: 'email', value: 'true' },
-          { preference: 'push', value: 'false' },
+          { preference: 'email_reminders_enabled', value: 'true' },
+          { preference: 'notify_overdue', value: 'true' },
         ],
       };
     }
@@ -124,12 +132,21 @@ describe('Notifications API', () => {
 
   describe('GET /api/notifications', () => {
     it('returns mapped notifications array', async () => {
-      const res = await request(app)
+      const queries = [];
+      const pool = buildMockPool({
+        query: async (sql, params) => {
+          queries.push(String(sql));
+          return buildMockPool().query(sql, params);
+        },
+      });
+      const a = createApp(pool);
+      const res = await request(a)
         .get('/api/notifications')
         .set('Authorization', `Bearer ${token}`);
       expect(res.statusCode).toBe(200);
       expect(Array.isArray(res.body)).toBe(true);
       expect(res.body.length).toBe(2);
+      expect(queries.some((q) => q.includes('archived_at IS NULL'))).toBe(true);
     });
 
     it('maps all notification fields correctly', async () => {
@@ -259,29 +276,38 @@ describe('Notifications API', () => {
         .get('/api/notifications/preferences')
         .set('Authorization', `Bearer ${token}`);
       expect(res.statusCode).toBe(200);
-      expect(res.body).toEqual({ email: 'true', push: 'false' });
+      expect(res.body.email_reminders_enabled).toBe(true);
+      expect(res.body.settings_matrix).toBeDefined();
+      expect(res.body.settings_matrix.invites_requests.push).toBe(true);
     });
   });
 
   describe('PUT /preferences', () => {
     it('updates preferences and returns body', async () => {
-      const res = await request(app)
-        .put('/api/notifications/preferences')
-        .set('Authorization', `Bearer ${token}`)
-        .send({ email: 'false', sms: 'true' });
-      expect(res.statusCode).toBe(200);
-      expect(res.body).toEqual({ email: 'false', sms: 'true' });
-    });
-
-    it('inserts new preference when not existing', async () => {
-      const queries = [];
+      const stored = new Map();
       const pool = buildMockPool({
         query: async (sql, params) => {
-          queries.push({ sql, params });
+          if (sql.includes('SELECT preference, value FROM notification_preferences')) {
+            return {
+              rows: [...stored.entries()].map(([preference, value]) => ({
+                preference,
+                value,
+              })),
+            };
+          }
           if (sql.includes('SELECT id FROM notification_preferences')) {
-            return { rows: [] };
+            const pref = params[1];
+            return stored.has(pref) ? { rows: [{ id: 'pref-1' }] } : { rows: [] };
           }
           if (sql.includes('INSERT INTO notification_preferences')) {
+            stored.set(params[2], params[3]);
+            return { rows: [] };
+          }
+          if (sql.includes('UPDATE notification_preferences')) {
+            stored.set(params[2], params[0]);
+            return { rows: [] };
+          }
+          if (sql.includes('UPDATE notifications') && sql.includes('archived_at')) {
             return { rows: [] };
           }
           return { rows: [] };
@@ -291,7 +317,41 @@ describe('Notifications API', () => {
       const res = await request(a)
         .put('/api/notifications/preferences')
         .set('Authorization', `Bearer ${token}`)
-        .send({ new_pref: 'yes' });
+        .send({ notify_overdue: false, agatha_suggestions_in_app: false });
+      expect(res.statusCode).toBe(200);
+      expect(res.body.notify_overdue).toBe(false);
+      expect(res.body.agatha_suggestions_in_app).toBe(false);
+    });
+
+    it('inserts new preference when not existing', async () => {
+      const queries = [];
+      const stored = new Map();
+      const pool = buildMockPool({
+        query: async (sql, params) => {
+          queries.push({ sql, params });
+          if (sql.includes('SELECT preference, value FROM notification_preferences')) {
+            return {
+              rows: [...stored.entries()].map(([preference, value]) => ({
+                preference,
+                value,
+              })),
+            };
+          }
+          if (sql.includes('SELECT id FROM notification_preferences')) {
+            return { rows: [] };
+          }
+          if (sql.includes('INSERT INTO notification_preferences')) {
+            stored.set(params[2], params[3]);
+            return { rows: [] };
+          }
+          return { rows: [] };
+        },
+      });
+      const a = createApp(pool);
+      const res = await request(a)
+        .put('/api/notifications/preferences')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ notify_completed: false });
       expect(res.statusCode).toBe(200);
       const insertQuery = queries.find(q => q.sql.includes('INSERT INTO notification_preferences'));
       expect(insertQuery).toBeDefined();
@@ -299,13 +359,23 @@ describe('Notifications API', () => {
 
     it('updates existing preference', async () => {
       const queries = [];
+      const stored = new Map([['notify_overdue', 'true']]);
       const pool = buildMockPool({
         query: async (sql, params) => {
           queries.push({ sql, params });
+          if (sql.includes('SELECT preference, value FROM notification_preferences')) {
+            return {
+              rows: [...stored.entries()].map(([preference, value]) => ({
+                preference,
+                value,
+              })),
+            };
+          }
           if (sql.includes('SELECT id FROM notification_preferences')) {
             return { rows: [{ id: 'existing-pref' }] };
           }
           if (sql.includes('UPDATE notification_preferences')) {
+            stored.set(params[2], params[0]);
             return { rows: [] };
           }
           return { rows: [] };
@@ -315,22 +385,23 @@ describe('Notifications API', () => {
       const res = await request(a)
         .put('/api/notifications/preferences')
         .set('Authorization', `Bearer ${token}`)
-        .send({ email: 'true' });
+        .send({ notify_overdue: false });
       expect(res.statusCode).toBe(200);
       const updateQuery = queries.find(q => q.sql.includes('UPDATE notification_preferences'));
       expect(updateQuery).toBeDefined();
+      expect(res.body.notify_overdue).toBe(false);
     });
   });
 
   describe('POST /check-due', () => {
-    it('returns checked true', async () => {
+    it('returns checked true and zero created (v2 inbox)', async () => {
       const res = await request(app)
         .post('/api/notifications/check-due')
         .set('Authorization', `Bearer ${token}`)
         .send({});
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty('checked', true);
-      expect(res.body).toHaveProperty('created');
+      expect(res.body).toHaveProperty('created', 0);
     });
   });
 

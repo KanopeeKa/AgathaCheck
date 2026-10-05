@@ -11,8 +11,11 @@ import {
   readRefreshTokenFromRequest,
   setRefreshTokenCookie,
 } from '../../lib/authCookies.js';
+import { captureDeviceLabelAfterAuth } from '../../lib/account/accountSecuritySession.js';
+import { emitAccountSessionsRevoked } from '../../lib/account/accountSecurityNotifications.js';
 import {
   issueTokenPair,
+  RefreshSessionError,
   revokeAllUserRefreshSessions,
   rotateRefreshToken,
 } from '../../lib/refreshSessions.js';
@@ -74,7 +77,13 @@ export function registerSessionRoutes(router, pool, { comparePassword, authLimit
           locale,
         };
         await linkExternalFostersByEmail(pool, user.id, email);
-        const { accessToken, refreshToken } = await issueTokenPair(pool, user.id, user.email);
+        const { accessToken, refreshToken, familyId } = await issueTokenPair(pool, user.id, user.email);
+        await captureDeviceLabelAfterAuth(pool, req, {
+          userId: user.id,
+          email: user.email,
+          sessionFamilyId: familyId,
+          isSignupSession: true,
+        });
         logAuditEventSafe(pool, {
           actorUserId: user.id,
           action: 'auth.signup',
@@ -133,7 +142,13 @@ export function registerSessionRoutes(router, pool, { comparePassword, authLimit
         }
         const user = userRowToMap(userRow);
         await linkExternalFostersByEmail(pool, user.id, user.email);
-        const { accessToken, refreshToken } = await issueTokenPair(pool, user.id, user.email);
+        const { accessToken, refreshToken, familyId } = await issueTokenPair(pool, user.id, user.email);
+        await captureDeviceLabelAfterAuth(pool, req, {
+          userId: user.id,
+          email: user.email,
+          sessionFamilyId: familyId,
+          isSignupSession: false,
+        });
         logAuditEventSafe(pool, {
           actorUserId: user.id,
           action: 'auth.login',
@@ -161,7 +176,15 @@ export function registerSessionRoutes(router, pool, { comparePassword, authLimit
         if (userResult.rows.length === 0) {
           return res.status(401).json({ error: 'Invalid or expired refresh token' });
         }
-        const { accessToken, refreshToken } = await rotateRefreshToken(pool, refresh_token);
+        const { accessToken, refreshToken, familyId } = await rotateRefreshToken(pool, refresh_token);
+        const userEmailResult = await pool.query('SELECT email FROM users WHERE id = $1', [prePayload.id]);
+        const email = userEmailResult.rows[0]?.email || prePayload.email;
+        await captureDeviceLabelAfterAuth(pool, req, {
+          userId: prePayload.id,
+          email,
+          sessionFamilyId: familyId,
+          isSignupSession: false,
+        });
         logAuditEventSafe(pool, {
           actorUserId: prePayload.id,
           action: 'auth.token_refresh',
@@ -172,6 +195,22 @@ export function registerSessionRoutes(router, pool, { comparePassword, authLimit
         setRefreshTokenCookie(res, refreshToken);
         res.status(200).json({ access_token: accessToken, refresh_token: refreshToken });
       } catch (err) {
+        if (err instanceof RefreshSessionError && err.code === 'reuse') {
+          try {
+            const prePayload = verifyRefreshToken(refresh_token);
+            const reuseUserResult = await pool.query('SELECT email FROM users WHERE id = $1', [
+              prePayload.id,
+            ]);
+            if (reuseUserResult.rows.length > 0) {
+              await emitAccountSessionsRevoked(pool, {
+                userId: prePayload.id,
+                email: reuseUserResult.rows[0].email,
+              });
+            }
+          } catch (_) {
+            // Best-effort A3 while rejecting reuse.
+          }
+        }
         return res.status(401).json({ error: 'Invalid or expired refresh token', ...errorDetails(err) });
       }
     }),

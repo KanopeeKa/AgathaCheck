@@ -8,19 +8,19 @@ Feature: Notifications
 
   # ── Notification Generation ──────────────────────────────────
 
-  @P1
+  @legacy @P1
   Scenario: Notification generated for overdue health entry
     Given a pet "Bella" has a health entry "Vaccination" that is overdue
     When the system checks for due entries
     Then a notification of type "overdue" should be created for "Vaccination"
 
-  @P1
+  @legacy @P1
   Scenario: Notification generated for entry due soon
     Given a pet "Bella" has a health entry "Flea Treatment" due tomorrow
     When the system checks for due entries
     Then a notification of type "due_soon" should be created for "Flea Treatment"
 
-  @P1
+  @legacy @P1
   Scenario: A reminder is created again after care is done on time
     Given a pet "Bella" has weekly care due today with a seven-day reminder
     When the user marks that care done on time

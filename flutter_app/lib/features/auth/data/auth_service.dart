@@ -185,6 +185,32 @@ class AuthService implements AuthRepository {
     );
   }
 
+  Future<String> secureAccount(
+    String accessToken, {
+    required String currentPassword,
+    required String newPassword,
+    String? notificationId,
+  }) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/api/auth/secure-account'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+      body: json.encode({
+        'currentPassword': currentPassword,
+        'newPassword': newPassword,
+        if (notificationId != null && notificationId.isNotEmpty)
+          'notification_id': notificationId,
+      }),
+    );
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    if (response.statusCode >= 400) {
+      throw Exception(data['error'] ?? 'Secure account failed');
+    }
+    return data['message'] as String;
+  }
+
   Future<String> changePassword(
     String accessToken, {
     required String currentPassword,

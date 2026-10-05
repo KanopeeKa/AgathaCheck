@@ -2,6 +2,9 @@ import { asyncHandler } from '../../lib/http/asyncHandler.js';
 import { v4 as uuidv4 } from 'uuid';
 
 import { createNotification, userDisplayName } from '../../lib/notificationHelper.js';
+import {
+  NOTIFICATION_TYPE_OWNERSHIP_TRANSFER_COMPLETED,
+} from '../../lib/notificationKind.js';
 import { transferPetToOrganization } from '../../lib/orgPetTransfer.js';
 import { userOwnsPet } from '../../lib/petAccess.js';
 import { rejectFrozenShelterApi } from '../../lib/frozenDomains.js';
@@ -139,7 +142,7 @@ export function registerTransferRoutes(router, pool) {
         petName: pet.name,
         title: 'Pet ownership transferred',
         message: `${ownerName} transferred ownership of ${pet.name} to you.`,
-        type: 'general',
+        type: NOTIFICATION_TYPE_OWNERSHIP_TRANSFER_COMPLETED,
       });
 
       await createNotification(pool, {
@@ -148,7 +151,7 @@ export function registerTransferRoutes(router, pool) {
         petName: pet.name,
         title: 'Pet transferred',
         message: `You transferred ${pet.name} to ${recipientName}. You can still view the pet as a shared follower.`,
-        type: 'general',
+        type: NOTIFICATION_TYPE_OWNERSHIP_TRANSFER_COMPLETED,
       });
 
       res.json({

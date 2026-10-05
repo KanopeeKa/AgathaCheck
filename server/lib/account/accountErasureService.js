@@ -6,6 +6,8 @@ import { withTransaction } from '../db/withTransaction.js';
 import { enqueueCleanupJob } from '../jobs/cleanupJobsApi.js';
 import { kickCleanupJobs } from '../jobs/cleanupJobsRunner.js';
 import { fileRefFromUrl } from '../petDataLifecycle.js';
+import { deleteAccountDeviceLabelsForUser } from './accountDeviceLabels.js';
+import { emitAccountDeletionRequestedEmail } from './accountSecurityNotifications.js';
 import { revokeAllUserRefreshSessions } from '../refreshSessions.js';
 import { redactJobError } from '../jobs/redactJobError.js';
 import { isPostHogPersonDeleteConfigured } from '../posthogServer.js';
@@ -105,6 +107,7 @@ async function collectErasureFileRefs(client, userId) {
 }
 
 async function applyExplicitErasurePii(client, userId, userEmail) {
+  await deleteAccountDeviceLabelsForUser(client, userId);
   const email = userEmail?.toLowerCase?.() ?? null;
   await client.query(
     'UPDATE archived_pets SET transferred_to_user_id = NULL WHERE transferred_to_user_id = $1',
@@ -251,6 +254,7 @@ export async function acceptAccountErasure(pool, { userId, userEmail, req = null
     });
 
     maybeFault('revoke_sessions');
+    await emitAccountDeletionRequestedEmail({ email: userEmail });
     await revokeAllUserRefreshSessions(client, userId);
 
     maybeFault('insert_operation');

@@ -40,6 +40,11 @@ class AppNotification {
     this.resolvedAt,
     required this.isRead,
     required this.createdAt,
+    this.suggestionDedupeKey,
+    this.suggestionState,
+    this.suggestionConfidence,
+    this.suggestionExpiresAt,
+    this.suggestionPayload,
   });
 
   final String id;
@@ -57,6 +62,15 @@ class AppNotification {
   final DateTime? resolvedAt;
   final bool isRead;
   final DateTime createdAt;
+  final String? suggestionDedupeKey;
+  final String? suggestionState;
+  final double? suggestionConfidence;
+  final DateTime? suggestionExpiresAt;
+  final Map<String, dynamic>? suggestionPayload;
+
+  bool get isSuggestionUnread =>
+      kind == NotificationKind.suggestion &&
+      (suggestionState == 'new' || (suggestionState == null && !isRead));
 
   AppNotification copyWith({
     String? id,
@@ -74,6 +88,11 @@ class AppNotification {
     DateTime? resolvedAt,
     bool? isRead,
     DateTime? createdAt,
+    String? suggestionDedupeKey,
+    String? suggestionState,
+    double? suggestionConfidence,
+    DateTime? suggestionExpiresAt,
+    Map<String, dynamic>? suggestionPayload,
   }) {
     return AppNotification(
       id: id ?? this.id,
@@ -91,6 +110,11 @@ class AppNotification {
       resolvedAt: resolvedAt ?? this.resolvedAt,
       isRead: isRead ?? this.isRead,
       createdAt: createdAt ?? this.createdAt,
+      suggestionDedupeKey: suggestionDedupeKey ?? this.suggestionDedupeKey,
+      suggestionState: suggestionState ?? this.suggestionState,
+      suggestionConfidence: suggestionConfidence ?? this.suggestionConfidence,
+      suggestionExpiresAt: suggestionExpiresAt ?? this.suggestionExpiresAt,
+      suggestionPayload: suggestionPayload ?? this.suggestionPayload,
     );
   }
 
