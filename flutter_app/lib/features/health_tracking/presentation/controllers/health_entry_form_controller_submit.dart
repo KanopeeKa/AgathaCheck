@@ -34,9 +34,15 @@ mixin HealthEntryFormSubmitMixin
         );
       }
     } else if (state.dueDate == null) {
-      return HealthEntrySubmitValidationFailed(
-        HealthEntrySubmitValidation.dueOrCompletedRequired,
-      );
+      final finishedPlannedOnce = state.isEdit &&
+          state.frequency == HealthFrequency.once &&
+          state.carePlanning == CarePlanningMode.planned &&
+          (state.completedOn != null || state.repeatEndDate != null);
+      if (!finishedPlannedOnce) {
+        return HealthEntrySubmitValidationFailed(
+          HealthEntrySubmitValidation.dueOrCompletedRequired,
+        );
+      }
     }
     if (state.selectedPetIds.isEmpty) {
       return HealthEntrySubmitValidationFailed(
@@ -81,7 +87,15 @@ mixin HealthEntryFormSubmitMixin
                     state.completedOn != null
                 ? null
                 : state.dueDate);
-      final effectiveCompleted = isRecord ? state.completedOn : null;
+      final effectiveCompleted = isRecord
+          ? state.completedOn
+          : (state.isEdit &&
+                    state.frequency == HealthFrequency.once &&
+                    state.carePlanning == CarePlanningMode.planned &&
+                    effectiveDue == null &&
+                    state.completedOn != null
+                ? state.completedOn
+                : null);
       final effectiveRemindDaysBefore = isRecord ? 0 : state.remindDaysBefore;
       final effectiveScheduleTimes = isRecord
           ? null
