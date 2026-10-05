@@ -47,6 +47,9 @@ void main() {
     final groups = partitionOpenOccurrences(entry.schedule!);
     expect(groups.started.map((o) => o.id), ['past', 'due-now']);
     expect(groups.upcoming.map((o) => o.id), ['later', 'future']);
-    expect(isLaterTodayUpcoming(groups.upcoming.first, entry.schedule!.asOf), isTrue);
+    expect(
+      isLaterTodayUpcoming(groups.upcoming.first, entry.schedule!.asOf),
+      isTrue,
+    );
   });
 }

@@ -43,10 +43,7 @@ bool isStack(CareItemSchedule schedule, {CareAsOf? asOf}) {
 
 /// Attention vs upcoming groups for the Care Item Needs attention module.
 class OpenOccurrenceGroups {
-  const OpenOccurrenceGroups({
-    required this.started,
-    required this.upcoming,
-  });
+  const OpenOccurrenceGroups({required this.started, required this.upcoming});
 
   final List<OpenOccurrence> started;
   final List<OpenOccurrence> upcoming;

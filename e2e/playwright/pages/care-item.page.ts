@@ -44,14 +44,21 @@ export class CareItemPage {
 
   async openRescheduleSheet(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
-    const button = this.page.getByRole('button', {
-      name: /^Change date$|^Changer la date$/i,
-    });
-    await expect(button.first()).toBeVisible({ timeout: 30_000 });
-    await button.first().click();
-    await expect(
-      this.page.getByText(/^Change date$|^Changer la date$/i).first(),
-    ).toBeVisible({ timeout: 15_000 });
+    const row = this.page
+      .locator('[flt-semantics-identifier^="care_item_occurrence_row_"]')
+      .first();
+    await expect(row).toBeVisible({ timeout: 30_000 });
+    await row.click();
+    await refreshFlutterAccessibility(this.page);
+    const changeDate = this.page
+      .locator('[flt-semantics-identifier="occurrence_change_date"]')
+      .or(
+        this.page.getByRole('button', {
+          name: /^Change date$|^Changer la date$/i,
+        }),
+      );
+    await expect(changeDate.first()).toBeVisible({ timeout: 30_000 });
+    await changeDate.first().click();
   }
 
   async expectReschedulePreviewNextDates(): Promise<void> {
@@ -67,12 +74,19 @@ export class CareItemPage {
     target.setUTCDate(target.getUTCDate() + dayOffsetFromToday);
     const day = target.getUTCDate();
     await refreshFlutterAccessibility(this.page);
+    const dialog = this.page.getByRole('dialog');
     const dateTrigger = this.page
       .getByRole('button', { name: /\d{2}\/\d{2}\/\d{4}/ })
       .first();
-    await expect(dateTrigger).toBeVisible({ timeout: 15_000 });
+    const sheetDatePicker = await dateTrigger.isVisible().catch(() => false);
+    if (!sheetDatePicker) {
+      await expect(dialog).toBeVisible({ timeout: 15_000 });
+      await dialog.getByText(new RegExp(`^${day},\\s`)).first().click({ force: true });
+      await dialog.getByRole('button', { name: /^OK$|^Save$|Enregistrer/i }).first().click();
+      await refreshFlutterAccessibility(this.page);
+      return;
+    }
     await dateTrigger.click();
-    const dialog = this.page.getByRole('dialog');
     await expect(dialog).toBeVisible({ timeout: 15_000 });
     await dialog.getByText(new RegExp(`^${day},\\s`)).first().click({ force: true });
     await dialog.getByRole('button', { name: /^OK$|^Save$|Enregistrer/i }).first().click();
@@ -83,6 +97,10 @@ export class CareItemPage {
     const buttons = this.page.getByRole('button', {
       name: /^Change date$|^Changer la date$/i,
     });
+    if ((await buttons.count()) <= 1) {
+      await refreshFlutterAccessibility(this.page);
+      return;
+    }
     await buttons.last().click();
     await refreshFlutterAccessibility(this.page);
   }
@@ -321,9 +339,12 @@ export class CareItemPage {
     await refreshFlutterAccessibility(this.page);
   }
 
-  async skipAll(count = 2): Promise<void> {
+  async skipAll(count?: number): Promise<void> {
     await refreshFlutterAccessibility(this.page);
-    const label = new RegExp(`Skip ${count}|Ignorer ${count}`, 'i');
+    const label =
+      count === undefined
+        ? /Skip \d+|Ignorer \d+/i
+        : new RegExp(`Skip ${count}|Ignorer ${count}`, 'i');
     await this.page
       .locator('[flt-semantics-identifier="care_item_bulk_skip"]')
       .or(this.page.getByRole('button', { name: label }))

@@ -152,7 +152,13 @@ void main() {
     );
     await _pumpSection(tester, entry);
     expect(find.byKey(const Key('care_item_bulk_mark_done')), findsNothing);
-    expect(find.byKey(const Key('care_item_occurrence_done_slot-1')), findsOneWidget);
-    expect(find.byKey(const Key('care_item_occurrence_skip_slot-1')), findsOneWidget);
+    expect(
+      find.byKey(const Key('care_item_occurrence_done_slot-1')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const Key('care_item_occurrence_skip_slot-1')),
+      findsOneWidget,
+    );
   });
 }

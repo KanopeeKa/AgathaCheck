@@ -2,7 +2,13 @@ import '../../../l10n/app_localizations.dart';
 import 'care_occurrence.dart';
 import 'occurrence_detail.dart';
 
-enum OccurrencePillTone { overdue, due, notRecorded, closedNotRecorded, neutral }
+enum OccurrencePillTone {
+  overdue,
+  due,
+  notRecorded,
+  closedNotRecorded,
+  neutral,
+}
 
 class OccurrencePillStyle {
   const OccurrencePillStyle({required this.label, required this.tone});
