@@ -49,10 +49,10 @@ next_action: "continue phase 1 on branch cursor/active-codebase-i2-1-layering-ad
 artifact_ref:
   branch: cursor/active-codebase-i2-1-layering-adr-e41f
   plan_path: .agents/plans/active-codebase-batch-i2-acyclic-graph-e41f.md
-  plan_commit: 3be58f113b48922922fb13cd8a3e3587b3f47042
+  plan_commit: a419d3a489555a8029843de11259797c77c76049
   snapshot_path: .agents/plans/active-codebase-batch-i2-acyclic-graph-e41f.snapshot.json
-  snapshot_commit: 3be58f113b48922922fb13cd8a3e3587b3f47042
-open_prs: []
+  snapshot_commit: a419d3a489555a8029843de11259797c77c76049
+open_prs: [true]
 merge_commits: {}
 debt_issue_refs: []
 ```
