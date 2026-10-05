@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
-import '../../../pet_profile/presentation/providers/pet_providers.dart';
+import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 import '../providers/vet_providers.dart';
 import '../utils/vet_accent.dart';
 import '../widgets/vet_team_identity_card.dart';

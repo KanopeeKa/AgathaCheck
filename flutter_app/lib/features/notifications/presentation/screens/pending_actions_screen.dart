@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../l10n/app_localizations.dart';
-import '../../../pet_profile/presentation/widgets/pet_list/pending_adoption_placements_section.dart';
-import '../../../pet_profile/presentation/widgets/pet_list/pending_custody_transfers_section.dart';
-import '../../../pet_profile/presentation/widgets/pet_list/pending_foster_placements_section.dart';
+import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 
 /// Cross-experience surface for administrative actions (accept/decline, etc.).
 ///

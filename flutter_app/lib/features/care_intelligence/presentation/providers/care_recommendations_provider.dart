@@ -1,13 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../auth/presentation/providers/auth_providers.dart';
+import 'package:pet_profile_app/features/auth/auth.dart';
 import '../../../../core/providers/api_base_url_provider.dart';
 import '../../data/datasources/care_intelligence_remote_datasource.dart';
 import '../../data/repositories/care_intelligence_repository_impl.dart';
 import '../../domain/entities/care_recommendation.dart';
 import '../../domain/entities/care_safeguard.dart';
 import '../../domain/repositories/care_intelligence_repository.dart';
-import '../../../pet_care/presentation/providers/pet_care_presentation_providers.dart';
+import 'package:pet_profile_app/features/pet_care/pet_care.dart';
 
 final careIntelligenceRemoteDataSourceProvider =
     Provider<CareIntelligenceRemoteDataSource>((ref) {

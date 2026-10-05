@@ -5,8 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/router/shell_return_navigation.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'package:pet_profile_app/core/router/experience_shell_scaffold.dart';
-import '../../../health_tracking/presentation/providers/health_issue_providers.dart';
-import '../../../health_tracking/presentation/widgets/health_issue_card.dart';
+import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import '../controllers/health_issues_controller.dart';
 import 'package:pet_profile_app/core/experience/app_experience.dart';
 

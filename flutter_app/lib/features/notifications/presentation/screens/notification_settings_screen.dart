@@ -7,8 +7,7 @@ import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/notification_preferences.dart';
 import '../providers/notification_providers.dart';
-import '../../../pet_profile/presentation/providers/pet_providers.dart';
-import '../../../pet_profile/presentation/utils/pet_accent_color.dart';
+import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 
 class NotificationSettingsScreen extends ConsumerStatefulWidget {
   const NotificationSettingsScreen({super.key});

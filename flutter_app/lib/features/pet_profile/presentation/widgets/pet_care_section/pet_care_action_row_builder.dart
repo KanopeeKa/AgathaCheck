@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../health_tracking/domain/entities/health_entry.dart';
-import '../../../../health_tracking/presentation/widgets/health_entry_status.dart';
-import '../../../../health_tracking/presentation/widgets/pet_event_lifecycle.dart';
-import '../../../../pet_care/presentation/widgets/care_surface/care_action_row.dart';
+import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
+import 'package:pet_profile_app/features/pet_care/pet_care.dart';
 import '../../widgets/care_family_icon.dart';
 import '../../widgets/care_family_labels.dart';
 import '../../../domain/services/care_family_inference.dart';

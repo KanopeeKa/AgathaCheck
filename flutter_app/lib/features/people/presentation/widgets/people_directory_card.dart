@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../l10n/app_localizations.dart';
-import '../../../vet/presentation/widgets/vet_team_initials_avatar.dart';
+import 'package:pet_profile_app/features/vet/vet.dart';
 import '../../domain/entities/person_roster_entry.dart';
 
 /// Directory card aligned with [VetTeamCard] styling for People hub and desk.

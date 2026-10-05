@@ -3,10 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../core/utils/calendar_date.dart';
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../pet_profile/data/services/pdf_saver.dart' as pdf_saver;
+import '../../../../../core/files/pdf_saver.dart' as pdf_saver;
 import '../../data/services/away_plan_handover_service.dart';
 import '../../domain/entities/away_plan_readiness.dart';
-import '../../domain/entities/care_period_coverage.dart';
 import '../../domain/entities/planned_absence.dart';
 import '../../domain/entities/planned_absence_pet_carer.dart';
 import '../away_plan_copy.dart';

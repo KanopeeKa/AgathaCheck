@@ -119,7 +119,7 @@ class VetTeamCard extends StatelessWidget {
                                   const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
-                                    caringLabel!,
+                                    caringLabel,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: theme.textTheme.labelSmall?.copyWith(

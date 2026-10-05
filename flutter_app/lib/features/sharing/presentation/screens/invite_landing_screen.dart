@@ -4,8 +4,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../auth/presentation/providers/auth_providers.dart';
-import '../../../pet_profile/presentation/providers/pet_providers.dart';
+import 'package:pet_profile_app/features/auth/auth.dart';
+import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 import '../../domain/entities/invite_preview.dart';
 import '../../domain/entities/pet_access.dart';
 import '../providers/sharing_providers.dart';

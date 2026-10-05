@@ -11,7 +11,7 @@ import '../utils/notification_accent.dart';
 import '../utils/notification_navigation.dart';
 import '../widgets/notification_date_groups.dart';
 import '../widgets/notification_tile.dart';
-import '../../../pet_profile/presentation/providers/pet_providers.dart';
+import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 
 class NotificationsScreen extends ConsumerStatefulWidget {
   const NotificationsScreen({super.key, this.backPath = '/', this.scope});

@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:pet_profile_app/core/utils/calendar_date.dart';
-import 'package:pet_profile_app/core/weight/weight_unit.dart';
 import 'package:pet_profile_app/core/weight/weight_unit_preference.dart';
 import 'package:pet_profile_app/features/weight_tracking/data/weight_api_exception.dart';
 import 'package:pet_profile_app/features/weight_tracking/domain/entities/weight_entry.dart';

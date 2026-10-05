@@ -1,10 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/utils/calendar_date.dart';
-import '../../../weight_tracking/domain/entities/weight_entry.dart';
-import '../../../../core/weight/weight_unit.dart';
 import '../../../../core/weight/weight_unit_preference.dart';
-import '../../../weight_tracking/presentation/providers/weight_providers.dart';
+import 'package:pet_profile_app/features/weight_tracking/weight_tracking.dart';
 
 @Deprecated('Removed in weight-unify-care W8')
 class WeightTrackingController {

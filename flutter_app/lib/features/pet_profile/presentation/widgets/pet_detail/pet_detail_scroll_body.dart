@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../../../../care_intelligence/presentation/widgets/pet_profile_care_safeguard_section.dart';
-import '../../../../care_intelligence/presentation/widgets/pet_profile_care_suggestion_section.dart';
+import 'package:pet_profile_app/features/care_intelligence/care_intelligence.dart';
 import '../../../domain/entities/pet.dart';
 import '../../../domain/services/pet_detail_actions.dart';
-import '../../../../pet_tags/presentation/widgets/pet_tag_chip_row.dart';
+import 'package:pet_profile_app/features/pet_tags/pet_tags.dart';
 import '../pet_care_section/pet_care_section.dart';
 import '../pet_form/pet_form_breakpoints.dart';
 import 'pet_detail_profile_card.dart';

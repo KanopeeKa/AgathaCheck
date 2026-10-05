@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../pet_profile/presentation/providers/pet_providers.dart';
+import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 import '../providers/care_recommendations_provider.dart';
-import '../../../pet_care/presentation/providers/pet_care_presentation_providers.dart';
-import '../../../pet_care/presentation/widgets/care_milestone_moment_card.dart';
+import 'package:pet_profile_app/features/pet_care/pet_care.dart';
 import 'care_suggestion_card.dart';
 
 /// Profile contextual card slot: suggestion or milestone moment (safeguard is separate).

@@ -5,9 +5,6 @@ import '../../../../../l10n/app_localizations.dart';
 import '../../../../health_tracking/domain/entities/health_entry.dart';
 import '../../../../health_tracking/domain/entities/health_history_entry.dart';
 import '../../../../health_tracking/presentation/providers/health_providers.dart';
-import '../../../../pet_profile/domain/entities/pet.dart';
-import '../../../../pet_profile/presentation/controllers/pet_list_controller.dart';
-import '../../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../../../pet_profile/presentation/screens/widgets/pet_event_entry_list.dart';
 
 import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';

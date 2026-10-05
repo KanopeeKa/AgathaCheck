@@ -1,6 +1,4 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/utils/calendar_date.dart';
 import '../../../care_taxonomy/domain/care_importance.dart';
@@ -9,12 +7,10 @@ import '../../../care_taxonomy/domain/care_setting.dart';
 import '../../../care_taxonomy/domain/care_taxonomy.dart';
 import '../../../pet_profile/domain/entities/care_family.dart';
 import '../../../pet_profile/domain/services/care_family_write.dart';
-import '../../data/datasources/health_remote_datasource.dart';
 import '../../domain/entities/care_item_blocks.dart';
 import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/recurrence_anchor.dart';
 import '../providers/health_providers.dart';
-import 'health_entry_form_constants.dart';
 import 'health_entry_form_controller_base.dart';
 import 'health_entry_form_controller_photos.dart';
 import 'health_entry_form_controller_submit.dart';

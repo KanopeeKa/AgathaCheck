@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../people/domain/entities/people_contact.dart';
-import '../../../people/presentation/providers/people_providers.dart';
+import 'package:pet_profile_app/features/people/people.dart';
 
 /// Legacy `vets.id` value stored on [Pet.vetId], with a People roster label.
 class PetVetOption {

@@ -1,13 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../auth/presentation/providers/auth_providers.dart';
+import 'package:pet_profile_app/features/auth/auth.dart';
 import '../../application/health_data_providers.dart';
-import '../../application/health_documents_providers.dart';
 import '../../domain/entities/command_outcome.dart';
 import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/health_history_entry.dart';
 import '../../domain/entities/health_occurrence.dart';
-import '../../domain/repositories/health_repository.dart';
 import '../../domain/usecases/create_health_entry.dart';
 import '../../domain/usecases/delete_health_entry.dart';
 import '../../domain/usecases/get_entry_history.dart';

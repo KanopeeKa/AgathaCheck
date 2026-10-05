@@ -4,7 +4,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:pet_profile_app/core/widgets/app_logo_title.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
-import 'package:pet_profile_app/features/experience/presentation/providers/experience_providers.dart';
 import 'package:pet_profile_app/features/experience/presentation/widgets/pet_care_navigation_rail.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 

@@ -4,8 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../core/theme/experience_colors.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../pet_profile/presentation/providers/pet_providers.dart';
-import '../../../pet_profile/presentation/utils/pet_accent_color.dart';
+import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 import '../../domain/entities/app_notification.dart';
 import '../../domain/entities/notification_kind.dart';
 import '../../domain/entities/notification_scope.dart';

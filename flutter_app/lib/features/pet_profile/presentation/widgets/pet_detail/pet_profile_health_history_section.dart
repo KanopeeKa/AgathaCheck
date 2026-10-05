@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../pet_care/presentation/widgets/care_surface/care_destination_row.dart';
+import 'package:pet_profile_app/features/pet_care/pet_care.dart';
 
 /// Quiet destination group for health issues and timeline (spec §9 region 7).
 class PetProfileHealthHistorySection extends StatelessWidget {

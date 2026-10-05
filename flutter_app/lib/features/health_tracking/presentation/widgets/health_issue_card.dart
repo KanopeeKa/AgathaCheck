@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/health_issue.dart';
 import '../../presentation/providers/health_issue_providers.dart';
-import '../../../pet_profile/presentation/controllers/health_issues_controller.dart';
+import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 import 'health_issue_card_body.dart';
 
 class HealthIssueCard extends ConsumerStatefulWidget {

@@ -22,6 +22,7 @@ Subscription status and paywall presentation (RevenueCat). **Non-goals:** paymen
 | `SubscriptionStatus` | domain entity | Entitlement display |
 | `subscriptionProviders` | providers | Status and offerings |
 | `PaywallScreen` | UI screen | Router destination |
+| `initializeSubscriptionSdk` | bootstrap | `main.dart` startup (RevenueCat stays in `data/`) |
 
 ## Dependencies
 

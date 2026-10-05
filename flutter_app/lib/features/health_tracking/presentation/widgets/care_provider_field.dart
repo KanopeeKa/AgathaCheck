@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../l10n/app_localizations.dart';
-import '../../../people/presentation/providers/people_providers.dart';
+import 'package:pet_profile_app/features/people/people.dart';
 
 /// Default provider on a care item: contact picker or interim typed name (D-CIE-016).
 class CareProviderField extends ConsumerStatefulWidget {
@@ -80,7 +80,7 @@ class _CareProviderFieldState extends ConsumerState<CareProviderField> {
           contactsAsync.when(
             data: (contacts) {
               return DropdownButtonFormField<String?>(
-                value: widget.contactId,
+                initialValue: widget.contactId,
                 decoration: InputDecoration(
                   labelText: l.careProviderChooseContact,
                 ),

@@ -13,3 +13,5 @@ export 'domain/usecases/delete_vet.dart';
 export 'presentation/providers/vet_providers.dart';
 export 'presentation/screens/vet_list_screen.dart';
 export 'presentation/screens/vet_form_screen.dart';
+export 'presentation/widgets/vet_team_initials_avatar.dart';
+export 'presentation/widgets/vet_team_pet_row.dart';

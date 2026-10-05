@@ -24,6 +24,8 @@ Health entries, issues, and documents for a pet. **Non-goals:** Care Item occurr
 | Create/update/delete/get use cases | domain commands | Orchestration |
 | `healthProviders` | providers | Riverpod wiring |
 | `HealthEntryFormScreen`, `HealthEntryCard` | UI | Cross-feature health UI |
+| `HealthEntryAbsenceContext` and related types | domain entities | Care Item absence sections |
+| Care schedule controllers, occurrence review flow, event widgets | UI / providers | Pet Profile and Care Item surfaces |
 
 ## Dependencies
 

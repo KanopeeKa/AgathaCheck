@@ -1,5 +1,4 @@
 import '../../domain/entities/household_pet_access.dart';
-import '../../domain/entities/pet_access.dart';
 import 'pet_access_model.dart';
 
 class HouseholdPetAccessModel extends HouseholdPetAccess {

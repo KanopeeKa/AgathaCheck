@@ -5,7 +5,7 @@ import '../../../../../core/theme/app_color_tokens.dart';
 import '../../../../../core/utils/calendar_date.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../health_tracking/domain/entities/health_occurrence.dart';
-import '../../../../health_tracking/presentation/controllers/care_schedule_controller.dart';
+import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import '../../domain/entities/absence_care_plan.dart';
 import '../../domain/entities/care_period_coverage.dart';
 import '../away_plan_planner_copy.dart';

@@ -6,8 +6,7 @@ import '../../../../../core/widgets/form/app_form_labeled_field.dart';
 import '../../../../../core/utils/calendar_date.dart';
 import '../../../../../core/utils/calendar_date_picker.dart';
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../weight_tracking/domain/entities/weight_entry.dart';
-import '../../../../weight_tracking/presentation/providers/weight_providers.dart';
+import 'package:pet_profile_app/features/weight_tracking/weight_tracking.dart';
 import '../../controllers/weight_tracking_controller.dart';
 
 @Deprecated('Removed in weight-unify-care W8')
