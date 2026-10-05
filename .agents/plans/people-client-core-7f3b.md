@@ -611,10 +611,10 @@ next_action: "continue phase c4-detail on branch cursor/people-client-c4-detail-
 artifact_ref:
   branch: cursor/people-client-c4-detail-7f3b
   plan_path: .agents/plans/people-client-core-7f3b.md
-  plan_commit: cfdb1bc51e0303650a6a711f2f2419b415c755a3
+  plan_commit: 7ffb49b23976810cefbb8a7ef651da576351976a
   snapshot_path: .agents/plans/people-client-core-7f3b.snapshot.json
-  snapshot_commit: cfdb1bc51e0303650a6a711f2f2419b415c755a3
-open_prs: []
+  snapshot_commit: 7ffb49b23976810cefbb8a7ef651da576351976a
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1592"]
 merge_commits: {}
 debt_issue_refs: []
 ```
