@@ -339,17 +339,17 @@ server/**
 
 ```yaml
 autonomy: active
-current_phase: i4-e2e-integration
-last_completed_phase: i3-retire-legacy
+current_phase: i5-ship-main
+last_completed_phase: i4-e2e-integration
 halt_reason: null
-next_action: "continue phase i4-e2e-integration on branch cursor/people-integration-i4-e2e-7f3b"
+next_action: "continue phase i5-ship-main on branch cursor/people-integration-i5-ship-7f3b"
 artifact_ref:
-  branch: cursor/people-integration-i4-e2e-7f3b
+  branch: cursor/people-integration-i5-ship-7f3b
   plan_path: .agents/plans/people-client-integration-7f3b.md
-  plan_commit: 57a44d6f65f7ad023325ae7217edc21b8346b8fd
+  plan_commit: c9cd3fb18b9ececa27e57212b4c43dd54bf37308
   snapshot_path: .agents/plans/people-client-integration-7f3b.snapshot.json
-  snapshot_commit: 57a44d6f65f7ad023325ae7217edc21b8346b8fd
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1674"]
+  snapshot_commit: c9cd3fb18b9ececa27e57212b4c43dd54bf37308
+open_prs: []
 merge_commits: {"i1-consumers":"6ba0a1cfce392dd92f2b3c492928ddbf105c73a2","i2-pet-people":"c64057378bcf851a2d2d3cb880573e4d3084b6b8"}
 debt_issue_refs: ["https://github.com/KanopeeKa/AgathaCheck/issues/1653"]
 ```
