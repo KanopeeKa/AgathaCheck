@@ -1,2 +1,2 @@
-/** @deprecated Import registerPetAccessRoutes from ../sharing/petAccessRoutes.js */
-export { registerPetAccessRoutes as registerAccessRoutes } from '../sharing/petAccessRoutes.js';
+/** @deprecated Import registerPetAccessRoutes from ../sharing/index.js */
+export { registerPetAccessRoutes as registerAccessRoutes } from '../sharing/index.js';

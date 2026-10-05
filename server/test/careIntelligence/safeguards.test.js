@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import { createApp } from '../../bin/server.js';
 import { handlePetAccessQuery } from '../helpers/petAccessMocks.js';
 import { evaluateWeightSafeguard } from '../../routes/careIntelligence/weightSafeguardEvaluator.js';
-import { weightContextFromPetRow } from '../../routes/careIntelligence/provenance.js';
+import { weightContextFromPetRow } from '../../lib/careIntelligence/provenance.js';
 import {
   evidenceFingerprint,
   magnitudeBucket,

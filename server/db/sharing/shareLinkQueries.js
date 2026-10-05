@@ -1,6 +1,8 @@
-import { CO_PARENT_ROLE, FOSTER_PET_ACCESS_ROLE, PET_ACCESS_ROLES } from '../../lib/petAccess.js';
-
-const PET_ACCESS_ROLES_SQL = PET_ACCESS_ROLES.map((role) => `'${role}'`).join(', ');
+import {
+  CO_PARENT_ROLE,
+  FOSTER_PET_ACCESS_ROLE,
+  PET_ACCESS_ROLES_SQL,
+} from './accessRoleLiterals.js';
 
 export async function loadShareLinkByCode(db, code) {
   const result = await db.query(

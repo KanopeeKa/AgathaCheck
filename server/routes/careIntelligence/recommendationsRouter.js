@@ -20,7 +20,7 @@ import {
   buildRecommendationInsertValues,
   evaluateCareRecommendationCandidates,
 } from './ruleEngine.js';
-import { syncPetRecommendationsToInbox } from '../notifications/suggestionInbox.js';
+import { syncPetRecommendationsToInbox } from '../../lib/notifications/suggestionInbox.js';
 
 async function loadPetContext(pool, userId, petId) {
   const petResult = await pool.query(

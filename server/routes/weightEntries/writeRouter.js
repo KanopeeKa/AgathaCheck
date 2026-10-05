@@ -18,7 +18,7 @@ import {
   fulfilExistingWeight,
   recordWeightWithFulfilment,
 } from '../../lib/care/observations/weightFulfilmentService.js';
-import { validateMeasurementSource } from '../careIntelligence/provenance.js';
+import { validateMeasurementSource } from '../../lib/careIntelligence/provenance.js';
 import { fulfilmentToMap, weightEntryToMap } from './wire.js';
 
 export function createWeightEntriesWriteRouter(pool) {
