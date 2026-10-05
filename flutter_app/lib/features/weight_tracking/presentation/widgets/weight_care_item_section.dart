@@ -85,32 +85,36 @@ class _Body extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Column(
-      key: const Key('weight_care_item_section'),
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(
-          summary,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: colorScheme.onSurfaceVariant,
+    return Semantics(
+      identifier: 'weight_care_item_section',
+      container: true,
+      child: Column(
+        key: const Key('weight_care_item_section'),
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            summary,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
           ),
-        ),
-        const SizedBox(height: 8),
-        WeightTrendSparkline(
-          values: sparklineValues,
-          semanticLabel: sparklineSemanticLabel,
-          emptyLabel: l.noWeightDataYet,
-          insufficientLabel: l.noWeightDataYet,
-        ),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: TextButton(
-            key: const Key('weight_care_item_see_all'),
-            onPressed: () => context.push('/pet/$petId/weight'),
-            child: Text(l.weightSeeAll),
+          const SizedBox(height: 8),
+          WeightTrendSparkline(
+            values: sparklineValues,
+            semanticLabel: sparklineSemanticLabel,
+            emptyLabel: l.noWeightDataYet,
+            insufficientLabel: l.noWeightDataYet,
           ),
-        ),
-      ],
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton(
+              key: const Key('weight_care_item_see_all'),
+              onPressed: () => context.push('/pet/$petId/weight'),
+              child: Text(l.weightSeeAll),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

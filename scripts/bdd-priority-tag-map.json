@@ -159,6 +159,9 @@
     "Choosing which weigh-in a weight counts as": "P1",
     "Undoing a weight that counted as a weigh-in": "P1",
     "Deleting a weight that counted as a weigh-in asks for confirmation": "P1",
+    "Skipping a weigh-in with a reason": "P1",
+    "Completing a weigh-in in pounds": "P1",
+    "Care item view shows the weight section": "P2",
     "Weight unit preference follows the user": "P1",
     "Weight screen suggests a weigh-in routine when there is none": "P2"
   },
