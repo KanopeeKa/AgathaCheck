@@ -104,8 +104,8 @@ export class HealthEntryFormPage {
     const dropdown = this.page.locator(
       '[flt-semantics-identifier="care_provider_dropdown"]',
     );
-    await dropdown.scrollIntoViewIfNeeded();
-    await dropdown.click();
+    await expect(dropdown).toBeVisible({ timeout: 60_000 });
+    await dropdown.click({ force: true });
   }
 
   async selectCareProviderContact(name: string): Promise<void> {
