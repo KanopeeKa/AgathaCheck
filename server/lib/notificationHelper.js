@@ -3,7 +3,6 @@ import {
   defaultKindForType,
   normaliseKind,
   normalisePriority,
-  NOTIFICATION_KIND_ADMINISTRATIVE,
   NOTIFICATION_PRIORITY_NORMAL,
   assertAllowedNotificationType,
 } from './notificationKind.js';
@@ -54,18 +53,18 @@ export async function createNotification(pool, {
 }
 
 /**
- * Mark open administrative notifications resolved when a pending object transitions.
+ * Mark open inbox rows resolved when a pending object transitions (any kind).
  */
-export async function resolveAdministrativeNotifications(pool, {
+export async function resolveNotificationsByType(pool, {
   userId,
   petId = null,
   type,
 }) {
   if (!userId || !type) return;
-  const params = [userId, type, NOTIFICATION_KIND_ADMINISTRATIVE];
+  const params = [userId, type];
   let petFilter = '';
   if (petId) {
-    petFilter = ' AND pet_id = $4';
+    petFilter = ' AND pet_id = $3';
     params.push(petId);
   }
   await pool.query(
@@ -73,10 +72,14 @@ export async function resolveAdministrativeNotifications(pool, {
      SET resolved_at = NOW()
      WHERE user_id = $1
        AND type = $2
-       AND kind = $3
        AND resolved_at IS NULL${petFilter}`,
     params,
   );
+}
+
+/** @deprecated Use resolveNotificationsByType — kept for call-site compatibility. */
+export async function resolveAdministrativeNotifications(pool, options) {
+  await resolveNotificationsByType(pool, options);
 }
 
 export function userDisplayName(row) {

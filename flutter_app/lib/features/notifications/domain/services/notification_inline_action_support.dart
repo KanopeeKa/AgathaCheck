@@ -22,7 +22,15 @@ class InlineActionLabels {
 class NotificationInlineActionSupport {
   const NotificationInlineActionSupport._();
 
+  static bool _passwordChangedInlineWindow(AppNotification notification) {
+    if (notification.wireType != 'accountPasswordChanged') return false;
+    if (notification.resolvedAt != null) return false;
+    final age = DateTime.now().difference(notification.createdAt);
+    return !age.isNegative && age <= const Duration(days: 7);
+  }
+
   static bool supportsInlineActions(AppNotification notification) {
+    if (_passwordChangedInlineWindow(notification)) return true;
     if (!NotificationInboxV2Rules.needsResponse(notification)) return false;
     return kindFor(notification) != null;
   }

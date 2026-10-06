@@ -1,5 +1,6 @@
 import '../entities/app_notification.dart';
 import '../entities/notification_kind.dart';
+import 'notification_actionability.dart';
 
 enum NotificationInboxTab { activity, forYou }
 
@@ -32,36 +33,12 @@ class NotificationInboxV2Rules {
     }
   }
 
-  static const accountPasswordChangedInlineDays = 7;
-
-  static bool _accountPasswordChangedNeedsResponse(AppNotification n) {
-    if (n.wireType != 'accountPasswordChanged') return false;
-    final age = DateTime.now().difference(n.createdAt);
-    return !age.isNegative &&
-        age <= const Duration(days: accountPasswordChangedInlineDays);
-  }
-
   static bool needsResponse(AppNotification n) {
-    if (n.kind == NotificationKind.administrative && n.resolvedAt == null) {
-      return true;
-    }
-    if (n.kind == NotificationKind.relationship && n.resolvedAt == null) {
-      return _relationshipNeedsResponseWireType(n.wireType);
-    }
-    if (n.kind == NotificationKind.account && n.resolvedAt == null) {
-      if (n.wireType == 'accountNewSignIn') return true;
-      return _accountPasswordChangedNeedsResponse(n);
-    }
-    return false;
-  }
-
-  static bool _relationshipNeedsResponseWireType(String wireType) {
-    const actionable = {
-      'shareInviteReceived',
-      'householdInviteReceived',
-      'absenceGuestGranted',
-    };
-    return actionable.contains(wireType);
+    return NotificationActionability.needsResponse(
+      kind: n.kind,
+      wireType: n.wireType,
+      resolvedAt: n.resolvedAt,
+    );
   }
 
   static bool isUrgent(AppNotification n) =>

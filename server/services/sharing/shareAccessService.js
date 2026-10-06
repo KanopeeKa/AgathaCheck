@@ -17,6 +17,7 @@ import {
 } from '../../lib/notificationKind.js';
 import { createNotification, userDisplayName } from '../../lib/notificationHelper.js';
 import { emitShareAccessChanged } from '../../lib/notifications/relationshipEmitters.js';
+import { emailShareAccessRemoved } from '../../lib/notifications/relationshipNotificationEmail.js';
 import {
   CARER_ROLE,
   CO_PARENT_ROLE,
@@ -275,6 +276,11 @@ export async function removeAccess(pool, { actorId, petId, targetUserId }) {
     message: `${actorName} stopped sharing ${petName} with you.`,
     type: NOTIFICATION_TYPE_SHARE_ACCESS_REMOVED,
   });
+
+  const target = await findUserDisplayFields(pool, targetUserId);
+  if (target?.email) {
+    await emailShareAccessRemoved(target.email, { actorName, petName });
+  }
 
   return { message: 'Access removed' };
 }

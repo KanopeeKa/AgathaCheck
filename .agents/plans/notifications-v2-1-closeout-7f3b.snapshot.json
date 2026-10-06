@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "plan_id": "notifications-v2-1-closeout-7f3b",
+  "approved_at": "2026-10-06T22:50:00Z",
+  "approved_by": "User chat 2026-10-06: execute-plan to fix UAT findings on notifications v2.1 (#1715)",
+  "approved_until": "2026-10-08T22:50:00Z",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/notifications-v2-1-closeout-integration-7f3b",
+  "control_issue": 1726,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Resolve notifications + needs-response matrix",
+      "branch": "cursor/notifications-v2-1-closeout-p1-7f3b",
+      "allowed_paths": [
+        ".agents/plans/notifications-v2-1-closeout-*",
+        "docs/domains/notifications/**",
+        "flutter_app/lib/features/notifications/**",
+        "flutter_app/test/features/notifications/**",
+        "server/lib/notificationHelper.js",
+        "server/lib/notificationKind.js",
+        "server/lib/notifications/**",
+        "server/lib/households/householdInviteService.js",
+        "server/services/sharing/**",
+        "server/test/notifications/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "in_progress"
+    },
+    {
+      "id": "2",
+      "title": "Suggestion scheduler + not-relevant FR-FB-2/3",
+      "branch": "cursor/notifications-v2-1-closeout-p2-7f3b",
+      "allowed_paths": [
+        ".agents/plans/notifications-v2-1-closeout-*",
+        "docs/domains/notifications/**",
+        "server/lib/suggestions/**",
+        "server/lib/jobs/cleanupJobsRunner.js",
+        "server/lib/notifications/suggestionInbox.js",
+        "server/lib/notificationPreferences.js",
+        "server/scripts/run-suggestion-generation.js",
+        "server/test/suggestions/**",
+        "server/test/notifications/**",
+        "server/test/jobs/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending"
+    },
+    {
+      "id": "3",
+      "title": "Compulsory relationship emails",
+      "branch": "cursor/notifications-v2-1-closeout-p3-7f3b",
+      "allowed_paths": [
+        ".agents/plans/notifications-v2-1-closeout-*",
+        "docs/domains/notifications/**",
+        "server/lib/notifications/**",
+        "server/services/sharing/**",
+        "server/test/notifications/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending"
+    },
+    {
+      "id": "4",
+      "title": "E2E + spec housekeeping",
+      "branch": "cursor/notifications-v2-1-closeout-p4-7f3b",
+      "allowed_paths": [
+        ".agents/plans/notifications-v2-1-closeout-*",
+        "docs/domains/notifications/**",
+        "e2e/**",
+        "flutter_app/test/features/notifications/**",
+        "server/test/notifications/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending"
+    },
+    {
+      "id": "5",
+      "title": "Integration to main with pre-UAT",
+      "branch": "cursor/notifications-v2-1-closeout-integration-7f3b",
+      "allowed_paths": [
+        ".agents/plans/notifications-v2-1-closeout-*",
+        "docs/domains/notifications/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending"
+    }
+  ],
+  "content_hash": "sha256:1bff00ceed9e676aa46d0a043775351a9023e444199f71d73d6d5899386f13ae"
+}

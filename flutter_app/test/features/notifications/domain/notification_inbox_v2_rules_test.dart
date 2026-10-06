@@ -76,7 +76,22 @@ void main() {
       expect(NotificationInboxV2Rules.bellNumericCount(list), 1);
     });
 
-    test('account password changed within 7 days needs response', () {
+    test('informational admin rows do not inflate bell count', () {
+      final list = [
+        _n(
+          kind: NotificationKind.administrative,
+          wireType: 'sessionStartingSoon',
+        ),
+        _n(
+          kind: NotificationKind.administrative,
+          wireType: 'adminMessageReceived',
+        ),
+      ];
+      expect(NotificationInboxV2Rules.bellNumericCount(list), 0);
+      expect(NotificationInboxV2Rules.bellShowDot(list), true);
+    });
+
+    test('account password changed does not count in bell', () {
       final list = [
         _n(
           kind: NotificationKind.account,
@@ -84,7 +99,7 @@ void main() {
           createdAt: DateTime.now().subtract(const Duration(days: 1)),
         ),
       ];
-      expect(NotificationInboxV2Rules.bellNumericCount(list), 1);
+      expect(NotificationInboxV2Rules.bellNumericCount(list), 0);
     });
   });
 }

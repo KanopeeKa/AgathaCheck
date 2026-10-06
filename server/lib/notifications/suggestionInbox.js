@@ -18,6 +18,8 @@ export const SUGGESTION_STATES_ACTIVE_INBOX = ['new', 'seen'];
 const DEFAULT_SUGGESTION_CONFIDENCE = 0.85;
 const SUGGESTION_TTL_DAYS = 14;
 const DISMISS_SUPPRESS_DAYS = 30;
+const NOT_RELEVANT_SUPPRESS_DAYS = 90;
+const NOT_RELEVANT_ACCOUNT_WIDE_PET_STRIKES = 3;
 
 /**
  * FR-SG-7 / care-family banner parity: `care_family:suggestion_key:petId`.
@@ -233,8 +235,11 @@ export async function applySuggestionFeedback(pool, userId, notificationId, acti
   }
   const row = result.rows[0];
   const recStatus = normalized === 'not_relevant' ? 'not_relevant' : 'dismissed';
+  const suppressDays = normalized === 'not_relevant'
+    ? NOT_RELEVANT_SUPPRESS_DAYS
+    : DISMISS_SUPPRESS_DAYS;
   const suppressUntil = new Date();
-  suppressUntil.setUTCDate(suppressUntil.getUTCDate() + DISMISS_SUPPRESS_DAYS);
+  suppressUntil.setUTCDate(suppressUntil.getUTCDate() + suppressDays);
 
   const updated = await pool.query(
     `UPDATE notifications
@@ -247,7 +252,46 @@ export async function applySuggestionFeedback(pool, userId, notificationId, acti
   );
 
   await syncRecommendationStatusFromNotification(pool, row, recStatus);
+  if (normalized === 'not_relevant') {
+    await maybeDisableSuggestionTypeAfterNotRelevantStrikes(pool, userId, row.type);
+  }
   return { notification: updated.rows[0] };
+}
+
+/**
+ * FR-FB-2 — suppress suggestion type for a pet until suggestion_expires_at on archived rows.
+ */
+export async function isSuggestionTypeSuppressedForPet(pool, userId, petId, wireType) {
+  const result = await pool.query(
+    `SELECT 1 FROM notifications
+     WHERE user_id = $1
+       AND pet_id = $2
+       AND type = $3
+       AND kind = $4
+       AND suggestion_state = 'not_relevant'
+       AND suggestion_expires_at IS NOT NULL
+       AND suggestion_expires_at > NOW()
+     LIMIT 1`,
+    [userId, petId, wireType, NOTIFICATION_KIND_SUGGESTION],
+  );
+  return result.rows.length > 0;
+}
+
+async function maybeDisableSuggestionTypeAfterNotRelevantStrikes(pool, userId, wireType) {
+  const result = await pool.query(
+    `SELECT COUNT(DISTINCT pet_id)::int AS pet_count
+     FROM notifications
+     WHERE user_id = $1
+       AND type = $2
+       AND kind = $3
+       AND suggestion_state = 'not_relevant'
+       AND created_at > NOW() - ($4::text || ' days')::interval`,
+    [userId, wireType, NOTIFICATION_KIND_SUGGESTION, String(NOT_RELEVANT_SUPPRESS_DAYS)],
+  );
+  const petCount = result.rows[0]?.pet_count ?? 0;
+  if (petCount < NOT_RELEVANT_ACCOUNT_WIDE_PET_STRIKES) return;
+  const { disableSuggestionTypeForUser } = await import('../notificationPreferences.js');
+  await disableSuggestionTypeForUser(pool, userId, wireType);
 }
 
 export const SUGGESTION_INBOX_ACTIVE_WHERE = `kind = '${NOTIFICATION_KIND_SUGGESTION}'

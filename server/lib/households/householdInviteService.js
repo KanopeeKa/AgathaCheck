@@ -5,7 +5,12 @@ import { findUserByEmail } from '../../db/sharing/shareInviteQueries.js';
 import { emitHouseholdMemberJoined } from '../notifications/relationshipEmitters.js';
 import { buildHouseholdInvitationEmail } from '../email/templates/householdInvitation.js';
 import { resolveEmailLocale } from '../email/locale.js';
-import { createNotification, userDisplayName } from '../notificationHelper.js';
+import {
+  createNotification,
+  resolveNotificationsByType,
+  userDisplayName,
+} from '../notificationHelper.js';
+import { NOTIFICATION_TYPE_HOUSEHOLD_INVITE_RECEIVED } from '../notificationKind.js';
 import { canEditContact } from '../people/access.js';
 import { logPeopleInviteEvent, tryLinkInviteContact } from '../people/inviteContactLink.js';
 import { isShareLinkExpired, shareExpiryFromNow } from '../shareLinkPolicy.js';
@@ -319,6 +324,11 @@ export async function acceptHouseholdInvite(pool, {
     source: 'household',
   });
 
+  await resolveNotificationsByType(pool, {
+    userId,
+    type: NOTIFICATION_TYPE_HOUSEHOLD_INVITE_RECEIVED,
+  });
+
   await emitHouseholdMemberJoined(pool, {
     householdId: invite.household_id,
     memberUserId: userId,
@@ -369,6 +379,11 @@ export async function declineHouseholdInvite(pool, {
     [invite.id, INVITE_DECLINED, userId],
   );
 
+  await resolveNotificationsByType(pool, {
+    userId,
+    type: NOTIFICATION_TYPE_HOUSEHOLD_INVITE_RECEIVED,
+  });
+
   return { invite_id: invite.id, status: INVITE_DECLINED };
 }
 
@@ -390,6 +405,13 @@ export async function revokeHouseholdInvite(pool, { householdId, inviteId, userI
      WHERE id = $1`,
     [inviteId, INVITE_REVOKED],
   );
+
+  if (invite.invitee_user_id) {
+    await resolveNotificationsByType(pool, {
+      userId: invite.invitee_user_id,
+      type: NOTIFICATION_TYPE_HOUSEHOLD_INVITE_RECEIVED,
+    });
+  }
 
   logPeopleInviteEvent('household_invite_revoked', {
     invite_id: inviteId,

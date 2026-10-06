@@ -4,7 +4,10 @@ import {
   isSuggestionTypeEnabled,
   loadNotificationPreferences,
 } from '../notificationPreferences.js';
-import { listSuggestionRecipientUserIds } from '../notifications/suggestionInbox.js';
+import {
+  isSuggestionTypeSuppressedForPet,
+  listSuggestionRecipientUserIds,
+} from '../notifications/suggestionInbox.js';
 import { evaluateS1MissingRecurringCare, buildS1DedupeKey } from './s1MissingRecurringCare.js';
 import { evaluateS2WeightTrend } from './s2WeightTrend.js';
 import { canCreateNewSuggestion } from './suggestionRateLimits.js';
@@ -102,6 +105,14 @@ export async function runSuggestionGeneration(pool, options = {}) {
 
       for (const candidate of candidates) {
         if (!isSuggestionTypeEnabled(prefs, candidate.wireType)) continue;
+        if (await isSuggestionTypeSuppressedForPet(
+          pool,
+          userId,
+          pet.id,
+          candidate.wireType,
+        )) {
+          continue;
+        }
 
         const existingActive = await pool.query(
           `SELECT id FROM notifications
