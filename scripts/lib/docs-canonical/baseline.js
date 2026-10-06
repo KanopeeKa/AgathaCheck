@@ -111,7 +111,6 @@ function generateBaselineFile(root) {
   const { listFeatureDocs, listChangeDocs, rel, isPolicyDoc } = require('./paths');
   const { docPassesGateC } = require('./gates-shape');
   const emptyBaseline = { features: new Set(), changes: new Set() };
-  const baseline = loadBaseline(root);
   const features = [];
   for (const f of listFeatureDocs(root)) {
     const r = rel(root, f);
