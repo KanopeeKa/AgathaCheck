@@ -1,5 +1,5 @@
 import { expect, type Page } from '@playwright/test';
-import { fillLabelledField } from '../support/flutter';
+import { fillLabelledField, refreshFlutterAccessibility } from '../support/flutter';
 
 /**
  * Care entry form (`/care/add`, `/pet/:petId/care/add`, or `/health/edit/:id`).
@@ -117,12 +117,18 @@ export class HealthEntryFormPage {
 
   async setCareProviderTypedName(name: string): Promise<void> {
     await this.expandAdvancedSettings();
-    await this.page
-      .locator('[flt-semantics-identifier="care_provider_use_typed_name"]')
-      .click();
-    await this.page
-      .locator('[flt-semantics-identifier="care_provider_typed_name_field"] input')
-      .fill(name);
+    const toggle = this.page.locator(
+      '[flt-semantics-identifier="care_provider_use_typed_name"]',
+    );
+    await toggle.click();
+    const field = this.page.locator(
+      '[flt-semantics-identifier="care_provider_typed_name_field"] input',
+    );
+    await expect(field).toBeVisible({ timeout: 30_000 });
+    await field.click();
+    await field.fill('');
+    await field.pressSequentially(name, { delay: 25 });
+    await refreshFlutterAccessibility(this.page);
   }
 
   async expectCareProviderDropdownShows(name: string): Promise<void> {
@@ -135,10 +141,12 @@ export class HealthEntryFormPage {
 
   async expectCareProviderTypedNameShows(name: string): Promise<void> {
     await this.expandAdvancedSettings();
-    await expect(
-      this.page.locator(
-        '[flt-semantics-identifier="care_provider_typed_name_field"] input',
-      ),
-    ).toHaveValue(name, { timeout: 15_000 });
+    const field = this.page.locator(
+      '[flt-semantics-identifier="care_provider_typed_name_field"] input',
+    );
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await expect(field).toHaveValue(name);
+    }).toPass({ timeout: 30_000 });
   }
 }
