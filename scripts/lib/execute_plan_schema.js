@@ -17,6 +17,39 @@ const { isRoadmap, validateRoadmap } = require('./execute_plan_roadmap');
 const REPO_ROOT = path.resolve(__dirname, '../..');
 const PLANS_DIR = path.join(REPO_ROOT, '.agents/plans');
 
+/** cursor/<name>-integration-<suffix> — see execute-plan-schema §Multi-phase integration */
+const INTEGRATION_BASE_BRANCH_RE =
+  /^cursor\/[a-z0-9]+(-[a-z0-9]+)*-integration-[a-z0-9]+$/;
+
+function isIntegrationBaseBranch(baseBranch) {
+  return typeof baseBranch === 'string' && INTEGRATION_BASE_BRANCH_RE.test(baseBranch);
+}
+
+/**
+ * Multi-phase plans must batch on an integration branch (not main) while autonomy is active.
+ * Grandfathers completed/revoked/halted snapshots until re-activated.
+ */
+function validateMultiPhaseIntegration(obj) {
+  if (obj.autonomy !== 'active') return;
+  if (!Array.isArray(obj.phases) || obj.phases.length < 2) return;
+  if (obj.plan_kind === 'roadmap' && obj.phases.length === 1) return;
+
+  if (obj.base_branch === 'main') {
+    throw new ExecutePlanError(
+      'multi-phase plans (2+ phases) require base_branch on an integration branch ' +
+        '(e.g. cursor/<plan_id>-integration-<suffix>), not main. ' +
+        'Phase PRs target integration; one final PR integration → main. ' +
+        'Use a single-phase plan or separate plan_id per independent outcome.'
+    );
+  }
+  if (!isIntegrationBaseBranch(obj.base_branch)) {
+    throw new ExecutePlanError(
+      'multi-phase plans require base_branch matching cursor/<name>-integration-<suffix> ' +
+        `(got ${JSON.stringify(obj.base_branch)})`
+    );
+  }
+}
+
 function isIsoDate(s) {
   return typeof s === 'string' && !Number.isNaN(Date.parse(s));
 }
@@ -136,6 +169,7 @@ function validateSnapshot(obj, { checkHash = true } = {}) {
     throw new ExecutePlanError('default_merge_mode invalid');
   }
   if (!obj.base_branch) throw new ExecutePlanError('base_branch required');
+  validateMultiPhaseIntegration(obj);
   if (!Number.isInteger(obj.control_issue) || obj.control_issue < 1) {
     throw new ExecutePlanError('control_issue must be positive integer');
   }
@@ -285,4 +319,6 @@ module.exports = {
   runDriftTests,
   saveSnapshot,
   validateSnapshot,
+  isIntegrationBaseBranch,
+  validateMultiPhaseIntegration,
 };

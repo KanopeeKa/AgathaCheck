@@ -6,7 +6,7 @@
   "approved_until": "2026-10-06T23:00:00Z",
   "autonomy": "active",
   "default_merge_mode": "auto",
-  "base_branch": "main",
+  "base_branch": "cursor/notifications-v2-foundation-integration-7f3b",
   "control_issue": 1571,
   "artifact_branch_policy": "phase-branch",
   "phases": [
@@ -76,5 +76,5 @@
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:377a2f7b9bb7e4d0b382a20aedc389dac05cfe19d21b814aa4ee9ad397347408"
+  "content_hash": "sha256:7e660bd3ae967e8339ee239849f2551b4bfd30a71c7963261a4d8e0b5febbbc0"
 }
