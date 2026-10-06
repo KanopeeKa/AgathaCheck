@@ -6,7 +6,7 @@ import {
   validateReferenceAuthority,
   validateManagementContext,
   weightContextFromPetRow,
-} from '../../routes/careIntelligence/provenance.js';
+} from '../../lib/careIntelligence/provenance.js';
 
 describe('careIntelligence provenance', () => {
   it('accepts valid measurement_source values', () => {

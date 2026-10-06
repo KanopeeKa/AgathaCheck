@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
-import 'package:pet_profile_app/features/pet_care/domain/models/care_temporal_buckets.dart';
-import 'package:pet_profile_app/features/pet_profile/presentation/widgets/pet_care_section/pet_care_buckets_filter.dart';
+import 'package:pet_profile_app/features/health_tracking/domain/models/care_temporal_buckets.dart';
+import 'package:pet_profile_app/features/experience/presentation/pet_profile/widgets/pet_care_section/pet_care_buckets_filter.dart';
 
 HealthEntry _entry(String id) {
   return HealthEntry(

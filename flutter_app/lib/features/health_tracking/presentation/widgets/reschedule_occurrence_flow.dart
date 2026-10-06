@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/widgets/app_undo_snackbar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/utils/calendar_date.dart';
-import '../../../pet_care/pet_care.dart';
 import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/health_occurrence.dart';
 import '../../domain/services/reschedule_occurrence_preview.dart';
@@ -19,61 +18,6 @@ import 'reschedule_warning_copy.dart';
 /// Shared reschedule + undo snackbar (R-C5, R-C7).
 class RescheduleOccurrenceFlow {
   const RescheduleOccurrenceFlow._();
-
-  static Future<void> fromAwayPlanRow({
-    required BuildContext context,
-    required WidgetRef ref,
-    required PlannedCareItem item,
-    required String startsOn,
-    required String endsOn,
-    required String absenceId,
-  }) async {
-    final occId = item.resolvedOccurrenceId;
-    final sched = item.openOccurrence?.scheduledDate ?? item.scheduledDate;
-    if (occId == null || sched == null) return;
-
-    final entry = await ref
-        .read(careScheduleControllerProvider)
-        .getEntry(item.healthEntryId);
-    if (entry == null || !context.mounted) return;
-
-    final occurrence = HealthOccurrence(
-      id: occId,
-      entryId: item.healthEntryId,
-      scheduledDate: parseCalendarDate(sched)!,
-      scheduledTime: item.openOccurrence?.scheduledTime,
-      status: 'pending',
-    );
-
-    final today = calendarDateOnly(DateTime.now());
-    final past = await ref
-        .read(entryPastOccurrencesProvider(entry.id).future)
-        .catchError((_) => <HealthOccurrence>[]);
-    final lastClosed = lastClosedReferenceDate(entry, past);
-    final bounds = reschedulePickerBounds(
-      entry: entry,
-      occurrence: occurrence,
-      today: today,
-      lastClosedDate: lastClosed,
-    );
-    final prefill = awayPlanReschedulePrefillDate(
-      startsOn: startsOn,
-      endsOn: endsOn,
-      today: today,
-      minDate: bounds.firstDate,
-      maxDate: bounds.lastDate,
-    );
-
-    await openSheetAndReschedule(
-      context: context,
-      ref: ref,
-      entry: entry,
-      occurrence: occurrence,
-      initialDate: prefill,
-      reasonCode: 'away_planner',
-      absenceId: absenceId,
-    );
-  }
 
   static Future<void> openSheetAndReschedule({
     required BuildContext context,

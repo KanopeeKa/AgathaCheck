@@ -9,7 +9,7 @@ import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/features/care_item/care_item.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
-import 'package:pet_profile_app/features/care_item/presentation/detail/care_item_needs_attention_section.dart';
+import 'package:pet_profile_app/features/experience/presentation/care_item/detail/care_item_needs_attention_section.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import '../../../../helpers/care_schedule_entries.dart';

@@ -1,7 +1,7 @@
 import { registerCareProgressionMomentsRoutes } from './momentsRouter.js';
 import { registerCareProgressionReadRoutes } from './readRouter.js';
 import { registerCareProgressionReEvaluateRoutes } from './reEvaluateRouter.js';
-import { registerCompleteWeightRoutes } from '../healthEntries/completeWeightRouter.js';
+import { registerCompleteWeightRoutes } from '../healthEntries/index.js';
 
 export function registerCareProgressionRoutes(router, pool) {
   registerCareProgressionMomentsRoutes(router, pool);

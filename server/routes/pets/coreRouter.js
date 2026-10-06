@@ -66,7 +66,7 @@ import { hasPetCapability, PET_CAPABILITIES } from '../../lib/petCapabilityPolic
 import {
   validateManagementContext,
   validateReferenceAuthority,
-} from '../careIntelligence/provenance.js';
+} from '../../lib/careIntelligence/provenance.js';
 import { rejectFrozenOrganizationIdOnPetWrite } from '../../lib/frozenDomains.js';
 import { orgPetViewerRolesSql } from '../../lib/orgRoles.js';
 import { OPEN_PLACEMENT_STATUSES } from '../../lib/fosterPlacements.js';

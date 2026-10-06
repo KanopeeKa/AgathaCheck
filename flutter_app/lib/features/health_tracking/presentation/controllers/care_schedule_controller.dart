@@ -49,7 +49,7 @@ class CareScheduleController {
     String? absenceId,
   }) async {
     try {
-      invalidateCareScheduleProviders(_ref, entryId, absenceId: absenceId);
+      invalidateCareScheduleProviders(_ref, entryId);
       await _ref.read(healthEntriesNotifierProvider.notifier).refresh();
       final entriesAsync = _ref.read(healthEntriesNotifierProvider);
       final refreshFailed =

@@ -7,7 +7,11 @@ import '../../data/repositories/care_intelligence_repository_impl.dart';
 import '../../domain/entities/care_recommendation.dart';
 import '../../domain/entities/care_safeguard.dart';
 import '../../domain/repositories/care_intelligence_repository.dart';
-import 'package:pet_profile_app/features/pet_care/pet_care.dart';
+import '../pet_care_presentation_policy.dart';
+
+final petCarePresentationPolicyProvider = Provider<PetCarePresentationPolicy>(
+  (ref) => const PetCarePresentationPolicy(),
+);
 
 final careIntelligenceRemoteDataSourceProvider =
     Provider<CareIntelligenceRemoteDataSource>((ref) {

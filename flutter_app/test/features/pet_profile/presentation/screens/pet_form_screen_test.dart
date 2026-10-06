@@ -9,7 +9,7 @@ import 'package:pet_profile_app/features/organization/domain/entities/organizati
 import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
-import 'package:pet_profile_app/features/pet_profile/presentation/screens/pet_form_screen.dart';
+import 'package:pet_profile_app/features/experience/presentation/pet_profile/screens/pet_form_screen.dart';
 import 'package:pet_profile_app/features/people/application/people_providers.dart';
 import 'package:pet_profile_app/features/people/domain/entities/contact_summary.dart';
 import 'package:pet_profile_app/features/people/domain/entities/roster.dart';

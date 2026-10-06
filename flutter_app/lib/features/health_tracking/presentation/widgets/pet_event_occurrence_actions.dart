@@ -23,7 +23,7 @@ class PetEventOccurrenceActions {
     String entryId, {
     String? absenceId,
   }) {
-    invalidateCareItemDetailData(ref, entryId, absenceId: absenceId);
+    invalidateCareItemDetailData(ref, entryId);
   }
 
   static Future<void> markDone(

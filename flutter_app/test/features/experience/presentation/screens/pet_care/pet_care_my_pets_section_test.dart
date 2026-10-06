@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/core/theme/app_theme.dart';
+import 'package:pet_profile_app/features/experience/presentation/pet_profile/utils/pet_care_dashboard_helpers.dart';
 import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 import 'package:pet_profile_app/features/experience/presentation/screens/pet_care/pet_care_my_pets_section.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/widgets/unified_pet_tile.dart';
@@ -95,7 +96,7 @@ void main() {
         species: 'Dog',
         breed: '',
         isShared: true,
-        accessRole: PetAccessRole.carer,
+        accessRole: PetProfileAccessRole.carer,
       ),
     ];
 
@@ -118,7 +119,7 @@ void main() {
         species: 'Dog',
         breed: '',
         isShared: true,
-        accessRole: PetAccessRole.coParent,
+        accessRole: PetProfileAccessRole.coParent,
       ),
     ];
 
@@ -205,7 +206,7 @@ void main() {
       name: 'Shared pet',
       species: 'Cat',
       isShared: true,
-      accessRole: PetAccessRole.carer,
+      accessRole: PetProfileAccessRole.carer,
     );
     await tester.pumpWidget(
       buildSection(
@@ -230,7 +231,7 @@ void main() {
         species: 'Cat',
         breed: '',
         isShared: true,
-        accessRole: PetAccessRole.carer,
+        accessRole: PetProfileAccessRole.carer,
       ),
     ];
 

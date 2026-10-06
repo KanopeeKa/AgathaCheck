@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../features/care_item/care_item.dart';
 import '../../features/auth/auth.dart';
 import '../../features/care_taxonomy/care_taxonomy.dart';
 import '../../features/health_tracking/health_tracking.dart';

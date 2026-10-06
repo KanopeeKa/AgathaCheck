@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pet_profile_app/features/pet_profile/data/services/pet_report_profile_section.dart';
+import 'package:pet_profile_app/features/experience/data/pet_profile/services/pet_report_profile_section.dart';
 import 'package:pet_profile_app/features/weight_tracking/domain/entities/weight_entry.dart';
 
 WeightEntry _entry(String id, DateTime date, double weight) =>

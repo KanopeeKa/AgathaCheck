@@ -5,23 +5,19 @@
     "R1": "domain-to-experience",
     "R2": "cross-feature-data",
     "R3": "cross-feature-presentation",
-    "R4": "new-feature-edge"
+    "R4": "new-feature-edge",
+    "R5": "feature-cycle",
+    "R8": "layer-order"
   },
   "violations": [],
   "edges": [
-    "auth->about",
     "care_intelligence->auth",
     "care_intelligence->health_tracking",
-    "care_intelligence->pet_care",
     "care_intelligence->pet_profile",
-    "care_item->health_tracking",
-    "care_item->people",
-    "care_item->pet_care",
-    "care_item->pet_profile",
-    "care_taxonomy->health_tracking",
-    "care_taxonomy->pet_profile",
     "experience->auth",
+    "experience->care_intelligence",
     "experience->care_item",
+    "experience->care_taxonomy",
     "experience->health_tracking",
     "experience->notifications",
     "experience->people",
@@ -29,34 +25,22 @@
     "experience->pet_profile",
     "experience->pet_tags",
     "experience->sharing",
+    "experience->weight_tracking",
     "health_tracking->auth",
     "health_tracking->care_item",
     "health_tracking->care_taxonomy",
-    "health_tracking->people",
-    "health_tracking->pet_care",
     "health_tracking->pet_profile",
     "notifications->auth",
     "notifications->pet_profile",
     "people->auth",
     "people->pet_profile",
-    "people->sharing",
     "pet_care->auth",
-    "pet_care->care_intelligence",
     "pet_care->care_item",
     "pet_care->health_tracking",
     "pet_care->people",
     "pet_care->pet_profile",
     "pet_profile->auth",
-    "pet_profile->care_intelligence",
-    "pet_profile->care_item",
     "pet_profile->care_taxonomy",
-    "pet_profile->health_tracking",
-    "pet_profile->notifications",
-    "pet_profile->people",
-    "pet_profile->pet_care",
-    "pet_profile->pet_tags",
-    "pet_profile->sharing",
-    "pet_profile->weight_tracking",
     "pet_tags->auth",
     "sharing->auth",
     "sharing->pet_profile",
@@ -80,29 +64,19 @@
       "accepted_on": "2026-10-03"
     },
     {
-      "identity": "R4|pet_profile->care_item",
-      "reason": "care-next-occurrence-c1a7 C3/C4 (§18.15 EX-12): the shared agenda and Care Item view lines replace rows that already crossed the same features (their R3 entries are resolved in this change); consolidated into features/care_item in F1/F3",
-      "accepted_on": "2026-10-03"
+      "identity": "R4|experience->care_intelligence",
+      "reason": "D21 phase 2: experience pet_profile composition imports care_intelligence, care_taxonomy, weight_tracking",
+      "accepted_on": "2026-10-05"
     },
     {
-      "identity": "R4|care_item->health_tracking",
-      "reason": "care-item-module-c1a7 F1: Care Item detail consolidated under features/care_item/presentation/detail; cross-feature wiring baselined per care-next-occurrence EX-12 (F1/F3)",
-      "accepted_on": "2026-10-04"
+      "identity": "R4|experience->care_taxonomy",
+      "reason": "D21 phase 2: experience pet_profile composition imports care_intelligence, care_taxonomy, weight_tracking",
+      "accepted_on": "2026-10-05"
     },
     {
-      "identity": "R4|care_item->people",
-      "reason": "care-item-module-c1a7 F1: Care Item detail consolidated under features/care_item/presentation/detail; cross-feature wiring baselined per care-next-occurrence EX-12 (F1/F3)",
-      "accepted_on": "2026-10-04"
-    },
-    {
-      "identity": "R4|care_item->pet_care",
-      "reason": "care-item-module-c1a7 F1: Care Item detail consolidated under features/care_item/presentation/detail; cross-feature wiring baselined per care-next-occurrence EX-12 (F1/F3)",
-      "accepted_on": "2026-10-04"
-    },
-    {
-      "identity": "R4|care_item->pet_profile",
-      "reason": "care-item-module-c1a7 F1: Care Item detail consolidated under features/care_item/presentation/detail; cross-feature wiring baselined per care-next-occurrence EX-12 (F1/F3)",
-      "accepted_on": "2026-10-04"
+      "identity": "R4|experience->weight_tracking",
+      "reason": "D21 phase 2: experience pet_profile composition imports care_intelligence, care_taxonomy, weight_tracking",
+      "accepted_on": "2026-10-05"
     }
   ]
 }

@@ -1,0 +1,85 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import 'package:pet_profile_app/core/router/shell_return_navigation.dart';
+import 'package:pet_profile_app/l10n/app_localizations.dart';
+import 'package:pet_profile_app/core/router/experience_shell_scaffold.dart';
+import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
+import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
+import 'package:pet_profile_app/core/experience/app_experience.dart';
+
+/// Dedicated health issues screen with expandable issue cards.
+class PetHealthIssuesScreen extends ConsumerWidget {
+  const PetHealthIssuesScreen({super.key, required this.petId});
+
+  final String petId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
+    final experience = AppExperience.petCare;
+    final issuesAsync = ref.watch(healthIssueNotifierProvider(petId));
+    final controller = HealthIssuesController(ref);
+
+    void onAddIssue() => controller.showAddIssueDialog(context, petId);
+
+    return ExperienceShellScaffold(
+      experience: experience,
+      currentLocation: GoRouterState.of(context).uri.path,
+      screenTitle: l.healthIssues,
+      backPath: petDetailBackPath(context, petId),
+      contextualActions: [
+        IconButton(
+          key: const Key('health_issues_add_app_bar'),
+          tooltip: l.addHealthIssue,
+          icon: const Icon(Icons.add),
+          onPressed: onAddIssue,
+        ),
+      ],
+      child: issuesAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, _) => Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Text(
+              l.errorWithMessage(e.toString()),
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+        data: (issues) {
+          if (issues.isEmpty) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Text(
+                  l.noEntriesYet,
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            );
+          }
+
+          return ListView.builder(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            itemCount: issues.length,
+            itemBuilder: (context, index) {
+              final issue = issues[index];
+              return HealthIssueCard(
+                key: Key('health_issue_list_${issue.id}'),
+                petId: petId,
+                issue: issue,
+                controller: controller,
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+}

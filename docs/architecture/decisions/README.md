@@ -14,6 +14,7 @@ Short, durable decisions that outlive individual PRs. New ADRs use the next four
 | ADR | Title | Status |
 |-----|-------|--------|
 | [0001](./0001-account-erasure-acceptance.md) | Account erasure acceptance boundary | Accepted |
+| [0002](./0002-feature-layering.md) | Feature layering and dependency direction (Flutter) | Accepted |
 
 ## When to add an ADR
 

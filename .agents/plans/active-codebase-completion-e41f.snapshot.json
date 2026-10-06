@@ -11,7 +11,7 @@
   "base_branch": "main",
   "control_issue": 1446,
   "artifact_branch_policy": "phase-branch",
-  "current_child_plan_id": "active-codebase-batch-h-ports-transport-e41f",
+  "current_child_plan_id": "active-codebase-batch-i2-acyclic-graph-e41f",
   "child_plans": [
     {
       "plan_id": "active-codebase-batch-d-guardrails-e41f",
@@ -39,13 +39,13 @@
     },
     {
       "plan_id": "active-codebase-batch-h-ports-transport-e41f",
-      "status": "in_progress",
+      "status": "merged",
       "pr_url": null,
       "merge_commit": null
     },
     {
       "plan_id": "active-codebase-batch-i1-public-apis-e41f",
-      "status": "pending",
+      "status": "merged",
       "pr_url": null,
       "merge_commit": null
     },
@@ -99,5 +99,5 @@
       "merge_commit": null
     }
   ],
-  "content_hash": "sha256:c84251a8162db1e888be61d3355e16b0367f40e8668a3af5f97986405a5ccc38"
+  "content_hash": "sha256:4c253247bb9bc3aa64c5ac6fe0f9f19a31a529e890e2e94ce4242ca8613f3d12"
 }

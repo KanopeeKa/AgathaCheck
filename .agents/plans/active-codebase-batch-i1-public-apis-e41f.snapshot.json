@@ -5,7 +5,7 @@
   "approved_at": "2026-10-05T10:20:00Z",
   "approved_by": "standing grant — roadmap active-codebase-completion-e41f (#1446); roadmap chain after Batch H",
   "approved_until": "2026-10-07T10:20:00Z",
-  "autonomy": "active",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "cursor/active-codebase-i1-integration-e41f",
   "control_issue": 1620,

@@ -1,4 +1,4 @@
-import '../../../sharing/sharing.dart';
+import 'pet_access_role.dart';
 
 /// Represents a pet entity in the domain layer.
 ///
@@ -66,7 +66,7 @@ class Pet {
   final String? fosterName;
   final DateTime? fosterEndDate;
   final String? petParentName;
-  final PetAccessRole? accessRole;
+  final PetProfileAccessRole? accessRole;
   final DateTime? createdAt;
   final double? weightReferenceValue;
   final String? weightReferenceAuthority;
@@ -136,7 +136,7 @@ class Pet {
     String? fosterName,
     DateTime? fosterEndDate,
     String? petParentName,
-    PetAccessRole? accessRole,
+    PetProfileAccessRole? accessRole,
     DateTime? createdAt,
     double? weightReferenceValue,
     String? weightReferenceAuthority,

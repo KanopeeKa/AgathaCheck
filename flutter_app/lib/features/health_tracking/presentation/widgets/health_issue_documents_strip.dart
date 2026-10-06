@@ -7,7 +7,7 @@ import '../../../../core/widgets/authenticated_network_image.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../health_tracking/domain/entities/health_issue_document.dart';
 import '../../../health_tracking/presentation/providers/health_issue_providers.dart';
-import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
+import '../controllers/health_issues_controller.dart';
 
 class HealthIssueDocumentsStrip extends ConsumerWidget {
   const HealthIssueDocumentsStrip({

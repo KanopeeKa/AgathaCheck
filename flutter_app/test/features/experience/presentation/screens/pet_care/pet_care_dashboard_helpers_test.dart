@@ -1,3 +1,4 @@
+import 'package:pet_profile_app/features/experience/presentation/pet_profile/utils/pet_care_dashboard_helpers.dart';
 import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 import 'package:pet_profile_app/features/sharing/domain/entities/pet_access.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
@@ -84,7 +85,7 @@ void main() {
         species: 'Cat',
         breed: '',
         isShared: true,
-        accessRole: PetAccessRole.carer,
+        accessRole: PetProfileAccessRole.carer,
       ),
       const Pet(
         id: '3',
@@ -92,7 +93,7 @@ void main() {
         species: 'Dog',
         breed: '',
         isShared: true,
-        accessRole: PetAccessRole.coParent,
+        accessRole: PetProfileAccessRole.coParent,
       ),
       const Pet(
         id: '4',
@@ -114,7 +115,7 @@ void main() {
       species: 'Dog',
       breed: '',
       isShared: true,
-      accessRole: PetAccessRole.coParent,
+      accessRole: PetProfileAccessRole.coParent,
     );
     const carer = Pet(
       id: 'carer',
@@ -122,7 +123,7 @@ void main() {
       species: 'Cat',
       breed: '',
       isShared: true,
-      accessRole: PetAccessRole.carer,
+      accessRole: PetProfileAccessRole.carer,
     );
     const owned = Pet(id: 'owned', name: 'Mine', species: 'Dog', breed: '');
     final pets = [coParent, carer, owned];
@@ -305,7 +306,7 @@ void main() {
             name: 'Shared',
             species: 'Cat',
             isShared: true,
-            accessRole: PetAccessRole.carer,
+            accessRole: PetProfileAccessRole.carer,
           ),
         ),
         PetCareTodayPetRelationship.shared,
@@ -317,7 +318,7 @@ void main() {
             name: 'Family',
             species: 'Dog',
             isShared: true,
-            accessRole: PetAccessRole.coParent,
+            accessRole: PetProfileAccessRole.coParent,
           ),
         ),
         PetCareTodayPetRelationship.owned,

@@ -14,7 +14,7 @@ import 'package:pet_profile_app/features/health_tracking/domain/entities/health_
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_issue_providers.dart';
 import 'package:pet_profile_app/features/notifications/presentation/providers/notification_providers.dart';
 import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
-import 'package:pet_profile_app/features/pet_profile/presentation/screens/pet_health_issues_screen.dart';
+import 'package:pet_profile_app/features/experience/presentation/pet_profile/screens/pet_health_issues_screen.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import '../../../../helpers/fakes.dart';

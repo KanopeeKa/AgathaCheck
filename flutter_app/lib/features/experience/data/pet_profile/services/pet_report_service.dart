@@ -1,0 +1,352 @@
+import 'dart:convert';
+import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
+import 'dart:typed_data';
+
+import 'package:pdf/pdf.dart';
+
+import 'package:pet_profile_app/core/theme/pdf_report_tokens.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:intl/intl.dart';
+
+import 'package:pet_profile_app/l10n/app_localizations.dart';
+import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
+import 'package:pet_profile_app/features/notifications/notifications.dart';
+import 'package:pet_profile_app/features/sharing/sharing.dart';
+import 'package:pet_profile_app/features/weight_tracking/weight_tracking.dart';
+import 'package:pet_profile_app/features/people/people.dart';
+import 'pet_report_profile_section.dart';
+import 'pet_report_weight_section.dart';
+import 'pet_report_health_section.dart';
+import 'pet_report_health_issues_section.dart';
+import 'pet_report_family_events_section.dart';
+import 'pet_report_foster_history_section.dart';
+import 'pet_report_notifications_section.dart';
+import 'pet_report_sharing_section.dart';
+
+/// Controls which sections are included in the generated PDF report.
+///
+/// [petProfile] is always included by default. All other sections are
+/// opt-in. When [healthEvents] is enabled, [healthFrom] / [healthTo]
+/// control the date range, and [includeFullLog] adds the detailed
+/// administration history for each entry.
+class ReportSections {
+  final bool petProfile;
+  final bool weightTracking;
+  final bool healthEvents;
+  final bool healthIssues;
+  final bool familyEvents;
+  final bool fosterHistory;
+  final bool notifications;
+  final bool sharing;
+  final DateTime? healthFrom;
+  final DateTime? healthTo;
+  final bool includeFullLog;
+
+  const ReportSections({
+    this.petProfile = true,
+    this.weightTracking = false,
+    this.healthEvents = false,
+    this.healthIssues = false,
+    this.familyEvents = false,
+    this.fosterHistory = false,
+    this.notifications = false,
+    this.sharing = false,
+    this.healthFrom,
+    this.healthTo,
+    this.includeFullLog = false,
+  });
+}
+
+class PetReportService {
+  /// Generates a comprehensive PDF report for a single pet.
+  ///
+  /// The [sections] parameter controls which parts of the report are included.
+  /// Data for each section is passed via the corresponding parameter lists.
+  /// Returns the raw PDF bytes ready for saving or sharing.
+  Future<Uint8List> generateReport({
+    required Pet pet,
+    required ReportSections sections,
+    required AppLocalizations l,
+    PetReportVetDetails? vet,
+    List<WeightEntry> weightEntries = const [],
+    List<HealthEntry> healthEntries = const [],
+    List<HealthIssue> healthIssues = const [],
+    List<PetReportFamilyEvent> familyEvents = const [],
+    List<PetReportFosterPlacement> fosterPlacements = const [],
+    List<AppNotification> petNotifications = const [],
+    List<PetAccess> accessList = const [],
+    Map<String, List<Map<String, dynamic>>> healthHistories = const {},
+    String weightUnit = 'kg',
+    Uint8List? logoBytes,
+  }) async {
+    final pdf = pw.Document(
+      title: '${pet.name} - ${l.pdfReportTitle}',
+      author: 'AgathaTrack',
+    );
+
+    final dateFormat = DateFormat('MMM d, yyyy');
+    final now = DateTime.now();
+
+    pw.ImageProvider? logoImage;
+    if (logoBytes != null) {
+      try {
+        logoImage = pw.MemoryImage(logoBytes);
+      } catch (_) {}
+    }
+
+    pdf.addPage(
+      pw.MultiPage(
+        pageFormat: PdfPageFormat.a4,
+        margin: const pw.EdgeInsets.all(32),
+        header: (context) => context.pageNumber == 1
+            ? _buildHeader(pet, dateFormat, logoImage, l)
+            : pw.SizedBox.shrink(),
+        footer: (context) => _buildFooter(context, now, dateFormat, l),
+        build: (context) {
+          final widgets = <pw.Widget>[];
+
+          if (sections.petProfile) {
+            widgets.addAll(
+              PetProfileSectionBuilder.build(
+                pet,
+                vet,
+                weightEntries,
+                weightUnit,
+                l,
+              ),
+            );
+          }
+
+          if (sections.weightTracking) {
+            widgets.addAll(
+              PetWeightSectionBuilder.build(
+                weightEntries,
+                dateFormat,
+                weightUnit,
+                l,
+              ),
+            );
+          }
+
+          if (sections.healthEvents) {
+            widgets.addAll(
+              PetHealthSectionBuilder.build(
+                healthEntries,
+                dateFormat,
+                sections.healthFrom,
+                sections.healthTo,
+                sections.includeFullLog,
+                healthHistories,
+                l,
+              ),
+            );
+          }
+
+          if (sections.healthIssues) {
+            widgets.addAll(
+              PetHealthIssuesSectionBuilder.build(
+                healthIssues,
+                healthEntries,
+                dateFormat,
+                l,
+              ),
+            );
+          }
+
+          if (sections.familyEvents) {
+            widgets.addAll(
+              PetFamilyEventsSectionBuilder.build(familyEvents, dateFormat, l),
+            );
+          }
+
+          if (sections.fosterHistory) {
+            widgets.addAll(
+              PetFosterHistorySectionBuilder.build(
+                fosterPlacements,
+                dateFormat,
+                l,
+              ),
+            );
+          }
+
+          if (sections.notifications) {
+            widgets.addAll(
+              PetNotificationsSectionBuilder.build(
+                petNotifications,
+                dateFormat,
+                l,
+              ),
+            );
+          }
+
+          if (sections.sharing) {
+            widgets.addAll(PetSharingSectionBuilder.build(accessList, l));
+          }
+
+          return widgets;
+        },
+      ),
+    );
+
+    return pdf.save();
+  }
+
+  pw.Widget _buildHeader(
+    Pet pet,
+    DateFormat dateFormat,
+    pw.ImageProvider? logoImage,
+    AppLocalizations l,
+  ) {
+    return pw.Container(
+      margin: const pw.EdgeInsets.only(bottom: 14),
+      padding: const pw.EdgeInsets.all(12),
+      decoration: pw.BoxDecoration(
+        color: PdfReportTokens.primary,
+        borderRadius: pw.BorderRadius.circular(8),
+      ),
+      child: pw.Row(
+        children: [
+          if (pet.photoPath != null && pet.photoPath!.isNotEmpty)
+            pw.Container(
+              width: 48,
+              height: 48,
+              margin: const pw.EdgeInsets.only(right: 12),
+              decoration: pw.BoxDecoration(
+                borderRadius: pw.BorderRadius.circular(24),
+                border: pw.Border.all(
+                  color: PdfReportTokens.inverse,
+                  width: 1.5,
+                ),
+              ),
+              child: pw.ClipOval(child: _buildPetImage(pet.photoPath!)),
+            ),
+          pw.Expanded(
+            child: pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                pw.Text(
+                  pet.name,
+                  style: pw.TextStyle(
+                    fontSize: 18,
+                    fontWeight: pw.FontWeight.bold,
+                    color: PdfReportTokens.inverse,
+                  ),
+                ),
+                pw.SizedBox(height: 2),
+                pw.Text(
+                  [
+                    pet.species,
+                    if (pet.breed.isNotEmpty) pet.breed,
+                    if (pet.ageDisplay != null) pet.ageDisplay!,
+                  ].join(' | '),
+                  style: pw.TextStyle(
+                    fontSize: 10,
+                    color: PdfReportTokens.primarySoft,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          pw.Row(
+            mainAxisSize: pw.MainAxisSize.min,
+            children: [
+              if (logoImage != null)
+                pw.Container(
+                  width: 20,
+                  height: 20,
+                  margin: const pw.EdgeInsets.only(right: 5),
+                  child: pw.Image(logoImage, fit: pw.BoxFit.contain),
+                ),
+              pw.Column(
+                crossAxisAlignment: pw.CrossAxisAlignment.end,
+                children: [
+                  pw.Text(
+                    l.pdfAgathaCheck,
+                    style: pw.TextStyle(
+                      fontSize: 9,
+                      fontWeight: pw.FontWeight.bold,
+                      color: PdfReportTokens.primarySoft,
+                      letterSpacing: 1.5,
+                    ),
+                  ),
+                  pw.SizedBox(height: 1),
+                  pw.Text(
+                    l.pdfReportTitle,
+                    style: pw.TextStyle(
+                      fontSize: 8,
+                      color: PdfReportTokens.primarySoft,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  pw.Widget _buildFooter(
+    pw.Context context,
+    DateTime generatedAt,
+    DateFormat dateFormat,
+    AppLocalizations l,
+  ) {
+    return pw.Container(
+      margin: const pw.EdgeInsets.only(top: 8),
+      padding: const pw.EdgeInsets.only(top: 6),
+      decoration: const pw.BoxDecoration(
+        border: pw.Border(
+          top: pw.BorderSide(color: PdfReportTokens.border, width: 0.5),
+        ),
+      ),
+      child: pw.Row(
+        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+        children: [
+          pw.Text(
+            l.pdfGeneratedBy(dateFormat.format(generatedAt)),
+            style: const pw.TextStyle(
+              fontSize: 8,
+              color: PdfReportTokens.muted,
+            ),
+          ),
+          pw.Text(
+            l.pdfPageOf(context.pageNumber, context.pagesCount),
+            style: const pw.TextStyle(
+              fontSize: 8,
+              color: PdfReportTokens.muted,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  pw.Widget _buildPetImage(String base64Data) {
+    try {
+      String data = base64Data;
+      if (data.contains(',')) {
+        data = data.split(',').last;
+      }
+      final bytes = base64Decode(data);
+      return pw.Image(
+        pw.MemoryImage(bytes),
+        fit: pw.BoxFit.cover,
+        width: 56,
+        height: 56,
+      );
+    } catch (_) {
+      return pw.Container(
+        width: 56,
+        height: 56,
+        color: PdfReportTokens.primaryLight,
+        child: pw.Center(
+          child: pw.Text(
+            '?',
+            style: pw.TextStyle(fontSize: 20, color: PdfReportTokens.primary),
+          ),
+        ),
+      );
+    }
+  }
+}

@@ -85,7 +85,7 @@ describe('petWeightSync', () => {
       );
     });
 
-    it('returns null when absent so pet home timezone defines today', () => {
+    it('returns null when absent so pet home timezone can choose today', () => {
       expect(resolveWeightEntryDateFromBody({})).toBeNull();
     });
   });

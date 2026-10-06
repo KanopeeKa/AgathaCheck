@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/care_establishment.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/care_family.dart';
-import 'package:pet_profile_app/features/pet_profile/presentation/widgets/care_establishment_helpers.dart';
+import 'package:pet_profile_app/features/pet_care/domain/services/care_establishment_helpers.dart';
 
 HealthEntry _entry({
   required String id,

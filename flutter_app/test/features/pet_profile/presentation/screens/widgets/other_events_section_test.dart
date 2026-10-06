@@ -6,7 +6,7 @@ import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/screens/health_entry_form_screen.dart';
-import 'package:pet_profile_app/features/pet_profile/presentation/screens/widgets/other_events_section.dart';
+import 'package:pet_profile_app/features/experience/presentation/pet_profile/screens/widgets/other_events_section.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 class _FakeHealthEntriesNotifier extends HealthEntriesNotifier {

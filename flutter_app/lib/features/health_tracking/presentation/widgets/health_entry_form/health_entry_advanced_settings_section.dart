@@ -34,6 +34,9 @@ class HealthEntryAdvancedSettingsSection extends StatefulWidget {
     required this.onPickGallery,
     required this.onDeletePhoto,
     required this.onRemovePendingPhoto,
+    this.providerContacts = const [],
+    this.providerContactsLoading = false,
+    this.providerContactsError = false,
     this.initiallyExpanded = false,
   });
 
@@ -53,6 +56,9 @@ class HealthEntryAdvancedSettingsSection extends StatefulWidget {
   final VoidCallback onPickGallery;
   final ValueChanged<EventPhoto> onDeletePhoto;
   final void Function(int index) onRemovePendingPhoto;
+  final List<CareProviderContactOption> providerContacts;
+  final bool providerContactsLoading;
+  final bool providerContactsError;
   final bool initiallyExpanded;
 
   @override
@@ -131,6 +137,9 @@ class _HealthEntryAdvancedSettingsSectionState
                     contactId: widget.providerContactId,
                     typedName: widget.providerTypedName,
                     onChanged: widget.controller.setProvider,
+                    contacts: widget.providerContacts,
+                    contactsLoading: widget.providerContactsLoading,
+                    contactsError: widget.providerContactsError,
                   ),
                   const SizedBox(height: 16),
                   HealthEntryPhotosSection(

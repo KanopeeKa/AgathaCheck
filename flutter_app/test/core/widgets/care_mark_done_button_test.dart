@@ -8,7 +8,7 @@ import 'package:pet_profile_app/features/health_tracking/presentation/widgets/he
 import 'package:pet_profile_app/features/pet_care/presentation/widgets/care_surface/care_action_row.dart';
 import 'package:pet_profile_app/core/widgets/care_mark_done_button.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/care_family.dart';
-import 'package:pet_profile_app/features/pet_profile/presentation/widgets/care_family_icon.dart';
+import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 Widget _host(Widget child) {

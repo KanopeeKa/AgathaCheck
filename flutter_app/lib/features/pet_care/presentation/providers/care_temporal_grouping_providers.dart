@@ -2,8 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import '../../../pet_profile/pet_profile.dart';
-import '../../domain/models/care_temporal_buckets.dart';
-import '../../domain/services/care_temporal_grouping_service.dart';
+import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 
 final careTemporalGroupingServiceProvider =
     Provider<CareTemporalGroupingService>(

@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/intl.dart';
 
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
-import 'package:pet_profile_app/features/pet_profile/presentation/screens/widgets/pet_event_entry_list.dart';
+import 'package:pet_profile_app/features/experience/presentation/pet_profile/screens/widgets/pet_event_entry_list.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 void main() {

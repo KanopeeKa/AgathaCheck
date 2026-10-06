@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/features/experience/domain/entities/app_experience.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
+import 'package:pet_profile_app/features/pet_profile/domain/entities/pet_access_role.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet_viewer_role.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/services/pet_detail_actions.dart';
 import 'package:pet_profile_app/features/sharing/domain/entities/pet_access.dart';
@@ -8,7 +9,7 @@ import 'package:pet_profile_app/features/sharing/domain/entities/pet_access.dart
 Pet _pet({
   bool isShared = false,
   bool isFoster = false,
-  PetAccessRole? accessRole,
+  PetProfileAccessRole? accessRole,
   String? organizationId,
   String? organizationName,
 }) {
@@ -49,7 +50,7 @@ void main() {
     test('co-parent access role resolves to coParent', () {
       expect(
         PetViewerRoleResolver.resolve(
-          pet: _pet(isShared: true, accessRole: PetAccessRole.coParent),
+          pet: _pet(isShared: true, accessRole: PetProfileAccessRole.coParent),
           experience: AppExperience.petCare,
         ),
         PetViewerRole.coParent,
@@ -93,7 +94,7 @@ void main() {
 
     test('co-parent gets owner actions without foster placement', () {
       final actions = PetDetailActions.visible(
-        pet: _pet(isShared: true, accessRole: PetAccessRole.coParent),
+        pet: _pet(isShared: true, accessRole: PetProfileAccessRole.coParent),
         experience: AppExperience.petCare,
         role: PetViewerRole.coParent,
       );
