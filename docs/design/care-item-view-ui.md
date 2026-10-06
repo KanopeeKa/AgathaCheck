@@ -39,7 +39,7 @@ Document hex values only in [`tokens.md`](./tokens.md) when promoted globally; C
 
 ## Module map (mobile order)
 
-1. **Pet context** — context strip on canvas (not a module): compact `UnifiedPetTile` / `PetCard` (no status) + care item name (≤2 lines) + `CareFamilyIcon`; tappable pet → pet profile. Spec: [care-item-context-header-spec.md](../domains/pet_care/changes/care-item-context-header-spec.md).
+1. **Pet context** — context strip on canvas (not a module): `CareItemPetContextTile` (or care-item-strip preset; not stock dashboard tile) + care name (≤2 lines) + decorative `CareFamilyIcon` + optional status chip (Paused/Archived/Finished — no dates). Tappable pet → `openPetDetail`. Spec: [care-item-context-header-spec.md](../domains/pet_care/changes/care-item-context-header-spec.md) **(pending implementation)**.
 2. **Needs attention (hero)** — lists every **open occurrence** as a line (date · status · trailing Done). **Stack** (≥2 started open dates on Fixed schedule): all lines + **Mark all as done** / **Skip all** (one `resolve-stack`, one Undo). **Single** leading open slot: outlined **Change date** (reschedule sheet). Row tap opens the **occurrence screen**; Done follows `decideDone` (one tap unless weight/date/early dialog). Paused: "Paused since …" / "Paused until …" + Resume.
 3. **Absence** — module or callout; resolution actions inside module body.
 4. **Schedule** — header row with **Edit schedule** trailing; body = stat grid (Frequency · Type · Reminder) + prose lines (next date, flexibility).
