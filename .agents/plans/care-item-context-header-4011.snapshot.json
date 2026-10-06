@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "plan_id": "care-item-context-header-4011",
+  "approved_at": "2026-10-06T16:05:00Z",
+  "approved_by": "user-chat-standing-grant-care-item-context-header-2026-10-06",
+  "approved_until": "2026-10-08T16:05:00Z",
+  "content_hash": "sha256:93d203b6decd259169a7da1ac00ae96045626b95a8d1ee62b9468ef00431febb",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/care-item-context-header-4011-integration-4011",
+  "control_issue": 1691,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Context strip and screen integration",
+      "branch": "cursor/care-item-context-strip-4011",
+      "allowed_paths": [
+        "flutter_app/lib/features/experience/presentation/care_item/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/care_item/**"
+      ],
+      "forbidden_paths": [
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "2",
+      "title": "E2E semantics and doc pending cleanup",
+      "branch": "cursor/care-item-context-header-e2e-4011",
+      "allowed_paths": [
+        "e2e/playwright/pages/care-item.page.ts",
+        "e2e/playwright/tests/care.item*.spec.ts",
+        "docs/design/care-item-view-ui.md",
+        "docs/domains/pet_care/features/care-item-evolution.md",
+        "docs/domains/pet_care/changes/care-item-context-header-spec.md"
+      ],
+      "forbidden_paths": [
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null
+    }
+  ]
+}
