@@ -6747,9 +6747,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get careItemStatusFinished => 'Finished';
-
-  @override
   String get occurrenceCareFinishedNoReopen => 'This care is finished.';
 
   @override

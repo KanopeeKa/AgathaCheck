@@ -2545,7 +2545,6 @@
       "name": { "type": "String" }
     }
   },
-  "careItemStatusFinished": "Finished",
   "occurrenceCareFinishedNoReopen": "This care is finished.",
   "occurrenceOpenCount": "{count} open",
   "@occurrenceOpenCount": {

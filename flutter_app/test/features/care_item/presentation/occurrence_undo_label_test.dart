@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/features/care_item/care_item.dart';
 import 'package:pet_profile_app/features/experience/presentation/care_item/occurrence/occurrence_undo_label.dart';
@@ -14,7 +15,10 @@ void main() {
       l.careUndoDateChange,
     );
     expect(
-      occurrenceUndoLabel(l, const CareLastAction(type: 'completed', occurrenceId: 'o1')),
+      occurrenceUndoLabel(
+        l,
+        const CareLastAction(type: 'completed', occurrenceId: 'o1'),
+      ),
       l.snackbarUndo,
     );
   });

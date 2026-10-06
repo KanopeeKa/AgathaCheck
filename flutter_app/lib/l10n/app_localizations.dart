@@ -11943,12 +11943,6 @@ abstract class AppLocalizations {
   /// **'In {name}\'s cover plan'**
   String careCoverPlanResolvedNamed(String name);
 
-  /// No description provided for @careItemStatusFinished.
-  ///
-  /// In en, this message translates to:
-  /// **'Finished'**
-  String get careItemStatusFinished;
-
   /// No description provided for @occurrenceCareFinishedNoReopen.
   ///
   /// In en, this message translates to:
