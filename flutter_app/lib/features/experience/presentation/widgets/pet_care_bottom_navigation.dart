@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../config/pet_care_primary_destinations.dart';
-import '../providers/care_actions_attention_provider.dart';
+import '../screens/pet_care/care_actions_attention_provider.dart';
 import 'pet_care_nav_attention_badge.dart';
 
 /// Primary Guardian destinations on compact and touch-first screens.

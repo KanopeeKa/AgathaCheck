@@ -9,7 +9,7 @@ import 'package:pet_profile_app/core/providers/shared_preferences_provider.dart'
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:pet_profile_app/features/experience/domain/entities/app_experience.dart';
 import 'package:pet_profile_app/features/experience/domain/services/experience_eligibility.dart';
-import 'package:pet_profile_app/features/experience/presentation/providers/care_actions_attention_provider.dart';
+import 'package:pet_profile_app/features/experience/presentation/screens/pet_care/care_actions_attention_provider.dart';
 import 'package:pet_profile_app/features/experience/presentation/providers/experience_providers.dart';
 import 'package:pet_profile_app/features/experience/presentation/widgets/experience_shell_scaffold.dart';
 import 'package:pet_profile_app/features/experience/presentation/widgets/pet_care_navigation_rail.dart';

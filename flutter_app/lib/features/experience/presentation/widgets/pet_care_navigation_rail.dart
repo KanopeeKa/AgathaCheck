@@ -7,7 +7,7 @@ import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/app_experience.dart';
 import '../config/pet_care_primary_destinations.dart';
-import '../providers/care_actions_attention_provider.dart';
+import '../screens/pet_care/care_actions_attention_provider.dart';
 import 'experience_workspace_toggle.dart';
 import 'pet_care_nav_attention_badge.dart';
 
