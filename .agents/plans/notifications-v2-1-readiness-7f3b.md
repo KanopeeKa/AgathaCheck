@@ -69,3 +69,22 @@ Replace placeholder BDD rows; migration fixtures; Playwright pre-UAT coverage fo
 **branch:** `cursor/notifications-v2-1-readiness-integration-7f3b`
 
 Single squash PR integration → `main`; `/babysit-uat`.
+
+## Runtime
+
+```yaml
+autonomy: active
+current_phase: 1
+last_completed_phase: null
+halt_reason: null
+next_action: babysit+ phase 1 PR
+artifact_ref:
+  branch: cursor/notifications-v2-1-plan-a-7f3b
+  plan_path: .agents/plans/notifications-v2-1-readiness-7f3b.md
+  plan_commit: pending
+  snapshot_path: .agents/plans/notifications-v2-1-readiness-7f3b.snapshot.json
+  snapshot_commit: pending
+open_prs: []
+merge_commits: {}
+debt_issue_refs: []
+```
