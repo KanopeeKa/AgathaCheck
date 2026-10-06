@@ -11,6 +11,8 @@ import 'package:pet_profile_app/core/weight/weight_unit.dart';
 import 'package:pet_profile_app/core/weight/weight_unit_preference.dart';
 import 'package:pet_profile_app/features/care_item/care_item.dart';
 import 'package:pet_profile_app/features/experience/presentation/care_item/occurrence/occurrence_screen.dart';
+import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
+import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 class _RecordingPetCareSync implements PetCareSync {
@@ -47,6 +49,15 @@ Map<String, dynamic> detail({
       'origin': 'computed',
       'notes': '',
     },
+    'open_occurrences': [
+      {
+        'id': 'occ-1',
+        'scheduled_date': '2026-06-10',
+        'scheduled_time': null,
+        'status': 'due',
+        'origin': 'computed',
+      },
+    ],
     'entry': {
       'id': 'entry-1',
       'pet_id': 'pet-1',
@@ -93,6 +104,14 @@ Widget _wrap(
 }) => ProviderScope(
   overrides: [
     careItemHttpClientProvider.overrideWithValue(server.client),
+    petByIdProvider('pet-1').overrideWith(
+      (ref) async => Pet(
+        id: 'pet-1',
+        name: 'Buddy',
+        species: 'dog',
+        photoPath: null,
+      ),
+    ),
     ...extraOverrides,
   ],
   child: MaterialApp(
@@ -119,9 +138,10 @@ void main() {
     await tester.pumpWidget(_wrap(server));
     await tester.pumpAndSettle();
 
+    expect(find.text('Care date'), findsOneWidget);
     expect(find.text('Mark Flea as done'), findsOneWidget);
     expect(find.byKey(const Key('occurrence_skip')), findsOneWidget);
-    expect(find.byKey(const Key('occurrence_change_date')), findsOneWidget);
+    expect(find.byKey(const Key('occurrence_reschedule')), findsOneWidget);
     await tester.tap(find.byKey(const Key('occurrence_done')));
     await tester.pumpAndSettle();
 

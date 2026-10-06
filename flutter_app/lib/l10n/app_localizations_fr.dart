@@ -6826,6 +6826,42 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String get careDateScreenTitle => 'Date de soin';
+
+  @override
+  String get occurrenceReschedule => 'Replannifier';
+
+  @override
+  String get occurrenceStatusSectionTitle => 'Statut';
+
+  @override
+  String get occurrenceActionsSectionTitle => 'Actions';
+
+  @override
+  String get occurrenceAwaySectionTitle => 'Absence';
+
+  @override
+  String get occurrenceAwayPresenceAway => 'Vous serez absent·e';
+
+  @override
+  String get occurrenceAwayKeepScopeExplainer =>
+      'Garder cette date s\'applique à toutes les dates de ce soin pendant votre absence.';
+
+  @override
+  String get careCoverPlanResolved => 'Dans le plan de couverture';
+
+  @override
+  String careCoverPlanResolvedNamed(String name) {
+    return 'Dans le plan de couverture de $name';
+  }
+
+  @override
+  String get careItemStatusFinished => 'Terminé';
+
+  @override
+  String get occurrenceCareFinishedNoReopen => 'Ce soin est terminé.';
+
+  @override
   String occurrenceOpenCount(int count) {
     return '$count en attente';
   }

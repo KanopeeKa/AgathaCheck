@@ -11889,6 +11889,72 @@ abstract class AppLocalizations {
   /// **'{date} at {time}'**
   String occurrenceDateAtTime(String date, String time);
 
+  /// No description provided for @careDateScreenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Care date'**
+  String get careDateScreenTitle;
+
+  /// No description provided for @occurrenceReschedule.
+  ///
+  /// In en, this message translates to:
+  /// **'Reschedule'**
+  String get occurrenceReschedule;
+
+  /// No description provided for @occurrenceStatusSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get occurrenceStatusSectionTitle;
+
+  /// No description provided for @occurrenceActionsSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Actions'**
+  String get occurrenceActionsSectionTitle;
+
+  /// No description provided for @occurrenceAwaySectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Away'**
+  String get occurrenceAwaySectionTitle;
+
+  /// No description provided for @occurrenceAwayPresenceAway.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ll be away'**
+  String get occurrenceAwayPresenceAway;
+
+  /// No description provided for @occurrenceAwayKeepScopeExplainer.
+  ///
+  /// In en, this message translates to:
+  /// **'Keeping this date applies to all dates for this care while you\'re away.'**
+  String get occurrenceAwayKeepScopeExplainer;
+
+  /// No description provided for @careCoverPlanResolved.
+  ///
+  /// In en, this message translates to:
+  /// **'In cover plan'**
+  String get careCoverPlanResolved;
+
+  /// No description provided for @careCoverPlanResolvedNamed.
+  ///
+  /// In en, this message translates to:
+  /// **'In {name}\'s cover plan'**
+  String careCoverPlanResolvedNamed(String name);
+
+  /// No description provided for @careItemStatusFinished.
+  ///
+  /// In en, this message translates to:
+  /// **'Finished'**
+  String get careItemStatusFinished;
+
+  /// No description provided for @occurrenceCareFinishedNoReopen.
+  ///
+  /// In en, this message translates to:
+  /// **'This care is finished.'**
+  String get occurrenceCareFinishedNoReopen;
+
   /// No description provided for @occurrenceOpenCount.
   ///
   /// In en, this message translates to:

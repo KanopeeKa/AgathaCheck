@@ -93,7 +93,7 @@ export class CareItemPage {
     await row.click();
     await refreshFlutterAccessibility(this.page);
     const changeDate = this.page
-      .locator('[flt-semantics-identifier="occurrence_change_date"]')
+      .locator('[flt-semantics-identifier="occurrence_reschedule"]')
       .or(
         this.page.getByRole('button', {
           name: /^Change date$|^Changer la date$/i,
@@ -389,14 +389,6 @@ export class CareItemPage {
       .first()
       .click();
     await refreshFlutterAccessibility(this.page);
-  }
-
-  /** @deprecated Use {@link OccurrencePage.planAnotherDateFromMenu} on the occurrence screen (§18.6.4). */
-  async planAnotherDateFromMenu(
-    isoDate: string,
-    occurrencePage: import('./occurrence.page').OccurrencePage,
-  ): Promise<void> {
-    await occurrencePage.planAnotherDateFromMenu(isoDate);
   }
 
   async markAllDone(count?: number): Promise<void> {

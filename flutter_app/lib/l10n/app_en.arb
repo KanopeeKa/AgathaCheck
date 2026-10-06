@@ -2531,6 +2531,22 @@
       "time": { "type": "String" }
     }
   },
+  "careDateScreenTitle": "Care date",
+  "occurrenceReschedule": "Reschedule",
+  "occurrenceStatusSectionTitle": "Status",
+  "occurrenceActionsSectionTitle": "Actions",
+  "occurrenceAwaySectionTitle": "Away",
+  "occurrenceAwayPresenceAway": "You'll be away",
+  "occurrenceAwayKeepScopeExplainer": "Keeping this date applies to all dates for this care while you're away.",
+  "careCoverPlanResolved": "In cover plan",
+  "careCoverPlanResolvedNamed": "In {name}'s cover plan",
+  "@careCoverPlanResolvedNamed": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "careItemStatusFinished": "Finished",
+  "occurrenceCareFinishedNoReopen": "This care is finished.",
   "occurrenceOpenCount": "{count} open",
   "@occurrenceOpenCount": {
     "placeholders": {

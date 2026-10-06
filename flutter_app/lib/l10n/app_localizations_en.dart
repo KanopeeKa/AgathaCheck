@@ -6717,6 +6717,42 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get careDateScreenTitle => 'Care date';
+
+  @override
+  String get occurrenceReschedule => 'Reschedule';
+
+  @override
+  String get occurrenceStatusSectionTitle => 'Status';
+
+  @override
+  String get occurrenceActionsSectionTitle => 'Actions';
+
+  @override
+  String get occurrenceAwaySectionTitle => 'Away';
+
+  @override
+  String get occurrenceAwayPresenceAway => 'You\'ll be away';
+
+  @override
+  String get occurrenceAwayKeepScopeExplainer =>
+      'Keeping this date applies to all dates for this care while you\'re away.';
+
+  @override
+  String get careCoverPlanResolved => 'In cover plan';
+
+  @override
+  String careCoverPlanResolvedNamed(String name) {
+    return 'In $name\'s cover plan';
+  }
+
+  @override
+  String get careItemStatusFinished => 'Finished';
+
+  @override
+  String get occurrenceCareFinishedNoReopen => 'This care is finished.';
+
+  @override
   String occurrenceOpenCount(int count) {
     return '$count open';
   }

@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "plan_id": "occurrence-screen-context-6b05",
+  "approved_at": "2026-10-06T17:45:00Z",
+  "approved_by": "user chat 2026-10-06 — go ahead, integration branch, single PR to main, no pause",
+  "approved_until": "2026-10-08T17:45:00Z",
+  "content_hash": "sha256:d818596a1bc54c923c2e2a3ea1a5409ad0fafad2545f05aa8569850f2312ea58",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/occurrence-screen-context-6b05-integration-6b05",
+  "control_issue": 1705,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Spec and core Care date layout",
+      "branch": "cursor/occurrence-screen-context-6b05-integration-6b05",
+      "allowed_paths": [
+        "docs/domains/pet_care/changes/occurrence-screen-context-spec.md",
+        "flutter_app/lib/features/experience/presentation/care_item/occurrence/**",
+        "flutter_app/lib/l10n/**",
+        ".agents/plans/occurrence-screen-context-6b05.md",
+        ".agents/plans/occurrence-screen-context-6b05.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "2",
+      "title": "Tests and E2E locators",
+      "branch": "cursor/occurrence-screen-context-6b05-integration-6b05",
+      "allowed_paths": [
+        "flutter_app/test/features/care_item/**",
+        "e2e/playwright/pages/occurrence.page.ts",
+        "e2e/playwright/pages/care-item.page.ts",
+        ".agents/plans/occurrence-screen-context-6b05.md",
+        ".agents/plans/occurrence-screen-context-6b05.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "in_progress",
+      "pr_url": null,
+      "pr_head_sha": null
+    }
+  ]
+}

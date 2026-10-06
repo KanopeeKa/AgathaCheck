@@ -10,6 +10,8 @@ import 'package:pet_profile_app/core/weight/weight_unit_preference.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 import 'package:pet_profile_app/features/care_item/care_item.dart';
 
+import 'occurrence_undo_label.dart';
+
 /// Primary and secondary actions for one occurrence (§18.6.4): open →
 /// required inputs, "When was this done?", Done, Skip, Change date;
 /// completed → change when it was done (D-CSM-034) and Undo; closed →
@@ -198,15 +200,12 @@ class _OccurrenceBlocksState extends ConsumerState<OccurrenceBlocks> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Semantics(
-          header: true,
-          child: Text(
-            l.careMarkDoneLabel(_d.item.name),
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
+        Text(
+          l.occurrenceActionsSectionTitle,
+          style: Theme.of(context).textTheme.titleSmall,
         ),
+        const SizedBox(height: 12),
         if (needsWeight) ...[
-          const SizedBox(height: 12),
           TextField(
             key: const Key('occurrence_field_weight'),
             controller: _weight,
@@ -217,6 +216,7 @@ class _OccurrenceBlocksState extends ConsumerState<OccurrenceBlocks> {
               helperText: missing.isEmpty ? null : l.careWeightRequiredHint,
             ),
           ),
+          const SizedBox(height: 12),
         ],
         _dateField(
           context,
@@ -225,15 +225,17 @@ class _OccurrenceBlocksState extends ConsumerState<OccurrenceBlocks> {
             if (picked != null) setState(() => _date = picked);
           },
         ),
-        const SizedBox(height: 8),
-        FilledButton(
-          key: const Key('occurrence_done'),
-          onPressed: _busy || missing.isNotEmpty ? null : _done,
-          child: Text(l.done),
-        ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         Row(
           children: [
+            Expanded(
+              child: FilledButton(
+                key: const Key('occurrence_done'),
+                onPressed: _busy || missing.isNotEmpty ? null : _done,
+                child: Text(l.careMarkDoneLabel(_d.item.name)),
+              ),
+            ),
+            const SizedBox(width: 8),
             Expanded(
               child: OutlinedButton(
                 key: const Key('occurrence_skip'),
@@ -263,34 +265,6 @@ class _OccurrenceBlocksState extends ConsumerState<OccurrenceBlocks> {
                         await _report(outcome, l.careSkipped(_d.item.name));
                       }),
                 child: Text(l.careSkip),
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: OutlinedButton(
-                key: const Key('occurrence_change_date'),
-                onPressed: _busy
-                    ? null
-                    : () => _guard(() async {
-                        final today = _d.item.asOf.date;
-                        final picked = await showCalendarDatePicker(
-                          context: context,
-                          initialDate: _occ.date.isBefore(today)
-                              ? today
-                              : _occ.date,
-                          firstDate: today,
-                          lastDate: DateTime(today.year + 5),
-                          helpText: l.careNewDateTitle,
-                        );
-                        if (picked == null) return;
-                        final outcome = await _service.changeDate(
-                          entryId: _d.item.id,
-                          occurrenceId: _occ.id,
-                          date: picked,
-                        );
-                        await _report(outcome, l.careDateMoved);
-                      }),
-                child: Text(l.careChangeDate),
               ),
             ),
           ],
@@ -355,14 +329,22 @@ class _OccurrenceBlocksState extends ConsumerState<OccurrenceBlocks> {
                     final outcome = await _service.undo(entryId: _d.item.id);
                     await _report(outcome, l.snackbarUndo);
                   }),
-            child: Text(
-              _d.lastAction!.isCompletionDateChange
-                  ? l.careUndoDateChange
-                  : l.snackbarUndo,
+            child: Text(occurrenceUndoLabel(l, _d.lastAction)),
+          )
+        else if (_seriesFinished)
+          Text(
+            l.occurrenceCareFinishedNoReopen,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
       ],
     );
+  }
+
+  bool get _seriesFinished {
+    if (_d.item.status == 'completed') return true;
+    return _d.schedule?.status == 'completed';
   }
 
   Widget _closedNotRecorded(BuildContext context) {
@@ -459,6 +441,27 @@ class _OccurrenceBlocksState extends ConsumerState<OccurrenceBlocks> {
             skip.note!,
             key: const Key('occurrence_skipped_note'),
             style: Theme.of(context).textTheme.bodySmall,
+          ),
+        ],
+        if (_d.canUndoHere) ...[
+          const SizedBox(height: 12),
+          OutlinedButton(
+            key: const Key('occurrence_undo'),
+            onPressed: _busy
+                ? null
+                : () => _guard(() async {
+                    final outcome = await _service.undo(entryId: _d.item.id);
+                    await _report(outcome, l.snackbarUndo);
+                  }),
+            child: Text(occurrenceUndoLabel(l, _d.lastAction)),
+          ),
+        ] else if (_seriesFinished) ...[
+          const SizedBox(height: 8),
+          Text(
+            l.occurrenceCareFinishedNoReopen,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
         ],
       ],
