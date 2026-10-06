@@ -6,7 +6,7 @@ import {
 } from '../notificationPreferences.js';
 import { listSuggestionRecipientUserIds } from '../notifications/suggestionInbox.js';
 import { evaluateS1MissingRecurringCare, buildS1DedupeKey } from './s1MissingRecurringCare.js';
-import { evaluateS2WeightTrend, buildS2DedupeKey } from './s2WeightTrend.js';
+import { evaluateS2WeightTrend } from './s2WeightTrend.js';
 import { canCreateNewSuggestion } from './suggestionRateLimits.js';
 import {
   completeSuggestionsForDedupeKeys,
