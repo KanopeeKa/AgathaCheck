@@ -170,9 +170,9 @@ class _BodyState extends ConsumerState<_Body> {
       await widget.onChanged();
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.careCommandFailed)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.careCommandFailed)));
       }
     } finally {
       if (mounted) setState(() => _busy = false);

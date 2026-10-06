@@ -14,18 +14,12 @@ void main() {
   });
 
   test('occurrenceShowsReschedule is false when dose is done', () {
-    final detail = _detail(
-      status: CareOccurrenceStatus.done,
-      isOpen: false,
-    );
+    final detail = _detail(status: CareOccurrenceStatus.done, isOpen: false);
     expect(occurrenceShowsReschedule(detail), isFalse);
   });
 
   test('occurrenceShowsReschedule is true for open due dose', () {
-    final detail = _detail(
-      status: CareOccurrenceStatus.due,
-      isOpen: true,
-    );
+    final detail = _detail(status: CareOccurrenceStatus.due, isOpen: true);
     expect(occurrenceShowsReschedule(detail), isTrue);
   });
 }

@@ -45,10 +45,7 @@ class OccurrenceTitleRow extends StatelessWidget {
               button: true,
               label: l.occurrenceReschedule,
               child: ConstrainedBox(
-                constraints: const BoxConstraints(
-                  minWidth: 48,
-                  minHeight: 48,
-                ),
+                constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
                 child: TextButton(
                   key: const Key('occurrence_reschedule'),
                   onPressed: busy ? null : onReschedule,

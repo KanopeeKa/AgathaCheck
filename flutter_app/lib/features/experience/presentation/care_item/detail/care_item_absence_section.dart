@@ -184,4 +184,3 @@ class CareItemAbsenceSection extends ConsumerWidget {
     }
   }
 }
-
