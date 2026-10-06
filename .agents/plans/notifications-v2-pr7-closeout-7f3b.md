@@ -57,17 +57,17 @@ docs/domains/notifications/changes/deferred.md
 ## Runtime
 
 ```yaml
-autonomy: active
-current_phase: 1
-last_completed_phase: null
+autonomy: completed
+current_phase: null
+last_completed_phase: 1
 halt_reason: null
-next_action: "continue phase 1 on branch cursor/notifications-v2-pr7-closeout-7f3b"
+next_action: "plan complete"
 artifact_ref:
-  branch: cursor/notifications-v2-pr7-closeout-7f3b
+  branch: main
   plan_path: .agents/plans/notifications-v2-pr7-closeout-7f3b.md
-  plan_commit: ab2dac749ba0ff958003252f1cb36866e672b418
+  plan_commit: 3c1f8b72187969a0e8d93e6f6b7505d0d2309fc3
   snapshot_path: .agents/plans/notifications-v2-pr7-closeout-7f3b.snapshot.json
-  snapshot_commit: ab2dac749ba0ff958003252f1cb36866e672b418
+  snapshot_commit: 3c1f8b72187969a0e8d93e6f6b7505d0d2309fc3
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
