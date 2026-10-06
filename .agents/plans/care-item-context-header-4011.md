@@ -101,21 +101,18 @@ After phase 2 merged into integration: open PR integration → `main`, run **/ba
 ## Runtime state
 
 ```yaml
-autonomy: active
+autonomy: completed
 current_phase: null
-last_completed_phase: "2"
+last_completed_phase: 2
 halt_reason: null
-next_action: null
+next_action: "plan complete"
 artifact_ref:
-  branch: cursor/care-item-context-header-4011-integration-4011
+  branch: cursor/plan-runtime-care-item-4011
   plan_path: .agents/plans/care-item-context-header-4011.md
-  plan_commit: null
+  plan_commit: 0b17269124bc40046914d24d93b7de634c598686
   snapshot_path: .agents/plans/care-item-context-header-4011.snapshot.json
-  snapshot_commit: null
+  snapshot_commit: 0b17269124bc40046914d24d93b7de634c598686
 open_prs: []
-merge_commits:
-  "1": 8c369c619ab8aea8668cbc9143aac5925614a037
-  "2": 88b84680
-  integration: fd403d7c78781c8c5954c8007ce738726531d4f9
+merge_commits: {}
 debt_issue_refs: []
 ```
