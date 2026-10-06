@@ -1,0 +1,176 @@
+{
+  "schema_version": 1,
+  "plan_id": "notifications-v2-1-readiness-7f3b",
+  "approved_at": "2026-10-06T16:10:00Z",
+  "approved_by": "User chat 2026-10-06 standing grant (notifications v2.1 Plans A–D, integration branch, full execute-plan autonomy)",
+  "approved_until": "2026-10-08T16:10:00Z",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/notifications-v2-1-readiness-integration-7f3b",
+  "control_issue": 1693,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Plan A — P0 remediation",
+      "branch": "cursor/notifications-v2-1-plan-a-7f3b",
+      "allowed_paths": [
+        ".agents/plans/notifications-v2-1-*",
+        "docs/domains/notifications/**",
+        "flutter_app/lib/features/notifications/**",
+        "flutter_app/lib/features/experience/presentation/widgets/pet_care_bottom_navigation.dart",
+        "flutter_app/lib/features/experience/presentation/widgets/pet_care_navigation_rail.dart",
+        "flutter_app/lib/features/experience/presentation/widgets/pet_care_navigation_sidebar.dart",
+        "flutter_app/lib/features/experience/presentation/config/pet_care_primary_destinations.dart",
+        "flutter_app/lib/features/experience/presentation/screens/pet_care/**",
+        "flutter_app/lib/features/experience/presentation/providers/**",
+        "flutter_app/lib/features/help/**",
+        "flutter_app/lib/l10n/app_en.arb",
+        "flutter_app/lib/l10n/app_fr.arb",
+        "flutter_app/test/features/notifications/**",
+        "flutter_app/test/features/experience/presentation/widgets/pet_care_bottom_navigation_test.dart",
+        "server/routes/notifications.js",
+        "server/routes/notifications/**",
+        "server/lib/notificationPreferences.js",
+        "server/lib/account/accountDeviceLabels.js",
+        "server/lib/notificationKind.js",
+        "server/test/notifications/**",
+        "server/test/account/accountDeviceLabels.test.js"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2",
+      "title": "Plan B — household & access events",
+      "branch": "cursor/notifications-v2-1-plan-b-7f3b",
+      "allowed_paths": [
+        ".agents/plans/notifications-v2-1-*",
+        "docs/domains/notifications/**",
+        "server/lib/notifications/**",
+        "server/routes/**",
+        "server/test/notifications/**",
+        "flutter_app/lib/features/notifications/**",
+        "flutter_app/lib/l10n/app_en.arb",
+        "flutter_app/lib/l10n/app_fr.arb",
+        "flutter_app/test/features/notifications/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "3",
+      "title": "Plan C — suggestions wave 1",
+      "branch": "cursor/notifications-v2-1-plan-c-7f3b",
+      "allowed_paths": [
+        ".agents/plans/notifications-v2-1-*",
+        "docs/domains/notifications/**",
+        "server/lib/suggestions/**",
+        "server/routes/notifications/**",
+        "server/test/**",
+        "flutter_app/lib/features/notifications/**",
+        "flutter_app/lib/l10n/app_en.arb",
+        "flutter_app/lib/l10n/app_fr.arb",
+        "flutter_app/test/features/notifications/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "4",
+      "title": "Plan D — BDD & fixtures",
+      "branch": "cursor/notifications-v2-1-plan-d-7f3b",
+      "allowed_paths": [
+        ".agents/plans/notifications-v2-1-*",
+        "docs/domains/notifications/**",
+        "flutter_app/test/bdd/**",
+        "e2e/**",
+        "server/migrations/**",
+        "server/test/notifications/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "5",
+      "title": "Integration branch to main with pre-UAT",
+      "branch": "cursor/notifications-v2-1-readiness-integration-7f3b",
+      "allowed_paths": [
+        ".agents/plans/notifications-v2-1-*",
+        "docs/domains/notifications/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    }
+  ],
+  "content_hash": "sha256:a8f34415b7ab4f22f438cf70db8c26f41951a085b9a4080a44fefa4aabbc5d47"
+}

@@ -8,13 +8,14 @@ abstract class NotificationRemoteDataSource {
   Future<List<NotificationModel>> getNotifications(String token);
   Future<int> getUnreadCount(String token);
   Future<void> markAsRead(String token, String id);
-  Future<void> markAllAsRead(String token);
+  Future<void> markAllAsRead(String token, {String scope = 'activity'});
   Future<NotificationPreferencesModel> getPreferences(String token);
   Future<NotificationPreferencesModel> updatePreferences(
     String token,
     NotificationPreferencesModel preferences,
   );
   Future<void> dismissV2InboxExplainer(String token);
+  Future<void> dismissDeviceSecurityIntro(String token);
   Future<void> checkDueEntries(
     String token, {
     Map<String, String> petNames = const {},
@@ -78,10 +79,11 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
   }
 
   @override
-  Future<void> markAllAsRead(String token) async {
+  Future<void> markAllAsRead(String token, {String scope = 'activity'}) async {
     final response = await _client.put(
       Uri.parse('$baseUrl/api/notifications/read-all'),
       headers: _headers(token),
+      body: json.encode({'scope': scope}),
     );
     _checkResponse(response);
   }
@@ -105,6 +107,19 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
       headers: _headers(token),
       body: json.encode({
         'v2_explainer_dismissed_at': DateTime.now().toUtc().toIso8601String(),
+      }),
+    );
+    _checkResponse(response);
+  }
+
+  @override
+  Future<void> dismissDeviceSecurityIntro(String token) async {
+    final response = await _client.put(
+      Uri.parse('$baseUrl/api/notifications/preferences'),
+      headers: _headers(token),
+      body: json.encode({
+        'device_security_intro_dismissed_at':
+            DateTime.now().toUtc().toIso8601String(),
       }),
     );
     _checkResponse(response);

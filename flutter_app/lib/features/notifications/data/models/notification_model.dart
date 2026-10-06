@@ -125,6 +125,7 @@ class NotificationPreferencesModel {
   final bool notifyCompleted;
   final List<String> mutedPetIds;
   final DateTime? v2ExplainerDismissedAt;
+  final bool showDeviceSecurityIntro;
   final bool agathaSuggestionsInApp;
   final NotificationSettingsMatrix settingsMatrix;
   final Map<String, bool> suggestionTypes;
@@ -137,6 +138,7 @@ class NotificationPreferencesModel {
     this.notifyCompleted = true,
     this.mutedPetIds = const [],
     this.v2ExplainerDismissedAt,
+    this.showDeviceSecurityIntro = false,
     this.agathaSuggestionsInApp = true,
     NotificationSettingsMatrix? settingsMatrix,
     Map<String, bool>? suggestionTypes,
@@ -172,6 +174,7 @@ class NotificationPreferencesModel {
       v2ExplainerDismissedAt: json['v2_explainer_dismissed_at'] != null
           ? DateTime.tryParse(json['v2_explainer_dismissed_at'].toString())
           : null,
+      showDeviceSecurityIntro: json['show_device_security_intro'] == true,
       agathaSuggestionsInApp: agathaInApp,
       settingsMatrix: matrix,
       suggestionTypes: parseSuggestionTypes(

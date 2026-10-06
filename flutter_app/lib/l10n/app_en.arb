@@ -1790,7 +1790,9 @@
 
   "faqNotificationsTitle": "Notifications",
   "faqNotificationsQ1": "What notifications will I receive?",
-  "faqNotificationsA1": "You will receive in-app notifications for: due or overdue health entries, upcoming medication reminders, organisation invites, share requests, pet memorials, and family event reminders.",
+  "faqNotificationsA1": "Activity shows invites, access changes, and account security items. Care due and overdue work appears on the Care (Actions) tab and its badge—not in the notification bell. Agatha suggestions appear under For you when enabled.",
+  "notificationDeviceSecurityIntro": "We now remember devices that sign in to your account. You will get a security notice when a new device signs in. This device was recorded quietly so existing members are not flooded with alerts.",
+  "notificationSettingsPushDeferredHelp": "Push to this phone or other devices is not available yet. In-app inbox and email toggles still apply.",
   "faqNotificationsQ2": "How do I manage notification preferences?",
   "faqNotificationsA2": "Go to the Notifications screen (bell icon in the top bar) and tap the settings icon. From there you can customise which types of notifications you receive.",
   "faqNotificationsQ3": "Can I mute notifications for a specific pet?",

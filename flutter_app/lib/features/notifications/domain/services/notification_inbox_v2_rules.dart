@@ -42,7 +42,6 @@ class NotificationInboxV2Rules {
   }
 
   static bool needsResponse(AppNotification n) {
-    if (n.isRead) return false;
     if (n.kind == NotificationKind.administrative && n.resolvedAt == null) {
       return true;
     }
@@ -72,8 +71,9 @@ class NotificationInboxV2Rules {
   static int bellNumericCount(Iterable<AppNotification> notifications) {
     return notifications
         .where((n) => isActivityKind(n.kind))
-        .where((n) => !n.isRead)
-        .where((n) => needsResponse(n) || isUrgent(n))
+        .where(
+          (n) => needsResponse(n) || (isUrgent(n) && !n.isRead),
+        )
         .length;
   }
 

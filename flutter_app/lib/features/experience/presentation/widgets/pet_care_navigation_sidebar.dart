@@ -7,7 +7,9 @@ import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/app_experience.dart';
 import '../config/pet_care_primary_destinations.dart';
+import '../providers/care_actions_attention_provider.dart';
 import 'experience_workspace_toggle.dart';
+import 'pet_care_nav_attention_badge.dart';
 
 /// Expanded leading sidebar for Guardian workspace on wide screens (≥840px).
 class PetCareNavigationSidebar extends ConsumerWidget {
@@ -27,6 +29,7 @@ class PetCareNavigationSidebar extends ConsumerWidget {
       destinations.length - 1,
     );
     final selectedIndex = PetCarePrimaryDestinations.indexFor(currentLocation);
+    final attentionCount = ref.watch(careActionsAttentionCountProvider);
 
     return Semantics(
       identifier: 'pet_care_navigation_sidebar',
@@ -69,6 +72,10 @@ class PetCareNavigationSidebar extends ConsumerWidget {
                         _SidebarDestinationTile(
                           destination: primaryDestinations[i],
                           selected: selectedIndex == i,
+                          attentionCount: primaryDestinations[i].route ==
+                                  '/pc/events'
+                              ? attentionCount
+                              : 0,
                           onTap: () => context.go(primaryDestinations[i].route),
                         ),
                     ],
@@ -78,6 +85,7 @@ class PetCareNavigationSidebar extends ConsumerWidget {
                 _SidebarDestinationTile(
                   destination: accountDestination,
                   selected: selectedIndex == 4,
+                  attentionCount: 0,
                   onTap: () => context.go(accountDestination.route),
                 ),
               ],
@@ -93,11 +101,13 @@ class _SidebarDestinationTile extends StatelessWidget {
   const _SidebarDestinationTile({
     required this.destination,
     required this.selected,
+    required this.attentionCount,
     required this.onTap,
   });
 
   final PetCarePrimaryDestination destination;
   final bool selected;
+  final int attentionCount;
   final VoidCallback onTap;
 
   @override
@@ -138,7 +148,10 @@ class _SidebarDestinationTile extends StatelessWidget {
                     )
                   else
                     const SizedBox(width: 12),
-                  Icon(icon, color: color, size: 24),
+                  PetCareNavAttentionBadge(
+                    count: attentionCount,
+                    child: Icon(icon, color: color, size: 24),
+                  ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(

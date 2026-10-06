@@ -9,6 +9,9 @@ export const PREF_EMAIL_REMINDERS = 'email_reminders_enabled';
 export const PREF_REMINDER_DAYS = 'reminder_days_before';
 export const PREF_MUTED_PET_IDS = 'muted_pet_ids';
 export const PREF_V2_EXPLAINER = 'v2_explainer_dismissed_at';
+export const PREF_DEVICE_SECURITY_INTRO_PENDING = 'device_security_intro_pending';
+export const PREF_DEVICE_SECURITY_INTRO_DISMISSED =
+  'device_security_intro_dismissed_at';
 export const PREF_AGATHA_IN_APP = 'agatha_suggestions_in_app';
 export const PREF_SETTINGS_MATRIX = 'settings_matrix_v2';
 export const PREF_SUGGESTION_TYPES = 'suggestion_types_v2';
@@ -175,6 +178,9 @@ export function preferenceMapToApiDto(map) {
     notify_completed: parseBool(map[PREF_NOTIFY_COMPLETED], true),
     muted_pet_ids: mutedPetIds,
     v2_explainer_dismissed_at: map[PREF_V2_EXPLAINER] || null,
+    show_device_security_intro:
+      parseBool(map[PREF_DEVICE_SECURITY_INTRO_PENDING], false)
+      && !map[PREF_DEVICE_SECURITY_INTRO_DISMISSED],
     agatha_suggestions_in_app: agathaInApp,
     settings_matrix: matrix,
     suggestion_types: mergeSuggestionTypes(typesStored),
@@ -223,6 +229,15 @@ export function apiDtoToPreferenceUpdates(body) {
   }
   if (body.v2_explainer_dismissed_at !== undefined && body.v2_explainer_dismissed_at) {
     updates[PREF_V2_EXPLAINER] = String(body.v2_explainer_dismissed_at);
+  }
+  if (
+    body.device_security_intro_dismissed_at !== undefined
+    && body.device_security_intro_dismissed_at
+  ) {
+    updates[PREF_DEVICE_SECURITY_INTRO_DISMISSED] = String(
+      body.device_security_intro_dismissed_at,
+    );
+    updates[PREF_DEVICE_SECURITY_INTRO_PENDING] = 'false';
   }
 
   let agathaInApp;

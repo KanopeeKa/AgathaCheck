@@ -1,6 +1,10 @@
 import { v4 as uuidv4 } from 'uuid';
 
 import { emitAccountNewSignIn } from './accountSecurityNotifications.js';
+import {
+  PREF_DEVICE_SECURITY_INTRO_PENDING,
+} from '../notificationPreferences.js';
+import { setNotificationPreference } from '../../routes/notifications/preferencesHandlers.js';
 
 const NINETY_DAYS_MS = 90 * 24 * 60 * 60 * 1000;
 
@@ -71,8 +75,19 @@ export async function recordAccountDeviceSignIn(pool, {
     );
   }
 
+  const legacySilentBootstrap =
+    !isSignupSession && !hadAnyLabels && !existingBefore;
+  if (legacySilentBootstrap) {
+    await setNotificationPreference(
+      pool,
+      userId,
+      PREF_DEVICE_SECURITY_INTRO_PENDING,
+      'true',
+    );
+  }
+
   if (isSignupSession || !hadAnyLabels) {
-    return { emittedA1: false };
+    return { emittedA1: false, legacySilentBootstrap };
   }
 
   const lastSeen = existingBefore?.last_seen_at
@@ -80,7 +95,7 @@ export async function recordAccountDeviceSignIn(pool, {
     : null;
   const seenWithin90Days = lastSeen && (now.getTime() - lastSeen.getTime()) < NINETY_DAYS_MS;
   if (existingBefore && seenWithin90Days) {
-    return { emittedA1: false };
+    return { emittedA1: false, legacySilentBootstrap: false };
   }
 
   await emitAccountNewSignIn(pool, {
@@ -90,7 +105,7 @@ export async function recordAccountDeviceSignIn(pool, {
     signedInAt: now,
     excludeSessionFamilyId: excludeSessionFamilyIdForPush ?? sessionFamilyId,
   });
-  return { emittedA1: true };
+  return { emittedA1: true, legacySilentBootstrap: false };
 }
 
 /**

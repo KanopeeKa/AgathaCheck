@@ -26,6 +26,10 @@ async function upsertPreferenceRows(pool, userId, updates) {
   }
 }
 
+export async function setNotificationPreference(pool, userId, preference, value) {
+  await upsertPreferenceRows(pool, userId, { [preference]: String(value) });
+}
+
 export async function getNotificationPreferences(pool, userId) {
   return loadNotificationPreferences(pool, userId);
 }
