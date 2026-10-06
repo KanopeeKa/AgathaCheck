@@ -105,12 +105,8 @@ Widget _wrap(
   overrides: [
     careItemHttpClientProvider.overrideWithValue(server.client),
     petByIdProvider('pet-1').overrideWith(
-      (ref) async => Pet(
-        id: 'pet-1',
-        name: 'Buddy',
-        species: 'dog',
-        photoPath: null,
-      ),
+      (ref) async =>
+          Pet(id: 'pet-1', name: 'Buddy', species: 'dog', photoPath: null),
     ),
     ...extraOverrides,
   ],
