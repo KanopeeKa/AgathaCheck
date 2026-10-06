@@ -4,8 +4,8 @@
   "approved_at": "2026-10-06T17:35:00Z",
   "approved_by": "user-chat-execute-plan",
   "approved_until": "2026-10-08T17:35:00Z",
-  "content_hash": "sha256:f2adc74687516107c06486b1100a833bacd8a80b93fad820f32f80b42546c66d",
-  "autonomy": "active",
+  "content_hash": "sha256:a07d16e8ec126d38f17c4472ac38912a176b18683b84dd3207fc223a93fac28e",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "main",
   "control_issue": 1702,
@@ -50,11 +50,11 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "governance",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1703",
-      "pr_head_sha": "9f517b9b32982e3ffcef612f41d8de40be02e741",
+      "pr_head_sha": "49afd9f0a5fa712dd8e97862348aaa3f7cd7ab34",
       "debt_issue_refs": []
     }
   ]
