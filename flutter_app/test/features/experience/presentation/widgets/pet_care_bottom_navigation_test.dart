@@ -7,6 +7,7 @@ import 'package:pet_profile_app/features/experience/domain/entities/app_experien
 import 'package:pet_profile_app/features/experience/domain/services/experience_eligibility.dart';
 import 'package:pet_profile_app/features/experience/presentation/providers/experience_providers.dart';
 import 'package:pet_profile_app/features/experience/presentation/widgets/experience_shell_scaffold.dart';
+import 'package:pet_profile_app/features/experience/presentation/screens/pet_care/care_actions_attention_provider.dart';
 import 'package:pet_profile_app/features/experience/presentation/widgets/pet_care_bottom_navigation.dart';
 import 'package:pet_profile_app/features/notifications/presentation/providers/notification_providers.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/organization.dart';
@@ -43,6 +44,7 @@ Widget _buildCompactShell({
       orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
       authProvider.overrideWith((ref) => FakeAuthNotifier()),
       organizationListProvider.overrideWith(_EmptyOrgListNotifier.new),
+      careActionsAttentionCountProvider.overrideWith((ref) => 0),
     ],
     child: MaterialApp(
       theme: ThemeData(splashFactory: NoSplash.splashFactory),
@@ -126,12 +128,17 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(
-        MaterialApp(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: Scaffold(
-            bottomNavigationBar: const PetCareBottomNavigation(
-              currentLocation: '/pc/home',
+        ProviderScope(
+          overrides: [
+            careActionsAttentionCountProvider.overrideWith((ref) => 0),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(
+              bottomNavigationBar: const PetCareBottomNavigation(
+                currentLocation: '/pc/home',
+              ),
             ),
           ),
         ),

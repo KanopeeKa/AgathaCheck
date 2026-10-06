@@ -1669,7 +1669,9 @@
 
   "faqNotificationsTitle": "Notifications",
   "faqNotificationsQ1": "Quelles notifications vais-je recevoir ?",
-  "faqNotificationsA1": "Vous recevrez des notifications dans l'application pour : les entrées de santé dues ou en retard, les rappels de médicaments, les invitations d'organisation, les demandes de partage, les mémoriaux et les rappels d'événements familiaux.",
+  "faqNotificationsA1": "Activité regroupe invitations, changements d'accès et sécurité du compte. Les soins en retard ou à faire aujourd'hui sont sur l'onglet Soins (Actions) et son badge—not dans la cloche. Les suggestions Agatha sont sous Pour vous si activées.",
+  "notificationDeviceSecurityIntro": "Nous mémorisons désormais les appareils qui se connectent. Une alerte s'affichera pour un nouvel appareil. Cet appareil a été enregistré discrètement pour ne pas alerter inutilement les comptes existants.",
+  "notificationSettingsPushDeferredHelp": "Les notifications push sur ce téléphone ou d'autres appareils ne sont pas encore disponibles. Les réglages boîte de réception et e-mail restent actifs.",
   "faqNotificationsQ2": "Comment gérer mes préférences de notification ?",
   "faqNotificationsA2": "Allez sur l'écran Notifications (icône cloche dans la barre du haut) et appuyez sur l'icône paramètres. Vous pouvez personnaliser les types de notifications que vous souhaitez recevoir.",
   "faqNotificationsQ3": "Puis-je désactiver les notifications pour un animal spécifique ?",

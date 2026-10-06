@@ -4775,7 +4775,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get faqNotificationsA1 =>
-      'You will receive in-app notifications for: due or overdue health entries, upcoming medication reminders, organisation invites, share requests, pet memorials, and family event reminders.';
+      'Activity shows invites, access changes, and account security items. Care due and overdue work appears on the Care (Actions) tab and its badge—not in the notification bell. Agatha suggestions appear under For you when enabled.';
+
+  @override
+  String get notificationDeviceSecurityIntro =>
+      'We now remember devices that sign in to your account. You will get a security notice when a new device signs in. This device was recorded quietly so existing members are not flooded with alerts.';
+
+  @override
+  String get notificationSettingsPushDeferredHelp =>
+      'Push to this phone or other devices is not available yet. In-app inbox and email toggles still apply.';
 
   @override
   String get faqNotificationsQ2 => 'How do I manage notification preferences?';

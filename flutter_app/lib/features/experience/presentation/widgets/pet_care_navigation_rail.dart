@@ -7,7 +7,9 @@ import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/app_experience.dart';
 import '../config/pet_care_primary_destinations.dart';
+import '../screens/pet_care/care_actions_attention_provider.dart';
 import 'experience_workspace_toggle.dart';
+import 'pet_care_nav_attention_badge.dart';
 
 /// Leading navigation rail for Guardian workspace on medium widths (600–839px).
 class PetCareNavigationRail extends ConsumerWidget {
@@ -22,6 +24,7 @@ class PetCareNavigationRail extends ConsumerWidget {
     final l = AppLocalizations.of(context)!;
     final destinations = PetCarePrimaryDestinations.destinations();
     final selectedIndex = PetCarePrimaryDestinations.indexFor(currentLocation);
+    final attentionCount = ref.watch(careActionsAttentionCountProvider);
 
     return Semantics(
       identifier: 'pet_care_navigation_rail',
@@ -87,11 +90,17 @@ class PetCareNavigationRail extends ConsumerWidget {
                   destination: destination,
                   label: destination.labelBuilder(l),
                   icon: destination.icon,
+                  attentionCount: destination.route == '/pc/events'
+                      ? attentionCount
+                      : 0,
                 ),
                 selectedIcon: _RailDestinationSemantics(
                   destination: destination,
                   label: destination.labelBuilder(l),
                   icon: destination.selectedIcon,
+                  attentionCount: destination.route == '/pc/events'
+                      ? attentionCount
+                      : 0,
                 ),
                 label: Text(destination.labelBuilder(l)),
               ),
@@ -108,11 +117,13 @@ class _RailDestinationSemantics extends StatelessWidget {
     required this.destination,
     required this.label,
     required this.icon,
+    required this.attentionCount,
   });
 
   final PetCarePrimaryDestination destination;
   final String label;
   final IconData icon;
+  final int attentionCount;
 
   @override
   Widget build(BuildContext context) {
@@ -122,19 +133,32 @@ class _RailDestinationSemantics extends StatelessWidget {
       ),
       button: true,
       label: label,
-      child: _RailDestinationIcon(icon: icon),
+      child: _RailDestinationIcon(icon: icon, attentionCount: attentionCount),
     );
   }
 }
 
 /// Ensures each rail destination meets the 48×48 logical px touch target.
 class _RailDestinationIcon extends StatelessWidget {
-  const _RailDestinationIcon({required this.icon});
+  const _RailDestinationIcon({
+    required this.icon,
+    required this.attentionCount,
+  });
 
   final IconData icon;
+  final int attentionCount;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(width: 48, height: 48, child: Center(child: Icon(icon)));
+    return SizedBox(
+      width: 48,
+      height: 48,
+      child: Center(
+        child: PetCareNavAttentionBadge(
+          count: attentionCount,
+          child: Icon(icon),
+        ),
+      ),
+    );
   }
 }
