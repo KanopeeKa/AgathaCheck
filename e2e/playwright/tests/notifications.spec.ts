@@ -24,7 +24,6 @@ import {
   createHealthEntry,
   createOrganization,
   createPet,
-  createPetShareInvite,
   fosterInviteToOrganization,
   getNotifications,
   getPendingInvites,
@@ -269,28 +268,8 @@ test.describe('Notifications', () => {
 
   // ── Unread badge ──────────────────────────────────────────────────────────
 
-  test('unread notification badge on app bar', async ({ page }) => {
-    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
-    const owner = await signupUser(baseURL, { firstName: 'Beth', lastName: 'Badge' });
-    const pet = await createPet(baseURL, owner.accessToken, 'Milo', 'Dog');
-    const invitee = await signupUser(baseURL, { firstName: 'Ben', lastName: 'Invitee' });
-    await createPetShareInvite(baseURL, owner.accessToken, [pet.id], invitee.email, 'carer');
-
-    await expect(async () => {
-      const rows = await getNotifications(baseURL, invitee.accessToken);
-      expect(rows.some((n) => n.type === 'shareInviteReceived')).toBe(true);
-    }).toPass({ timeout: 30_000 });
-
-    await loginAs(page, invitee);
-    const petList = new PetListPage(page);
-    await petList.expectLoaded();
-
-    const notificationsPage = new NotificationsPage(page);
-    await notificationsPage.openFromPetList();
-    await notificationsPage.selectInboxTab('activity');
-    await page.keyboard.press('Escape');
-    await petList.expectLoaded();
-    await notificationsPage.expectBadgeVisible(1);
+  test.skip('unread notification badge on app bar', async () => {
+    // v2 bell counts needs-response (see notifications_v2.feature); legacy care unread API count retired.
   });
 
   test('badge disappears after all notifications are marked read via API', async ({ page }) => {
