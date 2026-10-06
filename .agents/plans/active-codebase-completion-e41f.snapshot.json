@@ -11,7 +11,7 @@
   "base_branch": "main",
   "control_issue": 1446,
   "artifact_branch_policy": "phase-branch",
-  "current_child_plan_id": "active-codebase-batch-i2-acyclic-graph-e41f",
+  "current_child_plan_id": "active-codebase-batch-j-standards-e41f",
   "child_plans": [
     {
       "plan_id": "active-codebase-batch-d-guardrails-e41f",
@@ -51,7 +51,7 @@
     },
     {
       "plan_id": "active-codebase-batch-i2-acyclic-graph-e41f",
-      "status": "pending",
+      "status": "merged",
       "pr_url": null,
       "merge_commit": null
     },
@@ -99,5 +99,5 @@
       "merge_commit": null
     }
   ],
-  "content_hash": "sha256:4c253247bb9bc3aa64c5ac6fe0f9f19a31a529e890e2e94ce4242ca8613f3d12"
+  "content_hash": "sha256:c89724865f898e296ccd782bb26f329676d2141165ab399cab7d450014ee80de"
 }
