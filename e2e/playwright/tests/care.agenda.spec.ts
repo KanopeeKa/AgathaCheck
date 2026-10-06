@@ -32,9 +32,14 @@ test.describe('Care agenda (occurrence-first)', () => {
       const agenda = new CareAgendaPage(page);
       await agenda.openRow(entry.id, entry.name);
       await expect(
-        page.getByRole('heading', { name: 'Viewable Care', level: 2 }).first(),
+        page.getByRole('heading', { name: /Care date|Date de soin/i }).first(),
       ).toBeVisible({ timeout: 30_000 });
-      const aboutOccurrence = page.locator('[flt-semantics-identifier="occurrence_about_item"]');
+      await expect(page.getByText('Viewable Care').first()).toBeVisible({
+        timeout: 30_000,
+      });
+      const aboutOccurrence = page.locator(
+        '[flt-semantics-identifier="occurrence_about_item"]',
+      );
       if (await aboutOccurrence.isVisible({ timeout: 3_000 }).catch(() => false)) {
         await aboutOccurrence.click();
       }
