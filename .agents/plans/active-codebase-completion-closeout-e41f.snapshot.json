@@ -34,7 +34,8 @@
       "spawn_allowed": false,
       "merge_method": "squash",
       "exit_checklist": "governance",
-      "status": "pending"
+      "status": "merged",
+      "merge_commit": "a856d868fb6641de39015b3d528ad78f9d439337"
     },
     {
       "id": "2",
@@ -110,5 +111,5 @@
       "status": "pending"
     }
   ],
-  "content_hash": "sha256:c8901f2953ef2577b42f5b71b1652e5975c1e849ea1e78d5f798327b7c7e34f8"
+  "content_hash": "sha256:0f2f41159a9da8b6ac6a71742fe040d722bd353169a1783148b1611cbf053f10"
 }
