@@ -56,11 +56,11 @@ last_completed_phase: 4
 halt_reason: null
 next_action: "continue phase 5 on branch cursor/active-codebase-j-integration-e41f"
 artifact_ref:
-  branch: cursor/active-codebase-j4-checker-ci-e41f
+  branch: cursor/active-codebase-j-integration-e41f
   plan_path: .agents/plans/active-codebase-batch-j-standards-e41f.md
-  plan_commit: a9988601772604021ef5cc55fc6c77f1a474debd
+  plan_commit: ff512b07b65c081711da66fe210ec11a7f80ad05
   snapshot_path: .agents/plans/active-codebase-batch-j-standards-e41f.snapshot.json
-  snapshot_commit: a9988601772604021ef5cc55fc6c77f1a474debd
+  snapshot_commit: ff512b07b65c081711da66fe210ec11a7f80ad05
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
