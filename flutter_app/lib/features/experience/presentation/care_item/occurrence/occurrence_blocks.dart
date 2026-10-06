@@ -232,7 +232,7 @@ class _OccurrenceBlocksState extends ConsumerState<OccurrenceBlocks> {
               child: FilledButton(
                 key: const Key('occurrence_done'),
                 onPressed: _busy || missing.isNotEmpty ? null : _done,
-                child: Text(l.careMarkDoneLabel(_d.item.name)),
+                child: Text(l.markAsDone),
               ),
             ),
             const SizedBox(width: 8),
