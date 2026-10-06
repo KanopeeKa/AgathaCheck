@@ -31,11 +31,8 @@ test.describe('Care agenda (occurrence-first)', () => {
       await dashboard.open();
       const agenda = new CareAgendaPage(page);
       await agenda.openRow(entry.id, entry.name);
-      await expect(
-        page
-          .getByRole('heading', { name: /Care date|Date de soin/i })
-          .or(page.getByText(/^Care date$|^Date de soin$/i)),
-      ).toBeVisible({ timeout: 30_000 });
+      const occurrence = new OccurrencePage(page);
+      await occurrence.expectLoaded();
       await expect(page.getByText('Viewable Care').first()).toBeVisible({
         timeout: 30_000,
       });
