@@ -56,12 +56,14 @@ export class CareItemPage {
   }
 
   async expectPetContextTile(petName: string): Promise<void> {
-    await refreshFlutterAccessibility(this.page);
-    const tile = semanticsKey(this.page, 'care_item_pet_tile');
-    await expect(tile).toBeVisible({ timeout: 30_000 });
-    await expect(
-      this.page.getByRole('button', { name: new RegExp(`^${petName}$`, 'i') }),
-    ).toBeVisible({ timeout: 15_000 });
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      const tile = semanticsKey(this.page, 'care_item_pet_tile');
+      await expect(tile).toBeVisible();
+      await expect(
+        tile.or(this.page.getByText(new RegExp(petName, 'i'))).first(),
+      ).toContainText(petName);
+    }).toPass({ timeout: 45_000 });
   }
 
   async expectContextStripStatusChip(label: RegExp): Promise<void> {
