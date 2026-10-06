@@ -58,10 +58,10 @@ next_action: "continue phase 4 on branch cursor/active-codebase-j4-checker-ci-e4
 artifact_ref:
   branch: cursor/active-codebase-j4-checker-ci-e41f
   plan_path: .agents/plans/active-codebase-batch-j-standards-e41f.md
-  plan_commit: dc4807d9a08616c3a6df2d5d87b432ea74c335e5
+  plan_commit: 2d6329948933d71dff73c8f9fe2f123c31edf43b
   snapshot_path: .agents/plans/active-codebase-batch-j-standards-e41f.snapshot.json
-  snapshot_commit: dc4807d9a08616c3a6df2d5d87b432ea74c335e5
-open_prs: []
+  snapshot_commit: 2d6329948933d71dff73c8f9fe2f123c31edf43b
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1699"]
 merge_commits: {}
 debt_issue_refs: []
 ```
