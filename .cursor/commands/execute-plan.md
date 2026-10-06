@@ -22,11 +22,11 @@ Bare **`/execute-plan`** (no id) is valid when context is unambiguous — see sk
 
 ## Rules
 
-1. **Run-until-blocked** — gate exit `0` → stay in the phase loop until merge-done, `complete-plan`, or §Halt; never ask "shall I continue?" mid-flow
+1. **Run-until-blocked** — gate exit `0` → stay in the phase loop until merge-done, `complete-plan`, or §Halt; never ask "shall I continue?" mid-flow. **Orchestrator:** no routine user chat until `complete-plan` or §Halt (skill §Orchestrator visibility)
 2. **Babysit-plus** on intermediate phase PRs; **babysit-uat** on final PR to `main` — never plain `/babysit`
 3. **Always merge** when gates pass (no manual/labeled modes)
 4. **Phase gate = merge-done** — PR merged into base before next phase (final main PR also needs pre-UAT green)
-5. **Integration branch** — 2+ phases: `base_branch` = integration; one final PR to `main`
+5. **Integration branch (required for 2+ phases)** — `base_branch` = `cursor/<plan_id>-integration-<suffix>`; phase PRs → integration; one final PR → `main`. Validator rejects multi-phase + `main` when plan is `active`
 6. **Per-phase worker** — Task sub-agent for implementation; orchestrator owns babysit+ / merge
 7. **Halt only on revoke / escalation / session_limit (~24h)** — the only routine checkpoint; see autonomous-pr-policy §Halt and resume
 8. **48h `approved_until`** — mandatory autonomy window; re-approve if expired

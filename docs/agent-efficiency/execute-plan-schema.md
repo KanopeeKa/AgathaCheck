@@ -46,7 +46,7 @@ An autonomous multi-phase run is driven by:
 | `content_hash` | string | yes | `sha256:` of canonical JSON (excluding this field) |
 | `autonomy` | enum | yes | `active` \| `completed` \| `halted` \| `revoked` |
 | `default_merge_mode` | enum | yes | `auto` only |
-| `base_branch` | string | yes | Usually `main` or integration parent |
+| `base_branch` | string | yes | **1 phase:** `main`. **2+ phases (active plan):** integration branch `cursor/<plan_id>-integration-<suffix>` — see §Multi-phase integration |
 | `control_issue` | integer | yes | GitHub issue number |
 | `artifact_branch_policy` | enum | yes | `phase-branch` (default) \| `main` |
 | `phases` | array | yes | Ordered phase objects (see below) |
@@ -65,6 +65,19 @@ An autonomous multi-phase run is driven by:
 | `merge_commit` | string \| null | no | Merge commit after child completes |
 
 Roadmap parents still require at least one orchestrator `phase` (usually a single phase for plan-artifact updates). Child plans are bootstrapped and executed via `/execute-plan` on each child `plan_id`; the parent tracks progress via `roadmap-set-child` CLI (see [execute-plan-runtime.md](./execute-plan-runtime.md)).
+
+### Multi-phase integration (required)
+
+When `phases.length >= 2` and `autonomy: active`:
+
+1. Create `cursor/<plan_id>-integration-<suffix>` from `main` before `approve-autonomous`.
+2. Set snapshot `base_branch` to that branch (pattern: `cursor/<name>-integration-<suffix>`).
+3. Phase PRs target `base_branch`, not `main`.
+4. After all phases merge into integration, open **one** PR integration → `main` (`/babysit-uat` on that merge).
+
+`validateSnapshot` (via `scripts/lib/execute_plan_schema.js`) **rejects** `base_branch: main` for multi-phase active plans. **Grandfather:** `completed` and `revoked` snapshots are not re-checked on resume; `halted` plans must fix `base_branch` (or split phases) before returning to `active`.
+
+**Disjoint landings:** use separate `plan_id`s (often single-phase each), not one multi-phase plan on `main`.
 
 ### `artifact_branch_policy`
 

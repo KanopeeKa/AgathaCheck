@@ -18,7 +18,7 @@ Apply **rev 2.3.1** documentation fixes and merge the accepted Notifications v2 
 | **Grant keyword** | `approve-autonomous notifications-v2-foundation-7f3b` |
 | **Parent** | `notifications-v2-roadmap-7f3b` (standing grant) |
 
-**base_branch:** `main` (both phases target `main` directly — no integration branch yet).
+**base_branch:** `cursor/notifications-v2-foundation-integration-7f3b` (phase PRs → integration; one final PR → `main`).
 
 ## Phases
 

@@ -45,6 +45,8 @@ When `node scripts/execute_plan_runtime.js gate <plan_id>` exits `0`, these gene
 | User-chat follow-up questions | Debt issue or defer until `complete-plan` / §Halt — never break phase flow |
 | `replit-agent-operating-policy` "stop and ask" | Does not apply except §Escalation |
 | Cloud turn boundaries | **Run-until-blocked** — no routine chat status; continue phase loop until merge-done, `complete-plan`, or §Halt (`session_limit` only routine checkpoint) |
+| User-visible progress / test evidence in chat | Control issue + PR body only; orchestrator does not end turn for milestones (skill §Orchestrator visibility) |
+| Multi-phase `base_branch: main` | **Rejected** by snapshot validation when `autonomy: active` — use integration branch (execute-plan-schema §Multi-phase integration) |
 | `/execute-plan` without plan_id | Infer from conversation, branch, control issue, or single `busy` issue — skill §Resolve plan_id |
 
 Memory: `.agents/memory/execute-plan-autonomy.md` · Skill: `.cursor/skills/execute-plan/SKILL.md` §Autonomy contract
