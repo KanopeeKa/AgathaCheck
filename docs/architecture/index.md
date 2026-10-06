@@ -3,7 +3,7 @@ title: Architecture index
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-10-04
+last_updated: 2026-10-06
 tags: [architecture, index]
 ---
 # Architecture index (agent quick-reference)
@@ -11,7 +11,9 @@ tags: [architecture, index]
 Thin map for agents — read this **before** broad codebase search.  
 Full conventions: `docs/architecture/modularity.md`.  
 **Accepted architecture review (2026-09-22):** [active-codebase-review.md](reviews/active-codebase-review.md) — integrity fixes, module contracts, and delivery batches A → B → C.  
-**Architecture decisions (ADR):** [decisions/README.md](decisions/README.md) — platform boundaries (e.g. account erasure acceptance).
+**Architecture decisions (ADR):** [decisions/README.md](decisions/README.md) — [0001](decisions/0001-account-erasure-acceptance.md) erasure · [0002](decisions/0002-feature-layering.md) Flutter layering · [0003](decisions/0003-transaction-ownership.md) transactions · [0004](decisions/0004-cleanup-jobs.md) cleanup jobs · [0005](decisions/0005-canonical-health-state-care-schedule-controller.md) health store · [0006](decisions/0006-frozen-data-compatibility-seam.md) frozen seam · [0007](decisions/0007-pet-cache-freshness.md) pet cache.
+
+**Contracts and baselines:** [api-reference.md](api-reference.md) · [OpenAPI pet-care subset](openapi/pet-care-critical.json) · [active codebase baseline](../engineering/active-codebase-baseline/README.md) · [component README template](reviews/active-codebase-review.md#appendix-c--governance-evidence-and-documentation-template) (Appendix C).
 
 ---
 
@@ -29,7 +31,9 @@ Full conventions: `docs/architecture/modularity.md`.
 | E2E API helpers | `e2e/playwright/support/api.ts` | **Serialize edits** across agents |
 | Governance scripts | `scripts/` | file size, BDD gate, priority tags |
 | Calendar dates | `docs/architecture/calendar-dates.md` | `YYYY-MM-DD` wire format |
-| API reference | `docs/architecture/api-reference.md` | REST endpoints |
+| API reference | [api-reference.md](api-reference.md) | REST endpoints |
+| OpenAPI (critical subset) | [openapi/pet-care-critical.json](openapi/pet-care-critical.json) | Contract tests + DTO stability |
+| Active baseline | [active-codebase-baseline/README.md](../engineering/active-codebase-baseline/README.md) | Command matrix, metrics, gates |
 | Design / UX | `docs/design/index.md` | Tiers, `system.md`, `/ui-design-deep`, Router `accessibility` protocol |
 | Navigation shell & phased delivery | `docs/domains/navigation/` + `docs/domains/cross-domain/changes/` | **Active** — supersedes `docs/archived/navigation-v2.md`; read [navigation-decisions.md](/docs/domains/navigation/features/navigation-decisions.md) first |
 
@@ -212,6 +216,20 @@ One health entry as a care series: open occurrences, agenda row, occurrence scre
 | Uploads | `server/lib/safeUpload.js` |
 | GDPR export | `server/lib/gdprUserExport.js` |
 | Calendar dates | `server/lib/calendarDate.js` |
+
+### Server component contracts (Node)
+
+Appendix C READMEs — purpose, tables, endpoints, transaction owner, tests.
+
+| Component | README |
+|-----------|--------|
+| Auth (session, profile) | [server/routes/auth/README.md](../../server/routes/auth/README.md) |
+| Account (erasure service) | [server/lib/account/README.md](../../server/lib/account/README.md) |
+| Pets | [server/routes/pets/README.md](../../server/routes/pets/README.md) |
+| Health entries | [server/routes/healthEntries/README.md](../../server/routes/healthEntries/README.md) |
+| Sharing | [server/routes/sharing/README.md](../../server/routes/sharing/README.md) |
+| Care context (planned absences) | [server/routes/careContext/README.md](../../server/routes/careContext/README.md) |
+| Cleanup jobs | [server/lib/jobs/README.md](../../server/lib/jobs/README.md) |
 
 ---
 

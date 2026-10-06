@@ -51,17 +51,17 @@ Hotspots at `0cc739e` (from the metrics script):
 
 ```yaml
 autonomy: active
-current_phase: 2
-last_completed_phase: 1
+current_phase: 4
+last_completed_phase: 3
 halt_reason: null
-next_action: "continue phase 2 on branch cursor/active-codebase-k2-flutter-extractions-e41f"
+next_action: "start phase 4: checkout cursor/active-codebase-k4-final-acceptance-e41f"
 artifact_ref:
-  branch: cursor/active-codebase-k2-flutter-extractions-e41f
+  branch: cursor/active-codebase-k-integration-e41f
   plan_path: .agents/plans/active-codebase-batch-k-final-acceptance-e41f.md
-  plan_commit: fcf9bc1bbeba0053ddeca933ffcdcf214c8fd997
+  plan_commit: dbb4272e5181bcbaa058fbcbaa3b407dac9a8450
   snapshot_path: .agents/plans/active-codebase-batch-k-final-acceptance-e41f.snapshot.json
-  snapshot_commit: fcf9bc1bbeba0053ddeca933ffcdcf214c8fd997
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1719"]
+  snapshot_commit: dbb4272e5181bcbaa058fbcbaa3b407dac9a8450
+open_prs: []
 merge_commits: {}
 debt_issue_refs: []
 ```
@@ -206,9 +206,9 @@ docs
 
 **Acceptance criteria:**
 
-- [ ] **K.3-1** ADRs exist in `docs/architecture/decisions/` for: transaction ownership (`withTransaction`, COMMIT guard, no pool fallback); cleanup jobs (D10/D11, lease semantics, retention); canonical health state and `CareScheduleController` (D19); retained frozen-data compatibility seam (Package 2); and pet cache freshness (D2/D18). They join ADR 0001 (erasure) and the layering ADR (I2.1). The decisions index lists them all.
-- [ ] **K.3-2** Server component READMEs (auth, pets, healthEntries, sharing, careContext, jobs, account) follow Appendix C: purpose, owned tables, endpoints with inputs/outputs/errors, transaction owner, side effects, permissions, tests, owner and last reviewed. Flutter READMEs from I1 are refreshed with the last-reviewed date.
-- [ ] **K.3-3** `docs/architecture/index.md` links every ADR, component README, `api-reference.md`/OpenAPI and the baseline README. `bash scripts/validate_docs.sh` is green.
+- [x] **K.3-1** ADRs exist in `docs/architecture/decisions/` for: transaction ownership (`withTransaction`, COMMIT guard, no pool fallback); cleanup jobs (D10/D11, lease semantics, retention); canonical health state and `CareScheduleController` (D19); retained frozen-data compatibility seam (Package 2); and pet cache freshness (D2/D18). They join ADR 0001 (erasure) and the layering ADR (I2.1). The decisions index lists them all.
+- [x] **K.3-2** Server component READMEs (auth, pets, healthEntries, sharing, careContext, jobs, account) follow Appendix C: purpose, owned tables, endpoints with inputs/outputs/errors, transaction owner, side effects, permissions, tests, owner and last reviewed. Flutter READMEs from I1 are refreshed with the last-reviewed date.
+- [x] **K.3-3** `docs/architecture/index.md` links every ADR, component README, `api-reference.md`/OpenAPI and the baseline README. `bash scripts/validate_docs.sh` is green.
 
 ---
 
