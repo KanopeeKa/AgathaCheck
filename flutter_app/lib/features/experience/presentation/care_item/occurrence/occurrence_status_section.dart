@@ -14,9 +14,7 @@ class OccurrenceStatusSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final occ = detail.occurrence;
-    final pill = occ.isClosedNotRecorded
-        ? closedNotRecordedPillStyle(l)
-        : openOccurrencePillStyle(l, occ.status);
+    final pill = occurrenceStatusPillStyle(l, occ);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

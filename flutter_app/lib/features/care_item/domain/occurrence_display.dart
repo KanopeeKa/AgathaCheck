@@ -35,11 +35,34 @@ OccurrencePillStyle openOccurrencePillStyle(
       label: l.careStatusDue,
       tone: OccurrencePillTone.due,
     ),
-    _ => OccurrencePillStyle(
+    CareOccurrenceStatus.comingUp => OccurrencePillStyle(
+      label: l.careStatusComingUp,
+      tone: OccurrencePillTone.neutral,
+    ),
+    CareOccurrenceStatus.done => OccurrencePillStyle(
+      label: l.done,
+      tone: OccurrencePillTone.neutral,
+    ),
+    CareOccurrenceStatus.skipped => OccurrencePillStyle(
+      label: l.careSkip,
+      tone: OccurrencePillTone.neutral,
+    ),
+    CareOccurrenceStatus.unknown => OccurrencePillStyle(
       label: l.careStatusComingUp,
       tone: OccurrencePillTone.neutral,
     ),
   };
+}
+
+/// Status pill on the Care date screen (open + closed doses).
+OccurrencePillStyle occurrenceStatusPillStyle(
+  AppLocalizations l,
+  CareOccurrence occ,
+) {
+  if (occ.isClosedNotRecorded) {
+    return closedNotRecordedPillStyle(l);
+  }
+  return openOccurrencePillStyle(l, occ.status);
 }
 
 /// Status pill for an upcoming-group row (Later today vs Coming up).

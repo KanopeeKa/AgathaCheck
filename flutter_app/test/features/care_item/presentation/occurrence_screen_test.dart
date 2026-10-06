@@ -135,7 +135,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Care date'), findsOneWidget);
-    expect(find.text('Mark Flea as done'), findsOneWidget);
+    expect(find.text('Mark as done'), findsOneWidget);
     expect(find.byKey(const Key('occurrence_skip')), findsOneWidget);
     expect(find.byKey(const Key('occurrence_reschedule')), findsOneWidget);
     await tester.tap(find.byKey(const Key('occurrence_done')));

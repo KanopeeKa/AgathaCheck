@@ -12,6 +12,25 @@ void main() {
     l = await AppLocalizations.delegate.load(const Locale('en'));
   });
 
+  test('done and skipped use Done and Skip labels', () {
+    final done = openOccurrencePillStyle(l, CareOccurrenceStatus.done);
+    expect(done.label, l.done);
+    final skipped = openOccurrencePillStyle(l, CareOccurrenceStatus.skipped);
+    expect(skipped.label, l.careSkip);
+  });
+
+  test('occurrenceStatusPillStyle maps closed done dose', () {
+    final occ = CareOccurrence(
+      id: '1',
+      date: DateTime(2026, 10, 2),
+      time: '08:00',
+      status: CareOccurrenceStatus.done,
+      origin: CareOccurrenceOrigin.schedule,
+      isOpen: false,
+    );
+    expect(occurrenceStatusPillStyle(l, occ).label, l.done);
+  });
+
   test('open not_recorded shows grey Not recorded pill', () {
     final pill = openOccurrencePillStyle(l, CareOccurrenceStatus.notRecorded);
     expect(pill.label, l.careStatusNotRecorded);

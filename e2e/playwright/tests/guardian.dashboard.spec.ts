@@ -149,7 +149,7 @@ test.describe('Guardian dashboard', () => {
       const agenda = new CareAgendaPage(page);
       await agenda.openRow(entry.id, entry.name);
       await expect(
-        page.getByRole('heading', { name: 'Viewable Care', level: 2 }).first(),
+        page.getByRole('heading', { name: /Care date|Date de soin/i }).first(),
       ).toBeVisible({ timeout: 30_000 });
       await expect(page.getByRole('button', { name: /^Back$/i })).toBeVisible();
       await expect(page.getByRole('button', { name: /snooze/i })).toHaveCount(0);

@@ -31,3 +31,15 @@ Implement the agreed Care date screen layout: context tile, title + Reschedule, 
 ## Autonomy
 
 Granted in user chat 2026-10-06 — full integration branch, single PR to `main`, no pause.
+
+## Acceptance criteria (Care date v1)
+
+1. App bar title **Care date**; back returns per shell `returnTo`.
+2. Context tile opens Care details; shows pet medallion + name, care name, lifecycle chip, `{n} open` (hidden when finished).
+3. Title row shows scheduled date/time only; **Reschedule** visible for open actionable doses (not closed-not-recorded).
+4. Status pill matches occurrence state (due, overdue, done, skipped, not recorded, coming up).
+5. Away block only for open occurrence dates inside an absence window; **keep_date** is absence-wide with explainer.
+6. Open actions: completion date + **Mark as done** (filled) + **Skip** (outlined); no ⋯ menu.
+7. Done: editable completion date; Undo label from `lastAction` when `canUndoHere`.
+8. Finished series: static copy only when `!canUndoHere`.
+9. E2E semantics: `occurrence_about_item`, `occurrence_screen`, `occurrence_reschedule` stable for Playwright.

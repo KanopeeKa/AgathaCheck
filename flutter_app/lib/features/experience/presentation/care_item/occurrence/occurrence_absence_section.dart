@@ -7,6 +7,8 @@ import 'package:pet_profile_app/features/care_item/care_item.dart';
 import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
+import '../care_item_detail_with_absence_refresh.dart';
+
 /// Away context for one open occurrence (D-OCC-014, D-OCC-015).
 class OccurrenceAbsenceSection extends ConsumerWidget {
   const OccurrenceAbsenceSection({
@@ -46,7 +48,7 @@ class OccurrenceAbsenceSection extends ConsumerWidget {
   }
 }
 
-class _Body extends ConsumerWidget {
+class _Body extends ConsumerStatefulWidget {
   const _Body({
     required this.slice,
     required this.entryId,
@@ -58,9 +60,17 @@ class _Body extends ConsumerWidget {
   final Future<void> Function() onChanged;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_Body> createState() => _BodyState();
+}
+
+class _BodyState extends ConsumerState<_Body> {
+  bool _busy = false;
+
+  @override
+  Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final slice = widget.slice;
     final away = slice.resolutionDecision == 'keep_date';
     final carer = slice.carerDisplayName();
 
@@ -105,7 +115,7 @@ class _Body extends ConsumerWidget {
           const SizedBox(height: 12),
           OutlinedButton(
             key: const Key('occurrence_absence_keep'),
-            onPressed: () => _keepDate(context, ref),
+            onPressed: _busy ? null : _keepDate,
             child: Text(_keepLabel(l, slice)),
           ),
         ] else
@@ -136,19 +146,36 @@ class _Body extends ConsumerWidget {
     }
   }
 
-  Future<void> _keepDate(BuildContext context, WidgetRef ref) async {
-    final remote = ref.read(healthAbsenceContextRemoteProvider);
-    final lookedAfter =
-        slice.suggestedLookedAfterBy?.toApiPayload() ??
-        slice.petCarer?.toApiPayload();
-    await remote.saveResolution(
-      absenceId: slice.plannedAbsenceId,
-      healthEntryId: entryId,
-      decision: 'keep_date',
-      lookedAfterBy: lookedAfter,
-    );
-    invalidateCareItemDetailData(ref, entryId);
-    ref.invalidate(careItemAbsenceContextProvider(entryId));
-    await onChanged();
+  Future<void> _keepDate() async {
+    if (_busy) return;
+    setState(() => _busy = true);
+    final slice = widget.slice;
+    final l = AppLocalizations.of(context)!;
+    try {
+      final remote = ref.read(healthAbsenceContextRemoteProvider);
+      final lookedAfter =
+          slice.suggestedLookedAfterBy?.toApiPayload() ??
+          slice.petCarer?.toApiPayload();
+      await remote.saveResolution(
+        absenceId: slice.plannedAbsenceId,
+        healthEntryId: widget.entryId,
+        decision: 'keep_date',
+        lookedAfterBy: lookedAfter,
+      );
+      invalidateCareItemDetailWithAbsence(
+        ref,
+        widget.entryId,
+        absenceId: slice.plannedAbsenceId,
+      );
+      await widget.onChanged();
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.careCommandFailed)));
+      }
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
   }
 }
