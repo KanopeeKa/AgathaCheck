@@ -168,6 +168,32 @@ class CareItemDetailScreen extends ConsumerWidget {
               }
             }
 
+            Future<void> onPlanAnotherDate() async {
+              final asOf =
+                  entry.schedule?.asOf.date ?? calendarDateOnly(DateTime.now());
+              final reserved =
+                  openOccurrencesAsync.valueOrNull
+                      ?.map((o) => o.scheduledDate)
+                      .toList() ??
+                  (entry.nextDueDate != null
+                      ? [entry.nextDueDate!]
+                      : <DateTime>[]);
+              final added = await showPlanAnotherDateSheet(
+                context,
+                ref,
+                entryId: entryId,
+                asOf: asOf,
+                reservedDates: reserved,
+              );
+              if (added == true) {
+                PetEventOccurrenceActions.invalidateOccurrenceData(
+                  ref,
+                  entryId,
+                );
+                ref.invalidate(petHealthEntryByIdProvider);
+              }
+            }
+
             return ExperienceShellScaffold(
               experience: experience,
               currentLocation: GoRouterState.of(context).uri.path,
@@ -187,6 +213,7 @@ class CareItemDetailScreen extends ConsumerWidget {
                   onResume: onResume,
                   onArchive: onArchive,
                   onRestore: onRestore,
+                  onPlanAnotherDate: onPlanAnotherDate,
                 ),
               ],
               child: historyAsync.when(

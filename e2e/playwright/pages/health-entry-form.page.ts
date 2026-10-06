@@ -99,17 +99,46 @@ export class HealthEntryFormPage {
     await expect(this.page.getByText(label, { exact: true }).first()).toBeVisible();
   }
 
-  async openCareProviderPicker(): Promise<void> {
+  async openCareProviderDropdown(): Promise<void> {
     await this.expandAdvancedSettings();
-    await this.page
-      .locator('[flt-semantics-identifier="people_picker_field_care_provider"]')
-      .scrollIntoViewIfNeeded();
-    await this.page.locator('[flt-semantics-identifier="people_picker_field_care_provider"]').click();
+    const dropdown = this.page.locator(
+      '[flt-semantics-identifier="care_provider_dropdown"]',
+    );
+    await expect(dropdown).toBeVisible({ timeout: 60_000 });
+    await dropdown.click({ force: true });
   }
 
-  async expectCareProviderFieldShows(name: string): Promise<void> {
+  async selectCareProviderContact(name: string): Promise<void> {
+    await this.openCareProviderDropdown();
+    const option = this.page.getByRole('menuitem', { name, exact: true });
+    await expect(option).toBeVisible({ timeout: 60_000 });
+    await option.click();
+  }
+
+  async setCareProviderTypedName(name: string): Promise<void> {
+    await this.expandAdvancedSettings();
+    await this.page
+      .locator('[flt-semantics-identifier="care_provider_use_typed_name"]')
+      .click();
+    await this.page
+      .locator('[flt-semantics-identifier="care_provider_typed_name_field"] input')
+      .fill(name);
+  }
+
+  async expectCareProviderDropdownShows(name: string): Promise<void> {
+    await this.expandAdvancedSettings();
+    const dropdown = this.page.locator(
+      '[flt-semantics-identifier="care_provider_dropdown"]',
+    );
+    await expect(dropdown).toContainText(name, { timeout: 15_000 });
+  }
+
+  async expectCareProviderTypedNameShows(name: string): Promise<void> {
+    await this.expandAdvancedSettings();
     await expect(
-      this.page.locator('[flt-semantics-identifier="people_picker_field_care_provider"]'),
-    ).toContainText(name, { timeout: 15_000 });
+      this.page.locator(
+        '[flt-semantics-identifier="care_provider_typed_name_field"] input',
+      ),
+    ).toHaveValue(name, { timeout: 15_000 });
   }
 }
