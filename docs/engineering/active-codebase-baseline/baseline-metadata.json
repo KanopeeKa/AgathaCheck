@@ -1,12 +1,12 @@
 {
-  "baseline_id": "active-codebase-d1",
-  "recorded_at": "2026-09-29T22:50:00Z",
-  "git_commit": "f669b3ef18dbd5939caefc211c6ed05599aee524",
+  "baseline_id": "active-codebase-k4",
+  "recorded_at": "2026-10-06T22:15:00Z",
+  "git_commit": "afc7c4ad5c677f0e0b5719a2b0b61156202eb964",
   "architecture_review": "docs/architecture/reviews/active-codebase-review.md",
-  "execute_plan": "active-codebase-batch-d-guardrails-e41f",
-  "batch": "D1",
+  "execute_plan": "active-codebase-batch-k-final-acceptance-e41f",
+  "batch": "K4",
   "notes": "Refresh git_commit and current figures whenever metrics-headline.md is regenerated; append the previous values to previous_baselines.",
-  "source_tree_equals": "main@adaff34de2bc815637fa3362a72b7cc888017b2d (only .agents/plans differ)",
+  "source_tree_equals": "cursor/active-codebase-k-integration-e41f@afc7c4ad",
   "previous_baselines": [
     {
       "baseline_id": "active-codebase-review",
@@ -21,11 +21,25 @@
       "unique_feature_edges": 50,
       "directives": 466,
       "scc_features": 12
+    },
+    {
+      "baseline_id": "active-codebase-d1",
+      "git_commit": "f669b3ef18dbd5939caefc211c6ed05599aee524",
+      "unique_feature_edges": 59,
+      "directives": 536,
+      "scc_features": 13
+    },
+    {
+      "baseline_id": "active-codebase-roadmap-start",
+      "git_commit": "0cc739efa006e19c17c18f4327aacc59ee9da4e3",
+      "unique_feature_edges": 59,
+      "directives": 536,
+      "scc_features": 13
     }
   ],
   "current": {
-    "unique_feature_edges": 59,
-    "directives": 536,
-    "scc_features": 13
+    "unique_feature_edges": 35,
+    "directives": 347,
+    "scc_features": 0
   }
 }
