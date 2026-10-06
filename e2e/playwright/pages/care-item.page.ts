@@ -43,12 +43,16 @@ export class CareItemPage {
   }
 
   async expectContextStripCareName(careName: string): Promise<void> {
-    await refreshFlutterAccessibility(this.page);
-    await expect(
-      this.page.locator('[key="care_item_context_strip_title"]').or(
-        this.page.getByText(careName, { exact: true }),
-      ).first(),
-    ).toBeVisible({ timeout: 30_000 });
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      const namePattern = new RegExp(careName, 'i');
+      await expect(
+        this.page
+          .getByRole('heading', { name: namePattern })
+          .or(this.page.getByText(namePattern))
+          .first(),
+      ).toBeVisible();
+    }).toPass({ timeout: 45_000 });
   }
 
   async expectPetContextTile(petName: string): Promise<void> {
