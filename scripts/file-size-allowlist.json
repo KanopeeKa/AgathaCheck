@@ -1,3 +1,33 @@
 {
-  "_comment": "Grandfather list for scripts/check_file_size.js. Remove a path when split below 500 lines. maxLines is a ratchet ceiling — CI fails if the file grows beyond it."
+  "_comment": "Grandfather list for scripts/check_file_size.js. Remove a path when split below 500 lines. maxLines is a ratchet ceiling — CI fails if the file grows beyond it. owner, reason and review_date are required for server/lib and server/services entries.",
+  "server/lib/orgPeople.js": {
+    "maxLines": 538,
+    "owner": "Engineering",
+    "reason": "Frozen Shelter org people directory; freeze contract forbids refactoring",
+    "review_date": "2026-12-28"
+  },
+  "server/lib/orgPermissions.js": {
+    "maxLines": 523,
+    "owner": "Engineering",
+    "reason": "Frozen Shelter org role permissions; freeze contract forbids refactoring",
+    "review_date": "2026-12-28"
+  },
+  "server/lib/care/occurrence/occurrenceRepository.js": {
+    "maxLines": 501,
+    "owner": "Engineering",
+    "reason": "Occurrence persistence grew with care command stack; split planned in Batch K",
+    "review_date": "2026-12-28"
+  },
+  "server/lib/care/observations/weightObservationService.js": {
+    "maxLines": 551,
+    "owner": "Engineering",
+    "reason": "Weight observation service consolidated fulfilment paths",
+    "review_date": "2026-12-28"
+  },
+  "server/services/sharing/shareInviteService.js": {
+    "maxLines": 597,
+    "owner": "Engineering",
+    "reason": "Share invite orchestration includes delivery metadata and retries",
+    "review_date": "2026-12-28"
+  }
 }

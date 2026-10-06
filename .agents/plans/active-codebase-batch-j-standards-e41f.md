@@ -165,10 +165,10 @@ governance-allowlist
 
 **Acceptance criteria:**
 
-- [ ] **J.2-1** `validate_eslint.js` lints all **active** `server/lib/**`, `server/services/**` and `server/routes/**`, excluding frozen roots from the manifest. Today `LINT_PATHS` covers only 4 paths. Existing violations are recorded per rule and file in `server/eslint-baseline.json`; new violations fail, and the baseline only shrinks.
-- [ ] **J.2-2** D7 ratchet: `server/lib` and `server/services` become **blocking** for new files over 500 lines and for growth of existing offenders beyond their recorded `maxLines`. Allowlist entries carry `owner`, `reason` and `review_date`, and the check warns when a review date has passed.
-- [ ] **J.2-3** The size report classifies Flutter files as screens, widgets, controllers/providers or data, and reports physical and heuristic line counts separately. The published report is refreshed.
-- [ ] **J.2-4** Fixture tests cover: a new 501-line file in `server/lib` fails; an allowlisted file growing past `maxLines` fails; an expired `review_date` warns.
+- [x] **J.2-1** `validate_eslint.js` lints all **active** `server/lib/**`, `server/services/**` and `server/routes/**`, excluding frozen roots from the manifest. Today `LINT_PATHS` covers only 4 paths. Existing violations are recorded per rule and file in `server/eslint-baseline.json`; new violations fail, and the baseline only shrinks.
+- [x] **J.2-2** D7 ratchet: `server/lib` and `server/services` become **blocking** for new files over 500 lines and for growth of existing offenders beyond their recorded `maxLines`. Allowlist entries carry `owner`, `reason` and `review_date`, and the check warns when a review date has passed.
+- [x] **J.2-3** The size report classifies Flutter files as screens, widgets, controllers/providers or data, and reports physical and heuristic line counts separately. The published report is refreshed.
+- [x] **J.2-4** Fixture tests cover: a new 501-line file in `server/lib` fails; an allowlisted file growing past `maxLines` fails; an expired `review_date` warns.
 
 ---
 
