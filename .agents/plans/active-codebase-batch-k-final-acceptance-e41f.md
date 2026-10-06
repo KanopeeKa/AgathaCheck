@@ -51,10 +51,10 @@ Hotspots at `0cc739e` (from the metrics script):
 
 ```yaml
 autonomy: active
-current_phase: 1
-last_completed_phase: null
+current_phase: 2
+last_completed_phase: 1
 halt_reason: null
-next_action: "continue phase 1 on branch cursor/active-codebase-k1-server-extractions-e41f"
+next_action: "continue phase 2 on branch cursor/active-codebase-k2-flutter-extractions-e41f"
 artifact_ref:
   branch: cursor/active-codebase-k-integration-e41f
   plan_path: .agents/plans/active-codebase-batch-k-final-acceptance-e41f.md
