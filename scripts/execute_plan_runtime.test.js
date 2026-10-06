@@ -34,6 +34,43 @@ test('validateSnapshot accepts example snapshot', () => {
   validateSnapshot(snapshot);
 });
 
+test('validateSnapshot rejects multi-phase active plan with base_branch main', () => {
+  const snapshot = loadSnapshotFromPath(exampleSnapshot);
+  snapshot.autonomy = 'active';
+  snapshot.base_branch = 'main';
+  snapshot.phases = [
+    { ...snapshot.phases[0], id: '1' },
+    {
+      ...snapshot.phases[0],
+      id: '2',
+      title: 'Phase two',
+      branch: 'cursor/example-phase-two-aec1',
+    },
+  ];
+  snapshot.content_hash = computeHash(snapshot);
+  assert.throws(
+    () => validateSnapshot(snapshot, { checkHash: true }),
+    /multi-phase plans .* require base_branch on an integration branch/
+  );
+});
+
+test('validateSnapshot accepts multi-phase active plan with integration base_branch', () => {
+  const snapshot = loadSnapshotFromPath(exampleSnapshot);
+  snapshot.autonomy = 'active';
+  snapshot.base_branch = 'cursor/example-plan-integration-aec1';
+  snapshot.phases = [
+    { ...snapshot.phases[0], id: '1' },
+    {
+      ...snapshot.phases[0],
+      id: '2',
+      title: 'Phase two',
+      branch: 'cursor/example-phase-two-aec1',
+    },
+  ];
+  snapshot.content_hash = computeHash(snapshot);
+  validateSnapshot(snapshot, { checkHash: true });
+});
+
 test('mutated snapshot fails validation until content_hash is recomputed', () => {
   const snapshot = loadSnapshotFromPath(exampleSnapshot);
   snapshot.autonomy = 'active';

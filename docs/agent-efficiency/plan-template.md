@@ -22,12 +22,12 @@ Copy to `.agents/plans/<plan_id>.md` and fill in. Pair with `<plan_id>.snapshot.
 | **title** | Short human title |
 | **author** | |
 | **created** | YYYY-MM-DD |
-| **base_branch** | `main` |
+| **base_branch** | `main` (1 phase) **or** `cursor/<plan_id>-integration-<suffix>` (**required** for 2+ phases) |
 | **default_merge_mode** | `auto` (only valid value — agents always merge when gates pass) |
 | **artifact_branch_policy** | `phase-branch` (default) |
 | **plan_kind** | omit for single plans; `roadmap` for multi-plan parent orchestrators |
 
-**Multi-phase (2+):** prefer `base_branch: cursor/<plan_id>-integration-<suffix>` — phase PRs merge to integration; one final PR integration → `main`. See execute-plan skill §Multi-phase integration branch.
+**Multi-phase (2+):** **require** `base_branch: cursor/<plan_id>-integration-<suffix>` — phase PRs merge to integration; one final PR integration → `main`. Snapshot validation rejects `main` while `autonomy: active`. See execute-plan skill §Multi-phase integration branch.
 
 **Roadmap parent (`plan_kind: roadmap`):** one standing grant chains multiple child `plan_id`s. Snapshot includes `child_plans[]` with `{plan_id, status}` per slice; runtime CLI tracks progress (`roadmap-status`, `roadmap-set-child`). See [execute-plan-runtime.md](./execute-plan-runtime.md) §Roadmap orchestrator.
 
@@ -157,6 +157,8 @@ Agent evaluates before autonomy grant:
 
 - Every phase has `allowed_paths`, `forbidden_paths`, `allowed_exceptions`, `exit_checklist`
 - No overlapping `allowed_paths` across non-spawn phases
+- **1 phase** → `base_branch: main` (or documented integration parent for spawn children)
+- **2+ phases** → `base_branch` matches `cursor/<plan_id>-integration-<suffix>`; integration branch exists on origin; final integration → `main` PR noted in Goal or last phase
 - Pessimistic scope estimate (domains × phases × CI factor)
 - Migrations / auth / API breaks flagged
 

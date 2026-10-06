@@ -4,10 +4,10 @@
   "approved_at": "2026-07-16T21:00:00Z",
   "approved_by": "documentation",
   "approved_until": "2026-07-18T21:00:00Z",
-  "content_hash": "sha256:92930eeef70f0dbb69c7e64ad8e610752732e58604f768694c090923c72c4cc0",
+  "content_hash": "sha256:2a9d03af3b9ca3a7e3a13de125ccbab5595b86701a153902ea557528bfacf832",
   "autonomy": "halted",
   "default_merge_mode": "auto",
-  "base_branch": "main",
+  "base_branch": "cursor/example-plan-integration-aec1",
   "control_issue": 1,
   "artifact_branch_policy": "phase-branch",
   "phases": [

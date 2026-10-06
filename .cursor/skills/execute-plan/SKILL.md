@@ -4,7 +4,7 @@ description: >-
   Multi-phase autonomous orchestrator — runs frozen plan snapshots phase-by-phase,
   gates on merge-done, delegates PR hygiene to /babysit-plus (default merge mode auto).
   Post-merge UAT is CI-owned (pre-uat-e2e) — main session never polls deploy.
-  May spawn Task sub-agents per phase for implementation; use integration branch for 2+ phases.
+  May spawn Task sub-agents per phase for implementation; integration base_branch required for 2+ phases.
 ---
 
 # Execute-plan
@@ -29,6 +29,18 @@ When session preflight **gate** exits `0`, autonomy is **active**. You have upfr
 **Anti-pattern (soft-stop):** phrases like "I can spin up the next plan on request," "whenever you want to keep going," or "say which wave and I'll bootstrap it" are permission-seeking even though they don't look like a question. If the human's chat authorization already names the remaining scope (multiple journeys/waves, "all phases," "the entire plan/roadmap"), treat that as the standing grant for every plan it covers — do not re-ask per slice.
 
 **User chat (blocker alerts only):** post a short alert when you **need the human** (halt, `**Needs you:**`, escalation, `session_limit`) — full detail on the **control issue** first, then one paragraph in chat with the issue link and unblock action. Do **not** send routine progress summaries that end the turn mid-phase. Non-blocking follow-ups → debt issue or bundle only after `complete-plan` / §Halt. See §Scope follow-ups and §Issue hygiene.
+
+## Orchestrator visibility (Cloud — mandatory when gate exit 0)
+
+You are the **orchestrator**, not a milestone reporter.
+
+1. **No routine user chat** until `complete-plan` or a real §Halt / §Escalation.
+2. **Control issue only** for progress (PR opened, CI green, phase merged). Telemetry is not permission to stop.
+3. **Forbidden mid-plan chat:** summaries, test walkthroughs, "PR #N is open", "CI is green", "next phase is…", soft offers to continue.
+4. **Allowed user chat:** blocker alerts only — one short paragraph + control issue link (`**Needs you:**`, revoke, `session_limit`, genuine escalation).
+5. If the platform ends the turn anyway, next session continues with `/execute-plan` or `resume-plan` — never re-ask for approval when the standing grant still applies.
+
+**Overrides:** This section wins over generic "show the user evidence" and "update PR each turn" **for execute-plan orchestrator sessions**. Put evidence in the PR body and control-issue comments; do not end the turn to narrate them.
 
 ## Run-until-blocked (default mode)
 
@@ -138,8 +150,9 @@ Run when drafting a plan, **before** `approve-autonomous`:
    ```
    Create issue via rendered `gh issue create` command; set `control_issue` in snapshot; re-validate.
    **Project status:** new control issues enter **Backlog** (default when added to the project board).
-5. Sanity check (plan-template §Sanity check expectations): `proceed` \| `proceed-high-risk` \| `reject`
-6. Human comments `approve-autonomous <plan_id>`; freeze snapshot (`content_hash` must not change after approval)
+5. **Multi-phase (2+ phases):** create `cursor/<plan_id>-integration-<suffix>` from `main`, set snapshot `base_branch` to that branch, record it on the control issue. Validator rejects `base_branch: main` while `autonomy: active`.
+6. Sanity check (plan-template §Sanity check expectations): `proceed` \| `proceed-high-risk` \| `reject`
+7. Human comments `approve-autonomous <plan_id>`; freeze snapshot (`content_hash` must not change after approval)
 
 `approved_until` = `approved_at + 48 hours` (mandatory).
 
@@ -206,16 +219,16 @@ Cloud agents end each **turn** when you send a user-visible reply. **Turn end is
 
 ---
 
-## Multi-phase integration branch (recommended)
+## Multi-phase integration branch (required)
 
-For plans with **2+ phases** (especially UI or the same product area), batch merges to `main`:
+For plans with **2+ phases** (same programme / product slice), batch merges to `main`:
 
 1. At plan start, create `cursor/<plan-id>-integration-<suffix>` from `main`.
-2. Set snapshot `base_branch` to that integration branch.
+2. Set snapshot `base_branch` to that integration branch (`validateSnapshot` enforces while `autonomy: active`).
 3. Each phase PR targets `base_branch` (integration), not `main`.
-4. After **all** phases are `merged` into integration, open **one** PR: integration → `main` (coordinator runs `./scripts/pre-push.sh`).
+4. After **all** phases are `merged` into integration, open **one** PR: integration → `main` (coordinator runs `./scripts/pre-push.sh`, then `/babysit-uat`).
 
-Single-phase or disjoint-domain plans may keep `base_branch: main`. See uat-coordinator-plan §Goals (integration branches for multi-phase UI sprints).
+**Single-phase** plans use `base_branch: main` (one PR). **Disjoint outcomes** use separate `plan_id`s (often single-phase each), not one multi-phase plan on `main`. See uat-coordinator-plan §Goals and `docs/agent-efficiency/execute-plan-schema.md` §Multi-phase integration.
 
 ---
 
