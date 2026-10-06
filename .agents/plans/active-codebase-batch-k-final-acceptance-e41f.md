@@ -58,9 +58,9 @@ next_action: "phase 5: integration PR to main, ./scripts/pre-push.sh, /babysit-u
 artifact_ref:
   branch: cursor/active-codebase-k4-final-acceptance-e41f
   plan_path: .agents/plans/active-codebase-batch-k-final-acceptance-e41f.md
-  plan_commit: a050a9877c8f2e8b0e8c8e8e8e8e8e8e8e8e8e8e
+  plan_commit: 59342111ab6e8e388b303cc616e18a25f375a154
   snapshot_path: .agents/plans/active-codebase-batch-k-final-acceptance-e41f.snapshot.json
-  snapshot_commit: a050a9877c8f2e8b0e8c8e8e8e8e8e8e8e8e8e8e
+  snapshot_commit: 59342111ab6e8e388b303cc616e18a25f375a154
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
