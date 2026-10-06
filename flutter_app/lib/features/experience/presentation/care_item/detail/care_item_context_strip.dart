@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:pet_profile_app/features/experience/presentation/config/pet_care_primary_destinations.dart';
 import 'package:pet_profile_app/features/care_taxonomy/presentation/widgets/care_family_labels.dart';
 import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
-import 'package:pet_profile_app/features/pet_care/pet_care.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
@@ -50,20 +49,22 @@ class CareItemContextStrip extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final stripWidth = constraints.maxWidth;
-        final textScale =
-            MediaQuery.textScalerOf(context).scale(14) / 14;
-        final stacked = stripWidth <= _stackedMaxWidth ||
+        final textScale = MediaQuery.textScalerOf(context).scale(14) / 14;
+        final stacked =
+            stripWidth <= _stackedMaxWidth ||
             textScale >= _largeTextScaleThreshold;
         final viewportWidth = MediaQuery.sizeOf(context).width;
-        final useContentHeaderTitle =
-            !PetCarePrimaryDestinations.isCompact(viewportWidth);
-        final nameStyle = (useContentHeaderTitle
-                ? theme.textTheme.titleMedium
-                : theme.textTheme.titleLarge)
-            ?.copyWith(
-          fontWeight: FontWeight.w700,
-          color: colorScheme.onSurface,
+        final useContentHeaderTitle = !PetCarePrimaryDestinations.isCompact(
+          viewportWidth,
         );
+        final nameStyle =
+            (useContentHeaderTitle
+                    ? theme.textTheme.titleMedium
+                    : theme.textTheme.titleLarge)
+                ?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: colorScheme.onSurface,
+                );
 
         final nameWidget = Semantics(
           header: true,

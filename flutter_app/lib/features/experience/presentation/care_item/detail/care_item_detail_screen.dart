@@ -49,18 +49,14 @@ class CareItemDetailScreen extends ConsumerWidget {
     }
 
     return petsAsync.when(
-      loading: () => routeShell(
-        child: const Center(child: CircularProgressIndicator()),
-      ),
-      error: (error, _) => routeShell(
-        child: Center(child: Text(l.errorWithMessage('$error'))),
-      ),
+      loading: () =>
+          routeShell(child: const Center(child: CircularProgressIndicator())),
+      error: (error, _) =>
+          routeShell(child: Center(child: Text(l.errorWithMessage('$error')))),
       data: (pets) {
         final pet = pets.where((p) => p.id == petId).firstOrNull;
         if (pet == null) {
-          return routeShell(
-            child: Center(child: Text(l.petNotFound)),
-          );
+          return routeShell(child: Center(child: Text(l.petNotFound)));
         }
 
         return entryAsync.when(
@@ -72,9 +68,7 @@ class CareItemDetailScreen extends ConsumerWidget {
           ),
           data: (entry) {
             if (entry == null) {
-              return routeShell(
-                child: Center(child: Text(l.entryNotFound)),
-              );
+              return routeShell(child: Center(child: Text(l.entryNotFound)));
             }
 
             final isClosed = isHealthEntrySeriesClosed(entry);
