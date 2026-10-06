@@ -29,15 +29,14 @@ const ALLOWED_METADATA_KEYS = Object.freeze({
 export const PET_ACTIVITY_HOOK_MANIFEST = Object.freeze([
   {
     id: 'health-entry-crud',
-    file: 'server/routes/healthEntries/crudRouter.js',
+    file: 'server/lib/health/healthEntryWriteService.js',
     eventType: 'health_log',
     minCalls: 2,
   },
   {
-    // Every care command route (complete, skip, record, postpone, undo, close,
-    // reopen …) records activity through the shared `handleCommand` helper.
+    // Occurrence command HTTP bridge records activity after care commands.
     id: 'health-entry-completion',
-    file: 'server/routes/healthEntries/occurrencesRouter.js',
+    file: 'server/routes/healthEntries/occurrenceHttpBridge.js',
     eventType: 'health_log',
     minCalls: 1,
   },
@@ -49,7 +48,7 @@ export const PET_ACTIVITY_HOOK_MANIFEST = Object.freeze([
   },
   {
     id: 'pet-profile-update',
-    file: 'server/routes/pets/coreRouter.js',
+    file: 'server/lib/pets/petCoreCommandService.js',
     eventType: 'profile_edit',
     minCalls: 1,
   },

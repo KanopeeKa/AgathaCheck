@@ -1,0 +1,100 @@
+/**
+ * Pet list/detail wire models and SQL fragments for multi-source pet queries.
+ */
+
+import { dateToIsoDate } from '../calendarDate.js';
+import { normalizeGender, normalizeSpecies } from '../petProfileNormalize.js';
+import { normalizePetHomeTimezone } from '../petHomeTimezone.js';
+
+export const FOSTER_PLACEMENT_SELECT_SQL = `
+  (SELECT fp.status
+   FROM foster_placements fp
+   WHERE fp.pet_id = p.id
+     AND fp.status = ANY($4::text[])
+   ORDER BY fp.created_at DESC
+   LIMIT 1) AS foster_placement_status,
+  (SELECT NULLIF(TRIM(COALESCE(u.first_name, '') || ' ' || COALESCE(u.last_name, '')), '')
+   FROM foster_placements fp
+   LEFT JOIN users u ON u.id = fp.foster_user_id
+   WHERE fp.pet_id = p.id
+     AND fp.status = ANY($4::text[])
+   ORDER BY fp.created_at DESC
+   LIMIT 1) AS foster_name`;
+
+export const PET_PARENT_NAME_SELECT_SQL = `
+  (SELECT NULLIF(TRIM(COALESCE(u.first_name, '') || ' ' || COALESCE(u.last_name, '')), '')
+   FROM users u
+   WHERE u.id = p.user_id) AS pet_parent_name`;
+
+/** @deprecated Use PET_PARENT_NAME_SELECT_SQL */
+export const PRIMARY_HOLDER_NAME_SELECT_SQL = PET_PARENT_NAME_SELECT_SQL;
+
+export const PET_COLOR_PALETTE = [
+  0xFF7E57C2, 0xFF9575CD, 0xFF5C6BC0, 0xFF7986CB, 0xFF4DB6AC,
+  0xFF81C784, 0xFF4FC3F7, 0xFFBA68C8, 0xFFF06292, 0xFFE57373,
+  0xFFFFB74D, 0xFFA1887F, 0xFF90A4AE, 0xFF64B5F6, 0xFFAED581,
+];
+
+export function resolveColorValue(raw) {
+  if (raw == null) return null;
+  const v = typeof raw === 'number' ? raw : parseInt(raw, 10);
+  if (isNaN(v)) return null;
+  if (v < PET_COLOR_PALETTE.length) return PET_COLOR_PALETTE[v];
+  return v;
+}
+
+export function petRowToMap(row) {
+  const isShared = row.is_shared === true || row.is_shared === 't';
+  const isFoster = row.is_foster === true || row.is_foster === 't';
+  return {
+    id: row.id,
+    user_id: row.user_id,
+    name: row.name,
+    species: normalizeSpecies(row.species),
+    breed: row.breed || '',
+    age: row.age,
+    dateOfBirth: row.date_of_birth ? dateToIsoDate(row.date_of_birth) : null,
+    date_of_birth: row.date_of_birth ? dateToIsoDate(row.date_of_birth) : null,
+    weight: row.weight,
+    weight_reference_value: row.weight_reference_value ?? null,
+    weight_reference_authority: row.weight_reference_authority ?? null,
+    weight_management_context: row.weight_management_context || 'none',
+    gender: normalizeGender(row.gender),
+    bio: row.bio || '',
+    insurance: row.insurance || '',
+    neuteredDate: row.neutered_date ? dateToIsoDate(row.neutered_date) : null,
+    neuterDismissed: row.neuter_dismissed || false,
+    chipId: row.chip_id || '',
+    chipDismissed: row.chip_dismissed || false,
+    photoPath: row.photo_path,
+    vetId: row.vet_id ? String(row.vet_id) : null,
+    colorValue: resolveColorValue(row.color_index),
+    passedAway: row.passed_away || false,
+    organization_id: isShared ? null : row.organization_id,
+    organization_name: isShared ? null : (row.organization_name || null),
+    is_shared: isShared,
+    is_foster: isFoster,
+    foster_placement_status: row.foster_placement_status || null,
+    foster_name: row.foster_name || null,
+    pet_parent_name: row.pet_parent_name || row.primary_holder_name || null,
+    primary_holder_name: row.pet_parent_name || row.primary_holder_name || null,
+    access_role: row.access_role || null,
+    homeTimezone: normalizePetHomeTimezone(row.home_timezone),
+    home_timezone: normalizePetHomeTimezone(row.home_timezone),
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+  };
+}
+
+/** @deprecated Pet UI no longer uses per-pet rainbow colors; kept for API compat. */
+export async function autoAssignColors(_pool, pets) {
+  return pets;
+}
+
+export async function userInOrg(pool, orgId, userId) {
+  const result = await pool.query(
+    'SELECT 1 FROM organization_users WHERE organization_id = $1 AND user_id = $2 LIMIT 1',
+    [orgId, userId],
+  );
+  return result.rows.length > 0;
+}
