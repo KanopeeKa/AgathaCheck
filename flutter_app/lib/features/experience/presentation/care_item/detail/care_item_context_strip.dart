@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:pet_profile_app/features/experience/presentation/config/pet_care_primary_destinations.dart';
-import 'package:pet_profile_app/features/care_taxonomy/presentation/widgets/care_family_labels.dart';
 import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
-import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
+import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import 'care_item_pet_context_tile.dart';
