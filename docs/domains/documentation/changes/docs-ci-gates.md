@@ -7,7 +7,6 @@ status_since: 2026-10-06
 plan: docs-ci-gates-warn-2316
 folds_into: docs/domains/documentation/standards.md
 last_updated: 2026-10-06
-tags: [documentation, ci, governance]
 ---
 
 # Spec — Documentation CI gates
