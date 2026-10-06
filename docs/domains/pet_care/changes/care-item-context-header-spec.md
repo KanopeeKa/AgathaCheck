@@ -156,7 +156,7 @@ Full-width strip above two-column body; **no** pet module in side column.
 **Unchanged from current `CareItemDetailBody`** after inserting the strip where `petModule` was:
 
 - Mobile one column: strip → needs attention → `sideScheduleAbsenceColumn()` → details module (incl. established when applicable) → history.
-- `sideScheduleAbsenceColumn()` order is **conditional** (absence-before-schedule vs schedule-before-absence) and always includes the observation/weight slot between schedule and absence per existing code — do **not** reorder modules to match evolution's Agatha slot (not present in body today).
+- `sideScheduleAbsenceColumn()` order is **conditional** (absence-before-schedule vs schedule-before-absence); the observation/weight slot **always follows Schedule** per existing code — do **not** reorder modules to match evolution's Agatha slot (not present in body today).
 
 ## 6. Copy and l10n
 
