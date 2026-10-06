@@ -77,14 +77,14 @@ autonomy: active
 current_phase: 1
 last_completed_phase: null
 halt_reason: null
-next_action: babysit+ phase 1 PR
+next_action: "continue phase 1 on branch cursor/notifications-v2-1-plan-a-7f3b"
 artifact_ref:
   branch: cursor/notifications-v2-1-plan-a-7f3b
   plan_path: .agents/plans/notifications-v2-1-readiness-7f3b.md
-  plan_commit: pending
+  plan_commit: d46d5d47d5e81d3e277df6f8b1127f9972ceae85
   snapshot_path: .agents/plans/notifications-v2-1-readiness-7f3b.snapshot.json
-  snapshot_commit: pending
-open_prs: []
+  snapshot_commit: d46d5d47d5e81d3e277df6f8b1127f9972ceae85
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1694"]
 merge_commits: {}
 debt_issue_refs: []
 ```
