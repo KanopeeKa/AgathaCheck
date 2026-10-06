@@ -194,6 +194,16 @@ export class NotificationsPage {
       .waitFor({ timeout: 15_000 });
   }
 
+  /** FR-IA-1 share invite row shows Accept / Decline without opening the row. */
+  async expectInlineShareInviteActions(): Promise<void> {
+    await this.waitForNotificationListSettled();
+    await refreshFlutterAccessibility(this.page);
+    const accept = this.page.getByRole('button', { name: /^Accept$|^Accepter$/i }).first();
+    const decline = this.page.getByRole('button', { name: /^Decline$|^Refuser$/i }).first();
+    await expect(accept).toBeVisible({ timeout: 20_000 });
+    await expect(decline).toBeVisible({ timeout: 20_000 });
+  }
+
   /** Assert date-group section headers (e.g. Today, Yesterday). */
   async expectDateGroupLabels(labels: string[]): Promise<void> {
     await this.waitForNotificationListSettled();

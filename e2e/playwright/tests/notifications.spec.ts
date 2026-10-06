@@ -54,6 +54,25 @@ import { CareItemPage } from '../pages/care-item.page';
 import { GuardianDashboardPage } from '../pages/guardian-dashboard.page';
 
 /** Backdate a notification row for date-grouping E2E (no REST field for created_at). */
+function resolveNotification(notificationId: string): void {
+  if (!/^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i.test(notificationId)) {
+    throw new Error('resolveNotification requires a UUID');
+  }
+  const host = process.env.PGHOST ?? 'localhost';
+  const port = process.env.PGPORT ?? '5432';
+  const user = process.env.PGUSER ?? 'user';
+  const password = process.env.PGPASSWORD ?? 'password';
+  const database = process.env.PGDATABASE ?? 'agatha_db';
+  execFileSync('psql', [
+    '-X', '-v', 'ON_ERROR_STOP=1',
+    '-h', host, '-p', port, '-U', user, '-d', database,
+    '-c', `UPDATE notifications SET resolved_at = NOW() WHERE id = '${notificationId}'`,
+  ], {
+    encoding: 'utf8',
+    env: { ...process.env, PGPASSWORD: password },
+  });
+}
+
 function backdateNotification(notificationId: string, daysAgo: number): void {
   if (!/^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i.test(notificationId)
       || !Number.isSafeInteger(daysAgo) || daysAgo < 1) {
@@ -214,7 +233,9 @@ test.describe('Notifications', () => {
       entryName: 'Deworming',
     });
     backdateNotification(second.notification.id, 1);
-    // v2 pins unread administrative rows under "Needs your response" — read so date groups show.
+    // v2 keeps unresolved administrative rows under "Needs your response" — resolve for date groups.
+    resolveNotification(first.notification.id);
+    resolveNotification(second.notification.id);
     await loginAs(page, user);
     await markAllNotificationsRead(baseURL, user.accessToken);
     const petList = new PetListPage(page);
