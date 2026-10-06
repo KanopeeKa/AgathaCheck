@@ -65,32 +65,35 @@ class _CareProviderFieldState extends State<CareProviderField> {
         Semantics(
           identifier: 'care_provider_use_typed_name',
           child: SwitchListTile(
-          contentPadding: EdgeInsets.zero,
-          title: Text(l.careProviderUseTypedName),
-          value: _useTyped,
-          onChanged: (v) {
-            setState(() {
-              _useTyped = v;
-              if (v) {
-                widget.onChanged(
-                  contactId: null,
-                  typedName: _typedController.text.trim(),
-                );
-              } else {
-                widget.onChanged(contactId: widget.contactId, typedName: null);
-              }
-            });
-          },
+            contentPadding: EdgeInsets.zero,
+            title: Text(l.careProviderUseTypedName),
+            value: _useTyped,
+            onChanged: (v) {
+              setState(() {
+                _useTyped = v;
+                if (v) {
+                  widget.onChanged(
+                    contactId: null,
+                    typedName: _typedController.text.trim(),
+                  );
+                } else {
+                  widget.onChanged(
+                    contactId: widget.contactId,
+                    typedName: null,
+                  );
+                }
+              });
+            },
           ),
         ),
         if (_useTyped)
           Semantics(
             identifier: 'care_provider_typed_name_field',
             child: TextField(
-            controller: _typedController,
-            decoration: InputDecoration(labelText: l.careProviderTypedName),
-            onChanged: (v) =>
-                widget.onChanged(contactId: null, typedName: v.trim()),
+              controller: _typedController,
+              decoration: InputDecoration(labelText: l.careProviderTypedName),
+              onChanged: (v) =>
+                  widget.onChanged(contactId: null, typedName: v.trim()),
             ),
           )
         else if (widget.contactsLoading)
@@ -101,16 +104,21 @@ class _CareProviderFieldState extends State<CareProviderField> {
           Semantics(
             identifier: 'care_provider_dropdown',
             child: DropdownButtonFormField<String?>(
-            initialValue: widget.contactId,
-            decoration: InputDecoration(labelText: l.careProviderChooseContact),
-            items: [
-              DropdownMenuItem<String?>(value: null, child: Text(l.none)),
-              ...widget.contacts.map(
-                (c) =>
-                    DropdownMenuItem<String?>(value: c.id, child: Text(c.name)),
+              initialValue: widget.contactId,
+              decoration: InputDecoration(
+                labelText: l.careProviderChooseContact,
               ),
-            ],
-            onChanged: (id) => widget.onChanged(contactId: id, typedName: null),
+              items: [
+                DropdownMenuItem<String?>(value: null, child: Text(l.none)),
+                ...widget.contacts.map(
+                  (c) => DropdownMenuItem<String?>(
+                    value: c.id,
+                    child: Text(c.name),
+                  ),
+                ),
+              ],
+              onChanged: (id) =>
+                  widget.onChanged(contactId: id, typedName: null),
             ),
           ),
       ],
