@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -40,7 +42,7 @@ class CareSuggestionRespondActions {
           .respond(petId: petId, recommendationId: apiId, action: action);
       ref.invalidate(petCareRecommendationsProvider(petId));
       ref.invalidate(petProfileCareSuggestionProvider(petId));
-      ref.invalidate(healthEntriesNotifierProvider);
+      unawaited(ref.read(healthEntriesNotifierProvider.notifier).refresh());
 
       if (!context.mounted) return;
       final l = AppLocalizations.of(context)!;

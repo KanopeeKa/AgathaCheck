@@ -7,6 +7,8 @@ import 'package:pet_profile_app/core/widgets/screen_overflow_actions.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 import 'package:pet_profile_app/core/experience/app_experience.dart';
 import 'package:pet_profile_app/core/router/experience_shell_scaffold.dart';
+import 'package:pet_profile_app/features/care_intelligence/care_intelligence.dart';
+import 'package:pet_profile_app/features/pet_care/pet_care.dart';
 import '../controllers/download_report_controller.dart';
 import '../widgets/pet_detail/pet_detail_scroll_body.dart';
 
@@ -20,6 +22,17 @@ class PetDetailScreen extends ConsumerStatefulWidget {
 }
 
 class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      ref.invalidate(petCareRecommendationsProvider(widget.petId));
+      ref.invalidate(petCareSafeguardsProvider(widget.petId));
+      ref.invalidate(petPendingCareMomentsProvider(widget.petId));
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final petListAsync = ref.watch(petListProvider);

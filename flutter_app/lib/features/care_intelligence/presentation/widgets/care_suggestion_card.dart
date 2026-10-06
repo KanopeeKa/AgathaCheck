@@ -76,6 +76,7 @@ class _CareSuggestionCardState extends ConsumerState<CareSuggestionCard> {
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Semantics(
+          identifier: 'care_suggestion_group',
           key: const ValueKey('care_suggestion_group'),
           container: true,
           child: Column(

@@ -17,7 +17,10 @@ final careIntelligenceRemoteDataSourceProvider =
     Provider<CareIntelligenceRemoteDataSource>((ref) {
       final baseUrl = ref.watch(apiBaseUrlProvider);
       final token = ref.watch(authProvider).accessToken;
-      final ds = CareIntelligenceRemoteDataSource(baseUrl: baseUrl);
+      final ds = CareIntelligenceRemoteDataSource(
+        baseUrl: baseUrl,
+        client: ref.watch(authHttpClientProvider),
+      );
       ds.authToken = token;
       return ds;
     });
@@ -30,6 +33,7 @@ final careIntelligenceRepositoryProvider = Provider<CareIntelligenceRepository>(
 
 final petCareRecommendationsProvider =
     FutureProvider.family<List<CareRecommendation>, String>((ref, petId) async {
+      ref.watch(authProvider.select((auth) => auth.accessToken));
       return ref
           .read(careIntelligenceRepositoryProvider)
           .getRecommendations(petId);
@@ -37,6 +41,7 @@ final petCareRecommendationsProvider =
 
 final petCareSafeguardsProvider =
     FutureProvider.family<List<CareSafeguard>, String>((ref, petId) async {
+      ref.watch(authProvider.select((auth) => auth.accessToken));
       return ref.read(careIntelligenceRepositoryProvider).getSafeguards(petId);
     });
 
@@ -44,8 +49,11 @@ final petProfileCareSafeguardProvider =
     Provider.family<AsyncValue<CareSafeguard?>, String>((ref, petId) {
       final safeguardsAsync = ref.watch(petCareSafeguardsProvider(petId));
       final policy = ref.watch(petCarePresentationPolicyProvider);
-      return safeguardsAsync.whenData(
-        (safeguards) => policy.profileSafeguard(safeguards),
+      return safeguardsAsync.when(
+        loading: () => const AsyncLoading(),
+        error: (error, stackTrace) =>
+            AsyncError(error, stackTrace ?? StackTrace.empty),
+        data: (safeguards) => AsyncData(policy.profileSafeguard(safeguards)),
       );
     });
 
@@ -54,9 +62,27 @@ final petProfileCareSuggestionProvider =
       final recsAsync = ref.watch(petCareRecommendationsProvider(petId));
       final safeguardAsync = ref.watch(petProfileCareSafeguardProvider(petId));
       final policy = ref.watch(petCarePresentationPolicyProvider);
-      final activeSafeguard = safeguardAsync.valueOrNull;
-      return recsAsync.whenData(
-        (recs) =>
-            policy.profileSuggestion(recs, activeSafeguard: activeSafeguard),
+
+      if (recsAsync.isLoading || safeguardAsync.isLoading) {
+        return const AsyncLoading();
+      }
+      if (recsAsync.hasError) {
+        return AsyncError(
+          recsAsync.error!,
+          recsAsync.stackTrace ?? StackTrace.empty,
+        );
+      }
+      if (safeguardAsync.hasError) {
+        return AsyncError(
+          safeguardAsync.error!,
+          safeguardAsync.stackTrace ?? StackTrace.empty,
+        );
+      }
+
+      return AsyncData(
+        policy.profileSuggestion(
+          recsAsync.value ?? const [],
+          activeSafeguard: safeguardAsync.valueOrNull,
+        ),
       );
     });

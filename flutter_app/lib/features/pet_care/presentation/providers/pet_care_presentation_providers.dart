@@ -31,6 +31,7 @@ final petPendingCareMomentsProvider =
       ref,
       petId,
     ) async {
+      ref.watch(authProvider.select((auth) => auth.accessToken));
       return ref
           .read(careProgressionMomentsRepositoryProvider)
           .getPendingMoments(petId);

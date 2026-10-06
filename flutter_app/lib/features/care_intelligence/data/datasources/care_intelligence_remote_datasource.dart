@@ -16,7 +16,7 @@ class CareIntelligenceRemoteDataSource {
   String? authToken;
 
   Map<String, String> _headers({bool jsonBody = false}) {
-    final headers = <String, String>{};
+    final headers = <String, String>{'Cache-Control': 'no-cache'};
     if (jsonBody) headers['Content-Type'] = 'application/json';
     final token = authToken;
     if (token != null && token.isNotEmpty) {
@@ -39,6 +39,9 @@ class CareIntelligenceRemoteDataSource {
       headers: _headers(),
     );
     _check(response);
+    if (response.body.isEmpty) {
+      return [];
+    }
     final list = json.decode(response.body) as List<dynamic>;
     return list
         .map((e) => CareRecommendationModel.fromJson(e as Map<String, dynamic>))
@@ -51,6 +54,9 @@ class CareIntelligenceRemoteDataSource {
       headers: _headers(),
     );
     _check(response);
+    if (response.body.isEmpty) {
+      return [];
+    }
     final list = json.decode(response.body) as List<dynamic>;
     return list
         .map((e) => CareSafeguardModel.fromJson(e as Map<String, dynamic>))
