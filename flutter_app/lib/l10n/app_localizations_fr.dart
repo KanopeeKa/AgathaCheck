@@ -5483,6 +5483,12 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String get careItemScreenTitle => 'Détail du soin';
+
+  @override
+  String get careItemStatusFinished => 'Fini';
+
+  @override
   String get careItemDetailsTitle => 'Détails';
 
   @override
