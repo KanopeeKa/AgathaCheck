@@ -70,9 +70,9 @@ Every blocking gate measures an explicit file set. Exclusions match `scripts/arc
 
 | Gate | Universe | Exclusions (same family as metrics script) | Enforced by |
 |---|---|---|---|
-| File size (blocking) | Hand-written `.dart` under `flutter_app/lib/**`; `.js` under `server/routes/**` | Generated Dart (`*.g.dart`, `*.freezed.dart`, `*.mocks.dart`, `l10n/`); manifest `sourceRoots` / `serverRoots`; build/tool/deps paths | `scripts/check_file_size.js` |
-| File size (D7 report-only) | `server/lib/**`, `server/services/**` | Same as above for server paths | `scripts/check_file_size.js` |
-| ESLint (today) | Four Pet Care policy modules | Full active-server lint scope lands in Batch J phase 2 | `scripts/validate_eslint.js` |
+| File size (blocking) | Hand-written `.dart` under `flutter_app/lib/**`; `.js` under `server/routes/**`, `server/lib/**`, `server/services/**` | Generated Dart (`*.g.dart`, `*.freezed.dart`, `*.mocks.dart`, `l10n/`); manifest `sourceRoots` / `serverRoots`; build/tool/deps paths | `scripts/check_file_size.js` |
+| File size (D7 allowlist) | Same as blocking server roots — offenders over 500 lines require `scripts/file-size-allowlist.json` with `maxLines`, `owner`, `reason`, `review_date` | Allowlist ratchet: files must not grow past `maxLines`; expired `review_date` warns | `scripts/check_file_size.js` + `size-report.md` |
+| ESLint (active server ratchet) | Active `server/lib/**`, `server/services/**`, `server/routes/**` | Manifest frozen `serverRoots`; baselined violations in `server/eslint-baseline.json` (shrinks only) | `scripts/validate_eslint.js` |
 | Flutter domain coverage | `lib/features/<feature>/domain/**` for active features | Manifest `sourceRoots`; `activeSurfacesToRemove`; generated Dart suffixes; files absent from `lcov.info` count as 0% | `flutter_app/scripts/check_domain_coverage.js` + generated `test/generated/coverage_helper_imports.dart` |
 | Backend coverage ratchet | `server/lib/**`, `server/services/**`, `server/routes/**` | Manifest frozen route roots (`routes/organizations/**`, `fosterPlacements.js`, `custodyTransfers.js`) | `server/scripts/check_coverage_ratchet.js` + `server/coverage-ratchet.json` |
 | BDD blocking gate | Active Gherkin scenarios with `@bdd` mapping | Manifest `bddFeaturePatterns`; frozen E2E spec set | `e2e/scripts/check_bdd_coverage.js` |
