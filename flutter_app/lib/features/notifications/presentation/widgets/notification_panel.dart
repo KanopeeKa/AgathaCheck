@@ -9,6 +9,7 @@ import '../providers/notification_providers.dart';
 import '../utils/notification_navigation.dart';
 import 'notification_inbox_list.dart';
 import 'notification_inbox_tab_bar.dart';
+import 'notification_device_security_intro.dart';
 import 'notification_inbox_v2_explainer.dart';
 
 /// Full-height right slide-over notification panel (opened via bell → endDrawer).
@@ -76,6 +77,7 @@ class _NotificationPanelState extends ConsumerState<NotificationPanel> {
               const NotificationInboxV2Explainer(
                 onOpenActions: _openActionsFromPanel,
               ),
+              const NotificationDeviceSecurityIntro(),
               const Divider(height: 1),
               Expanded(
                 child: notificationsAsync.when(
@@ -126,7 +128,8 @@ class _NotificationPanelState extends ConsumerState<NotificationPanel> {
   }
 
   Future<void> _markAllRead() async {
-    await ref.read(notificationsProvider.notifier).markAllAsRead();
+    final tab = ref.read(notificationInboxSessionTabProvider);
+    await ref.read(notificationsProvider.notifier).markAllAsRead(scope: tab);
     if (mounted) {
       final l = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(

@@ -9,6 +9,7 @@ class NotificationPreferences {
     this.notifyCompleted = true,
     this.mutedPetIds = const [],
     this.v2ExplainerDismissedAt,
+    this.showDeviceSecurityIntro = false,
     this.agathaSuggestionsInApp = true,
     NotificationSettingsMatrix? settingsMatrix,
     Map<String, bool>? suggestionTypes,
@@ -22,6 +23,7 @@ class NotificationPreferences {
   final bool notifyCompleted;
   final List<String> mutedPetIds;
   final DateTime? v2ExplainerDismissedAt;
+  final bool showDeviceSecurityIntro;
   final bool agathaSuggestionsInApp;
   final NotificationSettingsMatrix settingsMatrix;
   final Map<String, bool> suggestionTypes;
@@ -34,6 +36,7 @@ class NotificationPreferences {
     bool? notifyCompleted,
     List<String>? mutedPetIds,
     DateTime? v2ExplainerDismissedAt,
+    bool? showDeviceSecurityIntro,
     bool? agathaSuggestionsInApp,
     NotificationSettingsMatrix? settingsMatrix,
     Map<String, bool>? suggestionTypes,
@@ -48,6 +51,8 @@ class NotificationPreferences {
       mutedPetIds: mutedPetIds ?? this.mutedPetIds,
       v2ExplainerDismissedAt:
           v2ExplainerDismissedAt ?? this.v2ExplainerDismissedAt,
+      showDeviceSecurityIntro:
+          showDeviceSecurityIntro ?? this.showDeviceSecurityIntro,
       agathaSuggestionsInApp:
           agathaSuggestionsInApp ?? this.agathaSuggestionsInApp,
       settingsMatrix: settingsMatrix ?? this.settingsMatrix,

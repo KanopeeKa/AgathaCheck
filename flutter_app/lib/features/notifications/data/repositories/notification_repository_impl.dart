@@ -1,6 +1,7 @@
 import '../../domain/entities/app_notification.dart';
 import '../../domain/entities/notification_preferences.dart';
 import '../../domain/repositories/notification_repository.dart';
+import '../../domain/services/notification_inbox_v2_rules.dart';
 import '../datasources/notification_remote_datasource.dart';
 import '../models/notification_model.dart';
 
@@ -26,8 +27,13 @@ class NotificationRepositoryImpl implements NotificationRepository {
   }
 
   @override
-  Future<void> markAllAsRead() async {
-    await _dataSource.markAllAsRead(_tokenGetter());
+  Future<void> markAllAsRead({
+    NotificationInboxTab scope = NotificationInboxTab.activity,
+  }) async {
+    final wireScope = scope == NotificationInboxTab.forYou
+        ? 'for_you'
+        : 'activity';
+    await _dataSource.markAllAsRead(_tokenGetter(), scope: wireScope);
   }
 
   @override
@@ -41,6 +47,7 @@ class NotificationRepositoryImpl implements NotificationRepository {
       notifyCompleted: model.notifyCompleted,
       mutedPetIds: model.mutedPetIds,
       v2ExplainerDismissedAt: model.v2ExplainerDismissedAt,
+      showDeviceSecurityIntro: model.showDeviceSecurityIntro,
       agathaSuggestionsInApp: model.agathaSuggestionsInApp,
       settingsMatrix: model.settingsMatrix,
       suggestionTypes: model.suggestionTypes,
@@ -72,6 +79,7 @@ class NotificationRepositoryImpl implements NotificationRepository {
       notifyCompleted: result.notifyCompleted,
       mutedPetIds: result.mutedPetIds,
       v2ExplainerDismissedAt: result.v2ExplainerDismissedAt,
+      showDeviceSecurityIntro: result.showDeviceSecurityIntro,
       agathaSuggestionsInApp: result.agathaSuggestionsInApp,
       settingsMatrix: result.settingsMatrix,
       suggestionTypes: result.suggestionTypes,
@@ -81,6 +89,11 @@ class NotificationRepositoryImpl implements NotificationRepository {
   @override
   Future<void> dismissV2InboxExplainer() async {
     await _dataSource.dismissV2InboxExplainer(_tokenGetter());
+  }
+
+  @override
+  Future<void> dismissDeviceSecurityIntro() async {
+    await _dataSource.dismissDeviceSecurityIntro(_tokenGetter());
   }
 
   @override

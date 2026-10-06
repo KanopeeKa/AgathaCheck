@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../config/pet_care_primary_destinations.dart';
+import '../screens/pet_care/care_actions_attention_provider.dart';
+import 'pet_care_nav_attention_badge.dart';
 
 /// Primary Guardian destinations on compact and touch-first screens.
 ///
 /// Shelter switching stays in the shared drawer; this bar only exposes the
 /// Guardian work a person performs most often.
-class PetCareBottomNavigation extends StatelessWidget {
+class PetCareBottomNavigation extends ConsumerWidget {
   const PetCareBottomNavigation({super.key, required this.currentLocation});
 
   final String currentLocation;
@@ -28,8 +31,9 @@ class PetCareBottomNavigation extends StatelessWidget {
   static int indexFor(String path) => PetCarePrimaryDestinations.indexFor(path);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
+    final attentionCount = ref.watch(careActionsAttentionCountProvider);
     final destinations = PetCarePrimaryDestinations.destinations();
     return SafeArea(
       top: false,
@@ -50,11 +54,17 @@ class PetCareBottomNavigation extends StatelessWidget {
                 destination: destination,
                 label: destination.labelBuilder(l),
                 selected: false,
+                attentionCount: destination.route == '/pc/events'
+                    ? attentionCount
+                    : 0,
               ),
               activeIcon: _BottomNavDestinationIcon(
                 destination: destination,
                 label: destination.labelBuilder(l),
                 selected: true,
+                attentionCount: destination.route == '/pc/events'
+                    ? attentionCount
+                    : 0,
               ),
               label: destination.labelBuilder(l),
             ),
@@ -70,11 +80,13 @@ class _BottomNavDestinationIcon extends StatelessWidget {
     required this.destination,
     required this.label,
     required this.selected,
+    required this.attentionCount,
   });
 
   final PetCarePrimaryDestination destination;
   final String label;
   final bool selected;
+  final int attentionCount;
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +101,10 @@ class _BottomNavDestinationIcon extends StatelessWidget {
         width: 48,
         height: 48,
         child: Center(
-          child: Icon(icon, size: PetCareBottomNavigation.bottomNavIconSize),
+          child: PetCareNavAttentionBadge(
+            count: attentionCount,
+            child: Icon(icon, size: PetCareBottomNavigation.bottomNavIconSize),
+          ),
         ),
       ),
     );

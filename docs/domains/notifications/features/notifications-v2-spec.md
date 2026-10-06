@@ -2,8 +2,8 @@
 title: Notifications v2 — Activity & Agatha Suggestions (functional spec)
 owner: Product
 audience: both
-status: accepted (rev 2.3.1)
-last_updated: 2026-10-04
+status: accepted (rev 2.4)
+last_updated: 2026-10-06
 tags: [domain,notifications,spec,suggestions,sharing]
 domain: notifications
 feature_id: notifications-v2
@@ -885,6 +885,27 @@ Still open (non-blocking): whether to add a "dot only for needs-response" badge 
 | Inline actions | FR-IA-7: **A1** / **A9** assigned to PR7 / PR8. |
 | Share link | **`shareLinkFollowed` (R19)** replaces mapping share link → R2. |
 | Secure my account | Current session preserved through password change (PR7); device label privacy pointer. |
+
+### Rev 2.4 — as-built vs intended (v2.1 readiness Plan A)
+
+| Area | Intended (spec) | As-built before Plan A | Plan A target |
+|---|---|---|---|
+| **FR-CR-2 Care attention** | Actions tab badge = overdue + due today; muted pets excluded; same rules as Care Actions list | No Guardian primary-nav badge | `careActionsAttentionCountProvider` + nav badge |
+| **Needs your response** | Driven by `resolved_at` / actionable type, not read state | `needsResponse` returned false when `is_read` | Decouple from read; bell counts unresolved even if read |
+| **Mark all read** | Tab-scoped (Activity vs For you); only sets `is_read` | Global update for all rows | `scope=activity\|for_you` on read-all |
+| **Push matrix** | Honest when transport absent | Push toggles visible | Push column hidden; deferred help copy |
+| **FAQ A1** | Care in Actions, not bell inbox | Promised inbox care reminders | Updated EN/FR `.arb` |
+| **A1 legacy bootstrap** | Record existing device quietly + one-time intro | First device skipped A1 (OK) but no intro | `device_security_intro_pending` + dismissible banner |
+| **Push to other devices** | Deferred programme item | — | Unchanged; see `deferred.md` |
+
+### Rev 2.5 — as-built (v2.1 readiness Plan C, wave 1)
+
+| Area | Delivered |
+|---|---|
+| **FR-SG-1 scheduler** | `runSuggestionGeneration` in `server/lib/suggestions/` (daily cron via host job calling the lib; on-demand per-pet hook deferred) |
+| **S1 / S2** | `suggestionMissingRecurringCare` (parasite prevention rhythm), `suggestionWeightTrend` (≥5% over 90d window) |
+| **FR-RL-1 / RL-2** | Rolling 7-day caps (3/pet, 5/user) + 10 active/user enforced on **new** rows only; dedupe upserts refresh evidence |
+| **FR-SC-3** | For you card shows vet disclaimer for S2 (`notificationSuggestionVetDisclaimer`) |
 
 ## Appendix A — FAQ copy (ships in PR2)
 

@@ -108,6 +108,7 @@ export async function updateAbsenceCarers(
 
     const columns = [];
     const values = [];
+    let resolvedCarer = null;
 
     if (hasCarerKind || hasContactId) {
       const resolved = await resolveCarerWrite(pool, {
@@ -121,6 +122,7 @@ export async function updateAbsenceCarers(
       if (!resolved.ok) {
         return { ok: false, status: resolved.status, error: resolved.error };
       }
+      resolvedCarer = resolved;
       columns.push(
         'carer_kind',
         'carer_user_id',
@@ -143,6 +145,13 @@ export async function updateAbsenceCarers(
       values.push(normalizePetNoteInput(rawPetNote));
     }
 
+    const prevRow = await pool.query(
+      `SELECT carer_user_id FROM planned_absence_pets
+       WHERE planned_absence_id = $1 AND pet_id = $2`,
+      [absenceId, petId],
+    );
+    const previousCarerId = prevRow.rows[0]?.carer_user_id || null;
+
     const setSql = columns.map((column, index) => `${column} = $${index + 1}`).join(', ');
     await pool.query(
       `UPDATE planned_absence_pets
@@ -150,6 +159,34 @@ export async function updateAbsenceCarers(
        WHERE planned_absence_id = $${values.length + 1} AND pet_id = $${values.length + 2}`,
       [...values, absenceId, petId],
     );
+
+    const newCarerId = resolvedCarer?.carer_user_id || null;
+    if (
+      newCarerId
+      && newCarerId !== previousCarerId
+      && (hasCarerKind || hasContactId)
+    ) {
+      const { emitCareAssignmentAssigned } = await import(
+        '../../lib/notifications/relationshipEmitters.js'
+      );
+      const absenceRow = await pool.query(
+        'SELECT starts_on, ends_on FROM planned_absences WHERE id = $1',
+        [absenceId],
+      );
+      const petRow = await pool.query('SELECT name FROM pets WHERE id = $1', [petId]);
+      const startsOn = absenceRow.rows[0]?.starts_on;
+      const endsOn = absenceRow.rows[0]?.ends_on;
+      if (startsOn && endsOn) {
+        await emitCareAssignmentAssigned(pool, {
+          assigneeUserId: newCarerId,
+          actorUserId: declarerUserId,
+          petId,
+          petName: petRow.rows[0]?.name,
+          startsOn: String(startsOn).split(/[T ]/)[0],
+          endsOn: String(endsOn).split(/[T ]/)[0],
+        });
+      }
+    }
   }
   return { ok: true };
 }
