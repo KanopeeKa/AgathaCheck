@@ -117,45 +117,50 @@ class CareItemDetailBody extends ConsumerWidget {
           final wide = layoutWidth >= kCareItemTwoColumnBreakpoint;
 
           final content = wide
-              ? Row(
-                  key: const Key('care_item_detail_two_column'),
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Expanded(
-                      flex: 3,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          needsSection,
-                          if (isEstablished) ...[
-                            _sectionGap,
-                            CareItemModule(child: establishedSection),
-                          ],
-                          _sectionGap,
-                          historyModule,
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      flex: 2,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          contextStrip,
-                          _sectionGap,
-                          sideScheduleAbsenceColumn(),
-                          _sectionGap,
-                          _DetailsModule(
-                            entry: entry,
-                            pet: pet,
-                            petId: petId,
-                            muted: muted,
-                            isEstablished: isEstablished,
-                            includeEstablished: false,
+                    contextStrip,
+                    _sectionGap,
+                    Row(
+                      key: const Key('care_item_detail_two_column'),
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          flex: 3,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              needsSection,
+                              if (isEstablished) ...[
+                                _sectionGap,
+                                CareItemModule(child: establishedSection),
+                              ],
+                              _sectionGap,
+                              historyModule,
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          flex: 2,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              sideScheduleAbsenceColumn(),
+                              _sectionGap,
+                              _DetailsModule(
+                                entry: entry,
+                                pet: pet,
+                                petId: petId,
+                                muted: muted,
+                                isEstablished: isEstablished,
+                                includeEstablished: false,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 )
