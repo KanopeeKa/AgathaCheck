@@ -6,6 +6,8 @@ Institutional knowledge for cloud agents. Domain workflows live in **Skills** (`
 
 **Framework:** `docs/engineering/cursor-agent-framework.md` · Router: `.cursor/agent-kernel/ROUTER.md`
 
+**Documentation duty (Cursor + Claude Code):** canonical doc = product spec; sync before verification on every behaviour change — see `CLAUDE.md` § Documentation duty (every turn) · `/canonical-docs`
+
 ### Tier 1 (normal use)
 
 | Skill | Use for |
