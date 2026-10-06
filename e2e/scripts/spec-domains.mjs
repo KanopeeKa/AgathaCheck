@@ -104,7 +104,7 @@ export const AREAS = {
   },
   notifications: {
     paths: ['flutter_app/lib/features/notifications/', 'server/routes/notifications'],
-    specs: ['notifications.spec.ts'],
+    specs: ['notifications.spec.ts', 'notifications_v2.spec.ts'],
   },
   weight: {
     paths: ['flutter_app/lib/features/weight_tracking/', 'server/routes/weightEntries'],
