@@ -87,9 +87,6 @@ class CareItemAttentionOccurrenceRow extends ConsumerWidget {
                 child: CareItemStatusPill(
                   label: pill.label,
                   tone: careItemStatusToneForPill(pill.tone),
-                  leadingIcon: status == CareOccurrenceStatus.notRecorded
-                      ? Icons.playlist_add_check_circle_outlined
-                      : null,
                 ),
               ),
               const SizedBox(width: 8),

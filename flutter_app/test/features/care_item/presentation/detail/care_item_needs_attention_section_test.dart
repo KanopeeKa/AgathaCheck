@@ -134,6 +134,72 @@ void main() {
     expect(find.text('3 marked done'), findsOneWidget);
   });
 
+  testWidgets('started rows list newest scheduled date first', (tester) async {
+    final today = careToday();
+    final entry = scheduledEntry(
+      id: 'pill',
+      name: 'Pill',
+      fixed: true,
+      frequency: HealthFrequency.daily,
+      asOfTime: '14:00',
+      open: [
+        OpenOccurrence(
+          id: 'slot-2',
+          date: today.subtract(const Duration(days: 2)),
+          status: CareOccurrenceStatus.notRecorded,
+          origin: CareOccurrenceOrigin.schedule,
+        ),
+        OpenOccurrence(
+          id: 'slot-1',
+          date: today.subtract(const Duration(days: 1)),
+          status: CareOccurrenceStatus.overdue,
+          origin: CareOccurrenceOrigin.schedule,
+        ),
+        OpenOccurrence(
+          id: 'slot-0',
+          date: today,
+          time: '08:00',
+          status: CareOccurrenceStatus.due,
+          origin: CareOccurrenceOrigin.schedule,
+        ),
+      ],
+    );
+    await _pumpSection(tester, entry);
+
+    final newest = tester.getTopLeft(
+      find.byKey(const Key('care_item_occurrence_slot-0')),
+    );
+    final middle = tester.getTopLeft(
+      find.byKey(const Key('care_item_occurrence_slot-1')),
+    );
+    final oldest = tester.getTopLeft(
+      find.byKey(const Key('care_item_occurrence_slot-2')),
+    );
+    expect(newest.dy, lessThan(middle.dy));
+    expect(middle.dy, lessThan(oldest.dy));
+  });
+
+  testWidgets('not recorded pill uses grey Not recorded label', (tester) async {
+    final today = careToday();
+    final entry = scheduledEntry(
+      id: 'pill',
+      name: 'Pill',
+      fixed: true,
+      frequency: HealthFrequency.daily,
+      open: [
+        OpenOccurrence(
+          id: 'slot-1',
+          date: today.subtract(const Duration(days: 1)),
+          status: CareOccurrenceStatus.notRecorded,
+          origin: CareOccurrenceOrigin.schedule,
+        ),
+      ],
+    );
+    await _pumpSection(tester, entry);
+    expect(find.text('Not recorded'), findsOneWidget);
+    expect(find.text('Not recorded (open)'), findsNothing);
+  });
+
   testWidgets('single started row has no bulk bar', (tester) async {
     final today = careToday();
     final entry = scheduledEntry(

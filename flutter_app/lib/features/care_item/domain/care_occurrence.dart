@@ -109,6 +109,13 @@ class OpenOccurrence implements Comparable<OpenOccurrence> {
   }
 }
 
+/// Care Item occurrence lists: latest scheduled instant first.
+List<OpenOccurrence> openOccurrencesNewestFirst(List<OpenOccurrence> items) {
+  final copy = List<OpenOccurrence>.from(items);
+  copy.sort((a, b) => b.compareTo(a));
+  return copy;
+}
+
 /// Display-only "Estimated next" for an overdue After-it's-done item.
 class EstimatedNext {
   const EstimatedNext({required this.date, required this.basis});

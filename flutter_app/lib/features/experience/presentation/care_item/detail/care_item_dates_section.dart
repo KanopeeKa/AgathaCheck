@@ -26,7 +26,7 @@ class CareItemDatesSection extends ConsumerWidget {
     final bucket = occurrences
         .where((o) => occurrenceZone(o, now) == zone)
         .toList();
-    return sortOccurrencesByZone(bucket, zone);
+    return sortOccurrencesNewestFirst(bucket);
   }
 
   @override
