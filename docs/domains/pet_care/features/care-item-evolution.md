@@ -195,7 +195,7 @@ Accessibility: section and group headings are headers; Upcoming exposes expanded
 
 ### Order on mobile
 
-1. **Header (amended 2026-10-06):** App bar title **Care details** / **Détail du soin** (not the item name). Body **context strip** on the warm canvas: compact pet tile (no status line) + care item name (≤2 lines) + category icon; optional paused/finished/archived line. Tapping the pet opens its profile (same as My Pets). Strip scrolls away (not sticky). Top right: Edit and the care item menu. Canonical layout: [care-item-context-header-spec.md](../changes/care-item-context-header-spec.md).
+1. **Header (amended 2026-10-06, pending implementation):** App bar **Care details** / **Détail du soin** (`careItemScreenTitle`). Body **context strip**: compact pet context tile + care name (≤2 lines) + category icon + optional **short status chip** (Paused / Archived / Finished — no dates). Lifecycle **dates and actions** stay in **Needs attention** (below). Pet tap via `openPetDetail` (`returnTo` preserves Back). Strip scrolls away. Top right: Edit and ⋯ menu. Canonical: [care-item-context-header-spec.md](../changes/care-item-context-header-spec.md).
 2. **Needs attention:** see below.
 3. **Agatha:** a suggestion or safeguard for this item, only when there is one.
 4. **Absence:** placed here when it needs a decision. Otherwise it sits after Schedule.
