@@ -14,8 +14,8 @@ function mockPool(handlers = {}) {
 describe('runSuggestionGeneration', () => {
   it('expires stale suggestions and returns stats for empty pet list', async () => {
     const pool = mockPool({
-      'suggestion_expires_at': { rows: [] },
-      'FROM pets p': { rows: [] },
+      'suggestion_expires_at': () => ({ rows: [] }),
+      'FROM pets p': () => ({ rows: [] }),
     });
     const stats = await runSuggestionGeneration(pool, { limit: 0 });
     expect(stats.pets).toBe(0);
