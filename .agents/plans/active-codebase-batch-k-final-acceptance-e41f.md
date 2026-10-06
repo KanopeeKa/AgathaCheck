@@ -51,17 +51,17 @@ Hotspots at `0cc739e` (from the metrics script):
 
 ```yaml
 autonomy: active
-current_phase: 1
-last_completed_phase: null
+current_phase: 3
+last_completed_phase: 2
 halt_reason: null
-next_action: "continue phase 1 on branch cursor/active-codebase-k1-server-extractions-e41f"
+next_action: "start phase 2: checkout cursor/active-codebase-k2-flutter-extractions-e41f"
 artifact_ref:
-  branch: cursor/active-codebase-k1-server-extractions-e41f
+  branch: cursor/active-codebase-k-integration-e41f
   plan_path: .agents/plans/active-codebase-batch-k-final-acceptance-e41f.md
-  plan_commit: fd154b741327416354c28a05f5dbf71b1e9d2a13
+  plan_commit: 0b041ce742b9844c297c4ebddbf6fd55a2d14d6d
   snapshot_path: .agents/plans/active-codebase-batch-k-final-acceptance-e41f.snapshot.json
-  snapshot_commit: fd154b741327416354c28a05f5dbf71b1e9d2a13
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1712"]
+  snapshot_commit: 0b041ce742b9844c297c4ebddbf6fd55a2d14d6d
+open_prs: []
 merge_commits: {}
 debt_issue_refs: []
 ```

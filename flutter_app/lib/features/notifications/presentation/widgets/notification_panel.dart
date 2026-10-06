@@ -10,6 +10,8 @@ import '../utils/notification_navigation.dart';
 import 'notification_inbox_list.dart';
 import 'notification_inbox_tab_bar.dart';
 import 'notification_inbox_v2_explainer.dart';
+import 'notification_panel_error_view.dart';
+import 'notification_panel_header.dart';
 
 /// Full-height right slide-over notification panel (opened via bell → endDrawer).
 ///
@@ -55,7 +57,11 @@ class _NotificationPanelState extends ConsumerState<NotificationPanel> {
         child: FocusTraversalGroup(
           child: Column(
             children: [
-              _PanelHeader(l: l, theme: theme, onMarkAllRead: _markAllRead),
+              NotificationPanelHeader(
+                l: l,
+                theme: theme,
+                onMarkAllRead: _markAllRead,
+              ),
               NotificationInboxTabBar(
                 selected: selectedTab,
                 onSelected: (tab) {
@@ -81,7 +87,7 @@ class _NotificationPanelState extends ConsumerState<NotificationPanel> {
                 child: notificationsAsync.when(
                   loading: () =>
                       const Center(child: CircularProgressIndicator()),
-                  error: (e, _) => _ErrorView(
+                  error: (e, _) => NotificationPanelErrorView(
                     error: e,
                     l: l,
                     theme: theme,
@@ -133,76 +139,5 @@ class _NotificationPanelState extends ConsumerState<NotificationPanel> {
         context,
       ).showSnackBar(SnackBar(content: Text(l.markAllRead)));
     }
-  }
-}
-
-class _PanelHeader extends StatelessWidget {
-  const _PanelHeader({
-    required this.l,
-    required this.theme,
-    required this.onMarkAllRead,
-  });
-
-  final AppLocalizations l;
-  final ThemeData theme;
-  final VoidCallback onMarkAllRead;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 8, 4),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            l.notifications,
-            style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          Align(
-            alignment: Alignment.centerRight,
-            child: TextButton.icon(
-              onPressed: onMarkAllRead,
-              icon: const Icon(Icons.done_all, size: 18),
-              label: Text(l.markAllRead),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ErrorView extends StatelessWidget {
-  const _ErrorView({
-    required this.error,
-    required this.l,
-    required this.theme,
-    required this.onRetry,
-  });
-
-  final Object error;
-  final AppLocalizations l;
-  final ThemeData theme;
-  final VoidCallback onRetry;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.error_outline, size: 48, color: theme.colorScheme.error),
-          const SizedBox(height: 12),
-          Text(
-            l.failedToLoadNotifications(error.toString()),
-            style: theme.textTheme.bodyMedium,
-          ),
-          const SizedBox(height: 8),
-          ElevatedButton(onPressed: onRetry, child: Text(l.retry)),
-        ],
-      ),
-    );
   }
 }
