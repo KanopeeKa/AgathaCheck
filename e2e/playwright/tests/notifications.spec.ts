@@ -286,6 +286,10 @@ test.describe('Notifications', () => {
     await petList.expectLoaded();
 
     const notificationsPage = new NotificationsPage(page);
+    await notificationsPage.openFromPetList();
+    await notificationsPage.selectInboxTab('activity');
+    await page.keyboard.press('Escape');
+    await petList.expectLoaded();
     await notificationsPage.expectBadgeVisible(1);
   });
 
