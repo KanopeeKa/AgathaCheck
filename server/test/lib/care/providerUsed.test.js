@@ -1,7 +1,7 @@
 import { describe, expect, it, jest } from '@jest/globals';
 
 import { resolveProviderUsedForCompletion } from '../../../lib/care/providerUsed.js';
-import { parseEntryProviderInput } from '../../../routes/healthEntries/shared.js';
+import { parseEntryProviderInput } from '../../../lib/health/healthEntryWriteSupport.js';
 
 describe('parseEntryProviderInput', () => {
   it('rejects contact and typed name together', () => {
