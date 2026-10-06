@@ -4,7 +4,7 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 INPUT_ROOT="${1:-_coverage_shards}"
-THRESHOLD="${DOMAIN_COVERAGE_THRESHOLD:-70}"
+THRESHOLD="${DOMAIN_COVERAGE_THRESHOLD:-8}"
 
 # Shard ids come from flutter_app/test/ci_shards.json (single source of truth).
 mapfile -t shards < <(node ../scripts/ci/flutter-shards.mjs list)
@@ -42,6 +42,11 @@ if [[ "$found" -ne ${#shards[@]} ]]; then
   echo "::error::Expected ${#shards[@]} shard coverage files, found ${found}" >&2
   exit 1
 fi
+
+node scripts/generate_coverage_helper.js
+echo "Running coverage helper test (loads every eligible domain file)"
+flutter test test/coverage_helper_test.dart --concurrency=1 --coverage --coverage-path=coverage/lcov.helper.info
+inputs+=("coverage/lcov.helper.info")
 
 node ../scripts/ci/lcov-merge.mjs --out coverage/lcov.info "${inputs[@]}"
 node scripts/check_domain_coverage.js --threshold "$THRESHOLD" --lcov coverage/lcov.info

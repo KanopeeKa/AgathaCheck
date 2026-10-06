@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "measured_at": "2026-10-06",
+  "measured_commit": "j1-coverage-denominator",
+  "areas": {
+    "lib": {
+      "lines_percent": 53.06
+    },
+    "services": {
+      "lines_percent": 73.78
+    },
+    "routes": {
+      "lines_percent": 74.86
+    }
+  }
+}

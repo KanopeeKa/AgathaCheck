@@ -75,6 +75,10 @@ jobs:
       - name: Flutter coverage threshold consistency (D23)
         run: node --test scripts/check_coverage_threshold_consistency.test.js
 
+      - name: Flutter domain coverage helper fixtures (J.1)
+        working-directory: flutter_app
+        run: node --test scripts/test/domain_coverage.fixture.mjs
+
       - name: CI gate assertion tests
         run: node --test scripts/ci/assert-ci-gate.test.js
 
@@ -140,6 +144,14 @@ jobs:
       - name: Run backend tests with coverage
         working-directory: server
         run: npm run test:unit -- --forceExit --coverage
+
+      - name: Backend coverage ratchet (J.1-4)
+        working-directory: server
+        run: node scripts/check_coverage_ratchet.js
+
+      - name: Backend coverage ratchet fixtures
+        working-directory: server
+        run: node --test scripts/test/check_coverage_ratchet.fixture.mjs
 
       - name: Backend Jest under Europe/Paris (AC-TZ2)
         working-directory: server

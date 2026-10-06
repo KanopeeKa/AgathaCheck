@@ -13,10 +13,15 @@ const ROOT = path.resolve(__dirname, '..');
 
 const SOURCES = [
   ['CONTRIBUTING.md', /Flutter domain line coverage ≥ (\d+)%/],
+  ['docs/quality/scorecard.md', /Flutter domain coverage gate \| \*\*(\d+)%\*\*/],
   ['docs/quality/scorecard.md', /Flutter domain \(`lib\/\*\*\/domain\/\*\*`\) \| \*\*(\d+)% line coverage gate\*\*/],
-  ['flutter_app/scripts/check_domain_coverage.js', /let threshold = (\d+);/],
+  [
+    'docs/engineering/active-codebase-baseline/flutter-domain-coverage-threshold.json',
+    /"threshold":\s*(\d+)/,
+  ],
   ['flutter_app/scripts/run_tests_ci.sh', /DOMAIN_COVERAGE_THRESHOLD:-(\d+)\}/],
   ['flutter_app/scripts/merge_flutter_coverage.sh', /DOMAIN_COVERAGE_THRESHOLD:-(\d+)\}/],
+  ['.github/workflows/_reusable-flutter-coverage.yml', /DOMAIN_COVERAGE_THRESHOLD:\s*(\d+)/],
 ];
 
 test('Flutter domain coverage threshold agrees across docs and scripts', () => {

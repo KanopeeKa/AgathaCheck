@@ -21,8 +21,20 @@ const frozenPatterns = [
   '<rootDir>/test/pets/orgMembership.test.js',
 ];
 
+/** Active server production roots for coverage denominator (J.1-4). */
+const collectCoverageFrom = [
+  'lib/**/*.js',
+  'services/**/*.js',
+  'routes/**/*.js',
+  '!routes/organizations/**',
+  '!routes/fosterPlacements.js',
+  '!routes/custodyTransfers.js',
+];
+
 module.exports = {
   ...base,
+  collectCoverageFrom,
+  coverageReporters: ['text', 'lcov', 'json-summary'],
   testPathIgnorePatterns: [
     ...(base.testPathIgnorePatterns || []),
     ...frozenPatterns,

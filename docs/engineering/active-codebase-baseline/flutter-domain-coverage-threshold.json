@@ -1,0 +1,12 @@
+{
+  "threshold": 8,
+  "policy_target": 70,
+  "measured_percent": 8.5,
+  "measured_at": "2026-10-06",
+  "measured_commit": "j1-coverage-denominator",
+  "exception": {
+    "reason": "J.1 counts every eligible domain file in the denominator; measured line coverage is below the 70% policy target until tests catch up.",
+    "owner": "Engineering",
+    "review_date": "2026-12-01"
+  }
+}
