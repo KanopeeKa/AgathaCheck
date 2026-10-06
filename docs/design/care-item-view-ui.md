@@ -20,7 +20,7 @@ Operational **care desk** segmentation: warm page canvas, white module cards, cl
 | Topic | Decision |
 |-------|----------|
 | Relief | **Border-first** white modules on warm canvas; optional subtle shadow on web only (default off in v1) |
-| Pet context | **Keep pet module** at top on mobile; compact chip in app bar on wide layouts (phase `web-layout`) |
+| Pet context | **Context strip** on warm canvas (compact pet tile + care name + category icon); scrolls away; wide: full-width strip **above** two columns — see [care-item-context-header-spec.md](../domains/pet_care/changes/care-item-context-header-spec.md) |
 | Icons | **Section headers + stat cells** only; not every metadata row |
 | Absence | **`CareAttentionCallout`** tier when slice needs attention; hide section when no upcoming absence (spec open item) |
 | Copy | No “View …” title; no “Current occurrence” (D-CIE-001) |
@@ -39,7 +39,7 @@ Document hex values only in [`tokens.md`](./tokens.md) when promoted globally; C
 
 ## Module map (mobile order)
 
-1. **Pet context** — existing `PetEventPetCard` inside `CareItemModule` (compact).
+1. **Pet context** — context strip on canvas (not a module): compact `UnifiedPetTile` / `PetCard` (no status) + care item name (≤2 lines) + `CareFamilyIcon`; tappable pet → pet profile. Spec: [care-item-context-header-spec.md](../domains/pet_care/changes/care-item-context-header-spec.md).
 2. **Needs attention (hero)** — lists every **open occurrence** as a line (date · status · trailing Done). **Stack** (≥2 started open dates on Fixed schedule): all lines + **Mark all as done** / **Skip all** (one `resolve-stack`, one Undo). **Single** leading open slot: outlined **Change date** (reschedule sheet). Row tap opens the **occurrence screen**; Done follows `decideDone` (one tap unless weight/date/early dialog). Paused: "Paused since …" / "Paused until …" + Resume.
 3. **Absence** — module or callout; resolution actions inside module body.
 4. **Schedule** — header row with **Edit schedule** trailing; body = stat grid (Frequency · Type · Reminder) + prose lines (next date, flexibility).
@@ -52,7 +52,7 @@ Document hex values only in [`tokens.md`](./tokens.md) when promoted globally; C
 |-------------|-------------|
 | Needs attention, Agatha (when present), History | Schedule, Absence, Details |
 
-Pet context: side column top or header chip — implementation in `web-layout` phase.
+Pet context: full-width context strip above the two-column row (not in side column). Spec: [care-item-context-header-spec.md](../domains/pet_care/changes/care-item-context-header-spec.md).
 
 ## Components (Flutter)
 

@@ -18,6 +18,7 @@ Part of the AgathaTrack domain-first documentation tree. Cross-cutting architect
 | Document | Role |
 |----------|------|
 | [care-item-evolution.md](/docs/domains/pet_care/features/care-item-evolution.md) | **Canonical** Care Item product behaviour |
+| [care-item-context-header-spec.md](/docs/domains/pet_care/changes/care-item-context-header-spec.md) | Care Item app bar + context strip (draft) |
 | [care-item-evolution execute-plan](/.agents/plans/care-item-evolution.md) | Active delivery programme |
 | [care-item-model-delivery-plan.md](/docs/domains/pet_care/changes/care-item-model-delivery-plan.md) | Superseded pointer + [historical archive](/docs/domains/pet_care/changes/archive/care-item-model-delivery-plan-2026-09-13.md) |
 
