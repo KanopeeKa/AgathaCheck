@@ -103,18 +103,26 @@ e2e/**
 
 **Exit criteria:**
 
-- [ ] All acceptance criteria in plan snapshot comment / PR checklist pass
-- [ ] `node scripts/check_skill_frontmatter.js` passes
-- [ ] `bash scripts/validate_docs.sh` passes
-- [ ] `./scripts/pre-push-changed.sh` passes
-- [ ] PR merged to `main`
+- [x] All acceptance criteria in plan snapshot comment / PR checklist pass
+- [x] `node scripts/check_skill_frontmatter.js` passes
+- [x] `bash scripts/validate_docs.sh` passes
+- [x] `./scripts/pre-push-changed.sh` passes
+- [x] PR merged to `main` (#1703)
 
 ## Runtime state
 
 ```yaml
-autonomy: active
-current_phase: "1"
-last_completed_phase: null
+autonomy: completed
+current_phase: null
+last_completed_phase: 1
 halt_reason: null
-next_action: implement phase 1
+next_action: "plan complete"
+artifact_ref:
+  branch: cursor/canonical-docs-skill-2316
+  plan_path: .agents/plans/canonical-docs-skill-2316.md
+  snapshot_path: .agents/plans/canonical-docs-skill-2316.snapshot.json
+open_prs: []
+merge_commits:
+  "1": 49afd9f0a5fa712dd8e97862348aaa3f7cd7ab34
+debt_issue_refs: []
 ```
