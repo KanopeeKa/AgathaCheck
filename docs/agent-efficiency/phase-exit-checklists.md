@@ -41,6 +41,7 @@ Profiles are **additive**: `exit_checklist: single-backend-route` means `default
 - [ ] All must-fix review items addressed in PR
 - [ ] Deferred / ignored items tracked in GitHub issues (dedupe per autonomous-pr-policy)
 - [ ] Commit messages use `phase(N/M):` prefix
+- [ ] **Docs gate:** PR has `## Docs`; canonical doc(s) updated or `N/A — reason`; delivered `changes/` docs deleted per deletion guard; `bash scripts/validate_docs.sh` when docs touched
 
 ---
 
@@ -81,7 +82,7 @@ Includes **default**.
 
 Includes **default**.
 
-- [ ] `docs/architecture/index.md` or agent-efficiency doc updated if workflow changed
+- [ ] Agent/workflow doc updates when this phase changes babysit, execute-plan, or agent-efficiency policy (same **Docs gate** items as `default` when behaviour or canonical policy changed)
 - [ ] No weakening of CI gates to pass
 - [ ] `governance-allowlist` exception only when phase explicitly allows
 

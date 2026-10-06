@@ -56,7 +56,8 @@ Every agent (and every human using an agent) **must** complete this checklist **
 2. **Risks** — Security (auth, validation, exposure), data integrity, migrations, API contracts, concurrency.
 3. **Design quality** — Smallest change that meets intent; match existing patterns; avoid drive-by refactors.
 4. **Better solution** — If a clearer or safer approach fits with equal or less scope, adopt it now.
-5. **Verification** — `./scripts/pre-push-changed.sh` after adjustments.
+5. **Documentation** — `/canonical-docs sync` when the diff changes behaviour; see `.cursor/rules/documentation.mdc` (pointer only — steps in the skill).
+6. **Verification** — `./scripts/pre-push-changed.sh` after adjustments.
 
 Then: commit → push → create or update the PR.
 

@@ -30,6 +30,7 @@ surface.
 @.cursor/rules/merge-policy.mdc
 @.cursor/rules/atomic-pr.mdc
 @.cursor/rules/pr-hygiene.mdc
+@.cursor/rules/documentation.mdc
 @.cursor/rules/modularity.mdc
 @.cursor/rules/security.mdc
 @.cursor/rules/accessibility.mdc

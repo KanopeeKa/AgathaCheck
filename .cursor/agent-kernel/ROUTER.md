@@ -120,6 +120,9 @@ Read only protocols listed for your surfaces. Path-scoped rules (e.g. `security.
 | Major backend ops change | observability |
 | Significant architecture | documentation |
 | Major user journey / release | release-verification |
+| Behaviour change (any surface) | documentation |
+
+**Canonical feature docs:** the `documentation` protocol row decides when deeper architecture or ADR work is needed; `/canonical-docs sync` **always** runs for product behaviour changes and owns the steps (see `.cursor/skills/canonical-docs/SKILL.md`).
 
 ### 5. Verification map
 

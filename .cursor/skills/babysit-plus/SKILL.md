@@ -53,8 +53,9 @@ Required for **all** agent PR work (not only babysit+). Canonical checklist: `do
 2. **Risks** — Security (auth, input validation, data exposure), data integrity, migrations, API contract drift, concurrency, and operational impact (logs, metrics, rollback).
 3. **Design quality** — Against existing codebase patterns, assess **robustness**, **maintainability**, and **testability**. Prefer the smallest change that meets the requirement; avoid drive-by refactors.
 4. **Better solution check** — If a clearer pattern, safer abstraction, or simpler approach would satisfy the requirement with equal or less scope, **adopt it now** — adjust code and tests before opening the PR. Do not defer with "we'll fix in review."
-5. **Verification** — Run `./scripts/pre-push-changed.sh` after any adjustments from this review.
-6. **UI-touching PRs** — If the diff includes `flutter_app/lib/**/presentation/**`, theme, or router files, complete **`.cursor/agent-kernel/protocols/accessibility.md` §Quick pass** before create/update PR. Escalate to `/ui-design-deep` when theme, landing/auth, or multi-screen work applies.
+5. **Documentation sync** — Run `/canonical-docs sync` (`.cursor/skills/canonical-docs/SKILL.md` Mode A). A behaviour-changing PR without a canonical doc update is not ready to open.
+6. **Verification** — Run `./scripts/pre-push-changed.sh` after any adjustments from this review.
+7. **UI-touching PRs** — If the diff includes `flutter_app/lib/**/presentation/**`, theme, or router files, complete **`.cursor/agent-kernel/protocols/accessibility.md` §Quick pass** before create/update PR. Escalate to `/ui-design-deep` when theme, landing/auth, or multi-screen work applies.
 
 Optional: `/review-bugbot` on the branch diff before push to dedupe a paid Bugbot PR review.
 
@@ -111,7 +112,7 @@ Post a **triage comment** on the PR summarizing every active unresolved thread:
 | **Nits** | Fix if local + low-risk; else debt issue |
 | **Ignore** | No code; debt issue if valid concern deferred |
 
-Rules: see autonomous-pr-policy §Review triage. **Never ignore** blocker / critical / high / must signals. Low confidence → debt issue + continue during active execute-plan (`gate` exit `0`); otherwise halt with `**Needs you:**` on control issue + short chat alert.
+Rules: see autonomous-pr-policy §Review triage. **Never ignore** blocker / critical / high / must signals. On a **behaviour-changing** PR, a missing or stale canonical doc update or missing `## Docs` in the PR body is **must-fix** (never a nit or debt issue). Low confidence → debt issue + continue during active execute-plan (`gate` exit `0`); otherwise halt with `**Needs you:**` on control issue + short chat alert.
 
 Template:
 
@@ -165,6 +166,8 @@ Deferred debt issues that are not being worked yet need no label.
 ### 6. Exit checklist
 
 When execute-plan phase declares `exit_checklist`, run every applicable item in `docs/agent-efficiency/phase-exit-checklists.md` before merge step.
+
+**Docs gate:** `## Docs` section present; canonical doc(s) updated or `N/A — reason`; any change doc this PR fully delivers deleted (deletion guard); `related_prs` includes this PR when docs changed; `bash scripts/validate_docs.sh` passes.
 
 Always before merge attempt: `./scripts/pre-push.sh` green locally.
 
@@ -240,3 +243,4 @@ See autonomous-pr-policy §Escalation. Includes security/crypto, breaking API, p
 | `/spawn-sprint-agents` | Parallel agents inside a phase (when snapshot allows) |
 | `/babysit-uat` | Final merge to `main` — babysit+ plus pre-UAT E2E gate |
 | `/execute-plan` | Multi-phase orchestrator — babysit+ on phases; babysit-uat on final main merge |
+| `/canonical-docs` | Mode A before PR open; Mode B consolidate on demand |

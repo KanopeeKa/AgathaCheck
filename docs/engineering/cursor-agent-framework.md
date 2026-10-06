@@ -40,6 +40,7 @@ The five commands above.
 |-------|------|
 | `/spawn-sprint-agents` | Parallel agents on integration branch |
 | `/pre-push-verify` | Which pre-push script to run |
+| `/canonical-docs` | Sync canonical feature docs on behaviour PRs; consolidate legacy per capability |
 | `/dependabot-batch` | Weekly dependency batch |
 | `/split-flutter-screen` | Screen extraction (execute-plan exit profile) |
 | `/add-bdd-playwright-scenario` | New BDD journey |

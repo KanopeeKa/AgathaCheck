@@ -39,6 +39,14 @@ One paragraph: what this plan achieves and why it is split into phases.
 
 ---
 
+## Canonical docs
+
+List canonical feature doc(s) this plan will update (`docs/domains/<domain>/features/…`). At **strengthen**, record per-phase `docs_targets` on the control issue.
+
+If the plan needs a proposal or delivery write-up before merge, create `docs/domains/<domain>/changes/<name>.md` with `status: proposed` and state which canonical doc it folds into. On plan completion, every delivered `changes/` doc must be folded and deleted or left `in-delivery` with tracked scope (deletion guard — `.cursor/skills/canonical-docs/SKILL.md`).
+
+---
+
 ## Autonomy (filled at approval)
 
 | Field | Value |

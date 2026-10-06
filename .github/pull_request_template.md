@@ -2,6 +2,10 @@
 
 <!-- One sentence: what this PR achieves (cross-domain OK if same outcome) -->
 
+## Docs
+
+- [ ] Canonical feature doc updated via `/canonical-docs sync` (or `N/A — reason`); completed `changes/` docs deleted when fully delivered (deletion guard)
+
 ## Scope
 
 <!-- Areas touched — confirm they all serve the outcome above -->

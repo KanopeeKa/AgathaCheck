@@ -205,6 +205,7 @@ Do **not** merge when: `do-not-merge` label, control issue `autonomous-revoked`,
 - File size gate respected
 - Dual-backend parity when routes touched
 - `approved_until` not past; not revoked
+- **Documentation:** behaviour-changing PRs pass the docs gate (`## Docs`, canonical doc sync or `N/A — reason`) per `.cursor/skills/canonical-docs/SKILL.md` and babysit+ §Exit checklist
 
 ### Execution
 

@@ -62,7 +62,7 @@ When session preflight **gate** exits `0`, autonomy is **active**. You have upfr
 - [github-labels.md](../../docs/agent-efficiency/github-labels.md) — control issue + debt labels
 - [plan-template.md](../../docs/agent-efficiency/plan-template.md) — authoring template
 
-**PR hygiene:** Delegate to **/babysit-plus** for intermediate phase PRs and **/babysit-uat** for the **final PR to `main`**. Never plain `/babysit` alone. Orchestrator babysit steps use **`composer-2.5` only**. Workers must complete **pre-PR critical self-review** before opening/updating a PR (`docs/agent-efficiency/pr-review-cost-efficiency.md`).
+**PR hygiene:** Delegate to **/babysit-plus** for intermediate phase PRs and **/babysit-uat** for the **final PR to `main`**. Never plain `/babysit` alone. Orchestrator babysit steps use **`composer-2.5` only**. Workers must complete **pre-PR critical self-review** and **`/canonical-docs sync`** when behaviour changes before opening/updating a PR (`docs/agent-efficiency/pr-review-cost-efficiency.md`).
 
 **Merge:** Always squash-merge when gates pass (no `manual` / `labeled` modes).
 
@@ -76,7 +76,8 @@ When session preflight **gate** exits `0`, autonomy is **active**. You have upfr
 
 1. Read `ROUTER.md` — inspect, classify domains/surfaces, assign R0–R3, resolve protocols, map verification.
 2. **Strengthen** the phase/plan (gap analysis — not scope creep):
-   - Annotate: `router_risk`, `protocols[]`, `verification[]`, `phase_fit: in-scope | split-required`
+   - Annotate: `router_risk`, `protocols[]`, `verification[]`, `docs_targets` (canonical doc paths the phase will update; `changes/` docs to fold or delete), `phase_fit: in-scope | split-required`
+   - Record `docs_targets` in plan markdown and on the control issue (no snapshot schema change)
    - If new requirements fit phase outcome → include in implementation
    - If additional independent outcome → **split phase** (update snapshot `allowed_paths`); do not mega-PR
 3. Delegate workers with `.cursor/agent-kernel/workers/phase-implementer.md` brief (risk + protocols + paths).
@@ -418,6 +419,11 @@ If more `pending` phases → loop to §1 **immediately** — no pre-UAT polling 
 
 If all phases `merged` into integration → open **one** PR integration → `main` → **/babysit-uat** → then **complete plan**.
 
+Before `complete-plan`:
+
+- Every `changes/` doc the plan created or fully delivered must be folded into its canonical doc and deleted, or remain `in-delivery` with tracked scope (deletion guard).
+- Post a **control-issue comment** and set the final phase `status_detail` listing each `docs_targets` path as `updated`, `N/A`, or `in-delivery`. If unmet, the final PR is not mergeable.
+
 ```bash
 node scripts/execute_plan_runtime.js complete-plan <plan_id> --write
 ```
@@ -476,5 +482,6 @@ See autonomous-pr-policy §Escalation. Includes security/crypto, breaking API, p
 | `/spawn-sprint-agents` | Phase with `spawn_allowed: true` (parallel within one phase) |
 | Task `generalPurpose` | Per-phase implementation worker (orchestrator retains babysit+ / merge) |
 | `/split-flutter-screen` | Screen-split phases per exit checklist |
+| `/canonical-docs` | Mode A on phase PRs; `docs_targets` at strengthen; plan completion checklist |
 
 **Tier 3 (internal — use Router protocols instead):** `single-backend-route-change` → `api-contract` + `validation`; `security-error-audit` → `security`; `ui-check` → `accessibility` §Quick pass.
