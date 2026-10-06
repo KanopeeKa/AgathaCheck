@@ -32,7 +32,10 @@ test.describe('Care item pause and resume (PP-2)', () => {
       await loginAs(page, testUser, { experience: 'guardian' });
       const careItem = new CareItemPage(page);
       await careItem.open(pet.id, entry.id);
+      await careItem.expectContextStripCareName('Flea treatment');
+      await careItem.expectPetContextTile('Rex');
       await careItem.pauseFromItemMenu({ noEndDate: true });
+      await careItem.expectContextStripStatusChip(/^Paused$|^En pause$/i);
       await careItem.expectPausedBanner();
 
       let item = await getCareItem(baseURL, testUser.accessToken, entry.id);
