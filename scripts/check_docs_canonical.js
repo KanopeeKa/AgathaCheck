@@ -106,8 +106,16 @@ function main() {
   if (opts.trace) findings.push(...runGateTrace(ctx));
   if (opts.baselineReport) console.log(JSON.stringify(baselineReport(root), null, 2));
   if (opts.report) {
-    if (opts.json) console.log(JSON.stringify(buildDomainReport(root, baseline), null, 2));
-    else console.log(baselineReportMarkdown(root, baseline));
+    const domainReport = buildDomainReport(root, baseline);
+    if (opts.json) {
+      console.log(
+        JSON.stringify(
+          { domains: domainReport.byDomain, canonical_ratio: domainReport.canonical_ratio },
+          null,
+          2,
+        ),
+      );
+    } else console.log(baselineReportMarkdown(root, baseline));
   }
   process.exit(summarize(findings.filter((f) => f.severity !== 'REPORT'), opts.gateMode));
 }
