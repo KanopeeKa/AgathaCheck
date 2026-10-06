@@ -202,13 +202,13 @@ autonomy: active
 current_phase: orchestrate
 last_completed_phase: null
 halt_reason: null
-next_action: "continue child plan active-codebase-batch-k-final-acceptance-e41f"
+next_action: "continue child plan active-codebase-batch-e-backend-integrity-e41f"
 artifact_ref:
-  branch: cursor/active-codebase-k-integration-e41f
+  branch: main
   plan_path: .agents/plans/active-codebase-completion-e41f.md
-  plan_commit: 8f5ea932708f84c746cca85495500e6eaaeb4582
+  plan_commit: 58427e4219fd1f5a011e678a7fecf855c2960b8e
   snapshot_path: .agents/plans/active-codebase-completion-e41f.snapshot.json
-  snapshot_commit: 8f5ea932708f84c746cca85495500e6eaaeb4582
+  snapshot_commit: 58427e4219fd1f5a011e678a7fecf855c2960b8e
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

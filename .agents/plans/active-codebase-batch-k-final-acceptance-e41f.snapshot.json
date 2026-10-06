@@ -5,7 +5,7 @@
   "approved_at": "2026-10-06T15:53:07Z",
   "approved_by": "roadmap active-codebase-completion-e41f standing grant (chat through batch K)",
   "approved_until": "2026-10-08T15:53:07Z",
-  "autonomy": "active",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "cursor/active-codebase-k-integration-e41f",
   "control_issue": 1711,
@@ -113,11 +113,11 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "governance",
-      "status": "complete",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1721",
       "pr_head_sha": null,
       "merge_commit": null
     },
@@ -145,11 +145,11 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "governance",
-      "status": "complete",
+      "status": "merged",
       "status_reason": null,
       "status_detail": "docs-only metrics and review closure",
       "debt_issue_refs": [],
-      "pr_url": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1723",
       "pr_head_sha": null,
       "merge_commit": null
     },
@@ -171,14 +171,14 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1724",
       "pr_head_sha": null,
-      "merge_commit": null
+      "merge_commit": "58427e4219fd1f5a011e678a7fecf855c2960b8e"
     }
   ],
-  "content_hash": "sha256:853768ee91994e8974963c8b04cfafed2d9aca58719b9bc7940c12114f255347"
+  "content_hash": "sha256:144f4221268c6c0f1ba2bb97ab46c7cb3afd26ea4ebb6f55ee715657ee79680d"
 }

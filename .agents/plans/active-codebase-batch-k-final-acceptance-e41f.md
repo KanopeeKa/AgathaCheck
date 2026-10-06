@@ -50,19 +50,19 @@ Hotspots at `0cc739e` (from the metrics script):
 ## Runtime
 
 ```yaml
-autonomy: active
-current_phase: 5
-last_completed_phase: 4
+autonomy: completed
+current_phase: null
+last_completed_phase: 5
 halt_reason: null
-next_action: "phase 5: integration PR to main, ./scripts/pre-push.sh, /babysit-uat"
+next_action: "plan complete"
 artifact_ref:
-  branch: cursor/active-codebase-k4-final-acceptance-e41f
+  branch: main
   plan_path: .agents/plans/active-codebase-batch-k-final-acceptance-e41f.md
-  plan_commit: 59342111ab6e8e388b303cc616e18a25f375a154
+  plan_commit: 58427e4219fd1f5a011e678a7fecf855c2960b8e
   snapshot_path: .agents/plans/active-codebase-batch-k-final-acceptance-e41f.snapshot.json
-  snapshot_commit: 59342111ab6e8e388b303cc616e18a25f375a154
+  snapshot_commit: 58427e4219fd1f5a011e678a7fecf855c2960b8e
 open_prs: []
-merge_commits: {}
+merge_commits: {"5":"58427e4219fd1f5a011e678a7fecf855c2960b8e"}
 debt_issue_refs: []
 ```
 
