@@ -122,6 +122,7 @@ Keep these EN/FR labels distinct in copy and l10n:
 | Profile operational section | {Pet}'s care | Soins pour {petName} | `careForPet` |
 | Profile preview trailing link | View all care | Voir tous les soins | `viewAllCare` |
 | Pet-scoped All care list | All care | Tous les soins de {petName} | `allCareTitle` |
+| Care Item detail app bar | Care details | Détail du soin | `careDetailsTitle` (spec: [care-item-context-header-spec.md](../domains/pet_care/changes/care-item-context-header-spec.md)) |
 | Passed-away pets section | Rainbow bridge | Au-delà des nuages | `rainbowBridge` — collapsed expansion on full pets list |
 
 Pet-scoped care surfaces use `viewAllCare` / `allCareTitle`; global surfaces keep `allCare` and

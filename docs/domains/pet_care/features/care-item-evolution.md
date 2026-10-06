@@ -195,7 +195,7 @@ Accessibility: section and group headings are headers; Upcoming exposes expanded
 
 ### Order on mobile
 
-1. **Header:** pet avatar, the care item's name, and "Buddy · Dog" underneath. Tapping the pet opens its profile. The header stays visible while scrolling. Top right: Edit and the care item menu.
+1. **Header (amended 2026-10-06):** App bar title **Care details** / **Détail du soin** (not the item name). Body **context strip** on the warm canvas: compact pet tile (no status line) + care item name (≤2 lines) + category icon; optional paused/finished/archived line. Tapping the pet opens its profile (same as My Pets). Strip scrolls away (not sticky). Top right: Edit and the care item menu. Canonical layout: [care-item-context-header-spec.md](../changes/care-item-context-header-spec.md).
 2. **Needs attention:** see below.
 3. **Agatha:** a suggestion or safeguard for this item, only when there is one.
 4. **Absence:** placed here when it needs a decision. Otherwise it sits after Schedule.
@@ -591,7 +591,7 @@ New FR wording is proposed and needs the FR copy pass.
 
 ## Mockup corrections
 
-- **Title:** use the care item's name, not "View …". Show the pet in the header or breadcrumb, and remove the header history icon.
+- **Title:** app bar uses **Care details** (not the item name); item name lives in the context strip. Show the pet via the tappable tile in that strip. Remove the header history icon. See [care-item-context-header-spec.md](../changes/care-item-context-header-spec.md).
 - **Labels:** remove "Current occurrence".
 - **Overdue:** a small red pill, the same at every priority. No large red block.
 - **"DUE IN 2 DAYS":** neutral "Coming up · 6 Oct · in 2 days". It is not Due yet (D-CIE-007).
