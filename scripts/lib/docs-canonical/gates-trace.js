@@ -87,11 +87,8 @@ function runGateTrace(ctx) {
     const baseText = fileAtRef(root, baseRef, relPath);
     let baseKeys = new Set();
     if (baseText) {
-      const os = require('os');
-      const tmp = path.join(os.tmpdir(), `trace-base-${Date.now()}.md`);
-      fs.writeFileSync(tmp, baseText);
-      const baseDoc = parseCanonicalDoc(tmp, root);
-      fs.unlinkSync(tmp);
+      const { parseCanonicalDocFromText } = require('./parse');
+      const baseDoc = parseCanonicalDocFromText(baseText, root);
       if (baseDoc.acceptance) {
         for (const row of baseDoc.acceptance.rows) {
           baseKeys.add(acRowKey(row.cells[0], row.cells[1]));

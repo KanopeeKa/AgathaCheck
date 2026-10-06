@@ -76,12 +76,8 @@ function runGateIds(ctx) {
     const headDoc = parseCanonicalDoc(headPath, root);
     let baseDoc = null;
     if (baseText) {
-      const fs = require('fs');
-      const os = require('os');
-      const tmp = require('path').join(os.tmpdir(), `base-${Date.now()}.md`);
-      fs.writeFileSync(tmp, baseText);
-      baseDoc = parseCanonicalDoc(tmp, root);
-      fs.unlinkSync(tmp);
+      const { parseCanonicalDocFromText } = require('./parse');
+      baseDoc = parseCanonicalDocFromText(baseText, root);
     }
     if (!baseDoc) continue;
 

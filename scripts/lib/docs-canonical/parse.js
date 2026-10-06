@@ -36,8 +36,7 @@ function parseFrontmatter(text) {
   return { raw, body };
 }
 
-function parseDoc(filePath, root) {
-  const text = fs.readFileSync(filePath, 'utf8');
+function parseDocText(text, root) {
   const { raw, body } = parseFrontmatter(text);
   let meta = {};
   if (raw) {
@@ -49,6 +48,11 @@ function parseDoc(filePath, root) {
     }
   }
   return { meta, body, text };
+}
+
+function parseDoc(filePath, root) {
+  const text = fs.readFileSync(filePath, 'utf8');
+  return parseDocText(text, root);
 }
 
 function idPrefixFromFeatureId(featureId) {
@@ -93,15 +97,13 @@ function parseMarkdownTable(section) {
   return { header, rows, headerLine: headerIdx + 1 };
 }
 
-function parseCanonicalDoc(filePath, root) {
-  const { meta, body } = parseDoc(filePath, root);
+function parseCanonicalDocFromText(text, root) {
+  const { meta, body } = parseDocText(text, root);
   const prefix = idPrefixFromFeatureId(meta.feature_id);
   const reqSec = findSection(body, 'Requirements');
   const acSec = findSection(body, 'Acceptance criteria');
   const decSec = findSection(body, 'Decision log');
-  const requirements = reqSec
-    ? parseMarkdownTable(reqSec.section)
-    : null;
+  const requirements = reqSec ? parseMarkdownTable(reqSec.section) : null;
   const acceptance = acSec ? parseMarkdownTable(acSec.section) : null;
   const decisions = decSec ? parseMarkdownTable(decSec.section) : null;
   return {
@@ -115,6 +117,11 @@ function parseCanonicalDoc(filePath, root) {
     acceptance,
     decisions,
   };
+}
+
+function parseCanonicalDoc(filePath, root) {
+  const { text } = parseDoc(filePath, root);
+  return parseCanonicalDocFromText(text, root);
 }
 
 function normalizeCoverageText(s) {
@@ -153,7 +160,9 @@ function reqStatusOk(status) {
 module.exports = {
   loadYaml,
   parseDoc,
+  parseDocText,
   parseCanonicalDoc,
+  parseCanonicalDocFromText,
   parseMarkdownTable,
   findSection,
   idPrefixFromFeatureId,
