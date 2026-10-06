@@ -6,6 +6,9 @@ name: Reusable Flutter coverage
 on:
   workflow_call:
 
+env:
+  FLUTTER_VERSION: '3.44.0'
+
 permissions:
   contents: read
 
@@ -29,6 +32,8 @@ jobs:
 
       - name: Set up Flutter (coverage helper test)
         uses: ./.github/actions/setup-flutter
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
 
       - name: Merge coverage and enforce gate
         working-directory: flutter_app

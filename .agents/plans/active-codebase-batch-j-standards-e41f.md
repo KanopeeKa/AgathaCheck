@@ -51,21 +51,17 @@ Finish Package 11 (D6, D7, D23). Every gate measures an explicit, published univ
 
 ```yaml
 autonomy: active
-current_phase: 3
-last_completed_phase: 2
+current_phase: 4
+last_completed_phase: 3
 halt_reason: null
-next_action: "continue phase 3 on branch cursor/active-codebase-j3-bdd-quality-e41f"
+next_action: "continue phase 4 on branch cursor/active-codebase-j4-checker-ci-e41f"
 artifact_ref:
-<<<<<<< HEAD
-  branch: cursor/active-codebase-j3-bdd-quality-e41f
-=======
-  branch: cursor/active-codebase-j-integration-e41f
->>>>>>> origin/cursor/active-codebase-j-integration-e41f
+  branch: cursor/active-codebase-j4-checker-ci-e41f
   plan_path: .agents/plans/active-codebase-batch-j-standards-e41f.md
-  plan_commit: dc4807d9a08616c3a6df2d5d87b432ea74c335e5
+  plan_commit: 2d6329948933d71dff73c8f9fe2f123c31edf43b
   snapshot_path: .agents/plans/active-codebase-batch-j-standards-e41f.snapshot.json
-  snapshot_commit: dc4807d9a08616c3a6df2d5d87b432ea74c335e5
-open_prs: []
+  snapshot_commit: 2d6329948933d71dff73c8f9fe2f123c31edf43b
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1699"]
 merge_commits: {}
 debt_issue_refs: []
 ```
@@ -258,9 +254,9 @@ docs
 
 **Acceptance criteria:**
 
-- [ ] **J.4-1** Each governance checker has a fixture test that **fails on a deliberate violation**: file size, feature imports, frozen boundaries, transaction ownership (E.3), server direction (H.4/I2.4), docs validation, BDD coverage, the Flutter coverage threshold and the backend coverage ratchet. All of them run in CI.
-- [ ] **J.4-2** `scripts/ci/assert-ci-gate.test.js` asserts that docs validation, frozen boundaries, feature imports, file size, ESLint, both coverage gates and the architecture tests are all **blocking** steps in the required CI gate.
-- [ ] **J.4-3** `CONTRIBUTING.md` and `docs/agent-efficiency/` list every gate with its command, universe and threshold, and they match the scripts. Verifying GitHub branch protection is documented as a manual human step, because agents cannot read repository settings.
+- [x] **J.4-1** Each governance checker has a fixture test that **fails on a deliberate violation**: file size, feature imports, frozen boundaries, transaction ownership (E.3), server direction (H.4/I2.4), docs validation, BDD coverage, the Flutter coverage threshold and the backend coverage ratchet. All of them run in CI.
+- [x] **J.4-2** `scripts/ci/assert-ci-gate.test.js` asserts that docs validation, frozen boundaries, feature imports, file size, ESLint, both coverage gates and the architecture tests are all **blocking** steps in the required CI gate.
+- [x] **J.4-3** `CONTRIBUTING.md` and `docs/agent-efficiency/` list every gate with its command, universe and threshold, and they match the scripts. Verifying GitHub branch protection is documented as a manual human step, because agents cannot read repository settings.
 
 ---
 

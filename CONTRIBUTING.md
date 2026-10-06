@@ -89,15 +89,23 @@ Use the PR template checklist. In summary:
 
 **Gate contract (blocking vs advisory, UAT/PROD rules):** [docs/pipelines/ci-cd-gates.md](docs/pipelines/ci-cd-gates.md)
 
+**Governance commands, universes, and thresholds:** [docs/agent-efficiency/governance-gates.md](docs/agent-efficiency/governance-gates.md) (must match the scripts; fixture tests prove each gate fails on a deliberate violation).
+
+**Branch protection:** confirming GitHub required checks (`ci-gate / CI passed`, CodeQL) is a **manual human step** — agents cannot read repository settings (see governance-gates doc).
+
 - Flutter analyze, format, and parallel domain test shards (matrix from `flutter_app/test/ci_shards.json`; `node scripts/ci/flutter-shards.mjs check` proves every active test file is owned) + merged domain coverage
 - Flutter integration test (blocking)
-- Node Jest tests
+- Node Jest tests + server architecture tests (`server/test/architecture/`)
 - `npm audit --audit-level=high` (server + e2e)
 - CodeQL (JavaScript)
 - `dart format --set-exit-if-changed` (Flutter code only, blocks merge)
-- Flutter domain line coverage ≥ 8% (`check_domain_coverage.js`; policy target 70% — see `docs/engineering/active-codebase-baseline/flutter-domain-coverage-threshold.json`)
+- Documentation validation: `bash scripts/validate_docs.sh --strict`
+- ESLint ratchet on active server code: `node scripts/validate_eslint.js`
+- Frozen domain boundaries: `bash scripts/check_frozen_domain_boundaries.sh`
+- Cross-feature import gate: `node scripts/check_feature_imports.js`
+- Flutter domain line coverage ≥ 8% (`merge_flutter_coverage.sh` / `check_domain_coverage.js`; policy target 70% — see `docs/engineering/active-codebase-baseline/flutter-domain-coverage-threshold.json`)
 - Backend line coverage ratchet for active `server/lib`, `server/services`, and `server/routes` (`server/scripts/check_coverage_ratchet.js`)
-- BDD scenario mapping gate: `node e2e/scripts/check_bdd_coverage.js --report-only` (live counts from the script only; gate is 68% of active scenarios)
+- BDD scenario mapping gate: `node e2e/scripts/check_bdd_coverage.js` (blocking; gate is 68% of gated active scenarios — use `--report-only` locally for counts only)
 - Hand-written file size ≤ 500 lines (`scripts/check_file_size.js`; grandfather ratchet for legacy monoliths)
 - Coverage artifacts: full Flutter lcov + Jest Istanbul (report-only beyond domain gate)
 

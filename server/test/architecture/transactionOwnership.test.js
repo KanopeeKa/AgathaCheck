@@ -5,7 +5,9 @@ import { fileURLToPath } from 'url';
 import manifest from '../../../docs/engineering/frozen-domains/manifest.json' with { type: 'json' };
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const serverRoot = path.resolve(__dirname, '../../');
+const serverRoot = process.env.GOVERNANCE_FIXTURE_SERVER_ROOT
+  ? path.resolve(process.env.GOVERNANCE_FIXTURE_SERVER_ROOT)
+  : path.resolve(__dirname, '../../');
 
 function normalizeRelPath(relativePath) {
   return relativePath.replace(/^server\//, '').replace(/\\/g, '/');
