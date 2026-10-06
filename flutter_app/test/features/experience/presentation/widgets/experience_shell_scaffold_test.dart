@@ -16,6 +16,8 @@ import 'package:pet_profile_app/features/experience/presentation/widgets/pet_car
 import 'package:pet_profile_app/features/experience/presentation/widgets/pet_care_navigation_sidebar.dart';
 import 'package:pet_profile_app/features/organization/presentation/providers/shelter_pinned_org_provider.dart';
 import 'package:pet_profile_app/features/experience/presentation/config/shelter_primary_destinations.dart';
+import 'package:pet_profile_app/features/notifications/domain/entities/app_notification.dart';
+import 'package:pet_profile_app/features/notifications/domain/entities/notification_kind.dart';
 import 'package:pet_profile_app/features/notifications/presentation/providers/notification_providers.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/organization.dart';
 import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
@@ -24,6 +26,23 @@ import 'package:pet_profile_app/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../helpers/fakes.dart';
+
+List<AppNotification> _bellBadgeNotifications(int count) {
+  return List.generate(
+    count,
+    (i) => AppNotification(
+      id: 'bell-badge-$i',
+      userId: 'u1',
+      title: 'Invite',
+      message: 'm',
+      type: NotificationType.general,
+      wireType: 'shareInviteReceived',
+      kind: NotificationKind.relationship,
+      isRead: false,
+      createdAt: DateTime.utc(2026, 1, 1).add(Duration(seconds: i)),
+    ),
+  );
+}
 
 class _EmptyOrgListNotifier extends OrganizationListNotifier {
   @override
@@ -57,8 +76,12 @@ Widget _buildApp({
           ),
         ),
       ),
-      combinedUnreadNotificationCountProvider.overrideWith(
-        (ref) => combinedUnread,
+      if (combinedUnread > 0)
+        notificationsProvider.overrideWith(
+          () => TestNotificationsNotifier(_bellBadgeNotifications(combinedUnread)),
+        ),
+      notificationPreferencesProvider.overrideWith(
+        FakeNotificationPreferencesNotifier.new,
       ),
       // Provide zero for legacy providers to satisfy any watchers
       guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),

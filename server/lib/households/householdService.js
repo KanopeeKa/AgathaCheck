@@ -18,6 +18,12 @@ import {
 } from './constants.js';
 import { getPetHouseholdId } from './petAccessGrants.js';
 import { getHouseholdMemberRemovalPreview } from './memberRemoval.js';
+import {
+  emitHouseholdMemberJoined,
+  emitHouseholdMemberLeft,
+  emitHouseholdPetAdded,
+  emitHouseholdPetRemoved,
+} from '../notifications/relationshipEmitters.js';
 
 export { getHouseholdMemberRemovalPreview };
 
@@ -182,6 +188,10 @@ export async function addHouseholdMember(db, actorId, householdId, body) {
      WHERE hm.household_id = $1 AND hm.user_id = $2`,
     [householdId, targetUserId],
   );
+  await emitHouseholdMemberJoined(db, {
+    householdId,
+    memberUserId: targetUserId,
+  });
   return { member: mapMemberRow(member.rows[0]) };
 }
 
@@ -212,6 +222,12 @@ export async function removeHouseholdMember(db, actorId, householdId, targetUser
       };
     }
   }
+
+  await emitHouseholdMemberLeft(db, {
+    householdId,
+    memberUserId: targetUserId,
+    removedByActorId: actorId,
+  });
 
   await withTransaction(db, async (client) => {
     if (preview.requires_successor && successorUserId) {
@@ -288,6 +304,7 @@ export async function setHouseholdPets(db, userId, householdId, petIds) {
       const ownerRow = await db.query('SELECT user_id FROM pets WHERE id = $1', [petId]);
       const ownerId = ownerRow.rows[0]?.user_id;
       if (ownerId === userId) {
+        const petNameRow = await db.query('SELECT name FROM pets WHERE id = $1', [petId]);
         await copyHouseholdContactsForPetLeave(db, petId, ownerId, householdId);
         await db.query('DELETE FROM household_pets WHERE pet_id = $1', [petId]);
         await recordPetAccessEvent(db, {
@@ -296,12 +313,19 @@ export async function setHouseholdPets(db, userId, householdId, petIds) {
           accessSource: 'household',
           detail: { household_id: householdId },
         });
+        await emitHouseholdPetRemoved(db, {
+          householdId,
+          petId,
+          petName: petNameRow.rows[0]?.name,
+          actorUserId: userId,
+        });
       }
     }
   }
 
   for (const petId of desired) {
     if (!currentIds.has(petId)) {
+      const petNameRow = await db.query('SELECT name FROM pets WHERE id = $1', [petId]);
       await db.query(
         `INSERT INTO household_pets (household_id, pet_id, added_at)
          VALUES ($1, $2, NOW())
@@ -313,6 +337,12 @@ export async function setHouseholdPets(db, userId, householdId, petIds) {
         eventType: 'pet_joined_household',
         accessSource: 'household',
         detail: { household_id: householdId },
+      });
+      await emitHouseholdPetAdded(db, {
+        householdId,
+        petId,
+        petName: petNameRow.rows[0]?.name,
+        actorUserId: userId,
       });
     }
   }
