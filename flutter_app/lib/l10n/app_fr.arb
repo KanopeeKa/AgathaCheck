@@ -350,6 +350,7 @@
   "careSuggestionRespondFailed": "Impossible de mettre à jour cette suggestion. Réessayez.",
   "careSafeguardDismissFailed": "Impossible d'ignorer. Réessayez.",
   "careSuggestionEditForbidden": "Vous pouvez consulter les soins de cet animal, mais pas ajouter de routines.",
+  "notificationSuggestionVetDisclaimer": "Agatha n'est pas vétérinaire. En cas d'inquiétude, parlez-en à votre vétérinaire.",
   "careSuggestionDismiss": "Ignorer",
   "careSuggestionNotRelevant": "Pas pertinent",
   "careSuggestionWhy": "Pourquoi ?",

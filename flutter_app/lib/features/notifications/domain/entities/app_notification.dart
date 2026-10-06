@@ -72,6 +72,12 @@ class AppNotification {
       kind == NotificationKind.suggestion &&
       (suggestionState == 'new' || (suggestionState == null && !isRead));
 
+  /// FR-SC-3 — health-adjacent suggestion copy (S2, S3).
+  bool get showsHealthAdjacentDisclaimer =>
+      wireType == 'suggestionWeightTrend' ||
+      wireType == 'suggestionRepeatedSymptom' ||
+      suggestionPayload?['health_adjacent'] == true;
+
   AppNotification copyWith({
     String? id,
     String? userId,

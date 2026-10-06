@@ -78,7 +78,9 @@ Widget _buildApp({
       ),
       if (combinedUnread > 0)
         notificationsProvider.overrideWith(
-          () => TestNotificationsNotifier(_bellBadgeNotifications(combinedUnread)),
+          () => TestNotificationsNotifier(
+            _bellBadgeNotifications(combinedUnread),
+          ),
         ),
       notificationPreferencesProvider.overrideWith(
         FakeNotificationPreferencesNotifier.new,

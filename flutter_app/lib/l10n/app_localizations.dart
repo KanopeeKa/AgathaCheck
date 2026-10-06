@@ -1958,6 +1958,12 @@ abstract class AppLocalizations {
   /// **'You can view this pet\'s care but cannot add routines.'**
   String get careSuggestionEditForbidden;
 
+  /// No description provided for @notificationSuggestionVetDisclaimer.
+  ///
+  /// In en, this message translates to:
+  /// **'Agatha isn\'t a vet. If you\'re worried, talk to your vet.'**
+  String get notificationSuggestionVetDisclaimer;
+
   /// No description provided for @careSuggestionDismiss.
   ///
   /// In en, this message translates to:

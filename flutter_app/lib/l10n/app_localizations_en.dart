@@ -1091,6 +1091,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'You can view this pet\'s care but cannot add routines.';
 
   @override
+  String get notificationSuggestionVetDisclaimer =>
+      'Agatha isn\'t a vet. If you\'re worried, talk to your vet.';
+
+  @override
   String get careSuggestionDismiss => 'Dismiss';
 
   @override
