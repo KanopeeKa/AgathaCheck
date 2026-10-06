@@ -3,7 +3,9 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const serverRoot = path.resolve(__dirname, '../../');
+const serverRoot = process.env.GOVERNANCE_FIXTURE_SERVER_ROOT
+  ? path.resolve(process.env.GOVERNANCE_FIXTURE_SERVER_ROOT)
+  : path.resolve(__dirname, '../../');
 
 const SCAN_ROOTS = ['lib', 'services'];
 const ROUTES_IMPORT_RE = /from\s+['"][^'"]*\/routes\//;

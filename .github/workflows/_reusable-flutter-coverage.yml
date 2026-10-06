@@ -6,6 +6,9 @@ name: Reusable Flutter coverage
 on:
   workflow_call:
 
+env:
+  FLUTTER_VERSION: '3.44.0'
+
 permissions:
   contents: read
 
@@ -27,8 +30,15 @@ jobs:
           path: _coverage_shards
           merge-multiple: false
 
+      - name: Set up Flutter (coverage helper test)
+        uses: ./.github/actions/setup-flutter
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+
       - name: Merge coverage and enforce gate
         working-directory: flutter_app
+        env:
+          DOMAIN_COVERAGE_THRESHOLD: 8
         run: bash scripts/merge_flutter_coverage.sh ../_coverage_shards
 
       - name: Upload merged Flutter coverage

@@ -45,8 +45,24 @@ jobs:
       - name: BDD scenario coverage gate (live script)
         run: node e2e/scripts/check_bdd_coverage.js
 
+      - name: BDD coverage fixtures (traceability / execution / quality)
+        run: node --test e2e/scripts/check_bdd_coverage.test.js
+
       - name: Frozen domain boundary (active tree)
         run: bash scripts/check_frozen_domain_boundaries.sh
+
+      - name: Frozen domain boundary fixtures
+        run: bash scripts/test/check_frozen_domain_boundaries.test.sh
+
+      - name: Install server deps (doc placement js-yaml)
+        working-directory: server
+        run: npm ci
+
+      - name: Documentation validation (strict)
+        run: bash scripts/validate_docs.sh --strict
+
+      - name: Documentation validation fixtures
+        run: node --test scripts/validate_docs.fixture.test.mjs
 
       - name: Cross-feature import gate (D6 block-new)
         run: node scripts/check_feature_imports.js
@@ -74,6 +90,10 @@ jobs:
 
       - name: Flutter coverage threshold consistency (D23)
         run: node --test scripts/check_coverage_threshold_consistency.test.js
+
+      - name: Flutter domain coverage helper fixtures (J.1)
+        working-directory: flutter_app
+        run: node --test scripts/test/domain_coverage.fixture.mjs
 
       - name: CI gate assertion tests
         run: node --test scripts/ci/assert-ci-gate.test.js
@@ -140,6 +160,21 @@ jobs:
       - name: Run backend tests with coverage
         working-directory: server
         run: npm run test:unit -- --forceExit --coverage
+
+      - name: Server architecture governance (transaction ownership + direction)
+        working-directory: server
+        run: npx jest test/architecture --runInBand --forceExit
+
+      - name: Server architecture governance fixtures
+        run: node --test scripts/test/architecture-checkers.fixture.test.mjs
+
+      - name: Backend coverage ratchet (J.1-4)
+        working-directory: server
+        run: node scripts/check_coverage_ratchet.js
+
+      - name: Backend coverage ratchet fixtures
+        working-directory: server
+        run: node --test scripts/test/check_coverage_ratchet.fixture.mjs
 
       - name: Backend Jest under Europe/Paris (AC-TZ2)
         working-directory: server

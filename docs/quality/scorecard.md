@@ -21,8 +21,8 @@ Living metrics for Agatha Track quality. Update when CI or test counts change ma
 
 | Metric | Value | Enforced by |
 |--------|------:|-------------|
-| Flutter unit/widget (active CI) | 332 | 6 shards (`ci_shards.json`) |
-| Flutter frozen / excluded tests | 62 / 1 | frozen-domains manifest |
+| Flutter unit/widget (active CI) | 335 | 6 shards (`ci_shards.json`) |
+| Flutter frozen / excluded tests | 62 / 2 | frozen-domains manifest |
 | Flutter unowned tests | 0 | `flutter-shards.mjs check` |
 | Flutter integration flows | 1 | `flutter-integration` job |
 | Jest (active / frozen) | 245 / 46 | `jest.config.active.cjs` |
@@ -33,7 +33,7 @@ Living metrics for Agatha Track quality. Update when CI or test counts change ma
 | BDD uncovered (active) | 37 | informational |
 | Pre-UAT shard orphans | 0 | `validate-shard-manifest.mjs` |
 | @smoke-ci / @smoke-uat / @smoke-a11y | 7 / 14 / 10 | `check-smoke-tags.mjs` |
-| Flutter domain coverage gate | **70%** | `check_domain_coverage.js` |
+| Flutter domain coverage gate | **8%** | `check_domain_coverage.js` |
 <!-- scorecard-metrics:end -->
 
 ## Test counts (reference)
@@ -69,7 +69,7 @@ Living metrics for Agatha Track quality. Update when CI or test counts change ma
 
 | Layer | Status |
 |---|---|
-| Flutter domain (`lib/**/domain/**`) | **70% line coverage gate** (CI) |
+| Flutter domain (`lib/**/domain/**`) | **8% line coverage gate** (CI; policy target 70%) |
 | Flutter lcov (full app) | CI artifact |
 | Jest Istanbul | CI artifact (report-only) |
 

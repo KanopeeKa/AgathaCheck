@@ -51,17 +51,17 @@ Finish Package 11 (D6, D7, D23). Every gate measures an explicit, published univ
 
 ```yaml
 autonomy: active
-current_phase: "1"
-last_completed_phase: null
+current_phase: 5
+last_completed_phase: 4
 halt_reason: null
-next_action: "bootstrap: create integration branch + control issue, then phase 1"
+next_action: "continue phase 5 on branch cursor/active-codebase-j-integration-e41f"
 artifact_ref:
-  branch: null
+  branch: cursor/active-codebase-j-integration-e41f
   plan_path: .agents/plans/active-codebase-batch-j-standards-e41f.md
-  plan_commit: null
+  plan_commit: 1b9df40bd6307079f0097adf304b40b8d37f9907
   snapshot_path: .agents/plans/active-codebase-batch-j-standards-e41f.snapshot.json
-  snapshot_commit: null
-open_prs: []
+  snapshot_commit: 1b9df40bd6307079f0097adf304b40b8d37f9907
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1700"]
 merge_commits: {}
 debt_issue_refs: []
 ```
@@ -165,10 +165,10 @@ governance-allowlist
 
 **Acceptance criteria:**
 
-- [ ] **J.2-1** `validate_eslint.js` lints all **active** `server/lib/**`, `server/services/**` and `server/routes/**`, excluding frozen roots from the manifest. Today `LINT_PATHS` covers only 4 paths. Existing violations are recorded per rule and file in `server/eslint-baseline.json`; new violations fail, and the baseline only shrinks.
-- [ ] **J.2-2** D7 ratchet: `server/lib` and `server/services` become **blocking** for new files over 500 lines and for growth of existing offenders beyond their recorded `maxLines`. Allowlist entries carry `owner`, `reason` and `review_date`, and the check warns when a review date has passed.
-- [ ] **J.2-3** The size report classifies Flutter files as screens, widgets, controllers/providers or data, and reports physical and heuristic line counts separately. The published report is refreshed.
-- [ ] **J.2-4** Fixture tests cover: a new 501-line file in `server/lib` fails; an allowlisted file growing past `maxLines` fails; an expired `review_date` warns.
+- [x] **J.2-1** `validate_eslint.js` lints all **active** `server/lib/**`, `server/services/**` and `server/routes/**`, excluding frozen roots from the manifest. Today `LINT_PATHS` covers only 4 paths. Existing violations are recorded per rule and file in `server/eslint-baseline.json`; new violations fail, and the baseline only shrinks.
+- [x] **J.2-2** D7 ratchet: `server/lib` and `server/services` become **blocking** for new files over 500 lines and for growth of existing offenders beyond their recorded `maxLines`. Allowlist entries carry `owner`, `reason` and `review_date`, and the check warns when a review date has passed.
+- [x] **J.2-3** The size report classifies Flutter files as screens, widgets, controllers/providers or data, and reports physical and heuristic line counts separately. The published report is refreshed.
+- [x] **J.2-4** Fixture tests cover: a new 501-line file in `server/lib` fails; an allowlisted file growing past `maxLines` fails; an expired `review_date` warns.
 
 ---
 
@@ -208,9 +208,9 @@ docs
 
 **Acceptance criteria:**
 
-- [ ] **J.3-1** `check_bdd_coverage.js` reports three separate figures: (a) active scenarios whose title maps to an `@bdd` spec; (b) mapped specs that are actually **scheduled** in the pre-UAT shard manifest (`e2e/scripts/shard-files.mjs`); and (c) skeleton or orphan specs (no `expect`, `test.skip` or `test.fixme`, or a spec with no scenario).
-- [ ] **J.3-2** The blocking gate stays at 68% of active **mapped** scenarios (no loosening). Figures (b) and (c) are report-only in this batch, and their current values are recorded in the baseline README.
-- [ ] **J.3-3** Frozen scenarios stay excluded via the manifest's `bddFeaturePatterns` and `frozen-e2e-specs.mjs`. Fixture tests cover each category.
+- [x] **J.3-1** `check_bdd_coverage.js` reports three separate figures: (a) active scenarios whose title maps to an `@bdd` spec; (b) mapped specs that are actually **scheduled** in the pre-UAT shard manifest (`e2e/scripts/shard-files.mjs`); and (c) skeleton or orphan specs (no `expect`, `test.skip` or `test.fixme`, or a spec with no scenario).
+- [x] **J.3-2** The blocking gate stays at 68% of active **mapped** scenarios (no loosening). Figures (b) and (c) are report-only in this batch, and their current values are recorded in the baseline README.
+- [x] **J.3-3** Frozen scenarios stay excluded via the manifest's `bddFeaturePatterns` and `frozen-e2e-specs.mjs`. Fixture tests cover each category.
 
 ---
 
@@ -254,9 +254,9 @@ docs
 
 **Acceptance criteria:**
 
-- [ ] **J.4-1** Each governance checker has a fixture test that **fails on a deliberate violation**: file size, feature imports, frozen boundaries, transaction ownership (E.3), server direction (H.4/I2.4), docs validation, BDD coverage, the Flutter coverage threshold and the backend coverage ratchet. All of them run in CI.
-- [ ] **J.4-2** `scripts/ci/assert-ci-gate.test.js` asserts that docs validation, frozen boundaries, feature imports, file size, ESLint, both coverage gates and the architecture tests are all **blocking** steps in the required CI gate.
-- [ ] **J.4-3** `CONTRIBUTING.md` and `docs/agent-efficiency/` list every gate with its command, universe and threshold, and they match the scripts. Verifying GitHub branch protection is documented as a manual human step, because agents cannot read repository settings.
+- [x] **J.4-1** Each governance checker has a fixture test that **fails on a deliberate violation**: file size, feature imports, frozen boundaries, transaction ownership (E.3), server direction (H.4/I2.4), docs validation, BDD coverage, the Flutter coverage threshold and the backend coverage ratchet. All of them run in CI.
+- [x] **J.4-2** `scripts/ci/assert-ci-gate.test.js` asserts that docs validation, frozen boundaries, feature imports, file size, ESLint, both coverage gates and the architecture tests are all **blocking** steps in the required CI gate.
+- [x] **J.4-3** `CONTRIBUTING.md` and `docs/agent-efficiency/` list every gate with its command, universe and threshold, and they match the scripts. Verifying GitHub branch protection is documented as a manual human step, because agents cannot read repository settings.
 
 ---
 

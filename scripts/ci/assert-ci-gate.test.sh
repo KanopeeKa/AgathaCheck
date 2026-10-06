@@ -103,4 +103,6 @@ export CI_E2E_AFFECTED=skipped
 export CI_SCOPE_JSON='{"scope":"FLUTTER_ONLY","skip_jobs":["ci-e2e-affected"]}'
 assert_exit 0 "affected-spec skip ok when not selected"
 
+node --test scripts/ci/governance-blocking-steps.test.mjs
+
 echo "assert-ci-gate tests passed"
