@@ -4,7 +4,10 @@
 
 ## Docs
 
-- [ ] Canonical feature doc updated via `/canonical-docs sync` (or `N/A — reason`); completed `changes/` docs deleted when fully delivered (deletion guard)
+<!-- CI reads this section (not the checkbox): list canonical doc path(s) updated,
+     change docs folded/deleted, IDs added — or `N/A — <reason>`. -->
+
+- [ ] Canonical doc `docs/domains/…` updated (or `N/A — <reason>`: no behaviour change)
 
 ## Scope
 

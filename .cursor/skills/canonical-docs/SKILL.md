@@ -30,7 +30,7 @@ Run **before** `ManagePullRequest create_pr` / PR update that ships new behaviou
 | Tests, CI, tooling, or agent workflow only | N/A for **domain** feature docs |
 | Edits under `.cursor/`, `docs/agent-efficiency/`, or agent scripts only | N/A for domain docs; update the relevant policy/skill doc in the same PR |
 
-If N/A: add `Docs: N/A — <reason>` to the PR body (see step 8) and stop.
+If N/A: under **`## Docs`** in the PR body write `N/A — <reason>` (see step 8) and stop.
 
 ### 2. Locate canonical doc(s)
 
@@ -40,10 +40,10 @@ If none exists for the capability, create `docs/domains/<domain>/features/<capab
 
 ### 3. Update canonical doc (post-merge truth)
 
-- **Requirements:** stable IDs `<PREFIX>-R-###` where prefix = doc `feature_id` uppercased with `_` → `-` (see standards). Status: `Live` | `In delivery` | `Planned`.
-- **Acceptance criteria:** Given/When/Then; cite requirement ID and BDD/test.
-  - **New or changed in this PR:** test reference or `Coverage: none — issue #…`.
-  - **Legacy untouched:** `Coverage: TBD — consolidate` is allowed.
+- **Requirements:** stable IDs `<PREFIX>-R-###` where prefix = doc `feature_id` uppercased with `_` → `-` (see standards). Status: `Live` | `In delivery` | `Planned` | `Retired`.
+- **Acceptance criteria:** Given/When/Then; cite requirement ID and coverage:
+  - Normative: `bdd: <file>.feature#<title>` or `bdd: <file>.feature@<tag>`, `test: <path>` or `test: <path>#<exact name>`, `none — #<issue>`.
+  - **Legacy untouched rows:** prose `….feature — Scenario: …` or `Coverage: TBD — consolidate` tolerated until the row changes.
 - **Decision log:** append `<PREFIX>-D-###` per decision; supersede old rows with `Superseded by <ID>`.
 - Remove delivery noise from sections you touch (phase tables, “amended on …” banners).
 
@@ -70,13 +70,16 @@ Only when this PR **changes a product rule documented solely in `.agents/memory/
 ```bash
 cd server && npm ci   # if js-yaml missing
 bash scripts/validate_docs.sh
+node scripts/check_docs_canonical.js --base origin/main
+# When the diff touches behaviour paths, also:
+node scripts/check_docs_canonical.js --pr-body --body-file /path/to/pr-body.md --base origin/main
 ```
 
 See **Troubleshooting** below on failures.
 
 ### 8. PR body `## Docs`
 
-List: canonical paths updated; change docs folded/deleted/trimmed; requirement/decision IDs added; or `N/A — reason`.
+List under **`## Docs`**: canonical paths updated; change docs folded/deleted/trimmed; requirement/decision IDs added; or `N/A — <reason>`.
 
 ### 9. Product conflicts
 
@@ -110,9 +113,12 @@ On demand only. **One capability per PR.**
 |---------|--------|
 | `js-yaml is required` | `cd server && npm ci` |
 | `check_doc_placement` / manifest errors | Fix path, frontmatter (`domain`, `feature_id`), or token links — **do not** weaken checks in this repo workflow |
+| `check_docs_canonical` **R-A1** | Add `## Docs` with paths or `N/A — <reason>` |
+| **R-A3** | Every path listed under `## Docs` must be modified in the PR |
+| **R-T1** / **R-T3** | Use normative `bdd:` / `test:` coverage (see standards §3.3) |
 | New feature doc fails gates | Ensure file lives under `features/`, valid YAML, no hex colours in prose |
 
-`validate_docs.sh` already runs existing placement/manifest gates; this skill does not add CI gates (see standards §Enforcement).
+Agents never apply the `docs-gate-exempt` label.
 
 ---
 

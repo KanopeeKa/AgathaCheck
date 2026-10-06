@@ -9,6 +9,7 @@ on:
 permissions:
   contents: read
   actions: read
+  issues: write
 
 jobs:
   kpis:
@@ -38,3 +39,61 @@ jobs:
           path: ci-health-kpis.md
           retention-days: 14
           if-no-files-found: ignore
+
+  docs-hygiene:
+    name: Weekly docs hygiene
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - name: Install backend deps
+        run: cd server && npm ci
+
+      - name: Collect docs hygiene findings
+        id: hygiene
+        run: |
+          node scripts/check_docs_canonical.js --changes --all > changes-report.txt 2>&1 || true
+          node scripts/check_docs_canonical.js --ids --report-duplicates > dup-report.txt 2>&1 || true
+          node scripts/check_docs_canonical.js --trace --closed-issues > trace-report.txt 2>&1 || true
+          node scripts/check_docs_canonical.js --baseline-report > baseline-report.json
+          node scripts/check_docs_canonical.js --report --json > docs-trace.json
+
+      - name: Open or update docs-hygiene issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          MARKER="<!-- docs-hygiene-weekly -->"
+          BODY="${MARKER}
+          ## Expired proposals (R-B5)
+          \`\`\`
+          $(grep R-B5 changes-report.txt || echo none)
+          \`\`\`
+          ## Stale in-delivery (R-B6)
+          \`\`\`
+          $(grep R-B6 changes-report.txt || echo none)
+          \`\`\`
+          ## Closed-issue AC rows (R-T4)
+          \`\`\`
+          $(grep R-T4 trace-report.txt || echo none)
+          \`\`\`
+          ## Duplicate IDs (R-D3)
+          \`\`\`
+          $(grep R-D3 dup-report.txt || echo none)
+          \`\`\`
+          ## Legacy baseline counts
+          \`\`\`
+          $(cat baseline-report.json)
+          \`\`\`"
+          EXISTING=$(gh issue list --label docs-hygiene --search "in:title Docs hygiene weekly" --json number --jq '.[0].number' || true)
+          if [[ -z "$EXISTING" ]]; then
+            gh issue create --title "Docs hygiene weekly" --label tech-debt --label docs-hygiene --body "$BODY"
+          else
+            gh issue edit "$EXISTING" --body "$BODY"
+          fi

@@ -36,15 +36,15 @@ Standalone `*-decisions.md` under `features/` or `changes/` is **legacy**; do no
 ## Feature doc rules
 
 1. **One file per capability** (not per sprint or PR).
-2. **YAML frontmatter:** `title`, `domain`, `feature_id`, `status`, `related_prs`, `related_bdd`, `last_updated`.
-3. **Decision log** lives in a `## Decision log` section **inside** the canonical doc — never a separate decisions-only file for new work. Append-only; superseded rows stay with `Superseded by <ID>`.
+2. **YAML frontmatter:** `title`, `domain`, `feature_id`, `status`, `related_prs` (advisory convenience — `git log --follow` is authoritative), `related_bdd` (recommended), `last_updated`.
+3. **Decision log** lives in a `## Decision log` section **inside** the canonical doc — never a separate decisions-only file for new work. Append-only; superseded rows stay with `Superseded by <ID>`. Decision `Status`: `Live` or `Superseded by <ID>` (legacy `Agreed` → `Live` on consolidate).
 4. **Requirements:** table or list with stable IDs and status on every row:
    - ID format: `<PREFIX>-R-###` where `PREFIX` = `feature_id` from frontmatter, uppercased, underscores → hyphens (e.g. `feature_id: care-item-evolution` → `CARE-ITEM-EVOLUTION-R-014`). IDs are stable for life; never reuse.
-   - Status: `Live` | `In delivery` | `Planned`.
+   - Status: `Live` | `In delivery` | `Planned` | `Retired`.
 5. **Acceptance criteria:** Given/When/Then; each cites a requirement ID and BDD/test coverage (see skill for coverage scope on legacy rows).
 6. **New decision IDs:** `<PREFIX>-D-###` using the same prefix rule. **Keep** existing IDs when consolidating (e.g. `D-CSM-019`).
 7. **No delivery history** in canonical body (no phase/shipped tables, “amended on …” banners).
-8. On merge to `main`, append the PR number to `related_prs` when the feature doc changed.
+8. `related_prs` is advisory — append the PR number when convenient; `git log --follow` is the audit trail.
 9. **No duplicate colour values** — link to `docs/design/tokens.md` and `docs/design/system.md`.
 10. **`.agents/memory/`** may not be the sole source of a product rule — promote to the canonical doc when the rule changes.
 
@@ -70,9 +70,9 @@ Standalone `*-decisions.md` under `features/` or `changes/` is **legacy**; do no
 
 ## Enforcement
 
-- **Procedure:** `.cursor/skills/canonical-docs/SKILL.md` (Mode A `sync` / Mode B `consolidate`). This section links to it and does not repeat the steps.
-- `bash scripts/validate_docs.sh` — links, frontmatter, placement/manifest gates (fix docs; do not weaken checks).
-- **CI gates** (including failing behaviour PRs without `## Docs`) follow in a separate PR.
+- **Procedure:** `.cursor/skills/canonical-docs/SKILL.md` (Mode A `sync` / Mode B `consolidate`).
+- `bash scripts/validate_docs.sh` — links, frontmatter, placement/manifest gates, and `check_docs_canonical.js` (diff vs `origin/main` when available).
+- **CI gates (warn mode on PRs):** rule groups **A** (PR `## Docs`), **B** (`changes/` lifecycle), **C** (canonical shape), **D** (ID stability), **E** (AC trace), **L** (legacy baseline ratchet). Details: `docs/domains/documentation/changes/docs-ci-gates.md` (folds into this file when delivered).
 - Legacy domain docs: migrate **one capability at a time** with `/canonical-docs consolidate`.
 
 ## Decision log

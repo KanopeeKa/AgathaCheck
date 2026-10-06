@@ -60,6 +60,11 @@ echo "$CHANGED" | sed 's/^/  /'
 
 bash "$ROOT/scripts/check_ui_touch_reminder.sh" "$MERGE_BASE" || true
 
+if echo "$CHANGED" | grep -qE '^docs/'; then
+  echo "==> Docs validation (docs/** touched)"
+  bash "$ROOT/scripts/validate_docs.sh" || exit 1
+fi
+
 needs_governance=false
 needs_server=false
 needs_flutter=false
