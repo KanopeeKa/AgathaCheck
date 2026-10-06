@@ -13,7 +13,10 @@ final careActionsAttentionCountProvider = Provider<int>((ref) {
   final entriesAsync = ref.watch(healthEntriesNotifierProvider);
   final historiesAsync = ref.watch(guardianGlobalEventHistoriesProvider);
   final mutedIds =
-      ref.watch(notificationPreferencesProvider).valueOrNull?.mutedPetIds
+      ref
+          .watch(notificationPreferencesProvider)
+          .valueOrNull
+          ?.mutedPetIds
           .toSet() ??
       {};
 

@@ -71,9 +71,7 @@ class NotificationInboxV2Rules {
   static int bellNumericCount(Iterable<AppNotification> notifications) {
     return notifications
         .where((n) => isActivityKind(n.kind))
-        .where(
-          (n) => needsResponse(n) || (isUrgent(n) && !n.isRead),
-        )
+        .where((n) => needsResponse(n) || (isUrgent(n) && !n.isRead))
         .length;
   }
 

@@ -72,8 +72,8 @@ class PetCareNavigationSidebar extends ConsumerWidget {
                         _SidebarDestinationTile(
                           destination: primaryDestinations[i],
                           selected: selectedIndex == i,
-                          attentionCount: primaryDestinations[i].route ==
-                                  '/pc/events'
+                          attentionCount:
+                              primaryDestinations[i].route == '/pc/events'
                               ? attentionCount
                               : 0,
                           onTap: () => context.go(primaryDestinations[i].route),

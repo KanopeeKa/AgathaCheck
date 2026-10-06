@@ -118,8 +118,9 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
       Uri.parse('$baseUrl/api/notifications/preferences'),
       headers: _headers(token),
       body: json.encode({
-        'device_security_intro_dismissed_at':
-            DateTime.now().toUtc().toIso8601String(),
+        'device_security_intro_dismissed_at': DateTime.now()
+            .toUtc()
+            .toIso8601String(),
       }),
     );
     _checkResponse(response);

@@ -53,7 +53,11 @@ class NotificationSettingsMatrixSection extends StatelessWidget {
             ),
           ),
         ),
-        _MatrixHeaderRow(l: l, theme: theme, showPush: kNotificationPushTransportShipped),
+        _MatrixHeaderRow(
+          l: l,
+          theme: theme,
+          showPush: kNotificationPushTransportShipped,
+        ),
         ...NotificationMatrixCategory.values.map((category) {
           if (category == NotificationMatrixCategory.agathaSuggestions) {
             return _AgathaSuggestionsRow(
@@ -233,7 +237,11 @@ class _CategoryMatrixRow extends StatelessWidget {
                   Expanded(
                     child: Center(
                       child: locked
-                          ? Icon(Icons.lock, size: 18, color: theme.disabledColor)
+                          ? Icon(
+                              Icons.lock,
+                              size: 18,
+                              color: theme.disabledColor,
+                            )
                           : Switch(
                               value: pushEnabled,
                               onChanged: pushOsDenied

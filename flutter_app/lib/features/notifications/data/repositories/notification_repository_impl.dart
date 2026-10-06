@@ -30,8 +30,9 @@ class NotificationRepositoryImpl implements NotificationRepository {
   Future<void> markAllAsRead({
     NotificationInboxTab scope = NotificationInboxTab.activity,
   }) async {
-    final wireScope =
-        scope == NotificationInboxTab.forYou ? 'for_you' : 'activity';
+    final wireScope = scope == NotificationInboxTab.forYou
+        ? 'for_you'
+        : 'activity';
     await _dataSource.markAllAsRead(_tokenGetter(), scope: wireScope);
   }
 

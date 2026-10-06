@@ -129,9 +129,7 @@ class _NotificationPanelState extends ConsumerState<NotificationPanel> {
 
   Future<void> _markAllRead() async {
     final tab = ref.read(notificationInboxSessionTabProvider);
-    await ref
-        .read(notificationsProvider.notifier)
-        .markAllAsRead(scope: tab);
+    await ref.read(notificationsProvider.notifier).markAllAsRead(scope: tab);
     if (mounted) {
       final l = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(
