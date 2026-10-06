@@ -34,9 +34,7 @@ class PetDetailProfileDetailRows extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                l.neuteredSpayed(
-                  formatCalendarDateMedium(pet.neuteredDate!),
-                ),
+                l.neuteredSpayed(formatCalendarDateMedium(pet.neuteredDate!)),
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                 ),

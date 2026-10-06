@@ -6,12 +6,7 @@ import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 void main() {
   testWidgets('PetDetailProfileDetailRows shows chip id', (tester) async {
-    const pet = Pet(
-      id: 'p1',
-      name: 'Rex',
-      species: 'Dog',
-      chipId: 'CHIP-99',
-    );
+    const pet = Pet(id: 'p1', name: 'Rex', species: 'Dog', chipId: 'CHIP-99');
 
     await tester.pumpWidget(
       MaterialApp(
@@ -19,10 +14,8 @@ void main() {
         supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
           body: Builder(
-            builder: (context) => PetDetailProfileDetailRows(
-              pet: pet,
-              theme: Theme.of(context),
-            ),
+            builder: (context) =>
+                PetDetailProfileDetailRows(pet: pet, theme: Theme.of(context)),
           ),
         ),
       ),

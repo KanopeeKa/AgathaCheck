@@ -61,11 +61,7 @@ class PetListNoPetsEmptyBody extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           ExcludeSemantics(
-            child: Icon(
-              Icons.pets,
-              size: 80,
-              color: theme.colorScheme.outline,
-            ),
+            child: Icon(Icons.pets, size: 80, color: theme.colorScheme.outline),
           ),
           const SizedBox(height: 16),
           Text(headline, style: theme.textTheme.headlineSmall),

@@ -41,10 +41,7 @@ class PetDetailProfileInfoChips extends StatelessWidget {
             child: PetInfoChip(icon: Icons.cake, label: pet.ageDisplay!),
           ),
         if (weightChipLabel != null)
-          PetInfoChip(
-            icon: Icons.monitor_weight,
-            label: weightChipLabel!,
-          ),
+          PetInfoChip(icon: Icons.monitor_weight, label: weightChipLabel!),
       ],
     );
   }

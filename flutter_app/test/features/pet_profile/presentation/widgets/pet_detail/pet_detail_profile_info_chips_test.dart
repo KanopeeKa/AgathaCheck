@@ -18,10 +18,7 @@ void main() {
     await tester.pumpWidget(
       const MaterialApp(
         home: Scaffold(
-          body: PetDetailProfileInfoChips(
-            pet: pet,
-            weightChipLabel: '12.0 kg',
-          ),
+          body: PetDetailProfileInfoChips(pet: pet, weightChipLabel: '12.0 kg'),
         ),
       ),
     );
