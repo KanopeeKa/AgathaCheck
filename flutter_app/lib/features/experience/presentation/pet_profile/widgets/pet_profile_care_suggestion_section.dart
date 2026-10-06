@@ -15,7 +15,6 @@ class PetProfileCareSuggestionSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final suggestionAsync = ref.watch(petProfileCareSuggestionProvider(petId));
-    final milestoneAsync = ref.watch(petProfileCareMilestoneProvider(petId));
     final petsAsync = ref.watch(allPetsIncludingOrgProvider);
     final petName =
         petsAsync.valueOrNull
@@ -35,18 +34,33 @@ class PetProfileCareSuggestionSection extends ConsumerWidget {
             petName: petName,
           );
         }
+        return _ProfileCareMilestoneFallback(petId: petId, petName: petName);
+      },
+    );
+  }
+}
 
-        return milestoneAsync.when(
-          loading: () => const SizedBox.shrink(),
-          error: (_, __) => const SizedBox.shrink(),
-          data: (moment) {
-            if (moment == null) return const SizedBox.shrink();
-            return CareMilestoneMomentCard(
-              petId: petId,
-              petName: petName,
-              moment: moment,
-            );
-          },
+class _ProfileCareMilestoneFallback extends ConsumerWidget {
+  const _ProfileCareMilestoneFallback({
+    required this.petId,
+    required this.petName,
+  });
+
+  final String petId;
+  final String petName;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final milestoneAsync = ref.watch(petProfileCareMilestoneProvider(petId));
+    return milestoneAsync.when(
+      loading: () => const SizedBox.shrink(),
+      error: (_, __) => const SizedBox.shrink(),
+      data: (moment) {
+        if (moment == null) return const SizedBox.shrink();
+        return CareMilestoneMomentCard(
+          petId: petId,
+          petName: petName,
+          moment: moment,
         );
       },
     );

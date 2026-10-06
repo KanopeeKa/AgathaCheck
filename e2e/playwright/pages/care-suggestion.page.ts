@@ -1,9 +1,11 @@
 import { Page } from '@playwright/test';
 
+import { CareAgendaPage } from './care-agenda.page';
 import {
   enableFlutterAccessibility,
   flutterGotoUrl,
   refreshFlutterAccessibility,
+  semanticsByName,
   waitForFlutterRoutePattern,
 } from '../support/flutter';
 
@@ -42,6 +44,7 @@ export class CareSuggestionPage {
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
       const card = this.suggestionCardRoot();
+      await card.scrollIntoViewIfNeeded();
       await expect(card).toBeVisible();
       await expect(card.getByRole('button', { name: addRoutineRe })).toBeVisible();
     }).toPass({ timeout });
@@ -82,17 +85,40 @@ export class CareSuggestionPage {
     }).toPass({ timeout });
   }
 
-  async expectCareRhythmVisible(rhythmPattern: RegExp, timeout = 15_000): Promise<void> {
+  async expectCareRhythmVisible(rhythmPattern: RegExp, timeout = 30_000): Promise<void> {
     const { expect } = await import('@playwright/test');
+    const agenda = new CareAgendaPage(this.page);
+    const petId = this.page.url().match(/\/pet\/([^/?]+)/)?.[1];
+    if (!petId) {
+      throw new Error(`Could not resolve pet id from URL: ${this.page.url()}`);
+    }
+    await enableFlutterAccessibility(this.page);
+    await this.page.goto(flutterGotoUrl(`/pet/${petId}/events`));
+    await waitForFlutterRoutePattern(this.page, new RegExp(`/pet/${petId}/events`), 30_000);
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      await expect(this.page.getByRole('button', { name: rhythmPattern }).first()).toBeVisible();
+      await agenda.showUpcomingCare();
+      const row = semanticsByName(this.page, rhythmPattern);
+      await row.scrollIntoViewIfNeeded();
+      await expect(row).toBeVisible();
     }).toPass({ timeout });
   }
 
   async acceptSuggestion(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
-    await this.suggestionCardRoot().getByRole('button', { name: addRoutineRe }).click();
+    const card = this.suggestionCardRoot();
+    await card.scrollIntoViewIfNeeded();
+    const respond = this.page.waitForResponse(
+      (res) =>
+        res.url().includes('/care-recommendations/') &&
+        res.url().includes('/respond') &&
+        res.request().method() === 'POST' &&
+        res.ok(),
+      { timeout: 30_000 },
+    );
+    await card.getByRole('button', { name: addRoutineRe }).click();
+    await respond;
+    await refreshFlutterAccessibility(this.page);
   }
 
   async expectSuggestionNotInEvents(timeout = 5_000): Promise<void> {

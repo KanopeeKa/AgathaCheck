@@ -51,8 +51,14 @@ export class CareAgendaPage {
 
   async showUpcomingCare(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
+    const hide = this.page.getByRole('button', {
+      name: /Hide upcoming care|Masquer les soins à venir/i,
+    });
+    if (await hide.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      return;
+    }
     const show = this.page.getByRole('button', {
-      name: /Show upcoming care|Afficher les soins à venir/i,
+      name: /Show upcoming care|Afficher les soins à venir|Upcoming \(\d+\)|À venir \(\d+\)/i,
     });
     if (await show.isVisible({ timeout: 5_000 }).catch(() => false)) {
       await show.click();
