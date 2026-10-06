@@ -45,8 +45,20 @@ jobs:
       - name: BDD scenario coverage gate (live script)
         run: node e2e/scripts/check_bdd_coverage.js
 
+      - name: BDD coverage fixtures (traceability / execution / quality)
+        run: node --test e2e/scripts/check_bdd_coverage.test.js
+
       - name: Frozen domain boundary (active tree)
         run: bash scripts/check_frozen_domain_boundaries.sh
+
+      - name: Frozen domain boundary fixtures
+        run: bash scripts/test/check_frozen_domain_boundaries.test.sh
+
+      - name: Documentation validation (strict)
+        run: bash scripts/validate_docs.sh --strict
+
+      - name: Documentation validation fixtures
+        run: node --test scripts/validate_docs.fixture.test.mjs
 
       - name: Cross-feature import gate (D6 block-new)
         run: node scripts/check_feature_imports.js
@@ -144,6 +156,13 @@ jobs:
       - name: Run backend tests with coverage
         working-directory: server
         run: npm run test:unit -- --forceExit --coverage
+
+      - name: Server architecture governance (transaction ownership + direction)
+        working-directory: server
+        run: npx jest test/architecture --runInBand --forceExit
+
+      - name: Server architecture governance fixtures
+        run: node --test scripts/test/architecture-checkers.fixture.test.mjs
 
       - name: Backend coverage ratchet (J.1-4)
         working-directory: server
