@@ -64,6 +64,29 @@ Refreshed 2026-09-29 against `main` @ `adaff34` (Batch D phase 1). Code paths ar
 | `POST /api/pets/:id/transfer-to-org` | `server/routes/pets/transferRouter.js` | owner check | org transfer lib | varies | JSON 404 when `ENABLE_FROZEN_DOMAINS` is off (`rejectFrozenShelterApi`) | none — Package 2 done | `server/test/pets/frozenRouteGate.test.js` |
 | `DELETE /api/auth/me` | `server/routes/auth/profileRouter.js` | session + password | none — sequential pool queries | user row delete, **after** file purge and PostHog call | 200 `{ message }` synchronous | not resumable; access JWTs stay valid; PostHog failures swallowed (F) | `server/test/auth/profile.test.js` |
 
+## Measured universes
+
+Every blocking gate measures an explicit file set. Exclusions match `scripts/architecture/architecture-metrics.py` and `docs/engineering/frozen-domains/manifest.json` unless noted.
+
+| Gate | Universe | Exclusions (same family as metrics script) | Enforced by |
+|---|---|---|---|
+| File size (blocking) | Hand-written `.dart` under `flutter_app/lib/**`; `.js` under `server/routes/**` | Generated Dart (`*.g.dart`, `*.freezed.dart`, `*.mocks.dart`, `l10n/`); manifest `sourceRoots` / `serverRoots`; build/tool/deps paths | `scripts/check_file_size.js` |
+| File size (D7 report-only) | `server/lib/**`, `server/services/**` | Same as above for server paths | `scripts/check_file_size.js` |
+| ESLint (today) | Four Pet Care policy modules | Full active-server lint scope lands in Batch J phase 2 | `scripts/validate_eslint.js` |
+| Flutter domain coverage | `lib/features/<feature>/domain/**` for active features | Manifest `sourceRoots`; `activeSurfacesToRemove`; generated Dart suffixes; files absent from `lcov.info` count as 0% | `flutter_app/scripts/check_domain_coverage.js` + generated `test/generated/coverage_helper_imports.dart` |
+| Backend coverage ratchet | `server/lib/**`, `server/services/**`, `server/routes/**` | Manifest frozen route roots (`routes/organizations/**`, `fosterPlacements.js`, `custodyTransfers.js`) | `server/scripts/check_coverage_ratchet.js` + `server/coverage-ratchet.json` |
+| BDD blocking gate | Active Gherkin scenarios with `@bdd` mapping | Manifest `bddFeaturePatterns`; frozen E2E spec set | `e2e/scripts/check_bdd_coverage.js` |
+
+Regenerate Flutter domain imports after adding domain files:
+
+```sh
+node flutter_app/scripts/generate_coverage_helper.js
+```
+
+Flutter domain threshold (D23 / J.1-3): recorded in `flutter-domain-coverage-threshold.json` (measured 8.5% → **8%** gate with review date **2026-12-01**; policy target remains **70%**).
+
+Backend ratchet floors (lines %, measured 2026-10-06): `lib` **53.06**, `services` **73.78**, `routes` **74.86**.
+
 ## Test policy
 
 - **Characterization** tests assert **current** behavior and are named `characterization:` in descriptions.

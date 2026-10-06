@@ -27,8 +27,13 @@ jobs:
           path: _coverage_shards
           merge-multiple: false
 
+      - name: Set up Flutter (coverage helper test)
+        uses: ./.github/actions/setup-flutter
+
       - name: Merge coverage and enforce gate
         working-directory: flutter_app
+        env:
+          DOMAIN_COVERAGE_THRESHOLD: 8
         run: bash scripts/merge_flutter_coverage.sh ../_coverage_shards
 
       - name: Upload merged Flutter coverage

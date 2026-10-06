@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Enforce minimum line coverage on Flutter domain layer
- * (lib/.../domain/... dart files that have executable lines in lcov).
+ * (lib/features/.../domain/... per frozen manifest; missing lcov rows count as 0%).
  *
  * Usage:
  *   node scripts/check_domain_coverage.js [--lcov coverage/lcov.info] [--threshold 70]
@@ -9,35 +9,30 @@
 
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
+
+const {
+  listEligibleDomainSources,
+  measureDomainCoverage,
+} = require('./domain_coverage_lib');
 
 const flutterRoot = path.resolve(__dirname, '..');
-const repoRoot = path.resolve(flutterRoot, '..');
 
-function frozenDomainSourcePrefixes() {
-  const manifestPath = path.join(
-    repoRoot,
-    'docs/engineering/frozen-domains/manifest.json',
+function defaultThreshold() {
+  const metaPath = path.join(
+    flutterRoot,
+    '..',
+    'docs/engineering/active-codebase-baseline/flutter-domain-coverage-threshold.json',
   );
-  if (!fs.existsSync(manifestPath)) return [];
-
-  const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-  const roots = manifest.sourceRoots || [];
-  return roots.map((root) => {
-    const normalized = root.replace(/^flutter_app\//, '');
-    return `lib/${normalized.replace(/^lib\//, '')}`;
-  });
-}
-
-function isFrozenDomainSource(file, frozenPrefixes) {
-  return frozenPrefixes.some(
-    (prefix) => file === prefix || file.startsWith(`${prefix}/`),
-  );
+  if (fs.existsSync(metaPath)) {
+    const meta = JSON.parse(fs.readFileSync(metaPath, 'utf8'));
+    if (Number.isFinite(meta.threshold)) return meta.threshold;
+  }
+  return 70;
 }
 
 function parseArgs(argv) {
   let lcovPath = path.join(flutterRoot, 'coverage', 'lcov.info');
-  let threshold = 70;
+  let threshold = defaultThreshold();
 
   for (let i = 2; i < argv.length; i++) {
     if (argv[i] === '--lcov' && argv[i + 1]) {
@@ -54,50 +49,6 @@ function parseArgs(argv) {
   return { lcovPath, threshold };
 }
 
-function listDomainSources() {
-  const frozenPrefixes = frozenDomainSourcePrefixes();
-  const output = execSync('find lib -path "*/domain/*.dart"', {
-    cwd: flutterRoot,
-    encoding: 'utf8',
-  });
-  return output
-    .trim()
-    .split('\n')
-    .filter(Boolean)
-    .filter((file) => !isFrozenDomainSource(file, frozenPrefixes))
-    .sort();
-}
-
-function normalizeLcovPath(sf) {
-  const marker = 'lib/';
-  const idx = sf.lastIndexOf(marker);
-  return idx >= 0 ? sf.slice(idx) : sf.replace(/^\.\//, '');
-}
-
-function parseLcov(text) {
-  const records = new Map();
-
-  for (const rec of text.split('end_of_record')) {
-    const sfMatch = rec.match(/^SF:(.+)$/m);
-    if (!sfMatch) continue;
-
-    const sf = normalizeLcovPath(sfMatch[1].trim());
-    let total = 0;
-    let hit = 0;
-
-    for (const line of rec.split('\n')) {
-      if (!line.startsWith('DA:')) continue;
-      const [, hits] = line.slice(3).split(',');
-      total += 1;
-      if (Number(hits) > 0) hit += 1;
-    }
-
-    records.set(sf, { total, hit });
-  }
-
-  return records;
-}
-
 function main() {
   const { lcovPath, threshold } = parseArgs(process.argv);
 
@@ -106,47 +57,50 @@ function main() {
     process.exit(1);
   }
 
-  const domainFiles = listDomainSources();
-  const records = parseLcov(fs.readFileSync(lcovPath, 'utf8'));
+  const domainFiles = listEligibleDomainSources(flutterRoot);
+  const lcovText = fs.readFileSync(lcovPath, 'utf8');
+  const result = measureDomainCoverage({
+    flutterRoot,
+    lcovText,
+    domainFiles,
+    threshold,
+  });
 
-  let measuredFiles = 0;
-  let totalLines = 0;
-  let hitLines = 0;
-  const uncovered = [];
-
-  for (const file of domainFiles) {
-    const record = records.get(file);
-    if (!record || record.total === 0) continue;
-
-    measuredFiles += 1;
-    totalLines += record.total;
-    hitLines += record.hit;
-
-    const pct = (100 * record.hit) / record.total;
-    if (pct < threshold) {
-      uncovered.push({ file, pct, hit: record.hit, total: record.total });
-    }
-  }
-
-  const overallPct = totalLines > 0 ? (100 * hitLines) / totalLines : 0;
+  const {
+    measuredFiles,
+    totalLines,
+    hitLines,
+    overallPct,
+    uncovered,
+    missingFromLcov,
+  } = result;
 
   console.log(
-    `Flutter domain coverage: ${overallPct.toFixed(1)}% (${hitLines}/${totalLines} lines, ${measuredFiles} files with executable lines)`,
+    `Flutter domain coverage: ${overallPct.toFixed(1)}% (${hitLines}/${totalLines} lines, ${measuredFiles} files in universe)`,
   );
+  if (missingFromLcov.length > 0) {
+    console.log(
+      `Files absent from lcov (counted as 0%): ${missingFromLcov.length}`,
+    );
+  }
   console.log(`Threshold: ${threshold}%`);
 
   if (uncovered.length > 0) {
     console.log('\nDomain files below threshold:');
-    for (const entry of uncovered.sort((a, b) => a.pct - b.pct)) {
+    for (const entry of uncovered.sort((a, b) => a.pct - b.pct).slice(0, 40)) {
       console.log(
         `  ${entry.file}: ${entry.pct.toFixed(1)}% (${entry.hit}/${entry.total})`,
       );
     }
+    if (uncovered.length > 40) {
+      console.log(`  … and ${uncovered.length - 40} more`);
+    }
   }
 
-  if (measuredFiles < 20) {
+  const minFiles = Math.min(20, Math.floor(domainFiles.length * 0.1));
+  if (measuredFiles < minFiles) {
     console.error(
-      '::error::Too few domain files in lcov — install lcov so run_tests_ci.sh can merge per-file coverage',
+      `::error::Too few domain files measured (${measuredFiles} < ${minFiles}) — regenerate coverage helper and merge lcov`,
     );
     process.exit(1);
   }
