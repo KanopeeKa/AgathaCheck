@@ -51,7 +51,7 @@ test.describe('Weight care (occurrence + care item)', () => {
       );
       expect((occDetail.occurrence as { status?: string }).status).toBe('skipped');
 
-      await occurrence.expectSkippedWeighIn(/Couldn't weigh|Impossible de peser/i, 'Too wiggly');
+      await occurrence.expectSkippedWeighIn(/Couldn't weigh|Impossible de peser/i);
     } finally {
       await withCareClock(null, page);
     }

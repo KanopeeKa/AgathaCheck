@@ -12,6 +12,7 @@ import { GuardianDashboardPage } from '../pages/guardian-dashboard.page';
 import { OccurrencePage } from '../pages/occurrence.page';
 import { createCareItem, withCareClock } from '../support/care-api';
 import { createPet } from '../support/api';
+import { refreshFlutterAccessibility } from '../support/flutter';
 
 test.describe('Care agenda (occurrence-first)', () => {
   test('row opens occurrence and links to care item', async ({ page, testUser }) => {
@@ -36,12 +37,13 @@ test.describe('Care agenda (occurrence-first)', () => {
       await expect(page.getByText('Viewable Care').first()).toBeVisible({
         timeout: 30_000,
       });
-      const aboutOccurrence = page.locator(
-        '[flt-semantics-identifier="occurrence_about_item"]',
-      );
-      if (await aboutOccurrence.isVisible({ timeout: 3_000 }).catch(() => false)) {
-        await aboutOccurrence.click();
-      }
+      await page
+        .getByRole('button', {
+          name: /Viewable Care.*About this care item|About this care item.*Viewable Care/i,
+        })
+        .first()
+        .click();
+      await refreshFlutterAccessibility(page);
       await expect(
         page
           .getByRole('heading', { name: /Care details|Détail du soin/i })

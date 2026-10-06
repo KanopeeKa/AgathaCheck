@@ -6,7 +6,6 @@ import {
   flutterRoutePath,
   refreshFlutterAccessibility,
   semanticsByName,
-  waitForFlutterRoutePattern,
 } from '../support/flutter';
 
 /**
@@ -43,30 +42,42 @@ export class CareAgendaPage {
         : null;
 
     const tapRow = async (): Promise<void> => {
-      if (byRole != null && (await byRole.count()) > 0) {
-        await byRole.first().click({ position: { x: 12, y: 16 } });
+      const target =
+        byRole != null && (await byRole.count()) > 0 ? byRole.first() : byId;
+      await expect(target).toBeVisible({ timeout: 30_000 });
+      const box = await target.boundingBox();
+      if (box == null) {
+        await target.click({ position: { x: 12, y: 16 } });
         return;
       }
-      await expect(byId).toBeVisible({ timeout: 30_000 });
-      await byId.click({ position: { x: 12, y: 16 } });
+      // Pointer hit on the leading icon column — avoids the trailing Mark done control.
+      await this.page.mouse.click(box.x + 20, box.y + box.height / 2);
     };
 
+    const careDateHeading = this.page.getByRole('heading', {
+      name: /Care date|Date de soin/i,
+    });
     await expect(async () => {
       await tapRow();
       await refreshFlutterAccessibility(this.page);
-      if (entryName) {
-        const path = flutterRoutePath(this.page.url());
-        if (!/\/occurrences\/[^/]+/.test(path)) {
-          await semanticsByName(
-            this.page,
-            new RegExp(`${escapeRegExp(entryName)}.*Opens this date|Ouvre cette date`, 'i'),
-          )
-            .first()
-            .click({ position: { x: 12, y: 16 } });
-          await refreshFlutterAccessibility(this.page);
-        }
+      const path = flutterRoutePath(this.page.url());
+      const onOccurrenceRoute = /\/occurrences\/[^/]+/.test(path);
+      const onScreen = await careDateHeading.isVisible().catch(() => false);
+      if (!onOccurrenceRoute && !onScreen && entryName) {
+        await semanticsByName(
+          this.page,
+          new RegExp(`${escapeRegExp(entryName)}.*Opens this date|Ouvre cette date`, 'i'),
+        )
+          .first()
+          .click({ position: { x: 12, y: 16 } });
+        await refreshFlutterAccessibility(this.page);
       }
-      await waitForFlutterRoutePattern(this.page, /\/occurrences\/[^/]+/, 15_000);
+      const ready =
+        /\/occurrences\/[^/]+/.test(flutterRoutePath(this.page.url())) ||
+        (await careDateHeading.isVisible().catch(() => false));
+      if (!ready) {
+        throw new Error(`Occurrence screen not open (path=${flutterRoutePath(this.page.url())})`);
+      }
     }).toPass({ timeout: 60_000 });
     await refreshFlutterAccessibility(this.page);
   }

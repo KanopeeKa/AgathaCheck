@@ -32,6 +32,7 @@ class OccurrenceContextTile extends ConsumerWidget {
     return Semantics(
       identifier: 'occurrence_about_item',
       button: true,
+      onTap: onOpenCareDetails,
       label: _semanticsLabel(
         l,
         petAsync,

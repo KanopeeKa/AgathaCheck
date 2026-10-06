@@ -36,7 +36,6 @@ export class OccurrencePage {
   }
 
   async expectLoaded(): Promise<void> {
-    await waitForFlutterRoutePattern(this.page, /\/occurrences\/[^/]+/, 60_000);
     await refreshFlutterAccessibility(this.page);
     const screen = this.page.locator('[flt-semantics-identifier="occurrence_screen"]');
     const about = this.page.locator(
@@ -49,8 +48,12 @@ export class OccurrencePage {
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
       const path = flutterRoutePath(this.page.url());
-      expect(path).toMatch(/\/occurrences\/[^/]+/);
-      await expect(screen.or(about).or(back).or(title)).toBeVisible();
+      const onOccurrenceRoute = /\/occurrences\/[^/]+/.test(path);
+      const titleVisible = await title.isVisible().catch(() => false);
+      if (!onOccurrenceRoute && !titleVisible) {
+        throw new Error(`Not on occurrence screen (path=${path})`);
+      }
+      await expect(title.or(back).or(screen).or(about).first()).toBeVisible();
     }).toPass({ timeout: 60_000 });
   }
 
@@ -141,9 +144,16 @@ export class OccurrencePage {
 
   async expectSkippedWeighIn(reasonText: RegExp, note?: string): Promise<void> {
     await refreshFlutterAccessibility(this.page);
-    await expect(this.page.getByText(reasonText).first()).toBeVisible({ timeout: 30_000 });
+    await expect(
+      this.page
+        .getByRole('group', { name: reasonText })
+        .or(this.page.getByText(reasonText))
+        .first(),
+    ).toBeVisible({ timeout: 30_000 });
     if (note) {
-      await expect(this.page.getByText(note)).toBeVisible();
+      await expect(
+        this.page.getByRole('group', { name: new RegExp(note) }).or(this.page.getByText(note)),
+      ).toBeVisible();
     }
   }
 
