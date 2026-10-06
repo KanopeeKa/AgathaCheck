@@ -9,7 +9,7 @@ tags: [documentation, standards, policy]
 
 # Documentation standards
 
-**Policy doc:** `feature_id: documentation-standards` (prefix `DOCUMENTATION-STANDARDS` for new IDs). Append PR numbers to `related_prs` in git when this file changes.
+**Policy doc:** `feature_id: documentation-standards` (prefix `DOCUMENTATION-STANDARDS` for new IDs). **related_prs:** #1703.
 
 ## Two axes
 
@@ -79,9 +79,9 @@ Standalone `*-decisions.md` under `features/` or `changes/` is **legacy**; do no
 
 | ID | Decision | Rationale | Status | Date | PR |
 |----|----------|-----------|--------|------|-----|
-| DOCUMENTATION-STANDARDS-D-001 | Decision logs live inside canonical feature docs | Single source of truth; append-only supersession | Live | 2026-10-06 | |
-| DOCUMENTATION-STANDARDS-D-002 | Agent workflow enforces sync before PR open | Skill + pr-hygiene/babysit/execute-plan wiring; CI gates deferred | Live | 2026-10-06 | |
-| DOCUMENTATION-STANDARDS-D-003 | Requirement/decision ID prefix from `feature_id` | One prefix per doc; uppercase kebab from YAML | Live | 2026-10-06 | |
+| DOCUMENTATION-STANDARDS-D-001 | Decision logs live inside canonical feature docs | Single source of truth; append-only supersession | Live | 2026-10-06 | #1703 |
+| DOCUMENTATION-STANDARDS-D-002 | Agent workflow enforces sync before PR open | Skill + pr-hygiene/babysit/execute-plan wiring; CI gates deferred | Live | 2026-10-06 | #1703 |
+| DOCUMENTATION-STANDARDS-D-003 | Requirement/decision ID prefix from `feature_id` | One prefix per doc; uppercase kebab from YAML | Live | 2026-10-06 | #1703 |
 
 ## Still open
 
