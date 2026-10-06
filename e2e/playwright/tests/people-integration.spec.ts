@@ -134,11 +134,11 @@ test.describe('People client integration journeys', () => {
     await form.selectCareFamily('Grooming');
 
     await form.selectCareProviderContact('Grooming Pro');
-    await form.expectCareProviderFieldShows('Grooming Pro');
+    await form.expectCareProviderDropdownShows('Grooming Pro');
 
     const inlineName = 'Inline Sitter';
     await form.setCareProviderTypedName(inlineName);
-    await form.expectCareProviderFieldShows(inlineName);
+    await form.expectCareProviderTypedNameShows(inlineName);
   });
 
   test('@P1 inactive care provider hidden in picker but visible on existing item', async ({

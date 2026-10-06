@@ -125,9 +125,20 @@ export class HealthEntryFormPage {
       .fill(name);
   }
 
-  async expectCareProviderFieldShows(name: string): Promise<void> {
-    await expect(this.page.getByText(name, { exact: true }).first()).toBeVisible({
-      timeout: 15_000,
-    });
+  async expectCareProviderDropdownShows(name: string): Promise<void> {
+    await this.expandAdvancedSettings();
+    const dropdown = this.page.locator(
+      '[flt-semantics-identifier="care_provider_dropdown"]',
+    );
+    await expect(dropdown).toContainText(name, { timeout: 15_000 });
+  }
+
+  async expectCareProviderTypedNameShows(name: string): Promise<void> {
+    await this.expandAdvancedSettings();
+    await expect(
+      this.page.locator(
+        '[flt-semantics-identifier="care_provider_typed_name_field"] input',
+      ),
+    ).toHaveValue(name, { timeout: 15_000 });
   }
 }
