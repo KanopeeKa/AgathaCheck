@@ -1,0 +1,223 @@
+{
+  "_comment": "ESLint ratchet for active server/lib, services and routes (J.2-1). Only shrinks: run --update-baseline after fixing a violation.",
+  "generated_at": "2026-10-06",
+  "violations": [
+    {
+      "file": "server/lib/care/awayPlan/presentation.js",
+      "rule": "no-unused-vars",
+      "line": 14,
+      "column": 10,
+      "message": "'dateToIsoDate' is defined but never used."
+    },
+    {
+      "file": "server/lib/care/categoryBlocks/index.js",
+      "rule": "no-unused-vars",
+      "line": 31,
+      "column": 7,
+      "message": "'VISIT_KEYS' is assigned a value but never used."
+    },
+    {
+      "file": "server/lib/care/occurrence/syncOpenOccurrences.js",
+      "rule": "no-unused-vars",
+      "line": 19,
+      "column": 3,
+      "message": "'nextSeriesSlotAfter' is defined but never used."
+    },
+    {
+      "file": "server/lib/care/planner/planAbsenceCare.js",
+      "rule": "no-unused-vars",
+      "line": 199,
+      "column": 13,
+      "message": "'_k' is assigned a value but never used."
+    },
+    {
+      "file": "server/lib/care/planner/planAbsenceCare.js",
+      "rule": "no-unused-vars",
+      "line": 45,
+      "column": 3,
+      "message": "'materializedInWindow' is assigned a value but never used. Allowed unused args must match /^_/u."
+    },
+    {
+      "file": "server/lib/care/providerUsed.js",
+      "rule": "no-unused-vars",
+      "line": 2,
+      "column": 27,
+      "message": "'loadContactForViewer' is defined but never used."
+    },
+    {
+      "file": "server/lib/care/taxonomy/classification.js",
+      "rule": "no-unused-vars",
+      "line": 39,
+      "column": 9,
+      "message": "'taxonomy' is assigned a value but never used."
+    },
+    {
+      "file": "server/lib/checkDueNotifications.js",
+      "rule": "no-unused-vars",
+      "line": 68,
+      "column": 59,
+      "message": "'petNamesFromClient' is assigned a value but never used. Allowed unused args must match /^_/u."
+    },
+    {
+      "file": "server/lib/custodyTransfers.js",
+      "rule": "no-unused-vars",
+      "line": 357,
+      "column": 63,
+      "message": "'actorUserId' is defined but never used. Allowed unused args must match /^_/u."
+    },
+    {
+      "file": "server/lib/email/branding.js",
+      "rule": "no-undef",
+      "line": 17,
+      "column": 16,
+      "message": "'URL' is not defined."
+    },
+    {
+      "file": "server/lib/fosterInvite.js",
+      "rule": "no-unused-vars",
+      "line": 142,
+      "column": 37,
+      "message": "'locale' is defined but never used. Allowed unused args must match /^_/u."
+    },
+    {
+      "file": "server/lib/fosterProfiles.js",
+      "rule": "no-unused-vars",
+      "line": 111,
+      "column": 64,
+      "message": "'orgId' is defined but never used. Allowed unused args must match /^_/u."
+    },
+    {
+      "file": "server/lib/fosterProfiles.js",
+      "rule": "no-unused-vars",
+      "line": 143,
+      "column": 3,
+      "message": "'actorUserId' is defined but never used. Allowed unused args must match /^_/u."
+    },
+    {
+      "file": "server/lib/orgMemberPrivacy.js",
+      "rule": "no-unused-vars",
+      "line": 10,
+      "column": 3,
+      "message": "'normaliseRole' is defined but never used."
+    },
+    {
+      "file": "server/lib/orgMemberPrivacy.js",
+      "rule": "no-unused-vars",
+      "line": 124,
+      "column": 3,
+      "message": "'subjectRole' is defined but never used. Allowed unused args must match /^_/u."
+    },
+    {
+      "file": "server/lib/orgMemberPrivacy.js",
+      "rule": "no-unused-vars",
+      "line": 65,
+      "column": 39,
+      "message": "'role' is defined but never used. Allowed unused args must match /^_/u."
+    },
+    {
+      "file": "server/lib/orgPetTransfer.js",
+      "rule": "no-unused-vars",
+      "line": 4,
+      "column": 10,
+      "message": "'createNotification' is defined but never used."
+    },
+    {
+      "file": "server/lib/people/absenceCarerInviteService.js",
+      "rule": "no-unused-vars",
+      "line": 115,
+      "column": 9,
+      "message": "'absencePetIds' is assigned a value but never used."
+    },
+    {
+      "file": "server/lib/people/absenceCarerInviteService.js",
+      "rule": "no-unused-vars",
+      "line": 14,
+      "column": 7,
+      "message": "'PLANNED_ABSENCE_STATUS_ACTIVE' is assigned a value but never used."
+    },
+    {
+      "file": "server/lib/people/absenceCarerInviteService.js",
+      "rule": "no-unused-vars",
+      "line": 247,
+      "column": 3,
+      "message": "'absenceId' is defined but never used. Allowed unused args must match /^_/u."
+    },
+    {
+      "file": "server/lib/people/absenceGuestGrants.js",
+      "rule": "no-unused-vars",
+      "line": 134,
+      "column": 3,
+      "message": "'newStartsOn' is defined but never used. Allowed unused args must match /^_/u."
+    },
+    {
+      "file": "server/lib/people/contactValidation.js",
+      "rule": "no-undef",
+      "line": 70,
+      "column": 23,
+      "message": "'URL' is not defined."
+    },
+    {
+      "file": "server/lib/people/relationships.js",
+      "rule": "no-unused-vars",
+      "line": 133,
+      "column": 59,
+      "message": "'userId' is defined but never used. Allowed unused args must match /^_/u."
+    },
+    {
+      "file": "server/lib/petDataLifecycle.js",
+      "rule": "no-unused-vars",
+      "line": 20,
+      "column": 3,
+      "message": "'removePrivateHealthFile' is defined but never used."
+    },
+    {
+      "file": "server/lib/petDataLifecycle.js",
+      "rule": "no-unused-vars",
+      "line": 4,
+      "column": 8,
+      "message": "'fs' is defined but never used."
+    },
+    {
+      "file": "server/lib/petWeightSync.js",
+      "rule": "no-undef",
+      "line": 70,
+      "column": 10,
+      "message": "'todayCalendarIso' is not defined."
+    },
+    {
+      "file": "server/lib/posthogServer.js",
+      "rule": "no-undef",
+      "line": 29,
+      "column": 28,
+      "message": "'fetch' is not defined."
+    },
+    {
+      "file": "server/routes/healthEntries/crudRouter.js",
+      "rule": "no-unused-vars",
+      "line": 150,
+      "column": 13,
+      "message": "'isRecurring' is assigned a value but never used."
+    },
+    {
+      "file": "server/routes/healthEntries/crudRouter.js",
+      "rule": "no-unused-vars",
+      "line": 17,
+      "column": 3,
+      "message": "'healthEntryToMap' is defined but never used."
+    },
+    {
+      "file": "server/routes/pets/coreRouter.js",
+      "rule": "no-unused-vars",
+      "line": 23,
+      "column": 21,
+      "message": "'PetNotFoundError' is defined but never used."
+    },
+    {
+      "file": "server/services/sharing/shareInviteService.js",
+      "rule": "no-unused-vars",
+      "line": 10,
+      "column": 3,
+      "message": "'findPendingInviteForPetAndEmail' is defined but never used."
+    }
+  ]
+}
