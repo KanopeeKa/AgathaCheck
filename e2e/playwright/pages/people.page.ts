@@ -709,7 +709,11 @@ export class PeoplePage {
         await this.page.goto(flutterGotoUrl('/pc/people?filter=professionals'));
         await refreshFlutterAccessibility(this.page);
         await waitForFlutterRoutePattern(this.page, /\/pc\/people(?:\?|$)/, 20_000);
+        const token = await readAccessTokenFromPage(this.page);
+        const vets = await getVets(this.baseURL(), token);
+        expect(vets.some((v) => v.name === options.name)).toBe(true);
       }).toPass({ timeout: 60_000 });
+      await refreshFlutterAccessibility(this.page);
       return;
     }
     await this.fillName(options.name);

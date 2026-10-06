@@ -48,12 +48,14 @@ test.describe('Veterinarian management', () => {
   });
 
   test('user can create a vet with only a name', async ({ page, testUser }) => {
+    test.setTimeout(120_000);
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
 
     const petList = await loginAs(page, testUser);
     await petList.openVets();
 
     const vetList = new PeoplePage(page);
+    await vetList.expectLoaded();
     await vetList.openAddForm();
 
     const vetForm = new PeoplePage(page);
