@@ -3,9 +3,9 @@
   "plan_id": "active-codebase-completion-e41f",
   "plan_kind": "roadmap",
   "programme_ref": "docs/architecture/reviews/active-codebase-review.md",
-  "approved_at": "2026-10-04T13:40:59Z",
-  "approved_by": "approve-autonomous active-codebase-completion-e41f on #1446 (2026-10-04); standing grant + full merge authority for roadmap children D–K",
-  "approved_until": "2026-10-06T13:40:59Z",
+  "approved_at": "2026-10-06T15:53:07Z",
+  "approved_by": "approve-autonomous active-codebase-completion-e41f on #1446 (2026-10-04); standing grant children D–K; chat re-approve 2026-10-06 resume through batch K",
+  "approved_until": "2026-10-08T15:53:07Z",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "main",
@@ -57,7 +57,7 @@
     },
     {
       "plan_id": "active-codebase-batch-j-standards-e41f",
-      "status": "pending",
+      "status": "in_progress",
       "pr_url": null,
       "merge_commit": null
     },
@@ -99,5 +99,5 @@
       "merge_commit": null
     }
   ],
-  "content_hash": "sha256:c89724865f898e296ccd782bb26f329676d2141165ab399cab7d450014ee80de"
+  "content_hash": "sha256:0f18556f095c05f7da3829b759747ca4ee813b772871f7dc758125185274e484"
 }
