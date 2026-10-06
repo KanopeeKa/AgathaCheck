@@ -4,6 +4,7 @@ import { expect } from '@playwright/test';
 import {
   enableFlutterAccessibility,
   flutterGotoUrl,
+  flutterRoutePath,
   refreshFlutterAccessibility,
   waitForFlutterRoutePattern,
 } from '../support/flutter';
@@ -35,22 +36,21 @@ export class OccurrencePage {
   }
 
   async expectLoaded(): Promise<void> {
+    await waitForFlutterRoutePattern(this.page, /\/occurrences\/[^/]+/, 60_000);
     await refreshFlutterAccessibility(this.page);
     const screen = this.page.locator('[flt-semantics-identifier="occurrence_screen"]');
     const about = this.page.locator(
       '[flt-semantics-identifier="occurrence_about_item"], [flt-semantics-identifier="occurrence_context_tile"]',
     );
     const back = this.page.getByRole('button', { name: /^Back$|^Go back$|^Retour$/i });
+    const title = this.page.getByRole('heading', {
+      name: /Care date|Date de soin/i,
+    });
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      const onRoute = /\/occurrences\/[^/?#]+/.test(
-        new URL(this.page.url()).hash.replace(/^#/, ''),
-      );
-      if (onRoute) {
-        await expect(screen.or(about).or(back)).toBeVisible();
-        return;
-      }
-      await expect(about.or(screen)).toBeVisible();
+      const path = flutterRoutePath(this.page.url());
+      expect(path).toMatch(/\/occurrences\/[^/]+/);
+      await expect(screen.or(about).or(back).or(title)).toBeVisible();
     }).toPass({ timeout: 60_000 });
   }
 

@@ -97,6 +97,9 @@ class _OccurrenceScreenState extends ConsumerState<OccurrenceScreen> {
     final outcome = _outcome;
     return Semantics(
       identifier: 'occurrence_screen',
+      container: true,
+      label: l.careDateScreenTitle,
+      explicitChildNodes: true,
       child: Scaffold(
         key: const Key('occurrence_screen'),
         appBar: AppBar(

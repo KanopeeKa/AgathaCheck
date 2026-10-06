@@ -1,7 +1,12 @@
 import type { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
 
-import { escapeRegExp, refreshFlutterAccessibility, semanticsByName } from '../support/flutter';
+import {
+  escapeRegExp,
+  refreshFlutterAccessibility,
+  semanticsByName,
+  waitForFlutterRoutePattern,
+} from '../support/flutter';
 
 /**
  * Shared care agenda rows (dashboard, pet profile, All Actions).
@@ -22,21 +27,32 @@ export class CareAgendaPage {
   /** Tap the row body (opens the occurrence screen). */
   async openRow(entryId: string, entryName?: string): Promise<void> {
     await refreshFlutterAccessibility(this.page);
+    if (entryName) {
+      await this.expectRowVisible(entryName);
+    }
+    const opensDate = /Opens this date|Ouvre cette date/i;
     const byId = this.page.locator(
       `[flt-semantics-identifier="care_agenda_row_${entryId}"]`,
     );
-    if ((await byId.count()) > 0) {
-      await byId.click();
-    } else if (entryName) {
-      const opensDate = /Opens this date|Ouvre cette date/i;
-      await this.page
-        .getByRole('button', { name: opensDate })
-        .filter({ hasText: new RegExp(escapeRegExp(entryName), 'i') })
-        .first()
-        .click();
-    } else {
-      await byId.click();
-    }
+    const byRole =
+      entryName != null
+        ? this.page
+            .getByRole('button', { name: opensDate })
+            .filter({ hasText: new RegExp(escapeRegExp(entryName), 'i') })
+        : null;
+
+    const tapRow = async (): Promise<void> => {
+      if (byRole != null && (await byRole.count()) > 0) {
+        await byRole.first().click({ position: { x: 12, y: 16 } });
+        return;
+      }
+      await expect(byId).toBeVisible({ timeout: 30_000 });
+      await byId.click({ position: { x: 12, y: 16 } });
+    };
+
+    await tapRow();
+    await refreshFlutterAccessibility(this.page);
+    await waitForFlutterRoutePattern(this.page, /\/occurrences\/[^/]+/, 60_000);
     await refreshFlutterAccessibility(this.page);
   }
 

@@ -54,7 +54,8 @@ class CareActionRow extends StatelessWidget {
       identifier: rowSemanticsIdentifier,
       label: semanticLabel,
       // The trailing CareMarkDoneButton is its own semantic button.
-      button: onTap != null,
+      button: onTap != null && onPressed == null,
+      container: onTap != null && onPressed != null,
       child: Material(
         color: inset ? Colors.transparent : colorScheme.surface,
         borderRadius: radius,
