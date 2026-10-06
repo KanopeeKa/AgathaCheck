@@ -51,17 +51,17 @@ Finish Package 11 (D6, D7, D23). Every gate measures an explicit, published univ
 
 ```yaml
 autonomy: active
-current_phase: 1
-last_completed_phase: null
+current_phase: 2
+last_completed_phase: 1
 halt_reason: null
-next_action: "continue phase 1 on branch cursor/active-codebase-j1-coverage-e41f"
+next_action: "continue phase 2 on branch cursor/active-codebase-j2-lint-size-e41f"
 artifact_ref:
-  branch: cursor/active-codebase-j1-coverage-e41f
+  branch: cursor/active-codebase-j-integration-e41f
   plan_path: .agents/plans/active-codebase-batch-j-standards-e41f.md
-  plan_commit: 34c3d3e10df93976a474566f7667de7f783beb40
+  plan_commit: d894674cd0fa8e13543d62efaa833fc629473730
   snapshot_path: .agents/plans/active-codebase-batch-j-standards-e41f.snapshot.json
-  snapshot_commit: 34c3d3e10df93976a474566f7667de7f783beb40
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1695"]
+  snapshot_commit: d894674cd0fa8e13543d62efaa833fc629473730
+open_prs: []
 merge_commits: {}
 debt_issue_refs: []
 ```
