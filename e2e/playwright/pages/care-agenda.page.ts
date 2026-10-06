@@ -3,6 +3,7 @@ import { expect } from '@playwright/test';
 
 import {
   escapeRegExp,
+  flutterRoutePath,
   refreshFlutterAccessibility,
   semanticsByName,
   waitForFlutterRoutePattern,
@@ -50,9 +51,23 @@ export class CareAgendaPage {
       await byId.click({ position: { x: 12, y: 16 } });
     };
 
-    await tapRow();
-    await refreshFlutterAccessibility(this.page);
-    await waitForFlutterRoutePattern(this.page, /\/occurrences\/[^/]+/, 60_000);
+    await expect(async () => {
+      await tapRow();
+      await refreshFlutterAccessibility(this.page);
+      if (entryName) {
+        const path = flutterRoutePath(this.page.url());
+        if (!/\/occurrences\/[^/]+/.test(path)) {
+          await semanticsByName(
+            this.page,
+            new RegExp(`${escapeRegExp(entryName)}.*Opens this date|Ouvre cette date`, 'i'),
+          )
+            .first()
+            .click({ position: { x: 12, y: 16 } });
+          await refreshFlutterAccessibility(this.page);
+        }
+      }
+      await waitForFlutterRoutePattern(this.page, /\/occurrences\/[^/]+/, 15_000);
+    }).toPass({ timeout: 60_000 });
     await refreshFlutterAccessibility(this.page);
   }
 
