@@ -21,20 +21,16 @@ Living metrics for Agatha Track quality. Update when CI or test counts change ma
 
 | Metric | Value | Enforced by |
 |--------|------:|-------------|
-| Flutter unit/widget (active CI) | 335 | 6 shards (`ci_shards.json`) |
-<<<<<<< HEAD
+| Flutter unit/widget (active CI) | 345 | 6 shards (`ci_shards.json`) |
 | Flutter frozen / excluded tests | 62 / 2 | frozen-domains manifest |
-=======
-| Flutter frozen / excluded tests | 62 / 1 | frozen-domains manifest |
->>>>>>> 4fd0ce46 (phase(2/5): Plan B — household & access relationship notification emitters (#1707))
 | Flutter unowned tests | 0 | `flutter-shards.mjs check` |
 | Flutter integration flows | 1 | `flutter-integration` job |
-| Jest (active / frozen) | 246 / 46 | `jest.config.active.cjs` |
-| Playwright (active / frozen) | 34 / 21 | `shard-files.mjs` + frozen list |
+| Jest (active / frozen) | 254 / 46 | `jest.config.active.cjs` |
+| Playwright (active / frozen) | 35 / 21 | `shard-files.mjs` + frozen list |
 | BDD active scenarios | 233 (21 frozen excluded) | `check_bdd_coverage.js` |
-| BDD mapped (active) | 84.1% (196/233) | gate **158/233 (68%)** |
+| BDD mapped (active) | 84.5% (197/233) | gate **158/233 (68%)** |
 | BDD title drift (active) | 0 | `generate-scorecard-metrics.mjs --check` |
-| BDD uncovered (active) | 37 | informational |
+| BDD uncovered (active) | 36 | informational |
 | Pre-UAT shard orphans | 0 | `validate-shard-manifest.mjs` |
 | @smoke-ci / @smoke-uat / @smoke-a11y | 7 / 14 / 10 | `check-smoke-tags.mjs` |
 | Flutter domain coverage gate | **8%** | `check_domain_coverage.js` |

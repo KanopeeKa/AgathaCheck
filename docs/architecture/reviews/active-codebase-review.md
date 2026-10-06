@@ -2,8 +2,8 @@
 title: Active codebase architecture review
 owner: Engineering
 audience: both
-status: accepted
-last_updated: 2026-09-29
+status: implemented
+last_updated: 2026-10-06
 peer_reviewed: 2026-09-22
 tags: [architecture, review, modularity, pet-care]
 ---
@@ -263,26 +263,50 @@ These are implementation design/test requirements, not claims of newly observed 
 
 **Scope discipline:** complete the contract and failure tests within each owning package; do not create a generic queue framework, offline mutation ledger, new auth platform, storage migration or unrelated refactor to satisfy this register. If a listed operational guarantee cannot be met by the current environment, stop that package's cutover and document the concrete blocker.
 
-## Implementation status (as of 2026-09-30)
+## Implementation status (as of 2026-10-06)
 
-Batches A–C shipped the core step of Packages 1–4 and 6–8 (PRs #1282–#1319). Measured against the exit gates in **Detailed implementation plan** below, several packages are still partial. Package 9's coupling has **regressed** since the review baseline (unique cross-feature edges 50 → 59, directives 466 → 536, strongly connected features 12 → 13), while Batch D (#1467) landed the **D6 block-new gate** so new violations cannot land—the graph metrics below remain worse than baseline until I1/I2. The remaining work is scheduled by the execute-plan roadmap [`active-codebase-completion-e41f`](../../../.agents/plans/active-codebase-completion-e41f.md) (control issue #1446), which also records decisions D8–D23. The copy of this document on branch `replit/preuat-adoption-pets-e7d3d1d` is historical; this file on `main` is authoritative.
+Programme [`active-codebase-completion-e41f`](../../../.agents/plans/active-codebase-completion-e41f.md) (control issue #1446) completed batches D–K on integration branch `cursor/active-codebase-k-integration-e41f` @ `afc7c4ad`. Cross-feature graph metrics versus the architecture-review baseline: edges **50 → 35**, directives **466 → 347**, multi-feature SCC **12 → 0** ([`metrics-headline.md`](../../engineering/active-codebase-baseline/metrics-headline.md)). Pre-UAT E2E on `main` remains the final programme gate (K.5).
 
-| Package | Status | Merged PRs | Open items | Owning child plan |
+| Package | Status | Evidence |
+|---|---|---|
+| 1 Baseline and failure contracts | Done | [`active-codebase-baseline/README.md`](../../engineering/active-codebase-baseline/README.md) command matrix; batches A, D |
+| 2 Active/frozen boundary | Done | #1283, #1284; `check_frozen_domain_boundaries.sh` in CI |
+| 3 Transaction owner and pet deletion | Done | Batch E; ADR 0003; `server/test/architecture/transactionOwnership.test.js` |
+| 4 Stable committed command results | Done | Batch E; ADR 0003–0004; weight + invite fault-path suites |
+| 5 Resumable account erasure | Done | Batch F; ADR 0001; `server/test/db/accountErasure.integration.test.js` |
+| 6 Passed-away notification contract | Done | Batch E; D14 ledger; lifecycle integration tests |
+| 7 Pet cache authority | Done | Batch G; ADR 0007; offline E2E `pet.offline-cache.spec.ts` |
+| 8 Canonical health state | Done | Batch G; ADR 0005; `CareScheduleController` + boundary architecture test |
+| 9 Public APIs and cycles | Done | Batches I1, I2; `check_feature_imports.js` R1–R8; metrics SCC **0** |
+| 10 Ports and transport boundaries | Done | Batch H; auth/document ports; `server/test/architecture/` |
+| 11 Measurable standards | Done | Batch J (#1700); ratchets in baseline README |
+| 12 Extractions and final acceptance | Done | Batch K (#1712, #1719, ADRs 0003–0007, component READMEs, metrics refresh) |
+
+### Remaining P2/P3 size exceptions (owner / review date)
+
+Tracked in [`size-report.md`](../../engineering/active-codebase-baseline/size-report.md) and `scripts/file-size-allowlist.json`. No P1 findings remain open.
+
+| File | Priority | Owner | Reason | Review date |
 |---|---|---|---|---|
-| 1 Baseline and failure contracts | Done | #1282 | Baseline README rows refreshed in Batch D phase 1 | `active-codebase-batch-d-guardrails-e41f` |
-| 2 Active/frozen boundary | Done | #1283, #1284 | None. Org-transfer and org-scoped family-event writes return JSON 404 when `ENABLE_FROZEN_DOMAINS` is off (`server/lib/frozenDomains.js`), which clients observe exactly as an unmounted route; the manifest-driven checker runs in CI. | — |
-| 3 Transaction owner and pet deletion | Partial | #1295, #1296 | No `cleanup_jobs` (files deleted best-effort after commit); `files_removed` counts scheduled files; audit write not awaited inside the transaction; `DELETE /pets/:id` deletes the pet row outside the data transaction; ~20 hand-written `BEGIN` blocks and 3 `withOptionalTransaction` copies with a pool fallback | `active-codebase-batch-e-backend-integrity-e41f` |
-| 4 Stable committed command results | Partial | #1297 | Invite-code retry runs inside an aborted transaction; no invite replay or concurrency control; invite notifications written after commit; weight establishment and cache refresh fail silently after commit | `active-codebase-batch-e-backend-integrity-e41f` |
-| 5 Resumable account erasure | Not started | — | `DELETE /api/auth/me` is synchronous, purges files and PostHog before deleting the user row, and leaves access JWTs valid | `active-codebase-batch-f-account-erasure-e41f` |
-| 6 Passed-away notification contract | Done (core) | #1299 | Repeat POST re-notifies every collaborator; `api-reference.md` still lists the endpoint under "Lifecycle stubs" | `active-codebase-batch-e-backend-integrity-e41f` |
-| 7 Pet cache authority | Partial | #1309, #1319 | No freshness limit; cached `fetchedAt` is set to `now()`; pet detail not migrated; no offline journey test | `active-codebase-batch-g-client-authority-e41f` |
-| 8 Canonical health state | Partial | #1315 | No `CareScheduleController` (15 repository calls in 10 widget files); `refresh()` drops data on failure; no out-of-order or session guard | `active-codebase-batch-g-client-authority-e41f` |
-| 9 Public APIs and cycles | Partial (gate) | #1467 (Batch D) | **D6 block-new** import gate in CI (`check_feature_imports.js`); public entrypoints and cycle-breaking still open | `active-codebase-batch-i1-public-apis-e41f`, `active-codebase-batch-i2-acyclic-graph-e41f` |
-| 10 Ports and transport boundaries | Not started | — | No `AuthRepository`/`SessionStore`/`HealthDocumentsRepository`; `server/lib` imports `server/routes`; no central async error boundary | `active-codebase-batch-h-ports-transport-e41f` |
-| 11 Measurable standards | Partial (D7/D23) | #1467 (Batch D) | `server/lib` / `server/services` size **report-only**; docs and scripts agree on **70%** Flutter coverage threshold; full ratchet and LCOV denominator work remain | `active-codebase-batch-j-standards-e41f` |
-| 12 Extractions and final acceptance | Not started | — | Hotspot extractions, ADRs, component READMEs, before/after metrics | `active-codebase-batch-k-final-acceptance-e41f` |
+| `server/lib/care/observations/weightObservationService.js` | P2 | Engineering | Active fulfilment service above 500 lines; ratcheted allowlist | 2026-12-28 |
+| `server/lib/care/occurrence/occurrenceRepository.js` | P2 | Engineering | Occurrence persistence; split deferred post-K hotspot pass | 2026-12-28 |
+| `server/services/sharing/shareInviteService.js` | P2 | Engineering | Invite orchestration + delivery metadata | 2026-12-28 |
+| `server/lib/orgPeople.js` | P3 | Engineering | Frozen Shelter internals | 2026-12-28 |
+| `server/lib/orgPermissions.js` | P3 | Engineering | Frozen Shelter internals | 2026-12-28 |
 
-Update the row for a package when the child plan that owns it merges to `main`.
+## Final acceptance verification (Batch K phase 4)
+
+Measured at `afc7c4ad` with identical exclusions ([`metrics-headline.md`](../../engineering/active-codebase-baseline/metrics-headline.md)). Blocking CI matrix runs on the integration → `main` PR (K.5); docs gate: `bash scripts/validate_docs.sh`.
+
+| Flow | Failure-path / journey tests | Operational visibility |
+|---|---|---|
+| Pet data deletion | `server/test/lib/petDataLifecycle.regression.test.js`, `server/test/db/petLifecycle.integration.test.js`, `server/test/db/petDataLifecycle.integration.test.js` | `cleanup_jobs` + [cleanup-jobs runbook](../../ops/cleanup-jobs.md); ADR 0004 |
+| Occurrence completion (weight) | `server/test/healthEntries/completeWeight.test.js`, real-PG fulfilment integration | committed outcome stable per ADR 0003 |
+| Sharing invite create / accept | `server/test/sharing/invites/createInvite.test.js`, `acceptDecline.test.js`, `server/test/db/shareInviteAccept.integration.test.js` | in-tx notifications; email best-effort metadata |
+| Login / logout | `server/test/auth/sessionV2.test.js`, `server/test/auth/accountExistence.test.js` | refresh cookie path; post-erasure login rejected |
+| Offline pet list recovery | `e2e/playwright/tests/pet.offline-cache.spec.ts`; `pet_repository_impl_test.dart` | D18 banners + Retry |
+| Account erasure | `server/test/auth/profile.test.js`, `server/test/db/accountErasure.integration.test.js` | `account_erasure_operations` + job correlation; [account-erasure runbook](../../ops/account-erasure.md) |
+| Pending / dead cleanup jobs | `server/test/migrations/085_cleanup_jobs.test.js`, runner tests | SQL in `docs/ops/cleanup-jobs.md` (`pending`, `retryable`, `dead`) |
 
 ## Detailed implementation plan to reach the target state
 

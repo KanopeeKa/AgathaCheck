@@ -75,6 +75,7 @@ Institutional knowledge for cloud agents. Domain workflows live in **Skills** (`
 
 ## Quick references
 
+- **Active codebase programme gates (2026-10-06, Batch K):** Mandatory `withTransaction` for active server mutations (`server/test/architecture/transactionOwnership.test.js`); cross-feature imports enforced by `node scripts/check_feature_imports.js` rules **R1–R8** (acyclic graph — metrics SCC **0**); Flutter/server **coverage ratchets** and domain threshold in `docs/engineering/active-codebase-baseline/`; file size blocking includes `server/lib` + `server/services` with `scripts/file-size-allowlist.json`. Review closure: `docs/architecture/reviews/active-codebase-review.md` (`status: implemented`).
 - **Experience program:** earlier references and file names using “Organisation” or “Guardian” (workspace) are legacy; interpret through **Pet Care** / **Shelter** (D38) and evolve screens deliberately. See [pet_care README](/docs/domains/pet_care/README.md).
 - **Execute-plan autonomy:** `.agents/memory/execute-plan-autonomy.md` — gate `0` = run-until-blocked; **phase merge → implement next phase same session** (skip only explicit blockers like CARE-gated phase 5); never end turn with a progress summary; full grant = babysit+ merge without waiting for owner
 - Domain map: `docs/architecture/index.md`

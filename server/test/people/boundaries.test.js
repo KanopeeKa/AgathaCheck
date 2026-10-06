@@ -49,6 +49,7 @@ const IMPORT_ALLOWLIST = new Set([
   'server/routes/pets/coreRouter.js',
   'server/routes/pets/peopleRelationshipsRouter.js',
   'server/routes/careContext/plannedAbsencesRouter.js',
+  'server/routes/careContext/plannedAbsenceUseCases.js',
   'server/routes/careContext/plannedAbsenceCarerInviteRoutes.js',
   'server/routes/careContext/plannedAbsenceStore.js',
   'server/scripts/migrations/073_people_vet_backfill.js',
