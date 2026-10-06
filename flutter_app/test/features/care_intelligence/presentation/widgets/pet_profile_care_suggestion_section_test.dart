@@ -30,28 +30,20 @@ CareRecommendation get _pendingRecommendation => const CareRecommendation(
   rationaleKey: 'careSuggestionWeightMonitoringWhy',
 );
 
-Pet get _pet => const Pet(
-  id: _petId,
-  name: 'CimDog',
-  species: 'Dog',
-);
+Pet get _pet => const Pet(id: _petId, name: 'CimDog', species: 'Dog');
 
 Widget _wrap(Widget child) {
   return ProviderScope(
     overrides: [
-      petCareRecommendationsProvider(_petId).overrideWith(
-        (ref) async => [_pendingRecommendation],
-      ),
+      petCareRecommendationsProvider(
+        _petId,
+      ).overrideWith((ref) async => [_pendingRecommendation]),
       petCareSafeguardsProvider(_petId).overrideWith((ref) async => []),
       petPendingCareMomentsProvider(_petId).overrideWith(
-        (ref) async => const CarePendingMomentsResponse(
-          moments: [],
-          throttled: false,
-        ),
+        (ref) async =>
+            const CarePendingMomentsResponse(moments: [], throttled: false),
       ),
-      allPetsIncludingOrgProvider.overrideWith(
-        (ref) async => [_pet],
-      ),
+      allPetsIncludingOrgProvider.overrideWith((ref) async => [_pet]),
     ],
     child: MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,

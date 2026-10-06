@@ -16,9 +16,7 @@ class CareIntelligenceRemoteDataSource {
   String? authToken;
 
   Map<String, String> _headers({bool jsonBody = false}) {
-    final headers = <String, String>{
-      'Cache-Control': 'no-cache',
-    };
+    final headers = <String, String>{'Cache-Control': 'no-cache'};
     if (jsonBody) headers['Content-Type'] = 'application/json';
     final token = authToken;
     if (token != null && token.isNotEmpty) {

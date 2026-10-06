@@ -19,24 +19,29 @@ CareRecommendation _pending() => const CareRecommendation(
 );
 
 void main() {
-  test('petProfileCareSuggestionProvider surfaces first pending recommendation', () async {
-    const petId = 'pet-1';
-    final container = ProviderContainer(
-      overrides: [
-        petCareRecommendationsProvider(petId).overrideWith(
-          (ref) async => [_pending()],
-        ),
-        petCareSafeguardsProvider(petId).overrideWith((ref) async => []),
-      ],
-    );
-    addTearDown(container.dispose);
+  test(
+    'petProfileCareSuggestionProvider surfaces first pending recommendation',
+    () async {
+      const petId = 'pet-1';
+      final container = ProviderContainer(
+        overrides: [
+          petCareRecommendationsProvider(
+            petId,
+          ).overrideWith((ref) async => [_pending()]),
+          petCareSafeguardsProvider(petId).overrideWith((ref) async => []),
+        ],
+      );
+      addTearDown(container.dispose);
 
-    await container.read(petCareRecommendationsProvider(petId).future);
-    await container.read(petCareSafeguardsProvider(petId).future);
+      await container.read(petCareRecommendationsProvider(petId).future);
+      await container.read(petCareSafeguardsProvider(petId).future);
 
-    final suggestion = container.read(petProfileCareSuggestionProvider(petId));
-    expect(suggestion.isLoading, isFalse);
-    expect(suggestion.hasError, isFalse);
-    expect(suggestion.valueOrNull?.suggestedName, 'Weight check');
-  });
+      final suggestion = container.read(
+        petProfileCareSuggestionProvider(petId),
+      );
+      expect(suggestion.isLoading, isFalse);
+      expect(suggestion.hasError, isFalse);
+      expect(suggestion.valueOrNull?.suggestedName, 'Weight check');
+    },
+  );
 }
