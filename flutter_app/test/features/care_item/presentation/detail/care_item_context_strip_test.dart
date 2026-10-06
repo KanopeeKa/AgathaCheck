@@ -147,7 +147,9 @@ void main() {
     expect(find.text('Buddy'), findsOneWidget);
   });
 
-  testWidgets('care name uses titleMedium w700 at wide viewport', (tester) async {
+  testWidgets('care name uses titleMedium w700 at wide viewport', (
+    tester,
+  ) async {
     await pumpStrip(
       tester,
       entry: baseEntry(),
@@ -250,9 +252,6 @@ void main() {
     await tester.tap(find.bySemanticsIdentifier('care_item_pet_tile'));
     await tester.pumpAndSettle();
 
-    expect(
-      find.text('Pet pet-1|/pet/pet-1/events/e1'),
-      findsOneWidget,
-    );
+    expect(find.text('Pet pet-1|/pet/pet-1/events/e1'), findsOneWidget);
   });
 }

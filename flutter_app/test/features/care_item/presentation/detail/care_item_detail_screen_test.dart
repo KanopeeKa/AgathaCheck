@@ -89,7 +89,10 @@ void main() {
       ),
       experienceEligibilityProvider.overrideWith(
         (ref) => AsyncValue.data(
-          ExperienceEligibilityRules.compute(pets: [pet], orgMembershipCount: 0),
+          ExperienceEligibilityRules.compute(
+            pets: [pet],
+            orgMembershipCount: 0,
+          ),
         ),
       ),
       combinedUnreadNotificationCountProvider.overrideWith((ref) => 0),
