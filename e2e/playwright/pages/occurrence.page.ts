@@ -4,6 +4,7 @@ import { expect } from '@playwright/test';
 import {
   enableFlutterAccessibility,
   flutterGotoUrl,
+  flutterRoutePath,
   refreshFlutterAccessibility,
   waitForFlutterRoutePattern,
 } from '../support/flutter';
@@ -37,18 +38,22 @@ export class OccurrencePage {
   async expectLoaded(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
     const screen = this.page.locator('[flt-semantics-identifier="occurrence_screen"]');
-    const about = this.page.locator('[flt-semantics-identifier="occurrence_about_item"]');
+    const about = this.page.locator(
+      '[flt-semantics-identifier="occurrence_about_item"], [flt-semantics-identifier="occurrence_context_tile"]',
+    );
     const back = this.page.getByRole('button', { name: /^Back$|^Go back$|^Retour$/i });
+    const title = this.page.getByRole('heading', {
+      name: /Care date|Date de soin/i,
+    });
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      const onRoute = /\/occurrences\/[^/?#]+/.test(
-        new URL(this.page.url()).hash.replace(/^#/, ''),
-      );
-      if (onRoute) {
-        await expect(screen.or(about).or(back)).toBeVisible();
-        return;
+      const path = flutterRoutePath(this.page.url());
+      const onOccurrenceRoute = /\/occurrences\/[^/]+/.test(path);
+      const titleVisible = await title.isVisible().catch(() => false);
+      if (!onOccurrenceRoute && !titleVisible) {
+        throw new Error(`Not on occurrence screen (path=${path})`);
       }
-      await expect(about.or(screen)).toBeVisible();
+      await expect(title.or(back).or(screen).or(about).first()).toBeVisible();
     }).toPass({ timeout: 60_000 });
   }
 
@@ -56,7 +61,11 @@ export class OccurrencePage {
     await refreshFlutterAccessibility(this.page);
     const done = this.page
       .locator('[flt-semantics-identifier="occurrence_done"]')
-      .or(this.page.getByRole('button', { name: /^Done$|^Fait$/i }));
+      .or(
+        this.page.getByRole('button', {
+          name: /Mark .* as done|Marquer .* comme fait|^Done$|^Fait$/i,
+        }),
+      );
     await done.first().click();
     await refreshFlutterAccessibility(this.page);
   }
@@ -64,8 +73,14 @@ export class OccurrencePage {
   async expectWeightRequiredBeforeDone(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
     await expect(this.page.getByLabel(/Weight/i).first()).toBeVisible({ timeout: 15_000 });
-    const done = this.page.getByRole('button', { name: /^Done$|^Fait$/i });
-    await expect(done).toBeDisabled();
+    const done = this.page
+      .locator('[flt-semantics-identifier="occurrence_done"]')
+      .or(
+        this.page.getByRole('button', {
+          name: /Mark .* as done|Marquer .* comme fait|^Done$|^Fait$/i,
+        }),
+      );
+    await expect(done.first()).toBeDisabled();
   }
 
   async fillWeight(value: string, unit: 'kg' | 'lb' = 'kg'): Promise<void> {
@@ -129,15 +144,28 @@ export class OccurrencePage {
 
   async expectSkippedWeighIn(reasonText: RegExp, note?: string): Promise<void> {
     await refreshFlutterAccessibility(this.page);
-    await expect(this.page.getByText(reasonText).first()).toBeVisible({ timeout: 30_000 });
+    await expect(
+      this.page
+        .getByRole('group', { name: reasonText })
+        .or(this.page.getByText(reasonText))
+        .first(),
+    ).toBeVisible({ timeout: 30_000 });
     if (note) {
-      await expect(this.page.getByText(note)).toBeVisible();
+      await expect(
+        this.page.getByRole('group', { name: new RegExp(note) }).or(this.page.getByText(note)),
+      ).toBeVisible();
     }
   }
 
   async expectDoneEnabled(): Promise<void> {
-    const done = this.page.getByRole('button', { name: /^Done$|^Fait$/i });
-    await expect(done).toBeEnabled({ timeout: 10_000 });
+    const done = this.page
+      .locator('[flt-semantics-identifier="occurrence_done"]')
+      .or(
+        this.page.getByRole('button', {
+          name: /Mark .* as done|Marquer .* comme fait|^Done$|^Fait$/i,
+        }),
+      );
+    await expect(done.first()).toBeEnabled({ timeout: 10_000 });
   }
 
   async expectRecordAsDoneVisible(): Promise<void> {
@@ -152,35 +180,6 @@ export class OccurrencePage {
   async openCompletedOnEditor(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
     await this.page.getByText(/Completed on|Complété le/i).first().click();
-    await refreshFlutterAccessibility(this.page);
-  }
-
-  async openScreenMenu(): Promise<void> {
-    await refreshFlutterAccessibility(this.page);
-    const menu = this.page
-      .locator('[flt-semantics-identifier^="occurrence_screen_menu_"]')
-      .first();
-    await menu.click();
-    await refreshFlutterAccessibility(this.page);
-  }
-
-  async planAnotherDateFromMenu(isoDate: string): Promise<void> {
-    await this.openScreenMenu();
-    await this.page
-      .getByRole('menuitem', { name: /Plan another date|Prévoir une autre date/i })
-      .click();
-    await expect(
-      this.page.locator('[flt-semantics-identifier="plan_another_date_sheet"]'),
-    ).toBeVisible({ timeout: 15_000 });
-    const day = parseInt(isoDate.split('-')[2]!, 10);
-    await this.page.getByRole('button', { name: /New date|Nouvelle date/i }).click();
-    const dialog = this.page.getByRole('dialog');
-    await expect(dialog).toBeVisible({ timeout: 15_000 });
-    await dialog.getByText(new RegExp(`^${day},\\s`)).first().click({ force: true });
-    await dialog.getByRole('button', { name: /^OK$|^Save$|Enregistrer/i }).first().click();
-    await this.page
-      .locator('[flt-semantics-identifier="plan_another_date_confirm"]')
-      .click();
     await refreshFlutterAccessibility(this.page);
   }
 

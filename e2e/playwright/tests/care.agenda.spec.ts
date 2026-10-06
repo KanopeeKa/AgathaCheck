@@ -12,6 +12,7 @@ import { GuardianDashboardPage } from '../pages/guardian-dashboard.page';
 import { OccurrencePage } from '../pages/occurrence.page';
 import { createCareItem, withCareClock } from '../support/care-api';
 import { createPet } from '../support/api';
+import { refreshFlutterAccessibility } from '../support/flutter';
 
 test.describe('Care agenda (occurrence-first)', () => {
   test('row opens occurrence and links to care item', async ({ page, testUser }) => {
@@ -31,16 +32,21 @@ test.describe('Care agenda (occurrence-first)', () => {
       await dashboard.open();
       const agenda = new CareAgendaPage(page);
       await agenda.openRow(entry.id, entry.name);
-      await expect(
-        page.getByRole('heading', { name: 'Viewable Care', level: 2 }).first(),
-      ).toBeVisible({ timeout: 30_000 });
-      const aboutOccurrence = page.locator('[flt-semantics-identifier="occurrence_about_item"]');
-      if (await aboutOccurrence.isVisible({ timeout: 3_000 }).catch(() => false)) {
-        await aboutOccurrence.click();
-      }
+      const occurrence = new OccurrencePage(page);
+      await occurrence.expectLoaded();
+      await expect(page.getByText('Viewable Care').first()).toBeVisible({
+        timeout: 30_000,
+      });
+      await page
+        .getByRole('button', {
+          name: /Viewable Care.*About this care item|About this care item.*Viewable Care/i,
+        })
+        .first()
+        .click();
+      await refreshFlutterAccessibility(page);
       await expect(
         page
-          .getByRole('heading', { name: /About this care item/i })
+          .getByRole('heading', { name: /Care details|Détail du soin/i })
           .or(page.locator('[flt-semantics-identifier="care_item_needs_attention_section"]')),
       ).toBeVisible({ timeout: 30_000 });
     } finally {

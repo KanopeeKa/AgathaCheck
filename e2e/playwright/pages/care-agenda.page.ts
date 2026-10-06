@@ -1,7 +1,12 @@
 import type { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
 
-import { escapeRegExp, refreshFlutterAccessibility, semanticsByName } from '../support/flutter';
+import {
+  escapeRegExp,
+  flutterRoutePath,
+  refreshFlutterAccessibility,
+  semanticsByName,
+} from '../support/flutter';
 
 /**
  * Shared care agenda rows (dashboard, pet profile, All Actions).
@@ -22,21 +27,58 @@ export class CareAgendaPage {
   /** Tap the row body (opens the occurrence screen). */
   async openRow(entryId: string, entryName?: string): Promise<void> {
     await refreshFlutterAccessibility(this.page);
+    if (entryName) {
+      await this.expectRowVisible(entryName);
+    }
+    const opensDate = /Opens this date|Ouvre cette date/i;
     const byId = this.page.locator(
       `[flt-semantics-identifier="care_agenda_row_${entryId}"]`,
     );
-    if ((await byId.count()) > 0) {
-      await byId.click();
-    } else if (entryName) {
-      const opensDate = /Opens this date|Ouvre cette date/i;
-      await this.page
-        .getByRole('button', { name: opensDate })
-        .filter({ hasText: new RegExp(escapeRegExp(entryName), 'i') })
-        .first()
-        .click();
-    } else {
-      await byId.click();
-    }
+    const byRole =
+      entryName != null
+        ? this.page
+            .getByRole('button', { name: opensDate })
+            .filter({ hasText: new RegExp(escapeRegExp(entryName), 'i') })
+        : null;
+
+    const tapRow = async (): Promise<void> => {
+      const target =
+        byRole != null && (await byRole.count()) > 0 ? byRole.first() : byId;
+      await expect(target).toBeVisible({ timeout: 30_000 });
+      const box = await target.boundingBox();
+      if (box == null) {
+        await target.click({ position: { x: 12, y: 16 } });
+        return;
+      }
+      // Pointer hit on the leading icon column — avoids the trailing Mark done control.
+      await this.page.mouse.click(box.x + 20, box.y + box.height / 2);
+    };
+
+    const careDateHeading = this.page.getByRole('heading', {
+      name: /Care date|Date de soin/i,
+    });
+    await expect(async () => {
+      await tapRow();
+      await refreshFlutterAccessibility(this.page);
+      const path = flutterRoutePath(this.page.url());
+      const onOccurrenceRoute = /\/occurrences\/[^/]+/.test(path);
+      const onScreen = await careDateHeading.isVisible().catch(() => false);
+      if (!onOccurrenceRoute && !onScreen && entryName) {
+        await semanticsByName(
+          this.page,
+          new RegExp(`${escapeRegExp(entryName)}.*Opens this date|Ouvre cette date`, 'i'),
+        )
+          .first()
+          .click({ position: { x: 12, y: 16 } });
+        await refreshFlutterAccessibility(this.page);
+      }
+      const ready =
+        /\/occurrences\/[^/]+/.test(flutterRoutePath(this.page.url())) ||
+        (await careDateHeading.isVisible().catch(() => false));
+      if (!ready) {
+        throw new Error(`Occurrence screen not open (path=${flutterRoutePath(this.page.url())})`);
+      }
+    }).toPass({ timeout: 60_000 });
     await refreshFlutterAccessibility(this.page);
   }
 

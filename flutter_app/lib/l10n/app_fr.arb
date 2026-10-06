@@ -2409,6 +2409,21 @@
       "time": { "type": "String" }
     }
   },
+  "careDateScreenTitle": "Date de soin",
+  "occurrenceReschedule": "Replannifier",
+  "occurrenceStatusSectionTitle": "Statut",
+  "occurrenceActionsSectionTitle": "Actions",
+  "occurrenceAwaySectionTitle": "Absence",
+  "occurrenceAwayPresenceAway": "Vous serez absent·e",
+  "occurrenceAwayKeepScopeExplainer": "Garder cette date s'applique à toutes les dates de ce soin pendant votre absence.",
+  "careCoverPlanResolved": "Dans le plan de couverture",
+  "careCoverPlanResolvedNamed": "Dans le plan de couverture de {name}",
+  "@careCoverPlanResolvedNamed": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "occurrenceCareFinishedNoReopen": "Ce soin est terminé.",
   "occurrenceOpenCount": "{count} en attente",
   "@occurrenceOpenCount": {
     "placeholders": {
