@@ -33,3 +33,9 @@ Feature: Notifications v2 inbox programme
     Given I have a pending share invite notification in Activity
     When I open the notification inbox on Activity
     Then I should see Accept and Decline actions on the invite row without opening it
+
+  @P1
+  Scenario: Accepted share invite is resolved and leaves needs-response
+    Given I accepted a pending share invite
+    When I fetch my notifications from the API
+    Then the share invite row should have a resolved timestamp

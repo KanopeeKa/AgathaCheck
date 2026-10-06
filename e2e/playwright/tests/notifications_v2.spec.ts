@@ -4,6 +4,7 @@
  * Scenario: Notification generated for entry due soon
  * Scenario: A reminder is created again after care is done on time
  * Scenario: Pending share invite shows inline accept and decline in Activity
+ * Scenario: Accepted share invite is resolved and leaves needs-response
  */
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
 import {

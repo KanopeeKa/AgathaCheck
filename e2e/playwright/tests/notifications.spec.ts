@@ -7,7 +7,7 @@
  * Scenario: Notification shows pet name and color
  * Scenario: Viewing the notification list
  * Scenario: Empty notifications shows message
- * Scenario: Unread notification badge on app bar
+ * Scenario: Unread notification badge reflects needs-response count (v2)
  * Scenario: Badge updates when notifications are read
  * Scenario: No badge when all notifications are read
  * Scenario: Marking a single notification as read
@@ -24,6 +24,7 @@ import {
   createHealthEntry,
   createOrganization,
   createPet,
+  createPetShareInvite,
   fosterInviteToOrganization,
   getNotifications,
   getPendingInvites,
@@ -268,27 +269,19 @@ test.describe('Notifications', () => {
 
   // ── Unread badge ──────────────────────────────────────────────────────────
 
-  test('unread notification badge reflects API unread count', async ({ page }) => {
+  test('unread notification badge reflects needs-response count (v2)', async ({ page }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
-    const user = await signupUser(baseURL, { firstName: 'Beth', lastName: 'Badge' });
+    const owner = await signupUser(baseURL, { firstName: 'Beth', lastName: 'Badge' });
+    const pet = await createPet(baseURL, owner.accessToken, 'Milo', 'Dog');
+    const invitee = await signupUser(baseURL, { firstName: 'Ben', lastName: 'Invitee' });
+    await createPetShareInvite(baseURL, owner.accessToken, [pet.id], invitee.email, 'carer');
 
-    await seedOverdueNotification(baseURL, user.accessToken, {
-      petName: 'Milo',
-      entryName: 'Vaccination',
-    });
-
-    expect(
-      await getUnreadNotificationCount(baseURL, user.accessToken),
-    ).toBeGreaterThan(0);
-
-    await loginAs(page, user);
+    await loginAs(page, invitee);
     const petList = new PetListPage(page);
     await petList.expectLoaded();
 
-    const unreadAfterLogin = await getUnreadNotificationCount(baseURL, user.accessToken);
-    expect(unreadAfterLogin).toBeGreaterThan(0);
     const notificationsPage = new NotificationsPage(page);
-    await notificationsPage.expectBadgeVisible(unreadAfterLogin);
+    await notificationsPage.expectBadgeVisible(1);
   });
 
   test('badge disappears after all notifications are marked read via API', async ({ page }) => {
