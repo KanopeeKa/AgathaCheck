@@ -1919,6 +1919,8 @@
       }
     }
   },
+  "careItemScreenTitle": "Détail du soin",
+  "careItemStatusFinished": "Fini",
   "careItemDetailsTitle": "Détails",
   "careItemHistoryTitle": "Historique",
   "careItemEditSchedule": "Modifier le planning",

@@ -8,6 +8,7 @@ import 'package:pet_profile_app/l10n/app_localizations.dart';
 import 'package:pet_profile_app/features/pet_care/pet_care.dart';
 import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
+import 'care_item_context_strip.dart';
 import 'care_item_absence_section.dart';
 import 'care_item_dates_section.dart';
 import 'care_item_needs_attention_section.dart';
@@ -48,9 +49,7 @@ class CareItemDetailBody extends ConsumerWidget {
       orElse: () => false,
     );
 
-    final petModule = CareItemModule(
-      child: PetEventPetCard(pet: pet, embedded: true),
-    );
+    final contextStrip = CareItemContextStrip(entry: entry, pet: pet);
     final schedule = entry.schedule;
     final needsSection = showNeedsAttention
         ? (schedule != null && !entry.isPaused
@@ -143,7 +142,7 @@ class CareItemDetailBody extends ConsumerWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          petModule,
+                          contextStrip,
                           _sectionGap,
                           sideScheduleAbsenceColumn(),
                           _sectionGap,
@@ -163,7 +162,7 @@ class CareItemDetailBody extends ConsumerWidget {
               : Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    petModule,
+                    contextStrip,
                     _sectionGap,
                     needsSection,
                     _sectionGap,
