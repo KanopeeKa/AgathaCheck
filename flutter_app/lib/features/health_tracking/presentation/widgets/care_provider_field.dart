@@ -81,13 +81,17 @@ class _CareProviderFieldState extends State<CareProviderField> {
               }
             });
           },
+          ),
         ),
         if (_useTyped)
-          TextField(
+          Semantics(
+            identifier: 'care_provider_typed_name_field',
+            child: TextField(
             controller: _typedController,
             decoration: InputDecoration(labelText: l.careProviderTypedName),
             onChanged: (v) =>
                 widget.onChanged(contactId: null, typedName: v.trim()),
+            ),
           )
         else if (widget.contactsLoading)
           const LinearProgressIndicator()

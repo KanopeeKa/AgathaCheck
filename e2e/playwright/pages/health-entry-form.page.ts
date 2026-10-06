@@ -116,9 +116,11 @@ export class HealthEntryFormPage {
   async setCareProviderTypedName(name: string): Promise<void> {
     await this.expandAdvancedSettings();
     await this.page
-      .getByRole('switch', { name: /Use a typed name|Utiliser un nom saisi/i })
-      .check();
-    await fillLabelledField(this.page, 'Typed name', name);
+      .locator('[flt-semantics-identifier="care_provider_use_typed_name"]')
+      .click();
+    await this.page
+      .locator('[flt-semantics-identifier="care_provider_typed_name_field"] input')
+      .fill(name);
   }
 
   async expectCareProviderFieldShows(name: string): Promise<void> {
