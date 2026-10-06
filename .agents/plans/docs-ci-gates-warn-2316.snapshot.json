@@ -8,7 +8,7 @@
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "main",
-  "control_issue": 2316,
+  "control_issue": 1730,
   "artifact_branch_policy": "phase-branch",
   "phases": [
     {
