@@ -180,8 +180,10 @@
       "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1715",
+      "pr_head_sha": "62fac16f"
     }
   ],
-  "content_hash": "sha256:59c61eda66a8138650cdf6bfb366980bbdfd4d257983383fa5b67385a57322bc"
+  "content_hash": "sha256:0198739a45f91865505f004383ef4dea8fcea5226dfd57a179dbba4c6bf492ce"
 }
