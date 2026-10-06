@@ -13,7 +13,7 @@ import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import 'package:pet_profile_app/features/notifications/notifications.dart';
 import 'package:pet_profile_app/features/sharing/sharing.dart';
 import 'package:pet_profile_app/features/weight_tracking/weight_tracking.dart';
-import 'package:pet_profile_app/features/vet/vet.dart';
+import 'package:pet_profile_app/features/people/people.dart';
 import 'pet_report_profile_section.dart';
 import 'pet_report_weight_section.dart';
 import 'pet_report_health_section.dart';
@@ -67,7 +67,7 @@ class PetReportService {
     required Pet pet,
     required ReportSections sections,
     required AppLocalizations l,
-    Vet? vet,
+    PetReportVetDetails? vet,
     List<WeightEntry> weightEntries = const [],
     List<HealthEntry> healthEntries = const [],
     List<HealthIssue> healthIssues = const [],

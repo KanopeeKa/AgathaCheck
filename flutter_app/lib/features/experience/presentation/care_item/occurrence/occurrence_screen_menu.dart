@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:pet_profile_app/features/care_item/domain/care_occurrence.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 enum OccurrenceScreenMenuAction { postpone, planAnother, addNote }

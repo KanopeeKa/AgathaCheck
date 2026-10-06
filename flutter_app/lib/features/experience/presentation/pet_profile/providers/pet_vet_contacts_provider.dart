@@ -29,12 +29,7 @@ List<PetVetOption> petVetOptionsFromRoster(Roster? roster) {
     if (!contact.roles.contains(ContactRole.vet)) continue;
     final vetId = contact.linkedVetRecordId;
     if (vetId == null || vetId.isEmpty) continue;
-    options.add(
-      PetVetOption(
-        vetId: vetId,
-        displayName: contact.name,
-      ),
-    );
+    options.add(PetVetOption(vetId: vetId, displayName: contact.name));
   }
   options.sort((a, b) => a.displayName.compareTo(b.displayName));
   return options;

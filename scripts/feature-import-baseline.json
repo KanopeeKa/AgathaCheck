@@ -25,7 +25,6 @@
     "experience->pet_profile",
     "experience->pet_tags",
     "experience->sharing",
-    "experience->vet",
     "experience->weight_tracking",
     "health_tracking->auth",
     "health_tracking->care_item",
@@ -46,8 +45,6 @@
     "sharing->auth",
     "sharing->pet_profile",
     "subscription->auth",
-    "vet->auth",
-    "vet->pet_profile",
     "weight_tracking->auth"
   ],
   "exceptions": [

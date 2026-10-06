@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pet_profile_app/features/pet_profile/presentation/widgets/pet_form/pet_form_vet_section.dart';
+import 'package:pet_profile_app/features/experience/presentation/pet_profile/widgets/pet_form/pet_form_vet_section.dart';
 import 'package:pet_profile_app/features/people/application/people_providers.dart';
 import 'package:pet_profile_app/features/people/domain/entities/contact_summary.dart';
 import 'package:pet_profile_app/features/people/domain/entities/roster.dart';

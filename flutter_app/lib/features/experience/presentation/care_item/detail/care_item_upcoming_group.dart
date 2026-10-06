@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:pet_profile_app/features/care_item/domain/care_item_schedule.dart';
-import 'package:pet_profile_app/features/care_item/domain/care_occurrence.dart';
+import 'package:pet_profile_app/features/care_item/care_item.dart';
 import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import 'package:pet_profile_app/features/pet_care/pet_care.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';

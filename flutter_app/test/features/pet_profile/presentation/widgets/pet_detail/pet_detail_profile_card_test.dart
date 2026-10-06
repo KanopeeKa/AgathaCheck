@@ -6,7 +6,6 @@ import 'package:pet_profile_app/features/experience/domain/entities/app_experien
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/services/pet_detail_actions.dart';
 import 'package:pet_profile_app/features/experience/presentation/pet_profile/widgets/pet_detail/pet_detail_profile_card.dart';
-import 'package:pet_profile_app/features/vet/presentation/providers/vet_providers.dart';
 import 'package:pet_profile_app/features/weight_tracking/domain/entities/weight_entry.dart';
 import 'package:pet_profile_app/features/weight_tracking/presentation/providers/weight_providers.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
@@ -29,7 +28,6 @@ Widget _wrap(Pet pet, {PetDetailContext? viewerContext}) {
   return ProviderScope(
     overrides: [
       apiBaseUrlProvider.overrideWithValue('http://test.local'),
-      vetListProvider.overrideWith(FakeVetListNotifier.new),
       weightEntriesNotifierProvider.overrideWith(
         () => _EmptyWeightEntriesNotifier(),
       ),

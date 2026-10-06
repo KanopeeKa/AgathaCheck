@@ -21,6 +21,7 @@ import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 import 'package:pet_profile_app/features/subscription/subscription.dart';
 import 'package:pet_profile_app/features/weight_tracking/weight_tracking.dart';
+
 /// Global messenger so session-expiry notices can be shown from anywhere,
 /// independent of the currently routed screen.
 final GlobalKey<ScaffoldMessengerState> rootScaffoldMessengerKey =
