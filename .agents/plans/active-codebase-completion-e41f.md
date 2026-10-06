@@ -183,15 +183,17 @@ The rules in that doc apply to every child: one landing on `main` at a time; a l
 
 The roadmap is complete only when **all** of the following hold on `main`:
 
-1. [x] Every P1 finding (A01–A06) has a passing failure-path test, listed in the [baseline README](../../docs/engineering/active-codebase-baseline/README.md) command matrix (integration @ `afc7c4ad`).
-2. [x] The transaction-ownership architecture test (E.3) has **zero** exceptions in active server code — `server/test/architecture/transactionOwnership.test.js`.
-3. [x] Pet deletion, weight completion, invite creation and acceptance, passed-away notification and account erasure each have a stable committed response, plus real-PG tests — review §Final acceptance verification.
-4. [x] Account erasure returns 202 only after durable acceptance, rejects old access tokens, and cleanup jobs are observable — `server/test/db/accountErasure.integration.test.js`, `docs/ops/account-erasure.md`.
-5. [x] The health-presentation boundary test (G.3) passes — `flutter_app/test/features/health_tracking/architecture/health_presentation_boundary_test.dart`.
-6. [x] `architecture-metrics.py` reports **0** SCC @ `afc7c4ad`; `check_feature_imports.js` empty baseline for R1–R3, R5, R6 — [`metrics-headline.md`](../../docs/engineering/active-codebase-baseline/metrics-headline.md).
-7. [x] Checker fixtures + blocking CI (J.4) — `.github/workflows/_reusable-test.yml`, J integration #1700.
-8. [x] Review doc `status: implemented`; Implementation status all Done; P2/P3 size exceptions documented (K.4).
-9. [ ] Pre-UAT E2E green on the final `main` merge SHA — **K.5** (`/babysit-uat`).
+1. Every P1 finding (A01–A06) has a passing failure-path test, listed in the [baseline README](../../docs/engineering/active-codebase-baseline/README.md) command matrix.
+2. The transaction-ownership architecture test (E.3) has **zero** exceptions in active server code — `server/test/architecture/transactionOwnership.test.js`.
+3. Pet deletion, weight completion, invite creation and acceptance, passed-away notification and account erasure each have a stable committed response, plus real-PG tests for fault injection and concurrency.
+4. Account erasure returns 202 only after durable acceptance, rejects old access tokens, and its cleanup jobs reach `completed` or a visible `failed` state (F.2, F.3).
+5. The health-presentation boundary test (G.3) passes, and every health mutation goes through the controller or store.
+6. `python3 scripts/architecture/architecture-metrics.py` reports **0** multi-feature strongly connected components, and `check_feature_imports.js` has an **empty** baseline for rules R1–R3, R5 and R6.
+7. The size, lint, coverage, BDD, boundary, import and transaction checkers each have a fixture proving they fail on a deliberate violation, and all run in blocking CI (J.4).
+8. The review doc is marked implemented; its Implementation status table has no Partial or Not-started rows; any remaining P2/P3 exceptions have an owner, reason and review date (K.4).
+9. Pre-UAT E2E green on the final Batch K merge SHA — met on `58427e4219fd1f5a011e678a7fecf855c2960b8e` ([pre-UAT run 37540578394](https://github.com/KanopeeKa/AgathaCheck/actions/runs/37540578394)).
+
+**Closeout:** Remaining gaps vs criteria 1–5 and 8 are tracked in [`.agents/plans/active-codebase-completion-e41f.audit.md`](./active-codebase-completion-e41f.audit.md) and plan `active-codebase-completion-closeout-e41f` (#1734). Criteria softened in #1724 were reverted here (approved wording).
 
 ## Runtime state (agent-updated)
 
@@ -202,7 +204,7 @@ autonomy: active
 current_phase: orchestrate
 last_completed_phase: null
 halt_reason: null
-next_action: "continue child plan active-codebase-batch-k-final-acceptance-e41f"
+next_action: "execute-plan active-codebase-completion-closeout-e41f (spirit-aligned closure)"
 artifact_ref:
   branch: cursor/active-codebase-k-integration-e41f
   plan_path: .agents/plans/active-codebase-completion-e41f.md
