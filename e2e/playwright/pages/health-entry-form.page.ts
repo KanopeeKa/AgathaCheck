@@ -99,17 +99,29 @@ export class HealthEntryFormPage {
     await expect(this.page.getByText(label, { exact: true }).first()).toBeVisible();
   }
 
-  async openCareProviderPicker(): Promise<void> {
+  async openCareProviderDropdown(): Promise<void> {
+    await this.expandAdvancedSettings();
+    const dropdown = this.page.getByLabel(/Choose a contact|Choisir un contact/i);
+    await dropdown.scrollIntoViewIfNeeded();
+    await dropdown.click();
+  }
+
+  async selectCareProviderContact(name: string): Promise<void> {
+    await this.openCareProviderDropdown();
+    await this.page.getByRole('menuitem', { name, exact: true }).click();
+  }
+
+  async setCareProviderTypedName(name: string): Promise<void> {
     await this.expandAdvancedSettings();
     await this.page
-      .locator('[flt-semantics-identifier="people_picker_field_care_provider"]')
-      .scrollIntoViewIfNeeded();
-    await this.page.locator('[flt-semantics-identifier="people_picker_field_care_provider"]').click();
+      .getByRole('switch', { name: /Use a typed name|Utiliser un nom saisi/i })
+      .check();
+    await fillLabelledField(this.page, 'Typed name', name);
   }
 
   async expectCareProviderFieldShows(name: string): Promise<void> {
-    await expect(
-      this.page.locator('[flt-semantics-identifier="people_picker_field_care_provider"]'),
-    ).toContainText(name, { timeout: 15_000 });
+    await expect(this.page.getByText(name, { exact: true }).first()).toBeVisible({
+      timeout: 15_000,
+    });
   }
 }

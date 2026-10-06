@@ -133,15 +133,11 @@ test.describe('People client integration journeys', () => {
     await form.fillEntryName('Integration Groom');
     await form.selectCareFamily('Grooming');
 
-    const people = new PeoplePage(page);
-    await form.openCareProviderPicker();
-    await people.selectPeoplePickerOption(existing.id);
+    await form.selectCareProviderContact('Grooming Pro');
     await form.expectCareProviderFieldShows('Grooming Pro');
 
-    await form.openCareProviderPicker();
     const inlineName = 'Inline Sitter';
-    await people.searchPeoplePicker(inlineName);
-    await people.quickAddContactFromPicker(inlineName);
+    await form.setCareProviderTypedName(inlineName);
     await form.expectCareProviderFieldShows(inlineName);
   });
 
@@ -181,10 +177,10 @@ test.describe('People client integration journeys', () => {
     await form.selectPet('Buddy');
     await form.fillEntryName('New Groom');
     await form.selectCareFamily('Grooming');
-    await form.openCareProviderPicker();
-
-    const people = new PeoplePage(page);
-    await people.expectPeoplePickerOptionHidden(provider.id);
+    await form.openCareProviderDropdown();
+    await expect(
+      page.getByRole('menuitem', { name: 'Inactive Provider', exact: true }),
+    ).toHaveCount(0);
     await page.keyboard.press('Escape');
   });
 
