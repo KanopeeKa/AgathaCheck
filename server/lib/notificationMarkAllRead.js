@@ -1,5 +1,5 @@
 import { NOTIFICATION_INBOX_ACTIVE_WHERE } from './notificationHelper.js';
-import { SUGGESTION_INBOX_ACTIVE_WHERE } from '../routes/notifications/suggestionInbox.js';
+import { SUGGESTION_INBOX_ACTIVE_WHERE } from './notifications/suggestionInbox.js';
 
 const ACTIVITY_KINDS = "kind IN ('relationship', 'administrative', 'account')";
 

@@ -3,8 +3,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { emitAccountNewSignIn } from './accountSecurityNotifications.js';
 import {
   PREF_DEVICE_SECURITY_INTRO_PENDING,
+  upsertNotificationPreference,
 } from '../notificationPreferences.js';
-import { setNotificationPreference } from '../../routes/notifications/preferencesHandlers.js';
 
 const NINETY_DAYS_MS = 90 * 24 * 60 * 60 * 1000;
 
@@ -78,7 +78,7 @@ export async function recordAccountDeviceSignIn(pool, {
   const legacySilentBootstrap =
     !isSignupSession && !hadAnyLabels && !existingBefore;
   if (legacySilentBootstrap) {
-    await setNotificationPreference(
+    await upsertNotificationPreference(
       pool,
       userId,
       PREF_DEVICE_SECURITY_INTRO_PENDING,

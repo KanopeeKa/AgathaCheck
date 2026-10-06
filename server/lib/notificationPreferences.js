@@ -2,6 +2,8 @@
  * Notifications v2 settings matrix (§8) persisted in notification_preferences rows.
  */
 
+import { v4 as uuidv4 } from 'uuid';
+
 export const PREF_NOTIFY_OVERDUE = 'notify_overdue';
 export const PREF_NOTIFY_DUE_SOON = 'notify_due_soon';
 export const PREF_NOTIFY_COMPLETED = 'notify_completed';
@@ -275,6 +277,30 @@ export async function loadNotificationPreferences(pool, userId) {
     [userId],
   );
   return preferenceMapToApiDto(rowsToPreferenceMap(result.rows));
+}
+
+export async function upsertNotificationPreference(
+  pool,
+  userId,
+  preference,
+  value,
+) {
+  const existing = await pool.query(
+    'SELECT id FROM notification_preferences WHERE user_id = $1 AND preference = $2',
+    [userId, preference],
+  );
+  const stringValue = String(value);
+  if (existing.rows.length > 0) {
+    await pool.query(
+      'UPDATE notification_preferences SET value = $1 WHERE user_id = $2 AND preference = $3',
+      [stringValue, userId, preference],
+    );
+  } else {
+    await pool.query(
+      'INSERT INTO notification_preferences (id, user_id, preference, value) VALUES ($1, $2, $3, $4)',
+      [uuidv4(), userId, preference, stringValue],
+    );
+  }
 }
 
 export function isAgathaSuggestionsInAppEnabled(prefsDto) {

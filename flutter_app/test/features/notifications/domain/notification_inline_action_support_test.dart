@@ -76,7 +76,7 @@ void main() {
     expect(NotificationInlineActionSupport.supportsInlineActions(n), isFalse);
   });
 
-  test('read rows do not show inline actions', () {
+  test('read rows still show inline actions when needs response', () {
     final n = AppNotification(
       id: '1',
       userId: 'u',
@@ -88,6 +88,6 @@ void main() {
       isRead: true,
       createdAt: DateTime(2026, 1, 1),
     );
-    expect(NotificationInlineActionSupport.supportsInlineActions(n), isFalse);
+    expect(NotificationInlineActionSupport.supportsInlineActions(n), isTrue);
   });
 }
