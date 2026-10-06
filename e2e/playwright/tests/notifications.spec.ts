@@ -7,7 +7,6 @@
  * Scenario: Notification shows pet name and color
  * Scenario: Viewing the notification list
  * Scenario: Empty notifications shows message
- * Scenario: Unread notification badge on app bar
  * Scenario: Badge updates when notifications are read
  * Scenario: No badge when all notifications are read
  * Scenario: Marking a single notification as read
