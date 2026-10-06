@@ -5,7 +5,7 @@
   "approved_at": "2026-10-06T15:53:07Z",
   "approved_by": "roadmap active-codebase-completion-e41f standing grant (chat 2026-10-06 through batch K)",
   "approved_until": "2026-10-08T15:53:07Z",
-  "autonomy": "active",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "cursor/active-codebase-j-integration-e41f",
   "control_issue": 1690,
@@ -175,13 +175,13 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1700",
-      "pr_head_sha": "1b9df40bd6307079f0097adf304b40b8d37f9907"
+      "pr_head_sha": "5eef10376676c965beaf4dd8a2f454942a4b47e0"
     }
   ],
-  "content_hash": "sha256:960a0dad372c33dbcaa8e0853bb063fa3c1a1c65dd6013cefc2f8ea92c5e954f"
+  "content_hash": "sha256:cc940607648919f7e347c1d5dfb9a25f8ec015bd9c8216b2cd90b23ec6054a27"
 }
