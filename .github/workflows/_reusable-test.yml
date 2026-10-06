@@ -54,6 +54,10 @@ jobs:
       - name: Frozen domain boundary fixtures
         run: bash scripts/test/check_frozen_domain_boundaries.test.sh
 
+      - name: Install server deps (doc placement js-yaml)
+        working-directory: server
+        run: npm ci
+
       - name: Documentation validation (strict)
         run: bash scripts/validate_docs.sh --strict
 
