@@ -16,6 +16,7 @@ import {
   NOTIFICATION_TYPE_SHARE_MEMBER_LEFT,
 } from '../../lib/notificationKind.js';
 import { createNotification, userDisplayName } from '../../lib/notificationHelper.js';
+import { emitShareAccessChanged } from '../../lib/notifications/relationshipEmitters.js';
 import {
   CARER_ROLE,
   CO_PARENT_ROLE,
@@ -241,6 +242,14 @@ export async function changeRole(pool, { userId, petId, targetUserId, nextRole }
   if (!updated) {
     return { error: 'Access not found', status: 404 };
   }
+  const petName = (await findPetName(pool, petId)) || 'the pet';
+  await emitShareAccessChanged(pool, {
+    targetUserId,
+    petId,
+    petName,
+    actorUserId: userId,
+    nextRole,
+  });
   return { user_id: targetUserId, role: updated.role };
 }
 

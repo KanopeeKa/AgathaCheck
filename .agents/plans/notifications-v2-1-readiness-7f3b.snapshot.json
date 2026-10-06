@@ -83,10 +83,12 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1707",
+      "pr_head_sha": "b1dd514b"
     },
     {
       "id": "3",
@@ -174,5 +176,5 @@
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:c3b1c45c494474f80e589abb2db478a0d8c7ea1aac1569e5f3ef67985fc5c690"
+  "content_hash": "sha256:b67b93352413d56e3f9634c5c3f026731eb59d7f3f1c3a7a95af0e12528b2f36"
 }

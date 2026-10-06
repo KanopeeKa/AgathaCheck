@@ -2,6 +2,7 @@ import crypto from 'crypto';
 import { v4 as uuidv4 } from 'uuid';
 
 import { findUserByEmail } from '../../db/sharing/shareInviteQueries.js';
+import { emitHouseholdMemberJoined } from '../notifications/relationshipEmitters.js';
 import { buildHouseholdInvitationEmail } from '../email/templates/householdInvitation.js';
 import { resolveEmailLocale } from '../email/locale.js';
 import { createNotification, userDisplayName } from '../notificationHelper.js';
@@ -316,6 +317,11 @@ export async function acceptHouseholdInvite(pool, {
   await tryLinkInviteContact(pool, invite.contact_id, userId, {
     inviteId: invite.id,
     source: 'household',
+  });
+
+  await emitHouseholdMemberJoined(pool, {
+    householdId: invite.household_id,
+    memberUserId: userId,
   });
 
   logPeopleInviteEvent('household_invite_accepted', {
