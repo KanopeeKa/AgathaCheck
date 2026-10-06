@@ -33,11 +33,13 @@ EN/FR terms — link `docs/design/terminology.md` and domain vocabulary docs whe
 |----|------|--------|
 | EXAMPLE-R-001 | Example requirement text | Live |
 
+Use `Retired` when a requirement no longer applies — never delete or reuse IDs.
+
 ## Acceptance criteria
 
 | Given / When / Then | Requirement | Coverage |
 |---------------------|-------------|----------|
-| Given … When … Then … | EXAMPLE-R-001 | `flutter_app/test/bdd/features/….feature` — Scenario: … |
+| Given … When … Then … | EXAMPLE-R-001 | bdd: example.feature#Scenario title |
 
 ## States & data
 

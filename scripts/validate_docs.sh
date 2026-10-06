@@ -40,6 +40,18 @@ if ! node "$REPO_ROOT/scripts/check_doc_placement.js" --feature-manifest; then
 fi
 echo ""
 
+# Canonical docs gates (diff vs origin/main when available)
+echo "Running canonical docs gates..."
+BASE="origin/main"
+if git rev-parse --verify "$BASE" >/dev/null 2>&1; then
+  if ! node "$REPO_ROOT/scripts/check_docs_canonical.js" --base "$BASE"; then
+    ERRORS=$((ERRORS + 1))
+  fi
+else
+  echo "  Skip check_docs_canonical (no $BASE — fetch origin/main for local parity)"
+fi
+echo ""
+
 # Helper function to check if a file has valid YAML frontmatter
 has_frontmatter() {
   local filepath="$1"

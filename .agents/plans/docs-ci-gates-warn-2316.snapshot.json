@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "plan_id": "docs-ci-gates-warn-2316",
+  "approved_at": "2026-10-06T22:45:00Z",
+  "approved_by": "user-chat-execute-plan",
+  "approved_until": "2026-10-08T22:45:00Z",
+  "content_hash": "sha256:51d499cac9c951d608ee99fd530c9c8352717be0994f34cf47f4c681e12d2a3e",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 2316,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Documentation CI gates (warn mode)",
+      "branch": "cursor/docs-ci-gates-warn-2316",
+      "allowed_paths": [
+        "scripts/check_docs_canonical.js",
+        "scripts/check_docs_canonical.test.js",
+        "scripts/lib/docs-canonical/**",
+        "scripts/docs-legacy-baseline.json",
+        "scripts/test/fixtures/docs-canonical/**",
+        "scripts/validate_docs.sh",
+        "scripts/pre-push-changed.sh",
+        ".github/workflows/docs-gate.yml",
+        ".github/workflows/docs-validation.yml",
+        ".github/workflows/quality-kpis.yml",
+        "docs/domains/documentation/**",
+        ".cursor/skills/canonical-docs/**",
+        ".github/pull_request_template.md",
+        ".agents/plans/docs-ci-gates-warn-2316.*"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "server/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "debt_issue_refs": []
+    }
+  ]
+}

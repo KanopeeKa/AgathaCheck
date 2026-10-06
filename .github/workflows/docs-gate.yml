@@ -1,0 +1,55 @@
+name: Docs gate
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+
+concurrency:
+  group: docs-gate-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  DOCS_GATE_MODE: warn
+
+jobs:
+  docs-declaration:
+    name: Docs declaration
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Gate A — PR body
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+          GITHUB_ACTOR: ${{ github.actor }}
+        run: |
+          node scripts/check_docs_canonical.js --pr-body --base "origin/${{ github.event.pull_request.base.ref }}"
+
+  docs-canonical:
+    name: Docs canonical
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install backend deps (js-yaml)
+        run: cd server && npm ci
+
+      - name: Default gates (diff vs base)
+        run: |
+          node scripts/check_docs_canonical.js --base "origin/${{ github.event.pull_request.base.ref }}"
+
+      - name: BDD coverage report
+        run: node e2e/scripts/check_bdd_coverage.js --report-only
+
+      - name: Per-domain docs trace report
+        run: |
+          node scripts/check_docs_canonical.js --report | tee -a "$GITHUB_STEP_SUMMARY"
