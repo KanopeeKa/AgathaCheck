@@ -202,13 +202,13 @@ autonomy: active
 current_phase: orchestrate
 last_completed_phase: null
 halt_reason: null
-next_action: "bootstrap and gate child plan active-codebase-batch-j-standards-e41f"
+next_action: "continue child plan active-codebase-batch-j-standards-e41f"
 artifact_ref:
-  branch: main
+  branch: cursor/active-codebase-j-integration-e41f
   plan_path: .agents/plans/active-codebase-completion-e41f.md
-  plan_commit: 3c1f8b72187969a0e8d93e6f6b7505d0d2309fc3
+  plan_commit: 581348818afac3a8838af39744083266f2d92d70
   snapshot_path: .agents/plans/active-codebase-completion-e41f.snapshot.json
-  snapshot_commit: 3c1f8b72187969a0e8d93e6f6b7505d0d2309fc3
+  snapshot_commit: 581348818afac3a8838af39744083266f2d92d70
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
