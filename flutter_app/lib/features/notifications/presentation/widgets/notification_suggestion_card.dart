@@ -49,6 +49,16 @@ class NotificationSuggestionCard extends ConsumerWidget {
                           color: theme.colorScheme.onSurfaceVariant,
                         ),
                       ),
+                      if (notification.showsHealthAdjacentDisclaimer) ...[
+                        const SizedBox(height: 6),
+                        Text(
+                          l.notificationSuggestionVetDisclaimer,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),
