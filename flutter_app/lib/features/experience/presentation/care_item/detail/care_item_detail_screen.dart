@@ -144,7 +144,8 @@ class CareItemDetailScreen extends ConsumerWidget {
 
             Future<void> onResume() async {
               await ref.read(healthEntriesNotifierProvider.notifier).refresh();
-              final freshEntry = ref
+              final freshEntry =
+                  ref
                       .read(healthEntriesNotifierProvider)
                       .valueOrNull
                       ?.where((e) => e.id == entryId)
