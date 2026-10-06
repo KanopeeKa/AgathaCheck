@@ -19,8 +19,22 @@ import { activeSpecs } from '../../e2e/scripts/shard-files.mjs';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const REPO_ROOT = path.resolve(HERE, '..', '..');
 
+function loadFlutterDomainCoverageThresholdPct() {
+  const jsonPath = path.join(
+    REPO_ROOT,
+    'docs',
+    'engineering',
+    'active-codebase-baseline',
+    'flutter-domain-coverage-threshold.json',
+  );
+  if (!fs.existsSync(jsonPath)) return 70;
+  const doc = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+  const value = Number(doc.threshold);
+  return Number.isFinite(value) ? value : 70;
+}
+
 export const THRESHOLDS = {
-  flutterDomainCoveragePct: 70,
+  flutterDomainCoveragePct: loadFlutterDomainCoverageThresholdPct(),
   bddGateRatio: 0.68,
 };
 
