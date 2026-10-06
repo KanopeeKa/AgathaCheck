@@ -1,0 +1,14 @@
+---
+description: Canonical feature documentation on behaviour-changing PRs
+alwaysApply: true
+---
+
+# Documentation (canonical docs)
+
+**Policy:** `docs/domains/documentation/standards.md`  
+**Procedure:** `.cursor/skills/canonical-docs/SKILL.md` (Mode A / Mode B)
+
+- Behaviour-changing PRs update the canonical feature doc in the **same PR** via `/canonical-docs sync`.
+- Decision logs live **inside** the canonical doc (append-only).
+- `changes/` holds proposals and in-delivery work only; delete when **fully** delivered (deletion guard in the skill).
+- Do not copy the sync steps here — use the skill and standards.

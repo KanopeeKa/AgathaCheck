@@ -15,7 +15,8 @@ Canonical policy: `docs/agent-efficiency/pr-review-cost-efficiency.md` · `docs/
 2. **Risks** — Security, data integrity, migrations, API contract drift, concurrency.
 3. **Design quality** — Smallest change that meets intent; match repo patterns.
 4. **Better solution** — Adopt a clearer/safer approach now; do not defer to review.
-5. **Verification** — Run `./scripts/pre-push-changed.sh` after any adjustments.
+5. **Documentation** — `/canonical-docs sync` when the diff changes behaviour; see `.cursor/rules/documentation.mdc` (same order as babysit-plus §Pre-PR).
+6. **Verification** — Run `./scripts/pre-push-changed.sh` after any adjustments.
 
 Optional cost saver: `/review-bugbot` on the branch diff before push dedupes a paid Bugbot PR review when the patch is unchanged.
 

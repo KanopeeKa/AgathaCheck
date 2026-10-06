@@ -7,7 +7,7 @@ description: Babysit+ through merge, then gate on pre-UAT E2E on main. On failur
 
 **Babysit+ through merge**, then **pre-UAT E2E green** for that merge commit on `main`. Does **not** poll `promote-uat` or `deploy-uat` (current policy).
 
-**Builds on:** `/babysit-plus` (§0–7, §7b roadmap child handoff) · **Remedial:** `/e2e-debug` (§Phase 3) · **Canonical policy:** `docs/agent-efficiency/autonomous-pr-policy.md`  
+**Builds on:** `/babysit-plus` (**§Pre-PR critical review** including documentation sync, then §0–7, §7b roadmap child handoff) · **Remedial:** `/e2e-debug` (§Phase 3) · **Canonical policy:** `docs/agent-efficiency/autonomous-pr-policy.md`  
 **Shard risk:** `scripts/babysit_uat_shard_risk.mjs` · **Scope resolve:** `scripts/e2e_debug_resolve.mjs`  
 **Manual ops sibling:** `scripts/agent-uat-babysit.sh` (full replay; ops only)
 
@@ -66,7 +66,7 @@ description: Babysit+ through merge, then gate on pre-UAT E2E on main. On failur
 
 ## Phase 1 — Babysit+ (mandatory)
 
-Run **all** of `/babysit-plus` §0–7:
+Run **all** of `/babysit-plus` **§Pre-PR critical review** (including `/canonical-docs sync`), then §0–7. Remedial PRs from `/e2e-debug` use the same docs gate — usually `Docs: N/A — test/infra fix` unless the remedy changes behaviour.
 
 1. Sync, triage, debt, CI loop, `pre-push.sh`
 2. **Always squash-merge** when gates pass (no `manual` / `labeled` modes)
@@ -160,3 +160,4 @@ Same as babysit+ §9. Plus: infra-only UAT blockers (`UAT_AUTO_MIGRATE`, WAF) �
 | `/babysit-plus` | Intermediate execute-plan merges; PRs that skip pre-UAT |
 | `/execute-plan` | Final main merge delegates here |
 | `/pre-push-verify` | Before every push; `--e2e-shards` during remedial |
+| `/canonical-docs` | Inherited via babysit+ pre-PR and docs gate |

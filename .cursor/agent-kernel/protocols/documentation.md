@@ -20,9 +20,10 @@
 
 ## 3. Update when
 
-- New public API or behaviour change → `docs/architecture/api-reference.md` or domain README
-- Workflow change → `docs/agent-efficiency/` or `docs/engineering/`
-- Intentional deferral → GitHub issue with `tech-debt` / `review-follow-up`
+- **Product behaviour change (any surface):** run `/canonical-docs sync` — `.cursor/skills/canonical-docs/SKILL.md` Mode A; policy in `docs/domains/documentation/standards.md`.
+- **Deeper architecture / ADR:** this protocol plus `docs/architecture/` when Router assigns `documentation` for significant architecture (see ROUTER §4).
+- **Agent workflow change:** `docs/agent-efficiency/` or skill docs — not domain `features/` unless product behaviour changed.
+- **Intentional deferral:** GitHub issue with `tech-debt` / `review-follow-up`
 
 ## 4. Do not
 

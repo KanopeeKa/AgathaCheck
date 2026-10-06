@@ -15,9 +15,10 @@ Use with Task `generalPurpose` from `/execute-plan` phase implementation.
 1. Read `.cursor/agent-kernel/ROUTER.md` — confirm risk/protocols match your task
 2. Read **only** listed protocol files under `.cursor/agent-kernel/protocols/`
 3. Implement within `allowed_paths` only
-4. Run `./scripts/pre-push-changed.sh` after logical batches
-5. Commit on phase branch: `phase(<id>/<total>): <type>: <description>`
-6. Return: summary, files changed, tests run, risks, blockers
+4. Run `/canonical-docs sync` (Mode A) before handback when the diff changes behaviour
+5. Run `./scripts/pre-push-changed.sh` after logical batches
+6. Commit on phase branch: `phase(<id>/<total>): <type>: <description>`
+7. Return: summary, files changed, tests run, risks, blockers
 
 ## Must NOT
 
