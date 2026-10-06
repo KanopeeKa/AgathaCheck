@@ -64,6 +64,7 @@ Widget _buildApp({
       orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
       authProvider.overrideWith((ref) => FakeAuthNotifier()),
       organizationListProvider.overrideWith(_EmptyOrgListNotifier.new),
+      careActionsAttentionCountProvider.overrideWith((ref) => 0),
     ],
     child: MaterialApp(
       theme: ThemeData(splashFactory: NoSplash.splashFactory),

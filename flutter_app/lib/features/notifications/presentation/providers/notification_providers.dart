@@ -179,7 +179,7 @@ class NotificationPreferencesNotifier
 
   Future<void> dismissDeviceSecurityIntro() async {
     await _getRepo().dismissDeviceSecurityIntro();
-    await refresh();
+    state = await AsyncValue.guard(() => _getRepo().getPreferences());
   }
 
   Future<void> dismissV2InboxExplainer() async {
