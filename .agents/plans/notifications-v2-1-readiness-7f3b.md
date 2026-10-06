@@ -74,17 +74,17 @@ Single squash PR integration → `main`; `/babysit-uat`.
 
 ```yaml
 autonomy: active
-current_phase: 1
-last_completed_phase: null
+current_phase: 2
+last_completed_phase: 1
 halt_reason: null
-next_action: "continue phase 1 on branch cursor/notifications-v2-1-plan-a-7f3b"
+next_action: "start phase 2: checkout cursor/notifications-v2-1-plan-b-7f3b"
 artifact_ref:
-  branch: cursor/notifications-v2-1-plan-a-7f3b
+  branch: cursor/notifications-v2-1-readiness-integration-7f3b
   plan_path: .agents/plans/notifications-v2-1-readiness-7f3b.md
-  plan_commit: d46d5d47d5e81d3e277df6f8b1127f9972ceae85
+  plan_commit: 933c1bea1d25bf7dc39caab121e2d3465508c38a
   snapshot_path: .agents/plans/notifications-v2-1-readiness-7f3b.snapshot.json
-  snapshot_commit: d46d5d47d5e81d3e277df6f8b1127f9972ceae85
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1694"]
+  snapshot_commit: 933c1bea1d25bf7dc39caab121e2d3465508c38a
+open_prs: []
 merge_commits: {}
 debt_issue_refs: []
 ```
