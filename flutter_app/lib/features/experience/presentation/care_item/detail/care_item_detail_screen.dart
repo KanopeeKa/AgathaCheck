@@ -35,37 +35,40 @@ class CareItemDetailScreen extends ConsumerWidget {
     );
     final historyAsync = ref.watch(entryHistoryProvider(entryId));
 
+    final routeTitle = l.careItemScreenTitle;
+    final location = GoRouterState.of(context).uri.path;
+
+    Widget routeShell({required Widget child, List<Widget>? actions}) {
+      return ExperienceShellScaffold(
+        experience: experience,
+        currentLocation: location,
+        screenTitle: routeTitle,
+        contextualActions: actions ?? const [],
+        child: child,
+      );
+    }
+
     return petsAsync.when(
       loading: () =>
-          const Scaffold(body: Center(child: CircularProgressIndicator())),
-      error: (error, _) => Scaffold(body: Center(child: Text('$error'))),
+          routeShell(child: const Center(child: CircularProgressIndicator())),
+      error: (error, _) =>
+          routeShell(child: Center(child: Text(l.errorWithMessage('$error')))),
       data: (pets) {
         final pet = pets.where((p) => p.id == petId).firstOrNull;
         if (pet == null) {
-          return Scaffold(body: Center(child: Text(l.petNotFound)));
+          return routeShell(child: Center(child: Text(l.petNotFound)));
         }
 
         return entryAsync.when(
-          loading: () => ExperienceShellScaffold(
-            experience: experience,
-            currentLocation: GoRouterState.of(context).uri.path,
-            screenTitle: l.allCareTitle(pet.name),
+          loading: () => routeShell(
             child: const Center(child: CircularProgressIndicator()),
           ),
-          error: (error, _) => ExperienceShellScaffold(
-            experience: experience,
-            currentLocation: GoRouterState.of(context).uri.path,
-            screenTitle: l.allCareTitle(pet.name),
+          error: (error, _) => routeShell(
             child: Center(child: Text(l.errorWithMessage('$error'))),
           ),
           data: (entry) {
             if (entry == null) {
-              return ExperienceShellScaffold(
-                experience: experience,
-                currentLocation: GoRouterState.of(context).uri.path,
-                screenTitle: l.allCareTitle(pet.name),
-                child: Center(child: Text(l.entryNotFound)),
-              );
+              return routeShell(child: Center(child: Text(l.entryNotFound)));
             }
 
             final isClosed = isHealthEntrySeriesClosed(entry);
@@ -194,11 +197,8 @@ class CareItemDetailScreen extends ConsumerWidget {
               }
             }
 
-            return ExperienceShellScaffold(
-              experience: experience,
-              currentLocation: GoRouterState.of(context).uri.path,
-              screenTitle: entry.name,
-              contextualActions: [
+            return routeShell(
+              actions: [
                 IconButton(
                   key: const Key('care_item_edit_app_bar'),
                   tooltip: l.edit,

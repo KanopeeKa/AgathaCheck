@@ -9,7 +9,7 @@ tags: [pet_care, care_item, ux, accessibility, l10n]
 
 # Spec — Care Item context header and app bar title
 
-**Status:** **agreed** — product decisions 2026-10-06; **UI pending implementation** (Flutter route still uses item name in app bar and `PetEventPetCard` until implementation PR).  
+**Status:** **agreed** — product decisions 2026-10-06; **implemented** on Care Item detail (context strip + `careItemScreenTitle` app bar).  
 **Surface:** Flutter Care Item detail (`/pet/:petId/events/:entryId`) — `CareItemDetailScreen`, `CareItemDetailBody`, new `care_item_context_strip.dart`, new `care_item_pet_context_tile.dart`, related l10n EN/FR. No server change in this programme.
 
 **Related**
@@ -263,7 +263,7 @@ Long strings (`careItemPausedSince`, `careItemPausedUntil`, …) remain in Needs
 
 ## 12. Canonical documentation
 
-`care-item-evolution.md` and `care-item-view-ui.md` on `main` / this PR describe target UI **(pending implementation)**. This spec is the implementation source of truth.
+`care-item-evolution.md` and `care-item-view-ui.md` describe the shipped UI; this spec remains the acceptance source of truth.
 
 ---
 
