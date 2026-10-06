@@ -83,6 +83,15 @@ void main() {
       find.byKey(const Key('care_item_detail_two_column')),
       findsOneWidget,
     );
+
+    final stripRect = tester.getRect(
+      find.byKey(const Key('care_item_context_strip')),
+    );
+    final rowRect = tester.getRect(
+      find.byKey(const Key('care_item_detail_two_column')),
+    );
+    expect(stripRect.top, lessThan(rowRect.top));
+    expect(stripRect.width, greaterThanOrEqualTo(rowRect.width));
   });
 
   testWidgets(

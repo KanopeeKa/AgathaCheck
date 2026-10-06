@@ -58,11 +58,12 @@ export class CareItemPage {
   async expectPetContextTile(petName: string): Promise<void> {
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
+      const namePattern = new RegExp(petName, 'i');
       const tile = semanticsKey(this.page, 'care_item_pet_tile');
-      await expect(tile).toBeVisible();
+      await expect(tile.first()).toBeVisible();
       await expect(
-        tile.or(this.page.getByText(new RegExp(petName, 'i'))).first(),
-      ).toContainText(petName);
+        this.page.getByRole('button', { name: namePattern }).first(),
+      ).toBeVisible();
     }).toPass({ timeout: 45_000 });
   }
 

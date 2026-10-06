@@ -32,6 +32,8 @@ test.describe('Vaccination booster (PL-1)', () => {
       await loginAs(page, testUser, { experience: 'guardian' });
       const careItem = new CareItemPage(page);
       await careItem.open(pet.id, entry.id);
+      await careItem.expectContextStripCareName('DHPP');
+      await careItem.expectPetContextTile('Rex');
       await careItem.expectNeedsAttentionVisible();
 
       await careItem.markLeadingDone();
