@@ -227,3 +227,22 @@ docs/domains/documentation/**
 ## Sanity check
 
 **proceed** — Two atomic PRs; no product behaviour change; CI workflow change explicitly granted in user request.
+
+## Runtime state (agent-updated)
+
+```yaml
+autonomy: active
+current_phase: 1
+last_completed_phase: null
+halt_reason: null
+next_action: implement phase 1 on cursor/docs-ci-gates-implement-a496
+artifact_ref:
+  branch: cursor/docs-ci-gates-implement-a496
+  plan_path: .agents/plans/docs-ci-gates-a496.md
+  plan_commit: pending
+  snapshot_path: .agents/plans/docs-ci-gates-a496.snapshot.json
+  snapshot_commit: pending
+open_prs: []
+merge_commits: {}
+debt_issue_refs: []
+```

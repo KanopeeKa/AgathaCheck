@@ -40,6 +40,22 @@ if ! node "$REPO_ROOT/scripts/check_doc_placement.js" --feature-manifest; then
 fi
 echo ""
 
+# Canonical documentation gates (warn during phase 1 rollout)
+echo "Running canonical documentation gates..."
+git fetch origin main --quiet 2>/dev/null || true
+MERGE_BASE="$(git merge-base HEAD origin/main 2>/dev/null || echo HEAD)"
+export DOCS_GATE_MODE="${DOCS_GATE_MODE:-warn}"
+export DOCS_BASE_SHA="${DOCS_BASE_SHA:-$MERGE_BASE}"
+export DOCS_HEAD_SHA="${DOCS_HEAD_SHA:-HEAD}"
+if ! node "$REPO_ROOT/scripts/check_docs_canonical.js"; then
+  if [[ "$DOCS_GATE_MODE" == "block" ]]; then
+    ERRORS=$((ERRORS + 1))
+  else
+    echo "  WARN: canonical docs findings (DOCS_GATE_MODE=warn)"
+  fi
+fi
+echo ""
+
 # Helper function to check if a file has valid YAML frontmatter
 has_frontmatter() {
   local filepath="$1"

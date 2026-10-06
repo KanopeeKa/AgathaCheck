@@ -36,11 +36,11 @@ Standalone `*-decisions.md` under `features/` or `changes/` is **legacy**; do no
 ## Feature doc rules
 
 1. **One file per capability** (not per sprint or PR).
-2. **YAML frontmatter:** `title`, `domain`, `feature_id`, `status`, `related_prs`, `related_bdd`, `last_updated`.
+2. **YAML frontmatter:** `title`, `domain`, `feature_id`, `status`, `related_prs` (optional — **R-A6** warns if behaviour PR omits doc sync), `related_bdd` (optional), `last_updated`.
 3. **Decision log** lives in a `## Decision log` section **inside** the canonical doc — never a separate decisions-only file for new work. Append-only; superseded rows stay with `Superseded by <ID>`.
 4. **Requirements:** table or list with stable IDs and status on every row:
    - ID format: `<PREFIX>-R-###` where `PREFIX` = `feature_id` from frontmatter, uppercased, underscores → hyphens (e.g. `feature_id: care-item-evolution` → `CARE-ITEM-EVOLUTION-R-014`). IDs are stable for life; never reuse.
-   - Status: `Live` | `In delivery` | `Planned`.
+   - Status: `Live` | `In delivery` | `Planned` | `Retired` (use `Retired` instead of deleting rows — gate **R-D1**).
 5. **Acceptance criteria:** Given/When/Then; each cites a requirement ID and BDD/test coverage (see skill for coverage scope on legacy rows).
 6. **New decision IDs:** `<PREFIX>-D-###` using the same prefix rule. **Keep** existing IDs when consolidating (e.g. `D-CSM-019`).
 7. **No delivery history** in canonical body (no phase/shipped tables, “amended on …” banners).
@@ -71,9 +71,9 @@ Standalone `*-decisions.md` under `features/` or `changes/` is **legacy**; do no
 ## Enforcement
 
 - **Procedure:** `.cursor/skills/canonical-docs/SKILL.md` (Mode A `sync` / Mode B `consolidate`). This section links to it and does not repeat the steps.
-- `bash scripts/validate_docs.sh` — links, frontmatter, placement/manifest gates (fix docs; do not weaken checks).
-- **CI gates** (including failing behaviour PRs without `## Docs`) follow in a separate PR.
-- Legacy domain docs: migrate **one capability at a time** with `/canonical-docs consolidate`.
+- `bash scripts/validate_docs.sh` — links, frontmatter, placement/manifest gates, plus `node scripts/check_docs_canonical.js` (canonical gates).
+- **CI:** `.github/workflows/docs-gate.yml` (warn mode: **R-A1**–**R-T4** — see `docs/domains/documentation/changes/docs-ci-gates.md`). Weekly hygiene: `quality-kpis.yml` job `docs-hygiene` (tracking issue marker `<!-- docs-hygiene -->`).
+- Legacy domain docs: migrate **one capability at a time** with `/canonical-docs consolidate`; baseline paths in `scripts/docs-legacy-baseline.json` (**R-L3** exempt until touched).
 
 ## Decision log
 

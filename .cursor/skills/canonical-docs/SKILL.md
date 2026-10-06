@@ -17,6 +17,8 @@ Run **before** `ManagePullRequest create_pr` / PR update that ships new behaviou
 
 ### 1. Classify the diff
 
+Add a `## Docs` section to the PR body (CI Gate A reads this heading — not the template checkbox alone). Use `N/A — <reason ≥10 chars>` when no domain feature doc applies.
+
 | Condition | Docs |
 |-----------|------|
 | Copy, terminology, or l10n change | **Behaviour** |
@@ -30,7 +32,7 @@ Run **before** `ManagePullRequest create_pr` / PR update that ships new behaviou
 | Tests, CI, tooling, or agent workflow only | N/A for **domain** feature docs |
 | Edits under `.cursor/`, `docs/agent-efficiency/`, or agent scripts only | N/A for domain docs; update the relevant policy/skill doc in the same PR |
 
-If N/A: add `Docs: N/A — <reason>` to the PR body (see step 8) and stop.
+If N/A: add `## Docs` with `N/A — <reason>` (see step 8) and stop.
 
 ### 2. Locate canonical doc(s)
 
@@ -70,6 +72,9 @@ Only when this PR **changes a product rule documented solely in `.agents/memory/
 ```bash
 cd server && npm ci   # if js-yaml missing
 bash scripts/validate_docs.sh
+# Optional local Gate A parity with CI:
+DOCS_BASE_SHA="$(git merge-base HEAD origin/main)" DOCS_HEAD_SHA=HEAD \
+  node scripts/check_docs_canonical.js --pr-body --body-file /path/to/pr-body.md
 ```
 
 See **Troubleshooting** below on failures.
@@ -110,9 +115,13 @@ On demand only. **One capability per PR.**
 |---------|--------|
 | `js-yaml is required` | `cd server && npm ci` |
 | `check_doc_placement` / manifest errors | Fix path, frontmatter (`domain`, `feature_id`), or token links — **do not** weaken checks in this repo workflow |
-| New feature doc fails gates | Ensure file lives under `features/`, valid YAML, no hex colours in prose |
+| **R-A1** missing `## Docs` | Add `## Docs` with canonical paths or `N/A — reason` |
+| **R-A3** path not in diff | List only docs this PR actually changes |
+| **R-C6** delivery noise | Remove phase/shipped tables, `## Phasing`, amendment banners from canonical body |
+| **R-T2** / **R-T3** coverage | Use `bdd:`, `test:`, or `none — #issue` wire formats (see feature-template) |
+| New feature doc fails gates | Ensure file lives under `features/`, valid YAML, `## Decision log`, no hex colours in prose |
 
-`validate_docs.sh` already runs existing placement/manifest gates; this skill does not add CI gates (see standards §Enforcement).
+Rule IDs: `docs/domains/documentation/changes/docs-ci-gates.md`.
 
 ---
 

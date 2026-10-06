@@ -4,7 +4,7 @@
   "approved_at": "2026-10-06T23:00:00Z",
   "approved_by": "User chat 2026-10-06 — docs CI gates v2; create plan and execute-plan",
   "approved_until": "2026-10-08T23:00:00Z",
-  "content_hash": "sha256:ec3fa6d9c61b6b03d1fd68e5a3e7a0847e956ec0556513c4bb0cce7d72bed5e2",
+  "content_hash": "sha256:6be19161e44ccead0c9f2518e3aba02e60f0e0f585adad58ec3b1dae07a56d21",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/docs-ci-gates-a496-integration-a496",
@@ -47,11 +47,10 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": [],
-      "pr_url": null
+      "debt_issue_refs": []
     },
     {
       "id": "2",
