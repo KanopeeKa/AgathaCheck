@@ -9,17 +9,17 @@ tags: [pet_care, care_item, ux, accessibility, l10n]
 
 # Spec — Care Item context header and app bar title
 
-**Status:** **agreed** — product decisions 2026-10-06; **UI pending implementation** (canonical docs on `main` describe target behaviour; Flutter route still uses item name in app bar and `PetEventPetCard` until implementation PR).  
-**Surface:** Flutter Care Item detail (`/pet/:petId/events/:entryId`) — `CareItemDetailScreen`, `CareItemDetailBody`, new `care_item_context_strip.dart`, related l10n EN/FR. No server change.
+**Status:** **agreed** — product decisions 2026-10-06; **UI pending implementation** (Flutter route still uses item name in app bar and `PetEventPetCard` until implementation PR).  
+**Surface:** Flutter Care Item detail (`/pet/:petId/events/:entryId`) — `CareItemDetailScreen`, `CareItemDetailBody`, new `care_item_context_strip.dart`, new `care_item_pet_context_tile.dart`, related l10n EN/FR. No server change.
 
 **Related**
 
 | Document | Relationship |
 |----------|----------------|
-| [care-item-evolution.md](../features/care-item-evolution.md) | Amends § Care item view → Header (mobile order item 1) and mockup title rule — **(pending implementation)** |
-| [care-item-view-ui.md](../../../design/care-item-view-ui.md) | Amends pet-context module decision — **(pending implementation)** |
-| [terminology.md](../../../design/terminology.md) | Care Item route app-bar labels |
-| [care-item-bulk-scope-spec.md](./care-item-bulk-scope-spec.md) | Same route; no change to Needs attention **actions** or dates |
+| [care-item-evolution.md](../features/care-item-evolution.md) | § Care item view → Header; lifecycle D-CIE-018 |
+| [care-item-view-ui.md](../../../design/care-item-view-ui.md) | Pet context module |
+| [terminology.md](../../../design/terminology.md) | `careItemScreenTitle` |
+| [care-item-bulk-scope-spec.md](./care-item-bulk-scope-spec.md) | Same route; Needs attention semantics unchanged |
 
 **Explicitly out of scope (separate requirements)**
 
@@ -27,57 +27,57 @@ tags: [pet_care, care_item, ux, accessibility, l10n]
 - Create/Edit care form titles
 - Notification deep-link titles
 - Multi-pet / dashboard entry-path wayfinding review
-- Pet tile destination when opened from contexts other than Care Item (unchanged elsewhere)
+- Changes to `UnifiedPetTile`, `PetCard`, or My Pets dashboard tiles
 
 ## 1. Problem
 
 On the Care Item detail route today:
 
 1. The **app bar title** is the care item name (e.g. "Heart tablet"). That duplicates the identity users already chose from the agenda and competes with the **Needs attention** hero for attention.
-2. The **pet block** is a large module (`PetEventPetCard` inside `CareItemModule`) with limited information (photo, name, species) and **no navigation** to the pet profile, despite the functional spec requiring a tappable pet affordance.
-3. On **wide layouts** (≥ `kCareItemTwoColumnBreakpoint`, 900 logical px), the pet module sits in the **side column**, separating pet context from the action column and consuming module chrome without adding operational value.
+2. The **pet block** is a large module (`PetEventPetCard` inside `CareItemModule`) with limited information and **no navigation** to the pet profile.
+3. On **wide layouts** (≥ `kCareItemTwoColumnBreakpoint`, 900 logical px), the pet module sits in the **side column**, separating pet context from the action column.
 
-Users need a calmer hierarchy: **what needs doing now** first, with **who** (pet) and **what** (named care) as compact, scannable context — not a second headline in the system chrome.
+Users need a calmer hierarchy: **what needs doing now** first, with **who** (pet) and **what** (named care) as compact, scannable context.
 
 ## 2. Outcome
 
-**The Care Item route uses a generic app bar title ("Care details"), a compact scrollable context strip (clickable pet context tile + care name + non-interactive category icon + optional short status chip), and no full-width pet module card.** Pet navigation uses **`openPetDetail`** (same as My Pets). **Needs attention** (and modules assigned by [care-item-evolution.md](../features/care-item-evolution.md) for paused/closed care) remain the place for **lifecycle dates and actions**. The strip may show a **short status chip only** so context survives after scroll (D-CIH-007).
+**Generic app bar (`careItemScreenTitle`), scrollable context strip** (pet chip + care name + decorative category icon + optional **short status chip**), **no** `PetEventPetCard` module. Pet tap via **`openPetDetail`**. **Needs attention** owns lifecycle **dates and actions**; strip chips are labels only (D-CIH-007).
 
 ## 3. Locked decisions
 
 | # | Decision |
 |---|----------|
-| D-CIH-001 | App bar title is **Care details** (EN) / **Détail du soin** (FR), not the care item name; l10n key **`careItemScreenTitle`** (not `careItemDetailsTitle`, which is the Details module header) |
-| D-CIH-002 | Care item **name** appears in the page **context strip** (max two lines, ellipsis) |
-| D-CIH-003 | **Pet context tile** is tappable via **`openPetDetail(context, petId)`** — pushes `/pet/:id` with `returnTo` = current shell location so **Back** from pet profile returns to this Care Item |
-| D-CIH-004 | **Do not** use stock `UnifiedPetTile` without a dedicated **care-item-strip** preset: default tile min width 120 px, height ≥140 px, and `statusLine: null` falls back to **"All set"**. Implement **`CareItemPetContextTile`** (or `UnifiedPetTile` with `PetTileContext.careItemStrip`: hidden status, compact dimensions, explicit `semanticsLabel`) aligned visually with dashboard tiles |
-| D-CIH-005 | **Species chip** on the pet tile is **optional** — omit when space is tight; pet name + photo remain |
-| D-CIH-006 | **Trailing category icon** (`CareFamilyIcon.forEntry`, `showChip: false`) — **visual only**, non-interactive; category name folded into the **care name header** semantics label (Details module still exposes family; no second focus stop) |
-| D-CIH-007 | **Lifecycle:** **Needs attention** (and evolution-assigned modules) own **dates and actions** (Paused since …, Resume, Finished · date, Archived + Restore). Strip shows **short status chip only** when paused, closed/archived, or series finished — **no dates, no buttons** (e.g. Paused, Archived, Finished). Omit chip when item is active with no special lifecycle state |
-| D-CIH-008 | Context strip is **not sticky**; it scrolls away to prioritise vertical real estate for modules |
-| D-CIH-009 | Do **not** use "Care routine" as the app bar title (inaccurate for one-off / record flows) |
-| D-CIH-010 | Pet tile semantics: **button**, label = **pet name** (+ species only if shown); **no** "Opens profile" suffix |
-| D-CIH-011 | Care name semantics: **`Semantics(header: true)` on the title text only**, not on the whole strip (so the pet button is not swallowed into the heading) |
-| D-CIH-012 | Extract strip to **`care_item_context_strip.dart`** — `care_item_detail_body.dart` is near the 500-line modularity limit |
+| D-CIH-001 | App bar: **`careItemScreenTitle`** — Care details / Détail du soin (not `careItemDetailsTitle`, the Details module header) |
+| D-CIH-002 | Care item **name** in the strip (max two lines, ellipsis) |
+| D-CIH-003 | Pet chip tap: **`openPetDetail(context, petId)`** with `returnTo` = current shell location |
+| D-CIH-004 | **`CareItemPetContextTile`** in `care_item_pet_context_tile.dart` — reuses **photo helper only** (`buildPetPhotoOrPlaceholder` / existing pet photo widgets). **Do not** modify `UnifiedPetTile`, `PetCard`, or `PetTileDimensions` |
+| D-CIH-005 | Species on pet chip **optional**; pet **name always visible** to sighted users (no avatar-only layout) |
+| D-CIH-006 | **Category icon** — visual only; family name in care-name **header** semantics label only |
+| D-CIH-007 | **Strip:** at most **one** status chip (no dates, no actions). **Needs attention** (and evolution-assigned modules) own paused/finished/archived **copy and actions** |
+| D-CIH-008 | Strip **not sticky**; scrolls away |
+| D-CIH-009 | App bar title is **not** "Care routine" |
+| D-CIH-010 | Pet chip semantics: **button**, label = pet name (+ species if shown); no "Opens profile" suffix |
+| D-CIH-011 | **`Semantics(header: true)` on care name `Text` only** — not on the whole strip |
+| D-CIH-012 | **`CareItemContextStrip`** in `care_item_context_strip.dart`; keep `care_item_detail_body.dart` under 500 lines |
+| D-CIH-013 | **Status chip priority** (at most one): **Archived > Finished > Paused** — derivation §5.2.2 |
+| D-CIH-014 | **Wide shell:** when `ExperienceShellScaffold` shows content-header title (`usesDesktopContentHeader`), strip care name uses **`theme.textTheme.titleMedium` with `fontWeight: FontWeight.w700`**; mobile strip care name uses **`titleLarge`** |
 
 ## 4. Scope
 
 ### In scope
 
-- `ExperienceShellScaffold` `screenTitle` → `l.careItemScreenTitle` on **every** shell-backed state of this route (see AC-2)
-- New **`CareItemContextStrip`** in `care_item_context_strip.dart`; body composes it only
-- Replace `petModule` (`PetEventPetCard` in `CareItemModule`) with the strip
-- Mobile column order: strip → Needs attention → … (unchanged module order after strip; Agatha and observation slot unchanged — §5.4)
-- Wide layout: context strip **full width above** the two-column row; **remove** pet module from side column
-- Widget tests, semantics-contract tests, Playwright audit (§9)
-- Status chip l10n keys (§6)
+- **`careItemScreenTitle`** on every state of this route (AC-2), including **migrating bare `Scaffold` shells** (pets loading/error before pet resolved) to `ExperienceShellScaffold` + route title in `care_item_detail_screen.dart`
+- `CareItemContextStrip` + `CareItemPetContextTile` (new files)
+- Replace `petModule` with strip; wide layout per §5.3
+- Status chip logic §5.2.2; l10n §6
+- Widget tests, semantics contract, Playwright audit §9
+- Doc cross-links (this spec is canonical for implementation)
 
 ### Out of scope
 
-- Occurrence screen title/header
-- Agenda navigation into Care Item
-- Notifications
+- Occurrence screen, agenda entry paths, notifications
 - `PetEventPetCard` on other routes
+- Any change to dashboard / My Pets `UnifiedPetTile` behaviour (AC-21)
 
 ## 5. UX specification
 
@@ -85,165 +85,173 @@ Users need a calmer hierarchy: **what needs doing now** first, with **who** (pet
 
 | Element | Rule |
 |---------|------|
-| Title | `careItemScreenTitle` — **Care details** / **Détail du soin** only |
-| Actions | Unchanged: Edit, ⋯ menu |
-| Back | Unchanged shell back behaviour |
+| Title | `l.careItemScreenTitle` only |
+| Actions | Unchanged (Edit, ⋯) |
+| Back | Unchanged |
 
-The care item name must **not** appear in the app bar after implementation.
+Care item name **not** in app bar after implementation.
 
-**Wide / leading-nav shell:** `ExperienceShellScaffold` may show `screenTitle` as **`titleLarge` in the content chrome**. The strip care name must use **one step smaller type** than on mobile (e.g. `titleMedium` / `headlineSmall`) so "Care details" and the item name do not compete as twin `titleLarge` headlines.
+**Wide / leading-nav:** Shell content chrome shows `screenTitle` as **`titleLarge` w700**. Strip care name uses **D-CIH-014** (`titleMedium` w700) so headings do not duplicate at the same scale.
 
-**Browser tab / document title:** If the shell maps `screenTitle` to the page title, tabs may all read "Care details" — acceptable for v1; notification deep links are out of scope.
+**Browser tab:** May read "Care details" if shell maps `screenTitle` to document title — acceptable v1 (risk §11).
 
 ### 5.2 Context strip
 
-**Layout (mobile)**
+#### 5.2.0 Default (horizontal) layout
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│  [ Pet tile ]   Care item name (1–2 lines)      [icon] │
-│                 [ Paused | Archived | Finished ]  (chip) │
+│  [ Pet chip ]   Care item name (1–2 lines)      [icon] │
+│                 [ status chip ]                          │
 └─────────────────────────────────────────────────────────┘
 ```
 
 | Part | Rule |
 |------|------|
-| Container | **Not** `CareItemModule`; first child inside the body's existing scroll view — **no extra horizontal padding** beyond the scroll view's existing inset (typically 16 px all round) |
-| Pet tile | **`CareItemPetContextTile`** (or approved compact preset): target width **88–112** logical px, height **56–80**, touch target **≥ 48×48**. Photo + **one-line** pet name (or avatar-only at narrow breakpoint — §5.2.1). **No** dashboard status. Tap → `openPetDetail(context, pet.id)` |
-| Title | Mobile: `titleLarge`, max **2 lines**, ellipsis. Wide (content header active): one step smaller per §5.1 |
-| Category icon | Trailing; **non-interactive**; excluded from separate semantics; family in header label |
-| Status chip | Optional **muted chip** per D-CIH-007 only; keys in §6 |
-| Spacing below | **16** logical px before first module |
+| Container | Not `CareItemModule`; inside existing scroll view padding (typically **16 px** — do not add a second horizontal inset) |
+| Pet chip | `CareItemPetContextTile`: **40 px** circular avatar + **one-line** pet name; row height **≥ 48 px**; tap → `openPetDetail` |
+| Care name | Mobile: `titleLarge`, max 2 lines, ellipsis. Wide content header: `titleMedium` w700 (D-CIH-014) |
+| Category icon | Trailing on care-name row; non-interactive |
+| Status chip | §5.2.2; muted chip below name row or inline per layout |
+| Gap before first module | **16 px** |
 
-**Scrolling:** Strip scrolls off with content (D-CIH-008).
+#### 5.2.1 Responsive stacked layout (mandatory fallback)
 
-#### 5.2.1 Responsive (narrow / large text)
+When viewport width **≤ 360** logical px **or** text scale **≥ 1.3**, use **stacked** strip (single rule — no avatar-only pet tile):
 
-At viewport width **≤ 360** logical px **or** text scale **≥ 1.3**:
+**Row 1:** Pet chip — 40 px avatar + pet name (≥ 48 px tall), full width of strip, tappable.
 
-- Category icon moves **below** the title row **or** is hidden; **no horizontal overflow**.
-- Pet tile may collapse to **avatar-only** (photo still ≥ 48×48 tap target); pet name remains on the button semantics label.
+**Row 2:** Care name (up to 2 lines) with category icon **trailing** on the same row, **or** icon on a third line directly under the care name if the row would overflow.
+
+Pet name remains **visible** for sighted users in all breakpoints.
+
+#### 5.2.2 Status chip — source and priority
+
+Show **at most one** chip. Priority: **Archived > Finished > Paused**. If multiple predicates match, show only the highest-priority chip.
+
+| Chip | Show when | l10n |
+|------|-----------|------|
+| **Archived** | `entry.status == 'completed'` (user **Archive** / `closeEvent` — D-CIE-018) | `careItemStatusArchived` |
+| **Finished** | `isHealthEntrySeriesClosed(entry)` is true **and** `entry.status != 'completed'` (e.g. one-off completed via `entry.isCompleted`, or `repeatEndDate` before today per `isHealthEntrySeriesClosedAt`) | `careItemStatusFinished` |
+| **Paused** | `entry.isPaused` **and** neither Archived nor Finished chip applies | **`careItemPausedStatus`** (existing) |
+
+**Open item (implementation):** If product later splits `completed` into distinct archived vs finished wire values, update this table in a small spec amend; until then the rules above are normative for the client.
+
+When **Active** (no chip predicates): **no** status chip.
 
 ### 5.3 Wide layout (≥ 900 logical px)
 
-| Region | Content |
-|--------|---------|
-| Full width (above columns) | Context strip only |
-| Main column (flex 3) | Needs attention, Established (if any), History |
-| Side column (flex 2) | Schedule, Absence, Details — **no pet module** |
+Full-width strip above two-column body; **no** pet module in side column (unchanged from v2).
 
 ### 5.4 Module order (unchanged after strip)
 
-Same as current `CareItemDetailBody`: strip → Needs attention → (Agatha when present) → absence/schedule block → Details (incl. observation/weight slot when applicable) → History. Wide: strip → two-column split per §5.3.
-
-**Authority for lifecycle copy and actions:** [care-item-evolution.md](../features/care-item-evolution.md) § Needs attention and paused rows — not duplicated in the strip beyond D-CIH-007 chips.
+Strip → Needs attention → Agatha (when present) → absence/schedule block → observation/weight slot (when applicable) → Details → History.
 
 ## 6. Copy and l10n
 
 | Key | EN | FR | Use |
 |-----|----|----|-----|
-| `careItemScreenTitle` | Care details | Détail du soin | App bar / shell title |
-| `careItemStatusPaused` | Paused | (TBD — align with `careItemPausedStatus`) | Strip chip only |
-| `careItemStatusArchived` | Archived | (TBD) | Strip chip only |
-| `careItemStatusFinished` | Finished | Fini | Strip chip only |
+| `careItemScreenTitle` | Care details | Détail du soin | App bar |
+| `careItemPausedStatus` | Paused | (existing FR) | Strip chip — **reuse; do not add** `careItemStatusPaused` |
+| `careItemStatusArchived` | Archived | (TBD in ARB) | Strip chip |
+| `careItemStatusFinished` | Finished | Fini | Strip chip |
 
-Add EN/FR to `app_en.arb` / `app_fr.arb`. Do **not** reuse `careItemDetailsTitle` ("Details" module). Do not repurpose `allCareTitle` / `allCare`.
-
-Long lifecycle strings (`careItemPausedSince`, `careItemPausedUntil`, etc.) stay in **Needs attention** / date modules only.
+Long strings (`careItemPausedSince`, `careItemPausedUntil`, …) remain in Needs attention / date modules only.
 
 ## 7. Accessibility
 
 | Requirement | Detail |
 |-------------|--------|
-| Care name | `Semantics(header: true)` on **title `Text` only**; label includes care name + care family/category (D-CIH-011, D-CIH-006) |
-| Pet tile | `Semantics(identifier: 'care_item_pet_tile')`; **button**; label = pet name (+ species if shown) |
-| Category icon | Decorative; no separate focusable node |
-| Touch targets | Pet tile ≥ **48×48**; app bar actions unchanged |
-| Colour | Chip and icons use semantic tokens; status not colour-alone |
+| Care name | `Semantics(header: true)` on title `Text`; label includes care name + family (from category) |
+| Pet chip | `Semantics(identifier: 'care_item_pet_tile')`; button; label = pet name (+ species if shown) |
+| Category icon | Exclude from separate semantics / focus |
+| Touch | Pet chip ≥ 48×48 |
 
 ## 8. Acceptance criteria
 
 ### App bar and route title
 
-- **AC-1:** Loaded state: app bar shows **Care details** / **Détail du soin**, not the item name.
-- **AC-2:** **Every** state of `/pet/:petId/events/:entryId` that uses `ExperienceShellScaffold` (pets loading/error/not found, entry loading/error/not found, loaded) uses `careItemScreenTitle`. Bare `Scaffold` shells without a title are **migrated** to the shell + route title or listed as explicit exceptions in the implementation PR (prefer migrate).
+- **AC-1:** Loaded: app bar shows `careItemScreenTitle`, not item name.
+- **AC-2:** **Every** state of `/pet/:petId/events/:entryId` shows `careItemScreenTitle` in `ExperienceShellScaffold`, including pets **loading** and **error** (migrate off bare `Scaffold`).
 
-### Context strip content
+### Context strip
 
-- **AC-3:** Item name appears in the strip, not the app bar.
-- **AC-4:** Long names: max **two lines**, then ellipsis.
-- **AC-5:** Category icon visible; **not** separately focusable.
-- **AC-6:** When **paused**, strip shows **Paused** chip only (no dates); paused dates/actions remain in Needs attention / date module.
-- **AC-7:** When **closed/archived** or **series finished**, strip shows **Archived** or **Finished** chip only; full copy and Restore/Resume stay in Needs attention.
-- **AC-8:** Active item: **no** status chip.
+- **AC-3:** Item name in strip, not app bar.
+- **AC-4:** Max two lines for care name, then ellipsis.
+- **AC-5:** Category icon visible; not separately focusable.
+- **AC-6:** Paused → chip text from **`careItemPausedStatus`** only; dates in Needs attention.
+- **AC-7:** Archived / Finished chips per §5.2.2; Restore / full lifecycle copy only in Needs attention.
+- **AC-8:** Active → no chip.
 
-### Pet tile behaviour
+### Pet chip
 
-- **AC-9:** Tap uses `openPetDetail(context, petId)`; Back from pet profile returns to this Care Item (`returnTo`). Same for pets from `allPetsIncludingOrgProvider` (owned, shared, fostered, passed-away sections) — no Care-Item-specific branch unless product blocks a class of pet (none today).
-- **AC-10:** No dashboard status line ("All set", overdue counts, etc.).
-- **AC-11:** No `PetEventPetCard` on this route's body.
+- **AC-9:** `openPetDetail` + `returnTo`; Back returns to Care Item.
+- **AC-10:** No dashboard status ("All set", etc.).
+- **AC-11:** No `PetEventPetCard` on this route body.
 
-### Layout and modules
+### Layout
 
 - **AC-12:** Strip not in `CareItemModule`.
-- **AC-13:** Needs attention is first module below strip on mobile.
+- **AC-13:** Needs attention first module below strip (mobile).
 - **AC-14:** Wide: strip full width above columns; no side pet module.
-- **AC-15:** Strip scrolls away (not pinned).
+- **AC-15:** Strip scrolls away.
 
 ### Accessibility
 
-- **AC-18:** Pet tile announced as **button** with pet name; care name announced as **heading**; not one merged heading over both.
+- **AC-18:** Pet = button + name; care name = heading; not merged.
 
 ### Responsive
 
-- **AC-19:** At **320** logical px width and text scale **≥ 1.3**, no horizontal overflow; icon/tile layout follows §5.2.1.
+- **AC-19:** At 320 px width **or** text scale ≥ 1.3: **stacked** layout §5.2.1; **pet name visible**; no horizontal overflow.
 
-### Regression
+### Typography (wide)
 
-- **AC-16:** Edit, ⋯, Needs attention actions, route URL unchanged.
-- **AC-17:** No new user-visible "occurrence" string.
+- **AC-22:** When `usesDesktopContentHeader` is true, strip care name uses **`titleMedium` w700**; when false, **`titleLarge`**.
 
-### Implementation structure
+### Regression and isolation
 
-- **AC-20:** `CareItemContextStrip` (or equivalent) lives in **`care_item_context_strip.dart`**; `care_item_detail_body.dart` stays under modularity limit.
+- **AC-16:** Edit, ⋯, Needs attention, route URL unchanged.
+- **AC-17:** No new user-visible "occurrence".
+- **AC-20:** Strip in `care_item_context_strip.dart`.
+- **AC-21:** **My Pets / dashboard** `UnifiedPetTile` / `PetCard` widgets and golden/widget tests **unchanged** (no shared-tile refactor).
+
+### Chip logic
+
+- **AC-23:** When `status == 'completed'`, chip is **Archived** even if `isHealthEntrySeriesClosed` is also true. When series closed and status not `completed`, chip is **Finished**. When paused and no higher chip, **Paused**.
 
 ## 9. Verification checklist (implementation PR)
 
 | Layer | Action |
 |-------|--------|
-| Widget | `care_item_detail_body_test.dart` — strip, wide layout without side pet module |
-| Widget | `care_item_context_strip_test.dart` (or screen test) — chips, breakpoints, semantics |
-| Widget | `CareItemDetailScreen` — AC-2 shell title matrix |
-| Semantics contract | `care_item_pet_tile` + care name header if Playwright depends on them |
-| Playwright | **Audit** `care-item.page.ts` / BDD for entry-name-in-app-bar assumptions; add checks for route title + strip semantics/tile key as needed (today page object does not assert app bar item name) |
-| l10n | `careItemScreenTitle` + chip keys EN/FR |
-| Manual | Mobile + wide: pet tap + returnTo; scroll strip away; 320 px / large text |
+| Widget | Strip, chip priority, stacked breakpoint, wide typography |
+| Widget | `CareItemDetailScreen` — AC-2 including former bare scaffolds |
+| Widget | Regression: `pet_card_test` / dashboard tile tests untouched |
+| Semantics | `care_item_pet_tile` + header |
+| Playwright | Audit `care-item.page.ts` for entry-name-in-title assumptions; add route title + tile identifier as needed |
+| l10n | Keys §6 |
+| Manual | Stacked layout 320 px; wide `titleMedium`; pet tap returnTo |
 
 ## 10. Open follow-ups
 
 | Topic | Notes |
 |-------|--------|
 | Occurrence screen | Separate requirement |
-| Agenda entry paths | Separate requirement |
-| Notifications | Separate review |
-| `PetEventPetCard` elsewhere | Optional consolidation |
+| Wire-level Archived vs Finished | If `completed` overload grows, amend §5.2.2 |
+| Agenda / notifications | Separate |
 
-## 11. Risks and mitigations
+## 11. Risks
 
 | Risk | Mitigation |
 |------|------------|
-| Generic app bar / tab title | Prominent strip title; AC-3, AC-4, AC-18 |
-| Wrong tile widget → "All set" | D-CIH-004, AC-10 |
-| Duplicate lifecycle UI | D-CIH-007, AC-6, AC-7 |
-| Twin `titleLarge` on wide | §5.1 typography rule |
-| Narrow layout crowding | AC-19, §5.2.1 |
-| `care_item_detail_body.dart` size | D-CIH-012, AC-20 |
+| Generic tab title | Strip title + AC-3/4/18 |
+| `completed` = Archived only | §5.2.2 + AC-23; open item if server adds distinction |
+| Twin large headings on wide | D-CIH-014, AC-22 |
+| Narrow crowding | Stacked layout AC-19 |
+| Body file size | D-CIH-012, AC-20 |
 
 ## 12. Canonical documentation
 
-**Already amended on `main` (2026-10-06):** `care-item-evolution.md`, `care-item-view-ui.md`, `terminology.md` describe **target** UI marked **(pending implementation)** where noted.
-
-**Implementation PR must:** ship Flutter behaviour matching this spec and remove "(pending implementation)" notes when done.
+`care-item-evolution.md`, `care-item-view-ui.md`, and `terminology.md` on `main` describe target UI **(pending implementation)**. This spec is the implementation source of truth; remove pending notes when Flutter ships.
 
 ---
 
@@ -251,5 +259,6 @@ Long lifecycle strings (`careItemPausedSince`, `careItemPausedUntil`, etc.) stay
 
 | Date | Change |
 |------|--------|
-| 2026-10-06 | Initial draft from product UX review |
-| 2026-10-06 | v2: review amendments — chips vs lifecycle, `careItemScreenTitle`, pet tile widget, AC-2/9/18/19/20, wide typography, semantics, docs status |
+| 2026-10-06 | Initial draft |
+| 2026-10-06 | v2: chips, `careItemScreenTitle`, strip file, a11y ACs |
+| 2026-10-06 | v2.1: stacked responsive (no avatar-only); `CareItemPetContextTile` only; chip derivation + priority; `careItemPausedStatus`; bare scaffold migration in scope; `titleMedium` w700 wide; AC-21–23 |
