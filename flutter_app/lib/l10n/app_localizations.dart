@@ -9585,6 +9585,18 @@ abstract class AppLocalizations {
   /// **'Due {date}'**
   String careItemAbsenceReviewDate(String date);
 
+  /// No description provided for @careItemScreenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Care details'**
+  String get careItemScreenTitle;
+
+  /// No description provided for @careItemStatusFinished.
+  ///
+  /// In en, this message translates to:
+  /// **'Finished'**
+  String get careItemStatusFinished;
+
   /// No description provided for @careItemDetailsTitle.
   ///
   /// In en, this message translates to:

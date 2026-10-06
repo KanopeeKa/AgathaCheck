@@ -2040,6 +2040,8 @@
       }
     }
   },
+  "careItemScreenTitle": "Care details",
+  "careItemStatusFinished": "Finished",
   "careItemDetailsTitle": "Details",
   "careItemHistoryTitle": "History",
   "careItemEditSchedule": "Edit schedule",
