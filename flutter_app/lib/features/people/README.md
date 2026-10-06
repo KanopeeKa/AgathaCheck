@@ -3,8 +3,8 @@ title: People feature
 owner: Pet Care team
 status: active
 component_id: flutter.feature.people
-last_updated: 2026-10-05
-last_reviewed: 2026-10-05
+last_updated: 2026-10-06
+last_reviewed: 2026-10-06
 ---
 
 # Purpose
