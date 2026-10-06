@@ -4,7 +4,7 @@
   "approved_at": "2026-10-06T16:10:00Z",
   "approved_by": "User chat 2026-10-06 standing grant (notifications v2.1 Plans A–D, integration branch, full execute-plan autonomy)",
   "approved_until": "2026-10-08T16:10:00Z",
-  "autonomy": "active",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "cursor/notifications-v2-1-readiness-integration-7f3b",
   "control_issue": 1693,
@@ -177,7 +177,7 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "bdd-journey",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
@@ -185,5 +185,5 @@
       "pr_head_sha": "62fac16f"
     }
   ],
-  "content_hash": "sha256:0198739a45f91865505f004383ef4dea8fcea5226dfd57a179dbba4c6bf492ce"
+  "content_hash": "sha256:7eb08498d38710979f4779ae1aa6d389817f97835f0d93f601cc48babf4976c0"
 }
