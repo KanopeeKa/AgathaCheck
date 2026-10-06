@@ -101,7 +101,9 @@ export class HealthEntryFormPage {
 
   async openCareProviderDropdown(): Promise<void> {
     await this.expandAdvancedSettings();
-    const dropdown = this.page.getByLabel(/Choose a contact|Choisir un contact/i);
+    const dropdown = this.page.locator(
+      '[flt-semantics-identifier="care_provider_dropdown"]',
+    );
     await dropdown.scrollIntoViewIfNeeded();
     await dropdown.click();
   }

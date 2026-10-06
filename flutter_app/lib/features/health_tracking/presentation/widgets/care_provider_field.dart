@@ -62,7 +62,9 @@ class _CareProviderFieldState extends State<CareProviderField> {
           style: Theme.of(context).textTheme.titleSmall,
         ),
         const SizedBox(height: 8),
-        SwitchListTile(
+        Semantics(
+          identifier: 'care_provider_use_typed_name',
+          child: SwitchListTile(
           contentPadding: EdgeInsets.zero,
           title: Text(l.careProviderUseTypedName),
           value: _useTyped,
@@ -92,7 +94,9 @@ class _CareProviderFieldState extends State<CareProviderField> {
         else if (widget.contactsError)
           Text(l.careProviderContactsUnavailable)
         else
-          DropdownButtonFormField<String?>(
+          Semantics(
+            identifier: 'care_provider_dropdown',
+            child: DropdownButtonFormField<String?>(
             initialValue: widget.contactId,
             decoration: InputDecoration(labelText: l.careProviderChooseContact),
             items: [
@@ -103,6 +107,7 @@ class _CareProviderFieldState extends State<CareProviderField> {
               ),
             ],
             onChanged: (id) => widget.onChanged(contactId: id, typedName: null),
+            ),
           ),
       ],
     );
