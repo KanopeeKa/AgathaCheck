@@ -32,7 +32,7 @@ last_updated: 2026-10-06
 | `architecture-metrics.py` | 0 multi-feature SCCs |
 | File size, frozen boundaries, BDD (80.2% vs 68% gate), shard manifest, priority tags | OK |
 | Every checker fixture test (imports, size, docs, BDD, frozen, coverage ×2, architecture, ESLint) | pass |
-| `./scripts/pre-push.sh` (Flutter analyze, 6 shards, format) | running at time of writing — see §2 note |
+| `./scripts/pre-push.sh` (Flutter analyze, 6 shards, format) | passed (exit 0): codegen, `flutter analyze`, all 6 shards, format |
 
 Pre-UAT on each child's merge SHA (CG10):
 
@@ -41,6 +41,8 @@ Pre-UAT on each child's merge SHA (CG10):
 - **Red:**
   - I2 was red and fixed by remedial #1682.
   - I1 merged while `main` was already red from Notifications v2 (run 617). That breaks the one-landing-at-a-time rule. `main` went green at run 622.
+
+Note: `main`'s committed `docs/quality/scorecard.md` says 345 Flutter tests where the generator now counts 346 (likely #1706, outside ARCH). Pre-UAT run 654 on `3a4ee8ba` (#1706) failed shards 3 and 7; that is also outside ARCH.
 
 ## 3. Programme exit criteria (original wording)
 
