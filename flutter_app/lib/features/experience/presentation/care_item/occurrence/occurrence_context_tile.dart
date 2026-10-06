@@ -30,7 +30,7 @@ class OccurrenceContextTile extends ConsumerWidget {
     final openCount = schedule?.openOccurrences.length ?? 0;
 
     return Semantics(
-      identifier: 'occurrence_context_tile',
+      identifier: 'occurrence_about_item',
       button: true,
       label: _semanticsLabel(
         l,

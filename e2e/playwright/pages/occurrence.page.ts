@@ -37,7 +37,9 @@ export class OccurrencePage {
   async expectLoaded(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
     const screen = this.page.locator('[flt-semantics-identifier="occurrence_screen"]');
-    const about = this.page.locator('[flt-semantics-identifier="occurrence_about_item"]');
+    const about = this.page.locator(
+      '[flt-semantics-identifier="occurrence_about_item"], [flt-semantics-identifier="occurrence_context_tile"]',
+    );
     const back = this.page.getByRole('button', { name: /^Back$|^Go back$|^Retour$/i });
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
