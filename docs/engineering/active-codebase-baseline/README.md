@@ -75,7 +75,9 @@ Every blocking gate measures an explicit file set. Exclusions match `scripts/arc
 | ESLint (active server ratchet) | Active `server/lib/**`, `server/services/**`, `server/routes/**` | Manifest frozen `serverRoots`; baselined violations in `server/eslint-baseline.json` (shrinks only) | `scripts/validate_eslint.js` |
 | Flutter domain coverage | `lib/features/<feature>/domain/**` for active features | Manifest `sourceRoots`; `activeSurfacesToRemove`; generated Dart suffixes; files absent from `lcov.info` count as 0% | `flutter_app/scripts/check_domain_coverage.js` + generated `test/generated/coverage_helper_imports.dart` |
 | Backend coverage ratchet | `server/lib/**`, `server/services/**`, `server/routes/**` | Manifest frozen route roots (`routes/organizations/**`, `fosterPlacements.js`, `custodyTransfers.js`) | `server/scripts/check_coverage_ratchet.js` + `server/coverage-ratchet.json` |
-| BDD blocking gate | Active Gherkin scenarios with `@bdd` mapping | Manifest `bddFeaturePatterns`; frozen E2E spec set | `e2e/scripts/check_bdd_coverage.js` |
+| BDD blocking gate | Gated active Gherkin scenarios with `@bdd` mapping (traceability) | Manifest `bddFeaturePatterns`; frozen E2E spec set; header-only phantom excluded from denominator | `e2e/scripts/check_bdd_coverage.js` |
+
+BDD traceability vs execution (Batch J.3, measured 2026-10-06): traceability **145/182** gated mapped (gate **123** at 68%); execution **145/145** mapped scenarios in Pre-UAT shards (report-only); quality **14** spec files with skeleton/orphan signals (report-only). Detail: `docs/e2e/bdd-traceability-baseline.md`.
 
 Regenerate Flutter domain imports after adding domain files:
 
