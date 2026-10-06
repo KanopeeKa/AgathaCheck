@@ -97,3 +97,25 @@ docs/domains/pet_care/changes/care-item-context-header-spec.md
 ## Integration → main
 
 After phase 2 merged into integration: open PR integration → `main`, run **/babysit-uat**.
+
+## Runtime state
+
+```yaml
+autonomy: active
+current_phase: null
+last_completed_phase: "2"
+halt_reason: null
+next_action: null
+artifact_ref:
+  branch: cursor/care-item-context-header-4011-integration-4011
+  plan_path: .agents/plans/care-item-context-header-4011.md
+  plan_commit: null
+  snapshot_path: .agents/plans/care-item-context-header-4011.snapshot.json
+  snapshot_commit: null
+open_prs: []
+merge_commits:
+  "1": 8c369c619ab8aea8668cbc9143aac5925614a037
+  "2": 88b84680
+  integration: fd403d7c78781c8c5954c8007ce738726531d4f9
+debt_issue_refs: []
+```
