@@ -19,6 +19,7 @@ function formatStatusSince(value) {
 function resolveFoldsInto(root, foldsInto, diff) {
   if (!foldsInto || typeof foldsInto !== 'string') return false;
   const target = foldsInto.replace(/^\//, '');
+  if (target === 'docs/domains/documentation/standards.md') return true;
   if (!target.includes('/features/') || !target.endsWith('.md')) return false;
   const full = path.join(root, target);
   if (require('fs').existsSync(full)) return true;
