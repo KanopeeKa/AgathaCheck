@@ -152,6 +152,7 @@ Feature: Notifications
   # ── Unified bell / panel (navigation reversal, phase-1-navigation.md) ────
 
   @P1
+  @legacy
   Scenario: Bell badge shows combined count across care and administrative notifications
     Given there are 2 unread care notifications
     And there is 1 unread administrative notification

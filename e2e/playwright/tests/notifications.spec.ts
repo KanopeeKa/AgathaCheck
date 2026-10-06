@@ -7,7 +7,7 @@
  * Scenario: Notification shows pet name and color
  * Scenario: Viewing the notification list
  * Scenario: Empty notifications shows message
- * Scenario: Unread notification badge reflects needs-response count (v2)
+ * Scenario: Unread notification badge on app bar
  * Scenario: Badge updates when notifications are read
  * Scenario: No badge when all notifications are read
  * Scenario: Marking a single notification as read
@@ -269,7 +269,7 @@ test.describe('Notifications', () => {
 
   // ── Unread badge ──────────────────────────────────────────────────────────
 
-  test('unread notification badge reflects needs-response count (v2)', async ({ page }) => {
+  test('unread notification badge on app bar', async ({ page }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const owner = await signupUser(baseURL, { firstName: 'Beth', lastName: 'Badge' });
     const pet = await createPet(baseURL, owner.accessToken, 'Milo', 'Dog');
