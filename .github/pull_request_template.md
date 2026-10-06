@@ -4,6 +4,8 @@
 
 ## Docs
 
+<!-- CI Gate A parses this section (heading + bullets). The checkbox is a human reminder only. -->
+
 - [ ] Canonical feature doc updated via `/canonical-docs sync` (or `N/A — reason`); completed `changes/` docs deleted when fully delivered (deletion guard)
 
 ## Scope

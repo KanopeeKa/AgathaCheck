@@ -65,6 +65,7 @@ needs_server=false
 needs_flutter=false
 needs_codegen=false
 needs_schema=false
+needs_docs=false
 
 ci_scope_classify_paths "$CHANGED"
 
@@ -84,12 +85,16 @@ fi
 
 while IFS= read -r f; do
   [[ -z "$f" ]] && continue
+  if [[ "$f" == docs/* ]]; then
+    needs_docs=true
+    needs_governance=true
+  fi
   case "$f" in
     db/migrations/*|db/schema/*|scripts/db/*|e2e/scripts/bootstrap-db.sh)
       needs_schema=true
       needs_governance=true
       ;;
-    scripts/*|.github/*|docs/agent-efficiency*|docs/architecture/index.md)
+    scripts/*|.github/*|    docs/agent-efficiency*|docs/architecture/index.md)
       needs_governance=true
       ;;
     flutter_app/pubspec.*|flutter_app/build.yaml|**/*.mocks.dart)
@@ -233,6 +238,10 @@ run_flutter() {
 }
 
 $needs_governance && run_governance
+if $needs_docs; then
+  echo "==> Documentation validation (docs/** changed)"
+  bash "$ROOT/scripts/validate_docs.sh"
+fi
 $needs_server && run_server
 $needs_flutter && run_flutter
 

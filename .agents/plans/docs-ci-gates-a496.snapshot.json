@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "plan_id": "docs-ci-gates-a496",
+  "approved_at": "2026-10-06T23:00:00Z",
+  "approved_by": "User chat 2026-10-06 — docs CI gates v2; create plan and execute-plan",
+  "approved_until": "2026-10-08T23:00:00Z",
+  "content_hash": "sha256:6be19161e44ccead0c9f2518e3aba02e60f0e0f585adad58ec3b1dae07a56d21",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/docs-ci-gates-a496-integration-a496",
+  "control_issue": 1728,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Implement gates (warn mode + weekly hygiene)",
+      "branch": "cursor/docs-ci-gates-implement-a496",
+      "allowed_paths": [
+        "docs/domains/documentation/**",
+        ".cursor/skills/canonical-docs/**",
+        ".github/workflows/docs-gate.yml",
+        ".github/workflows/docs-validation.yml",
+        ".github/workflows/quality-kpis.yml",
+        ".github/pull_request_template.md",
+        "scripts/check_docs_canonical.js",
+        "scripts/check_docs_canonical.test.js",
+        "scripts/lib/docs-canonical/**",
+        "scripts/test/fixtures/docs-canonical/**",
+        "scripts/docs-legacy-baseline.json",
+        "scripts/validate_docs.sh",
+        "scripts/pre-push-changed.sh",
+        ".agents/plans/docs-ci-gates-a496.md",
+        ".agents/plans/docs-ci-gates-a496.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "flutter_app/lib/**",
+        "server/routes/**",
+        "server/lib/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "governance-allowlist",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2",
+      "title": "Blocking mode + fold spec into standards",
+      "branch": "cursor/docs-ci-gates-block-a496",
+      "allowed_paths": [
+        ".github/workflows/docs-gate.yml",
+        "docs/domains/documentation/**",
+        ".agents/plans/docs-ci-gates-a496.md",
+        ".agents/plans/docs-ci-gates-a496.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null
+    }
+  ]
+}

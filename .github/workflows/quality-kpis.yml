@@ -9,6 +9,7 @@ on:
 permissions:
   contents: read
   actions: read
+  issues: write
 
 jobs:
   kpis:
@@ -38,3 +39,49 @@ jobs:
           path: ci-health-kpis.md
           retention-days: 14
           if-no-files-found: ignore
+
+  docs-hygiene:
+    name: Docs hygiene (weekly)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - name: Install backend deps (js-yaml)
+        run: cd server && npm ci
+
+      - name: Generate hygiene report
+        id: hygiene
+        run: |
+          REPORT="$(node scripts/check_docs_canonical.js --baseline-report)"
+          echo "$REPORT" | tee docs-hygiene-report.md
+          {
+            echo 'report<<EOF'
+            echo "$REPORT"
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Update tracking issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TITLE="Docs hygiene (weekly)"
+          BODY_FILE="$RUNNER_TEMP/docs-hygiene-body.md"
+          node -e "
+            const { formatTrackingIssueBody } = require('./scripts/lib/docs-canonical/hygiene');
+            const fs = require('fs');
+            const report = fs.readFileSync('docs-hygiene-report.md','utf8');
+            fs.writeFileSync(process.argv[1], formatTrackingIssueBody(report));
+          " "$BODY_FILE"
+          EXISTING="$(gh issue list --state open --search 'docs-hygiene in:body' --limit 1 --json number --jq '.[0].number' 2>/dev/null || true)"
+          if [[ -n "$EXISTING" && "$EXISTING" != "null" ]]; then
+            gh issue comment "$EXISTING" --body-file "$BODY_FILE"
+          else
+            gh issue create --title "$TITLE" --body-file "$BODY_FILE" --label documentation
+          fi

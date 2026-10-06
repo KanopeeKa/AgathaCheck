@@ -37,7 +37,9 @@ EN/FR terms — link `docs/design/terminology.md` and domain vocabulary docs whe
 
 | Given / When / Then | Requirement | Coverage |
 |---------------------|-------------|----------|
-| Given … When … Then … | EXAMPLE-R-001 | `flutter_app/test/bdd/features/….feature` — Scenario: … |
+| Given … When … Then … | EXAMPLE-R-001 | `bdd: example.feature#Scenario title` |
+| Given … When … Then … | EXAMPLE-R-002 | `test: flutter_app/test/example_test.dart#widget shows title` |
+| Given … When … Then … | EXAMPLE-R-003 | `none — #1234` |
 
 ## States & data
 

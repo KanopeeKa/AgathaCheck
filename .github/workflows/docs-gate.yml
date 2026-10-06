@@ -1,0 +1,57 @@
+name: Docs gate (canonical)
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+    paths:
+      - 'flutter_app/lib/**'
+      - 'flutter_app/lib/l10n/**'
+      - 'server/**'
+      - 'docs/**'
+      - 'scripts/check_docs_canonical.js'
+      - 'scripts/lib/docs-canonical/**'
+      - 'scripts/docs-legacy-baseline.json'
+
+concurrency:
+  group: docs-gate-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  docs-canonical:
+    name: Docs canonical (warn)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install backend deps (js-yaml)
+        run: cd server && npm ci
+
+      - name: Gate A — PR body
+        env:
+          DOCS_GATE_MODE: warn
+          DOCS_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          DOCS_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          DOCS_PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+        run: |
+          BODY_FILE="$RUNNER_TEMP/pr-body.md"
+          jq -r '.pull_request.body // ""' "$GITHUB_EVENT_PATH" > "$BODY_FILE"
+          node scripts/check_docs_canonical.js --pr-body --body-file "$BODY_FILE"
+
+      - name: Gates B–E (diff)
+        env:
+          DOCS_GATE_MODE: warn
+          DOCS_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          DOCS_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          node scripts/check_docs_canonical.js --changes --shape --ids --trace
