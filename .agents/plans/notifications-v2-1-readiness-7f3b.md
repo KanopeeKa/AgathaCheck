@@ -77,13 +77,13 @@ autonomy: active
 current_phase: 2
 last_completed_phase: 1
 halt_reason: null
-next_action: "start phase 2: checkout cursor/notifications-v2-1-plan-b-7f3b"
+next_action: "continue phase 2 on branch cursor/notifications-v2-1-plan-b-7f3b"
 artifact_ref:
-  branch: cursor/notifications-v2-1-readiness-integration-7f3b
+  branch: cursor/notifications-v2-1-plan-b-7f3b
   plan_path: .agents/plans/notifications-v2-1-readiness-7f3b.md
-  plan_commit: 933c1bea1d25bf7dc39caab121e2d3465508c38a
+  plan_commit: eddbe5c0a6c97172618979a135db0ecc19bbb8ad
   snapshot_path: .agents/plans/notifications-v2-1-readiness-7f3b.snapshot.json
-  snapshot_commit: 933c1bea1d25bf7dc39caab121e2d3465508c38a
+  snapshot_commit: eddbe5c0a6c97172618979a135db0ecc19bbb8ad
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
