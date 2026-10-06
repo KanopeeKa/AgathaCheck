@@ -51,12 +51,12 @@ Finish Package 11 (D6, D7, D23). Every gate measures an explicit, published univ
 
 ```yaml
 autonomy: active
-current_phase: 2
-last_completed_phase: 1
+current_phase: 3
+last_completed_phase: 2
 halt_reason: null
-next_action: "continue phase 2 on branch cursor/active-codebase-j2-lint-size-e41f"
+next_action: "continue phase 3 on branch cursor/active-codebase-j3-bdd-quality-e41f"
 artifact_ref:
-  branch: cursor/active-codebase-j2-lint-size-e41f
+  branch: cursor/active-codebase-j3-bdd-quality-e41f
   plan_path: .agents/plans/active-codebase-batch-j-standards-e41f.md
   plan_commit: ad98e4a347deeec3a580c39102e716e7a1e64837
   snapshot_path: .agents/plans/active-codebase-batch-j-standards-e41f.snapshot.json
@@ -208,9 +208,9 @@ docs
 
 **Acceptance criteria:**
 
-- [ ] **J.3-1** `check_bdd_coverage.js` reports three separate figures: (a) active scenarios whose title maps to an `@bdd` spec; (b) mapped specs that are actually **scheduled** in the pre-UAT shard manifest (`e2e/scripts/shard-files.mjs`); and (c) skeleton or orphan specs (no `expect`, `test.skip` or `test.fixme`, or a spec with no scenario).
-- [ ] **J.3-2** The blocking gate stays at 68% of active **mapped** scenarios (no loosening). Figures (b) and (c) are report-only in this batch, and their current values are recorded in the baseline README.
-- [ ] **J.3-3** Frozen scenarios stay excluded via the manifest's `bddFeaturePatterns` and `frozen-e2e-specs.mjs`. Fixture tests cover each category.
+- [x] **J.3-1** `check_bdd_coverage.js` reports three separate figures: (a) active scenarios whose title maps to an `@bdd` spec; (b) mapped specs that are actually **scheduled** in the pre-UAT shard manifest (`e2e/scripts/shard-files.mjs`); and (c) skeleton or orphan specs (no `expect`, `test.skip` or `test.fixme`, or a spec with no scenario).
+- [x] **J.3-2** The blocking gate stays at 68% of active **mapped** scenarios (no loosening). Figures (b) and (c) are report-only in this batch, and their current values are recorded in the baseline README.
+- [x] **J.3-3** Frozen scenarios stay excluded via the manifest's `bddFeaturePatterns` and `frozen-e2e-specs.mjs`. Fixture tests cover each category.
 
 ---
 
