@@ -64,6 +64,18 @@ void main() {
       expect(NotificationInboxV2Rules.bellNumericCount(list), 0);
       expect(NotificationInboxV2Rules.bellShowDot(list), true);
     });
+    test('needs-response invite counts when already read', () {
+      final list = [
+        _n(
+          kind: NotificationKind.relationship,
+          wireType: 'shareInviteReceived',
+          isRead: true,
+        ),
+      ];
+      expect(NotificationInboxV2Rules.needsResponse(list.first), isTrue);
+      expect(NotificationInboxV2Rules.bellNumericCount(list), 1);
+    });
+
     test('account password changed within 7 days needs response', () {
       final list = [
         _n(

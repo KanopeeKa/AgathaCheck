@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/notification_settings_matrix.dart';
 
+/// Push transport (FCM/APNs/web) is deferred; matrix push toggles stay hidden.
+const kNotificationPushTransportShipped = false;
+
 class NotificationSettingsMatrixSection extends StatelessWidget {
   const NotificationSettingsMatrixSection({
     super.key,
@@ -50,7 +53,11 @@ class NotificationSettingsMatrixSection extends StatelessWidget {
             ),
           ),
         ),
-        _MatrixHeaderRow(l: l, theme: theme),
+        _MatrixHeaderRow(
+          l: l,
+          theme: theme,
+          showPush: kNotificationPushTransportShipped,
+        ),
         ...NotificationMatrixCategory.values.map((category) {
           if (category == NotificationMatrixCategory.agathaSuggestions) {
             return _AgathaSuggestionsRow(
@@ -72,10 +79,21 @@ class NotificationSettingsMatrixSection extends StatelessWidget {
             category: category,
             channels: matrix.channel(category),
             pushOsDenied: pushOsDenied,
+            showPush: kNotificationPushTransportShipped,
             onChanged: (ch) =>
                 onMatrixChanged(matrix.copyWithCategory(category, ch)),
           );
         }),
+        if (!kNotificationPushTransportShipped)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+            child: Text(
+              l.notificationSettingsPushDeferredHelp,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
           child: Text(
@@ -91,10 +109,15 @@ class NotificationSettingsMatrixSection extends StatelessWidget {
 }
 
 class _MatrixHeaderRow extends StatelessWidget {
-  const _MatrixHeaderRow({required this.l, required this.theme});
+  const _MatrixHeaderRow({
+    required this.l,
+    required this.theme,
+    required this.showPush,
+  });
 
   final AppLocalizations l;
   final ThemeData theme;
+  final bool showPush;
 
   @override
   Widget build(BuildContext context) {
@@ -121,14 +144,15 @@ class _MatrixHeaderRow extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
           ),
-          Expanded(
-            flex: 2,
-            child: Text(
-              l.notificationSettingsColumnPush,
-              style: labelStyle,
-              textAlign: TextAlign.center,
+          if (showPush)
+            Expanded(
+              flex: 2,
+              child: Text(
+                l.notificationSettingsColumnPush,
+                style: labelStyle,
+                textAlign: TextAlign.center,
+              ),
             ),
-          ),
           Expanded(
             flex: 2,
             child: Text(
@@ -150,6 +174,7 @@ class _CategoryMatrixRow extends StatelessWidget {
     required this.category,
     required this.channels,
     required this.pushOsDenied,
+    required this.showPush,
     required this.onChanged,
   });
 
@@ -158,6 +183,7 @@ class _CategoryMatrixRow extends StatelessWidget {
   final NotificationMatrixCategory category;
   final NotificationCategoryChannels channels;
   final bool pushOsDenied;
+  final bool showPush;
   final ValueChanged<NotificationCategoryChannels> onChanged;
 
   String _title() {
@@ -193,7 +219,7 @@ class _CategoryMatrixRow extends StatelessWidget {
                 )
               : null,
           trailing: SizedBox(
-            width: 220,
+            width: showPush ? 220 : 160,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -207,20 +233,25 @@ class _CategoryMatrixRow extends StatelessWidget {
                         : const SizedBox.shrink(),
                   ),
                 ),
-                Expanded(
-                  child: Center(
-                    child: locked
-                        ? Icon(Icons.lock, size: 18, color: theme.disabledColor)
-                        : Switch(
-                            value: pushEnabled,
-                            onChanged: pushOsDenied
-                                ? null
-                                : (v) => onChanged(
-                                    channels.copyWith(pushEnabled: v),
-                                  ),
-                          ),
+                if (showPush)
+                  Expanded(
+                    child: Center(
+                      child: locked
+                          ? Icon(
+                              Icons.lock,
+                              size: 18,
+                              color: theme.disabledColor,
+                            )
+                          : Switch(
+                              value: pushEnabled,
+                              onChanged: pushOsDenied
+                                  ? null
+                                  : (v) => onChanged(
+                                      channels.copyWith(pushEnabled: v),
+                                    ),
+                            ),
+                    ),
                   ),
-                ),
                 Expanded(
                   child: Center(
                     child: locked
@@ -274,7 +305,7 @@ class _AgathaSuggestionsRow extends StatelessWidget {
           dense: true,
           title: Text(l.notificationSettingsCategorySuggestions),
           trailing: SizedBox(
-            width: 220,
+            width: kNotificationPushTransportShipped ? 220 : 160,
             child: Row(
               children: [
                 Expanded(
@@ -288,17 +319,19 @@ class _AgathaSuggestionsRow extends StatelessWidget {
                     ),
                   ),
                 ),
-                Expanded(
-                  child: Center(
-                    child: _SuggestionPushModeControl(
-                      mode: channels.pushMode,
-                      pushOsDenied: pushOsDenied,
-                      enabled: agathaInApp,
-                      onChanged: (mode) =>
-                          onChannelsChanged(channels.copyWith(pushMode: mode)),
+                if (kNotificationPushTransportShipped)
+                  Expanded(
+                    child: Center(
+                      child: _SuggestionPushModeControl(
+                        mode: channels.pushMode,
+                        pushOsDenied: pushOsDenied,
+                        enabled: agathaInApp,
+                        onChanged: (mode) => onChannelsChanged(
+                          channels.copyWith(pushMode: mode),
+                        ),
+                      ),
                     ),
                   ),
-                ),
                 Expanded(
                   child: Center(
                     child: Switch(

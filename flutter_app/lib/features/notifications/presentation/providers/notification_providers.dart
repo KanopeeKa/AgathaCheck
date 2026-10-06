@@ -55,8 +55,10 @@ class NotificationsNotifier extends AsyncNotifier<List<AppNotification>> {
     await refresh();
   }
 
-  Future<void> markAllAsRead() async {
-    await _getRepo().markAllAsRead();
+  Future<void> markAllAsRead({
+    NotificationInboxTab scope = NotificationInboxTab.activity,
+  }) async {
+    await _getRepo().markAllAsRead(scope: scope);
     await refresh();
   }
 
@@ -173,6 +175,11 @@ class NotificationPreferencesNotifier
   Future<void> updatePreferences(NotificationPreferences prefs) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() => _getRepo().updatePreferences(prefs));
+  }
+
+  Future<void> dismissDeviceSecurityIntro() async {
+    await _getRepo().dismissDeviceSecurityIntro();
+    state = await AsyncValue.guard(() => _getRepo().getPreferences());
   }
 
   Future<void> dismissV2InboxExplainer() async {

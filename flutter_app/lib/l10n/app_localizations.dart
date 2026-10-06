@@ -8514,8 +8514,20 @@ abstract class AppLocalizations {
   /// No description provided for @faqNotificationsA1.
   ///
   /// In en, this message translates to:
-  /// **'You will receive in-app notifications for: due or overdue health entries, upcoming medication reminders, organisation invites, share requests, pet memorials, and family event reminders.'**
+  /// **'Activity shows invites, access changes, and account security items. Care due and overdue work appears on the Care (Actions) tab and its badge—not in the notification bell. Agatha suggestions appear under For you when enabled.'**
   String get faqNotificationsA1;
+
+  /// No description provided for @notificationDeviceSecurityIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'We now remember devices that sign in to your account. You will get a security notice when a new device signs in. This device was recorded quietly so existing members are not flooded with alerts.'**
+  String get notificationDeviceSecurityIntro;
+
+  /// No description provided for @notificationSettingsPushDeferredHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Push to this phone or other devices is not available yet. In-app inbox and email toggles still apply.'**
+  String get notificationSettingsPushDeferredHelp;
 
   /// No description provided for @faqNotificationsQ2.
   ///

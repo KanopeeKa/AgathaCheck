@@ -22,6 +22,10 @@ import {
   patchNotificationPreferences,
 } from './notifications/preferencesHandlers.js';
 import { registerAccountSecurityFeedbackRoutes } from './notifications/accountSecurityFeedback.js';
+import {
+  markAllReadKindFilter,
+  parseMarkAllReadScope,
+} from '../lib/notificationMarkAllRead.js';
 
 export function notificationToMap(row) {
   const petId = row.pet_id || null;
@@ -158,27 +162,28 @@ export default function notificationsRoutes(pool) {
     }
   });
 
-  router.put('/read-all', async (req, res) => {
+  const handleMarkAllRead = async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      await pool.query('UPDATE notifications SET is_read = true, read = true WHERE user_id = $1', [userId]);
-      res.json({ success: true });
+      const scope = parseMarkAllReadScope(
+        req.body?.scope ?? req.query?.scope,
+      );
+      const kindFilter = markAllReadKindFilter(scope);
+      await pool.query(
+        `UPDATE notifications SET is_read = true, read = true
+         WHERE user_id = $1 AND ${kindFilter}`,
+        [userId],
+      );
+      res.json({ success: true, scope });
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }
-  });
+  };
 
-  router.post('/read-all', async (req, res) => {
-    const userId = extractUserId(req);
-    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    try {
-      await pool.query('UPDATE notifications SET is_read = true, read = true WHERE user_id = $1', [userId]);
-      res.json({ success: true });
-    } catch (err) {
-      res.status(500).json({ error: publicError(err) });
-    }
-  });
+  router.put('/read-all', handleMarkAllRead);
+
+  router.post('/read-all', handleMarkAllRead);
 
   const handlePreferencesGet = async (req, res) => {
     const userId = extractUserId(req);

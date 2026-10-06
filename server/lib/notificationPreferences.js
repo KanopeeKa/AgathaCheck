@@ -2,6 +2,8 @@
  * Notifications v2 settings matrix (§8) persisted in notification_preferences rows.
  */
 
+import { v4 as uuidv4 } from 'uuid';
+
 export const PREF_NOTIFY_OVERDUE = 'notify_overdue';
 export const PREF_NOTIFY_DUE_SOON = 'notify_due_soon';
 export const PREF_NOTIFY_COMPLETED = 'notify_completed';
@@ -9,6 +11,9 @@ export const PREF_EMAIL_REMINDERS = 'email_reminders_enabled';
 export const PREF_REMINDER_DAYS = 'reminder_days_before';
 export const PREF_MUTED_PET_IDS = 'muted_pet_ids';
 export const PREF_V2_EXPLAINER = 'v2_explainer_dismissed_at';
+export const PREF_DEVICE_SECURITY_INTRO_PENDING = 'device_security_intro_pending';
+export const PREF_DEVICE_SECURITY_INTRO_DISMISSED =
+  'device_security_intro_dismissed_at';
 export const PREF_AGATHA_IN_APP = 'agatha_suggestions_in_app';
 export const PREF_SETTINGS_MATRIX = 'settings_matrix_v2';
 export const PREF_SUGGESTION_TYPES = 'suggestion_types_v2';
@@ -175,6 +180,9 @@ export function preferenceMapToApiDto(map) {
     notify_completed: parseBool(map[PREF_NOTIFY_COMPLETED], true),
     muted_pet_ids: mutedPetIds,
     v2_explainer_dismissed_at: map[PREF_V2_EXPLAINER] || null,
+    show_device_security_intro:
+      parseBool(map[PREF_DEVICE_SECURITY_INTRO_PENDING], false)
+      && !map[PREF_DEVICE_SECURITY_INTRO_DISMISSED],
     agatha_suggestions_in_app: agathaInApp,
     settings_matrix: matrix,
     suggestion_types: mergeSuggestionTypes(typesStored),
@@ -224,6 +232,15 @@ export function apiDtoToPreferenceUpdates(body) {
   if (body.v2_explainer_dismissed_at !== undefined && body.v2_explainer_dismissed_at) {
     updates[PREF_V2_EXPLAINER] = String(body.v2_explainer_dismissed_at);
   }
+  if (
+    body.device_security_intro_dismissed_at !== undefined
+    && body.device_security_intro_dismissed_at
+  ) {
+    updates[PREF_DEVICE_SECURITY_INTRO_DISMISSED] = String(
+      body.device_security_intro_dismissed_at,
+    );
+    updates[PREF_DEVICE_SECURITY_INTRO_PENDING] = 'false';
+  }
 
   let agathaInApp;
   if (body.agatha_suggestions_in_app !== undefined) {
@@ -260,6 +277,30 @@ export async function loadNotificationPreferences(pool, userId) {
     [userId],
   );
   return preferenceMapToApiDto(rowsToPreferenceMap(result.rows));
+}
+
+export async function upsertNotificationPreference(
+  pool,
+  userId,
+  preference,
+  value,
+) {
+  const existing = await pool.query(
+    'SELECT id FROM notification_preferences WHERE user_id = $1 AND preference = $2',
+    [userId, preference],
+  );
+  const stringValue = String(value);
+  if (existing.rows.length > 0) {
+    await pool.query(
+      'UPDATE notification_preferences SET value = $1 WHERE user_id = $2 AND preference = $3',
+      [stringValue, userId, preference],
+    );
+  } else {
+    await pool.query(
+      'INSERT INTO notification_preferences (id, user_id, preference, value) VALUES ($1, $2, $3, $4)',
+      [uuidv4(), userId, preference, stringValue],
+    );
+  }
 }
 
 export function isAgathaSuggestionsInAppEnabled(prefsDto) {

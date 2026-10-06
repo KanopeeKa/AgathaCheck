@@ -88,7 +88,9 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
             icon: const Icon(Icons.done_all, size: 18),
             label: Text(l.markAllRead),
             onPressed: () async {
-              await ref.read(notificationsProvider.notifier).markAllAsRead();
+              await ref
+                  .read(notificationsProvider.notifier)
+                  .markAllAsRead(scope: selectedTab);
               if (context.mounted) {
                 ScaffoldMessenger.of(
                   context,

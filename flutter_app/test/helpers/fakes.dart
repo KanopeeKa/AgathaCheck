@@ -13,6 +13,7 @@ import 'package:pet_profile_app/features/health_tracking/domain/entities/health_
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
 import 'package:pet_profile_app/features/notifications/domain/entities/app_notification.dart';
 import 'package:pet_profile_app/features/notifications/domain/entities/notification_preferences.dart';
+import 'package:pet_profile_app/features/notifications/domain/services/notification_inbox_v2_rules.dart';
 import 'package:pet_profile_app/features/notifications/presentation/providers/notification_providers.dart';
 import 'package:pet_profile_app/features/subscription/data/services/revenuecat_service.dart';
 import 'package:pet_profile_app/features/subscription/domain/entities/subscription_status.dart';
@@ -168,7 +169,9 @@ class TestNotificationsNotifier extends NotificationsNotifier {
   Future<void> checkDueEntries() async {}
 
   @override
-  Future<void> markAllAsRead() async {
+  Future<void> markAllAsRead({
+    NotificationInboxTab scope = NotificationInboxTab.activity,
+  }) async {
     markAllAsReadCalled = true;
     state = AsyncValue.data(
       _notifications.map((n) => n.copyWith(isRead: true)).toList(),

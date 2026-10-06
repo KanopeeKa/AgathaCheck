@@ -4851,7 +4851,15 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get faqNotificationsA1 =>
-      'Vous recevrez des notifications dans l\'application pour : les entrées de santé dues ou en retard, les rappels de médicaments, les invitations d\'organisation, les demandes de partage, les mémoriaux et les rappels d\'événements familiaux.';
+      'Activité regroupe invitations, changements d\'accès et sécurité du compte. Les soins en retard ou à faire aujourd\'hui sont sur l\'onglet Soins (Actions) et son badge—not dans la cloche. Les suggestions Agatha sont sous Pour vous si activées.';
+
+  @override
+  String get notificationDeviceSecurityIntro =>
+      'Nous mémorisons désormais les appareils qui se connectent. Une alerte s\'affichera pour un nouvel appareil. Cet appareil a été enregistré discrètement pour ne pas alerter inutilement les comptes existants.';
+
+  @override
+  String get notificationSettingsPushDeferredHelp =>
+      'Les notifications push sur ce téléphone ou d\'autres appareils ne sont pas encore disponibles. Les réglages boîte de réception et e-mail restent actifs.';
 
   @override
   String get faqNotificationsQ2 =>
