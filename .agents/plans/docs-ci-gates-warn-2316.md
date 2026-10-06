@@ -10,17 +10,18 @@ Single phase: land documentation CI gates in **warn** mode (PR 1 of rollout).
 ## Runtime
 
 ```yaml
-autonomy: active
-current_phase: 1
-last_completed_phase: null
+autonomy: completed
+current_phase: null
+last_completed_phase: 1
 halt_reason: null
-next_action: "babysit+ merge PR #1731"
+next_action: "plan complete"
 artifact_ref:
-  branch: cursor/docs-ci-gates-warn-2316
+  branch: main
   plan_path: .agents/plans/docs-ci-gates-warn-2316.md
+  plan_commit: 19988dc692c0d95f4c2e9f45329966c8fb4bf347
   snapshot_path: .agents/plans/docs-ci-gates-warn-2316.snapshot.json
-open_prs:
-  - https://github.com/KanopeeKa/AgathaCheck/pull/1731
+  snapshot_commit: 19988dc692c0d95f4c2e9f45329966c8fb4bf347
+open_prs: []
 merge_commits: {}
 debt_issue_refs: []
 ```
