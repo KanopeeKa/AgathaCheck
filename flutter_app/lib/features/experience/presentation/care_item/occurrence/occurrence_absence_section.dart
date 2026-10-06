@@ -40,11 +40,7 @@ class OccurrenceAbsenceSection extends ConsumerWidget {
           }
         }
         if (slice == null) return const SizedBox.shrink();
-        return _Body(
-          slice: slice,
-          entryId: entryId,
-          onChanged: onChanged,
-        );
+        return _Body(slice: slice, entryId: entryId, onChanged: onChanged);
       },
     );
   }
@@ -71,10 +67,7 @@ class _Body extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          l.occurrenceAwaySectionTitle,
-          style: theme.textTheme.titleSmall,
-        ),
+        Text(l.occurrenceAwaySectionTitle, style: theme.textTheme.titleSmall),
         const SizedBox(height: 8),
         Row(
           children: [
@@ -101,10 +94,7 @@ class _Body extends ConsumerWidget {
             ),
           )
         else if (slice.needsAttention) ...[
-          Text(
-            _summaryLine(l, slice),
-            style: theme.textTheme.bodyMedium,
-          ),
+          Text(_summaryLine(l, slice), style: theme.textTheme.bodyMedium),
           const SizedBox(height: 8),
           Text(
             l.occurrenceAwayKeepScopeExplainer,
@@ -119,10 +109,7 @@ class _Body extends ConsumerWidget {
             child: Text(_keepLabel(l, slice)),
           ),
         ] else
-          Text(
-            _summaryLine(l, slice),
-            style: theme.textTheme.bodyMedium,
-          ),
+          Text(_summaryLine(l, slice), style: theme.textTheme.bodyMedium),
       ],
     );
   }

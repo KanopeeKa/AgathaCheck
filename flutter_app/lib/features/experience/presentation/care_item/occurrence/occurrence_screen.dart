@@ -134,7 +134,10 @@ class _OccurrenceScreenState extends ConsumerState<OccurrenceScreen> {
           CareSucceeded(:final value) => ListView(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
             children: [
-              OccurrenceContextTile(detail: value, onOpenCareDetails: _openItem),
+              OccurrenceContextTile(
+                detail: value,
+                onOpenCareDetails: _openItem,
+              ),
               const SizedBox(height: 16),
               OccurrenceTitleRow(
                 occurrence: value.occurrence,

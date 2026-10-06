@@ -32,9 +32,18 @@ class OccurrenceContextTile extends ConsumerWidget {
     return Semantics(
       identifier: 'occurrence_context_tile',
       button: true,
-      label: _semanticsLabel(l, petAsync, item.name, finished, paused, openCount),
+      label: _semanticsLabel(
+        l,
+        petAsync,
+        item.name,
+        finished,
+        paused,
+        openCount,
+      ),
       child: Material(
-        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),
+        color: theme.colorScheme.surfaceContainerHighest.withValues(
+          alpha: 0.35,
+        ),
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
           key: const Key('occurrence_about_item'),
