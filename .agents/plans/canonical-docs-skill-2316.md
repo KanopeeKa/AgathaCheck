@@ -113,8 +113,17 @@ e2e/**
 
 ```yaml
 autonomy: active
-current_phase: "1"
+current_phase: 1
 last_completed_phase: null
 halt_reason: null
-next_action: implement phase 1
+next_action: "continue phase 1 on branch cursor/canonical-docs-skill-2316"
+artifact_ref:
+  branch: cursor/canonical-docs-skill-2316
+  plan_path: .agents/plans/canonical-docs-skill-2316.md
+  plan_commit: 9f517b9b32982e3ffcef612f41d8de40be02e741
+  snapshot_path: .agents/plans/canonical-docs-skill-2316.snapshot.json
+  snapshot_commit: 9f517b9b32982e3ffcef612f41d8de40be02e741
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1703"]
+merge_commits: {}
+debt_issue_refs: []
 ```
