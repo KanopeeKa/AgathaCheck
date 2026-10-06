@@ -12,10 +12,10 @@ void main() {
     l = await AppLocalizations.delegate.load(const Locale('en'));
   });
 
-  test('open not_recorded shows Not recorded (open) pill', () {
+  test('open not_recorded shows grey Not recorded pill', () {
     final pill = openOccurrencePillStyle(l, CareOccurrenceStatus.notRecorded);
-    expect(pill.label, l.careStatusNotRecordedOpen);
-    expect(pill.tone, OccurrencePillTone.notRecorded);
+    expect(pill.label, l.careStatusNotRecorded);
+    expect(pill.tone, OccurrencePillTone.neutral);
   });
 
   test('closed not recorded pill is neutral grey tone', () {

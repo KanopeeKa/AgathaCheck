@@ -44,6 +44,17 @@ List<HealthOccurrence> sortOccurrencesByZone(
   return copy;
 }
 
+/// Care Item occurrence lists: latest scheduled instant first.
+List<HealthOccurrence> sortOccurrencesNewestFirst(
+  List<HealthOccurrence> items,
+) {
+  final copy = List<HealthOccurrence>.from(items);
+  copy.sort(
+    (a, b) => -compareOccurrencesForZone(a, b, OccurrenceZone.comingUp),
+  );
+  return copy;
+}
+
 /// Summary for list-row headlines (one series).
 class OccurrenceSummary {
   const OccurrenceSummary({

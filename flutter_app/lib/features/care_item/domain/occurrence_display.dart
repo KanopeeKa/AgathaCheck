@@ -28,8 +28,8 @@ OccurrencePillStyle openOccurrencePillStyle(
       tone: OccurrencePillTone.overdue,
     ),
     CareOccurrenceStatus.notRecorded => OccurrencePillStyle(
-      label: l.careStatusNotRecordedOpen,
-      tone: OccurrencePillTone.notRecorded,
+      label: l.careStatusNotRecorded,
+      tone: OccurrencePillTone.neutral,
     ),
     CareOccurrenceStatus.due => OccurrencePillStyle(
       label: l.careStatusDue,
