@@ -31,6 +31,48 @@ export class CareItemPage {
     await expect(this.page.getByRole('button', { name: /go back/i })).toBeVisible({
       timeout: 60_000,
     });
+    await this.expectCareDetailsScreenTitle();
+  }
+
+  /** App bar / shell title — not the care item name (care-item-context-header-spec D-CIH-001). */
+  async expectCareDetailsScreenTitle(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    await expect(
+      this.page.getByText(/^Care details$|^Détail du soin$/i).first(),
+    ).toBeVisible({ timeout: 30_000 });
+  }
+
+  async expectContextStripCareName(careName: string): Promise<void> {
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      const namePattern = new RegExp(careName, 'i');
+      await expect(
+        this.page
+          .getByRole('heading', { name: namePattern })
+          .or(this.page.getByText(namePattern))
+          .first(),
+      ).toBeVisible();
+    }).toPass({ timeout: 45_000 });
+  }
+
+  async expectPetContextTile(petName: string): Promise<void> {
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      const tile = semanticsKey(this.page, 'care_item_pet_tile');
+      await expect(tile).toBeVisible();
+      await expect(
+        tile.or(this.page.getByText(new RegExp(petName, 'i'))).first(),
+      ).toContainText(petName);
+    }).toPass({ timeout: 45_000 });
+  }
+
+  async expectContextStripStatusChip(label: RegExp): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    await expect(
+      this.page.locator('[key="care_item_context_strip_chip"]').or(
+        this.page.getByText(label),
+      ).first(),
+    ).toBeVisible({ timeout: 30_000 });
   }
 
   async goBack(): Promise<void> {
