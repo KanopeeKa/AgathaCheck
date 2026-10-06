@@ -276,6 +276,11 @@ test.describe('Notifications', () => {
     const invitee = await signupUser(baseURL, { firstName: 'Ben', lastName: 'Invitee' });
     await createPetShareInvite(baseURL, owner.accessToken, [pet.id], invitee.email, 'carer');
 
+    await expect(async () => {
+      const rows = await getNotifications(baseURL, invitee.accessToken);
+      expect(rows.some((n) => n.type === 'shareInviteReceived')).toBe(true);
+    }).toPass({ timeout: 30_000 });
+
     await loginAs(page, invitee);
     const petList = new PetListPage(page);
     await petList.expectLoaded();
