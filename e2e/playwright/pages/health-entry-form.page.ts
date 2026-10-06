@@ -110,7 +110,9 @@ export class HealthEntryFormPage {
 
   async selectCareProviderContact(name: string): Promise<void> {
     await this.openCareProviderDropdown();
-    await this.page.getByRole('menuitem', { name, exact: true }).click();
+    const option = this.page.getByRole('menuitem', { name, exact: true });
+    await expect(option).toBeVisible({ timeout: 60_000 });
+    await option.click();
   }
 
   async setCareProviderTypedName(name: string): Promise<void> {

@@ -4,6 +4,7 @@ import 'l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'app_care_provider_contacts.dart';
 import 'app_pet_care_sync.dart';
 import 'core/care/care_item_observation_section.dart';
 import 'core/providers/analytics_providers.dart';
@@ -59,6 +60,7 @@ Future<void> main() async {
           },
         ),
         petCareSyncProvider.overrideWith((ref) => AppPetCareSync(ref)),
+        careProviderContactOptionsOverride(),
         careItemObservationSectionProvider.overrideWith(
           (ref) =>
               (
