@@ -3,15 +3,15 @@ import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:pet_profile_app/core/utils/constants.dart';
-import 'package:pet_profile_app/core/widgets/app_logo_title.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 import 'package:pet_profile_app/features/auth/auth.dart';
 import '../utils/pet_care_dashboard_helpers.dart';
 import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import 'package:pet_profile_app/features/notifications/notifications.dart';
-import '../widgets/organization_pets_section.dart';
 import '../widgets/pet_list/guardian_embedded_pets_list.dart';
+import '../widgets/pet_list/pet_list_app_bar.dart';
+import '../widgets/pet_list/pet_list_filtered_content.dart';
+import '../widgets/pet_list/pet_list_status_views.dart';
 
 /// Screen that displays the list of all pets owned by the user.
 class PetListScreen extends ConsumerStatefulWidget {
@@ -46,7 +46,6 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
   @override
   Widget build(BuildContext context) {
     final petListAsync = ref.watch(petListProvider);
-    final auth = ref.watch(authProvider);
     final unreadCount = ref.watch(unreadNotificationCountProvider);
     final theme = Theme.of(context);
     final l = AppLocalizations.of(context)!;
@@ -60,179 +59,20 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
             pets: _controller.guardianShellPets(petListAsync.valueOrNull ?? []),
           )
         : null;
+
     final scaffoldBody = petListAsync.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stack) => Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.error_outline, size: 48, color: theme.colorScheme.error),
-            const SizedBox(height: 16),
-            Text(l.failedToLoadPets(error.toString())),
-            const SizedBox(height: 8),
-            ElevatedButton(
-              onPressed: () => ref.invalidate(petListProvider),
-              child: Text(l.retry),
-            ),
-          ],
-        ),
+      loading: () => const PetListLoadingBody(),
+      error: (error, stack) => PetListErrorBody(
+        message: l.failedToLoadPets(error.toString()),
+        onRetry: () => ref.invalidate(petListProvider),
+        retryLabel: l.retry,
       ),
-      data: (allPets) {
-        final scopedPets = widget.visiblePetIds == null
-            ? allPets
-            : allPets
-                  .where((pet) => widget.visiblePetIds!.contains(pet.id))
-                  .toList();
-        if (scopedPets.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ExcludeSemantics(
-                  child: Icon(
-                    Icons.pets,
-                    size: 80,
-                    color: theme.colorScheme.outline,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  allPets.isEmpty ? l.noPetsYet : l.petTagsNoMatch,
-                  style: theme.textTheme.headlineSmall,
-                ),
-                const SizedBox(height: 8),
-                if (allPets.isEmpty)
-                  Text(
-                    l.addFirstPet,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-              ],
-            ),
-          );
-        }
-
-        if (widget.embeddedInShell) {
-          return PetCareEmbeddedPetsList(
-            allPets: scopedPets,
-            controller: _controller,
-            careSummary: careSummary,
-            l: l,
-            theme: theme,
-          );
-        }
-
-        final orgNames = _controller.getOrgNames(scopedPets);
-        final hasFosteredPets = _controller.hasFosteredPets(scopedPets);
-        _controller.syncOrgFilter(orgNames);
-        final filteredPets = _controller.filterPets(scopedPets);
-
-        if (filteredPets.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.filter_list_off,
-                  size: 48,
-                  color: theme.colorScheme.outline,
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  l.noPetsMatchFilter,
-                  style: theme.textTheme.bodyLarge,
-                  textAlign: TextAlign.center,
-                ),
-                if (_controller.orgFilter != null) ...[
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () =>
-                        setState(() => _controller.orgFilter = null),
-                    child: Text(l.showAllPets),
-                  ),
-                ],
-              ],
-            ),
-          );
-        }
-        final personalActive = _controller.getPersonalActive(filteredPets);
-        final personalPassed = _controller.getPersonalPassed(filteredPets);
-        final fosteredActive = _controller.getFosteredActive(filteredPets);
-        final fosteredPassed = _controller.getFosteredPassed(filteredPets);
-        final orgGroups = _controller.getOrgGroups(filteredPets);
-        final orgPassedGroups = _controller.getOrgPassedGroups(filteredPets);
-        final allPassedAway = _controller.getAllPassedAway(
-          personalPassed,
-          fosteredPassed,
-          orgPassedGroups,
-        );
-
-        return ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            if (orgNames.isNotEmpty || hasFosteredPets)
-              OrgFilterChips(
-                orgNames: orgNames,
-                showFosteredChip: hasFosteredPets,
-                selected: _controller.orgFilter,
-                onSelected: (v) => setState(() => _controller.orgFilter = v),
-                l: l,
-              ),
-            if (!widget.embeddedInShell) ...[
-              PendingFosterPlacementsSection(),
-              PendingAdoptionPlacementsSection(),
-              const PendingCustodyTransfersSection(),
-            ],
-            if (_controller.orgFilter == null ||
-                _controller.orgFilter == '_personal') ...[
-              if (personalActive.isNotEmpty ||
-                  (_controller.orgFilter == null &&
-                      (fosteredActive.isNotEmpty || orgGroups.isNotEmpty)))
-                PetListSectionHeader(
-                  icon: Icons.person,
-                  title: l.myPets,
-                  count: personalActive.length,
-                ),
-              PersonalPetsSection(
-                personalActive: personalActive,
-                orgFilter: _controller.orgFilter,
-                l: l,
-                theme: theme,
-                ref: ref,
-                parentContext: context,
-              ),
-            ],
-            if (_controller.orgFilter == null ||
-                _controller.orgFilter == '_fostered') ...[
-              if (fosteredActive.isNotEmpty ||
-                  _controller.orgFilter == '_fostered')
-                PetListSectionHeader(
-                  icon: Icons.home_work_outlined,
-                  title: l.myFosteredPets,
-                  count: fosteredActive.length,
-                ),
-              FosteredPetsSection(
-                fosteredActive: fosteredActive,
-                orgFilter: _controller.orgFilter,
-                l: l,
-                theme: theme,
-              ),
-            ],
-            if (_controller.orgFilter == null ||
-                (_controller.orgFilter != '_personal' &&
-                    _controller.orgFilter != '_fostered'))
-              OrganizationPetsSection(
-                orgGroups: orgGroups,
-                l: l,
-                theme: theme,
-                ref: ref,
-                parentContext: context,
-              ),
-            PassedAwayPetsSection(allPassedAway: allPassedAway, theme: theme),
-          ],
-        );
-      },
+      data: (allPets) => _buildPetListData(
+        allPets: allPets,
+        careSummary: careSummary,
+        theme: theme,
+        l: l,
+      ),
     );
 
     if (widget.embeddedInShell) {
@@ -240,149 +80,9 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const AppLogoTitle(title: AppConstants.appTitle),
-        actions: [
-          MergeSemantics(
-            child: Semantics(
-              label: unreadCount > 0
-                  ? '${l.notifications}, ${unreadCount > 99 ? '99+' : unreadCount} unread'
-                  : l.notifications,
-              child: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.notifications_outlined),
-                    tooltip: l.notifications,
-                    onPressed: () => context.go('/notifications'),
-                  ),
-                  if (unreadCount > 0)
-                    Positioned(
-                      right: 4,
-                      top: 4,
-                      child: ExcludeSemantics(
-                        child: Container(
-                          padding: const EdgeInsets.all(2),
-                          decoration: BoxDecoration(
-                            color: theme.colorScheme.error,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          constraints: const BoxConstraints(
-                            minWidth: 16,
-                            minHeight: 16,
-                          ),
-                          child: Text(
-                            unreadCount > 99 ? '99+' : '$unreadCount',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          ),
-          IconButton(
-            icon: const Icon(Icons.local_hospital),
-            tooltip: l.veterinarians,
-            onPressed: () => context.go('/vets'),
-          ),
-          const EventsNavIconButton(),
-          IconButton(
-            icon: const Icon(Icons.business),
-            tooltip: l.organizations,
-            onPressed: () => context.go('/organizations'),
-          ),
-          PopupMenuButton<String>(
-            tooltip: l.userMenu,
-            icon: CircleAvatar(
-              radius: 16,
-              backgroundColor: theme.colorScheme.primaryContainer,
-              child: Text(
-                ((auth.user?.firstName?.isNotEmpty == true)
-                        ? auth.user!.firstName![0]
-                        : (auth.user?.lastName?.isNotEmpty == true
-                              ? auth.user!.lastName![0]
-                              : auth.user?.email[0] ?? 'U'))
-                    .toUpperCase(),
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.onPrimaryContainer,
-                ),
-              ),
-            ),
-            onSelected: (value) async {
-              if (value == 'details') {
-                context.push('/my-details');
-              } else if (value == 'help') {
-                context.push('/help');
-              } else if (value == 'logout') {
-                await ref.read(authProvider.notifier).logout();
-              }
-            },
-            itemBuilder: (context) {
-              final l = AppLocalizations.of(context)!;
-              return [
-                PopupMenuItem<String>(
-                  enabled: false,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        auth.user?.firstName?.isNotEmpty == true
-                            ? auth.user!.firstName!
-                            : (auth.user?.lastName?.isNotEmpty == true
-                                  ? auth.user!.lastName!
-                                  : 'User'),
-                        style: theme.textTheme.titleSmall,
-                      ),
-                      Text(
-                        auth.user?.email ?? '',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const PopupMenuDivider(),
-                PopupMenuItem<String>(
-                  value: 'details',
-                  child: ListTile(
-                    leading: const Icon(Icons.person_outlined),
-                    title: Text(l.myDetails),
-                    dense: true,
-                    contentPadding: EdgeInsets.zero,
-                  ),
-                ),
-                PopupMenuItem<String>(
-                  value: 'help',
-                  child: ListTile(
-                    leading: const Icon(Icons.help_outline),
-                    title: Text(l.help),
-                    dense: true,
-                    contentPadding: EdgeInsets.zero,
-                  ),
-                ),
-                PopupMenuItem<String>(
-                  value: 'logout',
-                  child: ListTile(
-                    leading: const Icon(Icons.logout),
-                    title: Text(l.logOut),
-                    dense: true,
-                    contentPadding: EdgeInsets.zero,
-                  ),
-                ),
-              ];
-            },
-          ),
-        ],
+      appBar: PetListAppBar(
+        unreadCount: unreadCount,
+        onLogout: () => ref.read(authProvider.notifier).logout(),
       ),
       body: scaffoldBody,
       floatingActionButton: FloatingActionButton.extended(
@@ -392,6 +92,64 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
         icon: const Icon(Icons.add),
         label: Text(l.addPet),
       ),
+    );
+  }
+
+  Widget _buildPetListData({
+    required List<Pet> allPets,
+    required PetCareTodayCareSummary? careSummary,
+    required ThemeData theme,
+    required AppLocalizations l,
+  }) {
+    final scopedPets = widget.visiblePetIds == null
+        ? allPets
+        : allPets
+              .where((pet) => widget.visiblePetIds!.contains(pet.id))
+              .toList();
+
+    if (scopedPets.isEmpty) {
+      return PetListNoPetsEmptyBody(
+        headline: allPets.isEmpty ? l.noPetsYet : l.petTagsNoMatch,
+        subtitle: l.addFirstPet,
+        showSubtitle: allPets.isEmpty,
+      );
+    }
+
+    if (widget.embeddedInShell) {
+      return PetCareEmbeddedPetsList(
+        allPets: scopedPets,
+        controller: _controller,
+        careSummary: careSummary,
+        l: l,
+        theme: theme,
+      );
+    }
+
+    final orgNames = _controller.getOrgNames(scopedPets);
+    final hasFosteredPets = _controller.hasFosteredPets(scopedPets);
+    _controller.syncOrgFilter(orgNames);
+    final filteredPets = _controller.filterPets(scopedPets);
+
+    if (filteredPets.isEmpty) {
+      return PetListFilterEmptyBody(
+        message: l.noPetsMatchFilter,
+        showClearFilter: _controller.orgFilter != null,
+        clearFilterLabel: l.showAllPets,
+        onClearFilter: () => setState(() => _controller.orgFilter = null),
+      );
+    }
+
+    return PetListFilteredContent(
+      filteredPets: filteredPets,
+      orgNames: orgNames,
+      hasFosteredPets: hasFosteredPets,
+      orgFilter: _controller.orgFilter,
+      onOrgFilterChanged: (v) => setState(() => _controller.orgFilter = v),
+      controller: _controller,
+      l: l,
+      theme: theme,
+      ref: ref,
+      parentContext: context,
     );
   }
 }
