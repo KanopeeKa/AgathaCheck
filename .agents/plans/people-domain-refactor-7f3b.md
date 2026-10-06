@@ -192,17 +192,17 @@ db/**
 ## Runtime state (agent-updated)
 
 ```yaml
-autonomy: active
-current_phase: orchestrate
-last_completed_phase: null
+autonomy: completed
+current_phase: null
+last_completed_phase: orchestrate
 halt_reason: null
-next_action: "continue child plan people-server-7f3b"
+next_action: "roadmap complete"
 artifact_ref:
   branch: cursor/people-refactor-orchestrate-7f3b
   plan_path: .agents/plans/people-domain-refactor-7f3b.md
-  plan_commit: 965da9abb2a07a93fe3c39cce78fafc58d62db86
+  plan_commit: 3c1f8b72187969a0e8d93e6f6b7505d0d2309fc3
   snapshot_path: .agents/plans/people-domain-refactor-7f3b.snapshot.json
-  snapshot_commit: 965da9abb2a07a93fe3c39cce78fafc58d62db86
+  snapshot_commit: 3c1f8b72187969a0e8d93e6f6b7505d0d2309fc3
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
