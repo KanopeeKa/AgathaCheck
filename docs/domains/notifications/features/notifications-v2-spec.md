@@ -898,6 +898,15 @@ Still open (non-blocking): whether to add a "dot only for needs-response" badge 
 | **A1 legacy bootstrap** | Record existing device quietly + one-time intro | First device skipped A1 (OK) but no intro | `device_security_intro_pending` + dismissible banner |
 | **Push to other devices** | Deferred programme item | — | Unchanged; see `deferred.md` |
 
+### Rev 2.5 — as-built (v2.1 readiness Plan C, wave 1)
+
+| Area | Delivered |
+|---|---|
+| **FR-SG-1 scheduler** | `runSuggestionGeneration` in `server/lib/suggestions/` (daily cron via host job calling the lib; on-demand per-pet hook deferred) |
+| **S1 / S2** | `suggestionMissingRecurringCare` (parasite prevention rhythm), `suggestionWeightTrend` (≥5% over 90d window) |
+| **FR-RL-1 / RL-2** | Rolling 7-day caps (3/pet, 5/user) + 10 active/user enforced on **new** rows only; dedupe upserts refresh evidence |
+| **FR-SC-3** | For you card shows vet disclaimer for S2 (`notificationSuggestionVetDisclaimer`) |
+
 ## Appendix A — FAQ copy (ships in PR2)
 
 | Key | EN | FR |

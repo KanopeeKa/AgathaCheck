@@ -1103,6 +1103,10 @@ class AppLocalizationsFr extends AppLocalizations {
       'Vous pouvez consulter les soins de cet animal, mais pas ajouter de routines.';
 
   @override
+  String get notificationSuggestionVetDisclaimer =>
+      'Agatha n\'est pas vétérinaire. En cas d\'inquiétude, parlez-en à votre vétérinaire.';
+
+  @override
   String get careSuggestionDismiss => 'Ignorer';
 
   @override

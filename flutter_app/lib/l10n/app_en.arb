@@ -457,6 +457,7 @@
   "careSuggestionRespondFailed": "Could not update this suggestion. Try again.",
   "careSafeguardDismissFailed": "Could not dismiss this. Try again.",
   "careSuggestionEditForbidden": "You can view this pet's care but cannot add routines.",
+  "notificationSuggestionVetDisclaimer": "Agatha isn't a vet. If you're worried, talk to your vet.",
   "careSuggestionDismiss": "Dismiss",
   "careSuggestionNotRelevant": "Not relevant",
   "careSuggestionWhy": "Why?",
