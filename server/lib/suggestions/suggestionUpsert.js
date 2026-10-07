@@ -106,15 +106,18 @@ export async function completeSuggestionsForDedupeKeys(pool, dedupeKeys) {
 }
 
 export async function expireStaleSuggestions(pool, now = new Date()) {
+  const suppressUntil = new Date(now);
+  suppressUntil.setUTCDate(suppressUntil.getUTCDate() + 30);
   await pool.query(
     `UPDATE notifications
      SET suggestion_state = 'expired',
-         archived_at = NOW()
+         archived_at = NOW(),
+         suggestion_expires_at = $3
      WHERE kind = $1
        AND archived_at IS NULL
        AND suggestion_state IN ('new', 'seen')
        AND suggestion_expires_at IS NOT NULL
        AND suggestion_expires_at < $2`,
-    [NOTIFICATION_KIND_SUGGESTION, now],
+    [NOTIFICATION_KIND_SUGGESTION, now, suppressUntil],
   );
 }
