@@ -106,7 +106,7 @@ cd ~/uat.agathatrack.com/backend && ~/nodevenv/uat.agathatrack.com/backend/22/bi
 # checked N care items; 0 with violations (dry run)
 ```
 
-A healthy tick after the §8 DATE parser fix shows `created: 0` and `closed: 0` on most runs (only right after pet-home midnight may create or close doses). Repeated non-zero `created`/`closed` on the same items usually means the host TZ bug or duplicate slots — see [not-recorded stale-open spec](../domains/pet_care/changes/not-recorded-stale-open-bug-spec.md) §2.8 and §9.
+A healthy tick after the §8 DATE parser fix shows `created: 0` and `closed: 0` on most runs (only right after pet-home midnight may create or close doses). Repeated non-zero `created`/`closed` on the same items usually means the host TZ bug or duplicate slots — see [care-item-evolution.md](../domains/pet_care/features/care-item-evolution.md) (Remediation — not recorded stale open).
 
 If the dry run reports violations (for example after restoring a backup), run it again with `--apply`, then the dry run again. A line with `care tick failed` in the log means the tick could not reach the database: check `.env`, then run step 2 by hand.
 
@@ -137,7 +137,7 @@ node scripts/care/repair_tz_shift.js --as-of-date=2026-10-05   # explicit calend
 node scripts/care/repair_occurrences.js --dry-run
 ```
 
-Full rules: [not-recorded stale-open spec](../domains/pet_care/changes/not-recorded-stale-open-bug-spec.md) §9.
+Full rules: [care-item-evolution.md](../domains/pet_care/features/care-item-evolution.md) (Remediation — not recorded stale open) and CSM D-CSM-023.
 
 When `docs/ops/prod-backup-restore-plan.md` Step 3 (cron-as-code) lands, move these lines into its managed `# BEGIN agatha` / `# END agatha` block and delete the manual entries.
 

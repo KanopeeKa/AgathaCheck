@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "plan_id": "documentation-migration-care-item-514a",
+  "approved_at": "2026-10-07T13:30:00Z",
+  "approved_by": "Roadmap documentation-migration-roadmap-514a + user /execute-plan 2026-10-07 standing grant",
+  "approved_until": "2026-10-09T13:30:00Z",
+  "content_hash": "sha256:88dd7733c1cacc47c29df9290f7777dd8c048f3888a22919e34c905c8caeab9f",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/documentation-migration-integration-514a",
+  "control_issue": 1774,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Consolidate pet_care/care-item (Wave 1.2)",
+      "branch": "cursor/documentation-migration-care-item-514a",
+      "allowed_paths": [
+        "docs/domains/pet_care/**",
+        "scripts/docs-legacy-baseline.json",
+        "scripts/docs-memory-backlog.json",
+        ".agents/memory/care-dose-selection-compatibility.md",
+        ".agents/memory/guardian-mobile-completion.md",
+        ".cursor/**",
+        "docs/architecture/**",
+        "e2e/**",
+        "flutter_app/**",
+        "AGENTS.md",
+        ".agents/plans/documentation-migration-care-item-514a.md",
+        ".agents/plans/documentation-migration-care-item-514a.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**",
+        "docs/domains/pet_care/changes/away-*"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1775",
+      "pr_head_sha": "f7ff1c08f8d77dbe92ae0889d1e01182aac05b24"
+    }
+  ]
+}
