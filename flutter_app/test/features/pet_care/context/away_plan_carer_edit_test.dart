@@ -81,6 +81,7 @@ class _FakeCareContextRepository implements CareContextRepository {
     required String startsOn,
     required String endsOn,
     required List<String> petIds,
+    String? title,
   }) {
     throw UnimplementedError();
   }
@@ -141,6 +142,18 @@ class _FakeCareContextRepository implements CareContextRepository {
   Future<PlannedAbsence> updateHandoverNote({
     required String absenceId,
     String? handoverNote,
+  }) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<PlannedAbsence> updatePlannedAbsenceDetails({
+    required String absenceId,
+    required String startsOn,
+    required String endsOn,
+    String? title,
+    String? handoverNote,
+    bool confirmGuestAccessWiden = false,
   }) {
     throw UnimplementedError();
   }

@@ -12493,16 +12493,70 @@ abstract class AppLocalizations {
   /// **'Care coverage'**
   String get careContextAwayPlanCareCoverageTitle;
 
+  /// No description provided for @careContextAwayTitleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get careContextAwayTitleLabel;
+
+  /// No description provided for @careContextAwayTitleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Ski week, Work trip'**
+  String get careContextAwayTitleHint;
+
+  /// No description provided for @careContextAwayTitleHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Visible to your care team and handover PDF.'**
+  String get careContextAwayTitleHelper;
+
+  /// No description provided for @careContextAwayTripDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip details'**
+  String get careContextAwayTripDetailsTitle;
+
+  /// No description provided for @careContextAwaySummaryEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get careContextAwaySummaryEdit;
+
+  /// No description provided for @careContextAwayDateChangeConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Change absence dates?'**
+  String get careContextAwayDateChangeConfirmTitle;
+
+  /// No description provided for @careContextAwayDateChangeConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Changing dates can change when carers have app access, leave some care decisions outside the new range, and show new care to review. Check planned care after saving.'**
+  String get careContextAwayDateChangeConfirmBody;
+
+  /// No description provided for @careContextAwayGuestWidenConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Extend carer access?'**
+  String get careContextAwayGuestWidenConfirmTitle;
+
+  /// No description provided for @careContextAwayGuestWidenConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Extending these dates widens app access for carers invited to this absence. Continue?'**
+  String get careContextAwayGuestWidenConfirmBody;
+
   /// No description provided for @careContextAwayEditTooltip.
   ///
   /// In en, this message translates to:
-  /// **'Edit away plan'**
+  /// **'Edit trip details'**
   String get careContextAwayEditTooltip;
 
   /// No description provided for @careContextAwayEditTitle.
   ///
   /// In en, this message translates to:
-  /// **'Edit away plan'**
+  /// **'Trip details'**
   String get careContextAwayEditTitle;
 
   /// No description provided for @careContextAwayEditDeleteTitle.

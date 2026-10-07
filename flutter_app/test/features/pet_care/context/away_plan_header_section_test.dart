@@ -187,9 +187,12 @@ void main() {
 
     expect(find.text(l.careContextAwayPlanCarerCoverageTitle), findsNothing);
     expect(find.text(l.careContextAwayPlanCareCoverageTitle), findsNothing);
-    // The date range still renders — this is a conditional-rendering
-    // change, not a "hide the whole header" change.
-    expect(find.textContaining('2026'), findsOneWidget);
+    expect(find.byType(AwayPlanHeaderSection), findsOneWidget);
+    // Dates moved to summary card; header collapses when nothing needs attention.
+    expect(
+      tester.widget<AwayPlanHeaderSection>(find.byType(AwayPlanHeaderSection)),
+      isNotNull,
+    );
   });
 
   testWidgets('renders both coverage lines when neither is reassured', (

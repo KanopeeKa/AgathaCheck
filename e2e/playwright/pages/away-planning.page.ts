@@ -35,7 +35,7 @@ async function fillDateField(field: Locator, isoDate: string): Promise<void> {
 }
 
 /**
- * Away Planning hub, wizard, and plan page vocabulary.
+ * Away Planning hub, create form, and plan page vocabulary.
  */
 export class AwayPlanningPage {
   constructor(private readonly page: Page) {}
@@ -67,7 +67,7 @@ export class AwayPlanningPage {
     ).toBeVisible({ timeout: 30_000 });
   }
 
-  async openWizard(): Promise<void> {
+  async openCreateForm(): Promise<void> {
     await this.page.goto(flutterGotoUrl('/pc/away/new'));
     await refreshFlutterAccessibility(this.page);
     await waitForFlutterRoutePattern(this.page, /\/pc\/away\/new/, 60_000);
@@ -109,18 +109,13 @@ export class AwayPlanningPage {
     await expect(dialog).not.toBeVisible({ timeout: 15_000 });
   }
 
+  /** @deprecated Create is a single scroll form — use pickAbsenceDates + selectPet + saveAbsence. */
   async continueWizard(): Promise<void> {
-    const continueButton = semanticsKey(this.page, 'planned_absence_continue');
-    if (await continueButton.isVisible().catch(() => false)) {
-      await continueButton.click();
-    } else {
-      await this.page
-        .getByRole('button', { name: /^Continue$|^Continuer$/i })
-        .first()
-        .click();
-    }
-    await this.page.waitForTimeout(750);
     await refreshFlutterAccessibility(this.page);
+  }
+
+  async openWizard(): Promise<void> {
+    await this.openCreateForm();
   }
 
   async selectPet(petId: string, petName?: string): Promise<void> {
@@ -456,33 +451,58 @@ export class AwayPlanningPage {
   }
 
   async openEditScreen(): Promise<void> {
-    await refreshFlutterAccessibility(this.page);
-    await this.page
-      .getByRole('button', { name: /Edit away plan|Modifier le plan d'absence/i })
-      .first()
-      .click();
-    await refreshFlutterAccessibility(this.page);
-    // Flutter web push may not sync hash; assert edit screen chrome instead.
-    await this.expectEditScreenLoaded();
+    const absenceId = this.absenceIdFromUrl();
+    if (absenceId) {
+      await this.page.goto(flutterGotoUrl(`/pc/away/${absenceId}/edit`));
+      await refreshFlutterAccessibility(this.page);
+      await this.expectEditScreenLoaded();
+      return;
+    }
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      const summaryEdit = semanticsKey(this.page, 'away_plan_summary_edit');
+      await summaryEdit.scrollIntoViewIfNeeded();
+      await expect(summaryEdit).toBeVisible({ timeout: 10_000 });
+      await summaryEdit.click();
+      await refreshFlutterAccessibility(this.page);
+      await this.expectEditScreenLoaded();
+    }).toPass({ timeout: 90_000 });
+  }
+
+  private absenceIdFromUrl(): string | null {
+    const hash = new URL(this.page.url()).hash.replace(/^#/, '');
+    const path = hash || this.page.url();
+    const match = path.match(/\/pc\/away\/([^/?#]+)/);
+    if (!match || match[1] === 'new') return null;
+    return match[1];
   }
 
   async expectEditScreenLoaded(): Promise<void> {
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      await expect(this.page.getByRole('textbox', { name: /^Notes$/i })).toBeVisible();
-      await expect(
-        this.page.getByRole('button', { name: /Delete plan|Supprimer le plan/i }).first(),
-      ).toBeVisible();
+      const editPage = semanticsKey(this.page, 'away_plan_edit_page');
+      const noteField = semanticsKey(this.page, 'away_plan_handover_note').or(
+        this.page.getByRole('textbox', { name: /^Notes$/i }),
+      );
+      const deleteBtn = semanticsKey(this.page, 'away_plan_edit_delete').or(
+        this.page.getByRole('button', { name: /Delete plan|Supprimer le plan/i }),
+      );
+      await expect(editPage.or(noteField).first()).toBeVisible();
+      await expect(noteField.first()).toBeVisible();
+      await expect(deleteBtn.first()).toBeVisible();
     }).toPass({ timeout: 60_000 });
   }
 
   async fillHandoverNote(note: string): Promise<void> {
-    const field = this.page.getByRole('textbox', { name: /^Notes$/i });
+    const field = semanticsKey(this.page, 'away_plan_handover_note').or(
+      this.page.getByRole('textbox', { name: /^Notes$/i }),
+    );
     await expect(field).toBeVisible({ timeout: 30_000 });
     await field.click();
     await field.fill('');
     await field.pressSequentially(note, { delay: 20 });
     await refreshFlutterAccessibility(this.page);
+    await this.page.waitForTimeout(300);
   }
 
   async saveEdit(): Promise<void> {
@@ -499,12 +519,12 @@ export class AwayPlanningPage {
   async expectHandoverNoteOnPlan(note: string): Promise<void> {
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      const bySemantics = semanticsKey(this.page, 'away_plan_handover_note_text');
-      // Both sides of `.or()` can independently match (semantics node + text
-      // span), so the combined locator can resolve to 2 elements; `.first()`
-      // must wrap the whole `.or()`, not just one side, to keep strict mode happy.
-      const combined = bySemantics.or(this.page.getByText(note, { exact: false })).first();
-      await expect(combined).toBeVisible();
+      const summaryNote = semanticsKey(this.page, 'away_plan_summary_handover_note');
+      await summaryNote.scrollIntoViewIfNeeded();
+      await expect(summaryNote.or(this.page.getByText(note, { exact: false })).first()).toBeVisible();
+      await expect(summaryNote.or(this.page.getByText(note, { exact: false })).first()).toContainText(
+        note,
+      );
     }).toPass({ timeout: 45_000 });
   }
 

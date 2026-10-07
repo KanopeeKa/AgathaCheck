@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../../core/widgets/form/app_form_actions_bar.dart';
+import '../../../../../core/widgets/form/app_form_breakpoints.dart';
 import '../../../../../l10n/app_localizations.dart';
 import 'package:pet_profile_app/core/experience/app_experience.dart';
 import 'package:pet_profile_app/core/router/experience_shell_scaffold.dart';
@@ -13,6 +15,7 @@ import '../widgets/planned_absence_dates_step.dart';
 import '../widgets/planned_absence_pets_step.dart';
 import '../widgets/planned_absence_preview_step.dart';
 
+/// Single-scroll create form (title, dates, pets, care preview) — not a wizard.
 class PlannedAbsenceFlowScreen extends ConsumerStatefulWidget {
   const PlannedAbsenceFlowScreen({super.key});
 
@@ -23,22 +26,20 @@ class PlannedAbsenceFlowScreen extends ConsumerStatefulWidget {
 
 class _PlannedAbsenceFlowScreenState
     extends ConsumerState<PlannedAbsenceFlowScreen> {
-  static const _stepCount = 3;
-
-  final _pageController = PageController();
+  final _titleController = TextEditingController();
   final _controller = PetListController();
 
-  int _step = 0;
   DateTime? _startsOn;
   DateTime? _endsOn;
   Set<String> _selectedPetIds = {};
   bool _hasInitializedPetSelection = false;
   bool _isSaving = false;
-  String? _stepValidationMessage;
+  String? _datesValidationMessage;
+  String? _petsValidationMessage;
 
   @override
   void dispose() {
-    _pageController.dispose();
+    _titleController.dispose();
     super.dispose();
   }
 
@@ -59,27 +60,32 @@ class _PlannedAbsenceFlowScreenState
 
   String? _endsOnWire() => PlannedAbsenceDateRules.endsOnWire(_endsOn);
 
-  bool _validateCurrentStep(List<Pet> allPets) {
-    final l = AppLocalizations.of(context)!;
-    if (_step == 0) {
-      if (!PlannedAbsenceDateRules.isValidRange(_startsOn, _endsOn)) {
-        if (_startsOn == null || _endsOn == null) {
-          _stepValidationMessage = l.careContextAwayDatesRequired;
-        } else if (_endsOn!.isBefore(_startsOn!)) {
-          _stepValidationMessage = l.careContextAwayDatesInvalid;
-        } else {
-          _stepValidationMessage = l.careContextAwayDatesHorizon;
-        }
-        return false;
+  bool get _hasValidDates =>
+      PlannedAbsenceDateRules.isValidRange(_startsOn, _endsOn);
+
+  bool get _canSave => _hasValidDates && _selectedPetIds.isNotEmpty;
+
+  bool _validateForSave(AppLocalizations l) {
+    var ok = true;
+    if (!_hasValidDates) {
+      if (_startsOn == null || _endsOn == null) {
+        _datesValidationMessage = l.careContextAwayDatesRequired;
+      } else if (_endsOn!.isBefore(_startsOn!)) {
+        _datesValidationMessage = l.careContextAwayDatesInvalid;
+      } else {
+        _datesValidationMessage = l.careContextAwayDatesHorizon;
       }
-    } else if (_step == 1) {
-      if (_selectedPetIds.isEmpty) {
-        _stepValidationMessage = l.careContextAwayPetsRequired;
-        return false;
-      }
+      ok = false;
+    } else {
+      _datesValidationMessage = null;
     }
-    _stepValidationMessage = null;
-    return true;
+    if (_selectedPetIds.isEmpty) {
+      _petsValidationMessage = l.careContextAwayPetsRequired;
+      ok = false;
+    } else {
+      _petsValidationMessage = null;
+    }
+    return ok;
   }
 
   void _invalidatePreviewProviders() {
@@ -97,43 +103,9 @@ class _PlannedAbsenceFlowScreenState
     }
   }
 
-  void _nextStep(List<Pet> allPets) {
-    if (!_validateCurrentStep(allPets)) {
-      setState(() {});
-      return;
-    }
-    if (_step >= _stepCount - 1) return;
-    setState(() {
-      _step += 1;
-      _stepValidationMessage = null;
-    });
-    if (_step == 2) {
-      _invalidatePreviewProviders();
-    }
-    _pageController.nextPage(
-      duration: const Duration(milliseconds: 250),
-      curve: Curves.easeOut,
-    );
-  }
-
-  void _previousStep() {
-    if (_step == 0) {
-      context.pop();
-      return;
-    }
-    setState(() {
-      _step -= 1;
-      _stepValidationMessage = null;
-    });
-    _pageController.previousPage(
-      duration: const Duration(milliseconds: 250),
-      curve: Curves.easeOut,
-    );
-  }
-
   Future<void> _saveAbsence(List<Pet> allPets) async {
     final l = AppLocalizations.of(context)!;
-    if (!_validateCurrentStep(allPets)) {
+    if (!_validateForSave(l)) {
       setState(() {});
       return;
     }
@@ -141,6 +113,7 @@ class _PlannedAbsenceFlowScreenState
     final endsOn = _endsOnWire();
     if (startsOn == null || endsOn == null) return;
 
+    final title = _titleController.text.trim();
     setState(() => _isSaving = true);
     try {
       final result = await ref
@@ -149,6 +122,7 @@ class _PlannedAbsenceFlowScreenState
             startsOn: startsOn,
             endsOn: endsOn,
             petIds: _selectedPetIds.toList(growable: false),
+            title: title.isEmpty ? null : title,
           );
       ref.invalidate(plannedAbsencesListProvider);
       if (!mounted) return;
@@ -192,6 +166,85 @@ class _PlannedAbsenceFlowScreenState
     }
   }
 
+  void _handleCancel() {
+    context.pop();
+  }
+
+  Widget _formBody(
+    AppLocalizations l, {
+    required List<Pet> selectablePets,
+    required String? startsOn,
+    required String? endsOn,
+    required Map<String, String> petNamesById,
+    required bool includeActions,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        TextFormField(
+          key: const Key('planned_absence_title'),
+          controller: _titleController,
+          decoration: InputDecoration(
+            labelText: l.careContextAwayTitleLabel,
+            hintText: l.careContextAwayTitleHint,
+            helperText: l.careContextAwayTitleHelper,
+          ),
+          maxLength: 60,
+          textInputAction: TextInputAction.next,
+        ),
+        const SizedBox(height: 16),
+        PlannedAbsenceDatesStep(
+          startsOn: _startsOn,
+          endsOn: _endsOn,
+          validationMessage: _datesValidationMessage,
+          onRangeChanged: (start, end) => setState(() {
+            _startsOn = start;
+            _endsOn = end;
+            _datesValidationMessage = null;
+            if (_hasValidDates) {
+              _invalidatePreviewProviders();
+            }
+          }),
+        ),
+        const SizedBox(height: 16),
+        PlannedAbsencePetsStep(
+          pets: selectablePets,
+          selectedPetIds: _selectedPetIds,
+          validationMessage: _petsValidationMessage,
+          onSelectionChanged: (next) => setState(() {
+            _selectedPetIds = next;
+            _petsValidationMessage = null;
+            if (_hasValidDates) {
+              _invalidatePreviewProviders();
+            }
+          }),
+        ),
+        if (startsOn != null && endsOn != null) ...[
+          const SizedBox(height: 24),
+          PlannedAbsencePreviewStep(
+            startsOn: startsOn,
+            endsOn: endsOn,
+            petNamesById: petNamesById,
+            selectedPetIds: _selectedPetIds.toList(growable: false),
+            onRetry: _invalidatePreviewProviders,
+          ),
+        ],
+        if (includeActions) ...[
+          const SizedBox(height: 24),
+          AppFormActionsBar(
+            isLoading: _isSaving,
+            isDirty: _canSave,
+            onSave: () => _saveAbsence(selectablePets),
+            onCancel: _handleCancel,
+            saveLabel: l.careContextAwaySaveAction,
+            cancelKey: const Key('planned_absence_cancel'),
+            saveKey: const Key('planned_absence_save'),
+          ),
+        ],
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
@@ -213,6 +266,10 @@ class _PlannedAbsenceFlowScreenState
         ? '/pc/away'
         : '/pc/home';
 
+    final isPhone =
+        AppFormBreakpoints.layoutForWidth(MediaQuery.sizeOf(context).width) ==
+        AppFormLayoutSize.phone;
+
     return ExperienceShellScaffold(
       experience: AppExperience.petCare,
       currentLocation: GoRouterState.of(context).uri.path,
@@ -220,98 +277,54 @@ class _PlannedAbsenceFlowScreenState
       backPath: backPath,
       child: Column(
         children: [
-          LinearProgressIndicator(
-            value: (_step + 1) / _stepCount,
-            minHeight: 4,
-          ),
           Expanded(
-            child: PageView(
-              controller: _pageController,
-              physics: const NeverScrollableScrollPhysics(),
-              children: [
-                SingleChildScrollView(
-                  padding: const EdgeInsets.all(20),
-                  child: PlannedAbsenceDatesStep(
-                    startsOn: _startsOn,
-                    endsOn: _endsOn,
-                    validationMessage: _step == 0
-                        ? _stepValidationMessage
-                        : null,
-                    onRangeChanged: (start, end) => setState(() {
-                      _startsOn = start;
-                      _endsOn = end;
-                    }),
-                  ),
-                ),
-                SingleChildScrollView(
-                  padding: const EdgeInsets.all(20),
-                  child: PlannedAbsencePetsStep(
-                    pets: selectablePets,
-                    selectedPetIds: _selectedPetIds,
-                    validationMessage: _step == 1
-                        ? _stepValidationMessage
-                        : null,
-                    onSelectionChanged: (next) =>
-                        setState(() => _selectedPetIds = next),
-                  ),
-                ),
-                if (startsOn != null && endsOn != null)
-                  SingleChildScrollView(
-                    padding: const EdgeInsets.all(20),
-                    child: PlannedAbsencePreviewStep(
-                      startsOn: startsOn,
-                      endsOn: endsOn,
-                      petNamesById: petNamesById,
-                      selectedPetIds: _selectedPetIds.toList(growable: false),
-                      onRetry: _invalidatePreviewProviders,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final layout = AppFormBreakpoints.layoutForWidth(
+                  constraints.maxWidth,
+                );
+                final includeActions = layout != AppFormLayoutSize.phone;
+                final form = _formBody(
+                  l,
+                  selectablePets: selectablePets,
+                  startsOn: startsOn,
+                  endsOn: endsOn,
+                  petNamesById: petNamesById,
+                  includeActions: includeActions,
+                );
+                if (layout == AppFormLayoutSize.phone) {
+                  return SingleChildScrollView(
+                    key: const Key('planned_absence_create_page'),
+                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 96),
+                    child: form,
+                  );
+                }
+                return Align(
+                  alignment: Alignment.topCenter,
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(24),
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(
+                        maxWidth: AppFormBreakpoints.tabletContentMaxWidth,
+                      ),
+                      child: form,
                     ),
-                  )
-                else
-                  const SizedBox.shrink(),
-              ],
+                  ),
+                );
+              },
             ),
           ),
-          SafeArea(
-            top: false,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
-              child: Row(
-                children: [
-                  TextButton(
-                    key: const Key('planned_absence_back'),
-                    onPressed: _isSaving ? null : _previousStep,
-                    child: Text(_step == 0 ? l.cancel : l.careContextAwayBack),
-                  ),
-                  const Spacer(),
-                  if (_step < _stepCount - 1)
-                    FilledButton(
-                      key: const Key('planned_absence_continue'),
-                      onPressed: _isSaving ? null : () => _nextStep(allPets),
-                      child: Text(l.careContextAwayContinue),
-                    )
-                  else ...[
-                    TextButton(
-                      key: const Key('planned_absence_done_without_save'),
-                      onPressed: _isSaving ? null : () => context.pop(),
-                      child: Text(l.careContextAwaySkipSave),
-                    ),
-                    const SizedBox(width: 8),
-                    FilledButton(
-                      key: const Key('planned_absence_save'),
-                      onPressed: _isSaving ? null : () => _saveAbsence(allPets),
-                      child: _isSaving
-                          ? const SizedBox(
-                              width: 18,
-                              height: 18,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : Text(l.careContextAwaySaveAction),
-                    ),
-                  ],
-                ],
-              ),
+          if (isPhone)
+            AppFormStickyActionsBar(
+              stickyKey: const Key('planned_absence_sticky_actions'),
+              isLoading: _isSaving,
+              isDirty: _canSave,
+              onSave: () => _saveAbsence(allPets),
+              onCancel: _handleCancel,
+              saveLabel: l.careContextAwaySaveAction,
+              cancelKey: const Key('planned_absence_cancel'),
+              saveKey: const Key('planned_absence_save'),
             ),
-          ),
         ],
       ),
     );

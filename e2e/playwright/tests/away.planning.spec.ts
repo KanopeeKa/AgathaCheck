@@ -1,7 +1,7 @@
 /**
  * @bdd away_planning.feature
  * Scenario: Dashboard away planning tile opens the hub
- * Scenario: Guardian can save a planned absence from the wizard
+ * Scenario: Guardian can save a planned absence from the create form
  * Scenario: Away planning hub lists a saved upcoming absence
  * Scenario: Away plan page shows who is caring for each pet
  * Scenario: Guardian assigns a shared carer on the away plan page
@@ -35,7 +35,7 @@ test.describe('Away planning', () => {
     await away.expectEmptyHub();
   });
 
-  test('Guardian can save a planned absence from the wizard', async ({ page, testUser }) => {
+  test('Guardian can save a planned absence from the create form', async ({ page, testUser }) => {
     const root = baseURL();
     const pet = await createPet(root, testUser.accessToken, 'WizardPet');
     await loginAs(page, testUser, { experience: 'guardian' });
@@ -46,9 +46,7 @@ test.describe('Away planning', () => {
     const startsOn = dateOffset(7);
     const endsOn = dateOffset(14);
     await away.pickAbsenceDates(startsOn, endsOn);
-    await away.continueWizard();
     await away.selectPet(pet.id, pet.name);
-    await away.continueWizard();
     await away.saveAbsence();
 
     await away.expectPlanPageLoaded();

@@ -13,10 +13,11 @@ import '../../domain/entities/carer_candidate.dart';
 import '../../domain/entities/planned_absence.dart';
 
 class CareContextApiException implements Exception {
-  CareContextApiException(this.statusCode, this.message);
+  CareContextApiException(this.statusCode, this.message, {this.code});
 
   final int statusCode;
   final String message;
+  final String? code;
 
   @override
   String toString() => 'CareContextApiException($statusCode): $message';
@@ -42,10 +43,23 @@ class CareContextRemoteDataSource {
 
   void _check(http.Response response) {
     if (response.statusCode >= 200 && response.statusCode < 300) return;
-    throw CareContextApiException(
-      response.statusCode,
-      'Care context request failed (${response.statusCode})',
-    );
+    throw _failure(response);
+  }
+
+  CareContextApiException _failure(http.Response response) {
+    var message = 'Care context request failed (${response.statusCode})';
+    String? code;
+    try {
+      final decoded = json.decode(response.body);
+      if (decoded is Map<String, dynamic>) {
+        final err = decoded['error'];
+        if (err is String && err.isNotEmpty) message = err;
+        code = decoded['code'] as String?;
+      }
+    } catch (_) {
+      // Keep generic message when body is not JSON.
+    }
+    return CareContextApiException(response.statusCode, message, code: code);
   }
 
   Future<CarePeriodCoverageResult> fetchCarePeriodCoverage({
@@ -69,15 +83,20 @@ class CareContextRemoteDataSource {
     required String startsOn,
     required String endsOn,
     required List<String> petIds,
+    String? title,
   }) async {
+    final payload = <String, dynamic>{
+      'starts_on': startsOn,
+      'ends_on': endsOn,
+      'pet_ids': petIds,
+    };
+    if (title != null && title.isNotEmpty) {
+      payload['title'] = title;
+    }
     final response = await _client.post(
       Uri.parse('$baseUrl/api/planned-absences'),
       headers: _headers(jsonBody: true),
-      body: json.encode({
-        'starts_on': startsOn,
-        'ends_on': endsOn,
-        'pet_ids': petIds,
-      }),
+      body: json.encode(payload),
     );
     _check(response);
     return PlannedAbsenceModel.createResultFromJson(
@@ -142,6 +161,34 @@ class CareContextRemoteDataSource {
       Uri.parse('$baseUrl/api/planned-absences/$absenceId'),
       headers: _headers(jsonBody: true),
       body: json.encode({'handover_note': handoverNote}),
+    );
+    _check(response);
+    final body = json.decode(response.body) as Map<String, dynamic>;
+    final absenceJson = body['absence'] as Map<String, dynamic>? ?? body;
+    return PlannedAbsenceModel.fromJson(absenceJson);
+  }
+
+  Future<PlannedAbsence> updatePlannedAbsenceDetails({
+    required String absenceId,
+    required String startsOn,
+    required String endsOn,
+    String? title,
+    String? handoverNote,
+    bool confirmGuestAccessWiden = false,
+  }) async {
+    final payload = <String, dynamic>{
+      'starts_on': startsOn,
+      'ends_on': endsOn,
+      'title': title,
+      'handover_note': handoverNote,
+    };
+    if (confirmGuestAccessWiden) {
+      payload['confirm_guest_access_widen'] = true;
+    }
+    final response = await _client.patch(
+      Uri.parse('$baseUrl/api/planned-absences/$absenceId'),
+      headers: _headers(jsonBody: true),
+      body: json.encode(payload),
     );
     _check(response);
     final body = json.decode(response.body) as Map<String, dynamic>;

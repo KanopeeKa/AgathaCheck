@@ -7070,10 +7070,40 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careContextAwayPlanCareCoverageTitle => 'Care coverage';
 
   @override
-  String get careContextAwayEditTooltip => 'Edit away plan';
+  String get careContextAwayTitleLabel => 'Title';
 
   @override
-  String get careContextAwayEditTitle => 'Edit away plan';
+  String get careContextAwayTitleHint => 'e.g. Ski week, Work trip';
+
+  @override
+  String get careContextAwayTitleHelper =>
+      'Visible to your care team and handover PDF.';
+
+  @override
+  String get careContextAwayTripDetailsTitle => 'Trip details';
+
+  @override
+  String get careContextAwaySummaryEdit => 'Edit';
+
+  @override
+  String get careContextAwayDateChangeConfirmTitle => 'Change absence dates?';
+
+  @override
+  String get careContextAwayDateChangeConfirmBody =>
+      'Changing dates can change when carers have app access, leave some care decisions outside the new range, and show new care to review. Check planned care after saving.';
+
+  @override
+  String get careContextAwayGuestWidenConfirmTitle => 'Extend carer access?';
+
+  @override
+  String get careContextAwayGuestWidenConfirmBody =>
+      'Extending these dates widens app access for carers invited to this absence. Continue?';
+
+  @override
+  String get careContextAwayEditTooltip => 'Edit trip details';
+
+  @override
+  String get careContextAwayEditTitle => 'Trip details';
 
   @override
   String get careContextAwayEditDeleteTitle => 'Delete this away plan?';

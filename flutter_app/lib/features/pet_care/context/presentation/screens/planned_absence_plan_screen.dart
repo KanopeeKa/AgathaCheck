@@ -9,9 +9,8 @@ import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 import '../providers/care_context_providers.dart';
 import '../controllers/away_plan_handover_controller.dart';
 import '../widgets/away_plan_carers_section.dart';
-import '../widgets/away_plan_details_section.dart';
-import '../widgets/away_plan_handover_note_section.dart';
 import '../widgets/away_plan_header_section.dart';
+import '../widgets/away_plan_summary_card.dart';
 import '../widgets/away_plan_pet_care_section.dart';
 
 class PlannedAbsencePlanScreen extends ConsumerWidget {
@@ -92,17 +91,6 @@ class PlannedAbsencePlanScreen extends ConsumerWidget {
             return shell(
               actions: [
                 IconButton(
-                  key: const Key('away_plan_edit'),
-                  tooltip: l.careContextAwayEditTooltip,
-                  icon: const Icon(Icons.edit_outlined),
-                  onPressed: absence.isCancelled
-                      ? null
-                      : () => context.pushNamed(
-                          'petCarePlannedAbsenceEdit',
-                          pathParameters: {'id': absenceId},
-                        ),
-                ),
-                IconButton(
                   key: const Key('away_plan_download_handover'),
                   tooltip: l.downloadReport,
                   icon: const Icon(Icons.picture_as_pdf_outlined),
@@ -113,6 +101,16 @@ class PlannedAbsencePlanScreen extends ConsumerWidget {
                 key: const Key('away_plan_page'),
                 padding: const EdgeInsets.all(16),
                 children: [
+                  AwayPlanSummaryCard(
+                    absence: absence,
+                    onEdit: absence.isCancelled
+                        ? null
+                        : () => context.pushNamed(
+                            'petCarePlannedAbsenceEdit',
+                            pathParameters: {'id': absenceId},
+                          ),
+                  ),
+                  const SizedBox(height: 16),
                   AwayPlanHeaderSection(absence: absence, readiness: readiness),
                   const SizedBox(height: 24),
                   AwayPlanCarersSection(
@@ -137,13 +135,6 @@ class PlannedAbsencePlanScreen extends ConsumerWidget {
                         onRetry: retryPetCoverage,
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  AwayPlanHandoverNoteSection(absence: absence),
-                  const SizedBox(height: 24),
-                  AwayPlanDetailsSection(
-                    absence: absence,
-                    petNamesById: petNamesById,
                   ),
                 ],
               ),

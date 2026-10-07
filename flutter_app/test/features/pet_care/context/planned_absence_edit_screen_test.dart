@@ -37,19 +37,37 @@ class _FakeCareContextRepository implements CareContextRepository {
     required String absenceId,
     String? handoverNote,
   }) async {
+    return updatePlannedAbsenceDetails(
+      absenceId: absenceId,
+      startsOn: absence.startsOn,
+      endsOn: absence.endsOn,
+      handoverNote: handoverNote,
+    );
+  }
+
+  @override
+  Future<PlannedAbsence> updatePlannedAbsenceDetails({
+    required String absenceId,
+    required String startsOn,
+    required String endsOn,
+    String? title,
+    String? handoverNote,
+    bool confirmGuestAccessWiden = false,
+  }) async {
     updateHandoverNoteCallCount++;
     if (updateThrows) throw CareContextApiException(500, 'Save failed');
     lastSavedNote = handoverNote;
     absence = PlannedAbsence(
       id: absence.id,
       userId: absence.userId,
-      startsOn: absence.startsOn,
-      endsOn: absence.endsOn,
+      startsOn: startsOn,
+      endsOn: endsOn,
       provenance: absence.provenance,
       status: absence.status,
       petIds: absence.petIds,
       petCarers: absence.petCarers,
       handoverNote: handoverNote,
+      title: title,
     );
     return absence;
   }
@@ -99,6 +117,7 @@ class _FakeCareContextRepository implements CareContextRepository {
     required String startsOn,
     required String endsOn,
     required List<String> petIds,
+    String? title,
   }) {
     throw UnimplementedError();
   }
@@ -267,6 +286,7 @@ void main() {
       );
       await tester.pump();
 
+      await tester.ensureVisible(find.byKey(const Key('away_plan_edit_save')));
       await tester.tap(find.byKey(const Key('away_plan_edit_save')));
       await tester.pumpAndSettle();
 
@@ -289,6 +309,9 @@ void main() {
       );
       await tester.pump();
 
+      await tester.ensureVisible(
+        find.byKey(const Key('away_plan_edit_cancel')),
+      );
       await tester.tap(find.byKey(const Key('away_plan_edit_cancel')));
       await tester.pumpAndSettle();
 
@@ -305,6 +328,9 @@ void main() {
       expect(find.byKey(const Key('away_plan_handover_note')), findsOneWidget);
 
       // Discard: navigates back to the plan screen.
+      await tester.ensureVisible(
+        find.byKey(const Key('away_plan_edit_cancel')),
+      );
       await tester.tap(find.byKey(const Key('away_plan_edit_cancel')));
       await tester.pumpAndSettle();
       await tester.tap(
