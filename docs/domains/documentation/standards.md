@@ -89,7 +89,7 @@ Standalone `*-decisions.md` under `features/` or `changes/` is **legacy**; do no
 - **Local:** `bash scripts/validate_docs.sh` — links, placement/manifest, plus `check_docs_canonical.js` (diff vs `origin/main`; `DOCS_GATE_MODE` defaults to `warn` locally).
 - **CI (blocking):** `.github/workflows/docs-gate.yml` — jobs **Docs declaration** (Gate A) and **Docs canonical** (Gates B–E + trace report). `DOCS_GATE_MODE=block` in that workflow.
 - **Weekly hygiene:** `quality-kpis.yml` job `docs-hygiene` — expired `changes/`, duplicate IDs, closed-issue `none — #n` rows, memory backlog (R-M4); tracking issue marker `<!-- docs-hygiene-weekly -->`.
-- **Legacy baseline:** `scripts/docs-legacy-baseline.json` — shrink-only; untouched paths skip Gate C (**R-L3**). Migrate with `/canonical-docs consolidate`.
+- **Legacy baseline:** `scripts/docs-legacy-baseline.json` — shrink-only; untouched paths skip Gate C (**R-L3**). Migrate with `/canonical-docs consolidate`; wave order in `changes/documentation-migration-handover.md`.
 
 ### Gate A — PR `## Docs`
 
@@ -122,6 +122,7 @@ Declare canonical path(s) updated or `N/A — <reason>` (≥10 characters after 
 | DOCUMENTATION-STANDARDS-D-004 | Documentation CI gates block on PR | `docs-gate.yml` Gates A–E; baseline shrink-only; plan docs-ci-gates-a496 | Live | 2026-10-07 | TBD |
 | DOCUMENTATION-STANDARDS-D-005 | Bare legacy decision IDs take a fixed per-domain prefix | Legacy ranges overlap (D20–D24 in two domains); fixed table avoids two consolidations inventing different prefixes; R-C7/R-D3 enforce uniqueness | Live | 2026-10-07 | — |
 | DOCUMENTATION-STANDARDS-D-006 | `.agents/memory/` holds lessons only; product rules move to canonical docs | Memory had become a hidden second spec; non-blocking guards (R-M1–R-M4) plus a backlog worked down during consolidation | Live | 2026-10-07 | — |
+| DOCUMENTATION-STANDARDS-D-007 | Documentation migration handover supersedes 2025 consolidation plan | Single authoritative migrate plan for agents; integration branch + two-phase gates | Live | 2026-10-07 | #1762 |
 
 ## Still open
 
