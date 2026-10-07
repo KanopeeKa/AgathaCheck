@@ -2,9 +2,11 @@
 title: Away Planning — Delivery Plan
 owner: Product / Agent
 audience: both
-status: active
-last_updated: 2026-09-15
-tags: [pet_care, care_context, delivery]
+status: in-delivery
+status_since: 2026-10-07
+folds_into: docs/domains/pet_care/features/away-planning-carer-model.md
+plan: documentation-migration-care-context-514a
+last_updated: 2026-10-07
 ---
 
 # Away Planning — Delivery Plan

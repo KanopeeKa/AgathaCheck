@@ -2,9 +2,11 @@
 title: Away Care Planning — Decisions
 owner: Product / Agent
 audience: both
-status: frozen
-last_updated: 2026-09-29
-tags: [pet_care, care_context, care_schedule_management, away_planning, decisions]
+status: in-delivery
+status_since: 2026-10-07
+folds_into: docs/domains/pet_care/features/care-context.md
+plan: documentation-migration-care-context-514a
+last_updated: 2026-10-07
 ---
 
 # Away Care Planning — Decisions

@@ -2,14 +2,16 @@
 title: Away Planning — Decision log
 owner: Product / Agent
 audience: both
-status: active
-last_updated: 2026-09-22
-tags: [pet_care, care_context, decisions]
+status: in-delivery
+status_since: 2026-10-07
+folds_into: docs/domains/pet_care/features/away-planning-carer-model.md
+plan: documentation-migration-care-context-514a
+last_updated: 2026-10-07
 ---
 
 # Away Planning — Decision log
 
-Frozen product and engineering decisions for **Away Planning V1**. **Care Context** (projection, coverage, readiness presentation, planned-care list, `explainGap`, absence invariants): canonical [care-context.md](../features/care-context.md) decision log — D-AWAY-001, D-AWAY-002, D-AWAY-006, D-AWAY-007, D-AWAY-010, D-AWAY-011, D-AWD-*, D-CC-ABS-001, D-CC-SCOPE-001. **This file** retains carer, handover, terminology, and debt rows for Wave 1.3b. Delivery sequencing: [away-planning-delivery-plan.md](./away-planning-delivery-plan.md).
+Frozen product and engineering decisions for **Away Planning V1**. **Care Context** (projection, coverage, readiness presentation, planned-care list, `explainGap`, absence invariants): canonical [care-context.md](../features/care-context.md) decision log — D-AWAY-001, D-AWAY-002, D-AWAY-006, D-AWAY-007, D-AWAY-010, D-AWAY-011, D-AWD-*, CARE-CONTEXT-D-001, CARE-CONTEXT-D-002. **This file** retains carer, handover, terminology, and debt rows for Wave 1.3b. Delivery sequencing: [away-planning-delivery-plan.md](./away-planning-delivery-plan.md).
 
 **Context:** AgathaTrack is **not in production**; no real user data exists. Verified against `main` through `fcc8a804` (2026-09-15). Care Schedule Management V1 merged in [#1193](https://github.com/KanopeeKa/AgathaCheck/pull/1193).
 

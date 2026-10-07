@@ -2,15 +2,17 @@
 title: Away Plan Detail V2 — Delivery Plan
 owner: Product / Agent
 audience: both
-status: active
-last_updated: 2026-09-22
-tags: [pet_care, care_context, away_planning, delivery]
+status: in-delivery
+status_since: 2026-10-07
+folds_into: docs/domains/pet_care/features/care-context.md
+plan: documentation-migration-care-context-514a
+last_updated: 2026-10-07
 ---
 
 # Away Plan Detail V2 — Delivery Plan
 
 **Canonical product behaviour (V1):** [care-context.md](../features/care-context.md) — update in AWD-5.
-**Frozen decisions:** [care-context.md](../features/care-context.md) (D-AWD-001–007; D-AWD-007 superseded by D-CC-ABS-001)
+**Frozen decisions:** [care-context.md](../features/care-context.md) (D-AWD-001–007; D-AWD-007 superseded by CARE-CONTEXT-D-001)
 **Execute-plan:** `.agents/plans/away-plan-detail-v2.md`
 
 **Status: active** — decisions frozen 2026-09-22 after two chat review rounds; implementation authorized.
@@ -143,7 +145,7 @@ One outcome: `PlannedAbsencePlanScreen` is read-only; a new edit screen owns the
 
 ## AWD-5 — Docs + journey
 
-`care-context.md` updated for the unified event model and trip-details edit (D-CC-ABS-001); `docs/architecture/api-reference.md` finalised for the AWD-2 contract fields (draft written in AWD-2, confirmed here against the shipped shape).
+`care-context.md` updated for the unified event model and trip-details edit (CARE-CONTEXT-D-001); `docs/architecture/api-reference.md` finalised for the AWD-2 contract fields (draft written in AWD-2, confirmed here against the shipped shape).
 
 **BDD: three separate scenarios, not one bundled one** (per review round 1 — atomic BDD, mirrors atomic-pr.mdc's "one outcome" principle applied to test scenarios):
 
