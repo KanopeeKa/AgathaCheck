@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/utils/calendar_date.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../domain/entities/away_plan_readiness.dart';
 import '../../domain/entities/planned_absence.dart';
@@ -20,15 +19,6 @@ class AwayPlanHeaderSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final start = parseCalendarDate(absence.startsOn);
-    final end = parseCalendarDate(absence.endsOn);
-    final dateRange = start != null && end != null
-        ? l.careContextAwayPreviewDateRange(
-            formatCalendarDateDisplay(start),
-            formatCalendarDateDisplay(end),
-          )
-        : '${absence.startsOn} – ${absence.endsOn}';
-
     // D-AWD-001: attention-only coverage summary. Each line renders only
     // when it isn't already fully reassured by the per-pet cards below.
     final showCarerCoverage =
@@ -37,19 +27,13 @@ class AwayPlanHeaderSection extends StatelessWidget {
         readiness.careCoverage.coverageState == 'has_items_to_review' ||
         readiness.careCoverage.coverageState == 'indeterminate';
 
+    if (!showCarerCoverage && !showCareCoverage) {
+      return const SizedBox.shrink();
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(dateRange, style: theme.textTheme.headlineSmall),
-        if (absence.isCancelled) ...[
-          const SizedBox(height: 8),
-          Text(
-            l.careContextAwayPlanStatusCancelled,
-            style: theme.textTheme.labelLarge?.copyWith(
-              color: theme.colorScheme.error,
-            ),
-          ),
-        ],
         if (showCarerCoverage) ...[
           const SizedBox(height: 16),
           Text(

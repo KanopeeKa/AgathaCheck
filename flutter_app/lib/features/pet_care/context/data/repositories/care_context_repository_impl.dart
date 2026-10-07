@@ -29,11 +29,13 @@ class CareContextRepositoryImpl implements CareContextRepository {
     required String startsOn,
     required String endsOn,
     required List<String> petIds,
+    String? title,
   }) {
     return _remote.createPlannedAbsence(
       startsOn: startsOn,
       endsOn: endsOn,
       petIds: petIds,
+      title: title,
     );
   }
 
@@ -62,6 +64,23 @@ class CareContextRepositoryImpl implements CareContextRepository {
   }) => _remote.updateHandoverNote(
     absenceId: absenceId,
     handoverNote: handoverNote,
+  );
+
+  @override
+  Future<PlannedAbsence> updatePlannedAbsenceDetails({
+    required String absenceId,
+    required String startsOn,
+    required String endsOn,
+    String? title,
+    String? handoverNote,
+    bool confirmGuestAccessWiden = false,
+  }) => _remote.updatePlannedAbsenceDetails(
+    absenceId: absenceId,
+    startsOn: startsOn,
+    endsOn: endsOn,
+    title: title,
+    handoverNote: handoverNote,
+    confirmGuestAccessWiden: confirmGuestAccessWiden,
   );
 
   @override

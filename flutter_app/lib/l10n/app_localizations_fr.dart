@@ -7187,10 +7187,42 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careContextAwayPlanCareCoverageTitle => 'Couverture des soins';
 
   @override
-  String get careContextAwayEditTooltip => 'Modifier le plan d\'absence';
+  String get careContextAwayTitleLabel => 'Titre';
 
   @override
-  String get careContextAwayEditTitle => 'Modifier le plan d\'absence';
+  String get careContextAwayTitleHint => 'p. ex. Semaine au ski, Voyage pro';
+
+  @override
+  String get careContextAwayTitleHelper =>
+      'Visible pour votre équipe de soins et le PDF de passation.';
+
+  @override
+  String get careContextAwayTripDetailsTitle => 'Détails du voyage';
+
+  @override
+  String get careContextAwaySummaryEdit => 'Modifier';
+
+  @override
+  String get careContextAwayDateChangeConfirmTitle =>
+      'Modifier les dates d\'absence ?';
+
+  @override
+  String get careContextAwayDateChangeConfirmBody =>
+      'Changer les dates peut modifier l\'accès app des soignants, laisser des décisions de soins hors de la nouvelle période et afficher de nouveaux soins à revoir. Vérifiez les soins planifiés après l\'enregistrement.';
+
+  @override
+  String get careContextAwayGuestWidenConfirmTitle =>
+      'Étendre l\'accès des soignants ?';
+
+  @override
+  String get careContextAwayGuestWidenConfirmBody =>
+      'Prolonger ces dates élargit l\'accès app pour les soignants invités à cette absence. Continuer ?';
+
+  @override
+  String get careContextAwayEditTooltip => 'Modifier les détails du voyage';
+
+  @override
+  String get careContextAwayEditTitle => 'Détails du voyage';
 
   @override
   String get careContextAwayEditDeleteTitle => 'Supprimer ce plan d\'absence ?';

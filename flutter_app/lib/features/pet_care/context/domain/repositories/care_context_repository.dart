@@ -15,6 +15,7 @@ abstract class CareContextRepository {
     required String startsOn,
     required String endsOn,
     required List<String> petIds,
+    String? title,
   });
 
   Future<List<PlannedAbsence>> listPlannedAbsences({String scope = 'all'});
@@ -28,6 +29,15 @@ abstract class CareContextRepository {
   Future<PlannedAbsence> updateHandoverNote({
     required String absenceId,
     String? handoverNote,
+  });
+
+  Future<PlannedAbsence> updatePlannedAbsenceDetails({
+    required String absenceId,
+    required String startsOn,
+    required String endsOn,
+    String? title,
+    String? handoverNote,
+    bool confirmGuestAccessWiden = false,
   });
 
   Future<void> recordHandoverDownload(String absenceId);

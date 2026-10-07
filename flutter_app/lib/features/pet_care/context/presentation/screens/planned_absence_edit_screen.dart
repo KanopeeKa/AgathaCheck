@@ -9,15 +9,13 @@ import '../../../../../core/widgets/form/app_form_breakpoints.dart';
 import '../../../../../core/widgets/form/app_form_destructive_button.dart';
 import '../../../../../core/widgets/form/app_form_discard_dialog.dart';
 import '../../../../../l10n/app_localizations.dart';
+import '../../data/datasources/care_context_remote_datasource.dart';
+import '../planned_absence_date_rules.dart';
 import '../providers/care_context_providers.dart';
 import '../widgets/away_plan_handover_note_editor.dart';
+import '../widgets/planned_absence_dates_step.dart';
 
-/// Edit screen for an away plan's handover note, and the place "Delete"
-/// (cancel the whole absence) lives.
-///
-/// Per D-AWD-007, scope is intentionally narrow: the handover note plus
-/// delete. Absence dates/pets and carer assignment are out of scope here —
-/// carer assignment stays inline on `PlannedAbsencePlanScreen`, unchanged.
+/// Full-screen trip details form: title, dates, notes, and cancel plan.
 class PlannedAbsenceEditScreen extends ConsumerStatefulWidget {
   const PlannedAbsenceEditScreen({super.key, required this.absenceId});
 
@@ -30,33 +28,52 @@ class PlannedAbsenceEditScreen extends ConsumerStatefulWidget {
 
 class _PlannedAbsenceEditScreenState
     extends ConsumerState<PlannedAbsenceEditScreen> {
+  final _titleController = TextEditingController();
   final _noteController = TextEditingController();
+
+  DateTime? _startsOn;
+  DateTime? _endsOn;
+  String? _baselineTitle;
+  String? _baselineStartsOn;
+  String? _baselineEndsOn;
+  String? _baselineNote;
+  String? _stepValidationMessage;
 
   bool _isLoading = true;
   bool _isSaving = false;
   bool _isDeleting = false;
   bool _loadFailed = false;
-  String? _baselineNote;
 
   @override
   void initState() {
     super.initState();
+    _titleController.addListener(_onFieldChanged);
     _noteController.addListener(_onFieldChanged);
     _loadAbsence();
   }
 
   @override
   void dispose() {
+    _titleController.dispose();
     _noteController.dispose();
     super.dispose();
   }
 
   void _onFieldChanged() => setState(() {});
 
-  bool get _isDirty =>
-      _baselineNote != null && _noteController.text != _baselineNote;
-
   bool get _isBusy => _isSaving || _isDeleting;
+
+  bool get _isDirty {
+    if (_baselineStartsOn == null) return false;
+    final title = _titleController.text.trim();
+    final baselineTitle = (_baselineTitle ?? '').trim();
+    final note = _noteController.text.trim();
+    final baselineNote = (_baselineNote ?? '').trim();
+    return title != baselineTitle ||
+        note != baselineNote ||
+        PlannedAbsenceDateRules.startsOnWire(_startsOn) != _baselineStartsOn ||
+        PlannedAbsenceDateRules.endsOnWire(_endsOn) != _baselineEndsOn;
+  }
 
   Future<void> _loadAbsence() async {
     setState(() {
@@ -67,17 +84,30 @@ class _PlannedAbsenceEditScreenState
       final absence = await ref
           .read(careContextRepositoryProvider)
           .getPlannedAbsence(widget.absenceId);
-      if (mounted) {
-        _noteController.text = absence.handoverNote ?? '';
-      }
+      if (!mounted) return;
+      _titleController.text = absence.title ?? '';
+      _noteController.text = absence.handoverNote ?? '';
+      _startsOn = _parseWireDate(absence.startsOn);
+      _endsOn = _parseWireDate(absence.endsOn);
+      _baselineTitle = absence.title;
+      _baselineStartsOn = absence.startsOn;
+      _baselineEndsOn = absence.endsOn;
+      _baselineNote = absence.handoverNote;
     } catch (_) {
       if (mounted) _loadFailed = true;
     } finally {
-      if (mounted) {
-        _baselineNote = _noteController.text;
-        setState(() => _isLoading = false);
-      }
+      if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  DateTime? _parseWireDate(String wire) {
+    final parts = wire.split('-');
+    if (parts.length != 3) return null;
+    final y = int.tryParse(parts[0]);
+    final m = int.tryParse(parts[1]);
+    final d = int.tryParse(parts[2]);
+    if (y == null || m == null || d == null) return null;
+    return DateTime(y, m, d);
   }
 
   void _goToPlan() {
@@ -99,24 +129,112 @@ class _PlannedAbsenceEditScreenState
     }
   }
 
-  Future<void> _save() async {
+  bool _validateDates(AppLocalizations l) {
+    if (!PlannedAbsenceDateRules.isValidRange(_startsOn, _endsOn)) {
+      if (_startsOn == null || _endsOn == null) {
+        _stepValidationMessage = l.careContextAwayDatesRequired;
+      } else if (_endsOn!.isBefore(_startsOn!)) {
+        _stepValidationMessage = l.careContextAwayDatesInvalid;
+      } else {
+        _stepValidationMessage = l.careContextAwayDatesHorizon;
+      }
+      return false;
+    }
+    _stepValidationMessage = null;
+    return true;
+  }
+
+  Future<bool> _confirmDateChange(AppLocalizations l) async {
+    final startsOn = PlannedAbsenceDateRules.startsOnWire(_startsOn);
+    final endsOn = PlannedAbsenceDateRules.endsOnWire(_endsOn);
+    if (startsOn == _baselineStartsOn && endsOn == _baselineEndsOn) {
+      return true;
+    }
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l.careContextAwayDateChangeConfirmTitle),
+        content: Text(l.careContextAwayDateChangeConfirmBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(l.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(l.careContextAwayContinue),
+          ),
+        ],
+      ),
+    );
+    return confirmed == true;
+  }
+
+  Future<bool> _confirmGuestWiden(AppLocalizations l) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l.careContextAwayGuestWidenConfirmTitle),
+        content: Text(l.careContextAwayGuestWidenConfirmBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(l.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(l.careContextAwayContinue),
+          ),
+        ],
+      ),
+    );
+    return confirmed == true;
+  }
+
+  Future<void> _save({bool confirmGuestAccessWiden = false}) async {
     final l = AppLocalizations.of(context)!;
+    if (!_validateDates(l)) {
+      setState(() {});
+      return;
+    }
+    if (!confirmGuestAccessWiden && !await _confirmDateChange(l)) return;
+
+    final startsOn = PlannedAbsenceDateRules.startsOnWire(_startsOn)!;
+    final endsOn = PlannedAbsenceDateRules.endsOnWire(_endsOn)!;
+    final title = _titleController.text.trim();
+    final note = _noteController.text.trim();
+
     setState(() => _isSaving = true);
     try {
-      await ref
-          .read(careContextRepositoryProvider)
-          .updateHandoverNote(
-            absenceId: widget.absenceId,
-            handoverNote: _noteController.text.trim().isEmpty
-                ? null
-                : _noteController.text,
-          );
+      await ref.read(careContextRepositoryProvider).updatePlannedAbsenceDetails(
+        absenceId: widget.absenceId,
+        startsOn: startsOn,
+        endsOn: endsOn,
+        title: title.isEmpty ? null : title,
+        handoverNote: note.isEmpty ? null : note,
+        confirmGuestAccessWiden: confirmGuestAccessWiden,
+      );
       ref.invalidate(plannedAbsenceDetailProvider(widget.absenceId));
+      ref.invalidate(awayPlanReadinessProvider(widget.absenceId));
+      ref.invalidate(plannedAbsencesListProvider);
+      ref.invalidate(awayPlanningDashboardTileProvider);
       if (mounted) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(l.careContextAwaySaveSuccess)));
         _goToPlan();
+      }
+    } on CareContextApiException catch (e) {
+      if (e.code == 'guest_access_widen_required' && mounted) {
+        if (await _confirmGuestWiden(l)) {
+          await _save(confirmGuestAccessWiden: true);
+        }
+        return;
+      }
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.careContextAwaySaveFailed)));
       }
     } catch (_) {
       if (mounted) {
@@ -187,6 +305,29 @@ class _PlannedAbsenceEditScreenState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        TextFormField(
+          key: const Key('away_plan_trip_title'),
+          controller: _titleController,
+          decoration: InputDecoration(
+            labelText: l.careContextAwayTitleLabel,
+            hintText: l.careContextAwayTitleHint,
+            helperText: l.careContextAwayTitleHelper,
+          ),
+          maxLength: 60,
+          textInputAction: TextInputAction.next,
+        ),
+        const SizedBox(height: 16),
+        PlannedAbsenceDatesStep(
+          startsOn: _startsOn,
+          endsOn: _endsOn,
+          validationMessage: _stepValidationMessage,
+          onRangeChanged: (start, end) => setState(() {
+            _startsOn = start;
+            _endsOn = end;
+            _stepValidationMessage = null;
+          }),
+        ),
+        const SizedBox(height: 16),
         AwayPlanHandoverNoteEditor(controller: _noteController),
         const SizedBox(height: 24),
         AppFormDestructiveButton(
@@ -216,7 +357,7 @@ class _PlannedAbsenceEditScreenState
       },
       child: Scaffold(
         appBar: AppBar(
-          title: AppLogoTitle(title: l.careContextAwayEditTitle),
+          title: AppLogoTitle(title: l.careContextAwayTripDetailsTitle),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             tooltip: l.goBack,

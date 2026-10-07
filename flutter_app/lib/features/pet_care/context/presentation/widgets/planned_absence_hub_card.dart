@@ -4,6 +4,7 @@ import '../../../../../core/utils/calendar_date.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../pet_profile/pet_profile.dart';
 import '../../domain/entities/planned_absence.dart';
+import '../planned_absence_display.dart';
 
 class PlannedAbsenceHubCard extends StatelessWidget {
   const PlannedAbsenceHubCard({
@@ -31,6 +32,8 @@ class PlannedAbsenceHubCard extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final dateRange = formatDateRange(l, absence);
+    final primary = PlannedAbsenceDisplay.primaryLabel(l, absence);
+    final secondaryDates = PlannedAbsenceDisplay.secondaryDateLine(l, absence);
     final petLines = _petLines(l);
     final titleStyle = theme.textTheme.titleSmall?.copyWith(
       fontWeight: FontWeight.w700,
@@ -41,7 +44,7 @@ class PlannedAbsenceHubCard extends StatelessWidget {
     );
     return Semantics(
       button: true,
-      label: '$dateRange. ${petLines.join(', ')}',
+      label: '$primary. ${petLines.join(', ')}',
       child: Card(
         margin: EdgeInsets.zero,
         color: subdued ? colorScheme.surfaceContainerLow : null,
@@ -64,7 +67,11 @@ class PlannedAbsenceHubCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(dateRange, style: titleStyle),
+                      Text(primary, style: titleStyle),
+                      if (secondaryDates != null) ...[
+                        const SizedBox(height: 4),
+                        Text(secondaryDates, style: bodyStyle),
+                      ],
                       const SizedBox(height: 4),
                       ...petLines.map(
                         (line) => Padding(

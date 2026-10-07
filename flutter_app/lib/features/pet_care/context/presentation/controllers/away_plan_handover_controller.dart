@@ -116,8 +116,11 @@ class AwayPlanHandoverController {
         .map((petId) => petNamesById[petId] ?? petId)
         .join(', ');
 
+    final tripLabel = absence.title?.trim();
     return AwayPlanHandoverDocument(
-      title: l.careContextAwayPlanTitle,
+      title: tripLabel != null && tripLabel.isNotEmpty
+          ? tripLabel
+          : l.careContextAwayPlanTitle,
       dateRangeLabel: dateRangeLabel,
       petNamesLabel: petNamesLabel,
       carerCoverageSummary: carerCoverageSummary,
