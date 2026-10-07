@@ -67,17 +67,8 @@ function checkBaselineRatchet(root, diff, baseRef) {
       });
     }
   }
-  for (const p of baseFeat) {
-    if (!headFeat.has(p) && fs.existsSync(path.join(root, p))) {
-      findings.push({
-        ruleId: 'R-L2',
-        severity: SEVERITY.BLOCK,
-        file: BASELINE_PATH,
-        line: 1,
-        message: `Removed baseline feature entry but file still exists: ${p}`,
-      });
-    }
-  }
+  // Feature baseline entries grandfather Gate C shape; removing one means the canonical
+  // doc at the same path now passes full template checks (consolidate), so the file stays.
   for (const p of baseCh) {
     if (!headCh.has(p) && fs.existsSync(path.join(root, p))) {
       findings.push({

@@ -5,24 +5,27 @@ audience: both
 domain: pet_care
 feature_id: care_schedule_management
 status: active
+last_updated: 2026-10-07
 related_prs: []
 ---
 
 # Care Schedule Management
 
-**Internal name:** CSM  
-**Layer:** Authoritative scheduling core of `care_planning`
+**Internal name:** CSM · **Layer:** authoritative scheduling core of `care_planning`
+
+## Summary / scope
+
+- **Owns:** occurrence lifecycle, schedule types, commands (complete, skip, reschedule, postpone, undo, cadence), care tick, `projectSchedule`, `explainGap`, `health_entries` schedule cache, occurrence-backed history reads.
+- **Does not own:** care meaning (`care_core`), agenda copy and completion UX ([care-item-evolution.md](./care-item-evolution.md)), maturity ([care-progression.md](./care-progression.md)), suggestions ([care-intelligence.md](./care-intelligence.md)).
+- **Depends on:** pet home timezone ([calendar-dates.md](/docs/architecture/calendar-dates.md)); entitlements gates ([care-entitlements.md](./care-entitlements.md)).
 
 CSM defines how AgathaTrack **creates, projects, changes, and explains the timing of care** — recurring and non-recurring, single and multiple times per day — while preserving a trustworthy care history.
-
-CSM owns **timing**. It does not own care meaning (`care_core`), suggestion-worthiness (`care_intelligence`), maturity (`care_progression`), or presentation (`care_presentation`).
 
 ```text
 care_core (CareFamily, capabilities)
         ↑
    CARE SCHEDULE MANAGEMENT
-   (depth of care_planning)
-   ↑        ↑             ↑
+        ↑        ↑             ↑
 care_context  care_progression  care_intelligence
         ↓
   care_presentation
@@ -30,29 +33,48 @@ care_context  care_progression  care_intelligence
 
 **Dependency rule:** Everything above reads from CSM. CSM depends on nothing above it.
 
-**Delivery status:** Care Schedule Management v1 shipped to `main` via programme integration ([#1193](https://github.com/KanopeeKa/AgathaCheck/pull/1193), 2026-09-15). All primitives below are live; the CSM-17 integration gate passed before merge ([#1192](https://github.com/KanopeeKa/AgathaCheck/pull/1192)). See [care-schedule-management-delivery-plan.md](../changes/care-schedule-management-delivery-plan.md) and [decision log](../changes/care-schedule-management-decisions.md).
+## Vocabulary
 
-| Phase | Status | Notes |
-|-------|--------|-------|
-| CSM-1 | Shipped | `care_schedule_events`, `completion_timing`, `paused_since`, `schedule_policy_version` |
-| CSM-2 | Shipped | `server/lib/care/schedule/` + per-family anchor defaults on create |
-| CSM-3 | Shipped | Unified `advanceSeries()` |
-| CSM-4 | Shipped | No `anchor+1` pre-materialisation (D-CSM-004) |
-| CSM-5 | Shipped | `completeOccurrence` (+ weight atomic path via `complete-weight`) |
-| CSM-6 | Shipped | `skipOccurrence` + ledger `skipped` events |
-| CSM-7 | Shipped | Entry-level `skip`/`unskip` removed; `mark-taken` delegates to oldest pending occurrence; **no new `health_history` writes** |
-| CSM-8 | Shipped | `undoLastAction` (timestamp-aware); retires `undo-complete` guessing |
-| CSM-9 | Shipped | `pauseSeries` / `resumeSeries` (no catch-up on resume) |
-| CSM-10 | Shipped | `rescheduleOccurrence` |
-| CSM-11 | Shipped | `adjustCadence` |
-| CSM-12 | Shipped | `projectSchedule` refactor from `projectCareForPeriod` |
-| CSM-13 | Shipped | `explainGap` read API |
-| CSM-14 | Shipped | Care Context thin caller over `projectSchedule` |
-| CSM-15 | Shipped | Flutter: client `snooze()` removed |
-| CSM-17 | Shipped | Integration gate — projection corpus, CP weight evidence, CIM baseline (`integrationGate.test.js`) |
-| Care occurrences (`care-next-occurrence-c1a7`) | In delivery | D-CSM-019 … D-CSM-035: stored open occurrence always; two schedule types; care tick; commands under one lock. Sections below describe this model |
+| Term | Meaning |
+|------|---------|
+| Fixed schedule | `recurrence_anchor = from_due_date` — calendar slots, stacks (D-CSM-020, D-CSM-023) |
+| After it's done | `from_completion` — one open date; next from done date (D-CSM-022) |
+| Open occurrence | `health_occurrences.status = pending` |
+| Not recorded | Fixed-schedule slot open when the next slot is due (UI: [care-item-evolution.md](./care-item-evolution.md) D-CIE-024) |
 
----
+User-facing words: `docs/design/terminology.md` and care-item spec — **occurrence** is internal (D-CIE-001).
+
+## Requirements
+
+| ID | Rule | Status |
+|----|------|--------|
+| CARE-SCHEDULE-MANAGEMENT-R-001 | Every active planned item has ≥1 stored open occurrence; created in the same transaction as the command that needs it (D-CSM-019) | Live |
+| CARE-SCHEDULE-MANAGEMENT-R-002 | Schedule type defaults: medication → Fixed schedule; other families → After it's done unless explicit (D-CSM-020) | Live |
+| CARE-SCHEDULE-MANAGEMENT-R-003 | Complete/skip/history use `health_occurrences` + `care_schedule_events`; no new `health_history` writes (D-CSM-003, D-CSM-035) | Live |
+| CARE-SCHEDULE-MANAGEMENT-R-004 | Fixed-schedule open slots follow D-CSM-023; stacks close as `not_recorded` after the three-day window | Live |
+| CARE-SCHEDULE-MANAGEMENT-R-005 | Late completion with a waiting date applies D-CSM-026 (remembered choice, `next_choice_applied`, 400 `next_choice_not_available`) | Live |
+| CARE-SCHEDULE-MANAGEMENT-R-006 | Postpone until / pause / absence move_after share one command (D-CSM-028); resume without catch-up (D-CSM-005) | Live |
+| CARE-SCHEDULE-MANAGEMENT-R-007 | Undo reverses the whole last command (D-CSM-029) | Live |
+| CARE-SCHEDULE-MANAGEMENT-R-008 | Care tick every 15 minutes; every command catch-up first (D-CSM-031) | Live |
+| CARE-SCHEDULE-MANAGEMENT-R-009 | `PUT /health-entries/:id` does not write `next_due_date`; schedule edits are commands (D-CSM-032) | Live |
+| CARE-SCHEDULE-MANAGEMENT-R-010 | One item row lock per command; 409 `occurrence_not_open` when stale (D-CSM-033) | Live |
+| CARE-SCHEDULE-MANAGEMENT-R-011 | Server supplies `as_of` and per-occurrence status; Flutter uses `HealthEntry.schedule` / `CareItemSchedule` for agenda grouping in production (not device `nextDueDate` alone) | Live |
+| CARE-SCHEDULE-MANAGEMENT-R-012 | Agenda placement: Today (Overdue first), Due soon (7d), Upcoming — server-backed grouping (D-CIE-025; timing rules here) | Live |
+
+## Occurrence existence and status
+
+| Schedule type | Stored open occurrences |
+|---------------|------------------------|
+| Once | Single occurrence until closed |
+| After it's done | One `computed` unless `planned` dates exist (D-CSM-021) |
+| Fixed schedule | Slots from today−3 through today, latest series date ≤ today, next series day, plus `planned` extras (D-CSM-023) |
+| Paused | Existing open rows stay hidden; tick still ages Fixed-schedule stacks (D-CSM-028) |
+
+Server `status` on open rows: `coming_up` \| `due` \| `overdue` \| `not_recorded`. Timezone: pet home TZ; test clock `X-Care-As-Of` in dev/test/ci only.
+
+## Client schedule status (Flutter)
+
+For API-hydrated entries, **`CareItemSchedule` on `HealthEntry.schedule`** is the only source for overdue / due-today / agenda grouping. Device-clock fallbacks in `HealthEntry.isOverdue` / `isDueToday` apply only when `schedule == null` (widget tests, drafts). Production Pet Care surfaces must use server-backed entries from `CareItemsController`.
 
 ## Model in one page (D-CSM-019 … D-CSM-033)
 
@@ -254,9 +276,147 @@ Care Through Change reschedule/pause **UI** (post–CC-4 tranche) is unblocked �
 
 ---
 
+## Out of scope
+
+- Care Item presentation strings and Care date screen layout ([care-item-evolution.md](./care-item-evolution.md)).
+- Away planner resolution UX ([away-planning-carer-model.md](./away-planning-carer-model.md)).
+- Notification copy and delivery timing.
+
+## Still open
+
+- GDPR export must read occurrences before `health_history` table drop (D-CSM-035).
+- Coverage gaps tracked in [#1770](https://github.com/KanopeeKa/AgathaCheck/issues/1770).
+
+## Acceptance criteria
+
+Case matrix (AID = After it's done, FX = Fixed schedule). Agenda UX words: [care-item-evolution.md](./care-item-evolution.md) (D-CIE-024 … D-CIE-028).
+
+| ID | Given / When / Then | Requirement | Coverage |
+|----|---------------------|-------------|----------|
+| AID-1 | When Monthly flea due 5 Jun, done 5 Jun then Next `computed` 5 Jul, same request | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.afterDone.integration.test.js#AID-1 marking done creates the next date in the same request |
+| AID-2 | When Not done; today 7 Jun then “Overdue · 5 Jun”; “Estimated next: 7 Jul” | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.afterDone.integration.test.js#AID-2 overdue shows an estimated next date that moves with today |
+| AID-3 | When Done on 6 Jun (recorded 7 Jun) then Next 6 Jul | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.afterDone.integration.test.js#AID-3 / AID-4 done or skipped late count from the done date or today |
+| AID-4 | When Skipped on 7 Jun then Next 7 Jul | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.afterDone.integration.test.js#AID-3 / AID-4 done or skipped late count from the done date or today |
+| AID-5 | When Done 20 May (16 days early of 30) then Confirmation; next 20 Jun | CARE-SCHEDULE-MANAGEMENT-R-001 | none — #1770 |
+| AID-6 | When Yearly wellness review due 1 Mar, done 15 Apr then Next 15 Apr next year | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/careSchedule/scheduleRules.test.js#AID-6 yearly done late |
+| AID-7 | When Daily dental chew, not done for 3 days then One Overdue occurrence (no stack) | CARE-SCHEDULE-MANAGEMENT-R-001 | none — #1770 |
+| AID-8 | When “Twice a day, after it's done” then Rejected `times_require_fixed_schedule`; the form prevents it | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.afterDone.integration.test.js#AID-8 several times of day need a fixed schedule |
+| AID-9 | When Created with due date 200 days away then Open occurrence exists; Mark as done works | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.afterDone.integration.test.js#AID-9 a date 200 days away is a real occurrence that can be marked done early |
+| AID-10 | When Overdue item shows “Estimated next” then Subtitle only; no row, action or reminder | CARE-SCHEDULE-MANAGEMENT-R-001 | none — #1770 |
+| AID-11 | When Overdue item → Mark as done then “When was this done?” first; the answer is sent with the completion | CARE-SCHEDULE-MANAGEMENT-R-001 | none — #1770 |
+| FX-1 | When Twice daily 08:00/18:00, at 07:00 then Today's and tomorrow's slots exist; only today's are listed | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.fixed.integration.test.js#FX-1 twice daily stores today and tomorrow |
+| FX-2 | When 08:00 not logged at 12:00 then “Overdue · 08:00” | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.fixed.integration.test.js#FX-2 / FX-3 overdue until the next dose, then not recorded |
+| FX-3 | When 08:00 still not logged at 18:01 then 08:00 → Not recorded (stack); 18:00 Due | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.fixed.integration.test.js#FX-2 / FX-3 overdue until the next dose, then not recorded |
+| FX-4 | When Mon, Tue not logged; today Wed then Stack of 4 (Review); Wed slots Due | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.fixed.integration.test.js#FX-4 / FX-5 the stack keeps three days, older doses close as not recorded |
+| FX-5 | When On Fri, Mon's slots then Closed by the tick as `not_recorded` | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.fixed.integration.test.js#FX-4 / FX-5 the stack keeps three days, older doses close as not recorded |
+| FX-6 | When Record a closed Not recorded dose from History then `completed`; nothing else changes; the tick leaves it | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.fixed.integration.test.js#FX-6 a closed not recorded dose can be recorded as given |
+| FX-7 | When Weekly Mondays, done Wednesday then Next Monday; no prompt (gap shrank 2/7) | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.fixed.integration.test.js#FX-7 done two days late does not ask |
+| FX-8 | When Weekly Mondays, done Saturday then Prompt: Keep Mon / Skip Mon / Move by 5 days | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.fixed.integration.test.js#FX-8 done on Saturday keeps the next date unless a choice is sent (D-CSM-026 v4) |
+| FX-9 | When Monthly injection not logged then Stack of 1; next month's slot when due | CARE-SCHEDULE-MANAGEMENT-R-001 | none — #1770 |
+| FX-10 | When Record next dose early then Slot completed; dates unchanged; confirmation if more than half an interval early | CARE-SCHEDULE-MANAGEMENT-R-001 | none — #1770 |
+| FX-11 | When End date passes then No slots after it; the item finishes when nothing is open | CARE-SCHEDULE-MANAGEMENT-R-001 | none — #1770 |
+| FX-12 | When Record earlier doses: one Given, one Not given then `completed` / `skipped` + `user`; History shows “Given” and “No… | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.fixed.integration.test.js#FX-12 record earlier doses: given and not given |
+| FX-13 | When Twice-daily stack of 3 slots then “3 doses not recorded” (slots); other care: “3 not recorded” | CARE-SCHEDULE-MANAGEMENT-R-001 | none — #1770 |
+| ME-1 | When FX monthly anchored 31 Jan then 28 Feb (29 leap), 31 Mar, 30 Apr, 31 May | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/careSchedule/scheduleRules.test.js#ME-1 monthly anchored on 31 Jan counts from the anchor |
+| ME-2 | When Every 6 months from 31 Aug then 28/29 Feb, 31 Aug | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/careSchedule/scheduleRules.test.js#ME-2 every six months from 31 Aug |
+| ME-3 | When Yearly from 29 Feb 2028 then 28 Feb 2029 … 29 Feb 2032 | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/careSchedule/scheduleRules.test.js#ME-3 yearly from 29 Feb 2028 |
+| ME-4 | When AID monthly done 31 Jan then 28 Feb; then from each completion | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/careSchedule/scheduleRules.test.js#ME-4 after-it's-done monthly done 31 Jan |
+| ME-5 | When FX “This and following” moved to 31 Oct then 30 Nov, 31 Dec | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/careSchedule/scheduleRules.test.js#ME-5 this-and-following moved to 31 Oct |
+| PL-1 | When Vaccine yearly AID: first dose 1 Jun, booster 1 Jul then 1 Jun done → next 1 Jul (no computed); booster done → 1 Ju… | CARE-SCHEDULE-MANAGEMENT-R-001 | bdd: care_booster.feature#PL-1 first dose then booster then yearly recurrence |
+| PL-2 | When First dose done 20 Jun (due 1 Jun), booster 1 Jul waiting then Gap 11 < 15 → Keep / Skip / Move by 19 days | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.afterDone.integration.test.js#PL-2 a late first dose keeps the booster unless a choice is sent (D-CSM-026 v4) |
+| PL-3 | When Change date on the open computed 5 Jun → 20 Jun then Same occurrence, now `planned` | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.afterDone.integration.test.js#PL-3 changing the computed date keeps one occurrence, now planned |
+| PL-4 | When Plan another date 8 Jun while 5 Jun open then Warning; add anyway → two open | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.afterDone.integration.test.js#PL-4 planning another date near an open one warns and adds it |
+| PL-5 | When AID: mark the later 1 Jul done while 5 Jun is open then No `earlier_choice` → 5 Jun stays open; `complete` / `skip`… | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.afterDone.integration.test.js#PL-5 / OR-3 marking the later date first keeps the earlier one open unless a choice is sent |
+| PL-6 | When Delete the only planned date then Rule creates the next; user confirms the date | CARE-SCHEDULE-MANAGEMENT-R-001 | none — #1770 |
+| PL-7 | When FX: plan an extra one-off dose then `planned`, independent of the series | CARE-SCHEDULE-MANAGEMENT-R-001 | none — #1770 |
+| PP-1 | When AID postpone 5 Jun → 20 Jun then Occurrence at 20 Jun (`planned`); done → next 20 Jul | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.afterDone.integration.test.js#PP-1 postponing moves the date; done counts from the done date |
+| PP-2 | When AID pause; resume 1 Aug then Hidden while paused; resume default 5 Aug; user picks 3 Aug | CARE-SCHEDULE-MANAGEMENT-R-001 | bdd: care_pause_resume.feature#PP-2 pause without end date then resume on the suggested date |
+| PP-3 | When FX daily postpone until 10 Jun (today 5 Jun) then 6–9 Jun not created; stack stays; the tick resumes on 10 Jun | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.fixed.integration.test.js#PP-3 postponing a fixed schedule pauses until the date, then the tick resumes it |
+| PP-4 | When FX pause; resume 20 Jun then Default = first slot on or after now | CARE-SCHEDULE-MANAGEMENT-R-001 | none — #1770 |
+| PP-5 | When Absence 10–15 Jun: move after on AID flea due 12 Jun then Postpone until 16 Jun (`reason: absence`) | CARE-SCHEDULE-MANAGEMENT-R-001 | none — #1770 |
+| PP-6 | When Postpone to a past date then 400 | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.afterDone.integration.test.js#PP-6 a past date is rejected |
+| PP-7 | When Undo right after pause then Previous state | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.afterDone.integration.test.js#PP-7 undo right after pause restores the item |
+| PP-8 | When FX paused with 2 doses not recorded; 4 days pass then Not in the agenda; the tick closes old slots as `not_recorded… | CARE-SCHEDULE-MANAGEMENT-R-001 | none — #1770 |
+| LC-1 | When Remember “Skip the next date” then Applied automatically in the completion transaction; visible and resettable in A… | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.fixed.integration.test.js#LC-1 a remembered choice is applied without asking |
+| LC-2 | When Nothing remembered, no choice sent then Keep; `next_choice_applied: keep` | CARE-SCHEDULE-MANAGEMENT-R-001 | none — #1770 |
+| LC-3 | When FX twice daily: 08:00 recorded at 15:00, 18:00 waiting then Gap 10 h → 3 h → the trigger fires; with no choice the … | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.fixed.integration.test.js#LC-3 twice daily recorded at 15:00 with no choice keeps the 18:00 dose |
+| LC-4 | When Sent with `next_choice: 'skip_next'` then One transaction: dose completed, 18:00 skipped; Undo reverses both | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.fixed.integration.test.js#LC-4 skip next is undone as a whole |
+| LC-5 | When Response lost; app retries then 409 `occurrence_not_open`; the app reloads the item | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.afterDone.integration.test.js#LC-5 completing a date twice answers 409 occurrence_not_open |
+| UN-1 | When AID done → computed next → Undo then Reopen; computed next deleted | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.afterDone.integration.test.js#UN-1 undo reopens the date and removes the new computed date |
+| UN-2 | When AID done → next changed (planned) → Undo then Reopen; planned kept | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.afterDone.integration.test.js#UN-2 a next date someone changed survives undo of the completion |
+| UN-3 | When FX dose done → Undo then Reopen only | CARE-SCHEDULE-MANAGEMENT-R-001 | none — #1770 |
+| UN-4 | When Done with “skip next” applied → Undo then Whole command reversed | CARE-SCHEDULE-MANAGEMENT-R-001 | none — #1770 |
+| UN-5 | When Delete a weigh-in's weight entry then Same as UN-1 | CARE-SCHEDULE-MANAGEMENT-R-001 | none — #1770 |
+| TS-1 | When FX → AID with 3 Not recorded + next scheduled then Confirm; all open `schedule` slots close as `not_recorded`; plan… | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.fixed.integration.test.js#TS-1 switching to after it's done closes the stack and computes from the last dose |
+| TS-1b | When Same, with a `planned` date then The planned date is the only open occurrence; no computed date | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.fixed.integration.test.js#TS-1 switching to after it's done closes the stack and computes from the last dose |
+| TS-2 | When AID → FX with a planned future date then Planned kept; anchor = open date; slots generated without duplicates | CARE-SCHEDULE-MANAGEMENT-R-001 | none — #1770 |
+| TS-3 | When FX weekly → every 2 weeks then Cadence “this and following” from today | CARE-SCHEDULE-MANAGEMENT-R-001 | none — #1770 |
+| TS-4 | When Edit form changes the next date then Change date on the open occurrence | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.afterDone.integration.test.js#TS-4 editing the next date moves the open occurrence |
+| AG-1 | When Only Anytime items today then Heading “Today's list”, no sub-groups | CARE-SCHEDULE-MANAGEMENT-R-012 | test: flutter_app/test/features/care_item/domain/care_agenda_test.dart#one time group → one "Today's list" heading |
+| AG-2 | When Morning + Anytime then Two headings | CARE-SCHEDULE-MANAGEMENT-R-012 | none — #1770 |
+| AG-3 | When Overdue items then First in Today | CARE-SCHEDULE-MANAGEMENT-R-012 | test: flutter_app/test/features/care_item/domain/care_agenda_test.dart#AG overdue first, then today by time group, due soon, upcoming |
+| AG-4 | When Daily med after all doses done then Stays in Today as Done until the day ends; never in Due soon | CARE-SCHEDULE-MANAGEMENT-R-012 | none — #1770 |
+| AG-5 | When Weekly item due in 3 / 20 days then Due soon / Upcoming (collapsed) | CARE-SCHEDULE-MANAGEMENT-R-012 | none — #1770 |
+| AG-6 | When Every-3-days item due tomorrow then Due soon | CARE-SCHEDULE-MANAGEMENT-R-012 | none — #1770 |
+| AG-7 | When Stack of 3 then One row “3 doses not recorded” + Review | CARE-SCHEDULE-MANAGEMENT-R-012 | test: flutter_app/test/features/care_item/domain/care_agenda_test.dart#a stack is one overdue row with its count (DN-1b) |
+| AG-8 | When Pet profile then Same groups, one pet | CARE-SCHEDULE-MANAGEMENT-R-012 | none — #1770 |
+| AG-9 | When Yearly vaccine in 200 days, reminder 7 days then Upcoming; no notification yet | CARE-SCHEDULE-MANAGEMENT-R-012 | none — #1770 |
+| AG-10 | When Nothing overdue or due today then “Nothing due today”, then Due soon / Upcoming | CARE-SCHEDULE-MANAGEMENT-R-012 | none — #1770 |
+| AG-11 | When Loading / error then Skeleton / Retry; no empty copy while loading | CARE-SCHEDULE-MANAGEMENT-R-012 | none — #1770 |
+| AB-1 | When AID done before a trip then The away plan lists it with its occurrence id | CARE-SCHEDULE-MANAGEMENT-R-001 | none — #1770 |
+| AB-2 | When Plan a date inside the trip, looked after by Carol then The real occurrence carries the assignment | CARE-SCHEDULE-MANAGEMENT-R-001 | none — #1770 |
+| AB-3 | When FX twice-daily med over a 7-day trip then One rhythm row; dates from the anchor; slots stored as days arrive | CARE-SCHEDULE-MANAGEMENT-R-001 | none — #1770 |
+| AB-4 | When Trip dates change then Resolution “needs review” | CARE-SCHEDULE-MANAGEMENT-R-001 | none — #1770 |
+| CR-1 | When Tick overlaps itself then Advisory lock; no duplicates | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.catchupConcurrency.integration.test.js#CR-1 an overlapping tick skips the held advisory lock, then a later tick catches up once |
+| CR-2 | When Tick late by 2 hours then The next command catches up first | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.catchupConcurrency.integration.test.js#CR-2 a command catches up a two-hour-late tick before applying its skip |
+| CR-3 | When Pet timezone differs from server then Day boundaries per pet timezone | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.catchupConcurrency.integration.test.js#CR-3 one instant straddles the Tokyo/UTC calendar boundary for two pets |
+| CR-4 | When Two carers complete the same slot then One 200, one 409 | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.catchupConcurrency.integration.test.js#CR-4 two authorized carers race for one dose: only one completion and one ledger event |
+| CR-5 | When Two carers complete different stack slots then Both 200 | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.catchupConcurrency.integration.test.js#CR-5 concurrent completion of different stack slots commits both, with two ledger events |
+| CR-6 | When Spring clock change, slot at 02:30 then Slot kept on its date; effective time 03:00; no duplicate | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/careSchedule/scheduleRules.test.js#CR-6 spring-forward 02:30 is due at the first real minute 03:00, not 03:30 |
+| CR-7 | When Autumn clock change, tick runs twice in the repeated hour then No duplicate slots, no double closing | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.catchupConcurrency.integration.test.js#CR-7 two distinct UTC instants in Paris repeated 02:30 do not close twice or duplicate slots |
+| OR-1 | When AID computed 5 Jun moved to 20 Jun (planned); the tick runs then Nothing created; one open occurrence | CARE-SCHEDULE-MANAGEMENT-R-001 | none — #1770 |
+| OR-2 | When FX with a planned extra; “This and following” rebuilds the series then Only `schedule` slots rebuilt; the planned e… | CARE-SCHEDULE-MANAGEMENT-R-001 | none — #1770 |
+| OR-3 | When AID vaccine: first dose overdue, booster planned; booster done first then Asks about the earlier date (PL-5); no co… | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.afterDone.integration.test.js#PL-5 / OR-3 marking the later date first keeps the earlier one open unless a choice is sent |
+| OR-4 | When Any command sequence above then Property test: never zero open occurrences for an active planned item; never two co… | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.property.integration.test.js#care occurrence invariants under random commands (OR-4) |
+
+## Decision log
+
+| ID | Decision | Rationale | Status | Date | PR |
+|----|----------|-----------|--------|------|----|
+| D-CSM-001 | Recurrence anchor defaults by care family (amended by D-CSM-020) | Explicit choice wins on create | Live | 2026-09-15 | — |
+| D-CSM-002 | `from_completion` drift is intentional; `completion_timing` informational | Guardian-paced rhythms | Live | 2026-09-15 | — |
+| D-CSM-003 | `health_history` retired for complete/skip; no backfill | Occurrences + ledger authoritative | Live | 2026-09-15 | — |
+| D-CSM-004 | Remove `anchor+1` pre-materialisation at create | Unified advanceSeries | Superseded by D-CSM-019 | 2026-09-15 | — |
+| D-CSM-005 | Pause resume has no catch-up | Matches care progression | Live | 2026-09-15 | — |
+| D-CSM-006 | Reschedule one occurrence vs `adjustCadence` series-forward | Never implicit rule change | Live | 2026-09-15 | — |
+| D-CSM-007 | Demo/UAT seed exercises CSM edge cases | Parallel infra | Live | 2026-09-15 | — |
+| D-CSM-008 | Care Through Change reschedule UI gated on CSM integration | Satisfied on main | Live | 2026-09-15 | — |
+| D-CSM-018 | Intent-based `ensure-open` for open head | On-demand materialisation | Superseded by D-CSM-019 | 2026-09-28 | — |
+| D-CSM-019 | Always ≥1 stored open occurrence; no T−1; `next_due_date` cache | Same-transaction create | Live | 2026-09-29 | — |
+| D-CSM-020 | Fixed schedule vs After it's done; family defaults | Medication fixed; others after done | Live | 2026-09-29 | — |
+| D-CSM-021 | Origins `schedule` / `computed` / `planned` + precedence rules | App never moves planned/schedule alone | Live | 2026-09-29 | — |
+| D-CSM-022 | After-it's-done done/skip/overdue/estimated-next rules | Display-only estimated next | Live | 2026-09-29 | — |
+| D-CSM-023 | Fixed-schedule slots, stack, not recorded window | Three-day stack close | Live | 2026-09-29 | — |
+| D-CSM-024 | Month-end clamp from anchor or done date | No JS overflow dates | Live | 2026-09-29 | — |
+| D-CSM-025 | Plan another date; booster pattern | Planned extras | Live | 2026-09-29 | — |
+| D-CSM-026 | Late completion with waiting date; remembered choice; 400 not 409 | Revised 2026-10-01 | Live | 2026-10-01 | — |
+| D-CSM-027 | Change date scopes this vs following | Re-anchors fixed series | Live | 2026-09-29 | — |
+| D-CSM-028 | Postpone until unifies pause/absence/resume | No catch-up on resume | Live | 2026-09-29 | — |
+| D-CSM-029 | Undo reverses whole command | Deletes computed next only if still computed | Live | 2026-09-29 | — |
+| D-CSM-030 | Early completion with half-interval confirm | Any surface | Live | 2026-09-29 | — |
+| D-CSM-031 | Care tick every 15 min + command catch-up first | Advisory lock per item | Live | 2026-09-29 | — |
+| D-CSM-032 | Schedule edits via commands; `PUT` no `next_due_date` | Type switch rules documented | Live | 2026-09-29 | — |
+| D-CSM-033 | One lock per command; write-path guard; compatibility routes temporary | 409 when not open | Live | 2026-09-29 | — |
+| D-CSM-034 | PATCH `completed_on` on completed occurrence | Moves computed next when applicable | Live | 2026-10-01 | — |
+| D-CSM-035 | History reads occurrences only; table drop pending GDPR export | Replaces `health_history` reads | Live | 2026-10-01 | — |
+
 ## Related
 
-- [occurrence-scheduling.md](/docs/domains/health_tracking/changes/occurrence-scheduling.md) — occurrence model, agenda and the acceptance case matrix
-- [care-item-evolution.md](./care-item-evolution.md) — canonical Care Item product spec (status words, agenda, completion)
-- [api-reference.md](/docs/architecture/api-reference.md) — endpoint index
-- [calendar-dates.md](/docs/architecture/calendar-dates.md) — `YYYY-MM-DD` wire format for schedule fields
+| Kind | Link |
+|------|------|
+| Care Item UX | [care-item-evolution.md](./care-item-evolution.md) |
+| API index | [api-reference.md](/docs/architecture/api-reference.md) |
+| Calendar dates | [calendar-dates.md](/docs/architecture/calendar-dates.md) |
+| Care tick ops | [care-tick.md](/docs/ops/care-tick.md) |
+| BDD | `flutter_app/test/bdd/features/care_agenda.feature`, `care_booster.feature`, `care_pause_resume.feature` |
+

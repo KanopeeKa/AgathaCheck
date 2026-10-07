@@ -6,19 +6,19 @@
   "approved_at": "2026-10-07T11:40:00Z",
   "approved_by": "User chat 2026-10-07 — full documentation migration execute-plan (standing grant)",
   "approved_until": "2026-10-09T11:40:00Z",
-  "content_hash": "sha256:47ebd14d103ec569e09856ca96d3363b1b05dcdfb230c52af686a28b08a86ab1",
+  "content_hash": "sha256:35dcb6661c5a18b10cb60b647b550c5cbaab70aaca48dc063332a965ff9c1021",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "main",
   "control_issue": 1765,
   "artifact_branch_policy": "phase-branch",
-  "current_child_plan_id": "documentation-migration-gate-warn-514a",
+  "current_child_plan_id": "documentation-migration-csm-514a",
   "child_plans": [
     {
       "plan_id": "documentation-migration-gate-warn-514a",
-      "status": "in_progress",
-      "pr_url": null,
-      "merge_commit": null
+      "status": "merged",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1768",
+      "merge_commit": "37024b8114ddd57e4a4666c20ee6eb953758e039"
     },
     {
       "plan_id": "documentation-migration-csm-514a",

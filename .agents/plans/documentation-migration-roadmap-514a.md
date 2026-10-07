@@ -27,3 +27,22 @@ last_updated: 2026-10-07
 ## Orchestrator phase
 
 Single phase `orchestrate` on branch `cursor/documentation-migration-roadmap-bootstrap-514a` — plan artifacts only.
+
+## Runtime state (agent-updated)
+
+```yaml
+autonomy: active
+current_phase: orchestrate
+last_completed_phase: null
+halt_reason: null
+next_action: child documentation-migration-csm-514a in progress after gate-warn merged (#1768)
+artifact_ref:
+  branch: cursor/documentation-migration-roadmap-bootstrap-514a
+  plan_path: .agents/plans/documentation-migration-roadmap-514a.md
+  plan_commit: pending
+  snapshot_path: .agents/plans/documentation-migration-roadmap-514a.snapshot.json
+  snapshot_commit: pending
+open_prs: []
+merge_commits: {}
+debt_issue_refs: []
+```

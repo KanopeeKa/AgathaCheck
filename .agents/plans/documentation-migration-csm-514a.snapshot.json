@@ -4,7 +4,7 @@
   "approved_at": "2026-10-07T12:00:00Z",
   "approved_by": "Roadmap documentation-migration-roadmap-514a + user chat 2026-10-07 standing grant",
   "approved_until": "2026-10-09T12:00:00Z",
-  "content_hash": "sha256:67f75d6d7619277437c7c18969c46e29da1bbd1fcce0f73a72d93740091b7b28",
+  "content_hash": "sha256:7c051aebc47a8cd24d72492244e86311bc6525a92fdf09db02920574ecafb453",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/documentation-migration-integration-514a",
@@ -44,12 +44,10 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null
+      "debt_issue_refs": []
     }
   ]
 }

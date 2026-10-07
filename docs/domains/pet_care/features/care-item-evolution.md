@@ -698,8 +698,7 @@ Two streams run in parallel, then join.
 | Kind | Link |
 |---|---|
 | Scheduling (CSM) | [care-schedule-management.md](/docs/domains/pet_care/features/care-schedule-management.md) |
-| CSM decisions | [care-schedule-management-decisions.md](/docs/domains/pet_care/changes/care-schedule-management-decisions.md) |
-| Occurrences, agenda, case matrix | [occurrence-scheduling.md](/docs/domains/health_tracking/changes/occurrence-scheduling.md) |
+| CSM timing + case matrix | [care-schedule-management.md](./care-schedule-management.md) |
 | UI spec for the Care Item view and agenda | [care-item-view-ui.md](/docs/design/care-item-view-ui.md) |
 | Away Planning decisions (D-AWAY) | [away-planning-decisions.md](/docs/domains/pet_care/changes/away-planning-decisions.md) |
 | Away Care Planning decisions (D-ACP) | [away-care-planning-decisions.md](/docs/domains/pet_care/changes/away-care-planning-decisions.md) |

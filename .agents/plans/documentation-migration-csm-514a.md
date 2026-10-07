@@ -13,13 +13,13 @@ autonomy: active
 current_phase: 1
 last_completed_phase: null
 halt_reason: null
-next_action: consolidate care-schedule-management per handover §6 Wave 1.1
+next_action: "continue phase 1 on branch cursor/documentation-migration-csm-514a"
 artifact_ref:
   branch: cursor/documentation-migration-csm-514a
   plan_path: .agents/plans/documentation-migration-csm-514a.md
-  plan_commit: pending
+  plan_commit: c6be31d696bc3df4dfed700cd6ec6a73deaa7a69
   snapshot_path: .agents/plans/documentation-migration-csm-514a.snapshot.json
-  snapshot_commit: pending
+  snapshot_commit: c6be31d696bc3df4dfed700cd6ec6a73deaa7a69
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
