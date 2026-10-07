@@ -101,6 +101,18 @@ describe('household invitation email template', () => {
     }
   });
 
+  it('escapes HTML in inviter and household names', () => {
+    const { html } = buildHouseholdInvitationEmail({
+      locale: 'en',
+      inviterName: '<script>',
+      householdName: 'Evil<img>',
+      code: 'abc12345',
+    });
+    expect(html).not.toContain('<script>');
+    expect(html).toContain('&lt;script&gt;');
+    expect(html).toContain('Evil&lt;img&gt;');
+  });
+
   it('builds English multipart content with household-invite landing URL', () => {
     const { subject, text, html } = buildHouseholdInvitationEmail({
       locale: 'en',
