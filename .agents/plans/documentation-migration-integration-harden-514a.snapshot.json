@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "plan_id": "documentation-migration-integration-harden-514a",
+  "approved_at": "2026-10-07T14:00:00Z",
+  "approved_by": "Roadmap documentation-migration-roadmap-514a + user /execute-plan 2026-10-07 standing grant",
+  "approved_until": "2026-10-09T14:00:00Z",
+  "content_hash": "sha256:5e2131ce578cc98e94c6afdd2d6bdd8cf1253c9a32c4b0857ee8700a19dbb2e6",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/documentation-migration-integration-514a",
+  "control_issue": 1777,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Restore DOCS_GATE_MODE=block on integration",
+      "branch": "cursor/documentation-migration-integration-harden-514a",
+      "allowed_paths": [
+        ".github/workflows/docs-gate.yml",
+        "docs/**",
+        "scripts/**",
+        ".agents/plans/documentation-migration-integration-harden-514a.md",
+        ".agents/plans/documentation-migration-integration-harden-514a.snapshot.json",
+        ".agents/plans/documentation-migration-roadmap-514a.md",
+        ".agents/plans/documentation-migration-roadmap-514a.snapshot.json",
+        ".agents/plans/documentation-migration-care-item-514a.md",
+        ".agents/plans/documentation-migration-care-item-514a.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "governance-allowlist",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    }
+  ]
+}

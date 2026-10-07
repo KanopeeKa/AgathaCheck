@@ -4,8 +4,8 @@
   "approved_at": "2026-10-07T13:30:00Z",
   "approved_by": "Roadmap documentation-migration-roadmap-514a + user /execute-plan 2026-10-07 standing grant",
   "approved_until": "2026-10-09T13:30:00Z",
-  "content_hash": "sha256:88dd7733c1cacc47c29df9290f7777dd8c048f3888a22919e34c905c8caeab9f",
-  "autonomy": "active",
+  "content_hash": "sha256:66389bec1dcaf5b96d80e17dc42fe9fb180c102272e25b6e958304436b7d9d76",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "cursor/documentation-migration-integration-514a",
   "control_issue": 1774,
@@ -44,12 +44,12 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1775",
-      "pr_head_sha": "f7ff1c08f8d77dbe92ae0889d1e01182aac05b24"
+      "pr_head_sha": "019dccf9"
     }
   ]
 }
