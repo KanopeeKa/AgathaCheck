@@ -30,4 +30,5 @@ push; never defer it to a debt issue.
 
 - Triage and debt conventions: `docs/agent-efficiency/autonomous-pr-policy.md`.
 - Cursor-only mechanics do not apply to Claude Code: the `composer-2.5` model,
-  `ManagePullRequest`, merging, and merge-lease scripts. Claude Code never merges.
+  `ManagePullRequest` and merge-lease scripts. Claude Code merges a PR only
+  when the user explicitly asks, once CI is green and no review thread is open.
