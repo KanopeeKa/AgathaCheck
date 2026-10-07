@@ -5,11 +5,11 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const upSql = fs.readFileSync(
-  path.resolve(__dirname, '../../../db/migrations/084_planned_absence_title.sql'),
+  path.resolve(__dirname, '../../../db/migrations/097_planned_absence_title.sql'),
   'utf8',
 );
 const downSql = fs.readFileSync(
-  path.resolve(__dirname, '../../../db/migrations/084_planned_absence_title_down.sql'),
+  path.resolve(__dirname, '../../../db/migrations/097_planned_absence_title_down.sql'),
   'utf8',
 );
 
