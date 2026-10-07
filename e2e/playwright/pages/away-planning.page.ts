@@ -502,6 +502,7 @@ export class AwayPlanningPage {
     await field.fill('');
     await field.pressSequentially(note, { delay: 20 });
     await refreshFlutterAccessibility(this.page);
+    await this.page.waitForTimeout(300);
   }
 
   async saveEdit(): Promise<void> {
@@ -518,7 +519,12 @@ export class AwayPlanningPage {
   async expectHandoverNoteOnPlan(note: string): Promise<void> {
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      await expect(this.page.getByText(note, { exact: false }).first()).toBeVisible();
+      const summaryNote = semanticsKey(this.page, 'away_plan_summary_handover_note');
+      await summaryNote.scrollIntoViewIfNeeded();
+      await expect(summaryNote.or(this.page.getByText(note, { exact: false })).first()).toBeVisible();
+      await expect(summaryNote.or(this.page.getByText(note, { exact: false })).first()).toContainText(
+        note,
+      );
     }).toPass({ timeout: 45_000 });
   }
 
