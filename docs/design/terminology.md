@@ -122,7 +122,7 @@ Keep these EN/FR labels distinct in copy and l10n:
 | Profile operational section | {Pet}'s care | Soins pour {petName} | `careForPet` |
 | Profile preview trailing link | View all care | Voir tous les soins | `viewAllCare` |
 | Pet-scoped All care list | All care | Tous les soins de {petName} | `allCareTitle` |
-| Care Item detail app bar | Care details | Détail du soin | `careItemScreenTitle` — not `careItemDetailsTitle` (Details module); spec: [care-item-context-header-spec.md](../domains/pet_care/changes/care-item-context-header-spec.md) |
+| Care Item detail app bar | Care details | Détail du soin | `careItemScreenTitle` — not `careItemDetailsTitle` (Details module); [care-item-evolution.md](../domains/pet_care/features/care-item-evolution.md) CARE-ITEM-R-001 |
 | Passed-away pets section | Rainbow bridge | Au-delà des nuages | `rainbowBridge` — collapsed expansion on full pets list |
 
 Pet-scoped care surfaces use `viewAllCare` / `allCareTitle`; global surfaces keep `allCare` and
@@ -143,7 +143,7 @@ Canonical in [care-item-evolution.md](../domains/pet_care/features/care-item-evo
 | **If done after the due date** | Si c'est fait après la date prévue | Remembered choice: Keep the next date / Skip the next date / Move this and following (no Ask me, D-CSM-026 v4) | Late behaviour, Late leeway |
 | **Plan another date** | Prévoir une autre date | Add a date (booster, booked visit, an extra one). **Change date** moves one | Add occurrence |
 | **Postpone until** | Reporter au | Move care to a later date; without a date it is **Pause** | Snooze |
-| **Mark {count} as done** · **Skip {count}** | Marquer {count} comme faits · Ignorer {count} | Care Item bulk actions (scoped count; see care-item-bulk-scope-spec) | Record earlier care, Review |
+| **Mark {count} as done** · **Skip {count}** | Marquer {count} comme faits · Ignorer {count} | Care Item bulk actions (scoped count; CARE-ITEM-R-009) | Record earlier care, Review |
 | **Later today** | Plus tard aujourd'hui | Upcoming-group pill when due later the same day | — |
 | **Show {count} more** / **Show less** | Afficher {count} de plus / Afficher moins | Expand collapsed upcoming rows on Care Item | — |
 | **Record as done** | Enregistrer comme fait | On a date closed as Not recorded | Reopen, Record as given |
