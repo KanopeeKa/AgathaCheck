@@ -7,18 +7,19 @@ Land A–E remediation (suggestion suppress, email escape, invite resolution, sc
 ## Runtime state
 
 ```yaml
-autonomy: active
-current_phase: 1
-last_completed_phase: null
+autonomy: completed
+current_phase: null
+last_completed_phase: 1
 halt_reason: null
-next_action: "continue phase 1 on branch cursor/notifications-v2-2-remediation-integration-7f3b"
+next_action: "plan complete"
 artifact_ref:
-  branch: cursor/notifications-v2-2-remediation-integration-7f3b
+  branch: main
   plan_path: .agents/plans/notifications-v2-2-remediation-main-7f3b.md
-  plan_commit: 9fc348ceb73a03ade98126680fdcbbdd29be973f
+  plan_commit: 31cc48309cc257e2a5a97a296c1c1a51aa358734
   snapshot_path: .agents/plans/notifications-v2-2-remediation-main-7f3b.snapshot.json
-  snapshot_commit: 9fc348ceb73a03ade98126680fdcbbdd29be973f
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1767"]
-merge_commits: {}
+  snapshot_commit: 31cc48309cc257e2a5a97a296c1c1a51aa358734
+open_prs: []
+merge_commits:
+  "1": "31cc48309cc257e2a5a97a296c1c1a51aa358734"
 debt_issue_refs: []
 ```

@@ -4,7 +4,7 @@
   "approved_at": "2026-10-07T11:30:00Z",
   "approved_by": "User chat 2026-10-07: standing grant remediation A–E / execute-plan",
   "approved_until": "2026-10-09T11:30:00Z",
-  "autonomy": "active",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "main",
   "control_issue": 1764,
@@ -28,12 +28,13 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1767",
-      "pr_head_sha": "9fc348ceb73a03ade98126680fdcbbdd29be973f"
+      "pr_head_sha": "b4bac93a",
+      "merge_commit": "31cc48309cc257e2a5a97a296c1c1a51aa358734"
     }
   ],
-  "content_hash": "sha256:2dcf523e14e10cb18795adab934bf3fa7bf76ab9a425eb2344e4e68db1780cbd"
+  "content_hash": "sha256:8bf9cc0585504a53f2c8d50e3e41ab961904fa54cbd19ea5b234fdd80e6cad28"
 }
