@@ -309,7 +309,9 @@ void main() {
       );
       await tester.pump();
 
-      await tester.ensureVisible(find.byKey(const Key('away_plan_edit_cancel')));
+      await tester.ensureVisible(
+        find.byKey(const Key('away_plan_edit_cancel')),
+      );
       await tester.tap(find.byKey(const Key('away_plan_edit_cancel')));
       await tester.pumpAndSettle();
 
@@ -326,7 +328,9 @@ void main() {
       expect(find.byKey(const Key('away_plan_handover_note')), findsOneWidget);
 
       // Discard: navigates back to the plan screen.
-      await tester.ensureVisible(find.byKey(const Key('away_plan_edit_cancel')));
+      await tester.ensureVisible(
+        find.byKey(const Key('away_plan_edit_cancel')),
+      );
       await tester.tap(find.byKey(const Key('away_plan_edit_cancel')));
       await tester.pumpAndSettle();
       await tester.tap(
