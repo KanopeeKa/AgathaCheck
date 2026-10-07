@@ -17,13 +17,13 @@ autonomy: active
 current_phase: 1
 last_completed_phase: null
 halt_reason: null
-next_action: consolidate care-item-evolution per handover Wave 1.2
+next_action: "continue phase 1 on branch cursor/documentation-migration-care-item-514a"
 artifact_ref:
   branch: cursor/documentation-migration-care-item-514a
   plan_path: .agents/plans/documentation-migration-care-item-514a.md
-  plan_commit: pending
+  plan_commit: 95202cb8053685af41cfc37500ab5e515cd49f61
   snapshot_path: .agents/plans/documentation-migration-care-item-514a.snapshot.json
-  snapshot_commit: pending
+  snapshot_commit: 95202cb8053685af41cfc37500ab5e515cd49f61
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
