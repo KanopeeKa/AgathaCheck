@@ -318,6 +318,19 @@ export function isSuggestionTypeEnabled(prefsDto, wireType) {
   return true;
 }
 
+/** FR-FB-3 — turn off a suggestion wire type in settings after repeated not-relevant feedback. */
+export async function disableSuggestionTypeForUser(pool, userId, wireType) {
+  const prefs = await loadNotificationPreferences(pool, userId);
+  const types = { ...(prefs.suggestion_types || defaultSuggestionTypes()) };
+  types[wireType] = false;
+  await upsertNotificationPreference(
+    pool,
+    userId,
+    PREF_SUGGESTION_TYPES,
+    JSON.stringify(mergeSuggestionTypes(types)),
+  );
+}
+
 export function isRelationshipPushEnabledForPet(prefsDto, petId) {
   if (!prefsDto) return true;
   const muted = prefsDto.muted_pet_ids || [];

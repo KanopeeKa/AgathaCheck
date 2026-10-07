@@ -1,5 +1,6 @@
 import { findUserDisplayFields } from '../../db/sharing/shareAccessQueries.js';
 import { createNotification, userDisplayName } from '../notificationHelper.js';
+import { emailShareAccessChanged } from './relationshipNotificationEmail.js';
 import { CO_PARENT_ROLE } from '../petAccess.js';
 import { HOUSEHOLD_TIER_LOG } from '../households/constants.js';
 
@@ -62,6 +63,14 @@ export async function emitShareAccessChanged(pool, {
     message: `${actorName} changed your access to ${petName || 'a pet'} to ${label}.`,
     type: NOTIFICATION_TYPE_SHARE_ACCESS_CHANGED,
   });
+  const target = await findUserDisplayFields(pool, targetUserId);
+  if (target?.email) {
+    await emailShareAccessChanged(target.email, {
+      actorName,
+      petName: petName || 'your pet',
+      roleLabel: label,
+    });
+  }
 }
 
 /**

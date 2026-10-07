@@ -4,6 +4,7 @@
  * Scenario: Notification generated for entry due soon
  * Scenario: A reminder is created again after care is done on time
  * Scenario: Pending share invite shows inline accept and decline in Activity
+ * Scenario: Accepted share invite is resolved and leaves needs-response
  */
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
 import {
@@ -16,6 +17,7 @@ import {
 import {
   createHealthEntry,
   createPet,
+  acceptPetShareInviteByCode,
   createPetShareInvite,
   getNotifications,
   signupUser,
@@ -113,5 +115,27 @@ test.describe('Notifications v2 programme', () => {
     await notifications.openFromPetList();
     await notifications.selectInboxTab('activity');
     await notifications.expectInlineShareInviteActions();
+  });
+
+  test('accepted share invite is resolved and leaves needs-response', async () => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const owner = await signupUser(baseURL, { firstName: 'Cara', lastName: 'Owner' });
+    const pet = await createPet(baseURL, owner.accessToken, 'Luna', 'Dog');
+    const invitee = await signupUser(baseURL, { firstName: 'Dan', lastName: 'Invitee' });
+    const invite = await createPetShareInvite(
+      baseURL,
+      owner.accessToken,
+      [pet.id],
+      invitee.email,
+      'carer',
+    );
+    await acceptPetShareInviteByCode(baseURL, invitee.accessToken, invite.code);
+
+    const rows = await getNotifications(baseURL, invitee.accessToken);
+    const inviteRow = rows.find(
+      (n) => n.type === 'shareInviteReceived' || (n as { wire_type?: string }).wire_type === 'shareInviteReceived',
+    );
+    expect(inviteRow).toBeTruthy();
+    expect((inviteRow as { resolved_at?: string | null }).resolved_at).toBeTruthy();
   });
 });

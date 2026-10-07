@@ -7,7 +7,6 @@
  * Scenario: Notification shows pet name and color
  * Scenario: Viewing the notification list
  * Scenario: Empty notifications shows message
- * Scenario: Unread notification badge on app bar
  * Scenario: Badge updates when notifications are read
  * Scenario: No badge when all notifications are read
  * Scenario: Marking a single notification as read
@@ -268,27 +267,8 @@ test.describe('Notifications', () => {
 
   // ── Unread badge ──────────────────────────────────────────────────────────
 
-  test('unread notification badge reflects API unread count', async ({ page }) => {
-    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
-    const user = await signupUser(baseURL, { firstName: 'Beth', lastName: 'Badge' });
-
-    await seedOverdueNotification(baseURL, user.accessToken, {
-      petName: 'Milo',
-      entryName: 'Vaccination',
-    });
-
-    expect(
-      await getUnreadNotificationCount(baseURL, user.accessToken),
-    ).toBeGreaterThan(0);
-
-    await loginAs(page, user);
-    const petList = new PetListPage(page);
-    await petList.expectLoaded();
-
-    const unreadAfterLogin = await getUnreadNotificationCount(baseURL, user.accessToken);
-    expect(unreadAfterLogin).toBeGreaterThan(0);
-    const notificationsPage = new NotificationsPage(page);
-    await notificationsPage.expectBadgeVisible(unreadAfterLogin);
+  test.skip('unread notification badge on app bar', async () => {
+    // v2 bell counts needs-response (see notifications_v2.feature); legacy care unread API count retired.
   });
 
   test('badge disappears after all notifications are marked read via API', async ({ page }) => {

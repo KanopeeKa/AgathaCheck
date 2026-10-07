@@ -5,6 +5,7 @@ import {
   failCleanupJob,
 } from './cleanupJobsApi.js';
 import { runCleanupJobsHousekeeping } from './cleanupJobsHousekeeping.js';
+import { maybeRunDailySuggestionGeneration } from '../suggestions/suggestionGenerationScheduler.js';
 import { runFileDeleteJob, runPosthogPersonDeleteJob } from './handlers/index.js';
 
 const TABLE_MISSING = '42P01';
@@ -104,6 +105,12 @@ export async function drainCleanupJobs(pool, { limit = 10 } = {}) {
     if (err?.code !== TABLE_MISSING) {
       logger.warn({ err }, 'cleanup jobs housekeeping failed');
     }
+  }
+
+  try {
+    await maybeRunDailySuggestionGeneration(pool);
+  } catch (err) {
+    logger.warn({ err }, 'suggestion generation scheduler failed');
   }
 
   logger.info(stats, 'cleanup jobs drain finished');

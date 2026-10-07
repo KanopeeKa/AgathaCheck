@@ -2,7 +2,7 @@
 title: Notifications v2 — Activity & Agatha Suggestions (functional spec)
 owner: Product
 audience: both
-status: accepted (rev 2.4)
+status: accepted (rev 2.5.1)
 last_updated: 2026-10-06
 tags: [domain,notifications,spec,suggestions,sharing]
 domain: notifications
@@ -11,7 +11,7 @@ feature_id: notifications-v2
 
 # Notifications v2 — Activity & Agatha Suggestions
 
-> **Status: accepted 2026-10-04, rev 2.3.1.** Documentation aligned (AC-MG-5). Billing provider: undecided, so PR8 is blocked. Sign-in location: not now (N13). Functional spec only. Implementation follows the rollout in §12, with one atomic PR
+> **Status: accepted 2026-10-06, rev 2.5.1.** UAT closeout: resolve-by-type, actionability matrix, suggestion scheduler, FR-FB-2/3. Billing provider: undecided, so PR8 is blocked. Sign-in location: not now (N13). Functional spec only. Implementation follows the rollout in §12, with one atomic PR
 > per outcome. Rev 2+ changes are summarised in §15. The decisions in §0 take effect.
 
 ## 0. Decisions this spec supersedes or adds
@@ -902,7 +902,7 @@ Still open (non-blocking): whether to add a "dot only for needs-response" badge 
 
 | Area | Delivered |
 |---|---|
-| **FR-SG-1 scheduler** | `runSuggestionGeneration` in `server/lib/suggestions/` (daily cron via host job calling the lib; on-demand per-pet hook deferred) |
+| **FR-SG-1 scheduler** | `runSuggestionGeneration` via `cleanupJobsRunner` (once/UTC day) and `server/scripts/run-suggestion-generation.js` for host cron |
 | **S1 / S2** | `suggestionMissingRecurringCare` (parasite prevention rhythm), `suggestionWeightTrend` (≥5% over 90d window) |
 | **FR-RL-1 / RL-2** | Rolling 7-day caps (3/pet, 5/user) + 10 active/user enforced on **new** rows only; dedupe upserts refresh evidence |
 | **FR-SC-3** | For you card shows vet disclaimer for S2 (`notificationSuggestionVetDisclaimer`) |

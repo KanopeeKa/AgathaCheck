@@ -75,6 +75,7 @@ import 'package:pet_profile_app/features/notifications/domain/entities/notificat
 import 'package:pet_profile_app/features/notifications/domain/entities/notification_scope.dart';
 import 'package:pet_profile_app/features/notifications/domain/entities/notification_settings_matrix.dart';
 import 'package:pet_profile_app/features/notifications/domain/repositories/notification_repository.dart';
+import 'package:pet_profile_app/features/notifications/domain/services/notification_actionability.dart';
 import 'package:pet_profile_app/features/notifications/domain/services/notification_inbox_v2_rules.dart';
 import 'package:pet_profile_app/features/notifications/domain/services/notification_inline_action_support.dart';
 import 'package:pet_profile_app/features/notifications/domain/services/notification_inline_actions.dart';
@@ -146,4 +147,4 @@ import 'package:pet_profile_app/features/weight_tracking/domain/entities/weight_
 import 'package:pet_profile_app/features/weight_tracking/domain/repositories/weight_repository.dart';
 import 'package:pet_profile_app/features/weight_tracking/domain/weight_entry_sort.dart';
 
-const int coverageHelperDomainFileCount = 144;
+const int coverageHelperDomainFileCount = 145;
