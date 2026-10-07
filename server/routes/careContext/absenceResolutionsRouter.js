@@ -1,5 +1,6 @@
 import { asyncHandler } from '../../lib/http/asyncHandler.js';
-import { dateToIsoDate, todayCalendarIso } from '../../lib/calendarDate.js';
+import { dateToIsoDate } from '../../lib/calendarDate.js';
+import { loadPetHomeTimezone, wallClockInTimeZone } from '../../lib/petHomeTimezone.js';
 import { loadAwayPlanProjection } from '../../lib/care/awayPlan/index.js';
 import { buildAbsenceCareView } from '../../lib/care/absence/buildAbsenceCareView.js';
 import { RESOLUTION_DECISION_MOVE_AFTER } from '../../lib/care/absence/constants.js';
@@ -69,8 +70,6 @@ export function registerAbsenceResolutionsRoutes(router, pool, deps) {
       const petRows = await deps.loadAbsencePets(pool, absenceRow.id);
       const startsOn = dateToIsoDate(absenceRow.starts_on);
       const endsOn = dateToIsoDate(absenceRow.ends_on);
-      const todayIso = todayCalendarIso();
-
       const rawItems = body.resolutions ?? (body.health_entry_id || body.healthEntryId ? [body] : null);
       if (!Array.isArray(rawItems) || rawItems.length === 0) {
         return res.status(400).json({ error: 'resolutions array or health_entry_id is required' });
@@ -107,12 +106,14 @@ export function registerAbsenceResolutionsRoutes(router, pool, deps) {
           }
         }
 
+        const petTimeZone = await loadPetHomeTimezone(pool, entry.pet_id);
+        const careTodayIso = wallClockInTimeZone(petTimeZone).todayIso;
         const projection = await loadAwayPlanProjection(
           pool,
           entry.pet_id,
           startsOn,
           endsOn,
-          todayIso
+          careTodayIso
         );
         const careView = buildAbsenceCareView({
           projection,

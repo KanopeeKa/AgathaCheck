@@ -165,7 +165,7 @@ describe('planned absences API', () => {
 
     expect(res.statusCode).toBe(200);
     expect(res.body).toHaveLength(3);
-    expect(queryCount).toBe(3);
+    expect(queryCount).toBe(5);
   });
 
   it('GET list rejects invalid scope', async () => {

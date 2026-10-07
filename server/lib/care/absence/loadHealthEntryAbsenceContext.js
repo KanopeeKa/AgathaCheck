@@ -1,6 +1,10 @@
-import { dateToIsoDate, todayCalendarIso } from '../../calendarDate.js';
+import { dateToIsoDate } from '../../calendarDate.js';
+import { loadPetHomeTimezone, wallClockInTimeZone } from '../../petHomeTimezone.js';
 import { loadAwayPlanProjection } from '../awayPlan/loadAwayPlanProjection.js';
-import { PLANNED_ABSENCE_STATUS_CANCELLED } from '../plannedAbsence.js';
+import {
+  PLANNED_ABSENCE_STATUS_CANCELLED,
+  resolvePlannedAbsenceTodayIso,
+} from '../plannedAbsence.js';
 import { buildAbsenceCareView } from './buildAbsenceCareView.js';
 import { loadResolutionsByEntryIds } from './resolutionRepository.js';
 
@@ -10,7 +14,9 @@ import { loadResolutionsByEntryIds } from './resolutionRepository.js';
  * @param {string} userId
  */
 export async function loadHealthEntryAbsenceContext(pool, entry, userId) {
-  const todayIso = todayCalendarIso();
+  const activeTodayIso = await resolvePlannedAbsenceTodayIso(pool, userId);
+  const petTimeZone = await loadPetHomeTimezone(pool, entry.pet_id);
+  const careTodayIso = wallClockInTimeZone(petTimeZone).todayIso;
   const result = await pool.query(
     `SELECT pa.*
      FROM planned_absences pa
@@ -20,7 +26,7 @@ export async function loadHealthEntryAbsenceContext(pool, entry, userId) {
        AND pa.status != $3
        AND pa.ends_on >= $4::date
      ORDER BY pa.starts_on ASC`,
-    [userId, entry.pet_id, PLANNED_ABSENCE_STATUS_CANCELLED, todayIso],
+    [userId, entry.pet_id, PLANNED_ABSENCE_STATUS_CANCELLED, activeTodayIso],
   );
 
   const absences = [];
@@ -34,7 +40,7 @@ export async function loadHealthEntryAbsenceContext(pool, entry, userId) {
       entry.pet_id,
       startsOn,
       endsOn,
-      todayIso
+      careTodayIso
     );
     const resolutionRows = await loadResolutionsByEntryIds(pool, absenceRow.id, [entry.id]);
     const resolutionDbRow = resolutionRows.get(entry.id) || null;

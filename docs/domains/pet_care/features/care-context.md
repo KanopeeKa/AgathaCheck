@@ -52,7 +52,7 @@ planned_absence_pets
 
 ### Active absence (overlap warnings)
 
-An absence is **active** when `status != cancelled` and `ends_on >= today` (calendar-date semantics).
+An absence is **active** when `status != cancelled` and `ends_on >= today` (calendar-date semantics). **`today`** for list/upcoming filters and health-entry absence-context queries is the declarer's account IANA timezone (`users.timezone`), not server UTC. Away-plan care projections use each pet's `home_timezone` for schedule "today" (same as CSM open/overdue).
 
 Overlapping active absences for the same pet are **allowed**. On save, show a **non-blocking warning** naming conflicting date range(s); allow continue. No 409 solely for overlap.
 

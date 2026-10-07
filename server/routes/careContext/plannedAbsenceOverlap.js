@@ -1,5 +1,9 @@
-import { dateToIsoDate, todayCalendarIso } from '../../lib/calendarDate.js';
-import { dateRangesOverlap, PLANNED_ABSENCE_STATUS_CANCELLED } from '../../lib/care/plannedAbsence.js';
+import { dateToIsoDate } from '../../lib/calendarDate.js';
+import {
+  dateRangesOverlap,
+  PLANNED_ABSENCE_STATUS_CANCELLED,
+  resolvePlannedAbsenceTodayIso,
+} from '../../lib/care/plannedAbsence.js';
 
 /**
  * Non-blocking overlap warnings for same pet on other active absences.
@@ -12,7 +16,7 @@ export async function findOverlapWarnings(
   endsOn,
   excludeAbsenceId = null,
 ) {
-  const todayIso = todayCalendarIso();
+  const todayIso = await resolvePlannedAbsenceTodayIso(pool, userId);
   const result = await pool.query(
     `SELECT pa.id, pa.starts_on, pa.ends_on, pap.pet_id
      FROM planned_absences pa
@@ -46,7 +50,7 @@ export async function loadOverlapCandidatesForAbsences(pool, userId, absences, p
     absences.flatMap((row) => (petsByAbsence.get(row.id) || []).map((pet) => pet.pet_id))
   )];
   if (!petIds.length) return [];
-  const todayIso = todayCalendarIso();
+  const todayIso = await resolvePlannedAbsenceTodayIso(pool, userId);
   const result = await pool.query(
     `SELECT pa.id, pa.starts_on, pa.ends_on, pap.pet_id
      FROM planned_absences pa
