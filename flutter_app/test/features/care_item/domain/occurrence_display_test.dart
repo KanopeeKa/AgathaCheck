@@ -12,11 +12,11 @@ void main() {
     l = await AppLocalizations.delegate.load(const Locale('en'));
   });
 
-  test('done and skipped use Done and Skip labels', () {
+  test('done and skipped use Done and Skipped status labels', () {
     final done = openOccurrencePillStyle(l, CareOccurrenceStatus.done);
     expect(done.label, l.done);
     final skipped = openOccurrencePillStyle(l, CareOccurrenceStatus.skipped);
-    expect(skipped.label, l.careSkip);
+    expect(skipped.label, l.occurrenceSkipped);
   });
 
   test('occurrenceStatusPillStyle maps closed done dose', () {

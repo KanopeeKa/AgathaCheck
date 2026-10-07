@@ -364,3 +364,132 @@ test('report json', () => {
   assert.equal(res.code, 0);
   assert.match(res.out, /"domains"/);
 });
+
+// --- Decision IDs and memory guards ---------------------------------------------
+
+function fixtureDoc() {
+  return fs.readFileSync(path.join(FIX, 'minimal-feature.md'), 'utf8');
+}
+
+function commitAll(root, message) {
+  spawnSync('git', ['add', '-A'], { cwd: root });
+  spawnSync('git', ['commit', '-m', message], { cwd: root });
+  return spawnSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).stdout.trim();
+}
+
+function withDecisionId(id) {
+  return fixtureDoc().replace('| EXAMPLE-CAP-D-001 |', `| ${id} |`);
+}
+
+test('R-C7 accepts feature prefix, kept D-XXX-### and registered legacy prefixes', () => {
+  for (const id of ['EXAMPLE-CAP-D-002', 'D-CSM-019', 'NAV-D1', 'PEOPLE-D12', 'SHELTER-D31']) {
+    const { root, base } = initRepo({ 'docs/domains/x/features/a.md': withDecisionId(id) });
+    const res = run({ DOCS_CANONICAL_ROOT: root, DOCS_BASE: base }, ['--shape']);
+    assert.doesNotMatch(res.out, /R-C7/, id);
+  }
+});
+
+test('R-C7 rejects unregistered legacy-style and bare decision IDs', () => {
+  for (const id of ['FOO-D3', 'D1', 'EXAMPLE-D-001', 'NAVIGATION-D1']) {
+    const { root, base } = initRepo({ 'docs/domains/x/features/a.md': withDecisionId(id) });
+    const res = run({ DOCS_CANONICAL_ROOT: root, DOCS_BASE: base }, ['--shape']);
+    assert.match(res.out, /R-C7/, id);
+  }
+});
+
+test('R-D3 decision ID introduced by a new doc already exists elsewhere', () => {
+  const { root } = initRepo({ 'docs/domains/x/features/a.md': fixtureDoc() });
+  const base = spawnSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).stdout.trim();
+  const other = fixtureDoc()
+    .replace('feature_id: example_cap', 'feature_id: other_cap')
+    .replace('EXAMPLE-CAP-R-001', 'OTHER-CAP-R-001');
+  fs.writeFileSync(path.join(root, 'docs/domains/x/features/b.md'), other);
+  commitAll(root, 'add b');
+  const res = run({ DOCS_CANONICAL_ROOT: root, DOCS_BASE: base }, ['--ids']);
+  assert.equal(res.code, 1);
+  assert.match(res.out, /R-D3.*Decision ID EXAMPLE-CAP-D-001 already defined/);
+  assert.doesNotMatch(res.out, /Requirement ID/);
+});
+
+test('R-D3 requirement ID collision is also caught on a new doc', () => {
+  const { root } = initRepo({ 'docs/domains/x/features/a.md': fixtureDoc() });
+  const base = spawnSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).stdout.trim();
+  fs.writeFileSync(
+    path.join(root, 'docs/domains/x/features/b.md'),
+    fixtureDoc().replace('| EXAMPLE-CAP-D-001 |', '| EXAMPLE-CAP-D-009 |'),
+  );
+  commitAll(root, 'add b');
+  const res = run({ DOCS_CANONICAL_ROOT: root, DOCS_BASE: base }, ['--ids']);
+  assert.match(res.out, /R-D3.*Requirement ID EXAMPLE-CAP-R-001 already defined/);
+});
+
+test('R-D3 not raised for an unrelated edit or a rename that keeps its IDs', () => {
+  const { root } = initRepo({ 'docs/domains/x/features/a.md': fixtureDoc() });
+  const base = spawnSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).stdout.trim();
+  fs.mkdirSync(path.join(root, 'docs/domains/y/features'), { recursive: true });
+  spawnSync('git', ['mv', 'docs/domains/x/features/a.md', 'docs/domains/y/features/a.md'], {
+    cwd: root,
+  });
+  commitAll(root, 'move');
+  const res = run({ DOCS_CANONICAL_ROOT: root, DOCS_BASE: base }, ['--ids']);
+  assert.doesNotMatch(res.out, /R-D[123]/);
+  assert.equal(res.code, 0);
+});
+
+test('R-D3 duplicates are printed (not swallowed) by --report-duplicates', () => {
+  const { root, base } = initRepo({
+    'docs/domains/x/features/a.md': fixtureDoc(),
+    'docs/domains/x/features/b.md': fixtureDoc(),
+  });
+  const res = run({ DOCS_CANONICAL_ROOT: root, DOCS_BASE: base }, ['--ids', '--report-duplicates']);
+  assert.equal(res.code, 0);
+  assert.match(res.out, /\[R-D3\] Duplicate decision ID EXAMPLE-CAP-D-001/);
+  assert.match(res.out, /\[R-D3\] Duplicate requirement ID EXAMPLE-CAP-R-001/);
+});
+
+test('R-M1 memory file citing a decision ID warns; plain lessons and MEMORY.md do not', () => {
+  const { root, base } = initRepo({
+    '.agents/memory/rule.md': 'Every care item has an open occurrence (D-CSM-019).\n',
+    '.agents/memory/lesson.md': 'Run flutter pub get before analyze.\n',
+    '.agents/memory/MEMORY.md': 'See NAV-D1 and D-CSM-019.\n',
+  });
+  const res = run({ DOCS_CANONICAL_ROOT: root, DOCS_BASE: base }, ['--memory']);
+  assert.equal(res.code, 0, 'R-M1 is a warning, never blocking');
+  assert.match(res.out, /\[R-M1\].*D-CSM-019/);
+  assert.doesNotMatch(res.out, /lesson\.md/);
+  assert.doesNotMatch(res.out, /MEMORY\.md/);
+});
+
+test('R-M2 canonical doc gaining a memory source warns; an existing link does not', () => {
+  const linked = `${fixtureDoc()}\nSource: .agents/memory/old-rule.md\n`;
+  const { root } = initRepo({ 'docs/domains/x/features/a.md': linked });
+  const base = spawnSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).stdout.trim();
+  fs.writeFileSync(
+    path.join(root, 'docs/domains/x/features/a.md'),
+    `${linked}\nAlso: .agents/memory/new-rule.md\n`,
+  );
+  commitAll(root, 'link');
+  const res = run({ DOCS_CANONICAL_ROOT: root, DOCS_BASE: base }, ['--memory']);
+  assert.equal(res.code, 0);
+  assert.match(res.out, /\[R-M2\].*new-rule\.md/);
+  assert.doesNotMatch(res.out, /old-rule\.md/);
+});
+
+test('R-M3 stale backlog entry warns; R-M4 lists live entries only with --all', () => {
+  const backlog = JSON.stringify({
+    entries: [
+      { file: '.agents/memory/gone.md', capability: 'x/y', target: 'docs/x.md' },
+      { file: '.agents/memory/here.md', capability: 'x/z', target: 'docs/z.md' },
+    ],
+  });
+  const { root, base } = initRepo({
+    'scripts/docs-memory-backlog.json': backlog,
+    '.agents/memory/here.md': 'A product rule.\n',
+  });
+  const pr = run({ DOCS_CANONICAL_ROOT: root, DOCS_BASE: base }, ['--memory']);
+  assert.match(pr.out, /\[R-M3\].*gone\.md/);
+  assert.doesNotMatch(pr.out, /R-M4/);
+  const weekly = run({ DOCS_CANONICAL_ROOT: root, DOCS_BASE: base }, ['--memory', '--all']);
+  assert.match(weekly.out, /\[R-M4\].*docs\/z\.md/);
+  assert.equal(weekly.code, 0);
+});

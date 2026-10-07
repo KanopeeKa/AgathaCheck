@@ -49,7 +49,8 @@ class OccurrenceTitleRow extends StatelessWidget {
                 child: TextButton(
                   key: const Key('occurrence_reschedule'),
                   onPressed: busy ? null : onReschedule,
-                  child: Text(l.occurrenceReschedule),
+                  style: TextButton.styleFrom(minimumSize: const Size(48, 48)),
+                  child: ExcludeSemantics(child: Text(l.occurrenceReschedule)),
                 ),
               ),
             ),
