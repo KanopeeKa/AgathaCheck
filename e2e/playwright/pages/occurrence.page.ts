@@ -59,28 +59,27 @@ export class OccurrencePage {
 
   async markDone(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
-    const done = this.page
+    await this.doneButton().first().click();
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  private doneButton() {
+    const screen = this.page.locator(
+      '[flt-semantics-identifier="occurrence_screen"]',
+    );
+    return screen
       .locator('[flt-semantics-identifier="occurrence_done"]')
       .or(
-        this.page.getByRole('button', {
+        screen.getByRole('button', {
           name: /Mark .* as done|Marquer .* comme fait|^Done$|^Fait$/i,
         }),
       );
-    await done.first().click();
-    await refreshFlutterAccessibility(this.page);
   }
 
   async expectWeightRequiredBeforeDone(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
     await expect(this.page.getByLabel(/Weight/i).first()).toBeVisible({ timeout: 15_000 });
-    const done = this.page
-      .locator('[flt-semantics-identifier="occurrence_done"]')
-      .or(
-        this.page.getByRole('button', {
-          name: /Mark .* as done|Marquer .* comme fait|^Done$|^Fait$/i,
-        }),
-      );
-    await expect(done.first()).toBeDisabled();
+    await expect(this.doneButton().first()).toBeDisabled();
   }
 
   async fillWeight(value: string, unit: 'kg' | 'lb' = 'kg'): Promise<void> {
