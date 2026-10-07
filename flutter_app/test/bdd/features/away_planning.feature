@@ -12,13 +12,13 @@ Feature: Away Planning
     When I open away planning from the Pet Care dashboard
     Then I should see the away planning hub
 
-  # ── Wizard ───────────────────────────────────────────────────
+  # ── Create form ──────────────────────────────────────────────
 
   @implemented
   @P0
-  Scenario: Guardian can save a planned absence from the wizard
+  Scenario: Guardian can save a planned absence from the create form
     Given I am signed in as a guardian with a pet
-    When I create a planned absence for that pet from the wizard
+    When I create a planned absence for that pet from the create form
     Then I should see the away plan for the saved absence
 
   # ── Hub ──────────────────────────────────────────────────────

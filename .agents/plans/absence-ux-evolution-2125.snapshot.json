@@ -4,7 +4,7 @@
   "approved_at": "2026-10-07T10:00:00Z",
   "approved_by": "user chat 2026-10-07 (full approval absence UX, /execute-plan)",
   "approved_until": "2026-10-09T10:00:00Z",
-  "content_hash": "sha256:3cb3b4445e94b719a9a3f9976bc40f3e5259444a7a60bc26d93a14eafe0f23b5",
+  "content_hash": "sha256:04fc2cd70355d7c25a76384dda39a6146aa58cd575b6c262a7a123e11c415756",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/absence-ux-evolution-integration-2125",
@@ -75,11 +75,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1759",
+      "merge_commit": "731a7ed1133a789e21454901fd51ca31130dc37c"
     },
     {
       "id": "3",
@@ -109,11 +110,11 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1763"
     }
   ]
 }

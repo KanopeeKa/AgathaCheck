@@ -90,7 +90,7 @@ Returned on `GET /api/planned-absences/:id/readiness` with `care_coverage` and `
 | Dashboard tile | Stateful when an upcoming absence exists; degrades to prompt on load error |
 | Hub (`/pc/away`) | Lists upcoming/past absences; FAB to `/pc/away/new` |
 | Plan page (`/pc/away/:id`) | "Who's caring" section — per-pet carer label from `pet_carers`; per-pet edit dialog also carries the `pet_note` field and a per-pet PDF download button, independent of carer kind |
-| Wizard (`/pc/away/new`) | Dates → pets → preview; save navigates to plan page |
+| Create (`/pc/away/new`) | Single scroll: title (optional), dates, pets, inline care preview; save navigates to plan page |
 
 Per-pet handover export (in addition to the existing full-plan download) produces a single-pet PDF — trip dates and pet names for context, this pet's carer row and schedule only, pet-scoped (not absence-aggregate) coverage summaries, the absence-wide `handover_note` under a "Trip notes" title, and this pet's `pet_note`. Does not bump `last_handover_downloaded_at` (full-plan download only). Full details: [away-planning-per-pet-handover-spec.md](../changes/away-planning-per-pet-handover-spec.md).
 

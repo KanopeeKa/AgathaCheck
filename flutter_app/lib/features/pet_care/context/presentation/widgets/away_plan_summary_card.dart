@@ -62,21 +62,30 @@ class AwayPlanSummaryCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    Text(
-                      note,
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.bodyMedium,
+                    Semantics(
+                      identifier: 'away_plan_summary_handover_note',
+                      child: Text(
+                        note,
+                        key: const Key('away_plan_summary_handover_note'),
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.bodyMedium,
+                      ),
                     ),
                   ],
                 ],
               ),
             ),
             if (onEdit != null)
-              TextButton(
-                key: const Key('away_plan_summary_edit'),
-                onPressed: onEdit,
-                child: Text(l.careContextAwaySummaryEdit),
+              Semantics(
+                identifier: 'away_plan_summary_edit',
+                button: true,
+                label: l.careContextAwaySummaryEdit,
+                child: TextButton(
+                  key: const Key('away_plan_summary_edit'),
+                  onPressed: onEdit,
+                  child: Text(l.careContextAwaySummaryEdit),
+                ),
               ),
           ],
         ),
