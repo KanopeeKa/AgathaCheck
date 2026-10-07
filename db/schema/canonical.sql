@@ -218,11 +218,6 @@ CREATE TABLE public.cleanup_jobs (
     CONSTRAINT cleanup_jobs_max_attempts_check CHECK ((max_attempts > 0)),
     CONSTRAINT cleanup_jobs_status_check CHECK (((status)::text = ANY ((ARRAY['pending'::character varying, 'running'::character varying, 'succeeded'::character varying, 'retryable'::character varying, 'dead'::character varying])::text[])))
 );
-CREATE TABLE public.scheduler_daily_runs (
-    job_key character varying(64) NOT NULL,
-    run_day date NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
-);
 CREATE TABLE public.custody_transfers (
     id uuid NOT NULL,
     pet_id uuid NOT NULL,
@@ -962,6 +957,11 @@ CREATE TABLE public.refresh_tokens (
     expires_at timestamp with time zone NOT NULL,
     created_at timestamp with time zone DEFAULT now()
 );
+CREATE TABLE public.scheduler_daily_runs (
+    job_key character varying(64) NOT NULL,
+    run_day date NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
 CREATE TABLE public.users (
     id uuid NOT NULL,
     email character varying(255) NOT NULL,
@@ -1044,8 +1044,6 @@ ALTER TABLE ONLY public.cleanup_jobs
     ADD CONSTRAINT cleanup_jobs_dedupe_key_key UNIQUE (dedupe_key);
 ALTER TABLE ONLY public.cleanup_jobs
     ADD CONSTRAINT cleanup_jobs_pkey PRIMARY KEY (id);
-ALTER TABLE ONLY public.scheduler_daily_runs
-    ADD CONSTRAINT scheduler_daily_runs_pkey PRIMARY KEY (job_key);
 ALTER TABLE ONLY public.custody_transfers
     ADD CONSTRAINT custody_transfers_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.document_templates
@@ -1200,6 +1198,8 @@ ALTER TABLE ONLY public.refresh_tokens
     ADD CONSTRAINT refresh_tokens_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.refresh_tokens
     ADD CONSTRAINT refresh_tokens_token_key UNIQUE (token);
+ALTER TABLE ONLY public.scheduler_daily_runs
+    ADD CONSTRAINT scheduler_daily_runs_pkey PRIMARY KEY (job_key);
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_email_key UNIQUE (email);
 ALTER TABLE ONLY public.users
