@@ -91,7 +91,7 @@ node flutter_app/scripts/generate_coverage_helper.js
 
 Flutter domain threshold (D23 / J.1-3): recorded in `flutter-domain-coverage-threshold.json` (measured 8.5% → **8%** gate with review date **2026-12-01**; policy target remains **70%**).
 
-Backend ratchet floors (lines %, measured 2026-10-06): `lib` **53.06**, `services` **73.78**, `routes` **74.86**.
+Backend ratchet floors (lines %): `lib` **53.06**, `services` **73.78**, `routes` **74.58** (remeasured 2026-10-06, Batch K1 #1712 — route handlers moved to `lib/`; prior published floor **74.86**). Floors live in `server/coverage-ratchet.json`.
 
 ## Test policy
 
