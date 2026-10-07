@@ -35,13 +35,13 @@ autonomy: active
 current_phase: orchestrate
 last_completed_phase: null
 halt_reason: null
-next_action: "bootstrap and gate child plan documentation-migration-integration-harden-514a"
+next_action: "bootstrap and gate child plan documentation-migration-integration-main-514a"
 artifact_ref:
   branch: cursor/documentation-migration-integration-514a
   plan_path: .agents/plans/documentation-migration-roadmap-514a.md
-  plan_commit: 6af0b467926ee98f5983c661add8794905a49561
+  plan_commit: 2646de77500e5615f00282c7bac8ca12b30c13ef
   snapshot_path: .agents/plans/documentation-migration-roadmap-514a.snapshot.json
-  snapshot_commit: 6af0b467926ee98f5983c661add8794905a49561
+  snapshot_commit: 2646de77500e5615f00282c7bac8ca12b30c13ef
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

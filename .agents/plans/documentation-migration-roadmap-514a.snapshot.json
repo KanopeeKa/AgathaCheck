@@ -6,13 +6,13 @@
   "approved_at": "2026-10-07T11:40:00Z",
   "approved_by": "User chat 2026-10-07 — full documentation migration execute-plan (standing grant)",
   "approved_until": "2026-10-09T11:40:00Z",
-  "content_hash": "sha256:791d6c8a356feae2bdad98d641db541f05a75bf61857134f4d0084b34e84c81e",
+  "content_hash": "sha256:825df88123733654c9665308c45444627c13290e5ea8f6ec0251d719c58adbaf",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "main",
   "control_issue": 1765,
   "artifact_branch_policy": "phase-branch",
-  "current_child_plan_id": "documentation-migration-integration-harden-514a",
+  "current_child_plan_id": "documentation-migration-integration-main-514a",
   "child_plans": [
     {
       "plan_id": "documentation-migration-gate-warn-514a",
@@ -34,7 +34,7 @@
     },
     {
       "plan_id": "documentation-migration-integration-harden-514a",
-      "status": "pending",
+      "status": "merged",
       "pr_url": null,
       "merge_commit": null
     },
