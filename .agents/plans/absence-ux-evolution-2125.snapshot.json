@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "plan_id": "absence-ux-evolution-2125",
+  "approved_at": "2026-10-07T10:00:00Z",
+  "approved_by": "user chat 2026-10-07 (full approval absence UX, /execute-plan)",
+  "approved_until": "2026-10-09T10:00:00Z",
+  "content_hash": "sha256:389b481258431b5dc3923ec6f0bc8c15057ee5a684897a15a76571258e62fb0d",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/absence-ux-evolution-integration-2125",
+  "control_issue": 1750,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Title API + date non-reg + spec",
+      "branch": "cursor/absence-ux-title-api-2125",
+      "allowed_paths": [
+        "db/migrations/084_planned_absence_title.sql",
+        "db/migrations/084_planned_absence_title_down.sql",
+        "server/scripts/migrations/084_planned_absence_title.js",
+        "server/test/migrations/084_planned_absence_title.test.js",
+        "server/routes/careContext/plannedAbsence*.js",
+        "server/lib/care/plannedAbsence.js",
+        "server/test/careContext/plannedAbsences.test.js",
+        "server/test/careContext/plannedAbsenceHandover.test.js",
+        "docs/domains/pet_care/features/care-context.md",
+        "docs/architecture/api-reference.md",
+        ".agents/plans/absence-ux-evolution-2125.md",
+        ".agents/plans/absence-ux-evolution-2125.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "e2e/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null
+    },
+    {
+      "id": "2",
+      "title": "Plan summary card + trip details form",
+      "branch": "cursor/absence-ux-plan-ui-2125",
+      "allowed_paths": [
+        "flutter_app/lib/features/pet_care/context/**",
+        "flutter_app/lib/core/router/away_routes.dart",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/pet_care/context/**",
+        "flutter_app/test/core/router/**",
+        ".agents/plans/absence-ux-evolution-2125.md",
+        ".agents/plans/absence-ux-evolution-2125.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null
+    },
+    {
+      "id": "3",
+      "title": "CRUD create replaces wizard",
+      "branch": "cursor/absence-ux-create-crud-2125",
+      "allowed_paths": [
+        "flutter_app/lib/features/pet_care/context/**",
+        "flutter_app/lib/core/router/away_routes.dart",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/pet_care/context/**",
+        "flutter_app/test/bdd/**",
+        "e2e/playwright/pages/away-planning.page.ts",
+        "e2e/playwright/tests/away.planning.spec.ts",
+        "docs/domains/pet_care/features/away-planning-carer-model.md",
+        ".agents/plans/absence-ux-evolution-2125.md",
+        ".agents/plans/absence-ux-evolution-2125.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null
+    }
+  ]
+}
