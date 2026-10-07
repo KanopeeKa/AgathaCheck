@@ -19,6 +19,7 @@ artifact_ref:
   snapshot_path: .agents/plans/notifications-v2-2-remediation-main-7f3b.snapshot.json
   snapshot_commit: 31cc48309cc257e2a5a97a296c1c1a51aa358734
 open_prs: []
-merge_commits: {}
+merge_commits:
+  "1": "31cc48309cc257e2a5a97a296c1c1a51aa358734"
 debt_issue_refs: []
 ```
