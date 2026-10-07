@@ -34,6 +34,12 @@ void main() {
         normalized.contains('/presentation/widgets/')) {
       return true;
     }
+    if (normalized.contains('/experience/presentation/care_item/')) {
+      return true;
+    }
+    if (normalized.contains('/experience/presentation/screens/pet_care/')) {
+      return true;
+    }
     return false;
   }
 
