@@ -106,6 +106,7 @@ export async function acceptShareInvite(pool, {
       await resolveAdministrativeNotifications(client, {
         userId,
         type: 'shareInviteReceived',
+        referenceId: invite.code,
       });
 
       await createNotification(client, {

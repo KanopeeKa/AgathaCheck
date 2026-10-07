@@ -7,7 +7,7 @@ import { buildHouseholdInvitationEmail } from '../email/templates/householdInvit
 import { resolveEmailLocale } from '../email/locale.js';
 import {
   createNotification,
-  resolveNotificationsByType,
+  resolveNotifications,
   userDisplayName,
 } from '../notificationHelper.js';
 import { NOTIFICATION_TYPE_HOUSEHOLD_INVITE_RECEIVED } from '../notificationKind.js';
@@ -324,9 +324,10 @@ export async function acceptHouseholdInvite(pool, {
     source: 'household',
   });
 
-  await resolveNotificationsByType(pool, {
+  await resolveNotifications(pool, {
     userId,
     type: NOTIFICATION_TYPE_HOUSEHOLD_INVITE_RECEIVED,
+    referenceId: invite.code,
   });
 
   await emitHouseholdMemberJoined(pool, {
@@ -379,9 +380,10 @@ export async function declineHouseholdInvite(pool, {
     [invite.id, INVITE_DECLINED, userId],
   );
 
-  await resolveNotificationsByType(pool, {
+  await resolveNotifications(pool, {
     userId,
     type: NOTIFICATION_TYPE_HOUSEHOLD_INVITE_RECEIVED,
+    referenceId: invite.code,
   });
 
   return { invite_id: invite.id, status: INVITE_DECLINED };
@@ -406,10 +408,16 @@ export async function revokeHouseholdInvite(pool, { householdId, inviteId, userI
     [inviteId, INVITE_REVOKED],
   );
 
-  if (invite.invitee_user_id) {
-    await resolveNotificationsByType(pool, {
-      userId: invite.invitee_user_id,
+  const inviteeUserId = invite.invitee_user_id
+    || (await pool.query(
+      'SELECT id FROM users WHERE LOWER(email) = LOWER($1) LIMIT 1',
+      [invite.invitee_email],
+    )).rows[0]?.id;
+  if (inviteeUserId) {
+    await resolveNotifications(pool, {
+      userId: inviteeUserId,
       type: NOTIFICATION_TYPE_HOUSEHOLD_INVITE_RECEIVED,
+      referenceId: invite.code,
     });
   }
 
