@@ -118,7 +118,7 @@ On demand only. **One capability per PR.**
 | **R-T1** / **R-T3** | Use normative `bdd:` / `test:` coverage (see standards §3.3) |
 | New feature doc fails gates | Ensure file lives under `features/`, valid YAML, no hex colours in prose |
 
-Agents never apply the `docs-gate-exempt` label.
+Rule IDs: `docs/domains/documentation/standards.md` §Enforcement. Agents never apply the `docs-gate-exempt` label.
 
 ---
 

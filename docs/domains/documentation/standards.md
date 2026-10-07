@@ -3,7 +3,7 @@ title: Documentation standards
 owner: Documentation Team
 audience: agent
 status: active
-last_updated: 2026-10-06
+last_updated: 2026-10-07
 tags: [documentation, standards, policy]
 ---
 
@@ -71,17 +71,38 @@ Standalone `*-decisions.md` under `features/` or `changes/` is **legacy**; do no
 ## Enforcement
 
 - **Procedure:** `.cursor/skills/canonical-docs/SKILL.md` (Mode A `sync` / Mode B `consolidate`).
-- `bash scripts/validate_docs.sh` — links, frontmatter, placement/manifest gates, and `check_docs_canonical.js` (diff vs `origin/main` when available).
-- **CI gates (warn mode on PRs):** rule groups **A** (PR `## Docs`), **B** (`changes/` lifecycle), **C** (canonical shape), **D** (ID stability), **E** (AC trace), **L** (legacy baseline ratchet). Details: `docs/domains/documentation/changes/docs-ci-gates.md` (folds into this file when delivered).
-- Legacy domain docs: migrate **one capability at a time** with `/canonical-docs consolidate`.
+- **Local:** `bash scripts/validate_docs.sh` — links, placement/manifest, plus `check_docs_canonical.js` (diff vs `origin/main`; `DOCS_GATE_MODE` defaults to `warn` locally).
+- **CI (blocking):** `.github/workflows/docs-gate.yml` — jobs **Docs declaration** (Gate A) and **Docs canonical** (Gates B–E + trace report). `DOCS_GATE_MODE=block` in that workflow.
+- **Weekly hygiene:** `quality-kpis.yml` job `docs-hygiene` — expired `changes/`, duplicate IDs, closed-issue `none — #n` rows; tracking issue marker `<!-- docs-hygiene -->`.
+- **Legacy baseline:** `scripts/docs-legacy-baseline.json` — shrink-only; untouched paths skip Gate C (**R-L3**). Migrate with `/canonical-docs consolidate`.
+
+### Gate A — PR `## Docs`
+
+Behaviour paths (require `## Docs` unless exempt bot): `flutter_app/lib/**` (excl. `*.g.dart`, `*.mocks.dart`, `*.freezed.dart`), `flutter_app/lib/l10n/*.arb`, `server/routes/**`, `server/lib/**`, `server/migrations/**`, `server/bin/**`. **Excluded:** `flutter_app/test/**`, `e2e/**`, `scripts/**`.
+
+Declare canonical path(s) updated or `N/A — <reason>` (≥10 characters after `N/A —`). Rules **R-A1**–**R-A6** (multi-doc list, `changes/` delete guard **R-A4** / legacy **R-A4b**).
+
+### Gates B–E (diff-scoped)
+
+| Gate | Mode | Rules (summary) |
+|------|------|-----------------|
+| B `changes/` | `--changes` | **R-B1**–**R-B5** — `proposed` \| `in-delivery` only; no new `*-decisions.md` |
+| C shape | `--shape` | **R-C1**–**R-C6** — template tables; **R-C6-legacy** WARN on touched baseline docs |
+| D IDs | `--ids` | **R-D1**–**R-D4** — append-only; use `Retired` not row delete |
+| E trace | `--trace` | **R-T2**–**R-T4** — `bdd:` / `test:` / `none — #n` on new/changed AC rows |
+
+**Coverage wire formats:** `bdd: file.feature#Scenario title` or `bdd: file.feature@tag`; `test: path#exact test name`; `none — #n`; legacy untouched rows may keep `TBD — consolidate`.
+
+**Checker:** `node scripts/check_docs_canonical.js` · **Tests:** `scripts/check_docs_canonical.test.js` · Rule fix text: skill Troubleshooting.
 
 ## Decision log
 
 | ID | Decision | Rationale | Status | Date | PR |
 |----|----------|-----------|--------|------|-----|
 | DOCUMENTATION-STANDARDS-D-001 | Decision logs live inside canonical feature docs | Single source of truth; append-only supersession | Live | 2026-10-06 | #1703 |
-| DOCUMENTATION-STANDARDS-D-002 | Agent workflow enforces sync before PR open | Skill + pr-hygiene/babysit/execute-plan wiring; CI gates deferred | Live | 2026-10-06 | #1703 |
+| DOCUMENTATION-STANDARDS-D-002 | Agent workflow enforces sync before PR open | Skill + pr-hygiene/babysit/execute-plan wiring; CI gates deferred | Superseded by DOCUMENTATION-STANDARDS-D-004 | 2026-10-06 | #1703 |
 | DOCUMENTATION-STANDARDS-D-003 | Requirement/decision ID prefix from `feature_id` | One prefix per doc; uppercase kebab from YAML | Live | 2026-10-06 | #1703 |
+| DOCUMENTATION-STANDARDS-D-004 | Documentation CI gates block on PR | `docs-gate.yml` Gates A–E; baseline shrink-only; plan docs-ci-gates-a496 | Live | 2026-10-07 | TBD |
 
 ## Still open
 

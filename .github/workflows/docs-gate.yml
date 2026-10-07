@@ -9,7 +9,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  DOCS_GATE_MODE: warn
+  DOCS_GATE_MODE: block
 
 jobs:
   docs-declaration:
