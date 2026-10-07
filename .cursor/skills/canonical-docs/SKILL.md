@@ -121,7 +121,7 @@ On demand only. **One capability per PR.**
 | **R-T2** / **R-T3** coverage | Use `bdd:`, `test:`, or `none — #issue` wire formats (see feature-template) |
 | New feature doc fails gates | Ensure file lives under `features/`, valid YAML, `## Decision log`, no hex colours in prose |
 
-Rule IDs: `docs/domains/documentation/changes/docs-ci-gates.md`.
+Rule IDs: `docs/domains/documentation/standards.md` §Enforcement.
 
 ---
 

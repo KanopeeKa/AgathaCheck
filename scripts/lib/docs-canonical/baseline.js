@@ -46,12 +46,15 @@ function checkBaselineFileDiff(diffFiles, baselineAtBase, root, headBaseline) {
   }
   for (const p of committed.features) {
     if (!onDisk.features.has(p)) {
-      findings.push({
-        ruleId: 'R-L2',
-        severity: 'BLOCK',
-        message: `Removed baseline feature entry (stale?): ${p}`,
-        file: relBaseline,
-      });
+      const abs = path.join(root, p);
+      if (fs.existsSync(abs)) {
+        findings.push({
+          ruleId: 'R-L2',
+          severity: 'BLOCK',
+          message: `Removed baseline feature entry but file still exists: ${p}`,
+          file: relBaseline,
+        });
+      }
     }
   }
   for (const p of onDisk.changes) {
@@ -66,12 +69,15 @@ function checkBaselineFileDiff(diffFiles, baselineAtBase, root, headBaseline) {
   }
   for (const p of committed.changes) {
     if (!onDisk.changes.has(p)) {
-      findings.push({
-        ruleId: 'R-L2',
-        severity: 'BLOCK',
-        message: `Removed baseline change entry (stale?): ${p}`,
-        file: relBaseline,
-      });
+      const abs = path.join(root, p);
+      if (fs.existsSync(abs)) {
+        findings.push({
+          ruleId: 'R-L2',
+          severity: 'BLOCK',
+          message: `Removed baseline change entry but file still exists: ${p}`,
+          file: relBaseline,
+        });
+      }
     }
   }
   return findings;
