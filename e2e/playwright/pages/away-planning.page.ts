@@ -35,7 +35,7 @@ async function fillDateField(field: Locator, isoDate: string): Promise<void> {
 }
 
 /**
- * Away Planning hub, wizard, and plan page vocabulary.
+ * Away Planning hub, create form, and plan page vocabulary.
  */
 export class AwayPlanningPage {
   constructor(private readonly page: Page) {}
@@ -67,7 +67,7 @@ export class AwayPlanningPage {
     ).toBeVisible({ timeout: 30_000 });
   }
 
-  async openWizard(): Promise<void> {
+  async openCreateForm(): Promise<void> {
     await this.page.goto(flutterGotoUrl('/pc/away/new'));
     await refreshFlutterAccessibility(this.page);
     await waitForFlutterRoutePattern(this.page, /\/pc\/away\/new/, 60_000);
@@ -109,18 +109,13 @@ export class AwayPlanningPage {
     await expect(dialog).not.toBeVisible({ timeout: 15_000 });
   }
 
+  /** @deprecated Create is a single scroll form — use pickAbsenceDates + selectPet + saveAbsence. */
   async continueWizard(): Promise<void> {
-    const continueButton = semanticsKey(this.page, 'planned_absence_continue');
-    if (await continueButton.isVisible().catch(() => false)) {
-      await continueButton.click();
-    } else {
-      await this.page
-        .getByRole('button', { name: /^Continue$|^Continuer$/i })
-        .first()
-        .click();
-    }
-    await this.page.waitForTimeout(750);
     await refreshFlutterAccessibility(this.page);
+  }
+
+  async openWizard(): Promise<void> {
+    await this.openCreateForm();
   }
 
   async selectPet(petId: string, petName?: string): Promise<void> {
@@ -457,10 +452,15 @@ export class AwayPlanningPage {
 
   async openEditScreen(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
-    await this.page
-      .getByRole('button', { name: /Edit away plan|Modifier le plan d'absence/i })
-      .first()
-      .click();
+    const summaryEdit = semanticsKey(this.page, 'away_plan_summary_edit');
+    if (await summaryEdit.isVisible().catch(() => false)) {
+      await summaryEdit.click();
+    } else {
+      await this.page
+        .getByRole('button', { name: /^Edit$|^Modifier$/i })
+        .first()
+        .click();
+    }
     await refreshFlutterAccessibility(this.page);
     // Flutter web push may not sync hash; assert edit screen chrome instead.
     await this.expectEditScreenLoaded();
