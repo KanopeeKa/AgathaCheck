@@ -6,7 +6,7 @@ title: Care date screen (occurrence leaf) v1
 
 ## Goal
 
-Implement the agreed Care date screen layout: context tile, title + Reschedule, status, away block, unified actions; spec `occurrence-screen-context-spec.md`; widget tests and E2E locator updates.
+Implement the agreed Care date screen layout: context tile, title + Reschedule, status, away block, unified actions. **Canonical spec:** `docs/domains/pet_care/features/care-item-evolution.md` § Care date screen (folded 2026-10-07). Widget tests and E2E locator updates.
 
 ## Metadata
 
@@ -21,7 +21,7 @@ Implement the agreed Care date screen layout: context tile, title + Reschedule, 
 ### Phase 1 — Spec and core Care date layout
 
 **branch:** `cursor/occurrence-screen-context-core-6b05`  
-**allowed_paths:** `docs/domains/pet_care/changes/occurrence-screen-context-spec.md`, `flutter_app/lib/features/experience/presentation/care_item/occurrence/**`, `flutter_app/lib/l10n/**`, `.agents/plans/occurrence-screen-context-6b05.*`
+**allowed_paths:** `docs/domains/pet_care/features/care-item-evolution.md`, `flutter_app/lib/features/experience/presentation/care_item/occurrence/**`, `flutter_app/lib/l10n/**`, `.agents/plans/occurrence-screen-context-6b05.*`
 
 ### Phase 2 — Away block, tests, E2E
 
