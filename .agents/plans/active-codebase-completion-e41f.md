@@ -193,24 +193,24 @@ The roadmap is complete only when **all** of the following hold on `main`:
 8. The review doc is marked implemented; its Implementation status table has no Partial or Not-started rows; any remaining P2/P3 exceptions have an owner, reason and review date (K.4).
 9. Pre-UAT E2E green on the final Batch K merge SHA — met on `58427e4219fd1f5a011e678a7fecf855c2960b8e` ([pre-UAT run 37540578394](https://github.com/KanopeeKa/AgathaCheck/actions/runs/37540578394)).
 
-**Closeout:** Remaining gaps vs criteria 1–5 and 8 are tracked in [`.agents/plans/active-codebase-completion-e41f.audit.md`](./active-codebase-completion-e41f.audit.md) and plan `active-codebase-completion-closeout-e41f` (#1734). Criteria softened in #1724 were reverted here (approved wording).
+**Spirit-aligned closure (2026-10-07):** Closeout plan landed on `main` @ `ec87ac68` ([#1739](https://github.com/KanopeeKa/AgathaCheck/pull/1739); pre-UAT [run 37602281747](https://github.com/KanopeeKa/AgathaCheck/actions/runs/37602281747)). Tier 0–1 + Tier 4 hygiene shipped; Tier 3 + residual Batch K are tracked in [`docs/debt/debt.md`](../../docs/debt/debt.md) ([#1735](https://github.com/KanopeeKa/AgathaCheck/issues/1735) for care tx deferral). Path A-lite per [audit](./active-codebase-completion-e41f.audit.md).
 
 ## Runtime state (agent-updated)
 
 **Agent handover (gates D–G delta):** [`.agents/plans/active-codebase-completion-e41f.handoff-d-g.md`](./active-codebase-completion-e41f.handoff-d-g.md) on `main` (full playbook remains on branch `claude/friendly-davinci-5zcxj2` until copied).
 
 ```yaml
-autonomy: active
+autonomy: completed
 current_phase: orchestrate
 last_completed_phase: null
 halt_reason: null
-next_action: "execute-plan active-codebase-completion-closeout-e41f (spirit-aligned closure)"
+next_action: "roadmap complete"
 artifact_ref:
-  branch: cursor/active-codebase-k-integration-e41f
+  branch: main
   plan_path: .agents/plans/active-codebase-completion-e41f.md
-  plan_commit: 8f5ea932708f84c746cca85495500e6eaaeb4582
+  plan_commit: ec87ac68bdefc8b9d72e646e209f0a5b27c777bf
   snapshot_path: .agents/plans/active-codebase-completion-e41f.snapshot.json
-  snapshot_commit: 8f5ea932708f84c746cca85495500e6eaaeb4582
+  snapshot_commit: ec87ac68bdefc8b9d72e646e209f0a5b27c777bf
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

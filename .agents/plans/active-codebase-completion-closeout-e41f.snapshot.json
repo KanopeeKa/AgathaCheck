@@ -5,7 +5,7 @@
   "approved_at": "2026-10-06T23:35:00Z",
   "approved_by": "Chat 2026-10-06 spirit-aligned closure; roadmap #1446 standing grant",
   "approved_until": "2026-10-08T23:35:00Z",
-  "autonomy": "active",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "cursor/active-codebase-completion-closeout-integration-26ff",
   "control_issue": 1734,
@@ -110,11 +110,12 @@
       "spawn_allowed": false,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1739"
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1739",
+      "pr_head_sha": "ec87ac68bdefc8b9d72e646e209f0a5b27c777bf"
     }
   ],
-  "content_hash": "sha256:3489930a7c491849fa95d93f81ee36959aa0029b1a679c3936617a77aa69504b"
+  "content_hash": "sha256:feacdcae6e4b7e9da7f38da9f5ceedf957a98c431c7b98ad41287ef9b423fd6c"
 }
