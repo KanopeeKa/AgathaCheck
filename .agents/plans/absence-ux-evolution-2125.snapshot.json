@@ -4,7 +4,7 @@
   "approved_at": "2026-10-07T10:00:00Z",
   "approved_by": "user chat 2026-10-07 (full approval absence UX, /execute-plan)",
   "approved_until": "2026-10-09T10:00:00Z",
-  "content_hash": "sha256:147ef318def7ce8a969b64840fb6d7533749417638fe8c642eb031552c0e0262",
+  "content_hash": "sha256:04fc2cd70355d7c25a76384dda39a6146aa58cd575b6c262a7a123e11c415756",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/absence-ux-evolution-integration-2125",
@@ -114,7 +114,7 @@
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1763"
     }
   ]
 }

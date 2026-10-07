@@ -73,10 +73,15 @@ class AwayPlanSummaryCard extends StatelessWidget {
               ),
             ),
             if (onEdit != null)
-              TextButton(
-                key: const Key('away_plan_summary_edit'),
-                onPressed: onEdit,
-                child: Text(l.careContextAwaySummaryEdit),
+              Semantics(
+                identifier: 'away_plan_summary_edit',
+                button: true,
+                label: l.careContextAwaySummaryEdit,
+                child: TextButton(
+                  key: const Key('away_plan_summary_edit'),
+                  onPressed: onEdit,
+                  child: Text(l.careContextAwaySummaryEdit),
+                ),
               ),
           ],
         ),
