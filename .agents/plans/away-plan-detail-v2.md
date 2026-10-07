@@ -18,7 +18,7 @@ plan_id: away-plan-detail-v2
 Redesign the Away Plan detail screen from Away Planning V1: one unified, tappable "Planned care" list (replaces Routine/Dated/Indeterminate); attention-only carer/care coverage summary; read-only display screen + new edit screen (notes, delete) on the app's standard edit-screen pattern; pet photo + tap-through. Scheduling stays with CSM — read-side only.
 
 **Canonical docs:** `docs/domains/pet_care/changes/away-plan-detail-v2-delivery-plan.md`
-**Frozen decisions:** `docs/domains/pet_care/changes/away-plan-detail-v2-decisions.md` (D-AWD-001–007, confirmed 2026-09-22 after two review rounds)
+**Frozen decisions:** `docs/domains/pet_care/features/care-context.md` (D-AWD-001–007, confirmed 2026-09-22; consolidated Wave 1.3a)
 
 ## Autonomy
 

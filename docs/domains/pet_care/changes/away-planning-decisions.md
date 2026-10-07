@@ -9,7 +9,7 @@ tags: [pet_care, care_context, decisions]
 
 # Away Planning — Decision log
 
-Frozen product and engineering decisions for **Away Planning V1**. Canonical behaviour: [care-context.md](../features/care-context.md). Delivery sequencing: [away-planning-delivery-plan.md](./away-planning-delivery-plan.md).
+Frozen product and engineering decisions for **Away Planning V1**. **Care Context** (projection, coverage, readiness presentation, planned-care list, `explainGap`, absence invariants): canonical [care-context.md](../features/care-context.md) decision log — D-AWAY-001, D-AWAY-002, D-AWAY-006, D-AWAY-007, D-AWAY-010, D-AWAY-011, D-AWD-*, D-CC-ABS-001, D-CC-SCOPE-001. **This file** retains carer, handover, terminology, and debt rows for Wave 1.3b. Delivery sequencing: [away-planning-delivery-plan.md](./away-planning-delivery-plan.md).
 
 **Context:** AgathaTrack is **not in production**; no real user data exists. Verified against `main` through `fcc8a804` (2026-09-15). Care Schedule Management V1 merged in [#1193](https://github.com/KanopeeKa/AgathaCheck/pull/1193).
 
@@ -19,39 +19,13 @@ Frozen product and engineering decisions for **Away Planning V1**. Canonical beh
 
 ## D-AWAY-001 — Away Planning does not introduce a second "status" (2026-09-15)
 
-**Status:** Frozen
-
-"Recorded" / "Prepared" / "ready" is never a column. `planned_absences.status` keeps exactly two meanings: `active` and `cancelled`.
-
-Facts about carers and coverage are computed **server-side** at read time so the tile, hub, plan page, and PDF cannot disagree.
+**Retired here** — canonical row in [care-context.md](../features/care-context.md#decision-log) (D-AWAY-001).
 
 ---
 
 ## D-AWAY-002 — Readiness is two facts, not one verdict (2026-09-15)
 
-**Status:** Frozen
-
-**Rejected:** a single "Recorded"/"Prepared" verdict or any ranking that collapses carer and coverage into one score.
-
-Surface **two independent facts**, using existing vocabulary only:
-
-| Fact | Source |
-|------|--------|
-| **Carer coverage** | Per pet: `planned_absence_pets.carer_kind` set or unset. At absence level: all pets have a carer / some do / none do. |
-| **Care coverage** | `evaluateCarePeriodCoverage()` → `coverage_state` (and `reassurance_available` only as the existing "may we speak?" flag). |
-
-`CarePeriodCoveragePolicy` (`server/lib/care/carePeriodCoverage.js`) is the **only** implementation of care coverage. Away Planning adds no new coverage vocabulary.
-
-**Copy rule:** reassurance sentences key off `coverage_state`. `nothing_scheduled` must **never** render as "Everything looks covered for these dates" — that claims coverage of nothing.
-
-**Presentation (no cross-axis ranking):**
-
-- **Plan page and hub** — room for both facts; show both with no ranking. **Amended 2026-09-22 by [D-AWD-001](/docs/domains/pet_care/changes/away-plan-detail-v2-decisions.md#d-awd-001--plan-page-readiness-becomes-attention-only-supersedes-part-of-d-away-002):** on the **plan page's `AwayPlanHeaderSection` only**, each line now renders only when it's actionable (not all carers assigned / items to review or indeterminate). Not touched: the handover PDF (unconditional, both lines), and the hub's list entries (`planned_absence_entry_tile.dart`), which as shipped already resolve through `AwayPlanningTileCopy` — the same fixed-priority mechanism as the dashboard tile below, not a "both facts" treatment. That's a pre-existing V1 implementation detail this amendment doesn't change or attempt to reconcile.
-- **Dashboard tile** — space-constrained; use a **fixed actionability priority**, not a strength comparison across axes:
-  1. If any pet lacks a carer → surface that (only fact the guardian alone can resolve; concerns people).
-  2. Else → surface the coverage sentence for the current `coverage_state`.
-
-**Tests:** assert a **triple** per matrix cell — carer fact, coverage fact, tile copy selected — not one enum (3 carer states × 5 coverage states = 15 cases).
+**Retired here** — canonical row in [care-context.md](../features/care-context.md#decision-log) (D-AWAY-002, D-AWD-001 amendment). Dashboard tile fixed-priority copy remains as implemented in `AwayPlanningTileCopy`.
 
 ---
 
@@ -114,21 +88,13 @@ No email, photo, bio, or category. Exposes collaborator user ids only for pets t
 
 ## D-AWAY-006 — Collapsed routine rows inherit least-certain constituent (2026-09-15)
 
-**Status:** Frozen (grouping key superseded — certainty rule unchanged)
-
-When N daily occurrences collapse to one routine row, certainty = **minimum** among constituents. Any `conditional_on_future_completion` → collapsed row shows `~` and expected copy. Implemented **server-side** beside the projector; plan page and PDF render only.
-
-**Amended 2026-09-22 by [D-AWD-002](/docs/domains/pet_care/changes/away-plan-detail-v2-decisions.md#d-awd-002--care-events-are-grouped-by-health-entry-not-by-time-slot-across-all-frequencies-supersedes-d-away-006s-grouping-key):** the grouping key changes from `health_entry_id + scheduled_time` (daily-only) to `health_entry_id` alone, extended to every repeating frequency. The **least-certain-wins** rule on this page stays exactly as written — it now applies to the wider grouping, not to a new one.
+**Retired here** — canonical row in [care-context.md](../features/care-context.md#decision-log) (D-AWAY-006, D-AWD-002 grouping).
 
 ---
 
 ## D-AWAY-007 — Indeterminate care is visible, not merely flagged (2026-09-15)
 
-**Status:** Frozen
-
-`projectEntryForPeriod` may return **no items** for `from_completion` entries with pending occurrences while recording `uncertainties[]`. Plan page and PDF must render enriched uncertainties as **named rows**, not omit care silently. Requires AW-3 enrichment (`name`, `type`, `care_family` on each uncertainty).
-
-**Extended 2026-09-22 by [D-AWD-003](/docs/domains/pet_care/changes/away-plan-detail-v2-decisions.md#d-awd-003--completion-chain-indeterminate-items-get-an-interval-description-not-just-a-reason-code-extends-d-away-007):** named rows now also carry a recurrence interval when the underlying entry has one (`recurring_chain` kind, D-AWD-002), instead of only a reason code. Still not omitted silently; still enriched with `name`/`type`/`care_family`.
+**Retired here** — canonical row in [care-context.md](../features/care-context.md#decision-log) (D-AWAY-007, D-AWD-003). Open-occurrence display amendments: [away-care-planning-decisions.md](./away-care-planning-decisions.md) (D-ACP-001).
 
 ---
 
@@ -154,21 +120,13 @@ Seed may include downloaded-then-edited absences because the timestamp column ex
 
 ## D-AWAY-010 — Saving never requires a complete plan (2026-09-15)
 
-**Status:** Frozen
-
-Dates + pets is a valid save. Carer, handover note, and download are optional. No completion percentage, checklist mechanic, or gate.
+**Retired here** — canonical row in [care-context.md](../features/care-context.md#decision-log) (D-AWAY-010 → CARE-CONTEXT-R-022).
 
 ---
 
 ## D-AWAY-011 — §3.8 forward-compat column dropped; document `explainGap` instead (2026-09-15)
 
-**Status:** Frozen
-
-**Removed from scope:** adding a `source_ref`-style pointer from projection calls to absences.
-
-**Reason:** `explainGap` already exists (`server/lib/care/schedule/explainGap.js`, CSM-13). It is keyed by `health_entry_id` + optional date window and returns ledger facts — no absence pointer. `planned_absences.source_ref` already means "what external thing declared this absence"; overloading it would corrupt a live field.
-
-**Ships instead:** documented `explainGap` window contract in [care-context.md](../features/care-context.md). Reverse lookup (which absence overlapped a schedule event) is answerable from `planned_absences` by `(user_id, date window)` with no new column.
+**Retired here** — canonical row in [care-context.md](../features/care-context.md#decision-log) (D-AWAY-011 → CARE-CONTEXT-R-014).
 
 ---
 
@@ -223,6 +181,6 @@ Spec: [away-planning-per-pet-handover-spec.md](./away-planning-per-pet-handover-
 
 - [away-planning-delivery-plan.md](./away-planning-delivery-plan.md)
 - [away-planning-per-pet-handover-spec.md](./away-planning-per-pet-handover-spec.md) — AW-11 implementation
-- [away-plan-detail-v2-decisions.md](./away-plan-detail-v2-decisions.md) — amends D-AWAY-002/006, extends D-AWAY-007; rebased onto AW-11
+- [care-context.md](../features/care-context.md) — D-AWD-* and context D-AWAY rows (Wave 1.3a consolidate)
 - [care-schedule-management-decisions.md](./care-schedule-management-decisions.md) — D-CSM-008 (no reschedule on plan page)
 - [terminology.md](/docs/design/terminology.md)

@@ -21,7 +21,7 @@ tags: [pet_care, care_context, execute-plan]
 | **default_merge_mode** | `auto` |
 | **artifact_branch_policy** | `phase-branch` |
 | **canonical spec** | `docs/domains/pet_care/features/care-context.md` |
-| **delivery plan** | `docs/domains/pet_care/changes/care-through-change-delivery-plan.md` |
+| **canonical doc** | `docs/domains/pet_care/features/care-context.md` |
 
 ## Goal
 

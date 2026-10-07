@@ -10,7 +10,7 @@ tags: [pet_care, care_context, away_planning, delivery]
 # Away Plan Detail V2 — Delivery Plan
 
 **Canonical product behaviour (V1):** [care-context.md](../features/care-context.md) — update in AWD-5.
-**Frozen decisions:** [away-plan-detail-v2-decisions.md](./away-plan-detail-v2-decisions.md)
+**Frozen decisions:** [care-context.md](../features/care-context.md) (D-AWD-001–007; D-AWD-007 superseded by D-CC-ABS-001)
 **Execute-plan:** `.agents/plans/away-plan-detail-v2.md`
 
 **Status: active** — decisions frozen 2026-09-22 after two chat review rounds; implementation authorized.
@@ -62,7 +62,7 @@ AWD-DOC-0
 
 ## AWD-DOC-0 — Plan bootstrap
 
-Review and freeze D-AWD-001–007 in [away-plan-detail-v2-decisions.md](./away-plan-detail-v2-decisions.md); this delivery plan; `.agents/plans/away-plan-detail-v2.{md,snapshot.json}`; open control issue; confirm scope boundaries (carer-edit dialog and dates/pets editing explicitly out of scope, D-AWD-007). Specific items this phase confirms (all drafted already, not blank):
+Review and freeze D-AWD-001–007 in [care-context.md](../features/care-context.md); this delivery plan; `.agents/plans/away-plan-detail-v2.{md,snapshot.json}`; open control issue; confirm scope boundaries (carer-edit dialog and dates/pets editing explicitly out of scope, D-AWD-007). Specific items this phase confirms (all drafted already, not blank):
 
 - `planned_care_items[]` wire shape, `kind` discriminant, sort/dedupe rules (D-AWD-002)
 - `[proposed]` ARB copy table in D-AWD-003 (wording confirmed by user 2026-09-22: "Repeats" over "Occurs") and its FR strings
@@ -143,7 +143,7 @@ One outcome: `PlannedAbsencePlanScreen` is read-only; a new edit screen owns the
 
 ## AWD-5 — Docs + journey
 
-`care-context.md` updated for the unified event model and the new edit screen; `away-plan-detail-v2-decisions.md` statuses flipped from Proposed to Frozen (post-merge); `docs/architecture/api-reference.md` finalised for the AWD-2 contract fields (draft written in AWD-2, confirmed here against the shipped shape).
+`care-context.md` updated for the unified event model and trip-details edit (D-CC-ABS-001); `docs/architecture/api-reference.md` finalised for the AWD-2 contract fields (draft written in AWD-2, confirmed here against the shipped shape).
 
 **BDD: three separate scenarios, not one bundled one** (per review round 1 — atomic BDD, mirrors atomic-pr.mdc's "one outcome" principle applied to test scenarios):
 

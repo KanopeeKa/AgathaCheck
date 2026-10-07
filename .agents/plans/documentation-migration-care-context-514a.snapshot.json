@@ -39,11 +39,11 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:7e90ca5a54a7cc8c935a7f617d3b61c82aac4742f681d66f544b47049c0ea2aa"
+  "content_hash": "sha256:e64d30dec3407f590cdf33449d2520fc0441222c9ef0b84f574f324cea193641"
 }

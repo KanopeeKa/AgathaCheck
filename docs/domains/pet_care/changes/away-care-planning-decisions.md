@@ -10,7 +10,7 @@ tags: [pet_care, care_context, care_schedule_management, away_planning, decision
 # Away Care Planning — Decisions
 
 **Delivery plan:** [away-care-planning-delivery-plan.md](./away-care-planning-delivery-plan.md)
-**Builds on:** [away-plan-detail-v2-decisions.md](./away-plan-detail-v2-decisions.md) (D-AWD-*), [away-planning-decisions.md](./away-planning-decisions.md) (D-AWAY-*), [care-schedule-management-decisions.md](./care-schedule-management-decisions.md) (D-CSM-*)
+**Builds on:** [care-context.md](../features/care-context.md) (D-AWD-*, context D-AWAY-*), [away-planning-decisions.md](./away-planning-decisions.md) (carer/handover D-AWAY-*), [care-schedule-management.md](../features/care-schedule-management.md) (D-CSM-*)
 
 **Status: frozen** (ACP-DOC-0, 2026-09-23; D-ACP-011 added 2026-09-29). Product answers were given in chat on 2026-09-23 (summarised in the delivery plan §1.3). Cursor review resolutions are recorded in delivery plan §9. Decisions marked *amends* change a frozen decision and must be read together with it.
 

@@ -206,4 +206,4 @@ Reschedule/move affordances. Per-item carer assignment. Pet Sitting. Public shar
 ## Related
 
 - [away-planning-decisions.md](./away-planning-decisions.md)
-- [care-through-change-delivery-plan.md](./care-through-change-delivery-plan.md)
+- [care-context.md](../features/care-context.md) (CC-1–CC-4 behaviour; delivery plan retired Wave 1.3a)
