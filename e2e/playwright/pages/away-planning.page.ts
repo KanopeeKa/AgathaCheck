@@ -422,8 +422,9 @@ export class AwayPlanningPage {
     const aboutItem = this.page.locator(
       '[flt-semantics-identifier="occurrence_about_item"]',
     );
+    const careMenu = this.page.locator('[flt-semantics-identifier="care_item_menu"]');
     const careActions = this.page.getByRole('button', {
-      name: /care item actions/i,
+      name: /care item actions|actions sur le soin/i,
     });
 
     await expect(async () => {
@@ -443,7 +444,7 @@ export class AwayPlanningPage {
         return;
       }
       // Care item detail (D-CIE-017): lifecycle actions live in overflow menu.
-      await expect(careActions).toBeVisible();
+      await expect(careMenu.or(careActions).first()).toBeVisible();
     }).toPass({ timeout: 45_000 });
   }
 
