@@ -11,7 +11,7 @@ last_updated: 2026-10-07
 
 # People — planned amendments to Away Planning decisions
 
-**Status:** in effect from People phase 2 (`p2-absence`). Canonical spec: [people-care-team.md](/docs/domains/people/features/people-care-team.md).
+**Status:** in effect from People phase 2 (`p2-absence`). **Planned carer-model requirements:** [away-planning-carer-model.md](/docs/domains/pet_care/features/away-planning-carer-model.md) (AWAY-PLANNING-CARER-R-014, R-015). Canonical People spec: [people-care-team.md](/docs/domains/people/features/people-care-team.md).
 
 ## Summary
 
