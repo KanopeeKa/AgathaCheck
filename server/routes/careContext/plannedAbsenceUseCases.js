@@ -3,7 +3,6 @@
  */
 
 import { v4 as uuidv4 } from 'uuid';
-import { todayCalendarIso } from '../../lib/calendarDate.js';
 import { loadAwayPlanReadinessForAbsence } from '../../lib/care/awayPlan/index.js';
 import { withTransaction } from '../../lib/db/withTransaction.js';
 import {
@@ -11,6 +10,7 @@ import {
   PLANNED_ABSENCE_STATUS_ACTIVE,
   PLANNED_ABSENCE_STATUS_CANCELLED,
   normalizeAbsenceTitleInput,
+  resolvePlannedAbsenceTodayIso,
   validateAbsenceDateWindow,
 } from '../../lib/care/plannedAbsence.js';
 import { loadUserTimezone } from '../../lib/people/absenceCarerInviteService.js';
@@ -40,7 +40,7 @@ import {
 } from './plannedAbsenceOverlap.js';
 
 export async function listPlannedAbsences(pool, userId, scopeResult) {
-  const todayIso = todayCalendarIso();
+  const todayIso = await resolvePlannedAbsenceTodayIso(pool, userId);
   const { sql, params } = listAbsencesSql(scopeResult.scope, todayIso);
   const result = await pool.query(sql, [userId, ...params]);
   const absenceIds = result.rows.map((row) => row.id);
@@ -61,7 +61,12 @@ export async function listPlannedAbsences(pool, userId, scopeResult) {
 }
 
 export async function createPlannedAbsence(pool, userId, body) {
-  const window = validateAbsenceDateWindow(body.starts_on || body.startsOn, body.ends_on || body.endsOn);
+  const todayIso = await resolvePlannedAbsenceTodayIso(pool, userId);
+  const window = validateAbsenceDateWindow(
+    body.starts_on || body.startsOn,
+    body.ends_on || body.endsOn,
+    todayIso,
+  );
   if (!window.ok) return { status: 400, error: window.error };
 
   const petsCheck = await assertManageablePets(pool, userId, body.pet_ids || body.petIds);
@@ -135,7 +140,8 @@ export async function patchPlannedAbsence(pool, userId, absenceId, body) {
 
   const startsOn = body.starts_on || body.startsOn || existing.starts_on;
   const endsOn = body.ends_on || body.endsOn || existing.ends_on;
-  const window = validateAbsenceDateWindow(startsOn, endsOn);
+  const todayIso = await resolvePlannedAbsenceTodayIso(pool, userId);
+  const window = validateAbsenceDateWindow(startsOn, endsOn, todayIso);
   if (!window.ok) return { status: 400, error: window.error };
 
   let petRows = await loadAbsencePets(pool, existing.id);
