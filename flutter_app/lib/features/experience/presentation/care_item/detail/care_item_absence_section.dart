@@ -9,7 +9,7 @@ import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 
 import '../care_item_detail_with_absence_refresh.dart';
 
-class CareItemAbsenceSection extends ConsumerWidget {
+class CareItemAbsenceSection extends ConsumerStatefulWidget {
   const CareItemAbsenceSection({
     super.key,
     required this.entry,
@@ -20,9 +20,20 @@ class CareItemAbsenceSection extends ConsumerWidget {
   final bool muted;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<CareItemAbsenceSection> createState() =>
+      _CareItemAbsenceSectionState();
+}
+
+class _CareItemAbsenceSectionState
+    extends ConsumerState<CareItemAbsenceSection> {
+  bool _keepBusy = false;
+
+  @override
+  Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    final asyncContext = ref.watch(careItemAbsenceContextProvider(entry.id));
+    final asyncContext = ref.watch(
+      careItemAbsenceContextProvider(widget.entry.id),
+    );
 
     return asyncContext.when(
       loading: () => const SizedBox.shrink(),
@@ -49,14 +60,14 @@ class CareItemAbsenceSection extends ConsumerWidget {
                 icon: Icons.flight_takeoff_outlined,
               ),
               const SizedBox(height: 12),
-              if (needsAttention && !muted)
+              if (needsAttention && !widget.muted)
                 CareAttentionCallout(
                   message: summary,
                   semanticLabel: l.careItemAbsenceNeedsReview,
                 )
               else
                 Text(summary, style: Theme.of(context).textTheme.bodyMedium),
-              if (needsAttention && !muted) ...[
+              if (needsAttention && !widget.muted) ...[
                 const SizedBox(height: 12),
                 Wrap(
                   spacing: 8,
@@ -64,12 +75,14 @@ class CareItemAbsenceSection extends ConsumerWidget {
                   children: [
                     OutlinedButton(
                       key: const Key('care_item_absence_keep_date'),
-                      onPressed: () => _keepDate(context, ref, primary),
+                      onPressed: _keepBusy ? null : () => _keepDate(primary),
                       child: Text(_keepLabel(l, primary)),
                     ),
                     TextButton(
                       key: const Key('care_item_absence_review_date'),
-                      onPressed: () => _reviewDate(context, ref, primary),
+                      onPressed: _keepBusy
+                          ? null
+                          : () => _reviewDate(context, primary),
                       child: Text(l.careItemAbsenceReviewDateAction),
                     ),
                   ],
@@ -117,31 +130,39 @@ class CareItemAbsenceSection extends ConsumerWidget {
     }
   }
 
-  Future<void> _keepDate(
-    BuildContext context,
-    WidgetRef ref,
-    HealthEntryAbsenceSlice slice,
-  ) async {
-    final remote = ref.read(healthAbsenceContextRemoteProvider);
-    final lookedAfter =
-        slice.suggestedLookedAfterBy?.toApiPayload() ??
-        slice.petCarer?.toApiPayload();
-    await remote.saveResolution(
-      absenceId: slice.plannedAbsenceId,
-      healthEntryId: entry.id,
-      decision: 'keep_date',
-      lookedAfterBy: lookedAfter,
-    );
-    invalidateCareItemDetailWithAbsence(
-      ref,
-      entry.id,
-      absenceId: slice.plannedAbsenceId,
-    );
+  Future<void> _keepDate(HealthEntryAbsenceSlice slice) async {
+    if (_keepBusy) return;
+    setState(() => _keepBusy = true);
+    final l = AppLocalizations.of(context)!;
+    try {
+      final remote = ref.read(healthAbsenceContextRemoteProvider);
+      final lookedAfter =
+          slice.suggestedLookedAfterBy?.toApiPayload() ??
+          slice.petCarer?.toApiPayload();
+      await remote.saveResolution(
+        absenceId: slice.plannedAbsenceId,
+        healthEntryId: widget.entry.id,
+        decision: 'keep_date',
+        lookedAfterBy: lookedAfter,
+      );
+      invalidateCareItemDetailWithAbsence(
+        ref,
+        widget.entry.id,
+        absenceId: slice.plannedAbsenceId,
+      );
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.careCommandFailed)));
+      }
+    } finally {
+      if (mounted) setState(() => _keepBusy = false);
+    }
   }
 
   Future<void> _reviewDate(
     BuildContext context,
-    WidgetRef ref,
     HealthEntryAbsenceSlice slice,
   ) async {
     final review = slice.reviewOccurrence;
@@ -153,7 +174,7 @@ class CareItemAbsenceSection extends ConsumerWidget {
       if (scheduled != null) {
         initialOccurrence = HealthOccurrence(
           id: review.occurrenceId,
-          entryId: entry.id,
+          entryId: widget.entry.id,
           scheduledDate: scheduled,
           scheduledTime: review.scheduledTime,
           status: 'pending',
@@ -171,14 +192,14 @@ class CareItemAbsenceSection extends ConsumerWidget {
     await OccurrenceReviewFlow.open(
       context,
       ref,
-      entry,
+      widget.entry,
       absenceId: slice.plannedAbsenceId,
       initialOccurrence: initialOccurrence,
     );
     if (context.mounted) {
       invalidateCareItemDetailWithAbsence(
         ref,
-        entry.id,
+        widget.entry.id,
         absenceId: slice.plannedAbsenceId,
       );
     }
