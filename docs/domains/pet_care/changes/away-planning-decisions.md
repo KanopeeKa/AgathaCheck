@@ -224,5 +224,5 @@ Spec: [away-planning-per-pet-handover-spec.md](./away-planning-per-pet-handover-
 - [away-planning-delivery-plan.md](./away-planning-delivery-plan.md)
 - [away-planning-per-pet-handover-spec.md](./away-planning-per-pet-handover-spec.md) — AW-11 implementation
 - [away-plan-detail-v2-decisions.md](./away-plan-detail-v2-decisions.md) — amends D-AWAY-002/006, extends D-AWAY-007; rebased onto AW-11
-- [care-schedule-management.md](../features/care-schedule-management.md) — D-CSM-008 (no reschedule on plan page)
+- [care-schedule-management-decisions.md](./care-schedule-management-decisions.md) — D-CSM-008 (no reschedule on plan page)
 - [terminology.md](/docs/design/terminology.md)

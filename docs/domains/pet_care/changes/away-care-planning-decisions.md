@@ -10,7 +10,7 @@ tags: [pet_care, care_context, care_schedule_management, away_planning, decision
 # Away Care Planning — Decisions
 
 **Delivery plan:** [away-care-planning-delivery-plan.md](./away-care-planning-delivery-plan.md)
-**Builds on:** [away-plan-detail-v2-decisions.md](./away-plan-detail-v2-decisions.md) (D-AWD-*), [away-planning-decisions.md](./away-planning-decisions.md) (D-AWAY-*), [care-schedule-management.md](../features/care-schedule-management.md) (D-CSM-*)
+**Builds on:** [away-plan-detail-v2-decisions.md](./away-plan-detail-v2-decisions.md) (D-AWD-*), [away-planning-decisions.md](./away-planning-decisions.md) (D-AWAY-*), [care-schedule-management-decisions.md](./care-schedule-management-decisions.md) (D-CSM-*)
 
 **Status: frozen** (ACP-DOC-0, 2026-09-23; D-ACP-011 added 2026-09-29). Product answers were given in chat on 2026-09-23 (summarised in the delivery plan §1.3). Cursor review resolutions are recorded in delivery plan §9. Decisions marked *amends* change a frozen decision and must be read together with it.
 
@@ -124,7 +124,7 @@ Confirmed by product: when a `from_due_date` occurrence is moved, the **followin
 
 D-CSM-006's "does not change series recurrence rule" remains true: frequency and interval are unchanged, only the phase moves. The reschedule UI must say so in its preview (delivery plan R-C3).
 
-> **Amended 2026-09-29 by D-CSM-027** ([care-schedule-management.md](../features/care-schedule-management.md)). Moving a Fixed-schedule date now asks the scope: **This date only** (default — the moved date becomes `planned` and the series keeps its anchor) or **This and following** (new `schedule_anchor_date`). “The next booster counts from when it was given” is now the **After it's done** rule, which vaccination uses by default (D-CSM-020).
+> **Amended 2026-09-29 by [D-CSM-027](./care-schedule-management-decisions.md#d-csm-027--changing-a-date-2026-09-29).** Moving a Fixed-schedule date now asks the scope: **This date only** (default — the moved date becomes `planned` and the series keeps its anchor) or **This and following** (new `schedule_anchor_date`). “The next booster counts from when it was given” is now the **After it's done** rule, which vaccination uses by default (D-CSM-020).
 
 ---
 
