@@ -21,7 +21,8 @@ export class OccurrencePage {
       .or(this.page.locator('[flt-semantics-identifier="occurrence_done"]'))
       .or(
         this.page.getByRole('button', {
-          name: /Mark .* as done|Marquer .* comme fait|^Done$|^Fait$/i,
+          name:
+            /Mark(?: .+)? as done|Mark as done|Marquer(?: .+)? comme fait|Marquer comme fait|^Done$|^Fait$/i,
         }),
       );
   }
