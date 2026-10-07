@@ -134,14 +134,16 @@ describe('pet lifecycle commands (real PG)', () => {
     for (const step of PET_DELETE_FAULT_STEPS) {
       const userId = randomUUID();
       const petId = randomUUID();
-      await seedUserPet(pool, { userId, petId });
+      const photoPath = `/uploads/pet_lifecycle_test/rollback-${randomUUID()}.txt`;
+      await seedUserPet(pool, { userId, petId, photoPath });
+      const healthEntryId = randomUUID();
       await pool.query(
         `INSERT INTO health_entries
            (id, pet_id, user_id, type, name, frequency, recurrence_anchor,
             next_due_date, start_date, status, care_planning, care_importance)
          VALUES ($1, $2, $3, 'medication', 'Fault pet care', 'daily', 'from_due_date',
            '2030-06-05', '2030-06-05', 'active', 'planned', 'essential')`,
-        [randomUUID(), petId, userId],
+        [healthEntryId, petId, userId],
       );
 
       setPetDeletionFaultStep(step);
@@ -151,6 +153,11 @@ describe('pet lifecycle commands (real PG)', () => {
 
       const pet = await pool.query('SELECT id FROM pets WHERE id = $1', [petId]);
       expect(pet.rows).toHaveLength(1);
+
+      const health = await pool.query('SELECT id FROM health_entries WHERE id = $1', [
+        healthEntryId,
+      ]);
+      expect(health.rows).toHaveLength(1);
 
       const jobs = await pool.query(
         'SELECT count(*)::int AS n FROM cleanup_jobs WHERE correlation_id = $1',
