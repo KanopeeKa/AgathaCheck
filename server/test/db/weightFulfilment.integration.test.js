@@ -1,5 +1,5 @@
 /**
- * W3 fulfilment (§8.3 F-11 … F-24).
+ * W3 fulfilment (§8.3 F-11 … F-24; F-23b/c: establishment on every weigh-in path).
  */
 import { afterAll, beforeAll, describe, expect, it } from '@jest/globals';
 import request from 'supertest';
@@ -303,6 +303,55 @@ describe('W3 weight fulfilment endpoints', () => {
         fulfils_occurrence_id: occ.id,
       }, `${date}T10:00`);
       expect(res.statusCode).toBe(201);
+    }
+    const est = await harness.pool.query(
+      'SELECT id FROM care_establishments WHERE health_entry_id = $1',
+      [entry.id],
+    );
+    expect(est.rows).toHaveLength(1);
+  });
+
+  it('F-23b complete-weight establishes on the 4th weekly weigh-in', async () => {
+    const entry = await createWeighIn('Establishment via complete-weight', '2027-08-02', {
+      frequency: 'weekly',
+      frequency_interval: 1,
+    });
+    const dates = ['2027-08-02', '2027-08-09', '2027-08-16', '2027-08-23'];
+    for (let i = 0; i < dates.length; i++) {
+      const date = dates[i];
+      const detail = await api.at(`${date}T09:00`).get(entry.id);
+      const occ = detail.body.open_occurrences[0];
+      expect(occ?.id).toBeTruthy();
+      const res = await request(harness.app)
+        .post(`/api/pets/${owner.petId}/care-rhythms/${entry.id}/occurrences/${occ.id}/complete-weight`)
+        .set('Authorization', `Bearer ${owner.token}`)
+        .set('X-Care-As-Of', `${date}T10:00`)
+        .send({ weight: 12 + i * 0.1, date, completed_on: date });
+      expect([200, 201]).toContain(res.statusCode);
+    }
+    const est = await harness.pool.query(
+      'SELECT id FROM care_establishments WHERE health_entry_id = $1',
+      [entry.id],
+    );
+    expect(est.rows).toHaveLength(1);
+  });
+
+  it('F-23c fulfilling an existing weight establishes on the 4th weekly weigh-in', async () => {
+    const entry = await createWeighIn('Establishment via fulfil-existing', '2027-09-06', {
+      frequency: 'weekly',
+      frequency_interval: 1,
+    });
+    const dates = ['2027-09-06', '2027-09-13', '2027-09-20', '2027-09-27'];
+    for (let i = 0; i < dates.length; i++) {
+      const date = dates[i];
+      const clock = `${date}T11:00`;
+      const detail = await api.at(`${date}T09:00`).get(entry.id);
+      const occ = detail.body.open_occurrences[0];
+      expect(occ?.id).toBeTruthy();
+      const created = await w().post({ pet_id: owner.petId, weight: 13 + i * 0.1, date }, clock);
+      expect(created.statusCode).toBe(201);
+      const fulfilled = await w().fulfil(created.body.id, occ.id, clock);
+      expect(fulfilled.statusCode).toBe(200);
     }
     const est = await harness.pool.query(
       'SELECT id FROM care_establishments WHERE health_entry_id = $1',
