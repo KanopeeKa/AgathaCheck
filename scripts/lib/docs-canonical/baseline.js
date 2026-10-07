@@ -67,6 +67,28 @@ function checkBaselineRatchet(root, diff, baseRef) {
       });
     }
   }
+  for (const p of baseFeat) {
+    if (!headFeat.has(p) && fs.existsSync(path.join(root, p))) {
+      findings.push({
+        ruleId: 'R-L2',
+        severity: SEVERITY.BLOCK,
+        file: BASELINE_PATH,
+        line: 1,
+        message: `Removed baseline feature entry but file still exists: ${p}`,
+      });
+    }
+  }
+  for (const p of baseCh) {
+    if (!headCh.has(p) && fs.existsSync(path.join(root, p))) {
+      findings.push({
+        ruleId: 'R-L2',
+        severity: SEVERITY.BLOCK,
+        file: BASELINE_PATH,
+        line: 1,
+        message: `Removed baseline change entry but file still exists: ${p}`,
+      });
+    }
+  }
   for (const p of [...headFeat, ...headCh]) {
     if (!fs.existsSync(path.join(root, p))) {
       findings.push({
