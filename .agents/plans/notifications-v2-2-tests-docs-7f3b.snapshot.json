@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "plan_id": "notifications-v2-2-tests-docs-7f3b",
+  "approved_at": "2026-10-07T10:50:00Z",
+  "approved_by": "User chat 2026-10-07: standing grant remediation A–E via /execute-plan",
+  "approved_until": "2026-10-09T10:50:00Z",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/notifications-v2-2-remediation-integration-7f3b",
+  "control_issue": 1760,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Schema canonical + BDD v2 parity",
+      "branch": "cursor/notifications-v2-2-tests-docs-p1-7f3b",
+      "allowed_paths": [
+        ".agents/plans/notifications-v2-2-tests-docs-*",
+        "db/schema/**",
+        "flutter_app/test/bdd/features/notifications*.feature",
+        "scripts/bdd-priority-tag-map.json",
+        "server/test/notifications/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "in_progress"
+    }
+  ],
+  "content_hash": "sha256:b1132db253b1632e4b2bb59f8e799cf68476d068fb8162ba756cb5b9733c9477"
+}

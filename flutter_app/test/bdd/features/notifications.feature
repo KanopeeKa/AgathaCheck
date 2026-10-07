@@ -42,6 +42,7 @@ Feature: Notifications
     Then notifications should be grouped under "Today" and "Yesterday"
 
   @P0
+  @legacy
   Scenario: Empty notifications shows message
     Given the user has no notifications
     When the user navigates to the notifications screen
@@ -64,12 +65,14 @@ Feature: Notifications
     Then the notification icon should show a badge with "3"
 
   @P1
+  @legacy
   Scenario: Badge updates when notifications are read
     Given there are 3 unread notifications
     When the user reads one notification
     Then the notification badge should show "2"
 
   @P1
+  @legacy
   Scenario: No badge when all notifications are read
     Given all notifications are read
     When the user views the pet list screen
@@ -161,6 +164,7 @@ Feature: Notifications
     Then the bell badge should show "3"
 
   @P1
+  @legacy
   Scenario: Notification kind filter narrows list without navigating
     Given there are both care and administrative notifications
     When the user opens the notification panel via the bell
