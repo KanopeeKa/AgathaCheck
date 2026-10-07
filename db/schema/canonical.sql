@@ -957,6 +957,11 @@ CREATE TABLE public.refresh_tokens (
     expires_at timestamp with time zone NOT NULL,
     created_at timestamp with time zone DEFAULT now()
 );
+CREATE TABLE public.scheduler_daily_runs (
+    job_key character varying(64) NOT NULL,
+    run_day date NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
 CREATE TABLE public.users (
     id uuid NOT NULL,
     email character varying(255) NOT NULL,
@@ -1193,6 +1198,8 @@ ALTER TABLE ONLY public.refresh_tokens
     ADD CONSTRAINT refresh_tokens_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.refresh_tokens
     ADD CONSTRAINT refresh_tokens_token_key UNIQUE (token);
+ALTER TABLE ONLY public.scheduler_daily_runs
+    ADD CONSTRAINT scheduler_daily_runs_pkey PRIMARY KEY (job_key);
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_email_key UNIQUE (email);
 ALTER TABLE ONLY public.users

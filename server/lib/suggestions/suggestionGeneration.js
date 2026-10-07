@@ -5,7 +5,7 @@ import {
   loadNotificationPreferences,
 } from '../notificationPreferences.js';
 import {
-  isSuggestionTypeSuppressedForPet,
+  isSuggestionDedupeSuppressedForUser,
   listSuggestionRecipientUserIds,
 } from '../notifications/suggestionInbox.js';
 import { evaluateS1MissingRecurringCare, buildS1DedupeKey } from './s1MissingRecurringCare.js';
@@ -18,12 +18,19 @@ import {
 } from './suggestionUpsert.js';
 import { MIN_SUGGESTION_CONFIDENCE } from './suggestionConstants.js';
 
-async function loadEligiblePets(pool, { petId = null, limit = 200 } = {}) {
+async function loadEligiblePets(pool, {
+  petId = null,
+  limit = 200,
+  afterId = null,
+} = {}) {
   const params = [];
   let filter = 'WHERE COALESCE(p.passed_away, false) = false';
   if (petId) {
     filter += ' AND p.id = $1';
     params.push(petId);
+  } else if (afterId) {
+    filter += ' AND p.id > $1';
+    params.push(afterId);
   }
   params.push(limit);
   const limitIdx = params.length;
@@ -31,7 +38,7 @@ async function loadEligiblePets(pool, { petId = null, limit = 200 } = {}) {
     `SELECT p.id, p.name, p.species, p.date_of_birth, p.passed_away, p.user_id
      FROM pets p
      ${filter}
-     ORDER BY p.updated_at DESC NULLS LAST, p.created_at DESC
+     ORDER BY p.id ASC
      LIMIT $${limitIdx}`,
     params,
   );
@@ -72,83 +79,100 @@ export async function runSuggestionGeneration(pool, options = {}) {
   const now = options.now || new Date();
   await expireStaleSuggestions(pool, now);
 
-  const pets = await loadEligiblePets(pool, options);
-  const stats = { pets: pets.length, upserted: 0, skipped_rate: 0, completed: 0 };
+  const batchSize = options.limit ?? 200;
+  const maxPets = options.maxPets ?? 50_000;
+  const stats = { pets: 0, upserted: 0, skipped_rate: 0, completed: 0 };
 
-  for (const pet of pets) {
-    const healthEntries = await loadHealthEntries(pool, pet.id);
-    const weightEntries = await loadWeightEntries(pool, pet.id);
+  let afterId = options.afterId ?? null;
+  let processed = 0;
 
-    const toComplete = [];
-    if (isRecurringParasitePrevention(healthEntries)) {
-      toComplete.push(buildS1DedupeKey(pet.id));
-    }
-    if (toComplete.length) {
-      await completeSuggestionsForDedupeKeys(pool, toComplete);
-      stats.completed += toComplete.length;
-    }
+  while (processed < maxPets) {
+    const pets = await loadEligiblePets(pool, {
+      petId: options.petId,
+      limit: batchSize,
+      afterId: options.petId ? null : afterId,
+    });
+    if (!pets.length) break;
+    afterId = pets[pets.length - 1].id;
+    processed += pets.length;
+    stats.pets += pets.length;
 
-    const candidates = [];
-    const s1 = evaluateS1MissingRecurringCare(pet, healthEntries, now);
-    if (s1 && s1.confidence >= MIN_SUGGESTION_CONFIDENCE) candidates.push(s1);
-    const s2 = evaluateS2WeightTrend(pet, weightEntries);
-    if (s2 && s2.confidence >= MIN_SUGGESTION_CONFIDENCE) candidates.push(s2);
+    for (const pet of pets) {
+      const healthEntries = await loadHealthEntries(pool, pet.id);
+      const weightEntries = await loadWeightEntries(pool, pet.id);
 
-    if (!candidates.length) continue;
+      const toComplete = [];
+      if (isRecurringParasitePrevention(healthEntries)) {
+        toComplete.push(buildS1DedupeKey(pet.id));
+      }
+      if (toComplete.length) {
+        await completeSuggestionsForDedupeKeys(pool, toComplete);
+        stats.completed += toComplete.length;
+      }
 
-    const recipientIds = await listSuggestionRecipientUserIds(pool, pet.id);
-    for (const userId of recipientIds) {
-      const prefs = await loadNotificationPreferences(pool, userId);
-      if (!isAgathaSuggestionsInAppEnabled(prefs)) continue;
-      const muted = prefs.muted_pet_ids || [];
-      if (muted.includes(String(pet.id))) continue;
+      const candidates = [];
+      const s1 = evaluateS1MissingRecurringCare(pet, healthEntries, now);
+      if (s1 && s1.confidence >= MIN_SUGGESTION_CONFIDENCE) candidates.push(s1);
+      const s2 = evaluateS2WeightTrend(pet, weightEntries);
+      if (s2 && s2.confidence >= MIN_SUGGESTION_CONFIDENCE) candidates.push(s2);
 
-      for (const candidate of candidates) {
-        if (!isSuggestionTypeEnabled(prefs, candidate.wireType)) continue;
-        if (await isSuggestionTypeSuppressedForPet(
-          pool,
-          userId,
-          pet.id,
-          candidate.wireType,
-        )) {
-          continue;
-        }
+      if (!candidates.length) continue;
 
-        const existingActive = await pool.query(
-          `SELECT id FROM notifications
-           WHERE user_id = $1 AND suggestion_dedupe_key = $2
-             AND kind = $3 AND archived_at IS NULL
-             AND suggestion_state IN ('new', 'seen')
-           LIMIT 1`,
-          [userId, candidate.dedupeKey, NOTIFICATION_KIND_SUGGESTION],
-        );
-        const isUpdate = existingActive.rows.length > 0;
-        if (!isUpdate) {
-          const rate = await canCreateNewSuggestion(pool, {
+      const recipientIds = await listSuggestionRecipientUserIds(pool, pet.id);
+      for (const userId of recipientIds) {
+        const prefs = await loadNotificationPreferences(pool, userId);
+        if (!isAgathaSuggestionsInAppEnabled(prefs)) continue;
+        const muted = prefs.muted_pet_ids || [];
+        if (muted.includes(String(pet.id))) continue;
+
+        for (const candidate of candidates) {
+          if (!isSuggestionTypeEnabled(prefs, candidate.wireType)) continue;
+          if (await isSuggestionDedupeSuppressedForUser(
+            pool,
             userId,
-            petId: pet.id,
-          });
-          if (!rate.allowed) {
-            stats.skipped_rate += 1;
+            candidate.dedupeKey,
+            now,
+          )) {
             continue;
           }
+
+          const existingActive = await pool.query(
+            `SELECT id FROM notifications
+             WHERE user_id = $1 AND suggestion_dedupe_key = $2
+               AND kind = $3 AND archived_at IS NULL
+               AND suggestion_state IN ('new', 'seen')
+             LIMIT 1`,
+            [userId, candidate.dedupeKey, NOTIFICATION_KIND_SUGGESTION],
+          );
+          const isUpdate = existingActive.rows.length > 0;
+          if (!isUpdate) {
+            const rate = await canCreateNewSuggestion(pool, {
+              userId,
+              petId: pet.id,
+            });
+            if (!rate.allowed) {
+              stats.skipped_rate += 1;
+              continue;
+            }
+          }
+
+          const { created } = await upsertWave1Suggestion(pool, {
+            userId,
+            petId: pet.id,
+            petName: pet.name,
+            wireType: candidate.wireType,
+            dedupeKey: candidate.dedupeKey,
+            title: candidate.title,
+            message: candidate.message,
+            confidence: candidate.confidence,
+            payload: candidate.payload,
+          });
+
+          if (created || isUpdate) stats.upserted += 1;
         }
-
-        const { created } = await upsertWave1Suggestion(pool, {
-          userId,
-          petId: pet.id,
-          petName: pet.name,
-          wireType: candidate.wireType,
-          dedupeKey: candidate.dedupeKey,
-          title: candidate.title,
-          message: candidate.message,
-          confidence: candidate.confidence,
-          payload: candidate.payload,
-        });
-
-        if (created || isUpdate) stats.upserted += 1;
       }
     }
+    if (options.petId) break;
   }
 
   return stats;

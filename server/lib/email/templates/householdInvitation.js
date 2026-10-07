@@ -1,5 +1,6 @@
 import { getPublicUrl } from '../branding.js';
 import { normalizeLocale } from '../locale.js';
+import { escapeHtml } from '../escapeHtml.js';
 import { renderEmailLayout } from '../layout.js';
 
 const STRINGS = {
@@ -47,10 +48,11 @@ export function buildHouseholdInvitationEmail({
   const lang = normalizeLocale(locale);
   const strings = STRINGS[lang] || STRINGS.en;
   const inviteUrl = `${getPublicUrl()}/household-invite/${code}`;
-  const safeHousehold = householdName || 'a household';
+  const safeHousehold = escapeHtml(householdName || 'a household');
+  const safeInviter = escapeHtml(inviterName);
 
   const text = [
-    strings.textIntro(inviterName, safeHousehold),
+    strings.textIntro(inviterName, householdName || 'a household'),
     strings.textExpiry,
     '',
     strings.textCta(inviteUrl),
@@ -62,7 +64,7 @@ export function buildHouseholdInvitationEmail({
   ].join('\n');
 
   const bodyHtml = `
-<p style="margin:0 0 16px 0;">${strings.intro(inviterName, safeHousehold)}</p>
+<p style="margin:0 0 16px 0;">${strings.intro(safeInviter, safeHousehold)}</p>
 <p style="margin:0 0 16px 0;font-size:14px;color:#555555;">${strings.expiry}</p>
 <p style="margin:0;font-size:14px;color:#777777;">${strings.security}</p>`;
 

@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "plan_id": "notifications-v2-2-tests-docs-7f3b",
+  "approved_at": "2026-10-07T10:50:00Z",
+  "approved_by": "User chat 2026-10-07: standing grant remediation A–E via /execute-plan",
+  "approved_until": "2026-10-09T10:50:00Z",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/notifications-v2-2-remediation-integration-7f3b",
+  "control_issue": 1760,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Schema canonical + BDD v2 parity",
+      "branch": "cursor/notifications-v2-2-tests-docs-p1-7f3b",
+      "allowed_paths": [
+        ".agents/plans/notifications-v2-2-tests-docs-*",
+        "db/schema/**",
+        "flutter_app/test/bdd/features/notifications*.feature",
+        "scripts/bdd-priority-tag-map.json",
+        "server/test/notifications/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1761",
+      "pr_head_sha": "e69671317c49c44014f64cd0dabe5102b6e26857"
+    }
+  ],
+  "content_hash": "sha256:3b93d30858754c2485bec81ea11a109f83194f03a345dc1c6d2093c1d8411411"
+}

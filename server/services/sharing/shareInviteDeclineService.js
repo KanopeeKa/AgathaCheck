@@ -61,6 +61,7 @@ export async function declineShareInvite(pool, {
       await resolveAdministrativeNotifications(client, {
         userId,
         type: 'shareInviteReceived',
+        referenceId: invite.code,
       });
 
       await createNotification(client, {

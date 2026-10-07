@@ -39,3 +39,15 @@ Feature: Notifications v2 inbox programme
     Given I accepted a pending share invite
     When I fetch my notifications from the API
     Then the share invite row should have a resolved timestamp
+
+  @P1
+  Scenario: Resolving one share invite leaves a second pending invite open
+    Given I have two pending share invite notifications with different invite codes
+    When I accept one invite by its invite code
+    Then only the accepted invite notification should have a resolved timestamp
+
+  @P0
+  Scenario: Foster invitation received is not a needs-response item
+    Given I have a foster invitation received notification
+    When I fetch my notification needs-response count from the API
+    Then the needs-response count should not include the foster invitation

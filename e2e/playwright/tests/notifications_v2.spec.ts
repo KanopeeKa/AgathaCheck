@@ -5,6 +5,8 @@
  * Scenario: A reminder is created again after care is done on time
  * Scenario: Pending share invite shows inline accept and decline in Activity
  * Scenario: Accepted share invite is resolved and leaves needs-response
+ * Scenario: Resolving one share invite leaves a second pending invite open
+ * Scenario: Foster invitation received is not a needs-response item
  */
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
 import {
