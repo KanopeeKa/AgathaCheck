@@ -5,7 +5,7 @@ import {
   loadNotificationPreferences,
 } from '../notificationPreferences.js';
 import {
-  isSuggestionTypeSuppressedForPet,
+  isSuggestionDedupeSuppressedForUser,
   listSuggestionRecipientUserIds,
 } from '../notifications/suggestionInbox.js';
 import { evaluateS1MissingRecurringCare, buildS1DedupeKey } from './s1MissingRecurringCare.js';
@@ -105,11 +105,11 @@ export async function runSuggestionGeneration(pool, options = {}) {
 
       for (const candidate of candidates) {
         if (!isSuggestionTypeEnabled(prefs, candidate.wireType)) continue;
-        if (await isSuggestionTypeSuppressedForPet(
+        if (await isSuggestionDedupeSuppressedForUser(
           pool,
           userId,
-          pet.id,
-          candidate.wireType,
+          candidate.dedupeKey,
+          now,
         )) {
           continue;
         }
