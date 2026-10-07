@@ -206,14 +206,16 @@ class _PlannedAbsenceEditScreenState
 
     setState(() => _isSaving = true);
     try {
-      await ref.read(careContextRepositoryProvider).updatePlannedAbsenceDetails(
-        absenceId: widget.absenceId,
-        startsOn: startsOn,
-        endsOn: endsOn,
-        title: title.isEmpty ? null : title,
-        handoverNote: note.isEmpty ? null : note,
-        confirmGuestAccessWiden: confirmGuestAccessWiden,
-      );
+      await ref
+          .read(careContextRepositoryProvider)
+          .updatePlannedAbsenceDetails(
+            absenceId: widget.absenceId,
+            startsOn: startsOn,
+            endsOn: endsOn,
+            title: title.isEmpty ? null : title,
+            handoverNote: note.isEmpty ? null : note,
+            confirmGuestAccessWiden: confirmGuestAccessWiden,
+          );
       ref.invalidate(plannedAbsenceDetailProvider(widget.absenceId));
       ref.invalidate(awayPlanReadinessProvider(widget.absenceId));
       ref.invalidate(plannedAbsencesListProvider);
