@@ -48,7 +48,7 @@ Route modules translate HTTP; **services and lib own transactions** unless the o
 
 ### Deferrals
 
-Care occurrence locking (`careItemLock.js`, `careTick.js`) may use dedicated primitives until migrated; listed in the architecture test allowlist with a linked issue.
+Care occurrence locking (`careItemLock.js`, `careTick.js`) may use dedicated primitives until migrated; listed in the architecture test allowlist. Tracked in [GitHub #1735](https://github.com/KanopeeKa/AgathaCheck/issues/1735).
 
 ## Consequences
 

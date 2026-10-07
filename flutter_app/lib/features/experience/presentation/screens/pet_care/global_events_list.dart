@@ -49,8 +49,8 @@ class _GlobalEventsListState extends ConsumerState<GlobalEventsList> {
 
   bool get _isOrg => widget.scope == GlobalEventsListScope.organization;
 
-  void _invalidateBoth() {
-    ref.invalidate(healthEntriesNotifierProvider);
+  Future<void> _invalidateBoth() async {
+    await ref.read(healthEntriesNotifierProvider.notifier).refresh();
     if (_isOrg) {
       ref.invalidate(orgGlobalEventHistoriesProvider);
     } else {
