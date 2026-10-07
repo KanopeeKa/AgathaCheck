@@ -35,13 +35,13 @@ autonomy: active
 current_phase: orchestrate
 last_completed_phase: null
 halt_reason: null
-next_action: child documentation-migration-csm-514a in progress after gate-warn merged (#1768)
+next_action: "bootstrap and gate child plan documentation-migration-integration-harden-514a"
 artifact_ref:
-  branch: cursor/documentation-migration-roadmap-bootstrap-514a
+  branch: cursor/documentation-migration-integration-514a
   plan_path: .agents/plans/documentation-migration-roadmap-514a.md
-  plan_commit: pending
+  plan_commit: 6af0b467926ee98f5983c661add8794905a49561
   snapshot_path: .agents/plans/documentation-migration-roadmap-514a.snapshot.json
-  snapshot_commit: pending
+  snapshot_commit: 6af0b467926ee98f5983c661add8794905a49561
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
