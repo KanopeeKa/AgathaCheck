@@ -4,7 +4,7 @@
   "approved_at": "2026-10-07T10:00:00Z",
   "approved_by": "user chat 2026-10-07 (full approval absence UX, /execute-plan)",
   "approved_until": "2026-10-09T10:00:00Z",
-  "content_hash": "sha256:389b481258431b5dc3923ec6f0bc8c15057ee5a684897a15a76571258e62fb0d",
+  "content_hash": "sha256:26f09faeffdcc15006f4ba2233641f7152c12b7d4dbe61b71f78b931a0f7432f",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/absence-ux-evolution-integration-2125",
