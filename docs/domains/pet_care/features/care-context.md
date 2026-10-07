@@ -38,12 +38,13 @@ Care-period projection is a function of `pet_id + starts_on + ends_on`. Preview 
 
 ```text
 planned_absences
-  id, user_id, starts_on, ends_on, provenance, source_ref?, status, timestamps
+  id, user_id, starts_on, ends_on, title?, provenance, source_ref?, status, timestamps
 
 planned_absence_pets
   planned_absence_id, pet_id
 ```
 
+- Optional **`title`** (max 60 chars, trimmed; empty → null) — user-facing label for lists, plan summary, PDF, and carer surfaces. Helper copy: visible to the care team. When absent, UI falls back to formatted date range.
 - One absence may attach multiple pets.
 - `ends_on >= starts_on` (inclusive calendar dates).
 - Request horizon: max **12 months**.
@@ -58,7 +59,19 @@ Overlapping active absences for the same pet are **allowed**. On save, show a **
 ### Shared-pet / privacy
 
 - Care truth (projection) follows existing pet manage permissions.
-- Personal absence context is **declarer-scoped** — collaborators do not see each other's planned absences in V1.
+- Personal absence context is **declarer-scoped** — collaborators do not see each other's planned absences in V1. A title helps the declarer disambiguate their own absences and orient carers; it does **not** share an absence with other household members (future work).
+
+### Planned — absence UX evolution (D-CC-ABS-001)
+
+**Status:** In progress (execute-plan `absence-ux-evolution-2125`). Supersedes D-AWD-007 UI split (notes-only edit route).
+
+| ID | Requirement |
+|----|-------------|
+| **R-ABS-001** | `title` on wire; display rules (title primary, dates secondary, date-only fallback). |
+| **R-ABS-002** | Plan page **summary card** (title, dates, notes preview) with local **Edit**; remove app-bar edit and bottom duplicate details/notes blocks. |
+| **R-ABS-003** | Full-screen **trip details** form: title, dates, notes, delete (cancel). V1 edit **excludes pets**. Date-change confirms cover carer access window, guest widen, and plan review — calendar dates stay `YYYY-MM-DD` on the wire. |
+| **R-ABS-004** | **Create** uses CRUD-style single form (pet/vet pattern) with inline care preview section — **not** a step wizard. |
+| **R-ABS-005** | Absence-wide notes labelled **Notes** (maps to `handover_note`); per-pet notes unchanged in carer dialog. |
 
 ### Provenance (Care Context namespace)
 

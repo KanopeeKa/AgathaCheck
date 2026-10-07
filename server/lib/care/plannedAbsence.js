@@ -23,6 +23,22 @@ export const CARER_KIND_NOTE_ONLY = 'note_only';
 /** Max forward request horizon (calendar months approximated as days). */
 export const PLANNED_ABSENCE_MAX_HORIZON_DAYS = 366;
 
+export const PLANNED_ABSENCE_TITLE_MAX_LENGTH = 60;
+
+/**
+ * @param {unknown} value
+ * @returns {{ ok: true, title: string | null | undefined } | { ok: false, error: string }}
+ */
+export function normalizeAbsenceTitleInput(value) {
+  if (value === undefined) return { ok: true, title: undefined };
+  if (value === null) return { ok: true, title: null };
+  const text = String(value).trim();
+  if (text.length > PLANNED_ABSENCE_TITLE_MAX_LENGTH) {
+    return { ok: false, error: `title must be at most ${PLANNED_ABSENCE_TITLE_MAX_LENGTH} characters` };
+  }
+  return { ok: true, title: text === '' ? null : text };
+}
+
 /**
  * @param {string|null|undefined} startsOn
  * @param {string|null|undefined} endsOn
@@ -213,6 +229,7 @@ export function absenceToMap(row, petRows = []) {
     updated_at: timestampToIso(row.updated_at),
     cancelled_at: timestampToIso(row.cancelled_at),
     timezone: row.timezone || 'UTC',
+    title: row.title ?? null,
   };
 }
 

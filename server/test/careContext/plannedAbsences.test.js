@@ -425,6 +425,129 @@ describe('planned absences API', () => {
     }]);
   });
 
+  it('POST stores optional title on create', async () => {
+    const app = createTransactionalTestApp(async (sql, params) => {
+      if (sql.includes('FROM pets WHERE id = $1 AND user_id = $2')) {
+        return { rows: [{ id: petId }] };
+      }
+      if (sql.includes('FROM planned_absences pa') && sql.includes('INNER JOIN planned_absence_pets')) {
+        return { rows: [] };
+      }
+      if (sql.includes('INSERT INTO planned_absences')) {
+        expect(params[8]).toBe('Work trip');
+        return {
+          rows: [{
+            id: params[0],
+            user_id: params[1],
+            starts_on: params[2],
+            ends_on: params[3],
+            provenance: params[4],
+            source_ref: params[5],
+            status: params[6],
+            timezone: params[7],
+            title: params[8],
+            created_at: new Date(),
+            updated_at: new Date(),
+            cancelled_at: null,
+          }],
+        };
+      }
+      if (sql.includes('INSERT INTO planned_absence_pets')) {
+        return { rows: [] };
+      }
+      if (sql.includes('DELETE FROM planned_absence_pets')) {
+        return { rows: [] };
+      }
+      if (sql.includes('SELECT timezone FROM users')) {
+        return { rows: [{ timezone: 'UTC' }] };
+      }
+      return { rows: [] };
+    });
+
+    const res = await request(app)
+      .post('/api/planned-absences')
+      .set(authHeader())
+      .send({
+        starts_on: startsOn,
+        ends_on: endsOn,
+        pet_ids: [petId],
+        title: '  Work trip ',
+      });
+
+    expect(res.statusCode).toBe(201);
+    expect(res.body.absence.title).toBe('Work trip');
+    expect(res.body.absence.starts_on).toBe(startsOn);
+    expect(res.body.absence.ends_on).toBe(endsOn);
+  });
+
+  it('PATCH preserves calendar date strings on the wire (no off-by-one drift)', async () => {
+    const wireStart = '2026-07-04';
+    const wireEnd = '2026-07-11';
+    const absenceId = 'abs-date-reg';
+    const app = createTransactionalTestApp(async (sql, params) => {
+      if (sql.includes('FROM planned_absences WHERE id = $1 AND user_id = $2')) {
+        return {
+          rows: [{
+            id: absenceId,
+            user_id: userId,
+            starts_on: wireStart,
+            ends_on: wireEnd,
+            provenance: 'user_declared',
+            source_ref: null,
+            status: 'active',
+            timezone: 'UTC',
+            title: null,
+            handover_note: null,
+            created_at: new Date(),
+            updated_at: new Date(),
+            cancelled_at: null,
+          }],
+        };
+      }
+      if (sql.includes('SELECT pet_id') || sql.includes('planned_absence_id')) {
+        return { rows: [{ planned_absence_id: absenceId, pet_id: petId, carer_kind: null }] };
+      }
+      if (sql.includes('UPDATE planned_absences')) {
+        expect(params[0]).toBe(wireStart);
+        expect(params[1]).toBe(wireEnd);
+        return {
+          rows: [{
+            id: absenceId,
+            user_id: userId,
+            starts_on: params[0],
+            ends_on: params[1],
+            provenance: 'user_declared',
+            source_ref: null,
+            status: 'active',
+            timezone: 'UTC',
+            title: 'Canada Day week',
+            handover_note: null,
+            created_at: new Date(),
+            updated_at: new Date(),
+            cancelled_at: null,
+          }],
+        };
+      }
+      if (sql.includes('DELETE FROM planned_absence_pets')) {
+        return { rows: [] };
+      }
+      if (sql.includes('FROM planned_absences pa')) {
+        return { rows: [] };
+      }
+      return { rows: [] };
+    });
+
+    const res = await request(app)
+      .patch(`/api/planned-absences/${absenceId}`)
+      .set(authHeader())
+      .send({ title: 'Canada Day week' });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.absence.starts_on).toBe(wireStart);
+    expect(res.body.absence.ends_on).toBe(wireEnd);
+    expect(res.body.absence.title).toBe('Canada Day week');
+  });
+
   it('GET /:id returns 404 for another user absence', async () => {
     const app = createTestApp(async (sql) => {
       if (sql.includes('FROM planned_absences WHERE id = $1 AND user_id = $2')) {

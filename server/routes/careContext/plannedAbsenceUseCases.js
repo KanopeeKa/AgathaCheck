@@ -10,6 +10,7 @@ import {
   PLANNED_ABSENCE_PROVENANCE_USER_DECLARED,
   PLANNED_ABSENCE_STATUS_ACTIVE,
   PLANNED_ABSENCE_STATUS_CANCELLED,
+  normalizeAbsenceTitleInput,
   validateAbsenceDateWindow,
 } from '../../lib/care/plannedAbsence.js';
 import { loadUserTimezone } from '../../lib/people/absenceCarerInviteService.js';
@@ -66,6 +67,9 @@ export async function createPlannedAbsence(pool, userId, body) {
   const petsCheck = await assertManageablePets(pool, userId, body.pet_ids || body.petIds);
   if (!petsCheck.ok) return { status: petsCheck.status, error: petsCheck.error };
 
+  const titleResult = normalizeAbsenceTitleInput(body.title);
+  if (!titleResult.ok) return { status: 400, error: titleResult.error };
+
   const overlapWarnings = await findOverlapWarnings(
     pool,
     userId,
@@ -79,8 +83,8 @@ export async function createPlannedAbsence(pool, userId, body) {
   const row = await withTransaction(pool, async (client) => {
     const result = await client.query(
       `INSERT INTO planned_absences
-         (id, user_id, starts_on, ends_on, provenance, source_ref, status, timezone)
-       VALUES ($1, $2, $3::date, $4::date, $5, $6, $7, $8)
+         (id, user_id, starts_on, ends_on, provenance, source_ref, status, timezone, title)
+       VALUES ($1, $2, $3::date, $4::date, $5, $6, $7, $8, $9)
        RETURNING *`,
       [
         id,
@@ -91,6 +95,7 @@ export async function createPlannedAbsence(pool, userId, body) {
         body.source_ref || body.sourceRef || null,
         PLANNED_ABSENCE_STATUS_ACTIVE,
         creatorTimezone,
+        titleResult.title ?? null,
       ],
     );
     await replaceAbsencePets(client, id, petsCheck.petIds);
@@ -148,6 +153,8 @@ export async function patchPlannedAbsence(pool, userId, absenceId, body) {
 
   const petCarersInput = body.pet_carers ?? body.petCarers ?? null;
   const handoverNote = normalizeHandoverNoteInput(body.handover_note ?? body.handoverNote);
+  const titleResult = normalizeAbsenceTitleInput(body.title);
+  if (!titleResult.ok) return { status: 400, error: titleResult.error };
 
   const overlapWarnings = await findOverlapWarnings(
     pool,
@@ -176,6 +183,10 @@ export async function patchPlannedAbsence(pool, userId, absenceId, body) {
       if (handoverNote !== undefined) {
         setClauses.push(`handover_note = $${updateParams.length + 1}`);
         updateParams.push(handoverNote);
+      }
+      if (titleResult.title !== undefined) {
+        setClauses.push(`title = $${updateParams.length + 1}`);
+        updateParams.push(titleResult.title);
       }
       updateParams.push(existing.id, userId);
       const result = await client.query(
