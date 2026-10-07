@@ -3,7 +3,7 @@ title: Open debt register
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-23
+last_updated: 2026-10-07
 tags: [debt, deferred, tech-debt]
 ---
 
@@ -55,6 +55,10 @@ tags: [debt, deferred, tech-debt]
 | vet | — | tech debt | P3 | Dedicated Playwright `vet.*.spec.ts` if CI scope needs explicit journey |
 | help_about | — | tech debt | P3 | FAQ navigation copy update when shell migration completes |
 | weight_tracking | — | tech debt | P3 | Playwright weight form stability (Flutter web fill timing) |
+| platform | ARCH #1446 | tech debt | P2 | **I1 / D20:** entrypoint README↔export checker; narrow public feature barrels (`health_tracking`, `people`, `pet_profile` wide re-exports vs README surfaces) — audit `active-codebase-completion-e41f.audit.md` §5 I1 |
+| platform | ARCH #1446 | tech debt | P2 | **Batch K residuals:** 10/20 K-extracted widgets without dedicated tests; route/build size overruns (`registerFamilyEventsRoutes`, weight router, `manage_events_filter_dimensions.dart`, long `build` methods) — see K `metrics-headline.md` |
+| platform | #1735 | tech debt | P2 | **ADR 0003 deferral:** migrate `careItemLock.js` / `careTick.js` from hand-written `BEGIN` to `withTransaction` |
+| platform | #1706 | tech debt | P2 | Trunk Playwright shard failures on post-K `main` (e.g. guardian dashboard care preview) — product CI; **not** ARCH programme exit 9 (evidence: pre-UAT run 653 on K merge `58427e42`) |
 
 ## Type legend
 
@@ -69,4 +73,5 @@ tags: [debt, deferred, tech-debt]
 
 | Date | Change |
 |------|--------|
+| 2026-10-07 | ARCH spirit-aligned closeout — Tier 3 + residual Batch K tracked as debt (#1446 audit Path A-lite) |
 | 2026-08-23 | Wave 5 phase 4 — consolidated open rows from `deferred.md`, `refactoring-debt.md`, and domain `changes/deferred.md` |
