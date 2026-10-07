@@ -3,7 +3,7 @@ title: Cross-domain documentation
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-23
+last_updated: 2026-10-07
 tags: [cross-domain]
 ---
 
@@ -31,7 +31,7 @@ Active and recent **multi-domain** execution plans (BDD sprints, toolchain, docu
 | Plan | Focus | Status |
 |------|-------|--------|
 | [docs-domain-audit-63ad.md](changes/docs-domain-audit-63ad.md) | Full `.md` inventory and move/stay decisions | Complete (wave 3) |
-| [documentation-consolidation-plan.md](changes/documentation-consolidation-plan.md) | Docs metadata and validation wave 1 | Complete |
+| [documentation-migration-handover.md](/docs/domains/documentation/changes/documentation-migration-handover.md) | Canonical-docs migration waves (supersedes 2025 consolidation plan) | In delivery |
 | [sprint-6-execution-plan.md](changes/sprint-6-execution-plan.md) | BDD coverage sprint (org/foster/help) | Active remainder |
 | [sprint-10-flutter-344-execution-plan.md](changes/sprint-10-flutter-344-execution-plan.md) | Flutter 3.44 / Dart 3.12 upgrade | Completed |
 
