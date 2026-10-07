@@ -11,7 +11,6 @@ class NotificationActionability {
     'pendingFosterPlacementReceived',
     'pendingAdoptionPlacementReceived',
     'pendingCustodyTransferReceived',
-    'fosterInvitationReceived',
     'connectionRequestReceived',
     'accountNewSignIn',
   };

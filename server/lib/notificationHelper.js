@@ -54,17 +54,25 @@ export async function createNotification(pool, {
 
 /**
  * Mark open inbox rows resolved when a pending object transitions (any kind).
+ *
+ * @param {string} [referenceId] — invite code / object ref stored in `health_entry_id`
+ *   (legacy column reused for non–health-entry references).
+ * @param {string} [petId] — fallback when referenceId absent (legacy rows).
  */
-export async function resolveNotificationsByType(pool, {
+export async function resolveNotifications(pool, {
   userId,
-  petId = null,
   type,
+  petId = null,
+  referenceId = null,
 }) {
   if (!userId || !type) return;
   const params = [userId, type];
-  let petFilter = '';
-  if (petId) {
-    petFilter = ' AND pet_id = $3';
+  let scopeFilter = '';
+  if (referenceId != null && String(referenceId).length > 0) {
+    scopeFilter = ` AND health_entry_id = $${params.length + 1}`;
+    params.push(String(referenceId));
+  } else if (petId) {
+    scopeFilter = ` AND pet_id = $${params.length + 1}`;
     params.push(petId);
   }
   await pool.query(
@@ -72,9 +80,14 @@ export async function resolveNotificationsByType(pool, {
      SET resolved_at = NOW()
      WHERE user_id = $1
        AND type = $2
-       AND resolved_at IS NULL${petFilter}`,
+       AND resolved_at IS NULL${scopeFilter}`,
     params,
   );
+}
+
+/** @deprecated Prefer resolveNotifications with referenceId when available. */
+export async function resolveNotificationsByType(pool, options) {
+  await resolveNotifications(pool, options);
 }
 
 /** @deprecated Use resolveNotificationsByType — kept for call-site compatibility. */

@@ -2,6 +2,7 @@ import { asyncHandler } from '../../lib/http/asyncHandler.js';
 import { v4 as uuidv4 } from 'uuid';
 
 import { createNotification, userDisplayName } from '../../lib/notificationHelper.js';
+import { emailOwnershipTransferCompleted } from '../../lib/notifications/relationshipNotificationEmail.js';
 import {
   NOTIFICATION_TYPE_OWNERSHIP_TRANSFER_COMPLETED,
 } from '../../lib/notificationKind.js';
@@ -144,6 +145,7 @@ export function registerTransferRoutes(router, pool) {
         message: `${ownerName} transferred ownership of ${pet.name} to you.`,
         type: NOTIFICATION_TYPE_OWNERSHIP_TRANSFER_COMPLETED,
       });
+      await emailOwnershipTransferCompleted(recipient.email, { petName: pet.name });
 
       await createNotification(pool, {
         userId: ownerId,
