@@ -910,6 +910,7 @@ CREATE TABLE public.planned_absences (
     user_id uuid NOT NULL,
     starts_on date NOT NULL,
     ends_on date NOT NULL,
+    title character varying(60),
     provenance character varying(50) DEFAULT 'user_declared'::character varying NOT NULL,
     source_ref text,
     status character varying(20) DEFAULT 'active'::character varying NOT NULL,
