@@ -28,8 +28,12 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "in_progress"
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1767",
+      "pr_head_sha": "9fc348ceb73a03ade98126680fdcbbdd29be973f"
     }
   ],
-  "content_hash": "sha256:cb88bc84b38917ccf14edfda776ccfb947098904d949ba85042c31307de16bc3"
+  "content_hash": "sha256:2dcf523e14e10cb18795adab934bf3fa7bf76ab9a425eb2344e4e68db1780cbd"
 }
