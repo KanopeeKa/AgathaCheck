@@ -52,7 +52,9 @@ void main() {
     expect(find.byKey(const Key('planned_absence_entry_tile')), findsOneWidget);
   });
 
-  testWidgets('stateful tile uses absence title as primary label', (tester) async {
+  testWidgets('stateful tile uses absence title as primary label', (
+    tester,
+  ) async {
     const absence = PlannedAbsence(
       id: 'abs-1',
       userId: 'user-1',
