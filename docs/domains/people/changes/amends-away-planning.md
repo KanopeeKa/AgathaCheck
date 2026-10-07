@@ -2,14 +2,16 @@
 title: People — planned amendments to Away Planning decisions
 owner: Product / Documentation
 audience: both
-status: accepted
-last_updated: 2026-09-27
-tags: [people, pet_care, away-planning, decisions]
+status: in-delivery
+status_since: 2026-10-07
+folds_into: docs/domains/pet_care/features/away-planning-carer-model.md
+plan: documentation-migration-carer-model-514a
+last_updated: 2026-10-07
 ---
 
 # People — planned amendments to Away Planning decisions
 
-**Status:** in effect from People phase 2 (`p2-absence`). Canonical spec: [people-care-team.md](/docs/domains/people/features/people-care-team.md).
+**Status:** in effect from People phase 2 (`p2-absence`). **Planned carer-model requirements:** [away-planning-carer-model.md](/docs/domains/pet_care/features/away-planning-carer-model.md) (AWAY-PLANNING-CARER-R-014, R-015). Canonical People spec: [people-care-team.md](/docs/domains/people/features/people-care-team.md).
 
 ## Summary
 

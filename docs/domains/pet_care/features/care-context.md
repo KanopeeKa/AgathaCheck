@@ -187,7 +187,7 @@ Coverage gaps: [#1770](https://github.com/KanopeeKa/AgathaCheck/issues/1770) (ab
 | CARE-CONTEXT-D-001 | Absence UX evolution: title, summary card, CRUD create, trip-details edit | Product programme absence-ux-evolution | Live | 2026-10-07 | #1772 |
 | CARE-CONTEXT-D-002 | Away plan in-window filter; pre-departure overdue via profile link | Reduces plan noise; PDF parity with screen | Live | 2026-09-26 | scope-simplify |
 
-Carer, handover, and programme decisions (D-AWAY-003–005, D-AWAY-008–009, D-AWAY-012–014): [away-planning-decisions.md](../changes/away-planning-decisions.md) and [away-planning-carer-model.md](./away-planning-carer-model.md). Display amendments D-ACP-*: [away-care-planning-decisions.md](../changes/away-care-planning-decisions.md).
+Carer, handover, and programme decisions (D-AWAY-003–005, D-AWAY-008–009, D-AWAY-012–014): [away-planning-carer-model.md](./away-planning-carer-model.md). Display amendments D-ACP-*: [away-care-planning-decisions.md](../changes/away-care-planning-decisions.md).
 
 ## Related
 
