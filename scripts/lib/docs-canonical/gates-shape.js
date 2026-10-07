@@ -1,14 +1,17 @@
 'use strict';
 
 const path = require('path');
-const { SEVERITY, isValidDecisionId } = require('./constants');
+const {
+  SEVERITY,
+  REQ_HEADER,
+  AC_HEADER,
+  DEC_HEADER,
+  isValidDecisionId,
+} = require('./constants');
 const { rel, isPolicyDoc } = require('./paths');
 const { isBaselineFeature } = require('./baseline');
 const {
   parseCanonicalDoc,
-  REQ_HEADER,
-  AC_HEADER,
-  DEC_HEADER,
   reqStatusOk,
   decisionStatusOk,
 } = require('./parse');
