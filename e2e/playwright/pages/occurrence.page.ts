@@ -15,6 +15,17 @@ import {
 export class OccurrencePage {
   constructor(private readonly page: Page) {}
 
+  private doneControl() {
+    return this.page
+      .locator('[key="occurrence_done"]')
+      .or(this.page.locator('[flt-semantics-identifier="occurrence_done"]'))
+      .or(
+        this.page.getByRole('button', {
+          name: /Mark .* as done|Marquer .* comme fait|^Done$|^Fait$/i,
+        }),
+      );
+  }
+
   async open(petId: string, entryId: string, occurrenceId: string): Promise<void> {
     await enableFlutterAccessibility(this.page);
     await this.page.goto(
@@ -59,13 +70,8 @@ export class OccurrencePage {
 
   async markDone(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
-    const done = this.page
-      .locator('[flt-semantics-identifier="occurrence_done"]')
-      .or(
-        this.page.getByRole('button', {
-          name: /Mark .* as done|Marquer .* comme fait|^Done$|^Fait$/i,
-        }),
-      );
+    const done = this.doneControl();
+    await done.first().scrollIntoViewIfNeeded();
     await done.first().click();
     await refreshFlutterAccessibility(this.page);
   }
@@ -73,13 +79,8 @@ export class OccurrencePage {
   async expectWeightRequiredBeforeDone(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
     await expect(this.page.getByLabel(/Weight/i).first()).toBeVisible({ timeout: 15_000 });
-    const done = this.page
-      .locator('[flt-semantics-identifier="occurrence_done"]')
-      .or(
-        this.page.getByRole('button', {
-          name: /Mark .* as done|Marquer .* comme fait|^Done$|^Fait$/i,
-        }),
-      );
+    const done = this.doneControl();
+    await expect(done.first()).toBeVisible({ timeout: 15_000 });
     await expect(done.first()).toBeDisabled();
   }
 
@@ -158,13 +159,7 @@ export class OccurrencePage {
   }
 
   async expectDoneEnabled(): Promise<void> {
-    const done = this.page
-      .locator('[flt-semantics-identifier="occurrence_done"]')
-      .or(
-        this.page.getByRole('button', {
-          name: /Mark .* as done|Marquer .* comme fait|^Done$|^Fait$/i,
-        }),
-      );
+    const done = this.doneControl();
     await expect(done.first()).toBeEnabled({ timeout: 10_000 });
   }
 
