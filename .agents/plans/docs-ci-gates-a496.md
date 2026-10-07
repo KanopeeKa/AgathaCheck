@@ -232,16 +232,16 @@ docs/domains/documentation/**
 
 ```yaml
 autonomy: active
-current_phase: 2
-last_completed_phase: 1
+current_phase: null
+last_completed_phase: 2
 halt_reason: null
-next_action: "continue phase 2 on branch cursor/docs-ci-gates-block-a496"
+next_action: "plan complete"
 artifact_ref:
-  branch: cursor/docs-ci-gates-block-a496
+  branch: cursor/docs-ci-gates-a496-integration-a496
   plan_path: .agents/plans/docs-ci-gates-a496.md
-  plan_commit: 69f12ca4900da47170f2e079cfcb1e499db5a90b
+  plan_commit: cd6eca4c60a046ce43ece125c140e2ec208932df
   snapshot_path: .agents/plans/docs-ci-gates-a496.snapshot.json
-  snapshot_commit: 69f12ca4900da47170f2e079cfcb1e499db5a90b
+  snapshot_commit: cd6eca4c60a046ce43ece125c140e2ec208932df
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

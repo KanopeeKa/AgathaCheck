@@ -4,7 +4,7 @@
   "approved_at": "2026-10-06T23:00:00Z",
   "approved_by": "User chat 2026-10-06 — docs CI gates v2; create plan and execute-plan",
   "approved_until": "2026-10-08T23:00:00Z",
-  "content_hash": "sha256:cfa8947a4f106b067b97c836745a4e646db2984b14d08ae58ccdd1a3267d5586",
+  "content_hash": "sha256:925016c0692618d071afa95dd1a48fa8910950c1665714689d59b4b81349b980",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/docs-ci-gates-a496-integration-a496",
@@ -79,10 +79,12 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1743",
+      "pr_head_sha": "cd6eca4c60a046ce43ece125c140e2ec208932df"
     }
   ]
 }
