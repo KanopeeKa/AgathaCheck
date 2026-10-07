@@ -42,9 +42,7 @@ Part of the AgathaTrack domain-first documentation tree. Cross-cutting architect
 
 | Document | Role |
 |----------|------|
-| [care-schedule-management.md](/docs/domains/pet_care/features/care-schedule-management.md) | Canonical scheduling semantics (CSM) |
-| [care-schedule-management-delivery-plan.md](/docs/domains/pet_care/changes/care-schedule-management-delivery-plan.md) | CSM-0–CSM-18 delivery plan (active) |
-| [care-schedule-management-decisions.md](/docs/domains/pet_care/changes/care-schedule-management-decisions.md) | Frozen CSM decisions |
+| [care-schedule-management.md](/docs/domains/pet_care/features/care-schedule-management.md) | Canonical scheduling semantics (CSM), decision log, acceptance matrix |
 
 ## Care Item evolution
 

@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "plan_id": "documentation-migration-csm-514a",
+  "approved_at": "2026-10-07T12:00:00Z",
+  "approved_by": "Roadmap documentation-migration-roadmap-514a + user chat 2026-10-07 standing grant",
+  "approved_until": "2026-10-09T12:00:00Z",
+  "content_hash": "sha256:7c051aebc47a8cd24d72492244e86311bc6525a92fdf09db02920574ecafb453",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/documentation-migration-integration-514a",
+  "control_issue": 1769,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Consolidate pet_care/care-schedule-management (Wave 1.1)",
+      "branch": "cursor/documentation-migration-csm-514a",
+      "allowed_paths": [
+        "docs/domains/pet_care/**",
+        "docs/domains/health_tracking/**",
+        "docs/domains/documentation/changes/documentation-migration-handover.md",
+        "scripts/docs-legacy-baseline.json",
+        "scripts/docs-memory-backlog.json",
+        ".agents/memory/**",
+        "docs/architecture/**",
+        ".cursor/**",
+        "AGENTS.md",
+        "e2e/**",
+        "flutter_app/**",
+        ".agents/plans/documentation-migration-csm-514a.md",
+        ".agents/plans/documentation-migration-csm-514a.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    }
+  ]
+}

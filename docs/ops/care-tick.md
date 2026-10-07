@@ -8,7 +8,7 @@ tags: [ops, cron, care, occurrences]
 ---
 # Care tick — host cron runbook
 
-The care tick (D-CSM-031, [decision log](../domains/pet_care/changes/care-schedule-management-decisions.md#d-csm-031--care-tick-2026-09-29)) keeps Fixed-schedule care current: it stores doses as their days arrive, closes Not recorded doses once the dose after them is three days old, and resumes items whose "Postpone until" date has come. It never creates After-it's-done dates.
+The care tick (D-CSM-031, [care-schedule-management.md](../domains/pet_care/features/care-schedule-management.md)) keeps Fixed-schedule care current: it stores doses as their days arrive, closes Not recorded doses once the dose after them is three days old, and resumes items whose "Postpone until" date has come. It never creates After-it's-done dates.
 
 Every care command runs the same catch-up for its item first, so a late or missing tick never leaves wrong data behind — only later "Not recorded" closing, later automatic resume, and reminders that wait for the next read.
 

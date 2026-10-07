@@ -11,17 +11,17 @@
 ## Runtime state (agent-updated)
 
 ```yaml
-autonomy: active
-current_phase: 1
-last_completed_phase: null
+autonomy: completed
+current_phase: null
+last_completed_phase: 1
 halt_reason: null
-next_action: "continue phase 1 on branch cursor/documentation-migration-gate-warn-514a"
+next_action: "plan complete"
 artifact_ref:
   branch: cursor/documentation-migration-gate-warn-514a
   plan_path: .agents/plans/documentation-migration-gate-warn-514a.md
-  plan_commit: 9d9ddf376f0168bc32cb467231a8a2edb50a175b
+  plan_commit: deab3abdc9e039e1f3586d278eb177e81a0ca40b
   snapshot_path: .agents/plans/documentation-migration-gate-warn-514a.snapshot.json
-  snapshot_commit: 9d9ddf376f0168bc32cb467231a8a2edb50a175b
+  snapshot_commit: deab3abdc9e039e1f3586d278eb177e81a0ca40b
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

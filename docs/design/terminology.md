@@ -130,7 +130,7 @@ Pet-scoped care surfaces use `viewAllCare` / `allCareTitle`; global surfaces kee
 
 ## Care timing vocabulary (care occurrences, 2026-09-29)
 
-Canonical in [care-item-evolution.md](../domains/pet_care/features/care-item-evolution.md) (D-CIE-024 … D-CIE-027) and [CSM decisions](../domains/pet_care/changes/care-schedule-management-decisions.md) (D-CSM-019 … D-CSM-035). "Occurrence" is an internal word and never appears in UI (D-CIE-001).
+Canonical in [care-item-evolution.md](../domains/pet_care/features/care-item-evolution.md) (D-CIE-024 … D-CIE-027) and [care-schedule-management.md](../domains/pet_care/features/care-schedule-management.md) (D-CSM-019 … D-CSM-035). "Occurrence" is an internal word and never appears in UI (D-CIE-001).
 
 | Term (EN) | FR (proposed) | Meaning | Do not say |
 |-----------|---------------|---------|-----------|
