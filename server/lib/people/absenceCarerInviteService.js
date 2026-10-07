@@ -190,7 +190,7 @@ export async function createAbsenceCarerInvite(pool, {
 
 async function loadInviteByCode(db, code) {
   const result = await db.query(
-    `SELECT i.*, pa.user_id AS absence_owner_user_id, pa.starts_on, pa.ends_on, pa.timezone, pa.status AS absence_status
+    `SELECT i.*, pa.user_id AS absence_owner_user_id, pa.starts_on, pa.ends_on, pa.timezone, pa.title, pa.status AS absence_status
      FROM planned_absence_carer_invites i
      INNER JOIN planned_absences pa ON pa.id = i.planned_absence_id
      WHERE i.code = $1`,
@@ -201,7 +201,7 @@ async function loadInviteByCode(db, code) {
 
 async function loadInviteById(db, inviteId) {
   const result = await db.query(
-    `SELECT i.*, pa.user_id AS absence_owner_user_id, pa.starts_on, pa.ends_on, pa.timezone, pa.status AS absence_status
+    `SELECT i.*, pa.user_id AS absence_owner_user_id, pa.starts_on, pa.ends_on, pa.timezone, pa.title, pa.status AS absence_status
      FROM planned_absence_carer_invites i
      INNER JOIN planned_absences pa ON pa.id = i.planned_absence_id
      WHERE i.id = $1`,
@@ -235,6 +235,7 @@ export async function getAbsenceCarerInvitePreview(pool, code) {
     starts_on: invite.starts_on,
     ends_on: invite.ends_on,
     timezone: invite.timezone,
+    title: invite.title ?? null,
     pet_ids: petIds,
     invitee_email: invite.invitee_email,
   };
@@ -244,7 +245,6 @@ async function notifyAbsenceOwnerGrant(pool, {
   absenceOwnerUserId,
   granterUserId,
   petIds,
-  absenceId,
 }) {
   if (!absenceOwnerUserId || absenceOwnerUserId === granterUserId) return;
   const granterName = await loadInviterName(pool, granterUserId);
@@ -320,7 +320,6 @@ export async function acceptAbsenceCarerInvite(pool, {
     absenceOwnerUserId: invite.absence_owner_user_id,
     granterUserId: invite.inviter_user_id,
     petIds,
-    absenceId: invite.planned_absence_id,
   });
 
   return {

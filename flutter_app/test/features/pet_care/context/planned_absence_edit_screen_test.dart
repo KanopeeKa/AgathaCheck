@@ -245,6 +245,10 @@ void main() {
     await tester.pumpWidget(buildScreen(repo));
     await tester.pumpAndSettle();
 
+    expect(
+      find.text('Visible to your care team and handover PDF.'),
+      findsOneWidget,
+    );
     expect(find.byKey(const Key('away_plan_handover_note')), findsOneWidget);
     expect(find.text('Feed twice a day.'), findsOneWidget);
     expect(find.byKey(const Key('away_plan_edit_save')), findsOneWidget);
