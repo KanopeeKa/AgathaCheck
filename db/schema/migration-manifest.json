@@ -103,7 +103,8 @@
     "094_notifications_v2_pr1.sql",
     "095_notifications_v2_suggestion_fields.sql",
     "096_account_device_labels.sql",
-    "097_planned_absence_title.sql"
+    "097_suggestion_daily_scheduler.sql",
+    "098_planned_absence_title.sql"
   ],
   "code_migrations": [
     "016_migrate_family_events_placements.sql",

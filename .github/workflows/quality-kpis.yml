@@ -62,6 +62,7 @@ jobs:
           node scripts/check_docs_canonical.js --changes --all > changes-report.txt 2>&1 || true
           node scripts/check_docs_canonical.js --ids --report-duplicates > dup-report.txt 2>&1 || true
           node scripts/check_docs_canonical.js --trace --closed-issues > trace-report.txt 2>&1 || true
+          node scripts/check_docs_canonical.js --memory --all > memory-report.txt 2>&1 || true
           node scripts/check_docs_canonical.js --baseline-report > baseline-report.json
           node scripts/check_docs_canonical.js --report --json > docs-trace.json
 
@@ -86,6 +87,10 @@ jobs:
           ## Duplicate IDs (R-D3)
           \`\`\`
           $(grep R-D3 dup-report.txt || echo none)
+          \`\`\`
+          ## Product rules still in memory (R-M1 / R-M4)
+          \`\`\`
+          $(grep -E 'R-M[14]' memory-report.txt || echo none)
           \`\`\`
           ## Legacy baseline counts
           \`\`\`

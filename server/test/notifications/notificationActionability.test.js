@@ -46,4 +46,10 @@ describe('notificationActionability', () => {
       true,
     );
   });
+
+  test('foster org invitation is informational (not needs-response)', () => {
+    expect(NOTIFICATION_TYPES_NEEDING_RESPONSE.has('fosterInvitationReceived')).toBe(
+      false,
+    );
+  });
 });

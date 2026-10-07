@@ -44,7 +44,7 @@ OccurrencePillStyle openOccurrencePillStyle(
       tone: OccurrencePillTone.neutral,
     ),
     CareOccurrenceStatus.skipped => OccurrencePillStyle(
-      label: l.careSkip,
+      label: l.occurrenceSkipped,
       tone: OccurrencePillTone.neutral,
     ),
     CareOccurrenceStatus.unknown => OccurrencePillStyle(
@@ -105,7 +105,7 @@ String occurrenceStatusLine(AppLocalizations l, CareOccurrence occ) {
     CareOccurrenceStatus.notRecorded => l.urgencyOverdue,
     CareOccurrenceStatus.due => l.careStatusDue,
     CareOccurrenceStatus.done => l.done,
-    CareOccurrenceStatus.skipped => l.careSkip,
+    CareOccurrenceStatus.skipped => l.occurrenceSkipped,
     _ => l.careStatusComingUp,
   };
 }

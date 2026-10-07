@@ -6,6 +6,7 @@ import {
   updateInviteStatus,
 } from '../../db/sharing/shareInviteQueries.js';
 import { withTransaction } from '../../lib/db/withTransaction.js';
+import { resolveNotifications } from '../../lib/notificationHelper.js';
 import { ShareCommandResult } from './shareCommandResult.js';
 
 export async function revokeShareInvite(pool, { inviteId, userId }) {
@@ -22,6 +23,13 @@ export async function revokeShareInvite(pool, { inviteId, userId }) {
         throw new ShareCommandResult({ error: 'Invitation is no longer pending', status: 409 });
       }
       await updateInviteStatus(client, invite.id, 'revoked');
+      if (invite.invitee_user_id) {
+        await resolveNotifications(client, {
+          userId: invite.invitee_user_id,
+          type: 'shareInviteReceived',
+          referenceId: invite.code,
+        });
+      }
       return { invite_id: invite.id, status: 'revoked' };
     });
   } catch (err) {

@@ -24,3 +24,22 @@ Close UAT gaps from #1715: fix P0 resolve/needs-response bell regression, wire S
 ### Phase 3 — Compulsory relationship emails
 ### Phase 4 — Tests, e2e, spec housekeeping
 ### Phase 5 — Integration → main + pre-UAT
+
+## Runtime state
+
+```yaml
+autonomy: completed
+current_phase: null
+last_completed_phase: 5
+halt_reason: null
+next_action: "plan complete"
+artifact_ref:
+  branch: main
+  plan_path: .agents/plans/notifications-v2-1-closeout-7f3b.md
+  plan_commit: d6a6219043209edad329a74a124d9874710a95ab
+  snapshot_path: .agents/plans/notifications-v2-1-closeout-7f3b.snapshot.json
+  snapshot_commit: d6a6219043209edad329a74a124d9874710a95ab
+open_prs: []
+merge_commits: {}
+debt_issue_refs: []
+```

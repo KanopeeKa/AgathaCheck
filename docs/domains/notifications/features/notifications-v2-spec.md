@@ -284,7 +284,7 @@ deleted, and what Free limits apply.
 | ID | Requirement |
 |---|---|
 | FR-CR-1 | The server MUST NOT create inbox rows with `kind=care` after the v2 cut-over. |
-| FR-CR-2 | Care reminders MUST continue to be delivered as push/local notifications according to existing reminder settings and D21/D25 recipient rules. |
+| FR-CR-2 | Care reminders MUST continue to be delivered via push/local channels per reminder settings and D21/D25; they do **not** create Activity inbox rows or affect the notifications bell (Care Actions / Actions tab is the home). |
 | FR-CR-3 | Tapping a care reminder push MUST deep-link to the care item / occurrence, exactly as today. |
 | FR-CR-4 | Care Actions (dashboard) and Actions (`/pc/events`) remain the single source of truth for due/overdue items. |
 | FR-CR-5 | Existing rows of type `overdue` / `due_soon` MUST be archived (not deleted) by migration and excluded from inbox lists and badge counts. Other `care`-kind rows are **reclassified** per §3.4, not archived. A blanket "archive all `care`" would hide ownership-transfer and memorial notices, which are stored as `general`/`care` today. |

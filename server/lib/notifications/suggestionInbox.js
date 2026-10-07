@@ -261,6 +261,37 @@ export async function applySuggestionFeedback(pool, userId, notificationId, acti
 /**
  * FR-FB-2 — suppress suggestion type for a pet until suggestion_expires_at on archived rows.
  */
+const SUGGESTION_SUPPRESS_STATES = ['dismissed', 'not_relevant', 'expired'];
+
+/**
+ * FR-FB-1 / FR-FB-2 — consult the latest row for this dedupe key (any archive state).
+ * Dismiss, expiry, and not-relevant all set suggestion_expires_at as the quiet window end.
+ */
+export async function isSuggestionDedupeSuppressedForUser(
+  pool,
+  userId,
+  dedupeKey,
+  now = new Date(),
+) {
+  if (!userId || !dedupeKey) return false;
+  const result = await pool.query(
+    `SELECT suggestion_state, suggestion_expires_at
+     FROM notifications
+     WHERE user_id = $1
+       AND suggestion_dedupe_key = $2
+       AND kind = $3
+     ORDER BY COALESCE(archived_at, created_at) DESC, created_at DESC
+     LIMIT 1`,
+    [userId, dedupeKey, NOTIFICATION_KIND_SUGGESTION],
+  );
+  const row = result.rows[0];
+  if (!row) return false;
+  if (!SUGGESTION_SUPPRESS_STATES.includes(row.suggestion_state)) return false;
+  if (!row.suggestion_expires_at) return false;
+  return new Date(row.suggestion_expires_at) > now;
+}
+
+/** @deprecated Prefer isSuggestionDedupeSuppressedForUser at generation time. */
 export async function isSuggestionTypeSuppressedForPet(pool, userId, petId, wireType) {
   const result = await pool.query(
     `SELECT 1 FROM notifications

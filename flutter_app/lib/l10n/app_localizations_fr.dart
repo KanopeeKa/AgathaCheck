@@ -657,11 +657,11 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get weightCheckFailedWontCount =>
-      'Vous pouvez quand même enregistrer ce poids. Il ne comtera pas comme pesée prévue tant que vous n\'utilisez pas « Compter comme pesée ».';
+      'Vous pouvez quand même enregistrer ce poids. Il ne comptera pas comme pesée prévue. Pour le compter plus tard, ouvrez-le depuis la liste des poids et choisissez « Compter comme pesée prévue ».';
 
   @override
   String get weightCheckTimedOut =>
-      'Nous n\'avons pas pu confirmer une pesée prévue à temps. Vous pouvez enregistrer ce poids ; il ne comtera pas comme pesée prévue tant que l\'option n\'est pas activée.';
+      'Nous n\'avons pas pu confirmer une pesée prévue à temps. Vous pouvez quand même enregistrer ce poids, mais il ne comptera pas comme pesée prévue. Pour le compter plus tard, ouvrez-le depuis la liste des poids et choisissez « Compter comme pesée prévue ».';
 
   @override
   String get weightCheckRetry => 'Réessayer';
