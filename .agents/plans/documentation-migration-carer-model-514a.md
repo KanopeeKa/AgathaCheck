@@ -20,7 +20,7 @@ artifact_ref:
   plan_commit: 9de483b2a5e6548671034dc0fce94d7888073b0a
   snapshot_path: .agents/plans/documentation-migration-carer-model-514a.snapshot.json
   snapshot_commit: 9de483b2a5e6548671034dc0fce94d7888073b0a
-open_prs: []
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1784"]
 merge_commits: {}
 debt_issue_refs: []
 ```
