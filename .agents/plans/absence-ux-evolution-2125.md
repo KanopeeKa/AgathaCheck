@@ -50,4 +50,23 @@ Add optional **title** to planned absences; replace wizard create with a **CRUD-
 
 ## Final integration PR
 
-Integration branch → `main` via `/babysit-uat`.
+Integration branch → `main` via `/babysit-uat` ([#1772](https://github.com/KanopeeKa/AgathaCheck/pull/1772), merge `1ab3280312cbea58702daec9c91642921e4ad93e`).
+
+## Runtime state
+
+```yaml
+autonomy: completed
+current_phase: null
+last_completed_phase: 3
+halt_reason: null
+next_action: "plan complete"
+artifact_ref:
+  branch: cursor/absence-ux-evolution-integration-2125
+  plan_path: .agents/plans/absence-ux-evolution-2125.md
+  plan_commit: 65f3592fcf60b3d1a0675d15e00fc19755f23f47
+  snapshot_path: .agents/plans/absence-ux-evolution-2125.snapshot.json
+  snapshot_commit: 65f3592fcf60b3d1a0675d15e00fc19755f23f47
+open_prs: []
+merge_commits: {"1":"2b69b7a672ef1c5f410c243b61eea235dfb15e3d","2":"731a7ed1133a789e21454901fd51ca31130dc37c","3":"10da986bf29b593deeb77a9e33968cbb3a2703a9"}
+debt_issue_refs: []
+```
