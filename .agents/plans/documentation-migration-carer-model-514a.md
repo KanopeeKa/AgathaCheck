@@ -9,18 +9,18 @@
 ## Runtime state (agent-updated)
 
 ```yaml
-autonomy: active
-current_phase: 1
-last_completed_phase: null
+autonomy: completed
+current_phase: null
+last_completed_phase: 1
 halt_reason: null
-next_action: "continue phase 1 on branch cursor/documentation-migration-carer-model-514a"
+next_action: "plan complete"
 artifact_ref:
-  branch: cursor/documentation-migration-carer-model-514a
+  branch: cursor/documentation-migration-wave13-integration-514a
   plan_path: .agents/plans/documentation-migration-carer-model-514a.md
-  plan_commit: 9de483b2a5e6548671034dc0fce94d7888073b0a
+  plan_commit: 7beb2e2aa8463c5983585a6486b2c0c46a6758a5
   snapshot_path: .agents/plans/documentation-migration-carer-model-514a.snapshot.json
-  snapshot_commit: 9de483b2a5e6548671034dc0fce94d7888073b0a
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1784"]
+  snapshot_commit: 7beb2e2aa8463c5983585a6486b2c0c46a6758a5
+open_prs: []
 merge_commits: {}
 debt_issue_refs: []
 ```
