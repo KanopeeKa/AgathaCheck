@@ -105,6 +105,7 @@ export class HealthEntryFormPage {
       '[flt-semantics-identifier="care_provider_dropdown"]',
     );
     await expect(dropdown).toBeVisible({ timeout: 60_000 });
+    await dropdown.scrollIntoViewIfNeeded();
     await dropdown.click({ force: true });
   }
 

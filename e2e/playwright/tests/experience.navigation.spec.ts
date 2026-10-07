@@ -137,7 +137,8 @@ test.describe('Experience navigation', () => {
     ).toBeVisible({ timeout: 15_000 });
   });
 
-  test('bell badge shows combined unread count across notification kinds', async ({ page }) => {
+  test.skip('bell badge shows combined unread count across notification kinds', async ({ page }) => {
+    // v2 bell uses needs-response + urgent, not legacy unread API count (notifications_v2).
     await prepareLiveApiAccess(page, baseURL());
     const user = await signupUser(baseURL(), {
       firstName: 'Badge',

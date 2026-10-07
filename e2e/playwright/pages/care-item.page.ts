@@ -381,13 +381,15 @@ export class CareItemPage {
   async markLeadingDone(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
     await this.page
-      .locator('[flt-semantics-identifier^="care_item_mark_done_"]')
+      .locator('[flt-semantics-identifier^="care_item_occurrence_done_"]')
+      .or(this.page.locator('[flt-semantics-identifier^="care_item_mark_done_"]'))
       .or(
         this.page.getByRole('button', {
           name: /Mark .* as done|Marquer .* comme fait/i,
         }),
       )
       .first()
+      .scrollIntoViewIfNeeded()
       .click();
     await refreshFlutterAccessibility(this.page);
   }
