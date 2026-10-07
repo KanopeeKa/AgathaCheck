@@ -9,7 +9,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  DOCS_GATE_MODE: block
+  # Phase A (documentation migration on integration): advisory only — restored to block before integration→main.
+  DOCS_GATE_MODE: warn
 
 jobs:
   docs-declaration:
