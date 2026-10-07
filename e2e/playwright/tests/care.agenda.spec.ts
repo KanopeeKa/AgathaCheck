@@ -34,9 +34,6 @@ test.describe('Care agenda (occurrence-first)', () => {
       await agenda.openRow(entry.id, entry.name);
       const occurrence = new OccurrencePage(page);
       await occurrence.expectLoaded();
-      await expect(page.getByText('Viewable Care').first()).toBeVisible({
-        timeout: 30_000,
-      });
       await page
         .getByRole('button', {
           name: /Viewable Care.*About this care item|About this care item.*Viewable Care/i,
