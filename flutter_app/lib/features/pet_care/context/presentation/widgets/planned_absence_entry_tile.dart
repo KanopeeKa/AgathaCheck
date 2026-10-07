@@ -7,6 +7,7 @@ import '../../../../../core/utils/calendar_date.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../away_planning_dashboard_tile_state.dart';
 import '../away_planning_tile_copy.dart';
+import '../planned_absence_display.dart';
 import '../providers/care_context_providers.dart';
 
 class PlannedAbsenceEntryTile extends ConsumerWidget {
@@ -34,12 +35,7 @@ class PlannedAbsenceEntryTile extends ConsumerWidget {
           final body = AwayPlanningTileCopy.resolve(l, s.tileCopy!);
           final st = parseCalendarDate(a.startsOn);
           final en = parseCalendarDate(a.endsOn);
-          final title = st != null && en != null
-              ? l.careContextAwayPreviewDateRange(
-                  formatCalendarDateDisplay(st),
-                  formatCalendarDateDisplay(en),
-                )
-              : l.careContextAwayEntryTitle;
+          final title = PlannedAbsenceDisplay.primaryLabel(l, a);
           return _card(title, body, () => openAwayPlanDetail(context, a.id));
         }
         return _card(

@@ -169,12 +169,7 @@ void main() {
     expect(find.text('Planned care'), findsOneWidget);
     expect(find.textContaining('Tom'), findsOneWidget);
 
-    await tester.scrollUntilVisible(
-      find.text('Plan details'),
-      120,
-      scrollable: find.byType(Scrollable).first,
-    );
-    expect(find.text('Plan details'), findsOneWidget);
+    expect(find.text('Plan details'), findsNothing);
     expect(find.textContaining('Reschedule'), findsNothing);
     expect(find.textContaining('Move'), findsNothing);
   });
@@ -189,16 +184,16 @@ void main() {
     expect(find.text('Save absence'), findsNothing);
   });
 
-  testWidgets('renders nothing for the note section when there is no note', (
-    tester,
-  ) async {
+  testWidgets('summary card omits notes when there is no note', (tester) async {
     await tester.pumpWidget(buildScreen());
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('away_plan_handover_note_text')), findsNothing);
+    expect(find.text('Notes'), findsNothing);
   });
 
-  testWidgets('shows the handover note read-only when present', (tester) async {
+  testWidgets('summary card shows handover note preview when present', (
+    tester,
+  ) async {
     const withNote = PlannedAbsence(
       id: 'abs-1',
       userId: 'user-1',
@@ -219,45 +214,27 @@ void main() {
     await tester.pumpWidget(buildScreen(overrideAbsence: withNote));
     await tester.pumpAndSettle();
 
-    await tester.scrollUntilVisible(
-      find.byKey(const Key('away_plan_handover_note_text')),
-      120,
-      scrollable: find.byType(Scrollable).first,
-    );
-
-    expect(
-      find.byKey(const Key('away_plan_handover_note_text')),
-      findsOneWidget,
-    );
     expect(find.text('Feed twice a day, meds at 8am.'), findsOneWidget);
     expect(find.byKey(const Key('away_plan_handover_note')), findsNothing);
   });
 
-  testWidgets('edit icon navigates to the edit screen for an active absence', (
+  testWidgets('summary Edit navigates to trip details for an active absence', (
     tester,
   ) async {
     await tester.pumpWidget(buildScreen());
     await tester.pumpAndSettle();
 
-    final editButton = tester.widget<IconButton>(
-      find.byKey(const Key('away_plan_edit')),
-    );
-    expect(editButton.onPressed, isNotNull);
-
-    await tester.tap(find.byKey(const Key('away_plan_edit')));
+    await tester.tap(find.byKey(const Key('away_plan_summary_edit')));
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('edit_screen_marker')), findsOneWidget);
     expect(find.text('edit-screen-abs-1'), findsOneWidget);
   });
 
-  testWidgets('edit icon is disabled for a cancelled absence', (tester) async {
+  testWidgets('summary Edit is hidden for a cancelled absence', (tester) async {
     await tester.pumpWidget(buildScreen(overrideAbsence: cancelledAbsence));
     await tester.pumpAndSettle();
 
-    final editButton = tester.widget<IconButton>(
-      find.byKey(const Key('away_plan_edit')),
-    );
-    expect(editButton.onPressed, isNull);
+    expect(find.byKey(const Key('away_plan_summary_edit')), findsNothing);
   });
 }
