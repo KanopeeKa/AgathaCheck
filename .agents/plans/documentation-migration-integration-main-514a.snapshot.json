@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "plan_id": "documentation-migration-integration-main-514a",
+  "approved_at": "2026-10-07T14:15:00Z",
+  "approved_by": "Roadmap documentation-migration-roadmap-514a standing grant",
+  "approved_until": "2026-10-09T14:15:00Z",
+  "content_hash": "sha256:ab464af3400136e1f9d318d3d120c9d3410762254aaf57371ba67bf1c92ea20a",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 1765,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Merge migration integration to main",
+      "branch": "cursor/documentation-migration-integration-514a",
+      "allowed_paths": [
+        "docs/**",
+        "scripts/**",
+        ".github/workflows/docs-gate.yml",
+        ".agents/**",
+        "AGENTS.md"
+      ],
+      "forbidden_paths": [],
+      "allowed_exceptions": [
+        "docs",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    }
+  ]
+}
