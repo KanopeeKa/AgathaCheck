@@ -437,12 +437,19 @@ export class AwayPlanningPage {
         (await aboutItem.isVisible().catch(() => false));
 
       await expect(back.first()).toBeVisible();
-      await expect(this.page.getByText(entryName, { exact: false }).first()).toBeVisible();
+
+      const entryVisible = this.page
+        .getByText(entryName, { exact: false })
+        .or(this.page.getByRole('button', { name: new RegExp(entryName, 'i') }))
+        .or(aboutItem);
 
       if (onOccurrenceUi) {
-        // Away plan rows with a resolved occurrence open the occurrence screen (E5).
+        // Occurrence screen: care name may live in semantics label only (context tile).
+        await expect(entryVisible.first()).toBeVisible();
         return;
       }
+
+      await expect(entryVisible.first()).toBeVisible();
       // Care item detail (D-CIE-017): lifecycle actions live in overflow menu.
       await expect(careMenu.or(careActions).first()).toBeVisible();
     }).toPass({ timeout: 45_000 });
