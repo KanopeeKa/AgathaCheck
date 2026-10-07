@@ -1,16 +1,16 @@
 {
   "version": 1,
-  "measured_at": "2026-10-06",
-  "measured_commit": "k1-server-extractions-remeasure",
+  "measured_at": "2026-10-07",
+  "measured_commit": "notifications-v2-2-pr-e-ci-remediate",
   "areas": {
     "lib": {
-      "lines_percent": 54.18
+      "lines_percent": 54.36
     },
     "services": {
-      "lines_percent": 74.05
+      "lines_percent": 74.01
     },
     "routes": {
-      "lines_percent": 74.58
+      "lines_percent": 74.65
     }
   }
 }
