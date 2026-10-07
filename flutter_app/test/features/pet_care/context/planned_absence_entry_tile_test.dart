@@ -52,6 +52,31 @@ void main() {
     expect(find.byKey(const Key('planned_absence_entry_tile')), findsOneWidget);
   });
 
+  testWidgets('stateful tile uses absence title as primary label', (tester) async {
+    const absence = PlannedAbsence(
+      id: 'abs-1',
+      userId: 'user-1',
+      startsOn: '2026-10-01',
+      endsOn: '2026-10-05',
+      title: 'Ski week',
+      provenance: 'user_declared',
+      status: 'active',
+      petIds: const ['pet-1'],
+    );
+    final state = AwayPlanningDashboardTileState.stateful(
+      absence: absence,
+      tileCopy: const AwayPlanTileCopy(
+        source: 'carer_coverage',
+        copyKey: 'awayPlanningTileCarerNone',
+      ),
+    );
+
+    await tester.pumpWidget(buildTile(Future.value(state)));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Ski week'), findsOneWidget);
+  });
+
   testWidgets('shows stateful copy for upcoming absence', (tester) async {
     const absence = PlannedAbsence(
       id: 'abs-1',

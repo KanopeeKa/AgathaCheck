@@ -384,7 +384,7 @@ Declarer-scoped absence context (not visible to collaborators in V1): `GET /`, `
 | Method | Path | Notes |
 |---|---|---|
 | POST | `/:id/carer-invites` | Body `{ contact_id, pet_ids? }`; record owner or household `full_access` on each pet; contact must be carer on absence pets |
-| GET | `/carer-invites/code/:code` | Public preview for invite landing |
+| GET | `/carer-invites/code/:code` | Public preview for invite landing (`inviter_name`, `starts_on`, `ends_on`, optional `title`, `pet_ids`, …) |
 | POST | `/carer-invites/code/:code/accept` | Authenticated invitee; creates grants + links contact |
 | POST | `/carer-invites/:inviteId/accept` | Same accept by id |
 | DELETE | `/carer-invites/:inviteId` | Revoke pending invite |

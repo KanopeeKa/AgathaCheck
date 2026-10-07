@@ -63,11 +63,11 @@ Overlapping active absences for the same pet are **allowed**. On save, show a **
 
 ### Planned — absence UX evolution (D-CC-ABS-001)
 
-**Status:** In progress (execute-plan `absence-ux-evolution-2125`). Supersedes D-AWD-007 UI split (notes-only edit route).
+**Status:** **Delivered** on `main` (integration PR #1772, 2026-10-07). Supersedes D-AWD-007 UI split (notes-only edit route).
 
 | ID | Requirement |
 |----|-------------|
-| **R-ABS-001** | `title` on wire; display rules (title primary, dates secondary, date-only fallback). |
+| **R-ABS-001** | `title` on wire; display rules (title primary, dates secondary, date-only fallback). Surfaces: away hub list tile, Pet Care home dashboard entry tile, plan summary card, handover PDF (full plan and per-pet export), carer invite landing preview. Care-item **Absence** sections keep the generic section title; body copy uses date range only (item-level conflict resolution, not trip labelling). |
 | **R-ABS-002** | Plan page **summary card** (title, dates, notes preview) with local **Edit**; remove app-bar edit and bottom duplicate details/notes blocks. |
 | **R-ABS-003** | Full-screen **trip details** form: title, dates, notes, delete (cancel). V1 edit **excludes pets**. Date-change confirms cover carer access window, guest widen, and plan review — calendar dates stay `YYYY-MM-DD` on the wire. |
 | **R-ABS-004** | **Create** uses CRUD-style single form (pet/vet pattern) with inline care preview section — **not** a step wizard. |

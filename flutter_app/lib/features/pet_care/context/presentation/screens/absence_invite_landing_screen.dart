@@ -4,7 +4,10 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../../core/widgets/app_logo_title.dart';
 import 'package:pet_profile_app/features/auth/auth.dart';
+import 'package:pet_profile_app/l10n/app_localizations.dart';
 import '../../data/datasources/care_context_remote_datasource.dart';
+import '../../domain/entities/planned_absence.dart';
+import '../planned_absence_display.dart';
 import '../providers/care_context_providers.dart';
 
 /// Landing screen for absence carer invites at `/absence-invite/:code`.
@@ -92,9 +95,23 @@ class _AbsenceInviteLandingScreenState
         body: Center(child: Text(_error ?? 'Invitation unavailable')),
       );
     }
+    final l = AppLocalizations.of(context)!;
     final inviter = _preview!['inviter_name'] as String? ?? 'Someone';
     final starts = _preview!['starts_on'] as String? ?? '';
     final ends = _preview!['ends_on'] as String? ?? '';
+    final previewTitle = _preview!['title'] as String?;
+    final absence = PlannedAbsence(
+      id: 'preview',
+      userId: 'preview',
+      startsOn: starts,
+      endsOn: ends,
+      title: previewTitle,
+      provenance: 'user_declared',
+      status: 'active',
+      petIds: const [],
+    );
+    final tripLabel = PlannedAbsenceDisplay.primaryLabel(l, absence);
+    final secondaryDates = PlannedAbsenceDisplay.secondaryDateLine(l, absence);
     return Scaffold(
       appBar: AppBar(title: const AppLogoTitle(title: 'Absence invite')),
       body: Padding(
@@ -107,7 +124,15 @@ class _AbsenceInviteLandingScreenState
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 12),
-            Text('Access window: $starts through $ends (local days).'),
+            Text(
+              tripLabel,
+              style: Theme.of(context).textTheme.titleMedium,
+              key: const Key('absence_invite_trip_label'),
+            ),
+            if (secondaryDates != null) ...[
+              const SizedBox(height: 4),
+              Text(secondaryDates),
+            ],
             const Spacer(),
             FilledButton(
               key: const Key('absence_invite_accept'),
