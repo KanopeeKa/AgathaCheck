@@ -375,6 +375,8 @@ Raw `items[]` entries may include `window_relation: before_window` on materialis
 
 Declarer-scoped absence context (not visible to collaborators in V1): `GET /`, `POST /`, `GET /:id`, `PATCH /:id`, `POST /:id/cancel`.
 
+**Title (D-CC-ABS-001)** — optional `title` on `POST` / `PATCH` (max 60 characters after trim; empty string → `null`). Omitted on `PATCH` leaves the stored title unchanged.
+
 **Timezone (D24)** — `users.timezone` is set at signup/login (optional body) or via `PATCH /api/auth/me`. **`weight_unit`** (`kg` default, or `lb`) is readable on `GET /api/auth/me` and writable via `PATCH /api/auth/me` (invalid values → `400`). Each absence stores `timezone` copied from the declarer's account at `POST` create (later account timezone changes do not alter existing absences). Access windows for guest grants use whole calendar days `starts_on`…`ends_on` inclusive in that absence timezone.
 
 **Guest access (People phase 4)** — time-bound `can_log_care` via absence guest grants (evaluated at read time alongside household + direct share):

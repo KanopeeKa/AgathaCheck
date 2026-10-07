@@ -919,6 +919,7 @@ CREATE TABLE public.planned_absences (
     handover_note text,
     last_handover_downloaded_at timestamp with time zone,
     timezone character varying(64) DEFAULT 'UTC'::character varying NOT NULL,
+    title character varying(60),
     CONSTRAINT planned_absences_date_order CHECK ((ends_on >= starts_on))
 );
 CREATE TABLE public.prospects (
