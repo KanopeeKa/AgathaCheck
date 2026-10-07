@@ -16,7 +16,7 @@
       "title": "Spec and core Care date layout",
       "branch": "cursor/occurrence-screen-context-6b05-integration-6b05",
       "allowed_paths": [
-        "docs/domains/pet_care/changes/occurrence-screen-context-spec.md",
+        "docs/domains/pet_care/features/care-item-evolution.md",
         "flutter_app/lib/features/experience/presentation/care_item/occurrence/**",
         "flutter_app/lib/l10n/**",
         ".agents/plans/occurrence-screen-context-6b05.md",

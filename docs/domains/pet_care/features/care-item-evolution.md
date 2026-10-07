@@ -5,6 +5,7 @@ audience: both
 domain: pet_care
 feature_id: care_item
 status: active
+last_updated: 2026-10-07
 related_prs: []
 related_bdd: []
 ---
@@ -69,10 +70,10 @@ Four principles:
 | D-CIE-026 | One row, one action | Agreed 2026-09-29 | Rows show name, status and date, and one trailing action: **Mark as done**, or **Review** for doses not recorded. Other actions are on the Care Item view. The row changes only after the server confirms |
 | D-CIE-027 | Create and Edit: main fields first, **Advanced settings** collapsed | Agreed 2026-09-29 | Plan something shows only **Due date**; Record something shows only **Completed on**. Advanced settings: Where, Priority, Schedule type, If done after the due date, Provider, Documents. See Edit |
 | D-CIE-028 | The server supplies "today" | Agreed 2026-09-29 | Responses carry `as_of` and a status per open occurrence, in the pet's home timezone. The app refreshes on resume, every 15 minutes while care is on screen, and when the pet's day changes |
-| D-CIE-029 | One **occurrence screen** per occurrence, for every status | Agreed 2026-10-01 | Rows open the occurrence; its header links to the Care Item view. Open: Done with any required input, Skip, Change date. Completed: change when it was done (D-CSM-034), notes, provider, documents, Undo. Server: `GET /:id/occurrences/:occId` |
+| D-CIE-029 | One **Care date screen** per occurrence, for every status | Agreed 2026-10-01; layout **delivered 2026-10-06** (D-OCC-001 … D-OCC-017) | Agenda rows open the Care date route (`OccurrenceScreen`). Context tile links to Care details. Open: completion date, **Mark as done**, **Skip**, **Reschedule** (`changeDate`, this date only). Done / Skipped: status pill uses **Done** / **Skipped** (not action verbs). Completed: editable completion date (D-CSM-034), Undo when `canUndoHere`. Server: `GET /:id/occurrences/:occId`. See § Care date screen |
 | D-CIE-030 | **Done** follows one rule on every surface | Agreed 2026-10-01 | A stack, an earlier open After-it's-done date, or a required input opens a screen and saves nothing; an overdue After-it's-done date asks "When was this done?"; more than half an interval early asks to confirm; anything else completes today in one request. The app never sends `next_choice` on one tap |
 | D-CIE-031 | Completion requirements per family, **required inputs only** | Agreed 2026-10-01 | Today only weight monitoring (a weight above 0, sent to `complete-weight`) |
-| D-CIE-032 | Copy: no "dose" | Agreed 2026-10-01 | Buttons say **Done**; "Mark {name} as done"; confirmation "{name} done" |
+| D-CIE-032 | Copy: no "dose" | Agreed 2026-10-01; amended **Care date** 2026-10-06 (D-OCC-008) | Buttons say **Done** where appropriate. **Care date** open actions use **Mark as done** (care name on context tile only). List rows and other surfaces may still use care name in copy where D-CIE-026 requires. Confirmation "{name} done" |
 | D-CIE-033 | Calendar: read-only projection, deferred | Agreed 2026-10-01 | Stored occurrences plus estimated dates; estimates carry no actions. Out of scope for the care occurrences programme |
 | D-CIE-034 | **Stack** = two or more open slots of one Fixed-schedule item that have **started** | Agreed 2026-10-01 | Overdue, not recorded, or due with their time reached; a slot without a time has started from the beginning of its day. Coming-up slots and slots later today never count |
 | D-CIE-023 | Pet **home timezone** on `pets.home_timezone` (IANA) | Agreed | Default at create: owner account TZ when People P4 exists, else `X-Client-Timezone` once, else `UTC`. Editable on pet profile. Care "today" and timed Overdue use this zone. **Absence guest access** keeps People **D24** (creator account TZ on the absence) — two fields, two jobs. Fallback chain: pet → owner account TZ → `UTC` |
@@ -346,6 +347,61 @@ sequenceDiagram
 - A date within half an interval of another open date asks first: "Another date is already planned for 5 Jun. Add this one too?"
 - Vaccines: "+ Add a booster date" under the first due date. First dose 1 Jun, booster 1 Jul, then yearly: the booster follows the first dose, and the yearly date counts from the booster.
 - After it's done: when a later date is open together with an earlier one, the app opens the Care Item view so each date can be marked done, skipped or moved on its own. A completion request without `earlier_choice` keeps the earlier date open.
+
+## Care date screen
+
+Leaf route for one calendar date of care (`OccurrenceScreen`). App bar title **Care date** (D-OCC-001). No ⋯ menu on this screen (D-OCC-016). **Plan another date**, **Pause until**, and stub **Add note** stay on Care details only (D-OCC-OUT-1).
+
+### Layout (D-OCC-005)
+
+1. **Context tile** (D-OCC-002 … D-OCC-003) — tappable card to Care details; pet medallion + name (non-link), care name, lifecycle chip (finished / paused), `{n} open` hidden when the series is finished; no chevron.
+2. **Title row** (D-OCC-004, D-OCC-006) — scheduled date and optional time only; **Reschedule** when allowed (`changeDate`, forward-only picker for open not recorded). EN **Reschedule**, FR **Replannifier**. Minimum 48×48 dp tap target; semantics id `occurrence_reschedule`.
+3. **Status** — pill matches the dose state (Due, Overdue, Coming up, Not recorded, **Done**, **Skipped**). Status labels use `occurrenceSkipped`, not the Skip action verb.
+4. **Away** (D-OCC-014, D-OCC-015) — only when the occurrence is **open** and its date falls inside an absence window. **Keep** applies `keep_date` to the **whole absence** (explainer required). Resolved keep shows **In {carer}'s cover plan** or **In cover plan**.
+5. **Actions** — see state table below.
+
+Pet on the tile loads via `petByIdProvider` (skeleton until resolved).
+
+### State and actions
+
+| State | Reschedule | Primary actions |
+|-------|------------|-----------------|
+| Open (due / overdue / upcoming) | Yes | Completion date; **Mark as done** (filled); **Skip** (outlined) |
+| Open not recorded | Yes (forward-only) | **Mark as done**; **Skip** — not **Record as done** |
+| Closed not recorded | No | **Record as done**; **Confirm not done** (D-OCC-017) |
+| Done | No | Editable completion date; **Undo** when `canUndoHere` (D-OCC-011, D-OCC-012) |
+| Skipped | No | Read-only; **Undo** when `canUndoHere` |
+
+When the series is **finished** and `!canUndoHere`, show static copy only — no disabled Undo (D-OCC-013). Undo label comes from `lastAction.type` (`careUndoDateChange` or `snackbarUndo`), never “Re-open” (D-OCC-011).
+
+### Analytics and tests
+
+| Kind | Names |
+|------|--------|
+| Analytics events | `occurrence_screen_opened`, `care_completion_date_changed`, `care_stack_resolved` |
+| Widget / E2E keys | `occurrence_reschedule`, `occurrence_done`, `occurrence_skip`, `occurrence_undo`, `occurrence_confirm_skip`, `occurrence_context_tile` / `occurrence_about_item` |
+
+### Care date decision log (delivered 2026-10-06)
+
+| ID | Decision |
+|----|----------|
+| D-OCC-001 | App bar: **Care date** |
+| D-OCC-002 | Context tile → Care details |
+| D-OCC-003 | Pet + care name on tile; lifecycle + open count rules |
+| D-OCC-004 | Title row: date/time only |
+| D-OCC-005 | Section order: Status → Away (conditional) → Actions |
+| D-OCC-006 | Reschedule = this occurrence only |
+| D-OCC-007 | No Reschedule on closed–not-recorded, Done, Skipped |
+| D-OCC-008 | Open: **Mark as done** + **Skip** |
+| D-OCC-009 | Open not recorded: **Mark as done**; **Record as done** only when closed |
+| D-OCC-010 | Done: completion date editable |
+| D-OCC-011 … D-OCC-013 | Undo labelling and finished-series copy |
+| D-OCC-014 … D-OCC-015 | Away block scope and keep_date |
+| D-OCC-016 | No ⋯ menu |
+| D-OCC-017 | Closed–not-recorded actions |
+| D-OCC-OUT-1 | Series-level actions on Care details only |
+
+Acceptance criteria for v1: plan `.agents/plans/occurrence-screen-context-6b05.md` (AC-1 … AC-9).
 
 ## Absences
 
