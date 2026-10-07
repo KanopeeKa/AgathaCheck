@@ -12,7 +12,7 @@
   "base_branch": "main",
   "control_issue": 1765,
   "artifact_branch_policy": "phase-branch",
-  "current_child_plan_id": "documentation-migration-integration-main-514a",
+  "current_child_plan_id": "documentation-migration-care-context-514a",
   "child_plans": [
     {
       "plan_id": "documentation-migration-gate-warn-514a",
@@ -40,6 +40,12 @@
     },
     {
       "plan_id": "documentation-migration-integration-main-514a",
+      "status": "merged",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1780",
+      "merge_commit": "7d5a5229f031747d8ef71983293d9861b39edfcf"
+    },
+    {
+      "plan_id": "documentation-migration-care-context-514a",
       "status": "pending",
       "pr_url": null,
       "merge_commit": null

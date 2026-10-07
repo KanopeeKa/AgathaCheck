@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "plan_id": "documentation-migration-care-context-514a",
+  "approved_at": "2026-10-07T15:25:00Z",
+  "approved_by": "Standing grant documentation-migration-roadmap-514a (#1765) + /execute-plan 2026-10-07",
+  "approved_until": "2026-10-09T11:40:00Z",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/documentation-migration-wave13-integration-514a",
+  "control_issue": 1781,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Consolidate pet_care/care-context (Wave 1.3a)",
+      "branch": "cursor/documentation-migration-care-context-514a",
+      "allowed_paths": [
+        "docs/domains/pet_care/**",
+        "scripts/docs-legacy-baseline.json",
+        "scripts/docs-memory-backlog.json",
+        "docs/architecture/api-reference.md",
+        ".agents/plans/documentation-migration-care-context-514a.md",
+        ".agents/plans/documentation-migration-care-context-514a.snapshot.json",
+        ".agents/plans/documentation-migration-roadmap-514a.md",
+        ".agents/plans/documentation-migration-roadmap-514a.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/**",
+        ".github/workflows/**",
+        "docs/domains/pet_care/features/away-planning-carer-model.md"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1782",
+      "pr_head_sha": "396305f9"
+    }
+  ],
+  "content_hash": "sha256:bb7f9e895a7c7d8eae0ebd4012e231c33ab624487d0e81297ee80529a059748e"
+}
