@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "plan_id": "active-codebase-completion-closeout-e41f",
+  "programme_ref": "docs/architecture/reviews/active-codebase-review.md",
+  "approved_at": "2026-10-06T23:35:00Z",
+  "approved_by": "Chat 2026-10-06 spirit-aligned closure; roadmap #1446 standing grant",
+  "approved_until": "2026-10-08T23:35:00Z",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/active-codebase-completion-closeout-integration-26ff",
+  "control_issue": 1734,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Tier 0 governance artifacts",
+      "branch": "cursor/arch-closeout-tier0-26ff",
+      "allowed_paths": [
+        ".agents/plans/active-codebase-completion*.md",
+        ".agents/plans/active-codebase-completion*.snapshot.json",
+        ".agents/plans/active-codebase-batch-*-e41f.*",
+        "docs/architecture/reviews/**",
+        "docs/engineering/active-codebase-baseline/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/**",
+        "e2e/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "merged",
+      "merge_commit": "a856d868fb6641de39015b3d528ad78f9d439337"
+    },
+    {
+      "id": "2",
+      "title": "Tier 1 integrity tests",
+      "branch": "cursor/arch-closeout-tier1-26ff",
+      "allowed_paths": [
+        ".agents/plans/active-codebase-completion-closeout-e41f.*",
+        "server/lib/petDataLifecycle.js",
+        "server/lib/pets/**",
+        "server/routes/pets/**",
+        "server/test/**",
+        "flutter_app/lib/features/experience/presentation/care_item/**",
+        "flutter_app/lib/features/experience/presentation/screens/pet_care/global_events_list.dart",
+        "flutter_app/test/features/health_tracking/architecture/**",
+        "docs/architecture/decisions/0003-transaction-ownership.md"
+      ],
+      "forbidden_paths": [
+        "e2e/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "merged",
+      "merge_commit": "d72473fe385a23388cad64bb9f123a417e45e914"
+    },
+    {
+      "id": "3",
+      "title": "Tier 4 hygiene and debt registration",
+      "branch": "cursor/arch-closeout-tier3-debt-26ff",
+      "allowed_paths": [
+        ".agents/plans/active-codebase-completion-closeout-e41f.*",
+        ".agents/plans/active-codebase-completion-e41f.*",
+        "docs/debt/debt.md",
+        "docs/quality/scorecard.md",
+        "server/coverage-ratchet.json",
+        "docs/engineering/active-codebase-baseline/**"
+      ],
+      "forbidden_paths": [
+        "server/**/*.js",
+        "flutter_app/**",
+        "e2e/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "merged",
+      "merge_commit": "07c48f7287982d95a3cc8b25b09d7235e3993515"
+    },
+    {
+      "id": "4",
+      "title": "Integration to main and roadmap complete",
+      "branch": "cursor/active-codebase-completion-closeout-integration-26ff",
+      "allowed_paths": [
+        "**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/deploy-*.yml"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1739"
+    }
+  ],
+  "content_hash": "sha256:3489930a7c491849fa95d93f81ee36959aa0029b1a679c3936617a77aa69504b"
+}

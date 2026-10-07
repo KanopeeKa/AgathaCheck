@@ -36,7 +36,6 @@ Heuristic counts match `scripts/architecture/architecture-metrics.py` (non-blank
 
 | File | Physical lines | Classification | Owner | Reason | Review date | Planned action |
 |---|---:|---|---|---|---|---|
-| `server/services/sharing/shareInviteService.js` | 597 | Active (sharing invites) | Engineering | Share invite orchestration includes delivery metadata and retries | 2026-12-28 | Split in Batch K or shrink below 500 |
 | `server/lib/care/observations/weightObservationService.js` | 551 | Active (weight observations) | Engineering | Weight observation service consolidated fulfilment paths | 2026-12-28 | Split by responsibility in Batch K |
 | `server/lib/orgPeople.js` | 538 | Frozen (Shelter family) | Engineering | Frozen domain internals; freeze contract forbids refactoring | 2026-12-28 | Leave while frozen |
 | `server/lib/orgPermissions.js` | 523 | Frozen (Shelter family) | Engineering | Frozen domain internals; freeze contract forbids refactoring | 2026-12-28 | Leave while frozen |

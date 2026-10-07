@@ -17,7 +17,7 @@ Living metrics for Agatha Track quality. Update when CI or test counts change ma
 ## Live metrics
 
 <!-- scorecard-metrics:begin -->
-**Auto-generated block** — refresh with `node scripts/quality/generate-scorecard-metrics.mjs --write-scorecard` (2026-10-06).
+**Auto-generated block** — refresh with `node scripts/quality/generate-scorecard-metrics.mjs --write-scorecard` (2026-10-07).
 
 | Metric | Value | Enforced by |
 |--------|------:|-------------|

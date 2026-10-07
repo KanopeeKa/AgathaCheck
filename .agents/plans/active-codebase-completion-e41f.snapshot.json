@@ -21,8 +21,8 @@
     },
     {
       "plan_id": "active-codebase-batch-e-backend-integrity-e41f",
-      "status": "in_progress",
-      "pr_url": null,
+      "status": "merged",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1503",
       "merge_commit": null
     },
     {
@@ -99,5 +99,5 @@
       "merge_commit": null
     }
   ],
-  "content_hash": "sha256:d61a592e1a859a6a58ef87427e753b9ea0aa5fe0639c9dfcd3ba5cffe52173e8"
+  "content_hash": "sha256:24b65869fb284f4a81f750d94da24338b4cc388033d564d1623c21b5fda04605"
 }

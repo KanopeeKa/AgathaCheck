@@ -145,7 +145,11 @@ class CareItemDetailScreen extends ConsumerWidget {
             Future<void> onResume() async {
               await ref.read(healthEntriesNotifierProvider.notifier).refresh();
               final freshEntry =
-                  await ref.read(healthRepositoryProvider).getEntry(entryId) ??
+                  ref
+                      .read(healthEntriesNotifierProvider)
+                      .valueOrNull
+                      ?.where((e) => e.id == entryId)
+                      .firstOrNull ??
                   entry;
               if (!context.mounted) return;
               final suggested =

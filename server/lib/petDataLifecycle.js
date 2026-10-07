@@ -34,6 +34,23 @@ const PET_DATA_TABLES = [
 
 const PASSED_AWAY_EVENT = 'passed_away';
 
+/** @type {string | null} */
+let petDeletionFaultStep = null;
+
+export function setPetDeletionFaultStep(step) {
+  petDeletionFaultStep = step;
+}
+
+export function clearPetDeletionFaultStep() {
+  petDeletionFaultStep = null;
+}
+
+function maybePetDeletionFault(step) {
+  if (petDeletionFaultStep === step) {
+    throw new Error(`pet deletion fault injection at ${step}`);
+  }
+}
+
 export class PetNotFoundError extends Error {
   constructor() {
     super('Pet not found');
@@ -167,11 +184,13 @@ async function runPetDataDeletionTransaction(client, petId, {
 } = {}) {
   const fileRefs = await collectPetFileRefs(client, petId);
   await enqueuePetFileDeletes(client, petId, fileRefs);
+  maybePetDeletionFault('enqueue_jobs');
 
   const rowsRemoved = {};
   for (const table of PET_DATA_TABLES) {
     const result = await client.query(`DELETE FROM ${table} WHERE pet_id = $1`, [petId]);
     rowsRemoved[table] = result.rowCount ?? 0;
+    maybePetDeletionFault(`delete_${table}`);
   }
 
   if (deletePetRow) {
@@ -183,6 +202,7 @@ async function runPetDataDeletionTransaction(client, petId, {
     if ((del.rowCount ?? 0) === 0) {
       throw new PetNotFoundError();
     }
+    maybePetDeletionFault('delete_pet_row');
   } else {
     await client.query(
       `UPDATE pets
@@ -193,6 +213,7 @@ async function runPetDataDeletionTransaction(client, petId, {
   }
 
   if (actorUserId && auditAction) {
+    maybePetDeletionFault('audit_insert');
     const auditId = await logAuditEvent(client, {
       actorUserId,
       action: auditAction,

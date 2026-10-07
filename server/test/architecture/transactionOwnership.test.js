@@ -13,13 +13,9 @@ function normalizeRelPath(relativePath) {
   return relativePath.replace(/^server\//, '').replace(/\\/g, '/');
 }
 
-/** PEOPLE server s3 — remove when people-server-7f3b lands. */
-const PEOPLE_TEMPORARY_ALLOWLIST = new Set([
-  'routes/pets/peopleRelationshipsRouter.js',
-]);
-
 /**
  * Care occurrence commands use a dedicated lock primitive (D-CSM-033); migrate with care-schedule work.
+ * @see https://github.com/KanopeeKa/AgathaCheck/issues/1735
  * @see server/lib/care/occurrence/careItemLock.js
  */
 const CARE_OCCURRENCE_TRANSACTION_DEFERRED = new Set([
@@ -31,7 +27,6 @@ const ALWAYS_ALLOWED = new Set([
   'lib/db/withTransaction.js',
   'lib/fosterInvite.js',
   'lib/orgPermissions.js',
-  ...PEOPLE_TEMPORARY_ALLOWLIST,
   ...CARE_OCCURRENCE_TRANSACTION_DEFERRED,
 ]);
 
