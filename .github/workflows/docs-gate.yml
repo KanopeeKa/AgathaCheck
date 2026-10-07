@@ -21,8 +21,28 @@ permissions:
   pull-requests: read
 
 jobs:
+  docs-declaration:
+    name: Docs declaration
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Gate A — PR body
+        env:
+          DOCS_GATE_MODE: block
+          DOCS_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          DOCS_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          DOCS_PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+        run: |
+          BODY_FILE="$RUNNER_TEMP/pr-body.md"
+          jq -r '.pull_request.body // ""' "$GITHUB_EVENT_PATH" > "$BODY_FILE"
+          node scripts/check_docs_canonical.js --pr-body --body-file "$BODY_FILE"
+
   docs-canonical:
-    name: Docs canonical (warn)
+    name: Docs canonical
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -37,21 +57,18 @@ jobs:
       - name: Install backend deps (js-yaml)
         run: cd server && npm ci
 
-      - name: Gate A — PR body
-        env:
-          DOCS_GATE_MODE: warn
-          DOCS_BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          DOCS_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-          DOCS_PR_AUTHOR: ${{ github.event.pull_request.user.login }}
-        run: |
-          BODY_FILE="$RUNNER_TEMP/pr-body.md"
-          jq -r '.pull_request.body // ""' "$GITHUB_EVENT_PATH" > "$BODY_FILE"
-          node scripts/check_docs_canonical.js --pr-body --body-file "$BODY_FILE"
-
       - name: Gates B–E (diff)
         env:
-          DOCS_GATE_MODE: warn
+          DOCS_GATE_MODE: block
           DOCS_BASE_SHA: ${{ github.event.pull_request.base.sha }}
           DOCS_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           node scripts/check_docs_canonical.js --changes --shape --ids --trace
+
+      - name: Per-domain trace report
+        env:
+          DOCS_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          DOCS_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          node scripts/check_docs_canonical.js --report
+          node e2e/scripts/check_bdd_coverage.js --report-only

@@ -235,13 +235,13 @@ autonomy: active
 current_phase: 2
 last_completed_phase: 1
 halt_reason: null
-next_action: "start phase 2: checkout cursor/docs-ci-gates-block-a496"
+next_action: "continue phase 2 on branch cursor/docs-ci-gates-block-a496"
 artifact_ref:
-  branch: cursor/docs-ci-gates-a496-integration-a496
+  branch: cursor/docs-ci-gates-block-a496
   plan_path: .agents/plans/docs-ci-gates-a496.md
-  plan_commit: 52e705c6efd33ad0d0dfd302e676938ccb0a9224
+  plan_commit: 69f12ca4900da47170f2e079cfcb1e499db5a90b
   snapshot_path: .agents/plans/docs-ci-gates-a496.snapshot.json
-  snapshot_commit: 52e705c6efd33ad0d0dfd302e676938ccb0a9224
+  snapshot_commit: 69f12ca4900da47170f2e079cfcb1e499db5a90b
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
