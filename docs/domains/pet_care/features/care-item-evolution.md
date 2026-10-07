@@ -58,62 +58,61 @@ Four principles:
 3. **Calm by default.** Status answers "when?". Priority answers "how important?". The two signals never mix.
 4. **Quick to complete, rich if wanted.** Marking care done never requires details, but it never guesses a date that changes the schedule.
 
-## Decisions
-
-| # | Decision | Status | Consequence |
+## Decision log
+| ID | Decision | Rationale | Status | Date | PR |
 |---|---|---|---|
-| D-CIE-001 | "Occurrence" is an internal word | Agreed | The View never says "Current occurrence". Status and date speak for themselves: "Overdue · 11 Sep 2026" |
-| D-CIE-002 | One word for late, unresolved care: **Overdue** | Agreed; amended by D-CIE-024 | "Missed" leaves the UI. Stored statuses stay `pending` / `completed` / `skipped`. There is no `cancelled`. D-CIE-024 adds **Not recorded** for Fixed-schedule doses whose next dose is already due |
-| D-CIE-003 | Timed care: Coming up until its time, **Due until the planned time, then Overdue** | Agreed | Matches live `isOccurrenceMissed` / `isOccurrenceMissed` (server + client). Multi-dose days: each slot has its own status |
-| D-CIE-004 | Status describes the schedule and what has been logged, not medical safety | Agreed | No wording implies that a late dose is safe or unsafe |
-| D-CIE-005 | Care uses the pet's home timezone | Agreed | Occurrences, reminders, absence boundaries, "today" and status changes all use one timezone |
-| D-CIE-006 | Overdue looks the same at every priority | Agreed | A small Overdue pill. Priority only changes ordering. Overdue items of every priority are listed and counted in Actions |
-| D-CIE-007 | Reminders never change status | Agreed | "Remind me 7 days before" doesn't make care Due |
-| D-CIE-008 | The attention area can hold several occurrences | Agreed | Twice-daily care shows today's doses, each with its own status and action |
-| D-CIE-009 | Completing overdue care asks when it was done | Agreed | A correctness rule. For "after completion" schedules, that date sets every following date |
-| D-CIE-010 | History lists resolved past occurrences | Agreed | Completed and skipped. An unresolved overdue occurrence stays in the attention area only |
-| D-CIE-011 | Three text scopes: Instructions, Notes, Absence note | Agreed | No separate "default carer instructions" field. Instructions serve that purpose |
-| D-CIE-012 | Absence handling is resolved per care item, per absence | Agreed | Amends D-AWAY-003 ("per-item assignment is out of scope") |
-| D-CIE-013 | Store the resolution, work out the status | Agreed | No stored "plan needed", "confirmed" or "needs review" |
-| D-CIE-014 | No permanent carer on a care item | Agreed | The pet's carer on the absence is the suggested "who". One occurrence can name someone else (People D10) |
-| D-CIE-015 | Schedule flexibility stays worked out, not stored | Agreed | D-ACP-006 unchanged. A per-item override stays deferred |
-| D-CIE-016 | A provider is a contact, or a typed name for now | *Proposed* | Typed names have limits (see Providers). Contacts remain the normal path |
-| D-CIE-017 | Occurrence actions and care item actions live in separate menus | Agreed (amended 2026-09-29) | Makes "this time only" vs "the schedule" visible in the layout. Occurrence menu: Skip, Postpone, Plan another date, Add note, Looked after by. Care item menu: Edit, Pause or Resume, Archive or Restore, Delete. List rows carry one action only (D-CIE-026) |
-| D-CIE-018 | Lifecycle: Active, Paused, Finished, Archived, Deleted | Agreed; amended by D-CSM-028 | "Close event" and "Reopen event" are retired. Pause and "pause until" are **Postpone until**; Resume asks the date, pre-filled with the date it would have had |
-| D-CIE-019 | Category fields are built from shared blocks | Agreed | Categories choose blocks. Route or method is optional where useful |
-| D-CIE-020 | Historical facts don't change when defaults change | Agreed | Occurrences keep the provider, dose and people recorded at the time |
-| D-CIE-021 | Reminder delivery is a separate track | Agreed | It can start early and doesn't block the redesign |
-| D-CIE-022 | Out of scope: cost, vaccination courses, stock and refills | Agreed | See Out of scope |
-| D-CIE-024 | Status words: Coming up, Due, Overdue, **Not recorded**, Done, Skipped, Paused | Agreed 2026-09-29 | Not recorded = a Fixed-schedule dose still open when the next dose is due. Neutral info styling, not error: it assumes the care was given and only the record is missing. See Occurrence status |
-| D-CIE-025 | One agenda: **Today** (Overdue first), **Due soon** (7 days), **Upcoming** (collapsed) | Agreed 2026-09-29 | Same component on the dashboard (all pets) and the pet profile (one pet). See Agenda |
-| D-CIE-026 | One row, one action | Agreed 2026-09-29 | Rows show name, status and date, and one trailing action: **Mark as done**, or **Review** for doses not recorded. Other actions are on the Care Item view. The row changes only after the server confirms |
-| D-CIE-027 | Create and Edit: main fields first, **Advanced settings** collapsed | Agreed 2026-09-29 | Plan something shows only **Due date**; Record something shows only **Completed on**. Advanced settings: Where, Priority, Schedule type, If done after the due date, Provider, Documents. See Edit |
-| D-CIE-028 | The server supplies "today" | Agreed 2026-09-29 | Responses carry `as_of` and a status per open occurrence, in the pet's home timezone. The app refreshes on resume, every 15 minutes while care is on screen, and when the pet's day changes |
-| D-CIE-029 | One **Care date screen** per occurrence, for every status | Agreed 2026-10-01; layout **delivered 2026-10-06** (D-OCC-001 … D-OCC-017) | Agenda rows open the Care date route (`OccurrenceScreen`). Context tile links to Care details. Open: completion date, **Mark as done**, **Skip**, **Reschedule** (`changeDate`, this date only). Done / Skipped: status pill uses **Done** / **Skipped** (not action verbs). Completed: editable completion date (D-CSM-034), Undo when `canUndoHere`. Server: `GET /:id/occurrences/:occId`. See § Care date screen |
-| D-CIE-030 | **Done** follows one rule on every surface | Agreed 2026-10-01 | A stack, an earlier open After-it's-done date, or a required input opens a screen and saves nothing; an overdue After-it's-done date asks "When was this done?"; more than half an interval early asks to confirm; anything else completes today in one request. The app never sends `next_choice` on one tap |
-| D-CIE-031 | Completion requirements per family, **required inputs only** | Agreed 2026-10-01 | Today only weight monitoring (a weight above 0, sent to `complete-weight`) |
-| D-CIE-032 | Copy: no "dose" | Agreed 2026-10-01; amended **Care date** 2026-10-06 (D-OCC-008) | Buttons say **Done** where appropriate. **Care date** open actions use **Mark as done** (care name on context tile only). List rows and other surfaces may still use care name in copy where D-CIE-026 requires. Confirmation "{name} done" |
-| D-CIE-033 | Calendar: read-only projection, deferred | Agreed 2026-10-01 | Stored occurrences plus estimated dates; estimates carry no actions. Out of scope for the care occurrences programme |
-| D-CIE-034 | **Stack** = two or more open slots of one Fixed-schedule item that have **started** | Agreed 2026-10-01 | Overdue, not recorded, or due with their time reached; a slot without a time has started from the beginning of its day. Coming-up slots and slots later today never count |
-| D-CIE-023 | Pet **home timezone** on `pets.home_timezone` (IANA) | Agreed | Default at create: owner account TZ when People P4 exists, else `X-Client-Timezone` once, else `UTC`. Editable on pet profile. Care "today" and timed Overdue use this zone. **Absence guest access** keeps People **D24** (creator account TZ on the absence) — two fields, two jobs. Fallback chain: pet → owner account TZ → `UTC` |
-| D-CIH-001 | App bar: **`careItemScreenTitle`** | Agreed 2026-10-06 | Care details / Détail du soin — not item name |
-| D-CIH-002 | Care item **name** in context strip (max two lines) | Agreed | — |
-| D-CIH-003 | Pet chip → `openPetDetail` with `returnTo` | Agreed | — |
-| D-CIH-004 | `CareItemPetContextTile` — photo helper only; do not change `UnifiedPetTile` / `PetCard` | Agreed | — |
-| D-CIH-005 | Pet name always visible; species optional on chip | Agreed | — |
-| D-CIH-006 | Category icon decorative; family in care-name header semantics | Agreed | — |
-| D-CIH-007 | Strip: at most one status chip; Needs attention owns dates/actions | Agreed | — |
-| D-CIH-008 | Strip scrolls away (not sticky) | Agreed | — |
-| D-CIH-009 | App bar title is not "Care routine" | Agreed | — |
-| D-CIH-010 | Pet chip: button semantics; label = pet name | Agreed | — |
-| D-CIH-011 | `Semantics(header: true)` on care name `Text` only | Agreed | — |
-| D-CIH-012 | `CareItemContextStrip` in dedicated file; detail body ≤500 lines | Agreed | — |
-| D-CIH-013 | Chip priority Finished > Paused; no Archived until `closed_reason` | Agreed | — |
-| D-CIH-014 | Strip title typography vs shell `screenTitle` at 600 px breakpoint | Agreed | Independent of 900 px two-column breakpoint |
-| D-BULK-001 | Started group heading stays **Needs attention** | Agreed 2026-10-05 | Row pills show Overdue / Not recorded / Due |
-| D-BULK-002 | One started row: row controls only; no bulk block (FR-12a) | Agreed | Plan another date moves to app-bar ⋯ |
-| D-BULK-003 | `CareMarkDoneButton` shared round `check_circle` everywhere | Agreed | — |
-| D-BULK-004 | Coming up cap **3** rows then "Show {n} more" | Agreed | — |
+| D-CIE-001 | "Occurrence" is an internal word | The View never says "Current occurrence". Status and date speak for themselves: "Overdue · 11 Sep 2026" | Live | — | — |
+| D-CIE-002 | One word for late, unresolved care: **Overdue** | "Missed" leaves the UI. Stored statuses stay `pending` / `completed` / `skipped`. There is no `cancelled`. D-CIE-024 adds **Not recorded** for Fixed-schedule doses whose next dose is already due | Live | — | — |
+| D-CIE-003 | Timed care: Coming up until its time, **Due until the planned time, then Overdue** | Matches live `isOccurrenceMissed` / `isOccurrenceMissed` (server + client). Multi-dose days: each slot has its own status | Live | — | — |
+| D-CIE-004 | Status describes the schedule and what has been logged, not medical safety | No wording implies that a late dose is safe or unsafe | Live | — | — |
+| D-CIE-005 | Care uses the pet's home timezone | Occurrences, reminders, absence boundaries, "today" and status changes all use one timezone | Live | — | — |
+| D-CIE-006 | Overdue looks the same at every priority | A small Overdue pill. Priority only changes ordering. Overdue items of every priority are listed and counted in Actions | Live | — | — |
+| D-CIE-007 | Reminders never change status | "Remind me 7 days before" doesn't make care Due | Live | — | — |
+| D-CIE-008 | The attention area can hold several occurrences | Twice-daily care shows today's doses, each with its own status and action | Live | — | — |
+| D-CIE-009 | Completing overdue care asks when it was done | A correctness rule. For "after completion" schedules, that date sets every following date | Live | — | — |
+| D-CIE-010 | History lists resolved past occurrences | Completed and skipped. An unresolved overdue occurrence stays in the attention area only | Live | — | — |
+| D-CIE-011 | Three text scopes: Instructions, Notes, Absence note | No separate "default carer instructions" field. Instructions serve that purpose | Live | — | — |
+| D-CIE-012 | Absence handling is resolved per care item, per absence | Amends D-AWAY-003 ("per-item assignment is out of scope") | Live | — | — |
+| D-CIE-013 | Store the resolution, work out the status | No stored "plan needed", "confirmed" or "needs review" | Live | — | — |
+| D-CIE-014 | No permanent carer on a care item | The pet's carer on the absence is the suggested "who". One occurrence can name someone else (People D10) | Live | — | — |
+| D-CIE-015 | Schedule flexibility stays worked out, not stored | D-ACP-006 unchanged. A per-item override stays deferred | Live | — | — |
+| D-CIE-016 | A provider is a contact, or a typed name for now | Typed names have limits (see Providers). Contacts remain the normal path | Live | — | — |
+| D-CIE-017 | Occurrence actions and care item actions live in separate menus | Makes "this time only" vs "the schedule" visible in the layout. Occurrence menu: Skip, Postpone, Plan another date, Add note, Looked after by. Care item menu: Edit, Pause or Resume, Archive or Restore, Delete. List rows carry one action only (D-CIE-026) | Live | — | — |
+| D-CIE-018 | Lifecycle: Active, Paused, Finished, Archived, Deleted | "Close event" and "Reopen event" are retired. Pause and "pause until" are **Postpone until**; Resume asks the date, pre-filled with the date it would have had | Live | — | — |
+| D-CIE-019 | Category fields are built from shared blocks | Categories choose blocks. Route or method is optional where useful | Live | — | — |
+| D-CIE-020 | Historical facts don't change when defaults change | Occurrences keep the provider, dose and people recorded at the time | Live | — | — |
+| D-CIE-021 | Reminder delivery is a separate track | It can start early and doesn't block the redesign | Live | — | — |
+| D-CIE-022 | Out of scope: cost, vaccination courses, stock and refills | See Out of scope | Live | — | — |
+| D-CIE-024 | Status words: Coming up, Due, Overdue, **Not recorded**, Done, Skipped, Paused | Not recorded = a Fixed-schedule dose still open when the next dose is due. Neutral info styling, not error: it assumes the care was given and only the record is missing. See Occurrence status | Live | — | — |
+| D-CIE-025 | One agenda: **Today** (Overdue first), **Due soon** (7 days), **Upcoming** (collapsed) | Same component on the dashboard (all pets) and the pet profile (one pet). See Agenda | Live | — | — |
+| D-CIE-026 | One row, one action | Rows show name, status and date, and one trailing action: **Mark as done**, or **Review** for doses not recorded. Other actions are on the Care Item view. The row changes only after the server confirms | Live | — | — |
+| D-CIE-027 | Create and Edit: main fields first, **Advanced settings** collapsed | Plan something shows only **Due date**; Record something shows only **Completed on**. Advanced settings: Where, Priority, Schedule type, If done after the due date, Provider, Documents. See Edit | Live | — | — |
+| D-CIE-028 | The server supplies "today" | Responses carry `as_of` and a status per open occurrence, in the pet's home timezone. The app refreshes on resume, every 15 minutes while care is on screen, and when the pet's day changes | Live | — | — |
+| D-CIE-029 | One **Care date screen** per occurrence, for every status | Agenda rows open the Care date route (`OccurrenceScreen`). Context tile links to Care details. Open: completion date, **Mark as done**, **Skip**, **Reschedule** (`changeDate`, this date only). Done / Skipped: status pill uses **Done** / **Skipped** (not action verbs). Completed: editable completion date (D-CSM-034), Undo when `canUndoHere`. Server: `GET /:id/occurrences/:occId`. See § Care date screen | Live | — | — |
+| D-CIE-030 | **Done** follows one rule on every surface | A stack, an earlier open After-it's-done date, or a required input opens a screen and saves nothing; an overdue After-it's-done date asks "When was this done?"; more than half an interval early asks to confirm; anything else completes today in one request. The app never sends `next_choice` on one tap | Live | — | — |
+| D-CIE-031 | Completion requirements per family, **required inputs only** | Today only weight monitoring (a weight above 0, sent to `complete-weight`) | Live | — | — |
+| D-CIE-032 | Copy: no "dose" | Buttons say **Done** where appropriate. **Care date** open actions use **Mark as done** (care name on context tile only). List rows and other surfaces may still use care name in copy where D-CIE-026 requires. Confirmation "{name} done" | Live | — | — |
+| D-CIE-033 | Calendar: read-only projection, deferred | Stored occurrences plus estimated dates; estimates carry no actions. Out of scope for the care occurrences programme | Live | — | — |
+| D-CIE-034 | **Stack** = two or more open slots of one Fixed-schedule item that have **started** | Overdue, not recorded, or due with their time reached; a slot without a time has started from the beginning of its day. Coming-up slots and slots later today never count | Live | — | — |
+| D-CIE-023 | Pet **home timezone** on `pets.home_timezone` (IANA) | Default at create: owner account TZ when People P4 exists, else `X-Client-Timezone` once, else `UTC`. Editable on pet profile. Care "today" and timed Overdue use this zone. **Absence guest access** keeps People **D24** (creator account TZ on the absence) — two fields, two jobs. Fallback chain: pet → owner account TZ → `UTC` | Live | — | — |
+| D-CIH-001 | App bar: **`careItemScreenTitle`** | Care details / Détail du soin — not item name | Live | — | — |
+| D-CIH-002 | Care item **name** in context strip (max two lines) | — | Live | — | — |
+| D-CIH-003 | Pet chip → `openPetDetail` with `returnTo` | — | Live | — | — |
+| D-CIH-004 | `CareItemPetContextTile` — photo helper only; do not change `UnifiedPetTile` / `PetCard` | — | Live | — | — |
+| D-CIH-005 | Pet name always visible; species optional on chip | — | Live | — | — |
+| D-CIH-006 | Category icon decorative; family in care-name header semantics | — | Live | — | — |
+| D-CIH-007 | Strip: at most one status chip; Needs attention owns dates/actions | — | Live | — | — |
+| D-CIH-008 | Strip scrolls away (not sticky) | — | Live | — | — |
+| D-CIH-009 | App bar title is not "Care routine" | — | Live | — | — |
+| D-CIH-010 | Pet chip: button semantics; label = pet name | — | Live | — | — |
+| D-CIH-011 | `Semantics(header: true)` on care name `Text` only | — | Live | — | — |
+| D-CIH-012 | `CareItemContextStrip` in dedicated file; detail body ≤500 lines | — | Live | — | — |
+| D-CIH-013 | Chip priority Finished > Paused; no Archived until `closed_reason` | — | Live | — | — |
+| D-CIH-014 | Strip title typography vs shell `screenTitle` at 600 px breakpoint | Independent of 900 px two-column breakpoint | Live | — | — |
+| D-BULK-001 | Started group heading stays **Needs attention** | Row pills show Overdue / Not recorded / Due | Live | — | — |
+| D-BULK-002 | One started row: row controls only; no bulk block (FR-12a) | Plan another date moves to app-bar ⋯ | Live | — | — |
+| D-BULK-003 | `CareMarkDoneButton` shared round `check_circle` everywhere | — | Live | — | — |
+| D-BULK-004 | Coming up cap **3** rows then "Show {n} more" | — | Live | — | — |
 
 ## Where we start
 
@@ -686,37 +685,7 @@ New FR wording is proposed and needs the FR copy pass.
 | Review date | Review date | Voir la date | New |
 | Looked after by | Looked after by | See the People vocabulary | People |
 
-## Mockup corrections
 
-- **Title:** app bar uses **Care details** (not the item name); item name lives in the context strip. Show the pet via the tappable tile in that strip. Remove the header history icon (CARE-ITEM-R-001).
-- **Labels:** remove "Current occurrence".
-- **Overdue:** a small red pill, the same at every priority. No large red block.
-- **"DUE IN 2 DAYS":** neutral "Coming up · 6 Oct · in 2 days". It is not Due yet (D-CIE-007).
-- **"PLAN NEEDED":** neutral "Not reviewed yet".
-- **Flea treatment:**
-  - "Move to 2 Oct" can't be suggested: monthly parasite prevention moves earlier only, by at most 3 days, and 3 Oct is inside the absence. Offer "Keep the date · Jamie", or a manual Change date with its caution.
-  - Parasite prevention now defaults to **After it's done** (D-CSM-020), so "After it's done" is correct; the mockup label "After completion" becomes "After it's done".
-  - "Assign to Jamie" becomes "Keep the date · Jamie".
-- **Wellness review:** "No impact" is wrong, because the overdue review is on the away plan.
-- **History:** 11 Sep 2026 appears only in Needs attention.
-- **Web "No upcoming conflicts":** hide the section when the pet has no upcoming absence (Still open item 4).
-
-## Phasing
-
-Two streams run in parallel, then join.
-
-| Phase | Stream | Scope | Depends on |
-|---|---|---|---|
-| A0. Vocabulary | Care | Overdue everywhere (retire "Missed" in UI), priority ordering, list subtitle for multi-dose | — |
-| A1. Timezone | Care | Pet home timezone for today, status, reminders, absence boundaries (schema + API + client) | A0 |
-| B. View and Edit | Care | Header, Needs attention (several occurrences), menus, schedule summary, Details, Instructions and Notes, History, Pause UI, access levels, web layout | A0 (A1 need not block layout-only work) |
-| C. Completing care | Care | The "when was this done?" question, Add details, occurrence documents, next date from the vet | B |
-| P1. People directory | People | People phase 1: contacts, provider foundations | — |
-| D. Providers and people | Join | Provider (typed names as an interim), provider used, performed by, names kept in history | C, P1 |
-| E. Absence resolutions | Join | Resolutions, worked-out states, the Care Item's Absence section, away-plan rows, handover PDF | B, and People phase 2 for carers from contacts. It can start with today's carers |
-| F. Category blocks | Care | In the order above | C |
-| R. Reminders | Own track | Delivery, at-time reminders, follow-ups, several reminders | Can start any time; blocks nothing |
-| O. Care occurrences | Care | Always a real next date, two schedule types, care tick, one agenda, Advanced settings, Plan another date, Postpone until, absences on real occurrences, Care Item module ([`care-next-occurrence-c1a7`](../../../.agents/plans/care-next-occurrence-c1a7.md)) | A1 |
 
 ## Out of scope
 
