@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "plan_id": "notifications-v2-2-remediation-main-7f3b",
+  "approved_at": "2026-10-07T11:30:00Z",
+  "approved_by": "User chat 2026-10-07: standing grant remediation A–E / execute-plan",
+  "approved_until": "2026-10-09T11:30:00Z",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 1764,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Integration batch to main",
+      "branch": "cursor/notifications-v2-2-remediation-integration-7f3b",
+      "allowed_paths": [
+        "**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "in_progress"
+    }
+  ],
+  "content_hash": "sha256:cb88bc84b38917ccf14edfda776ccfb947098904d949ba85042c31307de16bc3"
+}
