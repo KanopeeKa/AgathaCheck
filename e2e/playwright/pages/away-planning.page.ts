@@ -451,6 +451,13 @@ export class AwayPlanningPage {
   }
 
   async openEditScreen(): Promise<void> {
+    const absenceId = this.absenceIdFromUrl();
+    if (absenceId) {
+      await this.page.goto(flutterGotoUrl(`/pc/away/${absenceId}/edit`));
+      await refreshFlutterAccessibility(this.page);
+      await this.expectEditScreenLoaded();
+      return;
+    }
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
       const summaryEdit = semanticsKey(this.page, 'away_plan_summary_edit');
@@ -460,6 +467,14 @@ export class AwayPlanningPage {
       await refreshFlutterAccessibility(this.page);
       await this.expectEditScreenLoaded();
     }).toPass({ timeout: 90_000 });
+  }
+
+  private absenceIdFromUrl(): string | null {
+    const hash = new URL(this.page.url()).hash.replace(/^#/, '');
+    const path = hash || this.page.url();
+    const match = path.match(/\/pc\/away\/([^/?#]+)/);
+    if (!match || match[1] === 'new') return null;
+    return match[1];
   }
 
   async expectEditScreenLoaded(): Promise<void> {
