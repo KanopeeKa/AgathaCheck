@@ -54,9 +54,9 @@ Part of the AgathaTrack domain-first documentation tree. Cross-cutting architect
 | Document | Role |
 |----------|------|
 | [care-context.md](/docs/domains/pet_care/features/care-context.md) | **Canonical** Care Context / Care Through Change / away plan presentation |
-| [away-planning-carer-model.md](/docs/domains/pet_care/features/away-planning-carer-model.md) | Per-pet carer schema, API, and UI surfaces |
+| [away-planning-carer-model.md](/docs/domains/pet_care/features/away-planning-carer-model.md) | **Canonical** per-pet carer model, handover PDF, readiness carer fact |
 | [away-planning-delivery-plan.md](/docs/domains/pet_care/changes/away-planning-delivery-plan.md) | AW-EMERGENCY–AW-10 delivery plan (active) |
-| [away-planning-decisions.md](/docs/domains/pet_care/changes/away-planning-decisions.md) | Carer, handover, terminology (D-AWAY-003–005, 008–014); context rows in care-context.md |
+| [away-planning-decisions.md](/docs/domains/pet_care/changes/away-planning-decisions.md) | Retired pointer — decisions in care-context.md and away-planning-carer-model.md |
 | [amends-away-planning.md](/docs/domains/people/changes/amends-away-planning.md) | Planned People amendments to D-AWAY-002/003/004/005 (agreed, not in effect) |
 | [away-care-planning-delivery-plan.md](/docs/domains/pet_care/changes/away-care-planning-delivery-plan.md) | ACP-DOC-0–ACP-8: absence care display, reschedule UI, Care Planner (frozen) |
 | [away-care-planning-decisions.md](/docs/domains/pet_care/changes/away-care-planning-decisions.md) | Frozen Away Care Planning decisions (D-ACP-001–010) |

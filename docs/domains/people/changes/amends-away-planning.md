@@ -2,9 +2,11 @@
 title: People — planned amendments to Away Planning decisions
 owner: Product / Documentation
 audience: both
-status: accepted
-last_updated: 2026-09-27
-tags: [people, pet_care, away-planning, decisions]
+status: in-delivery
+status_since: 2026-10-07
+folds_into: docs/domains/pet_care/features/away-planning-carer-model.md
+plan: documentation-migration-carer-model-514a
+last_updated: 2026-10-07
 ---
 
 # People — planned amendments to Away Planning decisions

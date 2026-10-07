@@ -2,18 +2,19 @@
 title: Away Planning — Per-pet note & per-pet handover export
 owner: Product / Agent
 audience: both
-status: active
-last_updated: 2026-09-22
-tags: [pet_care, care_context, away_planning, handover, spec]
+status: in-delivery
+status_since: 2026-10-07
+folds_into: docs/domains/pet_care/features/away-planning-carer-model.md
+plan: documentation-migration-carer-model-514a
+last_updated: 2026-10-07
 ---
 
 # Away Planning — Per-pet note & per-pet handover export
 
 **Status:** Shipped (AW-11, [#1266](https://github.com/KanopeeKa/AgathaCheck/pull/1266)).
-**Extends:** [away-planning-carer-model.md](../features/away-planning-carer-model.md), the existing carer model (migration `063`).
+**Extends:** [away-planning-carer-model.md](../features/away-planning-carer-model.md) (canonical; migration `063` / `071`).
 **Delivery context:** AW-11 row in [away-planning-delivery-plan.md](./away-planning-delivery-plan.md).
-**Frozen context this must not violate:** [away-planning-decisions.md](./away-planning-decisions.md) — especially D-AWAY-004 (`note_only` never implies access), D-AWAY-008 (handover note is verbatim), D-AWAY-009 (download tracking, Part 2 deferred), D-AWAY-010 (saving never requires a complete plan).
-**Frozen decisions (shipped):** D-AWAY-014a/b — see [§11](#11-frozen-decisions-d-away-014).
+**Frozen context:** D-AWAY-004, D-AWAY-008, D-AWAY-009, D-AWAY-010 (care-context), D-AWAY-014a/b — [away-planning-carer-model.md](../features/away-planning-carer-model.md#decision-log).
 
 ---
 
