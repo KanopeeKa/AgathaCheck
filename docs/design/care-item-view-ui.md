@@ -20,7 +20,7 @@ Operational **care desk** segmentation: warm page canvas, white module cards, cl
 | Topic | Decision |
 |-------|----------|
 | Relief | **Border-first** white modules on warm canvas; optional subtle shadow on web only (default off in v1) |
-| Pet context | **Context strip** on warm canvas (compact pet tile + care name + category icon); scrolls away; wide: full-width strip **above** two columns — see [care-item-context-header-spec.md](../domains/pet_care/changes/care-item-context-header-spec.md) |
+| Pet context | **Context strip** on warm canvas (compact pet tile + care name + category icon); scrolls away; wide: full-width strip **above** two columns — see [care-item-evolution.md](../domains/pet_care/features/care-item-evolution.md) (CARE-ITEM-R-001) |
 | Icons | **Section headers + stat cells** only; not every metadata row |
 | Absence | **`CareAttentionCallout`** tier when slice needs attention; hide section when no upcoming absence (spec open item) |
 | Copy | No “View …” title; no “Current occurrence” (D-CIE-001) |
@@ -39,7 +39,7 @@ Document hex values only in [`tokens.md`](./tokens.md) when promoted globally; C
 
 ## Module map (mobile order)
 
-1. **Pet context** — context strip on canvas (not a module): **`CareItemPetContextTile`** (dashboard `UnifiedPetTile` unchanged) + care name (typography per spec D-CIH-014, 600 px shell breakpoint) + decorative `CareFamilyIcon` + optional chip (**Finished** or **Paused**; no Archived chip until API). Stacked layout per spec §5.2.1. `openPetDetail`. Spec: [care-item-context-header-spec.md](../domains/pet_care/changes/care-item-context-header-spec.md).
+1. **Pet context** — context strip on canvas (not a module): **`CareItemPetContextTile`** (dashboard `UnifiedPetTile` unchanged) + care name (typography per spec D-CIH-014, 600 px shell breakpoint) + decorative `CareFamilyIcon` + optional chip (**Finished** or **Paused**; no Archived chip until API). Stacked layout per spec §5.2.1. `openPetDetail`. Canonical: [care-item-evolution.md](../domains/pet_care/features/care-item-evolution.md).
 2. **Needs attention (hero)** — lists every **open occurrence** as a line (date · status · trailing Done). **Stack** (≥2 started open dates on Fixed schedule): all lines + **Mark all as done** / **Skip all** (one `resolve-stack`, one Undo). **Single** leading open slot: outlined **Change date** (reschedule sheet). Row tap opens the **occurrence screen**; Done follows `decideDone` (one tap unless weight/date/early dialog). Paused: "Paused since …" / "Paused until …" + Resume.
 3. **Absence** — module or callout; resolution actions inside module body.
 4. **Schedule** — header row with **Edit schedule** trailing; body = stat grid (Frequency · Type · Reminder) + prose lines (next date, flexibility).
@@ -52,7 +52,7 @@ Document hex values only in [`tokens.md`](./tokens.md) when promoted globally; C
 |-------------|-------------|
 | Needs attention, Agatha (when present), History | Schedule, Absence, Details |
 
-Pet context: full-width context strip above the two-column row (not in side column). Spec: [care-item-context-header-spec.md](../domains/pet_care/changes/care-item-context-header-spec.md).
+Pet context: full-width context strip above the two-column row (not in side column). Canonical: [care-item-evolution.md](../domains/pet_care/features/care-item-evolution.md).
 
 ## Components (Flutter)
 

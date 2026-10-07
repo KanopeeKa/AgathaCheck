@@ -3,37 +3,27 @@ title: Health tracking specs
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-22
+last_updated: 2026-10-07
 tags: [domain,health_tracking,specs]
 domain: health_tracking
 ---
 
 # Health tracking specs
 
-## Completion semantics (three-date model)
+## Care scheduling and completion
 
-Core domain semantics — full lesson: [.agents/memory/health-entry-completion.md](/.agents/memory/health-entry-completion.md).
+**Canonical:** [Care Schedule Management](/docs/domains/pet_care/features/care-schedule-management.md) owns occurrence timing, commands, and history reads (D-CSM-019 … D-CSM-035).
 
-| Field | Meaning |
-|-------|---------|
-| `nextDueDate` | When the current/upcoming occurrence is due |
-| `completedOn` | When a one-time entry was completed |
-| History `marked_at` / `marked_by_user_id` | Audit trail on mark-taken |
+**Care Item UX** (status words, agenda, completion flows): [care-item-evolution.md](/docs/domains/pet_care/features/care-item-evolution.md) (D-CIE-024 … D-CIE-034).
 
-**One-time completion:** `completedOn != null` (legacy `nextDueDate.year >= 9999` still read for backward compat).
+### Retired (pre-occurrence model)
 
-**Recurring:** series stays open; each mark-taken writes history and advances `nextDueDate`.
-
-**Recurrence anchor** (`recurrence_anchor` on `health_entries`):
-
-- `from_completion` — default for new entries; next due = completed on + interval
-- `from_due_date` — backfilled on existing recurring entries; next due = original due + interval
-
-**Mark-taken:** optional `completed_on` in body (defaults to today); `marked_at` and user set server-side.
-
-**Undo:** reverts latest history row and restores entry state.
-
-Handler: `server/routes/healthEntries.js`; recurrence helpers: `server/lib/recurrenceHelper.js`.
+| Topic | Status |
+|-------|--------|
+| Entry-level `mark-taken` advancing `nextDueDate` without occurrences | **Retired** — use occurrence `complete` APIs |
+| `health_history` as authoritative complete/skip log | **Retired** (D-CSM-003, D-CSM-035) |
+| `GET /:id/history` reading `health_history` only | **Retired** — closed occurrences (D-CSM-035) |
+| Three-date model lesson in `.agents/memory/health-entry-completion.md` | **Retired** — rules moved to CSM canonical doc |
 
 ## Health issues
 

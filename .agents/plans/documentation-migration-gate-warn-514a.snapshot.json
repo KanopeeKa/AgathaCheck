@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "plan_id": "documentation-migration-gate-warn-514a",
+  "approved_at": "2026-10-07T11:40:00Z",
+  "approved_by": "Roadmap documentation-migration-roadmap-514a + user chat 2026-10-07 standing grant",
+  "approved_until": "2026-10-09T11:40:00Z",
+  "content_hash": "sha256:296dc090fe1f5f04726073942b7a3f3632b9dcd73f4b9a441058ca44a05b6429",
+  "autonomy": "completed",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/documentation-migration-integration-514a",
+  "control_issue": 1766,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Set DOCS_GATE_MODE=warn on integration branch",
+      "branch": "cursor/documentation-migration-gate-warn-514a",
+      "allowed_paths": [
+        ".github/workflows/docs-gate.yml",
+        ".agents/plans/documentation-migration-gate-warn-514a.md",
+        ".agents/plans/documentation-migration-gate-warn-514a.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "server/**",
+        "docs/domains/**"
+      ],
+      "allowed_exceptions": [
+        "governance-allowlist",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1768",
+      "pr_head_sha": "37024b8114ddd57e4a4666c20ee6eb953758e039"
+    }
+  ]
+}

@@ -9,6 +9,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
+  # Phase B (documentation migration): blocking gate on integration before integration→main.
   DOCS_GATE_MODE: block
 
 jobs:
