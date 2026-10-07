@@ -245,7 +245,6 @@ async function notifyAbsenceOwnerGrant(pool, {
   absenceOwnerUserId,
   granterUserId,
   petIds,
-  absenceId,
 }) {
   if (!absenceOwnerUserId || absenceOwnerUserId === granterUserId) return;
   const granterName = await loadInviterName(pool, granterUserId);
@@ -321,7 +320,6 @@ export async function acceptAbsenceCarerInvite(pool, {
     absenceOwnerUserId: invite.absence_owner_user_id,
     granterUserId: invite.inviter_user_id,
     petIds,
-    absenceId: invite.planned_absence_id,
   });
 
   return {

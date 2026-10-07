@@ -1,6 +1,6 @@
 {
   "_comment": "ESLint ratchet for active server/lib, services and routes (J.2-1). Only shrinks: run --update-baseline after fixing a violation.",
-  "generated_at": "2026-10-06",
+  "generated_at": "2026-10-07",
   "violations": [
     {
       "file": "server/lib/care/awayPlan/presentation.js",
@@ -134,13 +134,6 @@
       "line": 14,
       "column": 7,
       "message": "'PLANNED_ABSENCE_STATUS_ACTIVE' is assigned a value but never used."
-    },
-    {
-      "file": "server/lib/people/absenceCarerInviteService.js",
-      "rule": "no-unused-vars",
-      "line": 247,
-      "column": 3,
-      "message": "'absenceId' is defined but never used. Allowed unused args must match /^_/u."
     },
     {
       "file": "server/lib/people/absenceGuestGrants.js",
