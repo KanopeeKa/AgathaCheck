@@ -1,7 +1,7 @@
 'use strict';
 
 const path = require('path');
-const { SEVERITY } = require('./constants');
+const { SEVERITY, isValidDecisionId } = require('./constants');
 const { rel, isPolicyDoc } = require('./paths');
 const { isBaselineFeature } = require('./baseline');
 const {
@@ -160,17 +160,15 @@ function runShapeOnFile(root, filePath, ctx) {
   if (doc.decisions) {
     for (const row of doc.decisions.rows) {
       const [id, , , status] = row.cells;
-      const ok =
-        new RegExp(`^${doc.prefix}-D-\\d{3}$`).test(id) ||
-        /^D-[A-Z]+-\d{3}$/.test(id) ||
-        /^[A-Z]+-D\d+$/.test(id);
+      const ok = isValidDecisionId(id, doc.prefix);
       if (!ok) {
         findings.push({
           ruleId: 'R-C7',
           severity: SEVERITY.BLOCK,
           file: relPath,
           line: row.lineNum,
-          message: 'Decision ID must match PREFIX-D-### or legacy D-* pattern.',
+          message:
+            'Decision ID must be <FEATURE_ID>-D-###, a kept D-XXX-### ID, or a registered legacy prefix (NAV, NOTIF, PETPROF, SHELTER, XDOM, PEOPLE). See standards.md.',
         });
       }
       if (!decisionStatusOk(status)) {

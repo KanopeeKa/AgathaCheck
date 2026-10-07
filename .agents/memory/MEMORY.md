@@ -2,6 +2,8 @@
 
 Institutional knowledge for cloud agents. Domain workflows live in **Skills** (`.cursor/skills/`).
 
+**Lessons only.** Memory holds agent lessons (tooling, environment, test-harness and process traps). Product rules — behaviour, requirements, decisions, terminology — live in the canonical doc (`docs/domains/documentation/standards.md` rule 10). Do not add a product rule here; if you find one, move it with `/canonical-docs sync` (backlog: `scripts/docs-memory-backlog.json`).
+
 ## Skills (prefer these for workflows)
 
 **Framework:** `docs/engineering/cursor-agent-framework.md` · Router: `.cursor/agent-kernel/ROUTER.md`

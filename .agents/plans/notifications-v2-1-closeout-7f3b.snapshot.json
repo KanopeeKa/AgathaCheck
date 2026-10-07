@@ -4,7 +4,7 @@
   "approved_at": "2026-10-06T22:50:00Z",
   "approved_by": "User chat 2026-10-06: execute-plan to fix UAT findings on notifications v2.1 (#1715)",
   "approved_until": "2026-10-08T22:50:00Z",
-  "autonomy": "active",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "cursor/notifications-v2-1-closeout-integration-7f3b",
   "control_issue": 1726,
@@ -37,7 +37,9 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "in_progress"
+      "status": "merged",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1727",
+      "pr_head_sha": "2bdc7207f78adb03cddabbc1721656c89a1eb805"
     },
     {
       "id": "2",
@@ -66,7 +68,9 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending"
+      "status": "merged",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1727",
+      "pr_head_sha": "2bdc7207f78adb03cddabbc1721656c89a1eb805"
     },
     {
       "id": "3",
@@ -90,7 +94,9 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending"
+      "status": "merged",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1727",
+      "pr_head_sha": "2bdc7207f78adb03cddabbc1721656c89a1eb805"
     },
     {
       "id": "4",
@@ -114,7 +120,9 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "bdd-journey",
-      "status": "pending"
+      "status": "merged",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1727",
+      "pr_head_sha": "2bdc7207f78adb03cddabbc1721656c89a1eb805"
     },
     {
       "id": "5",
@@ -134,8 +142,11 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "bdd-journey",
-      "status": "pending"
+      "status": "merged",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1727",
+      "pr_head_sha": "d6a62190",
+      "status_detail": "docs_targets: docs/domains/notifications/features/notifications-v2-spec.md — updated; pre-UAT green on d6a62190 (remedial #1740, #1741)"
     }
   ],
-  "content_hash": "sha256:1bff00ceed9e676aa46d0a043775351a9023e444199f71d73d6d5899386f13ae"
+  "content_hash": "sha256:80f053a5759d290848ca543ebb0691e14bf1ddfc083523ffbb7ea7d7726e818e"
 }

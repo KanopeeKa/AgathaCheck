@@ -1,0 +1,35 @@
+{
+  "_comment": "Product rules still living in .agents/memory/ — work list for /canonical-docs consolidate. Memory holds agent lessons only; move each rule into its canonical doc, then reduce the memory file to a pointer (or delete it) and remove the entry. Listed weekly by docs-hygiene (R-M4).",
+  "entries": [
+    {
+      "file": ".agents/memory/health-entry-completion.md",
+      "capability": "pet_care/care-schedule",
+      "target": "docs/domains/pet_care/features/care-schedule-management.md"
+    },
+    {
+      "file": ".agents/memory/care-schedule-status-source.md",
+      "capability": "pet_care/care-schedule",
+      "target": "docs/domains/pet_care/features/care-schedule-management.md"
+    },
+    {
+      "file": ".agents/memory/care-dose-selection-compatibility.md",
+      "capability": "pet_care/care-item",
+      "target": "docs/domains/pet_care/features/care-item-evolution.md"
+    },
+    {
+      "file": ".agents/memory/guardian-mobile-completion.md",
+      "capability": "pet_care/care-item",
+      "target": "docs/domains/pet_care/features/care-item-evolution.md"
+    },
+    {
+      "file": ".agents/memory/canonical-product-name.md",
+      "capability": "design/terminology",
+      "target": "docs/design/terminology.md"
+    },
+    {
+      "file": ".agents/memory/shelter-terminology-and-evolving-design.md",
+      "capability": "design/terminology",
+      "target": "docs/design/terminology.md"
+    }
+  ]
+}

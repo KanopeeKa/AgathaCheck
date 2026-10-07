@@ -47,4 +47,22 @@ describe('resolveNotifications', () => {
     ]);
     expect(updates[0].sql).toMatch(/health_entry_id/);
   });
+
+  test('referenceId limits resolve to one invite when types match', async () => {
+    const updates = [];
+    const pool = {
+      query: async (sql, params) => {
+        updates.push({ sql, params });
+        return { rows: [], rowCount: 1 };
+      },
+    };
+    await resolveNotifications(pool, {
+      userId: 'u1',
+      type: NOTIFICATION_TYPE_SHARE_INVITE_RECEIVED,
+      referenceId: 'code-a',
+    });
+    expect(updates).toHaveLength(1);
+    expect(updates[0].params).toContain('code-a');
+    expect(updates[0].sql).toMatch(/health_entry_id\s*=\s*\$3/i);
+  });
 });

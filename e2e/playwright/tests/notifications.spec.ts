@@ -6,9 +6,6 @@
  * Scenario: Notifications grouped by date
  * Scenario: Notification shows pet name and color
  * Scenario: Viewing the notification list
- * Scenario: Empty notifications shows message
- * Scenario: Badge updates when notifications are read
- * Scenario: No badge when all notifications are read
  * Scenario: Marking a single notification as read
  * Scenario: Marking all notifications as read
  * Scenario: Accessing notification settings

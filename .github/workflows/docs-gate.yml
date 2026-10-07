@@ -9,17 +9,24 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  DOCS_GATE_MODE: warn
+  DOCS_GATE_MODE: block
 
 jobs:
   docs-declaration:
     name: Docs declaration
     runs-on: ubuntu-latest
-    timeout-minutes: 1
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install backend deps (js-yaml)
+        run: cd server && npm ci
 
       - name: Gate A — PR body
         env:

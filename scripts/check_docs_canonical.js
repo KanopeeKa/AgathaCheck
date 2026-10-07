@@ -15,6 +15,7 @@ const { runGatePrBody } = require('./lib/docs-canonical/gates-pr-body');
 const { runGateChanges } = require('./lib/docs-canonical/gates-changes');
 const { runGateShape } = require('./lib/docs-canonical/gates-shape');
 const { runGateIds } = require('./lib/docs-canonical/gates-ids');
+const { runGateMemory } = require('./lib/docs-canonical/gates-memory');
 const { runGateTrace, buildDomainReport, baselineReportMarkdown } = require('./lib/docs-canonical/gates-trace');
 const { summarize } = require('./lib/docs-canonical/report');
 
@@ -30,6 +31,7 @@ function parseArgs(argv) {
     changesAll: false,
     shape: false,
     ids: false,
+    memory: false,
     reportDuplicates: false,
     trace: false,
     closedIssues: false,
@@ -50,6 +52,7 @@ function parseArgs(argv) {
     else if (a === '--all') o.changesAll = true;
     else if (a === '--shape') o.shape = true;
     else if (a === '--ids') o.ids = true;
+    else if (a === '--memory') o.memory = true;
     else if (a === '--report-duplicates') o.reportDuplicates = true;
     else if (a === '--trace') o.trace = true;
     else if (a === '--closed-issues') o.closedIssues = true;
@@ -60,8 +63,8 @@ function parseArgs(argv) {
     else if (a === '--author') o.author = argv[++i];
   }
   const any =
-    o.prBody || o.changes || o.shape || o.ids || o.trace || o.report || o.baselineReport || o.writeBaseline;
-  if (!any) o.changes = o.shape = o.ids = o.trace = true;
+    o.prBody || o.changes || o.shape || o.ids || o.memory || o.trace || o.report || o.baselineReport || o.writeBaseline;
+  if (!any) o.changes = o.shape = o.ids = o.memory = o.trace = true;
   return o;
 }
 
@@ -103,6 +106,7 @@ function main() {
   if (opts.changes) findings.push(...runGateChanges(ctx));
   if (opts.shape) findings.push(...runGateShape(ctx));
   if (opts.ids) findings.push(...runGateIds({ ...ctx, reportDuplicates: opts.reportDuplicates }));
+  if (opts.memory) findings.push(...runGateMemory(ctx));
   if (opts.trace) findings.push(...runGateTrace(ctx));
   if (opts.baselineReport) console.log(JSON.stringify(baselineReport(root), null, 2));
   if (opts.report) {
@@ -117,7 +121,7 @@ function main() {
       );
     } else console.log(baselineReportMarkdown(root, baseline));
   }
-  process.exit(summarize(findings.filter((f) => f.severity !== 'REPORT'), opts.gateMode));
+  process.exit(summarize(findings, opts.gateMode));
 }
 
 if (require.main === module) {

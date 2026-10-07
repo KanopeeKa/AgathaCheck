@@ -24,8 +24,9 @@ function summarize(findings, gateMode) {
     if (f.severity === SEVERITY.BLOCK) block += 1;
     else if (f.severity === SEVERITY.WARN) warn += 1;
   }
+  // REPORT findings only come from report modes (--all, --report-duplicates,
+  // --closed-issues, --memory --all); print them as notices so the weekly job can grep them.
   for (const f of findings) {
-    if (f.severity === SEVERITY.REPORT) continue;
     console.error(formatAnnotation(f, gateMode));
   }
   if (findings.length) {
