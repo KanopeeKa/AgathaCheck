@@ -97,7 +97,8 @@ On demand only. **One capability per PR.**
 
 1. **Inventory:** `features/` and `changes/` in all relevant domains; domain README; `.agents/memory/`; referenced `.agents/plans/`; `docs/design/`, `docs/architecture/`.
 2. **Reconcile** each rule against code and BDD/Jest; tag `Live` | `In delivery` | `Planned`. Conflicts → Mode A §9.
-3. **Write** one canonical doc (template structure). **Decision log:** keep existing IDs (`D-CSM-019`, …); bare legacy IDs (`D1`…) → prefix (e.g. `NAV-D1`) with old ID noted.
+3. **Write** one canonical doc (template structure). **Decision log:** keep existing IDs (`D-CSM-019`, …); bare legacy IDs (`D1`…) → the **fixed legacy prefix** from standards rule 6 (`NAV`, `NOTIF`, `PETPROF`, `SHELTER`, `XDOM`, `PEOPLE`), old ID noted in the row. Then **rewrite every reference** to a renamed ID (`grep -rn "People D5\|\bD5\b" docs .cursor AGENTS.md`) and check `node scripts/check_docs_canonical.js --ids --report-duplicates` is clean.
+   **Memory:** for each `.agents/memory/` file listed in `scripts/docs-memory-backlog.json` for this capability, move its product rule into the canonical doc, reduce the memory file to a pointer (or delete it), and remove the backlog entry.
 4. **Deletion guard, then delete or trim:**
    - Delete only when fully superseded.
    - Leave `in-delivery` when multi-phase plans or other streams still need the file.
@@ -116,6 +117,8 @@ On demand only. **One capability per PR.**
 | `check_docs_canonical` **R-A1** | Add `## Docs` with paths or `N/A — <reason>` |
 | **R-A3** | Every path listed under `## Docs` must be modified in the PR |
 | **R-T1** / **R-T3** | Use normative `bdd:` / `test:` coverage (see standards §3.3) |
+| **R-C7** / **R-D3** | Decision IDs: `<FEATURE_ID>-D-###`, a kept `D-XXX-###`, or a registered legacy prefix (standards rule 6); never reuse an ID another doc defines |
+| **R-M1** / **R-M2** (warn) | Product rule found in memory, or canonical doc citing memory: put the rule in the canonical doc; memory keeps lessons and a pointer |
 | New feature doc fails gates | Ensure file lives under `features/`, valid YAML, no hex colours in prose |
 
 Rule IDs: `docs/domains/documentation/standards.md` §Enforcement. Agents never apply the `docs-gate-exempt` label.
