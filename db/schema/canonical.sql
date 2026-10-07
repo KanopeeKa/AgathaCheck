@@ -910,7 +910,6 @@ CREATE TABLE public.planned_absences (
     user_id uuid NOT NULL,
     starts_on date NOT NULL,
     ends_on date NOT NULL,
-    title character varying(60),
     provenance character varying(50) DEFAULT 'user_declared'::character varying NOT NULL,
     source_ref text,
     status character varying(20) DEFAULT 'active'::character varying NOT NULL,
@@ -920,6 +919,7 @@ CREATE TABLE public.planned_absences (
     handover_note text,
     last_handover_downloaded_at timestamp with time zone,
     timezone character varying(64) DEFAULT 'UTC'::character varying NOT NULL,
+    title character varying(60),
     CONSTRAINT planned_absences_date_order CHECK ((ends_on >= starts_on))
 );
 CREATE TABLE public.prospects (
