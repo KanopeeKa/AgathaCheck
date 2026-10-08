@@ -50,8 +50,8 @@ export class OccurrencePage {
   async expectLoaded(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
     const screen = this.page.locator('[flt-semantics-identifier="occurrence_screen"]');
-    const about = this.page.locator(
-      '[flt-semantics-identifier="occurrence_about_item"], [flt-semantics-identifier="occurrence_context_tile"]',
+    const identity = this.page.locator(
+      '[flt-semantics-identifier="occurrence_identity_card"], [flt-semantics-identifier="occurrence_open_care_details"]',
     );
     const back = this.page.getByRole('button', { name: /^Back$|^Go back$|^Retour$/i });
     const title = this.page.getByRole('heading', {
@@ -65,7 +65,7 @@ export class OccurrencePage {
       if (!onOccurrenceRoute && !titleVisible) {
         throw new Error(`Not on occurrence screen (path=${path})`);
       }
-      await expect(title.or(back).or(screen).or(about).first()).toBeVisible();
+      await expect(title.or(back).or(screen).or(identity).first()).toBeVisible();
     }).toPass({ timeout: 60_000 });
   }
 

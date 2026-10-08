@@ -4,7 +4,7 @@
   "approved_at": "2026-10-08T10:12:00Z",
   "approved_by": "user chat 2026-10-08 — approved; GitHub #1789 approve-autonomous occurrence-screen-modules-5ec0",
   "approved_until": "2026-10-10T10:12:00Z",
-  "content_hash": "sha256:55debeae92826045c115bc0633c55101e734edefbe776a07ec7cbb338a5e81a5",
+  "content_hash": "sha256:38b21cd2411a7119db66a4530eeb14a12f607e7a33ffea52fe3910d9ffcc3a28",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/occurrence-screen-modules-5ec0-integration-5ec0",
@@ -74,12 +74,9 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
-      "status_detail": "Playwright locator migration; care-item-evolution Mode A; delete changes spec; integration to main.",
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
+      "status_detail": null,
       "debt_issue_refs": []
     }
   ]
