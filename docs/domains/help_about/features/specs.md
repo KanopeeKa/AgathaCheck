@@ -3,12 +3,37 @@ title: Help & about specs
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-22
+last_updated: 2026-10-08
 tags: [domain,help_about,specs]
 domain: help_about
+feature_id: help-about
 ---
 
-# Help & about specs
+# Help & about
+
+Account help, FAQ, about, and legal surfaces (`help_faq.feature`).
+
+## Requirements
+
+| ID | Requirement | Status |
+|----|-------------|--------|
+| **HA-1** | Help reachable from Account; FAQ accordion EN+FR. | delivered |
+| **HA-2** | About shows app version and project information. | delivered |
+| **HA-3** | Legal copy in assets aligned with FAQ where referenced. | delivered |
+
+## User journeys
+
+### Open Help from user menu
+
+Guardians navigate to the Help page from the account/user menu.
+
+### FAQ accordion
+
+Help displays feature sections as expandable FAQ groups; multiple sections may be open; content available in EN and FR.
+
+### About
+
+About screens present app version and project information (`flutter_app/lib/features/about/`).
 
 ## Help / FAQ
 
