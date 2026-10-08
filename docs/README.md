@@ -117,7 +117,7 @@ Navigation shell reversal and phased delivery (formerly `docs/experience-program
 | [/docs/architecture/modularity.md](/docs/architecture/modularity.md) | Clean architecture principles | Active |
 | [/docs/domains/shelter/features/org-custody-model.md](/docs/domains/shelter/features/org-custody-model.md) | Pet custody and transfer model | Active |
 | [/docs/domains/shelter/features/org-member-privacy.md](/docs/domains/shelter/features/org-member-privacy.md) | Per-shelter privacy rules | Active |
-| [/docs/architecture/pet-activity-model.md](/docs/architecture/pet-activity-model.md) | Pet activity tracking and timeline | Active |
+| [/docs/domains/pet_profile/features/pet-activity-model.md](/docs/domains/pet_profile/features/pet-activity-model.md) | Pet activity (org sort / preview) | Active |
 
 ### Design
 
