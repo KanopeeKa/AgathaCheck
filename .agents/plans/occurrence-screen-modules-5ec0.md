@@ -176,12 +176,14 @@ Unchanged: `occurrence_screen_opened`, `care_completion_date_changed`. **No** `o
 ## Runtime state
 
 ```yaml
-autonomy: halted
-next_action: approve-autonomous after review sign-off
+autonomy: active
+control_issue: 1789
+approved_until: 2026-10-10T10:12:00Z
+next_action: await /execute-plan occurrence-screen-modules-5ec0
 ```
 
-## Checklist before `approve-autonomous`
+## Bootstrap (done 2026-10-08)
 
-- [ ] Spec review (Claude checklist items 1–10) accepted
-- [ ] Snapshot validates; control issue created
-- [ ] Integration branch on origin
+- [x] Control issue [#1789](https://github.com/KanopeeKa/AgathaCheck/issues/1789) + `approve-autonomous` comment
+- [x] Integration branch `cursor/occurrence-screen-modules-5ec0-integration-5ec0`
+- [x] Snapshot `autonomy: active`, `content_hash` frozen
