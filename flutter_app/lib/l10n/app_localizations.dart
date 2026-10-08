@@ -11895,6 +11895,60 @@ abstract class AppLocalizations {
   /// **'Care date'**
   String get careDateScreenTitle;
 
+  /// No description provided for @occurrenceThisDateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'This date'**
+  String get occurrenceThisDateTitle;
+
+  /// No description provided for @occurrenceCompletionDateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Completion date'**
+  String get occurrenceCompletionDateLabel;
+
+  /// No description provided for @occurrenceDaysOverdue.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 day overdue} other{{count} days overdue}}'**
+  String occurrenceDaysOverdue(int count);
+
+  /// No description provided for @occurrenceNextOpenDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Next open date'**
+  String get occurrenceNextOpenDate;
+
+  /// No description provided for @occurrenceViewNext.
+  ///
+  /// In en, this message translates to:
+  /// **'View'**
+  String get occurrenceViewNext;
+
+  /// No description provided for @occurrenceOpenCareDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'View care details'**
+  String get occurrenceOpenCareDetails;
+
+  /// No description provided for @occurrenceOtherOpenDatesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Other open dates are on this care item.'**
+  String get occurrenceOtherOpenDatesHint;
+
+  /// No description provided for @occurrenceScheduleRecurring.
+  ///
+  /// In en, this message translates to:
+  /// **'Recurring care'**
+  String get occurrenceScheduleRecurring;
+
+  /// No description provided for @occurrenceSchedulePlannedDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Planned date'**
+  String get occurrenceSchedulePlannedDate;
+
   /// No description provided for @occurrenceReschedule.
   ///
   /// In en, this message translates to:

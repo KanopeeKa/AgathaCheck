@@ -21,6 +21,7 @@ export 'domain/care_occurrence.dart';
 export 'domain/completion_requirements.dart';
 export 'domain/done_decision.dart';
 export 'domain/leading_occurrence.dart';
+export 'domain/next_open_occurrence.dart';
 export 'domain/occurrence_detail.dart';
 export 'domain/occurrence_display.dart';
 export 'domain/occurrence_status.dart';

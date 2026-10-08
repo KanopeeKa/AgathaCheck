@@ -2410,6 +2410,20 @@
     }
   },
   "careDateScreenTitle": "Date de soin",
+  "occurrenceThisDateTitle": "Cette date",
+  "occurrenceCompletionDateLabel": "Date de réalisation",
+  "occurrenceDaysOverdue": "{count, plural, =1{1 jour de retard} other{{count} jours de retard}}",
+  "@occurrenceDaysOverdue": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "occurrenceNextOpenDate": "Prochaine date ouverte",
+  "occurrenceViewNext": "Voir",
+  "occurrenceOpenCareDetails": "Voir les détails du soin",
+  "occurrenceOtherOpenDatesHint": "Les autres dates ouvertes figurent sur cet élément de soin.",
+  "occurrenceScheduleRecurring": "Soin récurrent",
+  "occurrenceSchedulePlannedDate": "Date planifiée",
   "occurrenceReschedule": "Replannifier",
   "occurrenceStatusSectionTitle": "Statut",
   "occurrenceActionsSectionTitle": "Actions",
