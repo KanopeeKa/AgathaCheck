@@ -3,7 +3,7 @@
  * Scenario: Today orientation prioritises attention above the management sections
  * Scenario: Care preview orders overdue, due today, and upcoming items
  * Scenario: My Pets preview is capped at four with an All Pets destination
- * Scenario: Care preview row opens the occurrence screen
+ * Scenario: Care preview row opens Care details
  * Scenario: Care preview supports completion and undo
  * Scenario: Veterinary team preview reaches linked vet details
  * Scenario: Empty Pet Care dashboard shows first-use guidance without false alerts
@@ -32,6 +32,7 @@ import {
 import { prepareLiveApiAccess } from '../support/waf';
 import { checkA11y } from '../support/axe';
 import { CareAgendaPage } from '../pages/care-agenda.page';
+import { CareItemPage } from '../pages/care-item.page';
 import { createCareItem, withCareClock } from '../support/care-api';
 
 const baseURL = () => process.env.E2E_BASE_URL ?? 'http://localhost:3000';
@@ -126,7 +127,7 @@ test.describe('Guardian dashboard', () => {
     await dashboard.goBackToDashboard();
   });
 
-  test('Care preview row opens the occurrence screen', async ({
+  test('Care preview row opens Care details', async ({
     page,
     testUser,
   }) => {
@@ -148,10 +149,8 @@ test.describe('Guardian dashboard', () => {
       await expect(careRegion.getByRole('button', { name: /snooze/i })).toHaveCount(0);
       const agenda = new CareAgendaPage(page);
       await agenda.openRow(entry.id, entry.name);
-      await expect(
-        page.getByRole('heading', { name: /Care date|Date de soin/i }).first(),
-      ).toBeVisible({ timeout: 30_000 });
-      await expect(page.getByRole('button', { name: /^Back$/i })).toBeVisible();
+      const careItem = new CareItemPage(page);
+      await careItem.expectNeedsAttentionVisible();
       await expect(page.getByRole('button', { name: /snooze/i })).toHaveCount(0);
     } finally {
       await withCareClock(null, page);

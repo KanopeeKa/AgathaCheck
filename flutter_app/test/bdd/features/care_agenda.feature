@@ -8,17 +8,16 @@ Feature: Care agenda
     And a pet "Bella" exists
 
   @P1
-  Scenario: A care row opens its date, and the date links to the care item
+  Scenario: A care row opens Care details
     Given "Bella" has a health entry "Viewable Care" due today
     When the user navigates to the Pet Care dashboard
     And the user opens the care agenda row for "Viewable Care"
-    Then the occurrence screen should be visible for "Viewable Care"
-    And the occurrence screen should link to the care item "Viewable Care"
+    Then the care item view should show "Viewable Care"
 
   @P1
-  Scenario: Care that needs a weight opens its date to enter the weight
+  Scenario: Care that needs a weight opens Care date from Mark as done
     Given "Bella" has a weight check "Monthly weigh-in" due today
-    When the user opens the care agenda row for "Monthly weigh-in"
+    When the user marks "Monthly weigh-in" as done from the care agenda
     Then the occurrence screen should prompt for a weight before Done is enabled
 
   @P1

@@ -357,6 +357,15 @@ export class CareItemPage {
     ).toBeVisible({ timeout: 30_000 });
   }
 
+  /** Opens Care date from a Needs attention occurrence line (D-CIE-035). */
+  async openOccurrenceFromNeedsAttention(occurrenceId: string): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    await this.page
+      .locator(`[flt-semantics-identifier="care_item_occurrence_row_${occurrenceId}"]`)
+      .click();
+    await refreshFlutterAccessibility(this.page);
+  }
+
   async expectBulkStackDoneSnackbar(count: number): Promise<void> {
     const en =
       count === 1

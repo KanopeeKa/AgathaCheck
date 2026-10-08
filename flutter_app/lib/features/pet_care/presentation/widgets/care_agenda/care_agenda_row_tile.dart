@@ -45,8 +45,8 @@ HealthEntryStatusTreatment careAgendaStatusTreatment(
   };
 }
 
-/// One agenda row (R3): the row opens its occurrence — or the care item for
-/// a stack or a done-today row — and carries one trailing Done (§18.6.3).
+/// One agenda row (R3): the row opens the care item and carries one trailing
+/// Done (§18.6.3, D-CIE-026).
 class CareAgendaRowTile extends StatelessWidget {
   const CareAgendaRowTile({
     super.key,
@@ -59,7 +59,7 @@ class CareAgendaRowTile extends StatelessWidget {
 
   final CareAgendaRow<HealthEntry> row;
 
-  /// Opens the occurrence screen, or the Care Item view for a stack.
+  /// Opens the Care Item view.
   final VoidCallback onOpen;
 
   /// Done (§18.6.1); null hides the tick (done-today rows).
@@ -85,7 +85,6 @@ class CareAgendaRowTile extends StatelessWidget {
       careFamilyLabel(l, family),
       formatRecurrenceSummary(l, entry),
     ].join(' · ');
-    final opensItem = row.isStack || row.section == CareAgendaSection.doneToday;
     final label = [?petName, entry.name, status].join(', ');
     final done = row.section == CareAgendaSection.doneToday ? null : onDone;
 
@@ -101,8 +100,7 @@ class CareAgendaRowTile extends StatelessWidget {
       subtitle: subtitle,
       statusLabel: status,
       statusTreatment: careAgendaStatusTreatment(row, colorScheme),
-      semanticLabel:
-          '$label. ${opensItem ? l.careRowOpensItem : l.careRowOpensDate}',
+      semanticLabel: '$label. ${l.careRowOpensItem}',
       leading: CareFamilyIcon.forEntry(entry),
       onPressed: done,
       markDoneKey: Key('pet_care_action_done_${entry.id}'),

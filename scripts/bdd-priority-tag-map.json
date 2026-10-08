@@ -348,7 +348,7 @@
     "My Pets preview is capped at four with an All Pets destination": "P0",
     "Care preview orders overdue, due today, and upcoming items": "P0",
     "Care preview supports completion and undo": "P0",
-    "Care preview row opens the occurrence screen": "P1",
+    "Care preview row opens Care details": "P1",
     "Veterinary team preview reaches linked vet details": "P1",
     "Empty Pet Care dashboard shows first-use guidance without false alerts": "P1",
     "Pending foster placement surfaces as a notification, not a dashboard banner": "P1",
@@ -452,8 +452,8 @@
     "Profile Leave navigates to Account org settings": "P1"
   },
   "care_agenda.feature": {
-    "A care row opens its date, and the date links to the care item": "P1",
-    "Care that needs a weight opens its date to enter the weight": "P1",
+    "A care row opens Care details": "P1",
+    "Care that needs a weight opens Care date from Mark as done": "P1",
     "Several dates to sort out open the care item": "P1",
     "Upcoming care can be marked as done early": "P1"
   },

@@ -5,7 +5,7 @@ audience: both
 domain: pet_care
 feature_id: care_item
 status: active
-last_updated: 2026-10-07
+last_updated: 2026-10-08
 related_prs: []
 ---
 
@@ -89,6 +89,7 @@ Four principles:
 | D-CIE-027 | Create and Edit: main fields first, **Advanced settings** collapsed | Plan something shows only **Due date**; Record something shows only **Completed on**. Advanced settings: Where, Priority, Schedule type, If done after the due date, Provider, Documents. See Edit | Live | — | — |
 | D-CIE-028 | The server supplies "today" | Responses carry `as_of` and a status per open occurrence, in the pet's home timezone. The app refreshes on resume, every 15 minutes while care is on screen, and when the pet's day changes | Live | — | — |
 | D-CIE-029 | One **Care date screen** per occurrence, for every status | Agenda rows open the Care date route (`OccurrenceScreen`). Context tile links to Care details. Open: completion date, **Mark as done**, **Skip**, **Reschedule** (`changeDate`, this date only). Done / Skipped: status pill uses **Done** / **Skipped** (not action verbs). Completed: editable completion date (D-CSM-034), Undo when `canUndoHere`. Server: `GET /:id/occurrences/:occId`. See § Care date screen | Live | — | — |
+| D-CIE-035 | Agenda and away-plan **list rows** open **Care details** only | Dashboard, All care, pet profile care, pet All care, and away-plan planned-care rows use `petEventView` — never the Care date route on row tap. Per-date work uses Care item **Needs attention** rows or trailing **Mark as done** / **Review** (D-CIE-030). Retires list-row navigation to Care date from D-CIE-029; Care date screen definition in D-CIE-029 and § Care date screen still applies when opened from Care item or commands | Live | — | — |
 | D-CIE-030 | **Done** follows one rule on every surface | A stack, an earlier open After-it's-done date, or a required input opens a screen and saves nothing; an overdue After-it's-done date asks "When was this done?"; more than half an interval early asks to confirm; anything else completes today in one request. The app never sends `next_choice` on one tap | Live | — | — |
 | D-CIE-031 | Completion requirements per family, **required inputs only** | Today only weight monitoring (a weight above 0, sent to `complete-weight`) | Live | — | — |
 | D-CIE-032 | Copy: no "dose" | Buttons say **Done** where appropriate. **Care date** open actions use **Mark as done** (care name on context tile only). List rows and other surfaces may still use care name in copy where D-CIE-026 requires. Confirmation "{name} done" | Live | — | — |
