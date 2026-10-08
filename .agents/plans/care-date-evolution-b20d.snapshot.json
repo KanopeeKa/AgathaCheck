@@ -4,7 +4,7 @@
   "approved_at": "2026-10-08T17:15:44Z",
   "approved_by": "GitHub #1807 — approve-autonomous care-date-evolution-b20d (2026-10-08)",
   "approved_until": "2026-10-10T17:15:44Z",
-  "content_hash": "sha256:d5724858d580b0e7b25087bb12b833e06477e921c109b21d5d6d4db4f530f902",
+  "content_hash": "sha256:ee509e87946f6846aaadf2188ab12c742f63c3d98df108037eca97ab352656e5",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/care-date-evolution-b20d-integration-b20d",
@@ -41,12 +41,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1812",
+      "pr_head_sha": "268d8152"
     },
     {
       "id": "2",

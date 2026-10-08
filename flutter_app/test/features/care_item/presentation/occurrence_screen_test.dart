@@ -254,7 +254,8 @@ void main() {
   testWidgets('FW-14 weigh-in skip opens reason sheet and sends reason_code', (
     tester,
   ) async {
-    await tester.binding.setSurfaceSize(const Size(400, 900));
+    await tester.binding.setSurfaceSize(const Size(400, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
     final server = _Server([
       detail(family: 'weight_monitoring'),
       detail(
@@ -293,6 +294,8 @@ void main() {
   testWidgets('FW-14 non-weigh-in skip does not open the weigh-in sheet', (
     tester,
   ) async {
+    await tester.binding.setSurfaceSize(const Size(400, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
     final server = _Server([
       detail(),
       detail(status: 'skipped', occStatus: 'skipped'),
@@ -300,6 +303,7 @@ void main() {
     await tester.pumpWidget(_wrap(server));
     await tester.pumpAndSettle();
 
+    await tester.ensureVisible(find.byKey(const Key('occurrence_skip')));
     await tester.tap(find.byKey(const Key('occurrence_skip')));
     await tester.pumpAndSettle();
 
@@ -334,6 +338,8 @@ void main() {
   });
 
   testWidgets('FW-15 skipped weigh-in shows reason and note', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(400, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
     final server = _Server([
       detail(
         status: 'skipped',
