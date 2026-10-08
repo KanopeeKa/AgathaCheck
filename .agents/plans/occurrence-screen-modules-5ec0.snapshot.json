@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "plan_id": "occurrence-screen-modules-5ec0",
+  "approved_at": "2026-10-08T09:35:00Z",
+  "approved_by": "PLACEHOLDER — awaiting approve-autonomous occurrence-screen-modules-5ec0",
+  "approved_until": "2026-10-10T09:35:00Z",
+  "content_hash": "sha256:8c125426760d97c74bd0b3872ab94dcd974970e27cec37db42a7df2fb5f34372",
+  "autonomy": "halted",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/occurrence-screen-modules-5ec0-integration-5ec0",
+  "control_issue": 1,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Shell, canvas, and identity card",
+      "branch": "cursor/occurrence-screen-modules-identity-5ec0",
+      "allowed_paths": [
+        "docs/domains/pet_care/changes/occurrence-screen-modules-spec.md",
+        "flutter_app/lib/features/experience/presentation/care_item/occurrence/**",
+        "flutter_app/lib/features/care_item/domain/next_open_occurrence.dart",
+        "flutter_app/lib/l10n/**",
+        ".agents/plans/occurrence-screen-modules-5ec0.md",
+        ".agents/plans/occurrence-screen-modules-5ec0.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**",
+        "db/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": "ExperienceShellScaffold + CareItemDetailCanvas + OccurrenceIdentityCard; domain helper for next open.",
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2",
+      "title": "Complete care module and next open navigation",
+      "branch": "cursor/occurrence-screen-modules-actions-5ec0",
+      "allowed_paths": [
+        "flutter_app/lib/features/experience/presentation/care_item/occurrence/**",
+        "flutter_app/lib/features/care_item/domain/next_open_occurrence.dart",
+        "flutter_app/lib/l10n/**",
+        ".agents/plans/occurrence-screen-modules-5ec0.md",
+        ".agents/plans/occurrence-screen-modules-5ec0.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": "OccurrenceCompleteCareModule, OccurrenceNextOpenModule, reschedule in action row, remove v1 header widgets.",
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "3",
+      "title": "Tests, E2E, canonical sync",
+      "branch": "cursor/occurrence-screen-modules-verify-5ec0",
+      "allowed_paths": [
+        "docs/domains/pet_care/features/care-item-evolution.md",
+        "docs/domains/pet_care/changes/occurrence-screen-modules-spec.md",
+        "flutter_app/test/features/care_item/**",
+        "flutter_app/test/features/experience/**",
+        "e2e/playwright/pages/occurrence.page.ts",
+        "e2e/playwright/pages/care-item.page.ts",
+        ".agents/plans/occurrence-screen-modules-5ec0.md",
+        ".agents/plans/occurrence-screen-modules-5ec0.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": "Widget + E2E locators; fold care-item-evolution; delete changes spec; integration PR to main.",
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    }
+  ]
+}
