@@ -240,16 +240,16 @@ docs/debt/debt.md
 
 ```yaml
 autonomy: active
-current_phase: 2
-last_completed_phase: 1
+current_phase: 3
+last_completed_phase: 2
 halt_reason: null
-next_action: "continue phase 2 on branch cursor/care-date-evolution-flow-b20d"
+next_action: "continue phase 3 on branch cursor/care-date-evolution-verify-b20d"
 artifact_ref:
-  branch: cursor/care-date-evolution-b20d-integration-b20d
+  branch: cursor/care-date-evolution-verify-b20d
   plan_path: .agents/plans/care-date-evolution-b20d.md
-  plan_commit: 3352997dafe81afe655673c0c020626732ab7f6c
+  plan_commit: 30e32ab141331842fedd620e7e84547d56109978
   snapshot_path: .agents/plans/care-date-evolution-b20d.snapshot.json
-  snapshot_commit: 3352997dafe81afe655673c0c020626732ab7f6c
+  snapshot_commit: 30e32ab141331842fedd620e7e84547d56109978
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

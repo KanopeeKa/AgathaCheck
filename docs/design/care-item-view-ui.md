@@ -3,7 +3,7 @@ title: Care Item view — UI modules
 owner: Design Team
 audience: both
 status: active
-last_updated: 2026-10-03
+last_updated: 2026-10-08
 tags: [design, pet-care, care-item]
 ---
 
@@ -53,6 +53,18 @@ Document hex values only in [`tokens.md`](./tokens.md) when promoted globally; C
 | Needs attention, Agatha (when present), History | Schedule, Absence, Details |
 
 Pet context: full-width context strip above the two-column row (not in side column). Canonical: [care-item-evolution.md](../domains/pet_care/features/care-item-evolution.md).
+
+## Care date screen (leaf)
+
+Route `/pet/:petId/events/:entryId/occurrences/:occurrenceId` — one occurrence, one confirmation surface (D-CIE-037). **Care Item** Needs attention rows, stack bulk actions, and trailing **Done** are **shortcuts** to the same per-date APIs; they do not replace the leaf screen for review, Away, weight, or DN-3 completion-date prompts.
+
+| Surface | Role |
+|---------|------|
+| Care date | Canonical leaf: identity (schedule **Change date** / **Skip**) → Away → Complete (**Mark as done**) → Next open |
+| Care Item Needs attention | Shortcut rows + optional single-slot **Change date**; line tap opens Care date |
+| Agenda list rows | Open **Care details** only (D-CIE-035) |
+
+Visual tokens match Care Item modules (`CareItemModule`, warm canvas). Semantics keys: `occurrence_reschedule`, `occurrence_skip`, `occurrence_done` — see [care-item-evolution.md § Care date screen](../domains/pet_care/features/care-item-evolution.md#care-date-screen).
 
 ## Components (Flutter)
 

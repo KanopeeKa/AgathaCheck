@@ -6,7 +6,7 @@ domain: pet_care
 feature_id: care_item
 status: active
 last_updated: 2026-10-08
-related_prs: [1797, 1805]
+related_prs: [1797, 1805, 1812, 1817]
 ---
 
 # Care Item — functional spec
@@ -31,7 +31,7 @@ Historical profile refactor and 2026-09-13 delivery plan text: [archive/care-ite
 | CARE-ITEM-R-004 | List rows: one trailing action; server confirms before row updates (D-CIE-026) | Live |
 | CARE-ITEM-R-005 | Status words Coming up, Due, Overdue, Not recorded, Done, Skipped, Paused (D-CIE-024) | Live |
 | CARE-ITEM-R-006 | Single **Done** rule on every surface; no `next_choice` on one tap (D-CIE-030) | Live |
-| CARE-ITEM-R-007 | Care date screen per occurrence; open actions Mark as done / Skip / Reschedule (D-CIE-029, D-OCC-001 … D-OCC-017) | Live |
+| CARE-ITEM-R-007 | Care date screen per occurrence; open: **Change date** + **Skip** on identity, **Mark as done** in Complete module (D-CIE-029, D-CIE-037, D-OCC-001 … D-OCC-017) | Live |
 | CARE-ITEM-R-008 | Stack = two or more **started** open Fixed-schedule slots (D-CIE-034) | Live |
 | CARE-ITEM-R-009 | Needs attention: attention group (started rows) then Coming up (max 3 + show more); bulk Mark/Skip only when ≥2 started rows, labels include count (FR-1 … FR-17) | In delivery |
 | CARE-ITEM-R-010 | Row Mark done / Skip use `check_circle` / `skip_next`; per-row semantics name date/time (FR-7, FR-18 … FR-22) | In delivery |
@@ -88,8 +88,9 @@ Four principles:
 | D-CIE-026 | One row, one action | Rows show name, status and date, and one trailing action: **Mark as done**, or **Review** for doses not recorded. Other actions are on the Care Item view. The row changes only after the server confirms | Live | — | — |
 | D-CIE-027 | Create and Edit: main fields first, **Advanced settings** collapsed | Plan something shows only **Due date**; Record something shows only **Completed on**. Advanced settings: Where, Priority, Schedule type, If done after the due date, Provider, Documents. See Edit | Live | — | — |
 | D-CIE-028 | The server supplies "today" | Responses carry `as_of` and a status per open occurrence, in the pet's home timezone. The app refreshes on resume, every 15 minutes while care is on screen, and when the pet's day changes | Live | — | — |
-| D-CIE-029 | One **Care date screen** per occurrence, for every status | Agenda rows open the Care date route (`OccurrenceScreen`). Context tile links to Care details. Open: completion date, **Mark as done**, **Skip**, **Reschedule** (`changeDate`, this date only). Done / Skipped: status pill uses **Done** / **Skipped** (not action verbs). Completed: editable completion date (D-CSM-034), Undo when `canUndoHere`. Server: `GET /:id/occurrences/:occId`. See § Care date screen | Live | — | — |
-| D-CIE-036 | Care date **module layout** (identity → This date → Away → Next open) | `ExperienceShellScaffold` + `CareItemDetailCanvas`. **View care details** (`occurrence_open_care_details`) only path to Care details from identity; left column not tappable. Open actions in **This date** module (`occurrence_reschedule` there only). **Next open date** when `nextOpenOccurrenceAfter` finds a successor. After Mark as done / Skip / Reschedule success, route stays open and reloads (`onChanged`). Semantics: `occurrence_identity_card`, `occurrence_next_open`. See § Care date screen | Live | 2026-10-08 | #1797 |
+| D-CIE-029 | One **Care date screen** per occurrence, for every status | Per-date route (`OccurrenceScreen`); opened from Care item Needs attention or commands (agenda rows open Care details per D-CIE-035). Open: **Change date** + **Skip** on identity; **Mark as done** in Complete module (D-CIE-037). Done / Skipped: status pill **Done** / **Skipped**. Completed: editable completion date (D-CSM-034), Undo when `canUndoHere`. Server: `GET /:id/occurrences/:occId`. See § Care date screen | Live | — | — |
+| D-CIE-036 | Care date **module layout** (identity → Away → Complete → Next open) | Superseded by D-CIE-037 for module order and action placement; see § Care date screen | Superseded | 2026-10-08 | #1797 |
+| D-CIE-037 | Care date is the **canonical leaf** for one occurrence | Per-date APIs always target `occurrenceId`. Care item **Needs attention** rows and bulk Mark/Skip are shortcuts; bulk resolves N occurrences. Open schedule actions (**Change date**, **Skip**) live on the identity card; completion (**Mark as done**) in the Complete module. After-done overdue on non-fixed schedules uses the completion-date sheet (DN-3), not an inline picker | Live | 2026-10-08 | #1812, #1817 |
 | D-CIE-035 | Agenda and away-plan **list rows** open **Care details** only | Dashboard, All care, pet profile care, pet All care, and away-plan planned-care rows use `petEventView` — never the Care date route on row tap. Per-date work uses Care item **Needs attention** rows or trailing **Mark as done** / **Review** (D-CIE-030). Retires list-row navigation to Care date from D-CIE-029; Care date screen definition in D-CIE-029 and § Care date screen still applies when opened from Care item or commands | Live | — | — |
 | D-CIE-030 | **Done** follows one rule on every surface | A stack, an earlier open After-it's-done date, or a required input opens a screen and saves nothing; an overdue After-it's-done date asks "When was this done?"; more than half an interval early asks to confirm; anything else completes today in one request. The app never sends `next_choice` on one tap | Live | — | — |
 | D-CIE-031 | Completion requirements per family, **required inputs only** | Today only weight monitoring (a weight above 0, sent to `complete-weight`) | Live | — | — |
@@ -395,15 +396,15 @@ sequenceDiagram
 
 Leaf route for one calendar date of care (`OccurrenceScreen`). Shell: `ExperienceShellScaffold` + `CareItemDetailCanvas` (D-OSM-001). App bar title **Care date** (D-OCC-001). No ⋯ menu on this screen (D-OCC-016). **Plan another date**, **Pause until**, and stub **Add note** stay on Care details only (D-OCC-OUT-1).
 
-### Layout (module bands, D-OCC-005 v2)
+### Layout (module bands, D-OCC-005 v3)
 
-Phone column order: **Occurrence identity** → **This date** (actions) → **Away** (conditional) → **Next open date** (conditional). No section labels **Status** or **Actions** (D-OSM-008).
+Phone column order: **Occurrence identity** → **Away** (conditional) → **Complete** → **Next open date** (conditional). No section labels **Status** or **Actions** (D-OSM-008).
 
-**Wide (≥ `kCareItemTwoColumnBreakpoint`, 900px):** identity full width; Away full width when visible; when **Next open date** is visible, **This date** and Next open share one row (flex 3:2); when Next open is hidden, **This date** is full width.
+**Wide (≥ `kCareItemTwoColumnBreakpoint`, 900px):** identity full width; Away full width when visible; when **Next open date** is visible, **Complete** and Next open share one row (flex 3:2); when Next open is hidden, **Complete** is full width.
 
-1. **Occurrence identity** (`OccurrenceIdentityCard`, D-OCC-002 … D-OCC-004 v2, D-OSM-002 … D-OSM-004, D-OSM-007) — `CareItemModule` split card. **Left column is not tappable:** care family icon + label + schedule affordance (`Icons.autorenew` when `schedule.intervalDays != null` or `schedule.repeatsDailyOrMore`, else `Icons.event_outlined`; D-OSM-003). **Right:** care name, scheduled datetime, status pill + ICU plural overdue when overdue; pet chip (`CareItemPetContextTile`); finished/paused chips when applicable; text button **View care details** → Care details (`occurrence_open_care_details`). No `{n} open` on this screen.
-2. **This date** (`OccurrenceCompleteCareModule`, D-OSM-005) — open states: titled **This date**; completion date (friendly label vs `detail.item.asOf.date`: today / yesterday / neutral date); **Mark as done**, **Reschedule** (`occurrence_reschedule`, this occurrence only, D-OCC-006), **Skip**. Done / skipped / closed–not-recorded use existing record copy (no “This date” title on open-only helper).
-3. **Away** (D-OCC-014, D-OCC-015) — only when the occurrence is **open** and its date falls inside an absence window. **Keep** applies `keep_date` to the **whole absence** (explainer required). Resolved keep shows **In {carer}'s cover plan** or **In cover plan**.
+1. **Occurrence identity** (`OccurrenceIdentityCard`, D-OCC-002 … D-OCC-004 v3, D-OSM-002, D-OSM-003, D-OSM-007, D-OSM-014) — `CareItemModule` split card. **Left column is not tappable:** large care-family chip, family label, recurring/planned affordance (`Icons.autorenew` when `schedule.intervalDays != null` or `schedule.repeatsDailyOrMore`, else `Icons.event_outlined`), pet avatar + pet name (regular weight). **Right:** care name, scheduled datetime, status pill + ICU plural overdue when overdue; when open, **`OccurrenceScheduleActionBar`**: **Change date** (`rescheduleActionLabel`, `occurrence_reschedule`, D-OCC-006) and **Skip** (`occurrence_skip`); finished/paused chips when applicable; **View care details** (`occurrence_open_care_details`). No `{n} open` on this screen.
+2. **Away** (D-OCC-014, D-OCC-015) — only when the occurrence is **open** and its date falls inside an absence window. **Keep** applies `keep_date` to the **whole absence** (explainer required). Resolved keep shows **In {carer}'s cover plan** or **In cover plan**.
+3. **Complete** (`OccurrenceCompleteCareModule`, D-OSM-015) — open: weight field when required + full-width **Mark as done** only (no module title, no inline completion-date row). After-done overdue on non-fixed schedules: completion-date sheet via DN-3. Done / skipped / closed–not-recorded use existing record copy in `OccurrenceClosedActions`.
 4. **Next open date** (`OccurrenceNextOpenModule`, D-OSM-006) — neutral module when `nextOpenOccurrenceAfter` finds a successor in `schedule.openOccurrences` (list-index when current is open; else first with `compareTo > 0`). Visible for done/skipped/closed when applicable. **View** navigates to that occurrence (`occurrence_next_open`). When `openOccurrences.length > 1`, helper copy points to Care details for other open dates — not on the identity card.
 
 Pet on the identity card loads via `petByIdProvider` (skeleton until resolved).
@@ -412,10 +413,10 @@ Pet on the identity card loads via `petByIdProvider` (skeleton until resolved).
 
 ### State and actions
 
-| State | Reschedule | Primary actions |
-|-------|------------|-----------------|
-| Open (due / overdue / upcoming) | Yes | Completion date; **Mark as done** (filled); **Skip** (outlined) |
-| Open not recorded | Yes (forward-only) | **Mark as done**; **Skip** — not **Record as done** |
+| State | Change date | Primary actions |
+|-------|-------------|-----------------|
+| Open (due / overdue / upcoming) | Yes (identity) | **Mark as done** (Complete module); **Skip** (identity) |
+| Open not recorded | Yes (forward-only, identity) | **Mark as done**; **Skip** — not **Record as done** |
 | Closed not recorded | No | **Record as done**; **Confirm not done** (D-OCC-017) |
 | Done | No | Editable completion date; **Undo** when `canUndoHere` (D-OCC-011, D-OCC-012) |
 | Skipped | No | Read-only; **Undo** when `canUndoHere` |
@@ -451,8 +452,12 @@ When the series is **finished** and `!canUndoHere`, show static copy only — no
 | D-OSM-001 | `ExperienceShellScaffold` + `CareItemDetailCanvas`; app bar **Care date** |
 | D-OSM-002 | Identity `CareItemModule`; left column not tappable |
 | D-OSM-003 | Repeat icon when `intervalDays != null` or `repeatsDailyOrMore`; else event icon |
-| D-OSM-004 | Pet chip below datetime + status on identity right |
-| D-OSM-005 | Reschedule only in **This date** module (open) |
+| D-OSM-004 | Pet chip below datetime + status on identity right | Superseded by D-OSM-014 (pet on left rail) |
+| D-OSM-005 | Reschedule only in **This date** module (open) | Superseded by D-OSM-014 / D-OSM-016 |
+| D-OSM-013 | Phone module order: identity → Away → Complete → Next open |
+| D-OSM-014 | **Change date** + **Skip** on identity (`OccurrenceScheduleActionBar`); pet on left rail |
+| D-OSM-015 | Complete module: no **This date** header; open = weight (if any) + **Mark as done** |
+| D-OSM-016 | Open inline completion-date row removed; DN-3 sheet on Care date when applicable |
 | D-OSM-006 | Next open via `nextOpenOccurrenceAfter` on sorted `openOccurrences` |
 | D-OSM-007 | No `{n} open` on Care date |
 | D-OSM-008 | No Status/Actions section labels |
