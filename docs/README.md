@@ -3,7 +3,7 @@ title: Agatha Track Documentation
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-23
+last_updated: 2026-10-08
 tags: [overview,table-of-contents,documentation]
 ---
 
@@ -36,17 +36,21 @@ Each product area has a one-screen index under `docs/domains/<domain>/` with jou
 | Domain | Index | Focus |
 |--------|-------|-------|
 | Authentication | [/docs/domains/auth/README.md](/docs/domains/auth/README.md) | Login, signup, profile |
+| Pet Care | [/docs/domains/pet_care/README.md](/docs/domains/pet_care/README.md) | Care schedules, away planning, care items |
 | Pet profiles | [/docs/domains/pet_profile/README.md](/docs/domains/pet_profile/README.md) | Pets, guardian dashboard, timeline |
 | Health tracking | [/docs/domains/health_tracking/README.md](/docs/domains/health_tracking/README.md) | Medication, due dates, health issues |
 | Weight tracking | [/docs/domains/weight_tracking/README.md](/docs/domains/weight_tracking/README.md) | Weight history and charts |
 | Veterinarians | [/docs/domains/vet/README.md](/docs/domains/vet/README.md) | Vet contacts and pet links |
 | Sharing | [/docs/domains/sharing/README.md](/docs/domains/sharing/README.md) | Share links and collaborators |
-| People | [/docs/domains/people/README.md](/docs/domains/people/README.md) | People directory, households, absence access (spec agreed, not implemented) |
+| People | [/docs/domains/people/README.md](/docs/domains/people/README.md) | People directory, households, care team |
 | Notifications | [/docs/domains/notifications/README.md](/docs/domains/notifications/README.md) | In-app notification feed |
+| Navigation | [/docs/domains/navigation/README.md](/docs/domains/navigation/README.md) | Shell, drawer, workspace routing |
 | Shelter | [/docs/domains/shelter/README.md](/docs/domains/shelter/README.md) | Shelter identity, permissions, privacy, custody model |
 | Fostering | [/docs/domains/fostering/README.md](/docs/domains/fostering/README.md) | Placements, adoption, custody transfers |
 | Subscription | [/docs/domains/subscription/README.md](/docs/domains/subscription/README.md) | Premium tiers (billing TBD) |
 | Help & about | [/docs/domains/help_about/README.md](/docs/domains/help_about/README.md) | FAQ and about screens |
+| Cross-domain | [/docs/domains/cross-domain/README.md](/docs/domains/cross-domain/README.md) | Programme contract, delivery index |
+| Documentation | [/docs/domains/documentation/README.md](/docs/domains/documentation/README.md) | Canonical doc standards and migration |
 
 Cross-cutting open debt: [/docs/debt/debt.md](/docs/debt/debt.md)
 
@@ -178,7 +182,7 @@ Navigation shell reversal and phased delivery (formerly `docs/experience-program
 | [/docs/agent-efficiency/github-issue-workflow.md](/docs/agent-efficiency/github-issue-workflow.md) | Issue lifecycle and triage | Active |
 | **Open debt** | [/docs/debt/debt.md](/docs/debt/debt.md) | Single register — OPEN items only |
 | [/docs/debt/refactoring-log.md](/docs/debt/refactoring-log.md) | Sprint refactor history (completed work) | Active |
-| [/docs/debt/refactoring-log.md](/docs/debt/refactoring-log.md) | Completed refactoring work | Active |
+| [/docs/debt/README.md](/docs/debt/README.md) | Debt index; legacy stubs redirect here | Active |
 | [/docs/domains/cross-domain/changes/sprint-6-execution-plan.md](/docs/domains/cross-domain/changes/sprint-6-execution-plan.md) | Sprint 6 BDD deliverables | In delivery |
 | [/docs/pipelines/ci-build-artifact-contract.md](/docs/pipelines/ci-build-artifact-contract.md) | Build artifact specifications | Active |
 | [/docs/pipelines/promotion-contract.md](/docs/pipelines/promotion-contract.md) | UAT to PROD promotion rules | Active |
@@ -307,4 +311,4 @@ tags: [comma, separated, tags]
 
 ---
 
-*Last updated: 2026-08-23*
+*Index refreshed during documentation-migration Wave 5.2 (2026-10-08).*

@@ -88,17 +88,17 @@ Regenerate snapshot after editing phases: `node scripts/generate_documentation_m
 
 ```yaml
 autonomy: active
-current_phase: 23
-last_completed_phase: 22
+current_phase: 24
+last_completed_phase: 23
 halt_reason: null
-next_action: "continue phase 23 on branch cursor/documentation-migration-cross-domain-514a"
+next_action: "continue phase 24 on branch cursor/documentation-migration-indexes-514a"
 artifact_ref:
-  branch: cursor/documentation-migration-cross-domain-514a
+  branch: cursor/documentation-migration-wave13-integration-514a
   plan_path: .agents/plans/documentation-migration-514a.md
-  plan_commit: fd06b74cb6e96d6e139b47cddb6ff840f64bdeb9
+  plan_commit: dc18c5e38ba3f4b911ddf6ecea07745455770af2
   snapshot_path: .agents/plans/documentation-migration-514a.snapshot.json
-  snapshot_commit: fd06b74cb6e96d6e139b47cddb6ff840f64bdeb9
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1818"]
+  snapshot_commit: dc18c5e38ba3f4b911ddf6ecea07745455770af2
+open_prs: []
 merge_commits: {}
 debt_issue_refs: []
 ```
