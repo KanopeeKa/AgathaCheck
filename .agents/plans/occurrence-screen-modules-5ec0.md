@@ -177,9 +177,19 @@ Unchanged: `occurrence_screen_opened`, `care_completion_date_changed`. **No** `o
 
 ```yaml
 autonomy: active
-control_issue: 1789
-approved_until: 2026-10-10T10:12:00Z
-next_action: await /execute-plan occurrence-screen-modules-5ec0
+current_phase: 1
+last_completed_phase: null
+halt_reason: null
+next_action: "continue phase 1 on branch cursor/occurrence-screen-modules-ui-5ec0"
+artifact_ref:
+  branch: cursor/occurrence-screen-modules-5ec0-integration-5ec0
+  plan_path: .agents/plans/occurrence-screen-modules-5ec0.md
+  plan_commit: e926c9798cff10d07f66982c1057d84d211701e7
+  snapshot_path: .agents/plans/occurrence-screen-modules-5ec0.snapshot.json
+  snapshot_commit: e926c9798cff10d07f66982c1057d84d211701e7
+open_prs: []
+merge_commits: {}
+debt_issue_refs: []
 ```
 
 ## Bootstrap (done 2026-10-08)
