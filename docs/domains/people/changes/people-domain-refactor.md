@@ -2,7 +2,6 @@
 title: People domain refactor — target model, gap analysis and delivery plan
 owner: Product / Documentation
 audience: both
-domain: people
 status: proposed
 folds_into: docs/domains/people/features/people-care-team.md
 plan: people-domain-refactor-7f3b
