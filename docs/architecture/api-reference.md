@@ -460,7 +460,7 @@ Resolved affected items are excluded from away-plan `care_coverage.has_items_to_
 
 **Handover PDF (People phase 2)** — includes primary vet, out-of-hours vet, and emergency contacts from `GET /api/pets/:id/people-relationships` for pets on the plan.
 
-**Planned (People phase 2)** — per-pet carer fact and coverage extension ([amends-away-planning.md](/docs/domains/people/changes/amends-away-planning.md)) — **shipped** on branch `cursor/people-p2-absence-a58d`:
+**People phase 2 (shipped)** — per-pet carer fact and coverage extension — see [people-care-team.md](/docs/domains/people/features/people-care-team.md) § Away Planning integration and [away-planning-carer-model.md](/docs/domains/pet_care/features/away-planning-carer-model.md):
 
 | Field | Notes |
 |---|---|
