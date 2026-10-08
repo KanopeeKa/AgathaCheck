@@ -3,12 +3,46 @@ title: Health tracking specs
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-10-07
+last_updated: 2026-10-08
 tags: [domain,health_tracking,specs]
 domain: health_tracking
+feature_id: health-tracking
 ---
 
-# Health tracking specs
+# Health tracking
+
+Medication and treatment entries, health issues, completion semantics, and reminders (`health_tracking.feature`, `health.tracking.spec.ts`).
+
+## Requirements
+
+| ID | Requirement | Status |
+|----|-------------|--------|
+| **HT-1** | Pet carers manage health entries (one-time and recurring) with dosage, schedule, and notes. | delivered |
+| **HT-2** | Due/overdue entries surface on Pet Care dashboard and `/pc/events` (D17). | delivered |
+| **HT-3** | Completion uses occurrence model and CSM APIs — not legacy entry-only `mark-taken` advance. | delivered |
+| **HT-4** | Health issues are separate CRUD from entries (`healthIssues.js`). | delivered |
+
+## User journeys
+
+### Add health entry
+
+Pet carers create entries with name, dosage, frequency/recurrence, and optional notes. One-time and recurring series are supported.
+
+### Mark taken / complete
+
+For due entries, guardians confirm completion (optional completion date). Recurring series advance via occurrence completion; one-time entries close on `completed_on`.
+
+### View due and overdue
+
+Due and overdue items appear on the Pet Care dashboard Care Actions section and the due-events list (`/pc/events`).
+
+### Edit and delete
+
+Entries can be updated or removed; undo reverts the latest closed occurrence and restores due/completed state per CSM rules.
+
+### Health issues
+
+Separate health-issue records track conditions linked to pets (BDD `health_tracking` scenarios).
 
 ## Care scheduling and completion
 
