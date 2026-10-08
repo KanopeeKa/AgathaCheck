@@ -1,10 +1,10 @@
 ---
 title: Fostering plans index
 owner: Documentation Team
-audience: both
-status: active
-last_updated: 2026-08-22
-tags: [domain,fostering,plans]
+status: in-delivery
+status_since: 2026-10-08
+folds_into: docs/domains/fostering/features/specs.md
+plan: documentation-migration-514a
 ---
 
 # Fostering — plans index

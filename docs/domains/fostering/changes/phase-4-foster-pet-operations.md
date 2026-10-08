@@ -1,10 +1,10 @@
 ---
 title: Phase 4 — Foster & pet operations
 owner: Experience Program Team
-audience: both
-status: active
-last_updated: 2026-08-21
-tags: [experience,guardian,organisation]
+status: in-delivery
+status_since: 2026-10-08
+folds_into: docs/domains/fostering/features/specs.md
+plan: documentation-migration-514a
 ---
 # Phase 4 — Foster & pet operations
 

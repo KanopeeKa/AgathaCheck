@@ -47,7 +47,7 @@ Normative product requirements for cross-cutting capabilities live in domain `fe
 
 | Given / When / Then | Requirement | Coverage |
 |---------------------|-------------|----------|
-| Given an agent is asked to migrate domain docs, when they search for a consolidation plan, then they open `documentation-migration-handover.md` | DELIVERY-PLANS-INDEX-R-001 | test: scripts/check_docs_canonical.test.js#R-A4 fold before delete |
+| Given an agent is asked to migrate domain docs, when they search for a consolidation plan, then they open `documentation-migration-handover.md` | DELIVERY-PLANS-INDEX-R-001 | none — #1787 |
 | Given Experience program delivery, when phase order is chosen, then R precedes 0 and 1 precedes content phases 2–5 | DELIVERY-PLANS-INDEX-R-002 | none — #1787 |
 | Given reconciliation work, when conflicting nav-v2 / acf1 artefacts remain, then Phase R close-out in navigation-decisions is satisfied before Phase 0 | DELIVERY-PLANS-INDEX-R-003 | none — #1787 |
 
@@ -59,8 +59,8 @@ Normative product requirements for cross-cutting capabilities live in domain `fe
 | DELIVERY-PLANS-INDEX-D-002 | **D32** — Dedicated Phase R before Phase 0 | Close D2/D6; `@legacy` BDD tags | Live | 2026-07-25 | TBD |
 | DELIVERY-PLANS-INDEX-D-003 | **D33** — Default single-agent sequential to `main` | merge-policy; spawn only when disjoint | Live | 2026-07-25 | TBD |
 | DELIVERY-PLANS-INDEX-D-004 | Retire `roadmap-delivery-plan.md` and `delivery-decisions.md` after fold | Sprint tables remain in navigation-decisions + domain phase docs | Live | 2026-10-08 | TBD |
-| DELIVERY-PLANS-INDEX-D-005 | `delivery-plans-index` wave 3 complete — no further domain `git mv` | Inventory outcome: debt row migration + index cleanup | Retired | 2026-08-22 | TBD |
-| DELIVERY-PLANS-INDEX-D-006 | Sprint 10 Flutter 3.44 upgrade plan delivered | Execution detail in refactoring-log | Retired | 2026-07-10 | TBD |
+| DELIVERY-PLANS-INDEX-D-005 | `docs-domain-audit-63ad` wave 3 complete — no further domain `git mv` | Inventory outcome: debt row migration + index cleanup (file deleted) | Live | 2026-08-22 | TBD |
+| DELIVERY-PLANS-INDEX-D-006 | Sprint 10 Flutter 3.44 upgrade plan delivered | Execution detail in refactoring-log (plan doc deleted) | Live | 2026-07-10 | TBD |
 
 ### Experience program phase order (folded from roadmap)
 

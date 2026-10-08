@@ -1,10 +1,10 @@
 ---
 title: Organisation v2 delivery plan
 owner: Documentation Team
-audience: both
-status: active
-last_updated: 2026-08-22
-tags: [domain, organization, plans]
+status: in-delivery
+status_since: 2026-10-08
+folds_into: docs/domains/shelter/features/shelter-decisions.md
+plan: documentation-migration-514a
 ---
 # Organisation v2 — delivery plan
 

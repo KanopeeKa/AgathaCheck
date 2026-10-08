@@ -1,10 +1,10 @@
 ---
 title: Auth plans index
 owner: Documentation Team
-audience: both
-status: active
-last_updated: 2026-08-22
-tags: [domain,auth,plans]
+status: in-delivery
+status_since: 2026-10-08
+folds_into: docs/domains/auth/features/specs.md
+plan: documentation-migration-514a
 ---
 
 # Authentication — plans index

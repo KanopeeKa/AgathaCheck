@@ -34,7 +34,7 @@ discipline as `g0-contract-pack.md` so the two programs read consistently.
 | Given / When / Then | Requirement | Coverage |
 |---------------------|-------------|----------|
 | Given a new Experience-program screen, when copy uses workspace labels, then it follows D38 Pet Care / Suivi rules in terminology | PROGRAM-CONTRACT-R-001 | none — #1787 |
-| Given notification UI work, when kind/scope behaviour is specified, then agents read notifications-v2-spec first | PROGRAM-CONTRACT-R-002 | test: e2e/features/notifications_v2.feature |
+| Given notification UI work, when kind/scope behaviour is specified, then agents read notifications-v2-spec first | PROGRAM-CONTRACT-R-002 | none — #1787 |
 
 ## Decision log
 
