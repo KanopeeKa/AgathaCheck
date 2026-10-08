@@ -93,7 +93,7 @@ class _CareAgendaCollectionState extends ConsumerState<CareAgendaCollection> {
 
   void _open(CareAgendaRow<HealthEntry> row) {
     final entry = row.item;
-    openPetEventView(context, petId: entry.petId, entryId: entry.id);
+    goToPetEventView(context, petId: entry.petId, entryId: entry.id);
   }
 
   Future<void> _done(CareAgendaRow<HealthEntry> row) {

@@ -36,6 +36,7 @@ test.describe('Weight care (occurrence + care item)', () => {
       const agenda = new CareAgendaPage(page);
       await agenda.openRow(entry.id, 'Monthly weigh-in');
       const careItem = new CareItemPage(page);
+      await careItem.expectNeedsAttentionVisible();
       await careItem.openOccurrenceFromNeedsAttention(occurrenceId!);
 
       const occurrence = new OccurrencePage(page);
