@@ -146,7 +146,7 @@ Only a pet's record owner decides which household a pet is in, and they can alwa
 - A pet is in at most one household, where it lives (D6). Anyone beyond that household gets access pet by pet.
 - Within its household, a pet is shared with every member (D5).
 - **The record owner can take a pet out of the household at any time, without anyone else agreeing.** Other members lose access straight away. This is a safety requirement.
-- A pet changes owner only through a transfer that both people agree to. *Note: today's API (`routes/pets/transferRouter.js`) transfers immediately, with no accept step. Notifications v2 therefore ships only the "transfer completed" notice (R14); the request notice (R13) waits for this two-sided flow ([v2 spec §3.2](/docs/domains/notifications/features/notifications-v2-spec.md)).*
+- A pet changes owner only through a transfer that both people agree to. *Note: today's API (`routes/pets/transferRouter.js`) transfers immediately, with no accept step. Notifications v2 therefore ships only the "transfer completed" notice (R14); the request notice (R13) waits for this two-sided flow ([notifications spec §3.2](/docs/domains/notifications/features/notifications-v2-spec.md)).*
 - Long-term sharing with someone new is open to the record owner and direct co-parents, as today (D26). Household Full access can't do it (D12).
 
 ### What follows the pet
@@ -526,7 +526,7 @@ No product decisions are open. Engineering gaps vs target UX: [people-domain-ref
 | Away Planning carer model | [away-planning-carer-model.md](/docs/domains/pet_care/features/away-planning-carer-model.md) |
 | Away Planning decisions (historical pointer) | [away-planning-decisions.md](/docs/domains/pet_care/changes/away-planning-decisions.md) |
 | Refactor target and gaps | [people-domain-refactor.md](../changes/people-domain-refactor.md) |
-| Notifications (D21, D25) | [notification specs](/docs/domains/notifications/features/specs.md) |
+| Notifications (D21, D25) | [notifications-v2-spec §17](/docs/domains/notifications/features/notifications-v2-spec.md#17-implementation-reference) |
 | BDD, existing features that will change | `away_planning.feature`, `away_plan_detail_v2.feature`, `sharing.feature`, `veterinarian_management.feature`, `notifications.feature`. Planned: `people.feature` |
 | Sharing roles and API | [sharing specs](/docs/domains/sharing/features/specs.md) |
 | Vets today | [vet specs](/docs/domains/vet/features/specs.md) |

@@ -2,8 +2,10 @@
 title: Experience program contract
 owner: Documentation Team
 audience: both
-status: active
-last_updated: 2026-09-02
+status: in-delivery
+folds_into: docs/domains/navigation/features/navigation-brief.md
+plan: documentation-migration-514a
+status_since: 2026-10-08
 tags: [experience, contract]
 ---
 # Experience program — platform contract
@@ -68,7 +70,7 @@ discipline as `g0-contract-pack.md` so the two programs read consistently.
 
 ## 3. Notification model (D7–D11) — target shape
 
-> **Superseded in part (2026-10-04).** Kinds, chips, badge and the D10 deep-link pattern are replaced by [Notifications v2](/docs/domains/notifications/features/notifications-v2-spec.md); see [notification-decisions.md §C](/docs/domains/notifications/features/notification-decisions.md). This section remains the history of Phase 1–2.
+> **Superseded in part (2026-10-04).** Kinds, chips, badge and the D10 deep-link pattern are replaced by [Notifications v2](/docs/domains/notifications/features/notifications-v2-spec.md); see [§18 decision log](/docs/domains/notifications/features/notifications-v2-spec.md#18-decision-log-legacy--b--v2-supersession). This section remains the history of Phase 1–2.
 
 ### 3.1 Data model
 

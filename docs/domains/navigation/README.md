@@ -30,7 +30,7 @@ Shell navigation, routing UX, and experience switching (`/pc/*`, `/o/*`).
 | Domain | File | IDs |
 |--------|------|-----|
 | Navigation | [navigation-decisions.md](features/navigation-decisions.md) | D1–D6, D27 |
-| Notifications | [notification-decisions.md](/docs/domains/notifications/features/notification-decisions.md) | D7–D11 |
+| Notifications | [notifications-v2-spec.md](/docs/domains/notifications/features/notifications-v2-spec.md) | D7–D11, N1–N13 |
 | Pet profile | [pet-profile-decisions.md](/docs/domains/pet_profile/features/pet-profile-decisions.md) | D17–D24, D34–D37 |
 | Shelter | [shelter-decisions.md](/docs/domains/shelter/features/shelter-decisions.md) | D12–D16, D20–D31, D-v2-*, D-v3-*, D-v4-* |
 | Cross-domain delivery | [delivery-decisions.md](/docs/domains/cross-domain/changes/delivery-decisions.md) | D32–D33 |

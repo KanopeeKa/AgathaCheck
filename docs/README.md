@@ -89,7 +89,7 @@ Navigation shell reversal and phased delivery (formerly `docs/experience-program
 
 | Domain | File | IDs |
 |--------|------|-----|
-| Notifications | [/docs/domains/notifications/features/notification-decisions.md](/docs/domains/notifications/features/notification-decisions.md) | D7–D11 |
+| Notifications | [/docs/domains/notifications/features/notifications-v2-spec.md](/docs/domains/notifications/features/notifications-v2-spec.md) | D7–D11, N1–N13 |
 | Pet profile | [/docs/domains/pet_profile/features/pet-profile-decisions.md](/docs/domains/pet_profile/features/pet-profile-decisions.md) | D17–D24, D34–D37 |
 | Shelter | [/docs/domains/shelter/features/shelter-decisions.md](/docs/domains/shelter/features/shelter-decisions.md) | D12–D16, D20–D31, D-v2–v4 |
 | Cross-domain | [/docs/domains/cross-domain/changes/delivery-decisions.md](/docs/domains/cross-domain/changes/delivery-decisions.md) | D32–D33 |
