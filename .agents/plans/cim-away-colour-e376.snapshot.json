@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "plan_id": "cim-away-colour-e376",
+  "programme_ref": "docs/design/tokens.md",
+  "approved_at": "2026-10-08T10:00:00Z",
+  "approved_by": "draft — not approved",
+  "approved_until": "2026-10-10T10:00:00Z",
+  "autonomy": "halted",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/cim-away-colour-e376-integration-e376",
+  "control_issue": 1,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Agatha teal suggestions + info safeguards",
+      "branch": "cursor/agatha-teal-suggestion-cards-e376",
+      "allowed_paths": [
+        "flutter_app/lib/features/care_intelligence/**",
+        "flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_dashboard_contextual_slot_section.dart",
+        "flutter_app/lib/features/experience/presentation/pet_profile/widgets/pet_profile_care_suggestion_section.dart",
+        "flutter_app/test/features/care_intelligence/**",
+        "docs/design/tokens.md",
+        "docs/domains/pet_care/features/care-intelligence.md",
+        "docs/domains/pet_care/changes/cim-away-colour-rollout.md"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**",
+        "db/**",
+        "e2e/**",
+        "flutter_app/lib/features/pet_care/context/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": "CareSuggestionCard + CareSafeguardCard use canonical tokens; shared Agatha message shell.",
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2",
+      "title": "Away context plum on all Away surfaces",
+      "branch": "cursor/away-context-plum-tokens-e376",
+      "allowed_paths": [
+        "flutter_app/lib/core/theme/app_color_tokens.dart",
+        "flutter_app/lib/features/pet_care/context/**",
+        "flutter_app/lib/features/experience/presentation/care_item/detail/care_item_absence_section.dart",
+        "flutter_app/lib/features/experience/presentation/care_item/occurrence/occurrence_absence_section.dart",
+        "flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_planned_absence_section.dart",
+        "flutter_app/lib/features/pet_care/presentation/widgets/**",
+        "flutter_app/test/features/pet_care/context/**",
+        "flutter_app/test/features/experience/**",
+        "docs/design/tokens.md",
+        "docs/domains/pet_care/features/care-context.md",
+        "docs/domains/pet_care/changes/cim-away-colour-rollout.md"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**",
+        "db/**",
+        "flutter_app/lib/features/care_intelligence/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": "awayContext token aliases + shared chip; planner headings plum not Agatha.",
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    }
+  ],
+  "content_hash": "sha256:3a9ef6cfc423e50a531f265749a9cc705e86d081df94e31c9b7f59db33c14cd1"
+}
