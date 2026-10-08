@@ -116,7 +116,7 @@ Decisions: [shelter-dashboard-v2-framing-decisions.md](/docs/domains/shelter/cha
 | 4 | Section surfaces + nav active polish | `cursor/guardian-desk-framing-surfaces-6e46` | Pending |
 | 5 | Canvas width alignment | `cursor/guardian-desk-framing-canvas-6e46` | Pending |
 
-Decisions: [desk-framing-decisions.md](/docs/domains/pet_profile/changes/desk-framing-decisions.md).
+Decisions: [pet-profile-decisions.md — D-desk](/docs/domains/pet_profile/features/pet-profile-decisions.md#dashboard-desk-framing-d-desk).
 
 ---
 

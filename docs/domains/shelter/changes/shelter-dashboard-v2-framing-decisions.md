@@ -70,6 +70,6 @@ Placeholder illustration: product asset TBD (`flutter_app/assets/shelter/`).
 
 - [shelter-desk-framing-decisions.md](./shelter-desk-framing-decisions.md) — prior Shelter desk decisions (D-desk-S1/S5 superseded here)
 - [navigation-decisions.md](/docs/domains/navigation/features/navigation-decisions.md) — D-v4-2 Shelter clause superseded; D-shelter-NAV-*
-- [desk-framing-decisions.md](/docs/domains/pet_profile/changes/desk-framing-decisions.md) — pattern reference
+- [pet-profile-decisions.md — D-desk](/docs/domains/pet_profile/features/pet-profile-decisions.md#dashboard-desk-framing-d-desk) — pattern reference
 - [tokens.md](/docs/design/tokens.md)
 - Plan: `.agents/plans/unified-pet-tile-c4e8.md` (tile look-and-feel)

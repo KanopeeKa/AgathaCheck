@@ -50,5 +50,5 @@ My Organisations uses **pet-grid geometry** (2/3 media, 1/3 meta). No-hero fallb
 ## References
 
 - [navigation-decisions.md](/docs/domains/navigation/features/navigation-decisions.md) — D-v4-2, D-v5-WORKSPACE-4
-- [desk-framing-decisions.md](/docs/domains/pet_profile/changes/desk-framing-decisions.md) — Care desk (plum canvas; pattern reference only)
+- [pet-profile-decisions.md — D-desk](/docs/domains/pet_profile/features/pet-profile-decisions.md#dashboard-desk-framing-d-desk) — Care desk (plum canvas; pattern reference only)
 - [organisation-ux-v3-delivery-plan.md](./organisation-ux-v3-delivery-plan.md) — D-v3-NAV-1, D-v3-TILE-1

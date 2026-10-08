@@ -85,6 +85,86 @@ Role-specific sharing UI lives under `flutter_app/lib/features/pet_profile/widge
 
 Due-events preview supports reversible mobile completion with transient cache during refresh (same rules as care-item mobile completion UX).
 
+### Pet Care Today — authority boundaries
+
+Locked decisions **D34–D36** define product boundaries. Implementation must derive presentation from existing authorities only (no new API, schema, or ownership heuristics):
+
+| Dashboard concern | Stable source/authority | Constraint |
+|---|---|---|
+| Owned, fostered, and shared pets | `PetListController` and `guardian_dashboard_helpers.dart` | Do not infer ownership or eligibility from visual state. |
+| Pet card relationship/status | Existing `Pet` fields and `ownership_accent.dart` conventions | Plum/Pet Care and green/foster accents require text or icon support; never colour alone. |
+| Due/overdue care items | `healthEntriesNotifierProvider`, `guardianDueEntries`, and existing health entry entities | “Events” means computed health, weight, and other care entries per D17; no generic event entity. |
+| Completion and undo | Existing `HealthEntriesNotifier.markTaken` / `undoComplete` flow | The server remains authoritative; preserve optimistic preview and rollback/error semantics. |
+| Veterinary contacts | `vetListProvider` and existing vet entities | Keep compact rows and existing display/detail destinations. |
+| Global updates | Existing unified notification provider and header bell | Notifications remain global and outside the dashboard section list. |
+| Section shell/navigation | `ExperienceShellScaffold` and drawer configuration | Keep Pet Care, Shelter, and Account as the top-level shell model. |
+
+### Pet Care Today presentation foundation
+
+Pure, local adapter for existing owned pets and health entries — no requests, permission inference, or provider-owned collection changes.
+
+- **Inputs:** eligible pets via `PetListController.guardianShellPets`; `HealthEntry` values and an explicit clock for care priorities; explicit screen state for loading/error.
+- **Outputs:** `GuardianTodayCarePriorities` (overdue, due-today, reminder-window upcoming; dashboard preview capped at five); `GuardianTodayPetPreview` (attention-first four-pet preview + overflow count); relationship/care-status/screen-state enums for UI consumers.
+- **Ordering:** overdue → due-today → reminder-window upcoming; date order and source order break ties. Pet selection follows the same urgency groups, then stable guardian-shell order. Passed-away pets are not presented.
+- **States:** `firstUse`, `allClear`, `attention`, `loading`, `partial`, and `error` are distinct; errors must not present as an empty care list.
+
+### Pet Care Today orientation widget
+
+`GuardianTodayOrientation` is the compact, provider-free orientation layer above the three management sections — not a dashboard section, route, or care list.
+
+```dart
+GuardianTodayOrientation(
+  state: GuardianTodayScreenState,
+  summary: GuardianTodayCareSummary?,
+  onRetry: VoidCallback?,
+)
+```
+
+- Pass state and summary from the presentation foundation; do not watch providers inside the widget.
+- `summary` is required for `attention` and `allClear`; missing data resolves to `partial`.
+- Compose once above My Pets, Care Actions, and Veterinary team; no individual care rows; grouped semantic summary for screen readers; retry is the only interactive control (48dp target).
+
+### Dashboard desk framing (D-desk)
+
+Shell and section chrome on `/pc/home` (medium+ viewports) without redesigning row components. Control issue #928; supersedes bottom “All …” links with header-row actions per **D-desk-3**.
+
+| ID | Decision | Status |
+|----|----------|--------|
+| **D-desk-1** | Nav rail/sidebar uses semantic `surface`; main column uses `background`. No vertical dividers or card-wrapped sidebar. | locked |
+| **D-desk-2** | Mobile unchanged: plum app bar + bottom nav; no desktop sidebar framing on &lt;600px. | locked |
+| **D-desk-3** | Section chrome: eyebrow title (left) + optional “All …” (right) when a real destination exists. | locked |
+| **D-desk-4** | No phantom “All …” links — same gating as today. | locked |
+| **D-desk-5** | Open canvas default; no tinted `GuardianDeskSectionCard` shells except Care preview `petCareLight` and optional Fostering org tint. | locked |
+| **D-desk-6** | Pets hero rail may omit PETS eyebrow when the rail is the anchor. | locked |
+| **D-desk-7** | Dashboard max width **1120px**, centered; horizontal padding 16 / 24 / 32 by breakpoint. | locked |
+| **D-desk-8** | Sidebar active state: one primary channel (colour + optional slim left bar). | locked |
+| **D-desk-9** | Out of scope: row component redesign; shell-wide max width on every route; create actions in section headers. | locked |
+| **D-desk-10** | Optional non-interactive sketch overlays on wide web only (`assets/dashboard/dashboard-deco-*.png`); `ExcludeSemantics` + `IgnorePointer`. | locked |
+
+| Width | Nav surface | Canvas | Section chrome |
+|-------|-------------|--------|----------------|
+| &lt;600px | Plum app bar + bottom nav | `background` full width | Header row; 16px padding |
+| 600–839px | Rail `surface` | Column `background` | Header row; 24px padding |
+| ≥840px | Sidebar `surface` | Column `background`, max 1120px centered | Header row; 24–32px padding |
+
+### Pet Care Today — action destinations
+
+| User action | Existing destination/behavior |
+|---|---|
+| Open a pet card | `/pet/:id` |
+| Open the full pet collection | `/pc/pets` |
+| Open a care item | Existing health-entry detail/workflow |
+| Open all care items | `/pc/events` |
+| Complete or undo a care item | Existing `markTaken` / `undoComplete` flow |
+| Open a vet row | `/pc/vets/:id` |
+| Open all vets | `/pc/vets` |
+| Review global updates | Header notification bell/panel |
+| Switch top-level experience | Pet Care / Shelter / Account drawer |
+
+### Pet Care Today — characterization tests
+
+Preserve behavior while preview caps change: `guardian_shell_home_content_test.dart`, `guardian_my_pets_section_test.dart`, `guardian_upcoming_events_section_test.dart`, `experience_shell_scaffold_test.dart`, `guardian_dashboard.feature` / Playwright (pending-banner absence). Four-pet preview and Today orientation are implementation requirements in downstream UI slices.
+
 ### Tests
 
 - BDD: `pet_profiles.feature`
@@ -104,6 +184,7 @@ Private per-user labels for organizing and filtering pets on `/pc/pets`. No shar
 
 - Activity model detail: [pet-activity-model.md](pet-activity-model.md)
 - Delivery plans: [plans.md](../changes/plans.md)
-- Pet Care Today contract (phase 3.2): [guardian-today-contract.md](../changes/guardian-today-contract.md)
+- Pet Care Today implementation: sections above (D34–D36, presentation foundation, orientation, D-desk)
+- Wave 2 issue briefs (historical AC archive, in-delivery): [guardian-ui-wave2-issue-briefs.md](../changes/guardian-ui-wave2-issue-briefs.md)
 - Locked dashboard brief: [guardian-dashboard-brief.md](guardian-dashboard-brief.md)
 - Guardian journey delivery: [phase-2-guardian-journey.md](../changes/phase-2-guardian-journey.md)
