@@ -25,13 +25,13 @@ tags: [pet_care, design, ui, plan]
 
 Align Flutter with `docs/design/tokens.md` for **Care Intelligence** and **Away planning**:
 
-1. **Agatha suggestions** use `agathaTeal` / `agathaMessageSurface` / `agathaMessageBorder` (retire coral on CIM suggestion cards).
+1. **Agatha suggestions** use `agathaTeal` / `agathaMessageSurface` / `agathaMessageBorder` on **profile/dashboard `CareSuggestionCard` and inbox `NotificationSuggestionCard` (For you)** — retire coral on CIM suggestion surfaces.
 2. **CIM safeguards** use semantic `info` / `infoLight` (distinct from suggestions and from plum).
 3. **Away planning** uses documented **away-context** plum aliases on all `/pc/away` and absence modules (user-declared trip — never Agatha teal or info blue for chrome).
 
 Two implementation phases merge to an **integration branch**; one final PR integration → `main` with `/babysit-uat`.
 
-**Out of scope (debt / follow-up):** `NotificationSuggestionCard` Agatha styling; E2E visual assertions; global `ThemeData.tertiary` changes.
+**Out of scope:** E2E visual assertions; global `ThemeData.tertiary` changes.
 
 ## Canonical docs
 
@@ -39,6 +39,7 @@ Two implementation phases merge to an **integration branch**; one final PR integ
 |-----|-------|
 | `docs/design/tokens.md` | 1, 2 |
 | `docs/domains/pet_care/features/care-intelligence.md` | 1 |
+| `docs/domains/notifications/features/notifications-v2-spec.md` | 1 (For you card chrome) |
 | `docs/domains/pet_care/features/care-context.md` | 2 |
 
 Optional delivery note (delete when both phases merged): `docs/domains/pet_care/changes/cim-away-colour-rollout.md` (`status: proposed`).
@@ -50,7 +51,7 @@ Optional delivery note (delete when both phases merged): `docs/domains/pet_care/
 | **approved_at** | `2026-10-08T10:21:49Z` |
 | **approved_until** | `2026-10-10T10:21:49Z` |
 | **control_issue** | [#1791](https://github.com/KanopeeKa/AgathaCheck/issues/1791) |
-| **content_hash** | `sha256:…` (see snapshot) |
+| **content_hash** | `sha256:8877df6e73c9298f519ee7afccdaa8d8176f97a1972ea02334eddb125384ed26` |
 | **autonomy** | `active` |
 
 **Grant keyword:** `approve-autonomous cim-away-colour-e376`
@@ -75,7 +76,7 @@ node scripts/execute_plan_runtime.js init-control-issue cim-away-colour-e376
 
 ---
 
-## Phase 1 — Agatha teal suggestions + info safeguards
+## Phase 1 — Agatha teal suggestions (profile, dashboard, For you) + info safeguards
 
 | Field | Value |
 |-------|-------|
@@ -83,7 +84,7 @@ node scripts/execute_plan_runtime.js init-control-issue cim-away-colour-e376
 | **branch** | `cursor/agatha-teal-suggestion-cards-e376` |
 | **spawn_allowed** | `false` |
 | **exit_checklist** | `default` |
-| **docs_targets** | `docs/design/tokens.md`, `docs/domains/pet_care/features/care-intelligence.md` |
+| **docs_targets** | `docs/design/tokens.md`, `docs/domains/pet_care/features/care-intelligence.md`, `docs/domains/notifications/features/notifications-v2-spec.md` |
 
 **router_risk:** R1 (design-scoped Flutter)  
 **protocols:** `accessibility`, `flutter-mobile`, `documentation`
@@ -94,9 +95,13 @@ node scripts/execute_plan_runtime.js init-control-issue cim-away-colour-e376
 flutter_app/lib/features/care_intelligence/**
 flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_dashboard_contextual_slot_section.dart
 flutter_app/lib/features/experience/presentation/pet_profile/widgets/pet_profile_care_suggestion_section.dart
+flutter_app/lib/features/notifications/presentation/widgets/notification_suggestion_card.dart
+flutter_app/lib/features/notifications/presentation/widgets/notification_inbox_list.dart
 flutter_app/test/features/care_intelligence/**
+flutter_app/test/features/notifications/**
 docs/design/tokens.md
 docs/domains/pet_care/features/care-intelligence.md
+docs/domains/notifications/features/notifications-v2-spec.md
 docs/domains/pet_care/changes/cim-away-colour-rollout.md
 ```
 
@@ -116,13 +121,14 @@ flutter_app/lib/features/pet_care/context/**
 
 - Add shared shell (e.g. `agatha_message_card_shell.dart`): fill `agathaMessageSurface`, border `agathaMessageBorder`, title `agathaTeal`; body `body` token.
 - Refactor `care_suggestion_card.dart` off `warmAccent` / `warmAccentLight`.
+- Refactor `notification_suggestion_card.dart` to use the same Agatha message shell (For you tab parity with profile/dashboard).
 - Refactor `care_safeguard_card.dart` to `infoLight` + `info` title (not `primaryContainer`).
 - Keep accept / primary actions **plum** (`FilledButton` / theme primary).
 - Do **not** change unrelated `warmAccent` (undo, paywall, super-admin, archived pets).
 
 **Exit criteria:**
 
-- [ ] Suggestion card uses Agatha tokens only for chrome; widget tests pass.
+- [ ] `CareSuggestionCard` and `NotificationSuggestionCard` use Agatha tokens only for chrome; widget tests pass (add notification widget test if none).
 - [ ] Safeguard card uses info tokens; visually distinct from suggestion.
 - [ ] `/canonical-docs sync` on care-intelligence + tokens anti-pattern note (coral not for CIM cards).
 - [ ] `./scripts/pre-push-changed.sh` green.
@@ -195,7 +201,7 @@ After phase 2 `merged`:
 3. `/babysit-uat` (pre-UAT E2E on merge SHA).
 4. `node scripts/execute_plan_runtime.js complete-plan cim-away-colour-e376 --write`
 
-**Manual evidence (PR body):** screenshot — Agatha suggestion card (teal); safeguard (info); dashboard away tile + hub card (plum chip).
+**Manual evidence (PR body):** screenshot — Agatha suggestion card (teal) on profile and For you inbox; safeguard (info); dashboard away tile + hub card (plum chip).
 
 ---
 
@@ -222,9 +228,5 @@ debt_issue_refs: []
 
 | ID | Decision |
 |----|----------|
-| CIM-UI-D-001 | Suggestions → Agatha message tokens; safeguards → info; coral not CIM card chrome. |
+| CIM-UI-D-001 | Suggestions (profile, dashboard, For you inbox) → Agatha message tokens; safeguards → info; coral not CIM card chrome. |
 | CC-UI-D-001 | Away planning → away-context plum aliases; not Agatha teal or info fills. |
-
-## Optional follow-up (not in this plan)
-
-- Phase debt issue: Agatha shell on `notification_suggestion_card.dart` (For you tab).

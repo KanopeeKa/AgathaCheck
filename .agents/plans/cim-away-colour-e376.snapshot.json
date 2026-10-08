@@ -13,15 +13,19 @@
   "phases": [
     {
       "id": "1",
-      "title": "Agatha teal suggestions + info safeguards",
+      "title": "Agatha teal suggestions (profile, dashboard, For you) + info safeguards",
       "branch": "cursor/agatha-teal-suggestion-cards-e376",
       "allowed_paths": [
         "flutter_app/lib/features/care_intelligence/**",
         "flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_dashboard_contextual_slot_section.dart",
         "flutter_app/lib/features/experience/presentation/pet_profile/widgets/pet_profile_care_suggestion_section.dart",
+        "flutter_app/lib/features/notifications/presentation/widgets/notification_suggestion_card.dart",
+        "flutter_app/lib/features/notifications/presentation/widgets/notification_inbox_list.dart",
         "flutter_app/test/features/care_intelligence/**",
+        "flutter_app/test/features/notifications/**",
         "docs/design/tokens.md",
         "docs/domains/pet_care/features/care-intelligence.md",
+        "docs/domains/notifications/features/notifications-v2-spec.md",
         "docs/domains/pet_care/changes/cim-away-colour-rollout.md"
       ],
       "forbidden_paths": [
@@ -43,7 +47,7 @@
       "exit_checklist": "default",
       "status": "pending",
       "status_reason": null,
-      "status_detail": "CareSuggestionCard + CareSafeguardCard use canonical tokens; shared Agatha message shell.",
+      "status_detail": "Agatha shell on CareSuggestionCard + NotificationSuggestionCard; CareSafeguardCard uses info tokens.",
       "pr_url": null,
       "pr_head_sha": null,
       "merge_commit": null,
@@ -91,5 +95,5 @@
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:b6927c97b28d5b2a86be6c86b388829b5bc546e45025f3bea5b2e77e785d60f9"
+  "content_hash": "sha256:8877df6e73c9298f519ee7afccdaa8d8176f97a1972ea02334eddb125384ed26"
 }
