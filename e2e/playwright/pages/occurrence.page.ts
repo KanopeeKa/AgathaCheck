@@ -97,10 +97,10 @@ export class OccurrencePage {
 
   async fillWeight(value: string, _unit: 'kg' | 'lb' = 'kg'): Promise<void> {
     await refreshFlutterAccessibility(this.page);
-    const host = this.weightInput().first();
-    await host.scrollIntoViewIfNeeded();
-    const input = host.locator('input, textarea').first();
-    await input.fill(value);
+    const field = this.page.getByRole('textbox', { name: /Weight|Poids/i }).first();
+    await field.scrollIntoViewIfNeeded();
+    await field.click();
+    await field.pressSequentially(value, { delay: 30 });
     await refreshFlutterAccessibility(this.page);
   }
 
