@@ -32,6 +32,7 @@ import {
 import { prepareLiveApiAccess } from '../support/waf';
 import { checkA11y } from '../support/axe';
 import { CareAgendaPage } from '../pages/care-agenda.page';
+import { CareItemPage } from '../pages/care-item.page';
 import { createCareItem, withCareClock } from '../support/care-api';
 
 const baseURL = () => process.env.E2E_BASE_URL ?? 'http://localhost:3000';
