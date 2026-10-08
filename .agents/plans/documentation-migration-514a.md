@@ -93,11 +93,11 @@ last_completed_phase: 14
 halt_reason: null
 next_action: "continue phase 15 on branch cursor/documentation-migration-guardian-today-514a"
 artifact_ref:
-  branch: cursor/documentation-migration-wave13-integration-514a
+  branch: cursor/documentation-migration-guardian-today-514a
   plan_path: .agents/plans/documentation-migration-514a.md
-  plan_commit: ee37de33e9d5ad42cf4a1169e6ba5d3cbafaf73a
+  plan_commit: 16f6138f31888351c1d0c585da13ab8aba86d8ab
   snapshot_path: .agents/plans/documentation-migration-514a.snapshot.json
-  snapshot_commit: ee37de33e9d5ad42cf4a1169e6ba5d3cbafaf73a
+  snapshot_commit: 16f6138f31888351c1d0c585da13ab8aba86d8ab
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

@@ -586,7 +586,8 @@
       "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_head_sha": "16f6138f31888351c1d0c585da13ab8aba86d8ab"
     },
     {
       "id": "16",
@@ -1021,5 +1022,5 @@
       "pr_head_sha": null
     }
   ],
-  "content_hash": "sha256:395fd64501ddc580a782bd9a76ed6647422c916ea23c08f89d5aecef1b61369d"
+  "content_hash": "sha256:fd79f075e2b36a353f931ea74235f2d726e2b30f9685c8b17158734e1e558e4c"
 }
