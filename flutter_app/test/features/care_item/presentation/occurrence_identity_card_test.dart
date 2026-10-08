@@ -7,7 +7,9 @@ import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
-OccurrenceDetail _detail({CareOccurrenceStatus status = CareOccurrenceStatus.done}) {
+OccurrenceDetail _detail({
+  CareOccurrenceStatus status = CareOccurrenceStatus.done,
+}) {
   return OccurrenceDetail(
     item: CareItemSummary(
       id: 'e1',
@@ -43,12 +45,8 @@ void main() {
       ProviderScope(
         overrides: [
           petByIdProvider('p1').overrideWith(
-            (ref) async => Pet(
-              id: 'p1',
-              name: 'Buddy',
-              species: 'dog',
-              photoPath: null,
-            ),
+            (ref) async =>
+                Pet(id: 'p1', name: 'Buddy', species: 'dog', photoPath: null),
           ),
         ],
         child: MaterialApp(
@@ -66,7 +64,13 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text(l.done), findsOneWidget);
-    expect(find.bySemanticsIdentifier('occurrence_identity_card'), findsOneWidget);
-    expect(find.bySemanticsIdentifier('occurrence_open_care_details'), findsOneWidget);
+    expect(
+      find.bySemanticsIdentifier('occurrence_identity_card'),
+      findsOneWidget,
+    );
+    expect(
+      find.bySemanticsIdentifier('occurrence_open_care_details'),
+      findsOneWidget,
+    );
   });
 }

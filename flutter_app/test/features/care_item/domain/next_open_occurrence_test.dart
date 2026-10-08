@@ -1,11 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/features/care_item/care_item.dart';
 
-OpenOccurrence _open(
-  String id,
-  DateTime date, {
-  String? time,
-}) {
+OpenOccurrence _open(String id, DateTime date, {String? time}) {
   return OpenOccurrence(
     id: id,
     date: date,
@@ -64,21 +60,24 @@ void main() {
     );
   });
 
-  test('duplicate instant: first in list with different id wins at compareTo 0', () {
-    final open = [
-      _open('a', d1, time: '09:00'),
-      _open('b', d1, time: '09:00'),
-    ];
-    expect(
-      nextOpenOccurrenceAfter(
-        openOccurrences: open,
-        currentId: 'x',
-        currentDate: d1,
-        currentTime: '09:00',
-      )?.id,
-      'a',
-    );
-  });
+  test(
+    'duplicate instant: first in list with different id wins at compareTo 0',
+    () {
+      final open = [
+        _open('a', d1, time: '09:00'),
+        _open('b', d1, time: '09:00'),
+      ];
+      expect(
+        nextOpenOccurrenceAfter(
+          openOccurrences: open,
+          currentId: 'x',
+          currentDate: d1,
+          currentTime: '09:00',
+        )?.id,
+        'a',
+      );
+    },
+  );
 
   test('in-list index wins over compareTo when current is open', () {
     final open = [_open('a', d1), _open('b', d2)];
