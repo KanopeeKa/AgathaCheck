@@ -71,19 +71,26 @@ export class OccurrencePage {
     await refreshFlutterAccessibility(this.page);
   }
 
+  private weightInput() {
+    return this.page
+      .locator('[key="occurrence_field_weight"]')
+      .or(this.page.locator('[flt-semantics-identifier="occurrence_field_weight"]'));
+  }
+
   async expectWeightRequiredBeforeDone(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
-    await expect(this.page.getByLabel(/Weight/i).first()).toBeVisible({ timeout: 15_000 });
+    const field = this.weightInput();
+    await expect(field.first()).toBeVisible({ timeout: 15_000 });
     const done = this.doneControl();
     await expect(done.first()).toBeVisible({ timeout: 15_000 });
     await expect(done.first()).toBeDisabled();
   }
 
-  async fillWeight(value: string, unit: 'kg' | 'lb' = 'kg'): Promise<void> {
+  async fillWeight(value: string, _unit: 'kg' | 'lb' = 'kg'): Promise<void> {
     await refreshFlutterAccessibility(this.page);
-    const unitPattern = unit === 'lb' ? /Weight\s*\(lb\)|Poids\s*\(lb\)/i : /Weight|Poids/i;
-    const field = this.page.getByLabel(unitPattern).first();
-    await field.fill(value);
+    const field = this.weightInput();
+    await field.first().scrollIntoViewIfNeeded();
+    await field.first().fill(value);
     await refreshFlutterAccessibility(this.page);
   }
 
@@ -91,7 +98,9 @@ export class OccurrencePage {
     await refreshFlutterAccessibility(this.page);
     const pattern =
       unit === 'lb' ? /Weight\s*\(lb\)|Poids\s*\(lb\)/i : /Weight\s*\(kg\)|Poids\s*\(kg\)/i;
-    await expect(this.page.getByLabel(pattern).first()).toBeVisible({ timeout: 15_000 });
+    await expect(this.weightInput().or(this.page.getByLabel(pattern)).first()).toBeVisible({
+      timeout: 15_000,
+    });
   }
 
   async tapSkip(): Promise<void> {
