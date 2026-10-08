@@ -118,11 +118,26 @@ export class OccurrencePage {
     });
   }
 
+  async tapChangeDate(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    const changeDate = this.page
+      .locator('[flt-semantics-identifier="occurrence_reschedule"]')
+      .or(
+        this.page.getByRole('button', {
+          name: /Change date|Modifier la date|Reschedule|Replanifier/i,
+        }),
+      );
+    await changeDate.first().scrollIntoViewIfNeeded();
+    await changeDate.first().click();
+    await refreshFlutterAccessibility(this.page);
+  }
+
   async tapSkip(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
     const skip = this.page
       .locator('[flt-semantics-identifier="occurrence_skip"]')
       .or(this.page.getByRole('button', { name: /^Skip$|^Ignorer$/i }));
+    await skip.first().scrollIntoViewIfNeeded();
     await skip.first().click();
     await refreshFlutterAccessibility(this.page);
   }

@@ -3,7 +3,7 @@ title: Open debt register
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-10-07
+last_updated: 2026-10-08
 tags: [debt, deferred, tech-debt]
 ---
 
@@ -15,6 +15,7 @@ tags: [debt, deferred, tech-debt]
 
 | Domain | PR | Type | Priority | Description |
 |--------|-----|------|----------|-------------|
+| pet_care | #1823 | tech debt | P3 | Deduplicate **Change date** / **Skip** / Mark done controls in `care_item_dates_section.dart` vs Needs attention rows — leaf screen is canonical (D-CIE-037) |
 | pet_care | care-next-occurrence | feature | P2 | Notification deep link opens the **occurrence screen** (not care item only) — §18.14; track with `occurrence_screen_opened{source: notification}` |
 | pet_care | care-next-occurrence | feature | P3 | Calendar view + `GET /api/care-calendar` (D-CIE-033) — occurrence-first agenda is interim projection |
 | pet_care | — | tech debt | P2 | `publicError(err, msg)` returns a string — add `sendPublicError(res, err, msg)` wrapper or ESLint ban on `publicError(res` (D-AWAY-013; AW-EMERGENCY fixed the two `careContext` call sites) |
