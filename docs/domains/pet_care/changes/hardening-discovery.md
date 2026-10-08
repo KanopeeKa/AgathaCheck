@@ -2,9 +2,11 @@
 title: Pet Care hardening — Phase A discovery report
 owner: Documentation Team
 audience: both
-status: draft
-last_updated: 2026-09-05
-tags: [pet_care, security, discovery]
+status: in-delivery
+folds_into: docs/domains/pet_care/features/care-intelligence.md
+plan: documentation-migration-514a
+status_since: 2026-10-08
+last_updated: 2026-10-08
 ---
 
 # Pet Care hardening — Phase A discovery report
@@ -172,7 +174,7 @@ Evidence column cites file paths inspected 2026-09-05. Severity: **P0** release 
 | F-19 | P2 | Coverage | Jest collects coverage but no enforced minimum thresholds | No `coverageThreshold` in server package | Ratchet on `petAccess.js`, policy modules | CI threshold |
 | F-20 | P2 | Lint | No ESLint config in repository | Repo search | ESLint ratchet on `server/` | CI lint job |
 | F-21 | P2 | Hygiene | Dead `.bak` route files remain | `server/routes/pets.js.bak`, `server/routes/auth.js.bak` | Remove | N/A |
-| F-22 | P2 | Terminology | Guardian → Pet Care workspace rename complete | [terminology-rename-inventory.md](terminology-rename-inventory.md) · plan `pet-care-terminology-rename` (#1041–#1045) | Addressed 2026-09-06 | N/A |
+| F-22 | P2 | Terminology | Guardian → Pet Care workspace rename complete | [Pet Care README — Wire and code map](../README.md#wire-and-code-map) · plan `pet-care-terminology-rename` (#1041–#1045) | Addressed 2026-09-06 | N/A |
 | F-23 | P3 | Observability | `requestContextMiddleware` exists; no formal security-event taxonomy doc | `server/middleware/requestContext.js` | Document alert-worthy events | N/A |
 
 ### Security invariants mapping (programme §20)
