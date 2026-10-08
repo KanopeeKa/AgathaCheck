@@ -4,7 +4,7 @@
   "approved_at": "2026-10-08T10:12:00Z",
   "approved_by": "user chat 2026-10-08 — approved; GitHub #1789 approve-autonomous occurrence-screen-modules-5ec0",
   "approved_until": "2026-10-10T10:12:00Z",
-  "content_hash": "sha256:38b21cd2411a7119db66a4530eeb14a12f607e7a33ffea52fe3910d9ffcc3a28",
+  "content_hash": "sha256:f38b185488bc7d608f993d63fb82a6f642106b4e0694e8f010335ff194bc689d",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/occurrence-screen-modules-5ec0-integration-5ec0",
@@ -77,7 +77,9 @@
       "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1797",
+      "pr_head_sha": "0aa3001f"
     }
   ]
 }

@@ -183,10 +183,10 @@ next_action: "continue phase 2 on branch cursor/occurrence-screen-modules-verify
 artifact_ref:
   branch: cursor/occurrence-screen-modules-verify-5ec0
   plan_path: .agents/plans/occurrence-screen-modules-5ec0.md
-  plan_commit: 58141c5013240e105ede0fbdb63ae0359ca3dc61
+  plan_commit: 0aa3001ff115534b305407e1148a34a40c3ea565
   snapshot_path: .agents/plans/occurrence-screen-modules-5ec0.snapshot.json
-  snapshot_commit: 58141c5013240e105ede0fbdb63ae0359ca3dc61
-open_prs: []
+  snapshot_commit: 0aa3001ff115534b305407e1148a34a40c3ea565
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1797"]
 merge_commits: {}
 debt_issue_refs: []
 ```
