@@ -90,8 +90,18 @@ Legal or technical **guardianship** is separate from Pet Care relationship langu
 | Term | Rule |
 |------|------|
 | **AgathaTrack** | Current product name — use in all new UI and design work |
-| **AgathaCheck** | Legacy — do not introduce in new copy |
+| **AgathaCheck** | Legacy repository/product name — do not introduce in new copy |
 | **Agatha** | Product voice for explainable suggestions — not a chat persona, simulated person, or veterinarian |
+
+## Workspace shells (Pet Care vs Shelter)
+
+| Surface | EN | FR | Notes |
+|---------|----|----|-------|
+| Individual-carer workspace | **Pet Care** | **Suivi** | Plum shell at `/pc/*` — not Guardian / My Pets as workspace labels (D38) |
+| Operational org workspace | **Shelter** | **Refuges** (drawer) | Teal experience; fostering orgs recognise themselves here — “Organisation” in old copy is legacy UI wording, not the workspace name |
+| Global personal area | **Account** | (l10n) | Bottom-pinned drawer destination — not global “Settings” |
+
+Custody **guardianship** in legal docs is separate from Pet Care relationship language ([pet_care README](../domains/pet_care/README.md)).
 
 ## Recurring care: routine (UI) vs rhythm (internal)
 
