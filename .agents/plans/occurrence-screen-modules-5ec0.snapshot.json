@@ -4,7 +4,7 @@
   "approved_at": "2026-10-08T10:12:00Z",
   "approved_by": "user chat 2026-10-08 — approved; GitHub #1789 approve-autonomous occurrence-screen-modules-5ec0",
   "approved_until": "2026-10-10T10:12:00Z",
-  "content_hash": "sha256:fd77800bc2a1bed3d1a9d2ab45c294eb5e82bac001c020b7343b64b134bf753d",
+  "content_hash": "sha256:63f4dc942c7dfaf9df236b6a185f4d22f71b5607e274721d33025641dae3457e",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/occurrence-screen-modules-5ec0-integration-5ec0",
@@ -41,13 +41,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
-      "status_detail": "Full module UI in one PR: identity, this-date actions with reschedule, next-open, away layout, file split, widget+domain tests.",
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
-      "debt_issue_refs": []
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1794",
+      "pr_head_sha": "9cc6eb1957a7eb4dfd1e0537cc3db0986b9f7fe0"
     },
     {
       "id": "2",

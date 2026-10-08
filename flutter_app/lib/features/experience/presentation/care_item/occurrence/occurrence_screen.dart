@@ -2,16 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:pet_profile_app/core/experience/app_experience.dart';
 import 'package:pet_profile_app/core/providers/analytics_providers.dart';
+import 'package:pet_profile_app/core/router/experience_shell_scaffold.dart';
 import 'package:pet_profile_app/core/router/shell_return_navigation.dart';
 import 'package:pet_profile_app/features/care_item/care_item.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
-import 'occurrence_absence_section.dart';
-import 'occurrence_blocks.dart';
-import 'occurrence_context_tile.dart';
+
 import 'occurrence_reschedule.dart';
-import 'occurrence_status_section.dart';
-import 'occurrence_title_row.dart';
+import 'occurrence_screen_body.dart';
 
 /// One occurrence, every status (D-CIE-029, Care date screen spec).
 class OccurrenceScreen extends ConsumerStatefulWidget {
@@ -95,76 +94,52 @@ class _OccurrenceScreenState extends ConsumerState<OccurrenceScreen> {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final outcome = _outcome;
+    final router = GoRouter.maybeOf(context);
+    final location =
+        router?.routerDelegate.currentConfiguration.uri.path ??
+        '/pet/${widget.petId}/events/${widget.entryId}/occurrences/${widget.occurrenceId}';
+
+    Widget content = switch (outcome) {
+      null => const Center(child: CircularProgressIndicator()),
+      CareFailed(failure: CareNotOpenFailure(gone: true)) => _Message(
+        key: const Key('occurrence_gone'),
+        text: l.occurrenceGone,
+        actionLabel: l.occurrenceOpenCareDetails,
+        onAction: _openItem,
+      ),
+      CareFailed() => _Message(
+        key: const Key('occurrence_error'),
+        text: l.careOccurrenceLoadError,
+        actionLabel: l.careRetry,
+        onAction: () {
+          setState(() => _outcome = null);
+          _load();
+        },
+      ),
+      CareSucceeded(:final value) => OccurrenceScreenBody(
+        petId: widget.petId,
+        entryId: widget.entryId,
+        detail: value,
+        focus: widget.focus,
+        onChanged: _changed,
+        onOpenCareDetails: _openItem,
+        rescheduleBusy: _busy,
+        onReschedule: () => _reschedule(value),
+      ),
+    };
+
     return Semantics(
       identifier: 'occurrence_screen',
       container: true,
       label: l.careDateScreenTitle,
       explicitChildNodes: true,
-      child: Scaffold(
+      child: ExperienceShellScaffold(
         key: const Key('occurrence_screen'),
-        appBar: AppBar(
-          title: Text(l.careDateScreenTitle),
-          leading: BackButton(
-            onPressed: () {
-              final router = GoRouter.maybeOf(context);
-              handleShellBack(
-                context,
-                returnTo: router == null
-                    ? null
-                    : shellReturnToFromState(GoRouterState.of(context)),
-                defaultPath: '/pet/${widget.petId}/events/${widget.entryId}',
-              );
-            },
-          ),
-        ),
-        body: switch (outcome) {
-          null => const Center(child: CircularProgressIndicator()),
-          CareFailed(failure: CareNotOpenFailure(gone: true)) => _Message(
-            key: const Key('occurrence_gone'),
-            text: l.occurrenceGone,
-            actionLabel: l.occurrenceAboutItem,
-            onAction: _openItem,
-          ),
-          CareFailed() => _Message(
-            key: const Key('occurrence_error'),
-            text: l.careOccurrenceLoadError,
-            actionLabel: l.careRetry,
-            onAction: () {
-              setState(() => _outcome = null);
-              _load();
-            },
-          ),
-          CareSucceeded(:final value) => ListView(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
-            children: [
-              OccurrenceContextTile(
-                detail: value,
-                onOpenCareDetails: _openItem,
-              ),
-              const SizedBox(height: 16),
-              OccurrenceTitleRow(
-                occurrence: value.occurrence,
-                showReschedule: occurrenceShowsReschedule(value),
-                busy: _busy,
-                onReschedule: () => _reschedule(value),
-              ),
-              const SizedBox(height: 16),
-              OccurrenceStatusSection(detail: value),
-              const SizedBox(height: 16),
-              OccurrenceAbsenceSection(
-                entryId: widget.entryId,
-                detail: value,
-                onChanged: _changed,
-              ),
-              const SizedBox(height: 16),
-              OccurrenceBlocks(
-                detail: value,
-                focus: widget.focus,
-                onChanged: _changed,
-              ),
-            ],
-          ),
-        },
+        experience: AppExperience.petCare,
+        currentLocation: location,
+        screenTitle: l.careDateScreenTitle,
+        backPath: '/pet/${widget.petId}/events/${widget.entryId}',
+        child: content,
       ),
     );
   }

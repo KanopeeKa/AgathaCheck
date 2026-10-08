@@ -2532,6 +2532,20 @@
     }
   },
   "careDateScreenTitle": "Care date",
+  "occurrenceThisDateTitle": "This date",
+  "occurrenceCompletionDateLabel": "Completion date",
+  "occurrenceDaysOverdue": "{count, plural, =1{1 day overdue} other{{count} days overdue}}",
+  "@occurrenceDaysOverdue": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "occurrenceNextOpenDate": "Next open date",
+  "occurrenceViewNext": "View",
+  "occurrenceOpenCareDetails": "View care details",
+  "occurrenceOtherOpenDatesHint": "Other open dates are on this care item.",
+  "occurrenceScheduleRecurring": "Recurring care",
+  "occurrenceSchedulePlannedDate": "Planned date",
   "occurrenceReschedule": "Reschedule",
   "occurrenceStatusSectionTitle": "Status",
   "occurrenceActionsSectionTitle": "Actions",
