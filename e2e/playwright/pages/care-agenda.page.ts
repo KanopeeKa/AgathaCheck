@@ -6,6 +6,7 @@ import {
   flutterRoutePath,
   refreshFlutterAccessibility,
   semanticsByName,
+  waitForFlutterRoutePattern,
 } from '../support/flutter';
 
 /**
@@ -54,16 +55,17 @@ export class CareAgendaPage {
       await this.page.mouse.click(box.x + 20, box.y + box.height / 2);
     };
 
-    const careDetailsHeading = this.page.getByRole('heading', {
-      name: /Care details|Détail du soin/i,
-    });
+    const careDetailsTitle = this.page
+      .getByText(/^Care details$|^Détail du soin$/i)
+      .first();
     await expect(async () => {
       await tapRow();
       await refreshFlutterAccessibility(this.page);
       const path = flutterRoutePath(this.page.url());
       const onCareItemRoute =
-        /\/events\/[^/]+$/.test(path) && !/\/occurrences\//.test(path);
-      const onScreen = await careDetailsHeading.isVisible().catch(() => false);
+        /\/pet\/[^/]+\/events\/[^/]+$/.test(path) &&
+        !/\/occurrences\//.test(path);
+      const onScreen = await careDetailsTitle.isVisible().catch(() => false);
       if (!onCareItemRoute && !onScreen && entryName) {
         await semanticsByName(
           this.page,
@@ -76,16 +78,22 @@ export class CareAgendaPage {
           .click({ position: { x: 12, y: 16 } });
         await refreshFlutterAccessibility(this.page);
       }
+      const readyPath = flutterRoutePath(this.page.url());
       const ready =
-        (/\/events\/[^/]+$/.test(flutterRoutePath(this.page.url())) &&
-          !/\/occurrences\//.test(flutterRoutePath(this.page.url()))) ||
-        (await careDetailsHeading.isVisible().catch(() => false));
+        (/\/pet\/[^/]+\/events\/[^/]+$/.test(readyPath) &&
+          !/\/occurrences\//.test(readyPath)) ||
+        (await careDetailsTitle.isVisible().catch(() => false));
       if (!ready) {
-        throw new Error(
-          `Care details not open (path=${flutterRoutePath(this.page.url())})`,
-        );
+        throw new Error(`Care details not open (path=${readyPath})`);
       }
     }).toPass({ timeout: 60_000 });
+    if (entryId) {
+      await waitForFlutterRoutePattern(
+        this.page,
+        new RegExp(`/pet/[^/]+/events/${entryId}(\\?|$)`),
+        60_000,
+      );
+    }
     await refreshFlutterAccessibility(this.page);
   }
 

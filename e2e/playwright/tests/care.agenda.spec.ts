@@ -14,7 +14,7 @@ import { createCareItem, withCareClock } from '../support/care-api';
 import { createPet } from '../support/api';
 
 test.describe('Care agenda', () => {
-  test('row opens Care details', async ({ page, testUser }) => {
+  test('A care row opens Care details', async ({ page, testUser }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const today = new Date().toISOString().slice(0, 10);
     await withCareClock(`${today}T08:30`, page);
@@ -39,7 +39,7 @@ test.describe('Care agenda', () => {
     }
   });
 
-  test('weight check Mark as done opens Care date for weight entry', async ({
+  test('Care that needs a weight opens Care date from Mark as done', async ({
     page,
     testUser,
   }) => {
