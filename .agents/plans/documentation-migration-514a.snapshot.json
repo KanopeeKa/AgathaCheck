@@ -1,0 +1,1027 @@
+{
+  "schema_version": 1,
+  "plan_id": "documentation-migration-514a",
+  "programme_ref": "docs/domains/documentation/changes/documentation-migration-handover.md",
+  "approved_at": "2026-10-08T09:00:00Z",
+  "approved_by": "Pending — comment approve-autonomous documentation-migration-514a on control issue",
+  "approved_until": "2026-10-10T09:00:00Z",
+  "autonomy": "halted",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/documentation-migration-wave13-integration-514a",
+  "control_issue": 1787,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Phase A — docs gate warn on integration",
+      "branch": "cursor/documentation-migration-gate-warn-514a",
+      "allowed_paths": [
+        "docs/**",
+        "scripts/docs-legacy-baseline.json",
+        "scripts/docs-memory-backlog.json",
+        ".agents/memory/**",
+        ".agents/plans/documentation-migration-514a.md",
+        ".agents/plans/documentation-migration-514a.snapshot.json",
+        "docs/architecture/**",
+        ".cursor/**",
+        "AGENTS.md",
+        "e2e/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "governance-allowlist",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1768",
+      "pr_head_sha": "37024b8114ddd57e4a4666c20ee6eb953758e039"
+    },
+    {
+      "id": "2",
+      "title": "Wave 1.1 — care-schedule-management",
+      "branch": "cursor/documentation-migration-csm-514a",
+      "allowed_paths": [
+        "docs/**",
+        "scripts/docs-legacy-baseline.json",
+        "scripts/docs-memory-backlog.json",
+        ".agents/memory/**",
+        ".agents/plans/documentation-migration-514a.md",
+        ".agents/plans/documentation-migration-514a.snapshot.json",
+        "docs/architecture/**",
+        ".cursor/**",
+        "AGENTS.md",
+        "e2e/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "governance-allowlist",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "3",
+      "title": "Wave 1.2 — care-item",
+      "branch": "cursor/documentation-migration-care-item-514a",
+      "allowed_paths": [
+        "docs/**",
+        "scripts/docs-legacy-baseline.json",
+        "scripts/docs-memory-backlog.json",
+        ".agents/memory/**",
+        ".agents/plans/documentation-migration-514a.md",
+        ".agents/plans/documentation-migration-514a.snapshot.json",
+        "docs/architecture/**",
+        ".cursor/**",
+        "AGENTS.md",
+        "e2e/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "governance-allowlist",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1775",
+      "pr_head_sha": "6af0b467926ee98f5983c661add8794905a49561"
+    },
+    {
+      "id": "4",
+      "title": "Phase B — restore docs gate block + stragglers",
+      "branch": "cursor/documentation-migration-integration-harden-514a",
+      "allowed_paths": [
+        "docs/**",
+        "scripts/docs-legacy-baseline.json",
+        "scripts/docs-memory-backlog.json",
+        ".agents/memory/**",
+        ".agents/plans/documentation-migration-514a.md",
+        ".agents/plans/documentation-migration-514a.snapshot.json",
+        "docs/architecture/**",
+        ".cursor/**",
+        "AGENTS.md",
+        "e2e/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "governance-allowlist",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "5",
+      "title": "Batch merge integration → main (Wave 1.1–1.2)",
+      "branch": "cursor/documentation-migration-integration-main-514a",
+      "allowed_paths": [
+        "docs/**",
+        "scripts/docs-legacy-baseline.json",
+        "scripts/docs-memory-backlog.json",
+        ".agents/memory/**",
+        ".agents/plans/documentation-migration-514a.md",
+        ".agents/plans/documentation-migration-514a.snapshot.json",
+        "docs/architecture/**",
+        ".cursor/**",
+        "AGENTS.md",
+        "e2e/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "governance-allowlist",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1780",
+      "pr_head_sha": "7d5a5229f031747d8ef71983293d9861b39edfcf"
+    },
+    {
+      "id": "6",
+      "title": "Wave 1.3a — care-context",
+      "branch": "cursor/documentation-migration-care-context-514a",
+      "allowed_paths": [
+        "docs/**",
+        "scripts/docs-legacy-baseline.json",
+        "scripts/docs-memory-backlog.json",
+        ".agents/memory/**",
+        ".agents/plans/documentation-migration-514a.md",
+        ".agents/plans/documentation-migration-514a.snapshot.json",
+        "docs/architecture/**",
+        ".cursor/**",
+        "AGENTS.md",
+        "e2e/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "governance-allowlist",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1782",
+      "pr_head_sha": "c0331308bd1f1ef17e1db404a3408c91fe34657a"
+    },
+    {
+      "id": "7",
+      "title": "Wave 1.3b — away-planning-carer-model",
+      "branch": "cursor/documentation-migration-carer-model-514a",
+      "allowed_paths": [
+        "docs/**",
+        "scripts/docs-legacy-baseline.json",
+        "scripts/docs-memory-backlog.json",
+        ".agents/memory/**",
+        ".agents/plans/documentation-migration-514a.md",
+        ".agents/plans/documentation-migration-514a.snapshot.json",
+        "docs/architecture/**",
+        ".cursor/**",
+        "AGENTS.md",
+        "e2e/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "governance-allowlist",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1784",
+      "pr_head_sha": "7beb2e2aa8463c5983585a6486b2c0c46a6758a5"
+    },
+    {
+      "id": "8",
+      "title": "Wave 1.4a — care-progression",
+      "branch": "cursor/documentation-migration-care-progression-514a",
+      "allowed_paths": [
+        "docs/**",
+        "scripts/docs-legacy-baseline.json",
+        "scripts/docs-memory-backlog.json",
+        ".agents/memory/**",
+        ".agents/plans/documentation-migration-514a.md",
+        ".agents/plans/documentation-migration-514a.snapshot.json",
+        "docs/architecture/**",
+        ".cursor/**",
+        "AGENTS.md",
+        "e2e/**",
+        "docs/domains/pet_care/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "governance-allowlist",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "9",
+      "title": "Wave 1.4b — care-intelligence",
+      "branch": "cursor/documentation-migration-care-intelligence-514a",
+      "allowed_paths": [
+        "docs/**",
+        "scripts/docs-legacy-baseline.json",
+        "scripts/docs-memory-backlog.json",
+        ".agents/memory/**",
+        ".agents/plans/documentation-migration-514a.md",
+        ".agents/plans/documentation-migration-514a.snapshot.json",
+        "docs/architecture/**",
+        ".cursor/**",
+        "AGENTS.md",
+        "e2e/**",
+        "docs/domains/pet_care/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "governance-allowlist",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "10",
+      "title": "Wave 1.5 — pet_care domain index",
+      "branch": "cursor/documentation-migration-pet-care-index-514a",
+      "allowed_paths": [
+        "docs/**",
+        "scripts/docs-legacy-baseline.json",
+        "scripts/docs-memory-backlog.json",
+        ".agents/memory/**",
+        ".agents/plans/documentation-migration-514a.md",
+        ".agents/plans/documentation-migration-514a.snapshot.json",
+        "docs/architecture/**",
+        ".cursor/**",
+        "AGENTS.md",
+        "e2e/**",
+        "docs/domains/pet_care/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "governance-allowlist",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "11",
+      "title": "Wave 2.1 — people-care-team + vocabulary",
+      "branch": "cursor/documentation-migration-people-514a",
+      "allowed_paths": [
+        "docs/**",
+        "scripts/docs-legacy-baseline.json",
+        "scripts/docs-memory-backlog.json",
+        ".agents/memory/**",
+        ".agents/plans/documentation-migration-514a.md",
+        ".agents/plans/documentation-migration-514a.snapshot.json",
+        "docs/architecture/**",
+        ".cursor/**",
+        "AGENTS.md",
+        "e2e/**",
+        "docs/domains/people/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "governance-allowlist",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "12",
+      "title": "Wave 2.2 — notifications",
+      "branch": "cursor/documentation-migration-notifications-514a",
+      "allowed_paths": [
+        "docs/**",
+        "scripts/docs-legacy-baseline.json",
+        "scripts/docs-memory-backlog.json",
+        ".agents/memory/**",
+        ".agents/plans/documentation-migration-514a.md",
+        ".agents/plans/documentation-migration-514a.snapshot.json",
+        "docs/architecture/**",
+        ".cursor/**",
+        "AGENTS.md",
+        "e2e/**",
+        "docs/domains/notifications/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "governance-allowlist",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "13",
+      "title": "Wave 2.3 — weight tracking",
+      "branch": "cursor/documentation-migration-weight-514a",
+      "allowed_paths": [
+        "docs/**",
+        "scripts/docs-legacy-baseline.json",
+        "scripts/docs-memory-backlog.json",
+        ".agents/memory/**",
+        ".agents/plans/documentation-migration-514a.md",
+        ".agents/plans/documentation-migration-514a.snapshot.json",
+        "docs/architecture/**",
+        ".cursor/**",
+        "AGENTS.md",
+        "e2e/**",
+        "docs/domains/weight_tracking/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "governance-allowlist",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "14",
+      "title": "Wave 3.1 — pet profile cluster",
+      "branch": "cursor/documentation-migration-pet-profile-514a",
+      "allowed_paths": [
+        "docs/**",
+        "scripts/docs-legacy-baseline.json",
+        "scripts/docs-memory-backlog.json",
+        ".agents/memory/**",
+        ".agents/plans/documentation-migration-514a.md",
+        ".agents/plans/documentation-migration-514a.snapshot.json",
+        "docs/architecture/**",
+        ".cursor/**",
+        "AGENTS.md",
+        "e2e/**",
+        "docs/domains/pet_profile/**",
+        "docs/architecture/pet-activity-model.md"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "governance-allowlist",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "15",
+      "title": "Wave 3.2 — guardian dashboard / today",
+      "branch": "cursor/documentation-migration-guardian-today-514a",
+      "allowed_paths": [
+        "docs/**",
+        "scripts/docs-legacy-baseline.json",
+        "scripts/docs-memory-backlog.json",
+        ".agents/memory/**",
+        ".agents/plans/documentation-migration-514a.md",
+        ".agents/plans/documentation-migration-514a.snapshot.json",
+        "docs/architecture/**",
+        ".cursor/**",
+        "AGENTS.md",
+        "e2e/**",
+        "docs/domains/pet_profile/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "governance-allowlist",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "16",
+      "title": "Wave 3.3 — navigation shell",
+      "branch": "cursor/documentation-migration-navigation-514a",
+      "allowed_paths": [
+        "docs/**",
+        "scripts/docs-legacy-baseline.json",
+        "scripts/docs-memory-backlog.json",
+        ".agents/memory/**",
+        ".agents/plans/documentation-migration-514a.md",
+        ".agents/plans/documentation-migration-514a.snapshot.json",
+        "docs/architecture/**",
+        ".cursor/**",
+        "AGENTS.md",
+        "e2e/**",
+        "docs/domains/navigation/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "governance-allowlist",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "17",
+      "title": "Wave 3.4 — health_tracking remainder",
+      "branch": "cursor/documentation-migration-health-tracking-514a",
+      "allowed_paths": [
+        "docs/**",
+        "scripts/docs-legacy-baseline.json",
+        "scripts/docs-memory-backlog.json",
+        ".agents/memory/**",
+        ".agents/plans/documentation-migration-514a.md",
+        ".agents/plans/documentation-migration-514a.snapshot.json",
+        "docs/architecture/**",
+        ".cursor/**",
+        "AGENTS.md",
+        "e2e/**",
+        "docs/domains/health_tracking/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "governance-allowlist",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "18",
+      "title": "Wave 4 — auth",
+      "branch": "cursor/documentation-migration-auth-514a",
+      "allowed_paths": [
+        "docs/**",
+        "scripts/docs-legacy-baseline.json",
+        "scripts/docs-memory-backlog.json",
+        ".agents/memory/**",
+        ".agents/plans/documentation-migration-514a.md",
+        ".agents/plans/documentation-migration-514a.snapshot.json",
+        "docs/architecture/**",
+        ".cursor/**",
+        "AGENTS.md",
+        "e2e/**",
+        "docs/domains/auth/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "governance-allowlist",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "19",
+      "title": "Wave 4 — sharing",
+      "branch": "cursor/documentation-migration-sharing-514a",
+      "allowed_paths": [
+        "docs/**",
+        "scripts/docs-legacy-baseline.json",
+        "scripts/docs-memory-backlog.json",
+        ".agents/memory/**",
+        ".agents/plans/documentation-migration-514a.md",
+        ".agents/plans/documentation-migration-514a.snapshot.json",
+        "docs/architecture/**",
+        ".cursor/**",
+        "AGENTS.md",
+        "e2e/**",
+        "docs/domains/sharing/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "governance-allowlist",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "20",
+      "title": "Wave 4 — subscription",
+      "branch": "cursor/documentation-migration-subscription-514a",
+      "allowed_paths": [
+        "docs/**",
+        "scripts/docs-legacy-baseline.json",
+        "scripts/docs-memory-backlog.json",
+        ".agents/memory/**",
+        ".agents/plans/documentation-migration-514a.md",
+        ".agents/plans/documentation-migration-514a.snapshot.json",
+        "docs/architecture/**",
+        ".cursor/**",
+        "AGENTS.md",
+        "e2e/**",
+        "docs/domains/subscription/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "governance-allowlist",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "21",
+      "title": "Wave 4 — help_about",
+      "branch": "cursor/documentation-migration-help-about-514a",
+      "allowed_paths": [
+        "docs/**",
+        "scripts/docs-legacy-baseline.json",
+        "scripts/docs-memory-backlog.json",
+        ".agents/memory/**",
+        ".agents/plans/documentation-migration-514a.md",
+        ".agents/plans/documentation-migration-514a.snapshot.json",
+        "docs/architecture/**",
+        ".cursor/**",
+        "AGENTS.md",
+        "e2e/**",
+        "docs/domains/help_about/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "governance-allowlist",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "22",
+      "title": "Wave 4 — vet (PO: separate vs People)",
+      "branch": "cursor/documentation-migration-vet-514a",
+      "allowed_paths": [
+        "docs/**",
+        "scripts/docs-legacy-baseline.json",
+        "scripts/docs-memory-backlog.json",
+        ".agents/memory/**",
+        ".agents/plans/documentation-migration-514a.md",
+        ".agents/plans/documentation-migration-514a.snapshot.json",
+        "docs/architecture/**",
+        ".cursor/**",
+        "AGENTS.md",
+        "e2e/**",
+        "docs/domains/vet/**",
+        "docs/domains/people/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "governance-allowlist",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "23",
+      "title": "Wave 5.1 — cross-domain changes",
+      "branch": "cursor/documentation-migration-cross-domain-514a",
+      "allowed_paths": [
+        "docs/**",
+        "scripts/docs-legacy-baseline.json",
+        "scripts/docs-memory-backlog.json",
+        ".agents/memory/**",
+        ".agents/plans/documentation-migration-514a.md",
+        ".agents/plans/documentation-migration-514a.snapshot.json",
+        "docs/architecture/**",
+        ".cursor/**",
+        "AGENTS.md",
+        "e2e/**",
+        "docs/domains/cross-domain/**",
+        "docs/design/terminology.md"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "governance-allowlist",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "24",
+      "title": "Wave 5.2 — root indexes and debt stubs",
+      "branch": "cursor/documentation-migration-indexes-514a",
+      "allowed_paths": [
+        "docs/**",
+        "scripts/docs-legacy-baseline.json",
+        "scripts/docs-memory-backlog.json",
+        ".agents/memory/**",
+        ".agents/plans/documentation-migration-514a.md",
+        ".agents/plans/documentation-migration-514a.snapshot.json",
+        "docs/architecture/**",
+        ".cursor/**",
+        "AGENTS.md",
+        "e2e/**",
+        "docs/README.md",
+        "docs/debt/**",
+        "CONTRIBUTING.md"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "governance-allowlist",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "25",
+      "title": "Wave 5.3 — memory → terminology",
+      "branch": "cursor/documentation-migration-memory-514a",
+      "allowed_paths": [
+        "docs/**",
+        "scripts/docs-legacy-baseline.json",
+        "scripts/docs-memory-backlog.json",
+        ".agents/memory/**",
+        ".agents/plans/documentation-migration-514a.md",
+        ".agents/plans/documentation-migration-514a.snapshot.json",
+        "docs/architecture/**",
+        ".cursor/**",
+        "AGENTS.md",
+        "e2e/**",
+        "docs/design/terminology.md"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "governance-allowlist",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "26",
+      "title": "Final — integration → main (/babysit-uat)",
+      "branch": "cursor/documentation-migration-wave13-integration-514a",
+      "allowed_paths": [
+        "docs/**",
+        "scripts/docs-legacy-baseline.json",
+        "scripts/docs-memory-backlog.json",
+        ".agents/memory/**",
+        ".agents/plans/documentation-migration-514a.md",
+        ".agents/plans/documentation-migration-514a.snapshot.json",
+        "docs/architecture/**",
+        ".cursor/**",
+        "AGENTS.md",
+        "e2e/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "governance-allowlist",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": "Open PR integration → main; ./scripts/pre-push.sh; /babysit-uat on merge SHA",
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    }
+  ],
+  "content_hash": "sha256:099240d6b2abc285f3fb13bb6e07d3f2d662d44347c874b0e5291fcfd0268500"
+}
