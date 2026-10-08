@@ -42,9 +42,7 @@ class OccurrenceOpenActions extends ConsumerWidget {
       detail.item.careFamily,
     ).contains(CompletionRequirement.weight);
     final inputs = CompletionInputs(
-      weightValue: double.tryParse(
-        weightController.text.replaceAll(',', '.'),
-      ),
+      weightValue: double.tryParse(weightController.text.replaceAll(',', '.')),
       weightUnit: weightUnitToWire(ref.watch(weightUnitPreferenceProvider)),
     );
     final missing = missingRequirements(detail.item.careFamily, inputs);
@@ -101,7 +99,9 @@ class OccurrenceOpenActions extends ConsumerWidget {
                   child: OutlinedButton(
                     key: const Key('occurrence_reschedule'),
                     onPressed: busy ? null : onReschedule,
-                    child: ExcludeSemantics(child: Text(l.occurrenceReschedule)),
+                    child: ExcludeSemantics(
+                      child: Text(l.occurrenceReschedule),
+                    ),
                   ),
                 ),
               ),

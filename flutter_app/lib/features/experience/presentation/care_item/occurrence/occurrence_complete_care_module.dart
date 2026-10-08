@@ -180,10 +180,9 @@ class _OccurrenceCompleteCareModuleState
         reasonCode: skip.reasonCode,
         notes: skip.notes,
       );
-      await ref.read(analyticsServiceProvider).capture(
-        'weigh_in_skipped',
-        {'reason_code': skip.reasonCode ?? ''},
-      );
+      await ref.read(analyticsServiceProvider).capture('weigh_in_skipped', {
+        'reason_code': skip.reasonCode ?? '',
+      });
       await _report(outcome, l.careSkipped(_d.item.name));
       return;
     }
@@ -243,7 +242,9 @@ class _OccurrenceCompleteCareModuleState
                 ),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: CareItemSectionHeader(title: l.occurrenceThisDateTitle),
+                  child: CareItemSectionHeader(
+                    title: l.occurrenceThisDateTitle,
+                  ),
                 ),
               ],
             ),

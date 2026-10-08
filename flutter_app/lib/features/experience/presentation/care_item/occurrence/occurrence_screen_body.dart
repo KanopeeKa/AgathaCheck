@@ -70,15 +70,7 @@ class OccurrenceScreenBody extends StatelessWidget {
           if (!wide) {
             return ListView(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
-              children: [
-                identity,
-                _gap,
-                thisDate,
-                _gap,
-                away,
-                _gap,
-                nextOpen,
-              ],
+              children: [identity, _gap, thisDate, _gap, away, _gap, nextOpen],
             );
           }
 

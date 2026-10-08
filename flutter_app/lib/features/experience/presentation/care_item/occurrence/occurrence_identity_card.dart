@@ -130,8 +130,9 @@ class OccurrenceIdentityCard extends ConsumerWidget {
                       ),
                     ),
                     error: (_, __) => const SizedBox.shrink(),
-                    data: (pet) =>
-                        pet == null ? const SizedBox.shrink() : CareItemPetContextTile(pet: pet),
+                    data: (pet) => pet == null
+                        ? const SizedBox.shrink()
+                        : CareItemPetContextTile(pet: pet),
                   ),
                   if (finished || paused) ...[
                     const SizedBox(height: 8),
@@ -194,7 +195,11 @@ class OccurrenceIdentityCard extends ConsumerWidget {
     return days > 0 ? days : null;
   }
 
-  String _formatWhen(BuildContext context, AppLocalizations l, CareOccurrence occ) {
+  String _formatWhen(
+    BuildContext context,
+    AppLocalizations l,
+    CareOccurrence occ,
+  ) {
     final locale = Localizations.localeOf(context).toString();
     final dateStr = DateFormat.yMMMd(locale).format(occ.date);
     final time = occ.time;
