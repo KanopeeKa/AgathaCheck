@@ -89,15 +89,15 @@ Regenerate snapshot after editing phases: `node scripts/generate_documentation_m
 ```yaml
 autonomy: active
 current_phase: 19
-last_completed_phase: 18
+last_completed_phase: 22
 halt_reason: null
 next_action: "start phase 19: checkout cursor/documentation-migration-sharing-514a"
 artifact_ref:
   branch: cursor/documentation-migration-wave13-integration-514a
   plan_path: .agents/plans/documentation-migration-514a.md
-  plan_commit: 3f0111c0ee00399c1e062aff805ac2d2957cc21c
+  plan_commit: 689a61a32d92f4008245902b3470fef882680d6f
   snapshot_path: .agents/plans/documentation-migration-514a.snapshot.json
-  snapshot_commit: 3f0111c0ee00399c1e062aff805ac2d2957cc21c
+  snapshot_commit: 689a61a32d92f4008245902b3470fef882680d6f
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
