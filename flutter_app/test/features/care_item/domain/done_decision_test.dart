@@ -71,6 +71,13 @@ void main() {
       s([occ('o', 5, CareOccurrenceStatus.overdue)], fixed: false),
     );
     expect(d, isA<DoneAsksDate>());
+    expect(
+      decideDone(
+        s([occ('o', 5, CareOccurrenceStatus.overdue)], fixed: false),
+        onOccurrenceScreen: true,
+      ),
+      isA<DoneAsksDate>(),
+    );
   });
 
   test('DN-4 more than half an interval early asks to confirm', () {
