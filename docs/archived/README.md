@@ -35,7 +35,7 @@ These documents have been replaced by the [navigation domain](/docs/domains/navi
 | Original Path | Archived Path | Replacement | Reason |
 |---------------|---------------|--------------|--------|
 | `docs/design/navigation-v2.md` | [navigation-v2.md](navigation-v2.md) | [navigation domain](/docs/domains/navigation/README.md) | Navigation redesign superseded |
-| `docs/experience-split-plan.md` | [experience-split-plan.md](experience-split-plan.md) | [phase-r-reconciliation.md](/docs/domains/navigation/changes/phase-r-reconciliation.md) | Reconciled into Phase R |
+| `docs/experience-split-plan.md` | [experience-split-plan.md](experience-split-plan.md) | [navigation-decisions.md](/docs/domains/navigation/features/navigation-decisions.md#phase-r-reconciliation-folded) | Reconciled into Phase R |
 
 ### Point-in-Time Snapshots
 
