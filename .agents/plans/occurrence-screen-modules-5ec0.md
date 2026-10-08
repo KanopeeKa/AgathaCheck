@@ -175,17 +175,17 @@ Unchanged: `occurrence_screen_opened`, `care_completion_date_changed`. **No** `o
 ## Runtime state
 
 ```yaml
-autonomy: active
+autonomy: completed
 current_phase: null
 last_completed_phase: 2
 halt_reason: null
 next_action: "plan complete"
 artifact_ref:
-  branch: cursor/occurrence-screen-modules-5ec0-integration-5ec0
+  branch: main
   plan_path: .agents/plans/occurrence-screen-modules-5ec0.md
-  plan_commit: b06b7753fbc740a9b04146f48718011a3906fc5b
+  plan_commit: 2cb018d0e095b813a9581e26f2ca8d875dead3f2
   snapshot_path: .agents/plans/occurrence-screen-modules-5ec0.snapshot.json
-  snapshot_commit: b06b7753fbc740a9b04146f48718011a3906fc5b
+  snapshot_commit: 2cb018d0e095b813a9581e26f2ca8d875dead3f2
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
