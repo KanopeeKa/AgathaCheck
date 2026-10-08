@@ -11,7 +11,7 @@ tags: [pet_care, care_item, ui, execute-plan]
 
 ## Goal
 
-Deliver the **module-based Care date screen** per [`docs/domains/pet_care/changes/occurrence-screen-modules-spec.md`](../../docs/domains/pet_care/changes/occurrence-screen-modules-spec.md) (review amendments 2026-10-08).
+Deliver the **module-based Care date screen** per [`care-item-evolution.md`](../../docs/domains/pet_care/features/care-item-evolution.md) § Care date screen (module layout v2, 2026-10-08).
 
 **One verifiable outcome:** Care date reads as **one occurrence of a known Care** (identity → this date → away → next open), aligned with Care Item surface tokens, without API changes.
 
@@ -31,8 +31,7 @@ Deliver the **module-based Care date screen** per [`docs/domains/pet_care/change
 
 | Path | When |
 |------|------|
-| `docs/domains/pet_care/changes/occurrence-screen-modules-spec.md` | Source during build |
-| `docs/domains/pet_care/features/care-item-evolution.md` | Phase 2 Mode A fold + delete changes spec |
+| `docs/domains/pet_care/features/care-item-evolution.md` | Canonical Care date module layout (folded phase 2) |
 
 **Docs gate per PR:**
 
@@ -180,14 +179,14 @@ autonomy: active
 current_phase: 2
 last_completed_phase: 1
 halt_reason: null
-next_action: "start phase 2: checkout cursor/occurrence-screen-modules-verify-5ec0"
+next_action: "continue phase 2 on branch cursor/occurrence-screen-modules-verify-5ec0"
 artifact_ref:
-  branch: cursor/occurrence-screen-modules-ui-5ec0
+  branch: cursor/occurrence-screen-modules-verify-5ec0
   plan_path: .agents/plans/occurrence-screen-modules-5ec0.md
-  plan_commit: e885d472c03f42d296ab04383f52e7d6e580254d
+  plan_commit: 0aa3001ff115534b305407e1148a34a40c3ea565
   snapshot_path: .agents/plans/occurrence-screen-modules-5ec0.snapshot.json
-  snapshot_commit: e885d472c03f42d296ab04383f52e7d6e580254d
-open_prs: []
+  snapshot_commit: 0aa3001ff115534b305407e1148a34a40c3ea565
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1797"]
 merge_commits: {}
 debt_issue_refs: []
 ```

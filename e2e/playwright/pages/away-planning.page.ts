@@ -414,8 +414,8 @@ export class AwayPlanningPage {
     const occurrenceScreen = this.page.locator(
       '[flt-semantics-identifier="occurrence_screen"]',
     );
-    const aboutItem = this.page.locator(
-      '[flt-semantics-identifier="occurrence_about_item"]',
+    const occurrenceIdentity = this.page.locator(
+      '[flt-semantics-identifier="occurrence_identity_card"], [flt-semantics-identifier="occurrence_open_care_details"]',
     );
     const careMenu = this.page.locator('[flt-semantics-identifier="care_item_menu"]');
     const careActions = this.page.getByRole('button', {
@@ -429,14 +429,14 @@ export class AwayPlanningPage {
       const onOccurrenceUi =
         onOccurrenceRoute ||
         (await occurrenceScreen.isVisible().catch(() => false)) ||
-        (await aboutItem.isVisible().catch(() => false));
+        (await occurrenceIdentity.isVisible().catch(() => false));
 
       await expect(back.first()).toBeVisible();
 
       const entryVisible = this.page
         .getByText(entryName, { exact: false })
         .or(this.page.getByRole('button', { name: new RegExp(entryName, 'i') }))
-        .or(aboutItem);
+        .or(occurrenceIdentity);
 
       if (onOccurrenceUi) {
         // Occurrence screen: care name may live in semantics label only (context tile).
