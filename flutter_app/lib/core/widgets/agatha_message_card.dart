@@ -13,6 +13,32 @@ abstract final class AgathaMessageCardShell {
       fontWeight: FontWeight.w600,
     );
   }
+
+  /// Plum primary CTAs clash on Agatha message cards — use darker teal actions.
+  static ThemeData suggestionActionsTheme(ThemeData base) {
+    final action = AppColorTokens.agathaTealAction;
+    return base.copyWith(
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          backgroundColor: action,
+          foregroundColor: AppColorTokens.inverse,
+          disabledBackgroundColor: action.withValues(alpha: 0.38),
+          disabledForegroundColor: AppColorTokens.inverse.withValues(
+            alpha: 0.6,
+          ),
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: action,
+          side: BorderSide(color: action),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(foregroundColor: action),
+      ),
+    );
+  }
 }
 
 /// Card wrapper with Agatha message surface and border.
@@ -21,10 +47,14 @@ class AgathaMessageCard extends StatelessWidget {
     super.key,
     required this.child,
     this.margin = AgathaMessageCardShell.defaultMargin,
+    this.themeSuggestionActions = false,
   });
 
   final Widget child;
   final EdgeInsetsGeometry margin;
+
+  /// When true, Accept / Why / text actions use [AgathaMessageCardShell.suggestionActionsTheme].
+  final bool themeSuggestionActions;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +68,14 @@ class AgathaMessageCard extends StatelessWidget {
       ),
       child: Padding(
         padding: AgathaMessageCardShell.contentPadding,
-        child: child,
+        child: themeSuggestionActions
+            ? Theme(
+                data: AgathaMessageCardShell.suggestionActionsTheme(
+                  Theme.of(context),
+                ),
+                child: child,
+              )
+            : child,
       ),
     );
   }

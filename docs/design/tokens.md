@@ -169,10 +169,11 @@ Used for “Suggested by Agatha” routine proposals and related guidance — no
 | Token | Hex | Use |
 |-------|-----|-----|
 | agathaTeal | `#15586E` | suggestion title, accent text |
+| agathaTealAction | `#14656C` | suggestion card buttons and link actions (= `landingTealDeep`) |
 | agathaMessageSurface | `#E6F2F2` | suggestion card fill (= `landingTealSoft`) |
 | agathaMessageBorder | `#D9E5E1` | suggestion card border (= `landingLine`) |
 
-Body copy on suggestion cards uses foundation **body** (`#374151`). Accept actions remain **petCarePrimary** plum.
+Body copy on suggestion cards uses foundation **body** (`#374151`). Accept, Why, and secondary text actions on Agatha suggestion cards use **agathaTealAction** (not `petCarePrimary` plum).
 
 ## Away planning context (user-declared trip)
 

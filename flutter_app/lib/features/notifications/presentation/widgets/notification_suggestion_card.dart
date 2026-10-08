@@ -25,6 +25,7 @@ class NotificationSuggestionCard extends ConsumerWidget {
 
     return AgathaMessageCard(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      themeSuggestionActions: true,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

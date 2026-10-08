@@ -5,6 +5,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/care_recommendation.dart';
 import '../care_suggestion_copy.dart';
 import 'care_suggestion_respond_actions.dart';
+import 'package:pet_profile_app/core/theme/app_color_tokens.dart';
 import 'package:pet_profile_app/core/widgets/agatha_message_card.dart';
 import 'suggestion_why_sheet.dart';
 
@@ -71,6 +72,7 @@ class _CareSuggestionCardState extends ConsumerState<CareSuggestionCard> {
 
     return AgathaMessageCard(
       key: Key('care_suggestion_card_${recommendation.id}'),
+      themeSuggestionActions: true,
       child: Semantics(
         identifier: 'care_suggestion_group',
         key: const ValueKey('care_suggestion_group'),
@@ -129,7 +131,7 @@ class _CareSuggestionCardState extends ConsumerState<CareSuggestionCard> {
                             height: 18,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              color: theme.colorScheme.onPrimary,
+                              color: AppColorTokens.inverse,
                             ),
                           )
                         : Text(l.careSuggestionAccept),
