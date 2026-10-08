@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pet_profile_app/features/care_intelligence/presentation/widgets/agatha_message_card_shell.dart';
+import 'package:pet_profile_app/core/widgets/agatha_message_card.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/app_notification.dart';

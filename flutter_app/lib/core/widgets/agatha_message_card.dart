@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/theme/app_color_tokens.dart';
+import '../theme/app_color_tokens.dart';
 
 /// Shared Agatha / Care Intelligence suggestion card chrome (tokens.md).
 abstract final class AgathaMessageCardShell {

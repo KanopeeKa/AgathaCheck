@@ -5,7 +5,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/care_recommendation.dart';
 import '../care_suggestion_copy.dart';
 import 'care_suggestion_respond_actions.dart';
-import 'agatha_message_card_shell.dart';
+import 'package:pet_profile_app/core/widgets/agatha_message_card.dart';
 import 'suggestion_why_sheet.dart';
 
 /// Agatha suggestion card for established-care rhythm proposals.
