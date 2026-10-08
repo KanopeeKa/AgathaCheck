@@ -2,10 +2,11 @@
 title: Care classification taxonomy — product & data spec
 owner: Product / Agent
 audience: both
-status: draft
-last_updated: 2026-09-21
+status: in-delivery
+status_since: 2026-10-08
+folds_into: docs/domains/pet_care/features/care-progression.md
+last_updated: 2026-10-08
 tags: [pet_care, care_item, taxonomy, health_entry, spec]
-reviewed_by: [claude-review-2026-09-21]
 ---
 
 # Care classification taxonomy — product & data spec

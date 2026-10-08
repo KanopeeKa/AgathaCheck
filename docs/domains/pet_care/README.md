@@ -3,7 +3,7 @@ title: Pet Care domain
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-10-07
+last_updated: 2026-10-08
 tags: [domain, pet_care, experience]
 ---
 
@@ -34,7 +34,7 @@ Part of the AgathaTrack domain-first documentation tree. Cross-cutting architect
 | Document | Role |
 |----------|------|
 | [care-progression.md](/docs/domains/pet_care/features/care-progression.md) | Canonical product behaviour |
-| [care-progression-delivery-plan.md](/docs/domains/pet_care/changes/care-progression-delivery-plan.md) | CP-0–CP-7 delivery plan (shipped) |
+| [care-progression-delivery-plan.md](/docs/domains/pet_care/changes/care-progression-delivery-plan.md) | CP-0–CP-7 slice + API reference (in-delivery; rules in canonical) |
 | [care-entitlements.md](/docs/domains/pet_care/features/care-entitlements.md) | Future tier principles (no runtime in V1) |
 
 ## Care Schedule Management
