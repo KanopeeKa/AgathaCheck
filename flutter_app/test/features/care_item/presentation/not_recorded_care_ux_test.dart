@@ -40,8 +40,6 @@ void main() {
                 return OccurrenceCompleteCareModule(
                   detail: d,
                   onChanged: () async {},
-                  rescheduleBusy: false,
-                  onReschedule: () {},
                 );
               },
             ),
