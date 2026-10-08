@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:pet_profile_app/core/providers/pet_care_sync.dart';
@@ -36,7 +37,19 @@ Map<String, dynamic> detail({
   Map<String, dynamic>? lastAction,
   Map<String, dynamic>? linkedWeight,
   Map<String, dynamic>? skipReason,
+  List<Map<String, dynamic>>? openOccurrences,
 }) {
+  final opens =
+      openOccurrences ??
+      [
+        {
+          'id': 'occ-1',
+          'scheduled_date': '2026-06-10',
+          'scheduled_time': null,
+          'status': 'due',
+          'origin': 'computed',
+        },
+      ];
   final payload = {
     'occurrence': {
       'id': 'occ-1',
@@ -49,15 +62,6 @@ Map<String, dynamic> detail({
       'origin': 'computed',
       'notes': '',
     },
-    'open_occurrences': [
-      {
-        'id': 'occ-1',
-        'scheduled_date': '2026-06-10',
-        'scheduled_time': null,
-        'status': 'due',
-        'origin': 'computed',
-      },
-    ],
     'entry': {
       'id': 'entry-1',
       'pet_id': 'pet-1',
@@ -71,6 +75,7 @@ Map<String, dynamic> detail({
         'time': '09:00',
         'timezone': 'Europe/Paris',
       },
+      'open_occurrences': opens,
     },
     'last_action': lastAction,
   };
@@ -110,15 +115,23 @@ Widget _wrap(
     ),
     ...extraOverrides,
   ],
-  child: MaterialApp(
+  child: MaterialApp.router(
     theme: AppTheme.lightTheme,
     localizationsDelegates: AppLocalizations.localizationsDelegates,
     supportedLocales: AppLocalizations.supportedLocales,
-    home: OccurrenceScreen(
-      petId: 'pet-1',
-      entryId: 'entry-1',
-      occurrenceId: 'occ-1',
-      focus: focus,
+    routerConfig: GoRouter(
+      initialLocation: '/pet/pet-1/events/entry-1/occurrences/occ-1',
+      routes: [
+        GoRoute(
+          path: '/pet/:petId/events/:entryId/occurrences/:occurrenceId',
+          builder: (context, state) => OccurrenceScreen(
+            petId: state.pathParameters['petId']!,
+            entryId: state.pathParameters['entryId']!,
+            occurrenceId: state.pathParameters['occurrenceId']!,
+            focus: focus,
+          ),
+        ),
+      ],
     ),
   ),
 );
@@ -145,6 +158,7 @@ void main() {
     expect(post.url.path, endsWith('/occurrences/occ-1/complete'));
     expect(json.decode(post.body)['completed_on'], '2026-06-10');
     expect(find.byKey(const Key('occurrence_done')), findsNothing);
+    expect(find.byType(OccurrenceScreen), findsOneWidget);
   });
 
   testWidgets('weigh-in: Done stays disabled until a weight is entered', (
@@ -240,6 +254,7 @@ void main() {
   testWidgets('FW-14 weigh-in skip opens reason sheet and sends reason_code', (
     tester,
   ) async {
+    await tester.binding.setSurfaceSize(const Size(400, 900));
     final server = _Server([
       detail(family: 'weight_monitoring'),
       detail(
@@ -251,6 +266,7 @@ void main() {
     await tester.pumpWidget(_wrap(server));
     await tester.pumpAndSettle();
 
+    await tester.ensureVisible(find.byKey(const Key('occurrence_skip')));
     await tester.tap(find.byKey(const Key('occurrence_skip')));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('skip_weigh_in_sheet')), findsOneWidget);
@@ -372,6 +388,41 @@ void main() {
     await tester.pumpWidget(_wrap(_Server([404])));
     await tester.pumpAndSettle();
     expect(find.text('This date no longer exists'), findsOneWidget);
-    expect(find.text('About this care item'), findsOneWidget);
+    expect(find.text('View care details'), findsOneWidget);
+  });
+
+  testWidgets('shows next open module when a later open date exists', (
+    tester,
+  ) async {
+    final server = _Server([
+      detail(
+        openOccurrences: [
+          {
+            'id': 'occ-1',
+            'scheduled_date': '2026-06-10',
+            'scheduled_time': null,
+            'status': 'due',
+            'origin': 'computed',
+          },
+          {
+            'id': 'occ-2',
+            'scheduled_date': '2026-06-12',
+            'scheduled_time': null,
+            'status': 'due',
+            'origin': 'computed',
+          },
+        ],
+      ),
+    ]);
+    await tester.pumpWidget(_wrap(server));
+    await tester.pumpAndSettle();
+
+    await tester.scrollUntilVisible(
+      find.text('Next open date'),
+      48,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(find.text('Next open date'), findsOneWidget);
+    expect(find.bySemanticsIdentifier('occurrence_next_open'), findsOneWidget);
   });
 }

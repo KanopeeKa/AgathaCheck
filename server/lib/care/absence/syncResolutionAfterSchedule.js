@@ -1,10 +1,15 @@
-import { todayCalendarIso } from '../../calendarDate.js';
+import { loadPetHomeTimezone, wallClockInTimeZone } from '../../petHomeTimezone.js';
 import { CareCommandError } from '../occurrence/careCommandError.js';
 import { loadAwayPlanProjection } from '../awayPlan/loadAwayPlanProjection.js';
 import { RESOLUTION_DECISION_MOVE_AFTER } from './constants.js';
 import { inferResolutionDecisionAfterSchedule } from './inferResolutionDecision.js';
 import { loadAbsenceWindowForEntry } from './loadAbsenceWindowForEntry.js';
 import { upsertResolution } from './resolutionRepository.js';
+
+async function careTodayIsoForPet(pool, petId) {
+  const timeZone = await loadPetHomeTimezone(pool, petId);
+  return wallClockInTimeZone(timeZone).todayIso;
+}
 
 function throwSyncError(result) {
   if (result.ok) return;
@@ -90,7 +95,7 @@ export async function syncResolutionAfterAbsencePostpone(pool, {
     petId,
     window.startsOn,
     window.endsOn,
-    todayCalendarIso(),
+    await careTodayIsoForPet(pool, petId),
   );
   const result = await syncMoveAfterResolutionAfterAbsencePostpone(pool, {
     absenceId,
@@ -129,7 +134,7 @@ export async function syncResolutionAfterAbsenceReschedule(pool, {
     petId,
     window.startsOn,
     window.endsOn,
-    todayCalendarIso(),
+    await careTodayIsoForPet(pool, petId),
   );
   const result = await syncResolutionAfterSchedule(pool, {
     absenceId,

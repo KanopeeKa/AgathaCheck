@@ -87,6 +87,16 @@ Do not surface when: data quality is inadequate; sample size or spacing is insuf
 
 A suggestion alone **cannot** change Care Status. Safeguards are **informational**, not alarms.
 
+### Presentation (Flutter)
+
+| Surface | Chrome |
+|---------|--------|
+| `CareSuggestionCard` (profile, dashboard) | `agathaTeal` title on `agathaMessageSurface` with `agathaMessageBorder` (`AgathaMessageCard`) |
+| `NotificationSuggestionCard` (For you) | Same Agatha message chrome as profile/dashboard |
+| `CareSafeguardCard` | `info` title on `infoLight` fill — distinct from suggestions |
+
+Accept, Why, and secondary actions on suggestion cards use **agathaTealAction** (darker teal) via `AgathaMessageCard` action theming — not `petCarePrimary` plum. Warm accent (`accent` / `lightAccent`) is not used for CIM suggestion or safeguard cards.
+
 ### Safeguard resurface policy
 
 A dismissed weight safeguard resurfaces only when the trend **materially** worsens, not on every new measurement. Magnitude is bucketed into 5% bands; a dismissed safeguard reactivates only when the trend crosses **two** bucket boundaries (≈10pp worsening) past the dismissed magnitude. `delta_pct` is rounded to 0.1pp before bucketing so floating-point jitter cannot shift a bucket alone.

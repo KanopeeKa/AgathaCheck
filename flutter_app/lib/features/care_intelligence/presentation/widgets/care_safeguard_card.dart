@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/care_intelligence_exception.dart';
 import '../../domain/entities/care_safeguard.dart';
@@ -66,7 +67,11 @@ class _CareSafeguardCardState extends ConsumerState<CareSafeguardCard> {
     return Card(
       key: Key('care_safeguard_card_${safeguard.id}'),
       margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-      color: theme.colorScheme.primaryContainer.withValues(alpha: 0.35),
+      color: AppColorTokens.infoLight,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: AppColorTokens.info.withValues(alpha: 0.25)),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -75,7 +80,7 @@ class _CareSafeguardCardState extends ConsumerState<CareSafeguardCard> {
             Text(
               l.careSafeguardTitle,
               style: theme.textTheme.titleSmall?.copyWith(
-                color: theme.colorScheme.primary,
+                color: AppColorTokens.info,
                 fontWeight: FontWeight.w600,
               ),
             ),

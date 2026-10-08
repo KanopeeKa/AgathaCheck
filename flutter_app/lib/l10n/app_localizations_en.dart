@@ -6720,6 +6720,42 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careDateScreenTitle => 'Care date';
 
   @override
+  String get occurrenceThisDateTitle => 'This date';
+
+  @override
+  String get occurrenceCompletionDateLabel => 'Completion date';
+
+  @override
+  String occurrenceDaysOverdue(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days overdue',
+      one: '1 day overdue',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get occurrenceNextOpenDate => 'Next open date';
+
+  @override
+  String get occurrenceViewNext => 'View';
+
+  @override
+  String get occurrenceOpenCareDetails => 'View care details';
+
+  @override
+  String get occurrenceOtherOpenDatesHint =>
+      'Other open dates are on this care item.';
+
+  @override
+  String get occurrenceScheduleRecurring => 'Recurring care';
+
+  @override
+  String get occurrenceSchedulePlannedDate => 'Planned date';
+
+  @override
   String get occurrenceReschedule => 'Reschedule';
 
   @override

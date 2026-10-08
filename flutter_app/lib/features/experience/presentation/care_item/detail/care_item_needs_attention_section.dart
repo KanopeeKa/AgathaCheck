@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import 'package:pet_profile_app/core/providers/analytics_providers.dart';
+import 'package:pet_profile_app/core/widgets/app_undo_snackbar.dart';
 import 'package:pet_profile_app/features/care_item/care_item.dart';
 import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import 'package:pet_profile_app/features/pet_care/pet_care.dart';
@@ -66,34 +67,36 @@ class _CareItemNeedsAttentionSectionState
           'ignored': value.ignoredIds.length,
           'done': done,
         });
-        messenger.showSnackBar(
-          SnackBar(
-            key: const Key('care_stack_snackbar'),
-            content: Semantics(
-              identifier: 'care_stack_snackbar',
-              child: Text(
-                careStackSuccessMessage(
-                  l,
-                  done: done,
-                  result: value,
-                  itemName: _s.name,
-                ),
-              ),
+        final message = Semantics(
+          identifier: 'care_stack_snackbar',
+          child: Text(
+            careStackSuccessMessage(
+              l,
+              done: done,
+              result: value,
+              itemName: _s.name,
             ),
-            action: value.undoToken == null
-                ? null
-                : SnackBarAction(
-                    label: l.snackbarUndo,
-                    onPressed: () async {
-                      await service.undo(
-                        entryId: _s.entryId,
-                        undoToken: value.undoToken,
-                      );
-                      await _refresh();
-                    },
-                  ),
           ),
         );
+        if (value.undoToken == null) {
+          messenger.showAppSnackBar(
+            snackBarKey: const Key('care_stack_snackbar'),
+            content: message,
+          );
+        } else {
+          messenger.showUndoSnackBar(
+            snackBarKey: const Key('care_stack_snackbar'),
+            content: message,
+            undoLabel: l.snackbarUndo,
+            onUndo: () async {
+              await service.undo(
+                entryId: _s.entryId,
+                undoToken: value.undoToken,
+              );
+              await _refresh();
+            },
+          );
+        }
       case CareFailed(failure: CareNotOpenFailure()):
         messenger.showSnackBar(SnackBar(content: Text(l.careAlreadyUpdated)));
       case CareFailed():
@@ -116,23 +119,22 @@ class _CareItemNeedsAttentionSectionState
     final messenger = ScaffoldMessenger.of(context)..hideCurrentSnackBar();
     switch (outcome) {
       case CareSucceeded(:final value):
-        messenger.showSnackBar(
-          SnackBar(
-            content: Text(l.careSkipped(_s.name)),
-            action: value.undoToken == null
-                ? null
-                : SnackBarAction(
-                    label: l.snackbarUndo,
-                    onPressed: () async {
-                      await service.undo(
-                        entryId: _s.entryId,
-                        undoToken: value.undoToken,
-                      );
-                      await _refresh();
-                    },
-                  ),
-          ),
-        );
+        final skipped = Text(l.careSkipped(_s.name));
+        if (value.undoToken == null) {
+          messenger.showAppSnackBar(content: skipped);
+        } else {
+          messenger.showUndoSnackBar(
+            content: skipped,
+            undoLabel: l.snackbarUndo,
+            onUndo: () async {
+              await service.undo(
+                entryId: _s.entryId,
+                undoToken: value.undoToken,
+              );
+              await _refresh();
+            },
+          );
+        }
       case CareFailed(failure: CareNotOpenFailure()):
         messenger.showSnackBar(SnackBar(content: Text(l.careAlreadyUpdated)));
       case CareFailed():

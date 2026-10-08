@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "plan_id": "occurrence-screen-modules-5ec0",
+  "approved_at": "2026-10-08T10:12:00Z",
+  "approved_by": "user chat 2026-10-08 — approved; GitHub #1789 approve-autonomous occurrence-screen-modules-5ec0",
+  "approved_until": "2026-10-10T10:12:00Z",
+  "content_hash": "sha256:7550e38cd1da8cead8fe3b19c3eb59d9b5f912590806d15dc040f48ae3304827",
+  "autonomy": "completed",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/occurrence-screen-modules-5ec0-integration-5ec0",
+  "control_issue": 1789,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Module layout (full UI + unit/widget tests)",
+      "branch": "cursor/occurrence-screen-modules-ui-5ec0",
+      "allowed_paths": [
+        "docs/domains/pet_care/changes/occurrence-screen-modules-spec.md",
+        "flutter_app/lib/features/experience/presentation/care_item/occurrence/**",
+        "flutter_app/lib/features/care_item/domain/next_open_occurrence.dart",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/care_item/domain/next_open_occurrence_test.dart",
+        "flutter_app/test/features/care_item/presentation/occurrence_*.dart",
+        "flutter_app/test/features/experience/presentation/care_item/occurrence/**",
+        ".agents/plans/occurrence-screen-modules-5ec0.md",
+        ".agents/plans/occurrence-screen-modules-5ec0.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**",
+        "db/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1794",
+      "pr_head_sha": "e885d472"
+    },
+    {
+      "id": "2",
+      "title": "E2E locators + canonical sync",
+      "branch": "cursor/occurrence-screen-modules-verify-5ec0",
+      "allowed_paths": [
+        "docs/domains/pet_care/features/care-item-evolution.md",
+        "docs/domains/pet_care/changes/occurrence-screen-modules-spec.md",
+        "e2e/playwright/pages/occurrence.page.ts",
+        "e2e/playwright/pages/care-item.page.ts",
+        "e2e/playwright/pages/away-planning.page.ts",
+        "e2e/playwright/tests/care.agenda.spec.ts",
+        "flutter_app/lib/features/experience/presentation/care_item/occurrence/occurrence_open_actions.dart",
+        "flutter_app/test/features/care_item/**",
+        ".agents/plans/occurrence-screen-modules-5ec0.md",
+        ".agents/plans/occurrence-screen-modules-5ec0.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1797",
+      "pr_head_sha": "1d7c325e"
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 import { dateToIsoDate } from '../../calendarDate.js';
+import { loadPetHomeTimezone, wallClockInTimeZone } from '../../petHomeTimezone.js';
 import { loadResolutionsByEntryIds } from '../absence/resolutionRepository.js';
 import { evaluateCarePeriodCoverageWithResolutions } from '../absence/absenceCoverage.js';
 import {
@@ -29,12 +30,14 @@ export async function loadAwayPlanReadiness(
   const perPetCoverage = [];
 
   for (const petRow of petRows) {
+    const petTimeZone = await loadPetHomeTimezone(pool, petRow.pet_id);
+    const careTodayIso = todayIso ?? wallClockInTimeZone(petTimeZone).todayIso;
     const projection = await loadAwayPlanProjection(
       pool,
       petRow.pet_id,
       startsOn,
       endsOn,
-      todayIso
+      careTodayIso
     );
     let coverage;
     if (absenceId) {

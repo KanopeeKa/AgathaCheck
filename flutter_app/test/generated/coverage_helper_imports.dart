@@ -17,6 +17,7 @@ import 'package:pet_profile_app/features/care_item/domain/care_occurrence.dart';
 import 'package:pet_profile_app/features/care_item/domain/completion_requirements.dart';
 import 'package:pet_profile_app/features/care_item/domain/done_decision.dart';
 import 'package:pet_profile_app/features/care_item/domain/leading_occurrence.dart';
+import 'package:pet_profile_app/features/care_item/domain/next_open_occurrence.dart';
 import 'package:pet_profile_app/features/care_item/domain/occurrence_detail.dart';
 import 'package:pet_profile_app/features/care_item/domain/occurrence_display.dart';
 import 'package:pet_profile_app/features/care_item/domain/occurrence_status.dart';
@@ -147,4 +148,4 @@ import 'package:pet_profile_app/features/weight_tracking/domain/entities/weight_
 import 'package:pet_profile_app/features/weight_tracking/domain/repositories/weight_repository.dart';
 import 'package:pet_profile_app/features/weight_tracking/domain/weight_entry_sort.dart';
 
-const int coverageHelperDomainFileCount = 145;
+const int coverageHelperDomainFileCount = 146;

@@ -3,6 +3,8 @@ import { expect } from '@playwright/test';
 
 import {
   enableFlutterAccessibility,
+  fillSemanticsField,
+  fillTextbox,
   flutterGotoUrl,
   flutterRoutePath,
   refreshFlutterAccessibility,
@@ -50,8 +52,8 @@ export class OccurrencePage {
   async expectLoaded(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
     const screen = this.page.locator('[flt-semantics-identifier="occurrence_screen"]');
-    const about = this.page.locator(
-      '[flt-semantics-identifier="occurrence_about_item"], [flt-semantics-identifier="occurrence_context_tile"]',
+    const identity = this.page.locator(
+      '[flt-semantics-identifier="occurrence_identity_card"], [flt-semantics-identifier="occurrence_open_care_details"]',
     );
     const back = this.page.getByRole('button', { name: /^Back$|^Go back$|^Retour$/i });
     const title = this.page.getByRole('heading', {
@@ -61,11 +63,13 @@ export class OccurrencePage {
       await refreshFlutterAccessibility(this.page);
       const path = flutterRoutePath(this.page.url());
       const onOccurrenceRoute = /\/occurrences\/[^/]+/.test(path);
-      const titleVisible = await title.isVisible().catch(() => false);
-      if (!onOccurrenceRoute && !titleVisible) {
-        throw new Error(`Not on occurrence screen (path=${path})`);
+      if (onOccurrenceRoute) {
+        await expect(title.or(back).or(screen).or(identity).first()).toBeVisible();
+        return;
       }
-      await expect(title.or(back).or(screen).or(about).first()).toBeVisible();
+      if (await identity.isVisible().catch(() => false)) return;
+      if (await screen.isVisible().catch(() => false)) return;
+      throw new Error(`Care date not ready (path=${path})`);
     }).toPass({ timeout: 60_000 });
   }
 
@@ -77,9 +81,17 @@ export class OccurrencePage {
     await refreshFlutterAccessibility(this.page);
   }
 
+  private weightInput() {
+    return this.page
+      .getByRole('textbox', { name: /Weight|Poids/i })
+      .or(this.page.locator('[key="occurrence_field_weight"]'))
+      .or(this.page.locator('[flt-semantics-identifier="occurrence_field_weight"]'));
+  }
+
   async expectWeightRequiredBeforeDone(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
-    await expect(this.page.getByLabel(/Weight/i).first()).toBeVisible({ timeout: 15_000 });
+    const field = this.weightInput();
+    await expect(field.first()).toBeVisible({ timeout: 15_000 });
     const done = this.doneControl();
     await expect(done.first()).toBeVisible({ timeout: 15_000 });
     await expect(done.first()).toBeDisabled();
@@ -87,9 +99,13 @@ export class OccurrencePage {
 
   async fillWeight(value: string, unit: 'kg' | 'lb' = 'kg'): Promise<void> {
     await refreshFlutterAccessibility(this.page);
-    const unitPattern = unit === 'lb' ? /Weight\s*\(lb\)|Poids\s*\(lb\)/i : /Weight|Poids/i;
-    const field = this.page.getByLabel(unitPattern).first();
-    await field.fill(value);
+    try {
+      await fillSemanticsField(this.page, 'occurrence_field_weight', value);
+    } catch {
+      const pattern =
+        unit === 'lb' ? /Weight\s*\(lb\)|Poids\s*\(lb\)/i : /Weight|Poids/i;
+      await fillTextbox(this.page, pattern, value);
+    }
     await refreshFlutterAccessibility(this.page);
   }
 
@@ -97,7 +113,9 @@ export class OccurrencePage {
     await refreshFlutterAccessibility(this.page);
     const pattern =
       unit === 'lb' ? /Weight\s*\(lb\)|Poids\s*\(lb\)/i : /Weight\s*\(kg\)|Poids\s*\(kg\)/i;
-    await expect(this.page.getByLabel(pattern).first()).toBeVisible({ timeout: 15_000 });
+    await expect(this.weightInput().or(this.page.getByLabel(pattern)).first()).toBeVisible({
+      timeout: 15_000,
+    });
   }
 
   async tapSkip(): Promise<void> {

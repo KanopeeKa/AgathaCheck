@@ -93,18 +93,7 @@ class _CareAgendaCollectionState extends ConsumerState<CareAgendaCollection> {
 
   void _open(CareAgendaRow<HealthEntry> row) {
     final entry = row.item;
-    final occurrence = row.occurrence;
-    if (row.isStack || occurrence == null) {
-      openPetEventView(context, petId: entry.petId, entryId: entry.id);
-      return;
-    }
-    openOccurrenceScreen(
-      context,
-      petId: entry.petId,
-      entryId: entry.id,
-      occurrenceId: occurrence.id,
-      source: widget.source.name,
-    );
+    goToPetEventView(context, petId: entry.petId, entryId: entry.id);
   }
 
   Future<void> _done(CareAgendaRow<HealthEntry> row) {

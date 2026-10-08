@@ -8,6 +8,7 @@ import {
   timestampToIso,
   todayCalendarIso,
 } from '../calendarDate.js';
+import { normalizePetHomeTimezone, wallClockInTimeZone } from '../petHomeTimezone.js';
 import {
   CARER_STATE_UNAVAILABLE,
   deriveCarerState,
@@ -45,6 +46,19 @@ export function normalizeAbsenceTitleInput(value) {
  * @param {string} [todayIso]
  * @returns {{ ok: true, starts_on: string, ends_on: string } | { ok: false, error: string }}
  */
+/**
+ * Calendar today for planned-absence active/list filters (declarer account IANA TZ).
+ *
+ * @param {import('pg').Pool|import('pg').PoolClient} pool
+ * @param {string} userId
+ * @returns {Promise<string>}
+ */
+export async function resolvePlannedAbsenceTodayIso(pool, userId) {
+  const result = await pool.query('SELECT timezone FROM users WHERE id = $1', [userId]);
+  const tz = normalizePetHomeTimezone(result.rows[0]?.timezone);
+  return wallClockInTimeZone(tz).todayIso;
+}
+
 export function validateAbsenceDateWindow(startsOn, endsOn, todayIso = todayCalendarIso()) {
   const starts = normalizeCalendarDateInput(startsOn);
   const ends = normalizeCalendarDateInput(endsOn);

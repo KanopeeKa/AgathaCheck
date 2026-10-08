@@ -275,22 +275,11 @@ class _PlannedCareRow extends ConsumerWidget {
       colorScheme,
     );
     final inWindowLine = AwayPlanScheduleCopy.inWindowLine(l, item);
-    final occurrenceId = item.resolvedOccurrenceId;
     final viewLabel = '${item.name}. $scheduleLine';
     final showSeeOptions = item.showsSeeOptionsOnAwayPlan;
 
     void openCare() {
-      if (occurrenceId != null) {
-        openOccurrenceScreen(
-          context,
-          petId: petId,
-          entryId: item.healthEntryId,
-          occurrenceId: occurrenceId,
-          source: 'away_plan',
-        );
-      } else {
-        openPetEventView(context, petId: petId, entryId: item.healthEntryId);
-      }
+      openPetEventView(context, petId: petId, entryId: item.healthEntryId);
     }
 
     return Padding(

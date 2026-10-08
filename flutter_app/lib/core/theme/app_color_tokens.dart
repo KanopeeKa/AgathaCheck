@@ -19,6 +19,9 @@ abstract final class AppColorTokens {
   static const Color inverse = Color(0xFFFFFFFF);
   static const Color shadow = Color(0x141F2937);
 
+  /// Floating snackbars and undo confirmations (softer than heading ink).
+  static const Color snackBarSurface = Color(0xFF52606D);
+
   // Pet Care (formerly Guardian plum)
   static const Color petCarePrimary = Color(0xFF755B68);
   static const Color petCareHover = Color(0xFF664C59);
@@ -45,6 +48,10 @@ abstract final class AppColorTokens {
   static const Color petCareCarePrimary = petCarePrimary;
   static const Color petCareCareActive = petCareActive;
   static const Color petCareCareLight = petCareLight;
+
+  /// Away planning list/tile chrome (user-declared trip — not Agatha teal).
+  static const Color awayContextSurface = petCareLight;
+  static const Color awayContextAccent = petCareActive;
 
   @Deprecated('Use petCareCarePrimary')
   static const Color guardianCarePrimary = petCareCarePrimary;
@@ -93,6 +100,7 @@ abstract final class AppColorTokens {
 
   /// Agatha / Care Intelligence suggestion surfaces (not org mode primary).
   static const Color agathaTeal = Color(0xFF15586E);
+  static const Color agathaTealAction = landingTealDeep;
   static const Color agathaMessageSurface = landingTealSoft;
   static const Color agathaMessageBorder = landingLine;
 

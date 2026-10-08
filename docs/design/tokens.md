@@ -127,6 +127,7 @@ forms. Do not replace it with paws, paw prints, or a generic pet icon.
 | muted | `#667085` | secondary → `onSurfaceVariant` |
 | disabled | `#98A2B3` | disabled controls only |
 | inverse | `#FFFFFF` | on primary buttons |
+| snackBarSurface | `#52606D` | floating snackbars (undo confirmations); same as `landingInkSoft` |
 
 ## Pet Care mode (default primary — landing + `/pc/*`)
 
@@ -159,7 +160,7 @@ Org-guardianship pet photo border on guardian home: **primary** teal (subtle).
 | accent | `#D6A08F` |
 | lightAccent | `#F4E4DD` |
 
-Empty states, onboarding, welcome — not main action buttons.
+Empty states, onboarding, welcome — not main action buttons. **Not** used for Care Intelligence suggestion cards (use Agatha message surfaces below).
 
 ## Agatha message surfaces (Care Intelligence)
 
@@ -168,10 +169,22 @@ Used for “Suggested by Agatha” routine proposals and related guidance — no
 | Token | Hex | Use |
 |-------|-----|-----|
 | agathaTeal | `#15586E` | suggestion title, accent text |
+| agathaTealAction | `#14656C` | suggestion card buttons and link actions (= `landingTealDeep`) |
 | agathaMessageSurface | `#E6F2F2` | suggestion card fill (= `landingTealSoft`) |
 | agathaMessageBorder | `#D9E5E1` | suggestion card border (= `landingLine`) |
 
-Body copy on suggestion cards uses foundation **body** (`#374151`). Accept actions remain **petCarePrimary** plum.
+Body copy on suggestion cards uses foundation **body** (`#374151`). Accept, Why, and secondary text actions on Agatha suggestion cards use **agathaTealAction** (not `petCarePrimary` plum).
+
+## Away planning context (user-declared trip)
+
+Plum aliases for `/pc/away` and absence modules — **not** Agatha teal or semantic info chrome.
+
+| Token | Hex | Use |
+|-------|-----|-----|
+| awayContextSurface | `#E8E1E3` | icon chip fill (= `petCareLight`) |
+| awayContextAccent | `#573F4B` | chip icon, planner headings (= `petCareActive`) |
+
+List/tile surfaces: `Icons.event_busy_outlined` on `awayContextSurface`. Care-item absence modules may use `Icons.flight_takeoff_outlined` with `awayContextAccent`.
 
 ## Semantic (shared across modes)
 

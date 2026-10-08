@@ -76,7 +76,11 @@ Active absence: `status != cancelled` and `ends_on >= today`. Default list: non-
 
 **Provenance (Care Context namespace):** `user_declared` (V1 runtime); `calendar_import`, `integration_import`, `environmental_provider`, `system_derived` (future). Distinct from `CareSource` on health rhythms.
 
+<<<<<<< HEAD
 ## Care-period projection
+=======
+An absence is **active** when `status != cancelled` and `ends_on >= today` (calendar-date semantics). **`today`** for list/upcoming filters and health-entry absence-context queries is the declarer's account IANA timezone (`users.timezone`), not server UTC. Away-plan care projections use each pet's `home_timezone` for schedule "today" (same as CSM open/overdue).
+>>>>>>> origin/main
 
 Owned by **care_planning**; Care Context is a thin caller to CSM `projectSchedule`. Scheduling semantics: [care-schedule-management.md](./care-schedule-management.md).
 
@@ -189,6 +193,22 @@ Coverage gaps: [#1770](https://github.com/KanopeeKa/AgathaCheck/issues/1770) (ab
 | CC-UI-D-001 | Away surfaces use away-context plum aliases, not Agatha teal or warm accent | User-declared trip vs Agatha suggestions | Live | 2026-10-08 | |
 
 Carer, handover, and programme decisions (D-AWAY-003–005, D-AWAY-008–009, D-AWAY-012–014): [away-planning-carer-model.md](./away-planning-carer-model.md). Display amendments D-ACP-*: [away-care-planning-decisions.md](../changes/away-care-planning-decisions.md).
+
+## Presentation (Flutter)
+
+Away planning chrome uses **away-context** plum tokens (`docs/design/tokens.md` § Away planning context), shared `AwayContextIconChip`, and **not** Agatha message teal or coral warm accent.
+
+| Surface | Chrome |
+|---------|--------|
+| Dashboard `PlannedAbsenceEntryTile`, hub cards, hub empty state | `AwayContextIconChip` (`event_busy_outlined`) |
+| Care-item absence modules | `flight_takeoff_outlined` + `awayContextAccent` |
+| Away planner “Suggested by Agatha” heading | `awayContextAccent` (plum; distinct from inbox/profile Agatha cards) |
+
+## Decision log
+
+| ID | Decision | Rationale | Status | Date | PR |
+|----|----------|-----------|--------|------|-----|
+| CC-UI-D-001 | Away surfaces use away-context plum aliases, not Agatha teal or warm accent | User-declared trip vs Agatha suggestions | Live | 2026-10-08 | |
 
 ## Related
 
