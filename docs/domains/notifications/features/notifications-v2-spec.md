@@ -448,7 +448,7 @@ All other types are never grouped, including every needs-response, mandatory, ur
 
 | ID | Requirement |
 |---|---|
-| FR-SC-1 | A card shows: the pet avatar, a headline (≤ 80 chars), a rationale ("Based on 6 weight entries since June"), one primary action button, and an overflow with **Dismiss**, **Not relevant** and **Why am I seeing this?**. |
+| FR-SC-1 | A card shows: the pet avatar, a headline (≤ 80 chars), a rationale ("Based on 6 weight entries since June"), one primary action button, and an overflow with **Dismiss**, **Not relevant** and **Why am I seeing this?**. Card chrome matches `CareSuggestionCard`: Agatha message tokens (`agathaMessageSurface`, `agathaTeal` eyebrow for "Suggested by Agatha") per `docs/design/tokens.md`. |
 | FR-SC-2 | **Why am I seeing this?** opens a sheet that lists the evidence (data points, dates, threshold used) in plain language and links to the source records. |
 | FR-SC-3 | Health-adjacent suggestions (S2, S3) MUST include the line "Agatha isn't a vet. If you're worried, talk to your vet." |
 | FR-SC-4 | The primary action deep-links into the existing flow, pre-filled where possible (e.g. new reminder form pre-filled with type and frequency). Completing that flow marks the suggestion `completed`. |

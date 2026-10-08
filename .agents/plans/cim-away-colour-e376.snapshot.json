@@ -45,13 +45,12 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
-      "status_detail": "Agatha shell on CareSuggestionCard + NotificationSuggestionCard; CareSafeguardCard uses info tokens.",
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
-      "debt_issue_refs": []
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1792",
+      "pr_head_sha": "0537ae3a"
     },
     {
       "id": "2",
@@ -95,5 +94,5 @@
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:ba8b990d2f5b4ea66e238008bc34439a71e70e6c8a78b6e2ca7241820e64b178"
+  "content_hash": "sha256:7aff343f1d4d0ae09efc449d96252aa1e1708d7c5a7b037ab3d942eae4a06a7a"
 }
