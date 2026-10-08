@@ -2,14 +2,18 @@
 title: D4a — Second signal family design
 owner: Product / Agent
 audience: both
-status: active
-last_updated: 2026-09-08
-tags: [pet_care, care_intelligence, phase_d, d4a]
+status: in-delivery
+status_since: 2026-10-08
+folds_into: docs/domains/pet_care/features/care-intelligence.md
+plan: documentation-migration-514a
+last_updated: 2026-10-08
 ---
 
 # D4a — Second signal family (design only)
 
 **Status:** design-only — no implementation in Phase D.
+
+**Canonical behaviour:** [care-intelligence.md](../features/care-intelligence.md) §Second signal family and CARE-INTELLIGENCE-R-013.
 
 ## Candidate families (ranked)
 
@@ -18,13 +22,6 @@ tags: [pet_care, care_intelligence, phase_d, d4a]
 | 1 | **Activity / exercise** | Not reliable | Would need validated device or guardian cadence capture |
 | 2 | **Appetite** | Not reliable | Subjective scales only; high false-positive risk |
 | 3 | **BCS (body condition score)** | Not reliable | Clinic-entered occasionally; not longitudinal |
-
-## Design principles for signal #2
-
-- Must be **structured longitudinal** data with quality classifier parity to weight.
-- Must have independent provenance concepts (not overloaded onto weight fields).
-- Multi-signal safeguards require **both** families to pass quality + materiality gates.
-- Guardian copy must name each evidence family explicitly (see [care-intelligence.md](../features/care-intelligence.md)).
 
 ## Recommendation
 

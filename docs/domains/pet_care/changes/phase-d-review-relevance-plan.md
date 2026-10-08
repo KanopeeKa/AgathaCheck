@@ -2,14 +2,16 @@
 title: Phase D — Review Relevance Plan
 owner: Product / Agent
 audience: both
-status: active
-last_updated: 2026-09-08
-tags: [pet_care, care_intelligence, phase_d, delivery]
+status: in-delivery
+status_since: 2026-10-08
+folds_into: docs/domains/pet_care/features/care-intelligence.md
+plan: documentation-migration-514a
+last_updated: 2026-10-08
 ---
 
 # Phase D — Review Relevance Plan
 
-**Canonical product behaviour:** [care-intelligence.md](../features/care-intelligence.md)  
+**Canonical product behaviour:** [care-intelligence.md](../features/care-intelligence.md) — requirements, acceptance criteria, and decision log live there.  
 **Programme roadmap:** [care-foundation-roadmap.md](./care-foundation-roadmap.md) v0.4  
 **Execute-plan:** `care-foundation-c7a1` — control issue [#1082](https://github.com/KanopeeKa/AgathaCheck/issues/1082)  
 **Integration branch:** `cursor/care-foundation-c7a1-integration-dc3b`
