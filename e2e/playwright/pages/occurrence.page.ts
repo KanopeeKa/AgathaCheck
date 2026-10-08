@@ -3,6 +3,8 @@ import { expect } from '@playwright/test';
 
 import {
   enableFlutterAccessibility,
+  fillSemanticsField,
+  fillTextbox,
   flutterGotoUrl,
   flutterRoutePath,
   refreshFlutterAccessibility,
@@ -95,12 +97,15 @@ export class OccurrencePage {
     await expect(done.first()).toBeDisabled();
   }
 
-  async fillWeight(value: string, _unit: 'kg' | 'lb' = 'kg'): Promise<void> {
+  async fillWeight(value: string, unit: 'kg' | 'lb' = 'kg'): Promise<void> {
     await refreshFlutterAccessibility(this.page);
-    const field = this.page.getByRole('textbox', { name: /Weight|Poids/i }).first();
-    await field.scrollIntoViewIfNeeded();
-    await field.click();
-    await field.pressSequentially(value, { delay: 30 });
+    try {
+      await fillSemanticsField(this.page, 'occurrence_field_weight', value);
+    } catch {
+      const pattern =
+        unit === 'lb' ? /Weight\s*\(lb\)|Poids\s*\(lb\)/i : /Weight|Poids/i;
+      await fillTextbox(this.page, pattern, value);
+    }
     await refreshFlutterAccessibility(this.page);
   }
 
