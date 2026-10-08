@@ -245,12 +245,12 @@ last_completed_phase: null
 halt_reason: null
 next_action: "continue phase 1 on branch cursor/care-date-evolution-ui-b20d"
 artifact_ref:
-  branch: cursor/care-date-evolution-b20d-integration-b20d
+  branch: cursor/care-date-evolution-ui-b20d
   plan_path: .agents/plans/care-date-evolution-b20d.md
-  plan_commit: 8b54fc4c122685901b1d9f4ea3d62cad875f16b9
+  plan_commit: 268d815263d8aa0308d3f11ad45ca64eedf6ae51
   snapshot_path: .agents/plans/care-date-evolution-b20d.snapshot.json
-  snapshot_commit: 8b54fc4c122685901b1d9f4ea3d62cad875f16b9
-open_prs: []
+  snapshot_commit: 268d815263d8aa0308d3f11ad45ca64eedf6ae51
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1812"]
 merge_commits: {}
 debt_issue_refs: []
 ```
