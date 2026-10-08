@@ -46,7 +46,7 @@ All dashboard content sections should follow a consistent pattern:
 
 This creates a symmetrical and predictable dashboard model. The dashboard shows the most relevant subset, while the dedicated full screen handles the complete list and associated management actions.
 
-> **2026-09-03 (D-desk-3):** Section-level “All …” links move from the bottom of preview blocks to the **header row** beside the eyebrow title. See [desk-framing-decisions.md](../changes/desk-framing-decisions.md).
+> **2026-09-03 (D-desk-3):** Section-level “All …” links move from the bottom of preview blocks to the **header row** beside the eyebrow title. See [pet-profile-decisions.md — D-desk](pet-profile-decisions.md#dashboard-desk-framing-d-desk).
 
 ## Section rules
 

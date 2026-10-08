@@ -6,7 +6,7 @@ domain: pet_care
 feature_id: care_item
 status: active
 last_updated: 2026-10-08
-related_prs: [1797]
+related_prs: [1797, 1805]
 ---
 
 # Care Item — functional spec
@@ -115,6 +115,7 @@ Four principles:
 | D-BULK-002 | One started row: row controls only; no bulk block (FR-12a) | Plan another date moves to app-bar ⋯ | Live | — | — |
 | D-BULK-003 | `CareMarkDoneButton` shared round `check_circle` everywhere | — | Live | — | — |
 | D-BULK-004 | Coming up cap **3** rows then "Show {n} more" | — | Live | — | — |
+| D-BULK-005 | Bulk Mark/Skip success with undo uses shared undo snackbar (5 s, close control, `snackBarSurface`) | Same helper as single Done (regression guard after #1671) | Live | 2026-10-08 | — |
 
 ## Where we start
 

@@ -1,10 +1,11 @@
 ---
 title: Phase 2 — Pet Care journey
 owner: Experience Program Team
-audience: both
-status: active
-last_updated: 2026-08-21
+status: in-delivery
+status_since: 2026-10-08
 tags: [experience,guardian,organisation]
+folds_into: docs/domains/pet_profile/features/pet-profile-decisions.md
+plan: documentation-migration-514a
 ---
 # Phase 2 — Pet Care journey
 
@@ -27,7 +28,7 @@ behind the existing dashboard links and routes.
 
 The implementation-safe details, stable data authorities, action destinations,
 accessibility requirements, and file ownership boundaries are documented in the
-[Pet Care Today dashboard contract](guardian-today-contract.md). That handoff
+[Pet Care Today implementation](../features/pet-profile-decisions.md#pet-care-today--authority-boundaries). That handoff
 must be read alongside this phase document and the locked master brief.
 
 This branch is presentation-only at the data boundary: it must not add a backend
@@ -107,7 +108,7 @@ timeline widget on the org-side pet detail screen.
   distinguishable; retryable errors must not be rendered as an empty due list.
 - The five-tab bottom bar, universal Add action, and a new Today route are
   deferred navigation work, not Phase 2 dashboard work. See
-  [the contract](guardian-today-contract.md) and D34–D37 in the decisions log.
+  [pet-profile-decisions.md](../features/pet-profile-decisions.md) (D34–D37 and implementation sections).
 
 ## Screens and navigation
 

@@ -91,14 +91,14 @@ autonomy: active
 current_phase: 15
 last_completed_phase: 14
 halt_reason: null
-next_action: "start phase 15: checkout cursor/documentation-migration-guardian-today-514a"
+next_action: "continue phase 15 on branch cursor/documentation-migration-guardian-today-514a"
 artifact_ref:
-  branch: cursor/documentation-migration-wave13-integration-514a
+  branch: cursor/documentation-migration-guardian-today-514a
   plan_path: .agents/plans/documentation-migration-514a.md
-  plan_commit: cef46c497e74fb190e87c411feb1ad72be0429b5
+  plan_commit: 17570fae223f05ba1840d43cd5a741cc2ed8bf7d
   snapshot_path: .agents/plans/documentation-migration-514a.snapshot.json
-  snapshot_commit: cef46c497e74fb190e87c411feb1ad72be0429b5
-open_prs: []
+  snapshot_commit: 17570fae223f05ba1840d43cd5a741cc2ed8bf7d
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1808"]
 merge_commits: {}
 debt_issue_refs: []
 ```
