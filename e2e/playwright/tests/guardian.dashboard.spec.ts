@@ -149,9 +149,8 @@ test.describe('Guardian dashboard', () => {
       await expect(careRegion.getByRole('button', { name: /snooze/i })).toHaveCount(0);
       const agenda = new CareAgendaPage(page);
       await agenda.openRow(entry.id, entry.name);
-      await expect(
-        page.getByRole('heading', { name: /Care details|Détail du soin/i }).first(),
-      ).toBeVisible({ timeout: 30_000 });
+      const careItem = new CareItemPage(page);
+      await careItem.expectCareDetailsScreenTitle();
       await expect(page.getByRole('button', { name: /^Back$/i })).toBeVisible();
       await expect(page.getByRole('button', { name: /snooze/i })).toHaveCount(0);
     } finally {
