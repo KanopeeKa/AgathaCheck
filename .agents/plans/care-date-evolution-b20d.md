@@ -239,11 +239,11 @@ docs/debt/debt.md
 ## Runtime state (agent-updated)
 
 ```yaml
-autonomy: halted
-current_phase: null
+autonomy: active
+current_phase: "1"
 last_completed_phase: null
-halt_reason: awaiting_approve_autonomous
-next_action: "Human: init-control-issue + approve-autonomous care-date-evolution-b20d"
+halt_reason: null
+next_action: "/execute-plan care-date-evolution-b20d — phase 1 implement"
 artifact_ref:
   branch: cursor/care-date-evolution-b20d-integration-b20d
   plan_path: .agents/plans/care-date-evolution-b20d.md
