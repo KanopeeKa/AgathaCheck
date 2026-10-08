@@ -3,12 +3,27 @@ title: Subscription specs
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-22
+last_updated: 2026-10-08
 tags: [domain,subscription,specs]
 domain: subscription
+feature_id: subscription
 ---
 
-# Subscription specs
+# Subscription
+
+Premium tier purchase and entitlement flows (RevenueCat today). Billing provider under product review — see [deferred.md](../changes/deferred.md).
+
+## Requirements
+
+| ID | Requirement | Status |
+|----|-------------|--------|
+| **SUB-1** | Free and Unlimited tiers reflected in client `SubscriptionTier` + active flag. | delivered |
+| **SUB-2** | Paywall reachable from Account → Subscription. | delivered |
+| **SUB-3** | BDD `subscriptions.feature` documents intended purchase journeys. | delivered |
+
+## User journeys
+
+Premium purchase and entitlement flows. **Billing provider under product review** — EU-based solution may replace RevenueCat. BDD spec `subscriptions.feature` (11 scenarios); Playwright E2E deferred until billing architecture is decided.
 
 ## Tiers
 
