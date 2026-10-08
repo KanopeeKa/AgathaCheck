@@ -97,9 +97,10 @@ export class OccurrencePage {
 
   async fillWeight(value: string, _unit: 'kg' | 'lb' = 'kg'): Promise<void> {
     await refreshFlutterAccessibility(this.page);
-    const field = this.weightInput();
-    await field.first().scrollIntoViewIfNeeded();
-    await field.first().fill(value);
+    const host = this.weightInput().first();
+    await host.scrollIntoViewIfNeeded();
+    const input = host.locator('input, textarea').first();
+    await input.fill(value);
     await refreshFlutterAccessibility(this.page);
   }
 

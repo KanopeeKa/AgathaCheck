@@ -60,7 +60,9 @@ class OccurrenceOpenActions extends ConsumerWidget {
               key: const Key('occurrence_field_weight'),
               controller: weightController,
               autofocus: focus == 'weight',
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               decoration: InputDecoration(
                 labelText: l.careWeightFieldLabelUnit(unitLabel(weightUnit)),
                 helperText: missing.isEmpty ? null : l.careWeightRequiredHint,
