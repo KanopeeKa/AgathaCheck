@@ -238,6 +238,7 @@ Coverage gaps: [#1770](https://github.com/KanopeeKa/AgathaCheck/issues/1770) (sa
 
 | Kind | Link |
 |------|------|
+| Pet Care domain index | [README.md](../README.md) |
 | Programme roadmap | [care-foundation-roadmap.md](../changes/care-foundation-roadmap.md) |
 | Phase D delivery | [phase-d-review-relevance-plan.md](../changes/phase-d-review-relevance-plan.md) |
 | Provenance contract detail | [d0-provenance-contract.md](../changes/d0-provenance-contract.md) |
