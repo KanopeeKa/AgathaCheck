@@ -3,7 +3,8 @@ title: Care date screen — module layout (v2)
 owner: Pet Care
 audience: both
 status: proposed
-canonical_target: docs/domains/pet_care/features/care-item-evolution.md
+status_since: 2026-10-08
+folds_into: docs/domains/pet_care/features/care-item-evolution.md
 related_plan: occurrence-screen-modules-5ec0
 last_updated: 2026-10-08
 tags: [pet_care, care_item, ui]
