@@ -34,6 +34,9 @@ Future<CareOutcome<CareCommandResult>?> runOccurrenceSkip(
   return service.skip(entryId: detail.item.id, occurrenceId: occ.id);
 }
 
-String occurrenceSkipSuccessMessage(AppLocalizations l, OccurrenceDetail detail) {
+String occurrenceSkipSuccessMessage(
+  AppLocalizations l,
+  OccurrenceDetail detail,
+) {
   return l.careSkipped(detail.item.name);
 }

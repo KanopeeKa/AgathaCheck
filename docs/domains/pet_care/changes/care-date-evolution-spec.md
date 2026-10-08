@@ -1,11 +1,9 @@
 ---
 title: Care date screen evolution (proposed)
-owner: Product
-audience: both
-status: proposed
-canonical_target: docs/domains/pet_care/features/care-item-evolution.md
-related_prs: []
-last_updated: 2026-10-08
+status: in-delivery
+status_since: 2026-10-08
+folds_into: docs/domains/pet_care/features/care-item-evolution.md
+plan: care-date-evolution-b20d
 ---
 
 # Care date screen evolution

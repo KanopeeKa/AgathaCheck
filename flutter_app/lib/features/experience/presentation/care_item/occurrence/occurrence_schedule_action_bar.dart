@@ -39,7 +39,9 @@ class OccurrenceScheduleActionBar extends StatelessWidget {
               icon: const Icon(Icons.edit_calendar_outlined, size: 18),
               label: ExcludeSemantics(child: Text(l.rescheduleActionLabel)),
               style: fullWidth
-                  ? OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(48))
+                  ? OutlinedButton.styleFrom(
+                      minimumSize: const Size.fromHeight(48),
+                    )
                   : null,
             ),
           );
@@ -52,7 +54,9 @@ class OccurrenceScheduleActionBar extends StatelessWidget {
             icon: const Icon(Icons.skip_next, size: 18),
             label: Text(l.careSkip),
             style: fullWidth
-                ? OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(48))
+                ? OutlinedButton.styleFrom(
+                    minimumSize: const Size.fromHeight(48),
+                  )
                 : null,
           );
         }

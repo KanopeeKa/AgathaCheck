@@ -54,7 +54,8 @@ class OccurrenceIdentityCard extends ConsumerWidget {
     final scheduleIcon = recurring ? Icons.autorenew : Icons.event_outlined;
     final pill = occurrenceStatusPillStyle(l, occ);
     final overdueDays = _daysOverdue(occ, item.asOf.date);
-    final showScheduleActions = occ.isOpen && onChangeDate != null && onSkip != null;
+    final showScheduleActions =
+        occ.isOpen && onChangeDate != null && onSkip != null;
 
     return Semantics(
       identifier: 'occurrence_identity_card',

@@ -35,7 +35,8 @@ class OccurrenceScreenBody extends ConsumerStatefulWidget {
   final VoidCallback onReschedule;
 
   @override
-  ConsumerState<OccurrenceScreenBody> createState() => _OccurrenceScreenBodyState();
+  ConsumerState<OccurrenceScreenBody> createState() =>
+      _OccurrenceScreenBodyState();
 }
 
 const _kOccurrenceModuleGap = SizedBox(height: 16);
