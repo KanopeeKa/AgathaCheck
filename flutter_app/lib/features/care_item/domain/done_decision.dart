@@ -50,8 +50,8 @@ class DoneCompletesToday extends DoneDecision {
 }
 
 /// Decide what Done does for [schedule]'s [occurrence] (the leading one when
-/// null). [onOccurrenceScreen] skips DN-2 and DN-3 (the screen shows the
-/// field and the date inline).
+/// null). [onOccurrenceScreen] skips DN-2 when requirements are on-screen;
+/// DN-3 still applies (completion date via sheet after phase 2 IA).
 DoneDecision decideDone(
   CareItemSchedule schedule, {
   OpenOccurrence? occurrence,
@@ -73,7 +73,7 @@ DoneDecision decideDone(
   }
 
   final status = liveStatus(target, now);
-  if (!schedule.isFixedSchedule && isPastDue(status) && !onOccurrenceScreen) {
+  if (!schedule.isFixedSchedule && isPastDue(status)) {
     return DoneAsksDate(target);
   }
 
