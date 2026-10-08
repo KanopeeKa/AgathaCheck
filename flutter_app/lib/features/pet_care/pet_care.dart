@@ -13,6 +13,7 @@ export 'presentation/providers/care_temporal_grouping_providers.dart';
 export 'progression/domain/entities/care_pending_moment.dart';
 export 'presentation/providers/pet_care_presentation_providers.dart';
 export 'presentation/widgets/care_agenda/care_agenda_collection.dart';
+export 'presentation/widgets/away_context_icon_chip.dart';
 export 'presentation/widgets/care_milestone_moment_card.dart';
 export 'presentation/widgets/care_surface/care_action_row.dart';
 export 'presentation/widgets/care_surface/care_attention_callout.dart';

@@ -105,6 +105,16 @@ Do not surface when:
 
 A suggestion alone **cannot** change Care Status. Safeguards are **informational**, not alarms.
 
+### Presentation (Flutter)
+
+| Surface | Chrome |
+|---------|--------|
+| `CareSuggestionCard` (profile, dashboard) | `agathaTeal` title on `agathaMessageSurface` with `agathaMessageBorder` (`AgathaMessageCard`) |
+| `NotificationSuggestionCard` (For you) | Same Agatha message chrome as profile/dashboard |
+| `CareSafeguardCard` | `info` title on `infoLight` fill — distinct from suggestions |
+
+Accept / primary actions on suggestion cards remain **petCarePrimary** plum. Warm accent (`accent` / `lightAccent`) is not used for CIM suggestion or safeguard cards.
+
 ### Safeguard resurface policy
 
 A dismissed weight safeguard resurfaces only when the trend **materially**

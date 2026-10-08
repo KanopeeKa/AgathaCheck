@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../../l10n/app_localizations.dart';
 import 'package:pet_profile_app/core/experience/app_experience.dart';
 import 'package:pet_profile_app/core/router/experience_shell_scaffold.dart';
+import 'package:pet_profile_app/features/pet_care/presentation/widgets/away_context_icon_chip.dart';
 import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 import '../../domain/entities/planned_absence.dart';
 import '../planned_absence_hub_partition.dart';
@@ -132,10 +133,9 @@ class _HubEmptyState extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.event_busy_outlined,
-              size: 48,
-              color: theme.colorScheme.onSurfaceVariant,
+            const AwayContextIconChip(
+              iconSize: 32,
+              padding: EdgeInsets.all(14),
             ),
             const SizedBox(height: 16),
             Text(

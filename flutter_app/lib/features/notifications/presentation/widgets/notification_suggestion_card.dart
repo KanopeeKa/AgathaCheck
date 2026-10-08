@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pet_profile_app/core/widgets/agatha_message_card.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/app_notification.dart';
@@ -22,75 +23,77 @@ class NotificationSuggestionCard extends ConsumerWidget {
     final l = AppLocalizations.of(context)!;
     final unread = notification.isSuggestionUnread;
 
-    return Card(
+    return AgathaMessageCard(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        notification.title,
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight: unread ? FontWeight.bold : null,
-                        ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l.careSuggestionTitle,
+                      style: AgathaMessageCardShell.titleStyle(theme.textTheme),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      notification.title,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: unread ? FontWeight.bold : null,
                       ),
-                      const SizedBox(height: 4),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      notification.message,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    if (notification.showsHealthAdjacentDisclaimer) ...[
+                      const SizedBox(height: 6),
                       Text(
-                        notification.message,
+                        l.notificationSuggestionVetDisclaimer,
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
+                          fontStyle: FontStyle.italic,
                         ),
                       ),
-                      if (notification.showsHealthAdjacentDisclaimer) ...[
-                        const SizedBox(height: 6),
-                        Text(
-                          l.notificationSuggestionVetDisclaimer,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                            fontStyle: FontStyle.italic,
-                          ),
-                        ),
-                      ],
                     ],
-                  ),
-                ),
-                PopupMenuButton<String>(
-                  onSelected: (value) async {
-                    await ref
-                        .read(notificationsProvider.notifier)
-                        .submitSuggestionFeedback(notification.id, value);
-                  },
-                  itemBuilder: (context) => [
-                    PopupMenuItem(
-                      value: 'dismiss',
-                      child: Text(l.careSuggestionDismiss),
-                    ),
-                    PopupMenuItem(
-                      value: 'not_relevant',
-                      child: Text(l.careSuggestionNotRelevant),
-                    ),
                   ],
                 ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: TextButton(
-                onPressed: onOpenPet,
-                child: Text(l.careSuggestionAccept),
               ),
+              PopupMenuButton<String>(
+                onSelected: (value) async {
+                  await ref
+                      .read(notificationsProvider.notifier)
+                      .submitSuggestionFeedback(notification.id, value);
+                },
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: 'dismiss',
+                    child: Text(l.careSuggestionDismiss),
+                  ),
+                  PopupMenuItem(
+                    value: 'not_relevant',
+                    child: Text(l.careSuggestionNotRelevant),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton(
+              onPressed: onOpenPet,
+              child: Text(l.careSuggestionAccept),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
