@@ -10,24 +10,21 @@ import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import 'occurrence_closed_actions.dart';
 import 'occurrence_open_actions.dart';
-import 'occurrence_reschedule.dart';
 
-/// This date module: completion actions by occurrence state (D-OSM-005).
+/// Completion module: Mark as done (open) or record/undo bodies (closed).
 class OccurrenceCompleteCareModule extends ConsumerStatefulWidget {
   const OccurrenceCompleteCareModule({
     super.key,
     required this.detail,
     required this.onChanged,
     this.focus,
-    required this.rescheduleBusy,
-    required this.onReschedule,
+    this.actionBusy = false,
   });
 
   final OccurrenceDetail detail;
   final Future<void> Function() onChanged;
   final String? focus;
-  final bool rescheduleBusy;
-  final VoidCallback onReschedule;
+  final bool actionBusy;
 
   @override
   ConsumerState<OccurrenceCompleteCareModule> createState() =>
@@ -106,7 +103,7 @@ class _OccurrenceCompleteCareModuleState
     return _d.schedule?.status == 'completed';
   }
 
-  bool get _actionBusy => _busy || widget.rescheduleBusy;
+  bool get _actionBusy => _busy || widget.actionBusy;
 
   Future<void> _guard(Future<void> Function() run) async {
     if (_busy) return;
@@ -169,30 +166,6 @@ class _OccurrenceCompleteCareModuleState
         ),
   );
 
-  Future<void> _skip() => _guard(() async {
-    final l = AppLocalizations.of(context)!;
-    if (_d.item.careFamily == kWeightMonitoringFamily) {
-      final skip = await showSkipWeighInSheet(context);
-      if (skip == null) return;
-      final outcome = await _service.skip(
-        entryId: _d.item.id,
-        occurrenceId: _occ.id,
-        reasonCode: skip.reasonCode,
-        notes: skip.notes,
-      );
-      await ref.read(analyticsServiceProvider).capture('weigh_in_skipped', {
-        'reason_code': skip.reasonCode ?? '',
-      });
-      await _report(outcome, l.careSkipped(_d.item.name));
-      return;
-    }
-    final outcome = await _service.skip(
-      entryId: _d.item.id,
-      occurrenceId: _occ.id,
-    );
-    await _report(outcome, l.careSkipped(_d.item.name));
-  });
-
   Future<void> _confirmSkipClosed() => _guard(() async {
     final l = AppLocalizations.of(context)!;
     final ok = await showDialog<bool>(
@@ -230,38 +203,15 @@ class _OccurrenceCompleteCareModuleState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (isOpen) ...[
-            Row(
-              children: [
-                ExcludeSemantics(
-                  child: Icon(
-                    Icons.check_circle_outline,
-                    size: 20,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: CareItemSectionHeader(
-                    title: l.occurrenceThisDateTitle,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
+          if (isOpen)
             OccurrenceOpenActions(
               detail: _d,
-              date: _date,
               weightController: _weight,
               focus: widget.focus,
               busy: _actionBusy,
-              showReschedule: occurrenceShowsReschedule(_d),
-              onDatePicked: (picked) async => setState(() => _date = picked),
               onDone: _done,
-              onSkip: _skip,
-              onReschedule: widget.onReschedule,
-            ),
-          ] else
+            )
+          else
             OccurrenceClosedActions(
               detail: _d,
               date: _date,

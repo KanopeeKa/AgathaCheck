@@ -2,24 +2,38 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
+import 'package:pet_profile_app/core/router/shell_return_navigation.dart';
 import 'package:pet_profile_app/features/care_item/care_item.dart';
 import 'package:pet_profile_app/features/experience/presentation/care_item/care_item_occurrence_status_pill.dart';
-import 'package:pet_profile_app/features/experience/presentation/care_item/detail/care_item_pet_context_tile.dart';
 import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import 'package:pet_profile_app/features/pet_care/pet_care.dart';
 import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
-/// Split identity: care type (left) + this occurrence (right) — D-OSM-002.
+import 'occurrence_reschedule.dart';
+import 'occurrence_schedule_action_bar.dart';
+
+/// Split identity: care family + pet (left) + occurrence context (right).
 class OccurrenceIdentityCard extends ConsumerWidget {
   const OccurrenceIdentityCard({
     super.key,
     required this.detail,
     required this.onOpenCareDetails,
+    this.scheduleActionsBusy = false,
+    this.onChangeDate,
+    this.onSkip,
   });
 
   final OccurrenceDetail detail;
   final VoidCallback onOpenCareDetails;
+  final bool scheduleActionsBusy;
+  final VoidCallback? onChangeDate;
+  final VoidCallback? onSkip;
+
+  static const double _familyChipSize = 52;
+  static const double _petAvatarSize = 48;
+  static const double _leftRailWidth = 100;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -40,6 +54,7 @@ class OccurrenceIdentityCard extends ConsumerWidget {
     final scheduleIcon = recurring ? Icons.autorenew : Icons.event_outlined;
     final pill = occurrenceStatusPillStyle(l, occ);
     final overdueDays = _daysOverdue(occ, item.asOf.date);
+    final showScheduleActions = occ.isOpen && onChangeDate != null && onSkip != null;
 
     return Semantics(
       identifier: 'occurrence_identity_card',
@@ -49,13 +64,13 @@ class OccurrenceIdentityCard extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
-              width: 92,
+              width: _leftRailWidth,
               child: Column(
                 children: [
-                  CareFamilyIcon.forWire(
-                    type: null,
-                    careFamily: item.careFamily,
-                    showChip: false,
+                  CareFamilyIcon(
+                    family: family,
+                    showChip: true,
+                    chipSize: _familyChipSize,
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -71,9 +86,27 @@ class OccurrenceIdentityCard extends ConsumerWidget {
                     excludeSemantics: true,
                     child: Icon(
                       scheduleIcon,
-                      size: 20,
+                      size: 24,
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
+                  ),
+                  const SizedBox(height: 8),
+                  petAsync.when(
+                    loading: () => const SizedBox(
+                      width: _petAvatarSize,
+                      height: _petAvatarSize,
+                      child: Center(
+                        child: SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      ),
+                    ),
+                    error: (_, __) => const SizedBox.shrink(),
+                    data: (pet) => pet == null
+                        ? const SizedBox.shrink()
+                        : _PetRailAvatar(pet: pet),
                   ),
                 ],
               ),
@@ -88,7 +121,7 @@ class OccurrenceIdentityCard extends ConsumerWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                   const SizedBox(height: 6),
@@ -98,42 +131,40 @@ class OccurrenceIdentityCard extends ConsumerWidget {
                     style: theme.textTheme.titleSmall,
                   ),
                   const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 4,
-                    crossAxisAlignment: WrapCrossAlignment.center,
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      CareItemOccurrenceStatusPill(
-                        key: const Key('occurrence_status'),
-                        pill: pill,
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerLeft,
+                          child: CareItemOccurrenceStatusPill(
+                            key: const Key('occurrence_status'),
+                            pill: pill,
+                          ),
+                        ),
                       ),
-                      if (overdueDays != null)
+                      if (overdueDays != null) ...[
+                        const SizedBox(height: 4),
                         Text(
                           l.occurrenceDaysOverdue(overdueDays),
                           style: theme.textTheme.bodySmall?.copyWith(
                             fontWeight: FontWeight.w600,
                           ),
                         ),
+                      ],
                     ],
                   ),
-                  const SizedBox(height: 8),
-                  petAsync.when(
-                    loading: () => const SizedBox(
-                      height: 40,
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        ),
-                      ),
+                  if (showScheduleActions) ...[
+                    const SizedBox(height: 12),
+                    OccurrenceScheduleActionBar(
+                      busy: scheduleActionsBusy,
+                      showChangeDate: occurrenceShowsReschedule(detail),
+                      onChangeDate: onChangeDate,
+                      onSkip: onSkip,
                     ),
-                    error: (_, __) => const SizedBox.shrink(),
-                    data: (pet) => pet == null
-                        ? const SizedBox.shrink()
-                        : CareItemPetContextTile(pet: pet),
-                  ),
+                  ],
                   if (finished || paused) ...[
                     const SizedBox(height: 8),
                     Wrap(
@@ -212,5 +243,54 @@ class OccurrenceIdentityCard extends ConsumerWidget {
       context,
     ).formatTimeOfDay(TimeOfDay(hour: hour, minute: minute));
     return l.occurrenceDateAtTime(dateStr, formattedTime);
+  }
+}
+
+class _PetRailAvatar extends ConsumerWidget {
+  const _PetRailAvatar({required this.pet});
+
+  final Pet pet;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final apiBaseUrl = ref.watch(apiBaseUrlProvider);
+
+    return Semantics(
+      button: true,
+      label: pet.name,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => openPetDetail(context, pet.id),
+          customBorder: const CircleBorder(),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                width: OccurrenceIdentityCard._petAvatarSize,
+                height: OccurrenceIdentityCard._petAvatarSize,
+                child: ClipOval(
+                  child: buildPetPhotoOrPlaceholder(
+                    photoPath: pet.photoPath,
+                    apiBaseUrl: apiBaseUrl,
+                    fit: BoxFit.cover,
+                    semanticLabel: 'Photo of ${pet.name}',
+                  ),
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                pet.name,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.labelLarge,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
