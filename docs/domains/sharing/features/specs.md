@@ -3,12 +3,46 @@ title: Sharing specs
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-09-17
+last_updated: 2026-10-08
 tags: [domain,sharing,specs]
 domain: sharing
+feature_id: sharing
 ---
 
-# Sharing specs
+# Sharing
+
+Pet access, share links, email invites, and collaborator roles (`sharing.feature`, `sharing.spec.ts`).
+
+## Requirements
+
+| ID | Requirement | Status |
+|----|-------------|--------|
+| **SH-1** | Owners generate share links; recipients view or accept per link policy. | delivered |
+| **SH-2** | Email invites with role (`carer` / `co_parent`) and `/invite/:code` landing. | delivered |
+| **SH-3** | Hide shared pet from home list without revoking access. | delivered |
+| **SH-4** | Invalid/expired tokens show appropriate errors. | delivered |
+
+## User journeys
+
+### Create share link
+
+Pet owners generate a share link for collaborators to view (and optionally accept) pet access.
+
+### View shared pet (anonymous)
+
+Recipients open share URLs without logging in; health entries and vet info visibility per link policy.
+
+### Accept or decline share
+
+Share links: recipient opens `/shared/:code` and accepts into their pet list. Email invites: members land on `/invite/:code`; accept grants `pet_access`; decline notifies inviter.
+
+### Hide shared pet
+
+Swipe-to-hide removes shared pets from the home list without revoking access; unhide restores visibility.
+
+### Expired or invalid links
+
+Invalid or expired tokens show an appropriate error state.
 
 ## Roles (`pet_access.role`)
 
