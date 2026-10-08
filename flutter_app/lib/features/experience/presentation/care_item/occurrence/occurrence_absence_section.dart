@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import 'package:pet_profile_app/core/theme/app_color_tokens.dart';
 import 'package:pet_profile_app/core/utils/calendar_date.dart';
 import 'package:pet_profile_app/features/care_item/care_item.dart';
 import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
@@ -84,7 +85,7 @@ class _BodyState extends ConsumerState<_Body> {
             Icon(
               Icons.flight_takeoff_outlined,
               size: 18,
-              color: theme.colorScheme.onSurfaceVariant,
+              color: AppColorTokens.awayContextAccent,
             ),
             const SizedBox(width: 8),
             Text(

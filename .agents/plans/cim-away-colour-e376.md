@@ -212,14 +212,14 @@ autonomy: active
 current_phase: 2
 last_completed_phase: 1
 halt_reason: null
-next_action: "start phase 2: checkout cursor/away-context-plum-tokens-e376"
+next_action: "continue phase 2 on branch cursor/away-context-plum-tokens-e376"
 artifact_ref:
-  branch: cursor/agatha-teal-suggestion-cards-e376
+  branch: cursor/away-context-plum-tokens-e376
   plan_path: .agents/plans/cim-away-colour-e376.md
-  plan_commit: 940c1273b961cd7f630642aa959de073f8d82f27
+  plan_commit: e5ac59425f86ac3ec7d6db30b221d9e6d25c0847
   snapshot_path: .agents/plans/cim-away-colour-e376.snapshot.json
-  snapshot_commit: 940c1273b961cd7f630642aa959de073f8d82f27
-open_prs: []
+  snapshot_commit: e5ac59425f86ac3ec7d6db30b221d9e6d25c0847
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1795"]
 merge_commits: {"1":"9442c24f600186e849815fa9cb2b05b80e2b7ecd"}
 debt_issue_refs: []
 ```

@@ -93,7 +93,7 @@ class _AwayPlanSuggestionsBody extends ConsumerWidget {
           child: Text(
             l.careSuggestionTitle,
             style: theme.textTheme.titleSmall?.copyWith(
-              color: AppColorTokens.warmAccent,
+              color: AppColorTokens.awayContextAccent,
               fontWeight: FontWeight.w600,
             ),
           ),

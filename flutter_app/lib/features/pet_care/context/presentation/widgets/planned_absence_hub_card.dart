@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../../core/router/shell_return_navigation.dart';
+import '../../../presentation/widgets/away_context_icon_chip.dart';
 import '../../../../../core/utils/calendar_date.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../pet_profile/pet_profile.dart';
@@ -56,11 +57,11 @@ class PlannedAbsenceHubCard extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             child: Row(
               children: [
-                Icon(
-                  Icons.event_outlined,
-                  color: subdued
-                      ? colorScheme.onSurfaceVariant
-                      : colorScheme.primary,
+                AwayContextIconChip(
+                  icon: Icons.event_busy_outlined,
+                  iconSize: 22,
+                  padding: const EdgeInsets.all(8),
+                  subdued: subdued,
                 ),
                 const SizedBox(width: 12),
                 Expanded(

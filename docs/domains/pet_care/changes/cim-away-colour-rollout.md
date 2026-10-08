@@ -12,5 +12,5 @@ Execute-plan `cim-away-colour-e376`. Delete this file when phase 2 is merged and
 
 | Phase | Outcome | Status |
 |-------|---------|--------|
-| 1 | Agatha teal suggestions + info safeguards + For you inbox | in delivery |
-| 2 | Away context plum tokens | pending |
+| 1 | Agatha teal suggestions + info safeguards + For you inbox | merged |
+| 2 | Away context plum tokens | in delivery |

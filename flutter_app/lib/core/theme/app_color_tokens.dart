@@ -46,6 +46,10 @@ abstract final class AppColorTokens {
   static const Color petCareCareActive = petCareActive;
   static const Color petCareCareLight = petCareLight;
 
+  /// Away planning list/tile chrome (user-declared trip — not Agatha teal).
+  static const Color awayContextSurface = petCareLight;
+  static const Color awayContextAccent = petCareActive;
+
   @Deprecated('Use petCareCarePrimary')
   static const Color guardianCarePrimary = petCareCarePrimary;
   @Deprecated('Use petCareCareActive')

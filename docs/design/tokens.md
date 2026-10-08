@@ -173,6 +173,17 @@ Used for “Suggested by Agatha” routine proposals and related guidance — no
 
 Body copy on suggestion cards uses foundation **body** (`#374151`). Accept actions remain **petCarePrimary** plum.
 
+## Away planning context (user-declared trip)
+
+Plum aliases for `/pc/away` and absence modules — **not** Agatha teal or semantic info chrome.
+
+| Token | Hex | Use |
+|-------|-----|-----|
+| awayContextSurface | `#E8E1E3` | icon chip fill (= `petCareLight`) |
+| awayContextAccent | `#573F4B` | chip icon, planner headings (= `petCareActive`) |
+
+List/tile surfaces: `Icons.event_busy_outlined` on `awayContextSurface`. Care-item absence modules may use `Icons.flight_takeoff_outlined` with `awayContextAccent`.
+
 ## Semantic (shared across modes)
 
 | Token | Hex | Notes |

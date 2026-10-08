@@ -260,6 +260,22 @@ Absences use the same care commands as everything else — there is no absence-o
 
 Recording an absence still changes no care (the hard invariant above); only a person's explicit action does.
 
+## Presentation (Flutter)
+
+Away planning chrome uses **away-context** plum tokens (`docs/design/tokens.md` § Away planning context), shared `AwayContextIconChip`, and **not** Agatha message teal or coral warm accent.
+
+| Surface | Chrome |
+|---------|--------|
+| Dashboard `PlannedAbsenceEntryTile`, hub cards, hub empty state | `AwayContextIconChip` (`event_busy_outlined`) |
+| Care-item absence modules | `flight_takeoff_outlined` + `awayContextAccent` |
+| Away planner “Suggested by Agatha” heading | `awayContextAccent` (plum; distinct from inbox/profile Agatha cards) |
+
+## Decision log
+
+| ID | Decision | Rationale | Status | Date | PR |
+|----|----------|-----------|--------|------|-----|
+| CC-UI-D-001 | Away surfaces use away-context plum aliases, not Agatha teal or warm accent | User-declared trip vs Agatha suggestions | Live | 2026-10-08 | |
+
 ## Related
 
 - [care-schedule-management.md](care-schedule-management.md) — authoritative scheduling core (`projectSchedule`, `explainGap`)

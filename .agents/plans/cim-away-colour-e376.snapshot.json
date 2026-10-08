@@ -86,14 +86,13 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
-      "status_detail": "awayContext token aliases + shared chip; planner headings plum not Agatha.",
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
-      "debt_issue_refs": []
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1795",
+      "pr_head_sha": "e5ac5942"
     }
   ],
-  "content_hash": "sha256:fccb08d96f85ffebdf1eba67e9fc5cb15dcdf9e0a95ebda3a6937a5a7cdf5300"
+  "content_hash": "sha256:67bd7f8399a8489aed678c10e3b40f4af6db2d925bc47c138953a0b5ece7e5e6"
 }
