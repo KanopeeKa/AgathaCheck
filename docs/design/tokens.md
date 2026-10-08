@@ -127,6 +127,7 @@ forms. Do not replace it with paws, paw prints, or a generic pet icon.
 | muted | `#667085` | secondary → `onSurfaceVariant` |
 | disabled | `#98A2B3` | disabled controls only |
 | inverse | `#FFFFFF` | on primary buttons |
+| snackBarSurface | `#52606D` | floating snackbars (undo confirmations); same as `landingInkSoft` |
 
 ## Pet Care mode (default primary — landing + `/pc/*`)
 

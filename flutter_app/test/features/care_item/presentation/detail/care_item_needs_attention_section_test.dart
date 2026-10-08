@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:pet_profile_app/core/theme/app_theme.dart';
+import 'package:pet_profile_app/core/widgets/app_undo_snackbar.dart';
 import 'package:pet_profile_app/features/care_item/care_item.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
@@ -132,6 +133,11 @@ void main() {
     final body = json.decode(requests.single.body) as Map<String, dynamic>;
     expect(body['given'], ['slot-2', 'slot-1', 'slot-0']);
     expect(find.text('3 marked done'), findsOneWidget);
+    expect(find.byIcon(Icons.close), findsOneWidget);
+    await tester.pump(kUndoSnackBarDuration);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(find.text('3 marked done'), findsNothing);
   });
 
   testWidgets('started rows list newest scheduled date first', (tester) async {
