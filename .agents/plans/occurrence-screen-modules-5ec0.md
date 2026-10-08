@@ -183,9 +183,9 @@ next_action: "plan complete"
 artifact_ref:
   branch: main
   plan_path: .agents/plans/occurrence-screen-modules-5ec0.md
-  plan_commit: 0836e519614d0eb98f572412a2fcf19d863cef5a
+  plan_commit: 2cb018d0e095b813a9581e26f2ca8d875dead3f2
   snapshot_path: .agents/plans/occurrence-screen-modules-5ec0.snapshot.json
-  snapshot_commit: 0836e519614d0eb98f572412a2fcf19d863cef5a
+  snapshot_commit: 2cb018d0e095b813a9581e26f2ca8d875dead3f2
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
