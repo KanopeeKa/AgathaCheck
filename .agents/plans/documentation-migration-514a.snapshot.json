@@ -5,7 +5,7 @@
   "approved_at": "2026-10-08T10:02:00Z",
   "approved_by": "approve-autonomous documentation-migration-514a on GitHub #1787 (operator steps 1–2, 2026-10-08)",
   "approved_until": "2026-10-10T10:02:00Z",
-  "autonomy": "active",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "cursor/documentation-migration-wave13-integration-514a",
   "control_issue": 1787,
@@ -1015,13 +1015,13 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1821",
-      "pr_head_sha": "f7f5520d"
+      "pr_head_sha": "7dc094c4"
     }
   ],
-  "content_hash": "sha256:177eea0d7c5dd10a7c89ccaa63a4f3255db358bcdb3654edfd9804b99ce59091"
+  "content_hash": "sha256:952254a831a3b3c4e21db8308af68b2b5a1a197707d97d5557617fcec394f5a8"
 }
