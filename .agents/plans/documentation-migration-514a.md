@@ -95,10 +95,10 @@ next_action: "continue phase 26 on branch cursor/documentation-migration-wave13-
 artifact_ref:
   branch: cursor/documentation-migration-wave13-integration-514a
   plan_path: .agents/plans/documentation-migration-514a.md
-  plan_commit: 9f32f8883cb310b541ffde092826be52a507ce80
+  plan_commit: f7f5520de1d8636895b7d829b7cf776ed49b19da
   snapshot_path: .agents/plans/documentation-migration-514a.snapshot.json
-  snapshot_commit: 9f32f8883cb310b541ffde092826be52a507ce80
-open_prs: []
+  snapshot_commit: f7f5520de1d8636895b7d829b7cf776ed49b19da
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1821"]
 merge_commits: {}
 debt_issue_refs: []
 ```
