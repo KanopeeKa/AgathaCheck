@@ -2,13 +2,13 @@
   "schema_version": 1,
   "plan_id": "cim-away-colour-e376",
   "programme_ref": "docs/design/tokens.md",
-  "approved_at": "2026-10-08T10:00:00Z",
-  "approved_by": "draft — not approved",
-  "approved_until": "2026-10-10T10:00:00Z",
-  "autonomy": "halted",
+  "approved_at": "2026-10-08T10:21:49Z",
+  "approved_by": "GitHub issue #1791 — approve-autonomous cim-away-colour-e376",
+  "approved_until": "2026-10-10T10:21:49Z",
+  "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/cim-away-colour-e376-integration-e376",
-  "control_issue": 1,
+  "control_issue": 1791,
   "artifact_branch_policy": "phase-branch",
   "phases": [
     {
@@ -91,5 +91,5 @@
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:3a9ef6cfc423e50a531f265749a9cc705e86d081df94e31c9b7f59db33c14cd1"
+  "content_hash": "sha256:b6927c97b28d5b2a86be6c86b388829b5bc546e45025f3bea5b2e77e785d60f9"
 }

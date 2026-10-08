@@ -47,10 +47,10 @@ Optional delivery note (delete when both phases merged): `docs/domains/pet_care/
 
 | Field | Value |
 |-------|-------|
-| **approved_at** | |
-| **approved_until** | `approved_at + 48h` |
-| **control_issue** | # |
-| **content_hash** | from snapshot |
+| **approved_at** | `2026-10-08T10:21:49Z` |
+| **approved_until** | `2026-10-10T10:21:49Z` |
+| **control_issue** | [#1791](https://github.com/KanopeeKa/AgathaCheck/issues/1791) |
+| **content_hash** | `sha256:…` (see snapshot) |
 | **autonomy** | `active` |
 
 **Grant keyword:** `approve-autonomous cim-away-colour-e376`
@@ -202,11 +202,11 @@ After phase 2 `merged`:
 ## Runtime state (agent-updated)
 
 ```yaml
-autonomy: pending
+autonomy: active
 current_phase: null
 last_completed_phase: null
 halt_reason: null
-next_action: bootstrap integration branch; validate snapshot; init control issue; approve-autonomous
+next_action: /execute-plan cim-away-colour-e376 — phase 1 implement
 artifact_ref:
   branch: null
   plan_path: .agents/plans/cim-away-colour-e376.md
