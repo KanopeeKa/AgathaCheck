@@ -54,7 +54,7 @@ After API seeding, the Pet Care home `DueEventsSection` does not refresh until t
 
 ## Pet Care workspace naming (D38)
 
-Routes use `/pc/*`. Wire value `pet_care` replaces legacy `guardian` for experience scope. Shell drawer/toggle semantics use `drawer_pet_care` and `experience_workspace_menu_pet_care` (tier-1 rename, F-22 follow-up). Other Flutter/E2E identifiers may still use `guardian_*` prefixes — see [terminology-rename-inventory](/docs/domains/pet_care/changes/terminology-rename-inventory.md) §Deferred drift.
+Routes use `/pc/*`. Wire value `pet_care` replaces legacy `guardian` for experience scope. Shell drawer/toggle semantics use `drawer_pet_care` and `experience_workspace_menu_pet_care` (tier-1 rename, F-22 follow-up). Other Flutter/E2E identifiers may still use `guardian_*` prefixes — see [Pet Care README — Deferred identifier drift](/docs/domains/pet_care/README.md#deferred-identifier-drift-intentional).
 
 | Surface | EN | FR |
 |---------|----|----|
@@ -64,7 +64,7 @@ Routes use `/pc/*`. Wire value `pet_care` replaces legacy `guardian` for experie
 | Link to full due list | All Actions | Tous les soins |
 | Bottom nav tab | Actions | Soins |
 
-Full map: [pet_care domain rename plan](/docs/domains/pet_care/changes/domain-rename-plan.md).
+Full map: [Pet Care domain README — Wire and code map](/docs/domains/pet_care/README.md#wire-and-code-map).
 
 ## Pet Care compact bottom nav (D-v4-1)
 

@@ -50,6 +50,7 @@ Standalone `*-decisions.md` under `features/` or `changes/` is **legacy**; do no
 
    | Legacy domain | Prefix | Legacy source |
    |---------------|--------|---------------|
+   | care_context (away UI) | `CC-UI` | `care-context.md` (CC-UI-D-001 away plum aliases) |
    | navigation | `NAV` | `navigation-decisions.md` (D1–D6, D27) |
    | notifications | `NOTIF` | `notification-decisions.md` (D7–D11) |
    | pet_profile | `PETPROF` | `pet-profile-decisions.md` (D17–D24, D34–D38) |

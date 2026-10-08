@@ -23,5 +23,5 @@ new product copy and design decisions. Legacy **Guardian** and drawer **My Pets*
 references as candidates for deliberate revision rather than fixed constraints;
 change them only in the agreed, screen-by-screen redesign work. Preserve
 technical identifiers only until their migration is explicitly scoped in
-[pet_care domain rename plan](/docs/domains/pet_care/changes/domain-rename-plan.md).
+[Pet Care domain README](/docs/domains/pet_care/README.md).
 Custody **guardianship** legal terms remain in the custody model.
