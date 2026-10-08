@@ -159,7 +159,7 @@ Org-guardianship pet photo border on guardian home: **primary** teal (subtle).
 | accent | `#D6A08F` |
 | lightAccent | `#F4E4DD` |
 
-Empty states, onboarding, welcome — not main action buttons.
+Empty states, onboarding, welcome — not main action buttons. **Not** used for Care Intelligence suggestion cards (use Agatha message surfaces below).
 
 ## Agatha message surfaces (Care Intelligence)
 

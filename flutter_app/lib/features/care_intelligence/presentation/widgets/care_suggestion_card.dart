@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/care_recommendation.dart';
 import '../care_suggestion_copy.dart';
 import 'care_suggestion_respond_actions.dart';
+import 'agatha_message_card_shell.dart';
 import 'suggestion_why_sheet.dart';
 
-/// Warm-accent suggestion card for established-care rhythm proposals.
+/// Agatha suggestion card for established-care rhythm proposals.
 class CareSuggestionCard extends ConsumerStatefulWidget {
   const CareSuggestionCard({
     super.key,
@@ -69,26 +69,19 @@ class _CareSuggestionCardState extends ConsumerState<CareSuggestionCard> {
     final cadenceLabel = careSuggestionCadenceLabel(l, recommendation);
     final petName = _petName;
 
-    return Card(
+    return AgathaMessageCard(
       key: Key('care_suggestion_card_${recommendation.id}'),
-      margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-      color: AppColorTokens.warmAccentLight,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Semantics(
-          identifier: 'care_suggestion_group',
-          key: const ValueKey('care_suggestion_group'),
-          container: true,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                l.careSuggestionTitle,
-                style: theme.textTheme.titleSmall?.copyWith(
-                  color: AppColorTokens.warmAccent,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+      child: Semantics(
+        identifier: 'care_suggestion_group',
+        key: const ValueKey('care_suggestion_group'),
+        container: true,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              l.careSuggestionTitle,
+              style: AgathaMessageCardShell.titleStyle(theme.textTheme),
+            ),
               if (widget.petAvatar != null && petName != null) ...[
                 const SizedBox(height: 8),
                 Row(
@@ -173,8 +166,7 @@ class _CareSuggestionCardState extends ConsumerState<CareSuggestionCard> {
                   ),
                 ],
               ),
-            ],
-          ),
+          ],
         ),
       ),
     );

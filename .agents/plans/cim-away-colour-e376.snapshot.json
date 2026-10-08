@@ -45,12 +45,9 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
-      "status_detail": "Agatha shell on CareSuggestionCard + NotificationSuggestionCard; CareSafeguardCard uses info tokens.",
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
+      "status_detail": null,
       "debt_issue_refs": []
     },
     {
@@ -95,5 +92,5 @@
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:ba8b990d2f5b4ea66e238008bc34439a71e70e6c8a78b6e2ca7241820e64b178"
+  "content_hash": "sha256:a99e338fa5e619241e6d0bf46ef85ddcd34afd7bfd6f10dce992842338e3b0b9"
 }

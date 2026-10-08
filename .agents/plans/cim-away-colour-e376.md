@@ -51,7 +51,7 @@ Optional delivery note (delete when both phases merged): `docs/domains/pet_care/
 | **approved_at** | `2026-10-08T10:21:49Z` |
 | **approved_until** | `2026-10-10T10:21:49Z` |
 | **control_issue** | [#1791](https://github.com/KanopeeKa/AgathaCheck/issues/1791) |
-| **content_hash** | `sha256:8877df6e73c9298f519ee7afccdaa8d8176f97a1972ea02334eddb125384ed26` |
+| **content_hash** | `sha256:ba8b990d2f5b4ea66e238008bc34439a71e70e6c8a78b6e2ca7241820e64b178` |
 | **autonomy** | `active` |
 
 **Grant keyword:** `approve-autonomous cim-away-colour-e376`
@@ -209,16 +209,16 @@ After phase 2 `merged`:
 
 ```yaml
 autonomy: active
-current_phase: null
+current_phase: 1
 last_completed_phase: null
 halt_reason: null
-next_action: /execute-plan cim-away-colour-e376 — phase 1 implement
+next_action: "continue phase 1 on branch cursor/agatha-teal-suggestion-cards-e376"
 artifact_ref:
-  branch: null
+  branch: cursor/cim-away-colour-e376-integration-e376
   plan_path: .agents/plans/cim-away-colour-e376.md
-  plan_commit: null
+  plan_commit: 1b4f4df4ba680f762b1c79a2cda2a09e2b3e83b9
   snapshot_path: .agents/plans/cim-away-colour-e376.snapshot.json
-  snapshot_commit: null
+  snapshot_commit: 1b4f4df4ba680f762b1c79a2cda2a09e2b3e83b9
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
