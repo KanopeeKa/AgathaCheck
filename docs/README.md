@@ -78,10 +78,9 @@ Navigation shell reversal and phased delivery (formerly `docs/experience-program
 | Document | Purpose | Status |
 |----------|---------|--------|
 | [/docs/domains/navigation/README.md](/docs/domains/navigation/README.md) | **Start here** — decision index, briefs, phase 0–1 | Active |
-| [/docs/domains/navigation/features/navigation-decisions.md](/docs/domains/navigation/features/navigation-decisions.md) | Shell decisions D1–D6, D27 | Active |
-| [/docs/domains/cross-domain/changes/program-contract.md](/docs/domains/cross-domain/changes/program-contract.md) | Cross-cutting contracts and vocabulary | Active |
-| [/docs/domains/cross-domain/changes/roadmap-delivery-plan.md](/docs/domains/cross-domain/changes/roadmap-delivery-plan.md) | Phase order and sprint breakdown | Active |
 | [/docs/domains/navigation/features/navigation-decisions.md](/docs/domains/navigation/features/navigation-decisions.md) | Shell decisions + folded phase R/0/1 history | Active |
+| [/docs/domains/cross-domain/features/program-contract.md](/docs/domains/cross-domain/features/program-contract.md) | Cross-cutting contracts and vocabulary | Active |
+| [/docs/domains/cross-domain/features/delivery-plans-index.md](/docs/domains/cross-domain/features/delivery-plans-index.md) | Phase order (D32–D33) and programme index | Active |
 
 **Domain decisions** (split from former decisions log):
 
@@ -90,7 +89,7 @@ Navigation shell reversal and phased delivery (formerly `docs/experience-program
 | Notifications | [/docs/domains/notifications/features/notifications-v2-spec.md](/docs/domains/notifications/features/notifications-v2-spec.md) | D7–D11, N1–N13 |
 | Pet profile | [/docs/domains/pet_profile/features/pet-profile-decisions.md](/docs/domains/pet_profile/features/pet-profile-decisions.md) | D17–D24, D34–D37 |
 | Shelter | [/docs/domains/shelter/features/shelter-decisions.md](/docs/domains/shelter/features/shelter-decisions.md) | D12–D16, D20–D31, D-v2–v4 |
-| Cross-domain | [/docs/domains/cross-domain/changes/delivery-decisions.md](/docs/domains/cross-domain/changes/delivery-decisions.md) | D32–D33 |
+| Cross-domain | [/docs/domains/cross-domain/features/delivery-plans-index.md](/docs/domains/cross-domain/features/delivery-plans-index.md) | D32–D33 |
 
 **Domain delivery plans:**
 
@@ -180,9 +179,7 @@ Navigation shell reversal and phased delivery (formerly `docs/experience-program
 | **Open debt** | [/docs/debt/debt.md](/docs/debt/debt.md) | Single register — OPEN items only |
 | [/docs/debt/refactoring-log.md](/docs/debt/refactoring-log.md) | Sprint refactor history (completed work) | Active |
 | [/docs/debt/refactoring-log.md](/docs/debt/refactoring-log.md) | Completed refactoring work | Active |
-| [/docs/domains/cross-domain/changes/sprint-6-execution-plan.md](/docs/domains/cross-domain/changes/sprint-6-execution-plan.md) | Sprint 6 deliverables | Active |
-| [/docs/domains/cross-domain/changes/sprint-10-flutter-344-execution-plan.md](/docs/domains/cross-domain/changes/sprint-10-flutter-344-execution-plan.md) | Flutter 3.44 upgrade plan | Completed |
-| [/docs/domains/cross-domain/changes/docs-domain-audit-63ad.md](/docs/domains/cross-domain/changes/docs-domain-audit-63ad.md) | Full `.md` inventory audit (wave 3) | Active |
+| [/docs/domains/cross-domain/changes/sprint-6-execution-plan.md](/docs/domains/cross-domain/changes/sprint-6-execution-plan.md) | Sprint 6 BDD deliverables | In delivery |
 | [/docs/pipelines/ci-build-artifact-contract.md](/docs/pipelines/ci-build-artifact-contract.md) | Build artifact specifications | Active |
 | [/docs/pipelines/promotion-contract.md](/docs/pipelines/promotion-contract.md) | UAT to PROD promotion rules | Active |
 | [/docs/pipelines/db-schema-bootstrap-plan.md](/docs/pipelines/db-schema-bootstrap-plan.md) | Database initialization | Active |

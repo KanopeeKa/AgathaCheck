@@ -1,16 +1,16 @@
 ---
 title: Organisation v2 delivery plan
 owner: Documentation Team
-audience: both
-status: active
-last_updated: 2026-08-22
-tags: [domain, organization, plans]
+status: in-delivery
+status_since: 2026-10-08
+folds_into: docs/domains/shelter/features/shelter-decisions.md
+plan: documentation-migration-514a
 ---
 # Organisation v2 — delivery plan
 
 **Status:** Locked — implementation in progress (`execute-plan organisation-v2-abc9`, control issue #537)  
 **Supersedes:** Experience-program Phase 3 “section-card dashboard” as primary organisation IA  
-**Parent:** [../../cross-domain/changes/program-contract.md](../../cross-domain/changes/program-contract.md) · [shelter-decisions.md](../features/shelter-decisions.md)  
+**Parent:** [../../cross-domain/features/program-contract.md](../../cross-domain/features/program-contract.md) · [shelter-decisions.md](../features/shelter-decisions.md)  
 **Last updated:** 2026-08-02
 
 ---

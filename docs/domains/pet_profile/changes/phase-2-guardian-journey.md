@@ -9,7 +9,7 @@ plan: documentation-migration-514a
 ---
 # Phase 2 — Pet Care journey
 
-**Parent:** [../../cross-domain/changes/roadmap-delivery-plan.md](../../cross-domain/changes/roadmap-delivery-plan.md) · [../../cross-domain/changes/program-contract.md](../../cross-domain/changes/program-contract.md)  
+**Parent:** [../../cross-domain/features/delivery-plans-index.md](../../cross-domain/features/delivery-plans-index.md) · [../../cross-domain/features/program-contract.md](../../cross-domain/features/program-contract.md)  
 **Brief:** [`briefs/guardian-dashboard-brief.md`](briefs/guardian-dashboard-brief.md)
 
 ## Purpose
@@ -139,7 +139,7 @@ pet timeline's guardian-name visibility rule (business rule 4).
 
 ## Phases with exit criteria
 
-Sprints 2.1–2.8 (see [roadmap-delivery-plan.md](/docs/domains/cross-domain/changes/roadmap-delivery-plan.md)).
+Sprints 2.1–2.8 (see [roadmap-delivery-plan.md](/docs/domains/cross-domain/features/delivery-plans-index.md)).
 
 **Exit criteria:**
 

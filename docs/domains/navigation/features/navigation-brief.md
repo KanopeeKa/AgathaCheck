@@ -16,6 +16,12 @@ feature_id: navigation-brief
 
 # Navigation redesign brief
 
+## Cross-cutting contract
+
+Platform vocabulary, notification targets, and permission scaffolding for this brief live in
+[program-contract.md](/docs/domains/cross-domain/features/program-contract.md) (folded from
+`cross-domain/changes/program-contract.md` in documentation-migration Wave 5.1).
+
 ## Purpose
 
 Redesign the mobile navigation so it feels like a clean product shell rather than a generic website menu or mixed home feed. The new model should be simple, scalable, mobile-first, and suitable for a product that may later be ported to iOS and Android apps [file:32][file:33][web:46][web:48].

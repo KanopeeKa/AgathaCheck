@@ -1,10 +1,10 @@
 ---
 title: Sprint 6 execution plan
 owner: Documentation Team
-audience: both
-status: active
-last_updated: 2026-08-22
-tags: [plans, sprint, bdd]
+status: in-delivery
+status_since: 2026-08-22
+folds_into: docs/domains/cross-domain/features/delivery-plans-index.md
+plan: documentation-migration-514a
 ---
 # Sprint 6 — execution plan (remainder)
 

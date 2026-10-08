@@ -3,7 +3,7 @@ title: Cross-domain documentation
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-10-07
+last_updated: 2026-10-08
 tags: [cross-domain]
 ---
 
@@ -13,27 +13,23 @@ Platform contracts and delivery work that spans multiple product domains.
 
 | Folder | Contents |
 |--------|----------|
-| `features/` | Normative requirements shared across domains (when not in `docs/architecture/`) |
-| `changes/` | Cross-domain delivery plans, program contract, delivery-process decisions, sprint execution plans |
+| `features/` | Programme contract, delivery index, normative cross-cutting requirements |
+| `changes/` | Active multi-domain execution plans (BDD sprints, etc.) |
 
 ## Key docs
 
 | Doc | Purpose |
 |-----|---------|
-| [program-contract.md](changes/program-contract.md) | Experience-program vocabulary, notifications model, permissions scaffolding |
-| [roadmap-delivery-plan.md](changes/roadmap-delivery-plan.md) | Phase R + 0–5 order and sprint breakdown |
-| [delivery-decisions.md](changes/delivery-decisions.md) | Process decisions D32–D33 |
+| [program-contract.md](features/program-contract.md) | Experience-program vocabulary, notification/permission targets, test strategy |
+| [delivery-plans-index.md](features/delivery-plans-index.md) | Phase order (D32–D33), programme index, migration handover pointer |
+| [terminology.md](/docs/design/terminology.md) | Pet Care + Experience program vocabulary for copy and agents |
 
 ## Cross-cutting execution plans
 
-Active and recent **multi-domain** execution plans (BDD sprints, toolchain, documentation waves). Domain-specific delivery plans live under `docs/domains/<domain>/changes/`.
-
 | Plan | Focus | Status |
 |------|-------|--------|
-| [docs-domain-audit-63ad.md](changes/docs-domain-audit-63ad.md) | Full `.md` inventory and move/stay decisions | Complete (wave 3) |
-| [documentation-migration-handover.md](/docs/domains/documentation/changes/documentation-migration-handover.md) | Canonical-docs migration waves (supersedes 2025 consolidation plan) | In delivery |
-| [sprint-6-execution-plan.md](changes/sprint-6-execution-plan.md) | BDD coverage sprint (org/foster/help) | Active remainder |
-| [sprint-10-flutter-344-execution-plan.md](changes/sprint-10-flutter-344-execution-plan.md) | Flutter 3.44 / Dart 3.12 upgrade | Completed |
+| [sprint-6-execution-plan.md](changes/sprint-6-execution-plan.md) | BDD coverage sprint (org/foster/help) | In delivery |
+| [documentation-migration-handover.md](/docs/domains/documentation/changes/documentation-migration-handover.md) | Canonical-docs migration waves | In delivery |
 
 Domain-scoped execute-plan snapshots remain in `.agents/plans/` (link from domain `changes/plans.md` indexes).
 

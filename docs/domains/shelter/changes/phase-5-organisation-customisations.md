@@ -1,14 +1,14 @@
 ---
 title: Phase 5 — Organisation customisations
 owner: Experience Program Team
-audience: both
-status: active
-last_updated: 2026-08-21
-tags: [experience,guardian,organisation]
+status: in-delivery
+status_since: 2026-10-08
+folds_into: docs/domains/shelter/features/shelter-decisions.md
+plan: documentation-migration-514a
 ---
 # Phase 5 — Organisation customisations
 
-**Parent:** [../../cross-domain/changes/roadmap-delivery-plan.md](../../cross-domain/changes/roadmap-delivery-plan.md) · [../../cross-domain/changes/program-contract.md](../../cross-domain/changes/program-contract.md)  
+**Parent:** [../../cross-domain/features/delivery-plans-index.md](../../cross-domain/features/delivery-plans-index.md) · [../../cross-domain/features/program-contract.md](../../cross-domain/features/program-contract.md)  
 **Brief:** [`briefs/shelter-dashboard-brief.md`](briefs/shelter-dashboard-brief.md) §Organisation customisations
 
 ## Purpose
