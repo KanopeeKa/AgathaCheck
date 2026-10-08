@@ -93,12 +93,12 @@ last_completed_phase: 7
 halt_reason: null
 next_action: "continue phase 8 on branch cursor/documentation-migration-care-progression-514a"
 artifact_ref:
-  branch: cursor/documentation-migration-wave13-integration-514a
+  branch: cursor/documentation-migration-care-progression-514a
   plan_path: .agents/plans/documentation-migration-514a.md
-  plan_commit: b515ffae7f8b25820630bda8faedf41b9b7c81b2
+  plan_commit: 76424484f6cdbe940fe66176c5f3c8ae14494026
   snapshot_path: .agents/plans/documentation-migration-514a.snapshot.json
-  snapshot_commit: b515ffae7f8b25820630bda8faedf41b9b7c81b2
-open_prs: []
+  snapshot_commit: 76424484f6cdbe940fe66176c5f3c8ae14494026
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1790"]
 merge_commits: {}
 debt_issue_refs: []
 ```
