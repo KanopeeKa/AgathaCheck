@@ -27,6 +27,7 @@ const LEGACY_DECISION_PREFIXES = ['NAV', 'NOTIF', 'PETPROF', 'SHELTER', 'XDOM', 
 function isValidDecisionId(id, prefix) {
   if (prefix && new RegExp(`^${prefix}-D-\\d{3}$`).test(id)) return true;
   if (/^D-[A-Z]+-\d{3}$/.test(id)) return true;
+  if (/^CC-UI-D-\d{3}$/.test(id)) return true;
   return new RegExp(`^(${LEGACY_DECISION_PREFIXES.join('|')})-D\\d+$`).test(id);
 }
 
