@@ -240,17 +240,17 @@ docs/debt/debt.md
 
 ```yaml
 autonomy: active
-current_phase: 1
-last_completed_phase: null
+current_phase: 2
+last_completed_phase: 1
 halt_reason: null
-next_action: "continue phase 1 on branch cursor/care-date-evolution-ui-b20d"
+next_action: "continue phase 2 on branch cursor/care-date-evolution-flow-b20d"
 artifact_ref:
-  branch: cursor/care-date-evolution-ui-b20d
+  branch: cursor/care-date-evolution-b20d-integration-b20d
   plan_path: .agents/plans/care-date-evolution-b20d.md
-  plan_commit: 268d815263d8aa0308d3f11ad45ca64eedf6ae51
+  plan_commit: 3352997dafe81afe655673c0c020626732ab7f6c
   snapshot_path: .agents/plans/care-date-evolution-b20d.snapshot.json
-  snapshot_commit: 268d815263d8aa0308d3f11ad45ca64eedf6ae51
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1812"]
+  snapshot_commit: 3352997dafe81afe655673c0c020626732ab7f6c
+open_prs: []
 merge_commits: {}
 debt_issue_refs: []
 ```

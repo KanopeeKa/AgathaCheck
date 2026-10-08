@@ -27,7 +27,7 @@ plan: care-date-evolution-b20d
 | D-OSM-013 | Phone module order matches wide: Away before Complete |
 | D-OSM-014 | Change date + Skip live in identity card via `OccurrenceScheduleActionBar` |
 | D-OSM-015 | Complete module has no “This date” header icon |
-| D-OSM-016 | Open-state inline completion date row removed; DN-3 handled in phase 2 |
+| D-OSM-016 | Open-state inline completion date row removed; DN-3 via completion sheet on Care date (phase 2) |
 
 ## Copy
 
