@@ -87,11 +87,11 @@ Regenerate snapshot after editing phases: `node scripts/generate_documentation_m
 ## Runtime state (agent-updated)
 
 ```yaml
-autonomy: halted
+autonomy: active
 current_phase: null
 last_completed_phase: 7
-halt_reason: awaiting_operator_grant
-next_action: "approve-autonomous on #1787; set autonomy active; /execute-plan documentation-migration-514a"
+halt_reason: null
+next_action: "/execute-plan documentation-migration-514a (phase 8 care-progression)"
 artifact_ref:
   branch: cursor/documentation-migration-wave13-integration-514a
   plan_path: .agents/plans/documentation-migration-514a.md
