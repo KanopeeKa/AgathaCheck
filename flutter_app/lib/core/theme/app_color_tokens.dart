@@ -100,6 +100,7 @@ abstract final class AppColorTokens {
 
   /// Agatha / Care Intelligence suggestion surfaces (not org mode primary).
   static const Color agathaTeal = Color(0xFF15586E);
+  static const Color agathaTealAction = landingTealDeep;
   static const Color agathaMessageSurface = landingTealSoft;
   static const Color agathaMessageBorder = landingLine;
 

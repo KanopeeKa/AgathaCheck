@@ -57,5 +57,13 @@ void main() {
 
     final card = tester.widget<Card>(find.byType(Card));
     expect(card.color, AppColorTokens.agathaMessageSurface);
+
+    final acceptContext = tester.element(
+      find.widgetWithText(TextButton, l.careSuggestionAccept),
+    );
+    final acceptColor = Theme.of(
+      acceptContext,
+    ).textButtonTheme.style?.foregroundColor?.resolve({});
+    expect(acceptColor, AppColorTokens.agathaTealAction);
   });
 }

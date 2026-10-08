@@ -113,7 +113,7 @@ A suggestion alone **cannot** change Care Status. Safeguards are **informational
 | `NotificationSuggestionCard` (For you) | Same Agatha message chrome as profile/dashboard |
 | `CareSafeguardCard` | `info` title on `infoLight` fill — distinct from suggestions |
 
-Accept / primary actions on suggestion cards remain **petCarePrimary** plum. Warm accent (`accent` / `lightAccent`) is not used for CIM suggestion or safeguard cards.
+Accept, Why, and secondary actions on suggestion cards use **agathaTealAction** (darker teal) via `AgathaMessageCard` action theming — not `petCarePrimary` plum. Warm accent (`accent` / `lightAccent`) is not used for CIM suggestion or safeguard cards.
 
 ### Safeguard resurface policy
 

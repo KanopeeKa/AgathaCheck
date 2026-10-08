@@ -21,11 +21,7 @@ Living metrics for Agatha Track quality. Update when CI or test counts change ma
 
 | Metric | Value | Enforced by |
 |--------|------:|-------------|
-<<<<<<< HEAD
-| Flutter unit/widget (active CI) | 352 | 6 shards (`ci_shards.json`) |
-=======
-| Flutter unit/widget (active CI) | 350 | 6 shards (`ci_shards.json`) |
->>>>>>> 997dd3cf (phase(1/2): Care date screen module layout v2 (#1794))
+| Flutter unit/widget (active CI) | 353 | 6 shards (`ci_shards.json`) |
 | Flutter frozen / excluded tests | 62 / 2 | frozen-domains manifest |
 | Flutter unowned tests | 0 | `flutter-shards.mjs check` |
 | Flutter integration flows | 1 | `flutter-integration` job |
