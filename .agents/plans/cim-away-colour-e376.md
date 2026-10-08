@@ -209,18 +209,18 @@ After phase 2 `merged`:
 
 ```yaml
 autonomy: active
-current_phase: 2
-last_completed_phase: 1
+current_phase: null
+last_completed_phase: 2
 halt_reason: null
-next_action: "continue phase 2 on branch cursor/away-context-plum-tokens-e376"
+next_action: "plan complete"
 artifact_ref:
-  branch: cursor/away-context-plum-tokens-e376
+  branch: cursor/cim-away-colour-e376-integration-e376
   plan_path: .agents/plans/cim-away-colour-e376.md
-  plan_commit: e5ac59425f86ac3ec7d6db30b221d9e6d25c0847
+  plan_commit: 9afb163a8c4ee3f03067e46c56be702ba7858741
   snapshot_path: .agents/plans/cim-away-colour-e376.snapshot.json
-  snapshot_commit: e5ac59425f86ac3ec7d6db30b221d9e6d25c0847
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1795"]
-merge_commits: {"1":"9442c24f600186e849815fa9cb2b05b80e2b7ecd"}
+  snapshot_commit: 9afb163a8c4ee3f03067e46c56be702ba7858741
+open_prs: []
+merge_commits: {"1":"9442c24f600186e849815fa9cb2b05b80e2b7ecd","2":"9afb163a8c4ee3f03067e46c56be702ba7858741"}
 debt_issue_refs: []
 ```
 
