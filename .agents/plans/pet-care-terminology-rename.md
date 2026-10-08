@@ -47,4 +47,4 @@ debt_issue_refs: []
 
 - Prior plan: `pet-care-domain-rename-b088` (wire/API/DB — completed)
 - Discovery: F-22 in `docs/domains/pet_care/changes/hardening-discovery.md`
-- Naming contract: `docs/domains/pet_care/changes/domain-rename-plan.md`
+- Naming contract: `docs/domains/pet_care/README.md` (wire and code map)

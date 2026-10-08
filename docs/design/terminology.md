@@ -3,7 +3,7 @@ title: AgathaTrack terminology
 owner: Documentation Team
 audience: product, design, engineering, content
 status: active
-last_updated: 2026-10-05
+last_updated: 2026-10-08
 tags: [design, brand, copy, l10n]
 ---
 
@@ -90,8 +90,18 @@ Legal or technical **guardianship** is separate from Pet Care relationship langu
 | Term | Rule |
 |------|------|
 | **AgathaTrack** | Current product name — use in all new UI and design work |
-| **AgathaCheck** | Legacy — do not introduce in new copy |
+| **AgathaCheck** | Legacy repository/product name — do not introduce in new copy |
 | **Agatha** | Product voice for explainable suggestions — not a chat persona, simulated person, or veterinarian |
+
+## Workspace shells (Pet Care vs Shelter)
+
+| Surface | EN | FR | Notes |
+|---------|----|----|-------|
+| Individual-carer workspace | **Pet Care** | **Suivi** | Plum shell at `/pc/*` — not Guardian / My Pets as workspace labels (D38) |
+| Operational org workspace | **Shelter** | **Refuges** (drawer) | Teal experience; fostering orgs recognise themselves here — “Organisation” in old copy is legacy UI wording, not the workspace name |
+| Global personal area | **Account** | (l10n) | Bottom-pinned drawer destination — not global “Settings” |
+
+Custody **guardianship** in legal docs is separate from Pet Care relationship language ([pet_care README](../domains/pet_care/README.md)).
 
 ## Recurring care: routine (UI) vs rhythm (internal)
 
@@ -104,6 +114,26 @@ Legal or technical **guardianship** is separate from Pet Care relationship langu
 [`copy-tone.md`](./copy-tone.md). Keep it in code and on the wire — renaming persisted keys or endpoints for copy
 reasons is explicitly out of scope ([pet-care-architecture](../../.cursor/rules/pet-care-architecture.mdc)).
 ARB **keys** may keep `Rhythm` in their name; only the values are user-facing.
+
+## Experience program delivery vocabulary
+
+Terms from the [Experience program contract](/docs/domains/cross-domain/features/program-contract.md) §2. Product copy rules in later sections take precedence for Pet Care surfaces.
+
+| Term | Definition |
+|------|------------|
+| **Journey** | User-facing roadmap area (Pet Care navigation, Shelter management, and similar) |
+| **Feature** | Implementable slice with acceptance criteria, UI rules, permissions, and BDD |
+| **Sprint** | Vertically sliced increment for one feature (or safe sub-slice) with tests and release gate |
+| **Notification kind** | `care` \| `administrative` — content-type axis (orthogonal to scope) |
+| **Notification scope** | `pet_care` \| `organization` — list/badge grouping (wire migrating from legacy `guardian`) |
+| **Event** (Experience program) | Health/weight/other-entry due item only — not legacy “family event” |
+| **Pet timeline** | Per-pet history: custody segments + fostering sessions + manual entries |
+| **Role** | Coarse org membership: `associate` \| `foster` \| `admin` \| `super_admin` |
+| **Permission key** | Atomic capability (G0 catalog + program additions) |
+| **Bundle preset** | UI grouping of permission keys on `admin` members — not a wire role |
+| **Permission override** | Individual grant/revoke on a member, audited |
+
+**Forbidden synonyms (new work):** “Family event” → pet timeline entry; global “Settings” → Account vs org edit vs self-card; generic “Home” → Pet Care home or Shelter entry; workspace “Guardian” / “My Pets” → Pet Care / Suivi (D38); Foster/Pet/Team Admin as wire roles → bundle presets.
 
 ## Pet Care workspace labels (D38)
 

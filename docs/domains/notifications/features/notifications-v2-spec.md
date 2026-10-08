@@ -1,15 +1,15 @@
 ---
-title: Notifications v2 — Activity & Agatha Suggestions (functional spec)
+title: Notifications — Activity, account & Agatha Suggestions
 owner: Product
 audience: both
 status: accepted (rev 2.5.1)
-last_updated: 2026-10-06
+last_updated: 2026-10-08
 tags: [domain,notifications,spec,suggestions,sharing]
 domain: notifications
-feature_id: notifications-v2
+feature_id: notifications
 ---
 
-# Notifications v2 — Activity & Agatha Suggestions
+# Notifications — Activity, account & Agatha Suggestions
 
 > **Status: accepted 2026-10-06, rev 2.5.1.** UAT closeout: resolve-by-type, actionability matrix, suggestion scheduler, FR-FB-2/3. Billing provider: undecided, so PR8 is blocked. Sign-in location: not now (N13). Functional spec only. Implementation follows the rollout in §12, with one atomic PR
 > per outcome. Rev 2+ changes are summarised in §15. The decisions in §0 take effect.
@@ -247,7 +247,7 @@ The table is complete for the `type: 'general'` emitters on `main` at commit `4f
 password change → show the list of recently seen device labels. It never asks for credentials in an email.
 Today's password change revokes **all** sessions including the current one; PR7 MUST **re-issue the current session**
 after a successful password change so the user is not signed out mid-flow (see
-`docs/domains/notifications/changes/notifications-v2-security-architecture.md`).
+§16 below).
 
 **Device label (N13)** is new personal data. Storage, retention and erasure on account deletion are specified in that
 security architecture note and MUST be reflected in the privacy docs before PR7 code ships.
@@ -767,15 +767,15 @@ Written in Given/When/Then form so they can be turned into BDD scenarios with mi
 - **AC-MG-3** — A client at the previous release receives no unknown kinds (or parses them safely) and does not crash.
 - **AC-MG-4** — `migrate down` removes the v2 schema additions and restores the old type→kind map. A backup is taken before `up`, and the restore runbook exists in `docs/ops`.
 - **AC-MG-5** — The documentation checklist is complete before this spec is marked `accepted`:
-  - [x] `notification-decisions.md`: a "Notifications v2 supersession" subsection mirroring §0 (D7, D8, D9, D10, N1–N9).
-  - [x] `features/specs.md`: axes table updated (kinds, `pet_care` scope wording, tabs instead of chips).
-  - [x] `features/journeys.md`: care-in-inbox, chips and combined badge journeys rewritten.
-  - [x] `cross-domain/changes/program-contract.md` §3: a footnote pointing to this spec over the old diagram.
+  - [x] Decision log §18 mirrors §0 (D7–D11, N1–N13); legacy §B retained.
+  - [x] §17 implementation reference: axes table (kinds, `pet_care` scope, tabs).
+  - [x] §16 user journeys: care-in-inbox, chips and combined badge rewritten.
+  - [x] `cross-domain/features/program-contract.md` §3: a footnote pointing to this spec over the old diagram.
   - [x] Help/FAQ l10n strings: new copy drafted in Appendix A. The `.arb` files change **in PR2**, together with the behaviour, so the live FAQ never describes features that haven't shipped.
-  - [x] `changes/deferred.md`: quiet hours, R13 request flow, a "dot only for needs-response" badge option, S7 recipients revisit, approximate sign-in location (pending DPIA), and A4/A5 (pending the email-change feature).
+  - [x] §21 deferred work table: quiet hours, R13, badge option, S7, sign-in location, A4/A5, PR8, hard-delete.
   - [x] `docs/domains/subscription`: link to A7–A11 and the server-entitlement prerequisite.
   - [x] People domain docs: cross-link noting that ownership transfer is immediate in the API (no accept step), so R13 stays future. The contradiction is tracked on the People backlog.
-  - [x] `changes/plans.md`: the link points to the accepted revision.
+  - [x] §19 programme index points to accepted revision and child plans.
 - **AC-MG-6** — Given `householdInviteReceived` and `shareInviteAccepted` rows (today wrongly defaulted to `care`), then after migration both are `relationship` and visible in Activity.
 
 ### 13.15a Account security (AC-ACS)
@@ -906,6 +906,199 @@ Still open (non-blocking): whether to add a "dot only for needs-response" badge 
 | **S1 / S2** | `suggestionMissingRecurringCare` (parasite prevention rhythm), `suggestionWeightTrend` (≥5% over 90d window) |
 | **FR-RL-1 / RL-2** | Rolling 7-day caps (3/pet, 5/user) + 10 active/user enforced on **new** rows only; dedupe upserts refresh evidence |
 | **FR-SC-3** | For you card shows vet disclaimer for S2 (`notificationSuggestionVetDisclaimer`) |
+
+## 16. User journeys
+
+User-facing flows for the global bell and inbox. v2 ships in PR1–PR8 (§12). Until PR2 lands, the app still shows the All / Care / Organisation chips and care items in the inbox.
+
+### Open the inbox from the header bell
+
+On every authenticated screen, the header shows a persistent bell. On wide layouts it opens a full-height right slide-over; on compact layouts, a full screen with the same content. The inbox has two tabs: **Activity** (default) and **For you**.
+
+The bell shows a **number** for items that need you: invites to answer, urgent items, and an unanswered new-sign-in alert. It shows a **dot** when there is only something new to read. Care reminders never touch the bell.
+
+### Answer an invite without leaving the inbox
+
+Someone shares a pet or invites you to a household. The item appears under **Needs your response** with **Accept / Decline**. Accept shows what you're granted before confirming; Decline offers Undo. Tapping the row itself opens the full invite screen. If the invite was cancelled meanwhile, the row shows "Already handled".
+
+### See who joined, left or changed your access
+
+Activity lists people updates: invites accepted or declined, access changed or removed, members joining or leaving, pets added to or removed from a household, ownership transferred, a pet marked as passed away. Similar updates within a day are grouped ("Paul and 2 others joined…"); tap the group to expand it.
+
+### Review a security alert
+
+After a sign-in from a new device, Activity shows the device and time, with **This was me** / **Secure my account**. Secure my account signs out other devices and asks for a new password. Password changes and forced sign-outs are also reported. Security alerts are also emailed, contain no sign-in links, and can't be turned off.
+
+### Subscription updates *(after the billing provider is chosen)*
+
+Activity reports when Unlimited becomes active, an annual renewal is coming up, a payment fails (urgent, with **Update payment**), or the plan ends (with what changes on Free; no data is deleted).
+
+### Act on an Agatha suggestion
+
+**For you** groups suggestions by pet. Each card shows why it appeared, one action (e.g. *Add reminder*), and **Dismiss / Not relevant / Why am I seeing this?**. Health-related cards remind you that Agatha isn't a vet. Suggestions expire after 14 days; users get at most a few per week, plus an optional weekly digest.
+
+### Organisation and foster items
+
+Foster requests, placements, adoption, custody, org messages and agreement-withdrawal alerts stay in Activity with their "From: <org>" label. Pending ones sit under **Needs your response**; urgent ones are pinned at the top (D11).
+
+### Care reminders
+
+Due and overdue care is in **Care Actions** (dashboard) and **Actions**, and is delivered as device reminders. It is no longer duplicated in the inbox.
+
+### Notification settings
+
+Account → Notification settings shows a category × channel grid (in-app / push / email), per-suggestion-type toggles, and locked security items. Per-pet mute affects reminders, suggestions and people-update pushes, never security notices. Org-scoped self-management prefs are reached from org people cards (D26–D27).
+
+BDD: `notifications.feature` (legacy) + `notifications_v2.feature` · E2E: navigation contract requires bell + panel ready state.
+
+## 17. Implementation reference
+
+### Axes (orthogonal)
+
+| Field | Values | Notes |
+|-------|--------|-------|
+| `kind` | `relationship` \| `administrative` \| `suggestion` \| `account` | Set at creation from the type→kind map (§3.4). Drives the **Activity** (relationship, administrative, account) and **For you** (suggestion) tabs. *Today:* `care \| administrative` with chips, until PR1/PR2 |
+| `scope` | `pet_care` \| `organization` (`guardian` accepted as a legacy alias on the wire) | Grouping label (“From: org name”), not separate routes |
+| `priority` | `normal` \| `urgent` | Urgent for agreement withdrawal and subscription payment issues (D11, A9) |
+| `resolvedAt` | nullable timestamp | Items referencing an open object: administrative, relationship invites, account A1/A9 (D9 as extended by v2) |
+
+Wire enums: `flutter_app/lib/features/notifications/domain/entities/notification_kind.dart`
+
+### Flutter modules
+
+- Panel UI: `presentation/widgets/notification_panel.dart`
+- Navigation targets: `presentation/utils/notification_navigation.dart`
+- Scope rules: `domain/services/notification_scope_rules.dart`
+
+### Backend
+
+Notification rows served via `notification_remote_datasource`; preferences entity `notification_preferences` (see fostering G0 §11 for DPIA alignment D31).
+
+### Tests
+
+- BDD: `flutter_app/test/bdd/features/notifications.feature`; v2 scenarios in `notifications_v2.feature`; care-in-inbox scenarios tagged `@legacy` in PR1 (§12)
+- Extend v2 scenarios in `notifications_v2.feature` as each PR lands (tabs, resolved semantics — program-contract §6.1 footnote)
+- UAT live E2E: after API seed, if due events are missing on home, call `refreshByRemount()` on the Playwright page before asserting (live E2E timing).
+
+Contract detail: [/docs/domains/cross-domain/features/program-contract.md](/docs/domains/cross-domain/features/program-contract.md) §3
+
+### Planned: People & Care Team
+
+Agreed but not implemented — see [People & Care Team](/docs/domains/people/features/people-care-team.md).
+
+- **D21:** when someone is named as looking after an occurrence, only they get its reminder.
+- **D25:** when nobody is named, the record owner and Full access members get the reminder. Can log care members don't, unless they opt in.
+- **Setting:** pet parents can opt in to notifications for all events on their pets (new `notification_preferences` key).
+- **Household notices:** pet removed from household (D22); absence access granted by someone else notifies the record owner (D19).
+
+Today, `petNotificationRecipientIds` in `server/lib/petAccess.js` sends to every sharer.
+
+## 18. Decision log (legacy §B + v2 supersession)
+
+Product decisions for the global bell, unified panel, and kind vs scope semantics (D7–D11, N1–N13). Other docs reference these IDs instead of restating rationale.
+
+### §B — Notifications (kind vs scope) — historical
+
+| ID | Decision | Status | Phase |
+|----|----------|--------|-------|
+| **D7** | ~~Superseded by v2 (§C)~~ Two orthogonal axes: `kind` (Care vs Administrative) and `scope` (`guardian` / `organization`). | locked | Phase 1 |
+| **D8** | ~~Chips and combined badge superseded by v2 (§C)~~ One global bell, unified slide-over; All / Care / Organisation chips. | locked | Phase 1 |
+| **D9** | ~~Extended by v2 (§C)~~ Resolved state for Administrative items referencing open objects. | locked | Phase 1 |
+| **D10** | ~~Amended by v2 (§C)~~ Pending inboxes moved into Administrative feed. | locked | Phase 2 |
+| **D11** | Urgent Administrative notifications pinned; not a third kind. | locked | Phase 4 |
+
+Cross-refs: [program-contract.md](/docs/domains/cross-domain/features/program-contract.md) §3 · [navigation-decisions.md — Phase 1](/docs/domains/navigation/features/navigation-decisions.md#phase-1-shell-navigation-folded) · [navigation-decisions.md](/docs/domains/navigation/features/navigation-decisions.md)
+
+### §C — Notifications v2 supersession
+
+Source: §0 above.
+
+| ID | Decision | Status | Lands in |
+|----|----------|--------|----------|
+| **D7** | Kinds become `relationship \| administrative \| suggestion \| account`. `care` retired from inbox. | superseded | PR1 (server), PR2 (client) |
+| **D8** | Bell and slide-over kept; **Activity / For you** tabs; calm badge. | partially superseded | PR2 |
+| **D9** | Resolved also applies to `relationship` and `account` open-object items. | extended | PR4 |
+| **D10** | Pending shares/household → `relationship`; foster/adoption/custody stay `administrative`; inline actions. | amended | PR3–PR4 |
+| **D11** | Urgent pinned at top of Activity; subscription payment issues (A9). | unchanged | — |
+| **N1**–**N13** | See §0 decision table. | locked | per §0 |
+
+## 19. Programme & rollout index
+
+**Goal:** Ship Notifications v2 per this spec. **PR8 (subscription)** stays blocked until a billing provider and server entitlement source exist.
+
+**Execute-plan roadmap:** `.agents/plans/notifications-v2-roadmap-7f3b.md`
+
+Integration branch (historical): `cursor/notifications-v2-integration-7f3b` ← PR1–PR7, then one PR → `main`.
+
+| # | plan_id | Spec PR | Outcome |
+|---|---------|---------|---------|
+| 0 | `notifications-v2-foundation-7f3b` | — | Rev 2.3.1 doc fixes + lineage merge |
+| 1–7 | `notifications-v2-pr1-7f3b` … `pr7` | PR1–PR7 | Per §12 |
+| — | `notifications-v2-pr8-7f3b` | PR8 | **Skipped** — billing provider undecided |
+| 8 | `notifications-v2-integration-7f3b` | — | Integration → `main`, pre-UAT |
+
+**Cut order (time pressure):** PR6 digest/email enhancements → PR4 grouping/R4/R18 → never cut PR7 security core or PR1 migration.
+
+Related plans: Experience Phase 1 Navigation (global bell) — [navigation-decisions.md — Phase 1](/docs/domains/navigation/features/navigation-decisions.md#phase-1-shell-navigation-folded). Org-admin notification surface deferred (D-v3-NOTIF-1).
+
+## 20. Account security architecture (PR7)
+
+Companion to §3.5, FR-ACC-*, FR-IA-7, and **N11–N13**. Implementation on plan `notifications-v2-pr7-7f3b`.
+
+| In PR7 | Out of PR7 |
+|--------|------------|
+| A1–A3, A6 + device label + Secure my account | A4/A5 email-change (no product flow yet) |
+| Security emails (mandatory, no auth links) | A7–A11 subscription (PR8) |
+| Inline **This was me** / **Secure my account** on A1 | IP geolocation or fine-grained fingerprint |
+
+### Device labels (`device_label`)
+
+Refresh sessions carry no device metadata today. A1 compares a **coarse label** at login against historical labels. Table `account_device_labels`: `user_id`, `label` (e.g. `Chrome on Windows`), `first_seen_at`, `last_seen_at`, optional `session_family_id`; unique `(user_id, label)`. Parsed from User-Agent or app platform — **never** IP (N13). Retention: purge rows with `last_seen_at` older than 90 days. Erasure: delete on GDPR account deletion. DPIA: coarse label only in copy; masked email in emails.
+
+### A1 delivery matrix
+
+| Channel | Signing-in device | Other devices |
+|---------|-------------------|---------------|
+| Inbox | Yes | No |
+| Email | Yes | No separate copy |
+| Push | **No** | **Yes** — other session families |
+
+No A1 on first login after signup; no A1 if same label within 90 days. **This was me** / **Secure my account** resolve per FR-ACC-2; unanswered auto-resolve after 14 days.
+
+### “Secure my account” flow
+
+1. Start from A1/A2 row.
+2. Revoke all refresh sessions **except** current session family.
+3. Required password change — current session preserved on this family only.
+4. Resolve notification(s) on success.
+
+### API surface (PR7)
+
+| Endpoint | Role |
+|----------|------|
+| `POST /api/auth/login` (+ refresh) | Upsert `device_label`; evaluate A1 |
+| `POST /api/notifications/:id/account-security-feedback` | `this_was_me` \| `start_secure_flow` |
+| `POST /api/auth/secure-account` | Revoke others + password change |
+
+### Testing hooks
+
+Jest: label → A1 once; repeat within 90d → no A1; signup → no A1. Flutter: A1 inline buttons. BDD: AC-ACS-1..4, AC-ACS-10 in `notifications_v2.feature`.
+
+## 21. Deferred work
+
+Open debt rows: [/docs/debt/debt.md](/docs/debt/debt.md) (filter **Domain = notifications**).
+
+| Item | Why deferred | Trigger to revisit |
+|------|--------------|--------------------|
+| In-app quiet hours | OS Focus covers v2 (FR-PU-2) | User demand |
+| R13 ownership-transfer request + accept | Transfer is immediate in API | People two-sided transfer |
+| “Dot only for needs-response” badge | Not needed yet | Inbox-opens-without-action metric |
+| S7 recipients beyond record owner | N7 | Co-parent coverage gaps |
+| Approximate sign-in location on A1 | DPIA (N13) | DPIA + product ask |
+| A1 push to other session families | No push token registry yet | Token store + FR-BG-6 |
+| A4/A5 email-change notices | No email-change flow | Feature scheduled |
+| Subscription A7–A11 (PR8) | No server entitlement source | Provider chosen |
+| Inbox hard-delete at 365 days | `audit_events` gap (N5) | Audit debt closed |
 
 ## Appendix A — FAQ copy (ships in PR2)
 

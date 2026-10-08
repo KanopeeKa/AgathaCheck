@@ -15,7 +15,7 @@ Narrow away-plan `planned_care_items[]` to in-window care (plus stale open work 
 
 **branch:** `cursor/away-plan-scope-simplify-71a1`
 
-**allowed_paths:** `server/lib/care/awayPlan/**`, `server/lib/care/schedule/projectSchedule.js`, `server/test/careSchedule/**`, `docs/domains/pet_care/changes/away-plan-scope-simplify-decisions.md`, `docs/architecture/api-reference.md`
+**allowed_paths:** `server/lib/care/awayPlan/**`, `server/lib/care/schedule/projectSchedule.js`, `server/test/careSchedule/**`, `docs/domains/pet_care/features/care-context.md`, `docs/architecture/api-reference.md`
 
 ### Phase aps-2 — Flutter
 

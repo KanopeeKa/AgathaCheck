@@ -3,7 +3,7 @@ title: Pet Care domain
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-10-07
+last_updated: 2026-10-08
 tags: [domain, pet_care, experience]
 ---
 
@@ -13,67 +13,41 @@ The **Pet Care** workspace is the plum (`/pc/*`) operational experience for indi
 
 Part of the AgathaTrack domain-first documentation tree. Cross-cutting architecture: [/docs/architecture/index.md](/docs/architecture/index.md).
 
-## Care Item (series, detail, absence resolutions)
+## Canonical capabilities
 
-| Document | Role |
-|----------|------|
-| [care-item-evolution.md](/docs/domains/pet_care/features/care-item-evolution.md) | **Canonical** Care Item product behaviour (context strip, Needs attention, completion, remediation) |
-| [care-item-evolution execute-plan](/.agents/plans/care-item-evolution.md) | Active delivery programme |
-| [archive/care-item-model-delivery-plan-2026-09-13.md](/docs/domains/pet_care/changes/archive/care-item-model-delivery-plan-2026-09-13.md) | Historical 2026-09-13 profile refactor snapshot |
+| Capability | Document |
+|------------|----------|
+| Care Item (series, detail, absence resolutions) | [care-item-evolution.md](features/care-item-evolution.md) |
+| Care Schedule Management (CSM) | [care-schedule-management.md](features/care-schedule-management.md) |
+| Care Context / Care Through Change | [care-context.md](features/care-context.md) |
+| Away planning — carer model and handover | [away-planning-carer-model.md](features/away-planning-carer-model.md) |
+| Care Progression | [care-progression.md](features/care-progression.md) |
+| Care Intelligence | [care-intelligence.md](features/care-intelligence.md) |
+| Care entitlements (future tiers) | [care-entitlements.md](features/care-entitlements.md) |
 
-## Care Intelligence
+## Active delivery (`changes/`)
 
-| Document | Role |
-|----------|------|
-| [care-intelligence.md](/docs/domains/pet_care/features/care-intelligence.md) | Canonical product behaviour |
-| [care-foundation-roadmap.md](/docs/domains/pet_care/changes/care-foundation-roadmap.md) | Programme sequencing (v0.4) — Phases A–E |
-| [phase-d-review-relevance-plan.md](/docs/domains/pet_care/changes/phase-d-review-relevance-plan.md) | Phase D research/delivery plan |
+| Programme | Document | Notes |
+|-----------|----------|-------|
+| Care Item evolution | [care-item-evolution execute-plan](/.agents/plans/care-item-evolution.md) | Active delivery |
+| Care Foundation roadmap (v0.4) | [care-foundation-roadmap.md](changes/care-foundation-roadmap.md) | Phases A–E sequencing |
+| Care progression slices | [care-progression-delivery-plan.md](changes/care-progression-delivery-plan.md) | CP-0–CP-7; rules in canonical |
+| Away planning (AW) | [away-planning-delivery-plan.md](changes/away-planning-delivery-plan.md) | AW-EMERGENCY–AW-10 |
+| Away planning — People amendments | [people-care-team.md](/docs/domains/people/features/people-care-team.md) § Away Planning integration | Folded from `amends-away-planning` |
+| Care Intelligence Phase D | [phase-d-review-relevance-plan.md](changes/phase-d-review-relevance-plan.md) | Research and delivery |
+| Classification taxonomy | [care-classification-taxonomy-spec.md](changes/care-classification-taxonomy-spec.md) | Spec → fold when delivered |
 
-## Care Progression
+## Frozen delivery history
 
-| Document | Role |
-|----------|------|
-| [care-progression.md](/docs/domains/pet_care/features/care-progression.md) | Canonical product behaviour |
-| [care-progression-delivery-plan.md](/docs/domains/pet_care/changes/care-progression-delivery-plan.md) | CP-0–CP-7 delivery plan (shipped) |
-| [care-entitlements.md](/docs/domains/pet_care/features/care-entitlements.md) | Future tier principles (no runtime in V1) |
-
-## Care Schedule Management
-
-| Document | Role |
-|----------|------|
-| [care-schedule-management.md](/docs/domains/pet_care/features/care-schedule-management.md) | Canonical scheduling semantics (CSM), decision log, acceptance matrix |
-
-## Care Item evolution
-
-| Document | Role |
-|----------|------|
-| [care-item-evolution.md](/docs/domains/pet_care/features/care-item-evolution.md) | Functional spec (draft): Care Item View and Edit, occurrence status, completion, absence resolutions, category blocks |
-
-## Care Context (Care Through Change)
-
-| Document | Role |
-|----------|------|
-| [care-context.md](/docs/domains/pet_care/features/care-context.md) | Canonical product behaviour |
-| [away-planning-carer-model.md](/docs/domains/pet_care/features/away-planning-carer-model.md) | Per-pet carer schema, API, and UI surfaces |
-| [care-through-change-delivery-plan.md](/docs/domains/pet_care/changes/care-through-change-delivery-plan.md) | CC-1–CC-4 delivery plan (active) |
-| [away-planning-delivery-plan.md](/docs/domains/pet_care/changes/away-planning-delivery-plan.md) | AW-EMERGENCY–AW-10 delivery plan (active) |
-| [away-planning-decisions.md](/docs/domains/pet_care/changes/away-planning-decisions.md) | Frozen Away Planning decisions (D-AWAY-001–013) |
-| [amends-away-planning.md](/docs/domains/people/changes/amends-away-planning.md) | Planned People amendments to D-AWAY-002/003/004/005 (agreed, not in effect) |
-| [away-care-planning-delivery-plan.md](/docs/domains/pet_care/changes/away-care-planning-delivery-plan.md) | ACP-DOC-0–ACP-8: absence care display, reschedule UI, Care Planner (frozen) |
-| [away-care-planning-decisions.md](/docs/domains/pet_care/changes/away-care-planning-decisions.md) | Frozen Away Care Planning decisions (D-ACP-001–010) |
-
-## On this domain
-
-| Section | Link |
-|---------|------|
-| **Care Foundation & Intelligence roadmap (v0.4)** | [changes/care-foundation-roadmap.md](changes/care-foundation-roadmap.md) |
-| Domain rename plan | [changes/domain-rename-plan.md](changes/domain-rename-plan.md) |
-| F-22 residual inventory | [changes/terminology-rename-inventory.md](changes/terminology-rename-inventory.md) |
-| Pet profile decisions (D38) | [pet-profile-decisions.md](/docs/domains/pet_profile/features/pet-profile-decisions.md) |
-| Navigation contract (E2E) | [navigation-contract.md](/docs/e2e/navigation-contract.md) |
-| Program vocabulary | [program-contract.md](/docs/domains/cross-domain/changes/program-contract.md) §2 |
+| Topic | Document |
+|-------|----------|
+| Away Care Planning (ACP) | [away-care-planning-delivery-plan.md](changes/away-care-planning-delivery-plan.md) · [decisions](changes/away-care-planning-decisions.md) |
+| Retired away decision pointer | [away-planning-decisions.md](changes/away-planning-decisions.md) → canonical care-context and carer model |
+| Care Item model snapshot (2026-09-13) | [archive/care-item-model-delivery-plan-2026-09-13.md](changes/archive/care-item-model-delivery-plan-2026-09-13.md) |
 
 ## Product naming (locked)
+
+Authoritative decision **D38** in [pet-profile-decisions.md](/docs/domains/pet_profile/features/pet-profile-decisions.md).
 
 | Surface | EN | FR |
 |---------|----|----|
@@ -85,20 +59,86 @@ Part of the AgathaTrack domain-first documentation tree. Cross-cutting architect
 
 Eyebrow labels use **ALL CAPS** in EN (`CARE ACTIONS`, `PETS` where used). FR eyebrows stay uppercase where already established (`SOINS`, `ANIMAUX`).
 
-## Code map
+### Naming layers (do not conflate)
 
-Wire and routes use `pet_care` and `/pc/*`. Internal workspace identifiers use `pet_care_*` filenames, `PetCare*` classes, `petCare*` l10n keys, and shell semantics `drawer_pet_care` / `experience_workspace_menu_pet_care` — completed by execute-plan [`pet-care-terminology-rename`](../../.agents/plans/pet-care-terminology-rename.md) (PRs #1041–#1045) plus tier-1 shell semantics follow-up. Residual inventory and deferred drift: [terminology-rename-inventory.md](changes/terminology-rename-inventory.md).
+| Layer | Target | Do not confuse with |
+|-------|--------|---------------------|
+| Workspace domain | Pet Care / Suivi | My Pets section |
+| Dashboard pet rail | My Pets / Mes animaux | Workspace label |
+| Due-items block | Care Actions (eyebrow CARE ACTIONS / SOINS) | Notification kind `care`, Care team vets |
+| Bottom nav | Actions / Soins | Workspace Pet Care |
+| Custody legal | guardianship, `individual_guardianship` | Workspace branding |
 
 **Not** Pet Care workspace terminology: custody **guardianship**, `individual_guardianship` transfer kinds, legal holder on a pet — see [org-custody-model.md](/docs/domains/shelter/features/org-custody-model.md).
 
-## Related feature domains
+## Wire and code map
 
-Pet CRUD, timeline, and list behaviour remain documented under [pet_profile](/docs/domains/pet_profile/README.md). Health due-items under [health_tracking](/docs/domains/health_tracking/README.md). Shell navigation under [navigation](/docs/domains/navigation/README.md).
+Delivered by execute-plans `pet-care-domain-rename-b088` (#829–#847) and [`pet-care-terminology-rename`](/.agents/plans/pet-care-terminology-rename.md) (#1041–#1045).
 
-## Engineering hardening programme
+| Concern | Target |
+|---------|--------|
+| App experience | `AppExperience.petCare`, wire `'pet_care'` |
+| Routes | `/pc/*` (legacy `/g/*` redirects until telemetry clears) |
+| User category | `pet_carer` |
+| Notifications scope | `NotificationScope.petCare` |
+| API holder display | `primary_holder_name` (not `guardian_name`) |
+| Theme tokens | `petCarePrimary` |
+| Shell semantics | `drawer_pet_care`, `experience_workspace_menu_pet_care`, `DrawerMenuGroup.petCarePlum` |
+| Flutter feature root | `flutter_app/lib/features/experience/` (`pet_care_*` paths) |
+| Node routes | `server/routes/` Pet Care handlers under pet access policy |
 
-Phase A discovery (findings table, milestones, follow-on plans):
+Stored prefs: `fromWire('guardian')` dual-read remains for `last_app_section` migration.
 
-- [changes/hardening-discovery.md](changes/hardening-discovery.md)
-- Control issue: [#993](https://github.com/KanopeeKa/AgathaCheck/issues/993) (`pet-care-hardening-discovery`)
-- Programme index: [pet-care-hardening](/docs/engineering/pet-care-hardening/README.md)
+### E2E locator targets
+
+| Concern | EN regex | FR regex |
+|---------|----------|----------|
+| Workspace switcher | `^Pet Care$` | `^Suivi$` |
+| My Pets section | `My Pets` | `Mes animaux` |
+| Bottom nav tab | `^Actions$` | `^Soins$` |
+| Care Actions eyebrow | `CARE ACTIONS` | `SOINS` |
+
+Full navigation contract: [navigation-contract.md](/docs/e2e/navigation-contract.md).
+
+### Deferred identifier drift (intentional)
+
+Rename only when touching the owning feature — not bulk F-22 reopen.
+
+| Tier | Item | Notes |
+|------|------|-------|
+| 2 | `PetListController.guardianShellPets()` | `pet_profile` — shell custody filter |
+| 2 | `guardian_passed_away_section`, `guardian_embedded_pets_list` | `pet_profile` widgets |
+| 3 | `guardian_dashboard.feature`, `guardian_onboarding.feature` | BDD filenames |
+| 3 | `guardian.navigation.spec.ts` | Nav rail E2E |
+| Permanent | `pet_access.role = 'guardian'`, `guardianship` enums | Custody / API contract |
+
+### Permanent custody carve-out (never rename for workspace consistency)
+
+| Item | Reason |
+|------|--------|
+| `pet_access.role = 'guardian'` | DB enum / collaborator role |
+| `COLLABORATOR_ROLES` includes `'guardian'` | API contract |
+| `guardianship`, `individual_guardianship` | Legal custody |
+| `guardianIsOrg`, `guardianUserId` in `petCustody.js` | Holder semantics |
+
+## Security and hardening
+
+Phase A discovery (findings, actor matrix, follow-on plan map) lives in [changes/hardening-discovery.md](changes/hardening-discovery.md). Implementation programme (merged slices F-01–F-23): [pet-care-hardening](/docs/engineering/pet-care-hardening/README.md). Control issue [#993](https://github.com/KanopeeKa/AgathaCheck/issues/993).
+
+| ID | Status | Summary |
+|----|--------|---------|
+| PET-CARE-R-001 | Live | Workspace rename wire/API/DB and F-22 internal identifiers delivered (see wire map above) |
+| PET-CARE-R-002 | Live | P0 hardening slices (private files, share minimization, capability auth, session v2, data lifecycle) merged per engineering programme index |
+| PET-CARE-R-003 | Planned | Residual gold-standard gaps and new findings — track in engineering programme and debt; discovery report remains the historical evidence table |
+
+Care Intelligence live test with real health data still cites hardening prerequisites in [care-intelligence.md](features/care-intelligence.md).
+
+## Cross-domain references
+
+| Topic | Link |
+|-------|------|
+| Pet profile (CRUD, timeline) | [pet_profile](/docs/domains/pet_profile/README.md) |
+| Health due-items and entries | [health_tracking](/docs/domains/health_tracking/README.md) |
+| Shell navigation | [navigation](/docs/domains/navigation/README.md) |
+| Program vocabulary | [program-contract.md](/docs/domains/cross-domain/features/program-contract.md) §2 |
+| Navigation contract (E2E) | [navigation-contract.md](/docs/e2e/navigation-contract.md) |

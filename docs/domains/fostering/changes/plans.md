@@ -1,10 +1,10 @@
 ---
 title: Fostering plans index
 owner: Documentation Team
-audience: both
-status: active
-last_updated: 2026-08-22
-tags: [domain,fostering,plans]
+status: in-delivery
+status_since: 2026-10-08
+folds_into: docs/domains/fostering/features/specs.md
+plan: documentation-migration-514a
 ---
 
 # Fostering — plans index
@@ -20,4 +20,4 @@ tags: [domain,fostering,plans]
 | Fostering wave C | Wave C delivery | See snapshot | [.agents/plans/fostering-platform-wave-c-e877.md](/.agents/plans/fostering-platform-wave-c-e877.md) |
 | Session detail view | Foster + shelter View Session screen | In progress | [.agents/plans/session-detail-view-eec3.md](/.agents/plans/session-detail-view-eec3.md) · [session-detail-view.md](../features/session-detail-view.md) |
 
-Cross-cutting delivery: [navigation README](/docs/domains/navigation/README.md) · [cross-domain roadmap](/docs/domains/cross-domain/changes/roadmap-delivery-plan.md)
+Cross-cutting delivery: [navigation README](/docs/domains/navigation/README.md) · [cross-domain roadmap](/docs/domains/cross-domain/features/delivery-plans-index.md)

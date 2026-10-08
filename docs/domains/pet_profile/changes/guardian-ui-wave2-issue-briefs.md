@@ -1,10 +1,11 @@
 ---
 title: Pet Care UI wave 2 issue briefs
 owner: Documentation Team
-audience: both
-status: active
-last_updated: 2026-08-22
+status: in-delivery
+status_since: 2026-10-08
 tags: [domain, pet_profile, plans]
+folds_into: docs/domains/pet_profile/features/pet-profile-decisions.md
+plan: documentation-migration-514a
 ---
 # Pet Care UI wave 2 — feature issue briefs
 
@@ -103,7 +104,7 @@ UI + policy doc update
 
 ### Affected screens
 - `ExperienceSectionDrawer`
-- [phase-1-navigation.md](/docs/domains/navigation/changes/phase-1-navigation.md) (delete bottom-pin Account rules; update §1, §9)
+- [navigation-decisions.md — Phase 1](/docs/domains/navigation/features/navigation-decisions.md#phase-1-shell-navigation-folded) (historical; bottom-pin Account rules superseded by adaptive nav)
 - Drawer/account tests
 
 ### Desired behavior

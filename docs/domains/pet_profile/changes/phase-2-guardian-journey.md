@@ -1,14 +1,15 @@
 ---
 title: Phase 2 — Pet Care journey
 owner: Experience Program Team
-audience: both
-status: active
-last_updated: 2026-08-21
+status: in-delivery
+status_since: 2026-10-08
 tags: [experience,guardian,organisation]
+folds_into: docs/domains/pet_profile/features/pet-profile-decisions.md
+plan: documentation-migration-514a
 ---
 # Phase 2 — Pet Care journey
 
-**Parent:** [../../cross-domain/changes/roadmap-delivery-plan.md](../../cross-domain/changes/roadmap-delivery-plan.md) · [../../cross-domain/changes/program-contract.md](../../cross-domain/changes/program-contract.md)  
+**Parent:** [../../cross-domain/features/delivery-plans-index.md](../../cross-domain/features/delivery-plans-index.md) · [../../cross-domain/features/program-contract.md](../../cross-domain/features/program-contract.md)  
 **Brief:** [`briefs/guardian-dashboard-brief.md`](briefs/guardian-dashboard-brief.md)
 
 ## Purpose
@@ -27,7 +28,7 @@ behind the existing dashboard links and routes.
 
 The implementation-safe details, stable data authorities, action destinations,
 accessibility requirements, and file ownership boundaries are documented in the
-[Pet Care Today dashboard contract](guardian-today-contract.md). That handoff
+[Pet Care Today implementation](../features/pet-profile-decisions.md#pet-care-today--authority-boundaries). That handoff
 must be read alongside this phase document and the locked master brief.
 
 This branch is presentation-only at the data boundary: it must not add a backend
@@ -107,7 +108,7 @@ timeline widget on the org-side pet detail screen.
   distinguishable; retryable errors must not be rendered as an empty due list.
 - The five-tab bottom bar, universal Add action, and a new Today route are
   deferred navigation work, not Phase 2 dashboard work. See
-  [the contract](guardian-today-contract.md) and D34–D37 in the decisions log.
+  [pet-profile-decisions.md](../features/pet-profile-decisions.md) (D34–D37 and implementation sections).
 
 ## Screens and navigation
 
@@ -138,7 +139,7 @@ pet timeline's guardian-name visibility rule (business rule 4).
 
 ## Phases with exit criteria
 
-Sprints 2.1–2.8 (see [roadmap-delivery-plan.md](/docs/domains/cross-domain/changes/roadmap-delivery-plan.md)).
+Sprints 2.1–2.8 (see [roadmap-delivery-plan.md](/docs/domains/cross-domain/features/delivery-plans-index.md)).
 
 **Exit criteria:**
 

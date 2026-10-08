@@ -3,7 +3,7 @@ title: Sharing domain
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-22
+last_updated: 2026-10-08
 tags: [domain,sharing]
 ---
 
@@ -13,14 +13,18 @@ Share links, role-based pet access, and collaborator visibility.
 
 Part of the AgathaTrack domain-first documentation tree. Cross-cutting architecture: [/docs/architecture/index.md](/docs/architecture/index.md).
 
-## On this domain
+## Canonical capability
 
-| Section | Link |
-|---------|------|
-| User journeys | [features/journeys.md](features/journeys.md) |
-| Implementation specs | [features/specs.md](features/specs.md) |
-| Plans index | [changes/plans.md](changes/plans.md) |
-| Deferred work | [changes/deferred.md](changes/deferred.md) |
+| Document | Contents |
+|----------|----------|
+| [specs.md](features/specs.md) | Requirements, journeys, roles, API, UI |
+
+## In-flight
+
+| Document | Role |
+|----------|------|
+| [plans.md](changes/plans.md) | Plans index |
+| [deferred.md](changes/deferred.md) | Deferred work |
 
 ## Code map
 

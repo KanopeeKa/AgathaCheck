@@ -1,10 +1,10 @@
 ---
 title: Phase 3 — Organisation presentation & access control
 owner: Experience Program Team
-audience: both
-status: active
-last_updated: 2026-08-21
-tags: [experience,guardian,organisation]
+status: in-delivery
+status_since: 2026-10-08
+folds_into: docs/domains/shelter/features/shelter-decisions.md
+plan: documentation-migration-514a
 ---
 # Phase 3 — Organisation presentation & access control
 
@@ -14,7 +14,7 @@ tags: [experience,guardian,organisation]
 > [shelter-decisions.md](../features/shelter-decisions.md) (D-v2-IA-1). Kept as historical record for Phase 3 sprint
 > planning; do not implement new work against this spec.
 
-**Parent:** [../../cross-domain/changes/roadmap-delivery-plan.md](../../cross-domain/changes/roadmap-delivery-plan.md) · [../../cross-domain/changes/program-contract.md](../../cross-domain/changes/program-contract.md)  
+**Parent:** [../../cross-domain/features/delivery-plans-index.md](../../cross-domain/features/delivery-plans-index.md) · [../../cross-domain/features/program-contract.md](../../cross-domain/features/program-contract.md)  
 **Brief:** [`briefs/shelter-dashboard-brief.md`](briefs/shelter-dashboard-brief.md)  
 **Note:** Largest phase in the program. Default plan is single-agent sequential (D33); consider
 `/spawn-sprint-agents` if the sprint list below proves too large for one sitting — sprints 3.3,

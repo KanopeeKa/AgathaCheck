@@ -3,7 +3,7 @@ title: Navigation decisions
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-09-03
+last_updated: 2026-10-08
 tags: [navigation, decisions]
 domain: navigation
 feature_id: navigation-decisions
@@ -26,7 +26,7 @@ Source: experience-program analysis + Q&A, 2026-07-25. Master brief: [navigation
 | **D3** | Events and Vets are **removed from the drawer** entirely. They surface only via dashboard preview sections + their own full screens (`/pc/events`, `/pc/vets`, `/o/vets`, org pets/fosters screens). | locked | Phase 1 |
 | **D4** | The header "Home" button from nav v2 is also removed (not requested by the new brief, and reintroducing it would recreate the "generic Home" pattern D1 rejects). Header controls become: hamburger (section switch, dashboards) **or** back arrow (sub-screens), plus a persistent bell (all authenticated screens). | locked | Phase 1 |
 | **D5** | Drawer is **not mode-dependent**. It always shows the same two peer items (**Pet Care**, Shelter) plus bottom-pinned Account — never a long per-mode list. (D38: drawer labels **Pet Care** / **Suivi** and **Shelter** / **Refuges**; legacy brief used "Guardian".) | locked | Phase 1 |
-| **D6** | `org-mode-navigation-acf1` (branch `cursor/org-mode-nav-phase3-shell-acf1`, control issue #262) is **closed, not resumed**. Its only unmerged phase (router-file extraction) is superseded by Phase 3's from-scratch `organization_routes.dart` rewrite; merging then immediately rewriting wastes a review cycle. See [phase-r-reconciliation.md](../changes/phase-r-reconciliation.md) for close-out steps. | locked | Phase R |
+| **D6** | `org-mode-navigation-acf1` (branch `cursor/org-mode-nav-phase3-shell-acf1`, control issue #262) is **closed, not resumed**. Its only unmerged phase (router-file extraction) is superseded by Phase 3's from-scratch `organization_routes.dart` rewrite; merging then immediately rewriting wastes a review cycle. Close-out: [Phase R reconciliation (folded)](#phase-r-reconciliation-folded). | locked | Phase R |
 
 ## G (navigation) — Account and cross-org settings
 
@@ -48,12 +48,22 @@ Source: experience-program analysis + Q&A, 2026-07-25. Master brief: [navigation
 
 | ID | Decision | Status | Phase |
 |----|----------|--------|-------|
-| **D-shell-1** | **One product identity per navigation context** — when leading nav is visible, `AgathaTrack` is not duplicated in the app bar on Pet Care section roots. | locked | shell-hierarchy 2026-09 |
-| **D-shell-2** | Section roots suppress redundant app bar titles; deep routes keep contextual titles. | locked | shell-hierarchy 2026-09 |
-| **D-shell-4** | Workspace toggle = **Pet Care** / **Shelter**; **Actions** remains a nav destination only. | locked | shell-hierarchy 2026-09 |
-| **D-shell-6** | Tablet rail carries compact brand in header; desktop sidebar carries full brand. | locked | shell-hierarchy 2026-09 |
+| **D-shell-1** | **One product identity per navigation context** — when leading nav is visible (≥600px), `AgathaTrack` appears only in leading chrome, not duplicated in the app bar on section roots. | locked | shell-hierarchy 2026-09 |
+| **D-shell-2** | Section roots (`/pc/home`, `/o/orgs`, `/account`) with leading nav: **omit** app bar title when it repeats product/section identity; dashboard home uses active nav state + body. | locked | shell-hierarchy 2026-09 |
+| **D-shell-3** | Contextual app bar titles on deep routes (pet name, “All pets”, “Events”, etc.). | locked | shell-hierarchy 2026-09 |
+| **D-shell-4** | Workspace toggle labels **Pet Care** / **Shelter**; **Actions** stays primary nav (`/pc/events`). | locked | shell-hierarchy 2026-09 |
+| **D-shell-5** | Mobile (&lt;600px): plum app bar keeps `AppLogoTitle` + workspace toggle + bell. | locked | shell-hierarchy 2026-09 |
+| **D-shell-6** | Tablet rail header: compact brand above workspace toggle; no duplicate product title on section roots. | locked | shell-hierarchy 2026-09 |
+| **D-shell-7** | Desktop sidebar header: brand → workspace toggle → divider → primary nav → footer Account. | locked | shell-hierarchy 2026-09 |
+| **D-shell-8** | Notification bell globally accessible; on medium+ prefer content-column placement (behaviour unchanged). | locked | shell-hierarchy 2026-09 |
+| **D-shell-9** | Workspace toggle visual weight below brand (scope below identity). | locked | shell-hierarchy 2026-09 |
+| **D-shell-10** | Out of scope: dashboard body sections, org `/o/orgs` brand parity debt, Actions vs Events label debt. | locked | shell-hierarchy 2026-09 |
 
-Full detail: [shell-hierarchy-decisions.md](../changes/shell-hierarchy-decisions.md).
+| Width | Brand | Workspace | Primary nav | App bar (section root) |
+|-------|-------|-----------|-------------|------------------------|
+| &lt;600px | App bar logo | App bar toggle | Bottom nav | Centered title |
+| 600–839px | Rail header | Rail toggle | Navigation rail | **Suppressed** |
+| ≥840px | Sidebar header | Sidebar below brand | Sidebar + Account footer | **Suppressed** |
 
 ## I — Workspace navigation simplify (2026-09)
 
@@ -63,9 +73,9 @@ Full detail: [shell-hierarchy-decisions.md](../changes/shell-hierarchy-decisions
 | **D-v5-WORKSPACE-2** | Everyone lands on `/pc/home` after login; no `last_app_section` or `/app/choose`. | locked | workspace-nav-simplify |
 | **D-v5-WORKSPACE-3** | Canonical shelter root `/o/orgs`; `/o/home` redirects. | locked | workspace-nav-simplify |
 | **D-v5-WORKSPACE-4** | Workspace toggle on every authenticated screen (extends D-v4-3). | locked | workspace-nav-simplify |
-| **D-v5-WORKSPACE-5** | Fostering dashboard invite/thank-you copy + illustrations. | locked | workspace-nav-simplify |
+| **D-v5-WORKSPACE-5** | Fostering dashboard invite/thank-you copy + illustrations (`guardian-foster-invite.png`, `guardian-foster-thanks.png`). | locked | workspace-nav-simplify |
 
-Full detail: [workspace-nav-simplify-decisions.md](../changes/workspace-nav-simplify-decisions.md).
+Deferred: hash→path URL migration; first-connection tour; `/g/*` legacy removal.
 
 ## J — Shelter primary navigation (2026-09)
 
@@ -77,6 +87,22 @@ Full detail: [workspace-nav-simplify-decisions.md](../changes/workspace-nav-simp
 
 Full detail: [shelter-dashboard-v2-framing-decisions.md](/docs/domains/shelter/changes/shelter-dashboard-v2-framing-decisions.md). **D-v3-IA-2** amended there — Discover moves from hub body row to primary nav.
 
+## K — Folded delivery phases (history)
+
+Documentation-only summaries; implementation complete. Supersedes removed `changes/phase-*` files.
+
+### Phase R reconciliation (folded)
+
+Close conflicting work before new navigation: mark `docs/archived/navigation-v2.md` superseded (D2); close `org-mode-navigation-acf1` / issue #262 (D6); tag legacy BDD scenarios; publish domain docs. No product behaviour changes in the doc phase.
+
+### Phase 0 foundation (folded)
+
+Shared shell primitives and scaffolding without user-visible navigation change. Settings audit mapped Account vs org settings destinations (feeds Phase 1 routing).
+
+### Phase 1 shell navigation (folded)
+
+Ship drawer (Pet Care / Shelter + Account), header (hamburger/back + bell, no Home), unified notification slide-over, `/account` route; retire `/pc/notifications`, `/o/notifications`, and per-mode Settings entry points per audit. Dashboard **content** unchanged in this phase.
+
 ---
 
 ## How to use
@@ -84,4 +110,4 @@ Full detail: [shelter-dashboard-v2-framing-decisions.md](/docs/domains/shelter/c
 - New navigation decision → add a row here first, then implement.
 - A decision proves wrong → update the row and note the phase/PR that revised it.
 - Phase docs link to decision IDs; they do not re-explain rationale.
-- Related: [notification-decisions.md](/docs/domains/notifications/features/notification-decisions.md) (D7–D11), [delivery-decisions.md](/docs/domains/cross-domain/changes/delivery-decisions.md) (D32–D33).
+- Related: [notifications-v2-spec §18](/docs/domains/notifications/features/notifications-v2-spec.md#18-decision-log-legacy--b--v2-supersession) (D7–D11), [delivery-decisions.md](/docs/domains/cross-domain/features/delivery-plans-index.md) (D32–D33).

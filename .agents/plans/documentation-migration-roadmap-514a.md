@@ -1,48 +1,18 @@
 ---
-title: Documentation migration roadmap
+title: Documentation migration roadmap (SUPERSEDED)
 owner: Documentation Team
 audience: agent
-status: active
-last_updated: 2026-10-07
+status: retired
+last_updated: 2026-10-08
 ---
 
-# Documentation migration roadmap (`documentation-migration-roadmap-514a`)
+# SUPERSEDED — use `documentation-migration-514a`
 
-**Goal:** Run canonical-docs consolidation per `docs/domains/documentation/changes/documentation-migration-handover.md` on integration branch `cursor/documentation-migration-integration-514a`, then one `/babysit-uat` merge to `main`.
+This roadmap orchestrator is **retired**. Use the unified execute-plan instead:
 
-**Programme ref:** `docs/domains/documentation/changes/documentation-migration-handover.md`
+- **Plan:** `.agents/plans/documentation-migration-514a.md`
+- **Snapshot:** `.agents/plans/documentation-migration-514a.snapshot.json`
+- **Control issue:** [#1787](https://github.com/KanopeeKa/AgathaCheck/issues/1787)
+- **Command:** `/execute-plan documentation-migration-514a`
 
-**Standing grant:** User chat 2026-10-07 — execute full migration plan via `/execute-plan`.
-
-## Child plans (ordered)
-
-| plan_id | Scope |
-|---------|--------|
-| `documentation-migration-gate-warn-514a` | Phase A: `DOCS_GATE_MODE=warn` on integration |
-| `documentation-migration-csm-514a` | Wave 1.1: consolidate `pet_care/care-schedule-management` |
-| `documentation-migration-care-item-514a` | Wave 1.2: consolidate `pet_care/care-item` |
-| `documentation-migration-integration-harden-514a` | Phase B: restore `block` + fix stragglers on integration |
-| `documentation-migration-integration-main-514a` | Integration → `main` via babysit-uat |
-
-## Orchestrator phase
-
-Single phase `orchestrate` on branch `cursor/documentation-migration-roadmap-bootstrap-514a` — plan artifacts only.
-
-## Runtime state (agent-updated)
-
-```yaml
-autonomy: active
-current_phase: orchestrate
-last_completed_phase: null
-halt_reason: null
-next_action: "bootstrap and gate child plan documentation-migration-integration-main-514a"
-artifact_ref:
-  branch: cursor/documentation-migration-integration-514a
-  plan_path: .agents/plans/documentation-migration-roadmap-514a.md
-  plan_commit: 2646de77500e5615f00282c7bac8ca12b30c13ef
-  snapshot_path: .agents/plans/documentation-migration-roadmap-514a.snapshot.json
-  snapshot_commit: 2646de77500e5615f00282c7bac8ca12b30c13ef
-open_prs: []
-merge_commits: {}
-debt_issue_refs: []
-```
+Child `plan_id`s under `documentation-migration-*-514a` remain in git history only; do not run gate or bootstrap on them.

@@ -375,7 +375,7 @@ Raw `items[]` entries may include `window_relation: before_window` on materialis
 
 Declarer-scoped absence context (not visible to collaborators in V1): `GET /`, `POST /`, `GET /:id`, `PATCH /:id`, `POST /:id/cancel`.
 
-**Title (D-CC-ABS-001)** — optional `title` on `POST` / `PATCH` (max 60 characters after trim; empty string → `null`). Omitted on `PATCH` leaves the stored title unchanged.
+**Title (CARE-CONTEXT-D-001)** — optional `title` on `POST` / `PATCH` (max 60 characters after trim; empty string → `null`). Omitted on `PATCH` leaves the stored title unchanged.
 
 **Timezone (D24)** — `users.timezone` is set at signup/login (optional body) or via `PATCH /api/auth/me`. **`weight_unit`** (`kg` default, or `lb`) is readable on `GET /api/auth/me` and writable via `PATCH /api/auth/me` (invalid values → `400`). Each absence stores `timezone` copied from the declarer's account at `POST` create (later account timezone changes do not alter existing absences). Access windows for guest grants use whole calendar days `starts_on`…`ends_on` inclusive in that absence timezone.
 
@@ -460,7 +460,7 @@ Resolved affected items are excluded from away-plan `care_coverage.has_items_to_
 
 **Handover PDF (People phase 2)** — includes primary vet, out-of-hours vet, and emergency contacts from `GET /api/pets/:id/people-relationships` for pets on the plan.
 
-**Planned (People phase 2)** — per-pet carer fact and coverage extension ([amends-away-planning.md](/docs/domains/people/changes/amends-away-planning.md)) — **shipped** on branch `cursor/people-p2-absence-a58d`:
+**People phase 2 (shipped)** — per-pet carer fact and coverage extension — see [people-care-team.md](/docs/domains/people/features/people-care-team.md) § Away Planning integration and [away-planning-carer-model.md](/docs/domains/pet_care/features/away-planning-carer-model.md):
 
 | Field | Notes |
 |---|---|

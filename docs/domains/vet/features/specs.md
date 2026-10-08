@@ -3,12 +3,37 @@ title: Veterinarian specs
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-22
+last_updated: 2026-10-08
 tags: [domain,vet,specs]
 domain: vet
+feature_id: veterinarian
 ---
 
-# Veterinarian specs
+# Veterinarian
+
+User-scoped vet contacts and Pet Care **Care team** presentation (`veterinarian_management.feature`). Future People migration: [people-care-team.md](/docs/domains/people/features/people-care-team.md) (agreed, not implemented).
+
+## Requirements
+
+| ID | Requirement | Status |
+|----|-------------|--------|
+| **VET-1** | Create/edit/delete vet contacts (name required). | delivered |
+| **VET-2** | Link pets to vets; list shows linked counts; dashboard warm clinic cards. | delivered |
+| **VET-3** | Display-first detail with call/email (D24). | delivered |
+
+## User journeys
+
+### Create veterinarian
+
+Pet carers add a vet from the veterinarian list. Minimum required field is name; phone, email, address, and notes are optional.
+
+### View and link pets
+
+Full vet list uses compact rows with linked-pet counts. Guardian dashboard **Care team** section shows warmer clinic cards with initials avatars and linked-pet previews.
+
+### Edit and delete
+
+Fields can be updated. Deletion requires confirmation; cancel keeps the vet.
 
 ## Data model
 
