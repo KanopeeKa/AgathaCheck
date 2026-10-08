@@ -2,9 +2,12 @@
 title: Shelter dashboard v2 framing decisions
 owner: Experience Program Team
 audience: both
-status: active
-last_updated: 2026-09-03
+status: in-delivery
+status_since: 2026-10-08
+last_updated: 2026-10-08
 tags: [shelter, dashboard, navigation, framing]
+folds_into: docs/domains/shelter/features/shelter-dashboard-brief.md
+plan: documentation-migration-514a
 ---
 
 # Shelter dashboard v2 framing decisions

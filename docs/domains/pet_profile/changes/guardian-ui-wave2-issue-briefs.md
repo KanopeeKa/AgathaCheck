@@ -3,6 +3,7 @@ title: Pet Care UI wave 2 issue briefs
 owner: Documentation Team
 audience: both
 status: in-delivery
+status_since: 2026-10-08
 last_updated: 2026-10-08
 tags: [domain, pet_profile, plans]
 folds_into: docs/domains/pet_profile/features/pet-profile-decisions.md

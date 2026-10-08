@@ -2,9 +2,12 @@
 title: Phase 2 — Pet Care journey
 owner: Experience Program Team
 audience: both
-status: active
-last_updated: 2026-08-21
+status: in-delivery
+status_since: 2026-10-08
+last_updated: 2026-10-08
 tags: [experience,guardian,organisation]
+folds_into: docs/domains/pet_profile/features/pet-profile-decisions.md
+plan: documentation-migration-514a
 ---
 # Phase 2 — Pet Care journey
 
