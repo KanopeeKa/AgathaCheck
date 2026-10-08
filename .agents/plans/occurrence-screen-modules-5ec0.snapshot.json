@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
   "plan_id": "occurrence-screen-modules-5ec0",
-  "approved_at": "2026-10-08T09:35:00Z",
-  "approved_by": "PLACEHOLDER — awaiting approve-autonomous occurrence-screen-modules-5ec0",
-  "approved_until": "2026-10-10T09:35:00Z",
-  "content_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
-  "autonomy": "halted",
+  "approved_at": "2026-10-08T10:12:00Z",
+  "approved_by": "user chat 2026-10-08 — approved; GitHub #1789 approve-autonomous occurrence-screen-modules-5ec0",
+  "approved_until": "2026-10-10T10:12:00Z",
+  "content_hash": "sha256:fd77800bc2a1bed3d1a9d2ab45c294eb5e82bac001c020b7343b64b134bf753d",
+  "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/occurrence-screen-modules-5ec0-integration-5ec0",
-  "control_issue": 1,
+  "control_issue": 1789,
   "artifact_branch_policy": "phase-branch",
   "phases": [
     {
