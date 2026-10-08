@@ -59,7 +59,15 @@ export class OccurrencePage {
     });
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      await expect(title.or(back).or(screen).or(identity).first()).toBeVisible();
+      const path = flutterRoutePath(this.page.url());
+      const onOccurrenceRoute = /\/occurrences\/[^/]+/.test(path);
+      if (onOccurrenceRoute) {
+        await expect(title.or(back).or(screen).or(identity).first()).toBeVisible();
+        return;
+      }
+      if (await identity.isVisible().catch(() => false)) return;
+      if (await screen.isVisible().catch(() => false)) return;
+      throw new Error(`Care date not ready (path=${path})`);
     }).toPass({ timeout: 60_000 });
   }
 
@@ -73,7 +81,8 @@ export class OccurrencePage {
 
   private weightInput() {
     return this.page
-      .locator('[key="occurrence_field_weight"]')
+      .getByRole('textbox', { name: /Weight|Poids/i })
+      .or(this.page.locator('[key="occurrence_field_weight"]'))
       .or(this.page.locator('[flt-semantics-identifier="occurrence_field_weight"]'));
   }
 

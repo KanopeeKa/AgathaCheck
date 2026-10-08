@@ -52,14 +52,19 @@ class OccurrenceOpenActions extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (needsWeight) ...[
-          TextField(
-            key: const Key('occurrence_field_weight'),
-            controller: weightController,
-            autofocus: focus == 'weight',
-            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            decoration: InputDecoration(
-              labelText: l.careWeightFieldLabelUnit(unitLabel(weightUnit)),
-              helperText: missing.isEmpty ? null : l.careWeightRequiredHint,
+          Semantics(
+            identifier: 'occurrence_field_weight',
+            textField: true,
+            label: l.careWeightFieldLabelUnit(unitLabel(weightUnit)),
+            child: TextField(
+              key: const Key('occurrence_field_weight'),
+              controller: weightController,
+              autofocus: focus == 'weight',
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              decoration: InputDecoration(
+                labelText: l.careWeightFieldLabelUnit(unitLabel(weightUnit)),
+                helperText: missing.isEmpty ? null : l.careWeightRequiredHint,
+              ),
             ),
           ),
           const SizedBox(height: 12),

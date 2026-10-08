@@ -59,6 +59,7 @@
         "e2e/playwright/pages/care-item.page.ts",
         "e2e/playwright/pages/away-planning.page.ts",
         "e2e/playwright/tests/care.agenda.spec.ts",
+        "flutter_app/lib/features/experience/presentation/care_item/occurrence/occurrence_open_actions.dart",
         "flutter_app/test/features/care_item/**",
         ".agents/plans/occurrence-screen-modules-5ec0.md",
         ".agents/plans/occurrence-screen-modules-5ec0.snapshot.json"
