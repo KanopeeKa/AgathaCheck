@@ -55,45 +55,28 @@ export class CareAgendaPage {
       await this.page.mouse.click(box.x + 20, box.y + box.height / 2);
     };
 
-    const careDetailsTitle = this.page
-      .getByText(/^Care details$|^Détail du soin$/i)
-      .first();
+    const careItemRoute = entryId
+      ? new RegExp(`/pet/[^/]+/events/${entryId}(\\?|$)`)
+      : /\/pet\/[^/]+\/events\/[^/]+(\\?|$)/;
     await expect(async () => {
       await tapRow();
       await refreshFlutterAccessibility(this.page);
-      const path = flutterRoutePath(this.page.url());
-      const onCareItemRoute =
-        /\/pet\/[^/]+\/events\/[^/]+$/.test(path) &&
-        !/\/occurrences\//.test(path);
-      const onScreen = await careDetailsTitle.isVisible().catch(() => false);
-      if (!onCareItemRoute && !onScreen && entryName) {
-        await semanticsByName(
-          this.page,
-          new RegExp(
-            `${escapeRegExp(entryName)}.*Opens the care item|Ouvre le soin`,
-            'i',
-          ),
-        )
-          .first()
-          .click({ position: { x: 12, y: 16 } });
-        await refreshFlutterAccessibility(this.page);
+      let path = flutterRoutePath(this.page.url());
+      if (!careItemRoute.test(path) && entryName) {
+        const byRowId = this.page.locator(
+          `[flt-semantics-identifier="care_agenda_row_${entryId}"]`,
+        );
+        if (await byRowId.isVisible().catch(() => false)) {
+          await byRowId.click({ position: { x: 12, y: 16 } });
+          await refreshFlutterAccessibility(this.page);
+          path = flutterRoutePath(this.page.url());
+        }
       }
-      const readyPath = flutterRoutePath(this.page.url());
-      const ready =
-        (/\/pet\/[^/]+\/events\/[^/]+$/.test(readyPath) &&
-          !/\/occurrences\//.test(readyPath)) ||
-        (await careDetailsTitle.isVisible().catch(() => false));
-      if (!ready) {
-        throw new Error(`Care details not open (path=${readyPath})`);
+      if (!careItemRoute.test(path) || /\/occurrences\//.test(path)) {
+        throw new Error(`Care details route not open (path=${path})`);
       }
     }).toPass({ timeout: 60_000 });
-    if (entryId) {
-      await waitForFlutterRoutePattern(
-        this.page,
-        new RegExp(`/pet/[^/]+/events/${entryId}(\\?|$)`),
-        60_000,
-      );
-    }
+    await waitForFlutterRoutePattern(this.page, careItemRoute, 60_000);
     await refreshFlutterAccessibility(this.page);
   }
 
