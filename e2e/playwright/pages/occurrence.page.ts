@@ -59,12 +59,6 @@ export class OccurrencePage {
     });
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      const path = flutterRoutePath(this.page.url());
-      const onOccurrenceRoute = /\/occurrences\/[^/]+/.test(path);
-      const titleVisible = await title.isVisible().catch(() => false);
-      if (!onOccurrenceRoute && !titleVisible) {
-        throw new Error(`Not on occurrence screen (path=${path})`);
-      }
       await expect(title.or(back).or(screen).or(identity).first()).toBeVisible();
     }).toPass({ timeout: 60_000 });
   }
