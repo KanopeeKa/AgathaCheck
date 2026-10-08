@@ -37,7 +37,6 @@
     "docs/domains/subscription/features/specs.md",
     "docs/domains/vet/features/journeys.md",
     "docs/domains/vet/features/specs.md",
-    "docs/domains/weight_tracking/features/journeys.md",
     "docs/domains/weight_tracking/features/specs.md",
     "docs/domains/weight_tracking/features/weight-monitoring-model.md"
   ],
@@ -108,8 +107,6 @@
     "docs/domains/subscription/changes/deferred.md",
     "docs/domains/subscription/changes/plans.md",
     "docs/domains/vet/changes/deferred.md",
-    "docs/domains/vet/changes/plans.md",
-    "docs/domains/weight_tracking/changes/deferred.md",
-    "docs/domains/weight_tracking/changes/plans.md"
+    "docs/domains/vet/changes/plans.md"
   ]
 }

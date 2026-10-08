@@ -91,13 +91,13 @@ autonomy: active
 current_phase: 13
 last_completed_phase: 12
 halt_reason: null
-next_action: "start phase 13: checkout cursor/documentation-migration-weight-514a"
+next_action: "continue phase 13 on branch cursor/documentation-migration-weight-514a"
 artifact_ref:
   branch: cursor/documentation-migration-wave13-integration-514a
   plan_path: .agents/plans/documentation-migration-514a.md
-  plan_commit: f6dc75b0126f2c1946620d8e8c72c72a4b19beed
+  plan_commit: dd8b650f04bdcbab19a68adf546725378125648a
   snapshot_path: .agents/plans/documentation-migration-514a.snapshot.json
-  snapshot_commit: f6dc75b0126f2c1946620d8e8c72c72a4b19beed
+  snapshot_commit: dd8b650f04bdcbab19a68adf546725378125648a
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

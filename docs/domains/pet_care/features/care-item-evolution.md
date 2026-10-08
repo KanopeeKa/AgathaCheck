@@ -749,7 +749,7 @@ Coverage gaps: [#1770](https://github.com/KanopeeKa/AgathaCheck/issues/1770).
 | Carer model and handover | [away-planning-carer-model.md](/docs/domains/pet_care/features/away-planning-carer-model.md), [away-planning-per-pet-handover-spec.md](/docs/domains/pet_care/changes/away-planning-per-pet-handover-spec.md) |
 | Care Context | [care-context.md](/docs/domains/pet_care/features/care-context.md) |
 | Categories, where, priority | [care-classification-taxonomy-spec.md](/docs/domains/pet_care/changes/care-classification-taxonomy-spec.md) |
-| Weight | [weight tracking specs](/docs/domains/weight_tracking/features/specs.md) |
+| Weight | [weight-monitoring-model §Implementation](/docs/domains/weight_tracking/features/weight-monitoring-model.md#implementation-reference) |
 | Dates on the wire | [calendar-dates.md](/docs/architecture/calendar-dates.md) |
 | Values, tone, terms | [true-north.md](/docs/design/true-north.md), [copy-tone.md](/docs/design/copy-tone.md), [terminology.md](/docs/design/terminology.md) |
 | People & Care Team | [people-care-team.md](/docs/domains/people/features/people-care-team.md) |
