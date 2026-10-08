@@ -3,7 +3,7 @@ title: Pet profile decisions
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-09-02
+last_updated: 2026-10-08
 tags: [pet_profile, decisions]
 domain: pet_profile
 feature_id: pet-profile-decisions
@@ -42,8 +42,68 @@ Product decisions for Pet Care dashboard, pet timeline, events, and vet UX (D17�
 
 **D34 note:** Section titles in D34 used "Due and Overdue" for the care block; **D38** supersedes that label with **Care Actions** / **Actions** nav. **My Pets** and **Veterinary team** unchanged (D-AWAY-012).
 
+## User journeys
+
+User-facing flows for pet carers managing pets in AgathaTrack.
+
+### Pet Care dashboard (landing)
+
+The Pet Care dashboard (`/pc/home`) is a section landing page with three symmetric previews: **My Pets**, **Care Actions** (eyebrow CARE ACTIONS), and **Care team**. Each section shows a compact subset and links to the full management screen. Locked brief: [guardian-dashboard-brief.md](guardian-dashboard-brief.md).
+
+### Create and edit pet
+
+Pet carers add pets from the pet list or dashboard, enter profile fields (name, species, breed, photo, vet link), and save. Edits update the pet record; weight edits may create a same-day weight entry (see [weight_tracking](/docs/domains/weight_tracking/README.md)).
+
+### Pet timeline
+
+Pet timeline cards replace legacy family-events terminology (D18). Timeline shows foster placements, health milestones, and profile events on the pet detail view.
+
+### Bulk share
+
+Pet carers select multiple owned pets and open the bulk-share flow from the pets list (D23).
+
+### View pet list and detail
+
+All Pets screen lists owned and foster pets with visual distinction (Pet Care vs Shelter theme on status bar). Pet detail surfaces health, weight, sharing, and timeline sections.
+
+## Implementation reference
+
+### Pet activity model (org sort / preview)
+
+Organisation v2 **last-activity sorting** for the 12-pet profile preview uses a product-layer model distinct from compliance audit (`audit_events`) and guardian timeline (`pet_timeline_entries`). Full specification: [pet-activity-model.md](pet-activity-model.md). Architecture stub (superseded): [/docs/architecture/pet-activity-model.md](/docs/architecture/pet-activity-model.md).
+
+### Pet CRUD validation
+
+- Pets belong to a guardian account; foster pets appear via organisation custody (see organization / fostering domains).
+- Calendar dates on the wire use `YYYY-MM-DD` ([calendar-dates.md](/docs/architecture/calendar-dates.md)).
+
+### Sharing section on pet detail
+
+Role-specific sharing UI lives under `flutter_app/lib/features/pet_profile/widgets/sharing/` — see [sharing](/docs/domains/sharing/README.md) for share-link semantics.
+
+### Guardian mobile completion
+
+Due-events preview supports reversible mobile completion with transient cache during refresh (same rules as care-item mobile completion UX).
+
+### Tests
+
+- BDD: `pet_profiles.feature`
+- Playwright: `pet.profiles.spec.ts`
+
+## Pet tags v1
+
+Private per-user labels for organizing and filtering pets on `/pc/pets`. No sharing integration.
+
+| Layer | Detail |
+|-------|--------|
+| Data | `pet_tags` (user-owned definitions); `pet_tag_assignments` (many-to-many). Assignments are not cleaned up when `pet_access` is revoked (lazy ignore). CASCADE on user, pet, or tag delete. |
+| API | `GET/POST/PATCH/DELETE /api/pet-tags`; `POST/DELETE /api/pets/:petId/tags` (assign/unassign). Client uses `GET /api/pet-tags` with `pet_ids[]` for filter, profile, and manage UI. |
+| UI | Account → Preferences → Pet tags (catalog CRUD); pet profile → My tags; `/pc/pets` → tag filter (Match any / Match all). |
+
 ## How to use
 
+- Activity model detail: [pet-activity-model.md](pet-activity-model.md)
 - Delivery plans: [plans.md](../changes/plans.md)
-- Pet Care Today contract: [guardian-today-contract.md](../changes/guardian-today-contract.md) (filename legacy; content describes Pet Care home)
-- Locked brief: [guardian-dashboard-brief.md](guardian-dashboard-brief.md)
+- Pet Care Today contract (phase 3.2): [guardian-today-contract.md](../changes/guardian-today-contract.md)
+- Locked dashboard brief: [guardian-dashboard-brief.md](guardian-dashboard-brief.md)
+- Guardian journey delivery: [phase-2-guardian-journey.md](../changes/phase-2-guardian-journey.md)
