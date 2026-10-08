@@ -7,11 +7,13 @@ class CareItemSectionHeader extends StatelessWidget {
     required this.title,
     this.trailing,
     this.icon,
+    this.iconColor,
   });
 
   final String title;
   final Widget? trailing;
   final IconData? icon;
+  final Color? iconColor;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +23,11 @@ class CareItemSectionHeader extends StatelessWidget {
       child: Row(
         children: [
           if (icon != null) ...[
-            Icon(icon, size: 20, color: theme.colorScheme.primary),
+            Icon(
+              icon,
+              size: 20,
+              color: iconColor ?? theme.colorScheme.primary,
+            ),
             const SizedBox(width: 8),
           ],
           Expanded(
