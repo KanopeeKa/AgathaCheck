@@ -938,10 +938,12 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1819",
+      "pr_head_sha": "62ab6a93"
     },
     {
       "id": "25",
@@ -975,12 +977,12 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1820",
+      "pr_head_sha": "747c8ac5"
     },
     {
       "id": "26",
@@ -1013,13 +1015,11 @@
       "merge_mode": "auto",
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
-      "status_detail": "Open PR integration → main; ./scripts/pre-push.sh; /babysit-uat on merge SHA",
-      "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null
+      "status_detail": null,
+      "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:991ac0a1a59567a243b6126c7d830f07e9aa32a05f86db111ced865cafeca99c"
+  "content_hash": "sha256:33ce7f4ddb3bd256a1096d73bcd9b9fbcf0745c4e1eb1cef141fc50747194faa"
 }
