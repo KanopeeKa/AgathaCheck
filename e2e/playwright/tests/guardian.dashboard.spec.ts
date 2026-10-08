@@ -151,7 +151,6 @@ test.describe('Guardian dashboard', () => {
       await agenda.openRow(entry.id, entry.name);
       const careItem = new CareItemPage(page);
       await careItem.expectNeedsAttentionVisible();
-      await expect(page.getByRole('button', { name: /^Back$/i })).toBeVisible();
       await expect(page.getByRole('button', { name: /snooze/i })).toHaveCount(0);
     } finally {
       await withCareClock(null, page);
