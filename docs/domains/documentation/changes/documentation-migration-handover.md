@@ -246,14 +246,19 @@ Retention rule PR (delete terminal snapshots > N days; keep `_example`). Never d
 
 | Item | Choice |
 |------|--------|
-| Parent | `plan_kind: roadmap`, integration `base_branch: cursor/documentation-migration-integration-514a` |
-| Children | One plan per wave (or per capability for Wave 1) |
+| **Single plan** | `documentation-migration-514a` — `.agents/plans/documentation-migration-514a.{md,snapshot.json}` |
+| Control issue | [#1787](https://github.com/KanopeeKa/AgathaCheck/issues/1787) |
+| Integration `base_branch` | `cursor/documentation-migration-wave13-integration-514a` (resume after Wave 1.3b on `main`) |
+| Phases | **26** in one snapshot (phases 1–7 already `merged`; **8** = care-progression next) |
 | Phase exit | merge-done on integration; `/babysit-plus` each phase |
-| Final | `/babysit-uat` integration → `main` |
+| Final | Phase **26** — `/babysit-uat` integration → `main` |
 | Human checkpoints | **None** for routine progress — see §10 |
 
-**Bootstrap prompt (Wave 1.1):**  
-Run `/canonical-docs consolidate pet_care/care-schedule-management` per this handover §6 Wave 1.1. AC inventory before deletes. Product conflicts → issue + `## Still open`. Coverage gaps → one issue per capability. Merge to integration via `/babysit-plus`.
+**Supersedes:** `documentation-migration-roadmap-514a` and per-slice child `plan_id`s — do not bootstrap new children.
+
+**Operator grant:** comment `approve-autonomous documentation-migration-514a` on #1787, then `/execute-plan documentation-migration-514a`.
+
+**Per-phase work:** `/canonical-docs consolidate <domain>/<capability>` per §6 row for that phase. AC inventory before deletes. Product conflicts → issue + `## Still open`. Coverage gaps → one issue per capability.
 
 ---
 
