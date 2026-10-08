@@ -1,7 +1,6 @@
 {
   "_comment": "Grandfathered docs. Shrink-only. Remove an entry when /canonical-docs consolidate migrates it.",
   "features": [
-    "docs/domains/auth/features/journeys.md",
     "docs/domains/auth/features/specs.md",
     "docs/domains/fostering/features/foster-placement-lifecycle.md",
     "docs/domains/fostering/features/g0-contract-pack.md",
