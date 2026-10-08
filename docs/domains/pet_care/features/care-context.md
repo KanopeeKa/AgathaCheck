@@ -76,11 +76,9 @@ Active absence: `status != cancelled` and `ends_on >= today`. Default list: non-
 
 **Provenance (Care Context namespace):** `user_declared` (V1 runtime); `calendar_import`, `integration_import`, `environmental_provider`, `system_derived` (future). Distinct from `CareSource` on health rhythms.
 
-<<<<<<< HEAD
 ## Care-period projection
-=======
+
 An absence is **active** when `status != cancelled` and `ends_on >= today` (calendar-date semantics). **`today`** for list/upcoming filters and health-entry absence-context queries is the declarer's account IANA timezone (`users.timezone`), not server UTC. Away-plan care projections use each pet's `home_timezone` for schedule "today" (same as CSM open/overdue).
->>>>>>> origin/main
 
 Owned by **care_planning**; Care Context is a thin caller to CSM `projectSchedule`. Scheduling semantics: [care-schedule-management.md](./care-schedule-management.md).
 
