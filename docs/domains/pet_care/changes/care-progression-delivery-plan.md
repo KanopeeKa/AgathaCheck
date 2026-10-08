@@ -5,8 +5,8 @@ audience: both
 status: in-delivery
 status_since: 2026-10-08
 folds_into: docs/domains/pet_care/features/care-progression.md
+plan: documentation-migration-514a
 last_updated: 2026-10-08
-tags: [pet_care, care_progression, delivery]
 ---
 
 # Care Progression — Delivery Plan
