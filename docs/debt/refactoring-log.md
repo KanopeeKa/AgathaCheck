@@ -133,7 +133,7 @@ Decisions: [pet-profile-decisions.md — D-desk](/docs/domains/pet_profile/featu
 | 4 | Shell chrome polish | `cursor/shell-hierarchy-chrome-0b2d` | Pending |
 | 5 | BDD/E2E hierarchy verification | `cursor/shell-hierarchy-e2e-0b2d` | Pending |
 
-Decisions: [shell-hierarchy-decisions.md](/docs/domains/navigation/changes/shell-hierarchy-decisions.md).
+Decisions: [navigation-decisions.md — D-shell](/docs/domains/navigation/features/navigation-decisions.md#h--shell-hierarchy-brand-once-per-context).
 
 ---
 

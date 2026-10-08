@@ -81,9 +81,7 @@ Navigation shell reversal and phased delivery (formerly `docs/experience-program
 | [/docs/domains/navigation/features/navigation-decisions.md](/docs/domains/navigation/features/navigation-decisions.md) | Shell decisions D1–D6, D27 | Active |
 | [/docs/domains/cross-domain/changes/program-contract.md](/docs/domains/cross-domain/changes/program-contract.md) | Cross-cutting contracts and vocabulary | Active |
 | [/docs/domains/cross-domain/changes/roadmap-delivery-plan.md](/docs/domains/cross-domain/changes/roadmap-delivery-plan.md) | Phase order and sprint breakdown | Active |
-| [/docs/domains/navigation/changes/phase-r-reconciliation.md](/docs/domains/navigation/changes/phase-r-reconciliation.md) | Cleanup of legacy navigation work | Active |
-| [/docs/domains/navigation/changes/phase-0-foundation.md](/docs/domains/navigation/changes/phase-0-foundation.md) | Shared primitives and scaffolding | Active |
-| [/docs/domains/navigation/changes/phase-1-navigation.md](/docs/domains/navigation/changes/phase-1-navigation.md) | Drawer, header, notifications | Active |
+| [/docs/domains/navigation/features/navigation-decisions.md](/docs/domains/navigation/features/navigation-decisions.md) | Shell decisions + folded phase R/0/1 history | Active |
 
 **Domain decisions** (split from former decisions log):
 
@@ -214,7 +212,7 @@ See [/docs/archived/README.md](/docs/archived/README.md) for the full list.
 
 ### Key Archived Documents
 - [/docs/archived/navigation-v2.md](/docs/archived/navigation-v2.md) - Superseded by [navigation domain](/docs/domains/navigation/README.md)
-- [/docs/archived/experience-split-plan.md](/docs/archived/experience-split-plan.md) - Superseded by [Phase R](/docs/domains/navigation/changes/phase-r-reconciliation.md)
+- [/docs/archived/experience-split-plan.md](/docs/archived/experience-split-plan.md) - Superseded by [navigation decisions — Phase R](/docs/domains/navigation/features/navigation-decisions.md#phase-r-reconciliation-folded)
 - [/docs/archived/quality-review-2026-07-08.md](/docs/archived/quality-review-2026-07-08.md) - Point-in-time snapshot
 
 ---

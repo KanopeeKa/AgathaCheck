@@ -10,7 +10,7 @@ feature_id: navigation-brief
 ---
 > **Status:** Locked master brief (source of truth). Do not edit inline — track deviations in
 > [navigation-decisions.md](navigation-decisions.md) and feature-level detail in
-> [phase-1-navigation.md](../changes/phase-1-navigation.md). Imported verbatim 2026-07-25.
+> [navigation-decisions.md — Phase 1](navigation-decisions.md#phase-1-shell-navigation-folded). Imported verbatim 2026-07-25.
 >
 > **D38 supersession (2026-09-02):** Workspace drawer labels are **Pet Care** / **Suivi** and **Shelter** / **Refuges** — not Guardian / Organisation / My Pets. Historical bullets below retain original wording; interpret through [pet_care README](/docs/domains/pet_care/README.md).
 

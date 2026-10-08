@@ -1007,7 +1007,7 @@ Product decisions for the global bell, unified panel, and kind vs scope semantic
 | **D10** | ~~Amended by v2 (§C)~~ Pending inboxes moved into Administrative feed. | locked | Phase 2 |
 | **D11** | Urgent Administrative notifications pinned; not a third kind. | locked | Phase 4 |
 
-Cross-refs: [program-contract.md](/docs/domains/cross-domain/changes/program-contract.md) §3 · [phase-1-navigation.md](/docs/domains/navigation/changes/phase-1-navigation.md) · [navigation-decisions.md](/docs/domains/navigation/features/navigation-decisions.md)
+Cross-refs: [program-contract.md](/docs/domains/cross-domain/changes/program-contract.md) §3 · [navigation-decisions.md — Phase 1](/docs/domains/navigation/features/navigation-decisions.md#phase-1-shell-navigation-folded) · [navigation-decisions.md](/docs/domains/navigation/features/navigation-decisions.md)
 
 ### §C — Notifications v2 supersession
 
@@ -1039,7 +1039,7 @@ Integration branch (historical): `cursor/notifications-v2-integration-7f3b` ← 
 
 **Cut order (time pressure):** PR6 digest/email enhancements → PR4 grouping/R4/R18 → never cut PR7 security core or PR1 migration.
 
-Related plans: Experience Phase 1 Navigation (global bell) — [phase-1-navigation.md](/docs/domains/navigation/changes/phase-1-navigation.md). Org-admin notification surface deferred (D-v3-NOTIF-1).
+Related plans: Experience Phase 1 Navigation (global bell) — [navigation-decisions.md — Phase 1](/docs/domains/navigation/features/navigation-decisions.md#phase-1-shell-navigation-folded). Org-admin notification surface deferred (D-v3-NOTIF-1).
 
 ## 20. Account security architecture (PR7)
 

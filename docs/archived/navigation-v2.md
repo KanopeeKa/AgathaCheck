@@ -15,7 +15,7 @@ tags: [archived,historical]
 
 > **Status: SUPERSEDED (2026-07-25).** This model did not work for users and is being fully
 > reversed by the navigation shell program — see `docs/domains/navigation/features/navigation-decisions.md` (D1, D2)
-> and `docs/domains/navigation/changes/phase-1-navigation.md`. Kept here as historical record only; do not
+> and `docs/domains/navigation/features/navigation-decisions.md`. Kept here as historical record only; do not
 > implement new work against this spec.
 
 **Status:** ~~Approved (execute-plan `ui-navigation-v2-14ee`)~~ Superseded — see banner above  

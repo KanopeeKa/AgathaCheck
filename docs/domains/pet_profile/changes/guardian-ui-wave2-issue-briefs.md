@@ -104,7 +104,7 @@ UI + policy doc update
 
 ### Affected screens
 - `ExperienceSectionDrawer`
-- [phase-1-navigation.md](/docs/domains/navigation/changes/phase-1-navigation.md) (delete bottom-pin Account rules; update §1, §9)
+- [navigation-decisions.md — Phase 1](/docs/domains/navigation/features/navigation-decisions.md#phase-1-shell-navigation-folded) (historical; bottom-pin Account rules superseded by adaptive nav)
 - Drawer/account tests
 
 ### Desired behavior

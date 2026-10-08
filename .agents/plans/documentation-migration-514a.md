@@ -93,11 +93,11 @@ last_completed_phase: 15
 halt_reason: null
 next_action: "continue phase 16 on branch cursor/documentation-migration-navigation-514a"
 artifact_ref:
-  branch: cursor/documentation-migration-wave13-integration-514a
+  branch: cursor/documentation-migration-navigation-514a
   plan_path: .agents/plans/documentation-migration-514a.md
-  plan_commit: 911cf016b5292f879285cbaf4ccd029c630b720c
+  plan_commit: f52f733f5c4e644139d23a476242995205531aa5
   snapshot_path: .agents/plans/documentation-migration-514a.snapshot.json
-  snapshot_commit: 911cf016b5292f879285cbaf4ccd029c630b720c
+  snapshot_commit: f52f733f5c4e644139d23a476242995205531aa5
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

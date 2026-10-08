@@ -1,10 +1,11 @@
 ---
 title: Experience program roadmap
 owner: Documentation Team
-audience: both
-status: active
-last_updated: 2026-08-22
+status: in-delivery
+status_since: 2026-10-08
 tags: [experience, roadmap]
+folds_into: docs/domains/cross-domain/features/delivery-plans-index.md
+plan: documentation-migration-514a
 ---
 # Experience program — delivery plan (Phase R + 0–5)
 
@@ -75,7 +76,7 @@ parallel agents.
 
 ## Phase R — Reconciliation
 
-**Doc:** [phase-r-reconciliation.md](../../navigation/changes/phase-r-reconciliation.md)  
+**Doc:** [navigation-decisions.md — Phase R](../../navigation/features/navigation-decisions.md#phase-r-reconciliation-folded)  
 **Goal:** Close out conflicting prior work before new implementation starts. No product code
 changes beyond doc headers and BDD tags.
 
@@ -93,7 +94,7 @@ changes beyond doc headers and BDD tags.
 
 ## Phase 0 — Foundation
 
-**Doc:** [phase-0-foundation.md](../../navigation/changes/phase-0-foundation.md)  
+**Doc:** [navigation-decisions.md — Phase 0](../../navigation/features/navigation-decisions.md#phase-0-foundation-folded)  
 **Goal:** Contracts and shared primitives every later phase depends on — no visible UI change yet.
 
 | Sprint | Deliverable |
@@ -112,7 +113,7 @@ screen.
 
 ## Phase 1 — Shell & navigation reversal
 
-**Doc:** [phase-1-navigation.md](../../navigation/changes/phase-1-navigation.md)  
+**Doc:** [navigation-decisions.md — Phase 1](../../navigation/features/navigation-decisions.md#phase-1-shell-navigation-folded)  
 **Goal:** Ship the reversed navigation model end-to-end. This is the highest-risk phase (touches
 every authenticated screen's chrome) — do it in full before Pet Care/Shelter content changes.
 
