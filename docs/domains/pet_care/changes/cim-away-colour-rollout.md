@@ -1,8 +1,9 @@
 ---
 title: CIM and Away colour rollout
 status: in-delivery
-canonical_target: docs/design/tokens.md
-related_plan: cim-away-colour-e376
+status_since: 2026-10-08
+folds_into: docs/domains/pet_care/features/care-intelligence.md
+plan: cim-away-colour-e376
 ---
 
 # CIM and Away colour rollout

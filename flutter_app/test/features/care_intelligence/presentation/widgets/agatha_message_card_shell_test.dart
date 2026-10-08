@@ -9,9 +9,7 @@ void main() {
   ) async {
     await tester.pumpWidget(
       const MaterialApp(
-        home: Scaffold(
-          body: AgathaMessageCard(child: Text('body')),
-        ),
+        home: Scaffold(body: AgathaMessageCard(child: Text('body'))),
       ),
     );
 

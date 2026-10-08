@@ -214,12 +214,12 @@ last_completed_phase: null
 halt_reason: null
 next_action: "continue phase 1 on branch cursor/agatha-teal-suggestion-cards-e376"
 artifact_ref:
-  branch: cursor/cim-away-colour-e376-integration-e376
+  branch: cursor/agatha-teal-suggestion-cards-e376
   plan_path: .agents/plans/cim-away-colour-e376.md
-  plan_commit: 1b4f4df4ba680f762b1c79a2cda2a09e2b3e83b9
+  plan_commit: c227d431e627cf05f383461c9cd8edd6e031cf3a
   snapshot_path: .agents/plans/cim-away-colour-e376.snapshot.json
-  snapshot_commit: 1b4f4df4ba680f762b1c79a2cda2a09e2b3e83b9
-open_prs: []
+  snapshot_commit: c227d431e627cf05f383461c9cd8edd6e031cf3a
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1792"]
 merge_commits: {}
 debt_issue_refs: []
 ```
