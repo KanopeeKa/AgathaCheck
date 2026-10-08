@@ -770,7 +770,7 @@ Written in Given/When/Then form so they can be turned into BDD scenarios with mi
   - [x] Decision log §18 mirrors §0 (D7–D11, N1–N13); legacy §B retained.
   - [x] §17 implementation reference: axes table (kinds, `pet_care` scope, tabs).
   - [x] §16 user journeys: care-in-inbox, chips and combined badge rewritten.
-  - [x] `cross-domain/changes/program-contract.md` §3: a footnote pointing to this spec over the old diagram.
+  - [x] `cross-domain/features/program-contract.md` §3: a footnote pointing to this spec over the old diagram.
   - [x] Help/FAQ l10n strings: new copy drafted in Appendix A. The `.arb` files change **in PR2**, together with the behaviour, so the live FAQ never describes features that haven't shipped.
   - [x] §21 deferred work table: quiet hours, R13, badge option, S7, sign-in location, A4/A5, PR8, hard-delete.
   - [x] `docs/domains/subscription`: link to A7–A11 and the server-entitlement prerequisite.
@@ -980,7 +980,7 @@ Notification rows served via `notification_remote_datasource`; preferences entit
 - Extend v2 scenarios in `notifications_v2.feature` as each PR lands (tabs, resolved semantics — program-contract §6.1 footnote)
 - UAT live E2E: after API seed, if due events are missing on home, call `refreshByRemount()` on the Playwright page before asserting (live E2E timing).
 
-Contract detail: [/docs/domains/cross-domain/changes/program-contract.md](/docs/domains/cross-domain/changes/program-contract.md) §3
+Contract detail: [/docs/domains/cross-domain/features/program-contract.md](/docs/domains/cross-domain/features/program-contract.md) §3
 
 ### Planned: People & Care Team
 
@@ -1007,7 +1007,7 @@ Product decisions for the global bell, unified panel, and kind vs scope semantic
 | **D10** | ~~Amended by v2 (§C)~~ Pending inboxes moved into Administrative feed. | locked | Phase 2 |
 | **D11** | Urgent Administrative notifications pinned; not a third kind. | locked | Phase 4 |
 
-Cross-refs: [program-contract.md](/docs/domains/cross-domain/changes/program-contract.md) §3 · [navigation-decisions.md — Phase 1](/docs/domains/navigation/features/navigation-decisions.md#phase-1-shell-navigation-folded) · [navigation-decisions.md](/docs/domains/navigation/features/navigation-decisions.md)
+Cross-refs: [program-contract.md](/docs/domains/cross-domain/features/program-contract.md) §3 · [navigation-decisions.md — Phase 1](/docs/domains/navigation/features/navigation-decisions.md#phase-1-shell-navigation-folded) · [navigation-decisions.md](/docs/domains/navigation/features/navigation-decisions.md)
 
 ### §C — Notifications v2 supersession
 

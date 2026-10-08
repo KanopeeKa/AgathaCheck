@@ -20,4 +20,4 @@ tags: [domain,fostering,plans]
 | Fostering wave C | Wave C delivery | See snapshot | [.agents/plans/fostering-platform-wave-c-e877.md](/.agents/plans/fostering-platform-wave-c-e877.md) |
 | Session detail view | Foster + shelter View Session screen | In progress | [.agents/plans/session-detail-view-eec3.md](/.agents/plans/session-detail-view-eec3.md) · [session-detail-view.md](../features/session-detail-view.md) |
 
-Cross-cutting delivery: [navigation README](/docs/domains/navigation/README.md) · [cross-domain roadmap](/docs/domains/cross-domain/changes/roadmap-delivery-plan.md)
+Cross-cutting delivery: [navigation README](/docs/domains/navigation/README.md) · [cross-domain roadmap](/docs/domains/cross-domain/features/delivery-plans-index.md)

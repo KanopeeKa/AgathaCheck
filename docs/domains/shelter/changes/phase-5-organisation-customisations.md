@@ -8,7 +8,7 @@ tags: [experience,guardian,organisation]
 ---
 # Phase 5 — Organisation customisations
 
-**Parent:** [../../cross-domain/changes/roadmap-delivery-plan.md](../../cross-domain/changes/roadmap-delivery-plan.md) · [../../cross-domain/changes/program-contract.md](../../cross-domain/changes/program-contract.md)  
+**Parent:** [../../cross-domain/features/delivery-plans-index.md](../../cross-domain/features/delivery-plans-index.md) · [../../cross-domain/features/program-contract.md](../../cross-domain/features/program-contract.md)  
 **Brief:** [`briefs/shelter-dashboard-brief.md`](briefs/shelter-dashboard-brief.md) §Organisation customisations
 
 ## Purpose

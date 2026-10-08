@@ -495,7 +495,7 @@ starting Phase A).
 
 ## Related docs to update when implementing
 
-- [../../cross-domain/changes/program-contract.md](../../cross-domain/changes/program-contract.md) §4 — wire roles (3 not 4)
+- [../../cross-domain/features/program-contract.md](../../cross-domain/features/program-contract.md) §4 — wire roles (3 not 4)
 - [`g0-contract-pack.md`](/docs/domains/fostering/features/g0-contract-pack.md) §4.3 — foster badge note
 "- [`docs/architecture/api-reference.md`](/docs/architecture/api-reference.md) 2014 new routes
 - [`j1-foster-onboarding.md`](/docs/domains/fostering/changes/j1-foster-onboarding.md) — invite flows reopened

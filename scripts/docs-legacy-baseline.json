@@ -36,11 +36,6 @@
   "changes": [
     "docs/domains/auth/changes/deferred.md",
     "docs/domains/auth/changes/plans.md",
-    "docs/domains/cross-domain/changes/delivery-decisions.md",
-    "docs/domains/cross-domain/changes/docs-domain-audit-63ad.md",
-    "docs/domains/cross-domain/changes/program-contract.md",
-    "docs/domains/cross-domain/changes/roadmap-delivery-plan.md",
-    "docs/domains/cross-domain/changes/sprint-10-flutter-344-execution-plan.md",
     "docs/domains/cross-domain/changes/sprint-6-execution-plan.md",
     "docs/domains/fostering/changes/deferred.md",
     "docs/domains/fostering/changes/j1-foster-onboarding.md",

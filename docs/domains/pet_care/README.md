@@ -140,5 +140,5 @@ Care Intelligence live test with real health data still cites hardening prerequi
 | Pet profile (CRUD, timeline) | [pet_profile](/docs/domains/pet_profile/README.md) |
 | Health due-items and entries | [health_tracking](/docs/domains/health_tracking/README.md) |
 | Shell navigation | [navigation](/docs/domains/navigation/README.md) |
-| Program vocabulary | [program-contract.md](/docs/domains/cross-domain/changes/program-contract.md) §2 |
+| Program vocabulary | [program-contract.md](/docs/domains/cross-domain/features/program-contract.md) §2 |
 | Navigation contract (E2E) | [navigation-contract.md](/docs/e2e/navigation-contract.md) |

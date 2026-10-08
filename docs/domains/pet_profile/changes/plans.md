@@ -24,4 +24,4 @@ Delivery plans and phase docs for the guardian / pet_profile domain.
 
 Locked brief: [features/guardian-dashboard-brief.md](../features/guardian-dashboard-brief.md)
 
-Cross-cutting index: [navigation README](/docs/domains/navigation/README.md) · [cross-domain roadmap](/docs/domains/cross-domain/changes/roadmap-delivery-plan.md)
+Cross-cutting index: [navigation README](/docs/domains/navigation/README.md) · [cross-domain roadmap](/docs/domains/cross-domain/features/delivery-plans-index.md)

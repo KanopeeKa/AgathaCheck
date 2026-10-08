@@ -35,7 +35,7 @@ Full conventions: `docs/architecture/modularity.md`.
 | OpenAPI (critical subset) | [openapi/pet-care-critical.json](openapi/pet-care-critical.json) | Contract tests + DTO stability |
 | Active baseline | [active-codebase-baseline/README.md](../engineering/active-codebase-baseline/README.md) | Command matrix, metrics, gates |
 | Design / UX | `docs/design/index.md` | Tiers, `system.md`, `/ui-design-deep`, Router `accessibility` protocol |
-| Navigation shell & phased delivery | `docs/domains/navigation/` + `docs/domains/cross-domain/changes/` | **Active** — supersedes `docs/archived/navigation-v2.md`; read [navigation-decisions.md](/docs/domains/navigation/features/navigation-decisions.md) first |
+| Navigation shell & phased delivery | `docs/domains/navigation/` + `docs/domains/cross-domain/features/` | **Active** — supersedes `docs/archived/navigation-v2.md`; read [navigation-decisions.md](/docs/domains/navigation/features/navigation-decisions.md) first |
 
 ---
 

@@ -480,7 +480,7 @@ Decisions: [navigation-decisions.md — D-shell](/docs/domains/navigation/featur
 ## Sprint 10 — Flutter 3.44 / Dart 3.12 toolchain upgrade (completed)
 
 **Goal:** Upgrade Flutter 3.32 → 3.44 (Dart 3.8 → 3.12); unblock blocked pub Dependabot PRs (#77–#81).  
-**Execution plan:** `docs/domains/cross-domain/changes/sprint-10-flutter-344-execution-plan.md`  
+**Execution plan:** retired — see [delivery-plans-index D-006](/docs/domains/cross-domain/features/delivery-plans-index.md) and Sprint 10 entries below  
 **Integration branch:** `cursor/sprint-10-flutter-344-integration-4379` → single PR to `main`
 
 | # | Action | Status | Agent / notes |
@@ -628,7 +628,7 @@ Use this template when spawning agents on an integration branch:
 | 2026-07-16 | #188 merged: E1b org-only user lands on organisation home |
 | 2026-07-16 | #187 merged: E2E guardian shell nav hardening (chooser, strict-mode, shell fallbacks) |
 | 2026-07-16 | #186 merged: Experience Phase 3 pet detail context |
-| 2026-07-10 | Sprint 10 planned: Flutter 3.44 / Dart 3.12 upgrade; execution plan `docs/domains/cross-domain/changes/sprint-10-flutter-344-execution-plan.md` |
+| 2026-07-10 | Sprint 10 planned: Flutter 3.44 / Dart 3.12 upgrade; execution plan folded into delivery-plans-index (D-006) |
 | 2026-07-10 | Sprint 9 merged #129: Bugbot remediation (token migration, photo URLs, pet sync rollback, E2E hardening); dart-foster audit |
 | 2026-07-09 | Sprint 7: GDPR data-rights E2E; BDD gate 105/165; subscriptions E2E deferred (EU billing review) |
 | 2026-07-09 | Sprint 6 complete (#116): 113/165 BDD; org custody + help FAQ |

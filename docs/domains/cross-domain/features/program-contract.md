@@ -1,24 +1,47 @@
 ---
 title: Experience program contract
 owner: Documentation Team
-audience: both
-status: in-delivery
-folds_into: docs/domains/navigation/features/navigation-brief.md
-plan: documentation-migration-514a
-status_since: 2026-10-08
-tags: [experience, contract]
+audience: agent
+domain: cross-domain
+feature_id: program_contract
+status: active
+last_updated: 2026-10-08
+related_prs: []
 ---
+
 # Experience program — platform contract
 
 **Status:** Locked baseline for delivery  
 **Last updated:** 2026-07-25  
-**Related:** [navigation README](/docs/domains/navigation/README.md#decision-index-split-from-experience-program-decisions-log) · [roadmap-delivery-plan.md](roadmap-delivery-plan.md) · [navigation-brief.md](/docs/domains/navigation/features/navigation-brief.md) ·
+**Related:** [navigation README](/docs/domains/navigation/README.md#decision-index-split-from-experience-program-decisions-log) · [delivery-plans-index.md](delivery-plans-index.md) · [navigation-brief.md](/docs/domains/navigation/features/navigation-brief.md) ·
 [/docs/domains/fostering/features/g0-contract-pack.md](/docs/domains/fostering/features/g0-contract-pack.md) (this contract does not restate G0 — it extends it for the navigation/guardian/organisation-presentation surfaces G0 does not cover)
 
 This is the platform contract layer for the **Experience program** (navigation reversal + Pet Care
 dashboard + Organisation presentation/access-control rework). Phase docs reference this file
 instead of redefining vocabulary or cross-cutting rules. Follows the same "mandatory sections"
 discipline as `g0-contract-pack.md` so the two programs read consistently.
+
+## Requirements
+
+| ID | Rule | Status |
+|----|------|--------|
+| PROGRAM-CONTRACT-R-001 | Cross-cutting vocabulary in §2 and [terminology.md](/docs/design/terminology.md) must stay aligned; forbidden synonyms apply to new work | Live |
+| PROGRAM-CONTRACT-R-002 | Notification kind, scope, and slide-over UX ship per [notifications-v2-spec](/docs/domains/notifications/features/notifications-v2-spec.md); §3 is historical pre-v2 | In delivery |
+| PROGRAM-CONTRACT-R-003 | Phase-level sprint breakdown and ordering live in [navigation-decisions.md](/docs/domains/navigation/features/navigation-decisions.md) and [delivery-plans-index.md](delivery-plans-index.md) | Live |
+
+## Acceptance criteria
+
+| Given / When / Then | Requirement | Coverage |
+|---------------------|-------------|----------|
+| Given a new Experience-program screen, when copy uses workspace labels, then it follows D38 Pet Care / Suivi rules in terminology | PROGRAM-CONTRACT-R-001 | none — #1787 |
+| Given notification UI work, when kind/scope behaviour is specified, then agents read notifications-v2-spec first | PROGRAM-CONTRACT-R-002 | test: e2e/features/notifications_v2.feature |
+
+## Decision log
+
+| ID | Decision | Rationale | Status | Date | PR |
+|----|----------|-----------|--------|------|-----|
+| PROGRAM-CONTRACT-D-001 | Pet timeline replaces legacy family events (D18–D19) | Composite custody + fostering + manual entries | Live | 2026-07-25 | TBD |
+| PROGRAM-CONTRACT-D-002 | Default delivery mode is sequential single-agent to `main` (D33) | Recorded in delivery-plans-index | Live | 2026-07-25 | TBD |
 
 ---
 
