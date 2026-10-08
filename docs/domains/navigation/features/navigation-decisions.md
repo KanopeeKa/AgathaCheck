@@ -84,4 +84,4 @@ Full detail: [shelter-dashboard-v2-framing-decisions.md](/docs/domains/shelter/c
 - New navigation decision → add a row here first, then implement.
 - A decision proves wrong → update the row and note the phase/PR that revised it.
 - Phase docs link to decision IDs; they do not re-explain rationale.
-- Related: [notification-decisions.md](/docs/domains/notifications/features/notification-decisions.md) (D7–D11), [delivery-decisions.md](/docs/domains/cross-domain/changes/delivery-decisions.md) (D32–D33).
+- Related: [notifications-v2-spec §18](/docs/domains/notifications/features/notifications-v2-spec.md#18-decision-log-legacy--b--v2-supersession) (D7–D11), [delivery-decisions.md](/docs/domains/cross-domain/changes/delivery-decisions.md) (D32–D33).

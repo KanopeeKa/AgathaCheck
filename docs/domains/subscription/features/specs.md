@@ -31,7 +31,7 @@ Billing provider under **product review** — EU-based solution may replace Reve
 
 ## Notifications
 
-Subscription notices (activated, renewal upcoming, payment issue, ended, trial ending) are specified in [Notifications v2 §3.5.2](/docs/domains/notifications/features/notifications-v2-spec.md) (A7–A11). They require a **server-side entitlement source** (provider webhook or server receipt validation) and are blocked until the billing provider is chosen. The client must not synthesise them from RevenueCat state.
+Subscription notices (activated, renewal upcoming, payment issue, ended, trial ending) are specified in [Notifications §3.5.2](/docs/domains/notifications/features/notifications-v2-spec.md) (A7–A11). They require a **server-side entitlement source** (provider webhook or server receipt validation) and are blocked until the billing provider is chosen. The client must not synthesise them from RevenueCat state.
 
 ## Tests
 
