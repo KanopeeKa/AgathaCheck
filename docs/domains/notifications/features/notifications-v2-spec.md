@@ -285,7 +285,7 @@ deleted, and what Free limits apply.
 |---|---|
 | FR-CR-1 | The server MUST NOT create inbox rows with `kind=care` after the v2 cut-over. |
 | FR-CR-2 | Care reminders MUST continue to be delivered via push/local channels per reminder settings and D21/D25; they do **not** create Activity inbox rows or affect the notifications bell (Care Actions / Actions tab is the home). |
-| FR-CR-3 | Tapping a care reminder push MUST deep-link to the care item / occurrence, exactly as today. |
+| FR-CR-3 | Tapping a care reminder push MUST deep-link to **Care details** for that entry (`petEventView` when `healthEntryId` is set), not the Care date screen. |
 | FR-CR-4 | Care Actions (dashboard) and Actions (`/pc/events`) remain the single source of truth for due/overdue items. |
 | FR-CR-5 | Existing rows of type `overdue` / `due_soon` MUST be archived (not deleted) by migration and excluded from inbox lists and badge counts. Other `care`-kind rows are **reclassified** per §3.4, not archived. A blanket "archive all `care`" would hide ownership-transfer and memorial notices, which are stored as `general`/`care` today. |
 
@@ -613,7 +613,7 @@ Written in Given/When/Then form so they can be turned into BDD scenarios with mi
 
 - **AC-CR-1** — Given a pet with a vaccine due today, when the reminder job runs, then a push/local reminder is delivered **and** no inbox row is created **and** the bell badge does not change.
 - **AC-CR-2** — Given the same pet, when I open Care Actions and Actions, then the due item is listed there exactly as before v2.
-- **AC-CR-3** — Given I tap the care reminder push, then I land on that occurrence's detail screen.
+- **AC-CR-3** — Given I tap the care reminder push, then I land on **Care details** for that care item.
 - **AC-CR-4** — Given I had 12 unread `overdue`/`due_soon` rows before migration, when the migration runs, then those rows are archived, they do not appear in either tab, and the badge does not count them.
 - **AC-CR-6** — Given I received an ownership-transfer notice and a passed-away notice before migration (stored as `general`), when the migration runs, then both appear in Activity as `relationship` rows. Neither is archived.
 - **AC-CR-5** — Given a pet report is generated after migration, then its notifications section still includes historical care rows (archived rows remain reportable).

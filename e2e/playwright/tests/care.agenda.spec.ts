@@ -1,7 +1,7 @@
 /**
  * @bdd care_agenda.feature
- * Scenario: A care row opens its date, and the date links to the care item
- * Scenario: Care that needs a weight opens its date to enter the weight
+ * Scenario: A care row opens Care details
+ * Scenario: Care that needs a weight opens Care date from Mark as done
  * Scenario: Several dates to sort out open the care item
  * Scenario: Upcoming care can be marked as done early
  */
@@ -12,10 +12,9 @@ import { GuardianDashboardPage } from '../pages/guardian-dashboard.page';
 import { OccurrencePage } from '../pages/occurrence.page';
 import { createCareItem, withCareClock } from '../support/care-api';
 import { createPet } from '../support/api';
-import { refreshFlutterAccessibility } from '../support/flutter';
 
-test.describe('Care agenda (occurrence-first)', () => {
-  test('row opens occurrence and links to care item', async ({ page, testUser }) => {
+test.describe('Care agenda', () => {
+  test('row opens Care details', async ({ page, testUser }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const today = new Date().toISOString().slice(0, 10);
     await withCareClock(`${today}T08:30`, page);
@@ -32,23 +31,18 @@ test.describe('Care agenda (occurrence-first)', () => {
       await dashboard.open();
       const agenda = new CareAgendaPage(page);
       await agenda.openRow(entry.id, entry.name);
-      const occurrence = new OccurrencePage(page);
-      await occurrence.expectLoaded();
-      const aboutItem = page.locator('[flt-semantics-identifier="occurrence_about_item"]');
-      await expect(aboutItem).toBeVisible({ timeout: 30_000 });
-      await aboutItem.click();
-      await refreshFlutterAccessibility(page);
-      await expect(
-        page
-          .getByRole('heading', { name: /Care details|Détail du soin/i })
-          .or(page.locator('[flt-semantics-identifier="care_item_needs_attention_section"]')),
-      ).toBeVisible({ timeout: 30_000 });
+      const careItem = new CareItemPage(page);
+      await careItem.expectCareDetailsScreenTitle();
+      await careItem.expectContextStripCareName('Viewable Care');
     } finally {
       await withCareClock(null, page);
     }
   });
 
-  test('weight check occurrence requires weight before Done', async ({ page, testUser }) => {
+  test('weight check Mark as done opens Care date for weight entry', async ({
+    page,
+    testUser,
+  }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const today = '2026-06-12';
     await withCareClock(`${today}T09:00`, page);
@@ -64,7 +58,7 @@ test.describe('Care agenda (occurrence-first)', () => {
       const dashboard = new GuardianDashboardPage(page);
       await dashboard.open();
       const agenda = new CareAgendaPage(page);
-      await agenda.openRow(entry.id, 'Monthly weigh-in');
+      await agenda.markDone(entry.id);
       const occurrence = new OccurrencePage(page);
       await occurrence.expectLoaded();
       await occurrence.expectWeightRequiredBeforeDone();

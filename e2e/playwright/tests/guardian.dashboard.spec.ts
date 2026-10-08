@@ -3,7 +3,7 @@
  * Scenario: Today orientation prioritises attention above the management sections
  * Scenario: Care preview orders overdue, due today, and upcoming items
  * Scenario: My Pets preview is capped at four with an All Pets destination
- * Scenario: Care preview row opens the occurrence screen
+ * Scenario: Care preview row opens Care details
  * Scenario: Care preview supports completion and undo
  * Scenario: Veterinary team preview reaches linked vet details
  * Scenario: Empty Pet Care dashboard shows first-use guidance without false alerts
@@ -126,7 +126,7 @@ test.describe('Guardian dashboard', () => {
     await dashboard.goBackToDashboard();
   });
 
-  test('Care preview row opens the occurrence screen', async ({
+  test('Care preview row opens Care details', async ({
     page,
     testUser,
   }) => {
@@ -149,7 +149,7 @@ test.describe('Guardian dashboard', () => {
       const agenda = new CareAgendaPage(page);
       await agenda.openRow(entry.id, entry.name);
       await expect(
-        page.getByRole('heading', { name: /Care date|Date de soin/i }).first(),
+        page.getByRole('heading', { name: /Care details|Détail du soin/i }).first(),
       ).toBeVisible({ timeout: 30_000 });
       await expect(page.getByRole('button', { name: /^Back$/i })).toBeVisible();
       await expect(page.getByRole('button', { name: /snooze/i })).toHaveCount(0);

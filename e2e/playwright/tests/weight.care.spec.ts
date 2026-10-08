@@ -6,6 +6,7 @@
  */
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
 import { CareAgendaPage } from '../pages/care-agenda.page';
+import { CareItemPage } from '../pages/care-item.page';
 import { GuardianDashboardPage } from '../pages/guardian-dashboard.page';
 import { OccurrencePage } from '../pages/occurrence.page';
 import { WeightCarePage } from '../pages/weight-care.page';
@@ -34,6 +35,8 @@ test.describe('Weight care (occurrence + care item)', () => {
       await dashboard.open();
       const agenda = new CareAgendaPage(page);
       await agenda.openRow(entry.id, 'Monthly weigh-in');
+      const careItem = new CareItemPage(page);
+      await careItem.openOccurrenceFromNeedsAttention(occurrenceId!);
 
       const occurrence = new OccurrencePage(page);
       await occurrence.expectLoaded();
@@ -78,7 +81,7 @@ test.describe('Weight care (occurrence + care item)', () => {
       const dashboard = new GuardianDashboardPage(page);
       await dashboard.open();
       const agenda = new CareAgendaPage(page);
-      await agenda.openRow(entry.id, 'Lb weigh-in');
+      await agenda.markDone(entry.id);
 
       const occurrence = new OccurrencePage(page);
       await occurrence.expectLoaded();

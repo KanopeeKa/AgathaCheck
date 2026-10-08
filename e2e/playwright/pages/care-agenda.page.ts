@@ -24,20 +24,20 @@ export class CareAgendaPage {
     ).toBeVisible({ timeout: 30_000 });
   }
 
-  /** Tap the row body (opens the occurrence screen). */
+  /** Tap the row body (opens Care details). */
   async openRow(entryId: string, entryName?: string): Promise<void> {
     await refreshFlutterAccessibility(this.page);
     if (entryName) {
       await this.expectRowVisible(entryName);
     }
-    const opensDate = /Opens this date|Ouvre cette date/i;
+    const opensItem = /Opens the care item|Ouvre le soin/i;
     const byId = this.page.locator(
       `[flt-semantics-identifier="care_agenda_row_${entryId}"]`,
     );
     const byRole =
       entryName != null
         ? this.page
-            .getByRole('button', { name: opensDate })
+            .getByRole('button', { name: opensItem })
             .filter({ hasText: new RegExp(escapeRegExp(entryName), 'i') })
         : null;
 
@@ -54,35 +54,42 @@ export class CareAgendaPage {
       await this.page.mouse.click(box.x + 20, box.y + box.height / 2);
     };
 
-    const careDateHeading = this.page.getByRole('heading', {
-      name: /Care date|Date de soin/i,
+    const careDetailsHeading = this.page.getByRole('heading', {
+      name: /Care details|Détail du soin/i,
     });
     await expect(async () => {
       await tapRow();
       await refreshFlutterAccessibility(this.page);
       const path = flutterRoutePath(this.page.url());
-      const onOccurrenceRoute = /\/occurrences\/[^/]+/.test(path);
-      const onScreen = await careDateHeading.isVisible().catch(() => false);
-      if (!onOccurrenceRoute && !onScreen && entryName) {
+      const onCareItemRoute =
+        /\/events\/[^/]+$/.test(path) && !/\/occurrences\//.test(path);
+      const onScreen = await careDetailsHeading.isVisible().catch(() => false);
+      if (!onCareItemRoute && !onScreen && entryName) {
         await semanticsByName(
           this.page,
-          new RegExp(`${escapeRegExp(entryName)}.*Opens this date|Ouvre cette date`, 'i'),
+          new RegExp(
+            `${escapeRegExp(entryName)}.*Opens the care item|Ouvre le soin`,
+            'i',
+          ),
         )
           .first()
           .click({ position: { x: 12, y: 16 } });
         await refreshFlutterAccessibility(this.page);
       }
       const ready =
-        /\/occurrences\/[^/]+/.test(flutterRoutePath(this.page.url())) ||
-        (await careDateHeading.isVisible().catch(() => false));
+        (/\/events\/[^/]+$/.test(flutterRoutePath(this.page.url())) &&
+          !/\/occurrences\//.test(flutterRoutePath(this.page.url()))) ||
+        (await careDetailsHeading.isVisible().catch(() => false));
       if (!ready) {
-        throw new Error(`Occurrence screen not open (path=${flutterRoutePath(this.page.url())})`);
+        throw new Error(
+          `Care details not open (path=${flutterRoutePath(this.page.url())})`,
+        );
       }
     }).toPass({ timeout: 60_000 });
     await refreshFlutterAccessibility(this.page);
   }
 
-  /** Stack row opens the care item view (DN-1). */
+  /** Stack row opens the care item view (same as [openRow]). */
   async openStack(entryId: string): Promise<void> {
     await refreshFlutterAccessibility(this.page);
     await this.page

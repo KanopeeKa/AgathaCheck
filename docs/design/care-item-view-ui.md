@@ -40,7 +40,7 @@ Document hex values only in [`tokens.md`](./tokens.md) when promoted globally; C
 ## Module map (mobile order)
 
 1. **Pet context** — context strip on canvas (not a module): **`CareItemPetContextTile`** (dashboard `UnifiedPetTile` unchanged) + care name (typography per spec D-CIH-014, 600 px shell breakpoint) + decorative `CareFamilyIcon` + optional chip (**Finished** or **Paused**; no Archived chip until API). Stacked layout per spec §5.2.1. `openPetDetail`. Canonical: [care-item-evolution.md](../domains/pet_care/features/care-item-evolution.md).
-2. **Needs attention (hero)** — lists every **open occurrence** as a line (date · status · trailing Done). **Stack** (≥2 started open dates on Fixed schedule): all lines + **Mark all as done** / **Skip all** (one `resolve-stack`, one Undo). **Single** leading open slot: outlined **Change date** (reschedule sheet). Row tap opens the **occurrence screen**; Done follows `decideDone` (one tap unless weight/date/early dialog). Paused: "Paused since …" / "Paused until …" + Resume.
+2. **Needs attention (hero)** — lists every **open occurrence** as a line (date · status · trailing Done). **Stack** (≥2 started open dates on Fixed schedule): all lines + **Mark all as done** / **Skip all** (one `resolve-stack`, one Undo). **Single** leading open slot: outlined **Change date** (reschedule sheet). Occurrence line tap opens the **Care date** screen; Done follows `decideDone` (one tap unless weight/date/early dialog). Paused: "Paused since …" / "Paused until …" + Resume.
 3. **Absence** — module or callout; resolution actions inside module body.
 4. **Schedule** — header row with **Edit schedule** trailing; body = stat grid (Frequency · Type · Reminder) + prose lines (next date, flexibility).
 5. **Details** — definition-list rows; **no duplicate recurrence** (schedule owns rhythm).
@@ -82,7 +82,7 @@ Same component on the dashboard (all pets) and the pet profile (one pet); All ca
 |------|-------------|
 | Sections | **Today** · **Due soon** · **Upcoming** as `Semantics(header: true)` headings; Upcoming collapsed with a count and an expanded/collapsed state |
 | Today | Overdue rows first; then **Morning / Afternoon / Evening / Anytime** sub-headings only when ≥ 2 groups have rows, otherwise one **Today's list** heading; done-today rows last, quiet (check + time) |
-| Row (R3) | `CareActionRow` in `CareCollectionInsetList`: pet avatar (dashboard only) · name · status + date/time · **one** trailing Done. Non-stack row opens the **occurrence screen** (`care_agenda_row_<entryId>`); stack or done-today opens the **Care Item** view (`care_agenda_stack_<entryId>`). Semantics ids stable for E2E |
+| Row (R3) | `CareActionRow` in `CareCollectionInsetList`: pet avatar (dashboard only) · name · status + date/time · **one** trailing Done. Row tap opens the **Care Item** view (`care_agenda_row_<entryId>` or `care_agenda_stack_<entryId>` for stacks). Semantics ids stable for E2E |
 | Status pill | Tones: coming up (neutral text) · due (warning) · overdue (error + urgency icon) · **notRecorded** (info + icon — new tone) · done (success + check) · skipped (neutral) · paused (neutral + pause icon). Colour never alone |
 | Feedback | Button shows progress; the row changes only after the server responds; snackbar "Done · Undo" from the server result. No optimistic completion |
 | Orientation | Dashboard line "2 overdue · 3 due today"; zero → "Nothing due today" |

@@ -217,9 +217,9 @@ void main() {
     },
   );
 
-  testWidgets('planned care row tap opens occurrence screen when id present', (
-    tester,
-  ) async {
+  testWidgets(
+    'planned care row tap navigates to petEventView when occurrence id present',
+    (tester) async {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -263,9 +263,10 @@ void main() {
                 ),
               ),
               GoRoute(
-                path: '/pet/:petId/events/:entryId/occurrences/:occurrenceId',
+                path: '/pet/:petId/events/:entryId',
+                name: 'petEventView',
                 builder: (_, state) => Text(
-                  'occ-${state.pathParameters['occurrenceId']}|'
+                  'event-${state.pathParameters['entryId']}|'
                   '${state.uri.queryParameters['returnTo'] ?? ''}',
                 ),
               ),
@@ -280,7 +281,7 @@ void main() {
     await tester.tap(find.text('Vet visit'));
     await tester.pumpAndSettle();
 
-    expect(find.text('occ-occ-42|/pc/away/abs-1'), findsOneWidget);
+    expect(find.text('event-once-1|/pc/away/abs-1'), findsOneWidget);
   });
 
   testWidgets(
