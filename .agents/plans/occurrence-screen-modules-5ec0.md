@@ -177,17 +177,17 @@ Unchanged: `occurrence_screen_opened`, `care_completion_date_changed`. **No** `o
 
 ```yaml
 autonomy: active
-current_phase: 1
-last_completed_phase: null
+current_phase: 2
+last_completed_phase: 1
 halt_reason: null
-next_action: "continue phase 1 on branch cursor/occurrence-screen-modules-ui-5ec0"
+next_action: "start phase 2: checkout cursor/occurrence-screen-modules-verify-5ec0"
 artifact_ref:
   branch: cursor/occurrence-screen-modules-ui-5ec0
   plan_path: .agents/plans/occurrence-screen-modules-5ec0.md
-  plan_commit: 9cc6eb1957a7eb4dfd1e0537cc3db0986b9f7fe0
+  plan_commit: e885d472c03f42d296ab04383f52e7d6e580254d
   snapshot_path: .agents/plans/occurrence-screen-modules-5ec0.snapshot.json
-  snapshot_commit: 9cc6eb1957a7eb4dfd1e0537cc3db0986b9f7fe0
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1794"]
+  snapshot_commit: e885d472c03f42d296ab04383f52e7d6e580254d
+open_prs: []
 merge_commits: {}
 debt_issue_refs: []
 ```
