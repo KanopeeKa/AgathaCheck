@@ -127,7 +127,7 @@ component variant. Product UI should consume semantic tokens.
   --color-bg-primary: #EAE8E8;       /* Main app canvas */
   --color-bg-secondary: #FFFDFC;     /* Cards, sheets, menus */
   --color-bg-tertiary: #F2ECE6;      /* Grouped sections, quiet input areas */
-  --color-bg-overlay: #1F2937;       /* Dark overlay / snackbar background */
+  --color-bg-overlay: #52606D;       /* Snackbar / soft overlay (landingInkSoft) */
 
   --color-text-primary: #1F2937;     /* Headings and high-emphasis content */
   --color-text-body: #374151;        /* Body copy and field labels */

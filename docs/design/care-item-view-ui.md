@@ -84,7 +84,7 @@ Same component on the dashboard (all pets) and the pet profile (one pet); All ca
 | Today | Overdue rows first; then **Morning / Afternoon / Evening / Anytime** sub-headings only when ≥ 2 groups have rows, otherwise one **Today's list** heading; done-today rows last, quiet (check + time) |
 | Row (R3) | `CareActionRow` in `CareCollectionInsetList`: pet avatar (dashboard only) · name · status + date/time · **one** trailing Done. Row tap opens the **Care Item** view (`care_agenda_row_<entryId>` or `care_agenda_stack_<entryId>` for stacks). Semantics ids stable for E2E |
 | Status pill | Tones: coming up (neutral text) · due (warning) · overdue (error + urgency icon) · **notRecorded** (info + icon — new tone) · done (success + check) · skipped (neutral) · paused (neutral + pause icon). Colour never alone |
-| Feedback | Button shows progress; the row changes only after the server responds; snackbar "Done · Undo" from the server result. No optimistic completion |
+| Feedback | Button shows progress; the row changes only after the server responds; snackbar "Done · Undo" from the server result (5 s auto-dismiss, close control, middle-grey `snackBarSurface` — bulk stack included). No optimistic completion |
 | Orientation | Dashboard line "2 overdue · 3 due today"; zero → "Nothing due today" |
 | States | Skeleton while loading (no empty copy); error + Retry; no care → illustrated empty state + Add care |
 | Motion | Row moves respect reduced motion |

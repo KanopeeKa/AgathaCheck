@@ -19,6 +19,9 @@ abstract final class AppColorTokens {
   static const Color inverse = Color(0xFFFFFFFF);
   static const Color shadow = Color(0x141F2937);
 
+  /// Floating snackbars and undo confirmations (softer than heading ink).
+  static const Color snackBarSurface = Color(0xFF52606D);
+
   // Pet Care (formerly Guardian plum)
   static const Color petCarePrimary = Color(0xFF755B68);
   static const Color petCareHover = Color(0xFF664C59);

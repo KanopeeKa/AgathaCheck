@@ -145,8 +145,10 @@ class AppTheme {
       dividerTheme: const DividerThemeData(color: AppColorTokens.border),
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
-        backgroundColor: AppColorTokens.heading,
+        backgroundColor: AppColorTokens.snackBarSurface,
         contentTextStyle: const TextStyle(color: AppColorTokens.inverse),
+        actionTextColor: AppColorTokens.inverse,
+        closeIconColor: AppColorTokens.inverse,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
       dialogTheme: const DialogThemeData(

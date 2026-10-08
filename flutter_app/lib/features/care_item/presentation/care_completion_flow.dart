@@ -288,6 +288,9 @@ class CareCompletionFlow {
       SnackBar(
         key: const Key('care_done_failed'),
         content: Text(l.careCommandFailed),
+        duration: kUndoSnackBarDuration,
+        persist: false,
+        showCloseIcon: true,
         action: SnackBarAction(label: l.careRetry, onPressed: retry),
       ),
     );
