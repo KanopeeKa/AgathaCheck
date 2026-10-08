@@ -4,9 +4,10 @@ owner: Product / Documentation
 audience: both
 domain: people
 status: proposed
-last_updated: 2026-09-29
-tags: [people, contacts, refactor, architecture, ux, execute-plan]
-related_plan: people-domain-refactor-7f3b
+folds_into: docs/domains/people/features/people-care-team.md
+plan: people-domain-refactor-7f3b
+status_since: 2026-09-29
+last_updated: 2026-10-08
 ---
 
 # People domain refactor — target model, gap analysis and delivery plan
@@ -395,7 +396,7 @@ Opened from a picker, the flow is replaced by `QuickAddPersonSheet` and returns 
 #### Today desk module
 
 - Eyebrow **Contacts**, link **See all**.
-- **Vet team** (max 2): contacts in a vet slot for any pet or with the vet or vet nurse role. Ranked by linked pets, then primary slot, then name (ui-hub-navigation).
+- **Vet team** (max 2): contacts in a vet slot for any pet or with the vet or vet nurse role. Ranked by linked pets, then primary slot, then name ([people-care-team.md](../features/people-care-team.md) § Navigation contract).
 - **Trusted carers** (max 2): upcoming absence carer first, then most pets linked, then name.
 - **Household rail:** member chips (avatar and first name) → person detail.
 - Uses `PersonCard` (compact variant). Labels are always localized.

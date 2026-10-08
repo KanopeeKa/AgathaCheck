@@ -33,7 +33,7 @@ Part of the AgathaTrack domain-first documentation tree. Cross-cutting architect
 | Care Foundation roadmap (v0.4) | [care-foundation-roadmap.md](changes/care-foundation-roadmap.md) | Phases A–E sequencing |
 | Care progression slices | [care-progression-delivery-plan.md](changes/care-progression-delivery-plan.md) | CP-0–CP-7; rules in canonical |
 | Away planning (AW) | [away-planning-delivery-plan.md](changes/away-planning-delivery-plan.md) | AW-EMERGENCY–AW-10 |
-| Away planning — People amendments | [amends-away-planning.md](/docs/domains/people/changes/amends-away-planning.md) | Planned D-AWAY-002/003/004/005 |
+| Away planning — People amendments | [people-care-team.md](/docs/domains/people/features/people-care-team.md) § Away Planning integration | Folded from `amends-away-planning` |
 | Care Intelligence Phase D | [phase-d-review-relevance-plan.md](changes/phase-d-review-relevance-plan.md) | Research and delivery |
 | Classification taxonomy | [care-classification-taxonomy-spec.md](changes/care-classification-taxonomy-spec.md) | Spec → fold when delivered |
 

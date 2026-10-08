@@ -296,7 +296,7 @@ A sitter gets Can log care on the absence's pets, for the absence's dates, throu
     - A contact with no linked account works exactly like today's `note_only`. The PDF handover is its only channel.
     - A contact whose linked account already has access to the pet works like today's `shared_user`.
     - No partial app flows appear before phase 4.
-    - Migrating existing carer rows is covered in [amends-away-planning.md](/docs/domains/people/changes/amends-away-planning.md).
+    - Migrating existing carer rows: see § Away Planning integration (below).
 
 ### Invite for this absence
 
@@ -366,7 +366,25 @@ Four separate facts cover four questions: who provides the care, who is looking 
 
 ## UI and navigation
 
-The screen is called "People". **Compact navigation:** fifth primary bottom-tab destination (`/pc/people`) per [ui-hub-navigation.md](/docs/domains/people/changes/ui-hub-navigation.md). Most in-context entry points remain. All wording is in [vocabulary.md](/docs/domains/people/features/vocabulary.md).
+User-facing nav label **Contacts** (EN) / **Autour de vos animaux** (FR) — see [vocabulary.md](/docs/domains/people/features/vocabulary.md). Most in-context entry points remain.
+
+### Navigation contract (shipped)
+
+Execute-plans `people-ui-hub-a58d` (#1373) and `people-hub-remodel-a58d` (#1386). Layout details also in [people-domain-refactor.md](../changes/people-domain-refactor.md) §3.8.
+
+**Bottom navigation (five slots — always visible):**
+
+| Slot | Route | Label (EN nav) |
+|------|-------|----------------|
+| 1 | `/pc/home` | Today |
+| 2 | `/pc/pets` | Pets |
+| 3 | `/pc/events` | Care |
+| 4 | `/pc/people` | Contacts |
+| 5 | `/account` | Account |
+
+Never drop a tab on narrow phones; reduce padding and font sizes instead. `/pc/people`, legacy `/account/people`, and `/pc/people/:id` highlight the People tab. `/account/people` → `/pc/people` (permanent redirect). **Desktop (≥840px):** People on the Pet Care rail/sidebar with the same route and label.
+
+**Today desk — single People module:** eyebrow **People**, header **See all** → `/pc/people`. Sub-blocks: **Vet team** (max 2, ranked by linked pets), **Trusted carers** (max 2), household member chips (scroll). Desk label **Vet team** is the only Today exception; hub list uses **Pet professionals** from vocabulary. Card tap → `/pc/people/:id`. `/pc/vets` redirects to `/pc/people` with professionals filter (minimum one release).
 
 ### Hub remodel (`people-hub-remodel-a58d`)
 
@@ -481,9 +499,24 @@ The people-data layers must be settled before vets are migrated, so the data is 
 | 4. Absence guest access | Invite via sign-up. Access limited to the absence's dates and pets, within the care handover scope. Confirmation before access widens. Automatic expiry and early revocation. Full access can grant it, and the record owner is notified. Local-day access windows, using the account timezone from D24. That timezone can ship earlier, on its own |
 | 5. Later | Backup carers and date ranges in the UI. People linked to organisations. Features for professionals (D9). Child profiles (D14) |
 
+## Away Planning integration (People phase 2+)
+
+Canonical carer wire rules: [away-planning-carer-model.md](/docs/domains/pet_care/features/away-planning-carer-model.md) (`AWAY-PLANNING-CARER-R-014`, `R-015`).
+
+| Frozen Away decision | People amendment (in effect) |
+| --- | --- |
+| D-AWAY-002 readiness facts | Extended: per-pet carer fact gains `unavailable`; `carer_coverage` counts uncovered; still no stored verdict (D18) |
+| D-AWAY-003 one carer per pet | Model allows primary, backup, date ranges; v1 UI still one carer per pet |
+| D-AWAY-004 `note_only` | Unchanged: assignment never grants access; invite is separate (D19, D8) |
+| D-AWAY-005 `shared_user` | Generalised: directory contact; linked account with `pet_access` behaves like `shared_user` |
+
+**Migrating legacy carer rows (phase 2):** `note_only` → contact in creator's directory (dedupe same name + creator); `shared_user` → contact linked to `carer_user_id`; removed `shared_user` rows → "carer no longer available"; `pet_note` / `handover_note` unchanged; historical absences keep name snapshots.
+
+Away UI keeps **care team** / **équipe de soins**; People surfaces never use that term ([vocabulary.md](/docs/domains/people/features/vocabulary.md)).
+
 ## Still open
 
-No product decisions are open. When implementation starts, the delivery plan goes in `docs/domains/people/changes/`: file ownership, API milestones and BDD scenarios for each phase.
+No product decisions are open. Engineering gaps vs target UX: [people-domain-refactor.md](../changes/people-domain-refactor.md).
 
 ## Related
 
@@ -491,8 +524,8 @@ No product decisions are open. When implementation starts, the delivery plan goe
 | --- | --- |
 | Vocabulary (EN/FR) | [vocabulary.md](/docs/domains/people/features/vocabulary.md) |
 | Away Planning carer model | [away-planning-carer-model.md](/docs/domains/pet_care/features/away-planning-carer-model.md) |
-| Away Planning decisions (D-AWAY-002/003/004) | [away-planning-decisions.md](/docs/domains/pet_care/changes/away-planning-decisions.md) |
-| Planned amendments to Away Planning | [amends-away-planning.md](/docs/domains/people/changes/amends-away-planning.md) |
+| Away Planning decisions (historical pointer) | [away-planning-decisions.md](/docs/domains/pet_care/changes/away-planning-decisions.md) |
+| Refactor target and gaps | [people-domain-refactor.md](../changes/people-domain-refactor.md) |
 | Notifications (D21, D25) | [notification specs](/docs/domains/notifications/features/specs.md) |
 | BDD, existing features that will change | `away_planning.feature`, `away_plan_detail_v2.feature`, `sharing.feature`, `veterinarian_management.feature`, `notifications.feature`. Planned: `people.feature` |
 | Sharing roles and API | [sharing specs](/docs/domains/sharing/features/specs.md) |

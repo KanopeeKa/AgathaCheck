@@ -74,7 +74,7 @@ Absence-level `handover_note` and `last_handover_downloaded_at` live on `planned
 | AWAY-PLANNING-CARER-R-011 | Carer coverage fact at read time: `none_have_carers`, `some_have_carers`, `all_have_carers`; `shared_user` with null `carer_user_id` counts as unset; dashboard tile prioritises carer gap first (with care-context readiness) | Live |
 | AWAY-PLANNING-CARER-R-012 | Plan page Who's caring section: per-pet label; edit dialog for carer + `pet_note`; per-pet PDF download independent of carer kind | Live |
 | AWAY-PLANNING-CARER-R-013 | Vet surfaces renamed to Veterinary team before carer UI; personal-scope collection filter uses `collectionFilterPersonal` not `myVets` (D-AWAY-012) | Live |
-| AWAY-PLANNING-CARER-R-014 | People phase 2: primary + backup carers, directory contacts, optional date ranges within absence; `carer_coverage` gains `unavailable`; migration rules for existing rows (see Decision log and [amends-away-planning.md](../../people/changes/amends-away-planning.md)) | Planned |
+| AWAY-PLANNING-CARER-R-014 | People phase 2: primary + backup carers, directory contacts, optional date ranges within absence; `carer_coverage` gains `unavailable`; migration rules in [people-care-team.md](../../people/features/people-care-team.md) § Away Planning integration | Planned |
 | AWAY-PLANNING-CARER-R-015 | People phase 2+: carer as contact; `shared_user`-like behaviour when linked account has `pet_access`; absence-scoped app access via explicit invite (unchanged principle: assignment never grants access) | Planned |
 
 ## API summary
@@ -145,13 +145,14 @@ Coverage gaps: [#1770](https://github.com/KanopeeKa/AgathaCheck/issues/1770) (sh
 | D-AWAY-013 | `publicError` argument-order footgun | Fixed in AW-EMERGENCY; repo wrapper deferred | Live | 2026-09-15 | AW-EMERGENCY |
 | AWAY-PLANNING-CARER-D-014 | Per-pet handover PDF content and privacy | Former D-AWAY-014a; one pet's carer in Who's caring | Live | 2026-09-22 | #1266 |
 | AWAY-PLANNING-CARER-D-015 | Download timestamp full-plan only | Former D-AWAY-014b | Live | 2026-09-22 | #1266 |
+| AWAY-PLANNING-CARER-D-016 | People phase 2 amends D-AWAY-002/003/005 presentation | Primary+backup model, `unavailable` carer fact, contact-backed carers; UI one carer until later | Live | 2026-10-08 | documentation-migration |
+
 ## Related
 
 | Kind | Link |
 |------|------|
 | Absence facts and plan presentation | [care-context.md](./care-context.md) |
 | Care Item absence resolutions | [care-item-evolution.md](./care-item-evolution.md) |
-| People amendments (planned) | [amends-away-planning.md](../../people/changes/amends-away-planning.md) |
 | People Care Team spec | [people-care-team.md](../../people/features/people-care-team.md) |
 | AW-11 implementation spec | [away-planning-per-pet-handover-spec.md](../changes/away-planning-per-pet-handover-spec.md) |
 | Delivery sequencing (historical) | [away-planning-delivery-plan.md](../changes/away-planning-delivery-plan.md) |
