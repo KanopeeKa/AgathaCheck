@@ -3,12 +3,47 @@ title: Authentication specs
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-22
+last_updated: 2026-10-08
 tags: [domain,auth,specs]
 domain: auth
+feature_id: authentication
 ---
 
-# Authentication specs
+# Authentication
+
+Sign-up, login, session refresh, password reset, and guardian profile settings (`authentication.feature`, `auth.*.spec.ts`).
+
+## Requirements
+
+| ID | Requirement | Status |
+|----|-------------|--------|
+| **AUTH-1** | Pet carers register with email and password (minimum six characters) with validation for format, mismatch, duplicate email, and password rules. | delivered |
+| **AUTH-2** | Email/password login with clear errors for unknown email and incorrect password; password visibility toggle on login. | delivered |
+| **AUTH-3** | Log out ends the session; subsequent API calls require re-authentication. | delivered |
+| **AUTH-4** | Profile view and update from the account/profile screens. | delivered |
+| **AUTH-5** | Unauthenticated shell links login ↔ sign-up. | delivered |
+
+## User journeys
+
+### Sign up
+
+Pet carers register with email and password (minimum six characters). Validation covers mismatched passwords, missing email, invalid email format, duplicate email, and password rules.
+
+### Log in
+
+Email/password login with incorrect-password and unknown-email errors. Password visibility toggle on the login form.
+
+### Log out
+
+Session ends from the app; subsequent API calls require re-authentication.
+
+### Profile
+
+View account details and update profile fields from the profile screen.
+
+### Navigation between auth screens
+
+Login ↔ sign-up navigation links on the unauthenticated shell.
 
 ## Session and tokens
 
