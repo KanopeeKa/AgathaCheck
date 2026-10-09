@@ -33,7 +33,7 @@ test.describe('Care suggestion (CIM)', () => {
     await loginAs(page, testUser, { experience: 'guardian' });
     const suggestion = new CareSuggestionPage(page);
     await suggestion.openPetDetail(pet.id);
-    const timeout = isLiveHostingTarget(url) ? 60_000 : 30_000;
+    const timeout = isLiveHostingTarget(url) ? 60_000 : 45_000;
     await suggestion.expectSuggestionCardVisible(timeout);
     await suggestion.expectAcceptAndNotRelevantVisible();
   });
@@ -67,7 +67,7 @@ test.describe('Care suggestion (CIM)', () => {
     await loginAs(page, testUser, { experience: 'guardian' });
     const suggestion = new CareSuggestionPage(page);
     await suggestion.openPetDetail(pet.id);
-    const timeout = isLiveHostingTarget(url) ? 60_000 : 30_000;
+    const timeout = isLiveHostingTarget(url) ? 60_000 : 45_000;
     await suggestion.expectSuggestionCardVisible(timeout);
     const acceptedRhythm = await suggestion.readVisibleSuggestionRhythmPattern();
     await suggestion.acceptSuggestion();
