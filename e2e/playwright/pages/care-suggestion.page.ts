@@ -15,7 +15,8 @@ const addRoutineRe = /^(Add routine|Add rhythm)$|^(Ajouter la routine|Ajouter le
 const noThanksRe = /^No thanks$|^Pas merci$/i;
 const laterRe = /^Later$|^Plus tard$/i;
 const whyRe = /^Why this matters$|^Pourquoi c'est important$/i;
-const saveFormRe = /^Save$|^Enregistrer$/i;
+const saveFormRe =
+  /^(Add Health Event|Add health event|Ajouter.*événement)$/i;
 
 export class CareSuggestionPage {
   constructor(private readonly page: Page) {}
@@ -121,7 +122,10 @@ export class CareSuggestionPage {
     await card.getByRole('button', { name: addRoutineRe }).click();
     await waitForFlutterRoutePattern(this.page, /\/care\/add/, 15_000);
     await refreshFlutterAccessibility(this.page);
-    await this.page.getByRole('button', { name: saveFormRe }).click();
+    const saveButton = this.page.getByRole('button', { name: saveFormRe });
+    await saveButton.click({ timeout: 15_000 }).catch(async () => {
+      await this.page.locator('[flt-semantics-identifier="save_health_entry_button"]').click();
+    });
     await respond;
     await refreshFlutterAccessibility(this.page);
   }
