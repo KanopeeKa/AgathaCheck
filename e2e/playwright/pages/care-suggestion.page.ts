@@ -19,9 +19,13 @@ export class CareSuggestionPage {
   constructor(private readonly page: Page) {}
 
   private suggestionCardRoot() {
-    // Prefer stable Flutter semantics id — Accept can be absent from the a11y tree
-    // while pet policy is still loading (disabled FilledButton).
-    return this.page.locator('[flt-semantics-identifier="care_suggestion_group"]').first();
+    const acceptControl = this.page.locator(
+      '[flt-semantics-identifier^="care_suggestion_accept_"]',
+    );
+    return this.page
+      .getByRole('group', { name: suggestionTitleRe })
+      .filter({ has: acceptControl })
+      .first();
   }
 
   async openPetDetail(petId: string): Promise<void> {
@@ -45,11 +49,12 @@ export class CareSuggestionPage {
       const card = this.suggestionCardRoot();
       await card.scrollIntoViewIfNeeded();
       await expect(card).toBeVisible();
-      await expect(card.getByText(suggestionTitleRe)).toBeVisible();
     }).toPass({ timeout });
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
       const card = this.suggestionCardRoot();
+      const accept = card.locator('[flt-semantics-identifier^="care_suggestion_accept_"]');
+      await expect(accept).toBeVisible();
       await expect(card.getByRole('button', { name: addRoutineRe })).toBeVisible();
     }).toPass({ timeout });
   }
