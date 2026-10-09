@@ -127,7 +127,7 @@ export class CareSuggestionPage {
     const { expect } = await import('@playwright/test');
     await expect(acceptButton).toBeEnabled({ timeout: 20_000 });
     await acceptButton.click();
-    await waitForFlutterRoutePattern(this.page, /\/care\/add/, 20_000);
+    await waitForFlutterRoutePattern(this.page, /\/pet\/[^/]+\/care\/add/, 20_000);
     await refreshFlutterAccessibility(this.page);
     const saveSemantics = this.page.locator(
       '[flt-semantics-identifier="save_health_entry_button"]',
