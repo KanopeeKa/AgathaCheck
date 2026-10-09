@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../care_suggestion_copy.dart';
 
 Future<void> showSuggestionWhySheet(
   BuildContext context, {
@@ -11,7 +12,7 @@ Future<void> showSuggestionWhySheet(
 }) {
   final l = AppLocalizations.of(context)!;
   final theme = Theme.of(context);
-  final body = _rationaleText(l, rationaleKey);
+  final body = careSuggestionRationaleBody(l, rationaleKey);
   final hasPetName = petName != null && petName.isNotEmpty;
 
   return showModalBottomSheet<void>(
@@ -46,11 +47,3 @@ Future<void> showSuggestionWhySheet(
   );
 }
 
-String _rationaleText(AppLocalizations l, String rationaleKey) {
-  return switch (rationaleKey) {
-    'careSuggestionWeightMonitoringWhy' => l.careSuggestionWeightMonitoringWhy,
-    'careSuggestionDentalWhy' => l.careSuggestionDentalWhy,
-    'careSuggestionWellnessWhy' => l.careSuggestionWellnessWhy,
-    _ => l.careSuggestionGenericWhy,
-  };
-}

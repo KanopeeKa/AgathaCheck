@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/care_recommendation.dart';
 import '../care_suggestion_copy.dart';
+import '../care_suggestion_navigation.dart';
+import 'agatha_recommendation_eyebrow.dart';
 import 'care_suggestion_respond_actions.dart';
-import 'package:pet_profile_app/core/theme/app_color_tokens.dart';
 import 'package:pet_profile_app/core/widgets/agatha_message_card.dart';
 import 'suggestion_why_sheet.dart';
 
@@ -58,6 +60,16 @@ class _CareSuggestionCardState extends ConsumerState<CareSuggestionCard> {
     );
   }
 
+  void _openReviewForm() {
+    final l = AppLocalizations.of(context)!;
+    navigateToCareSuggestionReviewForm(
+      router: GoRouter.of(context),
+      l: l,
+      petId: widget.petId,
+      recommendation: widget.recommendation,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
@@ -68,7 +80,11 @@ class _CareSuggestionCardState extends ConsumerState<CareSuggestionCard> {
     );
     final recommendation = widget.recommendation;
     final cadenceLabel = careSuggestionCadenceLabel(l, recommendation);
+    final displayTitle = careSuggestionDisplayTitle(l, recommendation);
+    final benefit = careSuggestionShortBenefit(l, recommendation);
     final petName = _petName;
+    final eyebrowLabel =
+        '${l.careSuggestionEyebrowAgatha} ${l.careSuggestionEyebrowRecommends}';
 
     return AgathaMessageCard(
       key: Key('care_suggestion_card_${recommendation.id}'),
@@ -77,13 +93,11 @@ class _CareSuggestionCardState extends ConsumerState<CareSuggestionCard> {
         identifier: 'care_suggestion_group',
         key: const ValueKey('care_suggestion_group'),
         container: true,
+        label: '$eyebrowLabel. $displayTitle',
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              l.careSuggestionTitle,
-              style: AgathaMessageCardShell.titleStyle(theme.textTheme),
-            ),
+            const AgathaRecommendationEyebrow(),
             if (widget.petAvatar != null && petName != null) ...[
               const SizedBox(height: 8),
               Row(
@@ -98,71 +112,95 @@ class _CareSuggestionCardState extends ConsumerState<CareSuggestionCard> {
             ],
             const SizedBox(height: 8),
             Text(
-              recommendation.suggestedName,
-              style: theme.textTheme.titleMedium,
+              displayTitle,
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              benefit,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton(
+                key: Key('care_suggestion_why_link_${recommendation.id}'),
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 4),
+                  minimumSize: const Size(48, 40),
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                onPressed: _responding
+                    ? null
+                    : () => showSuggestionWhySheet(
+                        context,
+                        rationaleKey: recommendation.rationaleKey,
+                        routineName: displayTitle,
+                        petName: petName,
+                        cadenceLabel: cadenceLabel,
+                      ),
+                child: Text(l.careSuggestionWhyLink),
+              ),
             ),
             if (cadenceLabel != null) ...[
-              const SizedBox(height: 4),
-              Text(
-                cadenceLabel,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
+              Row(
+                children: [
+                  Icon(
+                    Icons.schedule_outlined,
+                    size: 18,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      cadenceLabel,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
+              const SizedBox(height: 12),
+            ] else
+              const SizedBox(height: 8),
+            Tooltip(
+              message: canEditHealth
+                  ? l.careSuggestionAccept
+                  : l.careSuggestionEditForbidden,
+              child: FilledButton(
+                key: Key('care_suggestion_accept_${recommendation.id}'),
+                onPressed: _responding || !canEditHealth ? null : _openReviewForm,
+                child: Text(l.careSuggestionAccept),
+              ),
+            ),
+            const SizedBox(height: 4),
+            Row(
               children: [
-                Tooltip(
-                  message: canEditHealth
-                      ? l.careSuggestionAccept
-                      : l.careSuggestionEditForbidden,
-                  child: FilledButton(
-                    key: Key('care_suggestion_accept_${recommendation.id}'),
+                Expanded(
+                  child: TextButton(
+                    key: Key('care_suggestion_later_${recommendation.id}'),
                     onPressed: _responding || !canEditHealth
                         ? null
-                        : () =>
-                              _respond(CareRecommendationResponseAction.accept),
-                    child: _responding
-                        ? SizedBox(
-                            width: 18,
-                            height: 18,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: AppColorTokens.inverse,
-                            ),
-                          )
-                        : Text(l.careSuggestionAccept),
+                        : () => _respond(CareRecommendationResponseAction.dismiss),
+                    child: Text(l.careSuggestionLater),
                   ),
                 ),
-                OutlinedButton(
-                  onPressed: _responding
-                      ? null
-                      : () => showSuggestionWhySheet(
-                          context,
-                          rationaleKey: recommendation.rationaleKey,
-                          routineName: recommendation.suggestedName,
-                          petName: petName,
-                          cadenceLabel: cadenceLabel,
-                        ),
-                  child: Text(l.careSuggestionWhy),
-                ),
-                TextButton(
-                  onPressed: _responding || !canEditHealth
-                      ? null
-                      : () => _respond(
-                          CareRecommendationResponseAction.notRelevant,
-                        ),
-                  child: Text(l.careSuggestionNotRelevant),
-                ),
-                TextButton(
-                  onPressed: _responding || !canEditHealth
-                      ? null
-                      : () =>
-                            _respond(CareRecommendationResponseAction.dismiss),
-                  child: Text(l.careSuggestionDismiss),
+                Expanded(
+                  child: TextButton(
+                    key: Key('care_suggestion_no_thanks_${recommendation.id}'),
+                    onPressed: _responding || !canEditHealth
+                        ? null
+                        : () => _respond(
+                            CareRecommendationResponseAction.notRelevant,
+                          ),
+                    child: Text(l.careSuggestionNoThanks),
+                  ),
                 ),
               ],
             ),

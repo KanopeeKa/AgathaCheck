@@ -4,7 +4,7 @@
   "approved_at": "2026-10-09T01:08:28Z",
   "approved_by": "github-issue-1827-comment-approve-autonomous-care-suggestion-card-cfa4",
   "approved_until": "2026-10-11T01:08:28Z",
-  "content_hash": "sha256:8063a8d9b9b68205173ff5fc50afad96cc21ce3b2674f82229a786e53bec44fa",
+  "content_hash": "sha256:356b012417679adbd50290e47cea50c7e51c6176c340a8c846e9567c83a10f0d",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/care-suggestion-card-integration-cfa4",
@@ -71,12 +71,9 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
-      "status_detail": "CareSuggestionCard redesign; form prefill; accept via respond+adjust",
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
+      "status_detail": null,
       "debt_issue_refs": []
     },
     {
