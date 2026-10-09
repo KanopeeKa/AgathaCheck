@@ -120,7 +120,10 @@ export class CareSuggestionPage {
         res.ok(),
       { timeout: 45_000 },
     );
-    await card.getByRole('button', { name: addRoutineRe }).click();
+    const acceptControl = card
+      .locator('[flt-semantics-identifier^="care_suggestion_accept_"]')
+      .or(card.getByRole('button', { name: addRoutineRe }));
+    await acceptControl.first().click();
     await waitForFlutterRoutePattern(this.page, /\/care\/add/, 20_000);
     await refreshFlutterAccessibility(this.page);
     const saveSemantics = this.page.locator(

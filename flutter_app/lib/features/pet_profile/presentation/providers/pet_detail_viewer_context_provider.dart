@@ -13,18 +13,21 @@ AppExperience _resolveExperience(AsyncValue petsAsync) {
 final petDetailViewerContextProvider =
     Provider.family<PetDetailContext, String>((ref, petId) {
       final petsAsync = ref.watch(allPetsIncludingOrgProvider);
+      final listAsync = ref.watch(petListProvider);
       final experience = _resolveExperience(petsAsync);
 
-      if (petsAsync.isLoading) {
-        return PetDetailContext.restricted(experience: experience);
+      Pet? pet = petsAsync.value?.where((p) => p.id == petId).firstOrNull;
+      if (pet == null && listAsync.hasValue) {
+        pet = listAsync.value?.where((p) => p.id == petId).firstOrNull;
       }
 
-      if (petsAsync.hasError) {
-        return PetDetailContext.restricted(experience: experience);
-      }
-
-      final pet = petsAsync.value?.where((p) => p.id == petId).firstOrNull;
       if (pet == null) {
+        if (petsAsync.isLoading || listAsync.isLoading) {
+          return PetDetailContext.restricted(experience: experience);
+        }
+        if (petsAsync.hasError && listAsync.hasError) {
+          return PetDetailContext.restricted(experience: experience);
+        }
         return PetDetailContext.restricted(experience: experience);
       }
 
