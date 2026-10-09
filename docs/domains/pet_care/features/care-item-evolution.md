@@ -5,7 +5,7 @@ audience: both
 domain: pet_care
 feature_id: care_item
 status: active
-last_updated: 2026-10-08
+last_updated: 2026-10-09
 related_prs: [1797, 1805, 1812, 1817]
 ---
 
@@ -97,6 +97,7 @@ Four principles:
 | D-CIE-032 | Copy: no "dose" | Buttons say **Done** where appropriate. **Care date** open actions use **Mark as done** (care name on context tile only). List rows and other surfaces may still use care name in copy where D-CIE-026 requires. Confirmation "{name} done" | Live | — | — |
 | D-CIE-033 | Calendar: read-only projection, deferred | Stored occurrences plus estimated dates; estimates carry no actions. Out of scope for the care occurrences programme | Live | — | — |
 | D-CIE-034 | **Stack** = two or more open slots of one Fixed-schedule item that have **started** | Overdue, not recorded, or due with their time reached; a slot without a time has started from the beginning of its day. Coming-up slots and slots later today never count | Live | — | — |
+| D-CIE-038 | Open-occurrence list order: **closest to present first** | **Started** rows (overdue, not recorded, due-now): latest scheduled instant first. **Upcoming** rows (later today, future dates): earliest instant first. Same rule on agenda overdue vs due-soon/upcoming rows and on health-tracking zone lists | Live | 2026-10-09 | — |
 | D-CIE-023 | Pet **home timezone** on `pets.home_timezone` (IANA) | Default at create: owner account TZ when People P4 exists, else `X-Client-Timezone` once, else `UTC`. Editable on pet profile. Care "today" and timed Overdue use this zone. **Absence guest access** keeps People **D24** (creator account TZ on the absence) — two fields, two jobs. Fallback chain: pet → owner account TZ → `UTC` | Live | — | — |
 | D-CIH-001 | App bar: **`careItemScreenTitle`** | Care details / Détail du soin — not item name | Live | — | — |
 | D-CIH-002 | Care item **name** in context strip (max two lines) | — | Live | — | — |
@@ -224,6 +225,7 @@ The dashboard (all pets) and the pet profile (one pet) use the same agenda. All 
 - Care that repeats daily or more often appears only in Today.
 - The reminder window never hides care. A yearly vaccine in 200 days is in Upcoming.
 - Dashboard orientation line: "2 overdue · 3 due today"; when both are zero, "Nothing due today", then Due soon and Upcoming.
+- Within each section, rows sort by the leading open occurrence: **overdue** rows use the latest due instant first; **due soon**, **upcoming**, and **today** time groups use the soonest instant first (D-CIE-038).
 - States: a loading skeleton (no empty copy while loading); an error with Retry; no care at all → the illustrated empty state and "Add care".
 - No progress bars, rings, "3 of 5" or praise (True North #4).
 - Time groups use each pet's local time.
@@ -270,7 +272,7 @@ The area at the top holds what needs doing now. For most items that's one occurr
   - The care item menu (top right) has Edit, Pause or Resume (both through Postpone until), Archive or Restore, and Delete.
 - **Verbs:** "Mark as done" replaces "Mark Completed". "Change date" stays, because it is frozen Away Care Planning copy.
 
-**Bulk scope (In delivery, CARE-ITEM-R-009 … R-010):** Split **started** occurrences (Overdue, Not recorded open, Due once time passed) from **Coming up** (including later today before time). Bulk **Mark {count} as done** / **Skip {count}** sit directly under the last started row when count ≥2; IDs sent match visible started rows only. Each started row has round Mark done (`check_circle`) and Skip (`skip_next`) with semantics naming the occurrence date/time. Coming up rows have no inline actions (cap 3 + show more). **Plan another date** lives in the care item ⋯ menu (D-BULK-002).
+**Bulk scope (In delivery, CARE-ITEM-R-009 … R-010):** Split **started** occurrences (Overdue, Not recorded open, Due once time passed) from **Coming up** (including later today before time). Started rows list latest scheduled instant first; Coming up lists earliest first (D-CIE-038). Bulk **Mark {count} as done** / **Skip {count}** sit directly under the last started row when count ≥2; IDs sent match visible started rows only. Each started row has round Mark done (`check_circle`) and Skip (`skip_next`) with semantics naming the occurrence date/time. Coming up rows have no inline actions (cap 3 + show more). **Plan another date** lives in the care item ⋯ menu (D-BULK-002).
 
 ### Schedule
 

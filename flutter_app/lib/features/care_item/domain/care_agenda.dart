@@ -63,7 +63,7 @@ class CareAgenda<T> {
     this.upcoming = const [],
   });
 
-  /// Overdue and not recorded, stacks included; earliest first.
+  /// Overdue and not recorded, stacks included; closest to present first.
   final List<CareAgendaRow<T>> overdue;
 
   /// Due today by time group (only non-empty groups).
@@ -163,17 +163,33 @@ CareAgenda<T> buildCareAgenda<T>(
     }
   }
 
-  int byOccurrence(CareAgendaRow<T> a, CareAgendaRow<T> b) {
-    final c = a.occurrence!.compareTo(b.occurrence!);
+  int byOccurrence(
+    CareAgendaRow<T> a,
+    CareAgendaRow<T> b,
+    OpenOccurrenceListContext context,
+  ) {
+    final c = compareOpenOccurrencesClosestToPresent(
+      a.occurrence!,
+      b.occurrence!,
+      context,
+    );
     return c != 0 ? c : a.schedule.name.compareTo(b.schedule.name);
   }
 
-  overdue.sort(byOccurrence);
+  overdue.sort(
+    (a, b) => byOccurrence(a, b, OpenOccurrenceListContext.started),
+  );
   for (final rows in today.values) {
-    rows.sort(byOccurrence);
+    rows.sort(
+      (a, b) => byOccurrence(a, b, OpenOccurrenceListContext.upcoming),
+    );
   }
-  dueSoon.sort(byOccurrence);
-  upcoming.sort(byOccurrence);
+  dueSoon.sort(
+    (a, b) => byOccurrence(a, b, OpenOccurrenceListContext.upcoming),
+  );
+  upcoming.sort(
+    (a, b) => byOccurrence(a, b, OpenOccurrenceListContext.upcoming),
+  );
   doneToday.sort(
     (a, b) => (a.schedule.lastDone?.time ?? '').compareTo(
       b.schedule.lastDone?.time ?? '',

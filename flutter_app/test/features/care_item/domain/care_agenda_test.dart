@@ -32,6 +32,14 @@ List<String> names(List<CareAgendaRow<CareItemSchedule>> rows) =>
     rows.map((r) => r.schedule.name).toList();
 
 void main() {
+  test('overdue rows sort closest to present first', () {
+    final a = agenda([
+      item('Older', [occ('o', 5, CareOccurrenceStatus.overdue)], fixed: false),
+      item('Recent', [occ('r', 8, CareOccurrenceStatus.overdue)], fixed: false),
+    ]);
+    expect(names(a.overdue), ['Recent', 'Older']);
+  });
+
   test('AG overdue first, then today by time group, due soon, upcoming', () {
     final a = agenda([
       item('Flea', [occ('f', 5, CareOccurrenceStatus.overdue)], fixed: false),

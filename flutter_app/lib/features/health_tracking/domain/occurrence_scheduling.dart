@@ -19,6 +19,7 @@ OccurrenceZone occurrenceZone(HealthOccurrence occ, DateTime now) {
   };
 }
 
+/// Closest scheduled instant to present first (D-CIE-038): missed reverses asc.
 int compareOccurrencesForZone(
   HealthOccurrence a,
   HealthOccurrence b,
@@ -44,16 +45,11 @@ List<HealthOccurrence> sortOccurrencesByZone(
   return copy;
 }
 
-/// Care Item occurrence lists: latest scheduled instant first.
-List<HealthOccurrence> sortOccurrencesNewestFirst(
+/// Sort [items] for [zone]: closest scheduled instant to present first.
+List<HealthOccurrence> sortOccurrencesClosestToPresent(
   List<HealthOccurrence> items,
-) {
-  final copy = List<HealthOccurrence>.from(items);
-  copy.sort(
-    (a, b) => -compareOccurrencesForZone(a, b, OccurrenceZone.comingUp),
-  );
-  return copy;
-}
+  OccurrenceZone zone,
+) => sortOccurrencesByZone(items, zone);
 
 /// Summary for list-row headlines (one series).
 class OccurrenceSummary {

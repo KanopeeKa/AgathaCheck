@@ -109,12 +109,46 @@ class OpenOccurrence implements Comparable<OpenOccurrence> {
   }
 }
 
-/// Care Item occurrence lists: latest scheduled instant first.
-List<OpenOccurrence> openOccurrencesNewestFirst(List<OpenOccurrence> items) {
+/// Started vs upcoming occurrence lists (Needs attention, agenda rows).
+enum OpenOccurrenceListContext {
+  /// Overdue / not recorded / due-now: closest to present = latest instant first.
+  started,
+  /// Future slots: closest to present = earliest instant first.
+  upcoming,
+}
+
+/// Compare scheduled instants for list order (D-CIE-038).
+int compareOpenOccurrencesClosestToPresent(
+  OpenOccurrence a,
+  OpenOccurrence b,
+  OpenOccurrenceListContext context,
+) {
+  final asc = a.compareTo(b);
+  return context == OpenOccurrenceListContext.started ? -asc : asc;
+}
+
+List<OpenOccurrence> sortOpenOccurrencesClosestToPresent(
+  List<OpenOccurrence> items,
+  OpenOccurrenceListContext context,
+) {
   final copy = List<OpenOccurrence>.from(items);
-  copy.sort((a, b) => b.compareTo(a));
+  copy.sort(
+    (a, b) => compareOpenOccurrencesClosestToPresent(a, b, context),
+  );
   return copy;
 }
+
+/// Started bucket: latest scheduled instant first (alias).
+List<OpenOccurrence> sortStartedOpenOccurrences(List<OpenOccurrence> items) =>
+    sortOpenOccurrencesClosestToPresent(items, OpenOccurrenceListContext.started);
+
+/// Upcoming bucket: earliest scheduled instant first.
+List<OpenOccurrence> sortUpcomingOpenOccurrences(List<OpenOccurrence> items) =>
+    sortOpenOccurrencesClosestToPresent(items, OpenOccurrenceListContext.upcoming);
+
+/// Care Item started lists: latest scheduled instant first.
+List<OpenOccurrence> openOccurrencesNewestFirst(List<OpenOccurrence> items) =>
+    sortStartedOpenOccurrences(items);
 
 /// Display-only "Estimated next" for an overdue After-it's-done item.
 class EstimatedNext {
