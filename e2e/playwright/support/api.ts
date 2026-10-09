@@ -407,6 +407,38 @@ export async function listCareRecommendations(
   return res.json<TestCareRecommendation[]>();
 }
 
+export async function respondCareRecommendation(
+  baseURL: string,
+  token: string,
+  petId: string,
+  recommendationId: string,
+  body: {
+    action: 'accept' | 'dismiss' | 'not_relevant';
+    adjust?: {
+      name: string;
+      frequency: string;
+      frequency_interval: number;
+    };
+  },
+): Promise<TestCareRecommendation> {
+  const res = await apiFetch(
+    apiUrl(`/pets/${petId}/care-recommendations/${recommendationId}/respond`, baseURL),
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(body),
+    },
+  );
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`respondCareRecommendation failed (${res.status}): ${text}`);
+  }
+  return res.json<TestCareRecommendation>();
+}
+
 export async function waitForPendingCareRecommendation(
   baseURL: string,
   token: string,
