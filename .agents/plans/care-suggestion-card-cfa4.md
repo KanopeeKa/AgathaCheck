@@ -249,10 +249,10 @@ next_action: "continue phase 2 on branch cursor/care-suggestion-ui-cfa4"
 artifact_ref:
   branch: cursor/care-suggestion-ui-cfa4
   plan_path: .agents/plans/care-suggestion-card-cfa4.md
-  plan_commit: 9cddf714cb7ed66b364db515eb7d74645c140c92
+  plan_commit: 91c079f8b1ed51a630809037e0bdcce4a59a3408
   snapshot_path: .agents/plans/care-suggestion-card-cfa4.snapshot.json
-  snapshot_commit: 9cddf714cb7ed66b364db515eb7d74645c140c92
-open_prs: []
+  snapshot_commit: 91c079f8b1ed51a630809037e0bdcce4a59a3408
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1830"]
 merge_commits: {}
 debt_issue_refs: []
 ```
