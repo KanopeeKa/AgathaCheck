@@ -28,7 +28,7 @@ export const SUGGESTION_CATALOG = {
   weight_monitoring_rhythm: {
     care_family: 'weight_monitoring',
     suggestion_key: 'weight_monitoring_rhythm',
-    suggested_name: 'Weight check',
+    suggested_name: 'Monthly weight check',
     suggested_frequency: 'monthly',
     suggested_frequency_interval: 1,
     rationale_key: 'careSuggestionWeightMonitoringWhy',
@@ -36,7 +36,7 @@ export const SUGGESTION_CATALOG = {
   dental_review_rhythm: {
     care_family: 'dental',
     suggestion_key: 'dental_review_rhythm',
-    suggested_name: 'Dental check',
+    suggested_name: 'Annual dental check-in',
     suggested_frequency: 'yearly',
     suggested_frequency_interval: 1,
     rationale_key: 'careSuggestionDentalWhy',
@@ -44,7 +44,7 @@ export const SUGGESTION_CATALOG = {
   wellness_review_rhythm: {
     care_family: 'wellness_review',
     suggestion_key: 'wellness_review_rhythm',
-    suggested_name: 'Wellness review',
+    suggested_name: 'Annual wellness checkup',
     suggested_frequency: 'yearly',
     suggested_frequency_interval: 1,
     rationale_key: 'careSuggestionWellnessWhy',

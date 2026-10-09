@@ -55,7 +55,25 @@ async function syncPendingRecommendations(pool, petId, candidates) {
     );
     if (existing.rows.length > 0) {
       const row = existing.rows[0];
-      if (row.status === 'pending') pending.push(row);
+      if (row.status === 'pending') {
+        const copyStale = row.knowledge_version === candidate.knowledge_version
+          && (row.suggested_name !== candidate.suggested_name
+            || row.rationale_key !== candidate.rationale_key);
+        if (copyStale) {
+          const refreshed = await pool.query(
+            `UPDATE care_recommendations
+             SET suggested_name = $1,
+                 rationale_key = $2,
+                 updated_at = NOW()
+             WHERE id = $3
+             RETURNING *`,
+            [candidate.suggested_name, candidate.rationale_key, row.id],
+          );
+          pending.push(refreshed.rows[0]);
+        } else {
+          pending.push(row);
+        }
+      }
       continue;
     }
     const id = uuidv4();
@@ -169,11 +187,12 @@ export function registerCareIntelligenceRoutes(router, pool) {
         if (recommendation.health_entry_id) {
           return res.json(recommendationToMap(recommendation));
         }
+        const adjust = req.body?.adjust ?? null;
         const healthEntryId = await createRhythmFromRecommendation(
           pool,
           recommendation,
           userId,
-          action === 'adjust' ? req.body?.adjust : null,
+          adjust,
         );
         const status = action === 'adjust' ? 'adjusted' : 'accepted';
         const updated = await pool.query(
