@@ -390,7 +390,9 @@ void main() {
             _FakeCareIntelligenceRepository(),
           ),
           petListProvider.overrideWith(_EmptyPetListNotifier.new),
-          allPetsIncludingOrgProvider.overrideWith((ref) async => const <Pet>[]),
+          allPetsIncludingOrgProvider.overrideWith(
+            (ref) async => const <Pet>[],
+          ),
           petDetailViewerContextProvider('pet-1').overrideWith((ref) {
             final resolved = ref.watch(policyResolved);
             return resolved
