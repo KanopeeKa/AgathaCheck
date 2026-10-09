@@ -22,11 +22,17 @@ export class CareSuggestionPage {
   constructor(private readonly page: Page) {}
 
   private suggestionCardRoot() {
-    return this.page
-      .getByRole('group', { name: suggestionGroupRe })
+    const byIdentifier = this.page.locator(
+      '[flt-semantics-identifier="care_suggestion_group"]',
+    );
+    return byIdentifier
       .filter({ has: this.page.getByRole('button', { name: addRoutineRe }) })
       .first();
   }
+
+  /** Localized Phase-C display titles (must match app l10n). */
+  private static readonly displayTitleRe =
+    /Monthly weight check|Annual dental check-in|Annual wellness checkup|Contrôle mensuel du poids|Bilan dentaire annuel|Bilan bien-être annuel/i;
 
   async openPetDetail(petId: string): Promise<void> {
     await enableFlutterAccessibility(this.page);
@@ -56,15 +62,13 @@ export class CareSuggestionPage {
   async readVisibleSuggestionRhythmPattern(): Promise<RegExp> {
     await refreshFlutterAccessibility(this.page);
     const card = this.suggestionCardRoot();
-    const label =
-      (await card.getAttribute('aria-label')) ||
-      (await card.evaluate((el) => el.getAttribute('aria-label') || ''));
-    const match = label.match(
-      /(?:Agatha recommends|Agatha recommande|Suggested by Agatha|Suggestion d'Agatha|Suggéré par Agatha)\s*[.:]?\s*(.+)$/i,
-    );
-    const routineName = match?.[1]?.trim() ?? '';
+    const titleNode = card.getByText(CareSuggestionPage.displayTitleRe).first();
+    const routineName = (await titleNode.textContent())?.trim() ?? '';
     if (!routineName) {
-      throw new Error(`Could not parse suggestion routine from group label: ${label}`);
+      const label = await card.evaluate((el) => el.getAttribute('aria-label') || '');
+      throw new Error(
+        `Could not read suggestion display title in card (aria-label=${label})`,
+      );
     }
     const escaped = routineName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     return new RegExp(escaped, 'i');
@@ -77,14 +81,11 @@ export class CareSuggestionPage {
     const { expect } = await import('@playwright/test');
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      const groups = this.page.getByRole('group', { name: suggestionGroupRe });
-      const count = await groups.count();
-      for (let i = 0; i < count; i++) {
-        const label = await groups.nth(i).evaluate((el) => el.getAttribute('aria-label') || '');
-        if (rhythmPattern.test(label)) {
-          throw new Error(`Suggestion card still visible for ${rhythmPattern}: ${label}`);
-        }
-      }
+      const card = this.page.locator(
+        '[flt-semantics-identifier="care_suggestion_group"]',
+      );
+      const match = card.filter({ hasText: rhythmPattern });
+      await expect(match).toHaveCount(0);
     }).toPass({ timeout });
   }
 
@@ -120,12 +121,13 @@ export class CareSuggestionPage {
       { timeout: 45_000 },
     );
     await card.getByRole('button', { name: addRoutineRe }).click();
-    await waitForFlutterRoutePattern(this.page, /\/care\/add/, 15_000);
+    await waitForFlutterRoutePattern(this.page, /\/care\/add/, 20_000);
     await refreshFlutterAccessibility(this.page);
-    const saveButton = this.page.getByRole('button', { name: saveFormRe });
-    await saveButton.click({ timeout: 15_000 }).catch(async () => {
-      await this.page.locator('[flt-semantics-identifier="save_health_entry_button"]').click();
-    });
+    const saveSemantics = this.page.locator(
+      '[flt-semantics-identifier="save_health_entry_button"]',
+    );
+    await saveSemantics.scrollIntoViewIfNeeded();
+    await saveSemantics.click({ timeout: 20_000 });
     await respond;
     await refreshFlutterAccessibility(this.page);
   }
@@ -134,7 +136,9 @@ export class CareSuggestionPage {
     const { expect } = await import('@playwright/test');
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      await expect(this.page.getByRole('group', { name: suggestionGroupRe })).toHaveCount(0);
+      await expect(
+        this.page.locator('[flt-semantics-identifier="care_suggestion_group"]'),
+      ).toHaveCount(0);
     }).toPass({ timeout });
   }
 
