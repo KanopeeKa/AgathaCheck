@@ -247,12 +247,12 @@ last_completed_phase: 2
 halt_reason: null
 next_action: "continue phase 3 on branch cursor/care-suggestion-inbox-e2e-cfa4"
 artifact_ref:
-  branch: cursor/care-suggestion-card-integration-cfa4
+  branch: cursor/care-suggestion-inbox-e2e-cfa4
   plan_path: .agents/plans/care-suggestion-card-cfa4.md
-  plan_commit: e15f2f00657e8bcf087d45fff99b7ba9b600bc8b
+  plan_commit: b9fb5cf9b7f0b8dcb648b54b419ee4674a097c01
   snapshot_path: .agents/plans/care-suggestion-card-cfa4.snapshot.json
-  snapshot_commit: e15f2f00657e8bcf087d45fff99b7ba9b600bc8b
-open_prs: []
+  snapshot_commit: b9fb5cf9b7f0b8dcb648b54b419ee4674a097c01
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1831"]
 merge_commits: {}
 debt_issue_refs: []
 ```
