@@ -162,11 +162,9 @@ export class CareSuggestionPage {
       await this.openReviewForm(options.petId, recommendation);
     }
     await refreshFlutterAccessibility(this.page);
-    const saveSemantics = this.page.locator(
-      '[flt-semantics-identifier="save_health_entry_button"]',
-    );
-    await saveSemantics.scrollIntoViewIfNeeded();
-    await saveSemantics.click({ timeout: 20_000 });
+    const saveButton = this.page.getByRole('button', { name: saveFormRe });
+    await saveButton.scrollIntoViewIfNeeded();
+    await saveButton.click({ timeout: 20_000 });
     await respond;
     await refreshFlutterAccessibility(this.page);
   }
