@@ -132,6 +132,16 @@ export class CareSuggestionPage {
     await refreshFlutterAccessibility(this.page);
   }
 
+  async expectSuggestionCardHidden(timeout = 15_000): Promise<void> {
+    const { expect } = await import('@playwright/test');
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await expect(
+        this.page.locator('[flt-semantics-identifier="care_suggestion_group"]'),
+      ).toHaveCount(0);
+    }).toPass({ timeout });
+  }
+
   async expectSuggestionNotInEvents(timeout = 5_000): Promise<void> {
     const { expect } = await import('@playwright/test');
     await expect(async () => {
