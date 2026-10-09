@@ -93,6 +93,7 @@ class _CareSuggestionCardState extends ConsumerState<CareSuggestionCard> {
         identifier: 'care_suggestion_group',
         key: const ValueKey('care_suggestion_group'),
         container: true,
+        explicitChildNodes: true,
         label: '$eyebrowLabel. $displayTitle',
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

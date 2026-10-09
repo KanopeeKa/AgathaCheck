@@ -10,14 +10,14 @@ Feature: Care Suggestion
   @P1
   Scenario: A care suggestion surfaces on the pet profile contextual slot
     When the user views the pet's profile
-    Then a "Suggested by Agatha" card should appear in the contextual slot
+    Then an "Agatha recommends" card should appear in the contextual slot
     And the card should offer accept and not-relevant actions
 
   @P1
   Scenario: A care suggestion never appears in the Actions (/pc/events) list
     Given the pet is eligible for a care suggestion
     When the user opens the Actions (/pc/events) list
-    Then no "Suggested by Agatha" card should appear in the list
+    Then no "Agatha recommends" card should appear in the list
 
   @P1
   Scenario: Accepting a suggestion creates a rhythm and removes the card

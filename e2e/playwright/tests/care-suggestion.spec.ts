@@ -11,6 +11,9 @@ import { isLiveHostingTarget } from '../support/hosting';
 
 const baseURL = () => process.env.E2E_BASE_URL ?? 'http://localhost:3000';
 
+/** 12-month dog fixtures in this file trigger weight_monitoring_rhythm (Phase C). */
+const weightMonitoringRhythmPattern = /Monthly weight check|Weight check/i;
+
 function dateOfBirthMonthsAgo(months: number): string {
   const d = new Date();
   d.setUTCMonth(d.getUTCMonth() - months);
@@ -69,9 +72,8 @@ test.describe('Care suggestion (CIM)', () => {
     await suggestion.openPetDetail(pet.id);
     const timeout = isLiveHostingTarget(url) ? 60_000 : 45_000;
     await suggestion.expectSuggestionCardVisible(timeout);
-    const acceptedRhythm = await suggestion.readVisibleSuggestionRhythmPattern();
     await suggestion.acceptSuggestion();
-    await suggestion.expectSuggestionForRhythmNotVisible(acceptedRhythm);
-    await suggestion.expectCareRhythmVisible(acceptedRhythm);
+    await suggestion.expectSuggestionCardHidden();
+    await suggestion.expectCareRhythmVisible(weightMonitoringRhythmPattern);
   });
 });

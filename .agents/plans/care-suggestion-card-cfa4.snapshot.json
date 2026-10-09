@@ -4,7 +4,7 @@
   "approved_at": "2026-10-09T01:08:28Z",
   "approved_by": "github-issue-1827-comment-approve-autonomous-care-suggestion-card-cfa4",
   "approved_until": "2026-10-11T01:08:28Z",
-  "content_hash": "sha256:519d5b028038f4b30cb1125f24bfbe3718e1319e55f4ddc255880a68f65f4555",
+  "content_hash": "sha256:f1debadae8187623fd81eb21fb0320d25b898a7369f1c797e47dbc76c1b88a85",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/care-suggestion-card-integration-cfa4",
@@ -32,12 +32,9 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
-      "status_detail": "Additive adjust on accept; catalog suggested_name + pending backfill",
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
+      "status_detail": null,
       "debt_issue_refs": []
     },
     {
@@ -71,12 +68,11 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1830",
-      "pr_head_sha": "91c079f8"
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1830"
     },
     {
       "id": "3",
@@ -104,13 +100,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "bdd-journey",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
-      "status_detail": "NotificationSuggestionCard CIM branch; care-suggestion E2E form flow",
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
-      "debt_issue_refs": []
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1831",
+      "pr_head_sha": "b9fb5cf9"
     }
   ]
 }
