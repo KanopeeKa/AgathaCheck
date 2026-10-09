@@ -252,7 +252,7 @@ void main() {
       );
       expect(
         groupSemantics.getSemanticsData().label,
-        'Suggested by Agatha\nWeight check\nEvery month',
+        'Suggested by Agatha\nWeight check\nEvery month\nWhy?',
       );
 
       final acceptSemantics = tester.getSemantics(
@@ -362,7 +362,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Why?'));
+    await tester.tap(find.byKey(const Key('care_suggestion_why_rec-1')));
     await tester.pumpAndSettle();
 
     expect(find.text('For Luna'), findsOneWidget);
@@ -372,6 +372,60 @@ void main() {
       findsOneWidget,
     );
   });
+
+  testWidgets(
+    'rebuilds accept when pet policy resolves after restricted load',
+    (tester) async {
+      final policyResolved = StateProvider<bool>((ref) => false);
+      final container = ProviderContainer(
+        overrides: [
+          careIntelligenceRepositoryProvider.overrideWithValue(
+            _FakeCareIntelligenceRepository(),
+          ),
+          petDetailViewerContextProvider('pet-1').overrideWith((ref) {
+            final resolved = ref.watch(policyResolved);
+            return resolved
+                ? _viewerContext(canEditHealth: true)
+                : PetDetailContext.restricted(
+                    experience: AppExperience.petCare,
+                  );
+          }),
+        ],
+      );
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(
+              body: CareSuggestionCard(
+                petId: 'pet-1',
+                recommendation: _recommendation,
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      var accept = tester.widget<FilledButton>(
+        find.byKey(const Key('care_suggestion_accept_rec-1')),
+      );
+      expect(accept.onPressed, isNull);
+
+      container.read(policyResolved.notifier).state = true;
+      await tester.pumpAndSettle();
+
+      accept = tester.widget<FilledButton>(
+        find.byKey(const Key('care_suggestion_accept_rec-1')),
+      );
+      expect(accept.onPressed, isNotNull);
+
+      container.dispose();
+    },
+  );
 
   testWidgets('why sheet omits the pet line when the pet is unknown', (
     tester,
@@ -388,7 +442,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Why?'));
+    await tester.tap(find.byKey(const Key('care_suggestion_why_rec-1')));
     await tester.pumpAndSettle();
 
     expect(find.textContaining('For '), findsNothing);

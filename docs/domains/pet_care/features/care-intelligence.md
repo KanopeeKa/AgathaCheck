@@ -91,7 +91,7 @@ A suggestion alone **cannot** change Care Status. Safeguards are **informational
 
 | Surface | Chrome |
 |---------|--------|
-| `CareSuggestionCard` (profile, dashboard) | `agathaTeal` title on `agathaMessageSurface` with `agathaMessageBorder` (`AgathaMessageCard`) |
+| `CareSuggestionCard` (profile, dashboard) | `agathaTeal` title on `agathaMessageSurface` with `agathaMessageBorder` (`AgathaMessageCard`); round **?** help control opens rationale sheet; actions use `agathaTealAction` after pet policy resolves |
 | `NotificationSuggestionCard` (For you) | Same Agatha message chrome as profile/dashboard |
 | `CareSafeguardCard` | `info` title on `infoLight` fill — distinct from suggestions |
 
