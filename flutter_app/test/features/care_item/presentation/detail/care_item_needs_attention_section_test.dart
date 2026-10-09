@@ -140,6 +140,55 @@ void main() {
     expect(find.text('3 marked done'), findsNothing);
   });
 
+  testWidgets('upcoming rows list soonest scheduled date first', (
+    tester,
+  ) async {
+    final today = careToday();
+    final entry = scheduledEntry(
+      id: 'course',
+      name: 'Weekly antibiotic course',
+      fixed: true,
+      frequency: HealthFrequency.daily,
+      asOfTime: '10:00',
+      open: [
+        OpenOccurrence(
+          id: 'later-week',
+          date: today.add(const Duration(days: 7)),
+          time: '20:00',
+          status: CareOccurrenceStatus.comingUp,
+          origin: CareOccurrenceOrigin.schedule,
+        ),
+        OpenOccurrence(
+          id: 'later-today',
+          date: today,
+          time: '20:00',
+          status: CareOccurrenceStatus.due,
+          origin: CareOccurrenceOrigin.schedule,
+        ),
+        OpenOccurrence(
+          id: 'next-week-am',
+          date: today.add(const Duration(days: 7)),
+          time: '08:00',
+          status: CareOccurrenceStatus.comingUp,
+          origin: CareOccurrenceOrigin.schedule,
+        ),
+      ],
+    );
+    await _pumpSection(tester, entry);
+
+    final laterToday = tester.getTopLeft(
+      find.byKey(const Key('care_item_upcoming_later-today')),
+    );
+    final nextWeekAm = tester.getTopLeft(
+      find.byKey(const Key('care_item_upcoming_next-week-am')),
+    );
+    final laterWeek = tester.getTopLeft(
+      find.byKey(const Key('care_item_upcoming_later-week')),
+    );
+    expect(laterToday.dy, lessThan(nextWeekAm.dy));
+    expect(nextWeekAm.dy, lessThan(laterWeek.dy));
+  });
+
   testWidgets('started rows list newest scheduled date first', (tester) async {
     final today = careToday();
     final entry = scheduledEntry(

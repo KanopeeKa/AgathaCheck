@@ -54,6 +54,30 @@ void main() {
     });
   });
 
+  group('sortOccurrencesByZone', () {
+    test('coming up sorts soonest first', () {
+      final today = calendarDateOnly(DateTime.now());
+      final items = [
+        occ(id: 'far', date: today.add(const Duration(days: 7)), time: '20:00'),
+        occ(id: 'soon', date: today, time: '20:00'),
+        occ(id: 'mid', date: today.add(const Duration(days: 7)), time: '08:00'),
+      ];
+      final sorted = sortOccurrencesByZone(items, OccurrenceZone.comingUp);
+      expect(sorted.map((o) => o.id), ['soon', 'mid', 'far']);
+    });
+
+    test('missed sorts closest to present first', () {
+      final today = calendarDateOnly(DateTime.now());
+      final yesterday = today.subtract(const Duration(days: 1));
+      final items = [
+        occ(id: 'older', date: yesterday, time: '08:00'),
+        occ(id: 'newer', date: yesterday, time: '20:00'),
+      ];
+      final sorted = sortOccurrencesByZone(items, OccurrenceZone.missed);
+      expect(sorted.map((o) => o.id), ['newer', 'older']);
+    });
+  });
+
   group('summarizeOpenOccurrences', () {
     test('missed LIFO head and FIFO next', () {
       final today = calendarDateOnly(DateTime.now());

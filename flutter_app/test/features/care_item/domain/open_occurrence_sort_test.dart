@@ -42,4 +42,33 @@ void main() {
       'old',
     ]);
   });
+
+  test('sortUpcomingOpenOccurrences sorts earliest date and time first', () {
+    final items = [
+      OpenOccurrence(
+        id: 'far',
+        date: DateTime(2026, 10, 16),
+        time: '20:00',
+        status: CareOccurrenceStatus.comingUp,
+        origin: CareOccurrenceOrigin.schedule,
+      ),
+      OpenOccurrence(
+        id: 'soon',
+        date: DateTime(2026, 10, 9),
+        time: '20:00',
+        status: CareOccurrenceStatus.due,
+        origin: CareOccurrenceOrigin.schedule,
+      ),
+      OpenOccurrence(
+        id: 'mid',
+        date: DateTime(2026, 10, 16),
+        time: '08:00',
+        status: CareOccurrenceStatus.comingUp,
+        origin: CareOccurrenceOrigin.schedule,
+      ),
+    ];
+
+    final sorted = sortUpcomingOpenOccurrences(items);
+    expect(sorted.map((o) => o.id), ['soon', 'mid', 'far']);
+  });
 }

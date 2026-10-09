@@ -146,8 +146,8 @@ class _CareItemNeedsAttentionSectionState
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final groups = partitionOpenOccurrences(_s);
-    final started = openOccurrencesNewestFirst(groups.started);
-    final upcoming = openOccurrencesNewestFirst(groups.upcoming);
+    final started = sortStartedOpenOccurrences(groups.started);
+    final upcoming = sortUpcomingOpenOccurrences(groups.upcoming);
     final estimated = _s.estimatedNext;
     final showBulk = started.length >= 2 && isStack(_s) && !widget.muted;
     final rowMuted = widget.muted || _busy;
