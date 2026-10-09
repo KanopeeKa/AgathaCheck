@@ -147,8 +147,7 @@ class _CareFamilySuggestionCard extends ConsumerWidget {
   int get _frequencyInterval =>
       (_payload['suggested_frequency_interval'] as num?)?.toInt() ?? 1;
 
-  String? get _recommendationId =>
-      _payload['recommendation_id']?.toString();
+  String? get _recommendationId => _payload['recommendation_id']?.toString();
 
   String? get _careFamilyWire => _payload['care_family']?.toString();
 
@@ -176,10 +175,7 @@ class _CareFamilySuggestionCard extends ConsumerWidget {
     GoRouter.of(context).push(uri.toString());
   }
 
-  Future<void> _feedback(
-    WidgetRef ref,
-    String action,
-  ) async {
+  Future<void> _feedback(WidgetRef ref, String action) async {
     await ref
         .read(notificationsProvider.notifier)
         .submitSuggestionFeedback(notification.id, action);
@@ -296,7 +292,10 @@ class _CareFamilySuggestionCard extends ConsumerWidget {
               alignment: Alignment.centerLeft,
               child: TextButton(
                 style: TextButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 0,
+                    vertical: 4,
+                  ),
                   minimumSize: const Size(48, 40),
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
