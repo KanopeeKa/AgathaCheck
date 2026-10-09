@@ -120,6 +120,9 @@ void main() {
     expect(find.text(l.careSuggestionWhyLink), findsOneWidget);
     expect(find.text(l.careSuggestionLater), findsOneWidget);
     expect(find.text(l.careSuggestionNoThanks), findsOneWidget);
-    expect(find.textContaining(l.careSuggestionEyebrowRecommends), findsOneWidget);
+    expect(
+      find.textContaining(l.careSuggestionEyebrowRecommends),
+      findsOneWidget,
+    );
   });
 }
