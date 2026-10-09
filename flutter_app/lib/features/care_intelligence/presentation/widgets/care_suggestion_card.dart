@@ -9,6 +9,7 @@ import '../care_suggestion_navigation.dart';
 import 'agatha_recommendation_eyebrow.dart';
 import 'care_suggestion_respond_actions.dart';
 import 'package:pet_profile_app/core/widgets/agatha_message_card.dart';
+import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 import 'suggestion_why_sheet.dart';
 
 /// Agatha suggestion card for established-care rhythm proposals.
@@ -74,6 +75,9 @@ class _CareSuggestionCardState extends ConsumerState<CareSuggestionCard> {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    ref.watch(allPetsIncludingOrgProvider);
+    ref.watch(petListProvider);
+    ref.watch(petDetailViewerContextProvider(widget.petId));
     final canEditHealth = CareSuggestionRespondActions.canEditHealth(
       ref,
       widget.petId,

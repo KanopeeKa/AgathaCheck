@@ -11,10 +11,17 @@ import 'package:pet_profile_app/features/care_intelligence/presentation/provider
 import 'package:pet_profile_app/features/care_intelligence/presentation/widgets/care_suggestion_card.dart';
 import 'package:pet_profile_app/features/experience/domain/entities/app_experience.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/care_family.dart';
+import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet_viewer_role.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/services/pet_detail_actions.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_detail_viewer_context_provider.dart';
+import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
+
+class _EmptyPetListNotifier extends PetListNotifier {
+  @override
+  Future<List<Pet>> build() async => const [];
+}
 
 class _FakeCareIntelligenceRepository implements CareIntelligenceRepository {
   _FakeCareIntelligenceRepository({this.onRespond});
@@ -382,6 +389,8 @@ void main() {
           careIntelligenceRepositoryProvider.overrideWithValue(
             _FakeCareIntelligenceRepository(),
           ),
+          petListProvider.overrideWith(_EmptyPetListNotifier.new),
+          allPetsIncludingOrgProvider.overrideWith((ref) async => const <Pet>[]),
           petDetailViewerContextProvider('pet-1').overrideWith((ref) {
             final resolved = ref.watch(policyResolved);
             return resolved
