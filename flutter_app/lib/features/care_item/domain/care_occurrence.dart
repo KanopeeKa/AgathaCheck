@@ -113,6 +113,7 @@ class OpenOccurrence implements Comparable<OpenOccurrence> {
 enum OpenOccurrenceListContext {
   /// Overdue / not recorded / due-now: closest to present = latest instant first.
   started,
+
   /// Future slots: closest to present = earliest instant first.
   upcoming,
 }
@@ -132,19 +133,23 @@ List<OpenOccurrence> sortOpenOccurrencesClosestToPresent(
   OpenOccurrenceListContext context,
 ) {
   final copy = List<OpenOccurrence>.from(items);
-  copy.sort(
-    (a, b) => compareOpenOccurrencesClosestToPresent(a, b, context),
-  );
+  copy.sort((a, b) => compareOpenOccurrencesClosestToPresent(a, b, context));
   return copy;
 }
 
 /// Started bucket: latest scheduled instant first (alias).
 List<OpenOccurrence> sortStartedOpenOccurrences(List<OpenOccurrence> items) =>
-    sortOpenOccurrencesClosestToPresent(items, OpenOccurrenceListContext.started);
+    sortOpenOccurrencesClosestToPresent(
+      items,
+      OpenOccurrenceListContext.started,
+    );
 
 /// Upcoming bucket: earliest scheduled instant first.
 List<OpenOccurrence> sortUpcomingOpenOccurrences(List<OpenOccurrence> items) =>
-    sortOpenOccurrencesClosestToPresent(items, OpenOccurrenceListContext.upcoming);
+    sortOpenOccurrencesClosestToPresent(
+      items,
+      OpenOccurrenceListContext.upcoming,
+    );
 
 /// Care Item started lists: latest scheduled instant first.
 List<OpenOccurrence> openOccurrencesNewestFirst(List<OpenOccurrence> items) =>

@@ -176,13 +176,9 @@ CareAgenda<T> buildCareAgenda<T>(
     return c != 0 ? c : a.schedule.name.compareTo(b.schedule.name);
   }
 
-  overdue.sort(
-    (a, b) => byOccurrence(a, b, OpenOccurrenceListContext.started),
-  );
+  overdue.sort((a, b) => byOccurrence(a, b, OpenOccurrenceListContext.started));
   for (final rows in today.values) {
-    rows.sort(
-      (a, b) => byOccurrence(a, b, OpenOccurrenceListContext.upcoming),
-    );
+    rows.sort((a, b) => byOccurrence(a, b, OpenOccurrenceListContext.upcoming));
   }
   dueSoon.sort(
     (a, b) => byOccurrence(a, b, OpenOccurrenceListContext.upcoming),
