@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
   "plan_id": "care-suggestion-card-cfa4",
-  "approved_at": "2026-10-09T00:00:00Z",
-  "approved_by": "PLACEHOLDER — awaiting approve-autonomous care-suggestion-card-cfa4",
-  "approved_until": "2026-10-11T00:00:00Z",
-  "content_hash": "sha256:5a0afcdc64a76edfa0386f8b72f77a657f8c9505f715de3656bfbd1415a82b55",
-  "autonomy": "halted",
+  "approved_at": "2026-10-09T01:08:28Z",
+  "approved_by": "github-issue-1827-comment-approve-autonomous-care-suggestion-card-cfa4",
+  "approved_until": "2026-10-11T01:08:28Z",
+  "content_hash": "sha256:928f914a5cb884ecec5b0181842968fae6a9dfdd5cd7e1fc2ed41eddc074ca18",
+  "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/care-suggestion-card-cfa4-integration",
-  "control_issue": 1,
+  "control_issue": 1827,
   "artifact_branch_policy": "phase-branch",
   "phases": [
     {

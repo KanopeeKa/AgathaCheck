@@ -56,11 +56,11 @@ Keep existing snackbar on success; **no** in-card success state.
 
 | Field | Value |
 |-------|-------|
-| **approved_at** | _pending_ |
-| **approved_until** | _approved_at + 48h_ |
-| **control_issue** | _TBD (snapshot placeholder `1` until issue created)_ |
+| **approved_at** | 2026-10-09T01:08:28Z |
+| **approved_until** | 2026-10-11T01:08:28Z |
+| **control_issue** | [#1827](https://github.com/KanopeeKa/AgathaCheck/issues/1827) |
 | **content_hash** | see snapshot |
-| **autonomy** | `halted` until `approve-autonomous care-suggestion-card-cfa4` |
+| **autonomy** | `active` (granted via issue comment) |
 
 **Grant keyword:** `approve-autonomous care-suggestion-card-cfa4`
 
@@ -241,11 +241,11 @@ db/**
 ## Runtime state (agent-updated)
 
 ```yaml
-autonomy: halted
-current_phase: null
+autonomy: active
+current_phase: "1"
 last_completed_phase: null
-halt_reason: awaiting approve-autonomous care-suggestion-card-cfa4
-next_action: "Create control issue + integration branch; comment approve-autonomous care-suggestion-card-cfa4; run /execute-plan care-suggestion-card-cfa4"
+halt_reason: null
+next_action: "/execute-plan care-suggestion-card-cfa4 — phase 1 server catalog + accept adjust"
 artifact_ref:
   branch: null
   plan_path: .agents/plans/care-suggestion-card-cfa4.md
