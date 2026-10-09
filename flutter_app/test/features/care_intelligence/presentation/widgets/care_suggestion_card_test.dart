@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart' show SemanticsAction;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:pet_profile_app/features/care_intelligence/data/care_intelligence_exception.dart';
 import 'package:pet_profile_app/features/care_intelligence/domain/entities/care_recommendation.dart';
 import 'package:pet_profile_app/features/care_intelligence/domain/entities/care_safeguard.dart';
@@ -87,10 +88,28 @@ Widget _wrap({
       careIntelligenceRepositoryProvider.overrideWithValue(repository),
       petDetailViewerContextProvider('pet-1').overrideWithValue(viewerContext),
     ],
-    child: MaterialApp(
+    child: MaterialApp.router(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      home: Scaffold(body: child, bottomNavigationBar: const SizedBox.shrink()),
+      routerConfig: GoRouter(
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (context, state) => Scaffold(
+              body: child,
+              bottomNavigationBar: const SizedBox.shrink(),
+            ),
+          ),
+          GoRoute(
+            path: '/pet/:petId/care/add',
+            builder: (context, state) => Scaffold(
+              body: Text(
+                'review-form:${state.uri.queryParameters['careRecommendationId']}',
+              ),
+            ),
+          ),
+        ],
+      ),
     ),
   );
 }
@@ -114,21 +133,13 @@ PetDetailContext _viewerContext({required bool canEditHealth}) {
 }
 
 void main() {
-  testWidgets('accept shows success snackbar when respond succeeds', (
+  testWidgets('add routine opens the review form with recommendation id', (
     tester,
   ) async {
-    final repository = _FakeCareIntelligenceRepository(
-      onRespond:
-          ({required petId, required recommendationId, required action}) async {
-            expect(action, CareRecommendationResponseAction.accept);
-            return _recommendation;
-          },
-    );
-
     await tester.pumpWidget(
       _wrap(
         viewerContext: _viewerContext(canEditHealth: true),
-        repository: repository,
+        repository: _FakeCareIntelligenceRepository(),
         child: CareSuggestionCard(
           petId: 'pet-1',
           recommendation: _recommendation,
@@ -138,42 +149,9 @@ void main() {
     await tester.pumpAndSettle();
 
     await tester.tap(find.byKey(const Key('care_suggestion_accept_rec-1')));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 100));
     await tester.pumpAndSettle();
 
-    expect(find.text('Weight check routine added'), findsOneWidget);
-  });
-
-  testWidgets('accept shows error snackbar when respond fails', (tester) async {
-    final repository = _FakeCareIntelligenceRepository(
-      onRespond:
-          ({required petId, required recommendationId, required action}) async {
-            throw const CareIntelligenceException(500);
-          },
-    );
-
-    await tester.pumpWidget(
-      _wrap(
-        viewerContext: _viewerContext(canEditHealth: true),
-        repository: repository,
-        child: CareSuggestionCard(
-          petId: 'pet-1',
-          recommendation: _recommendation,
-        ),
-      ),
-    );
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.byKey(const Key('care_suggestion_accept_rec-1')));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 100));
-    await tester.pumpAndSettle();
-
-    expect(
-      find.text('Could not update this suggestion. Try again.'),
-      findsOneWidget,
-    );
+    expect(find.text('review-form:rec-1'), findsOneWidget);
   });
 
   testWidgets('accept is disabled without editHealth capability', (
@@ -199,11 +177,11 @@ void main() {
     expect(button.onPressed, isNull);
   });
 
-  testWidgets('403 error shows forbidden snackbar', (tester) async {
+  testWidgets('later shows error snackbar when respond fails', (tester) async {
     final repository = _FakeCareIntelligenceRepository(
       onRespond:
           ({required petId, required recommendationId, required action}) async {
-            throw const CareIntelligenceException(403);
+            throw const CareIntelligenceException(500);
           },
     );
 
@@ -219,13 +197,13 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('care_suggestion_accept_rec-1')));
+    await tester.tap(find.byKey(const Key('care_suggestion_later_rec-1')));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));
     await tester.pumpAndSettle();
 
     expect(
-      find.text("You can view this pet's care but cannot add routines."),
+      find.text('Could not update this suggestion. Try again.'),
       findsOneWidget,
     );
   });
@@ -252,7 +230,11 @@ void main() {
       );
       expect(
         groupSemantics.getSemanticsData().label,
-        'Suggested by Agatha\nWeight check\nEvery month',
+        contains('Agatha recommends'),
+      );
+      expect(
+        groupSemantics.getSemanticsData().label,
+        contains('Monthly weight check'),
       );
 
       final acceptSemantics = tester.getSemantics(
@@ -265,12 +247,12 @@ void main() {
       );
 
       expect(
-        tester.getSemantics(find.text('Not relevant')).getSemanticsData().label,
-        'Not relevant',
+        tester.getSemantics(find.text('Later')).getSemanticsData().label,
+        'Later',
       );
       expect(
-        tester.getSemantics(find.text('Dismiss')).getSemanticsData().label,
-        'Dismiss',
+        tester.getSemantics(find.text('No thanks')).getSemanticsData().label,
+        'No thanks',
       );
     },
   );
@@ -345,7 +327,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.textContaining('fortnightly'), findsNothing);
-    expect(find.text('Weight check'), findsOneWidget);
+    expect(find.text('Monthly weight check'), findsOneWidget);
   });
 
   testWidgets('why sheet names the pet, routine, and cadence', (tester) async {
@@ -362,13 +344,31 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Why?'));
+    await tester.tap(find.text('Why this matters'));
     await tester.pumpAndSettle();
 
-    expect(find.text('For Luna'), findsOneWidget);
-    expect(find.text('Weight check · Every month'), findsOneWidget);
+    final sheet = find.ancestor(
+      of: find.text('Why Agatha suggests this'),
+      matching: find.byType(BottomSheet),
+    );
     expect(
-      find.textContaining('Monthly weigh-ins build a simple record'),
+      find.descendant(of: sheet, matching: find.text('For Luna')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: sheet,
+        matching: find.text('Monthly weight check · Every month'),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: sheet,
+        matching: find.textContaining(
+          'Monthly weigh-ins build a simple record',
+        ),
+      ),
       findsOneWidget,
     );
   });
@@ -388,10 +388,10 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Why?'));
+    await tester.tap(find.text('Why this matters'));
     await tester.pumpAndSettle();
 
     expect(find.textContaining('For '), findsNothing);
-    expect(find.text('Weight check · Every month'), findsOneWidget);
+    expect(find.text('Monthly weight check · Every month'), findsOneWidget);
   });
 }

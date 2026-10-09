@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/features/care_intelligence/data/models/care_recommendation_model.dart';
 import 'package:pet_profile_app/features/care_intelligence/domain/entities/care_recommendation.dart';
 import 'package:pet_profile_app/features/care_intelligence/presentation/providers/care_recommendations_provider.dart';
+import 'package:pet_profile_app/features/care_intelligence/presentation/widgets/agatha_recommendation_eyebrow.dart';
 import 'package:pet_profile_app/features/experience/presentation/pet_profile/widgets/pet_profile_care_suggestion_section.dart';
 import 'package:pet_profile_app/features/pet_care/presentation/providers/pet_care_presentation_providers.dart';
 import 'package:pet_profile_app/features/pet_care/progression/domain/entities/care_pending_moment.dart';
@@ -75,7 +76,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Suggested by Agatha'), findsOneWidget);
-    expect(find.text('Weight check'), findsOneWidget);
+    expect(find.byType(AgathaRecommendationEyebrow), findsOneWidget);
+    expect(find.text('Monthly weight check'), findsOneWidget);
   });
 }

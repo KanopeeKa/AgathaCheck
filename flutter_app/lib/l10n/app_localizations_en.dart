@@ -1069,7 +1069,34 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careSourceSystemDefault => 'Default schedule';
 
   @override
-  String get careSuggestionTitle => 'Suggested by Agatha';
+  String get careSuggestionTitle => 'Agatha recommends';
+
+  @override
+  String get careSuggestionEyebrowAgatha => 'Agatha';
+
+  @override
+  String get careSuggestionEyebrowRecommends => 'recommends';
+
+  @override
+  String get careSuggestionLater => 'Later';
+
+  @override
+  String get careSuggestionNoThanks => 'No thanks';
+
+  @override
+  String get careSuggestionWhyLink => 'Why this matters';
+
+  @override
+  String get careSuggestionDisplayTitleWeightMonitoringRhythm =>
+      'Monthly weight check';
+
+  @override
+  String get careSuggestionDisplayTitleDentalReviewRhythm =>
+      'Annual dental check-in';
+
+  @override
+  String get careSuggestionDisplayTitleWellnessReviewRhythm =>
+      'Annual wellness checkup';
 
   @override
   String get careSuggestionAccept => 'Add routine';

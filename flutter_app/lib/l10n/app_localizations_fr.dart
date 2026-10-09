@@ -1081,7 +1081,34 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careSourceSystemDefault => 'Calendrier par défaut';
 
   @override
-  String get careSuggestionTitle => 'Suggestion d\'Agatha';
+  String get careSuggestionTitle => 'Agatha recommande';
+
+  @override
+  String get careSuggestionEyebrowAgatha => 'Agatha';
+
+  @override
+  String get careSuggestionEyebrowRecommends => 'recommande';
+
+  @override
+  String get careSuggestionLater => 'Plus tard';
+
+  @override
+  String get careSuggestionNoThanks => 'Pas pour moi';
+
+  @override
+  String get careSuggestionWhyLink => 'Pourquoi c\'est utile';
+
+  @override
+  String get careSuggestionDisplayTitleWeightMonitoringRhythm =>
+      'Pesée mensuelle';
+
+  @override
+  String get careSuggestionDisplayTitleDentalReviewRhythm =>
+      'Contrôle dentaire annuel';
+
+  @override
+  String get careSuggestionDisplayTitleWellnessReviewRhythm =>
+      'Bilan de santé annuel';
 
   @override
   String get careSuggestionAccept => 'Ajouter la routine';

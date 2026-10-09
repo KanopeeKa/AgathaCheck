@@ -18,3 +18,40 @@ String? careSuggestionCadenceLabel(
     _ => null,
   };
 }
+
+/// Guardian-facing title (display layer), keyed by [CareRecommendation.suggestionKey].
+String careSuggestionDisplayTitle(
+  AppLocalizations l,
+  CareRecommendation recommendation,
+) {
+  return switch (recommendation.suggestionKey) {
+    'weight_monitoring_rhythm' =>
+      l.careSuggestionDisplayTitleWeightMonitoringRhythm,
+    'dental_review_rhythm' => l.careSuggestionDisplayTitleDentalReviewRhythm,
+    'wellness_review_rhythm' =>
+      l.careSuggestionDisplayTitleWellnessReviewRhythm,
+    _ => recommendation.suggestedName,
+  };
+}
+
+/// One concise benefit line for the card (full detail remains in the why sheet).
+String careSuggestionShortBenefit(
+  AppLocalizations l,
+  CareRecommendation recommendation,
+) {
+  return switch (recommendation.rationaleKey) {
+    'careSuggestionWeightMonitoringWhy' => l.careSuggestionWeightMonitoringWhy,
+    'careSuggestionDentalWhy' => l.careSuggestionDentalWhy,
+    'careSuggestionWellnessWhy' => l.careSuggestionWellnessWhy,
+    _ => l.careSuggestionGenericWhy,
+  };
+}
+
+String careSuggestionRationaleBody(AppLocalizations l, String rationaleKey) {
+  return switch (rationaleKey) {
+    'careSuggestionWeightMonitoringWhy' => l.careSuggestionWeightMonitoringWhy,
+    'careSuggestionDentalWhy' => l.careSuggestionDentalWhy,
+    'careSuggestionWellnessWhy' => l.careSuggestionWellnessWhy,
+    _ => l.careSuggestionGenericWhy,
+  };
+}

@@ -91,11 +91,13 @@ A suggestion alone **cannot** change Care Status. Safeguards are **informational
 
 | Surface | Chrome |
 |---------|--------|
-| `CareSuggestionCard` (profile, dashboard) | `agathaTeal` title on `agathaMessageSurface` with `agathaMessageBorder` (`AgathaMessageCard`) |
-| `NotificationSuggestionCard` (For you) | Same Agatha message chrome as profile/dashboard |
+| `CareSuggestionCard` (profile, dashboard) | `agathaTeal` eyebrow (“Agatha” italic + “recommends”) on `agathaMessageSurface` with `agathaMessageBorder` (`AgathaMessageCard`) |
+| `NotificationSuggestionCard` (For you) | Same Agatha message chrome as profile/dashboard (care-family suggestions; wave-1 S1/S2 stay compact) |
 | `CareSafeguardCard` | `info` title on `infoLight` fill — distinct from suggestions |
 
-Accept, Why, and secondary actions on suggestion cards use **agathaTealAction** (darker teal) via `AgathaMessageCard` action theming — not `petCarePrimary` plum. Warm accent (`accent` / `lightAccent`) is not used for CIM suggestion or safeguard cards.
+**Suggestion card actions (Phase C):** primary **Add routine** opens the health-entry add form prefilled for review; submit calls `accept` with optional `adjust.name`. **Later** maps to `dismiss`; **No thanks** maps to `not_relevant`. **Why this matters** opens the existing why sheet (not a fourth decision). Display titles and benefit copy are localized; server `suggested_name` matches accept for new catalog rows.
+
+Accept and secondary actions on suggestion cards use **agathaTealAction** (darker teal) via `AgathaMessageCard` action theming — not `petCarePrimary` plum. Warm accent (`accent` / `lightAccent`) is not used for CIM suggestion or safeguard cards.
 
 ### Safeguard resurface policy
 

@@ -242,17 +242,17 @@ db/**
 
 ```yaml
 autonomy: active
-current_phase: "1"
+current_phase: 2
 last_completed_phase: null
 halt_reason: null
-next_action: "/execute-plan care-suggestion-card-cfa4 — phase 1 server catalog + accept adjust"
+next_action: "continue phase 2 on branch cursor/care-suggestion-ui-cfa4"
 artifact_ref:
-  branch: null
+  branch: cursor/care-suggestion-ui-cfa4
   plan_path: .agents/plans/care-suggestion-card-cfa4.md
-  plan_commit: null
+  plan_commit: 91c079f8b1ed51a630809037e0bdcce4a59a3408
   snapshot_path: .agents/plans/care-suggestion-card-cfa4.snapshot.json
-  snapshot_commit: null
-open_prs: []
+  snapshot_commit: 91c079f8b1ed51a630809037e0bdcce4a59a3408
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1830"]
 merge_commits: {}
 debt_issue_refs: []
 ```

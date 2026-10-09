@@ -52,6 +52,10 @@ class HealthEntryFormScreen extends ConsumerStatefulWidget {
     this.allowedTypes,
     this.initialPlanningMode,
     this.initialCareFamily,
+    this.initialRoutineName,
+    this.initialFrequencyWire,
+    this.initialFrequencyInterval,
+    this.careRecommendationId,
   });
 
   final String? entryId;
@@ -66,6 +70,11 @@ class HealthEntryFormScreen extends ConsumerStatefulWidget {
 
   /// Preselects a care family on add (e.g. weight hub → weigh-in routine).
   final CareFamily? initialCareFamily;
+
+  final String? initialRoutineName;
+  final String? initialFrequencyWire;
+  final int? initialFrequencyInterval;
+  final String? careRecommendationId;
 
   @override
   ConsumerState<HealthEntryFormScreen> createState() =>
@@ -87,6 +96,10 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
       allowedTypes: widget.allowedTypes,
       initialPlanningMode: widget.initialPlanningMode,
       initialCareFamily: widget.initialCareFamily,
+      initialRoutineName: widget.initialRoutineName,
+      initialFrequencyWire: widget.initialFrequencyWire,
+      initialFrequencyInterval: widget.initialFrequencyInterval,
+      careRecommendationId: widget.careRecommendationId,
     );
     if (widget.entryId != null) {
       Future.microtask(() async {
@@ -260,12 +273,15 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
         :final careSetting,
         :final carePlanning,
         :final linkedHealthIssueId,
+        :final careSuggestionRoutineName,
       ):
         final count = petIds.length;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              isEdit
+              careSuggestionRoutineName != null
+                  ? l.careSuggestionRhythmAdded(careSuggestionRoutineName)
+                  : isEdit
                   ? l.entryUpdated
                   : count > 1
                   ? l.entriesCreated(count)
