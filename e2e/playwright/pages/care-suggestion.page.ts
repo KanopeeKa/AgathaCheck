@@ -19,10 +19,9 @@ export class CareSuggestionPage {
   constructor(private readonly page: Page) {}
 
   private suggestionCardRoot() {
-    return this.page
-      .getByRole('group', { name: suggestionTitleRe })
-      .filter({ has: this.page.getByRole('button', { name: addRoutineRe }) })
-      .first();
+    // Prefer stable Flutter semantics id — Accept can be absent from the a11y tree
+    // while pet policy is still loading (disabled FilledButton).
+    return this.page.locator('[flt-semantics-identifier="care_suggestion_group"]').first();
   }
 
   async openPetDetail(petId: string): Promise<void> {
@@ -46,6 +45,11 @@ export class CareSuggestionPage {
       const card = this.suggestionCardRoot();
       await card.scrollIntoViewIfNeeded();
       await expect(card).toBeVisible();
+      await expect(card.getByText(suggestionTitleRe)).toBeVisible();
+    }).toPass({ timeout });
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      const card = this.suggestionCardRoot();
       await expect(card.getByRole('button', { name: addRoutineRe })).toBeVisible();
     }).toPass({ timeout });
   }
@@ -130,11 +134,14 @@ export class CareSuggestionPage {
   }
 
   async expectAcceptAndNotRelevantVisible(): Promise<void> {
-    await refreshFlutterAccessibility(this.page);
+    const { expect } = await import('@playwright/test');
     const card = this.suggestionCardRoot();
-    await card.getByRole('button', { name: addRoutineRe }).waitFor({ timeout: 15_000 });
-    await card.getByRole('button', { name: whyRe }).waitFor({ timeout: 15_000 });
-    await card.getByRole('button', { name: notRelevantRe }).waitFor({ timeout: 15_000 });
-    await card.getByRole('button', { name: dismissRe }).waitFor({ timeout: 15_000 });
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await card.getByRole('button', { name: addRoutineRe }).waitFor({ timeout: 5_000 });
+      await card.getByRole('button', { name: whyRe }).waitFor({ timeout: 5_000 });
+      await card.getByRole('button', { name: notRelevantRe }).waitFor({ timeout: 5_000 });
+      await card.getByRole('button', { name: dismissRe }).waitFor({ timeout: 5_000 });
+    }).toPass({ timeout: 30_000 });
   }
 }
