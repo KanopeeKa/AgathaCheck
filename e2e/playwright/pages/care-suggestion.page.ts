@@ -9,23 +9,18 @@ import {
   waitForFlutterRoutePattern,
 } from '../support/flutter';
 
-const suggestionTitleRe = /Suggested by Agatha|Suggestion d'Agatha|Suggéré par Agatha/i;
 const addRoutineRe = /^(Add routine|Add rhythm)$|^(Ajouter la routine|Ajouter le rythme)$/i;
 const notRelevantRe = /^Not relevant$|^Pas pertinent$/i;
 const dismissRe = /^Dismiss$|^Ignorer$/i;
-const whyRe = /^Why\?$|^Pourquoi\s*\?$/i;
+const suggestionActionRowRe =
+  /(Add routine|Add rhythm|Ajouter la routine|Ajouter le rythme).*(Suggested by Agatha|Suggestion d'Agatha|Suggéré par Agatha)/i;
 
 export class CareSuggestionPage {
   constructor(private readonly page: Page) {}
 
+  /** Flutter web merges the suggestion card actions into one outer button. */
   private suggestionCardRoot() {
-    const acceptControl = this.page.locator(
-      '[flt-semantics-identifier^="care_suggestion_accept_"]',
-    );
-    return this.page
-      .getByRole('group', { name: suggestionTitleRe })
-      .filter({ has: acceptControl })
-      .first();
+    return this.page.getByRole('button', { name: suggestionActionRowRe }).first();
   }
 
   async openPetDetail(petId: string): Promise<void> {
@@ -49,12 +44,6 @@ export class CareSuggestionPage {
       const card = this.suggestionCardRoot();
       await card.scrollIntoViewIfNeeded();
       await expect(card).toBeVisible();
-    }).toPass({ timeout });
-    await expect(async () => {
-      await refreshFlutterAccessibility(this.page);
-      const card = this.suggestionCardRoot();
-      const accept = card.locator('[flt-semantics-identifier^="care_suggestion_accept_"]');
-      await expect(accept).toBeVisible();
       await expect(card.getByRole('button', { name: addRoutineRe })).toBeVisible();
     }).toPass({ timeout });
   }
@@ -64,13 +53,13 @@ export class CareSuggestionPage {
     const card = this.suggestionCardRoot();
     const label =
       (await card.getAttribute('aria-label')) ||
-      (await card.evaluate((el) => el.getAttribute('aria-label') || ''));
+      (await card.evaluate((el) => el.getAttribute('aria-label') || el.textContent || ''));
     const match = label.match(
       /(?:Suggested by Agatha|Suggestion d'Agatha|Suggéré par Agatha)\s+(.+?)\s+Every/i,
     );
     const routineName = match?.[1]?.trim() ?? '';
     if (!routineName) {
-      throw new Error(`Could not parse suggestion routine from group label: ${label}`);
+      throw new Error(`Could not parse suggestion routine from card label: ${label}`);
     }
     const escaped = routineName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     return new RegExp(escaped, 'i');
@@ -83,10 +72,12 @@ export class CareSuggestionPage {
     const { expect } = await import('@playwright/test');
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      const groups = this.page.getByRole('group', { name: suggestionTitleRe });
-      const count = await groups.count();
+      const rows = this.page.getByRole('button', { name: suggestionActionRowRe });
+      const count = await rows.count();
       for (let i = 0; i < count; i++) {
-        const label = await groups.nth(i).evaluate((el) => el.getAttribute('aria-label') || '');
+        const label = await rows.nth(i).evaluate(
+          (el) => el.getAttribute('aria-label') || el.textContent || '',
+        );
         if (rhythmPattern.test(label)) {
           throw new Error(`Suggestion card still visible for ${rhythmPattern}: ${label}`);
         }
@@ -134,7 +125,7 @@ export class CareSuggestionPage {
     const { expect } = await import('@playwright/test');
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      await expect(this.page.getByRole('group', { name: suggestionTitleRe })).toHaveCount(0);
+      await expect(this.page.getByRole('button', { name: suggestionActionRowRe })).toHaveCount(0);
     }).toPass({ timeout });
   }
 
@@ -144,7 +135,7 @@ export class CareSuggestionPage {
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
       await card.getByRole('button', { name: addRoutineRe }).waitFor({ timeout: 5_000 });
-      await card.getByRole('button', { name: whyRe }).waitFor({ timeout: 5_000 });
+      await card.getByRole('button', { name: /^\?$/ }).waitFor({ timeout: 5_000 });
       await card.getByRole('button', { name: notRelevantRe }).waitFor({ timeout: 5_000 });
       await card.getByRole('button', { name: dismissRe }).waitFor({ timeout: 5_000 });
     }).toPass({ timeout: 30_000 });
