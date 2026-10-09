@@ -4,10 +4,10 @@
   "approved_at": "2026-10-09T01:08:28Z",
   "approved_by": "github-issue-1827-comment-approve-autonomous-care-suggestion-card-cfa4",
   "approved_until": "2026-10-11T01:08:28Z",
-  "content_hash": "sha256:928f914a5cb884ecec5b0181842968fae6a9dfdd5cd7e1fc2ed41eddc074ca18",
+  "content_hash": "sha256:8063a8d9b9b68205173ff5fc50afad96cc21ce3b2674f82229a786e53bec44fa",
   "autonomy": "active",
   "default_merge_mode": "auto",
-  "base_branch": "cursor/care-suggestion-card-cfa4-integration",
+  "base_branch": "cursor/care-suggestion-card-integration-cfa4",
   "control_issue": 1827,
   "artifact_branch_policy": "phase-branch",
   "phases": [
