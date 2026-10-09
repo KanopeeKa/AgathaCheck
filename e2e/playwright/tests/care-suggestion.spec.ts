@@ -77,6 +77,7 @@ test.describe('Care suggestion (CIM)', () => {
       baseUrl: url,
       accessToken: testUser.accessToken,
     });
+    await suggestion.openPetDetail(pet.id);
     await suggestion.expectSuggestionCardHidden();
     await suggestion.expectCareRhythmVisible(weightMonitoringRhythmPattern);
   });
