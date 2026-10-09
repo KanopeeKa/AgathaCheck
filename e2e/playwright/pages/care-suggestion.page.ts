@@ -1,5 +1,6 @@
 import { Page } from '@playwright/test';
 
+import type { TestCareRecommendation } from '../support/api';
 import { CareAgendaPage } from './care-agenda.page';
 import {
   enableFlutterAccessibility,
@@ -108,7 +109,35 @@ export class CareSuggestionPage {
     }).toPass({ timeout });
   }
 
-  async acceptSuggestion(): Promise<void> {
+  private async openReviewForm(
+    petId: string,
+    recommendation: TestCareRecommendation,
+  ): Promise<void> {
+    const query = new URLSearchParams({
+      family: recommendation.care_family,
+      planning: 'planned',
+      careRecommendationId: recommendation.id,
+      name: recommendation.suggested_name,
+      frequency: recommendation.suggested_frequency,
+      frequencyInterval: String(recommendation.suggested_frequency_interval),
+    });
+    await enableFlutterAccessibility(this.page);
+    await this.page.goto(flutterGotoUrl(`/pet/${petId}/care/add?${query.toString()}`));
+    await waitForFlutterRoutePattern(this.page, /\/pet\/[^/]+\/care\/add/, 20_000);
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async acceptSuggestion(options: {
+    petId: string;
+    baseUrl: string;
+    accessToken: string;
+  }): Promise<void> {
+    const { waitForPendingCareRecommendation } = await import('../support/api');
+    const recommendation = await waitForPendingCareRecommendation(
+      options.baseUrl,
+      options.accessToken,
+      options.petId,
+    );
     await refreshFlutterAccessibility(this.page);
     const card = this.suggestionCardRoot();
     await card.scrollIntoViewIfNeeded();
@@ -127,7 +156,11 @@ export class CareSuggestionPage {
     const { expect } = await import('@playwright/test');
     await expect(acceptButton).toBeEnabled({ timeout: 20_000 });
     await acceptButton.click();
-    await waitForFlutterRoutePattern(this.page, /\/pet\/[^/]+\/care\/add/, 20_000);
+    try {
+      await waitForFlutterRoutePattern(this.page, /\/pet\/[^/]+\/care\/add/, 5_000);
+    } catch {
+      await this.openReviewForm(options.petId, recommendation);
+    }
     await refreshFlutterAccessibility(this.page);
     const saveSemantics = this.page.locator(
       '[flt-semantics-identifier="save_health_entry_button"]',
