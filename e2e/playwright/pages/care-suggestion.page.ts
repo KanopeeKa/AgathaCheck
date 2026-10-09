@@ -60,7 +60,7 @@ export class CareSuggestionPage {
       (await card.getAttribute('aria-label')) ||
       (await card.evaluate((el) => el.getAttribute('aria-label') || ''));
     const match = label.match(
-      /(?:Agatha recommends|Agatha recommande|Suggested by Agatha|Suggestion d'Agatha|Suggéré par Agatha)\s*[.:]?\s*(.+?)(?:\s+Every|\s+Chaque|$)/i,
+      /(?:Agatha recommends|Agatha recommande|Suggested by Agatha|Suggestion d'Agatha|Suggéré par Agatha)\s*[.:]?\s*(.+)$/i,
     );
     const routineName = match?.[1]?.trim() ?? '';
     if (!routineName) {
