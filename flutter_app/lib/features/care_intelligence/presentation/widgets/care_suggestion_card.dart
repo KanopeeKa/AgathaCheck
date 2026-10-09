@@ -131,7 +131,10 @@ class _CareSuggestionCardState extends ConsumerState<CareSuggestionCard> {
               child: TextButton(
                 key: Key('care_suggestion_why_link_${recommendation.id}'),
                 style: TextButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 0,
+                    vertical: 4,
+                  ),
                   minimumSize: const Size(48, 40),
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
@@ -175,7 +178,9 @@ class _CareSuggestionCardState extends ConsumerState<CareSuggestionCard> {
                   : l.careSuggestionEditForbidden,
               child: FilledButton(
                 key: Key('care_suggestion_accept_${recommendation.id}'),
-                onPressed: _responding || !canEditHealth ? null : _openReviewForm,
+                onPressed: _responding || !canEditHealth
+                    ? null
+                    : _openReviewForm,
                 child: Text(l.careSuggestionAccept),
               ),
             ),
@@ -187,7 +192,9 @@ class _CareSuggestionCardState extends ConsumerState<CareSuggestionCard> {
                     key: Key('care_suggestion_later_${recommendation.id}'),
                     onPressed: _responding || !canEditHealth
                         ? null
-                        : () => _respond(CareRecommendationResponseAction.dismiss),
+                        : () => _respond(
+                            CareRecommendationResponseAction.dismiss,
+                          ),
                     child: Text(l.careSuggestionLater),
                   ),
                 ),

@@ -1,8 +1,10 @@
 import 'package:go_router/go_router.dart';
 
+import '../../pet_profile/pet_profile.dart';
+import '../../../l10n/app_localizations.dart';
 import '../domain/entities/care_recommendation.dart';
 import 'care_suggestion_copy.dart';
-import '../../../l10n/app_localizations.dart';
+
 /// Opens the care add form so the guardian can review before accepting.
 void navigateToCareSuggestionReviewForm({
   required GoRouter router,

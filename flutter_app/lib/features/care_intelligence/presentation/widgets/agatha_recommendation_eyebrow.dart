@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../../../l10n/app_localizations.dart';
-import 'package:pet_profile_app/core/theme/app_color_tokens.dart';
 import 'package:pet_profile_app/core/widgets/agatha_message_card.dart';
 
 /// Typographic signature for Agatha-authored suggestions (no script font).

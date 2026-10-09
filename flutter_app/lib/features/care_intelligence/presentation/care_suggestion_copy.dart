@@ -25,9 +25,11 @@ String careSuggestionDisplayTitle(
   CareRecommendation recommendation,
 ) {
   return switch (recommendation.suggestionKey) {
-    'weight_monitoring_rhythm' => l.careSuggestionDisplayTitleWeightMonitoringRhythm,
+    'weight_monitoring_rhythm' =>
+      l.careSuggestionDisplayTitleWeightMonitoringRhythm,
     'dental_review_rhythm' => l.careSuggestionDisplayTitleDentalReviewRhythm,
-    'wellness_review_rhythm' => l.careSuggestionDisplayTitleWellnessReviewRhythm,
+    'wellness_review_rhythm' =>
+      l.careSuggestionDisplayTitleWellnessReviewRhythm,
     _ => recommendation.suggestedName,
   };
 }
