@@ -121,10 +121,14 @@ export function buildAcceptedHealthEntry({
     ?? adjust?.careImportance
     ?? familyDefaults.care_importance;
   const legacyType = deriveLegacyHealthEntryType(recommendation.care_family, careSetting);
+  const adjustedName = typeof adjust?.name === 'string' ? adjust.name.trim() : '';
+  const name = adjustedName.length > 0
+    ? adjustedName
+    : recommendation.suggested_name;
   return {
     petId,
     userId,
-    name: recommendation.suggested_name,
+    name,
     type: legacyType,
     frequency,
     frequencyInterval,
