@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/experience/app_experience.dart';
+import '../../domain/entities/pet.dart';
 import '../../domain/services/pet_detail_actions.dart';
 import '../providers/pet_providers.dart';
 
