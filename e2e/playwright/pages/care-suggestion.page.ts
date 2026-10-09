@@ -14,7 +14,7 @@ const suggestionGroupRe =
 const addRoutineRe = /^(Add routine|Add rhythm)$|^(Ajouter la routine|Ajouter le rythme)$/i;
 const noThanksRe = /^No thanks$|^Pas merci$/i;
 const laterRe = /^Later$|^Plus tard$/i;
-const whyRe = /^Why this matters$|^Pourquoi c'est important$/i;
+const whyRe = /^Why this matters$|^Pourquoi c'est utile$/i;
 const saveFormRe =
   /^(Add Health Event|Add health event|Ajouter.*événement)$/i;
 
