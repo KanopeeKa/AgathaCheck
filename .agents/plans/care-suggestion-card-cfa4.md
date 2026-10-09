@@ -17,7 +17,7 @@ tags: [execute-plan, care-intelligence, ux]
 | **title** | Compact Agatha recommendation cards + review-before-add flow |
 | **author** | cloud-agent (Stage 1 analysis 2026-10-09) |
 | **created** | 2026-10-09 |
-| **base_branch** | `cursor/care-suggestion-card-cfa4-integration` |
+| **base_branch** | `cursor/care-suggestion-card-integration-cfa4` |
 | **default_merge_mode** | `auto` |
 | **artifact_branch_policy** | `phase-branch` |
 
