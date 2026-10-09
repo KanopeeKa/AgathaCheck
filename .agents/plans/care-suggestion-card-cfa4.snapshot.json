@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "plan_id": "care-suggestion-card-cfa4",
+  "approved_at": "2026-10-09T00:00:00Z",
+  "approved_by": "PLACEHOLDER — awaiting approve-autonomous care-suggestion-card-cfa4",
+  "approved_until": "2026-10-11T00:00:00Z",
+  "content_hash": "sha256:5a0afcdc64a76edfa0386f8b72f77a657f8c9505f715de3656bfbd1415a82b55",
+  "autonomy": "halted",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/care-suggestion-card-cfa4-integration",
+  "control_issue": 1,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Server knowledge names and accept-with-adjust",
+      "branch": "cursor/care-suggestion-catalog-cfa4",
+      "allowed_paths": [
+        "server/routes/careIntelligence/**",
+        "server/test/careIntelligence/**"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        ".github/workflows/**",
+        "db/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": "Additive adjust on accept; catalog suggested_name + pending backfill",
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2",
+      "title": "Flutter cards copy and review-before-add",
+      "branch": "cursor/care-suggestion-ui-cfa4",
+      "allowed_paths": [
+        "flutter_app/lib/features/care_intelligence/**",
+        "flutter_app/lib/core/widgets/agatha_message_card.dart",
+        "flutter_app/lib/features/health_tracking/presentation/screens/health_entry_form_screen.dart",
+        "flutter_app/lib/features/health_tracking/presentation/controllers/health_entry_form_controller.dart",
+        "flutter_app/lib/features/health_tracking/presentation/controllers/health_entry_form_state.dart",
+        "flutter_app/lib/features/experience/presentation/screens/pet_care/pet_care_dashboard_contextual_slot_section.dart",
+        "flutter_app/lib/features/experience/presentation/pet_profile/widgets/pet_profile_care_suggestion_section.dart",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/care_intelligence/**",
+        "flutter_app/test/features/health_tracking/presentation/controllers/health_entry_form*",
+        "flutter_app/lib/core/router/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": "CareSuggestionCard redesign; form prefill; accept via respond+adjust",
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "3",
+      "title": "Notifications E2E and spec alignment",
+      "branch": "cursor/care-suggestion-inbox-e2e-cfa4",
+      "allowed_paths": [
+        "flutter_app/lib/features/notifications/presentation/widgets/notification_suggestion_card.dart",
+        "flutter_app/test/features/notifications/presentation/widgets/notification_suggestion_card_test.dart",
+        "e2e/playwright/tests/care-suggestion.spec.ts",
+        "e2e/playwright/pages/care-suggestion.page.ts",
+        "flutter_app/test/bdd/features/care_suggestion.feature",
+        "docs/domains/notifications/features/notifications-v2-spec.md",
+        "docs/domains/pet_care/features/care-intelligence.md"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**",
+        "db/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": "NotificationSuggestionCard CIM branch; care-suggestion E2E form flow",
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    }
+  ]
+}
