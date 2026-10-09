@@ -6,7 +6,7 @@
  */
 import { test, loginAs } from '../fixtures/auth.fixture';
 import { CareSuggestionPage } from '../pages/care-suggestion.page';
-import { createPet, updatePetProfile } from '../support/api';
+import { createPet, listCareRecommendations, updatePetProfile } from '../support/api';
 import { isLiveHostingTarget } from '../support/hosting';
 
 const baseURL = () => process.env.E2E_BASE_URL ?? 'http://localhost:3000';
@@ -78,7 +78,12 @@ test.describe('Care suggestion (CIM)', () => {
       accessToken: testUser.accessToken,
     });
     await suggestion.openPetDetail(pet.id);
-    await suggestion.expectSuggestionCardHidden();
+    const { expect } = await import('@playwright/test');
+    await expect(async () => {
+      const recs = await listCareRecommendations(url, testUser.accessToken, pet.id);
+      expect(recs.some((r) => r.status === 'pending')).toBe(false);
+    }).toPass({ timeout: 45_000 });
+    await suggestion.expectSuggestionCardHidden(45_000);
     await suggestion.expectCareRhythmVisible(weightMonitoringRhythmPattern);
   });
 });
