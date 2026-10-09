@@ -7,6 +7,8 @@ import '../care_suggestion_copy.dart';
 import 'care_suggestion_respond_actions.dart';
 import 'package:pet_profile_app/core/theme/app_color_tokens.dart';
 import 'package:pet_profile_app/core/widgets/agatha_message_card.dart';
+import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
+import 'suggestion_why_button.dart';
 import 'suggestion_why_sheet.dart';
 
 /// Agatha suggestion card for established-care rhythm proposals.
@@ -50,10 +52,9 @@ class _CareSuggestionCardState extends ConsumerState<CareSuggestionCard> {
       petId: widget.petId,
       recommendation: widget.recommendation,
       action: action,
-      canEditHealth: CareSuggestionRespondActions.canEditHealth(
-        ref,
-        widget.petId,
-      ),
+      canEditHealth: ref
+          .read(petDetailViewerContextProvider(widget.petId))
+          .can(PetDetailAction.editHealth),
       onLoadingChanged: (loading) => setState(() => _responding = loading),
     );
   }
@@ -62,10 +63,10 @@ class _CareSuggestionCardState extends ConsumerState<CareSuggestionCard> {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final canEditHealth = CareSuggestionRespondActions.canEditHealth(
-      ref,
-      widget.petId,
+    final viewerContext = ref.watch(
+      petDetailViewerContextProvider(widget.petId),
     );
+    final canEditHealth = viewerContext.can(PetDetailAction.editHealth);
     final recommendation = widget.recommendation;
     final cadenceLabel = careSuggestionCadenceLabel(l, recommendation);
     final petName = _petName;
@@ -137,7 +138,9 @@ class _CareSuggestionCardState extends ConsumerState<CareSuggestionCard> {
                         : Text(l.careSuggestionAccept),
                   ),
                 ),
-                OutlinedButton(
+                SuggestionWhyButton(
+                  key: Key('care_suggestion_why_${recommendation.id}'),
+                  tooltip: l.careSuggestionWhy,
                   onPressed: _responding
                       ? null
                       : () => showSuggestionWhySheet(
@@ -147,7 +150,6 @@ class _CareSuggestionCardState extends ConsumerState<CareSuggestionCard> {
                           petName: petName,
                           cadenceLabel: cadenceLabel,
                         ),
-                  child: Text(l.careSuggestionWhy),
                 ),
                 TextButton(
                   onPressed: _responding || !canEditHealth
