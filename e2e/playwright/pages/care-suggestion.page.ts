@@ -22,17 +22,18 @@ export class CareSuggestionPage {
   constructor(private readonly page: Page) {}
 
   private suggestionCardRoot() {
+    const addButton = this.page.getByRole('button', { name: addRoutineRe });
     const byIdentifier = this.page.locator(
       '[flt-semantics-identifier="care_suggestion_group"]',
     );
-    return byIdentifier
-      .filter({ has: this.page.getByRole('button', { name: addRoutineRe }) })
-      .first();
+    return byIdentifier.filter({ has: addButton }).or(
+      this.page.getByRole('group', { name: suggestionGroupRe }).filter({ has: addButton }),
+    ).first();
   }
 
-  /** Localized Phase-C display titles (must match app l10n). */
+  /** Display titles (l10n + legacy catalog names still on wire). */
   private static readonly displayTitleRe =
-    /Monthly weight check|Annual dental check-in|Annual wellness checkup|Contrôle mensuel du poids|Bilan dentaire annuel|Bilan bien-être annuel/i;
+    /Monthly weight check|Weight check|Annual dental check-in|Annual wellness checkup|Contrôle mensuel du poids|Bilan dentaire annuel|Bilan bien-être annuel/i;
 
   async openPetDetail(petId: string): Promise<void> {
     await enableFlutterAccessibility(this.page);
@@ -60,15 +61,14 @@ export class CareSuggestionPage {
   }
 
   async readVisibleSuggestionRhythmPattern(): Promise<RegExp> {
+    const { expect } = await import('@playwright/test');
     await refreshFlutterAccessibility(this.page);
-    const card = this.suggestionCardRoot();
-    const titleNode = card.getByText(CareSuggestionPage.displayTitleRe).first();
+    await this.expectSuggestionCardVisible(15_000);
+    const titleNode = this.page.getByText(CareSuggestionPage.displayTitleRe).first();
+    await expect(titleNode).toBeVisible({ timeout: 15_000 });
     const routineName = (await titleNode.textContent())?.trim() ?? '';
     if (!routineName) {
-      const label = await card.evaluate((el) => el.getAttribute('aria-label') || '');
-      throw new Error(
-        `Could not read suggestion display title in card (aria-label=${label})`,
-      );
+      throw new Error('Could not read suggestion display title on profile');
     }
     const escaped = routineName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     return new RegExp(escaped, 'i');
