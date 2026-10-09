@@ -13,8 +13,7 @@ void navigateToCareSuggestionReviewForm({
   required CareRecommendation recommendation,
 }) {
   final title = careSuggestionDisplayTitle(l, recommendation);
-  final uri = Uri(
-    path: '/pet/$petId/care/add',
+  final query = Uri(
     queryParameters: {
       'family': recommendation.careFamily.wireValue,
       'planning': 'planned',
@@ -23,6 +22,6 @@ void navigateToCareSuggestionReviewForm({
       'frequency': recommendation.suggestedFrequency,
       'frequencyInterval': recommendation.suggestedFrequencyInterval.toString(),
     },
-  );
-  router.push(uri.toString());
+  ).query;
+  router.push('/pet/$petId/care/add?$query');
 }
