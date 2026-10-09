@@ -4,7 +4,7 @@
   "approved_at": "2026-10-09T01:08:28Z",
   "approved_by": "github-issue-1827-comment-approve-autonomous-care-suggestion-card-cfa4",
   "approved_until": "2026-10-11T01:08:28Z",
-  "content_hash": "sha256:8063a8d9b9b68205173ff5fc50afad96cc21ce3b2674f82229a786e53bec44fa",
+  "content_hash": "sha256:519d5b028038f4b30cb1125f24bfbe3718e1319e55f4ddc255880a68f65f4555",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/care-suggestion-card-integration-cfa4",
@@ -71,13 +71,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
-      "status_detail": "CareSuggestionCard redesign; form prefill; accept via respond+adjust",
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
-      "debt_issue_refs": []
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1830",
+      "pr_head_sha": "91c079f8"
     },
     {
       "id": "3",

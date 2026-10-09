@@ -1925,8 +1925,56 @@ abstract class AppLocalizations {
   /// No description provided for @careSuggestionTitle.
   ///
   /// In en, this message translates to:
-  /// **'Suggested by Agatha'**
+  /// **'Agatha recommends'**
   String get careSuggestionTitle;
+
+  /// No description provided for @careSuggestionEyebrowAgatha.
+  ///
+  /// In en, this message translates to:
+  /// **'Agatha'**
+  String get careSuggestionEyebrowAgatha;
+
+  /// No description provided for @careSuggestionEyebrowRecommends.
+  ///
+  /// In en, this message translates to:
+  /// **'recommends'**
+  String get careSuggestionEyebrowRecommends;
+
+  /// No description provided for @careSuggestionLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get careSuggestionLater;
+
+  /// No description provided for @careSuggestionNoThanks.
+  ///
+  /// In en, this message translates to:
+  /// **'No thanks'**
+  String get careSuggestionNoThanks;
+
+  /// No description provided for @careSuggestionWhyLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Why this matters'**
+  String get careSuggestionWhyLink;
+
+  /// No description provided for @careSuggestionDisplayTitleWeightMonitoringRhythm.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly weight check'**
+  String get careSuggestionDisplayTitleWeightMonitoringRhythm;
+
+  /// No description provided for @careSuggestionDisplayTitleDentalReviewRhythm.
+  ///
+  /// In en, this message translates to:
+  /// **'Annual dental check-in'**
+  String get careSuggestionDisplayTitleDentalReviewRhythm;
+
+  /// No description provided for @careSuggestionDisplayTitleWellnessReviewRhythm.
+  ///
+  /// In en, this message translates to:
+  /// **'Annual wellness checkup'**
+  String get careSuggestionDisplayTitleWellnessReviewRhythm;
 
   /// No description provided for @careSuggestionAccept.
   ///

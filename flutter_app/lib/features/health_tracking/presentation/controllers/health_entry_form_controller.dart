@@ -18,13 +18,18 @@ export 'health_entry_form_state.dart';
 
 class HealthEntryFormController extends HealthEntryFormControllerBase
     with HealthEntryFormPhotoMixin, HealthEntryFormSubmitMixin {
-  HealthEntryFormController(this.ref, HealthEntryFormParams params)
+  HealthEntryFormController(this.ref, this.params)
     : super(_initialState(params));
 
   final Ref ref;
+  final HealthEntryFormParams params;
 
   @override
   Ref get formRef => ref;
+
+  @override
+  String? get careRecommendationId => params.careRecommendationId;
+
   String? _entryId;
   HealthEntryFormState? _baseline;
 
@@ -69,7 +74,35 @@ class HealthEntryFormController extends HealthEntryFormControllerBase
         careFamilyPickerRevealed: true,
       );
     }
+
+    final initialName = params.initialRoutineName?.trim();
+    if (initialName != null && initialName.isNotEmpty) {
+      state = state.copyWith(name: initialName);
+    }
+
+    final freq = _frequencyFromWire(params.initialFrequencyWire);
+    if (freq != null) {
+      state = state.copyWith(
+        frequency: freq,
+        frequencyInterval: params.initialFrequencyInterval ?? 1,
+      );
+    }
+
+    if (params.careRecommendationId != null && !state.isRecordMode) {
+      final today = calendarDateOnly(DateTime.now());
+      state = state.copyWith(dueDate: today, startDate: today);
+    }
     return state;
+  }
+
+  static HealthFrequency? _frequencyFromWire(String? wire) {
+    return switch (wire) {
+      'daily' => HealthFrequency.daily,
+      'weekly' => HealthFrequency.weekly,
+      'monthly' => HealthFrequency.monthly,
+      'yearly' => HealthFrequency.yearly,
+      _ => null,
+    };
   }
 
   @override

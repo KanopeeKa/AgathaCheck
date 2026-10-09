@@ -150,7 +150,7 @@ void main() {
       buildWidget(plan: emptyPlan, repository: repository),
     );
     await tester.pumpAndSettle();
-    expect(find.text('Suggested by Agatha'), findsNothing);
+    expect(find.text('Agatha recommends'), findsNothing);
   });
 
   testWidgets('shows suggestions and carer task summary', (tester) async {
@@ -159,7 +159,7 @@ void main() {
       buildWidget(plan: planWithSuggestion(), repository: repository),
     );
     await tester.pumpAndSettle();
-    expect(find.text('Suggested by Agatha'), findsOneWidget);
+    expect(find.text('Agatha recommends'), findsOneWidget);
     expect(find.text('Grooming'), findsOneWidget);
     expect(find.textContaining('care tasks'), findsOneWidget);
   });
