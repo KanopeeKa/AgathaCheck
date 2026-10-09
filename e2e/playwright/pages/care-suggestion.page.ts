@@ -9,18 +9,20 @@ import {
   waitForFlutterRoutePattern,
 } from '../support/flutter';
 
-const suggestionTitleRe = /Suggested by Agatha|Suggestion d'Agatha|Suggéré par Agatha/i;
+const suggestionGroupRe =
+  /Agatha recommends|Agatha recommande|Suggested by Agatha|Suggestion d'Agatha|Suggéré par Agatha/i;
 const addRoutineRe = /^(Add routine|Add rhythm)$|^(Ajouter la routine|Ajouter le rythme)$/i;
-const notRelevantRe = /^Not relevant$|^Pas pertinent$/i;
-const dismissRe = /^Dismiss$|^Ignorer$/i;
-const whyRe = /^Why\?$|^Pourquoi\s*\?$/i;
+const noThanksRe = /^No thanks$|^Pas merci$/i;
+const laterRe = /^Later$|^Plus tard$/i;
+const whyRe = /^Why this matters$|^Pourquoi c'est important$/i;
+const saveFormRe = /^Save$|^Enregistrer$/i;
 
 export class CareSuggestionPage {
   constructor(private readonly page: Page) {}
 
   private suggestionCardRoot() {
     return this.page
-      .getByRole('group', { name: suggestionTitleRe })
+      .getByRole('group', { name: suggestionGroupRe })
       .filter({ has: this.page.getByRole('button', { name: addRoutineRe }) })
       .first();
   }
@@ -57,7 +59,7 @@ export class CareSuggestionPage {
       (await card.getAttribute('aria-label')) ||
       (await card.evaluate((el) => el.getAttribute('aria-label') || ''));
     const match = label.match(
-      /(?:Suggested by Agatha|Suggestion d'Agatha|Suggéré par Agatha)\s+(.+?)\s+Every/i,
+      /(?:Agatha recommends|Agatha recommande|Suggested by Agatha|Suggestion d'Agatha|Suggéré par Agatha)\s*[.:]?\s*(.+?)(?:\s+Every|\s+Chaque|$)/i,
     );
     const routineName = match?.[1]?.trim() ?? '';
     if (!routineName) {
@@ -74,7 +76,7 @@ export class CareSuggestionPage {
     const { expect } = await import('@playwright/test');
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      const groups = this.page.getByRole('group', { name: suggestionTitleRe });
+      const groups = this.page.getByRole('group', { name: suggestionGroupRe });
       const count = await groups.count();
       for (let i = 0; i < count; i++) {
         const label = await groups.nth(i).evaluate((el) => el.getAttribute('aria-label') || '');
@@ -114,9 +116,12 @@ export class CareSuggestionPage {
         res.url().includes('/respond') &&
         res.request().method() === 'POST' &&
         res.ok(),
-      { timeout: 30_000 },
+      { timeout: 45_000 },
     );
     await card.getByRole('button', { name: addRoutineRe }).click();
+    await waitForFlutterRoutePattern(this.page, /\/care\/add/, 15_000);
+    await refreshFlutterAccessibility(this.page);
+    await this.page.getByRole('button', { name: saveFormRe }).click();
     await respond;
     await refreshFlutterAccessibility(this.page);
   }
@@ -125,7 +130,7 @@ export class CareSuggestionPage {
     const { expect } = await import('@playwright/test');
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      await expect(this.page.getByRole('group', { name: suggestionTitleRe })).toHaveCount(0);
+      await expect(this.page.getByRole('group', { name: suggestionGroupRe })).toHaveCount(0);
     }).toPass({ timeout });
   }
 
@@ -134,7 +139,7 @@ export class CareSuggestionPage {
     const card = this.suggestionCardRoot();
     await card.getByRole('button', { name: addRoutineRe }).waitFor({ timeout: 15_000 });
     await card.getByRole('button', { name: whyRe }).waitFor({ timeout: 15_000 });
-    await card.getByRole('button', { name: notRelevantRe }).waitFor({ timeout: 15_000 });
-    await card.getByRole('button', { name: dismissRe }).waitFor({ timeout: 15_000 });
+    await card.getByRole('button', { name: noThanksRe }).waitFor({ timeout: 15_000 });
+    await card.getByRole('button', { name: laterRe }).waitFor({ timeout: 15_000 });
   }
 }

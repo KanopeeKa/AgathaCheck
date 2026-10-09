@@ -66,4 +66,60 @@ void main() {
     ).textButtonTheme.style?.foregroundColor?.resolve({});
     expect(acceptColor, AppColorTokens.agathaTealAction);
   });
+
+  testWidgets('Care family suggestion uses hybrid card chrome', (tester) async {
+    final notification = AppNotification(
+      id: 'n-cim',
+      userId: 'u-1',
+      petId: 'pet-1',
+      petName: 'Luna',
+      title: 'Weight check',
+      message: 'ignored',
+      type: NotificationType.general,
+      wireType: 'suggestionCareFamily',
+      kind: NotificationKind.suggestion,
+      isRead: false,
+      createdAt: DateTime(2026, 1, 1),
+      suggestionState: 'new',
+      suggestionPayload: {
+        'care_family': 'weight_monitoring',
+        'suggestion_key': 'weight_monitoring_rhythm',
+        'suggested_name': 'Weight check',
+        'suggested_frequency': 'monthly',
+        'suggested_frequency_interval': 1,
+        'rationale_key': 'careSuggestionWeightMonitoringWhy',
+        'recommendation_id': 'rec-1',
+      },
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          notificationsProvider.overrideWith(
+            () => TestNotificationsNotifier(const []),
+          ),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: NotificationSuggestionCard(
+              notification: notification,
+              onOpenPet: () {},
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final l = AppLocalizations.of(
+      tester.element(find.byType(NotificationSuggestionCard)),
+    )!;
+    expect(find.text('Monthly weight check'), findsOneWidget);
+    expect(find.text(l.careSuggestionWhyLink), findsOneWidget);
+    expect(find.text(l.careSuggestionLater), findsOneWidget);
+    expect(find.text(l.careSuggestionNoThanks), findsOneWidget);
+    expect(find.textContaining(l.careSuggestionEyebrowRecommends), findsOneWidget);
+  });
 }
