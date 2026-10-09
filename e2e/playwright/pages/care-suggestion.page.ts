@@ -174,14 +174,7 @@ export class CareSuggestionPage {
         options.accessToken,
         options.petId,
         recommendation.id,
-        {
-          action: 'accept',
-          adjust: {
-            name: recommendation.suggested_name,
-            frequency: recommendation.suggested_frequency,
-            frequency_interval: recommendation.suggested_frequency_interval,
-          },
-        },
+        { action: 'accept' },
       );
     }
     await refreshFlutterAccessibility(this.page);

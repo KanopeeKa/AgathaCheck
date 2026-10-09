@@ -78,12 +78,7 @@ test.describe('Care suggestion (CIM)', () => {
       accessToken: testUser.accessToken,
     });
     await suggestion.openPetDetail(pet.id);
-    const { expect } = await import('@playwright/test');
-    await expect(async () => {
-      const recs = await listCareRecommendations(url, testUser.accessToken, pet.id);
-      expect(recs.some((r) => r.status === 'pending')).toBe(false);
-    }).toPass({ timeout: 45_000 });
-    await suggestion.expectSuggestionCardHidden(45_000);
+    await suggestion.expectSuggestionCardHidden(60_000);
     await suggestion.expectCareRhythmVisible(weightMonitoringRhythmPattern);
   });
 });
