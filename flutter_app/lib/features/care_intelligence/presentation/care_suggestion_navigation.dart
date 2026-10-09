@@ -24,5 +24,5 @@ void navigateToCareSuggestionReviewForm({
       'frequencyInterval': recommendation.suggestedFrequencyInterval.toString(),
     },
   ).query;
-  context.push('/pet/$petId/care/add?$query');
+  context.go('/pet/$petId/care/add?$query');
 }
