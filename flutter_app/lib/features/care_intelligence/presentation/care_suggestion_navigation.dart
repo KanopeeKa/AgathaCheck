@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../pet_profile/pet_profile.dart';
@@ -7,7 +8,7 @@ import 'care_suggestion_copy.dart';
 
 /// Opens the care add form so the guardian can review before accepting.
 void navigateToCareSuggestionReviewForm({
-  required GoRouter router,
+  required BuildContext context,
   required AppLocalizations l,
   required String petId,
   required CareRecommendation recommendation,
@@ -23,5 +24,5 @@ void navigateToCareSuggestionReviewForm({
       'frequencyInterval': recommendation.suggestedFrequencyInterval.toString(),
     },
   ).query;
-  router.push('/pet/$petId/care/add?$query');
+  context.push('/pet/$petId/care/add?$query');
 }

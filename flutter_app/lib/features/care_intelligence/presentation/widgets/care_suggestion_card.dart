@@ -64,7 +64,7 @@ class _CareSuggestionCardState extends ConsumerState<CareSuggestionCard> {
   void _openReviewForm() {
     final l = AppLocalizations.of(context)!;
     navigateToCareSuggestionReviewForm(
-      router: GoRouter.of(context),
+      context: context,
       l: l,
       petId: widget.petId,
       recommendation: widget.recommendation,
