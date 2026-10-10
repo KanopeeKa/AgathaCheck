@@ -56,9 +56,6 @@ class AppFormActionsBar extends StatelessWidget {
         Expanded(
           child: Semantics(
             identifier: _semanticsIdFromSaveKey(saveKey),
-            button: true,
-            enabled: canSave,
-            label: saveLabel,
             child: FilledButton.icon(
               key: saveKey,
               onPressed: canSave ? onSave : null,
