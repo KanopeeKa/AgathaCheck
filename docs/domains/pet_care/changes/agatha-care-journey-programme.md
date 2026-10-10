@@ -2,12 +2,11 @@
 title: Agatha care journey programme
 owner: Product / Documentation
 audience: both
-domain: pet_care
 status: proposed
+last_updated: 2026-10-10
 status_since: 2026-10-10
-folds_into: docs/domains/pet_care/features/care-intelligence.md
-related_plan: .agents/plans/agatha-care-journey.md
 tags: [pet_care, pet_profile, care_intelligence, roadmap, execute-plan]
+folds_into: docs/domains/pet_care/features/care-intelligence.md
 ---
 
 # Agatha care journey programme

@@ -2,12 +2,11 @@
 title: Agatha care journey — UI design (deep)
 owner: Product / Documentation
 audience: both
-domain: pet_care
 status: proposed
+last_updated: 2026-10-10
 status_since: 2026-10-10
-folds_into: docs/domains/pet_care/features/care-intelligence.md
-parent: agatha-care-journey-programme.md
 tags: [design, ui, pet_profile, care_intelligence]
+folds_into: docs/domains/pet_care/features/care-intelligence.md
 ---
 
 # Agatha care journey — UI design (deep)

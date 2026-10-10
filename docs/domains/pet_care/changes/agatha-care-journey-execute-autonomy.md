@@ -2,13 +2,11 @@
 title: Agatha care journey — execute-plan autonomy contract
 owner: Product / Documentation
 audience: agent
-domain: pet_care
 status: proposed
+last_updated: 2026-10-10
 status_since: 2026-10-10
-folds_into: docs/domains/pet_care/features/care-intelligence.md
-parent: agatha-care-journey-programme.md
-related_plan: .agents/plans/agatha-care-journey.md
 tags: [execute-plan, autonomy, uat]
+folds_into: docs/domains/pet_care/features/care-intelligence.md
 ---
 
 # Execute-plan autonomy contract
