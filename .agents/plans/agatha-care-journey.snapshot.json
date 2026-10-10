@@ -2,12 +2,12 @@
   "schema_version": 1,
   "plan_id": "agatha-care-journey",
   "programme_ref": "docs/domains/pet_care/changes/agatha-care-journey-programme.md",
-  "approved_at": "1970-01-01T00:00:00Z",
-  "approved_by": "PLACEHOLDER — awaiting approve-autonomous agatha-care-journey",
-  "approved_until": "1970-01-03T00:00:00Z",
-  "autonomy": "halted",
+  "approved_at": "2026-10-10T17:12:00Z",
+  "approved_by": "User chat 2026-10-10 — full execute-plan autonomy (integration branch → release PR → main + babysit-uat); approve-autonomous agatha-care-journey",
+  "approved_until": "2026-10-12T17:12:00Z",
+  "autonomy": "active",
   "default_merge_mode": "auto",
-  "base_branch": "main",
+  "base_branch": "cursor/agatha-care-journey-integration-b994",
   "control_issue": 1835,
   "artifact_branch_policy": "phase-branch",
   "phases": [
@@ -462,5 +462,5 @@
       "merge_method": "manual"
     }
   ],
-  "content_hash": "sha256:8bf07d365cbbd25968172cc2179484fe5e602e03c99c4576d58f63bd18970106"
+  "content_hash": "sha256:42779cce9c9984092c15aa06833488dc95392f87a75619a3faa99f253e614f6a"
 }

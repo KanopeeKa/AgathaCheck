@@ -2,7 +2,7 @@
 title: Agatha care journey (execute-plan)
 owner: Product / Agent
 audience: agent
-status: proposed
+status: active
 last_updated: 2026-10-10
 tags: [pet_care, pet_profile, care_intelligence, roadmap]
 ---
@@ -14,51 +14,39 @@ tags: [pet_care, pet_profile, care_intelligence, roadmap]
 | Field | Value |
 |-------|-------|
 | **plan_id** | `agatha-care-journey` |
-| **base_branch** | `main` |
+| **base_branch** | `cursor/agatha-care-journey-integration-b994` |
 | **default_merge_mode** | `auto` |
 | **artifact_branch_policy** | `phase-branch` |
+| **control_issue** | #1835 |
 | **programme_ref** | `docs/domains/pet_care/changes/agatha-care-journey-programme.md` |
 | **autonomy_contract** | `docs/domains/pet_care/changes/agatha-care-journey-execute-autonomy.md` |
 
 ## Goal
 
-Fourteen phases (**pr-01 … pr-14**), each **PR → `main`**. **No integration branch.** Full autonomy includes **`/babysit-uat`** on **pr-14** (pre-UAT E2E) before `complete-plan`.
+14 phases on **integration**; release PR → `main` with `/babysit-uat`. See programme + autonomy contract + bdd-qa.
 
-**Read first:** programme · ui-design · bdd-qa · **execute-autonomy contract**.
+## Runtime state
 
-## Autonomy (confirmed)
+```yaml
+autonomy: active
+current_phase: null
+last_completed_phase: null
+halt_reason: null
+next_action: "gate passed — begin pr-01 implementation"
+artifact_ref:
+  branch: cursor/agatha-care-journey-integration-b994
+  plan_path: .agents/plans/agatha-care-journey.md
+  snapshot_path: .agents/plans/agatha-care-journey.snapshot.json
+open_prs: []
+```
 
-| Item | Policy |
-|------|--------|
-| Integration mega-PR | **Forbidden** |
-| Per-phase merge | `main` via `/babysit-plus` |
-| Final phase | `/babysit-uat` + pre-UAT watch on pr-14 merge SHA |
-| Subagents | `spawn_allowed` on **pr-09** (parallel with pr-02 after pr-01) — ownership on control issue |
-| Migration merges | `merge_method: manual` — halt `human_pause` after CI green |
-| Model | `composer-2.5` for all babysit |
+## Preflight (completed)
 
-## Pre-approval
+- Integration branch created and pushed
+- Snapshot `autonomy: active`, `control_issue: 1835`
+- Gate validated
+- Control issue #1835 — `approve-autonomous` recorded
 
-Programme § Pre-approval checklist + autonomy contract. Snapshot: real `control_issue`, valid approval window, `--fix-hash`.
+## Phase loop
 
-## Per-phase exit (summary)
-
-| Phase | Babysit | exit_checklist |
-|-------|---------|----------------|
-| pr-01,06,09,14 | plus / **uat on 14 only** | default + single-backend-route + governance |
-| pr-04,12,13 | plus | + bdd-journey where noted in autonomy doc |
-| pr-02,03,04,05,07,08,10,11 | plus | default + flutter-screen-split (+ backend where applicable) |
-
-**TDD → BDD → Docs:** mandatory order per autonomy contract § Phase hygiene.
-
-## Halt
-
-- PR-12 without ACJ-D-006 Live
-- PR-14 UI without product gate
-- CSM-stable self-declaration (forbidden)
-
-## Completion
-
-All phases `merged` on `main`; pr-14 pre-UAT green; fold `changes/` docs; `autonomy: completed`.
-
-See snapshot for `allowed_paths`, `spawn_allowed`, `merge_method`.
+See snapshot phases `pr-01` … `pr-14`. Babysit-plus → integration. After pr-14 merged: open release PR → babysit-uat → complete-plan.

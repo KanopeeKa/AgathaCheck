@@ -12,80 +12,64 @@ tags: [execute-plan, autonomy, uat]
 
 # Execute-plan autonomy contract
 
-Governs **`agatha-care-journey`** when `approve-autonomous` is granted. Pair with [programme](./agatha-care-journey-programme.md) and [bdd-qa](./agatha-care-journey-bdd-qa.md).
+Governs **`agatha-care-journey`** when `approve-autonomous` is granted. Aligns with [execute-plan skill](/.cursor/skills/execute-plan/SKILL.md) and [execute-plan-schema.md](/docs/agent-efficiency/execute-plan-schema.md).
 
-## Delivery shape (confirmed)
+## Delivery shape (full autonomy — confirmed)
 
 | Rule | Value |
 |------|--------|
-| **Integration branch** | **None.** No `cursor/agatha-care-journey-integration-*`, no single mega-PR integration → `main`. |
-| **Per phase** | One PR → **`main`**; value ships incrementally (flags where needed). |
-| **Orchestrator** | `/execute-plan agatha-care-journey` — run-until-blocked; `composer-2.5` for all babysit steps. |
-| **Subagents** | **Allowed** for disjoint phases (see § Parallelism); brief via `phase-implementer.md`. |
-| **UAT** | **Included** in autonomy — final phase uses **`/babysit-uat`** (pre-UAT E2E on `main`); remedial via **`/e2e-debug`** same session. |
+| **Integration branch** | `cursor/agatha-care-journey-integration-b994` — **all phase PRs target this branch**, not `main`. |
+| **Per phase** | `pr-01` … `pr-14` → `/babysit-plus` → squash-merge into **integration**. |
+| **Release to main** | After all phases `merged` on integration: **one PR** integration → `main` → **`/babysit-uat`** (pre-UAT E2E on that merge SHA). |
+| **Orchestrator** | `/execute-plan agatha-care-journey` — run-until-blocked; `composer-2.5` for babysit. |
+| **Subagents** | Allowed when `spawn_allowed` (e.g. **pr-09** ∥ **pr-02** after pr-01). |
+| **UAT** | Included — **release PR** to `main` is the `/babysit-uat` gate; remedial via `/e2e-debug` same session. |
 
-## Phase hygiene (every PR)
+**Do not** open phase PRs against `main`. **Do not** merge programme slices to `main` until the release PR.
+
+## Phase hygiene (every phase)
 
 | Step | Requirement |
 |------|----------------|
-| 1 | **TDD:** failing tests for this phase’s AC-* **before** production code (bdd-qa traceability). |
-| 2 | **BDD:** extend `agatha_care_journey.feature` when guardian-visible; wire Playwright when steps exist. |
-| 3 | **Docs:** `/canonical-docs sync` Mode A before PR open if behaviour changes; PR body `## Docs`. |
-| 4 | **Pre-PR** | Critical self-review (pr-hygiene). |
-| 5 | **Verify** | `./scripts/pre-push-changed.sh`; migration phases also `./scripts/pre-push.sh` before merge request. |
-| 6 | **Babysit** | See § Babysit matrix below. |
+| 1 | **TDD** — failing tests for phase AC-* first ([bdd-qa](./agatha-care-journey-bdd-qa.md)). |
+| 2 | **BDD** — extend `agatha_care_journey.feature` when guardian-visible. |
+| 3 | **Docs** — `/canonical-docs sync` Mode A before PR open when behaviour changes. |
+| 4 | **Pre-PR** — critical self-review. |
+| 5 | **Verify** — `./scripts/pre-push-changed.sh` (full `./scripts/pre-push.sh` before release PR). |
+| 6 | **Babysit** — `/babysit-plus` → merge to **integration**. |
 
 ## Babysit / UAT matrix
 
-| Phase | PR | Merge skill | Pre-UAT E2E watch |
-|-------|-----|-------------|-------------------|
-| pr-01 … pr-13 | PR-01 … PR-13 | **`/babysit-plus`** | No (CI on PR + main trunk) |
-| **pr-14** | PR-14 | **`/babysit-uat`** | **Yes** — gate before `complete-plan` |
-| Remedial | any | `/e2e-debug` → **`/babysit-uat`** on remedial PR | Yes |
+| Step | Target | Skill | Pre-UAT watch |
+|------|--------|-------|----------------|
+| pr-01 … pr-14 | `cursor/agatha-care-journey-integration-b994` | `/babysit-plus` | No |
+| **Release PR** | `main` | **`/babysit-uat`** | **Yes** |
+| Pre-UAT failure | remedial PR → `main` | `/e2e-debug` → `/babysit-uat` | Yes |
 
-**Not in scope for agent:** polling `promote-uat` / `deploy-uat` (CI owns promotion per `uat-deploy-tiers.md`).
+**Not in scope:** polling `promote-uat` / `deploy-uat`.
 
-**Migration phases (PR-01, PR-06, PR-09, PR-14):** snapshot `merge_method: manual` — orchestrator runs babysit+ through CI green, then **halts** with `human_pause` until merge button / `resume-plan` after human squash-merge (data migration review).
+**Migration phases (PR-01, PR-06, PR-09, PR-14):** after CI green, orchestrator may **`halt --reason human_pause`** for human migration review on control issue **#1835**; comment `resume-plan agatha-care-journey` to continue merge to integration.
 
-## Parallelism (subagents)
+## Parallelism
 
-Publish ownership in control issue before spawning.
+Rebase phase branches on `origin/cursor/agatha-care-journey-integration-b994` between phases.
 
-| Window | Phases | Disjoint? | Spawn |
-|--------|--------|-----------|-------|
-| After pr-01 merge | **pr-02** (Flutter) ∥ **pr-09** (vax schema) | Yes — server vax vs flutter pet_profile | `spawn_allowed: true` on pr-09 |
-| After pr-06 merge | pr-07 then pr-08 | Same welfare evaluator paths — **sequential** | spawn false |
-| pr-03 → pr-04 | Sequential | Shared pet profile UI | spawn false |
+| Window | Spawn |
+|--------|-------|
+| After pr-01 → pr-02 ∥ pr-09 | `spawn_allowed: true` on pr-09 |
+| pr-07 → pr-08 | sequential |
 
-**Rule:** max one active PR per overlapping `allowed_paths`; integration merges = rebase onto `origin/main` between phases.
+## Exit checklists
 
-## Exit checklist profiles (snapshot)
+Per snapshot `exit_checklist` profiles (see programme verification pack).
 
-| Phase | `exit_checklist` |
-|-------|------------------|
-| pr-01, pr-06, pr-09, pr-14 | `default` + `single-backend-route` + `governance` (migrations) |
-| pr-02, pr-03, pr-05 | `default` + `flutter-screen-split` |
-| pr-04 | `default` + `flutter-screen-split` + `bdd-journey` |
-| pr-07–08, pr-10–11 | `default` + `single-backend-route` + `flutter-screen-split` |
-| pr-12–13 | `default` + `bdd-journey` |
-| pr-14 | `default` + `single-backend-route` + `governance` |
+## Feature flags
 
-## Feature flags (defaults off until wave sign-off)
+Unchanged — enable with surface PRs on integration; release PR may flip defaults on `main`.
 
-| Flag key | PR | Surface |
-|----------|-----|---------|
-| `acj_profile_facts_ui` | PR-02 | Form enums |
-| `acj_inline_profile_capture` | PR-03 | Sheet |
-| `acj_completeness_cards` | PR-04 | Agatha completeness |
-| `acj_welfare_suggestions` | PR-06+ | Welfare cards |
-| `acj_agenda_date_groups` | PR-12 | Actions grouping |
-| `acj_coordination_copy` | PR-13 | Coordination banner |
+## `complete-plan`
 
-Orchestrator enables flag in same PR that ships the surface (or documents server-side gating).
-
-## `complete-plan` criteria
-
-- All phases `merged` on `main`
-- **pr-14** merge SHA passed **pre-UAT E2E** watch
-- Programme `changes/` folded per canonical-docs skill
-- Snapshot `autonomy: completed`
+- All 14 phases `merged` on integration  
+- Release PR merged to `main` with **pre-UAT green**  
+- Fold `changes/` docs  
+- `autonomy: completed`

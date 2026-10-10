@@ -14,7 +14,7 @@ tags: [pet_care, pet_profile, care_intelligence, roadmap, execute-plan]
 
 # Agatha care journey programme
 
-Frozen programme for **`agatha-care-journey`** execute-plan. **Atomic PRs PR-01 … PR-14**, each merging to **`main`** (feature-flagged where user-visible). Parallel **Care Schedule Management (CSM)** continues on existing plans.
+Frozen programme for **`agatha-care-journey`** execute-plan. **Atomic phases PR-01 … PR-14** merge to integration branch **`cursor/agatha-care-journey-integration-b994`**; **one release PR** integration → **`main`** with **`/babysit-uat`**. Parallel **CSM** continues on existing plans.
 
 **Slot order (single source of truth):** [`agatha-care-journey-ui-design.md`](./agatha-care-journey-ui-design.md) §3 — programme links here; do not duplicate ordering prose.
 
@@ -34,18 +34,18 @@ AgathaTrack helps pet parents **know**, **understand**, **plan**, **act**, and *
 5. Adds agenda **grouping** and **coordination copy** after **CSM-stable** (halt if gate undefined).
 6. Defers visit **UI**; PR-14 is schema/API only.
 
-## Delivery model (B6) + full autonomy
+## Delivery model (execute-plan full autonomy)
 
 | Rule | Detail |
 |------|--------|
-| **Merge target** | Each PR-* merges to **`main`** — **no** integration branch, **no** batch integration→`main` PR. |
-| **Execute-plan** | `/execute-plan agatha-care-journey` — phases `pr-01`…`pr-14`; see [autonomy contract](./agatha-care-journey-execute-autonomy.md). |
-| **Babysit** | PR-01…13: `/babysit-plus`; PR-14 (final): `/babysit-uat` + pre-UAT E2E on `main` before `complete-plan`. |
-| **Subagents** | Allowed for disjoint paths (e.g. **pr-09** ∥ **pr-02** after pr-01). |
-| **Feature flags** | Keys in autonomy doc § Feature flags — default off until surface PR merges. |
-| **Migration PRs** | PR-01, PR-06, PR-09, PR-14: `merge_method: manual` — CI green then `human_pause` for squash-merge. |
-| **W1 value** | PR-01/02 plumbing; first visible: **PR-03** then **PR-04**. |
-| **Rollback** | PR-01 migration: lossy backfill documented in PR body. |
+| **Integration branch** | `cursor/agatha-care-journey-integration-b994` — phase PR base (`snapshot.base_branch`). |
+| **Phase merges** | Each PR-* → **`/babysit-plus`** → squash into **integration** (not `main`). |
+| **Release** | One PR integration → **`main`** → **`/babysit-uat`** + pre-UAT E2E; then `complete-plan`. |
+| **Contract** | [execute-autonomy.md](./agatha-care-journey-execute-autonomy.md) |
+| **Subagents** | **pr-09** ∥ **pr-02** after pr-01 when paths disjoint. |
+| **Feature flags** | Per autonomy doc; defaults may flip on release PR. |
+| **Migrations** | PR-01, 06, 09, 14: optional `human_pause` on #1835 before merge to integration. |
+| **W1 value** | First guardian-visible on integration: **PR-03**, **PR-04**. |
 
 ### Per-PR verification pack (mandatory)
 
@@ -363,14 +363,14 @@ Columns include: `pet_id`, `subject_key`, `dedupe_key`, `status`, `primary_outco
 - [ ] B1–B3 PR-01 contract in spec (this doc § PR-01)
 - [ ] B4 `welfare_suggestions` + ACJ-D-005
 - [ ] B5 ACJ-D-006 owner/criteria filled; PR-14 decoupled from PR-12
-- [ ] B6 delivery: per-PR `main`, flags, manual migration phases, rollback notes
+- [x] B6 delivery: phase PRs → integration; release PR → `main`; flags; optional migration `human_pause`; rollback notes
 - [ ] Q2 slot order in UI doc; PR-04 minimal policy; tiebreak + cooldown in PR-05
 - [ ] O1 legacy card deletion in PR-04 scope
 - [ ] UI-Q-01..03 resolved in UI doc
 - [ ] bdd-qa: `@smoke-ci` boundaries, traceability, copy lint
 - [ ] DATA_MAP PR-01/09; metrics § Success metrics
-- [ ] Snapshot: real `control_issue`, valid `approved_at` / `approved_until`, `--fix-hash`
-- [ ] [Execute autonomy](./agatha-care-journey-execute-autonomy.md): no integration branch; pr-14 `/babysit-uat`; spawn rules documented
+- [x] Snapshot: `control_issue` #1835, `base_branch` integration, `autonomy: active`, `approved_until` +48h, `--fix-hash`
+- [x] [Execute autonomy](./agatha-care-journey-execute-autonomy.md): integration branch `cursor/agatha-care-journey-integration-b994`; release `/babysit-uat`; spawn rules documented
 - [ ] bdd-qa: full AC→test traceability; per-PR verification pack above agreed
 
 ## Doc ownership (spec PR)
