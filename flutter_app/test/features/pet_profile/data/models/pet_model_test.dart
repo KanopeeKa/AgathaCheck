@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/core/utils/calendar_date.dart';
 import 'package:pet_profile_app/features/pet_profile/data/models/pet_model.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
+import 'package:pet_profile_app/features/pet_profile/domain/entities/profile_fact_status.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet_access_role.dart';
 import 'package:pet_profile_app/features/sharing/domain/entities/pet_access.dart';
 
@@ -27,6 +28,10 @@ void main() {
     'is_shared': true,
     'organization_id': 'org-99',
     'organization_name': 'Happy Paws',
+    'identificationStatus': 'yes',
+    'neuterStatus': 'no',
+    'identificationStatusSource': 'user',
+    'neuterStatusSource': 'user',
   };
 
   final fullModel = PetModel(
@@ -50,6 +55,10 @@ void main() {
     isShared: true,
     organizationId: 'org-99',
     organizationName: 'Happy Paws',
+    identificationStatus: profileFactStatusYes,
+    neuterStatus: profileFactStatusNo,
+    identificationStatusSource: 'user',
+    neuterStatusSource: 'user',
   );
 
   group('PetModel.fromJson', () {
@@ -82,6 +91,32 @@ void main() {
       expect(model.isShared, isTrue);
       expect(model.organizationId, 'org-99');
       expect(model.organizationName, 'Happy Paws');
+      expect(model.identificationStatus, profileFactStatusYes);
+      expect(model.neuterStatus, profileFactStatusNo);
+      expect(model.identificationStatusSource, 'user');
+      expect(model.neuterStatusSource, 'user');
+    });
+
+    test('parses snake_case profile fact status fields', () {
+      final model = PetModel.fromJson({
+        'id': 'p1',
+        'name': 'Max',
+        'species': 'Dog',
+        'identification_status': 'no',
+        'neuter_status': 'unknown',
+      });
+      expect(model.identificationStatus, profileFactStatusNo);
+      expect(model.neuterStatus, profileFactStatusUnknown);
+    });
+
+    test('defaults profile fact statuses to unknown when absent', () {
+      final model = PetModel.fromJson({
+        'id': 'min-id',
+        'name': 'Min',
+        'species': 'Cat',
+      });
+      expect(model.identificationStatus, profileFactStatusUnknown);
+      expect(model.neuterStatus, profileFactStatusUnknown);
     });
 
     test('parses snake_case date_of_birth', () {
@@ -220,6 +255,10 @@ void main() {
       expect(json['passedAway'], isFalse);
       expect(json['organization_id'], 'org-99');
       expect(json['organization_name'], 'Happy Paws');
+      expect(json['identificationStatus'], profileFactStatusYes);
+      expect(json['neuterStatus'], profileFactStatusNo);
+      expect(json['identificationStatusSource'], 'user');
+      expect(json['neuterStatusSource'], 'user');
     });
 
     test('includes weightEntryDate when requested and weight is set', () {

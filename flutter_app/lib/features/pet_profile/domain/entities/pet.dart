@@ -1,4 +1,5 @@
 import 'pet_access_role.dart';
+import 'profile_fact_status.dart';
 
 /// Represents a pet entity in the domain layer.
 ///
@@ -39,6 +40,10 @@ class Pet {
     this.weightReferenceAuthority,
     this.weightManagementContext = 'none',
     this.homeTimezone = 'UTC',
+    this.identificationStatus = profileFactStatusUnknown,
+    this.neuterStatus = profileFactStatusUnknown,
+    this.identificationStatusSource,
+    this.neuterStatusSource,
   });
 
   final String id;
@@ -72,6 +77,10 @@ class Pet {
   final String? weightReferenceAuthority;
   final String weightManagementContext;
   final String homeTimezone;
+  final String identificationStatus;
+  final String neuterStatus;
+  final String? identificationStatusSource;
+  final String? neuterStatusSource;
 
   double? get age {
     if (dateOfBirth == null) return null;
@@ -142,6 +151,12 @@ class Pet {
     String? weightReferenceAuthority,
     String? weightManagementContext,
     String? homeTimezone,
+    String? identificationStatus,
+    String? neuterStatus,
+    String? identificationStatusSource,
+    String? neuterStatusSource,
+    bool clearIdentificationStatusSource = false,
+    bool clearNeuterStatusSource = false,
     bool clearVetId = false,
     bool clearGender = false,
     bool clearNeuteredDate = false,
@@ -189,6 +204,14 @@ class Pet {
       weightManagementContext:
           weightManagementContext ?? this.weightManagementContext,
       homeTimezone: homeTimezone ?? this.homeTimezone,
+      identificationStatus: identificationStatus ?? this.identificationStatus,
+      neuterStatus: neuterStatus ?? this.neuterStatus,
+      identificationStatusSource: clearIdentificationStatusSource
+          ? null
+          : (identificationStatusSource ?? this.identificationStatusSource),
+      neuterStatusSource: clearNeuterStatusSource
+          ? null
+          : (neuterStatusSource ?? this.neuterStatusSource),
     );
   }
 
