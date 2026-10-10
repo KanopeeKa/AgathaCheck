@@ -25,20 +25,45 @@ tags: [pet_care, pet_profile, care_intelligence, roadmap]
 
 14 phases on **integration**; release PR → `main` with `/babysit-uat`. See programme + autonomy contract + bdd-qa.
 
-## Orchestrator contract (binding — do not soft-stop)
+## Orchestrator contract (binding — overrides generic “update the user” rules)
 
-This plan runs under **`/execute-plan` run-until-blocked** (skill + `.agents/memory/execute-plan-autonomy.md`). After gate exit `0`:
+**Mode:** `run-until-blocked` only. Canonical: `/execute-plan` skill · `.agents/memory/execute-plan-autonomy.md` · `agatha-care-journey-execute-autonomy.md`.
 
-| Rule | Meaning |
-|------|---------|
-| **No turn-end checkpoints** | A user-visible chat reply does **not** end the programme. Same session: implement → PR → babysit+ → merge → next phase until §Halt or `complete-plan`. |
-| **Forbidden stops** | Ending after preflight, PR opened, “CI pending”, milestone comment on #1835, or “next: pr-02” without merging pr-01 and starting implementation. |
-| **Merge** | `default_merge_mode: auto` — orchestrator runs **/babysit-plus** and **squash-merges** when CI is green. No waiting for human merge between phases. |
-| **Migration `human_pause`** | **Optional** explicit `halt --reason human_pause` on #1835 only when orchestrator chooses review before merge — **not** the default; default is merge when gates pass. |
-| **Chat** | Blocker alerts only (`**Needs you:**`, revoke, `session_limit`). Progress → control issue #1835 only. |
-| **Standing grant** | User authorized **full plan** (all 14 phases + release PR + babysit-uat). Do not re-ask per phase or per turn. |
+After gate exit `0`, the orchestrator **keeps using tools** until merge-done, `complete-plan`, or a real §Halt. **User chat is not a phase gate.**
 
-If the platform forces a turn boundary: next message is `/execute-plan agatha-care-journey` (or `resume-plan` on #1835) — continue `next_action` without permission prompts.
+### Must do (every session)
+
+1. `gate` → read `next_action` → continue that work **in the same session** when possible.
+2. **CI watch in-loop** (`gh pr checks --watch` / babysit+) — not a reason to send a status reply and stop.
+3. Phase **merge-done** → **immediately** start next `pending` phase (checkout, implement, PR) — no “confirm when done” in chat.
+4. **Squash-merge** phase PRs to `base_branch` via **/babysit-plus** when required checks pass (`default_merge_mode: auto`).
+
+### Forbidden (these count as wrongful stops)
+
+| Anti-pattern | Why it violates the plan |
+|--------------|---------------------------|
+| Reply after preflight, PR open, or “CI running” | Milestones are telemetry on **#1835** only |
+| “Next: pr-02” without pr-01 **merged** and pr-02 branch work started | Phase boundary = merge-done + continue |
+| “Confirm when done” / “let me know” / permission to proceed | Standing grant covers all 14 phases + release PR |
+| Waiting for human merge between phases | Babysit+ owns merge when green |
+| Treating `human_pause` as default for migrations | See below — default is **merge when green** |
+
+### Migrations (PR-01, 06, 09, 14)
+
+**Default:** merge to integration when CI green — **no** pause, **no** chat ask.
+
+**Only if** the orchestrator explicitly runs `halt --reason human_pause` on **#1835** does merge wait for `resume-plan agatha-care-journey`. Silence = continue.
+
+### Chat vs control issue
+
+| Channel | Use |
+|---------|-----|
+| **#1835** | PR links, CI green, phase merged, `next_action` |
+| **User chat** | `**Needs you:**`, revoke, `session_limit`, escalation only |
+
+**Standing grant (in snapshot `approved_by`):** full programme — all phases, integration batching, release PR, `/babysit-uat`. No re-approval per phase or per turn.
+
+**Turn boundary:** If the platform ends the turn, the **next** message resumes with `/execute-plan agatha-care-journey` — pick up `next_action`; do not treat the prior reply as programme complete.
 
 ## Runtime state
 
@@ -59,13 +84,6 @@ merge_commits: {}
 debt_issue_refs: []
 ```
 
-## Preflight (completed)
-
-- Integration branch created and pushed
-- Snapshot `autonomy: active`, `control_issue: 1835`
-- Gate validated
-- Control issue #1835 — `approve-autonomous` recorded
-
-## Phase loop
+## Phase loop (continuous — preflight is not a stop)
 
 See snapshot phases `pr-01` … `pr-14`. Babysit-plus → integration. After pr-14 merged: open release PR → babysit-uat → complete-plan.

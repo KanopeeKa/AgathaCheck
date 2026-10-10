@@ -3,7 +3,7 @@
   "plan_id": "agatha-care-journey",
   "programme_ref": "docs/domains/pet_care/changes/agatha-care-journey-programme.md",
   "approved_at": "2026-10-10T17:12:00Z",
-  "approved_by": "User chat 2026-10-10 — full execute-plan autonomy (integration branch → release PR → main + babysit-uat); approve-autonomous agatha-care-journey",
+  "approved_by": "User chat 2026-10-10 — full execute-plan RUN-UNTIL-BLOCKED (all 14 phases + release PR + babysit-uat); integration base; babysit+ auto-merge when CI green; approve-autonomous agatha-care-journey",
   "approved_until": "2026-10-12T17:12:00Z",
   "autonomy": "active",
   "default_merge_mode": "auto",
@@ -46,7 +46,7 @@
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "merge_method": "manual",
+      "merge_method": "squash",
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1837",
       "pr_head_sha": "4901ad8090d35458a1acb7664cafb11895a07503"
     },
@@ -204,7 +204,7 @@
       "pr_head_sha": null,
       "merge_commit": null,
       "debt_issue_refs": [],
-      "merge_method": "manual"
+      "merge_method": "squash"
     },
     {
       "id": "pr-07",
@@ -298,7 +298,7 @@
       "pr_head_sha": null,
       "merge_commit": null,
       "debt_issue_refs": [],
-      "merge_method": "manual",
+      "merge_method": "squash",
       "spawn_config": {
         "integration_branch": "main",
         "ownership_ref": "docs/domains/pet_care/changes/agatha-care-journey-execute-autonomy.md#parallelism-subagents"
@@ -458,8 +458,8 @@
       "pr_head_sha": null,
       "merge_commit": null,
       "debt_issue_refs": [],
-      "merge_method": "manual"
+      "merge_method": "squash"
     }
   ],
-  "content_hash": "sha256:4094975ec12d8e3c2e5de79a53b7c640992d9a6b0d15610155c165ad3f0aa642"
+  "content_hash": "sha256:68b81372c7a2b7b18420eb9a340a14ff715614e64ff5cc488129ee3b02ba42e1"
 }

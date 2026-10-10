@@ -11,70 +11,82 @@ folds_into: docs/domains/pet_care/features/care-intelligence.md
 
 # Execute-plan autonomy contract
 
-Governs **`agatha-care-journey`** when `approve-autonomous` is granted. Aligns with [execute-plan skill](/.cursor/skills/execute-plan/SKILL.md) and [execute-plan-schema.md](/docs/agent-efficiency/execute-plan-schema.md).
+Governs **`agatha-care-journey`** under `approve-autonomous` on **#1835**. **Binding orchestrator text:** `.agents/plans/agatha-care-journey.md` §Orchestrator contract (wins over generic agent “summarize progress” behavior).
 
-## Delivery shape (full autonomy — confirmed)
+## Full autonomy grant (what was approved)
+
+One standing grant covers **entire** delivery:
+
+- Phases **pr-01 … pr-14** → integration `cursor/agatha-care-journey-integration-b994`
+- **Release PR** integration → **`main`** → **`/babysit-uat`**
+- Orchestrator **run-until-blocked** — no per-phase or per-turn permission in user chat
+
+## Delivery shape
 
 | Rule | Value |
 |------|--------|
-| **Integration branch** | `cursor/agatha-care-journey-integration-b994` — **all phase PRs target this branch**, not `main`. |
-| **Per phase** | `pr-01` … `pr-14` → `/babysit-plus` → squash-merge into **integration**. |
-| **Release to main** | After all phases `merged` on integration: **one PR** integration → `main` → **`/babysit-uat`** (pre-UAT E2E on that merge SHA). |
-| **Orchestrator** | `/execute-plan agatha-care-journey` — **run-until-blocked** (see `.agents/plans/agatha-care-journey.md` §Orchestrator contract); `composer-2.5` for babysit. |
-| **Subagents** | Allowed when `spawn_allowed` (e.g. **pr-09** ∥ **pr-02** after pr-01). |
-| **UAT** | Included — **release PR** to `main` is the `/babysit-uat` gate; remedial via `/e2e-debug` same session. |
+| **Integration branch** | `cursor/agatha-care-journey-integration-b994` — phase PRs target this, **not** `main`. |
+| **Per phase** | Implement → PR → **/babysit-plus** → squash-merge into integration → **next phase same session**. |
+| **Release** | One PR integration → `main` → `/babysit-uat` → `complete-plan`. |
+| **Babysit model** | `composer-2.5` for babysit steps. |
+| **Subagents** | When `spawn_allowed` (e.g. pr-09 ∥ pr-02 after pr-01). |
 
-**Do not** open phase PRs against `main`. **Do not** merge programme slices to `main` until the release PR.
+## Run-until-blocked (default — the only operating mode)
 
-### Run-until-blocked (default — not optional)
+| Valid stop | Action after |
+|------------|----------------|
+| Phase PR **merged** to integration | Start next `pending` phase **immediately** (no user chat checkpoint) |
+| All phases merged | Open release PR → `/babysit-uat` |
+| `complete-plan` | Close control issue |
+| §Halt / escalation / `session_limit` | Post on #1835; chat = blocker alert only |
 
-After gate exit `0`, the orchestrator **must not stop** for: preflight done, PR opened, CI watching, control-issue milestones, or turn boundaries. Valid stops only: phase **merge-done** then **immediate** next phase, `complete-plan`, §Halt/Escalation, or `session_limit` (~24h).
+| **Not** a stop | Required behavior |
+|----------------|-------------------|
+| Preflight / gate exit 0 | Begin current phase work |
+| PR opened | Babysit+ / CI watch |
+| CI pending | Keep watching; fix and push |
+| Milestone posted on #1835 | Continue tools in same session |
+| Cloud turn ended | Next `/execute-plan` resumes `next_action` |
 
-**Not a stop:** “optional human_pause” on migrations — that is an **opt-in** `halt` on #1835; if not halted, **merge when CI green** and continue to the next phase in the same session.
+### Anti-patterns (do not do these)
+
+- Ending the turn with a progress summary after PR #N or “CI is running”
+- Asking the human to confirm continuation for the next phase
+- Leaving an open phase PR unmerged while starting narrative about the following phase
+
+## Migrations (PR-01, 06, 09, 14)
+
+| Default | Exception (opt-in only) |
+|---------|-------------------------|
+| Merge to integration when CI green | Orchestrator runs `halt --reason human_pause` on #1835 **before** merge; human comments `resume-plan agatha-care-journey` |
+
+**Wording trap:** programme tables may say “human_pause” beside migrations — that describes an **allowed halt**, not a **required** human gate. Unless `halt` was written to the snapshot, **merge automatically**.
 
 ## Phase hygiene (every phase)
 
 | Step | Requirement |
 |------|----------------|
-| 1 | **TDD** — failing tests for phase AC-* first ([bdd-qa](./agatha-care-journey-bdd-qa.md)). |
-| 2 | **BDD** — extend `agatha_care_journey.feature` when guardian-visible. |
-| 3 | **Docs** — `/canonical-docs sync` Mode A before PR open when behaviour changes. |
-| 4 | **Pre-PR** — critical self-review. |
-| 5 | **Verify** — `./scripts/pre-push-changed.sh` (full `./scripts/pre-push.sh` before release PR). |
-| 6 | **Babysit** — `/babysit-plus` → merge to **integration**. |
+| 1 | TDD first ([bdd-qa](./agatha-care-journey-bdd-qa.md)) |
+| 2 | BDD when guardian-visible |
+| 3 | `/canonical-docs sync` before PR when behaviour changes |
+| 4 | Pre-PR critical self-review |
+| 5 | `./scripts/pre-push-changed.sh` |
+| 6 | `/babysit-plus` → merge to integration |
 
 ## Babysit / UAT matrix
 
 | Step | Target | Skill | Pre-UAT watch |
 |------|--------|-------|----------------|
-| pr-01 … pr-14 | `cursor/agatha-care-journey-integration-b994` | `/babysit-plus` | No |
-| **Release PR** | `main` | **`/babysit-uat`** | **Yes** |
-| Pre-UAT failure | remedial PR → `main` | `/e2e-debug` → `/babysit-uat` | Yes |
+| pr-01 … pr-14 | integration branch | `/babysit-plus` | No |
+| Release PR | `main` | `/babysit-uat` | Yes |
+| Pre-UAT failure | remedial → `main` | `/e2e-debug` → `/babysit-uat` | Yes |
 
-**Not in scope:** polling `promote-uat` / `deploy-uat`.
-
-**Migration phases (PR-01, PR-06, PR-09, PR-14):** after CI green, orchestrator may **`halt --reason human_pause`** for human migration review on control issue **#1835**; comment `resume-plan agatha-care-journey` to continue merge to integration.
+Do **not** poll `promote-uat` / `deploy-uat`.
 
 ## Parallelism
 
-Rebase phase branches on `origin/cursor/agatha-care-journey-integration-b994` between phases.
-
-| Window | Spawn |
-|--------|-------|
-| After pr-01 → pr-02 ∥ pr-09 | `spawn_allowed: true` on pr-09 |
-| pr-07 → pr-08 | sequential |
-
-## Exit checklists
-
-Per snapshot `exit_checklist` profiles (see programme verification pack).
-
-## Feature flags
-
-Unchanged — enable with surface PRs on integration; release PR may flip defaults on `main`.
+After pr-01 merged: pr-02 and pr-09 may run in parallel when `spawn_allowed` on pr-09. Rebase on `origin/cursor/agatha-care-journey-integration-b994` between phases.
 
 ## `complete-plan`
 
-- All 14 phases `merged` on integration  
-- Release PR merged to `main` with **pre-UAT green**  
-- Fold `changes/` docs  
-- `autonomy: completed`
+All 14 phases merged on integration; release PR merged to `main` with pre-UAT green; fold `changes/` docs; `autonomy: completed`.
