@@ -1,6 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pet_profile_app/core/care/care_suggestion_form_accept.dart';
 import 'package:pet_profile_app/core/utils/calendar_date.dart';
+import 'package:pet_profile_app/features/care_taxonomy/care_taxonomy.dart';
+import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/recurrence_anchor.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/repositories/health_repository.dart';
@@ -8,6 +11,11 @@ import 'package:pet_profile_app/features/health_tracking/presentation/controller
 import 'package:pet_profile_app/features/health_tracking/presentation/controllers/health_entry_form_controller.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/controllers/health_entry_form_outcomes.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
+
+class _EmptyHealthEntriesNotifier extends HealthEntriesNotifier {
+  @override
+  Future<List<HealthEntry>> build() async => [];
+}
 
 class _FakeHealthRepository implements HealthRepository {
   HealthEntry? entryToReturn;
@@ -175,6 +183,52 @@ void main() {
       expect(state.scheduleAtSpecificTimes, isTrue);
       expect(state.scheduleTimes, ['08:00', '20:00']);
     });
+
+    test(
+      'submit with careRecommendationId invokes suggestion accept handler',
+      () async {
+        var acceptCalled = false;
+        const params = HealthEntryFormParams(
+          petId: 'pet-1',
+          initialPlanningMode: CarePlanningMode.planned,
+          initialCareFamily: CareFamily.weightMonitoring,
+          initialRoutineName: 'Monthly weight check',
+          initialFrequencyWire: 'monthly',
+          initialFrequencyInterval: 1,
+          careRecommendationId: 'rec-1',
+        );
+        container.dispose();
+        container = ProviderContainer(
+          overrides: [
+            healthRepositoryProvider.overrideWithValue(repository),
+            healthEntriesNotifierProvider.overrideWith(
+              _EmptyHealthEntriesNotifier.new,
+            ),
+            careSuggestionFormAcceptHandlerProvider.overrideWith(
+              (ref) => (innerRef, request) async {
+                acceptCalled = true;
+                expect(request.recommendationId, 'rec-1');
+                expect(request.petId, 'pet-1');
+                expect(request.frequencyWire, 'monthly');
+                expect(request.name, 'Monthly weight check');
+                return const CareSuggestionFormAcceptResult(
+                  healthEntryId: 'entry-new',
+                );
+              },
+            ),
+          ],
+        );
+
+        final c = controller(params);
+        final outcome = await c.submit();
+
+        expect(acceptCalled, isTrue);
+        expect(outcome, isA<HealthEntrySubmitSuccess>());
+        final success = outcome as HealthEntrySubmitSuccess;
+        expect(success.careSuggestionRoutineName, 'Monthly weight check');
+        expect(success.entryIds, ['entry-new']);
+      },
+    );
 
     test('loadEntry restores schedule times', () async {
       repository.entryToReturn = HealthEntry(

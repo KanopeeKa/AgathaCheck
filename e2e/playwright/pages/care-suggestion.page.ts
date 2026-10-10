@@ -141,14 +141,6 @@ export class CareSuggestionPage {
     await refreshFlutterAccessibility(this.page);
     const card = this.suggestionCardRoot();
     await card.scrollIntoViewIfNeeded();
-    const respond = this.page.waitForResponse(
-      (res) =>
-        res.url().includes('/care-recommendations/') &&
-        res.url().includes('/respond') &&
-        res.request().method() === 'POST' &&
-        res.ok(),
-      { timeout: 45_000 },
-    );
     const acceptControl = card
       .locator('[flt-semantics-identifier^="care_suggestion_accept_"]')
       .or(card.getByRole('button', { name: addRoutineRe }));
@@ -162,25 +154,24 @@ export class CareSuggestionPage {
       await this.openReviewForm(options.petId, recommendation);
     }
     await refreshFlutterAccessibility(this.page);
-    const saveButton = this.page.getByRole('button', { name: saveFormRe });
-    await saveButton.scrollIntoViewIfNeeded();
-    await saveButton.click({ timeout: 20_000 });
-    try {
-      await respond;
-    } catch {
-      const { respondCareRecommendation } = await import('../support/api');
-      await respondCareRecommendation(
-        options.baseUrl,
-        options.accessToken,
-        options.petId,
-        recommendation.id,
-        { action: 'accept' },
-      );
-    }
+    const respond = this.page.waitForResponse(
+      (res) =>
+        res.url().includes('/care-recommendations/') &&
+        res.url().includes('/respond') &&
+        res.request().method() === 'POST' &&
+        res.ok(),
+      { timeout: 45_000 },
+    );
+    const saveButton = this.page
+      .locator('[flt-semantics-identifier="save_health_entry_button"]')
+      .or(this.page.getByRole('button', { name: saveFormRe }));
+    await saveButton.first().scrollIntoViewIfNeeded();
+    await saveButton.first().click({ timeout: 20_000 });
+    await respond;
     await refreshFlutterAccessibility(this.page);
   }
 
-  async expectSuggestionCardHidden(timeout = 15_000): Promise<void> {
+  async expectSuggestionCardHidden(timeout = 60_000): Promise<void> {
     const { expect } = await import('@playwright/test');
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);

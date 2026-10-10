@@ -6,7 +6,7 @@
  */
 import { test, loginAs } from '../fixtures/auth.fixture';
 import { CareSuggestionPage } from '../pages/care-suggestion.page';
-import { createPet, listCareRecommendations, updatePetProfile } from '../support/api';
+import { createPet, updatePetProfile } from '../support/api';
 import { isLiveHostingTarget } from '../support/hosting';
 
 const baseURL = () => process.env.E2E_BASE_URL ?? 'http://localhost:3000';

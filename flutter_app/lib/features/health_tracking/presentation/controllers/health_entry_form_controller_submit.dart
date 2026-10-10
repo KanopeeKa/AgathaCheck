@@ -59,7 +59,10 @@ mixin HealthEntryFormSubmitMixin
       );
     }
 
-    if (!skipMarkCompletedCheck && !state.isEdit) {
+    final suggestionAcceptId = careRecommendationId?.trim();
+    final isSuggestionReview =
+        suggestionAcceptId != null && suggestionAcceptId.isNotEmpty;
+    if (!skipMarkCompletedCheck && !state.isEdit && !isSuggestionReview) {
       final prompt = markCompletedPromptIfNeeded();
       if (prompt != null && !markCompleted) {
         return HealthEntrySubmitNeedsMarkCompleted(prompt);
@@ -154,7 +157,7 @@ mixin HealthEntryFormSubmitMixin
           await loadPhotos();
         }
       } else {
-        final recommendationId = careRecommendationId;
+        final recommendationId = suggestionAcceptId;
         if (recommendationId != null && recommendationId.isNotEmpty) {
           final petId = state.selectedPetIds.first;
           final frequencyWire = _frequencyWireForAdjust(state.frequency);
