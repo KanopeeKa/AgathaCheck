@@ -1,0 +1,450 @@
+{
+  "schema_version": 1,
+  "plan_id": "agatha-care-journey",
+  "programme_ref": "docs/domains/pet_care/changes/agatha-care-journey-programme.md",
+  "approved_at": "1970-01-01T00:00:00Z",
+  "approved_by": "PLACEHOLDER — awaiting approve-autonomous agatha-care-journey",
+  "approved_until": "1970-01-03T00:00:00Z",
+  "autonomy": "halted",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/agatha-care-journey-integration-b994",
+  "control_issue": 1,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "pr-01",
+      "title": "PR-01 — see programme doc",
+      "branch": "cursor/acj-pr-01-b994",
+      "allowed_paths": [
+        "docs/domains/pet_care/changes/agatha-care-journey-*.md",
+        ".agents/plans/agatha-care-journey.*",
+        "server/**",
+        "flutter_app/**",
+        "db/**",
+        "e2e/**",
+        "docs/architecture/openapi/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "pr-02",
+      "title": "PR-02 — see programme doc",
+      "branch": "cursor/acj-pr-02-b994",
+      "allowed_paths": [
+        "docs/domains/pet_care/changes/agatha-care-journey-*.md",
+        ".agents/plans/agatha-care-journey.*",
+        "server/**",
+        "flutter_app/**",
+        "db/**",
+        "e2e/**",
+        "docs/architecture/openapi/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "pr-03",
+      "title": "PR-03 — see programme doc",
+      "branch": "cursor/acj-pr-03-b994",
+      "allowed_paths": [
+        "docs/domains/pet_care/changes/agatha-care-journey-*.md",
+        ".agents/plans/agatha-care-journey.*",
+        "server/**",
+        "flutter_app/**",
+        "db/**",
+        "e2e/**",
+        "docs/architecture/openapi/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "pr-04",
+      "title": "PR-04 — see programme doc",
+      "branch": "cursor/acj-pr-04-b994",
+      "allowed_paths": [
+        "docs/domains/pet_care/changes/agatha-care-journey-*.md",
+        ".agents/plans/agatha-care-journey.*",
+        "server/**",
+        "flutter_app/**",
+        "db/**",
+        "e2e/**",
+        "docs/architecture/openapi/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "pr-05",
+      "title": "PR-05 — see programme doc",
+      "branch": "cursor/acj-pr-05-b994",
+      "allowed_paths": [
+        "docs/domains/pet_care/changes/agatha-care-journey-*.md",
+        ".agents/plans/agatha-care-journey.*",
+        "server/**",
+        "flutter_app/**",
+        "db/**",
+        "e2e/**",
+        "docs/architecture/openapi/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "pr-06",
+      "title": "PR-06 — see programme doc",
+      "branch": "cursor/acj-pr-06-b994",
+      "allowed_paths": [
+        "docs/domains/pet_care/changes/agatha-care-journey-*.md",
+        ".agents/plans/agatha-care-journey.*",
+        "server/**",
+        "flutter_app/**",
+        "db/**",
+        "e2e/**",
+        "docs/architecture/openapi/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "pr-07",
+      "title": "PR-07 — see programme doc",
+      "branch": "cursor/acj-pr-07-b994",
+      "allowed_paths": [
+        "docs/domains/pet_care/changes/agatha-care-journey-*.md",
+        ".agents/plans/agatha-care-journey.*",
+        "server/**",
+        "flutter_app/**",
+        "db/**",
+        "e2e/**",
+        "docs/architecture/openapi/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "pr-08",
+      "title": "PR-08 — see programme doc",
+      "branch": "cursor/acj-pr-08-b994",
+      "allowed_paths": [
+        "docs/domains/pet_care/changes/agatha-care-journey-*.md",
+        ".agents/plans/agatha-care-journey.*",
+        "server/**",
+        "flutter_app/**",
+        "db/**",
+        "e2e/**",
+        "docs/architecture/openapi/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "pr-09",
+      "title": "PR-09 — see programme doc",
+      "branch": "cursor/acj-pr-09-b994",
+      "allowed_paths": [
+        "docs/domains/pet_care/changes/agatha-care-journey-*.md",
+        ".agents/plans/agatha-care-journey.*",
+        "server/**",
+        "flutter_app/**",
+        "db/**",
+        "e2e/**",
+        "docs/architecture/openapi/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "pr-10",
+      "title": "PR-10 — see programme doc",
+      "branch": "cursor/acj-pr-10-b994",
+      "allowed_paths": [
+        "docs/domains/pet_care/changes/agatha-care-journey-*.md",
+        ".agents/plans/agatha-care-journey.*",
+        "server/**",
+        "flutter_app/**",
+        "db/**",
+        "e2e/**",
+        "docs/architecture/openapi/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "pr-11",
+      "title": "PR-11 — see programme doc",
+      "branch": "cursor/acj-pr-11-b994",
+      "allowed_paths": [
+        "docs/domains/pet_care/changes/agatha-care-journey-*.md",
+        ".agents/plans/agatha-care-journey.*",
+        "server/**",
+        "flutter_app/**",
+        "db/**",
+        "e2e/**",
+        "docs/architecture/openapi/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "pr-12",
+      "title": "PR-12 — see programme doc",
+      "branch": "cursor/acj-pr-12-b994",
+      "allowed_paths": [
+        "docs/domains/pet_care/changes/agatha-care-journey-*.md",
+        ".agents/plans/agatha-care-journey.*",
+        "server/**",
+        "flutter_app/**",
+        "db/**",
+        "e2e/**",
+        "docs/architecture/openapi/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "pr-13",
+      "title": "PR-13 — see programme doc",
+      "branch": "cursor/acj-pr-13-b994",
+      "allowed_paths": [
+        "docs/domains/pet_care/changes/agatha-care-journey-*.md",
+        ".agents/plans/agatha-care-journey.*",
+        "server/**",
+        "flutter_app/**",
+        "db/**",
+        "e2e/**",
+        "docs/architecture/openapi/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "pr-14",
+      "title": "PR-14 — see programme doc",
+      "branch": "cursor/acj-pr-14-b994",
+      "allowed_paths": [
+        "docs/domains/pet_care/changes/agatha-care-journey-*.md",
+        ".agents/plans/agatha-care-journey.*",
+        "server/**",
+        "flutter_app/**",
+        "db/**",
+        "e2e/**",
+        "docs/architecture/openapi/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    }
+  ],
+  "content_hash": "sha256:82906e3a135364bcc76d5458de58a2f91ca414c097aa8000ab964a3c03dcb081"
+}

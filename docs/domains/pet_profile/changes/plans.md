@@ -21,6 +21,7 @@ Delivery plans and phase docs for the guardian / pet_profile domain.
 | Pet timeline segments | Timeline segment model | See snapshot | [.agents/plans/pet-timeline-segments-a03d.md](/.agents/plans/pet-timeline-segments-a03d.md) |
 | Pet Care UI rework | Pet Care shell polish | See snapshot | [.agents/plans/guardian-ui-rework-5dd0.md](/.agents/plans/guardian-ui-rework-5dd0.md) |
 | Pet Care UI wave 2 | Follow-on guardian UI | See snapshot | [.agents/plans/guardian-ui-wave2-5dd0.md](/.agents/plans/guardian-ui-wave2-5dd0.md) |
+| Agatha care journey | Profile facts + Agatha completeness + welfare PR-01–14 | Proposed | [agatha-care-journey-programme.md](/docs/domains/pet_care/changes/agatha-care-journey-programme.md) · [.agents/plans/agatha-care-journey.md](/.agents/plans/agatha-care-journey.md) |
 
 Locked brief: [features/guardian-dashboard-brief.md](../features/guardian-dashboard-brief.md)
 
