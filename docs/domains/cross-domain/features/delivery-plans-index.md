@@ -24,6 +24,7 @@ Normative product requirements for cross-cutting capabilities live in domain `fe
 | Plan | Focus | Status |
 |------|-------|--------|
 | [sprint-6-execution-plan.md](../changes/sprint-6-execution-plan.md) | BDD coverage sprint (org/foster/help) | In delivery |
+| [agatha-care-journey-programme.md](/docs/domains/pet_care/changes/agatha-care-journey-programme.md) | Profile facts → welfare → coordination (PR-01–14); per-PR `main`; [autonomy + UAT](/docs/domains/pet_care/changes/agatha-care-journey-execute-autonomy.md) | Proposed |
 
 **Documentation migration:** authoritative handover is [documentation-migration-handover.md](/docs/domains/documentation/changes/documentation-migration-handover.md). The Aug 2025 cross-domain consolidation plan was retired in Wave 0 (file deleted).
 

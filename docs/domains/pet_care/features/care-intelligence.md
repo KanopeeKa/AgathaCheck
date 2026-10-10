@@ -228,6 +228,16 @@ Coverage gaps: [#1770](https://github.com/KanopeeKa/AgathaCheck/issues/1770) (sa
 - `CareSafeguard` table + guardian-facing promotion from internal evaluate endpoint after D5b.
 - Second signal family implementation (activity-first candidate) after weight-only evaluation.
 
+## Planned — Agatha care journey (PR #1833 programme)
+
+Spec: [agatha-care-journey-programme.md](../changes/agatha-care-journey-programme.md) · Slot order: [ui-design.md](../changes/agatha-care-journey-ui-design.md) §3.
+
+| ID | Planned decision | Notes |
+|----|------------------|-------|
+| **ACJ-CIM-PL-001** | Welfare guidance persists in `welfare_suggestions`; `care_recommendations` unchanged | PR-06 |
+| **ACJ-CIM-PL-002** | Shared `dedupe_key` namespace + Agatha presentation shell; separate evaluators | PR-06 |
+| **ACJ-CIM-PL-003** | Profile slot order and guidance tiebreak per ui-design §3 | PR-04–05 |
+
 ## Decision log
 
 | ID | Decision | Rationale | Status | Date | PR |
