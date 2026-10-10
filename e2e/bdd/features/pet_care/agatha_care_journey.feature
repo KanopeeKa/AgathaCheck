@@ -3,7 +3,7 @@
 Feature: Agatha care journey profile facts
   Profile identification and neuter facts persist with merge-safe PUT semantics.
 
-  @smoke-ci @ACJ-PF-01
+  @ACJ-PF-01
   Scenario: Neuter status survives profile reload
     Given a guardian owns a pet with neuter status "no"
     When the guardian updates the pet name without sending neuter status
