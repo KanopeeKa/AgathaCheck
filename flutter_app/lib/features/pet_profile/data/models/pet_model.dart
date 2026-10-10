@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import '../../domain/entities/pet_access_role.dart';
 import '../../domain/entities/pet.dart';
+import '../../domain/entities/profile_fact_status.dart';
 import '../../../../core/utils/calendar_date.dart';
 import '../utils/pet_profile_normalize.dart';
 
@@ -37,6 +38,10 @@ class PetModel {
     this.weightReferenceAuthority,
     this.weightManagementContext = 'none',
     this.homeTimezone = 'UTC',
+    this.identificationStatus = profileFactStatusUnknown,
+    this.neuterStatus = profileFactStatusUnknown,
+    this.identificationStatusSource,
+    this.neuterStatusSource,
   });
 
   static DateTime? _parseTimestamp(dynamic raw) {
@@ -87,6 +92,18 @@ class PetModel {
           (json['weight_management_context'] as String?) ?? 'none',
       homeTimezone:
           (json['homeTimezone'] ?? json['home_timezone'])?.toString() ?? 'UTC',
+      identificationStatus: parseProfileFactStatusWire(
+        json['identificationStatus'] ?? json['identification_status'],
+      ),
+      neuterStatus: parseProfileFactStatusWire(
+        json['neuterStatus'] ?? json['neuter_status'],
+      ),
+      identificationStatusSource:
+          json['identificationStatusSource'] as String? ??
+          json['identification_status_source'] as String?,
+      neuterStatusSource:
+          json['neuterStatusSource'] as String? ??
+          json['neuter_status_source'] as String?,
     );
   }
 
@@ -122,6 +139,10 @@ class PetModel {
       weightReferenceAuthority: pet.weightReferenceAuthority,
       weightManagementContext: pet.weightManagementContext,
       homeTimezone: pet.homeTimezone,
+      identificationStatus: pet.identificationStatus,
+      neuterStatus: pet.neuterStatus,
+      identificationStatusSource: pet.identificationStatusSource,
+      neuterStatusSource: pet.neuterStatusSource,
     );
   }
 
@@ -159,6 +180,10 @@ class PetModel {
   final String? weightReferenceAuthority;
   final String weightManagementContext;
   final String homeTimezone;
+  final String identificationStatus;
+  final String neuterStatus;
+  final String? identificationStatusSource;
+  final String? neuterStatusSource;
 
   Map<String, dynamic> toJson({bool includeWeightEntryDate = false}) {
     return {
@@ -185,6 +210,12 @@ class PetModel {
       'weight_reference_authority': weightReferenceAuthority,
       'weight_management_context': weightManagementContext,
       'homeTimezone': homeTimezone,
+      'identificationStatus': identificationStatus,
+      'neuterStatus': neuterStatus,
+      if (identificationStatusSource != null)
+        'identificationStatusSource': identificationStatusSource,
+      if (neuterStatusSource != null)
+        'neuterStatusSource': neuterStatusSource,
       if (includeWeightEntryDate && weight != null)
         'weightEntryDate': toCalendarDateString(
           calendarDateOnly(DateTime.now()),
@@ -226,6 +257,10 @@ class PetModel {
       weightReferenceAuthority: weightReferenceAuthority,
       weightManagementContext: weightManagementContext,
       homeTimezone: homeTimezone,
+      identificationStatus: identificationStatus,
+      neuterStatus: neuterStatus,
+      identificationStatusSource: identificationStatusSource,
+      neuterStatusSource: neuterStatusSource,
     );
   }
 }

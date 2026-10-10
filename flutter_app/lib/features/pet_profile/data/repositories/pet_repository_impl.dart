@@ -58,6 +58,11 @@ class PetRepositoryImpl implements PetRepository {
             weightReferenceValue: rp.weightReferenceValue,
             weightReferenceAuthority: rp.weightReferenceAuthority,
             weightManagementContext: rp.weightManagementContext,
+            homeTimezone: rp.homeTimezone,
+            identificationStatus: rp.identificationStatus,
+            neuterStatus: rp.neuterStatus,
+            identificationStatusSource: rp.identificationStatusSource,
+            neuterStatusSource: rp.neuterStatusSource,
           ),
         );
       } else {

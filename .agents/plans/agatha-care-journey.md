@@ -72,13 +72,13 @@ autonomy: active
 current_phase: pr-02
 last_completed_phase: pr-01
 halt_reason: null
-next_action: "start phase pr-02: checkout cursor/acj-pr-02-b994"
+next_action: "continue phase pr-02 on branch cursor/acj-pr-02-b994"
 artifact_ref:
-  branch: cursor/acj-pr-01-b994
+  branch: cursor/acj-pr-02-b994
   plan_path: .agents/plans/agatha-care-journey.md
-  plan_commit: d360797d8634a72d958a9b3456c72e7758848cd0
+  plan_commit: f93e3dc9f95b1e3b8552aa6b2d827a3b6a77213d
   snapshot_path: .agents/plans/agatha-care-journey.snapshot.json
-  snapshot_commit: d360797d8634a72d958a9b3456c72e7758848cd0
+  snapshot_commit: f93e3dc9f95b1e3b8552aa6b2d827a3b6a77213d
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
