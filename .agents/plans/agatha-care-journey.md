@@ -29,15 +29,19 @@ tags: [pet_care, pet_profile, care_intelligence, roadmap]
 
 ```yaml
 autonomy: active
-current_phase: null
+current_phase: pr-01
 last_completed_phase: null
 halt_reason: null
-next_action: "gate passed — begin pr-01 implementation"
+next_action: "continue phase pr-01 on branch cursor/acj-pr-01-b994"
 artifact_ref:
-  branch: cursor/agatha-care-journey-integration-b994
+  branch: cursor/acj-pr-01-b994
   plan_path: .agents/plans/agatha-care-journey.md
+  plan_commit: 75559cb17ead9acae36daeee365b43c223c2a780
   snapshot_path: .agents/plans/agatha-care-journey.snapshot.json
+  snapshot_commit: 75559cb17ead9acae36daeee365b43c223c2a780
 open_prs: []
+merge_commits: {}
+debt_issue_refs: []
 ```
 
 ## Preflight (completed)

@@ -258,15 +258,15 @@ describe('Pets API', () => {
       const app = createApp(createMockPool(async (sql, params) => {
         const access = handlePetAccessQuery(sql, params, { userId, ownedPetIds: [petId] });
         if (access) return access;
-        if (sql.includes('SELECT organization_id, photo_path') && sql.includes('FROM pets')) {
+        if (sql.includes('SELECT * FROM pets WHERE id = $1')) {
           return {
-            rows: [{
+            rows: [makePetRow({
               organization_id: null,
               photo_path: '/uploads/fluffy.jpg',
               weight_reference_value: 5.5,
               weight_reference_authority: 'vet_target',
               weight_management_context: 'vet_managed',
-            }],
+            })],
           };
         }
         if (sql.includes('FROM weight_entries')) return { rows: [{ weight: 4.5 }] };
@@ -290,9 +290,9 @@ describe('Pets API', () => {
           weight_management_context: 'none',
         });
       expect(res.statusCode).toBe(200);
-      expect(capturedParams[17]).toBeNull();
-      expect(capturedParams[18]).toBeNull();
-      expect(capturedParams[19]).toBe('none');
+      expect(capturedParams[23]).toBeNull();
+      expect(capturedParams[24]).toBeNull();
+      expect(capturedParams[25]).toBe('none');
     });
 
     it('preserves existing photo when photoPath is omitted on update', async () => {
@@ -301,8 +301,8 @@ describe('Pets API', () => {
       const app = createApp(createMockPool(async (sql, params) => {
         const access = handlePetAccessQuery(sql, params, { userId, ownedPetIds: [petId] });
         if (access) return access;
-        if (sql.includes('SELECT organization_id, photo_path') && sql.includes('FROM pets')) {
-          return { rows: [{ organization_id: null, photo_path: '/uploads/fluffy.jpg' }] };
+        if (sql.includes('SELECT * FROM pets WHERE id = $1')) {
+          return { rows: [makePetRow({ organization_id: null, photo_path: '/uploads/fluffy.jpg' })] };
         }
         if (sql.includes('FROM weight_entries')) return { rows: [{ weight: 4.5 }] };
         if (sql.includes('INSERT INTO weight_entries')) return { rows: [] };
@@ -319,7 +319,7 @@ describe('Pets API', () => {
         .set('Authorization', `Bearer ${token}`)
         .send({ name: 'Fluffy', species: 'cat' });
       expect(res.statusCode).toBe(200);
-      expect(capturedParams[12]).toBe('/uploads/fluffy.jpg');
+      expect(capturedParams[18]).toBe('/uploads/fluffy.jpg');
     });
 
     it('rejects inline base64 photo paths on update', async () => {

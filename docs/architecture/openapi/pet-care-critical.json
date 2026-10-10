@@ -1150,6 +1150,24 @@
           "insurance": { "type": "string" },
           "neuteredDate": { "oneOf": [{ "$ref": "#/components/schemas/CalendarDate" }, { "type": "null" }] },
           "neuterDismissed": { "type": "boolean" },
+          "identificationStatus": {
+            "type": "string",
+            "enum": ["yes", "no", "unknown"]
+          },
+          "identification_status": {
+            "type": "string",
+            "enum": ["yes", "no", "unknown"]
+          },
+          "neuterStatus": {
+            "type": "string",
+            "enum": ["yes", "no", "unknown"]
+          },
+          "neuter_status": {
+            "type": "string",
+            "enum": ["yes", "no", "unknown"]
+          },
+          "identificationStatusSource": { "type": ["string", "null"] },
+          "neuterStatusSource": { "type": ["string", "null"] },
           "chipId": { "type": "string" },
           "chipDismissed": { "type": "boolean" },
           "photoPath": { "type": ["string", "null"] },

@@ -39,6 +39,12 @@
 | `insurance` | TEXT | Insurance information | Yes |
 | `neutered_date` | DATE | Neutering date | No |
 | `neuter_dismissed` | BOOLEAN | Whether neuter reminder is dismissed | No |
+| `identification_status` | VARCHAR(16) | Microchip fact: `yes`, `no`, `unknown` | No |
+| `neuter_status` | VARCHAR(16) | Neuter fact: `yes`, `no`, `unknown` | No |
+| `identification_status_source` | VARCHAR(64) | Provenance for identification status | No |
+| `neuter_status_source` | VARCHAR(64) | Provenance for neuter status | No |
+| `identification_status_updated_at` | TIMESTAMPTZ | Last identification status change | No |
+| `neuter_status_updated_at` | TIMESTAMPTZ | Last neuter status change | No |
 | `chip_id` | VARCHAR(255) | Microchip identification number | Yes |
 | `chip_dismissed` | BOOLEAN | Whether chip reminder is dismissed | No |
 | `photo_path` | TEXT | Pet photo file path | No |
