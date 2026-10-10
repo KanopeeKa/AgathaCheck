@@ -2,14 +2,11 @@
 title: Agatha care journey programme
 owner: Product / Documentation
 audience: both
-domain: pet_care
 status: proposed
+last_updated: 2026-10-10
 status_since: 2026-10-10
-folds_into:
-  - docs/domains/pet_care/features/care-intelligence.md
-  - docs/domains/pet_profile/features/pet-profile-decisions.md
-related_plan: .agents/plans/agatha-care-journey.md
 tags: [pet_care, pet_profile, care_intelligence, roadmap, execute-plan]
+folds_into: docs/domains/pet_care/features/care-intelligence.md
 ---
 
 # Agatha care journey programme
@@ -44,7 +41,8 @@ AgathaTrack helps pet parents **know**, **understand**, **plan**, **act**, and *
 | **Contract** | [execute-autonomy.md](./agatha-care-journey-execute-autonomy.md) |
 | **Subagents** | **pr-09** ∥ **pr-02** after pr-01 when paths disjoint. |
 | **Feature flags** | Per autonomy doc; defaults may flip on release PR. |
-| **Migrations** | PR-01, 06, 09, 14: optional `human_pause` on #1835 before merge to integration. |
+| **Migrations** | PR-01, 06, 09, 14: **default auto-merge** when CI green; orchestrator may **opt in** to `halt --reason human_pause` on #1835 (not required). |
+| **Orchestrator** | **Run-until-blocked** — see [execute-autonomy](./agatha-care-journey-execute-autonomy.md); no chat checkpoints between phases. |
 | **W1 value** | First guardian-visible on integration: **PR-03**, **PR-04**. |
 
 ### Per-PR verification pack (mandatory)

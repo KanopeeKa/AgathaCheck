@@ -44,6 +44,12 @@ export function makePetRow(overrides = {}) {
     neuter_dismissed: false,
     chip_id: 'CHIP-001',
     chip_dismissed: false,
+    identification_status: 'yes',
+    neuter_status: 'yes',
+    identification_status_source: null,
+    neuter_status_source: null,
+    identification_status_updated_at: null,
+    neuter_status_updated_at: null,
     photo_path: '/uploads/fluffy.jpg',
     vet_id: 'vet-uuid-1',
     color_index: 0,
@@ -63,6 +69,9 @@ async function defaultPetPoolHandler(sql, params) {
 
       if (sql.includes('SELECT photo_path FROM pets')) {
         return { rows: [{ photo_path: null }] };
+      }
+      if (sql.includes('SELECT * FROM pets WHERE id = $1')) {
+        return { rows: [makePetRow()] };
       }
       if (sql.includes('SELECT organization_id, photo_path') && sql.includes('FROM pets')) {
         return {

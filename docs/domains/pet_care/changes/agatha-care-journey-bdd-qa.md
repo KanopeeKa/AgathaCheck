@@ -2,11 +2,11 @@
 title: Agatha care journey — BDD, TDD, and QA matrix
 owner: Product / Documentation
 audience: both
-domain: pet_care
 status: proposed
+last_updated: 2026-10-10
 status_since: 2026-10-10
-parent: agatha-care-journey-programme.md
 tags: [qa, bdd, testing, e2e]
+folds_into: docs/domains/pet_care/features/care-intelligence.md
 ---
 
 # Agatha care journey — BDD, TDD, and QA matrix

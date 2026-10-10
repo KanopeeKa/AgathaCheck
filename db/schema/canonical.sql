@@ -859,6 +859,14 @@ CREATE TABLE public.pets (
     weight_reference_authority character varying(50),
     weight_management_context character varying(50) DEFAULT 'none'::character varying NOT NULL,
     home_timezone text DEFAULT 'UTC'::text NOT NULL,
+    identification_status character varying(16) DEFAULT 'unknown'::character varying NOT NULL,
+    neuter_status character varying(16) DEFAULT 'unknown'::character varying NOT NULL,
+    identification_status_source character varying(64),
+    neuter_status_source character varying(64),
+    identification_status_updated_at timestamp with time zone,
+    neuter_status_updated_at timestamp with time zone,
+    CONSTRAINT pets_identification_status_check CHECK (((identification_status)::text = ANY ((ARRAY['yes'::character varying, 'no'::character varying, 'unknown'::character varying])::text[]))),
+    CONSTRAINT pets_neuter_status_check CHECK (((neuter_status)::text = ANY ((ARRAY['yes'::character varying, 'no'::character varying, 'unknown'::character varying])::text[]))),
     CONSTRAINT pets_weight_management_context_check CHECK (((weight_management_context)::text = ANY ((ARRAY['none'::character varying, 'vet_managed'::character varying, 'care_plan'::character varying, 'treatment_related'::character varying])::text[]))),
     CONSTRAINT pets_weight_reference_authority_check CHECK (((weight_reference_authority IS NULL) OR ((weight_reference_authority)::text = ANY ((ARRAY['vet_target'::character varying, 'guardian_reference'::character varying, 'historical_baseline'::character varying])::text[]))))
 );
