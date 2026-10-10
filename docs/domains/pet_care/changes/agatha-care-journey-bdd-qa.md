@@ -11,6 +11,8 @@ tags: [qa, bdd, testing, e2e]
 
 # Agatha care journey — BDD, TDD, and QA matrix
 
+**Programme:** [`agatha-care-journey-programme.md`](./agatha-care-journey-programme.md) · **Autonomy:** [`agatha-care-journey-execute-autonomy.md`](./agatha-care-journey-execute-autonomy.md)
+
 ## Strategy
 
 | Layer | Tooling |
