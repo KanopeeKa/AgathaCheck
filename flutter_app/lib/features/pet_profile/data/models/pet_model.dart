@@ -214,8 +214,7 @@ class PetModel {
       'neuterStatus': neuterStatus,
       if (identificationStatusSource != null)
         'identificationStatusSource': identificationStatusSource,
-      if (neuterStatusSource != null)
-        'neuterStatusSource': neuterStatusSource,
+      if (neuterStatusSource != null) 'neuterStatusSource': neuterStatusSource,
       if (includeWeightEntryDate && weight != null)
         'weightEntryDate': toCalendarDateString(
           calendarDateOnly(DateTime.now()),

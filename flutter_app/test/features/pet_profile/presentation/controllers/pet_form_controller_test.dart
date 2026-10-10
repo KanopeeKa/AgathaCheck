@@ -286,7 +286,10 @@ void main() {
 
       await controller.submit(deps, isEditing: true, petId: 'pet-1');
 
-      expect(repository.updated.single.identificationStatus, profileFactStatusYes);
+      expect(
+        repository.updated.single.identificationStatus,
+        profileFactStatusYes,
+      );
       expect(repository.updated.single.neuterStatus, profileFactStatusNo);
     });
 
