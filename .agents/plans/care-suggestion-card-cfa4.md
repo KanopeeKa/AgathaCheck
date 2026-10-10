@@ -241,18 +241,18 @@ db/**
 ## Runtime state (agent-updated)
 
 ```yaml
-autonomy: active
-current_phase: 3
-last_completed_phase: 2
+autonomy: completed
+current_phase: null
+last_completed_phase: 3
 halt_reason: null
-next_action: "continue phase 3 on branch cursor/care-suggestion-inbox-e2e-cfa4"
+next_action: "plan complete"
 artifact_ref:
-  branch: cursor/care-suggestion-inbox-e2e-cfa4
+  branch: cursor/fix-form-save-semantics-cfa4
   plan_path: .agents/plans/care-suggestion-card-cfa4.md
-  plan_commit: b9fb5cf9b7f0b8dcb648b54b419ee4674a097c01
+  plan_commit: 766f46653f1a9098e091c8dd7d8474adb469420f
   snapshot_path: .agents/plans/care-suggestion-card-cfa4.snapshot.json
-  snapshot_commit: b9fb5cf9b7f0b8dcb648b54b419ee4674a097c01
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1831"]
+  snapshot_commit: 766f46653f1a9098e091c8dd7d8474adb469420f
+open_prs: []
 merge_commits: {}
 debt_issue_refs: []
 ```
