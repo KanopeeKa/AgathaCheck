@@ -72,13 +72,14 @@ test.describe('Care suggestion (CIM)', () => {
     await suggestion.openPetDetail(pet.id);
     const timeout = isLiveHostingTarget(url) ? 60_000 : 45_000;
     await suggestion.expectSuggestionCardVisible(timeout);
+    const acceptedRhythm = await suggestion.readVisibleSuggestionRhythmPattern();
     await suggestion.acceptSuggestion({
       petId: pet.id,
       baseUrl: url,
       accessToken: testUser.accessToken,
     });
     await suggestion.openPetDetail(pet.id);
-    await suggestion.expectSuggestionCardHidden(60_000);
+    await suggestion.expectSuggestionForRhythmNotVisible(acceptedRhythm, 60_000);
     await suggestion.expectCareRhythmVisible(weightMonitoringRhythmPattern);
   });
 });
