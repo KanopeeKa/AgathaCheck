@@ -20,11 +20,17 @@ Governs **`agatha-care-journey`** when `approve-autonomous` is granted. Aligns w
 | **Integration branch** | `cursor/agatha-care-journey-integration-b994` — **all phase PRs target this branch**, not `main`. |
 | **Per phase** | `pr-01` … `pr-14` → `/babysit-plus` → squash-merge into **integration**. |
 | **Release to main** | After all phases `merged` on integration: **one PR** integration → `main` → **`/babysit-uat`** (pre-UAT E2E on that merge SHA). |
-| **Orchestrator** | `/execute-plan agatha-care-journey` — run-until-blocked; `composer-2.5` for babysit. |
+| **Orchestrator** | `/execute-plan agatha-care-journey` — **run-until-blocked** (see `.agents/plans/agatha-care-journey.md` §Orchestrator contract); `composer-2.5` for babysit. |
 | **Subagents** | Allowed when `spawn_allowed` (e.g. **pr-09** ∥ **pr-02** after pr-01). |
 | **UAT** | Included — **release PR** to `main` is the `/babysit-uat` gate; remedial via `/e2e-debug` same session. |
 
 **Do not** open phase PRs against `main`. **Do not** merge programme slices to `main` until the release PR.
+
+### Run-until-blocked (default — not optional)
+
+After gate exit `0`, the orchestrator **must not stop** for: preflight done, PR opened, CI watching, control-issue milestones, or turn boundaries. Valid stops only: phase **merge-done** then **immediate** next phase, `complete-plan`, §Halt/Escalation, or `session_limit` (~24h).
+
+**Not a stop:** “optional human_pause” on migrations — that is an **opt-in** `halt` on #1835; if not halted, **merge when CI green** and continue to the next phase in the same session.
 
 ## Phase hygiene (every phase)
 

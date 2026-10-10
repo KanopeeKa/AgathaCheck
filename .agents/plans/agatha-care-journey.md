@@ -25,6 +25,21 @@ tags: [pet_care, pet_profile, care_intelligence, roadmap]
 
 14 phases on **integration**; release PR → `main` with `/babysit-uat`. See programme + autonomy contract + bdd-qa.
 
+## Orchestrator contract (binding — do not soft-stop)
+
+This plan runs under **`/execute-plan` run-until-blocked** (skill + `.agents/memory/execute-plan-autonomy.md`). After gate exit `0`:
+
+| Rule | Meaning |
+|------|---------|
+| **No turn-end checkpoints** | A user-visible chat reply does **not** end the programme. Same session: implement → PR → babysit+ → merge → next phase until §Halt or `complete-plan`. |
+| **Forbidden stops** | Ending after preflight, PR opened, “CI pending”, milestone comment on #1835, or “next: pr-02” without merging pr-01 and starting implementation. |
+| **Merge** | `default_merge_mode: auto` — orchestrator runs **/babysit-plus** and **squash-merges** when CI is green. No waiting for human merge between phases. |
+| **Migration `human_pause`** | **Optional** explicit `halt --reason human_pause` on #1835 only when orchestrator chooses review before merge — **not** the default; default is merge when gates pass. |
+| **Chat** | Blocker alerts only (`**Needs you:**`, revoke, `session_limit`). Progress → control issue #1835 only. |
+| **Standing grant** | User authorized **full plan** (all 14 phases + release PR + babysit-uat). Do not re-ask per phase or per turn. |
+
+If the platform forces a turn boundary: next message is `/execute-plan agatha-care-journey` (or `resume-plan` on #1835) — continue `next_action` without permission prompts.
+
 ## Runtime state
 
 ```yaml
