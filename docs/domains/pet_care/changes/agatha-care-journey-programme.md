@@ -20,7 +20,8 @@ Frozen programme for **`agatha-care-journey`** execute-plan. **Atomic PRs PR-01 
 
 **Execute-plan:** [`.agents/plans/agatha-care-journey.md`](../../../.agents/plans/agatha-care-journey.md)  
 **UI:** [`agatha-care-journey-ui-design.md`](./agatha-care-journey-ui-design.md)  
-**BDD / TDD / QA:** [`agatha-care-journey-bdd-qa.md`](./agatha-care-journey-bdd-qa.md)
+**BDD / TDD / QA:** [`agatha-care-journey-bdd-qa.md`](./agatha-care-journey-bdd-qa.md)  
+**Execute-plan autonomy (merge, UAT, subagents):** [`agatha-care-journey-execute-autonomy.md`](./agatha-care-journey-execute-autonomy.md)
 
 ## Executive summary
 
@@ -33,15 +34,38 @@ AgathaTrack helps pet parents **know**, **understand**, **plan**, **act**, and *
 5. Adds agenda **grouping** and **coordination copy** after **CSM-stable** (halt if gate undefined).
 6. Defers visit **UI**; PR-14 is schema/API only.
 
-## Delivery model (B6)
+## Delivery model (B6) + full autonomy
 
 | Rule | Detail |
 |------|--------|
-| **Merge target** | Each PR-* merges to **`main`** — not a 14-phase integration batch. |
-| **Feature flags** | User-visible surfaces (completeness cards, welfare cards, grouping) ship behind flags until stable. |
-| **Migration PRs** | PR-01, PR-06, PR-09, PR-14: **`merge_method: manual`** — human checkpoint on execute-plan phase; rollback note required in PR body. |
-| **W1 value** | PR-01/02 are plumbing; first guardian-visible W1 outcome is **PR-03** (sheet on existing inset prompt) then **PR-04** (Agatha cards + minimal slot policy). |
-| **Rollback** | PR-01 migration: document lossy backfill (`unknown` from empty fields); reversal drops columns — statuses lost unless exported. |
+| **Merge target** | Each PR-* merges to **`main`** — **no** integration branch, **no** batch integration→`main` PR. |
+| **Execute-plan** | `/execute-plan agatha-care-journey` — phases `pr-01`…`pr-14`; see [autonomy contract](./agatha-care-journey-execute-autonomy.md). |
+| **Babysit** | PR-01…13: `/babysit-plus`; PR-14 (final): `/babysit-uat` + pre-UAT E2E on `main` before `complete-plan`. |
+| **Subagents** | Allowed for disjoint paths (e.g. **pr-09** ∥ **pr-02** after pr-01). |
+| **Feature flags** | Keys in autonomy doc § Feature flags — default off until surface PR merges. |
+| **Migration PRs** | PR-01, PR-06, PR-09, PR-14: `merge_method: manual` — CI green then `human_pause` for squash-merge. |
+| **W1 value** | PR-01/02 plumbing; first visible: **PR-03** then **PR-04**. |
+| **Rollback** | PR-01 migration: lossy backfill documented in PR body. |
+
+### Per-PR verification pack (mandatory)
+
+| PR | Acceptance criteria | TDD (first) | BDD / E2E | Documentation |
+|----|---------------------|-------------|-----------|---------------|
+| 01 | AC-PF-01…07 | `profileFacts.test.js` + sharing/org | stub feature file | OpenAPI, DATA_MAP, Planned→Live rows start |
+| 02 | AC-PF-10,11 | `pet_model_test.dart` | — | pet-profile-decisions sync |
+| 03 | AC-IC-01,02 | sheet widget test | ACJ-IC-* | — |
+| 04 | AC-AC-01…04 | completeness widget | ACJ-AC-*, ACJ-GUARD-01 smoke-ci | care-intelligence presentation |
+| 05 | AC-SP-01,02 | policy unit tests | ACJ-SP-01 smoke-ci | slot order canonical |
+| 06 | AC-WF-01…03 | `welfareSuggestions.test.js` | — | welfare_suggestions in CIM doc |
+| 07–08 | AC-WF-10,11 + fixtures | welfare/*.test.js | ACJ-WF-07 jest; ACJ-WF-08 smoke-ci | copy lint ARB |
+| 09 | AC-VX-* | migration + API tests | — | DATA_MAP |
+| 10 | AC-WF-11 | gating fixtures | — | copy review sign-off in PR |
+| 11 | AC-FB-01 | completion job test | ACJ-FB-01 uat | — |
+| 12 | AC-CO-01 | agenda jest | ACJ-CO-01 smoke-uat | CSM doc cross-link |
+| 13 | AC-CO-02 | coordination jest | ACJ-CO-02 | — |
+| 14 | AC-FB-02, AC-VV-01 | visit schema integration | — | DATA_MAP, governance log |
+
+Full AC→test map: [bdd-qa](./agatha-care-journey-bdd-qa.md) § Traceability.
 
 ## Profile fact model (Q1 — canonical)
 
@@ -178,6 +202,7 @@ New status fields follow **`hasOwnProperty` / keep-existing** pattern used for w
 | AC-PF-04 | invalid enum → 400 `publicError` |
 | AC-PF-05 | stored statuses unchanged when old client PUT omits status fields |
 | AC-PF-06 | inconsistent status/value → defined normalise or 400 outcome |
+| AC-PF-07 | when `chipId` omitted from PUT body, stored `chip_id` unchanged (symmetric with status keep-when-omitted) |
 
 **TDD:** `server/test/pets/profileFacts.test.js`, org + sharing tests extended.
 
@@ -345,6 +370,8 @@ Columns include: `pet_id`, `subject_key`, `dedupe_key`, `status`, `primary_outco
 - [ ] bdd-qa: `@smoke-ci` boundaries, traceability, copy lint
 - [ ] DATA_MAP PR-01/09; metrics § Success metrics
 - [ ] Snapshot: real `control_issue`, valid `approved_at` / `approved_until`, `--fix-hash`
+- [ ] [Execute autonomy](./agatha-care-journey-execute-autonomy.md): no integration branch; pr-14 `/babysit-uat`; spawn rules documented
+- [ ] bdd-qa: full AC→test traceability; per-PR verification pack above agreed
 
 ## Doc ownership (spec PR)
 

@@ -41,7 +41,7 @@
         "file-split"
       ],
       "spawn_allowed": false,
-      "exit_checklist": "default",
+      "exit_checklist": "default+single-backend-route+governance",
       "status": "pending",
       "status_reason": null,
       "status_detail": null,
@@ -73,7 +73,7 @@
         "file-split"
       ],
       "spawn_allowed": false,
-      "exit_checklist": "default",
+      "exit_checklist": "default+flutter-screen-split",
       "status": "pending",
       "status_reason": null,
       "status_detail": null,
@@ -104,7 +104,7 @@
         "file-split"
       ],
       "spawn_allowed": false,
-      "exit_checklist": "default",
+      "exit_checklist": "default+flutter-screen-split",
       "status": "pending",
       "status_reason": null,
       "status_detail": null,
@@ -135,7 +135,7 @@
         "file-split"
       ],
       "spawn_allowed": false,
-      "exit_checklist": "default",
+      "exit_checklist": "default+flutter-screen-split+bdd-journey",
       "status": "pending",
       "status_reason": null,
       "status_detail": null,
@@ -166,7 +166,7 @@
         "file-split"
       ],
       "spawn_allowed": false,
-      "exit_checklist": "default",
+      "exit_checklist": "default+flutter-screen-split",
       "status": "pending",
       "status_reason": null,
       "status_detail": null,
@@ -197,7 +197,7 @@
         "file-split"
       ],
       "spawn_allowed": false,
-      "exit_checklist": "default",
+      "exit_checklist": "default+single-backend-route+governance",
       "status": "pending",
       "status_reason": null,
       "status_detail": null,
@@ -229,7 +229,7 @@
         "file-split"
       ],
       "spawn_allowed": false,
-      "exit_checklist": "default",
+      "exit_checklist": "default+single-backend-route+flutter-screen-split",
       "status": "pending",
       "status_reason": null,
       "status_detail": null,
@@ -260,7 +260,7 @@
         "file-split"
       ],
       "spawn_allowed": false,
-      "exit_checklist": "default",
+      "exit_checklist": "default+single-backend-route+flutter-screen-split",
       "status": "pending",
       "status_reason": null,
       "status_detail": null,
@@ -290,8 +290,8 @@
         "docs",
         "file-split"
       ],
-      "spawn_allowed": false,
-      "exit_checklist": "default",
+      "spawn_allowed": true,
+      "exit_checklist": "default+single-backend-route+governance",
       "status": "pending",
       "status_reason": null,
       "status_detail": null,
@@ -299,7 +299,11 @@
       "pr_head_sha": null,
       "merge_commit": null,
       "debt_issue_refs": [],
-      "merge_method": "manual"
+      "merge_method": "manual",
+      "spawn_config": {
+        "integration_branch": "main",
+        "ownership_ref": "docs/domains/pet_care/changes/agatha-care-journey-execute-autonomy.md#parallelism-subagents"
+      }
     },
     {
       "id": "pr-10",
@@ -323,7 +327,7 @@
         "file-split"
       ],
       "spawn_allowed": false,
-      "exit_checklist": "default",
+      "exit_checklist": "default+single-backend-route+flutter-screen-split",
       "status": "pending",
       "status_reason": null,
       "status_detail": null,
@@ -354,7 +358,7 @@
         "file-split"
       ],
       "spawn_allowed": false,
-      "exit_checklist": "default",
+      "exit_checklist": "default+single-backend-route+flutter-screen-split",
       "status": "pending",
       "status_reason": null,
       "status_detail": null,
@@ -385,7 +389,7 @@
         "file-split"
       ],
       "spawn_allowed": false,
-      "exit_checklist": "default",
+      "exit_checklist": "default+bdd-journey",
       "status": "pending",
       "status_reason": null,
       "status_detail": null,
@@ -416,7 +420,7 @@
         "file-split"
       ],
       "spawn_allowed": false,
-      "exit_checklist": "default",
+      "exit_checklist": "default+bdd-journey",
       "status": "pending",
       "status_reason": null,
       "status_detail": null,
@@ -447,7 +451,7 @@
         "file-split"
       ],
       "spawn_allowed": false,
-      "exit_checklist": "default",
+      "exit_checklist": "default+single-backend-route+governance",
       "status": "pending",
       "status_reason": null,
       "status_detail": null,
@@ -458,5 +462,5 @@
       "merge_method": "manual"
     }
   ],
-  "content_hash": "sha256:9ffdb336a1cea00d5aa670299363b831d29bc2c720fa532795c99ba2124f8555"
+  "content_hash": "sha256:8bf07d365cbbd25968172cc2179484fe5e602e03c99c4576d58f63bd18970106"
 }

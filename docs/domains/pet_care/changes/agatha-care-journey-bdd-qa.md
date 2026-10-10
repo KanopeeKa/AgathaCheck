@@ -127,26 +127,38 @@ Fail PR if new keys introduce them; existing legacy keys removed with O1 deletio
 
 ## Full AC → test traceability (freeze before autonomy)
 
-| AC | Primary test |
-|----|----------------|
-| AC-PF-01 | profileFacts.test.js |
-| AC-PF-02 | profileFacts.test.js |
-| AC-PF-03 | profileFacts.test.js / capability matrix |
-| AC-PF-04 | profileFacts.test.js |
-| AC-PF-05 | profileFacts.test.js |
-| AC-PF-06 | profileFacts.test.js |
-| AC-PF-10 | pet_model_test.dart |
-| AC-PF-11 | pet_form_controller_test.dart |
-| AC-IC-01 | sheet_widget_test + ACJ-IC-01 uat |
-| AC-IC-02 | ACJ-IC-02 smoke-ci |
-| AC-AC-01–04 | agatha_completeness_card_test.dart + ACJ-* |
-| AC-SP-01–02 | presentation_policy_test + ACJ-SP-01 |
-| AC-WF-01–03 | welfareSuggestions.test.js |
-| AC-WF-10 | welfare rule fixture + copy lint |
-| AC-WF-11 | welfare gating fixture |
-| AC-FB-01 | welfareSuggestions.test.js + ACJ-FB-01 |
-| AC-FB-02 | visit schema test PR-14 |
-| AC-CO-01 | agenda grouping jest + uat e2e |
+| AC | TDD / automated | BDD | Docs gate |
+|----|-----------------|-----|-----------|
+| AC-PF-01 | profileFacts.test.js | — | OpenAPI |
+| AC-PF-02 | profileFacts.test.js | — | OpenAPI |
+| AC-PF-03 | profileFacts.test.js, capability matrix | — | — |
+| AC-PF-04 | profileFacts.test.js | — | — |
+| AC-PF-05 | profileFacts.test.js | — | — |
+| AC-PF-06 | profileFacts.test.js | — | — |
+| AC-PF-07 | profileFacts.test.js | — | DATA_MAP PR-01 |
+| AC-PF-10 | pet_model_test.dart | — | — |
+| AC-PF-11 | pet_form_controller_test.dart | — | pet-profile-decisions |
+| AC-IC-01 | sheet_widget_test.dart | ACJ-IC-01 `@smoke-uat` | — |
+| AC-IC-02 | widget + capability test | ACJ-IC-02 `@smoke-ci` | — |
+| AC-AC-01 | agatha_completeness_card_test.dart | ACJ-AC-01 `@smoke-uat` | — |
+| AC-AC-02 | widget test | ACJ-AC-02 | — |
+| AC-AC-03 | widget test | — | — |
+| AC-AC-04 | widget + care status fixture | ACJ-GUARD-01 `@smoke-ci` | care-intelligence |
+| AC-SP-01 | presentation_policy_test.dart | ACJ-SP-01 `@smoke-ci` | — |
+| AC-SP-02 | presentation_policy_test.dart | — | care-intelligence |
+| AC-WF-01 | welfareSuggestions.test.js | — | — |
+| AC-WF-02 | welfareSuggestions.test.js | — | — |
+| AC-WF-03 | welfareSuggestions.test.js | — | — |
+| AC-WF-10 | welfare/fixtures microchip | ACJ-WF-07 Jest | copy lint |
+| AC-WF-11 | welfare/fixtures vaccination | — | copy review PR-10 |
+| AC-VX-01 | vaccinationRecord.test.js | — | DATA_MAP PR-09 |
+| AC-FB-01 | welfare completion.test.js | ACJ-FB-01 `@smoke-uat` | — |
+| AC-FB-02 | visitSchema.test.js | — | DATA_MAP PR-14 |
+| AC-CO-01 | agendaGrouping.test.js | ACJ-CO-01 `@smoke-uat` | CSM cross-link |
+| AC-CO-02 | coordinationCopy.test.js | ACJ-CO-02 | — |
+| AC-VV-01 | visitSchema.test.js | — | governance log |
+
+**Execute-plan:** PR-14 merge must pass **pre-UAT E2E** (`/babysit-uat`); not required for PR-01…13.
 
 ---
 
