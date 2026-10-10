@@ -3,7 +3,7 @@ title: AGENTS.md
 owner: Documentation Team
 audience: agent
 status: active
-last_updated: 2026-08-21
+last_updated: 2026-10-10
 tags: [agent,workflow]
 ---
 # AGENTS.md
@@ -96,9 +96,21 @@ Move Project board columns manually when you want **In Progress** / **Done** on 
 
 See `docs/agent-efficiency/github-issue-workflow.md` for the full issue lifecycle.
 
+### Execute-plan orchestration (Cloud Agents)
+
+When **`node scripts/execute_plan_runtime.js gate <plan_id>`** exits **`0`**, treat **run-until-blocked** as authoritative for that session (`.cursor/skills/execute-plan/SKILL.md`, `.agents/memory/execute-plan-autonomy.md`):
+
+| Rule | Detail |
+|------|--------|
+| **Loop** | Implement → PR → **`/babysit-plus`** (phase PRs to integration) or **`/babysit-uat`** (final PR to `main`) → squash merge → next phase until merge-done, `complete-plan`, or §Halt. |
+| **Chat** | Control issue telemetry only; user chat for **blocker alerts** (`**Needs you:**`, revoke, `session_limit`, escalation) — not routine milestones or permission prompts. |
+| **Overrides** | Execute-plan wins over generic “summarize each turn,” “confirm when done,” or walkthrough-in-chat while autonomy is active; put evidence in the PR body and control issue. |
+| **Babysit model** | **`composer-2.5` only** for babysit+ / babysit-uat triage, CI, and merge steps. |
+
 ### Policies (details in `.cursor/rules/` + Skills)
 
 - **PR hygiene:** mandatory pre-PR self-review, Copilot-first review (Bugbot disabled for this repo), `composer-2.5` for babysit — `docs/agent-efficiency/pr-review-cost-efficiency.md`
+- **Execute-plan PRs:** intermediate phases → **`/babysit-plus`**; single release/integration → **`main`** → **`/babysit-uat`** — never stop at “PR open” or “CI green” without merge when merge gates pass (`docs/agent-efficiency/autonomous-pr-policy.md`)
 - **Canonical docs:** `/canonical-docs` + `docs/domains/documentation/standards.md` — behaviour PRs sync feature docs before open
 - **Atomic PRs:** one verifiable outcome per PR; cross-domain OK when serving that outcome. Snag ladder + zero untracked debt → `docs/agent-efficiency/atomic-pr-policy.md`
 - Modularity ≤500 lines · BDD gate: `node e2e/scripts/check_bdd_coverage.js --report-only` (live counts from the script only; gate is 68% of active scenarios)
