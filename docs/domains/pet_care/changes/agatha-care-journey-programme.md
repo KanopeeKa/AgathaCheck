@@ -14,246 +14,247 @@ tags: [pet_care, pet_profile, care_intelligence, roadmap, execute-plan]
 
 # Agatha care journey programme
 
-Frozen programme for **`agatha-care-journey`** execute-plan. One integration branch, **atomic PRs PR-01 … PR-14**, progressive delivery. Features are **not** hard-blocked on each other except where `Depends` is stated — parallel **Care Schedule Management (CSM)** work continues on existing plans.
+Frozen programme for **`agatha-care-journey`** execute-plan. **Atomic PRs PR-01 … PR-14**, each merging to **`main`** (feature-flagged where user-visible). Parallel **Care Schedule Management (CSM)** continues on existing plans.
+
+**Slot order (single source of truth):** [`agatha-care-journey-ui-design.md`](./agatha-care-journey-ui-design.md) §3 — programme links here; do not duplicate ordering prose.
+
+**Execute-plan:** [`.agents/plans/agatha-care-journey.md`](../../../.agents/plans/agatha-care-journey.md)  
+**UI:** [`agatha-care-journey-ui-design.md`](./agatha-care-journey-ui-design.md)  
+**BDD / TDD / QA:** [`agatha-care-journey-bdd-qa.md`](./agatha-care-journey-bdd-qa.md)
 
 ## Executive summary
 
-AgathaTrack should help pet parents **know** (accurate profile facts), **understand** (quiet welfare and rhythm guidance), **plan** (independent care items and later coordination), **act** (Actions / occurrences), and **remember** (history that closes recommendation loops).
+AgathaTrack helps pet parents **know**, **understand**, **plan**, **act**, and **remember**. This programme:
 
-This programme:
+1. Persists **profile facts** (`identification_status`, `neuter_status`) with safe PUT semantics on the shared `pets` row.
+2. Replaces inset completeness UI with **Agatha completeness cards** (profile actions, not rhythm Accept).
+3. Adds **`welfare_suggestions`** (separate from `care_recommendations`).
+4. Closes **suggestion ↔ history** loops.
+5. Adds agenda **grouping** and **coordination copy** after **CSM-stable** (halt if gate undefined).
+6. Defers visit **UI**; PR-14 is schema/API only.
 
-1. Fixes **profile fact** persistence (chip / neuter / vaccination status) before advocacy cards.
-2. Replaces inset completeness rows with **Agatha completeness cards** (shared chrome, profile actions — not rhythm Accept).
-3. Introduces a **welfare suggestion** layer (distinct from Phase C rhythm `care_recommendations`).
-4. Strengthens **recommendation ↔ history** feedback.
-5. Adds **schedule presentation** grouping and **coordination copy** without merging care items.
-6. Defers **visit entity** UI until PR-14 schema/API slice is approved.
+## Delivery model (B6)
 
-**Execute-plan:** [`.agents/plans/agatha-care-journey.md`](../../../.agents/plans/agatha-care-journey.md)  
-**UI (design deep):** [`agatha-care-journey-ui-design.md`](./agatha-care-journey-ui-design.md)  
-**BDD / TDD / QA:** [`agatha-care-journey-bdd-qa.md`](./agatha-care-journey-bdd-qa.md)
+| Rule | Detail |
+|------|--------|
+| **Merge target** | Each PR-* merges to **`main`** — not a 14-phase integration batch. |
+| **Feature flags** | User-visible surfaces (completeness cards, welfare cards, grouping) ship behind flags until stable. |
+| **Migration PRs** | PR-01, PR-06, PR-09, PR-14: **`merge_method: manual`** — human checkpoint on execute-plan phase; rollback note required in PR body. |
+| **W1 value** | PR-01/02 are plumbing; first guardian-visible W1 outcome is **PR-03** (sheet on existing inset prompt) then **PR-04** (Agatha cards + minimal slot policy). |
+| **Rollback** | PR-01 migration: document lossy backfill (`unknown` from empty fields); reversal drops columns — statuses lost unless exported. |
 
-## Product journey (north star)
+## Profile fact model (Q1 — canonical)
 
-```text
-Profile facts → Agatha surfaces (completeness | welfare | rhythm | safeguard)
-            → Care planning (HealthEntry / occurrences)
-            → History → suppresses stale suggestions
-```
+| Concept | Rule |
+|---------|------|
+| **Statuses** | `yes \| no \| unknown` on wire for identification and neuter. |
+| **Species N/A** | Neutering not applicable = **derived from species** (`AppConstants.speciesWithoutNeutering`) — **not stored**. |
+| **Dismissal** | “Not for my pet” = `chip_dismissed` / `neuter_dismissed` — **not** a status value. |
+| **Provenance** | `identification_status_updated_at`, `neuter_status_updated_at`, `identification_status_source`, `neuter_status_source` (`backfill \| user`) so backfill `unknown` ≠ user “Not sure” policy. |
+| **Vaccination** | **No** `vaccination_status_summary` on `pets` (B3). PR-09 owns records; summaries are **computed**. |
 
-| Verb | Primary owner in repo | This programme |
-|------|----------------------|----------------|
-| Know | Pet profile + API | PR-01–PR-05 |
-| Understand | CIM + welfare layer | PR-06–PR-10 |
-| Plan | CSM + care-item evolution | Parallel CSM; PR-12–PR-14 |
-| Act | Actions / occurrences | Unchanged; guardrails in every PR |
-| Remember | Health entries, weight, issues | PR-11 |
+## Architectural boundaries
 
-## Architectural boundaries (non-negotiable)
+| Layer | Engine | Must not |
+|-------|--------|----------|
+| Profile completeness | Pet row + dismiss flags | Rhythms; alarmist copy |
+| Welfare guidance | `welfare_suggestions` table | Touch `care_recommendations` NOT NULL rhythm columns |
+| Rhythm suggestions | `care_recommendations` / Phase C | Change Care Status before accept |
+| Safeguards | Phase E path | Teal Agatha chrome |
 
-| Layer | User-facing | Engine | Must not |
-|-------|-------------|--------|----------|
-| **Profile completeness** | “Help Agatha know…” | Pet row + optional `profile_suggestions` | Create rhythms; alarmist clinical copy |
-| **Welfare guidance** | “Suggested by Agatha” | Server rules + `suggestion_kind=welfare` | Override vet cadence; diagnosis / dose copy |
-| **Rhythm suggestions** | “Suggested by Agatha” | `care_recommendations` / Phase C rule engine | Change Care Status before accept |
-| **Safeguards** | Info chrome | Phase E weight path | Compete with operational care list |
+**Dedupe:** Shared `dedupe_key` **namespace** across welfare + rhythm for future For you union (FR-SG-6). Presentation only is shared (ACJ-D-002).
 
-References: [`care-intelligence.md`](../features/care-intelligence.md), [`care-foundation-roadmap.md`](./care-foundation-roadmap.md) negative tests, [`notifications-v2-spec.md`](../../notifications/features/notifications-v2-spec.md) FR-SG-6 / FR-SC-1.
+### Visit invariants
 
-### Visit invariants (document now; implement PR-14+)
+Documented **in this programme** (ACJ-D-004). PR-14 implements schema only.
 
-- One `health_entry` = one care need; recurrence on the entry.
-- Occurrences complete independently; **visit complete ≠ all children complete**.
-- Shared calendar date does not merge items.
-- Future `vet_visit` coordinates links only — no owned clinical history.
+## CSM-stable gate (B5)
 
-## Parallel track: Care Schedule Management
+Agent **must halt** (`governance_approval_required`) until decision log row **ACJ-D-006** is **Live** with:
 
-**Not renumbered in this programme.** Continue active execute-plans / merges for care-item evolution and CSM (`care-schedule-management.md`, `care-item-evolution.md`).
+| Criterion | Owner (fill at approval) |
+|-----------|---------------------------|
+| Named CSM PRs merged to `main` | _TBD_ |
+| Agenda read contract frozen in OpenAPI (`pet-care-critical.json` or successor) | _TBD_ |
+| No open P1 defects against agenda grouping | _TBD_ |
 
-| Gate | Meaning |
-|------|---------|
-| **CSM-stable** | Agenda API grouping (Today / Due soon / Upcoming) trusted for PR-12+ |
-| **No CSM block** | PR-01–PR-11 may ship while CSM tranches land |
+PR-12 **cannot** start without ACJ-D-006 Live. No “or earlier if Flutter only” escape.
 
-## Waves (logical grouping, not ship batching)
+**PR-11 CSM exposure (not gated):** reads `health_entries`, occurrence rows, pet profile facts; breaks if occurrence status vocabulary or pet PUT contract changes without coordination.
+
+## Parallel track: CSM
+
+PR-01–PR-11 proceed independently of CSM. PR-12–PR-13 blocked on ACJ-D-006. PR-14 depends on **product gate only** (not PR-12).
+
+## Waves
 
 | Wave | PRs | Outcome |
 |------|-----|---------|
-| **W1 — Know** | PR-01–PR-05 | Durable profile facts + Agatha completeness + slot policy |
-| **W2 — Understand** | PR-06–PR-10 | Welfare framework + chip/neuter/vaccination guidance |
-| **W3 — Connect** | PR-11 | Suggestions auto-complete from profile + history |
-| **W4 — Coordinate** | PR-12–PR-13 | Same-day grouping + Agatha coordination copy |
-| **W5 — Visits** | PR-14 | Visit schema/API design slice (no full appointment UX) |
+| W1 — Know | PR-01–05 | Facts, capture, Agatha completeness, extended policy |
+| W2 — Understand | PR-06–10 | Welfare table + subjects |
+| W3 — Connect | PR-11 | Auto-complete / suppress |
+| W4 — Coordinate | PR-12–13 | Grouping + coordination copy |
+| W5 — Visits | PR-14 | Visit schema slice |
+
+## Success metrics (O12)
+
+| Metric | Use |
+|--------|-----|
+| Completeness answer rate | % pets with identification/neuter status ≠ `unknown` after 30d |
+| Dismiss rate per card kind | chip vs neuter vs welfare subject |
+| Time to first answered fact | Median from pet create → first user-sourced status |
+| Re-show rate after dismissal | Should drop with 30d cooldown (PR-05) |
 
 ---
 
 ## PR index
 
-| PR | Title | Wave | Depends |
-|----|-------|------|---------|
-| [PR-01](#pr-01--profile-fact-model-server) | Profile fact model (server) | W1 | — |
-| [PR-02](#pr-02--profile-facts-flutter--api-contract) | Profile facts Flutter + contract | W1 | PR-01 |
-| [PR-03](#pr-03--inline-profile-capture) | Inline profile capture | W1 | PR-02 |
-| [PR-04](#pr-04--agatha-completeness-cards) | Agatha completeness cards | W1 | PR-02, PR-03 |
-| [PR-05](#pr-05--agatha-surface-policy) | Agatha surface policy | W1 | PR-04 |
-| [PR-06](#pr-06--welfare-suggestion-framework) | Welfare suggestion framework | W2 | PR-01, PR-05 |
-| [PR-07](#pr-07--welfare-microchip-guidance) | Welfare: microchip guidance | W2 | PR-06 |
-| [PR-08](#pr-08--welfare-neuter-guidance) | Welfare: neuter guidance | W2 | PR-06 |
-| [PR-09](#pr-09--vaccination-record-minimum) | Vaccination record minimum | W2 | PR-01 |
-| [PR-10](#pr-10--welfare-vaccination-guidance) | Welfare: vaccination guidance | W2 | PR-06, PR-09 |
-| [PR-11](#pr-11--suggestion-history-feedback) | Suggestion ↔ history feedback | W3 | PR-06+ |
-| [PR-12](#pr-12--agenda-same-day-grouping) | Agenda same-day grouping | W4 | CSM-stable |
-| [PR-13](#pr-13--coordination-suggestion-copy) | Coordination suggestion copy | W4 | PR-12 |
-| [PR-14](#pr-14--vet-visit-schema-slice) | Vet visit schema slice | W5 | PR-12, product gate |
+| PR | Title | Depends |
+|----|-------|---------|
+| PR-01 | Profile fact model (server + OpenAPI) | — |
+| PR-02 | Profile facts Flutter | PR-01 |
+| PR-03 | Inline capture (existing inset prompt) | PR-02 |
+| PR-04 | Agatha completeness cards + **minimal** slot policy | PR-02, PR-03 |
+| PR-05 | Extended Agatha surface policy (tiebreak, cooldown, dashboard) | PR-04 |
+| PR-06 | `welfare_suggestions` framework | PR-01 |
+| PR-07–08 | Welfare rules (data-driven fixtures) | PR-06 |
+| PR-09 | Vaccination record minimum + DATA_MAP | PR-01 |
+| PR-10 | Welfare vaccination (+ copy review) | PR-06, PR-09 |
+| PR-11 | History feedback | PR-06+ |
+| PR-12 | Same-day grouping | ACJ-D-006, PR-11 |
+| PR-13 | Coordination copy | PR-12 |
+| PR-14 | Vet visit schema | Product gate |
 
 ---
 
-## PR-01 — Profile fact model (server)
+## PR-01 — Profile fact model (server + OpenAPI)
 
-**Objective:** Persist orthogonal **profile facts** so unknown / yes / no / not applicable are not inferred from empty strings.
+**Objective:** Persist `identification_status` and `neuter_status` on **`pets`** with **merge-safe PUT** semantics.
 
-**Scope**
+**Evidence:** `server/lib/pets/petCoreCommandService.js` today defaults omitted `chipId` to `''` and writes all columns — **contract change**, not “partial update” wording alone.
 
-- Add enums (wire + DB), e.g. `identification_status`, `neuter_status`, `vaccination_status_summary` (exact names in OpenAPI PR).
-- Migration backfill: empty chip → `unknown`; neuter: date → `yes`, dismissed flags preserved.
-- `PUT /api/pets/:id` partial update; capability auth unchanged.
-- Deprecate relying on `chipId.isEmpty` alone for business logic (keep field for ID value).
+### PUT merge semantics (B1)
 
-**Acceptance criteria**
+New status fields follow **`hasOwnProperty` / keep-existing** pattern used for weight reference (`:138-168`).
+
+**Kept when omitted from request body** (old clients):
+
+- `identification_status`, `neuter_status`
+- `identification_status_source`, `neuter_status_source`
+- `identification_status_updated_at`, `neuter_status_updated_at`
+- `chip_dismissed`, `neuter_dismissed`
+
+**Still required / replaced when omitted** (existing behaviour — document in PR, do not silently change without AC):
+
+- `name`, `species`, and other fields the current handler always binds from body defaults.
+
+**Old-client rule:** If request has **no** status fields but sends `chipId: ''`, **do not** reset status to `unknown` when stored status is already set (AC-PF-05).
+
+### Status / value normalisation (pick: **normalise**)
+
+| Input | Server action |
+|-------|----------------|
+| `identification_status=yes`, empty `chip_id` | **Allow** (“chipped, number unknown”) |
+| `chip_id` non-empty, status `unknown` or `no` | **Normalise** to `yes` |
+| `neutered_date` set, `neuter_status=no` | **Reject** 400 |
+| `neuter_status=yes`, no date | **Allow** (date optional) |
+
+### Scope beyond Pet Care API (B2)
+
+- `server/routes/organizations/petsRouter.js` org write path
+- `server/lib/orgPetShadow.js` — **default:** new statuses **not** copied to shadow / share preview / redacted payloads
+- Tests: `petRedacted.test.js`, `sharing.test.js`, `sharedPetAccess.test.js`, `sharePreview.test.js`
+- **`regulatory/DATA_MAP.md`** update for new profile fields (O7)
+
+**Migration rollback:** Dropping columns loses statuses; backfill from `chip_id` / `neutered_date` only partially recoverable.
+
+### Acceptance criteria
 
 | ID | Given / When / Then |
 |----|---------------------|
-| AC-PF-01 | Given a pet with neuter_status `no`, when profile is reloaded, then status remains `no` (not `unknown`). |
-| AC-PF-02 | Given identification_status `yes` and chip_id set, when GET pet, then both are returned. |
-| AC-PF-03 | Given view-only member, when PUT profile facts, then 403. |
-| AC-PF-04 | Given invalid enum, when PUT, then 400 with public error body (no raw exception). |
+| AC-PF-01 | neuter_status `no` survives reload |
+| AC-PF-02 | identification_status `yes` + chip_id returned on GET |
+| AC-PF-03 | view-only PUT → 403 |
+| AC-PF-04 | invalid enum → 400 `publicError` |
+| AC-PF-05 | stored statuses unchanged when old client PUT omits status fields |
+| AC-PF-06 | inconsistent status/value → defined normalise or 400 outcome |
 
-**TDD:** `server/test/pets/profileFacts.test.js` (new) before route implementation.
-
-**Docs:** Fold enum contract into pet-profile canonical on merge (Mode A); this doc stays `proposed` until W1 complete.
+**TDD:** `server/test/pets/profileFacts.test.js`, org + sharing tests extended.
 
 ---
 
-## PR-02 — Profile facts Flutter + API contract
+## PR-02 — Profile facts Flutter
 
-**Objective:** Flutter `Pet` entity and forms use the same facts as the server; OpenAPI updated.
+**Depends:** PR-01 (OpenAPI already updated in PR-01)
 
-**Depends:** PR-01
-
-**Acceptance criteria**
-
-| ID | Given / When / Then |
-|----|---------------------|
-| AC-PF-10 | Given API returns neuter_status `no`, when pet list loads, then form shows No selected. |
-| AC-PF-11 | Given round-trip save, then server and client enums match. |
-
-**TDD:** `pet_model_test.dart`, `pet_form_controller_test.dart` extended first.
+**Acceptance:** AC-PF-10, AC-PF-11.
 
 ---
 
 ## PR-03 — Inline profile capture
 
-**Objective:** Answer profile questions **on profile** without full form navigation where possible (sheet or inline controls).
-
 **Depends:** PR-02
 
-**UX:** Segmented Yes / No / Not sure for identification and neuter (species N/A for neuter). Optional chip ID field when Yes.
+**Verifiable alone:** Sheet opened from **existing** `PetProfileCompletenessPrompt` (inset), not Agatha card.
 
-**Acceptance criteria**
-
-| ID | Given / When / Then |
-|----|---------------------|
-| AC-IC-01 | Given missing neuter status, when user selects No on profile sheet, then pet persists `neuter_status=no` without date. |
-| AC-IC-02 | Given co-parent without editProfile, when viewing prompt, then primary action disabled with forbidden tooltip. |
-
-**BDD:** See `ACJ-IC-*` in bdd-qa doc.
+**Acceptance:** AC-IC-01, AC-IC-02.
 
 ---
 
-## PR-04 — Agatha completeness cards
-
-**Objective:** Replace `PetProfileCompletenessPrompt` inset list with `AgathaMessageCard` completeness cards.
+## PR-04 — Agatha completeness cards + minimal policy
 
 **Depends:** PR-02, PR-03
 
-**Actions (not rhythm Accept):**
+**Includes minimal slot policy (O2):** no stacking safeguard + rhythm + completeness; completeness competes for slot — **not always shown** (UI doc §3).
+
+**Actions:**
 
 | Action | Behaviour |
 |--------|-----------|
-| Primary | Open inline capture (PR-03) or edit deep link |
-| Why? | Species identification copy; factual evidence |
-| Not for my pet | Maps to `*_dismissed` or status N/A |
-| Dismiss | Quiet hide per policy |
+| Primary | PR-03 sheet |
+| Why? | Factual + species copy |
+| Not for my pet | `*_dismissed` only |
+| Dismiss | Quiet hide + cooldown (full cooldown in PR-05) |
 
-**Acceptance criteria**
+**Legacy removal (O1):** Delete unused `NeuterReminderCard`, `ChipReminderCard`, `neuter_reminder_controller.dart`, `chip_reminder_controller.dart` and dead tests.
 
-| ID | Given / When / Then |
-|----|---------------------|
-| AC-AC-01 | Given chip recorded, when profile loads, then completeness card absent. |
-| AC-AC-02 | Given card rendered, then chrome matches `CareSuggestionCard` tokens (CIM-9). |
-| AC-AC-03 | Given no edit capability, then primary action disabled. |
-| AC-AC-04 | Given completeness card, then Care Status and Actions unchanged. |
-
-**Negative:** Copy must not read as alarmist medical recommendation (roadmap §12).
+**Acceptance:** AC-AC-01 … AC-AC-04; no HealthEntry on any action.
 
 ---
 
-## PR-05 — Agatha surface policy
-
-**Objective:** Centralise **max prominent Agatha surfaces** on pet profile and dashboard.
+## PR-05 — Extended Agatha surface policy
 
 **Depends:** PR-04
 
-**Order (requirement):** Safeguard (info) → operational care → **at most one** of (rhythm suggestion | welfare suggestion) → completeness (if no conflict).
+**Guidance tiebreak:** rhythm **>** welfare, then rule severity, then oldest `created_at`.
 
-**Acceptance criteria**
+**Nag budget:** 30d cooldown per card kind after dismiss; cap re-shows (config in server or client policy doc).
 
-| ID | Given / When / Then |
-|----|---------------------|
-| AC-SP-01 | Given active safeguard, when profile loads, then rhythm and welfare suggestions hidden. |
-| AC-SP-02 | Given pending rhythm + completeness, then policy shows one prominent suggestion per `PetCarePresentationPolicy` doc. |
-
-**Docs:** Update `care-intelligence.md` presentation table + pet-profile decisions slot order.
+**Docs:** Canonical sync presentation tables.
 
 ---
 
 ## PR-06 — Welfare suggestion framework
 
-**Objective:** Server-persisted welfare suggestions with **outcome types** (record / learn / plan / discuss / dismiss).
+**Depends:** PR-01 (not PR-05)
 
-**Depends:** PR-01, PR-05
+**Storage (B4 / ACJ-D-005):** New table **`welfare_suggestions`** — `care_recommendations` **untouched**.
 
-**Not in scope:** Extending Phase C `evaluateCareRecommendationCandidates` without `kind` column.
+Columns include: `pet_id`, `subject_key`, `dedupe_key`, `status`, `primary_outcome`, `rationale_key`, `engine_version`, timestamps. No `suggested_frequency` NOT NULL hacks.
 
-**Schema sketch:** `welfare_suggestions` or `care_suggestions` with `kind=welfare|rhythm` — decision in PR-06 OpenAPI PR.
-
-**Acceptance criteria**
-
-| ID | Given / When / Then |
-|----|---------------------|
-| AC-WF-01 | Given dismiss on profile, when For you refreshed (when wired), then same row suppressed (FR-SG-6 direction). |
-| AC-WF-02 | Given welfare card, when primary action record_profile_fact, then no HealthEntry created. |
+**Acceptance:** AC-WF-01, AC-WF-02, AC-WF-03 (dismiss suppresses dedupe_key per FR-FB-1 direction).
 
 ---
 
-## PR-07 — Welfare: microchip guidance
-
-**Depends:** PR-06, profile facts
-
-**Gating:** identification_status `unknown` or missing ID when `yes`; suppress when `no` / N/A / dismissed.
-
-**Acceptance criteria:** AC-WF-10 — species-appropriate headline; no jurisdiction compliance claims.
-
----
-
-## PR-08 — Welfare: neuter guidance
+## PR-07 / PR-08 — Welfare subjects
 
 **Depends:** PR-06
 
-**Gating:** neuter_status `unknown` only; suppress for `no`, date recorded, species without neutering, dismissed.
+**Delivery (O4):** One PR per subject acceptable for first ship; rules as **data-driven fixtures** in `server/test/careIntelligence/welfare/` shared evaluator.
 
-**Copy:** Discuss with vet; no push to create rhythm.
+**PR-07 (microchip):** AC-WF-10; copy “check local rules” only — no compliance absolutes (O6).
+
+**PR-08:** Delete persuasive legacy neuter copy paths (O1); welfare gating `neuter_status=unknown` only.
 
 ---
 
@@ -261,19 +262,15 @@ References: [`care-intelligence.md`](../features/care-intelligence.md), [`care-f
 
 **Depends:** PR-01
 
-**Objective:** Structured minimum for “what vaccination history exists” before schedules (last dose date optional, status enum).
-
-**Defer:** Automated national schedules, product catalogue.
+**DATA_MAP** update (O7). No summary column on `pets`.
 
 ---
 
-## PR-10 — Welfare: vaccination guidance
+## PR-10 — Welfare vaccination
 
 **Depends:** PR-06, PR-09
 
-**Gating:** Only when PR-09 data quality threshold met; else silence.
-
-**May link:** S1-style missing recurring care (notifications spec) — single dedupe_key story.
+**Exit:** Product/vet **copy review** sign-off in PR checklist (O5). Silence when data quality below threshold (AC-WF-11).
 
 ---
 
@@ -281,42 +278,33 @@ References: [`care-intelligence.md`](../features/care-intelligence.md), [`care-f
 
 **Depends:** PR-06+
 
-**Objective:** Auto-complete / suppress suggestions when profile facts or relevant health_entries change.
+**Reads:** `pets` status fields, `welfare_suggestions`, `health_entries`, occurrences (CSM churn risk).
 
-**Acceptance criteria**
-
-| ID | Given / When / Then |
-|----|---------------------|
-| AC-FB-01 | Given microchip welfare active, when chip_id saved, then suggestion completes within one refresh cycle. |
-| AC-FB-02 | Given visit marked complete (future), then not all linked occurrences auto-complete. |
+**Acceptance:** AC-FB-01 only. **AC-FB-02 moved to PR-14** (visit completion).
 
 ---
 
-## PR-12 — Agenda same-day grouping
+## PR-12 — Same-day grouping
 
-**Depends:** CSM-stable
+**Depends:** ACJ-D-006 Live, PR-11 merged
 
-**Objective:** Phase A — visual group by pet + calendar date on Actions/agenda (read model only).
-
-**Acceptance criteria:** AC-CO-01 — three items same date render as one group header; three independent rows remain.
+**Acceptance:** AC-CO-01
 
 ---
 
-## PR-13 — Coordination suggestion copy
+## PR-13 — Coordination copy
 
-**Depends:** PR-12
-
-**Objective:** Phase B — Agatha message when ≥2 vet-setting items due in window; links only, no merge.
+**Depends:** PR-12 — links only, no merge.
 
 ---
 
 ## PR-14 — Vet visit schema slice
 
-**Depends:** PR-12, explicit product gate
+**Depends:** Product gate (ACJ-D-007 when added); **not** PR-12
 
-**Objective:** API + migration for `vet_visits` link table to occurrences/entries; **no** guardian appointment manager UI.
+**Scope:** `vet_visits` + link table; **AC-FB-02** visit bulk-complete semantics tested here.
 
-**Gate:** D0.5-style sign-off recorded in decision log before UI PRs.
+**DATA_MAP** + governance sign-off before UI PRs.
 
 ---
 
@@ -324,27 +312,45 @@ References: [`care-intelligence.md`](../features/care-intelligence.md), [`care-f
 
 | When | Action |
 |------|--------|
-| Each behaviour PR | `/canonical-docs sync` Mode A before open |
-| PR-05 | Presentation + pet-profile slot order |
-| PR-06 | New subsection in care-intelligence OR `pet-profile-decisions` for welfare vs rhythm |
-| PR-14 | DATA_MAP if new PII tables |
-| Programme complete | Fold this file into canonical docs; delete or mark delivered |
+| Spec PR #1833 merge | `Planned` rows in canonical docs (see § Doc ownership) |
+| Each behaviour PR | `/canonical-docs sync` Mode A |
+| PR-01, PR-09, PR-14 | DATA_MAP |
 
 ## Deliberate deferrals
 
-- Profile completion percentage
-- Welfare dashboard
-- Multi-country legal engine
-- LLM medical copy
-- Full vet practice scheduling
-- Auto vaccination schedules without PR-09 quality
-- Merging care items for convenience
+(Unchanged — completion %, welfare dashboard, jurisdiction engine, LLM advice, auto vax schedules, merged care items, full appointment UX.)
 
 ## Decision log (programme)
 
 | ID | Decision | Status | Date |
 |----|----------|--------|------|
-| ACJ-D-001 | Completeness uses Agatha chrome but not Phase C rhythm engine | Proposed | 2026-10-10 |
-| ACJ-D-002 | Welfare and rhythm share presentation policy, not rule engine | Proposed | 2026-10-10 |
-| ACJ-D-003 | CSM continues on existing plans; PR-12 waits CSM-stable | Proposed | 2026-10-10 |
-| ACJ-D-004 | Visit UI deferred; invariants documented in PR-01 programme | Proposed | 2026-10-10 |
+| ACJ-D-001 | Completeness: Agatha chrome, not Phase C engine | Proposed | 2026-10-10 |
+| ACJ-D-002 | Welfare + rhythm: shared presentation + dedupe namespace, separate storage | Proposed | 2026-10-10 |
+| ACJ-D-003 | PR-12 blocked on CSM-stable row | Proposed | 2026-10-10 |
+| ACJ-D-004 | Visit UI deferred; invariants in **this programme** | Proposed | 2026-10-10 |
+| ACJ-D-005 | `welfare_suggestions` table; `care_recommendations` unchanged | Proposed | 2026-10-10 |
+| ACJ-D-006 | CSM-stable gate definition (owner, PRs, OpenAPI, P1s) | Proposed | 2026-10-10 |
+
+---
+
+## Pre-approval checklist (§7 — before `approve-autonomous`)
+
+- [ ] B1–B3 PR-01 contract in spec (this doc § PR-01)
+- [ ] B4 `welfare_suggestions` + ACJ-D-005
+- [ ] B5 ACJ-D-006 owner/criteria filled; PR-14 decoupled from PR-12
+- [ ] B6 delivery: per-PR `main`, flags, manual migration phases, rollback notes
+- [ ] Q2 slot order in UI doc; PR-04 minimal policy; tiebreak + cooldown in PR-05
+- [ ] O1 legacy card deletion in PR-04 scope
+- [ ] UI-Q-01..03 resolved in UI doc
+- [ ] bdd-qa: `@smoke-ci` boundaries, traceability, copy lint
+- [ ] DATA_MAP PR-01/09; metrics § Success metrics
+- [ ] Snapshot: real `control_issue`, valid `approved_at` / `approved_until`, `--fix-hash`
+
+## Doc ownership (spec PR)
+
+On merge of #1833, add **Planned** rows to:
+
+- `docs/domains/pet_profile/features/pet-profile-decisions.md` — fact model, PUT semantics, dismiss vs status
+- `docs/domains/pet_care/features/care-intelligence.md` — welfare vs rhythm, `welfare_suggestions`, slot policy link
+
+`changes/agatha-care-journey-*.md` remain delivery specs until programme complete.

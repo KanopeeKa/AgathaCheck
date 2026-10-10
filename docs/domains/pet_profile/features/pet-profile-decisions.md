@@ -180,6 +180,18 @@ Private per-user labels for organizing and filtering pets on `/pc/pets`. No shar
 | API | `GET/POST/PATCH/DELETE /api/pet-tags`; `POST/DELETE /api/pets/:petId/tags` (assign/unassign). Client uses `GET /api/pet-tags` with `pet_ids[]` for filter, profile, and manage UI. |
 | UI | Account → Preferences → Pet tags (catalog CRUD); pet profile → My tags; `/pc/pets` → tag filter (Match any / Match all). |
 
+## Planned — Agatha care journey (PR #1833 programme)
+
+Delivery spec: [agatha-care-journey-programme.md](../../pet_care/changes/agatha-care-journey-programme.md). Fold into this doc when PR-01+ land.
+
+| ID | Planned decision | Notes |
+|----|------------------|-------|
+| **ACJ-PF-PL-001** | `identification_status` and `neuter_status` are `yes \| no \| unknown` on `pets`; species neuter N/A is derived, not stored | PR-01 |
+| **ACJ-PF-PL-002** | “Not for my pet” uses `chip_dismissed` / `neuter_dismissed`, not status enums | PR-04 |
+| **ACJ-PF-PL-003** | Pet PUT keeps status fields when omitted (old-client safe); normalise chip_id + status per programme § PR-01 | PR-01 |
+| **ACJ-PF-PL-004** | Status provenance: `*_status_source`, `*_status_updated_at` | PR-01 |
+| **ACJ-PF-PL-005** | New status fields excluded from org shadow / share preview / redacted views by default | PR-01 |
+
 ## How to use
 
 - Activity model detail: [pet-activity-model.md](pet-activity-model.md)

@@ -7,22 +7,30 @@
   "approved_until": "1970-01-03T00:00:00Z",
   "autonomy": "halted",
   "default_merge_mode": "auto",
-  "base_branch": "cursor/agatha-care-journey-integration-b994",
+  "base_branch": "main",
   "control_issue": 1,
   "artifact_branch_policy": "phase-branch",
   "phases": [
     {
       "id": "pr-01",
-      "title": "PR-01 — see programme doc",
+      "title": "PR-01 Profile facts server + OpenAPI",
       "branch": "cursor/acj-pr-01-b994",
       "allowed_paths": [
+        "db/migrations/**",
+        "server/lib/pets/**",
+        "server/routes/pets/**",
+        "server/routes/organizations/petsRouter.js",
+        "server/lib/orgPetShadow.js",
+        "server/test/pets/**",
+        "server/test/organizations/petRedacted.test.js",
+        "server/test/sharing.test.js",
+        "server/test/sharedPetAccess.test.js",
+        "server/test/sharePreview.test.js",
+        "docs/architecture/openapi/**",
+        "regulatory/DATA_MAP.md",
+        "e2e/bdd/features/pet_care/agatha_care_journey.feature",
         "docs/domains/pet_care/changes/agatha-care-journey-*.md",
-        ".agents/plans/agatha-care-journey.*",
-        "server/**",
-        "flutter_app/**",
-        "db/**",
-        "e2e/**",
-        "docs/architecture/openapi/**"
+        ".agents/plans/agatha-care-journey.*"
       ],
       "forbidden_paths": [
         ".github/workflows/**"
@@ -40,11 +48,12 @@
       "pr_url": null,
       "pr_head_sha": null,
       "merge_commit": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "merge_method": "manual"
     },
     {
       "id": "pr-02",
-      "title": "PR-02 — see programme doc",
+      "title": "PR-02 Profile facts Flutter",
       "branch": "cursor/acj-pr-02-b994",
       "allowed_paths": [
         "docs/domains/pet_care/changes/agatha-care-journey-*.md",
@@ -75,7 +84,7 @@
     },
     {
       "id": "pr-03",
-      "title": "PR-03 — see programme doc",
+      "title": "PR-03 Inline capture (inset prompt)",
       "branch": "cursor/acj-pr-03-b994",
       "allowed_paths": [
         "docs/domains/pet_care/changes/agatha-care-journey-*.md",
@@ -106,7 +115,7 @@
     },
     {
       "id": "pr-04",
-      "title": "PR-04 — see programme doc",
+      "title": "PR-04 Agatha completeness + minimal policy",
       "branch": "cursor/acj-pr-04-b994",
       "allowed_paths": [
         "docs/domains/pet_care/changes/agatha-care-journey-*.md",
@@ -137,7 +146,7 @@
     },
     {
       "id": "pr-05",
-      "title": "PR-05 — see programme doc",
+      "title": "PR-05 Extended surface policy",
       "branch": "cursor/acj-pr-05-b994",
       "allowed_paths": [
         "docs/domains/pet_care/changes/agatha-care-journey-*.md",
@@ -168,7 +177,7 @@
     },
     {
       "id": "pr-06",
-      "title": "PR-06 — see programme doc",
+      "title": "PR-06 welfare_suggestions framework",
       "branch": "cursor/acj-pr-06-b994",
       "allowed_paths": [
         "docs/domains/pet_care/changes/agatha-care-journey-*.md",
@@ -195,11 +204,12 @@
       "pr_url": null,
       "pr_head_sha": null,
       "merge_commit": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "merge_method": "manual"
     },
     {
       "id": "pr-07",
-      "title": "PR-07 — see programme doc",
+      "title": "PR-07 Welfare microchip",
       "branch": "cursor/acj-pr-07-b994",
       "allowed_paths": [
         "docs/domains/pet_care/changes/agatha-care-journey-*.md",
@@ -230,7 +240,7 @@
     },
     {
       "id": "pr-08",
-      "title": "PR-08 — see programme doc",
+      "title": "PR-08 Welfare neuter",
       "branch": "cursor/acj-pr-08-b994",
       "allowed_paths": [
         "docs/domains/pet_care/changes/agatha-care-journey-*.md",
@@ -261,7 +271,7 @@
     },
     {
       "id": "pr-09",
-      "title": "PR-09 — see programme doc",
+      "title": "PR-09 Vaccination record minimum",
       "branch": "cursor/acj-pr-09-b994",
       "allowed_paths": [
         "docs/domains/pet_care/changes/agatha-care-journey-*.md",
@@ -288,11 +298,12 @@
       "pr_url": null,
       "pr_head_sha": null,
       "merge_commit": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "merge_method": "manual"
     },
     {
       "id": "pr-10",
-      "title": "PR-10 — see programme doc",
+      "title": "PR-10 Welfare vaccination",
       "branch": "cursor/acj-pr-10-b994",
       "allowed_paths": [
         "docs/domains/pet_care/changes/agatha-care-journey-*.md",
@@ -323,7 +334,7 @@
     },
     {
       "id": "pr-11",
-      "title": "PR-11 — see programme doc",
+      "title": "PR-11 History feedback",
       "branch": "cursor/acj-pr-11-b994",
       "allowed_paths": [
         "docs/domains/pet_care/changes/agatha-care-journey-*.md",
@@ -354,7 +365,7 @@
     },
     {
       "id": "pr-12",
-      "title": "PR-12 — see programme doc",
+      "title": "PR-12 Same-day grouping (ACJ-D-006)",
       "branch": "cursor/acj-pr-12-b994",
       "allowed_paths": [
         "docs/domains/pet_care/changes/agatha-care-journey-*.md",
@@ -385,7 +396,7 @@
     },
     {
       "id": "pr-13",
-      "title": "PR-13 — see programme doc",
+      "title": "PR-13 Coordination copy",
       "branch": "cursor/acj-pr-13-b994",
       "allowed_paths": [
         "docs/domains/pet_care/changes/agatha-care-journey-*.md",
@@ -416,7 +427,7 @@
     },
     {
       "id": "pr-14",
-      "title": "PR-14 — see programme doc",
+      "title": "PR-14 Vet visit schema",
       "branch": "cursor/acj-pr-14-b994",
       "allowed_paths": [
         "docs/domains/pet_care/changes/agatha-care-journey-*.md",
@@ -443,8 +454,9 @@
       "pr_url": null,
       "pr_head_sha": null,
       "merge_commit": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "merge_method": "manual"
     }
   ],
-  "content_hash": "sha256:82906e3a135364bcc76d5458de58a2f91ca414c097aa8000ab964a3c03dcb081"
+  "content_hash": "sha256:9ffdb336a1cea00d5aa670299363b831d29bc2c720fa532795c99ba2124f8555"
 }

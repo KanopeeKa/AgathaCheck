@@ -11,185 +11,157 @@ tags: [qa, bdd, testing, e2e]
 
 # Agatha care journey — BDD, TDD, and QA matrix
 
-**Programme:** [`agatha-care-journey-programme.md`](./agatha-care-journey-programme.md)
-
 ## Strategy
 
-| Layer | When | Tooling |
-|-------|------|---------|
-| **BDD** | New guardian-visible behaviour | Gherkin in `e2e/bdd/features/pet_care/` → Playwright |
-| **TDD** | Server rules, enums, policy | Jest / Flutter unit first |
-| **Widget** | Agatha cards, sheets | `flutter_test` |
-| **Integration** | API + DB migrations | `server/test/db/*`, pets CRUD |
-| **A11y** | New cards | `@smoke-a11y` axe on touched routes (UAT tier) |
-| **Regression** | CIM negative routes | Existing `server/test/careIntelligence/*` unchanged |
+| Layer | Tooling |
+|-------|---------|
+| Guardian flows | Gherkin → Playwright |
+| API / rules | Jest first (BDD `@backend` = Jest only) |
+| Widget | `flutter_test` |
+| Boundaries in CI | `@smoke-ci` on **authz, policy, no-rhythm** — not happy paths |
 
-**BDD → TDD workflow per PR:**
-
-1. Add scenario stubs (or full scenarios) with tags `@acj` `@pr-0N`.
-2. Implement failing unit/API tests mapped to AC-* IDs.
-3. Implement feature; wire Playwright step defs.
-4. Run `node e2e/scripts/check_bdd_coverage.js --report-only` (gate unchanged).
+**Feature file:** `e2e/bdd/features/pet_care/agatha_care_journey.feature` — **created in PR-01** (stub) or **PR-03** at latest; extend per PR.
 
 ---
 
-## Scenario catalogue (BDD)
+## `@smoke-ci` policy (rework)
 
-File proposal: `e2e/bdd/features/pet_care/agatha_care_journey.feature` (create in PR-04).
+**Include (boundaries):**
 
-### Profile facts (PR-01–PR-03)
+- ACJ-SP-01 — safeguard hides rhythm  
+- ACJ-IC-02 — view-only disabled primary  
+- ACJ-WF-08 — welfare has no “add rhythm”  
+- **ACJ-GUARD-01** (new) — completeness/welfare actions create **no** `HealthEntry`; Care Status unchanged  
+
+**Exclude from `@smoke-ci` (pre-UAT / `@smoke-uat`):**
+
+- ACJ-IC-01, ACJ-AC-01 (happy paths)  
+- ACJ-CO-01 (PR-12, CSM-gated)  
+- ACJ-PF-01, ACJ-WF-07 — **Jest only**, not Playwright  
+
+---
+
+## Scenario catalogue
+
+### PR-01 — Jest (`profileFacts.test.js`)
+
+- ACJ-PF-01 → AC-PF-01  
+- **ACJ-PF-05** — old client PUT without status fields preserves statuses  
+- **ACJ-PF-06** — normalisation / 400 for inconsistent pairs  
+
+### PR-03 — Playwright
 
 ```gherkin
-@acj @pr-01 @backend
-Scenario: ACJ-PF-01 — Neuter status no survives reload
-  Given a pet parent owns a dog with neuter status "no"
-  When they open the pet profile
-  Then the neuter status shows "No"
+@acj @pr-03 @smoke-uat
+Scenario: ACJ-IC-01 — Record neuter no from sheet on inset prompt
+  ...
 
-@acj @pr-03 @smoke-ci
-Scenario: ACJ-IC-01 — Record neuter no from profile sheet
-  Given a pet with unknown neuter status
-  And the pet parent can edit the profile
-  When they open the completeness sheet and choose neuter "No"
-  Then the neuter completeness prompt is not shown
-
-@acj @pr-03 @authz
+@acj @pr-03 @smoke-ci @authz
 Scenario: ACJ-IC-02 — View-only cannot record profile facts
-  Given a co-parent with view-only access to a pet
-  When they view the pet profile
-  Then the completeness primary action is disabled
+  ...
 ```
 
-### Agatha completeness cards (PR-04–PR-05)
+### PR-04 — Playwright + widget
 
 ```gherkin
-@acj @pr-04 @smoke-ci
+@acj @pr-04 @smoke-uat
 Scenario: ACJ-AC-01 — Chip recorded hides completeness card
-  Given a pet with identification status "yes" and chip id "ABC"
-  When the pet parent opens the pet profile
-  Then no profile completeness agatha card is visible
 
 @acj @pr-04
-Scenario: ACJ-AC-02 — Completeness card uses Agatha chrome
-  Given a pet with missing identification status
-  When the pet parent opens the pet profile
-  Then they see an agatha message card for profile completeness
+Scenario: ACJ-AC-02 — Agatha chrome
 
-@acj @pr-05
+@acj @pr-04 @smoke-ci
+Scenario: ACJ-GUARD-01 — Completeness actions do not create care rhythms
+```
+
+### PR-05 — Playwright
+
+```gherkin
+@acj @pr-05 @smoke-ci
 Scenario: ACJ-SP-01 — Safeguard hides rhythm suggestion
-  Given an active weight safeguard for the pet
-  And a pending rhythm suggestion exists
-  When the pet parent opens the pet profile
-  Then the rhythm suggestion card is not shown
 ```
 
-### Welfare (PR-07–PR-08)
+### PR-06 — Jest
 
-```gherkin
-@acj @pr-07
-Scenario: ACJ-WF-07 — Microchip welfare suppressed when status no
-  Given a pet with identification status "no"
-  When welfare suggestions are evaluated
-  Then no microchip welfare card is shown
+- ACJ-WF-06 — dismiss suppresses `dedupe_key` resurfacing (AC-WF-03)
 
-@acj @pr-08 @copy
-Scenario: ACJ-WF-08 — Neuter welfare does not offer add routine
-  Given a pet eligible for neuter welfare guidance
-  When the pet parent opens the welfare card
-  Then they do not see a button to add a recurring care rhythm
-```
+### PR-07–08 — Jest + Playwright
 
-### Feedback (PR-11)
+- ACJ-WF-07 — **Jest** welfare evaluator when status `no`  
+- ACJ-WF-08 — **@smoke-ci** Playwright no rhythm button  
 
-```gherkin
-@acj @pr-11
-Scenario: ACJ-FB-01 — Recording chip clears welfare suggestion
-  Given an active microchip welfare suggestion
-  When the pet parent saves chip id on the profile
-  Then the microchip welfare suggestion is no longer shown
-```
+### PR-09 — Jest integration
 
-### Coordination (PR-12–PR-13)
+- ACJ-VX-01 — vaccination record minimum persisted  
 
-```gherkin
-@acj @pr-12 @smoke-ci
-Scenario: ACJ-CO-01 — Same day items share a date header
-  Given two vet-setting care items due on the same calendar day
-  When the pet parent opens Actions for that pet
-  Then both items appear under one date group header
-```
+### PR-10 — Jest
+
+- ACJ-WF-11 — silence when data quality below threshold  
+
+### PR-11 — Jest + Playwright
+
+- ACJ-FB-01 — chip save clears welfare suggestion  
+
+### PR-13 — Playwright
+
+- ACJ-CO-02 — coordination banner links only (no merged item)  
+
+### PR-12 — `@smoke-uat` only
+
+- ACJ-CO-01 — same-day date header  
+
+### PR-14 — Jest contract
+
+- ACJ-VV-01 — visit link API schema  
+- ACJ-FB-02 — visit complete does not auto-complete all occurrences (moved from PR-11)  
 
 ---
 
-## TDD matrix (by PR)
+## Copy lint (requirement)
 
-| PR | Jest (server) | Flutter unit/widget | Playwright |
-|----|---------------|---------------------|------------|
-| PR-01 | `profileFacts.test.js` | — | — |
-| PR-02 | field mapping | `pet_model_test.dart` | — |
-| PR-03 | — | sheet widget test | ACJ-IC-* |
-| PR-04 | — | `agatha_completeness_card_test.dart` | ACJ-AC-* |
-| PR-05 | — | `pet_care_presentation_policy_test.dart` extend | ACJ-SP-* |
-| PR-06 | `welfareSuggestions.test.js` | datasource test | — |
-| PR-07–10 | rule fixtures per subject | card copy tests | ACJ-WF-* |
-| PR-11 | completion job test | provider invalidate | ACJ-FB-01 |
-| PR-12 | agenda grouping API | agenda widget | ACJ-CO-01 |
-| PR-13 | coordination evaluator | banner widget | — |
-| PR-14 | migration integration | — | — |
+Script or CI step (PR-04): scan ARB keys listed in programme PR-04/07/08/10 for forbidden substrings (case-insensitive): `diagnose`, `dosage`, `required by law`, `cure`, `cancer`, `increase lifespan`.
+
+Fail PR if new keys introduce them; existing legacy keys removed with O1 deletions.
 
 ---
 
-## QA views
+## Full AC → test traceability (freeze before autonomy)
 
-### Risk tier (Router)
-
-| PR range | Typical tier | Protocols |
-|----------|--------------|-----------|
-| PR-01–02 | R2 | api-contract, authorization, database-and-migrations |
-| PR-03–05 | R1–R2 | flutter-mobile, accessibility, documentation |
-| PR-06–11 | R2 | security, api-contract, documentation |
-| PR-12–14 | R2–R3 | testing, release-verification |
-
-### Manual / computer-use (implementation PRs)
-
-- PR-04: Profile with missing chip — card actions, Why sheet, dismiss.
-- PR-03: Sheet save and reload.
-- PR-12: Actions agenda grouping on web viewport.
-
-Artifacts: `/opt/cursor/artifacts/` per testing policy.
-
-### CI gates (every PR)
-
-```bash
-./scripts/pre-push-changed.sh
-node scripts/check_file_size.js
-node e2e/scripts/check_bdd_coverage.js --report-only
-```
-
-### Negative test suite (must remain green)
-
-- Rhythm suggestion does not alter Care Status before accept (`recommendations.test.js`)
-- Missing chip/neuter not alarmist (widget copy assert + programme review checklist)
-- Unsupported species CIM unchanged
-
-### Pre-UAT
-
-New `@acj` scenarios tagged `@smoke-ci` where noted join PR CI subset when steps exist.
+| AC | Primary test |
+|----|----------------|
+| AC-PF-01 | profileFacts.test.js |
+| AC-PF-02 | profileFacts.test.js |
+| AC-PF-03 | profileFacts.test.js / capability matrix |
+| AC-PF-04 | profileFacts.test.js |
+| AC-PF-05 | profileFacts.test.js |
+| AC-PF-06 | profileFacts.test.js |
+| AC-PF-10 | pet_model_test.dart |
+| AC-PF-11 | pet_form_controller_test.dart |
+| AC-IC-01 | sheet_widget_test + ACJ-IC-01 uat |
+| AC-IC-02 | ACJ-IC-02 smoke-ci |
+| AC-AC-01–04 | agatha_completeness_card_test.dart + ACJ-* |
+| AC-SP-01–02 | presentation_policy_test + ACJ-SP-01 |
+| AC-WF-01–03 | welfareSuggestions.test.js |
+| AC-WF-10 | welfare rule fixture + copy lint |
+| AC-WF-11 | welfare gating fixture |
+| AC-FB-01 | welfareSuggestions.test.js + ACJ-FB-01 |
+| AC-FB-02 | visit schema test PR-14 |
+| AC-CO-01 | agenda grouping jest + uat e2e |
 
 ---
 
-## Traceability
+## QA Router tiers
 
-| Programme AC | BDD ID | Test file (planned) |
-|--------------|--------|---------------------|
-| AC-PF-01 | ACJ-PF-01 | profileFacts.test.js |
-| AC-AC-01 | ACJ-AC-01 | agatha_completeness_card_test.dart |
-| AC-SP-01 | ACJ-SP-01 | care_recommendations_provider_test.dart |
-| AC-FB-01 | ACJ-FB-01 | welfareSuggestions.test.js |
+| PRs | Tier | Protocols |
+|-----|------|-----------|
+| PR-01 | R2 | migrations, api-contract, authorization, DATA_MAP |
+| PR-04–05 | R1–R2 | flutter-mobile, accessibility |
+| PR-06 | R2 | security, api-contract |
+| PR-12–14 | R2–R3 | release-verification |
 
 ---
 
-## Debt / follow-ups
+## Regression (always green)
 
-- E2E coverage gap #1770 — extend with ACJ scenarios when cards ship.
-- For you parity (FR-SG-6) — separate micro-PR after PR-06 if inbox lags profile.
+- `server/test/careIntelligence/recommendations.test.js` — rhythm / Care Status  
+- CIM species gate tests unchanged  
