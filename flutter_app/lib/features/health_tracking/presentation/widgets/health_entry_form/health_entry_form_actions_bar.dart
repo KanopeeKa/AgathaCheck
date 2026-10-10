@@ -40,7 +40,7 @@ class HealthEntryFormActionsBar extends ConsumerWidget {
       onCancel: onCancel,
       saveLabel: saveLabel,
       cancelKey: const Key('cancel_health_entry_button'),
-      saveKey: const Key('save_health_entry_button'),
+      saveKey: const ValueKey<String>('save_health_entry_button'),
       requireDirtyToSave: form.isEdit,
     );
   }
@@ -82,7 +82,7 @@ class HealthEntryFormStickyActionsBar extends ConsumerWidget {
       onCancel: onCancel,
       saveLabel: saveLabel,
       cancelKey: const Key('cancel_health_entry_button'),
-      saveKey: const Key('save_health_entry_button'),
+      saveKey: const ValueKey<String>('save_health_entry_button'),
       requireDirtyToSave: form.isEdit,
     );
   }

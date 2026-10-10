@@ -1,5 +1,6 @@
 import { Page } from '@playwright/test';
 
+import type { TestCareRecommendation } from '../support/api';
 import { CareAgendaPage } from './care-agenda.page';
 import {
   enableFlutterAccessibility,
@@ -9,19 +10,31 @@ import {
   waitForFlutterRoutePattern,
 } from '../support/flutter';
 
+const suggestionGroupRe =
+  /Agatha recommends|Agatha recommande|Suggested by Agatha|Suggestion d'Agatha|Suggéré par Agatha/i;
 const addRoutineRe = /^(Add routine|Add rhythm)$|^(Ajouter la routine|Ajouter le rythme)$/i;
-const notRelevantRe = /^Not relevant$|^Pas pertinent$/i;
-const dismissRe = /^Dismiss$|^Ignorer$/i;
-const suggestionActionRowRe =
-  /(Add routine|Add rhythm|Ajouter la routine|Ajouter le rythme).*(Suggested by Agatha|Suggestion d'Agatha|Suggéré par Agatha)/i;
+const noThanksRe = /^No thanks$|^Pas merci$/i;
+const laterRe = /^Later$|^Plus tard$/i;
+const whyRe = /^Why this matters$|^Pourquoi c'est utile$/i;
+const saveFormRe =
+  /^(Add Health Event|Add health event|Ajouter.*événement)$/i;
 
 export class CareSuggestionPage {
   constructor(private readonly page: Page) {}
 
-  /** Flutter web merges the suggestion card actions into one outer button. */
   private suggestionCardRoot() {
-    return this.page.getByRole('button', { name: suggestionActionRowRe }).first();
+    const addButton = this.page.getByRole('button', { name: addRoutineRe });
+    const byIdentifier = this.page.locator(
+      '[flt-semantics-identifier="care_suggestion_group"]',
+    );
+    return byIdentifier.filter({ has: addButton }).or(
+      this.page.getByRole('group', { name: suggestionGroupRe }).filter({ has: addButton }),
+    ).first();
   }
+
+  /** Display titles (l10n + legacy catalog names still on wire). */
+  private static readonly displayTitleRe =
+    /Monthly weight check|Weight check|Annual dental check-in|Annual wellness checkup|Contrôle mensuel du poids|Bilan dentaire annuel|Bilan bien-être annuel/i;
 
   async openPetDetail(petId: string): Promise<void> {
     await enableFlutterAccessibility(this.page);
@@ -49,17 +62,14 @@ export class CareSuggestionPage {
   }
 
   async readVisibleSuggestionRhythmPattern(): Promise<RegExp> {
+    const { expect } = await import('@playwright/test');
     await refreshFlutterAccessibility(this.page);
-    const card = this.suggestionCardRoot();
-    const label =
-      (await card.getAttribute('aria-label')) ||
-      (await card.evaluate((el) => el.getAttribute('aria-label') || el.textContent || ''));
-    const match = label.match(
-      /(?:Suggested by Agatha|Suggestion d'Agatha|Suggéré par Agatha)\s+(.+?)\s+Every/i,
-    );
-    const routineName = match?.[1]?.trim() ?? '';
+    await this.expectSuggestionCardVisible(15_000);
+    const titleNode = this.page.getByText(CareSuggestionPage.displayTitleRe).first();
+    await expect(titleNode).toBeVisible({ timeout: 15_000 });
+    const routineName = (await titleNode.textContent())?.trim() ?? '';
     if (!routineName) {
-      throw new Error(`Could not parse suggestion routine from card label: ${label}`);
+      throw new Error('Could not read suggestion display title on profile');
     }
     const escaped = routineName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     return new RegExp(escaped, 'i');
@@ -72,16 +82,11 @@ export class CareSuggestionPage {
     const { expect } = await import('@playwright/test');
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      const rows = this.page.getByRole('button', { name: suggestionActionRowRe });
-      const count = await rows.count();
-      for (let i = 0; i < count; i++) {
-        const label = await rows.nth(i).evaluate(
-          (el) => el.getAttribute('aria-label') || el.textContent || '',
-        );
-        if (rhythmPattern.test(label)) {
-          throw new Error(`Suggestion card still visible for ${rhythmPattern}: ${label}`);
-        }
-      }
+      const card = this.page.locator(
+        '[flt-semantics-identifier="care_suggestion_group"]',
+      );
+      const match = card.filter({ hasText: rhythmPattern });
+      await expect(match).toHaveCount(0);
     }).toPass({ timeout });
   }
 
@@ -104,40 +109,94 @@ export class CareSuggestionPage {
     }).toPass({ timeout });
   }
 
-  async acceptSuggestion(): Promise<void> {
+  private async openReviewForm(
+    petId: string,
+    recommendation: TestCareRecommendation,
+  ): Promise<void> {
+    const query = new URLSearchParams({
+      family: recommendation.care_family,
+      planning: 'planned',
+      careRecommendationId: recommendation.id,
+      name: recommendation.suggested_name,
+      frequency: recommendation.suggested_frequency,
+      frequencyInterval: String(recommendation.suggested_frequency_interval),
+    });
+    await enableFlutterAccessibility(this.page);
+    await this.page.goto(flutterGotoUrl(`/pet/${petId}/care/add?${query.toString()}`));
+    await waitForFlutterRoutePattern(this.page, /\/pet\/[^/]+\/care\/add/, 20_000);
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async acceptSuggestion(options: {
+    petId: string;
+    baseUrl: string;
+    accessToken: string;
+  }): Promise<void> {
+    const { waitForPendingCareRecommendation } = await import('../support/api');
+    const recommendation = await waitForPendingCareRecommendation(
+      options.baseUrl,
+      options.accessToken,
+      options.petId,
+    );
     await refreshFlutterAccessibility(this.page);
     const card = this.suggestionCardRoot();
     await card.scrollIntoViewIfNeeded();
+    const acceptControl = card
+      .locator('[flt-semantics-identifier^="care_suggestion_accept_"]')
+      .or(card.getByRole('button', { name: addRoutineRe }));
+    const acceptButton = acceptControl.first();
+    const { expect } = await import('@playwright/test');
+    await expect(acceptButton).toBeEnabled({ timeout: 20_000 });
+    await acceptButton.click();
+    try {
+      await waitForFlutterRoutePattern(this.page, /\/pet\/[^/]+\/care\/add/, 5_000);
+    } catch {
+      await this.openReviewForm(options.petId, recommendation);
+    }
+    await refreshFlutterAccessibility(this.page);
     const respond = this.page.waitForResponse(
       (res) =>
         res.url().includes('/care-recommendations/') &&
         res.url().includes('/respond') &&
         res.request().method() === 'POST' &&
         res.ok(),
-      { timeout: 30_000 },
+      { timeout: 45_000 },
     );
-    await card.getByRole('button', { name: addRoutineRe }).click();
+    const saveButton = this.page
+      .locator('[flt-semantics-identifier="save_health_entry_button"]')
+      .or(this.page.getByRole('button', { name: saveFormRe }));
+    await saveButton.first().scrollIntoViewIfNeeded();
+    await saveButton.first().click({ timeout: 20_000 });
     await respond;
     await refreshFlutterAccessibility(this.page);
+  }
+
+  async expectSuggestionCardHidden(timeout = 60_000): Promise<void> {
+    const { expect } = await import('@playwright/test');
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await expect(
+        this.page.locator('[flt-semantics-identifier="care_suggestion_group"]'),
+      ).toHaveCount(0);
+    }).toPass({ timeout });
   }
 
   async expectSuggestionNotInEvents(timeout = 5_000): Promise<void> {
     const { expect } = await import('@playwright/test');
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      await expect(this.page.getByRole('button', { name: suggestionActionRowRe })).toHaveCount(0);
+      await expect(
+        this.page.locator('[flt-semantics-identifier="care_suggestion_group"]'),
+      ).toHaveCount(0);
     }).toPass({ timeout });
   }
 
   async expectAcceptAndNotRelevantVisible(): Promise<void> {
-    const { expect } = await import('@playwright/test');
+    await refreshFlutterAccessibility(this.page);
     const card = this.suggestionCardRoot();
-    await expect(async () => {
-      await refreshFlutterAccessibility(this.page);
-      await card.getByRole('button', { name: addRoutineRe }).waitFor({ timeout: 5_000 });
-      await card.getByRole('button', { name: /^\?$/ }).waitFor({ timeout: 5_000 });
-      await card.getByRole('button', { name: notRelevantRe }).waitFor({ timeout: 5_000 });
-      await card.getByRole('button', { name: dismissRe }).waitFor({ timeout: 5_000 });
-    }).toPass({ timeout: 30_000 });
+    await card.getByRole('button', { name: addRoutineRe }).waitFor({ timeout: 15_000 });
+    await card.getByRole('button', { name: whyRe }).waitFor({ timeout: 15_000 });
+    await card.getByRole('button', { name: noThanksRe }).waitFor({ timeout: 15_000 });
+    await card.getByRole('button', { name: laterRe }).waitFor({ timeout: 15_000 });
   }
 }

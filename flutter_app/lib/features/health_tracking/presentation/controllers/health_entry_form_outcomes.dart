@@ -43,6 +43,7 @@ class HealthEntrySubmitSuccess extends HealthEntrySubmitOutcome {
     required this.careSetting,
     required this.carePlanning,
     this.linkedHealthIssueId,
+    this.careSuggestionRoutineName,
   });
 
   final bool isEdit;
@@ -51,6 +52,7 @@ class HealthEntrySubmitSuccess extends HealthEntrySubmitOutcome {
   final CareSetting careSetting;
   final CarePlanningMode carePlanning;
   final String? linkedHealthIssueId;
+  final String? careSuggestionRoutineName;
 
   int get createdCount => petIds.length;
 }

@@ -1,20 +1,37 @@
+import '../../../core/care/care_suggestion_display_copy.dart';
 import '../../../l10n/app_localizations.dart';
 import '../domain/entities/care_recommendation.dart';
 
-/// Localized cadence line for an Agatha suggestion.
-///
-/// Returns `null` when the server sends a frequency this build has no plural
-/// form for, so the card omits the line instead of showing a wire token.
+export '../../../core/care/care_suggestion_display_copy.dart';
+
 String? careSuggestionCadenceLabel(
   AppLocalizations l,
   CareRecommendation recommendation,
 ) {
-  final interval = recommendation.suggestedFrequencyInterval;
-  return switch (recommendation.suggestedFrequency) {
-    'daily' => l.careSuggestionCadenceDaily(interval),
-    'weekly' => l.careSuggestionCadenceWeekly(interval),
-    'monthly' => l.careSuggestionCadenceMonthly(interval),
-    'yearly' => l.careSuggestionCadenceYearly(interval),
-    _ => null,
-  };
+  return careSuggestionCadenceLabelFromWire(
+    l,
+    frequency: recommendation.suggestedFrequency,
+    interval: recommendation.suggestedFrequencyInterval,
+  );
+}
+
+String careSuggestionDisplayTitle(
+  AppLocalizations l,
+  CareRecommendation recommendation,
+) {
+  return careSuggestionDisplayTitleForKey(
+    l,
+    suggestionKey: recommendation.suggestionKey,
+    suggestedName: recommendation.suggestedName,
+  );
+}
+
+String careSuggestionShortBenefit(
+  AppLocalizations l,
+  CareRecommendation recommendation,
+) {
+  return careSuggestionShortBenefitForRationale(
+    l,
+    rationaleKey: recommendation.rationaleKey,
+  );
 }

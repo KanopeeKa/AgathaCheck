@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 
 import '../../../l10n/app_localizations.dart';
 
+String? _semanticsIdFromSaveKey(Key? key) {
+  if (key is ValueKey<String>) return key.value;
+  return null;
+}
+
 /// Cancel + Save action row for harmonised create/edit forms.
 class AppFormActionsBar extends StatelessWidget {
   const AppFormActionsBar({
@@ -49,20 +54,26 @@ class AppFormActionsBar extends StatelessWidget {
         ),
         const SizedBox(width: 12),
         Expanded(
-          child: FilledButton.icon(
-            key: saveKey,
-            onPressed: canSave ? onSave : null,
-            style: FilledButton.styleFrom(
-              minimumSize: const Size.fromHeight(48),
+          child: Semantics(
+            identifier: _semanticsIdFromSaveKey(saveKey),
+            button: true,
+            enabled: canSave,
+            label: saveLabel,
+            child: FilledButton.icon(
+              key: saveKey,
+              onPressed: canSave ? onSave : null,
+              style: FilledButton.styleFrom(
+                minimumSize: const Size.fromHeight(48),
+              ),
+              icon: isLoading
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.save),
+              label: Text(saveLabel),
             ),
-            icon: isLoading
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Icon(Icons.save),
-            label: Text(saveLabel),
           ),
         ),
       ],

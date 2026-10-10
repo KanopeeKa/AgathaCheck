@@ -19,6 +19,10 @@ class HealthEntryFormParams {
     this.allowedTypes,
     this.initialPlanningMode,
     this.initialCareFamily,
+    this.initialRoutineName,
+    this.initialFrequencyWire,
+    this.initialFrequencyInterval,
+    this.careRecommendationId,
   });
 
   final String? entryId;
@@ -27,6 +31,10 @@ class HealthEntryFormParams {
   final List<HealthEntryType>? allowedTypes;
   final CarePlanningMode? initialPlanningMode;
   final CareFamily? initialCareFamily;
+  final String? initialRoutineName;
+  final String? initialFrequencyWire;
+  final int? initialFrequencyInterval;
+  final String? careRecommendationId;
 
   @override
   bool operator ==(Object other) =>
@@ -37,6 +45,10 @@ class HealthEntryFormParams {
           initialType == other.initialType &&
           initialPlanningMode == other.initialPlanningMode &&
           initialCareFamily == other.initialCareFamily &&
+          initialRoutineName == other.initialRoutineName &&
+          initialFrequencyWire == other.initialFrequencyWire &&
+          initialFrequencyInterval == other.initialFrequencyInterval &&
+          careRecommendationId == other.careRecommendationId &&
           listEquals(allowedTypes, other.allowedTypes);
 
   @override
@@ -46,6 +58,10 @@ class HealthEntryFormParams {
     initialType,
     initialPlanningMode,
     initialCareFamily,
+    initialRoutineName,
+    initialFrequencyWire,
+    initialFrequencyInterval,
+    careRecommendationId,
     allowedTypes == null ? null : Object.hashAll(allowedTypes!),
   );
 }

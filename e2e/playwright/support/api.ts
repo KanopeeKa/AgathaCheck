@@ -381,6 +381,80 @@ export async function createPet(
   return { id: json.id, name: json.name };
 }
 
+export interface TestCareRecommendation {
+  id: string;
+  pet_id: string;
+  care_family: string;
+  suggestion_key: string;
+  status: string;
+  suggested_name: string;
+  suggested_frequency: string;
+  suggested_frequency_interval: number;
+}
+
+export async function listCareRecommendations(
+  baseURL: string,
+  token: string,
+  petId: string,
+): Promise<TestCareRecommendation[]> {
+  const res = await apiFetch(apiUrl(`/pets/${petId}/care-recommendations`, baseURL), {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`listCareRecommendations failed (${res.status}): ${body}`);
+  }
+  return res.json<TestCareRecommendation[]>();
+}
+
+export async function respondCareRecommendation(
+  baseURL: string,
+  token: string,
+  petId: string,
+  recommendationId: string,
+  body: {
+    action: 'accept' | 'dismiss' | 'not_relevant';
+    adjust?: {
+      name: string;
+      frequency: string;
+      frequency_interval: number;
+    };
+  },
+): Promise<TestCareRecommendation> {
+  const res = await apiFetch(
+    apiUrl(`/pets/${petId}/care-recommendations/${recommendationId}/respond`, baseURL),
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(body),
+    },
+  );
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`respondCareRecommendation failed (${res.status}): ${text}`);
+  }
+  return res.json<TestCareRecommendation>();
+}
+
+export async function waitForPendingCareRecommendation(
+  baseURL: string,
+  token: string,
+  petId: string,
+  timeoutMs = 30_000,
+): Promise<TestCareRecommendation> {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    const recs = await listCareRecommendations(baseURL, token, petId);
+    const pending = recs.find((r) => r.status === 'pending');
+    if (pending) return pending;
+    await new Promise((r) => setTimeout(r, 500));
+  }
+  throw new Error(`No pending care recommendation for pet ${petId} within ${timeoutMs}ms`);
+}
+
 export interface TestPlannedAbsence {
   id: string;
   starts_on: string;

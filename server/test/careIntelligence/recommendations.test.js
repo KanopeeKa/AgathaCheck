@@ -143,6 +143,22 @@ describe('care intelligence rule engine', () => {
     expect(weight.type).toBe('other');
     expect(weight.careSetting).toBe('home');
   });
+
+  test('buildAcceptedHealthEntry uses adjust.name when provided', () => {
+    const entry = buildAcceptedHealthEntry({
+      petId: 'pet-1',
+      userId: 'user-1',
+      recommendation: {
+        care_family: 'wellness_review',
+        suggested_name: 'Annual wellness checkup',
+        suggested_frequency: 'yearly',
+        suggested_frequency_interval: 1,
+      },
+      adjust: { name: 'Custom wellness title' },
+    });
+    expect(entry.name).toBe('Custom wellness title');
+    expect(entry.careSource).toBe('agatha_adjusted');
+  });
 });
 
 describe('Care recommendations API', () => {

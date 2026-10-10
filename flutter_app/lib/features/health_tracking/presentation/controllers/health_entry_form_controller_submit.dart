@@ -1,7 +1,7 @@
 import 'package:image_picker/image_picker.dart';
 
+import '../../../../core/care/care_suggestion_form_accept.dart';
 import '../../../care_taxonomy/care_taxonomy.dart';
-import '../../../pet_profile/pet_profile.dart';
 import '../../domain/entities/health_entry.dart';
 import '../../domain/services/care_family/care_family_write.dart';
 import '../providers/health_providers.dart';
@@ -59,7 +59,10 @@ mixin HealthEntryFormSubmitMixin
       );
     }
 
-    if (!skipMarkCompletedCheck && !state.isEdit) {
+    final suggestionAcceptId = careRecommendationId?.trim();
+    final isSuggestionReview =
+        suggestionAcceptId != null && suggestionAcceptId.isNotEmpty;
+    if (!skipMarkCompletedCheck && !state.isEdit && !isSuggestionReview) {
       final prompt = markCompletedPromptIfNeeded();
       if (prompt != null && !markCompleted) {
         return HealthEntrySubmitNeedsMarkCompleted(prompt);
@@ -154,6 +157,41 @@ mixin HealthEntryFormSubmitMixin
           await loadPhotos();
         }
       } else {
+        final recommendationId = suggestionAcceptId;
+        if (recommendationId != null && recommendationId.isNotEmpty) {
+          final petId = state.selectedPetIds.first;
+          final frequencyWire = _frequencyWireForAdjust(state.frequency);
+          final acceptHandler = formRef.read(
+            careSuggestionFormAcceptHandlerProvider,
+          );
+          if (acceptHandler == null) {
+            throw StateError(
+              'careSuggestionFormAcceptHandlerProvider is not configured',
+            );
+          }
+          final accepted = await acceptHandler(
+            formRef,
+            CareSuggestionFormAcceptRequest(
+              petId: petId,
+              recommendationId: recommendationId,
+              name: state.name.trim(),
+              frequencyWire: frequencyWire,
+              frequencyInterval: state.frequencyInterval,
+            ),
+          );
+          await formRef.read(healthEntriesNotifierProvider.notifier).refresh();
+          final entryId = accepted.healthEntryId;
+          return HealthEntrySubmitSuccess(
+            isEdit: false,
+            petIds: {petId},
+            entryIds: entryId != null ? [entryId] : <String>[],
+            careSetting: state.careSetting,
+            carePlanning: state.carePlanning,
+            linkedHealthIssueId: state.selectedHealthIssueId,
+            careSuggestionRoutineName: state.name.trim(),
+          );
+        }
+
         final createUseCase = formRef.read(createHealthEntryProvider);
         for (final petId in state.selectedPetIds) {
           final entry = HealthEntry(
@@ -210,6 +248,7 @@ mixin HealthEntryFormSubmitMixin
       return HealthEntrySubmitSuccess(
         isEdit: state.isEdit,
         petIds: Set<String>.from(state.selectedPetIds),
+        careSuggestionRoutineName: null,
         entryIds: state.isEdit
             ? (entryId != null ? [entryId!] : <String>[])
             : createdEntryIds,
@@ -223,4 +262,15 @@ mixin HealthEntryFormSubmitMixin
       state = state.copyWith(isLoading: false);
     }
   }
+}
+
+String _frequencyWireForAdjust(HealthFrequency frequency) {
+  return switch (frequency) {
+    HealthFrequency.daily => 'daily',
+    HealthFrequency.weekly => 'weekly',
+    HealthFrequency.monthly => 'monthly',
+    HealthFrequency.yearly => 'yearly',
+    HealthFrequency.once => 'once',
+    HealthFrequency.custom => 'daily',
+  };
 }

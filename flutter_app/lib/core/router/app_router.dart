@@ -56,6 +56,11 @@ HealthEntryFormScreen _buildCareAddScreen(
   final typeParam = state.uri.queryParameters['type'];
   final familyParam = state.uri.queryParameters['family'];
   final planningParam = state.uri.queryParameters['planning'];
+  final nameParam = state.uri.queryParameters['name'];
+  final frequencyParam = state.uri.queryParameters['frequency'];
+  final frequencyIntervalParam = state.uri.queryParameters['frequencyInterval'];
+  final careRecommendationId =
+      state.uri.queryParameters['careRecommendationId'];
   final initialType = typeParam != null
       ? HealthEntryType.values.where((t) => t.name == typeParam).firstOrNull
       : null;
@@ -68,6 +73,10 @@ HealthEntryFormScreen _buildCareAddScreen(
     allowedTypes: resolvedPetId != null ? kAllPetEventTypes : null,
     initialPlanningMode: initialPlanningMode,
     initialCareFamily: CareFamilyWire.fromWire(familyParam),
+    initialRoutineName: nameParam,
+    initialFrequencyWire: frequencyParam,
+    initialFrequencyInterval: int.tryParse(frequencyIntervalParam ?? ''),
+    careRecommendationId: careRecommendationId,
   );
 }
 
