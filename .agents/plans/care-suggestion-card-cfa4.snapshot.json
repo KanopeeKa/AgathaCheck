@@ -4,8 +4,8 @@
   "approved_at": "2026-10-09T01:08:28Z",
   "approved_by": "github-issue-1827-comment-approve-autonomous-care-suggestion-card-cfa4",
   "approved_until": "2026-10-11T01:08:28Z",
-  "content_hash": "sha256:f1debadae8187623fd81eb21fb0320d25b898a7369f1c797e47dbc76c1b88a85",
-  "autonomy": "active",
+  "content_hash": "sha256:5e587e7729c76435b1e22fb5874e78eabd757dc5787dc899bb13fe7940f8d4f5",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "cursor/care-suggestion-card-integration-cfa4",
   "control_issue": 1827,
@@ -100,12 +100,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "bdd-journey",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1831",
-      "pr_head_sha": "b9fb5cf9"
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1832",
+      "pr_head_sha": "b1f22221584731ec629afaf044fa545101b0cc1f"
     }
   ]
 }
