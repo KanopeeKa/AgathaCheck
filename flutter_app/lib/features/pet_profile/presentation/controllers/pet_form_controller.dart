@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../../../core/weight/weight_unit.dart';
 import '../../data/utils/pet_photo_bytes.dart';
 import '../../domain/entities/pet.dart';
+import '../../domain/entities/profile_fact_status.dart';
 import 'pet_form_error_messages.dart';
 import 'pet_form_outcomes.dart';
 
@@ -49,6 +50,8 @@ class PetFormController {
       weightReferenceValue: pet.weightReferenceValue?.toString() ?? '',
       weightReferenceAuthority: pet.weightReferenceAuthority,
       weightManagementContext: pet.weightManagementContext,
+      identificationStatus: pet.identificationStatus,
+      neuterStatus: pet.neuterStatus,
     );
   }
 
@@ -241,6 +244,8 @@ class PetFormState {
   final String weightReferenceValue;
   final String? weightReferenceAuthority;
   final String weightManagementContext;
+  final String identificationStatus;
+  final String neuterStatus;
 
   PetFormState({
     this.name = '',
@@ -268,6 +273,8 @@ class PetFormState {
     this.weightReferenceValue = '',
     this.weightReferenceAuthority,
     this.weightManagementContext = 'none',
+    this.identificationStatus = profileFactStatusUnknown,
+    this.neuterStatus = profileFactStatusUnknown,
   });
 
   bool matchesEditableFields(PetFormState other) {
@@ -290,7 +297,9 @@ class PetFormState {
         selectedOrgId == other.selectedOrgId &&
         weightReferenceValue == other.weightReferenceValue &&
         weightReferenceAuthority == other.weightReferenceAuthority &&
-        weightManagementContext == other.weightManagementContext;
+        weightManagementContext == other.weightManagementContext &&
+        identificationStatus == other.identificationStatus &&
+        neuterStatus == other.neuterStatus;
   }
 
   PetFormState copyWith({
@@ -319,6 +328,8 @@ class PetFormState {
     String? weightReferenceValue,
     String? weightReferenceAuthority,
     String? weightManagementContext,
+    String? identificationStatus,
+    String? neuterStatus,
     bool clearWeightReferenceAuthority = false,
   }) {
     return PetFormState(
@@ -351,6 +362,8 @@ class PetFormState {
           : (weightReferenceAuthority ?? this.weightReferenceAuthority),
       weightManagementContext:
           weightManagementContext ?? this.weightManagementContext,
+      identificationStatus: identificationStatus ?? this.identificationStatus,
+      neuterStatus: neuterStatus ?? this.neuterStatus,
     );
   }
 }

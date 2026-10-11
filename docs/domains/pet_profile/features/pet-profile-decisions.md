@@ -3,7 +3,7 @@ title: Pet profile decisions
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-10-08
+last_updated: 2026-10-10
 tags: [pet_profile, decisions]
 domain: pet_profile
 feature_id: pet-profile-decisions
@@ -190,16 +190,21 @@ Private per-user labels for organizing and filtering pets on `/pc/pets`. No shar
 | **ACJ-PF-005** | View-only PUT → 403; invalid enum → 400 | Live (integration) |
 | **ACJ-PF-005b** | Org shadow snapshot excludes new status fields (unchanged shadow shape) | Live (integration) |
 
+## Profile facts (Flutter — PR-02)
+
+| ID | Requirement | Status |
+|----|-------------|--------|
+| **ACJ-PF-PL-001** | `identificationStatus` / `neuterStatus` on `Pet` + `PetModel` wire (`yes \| no \| unknown`; default `unknown`) | Live (integration) |
+| **ACJ-PF-PL-003** | Pet form edit PUT preserves status fields when the profile form does not change them | Live (integration) |
+| **ACJ-PF-PL-004** | Optional `*_status_source` on wire parsed on read; included in `toJson` when set | Live (integration) |
+
 ## Planned — Agatha care journey (PR #1833 programme)
 
 Delivery spec: [agatha-care-journey-programme.md](../../pet_care/changes/agatha-care-journey-programme.md). Fold into this doc when PR-01+ land.
 
 | ID | Planned decision | Notes |
 |----|------------------|-------|
-| **ACJ-PF-PL-001** | `identification_status` and `neuter_status` are `yes \| no \| unknown` on `pets`; species neuter N/A is derived, not stored | PR-01 ✓ server |
 | **ACJ-PF-PL-002** | “Not for my pet” uses `chip_dismissed` / `neuter_dismissed`, not status enums | PR-04 |
-| **ACJ-PF-PL-003** | Pet PUT keeps status fields when omitted (old-client safe); normalise chip_id + status per programme § PR-01 | PR-01 |
-| **ACJ-PF-PL-004** | Status provenance: `*_status_source`, `*_status_updated_at` | PR-01 |
 | **ACJ-PF-PL-005** | New status fields excluded from org shadow / share preview / redacted views by default | PR-01 |
 
 ## How to use
