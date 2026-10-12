@@ -28,7 +28,7 @@ Stop only when:
 
 | After this | Do immediately (same turn) | Forbidden |
 |------------|----------------------------|-----------|
-| Phase PR merged to `main` | `set-phase` merged → checkout/implement next pending phase → open PR or continue coding | User-visible summary that ends the turn |
+| Phase PR merged to snapshot **`base_branch`** (integration when 2+ phases) | `set-phase` merged → checkout/implement next pending phase → open PR or continue coding | User-visible summary that ends the turn |
 | Slice PR merged (e.g. TEST 1b) | §7 broadcast (if required) → next phase implementation | "Next: phase X on branch …" without coding |
 | Phase blocked (e.g. CARE gate) | **Skip only that phase**; start next allowed phase (e.g. 5 blocked → **6**) | Stopping the whole programme |
 | User says "do not stop" / full-plan grant | No turn end until §Halt or `complete-plan` | Asking permission; progress-only replies |

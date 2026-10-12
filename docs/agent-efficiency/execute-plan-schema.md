@@ -3,7 +3,7 @@ title: Execute Plan Schema
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-22
+last_updated: 2026-10-12
 tags: [agent-efficiency, policy]
 ---
 # Execute-plan snapshot schema (canonical)
@@ -78,6 +78,17 @@ When `phases.length >= 2` and `autonomy: active`:
 `validateSnapshot` (via `scripts/lib/execute_plan_schema.js`) **rejects** `base_branch: main` for multi-phase active plans. **Grandfather:** `completed` and `revoked` snapshots are not re-checked on resume; `halted` plans must fix `base_branch` (or split phases) before returning to `active`.
 
 **Disjoint landings:** use separate `plan_id`s (often single-phase each), not one multi-phase plan on `main`.
+
+#### Doc/spec PR vs phase PR (common confusion)
+
+A programme may have a **separate docs PR to `main`** (programme text, canonical **Planned** rows) that is **not** the execute-plan delivery path. Phase implementation PRs still use snapshot **`base_branch`** and the control issue on the plan.
+
+| Track | Typical base | Skill | Example (`agatha-care-journey`) |
+|-------|--------------|-------|----------------------------------|
+| **Phase PRs** | `base_branch` (integration) | `/babysit-plus` | PR-01…PR-14 → `cursor/agatha-care-journey-integration-b994`; control **#1835** |
+| **Programme/spec docs** | `main` | Normal PR hygiene | **#1833** — docs only; do not retarget phase work to `main` because this PR is open |
+
+Orchestrators must read **`base_branch` from the snapshot**, not from other open PRs on the same programme.
 
 ### `artifact_branch_policy`
 
