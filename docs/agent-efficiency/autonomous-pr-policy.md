@@ -97,7 +97,7 @@ Linux runner usage scales with **open PR count**, **pushes per PR**, and **jobs 
 | **Babysit+ push batching** | `.cursor/skills/babysit-plus/SKILL.md` §5 — one push per logical fix batch |
 | **`/babysit-plus` on phase PRs; `/babysit-uat` on release to `main` only** | Pre-UAT runs only after merge to `main` |
 
-Delivery: `changes/github-actions-cost-control-programme.md`.
+See [pr-review-cost-efficiency.md](./pr-review-cost-efficiency.md) § GitHub Actions minutes.
 
 **§0–§5 sync:** `./scripts/babysit_sync_base.sh --pr <url> --check` at preflight and before push; `--push` only when `--check` exits `1` (behind). **§7:** `--claim` → one `--push` rebase if needed → `gh pr merge` → `--release`.
 

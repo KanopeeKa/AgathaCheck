@@ -119,7 +119,7 @@ Linux runner minutes scale with **every push** (full `ci.yml` fan-out on many PR
 | **Integration programmes** | Land phase work on `cursor/*-integration-*`; avoid many parallel `cursor/**` PRs each running full CI (see `docs/agent-efficiency/autonomous-pr-policy.md` § CI cost). |
 | **Pre-UAT** | Only merges to `main` trigger `pre-uat-e2e.yml` — keep `main` green before merge (`/babysit-uat` on release PRs). |
 
-Programme: `changes/github-actions-cost-control-programme.md` (folds into `docs/agent-efficiency/pr-review-cost-efficiency.md` on delivery).
+Policy: `docs/agent-efficiency/pr-review-cost-efficiency.md` (§ GitHub Actions minutes).
 
 ### Policies (details in `.cursor/rules/` + Skills)
 

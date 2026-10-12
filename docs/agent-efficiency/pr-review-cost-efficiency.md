@@ -3,8 +3,9 @@ title: Pr Review Cost Efficiency
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-22
-tags: [agent-efficiency, policy]
+last_updated: 2026-10-12
+related_prs: [1843, 1844, 1845, 1846, 1847, 1848]
+tags: [agent-efficiency, policy, actions-cost]
 ---
 # PR review & cost efficiency
 
@@ -125,15 +126,22 @@ Cursor cannot enforce model choice from the repo alone; rules + dashboard defaul
 | Cloud Agent push batching | Fewer redundant `ci.yml` runs (see `AGENTS.md` § GitHub Actions cost) |
 | Pre-UAT cancel superseded runs | Stale post-merge E2E grids stop when `main` advances again |
 
-Delivery programme: `changes/github-actions-cost-control-programme.md`.
-
 ---
 
 ## GitHub Actions minutes (Linux runners)
 
 Copilot **AI credits** and **Actions Linux minutes** are separate meters on GitHub billing. Exhausting Copilot stops automated PR review; **CI keeps running** on every push.
 
-Primary levers in this repo: reduce **PR push frequency** (agents), trim **workflow triggers** on metadata-only PR edits, cap **affected E2E legs** on PR CI, and **cancel superseded Pre-UAT** runs when `main` moves. See cost levers table above and `autonomous-pr-policy.md` § CI cost.
+Primary levers in this repo: reduce **PR push frequency** (agents), trim **workflow triggers** on metadata-only PR edits, cap **affected E2E legs** on PR CI (default **2** parallel legs), and **cancel superseded Pre-UAT** runs when `main` moves. See cost levers table above and `autonomous-pr-policy.md` § CI cost.
+
+### Decision log
+
+| ID | Decision | Status |
+|----|----------|--------|
+| AEC-D-001 | Oct 2026 Actions spike driven mainly by `ci.yml` run volume (agents + integration), not Copilot Linux runners; Copilot credits are a separate meter. | Live |
+| AEC-D-002 | Delivered cost controls: trim babysit/docs-validation `edited` triggers; agent push batching; `ci.yml` dispatch `force_full` default false; Pre-UAT `cancel-in-progress: true`; PR affected E2E max **2** legs; ≤4 open `cursor/**` PRs policy. | Live |
+
+**30-day targets:** `ci.yml` &lt;80 runs/day on typical agent days; cancelled CI &lt;15%; Pre-UAT success &gt;70%.
 
 ---
 
