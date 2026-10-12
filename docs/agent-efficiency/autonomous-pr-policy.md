@@ -85,6 +85,20 @@ Serialize merge attempts when multiple PRs reach the CI gate at the same time. D
 
 Script: `scripts/babysit_merge_preflight.sh` — `merge-lease` label mutex + FIFO yield when base was updated within 10 minutes and a lower-numbered green PR exists on the same base. Env: `MERGE_PREFLIGHT_BASE_HOT_MINUTES`, `MERGE_PREFLIGHT_LEASE_STALE_MINUTES`.
 
+## CI cost (Actions minutes)
+
+Linux runner usage scales with **open PR count**, **pushes per PR**, and **jobs per `ci.yml` run**. Copilot review is a separate meter — see [pr-review-cost-efficiency.md](./pr-review-cost-efficiency.md).
+
+| Practice | Why |
+|----------|-----|
+| **≤4 open `cursor/**` PRs** with full CI at once | Limits parallel matrix fan-out across branches |
+| **Programme integration branch** (`cursor/*-integration-*`) | One CI-heavy line; single release PR to `main` |
+| **Merge-lease (§Merge coordination)** | Reduces thundering-herd rebase + duplicate CI on the same base |
+| **Babysit+ push batching** | `.cursor/skills/babysit-plus/SKILL.md` §5 — one push per logical fix batch |
+| **`/babysit-plus` on phase PRs; `/babysit-uat` on release to `main` only** | Pre-UAT runs only after merge to `main` |
+
+Delivery: `changes/github-actions-cost-control-programme.md`.
+
 **§0–§5 sync:** `./scripts/babysit_sync_base.sh --pr <url> --check` at preflight and before push; `--push` only when `--check` exits `1` (behind). **§7:** `--claim` → one `--push` rebase if needed → `gh pr merge` → `--release`.
 
 ---
