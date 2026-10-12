@@ -194,12 +194,9 @@
       ],
       "spawn_allowed": false,
       "exit_checklist": "default+single-backend-route+governance",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
       "debt_issue_refs": [],
       "merge_method": "squash"
     },
@@ -458,5 +455,5 @@
       "merge_method": "squash"
     }
   ],
-  "content_hash": "sha256:e4f1e6a19dce0c6d77839bcab2a89189baa2f143828a220860eb372fe0ae4f8e"
+  "content_hash": "sha256:5721aab23fb9c767419bc9db3eea5ef91e94be0ccb0136d06c3a7b929bd4ad15"
 }
