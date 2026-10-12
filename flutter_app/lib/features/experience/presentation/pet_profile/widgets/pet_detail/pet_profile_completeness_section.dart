@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pet_profile_app/features/care_intelligence/care_intelligence.dart';
 import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 
+import '../../profile_completeness_for_pet.dart';
 import '../../providers/pet_profile_care_milestone_provider.dart';
 
 /// Agatha completeness cards (PR-04); hidden when guidance slot is taken.
@@ -38,7 +39,7 @@ class PetProfileCompletenessSection extends ConsumerWidget {
       return const SizedBox.shrink();
     }
 
-    final kinds = policy.profileCompletenessCandidates(pet);
+    final kinds = profileCompletenessKindsForPet(pet);
     if (kinds.isEmpty) return const SizedBox.shrink();
 
     final canRecord = viewerContext.can(PetDetailAction.editProfile);

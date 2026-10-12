@@ -1,7 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
-import 'package:pet_profile_app/features/pet_profile/domain/entities/profile_fact_status.dart';
 import 'package:pet_profile_app/features/care_intelligence/domain/entities/care_recommendation.dart';
 import 'package:pet_profile_app/features/care_intelligence/domain/entities/care_safeguard.dart';
 import 'package:pet_profile_app/features/care_intelligence/presentation/pet_care_presentation_policy.dart';
@@ -140,17 +138,6 @@ void main() {
       policy.profileCompletenessSlotAvailable(guidanceMomentVisible: true),
       isFalse,
     );
-  });
-
-  test('profileCompletenessCandidates lists neuter and chip when unknown', () {
-    const pet = Pet(
-      id: 'p',
-      name: 'N',
-      species: 'Dog',
-      neuterStatus: profileFactStatusUnknown,
-      identificationStatus: profileFactStatusUnknown,
-    );
-    expect(policy.profileCompletenessCandidates(pet).length, 2);
   });
 
   test('dashboardSafeguard returns null when no active safeguard exists', () {
