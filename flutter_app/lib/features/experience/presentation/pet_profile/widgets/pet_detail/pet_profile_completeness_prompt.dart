@@ -6,21 +6,32 @@ import 'package:pet_profile_app/core/theme/app_color_tokens.dart';
 import 'package:pet_profile_app/core/utils/constants.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 import 'package:pet_profile_app/features/pet_care/pet_care.dart';
+import 'package:pet_profile_app/features/pet_profile/domain/entities/profile_fact_status.dart';
+import 'package:pet_profile_app/features/pet_profile/domain/services/pet_detail_actions.dart';
+import 'package:pet_profile_app/features/pet_profile/presentation/widgets/profile_fact_capture_sheet.dart';
 
 /// Single compact card for missing neuter and/or microchip profile data.
 class PetProfileCompletenessPrompt extends ConsumerWidget {
-  const PetProfileCompletenessPrompt({super.key, required this.pet});
+  const PetProfileCompletenessPrompt({
+    super.key,
+    required this.pet,
+    required this.viewerContext,
+  });
 
   final Pet pet;
+  final PetDetailContext viewerContext;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
+    final canRecord = viewerContext.can(PetDetailAction.editProfile);
     final showNeuter =
-        pet.neuteredDate == null &&
+        pet.neuterStatus == profileFactStatusUnknown &&
         !pet.neuterDismissed &&
         !AppConstants.speciesWithoutNeutering.contains(pet.species);
-    final showChip = pet.chipId.isEmpty && !pet.chipDismissed;
+    final showChip =
+        pet.identificationStatus == profileFactStatusUnknown &&
+        !pet.chipDismissed;
 
     if (!showNeuter && !showChip) {
       return const SizedBox.shrink();
@@ -34,7 +45,15 @@ class PetProfileCompletenessPrompt extends ConsumerWidget {
             key: const Key('pet_profile_prompt_neuter'),
             message: l.profilePromptNeuterMissing,
             icon: Icons.info_outline,
+            recordLabel: l.profileFactCaptureRecord,
             dismissLabel: l.dismiss,
+            canRecord: canRecord,
+            onRecord: () => showProfileFactCaptureSheet(
+              context,
+              ref,
+              pet: pet,
+              topic: ProfileFactCaptureTopic.neuter,
+            ),
             onDismiss: () =>
                 NeuterReminderController(ref).dismissNeuterReminder(pet),
           ),
@@ -49,7 +68,15 @@ class PetProfileCompletenessPrompt extends ConsumerWidget {
             key: const Key('pet_profile_prompt_chip'),
             message: l.profilePromptChipMissing,
             icon: Icons.memory_outlined,
+            recordLabel: l.profileFactCaptureRecord,
             dismissLabel: l.dismiss,
+            canRecord: canRecord,
+            onRecord: () => showProfileFactCaptureSheet(
+              context,
+              ref,
+              pet: pet,
+              topic: ProfileFactCaptureTopic.chip,
+            ),
             onDismiss: () =>
                 ChipReminderController(ref).dismissChipReminder(pet),
           ),
@@ -78,13 +105,19 @@ class _PromptLine extends StatelessWidget {
     super.key,
     required this.message,
     required this.icon,
+    required this.recordLabel,
     required this.dismissLabel,
+    required this.canRecord,
+    required this.onRecord,
     required this.onDismiss,
   });
 
   final String message;
   final IconData icon;
+  final String recordLabel;
   final String dismissLabel;
+  final bool canRecord;
+  final VoidCallback onRecord;
   final VoidCallback onDismiss;
 
   @override
@@ -97,7 +130,17 @@ class _PromptLine extends StatelessWidget {
         message,
         style: theme.textTheme.bodyMedium?.copyWith(color: AppColorTokens.body),
       ),
-      trailing: TextButton(onPressed: onDismiss, child: Text(dismissLabel)),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextButton(
+            key: const Key('profile_fact_capture_record'),
+            onPressed: canRecord ? onRecord : null,
+            child: Text(recordLabel),
+          ),
+          TextButton(onPressed: onDismiss, child: Text(dismissLabel)),
+        ],
+      ),
     );
   }
 }
