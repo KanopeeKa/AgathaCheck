@@ -3,15 +3,31 @@ import 'package:pet_profile_app/features/care_intelligence/care_intelligence.dar
 import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 
 /// Which Agatha completeness cards apply for [pet] (experience layer — avoids R6).
-List<ProfileCompletenessKind> profileCompletenessKindsForPet(Pet pet) {
+List<ProfileCompletenessKind> profileCompletenessKindsForPet(
+  Pet pet, {
+  required AgathaSurfacePolicy policy,
+  required DateTime now,
+  DateTime? neuterDismissedAt,
+  DateTime? chipDismissedAt,
+}) {
   final kinds = <ProfileCompletenessKind>[];
-  if (pet.neuterStatus == profileFactStatusUnknown &&
-      !pet.neuterDismissed &&
-      !AppConstants.speciesWithoutNeutering.contains(pet.species)) {
+  if (!AppConstants.speciesWithoutNeutering.contains(pet.species) &&
+      policy.shouldOfferCompletenessKind(
+        kind: ProfileCompletenessKind.neuter,
+        statusUnknown: pet.neuterStatus == profileFactStatusUnknown,
+        dismissedOnPet: pet.neuterDismissed,
+        dismissedAt: neuterDismissedAt,
+        now: now,
+      )) {
     kinds.add(ProfileCompletenessKind.neuter);
   }
-  if (pet.identificationStatus == profileFactStatusUnknown &&
-      !pet.chipDismissed) {
+  if (policy.shouldOfferCompletenessKind(
+    kind: ProfileCompletenessKind.chip,
+    statusUnknown: pet.identificationStatus == profileFactStatusUnknown,
+    dismissedOnPet: pet.chipDismissed,
+    dismissedAt: chipDismissedAt,
+    now: now,
+  )) {
     kinds.add(ProfileCompletenessKind.chip);
   }
   return kinds;

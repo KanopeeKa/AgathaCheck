@@ -2,16 +2,19 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:pet_profile_app/features/care_intelligence/domain/entities/care_recommendation.dart';
 import 'package:pet_profile_app/features/care_intelligence/domain/entities/care_safeguard.dart';
+import 'package:pet_profile_app/features/care_intelligence/presentation/agatha_surface_policy.dart';
 import 'package:pet_profile_app/features/care_intelligence/presentation/pet_care_presentation_policy.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/care_family.dart';
 
 CareRecommendation _rec({
   required String id,
+  String petId = 'pet-1',
   CareRecommendationStatus status = CareRecommendationStatus.pending,
+  DateTime? respondedAt,
 }) {
   return CareRecommendation(
     id: id,
-    petId: 'pet-1',
+    petId: petId,
     careFamily: CareFamily.wellnessReview,
     suggestionKey: 'wellness_review_rhythm',
     status: status,
@@ -21,6 +24,7 @@ CareRecommendation _rec({
     suggestedFrequency: 'yearly',
     suggestedFrequencyInterval: 1,
     rationaleKey: 'careSuggestionWellnessWhy',
+    respondedAt: respondedAt,
   );
 }
 
@@ -52,20 +56,47 @@ void main() {
     expect(rec?.id, 'pending');
   });
 
-  test('profileSuggestion suppressed when safeguard active', () {
+  test('AC-SP-01 profileSuggestion suppressed when safeguard active', () {
     final rec = policy.profileSuggestion([
       _rec(id: 'pending'),
     ], activeSafeguard: _safeguard(id: 'sg-1'));
     expect(rec, isNull);
   });
 
-  test('dashboardSuggestion returns at most one pending across pets', () {
+  test('AC-SP-01 profileSuggestion picks rhythm over welfare candidate', () {
+    final rec = policy.profileSuggestion(
+      [_rec(id: 'rhythm-pending')],
+      welfareCandidates: [
+        AgathaGuidanceCandidate(
+          kind: AgathaGuidanceKind.welfare,
+          severity: 50,
+          createdAt: DateTime.utc(2020, 1, 1),
+          id: 'welfare-1',
+        ),
+      ],
+    );
+    expect(rec?.id, 'rhythm-pending');
+  });
+
+  test('dashboardSuggestion returns oldest pending rhythm across pets', () {
     final rec = policy.dashboardSuggestion({
       'pet-1': [_rec(id: 'a', status: CareRecommendationStatus.dismissed)],
-      'pet-2': [_rec(id: 'b')],
-      'pet-3': [_rec(id: 'c')],
+      'pet-2': [
+        _rec(
+          id: 'newer',
+          petId: 'pet-2',
+          respondedAt: DateTime.utc(2025, 1, 1),
+        ),
+      ],
+      'pet-3': [
+        _rec(
+          id: 'older',
+          petId: 'pet-3',
+          respondedAt: DateTime.utc(2024, 1, 1),
+        ),
+      ],
     });
-    expect(rec?.id, 'b');
+    expect(rec?.id, 'older');
   });
 
   test('dashboardSuggestion suppressed when safeguard active', () {

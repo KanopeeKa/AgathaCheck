@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pet_profile_app/core/experience/app_experience.dart';
 import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/features/care_intelligence/care_intelligence.dart';
@@ -26,9 +27,16 @@ PetDetailContext _contextWithEdit({required bool canEdit}) {
   );
 }
 
-ProviderScope _scope({required Widget child, CareRecommendation? suggestion}) {
+ProviderScope _scope({
+  required Widget child,
+  CareRecommendation? suggestion,
+  required ProfileCompletenessDismissalStore dismissalStore,
+}) {
   return ProviderScope(
     overrides: [
+      profileCompletenessDismissalStoreProvider.overrideWith(
+        (ref) => Future.value(dismissalStore),
+      ),
       petProfileCareSafeguardProvider(
         'pet-1',
       ).overrideWith((ref) => const AsyncData(null)),
@@ -44,6 +52,15 @@ ProviderScope _scope({required Widget child, CareRecommendation? suggestion}) {
 }
 
 void main() {
+  late ProfileCompletenessDismissalStore dismissalStore;
+
+  setUp(() async {
+    SharedPreferences.setMockInitialValues({});
+    dismissalStore = ProfileCompletenessDismissalStore(
+      await SharedPreferences.getInstance(),
+    );
+  });
+
   testWidgets(
     'AC-AC-01 ACJ-AC-01: chip card hidden when identification known',
     (tester) async {
@@ -59,6 +76,7 @@ void main() {
       await tester.pumpWidget(
         _scope(
           suggestion: null,
+          dismissalStore: dismissalStore,
           child: MaterialApp(
             theme: AppTheme.lightTheme,
             localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -97,6 +115,7 @@ void main() {
     await tester.pumpWidget(
       _scope(
         suggestion: null,
+        dismissalStore: dismissalStore,
         child: MaterialApp(
           theme: AppTheme.lightTheme,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -144,6 +163,7 @@ void main() {
     await tester.pumpWidget(
       _scope(
         suggestion: suggestion,
+        dismissalStore: dismissalStore,
         child: MaterialApp(
           theme: AppTheme.lightTheme,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -179,6 +199,7 @@ void main() {
     await tester.pumpWidget(
       _scope(
         suggestion: null,
+        dismissalStore: dismissalStore,
         child: MaterialApp(
           theme: AppTheme.lightTheme,
           localizationsDelegates: AppLocalizations.localizationsDelegates,

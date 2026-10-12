@@ -12,5 +12,8 @@ export 'presentation/widgets/care_suggestion_card.dart';
 export 'presentation/widgets/profile_completeness_card.dart';
 export 'presentation/widgets/pet_profile_care_safeguard_section.dart';
 export 'presentation/pet_care_presentation_policy.dart';
+export 'presentation/agatha_surface_policy.dart';
+export 'presentation/profile_completeness_dismissal_store.dart';
+export 'presentation/providers/profile_completeness_dismissal_provider.dart';
 export 'domain/profile_completeness_kind.dart';
 export 'presentation/widgets/weight_management_context_selector.dart';

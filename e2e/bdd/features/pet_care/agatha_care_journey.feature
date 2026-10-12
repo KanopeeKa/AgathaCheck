@@ -36,3 +36,8 @@ Feature: Agatha care journey profile facts
     Given a guardian owns a pet with unknown profile facts
     When the guardian dismisses the neuter completeness card
     Then no new care rhythm appears on the pet profile
+
+  @acj @pr-05 @smoke-ci
+  Scenario: ACJ-SP-01 — Safeguard hides rhythm suggestion
+    Given a guardian owns a pet with an active weight safeguard and pending rhythm suggestion
+    Then the pet profile shows the safeguard card and not the rhythm suggestion

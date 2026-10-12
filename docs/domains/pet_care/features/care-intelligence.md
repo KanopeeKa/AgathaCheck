@@ -5,7 +5,7 @@ audience: both
 domain: pet_care
 feature_id: care_intelligence
 status: active
-last_updated: 2026-10-08
+last_updated: 2026-10-12
 related_prs: []
 ---
 
@@ -245,6 +245,17 @@ Spec: [agatha-care-journey-programme.md](../changes/agatha-care-journey-programm
 | **ACJ-CIM-AC-001** | `PetCarePresentationPolicy.profileCompletenessSlotAvailable` — safeguard + rhythm/milestone block completeness | Live (integration) |
 | **ACJ-CIM-AC-002** | `ProfileCompletenessCard` uses shared Agatha shell; Record opens PR-03 capture sheet | Live (integration) |
 | **ACJ-GUARD-01** | Completeness dismiss / not-for-my-pet updates pet row only (no rhythm accept path) | Live (integration) |
+
+## Agatha surface policy (PR-05)
+
+Presentation rules live in `AgathaSurfacePolicy` and are applied via `PetCarePresentationPolicy` on **profile and dashboard** rhythm slots.
+
+| ID | Requirement | Status |
+|----|-------------|--------|
+| **AC-SP-01** | Guidance tiebreak: rhythm **>** welfare, then higher `severity`, then oldest `created_at` / `respondedAt` | Live (integration) |
+| **AC-SP-02** | Completeness nag budget: **30d** suppress per card kind after dismiss; server `*_dismissed` without local timestamp stays hidden until status changes | Live (integration) |
+
+Local dismiss timestamps are stored in `ProfileCompletenessDismissalStore` (SharedPreferences) and recorded in `ProfileCompletenessActions.hidePrompt` before the pet row PUT.
 
 ## Decision log
 
