@@ -45,6 +45,15 @@ AgathaTrack helps pet parents **know**, **understand**, **plan**, **act**, and *
 | **Orchestrator** | **Run-until-blocked** — see [execute-autonomy](./agatha-care-journey-execute-autonomy.md); no chat checkpoints between phases. |
 | **W1 value** | First guardian-visible on integration: **PR-03**, **PR-04**. |
 
+### PR tracks (do not conflate)
+
+| Track | Example | Base branch | Merge skill | Purpose |
+|-------|---------|-------------|-------------|---------|
+| **Execute-plan phases** | PR-01 … PR-14 (`cursor/acj-pr-NN-b994`) | `cursor/agatha-care-journey-integration-b994` | `/babysit-plus` | Product delivery; control issue **#1835** |
+| **Programme spec (docs)** | **#1833** (`cursor/agatha-care-journey-specs-b994`) | **`main`** | Normal PR hygiene | Canonical **Planned** rows + programme docs — **not** a substitute for phase PRs |
+
+Orchestrating **`agatha-care-journey`** must open phase PRs against **integration**, not `main`, even if **#1833** is still open to `main`.
+
 ### Per-PR verification pack (mandatory)
 
 | PR | Acceptance criteria | TDD (first) | BDD / E2E | Documentation |
@@ -372,6 +381,8 @@ Columns include: `pet_id`, `subject_key`, `dedupe_key`, `status`, `primary_outco
 - [ ] bdd-qa: full AC→test traceability; per-PR verification pack above agreed
 
 ## Doc ownership (spec PR)
+
+**#1833** is the **docs/spec** track to `main` (see **PR tracks** above). It does not carry phase implementation.
 
 On merge of #1833, add **Planned** rows to:
 
