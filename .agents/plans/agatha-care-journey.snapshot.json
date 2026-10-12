@@ -103,13 +103,12 @@
       ],
       "spawn_allowed": false,
       "exit_checklist": "default+flutter-screen-split",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1839",
+      "pr_head_sha": "c97a2475"
     },
     {
       "id": "pr-04",
@@ -460,5 +459,5 @@
       "merge_method": "squash"
     }
   ],
-  "content_hash": "sha256:30491a5c95285063f1321f54ed7ffaa50ba36c2c780379237f44c85492c36c4e"
+  "content_hash": "sha256:4eaa1b04fb439568f3a7290f95cc5ec4c4aa1115a284342aa41f3cbcefe9b777"
 }

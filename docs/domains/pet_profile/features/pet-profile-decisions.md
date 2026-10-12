@@ -3,7 +3,7 @@ title: Pet profile decisions
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-10-10
+last_updated: 2026-10-12
 tags: [pet_profile, decisions]
 domain: pet_profile
 feature_id: pet-profile-decisions
@@ -189,6 +189,14 @@ Private per-user labels for organizing and filtering pets on `/pc/pets`. No shar
 | **ACJ-PF-004** | Provenance columns `*_status_source`, `*_status_updated_at` on wire + DB | Live (integration) |
 | **ACJ-PF-005** | View-only PUT → 403; invalid enum → 400 | Live (integration) |
 | **ACJ-PF-005b** | Org shadow snapshot excludes new status fields (unchanged shadow shape) | Live (integration) |
+
+## Profile facts — inline capture (Flutter — PR-03)
+
+| ID | Requirement | Status |
+|----|-------------|--------|
+| **ACJ-IC-001** | `PetProfileCompletenessPrompt` opens profile fact capture sheet from inset **Record** (neuter + chip topics) | Live (integration) |
+| **ACJ-IC-002** | View-only pet detail (`editProfile` absent) disables Record; no sheet | Live (integration) |
+| **ACJ-IC-003** | Sheet saves `neuterStatus` / `identificationStatus` (+ optional date or chip id) via pet PUT | Live (integration) |
 
 ## Profile facts (Flutter — PR-02)
 

@@ -308,6 +308,9 @@
   "careStatusViewAction": "Voir l'action",
   "profilePromptChipMissing": "Puce non renseignée",
   "profilePromptNeuterMissing": "Stérilisation non renseignée",
+  "profileFactCaptureRecord": "Enregistrer",
+  "profileFactCaptureNeuterTitle": "Statut de stérilisation",
+  "profileFactCaptureChipTitle": "Statut de la puce",
   "petHealthAndHistoryTitle": "Santé et historique",
   "weightInsightLastRecorded": "{weight} · dernier relevé le {date}",
   "@weightInsightLastRecorded": {

@@ -895,6 +895,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profilePromptNeuterMissing => 'Neutering status not recorded';
 
   @override
+  String get profileFactCaptureRecord => 'Record';
+
+  @override
+  String get profileFactCaptureNeuterTitle => 'Record neutering status';
+
+  @override
+  String get profileFactCaptureChipTitle => 'Record microchip status';
+
+  @override
   String get petHealthAndHistoryTitle => 'Health & history';
 
   @override

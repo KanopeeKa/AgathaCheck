@@ -1604,6 +1604,24 @@ abstract class AppLocalizations {
   /// **'Neutering status not recorded'**
   String get profilePromptNeuterMissing;
 
+  /// No description provided for @profileFactCaptureRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'Record'**
+  String get profileFactCaptureRecord;
+
+  /// No description provided for @profileFactCaptureNeuterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Record neutering status'**
+  String get profileFactCaptureNeuterTitle;
+
+  /// No description provided for @profileFactCaptureChipTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Record microchip status'**
+  String get profileFactCaptureChipTitle;
+
   /// No description provided for @petHealthAndHistoryTitle.
   ///
   /// In en, this message translates to:

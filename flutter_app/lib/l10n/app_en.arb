@@ -367,6 +367,9 @@
   "careStatusViewAction": "View action",
   "profilePromptChipMissing": "Microchip details not added",
   "profilePromptNeuterMissing": "Neutering status not recorded",
+  "profileFactCaptureRecord": "Record",
+  "profileFactCaptureNeuterTitle": "Record neutering status",
+  "profileFactCaptureChipTitle": "Record microchip status",
   "petHealthAndHistoryTitle": "Health & history",
   "weightInsightLastRecorded": "{weight} · last recorded {date}",
   "@weightInsightLastRecorded": {

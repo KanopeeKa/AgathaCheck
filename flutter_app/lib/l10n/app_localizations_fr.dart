@@ -907,6 +907,15 @@ class AppLocalizationsFr extends AppLocalizations {
   String get profilePromptNeuterMissing => 'Stérilisation non renseignée';
 
   @override
+  String get profileFactCaptureRecord => 'Enregistrer';
+
+  @override
+  String get profileFactCaptureNeuterTitle => 'Statut de stérilisation';
+
+  @override
+  String get profileFactCaptureChipTitle => 'Statut de la puce';
+
+  @override
   String get petHealthAndHistoryTitle => 'Santé et historique';
 
   @override
