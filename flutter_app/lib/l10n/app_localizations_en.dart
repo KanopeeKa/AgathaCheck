@@ -904,6 +904,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileFactCaptureChipTitle => 'Record microchip status';
 
   @override
+  String get profileCompletenessCategory => 'Profile';
+
+  @override
+  String get profileCompletenessWhyNeuterBody =>
+      'Recording whether your pet is neutered helps tailor care reminders. Ask your vet if you are unsure.';
+
+  @override
+  String get profileCompletenessWhyChipBody =>
+      'A microchip ID helps identify your pet if they are lost. Check local rules for registration.';
+
+  @override
+  String get profileCompletenessNotForMyPet => 'Not for my pet';
+
+  @override
   String get petHealthAndHistoryTitle => 'Health & history';
 
   @override

@@ -9,6 +9,7 @@ import 'package:pet_profile_app/features/auth/domain/repositories/auth_repositor
 import 'package:pet_profile_app/features/auth/domain/repositories/session_store.dart';
 import 'package:pet_profile_app/features/care_intelligence/domain/entities/care_recommendation.dart';
 import 'package:pet_profile_app/features/care_intelligence/domain/entities/care_safeguard.dart';
+import 'package:pet_profile_app/features/care_intelligence/domain/profile_completeness_kind.dart';
 import 'package:pet_profile_app/features/care_intelligence/domain/repositories/care_intelligence_repository.dart';
 import 'package:pet_profile_app/features/care_intelligence/domain/weight_provenance.dart';
 import 'package:pet_profile_app/features/care_item/domain/care_agenda.dart';
@@ -149,4 +150,4 @@ import 'package:pet_profile_app/features/weight_tracking/domain/entities/weight_
 import 'package:pet_profile_app/features/weight_tracking/domain/repositories/weight_repository.dart';
 import 'package:pet_profile_app/features/weight_tracking/domain/weight_entry_sort.dart';
 
-const int coverageHelperDomainFileCount = 147;
+const int coverageHelperDomainFileCount = 148;

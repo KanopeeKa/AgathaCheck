@@ -19,3 +19,20 @@ Feature: Agatha care journey profile facts
   Scenario: ACJ-IC-02 — View-only cannot record profile facts
     Given a shared carer views a pet with unknown profile facts
     Then the profile inset Record action is disabled
+
+  @acj @pr-04 @smoke-uat
+  Scenario: ACJ-AC-01 — Chip recorded hides completeness card
+    Given a guardian owns a pet with unknown microchip status
+    When the guardian records microchip identification from the Agatha completeness card
+    Then the pet profile no longer shows the microchip completeness card
+
+  @acj @pr-04
+  Scenario: ACJ-AC-02 — Agatha chrome on completeness cards
+    Given a guardian owns a pet with unknown neuter status
+    Then the pet profile shows an Agatha completeness card with profile category
+
+  @acj @pr-04 @smoke-ci
+  Scenario: ACJ-GUARD-01 — Completeness actions do not create care rhythms
+    Given a guardian owns a pet with unknown profile facts
+    When the guardian dismisses the neuter completeness card
+    Then no new care rhythm appears on the pet profile

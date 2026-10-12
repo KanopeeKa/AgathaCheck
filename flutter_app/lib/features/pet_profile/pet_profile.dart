@@ -40,8 +40,6 @@ export 'presentation/screens/widgets/pet_species_section.dart';
 export 'presentation/screens/widgets/pet_form_identity_header.dart';
 export 'presentation/widgets/pet_detail/pet_form_preview_card.dart';
 export 'presentation/widgets/pet_detail/pet_photo.dart';
-export 'presentation/controllers/chip_reminder_controller.dart';
-export 'presentation/controllers/neuter_reminder_controller.dart';
 export 'presentation/controllers/profile_fact_capture_controller.dart';
 export 'presentation/widgets/profile_fact_capture_sheet.dart';
 export 'presentation/utils/pet_responsibility_label.dart';

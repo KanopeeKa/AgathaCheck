@@ -916,6 +916,20 @@ class AppLocalizationsFr extends AppLocalizations {
   String get profileFactCaptureChipTitle => 'Statut de la puce';
 
   @override
+  String get profileCompletenessCategory => 'Profil';
+
+  @override
+  String get profileCompletenessWhyNeuterBody =>
+      'Indiquer si votre animal est stérilisé permet d\'adapter les rappels de soins. Demandez conseil à votre vétérinaire en cas de doute.';
+
+  @override
+  String get profileCompletenessWhyChipBody =>
+      'Un numéro de puce aide à identifier votre animal s\'il se perd. Renseignez-vous sur les règles locales.';
+
+  @override
+  String get profileCompletenessNotForMyPet => 'Pas pour mon animal';
+
+  @override
   String get petHealthAndHistoryTitle => 'Santé et historique';
 
   @override

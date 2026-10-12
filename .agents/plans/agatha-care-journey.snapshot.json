@@ -2,9 +2,9 @@
   "schema_version": 1,
   "plan_id": "agatha-care-journey",
   "programme_ref": "docs/domains/pet_care/changes/agatha-care-journey-programme.md",
-  "approved_at": "2026-10-10T17:12:00Z",
-  "approved_by": "User chat 2026-10-10 — full execute-plan RUN-UNTIL-BLOCKED (all 14 phases + release PR + babysit-uat); integration base; babysit+ auto-merge when CI green; approve-autonomous agatha-care-journey",
-  "approved_until": "2026-10-12T17:12:00Z",
+  "approved_at": "2026-10-12T18:00:00Z",
+  "approved_by": "User chat 2026-10-10 — full execute-plan RUN-UNTIL-BLOCKED (all 14 phases + release PR + babysit-uat). Re-grant: user chat 2026-10-12 resume /execute-plan after governance #1840/#1841 merged.",
+  "approved_until": "2026-10-14T18:00:00Z",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/agatha-care-journey-integration-b994",
@@ -133,12 +133,9 @@
       ],
       "spawn_allowed": false,
       "exit_checklist": "default+flutter-screen-split+bdd-journey",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
       "debt_issue_refs": []
     },
     {
@@ -459,5 +456,5 @@
       "merge_method": "squash"
     }
   ],
-  "content_hash": "sha256:34784c972006bd854148263174e128dc2febb17c192924ee0c3340720cbf5c16"
+  "content_hash": "sha256:ad1841df710a3d6cbe9541a242244f483e7476900b1c9b5103b972d63ffc015c"
 }

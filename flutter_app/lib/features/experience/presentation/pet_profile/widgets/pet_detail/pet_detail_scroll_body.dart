@@ -7,7 +7,7 @@ import 'package:pet_profile_app/features/pet_tags/pet_tags.dart';
 import '../pet_care_section/pet_care_section.dart';
 import '../pet_profile_care_suggestion_section.dart';
 import 'pet_detail_profile_card.dart';
-import 'pet_profile_completeness_prompt.dart';
+import 'pet_profile_completeness_section.dart';
 import 'pet_profile_health_history_section.dart';
 import 'pet_profile_weight_insight_section.dart';
 
@@ -34,15 +34,15 @@ class PetDetailScrollBody extends StatelessWidget {
 
         final primaryColumn = <Widget>[
           PetDetailProfileCard(pet: pet, viewerContext: viewerContext),
-          PetProfileCompletenessPrompt(pet: pet, viewerContext: viewerContext),
           PetProfileCareSafeguardSection(petId: pet.id, petName: pet.name),
+          PetCareSection(petId: pet.id, pet: pet),
           PetProfileCareSuggestionSection(petId: pet.id),
+          PetProfileCompletenessSection(pet: pet, viewerContext: viewerContext),
           PetPeopleSection(
             petId: pet.id,
             petName: pet.name,
             canManage: canManagePeople,
           ),
-          PetCareSection(petId: pet.id, pet: pet),
           PetTagChipRow(petId: pet.id),
         ];
 
