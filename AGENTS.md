@@ -108,6 +108,19 @@ When **`node scripts/execute_plan_runtime.js gate <plan_id>`** exits **`0`**, tr
 | **PR base** | Use snapshot **`base_branch`** for phase PRs (integration ≠ `main`); only the **release** PR targets `main`. |
 | **Babysit model** | **`composer-2.5` only** for babysit+ / babysit-uat triage, CI, and merge steps. |
 
+### GitHub Actions cost (Cloud Agents)
+
+Linux runner minutes scale with **every push** (full `ci.yml` fan-out on many PRs). Copilot PR review uses a **separate** meter — review can stop while Actions keep running.
+
+| Rule | Detail |
+|------|--------|
+| **Batch pushes** | One push per logical fix after `./scripts/pre-push-changed.sh` passes locally — not per micro-commit during babysit triage. |
+| **No push for triage-only** | Comment/title/label updates without code changes do not need a push. |
+| **Integration programmes** | Land phase work on `cursor/*-integration-*`; avoid many parallel `cursor/**` PRs each running full CI (see `docs/agent-efficiency/autonomous-pr-policy.md` § CI cost). |
+| **Pre-UAT** | Only merges to `main` trigger `pre-uat-e2e.yml` — keep `main` green before merge (`/babysit-uat` on release PRs). |
+
+Policy: `docs/agent-efficiency/pr-review-cost-efficiency.md` (§ GitHub Actions minutes).
+
 ### Policies (details in `.cursor/rules/` + Skills)
 
 - **PR hygiene:** mandatory pre-PR self-review, Copilot-first review (Bugbot disabled for this repo), `composer-2.5` for babysit — `docs/agent-efficiency/pr-review-cost-efficiency.md`

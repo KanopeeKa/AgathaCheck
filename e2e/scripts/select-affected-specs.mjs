@@ -10,7 +10,7 @@
  * deferred to Pre-UAT. Selected specs are LPT-balanced into at most `maxLegs` legs.
  *
  * Usage:
- *   git diff --name-only BASE HEAD | node e2e/scripts/select-affected-specs.mjs [--budget-sec 720] [--max-legs 3]
+ *   git diff --name-only BASE HEAD | node e2e/scripts/select-affected-specs.mjs [--budget-sec 720] [--max-legs 2]
  *   node e2e/scripts/select-affected-specs.mjs --paths-file changed.txt
  * Prints JSON: { legs: string[][], selected, deferred, broad, estimated_sec, reasons }
  */
@@ -41,7 +41,7 @@ export function pageImports(testsDir = TESTS_DIR, specs = activeSpecs(testsDir))
  *           budgetSec?: number, maxLegs?: number }} ctx
  */
 export function selectSpecs(changedPaths, ctx) {
-  const { active, imports, secondsOf, budgetSec = 720, maxLegs = 3 } = ctx;
+  const { active, imports, secondsOf, budgetSec = 720, maxLegs = 2 } = ctx;
   const activeSet = new Set(active);
   const tier = new Map(); // spec → best (lowest) tier
   const reasons = new Map();
@@ -110,7 +110,7 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.a
     imports: pageImports(TESTS_DIR, active),
     secondsOf: (spec) => specSeconds(spec),
     budgetSec: numArg(argv, '--budget-sec', 720),
-    maxLegs: numArg(argv, '--max-legs', 3),
+    maxLegs: numArg(argv, '--max-legs', 2),
   });
   console.log(JSON.stringify(result));
 }
