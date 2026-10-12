@@ -311,6 +311,10 @@
   "profileFactCaptureRecord": "Enregistrer",
   "profileFactCaptureNeuterTitle": "Statut de stérilisation",
   "profileFactCaptureChipTitle": "Statut de la puce",
+  "profileCompletenessCategory": "Profil",
+  "profileCompletenessWhyNeuterBody": "Indiquer si votre animal est stérilisé permet d'adapter les rappels de soins. Demandez conseil à votre vétérinaire en cas de doute.",
+  "profileCompletenessWhyChipBody": "Un numéro de puce aide à identifier votre animal s'il se perd. Renseignez-vous sur les règles locales.",
+  "profileCompletenessNotForMyPet": "Pas pour mon animal",
   "petHealthAndHistoryTitle": "Santé et historique",
   "weightInsightLastRecorded": "{weight} · dernier relevé le {date}",
   "@weightInsightLastRecorded": {

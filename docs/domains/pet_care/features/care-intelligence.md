@@ -238,6 +238,14 @@ Spec: [agatha-care-journey-programme.md](../changes/agatha-care-journey-programm
 | **ACJ-CIM-PL-002** | Shared `dedupe_key` namespace + Agatha presentation shell; separate evaluators | PR-06 |
 | **ACJ-CIM-PL-003** | Profile slot order and guidance tiebreak per ui-design §3 | PR-04–05 |
 
+## Agatha profile completeness presentation (PR-04)
+
+| ID | Requirement | Status |
+|----|-------------|--------|
+| **ACJ-CIM-AC-001** | `PetCarePresentationPolicy.profileCompletenessSlotAvailable` — safeguard + rhythm/milestone block completeness | Live (integration) |
+| **ACJ-CIM-AC-002** | `ProfileCompletenessCard` uses shared Agatha shell; Record opens PR-03 capture sheet | Live (integration) |
+| **ACJ-GUARD-01** | Completeness dismiss / not-for-my-pet updates pet row only (no rhythm accept path) | Live (integration) |
+
 ## Decision log
 
 | ID | Decision | Rationale | Status | Date | PR |

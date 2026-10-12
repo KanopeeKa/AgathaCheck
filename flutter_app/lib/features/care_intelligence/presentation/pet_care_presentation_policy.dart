@@ -40,4 +40,17 @@ class PetCarePresentationPolicy {
     }
     return null;
   }
+
+  /// PR-04 minimal slot policy: completeness does not stack with safeguard or
+  /// guidance (rhythm suggestion or milestone moment in the same slot).
+  bool profileCompletenessSlotAvailable({
+    CareSafeguard? activeSafeguard,
+    CareRecommendation? activeSuggestion,
+    required bool guidanceMomentVisible,
+  }) {
+    if (activeSafeguard != null) return false;
+    if (activeSuggestion != null) return false;
+    if (guidanceMomentVisible) return false;
+    return true;
+  }
 }

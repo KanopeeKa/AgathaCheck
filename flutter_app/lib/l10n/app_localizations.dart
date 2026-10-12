@@ -1622,6 +1622,30 @@ abstract class AppLocalizations {
   /// **'Record microchip status'**
   String get profileFactCaptureChipTitle;
 
+  /// No description provided for @profileCompletenessCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get profileCompletenessCategory;
+
+  /// No description provided for @profileCompletenessWhyNeuterBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording whether your pet is neutered helps tailor care reminders. Ask your vet if you are unsure.'**
+  String get profileCompletenessWhyNeuterBody;
+
+  /// No description provided for @profileCompletenessWhyChipBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A microchip ID helps identify your pet if they are lost. Check local rules for registration.'**
+  String get profileCompletenessWhyChipBody;
+
+  /// No description provided for @profileCompletenessNotForMyPet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not for my pet'**
+  String get profileCompletenessNotForMyPet;
+
   /// No description provided for @petHealthAndHistoryTitle.
   ///
   /// In en, this message translates to:

@@ -194,9 +194,18 @@ Private per-user labels for organizing and filtering pets on `/pc/pets`. No shar
 
 | ID | Requirement | Status |
 |----|-------------|--------|
-| **ACJ-IC-001** | `PetProfileCompletenessPrompt` opens profile fact capture sheet from inset **Record** (neuter + chip topics) | Live (integration) |
+| **ACJ-IC-001** | Profile fact capture sheet from **Record** on completeness UI (inset PR-03; Agatha card PR-04+) | Live (integration) |
 | **ACJ-IC-002** | View-only pet detail (`editProfile` absent) disables Record; no sheet | Live (integration) |
 | **ACJ-IC-003** | Sheet saves `neuterStatus` / `identificationStatus` (+ optional date or chip id) via pet PUT | Live (integration) |
+
+## Profile facts — Agatha completeness cards (Flutter — PR-04)
+
+| ID | Requirement | Status |
+|----|-------------|--------|
+| **ACJ-AC-001** | Agatha completeness card for chip/neuter; card hidden when status known | Live (integration) |
+| **ACJ-AC-002** | Agatha message shell + Profile category line | Live (integration) |
+| **ACJ-AC-003** | Dismiss / Not for my pet → `*_dismissed` only (no `HealthEntry`) | Live (integration) |
+| **ACJ-AC-004** | Minimal slot policy: no completeness when safeguard or guidance card visible | Live (integration) |
 
 ## Profile facts (Flutter — PR-02)
 

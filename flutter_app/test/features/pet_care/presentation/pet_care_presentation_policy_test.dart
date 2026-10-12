@@ -123,6 +123,23 @@ void main() {
     expect(safeguard?.id, 'sg-2');
   });
 
+  test('profileCompletenessSlotAvailable false when suggestion active', () {
+    expect(
+      policy.profileCompletenessSlotAvailable(
+        activeSuggestion: _rec(id: 'pending'),
+        guidanceMomentVisible: false,
+      ),
+      isFalse,
+    );
+  });
+
+  test('profileCompletenessSlotAvailable false when milestone visible', () {
+    expect(
+      policy.profileCompletenessSlotAvailable(guidanceMomentVisible: true),
+      isFalse,
+    );
+  });
+
   test('dashboardSafeguard returns null when no active safeguard exists', () {
     final safeguard = policy.dashboardSafeguard({
       'pet-1': [_safeguard(id: 'sg-1', status: 'dismissed')],
