@@ -5,6 +5,7 @@
 library;
 
 export 'domain/entities/pet.dart';
+export 'domain/entities/profile_fact_status.dart';
 export 'domain/entities/pet_access_role.dart'
     show PetProfileAccessRole, PetProfileAccessRoleWire;
 export 'domain/entities/pet_report_supplement.dart';
@@ -41,6 +42,8 @@ export 'presentation/widgets/pet_detail/pet_form_preview_card.dart';
 export 'presentation/widgets/pet_detail/pet_photo.dart';
 export 'presentation/controllers/chip_reminder_controller.dart';
 export 'presentation/controllers/neuter_reminder_controller.dart';
+export 'presentation/controllers/profile_fact_capture_controller.dart';
+export 'presentation/widgets/profile_fact_capture_sheet.dart';
 export 'presentation/utils/pet_responsibility_label.dart';
 export 'presentation/widgets/care_filter_group_labels.dart';
 export 'presentation/widgets/pet_card.dart';
