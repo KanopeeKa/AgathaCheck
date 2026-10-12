@@ -158,6 +158,8 @@ Deferred debt issues that are not being worked yet need no label.
 | Caused by this PR | 5 |
 | Flaky / unrelated (after rebase on latest base) | 3 |
 
+**Push batching (Actions cost):** Accumulate fixes locally until `./scripts/pre-push-changed.sh` is green, then **one push** per logical batch — do not push after every single-file triage fix. Re-run pre-push after the batch, not after each file.
+
 1. **Before watching CI:** `./scripts/babysit_sync_base.sh --pr <url> --check` — if behind, `--push` once instead of waiting for a failure.
 2. Push fixes; watch CI (`ManagePullRequest get_ci_status` or `gh pr checks`).
 3. Rebase on latest base before counting unrelated failures (`--check` then `--push` when behind).
