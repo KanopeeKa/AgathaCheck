@@ -76,10 +76,10 @@ next_action: "continue phase pr-05 on branch cursor/acj-pr-05-b994"
 artifact_ref:
   branch: cursor/acj-pr-05-b994
   plan_path: .agents/plans/agatha-care-journey.md
-  plan_commit: 667a9527621d2d7276d8f9d513cee4691dec7f8c
+  plan_commit: 04335d8daa4e983bf205643739d70ad9f96fb27c
   snapshot_path: .agents/plans/agatha-care-journey.snapshot.json
-  snapshot_commit: 667a9527621d2d7276d8f9d513cee4691dec7f8c
-open_prs: []
+  snapshot_commit: 04335d8daa4e983bf205643739d70ad9f96fb27c
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1849"]
 merge_commits: {}
 debt_issue_refs: []
 ```

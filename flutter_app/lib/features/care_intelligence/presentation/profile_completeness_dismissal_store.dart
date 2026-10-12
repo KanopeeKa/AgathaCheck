@@ -9,7 +9,9 @@ class ProfileCompletenessDismissalStore {
   final SharedPreferences _prefs;
 
   static Future<ProfileCompletenessDismissalStore> create() async {
-    return ProfileCompletenessDismissalStore(await SharedPreferences.getInstance());
+    return ProfileCompletenessDismissalStore(
+      await SharedPreferences.getInstance(),
+    );
   }
 
   static String _key(String petId, ProfileCompletenessKind kind) =>

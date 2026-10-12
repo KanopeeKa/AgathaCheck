@@ -11,7 +11,9 @@ class ProfileCompletenessActions {
   final WidgetRef ref;
 
   Future<void> hidePrompt(Pet pet, ProfileCompletenessKind kind) async {
-    final store = await ref.read(profileCompletenessDismissalStoreProvider.future);
+    final store = await ref.read(
+      profileCompletenessDismissalStoreProvider.future,
+    );
     await store.recordDismiss(pet.id, kind);
     ref.invalidate(profileCompletenessDismissalStoreProvider);
 
