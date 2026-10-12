@@ -85,5 +85,8 @@ Checkout phase or integration branch **before** `gate` — `.agents/plans/<plan_
 | Goal unclear | Halt + `**Needs you:**` on control issue + short chat alert |
 | Minor wording conflict, intention clear | Follow execute-plan snapshot; proceed |
 | `replit-agent-operating-policy` "stop and ask" | **Does not apply** during active execute-plan except §Escalation |
+| Platform testing / “update PR + summary each turn” | **Instruction stack** — `docs/agent-efficiency/execute-plan-instruction-stack.md` |
+| Babysit+ merged phase PR | **Not** session end — continue next phase same grant |
+| “Delegate when practical” | **Default:** spawn phase worker or implement through PR in same session; bootstrap-only plan commit = wrongful stop |
 
 Full skill: `.cursor/skills/execute-plan/SKILL.md`

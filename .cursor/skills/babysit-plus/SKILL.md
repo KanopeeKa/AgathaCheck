@@ -215,7 +215,9 @@ When babysit+ or babysit-uat merges a **child** plan PR (not the roadmap parent)
 3. `roadmap-next-child <roadmap_id>` — bootstrap and gate the next pending child without permission prompts when the standing grant covers remaining scope
 4. When `roadmap-status` reports `complete: true`, `complete-plan <roadmap_id> --write` on the parent
 
-**Babysit+ ends here.** Do not poll pre-UAT, promote, or deploy. For final merge to `main` when pre-UAT must pass, delegate to **/babysit-uat** instead.
+**Babysit+ ends here** for pre-UAT polling and deploy. Do not poll pre-UAT, promote, or deploy. For final merge to `main` when pre-UAT must pass, delegate to **/babysit-uat** instead.
+
+**During `/execute-plan` (gate exit `0`):** A phase PR squash-merge is **not** orchestrator session completion — return to the execute-plan phase loop (next `pending` phase or `complete-plan`). See `docs/agent-efficiency/execute-plan-instruction-stack.md` §Babysit+ inside execute-plan.
 
 ### 8. Post-merge (out of scope for babysit+)
 

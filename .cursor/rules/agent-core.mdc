@@ -17,7 +17,7 @@ alwaysApply: true
 
 | Command | Use for |
 |---------|---------|
-| `/execute-plan` | Multi-phase autonomous plans — gate exit `0` = proceed without asking |
+| `/execute-plan` | Multi-phase autonomous plans — gate exit `0` = run-until-blocked; instruction stack `docs/agent-efficiency/execute-plan-instruction-stack.md` |
 | `/babysit-plus` | Bounded autonomous work → PR triage, CI, merge |
 | `/babysit-uat` | **Final** merge to `main` + pre-UAT E2E gate |
 | `/e2e-debug` | Pre-UAT remedial fix loop (chains to babysit-uat) |

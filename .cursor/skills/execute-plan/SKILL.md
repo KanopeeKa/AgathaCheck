@@ -270,7 +270,7 @@ The **orchestrator** (this session running `/execute-plan`) owns: gate, runtime 
 
 ### Per-phase implementation worker (recommended)
 
-At each phase **§3 Implement scope**, the orchestrator **must** delegate implementation to a **Task sub-agent** (`generalPurpose`) when practical, scoped to that phase's `allowed_paths`, exit criteria, and branch — then verify diff, open/update PR, and run babysit+. Do not stop after the worker returns; continue through babysit+ and the next phase without asking the human.
+At each phase **§3 Implement scope**, the orchestrator **must** either (a) implement through PR + babysit+ in the same session, or (b) delegate to a **Task sub-agent** (`generalPurpose`) for non-trivial scope (default for migrations, new routes, multi-file UI). Scope: phase `allowed_paths`, exit criteria, branch — then verify diff, open/update PR, and run babysit+. **Forbidden:** `chore(plan): phase N in progress` as the only work before a user-visible stop. Do not stop after the worker returns; continue through babysit+ and the next phase without asking the human. **Instruction stack:** `docs/agent-efficiency/execute-plan-instruction-stack.md`.
 
 | Role | Owns |
 |------|------|

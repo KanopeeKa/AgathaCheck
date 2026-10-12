@@ -3,7 +3,7 @@ title: Execute Plan Runtime
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-22
+last_updated: 2026-10-12
 tags: [agent-efficiency, policy]
 ---
 # Execute-plan runtime (Phase C)
@@ -51,6 +51,8 @@ node scripts/execute_plan_runtime.js gate example-plan \
 ```
 
 Exit `0` = proceed; exit `2` = halt (JSON reason on stdout).
+
+While gate exit is `0`, Cloud Agents use the **instruction stack** so generic turn-summary and testing rules do not stop the phase loop: [execute-plan-instruction-stack.md](./execute-plan-instruction-stack.md).
 
 ### Resume check
 
