@@ -134,7 +134,7 @@ are no longer gated only by local pre-push (parallel-programmes §6 TEST.2).
 
 \*Flutter **analyze** still runs when `server/routes/**` or `server/lib/**` changed (API contract), even if `flutter_app/**` is untouched.
 
-**E2E-only PRs** (`e2e/**` without `flutter_app/**`): skip the Flutter unit stack; run **cached web build** (when Flutter inputs unchanged) + `@smoke-ci` canary + **`ci-e2e-affected`** matrix legs chosen by `e2e/scripts/select-affected-specs.mjs` (≤720 s budget, ≤3 legs; broad infra edits keep tiers 0–1 only). `resolve-ci-scope.sh` drops `server/**` paths before selection so **backend-only PRs stay short** (canary + post-merge Pre-UAT cover server changes). `e2e/package.json` / `e2e/package-lock.json` still force the **full** CI stack.
+**E2E-only PRs** (`e2e/**` without `flutter_app/**`): skip the Flutter unit stack; run **cached web build** (when Flutter inputs unchanged) + `@smoke-ci` canary + **`ci-e2e-affected`** matrix legs chosen by `e2e/scripts/select-affected-specs.mjs` (≤720 s budget, ≤2 legs; broad infra edits keep tiers 0–1 only). `resolve-ci-scope.sh` drops `server/**` paths before selection so **backend-only PRs stay short** (canary + post-merge Pre-UAT cover server changes). `e2e/package.json` / `e2e/package-lock.json` still force the **full** CI stack.
 
 **Web build cache:** `pre-uat-e2e.yml` on `main` **saves** `flutter_app/build/web`; PR `ci.yml` **restores** it (`web_cache: restore`). First PR after a cache miss builds normally. On cache **hit**, Flutter setup/build steps are skipped but **`verify-web-artifact.sh` still runs** on the restored tree. Cache key includes PostHog presence (`ph0`/`ph1`) and hashes build scripts plus `flutter_app` inputs.
 
