@@ -11,7 +11,7 @@ on:
       - 'scripts/check_docs_canonical.js'
       - 'scripts/lib/docs-canonical/**'
       - 'scripts/docs-legacy-baseline.json'
-    types: [opened, synchronize, reopened, edited]
+    types: [opened, synchronize, reopened]
   workflow_dispatch:
 
 concurrency:
