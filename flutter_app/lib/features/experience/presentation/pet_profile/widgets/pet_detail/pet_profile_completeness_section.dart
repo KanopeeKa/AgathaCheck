@@ -19,7 +19,9 @@ class PetProfileCompletenessSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final policy = ref.watch(petCarePresentationPolicyProvider);
+    final slotPolicy = ref.watch(petCarePresentationPolicyProvider);
+    const surfacePolicy = AgathaSurfacePolicy();
+    final storeAsync = ref.watch(profileCompletenessDismissalStoreProvider);
     final safeguard = ref
         .watch(petProfileCareSafeguardProvider(pet.id))
         .valueOrNull;
@@ -31,7 +33,7 @@ class PetProfileCompletenessSection extends ConsumerWidget {
         .valueOrNull;
     final guidanceMomentVisible = suggestion != null || milestone != null;
 
-    if (!policy.profileCompletenessSlotAvailable(
+    if (!slotPolicy.profileCompletenessSlotAvailable(
       activeSafeguard: safeguard,
       activeSuggestion: suggestion,
       guidanceMomentVisible: guidanceMomentVisible,
@@ -39,17 +41,40 @@ class PetProfileCompletenessSection extends ConsumerWidget {
       return const SizedBox.shrink();
     }
 
-    final kinds = profileCompletenessKindsForPet(pet);
-    if (kinds.isEmpty) return const SizedBox.shrink();
+    return storeAsync.when(
+      loading: () => const SizedBox.shrink(),
+      error: (_, __) => const SizedBox.shrink(),
+      data: (store) {
+        final now = DateTime.now().toUtc();
+        final kinds = profileCompletenessKindsForPet(
+          pet,
+          policy: surfacePolicy,
+          now: now,
+          neuterDismissedAt: store.dismissedAt(
+            pet.id,
+            ProfileCompletenessKind.neuter,
+          ),
+          chipDismissedAt: store.dismissedAt(
+            pet.id,
+            ProfileCompletenessKind.chip,
+          ),
+        );
+        if (kinds.isEmpty) return const SizedBox.shrink();
 
-    final canRecord = viewerContext.can(PetDetailAction.editProfile);
+        final canRecord = viewerContext.can(PetDetailAction.editProfile);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        for (final kind in kinds)
-          ProfileCompletenessCard(pet: pet, kind: kind, canRecord: canRecord),
-      ],
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            for (final kind in kinds)
+              ProfileCompletenessCard(
+                pet: pet,
+                kind: kind,
+                canRecord: canRecord,
+              ),
+          ],
+        );
+      },
     );
   }
 }
