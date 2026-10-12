@@ -1,7 +1,6 @@
 import 'package:pet_profile_app/core/utils/constants.dart';
-import 'package:pet_profile_app/features/care_intelligence/domain/profile_completeness_kind.dart';
-import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
-import 'package:pet_profile_app/features/pet_profile/domain/entities/profile_fact_status.dart';
+import 'package:pet_profile_app/features/care_intelligence/care_intelligence.dart';
+import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 
 /// Which Agatha completeness cards apply for [pet] (experience layer — avoids R6).
 List<ProfileCompletenessKind> profileCompletenessKindsForPet(Pet pet) {
