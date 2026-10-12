@@ -104,7 +104,8 @@ When **`node scripts/execute_plan_runtime.js gate <plan_id>`** exits **`0`**, tr
 |------|--------|
 | **Loop** | Implement → PR → **`/babysit-plus`** (phase PRs to integration) or **`/babysit-uat`** (final PR to `main`) → squash merge → next phase until merge-done, `complete-plan`, or §Halt. |
 | **Chat** | Control issue telemetry only; user chat for **blocker alerts** (`**Needs you:**`, revoke, `session_limit`, escalation) — not routine milestones or permission prompts. |
-| **Overrides** | Execute-plan wins over generic “summarize each turn,” “update PR each turn,” “confirm when done,” default **single-agent PR → `main`** (`.cursor/rules/merge-policy.mdc`), and walkthrough-in-chat while gate exit `0`; put evidence in the PR body and control issue. |
+| **Overrides** | Execute-plan wins over generic “summarize each turn,” “update PR each turn,” platform “prove in chat,” “confirm when done,” default **single-agent PR → `main`** (`.cursor/rules/merge-policy.mdc`), and walkthrough-in-chat while gate exit `0`. Evidence → PR body, control issue, `/opt/cursor/artifacts/` — not milestone replies. Precedence: `docs/agent-efficiency/execute-plan-instruction-stack.md`. |
+| **Phase merge** | Phase PR squash-merged to integration is **in-loop** — start next `pending` phase (implement or phase worker) same session; babysit+ merge is not programme completion. |
 | **PR base** | Use snapshot **`base_branch`** for phase PRs (integration ≠ `main`); only the **release** PR targets `main`. |
 | **Babysit model** | **`composer-2.5` only** for babysit+ / babysit-uat triage, CI, and merge steps. |
 
