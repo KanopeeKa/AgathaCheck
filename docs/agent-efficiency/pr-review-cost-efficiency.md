@@ -122,6 +122,18 @@ Cursor cannot enforce model choice from the repo alone; rules + dashboard defaul
 | `composer-2.5` for babysit | Avoid thinking-model token burn on triage/CI |
 | Slim babysit+ | Triage all collected review threads (Bugbot + Copilot + human); do not re-run adversarial review in agent turns |
 | Skip Copilot wait when unavailable | No 15-minute stall |
+| Cloud Agent push batching | Fewer redundant `ci.yml` runs (see `AGENTS.md` § GitHub Actions cost) |
+| Pre-UAT cancel superseded runs | Stale post-merge E2E grids stop when `main` advances again |
+
+Delivery programme: `changes/github-actions-cost-control-programme.md`.
+
+---
+
+## GitHub Actions minutes (Linux runners)
+
+Copilot **AI credits** and **Actions Linux minutes** are separate meters on GitHub billing. Exhausting Copilot stops automated PR review; **CI keeps running** on every push.
+
+Primary levers in this repo: reduce **PR push frequency** (agents), trim **workflow triggers** on metadata-only PR edits, cap **affected E2E legs** on PR CI, and **cancel superseded Pre-UAT** runs when `main` moves. See cost levers table above and `autonomous-pr-policy.md` § CI cost.
 
 ---
 
