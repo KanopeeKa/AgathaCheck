@@ -7,7 +7,6 @@ import 'package:pet_profile_app/core/utils/constants.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 import 'package:pet_profile_app/features/pet_care/pet_care.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/profile_fact_status.dart';
-import 'package:pet_profile_app/features/pet_profile/domain/services/pet_detail_actions.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/widgets/profile_fact_capture_sheet.dart';
 
 /// Single compact card for missing neuter and/or microchip profile data.

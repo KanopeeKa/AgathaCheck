@@ -103,8 +103,7 @@ Future<void> showProfileFactCaptureSheet(
                     key: const Key('profile_fact_capture_neuter_date'),
                     onTap: () async {
                       final initial =
-                          neuteredDate ??
-                          calendarDateOnly(DateTime.now());
+                          neuteredDate ?? calendarDateOnly(DateTime.now());
                       final picked = await showCalendarDatePicker(
                         context: ctx,
                         initialDate: initial,
