@@ -96,13 +96,25 @@ Move Project board columns manually when you want **In Progress** / **Done** on 
 
 See `docs/agent-efficiency/github-issue-workflow.md` for the full issue lifecycle.
 
+### Execute-plan orchestration (Cloud Agents)
+
+When **`node scripts/execute_plan_runtime.js gate <plan_id>`** exits **`0`**, treat **run-until-blocked** as authoritative (`.cursor/skills/execute-plan/SKILL.md`, `.agents/memory/execute-plan-autonomy.md`):
+
+| Rule | Detail |
+|------|--------|
+| **Loop** | Implement → PR → **`/babysit-plus`** (phase PRs to integration) or **`/babysit-uat`** (final PR to `main`) → squash merge → next phase until merge-done, `complete-plan`, or §Halt. |
+| **Chat** | Control issue telemetry only; user chat for **blocker alerts** (`**Needs you:**`, revoke, `session_limit`, escalation) — not routine milestones or permission prompts. |
+| **Overrides** | Execute-plan wins over generic “summarize each turn,” “update PR each turn,” “confirm when done,” default **single-agent PR → `main`** (`.cursor/rules/merge-policy.mdc`), and walkthrough-in-chat while gate exit `0`; put evidence in the PR body and control issue. |
+| **PR base** | Use snapshot **`base_branch`** for phase PRs (integration ≠ `main`); only the **release** PR targets `main`. |
+| **Babysit model** | **`composer-2.5` only** for babysit+ / babysit-uat triage, CI, and merge steps. |
+
 ### Policies (details in `.cursor/rules/` + Skills)
 
 - **PR hygiene:** mandatory pre-PR self-review, Copilot-first review (Bugbot disabled for this repo), `composer-2.5` for babysit — `docs/agent-efficiency/pr-review-cost-efficiency.md`
 - **Canonical docs:** `/canonical-docs` + `docs/domains/documentation/standards.md` — behaviour PRs sync feature docs before open
 - **Atomic PRs:** one verifiable outcome per PR; cross-domain OK when serving that outcome. Snag ladder + zero untracked debt → `docs/agent-efficiency/atomic-pr-policy.md`
 - Modularity ≤500 lines · BDD gate: `node e2e/scripts/check_bdd_coverage.js --report-only` (live counts from the script only; gate is 68% of active scenarios)
-- Single-agent PRs → `main`; multi-agent → integration branch (`/spawn-sprint-agents`)
+- Single-agent PRs → `main`; multi-agent → integration (`/spawn-sprint-agents`); **execute-plan phases** → snapshot `base_branch` (see **Execute-plan orchestration** above)
 - Memories: `.agents/memory/MEMORY.md`
 - Sprint log: `docs/debt/refactoring-log.md`
 - Single-backend (Node.js only): no Dart port in `server/`

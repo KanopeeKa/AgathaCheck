@@ -6,8 +6,9 @@ alwaysApply: true
 # Merge policy
 
 - `main` is the release trunk; keep it green.
-- **Single-agent / single-domain PRs** → `main` when CI green.
+- **Single-agent / single-domain PRs** → `main` when CI green — **unless** an active `/execute-plan` snapshot sets `base_branch` to an integration branch (see below).
 - **Multi-agent sprints** → `cursor/sprint-<N>-<topic>-integration-13e3`; agents merge there; **one PR** to `main`. Use `/spawn-sprint-agents`.
+- **`/execute-plan` (2+ phases, `autonomy: active`)** — read `base_branch` from `.agents/plans/<plan_id>.snapshot.json` (usually `cursor/<plan_id>-integration-<suffix>`). **Phase PRs target `base_branch`, not `main`.** Squash-merge via **`/babysit-plus`** into integration; **one release PR** integration → `main` via **`/babysit-uat`**. Do not use the single-agent→`main` default for intermediate phase PRs.
 
 ## Before every push
 
@@ -16,7 +17,8 @@ alwaysApply: true
 
 ## Branch naming
 
-- Integration: `cursor/sprint-<N>-<topic>-integration-13e3`
+- Integration (sprint): `cursor/sprint-<N>-<topic>-integration-13e3`
+- Integration (execute-plan): `cursor/<plan_id>-integration-<suffix>` — snapshot `base_branch`
 - Agent: `cursor/<descriptive-name>-13e3` or `cursor/<descriptive-name>-feec`
 
 Full ownership matrix and anti-patterns: `.cursor/rules/agent-coordination.mdc` and `docs/agent-efficiency/plans/agent-efficiency-plan.md`.
