@@ -44,7 +44,9 @@ flowchart TD
 
 ## Tier 1: Pre-UAT localhost E2E
 
-**Trigger:** every push to `main` (queued via `concurrency: pre-uat-e2e`).
+**Trigger:** every push to `main` (`concurrency: pre-uat-e2e`; **`cancel-in-progress: true`** — a newer push cancels an in-flight run so only the latest SHA spends nine-shard minutes).
+
+**Cancel vs promote:** Cancelling a superseded run does not promote UAT. Promotion still requires a **completed green** run whose `test_sha` equals `origin/main` at gate time (see **Throttle** above).
 
 **Steps:** resolve `origin/main` HEAD → build web → 9-shard Playwright → gate-summary.
 
