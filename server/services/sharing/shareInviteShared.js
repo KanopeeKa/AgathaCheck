@@ -19,6 +19,9 @@ import { ShareCommandResult } from './shareCommandResult.js';
 
 export const MAX_PET_IDS = 20;
 
+/** Opaque delivery metadata on invite create — must not reveal whether invitee_email is registered. */
+export const SHARE_INVITE_CREATE_DELIVERY = Object.freeze({ status: 'queued' });
+
 function generateInviteCode() {
   return crypto.randomBytes(6).toString('base64url').slice(0, 8);
 }
@@ -58,12 +61,19 @@ export async function loadInviterName(db, userId) {
   return userDisplayName(result.rows[0] || {});
 }
 
-export function isInvitee(invite, userId, userEmail) {
-  if (invite.invitee_user_id && invite.invitee_user_id === userId) return true;
-  if (userEmail && normalizeEmail(invite.invitee_email) === normalizeEmail(userEmail)) {
-    return true;
+/**
+ * Whether the signed-in user may accept or decline this invite.
+ * Uses the account email on file (not JWT claims). When invitee_user_id is set, both id and email must match.
+ */
+export function isInvitee(invite, userId, verifiedUserEmail) {
+  if (!verifiedUserEmail) return false;
+  if (normalizeEmail(invite.invitee_email) !== normalizeEmail(verifiedUserEmail)) {
+    return false;
   }
-  return false;
+  if (invite.invitee_user_id && invite.invitee_user_id !== userId) {
+    return false;
+  }
+  return true;
 }
 
 /**

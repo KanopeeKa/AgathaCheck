@@ -17,7 +17,7 @@ import { inviteBlockedResponse, isInvitee } from './shareInviteShared.js';
 export async function declineShareInvite(pool, {
   inviteId,
   userId,
-  userEmail,
+  userEmail: _userEmail,
 }) {
   try {
     return await withTransaction(pool, async (client) => {
@@ -30,10 +30,9 @@ export async function declineShareInvite(pool, {
         'SELECT first_name, last_name, email FROM users WHERE id = $1',
         [userId],
       );
-      const decliner = declinerResult.rows[0] || {};
-      const declinerEmail = decliner.email || userEmail;
-
-      if (!isInvitee(invite, userId, declinerEmail)) {
+      const decliner = declinerResult.rows[0];
+      const verifiedEmail = decliner?.email;
+      if (!verifiedEmail || !isInvitee(invite, userId, verifiedEmail)) {
         throw new ShareCommandResult({
           error: 'This invitation was sent to a different email address',
           status: 403,

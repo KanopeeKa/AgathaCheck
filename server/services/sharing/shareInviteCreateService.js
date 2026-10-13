@@ -19,6 +19,7 @@ import { ShareCommandResult } from './shareCommandResult.js';
 import {
   MAX_PET_IDS,
   normalizeEmail,
+  SHARE_INVITE_CREATE_DELIVERY,
   validateShareInviteContact,
   classifyPetsForInvite,
   insertInviteWithCodeRetry,
@@ -80,7 +81,7 @@ export async function createShareInvite(pool, {
           status: 200,
           replayed: true,
           ...classified.replay,
-          delivery: { email: 'skipped', notification: false },
+          delivery: SHARE_INVITE_CREATE_DELIVERY,
         };
       }
 
@@ -103,7 +104,7 @@ export async function createShareInvite(pool, {
         contactId,
       });
 
-      const delivery = { email: 'skipped', notification: false };
+      const delivery = SHARE_INVITE_CREATE_DELIVERY;
 
       if (inviteeUser) {
         const inviterName = await loadInviterName(client, inviterUserId);
@@ -123,7 +124,6 @@ export async function createShareInvite(pool, {
             type: 'shareInviteReceived',
           });
         }
-        delivery.notification = true;
       }
 
       return {
@@ -172,10 +172,8 @@ export async function createShareInvite(pool, {
         code: txResult.code,
       });
       await sendTransactionalEmail({ to: txResult.inviteeEmail, subject, text, html });
-      committedResult.delivery.email = 'sent';
     } catch (mailErr) {
       console.error('Pet share invitation email failed for invite', txResult.invite_id, mailErr);
-      committedResult.delivery.email = 'failed';
     }
   }
 

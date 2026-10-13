@@ -76,8 +76,8 @@ Address code-review follow-ups from recent merges to `main` in seven atomic phas
 
 **Exit criteria:**
 
-- [ ] Identical invite-create responses for known/unknown email
-- [ ] Accept rejects wrong user / unverified email
+- [x] Identical invite-create responses for known/unknown email
+- [x] Accept rejects wrong user / unverified email
 
 ### Phase 5 — Flutter: notifications and consent (items 12–13)
 
@@ -111,16 +111,16 @@ Address code-review follow-ups from recent merges to `main` in seven atomic phas
 
 ```yaml
 autonomy: active
-current_phase: 2
-last_completed_phase: 1
+current_phase: 5
+last_completed_phase: 4
 halt_reason: null
-next_action: "continue phase 2 on branch cursor/review-followups-phase2-care-tz-9100"
+next_action: "phase 4 pushed on cursor/review-followups-phase4-sharing-9100 (no PR); start phase 5"
 artifact_ref:
-  branch: cursor/review-followups-phase2-care-tz-9100
+  branch: cursor/review-followups-integration-9100
   plan_path: .agents/plans/review-followups-programme-9100.md
-  plan_commit: 21b51817212adca2b5cce41449fb88d05792dfbe
+  plan_commit: 04e5dd95bb422dfd9e3911c642df8135d1b601b2
   snapshot_path: .agents/plans/review-followups-programme-9100.snapshot.json
-  snapshot_commit: 21b51817212adca2b5cce41449fb88d05792dfbe
+  snapshot_commit: 04e5dd95bb422dfd9e3911c642df8135d1b601b2
 open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1859"]
 merge_commits: {}
 debt_issue_refs: []
