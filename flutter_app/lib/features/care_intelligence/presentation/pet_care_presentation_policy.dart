@@ -34,8 +34,7 @@ class PetCarePresentationPolicy {
           (w) => AgathaGuidanceCandidate(
             kind: AgathaGuidanceKind.welfare,
             severity: w.severity,
-            createdAt:
-                w.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0),
+            createdAt: w.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0),
             id: w.id,
           ),
         )
@@ -71,9 +70,7 @@ class PetCarePresentationPolicy {
     if (picked == null || picked.kind != AgathaGuidanceKind.welfare) {
       return null;
     }
-    return welfareSuggestions
-        .where((w) => w.id == picked.id)
-        .firstOrNull;
+    return welfareSuggestions.where((w) => w.id == picked.id).firstOrNull;
   }
 
   CareRecommendation? profileSuggestion(

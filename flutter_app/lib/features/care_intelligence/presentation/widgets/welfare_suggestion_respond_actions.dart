@@ -15,19 +15,21 @@ class WelfareSuggestionRespondActions {
   }) async {
     onLoadingChanged(true);
     try {
-      await ref.read(careIntelligenceRepositoryProvider).respondWelfareSuggestion(
-        petId: petId,
-        suggestionId: suggestionId,
-        action: 'dismiss',
-      );
+      await ref
+          .read(careIntelligenceRepositoryProvider)
+          .respondWelfareSuggestion(
+            petId: petId,
+            suggestionId: suggestionId,
+            action: 'dismiss',
+          );
       ref.invalidate(petWelfareSuggestionsProvider(petId));
       ref.invalidate(petProfileWelfareSuggestionProvider(petId));
       ref.invalidate(petProfileCareSuggestionProvider(petId));
     } catch (error) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(error.toString())),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(error.toString())));
     } finally {
       onLoadingChanged(false);
     }
