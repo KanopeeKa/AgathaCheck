@@ -24,6 +24,27 @@ test('measureAreas aggregates lib, services, and routes', () => {
   assert.ok(areas.routes.lines_percent < 40);
 });
 
+test('eligible file missing from Jest summary lowers measured coverage', () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'cov-ratchet-unloaded-'));
+  const libDir = path.join(tmp, 'server', 'lib');
+  fs.mkdirSync(libDir, { recursive: true });
+  const unloaded = path.join(libDir, 'unloaded.js');
+  fs.writeFileSync(unloaded, 'function run() {\n  return 1;\n}\n');
+
+  const summary = {
+    total: { lines: { total: 2, covered: 2, skipped: 0, pct: 100 } },
+    [path.join(tmp, 'server', 'lib', 'loaded.js')]: {
+      lines: { total: 2, covered: 2, skipped: 0, pct: 100 },
+    },
+  };
+
+  const withoutUnloaded = measureAreas(summary);
+  const withUnloaded = measureAreas(summary, { repoRoot: tmp });
+
+  assert.ok(withoutUnloaded.lib.lines_percent > withUnloaded.lib.lines_percent);
+  assert.ok(withUnloaded.lib.lines_total > withoutUnloaded.lib.lines_total);
+});
+
 test('check_coverage_ratchet.js fails when an area drops below its floor', () => {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'cov-ratchet-'));
   const summaryPath = path.join(tmp, 'summary.json');
