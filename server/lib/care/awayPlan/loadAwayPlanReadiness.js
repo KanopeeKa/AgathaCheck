@@ -1,5 +1,9 @@
 import { dateToIsoDate } from '../../calendarDate.js';
-import { loadPetHomeTimezone, wallClockInTimeZone } from '../../petHomeTimezone.js';
+import {
+  DEFAULT_PET_HOME_TIMEZONE,
+  normalizePetHomeTimezone,
+  wallClockInTimeZone,
+} from '../../petHomeTimezone.js';
 import { loadResolutionsByEntryIds } from '../absence/resolutionRepository.js';
 import { evaluateCarePeriodCoverageWithResolutions } from '../absence/absenceCoverage.js';
 import {
@@ -8,6 +12,22 @@ import {
   deriveCarerCoverage,
 } from './readiness.js';
 import { loadAwayPlanProjection } from './loadAwayPlanProjection.js';
+
+/**
+ * @param {import('pg').Pool|import('pg').PoolClient} pool
+ * @param {string[]} petIds
+ * @returns {Promise<Map<string, string>>}
+ */
+async function loadPetHomeTimezonesByPetIds(pool, petIds) {
+  if (!petIds.length) return new Map();
+  const result = await pool.query(
+    'SELECT id, home_timezone FROM pets WHERE id = ANY($1::uuid[])',
+    [petIds],
+  );
+  return new Map(
+    result.rows.map((row) => [row.id, normalizePetHomeTimezone(row.home_timezone)]),
+  );
+}
 
 /**
  * Derive Away Planning readiness for one absence (D-AWAY-002).
@@ -28,10 +48,17 @@ export async function loadAwayPlanReadiness(
 ) {
   const carerCoverage = deriveCarerCoverage(petRows);
   const perPetCoverage = [];
+  const useCallerToday = todayIso != null && todayIso !== '';
+  const timezonesByPetId = useCallerToday
+    ? null
+    : await loadPetHomeTimezonesByPetIds(pool, petRows.map((row) => row.pet_id));
 
   for (const petRow of petRows) {
-    const petTimeZone = await loadPetHomeTimezone(pool, petRow.pet_id);
-    const careTodayIso = todayIso ?? wallClockInTimeZone(petTimeZone).todayIso;
+    const careTodayIso = useCallerToday
+      ? todayIso
+      : wallClockInTimeZone(
+        timezonesByPetId?.get(petRow.pet_id) ?? DEFAULT_PET_HOME_TIMEZONE,
+      ).todayIso;
     const projection = await loadAwayPlanProjection(
       pool,
       petRow.pet_id,
