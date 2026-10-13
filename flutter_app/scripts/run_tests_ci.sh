@@ -61,7 +61,10 @@ if [ -f coverage/lcov.merged.info ]; then
 fi
 
 if [ -f coverage/lcov.info ]; then
-  node scripts/check_domain_coverage.js --threshold "${DOMAIN_COVERAGE_THRESHOLD:-8}"
+  if [[ -z "${DOMAIN_COVERAGE_THRESHOLD:-}" ]]; then
+    DOMAIN_COVERAGE_THRESHOLD="$(node -p "require('../scripts/lib/flutter-domain-coverage-threshold.cjs').readThreshold()")"
+  fi
+  node scripts/check_domain_coverage.js --threshold "${DOMAIN_COVERAGE_THRESHOLD}"
 else
   echo "::warning::No coverage/lcov.info produced; skipping domain coverage gate"
 fi

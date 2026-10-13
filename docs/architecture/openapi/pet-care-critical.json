@@ -154,6 +154,20 @@
                 "schema": { "$ref": "#/components/schemas/Pet" }
               }
             }
+          },
+          "409": {
+            "description": "Client-supplied pet id already owned by another user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["error"],
+                  "properties": {
+                    "error": { "const": "Pet id already in use" }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -193,6 +207,7 @@
       },
       "put": {
         "operationId": "updatePet",
+        "description": "Partial-safe merge: omitted keys keep stored values; explicit null clears nullable fields (see pet-profile D40).",
         "parameters": [{ "$ref": "#/components/parameters/PetId" }],
         "responses": {
           "200": {

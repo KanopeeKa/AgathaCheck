@@ -125,4 +125,131 @@ void main() {
       findsOneWidget,
     );
   });
+
+  testWidgets('care family accept without recommendation id shows error', (
+    tester,
+  ) async {
+    final notification = AppNotification(
+      id: 'n-bad',
+      userId: 'u-1',
+      petId: 'pet-1',
+      petName: 'Luna',
+      title: 'Weight check',
+      message: 'ignored',
+      type: NotificationType.general,
+      wireType: 'suggestionCareFamily',
+      kind: NotificationKind.suggestion,
+      isRead: false,
+      createdAt: DateTime(2026, 1, 1),
+      suggestionState: 'new',
+      suggestionPayload: {
+        'care_family': 'weight_monitoring',
+        'suggestion_key': 'weight_monitoring_rhythm',
+        'suggested_name': 'Weight check',
+        'suggested_frequency': 'monthly',
+        'suggested_frequency_interval': 1,
+        'rationale_key': 'careSuggestionWeightMonitoringWhy',
+      },
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          notificationsProvider.overrideWith(
+            () => TestNotificationsNotifier(const []),
+          ),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: NotificationSuggestionCard(
+              notification: notification,
+              onOpenPet: () {},
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final l = AppLocalizations.of(
+      tester.element(find.byType(NotificationSuggestionCard)),
+    )!;
+
+    await tester.tap(find.widgetWithText(FilledButton, l.careSuggestionAccept));
+    await tester.pump();
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text(l.notificationSuggestionAcceptUnavailable),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('care family feedback failure shows snackbar', (tester) async {
+    final notification = AppNotification(
+      id: 'n-cim',
+      userId: 'u-1',
+      petId: 'pet-1',
+      petName: 'Luna',
+      title: 'Weight check',
+      message: 'ignored',
+      type: NotificationType.general,
+      wireType: 'suggestionCareFamily',
+      kind: NotificationKind.suggestion,
+      isRead: false,
+      createdAt: DateTime(2026, 1, 1),
+      suggestionState: 'new',
+      suggestionPayload: {
+        'care_family': 'weight_monitoring',
+        'suggestion_key': 'weight_monitoring_rhythm',
+        'suggested_name': 'Weight check',
+        'suggested_frequency': 'monthly',
+        'suggested_frequency_interval': 1,
+        'rationale_key': 'careSuggestionWeightMonitoringWhy',
+        'recommendation_id': 'rec-1',
+      },
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          notificationsProvider.overrideWith(
+            () => _FeedbackFailingNotificationsNotifier([notification]),
+          ),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: NotificationSuggestionCard(
+              notification: notification,
+              onOpenPet: () {},
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final l = AppLocalizations.of(
+      tester.element(find.byType(NotificationSuggestionCard)),
+    )!;
+
+    await tester.tap(find.text(l.careSuggestionLater));
+    await tester.pump();
+    await tester.pumpAndSettle();
+
+    expect(find.text(l.careSuggestionRespondFailed), findsOneWidget);
+  });
+}
+
+class _FeedbackFailingNotificationsNotifier extends TestNotificationsNotifier {
+  _FeedbackFailingNotificationsNotifier(super.notifications);
+
+  @override
+  Future<void> submitSuggestionFeedback(String id, String action) async {
+    throw Exception('feedback failed');
+  }
 }

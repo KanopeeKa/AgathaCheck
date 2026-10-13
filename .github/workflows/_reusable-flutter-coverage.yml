@@ -35,10 +35,16 @@ jobs:
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
 
+      - name: Resolve Flutter domain coverage threshold
+        id: flutter_domain_threshold
+        run: |
+          THRESHOLD=$(node -p "require('./scripts/lib/flutter-domain-coverage-threshold.cjs').readThreshold()")
+          echo "threshold=$THRESHOLD" >> "$GITHUB_OUTPUT"
+
       - name: Merge coverage and enforce gate
         working-directory: flutter_app
         env:
-          DOMAIN_COVERAGE_THRESHOLD: 8
+          DOMAIN_COVERAGE_THRESHOLD: ${{ steps.flutter_domain_threshold.outputs.threshold }}
         run: bash scripts/merge_flutter_coverage.sh ../_coverage_shards
 
       - name: Upload merged Flutter coverage

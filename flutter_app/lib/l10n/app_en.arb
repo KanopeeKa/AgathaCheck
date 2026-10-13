@@ -463,6 +463,7 @@
     }
   },
   "careSuggestionRespondFailed": "Could not update this suggestion. Try again.",
+  "notificationSuggestionAcceptUnavailable": "This suggestion isn't ready yet. Try refreshing your inbox.",
   "careSafeguardDismissFailed": "Could not dismiss this. Try again.",
   "careSuggestionEditForbidden": "You can view this pet's care but cannot add routines.",
   "notificationSuggestionVetDisclaimer": "Agatha isn't a vet. If you're worried, talk to your vet.",
@@ -1843,6 +1844,7 @@
   "consentMarketingDescription": "Allows us to send you relevant updates and offers about AgathaTrack features and services.",
   "consentSavePreferences": "Save Preferences",
   "consentPreferencesSaved": "Privacy preferences saved",
+  "consentPreferencesSaveFailed": "Could not save your preferences. Try again.",
   "consentLastUpdated": "Last updated: {timestamp}",
   "@consentLastUpdated": { "placeholders": { "timestamp": { "type": "String" } } },
 

@@ -26,7 +26,7 @@ export async function acceptShareInvite(pool, {
   inviteId,
   code,
   userId,
-  userEmail,
+  userEmail: _userEmail,
 }) {
   try {
     return await withTransaction(pool, async (client) => {
@@ -42,10 +42,9 @@ export async function acceptShareInvite(pool, {
         'SELECT first_name, last_name, email FROM users WHERE id = $1',
         [userId],
       );
-      const accepter = accepterResult.rows[0] || {};
-      const accepterEmail = accepter.email || userEmail;
-
-      if (!isInvitee(invite, userId, accepterEmail)) {
+      const accepter = accepterResult.rows[0];
+      const verifiedEmail = accepter?.email;
+      if (!verifiedEmail || !isInvitee(invite, userId, verifiedEmail)) {
         throw new ShareCommandResult({
           error: 'This invitation was sent to a different email address',
           status: 403,

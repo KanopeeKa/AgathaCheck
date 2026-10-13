@@ -1,0 +1,222 @@
+{
+  "schema_version": 1,
+  "plan_id": "review-followups-programme-9100",
+  "approved_at": "2026-10-13T09:03:00Z",
+  "approved_by": "user-chat-2026-10-13-review-followups-programme-standing-grant",
+  "approved_until": "2026-10-15T09:03:00Z",
+  "content_hash": "sha256:ebf129f5a4f87e60e044e6b5af8b17746481c392a9e8fd7c39e0de51a63eaf1a",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/review-followups-integration-9100",
+  "control_issue": 1855,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Server: notifications and suggestions",
+      "branch": "cursor/review-followups-phase1-notifications-9100",
+      "allowed_paths": [
+        "server/lib/notificationHelper.js",
+        "server/lib/notifications/**",
+        "server/lib/suggestions/**",
+        "server/services/sharing/shareInviteRevokeService.js",
+        "server/test/**",
+        "server/scripts/migrations/**",
+        "db/migrations/**",
+        "docs/domains/notifications/**",
+        "docs/architecture/**"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1857",
+      "pr_head_sha": "de5c4649"
+    },
+    {
+      "id": "2",
+      "title": "Server: care, absence and timezone",
+      "branch": "cursor/review-followups-phase2-care-tz-9100",
+      "allowed_paths": [
+        "server/lib/care/**",
+        "server/routes/careContext/**",
+        "server/routes/healthEntries/occurrenceCommandRouter.js",
+        "server/test/**",
+        "docs/domains/pet_care/features/care-context.md",
+        "docs/architecture/calendar-dates.md"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1859",
+      "pr_head_sha": "21b51817212adca2b5cce41449fb88d05792dfbe"
+    },
+    {
+      "id": "3",
+      "title": "Server: pets and profile",
+      "branch": "cursor/review-followups-phase3-pets-9100",
+      "allowed_paths": [
+        "server/lib/pets/**",
+        "server/routes/pets/**",
+        "server/test/**",
+        "docs/domains/pet_profile/**",
+        "docs/openapi/**",
+        "openapi/**"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "4",
+      "title": "Server: sharing",
+      "branch": "cursor/review-followups-phase4-sharing-9100",
+      "allowed_paths": [
+        "server/services/sharing/**",
+        "server/routes/sharing/**",
+        "server/test/**",
+        "docs/domains/sharing/**"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_head_sha": "1c3b17a9"
+    },
+    {
+      "id": "5",
+      "title": "Flutter: notifications and consent",
+      "branch": "cursor/review-followups-phase5-flutter-9100",
+      "allowed_paths": [
+        "flutter_app/lib/features/notifications/**",
+        "flutter_app/lib/core/widgets/consent/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "6",
+      "title": "CI and workflows",
+      "branch": "cursor/review-followups-phase6-ci-9100",
+      "allowed_paths": [
+        ".github/workflows/**",
+        "scripts/**",
+        "server/scripts/check_coverage_ratchet.js",
+        "server/jest.config.js",
+        "server/package.json",
+        "docs/e2e/uat-deploy-tiers.md",
+        "docs/agent-efficiency/pr-review-cost-efficiency.md"
+      ],
+      "forbidden_paths": [
+        "flutter_app/lib/**",
+        "server/lib/**",
+        "server/routes/**",
+        "server/services/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1865",
+      "debt_issue_refs": []
+    },
+    {
+      "id": "7",
+      "title": "Release: integration to main",
+      "branch": "cursor/review-followups-integration-9100",
+      "allowed_paths": [
+        "**"
+      ],
+      "forbidden_paths": [],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "release-verification",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1866",
+      "pr_head_sha": "2a4fa5b1"
+    }
+  ]
+}
