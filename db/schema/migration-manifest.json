@@ -105,7 +105,8 @@
     "096_account_device_labels.sql",
     "097_suggestion_daily_scheduler.sql",
     "098_planned_absence_title.sql",
-    "099_pet_profile_facts.sql"
+    "099_pet_profile_facts.sql",
+    "100_welfare_suggestions.sql"
   ],
   "code_migrations": [
     "016_migrate_family_events_placements.sql",

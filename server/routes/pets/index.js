@@ -15,6 +15,7 @@ import {
   registerCareIntelligenceRoutes,
   registerCareIntelligenceReviewRoutes,
   registerCareSafeguardRoutes,
+  registerWelfareSuggestionRoutesForPets,
 } from '../careIntelligence/index.js';
 import { registerCareProgressionRoutes } from '../index.js';
 import { registerCareContextPetRoutes } from '../careContext/index.js';
@@ -32,6 +33,7 @@ export default function petsRoutes(pool) {
   registerCareIntelligenceRoutes(router, pool);
   registerCareIntelligenceReviewRoutes(router, pool);
   registerCareSafeguardRoutes(router, pool);
+  registerWelfareSuggestionRoutesForPets(router, pool);
   registerCareProgressionRoutes(router, pool);
   registerPetAccessRoutes(router, pool);
   registerLifecycleRoutes(router, pool);
