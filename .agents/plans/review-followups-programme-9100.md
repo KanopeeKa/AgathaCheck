@@ -118,10 +118,10 @@ next_action: "continue phase 7 on branch cursor/review-followups-integration-910
 artifact_ref:
   branch: cursor/review-followups-integration-9100
   plan_path: .agents/plans/review-followups-programme-9100.md
-  plan_commit: 267f789daba92c7b054ebb52a8d12e3faabd3f00
+  plan_commit: 2a4fa5b104d66ac76236b947269b06b97e0c060f
   snapshot_path: .agents/plans/review-followups-programme-9100.snapshot.json
-  snapshot_commit: 267f789daba92c7b054ebb52a8d12e3faabd3f00
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1859"]
+  snapshot_commit: 2a4fa5b104d66ac76236b947269b06b97e0c060f
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1859","https://github.com/KanopeeKa/AgathaCheck/pull/1866"]
 merge_commits: {}
 debt_issue_refs: []
 ```
