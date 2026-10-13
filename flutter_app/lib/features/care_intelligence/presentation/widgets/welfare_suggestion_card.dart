@@ -33,11 +33,26 @@ class _WelfareSuggestionCardState extends ConsumerState<WelfareSuggestionCard> {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final title = l.careWelfareMicrochipTitle;
-    final whyBody = l.careWelfareMicrochipWhy;
+    final isNeuter = widget.suggestion.subjectKey == 'neuter_welfare';
+    final title = isNeuter
+        ? l.careWelfareNeuterTitle
+        : l.careWelfareMicrochipTitle;
+    final whyBody = isNeuter
+        ? l.careWelfareNeuterWhy
+        : l.careWelfareMicrochipWhy;
+    final recordLabel = isNeuter
+        ? l.careWelfareNeuterRecord
+        : l.careWelfareMicrochipRecord;
+    final topic = isNeuter
+        ? ProfileFactCaptureTopic.neuter
+        : ProfileFactCaptureTopic.chip;
 
     return AgathaMessageCard(
-      key: const Key('welfare_suggestion_card_microchip'),
+      key: Key(
+        isNeuter
+            ? 'welfare_suggestion_card_neuter'
+            : 'welfare_suggestion_card_microchip',
+      ),
       themeSuggestionActions: true,
       child: Semantics(
         container: true,
@@ -56,16 +71,20 @@ class _WelfareSuggestionCardState extends ConsumerState<WelfareSuggestionCard> {
             Text(title, style: theme.textTheme.titleSmall),
             const SizedBox(height: 12),
             FilledButton(
-              key: const Key('welfare_suggestion_record_microchip'),
+              key: Key(
+                isNeuter
+                    ? 'welfare_suggestion_record_neuter'
+                    : 'welfare_suggestion_record_microchip',
+              ),
               onPressed: _loading || !widget.canRecord
                   ? null
                   : () => showProfileFactCaptureSheet(
                       context,
                       ref,
                       pet: widget.pet,
-                      topic: ProfileFactCaptureTopic.chip,
+                      topic: topic,
                     ),
-              child: Text(l.careWelfareMicrochipRecord),
+              child: Text(recordLabel),
             ),
             const SizedBox(height: 4),
             Wrap(

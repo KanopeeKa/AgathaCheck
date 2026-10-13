@@ -937,6 +937,17 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careWelfareMicrochipRecord => 'Mettre à jour le statut de la puce';
 
   @override
+  String get careWelfareNeuterTitle => 'Statut de stérilisation non renseigné';
+
+  @override
+  String get careWelfareNeuterWhy =>
+      'Savoir si votre animal est stérilisé aide à adapter les rappels de soins. Demandez conseil à votre vétérinaire si vous avez un doute.';
+
+  @override
+  String get careWelfareNeuterRecord =>
+      'Mettre à jour le statut de stérilisation';
+
+  @override
   String get profileCompletenessNotForMyPet => 'Pas pour mon animal';
 
   @override

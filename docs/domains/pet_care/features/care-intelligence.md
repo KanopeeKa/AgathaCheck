@@ -280,6 +280,16 @@ Evaluator: `server/routes/careIntelligence/welfare/microchipWelfareEvaluator.js`
 
 Coverage: `server/test/careIntelligence/welfare/microchipWelfareEvaluator.test.js` (fixtures in `welfare/fixtures/microchip.json`)
 
+## Welfare neuter evaluator (PR-08)
+
+| ID | Requirement | Status |
+|----|-------------|--------|
+| **PR-08** | When `neuter_status=unknown` on a neutering-applicable species, sync upserts `neuter_welfare`; neuter completeness card removed (chip completeness unchanged) | Live (integration) |
+
+Evaluator: `server/routes/careIntelligence/welfare/neuterWelfareEvaluator.js`. Species gate: `server/lib/pets/speciesNeutering.js` (aligned with Flutter `AppConstants.speciesWithoutNeutering`). Removed unused persuasive `AppConstants.identificationMessage` / `identificationTitle` helpers (O1).
+
+Coverage: `server/test/careIntelligence/welfare/neuterWelfareEvaluator.test.js`
+
 ## Decision log
 
 | ID | Decision | Rationale | Status | Date | PR |

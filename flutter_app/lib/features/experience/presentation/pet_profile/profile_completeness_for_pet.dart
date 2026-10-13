@@ -1,4 +1,3 @@
-import 'package:pet_profile_app/core/utils/constants.dart';
 import 'package:pet_profile_app/features/care_intelligence/care_intelligence.dart';
 import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 
@@ -11,16 +10,7 @@ List<ProfileCompletenessKind> profileCompletenessKindsForPet(
   DateTime? chipDismissedAt,
 }) {
   final kinds = <ProfileCompletenessKind>[];
-  if (!AppConstants.speciesWithoutNeutering.contains(pet.species) &&
-      policy.shouldOfferCompletenessKind(
-        kind: ProfileCompletenessKind.neuter,
-        statusUnknown: pet.neuterStatus == profileFactStatusUnknown,
-        dismissedOnPet: pet.neuterDismissed,
-        dismissedAt: neuterDismissedAt,
-        now: now,
-      )) {
-    kinds.add(ProfileCompletenessKind.neuter);
-  }
+  // Neuter unknown → welfare suggestion (PR-08); chip unknown stays here (PR-04).
   if (policy.shouldOfferCompletenessKind(
     kind: ProfileCompletenessKind.chip,
     statusUnknown: pet.identificationStatus == profileFactStatusUnknown,

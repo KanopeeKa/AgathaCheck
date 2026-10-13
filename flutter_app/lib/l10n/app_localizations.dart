@@ -1658,6 +1658,24 @@ abstract class AppLocalizations {
   /// **'Update microchip status'**
   String get careWelfareMicrochipRecord;
 
+  /// No description provided for @careWelfareNeuterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Neutering status not recorded'**
+  String get careWelfareNeuterTitle;
+
+  /// No description provided for @careWelfareNeuterWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording whether your pet is neutered helps tailor care reminders. Ask your vet if you are unsure.'**
+  String get careWelfareNeuterWhy;
+
+  /// No description provided for @careWelfareNeuterRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'Update neutering status'**
+  String get careWelfareNeuterRecord;
+
   /// No description provided for @profileCompletenessNotForMyPet.
   ///
   /// In en, this message translates to:

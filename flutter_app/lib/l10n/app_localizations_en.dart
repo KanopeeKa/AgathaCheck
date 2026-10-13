@@ -925,6 +925,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careWelfareMicrochipRecord => 'Update microchip status';
 
   @override
+  String get careWelfareNeuterTitle => 'Neutering status not recorded';
+
+  @override
+  String get careWelfareNeuterWhy =>
+      'Recording whether your pet is neutered helps tailor care reminders. Ask your vet if you are unsure.';
+
+  @override
+  String get careWelfareNeuterRecord => 'Update neutering status';
+
+  @override
   String get profileCompletenessNotForMyPet => 'Not for my pet';
 
   @override
