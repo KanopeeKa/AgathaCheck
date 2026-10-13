@@ -51,6 +51,10 @@ Demonstrate a two-phase Flutter screen split with schema-compliant snapshot and 
 | **exit_checklist** | `default` |
 | **merge_mode** | `auto` |
 
+## Turn boundary / orchestrator contract
+
+Documentation example only. Live plans: see [plan-template.md](../../docs/agent-efficiency/plan-template.md) §Turn boundary / orchestrator contract and execute-plan skill **§Stop rules**.
+
 ## Runtime state
 
 ```yaml

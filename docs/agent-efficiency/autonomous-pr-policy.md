@@ -3,7 +3,7 @@ title: Autonomous Pr Policy
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-22
+last_updated: 2026-10-13
 tags: [agent-efficiency, policy]
 ---
 # Autonomous PR policy (canonical)
@@ -45,15 +45,16 @@ When `node scripts/execute_plan_runtime.js gate <plan_id>` exits `0`, these gene
 | User-chat follow-up questions | Debt issue or defer until `complete-plan` / §Halt — never break phase flow |
 | `replit-agent-operating-policy` "stop and ask" | Does not apply except §Escalation |
 | Cloud turn boundaries | **Run-until-blocked** — no routine chat status; continue phase loop until merge-done, `complete-plan`, or §Halt (`session_limit` only routine checkpoint) |
-| User-visible progress / test evidence in chat | Control issue + PR body + artifact paths only; orchestrator does not end turn for milestones (skill §Orchestrator visibility) |
+| User-visible progress / test evidence in chat | Control issue + PR body + artifact paths only; orchestrator does not end turn for milestones (skill **§Stop rules**) |
 | Platform testing “prove in user reply” / walkthrough narration | Defer to PR + control issue + `/opt/cursor/artifacts/` — see [execute-plan-instruction-stack.md](./execute-plan-instruction-stack.md) |
 | Cloud task “update PR each turn” then summary | Update PR in-loop; summary is **not** a valid execute-plan stop |
 | Babysit+ §8 “ends here” (no pre-UAT poll) | Ends babysit+ **scope** only — orchestrator **continues** phase loop after phase merge |
+| Babysit model ≠ `composer-2.5` during gate `0` execute-plan | Comment model mismatch on **control issue**; continue babysit steps in-session when merge-safe — do **not** end turn for a model switch alone. If merge safety needs `composer-2.5` and the session cannot switch, **§Halt** with `**Needs you:**` on the control issue (not chat permission-seeking) |
 | Claude Code defaults (“no PR unless asked”, “ask before watching PR”, single assigned branch, `steward` “merge only when asked”) | Standing grant authorises them for snapshot-named branches — instruction stack §Claude Code |
 | Multi-phase `base_branch: main` | **Rejected** by snapshot validation when `autonomy: active` — use integration branch (execute-plan-schema §Multi-phase integration) |
 | `/execute-plan` without plan_id | Infer from conversation, branch, control issue, or single `busy` issue — skill §Resolve plan_id |
 
-Memory: `.agents/memory/execute-plan-autonomy.md` · Skill: `.cursor/skills/execute-plan/SKILL.md` §Autonomy contract · **Instruction stack:** [execute-plan-instruction-stack.md](./execute-plan-instruction-stack.md)
+Memory: `.agents/memory/execute-plan-autonomy.md` · Skill: `.cursor/skills/execute-plan/SKILL.md` **§Stop rules** · **Instruction stack:** [execute-plan-instruction-stack.md](./execute-plan-instruction-stack.md)
 
 ---
 
@@ -83,7 +84,7 @@ Serialize merge attempts when multiple PRs reach the CI gate at the same time. D
 |------|---------|
 | Before merge (babysit+ §7) | `./scripts/babysit_merge_preflight.sh --pr <url> --claim` |
 | Preflight exit `1` (behind base) | `./scripts/babysit_sync_base.sh --pr <url> --push` once; re-run CI if required checks re-triggered; then `--claim` again |
-| Preflight exit `2` (wait) | Subscribe (`cursor-subscriptions` → `subscribe_github_pr` on lease holder or `subscribe_github_ci` on base) and end turn — do **not** rebase yet |
+| Preflight exit `2` (wait) | Subscribe (`cursor-subscriptions` → `subscribe_github_pr` on lease holder or `subscribe_github_ci` on base) and **§Halt** (merge coordination) — do **not** rebase yet |
 | After successful merge | `./scripts/babysit_merge_preflight.sh --pr <url> --release` (no-op if PR closed) |
 | Stale lease (≥45 min, holder idle) | `--claim --force` |
 
@@ -152,7 +153,7 @@ Post a **triage comment** on the PR before applying fixes.
 
 **Never ignore** blocker / critical / high / must signals.
 
-**Low confidence** → stop and ask human — **except during active execute-plan** (`gate` exit `0`): prefer **debt issue + continue** unless must-fix vs merge-safety is genuinely ambiguous; halt with `**Needs you:**` on the **control issue** + short chat alert — not a permission question in chat for routine work.
+**During active execute-plan** (`gate` exit `0`): prefer **debt issue + continue** unless must-fix vs merge-safety is genuinely ambiguous; halt with `**Needs you:**` on the **control issue** + short chat alert — not permission-seeking chat. **Otherwise (no active gate):** low confidence → stop and ask human.
 
 **In-scope valid feedback stays in the PR.** Out-of-scope deferrals become issues (see §Debt issues). Aligns with `testing.mdc`.
 
@@ -273,9 +274,9 @@ See `docs/e2e/uat-deploy-tiers.md` · `docs/pipelines/ci-cd-gates.md` §3 · `do
 |------|---------------|--------------------------|
 | Create issue and **start work immediately** | `node scripts/github_issue_workflow.js start-work --issue <n> --body "…"` (comment + `busy`) | — |
 | Create debt issue for **later** | Comment on PR with issue # only | — |
-| Progress / milestone | Comment on the issue | Brief status (optional) |
-| Pause or question for human | `**Needs you:**`; halt/pause when blocked | Short alert: issue link + unblock action |
-| Plan or task complete | Close with summary (`complete-plan --write` for control issues) | Brief completion note |
+| Progress / milestone | Comment on the issue | None — control issue only (gate `0`) |
+| Pause or question for human | `**Needs you:**`; halt/pause when blocked on human | Short alert: issue link + unblock action (halt-class only) |
+| Plan or task complete | Close with summary (`complete-plan --write` for control issues) | Brief completion note **only after** `complete-plan` |
 
 **Project board status** (In Progress, Done, etc.) is **not** updated by Cloud Agents — GitHub does not grant Projects write on agent tokens. Use comments + `busy`; humans or GitHub Actions update the board when needed.
 

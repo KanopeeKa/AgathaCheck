@@ -3,7 +3,7 @@ title: Execute-plan instruction stack (Cloud Agents)
 owner: Documentation Team
 audience: agent
 status: active
-last_updated: 2026-10-12
+last_updated: 2026-10-13
 tags: [agent-efficiency, execute-plan, cloud-agents]
 ---
 
@@ -34,7 +34,7 @@ Read **top wins** when two instructions conflict:
 | Priority | Source | Orchestrator behavior |
 |----------|--------|----------------------|
 | 1 | Frozen snapshot + plan markdown (`next_action`, phases, `base_branch`) | Follow phase loop until `complete-plan` or §Halt |
-| 2 | `/execute-plan` skill §Autonomy contract, §Run-until-blocked, §Orchestrator visibility | No routine user chat; merge-done → next phase **same session** |
+| 2 | `/execute-plan` skill **§Stop rules** | No routine user chat; merge-done → next phase **same session** |
 | 3 | `autonomous-pr-policy.md` §Execute-plan overrides | Narrow generic “stop and ask” / chat evidence rules |
 | 4 | `AGENTS.md` §Execute-plan orchestration | Same as row 2–3 (Cloud-specific summary) |
 | 5 | `.agents/memory/execute-plan-autonomy.md` | Phase boundary table; conflict resolution |
@@ -43,13 +43,13 @@ Read **top wins** when two instructions conflict:
 | 8 | Generic git / Cloud task (“update PR each turn”, summary) | Update PR in-loop; **do not** treat summary as a valid stop |
 | 9 | User communication style (polish, proportional reply) | **Defer** until `complete-plan` or blocker alert |
 
-**Rule of thumb:** If the action sounds like “report progress to the user,” it is **wrong** during active execute-plan unless it is a §Halt / `**Needs you:**` alert.
+**Rule of thumb:** If the action sounds like “report progress to the user” or “end the turn with a summary,” it is **wrong** during gate `0` except after `complete-plan` or a §Halt / `**Needs you:**` blocker alert.
 
 ---
 
 ## Common false stop signals
 
-These feel like “done” but are **in-loop** steps (skill §Run-until-blocked):
+These feel like “done” but are **in-loop** steps (skill **§Stop rules**):
 
 | False stop | Required next step (same session when possible) |
 |----------|-----------------------------------------------|
@@ -83,7 +83,7 @@ After prior phase **`merged`**:
 | Orchestrator must (same session) | Forbidden |
 |----------------------------------|-----------|
 | Checkout next phase branch, `set-phase in_progress`, **implement** scoped work **or** spawn a **Task** phase worker and continue through PR + babysit+ after return | Stop after bootstrap commit + user-visible “PR-06 started” |
-| Stay on babysit+ through squash-merge before advancing `set-phase merged` | Treat babysit+ “ends here” (§8 post-merge) as programme end — that scope is **pre-UAT polling only**, not multi-phase loop exit |
+| Stay on babysit+ through squash-merge before advancing `set-phase merged` | Treat babysit+ “scope ends here” as programme end — that ends babysit+ only; orchestrator continues the phase loop |
 
 **Delegation:** At phase §3 Implement, spawn a fresh `generalPurpose` worker when the phase has non-trivial scope (typical for backend migrations, new routes, multi-file Flutter). The orchestrator may implement inline only if it will reach PR + babysit+ **without** sending a routine user chat stop. “When practical” means **default yes for R1+ implementation**, not “skip when large.”
 
@@ -105,7 +105,7 @@ Add to babysit+ PR triage comment when `plan_id` is set: `execute-plan: merge �
 
 1. **User-visible assistant messages end the Cloud turn** — design for long **tool-only** stretches during execute-plan.
 2. **Valid user chat:** blocker alerts (one short paragraph + control issue link). **Invalid:** PR #, CI green, “next phase is…”, soft offers to continue.
-3. If the platform ends the turn mid-phase, the **next** `/execute-plan` resumes `next_action`; the prior chat reply is **not** programme completion (plan markdown §Turn boundary).
+3. If the platform ends the turn mid-phase, the **next** `/execute-plan` resumes `next_action`; the prior chat reply is **not** programme completion ([plan-template.md](./plan-template.md) §Turn boundary / orchestrator contract).
 
 ---
 

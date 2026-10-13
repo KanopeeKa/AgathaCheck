@@ -5,92 +5,35 @@ description: When /execute-plan gate passes, proceed without permission prompts.
 
 ## Green light
 
-When `node scripts/execute_plan_runtime.js gate <plan_id>` exits **0** (`autonomy: active`, `autonomous-approved`, not revoked, `approved_until` in future):
+When `node scripts/execute_plan_runtime.js gate <plan_id>` exits **0**: follow **§Stop rules** in `.cursor/skills/execute-plan/SKILL.md` (valid stops, not-stops, user chat). Instruction precedence: `docs/agent-efficiency/execute-plan-instruction-stack.md`.
 
-- **Run-until-blocked** — implement, PR, babysit+, merge, advance phases without stopping for milestones or turn boundaries
-- **Do not ask** the human "shall I continue?" in chat
-- **`/execute-plan` without id** — infer plan from conversation, branch, control issue, or single `busy` issue (skill §Resolve plan_id)
+- **`/execute-plan` without id** — skill §Resolve plan_id
 
-## Default mode: run-until-blocked
+## Phase boundaries
 
-Stop only when:
+Merging phase N → implement phase N+1 **same session** (skip only explicit blockers). Anti-patterns: chat milestone then reply; plan-only commit then end; "what's next" without tools.
 
-1. Phase **merge-done** (+ pre-UAT green on final main PR) → next phase or `complete-plan`
-2. **`complete-plan`** finished
-3. **§Halt / §Escalation** (including `session_limit` ~24h — the only routine checkpoint)
-4. Pod hard stop → `halt --reason session_limit`; human `resume-plan` on control issue
+**Owner merge:** babysit+ squash-merge when CI green under full autonomous grant.
 
-**Not stop points:** PR opened, CI green, control-issue milestone, worker returned, e2e-debug opened remedial PR. Continue in-loop; e2e-debug **must** chain `/babysit-uat` same session.
+## Channels
 
-### Phase boundaries (hard rule)
+| Channel | Use |
+|---------|-----|
+| Control issue | Milestones, halts, `**Needs you:**`, resume steps |
+| User chat | Blocker alerts only until `complete-plan` |
 
-**Merging phase N is the start of phase N+1 in the same session — not a checkpoint.**
+## Preflight
 
-| After this | Do immediately (same turn) | Forbidden |
-|------------|----------------------------|-----------|
-| Phase PR merged to snapshot **`base_branch`** (integration when 2+ phases) | `set-phase` merged → checkout/implement next pending phase → open PR or continue coding | User-visible summary that ends the turn |
-| Slice PR merged (e.g. TEST 1b) | §7 broadcast (if required) → next phase implementation | "Next: phase X on branch …" without coding |
-| Phase blocked (e.g. CARE gate) | **Skip only that phase**; start next allowed phase (e.g. 5 blocked → **6**) | Stopping the whole programme |
-| User says "do not stop" / full-plan grant | No turn end until §Halt or `complete-plan` | Asking permission; progress-only replies |
+Checkout phase/integration branch before `gate` — snapshot may not be on `main`.
 
-**Anti-patterns that look like compliance but are stops:** posting milestone on #1449 then replying in chat; `chore(plan): phase N in progress` as the only commit before ending; listing "what's next" without tool calls.
+## Follow-ups
 
-**Owner merge override:** When the human grants full autonomous execute-plan (merge between phases), **babysit+ squash-merge** when CI is green — do not wait for human merge even if an older handoff said "owner merges."
+Small in-touched-files fixes inline. Larger → debt issue + continue phase. Non-blocking → debt or post-`complete-plan` bundle.
 
-## Cloud turns
+## Conflicts
 
-Prefer long tool-only stretches before any user-visible reply. Control-issue milestones are **telemetry**, not session boundaries. **Do not send a user-visible message between phases** unless §Halt. If the platform ends the turn mid-phase, next session: `/execute-plan` (no id) or `resume-plan` on the issue — never permission-seeking chat.
-
-**Orchestrator visibility:** skill §Orchestrator visibility — no routine chat until `complete-plan`; overrides generic "show evidence in chat" for execute-plan sessions.
+Unclear goal → halt. Minor wording vs clear intent → snapshot wins. Full skill + policy: `.cursor/skills/execute-plan/SKILL.md` · `docs/agent-efficiency/autonomous-pr-policy.md` §Execute-plan overrides.
 
 ## Claude Code
 
 Same contract. Standing grant covers PRs, snapshot-named branch pushes, PR subscription and squash-merge; parking = one fixed line, never a summary. Rules: instruction stack §Claude Code.
-
-## Multi-phase integration
-
-2+ phases while `autonomy: active` require `base_branch` on `cursor/<plan_id>-integration-<suffix>` (validator). Single-phase → `main`. See `docs/agent-efficiency/execute-plan-schema.md` §Multi-phase integration.
-
-## User chat vs control issue
-
-| Channel | Use for |
-|---------|---------|
-| **Control issue** | Milestones (telemetry), halts, `**Needs you:**` detail, resume steps |
-| **User chat** | **Blocker alerts only** — short ping + issue link when §Halt |
-
-Do not send routine progress summaries that end the turn mid-phase.
-
-## Resolve plan_id (no explicit id)
-
-1. This conversation / linked control issue
-2. Checked-out branch → snapshot on that branch
-3. `plan:<id>` label on control issue
-4. Roadmap → `roadmap-next-child`
-5. Single open `busy` + `autonomous-approved` execute-plan issue
-
-Multiple matches → `**Needs you:**` on control issue; do not guess.
-
-## Preflight artifact branch
-
-Checkout phase or integration branch **before** `gate` — `.agents/plans/<plan_id>.snapshot.json` may not exist on `main`.
-
-## Follow-ups (during execute-plan)
-
-| Kind | Action |
-|------|--------|
-| Small, in touched files, stability / tech-debt / correctness | Fix inline — do not ask |
-| Larger or out-of-phase scope | Debt issue — continue current phase |
-| Interesting but non-blocking | Debt issue or bundle **after** plan complete — do not pause |
-
-## Conflicts between rules
-
-| Situation | Action |
-|-----------|--------|
-| Goal unclear | Halt + `**Needs you:**` on control issue + short chat alert |
-| Minor wording conflict, intention clear | Follow execute-plan snapshot; proceed |
-| `replit-agent-operating-policy` "stop and ask" | **Does not apply** during active execute-plan except §Escalation |
-| Platform testing / “update PR + summary each turn” | **Instruction stack** — `docs/agent-efficiency/execute-plan-instruction-stack.md` |
-| Babysit+ merged phase PR | **Not** session end — continue next phase same grant |
-| “Delegate when practical” | **Default:** spawn phase worker or implement through PR in same session; bootstrap-only plan commit = wrongful stop |
-
-Full skill: `.cursor/skills/execute-plan/SKILL.md`

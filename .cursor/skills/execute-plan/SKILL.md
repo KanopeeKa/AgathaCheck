@@ -13,55 +13,32 @@ Multi-phase autonomous orchestrator. Drives work from a **frozen snapshot** (`.a
 
 **Memory:** [.agents/memory/execute-plan-autonomy.md](../../../.agents/memory/execute-plan-autonomy.md)
 
+## Stop rules (gate exit `0`)
+
+When `node scripts/execute_plan_runtime.js gate <plan_id>` exits **`0`**, **run-until-blocked** applies. Escalation list (SSOT): [autonomous-pr-policy.md](../../docs/agent-efficiency/autonomous-pr-policy.md) §Escalation.
+
+| Valid stops | Not stops (in-loop — continue) |
+|-------------|--------------------------------|
+| `complete-plan` → brief user chat OK | PR opened; CI green; babysit+ squash-merge |
+| §Halt / §Escalation (revoke, expired `approved_until`, gate `2`, drift, CI/debt/merge failure, unclear goal, …) | Phase merged → next phase; worker returned |
+| `session_limit` (~24h): `halt` + blocker alert; human `resume-plan` | Control-issue milestone; bootstrap/plan-only commit |
+| | e2e-debug remedial PR (chain `/babysit-uat`); merge-lease FIFO wait |
+| | Platform ended turn → `/execute-plan` or `resume-plan` (no permission chat) |
+| | Turn felt long; “next: babysit+” |
+
+**User chat until `complete-plan`:** blocker alerts only. Milestones + evidence → control issue, PR body, `/opt/cursor/artifacts/`. No permission prompts or soft offers. Instruction precedence: [execute-plan-instruction-stack.md](../../docs/agent-efficiency/execute-plan-instruction-stack.md).
+
 ## Autonomy contract
 
-When session preflight **gate** exits `0`, autonomy is **active**. You have upfront approval — **do not ask the human for permission** to implement, open/update PRs, babysit+, merge (`auto`), advance phases, or resume after `session_limit`.
+Gate exit `0` = proceed without asking to implement, PR, babysit+, merge (`auto`), advance phases, resume after `session_limit`. Standing grants → §Roadmap chaining. See **§Stop rules**.
 
-| Do | Do not |
-|----|--------|
-| Run gate every session; treat exit `0` as green light | Ask "shall I continue?" or "want me to proceed?" in user chat |
-| **Run-until-blocked** — stay in the phase loop until merge-done, `complete-plan`, or §Halt | End a turn after a milestone, PR open, or CI step and wait for the human |
-| Post milestones on the **control issue** (telemetry only — not a stop signal) | Use user chat for permission-seeking mid-flow |
-| Loop to the next phase immediately after merge-done | Wait for prod-ready UAT before the next phase |
-| When a standing grant covers a multi-plan roadmap, auto-bootstrap the next `plan_id` and keep looping (see §Roadmap chaining) | End a turn with a soft offer ("let me know", "whenever you want", "say which wave and I'll bootstrap") for scope already granted |
-| Halt only on §Halt / §Escalation list | Treat turn boundaries, milestones, or non-blocking follow-ups as checkpoints |
+## Orchestrator visibility (Cloud)
 
-**Anti-pattern (soft-stop):** phrases like "I can spin up the next plan on request," "whenever you want to keep going," or "say which wave and I'll bootstrap it" are permission-seeking even though they don't look like a question. If the human's chat authorization already names the remaining scope (multiple journeys/waves, "all phases," "the entire plan/roadmap"), treat that as the standing grant for every plan it covers — do not re-ask per slice.
+Orchestrator, not milestone reporter. See **§Stop rules**.
 
-**User chat (blocker alerts only):** post a short alert when you **need the human** (halt, `**Needs you:**`, escalation, `session_limit`) — full detail on the **control issue** first, then one paragraph in chat with the issue link and unblock action. Do **not** send routine progress summaries that end the turn mid-phase. Non-blocking follow-ups → debt issue or bundle only after `complete-plan` / §Halt. See §Scope follow-ups and §Issue hygiene.
+## Run-until-blocked
 
-## Orchestrator visibility (Cloud — mandatory when gate exit 0)
-
-You are the **orchestrator**, not a milestone reporter.
-
-1. **No routine user chat** until `complete-plan` or a real §Halt / §Escalation.
-2. **Control issue only** for progress (PR opened, CI green, phase merged). Telemetry is not permission to stop.
-3. **Forbidden mid-plan chat:** summaries, test walkthroughs, "PR #N is open", "CI is green", "next phase is…", soft offers to continue.
-4. **Allowed user chat:** blocker alerts only — one short paragraph + control issue link (`**Needs you:**`, revoke, `session_limit`, genuine escalation).
-5. If the platform ends the turn anyway, next session continues with `/execute-plan` or `resume-plan` — never re-ask for approval when the standing grant still applies.
-
-**Overrides:** This section wins over generic "show the user evidence" and "update PR each turn" **for execute-plan orchestrator sessions**. Put evidence in the PR body and control-issue comments; do not end the turn to narrate them.
-
-## Run-until-blocked (default mode)
-
-**Default:** after gate exit `0`, keep executing the phase loop **without sending a final user response** until one of:
-
-1. Phase gate = **merge-done** (and pre-UAT green when final PR targets `main`) → advance or `complete-plan`
-2. Plan **`complete-plan`** finished
-3. Real **§Halt / §Escalation** (including `session_limit` ~24h — the only routine checkpoint)
-4. Pod hard stop imminent — `halt --reason session_limit` with `next_action`; human comments `resume-plan` on control issue
-
-**Not valid stop points:** PR opened, CI green, control-issue milestone, worker returned, e2e-debug remedial PR opened, "next: babysit+". Those are **in-loop steps** — continue immediately.
-
-**Cloud turns:** a user-visible reply ends the turn. Prefer **long tool-only stretches** (implement → PR → babysit+ → merge → next phase) before any chat output. If the platform ends the turn anyway, the next message should be `/execute-plan` (no id) or `resume-plan` on the control issue — not a permission question.
-
-**e2e-debug handoff:** pre-UAT failure → `/e2e-debug` → **mandatory `/babysit-uat`** on the remedial PR in the **same session**. Never stop after e2e-debug with an open remedial PR.
-
-**Handoff (chat → autonomous):** Discuss and shape the plan in chat; freeze snapshot + control issue; human grants once (`approve-autonomous <plan_id>` or standing grant in `approved_by`). After `/execute-plan` gate exit `0`, **full handover** — no permission prompts for implement, PR, babysit+, merge, or next phase.
-
-**Human checkpoint (no manual merge):** use `halt` on the control issue + chat alert; human acts on the issue (`resume-plan`, `approve-autonomous`, etc.) — agents always merge when gates pass.
-
-**Conflicting rules:** execute-plan snapshot wins over generic "stop and ask" guidance. Only halt when the **goal is unclear**, or §Escalation applies. Minor policy wording conflicts with clear intent → proceed. See autonomous-pr-policy §Execute-plan overrides.
+Phase loop without routine user-visible reply until **§Stop rules**. Pre-UAT on final `main` PR: `/e2e-debug` → **`/babysit-uat`** same session. After `approve-autonomous`, full handover — agents merge when gates pass. Policy: autonomous-pr-policy §Execute-plan overrides.
 
 ---
 
@@ -203,19 +180,7 @@ Run when drafting a plan, **before** `approve-autonomous`:
 
 ## Cloud session continuity (turn boundaries)
 
-Cloud agents end each **turn** when you send a user-visible reply. **Turn end is not a phase gate.** Default is §Run-until-blocked — do not treat a reply as session complete.
-
-| Situation | Do | Do not |
-|-----------|-----|--------|
-| Mid-phase work (implement, PR, babysit+, CI watch) | **Keep calling tools** until merge-done or §Halt; post control-issue milestones without stopping | Send a summary + `next_action` and wait for the human |
-| Phase just merged, more `pending` | Loop to next phase **immediately** in the same session | Treat merge as done for the day |
-| Waiting on CI / pre-UAT watch | `gh pr checks --watch` or `./scripts/babysit_uat_watch_preuat.sh <merge_sha>` until green, then continue | Ask the human to nudge CI; poll deploy-uat or prod-ready |
-| Queued follow-up messages | Work through the queue in this session | Stop after one phase because the turn ended |
-| Platform forces turn end mid-phase | Record `next_action` on control issue only; next session starts with `/execute-plan` (no id) or `resume-plan` on issue | Ask "shall I continue?" or soft offers ("let me know", "whenever you want") |
-
-**Standing grant:** If the human authorized the full plan/roadmap once (`approve-autonomous`, or chat grant recorded in `approved_by`), you do **not** need a new approval per phase, per turn, or per PR.
-
-**Gate exit `2`:** Halt via control issue (`halt --write --post-comment`) with resume steps, plus a short chat alert (issue #, reason, unblock action). Common codes: `expired` (`approved_until` past — re-approve on control issue), `revoked`, `not_approved`.
+User-visible replies end a Cloud **turn**, not the programme — see **§Stop rules**. Prefer long tool-only stretches. Standing grant needs no re-approval per phase/PR. Gate exit `2` → halt on control issue + short chat alert.
 
 ---
 
@@ -266,20 +231,14 @@ When the standing grant names a multi-plan programme, create a **parent roadmap 
 
 ## Phase delegation (orchestrator vs workers)
 
-The **orchestrator** (this session running `/execute-plan`) owns: gate, runtime sync, control-issue hygiene, babysit+, merge, and advancing phases.
+Orchestrator owns gate, runtime, control issue, PR, babysit+/uat, merge, next phase. See **§Stop rules** — worker handback is never user chat.
 
-### Per-phase implementation worker (recommended)
-
-At each phase **§3 Implement scope**, the orchestrator **must** either (a) implement through PR + babysit+ in the same session, or (b) delegate to a **Task sub-agent** (`generalPurpose`) for non-trivial scope (default for migrations, new routes, multi-file UI). Scope: phase `allowed_paths`, exit criteria, branch — then verify diff, open/update PR, and run babysit+. **Forbidden:** `chore(plan): phase N in progress` as the only work before a user-visible stop. Do not stop after the worker returns; continue through babysit+ and the next phase without asking the human. **Instruction stack:** `docs/agent-efficiency/execute-plan-instruction-stack.md`.
+**Default:** delegate to a phase worker (`generalPurpose`) or implement inline through PR + babysit+ **without** a chat stop. Worker returns summary to orchestrator only (do not relay to user). Fresh worker each phase boundary. Instruction stack: `docs/agent-efficiency/execute-plan-instruction-stack.md`.
 
 | Role | Owns |
 |------|------|
-| **Orchestrator** | Gate, `set-phase`, PR registration, babysit skill selection, merge, next phase |
-| **Phase worker** (Task sub-agent) | Implement one phase scope; commit on phase branch; return summary |
-
-Spawn a **fresh worker at each phase boundary** (after prior phase `merged`). This limits context drift and mirrors "one agent per phase."
-
-**Do not await** the worker for deploy — only for implementation return.
+| **Orchestrator** | Gate, `set-phase`, PR, babysit skill, merge, next phase |
+| **Phase worker** | Implement on phase branch; commit; return summary to orchestrator |
 
 ### Within-phase parallel (`spawn_allowed: true`)
 
@@ -307,7 +266,7 @@ During implementation, apply the snag ladder without breaking flow:
 | Same file, ≤15 lines, stability / correctness / low-risk tech debt in touched code | Fix inline |
 | In-scope but larger, or risky | Debt issue; continue phase |
 | Out of phase `allowed_paths` | Debt issue or halt if drift |
-| Interesting but non-blocking | Bundle as end-of-turn questions in user chat, **or** one `tech-debt` / `review-follow-up` issue — do not pause the phase |
+| Interesting but non-blocking | Debt issue, or bundle for post-`complete-plan` message — do not pause the phase |
 
 Low-confidence **review triage** (must-fix vs ignore) is rare with tight phase scope. Prefer debt issue + continue; halt only when classification affects merge safety. See autonomous-pr-policy §Review triage (execute-plan override).
 
@@ -321,14 +280,12 @@ The **control issue** is the canonical plan dashboard. **User chat** gets a shor
 |------|---------------|-----------|
 | Work starts (session preflight) | `start-work` comment + `busy` | None required — do not end turn here |
 | Phase milestone (PR opened, CI green, merged) | Short comment (telemetry) | **No routine status** — keep working |
-| **Pause** (UAT remedial, waiting on you) | `pause --write --post-comment` — checkpoint + what you need | Short alert: issue link + what you need |
+| **Pause** (halt-class — blocked on human, not routine UAT/remedial steps) | `pause --write --post-comment` — checkpoint + what you need | Short alert: issue link + what you need |
 | **Halt** (revoke, escalation, CI exhausted, `session_limit`) | `halt --write --post-comment` — reason + resume steps | Short alert: issue link + unblock action (e.g. `resume-plan <plan_id>`) |
 | **Question for human** (blocks work) | `**Needs you:**` comment; halt if cannot continue | Short alert: issue link + the decision or action required |
 | All phases merged + pre-UAT green (when applicable) | `complete-plan <plan_id> --write` → close with summary | Brief "plan complete" only **after** `complete-plan` |
 
 **Chat alert format (blockers only):** one short paragraph — plan id, control issue link (`#N`), reason, single unblock action. Full detail stays on the issue.
-
-Debt issues created during babysit+ are deferred until picked up. When you **start work** on any issue, comment and add `busy`:
 
 Debt issues created during babysit+ are deferred until picked up. When you **start work** on any issue, comment and add `busy`:
 
@@ -366,7 +323,7 @@ Commit plan artifacts on the phase branch (`artifact_branch_policy: phase-branch
 - Commit messages: `phase(<id>/<total>): <type>: <description> [exception:<code>]`
 - Run `./scripts/pre-push-changed.sh` after each logical batch
 - On drift → `halt --reason drift` (see §Halt)
-- **Delegate implementation** to a per-phase Task worker when practical (see §Phase delegation)
+- **Default:** delegate to a phase worker or implement inline through PR + babysit+ without a chat stop (§Phase delegation)
 
 **Spawn (parallel within phase):** When `spawn_allowed: true`, invoke **/spawn-sprint-agents** per `spawn_config` before parallel work. Publish ownership map first.
 

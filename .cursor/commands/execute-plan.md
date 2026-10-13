@@ -5,6 +5,8 @@ description: Run a multi-phase autonomous plan from a frozen snapshot; babysit+ 
 
 # Execute-plan
 
+Gate exit `0` → no user-visible message until §Halt or `complete-plan`; see skill **§Stop rules**.
+
 Orchestrate an approved multi-phase plan. Read and follow **`.cursor/skills/execute-plan/SKILL.md`** — do not improvise policy.
 
 **Router:** `.cursor/agent-kernel/ROUTER.md` at phase start — see skill §Router.
@@ -22,7 +24,7 @@ Bare **`/execute-plan`** (no id) is valid when context is unambiguous — see sk
 
 ## Rules
 
-1. **Run-until-blocked** — gate exit `0` → stay in the phase loop until merge-done, `complete-plan`, or §Halt; never ask "shall I continue?" mid-flow. **Orchestrator:** no routine user chat until `complete-plan` or §Halt (skill §Orchestrator visibility)
+1. **Run-until-blocked** — gate exit `0` → skill **§Stop rules** (no routine user chat until `complete-plan` or §Halt)
 2. **Babysit-plus** on intermediate phase PRs; **babysit-uat** on final PR to `main` — never plain `/babysit`
 3. **Always merge** when gates pass (no manual/labeled modes)
 4. **Phase gate = merge-done** — PR merged into base before next phase (final main PR also needs pre-UAT green)
