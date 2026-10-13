@@ -46,6 +46,9 @@ ProviderScope _scope({
       petProfileCareMilestoneProvider(
         'pet-1',
       ).overrideWith((ref) => const AsyncData(null)),
+      petWelfareSuggestionsProvider(
+        'pet-1',
+      ).overrideWith((ref) async => []),
     ],
     child: child,
   );
@@ -98,7 +101,7 @@ void main() {
       );
       expect(
         find.byKey(const Key('profile_completeness_card_neuter')),
-        findsOneWidget,
+        findsNothing,
       );
     },
   );
@@ -180,7 +183,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
-      find.byKey(const Key('profile_completeness_card_neuter')),
+      find.byKey(const Key('profile_completeness_card_chip')),
       findsNothing,
     );
   });

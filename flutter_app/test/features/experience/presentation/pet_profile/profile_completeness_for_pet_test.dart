@@ -9,7 +9,7 @@ void main() {
   const policy = AgathaSurfacePolicy();
   final now = DateTime.utc(2026, 10, 1);
 
-  test('lists neuter and chip when unknown', () {
+  test('lists chip only when identification unknown (neuter via welfare PR-08)', () {
     const pet = Pet(
       id: 'p',
       name: 'N',
@@ -18,19 +18,17 @@ void main() {
       identificationStatus: profileFactStatusUnknown,
     );
     expect(profileCompletenessKindsForPet(pet, policy: policy, now: now), [
-      ProfileCompletenessKind.neuter,
       ProfileCompletenessKind.chip,
     ]);
   });
 
-  test('hides dismissed kind inside 30d cooldown', () {
+  test('hides chip when dismissed inside 30d cooldown', () {
     const pet = Pet(
       id: 'p',
       name: 'N',
       species: 'Dog',
-      neuterStatus: profileFactStatusUnknown,
       identificationStatus: profileFactStatusUnknown,
-      neuterDismissed: true,
+      chipDismissed: true,
     );
     final dismissedAt = DateTime.utc(2026, 9, 20);
     expect(
@@ -38,9 +36,9 @@ void main() {
         pet,
         policy: policy,
         now: now,
-        neuterDismissedAt: dismissedAt,
+        chipDismissedAt: dismissedAt,
       ),
-      [ProfileCompletenessKind.chip],
+      isEmpty,
     );
   });
 }

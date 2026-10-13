@@ -1,7 +1,5 @@
-import {
-  upsertWelfareSuggestionCandidate,
-} from '../welfareSuggestionsService.js';
-import { evaluateMicrochipWelfare } from './microchipWelfareEvaluator.js';
+import { upsertWelfareSuggestionCandidate } from '../welfareSuggestionsService.js';
+import { WELFARE_SYNC_SUBJECTS } from './welfareSyncSubjects.js';
 
 async function withdrawPendingByDedupe(pool, petId, dedupeKey) {
   await pool.query(
@@ -16,14 +14,16 @@ async function withdrawPendingByDedupe(pool, petId, dedupeKey) {
 }
 
 /**
- * Reconcile welfare rows from profile facts (PR-07 microchip subject).
+ * Reconcile welfare rows from profile facts (PR-07+ subjects).
  */
 export async function syncPetWelfareSuggestions(pool, pet, now = new Date()) {
-  const microchip = evaluateMicrochipWelfare(pet);
-  if (microchip) {
-    await upsertWelfareSuggestionCandidate(pool, pet.id, microchip, now);
-  } else {
-    const dedupe = `welfare:microchip:${pet.id}`;
-    await withdrawPendingByDedupe(pool, pet.id, dedupe);
+  for (const subject of WELFARE_SYNC_SUBJECTS) {
+    const candidate = subject.evaluate(pet);
+    const dedupe = subject.dedupeKey(pet.id);
+    if (candidate) {
+      await upsertWelfareSuggestionCandidate(pool, pet.id, candidate, now);
+    } else {
+      await withdrawPendingByDedupe(pool, pet.id, dedupe);
+    }
   }
 }
