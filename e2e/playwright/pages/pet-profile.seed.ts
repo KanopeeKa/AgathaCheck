@@ -98,10 +98,9 @@ export async function updatePetFields(
       breed: fields.breed ?? current.breed ?? '',
       dateOfBirth: fields.dateOfBirth ?? current.dateOfBirth ?? null,
       chipId: fields.chipId ?? current.chipId ?? '',
-      identificationStatus:
-        fields.identificationStatus
-        ?? (current as { identificationStatus?: string }).identificationStatus
-        ?? 'unknown',
+      ...(fields.identificationStatus !== undefined
+        ? { identificationStatus: fields.identificationStatus }
+        : {}),
       photoPath: fields.photoPath ?? current.photoPath ?? null,
       passedAway: fields.passedAway ?? current.passedAway ?? false,
       vetId: fields.vetId ?? current.vetId ?? null,
