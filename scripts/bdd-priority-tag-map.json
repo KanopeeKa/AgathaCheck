@@ -20,7 +20,8 @@
   },
   "agatha_care_journey.feature": {
     "ACJ-FB-01 — chip save clears welfare suggestion": "P1",
-    "ACJ-CO-01 — same-day date header": "P1"
+    "ACJ-CO-01 — same-day date header": "P1",
+    "ACJ-CO-02 — coordination banner links only": "P1"
   },
   "away_planning.feature": {
     "Dashboard away planning tile opens the hub": "P0",
