@@ -39,6 +39,12 @@
 | `insurance` | TEXT | Insurance information | Yes |
 | `neutered_date` | DATE | Neutering date | No |
 | `neuter_dismissed` | BOOLEAN | Whether neuter reminder is dismissed | No |
+| `identification_status` | VARCHAR(16) | Microchip fact: `yes`, `no`, `unknown` | No |
+| `neuter_status` | VARCHAR(16) | Neuter fact: `yes`, `no`, `unknown` | No |
+| `identification_status_source` | VARCHAR(64) | Provenance for identification status | No |
+| `neuter_status_source` | VARCHAR(64) | Provenance for neuter status | No |
+| `identification_status_updated_at` | TIMESTAMPTZ | Last identification status change | No |
+| `neuter_status_updated_at` | TIMESTAMPTZ | Last neuter status change | No |
 | `chip_id` | VARCHAR(255) | Microchip identification number | Yes |
 | `chip_dismissed` | BOOLEAN | Whether chip reminder is dismissed | No |
 | `photo_path` | TEXT | Pet photo file path | No |
@@ -150,6 +156,48 @@ Per-user presentation state — records when a prominent milestone card was rend
 | `copy_key` | VARCHAR(100) | l10n key for guardian copy |
 | `evidence_json` | JSONB | Facts-only evidence trace |
 | `dismissed_at` | TIMESTAMPTZ | When guardian dismissed |
+
+### 1.6g Vet visits (vet_visits, vet_visit_occurrence_links) — Agatha care journey PR-14
+
+Structured vet visit records for a pet. Occurrence links associate care schedule instances with a visit; **completing a visit does not complete linked occurrences** (guardian completes each occurrence via CSM).
+
+**vet_visits**
+
+| Field | Type | Purpose |
+|-------|------|---------|
+| `id` | UUID | Visit identifier |
+| `pet_id` | UUID | Associated pet |
+| `visited_on` | DATE | Calendar day of the visit (`YYYY-MM-DD` on wire) |
+| `status` | VARCHAR(32) | `open` or `completed` |
+| `completed_on` | DATE | Calendar day marked complete (required when `status = completed`) |
+| `notes` | TEXT | Guardian notes |
+| `created_by` | UUID | User who created the row (nullable) |
+| `created_at` | TIMESTAMPTZ | Row creation timestamp |
+| `updated_at` | TIMESTAMPTZ | Last update timestamp |
+
+**vet_visit_occurrence_links**
+
+| Field | Type | Purpose |
+|-------|------|---------|
+| `id` | UUID | Link row identifier |
+| `vet_visit_id` | UUID | Parent visit (`ON DELETE CASCADE`) |
+| `health_occurrence_id` | UUID | Linked occurrence (`UNIQUE`; `ON DELETE CASCADE`) |
+| `created_at` | TIMESTAMPTZ | Link creation timestamp |
+
+### 1.6f Pet vaccination records (pet_vaccination_records table) — Agatha care journey PR-09
+
+Structured vaccination history for welfare evaluators (PR-10+). **No** `vaccination_status_summary` on `pets`; list responses include a **computed** `summary` object.
+
+| Field | Type | Purpose |
+|-------|------|---------|
+| `id` | VARCHAR(255) | Record identifier (UUID) |
+| `pet_id` | VARCHAR(255) | Associated pet |
+| `vaccine_name` | VARCHAR(255) | Guardian-entered label (e.g. Rabies, DHPP) |
+| `administered_on` | DATE | Calendar day administered (`YYYY-MM-DD` on wire) |
+| `record_source` | VARCHAR(32) | `user` or `imported` |
+| `created_by` | UUID | User who created the row (nullable) |
+| `created_at` | TIMESTAMPTZ | Row creation timestamp |
+| `updated_at` | TIMESTAMPTZ | Last update timestamp |
 
 ### 1.6e Care Recommendations (care_recommendations table) — Phase C
 

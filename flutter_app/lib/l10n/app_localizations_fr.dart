@@ -907,6 +907,60 @@ class AppLocalizationsFr extends AppLocalizations {
   String get profilePromptNeuterMissing => 'Stérilisation non renseignée';
 
   @override
+  String get profileFactCaptureRecord => 'Enregistrer';
+
+  @override
+  String get profileFactCaptureNeuterTitle => 'Statut de stérilisation';
+
+  @override
+  String get profileFactCaptureChipTitle => 'Statut de la puce';
+
+  @override
+  String get profileCompletenessCategory => 'Profil';
+
+  @override
+  String get profileCompletenessWhyNeuterBody =>
+      'Indiquer si votre animal est stérilisé permet d\'adapter les rappels de soins. Demandez conseil à votre vétérinaire en cas de doute.';
+
+  @override
+  String get profileCompletenessWhyChipBody =>
+      'Un numéro de puce aide à identifier votre animal s\'il se perd. Renseignez-vous sur les règles locales.';
+
+  @override
+  String get careWelfareMicrochipTitle => 'Puce non enregistrée';
+
+  @override
+  String get careWelfareMicrochipWhy =>
+      'Une puce peut aider à identifier votre animal s\'il se perd. Renseignez-vous sur les règles locales.';
+
+  @override
+  String get careWelfareMicrochipRecord => 'Mettre à jour le statut de la puce';
+
+  @override
+  String get careWelfareNeuterTitle => 'Statut de stérilisation non renseigné';
+
+  @override
+  String get careWelfareNeuterWhy =>
+      'Savoir si votre animal est stérilisé aide à adapter les rappels de soins. Demandez conseil à votre vétérinaire si vous avez un doute.';
+
+  @override
+  String get careWelfareNeuterRecord =>
+      'Mettre à jour le statut de stérilisation';
+
+  @override
+  String get careWelfareVaccinationTitle => 'Historique vaccinal non renseigné';
+
+  @override
+  String get careWelfareVaccinationWhy =>
+      'Une liste simple des vaccins aide vous et votre vétérinaire à rester alignés. Demandez à votre vétérinaire quels vaccins comptent pour votre animal.';
+
+  @override
+  String get careWelfareVaccinationRecord => 'Enregistrer une vaccination';
+
+  @override
+  String get profileCompletenessNotForMyPet => 'Pas pour mon animal';
+
+  @override
   String get petHealthAndHistoryTitle => 'Santé et historique';
 
   @override
@@ -8471,6 +8525,16 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careAgendaHideUpcoming => 'Masquer les soins à venir';
+
+  @override
+  String careAgendaCoordinationMessage(String date) {
+    return 'Les soins de chaque animal pour le $date sont listés séparément — ouvrez un animal pour les consulter.';
+  }
+
+  @override
+  String careAgendaCoordinationPetLink(String petName) {
+    return 'Soins de $petName';
+  }
 
   @override
   String careStackCount(int count) {

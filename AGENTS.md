@@ -132,6 +132,7 @@ Full lifecycle: `docs/agent-efficiency/github-issue-workflow.md`.
 
 | Topic | Home |
 |-------|------|
+| Execute-plan (gate exit `0` → run-until-blocked; babysit+ / babysit-uat) | `.cursor/skills/execute-plan/SKILL.md` · `.agents/memory/execute-plan-autonomy.md` |
 | Pre-PR self-review, review triage (Copilot; Bugbot retired) | `.cursor/rules/pr-hygiene.mdc` · `docs/agent-efficiency/pr-review-cost-efficiency.md` |
 | One outcome per PR, snag ladder, zero untracked debt | `docs/agent-efficiency/atomic-pr-policy.md` |
 | Canonical docs (product spec) | `docs/domains/documentation/standards.md` · canonical-docs skill |

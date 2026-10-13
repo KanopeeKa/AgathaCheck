@@ -1,0 +1,42 @@
+[
+  {
+    "id": "eligible-unknown-dog",
+    "pet": {
+      "id": "pet-n-1",
+      "species": "Dog",
+      "neuter_status": "unknown",
+      "neuter_dismissed": false
+    },
+    "expectCandidate": true
+  },
+  {
+    "id": "neuter-status-no",
+    "pet": {
+      "id": "pet-n-2",
+      "species": "Dog",
+      "neuter_status": "no",
+      "neuter_dismissed": false
+    },
+    "expectCandidate": false
+  },
+  {
+    "id": "species-bird",
+    "pet": {
+      "id": "pet-n-3",
+      "species": "Bird",
+      "neuter_status": "unknown",
+      "neuter_dismissed": false
+    },
+    "expectCandidate": false
+  },
+  {
+    "id": "neuter-dismissed",
+    "pet": {
+      "id": "pet-n-4",
+      "species": "Cat",
+      "neuter_status": "unknown",
+      "neuter_dismissed": true
+    },
+    "expectCandidate": false
+  }
+]

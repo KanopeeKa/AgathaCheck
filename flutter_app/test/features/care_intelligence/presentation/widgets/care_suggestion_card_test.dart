@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:pet_profile_app/features/care_intelligence/data/care_intelligence_exception.dart';
 import 'package:pet_profile_app/features/care_intelligence/domain/entities/care_recommendation.dart';
 import 'package:pet_profile_app/features/care_intelligence/domain/entities/care_safeguard.dart';
+import 'package:pet_profile_app/features/care_intelligence/domain/entities/welfare_suggestion.dart';
 import 'package:pet_profile_app/features/care_intelligence/domain/repositories/care_intelligence_repository.dart';
 import 'package:pet_profile_app/features/care_intelligence/presentation/providers/care_recommendations_provider.dart';
 import 'package:pet_profile_app/features/care_intelligence/presentation/widgets/care_suggestion_card.dart';
@@ -62,6 +63,20 @@ class _FakeCareIntelligenceRepository implements CareIntelligenceRepository {
       recommendationId: recommendationId,
       action: action,
     );
+  }
+
+  @override
+  Future<List<WelfareSuggestion>> getWelfareSuggestions(String petId) async =>
+      [];
+
+  @override
+  Future<WelfareSuggestion> respondWelfareSuggestion({
+    required String petId,
+    required String suggestionId,
+    required String action,
+    String? primaryOutcome,
+  }) {
+    throw UnimplementedError();
   }
 }
 

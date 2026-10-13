@@ -14,14 +14,27 @@ class PetProfileCareSuggestionSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final welfareAsync = ref.watch(petProfileWelfareSuggestionProvider(petId));
     final suggestionAsync = ref.watch(petProfileCareSuggestionProvider(petId));
     final petsAsync = ref.watch(allPetsIncludingOrgProvider);
-    final petName =
-        petsAsync.valueOrNull
-            ?.where((pet) => pet.id == petId)
-            .firstOrNull
-            ?.name ??
-        '';
+    final pet = petsAsync.valueOrNull?.where((p) => p.id == petId).firstOrNull;
+    final petName = pet?.name ?? '';
+
+    if (welfareAsync.isLoading || suggestionAsync.isLoading) {
+      return const SizedBox.shrink();
+    }
+
+    final welfare = welfareAsync.valueOrNull;
+    if (welfare != null && pet != null) {
+      final canRecord = ref
+          .read(petDetailViewerContextProvider(petId))
+          .can(PetDetailAction.editProfile);
+      return WelfareSuggestionCard(
+        pet: pet,
+        suggestion: welfare,
+        canRecord: canRecord,
+      );
+    }
 
     return suggestionAsync.when(
       loading: () => const SizedBox.shrink(),

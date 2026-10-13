@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import '../care_intelligence_exception.dart';
 import '../models/care_recommendation_model.dart';
 import '../models/care_safeguard_model.dart';
+import '../models/welfare_suggestion_model.dart';
 import '../../domain/entities/care_recommendation.dart';
 
 class CareIntelligenceRemoteDataSource {
@@ -76,6 +77,45 @@ class CareIntelligenceRemoteDataSource {
     );
     _check(response);
     return CareSafeguardModel.fromJson(
+      json.decode(response.body) as Map<String, dynamic>,
+    );
+  }
+
+  Future<List<WelfareSuggestionModel>> fetchWelfareSuggestions(
+    String petId,
+  ) async {
+    final response = await _client.get(
+      Uri.parse('$baseUrl/api/pets/$petId/welfare-suggestions'),
+      headers: _headers(),
+    );
+    _check(response);
+    if (response.body.isEmpty) {
+      return [];
+    }
+    final list = json.decode(response.body) as List<dynamic>;
+    return list
+        .map((e) => WelfareSuggestionModel.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<WelfareSuggestionModel> respondWelfareSuggestion({
+    required String petId,
+    required String suggestionId,
+    required String action,
+    String? primaryOutcome,
+  }) async {
+    final response = await _client.post(
+      Uri.parse(
+        '$baseUrl/api/pets/$petId/welfare-suggestions/$suggestionId/respond',
+      ),
+      headers: _headers(jsonBody: true),
+      body: json.encode({
+        'action': action,
+        if (primaryOutcome != null) 'primary_outcome': primaryOutcome,
+      }),
+    );
+    _check(response);
+    return WelfareSuggestionModel.fromJson(
       json.decode(response.body) as Map<String, dynamic>,
     );
   }

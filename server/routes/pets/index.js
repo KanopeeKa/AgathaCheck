@@ -8,6 +8,8 @@ import { registerPeopleRelationshipsRoutes } from './peopleRelationshipsRouter.j
 import { registerPetPeopleRoutes } from './petPeopleRouter.js';
 import { registerLifecycleRoutes } from './lifecycleRouter.js';
 import { registerCoreRoutes } from './coreRouter.js';
+import { registerVaccinationRecordsRoutes } from './vaccinationRecordsRouter.js';
+import { registerVetVisitsRoutes } from './vetVisitsRouter.js';
 import { registerPhotoRoutes } from './photoRouter.js';
 import { registerPetTagsRoutes } from './tagsRouter.js';
 import { registerTimelineRoutes } from '../timeline/index.js';
@@ -15,6 +17,7 @@ import {
   registerCareIntelligenceRoutes,
   registerCareIntelligenceReviewRoutes,
   registerCareSafeguardRoutes,
+  registerWelfareSuggestionRoutesForPets,
 } from '../careIntelligence/index.js';
 import { registerCareProgressionRoutes } from '../index.js';
 import { registerCareContextPetRoutes } from '../careContext/index.js';
@@ -32,11 +35,14 @@ export default function petsRoutes(pool) {
   registerCareIntelligenceRoutes(router, pool);
   registerCareIntelligenceReviewRoutes(router, pool);
   registerCareSafeguardRoutes(router, pool);
+  registerWelfareSuggestionRoutesForPets(router, pool);
   registerCareProgressionRoutes(router, pool);
   registerPetAccessRoutes(router, pool);
   registerLifecycleRoutes(router, pool);
   registerPhotoRoutes(router, pool);
   registerPetTagsRoutes(router, pool);
+  registerVaccinationRecordsRoutes(router, pool);
+  registerVetVisitsRoutes(router, pool);
   registerCoreRoutes(router, pool);
   return router;
 }

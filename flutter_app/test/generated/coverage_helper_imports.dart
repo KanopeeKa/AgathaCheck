@@ -9,6 +9,8 @@ import 'package:pet_profile_app/features/auth/domain/repositories/auth_repositor
 import 'package:pet_profile_app/features/auth/domain/repositories/session_store.dart';
 import 'package:pet_profile_app/features/care_intelligence/domain/entities/care_recommendation.dart';
 import 'package:pet_profile_app/features/care_intelligence/domain/entities/care_safeguard.dart';
+import 'package:pet_profile_app/features/care_intelligence/domain/entities/welfare_suggestion.dart';
+import 'package:pet_profile_app/features/care_intelligence/domain/profile_completeness_kind.dart';
 import 'package:pet_profile_app/features/care_intelligence/domain/repositories/care_intelligence_repository.dart';
 import 'package:pet_profile_app/features/care_intelligence/domain/weight_provenance.dart';
 import 'package:pet_profile_app/features/care_item/domain/care_agenda.dart';
@@ -119,6 +121,7 @@ import 'package:pet_profile_app/features/pet_profile/domain/entities/pet_report_
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet_species.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet_timeline_segment.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet_viewer_role.dart';
+import 'package:pet_profile_app/features/pet_profile/domain/entities/profile_fact_status.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/repositories/care_progression_repository.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/repositories/pet_repository.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/services/pet_detail_actions.dart';
@@ -148,4 +151,4 @@ import 'package:pet_profile_app/features/weight_tracking/domain/entities/weight_
 import 'package:pet_profile_app/features/weight_tracking/domain/repositories/weight_repository.dart';
 import 'package:pet_profile_app/features/weight_tracking/domain/weight_entry_sort.dart';
 
-const int coverageHelperDomainFileCount = 146;
+const int coverageHelperDomainFileCount = 149;

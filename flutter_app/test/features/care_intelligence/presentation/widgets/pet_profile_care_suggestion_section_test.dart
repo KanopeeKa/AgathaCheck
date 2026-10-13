@@ -40,6 +40,7 @@ Widget _wrap(Widget child) {
         _petId,
       ).overrideWith((ref) async => [_pendingRecommendation]),
       petCareSafeguardsProvider(_petId).overrideWith((ref) async => []),
+      petWelfareSuggestionsProvider(_petId).overrideWith((ref) async => []),
       petPendingCareMomentsProvider(_petId).overrideWith(
         (ref) async =>
             const CarePendingMomentsResponse(moments: [], throttled: false),

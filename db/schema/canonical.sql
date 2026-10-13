@@ -827,6 +827,17 @@ CREATE TABLE public.pet_timeline_entries (
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     CONSTRAINT pet_timeline_entries_type_check CHECK (((entry_type)::text = 'manual'::text))
 );
+CREATE TABLE public.pet_vaccination_records (
+    id uuid NOT NULL,
+    pet_id uuid NOT NULL,
+    vaccine_name character varying(255) NOT NULL,
+    administered_on date NOT NULL,
+    record_source character varying(32) DEFAULT 'user'::character varying NOT NULL,
+    created_by uuid,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT pet_vaccination_records_source_check CHECK (((record_source)::text = ANY ((ARRAY['user'::character varying, 'imported'::character varying])::text[])))
+);
 CREATE TABLE public.pets (
     id uuid NOT NULL,
     user_id uuid NOT NULL,
@@ -859,6 +870,14 @@ CREATE TABLE public.pets (
     weight_reference_authority character varying(50),
     weight_management_context character varying(50) DEFAULT 'none'::character varying NOT NULL,
     home_timezone text DEFAULT 'UTC'::text NOT NULL,
+    identification_status character varying(16) DEFAULT 'unknown'::character varying NOT NULL,
+    neuter_status character varying(16) DEFAULT 'unknown'::character varying NOT NULL,
+    identification_status_source character varying(64),
+    neuter_status_source character varying(64),
+    identification_status_updated_at timestamp with time zone,
+    neuter_status_updated_at timestamp with time zone,
+    CONSTRAINT pets_identification_status_check CHECK (((identification_status)::text = ANY ((ARRAY['yes'::character varying, 'no'::character varying, 'unknown'::character varying])::text[]))),
+    CONSTRAINT pets_neuter_status_check CHECK (((neuter_status)::text = ANY ((ARRAY['yes'::character varying, 'no'::character varying, 'unknown'::character varying])::text[]))),
     CONSTRAINT pets_weight_management_context_check CHECK (((weight_management_context)::text = ANY ((ARRAY['none'::character varying, 'vet_managed'::character varying, 'care_plan'::character varying, 'treatment_related'::character varying])::text[]))),
     CONSTRAINT pets_weight_reference_authority_check CHECK (((weight_reference_authority IS NULL) OR ((weight_reference_authority)::text = ANY ((ARRAY['vet_target'::character varying, 'guardian_reference'::character varying, 'historical_baseline'::character varying])::text[]))))
 );
@@ -982,6 +1001,25 @@ CREATE TABLE public.users (
     weight_unit character varying(2) DEFAULT 'kg'::character varying NOT NULL,
     CONSTRAINT users_weight_unit_check CHECK (((weight_unit)::text = ANY ((ARRAY['kg'::character varying, 'lb'::character varying])::text[])))
 );
+CREATE TABLE public.vet_visit_occurrence_links (
+    id uuid NOT NULL,
+    vet_visit_id uuid NOT NULL,
+    health_occurrence_id uuid NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+CREATE TABLE public.vet_visits (
+    id uuid NOT NULL,
+    pet_id uuid NOT NULL,
+    visited_on date NOT NULL,
+    status character varying(32) DEFAULT 'open'::character varying NOT NULL,
+    completed_on date,
+    notes text DEFAULT ''::text NOT NULL,
+    created_by uuid,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT vet_visits_completed_on_check CHECK (((((status)::text = 'completed'::text) AND (completed_on IS NOT NULL)) OR (((status)::text = 'open'::text) AND (completed_on IS NULL)))),
+    CONSTRAINT vet_visits_status_check CHECK (((status)::text = ANY ((ARRAY['open'::character varying, 'completed'::character varying])::text[])))
+);
 CREATE TABLE public.vets (
     id uuid NOT NULL,
     user_id uuid,
@@ -1010,6 +1048,21 @@ CREATE TABLE public.weight_entries (
     health_occurrence_id uuid,
     CONSTRAINT weight_entries_measurement_source_check CHECK (((measurement_source)::text = ANY ((ARRAY['guardian'::character varying, 'clinic'::character varying, 'device'::character varying, 'imported'::character varying])::text[]))),
     CONSTRAINT weight_entries_unit_kg_check CHECK (((unit)::text = 'kg'::text))
+);
+CREATE TABLE public.welfare_suggestions (
+    id uuid NOT NULL,
+    pet_id uuid NOT NULL,
+    subject_key character varying(100) NOT NULL,
+    dedupe_key character varying(200) NOT NULL,
+    status character varying(30) DEFAULT 'pending'::character varying NOT NULL,
+    primary_outcome character varying(100),
+    rationale_key character varying(100) NOT NULL,
+    engine_version character varying(20) NOT NULL,
+    severity integer DEFAULT 0 NOT NULL,
+    dismissed_until timestamp with time zone,
+    responded_at timestamp with time zone,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
 ALTER TABLE ONLY public._migrations
     ADD CONSTRAINT _migrations_pkey PRIMARY KEY (id);
@@ -1177,6 +1230,8 @@ ALTER TABLE ONLY public.pet_tags
     ADD CONSTRAINT pet_tags_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.pet_timeline_entries
     ADD CONSTRAINT pet_timeline_entries_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.pet_vaccination_records
+    ADD CONSTRAINT pet_vaccination_records_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.pets
     ADD CONSTRAINT pets_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.planned_absence_carer_invite_pets
@@ -1207,10 +1262,18 @@ ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_email_key UNIQUE (email);
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.vet_visit_occurrence_links
+    ADD CONSTRAINT vet_visit_occurrence_links_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.vet_visit_occurrence_links
+    ADD CONSTRAINT vet_visit_occurrence_links_unique_occurrence UNIQUE (health_occurrence_id);
+ALTER TABLE ONLY public.vet_visits
+    ADD CONSTRAINT vet_visits_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.vets
     ADD CONSTRAINT vets_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.weight_entries
     ADD CONSTRAINT weight_entries_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.welfare_suggestions
+    ADD CONSTRAINT welfare_suggestions_pkey PRIMARY KEY (id);
 CREATE UNIQUE INDEX care_recommendations_pet_family_key_idx ON public.care_recommendations USING btree (pet_id, care_family, suggestion_key);
 CREATE INDEX care_recommendations_pet_status_idx ON public.care_recommendations USING btree (pet_id, status);
 CREATE UNIQUE INDEX care_safeguards_pet_key_idx ON public.care_safeguards USING btree (pet_id, safeguard_key);
@@ -1332,6 +1395,11 @@ CREATE INDEX idx_vets_organization_id ON public.vets USING btree (organization_i
 CREATE UNIQUE INDEX idx_weight_entries_health_occurrence_id ON public.weight_entries USING btree (health_occurrence_id) WHERE (health_occurrence_id IS NOT NULL);
 CREATE UNIQUE INDEX people_directories_household_unique ON public.people_directories USING btree (household_id) WHERE (household_id IS NOT NULL);
 CREATE UNIQUE INDEX people_directories_owner_user_unique ON public.people_directories USING btree (owner_user_id) WHERE (owner_user_id IS NOT NULL);
+CREATE INDEX pet_vaccination_records_pet_administered_idx ON public.pet_vaccination_records USING btree (pet_id, administered_on DESC);
+CREATE INDEX vet_visit_occurrence_links_visit_idx ON public.vet_visit_occurrence_links USING btree (vet_visit_id);
+CREATE INDEX vet_visits_pet_visited_idx ON public.vet_visits USING btree (pet_id, visited_on DESC);
+CREATE UNIQUE INDEX welfare_suggestions_pet_dedupe_idx ON public.welfare_suggestions USING btree (pet_id, dedupe_key);
+CREATE INDEX welfare_suggestions_pet_status_idx ON public.welfare_suggestions USING btree (pet_id, status);
 CREATE TRIGGER trg_clear_pinned_org_on_membership_loss AFTER DELETE OR UPDATE OF role ON public.organization_users FOR EACH ROW EXECUTE FUNCTION public.clear_pinned_org_on_membership_loss();
 ALTER TABLE ONLY public.account_device_labels
     ADD CONSTRAINT account_device_labels_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
@@ -1627,6 +1695,10 @@ ALTER TABLE ONLY public.pet_timeline_entries
     ADD CONSTRAINT pet_timeline_entries_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.users(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.pet_timeline_entries
     ADD CONSTRAINT pet_timeline_entries_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.pet_vaccination_records
+    ADD CONSTRAINT pet_vaccination_records_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.users(id) ON DELETE SET NULL;
+ALTER TABLE ONLY public.pet_vaccination_records
+    ADD CONSTRAINT pet_vaccination_records_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.pets
     ADD CONSTRAINT pets_care_holder_org_id_fkey FOREIGN KEY (care_holder_org_id) REFERENCES public.organizations(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.pets
@@ -1685,6 +1757,14 @@ ALTER TABLE ONLY public.refresh_tokens
     ADD CONSTRAINT refresh_tokens_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pinned_organization_id_fkey FOREIGN KEY (pinned_organization_id) REFERENCES public.organizations(id) ON DELETE SET NULL;
+ALTER TABLE ONLY public.vet_visit_occurrence_links
+    ADD CONSTRAINT vet_visit_occurrence_links_health_occurrence_id_fkey FOREIGN KEY (health_occurrence_id) REFERENCES public.health_occurrences(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.vet_visit_occurrence_links
+    ADD CONSTRAINT vet_visit_occurrence_links_vet_visit_id_fkey FOREIGN KEY (vet_visit_id) REFERENCES public.vet_visits(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.vet_visits
+    ADD CONSTRAINT vet_visits_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.users(id) ON DELETE SET NULL;
+ALTER TABLE ONLY public.vet_visits
+    ADD CONSTRAINT vet_visits_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.vets
     ADD CONSTRAINT vets_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES public.organizations(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.vets
@@ -1695,3 +1775,5 @@ ALTER TABLE ONLY public.weight_entries
     ADD CONSTRAINT weight_entries_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.weight_entries
     ADD CONSTRAINT weight_entries_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.welfare_suggestions
+    ADD CONSTRAINT welfare_suggestions_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;

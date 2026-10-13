@@ -267,6 +267,174 @@
         }
       }
     },
+    "/pets/{id}/vet-visits": {
+      "get": {
+        "operationId": "listPetVetVisits",
+        "parameters": [{ "$ref": "#/components/parameters/PetId" }],
+        "responses": {
+          "200": {
+            "description": "Vet visits with linked occurrence summaries",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PetVetVisitsResponse" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createPetVetVisit",
+        "parameters": [{ "$ref": "#/components/parameters/PetId" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/PetVetVisitCreate" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Visit created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PetVetVisit" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pets/{id}/vet-visits/{visitId}": {
+      "get": {
+        "operationId": "getPetVetVisit",
+        "parameters": [
+          { "$ref": "#/components/parameters/PetId" },
+          { "$ref": "#/components/parameters/VetVisitId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Single vet visit",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PetVetVisit" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pets/{id}/vet-visits/{visitId}/complete": {
+      "post": {
+        "operationId": "completePetVetVisit",
+        "parameters": [
+          { "$ref": "#/components/parameters/PetId" },
+          { "$ref": "#/components/parameters/VetVisitId" }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/PetVetVisitComplete" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Visit marked completed; linked occurrences unchanged",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PetVetVisit" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pets/{id}/vet-visits/{visitId}/occurrence-links": {
+      "post": {
+        "operationId": "linkPetVetVisitOccurrences",
+        "parameters": [
+          { "$ref": "#/components/parameters/PetId" },
+          { "$ref": "#/components/parameters/VetVisitId" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/PetVetVisitOccurrenceLinkRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Visit with updated links",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PetVetVisit" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pets/{id}/vet-visits/{visitId}/occurrence-links/{occId}": {
+      "delete": {
+        "operationId": "unlinkPetVetVisitOccurrence",
+        "parameters": [
+          { "$ref": "#/components/parameters/PetId" },
+          { "$ref": "#/components/parameters/VetVisitId" },
+          { "$ref": "#/components/parameters/OccurrenceId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Visit after link removed",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PetVetVisit" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pets/{id}/vaccination-records": {
+      "get": {
+        "operationId": "listPetVaccinationRecords",
+        "parameters": [{ "$ref": "#/components/parameters/PetId" }],
+        "responses": {
+          "200": {
+            "description": "Vaccination records with computed summary",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PetVaccinationRecordsResponse" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createPetVaccinationRecord",
+        "parameters": [{ "$ref": "#/components/parameters/PetId" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/PetVaccinationRecordCreate" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Record created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PetVaccinationRecord" }
+              }
+            }
+          }
+        }
+      }
+    },
     "/health-entries/{id}": {
       "get": {
         "operationId": "getCareItem",
@@ -1059,6 +1227,12 @@
           "type": "string",
           "format": "uuid"
         }
+      },
+      "VetVisitId": {
+        "name": "visitId",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string", "format": "uuid" }
       }
     },
     "schemas": {
@@ -1165,6 +1339,24 @@
           "insurance": { "type": "string" },
           "neuteredDate": { "oneOf": [{ "$ref": "#/components/schemas/CalendarDate" }, { "type": "null" }] },
           "neuterDismissed": { "type": "boolean" },
+          "identificationStatus": {
+            "type": "string",
+            "enum": ["yes", "no", "unknown"]
+          },
+          "identification_status": {
+            "type": "string",
+            "enum": ["yes", "no", "unknown"]
+          },
+          "neuterStatus": {
+            "type": "string",
+            "enum": ["yes", "no", "unknown"]
+          },
+          "neuter_status": {
+            "type": "string",
+            "enum": ["yes", "no", "unknown"]
+          },
+          "identificationStatusSource": { "type": ["string", "null"] },
+          "neuterStatusSource": { "type": ["string", "null"] },
           "chipId": { "type": "string" },
           "chipDismissed": { "type": "boolean" },
           "photoPath": { "type": ["string", "null"] },
@@ -1239,6 +1431,145 @@
           "delivery_status": {
             "type": "string",
             "enum": ["delivered", "already_notified", "no_recipients"]
+          }
+        }
+      },
+      "PetVaccinationRecord": {
+        "type": "object",
+        "required": [
+          "id",
+          "pet_id",
+          "vaccine_name",
+          "administered_on",
+          "record_source"
+        ],
+        "properties": {
+          "id": { "type": "string" },
+          "pet_id": { "type": "string", "format": "uuid" },
+          "vaccine_name": { "type": "string", "maxLength": 255 },
+          "administered_on": { "type": "string", "format": "date" },
+          "record_source": { "type": "string", "enum": ["user", "imported"] },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "PetVaccinationRecordCreate": {
+        "type": "object",
+        "required": ["vaccine_name", "administered_on"],
+        "properties": {
+          "id": { "type": "string" },
+          "vaccine_name": { "type": "string", "maxLength": 255 },
+          "administered_on": { "type": "string", "format": "date" },
+          "record_source": { "type": "string", "enum": ["user", "imported"] }
+        }
+      },
+      "PetVaccinationRecordsResponse": {
+        "type": "object",
+        "required": ["records", "summary"],
+        "properties": {
+          "records": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/PetVaccinationRecord" }
+          },
+          "summary": {
+            "type": "object",
+            "required": ["record_count", "last_administered_on"],
+            "properties": {
+              "record_count": { "type": "integer", "minimum": 0 },
+              "last_administered_on": {
+                "type": ["string", "null"],
+                "format": "date"
+              }
+            }
+          }
+        }
+      },
+      "PetVetVisitLinkedOccurrence": {
+        "type": "object",
+        "required": [
+          "occurrence_id",
+          "health_entry_id",
+          "status",
+          "scheduled_date"
+        ],
+        "properties": {
+          "occurrence_id": { "type": "string", "format": "uuid" },
+          "health_entry_id": { "type": "string", "format": "uuid" },
+          "status": {
+            "type": "string",
+            "enum": ["pending", "completed", "skipped"]
+          },
+          "scheduled_date": { "$ref": "#/components/schemas/CalendarDate" }
+        }
+      },
+      "PetVetVisit": {
+        "type": "object",
+        "required": [
+          "id",
+          "pet_id",
+          "visited_on",
+          "status",
+          "completed_on",
+          "notes",
+          "linked_occurrences"
+        ],
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "pet_id": { "type": "string", "format": "uuid" },
+          "visited_on": { "$ref": "#/components/schemas/CalendarDate" },
+          "status": { "type": "string", "enum": ["open", "completed"] },
+          "completed_on": {
+            "oneOf": [
+              { "$ref": "#/components/schemas/CalendarDate" },
+              { "type": "null" }
+            ]
+          },
+          "notes": { "type": "string" },
+          "linked_occurrences": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/PetVetVisitLinkedOccurrence" }
+          },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "PetVetVisitCreate": {
+        "type": "object",
+        "required": ["visited_on"],
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "visited_on": { "$ref": "#/components/schemas/CalendarDate" },
+          "notes": { "type": "string", "maxLength": 4000 },
+          "occurrence_ids": {
+            "type": "array",
+            "items": { "type": "string", "format": "uuid" }
+          }
+        }
+      },
+      "PetVetVisitComplete": {
+        "type": "object",
+        "properties": {
+          "completed_on": { "$ref": "#/components/schemas/CalendarDate" }
+        }
+      },
+      "PetVetVisitOccurrenceLinkRequest": {
+        "type": "object",
+        "required": ["occurrence_ids"],
+        "properties": {
+          "occurrence_ids": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "format": "uuid" }
+          }
+        }
+      },
+      "PetVetVisitsResponse": {
+        "type": "object",
+        "required": ["visits"],
+        "properties": {
+          "visits": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/PetVetVisit" }
           }
         }
       },

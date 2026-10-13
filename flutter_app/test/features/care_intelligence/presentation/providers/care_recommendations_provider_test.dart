@@ -29,12 +29,14 @@ void main() {
             petId,
           ).overrideWith((ref) async => [_pending()]),
           petCareSafeguardsProvider(petId).overrideWith((ref) async => []),
+          petWelfareSuggestionsProvider(petId).overrideWith((ref) async => []),
         ],
       );
       addTearDown(container.dispose);
 
       await container.read(petCareRecommendationsProvider(petId).future);
       await container.read(petCareSafeguardsProvider(petId).future);
+      await container.read(petWelfareSuggestionsProvider(petId).future);
 
       final suggestion = container.read(
         petProfileCareSuggestionProvider(petId),

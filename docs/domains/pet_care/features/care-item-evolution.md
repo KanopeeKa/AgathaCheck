@@ -5,7 +5,7 @@ audience: both
 domain: pet_care
 feature_id: care_item
 status: active
-last_updated: 2026-10-09
+last_updated: 2026-10-13
 related_prs: [1797, 1805, 1812, 1817]
 ---
 
@@ -38,6 +38,8 @@ Historical profile refactor and 2026-09-13 delivery plan text: [archive/care-ite
 | CARE-ITEM-R-011 | Reads and commands agree on open occurrences; PostgreSQL `DATE` parsed calendar-safe; catch-up visible on read or heal without user trap (remediation § below) | In delivery |
 | CARE-ITEM-R-012 | Same-day multi-dose: dose selector when multiple pending on one calendar day; do not treat all pending as missed-dose review | Live |
 | CARE-ITEM-R-013 | Mobile due preview: reversible completion in list position with Undo after date sheet (below mobile breakpoint only) | Live |
+| CARE-ITEM-R-014 | Vet visits: `vet_visits` + `vet_visit_occurrence_links`; pet-scoped API under `/pets/{id}/vet-visits`; calendar dates on wire; UI deferred | Live |
+| CARE-ITEM-R-015 | Completing a vet visit updates the visit row only — linked `health_occurrences` stay on their CSM status until explicitly completed | Live |
 
 ## Verdict
 
@@ -118,6 +120,13 @@ Four principles:
 | D-BULK-003 | `CareMarkDoneButton` shared round `check_circle` everywhere | — | Live | — | — |
 | D-BULK-004 | Coming up cap **3** rows then "Show {n} more" | — | Live | — | — |
 | D-BULK-005 | Bulk Mark/Skip success with undo uses shared undo snackbar (5 s, close control, `snackBarSurface`) | Same helper as single Done (regression guard after #1671) | Live | 2026-10-08 | — |
+| D-CIE-039 | Vet visit completion is not bulk occurrence completion | Visit records group care done at the clinic; each occurrence still uses CSM Mark as done / Skip (AC-FB-02) | Live | 2026-10-13 | PR-14 |
+
+## Vet visit schema (API slice — PR-14)
+
+Service: `server/lib/pets/vetVisits.js`. Routes: `server/routes/pets/vetVisitsRouter.js` (`HEALTH_VIEW` / `HEALTH_EDIT`). OpenAPI: `docs/architecture/openapi/pet-care-critical.json` (`PetVetVisit`, occurrence link request/response).
+
+Coverage: `server/test/care/visitSchema.test.js` — ACJ-VV-01 / AC-VV-01 (link API contract), AC-FB-02 (complete visit does not mutate occurrences).
 
 ## Where we start
 
@@ -219,8 +228,8 @@ The dashboard (all pets) and the pet profile (one pet) use the same agenda. All 
    - **Overdue** first, both schedule types. A Fixed-schedule stack is one row, "3 doses not recorded", with **Review**.
    - Then care due today, grouped **Morning** (before 12:00), **Afternoon** (12:00–17:59), **Evening** (from 18:00) and **Anytime** (no time). Group headings appear only when at least two groups have care; otherwise one heading, **Today's list**.
    - Care done today stays at the end, quiet (check and time), until the day ends.
-2. **Due soon** — the next 7 days after today.
-3. **Upcoming** — later dates, collapsed, with a count.
+2. **Due soon** — the next 7 days after today. When two or more rows share the same due calendar day, a **same-day date** sub-heading shows that day (formatted) before those rows. When those rows belong to **two or more pets** on the all-pets dashboard, a **coordination** line appears under that date with a link per pet (no merged agenda row).
+3. **Upcoming** — later dates, collapsed, with a count. Expanded Upcoming uses the same same-day date sub-headings when two or more rows share a due day, and the same multi-pet coordination links when applicable.
 
 - Care that repeats daily or more often appears only in Today.
 - The reminder window never hides care. A yearly vaccine in 200 days is in Upcoming.
@@ -232,7 +241,7 @@ The dashboard (all pets) and the pet profile (one pet) use the same agenda. All 
 
 **Row (D-CIE-026):** one composition everywhere (`CareActionRow` inside `CareCollectionInsetList`): pet avatar on the dashboard only, name, status chip and date or time, and **one trailing action** — **Mark as done**, or **Review** for a stack. Tapping the row opens the Care Item view. An item with several open doses acts on the most urgent one. The row changes only after the server confirms, then "Done · Undo".
 
-Accessibility: section and group headings are headers; Upcoming exposes expanded or collapsed; rows are at least 56 high and fully tappable, the trailing button at least 48; the row reads as one label, e.g. "Buddy, Flea treatment, Overdue, 5 June"; moves respect reduced motion. Stable ids: `care_agenda_today`, `care_agenda_due_soon`, `care_agenda_upcoming`, `care_agenda_group_<morning|afternoon|evening|anytime>`, `care_agenda_stack_<entryId>`.
+Accessibility: section and group headings are headers; Upcoming exposes expanded or collapsed; rows are at least 56 high and fully tappable, the trailing button at least 48; the row reads as one label, e.g. "Buddy, Flea treatment, Overdue, 5 June"; moves respect reduced motion. Stable ids: `care_agenda_today`, `care_agenda_due_soon`, `care_agenda_upcoming`, `care_agenda_group_<morning|afternoon|evening|anytime>`, `care_agenda_date_<YYYY-MM-DD>` (same-day sub-heading under Due soon / Upcoming), `care_coordination_banner_<YYYY-MM-DD>`, `care_coordination_pet_link_<petId>`, `care_agenda_stack_<entryId>`.
 
 ## Care item view
 

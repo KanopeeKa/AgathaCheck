@@ -7,6 +7,7 @@ import {
 } from '../../lib/pets/petCoreCommandService.js';
 import { rejectFrozenOrganizationIdOnPetWrite } from '../../lib/frozenDomains.js';
 import { extractUserId } from './shared.js';
+import { reconcilePetWelfareAfterProfileUpdate } from '../careIntelligence/index.js';
 
 export function registerCoreWriteRoutes(router, pool) {
   router.post('/', asyncHandler(async (req, res) => {
@@ -36,6 +37,10 @@ export function registerCoreWriteRoutes(router, pool) {
       if (rejectInvalidPetWeight(weight, res)) return;
       const out = await updatePet(pool, userId, req.params.id, req.body, req);
       if (out.error) return res.status(out.status).json({ error: out.error });
+      const refreshed = await pool.query('SELECT * FROM pets WHERE id = $1', [req.params.id]);
+      if (refreshed.rows[0]) {
+        await reconcilePetWelfareAfterProfileUpdate(pool, refreshed.rows[0]);
+      }
       res.json(out.pet);
     } catch (err) {
       if (err.status && err.body) {

@@ -1,0 +1,455 @@
+{
+  "schema_version": 1,
+  "plan_id": "agatha-care-journey",
+  "programme_ref": "docs/domains/pet_care/changes/agatha-care-journey-programme.md",
+  "approved_at": "2026-10-12T18:00:00Z",
+  "approved_by": "User chat 2026-10-10 — full execute-plan RUN-UNTIL-BLOCKED (all 14 phases + release PR + babysit-uat). Re-grant: user chat 2026-10-12 resume after governance #1840/#1841 merged. Re-grant: user chat 2026-10-13 resume-plan on #1835 (proceed PR-12 despite ACJ-D-006 Proposed).",
+  "approved_until": "2026-10-14T18:00:00Z",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/agatha-care-journey-integration-b994",
+  "control_issue": 1835,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "pr-01",
+      "title": "PR-01 Profile facts server + OpenAPI",
+      "branch": "cursor/acj-pr-01-b994",
+      "allowed_paths": [
+        "db/migrations/**",
+        "server/lib/pets/**",
+        "server/routes/pets/**",
+        "server/routes/organizations/petsRouter.js",
+        "server/lib/orgPetShadow.js",
+        "server/test/pets/**",
+        "server/test/organizations/petRedacted.test.js",
+        "server/test/sharing.test.js",
+        "server/test/sharedPetAccess.test.js",
+        "server/test/sharePreview.test.js",
+        "docs/architecture/openapi/**",
+        "regulatory/DATA_MAP.md",
+        "e2e/bdd/features/pet_care/agatha_care_journey.feature",
+        "docs/domains/pet_care/changes/agatha-care-journey-*.md",
+        ".agents/plans/agatha-care-journey.*"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "exit_checklist": "default+single-backend-route+governance",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "merge_method": "squash",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1837",
+      "pr_head_sha": "d360797d"
+    },
+    {
+      "id": "pr-02",
+      "title": "PR-02 Profile facts Flutter",
+      "branch": "cursor/acj-pr-02-b994",
+      "allowed_paths": [
+        "docs/domains/pet_care/changes/agatha-care-journey-*.md",
+        ".agents/plans/agatha-care-journey.*",
+        "server/**",
+        "flutter_app/**",
+        "db/**",
+        "e2e/**",
+        "docs/architecture/openapi/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "exit_checklist": "default+flutter-screen-split",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_head_sha": "8c8f3eb8",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1838"
+    },
+    {
+      "id": "pr-03",
+      "title": "PR-03 Inline capture (inset prompt)",
+      "branch": "cursor/acj-pr-03-b994",
+      "allowed_paths": [
+        "docs/domains/pet_care/changes/agatha-care-journey-*.md",
+        ".agents/plans/agatha-care-journey.*",
+        "server/**",
+        "flutter_app/**",
+        "db/**",
+        "e2e/**",
+        "docs/architecture/openapi/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "exit_checklist": "default+flutter-screen-split",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1839",
+      "pr_head_sha": "983b8e74"
+    },
+    {
+      "id": "pr-04",
+      "title": "PR-04 Agatha completeness + minimal policy",
+      "branch": "cursor/acj-pr-04-b994",
+      "allowed_paths": [
+        "docs/domains/pet_care/changes/agatha-care-journey-*.md",
+        ".agents/plans/agatha-care-journey.*",
+        "server/**",
+        "flutter_app/**",
+        "db/**",
+        "e2e/**",
+        "docs/architecture/openapi/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "exit_checklist": "default+flutter-screen-split+bdd-journey",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1842",
+      "pr_head_sha": "4653b812"
+    },
+    {
+      "id": "pr-05",
+      "title": "PR-05 Extended surface policy",
+      "branch": "cursor/acj-pr-05-b994",
+      "allowed_paths": [
+        "docs/domains/pet_care/changes/agatha-care-journey-*.md",
+        ".agents/plans/agatha-care-journey.*",
+        "server/**",
+        "flutter_app/**",
+        "db/**",
+        "e2e/**",
+        "docs/architecture/openapi/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "exit_checklist": "default+flutter-screen-split",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1849",
+      "pr_head_sha": "a462601f",
+      "merge_commit": "8ec5d9c90c57e867f5a2260621fb766dad19d15e"
+    },
+    {
+      "id": "pr-06",
+      "title": "PR-06 welfare_suggestions framework",
+      "branch": "cursor/acj-pr-06-b994",
+      "allowed_paths": [
+        "docs/domains/pet_care/changes/agatha-care-journey-*.md",
+        ".agents/plans/agatha-care-journey.*",
+        "server/**",
+        "flutter_app/**",
+        "db/**",
+        "e2e/**",
+        "docs/architecture/openapi/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "exit_checklist": "default+single-backend-route+governance",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "merge_method": "squash",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1852",
+      "pr_head_sha": "05827a1a"
+    },
+    {
+      "id": "pr-07",
+      "title": "PR-07 Welfare microchip",
+      "branch": "cursor/acj-pr-07-b994",
+      "allowed_paths": [
+        "docs/domains/pet_care/changes/agatha-care-journey-*.md",
+        ".agents/plans/agatha-care-journey.*",
+        "server/**",
+        "flutter_app/**",
+        "db/**",
+        "e2e/**",
+        "docs/architecture/openapi/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "exit_checklist": "default+single-backend-route+flutter-screen-split",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1858",
+      "pr_head_sha": "9f3b52e7"
+    },
+    {
+      "id": "pr-08",
+      "title": "PR-08 Welfare neuter",
+      "branch": "cursor/acj-pr-08-b994",
+      "allowed_paths": [
+        "docs/domains/pet_care/changes/agatha-care-journey-*.md",
+        ".agents/plans/agatha-care-journey.*",
+        "server/**",
+        "flutter_app/**",
+        "db/**",
+        "e2e/**",
+        "docs/architecture/openapi/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "exit_checklist": "default+single-backend-route+flutter-screen-split",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1862",
+      "pr_head_sha": "fb0dfa9a7f873ab309ae35bcf0e4257ffdd11aa5"
+    },
+    {
+      "id": "pr-09",
+      "title": "PR-09 Vaccination record minimum",
+      "branch": "cursor/acj-pr-09-b994",
+      "allowed_paths": [
+        "docs/domains/pet_care/changes/agatha-care-journey-*.md",
+        ".agents/plans/agatha-care-journey.*",
+        "server/**",
+        "flutter_app/**",
+        "db/**",
+        "e2e/**",
+        "docs/architecture/openapi/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": true,
+      "exit_checklist": "default+single-backend-route+governance",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "merge_method": "squash",
+      "spawn_config": {
+        "integration_branch": "main",
+        "ownership_ref": "docs/domains/pet_care/changes/agatha-care-journey-execute-autonomy.md#parallelism-subagents"
+      },
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1864",
+      "pr_head_sha": "d16297cf"
+    },
+    {
+      "id": "pr-10",
+      "title": "PR-10 Welfare vaccination",
+      "branch": "cursor/acj-pr-10-b994",
+      "allowed_paths": [
+        "docs/domains/pet_care/changes/agatha-care-journey-*.md",
+        ".agents/plans/agatha-care-journey.*",
+        "server/**",
+        "flutter_app/**",
+        "db/**",
+        "e2e/**",
+        "docs/architecture/openapi/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "exit_checklist": "default+single-backend-route+flutter-screen-split",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1867",
+      "pr_head_sha": "cf7f11d1"
+    },
+    {
+      "id": "pr-11",
+      "title": "PR-11 History feedback",
+      "branch": "cursor/acj-pr-11-b994",
+      "allowed_paths": [
+        "docs/domains/pet_care/changes/agatha-care-journey-*.md",
+        ".agents/plans/agatha-care-journey.*",
+        "server/**",
+        "flutter_app/**",
+        "db/**",
+        "e2e/**",
+        "docs/architecture/openapi/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "exit_checklist": "default+single-backend-route+flutter-screen-split",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1868",
+      "pr_head_sha": "127f00be",
+      "merge_commit": "9e0d4fc3fddbcc7e86cfb6d6c9d64639c9f39eaf"
+    },
+    {
+      "id": "pr-12",
+      "title": "PR-12 Same-day grouping (ACJ-D-006)",
+      "branch": "cursor/acj-pr-12-b994",
+      "allowed_paths": [
+        "docs/domains/pet_care/changes/agatha-care-journey-*.md",
+        ".agents/plans/agatha-care-journey.*",
+        "server/**",
+        "flutter_app/**",
+        "db/**",
+        "e2e/**",
+        "docs/architecture/openapi/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "exit_checklist": "default+bdd-journey",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1871",
+      "pr_head_sha": "aa098a7d",
+      "merge_commit": "2de9ec9ed5d6258e7de4d26e0879b9a468284d36"
+    },
+    {
+      "id": "pr-13",
+      "title": "PR-13 Coordination copy",
+      "branch": "cursor/acj-pr-13-b994",
+      "allowed_paths": [
+        "docs/domains/pet_care/changes/agatha-care-journey-*.md",
+        ".agents/plans/agatha-care-journey.*",
+        "server/**",
+        "flutter_app/**",
+        "db/**",
+        "e2e/**",
+        "docs/architecture/openapi/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "exit_checklist": "default+bdd-journey",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1873",
+      "pr_head_sha": "c29ff745"
+    },
+    {
+      "id": "pr-14",
+      "title": "PR-14 Vet visit schema",
+      "branch": "cursor/acj-pr-14-b994",
+      "allowed_paths": [
+        "docs/domains/pet_care/changes/agatha-care-journey-*.md",
+        ".agents/plans/agatha-care-journey.*",
+        "server/**",
+        "flutter_app/**",
+        "db/**",
+        "e2e/**",
+        "docs/architecture/openapi/**"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "exit_checklist": "default+single-backend-route+governance",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "merge_method": "squash",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1874",
+      "pr_head_sha": "f4ec4f38"
+    }
+  ],
+  "content_hash": "sha256:c89c95954ec99093b4f1c981e40c6f3d72fee4e3b049818d8c7fd7b255f7460e"
+}

@@ -99,6 +99,70 @@ class CareAgenda<T> {
   ];
 }
 
+/// Consecutive due-soon / upcoming rows grouped by calendar due date.
+class CareAgendaDateGroup<T> {
+  const CareAgendaDateGroup({
+    required this.dateKey,
+    required this.date,
+    required this.rows,
+  });
+
+  final String dateKey;
+  final DateTime date;
+  final List<CareAgendaRow<T>> rows;
+}
+
+List<CareAgendaDateGroup<T>> groupAgendaRowsByDueDate<T>(
+  List<CareAgendaRow<T>> rows,
+) {
+  if (rows.isEmpty) return const [];
+  final groups = <CareAgendaDateGroup<T>>[];
+  for (final row in rows) {
+    final occ = row.occurrence;
+    if (occ == null) continue;
+    final date = DateTime(occ.date.year, occ.date.month, occ.date.day);
+    final key =
+        '${date.year.toString().padLeft(4, '0')}-'
+        '${date.month.toString().padLeft(2, '0')}-'
+        '${date.day.toString().padLeft(2, '0')}';
+    if (groups.isNotEmpty && groups.last.dateKey == key) {
+      final last = groups.removeLast();
+      groups.add(
+        CareAgendaDateGroup(
+          dateKey: key,
+          date: date,
+          rows: [...last.rows, row],
+        ),
+      );
+    } else {
+      groups.add(CareAgendaDateGroup(dateKey: key, date: date, rows: [row]));
+    }
+  }
+  return groups;
+}
+
+/// Same-day date sub-header when two or more items share a due calendar day.
+bool showSameDayDateHeader(CareAgendaDateGroup<Object?> group) =>
+    group.rows.length >= 2;
+
+/// Multi-pet coordination banner (AC-CO-02): same calendar day, distinct pets.
+bool showCoordinationBanner<T>(
+  CareAgendaDateGroup<T> group,
+  String Function(T item) petIdOf,
+) {
+  if (group.rows.length < 2) return false;
+  return group.rows.map((r) => petIdOf(r.item)).toSet().length >= 2;
+}
+
+List<String> coordinationPetIds<T>(
+  CareAgendaDateGroup<T> group,
+  String Function(T item) petIdOf,
+) {
+  final ids = group.rows.map((r) => petIdOf(r.item)).toSet().toList();
+  ids.sort();
+  return ids;
+}
+
 /// Build the agenda for [items]. Items without a schedule, paused or ended
 /// items are left out (INV-4). [elapsed] advances each read's clock (live
 /// status between reads).

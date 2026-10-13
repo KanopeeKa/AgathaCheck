@@ -1604,6 +1604,102 @@ abstract class AppLocalizations {
   /// **'Neutering status not recorded'**
   String get profilePromptNeuterMissing;
 
+  /// No description provided for @profileFactCaptureRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'Record'**
+  String get profileFactCaptureRecord;
+
+  /// No description provided for @profileFactCaptureNeuterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Record neutering status'**
+  String get profileFactCaptureNeuterTitle;
+
+  /// No description provided for @profileFactCaptureChipTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Record microchip status'**
+  String get profileFactCaptureChipTitle;
+
+  /// No description provided for @profileCompletenessCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get profileCompletenessCategory;
+
+  /// No description provided for @profileCompletenessWhyNeuterBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording whether your pet is neutered helps tailor care reminders. Ask your vet if you are unsure.'**
+  String get profileCompletenessWhyNeuterBody;
+
+  /// No description provided for @profileCompletenessWhyChipBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A microchip ID helps identify your pet if they are lost. Check local rules for registration.'**
+  String get profileCompletenessWhyChipBody;
+
+  /// No description provided for @careWelfareMicrochipTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Microchip not recorded'**
+  String get careWelfareMicrochipTitle;
+
+  /// No description provided for @careWelfareMicrochipWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'A microchip can help identify your pet if they are lost. Check local rules for registration.'**
+  String get careWelfareMicrochipWhy;
+
+  /// No description provided for @careWelfareMicrochipRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'Update microchip status'**
+  String get careWelfareMicrochipRecord;
+
+  /// No description provided for @careWelfareNeuterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Neutering status not recorded'**
+  String get careWelfareNeuterTitle;
+
+  /// No description provided for @careWelfareNeuterWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording whether your pet is neutered helps tailor care reminders. Ask your vet if you are unsure.'**
+  String get careWelfareNeuterWhy;
+
+  /// No description provided for @careWelfareNeuterRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'Update neutering status'**
+  String get careWelfareNeuterRecord;
+
+  /// No description provided for @careWelfareVaccinationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Vaccination history not recorded'**
+  String get careWelfareVaccinationTitle;
+
+  /// No description provided for @careWelfareVaccinationWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'Keeping a simple list of vaccinations helps you and your vet stay aligned. Ask your vet which vaccines matter for your pet.'**
+  String get careWelfareVaccinationWhy;
+
+  /// No description provided for @careWelfareVaccinationRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'Record a vaccination'**
+  String get careWelfareVaccinationRecord;
+
+  /// No description provided for @profileCompletenessNotForMyPet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not for my pet'**
+  String get profileCompletenessNotForMyPet;
+
   /// No description provided for @petHealthAndHistoryTitle.
   ///
   /// In en, this message translates to:
@@ -14649,6 +14745,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Hide upcoming care'**
   String get careAgendaHideUpcoming;
+
+  /// No description provided for @careAgendaCoordinationMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Each pet\'s care for {date} is listed separately — open a pet to review.'**
+  String careAgendaCoordinationMessage(String date);
+
+  /// No description provided for @careAgendaCoordinationPetLink.
+  ///
+  /// In en, this message translates to:
+  /// **'{petName}\'s care'**
+  String careAgendaCoordinationPetLink(String petName);
 
   /// No description provided for @careStackCount.
   ///

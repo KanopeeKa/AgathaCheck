@@ -3,6 +3,11 @@ import 'package:pet_profile_app/features/care_item/care_item.dart';
 
 import 'care_item_test_data.dart';
 
+class _PetRef {
+  const _PetRef(this.id);
+  final String id;
+}
+
 CareItemSchedule item(
   String name,
   List<OpenOccurrence> open, {
@@ -150,5 +155,41 @@ void main() {
     expect(timeGroupFor('12:00'), CareTimeGroup.afternoon);
     expect(timeGroupFor('18:00'), CareTimeGroup.evening);
     expect(timeGroupFor(null), CareTimeGroup.anytime);
+  });
+
+  test('coordination banner when two pets share a due day', () {
+    CareAgendaRow<_PetRef> row(String petId, String name, int day) {
+      final schedule = item(name, [
+        occ(name, day, CareOccurrenceStatus.comingUp),
+      ]);
+      final leading = leadingOccurrence(schedule);
+      return CareAgendaRow(
+        item: _PetRef(petId),
+        schedule: schedule,
+        section: CareAgendaSection.dueSoon,
+        occurrence: leading,
+        status: liveStatus(leading!, schedule.asOf),
+      );
+    }
+
+    final groups = groupAgendaRowsByDueDate([
+      row('pet-a', 'Alpha', 13),
+      row('pet-b', 'Beta', 13),
+    ]);
+    expect(showCoordinationBanner(groups.single, (p) => p.id), isTrue);
+    expect(coordinationPetIds(groups.single, (p) => p.id), ['pet-a', 'pet-b']);
+  });
+
+  test('due soon groups share a same-day date header when two items match', () {
+    final rows = agenda([
+      item('Alpha', [occ('a', 13, CareOccurrenceStatus.comingUp)]),
+      item('Beta', [occ('b', 13, CareOccurrenceStatus.comingUp)]),
+      item('Gamma', [occ('g', 15, CareOccurrenceStatus.comingUp)]),
+    ]).dueSoon;
+    final groups = groupAgendaRowsByDueDate(rows);
+    expect(groups.length, 2);
+    expect(groups.first.rows.length, 2);
+    expect(showSameDayDateHeader(groups.first), isTrue);
+    expect(showSameDayDateHeader(groups.last), isFalse);
   });
 }

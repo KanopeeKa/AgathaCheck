@@ -895,6 +895,59 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profilePromptNeuterMissing => 'Neutering status not recorded';
 
   @override
+  String get profileFactCaptureRecord => 'Record';
+
+  @override
+  String get profileFactCaptureNeuterTitle => 'Record neutering status';
+
+  @override
+  String get profileFactCaptureChipTitle => 'Record microchip status';
+
+  @override
+  String get profileCompletenessCategory => 'Profile';
+
+  @override
+  String get profileCompletenessWhyNeuterBody =>
+      'Recording whether your pet is neutered helps tailor care reminders. Ask your vet if you are unsure.';
+
+  @override
+  String get profileCompletenessWhyChipBody =>
+      'A microchip ID helps identify your pet if they are lost. Check local rules for registration.';
+
+  @override
+  String get careWelfareMicrochipTitle => 'Microchip not recorded';
+
+  @override
+  String get careWelfareMicrochipWhy =>
+      'A microchip can help identify your pet if they are lost. Check local rules for registration.';
+
+  @override
+  String get careWelfareMicrochipRecord => 'Update microchip status';
+
+  @override
+  String get careWelfareNeuterTitle => 'Neutering status not recorded';
+
+  @override
+  String get careWelfareNeuterWhy =>
+      'Recording whether your pet is neutered helps tailor care reminders. Ask your vet if you are unsure.';
+
+  @override
+  String get careWelfareNeuterRecord => 'Update neutering status';
+
+  @override
+  String get careWelfareVaccinationTitle => 'Vaccination history not recorded';
+
+  @override
+  String get careWelfareVaccinationWhy =>
+      'Keeping a simple list of vaccinations helps you and your vet stay aligned. Ask your vet which vaccines matter for your pet.';
+
+  @override
+  String get careWelfareVaccinationRecord => 'Record a vaccination';
+
+  @override
+  String get profileCompletenessNotForMyPet => 'Not for my pet';
+
+  @override
   String get petHealthAndHistoryTitle => 'Health & history';
 
   @override
@@ -8344,6 +8397,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careAgendaHideUpcoming => 'Hide upcoming care';
+
+  @override
+  String careAgendaCoordinationMessage(String date) {
+    return 'Each pet\'s care for $date is listed separately — open a pet to review.';
+  }
+
+  @override
+  String careAgendaCoordinationPetLink(String petName) {
+    return '$petName\'s care';
+  }
 
   @override
   String careStackCount(int count) {

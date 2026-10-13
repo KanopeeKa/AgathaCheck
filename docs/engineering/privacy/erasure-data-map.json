@@ -531,6 +531,22 @@
       "discovery_source": "foreign_key"
     },
     {
+      "table": "pet_vaccination_records",
+      "column": "created_by",
+      "erasure_action": "set_null",
+      "reason": "ON DELETE SET NULL from users(id); attribution cleared when account removed.",
+      "pg_on_delete": "n",
+      "discovery_source": "foreign_key"
+    },
+    {
+      "table": "vet_visits",
+      "column": "created_by",
+      "erasure_action": "set_null",
+      "reason": "ON DELETE SET NULL from users(id); attribution cleared when account removed.",
+      "pg_on_delete": "n",
+      "discovery_source": "foreign_key"
+    },
+    {
       "table": "pets",
       "column": "care_holder_user_id",
       "erasure_action": "set_null",

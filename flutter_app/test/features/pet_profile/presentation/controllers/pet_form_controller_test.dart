@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/core/weight/weight_unit.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
+import 'package:pet_profile_app/features/pet_profile/domain/entities/profile_fact_status.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/controllers/pet_form_controller.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/controllers/pet_form_outcomes.dart';
 
@@ -30,6 +31,8 @@ void main() {
         chipDismissed: true,
         passedAway: true,
         organizationId: 'org-1',
+        identificationStatus: profileFactStatusYes,
+        neuterStatus: profileFactStatusNo,
       );
 
       controller.populateForm(pet);
@@ -53,6 +56,8 @@ void main() {
       expect(state.chipDismissed, true);
       expect(state.passedAway, true);
       expect(state.selectedOrgId, 'org-1');
+      expect(state.identificationStatus, profileFactStatusYes);
+      expect(state.neuterStatus, profileFactStatusNo);
     });
 
     test('represents a null weight as an empty string', () {
@@ -261,6 +266,31 @@ void main() {
       expect(repository.updated.single.breed, 'Labrador');
       expect(repository.updated.single.bio, 'Updated bio');
       expect(repository.updated.single.colorValue, 0xFF7E57C2);
+    });
+
+    test('edit preserves profile fact statuses from existing pet', () async {
+      final existing = Pet(
+        id: 'pet-1',
+        name: 'Rex',
+        species: 'dog',
+        identificationStatus: profileFactStatusYes,
+        neuterStatus: profileFactStatusNo,
+      );
+      repository = RecordingPetRepository(initial: [existing]);
+      container.dispose();
+      container = makeContainer(repo: repository);
+      controller = PetFormController();
+      deps = makeDeps(repository);
+      controller.populateForm(existing);
+      controller.state = controller.state.copyWith(name: 'Rexy');
+
+      await controller.submit(deps, isEditing: true, petId: 'pet-1');
+
+      expect(
+        repository.updated.single.identificationStatus,
+        profileFactStatusYes,
+      );
+      expect(repository.updated.single.neuterStatus, profileFactStatusNo);
     });
 
     test('fails when editing a pet that is not in the list', () async {

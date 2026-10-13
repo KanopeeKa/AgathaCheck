@@ -193,6 +193,50 @@ Private per-user labels for organizing and filtering pets on `/pc/pets`. No shar
 | API | `GET/POST/PATCH/DELETE /api/pet-tags`; `POST/DELETE /api/pets/:petId/tags` (assign/unassign). Client uses `GET /api/pet-tags` with `pet_ids[]` for filter, profile, and manage UI. |
 | UI | Account → Preferences → Pet tags (catalog CRUD); pet profile → My tags; `/pc/pets` → tag filter (Match any / Match all). |
 
+## Profile facts (server — PR-01)
+
+| ID | Requirement | Status |
+|----|-------------|--------|
+| **ACJ-PF-001** | `identification_status` / `neuter_status` enum `yes \| no \| unknown` on `pets` (migration `100_pet_profile_facts`) | Live (integration) |
+| **ACJ-PF-003** | PUT merge: status + dismiss fields + `chip_id` kept when omitted; normalise chip ↔ status per programme | Live (integration) |
+| **ACJ-PF-004** | Provenance columns `*_status_source`, `*_status_updated_at` on wire + DB | Live (integration) |
+| **ACJ-PF-005** | View-only PUT → 403; invalid enum → 400 | Live (integration) |
+| **ACJ-PF-005b** | Org shadow snapshot excludes new status fields (unchanged shadow shape) | Live (integration) |
+
+## Profile facts — inline capture (Flutter — PR-03)
+
+| ID | Requirement | Status |
+|----|-------------|--------|
+| **ACJ-IC-001** | Profile fact capture sheet from **Record** on completeness UI (inset PR-03; Agatha card PR-04+) | Live (integration) |
+| **ACJ-IC-002** | View-only pet detail (`editProfile` absent) disables Record; no sheet | Live (integration) |
+| **ACJ-IC-003** | Sheet saves `neuterStatus` / `identificationStatus` (+ optional date or chip id) via pet PUT | Live (integration) |
+
+## Profile facts — Agatha completeness cards (Flutter — PR-04)
+
+| ID | Requirement | Status |
+|----|-------------|--------|
+| **ACJ-AC-001** | Agatha completeness card for chip/neuter; card hidden when status known | Live (integration) |
+| **ACJ-AC-002** | Agatha message shell + Profile category line | Live (integration) |
+| **ACJ-AC-003** | Dismiss / Not for my pet → `*_dismissed` only (no `HealthEntry`) | Live (integration) |
+| **ACJ-AC-004** | Minimal slot policy: no completeness when safeguard or guidance card visible | Live (integration) |
+
+## Profile facts (Flutter — PR-02)
+
+| ID | Requirement | Status |
+|----|-------------|--------|
+| **ACJ-PF-PL-001** | `identificationStatus` / `neuterStatus` on `Pet` + `PetModel` wire (`yes \| no \| unknown`; default `unknown`) | Live (integration) |
+| **ACJ-PF-PL-003** | Pet form edit PUT preserves status fields when the profile form does not change them | Live (integration) |
+| **ACJ-PF-PL-004** | Optional `*_status_source` on wire parsed on read; included in `toJson` when set | Live (integration) |
+
+## Planned — Agatha care journey (PR #1833 programme)
+
+Delivery spec: [agatha-care-journey-programme.md](../../pet_care/changes/agatha-care-journey-programme.md). Fold into this doc when PR-01+ land.
+
+| ID | Planned decision | Notes |
+|----|------------------|-------|
+| **ACJ-PF-PL-002** | “Not for my pet” uses `chip_dismissed` / `neuter_dismissed`, not status enums | PR-04 |
+| **ACJ-PF-PL-005** | New status fields excluded from org shadow / share preview / redacted views by default | PR-01 |
+
 ## How to use
 
 - Activity model detail: [pet-activity-model.md](pet-activity-model.md)
