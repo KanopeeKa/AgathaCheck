@@ -1017,6 +1017,21 @@ CREATE TABLE public.weight_entries (
     CONSTRAINT weight_entries_measurement_source_check CHECK (((measurement_source)::text = ANY ((ARRAY['guardian'::character varying, 'clinic'::character varying, 'device'::character varying, 'imported'::character varying])::text[]))),
     CONSTRAINT weight_entries_unit_kg_check CHECK (((unit)::text = 'kg'::text))
 );
+CREATE TABLE public.welfare_suggestions (
+    id uuid NOT NULL,
+    pet_id uuid NOT NULL,
+    subject_key character varying(100) NOT NULL,
+    dedupe_key character varying(200) NOT NULL,
+    status character varying(30) DEFAULT 'pending'::character varying NOT NULL,
+    primary_outcome character varying(100),
+    rationale_key character varying(100) NOT NULL,
+    engine_version character varying(20) NOT NULL,
+    severity integer DEFAULT 0 NOT NULL,
+    dismissed_until timestamp with time zone,
+    responded_at timestamp with time zone,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
 ALTER TABLE ONLY public._migrations
     ADD CONSTRAINT _migrations_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.account_device_labels
@@ -1217,6 +1232,8 @@ ALTER TABLE ONLY public.vets
     ADD CONSTRAINT vets_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.weight_entries
     ADD CONSTRAINT weight_entries_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.welfare_suggestions
+    ADD CONSTRAINT welfare_suggestions_pkey PRIMARY KEY (id);
 CREATE UNIQUE INDEX care_recommendations_pet_family_key_idx ON public.care_recommendations USING btree (pet_id, care_family, suggestion_key);
 CREATE INDEX care_recommendations_pet_status_idx ON public.care_recommendations USING btree (pet_id, status);
 CREATE UNIQUE INDEX care_safeguards_pet_key_idx ON public.care_safeguards USING btree (pet_id, safeguard_key);
@@ -1338,6 +1355,8 @@ CREATE INDEX idx_vets_organization_id ON public.vets USING btree (organization_i
 CREATE UNIQUE INDEX idx_weight_entries_health_occurrence_id ON public.weight_entries USING btree (health_occurrence_id) WHERE (health_occurrence_id IS NOT NULL);
 CREATE UNIQUE INDEX people_directories_household_unique ON public.people_directories USING btree (household_id) WHERE (household_id IS NOT NULL);
 CREATE UNIQUE INDEX people_directories_owner_user_unique ON public.people_directories USING btree (owner_user_id) WHERE (owner_user_id IS NOT NULL);
+CREATE UNIQUE INDEX welfare_suggestions_pet_dedupe_idx ON public.welfare_suggestions USING btree (pet_id, dedupe_key);
+CREATE INDEX welfare_suggestions_pet_status_idx ON public.welfare_suggestions USING btree (pet_id, status);
 CREATE TRIGGER trg_clear_pinned_org_on_membership_loss AFTER DELETE OR UPDATE OF role ON public.organization_users FOR EACH ROW EXECUTE FUNCTION public.clear_pinned_org_on_membership_loss();
 ALTER TABLE ONLY public.account_device_labels
     ADD CONSTRAINT account_device_labels_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
@@ -1701,3 +1720,5 @@ ALTER TABLE ONLY public.weight_entries
     ADD CONSTRAINT weight_entries_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.weight_entries
     ADD CONSTRAINT weight_entries_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.welfare_suggestions
+    ADD CONSTRAINT welfare_suggestions_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;

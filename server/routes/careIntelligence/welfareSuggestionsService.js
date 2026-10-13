@@ -139,7 +139,6 @@ export async function respondToWelfareSuggestion(
   );
   if (recResult.rows.length === 0) return undefined;
 
-  const row = recResult.rows[0];
   if (action === 'dismiss') {
     const dismissedUntil = addSuppressDays(now);
     const updated = await pool.query(
