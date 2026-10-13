@@ -3,7 +3,7 @@ title: Pet profile decisions
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-10-12
+last_updated: 2026-10-13
 tags: [pet_profile, decisions]
 domain: pet_profile
 feature_id: pet-profile-decisions
@@ -76,6 +76,19 @@ Organisation v2 **last-activity sorting** for the 12-pet profile preview uses a 
 
 - Pets belong to a guardian account; foster pets appear via organisation custody (see organization / fostering domains).
 - Calendar dates on the wire use `YYYY-MM-DD` ([calendar-dates.md](/docs/architecture/calendar-dates.md)).
+
+### Pet write API (POST / PUT)
+
+| ID | Decision | Status |
+|----|----------|--------|
+| **D39** | `POST /api/pets` with a client-supplied `id` that already exists on another user's pet returns **409** `{ error: "Pet id already in use" }` and performs **no** weight side-effect. Same-user id re-post remains an upsert (offline sync). | locked |
+| **D40** | `PUT /api/pets/:id` is **partial-safe**: omitted JSON keys retain stored values; explicit `null` clears nullable fields (`organization_id`, `chipId`, and other nullable profile fields). OpenAPI documents **PUT only** (no PATCH). The Flutter client sends the full `Pet` map on save; partial bodies are supported for integrators and scripts. Organisation membership is still enforced when `organization_id` changes. | locked |
+
+| Requirement | Coverage |
+|-------------|----------|
+| D39 — foreign id conflict | `test: server/test/pets/petCoreCommand.test.js#returns 409 when client id is already owned by another user and does not write weight` |
+| D40 — partial PUT preserves fields | `test: server/test/pets/petCoreCommand.test.js#preserves passedAway, chipId, and organization_id when only name is sent` |
+| D40 — explicit null clears | `test: server/test/pets/petCoreCommand.test.js#clears organization_id and chipId when explicit null is sent` |
 
 ### Sharing section on pet detail
 
@@ -184,7 +197,7 @@ Private per-user labels for organizing and filtering pets on `/pc/pets`. No shar
 
 | ID | Requirement | Status |
 |----|-------------|--------|
-| **ACJ-PF-001** | `identification_status` / `neuter_status` enum `yes \| no \| unknown` on `pets` (migration `099_pet_profile_facts`) | Live (integration) |
+| **ACJ-PF-001** | `identification_status` / `neuter_status` enum `yes \| no \| unknown` on `pets` (migration `100_pet_profile_facts`) | Live (integration) |
 | **ACJ-PF-003** | PUT merge: status + dismiss fields + `chip_id` kept when omitted; normalise chip ↔ status per programme | Live (integration) |
 | **ACJ-PF-004** | Provenance columns `*_status_source`, `*_status_updated_at` on wire + DB | Live (integration) |
 | **ACJ-PF-005** | View-only PUT → 403; invalid enum → 400 | Live (integration) |

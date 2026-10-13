@@ -15,8 +15,9 @@ export async function findOverlapWarnings(
   startsOn,
   endsOn,
   excludeAbsenceId = null,
+  todayIso = null,
 ) {
-  const todayIso = await resolvePlannedAbsenceTodayIso(pool, userId);
+  const activeTodayIso = todayIso ?? await resolvePlannedAbsenceTodayIso(pool, userId);
   const result = await pool.query(
     `SELECT pa.id, pa.starts_on, pa.ends_on, pap.pet_id
      FROM planned_absences pa
@@ -25,7 +26,7 @@ export async function findOverlapWarnings(
        AND pa.status != $2
        AND pa.ends_on >= $3::date
        AND pap.pet_id = ANY($4::uuid[])`,
-    [userId, PLANNED_ABSENCE_STATUS_CANCELLED, todayIso, petIds]
+    [userId, PLANNED_ABSENCE_STATUS_CANCELLED, activeTodayIso, petIds]
   );
   const warnings = [];
   for (const row of result.rows) {
@@ -44,13 +45,19 @@ export async function findOverlapWarnings(
   return warnings;
 }
 
-export async function loadOverlapCandidatesForAbsences(pool, userId, absences, petsByAbsence) {
+export async function loadOverlapCandidatesForAbsences(
+  pool,
+  userId,
+  absences,
+  petsByAbsence,
+  todayIso = null,
+) {
   if (!absences.length) return [];
   const petIds = [...new Set(
     absences.flatMap((row) => (petsByAbsence.get(row.id) || []).map((pet) => pet.pet_id))
   )];
   if (!petIds.length) return [];
-  const todayIso = await resolvePlannedAbsenceTodayIso(pool, userId);
+  const activeTodayIso = todayIso ?? await resolvePlannedAbsenceTodayIso(pool, userId);
   const result = await pool.query(
     `SELECT pa.id, pa.starts_on, pa.ends_on, pap.pet_id
      FROM planned_absences pa
@@ -59,7 +66,7 @@ export async function loadOverlapCandidatesForAbsences(pool, userId, absences, p
        AND pa.status != $2
        AND pa.ends_on >= $3::date
        AND pap.pet_id = ANY($4::uuid[])`,
-    [userId, PLANNED_ABSENCE_STATUS_CANCELLED, todayIso, petIds]
+    [userId, PLANNED_ABSENCE_STATUS_CANCELLED, activeTodayIso, petIds]
   );
   return result.rows;
 }

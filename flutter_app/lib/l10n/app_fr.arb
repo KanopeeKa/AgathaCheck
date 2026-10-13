@@ -372,6 +372,7 @@
     }
   },
   "careSuggestionRespondFailed": "Impossible de mettre à jour cette suggestion. Réessayez.",
+  "notificationSuggestionAcceptUnavailable": "Cette suggestion n'est pas encore prête. Actualisez votre boîte de réception.",
   "careSafeguardDismissFailed": "Impossible d'ignorer. Réessayez.",
   "careSuggestionEditForbidden": "Vous pouvez consulter les soins de cet animal, mais pas ajouter de routines.",
   "notificationSuggestionVetDisclaimer": "Agatha n'est pas vétérinaire. En cas d'inquiétude, parlez-en à votre vétérinaire.",
@@ -1738,6 +1739,7 @@
   "consentMarketingDescription": "Nous permet de vous envoyer des mises à jour et offres pertinentes concernant les fonctionnalités et services d'AgathaTrack.",
   "consentSavePreferences": "Enregistrer les préférences",
   "consentPreferencesSaved": "Préférences de confidentialité enregistrées",
+  "consentPreferencesSaveFailed": "Impossible d'enregistrer vos préférences. Réessayez.",
   "consentLastUpdated": "Dernière mise à jour : {timestamp}",
   "@consentLastUpdated": { "placeholders": { "timestamp": { "type": "String" } } },
 

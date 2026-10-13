@@ -9,7 +9,7 @@ Pointer-only. Do not copy procedures from the files linked here.
 
 ## Pre-PR order
 
-Same order as `.cursor/skills/babysit-plus/SKILL.md` §Pre-PR critical review:
+`.cursor/rules/pr-hygiene.mdc` §Pre-PR critical self-review:
 correctness → risks → design → better solution → **documentation sync**
 (`/canonical-docs sync`) → verification (`./scripts/pre-push-changed.sh`).
 
@@ -29,6 +29,7 @@ push; never defer it to a debt issue.
 ## Everything else
 
 - Triage and debt conventions: `docs/agent-efficiency/autonomous-pr-policy.md`.
-- Cursor-only mechanics do not apply to Claude Code: the `composer-2.5` model,
-  `ManagePullRequest` and merge-lease scripts. Claude Code merges a PR only
-  when the user explicitly asks, once CI is green and no review thread is open.
+- Cursor-only mechanics do not apply to Claude Code (see `CLAUDE.md` §Claude Code mechanics).
+- Merging: `AGENTS.md` §Autonomy and merging — when the user asked you to merge
+  or babysit the PR, or execute-plan gate exits `0`; squash once merge gates pass
+  (CI green, no open review thread).

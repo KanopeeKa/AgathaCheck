@@ -258,9 +258,6 @@ export async function applySuggestionFeedback(pool, userId, notificationId, acti
   return { notification: updated.rows[0] };
 }
 
-/**
- * FR-FB-2 — suppress suggestion type for a pet until suggestion_expires_at on archived rows.
- */
 const SUGGESTION_SUPPRESS_STATES = ['dismissed', 'not_relevant', 'expired'];
 
 /**
@@ -291,7 +288,10 @@ export async function isSuggestionDedupeSuppressedForUser(
   return new Date(row.suggestion_expires_at) > now;
 }
 
-/** @deprecated Prefer isSuggestionDedupeSuppressedForUser at generation time. */
+/**
+ * FR-FB-2 — suppress suggestion type for a pet until suggestion_expires_at on archived rows.
+ * @deprecated Prefer isSuggestionDedupeSuppressedForUser at generation time.
+ */
 export async function isSuggestionTypeSuppressedForPet(pool, userId, petId, wireType) {
   const result = await pool.query(
     `SELECT 1 FROM notifications

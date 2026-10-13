@@ -1,70 +1,42 @@
 ---
-description: Slim always-on agent pointers — Router, five commands, links to docs and path-scoped rules
+description: Cursor-only entry — Tier 1 commands, Router, path-scoped rules (shared rules in AGENTS.md)
 alwaysApply: true
 ---
 
-# Agent core (AgathaTrack)
+# Agent core (Cursor)
+
+**Shared operating rules:** [`AGENTS.md`](../../AGENTS.md) §Operating rules · **Architecture:** [`docs/agent-efficiency/agent-instructions.md`](../../docs/agent-efficiency/agent-instructions.md)
 
 ## Start here
 
-- **Domain map:** `docs/architecture/index.md` (read before broad search)
-- **Cursor framework:** `docs/engineering/cursor-agent-framework.md` · Router: `.cursor/agent-kernel/ROUTER.md`
-- **Efficiency plan:** `docs/agent-efficiency/plans/agent-efficiency-plan.md`
-- **Sprint status:** `docs/debt/refactoring-log.md`
-- **Institutional memory:** `.agents/memory/MEMORY.md`
+- Domain map: `docs/architecture/index.md`
+- Framework + Router: `docs/engineering/cursor-agent-framework.md` · `.cursor/agent-kernel/ROUTER.md`
+- Sprint log: `docs/debt/refactoring-log.md` · Lessons: `.agents/memory/MEMORY.md`
 
-## Tier 1 commands (normal use)
+## Tier 1 commands
 
 | Command | Use for |
 |---------|---------|
-| `/execute-plan` | Multi-phase autonomous plans — gate exit `0` = proceed without asking |
-| `/babysit-plus` | Bounded autonomous work → PR triage, CI, merge |
-| `/babysit-uat` | **Final** merge to `main` + pre-UAT E2E gate |
-| `/e2e-debug` | Pre-UAT remedial fix loop (chains to babysit-uat) |
-| `/ui-design-deep` | Flow/theme/multi-screen design + implementation |
+| `/execute-plan` | Multi-phase plans — [`execute-plan` skill](../skills/execute-plan/SKILL.md) |
+| `/babysit-plus` | PR triage, CI, merge |
+| `/babysit-uat` | Final merge to `main` + pre-UAT |
+| `/e2e-debug` | Pre-UAT remedial → chain babysit-uat |
+| `/ui-design-deep` | Multi-screen design + implementation |
 
-Each Tier 1 skill runs the **Engineering Router** first (profile per skill), then loads only applicable **protocols** under `.cursor/agent-kernel/protocols/`.
+Each Tier 1 skill runs the **Router** first, then applicable protocols under `.cursor/agent-kernel/protocols/`.
 
 ## Definition of done
 
-Complete when the requested outcome **and** Router-determined verification pass: tests, lint/pre-push, contracts, migrations, security checks, docs — as applicable. Not merely “looks working.” Details: Router + `docs/engineering/cursor-agent-framework.md`.
+Requested outcome + Router `verification[]` (tests, pre-push, docs, etc.) — see framework doc.
 
 ## PR hygiene
 
-- **Pre-PR critical self-review** — `.cursor/rules/pr-hygiene.mdc`
-- **Babysit model:** `composer-2.5` only for `/babysit`, `/babysit-plus`, `/babysit-uat`
-- Policy: `docs/agent-efficiency/pr-review-cost-efficiency.md`
+`.cursor/rules/pr-hygiene.mdc` → `docs/agent-efficiency/pr-review-cost-efficiency.md`
 
-## Pre-push
+## Pre-push / toolchain / Cloud
 
-| When | Command |
-|------|---------|
-| During iteration | `./scripts/pre-push-changed.sh` |
-| Before merge to `main` | `./scripts/pre-push.sh` |
-
-Skill: `/pre-push-verify`. Do not duplicate in chat — run the script.
-
-## Internal / advanced (Tier 2)
-
-`/spawn-sprint-agents` · `/pre-push-verify` · `/dependabot-batch` · `/split-flutter-screen` · `/add-bdd-playwright-scenario`
-
-Orchestrators invoke these; not equivalent to Tier 1.
-
-## Non-negotiables
-
-- Hand-written files ≤ **500 lines** (`node scripts/check_file_size.js`)
-- BDD gate: `node e2e/scripts/check_bdd_coverage.js --report-only`
-- Node.js canonical backend; calendar dates `YYYY-MM-DD` on wire
-- Never raw exception text in prod 5xx bodies
-- **UAT WAF:** no CI IP whitelist — live E2E advisory; see `docs/e2e/uat-deploy-tiers.md`
-- **Atomic PRs:** one verifiable outcome — `docs/agent-efficiency/atomic-pr-policy.md`
-
-## Cloud environment
-
-PostgreSQL: `sudo pg_ctlcluster 16 main start`  
-Backend: `cd server && PGUSER=user PGPASSWORD=password PGHOST=localhost PGPORT=5432 PGDATABASE=agatha_db node bin/start.js`  
-Full: `AGENTS.md`.
+[`AGENTS.md`](../../AGENTS.md) · Cursor Cloud: [`docs/engineering/cursor-cloud-environment.md`](../../docs/engineering/cursor-cloud-environment.md)
 
 ## Path-scoped rules
 
-`modularity.mdc` · `testing.mdc` · `security.mdc` · `single-backend.mdc` · `accessibility.mdc` · `design.mdc` · `pet-care-architecture.mdc` · `agent-coordination.mdc`
+`modularity.mdc` · `testing.mdc` · `security.mdc` · `single-backend.mdc` · `accessibility.mdc` · `design.mdc` · `pet-care-architecture.mdc` · `agent-coordination.mdc` · `atomic-pr.mdc` · `merge-policy.mdc` · `documentation.mdc` · `pr-hygiene.mdc`

@@ -1164,6 +1164,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Could not update this suggestion. Try again.';
 
   @override
+  String get notificationSuggestionAcceptUnavailable =>
+      'This suggestion isn\'t ready yet. Try refreshing your inbox.';
+
+  @override
   String get careSafeguardDismissFailed => 'Could not dismiss this. Try again.';
 
   @override
@@ -4995,6 +4999,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get consentPreferencesSaved => 'Privacy preferences saved';
+
+  @override
+  String get consentPreferencesSaveFailed =>
+      'Could not save your preferences. Try again.';
 
   @override
   String consentLastUpdated(String timestamp) {

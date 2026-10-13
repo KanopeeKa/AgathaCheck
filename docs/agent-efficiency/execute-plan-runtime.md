@@ -3,7 +3,7 @@ title: Execute Plan Runtime
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-22
+last_updated: 2026-10-12
 tags: [agent-efficiency, policy]
 ---
 # Execute-plan runtime (Phase C)
@@ -50,7 +50,13 @@ node scripts/execute_plan_runtime.js gate example-plan \
   --labels execute-plan,plan:example-plan,autonomous-approved
 ```
 
-Exit `0` = proceed; exit `2` = halt (JSON reason on stdout).
+Exit `0` = proceed; exit `2` = halt (JSON on stdout).
+
+On exit `0`, stdout includes JSON (`next_action`, `agent_next_step`) and a final line `NEXT: <concrete tool step>` — run that immediately; preflight is not a deliverable. `/execute-plan` means **resume** the programme, not permission to start the next phase.
+
+On exit `2` with `code: expired`, a `UNBLOCK:` line gives `approve-autonomous` + `resume-plan` only (no phase re-selection).
+
+While gate exit is `0`, see `AGENTS.md` §Execute-plan and [execute-plan-instruction-stack.md](./execute-plan-instruction-stack.md).
 
 ### Resume check
 

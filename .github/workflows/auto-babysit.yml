@@ -2,7 +2,7 @@ name: Auto Babysit PR
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, edited, ready_for_review]
+    types: [opened, synchronize, reopened]
   workflow_dispatch:
     inputs:
       pr_number:

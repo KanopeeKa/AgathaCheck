@@ -72,7 +72,7 @@ Run **all** of `/babysit-plus` **§Pre-PR critical review** (including `/canonic
 2. **Always squash-merge** when gates pass (no `manual` / `labeled` modes)
 3. Record `merge_sha` from merged PR
 
-**Stop babysit-plus scope here** — continue into Phase 2 in this skill only.
+**Babysit-plus scope ends here** (not the session or turn) — continue into Phase 2 of this skill only.
 
 ---
 

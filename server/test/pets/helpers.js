@@ -71,20 +71,11 @@ async function defaultPetPoolHandler(sql, params) {
       if (sql.includes('SELECT photo_path FROM pets')) {
         return { rows: [{ photo_path: null }] };
       }
-      if (sql.includes('SELECT * FROM pets WHERE id = $1')) {
+      if (sql.includes('FROM pets WHERE id = $1') && sql.includes('SELECT')) {
+        if (sql.includes('organization_id') && !sql.includes('*')) {
+          return { rows: [{ organization_id: 'org-uuid-1' }] };
+        }
         return { rows: [makePetRow()] };
-      }
-      if (sql.includes('SELECT organization_id, photo_path') && sql.includes('FROM pets')) {
-        return {
-          rows: [{
-            organization_id: null,
-            photo_path: null,
-            weight_reference_value: null,
-            weight_reference_authority: null,
-            weight_management_context: 'none',
-            home_timezone: 'UTC',
-          }],
-        };
       }
       if (sql.includes('SELECT home_timezone FROM pets')) {
         return { rows: [{ home_timezone: 'UTC' }] };
@@ -183,7 +174,7 @@ async function defaultPetPoolHandler(sql, params) {
       if (sql.includes('SELECT organization_id FROM pets')) {
         return { rows: [{ organization_id: 'org-uuid-1' }] };
       }
-      if (sql.includes('SELECT organization_id, photo_path') && sql.includes('FROM pets')) {
+      if (sql.includes('FROM pets WHERE id = $1') && sql.includes('SELECT')) {
         return { rows: [{ organization_id: 'org-uuid-1', photo_path: '/uploads/fluffy.jpg' }] };
       }
       if (sql.includes('SELECT 1 FROM organization_users')) {

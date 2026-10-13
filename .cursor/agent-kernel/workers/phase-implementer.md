@@ -18,10 +18,11 @@ Use with Task `generalPurpose` from `/execute-plan` phase implementation.
 4. Run `/canonical-docs sync` (Mode A) before handback when the diff changes behaviour
 5. Run `./scripts/pre-push-changed.sh` after logical batches
 6. Commit on phase branch: `phase(<id>/<total>): <type>: <description>`
-7. Return: summary, files changed, tests run, risks, blockers
+7. Return to **orchestrator only:** summary, files changed, tests run, risks, blockers (never address the user)
 
 ## Must NOT
 
 - Redefine shared architecture (auth, AuthZ, API errors, validation conventions, session, storage)
-- Merge or open PR (orchestrator owns babysit+)
+- Merge or open PR (orchestrator owns PR + babysit+ through merge)
+- Address the user in chat — orchestrator continues the phase loop after handback
 - Expand scope beyond phase outcome — flag split need to orchestrator

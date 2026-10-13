@@ -1177,6 +1177,10 @@ class AppLocalizationsFr extends AppLocalizations {
       'Impossible de mettre à jour cette suggestion. Réessayez.';
 
   @override
+  String get notificationSuggestionAcceptUnavailable =>
+      'Cette suggestion n\'est pas encore prête. Actualisez votre boîte de réception.';
+
+  @override
   String get careSafeguardDismissFailed => 'Impossible d\'ignorer. Réessayez.';
 
   @override
@@ -5075,6 +5079,10 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get consentPreferencesSaved =>
       'Préférences de confidentialité enregistrées';
+
+  @override
+  String get consentPreferencesSaveFailed =>
+      'Impossible d\'enregistrer vos préférences. Réessayez.';
 
   @override
   String consentLastUpdated(String timestamp) {

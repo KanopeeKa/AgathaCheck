@@ -3,7 +3,7 @@ title: Sharing specs
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-10-08
+last_updated: 2026-10-13
 tags: [domain,sharing,specs]
 domain: sharing
 feature_id: sharing
@@ -21,6 +21,8 @@ Pet access, share links, email invites, and collaborator roles (`sharing.feature
 | **SH-2** | Email invites with role (`carer` / `co_parent`) and `/invite/:code` landing. | delivered |
 | **SH-3** | Hide shared pet from home list without revoking access. | delivered |
 | **SH-4** | Invalid/expired tokens show appropriate errors. | delivered |
+| **SH-5** | `POST /api/share/invites` returns the same `delivery` shape whether or not `invitee_email` is registered (no account enumeration). | delivered |
+| **SH-6** | Accept/decline require the signed-in user's id (when `invitee_user_id` is set) and email on file to match the invite; JWT email alone is insufficient. | delivered |
 
 ## User journeys
 
@@ -77,10 +79,10 @@ Server splits management checks in `server/lib/petAccess.js`:
 
 | Method | Path | Notes |
 |--------|------|-------|
-| POST | `/api/share/invites` | Body `{ invitee_email, pet_ids, role }` — atomic 403 if any pet fails `userCanSharePet` |
+| POST | `/api/share/invites` | Body `{ invitee_email, pet_ids, role }` — atomic 403 if any pet fails `userCanSharePet`; response `delivery` is always `{ status: 'queued' }` (SH-5) |
 | GET | `/api/share/invites/code/:code` | Public preview (rate-limited) |
-| POST | `/api/share/invites/code/:code/accept` | Auth required; idempotent; may upgrade `carer` → `co_parent` |
-| POST | `/api/share/invites/:id/decline` | Auth required |
+| POST | `/api/share/invites/code/:code/accept` | Auth required; idempotent; may upgrade `carer` → `co_parent`; invitee must match invite email on file and `invitee_user_id` when set (SH-6) |
+| POST | `/api/share/invites/:id/decline` | Auth required; same invitee checks as accept (SH-6) |
 | DELETE | `/api/share/invites/:id` | Cancel (inviter or owner/co-parent on pets) |
 | GET | `/api/pets/:id/invites` | Pending invites for one pet |
 | GET | `/api/share/access?pet_ids=` | Aggregate access + pending invites (max 20 ids) |
@@ -121,6 +123,13 @@ Canonical: [people-care-team.md](/docs/domains/people/features/people-care-team.
 | Hidden share (Stop following) | Removes access | Direct shares only (D27) |
 
 Effective access is the highest of household membership, direct share and absence access, evaluated when read. Every grant and revocation is audited (this closes the audit-logging item below).
+
+## Decision log
+
+| ID | Decision | Status |
+|----|----------|--------|
+| **SH-D-001** | Invite-create `delivery` must not expose `notification` or per-channel email status (review follow-ups programme item 10). | Live |
+| **SH-D-002** | `isInvitee` is strict AND: normalized invite email equals the user's stored email; when `invitee_user_id` is non-null it must equal the authenticated user id (item 11). | Live |
 
 ## Deferred
 

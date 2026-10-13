@@ -3,10 +3,10 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const migrationPath = path.resolve(__dirname, '../../../db/migrations/100_welfare_suggestions.sql');
-const downPath = path.resolve(__dirname, '../../../db/migrations/100_welfare_suggestions_down.sql');
+const migrationPath = path.resolve(__dirname, '../../../db/migrations/101_welfare_suggestions.sql');
+const downPath = path.resolve(__dirname, '../../../db/migrations/101_welfare_suggestions_down.sql');
 
-describe('100_welfare_suggestions migration', () => {
+describe('101_welfare_suggestions migration', () => {
   const sql = fs.readFileSync(migrationPath, 'utf8');
   const downSql = fs.readFileSync(downPath, 'utf8');
 

@@ -2090,6 +2090,12 @@ abstract class AppLocalizations {
   /// **'Could not update this suggestion. Try again.'**
   String get careSuggestionRespondFailed;
 
+  /// No description provided for @notificationSuggestionAcceptUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'This suggestion isn\'t ready yet. Try refreshing your inbox.'**
+  String get notificationSuggestionAcceptUnavailable;
+
   /// No description provided for @careSafeguardDismissFailed.
   ///
   /// In en, this message translates to:
@@ -8900,6 +8906,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Privacy preferences saved'**
   String get consentPreferencesSaved;
+
+  /// No description provided for @consentPreferencesSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save your preferences. Try again.'**
+  String get consentPreferencesSaveFailed;
 
   /// No description provided for @consentLastUpdated.
   ///

@@ -14,9 +14,9 @@ on:
   workflow_dispatch:
     inputs:
       force_full:
-        description: Run full Flutter stack (ignore path scope)
+        description: Run full Flutter stack (ignore path scope). Enable only for audits or when path scope is wrong.
         type: boolean
-        default: true
+        default: false
 
 concurrency:
   group: ci-${{ github.event.pull_request.number || github.run_id }}

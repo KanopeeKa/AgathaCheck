@@ -105,10 +105,11 @@
     "096_account_device_labels.sql",
     "097_suggestion_daily_scheduler.sql",
     "098_planned_absence_title.sql",
-    "099_pet_profile_facts.sql",
-    "100_welfare_suggestions.sql",
-    "101_pet_vaccination_records.sql",
-    "102_vet_visits.sql"
+    "099_scheduler_daily_run_lease.sql",
+    "100_pet_profile_facts.sql",
+    "101_welfare_suggestions.sql",
+    "102_pet_vaccination_records.sql",
+    "103_vet_visits.sql"
   ],
   "code_migrations": [
     "016_migrate_family_events_placements.sql",

@@ -9,7 +9,6 @@ on:
 permissions:
   contents: read
   actions: read
-  issues: write
 
 jobs:
   kpis:
@@ -44,6 +43,11 @@ jobs:
     name: Weekly docs hygiene
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    permissions:
+      contents: read
+      issues: write
+    env:
+      DOCS_GATE_MODE: warn
     steps:
       - uses: actions/checkout@v5
         with:
@@ -59,10 +63,25 @@ jobs:
       - name: Collect docs hygiene findings
         id: hygiene
         run: |
-          node scripts/check_docs_canonical.js --changes --all > changes-report.txt 2>&1 || true
-          node scripts/check_docs_canonical.js --ids --report-duplicates > dup-report.txt 2>&1 || true
-          node scripts/check_docs_canonical.js --trace --closed-issues > trace-report.txt 2>&1 || true
-          node scripts/check_docs_canonical.js --memory --all > memory-report.txt 2>&1 || true
+          set -uo pipefail
+          collect() {
+            local out="$1"
+            shift
+            set +e
+            "$@" >"$out" 2>&1
+            local code=$?
+            set -e
+            echo "${out%.txt}=$code" >> collection-exits.env
+            if [[ "$code" -gt 1 ]]; then
+              echo "::error::Unexpected exit $code from: $*"
+              exit "$code"
+            fi
+          }
+          : > collection-exits.env
+          collect changes-report.txt node scripts/check_docs_canonical.js --changes --all
+          collect dup-report.txt node scripts/check_docs_canonical.js --ids --report-duplicates
+          collect trace-report.txt node scripts/check_docs_canonical.js --trace --closed-issues
+          collect memory-report.txt node scripts/check_docs_canonical.js --memory --all
           node scripts/check_docs_canonical.js --baseline-report > baseline-report.json
           node scripts/check_docs_canonical.js --report --json > docs-trace.json
 
@@ -96,7 +115,7 @@ jobs:
           \`\`\`
           $(cat baseline-report.json)
           \`\`\`"
-          EXISTING=$(gh issue list --label docs-hygiene --search "in:title Docs hygiene weekly" --json number --jq '.[0].number' || true)
+          EXISTING=$(gh issue list --label docs-hygiene --search "in:title Docs hygiene weekly" --state all --limit 1 --json number --jq 'if length > 0 then .[0].number else "" end')
           if [[ -z "$EXISTING" ]]; then
             gh issue create --title "Docs hygiene weekly" --label tech-debt --label docs-hygiene --body "$BODY"
           else

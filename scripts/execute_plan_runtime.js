@@ -141,6 +141,12 @@ function runSync(cmd, planId, flags) {
         validateSnapshot(snapshot);
         const result = checkAutonomyGate(snapshot, { labels: flags.labels });
         printJson(result);
+        if (result.ok && result.agent_next_step) {
+          console.log(`NEXT: ${result.agent_next_step}`);
+        }
+        if (!result.ok && result.code === 'expired' && result.unblock) {
+          console.log(`UNBLOCK: ${result.unblock}`);
+        }
         process.exit(result.ok ? 0 : 2);
       }
 

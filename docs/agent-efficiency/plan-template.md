@@ -166,6 +166,12 @@ Output: `proceed` | `proceed-high-risk` | `reject`
 
 ---
 
+## Turn boundary / orchestrator contract
+
+When this plan runs under **`autonomy: active`** (gate exit `0`), the orchestrator follows `.cursor/skills/execute-plan/SKILL.md` **§Stop rules** and [execute-plan-instruction-stack.md](./execute-plan-instruction-stack.md). Phase merges and babysit+ completion are **not** programme stops. User chat is for blocker alerts and post-`complete-plan` summary only.
+
+---
+
 ## Revoke and resume
 
 | Action | How |

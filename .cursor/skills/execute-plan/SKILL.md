@@ -1,101 +1,35 @@
 ---
 name: execute-plan
 description: >-
-  Multi-phase autonomous orchestrator — runs frozen plan snapshots phase-by-phase,
-  gates on merge-done, delegates PR hygiene to /babysit-plus (default merge mode auto).
-  Post-merge UAT is CI-owned (pre-uat-e2e) — main session never polls deploy.
-  May spawn Task sub-agents per phase for implementation; integration base_branch required for 2+ phases.
+  Multi-phase autonomous orchestrator — frozen snapshot, phase loop, babysit+/uat.
+  Contract: AGENTS.md §Operating rules › Execute-plan. Valid stops: §Stop rules below.
 ---
 
 # Execute-plan
 
-Multi-phase autonomous orchestrator. Drives work from a **frozen snapshot** (`.agents/plans/<plan_id>.snapshot.json`) and live plan (`.agents/plans/<plan_id>.md`), one phase at a time.
+Orchestrates `.agents/plans/<plan_id>.{md,snapshot.json}` one phase at a time.
 
-**Memory:** [.agents/memory/execute-plan-autonomy.md](../../../.agents/memory/execute-plan-autonomy.md)
+**Contract (gate exit `0`):** [`AGENTS.md`](../../AGENTS.md) §Operating rules › Execute-plan · [`execute-plan-instruction-stack.md`](../../docs/agent-efficiency/execute-plan-instruction-stack.md) · [`.agents/memory/execute-plan-autonomy.md`](../../../.agents/memory/execute-plan-autonomy.md)
 
-## Autonomy contract
+## Stop rules (gate exit `0`)
 
-When session preflight **gate** exits `0`, autonomy is **active**. You have upfront approval — **do not ask the human for permission** to implement, open/update PRs, babysit+, merge (`auto`), advance phases, or resume after `session_limit`.
+When `node scripts/execute_plan_runtime.js gate <plan_id>` exits **`0`**, run-until-blocked. Escalation: [autonomous-pr-policy.md](../../docs/agent-efficiency/autonomous-pr-policy.md) §Escalation.
 
-| Do | Do not |
-|----|--------|
-| Run gate every session; treat exit `0` as green light | Ask "shall I continue?" or "want me to proceed?" in user chat |
-| **Run-until-blocked** — stay in the phase loop until merge-done, `complete-plan`, or §Halt | End a turn after a milestone, PR open, or CI step and wait for the human |
-| Post milestones on the **control issue** (telemetry only — not a stop signal) | Use user chat for permission-seeking mid-flow |
-| Loop to the next phase immediately after merge-done | Wait for prod-ready UAT before the next phase |
-| When a standing grant covers a multi-plan roadmap, auto-bootstrap the next `plan_id` and keep looping (see §Roadmap chaining) | End a turn with a soft offer ("let me know", "whenever you want", "say which wave and I'll bootstrap") for scope already granted |
-| Halt only on §Halt / §Escalation list | Treat turn boundaries, milestones, or non-blocking follow-ups as checkpoints |
+| Valid stops | Not stops (in-loop — continue) |
+|-------------|--------------------------------|
+| `complete-plan` → brief user chat OK | PR opened; CI green; babysit+ squash-merge |
+| §Halt / §Escalation (revoke, `expired`, gate `2`, drift, CI/debt/merge failure, unclear goal, …) | Phase merged → next phase; worker returned |
+| `session_limit` (~24h): `halt` + blocker alert; `resume-plan` | Control-issue telemetry; plan-only bootstrap commit |
+| | e2e-debug → chain `/babysit-uat`; merge-lease FIFO wait |
+| | Platform ended turn → resume via tools / next `/execute-plan` (no permission chat) |
 
-**Anti-pattern (soft-stop):** phrases like "I can spin up the next plan on request," "whenever you want to keep going," or "say which wave and I'll bootstrap it" are permission-seeking even though they don't look like a question. If the human's chat authorization already names the remaining scope (multiple journeys/waves, "all phases," "the entire plan/roadmap"), treat that as the standing grant for every plan it covers — do not re-ask per slice.
+User chat until `complete-plan`: blocker alerts only (see AGENTS.md). Milestones → control issue, PR body, `/opt/cursor/artifacts/`.
 
-**User chat (blocker alerts only):** post a short alert when you **need the human** (halt, `**Needs you:**`, escalation, `session_limit`) — full detail on the **control issue** first, then one paragraph in chat with the issue link and unblock action. Do **not** send routine progress summaries that end the turn mid-phase. Non-blocking follow-ups → debt issue or bundle only after `complete-plan` / §Halt. See §Scope follow-ups and §Issue hygiene.
+**Policy detail (do not restate here):** [autonomous-pr-policy.md](../../docs/agent-efficiency/autonomous-pr-policy.md) · [execute-plan-schema.md](../../docs/agent-efficiency/execute-plan-schema.md) · [execute-plan-runtime.md](../../docs/agent-efficiency/execute-plan-runtime.md) · [phase-exit-checklists.md](../../docs/agent-efficiency/phase-exit-checklists.md) · [plan-template.md](../../docs/agent-efficiency/plan-template.md)
 
-## Orchestrator visibility (Cloud — mandatory when gate exit 0)
+**PR hygiene:** `/babysit-plus` (phase PRs) · `/babysit-uat` (final → `main`) — never plain `/babysit`. Pre-PR review + docs: [pr-review-cost-efficiency.md](../../docs/agent-efficiency/pr-review-cost-efficiency.md). **Merge:** squash when gates pass (`default_merge_mode: auto`).
 
-You are the **orchestrator**, not a milestone reporter.
-
-1. **No routine user chat** until `complete-plan` or a real §Halt / §Escalation.
-2. **Control issue only** for progress (PR opened, CI green, phase merged). Telemetry is not permission to stop.
-3. **Forbidden mid-plan chat:** summaries, test walkthroughs, "PR #N is open", "CI is green", "next phase is…", soft offers to continue.
-4. **Allowed user chat:** blocker alerts only — one short paragraph + control issue link (`**Needs you:**`, revoke, `session_limit`, genuine escalation).
-5. If the platform ends the turn anyway, next session continues with `/execute-plan` or `resume-plan` — never re-ask for approval when the standing grant still applies.
-
-**Overrides:** This section wins over generic "show the user evidence" and "update PR each turn" **for execute-plan orchestrator sessions**. Put evidence in the PR body and control-issue comments; do not end the turn to narrate them.
-
-## Run-until-blocked (default mode)
-
-**Default:** after gate exit `0`, keep executing the phase loop **without sending a final user response** until one of:
-
-1. Phase gate = **merge-done** (and pre-UAT green when final PR targets `main`) → advance or `complete-plan`
-2. Plan **`complete-plan`** finished
-3. Real **§Halt / §Escalation** (including `session_limit` ~24h — the only routine checkpoint)
-4. Pod hard stop imminent — `halt --reason session_limit` with `next_action`; human comments `resume-plan` on control issue
-
-**Not valid stop points:** PR opened, CI green, control-issue milestone, worker returned, e2e-debug remedial PR opened, "next: babysit+". Those are **in-loop steps** — continue immediately.
-
-**Cloud turns:** a user-visible reply ends the turn. Prefer **long tool-only stretches** (implement → PR → babysit+ → merge → next phase) before any chat output. If the platform ends the turn anyway, the next message should be `/execute-plan` (no id) or `resume-plan` on the control issue — not a permission question.
-
-**e2e-debug handoff:** pre-UAT failure → `/e2e-debug` → **mandatory `/babysit-uat`** on the remedial PR in the **same session**. Never stop after e2e-debug with an open remedial PR.
-
-**Handoff (chat → autonomous):** Discuss and shape the plan in chat; freeze snapshot + control issue; human grants once (`approve-autonomous <plan_id>` or standing grant in `approved_by`). After `/execute-plan` gate exit `0`, **full handover** — no permission prompts for implement, PR, babysit+, merge, or next phase.
-
-**Human checkpoint (no manual merge):** use `halt` on the control issue + chat alert; human acts on the issue (`resume-plan`, `approve-autonomous`, etc.) — agents always merge when gates pass.
-
-**Conflicting rules:** execute-plan snapshot wins over generic "stop and ask" guidance. Only halt when the **goal is unclear**, or §Escalation applies. Minor policy wording conflicts with clear intent → proceed. See autonomous-pr-policy §Execute-plan overrides.
-
----
-
-**Canonical policy (do not restate here):**
-
-- [autonomous-pr-policy.md](../../docs/agent-efficiency/autonomous-pr-policy.md) — triage, debt issues, merge modes, halt/resume
-- [execute-plan-schema.md](../../docs/agent-efficiency/execute-plan-schema.md) — snapshot fields, drift, status model
-- [execute-plan-runtime.md](../../docs/agent-efficiency/execute-plan-runtime.md) — CLI commands
-- [phase-exit-checklists.md](../../docs/agent-efficiency/phase-exit-checklists.md) — per-phase exit profiles
-- [github-labels.md](../../docs/agent-efficiency/github-labels.md) — control issue + debt labels
-- [plan-template.md](../../docs/agent-efficiency/plan-template.md) — authoring template
-
-**PR hygiene:** Delegate to **/babysit-plus** for intermediate phase PRs and **/babysit-uat** for the **final PR to `main`**. Never plain `/babysit` alone. Orchestrator babysit steps use **`composer-2.5` only**. Workers must complete **pre-PR critical self-review** and **`/canonical-docs sync`** when behaviour changes before opening/updating a PR (`docs/agent-efficiency/pr-review-cost-efficiency.md`).
-
-**Merge:** Always squash-merge when gates pass (no `manual` / `labeled` modes).
-
-**Engineering Router:** `.cursor/agent-kernel/ROUTER.md` · Framework: `docs/engineering/cursor-agent-framework.md`
-
----
-
-## Router (execute-plan)
-
-**Profile:** `full` at phase select + plan strengthen. **Skip strengthen** on resume-only sessions (babysit, CI watch, `next_action` already set).
-
-1. Read `ROUTER.md` — inspect, classify domains/surfaces, assign R0–R3, resolve protocols, map verification.
-2. **Strengthen** the phase/plan (gap analysis — not scope creep):
-   - Annotate: `router_risk`, `protocols[]`, `verification[]`, `docs_targets` (canonical doc paths the phase will update; `changes/` docs to fold or delete), `phase_fit: in-scope | split-required`
-   - Record `docs_targets` in plan markdown and on the control issue (no snapshot schema change)
-   - If new requirements fit phase outcome → include in implementation
-   - If additional independent outcome → **split phase** (update snapshot `allowed_paths`); do not mega-PR
-3. Delegate workers with `.cursor/agent-kernel/workers/phase-implementer.md` brief (risk + protocols + paths).
-4. R2+ before merge: integration review per `workers/integration-reviewer.md`.
-
-Resume-only: gate → resume-check → continue `next_action` — **no** full re-strengthen.
+**Router:** `.cursor/agent-kernel/ROUTER.md` — if execute-plan is active (gate `0`), re-read **AGENTS.md §Execute-plan** at classification. Profile `full` at phase select + strengthen; **skip strengthen** on resume-only (babysit, CI watch, `next_action` set).
 
 ---
 
@@ -103,384 +37,111 @@ Resume-only: gate → resume-check → continue `next_action` — **no** full re
 
 | Command | When |
 |---------|------|
-| `/execute-plan` | Continue the obvious active plan (see §Resolve plan_id) |
-| `/execute-plan <plan_id>` | Start or continue a specific plan when context names it |
-| `/execute-plan resume` | After human removed `autonomous-revoked` and commented `resume-plan` on control issue |
-| `/execute-plan <plan_id> resume` | Same, when multiple plans could match |
+| `/execute-plan` | Resume programme — same as continue; not permission to start next phase ([AGENTS.md](../../AGENTS.md)) |
+| `/execute-plan <plan_id>` | Named plan |
+| `/execute-plan resume` | After revoke removed + `resume-plan` on control issue |
 
-Do **not** invoke `/execute-plan example-plan` — `_example` is documentation-only.
+## Resolve `plan_id` (when omitted)
 
----
+1. This conversation / control issue link  
+2. Checked-out `cursor/*` or integration branch (snapshot on branch)  
+3. Control issue `plan:<id>` label  
+4. Roadmap parent → `roadmap-next-child`  
+5. Single open `busy` + `execute-plan` + `autonomous-approved`  
 
-## Resolve plan_id
-
-When `/execute-plan` is invoked **without** `plan_id`, infer from context (first match wins):
-
-1. **This conversation** — task, control issue link, or prior turn names the plan
-2. **Checked-out branch** — `cursor/<…>-<suffix>` or integration branch; load `.agents/plans/<plan_id>.snapshot.json` from that branch
-3. **Control issue in scope** — title/body or `plan:<id>` label on linked issue
-4. **Roadmap parent** — standing grant on a programme → `roadmap-next-child <roadmap_id>` for the active child
-5. **Single open `busy` issue** — exactly one open control issue with `execute-plan` + `autonomous-approved` + `busy`
-
-If **multiple** active approved plans match and context is ambiguous → `**Needs you:**` on the most recent control issue listing candidates; do not guess.
+Ambiguous → `**Needs you:**` on control issue; do not guess.
 
 ---
 
-## Inputs
+## Before `approve-autonomous` (plan authoring)
 
-| Input | Required | Notes |
-|-------|----------|-------|
-| `plan_id` | when ambiguous | Matches `.agents/plans/<plan_id>.{md,snapshot.json}`; omit when §Resolve plan_id yields one plan |
-| Frozen snapshot | yes | Validated, `autonomy: active`, `approved_until` in future |
-| Control issue | yes | Labels: `execute-plan`, `plan:<id>`, `autonomous-approved`; not `autonomous-revoked` |
-| Human approval | yes (first run) | Keyword `approve-autonomous <plan_id>` on control issue — **except** self-bootstrapped roadmap-chain plans, see §Roadmap chaining |
-
----
-
-## Before autonomy grant (human + agent sanity check)
-
-Run when drafting a plan, **before** `approve-autonomous`:
-
-1. Copy [plan-template.md](../../docs/agent-efficiency/plan-template.md) → `.agents/plans/<plan_id>.md`
-2. Author snapshot JSON; set **`default_merge_mode: auto`** (only valid value)
-3. Validate: `node scripts/validate_execute_plan_snapshot.js .agents/plans/<plan_id>.snapshot.json`
-4. Bootstrap control issue:
-   ```bash
-   node scripts/execute_plan_runtime.js init-control-issue <plan_id>
-   ```
-   Create issue via rendered `gh issue create` command; set `control_issue` in snapshot; re-validate.
-   **Project status:** new control issues enter **Backlog** (default when added to the project board).
-5. **Multi-phase (2+ phases):** create `cursor/<plan_id>-integration-<suffix>` from `main`, set snapshot `base_branch` to that branch, record it on the control issue. Validator rejects `base_branch: main` while `autonomy: active`.
-6. Sanity check (plan-template §Sanity check expectations): `proceed` \| `proceed-high-risk` \| `reject`
-7. Human comments `approve-autonomous <plan_id>`; freeze snapshot (`content_hash` must not change after approval)
-
-`approved_until` = `approved_at + 48 hours` (mandatory).
+Follow [plan-template.md](../../docs/agent-efficiency/plan-template.md): snapshot validate, `init-control-issue`, integration `base_branch` for 2+ phases, sanity check, then `approve-autonomous <plan_id>` on control issue. `approved_until` = 48h from approval.
 
 ---
 
 ## Session preflight (every run)
 
-1. `git fetch origin main` (and `origin/<base_branch>` / integration parent when known)
-2. **Resolve `plan_id`** — §Resolve plan_id when not passed explicitly
-3. **Checkout artifact branch** before gate — snapshot lives on phase/integration branch (`artifact_branch_policy: phase-branch`), not always on `main`:
-   ```bash
-   git fetch origin <phase.branch or base_branch>
-   git checkout <branch>   # or worktree already on phase branch
-   ```
-   If snapshot missing locally, fetch the branch that carries `.agents/plans/<plan_id>.snapshot.json`.
-4. **Gate:**
-   ```bash
-   node scripts/execute_plan_runtime.js gate <plan_id> \
-     --labels execute-plan,plan:<plan_id>,autonomous-approved
-   ```
-   Exit `2` → halt; do not start work
+1. `git fetch origin main` (+ `origin/<base_branch>`)  
+2. Resolve `plan_id` if needed  
+3. Checkout branch carrying snapshot (`artifact_branch_policy: phase-branch`)  
+4. **Gate:** `node scripts/execute_plan_runtime.js gate <plan_id> --labels execute-plan,plan:<plan_id>,autonomous-approved`  
+   - Exit `2` → halt; no work  
+   - Exit `0` → re-read **AGENTS.md §Execute-plan**; obey gate stdout **next action** (first tool step — preflight is not a deliverable)  
+5. **Resume** (if applicable): `resume-check` — mismatch → halt unless `accept-head` on issue  
+6. `current-phase`; rebase phase branch on `origin/<base_branch>`  
+7. Control issue `start-work` + `busy` on first session (no Project board writes)  
+8. **Session limit** (~24h): safe step → `halt --reason session_limit` + `resume-plan` in chat (blocker only)
 
-   **Gate exit `0` = proceed without asking the human.** This is the authoritative green light for the session.
-5. **Resume** (when subcommand `resume` or after halt):
-   ```bash
-   node scripts/execute_plan_runtime.js resume-check <plan_id> \
-     --phase <id> --pr-head <sha> --labels autonomous-approved
-   ```
-   `resume_mismatch` → halt unless human commented `accept-head` on control issue
-6. **Current phase:**
-   ```bash
-   node scripts/execute_plan_runtime.js current-phase <plan_id>
-   ```
-7. Rebase phase branch on `origin/<base_branch>` (or integration parent when spawn phase)
-8. **Control issue session comment** — post what you are starting (phase id, branch, PR if any). Add `busy` on first session:
-   ```bash
-   node scripts/github_issue_workflow.js start-work --issue <control_issue> --body "## Session start
-   - phase: <id> — <title>
-   - branch: <branch>
-   - next: implement | babysit+ | resume"
-   ```
-
-   **Do not** attempt GitHub Project board status updates — Cloud Agents cannot write Projects. Comments + `busy` are the agent-visible signal; you move board columns manually if needed.
-
-9. **Session limit check** — if this plan has run continuously for **~24 hours** (or the pod is near timeout), finish the current safe atomic step, then `halt --reason session_limit` with `next_action` recorded. Post on control issue + short chat alert (issue link, `resume-plan <plan_id>`). Do **not** ask for permission in chat.
+Turn boundaries: [execute-plan-instruction-stack.md](../../docs/agent-efficiency/execute-plan-instruction-stack.md) §Cloud turn mechanics. CI wait: subscribe + tool-only until green or §Halt (≤5 lines in babysit+ / stack doc).
 
 ---
 
-## Cloud session continuity (turn boundaries)
+## Multi-phase integration
 
-Cloud agents end each **turn** when you send a user-visible reply. **Turn end is not a phase gate.** Default is §Run-until-blocked — do not treat a reply as session complete.
-
-| Situation | Do | Do not |
-|-----------|-----|--------|
-| Mid-phase work (implement, PR, babysit+, CI watch) | **Keep calling tools** until merge-done or §Halt; post control-issue milestones without stopping | Send a summary + `next_action` and wait for the human |
-| Phase just merged, more `pending` | Loop to next phase **immediately** in the same session | Treat merge as done for the day |
-| Waiting on CI / pre-UAT watch | `gh pr checks --watch` or `./scripts/babysit_uat_watch_preuat.sh <merge_sha>` until green, then continue | Ask the human to nudge CI; poll deploy-uat or prod-ready |
-| Queued follow-up messages | Work through the queue in this session | Stop after one phase because the turn ended |
-| Platform forces turn end mid-phase | Record `next_action` on control issue only; next session starts with `/execute-plan` (no id) or `resume-plan` on issue | Ask "shall I continue?" or soft offers ("let me know", "whenever you want") |
-
-**Standing grant:** If the human authorized the full plan/roadmap once (`approve-autonomous`, or chat grant recorded in `approved_by`), you do **not** need a new approval per phase, per turn, or per PR.
-
-**Gate exit `2`:** Halt via control issue (`halt --write --post-comment`) with resume steps, plus a short chat alert (issue #, reason, unblock action). Common codes: `expired` (`approved_until` past — re-approve on control issue), `revoked`, `not_approved`.
+2+ phases: `cursor/<plan_id>-integration-<suffix>` = `base_branch`; phase PRs target integration; one release PR integration → `main` + `/babysit-uat`. Single phase: `base_branch: main`. Details: execute-plan-schema §Multi-phase integration.
 
 ---
 
-## Multi-phase integration branch (required)
+## Roadmap chaining
 
-For plans with **2+ phases** (same programme / product slice), batch merges to `main`:
-
-1. At plan start, create `cursor/<plan-id>-integration-<suffix>` from `main`.
-2. Set snapshot `base_branch` to that integration branch (`validateSnapshot` enforces while `autonomy: active`).
-3. Each phase PR targets `base_branch` (integration), not `main`.
-4. After **all** phases are `merged` into integration, open **one** PR: integration → `main` (coordinator runs `./scripts/pre-push.sh`, then `/babysit-uat`).
-
-**Single-phase** plans use `base_branch: main` (one PR). **Disjoint outcomes** use separate `plan_id`s (often single-phase each), not one multi-phase plan on `main`. See uat-coordinator-plan §Goals and `docs/agent-efficiency/execute-plan-schema.md` §Multi-phase integration.
+Standing grant beyond one `plan_id`: on child `complete-plan`, bootstrap next child in **same session** (reuse grant; still gate + control issue). Parallel waves → `/spawn-sprint-agents` when disjoint paths. Parent `plan_kind: roadmap`: `roadmap-status`, `roadmap-next-child`, `roadmap-set-child`. Soft closers: AGENTS.md §Execute-plan.
 
 ---
 
-## Roadmap chaining (multi-plan grants)
-
-A single `plan_id` stays small on purpose (tight `allowed_paths`, one reviewable slice). A **roadmap** — several journeys/waves the human describes in one chat message — spans **multiple** `plan_id`s. Do not let "plan complete" silently become "session complete" when the standing grant covers more than the plan that just finished.
-
-**Trigger:** the human's authorization names scope beyond the current plan (e.g. "go ahead through the entire plan/roadmap," "all phases," "the full journey list," or explicitly invokes `/spawn-sprint-agents` for a wave you identified).
-
-**On plan completion, if the standing grant still covers remaining scope:**
-
-1. Do **not** end the turn with a soft offer. Draft the next slice's plan + snapshot immediately (§Before autonomy grant §1–3), reusing the standing grant as `approved_by` (reference the originating chat message/timestamp) instead of waiting for a fresh literal `approve-autonomous <plan_id>`.
-2. Still bootstrap a real control issue with `execute-plan`, `plan:<id>`, `autonomous-approved` and run the gate — self-authorized plans keep the same auditability, just skip the round-trip for a keyword the human already gave in spirit.
-3. Before slicing sequentially, re-check the roadmap for independent waves (disjoint `allowed_paths`, e.g. backend-only vs Flutter-only, or unrelated features). If the human named `/spawn-sprint-agents` or you identify such a wave yourself, set `spawn_allowed: true` and invoke **/spawn-sprint-agents** for that wave rather than defaulting to one plan at a time — sequential slicing when parallel was explicitly requested is itself a standing-grant violation.
-4. Only fall back to a soft closer / control-issue `**Needs you:**` when: the roadmap is genuinely exhausted, the next slice needs a decision the grant didn't cover (e.g. new escalation-list item), or `approved_until` would be exceeded before it can be re-validated.
-
-### Roadmap parent orchestrator (`plan_kind: roadmap`)
-
-When the standing grant names a multi-plan programme, create a **parent roadmap snapshot** with `child_plans[]` listing each slice. Use the runtime CLI to track child progress — do not rely on chat memory alone.
-
-| CLI | Purpose |
-|-----|---------|
-| `roadmap-status <roadmap_id>` | Current child, pending list, `complete` flag |
-| `roadmap-next-child <roadmap_id>` | Next `pending` child `plan_id` |
-| `roadmap-set-child <roadmap_id> --child <id> --status <s> --write` | Record child merge / in-progress |
-
-**Roadmap loop (active parent):** while standing grant covers remaining children — do not end the session between children:
-
-1. Child PR merged? → `complete-plan` on child + `roadmap-set-child --status merged` on parent
-2. Run `roadmap-next-child` — if pending, bootstrap child plan + control issue and **continue in the same session**
-3. Post milestone on roadmap control issue (telemetry only)
-4. **Forbidden closers:** "shall I continue?", "which finding next?", "let me know when…", "say which wave…"
-
----
-
-## Phase delegation (orchestrator vs workers)
-
-The **orchestrator** (this session running `/execute-plan`) owns: gate, runtime sync, control-issue hygiene, babysit+, merge, and advancing phases.
-
-### Per-phase implementation worker (recommended)
-
-At each phase **§3 Implement scope**, the orchestrator **must** delegate implementation to a **Task sub-agent** (`generalPurpose`) when practical, scoped to that phase's `allowed_paths`, exit criteria, and branch — then verify diff, open/update PR, and run babysit+. Do not stop after the worker returns; continue through babysit+ and the next phase without asking the human.
+## Phase delegation
 
 | Role | Owns |
 |------|------|
-| **Orchestrator** | Gate, `set-phase`, PR registration, babysit skill selection, merge, next phase |
-| **Phase worker** (Task sub-agent) | Implement one phase scope; commit on phase branch; return summary |
+| **Orchestrator** | Gate, runtime, control issue, PR, babysit+/uat, merge, next phase |
+| **Phase worker** | Implement on phase branch ([phase-implementer.md](../agent-kernel/workers/phase-implementer.md)); summary **to orchestrator only** — never user chat |
 
-Spawn a **fresh worker at each phase boundary** (after prior phase `merged`). This limits context drift and mirrors "one agent per phase."
+Default: worker or inline through PR + babysit+ without chat stop. `spawn_allowed: true` → `/spawn-sprint-agents` first.
 
-**Do not await** the worker for deploy — only for implementation return.
+| PR base | After CI-ready |
+|---------|----------------|
+| Not `main` | `/babysit-plus` |
+| `main` (final) | `/babysit-uat`; pre-UAT red → `/e2e-debug` then **chain** `/babysit-uat` same session |
 
-### Within-phase parallel (`spawn_allowed: true`)
-
-Invoke **/spawn-sprint-agents** per `spawn_config` before parallel work. Publish ownership map first. Phase PR still goes through orchestrator babysit+.
-
-### Post-merge pre-UAT
-
-| PR target | Skill after CI-ready |
-|-----------|----------------------|
-| Integration / non-`main` base | **/babysit-plus** only — ends at merge |
-| **`main`** (final plan PR) | **/babysit-uat** — pre-UAT E2E gate on merge SHA |
-
-**Pre-UAT failure on final merge:** `/babysit-uat` delegates remedial work to **/e2e-debug**, then **must** chain **/babysit-uat** on the remedial PR in the same session — merge + re-watch. Do **not** stop after e2e-debug with an unmerged remedial PR.
-
-Do **not** poll `deploy-uat` or prod-ready. See [uat-deploy-tiers.md](../../../docs/e2e/uat-deploy-tiers.md), `/babysit-uat`, and `/e2e-debug`.
+Snag ladder: [atomic-pr-policy.md](../../docs/agent-efficiency/atomic-pr-policy.md). Drift → `halt --reason drift`.
 
 ---
 
-## Scope follow-ups (snags and debt)
-
-During implementation, apply the snag ladder without breaking flow:
-
-| Follow-up | Action |
-|-----------|--------|
-| Same file, ≤15 lines, stability / correctness / low-risk tech debt in touched code | Fix inline |
-| In-scope but larger, or risky | Debt issue; continue phase |
-| Out of phase `allowed_paths` | Debt issue or halt if drift |
-| Interesting but non-blocking | Bundle as end-of-turn questions in user chat, **or** one `tech-debt` / `review-follow-up` issue — do not pause the phase |
-
-Low-confidence **review triage** (must-fix vs ignore) is rare with tight phase scope. Prefer debt issue + continue; halt only when classification affects merge safety. See autonomous-pr-policy §Review triage (execute-plan override).
-
----
-
-## Issue hygiene (mandatory)
-
-The **control issue** is the canonical plan dashboard. **User chat** gets a short alert when you need the human (they see chat first).
+## Issue hygiene
 
 | When | Control issue | User chat |
 |------|---------------|-----------|
-| Work starts (session preflight) | `start-work` comment + `busy` | None required — do not end turn here |
-| Phase milestone (PR opened, CI green, merged) | Short comment (telemetry) | **No routine status** — keep working |
-| **Pause** (UAT remedial, waiting on you) | `pause --write --post-comment` — checkpoint + what you need | Short alert: issue link + what you need |
-| **Halt** (revoke, escalation, CI exhausted, `session_limit`) | `halt --write --post-comment` — reason + resume steps | Short alert: issue link + unblock action (e.g. `resume-plan <plan_id>`) |
-| **Question for human** (blocks work) | `**Needs you:**` comment; halt if cannot continue | Short alert: issue link + the decision or action required |
-| All phases merged + pre-UAT green (when applicable) | `complete-plan <plan_id> --write` → close with summary | Brief "plan complete" only **after** `complete-plan` |
-
-**Chat alert format (blockers only):** one short paragraph — plan id, control issue link (`#N`), reason, single unblock action. Full detail stays on the issue.
-
-Debt issues created during babysit+ are deferred until picked up. When you **start work** on any issue, comment and add `busy`:
-
-Debt issues created during babysit+ are deferred until picked up. When you **start work** on any issue, comment and add `busy`:
-
-```bash
-node scripts/github_issue_workflow.js start-work --issue <n> --body "Starting remedial fix for …"
-```
+| Session start | `start-work` + `busy` | — |
+| Milestones | Short comment | **No** routine status |
+| Halt / needs human | `halt` / `**Needs you:**` | One short blocker paragraph + link |
+| Done | `complete-plan` | Brief complete only after CLI |
 
 ---
 
 ## Phase loop
 
-Repeat until all phases `merged` or autonomy halts.
+Until all phases `merged` or halt:
 
-### 1. Select phase
+1. **Select** — first `pending` or `next_action`; checkout `phase.branch`; Router strengthen unless resume-only  
+2. **Mark** — `set-phase … in_progress` + `sync-runtime`; commit plan artifacts on phase branch  
+3. **Implement** — `allowed_paths` only; `./scripts/pre-push-changed.sh`; delegate per §Phase delegation  
+4. **PR** — target `base_branch`; `set-phase` with `--pr-url` / `--pr-head`  
+5. **Babysit** — skill per table above through **merge-done** (`MERGED`, `merge_commit` on base)  
+6. **Complete** — `set-phase … merged`; control-issue comment  
+7. **Next** — loop §1 immediately if more `pending`; else integration → `main` PR + `/babysit-uat` + `complete-plan`
 
-- First `pending` phase after last `merged`, or resume from `next_action` in live plan
-- Skip phases already `merged` — never redo merged work
-- Checkout `phase.branch`; create branch if missing
-- **Router (full):** classify phase; strengthen/split per §Router above; record annotations on control issue
+`complete-plan` docs gate: fold/delete `changes/` per plan; `docs_targets` on control issue. CLI: `node scripts/execute_plan_runtime.js complete-plan <plan_id> --write`
 
-### 2. Mark in progress
-
-```bash
-node scripts/execute_plan_runtime.js set-phase <plan_id> \
-  --phase <id> --status in_progress --write
-node scripts/execute_plan_runtime.js sync-runtime <plan_id> --write
-```
-
-Commit plan artifacts on the phase branch (`artifact_branch_policy: phase-branch`).
-
-### 3. Implement scope
-
-- Stay within `allowed_paths`; respect `forbidden_paths`
-- Out-of-path files only with mapped `allowed_exceptions` (see execute-plan-schema §Drift)
-- Commit messages: `phase(<id>/<total>): <type>: <description> [exception:<code>]`
-- Run `./scripts/pre-push-changed.sh` after each logical batch
-- On drift → `halt --reason drift` (see §Halt)
-- **Delegate implementation** to a per-phase Task worker when practical (see §Phase delegation)
-
-**Spawn (parallel within phase):** When `spawn_allowed: true`, invoke **/spawn-sprint-agents** per `spawn_config` before parallel work. Publish ownership map first.
-
-### 4. Open or update PR
-
-- Target `base_branch` from snapshot (or integration branch for spawn phases)
-- Register PR URL + head SHA:
-  ```bash
-  node scripts/execute_plan_runtime.js set-phase <plan_id> \
-    --phase <id> --status in_progress --pr-url <url> --pr-head <sha> --write
-  node scripts/execute_plan_runtime.js sync-runtime <plan_id> --write
-  ```
-- Push plan artifact commits to phase branch before babysit-plus
-
-### 5. Babysit through merge
-
-**Final PR to `main`?** Use **/babysit-uat** (babysit+ merge + pre-UAT gate).  
-**Intermediate phase PR** (integration or non-main base)? Use **/babysit-plus** only.
-
-| Check | Skill |
-|-------|-------|
-| `baseRefName == main` **and** (last pending phase **or** integration→main batch PR) | `/babysit-uat` |
-| Otherwise | `/babysit-plus` |
-
-**Main agent** runs the selected skill through merge.
-
-| Parameter | Value |
-|-----------|-------|
-| PR URL / branch | phase PR |
-| `plan_id` | current plan |
-| Phase snapshot | current phase object |
-| `approved_until` | from snapshot |
-
-**Phase gate = merge-done** — do not advance until:
-
-- PR `state == MERGED`
-- `merge_commit` recorded
-- `git merge-base --is-ancestor <merge_commit> origin/<base_branch>`
-
-For **babysit-uat** on final main merge, phase gate also requires **pre-UAT E2E green** for that `merge_commit` before `complete-plan`. If watch fails, run **/e2e-debug** (reactive) before remedial merge — remedial branch is usually already prepared by `/e2e-debug` on the same execute-plan session.
-
-```bash
-gh pr view <url> --json state,mergedAt,mergeCommit,baseRefName
-git fetch origin <base_branch>
-git merge-base --is-ancestor <mergeCommit.oid> origin/<base_branch>
-./scripts/babysit_uat_watch_preuat.sh <mergeCommit.oid> --timeout-min 90
-```
-
-**UAT prod-ready is not a phase gate.** Do not poll deploy-uat.
-
-### 6. Complete phase
-
-```bash
-node scripts/execute_plan_runtime.js set-phase <plan_id> \
-  --phase <id> --status merged --pr-url <url> --pr-head <sha> --write
-```
-
-Update snapshot `merge_commit` via runtime (`set-phase` + `saveSnapshot`). Sync live plan; comment phase summary on control issue.
-
-### 7. Next phase
-
-If more `pending` phases → loop to §1 **immediately** — no pre-UAT polling on intermediate merges.
-
-If all phases `merged` into integration → open **one** PR integration → `main` → **/babysit-uat** → then **complete plan**.
-
-Before `complete-plan`:
-
-- Every `changes/` doc the plan created or fully delivered must be folded into its canonical doc and deleted, or remain `in-delivery` with tracked scope (deletion guard).
-- Post a **control-issue comment** and set the final phase `status_detail` listing each `docs_targets` path as `updated`, `N/A`, or `in-delivery`. If unmet, the final PR is not mergeable.
-
-```bash
-node scripts/execute_plan_runtime.js complete-plan <plan_id> --write
-```
-
-This sets `autonomy: completed`, syncs runtime, and closes the control issue with a summary comment (removes `busy` if still present). Use `--skip-close` only for dry-run inspection. If `gh issue close` fails, post the rendered `comment` manually on the control issue. Project board columns are human-maintained — agents do not update them.
+Pre-UAT on final merge: `./scripts/babysit_uat_watch_preuat.sh <mergeCommit.oid> --timeout-min 90` — do not poll deploy-uat.
 
 ---
 
-## Halt (graceful shutdown)
+## Halt / resume / escalation
 
-Stop immediately on: revoke label, past `approved_until`, escalation, drift, CI budget exhausted, debt issue create failure, merge failure, or **session limit** (~24h continuous work — see Session preflight §9).
+Halt: revoke, `expired`, escalation, drift, CI exhausted, debt create failure, merge failure, `session_limit`. CLI: [execute-plan-runtime.md](../../docs/agent-efficiency/execute-plan-runtime.md). **`expired`:** re-approve + `resume-plan` only — never ask which phase next.
 
-**Session limit** is a **checkpoint**, not a revoke. Post `halt --reason session_limit` on the control issue with `next_action`. Human comments `resume-plan <plan_id>`; no chat permission prompt.
+Resume: remove revoke → `resume-plan` → `/execute-plan <plan_id> resume` → `resume-check` → continue `next_action`.
 
-**UAT prod-ready failure** → next merge agent or human manual promote owns remedial work — **not** a halt or `uat_paused` trigger.
-
-```bash
-node scripts/execute_plan_runtime.js halt <plan_id> \
-  --reason <status_reason> --detail "<checkpoint>" --write --post-comment
-node scripts/execute_plan_runtime.js render-halt-comment <plan_id> \
-  --reason <status_reason> --detail "<checkpoint>"
-```
-
-1. Finish safe atomic step only; **do not merge** if revoke detected pre-merge
-2. Post halt comment on control issue (and open PRs) — prefer `--post-comment` on `halt`
-3. Push plan artifact to phase branch
-4. **Halt only** — do not close PRs, delete branches, or revert merged commits
-5. On revoke: human adds `autonomous-revoked` on control issue; optional `do-not-merge` on open PRs
-
----
-
-## Resume
-
-1. Human removes `autonomous-revoked`; comments `resume-plan <plan_id>`
-2. `/execute-plan <plan_id> resume`
-3. `resume-check` (gate + `pr_head_sha` match or `accept-head`)
-4. Continue from `next_action`; do not redo `merged` phases
-5. Plan changes after approval → new snapshot + `approve-autonomous` again
-
----
-
-## Escalation (always halt)
-
-See autonomous-pr-policy §Escalation. Includes security/crypto, breaking API, prod migrations, CI workflow changes, product/legal, drift, CI exhausted, issue tracking failed.
+Escalation list: autonomous-pr-policy §Escalation (always halt).
 
 ---
 
@@ -488,13 +149,10 @@ See autonomous-pr-policy §Escalation. Includes security/crypto, breaking API, p
 
 | Skill | When |
 |-------|------|
-| `/babysit-plus` | Intermediate phase PRs — triage, debt, CI, merge |
-| `/babysit-uat` | **Final** PR to `main` — babysit+ + pre-UAT E2E |
-| `/e2e-debug` | Pre-UAT remedial — delegated from babysit-uat / execute-plan on failure |
-| `/pre-push-verify` | Before every push; full suite before merge |
-| `/spawn-sprint-agents` | Phase with `spawn_allowed: true` (parallel within one phase) |
-| Task `generalPurpose` | Per-phase implementation worker (orchestrator retains babysit+ / merge) |
-| `/split-flutter-screen` | Screen-split phases per exit checklist |
-| `/canonical-docs` | Mode A on phase PRs; `docs_targets` at strengthen; plan completion checklist |
-
-**Tier 3 (internal — use Router protocols instead):** `single-backend-route-change` → `api-contract` + `validation`; `security-error-audit` → `security`; `ui-check` → `accessibility` §Quick pass.
+| `/babysit-plus` | Phase PRs |
+| `/babysit-uat` | Release to `main` |
+| `/e2e-debug` | Pre-UAT remedial |
+| `/pre-push-verify` | Before push |
+| `/spawn-sprint-agents` | `spawn_allowed` |
+| `/canonical-docs` | Behaviour PRs |
+| Task `generalPurpose` | Phase worker |

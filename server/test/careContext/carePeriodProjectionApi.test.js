@@ -26,7 +26,15 @@ describe('care-period projection API', () => {
   });
 
   it('GET returns 400 for invalid date window', async () => {
-    const app = createTestApp(async () => ({ rows: [] }));
+    const app = createTestApp(async (sql) => {
+      if (sql.includes('FROM pets WHERE id = $1 AND user_id = $2')) {
+        return { rows: [{ id: petId, user_id: userId }] };
+      }
+      if (sql.includes('SELECT timezone FROM users')) {
+        return { rows: [{ timezone: 'UTC' }] };
+      }
+      return { rows: [] };
+    });
     const res = await request(app)
       .get(`/api/pets/${petId}/care-period-projection?starts_on=${endsOn}&ends_on=${startsOn}`)
       .set(authHeader());
@@ -35,6 +43,9 @@ describe('care-period projection API', () => {
 
   it('GET returns 403 when user cannot manage pet', async () => {
     const app = createTestApp(async (sql) => {
+      if (sql.includes('SELECT timezone FROM users')) {
+        throw new Error('declarer timezone must not load before pet access check');
+      }
       if (sql.includes('FROM pets WHERE id = $1 AND user_id = $2')) {
         return { rows: [] };
       }

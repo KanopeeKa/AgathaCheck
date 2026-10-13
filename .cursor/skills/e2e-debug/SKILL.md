@@ -44,7 +44,7 @@ node scripts/e2e_debug_status.mjs --json
 | Exit / `safe_to_start` | Action |
 |------------------------|--------|
 | `0` / `true` | Proceed to Phase 1 |
-| `2` / `false`, `reason: e2e_debug_in_progress` | **Stop** — another agent holds `e2e-debug` + `busy` on a control issue. Wait, or comment on that issue and coordinate |
+| `2` / `false`, `reason: e2e_debug_in_progress` | **§Halt** — another agent holds `e2e-debug` + `busy`. Post on control issue and coordinate; do not permission-seek in user chat |
 | `2` / `false`, `reason: open_remedial_pr` | **Join** the open remedial PR — do not start a duplicate branch/stack. Re-run with `--join --remedial-branch <branch>` after resolve |
 | `2` / `false`, `reason: open_e2e_pr_while_main_red` | **Join** the open E2E PR while `main` pre-UAT is red — same join flow; do not open another `e2e/**` PR |
 | `2` / `false`, `reason: join_branch_mismatch` | Use `open_remedial_pr.branch` from JSON — one remedial PR per failure wave |
@@ -96,12 +96,6 @@ node scripts/e2e_debug_status.mjs --release --issue <control_issue> --json
 | `plan_id` | when in execute-plan | Control-issue comment |
 | `remedial_branch` | optional | Default from resolve JSON |
 | `round` | optional | `2+` = failed shards only (no proactive expansion) |
-
----
-
-## Model
-
-**`composer-2.5` only** for orchestrator and **all** shard Task subagents (audit, fix, isolated replay). No thinking/high models for remedial orchestration.
 
 ---
 
@@ -170,7 +164,7 @@ Publish before spawning workers:
 
 ## Phase 5 — Parallel workers (`parallel_workers: true`)
 
-Spawn **Task subagents** (`generalPurpose`, **`composer-2.5`**) — one per target shard:
+Spawn **Task subagents** (`generalPurpose`) — one per target shard; model: pr-review-cost-efficiency.md §Cloud Agent model policy:
 
 | Subagent task | Allowed |
 |---------------|---------|
@@ -236,11 +230,11 @@ node scripts/e2e_debug_status.mjs --release --issue <control_issue> --json
 | 3 | Release `e2e-debug` claim when one was taken (`--release`) |
 | 4 | **Immediately invoke `/babysit-uat`** on the remedial PR — merge + `babysit_uat_watch_preuat.sh` |
 
-**Do not** end the turn after opening a draft remedial PR. Saying "hand off to `/babysit-uat`" without running it leaves `main` red.
+**Do not** end the session after opening a draft remedial PR — invoke `/babysit-uat` in-loop. Saying "hand off to `/babysit-uat`" without running it leaves `main` red.
 
 | Anti-pattern | Result |
 |--------------|--------|
-| Open draft remedial PR and stop | Pre-UAT stays broken; no merge |
+| Open draft remedial PR and end session/turn | Pre-UAT stays broken; no merge |
 | Standalone `/e2e-debug` with no follow-up | Process failure — always chain `/babysit-uat` |
 | Release claim before babysit-uat starts | OK only when babysit-uat is already running in same session |
 
@@ -296,17 +290,7 @@ Full symptom map: `.agents/memory/uat-live-e2e-triage.md`
 | **Sequential Playwright on one pod** | Never parallel `babysit_uat_run_shard.sh` on the same pod — port/DB races |
 | **Isolated pods for parallel replay** | `babysit_uat_run_shard_isolated.sh` only when separate Cloud Agent pods |
 | **`--e2e-shards` not full suite** | `./scripts/pre-push-changed.sh --e2e-shards <target_shards>` after fixes |
-| **Subscribe to CI, don't poll** | Use `cursor-subscriptions` `subscribe_github_ci` on `pre-uat-e2e.yml` while fixing |
-| **Release `busy` on handoff** | Unblocks the next remedial round if babysit-uat must re-delegate |
+| **Subscribe to CI, don't poll** | `cursor-subscriptions` on `pre-uat-e2e.yml` while fixing |
+| **Release `busy` on handoff** | Unblocks next remedial round |
 
----
-
-## Related
-
-| Skill | When |
-|-------|------|
-| `/babysit-uat` | Merge remedial PR + pre-UAT watch — **after** this skill |
-| `/pre-push-verify` | `--e2e-shards` after fixes |
-| `/spawn-sprint-agents` | Ownership pattern only — **no** integration branch for remedial |
-| `/execute-plan` | Delegates here on pre-UAT failure before `complete-plan` |
-| `/add-bdd-playwright-scenario` | Adding coverage — not remedial |
+**Related:** `/babysit-uat` (after handoff) · `/execute-plan` (delegates on pre-UAT red) · `/pre-push-verify`

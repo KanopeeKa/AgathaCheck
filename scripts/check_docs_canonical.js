@@ -16,6 +16,7 @@ const { runGateChanges } = require('./lib/docs-canonical/gates-changes');
 const { runGateShape } = require('./lib/docs-canonical/gates-shape');
 const { runGateIds } = require('./lib/docs-canonical/gates-ids');
 const { runGateMemory } = require('./lib/docs-canonical/gates-memory');
+const { runGateInstructions } = require('./lib/docs-canonical/gates-instructions');
 const { runGateTrace, buildDomainReport, baselineReportMarkdown } = require('./lib/docs-canonical/gates-trace');
 const { summarize } = require('./lib/docs-canonical/report');
 
@@ -32,6 +33,7 @@ function parseArgs(argv) {
     shape: false,
     ids: false,
     memory: false,
+    instructions: false,
     reportDuplicates: false,
     trace: false,
     closedIssues: false,
@@ -53,6 +55,7 @@ function parseArgs(argv) {
     else if (a === '--shape') o.shape = true;
     else if (a === '--ids') o.ids = true;
     else if (a === '--memory') o.memory = true;
+    else if (a === '--instructions') o.instructions = true;
     else if (a === '--report-duplicates') o.reportDuplicates = true;
     else if (a === '--trace') o.trace = true;
     else if (a === '--closed-issues') o.closedIssues = true;
@@ -63,8 +66,9 @@ function parseArgs(argv) {
     else if (a === '--author') o.author = argv[++i];
   }
   const any =
-    o.prBody || o.changes || o.shape || o.ids || o.memory || o.trace || o.report || o.baselineReport || o.writeBaseline;
-  if (!any) o.changes = o.shape = o.ids = o.memory = o.trace = true;
+    o.prBody || o.changes || o.shape || o.ids || o.memory || o.instructions || o.trace || o.report ||
+    o.baselineReport || o.writeBaseline;
+  if (!any) o.changes = o.shape = o.ids = o.memory = o.trace = o.instructionsOnDiff = true;
   return o;
 }
 
@@ -107,6 +111,9 @@ function main() {
   if (opts.shape) findings.push(...runGateShape(ctx));
   if (opts.ids) findings.push(...runGateIds({ ...ctx, reportDuplicates: opts.reportDuplicates }));
   if (opts.memory) findings.push(...runGateMemory(ctx));
+  if (opts.instructions || opts.instructionsOnDiff) {
+    findings.push(...runGateInstructions({ ...ctx, scopeAll: opts.instructions }));
+  }
   if (opts.trace) findings.push(...runGateTrace(ctx));
   if (opts.baselineReport) console.log(JSON.stringify(baselineReport(root), null, 2));
   if (opts.report) {

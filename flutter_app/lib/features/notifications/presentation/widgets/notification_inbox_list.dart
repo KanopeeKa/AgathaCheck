@@ -216,7 +216,10 @@ class NotificationInboxList extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
             child: Text(
-              formatPetGroupHeader(byPet[petKey]?.first.petName),
+              formatPetGroupHeader(
+                AppLocalizations.of(context)!,
+                byPet[petKey]?.first.petName,
+              ),
               style: theme.textTheme.labelLarge?.copyWith(
                 fontWeight: FontWeight.bold,
               ),

@@ -44,7 +44,11 @@ flowchart TD
 
 ## Tier 1: Pre-UAT localhost E2E
 
-**Trigger:** every push to `main` (queued via `concurrency: pre-uat-e2e`).
+**Trigger:** every push to `main` (`concurrency: pre-uat-e2e`; **`cancel-in-progress: true`** — a newer push cancels an in-flight run so only the latest SHA spends nine-shard minutes).
+
+**Decision (review-followups programme, Oct 2026):** Keep **`cancel-in-progress: true`** on the shared `pre-uat-e2e` concurrency group (not per-SHA keys). Superseded runs stop spending nine-shard minutes; promotion still requires a **completed green** run for the current `origin/main` HEAD (see **Cancel vs promote**). Rationale and cost context: `docs/agent-efficiency/pr-review-cost-efficiency.md` (AEC-D-002).
+
+**Cancel vs promote:** Cancelling a superseded run does not promote UAT. Promotion still requires a **completed green** run whose `test_sha` equals `origin/main` at gate time (see **Throttle** above).
 
 **Steps:** resolve `origin/main` HEAD → build web → 9-shard Playwright → gate-summary.
 

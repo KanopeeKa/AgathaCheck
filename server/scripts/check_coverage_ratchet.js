@@ -3,12 +3,20 @@
  * Backend coverage ratchet (J.1-4): fail when line coverage for an active area
  * drops below the floor recorded in coverage-ratchet.json.
  *
+ * Eligible files match Jest collectCoverageFrom (server/collectCoverageFrom.cjs)
+ * and scripts/lib/active-server-universe.js. Sources absent from the Jest summary
+ * count as 0% covered (unloaded / not instrumented).
+ *
  * Usage:
  *   node scripts/check_coverage_ratchet.js [--summary coverage/coverage-summary.json]
  */
 import fs from 'node:fs';
 import path from 'node:path';
+import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
+
+const require = createRequire(import.meta.url);
+const { listActiveServerFiles } = require('../../scripts/lib/active-server-universe.js');
 
 const serverRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -41,7 +49,52 @@ function areaForFile(relPath) {
   return null;
 }
 
-export function measureAreas(summary) {
+function summaryRelPaths(summary) {
+  const out = new Set();
+  for (const filePath of Object.keys(summary)) {
+    if (filePath === 'total') continue;
+    out.add(relServerPath(filePath));
+  }
+  return out;
+}
+
+/** Heuristic executable lines when Jest omits a collectCoverageFrom file from the summary. */
+function countHeuristicExecutableLines(absPath) {
+  const text = fs.readFileSync(absPath, 'utf8');
+  let total = 0;
+  let block = false;
+  for (const raw of text.split('\n')) {
+    let s = raw.trim();
+    if (!s) continue;
+    while (s) {
+      if (block) {
+        const j = s.indexOf('*/');
+        if (j < 0) break;
+        block = false;
+        s = s.slice(j + 2).trim();
+        continue;
+      }
+      if (s.startsWith('/*')) {
+        block = true;
+        s = s.slice(2).trim();
+        continue;
+      }
+      if (
+        s.startsWith('//') ||
+        s.startsWith('import ') ||
+        s.startsWith('export ') ||
+        s.startsWith('use strict')
+      ) {
+        break;
+      }
+      total += 1;
+      break;
+    }
+  }
+  return total;
+}
+
+export function measureAreas(summary, options = {}) {
   const totals = {
     lib: { covered: 0, total: 0 },
     services: { covered: 0, total: 0 },
@@ -55,6 +108,21 @@ export function measureAreas(summary) {
     if (!area || !metrics?.lines) continue;
     totals[area].total += metrics.lines.total;
     totals[area].covered += metrics.lines.covered;
+  }
+
+  const repoRoot = options.repoRoot;
+  if (repoRoot) {
+    const inSummary = summaryRelPaths(summary);
+    for (const rel of listActiveServerFiles(repoRoot)) {
+      const serverRel = rel.replace(/^server\//, '');
+      const area = areaForFile(serverRel);
+      if (!area || inSummary.has(serverRel)) continue;
+      const abs = path.join(repoRoot, rel);
+      if (!fs.existsSync(abs)) continue;
+      const lines = countHeuristicExecutableLines(abs);
+      if (lines <= 0) continue;
+      totals[area].total += lines;
+    }
   }
 
   const out = {};
@@ -82,7 +150,8 @@ function main() {
 
   const summary = JSON.parse(fs.readFileSync(summaryPath, 'utf8'));
   const ratchet = JSON.parse(fs.readFileSync(ratchetPath, 'utf8'));
-  const measured = measureAreas(summary);
+  const repoRoot = path.resolve(serverRoot, '..');
+  const measured = measureAreas(summary, { repoRoot });
   const floors = ratchet.areas || {};
 
   let failed = false;

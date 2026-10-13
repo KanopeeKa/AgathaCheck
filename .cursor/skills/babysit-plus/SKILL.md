@@ -15,7 +15,7 @@ Autonomous PR operator. Extends lightweight `/babysit` with mandatory triage, de
 
 During `/execute-plan`, use **/babysit-plus** for intermediate phase PRs and **/babysit-uat** for the **final** PR to `main` — never plain `/babysit` alone.
 
-**Execute-plan override:** When `gate <plan_id>` exits `0`, do **not** halt or ask the human in chat for low-confidence triage — post `**Needs you:**` on the **control issue** only when merge safety is genuinely ambiguous; otherwise debt issue + continue. See autonomous-pr-policy §Execute-plan overrides and `.agents/memory/execute-plan-autonomy.md`.
+**Execute-plan override (gate `0`):** Not a routine stop — after merge, return to the execute-plan phase loop. Low-confidence triage → debt issue + continue; `**Needs you:**` on **control issue** only when merge safety is ambiguous. See autonomous-pr-policy §Execute-plan overrides.
 
 ---
 
@@ -57,8 +57,6 @@ Required for **all** agent PR work (not only babysit+). Canonical checklist: `do
 6. **Verification** — Run `./scripts/pre-push-changed.sh` after any adjustments from this review.
 7. **UI-touching PRs** — If the diff includes `flutter_app/lib/**/presentation/**`, theme, or router files, complete **`.cursor/agent-kernel/protocols/accessibility.md` §Quick pass** before create/update PR. Escalate to `/ui-design-deep` when theme, landing/auth, or multi-screen work applies.
 
-Optional: `/review-bugbot` on the branch diff before push to dedupe a paid Bugbot PR review.
-
 Only after this review passes: commit, push, and create/update the PR. Then continue with §Workflow from step 0 (Preflight).
 
 ## Model (babysit phase)
@@ -78,7 +76,7 @@ Use **`composer-2.5` only** for steps §0–7 (sync, poll, triage, fixes, CI, me
    When exit `1` (behind), rebase once: `./scripts/babysit_sync_base.sh --pr <url> --push`. Re-run `--check` before every push, before the CI wait loop, and after long automatic-review polls. See autonomous-pr-policy §Proactive base sync and §Merge coordination.
 2. If execute-plan: confirm control issue has `autonomous-approved`, not `autonomous-revoked`, and `approved_until` is in the future (`node scripts/execute_plan_runtime.js gate <plan_id> --labels ...`).
 3. `gh pr view <url> --json state,isDraft,labels,headRefOid,baseRefName`
-4. Stop if: `do-not-merge`, draft (when merge intended), revoked, or expired.
+4. **§Halt if:** `do-not-merge`, draft (when merge intended), revoked, or expired.
 
 ### 0b. Ready for review + collect automatic reviews (mandatory)
 
@@ -94,7 +92,7 @@ Applies to **both** `/babysit` and `/babysit-plus`. **Copilot** is the primary a
 4. **Copilot unavailable / no threads:** Proceed when `collect` returns zero unresolved threads (or Copilot never posted). Comment `Copilot unavailable; babysit+ triage used CI + pre-push only.` only when Copilot was expected but never posted — do **not** halt.
 5. **Autofix:** Off — babysit+ owns fixes; do not re-run adversarial review in agent turns (slim babysit).
 
-Do **not** wait on Cursor Bugbot — it is disabled for this repo. The `wait` subcommand remains for optional manual use only.
+Automatic review: Copilot when enabled — see pr-review-cost-efficiency.md (Bugbot retired).
 
 ### 1. Sync and conflicts
 
@@ -158,6 +156,8 @@ Deferred debt issues that are not being worked yet need no label.
 | Caused by this PR | 5 |
 | Flaky / unrelated (after rebase on latest base) | 3 |
 
+**Push batching (Actions cost):** Accumulate fixes locally until `./scripts/pre-push-changed.sh` is green, then **one push** per logical batch — do not push after every single-file triage fix. Re-run pre-push after the batch, not after each file.
+
 1. **Before watching CI:** `./scripts/babysit_sync_base.sh --pr <url> --check` — if behind, `--push` once instead of waiting for a failure.
 2. Push fixes; watch CI (`ManagePullRequest get_ci_status` or `gh pr checks`).
 3. Rebase on latest base before counting unrelated failures (`--check` then `--push` when behind).
@@ -185,7 +185,7 @@ When all merge gates pass (autonomous-pr-policy §Merge gates), **always squash-
 |------|--------|
 | `0` | Proceed |
 | `1` | `./scripts/babysit_sync_base.sh --pr <url> --push` once; re-run CI if checks re-triggered; `--claim` again |
-| `2` | Another PR holds `merge-lease` or FIFO yield — subscribe and end turn; do not rebase yet |
+| `2` | Another PR holds `merge-lease` or FIFO yield — subscribe and **§Halt** (merge coordination); do not rebase yet |
 | `3` | Halt (`do-not-merge` or error) |
 
 Then merge:
@@ -213,7 +213,9 @@ When babysit+ or babysit-uat merges a **child** plan PR (not the roadmap parent)
 3. `roadmap-next-child <roadmap_id>` — bootstrap and gate the next pending child without permission prompts when the standing grant covers remaining scope
 4. When `roadmap-status` reports `complete: true`, `complete-plan <roadmap_id> --write` on the parent
 
-**Babysit+ ends here.** Do not poll pre-UAT, promote, or deploy. For final merge to `main` when pre-UAT must pass, delegate to **/babysit-uat** instead.
+**During `/execute-plan` (gate exit `0`):** Phase PR squash-merge is **not** session completion — return to the execute-plan phase loop (next `pending` phase or `complete-plan`). See `docs/agent-efficiency/execute-plan-instruction-stack.md` §Babysit+ inside execute-plan.
+
+**Babysit+ scope ends here** (not the session) — no pre-UAT polling or deploy. Final merge to `main` when pre-UAT must pass → **/babysit-uat**.
 
 ### 8. Post-merge (out of scope for babysit+)
 
