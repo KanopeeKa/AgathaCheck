@@ -18,7 +18,7 @@ Normal day-to-day workflows:
 
 | Command | Purpose |
 |---------|---------|
-| `/execute-plan` | Multi-phase autonomous plans (snapshots, control issues, integration branches). Active gate: [instruction stack](../agent-efficiency/execute-plan-instruction-stack.md) (Cloud turn + testing vs run-until-blocked) |
+| `/execute-plan` | Multi-phase plans — skill + `AGENTS.md` §Execute-plan; platform deltas: [instruction stack](../agent-efficiency/execute-plan-instruction-stack.md) |
 | `/babysit-plus` | Bounded autonomous work: implement or PR triage → CI → merge |
 | `/babysit-uat` | Final merge to `main` + pre-UAT E2E watch + remedial loop |
 | `/e2e-debug` | Pre-UAT forensic fix on one remedial branch (hands off to babysit-uat) |

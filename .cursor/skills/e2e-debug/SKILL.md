@@ -99,12 +99,6 @@ node scripts/e2e_debug_status.mjs --release --issue <control_issue> --json
 
 ---
 
-## Model
-
-**`composer-2.5` only** for orchestrator and **all** shard Task subagents (audit, fix, isolated replay). No thinking/high models for remedial orchestration.
-
----
-
 ## Phase 1 — Resolve scope
 
 ```bash
@@ -170,7 +164,7 @@ Publish before spawning workers:
 
 ## Phase 5 — Parallel workers (`parallel_workers: true`)
 
-Spawn **Task subagents** (`generalPurpose`, **`composer-2.5`**) — one per target shard:
+Spawn **Task subagents** (`generalPurpose`) — one per target shard; model: pr-review-cost-efficiency.md §Cloud Agent model policy:
 
 | Subagent task | Allowed |
 |---------------|---------|
@@ -296,17 +290,7 @@ Full symptom map: `.agents/memory/uat-live-e2e-triage.md`
 | **Sequential Playwright on one pod** | Never parallel `babysit_uat_run_shard.sh` on the same pod — port/DB races |
 | **Isolated pods for parallel replay** | `babysit_uat_run_shard_isolated.sh` only when separate Cloud Agent pods |
 | **`--e2e-shards` not full suite** | `./scripts/pre-push-changed.sh --e2e-shards <target_shards>` after fixes |
-| **Subscribe to CI, don't poll** | Use `cursor-subscriptions` `subscribe_github_ci` on `pre-uat-e2e.yml` while fixing |
-| **Release `busy` on handoff** | Unblocks the next remedial round if babysit-uat must re-delegate |
+| **Subscribe to CI, don't poll** | `cursor-subscriptions` on `pre-uat-e2e.yml` while fixing |
+| **Release `busy` on handoff** | Unblocks next remedial round |
 
----
-
-## Related
-
-| Skill | When |
-|-------|------|
-| `/babysit-uat` | Merge remedial PR + pre-UAT watch — **after** this skill |
-| `/pre-push-verify` | `--e2e-shards` after fixes |
-| `/spawn-sprint-agents` | Ownership pattern only — **no** integration branch for remedial |
-| `/execute-plan` | Delegates here on pre-UAT failure before `complete-plan` |
-| `/add-bdd-playwright-scenario` | Adding coverage — not remedial |
+**Related:** `/babysit-uat` (after handoff) · `/execute-plan` (delegates on pre-UAT red) · `/pre-push-verify`

@@ -9,127 +9,97 @@ tags: [agent-efficiency, execute-plan, cloud-agents]
 
 # Execute-plan instruction stack (Cloud Agents)
 
-**Purpose:** When `/execute-plan` gate exits `0`, several **always-on** platform and repo instructions still appear in context. This document states **which instruction wins** so orchestrators do not treat a phase merge, babysit+ completion, or turn boundary as programme completion.
+**Purpose:** When gate exits `0`, platform and repo instructions still conflict. **Precedence:** [`AGENTS.md`](../../AGENTS.md) §Precedence and §Execute-plan (forbidden closers, no routine chat). **Loop:** [autonomous-pr-policy.md](./autonomous-pr-policy.md) §Execute-plan overrides · Skill §Stop rules · [execute-plan-autonomy.md](../../.agents/memory/execute-plan-autonomy.md).
 
-**Canonical loop:** [autonomous-pr-policy.md](./autonomous-pr-policy.md) §Execute-plan overrides · Skill: `.cursor/skills/execute-plan/SKILL.md` · Memory: `.agents/memory/execute-plan-autonomy.md`
+Plan-specific orchestrator contracts (e.g. programme docs) **add** constraints; they do not relax this stack.
 
 ---
 
 ## When this applies
 
-| Condition | Instruction stack rules apply |
-|-----------|-------------------------------|
-| `node scripts/execute_plan_runtime.js gate <plan_id>` exits **`0`** | **Yes** — run-until-blocked is authoritative |
-| Gate exit **`2`**, revoked, or no standing grant | **No** — use generic agent + human checkpoint rules |
-| Plain PR / no execute-plan | **No** — babysit+ and PR hygiene only |
-
-Plan-specific binding text (e.g. `agatha-care-journey` §Orchestrator contract) **adds** programme constraints; it does not relax this stack.
+| Condition | Stack applies |
+|-----------|----------------|
+| `gate` exit **`0`** | Yes — run-until-blocked |
+| Gate **`2`**, revoked, no grant | No — generic agent rules |
+| Plain PR | No — babysit+ only |
 
 ---
 
-## Instruction precedence (gate exit `0`)
+## Platform vs repo (gate exit `0`)
 
-Read **top wins** when two instructions conflict:
+| Generic instruction | During active execute-plan |
+|---------------------|----------------------------|
+| Prove changes in **user reply** | PR body, control issue, `/opt/cursor/artifacts/` |
+| End turn with summary / walkthrough | Deferred — evidence in PR + artifacts |
+| `code-tour-author-handoff.md` | When product code changes; **not** a phase stop |
+| “Update PR each turn” then summarize | Update PR in-loop; summary ≠ stop |
+| Babysit+ “scope ends here” | Ends babysit+ only — orchestrator continues phase loop |
+| Testing / diligence defaults | See AGENTS.md §Reporting and §Execute-plan |
 
-| Priority | Source | Orchestrator behavior |
-|----------|--------|----------------------|
-| 1 | Frozen snapshot + plan markdown (`next_action`, phases, `base_branch`) | Follow phase loop until `complete-plan` or §Halt |
-| 2 | `/execute-plan` skill **§Stop rules** | No routine user chat; merge-done → next phase **same session** |
-| 3 | `autonomous-pr-policy.md` §Execute-plan overrides | Narrow generic “stop and ask” / chat evidence rules |
-| 4 | `AGENTS.md` §Operating rules › Execute-plan | Cross-agent contract + forbidden closers |
-| 5 | `.agents/memory/execute-plan-autonomy.md` | Phase boundary table; conflict resolution |
-| 6 | `/babysit-plus` skill | Triage, CI, **squash-merge** — then **return to execute-plan loop** (not session end) |
-| 7 | Generic testing / diligence (platform) | Evidence → PR body, control issue, `/opt/cursor/artifacts/` — **not** milestone chat |
-| 8 | Generic git / Cloud task (“update PR each turn”, summary) | Update PR in-loop; **do not** treat summary as a valid stop |
-| 9 | User communication style (polish, proportional reply) | **Defer** until `complete-plan` or blocker alert |
-
-**Rule of thumb:** If the action sounds like “report progress to the user” or “end the turn with a summary,” it is **wrong** during gate `0` except after `complete-plan` or a §Halt / `**Needs you:**` blocker alert.
+**Rule of thumb:** “Report progress to the user” or “end with a summary” is wrong during gate `0` except `complete-plan` or §Halt / `**Needs you:**`.
 
 ---
 
 ## Common false stop signals
 
-These feel like “done” but are **in-loop** steps (skill **§Stop rules**):
-
-| False stop | Required next step (same session when possible) |
-|----------|-----------------------------------------------|
-| Phase PR opened | Babysit+, CI watch, merge when green |
-| CI green | Merge (babysit+ §7), `set-phase merged`, control-issue telemetry |
-| Babysit+ merge to integration | **Immediately** checkout next `pending` phase and implement (or spawn phase worker) |
-| `chore(plan): phase N in progress` only | Insufficient — need implementation commits + PR or active worker |
-| User message was `/execute-plan` | Not a request for a milestone report; resume `next_action` via tools |
-| Cloud turn ended after a reply | Next message: `/execute-plan` or `resume-plan` on control issue — not permission-seeking |
-
-**Phase merge is not session complete.** Merging phase *N* starts phase *N+1* in the same autonomy grant (memory §Phase boundaries).
-
----
-
-## Evidence and testing (platform vs orchestrator)
-
-| Generic testing instruction | During active execute-plan (gate `0`) |
-|-----------------------------|----------------------------------------|
-| Prove changes in the **user reply** | Put proof in **PR description**, **control issue** comments, and artifact files under `/opt/cursor/artifacts/` when the platform requires them |
-| Manual UI walkthrough in chat | Run when UI changes; attach artifacts to PR / artifacts dir; **do not** end turn to narrate walkthrough |
-| `code-tour-author-handoff.md` | Write when the turn changes product code; **not** a substitute for continuing the phase loop |
-
-Orchestrator visibility explicitly **overrides** “show the user evidence each turn” for execute-plan sessions (skill §Orchestrator visibility).
+| False stop | Next step (same session when possible) |
+|------------|----------------------------------------|
+| Phase PR opened | Babysit+, CI wait (subscribe), merge |
+| CI green | Merge, `set-phase merged`, control-issue telemetry |
+| Babysit+ merge to integration | Checkout next `pending` phase; implement or spawn worker |
+| Plan bootstrap commit only | Implementation + PR or active worker |
+| User sent `/execute-plan` | Resume `next_action` via tools — not a milestone request |
+| Cloud turn ended after a reply | Next `/execute-plan` resumes; prior chat ≠ programme end |
 
 ---
 
 ## Phase implementation (orchestrator vs worker)
 
-After prior phase **`merged`**:
+| Orchestrator must | Forbidden |
+|-------------------|-----------|
+| Next phase: checkout, `set-phase in_progress`, implement or Task worker → PR + babysit+ | User-visible “PR-N started” then stop |
+| Babysit+ through squash-merge before `merged` | Treat babysit+ end as session end |
 
-| Orchestrator must (same session) | Forbidden |
-|----------------------------------|-----------|
-| Checkout next phase branch, `set-phase in_progress`, **implement** scoped work **or** spawn a **Task** phase worker and continue through PR + babysit+ after return | Stop after bootstrap commit + user-visible “PR-06 started” |
-| Stay on babysit+ through squash-merge before advancing `set-phase merged` | Treat babysit+ “scope ends here” as programme end — that ends babysit+ only; orchestrator continues the phase loop |
-
-**Delegation:** At phase §3 Implement, spawn a fresh `generalPurpose` worker when the phase has non-trivial scope (typical for backend migrations, new routes, multi-file Flutter). The orchestrator may implement inline only if it will reach PR + babysit+ **without** sending a routine user chat stop. “When practical” means **default yes for R1+ implementation**, not “skip when large.”
+Default spawn worker for R1+ multi-file scope. Worker brief: [phase-implementer.md](../../.cursor/agent-kernel/workers/phase-implementer.md).
 
 ---
 
 ## Babysit+ inside execute-plan
 
-| Babysit+ completes | Execute-plan orchestrator |
-|--------------------|---------------------------|
-| Squash-merge of **phase** PR to integration | Record merge in runtime → **next phase** (no user chat checkpoint) |
-| Squash-merge of **release** PR to `main` | `/babysit-uat` + pre-UAT watch → `complete-plan` |
-| CI exhausted / `do-not-merge` | §Halt on control issue + short chat blocker alert |
+| Babysit+ completes | Orchestrator |
+|--------------------|--------------|
+| Phase PR squash-merged | Runtime update → **next phase** (no user chat) |
+| Release PR to `main` | `/babysit-uat` → `complete-plan` |
+| CI exhausted / `do-not-merge` | §Halt + blocker chat |
 
-Add to babysit+ PR triage comment when `plan_id` is set: `execute-plan: merge → continue phase loop per execute-plan-instruction-stack.md`.
+Triage comment when `plan_id` set: `execute-plan: merge → continue phase loop`.
 
 ---
 
 ## Cloud turn mechanics
 
-1. **User-visible assistant messages end the Cloud turn** — design for long **tool-only** stretches during execute-plan.
-2. **Valid user chat:** blocker alerts (one short paragraph + control issue link). **Invalid:** PR #, CI green, “next phase is…”, soft offers to continue.
-3. If the platform ends the turn mid-phase, the **next** `/execute-plan` resumes `next_action`; the prior chat reply is **not** programme completion ([plan-template.md](./plan-template.md) §Turn boundary / orchestrator contract).
+1. User-visible messages **end the Cloud turn** — prefer long tool-only stretches.  
+2. Valid user chat: blocker alerts only. Invalid: PR #, CI green, next-phase narration, soft offers.  
+3. Forced turn end while waiting on CI: **subscribe** (`cursor-subscriptions`) + await; optional one-line park per agent entry file — no summary.  
+4. Next `/execute-plan` resumes `next_action` ([plan-template.md](./plan-template.md) §Turn boundary).
+
+**Residual risk:** Platform testing prompts may still bias toward chat proof; AGENTS.md §Execute-plan narrows them — behaviour is not fully enforceable from the repo alone.
 
 ---
 
 ## Claude Code
 
-Claude Code sessions follow the same stack. Differences:
-
-| Topic | Rule (gate exit `0`) |
-|-------|----------------------|
-| Authorisation | The standing grant is explicit authorisation to open phase/release PRs, push to the snapshot's phase and integration branches (only those names), subscribe to PR activity without asking, and squash-merge when merge gates pass. This narrows the generic "no PR unless asked", "ask before watching a PR", "one assigned branch" and `steward` "merge only when asked" defaults |
-| GitHub access | `mcp__github__*` tools (`gh` fallback); pass control-issue labels to `gate --labels` |
-| Phase workers | `Agent` with `.cursor/agent-kernel/workers/phase-implementer.md`; brief names canonical doc(s) and requires docs sync before return. Worker summary goes to the orchestrator, never to user chat |
-| Waiting | Background watch first (`run_in_background`, Monitor). If the turn must end: subscribe to PR activity, arm `send_later`, record `next_action` on the control issue, send exactly one line: `Parked on CI for <PR>; resuming on event.` — no summary, options or questions |
-| Docs duty | Docs gate still holds before every push; the end-of-turn docs report is deferred to `complete-plan`, a halt or the parking line. A product conflict → `**Needs you:**` on the control issue + halt |
-| Compaction / resume | Re-read snapshot, control issue and this doc, then continue from `next_action` |
-| Not applicable | `composer-2.5`, `ManagePullRequest`, `/opt/cursor/artifacts/` |
+| Topic | Rule (gate `0`) |
+|-------|-----------------|
+| Authorisation | Standing grant: phase/release PRs, snapshot branches, subscribe, squash-merge when gates pass |
+| GitHub | `mcp__github__*` / `gh`; pass labels to `gate --labels` |
+| Phase workers | [phase-implementer.md](../../.cursor/agent-kernel/workers/phase-implementer.md); summary to orchestrator only |
+| Waiting | Background watch; if turn must end: subscribe + `send_later`; one line: `Parked on CI for <PR>; resuming on event.` |
+| Docs | Sync before push; end-of-turn docs report deferred to `complete-plan` or halt |
+| N/A | `composer-2.5`, `ManagePullRequest`, `/opt/cursor/artifacts/` |
 
 ---
 
 ## Related
 
-| Doc | Role |
-|-----|------|
-| [execute-plan-schema.md](./execute-plan-schema.md) | Snapshot, integration `base_branch`, phases |
-| [execute-plan-runtime.md](./execute-plan-runtime.md) | CLI gate, halt, resume |
-| [pr-review-cost-efficiency.md](./pr-review-cost-efficiency.md) | Pre-PR self-review (still applies per phase PR) |
-| [cursor-agent-framework.md](../engineering/cursor-agent-framework.md) | Tier-1 commands and Router |
+[execute-plan-schema.md](./execute-plan-schema.md) · [execute-plan-runtime.md](./execute-plan-runtime.md) · [pr-review-cost-efficiency.md](./pr-review-cost-efficiency.md) · [cursor-agent-framework.md](../engineering/cursor-agent-framework.md)
