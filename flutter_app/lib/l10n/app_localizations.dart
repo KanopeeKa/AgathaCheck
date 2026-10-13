@@ -1676,6 +1676,24 @@ abstract class AppLocalizations {
   /// **'Update neutering status'**
   String get careWelfareNeuterRecord;
 
+  /// No description provided for @careWelfareVaccinationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Vaccination history not recorded'**
+  String get careWelfareVaccinationTitle;
+
+  /// No description provided for @careWelfareVaccinationWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'Keeping a simple list of vaccinations helps you and your vet stay aligned. Ask your vet which vaccines matter for your pet.'**
+  String get careWelfareVaccinationWhy;
+
+  /// No description provided for @careWelfareVaccinationRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'Record a vaccination'**
+  String get careWelfareVaccinationRecord;
+
   /// No description provided for @profileCompletenessNotForMyPet.
   ///
   /// In en, this message translates to:

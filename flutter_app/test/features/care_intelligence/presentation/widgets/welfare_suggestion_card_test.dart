@@ -49,4 +49,46 @@ void main() {
       findsOneWidget,
     );
   });
+
+  testWidgets('vaccination welfare card has record action without Accept', (
+    tester,
+  ) async {
+    const pet = Pet(id: 'p1', name: 'Ada', species: 'Dog');
+    const suggestion = WelfareSuggestion(
+      id: 'ws-vx',
+      petId: 'p1',
+      subjectKey: 'vaccination_welfare',
+      dedupeKey: 'welfare:vaccination:p1',
+      rationaleKey: 'careWelfareVaccinationWhy',
+      engineVersion: '1.0.0',
+      severity: 4,
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: WelfareSuggestionCard(
+              pet: pet,
+              suggestion: suggestion,
+              canRecord: true,
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byKey(const Key('welfare_suggestion_card_vaccination')),
+      findsOneWidget,
+    );
+    expect(find.text('Accept'), findsNothing);
+    expect(
+      find.byKey(const Key('welfare_suggestion_record_vaccination')),
+      findsOneWidget,
+    );
+  });
 }
