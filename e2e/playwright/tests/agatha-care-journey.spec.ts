@@ -98,7 +98,7 @@ test.describe('Agatha care journey', () => {
     }
   });
 
-  test('@smoke-ci ACJ-CO-02 — coordination banner links only', async ({
+  test('@smoke-ci @smoke-uat ACJ-CO-02 — coordination banner links only', async ({
     page,
     testUser,
   }) => {
