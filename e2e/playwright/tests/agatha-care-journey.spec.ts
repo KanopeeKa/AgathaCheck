@@ -12,7 +12,7 @@ import {
 import { enableFlutterAccessibility } from '../support/flutter';
 
 test.describe('Agatha care journey', () => {
-  test('@smoke-uat @P1 ACJ-FB-01 chip save clears welfare suggestion', async ({
+  test('@smoke-uat @P1 ACJ-FB-01 — chip save clears welfare suggestion', async ({
     page,
     testUser,
   }) => {

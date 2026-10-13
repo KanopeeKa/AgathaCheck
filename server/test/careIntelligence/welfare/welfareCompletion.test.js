@@ -1,11 +1,14 @@
 import { describe, expect, it } from '@jest/globals';
+import request from 'supertest';
+import jwt from 'jsonwebtoken';
 
-import { updatePet } from '../../../lib/pets/petCoreCommandService.js';
+import { createApp } from '../../../bin/server.js';
 import * as welfareSync from '../../../routes/careIntelligence/welfare/syncPetWelfareSuggestions.js';
 import { handlePetAccessQuery } from '../../helpers/petAccessMocks.js';
 import { createMockPool, makePetRow, petId, userId } from '../../pets/helpers.js';
 
-const orgViewerId = 'org-viewer-id';
+const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'default_secret';
+const token = jwt.sign({ id: userId, email: 'test@example.com' }, JWT_SECRET, { expiresIn: '1h' });
 
 function welfareSyncFallback(sql, welfareRows) {
   if (sql.includes('pet_vaccination_records')) {
@@ -33,7 +36,7 @@ function welfareSyncFallback(sql, welfareRows) {
 }
 
 describe('welfare completion on profile save (AC-FB-01)', () => {
-  it('updatePet chip save withdraws pending microchip welfare', async () => {
+  it('PUT pet chip save withdraws pending microchip welfare', async () => {
     const welfareRows = [
       {
         id: 'ws-1',
@@ -56,8 +59,6 @@ describe('welfare completion on profile save (AC-FB-01)', () => {
       const access = handlePetAccessQuery(sql, params, {
         userId,
         ownedPetIds: [petId],
-        orgViewerId,
-        orgViewerCanView: true,
       });
       if (access) return access;
 
@@ -84,13 +85,18 @@ describe('welfare completion on profile save (AC-FB-01)', () => {
       return null;
     });
 
-    await updatePet(pool, userId, petId, {
-      name: 'Fluffy',
-      species: 'Dog',
-      identificationStatus: 'yes',
-      chipId: '982000123456789',
-    }, {});
+    const app = createApp(pool);
+    const res = await request(app)
+      .put(`/api/pets/${petId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        name: 'Fluffy',
+        species: 'Dog',
+        identificationStatus: 'yes',
+        chipId: '982000123456789',
+      });
 
+    expect(res.status).toBe(200);
     expect(welfareRows[0].status).toBe('completed');
     expect(welfareRows[0].primary_outcome).toBe('withdrawn');
   });
@@ -107,7 +113,7 @@ describe('welfare completion on profile save (AC-FB-01)', () => {
       },
     ];
 
-    const pool = createMockPool(async (sql, params) => {
+    const pool = createMockPool(async (sql) => {
       const welfare = welfareSyncFallback(sql, welfareRows);
       if (welfare) return welfare;
       return { rows: [] };

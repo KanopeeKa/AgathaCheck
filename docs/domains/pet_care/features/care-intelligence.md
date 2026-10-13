@@ -320,7 +320,7 @@ Coverage: `server/test/careIntelligence/welfare/vaccinationWelfareEvaluator.test
 |----|-------------|--------|
 | **AC-FB-01** | After a successful pet profile PUT, `syncPetWelfareSuggestions` runs so resolving profile facts (e.g. chip id) withdraws pending welfare rows without waiting for GET welfare | Live (integration) |
 
-Hook: `server/lib/pets/petCoreCommandService.js` (`updatePet`). Withdraw semantics unchanged (`primary_outcome = withdrawn` when evaluators return null).
+Hook: `server/routes/pets/coreWriteRouter.js` (after successful `updatePet` PUT). Withdraw semantics unchanged (`primary_outcome = withdrawn` when evaluators return null).
 
 Coverage: `server/test/careIntelligence/welfare/welfareCompletion.test.js` · BDD `ACJ-FB-01` (`@smoke-uat`)
 
