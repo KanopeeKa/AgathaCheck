@@ -6,6 +6,7 @@ import '../../data/datasources/care_intelligence_remote_datasource.dart';
 import '../../data/repositories/care_intelligence_repository_impl.dart';
 import '../../domain/entities/care_recommendation.dart';
 import '../../domain/entities/care_safeguard.dart';
+import '../../domain/entities/welfare_suggestion.dart';
 import '../../domain/repositories/care_intelligence_repository.dart';
 import '../pet_care_presentation_policy.dart';
 
@@ -39,6 +40,14 @@ final petCareRecommendationsProvider =
           .getRecommendations(petId);
     });
 
+final petWelfareSuggestionsProvider =
+    FutureProvider.family<List<WelfareSuggestion>, String>((ref, petId) async {
+      ref.watch(authProvider.select((auth) => auth.accessToken));
+      return ref
+          .read(careIntelligenceRepositoryProvider)
+          .getWelfareSuggestions(petId);
+    });
+
 final petCareSafeguardsProvider =
     FutureProvider.family<List<CareSafeguard>, String>((ref, petId) async {
       ref.watch(authProvider.select((auth) => auth.accessToken));
@@ -60,10 +69,13 @@ final petProfileCareSafeguardProvider =
 final petProfileCareSuggestionProvider =
     Provider.family<AsyncValue<CareRecommendation?>, String>((ref, petId) {
       final recsAsync = ref.watch(petCareRecommendationsProvider(petId));
+      final welfareAsync = ref.watch(petWelfareSuggestionsProvider(petId));
       final safeguardAsync = ref.watch(petProfileCareSafeguardProvider(petId));
       final policy = ref.watch(petCarePresentationPolicyProvider);
 
-      if (recsAsync.isLoading || safeguardAsync.isLoading) {
+      if (recsAsync.isLoading ||
+          safeguardAsync.isLoading ||
+          welfareAsync.isLoading) {
         return const AsyncLoading();
       }
       if (recsAsync.hasError) {
@@ -78,9 +90,56 @@ final petProfileCareSuggestionProvider =
           safeguardAsync.stackTrace ?? StackTrace.empty,
         );
       }
+      if (welfareAsync.hasError) {
+        return AsyncError(
+          welfareAsync.error!,
+          welfareAsync.stackTrace ?? StackTrace.empty,
+        );
+      }
 
       return AsyncData(
         policy.profileSuggestion(
+          recsAsync.value ?? const [],
+          activeSafeguard: safeguardAsync.valueOrNull,
+          welfareSuggestions: welfareAsync.value ?? const [],
+        ),
+      );
+    });
+
+final petProfileWelfareSuggestionProvider =
+    Provider.family<AsyncValue<WelfareSuggestion?>, String>((ref, petId) {
+      final recsAsync = ref.watch(petCareRecommendationsProvider(petId));
+      final welfareAsync = ref.watch(petWelfareSuggestionsProvider(petId));
+      final safeguardAsync = ref.watch(petProfileCareSafeguardProvider(petId));
+      final policy = ref.watch(petCarePresentationPolicyProvider);
+
+      if (recsAsync.isLoading ||
+          safeguardAsync.isLoading ||
+          welfareAsync.isLoading) {
+        return const AsyncLoading();
+      }
+      if (recsAsync.hasError) {
+        return AsyncError(
+          recsAsync.error!,
+          recsAsync.stackTrace ?? StackTrace.empty,
+        );
+      }
+      if (safeguardAsync.hasError) {
+        return AsyncError(
+          safeguardAsync.error!,
+          safeguardAsync.stackTrace ?? StackTrace.empty,
+        );
+      }
+      if (welfareAsync.hasError) {
+        return AsyncError(
+          welfareAsync.error!,
+          welfareAsync.stackTrace ?? StackTrace.empty,
+        );
+      }
+
+      return AsyncData(
+        policy.profileWelfareSuggestion(
+          welfareAsync.value ?? const [],
           recsAsync.value ?? const [],
           activeSafeguard: safeguardAsync.valueOrNull,
         ),

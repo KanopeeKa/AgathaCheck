@@ -69,17 +69,17 @@ After gate exit `0`, the orchestrator **keeps using tools** until merge-done, `c
 
 ```yaml
 autonomy: active
-current_phase: pr-06
-last_completed_phase: pr-05
+current_phase: pr-07
+last_completed_phase: pr-06
 halt_reason: null
-next_action: "continue phase pr-06 on branch cursor/acj-pr-06-b994"
+next_action: "continue phase pr-07 on branch cursor/acj-pr-07-b994"
 artifact_ref:
-  branch: cursor/acj-pr-06-b994
+  branch: cursor/acj-pr-07-b994
   plan_path: .agents/plans/agatha-care-journey.md
-  plan_commit: d045599f5e81d00ad4c270649885502ac75566ba
+  plan_commit: 8f654d13c5ae5496974e44792c2592f1f157116f
   snapshot_path: .agents/plans/agatha-care-journey.snapshot.json
-  snapshot_commit: d045599f5e81d00ad4c270649885502ac75566ba
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1852"]
+  snapshot_commit: 8f654d13c5ae5496974e44792c2592f1f157116f
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1858"]
 merge_commits: {"pr-05":"8ec5d9c90c57e867f5a2260621fb766dad19d15e"}
 debt_issue_refs: []
 ```

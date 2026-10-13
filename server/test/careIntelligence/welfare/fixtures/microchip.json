@@ -1,0 +1,52 @@
+[
+  {
+    "id": "eligible-no-status",
+    "pet": {
+      "id": "pet-fixture-1",
+      "identification_status": "no",
+      "chip_id": "",
+      "chip_dismissed": false
+    },
+    "expectCandidate": true
+  },
+  {
+    "id": "unknown-status-completeness-only",
+    "pet": {
+      "id": "pet-fixture-2",
+      "identification_status": "unknown",
+      "chip_id": "",
+      "chip_dismissed": false
+    },
+    "expectCandidate": false
+  },
+  {
+    "id": "yes-status",
+    "pet": {
+      "id": "pet-fixture-3",
+      "identification_status": "yes",
+      "chip_id": "",
+      "chip_dismissed": false
+    },
+    "expectCandidate": false
+  },
+  {
+    "id": "chip-id-present",
+    "pet": {
+      "id": "pet-fixture-4",
+      "identification_status": "no",
+      "chip_id": "982000123456789",
+      "chip_dismissed": false
+    },
+    "expectCandidate": false
+  },
+  {
+    "id": "chip-dismissed-on-pet",
+    "pet": {
+      "id": "pet-fixture-5",
+      "identification_status": "no",
+      "chip_id": "",
+      "chip_dismissed": true
+    },
+    "expectCandidate": false
+  }
+]

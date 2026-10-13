@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:pet_profile_app/features/care_intelligence/domain/entities/care_recommendation.dart';
 import 'package:pet_profile_app/features/care_intelligence/domain/entities/care_safeguard.dart';
+import 'package:pet_profile_app/features/care_intelligence/domain/entities/welfare_suggestion.dart';
 import 'package:pet_profile_app/features/care_intelligence/presentation/agatha_surface_policy.dart';
 import 'package:pet_profile_app/features/care_intelligence/presentation/pet_care_presentation_policy.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/care_family.dart';
@@ -66,12 +67,16 @@ void main() {
   test('AC-SP-01 profileSuggestion picks rhythm over welfare candidate', () {
     final rec = policy.profileSuggestion(
       [_rec(id: 'rhythm-pending')],
-      welfareCandidates: [
-        AgathaGuidanceCandidate(
-          kind: AgathaGuidanceKind.welfare,
+      welfareSuggestions: [
+        WelfareSuggestion(
+          id: 'welfare-1',
+          petId: 'pet-1',
+          subjectKey: 'microchip_welfare',
+          dedupeKey: 'welfare:microchip:pet-1',
+          rationaleKey: 'careWelfareMicrochipWhy',
+          engineVersion: '1.0.0',
           severity: 50,
           createdAt: DateTime.utc(2020, 1, 1),
-          id: 'welfare-1',
         ),
       ],
     );

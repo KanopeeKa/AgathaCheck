@@ -927,6 +927,16 @@ class AppLocalizationsFr extends AppLocalizations {
       'Un numéro de puce aide à identifier votre animal s\'il se perd. Renseignez-vous sur les règles locales.';
 
   @override
+  String get careWelfareMicrochipTitle => 'Puce non enregistrée';
+
+  @override
+  String get careWelfareMicrochipWhy =>
+      'Une puce peut aider à identifier votre animal s\'il se perd. Renseignez-vous sur les règles locales.';
+
+  @override
+  String get careWelfareMicrochipRecord => 'Mettre à jour le statut de la puce';
+
+  @override
   String get profileCompletenessNotForMyPet => 'Pas pour mon animal';
 
   @override
