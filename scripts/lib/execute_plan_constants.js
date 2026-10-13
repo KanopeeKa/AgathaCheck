@@ -25,6 +25,7 @@ const PHASE_STATUS = new Set([
 ]);
 
 const STATUS_REASON = new Set([
+  'expired',
   'revoked',
   'session_limit',
   'human_pause',

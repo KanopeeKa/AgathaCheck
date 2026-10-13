@@ -14,6 +14,7 @@ const {
   renderControlIssueBody,
   renderControlIssueTitle,
   renderCompletePlanComment,
+  renderHaltComment,
   renderRuntimeBlock,
   setAutonomyHalted,
   setAutonomyCompleted,
@@ -123,6 +124,29 @@ test('checkAutonomyGate passes when active and approved', () => {
     now: new Date('2026-07-17T12:00:00Z'),
   });
   assert.equal(result.ok, true);
+  assert.match(result.next_action, /start phase/);
+  assert.match(result.agent_next_step, /git checkout/);
+});
+
+test('checkAutonomyGate expired includes re-approve unblock without phase choice', () => {
+  const snapshot = loadSnapshotFromPath(exampleSnapshot);
+  snapshot.autonomy = 'active';
+  const result = checkAutonomyGate(snapshot, {
+    labels: ['autonomous-approved'],
+    now: new Date('2026-07-19T00:00:00Z'),
+  });
+  assert.equal(result.code, 'expired');
+  assert.match(result.unblock, /approve-autonomous/);
+  assert.match(result.unblock, /resume-plan/);
+  assert.doesNotMatch(result.unblock, /which phase/i);
+});
+
+test('renderHaltComment for expired uses re-approve and resume-plan only', () => {
+  const snapshot = loadSnapshotFromPath(exampleSnapshot);
+  const body = renderHaltComment(snapshot, { reason: 'expired', detail: 'grant ended' });
+  assert.match(body, /approve-autonomous/);
+  assert.match(body, /resume-plan/);
+  assert.match(body, /do not re-select phases/i);
 });
 
 test('checkResume detects pr head mismatch', () => {

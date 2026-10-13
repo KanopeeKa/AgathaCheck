@@ -198,7 +198,15 @@ function renderHaltComment(snapshot, { reason, detail }) {
     lines.push(`- **phase:** ${phase.id} (${phase.title})`);
     if (phase.pr_url) lines.push(`- **pr:** ${phase.pr_url}`);
   }
-  lines.push('', 'Resume: remove `autonomous-revoked`, comment `resume-plan ' + snapshot.plan_id + '`.');
+  if (reason === 'expired') {
+    lines.push(
+      '',
+      `**Unblock:** comment \`approve-autonomous ${snapshot.plan_id}\` on the control issue, then \`resume-plan ${snapshot.plan_id}\`.`,
+      'Work resumes from recorded `next_action` — do not re-select phases.'
+    );
+  } else {
+    lines.push('', 'Resume: remove `autonomous-revoked`, comment `resume-plan ' + snapshot.plan_id + '`.');
+  }
   return lines.join('\n');
 }
 
@@ -286,6 +294,24 @@ function normalizeLabels(labels) {
     .filter(Boolean);
 }
 
+function formatAgentNextStep(snapshot, nextAction) {
+  if (!nextAction) return 'run complete-plan or open integration→main release PR';
+  if (nextAction === 'plan complete') {
+    return 'open integration→main PR if applicable; then complete-plan';
+  }
+  const startMatch = /^start phase ([^:]+): checkout (.+)$/.exec(nextAction);
+  if (startMatch) {
+    const [, phaseId, branch] = startMatch;
+    return `git checkout ${branch}; set-phase ${phaseId} in_progress; implement scoped work`;
+  }
+  const continueMatch = /^continue phase (\S+) on branch (.+)$/.exec(nextAction);
+  if (continueMatch) {
+    const [, phaseId, branch] = continueMatch;
+    return `git checkout ${branch}; continue phase ${phaseId} (implement, PR, or babysit+)`;
+  }
+  return nextAction;
+}
+
 function checkAutonomyGate(snapshot, { now = new Date(), labels = [] } = {}) {
   const labelSet = new Set(normalizeLabels(labels));
   if (labelSet.has('autonomous-revoked')) {
@@ -312,13 +338,20 @@ function checkAutonomyGate(snapshot, { now = new Date(), labels = [] } = {}) {
     return { ok: false, code: 'inactive', message: `snapshot autonomy is ${snapshot.autonomy}` };
   }
   if (new Date(snapshot.approved_until) <= now) {
+    const planId = snapshot.plan_id;
     return {
       ok: false,
       code: 'expired',
       message: `approved_until ${snapshot.approved_until} is in the past`,
+      unblock: `Comment approve-autonomous ${planId} on the control issue, then resume-plan ${planId}. Do not re-select phases.`,
     };
   }
-  return { ok: true };
+  const nextAction = computeNextAction(snapshot);
+  return {
+    ok: true,
+    next_action: nextAction,
+    agent_next_step: formatAgentNextStep(snapshot, nextAction),
+  };
 }
 
 function checkResume(snapshot, phaseId, options = {}) {
