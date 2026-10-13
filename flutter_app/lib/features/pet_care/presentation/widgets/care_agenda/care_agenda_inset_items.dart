@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/utils/calendar_date.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../care_item/care_item.dart';
 import '../../../../health_tracking/health_tracking.dart';
@@ -49,6 +50,19 @@ List<CareCollectionInsetItem> buildCareAgendaInsetItems({
     }
   }
 
+  void rowsWithSameDayDateHeaders(List<CareAgendaRow<HealthEntry>> list) {
+    for (final group in groupAgendaRowsByDueDate(list)) {
+      if (showSameDayDateHeader(group)) {
+        header(
+          'care_agenda_date_${group.dateKey}',
+          formatCalendarDateDisplay(group.date),
+          level2: true,
+        );
+      }
+      rows(group.rows);
+    }
+  }
+
   header('care_agenda_today', l.careAgendaToday);
   if (agenda.overdue.isEmpty && agenda.today.isEmpty) {
     items.add(
@@ -79,7 +93,7 @@ List<CareCollectionInsetItem> buildCareAgendaInsetItems({
 
   if (agenda.dueSoon.isNotEmpty) {
     header('care_agenda_due_soon', l.careAgendaDueSoon);
-    rows(agenda.dueSoon);
+    rowsWithSameDayDateHeaders(agenda.dueSoon);
   }
 
   if (agenda.upcoming.isNotEmpty) {
@@ -93,7 +107,7 @@ List<CareCollectionInsetItem> buildCareAgendaInsetItems({
         ),
       ),
     );
-    if (upcomingExpanded) rows(agenda.upcoming);
+    if (upcomingExpanded) rowsWithSameDayDateHeaders(agenda.upcoming);
   }
   return items;
 }
@@ -115,8 +129,10 @@ class _AgendaHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final semanticsId = key is ValueKey<String> ? key?.value as String? : null;
     return Semantics(
       header: true,
+      identifier: semanticsId,
       child: Padding(
         padding: CareSurfaceTokens.collectionHeaderPadding,
         child: Text(
