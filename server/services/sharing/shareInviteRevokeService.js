@@ -23,7 +23,7 @@ export async function revokeShareInvite(pool, { inviteId, userId }) {
         throw new ShareCommandResult({ error: 'Invitation is no longer pending', status: 409 });
       }
       await updateInviteStatus(client, invite.id, 'revoked');
-      if (invite.invitee_user_id) {
+      if (invite.invitee_user_id && invite.code) {
         await resolveNotifications(client, {
           userId: invite.invitee_user_id,
           type: 'shareInviteReceived',

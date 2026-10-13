@@ -961,6 +961,8 @@ CREATE TABLE public.refresh_tokens (
 CREATE TABLE public.scheduler_daily_runs (
     job_key character varying(64) NOT NULL,
     run_day date NOT NULL,
+    claimed_at timestamp with time zone,
+    completed_at timestamp with time zone,
     updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
 CREATE TABLE public.users (

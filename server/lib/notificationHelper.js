@@ -58,20 +58,26 @@ export async function createNotification(pool, {
  * @param {string} [referenceId] — invite code / object ref stored in `health_entry_id`
  *   (legacy column reused for non–health-entry references).
  * @param {string} [petId] — fallback when referenceId absent (legacy rows).
+ * @param {boolean} [allowUnscoped] — resolve every open row of this type (avoid unless intentional).
  */
 export async function resolveNotifications(pool, {
   userId,
   type,
   petId = null,
   referenceId = null,
+  allowUnscoped = false,
 }) {
   if (!userId || !type) return;
+  const hasReference = referenceId != null && String(referenceId).length > 0;
+  const hasPet = petId != null && String(petId).length > 0;
+  if (!hasReference && !hasPet && !allowUnscoped) return;
+
   const params = [userId, type];
   let scopeFilter = '';
-  if (referenceId != null && String(referenceId).length > 0) {
+  if (hasReference) {
     scopeFilter = ` AND health_entry_id = $${params.length + 1}`;
     params.push(String(referenceId));
-  } else if (petId) {
+  } else if (hasPet) {
     scopeFilter = ` AND pet_id = $${params.length + 1}`;
     params.push(petId);
   }

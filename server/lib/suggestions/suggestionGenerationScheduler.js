@@ -2,6 +2,7 @@ import { logger } from '../logger.js';
 import { runSuggestionGeneration } from './suggestionGeneration.js';
 
 const JOB_KEY = 'suggestion_wave1';
+const STALE_CLAIM_INTERVAL = "INTERVAL '1 hour'";
 
 function utcDayKey(date = new Date()) {
   return date.toISOString().slice(0, 10);
@@ -9,11 +10,12 @@ function utcDayKey(date = new Date()) {
 
 /**
  * Claim once-per-UTC-day execution across app instances (scheduler_daily_runs).
+ * Reclaims rows stuck in-flight longer than one hour.
  */
 async function tryClaimDailyRun(pool, day) {
   const inserted = await pool.query(
-    `INSERT INTO scheduler_daily_runs (job_key, run_day)
-     VALUES ($1, $2::date)
+    `INSERT INTO scheduler_daily_runs (job_key, run_day, claimed_at, completed_at)
+     VALUES ($1, $2::date, NOW(), NULL)
      ON CONFLICT (job_key) DO NOTHING
      RETURNING job_key`,
     [JOB_KEY, day],
@@ -22,12 +24,33 @@ async function tryClaimDailyRun(pool, day) {
 
   const updated = await pool.query(
     `UPDATE scheduler_daily_runs
-     SET run_day = $2::date, updated_at = NOW()
-     WHERE job_key = $1 AND run_day < $2::date
+     SET run_day = $2::date,
+         claimed_at = NOW(),
+         completed_at = NULL,
+         updated_at = NOW()
+     WHERE job_key = $1
+       AND (
+         run_day < $2::date
+         OR (
+           run_day = $2::date
+           AND completed_at IS NULL
+           AND claimed_at IS NOT NULL
+           AND claimed_at < NOW() - ${STALE_CLAIM_INTERVAL}
+         )
+       )
      RETURNING job_key`,
     [JOB_KEY, day],
   );
   return updated.rows.length > 0;
+}
+
+async function markDailyRunCompleted(pool) {
+  await pool.query(
+    `UPDATE scheduler_daily_runs
+     SET completed_at = NOW(), updated_at = NOW()
+     WHERE job_key = $1`,
+    [JOB_KEY],
+  );
 }
 
 /**
@@ -40,12 +63,16 @@ export async function maybeRunDailySuggestionGeneration(pool) {
 
   try {
     const stats = await runSuggestionGeneration(pool, { limit: 200 });
+    await markDailyRunCompleted(pool);
     logger.info({ stats, day }, 'daily suggestion generation finished');
     return { skipped: false, stats };
   } catch (err) {
     await pool.query(
       `UPDATE scheduler_daily_runs
-       SET run_day = ($2::date - INTERVAL '1 day')::date, updated_at = NOW()
+       SET run_day = ($2::date - INTERVAL '1 day')::date,
+           claimed_at = NULL,
+           completed_at = NULL,
+           updated_at = NOW()
        WHERE job_key = $1`,
       [JOB_KEY, day],
     );
