@@ -3,7 +3,7 @@ title: Calendar dates in Agatha Track
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-09-15
+last_updated: 2026-10-13
 tags: [documentation]
 ---
 # Calendar dates in Agatha Track
@@ -80,6 +80,7 @@ via `POST /api/pets/:id/family-events`. Both paths normalize writes with
   - `dateToIsoDate` — DB value → `YYYY-MM-DD` for JSON responses
   - `normalizeCalendarDateInput` — request body → `YYYY-MM-DD` for DB writes
   - `todayCalendarIso` — today's calendar date on the server
+- **Care Context:** `resolvePlannedAbsenceTodayIso` (declarer account IANA TZ) is resolved **once per HTTP request** on absence list/create/patch and overlap helpers; away-plan readiness still uses each pet's `home_timezone` for schedule "today" when the caller does not pass an explicit `todayIso`.
 
 ## Date pickers
 
