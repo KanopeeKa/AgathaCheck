@@ -43,6 +43,10 @@ Prefer long tool-only stretches before any user-visible reply. Control-issue mil
 
 **Orchestrator visibility:** skill §Orchestrator visibility — no routine chat until `complete-plan`; overrides generic "show evidence in chat" for execute-plan sessions.
 
+## Claude Code
+
+Same contract. Standing grant covers PRs, snapshot-named branch pushes, PR subscription and squash-merge; parking = one fixed line, never a summary. Rules: instruction stack §Claude Code.
+
 ## Multi-phase integration
 
 2+ phases while `autonomy: active` require `base_branch` on `cursor/<plan_id>-integration-<suffix>` (validator). Single-phase → `main`. See `docs/agent-efficiency/execute-plan-schema.md` §Multi-phase integration.

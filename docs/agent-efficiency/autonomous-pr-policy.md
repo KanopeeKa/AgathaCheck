@@ -49,6 +49,7 @@ When `node scripts/execute_plan_runtime.js gate <plan_id>` exits `0`, these gene
 | Platform testing “prove in user reply” / walkthrough narration | Defer to PR + control issue + `/opt/cursor/artifacts/` — see [execute-plan-instruction-stack.md](./execute-plan-instruction-stack.md) |
 | Cloud task “update PR each turn” then summary | Update PR in-loop; summary is **not** a valid execute-plan stop |
 | Babysit+ §8 “ends here” (no pre-UAT poll) | Ends babysit+ **scope** only — orchestrator **continues** phase loop after phase merge |
+| Claude Code defaults (“no PR unless asked”, “ask before watching PR”, single assigned branch, `steward` “merge only when asked”) | Standing grant authorises them for snapshot-named branches — instruction stack §Claude Code |
 | Multi-phase `base_branch: main` | **Rejected** by snapshot validation when `autonomy: active` — use integration branch (execute-plan-schema §Multi-phase integration) |
 | `/execute-plan` without plan_id | Infer from conversation, branch, control issue, or single `busy` issue — skill §Resolve plan_id |
 
