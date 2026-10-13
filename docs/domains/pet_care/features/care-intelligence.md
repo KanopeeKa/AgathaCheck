@@ -5,7 +5,7 @@ audience: both
 domain: pet_care
 feature_id: care_intelligence
 status: active
-last_updated: 2026-10-12
+last_updated: 2026-10-13
 related_prs: []
 ---
 
@@ -234,8 +234,7 @@ Spec: [agatha-care-journey-programme.md](../changes/agatha-care-journey-programm
 
 | ID | Planned decision | Notes |
 |----|------------------|-------|
-| **ACJ-CIM-PL-001** | Welfare guidance persists in `welfare_suggestions`; `care_recommendations` unchanged | PR-06 |
-| **ACJ-CIM-PL-002** | Shared `dedupe_key` namespace + Agatha presentation shell; separate evaluators | PR-06 |
+| **ACJ-CIM-PL-002** | Shared `dedupe_key` namespace + Agatha presentation shell; separate evaluators | PR-06+ (presentation PR-04–05; evaluators PR-07+) |
 | **ACJ-CIM-PL-003** | Profile slot order and guidance tiebreak per ui-design §3 | PR-04–05 |
 
 ## Agatha profile completeness presentation (PR-04)
@@ -257,6 +256,20 @@ Presentation rules live in `AgathaSurfacePolicy` and are applied via `PetCarePre
 
 Local dismiss timestamps are stored in `ProfileCompletenessDismissalStore` (SharedPreferences) and recorded in `ProfileCompletenessActions.hidePrompt` before the pet row PUT.
 
+## Welfare suggestions persistence (PR-06)
+
+Welfare guidance uses table **`welfare_suggestions`** — **`care_recommendations` is unchanged** (rhythm / Phase C only).
+
+| ID | Requirement | Status |
+|----|-------------|--------|
+| **AC-WF-01** | Persist welfare rows; GET `/api/pets/:id/welfare-suggestions` lists pending (`HEALTH_VIEW`) | Live (integration) |
+| **AC-WF-02** | Upsert by `(pet_id, dedupe_key)` refreshes copy instead of duplicating | Live (integration) |
+| **AC-WF-03** | Dismiss sets `dismissed_until` (+30d); upsert does not reopen inside window | Live (integration) |
+
+Service: `server/routes/careIntelligence/welfareSuggestionsService.js` (`upsertWelfareSuggestionCandidate` for evaluators in PR-07+). Respond: `POST …/respond` with `{ action: dismiss \| complete, primary_outcome? }` — **no** `health_entry` create (`HEALTH_EDIT`).
+
+Coverage: `test: server/test/careIntelligence/welfareSuggestions.test.js`
+
 ## Decision log
 
 | ID | Decision | Rationale | Status | Date | PR |
@@ -274,6 +287,7 @@ Local dismiss timestamps are stored in `ProfileCompletenessDismissalStore` (Shar
 | CARE-INTELLIGENCE-D-011 | `PhaseDEvidenceTrace` ephemeral by default | Regulatory minimization until DATA_MAP approval | Live | 2026-09-08 | D0 |
 | CARE-INTELLIGENCE-D-012 | CSM supplies schedule facts via `explainGap` only | Avoid overloading CIM with scheduling commands | Live | 2026-09-09 | CSM-13 |
 | CARE-INTELLIGENCE-D-013 | Progression does not consume review-relevance output | Domain boundary with care_progression | Live | 2026-09-09 | CP prog |
+| CARE-INTELLIGENCE-D-014 | Welfare guidance in `welfare_suggestions`; rhythm table untouched | ACJ programme B4 (ACJ-D-005) | Live | 2026-10-13 | PR-06 |
 
 ## Related
 
