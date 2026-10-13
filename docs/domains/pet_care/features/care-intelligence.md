@@ -287,7 +287,7 @@ Coverage: `test: server/test/careIntelligence/welfareSuggestions.test.js`
 | CARE-INTELLIGENCE-D-011 | `PhaseDEvidenceTrace` ephemeral by default | Regulatory minimization until DATA_MAP approval | Live | 2026-09-08 | D0 |
 | CARE-INTELLIGENCE-D-012 | CSM supplies schedule facts via `explainGap` only | Avoid overloading CIM with scheduling commands | Live | 2026-09-09 | CSM-13 |
 | CARE-INTELLIGENCE-D-013 | Progression does not consume review-relevance output | Domain boundary with care_progression | Live | 2026-09-09 | CP prog |
-| **ACJ-CIM-D-005** | Welfare guidance in `welfare_suggestions`; rhythm table untouched | ACJ programme B4 | Live | 2026-10-13 | PR-06 |
+| CARE-INTELLIGENCE-D-014 | Welfare guidance in `welfare_suggestions`; rhythm table untouched | ACJ programme B4 (ACJ-D-005) | Live | 2026-10-13 | PR-06 |
 
 ## Related
 
