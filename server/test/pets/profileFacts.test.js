@@ -76,7 +76,7 @@ describe('profileFacts updatePet', () => {
         orgViewerCanView: true,
       });
       if (access) return access;
-      if (sql.includes('SELECT * FROM pets WHERE id = $1')) {
+      if (sql.includes('FROM pets WHERE id = $1') && sql.includes('SELECT')) {
         return { rows: [existing] };
       }
       if (sql.includes('FROM weight_entries')) return { rows: [{ weight: 4.5 }] };
@@ -90,7 +90,7 @@ describe('profileFacts updatePet', () => {
       if (sql.includes('SELECT * FROM pets WHERE id = $1') && sql.includes('RETURNING')) {
         return { rows: [existing] };
       }
-      if (sql.includes('SELECT * FROM pets WHERE id = $1')) {
+      if (sql.includes('FROM pets WHERE id = $1') && sql.includes('SELECT')) {
         return { rows: [existing] };
       }
       if (sql.includes('pet_vaccination_records')) {
@@ -112,13 +112,13 @@ describe('profileFacts updatePet', () => {
   function rowFromUpdateParams(params) {
     return {
       chip_id: params[10],
-      neuter_status: params[13],
       identification_status: params[12],
+      neuter_status: params[13],
     };
   }
 
   it('AC-PF-01 neuter_status no survives update when omitted', async () => {
-    const existing = makePetRow({ neuter_status: 'no' });
+    const existing = makePetRow({ neuter_status: 'no', neutered_date: null });
     let captured;
     const pool = poolForUpdate(existing, (p) => { captured = p; });
     const out = await updatePet(pool, userId, petId, {

@@ -62,7 +62,7 @@ describe('petCoreCommandService behaviour', () => {
         if (sql.includes('UPDATE pets SET weight = (')) return { rows: [] };
         if (sql.includes('UPDATE pets SET name=$1')) {
           onUpdate(params);
-          return { rows: [makePetRow({ name: params[0], passed_away: params[15], chip_id: params[10], organization_id: params[16] })] };
+          return { rows: [makePetRow({ name: params[0], passed_away: params[21], chip_id: params[10], organization_id: params[22] })] };
         }
         if (sql.includes('SELECT * FROM pets WHERE id = $1')) {
           return { rows: [makePetRow()] };
@@ -81,8 +81,8 @@ describe('petCoreCommandService behaviour', () => {
       expect(res.statusCode).toBe(200);
       expect(capturedParams[0]).toBe('Renamed only');
       expect(capturedParams[10]).toBe('CHIP-KEEP');
-      expect(capturedParams[15]).toBe(true);
-      expect(capturedParams[16]).toBe('org-uuid-1');
+      expect(capturedParams[21]).toBe(true);
+      expect(capturedParams[22]).toBe('org-uuid-1');
     });
 
     it('clears organization_id and chipId when explicit null is sent', async () => {
