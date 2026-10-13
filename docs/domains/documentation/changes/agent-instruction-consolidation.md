@@ -28,34 +28,28 @@ chat, preflight-only turns).
 | # | Owner | Scope | Status |
 |---|-------|-------|--------|
 | 1 | Claude Code | Architecture + `AGENTS.md` operating rules; slim agent entries; gate I (WARN) | Done (#1869) |
-| 2 | Cursor | `.cursor/**` dedupe; execute-plan ≤300 lines; Bugbot retired; gate I → 0 in owned files | In progress |
-| 3 | Cursor | Runtime: gate stdout next action; `expired` halt copy; tests | Planned (after 2) |
+| 2 | Cursor | `.cursor/**` dedupe; execute-plan ≤300 lines; Bugbot retired; gate I → 0 in owned files | Done (#1870) |
+| 3 | Cursor | Runtime: gate stdout next action; `expired` halt copy; tests | Done (#1872) |
 | 4 | Claude Code | Promote gate I BLOCK; stale plan audit in `docs/agent-efficiency/` | Planned — after 2–3 |
 | 5 | Any | Product rules in memory → canonical docs on consolidate | Ongoing |
 
 ### Row 2 — Cursor dedupe (PR a)
 
-- Run `node scripts/check_docs_canonical.js --instructions`; **0 findings** in owned paths (see task brief).
-- Link don't restate: precedence, when-to-ask, closers, pre-push, docs duty, model → owner map in `agent-instructions.md`.
-- `execute-plan-instruction-stack.md`: drop precedence rows now in `AGENTS.md`; keep platform-vs-repo, Cloud turns, Claude Code.
-- `agent-core.mdc`: Cursor-only; always-loaded ≤2,400 words.
-- Bugbot: delete `.cursor/BUGBOT.md`, `/review-bugbot`; Copilot-first in pr-review-cost-efficiency.md.
-- Router: one line re-read `AGENTS.md` §Execute-plan (no override card).
-- Word counts before/after in PR body.
+See #1870. Gate I 0 in owned paths; link don't restate per `agent-instructions.md` owner map.
 
 ### Row 3 — Cursor runtime (PR b)
 
-- Gate exit `0` stdout ends with concrete `next_action` tool step; `/execute-plan` = resume (not permission).
-- CI: subscribe/await, tool-only; skill ≤5 lines pointer.
-- `approved_until` stays 48h; `expired` halt = re-approve + `resume-plan` only.
+- Gate exit `0`: JSON `next_action` / `agent_next_step` + stdout `NEXT:` line (concrete tool step).
+- Gate `expired`: stdout `UNBLOCK:` with `approve-autonomous` + `resume-plan` only.
+- `halt --reason expired` comment matches unblock copy.
 - Tests in `execute_plan_runtime.test.js`.
 - **Acceptance note:** phase-merge silence is spot-checked on execute-plan runs; repo tests cover gate/halt strings only.
-- **Residual risk:** platform testing prompts may still bias to chat proof — mitigated by AGENTS §Execute-plan, not fully repo-enforceable.
+- **Residual risk:** platform testing prompts may still bias to chat proof — not fully repo-enforceable.
 
 ## Acceptance
 
-- Gate I: 0 findings in owned files (row 2/3 scope).
-- No owned file restates a rule whose home is elsewhere.
-- `pre-push-changed.sh` green; `## Docs` on PRs; one outcome per PR.
+- `node scripts/check_docs_canonical.js --instructions` reports 0 findings (then promoted to BLOCK).
+- No instruction file restates a rule whose home is elsewhere (owner map in the architecture doc).
+- Execute-plan gate `0` + runtime tests; phase-merge chat silence validated by spot runs (not CI).
 
 On row 4 PR: fold into `standards.md` / architecture doc and delete this file.
