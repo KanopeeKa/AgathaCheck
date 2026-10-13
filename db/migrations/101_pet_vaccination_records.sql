@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS pet_vaccination_records (
   vaccine_name character varying(255) NOT NULL,
   administered_on date NOT NULL,
   record_source character varying(32) NOT NULL DEFAULT 'user',
-  created_by UUID REFERENCES users(id),
+  created_by UUID REFERENCES users(id) ON DELETE SET NULL,
   created_at timestamp with time zone NOT NULL DEFAULT NOW(),
   updated_at timestamp with time zone NOT NULL DEFAULT NOW(),
   CONSTRAINT pet_vaccination_records_source_check

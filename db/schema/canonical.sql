@@ -1667,7 +1667,7 @@ ALTER TABLE ONLY public.pet_timeline_entries
 ALTER TABLE ONLY public.pet_timeline_entries
     ADD CONSTRAINT pet_timeline_entries_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.pet_vaccination_records
-    ADD CONSTRAINT pet_vaccination_records_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.users(id);
+    ADD CONSTRAINT pet_vaccination_records_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.users(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.pet_vaccination_records
     ADD CONSTRAINT pet_vaccination_records_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.pets
