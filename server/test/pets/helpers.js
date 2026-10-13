@@ -65,16 +65,10 @@ async function defaultPetPoolHandler(sql, params) {
         return { rows: [{ photo_path: null }] };
       }
       if (sql.includes('FROM pets WHERE id = $1') && sql.includes('SELECT')) {
-        return {
-          rows: [{
-            organization_id: null,
-            photo_path: null,
-            weight_reference_value: null,
-            weight_reference_authority: null,
-            weight_management_context: 'none',
-            home_timezone: 'UTC',
-          }],
-        };
+        if (sql.includes('organization_id') && !sql.includes('*')) {
+          return { rows: [{ organization_id: 'org-uuid-1' }] };
+        }
+        return { rows: [makePetRow()] };
       }
       if (sql.includes('SELECT home_timezone FROM pets')) {
         return { rows: [{ home_timezone: 'UTC' }] };
