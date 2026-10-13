@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/utils/calendar_date.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../care_item/care_item.dart';
 import '../../../../health_tracking/health_tracking.dart';
@@ -29,11 +30,21 @@ List<CareCollectionInsetItem> buildCareAgendaInsetItems({
   final l = AppLocalizations.of(context)!;
   final items = <CareCollectionInsetItem>[];
 
-  void header(String key, String text, {bool level2 = false}) {
+  void header(
+    String key,
+    String text, {
+    bool level2 = false,
+    String? semanticsIdentifier,
+  }) {
     items.add(
       CareCollectionInsetItem(
         showDividerBefore: items.isNotEmpty,
-        child: _AgendaHeader(key: Key(key), text: text, level2: level2),
+        child: _AgendaHeader(
+          key: Key(key),
+          text: text,
+          level2: level2,
+          semanticsIdentifier: semanticsIdentifier ?? key,
+        ),
       ),
     );
   }
@@ -46,6 +57,19 @@ List<CareCollectionInsetItem> buildCareAgendaInsetItems({
           child: rowBuilder(row),
         ),
       );
+    }
+  }
+
+  void rowsWithSameDayDateHeaders(List<CareAgendaRow<HealthEntry>> list) {
+    for (final group in groupAgendaRowsByDueDate(list)) {
+      if (showSameDayDateHeader(group)) {
+        header(
+          'care_agenda_date_${group.dateKey}',
+          formatCalendarDateDisplay(group.date),
+          level2: true,
+        );
+      }
+      rows(group.rows);
     }
   }
 
@@ -79,7 +103,7 @@ List<CareCollectionInsetItem> buildCareAgendaInsetItems({
 
   if (agenda.dueSoon.isNotEmpty) {
     header('care_agenda_due_soon', l.careAgendaDueSoon);
-    rows(agenda.dueSoon);
+    rowsWithSameDayDateHeaders(agenda.dueSoon);
   }
 
   if (agenda.upcoming.isNotEmpty) {
@@ -93,7 +117,7 @@ List<CareCollectionInsetItem> buildCareAgendaInsetItems({
         ),
       ),
     );
-    if (upcomingExpanded) rows(agenda.upcoming);
+    if (upcomingExpanded) rowsWithSameDayDateHeaders(agenda.upcoming);
   }
   return items;
 }
@@ -107,16 +131,23 @@ String careAgendaOrientation(AppLocalizations l, CareAgenda<Object?> agenda) {
 }
 
 class _AgendaHeader extends StatelessWidget {
-  const _AgendaHeader({super.key, required this.text, this.level2 = false});
+  const _AgendaHeader({
+    super.key,
+    required this.text,
+    this.level2 = false,
+    this.semanticsIdentifier,
+  });
 
   final String text;
   final bool level2;
+  final String? semanticsIdentifier;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Semantics(
       header: true,
+      identifier: semanticsIdentifier,
       child: Padding(
         padding: CareSurfaceTokens.collectionHeaderPadding,
         child: Text(

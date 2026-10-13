@@ -151,4 +151,17 @@ void main() {
     expect(timeGroupFor('18:00'), CareTimeGroup.evening);
     expect(timeGroupFor(null), CareTimeGroup.anytime);
   });
+
+  test('due soon groups share a same-day date header when two items match', () {
+    final rows = agenda([
+      item('Alpha', [occ('a', 13, CareOccurrenceStatus.comingUp)]),
+      item('Beta', [occ('b', 13, CareOccurrenceStatus.comingUp)]),
+      item('Gamma', [occ('g', 15, CareOccurrenceStatus.comingUp)]),
+    ]).dueSoon;
+    final groups = groupAgendaRowsByDueDate(rows);
+    expect(groups.length, 2);
+    expect(groups.first.rows.length, 2);
+    expect(showSameDayDateHeader(groups.first), isTrue);
+    expect(showSameDayDateHeader(groups.last), isFalse);
+  });
 }

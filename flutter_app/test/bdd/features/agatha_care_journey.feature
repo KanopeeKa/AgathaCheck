@@ -8,3 +8,10 @@ Feature: Agatha care journey welfare feedback
     Given a guardian owns a pet with microchip welfare pending
     When the guardian saves a microchip id on the pet profile
     Then the pet profile no longer shows the microchip welfare suggestion
+
+  @acj @pr-12 @smoke-uat
+  @P1
+  Scenario: ACJ-CO-01 — same-day date header
+    Given a guardian owns two care items due on the same future day
+    When the guardian opens the care agenda due soon section
+    Then the care agenda shows a same-day date header for that day

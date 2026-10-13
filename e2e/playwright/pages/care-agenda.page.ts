@@ -89,6 +89,19 @@ export class CareAgendaPage {
     await refreshFlutterAccessibility(this.page);
   }
 
+  dateHeaderIdentifier(dateKey: string) {
+    return this.page.locator(
+      `[flt-semantics-identifier="care_agenda_date_${dateKey}"]`,
+    );
+  }
+
+  async expectSameDayDateHeader(dateKey: string): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    await expect(this.dateHeaderIdentifier(dateKey)).toBeVisible({
+      timeout: 30_000,
+    });
+  }
+
   async showUpcomingCare(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
     const hide = this.page.getByRole('button', {
