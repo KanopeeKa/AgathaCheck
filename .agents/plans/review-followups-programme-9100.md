@@ -116,12 +116,12 @@ last_completed_phase: 1
 halt_reason: null
 next_action: "continue phase 2 on branch cursor/review-followups-phase2-care-tz-9100"
 artifact_ref:
-  branch: cursor/review-followups-integration-9100
+  branch: cursor/review-followups-phase2-care-tz-9100
   plan_path: .agents/plans/review-followups-programme-9100.md
-  plan_commit: d821ddad390cd105b18777dc1c39a423f023ffe1
+  plan_commit: 21b51817212adca2b5cce41449fb88d05792dfbe
   snapshot_path: .agents/plans/review-followups-programme-9100.snapshot.json
-  snapshot_commit: d821ddad390cd105b18777dc1c39a423f023ffe1
-open_prs: []
+  snapshot_commit: 21b51817212adca2b5cce41449fb88d05792dfbe
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1859"]
 merge_commits: {}
 debt_issue_refs: []
 ```

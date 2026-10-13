@@ -4,7 +4,7 @@
   "approved_at": "2026-10-13T09:03:00Z",
   "approved_by": "user-chat-2026-10-13-review-followups-programme-standing-grant",
   "approved_until": "2026-10-15T09:03:00Z",
-  "content_hash": "sha256:5d8101d5a4d1e00221578ace7f46697b625c1ec0bd6204345ecbc7cf2f34d4ec",
+  "content_hash": "sha256:ee4f1f8c189b482851f0611179224ce7ad0443f5a941bb9afc67d9e4e60eca64",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/review-followups-integration-9100",
@@ -72,7 +72,9 @@
       "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1859",
+      "pr_head_sha": "21b51817212adca2b5cce41449fb88d05792dfbe"
     },
     {
       "id": "3",
