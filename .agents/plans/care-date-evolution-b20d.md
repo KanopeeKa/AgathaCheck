@@ -2,8 +2,8 @@
 title: Care date screen evolution (identity + actions IA)
 owner: Agent
 audience: agent
-status: active
-last_updated: 2026-10-08
+status: completed
+last_updated: 2026-10-13
 tags: [pet_care, care_item, ui, execute-plan]
 ---
 
@@ -33,15 +33,10 @@ Evolve the **Care date** leaf screen so users orient on **pet + care family**, m
 
 | Path | When |
 |------|------|
-| `docs/domains/pet_care/features/care-item-evolution.md` | § Care date screen — fold phase 3 |
-| `docs/design/care-item-view-ui.md` | One paragraph on leaf vs Care item shortcuts (phase 3) |
+| `docs/domains/pet_care/features/care-item-evolution.md` | Delivered — § Care date screen v3, D-CIE-037, D-OSM-013–016 (#1824) |
+| `docs/design/care-item-view-ui.md` | Delivered — Care date leaf subsection (#1824) |
 
-**Proposal (phase 1 only):** `docs/domains/pet_care/changes/care-date-evolution-spec.md` (`status: proposed`) — delete after canonical fold in phase 3.
-
-**Docs gate per PR:**
-
-- Phase 1–2: `Docs: N/A — spec in changes/care-date-evolution-spec.md; canonical fold phase 3` (unless phase touches copy-only l10n without behaviour — still N/A until fold).
-- Phase 3: full `/canonical-docs` sync (Mode A).
+**Change doc:** `docs/domains/pet_care/changes/care-date-evolution-spec.md` — folded and deleted in phase 3 (#1824).
 
 ## Router (strengthen at phase start)
 
@@ -143,12 +138,12 @@ flutter_app/test/features/experience/presentation/care_item/occurrence/**
 
 **Exit criteria:**
 
-- [ ] Open occurrence: Change date + Skip under datetime in identity card; Mark as done alone in Complete module; no “This date” / completion-date row in open Complete module.
-- [ ] Away module appears **above** Complete on phone (widget test scroll order or module keys).
-- [ ] Family chip ≥48dp; pet name not bold on left rail.
-- [ ] Semantics keys `occurrence_reschedule`, `occurrence_skip`, `occurrence_done` preserved.
-- [ ] Files ≤500 lines; `pre-push-changed.sh` green.
-- [ ] PR body: `Docs: N/A — changes/care-date-evolution-spec.md; canonical phase 3`.
+- [x] Open occurrence: Change date + Skip under datetime in identity card; Mark as done alone in Complete module; no “This date” / completion-date row in open Complete module.
+- [x] Away module appears **above** Complete on phone (widget test scroll order or module keys).
+- [x] Family chip ≥48dp; pet name not bold on left rail.
+- [x] Semantics keys `occurrence_reschedule`, `occurrence_skip`, `occurrence_done` preserved.
+- [x] Files ≤500 lines; `pre-push-changed.sh` green.
+- [x] PR body: `Docs: N/A — changes/care-date-evolution-spec.md; canonical phase 3`.
 
 **Note:** Phase 1 may temporarily regress overdue backdate until phase 2 merges — do **not** merge integration → `main` until all phases complete.
 
@@ -188,9 +183,9 @@ docs/domains/pet_care/changes/care-date-evolution-spec.md
 
 **Exit criteria:**
 
-- [ ] Widget or unit tests prove DN-3 path on occurrence screen without inline picker.
-- [ ] `pre-push-changed.sh` green.
-- [ ] No server/API changes.
+- [x] Widget or unit tests prove DN-3 path on occurrence screen without inline picker.
+- [x] `pre-push-changed.sh` green.
+- [x] No server/API changes.
 
 ---
 
@@ -229,36 +224,37 @@ docs/debt/debt.md
 
 **Exit criteria:**
 
-- [ ] Canonical doc matches shipped UI; change doc deleted.
-- [ ] E2E/page objects green in CI for touched specs.
-- [ ] Debt issue filed with label `tech-debt` and link from control issue.
-- [ ] Integration → `main` PR ready for `/babysit-uat`.
+- [x] Canonical doc matches shipped UI; change doc deleted.
+- [x] E2E/page objects green in CI for touched specs.
+- [x] Debt issue filed with label `tech-debt` and link from control issue (#1823).
+- [x] Integration → `main` PR merged with pre-UAT green (#1825).
 
 ---
 
 ## Runtime state (agent-updated)
 
 ```yaml
-autonomy: active
+autonomy: completed
 current_phase: null
 last_completed_phase: 3
 halt_reason: null
 next_action: "plan complete"
 artifact_ref:
-  branch: cursor/care-date-evolution-b20d-integration-b20d
+  branch: cursor/care-date-evolution-plan-tidy-b20d
   plan_path: .agents/plans/care-date-evolution-b20d.md
-  plan_commit: 3f1662d46b7197de48ea874ef3c247400eda9273
+  plan_commit: 562ce69e54cb04155c99d9cbd0a29707dc32ecf8
   snapshot_path: .agents/plans/care-date-evolution-b20d.snapshot.json
-  snapshot_commit: 3f1662d46b7197de48ea874ef3c247400eda9273
+  snapshot_commit: 562ce69e54cb04155c99d9cbd0a29707dc32ecf8
 open_prs: []
 merge_commits: {}
 debt_issue_refs: [1823]
 ```
 
-## Final integration → main
+## Completion
 
-After phase 3 merges to integration:
-
-1. `./scripts/pre-push.sh` on integration tip.
-2. Open PR `cursor/care-date-evolution-b20d-integration-b20d` → `main`.
-3. `/babysit-uat` on that PR.
+| Item | Reference |
+|------|-----------|
+| Control issue | [#1807](https://github.com/KanopeeKa/AgathaCheck/issues/1807) (closed 2026-10-08) |
+| Release PR → `main` | [#1825](https://github.com/KanopeeKa/AgathaCheck/pull/1825) — merge `d35a77f4` |
+| Pre-UAT E2E | [run 37831075763](https://github.com/KanopeeKa/AgathaCheck/actions/runs/37831075763) (success) |
+| Follow-up debt | [#1823](https://github.com/KanopeeKa/AgathaCheck/issues/1823) — `care_item_dates_section.dart` dedup (out of plan scope) |
