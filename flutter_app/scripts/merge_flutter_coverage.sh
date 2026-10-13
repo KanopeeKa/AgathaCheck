@@ -4,7 +4,10 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 INPUT_ROOT="${1:-_coverage_shards}"
-THRESHOLD="${DOMAIN_COVERAGE_THRESHOLD:-8}"
+if [[ -z "${DOMAIN_COVERAGE_THRESHOLD:-}" ]]; then
+  DOMAIN_COVERAGE_THRESHOLD="$(node -p "require('../scripts/lib/flutter-domain-coverage-threshold.cjs').readThreshold()")"
+fi
+THRESHOLD="${DOMAIN_COVERAGE_THRESHOLD}"
 
 # Shard ids come from flutter_app/test/ci_shards.json (single source of truth).
 mapfile -t shards < <(node ../scripts/ci/flutter-shards.mjs list)
