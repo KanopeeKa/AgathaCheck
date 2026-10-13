@@ -44,7 +44,7 @@ node scripts/e2e_debug_status.mjs --json
 | Exit / `safe_to_start` | Action |
 |------------------------|--------|
 | `0` / `true` | Proceed to Phase 1 |
-| `2` / `false`, `reason: e2e_debug_in_progress` | **Stop** — another agent holds `e2e-debug` + `busy` on a control issue. Wait, or comment on that issue and coordinate |
+| `2` / `false`, `reason: e2e_debug_in_progress` | **§Halt** — another agent holds `e2e-debug` + `busy`. Post on control issue and coordinate; do not permission-seek in user chat |
 | `2` / `false`, `reason: open_remedial_pr` | **Join** the open remedial PR — do not start a duplicate branch/stack. Re-run with `--join --remedial-branch <branch>` after resolve |
 | `2` / `false`, `reason: open_e2e_pr_while_main_red` | **Join** the open E2E PR while `main` pre-UAT is red — same join flow; do not open another `e2e/**` PR |
 | `2` / `false`, `reason: join_branch_mismatch` | Use `open_remedial_pr.branch` from JSON — one remedial PR per failure wave |
@@ -236,11 +236,11 @@ node scripts/e2e_debug_status.mjs --release --issue <control_issue> --json
 | 3 | Release `e2e-debug` claim when one was taken (`--release`) |
 | 4 | **Immediately invoke `/babysit-uat`** on the remedial PR — merge + `babysit_uat_watch_preuat.sh` |
 
-**Do not** end the turn after opening a draft remedial PR. Saying "hand off to `/babysit-uat`" without running it leaves `main` red.
+**Do not** end the session after opening a draft remedial PR — invoke `/babysit-uat` in-loop. Saying "hand off to `/babysit-uat`" without running it leaves `main` red.
 
 | Anti-pattern | Result |
 |--------------|--------|
-| Open draft remedial PR and stop | Pre-UAT stays broken; no merge |
+| Open draft remedial PR and end session/turn | Pre-UAT stays broken; no merge |
 | Standalone `/e2e-debug` with no follow-up | Process failure — always chain `/babysit-uat` |
 | Release claim before babysit-uat starts | OK only when babysit-uat is already running in same session |
 
