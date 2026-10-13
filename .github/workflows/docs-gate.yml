@@ -17,6 +17,8 @@ jobs:
     name: Docs declaration
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    env:
+      BASE_REF: ${{ github.event.pull_request.base.sha }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -33,12 +35,13 @@ jobs:
         env:
           PR_BODY: ${{ github.event.pull_request.body }}
           GITHUB_ACTOR: ${{ github.actor }}
-        run: |
-          node scripts/check_docs_canonical.js --pr-body --base "origin/${{ github.event.pull_request.base.ref }}"
+        run: node scripts/check_docs_canonical.js --pr-body --base "$BASE_REF"
 
   docs-canonical:
     name: Docs canonical
     runs-on: ubuntu-latest
+    env:
+      BASE_REF: ${{ github.event.pull_request.base.sha }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -52,8 +55,7 @@ jobs:
         run: cd server && npm ci
 
       - name: Default gates (diff vs base)
-        run: |
-          node scripts/check_docs_canonical.js --base "origin/${{ github.event.pull_request.base.ref }}"
+        run: node scripts/check_docs_canonical.js --base "$BASE_REF"
 
       - name: BDD coverage report
         run: node e2e/scripts/check_bdd_coverage.js --report-only
