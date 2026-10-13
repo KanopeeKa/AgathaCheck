@@ -177,13 +177,14 @@ void main() {
       tester.element(find.byType(NotificationSuggestionCard)),
     )!;
 
-    await tester.tap(
-      find.widgetWithText(FilledButton, l.careSuggestionAccept),
-    );
+    await tester.tap(find.widgetWithText(FilledButton, l.careSuggestionAccept));
     await tester.pump();
     await tester.pumpAndSettle();
 
-    expect(find.text(l.notificationSuggestionAcceptUnavailable), findsOneWidget);
+    expect(
+      find.text(l.notificationSuggestionAcceptUnavailable),
+      findsOneWidget,
+    );
   });
 
   testWidgets('care family feedback failure shows snackbar', (tester) async {

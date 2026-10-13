@@ -41,9 +41,9 @@ class _ConsentPreferencesSheetState
     if (!mounted) return;
     setState(() => _saving = false);
     if (ok) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.consentPreferencesSaved)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.consentPreferencesSaved)));
       Navigator.of(context).pop();
     } else {
       ScaffoldMessenger.of(context).showSnackBar(

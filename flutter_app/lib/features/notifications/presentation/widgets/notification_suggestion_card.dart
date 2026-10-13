@@ -61,9 +61,9 @@ class _LegacyCompactSuggestionCardState
           .submitSuggestionFeedback(widget.notification.id, value);
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.careSuggestionRespondFailed)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.careSuggestionRespondFailed)));
       }
     } finally {
       if (mounted) setState(() => _feedbackInFlight = false);
@@ -240,9 +240,9 @@ class _CareFamilySuggestionCardState
           .submitSuggestionFeedback(notification.id, action);
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.careSuggestionRespondFailed)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.careSuggestionRespondFailed)));
       }
     } finally {
       if (mounted) setState(() => _feedbackInFlight = false);
