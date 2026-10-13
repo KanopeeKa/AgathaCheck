@@ -123,15 +123,22 @@ class _ConsentSettingsScreenState extends ConsumerState<ConsentSettingsScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton(
-                    onPressed: () {
-                      ref
+                    onPressed: () async {
+                      final ok = await ref
                           .read(consentServiceProvider.notifier)
                           .savePreferences(
                             analyticsConsent: _analytics,
                             marketingConsent: _marketing,
                           );
+                      if (!context.mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(l10n.consentPreferencesSaved)),
+                        SnackBar(
+                          content: Text(
+                            ok
+                                ? l10n.consentPreferencesSaved
+                                : l10n.consentPreferencesSaveFailed,
+                          ),
+                        ),
                       );
                     },
                     style: FilledButton.styleFrom(

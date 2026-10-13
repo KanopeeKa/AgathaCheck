@@ -1022,6 +1022,7 @@ Source: §0 above.
 | **D10** | Pending shares/household → `relationship`; foster/adoption/custody stay `administrative`; inline actions. | amended | PR3–PR4 |
 | **D11** | Urgent pinned at top of Activity; subscription payment issues (A9). | unchanged | — |
 | **N1**–**N14** | See §0 decision table. | locked | per §0 |
+| **N15** | For you **suggestion** cards: **Accept** requires `pet_id` and payload `recommendation_id`; otherwise show a localized error snackbar (no silent no-op). Dismiss / not-relevant guard against double-submit and show a localized failure snackbar. Inbox pet group headers use localized `petLabel` when the pet name is missing. | locked | review-followups-programme-9100 phase 5 |
 
 ## 19. Programme & rollout index
 

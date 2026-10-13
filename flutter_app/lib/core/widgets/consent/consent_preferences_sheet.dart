@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
@@ -18,6 +19,7 @@ class _ConsentPreferencesSheetState
     extends ConsumerState<ConsentPreferencesSheet> {
   late bool _analytics;
   late bool _marketing;
+  bool _saving = false;
 
   @override
   void initState() {
@@ -25,6 +27,29 @@ class _ConsentPreferencesSheetState
     final consent = ref.read(consentServiceProvider);
     _analytics = consent.analyticsConsent;
     _marketing = consent.marketingConsent;
+  }
+
+  Future<void> _save(AppLocalizations l10n) async {
+    if (_saving) return;
+    setState(() => _saving = true);
+    final ok = await ref
+        .read(consentServiceProvider.notifier)
+        .savePreferences(
+          analyticsConsent: _analytics,
+          marketingConsent: _marketing,
+        );
+    if (!mounted) return;
+    setState(() => _saving = false);
+    if (ok) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.consentPreferencesSaved)),
+      );
+      Navigator.of(context).pop();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.consentPreferencesSaveFailed)),
+      );
+    }
   }
 
   @override
@@ -81,7 +106,10 @@ class _ConsentPreferencesSheetState
                         Expanded(
                           child: Text(
                             l10n.consentLastUpdated(
-                              _formatTimestamp(consent.consentTimestamp!),
+                              _formatTimestamp(
+                                context,
+                                consent.consentTimestamp!,
+                              ),
                             ),
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: theme.colorScheme.onSecondaryContainer,
@@ -109,7 +137,9 @@ class _ConsentPreferencesSheetState
                       const Divider(height: 1),
                       SwitchListTile(
                         value: _analytics,
-                        onChanged: (v) => setState(() => _analytics = v),
+                        onChanged: _saving
+                            ? null
+                            : (v) => setState(() => _analytics = v),
                         title: Text(l10n.consentAnalytics),
                         subtitle: Text(l10n.consentAnalyticsDescription),
                         secondary: const Icon(
@@ -120,7 +150,9 @@ class _ConsentPreferencesSheetState
                       const Divider(height: 1),
                       SwitchListTile(
                         value: _marketing,
-                        onChanged: (v) => setState(() => _marketing = v),
+                        onChanged: _saving
+                            ? null
+                            : (v) => setState(() => _marketing = v),
                         title: Text(l10n.consentMarketing),
                         subtitle: Text(l10n.consentMarketingDescription),
                         secondary: const Icon(
@@ -135,18 +167,7 @@ class _ConsentPreferencesSheetState
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton(
-                    onPressed: () {
-                      ref
-                          .read(consentServiceProvider.notifier)
-                          .savePreferences(
-                            analyticsConsent: _analytics,
-                            marketingConsent: _marketing,
-                          );
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(l10n.consentPreferencesSaved)),
-                      );
-                      Navigator.of(context).pop();
-                    },
+                    onPressed: _saving ? null : () => _save(l10n),
                     style: FilledButton.styleFrom(
                       backgroundColor: AppColorTokens.operationsOlive,
                       foregroundColor: AppColorTokens.inverse,
@@ -163,10 +184,11 @@ class _ConsentPreferencesSheetState
     );
   }
 
-  String _formatTimestamp(String iso) {
+  String _formatTimestamp(BuildContext context, String iso) {
     try {
-      final dt = DateTime.parse(iso);
-      return '${dt.day.toString().padLeft(2, '0')}/${dt.month.toString().padLeft(2, '0')}/${dt.year} ${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
+      final dt = DateTime.parse(iso).toLocal();
+      final locale = Localizations.localeOf(context).toString();
+      return DateFormat.yMd(locale).add_Hm().format(dt);
     } catch (_) {
       return iso;
     }
