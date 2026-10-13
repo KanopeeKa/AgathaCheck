@@ -381,12 +381,9 @@
       ],
       "spawn_allowed": false,
       "exit_checklist": "default+bdd-journey",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
       "debt_issue_refs": []
     },
     {
@@ -453,5 +450,5 @@
       "merge_method": "squash"
     }
   ],
-  "content_hash": "sha256:e04394bac5c42343e735fd7e3b1726d206a8de104c91297f170db84ffb1e6b2f"
+  "content_hash": "sha256:c064ce8019f1c1b5b5290ebf4ab13ae68e3c0873499fe424ed80c5a2f51e04b3"
 }
