@@ -33,3 +33,7 @@ Small in-touched-files fixes inline. Larger → debt issue + continue phase. Non
 ## Conflicts
 
 Unclear goal → halt. Minor wording vs clear intent → snapshot wins. Full skill + policy: `.cursor/skills/execute-plan/SKILL.md` · `docs/agent-efficiency/autonomous-pr-policy.md` §Execute-plan overrides.
+
+## Claude Code
+
+Same contract. Standing grant covers PRs, snapshot-named branch pushes, PR subscription and squash-merge; parking = one fixed line, never a summary. Rules: instruction stack §Claude Code.

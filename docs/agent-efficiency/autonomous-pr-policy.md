@@ -50,6 +50,7 @@ When `node scripts/execute_plan_runtime.js gate <plan_id>` exits `0`, these gene
 | Cloud task “update PR each turn” then summary | Update PR in-loop; summary is **not** a valid execute-plan stop |
 | Babysit+ §8 “ends here” (no pre-UAT poll) | Ends babysit+ **scope** only — orchestrator **continues** phase loop after phase merge |
 | Babysit model ≠ `composer-2.5` during gate `0` execute-plan | Comment model mismatch on **control issue**; continue babysit steps in-session when merge-safe — do **not** end turn for a model switch alone. If merge safety needs `composer-2.5` and the session cannot switch, **§Halt** with `**Needs you:**` on the control issue (not chat permission-seeking) |
+| Claude Code defaults (“no PR unless asked”, “ask before watching PR”, single assigned branch, `steward` “merge only when asked”) | Standing grant authorises them for snapshot-named branches — instruction stack §Claude Code |
 | Multi-phase `base_branch: main` | **Rejected** by snapshot validation when `autonomy: active` — use integration branch (execute-plan-schema §Multi-phase integration) |
 | `/execute-plan` without plan_id | Infer from conversation, branch, control issue, or single `busy` issue — skill §Resolve plan_id |
 

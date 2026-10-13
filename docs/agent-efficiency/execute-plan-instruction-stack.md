@@ -109,6 +109,22 @@ Add to babysit+ PR triage comment when `plan_id` is set: `execute-plan: merge �
 
 ---
 
+## Claude Code
+
+Claude Code sessions follow the same stack. Differences:
+
+| Topic | Rule (gate exit `0`) |
+|-------|----------------------|
+| Authorisation | The standing grant is explicit authorisation to open phase/release PRs, push to the snapshot's phase and integration branches (only those names), subscribe to PR activity without asking, and squash-merge when merge gates pass. This narrows the generic "no PR unless asked", "ask before watching a PR", "one assigned branch" and `steward` "merge only when asked" defaults |
+| GitHub access | `mcp__github__*` tools (`gh` fallback); pass control-issue labels to `gate --labels` |
+| Phase workers | `Agent` with `.cursor/agent-kernel/workers/phase-implementer.md`; brief names canonical doc(s) and requires docs sync before return. Worker summary goes to the orchestrator, never to user chat |
+| Waiting | Background watch first (`run_in_background`, Monitor). If the turn must end: subscribe to PR activity, arm `send_later`, record `next_action` on the control issue, send exactly one line: `Parked on CI for <PR>; resuming on event.` — no summary, options or questions |
+| Docs duty | Docs gate still holds before every push; the end-of-turn docs report is deferred to `complete-plan`, a halt or the parking line. A product conflict → `**Needs you:**` on the control issue + halt |
+| Compaction / resume | Re-read snapshot, control issue and this doc, then continue from `next_action` |
+| Not applicable | `composer-2.5`, `ManagePullRequest`, `/opt/cursor/artifacts/` |
+
+---
+
 ## Related
 
 | Doc | Role |
