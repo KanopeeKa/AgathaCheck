@@ -12,12 +12,14 @@ import {
 } from '../../lib/care/occurrence/index.js';
 import { validateSkipReasonForFamily } from '../../lib/care/capabilities.js';
 import { extractUserId } from './shared.js';
+import { CareCommandError } from '../../lib/care/occurrence/careCommandError.js';
 import {
   handleCommand,
   loadEntry,
   weightGuard,
   withEarlierPastDueSkipped,
 } from './occurrenceHttpBridge.js';
+import { resolveUndoAuditOccurrenceId } from './occurrenceUndoAudit.js';
 
 export function registerOccurrenceCommandRoutes(router, pool) {
 router.post('/:id/occurrences/:occId/complete', asyncHandler(async (req, res) => {
@@ -157,15 +159,28 @@ router.post('/:id/occurrences/:occId/complete', asyncHandler(async (req, res) =>
   }));
 
   // Compatibility (deleted in child F): per-occurrence undo.
-  router.post('/:id/occurrences/:occId/undo', asyncHandler(async (req, res) => handleCommand(pool, req, res, {
-    command: (ctx) => undoCommand(ctx, {}),
-    audit: (out) => ({
-      action: 'health_occurrence.undone',
-      metadata: { occurrence_id: req.params.occId, action_type: out.undoneType },
-    }),
-    respond: async (out) => ({
-      body: out.occurrence ? occurrenceToMap(out.occurrence) : { undone: out.undoneType },
-    }),
-  })));
+  router.post('/:id/occurrences/:occId/undo', asyncHandler(async (req, res) => {
+    const occurrenceId = req.params.occId;
+    return handleCommand(pool, req, res, {
+      command: (ctx) => undoCommand(ctx, { occurrenceId }),
+      audit: (out) => {
+        const resolved = resolveUndoAuditOccurrenceId(occurrenceId, out);
+        if (!resolved.ok) {
+          throw new CareCommandError(
+            resolved.status,
+            resolved.code,
+            'Undone occurrence does not match the request',
+          );
+        }
+        return {
+          action: 'health_occurrence.undone',
+          metadata: { occurrence_id: resolved.occurrenceId, action_type: out.undoneType },
+        };
+      },
+      respond: async (out) => ({
+        body: out.occurrence ? occurrenceToMap(out.occurrence) : { undone: out.undoneType },
+      }),
+    });
+  }));
 }
 
