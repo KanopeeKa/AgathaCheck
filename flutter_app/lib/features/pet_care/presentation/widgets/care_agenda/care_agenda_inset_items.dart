@@ -64,7 +64,8 @@ List<CareCollectionInsetItem> buildCareAgendaInsetItems({
   }
 
   void rowsWithSameDayDateHeaders(List<CareAgendaRow<HealthEntry>> list) {
-    final multiPet = petNames != null && petNames.length > 1 && onOpenPet != null;
+    final multiPet =
+        petNames != null && petNames.length > 1 && onOpenPet != null;
     for (final group in groupAgendaRowsByDueDate(list)) {
       if (showSameDayDateHeader(group)) {
         header(
@@ -73,8 +74,7 @@ List<CareCollectionInsetItem> buildCareAgendaInsetItems({
           level2: true,
         );
       }
-      if (multiPet &&
-          showCoordinationBanner(group, (entry) => entry.petId)) {
+      if (multiPet && showCoordinationBanner(group, (entry) => entry.petId)) {
         final ids = coordinationPetIds(group, (entry) => entry.petId);
         final names = {
           for (final id in ids)

@@ -159,7 +159,9 @@ void main() {
 
   test('coordination banner when two pets share a due day', () {
     CareAgendaRow<_PetRef> row(String petId, String name, int day) {
-      final schedule = item(name, [occ(name, day, CareOccurrenceStatus.comingUp)]);
+      final schedule = item(name, [
+        occ(name, day, CareOccurrenceStatus.comingUp),
+      ]);
       final leading = leadingOccurrence(schedule);
       return CareAgendaRow(
         item: _PetRef(petId),

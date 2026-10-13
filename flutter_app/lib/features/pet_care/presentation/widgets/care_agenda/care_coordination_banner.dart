@@ -54,7 +54,9 @@ class CareCoordinationBanner extends StatelessWidget {
                     child: TextButton(
                       key: Key('care_coordination_pet_$petId'),
                       onPressed: () => onOpenPet(petId),
-                      child: Text(l.careAgendaCoordinationPetLink(petNames[petId]!)),
+                      child: Text(
+                        l.careAgendaCoordinationPetLink(petNames[petId]!),
+                      ),
                     ),
                   ),
               ],
