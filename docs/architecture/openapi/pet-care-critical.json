@@ -252,6 +252,44 @@
         }
       }
     },
+    "/pets/{id}/vaccination-records": {
+      "get": {
+        "operationId": "listPetVaccinationRecords",
+        "parameters": [{ "$ref": "#/components/parameters/PetId" }],
+        "responses": {
+          "200": {
+            "description": "Vaccination records with computed summary",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PetVaccinationRecordsResponse" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createPetVaccinationRecord",
+        "parameters": [{ "$ref": "#/components/parameters/PetId" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/PetVaccinationRecordCreate" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Record created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PetVaccinationRecord" }
+              }
+            }
+          }
+        }
+      }
+    },
     "/health-entries/{id}": {
       "get": {
         "operationId": "getCareItem",
@@ -1242,6 +1280,56 @@
           "delivery_status": {
             "type": "string",
             "enum": ["delivered", "already_notified", "no_recipients"]
+          }
+        }
+      },
+      "PetVaccinationRecord": {
+        "type": "object",
+        "required": [
+          "id",
+          "pet_id",
+          "vaccine_name",
+          "administered_on",
+          "record_source"
+        ],
+        "properties": {
+          "id": { "type": "string" },
+          "pet_id": { "type": "string", "format": "uuid" },
+          "vaccine_name": { "type": "string", "maxLength": 255 },
+          "administered_on": { "type": "string", "format": "date" },
+          "record_source": { "type": "string", "enum": ["user", "imported"] },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "PetVaccinationRecordCreate": {
+        "type": "object",
+        "required": ["vaccine_name", "administered_on"],
+        "properties": {
+          "id": { "type": "string" },
+          "vaccine_name": { "type": "string", "maxLength": 255 },
+          "administered_on": { "type": "string", "format": "date" },
+          "record_source": { "type": "string", "enum": ["user", "imported"] }
+        }
+      },
+      "PetVaccinationRecordsResponse": {
+        "type": "object",
+        "required": ["records", "summary"],
+        "properties": {
+          "records": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/PetVaccinationRecord" }
+          },
+          "summary": {
+            "type": "object",
+            "required": ["record_count", "last_administered_on"],
+            "properties": {
+              "record_count": { "type": "integer", "minimum": 0 },
+              "last_administered_on": {
+                "type": ["string", "null"],
+                "format": "date"
+              }
+            }
           }
         }
       },

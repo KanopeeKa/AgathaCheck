@@ -157,6 +157,21 @@ Per-user presentation state — records when a prominent milestone card was rend
 | `evidence_json` | JSONB | Facts-only evidence trace |
 | `dismissed_at` | TIMESTAMPTZ | When guardian dismissed |
 
+### 1.6f Pet vaccination records (pet_vaccination_records table) — Agatha care journey PR-09
+
+Structured vaccination history for welfare evaluators (PR-10+). **No** `vaccination_status_summary` on `pets`; list responses include a **computed** `summary` object.
+
+| Field | Type | Purpose |
+|-------|------|---------|
+| `id` | VARCHAR(255) | Record identifier (UUID) |
+| `pet_id` | VARCHAR(255) | Associated pet |
+| `vaccine_name` | VARCHAR(255) | Guardian-entered label (e.g. Rabies, DHPP) |
+| `administered_on` | DATE | Calendar day administered (`YYYY-MM-DD` on wire) |
+| `record_source` | VARCHAR(32) | `user` or `imported` |
+| `created_by` | UUID | User who created the row (nullable) |
+| `created_at` | TIMESTAMPTZ | Row creation timestamp |
+| `updated_at` | TIMESTAMPTZ | Last update timestamp |
+
 ### 1.6e Care Recommendations (care_recommendations table) — Phase C
 
 Pet-scoped care-intelligence state: server-authored care rhythm suggestions

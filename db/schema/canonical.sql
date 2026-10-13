@@ -827,6 +827,17 @@ CREATE TABLE public.pet_timeline_entries (
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     CONSTRAINT pet_timeline_entries_type_check CHECK (((entry_type)::text = 'manual'::text))
 );
+CREATE TABLE public.pet_vaccination_records (
+    id uuid NOT NULL,
+    pet_id uuid NOT NULL,
+    vaccine_name character varying(255) NOT NULL,
+    administered_on date NOT NULL,
+    record_source character varying(32) DEFAULT 'user'::character varying NOT NULL,
+    created_by uuid,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT pet_vaccination_records_source_check CHECK (((record_source)::text = ANY ((ARRAY['user'::character varying, 'imported'::character varying])::text[])))
+);
 CREATE TABLE public.pets (
     id uuid NOT NULL,
     user_id uuid NOT NULL,
@@ -1198,6 +1209,8 @@ ALTER TABLE ONLY public.pet_tags
     ADD CONSTRAINT pet_tags_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.pet_timeline_entries
     ADD CONSTRAINT pet_timeline_entries_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.pet_vaccination_records
+    ADD CONSTRAINT pet_vaccination_records_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.pets
     ADD CONSTRAINT pets_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.planned_absence_carer_invite_pets
@@ -1355,6 +1368,7 @@ CREATE INDEX idx_vets_organization_id ON public.vets USING btree (organization_i
 CREATE UNIQUE INDEX idx_weight_entries_health_occurrence_id ON public.weight_entries USING btree (health_occurrence_id) WHERE (health_occurrence_id IS NOT NULL);
 CREATE UNIQUE INDEX people_directories_household_unique ON public.people_directories USING btree (household_id) WHERE (household_id IS NOT NULL);
 CREATE UNIQUE INDEX people_directories_owner_user_unique ON public.people_directories USING btree (owner_user_id) WHERE (owner_user_id IS NOT NULL);
+CREATE INDEX pet_vaccination_records_pet_administered_idx ON public.pet_vaccination_records USING btree (pet_id, administered_on DESC);
 CREATE UNIQUE INDEX welfare_suggestions_pet_dedupe_idx ON public.welfare_suggestions USING btree (pet_id, dedupe_key);
 CREATE INDEX welfare_suggestions_pet_status_idx ON public.welfare_suggestions USING btree (pet_id, status);
 CREATE TRIGGER trg_clear_pinned_org_on_membership_loss AFTER DELETE OR UPDATE OF role ON public.organization_users FOR EACH ROW EXECUTE FUNCTION public.clear_pinned_org_on_membership_loss();
@@ -1652,6 +1666,10 @@ ALTER TABLE ONLY public.pet_timeline_entries
     ADD CONSTRAINT pet_timeline_entries_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.users(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.pet_timeline_entries
     ADD CONSTRAINT pet_timeline_entries_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.pet_vaccination_records
+    ADD CONSTRAINT pet_vaccination_records_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.users(id) ON DELETE SET NULL;
+ALTER TABLE ONLY public.pet_vaccination_records
+    ADD CONSTRAINT pet_vaccination_records_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.pets
     ADD CONSTRAINT pets_care_holder_org_id_fkey FOREIGN KEY (care_holder_org_id) REFERENCES public.organizations(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.pets
