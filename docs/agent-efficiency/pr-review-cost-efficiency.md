@@ -123,7 +123,7 @@ Cursor cannot enforce model choice from the repo alone; rules + dashboard defaul
 | `composer-2.5` for babysit | Avoid thinking-model token burn on triage/CI |
 | Slim babysit+ | Triage all collected review threads (Bugbot + Copilot + human); do not re-run adversarial review in agent turns |
 | Skip Copilot wait when unavailable | No 15-minute stall |
-| Cloud Agent push batching | Fewer redundant `ci.yml` runs (see `AGENTS.md` § GitHub Actions cost) |
+| Cloud Agent push batching | Fewer redundant `ci.yml` runs (see `AGENTS.md` §Autonomy and merging) |
 | Pre-UAT cancel superseded runs | Stale post-merge E2E grids stop when `main` advances again |
 
 ---

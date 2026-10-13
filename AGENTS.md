@@ -3,38 +3,73 @@ title: AGENTS.md
 owner: Documentation Team
 audience: agent
 status: active
-last_updated: 2026-08-21
+last_updated: 2026-10-13
 tags: [agent,workflow]
 ---
 # AGENTS.md
 
-## Cursor Cloud specific instructions
+Shared rulebook for **every** coding agent on this repo (Cursor, Claude Code, Copilot, Replit, others). Agent files
+(`CLAUDE.md`, `.github/copilot-instructions.md`, `replit.md`, `.cursor/rules/*`) add only agent-specific mechanics and
+link here. Before changing any instruction file: `docs/agent-efficiency/agent-instructions.md`.
 
-This repo is **Agatha Track**: Flutter web (`flutter_app/`) + Node.js API (`server/`) + PostgreSQL.
+**Agatha Track:** Flutter web (`flutter_app/`) + Node.js API (`server/`) + PostgreSQL. Map: `docs/architecture/index.md`.
 
-**Agent quick-start:** `docs/architecture/index.md` · Skills in `.cursor/skills/` · Plan in `docs/agent-efficiency/plans/agent-efficiency-plan.md`
+## Operating rules (all agents)
 
-### Toolchain
+### Precedence
 
-- Flutter 3.44.0 at `/opt/flutter/bin` (provisioned by `.cursor/Dockerfile` on Cloud Agents)
-- Node 22, `psql` (PostgreSQL 16)
-- Cloud environment: `.cursor/environment.json` + `.cursor/Dockerfile` — install/start via `.cursor/scripts/cloud-*.sh`
+When written instructions conflict, the higher one wins; then fix the losing text (a doc conflict is a PR, not a question).
 
-If a Cloud Agent pod reports missing `flutter` or `pg_ctlcluster`, confirm the repo uses Dockerfile mode (no `snapshot` field in `.cursor/environment.json`) and rebuild — see **Cloud environment rebuild** below.
+1. The user's explicit instruction in the current conversation
+2. Safety gates — sensitive paths (`.github/scripts/agent-safety-lib.js`), §Escalation in `docs/agent-efficiency/autonomous-pr-policy.md`
+3. Active execute-plan (gate exit `0`) — §Execute-plan below
+4. This file
+5. Path-scoped rules (`.cursor/rules/*.mdc`)
+6. Skills and procedures
+7. Reference docs (`docs/agent-efficiency/`, `docs/architecture/`, `.cursor/agent-kernel/`)
+8. Memory (`.agents/memory/`) — lessons only
 
-### Cloud environment rebuild
+Your product's default instructions apply except where this section narrows them.
 
-The Flutter SDK is baked into the image via `.cursor/Dockerfile` (`FLUTTER_VERSION=3.44.0`). After a toolchain bump, **new pods must rebuild** from that Dockerfile — `cloud-install.sh` only runs `pub get` / `npm ci`, it does not upgrade `/opt/flutter`.
+### When to ask — critical only
 
-**Operator steps** (when agents still show Flutter 3.32 or `cloud-install.sh` fails the version gate):
+Stop and ask the user **only** when one of these is true:
 
-1. Open [Cloud Agents → Environments](https://cursor.com/dashboard/cloud-agents#environments) for this repo.
-2. Delete the saved environment for AgathaCheck, **or** create a fresh environment from the repo (do not use the interactive wizard snapshot — it ignores `build.dockerfile`).
-3. Confirm `.cursor/environment.json` has `build.dockerfile` only — **no** `snapshot` field.
-4. Start a new Cloud Agent from `main` (or a branch that includes the latest `.cursor/Dockerfile`).
-5. Verify: `flutter --version` → **3.44.0** and `dart --version` → **3.12.x**.
+- An item on the §Escalation list in `docs/agent-efficiency/autonomous-pr-policy.md` (security/crypto, breaking API,
+  production data migration, CI gate change, product or legal decision the canonical doc does not answer), or a
+  sensitive-path change the task did not ask for.
+- An action is destructive or irreversible beyond the task (data loss, production data migration, force-push to a shared branch, deleting others' work).
+- The goal itself is unclear — you cannot state the outcome in one sentence.
 
-`cloud-install.sh` fails fast when `/opt/flutter` exists but is the wrong version, with the message above.
+Everything else — low confidence on in-scope work, review triage, follow-ups, minor wording conflicts between docs —
+you decide, proceed, and record (PR body, issue or debt issue). Ask one question at a time, with your recommendation.
+
+### Autonomy and merging
+
+- Work you were asked to do includes opening the PR, pushing fixes and driving CI to green.
+- **Merge** (squash, when `autonomous-pr-policy.md` §Merge gates pass) only if the user asked you to merge or babysit that PR, or execute-plan gate exits `0`. Otherwise the user merges.
+- One validated push per logical fix (`./scripts/pre-push-changed.sh` first) — every push costs full CI minutes. No push for comment/label-only changes.
+
+### Reporting
+
+- Evidence goes in the PR body (and the control issue for plans), not only in chat.
+- Final message: outcome, verification run, docs updated (or why not), blockers. Do not end with an optional offer or a question unless it meets *When to ask*.
+
+### Execute-plan (gate exit `0`)
+
+If `node scripts/execute_plan_runtime.js gate <plan_id>` exits `0`, run until blocked in the same session:
+implement → PR → babysit → merge → next phase. Valid stops and in-loop steps: `.cursor/skills/execute-plan/SKILL.md`
+§Stop rules (halt/escalation, revoke, expired grant, `session_limit`, gate `2`, `complete-plan`).
+
+- **No user-visible message until a valid stop.** Progress goes to the control issue. PR opened, CI green, a merge, a returned worker or a finished preflight are not stops.
+- If your platform forces a turn to end while waiting (e.g. on CI), send only your agent file's parking line.
+- **Forbidden closers** while in-loop: "next session", "follow-up run", "say if you want", "when you want", "let me know", "shall I continue", "want me to", "run /execute-plan again".
+- Platform-vs-repo overrides and Claude Code mechanics: `docs/agent-efficiency/execute-plan-instruction-stack.md`.
+
+## Toolchain
+
+- Flutter 3.44.0 (`/opt/flutter/bin` on Cursor Cloud), Node 22, PostgreSQL 16 (`psql`)
+- Cursor Cloud image, rebuild steps and version gate: `docs/engineering/cursor-cloud-environment.md`
 
 ### PostgreSQL (start each session)
 
@@ -61,7 +96,7 @@ Use `bin/start.js` (not `npm start`). Serves Flutter web build at `http://localh
 | During iteration | `./scripts/pre-push-changed.sh` |
 | Before merge to `main` | `./scripts/pre-push.sh` |
 
-Skill: `/pre-push-verify`. Full human checklist: `CONTRIBUTING.md`.
+Full human checklist: `CONTRIBUTING.md`.
 
 ### Flutter
 
@@ -81,55 +116,29 @@ Web build: `flutter build web --release --no-tree-shake-icons`
 
 User-facing dates are calendar days (`YYYY-MM-DD` on the wire). See `docs/architecture/calendar-dates.md`.
 
-### GitHub issues (Cloud Agents)
+## GitHub issues
 
-Agents can **comment**, **close**, and add/remove **labels** via `GH_TOKEN`. They **cannot** update GitHub Project board status (Projects write is not available on agent tokens).
-
-Use comments + the `busy` label as the agent signal for active work:
+Agents can comment, close and add/remove labels; they cannot move GitHub Project board columns (no Projects write on
+agent tokens — humans or Actions do that). The `busy` label signals active work:
 
 ```bash
 node scripts/github_issue_workflow.js start-work --issue <n> --body "Work started …"
 node scripts/github_issue_workflow.js comment --issue <n> --body "…"
 ```
 
-Move Project board columns manually when you want **In Progress** / **Done** on the board. GitHub Actions workflows may still update the board when `GH_PROJECTS_PAT` is configured in repo secrets.
+Full lifecycle: `docs/agent-efficiency/github-issue-workflow.md`.
 
-See `docs/agent-efficiency/github-issue-workflow.md` for the full issue lifecycle.
+## Policy index
 
-### Execute-plan orchestration (Cloud Agents)
-
-When **`node scripts/execute_plan_runtime.js gate <plan_id>`** exits **`0`**, treat **run-until-blocked** as authoritative (`.cursor/skills/execute-plan/SKILL.md`, `.agents/memory/execute-plan-autonomy.md`):
-
-| Rule | Detail |
-|------|--------|
-| **Loop** | Implement → PR → **`/babysit-plus`** (phase PRs to integration) or **`/babysit-uat`** (final PR to `main`) → squash merge → next phase until merge-done, `complete-plan`, or §Halt. |
-| **Chat** | Control issue telemetry only; user chat for **blocker alerts** (`**Needs you:**`, revoke, `session_limit`, escalation) — not routine milestones or permission prompts. |
-| **Overrides** | Execute-plan wins over generic “summarize each turn,” “update PR each turn,” platform “prove in chat,” “confirm when done,” default **single-agent PR → `main`** (`.cursor/rules/merge-policy.mdc`), and walkthrough-in-chat while gate exit `0`. Evidence → PR body, control issue, `/opt/cursor/artifacts/` — not milestone replies. Precedence: `docs/agent-efficiency/execute-plan-instruction-stack.md`. |
-| **Phase merge** | Phase PR squash-merged to integration is **in-loop** — start next `pending` phase (implement or phase worker) same session; babysit+ merge is not programme completion. |
-| **PR base** | Use snapshot **`base_branch`** for phase PRs (integration ≠ `main`); only the **release** PR targets `main`. |
-| **Babysit model** | **`composer-2.5` only** for babysit+ / babysit-uat triage, CI, and merge steps. |
-
-### GitHub Actions cost (Cloud Agents)
-
-Linux runner minutes scale with **every push** (full `ci.yml` fan-out on many PRs). Copilot PR review uses a **separate** meter — review can stop while Actions keep running.
-
-| Rule | Detail |
-|------|--------|
-| **Batch pushes** | One push per logical fix after `./scripts/pre-push-changed.sh` passes locally — not per micro-commit during babysit triage. |
-| **No push for triage-only** | Comment/title/label updates without code changes do not need a push. |
-| **Integration programmes** | Land phase work on `cursor/*-integration-*`; avoid many parallel `cursor/**` PRs each running full CI (see `docs/agent-efficiency/autonomous-pr-policy.md` § CI cost). |
-| **Pre-UAT** | Only merges to `main` trigger `pre-uat-e2e.yml` — keep `main` green before merge (`/babysit-uat` on release PRs). |
-
-Policy: `docs/agent-efficiency/pr-review-cost-efficiency.md` (§ GitHub Actions minutes).
-
-### Policies (details in `.cursor/rules/` + Skills)
-
-- **PR hygiene:** mandatory pre-PR self-review, Copilot-first review (Bugbot disabled for this repo), `composer-2.5` for babysit — `docs/agent-efficiency/pr-review-cost-efficiency.md`
-- **Canonical docs:** `/canonical-docs` + `docs/domains/documentation/standards.md` — behaviour PRs sync feature docs before open
-- **Atomic PRs:** one verifiable outcome per PR; cross-domain OK when serving that outcome. Snag ladder + zero untracked debt → `docs/agent-efficiency/atomic-pr-policy.md`
-- Modularity ≤500 lines · BDD gate: `node e2e/scripts/check_bdd_coverage.js --report-only` (live counts from the script only; gate is 68% of active scenarios)
-- Single-agent PRs → `main`; multi-agent → integration (`/spawn-sprint-agents`); **execute-plan phases** → snapshot `base_branch` (see **Execute-plan orchestration** above)
-- Memories: `.agents/memory/MEMORY.md`
-- Sprint log: `docs/debt/refactoring-log.md`
-- Single-backend (Node.js only): no Dart port in `server/`
-- **UAT pipeline:** `docs/e2e/uat-deploy-tiers.md` — pre-UAT E2E gates promotion; deploy is HTTP smoke only
+| Topic | Home |
+|-------|------|
+| Pre-PR self-review, review triage (Copilot; Bugbot retired) | `.cursor/rules/pr-hygiene.mdc` · `docs/agent-efficiency/pr-review-cost-efficiency.md` |
+| One outcome per PR, snag ladder, zero untracked debt | `docs/agent-efficiency/atomic-pr-policy.md` |
+| Canonical docs (product spec) | `docs/domains/documentation/standards.md` · canonical-docs skill |
+| Branch targets (single-agent → `main`; sprints and execute-plan → integration `base_branch`) | `.cursor/rules/merge-policy.mdc` |
+| Halt, escalation, merge gates, debt issues | `docs/agent-efficiency/autonomous-pr-policy.md` |
+| CI cost (batch pushes, integration programmes) | `docs/agent-efficiency/pr-review-cost-efficiency.md` § GitHub Actions minutes |
+| File size ≤500 lines · BDD gate | `node scripts/check_file_size.js` · `node e2e/scripts/check_bdd_coverage.js --report-only` |
+| Single backend (Node.js only, no Dart in `server/`) | `.cursor/rules/single-backend.mdc` |
+| UAT pipeline (pre-UAT E2E gates promotion) | `docs/e2e/uat-deploy-tiers.md` |
+| Memory (lessons only) · sprint log | `.agents/memory/MEMORY.md` · `docs/debt/refactoring-log.md` |

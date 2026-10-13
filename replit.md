@@ -3,88 +3,53 @@ title: AgathaTrack (PetProfileApp)
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-21
+last_updated: 2026-10-13
 tags: [development,environment]
 ---
 # AgathaTrack (PetProfileApp)
 
 ## Overview
-AgathaTrack is a modular Flutter application designed for comprehensive pet management and care coordination. It enables users to manage pet profiles, track health, log weight, and maintain veterinarian contacts. The platform offers robust authentication, in-app notifications, detailed pet reports, and adheres to GDPR data rights and consent management. The project aims to provide a scalable, production-ready solution for guardians, shelters, foster teams, and organisations, with future potential for native mobile and advanced sharing capabilities.
+AgathaTrack is a modular Flutter web application (Node.js API + PostgreSQL) for pet management and care coordination —
+pet profiles, care and health tracking, weight, contacts, sharing, organisations (shelters, foster teams), reports,
+notifications, GDPR data rights. Guardians, shelters, foster teams and organisations are the users.
 
-## User Preferences
-- Clean architecture with feature-driven structure
-- TDD/BDD with comprehensive testing
-- Full dartdoc documentation
-- Production-ready CI setup
-- EU GDPR compliance
-- **Cross-agent policy alignment**: `.cursor/rules/*.mdc`, `AGENTS.md`, and `.cursor/skills/` are authoritative shared guidance for ALL agents (Cursor and Replit). Follow them; when instruction sources conflict, surface the conflict and ask — do not improvise a compromise.
-- **PR flow required**: GitHub branch protection enforces PRs to `main` (umbrella `ci-gate / CI passed` + CodeQL required). Prefer routing changes through a PR where practical rather than direct-to-main.
-- **Inspect first, change second**: smallest safe change; be especially conservative around UAT deploy workflow, Playwright E2E, auth/session handling, and environment-specific behavior. Sensitive paths need explicit confirmation: `db/migrations/`, `server/config/security.js`, `infra/`, and any path matching `/auth/`, `/billing/`, or `/secrets?/` (see `.github/scripts/agent-safety-lib.js` for the authoritative pattern list). Agent PRs may edit `.github/workflows/` when gate contracts in `docs/pipelines/ci-cd-gates.md` are updated in the same PR.
+**Where things are:** domain map `docs/architecture/index.md` · product behaviour = canonical docs under
+`docs/domains/<domain>/` · CI/CD gates `docs/pipelines/ci-cd-gates.md` · dependencies `flutter_app/pubspec.yaml`,
+`server/package.json`.
 
-## Agent Policy Layer (shared with Cursor)
-- **`AGENTS.md`** (root): toolchain, migration commands, pre-push scripts, policy index. Key: use `cd server && node scripts/migrate.js up` for migrations. Never use `gen_random_uuid()` in SQL (generate UUIDs in code).
-- **`.cursor/rules/`**: atomic-pr (one verifiable outcome per PR; snag ladder; no silent deferral), single-backend (Node.js only), modularity (CI enforces a 500-line limit on all hand-written `.js`/`.dart` files in `flutter_app/lib`, `server/routes` via `scripts/check_file_size.js`; grandfathered files have an allowlist with a ratchet ceiling), security (`publicError()` redaction, `createApiLimiter()` on DB routes, UUID filenames), testing (BDD coverage gate ≥105 mapped scenarios — denominator is dynamic, computed from feature files by `e2e/scripts/check_bdd_coverage.js`), merge-policy, agent-coordination, accessibility.
-- **`.cursor/skills/`**: babysit-plus, execute-plan, pre-push-verify, security-error-audit, single-backend-route-change, add-bdd-playwright-scenario, split-flutter-screen, spawn-sprint-agents.
-- **Calendar dates**: user-facing dates are calendar days, `YYYY-MM-DD` on the wire (`docs/architecture/calendar-dates.md`).
+**Do not add product behaviour, schemas or feature lists to this file** — they go in the canonical doc for that
+capability (`docs/domains/documentation/standards.md`). This file holds Replit-specific mechanics only.
 
-## System Architecture
-The application is built with a clean architecture, separating concerns into data, domain, and presentation layers within feature modules. The UI follows Material 3 design principles, with experience-aware guardian and organisation tokens, and utilizes GoRouter for navigation.
+## Rules (shared with every agent)
+`AGENTS.md` is the shared rulebook — precedence, when to ask (critical questions only), autonomy and merging,
+toolchain and test commands. Path rules: `.cursor/rules/*.mdc`; procedures: `.cursor/skills/`. When two written
+sources conflict, follow `AGENTS.md` §Precedence and fix the losing text; do not stop to ask unless `AGENTS.md`
+§When to ask applies.
 
-**Key Technical Implementations & Features:**
+## User preferences
+- Clean architecture with feature-driven structure; TDD/BDD; dartdoc; production-ready CI; EU GDPR compliance.
+- Inspect first, change second: smallest safe change; be conservative around UAT deploy, Playwright E2E, auth/session
+  handling and environment-specific behaviour.
+- PRs to `main` are enforced by branch protection (`ci-gate / CI passed` + CodeQL `Analyze JavaScript` required).
+  Sensitive paths (`.github/scripts/agent-safety-lib.js`) are blocked on `replit/*` branches by
+  `agent-pr-safety-gate.yml`.
 
--   **Pet Profile Management**: CRUD operations for pet profiles, including dynamic age calculation, unique color assignment, and cascading deletion.
--   **Authentication & User Profile**: JWT-based authentication with comprehensive user profile management, including password reset and profile editing. Tokens are persisted via a `TokenStore` abstraction (`flutter_app/lib/features/auth/data/token_store.dart`): `flutter_secure_storage` (iOS Keychain / Android Keystore) on mobile, and `SharedPreferences` on web/desktop/tests (`createTokenStore` selects by platform). `AuthNotifier` takes a `TokenStore`, so tests inject `PrefsTokenStore(prefs)`.
--   **Health Tracking**: Manages medications, preventives, and vet visits with scheduling, photo attachments, and a tabbed dashboard. The entry form (`health_entry_form_screen.dart`) is fully localized (EN/FR) — every label, hint, dialog, and snackbar resolves through `AppLocalizations`. **Photos**: max 4 per event; picked images are downscaled to 1200×1200 at 80% JPEG quality before upload; in add-mode they queue as "pending" and upload only on save, while in edit-mode they upload immediately. Every photo/entry operation (load, add, upload, delete, history) surfaces failures via a snackbar rather than failing silently.
--   **Health Issues**: Tracks ongoing health conditions linked to pets, associating them with health entries.
--   **Weight Tracking**: Records and visualizes per-pet weight history with line charts.
--   **Veterinarian Management**: CRUD for veterinarian contacts, scoped per user.
--   **Notification System**: In-app notifications for due entries and general events, with per-pet mute options.
--   **Sharing Feature**: Multi-user pet access with guardian/shared roles via share links, managed through a `pet_access` table with pending share acceptance and visibility controls.
--   **Organization Support**: Comprehensive management for Professional and Charity organizations, including user roles, pet transfers, archiving, and an email-based invite flow. Org pets support family events with assigned members, date ranges, and reminder notifications.
--   **Pet Report Generation**: Customizable PDF reports for individual pets, including sections for profile, weight, health events, issues, family events, notifications, and sharing details. The profile section's "Current Weight" uses the most recent weight entry by date (matching the pet detail screen), not the static `pets.weight` field.
--   **Localization**: Full English/French localization with locale persistence.
--   **Deployment**: UAT/prod (cPanel) run the **Node.js backend** (canonical) serving the Flutter web build. The Replit dev preview also runs the Node.js backend on port 5000.
--   **Database Migrations**: SQL migration files in `db/migrations/` (currently through `020_org_custody.sql`) tracked in the shared `_migrations` table. **Canonical runner: `cd server && node scripts/migrate.js` (`up`/`status`)** — works locally (uses `DATABASE_URL` or PG* vars) and on UAT/prod (no Dart on cPanel).  Never use `gen_random_uuid()` in SQL; generate UUIDs in code. Deploy-time migrations: prod runs `migrate.js up` over SSH; UAT auto-runs it only when `UAT_SSH_ENABLED=true` and `UAT_AUTO_MIGRATE=true`, otherwise manual. Replit dev DB is migrated through 020 (July 2026).
--   **Database Schema (current)**: 28 application tables + `_migrations` tracker. `v3__initial_uuid_schema.sql` inlines only migrations 001–007 — it is **NOT current**; fresh installs must replay `008`–`020` on top (schema drift: v3 lacks share links, foster, audit, custody tables). Since migration 007, additions include: `pet_share_links` (single-use share codes, 008/009), three-date event logic (`completed_on`/`recurrence_anchor` on `health_entries`; `family_event_history`, 010), `health_entries.next_due_date` is now `DATE` not timestamptz (011), tiered org roles (012), `org_foster_parents` (013), `foster_placements` + adoption (014/015/016), org people contact fields (017), org branding (018), `audit_events` (019), and the custody model — `pets.care_holder_kind/id`, `org_connections`, `org_connection_requests`, `custody_transfers`, `org_pet_home_hidden` (020). Legacy notes still true: `archived_pets` is a transfer record, not a pet copy; `notifications` keeps both `is_read` and legacy `read` columns.
--   **GDPR Data Rights**: Functionality for account deletion, data export (JSON), profile editing, and consent withdrawal.
--   **Consent Management**: Custom CMP-style banner for initial consent, with preferences stored locally and re-accessible.
--   **Accessibility**: Implemented across all screens with tooltips, keys, semantics, and proper form field labeling.
--   **Dual route mount is intentional**: every router is mounted under **both** `/api/...` and `/backend/api/...`. This is required, not redundant — the deployed Flutter **web** app calls `/backend/api/...` (same origin behind the `/backend` path) while **native/dev** builds call `http://localhost:5000/api/...` (see `flutter_app/lib/core/providers/api_base_url_provider.dart`). Do not remove either prefix.
--   **API Auth Hardening**: All authenticated Node.js routes enforce JWT validation and user ID extraction to prevent unauthorized access and cross-user IDOR. In the sharing router, `/pending` and `/hidden` are declared before `/:code` so they are not swallowed by the parameterised route. The JWT signing secret is resolved in **one shared module** (`server/config/jwtSecret.js`) imported by every route file — there is no longer a per-file `process.env.JWT_SECRET || ... || 'default_secret'`. Resolution is `JWT_SECRET || SESSION_SECRET`; when `NODE_ENV=production` a missing secret **throws at startup** (no insecure default reaches prod), while a `'default_secret'` dev/test fallback is kept so local runs and the Jest/CI suite work without extra env setup. The runtime secret for UAT/PROD must be set in the cPanel Node.js app environment (not GitHub Actions secrets, which the FTP/SSH deploy workflows do not inject). **CORS & error redaction** are centralized: `server/config/security.js` exports a CORS policy plus error helpers, imported by every route/server file. **CORS**: when `CORS_ALLOWED_ORIGINS` (comma-separated) is set, only those origins are allowed; in production with no allowlist, cross-origin is denied (the API serves its own same-origin Flutter frontend, so it needs none); outside production it stays permissive for local dev. **Error redaction**: raw exception messages are no longer returned to clients in production — `publicError(err)` returns a generic message (or a contextual prefix) and `errorDetails(err)`/`...errorDetails(e)` omits the `details` field, but **only when `NODE_ENV=production`**. Outside production (incl. the Jest suite, which never sets production) the full message/details are preserved unchanged, so tests asserting dev-style strings (e.g. `error` contains "Error fetching pets") still pass. **Organization authorization**: org routes additionally enforce *membership/role* (not just a valid JWT). Reads of a specific org's members/pets/archived require active membership; mutations (update/delete/invite, member role change, member removal, photo, org-pet add/transfer) require the `super_user` role (`requireMember`/`requireAdmin` in `server/routes/organizations.js`). Invite/role-change values are restricted to `member`/`super_user` so callers cannot smuggle in privileged or `pending_*` strings. Previously the role-change, member-removal, and photo routes had no auth at all. **Resource ownership**: creating a health entry / health issue / weight entry verifies the target `pet_id` belongs to the caller (`userOwnsPet`), and the nested health-entry history/photos and health-issue events routes verify the parent record belongs to the caller before reading/mutating (they previously keyed only on `health_entry_id`/`health_issue_id`, an IDOR). **Password reset**: the 6-digit code is generated with a CSPRNG (`crypto.randomInt`) and is **never returned in the API response or logged in production** — outside production it is still exposed (response `code` field + server log) so local dev and the Jest suite can drive the flow without an email provider. Production must deliver the code out of band (email/SMS — not yet wired up). **Auth abuse/validation hardening**: the sensitive auth endpoints (`login`, `signup`, `forgot-password`, `reset-password`) are rate limited — default 10 requests / 15 min per client IP, configurable via `AUTH_RATE_LIMIT_MAX` / `AUTH_RATE_LIMIT_WINDOW_MS` (`express-rate-limit` in `server/config/rateLimit.js`, skipped under `NODE_ENV=test` unless `AUTH_RATE_LIMIT_TEST=1`). `signup`/`change-password`/`reset-password` validate email format and a minimum password length (`server/config/validation.js`). `POST /auth/refresh` now verifies the user still exists, so a refresh token for a deleted account stops minting access tokens.
+## Replit mechanics
+1. **Pre-PR critical self-review** — `.cursor/rules/pr-hygiene.mdc`; canonical-docs sync when behaviour changes.
+2. **Rebase your branch** before pushing: `git fetch origin && git rebase origin/main`.
+3. **Push** without embedding the token in the URL:
+   ```bash
+   git -c credential.helper='!f() { echo "username=x-access-token"; echo "password=$GITHUB_TOKEN"; }; f' \
+     push origin HEAD:refs/heads/replit/<topic>
+   ```
+   If the sandbox blocks local commits, push files via `PUT /repos/KanopeeKa/AgathaCheck/contents/<path>` (base64
+   content, current blob SHA, branch name).
+4. **Open the PR** via the GitHub REST API with `GITHUB_TOKEN`, ready (not draft), with `## Docs` in the body.
+5. **Review:** Copilot (`POST /repos/KanopeeKa/AgathaCheck/pulls/{n}/requested_reviewers` with
+   `{"reviewers":["copilot-pull-request-reviewer"]}` when credits allow). Bugbot is retired. Triage threads per
+   `docs/agent-efficiency/autonomous-pr-policy.md`.
+6. **CI:** poll `GET /repos/KanopeeKa/AgathaCheck/commits/{sha}/check-runs` every 60–90 s and fix failures (Flutter
+   shards ~3–5 min, full suite ~8–10 min). New blocking jobs go in ci-gate `needs` and `scripts/ci/assert-ci-gate.sh`.
+7. **Merge** per `AGENTS.md` §Autonomy and merging. After merge: `git fetch origin && git checkout main && git reset --hard origin/main`.
 
-## Testing
--   **Backend (Node.js)**: Jest is the canonical runner. Run `cd server && npx jest --env=node --forceExit`. The `--forceExit` flag avoids hangs caused by lingering pg client handles. Tests use the `createApp(mockPool)` factory and sign JWTs with `JWT_SECRET || SESSION_SECRET || 'default_secret'`. `babel-plugin-transform-import-meta` handles ESM `import.meta`. Mocha is legacy-only (`npm run test:mocha`).
--   **Frontend (Flutter)**: canonical commands (per `AGENTS.md`): `cd flutter_app && flutter test --concurrency=1 --exclude-tags=integration`; analyze with `flutter analyze --no-fatal-warnings --no-fatal-infos`; run `dart run build_runner build --delete-conflicting-outputs` when mocks change. Model tests live under `flutter_app/test/features/*/data/models/` and verify camelCase field mapping, defaults, and null handling. Remote-datasource tests (e.g. `flutter_app/test/features/health_tracking/data/datasources/health_remote_datasource_test.dart`) use `package:http/testing.dart` `MockClient` to assert outgoing requests attach the `Authorization: Bearer <token>` header. Run `flutter pub get` first if the pub cache is incomplete.
--   **Health entry completion semantics**: the Flutter UI derives "overdue"/"completed" purely from `next_due_date` (the entity has no status field). `mark-taken` for a `once` entry sets `next_due_date` to the 9999-12-31 sentinel (`isCompleted` true); for a recurring entry it advances `next_due_date` past today so the entry leaves the overdue state. `undo-complete` restores `once` entries to `start_date`. Covered by `healthEntries.test.js` (Node) and `health_entry_test.dart` (entity contract).
--   **To Do card status line**: `HealthEntryCard` (Health Dashboard / "To Do" screen) and `PetEventEntryList` (pet profile event sections) share `health_entry_status.dart` for status text — `doneOn` for completed once entries, `dd MMM yy` (e.g. `01 Jan 26`) for due/overdue/future — with color conveying state (green / red / orange / amber / primary). No separate "Done" chip or "Overdue"/"Due today" labels.
--   **BDD**: Gherkin features under `flutter_app/test/bdd/features/`; hybrid BDD maps `.feature` scenarios to Playwright specs: each spec has a leading `/** ... */` header block where `@bdd <feature>.feature` attributes the spec to feature files and `* Scenario: <title>` lines list the mapped scenarios (fuzzy-matched against feature scenario names by `e2e/scripts/check_bdd_coverage.js`). CI enforces a **BDD coverage gate of ≥105 mapped scenarios** (`node e2e/scripts/check_bdd_coverage.js` — denominator is computed dynamically from feature files, not fixed). E2E locator hygiene: assert visibility (not DOM absence), scope assertions to the target control.
--   **Pre-push (per `AGENTS.md`)**: `./scripts/pre-push-changed.sh` during iteration; `./scripts/pre-push.sh` before merge to `main`.
--   **Pitfall**: Dart enum `.name` is minified in release builds — always use direct enum comparison or a `.label` getter, never `.name`.
-
-## CI / CD
-Gate-driven pipeline (details: `docs/pipelines/ci-cd-gates.md`, `docs/pipelines/promotion-contract.md`, `docs/pipelines/ci-build-artifact-contract.md`). **Do not modify any workflow without explicit user confirmation.**
--   **PR to `main` (required checks)**: only the umbrella **`ci-gate / CI passed`** aggregator + CodeQL `Analyze JavaScript` are GitHub-required. `ci-gate` aggregates 10+ jobs: startup smoke, Flutter analyze/test shards, web build artifact, Jest, coverage ≥65%, file-size (500-line) check, BDD coverage ≥105 mapped scenarios. **Rule: any new blocking job must be added to both the `ci-gate` `needs` list AND `scripts/ci/assert-ci-gate.sh`.** Advisory: `pr-governance-hints`, `actionlint`.
--   **`agent-pr-safety-gate.yml`**: blocks PRs from **`cursor/*` and `replit/*`** branches touching sensitive paths: `db/migrations/`, `server/config/security.js`, `infra/`, and paths matching `/auth/`, `/billing/`, `/secrets?/` (authoritative list: `.github/scripts/agent-safety-lib.js`). **`.github/workflows/` is allowed** for agent PRs (update `docs/pipelines/ci-cd-gates.md` when changing blocking jobs).
--   **Promotion (tag-first, automated)**: merge to `main` → `promote-uat.yml` resolves the merged PR and creates an **immutable** `uat-YYMMDD-PR#` tag + `promotion-manifest.json` → `deploy-uat.yml` runs via `workflow_run` chaining (GITHUB_TOKEN tag pushes don't trigger workflows): FTP deploy to `uat.agathatrack.com`, then parallel HTTP smoke, live `@smoke` Playwright, and full localhost E2E (ten shards) → **`Prod ready`** umbrella gate.
--   **`deploy-prod.yml`**: auto via `workflow_run` after green `Prod ready`. Uses **artifact promotion** — downloads the UAT-validated `web-build-<sha>` artifact (provenance enforced by `scripts/ci/assert-artifact-provenance.sh`; rebuilds are audited fallbacks). Stub `vX.Y.Z-rc.N` tag when `PROD_DEPLOY_ENABLED` ≠ `true`; full FTP+SSH deploy when `true` (FTP to `./agathatrack.com/` + `./agathatrack.com/backend/`; SSH migrate/restart under `~/agathatrack.com/backend`; o2switch SSH whitelist via `PROD_CPANEL_API_TOKEN`; HTTP smoke on `https://agathatrack.com`). GitHub Environment `PROD` requires the **Deploy UAT / Prod ready** status check.
--   **Migration automation flags**: UAT auto-migrates only when `UAT_SSH_ENABLED=true` + `UAT_AUTO_MIGRATE=true`; prod always migrates over SSH.
--   **UAT invariant**: `backend/node_modules` on UAT must remain a CloudLinux `nodevenv` **symlink** — never upload a real folder (see `docs/pipelines/uat-backend-node-modules-runbook.md`).
--   **Agent automation workflows**: `agent-dispatch.yml` / `agent-monitor.yml` / `issue-agent-pr-merge.yml` / `triage-human-reviewed.yml` support the Cursor agent loop (babysit/execute-plan). Leave untouched.
--   **`e2e.yml`**: `workflow_dispatch` + weekly cron (non-blocking) full Playwright run; UAT CD runs the same suite as `uat-e2e-full`.
--   **Required secrets**: UAT needs `UAT_FTP_SERVER|USERNAME|PASSWORD` (+SSH vars when enabled). PROD needs `PROD_FTP_SERVER|USERNAME|PASSWORD`, `PROD_CPANEL_API_TOKEN`, plus `PROD_SSH_HOST|USER|PRIVATE_KEY` (optional `PROD_SSH_PORT`, `PROD_SSH_PASSPHRASE`).
-
-## External Dependencies
--   **Flutter**: Frontend framework
--   **flutter_riverpod**: State management
--   **go_router**: Navigation
--   **shared_preferences**: Local storage
--   **PostgreSQL**: Primary database
--   **jsonwebtoken**: JWT handling
--   **bcrypt**: Password hashing
--   **intl**: Date formatting
--   **fl_chart**: Interactive charts
--   **http**: API communication
--   **image_picker**: Photo selection
--   **pdf**, **printing**: PDF generation
--   **purchases_flutter**, **purchases_ui_flutter**: RevenueCat SDK
--   **web**: Dart web interop (for file downloads)
+Replit runtime lessons (preview toolchain, test PostgreSQL, Nix/Chromium): `.agents/memory/MEMORY.md` → Replit entries.
