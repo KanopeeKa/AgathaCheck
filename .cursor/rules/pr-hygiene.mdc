@@ -1,39 +1,26 @@
 ---
-description: Mandatory pre-PR self-review, Copilot automatic review triage, and composer-2.5 for PR babysitting
+description: Pre-PR self-review and automatic review triage — policy in pr-review-cost-efficiency.md
 alwaysApply: true
 ---
 
 # PR hygiene (always on)
 
-Canonical policy: `docs/agent-efficiency/pr-review-cost-efficiency.md` · `docs/agent-efficiency/autonomous-pr-policy.md`
+Canonical policy: [`docs/agent-efficiency/pr-review-cost-efficiency.md`](../../docs/agent-efficiency/pr-review-cost-efficiency.md) · [`autonomous-pr-policy.md`](../../docs/agent-efficiency/autonomous-pr-policy.md)
 
 ## Pre-PR critical self-review (mandatory — every PR)
 
-**Before** the first push that opens a PR, and **before** every `ManagePullRequest create_pr` / PR update that ships new behavior, perform a **critical self-review** of the full diff against the requirement. Applies to **all** agent work — ad-hoc cloud agents, `/babysit`, `/babysit-plus`, `/execute-plan` workers, and humans using agents.
+**Before** the first push that opens a PR, and **before** every behavior-changing PR update, perform a **critical self-review** of the full diff. Applies to all agent work including execute-plan workers.
 
-1. **Correctness & impact** — Happy paths, edge cases, error handling, regressions.
-2. **Risks** — Security, data integrity, migrations, API contract drift, concurrency.
-3. **Design quality** — Smallest change that meets intent; match repo patterns.
-4. **Better solution** — Adopt a clearer/safer approach now; do not defer to review.
-5. **Documentation** — `/canonical-docs sync` when the diff changes behaviour; see `.cursor/rules/documentation.mdc` (same order as babysit-plus §Pre-PR).
-6. **Verification** — Run `./scripts/pre-push-changed.sh` after any adjustments.
-
-Optional cost saver: `/review-bugbot` on the branch diff before push dedupes a paid Bugbot PR review when the patch is unchanged.
+Checklist (full text): pr-review-cost-efficiency.md §Pre-PR critical self-review. Documentation: `.cursor/rules/documentation.mdc` + `/canonical-docs sync` when behaviour changes. Verification: `./scripts/pre-push-changed.sh` after adjustments.
 
 Only after this review passes: commit, push, create/update the PR.
 
 ## Automatic review (Copilot-first)
 
-- **Primary:** GitHub **Copilot** PR review when enabled — must be **triaged when threads exist**.
-- **Babysit collect:** `node scripts/babysit_pr_reviews.js collect --pr <url>` — triage every unresolved thread (Copilot, human). See autonomous-pr-policy §Automatic reviews.
-- **Cursor Bugbot:** Disabled for this repo — do **not** wait on `babysit_pr_reviews.js wait`.
-- **Autofix:** **Off** — babysit+ owns triage and fixes (avoids double Cloud Agent spend).
+- **Primary:** GitHub **Copilot** PR review when enabled — triage when threads exist.
+- **Collect:** `node scripts/babysit_pr_reviews.js collect --pr <url>` — triage Copilot + human threads (autonomous-pr-policy §Automatic reviews).
+- **Autofix:** Off — babysit+ owns fixes.
 
 ## Model for PR babysitting
 
-| Phase | Model |
-|-------|--------|
-| Implementation, architecture, large refactors | `composer-2.5` default; thinking models (e.g. Claude Sonnet) only when the task explicitly needs deep reasoning |
-| **PR babysitting** (`/babysit`, `/babysit-plus`, `/babysit-uat`, post-PR triage, CI loop, merge) | **`composer-2.5` only** — never thinking/high models |
-
-If the session model is not `composer-2.5` when starting babysit work, switch model (Cursor dashboard → Models, or start a new cloud agent on `composer-2.5`) before triage, fixes, and merge. **During active execute-plan** (`gate` exit `0`), do not end the turn for a model mismatch alone — follow [autonomous-pr-policy.md](../../docs/agent-efficiency/autonomous-pr-policy.md) §Execute-plan overrides (control-issue note + continue, or §Halt when switch is required for merge safety).
+See pr-review-cost-efficiency.md §Cloud Agent model policy. During active execute-plan (gate `0`), do not end the turn for model mismatch alone — autonomous-pr-policy §Execute-plan overrides.

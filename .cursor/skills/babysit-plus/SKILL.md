@@ -57,8 +57,6 @@ Required for **all** agent PR work (not only babysit+). Canonical checklist: `do
 6. **Verification** — Run `./scripts/pre-push-changed.sh` after any adjustments from this review.
 7. **UI-touching PRs** — If the diff includes `flutter_app/lib/**/presentation/**`, theme, or router files, complete **`.cursor/agent-kernel/protocols/accessibility.md` §Quick pass** before create/update PR. Escalate to `/ui-design-deep` when theme, landing/auth, or multi-screen work applies.
 
-Optional: `/review-bugbot` on the branch diff before push to dedupe a paid Bugbot PR review.
-
 Only after this review passes: commit, push, and create/update the PR. Then continue with §Workflow from step 0 (Preflight).
 
 ## Model (babysit phase)
@@ -94,7 +92,7 @@ Applies to **both** `/babysit` and `/babysit-plus`. **Copilot** is the primary a
 4. **Copilot unavailable / no threads:** Proceed when `collect` returns zero unresolved threads (or Copilot never posted). Comment `Copilot unavailable; babysit+ triage used CI + pre-push only.` only when Copilot was expected but never posted — do **not** halt.
 5. **Autofix:** Off — babysit+ owns fixes; do not re-run adversarial review in agent turns (slim babysit).
 
-Do **not** wait on Cursor Bugbot — it is disabled for this repo. The `wait` subcommand remains for optional manual use only.
+Automatic review: Copilot when enabled — see pr-review-cost-efficiency.md (Bugbot retired).
 
 ### 1. Sync and conflicts
 

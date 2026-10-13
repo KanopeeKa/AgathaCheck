@@ -22,7 +22,7 @@ Use the profile named in each skill preamble — do not run full classification 
 
 | Skill | Default profile | Modes |
 |-------|-----------------|-------|
-| `/execute-plan` | **full** at phase select + plan strengthen; **skip strengthen** on resume-only (babysit/CI/watch) |
+| `/execute-plan` | **full** at phase select + plan strengthen; **skip strengthen** on resume-only (babysit/CI/watch). If gate exit `0`, re-read `AGENTS.md` §Execute-plan at classification. |
 | `/babysit-plus` | **full** when implementing; **diff-scoped** when PR-only triage/CI/merge |
 | `/babysit-uat` | **diff-scoped** (+ existing shard-risk scripts) |
 | `/e2e-debug` | **classify-first** |
