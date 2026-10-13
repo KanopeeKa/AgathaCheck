@@ -270,6 +270,16 @@ Service: `server/routes/careIntelligence/welfareSuggestionsService.js` (`upsertW
 
 Coverage: `test: server/test/careIntelligence/welfareSuggestions.test.js`
 
+## Welfare microchip evaluator (PR-07)
+
+| ID | Requirement | Status |
+|----|-------------|--------|
+| **AC-WF-10** | When `identification_status=no` (and not `chip_dismissed`), sync on GET upserts `microchip_welfare` with `careWelfareMicrochipWhy` copy (check local rules — no compliance absolutes) | Live (integration) |
+
+Evaluator: `server/routes/careIntelligence/welfare/microchipWelfareEvaluator.js`; sync: `welfare/syncPetWelfareSuggestions.js` (runs inside `listPendingWelfareSuggestions`). Flutter: `WelfareSuggestionCard` on profile when welfare wins tiebreak.
+
+Coverage: `server/test/careIntelligence/welfare/microchipWelfareEvaluator.test.js` (fixtures in `welfare/fixtures/microchip.json`)
+
 ## Decision log
 
 | ID | Decision | Rationale | Status | Date | PR |

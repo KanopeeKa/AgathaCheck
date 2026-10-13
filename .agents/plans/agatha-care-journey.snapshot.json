@@ -225,12 +225,9 @@
       ],
       "spawn_allowed": false,
       "exit_checklist": "default+single-backend-route+flutter-screen-split",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
       "debt_issue_refs": []
     },
     {
@@ -457,5 +454,5 @@
       "merge_method": "squash"
     }
   ],
-  "content_hash": "sha256:717148844a24c1a0fbd088c3c5d20346db4a0e4d9722e214044984b286c0a6c2"
+  "content_hash": "sha256:1bfb76d81b1c1589e85d6ed4f0b7f6a4f5fd593e39e2d032bc8b20d5fb21b96a"
 }

@@ -1640,6 +1640,24 @@ abstract class AppLocalizations {
   /// **'A microchip ID helps identify your pet if they are lost. Check local rules for registration.'**
   String get profileCompletenessWhyChipBody;
 
+  /// No description provided for @careWelfareMicrochipTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Microchip not recorded'**
+  String get careWelfareMicrochipTitle;
+
+  /// No description provided for @careWelfareMicrochipWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'A microchip can help identify your pet if they are lost. Check local rules for registration.'**
+  String get careWelfareMicrochipWhy;
+
+  /// No description provided for @careWelfareMicrochipRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'Update microchip status'**
+  String get careWelfareMicrochipRecord;
+
   /// No description provided for @profileCompletenessNotForMyPet.
   ///
   /// In en, this message translates to:

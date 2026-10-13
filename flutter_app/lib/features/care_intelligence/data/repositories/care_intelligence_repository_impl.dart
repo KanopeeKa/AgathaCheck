@@ -1,5 +1,6 @@
 import '../../domain/entities/care_recommendation.dart';
 import '../../domain/entities/care_safeguard.dart';
+import '../../domain/entities/welfare_suggestion.dart';
 import '../../domain/repositories/care_intelligence_repository.dart';
 import '../datasources/care_intelligence_remote_datasource.dart';
 
@@ -28,6 +29,28 @@ class CareIntelligenceRepositoryImpl implements CareIntelligenceRepository {
     final model = await _dataSource.dismissSafeguard(
       petId: petId,
       safeguardId: safeguardId,
+    );
+    return model.toEntity();
+  }
+
+  @override
+  Future<List<WelfareSuggestion>> getWelfareSuggestions(String petId) async {
+    final models = await _dataSource.fetchWelfareSuggestions(petId);
+    return models.map((m) => m.toEntity()).toList();
+  }
+
+  @override
+  Future<WelfareSuggestion> respondWelfareSuggestion({
+    required String petId,
+    required String suggestionId,
+    required String action,
+    String? primaryOutcome,
+  }) async {
+    final model = await _dataSource.respondWelfareSuggestion(
+      petId: petId,
+      suggestionId: suggestionId,
+      action: action,
+      primaryOutcome: primaryOutcome,
     );
     return model.toEntity();
   }

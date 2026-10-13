@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 
 import { accessiblePetSql } from '../../lib/petAccess.js';
+import { syncPetWelfareSuggestions } from './welfare/syncPetWelfareSuggestions.js';
 
 export const WELFARE_SUGGESTION_STATUSES = new Set([
   'pending',
@@ -113,6 +114,7 @@ export async function upsertWelfareSuggestionCandidate(pool, petId, candidate, n
 export async function listPendingWelfareSuggestions(pool, userId, petId, now = new Date()) {
   const pet = await loadPetRow(pool, userId, petId);
   if (!pet) return null;
+  await syncPetWelfareSuggestions(pool, pet, now);
   const result = await pool.query(
     `SELECT * FROM welfare_suggestions WHERE pet_id = $1 AND status = 'pending'`,
     [petId],

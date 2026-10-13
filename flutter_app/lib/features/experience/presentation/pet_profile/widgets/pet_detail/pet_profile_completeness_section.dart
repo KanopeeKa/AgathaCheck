@@ -28,6 +28,9 @@ class PetProfileCompletenessSection extends ConsumerWidget {
     final suggestion = ref
         .watch(petProfileCareSuggestionProvider(pet.id))
         .valueOrNull;
+    final welfare = ref
+        .watch(petProfileWelfareSuggestionProvider(pet.id))
+        .valueOrNull;
     final milestone = ref
         .watch(petProfileCareMilestoneProvider(pet.id))
         .valueOrNull;
@@ -36,6 +39,7 @@ class PetProfileCompletenessSection extends ConsumerWidget {
     if (!slotPolicy.profileCompletenessSlotAvailable(
       activeSafeguard: safeguard,
       activeSuggestion: suggestion,
+      activeWelfareSuggestion: welfare,
       guidanceMomentVisible: guidanceMomentVisible,
     )) {
       return const SizedBox.shrink();

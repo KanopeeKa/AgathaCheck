@@ -915,6 +915,16 @@ class AppLocalizationsEn extends AppLocalizations {
       'A microchip ID helps identify your pet if they are lost. Check local rules for registration.';
 
   @override
+  String get careWelfareMicrochipTitle => 'Microchip not recorded';
+
+  @override
+  String get careWelfareMicrochipWhy =>
+      'A microchip can help identify your pet if they are lost. Check local rules for registration.';
+
+  @override
+  String get careWelfareMicrochipRecord => 'Update microchip status';
+
+  @override
   String get profileCompletenessNotForMyPet => 'Not for my pet';
 
   @override
