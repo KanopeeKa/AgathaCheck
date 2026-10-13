@@ -15,14 +15,15 @@ export function registerCarePeriodProjectionRoutes(router, pool) {
 
       const { petId } = req.params;
       const { starts_on: startsOn, ends_on: endsOn } = req.query;
+
+      if (!(await userCanManagePet(pool, petId, userId))) {
+        return res.status(403).json({ error: 'Forbidden' });
+      }
+
       const declarerTodayIso = await resolvePlannedAbsenceTodayIso(pool, userId);
       const window = validateAbsenceDateWindow(startsOn, endsOn, declarerTodayIso);
       if (!window.ok) {
         return res.status(400).json({ error: window.error });
-      }
-
-      if (!(await userCanManagePet(pool, petId, userId))) {
-        return res.status(403).json({ error: 'Forbidden' });
       }
 
       const petTimeZone = await loadPetHomeTimezone(pool, petId);

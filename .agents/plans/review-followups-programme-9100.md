@@ -111,17 +111,17 @@ Address code-review follow-ups from recent merges to `main` in seven atomic phas
 
 ```yaml
 autonomy: active
-current_phase: 1
-last_completed_phase: null
+current_phase: 2
+last_completed_phase: 1
 halt_reason: null
-next_action: "continue phase 1 on branch cursor/review-followups-phase1-notifications-9100"
+next_action: "continue phase 2 on branch cursor/review-followups-phase2-care-tz-9100"
 artifact_ref:
-  branch: cursor/review-followups-phase1-notifications-9100
+  branch: cursor/review-followups-phase2-care-tz-9100
   plan_path: .agents/plans/review-followups-programme-9100.md
-  plan_commit: 3325caeddceebe7d51f7fdd9e7885433599a2758
+  plan_commit: 21b51817212adca2b5cce41449fb88d05792dfbe
   snapshot_path: .agents/plans/review-followups-programme-9100.snapshot.json
-  snapshot_commit: 3325caeddceebe7d51f7fdd9e7885433599a2758
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1857"]
+  snapshot_commit: 21b51817212adca2b5cce41449fb88d05792dfbe
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1859"]
 merge_commits: {}
 debt_issue_refs: []
 ```

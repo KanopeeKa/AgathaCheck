@@ -129,9 +129,14 @@ describe('planned absences API', () => {
 
   it('GET list batches pet id lookup (no N+1)', async () => {
     let queryCount = 0;
+    let declarerTimezoneQueries = 0;
     const absenceIds = ['abs-1', 'abs-2', 'abs-3'];
     const app = createTestApp(async (sql) => {
       queryCount += 1;
+      if (sql.includes('SELECT timezone FROM users')) {
+        declarerTimezoneQueries += 1;
+        return { rows: [{ timezone: 'UTC' }] };
+      }
       if (sql.includes('FROM planned_absences pa') && sql.includes('INNER JOIN planned_absence_pets')) {
         return { rows: [] };
       }
@@ -165,7 +170,8 @@ describe('planned absences API', () => {
 
     expect(res.statusCode).toBe(200);
     expect(res.body).toHaveLength(3);
-    expect(queryCount).toBe(5);
+    expect(declarerTimezoneQueries).toBe(1);
+    expect(queryCount).toBe(4);
   });
 
   it('GET list rejects invalid scope', async () => {

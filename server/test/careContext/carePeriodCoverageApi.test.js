@@ -17,6 +17,27 @@ describe('care-period coverage API', () => {
     return createApp(createMockPool(handler));
   }
 
+  it('GET returns 403 without loading declarer timezone when pet is forbidden', async () => {
+    const app = createTestApp(async (sql) => {
+      if (sql.includes('SELECT timezone FROM users')) {
+        throw new Error('declarer timezone must not load before pet access check');
+      }
+      if (sql.includes('FROM pets WHERE id = $1 AND user_id = $2')) {
+        return { rows: [] };
+      }
+      if (sql.includes('FROM pet_access')) {
+        return { rows: [] };
+      }
+      return { rows: [] };
+    });
+
+    const res = await request(app)
+      .get(`/api/pets/${petId}/care-period-coverage?starts_on=${startsOn}&ends_on=${endsOn}`)
+      .set(authHeader());
+
+    expect(res.statusCode).toBe(403);
+  });
+
   it('GET returns coverage nested in projection payload', async () => {
     const app = createTestApp(async (sql) => {
       if (sql.includes('FROM pets WHERE id = $1 AND user_id = $2')) {

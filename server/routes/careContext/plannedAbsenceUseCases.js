@@ -50,6 +50,7 @@ export async function listPlannedAbsences(pool, userId, scopeResult) {
     userId,
     result.rows,
     petsByAbsence,
+    todayIso,
   );
   return result.rows.map((row) => {
     const petRows = petsByAbsence.get(row.id) || [];
@@ -81,6 +82,8 @@ export async function createPlannedAbsence(pool, userId, body) {
     petsCheck.petIds,
     window.starts_on,
     window.ends_on,
+    null,
+    todayIso,
   );
   const id = uuidv4();
   const provenance = body.provenance || PLANNED_ABSENCE_PROVENANCE_USER_DECLARED;
@@ -169,6 +172,7 @@ export async function patchPlannedAbsence(pool, userId, absenceId, body) {
     window.starts_on,
     window.ends_on,
     existing.id,
+    todayIso,
   );
 
   const widenGate = await evaluateGuestAccessWidenGate(pool, {

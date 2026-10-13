@@ -5,7 +5,7 @@ audience: both
 domain: pet_care
 feature_id: care_context
 status: active
-last_updated: 2026-10-07
+last_updated: 2026-10-13
 related_prs: []
 ---
 
@@ -207,6 +207,7 @@ Away planning chrome uses **away-context** plum tokens (`docs/design/tokens.md` 
 | ID | Decision | Rationale | Status | Date | PR |
 |----|----------|-----------|--------|------|-----|
 | CC-UI-D-001 | Away surfaces use away-context plum aliases, not Agatha teal or warm accent | User-declared trip vs Agatha suggestions | Live | 2026-10-08 | |
+| CARE-CONTEXT-D-003 | Declarer `todayIso` once per absence request; pet access before declarer TZ on care-period preview; undo audit uses undo result occurrence id | Programme 9100 phase 2 | Live | 2026-10-13 | |
 
 ## Related
 
