@@ -68,17 +68,17 @@ After gate exit `0`, the orchestrator **keeps using tools** until merge-done, `c
 ## Runtime state
 
 ```yaml
-autonomy: halted
+autonomy: active
 current_phase: pr-12
 last_completed_phase: pr-11
-halt_reason: halted
+halt_reason: null
 next_action: "start phase pr-12: checkout cursor/acj-pr-12-b994"
 artifact_ref:
   branch: cursor/agatha-care-journey-integration-b994
   plan_path: .agents/plans/agatha-care-journey.md
-  plan_commit: 3dbfc81f50e69d8dfb4e8a59be73fbce8f8ef4e3
+  plan_commit: 609807eaa3a8dedd48743ed3b0dc5595e00d6c69
   snapshot_path: .agents/plans/agatha-care-journey.snapshot.json
-  snapshot_commit: 3dbfc81f50e69d8dfb4e8a59be73fbce8f8ef4e3
+  snapshot_commit: 609807eaa3a8dedd48743ed3b0dc5595e00d6c69
 open_prs: []
 merge_commits: {"pr-05":"8ec5d9c90c57e867f5a2260621fb766dad19d15e","pr-11":"9e0d4fc3fddbcc7e86cfb6d6c9d64639c9f39eaf"}
 debt_issue_refs: []

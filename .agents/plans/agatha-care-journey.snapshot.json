@@ -3,9 +3,9 @@
   "plan_id": "agatha-care-journey",
   "programme_ref": "docs/domains/pet_care/changes/agatha-care-journey-programme.md",
   "approved_at": "2026-10-12T18:00:00Z",
-  "approved_by": "User chat 2026-10-10 — full execute-plan RUN-UNTIL-BLOCKED (all 14 phases + release PR + babysit-uat). Re-grant: user chat 2026-10-12 resume /execute-plan after governance #1840/#1841 merged.",
+  "approved_by": "User chat 2026-10-10 — full execute-plan RUN-UNTIL-BLOCKED (all 14 phases + release PR + babysit-uat). Re-grant: user chat 2026-10-12 resume after governance #1840/#1841 merged. Re-grant: user chat 2026-10-13 resume-plan on #1835 (proceed PR-12 despite ACJ-D-006 Proposed).",
   "approved_until": "2026-10-14T18:00:00Z",
-  "autonomy": "halted",
+  "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/agatha-care-journey-integration-b994",
   "control_issue": 1835,
@@ -453,5 +453,5 @@
       "merge_method": "squash"
     }
   ],
-  "content_hash": "sha256:fa7b21be0dc3413b3048f003d1e6abb36a3d8ea5d6f4d0102e693f70c5d9ccba"
+  "content_hash": "sha256:e04394bac5c42343e735fd7e3b1726d206a8de104c91297f170db84ffb1e6b2f"
 }
