@@ -30,6 +30,57 @@ import { applyPetWeightFromPayload, rejectInvalidPetWeight } from './petWeightWr
 
 export { rejectInvalidPetWeight };
 
+function bodyHas(body, key) {
+  return Object.prototype.hasOwnProperty.call(body, key);
+}
+
+function mergePetUpdateFields(existingRow, body) {
+  const row = existingRow || {};
+  const species = bodyHas(body, 'species')
+    ? normalizeSpecies(body.species)
+    : normalizeSpecies(row.species);
+  const gender = bodyHas(body, 'gender')
+    ? normalizeGender(body.gender)
+    : normalizeGender(row.gender);
+  const dateOfBirth = (bodyHas(body, 'dateOfBirth') || bodyHas(body, 'date_of_birth'))
+    ? normalizeCalendarDateInput(body.dateOfBirth || body.date_of_birth)
+    : row.date_of_birth;
+  const neuteredDate = bodyHas(body, 'neuteredDate')
+    ? normalizeCalendarDateInput(body.neuteredDate)
+    : row.neutered_date;
+  return {
+    name: bodyHas(body, 'name') ? body.name : row.name,
+    species,
+    breed: bodyHas(body, 'breed') ? (body.breed ?? '') : (row.breed ?? ''),
+    age: bodyHas(body, 'age') ? body.age : row.age,
+    dateOfBirth,
+    gender,
+    bio: bodyHas(body, 'bio') ? (body.bio ?? '') : (row.bio ?? ''),
+    insurance: bodyHas(body, 'insurance') ? (body.insurance ?? '') : (row.insurance ?? ''),
+    neuteredDate,
+    neuterDismissed: bodyHas(body, 'neuterDismissed')
+      ? body.neuterDismissed === true
+      : row.neuter_dismissed === true,
+    chipId: bodyHas(body, 'chipId') ? (body.chipId ?? '') : (row.chip_id ?? ''),
+    chipDismissed: bodyHas(body, 'chipDismissed')
+      ? body.chipDismissed === true
+      : row.chip_dismissed === true,
+    vetId: (bodyHas(body, 'vetId') || bodyHas(body, 'vet_id'))
+      ? (body.vetId ?? body.vet_id ?? null)
+      : row.vet_id,
+    colorValue: bodyHas(body, 'colorValue')
+      ? (body.colorValue != null ? body.colorValue : null)
+      : (row.color_index != null ? row.color_index : null),
+    passedAway: bodyHas(body, 'passedAway')
+      ? body.passedAway === true
+      : row.passed_away === true,
+    organization_id: bodyHas(body, 'organization_id')
+      ? (body.organization_id ?? null)
+      : (row.organization_id ?? null),
+    weight: bodyHas(body, 'weight') ? body.weight : undefined,
+  };
+}
+
 export async function createPet(pool, userId, body, req) {
   const id = body.id || uuidv4();
   const {
@@ -72,6 +123,9 @@ export async function createPet(pool, userId, body, req) {
         passedAway, organization_id || null, homeTimezone],
     );
     const pet = result.rows[0];
+    if (!pet) {
+      return { conflict: true };
+    }
     await applyPetWeightFromPayload(db, {
       petId: pet.id,
       userId,
@@ -80,41 +134,46 @@ export async function createPet(pool, userId, body, req) {
       req,
     });
     const refreshed = await db.query('SELECT * FROM pets WHERE id = $1', [pet.id]);
-    return refreshed.rows[0] || pet;
+    return { pet: refreshed.rows[0] || pet };
   });
-  await setPrimaryVetFromLegacyVetId(pool, syncedPet.id, syncedPet.vet_id, userId);
+  if (syncedPet.conflict) {
+    return { error: 'Pet id already in use', status: 409 };
+  }
+  const createdPet = syncedPet.pet;
+  await setPrimaryVetFromLegacyVetId(pool, createdPet.id, createdPet.vet_id, userId);
   logAuditEventSafe(pool, {
     actorUserId: userId,
     action: 'pet.created',
     resourceType: 'pet',
-    resourceId: syncedPet.id,
-    petId: syncedPet.id,
-    orgId: syncedPet.organization_id || null,
-    metadata: { species: syncedPet.species },
+    resourceId: createdPet.id,
+    petId: createdPet.id,
+    orgId: createdPet.organization_id || null,
+    metadata: { species: createdPet.species },
     req,
   });
-  return { pet: petRowToMap(syncedPet), status: 201 };
+  return { pet: petRowToMap(createdPet), status: 201 };
 }
 
 export async function updatePet(pool, userId, petId, body, req) {
   if (!(await hasPetCapability(pool, userId, petId, PET_CAPABILITIES.PROFILE_EDIT))) {
     return { error: 'Pet not found', status: 404 };
   }
-  const {
-    name, breed = '', age, weight,
-    bio = '', insurance = '',
-    neuterDismissed = false, chipId = '', chipDismissed = false,
-    vetId, colorValue, passedAway = false,
-    organization_id,
-  } = body;
-  const species = normalizeSpecies(body.species);
-  const gender = normalizeGender(body.gender);
   const existingPet = await pool.query(
-    `SELECT organization_id, photo_path, weight_reference_value, weight_reference_authority,
-            weight_management_context, home_timezone
+    `SELECT *
      FROM pets WHERE id = $1`,
     [petId],
   );
+  const existingRow = existingPet.rows[0] || {};
+  const merged = mergePetUpdateFields(existingRow, body);
+  const {
+    name, breed, age, weight,
+    bio, insurance,
+    neuterDismissed, chipId, chipDismissed,
+    vetId, colorValue, passedAway,
+    organization_id,
+  } = merged;
+  const species = merged.species;
+  const gender = merged.gender;
   let photoPath = existingPet.rows[0]?.photo_path ?? null;
   if (Object.prototype.hasOwnProperty.call(body, 'photoPath')) {
     const photoSanitized = sanitizePhotoPathForWrite(body.photoPath);
@@ -123,15 +182,14 @@ export async function updatePet(pool, userId, petId, body, req) {
     }
     photoPath = photoSanitized.value;
   }
-  const dateOfBirth = normalizeCalendarDateInput(body.dateOfBirth || body.date_of_birth);
-  const neuteredDate = normalizeCalendarDateInput(body.neuteredDate);
-  const previousOrgId = existingPet.rows[0]?.organization_id || null;
+  const dateOfBirth = merged.dateOfBirth;
+  const neuteredDate = merged.neuteredDate;
+  const previousOrgId = existingRow.organization_id || null;
   const nextOrgId = organization_id || null;
   if (nextOrgId && String(nextOrgId) !== String(previousOrgId || '')
       && !(await userInOrg(pool, nextOrgId, userId))) {
     return { error: 'Not a member of this organization', status: 403 };
   }
-  const existingRow = existingPet.rows[0] || {};
   let weightReferenceValue = existingRow.weight_reference_value ?? null;
   let weightReferenceAuthority = existingRow.weight_reference_authority ?? null;
   let weightManagementContext = existingRow.weight_management_context || 'none';
