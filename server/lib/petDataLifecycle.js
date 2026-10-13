@@ -25,6 +25,7 @@ const PET_DATA_TABLES = [
   'weight_entries',
   'health_issues',
   'health_entries',
+  'pet_vaccination_records',
   'pet_timeline_entries',
   'pet_activity_events',
   'family_events',

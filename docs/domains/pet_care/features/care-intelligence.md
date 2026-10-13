@@ -290,6 +290,18 @@ Evaluator: `server/routes/careIntelligence/welfare/neuterWelfareEvaluator.js`. S
 
 Coverage: `server/test/careIntelligence/welfare/neuterWelfareEvaluator.test.js`
 
+## Pet vaccination records (PR-09)
+
+Structured vaccination history lives in **`pet_vaccination_records`** — not on the `pets` row (programme B3). Summaries are **computed** on read.
+
+| ID | Requirement | Status |
+|----|-------------|--------|
+| **AC-VX-01** | `POST /api/pets/:id/vaccination-records` persists `vaccine_name` + `administered_on`; `GET` returns `records` + computed `summary` | Live (integration) |
+
+Service: `server/lib/pets/vaccinationRecords.js`. Routes: `server/routes/pets/vaccinationRecordsRouter.js` (`HEALTH_VIEW` / `HEALTH_EDIT`).
+
+Coverage: `server/test/pets/vaccinationRecord.test.js`
+
 ## Decision log
 
 | ID | Decision | Rationale | Status | Date | PR |
