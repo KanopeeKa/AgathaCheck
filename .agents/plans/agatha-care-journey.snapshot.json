@@ -5,7 +5,7 @@
   "approved_at": "2026-10-12T18:00:00Z",
   "approved_by": "User chat 2026-10-10 — full execute-plan RUN-UNTIL-BLOCKED (all 14 phases + release PR + babysit-uat). Re-grant: user chat 2026-10-12 resume /execute-plan after governance #1840/#1841 merged.",
   "approved_until": "2026-10-14T18:00:00Z",
-  "autonomy": "active",
+  "autonomy": "halted",
   "default_merge_mode": "auto",
   "base_branch": "cursor/agatha-care-journey-integration-b994",
   "control_issue": 1835,
@@ -453,5 +453,5 @@
       "merge_method": "squash"
     }
   ],
-  "content_hash": "sha256:e80033123e5f55ddfa6534914a8bd2213235eaf6db4c748e717fac6c97ec3155"
+  "content_hash": "sha256:fa7b21be0dc3413b3048f003d1e6abb36a3d8ea5d6f4d0102e693f70c5d9ccba"
 }
