@@ -74,12 +74,12 @@ last_completed_phase: pr-10
 halt_reason: null
 next_action: "continue phase pr-11 on branch cursor/acj-pr-11-b994"
 artifact_ref:
-  branch: cursor/agatha-care-journey-integration-b994
+  branch: cursor/acj-pr-11-b994
   plan_path: .agents/plans/agatha-care-journey.md
-  plan_commit: de00c4269be3216049e00daa030988011413c786
+  plan_commit: 72a13d3dc57ce76433f1763b9014f2a46020b0c4
   snapshot_path: .agents/plans/agatha-care-journey.snapshot.json
-  snapshot_commit: de00c4269be3216049e00daa030988011413c786
-open_prs: []
+  snapshot_commit: 72a13d3dc57ce76433f1763b9014f2a46020b0c4
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1868"]
 merge_commits: {"pr-05":"8ec5d9c90c57e867f5a2260621fb766dad19d15e"}
 debt_issue_refs: []
 ```
