@@ -935,6 +935,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careWelfareNeuterRecord => 'Update neutering status';
 
   @override
+  String get careWelfareVaccinationTitle => 'Vaccination history not recorded';
+
+  @override
+  String get careWelfareVaccinationWhy =>
+      'Keeping a simple list of vaccinations helps you and your vet stay aligned. Ask your vet which vaccines matter for your pet.';
+
+  @override
+  String get careWelfareVaccinationRecord => 'Record a vaccination';
+
+  @override
   String get profileCompletenessNotForMyPet => 'Not for my pet';
 
   @override

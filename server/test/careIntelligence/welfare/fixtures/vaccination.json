@@ -1,0 +1,72 @@
+[
+  {
+    "id": "dog-zero-records",
+    "pet": {
+      "id": "pet-vx-1",
+      "species": "Dog",
+      "passed_away": false
+    },
+    "context": {
+      "vaccinationSummary": { "record_count": 0, "last_administered_on": null }
+    },
+    "expectCandidate": true
+  },
+  {
+    "id": "cat-zero-records",
+    "pet": {
+      "id": "pet-vx-2",
+      "species": "Cat",
+      "passed_away": false
+    },
+    "context": {
+      "vaccinationSummary": { "record_count": 0, "last_administered_on": null }
+    },
+    "expectCandidate": true
+  },
+  {
+    "id": "has-structured-record-silence",
+    "pet": {
+      "id": "pet-vx-3",
+      "species": "Dog",
+      "passed_away": false
+    },
+    "context": {
+      "vaccinationSummary": { "record_count": 1, "last_administered_on": "2026-01-01" }
+    },
+    "expectCandidate": false
+  },
+  {
+    "id": "ac-wf-11-missing-summary",
+    "pet": {
+      "id": "pet-vx-4",
+      "species": "Dog",
+      "passed_away": false
+    },
+    "context": {},
+    "expectCandidate": false
+  },
+  {
+    "id": "ac-wf-11-unsupported-species",
+    "pet": {
+      "id": "pet-vx-5",
+      "species": "Fish",
+      "passed_away": false
+    },
+    "context": {
+      "vaccinationSummary": { "record_count": 0, "last_administered_on": null }
+    },
+    "expectCandidate": false
+  },
+  {
+    "id": "passed-away",
+    "pet": {
+      "id": "pet-vx-6",
+      "species": "Dog",
+      "passed_away": true
+    },
+    "context": {
+      "vaccinationSummary": { "record_count": 0, "last_administered_on": null }
+    },
+    "expectCandidate": false
+  }
+]

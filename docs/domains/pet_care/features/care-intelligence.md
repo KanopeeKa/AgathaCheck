@@ -302,6 +302,18 @@ Service: `server/lib/pets/vaccinationRecords.js`. Routes: `server/routes/pets/va
 
 Coverage: `server/test/pets/vaccinationRecord.test.js`
 
+## Welfare vaccination evaluator (PR-10)
+
+| ID | Requirement | Status |
+|----|-------------|--------|
+| **AC-WF-11** | When dog/cat has zero `pet_vaccination_records`, sync upserts `vaccination_welfare`; **silence** when records exist, species unsupported, summary missing, or pet passed away | Live (integration) |
+
+Evaluator: `server/routes/careIntelligence/welfare/vaccinationWelfareEvaluator.js`; vaccination summary loaded in `syncPetWelfareSuggestions`. Flutter: `WelfareSuggestionCard` routes Record to care add (`family=vaccination`).
+
+Coverage: `server/test/careIntelligence/welfare/vaccinationWelfareEvaluator.test.js` (fixtures `welfare/fixtures/vaccination.json`)
+
+**Copy review (O5):** PR checklist — vet-aligned ARB keys `careWelfareVaccination*`; no compliance absolutes.
+
 ## Decision log
 
 | ID | Decision | Rationale | Status | Date | PR |

@@ -948,6 +948,16 @@ class AppLocalizationsFr extends AppLocalizations {
       'Mettre à jour le statut de stérilisation';
 
   @override
+  String get careWelfareVaccinationTitle => 'Historique vaccinal non renseigné';
+
+  @override
+  String get careWelfareVaccinationWhy =>
+      'Une liste simple des vaccins aide vous et votre vétérinaire à rester alignés. Demandez à votre vétérinaire quels vaccins comptent pour votre animal.';
+
+  @override
+  String get careWelfareVaccinationRecord => 'Enregistrer une vaccination';
+
+  @override
   String get profileCompletenessNotForMyPet => 'Pas pour mon animal';
 
   @override
