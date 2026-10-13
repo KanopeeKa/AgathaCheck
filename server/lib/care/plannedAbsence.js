@@ -41,12 +41,6 @@ export function normalizeAbsenceTitleInput(value) {
 }
 
 /**
- * @param {string|null|undefined} startsOn
- * @param {string|null|undefined} endsOn
- * @param {string} [todayIso]
- * @returns {{ ok: true, starts_on: string, ends_on: string } | { ok: false, error: string }}
- */
-/**
  * Calendar today for planned-absence active/list filters (declarer account IANA TZ).
  *
  * @param {import('pg').Pool|import('pg').PoolClient} pool
@@ -59,6 +53,12 @@ export async function resolvePlannedAbsenceTodayIso(pool, userId) {
   return wallClockInTimeZone(tz).todayIso;
 }
 
+/**
+ * @param {string|null|undefined} startsOn
+ * @param {string|null|undefined} endsOn
+ * @param {string} [todayIso]
+ * @returns {{ ok: true, starts_on: string, ends_on: string } | { ok: false, error: string }}
+ */
 export function validateAbsenceDateWindow(startsOn, endsOn, todayIso = todayCalendarIso()) {
   const starts = normalizeCalendarDateInput(startsOn);
   const ends = normalizeCalendarDateInput(endsOn);
