@@ -293,7 +293,9 @@
       "spawn_config": {
         "integration_branch": "main",
         "ownership_ref": "docs/domains/pet_care/changes/agatha-care-journey-execute-autonomy.md#parallelism-subagents"
-      }
+      },
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1864",
+      "pr_head_sha": "3f3a75e7"
     },
     {
       "id": "pr-10",
@@ -452,5 +454,5 @@
       "merge_method": "squash"
     }
   ],
-  "content_hash": "sha256:772a646822cde29c61abf4f0854f669c3a7716d9ae486dff7518984a050c779b"
+  "content_hash": "sha256:cfb618d1432bb6eb75d95495bcff4d6343e1481ab927ad0766d5c67d1019aee7"
 }
