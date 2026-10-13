@@ -145,6 +145,24 @@ List<CareAgendaDateGroup<T>> groupAgendaRowsByDueDate<T>(
 bool showSameDayDateHeader(CareAgendaDateGroup<Object?> group) =>
     group.rows.length >= 2;
 
+/// Multi-pet coordination banner (AC-CO-02): same calendar day, distinct pets.
+bool showCoordinationBanner<T>(
+  CareAgendaDateGroup<T> group,
+  String Function(T item) petIdOf,
+) {
+  if (group.rows.length < 2) return false;
+  return group.rows.map((r) => petIdOf(r.item)).toSet().length >= 2;
+}
+
+List<String> coordinationPetIds<T>(
+  CareAgendaDateGroup<T> group,
+  String Function(T item) petIdOf,
+) {
+  final ids = group.rows.map((r) => petIdOf(r.item)).toSet().toList();
+  ids.sort();
+  return ids;
+}
+
 /// Build the agenda for [items]. Items without a schedule, paused or ended
 /// items are left out (INV-4). [elapsed] advances each read's clock (live
 /// status between reads).

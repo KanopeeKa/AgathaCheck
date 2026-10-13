@@ -15,3 +15,9 @@ Feature: Agatha care journey welfare feedback
     Given a guardian owns two care items due on the same future day
     When the guardian opens the care agenda due soon section
     Then the care agenda shows a same-day date header for that day
+
+  @acj @pr-13 @smoke-ci
+  Scenario: ACJ-CO-02 — coordination banner links only
+    Given a guardian owns two pets with care due on the same future day
+    When the guardian opens the care agenda due soon section
+    Then the care agenda shows coordination links for each pet

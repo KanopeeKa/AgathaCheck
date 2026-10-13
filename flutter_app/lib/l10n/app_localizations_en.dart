@@ -8391,6 +8391,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careAgendaHideUpcoming => 'Hide upcoming care';
 
   @override
+  String careAgendaCoordinationMessage(String date) {
+    return 'Each pet\'s care for $date is listed separately — open a pet to review.';
+  }
+
+  @override
+  String careAgendaCoordinationPetLink(String petName) {
+    return '$petName\'s care';
+  }
+
+  @override
   String careStackCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,

@@ -97,4 +97,41 @@ test.describe('Agatha care journey', () => {
       await withCareClock(null, page);
     }
   });
+
+  test('@smoke-ci ACJ-CO-02 — coordination banner links only', async ({
+    page,
+    testUser,
+  }) => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const today = '2026-06-10';
+    const dueSoonDay = '2026-06-13';
+    await withCareClock(`${today}T10:00`, page);
+    try {
+      const petA = await createPet(baseURL, testUser.accessToken, 'Bella', 'Dog');
+      const petB = await createPet(baseURL, testUser.accessToken, 'Max', 'Dog');
+      await createCareItem(baseURL, testUser.accessToken, petA.id, {
+        name: 'Bella groom',
+        careFamily: 'grooming',
+        frequency: 'once',
+        dueDate: dueSoonDay,
+      });
+      await createCareItem(baseURL, testUser.accessToken, petB.id, {
+        name: 'Max groom',
+        careFamily: 'grooming',
+        frequency: 'once',
+        dueDate: dueSoonDay,
+      });
+      await loginAs(page, testUser, { experience: 'guardian' });
+      const dashboard = new GuardianDashboardPage(page);
+      await dashboard.open();
+      const agenda = new CareAgendaPage(page);
+      await agenda.expectRowVisible('Bella groom');
+      await agenda.expectRowVisible('Max groom');
+      await agenda.expectCoordinationLinks([petA.id, petB.id], dueSoonDay);
+      await agenda.coordinationPetLink(petB.id).click();
+      await page.waitForURL(new RegExp(`/pet/${petB.id}`), { timeout: 30_000 });
+    } finally {
+      await withCareClock(null, page);
+    }
+  });
 });
