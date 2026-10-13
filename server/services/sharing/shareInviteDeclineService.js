@@ -17,7 +17,7 @@ import { inviteBlockedResponse, isInvitee } from './shareInviteShared.js';
 export async function declineShareInvite(pool, {
   inviteId,
   userId,
-  userEmail,
+  userEmail: _userEmail,
 }) {
   try {
     return await withTransaction(pool, async (client) => {

@@ -26,7 +26,7 @@ export async function acceptShareInvite(pool, {
   inviteId,
   code,
   userId,
-  userEmail,
+  userEmail: _userEmail,
 }) {
   try {
     return await withTransaction(pool, async (client) => {
