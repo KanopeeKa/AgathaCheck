@@ -121,6 +121,10 @@ class _CareAgendaCollectionState extends ConsumerState<CareAgendaCollection> {
       upcomingExpanded: _upcomingExpanded,
       onToggleUpcoming: () =>
           setState(() => _upcomingExpanded = !_upcomingExpanded),
+      petNames: widget.petNames,
+      onOpenPet: widget.petNames != null
+          ? (petId) => goToPetDetail(context, petId)
+          : null,
       rowBuilder: (row) => CareAgendaRowTile(
         row: row,
         petName: widget.petNames?[row.item.petId],

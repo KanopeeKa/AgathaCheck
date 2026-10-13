@@ -8519,6 +8519,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careAgendaHideUpcoming => 'Masquer les soins à venir';
 
   @override
+  String careAgendaCoordinationMessage(String date) {
+    return 'Les soins de chaque animal pour le $date sont listés séparément — ouvrez un animal pour les consulter.';
+  }
+
+  @override
+  String careAgendaCoordinationPetLink(String petName) {
+    return 'Soins de $petName';
+  }
+
+  @override
   String careStackCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,

@@ -219,8 +219,8 @@ The dashboard (all pets) and the pet profile (one pet) use the same agenda. All 
    - **Overdue** first, both schedule types. A Fixed-schedule stack is one row, "3 doses not recorded", with **Review**.
    - Then care due today, grouped **Morning** (before 12:00), **Afternoon** (12:00–17:59), **Evening** (from 18:00) and **Anytime** (no time). Group headings appear only when at least two groups have care; otherwise one heading, **Today's list**.
    - Care done today stays at the end, quiet (check and time), until the day ends.
-2. **Due soon** — the next 7 days after today. When two or more rows share the same due calendar day, a **same-day date** sub-heading shows that day (formatted) before those rows.
-3. **Upcoming** — later dates, collapsed, with a count. Expanded Upcoming uses the same same-day date sub-headings when two or more rows share a due day.
+2. **Due soon** — the next 7 days after today. When two or more rows share the same due calendar day, a **same-day date** sub-heading shows that day (formatted) before those rows. When those rows belong to **two or more pets** on the all-pets dashboard, a **coordination** line appears under that date with a link per pet (no merged agenda row).
+3. **Upcoming** — later dates, collapsed, with a count. Expanded Upcoming uses the same same-day date sub-headings when two or more rows share a due day, and the same multi-pet coordination links when applicable.
 
 - Care that repeats daily or more often appears only in Today.
 - The reminder window never hides care. A yearly vaccine in 200 days is in Upcoming.
@@ -232,7 +232,7 @@ The dashboard (all pets) and the pet profile (one pet) use the same agenda. All 
 
 **Row (D-CIE-026):** one composition everywhere (`CareActionRow` inside `CareCollectionInsetList`): pet avatar on the dashboard only, name, status chip and date or time, and **one trailing action** — **Mark as done**, or **Review** for a stack. Tapping the row opens the Care Item view. An item with several open doses acts on the most urgent one. The row changes only after the server confirms, then "Done · Undo".
 
-Accessibility: section and group headings are headers; Upcoming exposes expanded or collapsed; rows are at least 56 high and fully tappable, the trailing button at least 48; the row reads as one label, e.g. "Buddy, Flea treatment, Overdue, 5 June"; moves respect reduced motion. Stable ids: `care_agenda_today`, `care_agenda_due_soon`, `care_agenda_upcoming`, `care_agenda_group_<morning|afternoon|evening|anytime>`, `care_agenda_date_<YYYY-MM-DD>` (same-day sub-heading under Due soon / Upcoming), `care_agenda_stack_<entryId>`.
+Accessibility: section and group headings are headers; Upcoming exposes expanded or collapsed; rows are at least 56 high and fully tappable, the trailing button at least 48; the row reads as one label, e.g. "Buddy, Flea treatment, Overdue, 5 June"; moves respect reduced motion. Stable ids: `care_agenda_today`, `care_agenda_due_soon`, `care_agenda_upcoming`, `care_agenda_group_<morning|afternoon|evening|anytime>`, `care_agenda_date_<YYYY-MM-DD>` (same-day sub-heading under Due soon / Upcoming), `care_coordination_banner_<YYYY-MM-DD>`, `care_coordination_pet_link_<petId>`, `care_agenda_stack_<entryId>`.
 
 ## Care item view
 

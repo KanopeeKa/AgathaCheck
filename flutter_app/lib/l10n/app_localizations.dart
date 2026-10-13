@@ -14734,6 +14734,18 @@ abstract class AppLocalizations {
   /// **'Hide upcoming care'**
   String get careAgendaHideUpcoming;
 
+  /// No description provided for @careAgendaCoordinationMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Each pet\'s care for {date} is listed separately — open a pet to review.'**
+  String careAgendaCoordinationMessage(String date);
+
+  /// No description provided for @careAgendaCoordinationPetLink.
+  ///
+  /// In en, this message translates to:
+  /// **'{petName}\'s care'**
+  String careAgendaCoordinationPetLink(String petName);
+
   /// No description provided for @careStackCount.
   ///
   /// In en, this message translates to:

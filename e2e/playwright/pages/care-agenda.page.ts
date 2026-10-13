@@ -95,6 +95,28 @@ export class CareAgendaPage {
     );
   }
 
+  coordinationBanner(dateKey: string) {
+    return this.page.locator(
+      `[flt-semantics-identifier="care_coordination_banner_${dateKey}"]`,
+    );
+  }
+
+  coordinationPetLink(petId: string) {
+    return this.page.locator(
+      `[flt-semantics-identifier="care_coordination_pet_link_${petId}"]`,
+    );
+  }
+
+  async expectCoordinationLinks(petIds: string[], dateKey: string): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    await expect(this.coordinationBanner(dateKey)).toBeVisible({
+      timeout: 30_000,
+    });
+    for (const petId of petIds) {
+      await expect(this.coordinationPetLink(petId)).toBeVisible();
+    }
+  }
+
   async expectSameDayDateHeader(dateKey: string): Promise<void> {
     await refreshFlutterAccessibility(this.page);
     await expect(this.dateHeaderIdentifier(dateKey)).toBeVisible({
