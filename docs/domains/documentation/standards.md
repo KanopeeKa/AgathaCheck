@@ -3,7 +3,7 @@ title: Documentation standards
 owner: Documentation Team
 audience: agent
 status: active
-last_updated: 2026-10-07
+last_updated: 2026-10-13
 tags: [documentation, standards, policy]
 ---
 
@@ -63,6 +63,7 @@ Standalone `*-decisions.md` under `features/` or `changes/` is **legacy**; do no
 8. `related_prs` is advisory — append the PR number when convenient; `git log --follow` is the audit trail.
 9. **No duplicate colour values** — link to `docs/design/tokens.md` and `docs/design/system.md`.
 10. **`.agents/memory/` holds agent lessons only** (tooling, environment, test-harness and process traps). A product rule — behaviour, requirement, decision, terminology — lives in its canonical doc, never only in memory. Memory may link to the doc; a canonical doc must not cite memory as its source. Rules still in memory are tracked in `scripts/docs-memory-backlog.json` and move during that capability's `/canonical-docs consolidate`.
+11. **Agent instruction files** (`AGENTS.md`, `CLAUDE.md`, `.claude/`, `.cursor/rules|skills|commands`, `.github/copilot-instructions.md`, `replit.md`) follow [agent-instructions.md](../../agent-efficiency/agent-instructions.md): one home per rule, agent files hold deltas only, word budgets, gate **I** (`--instructions`).
 
 **Policy-doc exception:** meta docs under `docs/domains/documentation/` and `docs/agent-efficiency/` follow the template where it applies (`related_prs`, decision log, `## Docs` on PRs) but do not need a Requirements row for every policy paragraph.
 
@@ -124,6 +125,7 @@ Declare canonical path(s) updated or `N/A — <reason>` (≥10 characters after 
 | DOCUMENTATION-STANDARDS-D-005 | Bare legacy decision IDs take a fixed per-domain prefix | Legacy ranges overlap (D20–D24 in two domains); fixed table avoids two consolidations inventing different prefixes; R-C7/R-D3 enforce uniqueness | Live | 2026-10-07 | — |
 | DOCUMENTATION-STANDARDS-D-006 | `.agents/memory/` holds lessons only; product rules move to canonical docs | Memory had become a hidden second spec; non-blocking guards (R-M1–R-M4) plus a backlog worked down during consolidation | Live | 2026-10-07 | — |
 | DOCUMENTATION-STANDARDS-D-007 | Documentation migration handover supersedes 2025 consolidation plan | Single authoritative migrate plan for agents; integration branch + two-phase gates | Live | 2026-10-07 | #1762 |
+| DOCUMENTATION-STANDARDS-D-008 | Agent instruction files: one shared rulebook (`AGENTS.md`), agent-specific deltas only, budgets and gate A | Restated rules drifted and contradicted across Cursor, Claude Code, Copilot and Replit layers; override layers did not stop wrongful agent stops | Live | 2026-10-13 | — |
 
 ## Still open
 

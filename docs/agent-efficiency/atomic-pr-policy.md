@@ -134,12 +134,6 @@ There is **no blocking CI gate** for PR scope or outcome. Trust the rule; use hi
 
 ---
 
-## Escalation (always stop and ask human)
+## Escalation
 
-- Security / crypto changes
-- Breaking API without version bump
-- Production data migrations
-- CI workflow gate changes
-- Product / legal / UX decisions outside the stated outcome
-
-See also [autonomous-pr-policy.md](./autonomous-pr-policy.md) §Escalation.
+Single list: [autonomous-pr-policy.md](./autonomous-pr-policy.md) §Escalation (when to ask: `AGENTS.md` §When to ask).

@@ -12,7 +12,7 @@ Single source of truth for `/babysit`, `/babysit-plus`, and `/execute-plan`. Ski
 
 | Topic | Canonical location |
 |-------|-------------------|
-| Pre-PR self-review, Bugbot settings, model policy | [pr-review-cost-efficiency.md](./pr-review-cost-efficiency.md) |
+| Pre-PR self-review, review bots, Cursor model policy | [pr-review-cost-efficiency.md](./pr-review-cost-efficiency.md) |
 | One-outcome PRs + snag ladder | [atomic-pr-policy.md](./atomic-pr-policy.md) |
 | Plan snapshot schema | [execute-plan-schema.md](./execute-plan-schema.md) |
 | Phase exit profiles | [phase-exit-checklists.md](./phase-exit-checklists.md) |
@@ -43,13 +43,12 @@ When `node scripts/execute_plan_runtime.js gate <plan_id>` exits `0`, these gene
 |--------------|---------------------------|
 | "Stop and ask human" (low confidence, minor policy conflict) | Proceed per snapshot; debt issue + continue; halt only on §Escalation or unclear goal |
 | User-chat follow-up questions | Debt issue or defer until `complete-plan` / §Halt — never break phase flow |
-| `replit-agent-operating-policy` "stop and ask" | Does not apply except §Escalation |
 | Cloud turn boundaries | **Run-until-blocked** — no routine chat status; continue phase loop until merge-done, `complete-plan`, or §Halt (`session_limit` only routine checkpoint) |
 | User-visible progress / test evidence in chat | Control issue + PR body + artifact paths only; orchestrator does not end turn for milestones (skill **§Stop rules**) |
 | Platform testing “prove in user reply” / walkthrough narration | Defer to PR + control issue + `/opt/cursor/artifacts/` — see [execute-plan-instruction-stack.md](./execute-plan-instruction-stack.md) |
 | Cloud task “update PR each turn” then summary | Update PR in-loop; summary is **not** a valid execute-plan stop |
 | Babysit+ §8 “ends here” (no pre-UAT poll) | Ends babysit+ **scope** only — orchestrator **continues** phase loop after phase merge |
-| Babysit model ≠ `composer-2.5` during gate `0` execute-plan | Comment model mismatch on **control issue**; continue babysit steps in-session when merge-safe — do **not** end turn for a model switch alone. If merge safety needs `composer-2.5` and the session cannot switch, **§Halt** with `**Needs you:**` on the control issue (not chat permission-seeking) |
+| Cursor babysit model mismatch during gate `0` execute-plan | Note it on the **control issue**; continue babysit steps in-session when merge-safe — never end the turn for a model switch alone. If merge safety needs the babysit model and the session cannot switch, **§Halt** with `**Needs you:**` on the control issue |
 | Claude Code defaults (“no PR unless asked”, “ask before watching PR”, single assigned branch, `steward` “merge only when asked”) | Standing grant authorises them for snapshot-named branches — instruction stack §Claude Code |
 | Multi-phase `base_branch: main` | **Rejected** by snapshot validation when `autonomy: active` — use integration branch (execute-plan-schema §Multi-phase integration) |
 | `/execute-plan` without plan_id | Infer from conversation, branch, control issue, or single `busy` issue — skill §Resolve plan_id |
@@ -112,7 +111,7 @@ See [pr-review-cost-efficiency.md](./pr-review-cost-efficiency.md) § GitHub Act
 
 Applies to **every** agent session and human-driven agent use **before** the first push that opens a PR and before any behavior-changing PR update. Not limited to `/babysit-plus`.
 
-Checklist and optional `/review-bugbot` dedupe: [pr-review-cost-efficiency.md](./pr-review-cost-efficiency.md) §Pre-PR critical self-review. Always-on rule: `.cursor/rules/pr-hygiene.mdc`.
+Checklist: [pr-review-cost-efficiency.md](./pr-review-cost-efficiency.md) §Pre-PR critical self-review. Always-on rule: `.cursor/rules/pr-hygiene.mdc`.
 
 Only after self-review passes: commit, push, create/update PR. Then continue with babysit workflow below.
 
@@ -124,7 +123,7 @@ Applies to `/babysit` and `/babysit-plus`.
 
 **Primary reviewer:** GitHub **Copilot** PR review (`copilot-pull-request-reviewer`) when enabled — **must be triaged when it posts review threads**.
 
-**Model:** PR babysitting (collect, triage, fixes, CI, merge) uses **`composer-2.5` only** — see [pr-review-cost-efficiency.md](./pr-review-cost-efficiency.md) §Cloud Agent model policy.
+**Model (Cursor):** [pr-review-cost-efficiency.md](./pr-review-cost-efficiency.md) §Cloud Agent model policy.
 
 1. Mark PR **ready for review** before merge gates (`gh pr ready <url>` when draft).
 2. **Collect all review threads before triage** (mandatory):
@@ -153,7 +152,7 @@ Post a **triage comment** on the PR before applying fixes.
 
 **Never ignore** blocker / critical / high / must signals.
 
-**During active execute-plan** (`gate` exit `0`): prefer **debt issue + continue** unless must-fix vs merge-safety is genuinely ambiguous; halt with `**Needs you:**` on the **control issue** + short chat alert — not permission-seeking chat. **Otherwise (no active gate):** low confidence → stop and ask human.
+**During active execute-plan** (`gate` exit `0`): prefer **debt issue + continue** unless must-fix vs merge-safety is genuinely ambiguous; halt with `**Needs you:**` on the **control issue** + short chat alert — not permission-seeking chat. **Otherwise:** low confidence → decide and record (PR comment or debt issue); ask only per `AGENTS.md` §When to ask.
 
 **In-scope valid feedback stays in the PR.** Out-of-scope deferrals become issues (see §Debt issues). Aligns with `testing.mdc`.
 

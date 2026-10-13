@@ -36,7 +36,7 @@ Read **top wins** when two instructions conflict:
 | 1 | Frozen snapshot + plan markdown (`next_action`, phases, `base_branch`) | Follow phase loop until `complete-plan` or §Halt |
 | 2 | `/execute-plan` skill **§Stop rules** | No routine user chat; merge-done → next phase **same session** |
 | 3 | `autonomous-pr-policy.md` §Execute-plan overrides | Narrow generic “stop and ask” / chat evidence rules |
-| 4 | `AGENTS.md` §Execute-plan orchestration | Same as row 2–3 (Cloud-specific summary) |
+| 4 | `AGENTS.md` §Operating rules › Execute-plan | Cross-agent contract + forbidden closers |
 | 5 | `.agents/memory/execute-plan-autonomy.md` | Phase boundary table; conflict resolution |
 | 6 | `/babysit-plus` skill | Triage, CI, **squash-merge** — then **return to execute-plan loop** (not session end) |
 | 7 | Generic testing / diligence (platform) | Evidence → PR body, control issue, `/opt/cursor/artifacts/` — **not** milestone chat |

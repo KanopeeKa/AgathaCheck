@@ -22,12 +22,12 @@ ensure_flutter() {
   local expected_version="3.44.0"
   export PATH="/opt/flutter/bin:${PATH}"
   if [[ ! -x /opt/flutter/bin/flutter ]]; then
-    die "Flutter SDK missing at /opt/flutter/bin/flutter. Rebuild the Cursor Cloud environment — see AGENTS.md §Cloud environment rebuild."
+    die "Flutter SDK missing at /opt/flutter/bin/flutter. Rebuild the Cursor Cloud environment — see docs/engineering/cursor-cloud-environment.md."
   fi
   local actual_version
   actual_version="$(flutter --version 2>/dev/null | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1 || true)"
   if [[ "$actual_version" != "$expected_version" ]]; then
-    die "Flutter SDK is ${actual_version:-unknown}; expected ${expected_version}. Delete the stale dashboard environment snapshot and start a new Cloud Agent so .cursor/Dockerfile rebuilds — see AGENTS.md §Cloud environment rebuild."
+    die "Flutter SDK is ${actual_version:-unknown}; expected ${expected_version}. Delete the stale dashboard environment snapshot and start a new Cloud Agent so .cursor/Dockerfile rebuilds — see docs/engineering/cursor-cloud-environment.md."
   fi
 }
 
