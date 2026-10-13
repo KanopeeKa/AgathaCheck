@@ -38,9 +38,15 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('welfare_suggestion_card_neuter')), findsOneWidget);
+    expect(
+      find.byKey(const Key('welfare_suggestion_card_neuter')),
+      findsOneWidget,
+    );
     expect(find.text('Add routine'), findsNothing);
     expect(find.text('Accept'), findsNothing);
-    expect(find.byKey(const Key('welfare_suggestion_record_neuter')), findsOneWidget);
+    expect(
+      find.byKey(const Key('welfare_suggestion_record_neuter')),
+      findsOneWidget,
+    );
   });
 }

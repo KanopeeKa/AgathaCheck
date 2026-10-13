@@ -46,9 +46,7 @@ ProviderScope _scope({
       petProfileCareMilestoneProvider(
         'pet-1',
       ).overrideWith((ref) => const AsyncData(null)),
-      petWelfareSuggestionsProvider(
-        'pet-1',
-      ).overrideWith((ref) async => []),
+      petWelfareSuggestionsProvider('pet-1').overrideWith((ref) async => []),
     ],
     child: child,
   );

@@ -9,18 +9,21 @@ void main() {
   const policy = AgathaSurfacePolicy();
   final now = DateTime.utc(2026, 10, 1);
 
-  test('lists chip only when identification unknown (neuter via welfare PR-08)', () {
-    const pet = Pet(
-      id: 'p',
-      name: 'N',
-      species: 'Dog',
-      neuterStatus: profileFactStatusUnknown,
-      identificationStatus: profileFactStatusUnknown,
-    );
-    expect(profileCompletenessKindsForPet(pet, policy: policy, now: now), [
-      ProfileCompletenessKind.chip,
-    ]);
-  });
+  test(
+    'lists chip only when identification unknown (neuter via welfare PR-08)',
+    () {
+      const pet = Pet(
+        id: 'p',
+        name: 'N',
+        species: 'Dog',
+        neuterStatus: profileFactStatusUnknown,
+        identificationStatus: profileFactStatusUnknown,
+      );
+      expect(profileCompletenessKindsForPet(pet, policy: policy, now: now), [
+        ProfileCompletenessKind.chip,
+      ]);
+    },
+  );
 
   test('hides chip when dismissed inside 30d cooldown', () {
     const pet = Pet(
