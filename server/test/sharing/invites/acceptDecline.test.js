@@ -14,6 +14,11 @@ const inviteeToken = jwt.sign(
   JWT_SECRET,
   { expiresIn: '1h' },
 );
+const wrongUserToken = jwt.sign(
+  { id: 'wrong-user', email: 'invitee@example.com' },
+  JWT_SECRET,
+  { expiresIn: '1h' },
+);
 
 function baseInvite(overrides = {}) {
   return {
@@ -67,7 +72,7 @@ function buildAcceptDeclinePool(overrides = {}) {
       return { rows: [{ first_name: 'Bob', last_name: 'Invitee' }] };
     }
     if (sql.includes('SELECT first_name, last_name, email FROM users WHERE id = $1')) {
-      if (params[0] === inviteeId) {
+      if (params[0] === inviteeId || params[0] === 'wrong-user') {
         return { rows: [{ first_name: 'Bob', last_name: 'Invitee', email: 'invitee@example.com' }] };
       }
       return { rows: [{ first_name: 'Alice', last_name: 'Owner', email: 'owner@example.com' }] };
@@ -142,6 +147,37 @@ describe('POST /api/share/invites/:inviteId/accept', () => {
     expect(res.statusCode).toBe(200);
     expect(pool.state.upgraded).toBe(true);
     expect(pool.state.accessRole).toBe('co_parent');
+  });
+
+  it('returns 403 when authenticated user id does not match invitee_user_id', async () => {
+    const pool = buildAcceptDeclinePool();
+    const app = createApp(pool);
+    const res = await request(app)
+      .post(`/api/share/invites/${inviteId}/accept`)
+      .set('Authorization', `Bearer ${wrongUserToken}`);
+    expect(res.statusCode).toBe(403);
+    expect(res.body.error).toMatch(/different email/i);
+  });
+
+  it('returns 403 when account has no verified email on file', async () => {
+    const pool = buildAcceptDeclinePool();
+    const baseQuery = pool.query;
+    pool.query = async (sql, params) => {
+      if (
+        sql.includes('SELECT first_name, last_name, email FROM users WHERE id = $1')
+        && params[0] === inviteeId
+      ) {
+        return { rows: [{ first_name: 'Bob', last_name: 'Invitee' }] };
+      }
+      return baseQuery(sql, params);
+    };
+    pool.connect = async () => ({ query: pool.query, release: () => {} });
+    const app = createApp(pool);
+    const res = await request(app)
+      .post(`/api/share/invites/${inviteId}/accept`)
+      .set('Authorization', `Bearer ${inviteeToken}`);
+    expect(res.statusCode).toBe(403);
+    expect(res.body.error).toMatch(/different email/i);
   });
 
   it('is idempotent when invite already accepted', async () => {

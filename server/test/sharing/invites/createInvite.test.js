@@ -220,7 +220,28 @@ describe('POST /api/share/invites', () => {
     expect(res.body.code).toBeTruthy();
   });
 
-  it('creates invite for existing member with notification delivery', async () => {
+  it('returns identical delivery metadata for known and unknown invitee emails', async () => {
+    const poolKnown = buildCreateInvitePool();
+    const poolUnknown = buildCreateInvitePool({ state: { usersByEmail: {} } });
+    const appKnown = createApp(poolKnown);
+    const appUnknown = createApp(poolUnknown);
+    const known = await request(appKnown)
+      .post('/api/share/invites')
+      .set('Authorization', `Bearer ${inviterToken}`)
+      .send({ invitee_email: 'invitee@example.com', pet_ids: [pet1] });
+    const unknown = await request(appUnknown)
+      .post('/api/share/invites')
+      .set('Authorization', `Bearer ${inviterToken}`)
+      .send({ invitee_email: 'newuser@example.com', pet_ids: [pet1] });
+    expect(known.statusCode).toBe(201);
+    expect(unknown.statusCode).toBe(201);
+    expect(known.body.delivery).toEqual(unknown.body.delivery);
+    expect(known.body.delivery).toEqual({ status: 'queued' });
+    expect(poolKnown.state.notifications.length).toBeGreaterThan(0);
+    expect(poolUnknown.state.notifications.length).toBe(0);
+  });
+
+  it('creates invite for existing member with in-app notification side effect', async () => {
     const pool = buildCreateInvitePool();
     const app = createApp(pool);
     const res = await request(app)
@@ -231,7 +252,7 @@ describe('POST /api/share/invites', () => {
     expect(res.body).toMatchObject({
       included_pet_ids: [pet1],
       excluded: [],
-      delivery: { email: 'skipped', notification: true },
+      delivery: { status: 'queued' },
     });
     expect(res.body.invite_id).toBeTruthy();
     expect(res.body.code).toBeTruthy();
@@ -282,7 +303,7 @@ describe('POST /api/share/invites', () => {
     expect(res.body.invite_id).toBeTruthy();
     expect(res.body.code).toBeTruthy();
     expect(pool.state.insertedInvites.length).toBe(1);
-    expect(res.body.delivery.email).toBe('failed');
+    expect(res.body.delivery).toEqual({ status: 'queued' });
   });
 
   it('creates invite for new user with skipped notification', async () => {
@@ -295,7 +316,6 @@ describe('POST /api/share/invites', () => {
       .set('Authorization', `Bearer ${inviterToken}`)
       .send({ invitee_email: 'newuser@example.com', pet_ids: [pet1] });
     expect(res.statusCode).toBe(201);
-    expect(res.body.delivery.notification).toBe(false);
-    expect(['sent', 'failed', 'skipped']).toContain(res.body.delivery.email);
+    expect(res.body.delivery).toEqual({ status: 'queued' });
   });
 });
