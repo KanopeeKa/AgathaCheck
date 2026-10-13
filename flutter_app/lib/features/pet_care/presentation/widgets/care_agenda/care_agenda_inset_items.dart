@@ -30,11 +30,21 @@ List<CareCollectionInsetItem> buildCareAgendaInsetItems({
   final l = AppLocalizations.of(context)!;
   final items = <CareCollectionInsetItem>[];
 
-  void header(String key, String text, {bool level2 = false}) {
+  void header(
+    String key,
+    String text, {
+    bool level2 = false,
+    String? semanticsIdentifier,
+  }) {
     items.add(
       CareCollectionInsetItem(
         showDividerBefore: items.isNotEmpty,
-        child: _AgendaHeader(key: Key(key), text: text, level2: level2),
+        child: _AgendaHeader(
+          key: Key(key),
+          text: text,
+          level2: level2,
+          semanticsIdentifier: semanticsIdentifier ?? key,
+        ),
       ),
     );
   }
@@ -121,18 +131,23 @@ String careAgendaOrientation(AppLocalizations l, CareAgenda<Object?> agenda) {
 }
 
 class _AgendaHeader extends StatelessWidget {
-  const _AgendaHeader({super.key, required this.text, this.level2 = false});
+  const _AgendaHeader({
+    super.key,
+    required this.text,
+    this.level2 = false,
+    this.semanticsIdentifier,
+  });
 
   final String text;
   final bool level2;
+  final String? semanticsIdentifier;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final semanticsId = key is ValueKey<String> ? key?.value as String? : null;
     return Semantics(
       header: true,
-      identifier: semanticsId,
+      identifier: semanticsIdentifier,
       child: Padding(
         padding: CareSurfaceTokens.collectionHeaderPadding,
         child: Text(
