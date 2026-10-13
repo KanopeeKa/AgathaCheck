@@ -5,7 +5,7 @@ audience: both
 domain: pet_care
 feature_id: care_item
 status: active
-last_updated: 2026-10-09
+last_updated: 2026-10-13
 related_prs: [1797, 1805, 1812, 1817]
 ---
 
@@ -38,6 +38,8 @@ Historical profile refactor and 2026-09-13 delivery plan text: [archive/care-ite
 | CARE-ITEM-R-011 | Reads and commands agree on open occurrences; PostgreSQL `DATE` parsed calendar-safe; catch-up visible on read or heal without user trap (remediation § below) | In delivery |
 | CARE-ITEM-R-012 | Same-day multi-dose: dose selector when multiple pending on one calendar day; do not treat all pending as missed-dose review | Live |
 | CARE-ITEM-R-013 | Mobile due preview: reversible completion in list position with Undo after date sheet (below mobile breakpoint only) | Live |
+| CARE-ITEM-R-014 | Vet visits: `vet_visits` + `vet_visit_occurrence_links`; pet-scoped API under `/pets/{id}/vet-visits`; calendar dates on wire; UI deferred | Live |
+| CARE-ITEM-R-015 | Completing a vet visit updates the visit row only — linked `health_occurrences` stay on their CSM status until explicitly completed | Live |
 
 ## Verdict
 
@@ -118,6 +120,13 @@ Four principles:
 | D-BULK-003 | `CareMarkDoneButton` shared round `check_circle` everywhere | — | Live | — | — |
 | D-BULK-004 | Coming up cap **3** rows then "Show {n} more" | — | Live | — | — |
 | D-BULK-005 | Bulk Mark/Skip success with undo uses shared undo snackbar (5 s, close control, `snackBarSurface`) | Same helper as single Done (regression guard after #1671) | Live | 2026-10-08 | — |
+| D-CIE-039 | Vet visit completion is not bulk occurrence completion | Visit records group care done at the clinic; each occurrence still uses CSM Mark as done / Skip (AC-FB-02) | Live | 2026-10-13 | PR-14 |
+
+## Vet visit schema (API slice — PR-14)
+
+Service: `server/lib/pets/vetVisits.js`. Routes: `server/routes/pets/vetVisitsRouter.js` (`HEALTH_VIEW` / `HEALTH_EDIT`). OpenAPI: `docs/architecture/openapi/pet-care-critical.json` (`PetVetVisit`, occurrence link request/response).
+
+Coverage: `server/test/care/visitSchema.test.js` — ACJ-VV-01 / AC-VV-01 (link API contract), AC-FB-02 (complete visit does not mutate occurrences).
 
 ## Where we start
 

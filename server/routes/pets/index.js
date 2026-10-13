@@ -9,6 +9,7 @@ import { registerPetPeopleRoutes } from './petPeopleRouter.js';
 import { registerLifecycleRoutes } from './lifecycleRouter.js';
 import { registerCoreRoutes } from './coreRouter.js';
 import { registerVaccinationRecordsRoutes } from './vaccinationRecordsRouter.js';
+import { registerVetVisitsRoutes } from './vetVisitsRouter.js';
 import { registerPhotoRoutes } from './photoRouter.js';
 import { registerPetTagsRoutes } from './tagsRouter.js';
 import { registerTimelineRoutes } from '../timeline/index.js';
@@ -41,6 +42,7 @@ export default function petsRoutes(pool) {
   registerPhotoRoutes(router, pool);
   registerPetTagsRoutes(router, pool);
   registerVaccinationRecordsRoutes(router, pool);
+  registerVetVisitsRoutes(router, pool);
   registerCoreRoutes(router, pool);
   return router;
 }
