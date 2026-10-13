@@ -33,7 +33,7 @@ class NotificationSuggestionCard extends ConsumerWidget {
   }
 }
 
-class _LegacyCompactSuggestionCard extends ConsumerWidget {
+class _LegacyCompactSuggestionCard extends ConsumerStatefulWidget {
   const _LegacyCompactSuggestionCard({
     required this.notification,
     required this.onOpenPet,
@@ -43,10 +43,38 @@ class _LegacyCompactSuggestionCard extends ConsumerWidget {
   final VoidCallback onOpenPet;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_LegacyCompactSuggestionCard> createState() =>
+      _LegacyCompactSuggestionCardState();
+}
+
+class _LegacyCompactSuggestionCardState
+    extends ConsumerState<_LegacyCompactSuggestionCard> {
+  bool _feedbackInFlight = false;
+
+  Future<void> _submitFeedback(String value) async {
+    if (_feedbackInFlight) return;
+    setState(() => _feedbackInFlight = true);
+    final l = AppLocalizations.of(context)!;
+    try {
+      await ref
+          .read(notificationsProvider.notifier)
+          .submitSuggestionFeedback(widget.notification.id, value);
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l.careSuggestionRespondFailed)),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _feedbackInFlight = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l = AppLocalizations.of(context)!;
-    final unread = notification.isSuggestionUnread;
+    final unread = widget.notification.isSuggestionUnread;
 
     return AgathaMessageCard(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -67,19 +95,19 @@ class _LegacyCompactSuggestionCard extends ConsumerWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      notification.title,
+                      widget.notification.title,
                       style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: unread ? FontWeight.bold : null,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      notification.message,
+                      widget.notification.message,
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
-                    if (notification.showsHealthAdjacentDisclaimer) ...[
+                    if (widget.notification.showsHealthAdjacentDisclaimer) ...[
                       const SizedBox(height: 6),
                       Text(
                         l.notificationSuggestionVetDisclaimer,
@@ -93,10 +121,9 @@ class _LegacyCompactSuggestionCard extends ConsumerWidget {
                 ),
               ),
               PopupMenuButton<String>(
-                onSelected: (value) async {
-                  await ref
-                      .read(notificationsProvider.notifier)
-                      .submitSuggestionFeedback(notification.id, value);
+                onSelected: (value) {
+                  if (_feedbackInFlight) return;
+                  _submitFeedback(value);
                 },
                 itemBuilder: (context) => [
                   PopupMenuItem(
@@ -115,7 +142,7 @@ class _LegacyCompactSuggestionCard extends ConsumerWidget {
           Align(
             alignment: Alignment.centerLeft,
             child: TextButton(
-              onPressed: onOpenPet,
+              onPressed: widget.onOpenPet,
               child: Text(l.careSuggestionAccept),
             ),
           ),
@@ -125,10 +152,21 @@ class _LegacyCompactSuggestionCard extends ConsumerWidget {
   }
 }
 
-class _CareFamilySuggestionCard extends ConsumerWidget {
+class _CareFamilySuggestionCard extends ConsumerStatefulWidget {
   const _CareFamilySuggestionCard({required this.notification});
 
   final AppNotification notification;
+
+  @override
+  ConsumerState<_CareFamilySuggestionCard> createState() =>
+      _CareFamilySuggestionCardState();
+}
+
+class _CareFamilySuggestionCardState
+    extends ConsumerState<_CareFamilySuggestionCard> {
+  bool _feedbackInFlight = false;
+
+  AppNotification get notification => widget.notification;
 
   Map<String, dynamic> get _payload =>
       notification.suggestionPayload ?? const <String, dynamic>{};
@@ -151,11 +189,28 @@ class _CareFamilySuggestionCard extends ConsumerWidget {
 
   String? get _careFamilyWire => _payload['care_family']?.toString();
 
-  void _openReviewForm(BuildContext context, AppLocalizations l) {
+  bool get _canAccept {
     final petId = notification.petId;
-    if (petId == null || petId.isEmpty) return;
     final recId = _recommendationId;
-    if (recId == null || recId.isEmpty) return;
+    return petId != null &&
+        petId.isNotEmpty &&
+        recId != null &&
+        recId.isNotEmpty;
+  }
+
+  void _onAccept(BuildContext context, AppLocalizations l) {
+    if (!_canAccept) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l.notificationSuggestionAcceptUnavailable)),
+      );
+      return;
+    }
+    _openReviewForm(context, l);
+  }
+
+  void _openReviewForm(BuildContext context, AppLocalizations l) {
+    final petId = notification.petId!;
+    final recId = _recommendationId!;
     final title = careSuggestionDisplayTitleForKey(
       l,
       suggestionKey: _suggestionKey,
@@ -175,10 +230,23 @@ class _CareFamilySuggestionCard extends ConsumerWidget {
     GoRouter.of(context).push(uri.toString());
   }
 
-  Future<void> _feedback(WidgetRef ref, String action) async {
-    await ref
-        .read(notificationsProvider.notifier)
-        .submitSuggestionFeedback(notification.id, action);
+  Future<void> _feedback(BuildContext context, String action) async {
+    if (_feedbackInFlight) return;
+    setState(() => _feedbackInFlight = true);
+    final l = AppLocalizations.of(context)!;
+    try {
+      await ref
+          .read(notificationsProvider.notifier)
+          .submitSuggestionFeedback(notification.id, action);
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l.careSuggestionRespondFailed)),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _feedbackInFlight = false);
+    }
   }
 
   void _showWhy(BuildContext context, AppLocalizations l, String displayTitle) {
@@ -228,7 +296,7 @@ class _CareFamilySuggestionCard extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l = AppLocalizations.of(context)!;
     final displayTitle = careSuggestionDisplayTitleForKey(
@@ -326,7 +394,7 @@ class _CareFamilySuggestionCard extends ConsumerWidget {
             ] else
               const SizedBox(height: 8),
             FilledButton(
-              onPressed: () => _openReviewForm(context, l),
+              onPressed: () => _onAccept(context, l),
               child: Text(l.careSuggestionAccept),
             ),
             const SizedBox(height: 4),
@@ -334,13 +402,17 @@ class _CareFamilySuggestionCard extends ConsumerWidget {
               children: [
                 Expanded(
                   child: TextButton(
-                    onPressed: () => _feedback(ref, 'dismiss'),
+                    onPressed: _feedbackInFlight
+                        ? null
+                        : () => _feedback(context, 'dismiss'),
                     child: Text(l.careSuggestionLater),
                   ),
                 ),
                 Expanded(
                   child: TextButton(
-                    onPressed: () => _feedback(ref, 'not_relevant'),
+                    onPressed: _feedbackInFlight
+                        ? null
+                        : () => _feedback(context, 'not_relevant'),
                     child: Text(l.careSuggestionNoThanks),
                   ),
                 ),
@@ -353,5 +425,5 @@ class _CareFamilySuggestionCard extends ConsumerWidget {
   }
 }
 
-String formatPetGroupHeader(String? petName) =>
-    petName == null || petName.isEmpty ? 'Pet' : petName;
+String formatPetGroupHeader(AppLocalizations l, String? petName) =>
+    petName == null || petName.isEmpty ? l.petLabel : petName;
