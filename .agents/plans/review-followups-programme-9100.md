@@ -114,13 +114,13 @@ autonomy: active
 current_phase: 1
 last_completed_phase: null
 halt_reason: null
-next_action: "start phase 1: checkout cursor/review-followups-phase1-notifications-9100"
+next_action: "continue phase 1 on branch cursor/review-followups-phase1-notifications-9100"
 artifact_ref:
-  branch: cursor/review-followups-integration-9100
+  branch: cursor/review-followups-phase1-notifications-9100
   plan_path: .agents/plans/review-followups-programme-9100.md
-  plan_commit: 562ce69e54cb04155c99d9cbd0a29707dc32ecf8
+  plan_commit: 95eb27eebcb988f66e9c0c81fa7ddb46da135ff7
   snapshot_path: .agents/plans/review-followups-programme-9100.snapshot.json
-  snapshot_commit: 562ce69e54cb04155c99d9cbd0a29707dc32ecf8
+  snapshot_commit: 95eb27eebcb988f66e9c0c81fa7ddb46da135ff7
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
