@@ -3,6 +3,9 @@ export const SUGGESTION_TYPE_MISSING_RECURRING = 'suggestionMissingRecurringCare
 export const SUGGESTION_TYPE_WEIGHT_TREND = 'suggestionWeightTrend';
 
 export const SUGGESTION_TTL_DAYS = 14;
+
+/** FR-FB-1 — dedupe quiet window after dismiss / scheduler expiry (days). */
+export const SUGGESTION_EXPIRY_QUIET_WINDOW_DAYS = 30;
 export const DEFAULT_SUGGESTION_CONFIDENCE = 0.85;
 export const MIN_SUGGESTION_CONFIDENCE = 0.7;
 

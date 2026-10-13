@@ -3,7 +3,7 @@ title: Notifications — Activity, account & Agatha Suggestions
 owner: Product
 audience: both
 status: accepted (rev 2.5.1)
-last_updated: 2026-10-08
+last_updated: 2026-10-13
 tags: [domain,notifications,spec,suggestions,sharing]
 domain: notifications
 feature_id: notifications
@@ -38,6 +38,7 @@ Decision IDs **D12–D16** are already taken (roles and permissions), so new dec
 | **N11** | Security notices tell the user what happened and offer **"This was me" / "Secure my account"**. They never contain a sign-in link or a code (anti-phishing). |
 | **N12** | Subscription notices only cover **what the app store or billing provider doesn't already tell the user**: entitlement changes and payment problems that affect Agatha. No receipts. The design is independent of the billing provider (RevenueCat today, possibly an EU provider later). |
 | **N13** | "New device" detection stores only a coarse device label (OS + browser/app) and the first-seen time, with no IP and no location. Location is deferred pending a DPIA. |
+| **N14** | `suggestion_expires_at` means "active suggestion TTL" on live rows and "quiet window ends at" on archived rows (`dismissed`, `not_relevant`, `expired`). Scheduler expiry overwrites the prior TTL on archive — intentional single column (no `suggestion_suppress_until`). Constant: `SUGGESTION_EXPIRY_QUIET_WINDOW_DAYS` (30) in `server/lib/suggestions/suggestionConstants.js`. |
 
 Accepting this spec includes the documentation checklist in AC-MG-5.
 
@@ -463,7 +464,7 @@ dwell time, so screen-reader and keyboard users get the same result. Only `new` 
 
 | ID | Requirement |
 |---|---|
-| FR-FB-1 | **Dismiss** hides this suggestion only. The same `dedupe_key` MUST NOT reappear for 30 days. |
+| FR-FB-1 | **Dismiss** hides this suggestion only. The same `dedupe_key` MUST NOT reappear for 30 days. Scheduler **expiry** (`expireStaleSuggestions`) uses the same 30-day quiet window: it sets `suggestion_state = expired`, archives the row, and writes `suggestion_expires_at = now + 30 days` so generation respects the dedupe suppress check (reuses the column rather than a separate suppress-until field — see **N14**). |
 | FR-FB-2 | **Not relevant** hides it and suppresses that `type` for that pet for 90 days. An optional one-tap reason can be recorded ("Already handled elsewhere", "Doesn't apply to my pet", "Too frequent"). |
 | FR-FB-3 | Three "Not relevant" responses for the same `type` across pets within 90 days MUST suppress that type account-wide, and the settings screen MUST show it as off (§8). |
 | FR-FB-4 | Feedback events are stored to measure per-type acceptance and precision (§10). |
@@ -1020,7 +1021,7 @@ Source: §0 above.
 | **D9** | Resolved also applies to `relationship` and `account` open-object items. | extended | PR4 |
 | **D10** | Pending shares/household → `relationship`; foster/adoption/custody stay `administrative`; inline actions. | amended | PR3–PR4 |
 | **D11** | Urgent pinned at top of Activity; subscription payment issues (A9). | unchanged | — |
-| **N1**–**N13** | See §0 decision table. | locked | per §0 |
+| **N1**–**N14** | See §0 decision table. | locked | per §0 |
 
 ## 19. Programme & rollout index
 

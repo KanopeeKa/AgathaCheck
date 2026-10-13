@@ -7,7 +7,7 @@ import {
 } from '../../lib/notificationKind.js';
 
 describe('resolveNotifications', () => {
-  test('resolves relationship invite rows (not only administrative)', async () => {
+  test('does not resolve when scope and allowUnscoped are missing', async () => {
     const updates = [];
     const pool = {
       query: async (sql, params) => {
@@ -19,12 +19,50 @@ describe('resolveNotifications', () => {
       userId: 'u1',
       type: NOTIFICATION_TYPE_SHARE_INVITE_RECEIVED,
     });
+    expect(updates).toHaveLength(0);
+  });
+
+  test('allowUnscoped resolves all open rows of the type', async () => {
+    const updates = [];
+    const pool = {
+      query: async (sql, params) => {
+        updates.push({ sql, params });
+        return { rows: [], rowCount: 1 };
+      },
+    };
+    await resolveNotifications(pool, {
+      userId: 'u1',
+      type: NOTIFICATION_TYPE_SHARE_INVITE_RECEIVED,
+      allowUnscoped: true,
+    });
     expect(updates).toHaveLength(1);
     expect(updates[0].sql).not.toMatch(/kind\s*=/i);
     expect(updates[0].params).toEqual([
       'u1',
       NOTIFICATION_TYPE_SHARE_INVITE_RECEIVED,
     ]);
+  });
+
+  test('petId scopes resolve when referenceId is absent', async () => {
+    const updates = [];
+    const pool = {
+      query: async (sql, params) => {
+        updates.push({ sql, params });
+        return { rows: [], rowCount: 1 };
+      },
+    };
+    await resolveNotifications(pool, {
+      userId: 'u1',
+      type: NOTIFICATION_TYPE_SHARE_INVITE_RECEIVED,
+      petId: 'pet-42',
+    });
+    expect(updates).toHaveLength(1);
+    expect(updates[0].params).toEqual([
+      'u1',
+      NOTIFICATION_TYPE_SHARE_INVITE_RECEIVED,
+      'pet-42',
+    ]);
+    expect(updates[0].sql).toMatch(/pet_id/);
   });
 
   test('scopes resolve to invite reference in health_entry_id', async () => {

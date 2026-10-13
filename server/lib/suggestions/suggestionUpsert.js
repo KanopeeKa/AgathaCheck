@@ -4,7 +4,10 @@ import {
   NOTIFICATION_KIND_SUGGESTION,
   NOTIFICATION_PRIORITY_NORMAL,
 } from '../notificationKind.js';
-import { SUGGESTION_TTL_DAYS } from './suggestionConstants.js';
+import {
+  SUGGESTION_EXPIRY_QUIET_WINDOW_DAYS,
+  SUGGESTION_TTL_DAYS,
+} from './suggestionConstants.js';
 
 /**
  * Upsert an active suggestion inbox row (FR-SG-5). Updates copy/evidence on conflict.
@@ -107,7 +110,9 @@ export async function completeSuggestionsForDedupeKeys(pool, dedupeKeys) {
 
 export async function expireStaleSuggestions(pool, now = new Date()) {
   const suppressUntil = new Date(now);
-  suppressUntil.setUTCDate(suppressUntil.getUTCDate() + 30);
+  suppressUntil.setUTCDate(
+    suppressUntil.getUTCDate() + SUGGESTION_EXPIRY_QUIET_WINDOW_DAYS,
+  );
   await pool.query(
     `UPDATE notifications
      SET suggestion_state = 'expired',
