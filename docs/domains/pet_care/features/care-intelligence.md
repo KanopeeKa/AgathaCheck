@@ -314,6 +314,16 @@ Coverage: `server/test/careIntelligence/welfare/vaccinationWelfareEvaluator.test
 
 **Copy review (O5):** PR checklist — vet-aligned ARB keys `careWelfareVaccination*`; no compliance absolutes.
 
+## Welfare feedback on profile save (PR-11)
+
+| ID | Requirement | Status |
+|----|-------------|--------|
+| **AC-FB-01** | After a successful pet profile PUT, `syncPetWelfareSuggestions` runs so resolving profile facts (e.g. chip id) withdraws pending welfare rows without waiting for GET welfare | Live (integration) |
+
+Hook: `server/lib/pets/petCoreCommandService.js` (`updatePet`). Withdraw semantics unchanged (`primary_outcome = withdrawn` when evaluators return null).
+
+Coverage: `server/test/careIntelligence/welfare/welfareCompletion.test.js` · BDD `ACJ-FB-01` (`@smoke-uat`)
+
 ## Decision log
 
 | ID | Decision | Rationale | Status | Date | PR |

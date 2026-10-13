@@ -66,7 +66,7 @@ export const AREAS = {
   },
   careIntelligence: {
     paths: ['flutter_app/lib/features/care_intelligence/', 'server/routes/careIntelligence/'],
-    specs: ['care-suggestion.spec.ts'],
+    specs: ['care-suggestion.spec.ts', 'agatha-care-journey.spec.ts'],
   },
   petProfile: {
     paths: ['flutter_app/lib/features/pet_profile/', 'flutter_app/lib/features/pet_tags/', 'server/routes/pets', 'server/routes/petTags'],

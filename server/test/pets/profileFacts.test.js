@@ -93,6 +93,18 @@ describe('profileFacts updatePet', () => {
       if (sql.includes('SELECT * FROM pets WHERE id = $1')) {
         return { rows: [existing] };
       }
+      if (sql.includes('pet_vaccination_records')) {
+        return { rows: [] };
+      }
+      if (sql.includes('FROM welfare_suggestions')) {
+        return { rows: [] };
+      }
+      if (sql.includes('UPDATE welfare_suggestions')) {
+        return { rows: [] };
+      }
+      if (sql.startsWith('INSERT INTO welfare_suggestions')) {
+        return { rows: [] };
+      }
       return null;
     });
   }

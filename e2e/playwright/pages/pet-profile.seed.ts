@@ -47,6 +47,27 @@ export async function getPetRecord(
   return res.json() as Promise<PetRecord>;
 }
 
+export interface WelfareSuggestionWire {
+  id: string;
+  subject_key: string;
+  dedupe_key: string;
+  status: string;
+}
+
+export async function listPendingWelfareSuggestions(
+  baseURL: string,
+  token: string,
+  petId: string,
+): Promise<WelfareSuggestionWire[]> {
+  const res = await apiFetch(apiUrl(`/pets/${petId}/welfare-suggestions`, baseURL), {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    throw new Error(`listPendingWelfareSuggestions failed (${res.status}): ${await res.text()}`);
+  }
+  return res.json() as Promise<WelfareSuggestionWire[]>;
+}
+
 export async function updatePetFields(
   baseURL: string,
   token: string,
@@ -57,6 +78,7 @@ export async function updatePetFields(
     breed?: string;
     dateOfBirth?: string | null;
     chipId?: string;
+    identificationStatus?: 'unknown' | 'yes' | 'no';
     gender?: string | null;
     photoPath?: string | null;
     passedAway?: boolean;
@@ -76,6 +98,10 @@ export async function updatePetFields(
       breed: fields.breed ?? current.breed ?? '',
       dateOfBirth: fields.dateOfBirth ?? current.dateOfBirth ?? null,
       chipId: fields.chipId ?? current.chipId ?? '',
+      identificationStatus:
+        fields.identificationStatus
+        ?? (current as { identificationStatus?: string }).identificationStatus
+        ?? 'unknown',
       photoPath: fields.photoPath ?? current.photoPath ?? null,
       passedAway: fields.passedAway ?? current.passedAway ?? false,
       vetId: fields.vetId ?? current.vetId ?? null,

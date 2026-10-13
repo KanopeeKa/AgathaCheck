@@ -32,6 +32,7 @@ import {
   normaliseProfileFacts,
   profileFactDefaultsForCreate,
 } from './profileFacts.js';
+import { syncPetWelfareSuggestions } from '../../routes/careIntelligence/welfare/syncPetWelfareSuggestions.js';
 
 export { rejectInvalidPetWeight };
 
@@ -283,6 +284,7 @@ export async function updatePet(pool, userId, petId, body, req) {
       metadata: { field_count: Object.keys(body || {}).length },
     });
   }
+  await syncPetWelfareSuggestions(pool, syncedPet);
   return { pet: petRowToMap(syncedPet) };
 }
 

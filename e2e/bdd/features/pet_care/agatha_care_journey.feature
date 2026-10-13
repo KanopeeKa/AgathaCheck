@@ -41,3 +41,9 @@ Feature: Agatha care journey profile facts
   Scenario: ACJ-SP-01 — Safeguard hides rhythm suggestion
     Given a guardian owns a pet with an active weight safeguard and pending rhythm suggestion
     Then the pet profile shows the safeguard card and not the rhythm suggestion
+
+  @acj @pr-11 @smoke-uat
+  Scenario: ACJ-FB-01 — chip save clears welfare suggestion
+    Given a guardian owns a pet with microchip welfare pending
+    When the guardian saves a microchip id on the pet profile
+    Then the pet profile no longer shows the microchip welfare suggestion
