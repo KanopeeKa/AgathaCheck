@@ -81,7 +81,9 @@ class CareIntelligenceRemoteDataSource {
     );
   }
 
-  Future<List<WelfareSuggestionModel>> fetchWelfareSuggestions(String petId) async {
+  Future<List<WelfareSuggestionModel>> fetchWelfareSuggestions(
+    String petId,
+  ) async {
     final response = await _client.get(
       Uri.parse('$baseUrl/api/pets/$petId/welfare-suggestions'),
       headers: _headers(),
@@ -92,9 +94,7 @@ class CareIntelligenceRemoteDataSource {
     }
     final list = json.decode(response.body) as List<dynamic>;
     return list
-        .map(
-          (e) => WelfareSuggestionModel.fromJson(e as Map<String, dynamic>),
-        )
+        .map((e) => WelfareSuggestionModel.fromJson(e as Map<String, dynamic>))
         .toList();
   }
 
