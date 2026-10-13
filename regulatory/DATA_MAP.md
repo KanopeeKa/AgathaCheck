@@ -157,6 +157,33 @@ Per-user presentation state — records when a prominent milestone card was rend
 | `evidence_json` | JSONB | Facts-only evidence trace |
 | `dismissed_at` | TIMESTAMPTZ | When guardian dismissed |
 
+### 1.6g Vet visits (vet_visits, vet_visit_occurrence_links) — Agatha care journey PR-14
+
+Structured vet visit records for a pet. Occurrence links associate care schedule instances with a visit; **completing a visit does not complete linked occurrences** (guardian completes each occurrence via CSM).
+
+**vet_visits**
+
+| Field | Type | Purpose |
+|-------|------|---------|
+| `id` | UUID | Visit identifier |
+| `pet_id` | UUID | Associated pet |
+| `visited_on` | DATE | Calendar day of the visit (`YYYY-MM-DD` on wire) |
+| `status` | VARCHAR(32) | `open` or `completed` |
+| `completed_on` | DATE | Calendar day marked complete (required when `status = completed`) |
+| `notes` | TEXT | Guardian notes |
+| `created_by` | UUID | User who created the row (nullable) |
+| `created_at` | TIMESTAMPTZ | Row creation timestamp |
+| `updated_at` | TIMESTAMPTZ | Last update timestamp |
+
+**vet_visit_occurrence_links**
+
+| Field | Type | Purpose |
+|-------|------|---------|
+| `id` | UUID | Link row identifier |
+| `vet_visit_id` | UUID | Parent visit (`ON DELETE CASCADE`) |
+| `health_occurrence_id` | UUID | Linked occurrence (`UNIQUE`; `ON DELETE CASCADE`) |
+| `created_at` | TIMESTAMPTZ | Link creation timestamp |
+
 ### 1.6f Pet vaccination records (pet_vaccination_records table) — Agatha care journey PR-09
 
 Structured vaccination history for welfare evaluators (PR-10+). **No** `vaccination_status_summary` on `pets`; list responses include a **computed** `summary` object.

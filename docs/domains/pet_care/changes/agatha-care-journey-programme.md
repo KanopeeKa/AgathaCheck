@@ -362,6 +362,7 @@ Columns include: `pet_id`, `subject_key`, `dedupe_key`, `status`, `primary_outco
 | ACJ-D-004 | Visit UI deferred; invariants in **this programme** | Proposed | 2026-10-10 |
 | ACJ-D-005 | `welfare_suggestions` table; `care_recommendations` unchanged | Proposed | 2026-10-10 |
 | ACJ-D-006 | CSM-stable gate definition (owner, PRs, OpenAPI, P1s) | Live | 2026-10-13 — human `resume-plan` on #1835 authorizes PR-12 despite interim Proposed halt; criteria: CSM on `main`, agenda contract in `pet-care-critical.json`, no open P1 on agenda grouping |
+| ACJ-D-007 | Vet visit `complete` updates `vet_visits` only; linked occurrences remain pending until CSM completion (AC-FB-02) | Live | 2026-10-13 | PR-14 |
 
 ---
 
