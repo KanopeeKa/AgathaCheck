@@ -2569,6 +2569,7 @@
   "occurrenceNextOpenDate": "Next open date",
   "occurrenceViewNext": "View",
   "occurrenceOpenCareDetails": "View care details",
+  "occurrenceDueLabel": "Due",
   "occurrenceOtherOpenDatesHint": "Other open dates are on this care item.",
   "occurrenceScheduleRecurring": "Recurring care",
   "occurrenceSchedulePlannedDate": "Planned date",

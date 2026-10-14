@@ -415,7 +415,7 @@ export class AwayPlanningPage {
       '[flt-semantics-identifier="occurrence_screen"]',
     );
     const occurrenceIdentity = this.page.locator(
-      '[flt-semantics-identifier="occurrence_identity_card"], [flt-semantics-identifier="occurrence_open_care_details"]',
+      '[flt-semantics-identifier="occurrence_care_context_card"], [flt-semantics-identifier="occurrence_care_name_link"]',
     );
     const careMenu = this.page.locator('[flt-semantics-identifier="care_item_menu"]');
     const careActions = this.page.getByRole('button', {

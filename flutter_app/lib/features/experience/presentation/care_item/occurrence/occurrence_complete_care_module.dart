@@ -19,12 +19,14 @@ class OccurrenceCompleteCareModule extends ConsumerStatefulWidget {
     required this.onChanged,
     this.focus,
     this.actionBusy = false,
+    this.showUndoInBlock3 = true,
   });
 
   final OccurrenceDetail detail;
   final Future<void> Function() onChanged;
   final String? focus;
   final bool actionBusy;
+  final bool showUndoInBlock3;
 
   @override
   ConsumerState<OccurrenceCompleteCareModule> createState() =>
@@ -217,6 +219,7 @@ class _OccurrenceCompleteCareModuleState
               date: _date,
               busy: _actionBusy,
               seriesFinished: _seriesFinished,
+              showUndoButton: widget.showUndoInBlock3,
               onDateChange: (picked) => _guard(() async {
                 final outcome = await _service.changeCompletionDate(
                   entryId: _d.item.id,

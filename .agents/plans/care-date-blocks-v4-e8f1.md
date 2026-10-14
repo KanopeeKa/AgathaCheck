@@ -297,17 +297,17 @@ docs/domains/pet_care/changes/care-date-blocks-v4-spec.md
 
 ```yaml
 autonomy: active
-current_phase: 1
-last_completed_phase: null
+current_phase: 2
+last_completed_phase: 1
 halt_reason: null
-next_action: "continue phase 1 on branch cursor/care-date-blocks-v4-api-e8f1"
+next_action: "continue phase 2 on branch cursor/care-date-blocks-v4-context-e8f1"
 artifact_ref:
-  branch: cursor/care-date-blocks-v4-api-e8f1
+  branch: cursor/care-date-blocks-v4-context-e8f1
   plan_path: .agents/plans/care-date-blocks-v4-e8f1.md
-  plan_commit: ca8162ed3785ceb36e1e4a0bc9bbfcb6eae359a5
+  plan_commit: 84ca39d6985fe1a85d3e2b967a87aec87f10eece
   snapshot_path: .agents/plans/care-date-blocks-v4-e8f1.snapshot.json
-  snapshot_commit: ca8162ed3785ceb36e1e4a0bc9bbfcb6eae359a5
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1895"]
+  snapshot_commit: 84ca39d6985fe1a85d3e2b967a87aec87f10eece
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1896"]
 merge_commits: {}
 debt_issue_refs: []
 ```

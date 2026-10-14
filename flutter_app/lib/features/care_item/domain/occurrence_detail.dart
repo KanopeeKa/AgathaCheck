@@ -94,6 +94,8 @@ class CareItemSummary {
     required this.asOf,
     this.careFamily,
     this.lateCompletionChoice,
+    this.doseLine,
+    this.strengthFormLine,
   });
 
   final String id;
@@ -104,6 +106,16 @@ class CareItemSummary {
   final String status;
   final String? lateCompletionChoice;
   final CareAsOf asOf;
+
+  /// Dosage or product dose amount (Care date Block 1, CARE-ITEM-R-017).
+  final String? doseLine;
+
+  /// Combined strength and form for medication families when set.
+  final String? strengthFormLine;
+}
+
+bool careItemSummaryShowsStrengthForm(String? careFamily) {
+  return careFamily == 'medication' || careFamily == 'parasite_prevention';
 }
 
 /// The ledger type of the item's latest undoable action.

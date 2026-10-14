@@ -53,7 +53,7 @@ export class OccurrencePage {
     await refreshFlutterAccessibility(this.page);
     const screen = this.page.locator('[flt-semantics-identifier="occurrence_screen"]');
     const identity = this.page.locator(
-      '[flt-semantics-identifier="occurrence_identity_card"], [flt-semantics-identifier="occurrence_open_care_details"]',
+      '[flt-semantics-identifier="occurrence_care_context_card"], [flt-semantics-identifier="occurrence_care_name_link"], [flt-semantics-identifier="occurrence_schedule_section"]',
     );
     const back = this.page.getByRole('button', { name: /^Back$|^Go back$|^Retour$/i });
     const title = this.page.getByRole('heading', {
