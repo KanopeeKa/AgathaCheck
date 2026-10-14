@@ -40,6 +40,12 @@ Historical profile refactor and 2026-09-13 delivery plan text: [archive/care-ite
 | CARE-ITEM-R-013 | Mobile due preview: reversible completion in list position with Undo after date sheet (below mobile breakpoint only) | Live |
 | CARE-ITEM-R-014 | Vet visits: `vet_visits` + `vet_visit_occurrence_links`; pet-scoped API under `/pets/{id}/vet-visits`; calendar dates on wire; UI deferred | Live |
 | CARE-ITEM-R-015 | Completing a vet visit updates the visit row only — linked `health_occurrences` stay on their CSM status until explicitly completed | Live |
+| CARE-ITEM-R-016 | Care date **four-block layout**: context (Block 1) → schedule/absence (Block 2) → completion (Block 3) → chronological previous/next (Block 4) | Planned |
+| CARE-ITEM-R-017 | Care date Block 1: pet rail + linked care name; dose line; strength/form for medication families; care name link replaces View care details | Planned |
+| CARE-ITEM-R-018 | Care date Block 2: Due row + icon reschedule/skip; read-only carer; absence in-block; Reopen when `canUndoHere` on closed rows | Planned |
+| CARE-ITEM-R-019 | Care date Block 3: inline **completion date** (default `min(due, as_of.date)`); scheduled time read-only; complete icon; no DN-3 sheet on leaf | Planned |
+| CARE-ITEM-R-020 | Care date Block 4: server `previous_occurrence` / `next_occurrence`; empty-state copy when none; replace-route navigation | Planned |
+| CARE-ITEM-R-021 | Persisted **completion time of day** on occurrences (display + API) | Planned |
 
 ## Verdict
 
