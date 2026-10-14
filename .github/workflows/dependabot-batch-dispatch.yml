@@ -1,0 +1,40 @@
+# Weekly Cursor Cloud Agent dispatch for /dependabot-batch (no Dependabot CI gate).
+name: Dependabot batch dispatch
+
+on:
+  schedule:
+    # Tuesday 10:00 UTC — after Monday Dependabot opens (.github/dependabot.yml).
+    - cron: '0 10 * * 2'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Build payload only (no Cursor API call)
+        type: boolean
+        default: false
+
+concurrency:
+  group: dependabot-batch-dispatch
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  dispatch:
+    name: Launch dependabot-batch agent
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - name: Launch Cursor agent (/dependabot-batch)
+        env:
+          cursor_api_key: ${{ secrets.cursor_api_key }}
+          CURSOR_AGENT_MODEL: composer-2.5
+          DRY_RUN: ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run == true) && 'true' || 'false' }}
+          DISPATCH_TRIGGER: ${{ github.event_name }}
+        run: node .github/scripts/launch-dependabot-batch.js

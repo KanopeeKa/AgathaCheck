@@ -25,6 +25,8 @@ Batch **open Dependabot PRs** into **one agent PR to `main`** to avoid N queued 
 **Policy:** `docs/agent-efficiency/autonomous-pr-policy.md` · `docs/e2e/uat-deploy-tiers.md`  
 **Config:** `.github/dependabot.yml`
 
+**Automation:** [`.github/workflows/dependabot-batch-dispatch.yml`](../../.github/workflows/dependabot-batch-dispatch.yml) — Tuesday 10:00 UTC cron (+ `workflow_dispatch`) launches a Cloud Agent via Cursor API with this skill. **No pre-dispatch CI gate** (red Dependabot PRs are classified in Phase 0). Requires repo secret `cursor_api_key`. Model: `composer-2.5`.
+
 ---
 
 ## Why batch (not individual merges)

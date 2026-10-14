@@ -51,6 +51,24 @@ describe('launch-cursor-agent module', () => {
   });
 });
 
+describe('launch-dependabot-batch module', () => {
+  it('loads launchDependabotBatch when launch-cursor-agent is only required', () => {
+    clearScriptModules();
+    withEnv({
+      ISSUE_NUMBER: undefined,
+      GITHUB_REPOSITORY: undefined,
+      GITHUB_TOKEN: undefined,
+    }, () => {
+      let mod;
+      assert.doesNotThrow(() => {
+        mod = require('./launch-dependabot-batch');
+      });
+      assert.equal(typeof mod.launchDependabotBatch, 'function');
+      assert.equal(mod.REQUIRED_MODEL, 'composer-2.5');
+    });
+  });
+});
+
 describe('launch-uat-coordinator module', () => {
   it('loads launchUatCoordinator when launch-cursor-agent is only required', () => {
     clearScriptModules();
