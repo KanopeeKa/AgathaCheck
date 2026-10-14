@@ -12087,6 +12087,12 @@ abstract class AppLocalizations {
   /// **'View care details'**
   String get occurrenceOpenCareDetails;
 
+  /// No description provided for @occurrenceDueLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Due'**
+  String get occurrenceDueLabel;
+
   /// No description provided for @occurrenceOtherOpenDatesHint.
   ///
   /// In en, this message translates to:

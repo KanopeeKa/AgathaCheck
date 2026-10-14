@@ -5,10 +5,10 @@ import 'package:pet_profile_app/features/care_item/care_item.dart';
 import 'package:pet_profile_app/features/pet_care/pet_care.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
-import 'occurrence_absence_section.dart';
+import 'occurrence_care_context_card.dart';
 import 'occurrence_complete_care_module.dart';
-import 'occurrence_identity_card.dart';
 import 'occurrence_next_open_module.dart';
+import 'occurrence_schedule_section.dart';
 import 'occurrence_skip_command.dart';
 
 /// Module layout for the Care date screen (phone + wide breakpoints).
@@ -43,8 +43,17 @@ const _kOccurrenceModuleGap = SizedBox(height: 16);
 
 class _OccurrenceScreenBodyState extends ConsumerState<OccurrenceScreenBody> {
   bool _skipBusy = false;
+  bool _undoBusy = false;
 
-  bool get _scheduleActionsBusy => widget.rescheduleBusy || _skipBusy;
+  bool get _scheduleActionsBusy =>
+      widget.rescheduleBusy || _skipBusy || _undoBusy;
+
+  bool get _seriesFinished {
+    final item = widget.detail.item;
+    final schedule = widget.detail.schedule;
+    if (item.status == 'completed') return true;
+    return schedule?.status == 'completed';
+  }
 
   Future<void> _skip() async {
     if (_skipBusy || !widget.detail.occurrence.isOpen) return;
@@ -82,26 +91,59 @@ class _OccurrenceScreenBodyState extends ConsumerState<OccurrenceScreenBody> {
     }
   }
 
+  Future<void> _undo() async {
+    if (_undoBusy) return;
+    setState(() => _undoBusy = true);
+    final l = AppLocalizations.of(context)!;
+    try {
+      final outcome = await ref
+          .read(careCompletionServiceProvider)
+          .undo(entryId: widget.detail.item.id);
+      if (!mounted) return;
+      switch (outcome) {
+        case CareSucceeded():
+          await widget.onChanged();
+          if (!mounted) return;
+          ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(SnackBar(content: Text(l.snackbarUndo)));
+        case CareFailed(failure: CareNotOpenFailure()):
+          ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(SnackBar(content: Text(l.careAlreadyUpdated)));
+        case CareFailed():
+          ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(SnackBar(content: Text(l.careCommandFailed)));
+      }
+    } finally {
+      if (mounted) setState(() => _undoBusy = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final detail = widget.detail;
-    final identity = OccurrenceIdentityCard(
+    final contextCard = OccurrenceCareContextCard(
       detail: detail,
       onOpenCareDetails: widget.onOpenCareDetails,
+    );
+    final schedule = OccurrenceScheduleSection(
+      entryId: widget.entryId,
+      detail: detail,
+      onChanged: widget.onChanged,
       scheduleActionsBusy: _scheduleActionsBusy,
       onChangeDate: detail.occurrence.isOpen ? widget.onReschedule : null,
       onSkip: detail.occurrence.isOpen ? _skip : null,
+      onUndo: detail.canUndoHere ? _undo : null,
+      seriesFinished: _seriesFinished,
     );
     final complete = OccurrenceCompleteCareModule(
       detail: detail,
       focus: widget.focus,
       onChanged: widget.onChanged,
       actionBusy: _scheduleActionsBusy,
-    );
-    final away = _AwayModule(
-      entryId: widget.entryId,
-      detail: detail,
-      onChanged: widget.onChanged,
+      showUndoInBlock3: false,
     );
     final nextOpen = OccurrenceNextOpenModule(
       detail: detail,
@@ -123,9 +165,9 @@ class _OccurrenceScreenBodyState extends ConsumerState<OccurrenceScreenBody> {
             return ListView(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
               children: [
-                identity,
+                contextCard,
                 _kOccurrenceModuleGap,
-                away,
+                schedule,
                 _kOccurrenceModuleGap,
                 complete,
                 _kOccurrenceModuleGap,
@@ -137,9 +179,9 @@ class _OccurrenceScreenBodyState extends ConsumerState<OccurrenceScreenBody> {
           return ListView(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
             children: [
-              identity,
+              contextCard,
               _kOccurrenceModuleGap,
-              away,
+              schedule,
               _kOccurrenceModuleGap,
               if (showNext)
                 Row(
@@ -169,29 +211,5 @@ class _OccurrenceScreenBodyState extends ConsumerState<OccurrenceScreenBody> {
           currentTime: detail.occurrence.time,
         ) !=
         null;
-  }
-}
-
-class _AwayModule extends StatelessWidget {
-  const _AwayModule({
-    required this.entryId,
-    required this.detail,
-    required this.onChanged,
-  });
-
-  final String entryId;
-  final OccurrenceDetail detail;
-  final Future<void> Function() onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    if (!detail.occurrence.isOpen) return const SizedBox.shrink();
-    return CareItemModule(
-      child: OccurrenceAbsenceSection(
-        entryId: entryId,
-        detail: detail,
-        onChanged: onChanged,
-      ),
-    );
   }
 }

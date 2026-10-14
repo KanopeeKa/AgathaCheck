@@ -2447,6 +2447,7 @@
   "occurrenceNextOpenDate": "Prochaine date ouverte",
   "occurrenceViewNext": "Voir",
   "occurrenceOpenCareDetails": "Voir les détails du soin",
+  "occurrenceDueLabel": "Échéance",
   "occurrenceOtherOpenDatesHint": "Les autres dates ouvertes figurent sur cet élément de soin.",
   "occurrenceScheduleRecurring": "Soin récurrent",
   "occurrenceSchedulePlannedDate": "Date planifiée",

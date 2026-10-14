@@ -23,6 +23,7 @@ class OccurrenceClosedActions extends ConsumerWidget {
     required this.onUndo,
     required this.onRecord,
     required this.onConfirmSkip,
+    this.showUndoButton = true,
   });
 
   final OccurrenceDetail detail;
@@ -33,6 +34,7 @@ class OccurrenceClosedActions extends ConsumerWidget {
   final Future<void> Function() onUndo;
   final Future<void> Function(DateTime picked) onRecord;
   final Future<void> Function() onConfirmSkip;
+  final bool showUndoButton;
 
   CareOccurrence get _occ => detail.occurrence;
 
@@ -97,12 +99,14 @@ class OccurrenceClosedActions extends ConsumerWidget {
             await onDateChange(picked);
           },
         ),
-        if (detail.canUndoHere)
+        if (showUndoButton && detail.canUndoHere)
           OutlinedButton(
             key: const Key('occurrence_undo'),
             onPressed: busy ? null : () => onUndo(),
             child: Text(occurrenceUndoLabel(l, detail.lastAction)),
           )
+        else if (!showUndoButton && detail.canUndoHere)
+          const SizedBox.shrink()
         else if (seriesFinished)
           Text(
             l.occurrenceCareFinishedNoReopen,
@@ -178,7 +182,7 @@ class OccurrenceClosedActions extends ConsumerWidget {
             style: Theme.of(context).textTheme.bodySmall,
           ),
         ],
-        if (detail.canUndoHere) ...[
+        if (showUndoButton && detail.canUndoHere) ...[
           const SizedBox(height: 12),
           OutlinedButton(
             key: const Key('occurrence_undo'),

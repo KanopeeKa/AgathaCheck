@@ -60,7 +60,7 @@ Route `/pet/:petId/events/:entryId/occurrences/:occurrenceId` — one occurrence
 
 | Surface | Role |
 |---------|------|
-| Care date | Canonical leaf: identity (schedule **Change date** / **Skip**) → Away → Complete (**Mark as done**) → Next open |
+| Care date | v4 leaf (in delivery): **Context** (pet + linked care name) → **Schedule** (Due, icon reschedule/skip, carer, absence) → Complete → Next open (neighbours in phase 4) |
 | Care Item Needs attention | Shortcut rows + optional single-slot **Change date**; line tap opens Care date |
 | Agenda list rows | Open **Care details** only (D-CIE-035) |
 

@@ -6944,6 +6944,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get occurrenceOpenCareDetails => 'Voir les détails du soin';
 
   @override
+  String get occurrenceDueLabel => 'Échéance';
+
+  @override
   String get occurrenceOtherOpenDatesHint =>
       'Les autres dates ouvertes figurent sur cet élément de soin.';
 

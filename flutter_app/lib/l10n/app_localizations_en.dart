@@ -6834,6 +6834,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get occurrenceOpenCareDetails => 'View care details';
 
   @override
+  String get occurrenceDueLabel => 'Due';
+
+  @override
   String get occurrenceOtherOpenDatesHint =>
       'Other open dates are on this care item.';
 
