@@ -52,4 +52,38 @@ void main() {
       expect(detail.schedule!.intervalDays, 30);
     },
   );
+
+  test('occurrenceDetailFromJson parses neighbour summaries', () {
+    final detail = occurrenceDetailFromJson({
+      'occurrence': {
+        'id': 'occ-mid',
+        'scheduled_date': '2026-06-10',
+        'status': 'pending',
+        'occurrence_status': 'due',
+        'origin': 'computed',
+      },
+      'entry': {
+        'id': 'entry-1',
+        'pet_id': 'pet-1',
+        'name': 'Flea',
+        'status': 'active',
+        'as_of': {'date': '2026-06-10', 'time': '09:00', 'timezone': 'UTC'},
+      },
+      'previous_occurrence': {
+        'id': 'occ-prev',
+        'scheduled_date': '2026-06-05',
+        'occurrence_status': 'done',
+        'completed_on': '2026-06-05',
+      },
+      'next_occurrence': {
+        'id': 'occ-next',
+        'scheduled_date': '2026-06-15',
+        'scheduled_time': '08:00',
+        'occurrence_status': 'coming_up',
+      },
+    });
+
+    expect(detail.previousOccurrence?.id, 'occ-prev');
+    expect(detail.nextOccurrence?.scheduledTime, '08:00');
+  });
 }
