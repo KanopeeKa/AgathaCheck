@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
   "plan_id": "agatha-care-journey",
-  "programme_ref": "docs/domains/pet_care/changes/agatha-care-journey-programme.md",
+  "programme_ref": "docs/domains/pet_care/features/care-intelligence.md",
   "approved_at": "2026-10-12T18:00:00Z",
   "approved_by": "User chat 2026-10-10 — full execute-plan RUN-UNTIL-BLOCKED (all 14 phases + release PR + babysit-uat). Re-grant: user chat 2026-10-12 resume after governance #1840/#1841 merged. Re-grant: user chat 2026-10-13 resume-plan on #1835 (proceed PR-12 despite ACJ-D-006 Proposed).",
   "approved_until": "2026-10-14T18:00:00Z",
-  "autonomy": "active",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "cursor/agatha-care-journey-integration-b994",
   "control_issue": 1835,
@@ -29,7 +29,7 @@
         "docs/architecture/openapi/**",
         "regulatory/DATA_MAP.md",
         "e2e/bdd/features/pet_care/agatha_care_journey.feature",
-        "docs/domains/pet_care/changes/agatha-care-journey-*.md",
+        "docs/domains/pet_care/features/care-intelligence.md",
         ".agents/plans/agatha-care-journey.*"
       ],
       "forbidden_paths": [
@@ -55,7 +55,7 @@
       "title": "PR-02 Profile facts Flutter",
       "branch": "cursor/acj-pr-02-b994",
       "allowed_paths": [
-        "docs/domains/pet_care/changes/agatha-care-journey-*.md",
+        "docs/domains/pet_care/features/care-intelligence.md",
         ".agents/plans/agatha-care-journey.*",
         "server/**",
         "flutter_app/**",
@@ -85,7 +85,7 @@
       "title": "PR-03 Inline capture (inset prompt)",
       "branch": "cursor/acj-pr-03-b994",
       "allowed_paths": [
-        "docs/domains/pet_care/changes/agatha-care-journey-*.md",
+        "docs/domains/pet_care/features/care-intelligence.md",
         ".agents/plans/agatha-care-journey.*",
         "server/**",
         "flutter_app/**",
@@ -115,7 +115,7 @@
       "title": "PR-04 Agatha completeness + minimal policy",
       "branch": "cursor/acj-pr-04-b994",
       "allowed_paths": [
-        "docs/domains/pet_care/changes/agatha-care-journey-*.md",
+        "docs/domains/pet_care/features/care-intelligence.md",
         ".agents/plans/agatha-care-journey.*",
         "server/**",
         "flutter_app/**",
@@ -145,7 +145,7 @@
       "title": "PR-05 Extended surface policy",
       "branch": "cursor/acj-pr-05-b994",
       "allowed_paths": [
-        "docs/domains/pet_care/changes/agatha-care-journey-*.md",
+        "docs/domains/pet_care/features/care-intelligence.md",
         ".agents/plans/agatha-care-journey.*",
         "server/**",
         "flutter_app/**",
@@ -176,7 +176,7 @@
       "title": "PR-06 welfare_suggestions framework",
       "branch": "cursor/acj-pr-06-b994",
       "allowed_paths": [
-        "docs/domains/pet_care/changes/agatha-care-journey-*.md",
+        "docs/domains/pet_care/features/care-intelligence.md",
         ".agents/plans/agatha-care-journey.*",
         "server/**",
         "flutter_app/**",
@@ -207,7 +207,7 @@
       "title": "PR-07 Welfare microchip",
       "branch": "cursor/acj-pr-07-b994",
       "allowed_paths": [
-        "docs/domains/pet_care/changes/agatha-care-journey-*.md",
+        "docs/domains/pet_care/features/care-intelligence.md",
         ".agents/plans/agatha-care-journey.*",
         "server/**",
         "flutter_app/**",
@@ -237,7 +237,7 @@
       "title": "PR-08 Welfare neuter",
       "branch": "cursor/acj-pr-08-b994",
       "allowed_paths": [
-        "docs/domains/pet_care/changes/agatha-care-journey-*.md",
+        "docs/domains/pet_care/features/care-intelligence.md",
         ".agents/plans/agatha-care-journey.*",
         "server/**",
         "flutter_app/**",
@@ -267,7 +267,7 @@
       "title": "PR-09 Vaccination record minimum",
       "branch": "cursor/acj-pr-09-b994",
       "allowed_paths": [
-        "docs/domains/pet_care/changes/agatha-care-journey-*.md",
+        "docs/domains/pet_care/features/care-intelligence.md",
         ".agents/plans/agatha-care-journey.*",
         "server/**",
         "flutter_app/**",
@@ -292,7 +292,7 @@
       "merge_method": "squash",
       "spawn_config": {
         "integration_branch": "main",
-        "ownership_ref": "docs/domains/pet_care/changes/agatha-care-journey-execute-autonomy.md#parallelism-subagents"
+        "ownership_ref": ".agents/plans/agatha-care-journey.md"
       },
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1864",
       "pr_head_sha": "d16297cf"
@@ -302,7 +302,7 @@
       "title": "PR-10 Welfare vaccination",
       "branch": "cursor/acj-pr-10-b994",
       "allowed_paths": [
-        "docs/domains/pet_care/changes/agatha-care-journey-*.md",
+        "docs/domains/pet_care/features/care-intelligence.md",
         ".agents/plans/agatha-care-journey.*",
         "server/**",
         "flutter_app/**",
@@ -332,7 +332,7 @@
       "title": "PR-11 History feedback",
       "branch": "cursor/acj-pr-11-b994",
       "allowed_paths": [
-        "docs/domains/pet_care/changes/agatha-care-journey-*.md",
+        "docs/domains/pet_care/features/care-intelligence.md",
         ".agents/plans/agatha-care-journey.*",
         "server/**",
         "flutter_app/**",
@@ -363,7 +363,7 @@
       "title": "PR-12 Same-day grouping (ACJ-D-006)",
       "branch": "cursor/acj-pr-12-b994",
       "allowed_paths": [
-        "docs/domains/pet_care/changes/agatha-care-journey-*.md",
+        "docs/domains/pet_care/features/care-intelligence.md",
         ".agents/plans/agatha-care-journey.*",
         "server/**",
         "flutter_app/**",
@@ -394,7 +394,7 @@
       "title": "PR-13 Coordination copy",
       "branch": "cursor/acj-pr-13-b994",
       "allowed_paths": [
-        "docs/domains/pet_care/changes/agatha-care-journey-*.md",
+        "docs/domains/pet_care/features/care-intelligence.md",
         ".agents/plans/agatha-care-journey.*",
         "server/**",
         "flutter_app/**",
@@ -424,7 +424,7 @@
       "title": "PR-14 Vet visit schema",
       "branch": "cursor/acj-pr-14-b994",
       "allowed_paths": [
-        "docs/domains/pet_care/changes/agatha-care-journey-*.md",
+        "docs/domains/pet_care/features/care-intelligence.md",
         ".agents/plans/agatha-care-journey.*",
         "server/**",
         "flutter_app/**",
@@ -451,5 +451,5 @@
       "pr_head_sha": "f4ec4f38"
     }
   ],
-  "content_hash": "sha256:c89c95954ec99093b4f1c981e40c6f3d72fee4e3b049818d8c7fd7b255f7460e"
+  "content_hash": "sha256:716b48b3e0c464c0d9b5d2fb0e1677532e7eda6dbcf3b588ac41829e5cc4b438"
 }

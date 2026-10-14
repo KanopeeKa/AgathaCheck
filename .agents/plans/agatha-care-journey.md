@@ -2,8 +2,8 @@
 title: Agatha care journey (execute-plan)
 owner: Product / Agent
 audience: agent
-status: active
-last_updated: 2026-10-10
+status: completed
+last_updated: 2026-10-14
 tags: [pet_care, pet_profile, care_intelligence, roadmap]
 ---
 
@@ -18,16 +18,16 @@ tags: [pet_care, pet_profile, care_intelligence, roadmap]
 | **default_merge_mode** | `auto` |
 | **artifact_branch_policy** | `phase-branch` |
 | **control_issue** | #1835 |
-| **programme_ref** | `docs/domains/pet_care/changes/agatha-care-journey-programme.md` |
-| **autonomy_contract** | `docs/domains/pet_care/changes/agatha-care-journey-execute-autonomy.md` |
+| **programme_ref** | `docs/domains/pet_care/features/care-intelligence.md` (Agatha care journey §) |
+| **autonomy_contract** | `.agents/plans/agatha-care-journey.md` §Orchestrator contract (plan **completed** 2026-10-14) |
 
 ## Goal
 
-14 phases on **integration**; release PR → `main` with `/babysit-uat`. See programme + autonomy contract + bdd-qa.
+**Completed 2026-10-14.** All 14 phases merged via integration; release [#1875](https://github.com/KanopeeKa/AgathaCheck/pull/1875) → `main`. Product spec: `care-intelligence.md` (Agatha care journey sections). Pre-UAT on the release commit failed; remedial E2E fix shipped in [#1888](https://github.com/KanopeeKa/AgathaCheck/pull/1888) (first green pre-UAT on `895977c`).
 
 ## Orchestrator contract (binding — overrides generic “update the user” rules)
 
-**Mode:** `run-until-blocked` only. Canonical: `/execute-plan` skill · `.agents/memory/execute-plan-autonomy.md` · `agatha-care-journey-execute-autonomy.md`.
+**Mode:** `run-until-blocked` only (historical). Canonical: `/execute-plan` skill · `.agents/memory/execute-plan-autonomy.md`.
 
 After gate exit `0`, the orchestrator **keeps using tools** until merge-done, `complete-plan`, or a real §Halt. **User chat is not a phase gate.**
 
@@ -68,19 +68,17 @@ After gate exit `0`, the orchestrator **keeps using tools** until merge-done, `c
 ## Runtime state
 
 ```yaml
-autonomy: active
+autonomy: completed
 current_phase: null
 last_completed_phase: pr-14
 halt_reason: null
 next_action: "plan complete"
 artifact_ref:
-  branch: cursor/acj-pr-14-b994
+  branch: main
   plan_path: .agents/plans/agatha-care-journey.md
-  plan_commit: f4ec4f38a66b64930f51efcad042679e04f8c7f9
   snapshot_path: .agents/plans/agatha-care-journey.snapshot.json
-  snapshot_commit: f4ec4f38a66b64930f51efcad042679e04f8c7f9
 open_prs: []
-merge_commits: {"pr-05":"8ec5d9c90c57e867f5a2260621fb766dad19d15e","pr-11":"9e0d4fc3fddbcc7e86cfb6d6c9d64639c9f39eaf","pr-12":"2de9ec9ed5d6258e7de4d26e0879b9a468284d36"}
+merge_commits: {"release":"7a6ea79d","pre_uat_green":"895977c0"}
 debt_issue_refs: []
 ```
 

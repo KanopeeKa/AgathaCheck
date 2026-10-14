@@ -81,9 +81,7 @@ When `phases.length >= 2` and `autonomy: active`:
 
 #### Phase PR vs release PR (common confusion)
 
-Multi-phase delivery uses snapshot **`base_branch`** (integration) for every phase PR, then **one** integration → `main` release PR. Programme and canonical doc updates ride **phase PRs** and the **release PR** — not a parallel “spec PR” that retargets phases to `main`.
-
-<!-- Historical: agatha-care-journey draft #1833 described per-phase merge to main; superseded by integration + release #1875. -->
+Multi-phase delivery uses snapshot **`base_branch`** (integration) for every phase PR, then **one** integration → `main` release PR. Programme and canonical doc updates ride **phase PRs** and the **release PR**.
 
 | Track | Typical base | Skill | Example (`agatha-care-journey`) |
 |-------|--------------|-------|----------------------------------|

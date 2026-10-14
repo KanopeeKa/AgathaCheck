@@ -5,8 +5,8 @@ audience: both
 domain: pet_care
 feature_id: care_intelligence
 status: active
-last_updated: 2026-10-13
-related_prs: []
+last_updated: 2026-10-14
+related_prs: [1875, 1888, 1889]
 ---
 
 # Care Intelligence
@@ -228,22 +228,44 @@ Coverage gaps: [#1770](https://github.com/KanopeeKa/AgathaCheck/issues/1770) (sa
 - `CareSafeguard` table + guardian-facing promotion from internal evaluate endpoint after D5b.
 - Second signal family implementation (activity-first candidate) after weight-only evaluation.
 
-## Planned — Agatha care journey programme
+## Agatha care journey — delivery record
 
-Spec: [agatha-care-journey-programme.md](../changes/agatha-care-journey-programme.md) · Slot order: [ui-design.md](../changes/agatha-care-journey-ui-design.md) §3.
+Execute-plan **`agatha-care-journey`** (control [#1835](https://github.com/KanopeeKa/AgathaCheck/issues/1835), **completed** 2026-10-14): PR-01…PR-14 via integration branch, release [#1875](https://github.com/KanopeeKa/AgathaCheck/pull/1875) → `main`.
 
-| ID | Planned decision | Notes |
-|----|------------------|-------|
-| **ACJ-CIM-PL-002** | Shared `dedupe_key` namespace + Agatha presentation shell; separate evaluators | PR-06+ (presentation PR-04–05; evaluators PR-07+) |
-| **ACJ-CIM-PL-003** | Profile slot order and guidance tiebreak per ui-design §3 | PR-04–05 |
+| Milestone | Detail |
+|-----------|--------|
+| **Pre-UAT on release** | Workflow run **704** on merge commit `7a6ea79` **failed** (shard 1/9) — `expectLinkedVet` locator after profile reorder (PR-04). |
+| **Remedial fix** | Playwright locator update in [#1888](https://github.com/KanopeeKa/AgathaCheck/pull/1888) (dependency batch; not a standalone `/e2e-debug` PR). |
+| **First green pre-UAT on `main`** | Run **705** on `895977c` (ACJ + deps + E2E fix). |
+
+Pet-profile fact model and PUT semantics: [pet-profile-decisions.md](../../pet_profile/features/pet-profile-decisions.md) (ACJ-PF-*). Plan artifacts: [`.agents/plans/agatha-care-journey.md`](../../../.agents/plans/agatha-care-journey.md).
+
+### Pet profile slot order (canonical)
+
+1. Identity card  
+2. **Safeguard** (info chrome) — if active  
+3. **`{Pet}'s care`** — operational centre; never outranked  
+4. **At most one guidance card:** rhythm **or** welfare (tiebreak: rhythm **>** welfare, then higher severity, then oldest `created_at`)  
+5. **Completeness** — only if policy allows; not mandatory when slot budget exhausted  
+6. Insights (weight, health history)
+
+Completeness nag budget: **30d** suppress per card kind after dismiss (align welfare with FR-FB-1). UI-Q-01..03: Agatha eyebrow on completeness; max **two** cards (chip + neuter); completeness not in For you until welfare inbox union (PR-06+).
+
+### QA traceability (Agatha care journey)
+
+| Layer | Location |
+|-------|----------|
+| BDD | `e2e/bdd/features/pet_care/agatha_care_journey.feature` |
+| `@smoke-ci` boundaries | ACJ-SP-01, ACJ-IC-02, ACJ-WF-08, ACJ-GUARD-01 (no rhythm / no HealthEntry on completeness actions) |
+| Priority map | `scripts/bdd-priority-tag-map.json` |
 
 ## Agatha profile completeness presentation (PR-04)
 
 | ID | Requirement | Status |
 |----|-------------|--------|
-| **ACJ-CIM-AC-001** | `PetCarePresentationPolicy.profileCompletenessSlotAvailable` — safeguard + rhythm/milestone block completeness | Live (integration) |
-| **ACJ-CIM-AC-002** | `ProfileCompletenessCard` uses shared Agatha shell; Record opens PR-03 capture sheet | Live (integration) |
-| **ACJ-GUARD-01** | Completeness dismiss / not-for-my-pet updates pet row only (no rhythm accept path) | Live (integration) |
+| **ACJ-CIM-AC-001** | `PetCarePresentationPolicy.profileCompletenessSlotAvailable` — safeguard + rhythm/milestone block completeness | Live |
+| **ACJ-CIM-AC-002** | `ProfileCompletenessCard` uses shared Agatha shell; Record opens PR-03 capture sheet | Live |
+| **ACJ-GUARD-01** | Completeness dismiss / not-for-my-pet updates pet row only (no rhythm accept path) | Live |
 
 ## Agatha surface policy (PR-05)
 
@@ -251,8 +273,8 @@ Presentation rules live in `AgathaSurfacePolicy` and are applied via `PetCarePre
 
 | ID | Requirement | Status |
 |----|-------------|--------|
-| **AC-SP-01** | Guidance tiebreak: rhythm **>** welfare, then higher `severity`, then oldest `created_at` / `respondedAt` | Live (integration) |
-| **AC-SP-02** | Completeness nag budget: **30d** suppress per card kind after dismiss; server `*_dismissed` without local timestamp stays hidden until status changes | Live (integration) |
+| **AC-SP-01** | Guidance tiebreak: rhythm **>** welfare, then higher `severity`, then oldest `created_at` / `respondedAt` | Live |
+| **AC-SP-02** | Completeness nag budget: **30d** suppress per card kind after dismiss; server `*_dismissed` without local timestamp stays hidden until status changes | Live |
 
 Local dismiss timestamps are stored in `ProfileCompletenessDismissalStore` (SharedPreferences) and recorded in `ProfileCompletenessActions.hidePrompt` before the pet row PUT.
 
@@ -262,9 +284,9 @@ Welfare guidance uses table **`welfare_suggestions`** — **`care_recommendation
 
 | ID | Requirement | Status |
 |----|-------------|--------|
-| **AC-WF-01** | Persist welfare rows; GET `/api/pets/:id/welfare-suggestions` lists pending (`HEALTH_VIEW`) | Live (integration) |
-| **AC-WF-02** | Upsert by `(pet_id, dedupe_key)` refreshes copy instead of duplicating | Live (integration) |
-| **AC-WF-03** | Dismiss sets `dismissed_until` (+30d); upsert does not reopen inside window | Live (integration) |
+| **AC-WF-01** | Persist welfare rows; GET `/api/pets/:id/welfare-suggestions` lists pending (`HEALTH_VIEW`) | Live |
+| **AC-WF-02** | Upsert by `(pet_id, dedupe_key)` refreshes copy instead of duplicating | Live |
+| **AC-WF-03** | Dismiss sets `dismissed_until` (+30d); upsert does not reopen inside window | Live |
 
 Service: `server/routes/careIntelligence/welfareSuggestionsService.js` (`upsertWelfareSuggestionCandidate` for evaluators in PR-07+). Respond: `POST …/respond` with `{ action: dismiss \| complete, primary_outcome? }` — **no** `health_entry` create (`HEALTH_EDIT`).
 
@@ -274,7 +296,7 @@ Coverage: `test: server/test/careIntelligence/welfareSuggestions.test.js`
 
 | ID | Requirement | Status |
 |----|-------------|--------|
-| **AC-WF-10** | When `identification_status=no` (and not `chip_dismissed`), sync on GET upserts `microchip_welfare` with `careWelfareMicrochipWhy` copy (check local rules — no compliance absolutes) | Live (integration) |
+| **AC-WF-10** | When `identification_status=no` (and not `chip_dismissed`), sync on GET upserts `microchip_welfare` with `careWelfareMicrochipWhy` copy (check local rules — no compliance absolutes) | Live |
 
 Evaluator: `server/routes/careIntelligence/welfare/microchipWelfareEvaluator.js`; sync: `welfare/syncPetWelfareSuggestions.js` (runs inside `listPendingWelfareSuggestions`). Flutter: `WelfareSuggestionCard` on profile when welfare wins tiebreak.
 
@@ -284,7 +306,7 @@ Coverage: `server/test/careIntelligence/welfare/microchipWelfareEvaluator.test.j
 
 | ID | Requirement | Status |
 |----|-------------|--------|
-| **PR-08** | When `neuter_status=unknown` on a neutering-applicable species, sync upserts `neuter_welfare`; neuter completeness card removed (chip completeness unchanged) | Live (integration) |
+| **PR-08** | When `neuter_status=unknown` on a neutering-applicable species, sync upserts `neuter_welfare`; neuter completeness card removed (chip completeness unchanged) | Live |
 
 Evaluator: `server/routes/careIntelligence/welfare/neuterWelfareEvaluator.js`. Species gate: `server/lib/pets/speciesNeutering.js` (aligned with Flutter `AppConstants.speciesWithoutNeutering`). Removed unused persuasive `AppConstants.identificationMessage` / `identificationTitle` helpers (O1).
 
@@ -296,7 +318,7 @@ Structured vaccination history lives in **`pet_vaccination_records`** — not on
 
 | ID | Requirement | Status |
 |----|-------------|--------|
-| **AC-VX-01** | `POST /api/pets/:id/vaccination-records` persists `vaccine_name` + `administered_on`; `GET` returns `records` + computed `summary` | Live (integration) |
+| **AC-VX-01** | `POST /api/pets/:id/vaccination-records` persists `vaccine_name` + `administered_on`; `GET` returns `records` + computed `summary` | Live |
 
 Service: `server/lib/pets/vaccinationRecords.js`. Routes: `server/routes/pets/vaccinationRecordsRouter.js` (`HEALTH_VIEW` / `HEALTH_EDIT`).
 
@@ -306,7 +328,7 @@ Coverage: `server/test/pets/vaccinationRecord.test.js`
 
 | ID | Requirement | Status |
 |----|-------------|--------|
-| **AC-WF-11** | When dog/cat has zero `pet_vaccination_records`, sync upserts `vaccination_welfare`; **silence** when records exist, species unsupported, summary missing, or pet passed away | Live (integration) |
+| **AC-WF-11** | When dog/cat has zero `pet_vaccination_records`, sync upserts `vaccination_welfare`; **silence** when records exist, species unsupported, summary missing, or pet passed away | Live |
 
 Evaluator: `server/routes/careIntelligence/welfare/vaccinationWelfareEvaluator.js`; vaccination summary loaded in `syncPetWelfareSuggestions`. Flutter: `WelfareSuggestionCard` routes Record to care add (`family=vaccination`).
 
@@ -318,11 +340,36 @@ Coverage: `server/test/careIntelligence/welfare/vaccinationWelfareEvaluator.test
 
 | ID | Requirement | Status |
 |----|-------------|--------|
-| **AC-FB-01** | After a successful pet profile PUT, `syncPetWelfareSuggestions` runs so resolving profile facts (e.g. chip id) withdraws pending welfare rows without waiting for GET welfare | Live (integration) |
+| **AC-FB-01** | After a successful pet profile PUT, `syncPetWelfareSuggestions` runs so resolving profile facts (e.g. chip id) withdraws pending welfare rows without waiting for GET welfare | Live |
 
 Hook: `server/routes/pets/coreWriteRouter.js` (after successful `updatePet` PUT). Withdraw semantics unchanged (`primary_outcome = withdrawn` when evaluators return null).
 
 Coverage: `server/test/careIntelligence/welfare/welfareCompletion.test.js` · BDD `ACJ-FB-01` (`@smoke-uat`)
+
+## Actions agenda — same-day grouping (PR-12)
+
+| ID | Requirement | Status |
+|----|-------------|--------|
+| **AC-CO-01** | Same-day care items grouped on the actions agenda per CSM contract | Live |
+
+Coverage: server agenda tests · BDD `ACJ-CO-01` (`@smoke-uat`)
+
+## Coordination copy (PR-13)
+
+| ID | Requirement | Status |
+|----|-------------|--------|
+| **AC-CO-02** | Coordination messaging when grouped items need guardian attention | Live |
+
+Coverage: coordination jest · BDD `ACJ-CO-02`
+
+## Vet visit schema (PR-14)
+
+| ID | Requirement | Status |
+|----|-------------|--------|
+| **AC-VV-01** | `vet_visits` + occurrence link table; visit UI deferred | Live |
+| **AC-FB-02** | Visit `complete` updates `vet_visits` only; linked occurrences stay pending until CSM completion | Live |
+
+See [care-item-evolution.md](./care-item-evolution.md). DATA_MAP updated in release.
 
 ## Decision log
 
@@ -342,6 +389,14 @@ Coverage: `server/test/careIntelligence/welfare/welfareCompletion.test.js` · BD
 | CARE-INTELLIGENCE-D-012 | CSM supplies schedule facts via `explainGap` only | Avoid overloading CIM with scheduling commands | Live | 2026-09-09 | CSM-13 |
 | CARE-INTELLIGENCE-D-013 | Progression does not consume review-relevance output | Domain boundary with care_progression | Live | 2026-09-09 | CP prog |
 | CARE-INTELLIGENCE-D-014 | Welfare guidance in `welfare_suggestions`; rhythm table untouched | ACJ programme B4 (ACJ-D-005) | Live | 2026-10-13 | PR-06 |
+| CARE-INTELLIGENCE-D-015 | Agatha completeness chrome, not Phase C rhythm engine (was ACJ-D-001) | Programme boundary | Live | 2026-10-14 | PR-04, #1875 |
+| CARE-INTELLIGENCE-D-016 | Welfare + rhythm: shared presentation + dedupe namespace; separate storage (was ACJ-D-002) | FR-SG-6 direction | Live | 2026-10-14 | PR-06–08, #1875 |
+| CARE-INTELLIGENCE-D-017 | PR-12–13 require CSM-stable gate before start (was ACJ-D-003) | Enforced via D-018 waiver | Live | 2026-10-14 | PR-12 merged |
+| CARE-INTELLIGENCE-D-018 | CSM-stable gate — **waiver** (was ACJ-D-006) | **Waiver (2026-10-13):** human `resume-plan agatha-care-journey` on [#1835](https://github.com/KanopeeKa/AgathaCheck/issues/1835) authorized PR-12 before formal checklist evidence was recorded. **Criteria (verify post-ship):** CSM on `main`; agenda contract in `pet-care-critical.json`; no open P1 on agenda grouping. | Live | 2026-10-13 | PR-12 |
+| CARE-INTELLIGENCE-D-019 | Visit **UI** deferred; schema/API only (was ACJ-D-004) | PR-14 scope | Live | 2026-10-14 | PR-14 |
+| CARE-INTELLIGENCE-D-020 | `welfare_suggestions` table; `care_recommendations` unchanged (was ACJ-D-005) | B4 | Live | 2026-10-14 | PR-06 |
+| CARE-INTELLIGENCE-D-021 | Vet visit complete does not bulk-complete linked occurrences (was ACJ-D-007) | AC-FB-02 | Live | 2026-10-13 | PR-14 |
+| CARE-INTELLIGENCE-D-022 | Release pre-UAT failure remediated via #1888 (was ACJ-D-008) | Pre-UAT run #704 red on `7a6ea79`; first green pre-UAT #705 on `895977c` | Live | 2026-10-14 | #1888 |
 
 ## Related
 
