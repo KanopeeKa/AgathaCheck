@@ -228,7 +228,7 @@ Private per-user labels for organizing and filtering pets on `/pc/pets`. No shar
 | **ACJ-PF-PL-003** | Pet form edit PUT preserves status fields when the profile form does not change them | Live (integration) |
 | **ACJ-PF-PL-004** | Optional `*_status_source` on wire parsed on read; included in `toJson` when set | Live (integration) |
 
-## Planned — Agatha care journey (PR #1833 programme)
+## Planned — Agatha care journey programme
 
 Delivery spec: [agatha-care-journey-programme.md](../../pet_care/changes/agatha-care-journey-programme.md). Fold into this doc when PR-01+ land.
 

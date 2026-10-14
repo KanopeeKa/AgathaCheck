@@ -47,12 +47,14 @@ AgathaTrack helps pet parents **know**, **understand**, **plan**, **act**, and *
 
 ### PR tracks (do not conflate)
 
+<!-- Historical (do not restore): closed draft #1833 PR body claimed per-phase merge to main and snapshot base_branch main; delivery used integration (#1835) + release #1875. -->
+
 | Track | Example | Base branch | Merge skill | Purpose |
 |-------|---------|-------------|-------------|---------|
 | **Execute-plan phases** | PR-01 … PR-14 (`cursor/acj-pr-NN-b994`) | `cursor/agatha-care-journey-integration-b994` | `/babysit-plus` | Product delivery; control issue [#1835](https://github.com/KanopeeKa/AgathaCheck/issues/1835) (closed — plan complete) |
-| **Release** | [#1875](https://github.com/KanopeeKa/AgathaCheck/pull/1875) | `main` | `/babysit-uat` | Integration → `main`; supersedes closed draft [#1833](https://github.com/KanopeeKa/AgathaCheck/pull/1833) (wrong per-phase→`main` spec) |
+| **Release** | [#1875](https://github.com/KanopeeKa/AgathaCheck/pull/1875) | `main` | `/babysit-uat` | One integration → `main` PR after all phase merges |
 
-Phase PRs **always** target **integration**, not `main`. Canonical **Planned→Live** rows ship with behaviour PRs and release [#1875](https://github.com/KanopeeKa/AgathaCheck/pull/1875), not a separate spec mega-PR.
+Phase PRs **always** target **integration**, not `main`. Canonical **Planned→Live** rows ship with behaviour PRs and release [#1875](https://github.com/KanopeeKa/AgathaCheck/pull/1875).
 
 ### Per-PR verification pack (mandatory)
 
