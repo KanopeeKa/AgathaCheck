@@ -4,11 +4,11 @@
   "approved_at": "2026-10-14T15:50:00Z",
   "approved_by": "Product owner chat 2026-10-14 — Option (a), execute-plan",
   "approved_until": "2026-10-16T15:50:00Z",
-  "content_hash": "sha256:pending",
+  "content_hash": "sha256:732e728ad3bd86af9e1bd70bd14abe4b5a6137587f69aafc0e5ada73a29cbdd2",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/care-date-blocks-v4-e8f1-integration-e8f1",
-  "control_issue": 0,
+  "control_issue": 1894,
   "artifact_branch_policy": "phase-branch",
   "phases": [
     {
@@ -36,7 +36,10 @@
         "db/migrations/**",
         "flutter_app/lib/features/experience/**"
       ],
-      "allowed_exceptions": ["tests", "docs"],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
       "spawn_allowed": false,
       "spawn_config": null,
       "merge_method": "squash",
@@ -67,8 +70,15 @@
         ".agents/plans/care-date-blocks-v4-e8f1.md",
         ".agents/plans/care-date-blocks-v4-e8f1.snapshot.json"
       ],
-      "forbidden_paths": ["server/**", "db/**"],
-      "allowed_exceptions": ["tests", "docs", "file-split"],
+      "forbidden_paths": [
+        "server/**",
+        "db/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
       "spawn_allowed": false,
       "spawn_config": null,
       "merge_method": "squash",
@@ -98,8 +108,14 @@
         ".agents/plans/care-date-blocks-v4-e8f1.md",
         ".agents/plans/care-date-blocks-v4-e8f1.snapshot.json"
       ],
-      "forbidden_paths": ["server/**", "db/**"],
-      "allowed_exceptions": ["tests", "docs"],
+      "forbidden_paths": [
+        "server/**",
+        "db/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
       "spawn_allowed": false,
       "spawn_config": null,
       "merge_method": "squash",
@@ -128,8 +144,15 @@
         ".agents/plans/care-date-blocks-v4-e8f1.md",
         ".agents/plans/care-date-blocks-v4-e8f1.snapshot.json"
       ],
-      "forbidden_paths": ["server/**", "db/**"],
-      "allowed_exceptions": ["tests", "docs", "file-split"],
+      "forbidden_paths": [
+        "server/**",
+        "db/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
       "spawn_allowed": false,
       "spawn_config": null,
       "merge_method": "squash",
@@ -158,8 +181,13 @@
         ".agents/plans/care-date-blocks-v4-e8f1.md",
         ".agents/plans/care-date-blocks-v4-e8f1.snapshot.json"
       ],
-      "forbidden_paths": ["server/**"],
-      "allowed_exceptions": ["tests", "docs"],
+      "forbidden_paths": [
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
       "spawn_allowed": false,
       "spawn_config": null,
       "merge_method": "squash",
