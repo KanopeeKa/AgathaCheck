@@ -69,10 +69,7 @@ void main() {
         'care_family': 'medication',
         'dosage': '1 tablet',
         'care_blocks': {
-          'product_dose': {
-            'strength': '10 mg',
-            'form': 'tablet',
-          },
+          'product_dose': {'strength': '10 mg', 'form': 'tablet'},
         },
         'status': 'active',
         'as_of': {'date': '2026-06-10', 'time': '09:00', 'timezone': 'UTC'},

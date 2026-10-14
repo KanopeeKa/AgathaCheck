@@ -92,12 +92,8 @@ void main() {
         child: ProviderScope(
           overrides: [
             petByIdProvider('p1').overrideWith(
-              (ref) async => Pet(
-                id: 'p1',
-                name: 'Buddy',
-                species: 'dog',
-                photoPath: null,
-              ),
+              (ref) async =>
+                  Pet(id: 'p1', name: 'Buddy', species: 'dog', photoPath: null),
             ),
           ],
           child: MaterialApp(
@@ -105,9 +101,7 @@ void main() {
             supportedLocales: AppLocalizations.supportedLocales,
             home: Scaffold(
               body: OccurrenceCareContextCard(
-                detail: _detail(
-                  strengthFormLine: '10 mg · tablet',
-                ),
+                detail: _detail(strengthFormLine: '10 mg · tablet'),
                 onOpenCareDetails: () {},
               ),
             ),
