@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:pet_profile_app/core/providers/analytics_providers.dart';
+import 'package:pet_profile_app/core/utils/calendar_date_picker.dart';
 import 'package:pet_profile_app/core/weight/weight_unit.dart';
 import 'package:pet_profile_app/core/weight/weight_unit_preference.dart';
 import 'package:pet_profile_app/features/care_item/care_item.dart';
@@ -45,7 +46,12 @@ class _OccurrenceCompleteCareModuleState
   @override
   void initState() {
     super.initState();
-    _date = _occ.completedOn ?? _d.item.asOf.date;
+    _date =
+        _occ.completedOn ??
+        defaultOccurrenceCompletionDate(
+          scheduledDate: _occ.date,
+          asOfDate: _d.item.asOf.date,
+        );
     _weight.addListener(() => setState(() {}));
   }
 
@@ -153,6 +159,17 @@ class _OccurrenceCompleteCareModuleState
 
   CareCompletionService get _service => ref.read(careCompletionServiceProvider);
 
+  Future<void> _pickOpenCompletionDate() async {
+    final picked = await showCalendarDatePicker(
+      context: context,
+      initialDate: _date,
+      firstDate: DateTime(2000),
+      lastDate: _d.item.asOf.date,
+    );
+    if (picked == null || picked == _date) return;
+    setState(() => _date = picked);
+  }
+
   Future<void> _done() => _guard(
     () => ref
         .read(careCompletionFlowProvider)
@@ -211,6 +228,8 @@ class _OccurrenceCompleteCareModuleState
               weightController: _weight,
               focus: widget.focus,
               busy: _actionBusy,
+              completionDate: _date,
+              onPickCompletionDate: _pickOpenCompletionDate,
               onDone: _done,
             )
           else

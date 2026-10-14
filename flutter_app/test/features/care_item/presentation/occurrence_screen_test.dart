@@ -148,7 +148,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Care date'), findsOneWidget);
-    expect(find.text('Mark as done'), findsOneWidget);
+    expect(find.byKey(const Key('occurrence_done')), findsOneWidget);
     expect(find.byKey(const Key('occurrence_skip')), findsOneWidget);
     expect(find.byKey(const Key('occurrence_reschedule')), findsOneWidget);
     await tester.tap(find.byKey(const Key('occurrence_done')));
@@ -168,8 +168,12 @@ void main() {
     await tester.pumpWidget(_wrap(server, focus: 'weight'));
     await tester.pumpAndSettle();
 
-    FilledButton done() =>
-        tester.widget(find.byKey(const Key('occurrence_done')));
+    IconButton done() => tester.widget(
+      find.descendant(
+        of: find.byKey(const Key('occurrence_done')),
+        matching: find.byType(IconButton),
+      ),
+    );
     expect(done().onPressed, isNull);
     await tester.enterText(
       find.byKey(const Key('occurrence_field_weight')),

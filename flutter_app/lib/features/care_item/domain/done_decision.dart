@@ -49,9 +49,21 @@ class DoneCompletesToday extends DoneDecision {
   final bool offerChangeDate;
 }
 
+/// Default inline completion date on the Care date leaf (CARE-ITEM-D-007).
+DateTime defaultOccurrenceCompletionDate({
+  required DateTime scheduledDate,
+  required DateTime asOfDate,
+}) {
+  final due = _calendarDay(scheduledDate);
+  final today = _calendarDay(asOfDate);
+  return due.isBefore(today) ? due : today;
+}
+
+DateTime _calendarDay(DateTime d) => DateTime(d.year, d.month, d.day);
+
 /// Decide what Done does for [schedule]'s [occurrence] (the leading one when
-/// null). [onOccurrenceScreen] skips DN-2 when requirements are on-screen;
-/// DN-3 still applies (completion date via sheet after phase 2 IA).
+/// null). [onOccurrenceScreen] skips DN-2 when requirements are on-screen and
+/// DN-3 (inline completion date on the leaf).
 DoneDecision decideDone(
   CareItemSchedule schedule, {
   OpenOccurrence? occurrence,
@@ -74,6 +86,9 @@ DoneDecision decideDone(
 
   final status = liveStatus(target, now);
   if (!schedule.isFixedSchedule && isPastDue(status)) {
+    if (onOccurrenceScreen) {
+      return DoneCompletesToday(target);
+    }
     return DoneAsksDate(target);
   }
 

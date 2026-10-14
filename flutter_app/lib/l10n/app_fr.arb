@@ -2438,6 +2438,7 @@
   "careDateScreenTitle": "Date de soin",
   "occurrenceThisDateTitle": "Cette date",
   "occurrenceCompletionDateLabel": "Date de réalisation",
+  "occurrenceScheduledTimeLabel": "Heure prévue",
   "occurrenceDaysOverdue": "{count, plural, =1{1 jour de retard} other{{count} jours de retard}}",
   "@occurrenceDaysOverdue": {
     "placeholders": {

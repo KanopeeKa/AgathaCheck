@@ -76,7 +76,24 @@ void main() {
         s([occ('o', 5, CareOccurrenceStatus.overdue)], fixed: false),
         onOccurrenceScreen: true,
       ),
-      isA<DoneAsksDate>(),
+      isA<DoneCompletesToday>(),
+    );
+  });
+
+  test('defaultOccurrenceCompletionDate uses min(due, as_of)', () {
+    expect(
+      defaultOccurrenceCompletionDate(
+        scheduledDate: DateTime(2026, 6, 5),
+        asOfDate: DateTime(2026, 6, 10),
+      ),
+      DateTime(2026, 6, 5),
+    );
+    expect(
+      defaultOccurrenceCompletionDate(
+        scheduledDate: DateTime(2026, 6, 15),
+        asOfDate: DateTime(2026, 6, 10),
+      ),
+      DateTime(2026, 6, 10),
     );
   });
 

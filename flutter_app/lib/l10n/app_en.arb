@@ -2560,6 +2560,7 @@
   "careDateScreenTitle": "Care date",
   "occurrenceThisDateTitle": "This date",
   "occurrenceCompletionDateLabel": "Completion date",
+  "occurrenceScheduledTimeLabel": "Scheduled time",
   "occurrenceDaysOverdue": "{count, plural, =1{1 day overdue} other{{count} days overdue}}",
   "@occurrenceDaysOverdue": {
     "placeholders": {

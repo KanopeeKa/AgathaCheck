@@ -43,7 +43,7 @@ Historical profile refactor and 2026-09-13 delivery plan text: [archive/care-ite
 | CARE-ITEM-R-016 | Care date **four-block layout**: context (Block 1) → schedule/absence (Block 2) → completion (Block 3) → chronological previous/next (Block 4) | In delivery |
 | CARE-ITEM-R-017 | Care date Block 1: pet rail + linked care name; dose line; strength/form for medication families; care name link replaces View care details | In delivery |
 | CARE-ITEM-R-018 | Care date Block 2: Due row + icon reschedule/skip; read-only carer; absence in-block; Reopen when `canUndoHere` on closed rows | In delivery |
-| CARE-ITEM-R-019 | Care date Block 3: inline **completion date** (default `min(due, as_of.date)`); scheduled time read-only; complete icon; no DN-3 sheet on leaf | Planned |
+| CARE-ITEM-R-019 | Care date Block 3: inline **completion date** (default `min(due, as_of.date)`); scheduled time read-only; complete icon; no DN-3 sheet on leaf | In delivery |
 | CARE-ITEM-R-020 | Care date Block 4: server `previous_occurrence` / `next_occurrence`; empty-state copy when none; replace-route navigation | In delivery |
 | CARE-ITEM-R-021 | Persisted **completion time of day** on occurrences (display + API) | Planned |
 

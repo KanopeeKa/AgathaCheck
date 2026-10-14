@@ -12063,6 +12063,12 @@ abstract class AppLocalizations {
   /// **'Completion date'**
   String get occurrenceCompletionDateLabel;
 
+  /// No description provided for @occurrenceScheduledTimeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled time'**
+  String get occurrenceScheduledTimeLabel;
+
   /// No description provided for @occurrenceDaysOverdue.
   ///
   /// In en, this message translates to:

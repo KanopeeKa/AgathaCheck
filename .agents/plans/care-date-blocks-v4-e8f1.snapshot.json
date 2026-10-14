@@ -4,7 +4,7 @@
   "approved_at": "2026-10-14T15:50:00Z",
   "approved_by": "Product owner chat 2026-10-14 — Option (a), execute-plan",
   "approved_until": "2026-10-21T21:52:00Z",
-  "content_hash": "sha256:aaad8fff97bd2cdc993fa423897b042879b3879a26bf9c7bc21e8ccacebe5e0a",
+  "content_hash": "sha256:07f1682fe2942244557b7b595cf613f1a6fc5f711b2a73d47dcc2e06726e3e1c",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/care-date-blocks-v4-e8f1-integration-e8f1",
@@ -84,12 +84,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1896",
-      "pr_head_sha": "84ca39d6"
+      "pr_head_sha": "586483c64a06ba883a04e439767cdeeabb73f155"
     },
     {
       "id": "3",
@@ -121,12 +121,10 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null
+      "debt_issue_refs": []
     },
     {
       "id": "4",
