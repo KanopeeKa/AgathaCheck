@@ -5,7 +5,7 @@ audience: agent
 domain: cross-domain
 feature_id: delivery_plans_index
 status: active
-last_updated: 2026-10-08
+last_updated: 2026-10-14
 related_prs: []
 ---
 
@@ -24,7 +24,12 @@ Normative product requirements for cross-cutting capabilities live in domain `fe
 | Plan | Focus | Status |
 |------|-------|--------|
 | [sprint-6-execution-plan.md](../changes/sprint-6-execution-plan.md) | BDD coverage sprint (org/foster/help) | In delivery |
-| [agatha-care-journey-programme.md](/docs/domains/pet_care/changes/agatha-care-journey-programme.md) | Profile facts → welfare → coordination (PR-01–14); per-PR `main`; [autonomy + UAT](/docs/domains/pet_care/changes/agatha-care-journey-execute-autonomy.md) | Proposed |
+
+**Completed execute-plans** (spec folded into canonical docs):
+
+| Plan | Focus | Status |
+|------|-------|--------|
+| [agatha-care-journey](/.agents/plans/agatha-care-journey.md) | Profile facts → welfare → coordination (PR-01–14); release [#1875](https://github.com/KanopeeKa/AgathaCheck/pull/1875) | **Completed** — [care-intelligence.md](/docs/domains/pet_care/features/care-intelligence.md) · [pet-profile-decisions.md](/docs/domains/pet_profile/features/pet-profile-decisions.md) |
 
 **Documentation migration:** authoritative handover is [documentation-migration-handover.md](/docs/domains/documentation/changes/documentation-migration-handover.md). The Aug 2025 cross-domain consolidation plan was retired in Wave 0 (file deleted).
 
