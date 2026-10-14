@@ -5,7 +5,7 @@ audience: both
 domain: pet_care
 feature_id: care_item
 status: active
-last_updated: 2026-10-13
+last_updated: 2026-10-14
 related_prs: [1797, 1805, 1812, 1817]
 ---
 
@@ -248,11 +248,11 @@ Accessibility: section and group headings are headers; Upcoming exposes expanded
 ### Order on mobile
 
 1. **Header (shipped 2026-10-06):** App bar **`careItemScreenTitle`** (CARE-ITEM-R-001). Body **context strip**: `CareItemPetContextTile` + care name + category icon + **one** status chip (**Finished** or **Paused** only until API `closed_reason`; D-CIH-013). Lifecycle **dates and actions** in **Needs attention**; client cannot yet separate Archived vs Finished on wire. `openPetDetail` with `returnTo`. Strip scrolls away; stacked layout when strip width ≤360 px or text scale ≥1.3× (D-CIH-014).
-2. **Needs attention:** see below.
-3. **Agatha:** a suggestion or safeguard for this item, only when there is one.
-4. **Absence:** placed here when it needs a decision. Otherwise it sits after Schedule.
-5. **Schedule**
-6. **Details**
+2. **Details** — identity and item-level fields (see §Details); full width on wide layouts, directly under the context strip.
+3. **Needs attention:** see below.
+4. **Agatha:** a suggestion or safeguard for this item, only when there is one.
+5. **Absence:** placed here when it needs a decision. Otherwise it sits after Schedule.
+6. **Schedule**
 7. **History**
 
 ### Needs attention
@@ -305,13 +305,20 @@ The Change date sheet previews the next two dates for the chosen scope (R-C3).
 
 ### Details
 
-- **Where and who** on one row: "At the vet · Greenhill Veterinary Clinic"
-- Priority
-- Instructions
-- Category fields that have a value. Empty ones appear only in Edit
-- Documents. Upload limits are shown only while uploading
-- Notes (Full access only)
-- Health issue: "Related to Arthritis", linked to the issue
+Read view order (label : value rows unless noted):
+
+1. **Identity** — `Details of {care category}: {care item name}` (semantics header).
+2. **Dosage** — when set (structured product dose or legacy dosage field); one line only.
+3. **Category fields** — product, form, strength, route, visit questions, weight target, etc. Only populated values (D-CIE-019); empty fields appear only in Edit.
+4. **Provider** — contact or typed name when set.
+5. **Where** — `At home`, `At the vet`, or `Somewhere else` when set (`careSetting`).
+6. **Priority** — when the user overrode the family default in Advanced settings.
+7. **Notes** — when non-empty (Full access only).
+8. **Health issue** — "Related to …", linked to the issue when set.
+
+Documents remain under **History** on the current client (canonical target: Details — track if moved).
+
+Instructions are not yet on the wire; defer until the field exists.
 
 ### History (D-CIE-010)
 
@@ -341,9 +348,9 @@ People tiers decide what each person sees.
 ### Web and desktop
 
 - A breadcrumb shows the pet: "Pets › Buddy › Wellness review". The title is the care item's name, without "View".
-- On wide screens there are two columns:
+- On wide screens **Details** is full width under the context strip, then two columns:
   - The main column holds Needs attention, Agatha and History. Needs attention stays visible while the page scrolls.
-  - The side column holds Schedule, Absence and Details.
+  - The side column holds Schedule, Absence and observation modules.
 - Text and fields keep a comfortable reading width.
 - Below the breakpoint, the page becomes one column in the mobile order, with the same components and words.
 - On wide screens, Edit is one form column with a live summary beside it: the schedule sentence and the next dates.

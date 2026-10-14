@@ -92,7 +92,62 @@ void main() {
     );
     expect(stripRect.top, lessThan(rowRect.top));
     expect(stripRect.width, greaterThanOrEqualTo(rowRect.width));
+
+    final detailsRect = tester.getRect(
+      find.byKey(const Key('care_item_details_module')),
+    );
+    expect(detailsRect.top, lessThan(rowRect.top));
   });
+
+  testWidgets(
+    'CareItemDetailBody places Details above Needs attention on mobile',
+    (tester) async {
+      tester.view.physicalSize = const Size(400, 900);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            apiBaseUrlProvider.overrideWithValue('http://test.local'),
+            careItemAbsenceContextProvider('entry-1').overrideWith(
+              (ref) async => const HealthEntryAbsenceContext(
+                healthEntryId: 'entry-1',
+                petId: 'pet-1',
+                absences: [],
+              ),
+            ),
+            entryOccurrencesProvider('entry-1').overrideWith((ref) async => []),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(
+              body: CareItemDetailBody(
+                petId: 'pet-1',
+                entry: entry,
+                pet: pet,
+                history: const <HealthHistoryEntry>[],
+                isClosed: false,
+                isEstablished: false,
+                onSeeHistory: () {},
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      final detailsRect = tester.getRect(
+        find.byKey(const Key('care_item_details_module')),
+      );
+      final datesRect = tester.getRect(
+        find.byKey(const Key('care_item_dates_section')),
+      );
+      expect(detailsRect.top, lessThan(datesRect.top));
+    },
+  );
 
   testWidgets(
     'FW-17 weigh-in routine shows weight section; medication does not',
