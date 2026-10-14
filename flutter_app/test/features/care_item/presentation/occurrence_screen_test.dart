@@ -38,6 +38,8 @@ Map<String, dynamic> detail({
   Map<String, dynamic>? linkedWeight,
   Map<String, dynamic>? skipReason,
   List<Map<String, dynamic>>? openOccurrences,
+  Map<String, dynamic>? nextOccurrence,
+  Map<String, dynamic>? previousOccurrence,
 }) {
   final opens =
       openOccurrences ??
@@ -81,6 +83,10 @@ Map<String, dynamic> detail({
   };
   if (linkedWeight != null) payload['linked_weight'] = linkedWeight;
   if (skipReason != null) payload['skip_reason'] = skipReason;
+  if (nextOccurrence != null) payload['next_occurrence'] = nextOccurrence;
+  if (previousOccurrence != null) {
+    payload['previous_occurrence'] = previousOccurrence;
+  }
   return payload;
 }
 
@@ -401,38 +407,34 @@ void main() {
     expect(find.text('View care details'), findsOneWidget);
   });
 
-  testWidgets('shows next open module when a later open date exists', (
+  testWidgets('shows neighbour section when API returns next occurrence', (
     tester,
   ) async {
     final server = _Server([
       detail(
-        openOccurrences: [
-          {
-            'id': 'occ-1',
-            'scheduled_date': '2026-06-10',
-            'scheduled_time': null,
-            'status': 'due',
-            'origin': 'computed',
-          },
-          {
-            'id': 'occ-2',
-            'scheduled_date': '2026-06-12',
-            'scheduled_time': null,
-            'status': 'due',
-            'origin': 'computed',
-          },
-        ],
+        nextOccurrence: {
+          'id': 'occ-2',
+          'scheduled_date': '2026-06-12',
+          'scheduled_time': null,
+          'occurrence_status': 'due',
+        },
       ),
     ]);
     await tester.pumpWidget(_wrap(server));
     await tester.pumpAndSettle();
 
     await tester.scrollUntilVisible(
-      find.text('Next open date'),
+      find.text('Other dates'),
       48,
       scrollable: find.byType(Scrollable).first,
     );
-    expect(find.text('Next open date'), findsOneWidget);
-    expect(find.bySemanticsIdentifier('occurrence_next_open'), findsOneWidget);
+    expect(
+      find.bySemanticsIdentifier('occurrence_neighbors_section'),
+      findsOneWidget,
+    );
+    expect(
+      find.bySemanticsIdentifier('occurrence_neighbor_next'),
+      findsOneWidget,
+    );
   });
 }

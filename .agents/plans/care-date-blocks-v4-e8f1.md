@@ -297,16 +297,16 @@ docs/domains/pet_care/changes/care-date-blocks-v4-spec.md
 
 ```yaml
 autonomy: active
-current_phase: 3
-last_completed_phase: 2
+current_phase: 4
+last_completed_phase: 3
 halt_reason: null
-next_action: "continue phase 3 on branch cursor/care-date-blocks-v4-complete-e8f1"
+next_action: "continue phase 4 on branch cursor/care-date-blocks-v4-nav-e8f1"
 artifact_ref:
-  branch: cursor/care-date-blocks-v4-complete-e8f1
+  branch: cursor/care-date-blocks-v4-nav-e8f1
   plan_path: .agents/plans/care-date-blocks-v4-e8f1.md
-  plan_commit: 95fbdbf3d844d261720cde118341cbb1684ce1a4
+  plan_commit: 1c9e387bb659f051d6e3c154bc0a5592a624a7c6
   snapshot_path: .agents/plans/care-date-blocks-v4-e8f1.snapshot.json
-  snapshot_commit: 95fbdbf3d844d261720cde118341cbb1684ce1a4
+  snapshot_commit: 1c9e387bb659f051d6e3c154bc0a5592a624a7c6
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

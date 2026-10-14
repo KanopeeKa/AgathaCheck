@@ -2568,6 +2568,11 @@
     }
   },
   "occurrenceNextOpenDate": "Next open date",
+  "occurrenceNeighborsTitle": "Other dates",
+  "occurrenceNeighborPreviousLabel": "Previous",
+  "occurrenceNeighborNextLabel": "Next",
+  "occurrenceNeighborNonePrevious": "No earlier date",
+  "occurrenceNeighborNoneNext": "No later date",
   "occurrenceViewNext": "View",
   "occurrenceOpenCareDetails": "View care details",
   "occurrenceDueLabel": "Due",

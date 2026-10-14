@@ -6831,6 +6831,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get occurrenceNextOpenDate => 'Next open date';
 
   @override
+  String get occurrenceNeighborsTitle => 'Other dates';
+
+  @override
+  String get occurrenceNeighborPreviousLabel => 'Previous';
+
+  @override
+  String get occurrenceNeighborNextLabel => 'Next';
+
+  @override
+  String get occurrenceNeighborNonePrevious => 'No earlier date';
+
+  @override
+  String get occurrenceNeighborNoneNext => 'No later date';
+
+  @override
   String get occurrenceViewNext => 'View';
 
   @override
