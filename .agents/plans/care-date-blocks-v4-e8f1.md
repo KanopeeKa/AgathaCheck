@@ -304,9 +304,9 @@ next_action: "continue phase 4 on branch cursor/care-date-blocks-v4-nav-e8f1"
 artifact_ref:
   branch: cursor/care-date-blocks-v4-nav-e8f1
   plan_path: .agents/plans/care-date-blocks-v4-e8f1.md
-  plan_commit: 1c9e387bb659f051d6e3c154bc0a5592a624a7c6
+  plan_commit: bb19a1034db74026a48f939521130b68f5456d71
   snapshot_path: .agents/plans/care-date-blocks-v4-e8f1.snapshot.json
-  snapshot_commit: 1c9e387bb659f051d6e3c154bc0a5592a624a7c6
+  snapshot_commit: bb19a1034db74026a48f939521130b68f5456d71
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
