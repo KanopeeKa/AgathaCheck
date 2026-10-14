@@ -1951,6 +1951,17 @@
   "careItemScreenTitle": "Détail du soin",
   "careItemStatusFinished": "Fini",
   "careItemDetailsTitle": "Détails",
+  "careItemDetailsIdentity": "Détails de {category} : {name}",
+  "@careItemDetailsIdentity": {
+    "placeholders": {
+      "category": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "careItemHistoryTitle": "Historique",
   "careItemEditSchedule": "Modifier le planning",
   "careItemMenuTooltip": "Actions sur le soin",
