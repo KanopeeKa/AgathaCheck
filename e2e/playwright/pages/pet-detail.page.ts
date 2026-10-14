@@ -205,7 +205,14 @@ export class PetDetailPage {
   }
 
   async expectLinkedVet(vetName: string): Promise<void> {
-    await this.page.getByText(new RegExp(vetName, 'i')).first().waitFor({ timeout: 15_000 });
+    await refreshFlutterAccessibility(this.page);
+    const vetPattern = new RegExp(escapeRegExp(vetName), 'i');
+    await this.page
+      .getByRole('group', { name: new RegExp(`Primary vet.*${escapeRegExp(vetName)}`, 'i') })
+      .or(this.page.getByRole('group', { name: vetPattern }))
+      .or(this.page.getByText(vetPattern))
+      .first()
+      .waitFor({ timeout: 15_000 });
   }
 
   async downloadProfileReport(): Promise<void> {
