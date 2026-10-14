@@ -9,6 +9,9 @@ import 'care_item_pet_context_tile.dart';
 
 enum _CareItemStripChip { finished, paused }
 
+/// Visual size for pet avatar and care-family icon in the context strip row.
+const double _kContextStripEndcapSize = CareItemPetContextTile.avatarSize;
+
 _CareItemStripChip? careItemStripChip(HealthEntry entry) {
   final finished =
       entry.status == 'completed' || isHealthEntrySeriesClosed(entry);
@@ -80,7 +83,11 @@ class CareItemContextStrip extends StatelessWidget {
         );
 
         final categoryIcon = ExcludeSemantics(
-          child: CareFamilyIcon.forEntry(entry, showChip: false),
+          child: CareFamilyIcon.forEntry(
+            entry,
+            showChip: false,
+            size: _kContextStripEndcapSize,
+          ),
         );
 
         final chipWidget = chipLabel == null
@@ -109,9 +116,14 @@ class CareItemContextStrip extends StatelessWidget {
               CareItemPetContextTile(pet: pet),
               const SizedBox(height: 8),
               Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Expanded(child: nameWidget),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: nameWidget,
+                    ),
+                  ),
                   const SizedBox(width: 8),
                   categoryIcon,
                 ],
@@ -127,20 +139,18 @@ class CareItemContextStrip extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 CareItemPetContextTile(pet: pet),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(child: nameWidget),
-                      const SizedBox(width: 8),
-                      categoryIcon,
-                    ],
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: nameWidget,
                   ),
                 ),
+                const SizedBox(width: 8),
+                categoryIcon,
               ],
             ),
             if (chipWidget != null) chipWidget,

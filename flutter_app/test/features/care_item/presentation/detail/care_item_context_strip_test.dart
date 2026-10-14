@@ -5,7 +5,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
 import 'package:pet_profile_app/features/experience/presentation/care_item/detail/care_item_context_strip.dart';
+import 'package:pet_profile_app/features/experience/presentation/care_item/detail/care_item_pet_context_tile.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
+import 'package:pet_profile_app/features/health_tracking/presentation/widgets/care_family/care_family_icon.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
@@ -195,6 +197,46 @@ void main() {
     expect(semantics.hasFlag(SemanticsFlag.isButton), isTrue);
     expect(semantics.label, contains('Buddy'));
     handle.dispose();
+  });
+
+  testWidgets('care icon matches pet avatar size on wide layout', (
+    tester,
+  ) async {
+    await pumpStrip(
+      tester,
+      entry: baseEntry(),
+      viewportWidth: 800,
+      stripWidth: 700,
+    );
+
+    const endcap = CareItemPetContextTile.avatarSize;
+    expect(
+      tester.getSize(find.byType(CareFamilyIcon)),
+      const Size(endcap, endcap),
+    );
+  });
+
+  testWidgets('care name is centered between pet chip and care icon', (
+    tester,
+  ) async {
+    await pumpStrip(
+      tester,
+      entry: baseEntry(),
+      viewportWidth: 800,
+      stripWidth: 700,
+    );
+
+    final titleRect = tester.getRect(
+      find.byKey(const Key('care_item_context_strip_title')),
+    );
+    final petRect = tester.getRect(
+      find.bySemanticsIdentifier('care_item_pet_tile'),
+    );
+    final iconRect = tester.getRect(find.byType(CareFamilyIcon));
+
+    final titleCenterX = titleRect.center.dx;
+    final rowMidX = (petRect.right + iconRect.left) / 2;
+    expect(titleCenterX, closeTo(rowMidX, 2));
   });
 
   testWidgets('care name is a semantics header', (tester) async {
