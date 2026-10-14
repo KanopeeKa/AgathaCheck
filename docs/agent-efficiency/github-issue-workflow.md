@@ -214,6 +214,7 @@ For organization-owned repos, use `--org <login>` instead.
 
 ### Monitoring and debugging
 
+- **Weekly dependabot batch:** Actions → **Dependabot batch dispatch** (Tuesday cron; `workflow_dispatch` with `dry_run` for payload-only). Agent URL is written to the workflow job summary.
 - **Dispatch logs:** Actions → **Agent dispatch**
 - **Run polling:** Actions → **Agent monitor** (manual `workflow_dispatch` only; scheduled polling disabled)
 - **Issue comment marker:** `<!-- cursor-agent-run: {...} -->` stores `agentId`, `runId`, status
