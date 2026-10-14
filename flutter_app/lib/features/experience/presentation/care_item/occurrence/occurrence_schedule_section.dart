@@ -116,7 +116,9 @@ class OccurrenceScheduleSection extends ConsumerWidget {
                 ),
                 if (showScheduleActions) ...[
                   OccurrenceRescheduleIconButton(
-                    onPressed: scheduleActionsBusy || !occurrenceShowsReschedule(detail)
+                    onPressed:
+                        scheduleActionsBusy ||
+                            !occurrenceShowsReschedule(detail)
                         ? null
                         : onChangeDate,
                   ),
@@ -149,10 +151,7 @@ class OccurrenceScheduleSection extends ConsumerWidget {
               ),
             ],
             _CarerReadOnly(entryId: entryId, detail: detail),
-            if (occ.isOpen) ...[
-              const SizedBox(height: 12),
-              absenceChild,
-            ],
+            if (occ.isOpen) ...[const SizedBox(height: 12), absenceChild],
             if (showReopen) ...[
               const SizedBox(height: 12),
               OutlinedButton(
@@ -247,10 +246,7 @@ class _ScheduleSurface extends ConsumerWidget {
               color: AppColorTokens.awayContextSurface,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: child,
-            ),
+            child: Padding(padding: const EdgeInsets.all(12), child: child),
           ),
         );
       },
