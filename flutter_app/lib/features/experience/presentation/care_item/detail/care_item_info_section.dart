@@ -1,27 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:pet_profile_app/features/care_taxonomy/care_taxonomy.dart';
 import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
-import 'package:pet_profile_app/features/health_tracking/presentation/widgets/care_category_blocks/care_category_blocks_detail_section.dart';
-import 'package:pet_profile_app/features/health_tracking/presentation/widgets/health_entry_form/health_entry_care_classification_labels.dart';
 import 'package:pet_profile_app/features/people/people.dart';
 import 'package:pet_profile_app/features/pet_care/pet_care.dart';
 import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
+String _careSettingLabel(AppLocalizations l, CareSetting setting) {
+  return switch (setting) {
+    CareSetting.home => l.careSettingHome,
+    CareSetting.vet => l.careSettingVet,
+    CareSetting.other => l.careSettingOther,
+  };
+}
+
+String _careImportanceLabel(AppLocalizations l, CareImportance importance) {
+  return switch (importance) {
+    CareImportance.essential => l.careImportanceEssential,
+    CareImportance.recommended => l.careImportanceRecommended,
+    CareImportance.optional => l.careImportanceOptional,
+  };
+}
+
 /// Care item detail rows inside the Details module (schedule owns recurrence).
 class CareItemInfoSection extends ConsumerWidget {
   const CareItemInfoSection({
     super.key,
     required this.entry,
-    required this.pet,
     required this.muted,
+    this.section = CareItemInfoSectionPart.all,
   });
 
   final HealthEntry entry;
-  final Pet pet;
   final bool muted;
+  final CareItemInfoSectionPart section;
 
   String? _providerLabel(Roster? roster) {
     if (entry.providerTypedName != null &&
@@ -42,15 +57,15 @@ class CareItemInfoSection extends ConsumerWidget {
     final family = entry.careFamily ?? inferCareFamily(entry);
     final familyLabel = careFamilyLabel(l, family);
     final rosterAsync = ref.watch(rosterProvider);
-    final dosageLine = careItemPrimaryDosageLine(entry);
-    final hasDosageRow = dosageLine != null;
 
-    final identityLine = l.careItemDetailsIdentity(familyLabel, entry.name);
+    final children = <Widget>[];
 
-    return Column(
-      key: const Key('care_item_info_section'),
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
+    if (section == CareItemInfoSectionPart.lead ||
+        section == CareItemInfoSectionPart.all) {
+      final identityLine = l.careItemDetailsIdentity(familyLabel, entry.name);
+      final dosageLine = entry.primaryDosageLine;
+
+      children.addAll([
         Semantics(
           header: true,
           label: identityLine,
@@ -63,16 +78,16 @@ class CareItemInfoSection extends ConsumerWidget {
             ),
           ),
         ),
-        if (hasDosageRow) ...[
+        if (dosageLine != null) ...[
           const SizedBox(height: 8),
-          CareItemDetailRow(label: l.dosage, value: dosageLine!, muted: muted),
+          CareItemDetailRow(label: l.dosage, value: dosageLine, muted: muted),
         ],
-        CareCategoryBlocksDetailSection(
-          entry: entry,
-          pet: pet,
-          muted: muted,
-          skipDosageLine: hasDosageRow,
-        ),
+      ]);
+    }
+
+    if (section == CareItemInfoSectionPart.trail ||
+        section == CareItemInfoSectionPart.all) {
+      children.add(
         rosterAsync.when(
           data: (roster) {
             final provider = _providerLabel(roster);
@@ -88,25 +103,44 @@ class CareItemInfoSection extends ConsumerWidget {
           loading: () => const SizedBox.shrink(),
           error: (_, __) => const SizedBox.shrink(),
         ),
-        if (entry.careSetting != null)
+      );
+      if (entry.careSetting != null) {
+        children.add(
           CareItemDetailRow(
             label: l.careSettingFieldLabel,
-            value: healthEntryCareSettingLabel(l, entry.careSetting!),
+            value: _careSettingLabel(l, entry.careSetting!),
             muted: muted,
           ),
-        if (entry.importanceOverridden && entry.careImportance != null)
+        );
+      }
+      if (entry.importanceOverridden && entry.careImportance != null) {
+        children.add(
           CareItemDetailRow(
             label: l.careImportanceFieldLabel,
-            value: healthEntryCareImportanceLabel(l, entry.careImportance!),
+            value: _careImportanceLabel(l, entry.careImportance!),
             muted: muted,
           ),
-        if (entry.notes.trim().isNotEmpty)
+        );
+      }
+      if (entry.notes.trim().isNotEmpty) {
+        children.add(
           CareItemDetailRow(
             label: l.notes,
             value: entry.notes.trim(),
             muted: muted,
           ),
-      ],
+        );
+      }
+    }
+
+    if (children.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      key: const Key('care_item_info_section'),
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: children,
     );
   }
 }
+
+enum CareItemInfoSectionPart { lead, trail, all }

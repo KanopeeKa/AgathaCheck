@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../pet_care/presentation/widgets/care_surface/care_item_detail_row.dart';
 import '../../../../pet_profile/pet_profile.dart';
 import '../../../domain/entities/care_item_blocks.dart';
 import '../../../domain/entities/health_entry.dart';
@@ -56,10 +55,21 @@ class CareCategoryBlocksDetailSection extends StatelessWidget {
 
     if (rows.isEmpty) return const SizedBox.shrink();
 
+    final theme = Theme.of(context);
+    final textColor = muted ? theme.colorScheme.onSurfaceVariant : null;
+
     return Column(
       key: const Key('care_category_blocks_detail'),
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: rows,
+      children: [
+        for (var i = 0; i < rows.length; i++) ...[
+          if (i > 0) const SizedBox(height: 12),
+          DefaultTextStyle(
+            style: theme.textTheme.bodyMedium!.copyWith(color: textColor),
+            child: rows[i],
+          ),
+        ],
+      ],
     );
   }
 
@@ -73,7 +83,7 @@ class CareCategoryBlocksDetailSection extends StatelessWidget {
     void add(String label, String value) {
       final t = value.trim();
       if (t.isEmpty) return;
-      out.add(CareItemDetailRow(label: label, value: t, muted: muted));
+      out.add(_labelValue(label, t));
     }
 
     add(l.careCategoryBlockProductName, block.productName);
@@ -93,32 +103,23 @@ class CareCategoryBlocksDetailSection extends StatelessWidget {
     if (block == null || block.isEmpty) return [];
     final questions = block.questionsToAsk.trim();
     if (questions.isEmpty) return [];
-    return [
-      CareItemDetailRow(
-        label: l.careCategoryBlockQuestionsToAsk,
-        value: questions,
-        muted: muted,
-      ),
-    ];
+    return [_labelValue(l.careCategoryBlockQuestionsToAsk, questions)];
   }
 
   List<Widget> _weightRows(AppLocalizations l, Pet pet) {
     final ref = pet.weightReferenceValue;
     if (ref == null) return [];
-    return [
-      CareItemDetailRow(
-        label: l.careCategoryBlockWeightTargetTitle,
-        value: '$ref kg',
-        muted: muted,
-      ),
-    ];
+    return [_labelValue(l.careCategoryBlockWeightTargetTitle, '$ref kg')];
   }
-}
 
-/// Primary dosage line for Details: structured block first, then legacy field.
-String? careItemPrimaryDosageLine(HealthEntry entry) {
-  final fromBlock = entry.careBlocks.productDose?.legacyDosageLine() ?? '';
-  if (fromBlock.trim().isNotEmpty) return fromBlock.trim();
-  final legacy = entry.dosage.trim();
-  return legacy.isEmpty ? null : legacy;
+  Widget _labelValue(String label, String value) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
+        const SizedBox(height: 4),
+        Text(value),
+      ],
+    );
+  }
 }

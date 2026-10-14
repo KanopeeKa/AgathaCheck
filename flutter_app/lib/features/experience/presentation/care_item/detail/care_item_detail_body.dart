@@ -218,7 +218,22 @@ class _DetailsModule extends StatelessWidget {
             icon: Icons.article_outlined,
           ),
           const SizedBox(height: 12),
-          CareItemInfoSection(entry: entry, pet: pet, muted: muted),
+          CareItemInfoSection(
+            entry: entry,
+            muted: muted,
+            section: CareItemInfoSectionPart.lead,
+          ),
+          CareCategoryBlocksDetailSection(
+            entry: entry,
+            pet: pet,
+            muted: muted,
+            skipDosageLine: entry.primaryDosageLine != null,
+          ),
+          CareItemInfoSection(
+            entry: entry,
+            muted: muted,
+            section: CareItemInfoSectionPart.trail,
+          ),
           if (includeEstablished)
             CareItemEstablishedSection(pet: pet, isEstablished: isEstablished),
           if (entry.healthIssueId != null &&

@@ -31,7 +31,7 @@ void main() {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
-            body: CareItemInfoSection(entry: entry, pet: pet, muted: false),
+            body: CareItemInfoSection(entry: entry, muted: false),
           ),
         ),
       ),
