@@ -15,6 +15,7 @@ import {
 } from '../../lib/care/occurrence/index.js';
 import { UNDOABLE_EVENT_TYPES } from '../../lib/care/schedule/scheduleEventLedger.js';
 import { resolveProviderUsedPatch } from '../../lib/care/providerUsed.js';
+import { occurrenceNeighborsForRead } from '../../lib/health/occurrenceNeighbors.js';
 import { careItemWire, commandResponse, occurrenceToMap } from '../../lib/care/item/index.js';
 import { extractUserId } from './shared.js';
 import { handleCommand, loadEntry, loadOccurrence } from './occurrencesRouter.js';
@@ -131,6 +132,9 @@ export function registerOccurrencePatchRoutes(router, pool) {
       const weight = await linkedWeight(pool, occ.id);
       if (weight) body.linked_weight = weight;
       body.skip_reason = await skipReasonForOccurrence(pool, entry.id, occ.id);
+      const neighbors = await occurrenceNeighborsForRead(pool, freshEntry, occ.id, asOf);
+      body.previous_occurrence = neighbors.previous_occurrence;
+      body.next_occurrence = neighbors.next_occurrence;
       return res.json(body);
     } catch (err) {
       throw err;

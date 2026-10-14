@@ -26,6 +26,23 @@ Deliver Care date **v4**: four blocks (context → schedule/absence → completi
 | **base_branch** | `cursor/care-date-blocks-v4-e8f1-integration-e8f1` |
 | **default_merge_mode** | `auto` |
 | **artifact_branch_policy** | `phase-branch` |
+| **orchestration** | **continuous** — one grant through release |
+| **approved_until** | Extended for full programme (see snapshot) |
+
+## Continuous execute-plan contract
+
+Owner intent (2026-10-14): **no stops between phases**; full autonomy until **`complete-plan`** after integration → `main`.
+
+| Rule | Behaviour |
+|------|-----------|
+| **Integration trunk** | All phase PRs target `cursor/care-date-blocks-v4-e8f1-integration-e8f1` only. |
+| **Phase loop** | After phase *N* merges: immediately start phase *N+1* (gate `0`, same control issue) — **not** a user-visible stop. |
+| **Babysit** | `/babysit-plus` every phase PR; **`/babysit-uat` only** on the **release PR** integration → `main`. |
+| **User chat** | Blockers / escalation / `complete-plan` summary only (AGENTS.md §Execute-plan). |
+| **Waves** | One wave: phases **1 → 2 → 3 → 4 → 5** on integration, then **release** integration → `main`. No parallel phase agents unless `spawn_allowed` is set (false). |
+| **Expiry** | `approved_until` must cover all phases + release; re-approve only on halt/expiry. |
+
+**Release (post-phase 5):** Open PR `cursor/care-date-blocks-v4-e8f1-integration-e8f1` → `main`; drive `/babysit-uat`; then `complete-plan care-date-blocks-v4-e8f1`.
 
 ## Canonical docs
 
@@ -280,8 +297,17 @@ docs/domains/pet_care/changes/care-date-blocks-v4-spec.md
 
 ```yaml
 autonomy: active
-current_phase: "1"
+current_phase: 1
 last_completed_phase: null
 halt_reason: null
-next_action: "phase 1 implement"
+next_action: "continue phase 1 on branch cursor/care-date-blocks-v4-api-e8f1"
+artifact_ref:
+  branch: cursor/care-date-blocks-v4-api-e8f1
+  plan_path: .agents/plans/care-date-blocks-v4-e8f1.md
+  plan_commit: ca8162ed3785ceb36e1e4a0bc9bbfcb6eae359a5
+  snapshot_path: .agents/plans/care-date-blocks-v4-e8f1.snapshot.json
+  snapshot_commit: ca8162ed3785ceb36e1e4a0bc9bbfcb6eae359a5
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1895"]
+merge_commits: {}
+debt_issue_refs: []
 ```

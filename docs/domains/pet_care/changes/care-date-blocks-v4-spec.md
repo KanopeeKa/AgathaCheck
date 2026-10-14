@@ -2,6 +2,8 @@
 title: Care date screen v4 (four blocks)
 domain: pet_care
 status: proposed
+status_since: 2026-10-14
+folds_into: docs/domains/pet_care/features/care-item-evolution.md
 last_updated: 2026-10-14
 ---
 

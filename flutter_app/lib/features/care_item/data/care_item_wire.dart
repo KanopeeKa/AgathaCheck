@@ -2,6 +2,7 @@ import '../../../core/utils/calendar_date.dart';
 import '../domain/care_item_schedule.dart';
 import '../domain/care_occurrence.dart';
 import '../domain/occurrence_detail.dart';
+import '../domain/occurrence_neighbor.dart';
 import '../domain/weigh_in_skip_reason.dart';
 
 /// Parsers for care item wire shapes (`api-reference.md` § Occurrence APIs).
@@ -109,6 +110,21 @@ LastDone? _lastDone(Object? raw) {
   );
 }
 
+OccurrenceNeighborSummary? _neighborSummary(Object? raw) {
+  if (raw is! Map<String, dynamic>) return null;
+  final id = raw['id'] as String?;
+  final dateRaw = raw['scheduled_date'] as String?;
+  if (id == null || dateRaw == null) return null;
+  return OccurrenceNeighborSummary(
+    id: id,
+    scheduledDate: _requiredDate(dateRaw, 'scheduled_date'),
+    scheduledTime: _time(raw['scheduled_time']),
+    occurrenceStatus: raw['occurrence_status'] as String? ?? 'due',
+    completedOn: parseCalendarDate(raw['completed_on']),
+    performedByName: raw['performed_by_name'] as String?,
+  );
+}
+
 /// `GET /api/health-entries/:id/occurrences/:occId`.
 OccurrenceDetail occurrenceDetailFromJson(Map<String, dynamic> json) {
   final occ = json['occurrence'] as Map<String, dynamic>;
@@ -161,5 +177,7 @@ OccurrenceDetail occurrenceDetailFromJson(Map<String, dynamic> json) {
             code: skipRaw['code'] as String?,
             note: skipRaw['note'] as String?,
           ),
+    previousOccurrence: _neighborSummary(json['previous_occurrence']),
+    nextOccurrence: _neighborSummary(json['next_occurrence']),
   );
 }
