@@ -12081,6 +12081,36 @@ abstract class AppLocalizations {
   /// **'Next open date'**
   String get occurrenceNextOpenDate;
 
+  /// No description provided for @occurrenceNeighborsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Other dates'**
+  String get occurrenceNeighborsTitle;
+
+  /// No description provided for @occurrenceNeighborPreviousLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous'**
+  String get occurrenceNeighborPreviousLabel;
+
+  /// No description provided for @occurrenceNeighborNextLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get occurrenceNeighborNextLabel;
+
+  /// No description provided for @occurrenceNeighborNonePrevious.
+  ///
+  /// In en, this message translates to:
+  /// **'No earlier date'**
+  String get occurrenceNeighborNonePrevious;
+
+  /// No description provided for @occurrenceNeighborNoneNext.
+  ///
+  /// In en, this message translates to:
+  /// **'No later date'**
+  String get occurrenceNeighborNoneNext;
+
   /// No description provided for @occurrenceViewNext.
   ///
   /// In en, this message translates to:

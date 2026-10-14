@@ -7,7 +7,7 @@ import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import 'occurrence_care_context_card.dart';
 import 'occurrence_complete_care_module.dart';
-import 'occurrence_next_open_module.dart';
+import 'occurrence_neighbors_module.dart';
 import 'occurrence_schedule_section.dart';
 import 'occurrence_skip_command.dart';
 
@@ -145,71 +145,25 @@ class _OccurrenceScreenBodyState extends ConsumerState<OccurrenceScreenBody> {
       actionBusy: _scheduleActionsBusy,
       showUndoInBlock3: false,
     );
-    final nextOpen = OccurrenceNextOpenModule(
-      detail: detail,
+    final neighbors = OccurrenceNeighborsModule(
       petId: widget.petId,
       entryId: widget.entryId,
-      onOpenCareDetails: widget.onOpenCareDetails,
+      detail: detail,
     );
 
     return CareItemDetailCanvas(
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final layoutWidth = constraints.maxWidth.isFinite
-              ? constraints.maxWidth
-              : MediaQuery.sizeOf(context).width;
-          final wide = layoutWidth >= kCareItemTwoColumnBreakpoint;
-          final showNext = _nextOpenVisible(detail);
-
-          if (!wide) {
-            return ListView(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
-              children: [
-                contextCard,
-                _kOccurrenceModuleGap,
-                schedule,
-                _kOccurrenceModuleGap,
-                complete,
-                _kOccurrenceModuleGap,
-                nextOpen,
-              ],
-            );
-          }
-
-          return ListView(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
-            children: [
-              contextCard,
-              _kOccurrenceModuleGap,
-              schedule,
-              _kOccurrenceModuleGap,
-              if (showNext)
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(flex: 3, child: complete),
-                    const SizedBox(width: 16),
-                    Expanded(flex: 2, child: nextOpen),
-                  ],
-                )
-              else
-                complete,
-            ],
-          );
-        },
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+        children: [
+          contextCard,
+          _kOccurrenceModuleGap,
+          schedule,
+          _kOccurrenceModuleGap,
+          complete,
+          _kOccurrenceModuleGap,
+          neighbors,
+        ],
       ),
     );
-  }
-
-  bool _nextOpenVisible(OccurrenceDetail detail) {
-    final schedule = detail.schedule;
-    if (schedule == null) return false;
-    return nextOpenOccurrenceAfter(
-          openOccurrences: schedule.openOccurrences,
-          currentId: detail.occurrence.id,
-          currentDate: detail.occurrence.date,
-          currentTime: detail.occurrence.time,
-        ) !=
-        null;
   }
 }

@@ -2446,6 +2446,11 @@
     }
   },
   "occurrenceNextOpenDate": "Prochaine date ouverte",
+  "occurrenceNeighborsTitle": "Autres dates",
+  "occurrenceNeighborPreviousLabel": "Précédente",
+  "occurrenceNeighborNextLabel": "Suivante",
+  "occurrenceNeighborNonePrevious": "Aucune date antérieure",
+  "occurrenceNeighborNoneNext": "Aucune date ultérieure",
   "occurrenceViewNext": "Voir",
   "occurrenceOpenCareDetails": "Voir les détails du soin",
   "occurrenceDueLabel": "Échéance",
