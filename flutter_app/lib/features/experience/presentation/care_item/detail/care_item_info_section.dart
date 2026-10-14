@@ -5,8 +5,6 @@ import 'package:pet_profile_app/features/care_taxonomy/care_taxonomy.dart';
 import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import 'package:pet_profile_app/features/people/people.dart';
 import 'package:pet_profile_app/features/pet_care/pet_care.dart';
-import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
-
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 String _careSettingLabel(AppLocalizations l, CareSetting setting) {
