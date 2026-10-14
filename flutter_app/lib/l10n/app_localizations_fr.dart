@@ -6924,6 +6924,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get occurrenceCompletionDateLabel => 'Date de réalisation';
 
   @override
+  String get occurrenceScheduledTimeLabel => 'Heure prévue';
+
+  @override
   String occurrenceDaysOverdue(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
