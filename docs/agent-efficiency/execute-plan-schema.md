@@ -79,16 +79,18 @@ When `phases.length >= 2` and `autonomy: active`:
 
 **Disjoint landings:** use separate `plan_id`s (often single-phase each), not one multi-phase plan on `main`.
 
-#### Doc/spec PR vs phase PR (common confusion)
+#### Phase PR vs release PR (common confusion)
 
-A programme may have a **separate docs PR to `main`** (programme text, canonical **Planned** rows) that is **not** the execute-plan delivery path. Phase implementation PRs still use snapshot **`base_branch`** and the control issue on the plan.
+Multi-phase delivery uses snapshot **`base_branch`** (integration) for every phase PR, then **one** integration → `main` release PR. Programme and canonical doc updates ride **phase PRs** and the **release PR** — not a parallel “spec PR” that retargets phases to `main`.
+
+<!-- Historical: agatha-care-journey draft #1833 described per-phase merge to main; superseded by integration + release #1875. -->
 
 | Track | Typical base | Skill | Example (`agatha-care-journey`) |
 |-------|--------------|-------|----------------------------------|
 | **Phase PRs** | `base_branch` (integration) | `/babysit-plus` | PR-01…PR-14 → `cursor/agatha-care-journey-integration-b994`; control **#1835** |
-| **Programme/spec docs** | `main` | Normal PR hygiene | **#1833** — docs only; do not retarget phase work to `main` because this PR is open |
+| **Release** | `main` | `/babysit-uat` | [#1875](https://github.com/KanopeeKa/AgathaCheck/pull/1875) integration → `main` |
 
-Orchestrators must read **`base_branch` from the snapshot**, not from other open PRs on the same programme.
+Orchestrators must read **`base_branch` from the snapshot**, not from stale PR descriptions on the same programme.
 
 ### `artifact_branch_policy`
 

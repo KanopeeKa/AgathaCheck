@@ -228,7 +228,7 @@ Coverage gaps: [#1770](https://github.com/KanopeeKa/AgathaCheck/issues/1770) (sa
 - `CareSafeguard` table + guardian-facing promotion from internal evaluate endpoint after D5b.
 - Second signal family implementation (activity-first candidate) after weight-only evaluation.
 
-## Planned — Agatha care journey (PR #1833 programme)
+## Planned — Agatha care journey programme
 
 Spec: [agatha-care-journey-programme.md](../changes/agatha-care-journey-programme.md) · Slot order: [ui-design.md](../changes/agatha-care-journey-ui-design.md) §3.
 

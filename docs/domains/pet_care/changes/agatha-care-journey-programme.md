@@ -3,8 +3,8 @@ title: Agatha care journey programme
 owner: Product / Documentation
 audience: both
 status: proposed
-last_updated: 2026-10-10
-status_since: 2026-10-10
+last_updated: 2026-10-14
+status_since: 2026-10-14
 tags: [pet_care, pet_profile, care_intelligence, roadmap, execute-plan]
 folds_into: docs/domains/pet_care/features/care-intelligence.md
 ---
@@ -38,21 +38,23 @@ AgathaTrack helps pet parents **know**, **understand**, **plan**, **act**, and *
 | **Integration branch** | `cursor/agatha-care-journey-integration-b994` — phase PR base (`snapshot.base_branch`). |
 | **Phase merges** | Each PR-* → **`/babysit-plus`** → squash into **integration** (not `main`). |
 | **Release** | One PR integration → **`main`** → **`/babysit-uat`** + pre-UAT E2E; then `complete-plan`. |
-| **Contract** | [execute-autonomy.md](./agatha-care-journey-execute-autonomy.md) |
+| **Contract** | [`agatha-care-journey-execute-autonomy.md`](./agatha-care-journey-execute-autonomy.md) |
 | **Subagents** | **pr-09** ∥ **pr-02** after pr-01 when paths disjoint. |
 | **Feature flags** | Per autonomy doc; defaults may flip on release PR. |
-| **Migrations** | PR-01, 06, 09, 14: **default auto-merge** when CI green; orchestrator may **opt in** to `halt --reason human_pause` on #1835 (not required). |
-| **Orchestrator** | **Run-until-blocked** — see [execute-autonomy](./agatha-care-journey-execute-autonomy.md); no chat checkpoints between phases. |
+| **Migrations** | PR-01, 06, 09, 14: **default auto-merge** when CI green; orchestrator may **opt in** to `halt --reason human_pause` on [#1835](https://github.com/KanopeeKa/AgathaCheck/issues/1835) (not required). |
+| **Orchestrator** | **Run-until-blocked** — see [`agatha-care-journey-execute-autonomy.md`](./agatha-care-journey-execute-autonomy.md); no chat checkpoints between phases. |
 | **W1 value** | First guardian-visible on integration: **PR-03**, **PR-04**. |
 
 ### PR tracks (do not conflate)
 
+<!-- Historical (do not restore): closed draft #1833 PR body claimed per-phase merge to main and snapshot base_branch main; delivery used integration (#1835) + release #1875. -->
+
 | Track | Example | Base branch | Merge skill | Purpose |
 |-------|---------|-------------|-------------|---------|
-| **Execute-plan phases** | PR-01 … PR-14 (`cursor/acj-pr-NN-b994`) | `cursor/agatha-care-journey-integration-b994` | `/babysit-plus` | Product delivery; control issue **#1835** |
-| **Programme spec (docs)** | **#1833** (`cursor/agatha-care-journey-specs-b994`) | **`main`** | Normal PR hygiene | Canonical **Planned** rows + programme docs — **not** a substitute for phase PRs |
+| **Execute-plan phases** | PR-01 … PR-14 (`cursor/acj-pr-NN-b994`) | `cursor/agatha-care-journey-integration-b994` | `/babysit-plus` | Product delivery; control issue [#1835](https://github.com/KanopeeKa/AgathaCheck/issues/1835) (closed — plan complete) |
+| **Release** | [#1875](https://github.com/KanopeeKa/AgathaCheck/pull/1875) | `main` | `/babysit-uat` | One integration → `main` PR after all phase merges |
 
-Orchestrating **`agatha-care-journey`** must open phase PRs against **integration**, not `main`, even if **#1833** is still open to `main`.
+Phase PRs **always** target **integration**, not `main`. Canonical **Planned→Live** rows ship with behaviour PRs and release [#1875](https://github.com/KanopeeKa/AgathaCheck/pull/1875).
 
 ### Per-PR verification pack (mandatory)
 
@@ -105,9 +107,9 @@ Agent **must halt** (`governance_approval_required`) until decision log row **AC
 
 | Criterion | Owner (fill at approval) |
 |-----------|---------------------------|
-| Named CSM PRs merged to `main` | _TBD_ |
-| Agenda read contract frozen in OpenAPI (`pet-care-critical.json` or successor) | _TBD_ |
-| No open P1 defects against agenda grouping | _TBD_ |
+| Named CSM PRs merged to `main` | CSM track on `main` (see ACJ-D-006) |
+| Agenda read contract frozen in OpenAPI (`pet-care-critical.json` or successor) | Pet-care OpenAPI / `pet-care-critical.json` |
+| No open P1 defects against agenda grouping | QA — none open at PR-12 start |
 
 PR-12 **cannot** start without ACJ-D-006 Live. No “or earlier if Flutter only” escape.
 
@@ -344,7 +346,7 @@ Columns include: `pet_id`, `subject_key`, `dedupe_key`, `status`, `primary_outco
 
 | When | Action |
 |------|--------|
-| Spec PR #1833 merge | `Planned` rows in canonical docs (see § Doc ownership) |
+| Release [#1875](https://github.com/KanopeeKa/AgathaCheck/pull/1875) merge | Fold delivered **Planned→Live** rows in canonical docs (see § Doc ownership) |
 | Each behaviour PR | `/canonical-docs sync` Mode A |
 | PR-01, PR-09, PR-14 | DATA_MAP |
 
@@ -356,12 +358,12 @@ Columns include: `pet_id`, `subject_key`, `dedupe_key`, `status`, `primary_outco
 
 | ID | Decision | Status | Date |
 |----|----------|--------|------|
-| ACJ-D-001 | Completeness: Agatha chrome, not Phase C engine | Proposed | 2026-10-10 |
-| ACJ-D-002 | Welfare + rhythm: shared presentation + dedupe namespace, separate storage | Proposed | 2026-10-10 |
-| ACJ-D-003 | PR-12 blocked on CSM-stable row | Proposed | 2026-10-10 |
-| ACJ-D-004 | Visit UI deferred; invariants in **this programme** | Proposed | 2026-10-10 |
-| ACJ-D-005 | `welfare_suggestions` table; `care_recommendations` unchanged | Proposed | 2026-10-10 |
-| ACJ-D-006 | CSM-stable gate definition (owner, PRs, OpenAPI, P1s) | Live | 2026-10-13 — human `resume-plan` on #1835 authorizes PR-12 despite interim Proposed halt; criteria: CSM on `main`, agenda contract in `pet-care-critical.json`, no open P1 on agenda grouping |
+| ACJ-D-001 | Completeness: Agatha chrome, not Phase C engine | Live | 2026-10-14 | PR-04, release [#1875](https://github.com/KanopeeKa/AgathaCheck/pull/1875) |
+| ACJ-D-002 | Welfare + rhythm: shared presentation + dedupe namespace, separate storage | Live | 2026-10-14 | PR-06–08, release [#1875](https://github.com/KanopeeKa/AgathaCheck/pull/1875) |
+| ACJ-D-003 | PR-12 blocked on CSM-stable row | Live | 2026-10-14 | Enforced via ACJ-D-006; PR-12 merged |
+| ACJ-D-004 | Visit UI deferred; invariants in **this programme** | Live | 2026-10-14 | PR-14 schema only |
+| ACJ-D-005 | `welfare_suggestions` table; `care_recommendations` unchanged | Live | 2026-10-14 | PR-06, release [#1875](https://github.com/KanopeeKa/AgathaCheck/pull/1875) |
+| ACJ-D-006 | CSM-stable gate definition (owner, PRs, OpenAPI, P1s) | Live | 2026-10-13 | Human `resume-plan` on [#1835](https://github.com/KanopeeKa/AgathaCheck/issues/1835); criteria: CSM on `main`, agenda contract in `pet-care-critical.json`, no open P1 on agenda grouping |
 | ACJ-D-007 | Vet visit `complete` updates `vet_visits` only; linked occurrences remain pending until CSM completion (AC-FB-02) | Live | 2026-10-13 | PR-14 |
 
 ---
@@ -369,25 +371,23 @@ Columns include: `pet_id`, `subject_key`, `dedupe_key`, `status`, `primary_outco
 ## Pre-approval checklist (§7 — before `approve-autonomous`)
 
 - [ ] B1–B3 PR-01 contract in spec (this doc § PR-01)
-- [ ] B4 `welfare_suggestions` + ACJ-D-005
-- [ ] B5 ACJ-D-006 owner/criteria filled; PR-14 decoupled from PR-12
+- [x] B4 `welfare_suggestions` + ACJ-D-005 (Live — PR-06)
+- [x] B5 ACJ-D-006 owner/criteria filled; PR-14 decoupled from PR-12 (ACJ-D-006 Live; ACJ-D-007 Live)
 - [x] B6 delivery: phase PRs → integration; release PR → `main`; flags; optional migration `human_pause`; rollback notes
 - [ ] Q2 slot order in UI doc; PR-04 minimal policy; tiebreak + cooldown in PR-05
 - [ ] O1 legacy card deletion in PR-04 scope
 - [ ] UI-Q-01..03 resolved in UI doc
 - [ ] bdd-qa: `@smoke-ci` boundaries, traceability, copy lint
 - [ ] DATA_MAP PR-01/09; metrics § Success metrics
-- [x] Snapshot: `control_issue` #1835, `base_branch` integration, `autonomy: active`, `approved_until` +48h, `--fix-hash`
+- [x] Snapshot: `control_issue` [#1835](https://github.com/KanopeeKa/AgathaCheck/issues/1835), `base_branch` integration, plan **completed** 2026-10-14
 - [x] [Execute autonomy](./agatha-care-journey-execute-autonomy.md): integration branch `cursor/agatha-care-journey-integration-b994`; release `/babysit-uat`; spawn rules documented
 - [ ] bdd-qa: full AC→test traceability; per-PR verification pack above agreed
 
-## Doc ownership (spec PR)
+## Doc ownership (canonical)
 
-**#1833** is the **docs/spec** track to `main` (see **PR tracks** above). It does not carry phase implementation.
+Delivered behaviour is documented in canonical feature docs (synced per phase and release [#1875](https://github.com/KanopeeKa/AgathaCheck/pull/1875)):
 
-On merge of #1833, add **Planned** rows to:
+- [`pet-profile-decisions.md`](../../pet_profile/features/pet-profile-decisions.md) — fact model, PUT semantics, dismiss vs status
+- [`care-intelligence.md`](../features/care-intelligence.md) — welfare vs rhythm, `welfare_suggestions`, slot policy link
 
-- `docs/domains/pet_profile/features/pet-profile-decisions.md` — fact model, PUT semantics, dismiss vs status
-- `docs/domains/pet_care/features/care-intelligence.md` — welfare vs rhythm, `welfare_suggestions`, slot policy link
-
-`changes/agatha-care-journey-*.md` remain delivery specs until programme complete.
+`changes/agatha-care-journey-*.md` remain delivery/archive specs until a consolidate pass folds them.

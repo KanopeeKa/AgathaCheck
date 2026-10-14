@@ -3,15 +3,15 @@ title: Agatha care journey — execute-plan autonomy contract
 owner: Product / Documentation
 audience: agent
 status: proposed
-last_updated: 2026-10-10
-status_since: 2026-10-10
+last_updated: 2026-10-14
+status_since: 2026-10-14
 tags: [execute-plan, autonomy, uat]
 folds_into: docs/domains/pet_care/features/care-intelligence.md
 ---
 
 # Execute-plan autonomy contract
 
-Governs **`agatha-care-journey`** under `approve-autonomous` on **#1835**. **Binding orchestrator text:** `.agents/plans/agatha-care-journey.md` §Orchestrator contract (wins over generic agent “summarize progress” behavior).
+Governs **`agatha-care-journey`** under `approve-autonomous` on [#1835](https://github.com/KanopeeKa/AgathaCheck/issues/1835) (plan completed 2026-10-14). **Binding orchestrator text:** `.agents/plans/agatha-care-journey.md` §Orchestrator contract (wins over generic agent “summarize progress” behavior).
 
 ## Full autonomy grant (what was approved)
 
@@ -38,14 +38,14 @@ One standing grant covers **entire** delivery:
 | Phase PR **merged** to integration | Start next `pending` phase **immediately** (no user chat checkpoint) |
 | All phases merged | Open release PR → `/babysit-uat` |
 | `complete-plan` | Close control issue |
-| §Halt / escalation / `session_limit` | Post on #1835; chat = blocker alert only |
+| §Halt / escalation / `session_limit` | Post on [#1835](https://github.com/KanopeeKa/AgathaCheck/issues/1835); chat = blocker alert only |
 
 | **Not** a stop | Required behavior |
 |----------------|-------------------|
 | Preflight / gate exit 0 | Begin current phase work |
 | PR opened | Babysit+ / CI watch |
 | CI pending | Keep watching; fix and push |
-| Milestone posted on #1835 | Continue tools in same session |
+| Milestone posted on [#1835](https://github.com/KanopeeKa/AgathaCheck/issues/1835) | Continue tools in same session |
 | Cloud turn ended | Next `/execute-plan` resumes `next_action` |
 
 ### Anti-patterns (do not do these)
@@ -58,7 +58,7 @@ One standing grant covers **entire** delivery:
 
 | Default | Exception (opt-in only) |
 |---------|-------------------------|
-| Merge to integration when CI green | Orchestrator runs `halt --reason human_pause` on #1835 **before** merge; human comments `resume-plan agatha-care-journey` |
+| Merge to integration when CI green | Orchestrator runs `halt --reason human_pause` on [#1835](https://github.com/KanopeeKa/AgathaCheck/issues/1835) **before** merge; human comments `resume-plan agatha-care-journey` |
 
 **Wording trap:** programme tables may say “human_pause” beside migrations — that describes an **allowed halt**, not a **required** human gate. Unless `halt` was written to the snapshot, **merge automatically**.
 
