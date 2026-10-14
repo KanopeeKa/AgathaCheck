@@ -144,10 +144,7 @@ class CareItemContextStrip extends StatelessWidget {
                 CareItemPetContextTile(pet: pet),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: nameWidget,
-                  ),
+                  child: Align(alignment: Alignment.center, child: nameWidget),
                 ),
                 const SizedBox(width: 8),
                 categoryIcon,
