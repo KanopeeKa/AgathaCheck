@@ -12,11 +12,15 @@ class CareCategoryBlocksDetailSection extends StatelessWidget {
     required this.entry,
     required this.pet,
     required this.muted,
+    this.skipDosageLine = false,
   });
 
   final HealthEntry entry;
   final Pet pet;
   final bool muted;
+
+  /// When true, [ProductDoseBlock.legacyDosageLine] is omitted (shown elsewhere).
+  final bool skipDosageLine;
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +34,13 @@ class CareCategoryBlocksDetailSection extends StatelessWidget {
     switch (family) {
       case CareFamily.medication:
       case CareFamily.parasitePrevention:
-        rows.addAll(_productDoseRows(l, blocks.productDose));
+        rows.addAll(
+          _productDoseRows(
+            l,
+            blocks.productDose,
+            skipDosageLine: skipDosageLine,
+          ),
+        );
       case CareFamily.vaccination:
       case CareFamily.wellnessReview:
         rows.addAll(_visitRows(l, blocks.visit));
@@ -59,26 +69,31 @@ class CareCategoryBlocksDetailSection extends StatelessWidget {
             child: rows[i],
           ),
         ],
-        const SizedBox(height: 16),
       ],
     );
   }
 
-  List<Widget> _productDoseRows(AppLocalizations l, ProductDoseBlock? block) {
+  List<Widget> _productDoseRows(
+    AppLocalizations l,
+    ProductDoseBlock? block, {
+    required bool skipDosageLine,
+  }) {
     if (block == null || block.isEmpty) return [];
     final out = <Widget>[];
     void add(String label, String value) {
       final t = value.trim();
       if (t.isEmpty) return;
-      out.add(_labelValue(l, label, t));
+      out.add(_labelValue(label, t));
     }
 
     add(l.careCategoryBlockProductName, block.productName);
     add(l.careCategoryBlockForm, block.form);
     add(l.careCategoryBlockStrength, block.strength);
-    final dose = block.legacyDosageLine();
-    if (dose.isNotEmpty) {
-      add(l.dosage, dose);
+    if (!skipDosageLine) {
+      final dose = block.legacyDosageLine();
+      if (dose.isNotEmpty) {
+        add(l.dosage, dose);
+      }
     }
     add(l.careCategoryBlockRouteMethod, block.routeMethod);
     return out;
@@ -86,18 +101,18 @@ class CareCategoryBlocksDetailSection extends StatelessWidget {
 
   List<Widget> _visitRows(AppLocalizations l, VisitBlock? block) {
     if (block == null || block.isEmpty) return [];
-    return [
-      _labelValue(l, l.careCategoryBlockQuestionsToAsk, block.questionsToAsk),
-    ];
+    final questions = block.questionsToAsk.trim();
+    if (questions.isEmpty) return [];
+    return [_labelValue(l.careCategoryBlockQuestionsToAsk, questions)];
   }
 
   List<Widget> _weightRows(AppLocalizations l, Pet pet) {
     final ref = pet.weightReferenceValue;
     if (ref == null) return [];
-    return [_labelValue(l, l.careCategoryBlockWeightTargetTitle, '$ref kg')];
+    return [_labelValue(l.careCategoryBlockWeightTargetTitle, '$ref kg')];
   }
 
-  Widget _labelValue(AppLocalizations l, String label, String value) {
+  Widget _labelValue(String label, String value) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

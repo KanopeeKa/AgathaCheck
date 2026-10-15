@@ -5593,6 +5593,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careItemDetailsTitle => 'Détails';
 
   @override
+  String careItemDetailsIdentity(String category, String name) {
+    return 'Détails de $category : $name';
+  }
+
+  @override
   String get careItemHistoryTitle => 'Historique';
 
   @override

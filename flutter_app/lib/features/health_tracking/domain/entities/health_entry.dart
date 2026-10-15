@@ -171,6 +171,14 @@ class HealthEntry {
 
   bool get isPaused => status == 'paused';
 
+  /// Dosage for Details read view (structured product dose, else legacy field).
+  String? get primaryDosageLine {
+    final fromBlock = careBlocks.productDose?.legacyDosageLine() ?? '';
+    if (fromBlock.trim().isNotEmpty) return fromBlock.trim();
+    final legacy = dosage.trim();
+    return legacy.isEmpty ? null : legacy;
+  }
+
   /// Whether a one-time entry has been completed.
   bool get isCompleted {
     if (status == 'completed') return true;

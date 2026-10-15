@@ -2072,6 +2072,17 @@
   "careItemScreenTitle": "Care details",
   "careItemStatusFinished": "Finished",
   "careItemDetailsTitle": "Details",
+  "careItemDetailsIdentity": "Details of {category}: {name}",
+  "@careItemDetailsIdentity": {
+    "placeholders": {
+      "category": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "careItemHistoryTitle": "History",
   "careItemEditSchedule": "Edit schedule",
   "careItemMenuTooltip": "Care item actions",

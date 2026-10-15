@@ -9777,6 +9777,12 @@ abstract class AppLocalizations {
   /// **'Details'**
   String get careItemDetailsTitle;
 
+  /// No description provided for @careItemDetailsIdentity.
+  ///
+  /// In en, this message translates to:
+  /// **'Details of {category}: {name}'**
+  String careItemDetailsIdentity(String category, String name);
+
   /// No description provided for @careItemHistoryTitle.
   ///
   /// In en, this message translates to:

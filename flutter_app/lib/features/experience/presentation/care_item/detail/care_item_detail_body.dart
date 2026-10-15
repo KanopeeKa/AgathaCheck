@@ -116,11 +116,24 @@ class CareItemDetailBody extends ConsumerWidget {
               : MediaQuery.sizeOf(context).width;
           final wide = layoutWidth >= kCareItemTwoColumnBreakpoint;
 
+          Widget detailsModule({required bool includeEstablished}) {
+            return _DetailsModule(
+              entry: entry,
+              pet: pet,
+              petId: petId,
+              muted: muted,
+              isEstablished: isEstablished,
+              includeEstablished: includeEstablished,
+            );
+          }
+
           final content = wide
               ? Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     contextStrip,
+                    _sectionGap,
+                    detailsModule(includeEstablished: false),
                     _sectionGap,
                     Row(
                       key: const Key('care_item_detail_two_column'),
@@ -142,24 +155,7 @@ class CareItemDetailBody extends ConsumerWidget {
                           ),
                         ),
                         const SizedBox(width: 16),
-                        Expanded(
-                          flex: 2,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              sideScheduleAbsenceColumn(),
-                              _sectionGap,
-                              _DetailsModule(
-                                entry: entry,
-                                pet: pet,
-                                petId: petId,
-                                muted: muted,
-                                isEstablished: isEstablished,
-                                includeEstablished: false,
-                              ),
-                            ],
-                          ),
-                        ),
+                        Expanded(flex: 2, child: sideScheduleAbsenceColumn()),
                       ],
                     ),
                   ],
@@ -169,18 +165,11 @@ class CareItemDetailBody extends ConsumerWidget {
                   children: [
                     contextStrip,
                     _sectionGap,
+                    detailsModule(includeEstablished: true),
+                    _sectionGap,
                     needsSection,
                     _sectionGap,
                     sideScheduleAbsenceColumn(),
-                    _sectionGap,
-                    _DetailsModule(
-                      entry: entry,
-                      pet: pet,
-                      petId: petId,
-                      muted: muted,
-                      isEstablished: isEstablished,
-                      includeEstablished: true,
-                    ),
                     _sectionGap,
                     historyModule,
                   ],
@@ -229,8 +218,22 @@ class _DetailsModule extends StatelessWidget {
             icon: Icons.article_outlined,
           ),
           const SizedBox(height: 12),
-          CareCategoryBlocksDetailSection(entry: entry, pet: pet, muted: muted),
-          CareItemInfoSection(entry: entry, muted: muted),
+          CareItemInfoSection(
+            entry: entry,
+            muted: muted,
+            section: CareItemInfoSectionPart.lead,
+          ),
+          CareCategoryBlocksDetailSection(
+            entry: entry,
+            pet: pet,
+            muted: muted,
+            skipDosageLine: entry.primaryDosageLine != null,
+          ),
+          CareItemInfoSection(
+            entry: entry,
+            muted: muted,
+            section: CareItemInfoSectionPart.trail,
+          ),
           if (includeEstablished)
             CareItemEstablishedSection(pet: pet, isEstablished: isEstablished),
           if (entry.healthIssueId != null &&
