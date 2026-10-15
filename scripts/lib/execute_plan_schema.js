@@ -313,6 +313,7 @@ module.exports = {
   classifyWithException,
   computeHash,
   getPhase,
+  globToRegExp,
   loadSnapshot,
   loadSnapshotFromPath,
   planPaths,
