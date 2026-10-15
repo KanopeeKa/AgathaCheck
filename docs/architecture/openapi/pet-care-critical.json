@@ -2097,6 +2097,56 @@
           }
         }
       },
+      "OccurrenceNeighborSummary": {
+        "type": "object",
+        "required": [
+          "id",
+          "scheduled_date",
+          "occurrence_status"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "scheduled_date": {
+            "$ref": "#/components/schemas/CalendarDate"
+          },
+          "scheduled_time": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "occurrence_status": {
+            "enum": [
+              "coming_up",
+              "due",
+              "overdue",
+              "not_recorded",
+              "done",
+              "skipped"
+            ]
+          },
+          "completed_on": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/CalendarDate"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "performed_by_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
       "OccurrenceDetail": {
         "type": "object",
         "required": [
@@ -2252,6 +2302,26 @@
                     ]
                   }
                 }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "previous_occurrence": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/OccurrenceNeighborSummary"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "next_occurrence": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/OccurrenceNeighborSummary"
               },
               {
                 "type": "null"

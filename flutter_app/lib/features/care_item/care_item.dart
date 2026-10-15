@@ -23,6 +23,7 @@ export 'domain/done_decision.dart';
 export 'domain/leading_occurrence.dart';
 export 'domain/next_open_occurrence.dart';
 export 'domain/occurrence_detail.dart';
+export 'domain/occurrence_neighbor.dart';
 export 'domain/occurrence_display.dart';
 export 'domain/occurrence_status.dart';
 export 'domain/weigh_in_skip_reason.dart';
