@@ -3,7 +3,7 @@ title: Execute Plan Runtime
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-10-12
+last_updated: 2026-10-15
 tags: [agent-efficiency, policy]
 ---
 # Execute-plan runtime (Phase C)
@@ -182,10 +182,33 @@ Full halt/resume semantics: [autonomous-pr-policy.md](./autonomous-pr-policy.md)
 
 ---
 
+## v2 GitHub client
+
+`scripts/lib/execute_plan_github.js` is the only way execute-plan v2 code talks to GitHub (REST and
+GraphQL, Node 22 built-ins only, so it also runs in Actions without `npm ci`). New v2 code never
+shells out to `gh`; v1 modules such as `execute_plan_project.js` keep their `gh` calls until v2
+retires them. Build spec: [execute-plan-v2 WP1](./plans/execute-plan-v2/work-packages-runtime.md).
+
+- **Client:** `createGitHubClient({ repo: 'owner/name', token?, fetchImpl?, baseUrl?, sleep? })`.
+  List methods follow `Link: rel="next"` unless given `pages`.
+- **Token order:** `token` option → `EXECUTE_PLAN_TOKEN` → `GH_TOKEN` → `GITHUB_TOKEN`. With none, the
+  first request (not construction) throws `MissingToken`. Errors name the method and path only, never
+  the token.
+- **Errors and retries:** 502/503/504 and secondary rate limits are retried at most 3 times (2 s,
+  4 s, 8 s); an exhausted primary rate limit throws `RateLimited` (`resetAt`); other failures throw
+  `GitHubError` (`status`). `getBranch`, `getFileAtRef` return `null` on 404, and `removeLabel`
+  ignores 404. `listPullFiles` throws `PullFilesOverflow` above GitHub's 3000-file listing limit.
+- **Tests:** `scripts/test/helpers/execute_plan_fake_fetch.js` — `createFakeFetch(routes)` maps
+  `'<METHOD> <path>?<sorted query>'` (or `'POST /graphql'`) to a response or a function, records
+  `fake.calls`, and throws `Unrecorded request: <key>` for anything else. v2 tests are offline.
+
+---
+
 ## Tests
 
 ```bash
 node --test scripts/execute_plan_runtime.test.js
+node --test scripts/test/execute_plan_github.test.js
 ```
 
 Wired into `./scripts/pre-push-changed.sh` and `./scripts/pre-push.sh` governance gates.

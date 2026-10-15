@@ -133,6 +133,7 @@ run_governance() {
   node scripts/validate_execute_plan_snapshot.js .agents/plans/_example.snapshot.json
   node scripts/validate_execute_plan_snapshot.js --drift-test
   node --test scripts/execute_plan_runtime.test.js
+  node --test scripts/test/execute_plan_github.test.js
   node --test scripts/uat_queue_runtime.test.js
   node --test scripts/uat_coordinator_payload.test.js
   node --test scripts/ci/evaluate-uat-promote-hold.test.js
