@@ -9,6 +9,7 @@
 const DEFAULT_BASE_URL = 'https://api.github.com';
 const RETRY_DELAYS_MS = [2000, 4000, 8000];
 const RETRY_STATUSES = new Set([502, 503, 504]);
+const REQUEST_TIMEOUT_MS = 30_000; // a hung call must not hold the driver until the job timeout
 const PULL_FILES_LIMIT = 3000;
 
 class MissingToken extends Error {
@@ -124,7 +125,8 @@ function createGitHubClient(opts) {
     if (redirect) init.redirect = redirect;
 
     for (let attempt = 0; ; attempt += 1) {
-      const res = await fetchImpl(url, init);
+      // Timeouts reject and propagate; they are never retried.
+      const res = await fetchImpl(url, { ...init, signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) });
       if (res.status >= 300 && res.status < 400 && redirect === 'manual') {
         return { status: res.status, headers: res.headers, data: null, text: '' };
       }
@@ -295,7 +297,10 @@ function createGitHubClient(opts) {
       const location = first.headers.get('location');
       if (!location) throw new GitHubError(first.status, `GET job ${jobId} logs: redirect without location`);
       // The signed log URL must not receive the token.
-      const res = await fetchImpl(new URL(location, baseUrl).toString(), { method: 'GET' });
+      const res = await fetchImpl(new URL(location, baseUrl).toString(), {
+        method: 'GET',
+        signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+      });
       if (!res.ok) throw new GitHubError(res.status, `GET job ${jobId} logs (download) failed with ${res.status}`);
       return res.text();
     },
@@ -315,4 +320,5 @@ module.exports = {
   parseNextLink,
   DEFAULT_BASE_URL,
   RETRY_DELAYS_MS,
+  REQUEST_TIMEOUT_MS,
 };

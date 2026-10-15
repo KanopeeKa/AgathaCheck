@@ -98,6 +98,27 @@ test('retries are bounded (3) and then throw GitHubError', async () => {
   assert.deepEqual(sleeps, [2000, 4000, 8000]);
 });
 
+test('request timeout surfaces as an error', async () => {
+  const calls = [];
+  const sleeps = [];
+  const gh = createGitHubClient({
+    repo: 'acme/app',
+    token: 'tkn',
+    sleep: async (ms) => {
+      sleeps.push(ms);
+    },
+    fetchImpl: async (url, init) => {
+      calls.push(init);
+      if (init.signal) throw new DOMException('The operation was aborted due to timeout', 'TimeoutError');
+      return new Response('{}', { status: 200 });
+    },
+  });
+  await assert.rejects(gh.getIssue(1), { name: 'TimeoutError' });
+  assert.ok(calls[0].signal instanceof AbortSignal);
+  assert.equal(calls.length, 1);
+  assert.deepEqual(sleeps, []);
+});
+
 test('secondary rate limit retried then succeeds', async () => {
   const { gh, sleeps } = client({
     [`POST ${R}/issues/2/comments`]: [

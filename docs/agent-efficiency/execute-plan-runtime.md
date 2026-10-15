@@ -198,6 +198,7 @@ retires them. Build spec: [execute-plan-v2 WP1](./plans/execute-plan-v2/work-pac
   4 s, 8 s); an exhausted primary rate limit throws `RateLimited` (`resetAt`); other failures throw
   `GitHubError` (`status`). `getBranch`, `getFileAtRef` return `null` on 404, and `removeLabel`
   ignores 404. `listPullFiles` throws `PullFilesOverflow` above GitHub's 3000-file listing limit.
+  Every request has a 30 s timeout (`AbortSignal.timeout`); a timeout propagates and is never retried.
 - **Tests:** `scripts/test/helpers/execute_plan_fake_fetch.js` — `createFakeFetch(routes)` maps
   `'<METHOD> <path>?<sorted query>'` (or `'POST /graphql'`) to a response or a function, records
   `fake.calls`, and throws `Unrecorded request: <key>` for anything else. v2 tests are offline.
