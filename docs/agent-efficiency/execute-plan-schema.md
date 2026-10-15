@@ -3,7 +3,7 @@ title: Execute Plan Schema
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-10-12
+last_updated: 2026-10-15
 tags: [agent-efficiency, policy]
 ---
 # Execute-plan snapshot schema (canonical)
@@ -281,6 +281,69 @@ node scripts/execute_plan_runtime.js gate <plan_id> --labels autonomous-approved
 ```
 
 Runtime CLI: [execute-plan-runtime.md](./execute-plan-runtime.md).
+
+---
+
+## v2 scope check
+
+Applies to `schema_version: 2` snapshots only; the v1 drift algorithm above is unchanged.
+Code: `scripts/lib/execute_plan_scope.js` (pure, no I/O). The CLI and the `execute-plan-scope`
+check run that call it arrive in a later work package (build spec:
+[execute-plan-v2.md](./plans/execute-plan-v2.md), WP2 / WP7a).
+
+**Categories** (`categorizePull`; `<id>` = `plan_id`, `I` = `integration_branch`):
+
+| Head → base | Category |
+|-------------|----------|
+| `cursor/<id>-p<n>` → `I` | `phase` (phase `n`) |
+| `main` → `I` | `sync` |
+| `cursor/<id>-sync-<n>` → `I` | `sync-resolve` |
+| `I` → `main` | `release` |
+| `cursor/<id>-remedial-<n>` → `main` | `remedial` |
+| anything else | none — not a plan PR |
+
+**Evaluation order** (`evaluateDiff`):
+
+1. Plan stopped → `failure`, title `plan-stopped`; no file is evaluated.
+2. No category, or `sync` → `success`, title `ok`; no file is evaluated.
+3. Per file, first match wins:
+   1. The plan's own `.agents/plans/<id>.md` / `<id>.snapshot.json` → allowed only in the
+      `release` PR when their bytes equal the approved content; otherwise `drift`.
+   2. Protected set → `protected`.
+   3. `isForbiddenPath` from `.github/scripts/agent-safety-lib.js` → `forbidden`.
+   4. A phase's `forbidden_paths` (`phase`: that phase; otherwise every phase) → `forbidden`.
+   5. Scope: `phase` → that phase's `allowed_paths`; `release` / `sync-resolve` → union of all
+      phases' `allowed_paths`; `remedial` → that union plus `e2e/**` → allowed.
+   6. Exceptions the phase lists (`phase`: that phase; otherwise any phase; `remedial` always
+      gets `tests`) → `exception:tests` / `exception:docs`.
+   7. Companions (the phase's `companions` — every phase's for other categories — plus the fixed
+      list) → `companion`; the 6th and later companion files are `companion-cap`.
+   8. Otherwise `unclassified`.
+4. Conclusion `failure` iff any violation. Title = the most serious reason present:
+   `drift` > `protected` > `forbidden` > `unclassified` > `companion-cap`; none → `ok`.
+
+**Protected set** (`PROTECTED_PATHS`) — no plan PR may change these, even when listed in
+`allowed_paths`: `scripts/execute_plan_runtime.js`, `scripts/execute_plan_runtime.test.js`,
+`scripts/lib/execute_plan_*`, `scripts/validate_execute_plan_snapshot.js`,
+`scripts/test/execute_plan_*`, `scripts/test/helpers/execute_plan_*`,
+`scripts/test/fixtures/execute-plan-v2/**`, `scripts/pre-push.sh`, `scripts/pre-push-changed.sh`,
+`.github/**`, `.cursor/rules/**`, `.cursor/skills/**`, `.cursor/hooks.json`, `.claude/**`,
+`AGENTS.md`, `CLAUDE.md`, `.agents/plans/**` (other plans' files),
+`docs/agent-efficiency/plans/execute-plan-v2.md`, `docs/agent-efficiency/plans/execute-plan-v2/**`.
+
+**Fixed companions** (`FIXED_COMPANIONS`): `**/generated/**`, `**/*.g.dart`,
+`**/*.freezed.dart`, `flutter_app/lib/l10n/*.arb`, `docs/architecture/openapi/*.json`,
+`flutter_app/lib/features/*/*.dart` (feature barrel files). Companions are reported in
+`companionsUsed`; at most 5 per PR.
+
+**Exception globs** (`EXCEPTION_GLOBS`): `tests` = `**/test/**`, `**/*.test.js`,
+`**/*.test.mjs`, `**/*.test.ts`, `**/*_test.dart`, `e2e/**/*.spec.ts`; `docs` = `docs/**`,
+`**/*.md`. Globs use `globToRegExp` (`**` any segments, `*` one segment); there is no brace
+expansion.
+
+**Never in a plan:** paths matched by `agent-safety-lib.js` — auth, billing, secrets,
+migrations, infra, `server/config/security.js` — are rejected before any scope or exception
+glob is consulted, so no plan can authorise them.
 
 ---
 
