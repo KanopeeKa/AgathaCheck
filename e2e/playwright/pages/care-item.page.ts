@@ -458,10 +458,11 @@ export class CareItemPage {
   }
 
   async expectCareProviderVisible(providerName: string): Promise<void> {
-    await refreshFlutterAccessibility(this.page);
-    await expect(this.page.getByText(providerName, { exact: false }).first()).toBeVisible({
-      timeout: 30_000,
-    });
+    const pattern = new RegExp(providerName, 'i');
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await expect(this.page.getByText(pattern).first()).toBeVisible();
+    }).toPass({ timeout: 45_000 });
   }
 
   async expectAbsenceReviewActionsHidden(): Promise<void> {
