@@ -304,10 +304,10 @@ next_action: "continue phase 5 on branch cursor/care-date-blocks-v4-verify-e8f1"
 artifact_ref:
   branch: cursor/care-date-blocks-v4-verify-e8f1
   plan_path: .agents/plans/care-date-blocks-v4-e8f1.md
-  plan_commit: 2c0dcfc820abf133e06064936e9da4de55f840be
+  plan_commit: 0811f2ebc1e40b50237f35556f9805796b0c4e45
   snapshot_path: .agents/plans/care-date-blocks-v4-e8f1.snapshot.json
-  snapshot_commit: 2c0dcfc820abf133e06064936e9da4de55f840be
-open_prs: []
+  snapshot_commit: 0811f2ebc1e40b50237f35556f9805796b0c4e45
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/1900"]
 merge_commits: {}
 debt_issue_refs: []
 ```
