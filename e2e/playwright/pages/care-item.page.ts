@@ -458,10 +458,19 @@ export class CareItemPage {
   }
 
   async expectCareProviderVisible(providerName: string): Promise<void> {
-    await refreshFlutterAccessibility(this.page);
-    await expect(this.page.getByText(providerName, { exact: false }).first()).toBeVisible({
-      timeout: 30_000,
-    });
+    const pattern = new RegExp(providerName, 'i');
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      const detailsModule = this.page
+        .getByRole('heading', { name: /^Details$|^Détails$/i })
+        .or(this.page.getByText(/^Details$|^Détails$/i));
+      if (await detailsModule.first().isVisible().catch(() => false)) {
+        await detailsModule.first().scrollIntoViewIfNeeded();
+      }
+      const row = this.page.getByText(pattern).first();
+      await row.scrollIntoViewIfNeeded();
+      await expect(row).toBeVisible();
+    }).toPass({ timeout: 60_000 });
   }
 
   async expectAbsenceReviewActionsHidden(): Promise<void> {

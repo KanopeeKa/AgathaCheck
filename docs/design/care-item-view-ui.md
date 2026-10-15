@@ -3,7 +3,7 @@ title: Care Item view — UI modules
 owner: Design Team
 audience: both
 status: active
-last_updated: 2026-10-08
+last_updated: 2026-10-14
 tags: [design, pet-care, care-item]
 ---
 
@@ -56,15 +56,15 @@ Pet context: full-width context strip above the two-column row (not in side colu
 
 ## Care date screen (leaf)
 
-Route `/pet/:petId/events/:entryId/occurrences/:occurrenceId` — one occurrence, one confirmation surface (D-CIE-037). **Care Item** Needs attention rows, stack bulk actions, and trailing **Done** are **shortcuts** to the same per-date APIs; they do not replace the leaf screen for review, Away, weight, or DN-3 completion-date prompts.
+Route `/pet/:petId/events/:entryId/occurrences/:occurrenceId` — one occurrence, one confirmation surface (D-CIE-037). **Care Item** Needs attention rows, stack bulk actions, and trailing **Done** are **shortcuts** to the same per-date APIs; they do not replace the leaf screen for review, Away, weight, or off-leaf DN-3 completion-date prompts.
 
 | Surface | Role |
 |---------|------|
-| Care date | Canonical leaf: identity (schedule **Change date** / **Skip**) → Away → Complete (**Mark as done**) → Next open |
+| Care date | v4 leaf: **Context** → **Schedule** (Due, icon reschedule/skip, carer, absence) → **Complete** → **Neighbours** (chronological previous/next) |
 | Care Item Needs attention | Shortcut rows + optional single-slot **Change date**; line tap opens Care date |
 | Agenda list rows | Open **Care details** only (D-CIE-035) |
 
-Visual tokens match Care Item modules (`CareItemModule`, warm canvas). Semantics keys: `occurrence_reschedule`, `occurrence_skip`, `occurrence_done` — see [care-item-evolution.md § Care date screen](../domains/pet_care/features/care-item-evolution.md#care-date-screen).
+Visual tokens match Care Item modules (`CareItemModule`, warm canvas). Semantics keys include `occurrence_care_context_card`, `occurrence_schedule_section`, `occurrence_neighbors_section`, `occurrence_neighbor_previous`, `occurrence_neighbor_next`, `occurrence_reschedule`, `occurrence_skip`, `occurrence_done` — see [care-item-evolution.md § Care date screen](../domains/pet_care/features/care-item-evolution.md#care-date-screen).
 
 ## Components (Flutter)
 

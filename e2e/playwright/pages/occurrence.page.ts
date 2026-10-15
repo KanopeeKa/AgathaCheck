@@ -53,7 +53,7 @@ export class OccurrencePage {
     await refreshFlutterAccessibility(this.page);
     const screen = this.page.locator('[flt-semantics-identifier="occurrence_screen"]');
     const identity = this.page.locator(
-      '[flt-semantics-identifier="occurrence_identity_card"], [flt-semantics-identifier="occurrence_open_care_details"]',
+      '[flt-semantics-identifier="occurrence_care_context_card"], [flt-semantics-identifier="occurrence_care_name_link"], [flt-semantics-identifier="occurrence_schedule_section"]',
     );
     const back = this.page.getByRole('button', { name: /^Back$|^Go back$|^Retour$/i });
     const title = this.page.getByRole('heading', {
@@ -218,5 +218,69 @@ export class OccurrencePage {
     await dialog.getByText(new RegExp(`^${day},\\s`)).first().click({ force: true });
     await dialog.getByRole('button', { name: /^OK$|^Save$|Enregistrer/i }).first().click();
     await refreshFlutterAccessibility(this.page);
+  }
+
+  async expectV4FourBlockLayout(): Promise<void> {
+    await this.expectLoaded();
+    await refreshFlutterAccessibility(this.page);
+    const contextCard = this.page
+      .locator('[flt-semantics-identifier="occurrence_care_context_card"]')
+      .or(this.page.locator('[key="occurrence_care_name_link"]'))
+      .or(this.page.locator('[flt-semantics-identifier="occurrence_care_name_link"]'));
+    await expect(contextCard.first()).toBeVisible({ timeout: 45_000 });
+    const schedule = this.page
+      .locator('[flt-semantics-identifier="occurrence_schedule_section"]')
+      .or(this.page.getByText(/^Due\b|^Échéance\b/i).first());
+    await expect(schedule.first()).toBeVisible();
+    await expect(this.doneControl().first()).toBeVisible();
+    await expect(
+      this.page
+        .locator('[flt-semantics-identifier="occurrence_neighbors_section"]')
+        .or(this.page.getByText(/Other dates|Autres dates/i)),
+    ).toBeVisible();
+  }
+
+  async tapCareNameLink(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    const link = this.page
+      .locator('[flt-semantics-identifier="occurrence_care_name_link"]')
+      .or(this.page.locator('[key="occurrence_care_name_link"]'));
+    await link.first().click();
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async expectInlineCompletionDateVisible(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    await expect(
+      this.page
+        .locator('[flt-semantics-identifier="occurrence_field_completion_date"]')
+        .or(this.page.locator('[key="occurrence_field_completion_date"]')),
+    ).toBeVisible({ timeout: 15_000 });
+  }
+
+  async expectCompletionDateSheetHidden(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    await expect(this.page.locator('[key="completion_date_sheet"]')).toHaveCount(0);
+  }
+
+  async expectNeighborNextEnabled(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    const next = this.page.locator('[flt-semantics-identifier="occurrence_neighbor_next"]');
+    await expect(next).toBeVisible({ timeout: 15_000 });
+    await expect(next).toBeEnabled();
+  }
+
+  async tapNeighborNext(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    const next = this.page.locator('[flt-semantics-identifier="occurrence_neighbor_next"]');
+    await next.click();
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async expectRouteOccurrenceId(occurrenceId: string): Promise<void> {
+    await expect(async () => {
+      const path = flutterRoutePath(this.page.url());
+      expect(path).toContain(`/occurrences/${occurrenceId}`);
+    }).toPass({ timeout: 60_000 });
   }
 }

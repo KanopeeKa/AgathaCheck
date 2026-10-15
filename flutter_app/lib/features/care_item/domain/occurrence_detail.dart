@@ -1,5 +1,6 @@
 import 'care_item_schedule.dart';
 import 'care_occurrence.dart';
+import 'occurrence_neighbor.dart';
 import 'weigh_in_skip_reason.dart';
 
 /// One occurrence for the occurrence screen (§18.7.1, D-CIE-029).
@@ -11,6 +12,8 @@ class OccurrenceDetail {
     this.lastAction,
     this.linkedWeight,
     this.skipReason,
+    this.previousOccurrence,
+    this.nextOccurrence,
   });
 
   final CareOccurrence occurrence;
@@ -27,6 +30,9 @@ class OccurrenceDetail {
 
   /// Present when a weigh-in was skipped with an optional reason.
   final OccurrenceSkipReason? skipReason;
+
+  final OccurrenceNeighborSummary? previousOccurrence;
+  final OccurrenceNeighborSummary? nextOccurrence;
 
   /// Undo is offered on this occurrence only when the item's last action is
   /// on it (§18.6.4).
@@ -88,6 +94,8 @@ class CareItemSummary {
     required this.asOf,
     this.careFamily,
     this.lateCompletionChoice,
+    this.doseLine,
+    this.strengthFormLine,
   });
 
   final String id;
@@ -98,6 +106,16 @@ class CareItemSummary {
   final String status;
   final String? lateCompletionChoice;
   final CareAsOf asOf;
+
+  /// Dosage or product dose amount (Care date Block 1, CARE-ITEM-R-017).
+  final String? doseLine;
+
+  /// Combined strength and form for medication families when set.
+  final String? strengthFormLine;
+}
+
+bool careItemSummaryShowsStrengthForm(String? careFamily) {
+  return careFamily == 'medication' || careFamily == 'parasite_prevention';
 }
 
 /// The ledger type of the item's latest undoable action.

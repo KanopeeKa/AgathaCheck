@@ -236,3 +236,27 @@ void openOccurrenceScreen(
     ),
   );
 }
+
+/// Replaces the current Care date route (chronological neighbour nav, R-020).
+void replaceOccurrenceScreen(
+  BuildContext context, {
+  required String petId,
+  required String entryId,
+  required String occurrenceId,
+  String? focus,
+  String? source,
+}) {
+  final router = GoRouter.of(context);
+  final current = router.routerDelegate.currentConfiguration.uri;
+  final preservedReturnTo = current.queryParameters['returnTo'];
+  context.go(
+    occurrenceScreenLocation(
+      petId,
+      entryId,
+      occurrenceId,
+      focus: focus,
+      source: source,
+      returnTo: preservedReturnTo ?? currentShellLocation(context),
+    ),
+  );
+}

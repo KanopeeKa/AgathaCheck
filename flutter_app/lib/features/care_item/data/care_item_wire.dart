@@ -2,6 +2,7 @@ import '../../../core/utils/calendar_date.dart';
 import '../domain/care_item_schedule.dart';
 import '../domain/care_occurrence.dart';
 import '../domain/occurrence_detail.dart';
+import '../domain/occurrence_neighbor.dart';
 import '../domain/weigh_in_skip_reason.dart';
 
 /// Parsers for care item wire shapes (`api-reference.md` § Occurrence APIs).
@@ -109,6 +110,49 @@ LastDone? _lastDone(Object? raw) {
   );
 }
 
+String? _entryDoseLine(Map<String, dynamic> entry) {
+  final dosage = entry['dosage'] as String?;
+  if (dosage != null && dosage.trim().isNotEmpty) return dosage.trim();
+  final blocks = entry['care_blocks'] as Map<String, dynamic>?;
+  final pd = blocks?['product_dose'] as Map<String, dynamic>?;
+  if (pd == null) return null;
+  final amount = (pd['dose_amount'] as String? ?? '').trim();
+  final unit = (pd['dose_unit'] as String? ?? '').trim();
+  if (amount.isEmpty && unit.isEmpty) return null;
+  return [amount, unit].where((s) => s.isNotEmpty).join(' ');
+}
+
+String? _entryStrengthFormLine(Map<String, dynamic> entry) {
+  final family = entry['care_family'] as String?;
+  if (family != 'medication' && family != 'parasite_prevention') {
+    return null;
+  }
+  final blocks = entry['care_blocks'] as Map<String, dynamic>?;
+  final pd = blocks?['product_dose'] as Map<String, dynamic>?;
+  if (pd == null) return null;
+  final strength = (pd['strength'] as String? ?? '').trim();
+  final form = (pd['form'] as String? ?? '').trim();
+  if (strength.isEmpty && form.isEmpty) return null;
+  if (strength.isEmpty) return form;
+  if (form.isEmpty) return strength;
+  return '$strength · $form';
+}
+
+OccurrenceNeighborSummary? _neighborSummary(Object? raw) {
+  if (raw is! Map<String, dynamic>) return null;
+  final id = raw['id'] as String?;
+  final dateRaw = raw['scheduled_date'] as String?;
+  if (id == null || dateRaw == null) return null;
+  return OccurrenceNeighborSummary(
+    id: id,
+    scheduledDate: _requiredDate(dateRaw, 'scheduled_date'),
+    scheduledTime: _time(raw['scheduled_time']),
+    occurrenceStatus: raw['occurrence_status'] as String? ?? 'due',
+    completedOn: parseCalendarDate(raw['completed_on']),
+    performedByName: raw['performed_by_name'] as String?,
+  );
+}
+
 /// `GET /api/health-entries/:id/occurrences/:occId`.
 OccurrenceDetail occurrenceDetailFromJson(Map<String, dynamic> json) {
   final occ = json['occurrence'] as Map<String, dynamic>;
@@ -140,6 +184,8 @@ OccurrenceDetail occurrenceDetailFromJson(Map<String, dynamic> json) {
       status: entry['status'] as String? ?? 'active',
       lateCompletionChoice: entry['late_completion_choice'] as String?,
       asOf: careAsOfFromJson(entry['as_of'] as Map<String, dynamic>),
+      doseLine: _entryDoseLine(entry),
+      strengthFormLine: _entryStrengthFormLine(entry),
     ),
     schedule: schedule,
     lastAction: last == null
@@ -161,5 +207,7 @@ OccurrenceDetail occurrenceDetailFromJson(Map<String, dynamic> json) {
             code: skipRaw['code'] as String?,
             note: skipRaw['note'] as String?,
           ),
+    previousOccurrence: _neighborSummary(json['previous_occurrence']),
+    nextOccurrence: _neighborSummary(json['next_occurrence']),
   );
 }

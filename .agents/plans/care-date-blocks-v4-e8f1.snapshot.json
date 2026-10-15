@@ -1,0 +1,204 @@
+{
+  "schema_version": 1,
+  "plan_id": "care-date-blocks-v4-e8f1",
+  "approved_at": "2026-10-14T15:50:00Z",
+  "approved_by": "Product owner chat 2026-10-14 — Option (a), execute-plan",
+  "approved_until": "2026-10-21T21:52:00Z",
+  "content_hash": "sha256:27c5cdf3bd8132b0efb23c4585c054dad73b208023b01ff5195a857c3eae7642",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/care-date-blocks-v4-e8f1-integration-e8f1",
+  "control_issue": 1894,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Neighbours API + wire models",
+      "branch": "cursor/care-date-blocks-v4-api-e8f1",
+      "allowed_paths": [
+        "server/lib/health/occurrenceNeighbors.js",
+        "server/lib/health/**",
+        "server/routes/healthEntries/occurrencePatchRouter.js",
+        "server/test/db/careOccurrences.neighbors.integration.test.js",
+        "server/test/health/**",
+        "flutter_app/lib/features/care_item/domain/occurrence_neighbor.dart",
+        "flutter_app/lib/features/care_item/data/care_item_wire.dart",
+        "flutter_app/lib/features/care_item/domain/occurrence_detail.dart",
+        "flutter_app/test/features/care_item/data/care_item_wire_occurrence_detail_test.dart",
+        "docs/architecture/api-reference.md",
+        "docs/architecture/openapi/pet-care-critical.json",
+        "docs/domains/pet_care/features/care-item-evolution.md",
+        "docs/domains/pet_care/changes/care-date-blocks-v4-spec.md",
+        ".agents/plans/care-date-blocks-v4-e8f1.md",
+        ".agents/plans/care-date-blocks-v4-e8f1.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "e2e/**",
+        "db/migrations/**",
+        "flutter_app/lib/features/experience/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1895",
+      "pr_head_sha": "ca041a6562c139415cae823a42483c29d0e750b1"
+    },
+    {
+      "id": "2",
+      "title": "Blocks 1 and 2",
+      "branch": "cursor/care-date-blocks-v4-context-e8f1",
+      "allowed_paths": [
+        "flutter_app/lib/features/experience/presentation/care_item/occurrence/**",
+        "flutter_app/lib/features/care_item/domain/occurrence_detail.dart",
+        "flutter_app/lib/features/care_item/data/care_item_wire.dart",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/care_item/presentation/**",
+        "flutter_app/test/features/experience/presentation/care_item/occurrence/**",
+        "e2e/playwright/pages/occurrence.page.ts",
+        "e2e/playwright/pages/away-planning.page.ts",
+        "e2e/playwright/tests/care.agenda.spec.ts",
+        "docs/design/care-item-view-ui.md",
+        "docs/domains/pet_care/features/care-item-evolution.md",
+        ".agents/plans/care-date-blocks-v4-e8f1.md",
+        ".agents/plans/care-date-blocks-v4-e8f1.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "db/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1896",
+      "pr_head_sha": "586483c64a06ba883a04e439767cdeeabb73f155"
+    },
+    {
+      "id": "3",
+      "title": "Block 3 completion",
+      "branch": "cursor/care-date-blocks-v4-complete-e8f1",
+      "allowed_paths": [
+        "flutter_app/lib/features/care_item/domain/done_decision.dart",
+        "flutter_app/lib/features/care_item/presentation/care_completion_flow.dart",
+        "flutter_app/lib/features/experience/presentation/care_item/occurrence/occurrence_complete_care_module.dart",
+        "flutter_app/lib/features/experience/presentation/care_item/occurrence/occurrence_open_actions.dart",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/care_item/domain/done_decision_test.dart",
+        "flutter_app/test/features/care_item/presentation/**",
+        "flutter_app/test/features/experience/presentation/care_item/occurrence/**",
+        "e2e/playwright/tests/weight.care.spec.ts",
+        "docs/domains/pet_care/features/care-item-evolution.md",
+        ".agents/plans/care-date-blocks-v4-e8f1.md",
+        ".agents/plans/care-date-blocks-v4-e8f1.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "db/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1897",
+      "pr_head_sha": "1c9e387bb659f051d6e3c154bc0a5592a624a7c6"
+    },
+    {
+      "id": "4",
+      "title": "Block 4 navigation",
+      "branch": "cursor/care-date-blocks-v4-nav-e8f1",
+      "allowed_paths": [
+        "flutter_app/lib/features/experience/presentation/care_item/occurrence/**",
+        "flutter_app/lib/core/router/shell_return_navigation.dart",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/care_item/presentation/**",
+        "flutter_app/test/features/experience/presentation/care_item/occurrence/**",
+        "e2e/playwright/pages/occurrence.page.ts",
+        "e2e/playwright/tests/care.item.booster.spec.ts",
+        "docs/design/care-item-view-ui.md",
+        "docs/domains/pet_care/features/care-item-evolution.md",
+        ".agents/plans/care-date-blocks-v4-e8f1.md",
+        ".agents/plans/care-date-blocks-v4-e8f1.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "db/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1899",
+      "pr_head_sha": "2c0dcfc820abf133e06064936e9da4de55f840be"
+    },
+    {
+      "id": "5",
+      "title": "BDD canonical Live release prep",
+      "branch": "cursor/care-date-blocks-v4-verify-e8f1",
+      "allowed_paths": [
+        "flutter_app/test/bdd/features/care_date_screen.feature",
+        "e2e/playwright/tests/care.date.spec.ts",
+        "e2e/playwright/pages/**",
+        "e2e/playwright/tests/care.agenda.spec.ts",
+        "e2e/playwright/tests/weight.care.spec.ts",
+        "flutter_app/test/features/care_item/**",
+        "docs/domains/pet_care/features/care-item-evolution.md",
+        "docs/design/care-item-view-ui.md",
+        "docs/domains/pet_care/changes/care-date-blocks-v4-spec.md",
+        ".agents/plans/care-date-blocks-v4-e8f1.md",
+        ".agents/plans/care-date-blocks-v4-e8f1.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1900",
+      "pr_head_sha": "9d1c34f6"
+    }
+  ]
+}

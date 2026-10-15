@@ -2571,6 +2571,7 @@
   "careDateScreenTitle": "Care date",
   "occurrenceThisDateTitle": "This date",
   "occurrenceCompletionDateLabel": "Completion date",
+  "occurrenceScheduledTimeLabel": "Scheduled time",
   "occurrenceDaysOverdue": "{count, plural, =1{1 day overdue} other{{count} days overdue}}",
   "@occurrenceDaysOverdue": {
     "placeholders": {
@@ -2578,8 +2579,14 @@
     }
   },
   "occurrenceNextOpenDate": "Next open date",
+  "occurrenceNeighborsTitle": "Other dates",
+  "occurrenceNeighborPreviousLabel": "Previous",
+  "occurrenceNeighborNextLabel": "Next",
+  "occurrenceNeighborNonePrevious": "No earlier date",
+  "occurrenceNeighborNoneNext": "No later date",
   "occurrenceViewNext": "View",
   "occurrenceOpenCareDetails": "View care details",
+  "occurrenceDueLabel": "Due",
   "occurrenceOtherOpenDatesHint": "Other open dates are on this care item.",
   "occurrenceScheduleRecurring": "Recurring care",
   "occurrenceSchedulePlannedDate": "Planned date",

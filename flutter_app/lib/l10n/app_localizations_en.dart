@@ -6819,6 +6819,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get occurrenceCompletionDateLabel => 'Completion date';
 
   @override
+  String get occurrenceScheduledTimeLabel => 'Scheduled time';
+
+  @override
   String occurrenceDaysOverdue(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -6833,10 +6836,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get occurrenceNextOpenDate => 'Next open date';
 
   @override
+  String get occurrenceNeighborsTitle => 'Other dates';
+
+  @override
+  String get occurrenceNeighborPreviousLabel => 'Previous';
+
+  @override
+  String get occurrenceNeighborNextLabel => 'Next';
+
+  @override
+  String get occurrenceNeighborNonePrevious => 'No earlier date';
+
+  @override
+  String get occurrenceNeighborNoneNext => 'No later date';
+
+  @override
   String get occurrenceViewNext => 'View';
 
   @override
   String get occurrenceOpenCareDetails => 'View care details';
+
+  @override
+  String get occurrenceDueLabel => 'Due';
 
   @override
   String get occurrenceOtherOpenDatesHint =>
