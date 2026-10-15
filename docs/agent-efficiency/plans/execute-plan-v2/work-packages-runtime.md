@@ -1,237 +1,278 @@
 ---
-title: Execute-plan v2 — runtime work packages (WP1–WP5)
+title: Execute-plan v2 — runtime work packages WP1–WP3
 owner: Kanopee
 audience: agent
 status: active
 last_updated: 2026-10-15
 tags: [agent, execute-plan, autonomy]
 ---
-# Execute-plan v2 — runtime work packages (WP1–WP5)
+# Execute-plan v2 — runtime work packages WP1–WP3
 
 Part of [execute-plan-v2.md](../execute-plan-v2.md). Contracts: [contracts.md](./contracts.md).
-Common to every WP: branch from `main`; one PR; `./scripts/pre-push-changed.sh` green before push;
-new test files added to the `node --test` line at `scripts/pre-push-changed.sh:135`; PR body with
-`## Docs`; no file over 500 lines; no `gh` in new code; tests offline on fixtures; v1 behaviour
-unchanged (`schema_version` absent/`1` → existing code paths). CLI entry point stays
-`scripts/execute_plan_runtime.js`; new subcommands are registered there and delegate to modules.
+State machine: [state-machine.md](./state-machine.md). WP4a–WP5: [work-packages-tick.md](./work-packages-tick.md).
+Kickoff prompts: [work-split-and-prompts.md](./work-split-and-prompts.md).
 
-## WP1 — GitHub client and fixtures
+**Rules for every runtime WP** (in addition to index §2):
+- Node 22 built-ins only (`fetch`, `crypto`, `fs`, `path`, `child_process` for `git`). No npm
+  package, no `gh`, no YAML. These modules also run inside GitHub Actions without `npm ci`.
+- CommonJS (`'use strict'; module.exports = …`) like the existing `scripts/lib/execute_plan_*.js`.
+- Tests: `node:test` + `node:assert/strict`, offline. HTTP is faked with the WP1 fake fetch; pure
+  logic is tested with plain objects. A test that reaches the network is a defect.
+- Every new test file is added to the governance block of `scripts/pre-push-changed.sh` next to
+  line 135 (`node --test scripts/execute_plan_runtime.test.js`). CI wiring is done once in WP7a.
+- v1 untouched: a snapshot without `schema_version` or with `1` keeps today's behaviour; the
+  existing `node --test scripts/execute_plan_runtime.test.js` stays green unchanged.
+- Each module ≤ 400 lines; split before that.
 
-**Branch:** `claude/execute-plan-v2-wp1` · **Size:** ~350 lines code, ~250 lines tests/fixtures
+## WP1 — GitHub client and fake fetch
 
-**Files**
-- `scripts/lib/execute_plan_github.js` (new) — REST + GraphQL client over global `fetch`.
-- `scripts/test/fixtures/execute-plan-v2/README.md` — fixture format.
-- `scripts/test/fixtures/execute-plan-v2/replay-1894-1895/*.json` — recorded responses (see below).
-- `scripts/test/execute_plan_github.test.js` (new).
+**Depends on:** nothing · **Recommended executor:** Claude Code (or Cursor) · **Size:** ~350 code, ~250 tests
 
-**Exports**
+**Files (create)**
+- `scripts/lib/execute_plan_github.js`
+- `scripts/test/helpers/execute_plan_fake_fetch.js`
+- `scripts/test/execute_plan_github.test.js`
+
+**Do not touch:** any other file except the one test line in `scripts/pre-push-changed.sh`;
+in particular `scripts/lib/execute_plan_project.js` (keeps its `gh` calls until WP10) and `.github/**`.
+
+**Exports — `execute_plan_github.js`**
 ```js
-/** @typedef {{ method?: string, path: string, query?: Record<string,string|number>, body?: any, graphql?: string, variables?: any }} GhRequest */
-/** @param {{ token?: string, repo: string, fetchImpl?: typeof fetch, baseUrl?: string }} opts */
-function createGitHubClient(opts)  // → client
-// client methods (all async, all paginate where GitHub paginates):
-client.getRepo(); client.getIssue(n); client.listIssueComments(n); client.createComment(n, body);
-client.updateComment(id, body); client.addLabels(n, labels); client.removeLabel(n, label);
-client.listPulls({ head, base, state }); client.getPull(n); client.listPullFiles(n)  // throws PullFilesOverflow when > 3000
-client.listCheckRuns(sha); client.compare(base, head)  // → { status, ahead_by, behind_by, files: [{filename,status}] }
-client.listWorkflowRuns(file, { branch, event, per_page }); client.getWorkflowRun(id); client.listRunJobs(id);
-client.dispatchWorkflow(file, ref, inputs); client.rerunFailedJobs(id);
-client.listTags(); client.getBranch(name); client.createRef(ref, sha); client.createPull({ title, head, base, body, draft });
-client.mergePull(n, { method }); client.updateBranch(n); client.enableAutoMerge(nodeId, method); client.disableAutoMerge(nodeId);
-client.listUnresolvedThreads(n)  // GraphQL → [{ url, path, line, author }]
-client.getFileAtRef(path, ref)   // → { content: string, sha }
-/** Replays recorded responses; throws on an unrecorded request. */
-function createFixtureClient(fixtureDir)
-/** Records live responses into fixtureDir (manual use only; never in tests). */
-function createRecordingClient(opts, fixtureDir)
+/** @param {{ repo: string, token?: string, fetchImpl?: typeof fetch, baseUrl?: string, sleep?: (ms:number)=>Promise<void> }} opts */
+function createGitHubClient(opts)          // repo = 'owner/name'; baseUrl default 'https://api.github.com'
+class MissingToken extends Error {}  class RateLimited extends Error { /** resetAt: string */ }
+class PullFilesOverflow extends Error {}  class GitHubError extends Error { /** status: number */ }
 ```
+Client methods (all `async`; list methods follow `Link: rel="next"` until exhausted unless a
+`pages` limit is given):
+
+| Method | REST / GraphQL |
+|--------|----------------|
+| `getIssue(n)` / `closeIssue(n)` | `GET` / `PATCH /issues/{n}` (`state: closed`) |
+| `listIssueComments(n)` / `createComment(n, body)` / `updateComment(id, body)` | `/issues/{n}/comments`, `PATCH /issues/comments/{id}` |
+| `addLabels(n, labels)` / `removeLabel(n, label)` | `POST /issues/{n}/labels`, `DELETE /issues/{n}/labels/{label}` (404 ignored) |
+| `listIssueTimeline(n)` | `GET /issues/{n}/timeline` |
+| `listPulls({ head, base, state })` | `GET /pulls?head={owner}:{head}&base={base}&state={state}` |
+| `getPull(n)`, `listPullCommits(n)`, `listPullReviews(n)` | `/pulls/{n}`, `/pulls/{n}/commits`, `/pulls/{n}/reviews` |
+| `listPullFiles(n)` | `/pulls/{n}/files`; throws `PullFilesOverflow` when more than 3000 files |
+| `createPull({ title, head, base, body, draft })`, `mergePull(n, { method })`, `updateBranch(n)` | `POST /pulls`, `PUT /pulls/{n}/merge`, `PUT /pulls/{n}/update-branch` |
+| `listUnresolvedThreads(n)` | GraphQL `repository.pullRequest(number).reviewThreads(first:100){nodes{isResolved path comments(first:1){nodes{url author{login}}}}}` → `[{ url, path, author }]` for unresolved |
+| `enableAutoMerge(nodeId, method)` / `disableAutoMerge(nodeId)` | GraphQL `enablePullRequestAutoMerge(input:{pullRequestId, mergeMethod: SQUASH\|MERGE})` / `disablePullRequestAutoMerge` |
+| `listCheckRuns(sha)` | `GET /commits/{sha}/check-runs?per_page=100` |
+| `createCheckRun({ name, head_sha, conclusion, title, summary })`, `updateCheckRun(id, {…})` | `POST /check-runs` (`status: completed`), `PATCH /check-runs/{id}` |
+| `compare(base, head)` | `GET /compare/{base}...{head}` → `{ status, ahead_by, behind_by, files: [{ filename, status }] }` |
+| `listWorkflowRuns(file, { branch, event, status, per_page, pages })` | `GET /actions/workflows/{file}/runs` |
+| `listRunJobs(runId)` / `getJobLog(jobId)` | `GET /actions/runs/{id}/jobs`; `GET /actions/jobs/{id}/logs` (follows the redirect, returns text) |
+| `dispatchWorkflow(file, ref, inputs)` | `POST /actions/workflows/{file}/dispatches` |
+| `listTags({ pages })` | `GET /tags` (`[{ name, commit: { sha } }]`) |
+| `getBranch(name)` / `createRef(ref, sha)` | `GET /branches/{name}` (404 → `null`), `POST /git/refs` |
+| `getFileAtRef(path, ref)` | `GET /contents/{path}?ref={ref}` → `{ content: <utf-8 string>, sha }`; 404 → `null` |
 
 **Rules**
-1. Token resolution: `EXECUTE_PLAN_TOKEN` → `GH_TOKEN` → `GITHUB_TOKEN`; missing token → throw `MissingToken` at first call, not at construction.
-2. Every request sends `Accept: application/vnd.github+json`, `X-GitHub-Api-Version: 2022-11-28`, `User-Agent: execute-plan/2`.
-3. Retries: `502/503/504` and `secondary rate limit` → 3 attempts, exponential 2 s/4 s/8 s. `403` with `x-ratelimit-remaining: 0` → throw `RateLimited` with reset time; never spin.
-4. Fixture format: one JSON file per request, name `<METHOD>_<path with / → _>_<sha1(query+body)[0:8]>.json`, content `{ request, status, headers, body }`. The fixture client matches on method, path, query and body.
-5. Replay fixture: record issue `#1894` (comments, labels, timeline), PR `#1895` (pull, files, check runs on head `e80264e`), the integration-branch snapshot and the head-branch snapshot. Owner runs the recorder once (`node scripts/execute_plan_runtime.js record-fixtures --plan care-date-blocks-v4-e8f1 --issue 1894 --pr 1895 --out scripts/test/fixtures/execute-plan-v2/replay-1894-1895`); strip tokens and emails from recorded bodies.
+1. Token: `opts.token` ?? `EXECUTE_PLAN_TOKEN` ?? `GH_TOKEN` ?? `GITHUB_TOKEN`. None → throw
+   `MissingToken` on the first request (not at construction).
+2. Headers: `Authorization: Bearer <token>`, `Accept: application/vnd.github+json`,
+   `X-GitHub-Api-Version: 2022-11-28`, `User-Agent: execute-plan/2`. GraphQL: `POST {baseUrl}/graphql`.
+3. Retries: status 502/503/504, or 403/429 whose body mentions `secondary rate limit` → up to 3
+   retries with `sleep` 2 s, 4 s, 8 s. 403 with header `x-ratelimit-remaining: 0` → throw
+   `RateLimited` (resetAt from `x-ratelimit-reset`). Never loop without a limit.
+4. Other non-2xx → `GitHubError(status, message)`; 404 → `null` only where the table says so.
+5. Never print tokens; errors include method and path only.
 
-**Tests:** `pagination follows Link headers`, `listPullFiles overflow throws`, `retry on 502 then success`, `rate limit throws RateLimited`, `token resolution order`, `fixture client throws on unrecorded request`, `compare maps status and files`, `unresolved threads GraphQL mapping`.
+**Fake fetch — `scripts/test/helpers/execute_plan_fake_fetch.js`**
+`createFakeFetch(routes)` returns a `fetch`-compatible function. `routes` maps keys
+`'<METHOD> <path>?<query sorted by key>'` (path without the `https://api.github.com` prefix) or
+`'POST /graphql'` to `{ status = 200, headers = {}, body }` or to `(request) => response`. An
+unmatched request throws `Error('Unrecorded request: <key>')`. It records every request in
+`fake.calls` for assertions. Later WPs reuse it to test `observe()` and workflow scripts.
+
+**Tests** (`scripts/test/execute_plan_github.test.js`): `pagination follows Link`,
+`listPullFiles overflow throws PullFilesOverflow`, `retry on 502 then success`,
+`secondary rate limit retried then succeeds`, `rate limit remaining 0 throws RateLimited`,
+`token resolution order`, `missing token throws on first call`, `getBranch 404 returns null`,
+`getFileAtRef decodes base64 content`, `compare maps fields`, `unresolved threads mapping`,
+`enableAutoMerge sends the GraphQL mutation`, `getJobLog returns text`,
+`fake fetch throws on unrecorded request`.
 
 **Acceptance:** `node --test scripts/test/execute_plan_github.test.js && ./scripts/pre-push-changed.sh`
 
-**Docs:** add a row to `docs/agent-efficiency/README.md` tooling table pointing at the client; note in `docs/engineering/cursor-agent-framework.md` § tooling that new GitHub I/O uses it.
+**Docs:** `docs/agent-efficiency/execute-plan-runtime.md` — new section "v2 GitHub client" (what it
+is, token order, no `gh` in new code, the fake for tests).
 
-**Kickoff prompt:** "Implement WP1 of docs/agent-efficiency/plans/execute-plan-v2.md (read the index, contracts.md, and the WP1 section of work-packages-runtime.md). Branch from main. Offline tests only. Open a draft PR, mark ready when pre-push-changed is green."
+## WP2 — Scope matcher (pure)
 
-## WP2 — Scope matcher and `check-diff`
+**Depends on:** nothing (can run in parallel with WP1) · **Recommended executor:** Claude Code · **Size:** ~250 code, ~250 tests
 
-**Branch:** `claude/execute-plan-v2-wp2` · **Size:** ~300 lines code, ~250 lines tests
+**Files (create)**
+- `scripts/lib/execute_plan_scope.js`
+- `scripts/test/execute_plan_scope.test.js`
 
-**Files**
-- `scripts/lib/execute_plan_scope.js` (new) — protected set, categories, classification.
-- `scripts/execute_plan_runtime.js` — register `check-diff`.
-- `scripts/test/execute_plan_scope.test.js` (new).
-- Leave `classifyFile`/`classifyWithException` in `execute_plan_schema.js:84-105` untouched for v1.
+**Do not touch:** `classifyFile` / `classifyWithException` in `scripts/lib/execute_plan_schema.js:84-105`
+(v1 keeps them), `.github/scripts/agent-safety-lib.js` (import only). The CLI and the workflow
+that call this module are WP7a, not here.
 
 **Exports**
 ```js
-const PROTECTED_PATHS_V1 = [ 'scripts/execute_plan_runtime.js', 'scripts/lib/execute_plan_*', 'scripts/execute_plan_*.test.js',
-  '.github/**', '.cursor/rules/**', '.cursor/skills/**', '.cursor/hooks.json', '.claude/**', 'AGENTS.md', 'CLAUDE.md' ];
-// plus FORBIDDEN_PATH_PATTERNS imported from .github/scripts/agent-safety-lib.js (import, never copy)
-/** @returns {'phase'|'sync'|'sync-resolve'|'release'|'remedial'|'init'|null} */
-function categorizePull(pr, snapshot)   // by head/base refs: phase branch→integration; main→integration; cursor/<id>-sync-N→integration; integration→main; cursor/<id>-remedial-N→main; cursor/<id>-init→(none, init branch has no PR)
-/** @returns {{ ok: boolean, reason: string, category: 'protected'|'forbidden'|'allowed'|'companion'|'exception:tests'|'exception:docs'|'drift'|'unclassified' }} */
-function classifyPath(file, { snapshot, phase, prCategory })
-/** @returns {{ ok, verdict: 'green'|'red', violations: [{file, reason}], companionsUsed: string[], evidence }} */
-function evaluateDiff(files, { snapshot, phase, prCategory, controlState })
+const PROTECTED_PATHS            // array of globs, exactly the list in rule 3
+const FIXED_COMPANIONS           // array of globs, rule 7
+const EXCEPTION_GLOBS            // { tests: [...], docs: [...] }, rule 6
+/** @returns {{ category: 'phase'|'sync'|'sync-resolve'|'release'|'remedial'|null, phaseId: string|null }} */
+function categorizePull({ head_ref, base_ref }, snapshot)
+/** @returns {{ file, verdict: 'own-plan-file'|'protected'|'forbidden'|'allowed'|'exception:tests'|'exception:docs'|'companion'|'unclassified' }} */
+function classifyPath(file, { snapshot, category, phaseId })
+/** @param {{ files: string[], snapshot, category, phaseId, ownPlanFilesVerified: boolean, stopped: { stopped: boolean, reason: string|null } }} args
+ *  @returns {{ conclusion: 'success'|'failure', title: string, violations: {file:string, reason:string}[], companionsUsed: string[] }} */
+function evaluateDiff(args)
 ```
 
-**Rules (evaluation order per file — forbidden first, B5/R9)**
-1. `.agents/plans/<plan_id>.md` or `.snapshot.json` changed → `drift` → red.
-2. Protected set or `FORBIDDEN_PATH_PATTERNS` match → `protected`/`forbidden` → red, regardless of `allowed_paths`.
-3. Plan `forbidden_paths` match → red.
-4. Category scope: `phase` → the phase's `allowed_paths`; `release` and `sync-resolve` → union of all phases' `allowed_paths` (files are `compare(main...head).files`); `remedial` → that union ∪ `e2e/**` ∪ test category; `sync` (head is `main`) → always green with no file evaluation.
-5. Exceptions are real categories: `tests` ⇔ `**/test/**`, `**/*.test.{js,mjs,ts}`, `**/*_test.dart`, `e2e/**/*.spec.ts`; `docs` ⇔ `docs/**`, `**/*.md` outside `.agents/` and `.cursor/`. Only if the phase lists the exception.
-6. Companions: phase `companions` globs plus the fixed generated/barrel list `['**/generated/**', '**/*.g.dart', '**/*.freezed.dart', 'flutter_app/lib/l10n/*.arb', 'openapi/*.json', '**/index.{js,ts,dart}']`; ≤ 5 companion files per PR, each reported in `companionsUsed`.
-7. Anything else → `unclassified` → red.
-8. `controlState` (from the status comment / labels): `stop`, revoked, expired or invalid approval → red with reason `plan-stopped` even when files are fine (B3).
+**`categorizePull`** (`<id>` = `snapshot.plan_id`, `I` = `snapshot.integration_branch`):
+`cursor/<id>-p<n>` → `I` ⇒ `phase` (phaseId `n`); `main` → `I` ⇒ `sync`; `cursor/<id>-sync-<n>` → `I` ⇒
+`sync-resolve`; `I` → `main` ⇒ `release`; `cursor/<id>-remedial-<n>` → `main` ⇒ `remedial`;
+anything else ⇒ `null`.
 
-**CLI:** `node scripts/execute_plan_runtime.js check-diff <plan_id> --pr <n> [--json]` — v2 only; uses the client from WP1; exit `0` green, `1` red, `3` config error. It is the function the scope workflow calls (WP8).
+**`evaluateDiff` rules** (globs via `globToRegExp` from `scripts/lib/execute_plan_schema.js:72`; **no brace expansion** — list every glob separately):
+1. `stopped.stopped` → `failure`, title `plan-stopped`, no file evaluation.
+2. `category == null` or `'sync'` → `success`, title `ok`, no file evaluation.
+3. Per file, first match wins:
+   a. `.agents/plans/<id>.md` or `.agents/plans/<id>.snapshot.json` → `own-plan-file`: allowed
+      only when `category == 'release'` and `ownPlanFilesVerified`; otherwise violation `drift`.
+   b. Protected set → violation `protected`: `scripts/execute_plan_runtime.js`,
+      `scripts/execute_plan_runtime.test.js`, `scripts/lib/execute_plan_*`,
+      `scripts/validate_execute_plan_snapshot.js`, `scripts/test/execute_plan_*`,
+      `scripts/test/helpers/execute_plan_*`, `scripts/test/fixtures/execute-plan-v2/**`,
+      `scripts/pre-push.sh`, `scripts/pre-push-changed.sh`, `.github/**`, `.cursor/rules/**`,
+      `.cursor/skills/**`, `.cursor/hooks.json`, `.claude/**`, `AGENTS.md`, `CLAUDE.md`,
+      `.agents/plans/**`, `docs/agent-efficiency/plans/execute-plan-v2.md`,
+      `docs/agent-efficiency/plans/execute-plan-v2/**`.
+   c. `isForbiddenPath(file)` from `.github/scripts/agent-safety-lib.js` (migrations, security
+      config, infra, `/auth/`, `/billing/`, `/secret(s)/`) → violation `forbidden`.
+   d. Any phase's `forbidden_paths` (for `phase`: that phase; otherwise all phases) → `forbidden`.
+   e. Scope globs: `phase` → that phase's `allowed_paths`; `release` and `sync-resolve` → union of
+      all phases' `allowed_paths`; `remedial` → that union plus `e2e/**` → `allowed`.
+   f. Exceptions, only when listed (`phase`: by that phase; otherwise by any phase; `remedial`
+      always gets `tests`): `tests` = `**/test/**`, `**/*.test.js`, `**/*.test.mjs`,
+      `**/*.test.ts`, `**/*_test.dart`, `e2e/**/*.spec.ts`; `docs` = `docs/**`, `**/*.md` →
+      `exception:<name>`.
+   g. Companions: the phase's `companions` (all phases' for non-phase categories) plus
+      `FIXED_COMPANIONS` = `**/generated/**`, `**/*.g.dart`, `**/*.freezed.dart`,
+      `flutter_app/lib/l10n/*.arb`, `docs/architecture/openapi/*.json`,
+      `flutter_app/lib/features/*/*.dart` (feature barrel files) → `companion`; the 6th and later
+      companion files are violations `companion-cap`.
+   h. Otherwise violation `unclassified`.
+4. Title = the most serious violation reason present, in this order: `drift`, `protected`,
+   `forbidden`, `unclassified`, `companion-cap`; no violation → `ok`. Conclusion `failure` iff
+   any violation.
 
-**Tests:** `forbidden beats allowed overlap (server/** vs server/auth/**)`, `exception tests only matches test files`, `exception docs rejects care_item.dart`, `companion openapi green and reported`, `sixth companion red`, `snapshot edit is drift`, `workflow edit is protected`, `release union`, `remedial allows e2e`, `sync head main green`, `stopped plan red`, `unclassified red`. Fixture: phase 1 of the replay snapshot with `care_item/care_item.dart` → red `unclassified` (the real drift from 2026-10-14).
+**Tests:** `forbidden beats allowed (server/** allowed, server/routes/auth/x.js)`,
+`protected beats allowed (.github/workflows/x.yml in allowed_paths)`, `exception tests matches only test files`,
+`exception docs rejects care_item.dart`, `barrel care_item.dart is a companion and reported`,
+`openapi json is a companion`, `sixth companion is companion-cap`, `own plan file in phase PR is drift`,
+`own plan file in release PR verified is allowed`, `own plan file in release PR unverified is drift`,
+`other plan file is protected`, `release uses union`, `remedial allows e2e and tests`,
+`sync category green without evaluation`, `stopped plan red plan-stopped`, `unclassified red`,
+`categorizePull for each category and null`, `title priority`.
 
 **Acceptance:** `node --test scripts/test/execute_plan_scope.test.js && ./scripts/pre-push-changed.sh`
 
-**Docs:** `docs/agent-efficiency/execute-plan-schema.md` (or the file documenting the snapshot — **VERIFY:** `rg -l "allowed_exceptions" docs | head`) § Scope: evaluation order, categories, companions.
+**Docs:** `docs/agent-efficiency/execute-plan-schema.md` — new section "v2 scope check":
+categories, evaluation order, protected set, companions, exception globs, and that plans can never
+touch paths matched by `agent-safety-lib.js` (auth, billing, secrets, migrations, infra).
 
-**Kickoff prompt:** "Implement WP2 of docs/agent-efficiency/plans/execute-plan-v2.md (index, contracts.md §3.1, work-packages-runtime.md WP2). Forbidden-first matcher, categories, check-diff CLI. Offline tests. Draft PR, ready when green."
+## WP3 — Approval, snapshot v2, `init`
 
-## WP3 — Snapshot v2, `init`, approval hash
-
-**Branch:** `claude/execute-plan-v2-wp3` · **Size:** ~400 lines code, ~250 lines tests
+**Depends on:** WP1 · **Recommended executor:** Claude Code · **Size:** ~400 code, ~300 tests
 
 **Files**
-- `scripts/lib/execute_plan_approval.js` (new) — `canonical`, `computeApprovalHash`, `APPROVAL_RE`, `parseApprovalComment`, `validateApproval`.
-- `scripts/lib/execute_plan_snapshot_v2.js` (new) — `validateSnapshotV2`, `loadSnapshotAtRef`, `buildSnapshotFromPlan`.
-- `scripts/lib/execute_plan_constants.js` — add `V2_CAPS = { window_days: 14, ci_per_phase: 3, launches_per_phase: 3, remedial_rounds: 3, sync_attempts: 2, daily_launches: 10 }` and `V2_DEFAULT_WINDOW_DAYS = 7`.
-- `scripts/validate_execute_plan_snapshot.js` — route `schema_version: 2` to the v2 validator; `--fix-hash` refuses v2 files.
-- `scripts/execute_plan_runtime.js` — register `init`.
-- `.agents/plans/_example.v2.snapshot.json` + `_example.v2.md` — the §3.1 object and a matching plan file; add both to the pre-push validation lines next to `_example.snapshot.json`.
-- `scripts/test/execute_plan_approval.test.js`, `scripts/test/execute_plan_snapshot_v2.test.js` (new).
+- Create: `scripts/lib/execute_plan_approval.js`, `scripts/lib/execute_plan_snapshot_v2.js`,
+  `scripts/lib/execute_plan_init.js`, `scripts/test/execute_plan_approval.test.js`,
+  `scripts/test/execute_plan_snapshot_v2.test.js`, `.agents/plans/_example.v2.md`,
+  `.agents/plans/_example.v2.snapshot.json`.
+- Modify: `scripts/lib/execute_plan_constants.js` (add a v2 block), `scripts/validate_execute_plan_snapshot.js`
+  (route v2), `scripts/execute_plan_runtime.js` (register `init`), `scripts/pre-push.sh` and
+  `scripts/pre-push-changed.sh` (validate the v2 example next to `_example.snapshot.json`).
+
+**Do not touch:** v1 functions in `scripts/lib/execute_plan_artifacts.js` and
+`scripts/lib/execute_plan_schema.js` (call them only for `globToRegExp`), `.github/**`,
+`.agents/plans/_example.snapshot.json`.
 
 **Exports**
 ```js
-function canonical(value)                                    // contracts §3.4
-function computeApprovalHash(snapshot)                       // → 'sha256:…', ignores snapshot.approval_hash
-const APPROVAL_RE                                             // contracts §3.3
-function parseApprovalComment(body)                          // → { plan, hash, until } | null
-/** @param {{ comment, snapshot, config: { owners: string[], bot_login: string }, now: Date }} */
-function validateApproval(args)                              // → { ok, reason? }  reasons: not-owner|bot|edited|plan|hash|until|window
-function validateSnapshotV2(snapshot, { planFileBytes })     // throws ExecutePlanError; checks every rule in contracts §3.1 incl. caps and plan_file_sha256
-async function loadSnapshotAtRef(client, planId, ref)        // reads .agents/plans/<id>.snapshot.json and <id>.md at ref; verifies hash; → { snapshot, planMarkdown }
-function buildSnapshotFromPlan({ planMarkdown, planId, controlIssue, now, settings })  // phases parsed from "### Phase <id> — <title>" sections with a fenced ```yaml scope block (allowed_paths, forbidden_paths, allowed_exceptions, companions, exit_checklist)
+// execute_plan_constants.js (append)
+const V2_CAPS = { window_days: 14, ci_per_phase: 3, launches_per_phase: 3, remedial_rounds: 3, sync_attempts: 2, daily_launches: 10, phases: 8, companions: 5 };
+const V2_DEFAULTS = { window_days: 7, budgets: { ci_per_phase: 3, launches_per_phase: 3, remedial_rounds: 3, sync_attempts: 2, daily_launches: 10 } };
+
+// execute_plan_approval.js
+function canonical(value)                         // contracts §3.4
+function computeApprovalHash(snapshot)            // 'sha256:<hex>'; ignores snapshot.approval_hash
+const APPROVE_RE, RESUME_RE, REVOKE_RE            // contracts §3.3
+function parseControlComment(body)                // → { verb: 'approve'|'resume'|'revoke', plan, hash?, until? } | null
+/** @param {{ comment: {user:{login}, author_association, created_at, updated_at, body}, snapshot, config: {owners: string[], bot_login: string} }} args
+ *  @returns {{ valid: boolean, reason: null|'not-owner'|'bot'|'edited'|'plan'|'hash'|'until'|'window', verb, until }} */
+function validateControlComment(args)
+/** Latest approve/resume comment (valid or not) and latest valid revoke. */
+function findControlComments(comments, snapshot, config) // → { authorizing: <Observations.control.authorizing>|null, revoke_comment_at: string|null }
+
+// execute_plan_snapshot_v2.js
+function isV2(snapshot)                           // schema_version === 2
+function validateSnapshotV2(snapshot, { planMarkdown })  // throws ExecutePlanError with a precise message
+function parsePlanMarkdown(markdown)              // → { title, phases: [{ id, title, scope: {...json block} }] } per contracts §3.2
+function buildSnapshotFromPlan({ planId, planMarkdown, controlIssue, now, windowDays, integrationSuffix, settings }) // → snapshot with approval_hash
+async function loadSnapshotAtRef(client, planId, ref)     // reads both files at ref; validates; checks hash → { snapshot, planMarkdown }
+
+// execute_plan_init.js
+async function runInit({ client, planId, windowDays = 7, dryRun = false, git, now })
 ```
 
-**`init` command:** `node scripts/execute_plan_runtime.js init <plan_id> [--window-days 7] [--dry-run]`
-1. Requires `.agents/plans/<plan_id>.md` on the current branch, named `cursor/<plan_id>-init` (or `claude/<plan_id>-init`); refuses on any other branch and refuses if the working tree has changes outside `.agents/plans/<plan_id>.*`.
-2. Validates the plan file headings (contracts §3.2; rejects `## Contract`/`## Rules`).
-3. Creates the control issue (title `execute-plan: <title> (<plan_id>)`, label `execute-plan`) with a body listing phases, paths, window, and `Approval hash: pending`.
-4. Builds the snapshot with the issue number, computes `approval_hash`, writes the snapshot, commits both files (`execute-plan init <plan_id>`), pushes the init branch.
-5. Edits the issue body: hash, init branch head SHA, and the exact approval line the owner must paste: `approve-autonomous <plan_id> sha256:<hash> until <approved_until>`.
-6. Prints that line and **stops**. The agent's turn ends here by design; `init` is the one human checkpoint.
+**Rules**
+1. `validateSnapshotV2` enforces every row of contracts §3.1, the caps, `computeApprovalHash(snapshot)
+   === snapshot.approval_hash`, and `sha256(planMarkdown) === plan_file_sha256`.
+2. `parsePlanMarkdown` follows contracts §3.2 exactly: phases from `### Phase <id> — <title>`
+   headings, the first fenced ```` ```json ```` block after each heading is `JSON.parse`d; a
+   heading `Contract`, `Rules` or `Process` at any level → error `plan file must not contain
+   process rules (heading "<name>")`.
+3. `buildSnapshotFromPlan`: `integration_branch = cursor/<planId>-integration-<integrationSuffix>`
+   (suffix = the last 4 characters of `planId` when it ends in `-[a-z0-9]{4}`, as in
+   `proof-build-label-7f3a` → `7f3a`; otherwise the first 4 hex chars of `sha256(planId)`),
+   phase branches `cursor/<planId>-p<id>`,
+   `release_branch: "main"`, `approved_until = now + windowDays` (seconds = 0, ISO `Z`),
+   `protected_paths_version: 1`, settings default from `V2_DEFAULTS` overlaid by the given values.
+4. `validate_execute_plan_snapshot.js`: `schema_version === 2` → v2 validator (reads the plan file
+   next to it); `--fix-hash` on a v2 file exits `1` with `--fix-hash is not allowed for v2 snapshots`.
+5. `runInit` (CLI `node scripts/execute_plan_runtime.js init <plan_id> [--window-days N] [--dry-run]`):
+   a. Current branch must be `cursor/<plan_id>-init`; `git status --porcelain` may list only
+      `.agents/plans/<plan_id>.md`; otherwise exit `3` with the reason.
+   b. Parse and validate the plan markdown (rule 2).
+   c. Create the control issue: title `execute-plan: <title> (<plan_id>)`, label `execute-plan`,
+      body = phase table (id, title, branch, allowed paths), window, `Approval hash: pending`.
+   d. Build the snapshot with that issue number, write `.agents/plans/<plan_id>.snapshot.json`,
+      `git add` both files, commit `execute-plan init <plan_id>`, `git push -u origin HEAD`.
+   e. Edit the issue body: replace `Approval hash: pending` with the hash, add
+      `Init branch: cursor/<plan_id>-init @ <commit sha>` and the exact line the owner must post:
+      `approve-autonomous <plan_id> sha256:<hex> until <approved_until>`.
+   f. Print that line and exit `0`. **The session ends here by design** (the one human checkpoint).
+   g. `--dry-run`: no issue, no commit, no push; print the snapshot JSON and the approval line
+      with `control_issue: 0`.
+6. Example files: `_example.v2.md` = the §8 proof plan of the runbooks with `<date>` replaced by
+   `2026-10-16`; `_example.v2.snapshot.json` is generated from it by `buildSnapshotFromPlan`
+   (`controlIssue: 1900`, `now: 2026-10-16T09:00:00Z`) — never hand-edited. The §3.4 test
+   vectors use inline objects, not these files.
 
-**Tests:** vectors from contracts §3.4 (`canonical empty`, `canonical sorted`, `approval hash example`), `hash ignores approval_hash field`, `hash changes when plan md changes`, `approval regex accepts exact / rejects trailing text`, `validateApproval: not-owner, bot, edited, wrong hash, wrong until, window over cap`, `snapshot caps: raising a budget rejected, lowering accepted`, `integration branch pattern`, `phase branch pattern`, `v1 file routed unchanged`, `--fix-hash refuses v2`, `init dry-run output`.
+**Tests:** `canonical empty`, `canonical sorted`, `approval hash example (contracts §3.4 vector 3)`,
+`hash ignores approval_hash field`, `hash changes when plan_file_sha256 changes`,
+`approve regex accepts exact line`, `approve regex rejects trailing text`, `resume and revoke parse`,
+`validate: not-owner`, `validate: author_association not OWNER`, `validate: bot login`,
+`validate: edited`, `validate: wrong hash`, `validate: approve until mismatch`,
+`validate: resume until beyond 14 days`, `findControlComments picks latest authorizing`,
+`snapshot caps: raising a budget rejected`, `snapshot caps: lowering accepted`,
+`integration branch pattern enforced`, `phase branch pattern enforced`, `plan markdown json block parsed`,
+`plan markdown with Rules heading rejected`, `v1 file routed unchanged`, `--fix-hash refuses v2`,
+`init refuses wrong branch`, `init refuses dirty tree`, `init dry-run output`
+(`init` tests inject a fake `git` object and the WP1 fake fetch).
 
 **Acceptance:** `node --test scripts/test/execute_plan_approval.test.js scripts/test/execute_plan_snapshot_v2.test.js && node scripts/validate_execute_plan_snapshot.js .agents/plans/_example.v2.snapshot.json && ./scripts/pre-push-changed.sh`
 
-**Docs:** `docs/agent-efficiency/plan-template.md` — add the v2 plan layout (headings + yaml scope block); `docs/agent-efficiency/autonomous-pr-policy.md:313` — replace "new snapshot + approve-autonomous again" with "plan changes after approval are impossible; start a new plan".
-
-**Kickoff prompt:** "Implement WP3 of docs/agent-efficiency/plans/execute-plan-v2.md (index, contracts.md §3.1–3.4, work-packages-runtime.md WP3). Approval hash with the given vectors, snapshot v2 validator, init command. v1 untouched. Offline tests. Draft PR, ready when green."
-
-## WP4 — `tick`: phases, sync, release
-
-**Branch:** `claude/execute-plan-v2-wp4` · **Size:** ~450 lines code (two modules), ~350 lines tests
-
-**Files**
-- `scripts/lib/execute_plan_state.js` (new) — pure derivation from observations to a state (contracts §4, phases/sync/release rows).
-- `scripts/lib/execute_plan_tick.js` (new) — observation gathering, action selection, lease and status comment, log comments.
-- `scripts/lib/execute_plan_control.js` (new, small) — control issue reads: approval comment, labels, status comment parse/format, config file from `main`.
-- `scripts/execute_plan_runtime.js` — register `tick` and `watch-ci`.
-- `scripts/test/execute_plan_state.test.js`, `scripts/test/execute_plan_tick.test.js` (new).
-
-**Exports**
-```js
-/** Pure. @param {Observations} obs @returns {{ state, phase?, prs, budgets, evidence }} */
-function deriveState(snapshot, obs)
-/** Pure. @returns {{ action, stop }} per contracts §3.7 */
-function selectAction(snapshot, derived, { now, lease, config })
-/** Gathers observations through the client; no decisions. */
-async function observe(client, snapshot, { now })
-/** One tick: observe → derive → select → persist (status comment, lease, log comment) → return output. */
-async function tick(client, { planId, now, actor: 'driver'|'agent', agentId?, dryRun })
-async function watchCi(client, { pr, timeoutMin = 25, pollSec = 60 })   // → { conclusion, failing: [...] }
-```
-
-**Rules**
-1. `tick` reads the snapshot and plan file **from the integration branch** via `loadSnapshotAtRef` (never the checked-out copy), and the config from `main`.
-2. Order of evaluation: stopped? → complete? (delegated to WP5 when a release merge exists) → release → sync → phases. The first matching row wins.
-3. Phase PR = most recent PR with `head = phase.branch`, `base = integration_branch`. Phase merged ⇔ `merged_at` set.
-4. CI attempts per PR = count of check runs named `ci-gate / CI passed` with `conclusion = failure` across the PR's commits (`GET /pulls/{n}/commits` then check runs per sha); ≥ budget → STOP `ci-budget`.
-5. `rerun-ci` is allowed once per head SHA and only when the failed job has no test step output (`listRunJobs` step name does not start with `Test`/`Run`); otherwise the failure counts and `fix-ci` is selected.
-6. `arm-auto-merge` only when: PR ready, no unresolved threads, at least one required check still pending or all green, and for `main`-based PRs either a Copilot review was submitted or 15 min passed since ready. If GitHub answers "clean status" → `merge-now`.
-7. Lease: `actor: 'agent'` ticks refresh `lease.last_tick_at`; `actor: 'driver'` ticks never create a lease. `selectAction` returns an `agent` action with `launch: true` only when the lease is dead (contracts §3.5) and budgets allow; otherwise `wait` with `reason: 'agent-alive'`.
-8. Launch budgets: `launches[phase] < launches_per_phase` and `launches_today < daily_launches`; the launch itself is recorded by the driver (WP7) through `recordLaunch(client, planId, { phase, agentId })` exported here.
-9. Sync: before `open-release-pr`, if `compare(main...integration).behind_by > 0` → `open-sync-pr` (title `execute-plan sync: main → <integration>`, body marker `<!-- execute-plan-sync:<id> -->`), method `merge`. Not mergeable (`mergeable_state = dirty`) → `resolve-sync` on `cursor/<id>-sync-<n>` (n = sync attempts + 1); the resolve PR targets integration and is category `sync-resolve`. Attempts ≥ budget → STOP `sync-conflict`.
-10. `open-release-pr`: title `Release: <plan title> (<plan_id>)`, body with the phase table, `## Docs` section, and marker `<!-- execute-plan-release:<id> -->`; draft = false; if `release_owner_review` → do not arm auto-merge; state stays `release:open` with `wait: owner-review` (not a STOP).
-11. `update-branch` when `mergeable_state = behind` on a `strict` base; counts nothing.
-12. Status comment and log comment per contracts §3.5; `--dry-run` prints what it would write.
-13. `watch-ci` polls check runs for the PR head; returns on completion or timeout; never ends the process with a non-zero code on timeout (exit `0`, `timedOut: true`) so the worker runs `tick` next.
-
-**CLI:** `node scripts/execute_plan_runtime.js tick <plan_id> [--json] [--actor agent|driver] [--agent-id …] [--dry-run]`; `watch-ci <plan_id> --pr <n> [--timeout-min 25]`.
-
-**Tests (fixture-driven, names from contracts §4.3 for phase/sync/release rows)** plus: `tick reads snapshot from integration not checkout`, `lease alive → wait agent-alive`, `lease stale → launch`, `daily cap → STOP launch-budget`, `rerun once per head`, `copilot wait 15 min on main PRs`, `owner-review → wait not stop`, `replay-1894-1895 → state phase:ready, action arm-auto-merge` (where the agent stopped on 2026-10-14).
-
-**Acceptance:** `node --test scripts/test/execute_plan_state.test.js scripts/test/execute_plan_tick.test.js && ./scripts/pre-push-changed.sh`
-
-**Docs:** `docs/agent-efficiency/execute-plan-instruction-stack.md` — add § v2 loop (tick/watch-ci) above the platform table; the table itself is deleted in WP10.
-
-**Kickoff prompt:** "Implement WP4 of docs/agent-efficiency/plans/execute-plan-v2.md (index, contracts.md §3.5–4.3, work-packages-runtime.md WP4). Pure deriveState/selectAction + tick + watch-ci. Offline fixtures incl. replay-1894-1895. Draft PR, ready when green."
-
-## WP5 — `tick`: UAT stage, watchers, `complete-plan` verification
-
-**Branch:** `claude/execute-plan-v2-wp5` · **Size:** ~400 lines code, ~300 lines tests
-
-**Files**
-- `scripts/lib/execute_plan_uat.js` (new) — UAT observations and derivation (contracts §4 rows from `release:merged` to `complete`, §4.2 classes).
-- `scripts/lib/execute_plan_state.js` — call into `execute_plan_uat.js` when a release merge exists.
-- `scripts/execute_plan_runtime.js` — register `watch-preuat`, `watch-deploy`; `complete-plan` for v2 verifies instead of writing.
-- `scripts/test/execute_plan_uat.test.js` (new) + fixtures recorded from real runs: one green Pre-UAT, one red (shard list), one cancelled, one throttle-skipped Promote (`::notice::Skipping tag` in logs → use run conclusion `success` with no tag), one red Deploy UAT.
-
-**Exports**
-```js
-async function observeUat(client, { mergeSha, mergedAt })   // runs of pre-uat-e2e.yml / promote-uat.yml / deploy-uat.yml / uat-live-e2e.yml, tags, compare results
-/** Pure. */ function deriveUatState(snapshot, uatObs, { now })  // → awaiting-preuat | remedial | awaiting-main-green | awaiting-promote | awaiting-deploy | complete | stop
-/** Pure. */ function failingShards(run, jobs)                 // → sorted job names with conclusion failure, excluding gate-summary
-/** Pure. */ function classifyDeployFailure(run, jobs)        // → 'infra-transient' | 'infra-migration' | 'app-smoke' | 'unknown'
-async function watchPreUat(client, { mergeSha, timeoutMin = 90 })
-async function watchDeploy(client, { mergeSha, timeoutMin = 45 })
-async function verifyComplete(client, snapshot)               // → { complete: boolean, evidence: { release_pr, merge_sha, preuat_run, tag, deploy_run, tier3 } }
-```
-
-**Rules**
-1. "Contains" is always `compare(merge_sha...candidate).status ∈ {ahead, identical}` (B2). Never match by exact SHA or prefix.
-2. Pre-UAT candidate runs: `listWorkflowRuns('pre-uat-e2e.yml', { branch: 'main' })` with `created_at ≥ mergedAt`, `event ∈ {push, workflow_dispatch}`; ignore `conclusion ∈ {cancelled, skipped}`.
-3. Baseline run = latest completed non-cancelled Pre-UAT run whose head is an ancestor of `merge_sha` and ≠ `merge_sha`. App-caused ⇔ `failingShards(candidate) ⊄ failingShards(baseline)` or baseline is green. Baseline red with the same shards → `awaiting-main-green`; > 6 h → STOP `main-red`.
-4. `dispatch-preuat` only when no Pre-UAT run for `main` HEAD is queued/in progress and (merge ≥ 10 min ago or the throttle skipped); at most once per `main` HEAD.
-5. Tag check: `listTags()` entries matching `^uat-` whose `commit.sha` contains `merge_sha`.
-6. Deploy run: `listWorkflowRuns('deploy-uat.yml')` with `created_at ≥ mergedAt` and head containing `merge_sha`; `success` → complete; `failure` → `classifyDeployFailure` → §4.2; the re-dispatch uses `dispatchWorkflow('deploy-uat.yml', 'main', { deploy_ref: tag })` once.
-7. Tier 3: latest `uat-live-e2e.yml` run after the deploy; recorded in `uat.tier3`; blocks completion only if `settings.tier3_blocking`.
-8. `remedial` action args: failing shards, baseline run url, branch `cursor/<id>-remedial-<n>`; the remedial PR targets `main` and follows the `release:open` rules; after its merge, `merge_sha` becomes the remedial merge SHA and the stage restarts at `awaiting-preuat`.
-9. `complete-plan <plan_id>` (v2): runs `verifyComplete`; if complete → final status comment, log comment with the four evidence links, label `plan:complete`, close the issue; else exit `2` with the missing condition. It never sets a flag by itself.
-
-**Tests:** contracts §4.3 UAT rows plus `contains via compare not prefix`, `cancelled ignored`, `baseline selection skips merge_sha itself`, `dispatch once per HEAD`, `tier3 advisory recorded`, `tier3 blocking waits`, `complete-plan refuses without deploy`, `remedial restarts stage with new merge_sha`.
-
-**Acceptance:** `node --test scripts/test/execute_plan_uat.test.js && node --test scripts/test/execute_plan_state.test.js && ./scripts/pre-push-changed.sh`
-
-**Docs:** `docs/e2e/uat-deploy-tiers.md` § "Execute-plan v2 observes this chain" (what is read, what is dispatched, never more than one dispatch per HEAD); `.cursor/skills/babysit-uat/SKILL.md` line 8 note: v2 plans are driven by `tick` (full rewrite in WP6).
-
-**Kickoff prompt:** "Implement WP5 of docs/agent-efficiency/plans/execute-plan-v2.md (index, contracts.md §4–4.3, work-packages-runtime.md WP5). UAT stage derivation with ancestry via compare, failure classes, watchers, complete-plan verification. Offline fixtures from real runs. Draft PR, ready when green."
+**Docs:** `docs/agent-efficiency/plan-template.md` — new section "v2 plan file" (contracts §3.2
+layout and the error for process-rule headings); `docs/agent-efficiency/autonomous-pr-policy.md:313`
+— replace "Plan changes after approval → new snapshot + `approve-autonomous` again" with
+"v2: plans are immutable after approval; changing scope means a new plan; time and budgets are
+renewed with `resume-autonomous`".

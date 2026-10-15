@@ -1,108 +1,246 @@
 ---
-title: Execute-plan v2 — platform work packages (WP6–WP8) and workflows
+title: Execute-plan v2 — platform work packages WP6–WP8 and workflows
 owner: Kanopee
 audience: agent
 status: active
 last_updated: 2026-10-15
 tags: [agent, execute-plan, autonomy, github-actions]
 ---
-# Execute-plan v2 — platform work packages (WP6–WP8) and workflows
+# Execute-plan v2 — platform work packages WP6–WP8 and workflows
 
 Part of [execute-plan-v2.md](../execute-plan-v2.md). Contracts: [contracts.md](./contracts.md).
-Runtime modules these packages call: [work-packages-runtime.md](./work-packages-runtime.md).
-The executor never merges a PR touching `.github/**` and never applies rulesets (owner hand-off).
+Runtime modules called here: [work-packages-runtime.md](./work-packages-runtime.md),
+[work-packages-tick.md](./work-packages-tick.md). Kickoff prompts: [work-split-and-prompts.md](./work-split-and-prompts.md).
 
-## WP6 — Skills and rules (Cursor + Claude Code)
+Workflow code rules: workflows are thin (checkout `main`, setup Node 22, run one script); all logic
+lives in `scripts/lib/execute_plan_*.js` (protected, tested) with a small wrapper in
+`.github/scripts/execute-plan-*.js`. No `npm ci`, no dependency, no `${{ github.event.* }}` inside
+`run:` (pass values through `env`). The owner merges every PR of this file.
 
-**Branch:** `claude/execute-plan-v2-wp6` · **Size:** docs only, ~250 changed lines · **Depends on:** WP4, WP5 merged
+## Token table (B1, item 13)
 
-**Files and changes**
-1. `.cursor/skills/execute-plan/SKILL.md` and `.claude/skills/execute-plan/SKILL.md` — new top section **"v2 plans (`schema_version: 2`)"**, ≤ 20 lines:
-   `init` (one human checkpoint) → after approval the driver launches workers → a worker runs
-   `node scripts/execute_plan_runtime.js tick <plan_id> --json --actor agent`, performs the one
-   `agent` action, runs `tick` again, and ends its turn when the actor is `driver` or `stop` is set.
-   Then the sentence: *"There is no stop table: `tick` decides."* Keep the existing v1 text below a
-   `## v1 plans (schema 1)` heading, unchanged except items 2–3 below (B8).
-2. Same two files, v1 section: stop table entry "CI/debt/merge failure" → "CI retry budget
-   exhausted"; fix the relative links (10 of 11 resolve one folder too shallow — e.g.
-   `../../AGENTS.md` → `../../../AGENTS.md`; verify each with `test -f`).
-3. `.cursor/skills/babysit-plus/SKILL.md` — at §Model (lines 62–64, 85): add "Active execute-plan
-   (any schema): do not switch model or spawn a fresh agent; v2 workers never merge — `tick` arms
-   auto-merge." At the merge-lease exit `2` line (~188): "wait with subscription; not a halt."
-4. `docs/agent-efficiency/autonomous-pr-policy.md:86` — same lease wording; `:51` unchanged;
-   `:313` already changed in WP3.
-5. `.cursor/skills/babysit-uat/SKILL.md` — line 8 area: "v2 plans: Phases 1–4 of this skill are
-   performed by `tick`/auto-merge; use §Phase 3 (e2e-debug) when `tick` returns `remedial`."
-6. `AGENTS.md:58-66` §Execute-plan → v2 paragraph (3 lines: gate is `tick`; workers do one action
-   per launch; no chat rules) + "v1 plans: see the skill's v1 section".
-7. `.agents/memory/execute-plan-autonomy.md` — fix its 3 links; content becomes a pointer to the
-   v2 index and the v1 skill section.
-8. `.agents/memory/MEMORY.md` — one index bullet titled "Execute-plan v2", linking (relative to
-   `.agents/memory/`) to `docs/agent-efficiency/plans/execute-plan-v2.md`, hook text: "liveness and
-   integrity are mechanisms (tick, driver, scope check); never add prose stop rules."
-9. `docs/agent-efficiency/agent-instructions.md` (**VERIFY** path: `rg -l "agent-instructions" docs | head -3`) — meta-rule: "Execute-plan liveness/integrity failures are fixed with a mechanism, never with more text."
-10. Link validation — extend the docs link check to `.cursor/**/*.md` and `.agents/**/*.md`
-    (**VERIFY** the checker: `rg -n "link" scripts/validate_docs.sh | head`); fix what it finds.
-11. Plan-file rule: `scripts/validate_execute_plan_snapshot.js` (v2 path from WP3) rejects
-    `## Contract` / `## Rules` headings — confirm the error message is documented in
-    `docs/agent-efficiency/plan-template.md`.
-12. Optional, last (R10): `.claude/settings.json` Stop hook →
-    `{"hooks":{"Stop":[{"hooks":[{"type":"command","command":"node scripts/execute_plan_runtime.js stop-hook"}]}]}}`
-    with a new `stop-hook` subcommand: reads hook JSON from stdin; exits `0` immediately when
-    `stop_hook_active` is true (loop guard) or the current branch is not a v2 plan branch; else
-    runs `tick --actor agent`; exits `2` with the handoff text on stderr when an `agent` action
-    remains; exits `0` otherwise. Test: `stop-hook exits 0 on non-plan branch`,
-    `stop-hook exits 2 with action`, `stop-hook loop guard`.
+| Operation | Token | Why |
+|-----------|-------|-----|
+| Reads | `GITHUB_TOKEN` | — |
+| Create/update the `execute-plan-scope` **check run** | `GITHUB_TOKEN` | A PAT cannot create check runs, so the bot cannot forge it. |
+| `workflow_dispatch` (Pre-UAT, Deploy UAT) | `GITHUB_TOKEN` | Dispatch events do start workflows. |
+| Create branches, open sync/release PRs, `update-branch`, enable/disable auto-merge, merge | `EXECUTE_PLAN_BOT_TOKEN` | Must trigger CI and Pre-UAT (B1). |
+| Issue comments, labels, status comment, closing the control issue | `EXECUTE_PLAN_BOT_TOKEN` | One identity edits the status comment (item 13). |
+| Cursor API | `cursor_api_key` | — |
 
-**Acceptance:** `bash scripts/validate_docs.sh && ./scripts/pre-push-changed.sh`; a grep proves no
-contradiction remains: `rg -n "§Halt" .cursor/skills/babysit-plus/SKILL.md docs/agent-efficiency/autonomous-pr-policy.md | rg -i lease` returns nothing.
+## WP6a — Cursor skills and commands
 
-**Kickoff prompt:** "Implement WP6 of docs/agent-efficiency/plans/execute-plan-v2.md (index, work-packages-platform.md WP6). Docs/skills only; v1 text preserved; fix links and contradictions; optional Stop hook last. Draft PR, ready when docs gates are green."
+**Depends on:** WP5 · **Recommended executor:** Cursor · **Size:** docs only, ~150 changed lines
 
-## WP7 — Workflow scripts and the three workflows
+**Files (modify):** `.cursor/skills/execute-plan/SKILL.md`, `.cursor/commands/execute-plan.md`,
+`.cursor/skills/babysit-plus/SKILL.md`, `.cursor/skills/babysit-uat/SKILL.md`.
+**Do not touch:** `.claude/**`, `AGENTS.md`, any code.
 
-**Branch:** `claude/execute-plan-v2-wp7` · **Size:** ~500 lines scripts, ~300 lines tests, ~150 lines YAML · **Depends on:** WP1–WP5 merged · **Owner merges this PR.**
+1. `.cursor/skills/execute-plan/SKILL.md`: insert directly under the title a section
+   `## v2 plans (snapshot schema_version 2)`, ≤ 20 lines: (a) planning session: write the plan
+   file on `cursor/<plan_id>-init`, run `node scripts/execute_plan_runtime.js init <plan_id>`,
+   end the session with the printed approval line; (b) worker session: run
+   `node scripts/execute_plan_runtime.js tick <plan_id> --json --actor agent`, do the one `agent`
+   action, run `tick` again, end the turn with one line when the actor is `driver` or `stop` is set;
+   (c) the sentence "There is no stop table for v2: `tick` decides." Rename the rest of the file
+   under `## v1 plans (schema 1)` without other changes except items 2–3.
+2. Same file, v1 section: stop-table cell "CI/debt/merge failure" → "CI retry budget exhausted /
+   debt-issue create failure / merge failure".
+3. Same file: every relative link must resolve. The file is three levels below the repo root, so
+   `../../AGENTS.md` → `../../../AGENTS.md`, `../../docs/…` → `../../../docs/…`,
+   `../agent-kernel/…` → `../../agent-kernel/…`. Check each with `test -f`.
+4. `.cursor/commands/execute-plan.md`: first line after the title: "v2 plans (`schema_version: 2`):
+   see the skill's v2 section; the rules below apply to v1 plans."
+5. `.cursor/skills/babysit-plus/SKILL.md`: in §Model (lines 62–64) and step 0b.1 (line 85) add:
+   "During an active execute-plan (any schema), never switch model or spawn a fresh agent for this
+   step; v2 workers never merge — the driver arms auto-merge." At §7 exit `2` (line ~188) replace
+   "subscribe and **§Halt**" with "subscribe and wait for the lease holder; this is not a halt".
+6. `.cursor/skills/babysit-uat/SKILL.md`: under the title: "v2 plans: merge, Pre-UAT watching and
+   promotion are done by `tick` and the driver; use this skill's e2e-debug path only when `tick`
+   returns a `remedial` action."
+
+**Acceptance:** every relative link in `.cursor/skills/execute-plan/SKILL.md` resolves (list each link and its `test -f` result in the PR body);
+`rg -n "§Halt" .cursor/skills/babysit-plus/SKILL.md | rg -i lease` prints nothing; `./scripts/pre-push-changed.sh` green.
+
+## WP6b — Claude Code skill, AGENTS.md, memory, docs, link check
+
+**Depends on:** WP5 · **Recommended executor:** Claude Code · **Size:** docs ~150 lines, optional hook ~80 code
+
+**Files (modify):** `.claude/skills/execute-plan/SKILL.md`, `AGENTS.md`, `.agents/memory/execute-plan-autonomy.md`,
+`.agents/memory/MEMORY.md`, `docs/agent-efficiency/autonomous-pr-policy.md`,
+`docs/agent-efficiency/agent-instructions.md`, `scripts/validate_docs.sh`; optional item 7 adds
+`.claude/settings.json`, `scripts/lib/execute_plan_stop_hook.js`, `scripts/test/execute_plan_stop_hook.test.js`.
+**Do not touch:** `.cursor/**` (WP6a), runtime logic.
+
+1. `.claude/skills/execute-plan/SKILL.md`: add the same v2 section as WP6a item 1 (Claude Code
+   wording: use the Bash tool for `tick`; GitHub MCP tools for reads), keep the v1 pointer text.
+2. `AGENTS.md` §Execute-plan (lines 58–66): prepend a 3-line v2 paragraph — "v2 plans: `tick`
+   decides; workers do one agent action per launch and end the turn when the actor is `driver`;
+   no chat rules apply. Spec: `docs/agent-efficiency/plans/execute-plan-v2.md`." Keep the v1 text.
+3. `.agents/memory/execute-plan-autonomy.md`: fix its 3 links (`../AGENTS.md` → `../../AGENTS.md`,
+   `../.cursor/…` → `../../.cursor/…`, `../docs/…` → `../../docs/…`) and add one line pointing to the v2 index.
+4. `.agents/memory/MEMORY.md`: one bullet "Execute-plan v2 — liveness and integrity are mechanisms
+   (tick, driver, scope check); never add prose stop rules" linking `../../docs/agent-efficiency/plans/execute-plan-v2.md`.
+5. `docs/agent-efficiency/autonomous-pr-policy.md:86`: same merge-lease wording as WP6a item 5.
+   `docs/agent-efficiency/agent-instructions.md`: add to its rules list "Execute-plan liveness or
+   integrity failures are fixed with a mechanism, never with more instruction text."
+6. Link check: in `scripts/validate_docs.sh:75-82` remove the `-not -path "*/.agents/*"` and
+   `-not -path "*/.cursor/*"` exclusions, run `bash scripts/validate_docs.sh`, fix every broken
+   link it reports. **Decision:** ≤ 30 broken links → fix them all in this PR; more than 30 → keep
+   the two exclusions, add `.cursor/skills/` and `.agents/memory/` explicitly instead, and open a
+   debt issue listing the rest.
+7. Optional, last: Claude Code `Stop` hook. `.claude/settings.json` =
+   `{"hooks":{"Stop":[{"hooks":[{"type":"command","command":"node scripts/execute_plan_runtime.js stop-hook"}]}]}}`.
+   `stop-hook` reads the hook JSON from stdin; exits `0` when `stop_hook_active` is true (loop guard)
+   or the current branch is not a v2 plan branch (`cursor/<id>-p<n>`, `-sync-<n>`, `-remedial-<n>`);
+   otherwise runs `tick --actor agent --json`; exits `2` with the handoff text on stderr when an
+   `agent` action remains; else `0`. Tests: `non-plan branch exits 0`, `agent action exits 2`, `loop guard exits 0`.
+
+**Acceptance:** `bash scripts/validate_docs.sh && ./scripts/pre-push-changed.sh`; with item 7,
+`node --test scripts/test/execute_plan_stop_hook.test.js`.
+
+## WP7a — Scope check, config, CI wiring
+
+**Depends on:** WP2, WP3 · **Recommended executor:** Claude Code · **Size:** ~200 code, ~200 tests, ~40 YAML
 
 **Files**
-- `.github/execute-plan.config.json` (new, on `main`): `{ "owners": ["KanopeeKa"], "bot_login": "<machine user>", "cursor_model_implement": "<per model policy>", "cursor_model_fix": "composer-2.5" }`.
-- `.github/scripts/execute-plan-lib.js` — `loadConfig()`, `plansForEvent(event)`, `killSwitch()`, `tokens()`.
-- `.github/scripts/execute-plan-approve.js`, `execute-plan-driver.js`, `execute-plan-scope.js`, `execute-plan-launch.js` + `*.test.js` for each (node:test, fixtures from `scripts/test/fixtures/execute-plan-v2/`). **VERIFY** how `.github/scripts/*.test.js` run today: `rg -n "github/scripts" scripts/pre-push.sh scripts/pre-push-changed.sh .github/workflows/ci.yml`; add the new tests the same way.
-- `.github/workflows/execute-plan-approve.yml`, `execute-plan-driver.yml`, `execute-plan-scope.yml` (YAML below).
+- Create: `.github/execute-plan.config.json` (contracts §3.8, `bot_login` from Phase 0),
+  `scripts/lib/execute_plan_scope_run.js`, `scripts/lib/execute_plan_plans.js`,
+  `.github/scripts/execute-plan-scope.js`, `.github/workflows/execute-plan-scope.yml`,
+  `scripts/test/execute_plan_scope_run.test.js`.
+- Modify: `.github/workflows/_reusable-test.yml` (governance job, after the
+  `domain_coverage.fixture.mjs` step at line ~96), `scripts/execute_plan_runtime.js` (register `check-diff`).
 
-**Token table (B1)**
+**Do not touch:** `.github/workflows/agent-pr-safety-gate.yml` (stays until WP10), other workflows.
 
-| Operation | Token |
-|-----------|-------|
-| Reads, labels, issue comments, check-run/status publication, `workflow_dispatch`, `rerunFailedJobs` | `GITHUB_TOKEN` |
-| Create integration branch, open sync/release PRs, `update-branch`, enable/disable auto-merge, `merge-now` | `EXECUTE_PLAN_BOT_TOKEN` (machine user) |
-| Cursor API | `cursor_api_key` |
+**Exports**
+```js
+// execute_plan_plans.js
+function planIdFromRefs({ head_ref, base_ref })     // → candidate plan_id or null (patterns from WP2 categorizePull)
+async function findControlIssue(client, planId)     // open issue labelled execute-plan + plan:<id>, else null
+async function listActivePlans(client)              // open issues labelled execute-plan + autonomous-approved, without plan:complete
+// execute_plan_scope_run.js
+/** @returns {{ conclusion, title, summary, planId|null }} */
+async function runScopeCheck(client, { prNumber, headSha, headRef, baseRef, headRepo, repo, now })
+async function publishScopeCheck(client, { headSha, conclusion, title, summary }) // create or update the check run named execute-plan-scope
+```
 
-`execute-plan-scope.yml` receives **no secrets** and only `GITHUB_TOKEN`.
+**`runScopeCheck` rules**
+1. `headRepo !== repo` (fork) → `success`, title `ok`, summary `not an execute-plan PR (fork)`.
+2. No plan id from the refs, or no open control issue → `success`, `ok`, `not an execute-plan PR`.
+3. Load config from `main`, the status comment, `init_sha`, the snapshot at `init_sha` (WP3
+   `loadSnapshotAtRef`; failure → `failure`, title `drift`, summary = the error).
+4. `stopped` = `deriveControl` (WP4a) on observed control comments/labels/status → passed to `evaluateDiff`.
+5. Files: `listPullFiles(prNumber)`; `PullFilesOverflow` → `failure`, title `too-many-files`.
+6. `ownPlanFilesVerified` = when the diff contains the own plan files: their content at `headSha`
+   (`getFileAtRef`) hashes to `approval_hash` (snapshot) and to `plan_file_sha256` (markdown).
+7. Return `evaluateDiff` (WP2) output; `summary` lists violations and `companionsUsed`.
 
-**`execute-plan-approve.js` rules**
-1. Kill switch `off` → exit 0 with a notice. `dry-run` → verify and report, no label, no launch.
-2. Only issues (not PRs) labelled `execute-plan`. Parse `approve-autonomous` / `revoke-autonomous` (contracts §3.3).
-3. Approval: locate the init branch head from the issue body (`Init branch: <name> @ <sha>`), load the snapshot and plan file at that SHA, `validateApproval` (WP3) against the comment; check `compare(main...<sha>).files` ⊆ `.agents/plans/<plan_id>.*` (init branch is plan-files-only).
-4. On success: create `refs/heads/<integration_branch>` at that SHA with the bot token; add labels `autonomous-approved`, `plan:<plan_id>`; edit the issue body `Approval: valid (comment <id>)`; then run the driver logic once for this plan (first `implement` launch).
-5. On failure: one comment `approve-autonomous rejected: <reason>` and no label. `edited`/`deleted` on an approval comment → run `tick` (it returns STOP `approval-invalid`) and disable auto-merge.
-6. Revocation → label `autonomous-revoked`, `tick` (STOP `revoked`), disable auto-merge on open plan PRs.
+**`.github/workflows/execute-plan-scope.yml`**
+```yaml
+name: Execute-plan scope
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, ready_for_review, edited]
+permissions:
+  contents: read
+  pull-requests: read
+  issues: read
+  checks: write
+concurrency:
+  group: execute-plan-scope-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  scope-runner:
+    name: scope-runner
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+        with: { ref: main }          # trusted code only; PR code is never checked out
+      - uses: actions/setup-node@v5
+        with: { node-version: 22 }
+      - name: Evaluate and publish execute-plan-scope
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+        run: node .github/scripts/execute-plan-scope.js
+```
+The job is named `scope-runner` so its own check run never shares the required check's name; the
+script publishes the check run `execute-plan-scope` on `HEAD_SHA` and exits `0` either way.
 
-**`execute-plan-driver.js` rules**
-1. Kill switch: `off` → exit 0; `dry-run` → `tick --dry-run`, log the action, never launch or write.
-2. Ignore events from fork PRs (`pull_request.head.repo.full_name !== repository`).
-3. `plansForEvent`: PR events → plan whose branches match head/base; `check_suite` → its PRs → plans; `workflow_run` / `schedule` / `workflow_dispatch(no plan_id)` → every open issue with labels `execute-plan` + `autonomous-approved`; `issues`/`issue_comment` → that issue's plan.
-4. For each plan: `tick(client, { actor: 'driver' })`. `driver` actions are executed here with the bot token; `agent` actions with `launch: true` → `launchPlanAgent`, then `recordLaunch`. `wait` and `stop` → nothing more.
-5. `launchPlanAgent({ repoUrl, startingRef, branchName, promptText, model })` (R1): new function in `execute-plan-launch.js` mirroring the request of `.github/scripts/launch-cursor-agent.js:46-60` with `autoCreatePr: false` and the plan branch as source ref (**VERIFY** exact field names in that file before coding); prompt = contracts §3.6 handoff; model from config by action kind (`fix-ci`/`triage-review`/`remedial` → `cursor_model_fix`, else `cursor_model_implement`). Returns `{ agentId }`.
-6. Never post comments except through `tick`. Job summary lists plan, state, action, launch id.
+**CI wiring** (`_reusable-test.yml`, governance job): new step `Execute-plan runtime tests` running
+`node --test scripts/execute_plan_runtime.test.js scripts/test/execute_plan_*.test.js`.
 
-**`execute-plan-scope.js` rules**
-1. Inputs from `env` only (`PR_NUMBER`, `HEAD_SHA`, `HEAD_REF`, `BASE_REF`, `HEAD_REPO`), never interpolated into `run:` (B5).
-2. Resolve plan by branch patterns against open `execute-plan` issues (snapshot read from the integration branch; for `sync`/`release`/`remedial` PRs the integration branch comes from the plan whose id prefix matches the head ref). Non-plan PR or fork PR → **success** with summary `not an execute-plan PR`.
-3. Plan PR → `evaluateDiff` (WP2) with `controlState` from the control issue; paginate `listPullFiles`; overflow → **failure** `too many files`.
-4. Publish: `--mode check` creates/updates a check run named `execute-plan-scope` on `HEAD_SHA` (`checks: write`); `--mode status` publishes a commit status with context `execute-plan-scope`. Default `check`; WP8 decides after the B5 VERIFY.
-5. Red for `drift`/`protected` additionally comments nothing; `tick` turns it into STOP `drift`. Red for `unclassified`/companion cap → `tick` action `fix-scope` (agent; counts as a CI attempt).
+**Tests:** `fork → success ok`, `non-plan PR → success ok`, `phase PR in scope → success`,
+`phase PR unclassified → failure`, `drift on plan file edit`, `release PR with verified plan files → success`,
+`overflow → too-many-files`, `stopped plan → plan-stopped`, `publish creates then updates the check run`
+(all with the WP1 fake fetch).
 
-**YAML — `.github/workflows/execute-plan-approve.yml`**
+**Acceptance:** `node --test scripts/test/execute_plan_scope_run.test.js && ./scripts/pre-push-changed.sh`;
+actionlint: **decision** — if `actionlint -version` works locally, run
+`actionlint .github/workflows/execute-plan-scope.yml .github/workflows/_reusable-test.yml`; otherwise
+rely on the `actionlint.yml` workflow on the PR and do not mark ready until it is green.
+
+**Docs:** `docs/pipelines/ci-cd-gates.md` — row for `execute-plan-scope` (what it checks, check run
+from GitHub Actions, required on `main` and integration branches after WP8).
+
+## WP7b — Approve and driver workflows
+
+**Depends on:** WP4b, WP5, WP7a, WP7c · **Recommended executor:** Claude Code · **Size:** ~400 code, ~300 tests, ~90 YAML
+
+**Files**
+- Create: `scripts/lib/execute_plan_driver_actions.js`, `scripts/lib/execute_plan_approve.js`,
+  `.github/scripts/execute-plan-approve.js`, `.github/scripts/execute-plan-driver.js`,
+  `.github/workflows/execute-plan-approve.yml`, `.github/workflows/execute-plan-driver.yml`,
+  `scripts/test/execute_plan_driver_actions.test.js`, `scripts/test/execute_plan_approve.test.js`.
+
+**Do not touch:** `.github/scripts/execute-plan-launch.js` (WP7c; import only), other workflows.
+
+**`execute_plan_approve.js` — `handleControlComment(clients, event, { now, killSwitch })`**
+1. Kill switch `off` → return. `dry-run` → validate and write the job summary only.
+2. Ignore comments on PRs and on issues without label `execute-plan`.
+3. `approve`: read `Init branch: <name> @ <sha>` from the issue body; `loadSnapshotAtRef` at `<sha>`;
+   `validateControlComment`; `compare(main...<sha>).files` must be exactly the two own plan files;
+   the integration branch must not exist (exists at `<sha>` → idempotent success). Then, with the
+   bot token: `createRef(refs/heads/<integration_branch>, <sha>)`; create the status comment
+   (`init_sha`, `state: phase:pending`); labels `autonomous-approved`, `plan:<plan_id>`; append
+   `Approval: valid (comment <id>)` to the issue body; run one driver pass for this plan.
+4. Invalid approve → one comment `approve-autonomous rejected: <reason>`; nothing else.
+5. `resume` (valid) → one driver pass. `revoke` (valid) → label `autonomous-revoked`, one driver pass.
+6. `edited` / `deleted` of an approve or resume comment → one driver pass (`tick` stops with
+   `approval-invalid` and the driver enforces it).
+
+**`execute_plan_driver_actions.js` — `runDriverPass(clients, { planId, now, killSwitch })`**
+1. `lease` = status `lease` present ? `{ ...status.lease, status: await getAgentRunStatus(...) }` : `null`.
+2. `decision = await tick(botClient, { planId, actor: 'driver', lease, now, dryRun: killSwitch === 'dry-run' })`.
+3. Execute `decision.action` (skipped in dry-run; logged in the job summary):
+   `create-phase-branch` (bot, `createRef` at `from_sha`); `arm-auto-merge` (bot, GraphQL; if the
+   error says the PR is in clean status → `mergePull` with the same method); `update-branch` (bot);
+   `open-sync-pr` (bot, title `execute-plan sync: main → <integration>`, marker
+   `<!-- execute-plan-sync:<id> -->`); `open-release-pr` (bot, title `Release: <title> (<plan_id>)`,
+   body = phase table, `## Docs` listing every `docs/**` file in `compare(main...integration)` or
+   `N/A — no documentation files changed in this release`, marker `<!-- execute-plan-release:<id> -->`);
+   `dispatch-preuat` / `dispatch-deploy` (`GITHUB_TOKEN`, then record in `status.dispatched`);
+   `enforce-stop` (for each open plan PR: `disableAutoMerge` with bot, `publishScopeCheck`
+   `failure`/`plan-stopped` with `GITHUB_TOKEN`); `complete-plan` (WP5 `verifyComplete` path);
+   agent action with `launch: true` → `launchPlanAgent` (WP7c) with `buildHandoffPrompt`, model
+   `config.cursor_model_fix` for `fix-ci`/`fix-scope`/`triage-review`/`resolve-conflict`/`remedial`
+   else `config.cursor_model_implement`, `startingRef` = the action's branch; then append to
+   `status.launches` and set `status.lease` (bot).
+4. One action per plan per pass; the next event or heartbeat continues.
+
+**`.github/scripts/execute-plan-driver.js` — `plansForEvent`:** `pull_request` /
+`pull_request_review` → plan from the PR refs (`planIdFromRefs`); `workflow_run` of `CI` → the
+plans of `workflow_run.pull_requests[]` (all active plans when empty); other `workflow_run`,
+`schedule`, `workflow_dispatch` without `plan_id` → `listActivePlans`; `workflow_dispatch` with
+`plan_id` → that plan; `issues` → the plan from the issue's `plan:<id>` label. Fork PRs are ignored.
+
+**`.github/workflows/execute-plan-approve.yml`**
 ```yaml
 name: Execute-plan approve
 on:
@@ -113,6 +251,7 @@ permissions:
   issues: write
   pull-requests: write
   actions: write
+  checks: write
 concurrency:
   group: execute-plan-approve-${{ github.event.issue.number }}
   cancel-in-progress: false
@@ -121,14 +260,18 @@ jobs:
     name: execute-plan-approve
     if: >-
       github.event.issue.pull_request == null &&
-      (startsWith(github.event.comment.body, 'approve-autonomous ') || startsWith(github.event.comment.body, 'revoke-autonomous '))
+      github.event.comment.author_association == 'OWNER' &&
+      (startsWith(github.event.comment.body, 'approve-autonomous ') ||
+       startsWith(github.event.comment.body, 'resume-autonomous ') ||
+       startsWith(github.event.comment.body, 'revoke-autonomous '))
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v5
         with: { ref: main }
       - uses: actions/setup-node@v5
         with: { node-version: 22 }
-      - name: Verify approval and start the plan
+      - name: Handle control comment
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           EXECUTE_PLAN_BOT_TOKEN: ${{ secrets.EXECUTE_PLAN_BOT_TOKEN }}
@@ -137,8 +280,10 @@ jobs:
           EVENT_PATH: ${{ github.event_path }}
         run: node .github/scripts/execute-plan-approve.js
 ```
+`tick` re-validates the authorizing comment on every pass, so an edit that changes the comment
+prefix (and therefore skips this workflow) is still caught by the next driver pass.
 
-**YAML — `.github/workflows/execute-plan-driver.yml`**
+**`.github/workflows/execute-plan-driver.yml`**
 ```yaml
 name: Execute-plan driver
 on:
@@ -147,15 +292,12 @@ on:
   workflow_dispatch:
     inputs:
       plan_id: { description: Plan id (empty = all active), required: false }
-      dry_run: { description: Observe only, type: boolean, default: false }
   pull_request:
     types: [opened, ready_for_review, converted_to_draft, synchronize, closed]
   pull_request_review:
     types: [submitted]
-  check_suite:
-    types: [completed]
   workflow_run:
-    workflows: ['Pre-UAT E2E', 'Promote UAT (tag on merge to main)', 'Deploy UAT (uat.agathatrack.com)', 'UAT Live E2E']
+    workflows: ['CI', 'Pre-UAT E2E', 'Promote UAT (tag on merge to main)', 'Deploy UAT (uat.agathatrack.com)']
     types: [completed]
   issues:
     types: [labeled, unlabeled]
@@ -164,7 +306,7 @@ permissions:
   issues: write
   pull-requests: write
   actions: write
-  checks: read
+  checks: write
 concurrency:
   group: execute-plan-driver
   cancel-in-progress: false
@@ -179,7 +321,7 @@ jobs:
         with: { ref: main }
       - uses: actions/setup-node@v5
         with: { node-version: 22 }
-      - name: Tick active plans
+      - name: Drive active plans
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           EXECUTE_PLAN_BOT_TOKEN: ${{ secrets.EXECUTE_PLAN_BOT_TOKEN }}
@@ -188,72 +330,89 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           EVENT_PATH: ${{ github.event_path }}
           INPUT_PLAN_ID: ${{ inputs.plan_id }}
-          INPUT_DRY_RUN: ${{ inputs.dry_run }}
         run: node .github/scripts/execute-plan-driver.js
 ```
-Disagreement with R5 noted: one global concurrency group instead of per plan, because `plan_id`
-is unknown at workflow level for `schedule`/`workflow_run` events; the script loops over plans.
-Per-plan grouping is an optimisation for when plans run concurrently.
+Notes: `check_suite` is not used — GitHub does not start workflows from check suites created by
+GitHub Actions, so CI completion comes from `workflow_run` of `CI` (`ci.yml` `name: CI`).
+`workflow_run` chains stop at three levels (Pre-UAT → Promote → Deploy → driver would be the
+fourth), so driver runs after Deploy UAT may not fire; the 30-minute heartbeat covers them and
+correctness never depends on those events. One global concurrency group is accepted for v1
+(Fable's disagreement); the driver never waits inside a job (no watchers).
 
-**YAML — `.github/workflows/execute-plan-scope.yml`**
-```yaml
-name: Execute-plan scope
-on:
-  pull_request_target:
-    types: [opened, synchronize, reopened, ready_for_review]
-permissions:
-  contents: read
-  pull-requests: read
-  checks: write
-  statuses: write
-concurrency:
-  group: execute-plan-scope-${{ github.event.pull_request.number }}
-  cancel-in-progress: true
-jobs:
-  scope:
-    name: execute-plan-scope
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v5
-        with: { ref: main }          # trusted code only; PR code is never checked out
-      - uses: actions/setup-node@v5
-        with: { node-version: 22 }
-      - name: Evaluate plan scope
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-          HEAD_REF: ${{ github.event.pull_request.head.ref }}
-          BASE_REF: ${{ github.event.pull_request.base.ref }}
-          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
-        run: node .github/scripts/execute-plan-scope.js --mode check
+**Tests:** approve `valid → branch + status + labels + driver pass`, `not owner → ignored`,
+`invalid hash → rejected comment`, `init branch with extra files → rejected`, `resume → driver pass`,
+`revoke → label + driver pass`, `kill switch off → no-op`, `dry-run → no writes`; driver
+`plansForEvent per event type`, `fork PR ignored`, `arm-auto-merge clean status falls back to merge`,
+`enforce-stop disables auto-merge and publishes plan-stopped`, `launch records lease and launches`,
+`lease alive → no launch`, `dispatch-preuat recorded once per head`.
+
+**Acceptance:** `node --test scripts/test/execute_plan_driver_actions.test.js scripts/test/execute_plan_approve.test.js && ./scripts/pre-push-changed.sh`;
+actionlint decision as in WP7a.
+
+**Docs:** `docs/agent-efficiency/github-issue-workflow.md` — section "Execute-plan v2 driver"
+(events, token table, kill switch, approve/resume/revoke comments).
+
+**Owner hand-off:** merge; create secret `EXECUTE_PLAN_BOT_TOKEN` (runbooks §7.1); set variable
+`EXECUTE_PLAN_DRIVER=dry-run`; check that the next scheduled driver run shows a job summary and no writes.
+
+## WP7c — Cursor launch adapter (Cursor-specific)
+
+**Depends on:** nothing (run in parallel with WP1–WP3) · **Recommended executor:** Cursor · **Size:** ~120 code, ~120 tests
+
+**Files (create):** `.github/scripts/execute-plan-launch.js`, `scripts/test/execute_plan_launch.test.js` (under `scripts/test/` so the CI glob from WP7a runs it).
+**Do not touch:** `.github/scripts/launch-cursor-agent.js`, `.github/scripts/monitor-cursor-agent.js` (read them; reuse their request shape).
+
+**Exports**
+```js
+/** @returns {Promise<{ agentId: string, runId: string, agentUrl: string|null }>} */
+async function launchPlanAgent({ apiKey, repoUrl, startingRef, prompt, model, fetchImpl })
+/** @returns {Promise<'CREATING'|'RUNNING'|'FINISHED'|'ERROR'|'CANCELLED'|'EXPIRED'|'UNKNOWN'>} */
+async function getAgentRunStatus({ apiKey, agentId, runId, fetchImpl })
 ```
 
-**Tests:** approve `valid → labels + branch + launch`, `not owner → rejected`, `edited → stop`,
-`revoke → disable auto-merge`, `kill switch off → no-op`, `dry-run → no writes`; driver
-`plansForEvent per event type`, `fork PR ignored`, `driver action executed with bot token`,
-`agent action launches once and records`, `lease alive → no launch`; scope `non-plan → success`,
-`fork → success`, `phase red unclassified`, `drift red`, `overflow red`, `stopped plan red`; launch
-`request body matches recorded fixture`.
+**Rules**
+1. Request shape copied from `.github/scripts/launch-cursor-agent.js:46-60`: `POST https://api.cursor.com/v1/agents`
+   with `prompt.text`, `repos: [{ url, startingRef }]`, `autoCreatePR: false`, `model: { id }`;
+   the response fields `agent.id`, `run.id`, `agent.url` (`launch-cursor-agent.js:135-137`).
+2. Status: `GET /v1/agents/{agentId}/runs/{runId}` → `status` (as `monitor-cursor-agent.js:185`);
+   any error → `UNKNOWN` (never throw from the status call).
+3. **VERIFY (Cursor API docs, decision):** does `workOnCurrentBranch: true` with `startingRef = <branch>`
+   make the agent commit and push to that existing branch? Yes → send `workOnCurrentBranch: true`.
+   No or unclear → send `false` and append to the prompt: "Commit to branch `<branch>`; push with
+   `git push origin HEAD:<branch>`; never create another branch." Record the answer in the PR body.
+4. **VERIFY (Cursor dashboard, decision):** a Cloud Agent launched through the API receives the
+   cloud secret `GH_TOKEN`. Yes → nothing to do. No → stop and report; the owner must configure it
+   (runbooks §7.1 step 5) before WP8.
 
-**Acceptance:** `node --test .github/scripts/execute-plan-*.test.js && actionlint .github/workflows/execute-plan-*.yml && ./scripts/pre-push-changed.sh` (**VERIFY** `actionlint` availability: `actionlint -version || echo "run via .github/workflows/actionlint.yml"`).
+**Tests:** `launch request body matches the contract`, `launch returns ids from the response`,
+`status maps RUNNING`, `status error → UNKNOWN` (fake fetch).
 
-**Docs:** `docs/agent-efficiency/github-issue-workflow.md` § Execute-plan v2 driver (events, tokens, kill switch); `docs/pipelines/ci-cd-gates.md` row for `execute-plan-scope`.
+**Acceptance:** `node --test scripts/test/execute_plan_launch.test.js`; add the file to the governance block of `scripts/pre-push-changed.sh`.
 
-**Owner hand-off after this WP:** merge the PR; create secret `EXECUTE_PLAN_BOT_TOKEN`; set variable `EXECUTE_PLAN_DRIVER=dry-run`; confirm the driver's scheduled run shows a job summary with no writes.
+## WP8 — Rulesets and live verification
 
-**Kickoff prompt:** "Implement WP7 of docs/agent-efficiency/plans/execute-plan-v2.md (index, contracts.md, work-packages-platform.md WP7). Thin workflows, logic in .github/scripts with node:test. Do not merge; mark ready and hand off to the owner."
+**Depends on:** WP7b merged, identity in place (runbooks §7.1), driver in `dry-run` · **Recommended executor:** Cursor (its `GH_TOKEN` is the bot, which some checks need) with the owner
 
-## WP8 — Scope check wiring, rulesets, verification
+Each step is a decision; on any unexpected outcome, stop and report.
+1. **Check placement.** Open a probe PR with the bot token from `cursor/execute-plan-v2-probe-<4>`
+   (one whitespace change in `docs/agent-efficiency/plans/README.md`) into `main`.
+   Expected: a check run named `execute-plan-scope`, app `github-actions`, conclusion `success`,
+   title `ok`. Seen → continue. Not seen → stop and report the workflow run link.
+2. **Unattributed-changes rule.** On the same probe PR, with every check green, read
+   `GET /pulls/{n}` → `mergeable_state`. `clean` → continue. `blocked` → report; the owner sets
+   `require_extra_approval_for_unattributed_changes: false` on the `main` ruleset (runbooks §7.2),
+   then re-check. Close the probe PR without merging.
+3. **Owner** applies runbooks §7.2 (both rulesets, contexts pinned to `integration_id: 15368`) and §7.3.
+4. **Sandbox plan** `scope-probe-0000` (init on `cursor/scope-probe-0000-init`, approved by the owner
+   with a 1-day window, `EXECUTE_PLAN_DRIVER=on` for the duration). Fixture PRs and expected results:
+   (a) out-of-scope file → `execute-plan-scope` red `unclassified`; (b) snapshot edit → red `drift`
+   and the control issue gets `needs-owner`; (c) push of `.github/workflows/x.yml` with the bot
+   token → rejected by GitHub (no `workflow` scope); (d) `docs/architecture/openapi/*.json`
+   companion → green, companion listed; (e) non-plan PR → green; (f) the bot posts a commit status
+   `execute-plan-scope = success` on PR (a)'s head → PR (a) still blocked. Record PR numbers on the
+   control issue, comment `revoke-autonomous scope-probe-0000`, delete the branches, set
+   `EXECUTE_PLAN_DRIVER=dry-run` again.
+5. **Owner** sets `EXECUTE_PLAN_DRIVER=on` when WP9 starts.
 
-**Branch:** none for code; owner applies settings per [runbooks §7.2–7.4](./runbooks-proof-retirement.md) · **Executor part:** verification only · **Depends on:** WP7 merged, identity in place
-
-1. **VERIFY (B5)** check placement: open a throwaway PR from branch `claude/execute-plan-v2-scope-probe` (one whitespace change in `docs/agent-efficiency/README.md`) into `main`; confirm a check named `execute-plan-scope` appears on the PR head with conclusion `success`. If it does not appear, switch the workflow step to `--mode status` and confirm a commit status with that context appears. Close the probe PR without merging.
-2. Owner adds `execute-plan-scope` to the `main` ruleset required checks and creates the integration ruleset (§7.2); enables auto-merge (§7.3).
-3. Fixture verification on a sandbox v2 plan `scope-probe-0000` (init on branch `cursor/scope-probe-0000-init`, approved by the owner with a 1-day window): PRs (a) out-of-scope file → red `unclassified`; (b) snapshot edit → red `drift` and `tick` STOP; (c) `.github/workflows/x.yml` edit → red `protected` **and** GitHub rejects the push when done with the bot token (no `workflow` scope); (d) companion `openapi/*.json` → green with the companion logged; (e) non-plan PR → green. Record the PR numbers in the control issue, then `revoke-autonomous scope-probe-0000` and delete its branches.
-4. Owner sets `EXECUTE_PLAN_DRIVER=on`.
-
-**Acceptance:** the five fixture outcomes recorded on the sandbox control issue; the probe PR closed; both rulesets active (`gh api repos/KanopeeKa/AgathaCheck/rulesets --jq '.[] | select(.enforcement=="active") | .name'` lists `Main protection` and `Execute-plan integration`).
-
-**Kickoff prompt:** "Run WP8 of docs/agent-efficiency/plans/execute-plan-v2.md (work-packages-platform.md WP8 + runbooks §7.2–7.4). Verification only; stop at each owner step and report."
+**Acceptance:** the six fixture outcomes recorded on the sandbox control issue; both rulesets active
+(`Main protection`, `Execute-plan integration`).

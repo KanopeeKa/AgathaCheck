@@ -9,39 +9,39 @@ tags: [agent, execute-plan, autonomy, runbook]
 # Execute-plan v2 — owner runbooks, proof run, retirement
 
 Part of [execute-plan-v2.md](../execute-plan-v2.md). §7 is done by the owner; §8 (WP9) and §9
-(WP10) by the executor with the owner hand-offs marked.
+(WP10) by an executor, with the owner steps marked.
 
 ## 7. Owner runbooks
 
 ### 7.1 Identity (prerequisite for the driver — B1, B6)
 
-**Path A — machine user with a classic PAT (default).**
+**Path A — machine user with a classic PAT (default).** Fine-grained PATs cannot target a repo
+owned by another personal account (`owner.type = User`, live read), so this is the available path.
 1. Create a second GitHub account for the bot (GitHub permits one machine account per person).
-   Name it; write the login into `.github/execute-plan.config.json` → `bot_login` (WP7 PR).
+   Its login goes into `.github/execute-plan.config.json` → `bot_login` (WP7a PR).
 2. Repo → Settings → Collaborators → invite the bot with **Write**; accept from the bot account.
 3. Bot account → Settings → Developer settings → Personal access tokens (classic) → scopes:
-   **`repo` only** (no `workflow`, no `admin:*`); expiry 90 days; put the renewal date in your calendar.
+   **`repo` only** (no `workflow`, no `admin:*`); expiry 90 days; put the renewal date in a calendar.
 4. Repo → Settings → Secrets and variables → Actions → secret `EXECUTE_PLAN_BOT_TOKEN` = that token.
-5. Cursor → cloud agent settings → secrets: set `GH_TOKEN` to the same token, replacing your own,
-   so workers act as the bot. Keep `cursor_api_key` as is.
-6. Verify, from any shell with the token in `T`:
-   - `curl -s -H "Authorization: token $T" https://api.github.com/user | jq -r .login` → bot login.
-   - Push a branch that edits `.github/workflows/actionlint.yml` with the token → GitHub rejects it
+5. Cursor → Cloud Agents → Secrets: set `GH_TOKEN` to the same token (replacing your own) so
+   workers act as the bot. Keep `cursor_api_key` as it is.
+6. Verify from any shell with the token in `T`:
+   - `curl -s -H "Authorization: Bearer $T" https://api.github.com/user | jq -r .login` → the bot login.
+   - Pushing a branch that edits `.github/workflows/actionlint.yml` with this token is rejected
      ("refusing to allow a Personal Access Token to create or update workflow"). Delete the branch.
-   - After WP7: a PR merged by the bot token triggers **Pre-UAT E2E** (check the Actions tab).
+   - After WP7b: a PR merged by the bot token starts **Pre-UAT E2E** (Actions tab).
 
-**Path B — GitHub App (driver only; workers still need Path A).**
-1. Settings → Developer settings → GitHub Apps → New: permissions Contents RW, Pull requests RW,
-   Issues RW, Metadata R, **Workflows: none**; no webhooks; install on `AgathaCheck`.
-2. Secrets `EXECUTE_PLAN_APP_ID`, `EXECUTE_PLAN_APP_PRIVATE_KEY`; workflows mint a token with
-   `actions/create-github-app-token@v2` and export it as `EXECUTE_PLAN_BOT_TOKEN` for the step.
-3. `bot_login` = `<app-slug>[bot]`.
-
-Why not a fine-grained PAT: the repo is owned by a personal account, and a fine-grained token can
-only target resources owned by its own user or an organisation. Moving the repo to a free
-organisation would enable it; that is a separate decision.
+**Path B — GitHub App (driver only; workers still need Path A).** Permissions Contents RW, Pull
+requests RW, Issues RW, Metadata R, Workflows **none**; install on `AgathaCheck`; secrets
+`EXECUTE_PLAN_APP_ID` + `EXECUTE_PLAN_APP_PRIVATE_KEY`; the workflows mint a token with
+`actions/create-github-app-token@v2` and export it as `EXECUTE_PLAN_BOT_TOKEN`; `bot_login` =
+`<app-slug>[bot]`. Only worth it if PAT renewal becomes a burden.
 
 ### 7.2 Rulesets
+
+Every required context is **pinned to GitHub Actions** (`integration_id: 15368`, the id the live
+`main` ruleset already uses). Without the pin, the bot's PAT could post a commit status with the
+same name and satisfy the check.
 
 **Integration branches — create** (`gh api -X POST repos/KanopeeKa/AgathaCheck/rulesets --input integration-ruleset.json`):
 ```json
@@ -50,7 +50,7 @@ organisation would enable it; that is a separate decision.
   "target": "branch",
   "enforcement": "active",
   "conditions": { "ref_name": { "include": ["refs/heads/cursor/*-integration-*"], "exclude": [] } },
-  "bypass_actors": [ { "actor_id": 5, "actor_type": "RepositoryRole", "bypass_mode": "always" } ],
+  "bypass_actors": [],
   "rules": [
     { "type": "deletion" },
     { "type": "non_fast_forward" },
@@ -61,29 +61,32 @@ organisation would enable it; that is a separate decision.
         "allowed_merge_methods": ["squash", "merge"] } },
     { "type": "required_status_checks", "parameters": {
         "strict_required_status_checks_policy": false, "do_not_enforce_on_create": true,
-        "required_status_checks": [ { "context": "execute-plan-scope" }, { "context": "ci-gate / CI passed" } ] } }
+        "required_status_checks": [
+          { "context": "ci-gate / CI passed", "integration_id": 15368 },
+          { "context": "execute-plan-scope", "integration_id": 15368 } ] } }
   ]
 }
 ```
-**VERIFY** before applying: `actor_id: 5` is the Admin repository role in your account
-(`gh api repos/KanopeeKa/AgathaCheck/rulesets/18979034 --jq .bypass_actors`), and
-`allowed_merge_methods` is accepted by the API version in use (drop the key if rejected; then set
-the repo-level merge methods instead). `do_not_enforce_on_create` lets the approve workflow create
-the branch. The bot (Write) cannot bypass; you (Admin) can.
+`bypass_actors` is empty like `main`'s ruleset (live read); as repo admin you can still edit or
+disable the ruleset. If the API rejects `allowed_merge_methods`, drop that key (the repo already
+allows squash and merge commits). `do_not_enforce_on_create` lets the approve workflow create the branch.
 
-**`main` — edit ruleset 18979034 "Main protection":** `gh api repos/KanopeeKa/AgathaCheck/rulesets/18979034 > main-ruleset.json`,
-add `{ "context": "execute-plan-scope" }` to `required_status_checks`, keep `strict = true`,
-keep reviews 0 and `copilot_code_review`; recommended: set `required_review_thread_resolution: true`
-in the `pull_request` rule so Copilot threads must be resolved before auto-merge (matches the
-repo's PR-review policy). Apply with `gh api -X PUT repos/KanopeeKa/AgathaCheck/rulesets/18979034 --input main-ruleset.json`.
-Verify: `gh api repos/KanopeeKa/AgathaCheck/rules/branches/main --jq '.[] | select(.type=="required_status_checks") | .parameters.required_status_checks[].context'`
-lists three contexts. Do this only after WP8 step 1 proved the check appears on PR heads.
+**`main` — edit ruleset 18979034 "Main protection":**
+`gh api repos/KanopeeKa/AgathaCheck/rulesets/18979034 > main-ruleset.json`; in the
+`required_status_checks` rule add `{ "context": "execute-plan-scope", "integration_id": 15368 }`;
+keep `strict_required_status_checks_policy: true` (the driver runs `update-branch`), reviews 0 and
+`copilot_code_review`; set `required_review_thread_resolution: true` in the `pull_request` rule so
+review threads must be resolved before auto-merge. `require_extra_approval_for_unattributed_changes`
+is currently `true`: keep it unless WP8 step 2 shows it blocks bot PRs, then set it to `false`.
+Apply with `gh api -X PUT repos/KanopeeKa/AgathaCheck/rulesets/18979034 --input main-ruleset.json`.
+Verify: `gh api repos/KanopeeKa/AgathaCheck/rules/branches/main --jq '.[] | select(.type=="required_status_checks") | .parameters.required_status_checks'`
+lists three contexts, each with `integration_id: 15368`. Do this only after WP8 step 1 passed.
 
 ### 7.3 Repository settings
 
 `gh api -X PATCH repos/KanopeeKa/AgathaCheck -F allow_auto_merge=true` (currently `false`). Keep
-`allow_squash_merge` and `allow_merge_commit` true (sync PRs need merge commits), keep
-`delete_branch_on_merge` true.
+`allow_squash_merge` and `allow_merge_commit` true (sync PRs use merge commits) and
+`delete_branch_on_merge` true (snapshots are read at `init_sha`, so deleted branches do not matter).
 
 ### 7.4 Secrets and variables
 
@@ -91,24 +94,31 @@ lists three contexts. Do this only after WP8 step 1 proved the check appears on 
 |------|------|-------|
 | `EXECUTE_PLAN_BOT_TOKEN` | secret | §7.1 |
 | `cursor_api_key` | secret | exists |
-| `EXECUTE_PLAN_DRIVER` | variable | `dry-run` after WP7; `on` after WP8; `off` = kill switch |
+| `EXECUTE_PLAN_DRIVER` | variable | `dry-run` after WP7b; `on` for WP8 step 4 and from WP9; `off` = kill switch |
 
-Owner-only maintenance: PAT renewal (90 d), reviewing `needs-owner` issues, removing
-`autonomous-revoked`/`needs-owner` labels after a decision (a removed label does not restart a
-run; re-approval is impossible by design — start a new plan).
+### 7.5 Day-to-day: approve, resume, revoke
+
+- **Approve** a new plan: paste the exact line printed by `init` as a comment on its control issue.
+- **When a run stops** (label `needs-owner`, reason in the status comment): fix the cause if needed
+  (for example merge a fix to `main`), then remove `needs-owner` (and `autonomous-revoked` if
+  present) and comment `resume-autonomous <plan_id> sha256:<same hash> until <ISO date ≤ 14 days ahead>`.
+  Scope stays the same; time and budgets restart from that comment. Changing scope means a new plan.
+- **Revoke**: add label `autonomous-revoked` or comment `revoke-autonomous <plan_id>`. Auto-merge
+  is disabled and the scope check turns red on every open plan PR within one driver pass.
+- **Kill switch**: set `EXECUTE_PLAN_DRIVER=off` — the approve and driver workflows stop acting at once.
+- Maintenance: PAT renewal every 90 days.
 
 ## 8. Proof run (WP9) — the first v2 plan
 
-**Plan id:** `proof-build-label-7f3a` (the contracts §3.1 example). **Precondition:** WP1–WP8
-done, `EXECUTE_PLAN_DRIVER=on`, `main` quiet (no other programme merging that day).
+**Plan id:** `proof-build-label-7f3a`. **Precondition:** WP1–WP8 done, `EXECUTE_PLAN_DRIVER=on`,
+`main` quiet (no other programme merging that day). **Recommended executor for the init step:**
+Cursor (it acts as the bot, which is the real path).
 
-**VERIFY before `init`:** the health route and its test file —
-`rg -n "health" server/routes server/app.js server/index.js 2>/dev/null | head -5` — and replace
-`server/routes/health.js` / `server/test/health.test.js` in the plan's yaml scope with the real
-paths. The hash is computed at `init`, so the example hash in contracts §3.1 will differ; that is
-expected.
+Facts already checked: `/backend/health` is defined inline at `server/bin/server.js:158`
+(`createApp` is exported); route tests use `supertest` + `createApp(mockPool())` as in
+`server/test/publicAccess.test.js`.
 
-**Plan file `.agents/plans/proof-build-label-7f3a.md`** (exact content; adjust paths per VERIFY):
+**Plan file `.agents/plans/proof-build-label-7f3a.md`** (exact content; replace `<date>` with the run date):
 ````markdown
 # Proof run: UAT build label
 
@@ -119,26 +129,24 @@ Pre-UAT E2E, promotion and Deploy UAT, with no owner message after the approval 
 ## Phases
 
 ### Phase 1 — Server build label
-```yaml
-allowed_paths: [server/routes/health.js, server/test/health.test.js]
-forbidden_paths: []
-allowed_exceptions: [tests]
-companions: []
-exit_checklist: [health unit test green, pre-push-changed green]
+```json
+{ "allowed_paths": ["server/bin/server.js", "server/test/healthProofLabel.test.js"],
+  "forbidden_paths": [], "allowed_exceptions": ["tests"], "companions": [],
+  "exit_checklist": ["health proof-label test green", "pre-push-changed green"] }
 ```
-Scope: add the JSON field `proof_label` with the constant value `execute-plan-v2-proof` to the
-`GET /backend/health` response, plus a unit test asserting it.
-Out of scope: any other route, any Flutter file.
+Scope: in the `GET /backend/health` handler, add the JSON field `proof_label` with the constant
+value `execute-plan-v2-proof` (keep `status: 'OK'`); add `server/test/healthProofLabel.test.js`
+asserting both fields with `supertest` and `createApp(mockPool())`.
+Out of scope: `/health`, any other route, any Flutter file.
 
 ### Phase 2 — Docs note
-```yaml
-allowed_paths: [docs/e2e/uat-deploy-tiers.md]
-forbidden_paths: []
-allowed_exceptions: [docs]
-companions: []
-exit_checklist: [docs gates green]
+```json
+{ "allowed_paths": ["docs/e2e/uat-deploy-tiers.md"],
+  "forbidden_paths": [], "allowed_exceptions": ["docs"], "companions": [],
+  "exit_checklist": ["docs gates green"] }
 ```
-Scope: add one line under "Execute-plan v2 observes this chain": `Proof run: proof-build-label-7f3a (<date>)`.
+Scope: add one line under the section "Execute-plan v2 observes this chain":
+`Proof run: proof-build-label-7f3a (<date>)`.
 Out of scope: everything else.
 
 ## Proof on UAT
@@ -146,68 +154,66 @@ Out of scope: everything else.
 ````
 
 **Procedure**
-1. Executor: on branch `cursor/proof-build-label-7f3a-init`, add the plan file, run
-   `node scripts/execute_plan_runtime.js init proof-build-label-7f3a --window-days 3`. The turn ends.
-2. Owner: paste the printed approval line as a comment on the control issue. **From here the only
-   human actions are the two drill actions below.**
+1. Executor: create branch `cursor/proof-build-label-7f3a-init` from `main`, add the plan file, run
+   `node scripts/execute_plan_runtime.js init proof-build-label-7f3a --window-days 3`. The session ends.
+2. Owner: paste the printed approval line on the control issue. **From here the only human actions
+   are the two drill actions.**
 3. Drill 1 — injected phase-CI failure: when phase 1's PR is marked ready, the owner pushes one
-   commit to the phase-1 branch that flips the new assertion to an impossible value. Expected:
-   red `ci-gate` → `tick` → `fix-ci` → worker launched → fix → green → auto-merge.
-4. Drill 2 — forced turn end: while phase 2's worker is running (draft PR exists), the owner cancels
-   the Cursor agent from the Cursor dashboard. Expected: within ≤ 30 min the heartbeat sees a dead
-   lease and relaunches with the handoff; phase 2 completes.
-5. Watch nothing else. Expected sequence on the control issue: `phase:1 … merged` →
-   `phase:2 … merged` → `sync` (only if `main` moved) → `release:open` → `release:merged` →
-   `awaiting-preuat` → `awaiting-promote` → `awaiting-deploy` → `complete`, issue closed by `tick`.
+   commit to the phase-1 branch that changes the expected value in the new test. Expected: red
+   `ci-gate` → `fix-ci` → worker launched → fixed → green → auto-merge.
+4. Drill 2 — forced turn end: while phase 2's worker runs (draft PR exists), the owner cancels the
+   Cursor agent from the dashboard. Expected: within 30 min the heartbeat sees a dead lease and
+   relaunches with the handoff; phase 2 completes.
+5. Expected log on the control issue: `phase:pending … phase:merged` (×2) → `sync` (only if `main`
+   moved) → `release:open` → `awaiting-preuat` → `awaiting-promote` (only if the throttle skipped)
+   → `awaiting-deploy` → `complete`; the issue is closed by the driver.
 
-**Record** (in the control issue's final status comment and in `docs/agent-efficiency/plans/execute-plan-v2/proof-run-results.md`):
-launches per phase (expected: p1 = 2, p2 = 2, release = 0), total wall time, Pre-UAT/Deploy run
-URLs, tag name, Cursor cost from the usage page, number of human messages (expected 0 besides the
-approval and the two drill actions), every `wait` reason seen.
+**Record** (final status comment + `docs/agent-efficiency/plans/execute-plan-v2/proof-run-results.md`):
+launches per phase (expected p1 = 2, p2 = 2, release = 0), wall time, Pre-UAT / Deploy UAT run
+URLs, tag, Cursor cost, number of human actions (expected: approval + 2 drills), every `wait` reason seen.
 
-**Pass:** issue closed by `tick` with the four evidence links; the curl prints the label; no STOP
-occurred; launches within budgets. **Fail:** any STOP, any human message needed, or the issue not
-closed within the window. On fail: fix the cause in a normal PR and rerun with a **new plan id**
-(plans are immutable), e.g. `proof-build-label-7f3b`.
+**Pass:** issue closed by the driver with the four evidence links; the curl prints the label; no
+STOP; launches within budget. **Fail:** any STOP, any extra human action, or the window expires.
+On fail: fix the cause in a normal PR, then either `resume-autonomous` (same scope) or rerun with a
+new plan id (`proof-build-label-7f3b`) if the plan itself was wrong.
 
-**UAT failure drill (separate; owner opt-in).** Default: fixtures only — WP5 already replays real
-red, cancelled and throttle-skipped runs. Live option, on a quiet day: plan `proof-uat-drill-<id>`
+**UAT failure drill (separate, owner opt-in).** Default: the WP5 scenarios already cover red,
+cancelled, throttle-skipped and no-op runs. Live option on a quiet day: plan `proof-uat-drill-<4>`
 whose single phase makes one Playwright assertion under `e2e/` fail deterministically (`tests`
 exception). Expected: release merges → Pre-UAT red, app-caused (baseline green) → `remedial` →
 worker fixes the assertion on `cursor/<id>-remedial-1` → merge → green → tag → deploy →
-`complete`. It blocks UAT promotion for one to two hours; schedule accordingly.
+`complete`. It blocks UAT promotion for one to two hours.
 
 ## 9. Retirement PR (WP10) — only after §8 passes
 
-**Branch:** `claude/execute-plan-v2-wp10` · **Precondition:** no open v1 plan
-(`gh issue list -R KanopeeKa/AgathaCheck -l execute-plan -s open` shows only v2 issues).
+**Recommended executor:** Claude Code · **Precondition:** no open v1 plan (open `execute-plan`
+issues all have a v2 snapshot).
 
 **Code**
 - Remove v1 paths: `set-phase`, `sync-runtime`, `--labels` on `gate`, `--fix-hash`, v1 schema
   routing, `checkAutonomyGate` label handling (`scripts/lib/execute_plan_artifacts.js:315`),
   `formatAgentNextStep` (`:297`); keep `gate` as an alias of `tick`.
-- `.agents/plans/_example.snapshot.json` (v1) → delete; pre-push validates only the v2 example.
-- `scripts/babysit_uat_watch_preuat.sh` → thin wrapper around `watch-preuat` or delete if nothing
-  calls it (`rg -n "watch_preuat" scripts .cursor docs`).
+- Delete `.agents/plans/_example.snapshot.json` (v1); pre-push validates only the v2 example.
+- `scripts/babysit_uat_watch_preuat.sh` → thin wrapper around `watch-preuat`, or delete it when
+  `rg -n "watch_preuat" scripts .cursor docs` finds no caller.
 - `scripts/lib/execute_plan_project.js` → use the WP1 client; no `gh` left in `scripts/lib/execute_plan_*`.
-- Decide and do one: fold `agent-pr-safety-gate.yml` into `execute-plan-scope.yml`, or extend it
-  to `cursor/*-integration-*`. One gate afterwards.
-- Remove `proof_label` from the health route (or rename it `deployed_marker` if kept on purpose).
+- One safety gate: extend `execute-plan-scope` to all agent PRs and delete `agent-pr-safety-gate.yml`,
+  or keep both and document why (owner decision recorded in the PR).
+- Remove `proof_label` from the health handler (or keep it renamed `deployed_marker` on purpose).
 
 **Docs**
 - Both execute-plan skills: delete the v1 sections; the skill is the v2 loop only.
 - `docs/agent-efficiency/execute-plan-instruction-stack.md`: delete the platform-override table
   and § Cloud turn mechanics; keep § v2 loop.
-- `docs/agent-efficiency/autonomous-pr-policy.md`: delete rows 45–51 (turn-boundary rules).
+- `docs/agent-efficiency/autonomous-pr-policy.md`: delete the turn-boundary rows of §Execute-plan
+  overrides (lines 45–51 today).
 - `AGENTS.md` §Execute-plan: v2 paragraph only.
-- `.agents/memory/execute-plan-autonomy.md`: delete; `MEMORY.md` keeps the v2 index line.
+- `.agents/memory/execute-plan-autonomy.md`: delete; `MEMORY.md` keeps the v2 line.
 - `docs/agent-efficiency/execute-plan-memory-1470.md`: append "2026-10: superseded — liveness and
-  integrity are now mechanisms (execute-plan v2); see `docs/agent-efficiency/plans/execute-plan-v2.md`."
-- `docs/agent-efficiency/plans/execute-plan-v2.md`: add `Shipped: <date>` under the title; link
-  `proof-run-results.md`.
-- `docs/design/terminology.md` / `docs/agent-efficiency/README.md`: update any "execute-plan"
-  entries that describe v1 commands (`rg -n "set-phase|sync-runtime|fix-hash" docs .cursor AGENTS.md`).
+  integrity are mechanisms (execute-plan v2); see `docs/agent-efficiency/plans/execute-plan-v2.md`."
+- `docs/agent-efficiency/plans/execute-plan-v2.md`: add `Shipped: <date>` and link `proof-run-results.md`.
+- Update other v1 command mentions: `rg -n "set-phase|sync-runtime|fix-hash" docs .cursor AGENTS.md`.
 
-**Acceptance:** `./scripts/pre-push.sh` green; `rg -n "set-phase|sync-runtime|--fix-hash|forbidden closers" --glob '!docs/agent-efficiency/plans/**' . ` returns nothing; docs link check green.
+**Acceptance:** `./scripts/pre-push.sh` green; `rg -n "set-phase|sync-runtime|--fix-hash" --glob '!docs/agent-efficiency/plans/**' .` returns nothing; `bash scripts/validate_docs.sh` green.
 
-**Rollback:** revert the retirement PR; v1 returns intact (it was never modified before this PR).
+**Rollback:** revert the retirement PR; v1 returns intact (it was not modified before this PR).
