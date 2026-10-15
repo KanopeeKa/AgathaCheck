@@ -474,5 +474,11 @@
     "Care done after its due date keeps the next planned date and offers to change it": "P1",
     "A remembered choice is applied without asking again": "P1",
     "Changing when care was done moves the next date of after-it's-done care": "P1"
+  },
+  "care_date_screen.feature": {
+    "CD-1 Care date shows four-block layout": "P1",
+    "CD-2 Care name link opens Care details": "P1",
+    "CD-3 After-it's-done overdue completes inline on the leaf without a date sheet": "P1",
+    "CD-4 Neighbour chevron opens the adjacent occurrence on the same route": "P1"
   }
 }
