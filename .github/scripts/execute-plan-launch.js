@@ -2,6 +2,7 @@
 'use strict';
 
 const CURSOR_API_BASE = 'https://api.cursor.com';
+const FETCH_TIMEOUT_MS = 30_000;
 
 const TERMINAL_STATUSES = new Set(['FINISHED', 'ERROR', 'CANCELLED', 'EXPIRED']);
 const RUNNING_STATUSES = new Set(['CREATING', 'RUNNING']);
@@ -28,6 +29,7 @@ async function cursorApi(fetchImpl, method, path, apiKey, body) {
       'Content-Type': 'application/json',
     },
     body: body ? JSON.stringify(body) : undefined,
+    signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
   });
 
   const text = await response.text();
@@ -105,6 +107,7 @@ async function getAgentRunStatus({ apiKey, agentId, runId, fetchImpl }) {
   try {
     const response = await fetchFn(`${CURSOR_API_BASE}${path}`, {
       headers: { Authorization: `Bearer ${apiKey}` },
+      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
     });
     const text = await response.text();
     if (!response.ok) {

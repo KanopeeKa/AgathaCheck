@@ -200,6 +200,45 @@ test('status network failure → UNKNOWN', async () => {
   assert.equal(status, 'UNKNOWN');
 });
 
+test('launch timeout throws', async () => {
+  const fetchImpl = async (_url, options) => {
+    assert.ok(options.signal);
+    const error = new Error('The operation was aborted');
+    error.name = 'TimeoutError';
+    throw error;
+  };
+
+  await assert.rejects(
+    () =>
+      launchPlanAgent({
+        apiKey: API_KEY,
+        repoUrl: REPO_URL,
+        startingRef: STARTING_REF,
+        prompt: 'Work',
+        fetchImpl,
+      }),
+    /aborted|TimeoutError/i,
+  );
+});
+
+test('status timeout → UNKNOWN', async () => {
+  const fetchImpl = async (_url, options) => {
+    assert.ok(options.signal);
+    const error = new Error('The operation was aborted');
+    error.name = 'TimeoutError';
+    throw error;
+  };
+
+  const status = await getAgentRunStatus({
+    apiKey: API_KEY,
+    agentId: 'bc-a',
+    runId: 'run-b',
+    fetchImpl,
+  });
+
+  assert.equal(status, 'UNKNOWN');
+});
+
 test('status unknown value → UNKNOWN', async () => {
   const fetchImpl = fakeFetch({
     '/v1/agents/bc-a/runs/run-b': async () => ({
