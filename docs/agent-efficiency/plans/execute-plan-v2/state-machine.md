@@ -147,9 +147,9 @@ and no `status.stop` newer than the epoch), the recorded `status.stop.reason` (w
 - L3 `opts.actor == "agent"` (worker tick): agent actions are returned with `launch: false` — the
   caller is the worker and does the action itself.
 - L4 `opts.actor == "driver"`: an agent action becomes `wait(agent-alive)` when the lease is
-  alive; otherwise it gets `launch: true` if `launches for this phase since the epoch <
-  launches_per_phase` **and** `launches today (UTC) < daily_launches`; otherwise STOP
-  `launch-budget`.
+  alive. Otherwise: `launches for this phase since the epoch ≥ launches_per_phase` → STOP
+  `launch-budget`; else `launches today (UTC) ≥ daily_launches` → `wait(daily-cap)` (the next
+  UTC day lifts it; never a STOP); else the action gets `launch: true`.
 
 ## 4.2 Decision rules (`decide`, first matching rule wins)
 
@@ -225,7 +225,7 @@ State names written to the status comment: `stopped`, `phase:pending`, `phase:im
 | `expired` | §4.1 — `now ≥` effective deadline |
 | `drift` | PR-ladder 3 |
 | `ci-budget` | PR-ladder 4 |
-| `launch-budget` | L4 |
+| `launch-budget` | L4 (per-phase launches only; the daily cap waits) |
 | `pr-blocked` | PR-ladder 1 |
 | `sync-conflict` | S1b |
 | `preuat-budget` | U3 / U7 |
@@ -289,7 +289,7 @@ WP5 writes U):
 | `p-merged-next-phase.json` | P1–P2 | phase 2 / driver `create-phase-branch` |
 | `p-do-not-merge-stop.json` | PR-ladder 1 | stop `pr-blocked` |
 | `l-launch-budget-phase-stop.json` | L4 | stop `launch-budget` |
-| `l-daily-cap-stop.json` | L4 | stop `launch-budget` |
+| `l-daily-cap-wait.json` | L4 | driver `wait` (`daily-cap`), no stop |
 | `s-behind-open-sync.json` | S1a | `sync` / driver `open-sync-pr` |
 | `s-sync-dirty-resolve.json` | S1b | agent `resolve-sync` |
 | `s-sync-budget-stop.json` | S1b | stop `sync-conflict` |

@@ -15,16 +15,21 @@ Part of [execute-plan-v2.md](../execute-plan-v2.md). §7 is done by the owner; �
 
 ### 7.1 Identity (prerequisite for the driver — B1, B6)
 
+**Status (2026-10-15):** done with Path A — bot `pawpet-bot` is a collaborator and the repo secret
+`EXECUTE_PLAN_BOT_TOKEN` is set; step 5 is pending until WP8.
+
 **Path A — machine user with a classic PAT (default).** Fine-grained PATs cannot target a repo
 owned by another personal account (`owner.type = User`, live read), so this is the available path.
 1. Create a second GitHub account for the bot (GitHub permits one machine account per person).
    Its login goes into `.github/execute-plan.config.json` → `bot_login` (WP7a PR).
-2. Repo → Settings → Collaborators → invite the bot with **Write**; accept from the bot account.
+2. Repo → Settings → Collaborators → Add people → the bot login; accept from the bot account. A
+   repo owned by a personal account has no role picker: collaborators get push (write) access.
 3. Bot account → Settings → Developer settings → Personal access tokens (classic) → scopes:
    **`repo` only** (no `workflow`, no `admin:*`); expiry 90 days; put the renewal date in a calendar.
 4. Repo → Settings → Secrets and variables → Actions → secret `EXECUTE_PLAN_BOT_TOKEN` = that token.
-5. Cursor → Cloud Agents → Secrets: set `GH_TOKEN` to the same token (replacing your own) so
-   workers act as the bot. Keep `cursor_api_key` as it is.
+5. **At WP8, not before:** Cursor → Cloud Agents → Secrets: set `GH_TOKEN` to the same token
+   (replacing your own) so workers act as the bot. Keep `cursor_api_key` as it is. This applies to
+   every Cursor cloud agent on the repo, so their PRs and comments then appear as the bot.
 6. Verify from any shell with the token in `T`:
    - `curl -s -H "Authorization: Bearer $T" https://api.github.com/user | jq -r .login` → the bot login.
    - Pushing a branch that edits `.github/workflows/actionlint.yml` with this token is rejected

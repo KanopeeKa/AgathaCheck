@@ -31,8 +31,9 @@ agents never need this conversation.
 | WP9 Proof run (init step) | **Cursor** + owner | Exercises the real worker path | — |
 | WP10 Retirement | Claude Code | Deletions across code and docs | — |
 
-Owner steps in order: Phase 0 decisions → identity (runbooks §7.1) → merge each WP PR → after
-WP7b: secret + `EXECUTE_PLAN_DRIVER=dry-run` → WP8 rulesets (§7.2) and auto-merge (§7.3) →
+Owner steps in order: Phase 0 decisions ✔ → identity and repo secret ✔ (bot `pawpet-bot`) → merge
+each WP PR → after WP7b: `EXECUTE_PLAN_DRIVER=dry-run` → before WP8: Cursor `GH_TOKEN` = bot
+token → WP8 rulesets (§7.2) and auto-merge (§7.3) →
 approval comment of the proof run → go / no-go after WP9.
 
 ## Plan-first rule (all executors)
@@ -95,7 +96,7 @@ Context you know better than other agents: the Cursor Cloud Agents API and dashb
    Cursor dashboard:
    - Does workOnCurrentBranch: true with startingRef = an existing branch make the agent commit
      and push to that branch? Quote the doc sentence in the PR body.
-   - Does a Cloud Agent launched through the API receive the cloud secret GH_TOKEN?
+   - Does a Cloud Agent launched through the API receive the repo's cloud secrets (GH_TOKEN)?
    Follow the decision written in WP7c for each answer.
 3. Create .github/scripts/execute-plan-launch.js (launchPlanAgent, getAgentRunStatus) and
    scripts/test/execute_plan_launch.test.js using an injected fetch (no network in tests).

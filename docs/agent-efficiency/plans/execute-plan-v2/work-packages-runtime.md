@@ -198,8 +198,8 @@ touch paths matched by `agent-safety-lib.js` (auth, billing, secrets, migrations
 **Exports**
 ```js
 // execute_plan_constants.js (append)
-const V2_CAPS = { window_days: 14, ci_per_phase: 3, launches_per_phase: 3, remedial_rounds: 3, sync_attempts: 2, daily_launches: 10, phases: 8, companions: 5 };
-const V2_DEFAULTS = { window_days: 7, budgets: { ci_per_phase: 3, launches_per_phase: 3, remedial_rounds: 3, sync_attempts: 2, daily_launches: 10 } };
+const V2_CAPS = { window_days: 14, ci_per_phase: 3, launches_per_phase: 6, remedial_rounds: 3, sync_attempts: 2, daily_launches: 30, phases: 8, companions: 5 };
+const V2_DEFAULTS = { window_days: 7, budgets: { ci_per_phase: 3, launches_per_phase: 5, remedial_rounds: 3, sync_attempts: 2, daily_launches: 20 } };
 
 // execute_plan_approval.js
 function canonical(value)                         // contracts §3.4

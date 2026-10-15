@@ -31,7 +31,7 @@ GitHub (state-machine §4). This exact object is the worked example of the hash 
   "settings": {
     "release_owner_review": false,
     "tier3_blocking": false,
-    "budgets": { "ci_per_phase": 3, "launches_per_phase": 3, "remedial_rounds": 3, "sync_attempts": 2, "daily_launches": 10 }
+    "budgets": { "ci_per_phase": 3, "launches_per_phase": 5, "remedial_rounds": 3, "sync_attempts": 2, "daily_launches": 20 }
   },
   "protected_paths_version": 1,
   "phases": [
@@ -44,7 +44,7 @@ GitHub (state-machine §4). This exact object is the worked example of the hash 
       "forbidden_paths": [], "allowed_exceptions": ["docs"], "companions": [],
       "exit_checklist": ["docs gate green"] }
   ],
-  "approval_hash": "sha256:dea45fc08fccff02c09a4793d693e2dba3c23ff638928bf081623f14f0187bc3"
+  "approval_hash": "sha256:fdaabc2824a1c11fc508b1425b7ab18ab5d0abd639794298535fcf43845b1e53"
 }
 ```
 
@@ -145,7 +145,7 @@ Test vectors (`scripts/test/execute_plan_approval.test.js`, inline objects — n
 |-------|-------------|------|
 | `{}` | `{}` | `sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a` |
 | `{b:1,a:[true,null,"x"]}` | `{"a":[true,null,"x"],"b":1}` | `sha256:54a65415ad370228851a1da4b31b6fd42dc58b19a50d35cae759325f7388ce64` |
-| §3.1 object minus `approval_hash` | 1136 bytes, starts `{"approved_until":"2026-10-23T09:00:00Z","control_issue":1900,` | `sha256:dea45fc08fccff02c09a4793d693e2dba3c23ff638928bf081623f14f0187bc3` |
+| §3.1 object minus `approval_hash` | 1136 bytes, starts `{"approved_until":"2026-10-23T09:00:00Z","control_issue":1900,` | `sha256:fdaabc2824a1c11fc508b1425b7ab18ab5d0abd639794298535fcf43845b1e53` |
 
 ## 3.5 Status comment (one per control issue, edited in place)
 
@@ -244,7 +244,7 @@ non-null except in state `complete`; on a stop, `action.kind` is `enforce-stop`.
 | driver | `dispatch-deploy` | tag | Re-dispatch `deploy-uat.yml` with `deploy_ref`, once per tag. |
 | driver | `enforce-stop` | prs (open plan PRs) | Disable auto-merge, set scope check `failure` (`plan-stopped`) on each head, add `needs-owner`, write `stop`. Idempotent. |
 | driver | `complete-plan` | evidence | Run `verifyComplete`; if true, final status, log comment, label `plan:complete`, close the issue. |
-| driver | `wait` | reason (`agent-alive`, `checks`, `copilot`, `owner-review`, `preuat`, `preuat-dispatched`, `promote`, `deploy`, `main-green`, `tier3`) | Nothing to do now. |
+| driver | `wait` | reason (`agent-alive`, `checks`, `copilot`, `owner-review`, `preuat`, `preuat-dispatched`, `promote`, `deploy`, `main-green`, `tier3`, `daily-cap`) | Nothing to do now. |
 
 `launch: true` appears only on agent actions decided for the driver when no live worker holds the
 lease (state-machine §4.1 L-rules).
@@ -254,7 +254,7 @@ lease (state-machine §4.1 L-rules).
 ```json
 {
   "owners": ["KanopeeKa"],
-  "bot_login": "agatha-bot",
+  "bot_login": "pawpet-bot",
   "cursor_model_implement": "<model id from the policy below>",
   "cursor_model_fix": "<model id from the policy below>",
   "required_checks": {
@@ -275,7 +275,7 @@ lease (state-machine §4.1 L-rules).
 }
 ```
 
-`bot_login` is the Phase 0 machine-user login (placeholder `agatha-bot`). `cursor_model_*` = the
+`bot_login` is the machine-user login chosen in Phase 0 (`pawpet-bot`). `cursor_model_*` = the
 model id that `docs/agent-efficiency/pr-review-cost-efficiency.md` §Cloud Agent model policy names
 for implementation and babysit work (WP7a copies it from there; both keys get the same value today). Job names are the live
 names in `deploy-uat.yml` / `pre-uat-e2e.yml` (verified 2026-10-15); code never hard-codes them.

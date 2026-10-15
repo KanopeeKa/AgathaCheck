@@ -26,6 +26,12 @@ Anything still unverified is a **VERIFY** with a decision for each outcome.
 
 ## Review history
 
+**Round 3 (owner Phase 0 decisions, 2026-10-15):** launches per phase 5 (cap 6); daily launches 20
+(cap 30) and the daily cap waits instead of stopping; bot account `pawpet-bot` created with the repo
+secret; the Cursor `GH_TOKEN` switch moves to WP8 (it affects every Cursor cloud agent on the repo);
+runbook §7.1 corrected for personal-account repos (no collaborator role picker). All other Phase 0
+defaults confirmed.
+
 **Round 1 (Fable, accepted by Opus):** the spec is split into a folder (500-line limit, one
 session per WP); identity default = machine user with a classic PAT (`owner.type = User`, so
 fine-grained PATs are not available); `agent-pr-safety-gate.yml` stays untouched until WP10;
@@ -123,10 +129,10 @@ comment on the draft PR with the command and its output, and end the session.
 
 | Decision | Default | Where it lands |
 |----------|---------|----------------|
-| Identity | Machine user (login chosen by the owner; placeholder `agatha-bot`), classic PAT `repo` scope, **no** `workflow`; secret `EXECUTE_PLAN_BOT_TOKEN` and Cursor cloud secret `GH_TOKEN` | runbooks §7.1 |
+| Identity | Machine user **`pawpet-bot`** (created; collaborator with write), classic PAT `repo` scope, **no** `workflow`; repo secret `EXECUTE_PLAN_BOT_TOKEN` (set); Cursor cloud secret `GH_TOKEN` switched to the bot token **at WP8**, not before | runbooks §7.1 |
 | Owners | `["KanopeeKa"]` | config `owners` |
 | Window | default 7 days, cap 14 | `V2_DEFAULTS` / `V2_CAPS` |
-| Budgets | CI attempts 3 per PR, launches 3 per phase, remedial 3, sync resolves 2, daily launches 10 | snapshot `settings.budgets` (≤ caps) |
+| Budgets | CI attempts 3 per PR, launches **5** per phase (cap 6), remedial 3, sync resolves 2, daily launches **20** per plan (cap 30) — reaching the daily cap **waits** until the next UTC day, it never stops the plan | snapshot `settings.budgets` (≤ caps) |
 | Tier 3 live E2E | advisory | `settings.tier3_blocking: false` |
 | Release owner review | off | `settings.release_owner_review: false` |
 | Models | the Cursor model named in `pr-review-cost-efficiency.md` §Cloud Agent model policy, for every worker action | config `cursor_model_*` |
@@ -138,7 +144,7 @@ comment on the draft PR with the command and its output, and end the session.
 ## Order and hand-off points
 
 ```
-Phase 0 decisions (owner) → §7.1 identity + secrets (owner)          ← needed before WP7b
+Phase 0 decisions ✔ → §7.1 identity + repo secret ✔ (Cursor GH_TOKEN switch waits for WP8)
 WP1 client ─┐                          WP7c Cursor launch adapter (parallel, Cursor)
 WP2 scope ──┼→ WP3 approval/init → WP4a decide → WP4b tick → WP5 UAT
             │                                                   ↓
