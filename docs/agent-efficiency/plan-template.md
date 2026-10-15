@@ -3,7 +3,7 @@ title: Plan Template
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-22
+last_updated: 2026-10-15
 tags: [agent-efficiency, policy]
 ---
 # Plan template — execute-plan
@@ -189,3 +189,34 @@ See [autonomous-pr-policy.md](./autonomous-pr-policy.md) §Halt and resume.
 - [ ] Control issue created with labels `execute-plan`, `plan:<id>`, `autonomous-approved`
 - [ ] `default_merge_mode: auto` on snapshot (required)
 - [ ] Plan fits medium feature scope (< 48h expected)
+
+---
+
+## v2 plan file
+
+Execute-plan v2 plans (`schema_version: 2` snapshots, created by `node scripts/execute_plan_runtime.js init <plan_id>`) use a fixed layout in `.agents/plans/<plan_id>.md`:
+
+````markdown
+# <title>
+
+## Goal
+<one paragraph>
+
+## Phases
+
+### Phase 1 — <phase title>
+```json
+{ "allowed_paths": ["…"], "forbidden_paths": [], "allowed_exceptions": ["tests"],
+  "companions": [], "exit_checklist": ["…"] }
+```
+Scope: <what to build>
+Out of scope: <what not to touch>
+
+## Proof on UAT
+<how the result is observed on https://uat.agathatrack.com>
+````
+
+- Phase headings are `### Phase <id> — <title>` with an em dash (U+2014) between single spaces; ids run `1`, `2`, … in order.
+- The first fenced `json` block after each phase heading is the phase scope (`JSON.parse`; no YAML). `allowed_paths` and `exit_checklist` are required.
+- The file must not contain a heading named `Contract`, `Rules` or `Process` at any level; `init` fails with `plan file must not contain process rules (heading "<name>")`. Process rules belong in code, not plans.
+- Immutable after approval: the snapshot's `plan_file_sha256` is covered by `approval_hash`. Contracts: `docs/agent-efficiency/plans/execute-plan-v2/contracts.md` §3.1–3.4.

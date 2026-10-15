@@ -131,11 +131,14 @@ run_governance() {
   node scripts/check_feature_imports.js
   node --test scripts/check_feature_imports.test.js
   node scripts/validate_execute_plan_snapshot.js .agents/plans/_example.snapshot.json
+  node scripts/validate_execute_plan_snapshot.js .agents/plans/_example.v2.snapshot.json
   node scripts/validate_execute_plan_snapshot.js --drift-test
   node --test scripts/execute_plan_runtime.test.js
   node --test scripts/test/execute_plan_scope.test.js
   node --test scripts/test/execute_plan_launch.test.js
   node --test scripts/test/execute_plan_github.test.js
+  node --test scripts/test/execute_plan_approval.test.js
+  node --test scripts/test/execute_plan_snapshot_v2.test.js
   node --test scripts/uat_queue_runtime.test.js
   node --test scripts/uat_coordinator_payload.test.js
   node --test scripts/ci/evaluate-uat-promote-hold.test.js
