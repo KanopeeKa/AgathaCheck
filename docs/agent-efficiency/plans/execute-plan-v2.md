@@ -112,7 +112,17 @@ one agent action. *Lease* — the record of the live worker. *Owner* — a login
 - Never merge. The owner merges every WP PR (and reads every `.github/**` diff).
 
 **Repo conventions**
-- `./scripts/pre-push-changed.sh` before every push; `./scripts/pre-push.sh` before marking ready.
+- `./scripts/pre-push-changed.sh` before every push; `./scripts/pre-push.sh` before marking ready
+  **when the environment can run it**. In agent cloud containers its database-backed server suites
+  (`server/test/db`, which need the full local schema) and Flutter stages usually cannot run. Then:
+  run `./scripts/pre-push-changed.sh`, the WP acceptance commands, and `cd server && npm run test:unit`
+  when `server/` is touched; list in the PR body what could not run and why; **CI on the PR is the
+  gate** for marking ready. Spend at most one attempt on database setup, never more.
+- Known container fixes (environment only, never committed): `git config --global --add
+  safe.directory '*'` when the Flutter SDK refuses to run; `BOT=true` when Flutter's root warning
+  breaks the version check; `cd server && npm ci` before `validate_docs.sh` (it needs `js-yaml`);
+  install `shellcheck` if pre-push asks for it. Discard a regenerated `docs/quality/scorecard.md`
+  unless the WP lists it.
 - Files ≤ 500 lines (`node scripts/check_file_size.js`); new modules ≤ 400 lines.
 - Node 22, CommonJS, `node:test`; built-ins only in v2 code (it also runs in Actions without `npm ci`).
 - New test files go under `scripts/test/` and into the governance block of
