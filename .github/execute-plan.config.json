@@ -1,0 +1,21 @@
+{
+  "owners": ["KanopeeKa"],
+  "bot_login": "pawpet-bot",
+  "cursor_model_implement": "composer-2.5",
+  "cursor_model_fix": "composer-2.5",
+  "required_checks": {
+    "integration": ["ci-gate / CI passed", "execute-plan-scope"],
+    "main": ["Analyze JavaScript", "ci-gate / CI passed", "execute-plan-scope"]
+  },
+  "uat": {
+    "preuat_workflow": "pre-uat-e2e.yml",
+    "preuat_gate_job": "Pre-UAT E2E gate",
+    "promote_workflow": "promote-uat.yml",
+    "deploy_workflow": "deploy-uat.yml",
+    "deploy_proof_job": "Prod ready",
+    "deploy_job": "Build and deploy to UAT",
+    "smoke_job": "UAT post-deploy smoke",
+    "tier3_workflow": "uat-live-e2e.yml",
+    "tag_pattern": "^uat-(\\d{6})-(\\d+)$"
+  }
+}
