@@ -205,6 +205,19 @@ retires them. Build spec: [execute-plan-v2 WP1](./plans/execute-plan-v2/work-pac
 
 ---
 
+## v2 `tick` and `watch-ci`
+
+Modules: `scripts/lib/execute_plan_observe.js` (reads), `execute_plan_status.js` (status comment), `execute_plan_tick.js` (decide + persist).
+
+```bash
+node scripts/execute_plan_runtime.js tick <plan_id> [--issue N] [--json] [--actor agent|driver] [--dry-run]
+node scripts/execute_plan_runtime.js watch-ci <plan_id> --pr <n> [--timeout-min 25]
+```
+
+- `tick` loads config from `main`, the control issue (`--issue`, else the open issue labelled `plan:<plan_id>`), the bot-authored status comment and the snapshot at its `init_sha`; observes GitHub; calls `decide()`; then edits the status comment, posts one log comment on a state change and adds `needs-owner` on a stop. It returns driver actions; it never performs them. `--dry-run` prints the would-be writes. `--actor` defaults to `agent` (a worker tick also refreshes `lease.last_tick_at`).
+- `watch-ci` polls the PR head's required checks; it returns on completion, on the first failing required check, or on timeout (exit `0`, `timedOut: true`, so the worker runs `tick` next).
+- Exit codes: `0` action (including `wait`) or complete; `2` stop; `3` config/approval error (missing config, status comment, `init_sha` or snapshot).
+
 ## v2 decision logic
 
 `scripts/lib/execute_plan_state.js` (`decide`, `prLadder`) and `scripts/lib/execute_plan_control.js`
