@@ -25,10 +25,15 @@ function statusMarker(planId) {
   return `<!-- execute-plan-status:${planId} -->`;
 }
 
-/** Parsed JSON block of the status comment (contracts §3.5), or null. */
-function parseStatusComment(comments, planId) {
+/**
+ * Parsed JSON block of the status comment (contracts §3.5), or null. Only a comment written by
+ * `botLogin` counts: on a public repo anyone can post a comment carrying the marker.
+ */
+function parseStatusComment(comments, planId, botLogin) {
   const marker = statusMarker(planId);
-  const comment = comments.find((c) => String(c.body || '').split('\n', 1)[0].trim() === marker);
+  const comment = comments.find(
+    (c) => String(c.body || '').split('\n', 1)[0].trim() === marker && c.user && c.user.login === botLogin,
+  );
   if (!comment) return null;
   const m = /```json\s*\n([\s\S]*?)\n```/.exec(comment.body);
   if (!m) return null;
@@ -103,7 +108,7 @@ async function runScopeCheck(client, { prNumber, headSha, headRef, baseRef, head
   try {
     config = await loadConfig(client);
     comments = await client.listIssueComments(issue.number);
-    status = parseStatusComment(comments, planId);
+    status = parseStatusComment(comments, planId, config.bot_login);
     if (!status || typeof status.init_sha !== 'string') throw new Error('status comment with init_sha not found');
     ({ snapshot } = await loadSnapshotAtRef(client, planId, status.init_sha));
   } catch (e) {

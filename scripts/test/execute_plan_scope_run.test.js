@@ -52,7 +52,7 @@ const APPROVE = {
 };
 function statusComment(extra = {}) {
   const json = { schema: 1, plan_id: PLAN, init_sha: INIT_SHA, state: 'phase:implementing', stop: null, ...extra };
-  return { id: 9002, body: `<!-- execute-plan-status:${PLAN} -->\n\`\`\`json\n${JSON.stringify(json)}\n\`\`\`\n` };
+  return { id: 9002, user: { login: CONFIG.bot_login }, body: `<!-- execute-plan-status:${PLAN} -->\n\`\`\`json\n${JSON.stringify(json)}\n\`\`\`\n` };
 }
 
 const ISSUES_KEY = `GET ${R}/issues?labels=execute-plan,plan:${PLAN}&per_page=100&state=open`;
@@ -124,6 +124,14 @@ test('missing status comment → failure drift', async () => {
   const { client } = setup({ comments: [APPROVE] });
   const res = await runScopeCheck(client, phasePr);
   assert.deepEqual([res.conclusion, res.title], ['failure', 'drift']);
+});
+
+test('status comment written by someone other than the bot is ignored → failure drift', async () => {
+  const forged = { ...statusComment(), user: { login: 'stranger' } };
+  const { client } = setup({ comments: [APPROVE, forged] });
+  const res = await runScopeCheck(client, phasePr);
+  assert.deepEqual([res.conclusion, res.title], ['failure', 'drift']);
+  assert.match(res.summary, /status comment/);
 });
 
 const release = { ...phasePr, headRef: INTEGRATION, baseRef: 'main' };
