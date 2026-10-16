@@ -61,7 +61,7 @@ Only after this review passes: commit, push, and create/update the PR. Then cont
 
 ## Model (babysit phase)
 
-Use **`composer-2.5` only** for steps §0–7 (sync, poll, triage, fixes, CI, merge). If the session is on a thinking/high model, **switch to `composer-2.5`** or spawn a fresh cloud agent before babysit work. Implementation may use other models; babysitting may not.
+Use **`composer-2.5` only** for steps §0–7 (sync, poll, triage, fixes, CI, merge). If the session is on a thinking/high model, **switch to `composer-2.5`** or spawn a fresh cloud agent before babysit work. Implementation may use other models; babysitting may not. During an active execute-plan (any schema), never switch model or spawn a fresh agent for this step; v2 workers never merge — the driver arms auto-merge.
 
 ---
 
@@ -82,7 +82,7 @@ Use **`composer-2.5` only** for steps §0–7 (sync, poll, triage, fixes, CI, me
 
 Applies to **both** `/babysit` and `/babysit-plus`. **Copilot** is the primary automatic reviewer when enabled; **must be triaged when threads exist**. Policy: `docs/agent-efficiency/pr-review-cost-efficiency.md`.
 
-1. Confirm session model is **`composer-2.5`** before this step (see §Model).
+1. Confirm session model is **`composer-2.5`** before this step (see §Model). During an active execute-plan (any schema), never switch model or spawn a fresh agent for this step; v2 workers never merge — the driver arms auto-merge.
 2. If `isDraft`: `gh pr ready <url>` (or equivalent).
 3. **Collect review threads** (mandatory — do not hand-roll `gh api` calls):
    ```bash
@@ -185,7 +185,7 @@ When all merge gates pass (autonomous-pr-policy §Merge gates), **always squash-
 |------|--------|
 | `0` | Proceed |
 | `1` | `./scripts/babysit_sync_base.sh --pr <url> --push` once; re-run CI if checks re-triggered; `--claim` again |
-| `2` | Another PR holds `merge-lease` or FIFO yield — subscribe and **§Halt** (merge coordination); do not rebase yet |
+| `2` | Another PR holds `merge-lease` or FIFO yield — subscribe and wait for the lease holder; this is not a halt (merge coordination); do not rebase yet |
 | `3` | Halt (`do-not-merge` or error) |
 
 Then merge:
