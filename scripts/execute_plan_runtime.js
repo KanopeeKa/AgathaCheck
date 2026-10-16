@@ -78,6 +78,8 @@ Commands:
   complete-plan <plan_id> [--write] [--skip-close] [--post-comment]
   init <plan_id> [--window-days N] [--dry-run]
   check-diff --pr <n> [--repo owner/name] [--publish]
+  tick <plan_id> [--issue N] [--json] [--actor agent|driver] [--dry-run]
+  watch-ci <plan_id> --pr <n> [--timeout-min 25]
   roadmap-status <roadmap_id>
   roadmap-next-child <roadmap_id>
   roadmap-set-child <roadmap_id> --child <plan_id> --status <status> [--pr-url u] [--merge-commit sha] [--write]
@@ -121,7 +123,7 @@ function main() {
   const planId = positional[1];
   if (!cmd) usage();
 
-  const asyncCmds = new Set(['set-project-status', 'complete-plan', 'init', 'check-diff']);
+  const asyncCmds = new Set(['set-project-status', 'complete-plan', 'init', 'check-diff', 'tick', 'watch-ci']);
   if (asyncCmds.has(cmd)) {
     runAsync(cmd, planId, flags).catch((e) => {
       fail(e.message, e.exitCode || 1);
@@ -421,6 +423,18 @@ async function runAsync(cmd, planId, flags) {
     case 'check-diff':
       await require('./lib/execute_plan_scope_run').cliCheckDiff(flags);
       break;
+
+    case 'tick': {
+      if (!planId) usage();
+      await require('./lib/execute_plan_tick').cliTick(planId, flags);
+      break;
+    }
+
+    case 'watch-ci': {
+      if (!planId) usage();
+      await require('./lib/execute_plan_tick').cliWatchCi(planId, flags);
+      break;
+    }
 
     case 'complete-plan': {
       if (!planId) usage();

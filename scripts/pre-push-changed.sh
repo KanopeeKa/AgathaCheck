@@ -141,6 +141,9 @@ run_governance() {
   node --test scripts/test/execute_plan_snapshot_v2.test.js
   node --test scripts/test/execute_plan_scope_run.test.js
   node --test scripts/test/execute_plan_scenarios.test.js
+  node --test scripts/test/execute_plan_status.test.js
+  node --test scripts/test/execute_plan_observe.test.js
+  node --test scripts/test/execute_plan_tick.test.js
   node --test scripts/uat_queue_runtime.test.js
   node --test scripts/uat_coordinator_payload.test.js
   node --test scripts/ci/evaluate-uat-promote-hold.test.js

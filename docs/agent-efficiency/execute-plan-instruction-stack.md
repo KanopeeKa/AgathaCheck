@@ -15,6 +15,12 @@ Plan-specific orchestrator contracts (e.g. programme docs) **add** constraints; 
 
 ---
 
+## v2 loop
+
+Worker: `node scripts/execute_plan_runtime.js tick <plan_id> --json --actor agent` → do the returned `agent` action → `tick` again. Stop when the action's actor is `driver` or `stop` is set. Details: [execute-plan-runtime.md](./execute-plan-runtime.md) § v2 `tick` and `watch-ci`.
+
+---
+
 ## When this applies
 
 | Condition | Stack applies |
