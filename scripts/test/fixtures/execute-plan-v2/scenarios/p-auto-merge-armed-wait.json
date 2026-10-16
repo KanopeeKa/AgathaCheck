@@ -1,0 +1,33 @@
+{
+  "name": "auto-merge armed \u2192 wait checks",
+  "rule": "PR-ladder 10",
+  "snapshot_patch": {},
+  "observations_patch": {
+    "phases": [
+      {
+        "id": "1",
+        "branch_exists": true,
+        "pr": {
+          "auto_merge_enabled": true
+        }
+      },
+      {
+        "id": "2",
+        "branch_exists": false,
+        "pr": null
+      }
+    ]
+  },
+  "opts": {
+    "actor": "driver",
+    "lease": null
+  },
+  "expected": {
+    "launch": false,
+    "stop": null,
+    "state": "phase:ready",
+    "actor": "driver",
+    "kind": "wait",
+    "reason": "checks"
+  }
+}

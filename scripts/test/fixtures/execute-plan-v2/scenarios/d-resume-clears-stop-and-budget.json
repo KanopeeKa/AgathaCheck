@@ -1,0 +1,109 @@
+{
+  "name": "resume ignores old stop and old budgets",
+  "rule": "\u00a74.1",
+  "snapshot_patch": {},
+  "observations_patch": {
+    "control": {
+      "authorizing": {
+        "verb": "resume",
+        "created_at": "2026-10-16T09:30:00Z"
+      },
+      "status": {
+        "schema": 1,
+        "plan_id": "proof-build-label-7f3a",
+        "init_sha": "0f1e2d3c4b5a69788796a5b4c3d2e1f00f1e2d3c",
+        "state": "phase:implementing",
+        "phase": "1",
+        "lease": null,
+        "launches": [
+          {
+            "at": "2026-10-16T09:06:00Z",
+            "phase": "1",
+            "kind": "implement",
+            "agent_id": "bc-123",
+            "run_id": "run-456"
+          },
+          {
+            "at": "2026-10-16T09:07:00Z",
+            "phase": "1",
+            "kind": "implement",
+            "agent_id": "bc-123",
+            "run_id": "run-456"
+          },
+          {
+            "at": "2026-10-16T09:08:00Z",
+            "phase": "1",
+            "kind": "implement",
+            "agent_id": "bc-123",
+            "run_id": "run-456"
+          },
+          {
+            "at": "2026-10-16T09:09:00Z",
+            "phase": "1",
+            "kind": "implement",
+            "agent_id": "bc-123",
+            "run_id": "run-456"
+          },
+          {
+            "at": "2026-10-16T09:10:00Z",
+            "phase": "1",
+            "kind": "implement",
+            "agent_id": "bc-123",
+            "run_id": "run-456"
+          }
+        ],
+        "dispatched": {
+          "preuat_heads": [],
+          "deploy_tags": []
+        },
+        "release": null,
+        "uat": null,
+        "stop": {
+          "reason": "ci-budget",
+          "detail": "3 failed attempts",
+          "at": "2026-10-16T09:20:00Z"
+        },
+        "updated_at": "2026-10-16T09:00:00Z"
+      }
+    },
+    "phases": [
+      {
+        "id": "1",
+        "branch_exists": true,
+        "pr": {
+          "checks": [
+            {
+              "name": "ci-gate / CI passed",
+              "status": "completed",
+              "conclusion": "failure",
+              "reason": null
+            },
+            {
+              "name": "execute-plan-scope",
+              "status": "completed",
+              "conclusion": "success",
+              "reason": "ok"
+            }
+          ],
+          "failed_attempts_since_epoch": 1
+        }
+      },
+      {
+        "id": "2",
+        "branch_exists": false,
+        "pr": null
+      }
+    ]
+  },
+  "opts": {
+    "actor": "driver",
+    "lease": null
+  },
+  "expected": {
+    "launch": true,
+    "stop": null,
+    "state": "phase:ready",
+    "actor": "agent",
+    "kind": "fix-ci"
+  }
+}

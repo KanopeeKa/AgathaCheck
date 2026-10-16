@@ -1,0 +1,24 @@
+{
+  "name": "edited approval \u2192 stop",
+  "rule": "D1",
+  "snapshot_patch": {},
+  "observations_patch": {
+    "control": {
+      "authorizing": {
+        "valid": false,
+        "invalid_reason": "edited"
+      }
+    }
+  },
+  "opts": {
+    "actor": "driver",
+    "lease": null
+  },
+  "expected": {
+    "launch": false,
+    "stop": "approval-invalid",
+    "state": "stopped",
+    "actor": "driver",
+    "kind": "enforce-stop"
+  }
+}

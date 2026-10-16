@@ -1,0 +1,44 @@
+{
+  "merge_sha": "dddd000000000000000000000000000000000001",
+  "merged_at": "2026-10-17T08:00:00Z",
+  "source": {
+    "kind": "release",
+    "pr": 1960
+  },
+  "preuat_runs": [
+    {
+      "id": 501,
+      "head_sha": "dddd000000000000000000000000000000000001",
+      "event": "push",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-17T08:01:00Z",
+      "updated_at": "2026-10-17T09:10:00Z",
+      "contains_merge": true,
+      "failed_jobs": []
+    }
+  ],
+  "baseline_run": null,
+  "uat_tags": [
+    {
+      "name": "uat-261017-1960",
+      "commit_sha": "dddd000000000000000000000000000000000001",
+      "contains_merge": true
+    }
+  ],
+  "deploy_runs": [
+    {
+      "id": 601,
+      "created_at": "2026-10-17T09:12:00Z",
+      "status": "completed",
+      "conclusion": "success",
+      "proof_job": "success",
+      "deploy_job": "success",
+      "smoke_job": "success",
+      "deploy_ref": "uat-261017-1960",
+      "deploy_ref_contains_merge": true,
+      "gate_failure_class": "none"
+    }
+  ],
+  "tier3_run": null
+}

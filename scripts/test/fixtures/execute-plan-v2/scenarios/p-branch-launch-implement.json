@@ -1,0 +1,30 @@
+{
+  "name": "branch exists, no PR \u2192 launch implement",
+  "rule": "P3, L4",
+  "snapshot_patch": {},
+  "observations_patch": {
+    "phases": [
+      {
+        "id": "1",
+        "branch_exists": true,
+        "pr": null
+      },
+      {
+        "id": "2",
+        "branch_exists": false,
+        "pr": null
+      }
+    ]
+  },
+  "opts": {
+    "actor": "driver",
+    "lease": null
+  },
+  "expected": {
+    "launch": true,
+    "stop": null,
+    "state": "phase:pending",
+    "actor": "agent",
+    "kind": "implement"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "deadline passed \u2192 stop",
+  "rule": "D1",
+  "snapshot_patch": {},
+  "observations_patch": {
+    "control": {
+      "authorizing": {
+        "until": "2026-10-16T09:59:00Z"
+      }
+    }
+  },
+  "opts": {
+    "actor": "driver",
+    "lease": null
+  },
+  "expected": {
+    "launch": false,
+    "stop": "expired",
+    "state": "stopped",
+    "actor": "driver",
+    "kind": "enforce-stop"
+  }
+}

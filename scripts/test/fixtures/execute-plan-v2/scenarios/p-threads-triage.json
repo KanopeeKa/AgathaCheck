@@ -1,0 +1,38 @@
+{
+  "name": "unresolved threads \u2192 triage",
+  "rule": "PR-ladder 5",
+  "snapshot_patch": {},
+  "observations_patch": {
+    "phases": [
+      {
+        "id": "1",
+        "branch_exists": true,
+        "pr": {
+          "unresolved_threads": [
+            {
+              "url": "https://github.com/KanopeeKa/AgathaCheck/pull/1950#discussion_r1",
+              "path": "server/bin/server.js",
+              "author": "copilot"
+            }
+          ]
+        }
+      },
+      {
+        "id": "2",
+        "branch_exists": false,
+        "pr": null
+      }
+    ]
+  },
+  "opts": {
+    "actor": "driver",
+    "lease": null
+  },
+  "expected": {
+    "launch": true,
+    "stop": null,
+    "state": "phase:ready",
+    "actor": "agent",
+    "kind": "triage-review"
+  }
+}

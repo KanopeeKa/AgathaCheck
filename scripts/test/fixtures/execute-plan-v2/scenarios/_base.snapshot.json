@@ -1,0 +1,60 @@
+{
+  "schema_version": 2,
+  "plan_id": "proof-build-label-7f3a",
+  "title": "Proof run: UAT build label",
+  "plan_file": ".agents/plans/proof-build-label-7f3a.md",
+  "plan_file_sha256": "3b1f0d7c1a4e2f9b8c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b",
+  "release_branch": "main",
+  "integration_branch": "cursor/proof-build-label-7f3a-integration-7f3a",
+  "control_issue": 1900,
+  "created_at": "2026-10-16T09:00:00Z",
+  "approved_until": "2026-10-23T09:00:00Z",
+  "settings": {
+    "release_owner_review": false,
+    "tier3_blocking": false,
+    "budgets": {
+      "ci_per_phase": 3,
+      "launches_per_phase": 5,
+      "remedial_rounds": 3,
+      "sync_attempts": 2,
+      "daily_launches": 20
+    }
+  },
+  "protected_paths_version": 1,
+  "phases": [
+    {
+      "id": "1",
+      "title": "Server build label",
+      "branch": "cursor/proof-build-label-7f3a-p1",
+      "allowed_paths": [
+        "server/bin/server.js",
+        "server/test/healthProofLabel.test.js"
+      ],
+      "forbidden_paths": [],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "companions": [],
+      "exit_checklist": [
+        "health test green"
+      ]
+    },
+    {
+      "id": "2",
+      "title": "Docs note",
+      "branch": "cursor/proof-build-label-7f3a-p2",
+      "allowed_paths": [
+        "docs/e2e/uat-deploy-tiers.md"
+      ],
+      "forbidden_paths": [],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "companions": [],
+      "exit_checklist": [
+        "docs gate green"
+      ]
+    }
+  ],
+  "approval_hash": "sha256:fdaabc2824a1c11fc508b1425b7ab18ab5d0abd639794298535fcf43845b1e53"
+}
