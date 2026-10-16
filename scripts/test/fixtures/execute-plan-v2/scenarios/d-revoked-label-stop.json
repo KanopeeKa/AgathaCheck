@@ -1,0 +1,25 @@
+{
+  "name": "revoked label \u2192 stop",
+  "rule": "D1",
+  "snapshot_patch": {},
+  "observations_patch": {
+    "control": {
+      "labels": [
+        "execute-plan",
+        "autonomous-approved",
+        "autonomous-revoked"
+      ]
+    }
+  },
+  "opts": {
+    "actor": "driver",
+    "lease": null
+  },
+  "expected": {
+    "launch": false,
+    "stop": "revoked",
+    "state": "stopped",
+    "actor": "driver",
+    "kind": "enforce-stop"
+  }
+}

@@ -205,11 +205,25 @@ retires them. Build spec: [execute-plan-v2 WP1](./plans/execute-plan-v2/work-pac
 
 ---
 
+## v2 decision logic
+
+`scripts/lib/execute_plan_state.js` (`decide`, `prLadder`) and `scripts/lib/execute_plan_control.js`
+(`deriveControl`, `leaseAlive`, `launchCounts`) are the pure core of execute-plan v2: they read only
+their arguments (no GitHub, `fs`, `process.env` or clock; time is `opts.now`). The rules, STOP reasons,
+observation shapes and the scenario table are normative in
+[state-machine.md](./plans/execute-plan-v2/state-machine.md); output and actions are in
+[contracts.md](./plans/execute-plan-v2/contracts.md) §3.7. Rule ids appear as comments in the code and
+as `rule` in each scenario file under `scripts/test/fixtures/execute-plan-v2/scenarios/`.
+`execute_plan_uat.js` holds a stub `decideUat` until WP5.
+
+---
+
 ## Tests
 
 ```bash
 node --test scripts/execute_plan_runtime.test.js
 node --test scripts/test/execute_plan_github.test.js
+node --test scripts/test/execute_plan_scenarios.test.js
 ```
 
 Wired into `./scripts/pre-push-changed.sh` and `./scripts/pre-push.sh` governance gates.

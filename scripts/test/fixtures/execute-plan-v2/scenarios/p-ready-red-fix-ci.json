@@ -1,0 +1,46 @@
+{
+  "name": "required check red \u2192 fix-ci",
+  "rule": "PR-ladder 4",
+  "snapshot_patch": {},
+  "observations_patch": {
+    "phases": [
+      {
+        "id": "1",
+        "branch_exists": true,
+        "pr": {
+          "checks": [
+            {
+              "name": "ci-gate / CI passed",
+              "status": "completed",
+              "conclusion": "failure",
+              "reason": null
+            },
+            {
+              "name": "execute-plan-scope",
+              "status": "completed",
+              "conclusion": "success",
+              "reason": "ok"
+            }
+          ],
+          "failed_attempts_since_epoch": 1
+        }
+      },
+      {
+        "id": "2",
+        "branch_exists": false,
+        "pr": null
+      }
+    ]
+  },
+  "opts": {
+    "actor": "driver",
+    "lease": null
+  },
+  "expected": {
+    "launch": true,
+    "stop": null,
+    "state": "phase:ready",
+    "actor": "agent",
+    "kind": "fix-ci"
+  }
+}

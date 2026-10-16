@@ -1,0 +1,43 @@
+{
+  "name": "integration behind main \u2192 open sync PR",
+  "rule": "S1a",
+  "snapshot_patch": {},
+  "observations_patch": {
+    "phases": [
+      {
+        "id": "1",
+        "branch_exists": true,
+        "pr": {
+          "state": "merged",
+          "merged_at": "2026-10-16T09:55:00Z",
+          "merge_commit_sha": "eeee000000000000000000000000000000000001",
+          "number": 1950
+        }
+      },
+      {
+        "id": "2",
+        "branch_exists": true,
+        "pr": {
+          "state": "merged",
+          "merged_at": "2026-10-16T09:55:00Z",
+          "merge_commit_sha": "eeee000000000000000000000000000000000001",
+          "number": 1951
+        }
+      }
+    ],
+    "integration": {
+      "behind_main_by": 2
+    }
+  },
+  "opts": {
+    "actor": "driver",
+    "lease": null
+  },
+  "expected": {
+    "launch": false,
+    "stop": null,
+    "state": "sync",
+    "actor": "driver",
+    "kind": "open-sync-pr"
+  }
+}

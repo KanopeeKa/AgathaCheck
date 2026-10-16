@@ -1,0 +1,52 @@
+{
+  "name": "clean sync PR \u2192 arm merge-commit",
+  "rule": "S1c",
+  "snapshot_patch": {},
+  "observations_patch": {
+    "phases": [
+      {
+        "id": "1",
+        "branch_exists": true,
+        "pr": {
+          "state": "merged",
+          "merged_at": "2026-10-16T09:55:00Z",
+          "merge_commit_sha": "eeee000000000000000000000000000000000001",
+          "number": 1950
+        }
+      },
+      {
+        "id": "2",
+        "branch_exists": true,
+        "pr": {
+          "state": "merged",
+          "merged_at": "2026-10-16T09:55:00Z",
+          "merge_commit_sha": "eeee000000000000000000000000000000000001",
+          "number": 1951
+        }
+      }
+    ],
+    "integration": {
+      "behind_main_by": 2
+    },
+    "sync": {
+      "open_pr": {
+        "number": 1955,
+        "head_ref": "main",
+        "base_ref": "cursor/proof-build-label-7f3a-integration-7f3a",
+        "created_at": "2026-10-16T09:58:00Z"
+      }
+    }
+  },
+  "opts": {
+    "actor": "driver",
+    "lease": null
+  },
+  "expected": {
+    "launch": false,
+    "stop": null,
+    "state": "sync",
+    "actor": "driver",
+    "kind": "arm-auto-merge",
+    "method": "merge"
+  }
+}

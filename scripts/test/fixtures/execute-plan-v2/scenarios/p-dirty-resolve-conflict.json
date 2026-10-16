@@ -1,0 +1,32 @@
+{
+  "name": "dirty \u2192 resolve-conflict",
+  "rule": "PR-ladder 6",
+  "snapshot_patch": {},
+  "observations_patch": {
+    "phases": [
+      {
+        "id": "1",
+        "branch_exists": true,
+        "pr": {
+          "mergeable_state": "dirty"
+        }
+      },
+      {
+        "id": "2",
+        "branch_exists": false,
+        "pr": null
+      }
+    ]
+  },
+  "opts": {
+    "actor": "driver",
+    "lease": null
+  },
+  "expected": {
+    "launch": true,
+    "stop": null,
+    "state": "phase:ready",
+    "actor": "agent",
+    "kind": "resolve-conflict"
+  }
+}

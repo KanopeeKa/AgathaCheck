@@ -1,0 +1,31 @@
+{
+  "name": "ready, green \u2192 arm auto-merge",
+  "rule": "PR-ladder 9",
+  "snapshot_patch": {},
+  "observations_patch": {
+    "phases": [
+      {
+        "id": "1",
+        "branch_exists": true,
+        "pr": {}
+      },
+      {
+        "id": "2",
+        "branch_exists": false,
+        "pr": null
+      }
+    ]
+  },
+  "opts": {
+    "actor": "driver",
+    "lease": null
+  },
+  "expected": {
+    "launch": false,
+    "stop": null,
+    "state": "phase:ready",
+    "actor": "driver",
+    "kind": "arm-auto-merge",
+    "method": "squash"
+  }
+}

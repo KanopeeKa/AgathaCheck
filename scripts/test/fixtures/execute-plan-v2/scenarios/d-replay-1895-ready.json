@@ -1,0 +1,59 @@
+{
+  "name": "2026-10-14 replay: ready phase PR is armed, not stopped",
+  "rule": "PR-ladder 9",
+  "snapshot_patch": {},
+  "observations_patch": {
+    "phases": [
+      {
+        "id": "1",
+        "branch_exists": true,
+        "pr": {
+          "number": 1895,
+          "head_ref": "cursor/proof-build-label-7f3a-p1"
+        }
+      },
+      {
+        "id": "2",
+        "branch_exists": false,
+        "pr": null
+      }
+    ],
+    "control": {
+      "status": {
+        "schema": 1,
+        "plan_id": "proof-build-label-7f3a",
+        "init_sha": "0f1e2d3c4b5a69788796a5b4c3d2e1f00f1e2d3c",
+        "state": "phase:implementing",
+        "phase": "1",
+        "lease": {
+          "platform": "cursor",
+          "agent_id": "bc-123",
+          "run_id": "run-456",
+          "launched_at": "2026-10-16T09:10:00Z",
+          "last_tick_at": "2026-10-16T09:55:00Z"
+        },
+        "launches": [],
+        "dispatched": {
+          "preuat_heads": [],
+          "deploy_tags": []
+        },
+        "release": null,
+        "uat": null,
+        "stop": null,
+        "updated_at": "2026-10-16T09:55:00Z"
+      }
+    }
+  },
+  "opts": {
+    "actor": "driver",
+    "lease": null
+  },
+  "expected": {
+    "launch": false,
+    "stop": null,
+    "state": "phase:ready",
+    "actor": "driver",
+    "kind": "arm-auto-merge",
+    "method": "squash"
+  }
+}

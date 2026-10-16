@@ -1,0 +1,48 @@
+{
+  "name": "release PR fresh \u2192 wait for Copilot",
+  "rule": "PR-ladder 9",
+  "snapshot_patch": {},
+  "observations_patch": {
+    "phases": [
+      {
+        "id": "1",
+        "branch_exists": true,
+        "pr": {
+          "state": "merged",
+          "merged_at": "2026-10-16T09:55:00Z",
+          "merge_commit_sha": "eeee000000000000000000000000000000000001",
+          "number": 1950
+        }
+      },
+      {
+        "id": "2",
+        "branch_exists": true,
+        "pr": {
+          "state": "merged",
+          "merged_at": "2026-10-16T09:55:00Z",
+          "merge_commit_sha": "eeee000000000000000000000000000000000001",
+          "number": 1951
+        }
+      }
+    ],
+    "release": {
+      "pr": {
+        "number": 1960,
+        "head_ref": "cursor/proof-build-label-7f3a-integration-7f3a",
+        "base_ref": "main"
+      }
+    }
+  },
+  "opts": {
+    "actor": "driver",
+    "lease": null
+  },
+  "expected": {
+    "launch": false,
+    "stop": null,
+    "state": "release:open",
+    "actor": "driver",
+    "kind": "wait",
+    "reason": "copilot"
+  }
+}
