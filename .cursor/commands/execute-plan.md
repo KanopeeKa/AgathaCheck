@@ -5,6 +5,8 @@ description: Run a multi-phase autonomous plan from a frozen snapshot; babysit+ 
 
 # Execute-plan
 
+v2 plans (`schema_version: 2`): see the skill's v2 section; the rules below apply to v1 plans.
+
 Gate exit `0` → no user-visible message until §Halt or `complete-plan`; see skill **§Stop rules**.
 
 Orchestrate an approved multi-phase plan. Read and follow **`.cursor/skills/execute-plan/SKILL.md`** — do not improvise policy.

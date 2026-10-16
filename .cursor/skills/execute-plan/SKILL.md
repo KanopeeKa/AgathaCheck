@@ -7,27 +7,45 @@ description: >-
 
 # Execute-plan
 
+## v2 plans (snapshot schema_version 2)
+
+**Planning session:** Write the plan files on branch `cursor/<plan_id>-init`, run
+`node scripts/execute_plan_runtime.js init <plan_id>`, end the session with the printed approval line.
+
+**Worker session:** Run `node scripts/execute_plan_runtime.js tick <plan_id> --json --actor agent`, do the
+one `agent` action returned, run `tick` again, end the turn with one line when the decision `actor` is
+`driver` or `stop` is set.
+
+**Driver loop:** `tick` / `decide` ([state-machine §4.2](../../../docs/agent-efficiency/plans/execute-plan-v2/state-machine.md)):
+control (D) → phases (P) → sync/release (S) → UAT (U). The Actions driver runs driver actions (phase
+branches, sync/release PRs, worker launch, arm auto-merge); workers do not babysit or merge.
+
+There is no stop table for v2: `tick` decides. Spec:
+[`execute-plan-v2.md`](../../../docs/agent-efficiency/plans/execute-plan-v2.md).
+
+## v1 plans (schema 1)
+
 Orchestrates `.agents/plans/<plan_id>.{md,snapshot.json}` one phase at a time.
 
-**Contract (gate exit `0`):** [`AGENTS.md`](../../AGENTS.md) §Operating rules › Execute-plan · [`execute-plan-instruction-stack.md`](../../docs/agent-efficiency/execute-plan-instruction-stack.md) · [`.agents/memory/execute-plan-autonomy.md`](../../../.agents/memory/execute-plan-autonomy.md)
+**Contract (gate exit `0`):** [`AGENTS.md`](../../../AGENTS.md) §Operating rules › Execute-plan · [`execute-plan-instruction-stack.md`](../../../docs/agent-efficiency/execute-plan-instruction-stack.md) · [`.agents/memory/execute-plan-autonomy.md`](../../../.agents/memory/execute-plan-autonomy.md)
 
 ## Stop rules (gate exit `0`)
 
-When `node scripts/execute_plan_runtime.js gate <plan_id>` exits **`0`**, run-until-blocked. Escalation: [autonomous-pr-policy.md](../../docs/agent-efficiency/autonomous-pr-policy.md) §Escalation.
+When `node scripts/execute_plan_runtime.js gate <plan_id>` exits **`0`**, run-until-blocked. Escalation: [autonomous-pr-policy.md](../../../docs/agent-efficiency/autonomous-pr-policy.md) §Escalation.
 
 | Valid stops | Not stops (in-loop — continue) |
 |-------------|--------------------------------|
 | `complete-plan` → brief user chat OK | PR opened; CI green; babysit+ squash-merge |
-| §Halt / §Escalation (revoke, `expired`, gate `2`, drift, CI/debt/merge failure, unclear goal, …) | Phase merged → next phase; worker returned |
+| §Halt / §Escalation (revoke, `expired`, gate `2`, drift, CI retry budget exhausted / debt-issue create failure / merge failure, unclear goal, …) | Phase merged → next phase; worker returned |
 | `session_limit` (~24h): `halt` + blocker alert; `resume-plan` | Control-issue telemetry; plan-only bootstrap commit |
 | | e2e-debug → chain `/babysit-uat`; merge-lease FIFO wait |
 | | Platform ended turn → resume via tools / next `/execute-plan` (no permission chat) |
 
 User chat until `complete-plan`: blocker alerts only (see AGENTS.md). Milestones → control issue, PR body, `/opt/cursor/artifacts/`.
 
-**Policy detail (do not restate here):** [autonomous-pr-policy.md](../../docs/agent-efficiency/autonomous-pr-policy.md) · [execute-plan-schema.md](../../docs/agent-efficiency/execute-plan-schema.md) · [execute-plan-runtime.md](../../docs/agent-efficiency/execute-plan-runtime.md) · [phase-exit-checklists.md](../../docs/agent-efficiency/phase-exit-checklists.md) · [plan-template.md](../../docs/agent-efficiency/plan-template.md)
+**Policy detail (do not restate here):** [autonomous-pr-policy.md](../../../docs/agent-efficiency/autonomous-pr-policy.md) · [execute-plan-schema.md](../../../docs/agent-efficiency/execute-plan-schema.md) · [execute-plan-runtime.md](../../../docs/agent-efficiency/execute-plan-runtime.md) · [phase-exit-checklists.md](../../../docs/agent-efficiency/phase-exit-checklists.md) · [plan-template.md](../../../docs/agent-efficiency/plan-template.md)
 
-**PR hygiene:** `/babysit-plus` (phase PRs) · `/babysit-uat` (final → `main`) — never plain `/babysit`. Pre-PR review + docs: [pr-review-cost-efficiency.md](../../docs/agent-efficiency/pr-review-cost-efficiency.md). **Merge:** squash when gates pass (`default_merge_mode: auto`).
+**PR hygiene:** `/babysit-plus` (phase PRs) · `/babysit-uat` (final → `main`) — never plain `/babysit`. Pre-PR review + docs: [pr-review-cost-efficiency.md](../../../docs/agent-efficiency/pr-review-cost-efficiency.md). **Merge:** squash when gates pass (`default_merge_mode: auto`).
 
 **Router:** `.cursor/agent-kernel/ROUTER.md` — if execute-plan is active (gate `0`), re-read **AGENTS.md §Execute-plan** at classification. Profile `full` at phase select + strengthen; **skip strengthen** on resume-only (babysit, CI watch, `next_action` set).
 
@@ -37,7 +55,7 @@ User chat until `complete-plan`: blocker alerts only (see AGENTS.md). Milestones
 
 | Command | When |
 |---------|------|
-| `/execute-plan` | Resume programme — same as continue; not permission to start next phase ([AGENTS.md](../../AGENTS.md)) |
+| `/execute-plan` | Resume programme — same as continue; not permission to start next phase ([AGENTS.md](../../../AGENTS.md)) |
 | `/execute-plan <plan_id>` | Named plan |
 | `/execute-plan resume` | After revoke removed + `resume-plan` on control issue |
 
@@ -55,7 +73,7 @@ Ambiguous → `**Needs you:**` on control issue; do not guess.
 
 ## Before `approve-autonomous` (plan authoring)
 
-Follow [plan-template.md](../../docs/agent-efficiency/plan-template.md): snapshot validate, `init-control-issue`, integration `base_branch` for 2+ phases, sanity check, then `approve-autonomous <plan_id>` on control issue. `approved_until` = 48h from approval.
+Follow [plan-template.md](../../../docs/agent-efficiency/plan-template.md): snapshot validate, `init-control-issue`, integration `base_branch` for 2+ phases, sanity check, then `approve-autonomous <plan_id>` on control issue. `approved_until` = 48h from approval.
 
 ---
 
@@ -72,7 +90,7 @@ Follow [plan-template.md](../../docs/agent-efficiency/plan-template.md): snapsho
 7. Control issue `start-work` + `busy` on first session (no Project board writes)  
 8. **Session limit** (~24h): safe step → `halt --reason session_limit` + `resume-plan` in chat (blocker only)
 
-Turn boundaries: [execute-plan-instruction-stack.md](../../docs/agent-efficiency/execute-plan-instruction-stack.md) §Cloud turn mechanics. CI wait: subscribe + tool-only until green or §Halt (≤5 lines in babysit+ / stack doc).
+Turn boundaries: [execute-plan-instruction-stack.md](../../../docs/agent-efficiency/execute-plan-instruction-stack.md) §Cloud turn mechanics. CI wait: subscribe + tool-only until green or §Halt (≤5 lines in babysit+ / stack doc).
 
 ---
 
@@ -93,7 +111,7 @@ Standing grant beyond one `plan_id`: on child `complete-plan`, bootstrap next ch
 | Role | Owns |
 |------|------|
 | **Orchestrator** | Gate, runtime, control issue, PR, babysit+/uat, merge, next phase |
-| **Phase worker** | Implement on phase branch ([phase-implementer.md](../agent-kernel/workers/phase-implementer.md)); summary **to orchestrator only** — never user chat |
+| **Phase worker** | Implement on phase branch ([phase-implementer.md](../../agent-kernel/workers/phase-implementer.md)); summary **to orchestrator only** — never user chat |
 
 Default: worker or inline through PR + babysit+ without chat stop. `spawn_allowed: true` → `/spawn-sprint-agents` first.
 
@@ -102,7 +120,7 @@ Default: worker or inline through PR + babysit+ without chat stop. `spawn_allowe
 | Not `main` | `/babysit-plus` |
 | `main` (final) | `/babysit-uat`; pre-UAT red → `/e2e-debug` then **chain** `/babysit-uat` same session |
 
-Snag ladder: [atomic-pr-policy.md](../../docs/agent-efficiency/atomic-pr-policy.md). Drift → `halt --reason drift`.
+Snag ladder: [atomic-pr-policy.md](../../../docs/agent-efficiency/atomic-pr-policy.md). Drift → `halt --reason drift`.
 
 ---
 
@@ -137,7 +155,7 @@ Pre-UAT on final merge: `./scripts/babysit_uat_watch_preuat.sh <mergeCommit.oid>
 
 ## Halt / resume / escalation
 
-Halt: revoke, `expired`, escalation, drift, CI exhausted, debt create failure, merge failure, `session_limit`. CLI: [execute-plan-runtime.md](../../docs/agent-efficiency/execute-plan-runtime.md). **`expired`:** re-approve + `resume-plan` only — never ask which phase next.
+Halt: revoke, `expired`, escalation, drift, CI exhausted, debt create failure, merge failure, `session_limit`. CLI: [execute-plan-runtime.md](../../../docs/agent-efficiency/execute-plan-runtime.md). **`expired`:** re-approve + `resume-plan` only — never ask which phase next.
 
 Resume: remove revoke → `resume-plan` → `/execute-plan <plan_id> resume` → `resume-check` → continue `next_action`.
 
