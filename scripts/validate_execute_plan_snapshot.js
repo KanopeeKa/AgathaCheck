@@ -21,6 +21,8 @@ const {
   ExecutePlanError,
 } = require('./lib/execute_plan_lib');
 
+const { isV2, validateSnapshotV2 } = require('./lib/execute_plan_snapshot_v2');
+
 const REPO_ROOT = path.resolve(__dirname, '..');
 const SCHEMA_PATH = path.join(
   REPO_ROOT,
@@ -30,6 +32,28 @@ const SCHEMA_PATH = path.join(
 function fail(msg) {
   console.error(`validate_execute_plan_snapshot: ${msg}`);
   process.exit(1);
+}
+
+function isV2Raw(filePath) {
+  try {
+    return isV2(JSON.parse(fs.readFileSync(filePath, 'utf8')));
+  } catch {
+    return false;
+  }
+}
+
+function validateV2File(filePath, fixHash) {
+  if (fixHash) fail('--fix-hash is not allowed for v2 snapshots');
+  try {
+    const snapshot = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    // Plan file sits next to the snapshot: <stem>.snapshot.json -> <stem>.md (stem = plan_id for real plans).
+    const planPath = filePath.replace(/\.snapshot\.json$/, '.md');
+    validateSnapshotV2(snapshot, { planMarkdown: fs.readFileSync(planPath, 'utf8') });
+  } catch (e) {
+    fail(e.code === 'ENOENT' ? `file not found: ${e.path}` : e.message);
+  }
+  console.log(`validate_execute_plan_snapshot: OK ${path.relative(REPO_ROOT, filePath)}`);
+  process.exit(0);
 }
 
 function main() {
@@ -55,6 +79,7 @@ function main() {
   }
 
   const filePath = path.resolve(fileArg);
+  if (isV2Raw(filePath)) validateV2File(filePath, fixHash);
   let obj;
   try {
     obj = loadSnapshotFromPath(filePath);

@@ -16,6 +16,7 @@
  *   node scripts/execute_plan_runtime.js init-control-issue <plan_id>
  *   node scripts/execute_plan_runtime.js set-project-status <plan_id> --status <name> [--issue N]
  *   node scripts/execute_plan_runtime.js complete-plan <plan_id> [--write] [--skip-close]
+ *   node scripts/execute_plan_runtime.js init <plan_id> [--window-days N] [--dry-run]   (v2)
  *   node scripts/execute_plan_runtime.js roadmap-status <roadmap_id>
  *   node scripts/execute_plan_runtime.js roadmap-next-child <roadmap_id>
  *   node scripts/execute_plan_runtime.js roadmap-set-child <roadmap_id> --child <plan_id> --status <status> [--pr-url u] [--merge-commit sha] [--write]
@@ -75,6 +76,7 @@ Commands:
   init-control-issue <plan_id>
   set-project-status <plan_id> --status <name> [--issue N]
   complete-plan <plan_id> [--write] [--skip-close] [--post-comment]
+  init <plan_id> [--window-days N] [--dry-run]
   roadmap-status <roadmap_id>
   roadmap-next-child <roadmap_id>
   roadmap-set-child <roadmap_id> --child <plan_id> --status <status> [--pr-url u] [--merge-commit sha] [--write]
@@ -118,10 +120,10 @@ function main() {
   const planId = positional[1];
   if (!cmd) usage();
 
-  const asyncCmds = new Set(['set-project-status', 'complete-plan']);
+  const asyncCmds = new Set(['set-project-status', 'complete-plan', 'init']);
   if (asyncCmds.has(cmd)) {
     runAsync(cmd, planId, flags).catch((e) => {
-      fail(e instanceof ExecutePlanError ? e.message : e.message);
+      fail(e.message, e.exitCode || 1);
     });
     return;
   }
@@ -406,6 +408,12 @@ async function runAsync(cmd, planId, flags) {
       if (!result.ok && !result.skipped) {
         process.exit(1);
       }
+      break;
+    }
+
+    case 'init': {
+      if (!planId) usage();
+      await require('./lib/execute_plan_init').cliInit(planId, flags);
       break;
     }
 
