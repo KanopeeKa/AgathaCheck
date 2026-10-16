@@ -11,6 +11,7 @@ const { PullFilesOverflow } = require('./execute_plan_github');
 const { computeApprovalHash, findControlComments } = require('./execute_plan_approval');
 const { loadSnapshotAtRef } = require('./execute_plan_snapshot_v2');
 const { categorizePull, evaluateDiff } = require('./execute_plan_scope');
+const { deriveControl } = require('./execute_plan_control');
 const { planIdFromRefs, findControlIssue, labelNames } = require('./execute_plan_plans');
 
 const CHECK_NAME = 'execute-plan-scope';
@@ -36,26 +37,6 @@ function parseStatusComment(comments, planId) {
   } catch {
     return null;
   }
-}
-
-/**
- * Local stand-in for deriveControl (state-machine §4.1), reading the same inputs.
- * TODO(WP7b/WP4b): switch to deriveControl from scripts/lib/execute_plan_control.js once WP4a is on main.
- * @returns {{ stopped: boolean, reason: string|null }}
- */
-function deriveStopped({ labels, control, status, now }) {
-  const auth = control.authorizing;
-  if (!auth || auth.valid !== true) return { stopped: true, reason: 'approval-invalid' };
-  const epoch = Date.parse(auth.created_at);
-  const revoked = labels.includes('autonomous-revoked')
-    || (control.revoke_comment_at != null && Date.parse(control.revoke_comment_at) > epoch);
-  if (revoked) return { stopped: true, reason: 'revoked' };
-  const stop = status && status.stop ? status.stop : null;
-  const stopIsCurrent = stop != null && Date.parse(stop.at) > epoch;
-  if (labels.includes('needs-owner') && !stopIsCurrent) return { stopped: true, reason: 'escalation' };
-  if (stopIsCurrent) return { stopped: true, reason: stop.reason };
-  if (Date.parse(now) >= Date.parse(auth.until)) return { stopped: true, reason: 'expired' };
-  return { stopped: false, reason: null };
 }
 
 async function loadConfig(client) {
@@ -130,12 +111,10 @@ async function runScopeCheck(client, { prNumber, headSha, headRef, baseRef, head
   }
 
   const control = findControlComments(comments, snapshot, config);
-  const stopped = deriveStopped({
-    labels: labelNames(issue),
-    control,
-    status,
-    now: new Date(now).toISOString(),
-  });
+  const stopped = deriveControl(
+    { ...control, labels: labelNames(issue), status },
+    { now: new Date(now).toISOString() },
+  );
 
   let files;
   try {
@@ -189,7 +168,6 @@ async function cliCheckDiff(flags, { client: injected } = {}) {
 module.exports = {
   CHECK_NAME,
   cliCheckDiff,
-  deriveStopped,
   parseStatusComment,
   publishScopeCheck,
   runScopeCheck,

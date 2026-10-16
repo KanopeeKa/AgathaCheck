@@ -1,0 +1,25 @@
+{
+  "name": "revoke older than resume \u2192 running",
+  "rule": "\u00a74.1",
+  "snapshot_patch": {},
+  "observations_patch": {
+    "control": {
+      "revoke_comment_at": "2026-10-16T09:10:00Z",
+      "authorizing": {
+        "verb": "resume",
+        "created_at": "2026-10-16T09:30:00Z"
+      }
+    }
+  },
+  "opts": {
+    "actor": "driver",
+    "lease": null
+  },
+  "expected": {
+    "launch": false,
+    "stop": null,
+    "state": "phase:pending",
+    "actor": "driver",
+    "kind": "create-phase-branch"
+  }
+}

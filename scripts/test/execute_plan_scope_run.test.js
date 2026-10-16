@@ -5,7 +5,7 @@ const assert = require('node:assert/strict');
 const { createGitHubClient } = require('../lib/execute_plan_github');
 const { buildSnapshotFromPlan } = require('../lib/execute_plan_snapshot_v2');
 const { planIdFromRefs, listActivePlans } = require('../lib/execute_plan_plans');
-const { runScopeCheck, publishScopeCheck, deriveStopped } = require('../lib/execute_plan_scope_run');
+const { runScopeCheck, publishScopeCheck } = require('../lib/execute_plan_scope_run');
 const { createFakeFetch } = require('./helpers/execute_plan_fake_fetch');
 
 const REPO = 'acme/app';
@@ -179,20 +179,6 @@ test('stopped plan → plan-stopped (revoked label, expiry, escalation)', async 
   const needs = { ...CONTROL_ISSUE, labels: [...CONTROL_ISSUE.labels, { name: 'needs-owner' }] };
   const { client: c3 } = setup({ issue: needs, files: ['server/bin/server.js'] });
   assert.match((await runScopeCheck(c3, phasePr)).summary, /escalation/);
-});
-
-test('deriveStopped follows state-machine 4.1', () => {
-  const valid = { authorizing: { valid: true, created_at: '2026-10-16T09:05:00Z', until: '2026-10-23T09:00:00Z' }, revoke_comment_at: null };
-  const base = { labels: [], control: valid, status: null, now: NOW };
-  assert.deepEqual(deriveStopped(base), { stopped: false, reason: null });
-  assert.equal(deriveStopped({ ...base, control: { authorizing: null, revoke_comment_at: null } }).reason, 'approval-invalid');
-  assert.equal(deriveStopped({ ...base, control: { ...valid, revoke_comment_at: '2026-10-16T09:30:00Z' } }).reason, 'revoked');
-  assert.equal(deriveStopped({ ...base, control: { ...valid, revoke_comment_at: '2026-10-16T09:00:00Z' } }).stopped, false);
-  const stale = { reason: 'ci-exhausted', at: '2026-10-16T09:00:00Z' };
-  assert.equal(deriveStopped({ ...base, status: { stop: stale } }).stopped, false);
-  assert.equal(deriveStopped({ ...base, labels: ['needs-owner'], status: { stop: stale } }).reason, 'escalation');
-  const fresh = { reason: 'ci-exhausted', at: '2026-10-16T09:30:00Z' };
-  assert.equal(deriveStopped({ ...base, labels: ['needs-owner'], status: { stop: fresh } }).reason, 'ci-exhausted');
 });
 
 test('publish creates then updates the check run', async () => {

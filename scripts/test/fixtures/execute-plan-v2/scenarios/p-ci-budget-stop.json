@@ -1,0 +1,46 @@
+{
+  "name": "CI attempts exhausted \u2192 stop",
+  "rule": "PR-ladder 4",
+  "snapshot_patch": {},
+  "observations_patch": {
+    "phases": [
+      {
+        "id": "1",
+        "branch_exists": true,
+        "pr": {
+          "checks": [
+            {
+              "name": "ci-gate / CI passed",
+              "status": "completed",
+              "conclusion": "failure",
+              "reason": null
+            },
+            {
+              "name": "execute-plan-scope",
+              "status": "completed",
+              "conclusion": "success",
+              "reason": "ok"
+            }
+          ],
+          "failed_attempts_since_epoch": 3
+        }
+      },
+      {
+        "id": "2",
+        "branch_exists": false,
+        "pr": null
+      }
+    ]
+  },
+  "opts": {
+    "actor": "driver",
+    "lease": null
+  },
+  "expected": {
+    "launch": false,
+    "stop": "ci-budget",
+    "state": "stopped",
+    "actor": "driver",
+    "kind": "enforce-stop"
+  }
+}

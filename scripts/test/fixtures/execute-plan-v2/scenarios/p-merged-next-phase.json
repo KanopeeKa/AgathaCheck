@@ -1,0 +1,36 @@
+{
+  "name": "phase 1 merged \u2192 create phase 2 branch",
+  "rule": "P1\u2013P2",
+  "snapshot_patch": {},
+  "observations_patch": {
+    "phases": [
+      {
+        "id": "1",
+        "branch_exists": true,
+        "pr": {
+          "state": "merged",
+          "merged_at": "2026-10-16T09:55:00Z",
+          "merge_commit_sha": "eeee000000000000000000000000000000000001",
+          "number": 1950
+        }
+      },
+      {
+        "id": "2",
+        "branch_exists": false,
+        "pr": null
+      }
+    ]
+  },
+  "opts": {
+    "actor": "driver",
+    "lease": null
+  },
+  "expected": {
+    "launch": false,
+    "stop": null,
+    "state": "phase:pending",
+    "actor": "driver",
+    "kind": "create-phase-branch",
+    "phase": "2"
+  }
+}

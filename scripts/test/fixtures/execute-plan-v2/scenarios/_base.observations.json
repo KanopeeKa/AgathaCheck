@@ -1,0 +1,54 @@
+{
+  "now": "2026-10-16T10:00:00Z",
+  "control": {
+    "labels": [
+      "execute-plan",
+      "autonomous-approved",
+      "plan:proof-build-label-7f3a"
+    ],
+    "authorizing": {
+      "comment_id": 9001,
+      "verb": "approve",
+      "valid": true,
+      "invalid_reason": null,
+      "created_at": "2026-10-16T09:05:00Z",
+      "until": "2026-10-23T09:00:00Z"
+    },
+    "revoke_comment_at": null,
+    "status": null
+  },
+  "init_sha": "0f1e2d3c4b5a69788796a5b4c3d2e1f00f1e2d3c",
+  "main": {
+    "head_sha": "aaaa000000000000000000000000000000000001",
+    "preuat_queued_for_head": false
+  },
+  "integration": {
+    "exists": true,
+    "head_sha": "bbbb000000000000000000000000000000000001",
+    "behind_main_by": 0
+  },
+  "phases": [
+    {
+      "id": "1",
+      "branch_exists": false,
+      "pr": null
+    },
+    {
+      "id": "2",
+      "branch_exists": false,
+      "pr": null
+    }
+  ],
+  "sync": {
+    "open_pr": null,
+    "resolve_prs_since_epoch": 0
+  },
+  "release": {
+    "pr": null
+  },
+  "remedial": {
+    "open_pr": null,
+    "merged_since_epoch": 0
+  },
+  "uat": null
+}

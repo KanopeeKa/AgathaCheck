@@ -1,0 +1,31 @@
+{
+  "name": "pending phase \u2192 create branch",
+  "rule": "P2",
+  "snapshot_patch": {},
+  "observations_patch": {
+    "phases": [
+      {
+        "id": "1",
+        "branch_exists": false,
+        "pr": null
+      },
+      {
+        "id": "2",
+        "branch_exists": false,
+        "pr": null
+      }
+    ]
+  },
+  "opts": {
+    "actor": "driver",
+    "lease": null
+  },
+  "expected": {
+    "launch": false,
+    "stop": null,
+    "state": "phase:pending",
+    "actor": "driver",
+    "kind": "create-phase-branch",
+    "phase": "1"
+  }
+}

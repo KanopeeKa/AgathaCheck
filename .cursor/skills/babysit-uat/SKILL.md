@@ -5,6 +5,9 @@ description: Babysit+ through merge, then gate on pre-UAT E2E on main. On failur
 
 # Babysit-UAT
 
+v2 plans: merge, Pre-UAT watching and promotion are done by `tick` and the driver; use this skill's
+e2e-debug path only when `tick` returns a `remedial` action.
+
 **Babysit+ through merge**, then **pre-UAT E2E green** for that merge commit on `main`. Does **not** poll `promote-uat` or `deploy-uat` (current policy).
 
 **Builds on:** `/babysit-plus` (**§Pre-PR critical review** including documentation sync, then §0–7, §7b roadmap child handoff) · **Remedial:** `/e2e-debug` (§Phase 3) · **Canonical policy:** `docs/agent-efficiency/autonomous-pr-policy.md`  
