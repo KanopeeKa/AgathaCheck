@@ -3,6 +3,7 @@ import { expect } from '@playwright/test';
 
 import {
   enableFlutterAccessibility,
+  escapeRegExp,
   flutterGotoUrl,
   refreshFlutterAccessibility,
   waitForFlutterRoutePattern,
@@ -459,6 +460,10 @@ export class CareItemPage {
 
   async expectCareProviderVisible(providerName: string): Promise<void> {
     const pattern = new RegExp(providerName, 'i');
+    const providerGroupPattern = new RegExp(
+      `(?:Provider|Prestataire)\\s+${escapeRegExp(providerName)}`,
+      'i',
+    );
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
       const detailsModule = this.page
@@ -467,9 +472,12 @@ export class CareItemPage {
       if (await detailsModule.first().isVisible().catch(() => false)) {
         await detailsModule.first().scrollIntoViewIfNeeded();
       }
-      const row = this.page.getByText(pattern).first();
-      await row.scrollIntoViewIfNeeded();
-      await expect(row).toBeVisible();
+      const row = this.page
+        .getByRole('group', { name: providerGroupPattern })
+        .or(this.page.getByRole('group', { name: pattern }))
+        .or(this.page.getByText(pattern).first());
+      await row.first().scrollIntoViewIfNeeded();
+      await expect(row.first()).toBeVisible();
     }).toPass({ timeout: 60_000 });
   }
 
