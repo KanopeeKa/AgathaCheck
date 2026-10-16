@@ -1,0 +1,31 @@
+name: Execute-plan scope
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, ready_for_review, edited]
+permissions:
+  contents: read
+  pull-requests: read
+  issues: read
+  checks: write
+concurrency:
+  group: execute-plan-scope-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  scope-runner:
+    name: scope-runner
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+        with: { ref: main }          # trusted code only; PR code is never checked out
+      - uses: actions/setup-node@v5
+        with: { node-version: 22 }
+      - name: Evaluate and publish execute-plan-scope
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+        run: node .github/scripts/execute-plan-scope.js

@@ -190,6 +190,12 @@ function createGitHubClient(opts) {
     async removeLabel(n, label) {
       await rest('DELETE', `/issues/${n}/labels/${enc(label)}`, { nullOn404: true });
     },
+    /** Issues only (items carrying `pull_request` are dropped); `labels` is an array joined with commas. */
+    async listIssues({ labels, state = 'open', pages } = {}) {
+      const query = { state, labels: Array.isArray(labels) ? labels.join(',') : labels };
+      const items = await paginate('/issues', { pages, query });
+      return items.filter((item) => !item.pull_request);
+    },
     listIssueTimeline: (n, { pages } = {}) => paginate(`/issues/${n}/timeline`, { pages }),
 
     // Pull requests

@@ -300,6 +300,17 @@ test('list endpoints unwrap wrapped pages and build queries', async () => {
   assert.deepEqual(await gh.listPulls({ head: 'cursor/x-p1', base: 'main', state: 'open' }), [{ number: 8 }]);
 });
 
+test('listIssues sends labels and state and drops pull requests', async () => {
+  const { gh, fake } = client({
+    [`GET ${R}/issues?labels=execute-plan,plan:abc&per_page=100&state=open`]: {
+      body: [{ number: 1 }, { number: 2, pull_request: {} }, { number: 3 }],
+    },
+  });
+  const issues = await gh.listIssues({ labels: ['execute-plan', 'plan:abc'] });
+  assert.deepEqual(issues.map((i) => i.number), [1, 3]);
+  assert.equal(fake.calls.length, 1);
+});
+
 test('fake fetch throws on unrecorded request', async () => {
   const fake = createFakeFetch({});
   await assert.rejects(
