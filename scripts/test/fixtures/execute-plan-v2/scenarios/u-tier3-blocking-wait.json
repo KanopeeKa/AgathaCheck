@@ -1,0 +1,25 @@
+{
+  "name": "tier3 blocking and not yet run → wait tier3",
+  "rule": "U6",
+  "snapshot_patch": {
+    "settings": {
+      "tier3_blocking": true
+    }
+  },
+  "observations_patch": {
+    "uat": {}
+  },
+  "opts": {
+    "actor": "driver",
+    "lease": null,
+    "now": "2026-10-17T12:00:00Z"
+  },
+  "expected": {
+    "stop": null,
+    "state": "awaiting-deploy",
+    "actor": "driver",
+    "kind": "wait",
+    "launch": false,
+    "reason": "tier3"
+  }
+}

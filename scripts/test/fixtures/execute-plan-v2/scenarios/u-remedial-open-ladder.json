@@ -1,0 +1,50 @@
+{
+  "name": "open remedial PR, CI green → ladder arm-auto-merge",
+  "rule": "U1",
+  "snapshot_patch": {},
+  "observations_patch": {
+    "remedial": {
+      "open_pr": {
+        "number": 1970,
+        "draft": false,
+        "head_ref": "cursor/proof-build-label-7f3a-remedial-1",
+        "base_ref": "main",
+        "copilot_review_submitted": true,
+        "checks": [
+          {
+            "name": "Analyze JavaScript",
+            "status": "completed",
+            "conclusion": "success",
+            "reason": null
+          },
+          {
+            "name": "ci-gate / CI passed",
+            "status": "completed",
+            "conclusion": "success",
+            "reason": null
+          },
+          {
+            "name": "execute-plan-scope",
+            "status": "completed",
+            "conclusion": "success",
+            "reason": "ok"
+          }
+        ]
+      }
+    },
+    "uat": {}
+  },
+  "opts": {
+    "actor": "driver",
+    "lease": null,
+    "now": "2026-10-17T12:00:00Z"
+  },
+  "expected": {
+    "stop": null,
+    "state": "remedial",
+    "actor": "driver",
+    "kind": "arm-auto-merge",
+    "launch": false,
+    "method": "squash"
+  }
+}

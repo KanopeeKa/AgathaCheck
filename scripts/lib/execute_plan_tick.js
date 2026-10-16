@@ -12,6 +12,7 @@ const { decide } = require('./execute_plan_state');
 const { deriveControl } = require('./execute_plan_control');
 const { loadPlanContext, observe, configError, CONFIG_PATH } = require('./execute_plan_observe');
 const { formatStatusComment, formatLogLine, applyDecisionToStatus } = require('./execute_plan_status');
+const { verifyComplete, resolveMergeSource, watchPreUat, watchDeploy } = require('./execute_plan_uat_observe');
 
 const FAILED = new Set(['failure', 'timed_out', 'action_required']);
 const STOP_EXIT_CODE = 2;
@@ -146,4 +147,69 @@ async function cliWatchCi(planId, flags) {
   console.log(JSON.stringify(await watchCi(makeClient(), { pr: Number(flags.pr), timeoutMin }), null, 2));
 }
 
-module.exports = { tick, watchCi, cliTick, cliWatchCi, STOP_EXIT_CODE };
+const NOT_COMPLETE_EXIT_CODE = 2;
+const runLink = (repo, id) => `https://github.com/${repo}/actions/runs/${id}`;
+
+/**
+ * v2 `complete-plan` (WP5): re-observes GitHub; only a verified Definition of Done closes the plan.
+ * @returns {Promise<{ complete: boolean, missing: string|null, evidence: object, writes?: object[] }>}
+ */
+async function completePlan(client, { planId, controlIssue, now = isoNow(), dryRun = false, ctx: preloaded } = {}) {
+  const ctx = preloaded || await loadPlanContext(client, { planId, controlIssue });
+  const result = await verifyComplete(client, ctx);
+  if (!result.complete) return result;
+  const e = result.evidence;
+  const links = [
+    `release/merge: https://github.com/${client.repo}/pull/${e.source.pr} (${e.merge_sha})`,
+    `Pre-UAT E2E: ${runLink(client.repo, e.preuat_run)}`,
+    `UAT tag: ${e.tag}`,
+    `Deploy UAT (Prod ready, ${e.deploy_ref}): ${runLink(client.repo, e.deploy_run)}`,
+  ];
+  const status = { ...ctx.status, state: 'complete', phase: null, uat: { preuat_run: e.preuat_run, tag: e.deploy_ref, deploy_run: e.deploy_run, tier3: e.tier3_run ? e.tier3_run.conclusion || 'pending' : 'pending' }, updated_at: now };
+  const writes = [
+    { kind: 'update-status', comment_id: ctx.statusComment.id, body: formatStatusComment(status, '') },
+    { kind: 'log-comment', body: `${formatLogLine(ctx.status.state || 'new', 'complete', runLink(client.repo, e.deploy_run))}\n\n${links.map((l) => `- ${l}`).join('\n')}` },
+    { kind: 'add-label', label: 'plan:complete' },
+    { kind: 'close-issue' },
+  ];
+  if (!dryRun) {
+    await client.updateComment(writes[0].comment_id, writes[0].body);
+    await client.createComment(ctx.issueNumber, writes[1].body);
+    await client.addLabels(ctx.issueNumber, ['plan:complete']);
+    await client.closeIssue(ctx.issueNumber);
+  }
+  return dryRun ? { ...result, writes: writes.map((w) => (w.kind === 'update-status' ? { kind: w.kind } : w)) } : result;
+}
+
+const issueFlag = (flags) => (flags.issue === undefined || flags.issue === true ? undefined : Number(flags.issue));
+
+/** CLI: `complete-plan <plan_id> [--issue N] [--dry-run]` for v2 snapshots. Exit 0 complete, 2 with `missing`. */
+async function cliCompletePlan(planId, flags) {
+  const out = await completePlan(makeClient(), { planId, controlIssue: issueFlag(flags), dryRun: Boolean(flags['dry-run']) });
+  console.log(JSON.stringify(out, null, 2));
+  if (!out.complete) process.exitCode = NOT_COMPLETE_EXIT_CODE;
+}
+
+async function watchTarget(planId, flags) {
+  const client = makeClient();
+  const ctx = await loadPlanContext(client, { planId, controlIssue: issueFlag(flags) });
+  const found = await resolveMergeSource(client, ctx.snapshot);
+  if (!found) throw new ExecutePlanError('no plan PR into main has merged yet; nothing to watch');
+  return { client, ctx, args: { mergeSha: found.mergeSha, mergedAt: found.mergedAt, config: ctx.config } };
+}
+
+/** CLI: `watch-preuat <plan_id> [--timeout-min 90]`. Timeout exits 0 with `timedOut: true`. */
+async function cliWatchPreUat(planId, flags) {
+  const { client, args } = await watchTarget(planId, flags);
+  const timeoutMin = flags['timeout-min'] === undefined ? 90 : Number(flags['timeout-min']);
+  console.log(JSON.stringify(await watchPreUat(client, { ...args, timeoutMin }), null, 2));
+}
+
+/** CLI: `watch-deploy <plan_id> [--timeout-min 45]`. Timeout exits 0 with `timedOut: true`. */
+async function cliWatchDeploy(planId, flags) {
+  const { client, args } = await watchTarget(planId, flags);
+  const timeoutMin = flags['timeout-min'] === undefined ? 45 : Number(flags['timeout-min']);
+  console.log(JSON.stringify(await watchDeploy(client, { ...args, timeoutMin }), null, 2));
+}
+
+module.exports = { tick, watchCi, completePlan, cliTick, cliWatchCi, cliCompletePlan, cliWatchPreUat, cliWatchDeploy, STOP_EXIT_CODE, NOT_COMPLETE_EXIT_CODE };
