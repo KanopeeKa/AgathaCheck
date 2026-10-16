@@ -182,6 +182,12 @@ function createGitHubClient(opts) {
 
     // Issues, comments, labels
     getIssue: (n) => rest('GET', `/issues/${n}`),
+    createIssue: ({ title, body, labels }) => rest('POST', '/issues', { body: { title, body, labels } }),
+    updateIssue: (n, { title, body, state, labels } = {}) => {
+      const patch = { title, body, state, labels };
+      for (const key of Object.keys(patch)) if (patch[key] === undefined) delete patch[key];
+      return rest('PATCH', `/issues/${n}`, { body: patch });
+    },
     closeIssue: (n) => rest('PATCH', `/issues/${n}`, { body: { state: 'closed' } }),
     listIssueComments: (n, { pages } = {}) => paginate(`/issues/${n}/comments`, { pages }),
     createComment: (n, body) => rest('POST', `/issues/${n}/comments`, { body: { body } }),

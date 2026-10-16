@@ -311,6 +311,19 @@ test('listIssues sends labels and state and drops pull requests', async () => {
   assert.equal(fake.calls.length, 1);
 });
 
+test('createIssue posts title, body and labels', async () => {
+  const { gh, fake } = client({ [`POST ${R}/issues`]: { status: 201, body: { number: 9 } } });
+  const issue = await gh.createIssue({ title: 'T', body: 'B', labels: ['execute-plan'] });
+  assert.equal(issue.number, 9);
+  assert.deepEqual(fake.calls[0].body, { title: 'T', body: 'B', labels: ['execute-plan'] });
+});
+
+test('updateIssue patches only the given fields', async () => {
+  const { gh, fake } = client({ [`PATCH ${R}/issues/9`]: { body: { number: 9 } } });
+  await gh.updateIssue(9, { body: 'new', state: 'closed' });
+  assert.deepEqual(fake.calls[0].body, { body: 'new', state: 'closed' });
+});
+
 test('fake fetch throws on unrecorded request', async () => {
   const fake = createFakeFetch({});
   await assert.rejects(
