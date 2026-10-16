@@ -61,3 +61,8 @@ test('applyDecisionToStatus records the merged release PR once and caps launches
 test('formatLogLine', () => {
   assert.equal(formatLogLine('a', 'b', 'https://x'), 'execute-plan: a → b — https://x');
 });
+
+test('table cells escape backslashes, pipes and newlines', () => {
+  const body = formatStatusComment(status(), [{ phase: '1', branch: 'a\\|b\nc', pr: null, state: 's', failed: 0, launches: 0 }]);
+  assert.match(body, /\| a\\\\\\\|b c \|/);
+});

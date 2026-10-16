@@ -24,7 +24,7 @@ function parseStatusComment(body) {
   }
 }
 
-const cell = (v) => (v === null || v === undefined || v === '' ? '—' : String(v).replace(/\|/g, '\\|'));
+const cell = (v) => (v === null || v === undefined || v === '' ? '—' : String(v).replace(/\\/g, '\\\\').replace(/\|/g, '\\|').replace(/\s+/g, ' '));
 
 /** `table` is a ready string, or rows `{ phase, branch, pr, state, failed, launches }`. */
 function formatStatusComment(status, table) {
