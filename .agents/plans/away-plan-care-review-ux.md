@@ -25,10 +25,10 @@ Stop enumerating care occurrences before an absence is saved; after save, show a
 
 | Field | Value |
 |-------|-------|
-| **approved_at** | *(pending — run `approve-autonomous away-plan-care-review-ux` on control issue after DOC-0)* |
-| **approved_until** | |
-| **control_issue** | |
-| **autonomy** | `pending` |
+| **approved_at** | 2026-10-18T21:00:00Z |
+| **approved_until** | 2026-10-20T21:00:00Z |
+| **control_issue** | [#1917](https://github.com/KanopeeKa/AgathaCheck/issues/1917) |
+| **autonomy** | `active` |
 
 ## Phases
 

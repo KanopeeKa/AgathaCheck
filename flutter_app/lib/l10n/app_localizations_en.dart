@@ -7098,6 +7098,57 @@ class AppLocalizationsEn extends AppLocalizations {
       'Here\'s care for each pet during those dates.';
 
   @override
+  String get careContextAwayCreateReassuranceIntro =>
+      'After you save, you can review care that falls during these dates.';
+
+  @override
+  String get careContextAwayReviewSectionTitle => 'Care to review';
+
+  @override
+  String careContextAwayReviewImpactedDates(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count dates during your absence',
+      one: '1 date during your absence',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get careContextAwayReviewDatesAction => 'Review dates';
+
+  @override
+  String get careContextAwayReviewBulkMode => 'Select';
+
+  @override
+  String get careContextAwayReviewBulkKeepCarer => 'Keep with carer';
+
+  @override
+  String get careContextAwayReviewBulkSelectAll => 'Select all';
+
+  @override
+  String get careContextAwayReviewBulkClear => 'Clear selection';
+
+  @override
+  String get careContextAwayReviewBulkKeepCarerDisabled =>
+      'Assign a carer or change your selection to use this action.';
+
+  @override
+  String get careContextAwayPlannedCareExpand => 'All planned care';
+
+  @override
+  String careContextCoverageHasCareItemsToReview(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count care items to review',
+      one: '1 care item to review',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String careContextAwayPreviewDateRange(String startDate, String endDate) {
     return '$startDate to $endDate';
   }

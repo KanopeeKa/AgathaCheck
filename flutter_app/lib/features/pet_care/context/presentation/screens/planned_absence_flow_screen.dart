@@ -98,6 +98,7 @@ class _PlannedAbsenceFlowScreenState
           petId: petId,
           startsOn: startsOn,
           endsOn: endsOn,
+          plannedAbsenceId: null,
         )),
       );
     }

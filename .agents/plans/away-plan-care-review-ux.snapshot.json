@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
   "plan_id": "away-plan-care-review-ux",
-  "approved_at": null,
-  "approved_by": null,
-  "approved_until": null,
+  "approved_at": "2026-10-18T21:00:00Z",
+  "approved_by": "user-chat-2026-10-18-d008-amendment-approved-execute-plan",
+  "approved_until": "2026-10-20T21:00:00Z",
   "content_hash": null,
-  "autonomy": "pending",
+  "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/away-plan-care-review-ux-integration-a227",
-  "control_issue": null,
+  "control_issue": 1917,
   "artifact_branch_policy": "phase-branch",
   "phases": [
     {

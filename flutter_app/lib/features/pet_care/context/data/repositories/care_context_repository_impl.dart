@@ -16,11 +16,13 @@ class CareContextRepositoryImpl implements CareContextRepository {
     required String petId,
     required String startsOn,
     required String endsOn,
+    String? plannedAbsenceId,
   }) {
     return _remote.fetchCarePeriodCoverage(
       petId: petId,
       startsOn: startsOn,
       endsOn: endsOn,
+      plannedAbsenceId: plannedAbsenceId,
     );
   }
 

@@ -66,12 +66,16 @@ class CareContextRemoteDataSource {
     required String petId,
     required String startsOn,
     required String endsOn,
+    String? plannedAbsenceId,
   }) async {
-    final uri = Uri.parse(
-      '$baseUrl/api/pets/$petId/care-period-coverage'
-      '?starts_on=${Uri.encodeQueryComponent(startsOn)}'
-      '&ends_on=${Uri.encodeQueryComponent(endsOn)}',
-    );
+    final query = {
+      'starts_on': startsOn,
+      'ends_on': endsOn,
+      if (plannedAbsenceId != null && plannedAbsenceId.isNotEmpty)
+        'planned_absence_id': plannedAbsenceId,
+    };
+    final uri = Uri.parse('$baseUrl/api/pets/$petId/care-period-coverage')
+        .replace(queryParameters: query);
     final response = await _client.get(uri, headers: _headers());
     _check(response);
     return CarePeriodCoverageModel.fromJson(

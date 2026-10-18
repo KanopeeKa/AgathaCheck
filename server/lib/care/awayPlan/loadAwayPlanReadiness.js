@@ -5,13 +5,18 @@ import {
   wallClockInTimeZone,
 } from '../../petHomeTimezone.js';
 import { loadResolutionsByEntryIds } from '../absence/resolutionRepository.js';
-import { evaluateCarePeriodCoverageWithResolutions } from '../absence/absenceCoverage.js';
 import {
   aggregateCareCoverage,
   deriveAwayPlanReadiness,
   deriveCarerCoverage,
 } from './readiness.js';
 import { loadAwayPlanProjection } from './loadAwayPlanProjection.js';
+import { buildCareReviewQueue } from './reviewQueue.js';
+import {
+  applyReviewQueueToCoverage,
+  evaluateCarePeriodCoverageWithResolutions,
+} from '../absence/absenceCoverage.js';
+import { petHasCarer } from './readiness.js';
 
 /**
  * @param {import('pg').Pool|import('pg').PoolClient} pool
@@ -67,14 +72,25 @@ export async function loadAwayPlanReadiness(
       careTodayIso
     );
     let coverage;
+    let reviewQueue = [];
     if (absenceId) {
       const entryIds = (projection.planned_care_items || []).map((row) => row.health_entry_id);
       const resolutionsByEntry = await loadResolutionsByEntryIds(pool, absenceId, entryIds);
-      coverage = evaluateCarePeriodCoverageWithResolutions(
-        projection,
+      reviewQueue = buildCareReviewQueue(
         projection.planned_care_items || [],
+        projection.items || [],
         resolutionsByEntry,
-        { startsOn, endsOn }
+        { startsOn, endsOn },
+        { petHasCarer: petHasCarer(petRow) }
+      );
+      coverage = applyReviewQueueToCoverage(
+        evaluateCarePeriodCoverageWithResolutions(
+          projection,
+          projection.planned_care_items || [],
+          resolutionsByEntry,
+          { startsOn, endsOn }
+        ),
+        reviewQueue
       );
     } else {
       const { evaluateCarePeriodCoverage } = await import('../carePeriodCoverage.js');
@@ -84,6 +100,7 @@ export async function loadAwayPlanReadiness(
       pet_id: petRow.pet_id,
       projection,
       coverage,
+      review_queue: reviewQueue,
     });
   }
 

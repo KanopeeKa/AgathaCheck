@@ -173,6 +173,7 @@ class _AwayPlanSuggestionsBody extends ConsumerWidget {
           petId: petId,
           startsOn: startsOn,
           endsOn: endsOn,
+          plannedAbsenceId: absenceId,
         )),
       );
 
@@ -215,6 +216,7 @@ class _AwayPlanSuggestionsBody extends ConsumerWidget {
           petId: petId,
           startsOn: startsOn,
           endsOn: endsOn,
+          plannedAbsenceId: absenceId,
         )),
       );
     } catch (_) {

@@ -2,8 +2,8 @@
 title: Away Plan Care Review UX — Delivery Plan
 owner: Product / Agent
 audience: both
-status: proposed
-status_since: 2026-10-16
+status: in-delivery
+status_since: 2026-10-18
 folds_into: docs/domains/pet_care/features/care-context.md
 plan: away-plan-care-review-ux
 last_updated: 2026-10-16
@@ -15,7 +15,7 @@ last_updated: 2026-10-16
 **Execute-plan:** `.agents/plans/away-plan-care-review-ux.md`
 **Design basis:** `/ui-design-deep` (2026-10-16) — absence create preview noise + post-save review queue.
 
-**Status: proposed** — decisions below are **draft for DOC-0 freeze**; do not implement until `approve-autonomous away-plan-care-review-ux`.
+**Status: in-delivery** — decisions **CARE-CONTEXT-D-004 … D-009** frozen 2026-10-18 (D-008 amendment approved in chat).
 
 ---
 
@@ -144,6 +144,8 @@ Record in [care-context.md](../features/care-context.md) decision log and requir
 | **Out of V1** | Bulk skip/reschedule/move dates on the plan (remain on care item / occurrence review). Track debt issue if product wants parity with care-item bulk Mark/Skip. |
 | **Empty** | Bulk mode hidden when zero review cards. |
 
+**Amendment (approved 2026-10-18):** Bulk mode is **opt-in** — checkboxes appear only after the pet parent toggles bulk mode in the section header (not on the default card layout). The sticky bar offers **Select all** and **Clear** for the **current pet's** review queue only. **Keep with carer** runs only when **every** selected card is `bulk_keep_carer_eligible`; otherwise the action stays disabled with helper copy (e.g. assign a carer first, or deselect ineligible items). Bulk **Skip**, **Mark as done**, and **reschedule** remain out of scope on the away plan (care item only).
+
 ### CARE-CONTEXT-D-009 — Plan layout: review queue before schedule
 
 | | |
@@ -162,6 +164,9 @@ Record in [care-context.md](../features/care-context.md) decision log and requir
 | `careContextAwayReviewImpactedDates` | `{count, plural, =1{1 date during your absence} other{{count} dates during your absence}}` | Card subtitle |
 | `careContextAwayReviewDatesAction` | “Review dates” | Primary button |
 | `careContextAwayReviewBulkKeepCarer` | “Keep with carer” | Bulk bar |
+| `careContextAwayReviewBulkSelectAll` | “Select all” | Bulk bar |
+| `careContextAwayReviewBulkClear` | “Clear selection” | Bulk bar |
+| `careContextAwayReviewBulkKeepCarerDisabled` | “Assign a carer or change your selection to use this action.” | Disabled bulk keep |
 | `careContextAwayPlannedCareExpand` | “All planned care” | Collapsed schedule |
 | `careContextCoverageHasCareItemsToReview` | `{count, plural, =1{1 care item to review} other{{count} care items to review}}` | Replaces occurrence-based count copy where D-005 applies |
 

@@ -2696,6 +2696,27 @@
   "careContextAwayPetsRequired": "Select at least one pet.",
   "careContextAwayPreviewStepTitle": "Care during your absence",
   "careContextAwayPreviewIntro": "Here's care for each pet during those dates.",
+  "careContextAwayCreateReassuranceIntro": "After you save, you can review care that falls during these dates.",
+  "careContextAwayReviewSectionTitle": "Care to review",
+  "careContextAwayReviewImpactedDates": "{count, plural, =1{1 date during your absence} other{{count} dates during your absence}}",
+  "@careContextAwayReviewImpactedDates": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "careContextAwayReviewDatesAction": "Review dates",
+  "careContextAwayReviewBulkMode": "Select",
+  "careContextAwayReviewBulkKeepCarer": "Keep with carer",
+  "careContextAwayReviewBulkSelectAll": "Select all",
+  "careContextAwayReviewBulkClear": "Clear selection",
+  "careContextAwayReviewBulkKeepCarerDisabled": "Assign a carer or change your selection to use this action.",
+  "careContextAwayPlannedCareExpand": "All planned care",
+  "careContextCoverageHasCareItemsToReview": "{count, plural, =1{1 care item to review} other{{count} care items to review}}",
+  "@careContextCoverageHasCareItemsToReview": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
   "careContextAwayPreviewDateRange": "{startDate} to {endDate}",
   "@careContextAwayPreviewDateRange": {
     "placeholders": {
