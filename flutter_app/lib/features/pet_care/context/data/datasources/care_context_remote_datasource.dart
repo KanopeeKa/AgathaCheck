@@ -74,8 +74,9 @@ class CareContextRemoteDataSource {
       if (plannedAbsenceId != null && plannedAbsenceId.isNotEmpty)
         'planned_absence_id': plannedAbsenceId,
     };
-    final uri = Uri.parse('$baseUrl/api/pets/$petId/care-period-coverage')
-        .replace(queryParameters: query);
+    final uri = Uri.parse(
+      '$baseUrl/api/pets/$petId/care-period-coverage',
+    ).replace(queryParameters: query);
     final response = await _client.get(uri, headers: _headers());
     _check(response);
     return CarePeriodCoverageModel.fromJson(

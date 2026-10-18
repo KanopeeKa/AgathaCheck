@@ -101,4 +101,80 @@ describe('care-period coverage API', () => {
     expect(res.statusCode).toBe(500);
     expect(res.body.error).toBeTruthy();
   });
+
+  it('GET with planned_absence_id returns review_queue and review_care_item_count', async () => {
+    const absenceId = 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee';
+    const app = createTestApp(async (sql) => {
+      if (sql.includes('FROM planned_absence_pets')) {
+        return {
+          rows: [{
+            planned_absence_id: absenceId,
+            pet_id: petId,
+            carer_kind: 'note_only',
+            carer_name: 'Jamie',
+            carer_state: 'set',
+          }],
+        };
+      }
+      if (sql.includes('health_entry_absence_resolutions')) {
+        return { rows: [] };
+      }
+      if (sql.includes('FROM pets WHERE id = $1 AND user_id = $2')) {
+        return { rows: [{ id: petId, user_id: userId }] };
+      }
+      if (sql.includes('FROM health_entries WHERE pet_id = $1')) {
+        return {
+          rows: [{
+            id: 'entry-1',
+            pet_id: petId,
+            type: 'medication',
+            name: 'Monthly',
+            frequency: 'monthly',
+            frequency_interval: 1,
+            recurrence_anchor: 'from_due_date',
+            next_due_date: startsOn,
+            status: 'active',
+            schedule_times: null,
+            care_family: 'medication',
+          }],
+        };
+      }
+      if (sql.includes('FROM health_occurrences ho')) {
+        return { rows: [] };
+      }
+      return { rows: [] };
+    });
+
+    const res = await request(app)
+      .get(
+        `/api/pets/${petId}/care-period-coverage?starts_on=${startsOn}&ends_on=${endsOn}&planned_absence_id=${absenceId}`
+      )
+      .set(authHeader());
+
+    expect(res.statusCode).toBe(200);
+    expect(Array.isArray(res.body.review_queue)).toBe(true);
+    expect(res.body.review_queue.length).toBeGreaterThanOrEqual(1);
+    expect(res.body.coverage.review_care_item_count).toBeGreaterThanOrEqual(1);
+  });
+
+  it('GET with planned_absence_id returns 404 when pet not on absence', async () => {
+    const absenceId = 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee';
+    const app = createTestApp(async (sql) => {
+      if (sql.includes('FROM planned_absence_pets')) {
+        return { rows: [] };
+      }
+      if (sql.includes('FROM pets WHERE id = $1 AND user_id = $2')) {
+        return { rows: [{ id: petId, user_id: userId }] };
+      }
+      return { rows: [] };
+    });
+
+    const res = await request(app)
+      .get(
+        `/api/pets/${petId}/care-period-coverage?starts_on=${startsOn}&ends_on=${endsOn}&planned_absence_id=${absenceId}`
+      )
+      .set(authHeader());
+
+    expect(res.statusCode).toBe(404);
+  });
 });

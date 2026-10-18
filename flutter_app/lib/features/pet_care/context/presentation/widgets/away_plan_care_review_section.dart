@@ -5,7 +5,7 @@ import '../../../../../core/router/shell_return_navigation.dart';
 import '../../../../../l10n/app_localizations.dart';
 import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import '../../domain/entities/care_period_coverage.dart';
-import 'package:pet_profile_app/features/experience/presentation/care_item/care_item_detail_with_absence_refresh.dart';
+import '../providers/care_context_providers.dart';
 
 /// Care-item review queue for one pet on a saved away plan (D-004…D-009).
 class AwayPlanCareReviewSection extends ConsumerStatefulWidget {
@@ -49,7 +49,8 @@ class _AwayPlanCareReviewSectionState
               item.bulkKeepCarerEligible,
         )
         .toList();
-    final canBulkKeep = _bulkMode &&
+    final canBulkKeep =
+        _bulkMode &&
         selectedEligible.isNotEmpty &&
         selectedEligible.length == _selectedEntryIds.length;
 
@@ -157,12 +158,10 @@ class _AwayPlanCareReviewSectionState
           healthEntryId: item.healthEntryId,
           decision: 'keep_date',
         );
+        invalidateCareItemDetailData(ref, item.healthEntryId);
       }
-      invalidateCareItemDetailWithAbsence(
-        ref,
-        items.first.healthEntryId,
-        absenceId: widget.absenceId,
-      );
+      ref.invalidate(absenceCarePlanProvider(widget.absenceId));
+      ref.invalidate(carePeriodCoverageProvider);
       if (mounted) {
         setState(() {
           _bulkMode = false;
@@ -195,8 +194,6 @@ class _ReviewCard extends StatelessWidget {
   final bool bulkMode;
   final bool selected;
   final ValueChanged<bool> onSelected;
-
-  static const _kMinTouchTarget = 48.0;
 
   @override
   Widget build(BuildContext context) {
@@ -232,7 +229,9 @@ class _ReviewCard extends StatelessWidget {
                 children: [
                   Text(item.name, style: theme.textTheme.titleSmall),
                   Text(
-                    l.careContextAwayReviewImpactedDates(item.impactedDateCount),
+                    l.careContextAwayReviewImpactedDates(
+                      item.impactedDateCount,
+                    ),
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
