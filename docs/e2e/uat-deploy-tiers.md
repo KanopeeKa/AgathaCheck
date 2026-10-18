@@ -3,7 +3,7 @@ title: UAT deploy tiers
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-22
+last_updated: 2026-10-16
 tags: [e2e, uat, deploy]
 ---
 # UAT deploy tiers
@@ -127,6 +127,26 @@ flowchart TD
 3. `@smoke-uat` or full E2E shards inside `deploy-uat.yml`
 4. `resetHostingWafSession()` in live smoke fixtures
 5. Reintroducing UAT queue coordinator as promotion gate
+
+---
+
+## Execute-plan v2 observes this chain
+
+Execute-plan v2 (`scripts/lib/execute_plan_uat_observe.js`, rules in
+[state-machine.md](../agent-efficiency/plans/execute-plan-v2/state-machine.md) §4.2 U-rules) reads
+this pipeline after a plan PR merges into `main`; it never changes it.
+
+- **Reads:** `pre-uat-e2e.yml` runs on `main` (with their failed jobs, excluding `Pre-UAT E2E gate`),
+  `uat-*` tags, `deploy-uat.yml` runs with their job conclusions, and `uat-live-e2e.yml` runs.
+  "Contains the merge" is always `compare(merge_sha...candidate)` ∈ `ahead`/`identical`, never SHA equality.
+- **`Prod ready` is the proof.** A Deploy UAT run can conclude `success` while every deploy job is
+  `skipped` (a no-op); such runs never count. The plan is complete only when the `Prod ready` job
+  succeeded and its log (`DEPLOY_REF: uat-…`, `gate_failure_class=none|infra_only|code`) names a tag
+  whose commit contains the merge.
+- **Writes (via the driver):** at most one Pre-UAT dispatch per `main` head, and one Deploy UAT
+  re-dispatch per tag (only for `gate_failure_class=infra_only`). Anything else that fails opens a
+  remedial PR (budgeted) or stops the plan.
+- **Commands:** `watch-preuat`, `watch-deploy`, and `complete-plan` (verifies, then closes the control issue).
 
 ---
 

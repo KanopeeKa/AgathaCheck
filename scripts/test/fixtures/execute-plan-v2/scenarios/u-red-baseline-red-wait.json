@@ -1,0 +1,53 @@
+{
+  "name": "red, same failures on baseline → wait main-green",
+  "rule": "U3",
+  "snapshot_patch": {},
+  "observations_patch": {
+    "uat": {
+      "preuat_runs": [
+        {
+          "id": 501,
+          "head_sha": "dddd000000000000000000000000000000000001",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "failure",
+          "created_at": "2026-10-17T08:01:00Z",
+          "updated_at": "2026-10-17T10:00:00Z",
+          "contains_merge": true,
+          "failed_jobs": [
+            "shard-3"
+          ]
+        }
+      ],
+      "baseline_run": {
+        "id": 400,
+        "head_sha": "dddd000000000000000000000000000000000001",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-10-17T08:01:00Z",
+        "updated_at": "2026-10-17T09:10:00Z",
+        "contains_merge": false,
+        "failed_jobs": [
+          "shard-3",
+          "shard-4"
+        ]
+      },
+      "uat_tags": [],
+      "deploy_runs": []
+    }
+  },
+  "opts": {
+    "actor": "driver",
+    "lease": null,
+    "now": "2026-10-17T12:00:00Z"
+  },
+  "expected": {
+    "stop": null,
+    "state": "awaiting-main-green",
+    "actor": "driver",
+    "kind": "wait",
+    "launch": false,
+    "reason": "main-green"
+  }
+}

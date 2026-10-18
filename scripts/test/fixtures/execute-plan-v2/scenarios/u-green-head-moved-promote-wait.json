@@ -1,0 +1,28 @@
+{
+  "name": "green, no tag yet, run queued for new head → wait promote",
+  "rule": "U4",
+  "snapshot_patch": {},
+  "observations_patch": {
+    "main": {
+      "head_sha": "eeee000000000000000000000000000000000002",
+      "preuat_queued_for_head": true
+    },
+    "uat": {
+      "uat_tags": [],
+      "deploy_runs": []
+    }
+  },
+  "opts": {
+    "actor": "driver",
+    "lease": null,
+    "now": "2026-10-17T12:00:00Z"
+  },
+  "expected": {
+    "stop": null,
+    "state": "awaiting-promote",
+    "actor": "driver",
+    "kind": "wait",
+    "launch": false,
+    "reason": "promote"
+  }
+}

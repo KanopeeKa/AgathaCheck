@@ -1,0 +1,20 @@
+{
+  "name": "all four conditions hold → complete-plan",
+  "rule": "U6",
+  "snapshot_patch": {},
+  "observations_patch": {
+    "uat": {}
+  },
+  "opts": {
+    "actor": "driver",
+    "lease": null,
+    "now": "2026-10-17T12:00:00Z"
+  },
+  "expected": {
+    "stop": null,
+    "state": "complete",
+    "actor": "driver",
+    "kind": "complete-plan",
+    "launch": false
+  }
+}

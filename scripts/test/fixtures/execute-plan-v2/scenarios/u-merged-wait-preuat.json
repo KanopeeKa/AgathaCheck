@@ -1,0 +1,25 @@
+{
+  "name": "merged 5 min ago, nothing yet → wait preuat",
+  "rule": "U2",
+  "snapshot_patch": {},
+  "observations_patch": {
+    "uat": {
+      "preuat_runs": [],
+      "uat_tags": [],
+      "deploy_runs": []
+    }
+  },
+  "opts": {
+    "actor": "driver",
+    "lease": null,
+    "now": "2026-10-17T08:05:00Z"
+  },
+  "expected": {
+    "stop": null,
+    "state": "awaiting-preuat",
+    "actor": "driver",
+    "kind": "wait",
+    "launch": false,
+    "reason": "preuat"
+  }
+}
