@@ -37,7 +37,7 @@ class PlannedAbsencePreviewStep extends ConsumerWidget {
         ),
         const SizedBox(height: 8),
         Text(
-          l.careContextAwayPreviewIntro,
+          l.careContextAwayCreateReassuranceIntro,
           style: theme.textTheme.bodyLarge?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,
           ),
@@ -52,7 +52,12 @@ class PlannedAbsencePreviewStep extends ConsumerWidget {
         ),
         const SizedBox(height: 20),
         ...orderedPetIds.map((petId) {
-          final previewKey = (petId: petId, startsOn: startsOn, endsOn: endsOn);
+          final previewKey = (
+            petId: petId,
+            startsOn: startsOn,
+            endsOn: endsOn,
+            plannedAbsenceId: null,
+          );
           final coverageAsync = ref.watch(
             carePeriodCoverageProvider(previewKey),
           );

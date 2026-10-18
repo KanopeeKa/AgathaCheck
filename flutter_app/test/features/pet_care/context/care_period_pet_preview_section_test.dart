@@ -60,12 +60,13 @@ void main() {
     final l = AppLocalizations.of(context)!;
 
     expect(find.text('Agatha'), findsOneWidget);
-    expect(find.text(l.careContextCoverageIndeterminate), findsOneWidget);
+    expect(find.text(l.careContextAwayCreateReassuranceIntro), findsOneWidget);
+    expect(find.text(l.careContextCoverageIndeterminate), findsNothing);
     expect(
       find.text(l.careContextCoverageIndeterminateQualifier),
       findsOneWidget,
     );
-    expect(find.text('Daily tablet'), findsOneWidget);
+    expect(find.text('Daily tablet'), findsNothing);
     expect(find.textContaining('All clear'), findsNothing);
     expect(find.textContaining('All covered'), findsNothing);
   });
@@ -91,6 +92,6 @@ void main() {
     final l = AppLocalizations.of(context)!;
 
     expect(find.text('Milo'), findsOneWidget);
-    expect(find.text(l.careContextCoverageNothingScheduled), findsOneWidget);
+    expect(find.text(l.careContextAwayCreateReassuranceIntro), findsOneWidget);
   });
 }

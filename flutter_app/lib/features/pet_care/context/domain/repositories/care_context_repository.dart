@@ -9,6 +9,7 @@ abstract class CareContextRepository {
     required String petId,
     required String startsOn,
     required String endsOn,
+    String? plannedAbsenceId,
   });
 
   Future<CreatePlannedAbsenceResult> createPlannedAbsence({

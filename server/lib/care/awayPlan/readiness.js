@@ -112,7 +112,11 @@ export function aggregateCareCoverage(perPetResults) {
       selectedPriority = priority;
     }
     if (coverage.coverage_state === COVERAGE_STATE_HAS_ITEMS_TO_REVIEW) {
-      pendingItemCount += (projection?.items || []).filter((item) => item.status === 'pending').length;
+      if (coverage.review_care_item_count != null) {
+        pendingItemCount += coverage.review_care_item_count;
+      } else {
+        pendingItemCount += (projection?.items || []).filter((item) => item.status === 'pending').length;
+      }
     }
   }
 

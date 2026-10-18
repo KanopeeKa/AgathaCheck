@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/utils/calendar_date.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../domain/entities/care_period_coverage.dart';
 import '../care_period_coverage_copy.dart';
 
+/// Per-pet reassurance during absence create — no care enumeration (D-004).
 class CarePeriodPetPreviewSection extends StatelessWidget {
   const CarePeriodPetPreviewSection({
     super.key,
@@ -85,78 +85,24 @@ class CarePeriodPetPreviewSection extends StatelessWidget {
               )
             else if (result != null) ...[
               Text(
-                CarePeriodCoverageCopy.summary(l, result!),
-                style: theme.textTheme.bodyLarge,
+                l.careContextAwayCreateReassuranceIntro,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
               ),
               if (CarePeriodCoverageCopy.indeterminateQualifier(l, result!) !=
                   null) ...[
                 const SizedBox(height: 8),
                 Text(
                   CarePeriodCoverageCopy.indeterminateQualifier(l, result!)!,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
-              if (result!.items.isNotEmpty) ...[
-                const SizedBox(height: 12),
-                ...result!.items.map((item) => _PreviewItemRow(item: item)),
-              ],
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _PreviewItemRow extends StatelessWidget {
-  const _PreviewItemRow({required this.item});
-
-  final CarePeriodProjectionItem item;
-
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final parsed = parseCalendarDate(item.scheduledDate);
-    final dateLabel = parsed == null
-        ? item.scheduledDate
-        : formatCalendarDateDisplay(parsed);
-    final statusLabel = switch (item.status) {
-      'completed' => l.careContextPreviewItemCompleted(dateLabel),
-      'skipped' => l.careContextPreviewItemSkipped(dateLabel),
-      _ => l.careContextPreviewItemPending(dateLabel),
-    };
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(
-            item.isPending ? Icons.circle_outlined : Icons.check_circle_outline,
-            size: 18,
-            color: item.isPending
-                ? theme.colorScheme.primary
-                : theme.colorScheme.onSurfaceVariant,
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(item.name, style: theme.textTheme.bodyMedium),
-                Text(
-                  statusLabel,
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],
-            ),
-          ),
-        ],
+            ],
+          ],
+        ),
       ),
     );
   }

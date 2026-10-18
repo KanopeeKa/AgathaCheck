@@ -7213,6 +7213,57 @@ class AppLocalizationsFr extends AppLocalizations {
       'Voici les soins de chaque animal pour ces dates.';
 
   @override
+  String get careContextAwayCreateReassuranceIntro =>
+      'Après l\'enregistrement, vous pourrez revoir les soins prévus pendant ces dates.';
+
+  @override
+  String get careContextAwayReviewSectionTitle => 'Soins à revoir';
+
+  @override
+  String careContextAwayReviewImpactedDates(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count dates pendant votre absence',
+      one: '1 date pendant votre absence',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get careContextAwayReviewDatesAction => 'Voir les dates';
+
+  @override
+  String get careContextAwayReviewBulkMode => 'Sélectionner';
+
+  @override
+  String get careContextAwayReviewBulkKeepCarer => 'Confier au gardien';
+
+  @override
+  String get careContextAwayReviewBulkSelectAll => 'Tout sélectionner';
+
+  @override
+  String get careContextAwayReviewBulkClear => 'Effacer la sélection';
+
+  @override
+  String get careContextAwayReviewBulkKeepCarerDisabled =>
+      'Assignez un gardien ou modifiez la sélection pour utiliser cette action.';
+
+  @override
+  String get careContextAwayPlannedCareExpand => 'Tous les soins prévus';
+
+  @override
+  String careContextCoverageHasCareItemsToReview(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count éléments de soin à revoir',
+      one: '1 élément de soin à revoir',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String careContextAwayPreviewDateRange(String startDate, String endDate) {
     return 'Du $startDate au $endDate';
   }
