@@ -293,9 +293,29 @@ export class AwayPlanningPage {
     return bySemantics;
   }
 
+  /** When a care review queue is present, planned care lives under a collapsed tile (D-009). */
+  private async expandAllPlannedCareIfCollapsed(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    const toggle = this.page
+      .getByRole('button', { name: /All planned care|Tous les soins prévus/i })
+      .first();
+    if (await toggle.isVisible().catch(() => false)) {
+      await toggle.click();
+      await refreshFlutterAccessibility(this.page);
+    }
+  }
+
+  private async ensurePlannedCareRowAccessible(entryId: string, entryName?: string): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    const row = this.plannedCareRow(entryId, entryName);
+    if ((await row.count()) === 0) {
+      await this.expandAllPlannedCareIfCollapsed();
+    }
+  }
+
   async expectPlannedCareItemRow(entryId: string, entryName?: string): Promise<void> {
     await expect(async () => {
-      await refreshFlutterAccessibility(this.page);
+      await this.ensurePlannedCareRowAccessible(entryId, entryName);
       await expect(this.plannedCareRow(entryId, entryName)).toBeVisible();
     }).toPass({ timeout: 45_000 });
   }
@@ -334,7 +354,7 @@ export class AwayPlanningPage {
     overdueLabel: RegExp,
   ): Promise<void> {
     await expect(async () => {
-      await refreshFlutterAccessibility(this.page);
+      await this.ensurePlannedCareRowAccessible(entryId, entryName);
       await expect(this.plannedCareRow(entryId, entryName)).toBeVisible();
       await expect(this.page.getByText(overdueLabel).first()).toBeVisible();
     }).toPass({ timeout: 45_000 });
@@ -342,7 +362,7 @@ export class AwayPlanningPage {
 
   async expectPlannedCareRowShowsEstimated(entryId: string, entryName: string): Promise<void> {
     await expect(async () => {
-      await refreshFlutterAccessibility(this.page);
+      await this.ensurePlannedCareRowAccessible(entryId, entryName);
       const row = this.plannedCareRow(entryId, entryName);
       await expect(row).toBeVisible();
       await expect(row).toContainText(/Estimated:|Estimé:/i);
@@ -401,6 +421,7 @@ export class AwayPlanningPage {
   }
 
   async openPlannedCareItem(entryId: string): Promise<void> {
+    await this.ensurePlannedCareRowAccessible(entryId);
     const row = semanticsKey(this.page, `away_plan_planned_care_${entryId}`);
     await expect(row).toBeVisible({ timeout: 30_000 });
     await row.click();
