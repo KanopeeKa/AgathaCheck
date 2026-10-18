@@ -1,0 +1,37 @@
+name: Execute-plan approve
+on:
+  issue_comment:
+    types: [created, edited, deleted]
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+  actions: write
+  checks: write
+concurrency:
+  group: execute-plan-approve-${{ github.event.issue.number }}
+  cancel-in-progress: false
+jobs:
+  approve:
+    name: execute-plan-approve
+    if: >-
+      github.event.issue.pull_request == null &&
+      github.event.comment.author_association == 'OWNER' &&
+      (startsWith(github.event.comment.body, 'approve-autonomous ') ||
+       startsWith(github.event.comment.body, 'resume-autonomous ') ||
+       startsWith(github.event.comment.body, 'revoke-autonomous '))
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+        with: { ref: main }
+      - uses: actions/setup-node@v5
+        with: { node-version: 22 }
+      - name: Handle control comment
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EXECUTE_PLAN_BOT_TOKEN: ${{ secrets.EXECUTE_PLAN_BOT_TOKEN }}
+          CURSOR_API_KEY: ${{ secrets.cursor_api_key }}
+          EXECUTE_PLAN_DRIVER: ${{ vars.EXECUTE_PLAN_DRIVER }}
+          EVENT_PATH: ${{ github.event_path }}
+        run: node .github/scripts/execute-plan-approve.js

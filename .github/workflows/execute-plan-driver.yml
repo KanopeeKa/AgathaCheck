@@ -1,0 +1,46 @@
+name: Execute-plan driver
+on:
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+    inputs:
+      plan_id: { description: Plan id (empty = all active), required: false }
+  pull_request:
+    types: [opened, ready_for_review, converted_to_draft, synchronize, closed]
+  pull_request_review:
+    types: [submitted]
+  workflow_run:
+    workflows: ['CI', 'Pre-UAT E2E', 'Promote UAT (tag on merge to main)', 'Deploy UAT (uat.agathatrack.com)']
+    types: [completed]
+  issues:
+    types: [labeled, unlabeled]
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+  actions: write
+  checks: write
+concurrency:
+  group: execute-plan-driver
+  cancel-in-progress: false
+jobs:
+  drive:
+    name: execute-plan-driver
+    if: github.event.pull_request == null || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with: { ref: main }
+      - uses: actions/setup-node@v5
+        with: { node-version: 22 }
+      - name: Drive active plans
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EXECUTE_PLAN_BOT_TOKEN: ${{ secrets.EXECUTE_PLAN_BOT_TOKEN }}
+          CURSOR_API_KEY: ${{ secrets.cursor_api_key }}
+          EXECUTE_PLAN_DRIVER: ${{ vars.EXECUTE_PLAN_DRIVER }}
+          EVENT_NAME: ${{ github.event_name }}
+          EVENT_PATH: ${{ github.event_path }}
+          INPUT_PLAN_ID: ${{ inputs.plan_id }}
+        run: node .github/scripts/execute-plan-driver.js
