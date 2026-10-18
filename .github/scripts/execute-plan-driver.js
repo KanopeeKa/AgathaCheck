@@ -8,7 +8,6 @@
  */
 
 const fs = require('fs');
-const { createGitHubClient } = require('../../scripts/lib/execute_plan_github');
 const { runDriverPass, normalizeKillSwitch } = require('../../scripts/lib/execute_plan_driver_actions');
 const { planIdFromRefs, findControlIssue, listActivePlans, labelNames } = require('../../scripts/lib/execute_plan_plans');
 const { makeClients } = require('./execute-plan-approve');
