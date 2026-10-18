@@ -3,7 +3,7 @@ title: GitHub issue workflow
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-21
+last_updated: 2026-10-18
 tags: [documentation]
 ---
 # GitHub issue workflow
@@ -369,6 +369,37 @@ The script prints `GH_PROJECT_ID`, `GH_STATUS_FIELD_ID`, and the option IDs for 
 **Repository ownership:** This repo is **user-owned**. Use `--user <login>` when discovering project IDs. Organization-owned repos can use `--org <login>`.
 
 If secrets are not configured, triage and agent workflows still update labels and comments but skip Project status changes and log a warning.
+
+## Execute-plan v2 driver
+
+Two workflows run execute-plan v2 without a long-lived agent session. Both are thin: they check out `main`, run
+one script under `.github/scripts/`, and the logic lives in `scripts/lib/execute_plan_*.js`. Design:
+`docs/agent-efficiency/plans/execute-plan-v2/work-packages-platform.md` §WP7b.
+
+| Workflow | Events | Does |
+|----------|--------|------|
+| [`execute-plan-approve.yml`](../../.github/workflows/execute-plan-approve.yml) | `issue_comment` (created, edited, deleted) by the repo owner | Validates `approve-autonomous` / `resume-autonomous` / `revoke-autonomous` on a control issue, creates the integration branch, status comment and labels on approve, then runs one driver pass |
+| [`execute-plan-driver.yml`](../../.github/workflows/execute-plan-driver.yml) | PR, review, `workflow_run` (CI, Pre-UAT, Promote UAT, Deploy UAT), `issues` labels, 30-minute heartbeat, manual dispatch | Runs `tick` for each affected active plan and executes the one driver action it returns |
+
+**Control comments** (one line, on the control issue, by an owner in `.github/execute-plan.config.json`):
+`approve-autonomous <plan> sha256:<hash> until <ISO>`, `resume-autonomous <plan> sha256:<hash> until <ISO>`
+(renews time and budgets, at most 14 days), `revoke-autonomous <plan>`. Contracts: `execute-plan-v2/contracts.md` §3.3.
+An invalid approve gets one reply `approve-autonomous rejected: <reason>`; other invalid comments are ignored.
+Editing or deleting an approve or resume comment stops the plan on the next pass (`approval-invalid`).
+
+**Kill switch:** repository variable `EXECUTE_PLAN_DRIVER` — `off` (default when unset or unknown: nothing runs),
+`dry-run` (validate and decide, write only the job summary), `on`. Checked first in both scripts.
+
+**Tokens**
+
+| Operation | Token |
+|-----------|-------|
+| Reads, `workflow_dispatch` (Pre-UAT, Deploy UAT), the `execute-plan-scope` check run | `GITHUB_TOKEN` |
+| Branches, sync/release PRs, `update-branch`, auto-merge, labels, comments, status comment | `EXECUTE_PLAN_BOT_TOKEN` |
+| Cursor API (worker launch) | `cursor_api_key` |
+
+Per-plan serialization comes from the single `execute-plan-driver` concurrency group plus the lease in the status
+comment; the driver never waits inside a job. One action per plan per pass; the next event or heartbeat continues.
 
 ## Smoke-test log
 
