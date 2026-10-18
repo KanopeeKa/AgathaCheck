@@ -109,6 +109,10 @@ function decideUat(snapshot, obs, ctx) {
   const cls = classifyDeployFailure(D);
   if (cls === 'infra') {
     if (!(dispatched.deploy_tags || []).includes(D.deploy_ref)) return out('awaiting-deploy', driver('dispatch-deploy', { tag: D.deploy_ref }), evidence);
+    // The tag was already re-dispatched: stop only on the SECOND failed run for it. Until that run
+    // shows up (seconds after the dispatch) the first failure is still the newest, so wait.
+    const failuresForTag = deploys.filter((r) => r.proof_job === 'failure' && r.deploy_ref === D.deploy_ref).length;
+    if (failuresForTag < 2) return out('awaiting-deploy', wait('deploy'), evidence);
     return halt('uat-infra', `Deploy UAT failed on infrastructure again for ${D.deploy_ref}`, evidence);
   }
   if (cls === 'app-smoke') return remedial(['deploy-smoke'], evidence);
