@@ -139,6 +139,7 @@ run_governance() {
   node --test scripts/test/execute_plan_github.test.js
   node --test scripts/test/execute_plan_approval.test.js
   node --test scripts/test/execute_plan_snapshot_v2.test.js
+  node --test scripts/test/execute_plan_scope_run.test.js
   node --test scripts/test/execute_plan_scenarios.test.js
   node --test scripts/test/execute_plan_status.test.js
   node --test scripts/test/execute_plan_observe.test.js

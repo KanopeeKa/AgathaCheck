@@ -182,6 +182,12 @@ function createGitHubClient(opts) {
 
     // Issues, comments, labels
     getIssue: (n) => rest('GET', `/issues/${n}`),
+    createIssue: ({ title, body, labels }) => rest('POST', '/issues', { body: { title, body, labels } }),
+    updateIssue: (n, { title, body, state, labels } = {}) => {
+      const patch = { title, body, state, labels };
+      for (const key of Object.keys(patch)) if (patch[key] === undefined) delete patch[key];
+      return rest('PATCH', `/issues/${n}`, { body: patch });
+    },
     closeIssue: (n) => rest('PATCH', `/issues/${n}`, { body: { state: 'closed' } }),
     listIssueComments: (n, { pages } = {}) => paginate(`/issues/${n}/comments`, { pages }),
     createComment: (n, body) => rest('POST', `/issues/${n}/comments`, { body: { body } }),
@@ -189,6 +195,12 @@ function createGitHubClient(opts) {
     addLabels: (n, labels) => rest('POST', `/issues/${n}/labels`, { body: { labels } }),
     async removeLabel(n, label) {
       await rest('DELETE', `/issues/${n}/labels/${enc(label)}`, { nullOn404: true });
+    },
+    /** Issues only (items carrying `pull_request` are dropped); `labels` is an array joined with commas. */
+    async listIssues({ labels, state = 'open', pages } = {}) {
+      const query = { state, labels: Array.isArray(labels) ? labels.join(',') : labels };
+      const items = await paginate('/issues', { pages, query });
+      return items.filter((item) => !item.pull_request);
     },
     listIssueTimeline: (n, { pages } = {}) => paginate(`/issues/${n}/timeline`, { pages }),
 

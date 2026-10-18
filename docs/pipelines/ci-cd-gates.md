@@ -3,7 +3,7 @@ title: CI/CD gates
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-10-04
+last_updated: 2026-10-16
 tags: [ci, gates, pipeline]
 ---
 # CI/CD gate contract
@@ -362,6 +362,7 @@ wait for one green **CI** run — GitHub only lists checks that have reported at
 |----------------|----------|----------|
 | `Governance hints (advisory)` | `pr-governance-hints.yml` | PR comment only; does not block merge |
 | `Forbidden path check` | `agent-pr-safety-gate.yml` | **Blocks** PRs from `cursor/*` branches that touch forbidden paths (migrations, `server/config/security.js`, `infra/`, auth/billing/secrets routes). Workflow edits under `.github/workflows/` are allowed when paired with gate doc updates. Human branches unaffected |
+| `execute-plan-scope` | `execute-plan-scope.yml` (`pull_request_target`, job `scope-runner`; check run created via the Checks API with `GITHUB_TOKEN`, app `github-actions`) | Execute-plan v2 PRs only (`cursor/<plan_id>-p<n>`, `-sync-<n>`, `-remedial-<n>`, integration → `main`): every changed file must fit the approved snapshot scope (no protected, forbidden or unclassified paths; plan files unchanged except on the release PR; at most 5 companions); red `plan-stopped` once the plan is stopped. Other PRs get a green `ok`. Runs trusted `main` code only. **Advisory until WP8**, then required on `main` and on integration branches (pinned to the GitHub Actions app). Logic: `scripts/lib/execute_plan_scope_run.js`; spec: [execute-plan-v2](../agent-efficiency/plans/execute-plan-v2.md) |
 
 ---
 

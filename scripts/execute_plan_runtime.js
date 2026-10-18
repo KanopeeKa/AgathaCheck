@@ -77,6 +77,7 @@ Commands:
   set-project-status <plan_id> --status <name> [--issue N]
   complete-plan <plan_id> [--write] [--skip-close] [--post-comment]
   init <plan_id> [--window-days N] [--dry-run]
+  check-diff --pr <n> [--repo owner/name] [--publish]
   tick <plan_id> [--issue N] [--json] [--actor agent|driver] [--dry-run]
   watch-ci <plan_id> --pr <n> [--timeout-min 25]
   watch-preuat <plan_id> [--issue N] [--timeout-min 90]   (v2)
@@ -124,7 +125,7 @@ function main() {
   const planId = positional[1];
   if (!cmd) usage();
 
-  const asyncCmds = new Set(['set-project-status', 'complete-plan', 'init', 'tick', 'watch-ci', 'watch-preuat', 'watch-deploy']);
+  const asyncCmds = new Set(['set-project-status', 'complete-plan', 'init', 'check-diff', 'tick', 'watch-ci', 'watch-preuat', 'watch-deploy']);
   if (asyncCmds.has(cmd)) {
     runAsync(cmd, planId, flags).catch((e) => {
       fail(e.message, e.exitCode || 1);
@@ -420,6 +421,10 @@ async function runAsync(cmd, planId, flags) {
       await require('./lib/execute_plan_init').cliInit(planId, flags);
       break;
     }
+
+    case 'check-diff':
+      await require('./lib/execute_plan_scope_run').cliCheckDiff(flags);
+      break;
 
     case 'tick': {
       if (!planId) usage();
