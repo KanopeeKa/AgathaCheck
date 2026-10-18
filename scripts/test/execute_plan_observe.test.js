@@ -145,6 +145,7 @@ test('loadPlanContext: errors exit 3 and status must be the bot\'s', async () =>
   const noSnap = setup({ [`GET /repos/o/r/contents/.agents/plans/${PLAN_ID}.snapshot.json?ref=${STATUS.init_sha}`]: { status: 404, body: {} } });
   await assert.rejects(loadPlanContext(noSnap.client, { planId: PLAN_ID, controlIssue: 9 }), (e) => e.exitCode === 3);
   const noIssue = setup();
+  noIssue.client.listIssues = undefined; // simulate a client without label search (the real one has it since WP7a)
   await assert.rejects(loadPlanContext(noIssue.client, { planId: PLAN_ID }), (e) => e.exitCode === 3 && /--issue/.test(e.message));
 });
 

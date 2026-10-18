@@ -95,6 +95,9 @@ jobs:
         working-directory: flutter_app
         run: node --test scripts/test/domain_coverage.fixture.mjs
 
+      - name: Execute-plan runtime tests
+        run: node --test scripts/execute_plan_runtime.test.js scripts/test/execute_plan_*.test.js
+
       - name: CI gate assertion tests
         run: node --test scripts/ci/assert-ci-gate.test.js
 
