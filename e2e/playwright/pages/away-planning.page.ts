@@ -309,6 +309,24 @@ export class AwayPlanningPage {
     await this.expandAllPlannedCareIfCollapsed();
   }
 
+  async expectPetCareSectionForPet(petId: string): Promise<void> {
+    await expect(async () => {
+      await this.waitForPetCareCoverageReady();
+      await refreshFlutterAccessibility(this.page);
+      await expect(
+        this.page.locator(`[data-flutter-key="away_plan_pet_care_${petId}"]`),
+      ).toBeVisible();
+    }).toPass({ timeout: 60_000 });
+  }
+
+  async expectCareItemNamedOnPlan(name: string): Promise<void> {
+    await expect(async () => {
+      await this.waitForPetCareCoverageReady();
+      await refreshFlutterAccessibility(this.page);
+      await expect(this.page.getByText(name, { exact: false }).first()).toBeVisible();
+    }).toPass({ timeout: 60_000 });
+  }
+
   private async expandAllPlannedCareIfCollapsed(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
     const expandTile = this.page

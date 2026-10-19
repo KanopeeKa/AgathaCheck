@@ -123,7 +123,8 @@ test.describe('Away care planning display', () => {
 
     const away = new AwayPlanningPage(page);
     await away.openPlan(absence.id);
-    await expect(page.getByText('Weekly Grooming').first()).toBeVisible();
+    await away.expectPetCareSectionForPet(pet.id);
+    await away.expectCareItemNamedOnPlan('Weekly Grooming');
     await away.revealAllPlannedCareSchedule();
     await expect(page.getByText(/Estimated:|Estimé:/i).first()).toBeVisible({
       timeout: 45_000,
