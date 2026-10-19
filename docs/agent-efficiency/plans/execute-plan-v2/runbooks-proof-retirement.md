@@ -27,9 +27,11 @@ owned by another personal account (`owner.type = User`, live read), so this is t
 3. Bot account → Settings → Developer settings → Personal access tokens (classic) → scopes:
    **`repo` only** (no `workflow`, no `admin:*`); expiry 90 days; put the renewal date in a calendar.
 4. Repo → Settings → Secrets and variables → Actions → secret `EXECUTE_PLAN_BOT_TOKEN` = that token.
-5. **At WP8, not before:** Cursor → Cloud Agents → Secrets: set `GH_TOKEN` to the same token
-   (replacing your own) so workers act as the bot. Keep `cursor_api_key` as it is. This applies to
-   every Cursor cloud agent on the repo, so their PRs and comments then appear as the bot.
+5. **Do not change the Cursor `GH_TOKEN`** (it is the owner's identity for all Cursor work). Plan
+   workers act as the bot because the driver passes `GH_TOKEN` and `EXECUTE_PLAN_TOKEN` (the bot
+   token) in the launch request (`envVars` take precedence over dashboard secrets). The only other
+   place the bot token goes in Cursor is a **temporary** secret named `BOT_GH_TOKEN` for WP8
+   (set it before WP8, delete it after). Keep `cursor_api_key` as it is.
 6. Verify from any shell with the token in `T`:
    - `curl -s -H "Authorization: Bearer $T" https://api.github.com/user | jq -r .login` → the bot login.
    - Pushing a branch that edits `.github/workflows/actionlint.yml` with this token is rejected
