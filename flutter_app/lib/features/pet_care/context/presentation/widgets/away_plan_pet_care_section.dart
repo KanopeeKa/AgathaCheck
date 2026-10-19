@@ -307,7 +307,6 @@ class _PlannedCareScheduleBlock extends StatelessWidget {
       key: const Key('away_plan_planned_care_expand'),
       initiallyExpanded: initiallyExpanded,
       title: Semantics(
-        button: true,
         identifier: 'away_plan_planned_care_expand',
         label: l.careContextAwayPlannedCareExpand,
         child: Text(

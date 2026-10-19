@@ -293,33 +293,42 @@ export class AwayPlanningPage {
     return bySemantics;
   }
 
+  private async waitForPetCareCoverageReady(): Promise<void> {
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await expect(
+        this.page.getByText(/Loading care preview|Chargement de l'aperçu/i),
+      ).toHaveCount(0);
+    }).toPass({ timeout: 60_000 });
+  }
+
   /** When a care review queue is present, planned care lives under a collapsed tile (D-009). */
   private async expandAllPlannedCareIfCollapsed(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
-    const label = /All planned care|Tous les soins prévus/i;
-    const bySemantics = semanticsKey(this.page, 'away_plan_planned_care_expand');
-    const byButton = this.page.getByRole('button', { name: label }).first();
-    const byText = this.page.getByText(label).first();
-    if (await bySemantics.isVisible().catch(() => false)) {
-      await bySemantics.click();
-    } else if (await byButton.isVisible().catch(() => false)) {
-      await byButton.click();
-    } else if (await byText.isVisible().catch(() => false)) {
-      await byText.click();
+    const expandTile = this.page
+      .locator('[data-flutter-key="away_plan_planned_care_expand"]')
+      .or(semanticsKey(this.page, 'away_plan_planned_care_expand'))
+      .or(this.page.getByRole('button', { name: /All planned care|Tous les soins prévus/i }));
+    if ((await expandTile.count()) === 0) {
+      return;
     }
-    await refreshFlutterAccessibility(this.page);
+    const tile = expandTile.first();
+    await tile.scrollIntoViewIfNeeded();
+    const expanded = await tile.getAttribute('aria-expanded');
+    if (expanded !== 'true') {
+      await tile.click();
+      await refreshFlutterAccessibility(this.page);
+    }
   }
 
   private async ensurePlannedCareRowAccessible(entryId: string, entryName?: string): Promise<void> {
+    await this.waitForPetCareCoverageReady();
     await refreshFlutterAccessibility(this.page);
-    const row = this.plannedCareRow(entryId, entryName);
-    const visible = await row
-      .first()
-      .isVisible()
-      .catch(() => false);
-    if (!visible) {
-      await this.expandAllPlannedCareIfCollapsed();
+    const row = this.plannedCareRow(entryId, entryName).first();
+    if (await row.isVisible().catch(() => false)) {
+      return;
     }
+    await this.expandAllPlannedCareIfCollapsed();
   }
 
   async expectPlannedCareItemRow(entryId: string, entryName?: string): Promise<void> {
@@ -430,6 +439,16 @@ export class AwayPlanningPage {
   }
 
   async openPlannedCareItem(entryId: string): Promise<void> {
+    await this.waitForPetCareCoverageReady();
+    await refreshFlutterAccessibility(this.page);
+    const reviewDates = semanticsKey(this.page, `away_plan_review_dates_${entryId}`).or(
+      this.page.locator(`[data-flutter-key="away_plan_review_dates_${entryId}"]`),
+    );
+    if (await reviewDates.first().isVisible().catch(() => false)) {
+      await reviewDates.first().click();
+      await refreshFlutterAccessibility(this.page);
+      return;
+    }
     await this.ensurePlannedCareRowAccessible(entryId);
     const row = semanticsKey(this.page, `away_plan_planned_care_${entryId}`);
     await expect(row).toBeVisible({ timeout: 30_000 });
