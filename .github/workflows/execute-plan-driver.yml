@@ -43,4 +43,10 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           EVENT_PATH: ${{ github.event_path }}
           INPUT_PLAN_ID: ${{ inputs.plan_id }}
-        run: node .github/scripts/execute-plan-driver.js
+        run: |
+          # Bootstrap: runs on PRs that add the driver check out `main`, which has no script until the merge.
+          if [ ! -f .github/scripts/execute-plan-driver.js ]; then
+            echo "execute-plan driver script is not on main yet; nothing to do"
+            exit 0
+          fi
+          node .github/scripts/execute-plan-driver.js
