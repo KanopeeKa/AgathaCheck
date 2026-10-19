@@ -28,7 +28,7 @@ Anything still unverified is a **VERIFY** with a decision for each outcome.
 
 **Round 3 (owner Phase 0 decisions, 2026-10-15):** launches per phase 5 (cap 6); daily launches 20
 (cap 30) and the daily cap waits instead of stopping; bot account `pawpet-bot` created with the repo
-secret; the Cursor `GH_TOKEN` switch moves to WP8 (it affects every Cursor cloud agent on the repo);
+secret; the owner's Cursor `GH_TOKEN` stays untouched (a global switch would turn every Cursor agent into the bot): the driver passes the bot token to plan workers at launch (`envVars`), and WP8 uses a temporary, separately named secret `BOT_GH_TOKEN`;
 runbook §7.1 corrected for personal-account repos (no collaborator role picker). All other Phase 0
 defaults confirmed.
 
@@ -139,7 +139,7 @@ comment on the draft PR with the command and its output, and end the session.
 
 | Decision | Default | Where it lands |
 |----------|---------|----------------|
-| Identity | Machine user **`pawpet-bot`** (created; collaborator with write), classic PAT `repo` scope, **no** `workflow`; repo secret `EXECUTE_PLAN_BOT_TOKEN` (set); Cursor cloud secret `GH_TOKEN` switched to the bot token **at WP8**, not before | runbooks §7.1 |
+| Identity | Machine user **`pawpet-bot`** (created; collaborator with write), classic PAT `repo` scope, **no** `workflow`; repo secret `EXECUTE_PLAN_BOT_TOKEN` (set); owner's own Cursor `GH_TOKEN` is **not** changed: plan workers get the bot token from the driver at launch; WP8 uses a temporary Cursor secret `BOT_GH_TOKEN` | runbooks §7.1 |
 | Owners | `["KanopeeKa"]` | config `owners` |
 | Window | default 7 days, cap 14 | `V2_DEFAULTS` / `V2_CAPS` |
 | Budgets | CI attempts 3 per PR, launches **5** per phase (cap 6), remedial 3, sync resolves 2, daily launches **20** per plan (cap 30) — reaching the daily cap **waits** until the next UTC day, it never stops the plan | snapshot `settings.budgets` (≤ caps) |
@@ -154,7 +154,7 @@ comment on the draft PR with the command and its output, and end the session.
 ## Order and hand-off points
 
 ```
-Phase 0 decisions ✔ → §7.1 identity + repo secret ✔ (Cursor GH_TOKEN switch waits for WP8)
+Phase 0 decisions ✔ → §7.1 identity + repo secret ✔ (Cursor `GH_TOKEN` stays the owner's)
 WP1 client ─┐                          WP7c Cursor launch adapter (parallel, Cursor)
 WP2 scope ──┼→ WP3 approval/init → WP4a decide → WP4b tick → WP5 UAT
             │                                                   ↓

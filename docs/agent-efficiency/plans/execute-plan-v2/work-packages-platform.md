@@ -381,8 +381,8 @@ async function getAgentRunStatus({ apiKey, agentId, runId, fetchImpl })
    No or unclear → send `false` and append to the prompt: "Commit to branch `<branch>`; push with
    `git push origin HEAD:<branch>`; never create another branch." Record the answer in the PR body.
 4. **VERIFY (Cursor docs/dashboard, decision):** a Cloud Agent launched through the API receives the
-   repo's cloud secrets (such as `GH_TOKEN`). Yes → nothing to do. No → stop and report: workers
-   would not act as the bot. (The owner switches `GH_TOKEN` to the bot token only at WP8 step 0.)
+   repo's cloud secrets. Yes → nothing to do. (Plan workers get the bot token through `envVars` at
+   launch, not through a dashboard secret; WP7b passes it.)
 
 **Tests:** `launch request body matches the contract`, `launch returns ids from the response`,
 `status maps RUNNING`, `status error → UNKNOWN` (fake fetch).
@@ -391,12 +391,14 @@ async function getAgentRunStatus({ apiKey, agentId, runId, fetchImpl })
 
 ## WP8 — Rulesets and live verification
 
-**Depends on:** WP7b merged, identity in place (runbooks §7.1), driver in `dry-run` · **Recommended executor:** Cursor (its `GH_TOKEN` is the bot, which some checks need) with the owner
+**Depends on:** WP7b merged, identity in place (runbooks §7.1), driver in `dry-run` · **Recommended executor:** Cursor (using the temporary secret `BOT_GH_TOKEN`, which some checks need) with the owner
 
 Each step is a decision; on any unexpected outcome, stop and report.
-0. **Owner, before starting WP8:** Cursor → Cloud Agents → Secrets → set `GH_TOKEN` to the
-   `pawpet-bot` token (runbooks §7.1 step 5). Then launch the WP8 agent; its first command
-   `curl -s -H "Authorization: Bearer $GH_TOKEN" https://api.github.com/user` must print `pawpet-bot`.
+0. **Owner, before starting WP8:** Cursor → Cloud Agents → Secrets → add a **new** secret named
+   `BOT_GH_TOKEN` with the `pawpet-bot` token (do not touch `GH_TOKEN`). The WP8 agent runs every
+   bot action as `GH_TOKEN="$BOT_GH_TOKEN" gh ...` / `curl -H "Authorization: Bearer $BOT_GH_TOKEN"`.
+   Its first command, `curl -s -H "Authorization: Bearer $BOT_GH_TOKEN" https://api.github.com/user`,
+   must print `pawpet-bot`. After WP8 the owner deletes `BOT_GH_TOKEN`.
 1. **Check placement.** Open a probe PR with the bot token from `cursor/execute-plan-v2-probe-<4>`
    (one whitespace change in `docs/agent-efficiency/plans/README.md`) into `main`.
    Expected: a check run named `execute-plan-scope`, app `github-actions`, conclusion `success`,
