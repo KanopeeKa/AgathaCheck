@@ -4,8 +4,8 @@
   "approved_at": "2026-10-18T21:00:00Z",
   "approved_by": "user-chat-2026-10-18-d008-amendment-approved-execute-plan",
   "approved_until": "2026-10-20T21:00:00Z",
-  "content_hash": "sha256:c98c843063fe6e922848e8135fb77b2fc2ccfd3db568df7d1ec75e4ac0bd807f",
-  "autonomy": "active",
+  "content_hash": "sha256:cf27baca6d59f1d37f285e0e71d493c1216dd9d4a092449930761c0bf03bf5d6",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "cursor/away-plan-care-review-ux-integration-a227",
   "control_issue": 1917,
@@ -34,13 +34,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1919",
+      "pr_head_sha": "a945aab007a9343eee804600479fb1ca2c5ffbd2"
     },
     {
       "id": "acr-1",
@@ -68,13 +67,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1919",
+      "pr_head_sha": "a945aab007a9343eee804600479fb1ca2c5ffbd2"
     },
     {
       "id": "acr-2",
@@ -101,13 +99,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1919",
+      "pr_head_sha": "a945aab007a9343eee804600479fb1ca2c5ffbd2"
     },
     {
       "id": "acr-3",
@@ -133,13 +130,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1919",
+      "pr_head_sha": "a945aab007a9343eee804600479fb1ca2c5ffbd2"
     },
     {
       "id": "acr-4",
@@ -165,13 +161,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1919",
+      "pr_head_sha": "a945aab007a9343eee804600479fb1ca2c5ffbd2"
     },
     {
       "id": "acr-5",
@@ -197,13 +192,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/1919",
+      "pr_head_sha": "a945aab007a9343eee804600479fb1ca2c5ffbd2"
     }
   ]
 }

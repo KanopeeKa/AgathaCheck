@@ -15,10 +15,9 @@ plan_id: away-plan-care-review-ux
 
 ## Goal
 
-Stop enumerating care occurrences before an absence is saved; after save, show a per-pet **care-item review queue** with in-trip date counts, **Review dates**, and bulk **Keep with carer**—aligned with frozen decisions **CARE-CONTEXT-D-004 … D-009** in the delivery plan.
+Stop enumerating care occurrences before an absence is saved; after save, show a per-pet **care-item review queue** with in-trip date counts, **Review dates**, and bulk **Keep with carer**—aligned with frozen decisions **CARE-CONTEXT-D-004 … D-009** in `care-context.md`.
 
-**Delivery plan:** `docs/domains/pet_care/changes/away-plan-care-review-delivery-plan.md`
-**Canonical docs (acr-5):** `docs/domains/pet_care/features/care-context.md`
+**Canonical docs:** `docs/domains/pet_care/features/care-context.md` (delivery plan folded 2026-10-18)
 **Related:** `care-item-evolution.md` (Review date / occurrence review), `away-plan-detail-v2` (planned_care_items)
 
 ## Autonomy
@@ -197,3 +196,22 @@ flutter_app/test/bdd/features/away_planning.feature
 ```
 
 Flutter phases: `cd flutter_app && flutter analyze --no-fatal-warnings --no-fatal-infos` and targeted `flutter test`.
+
+## Runtime state
+
+```yaml
+autonomy: completed
+current_phase: null
+last_completed_phase: acr-5
+halt_reason: null
+next_action: "plan complete"
+artifact_ref:
+  branch: cursor/away-plan-care-review-complete-a227
+  plan_path: .agents/plans/away-plan-care-review-ux.md
+  plan_commit: a945aab007a9343eee804600479fb1ca2c5ffbd2
+  snapshot_path: .agents/plans/away-plan-care-review-ux.snapshot.json
+  snapshot_commit: a945aab007a9343eee804600479fb1ca2c5ffbd2
+open_prs: []
+merge_commits: {}
+debt_issue_refs: []
+```
