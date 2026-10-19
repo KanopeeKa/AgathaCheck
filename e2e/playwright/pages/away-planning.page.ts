@@ -303,6 +303,12 @@ export class AwayPlanningPage {
   }
 
   /** When a care review queue is present, planned care lives under a collapsed tile (D-009). */
+  /** Expands **All planned care** when the review queue collapsed the schedule (D-009). */
+  async revealAllPlannedCareSchedule(): Promise<void> {
+    await this.waitForPetCareCoverageReady();
+    await this.expandAllPlannedCareIfCollapsed();
+  }
+
   private async expandAllPlannedCareIfCollapsed(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
     const expandTile = this.page
@@ -317,6 +323,14 @@ export class AwayPlanningPage {
     const expanded = await tile.getAttribute('aria-expanded');
     if (expanded !== 'true') {
       await tile.click();
+      if ((await tile.getAttribute('aria-expanded')) !== 'true') {
+        const box = await tile.boundingBox();
+        if (box) {
+          await this.page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+        }
+        await tile.focus().catch(() => {});
+        await this.page.keyboard.press('Enter');
+      }
       await refreshFlutterAccessibility(this.page);
     }
   }
@@ -381,6 +395,7 @@ export class AwayPlanningPage {
   async expectPlannedCareRowShowsEstimated(entryId: string, entryName: string): Promise<void> {
     await expect(async () => {
       await this.ensurePlannedCareRowAccessible(entryId, entryName);
+      await this.expandAllPlannedCareIfCollapsed();
       const row = this.plannedCareRow(entryId, entryName);
       await expect(row).toBeVisible();
       await expect(row).toContainText(/Estimated:|Estimé:/i);
