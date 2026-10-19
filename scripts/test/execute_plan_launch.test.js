@@ -56,6 +56,23 @@ test('launch request body matches the contract', async () => {
   assert.deepEqual(capturedBody.model, { id: 'composer-2.5' });
 });
 
+test('launch sends envVars in the request body when given, and omits them otherwise', async () => {
+  const bodies = [];
+  const fetchImpl = fakeFetch({
+    '/v1/agents': async (_path, options) => {
+      bodies.push(JSON.parse(options.body));
+      return { ok: true, text: async () => JSON.stringify({ agent: { id: 'a' }, run: { id: 'r' } }) };
+    },
+  });
+  const base = { apiKey: API_KEY, repoUrl: REPO_URL, startingRef: STARTING_REF, prompt: 'p', fetchImpl };
+  await launchPlanAgent({ ...base, envVars: { GH_TOKEN: 't', EXECUTE_PLAN_TOKEN: 't' } });
+  await launchPlanAgent(base);
+  await launchPlanAgent({ ...base, envVars: {} });
+  assert.deepEqual(bodies[0].envVars, { GH_TOKEN: 't', EXECUTE_PLAN_TOKEN: 't' });
+  assert.equal('envVars' in bodies[1], false);
+  assert.equal('envVars' in bodies[2], false);
+});
+
 test('launch omits model when not provided', async () => {
   let capturedBody;
   const fetchImpl = fakeFetch({

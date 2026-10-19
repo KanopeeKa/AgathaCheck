@@ -24,7 +24,7 @@ function makeClients(env, killSwitch) {
   const read = createGitHubClient({ repo, token: env.GITHUB_TOKEN });
   const botToken = env.EXECUTE_PLAN_BOT_TOKEN || (killSwitch === 'dry-run' ? env.GITHUB_TOKEN : null);
   if (!botToken) throw new Error('EXECUTE_PLAN_BOT_TOKEN is not set');
-  return { bot: createGitHubClient({ repo, token: botToken }), read, cursorApiKey: env.CURSOR_API_KEY || null };
+  return { bot: createGitHubClient({ repo, token: botToken }), read, cursorApiKey: env.CURSOR_API_KEY || null, botToken: env.EXECUTE_PLAN_BOT_TOKEN || null };
 }
 
 async function main(env = process.env) {

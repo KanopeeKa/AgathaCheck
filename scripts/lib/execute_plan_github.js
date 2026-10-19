@@ -180,6 +180,9 @@ function createGitHubClient(opts) {
   return {
     repo,
 
+    /** The account the token belongs to (`GET /user`). */
+    getAuthenticatedUser: async () => (await send('GET', '/user')).data,
+
     // Issues, comments, labels
     getIssue: (n) => rest('GET', `/issues/${n}`),
     createIssue: ({ title, body, labels }) => rest('POST', '/issues', { body: { title, body, labels } }),

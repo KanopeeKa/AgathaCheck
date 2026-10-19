@@ -48,9 +48,22 @@ async function maybeObserveUat(client, ctx, obs, now) {
   return typeof uatModule.observeUat === 'function' ? uatModule.observeUat(client, ctx, obs, { now }) : null;
 }
 
+/**
+ * A worker must act as the bot: with the owner's token it could post a valid approval. Fails closed
+ * (exit 3, nothing written) when the launch-time token handoff did not take effect.
+ */
+async function assertWorkerIsBot(client, config) {
+  const me = await client.getAuthenticatedUser();
+  const login = me && me.login;
+  if (login !== config.bot_login) {
+    throw configError(`worker token belongs to ${login || 'unknown'}, not ${config.bot_login}: refusing to tick`);
+  }
+}
+
 /** @returns {Promise<object>} contracts §3.7 output (plus `writes` on dry-run) */
 async function tick(client, { planId, controlIssue, now = isoNow(), actor = 'agent', lease, dryRun = false, sleep } = {}) {
   const ctx = await loadPlanContext(client, { planId, controlIssue });
+  if (actor === 'agent') await assertWorkerIsBot(client, ctx.config);
   const obs = await observe(client, ctx, { now, sleep });
   obs.uat = await maybeObserveUat(client, ctx, obs, now);
   const opts = { actor, lease: lease === undefined ? (actor === 'agent' ? { status: 'UNKNOWN' } : null) : lease, now, config: ctx.config, repo: client.repo };

@@ -55,6 +55,9 @@ async function cursorApi(fetchImpl, method, path, apiKey, body) {
  * @param {string} params.startingRef
  * @param {string} params.prompt
  * @param {string} [params.model]
+ * @param {Record<string,string>} [params.envVars] values for the agent's environment, sent in the launch request
+ *   (Cursor: take precedence over dashboard secrets). Never logged. Field name/shape unverified against the
+ *   official docs (unreachable when written): kept as an object of string -> string.
  * @param {typeof fetch} [params.fetchImpl]
  * @returns {Promise<{ agentId: string, runId: string, agentUrl: string|null }>}
  */
@@ -64,6 +67,7 @@ async function launchPlanAgent({
   startingRef,
   prompt,
   model,
+  envVars,
   fetchImpl,
 }) {
   const fetchFn = resolveFetch(fetchImpl);
@@ -77,6 +81,9 @@ async function launchPlanAgent({
 
   if (model) {
     body.model = { id: model };
+  }
+  if (envVars && Object.keys(envVars).length > 0) {
+    body.envVars = envVars;
   }
 
   const launched = await cursorApi(fetchFn, 'POST', '/v1/agents', apiKey, body);

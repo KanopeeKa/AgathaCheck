@@ -76,7 +76,7 @@ function harness(opts = {}, tickResult, extra = {}) {
     publishScopeCheck: async (c, a) => { seen.scope.push({ client: c.name, ...a }); },
     completePlan: async () => ({ complete: true }),
   };
-  return { bot, read, seen, clients: { bot, read, cursorApiKey: extra.noKey ? null : 'key', deps }, log: [] };
+  return { bot, read, seen, clients: { bot, read, cursorApiKey: extra.noKey ? null : 'key', botToken: extra.noBotToken ? null : 'bot-secret-token', deps }, log: [] };
 }
 const drive = (h, over = {}) => runDriverPass(h.clients, { planId: PLAN_ID, now: NOW, killSwitch: 'on', log: (l) => h.log.push(l), ...over });
 const driverAction = (kind, args) => ({ action: { actor: 'driver', kind, launch: false, args } });
@@ -212,6 +212,26 @@ test('launch: starts the worker on the action branch, records launch and lease',
   const status = h.bot.statusNow();
   assert.deepEqual(status.launches, [{ at: NOW, phase: '1', kind: 'implement', agent_id: 'bc-1', run_id: 'run-1' }]);
   assert.deepEqual(status.lease, { platform: 'cursor', agent_id: 'bc-1', run_id: 'run-1', launched_at: NOW, last_tick_at: NOW });
+});
+
+test('launch: the worker gets the bot token in envVars, and the token is never logged', async () => {
+  const h = harness({}, agentAction('implement', { phase: '1', branch: 'b', base: 'i' }, { phase: '1' }));
+  await drive(h);
+  assert.deepEqual(h.seen.launch[0].envVars, { GH_TOKEN: 'bot-secret-token', EXECUTE_PLAN_TOKEN: 'bot-secret-token' });
+  assert.ok(!h.log.join('\n').includes('bot-secret-token'));
+  assert.ok(!h.seen.launch[0].prompt.includes('bot-secret-token'));
+});
+
+test('launch: no bot token → refuses to launch', async () => {
+  const h = harness({}, agentAction('implement', { phase: '1', branch: 'b', base: 'i' }, { phase: '1' }), { noBotToken: true });
+  await assert.rejects(drive(h), /EXECUTE_PLAN_BOT_TOKEN/);
+  assert.equal(h.seen.launch.length, 0);
+});
+
+test('dry-run never launches, even with a bot token', async () => {
+  const h = harness({}, agentAction('implement', { phase: '1', branch: 'b', base: 'i' }, { phase: '1' }));
+  await drive(h, { killSwitch: 'dry-run' });
+  assert.equal(h.seen.launch.length, 0);
 });
 
 test('launch: fix actions use the fix model; release-level work counts under "release"', async () => {
