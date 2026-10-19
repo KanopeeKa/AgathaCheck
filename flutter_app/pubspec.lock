@@ -841,10 +841,10 @@ packages:
     dependency: "direct main"
     description:
       name: purchases_ui_flutter
-      sha256: "3749b18811c4fe04d0a2771d6e3a7529857429a60fbdd0b6e21f7366f2323118"
+      sha256: ece131fa4123e137593764953a5e87abe03dcaadd89407c663f6a1d328050569
       url: "https://pub.dev"
     source: hosted
-    version: "10.15.2"
+    version: "10.16.0"
   qr:
     dependency: transitive
     description:
