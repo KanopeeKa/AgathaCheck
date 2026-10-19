@@ -1,0 +1,23 @@
+{
+  "name": "tag exists, no deploy yet → wait deploy",
+  "rule": "U5",
+  "snapshot_patch": {},
+  "observations_patch": {
+    "uat": {
+      "deploy_runs": []
+    }
+  },
+  "opts": {
+    "actor": "driver",
+    "lease": null,
+    "now": "2026-10-17T12:00:00Z"
+  },
+  "expected": {
+    "stop": null,
+    "state": "awaiting-deploy",
+    "actor": "driver",
+    "kind": "wait",
+    "launch": false,
+    "reason": "deploy"
+  }
+}

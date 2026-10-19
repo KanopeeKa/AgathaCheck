@@ -1,0 +1,35 @@
+{
+  "name": "code failure in smoke → remedial",
+  "rule": "U7",
+  "snapshot_patch": {},
+  "observations_patch": {
+    "uat": {
+      "deploy_runs": [
+        {
+          "id": 601,
+          "created_at": "2026-10-17T09:12:00Z",
+          "status": "completed",
+          "conclusion": "failure",
+          "proof_job": "failure",
+          "deploy_job": "success",
+          "smoke_job": "failure",
+          "deploy_ref": "uat-261017-1960",
+          "deploy_ref_contains_merge": true,
+          "gate_failure_class": "code"
+        }
+      ]
+    }
+  },
+  "opts": {
+    "actor": "driver",
+    "lease": null,
+    "now": "2026-10-17T12:00:00Z"
+  },
+  "expected": {
+    "stop": null,
+    "state": "remedial",
+    "actor": "agent",
+    "kind": "remedial",
+    "launch": true
+  }
+}

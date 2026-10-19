@@ -1,0 +1,36 @@
+{
+  "name": "deploy run concluded success with every job skipped → wait deploy",
+  "rule": "U5",
+  "snapshot_patch": {},
+  "observations_patch": {
+    "uat": {
+      "deploy_runs": [
+        {
+          "id": 602,
+          "created_at": "2026-10-17T09:12:00Z",
+          "status": "completed",
+          "conclusion": "success",
+          "proof_job": "skipped",
+          "deploy_job": "skipped",
+          "smoke_job": "skipped",
+          "deploy_ref": null,
+          "deploy_ref_contains_merge": false,
+          "gate_failure_class": null
+        }
+      ]
+    }
+  },
+  "opts": {
+    "actor": "driver",
+    "lease": null,
+    "now": "2026-10-17T12:00:00Z"
+  },
+  "expected": {
+    "stop": null,
+    "state": "awaiting-deploy",
+    "actor": "driver",
+    "kind": "wait",
+    "launch": false,
+    "reason": "deploy"
+  }
+}

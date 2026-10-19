@@ -47,7 +47,7 @@ A declared absence does not create HealthEntries, alter Care Status, change recu
 | CARE-CONTEXT-R-006 | `title` on wire; display title primary, dates secondary; surfaces: hub tile, dashboard tile, plan summary, handover PDF, carer invite preview; Care Item Absence sections use date range only (CARE-CONTEXT-D-001) | Live |
 | CARE-CONTEXT-R-007 | Plan page summary card (title, dates, notes preview) with local Edit; no app-bar edit or duplicate details blocks (CARE-CONTEXT-D-001) | Live |
 | CARE-CONTEXT-R-008 | Full-screen trip details: title, dates, notes, delete (cancel); V1 edit excludes pets; date-change confirms cover carer window and plan review (CARE-CONTEXT-D-001) | Live |
-| CARE-CONTEXT-R-009 | Create uses single CRUD form with inline care preview — not a step wizard (CARE-CONTEXT-D-001) | Live |
+| CARE-CONTEXT-R-009 | Create uses single CRUD form with inline care **reassurance** only (no care/date enumeration before save) — not a step wizard (CARE-CONTEXT-D-001, D-004) | Live |
 | CARE-CONTEXT-R-010 | Absence-wide notes labelled **Notes** (`handover_note`); per-pet notes stay in carer dialog (CARE-CONTEXT-D-001) | Live |
 | CARE-CONTEXT-R-011 | Projection: `starts_on <= scheduled_date <= ends_on`; materialised occurrences win; default anchor `from_completion` → indeterminate tail; `projection_status` + `uncertainties[]` on wire | Live |
 | CARE-CONTEXT-R-012 | `nothing_scheduled` only when projection `complete` and zero items; partially indeterminate forbids global reassurance (D-AWAY-002) | Live |
@@ -55,12 +55,14 @@ A declared absence does not create HealthEntries, alter Care Status, change recu
 | CARE-CONTEXT-R-014 | No absence pointer on projection APIs; schedule facts via `explainGap(entry, fromDate?, toDate?)` only (D-AWAY-011) | Live |
 | CARE-CONTEXT-R-015 | Readiness: two facts at read time — carer coverage + care coverage — no single “prepared” verdict (D-AWAY-001, D-AWAY-002) | Live |
 | CARE-CONTEXT-R-016 | Plan header readiness attention-only: carer line only when not all pets have carers; care line only for `has_items_to_review` or indeterminate (D-AWD-001); PDF keeps both lines | Live |
-| CARE-CONTEXT-R-017 | `planned_care_items[]` one row per `health_entry_id` with `kind` discriminant; server sort; `items[]` flat list unchanged for counts/preview (D-AWD-002) | Live |
+| CARE-CONTEXT-R-017 | `planned_care_items[]` one row per `health_entry_id` with `kind` discriminant; server sort; `items[]` for projection only — away UI counts use care items (`review_queue` / `review_care_item_count`, D-005) (D-AWD-002) | Live |
 | CARE-CONTEXT-R-018 | Unified **Planned care** section; row tap → `/pet/:petId/events/:entryId` (D-AWD-004, D-AWD-005); pet header photo + profile link (D-AWD-006) | Live |
 | CARE-CONTEXT-R-019 | Away plan row contract R-A1–R-A9: open/overdue/pre-window rules, date_basis labels, section footnote for estimates, PDF parity, paused rows (see § Away plan display) | Live |
 | CARE-CONTEXT-R-020 | In-window list filter: include `in_window` rows; when `today >= S` include stale pre-`S` open work; exclude pre-window overdue while `today < S` (wire `pre_absence_overdue_attention`); PDF parity (CARE-CONTEXT-D-002) | Live |
 | CARE-CONTEXT-R-021 | No **Plan this** on away plan; flexible rows use **See options** → care item detail; inline Care Planner block removed from plan (CARE-CONTEXT-D-002) | Live |
 | CARE-CONTEXT-R-022 | Saving absence requires dates + pets only; carers, note, download optional (D-AWAY-010) | Live |
+| CARE-CONTEXT-R-023 | Saved plan: per-pet **Care to review** queue (care-item cards: title, in-trip impacted date count, Review dates, opt-in bulk select) before full schedule (D-004…D-009) | Live |
+| CARE-CONTEXT-R-024 | Optional `planned_absence_id` on care-period coverage loads `review_queue[]` and care-item review counts | Live |
 
 ## Planned absence model
 
@@ -208,6 +210,12 @@ Away planning chrome uses **away-context** plum tokens (`docs/design/tokens.md` 
 |----|----------|-----------|--------|------|-----|
 | CC-UI-D-001 | Away surfaces use away-context plum aliases, not Agatha teal or warm accent | User-declared trip vs Agatha suggestions | Live | 2026-10-08 | |
 | CARE-CONTEXT-D-003 | Declarer `todayIso` once per absence request; pet access before declarer TZ on care-period preview; undo audit uses undo result occurrence id | Programme 9100 phase 2 | Live | 2026-10-13 | |
+| CARE-CONTEXT-D-004 | No care/date enumeration on create before save; reassurance only | Away plan care review UX | Live | 2026-10-18 | |
+| CARE-CONTEXT-D-005 | Away “to review” counts = unresolved affected care items, not `items[]` rows | D-005 | Live | 2026-10-18 | |
+| CARE-CONTEXT-D-006 | Card impacted date count = in-trip pending dates only | D-006 | Live | 2026-10-18 | |
+| CARE-CONTEXT-D-007 | Review dates → care item with absence review entry | D-007 | Live | 2026-10-18 | |
+| CARE-CONTEXT-D-008 | Opt-in bulk mode; Select all/Clear; V1 bulk **Keep with carer** only (amendment approved 2026-10-18) | D-008 | Live | 2026-10-18 | |
+| CARE-CONTEXT-D-009 | Review queue before schedule; **All planned care** collapsed when queue non-empty | D-009 | Live | 2026-10-18 | |
 
 ## Related
 

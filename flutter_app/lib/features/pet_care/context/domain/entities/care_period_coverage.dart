@@ -193,18 +193,38 @@ class PlannedCareItem {
   }
 }
 
+class CareReviewQueueItem {
+  const CareReviewQueueItem({
+    required this.healthEntryId,
+    required this.name,
+    this.type,
+    this.careFamily,
+    required this.impactedDateCount,
+    required this.bulkKeepCarerEligible,
+  });
+
+  final String healthEntryId;
+  final String name;
+  final String? type;
+  final String? careFamily;
+  final int impactedDateCount;
+  final bool bulkKeepCarerEligible;
+}
+
 class CarePeriodCoverageSummary {
   const CarePeriodCoverageSummary({
     required this.policyVersion,
     required this.coverageState,
     required this.reasonCodes,
     required this.reassuranceAvailable,
+    this.reviewCareItemCount,
   });
 
   final String policyVersion;
   final CarePeriodCoverageState coverageState;
   final List<String> reasonCodes;
   final bool reassuranceAvailable;
+  final int? reviewCareItemCount;
 }
 
 class CarePeriodCoverageResult {
@@ -219,6 +239,7 @@ class CarePeriodCoverageResult {
       show: false,
       overdueCount: 0,
     ),
+    this.reviewQueue = const [],
   });
 
   final String startsOn;
@@ -228,6 +249,7 @@ class CarePeriodCoverageResult {
   final CarePeriodCoverageSummary coverage;
   final List<PlannedCareItem> plannedCareItems;
   final PreAbsenceOverdueAttention preAbsenceOverdueAttention;
+  final List<CareReviewQueueItem> reviewQueue;
 
   bool get isPartiallyIndeterminate =>
       projectionStatus == CarePeriodProjectionStatus.partiallyIndeterminate;

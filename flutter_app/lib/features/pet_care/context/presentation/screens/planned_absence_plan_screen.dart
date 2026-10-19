@@ -75,6 +75,7 @@ class PlannedAbsencePlanScreen extends ConsumerWidget {
                     petId: petId,
                     startsOn: absence.startsOn,
                     endsOn: absence.endsOn,
+                    plannedAbsenceId: absenceId,
                   )),
                 );
               }

@@ -1,0 +1,46 @@
+{
+  "name": "already dispatched for this head → wait preuat-dispatched",
+  "rule": "U2",
+  "snapshot_patch": {},
+  "observations_patch": {
+    "control": {
+      "status": {
+        "schema": 1,
+        "plan_id": "proof-build-label-7f3a",
+        "init_sha": "0f1e2d3c4b5a69788796a5b4c3d2e1f00f1e2d3c",
+        "state": "awaiting-preuat",
+        "phase": null,
+        "lease": null,
+        "launches": [],
+        "dispatched": {
+          "preuat_heads": [
+            "aaaa000000000000000000000000000000000001"
+          ],
+          "deploy_tags": []
+        },
+        "release": null,
+        "uat": null,
+        "stop": null,
+        "updated_at": "2026-10-17T08:00:00Z"
+      }
+    },
+    "uat": {
+      "preuat_runs": [],
+      "uat_tags": [],
+      "deploy_runs": []
+    }
+  },
+  "opts": {
+    "actor": "driver",
+    "lease": null,
+    "now": "2026-10-17T12:00:00Z"
+  },
+  "expected": {
+    "stop": null,
+    "state": "awaiting-preuat",
+    "actor": "driver",
+    "kind": "wait",
+    "launch": false,
+    "reason": "preuat-dispatched"
+  }
+}

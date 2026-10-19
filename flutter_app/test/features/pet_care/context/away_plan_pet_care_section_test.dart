@@ -59,6 +59,7 @@ void main() {
           petId: 'pet-1',
           startsOn: '2026-10-01',
           endsOn: '2026-10-05',
+          plannedAbsenceId: 'abs-1',
         )).overrideWith((ref) async => coverage),
       ],
       child: MaterialApp.router(
@@ -231,6 +232,7 @@ void main() {
               petId: 'pet-1',
               startsOn: '2026-10-01',
               endsOn: '2026-10-05',
+              plannedAbsenceId: 'abs-1',
             )).overrideWith(
               (ref) async => _coverage(
                 plannedCareItems: [
@@ -299,6 +301,7 @@ void main() {
               petId: 'pet-1',
               startsOn: '2026-10-01',
               endsOn: '2026-10-05',
+              plannedAbsenceId: 'abs-1',
             )).overrideWith(
               (ref) async => _coverage(
                 plannedCareItems: [

@@ -51,6 +51,7 @@ class AwayPlanHandoverController {
         petId: petId,
         startsOn: absence.startsOn,
         endsOn: absence.endsOn,
+        plannedAbsenceId: absence.id,
       );
       final petPeople = await ref.read(petPeopleProvider(petId).future);
       if (petPeople != null) {

@@ -80,6 +80,8 @@ Commands:
   check-diff --pr <n> [--repo owner/name] [--publish]
   tick <plan_id> [--issue N] [--json] [--actor agent|driver] [--dry-run]
   watch-ci <plan_id> --pr <n> [--timeout-min 25]
+  watch-preuat <plan_id> [--issue N] [--timeout-min 90]   (v2)
+  watch-deploy <plan_id> [--issue N] [--timeout-min 45]   (v2)
   roadmap-status <roadmap_id>
   roadmap-next-child <roadmap_id>
   roadmap-set-child <roadmap_id> --child <plan_id> --status <status> [--pr-url u] [--merge-commit sha] [--write]
@@ -123,7 +125,7 @@ function main() {
   const planId = positional[1];
   if (!cmd) usage();
 
-  const asyncCmds = new Set(['set-project-status', 'complete-plan', 'init', 'check-diff', 'tick', 'watch-ci']);
+  const asyncCmds = new Set(['set-project-status', 'complete-plan', 'init', 'check-diff', 'tick', 'watch-ci', 'watch-preuat', 'watch-deploy']);
   if (asyncCmds.has(cmd)) {
     runAsync(cmd, planId, flags).catch((e) => {
       fail(e.message, e.exitCode || 1);
@@ -436,8 +438,24 @@ async function runAsync(cmd, planId, flags) {
       break;
     }
 
+    case 'watch-preuat': {
+      if (!planId) usage();
+      await require('./lib/execute_plan_tick').cliWatchPreUat(planId, flags);
+      break;
+    }
+
+    case 'watch-deploy': {
+      if (!planId) usage();
+      await require('./lib/execute_plan_tick').cliWatchDeploy(planId, flags);
+      break;
+    }
+
     case 'complete-plan': {
       if (!planId) usage();
+      if (isV2Plan(planId)) {
+        await require('./lib/execute_plan_tick').cliCompletePlan(planId, flags);
+        break;
+      }
       const snapshot = loadSnapshot(planId);
       validateSnapshot(snapshot);
       setAutonomyCompleted(snapshot);
@@ -496,6 +514,15 @@ async function runAsync(cmd, planId, flags) {
 
     default:
       usage();
+  }
+}
+
+/** v2 snapshots carry `schema_version: 2`; v1 (no field or 1) keeps the old behaviour. */
+function isV2Plan(planId) {
+  try {
+    return loadSnapshot(planId).schema_version === 2;
+  } catch {
+    return false;
   }
 }
 

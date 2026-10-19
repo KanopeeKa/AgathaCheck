@@ -1,0 +1,68 @@
+{
+  "name": "infra failure again for same tag \u2192 stop uat-infra",
+  "rule": "U7",
+  "snapshot_patch": {},
+  "observations_patch": {
+    "control": {
+      "status": {
+        "schema": 1,
+        "plan_id": "proof-build-label-7f3a",
+        "init_sha": "0f1e2d3c4b5a69788796a5b4c3d2e1f00f1e2d3c",
+        "state": "awaiting-preuat",
+        "phase": null,
+        "lease": null,
+        "launches": [],
+        "dispatched": {
+          "preuat_heads": [],
+          "deploy_tags": [
+            "uat-261017-1960"
+          ]
+        },
+        "release": null,
+        "uat": null,
+        "stop": null,
+        "updated_at": "2026-10-17T08:00:00Z"
+      }
+    },
+    "uat": {
+      "deploy_runs": [
+        {
+          "id": 602,
+          "created_at": "2026-10-17T10:30:00Z",
+          "status": "completed",
+          "conclusion": "failure",
+          "proof_job": "failure",
+          "deploy_job": "failure",
+          "smoke_job": "skipped",
+          "deploy_ref": "uat-261017-1960",
+          "deploy_ref_contains_merge": true,
+          "gate_failure_class": "infra_only"
+        },
+        {
+          "id": 601,
+          "created_at": "2026-10-17T09:12:00Z",
+          "status": "completed",
+          "conclusion": "failure",
+          "proof_job": "failure",
+          "deploy_job": "failure",
+          "smoke_job": "skipped",
+          "deploy_ref": "uat-261017-1960",
+          "deploy_ref_contains_merge": true,
+          "gate_failure_class": "infra_only"
+        }
+      ]
+    }
+  },
+  "opts": {
+    "actor": "driver",
+    "lease": null,
+    "now": "2026-10-17T12:00:00Z"
+  },
+  "expected": {
+    "stop": "uat-infra",
+    "state": "stopped",
+    "actor": "driver",
+    "kind": "enforce-stop",
+    "launch": false
+  }
+}

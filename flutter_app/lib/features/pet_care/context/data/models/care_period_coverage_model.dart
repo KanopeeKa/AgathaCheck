@@ -108,6 +108,17 @@ class CarePeriodCoverageModel {
     );
   }
 
+  static CareReviewQueueItem reviewQueueItemFromJson(Map<String, dynamic> raw) {
+    return CareReviewQueueItem(
+      healthEntryId: raw['health_entry_id'] as String? ?? '',
+      name: raw['name'] as String? ?? '',
+      type: raw['type'] as String?,
+      careFamily: raw['care_family'] as String?,
+      impactedDateCount: raw['impacted_date_count'] as int? ?? 0,
+      bulkKeepCarerEligible: raw['bulk_keep_carer_eligible'] == true,
+    );
+  }
+
   static CarePeriodCoverageResult fromJson(Map<String, dynamic> json) {
     final coverageJson = json['coverage'] as Map<String, dynamic>? ?? {};
     final coverageState =
@@ -131,6 +142,10 @@ class CarePeriodCoverageModel {
     final plannedCareItems = plannedCareItemsJson
         .map((raw) => plannedCareItemFromJson(raw as Map<String, dynamic>))
         .toList(growable: false);
+    final reviewQueueJson = json['review_queue'] as List<dynamic>? ?? const [];
+    final reviewQueue = reviewQueueJson
+        .map((raw) => reviewQueueItemFromJson(raw as Map<String, dynamic>))
+        .toList(growable: false);
 
     return CarePeriodCoverageResult(
       startsOn: json['starts_on'] as String? ?? '',
@@ -149,7 +164,9 @@ class CarePeriodCoverageModel {
                 .map((code) => code.toString())
                 .toList(growable: false),
         reassuranceAvailable: coverageJson['reassurance_available'] == true,
+        reviewCareItemCount: coverageJson['review_care_item_count'] as int?,
       ),
+      reviewQueue: reviewQueue,
     );
   }
 }
