@@ -76,8 +76,6 @@ MD_FILES=$(find "$REPO_ROOT" -name "*.md" -type f \
   -not -path "*/.git/*" \
   -not -path "*/node_modules/*" \
   -not -path "*/artifacts/*" \
-  -not -path "*/.agents/*" \
-  -not -path "*/.cursor/*" \
   -not -path "*/.github/*" \
   2>/dev/null)
 
