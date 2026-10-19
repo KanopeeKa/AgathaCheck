@@ -296,19 +296,28 @@ export class AwayPlanningPage {
   /** When a care review queue is present, planned care lives under a collapsed tile (D-009). */
   private async expandAllPlannedCareIfCollapsed(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
-    const toggle = this.page
-      .getByRole('button', { name: /All planned care|Tous les soins prévus/i })
-      .first();
-    if (await toggle.isVisible().catch(() => false)) {
-      await toggle.click();
-      await refreshFlutterAccessibility(this.page);
+    const label = /All planned care|Tous les soins prévus/i;
+    const bySemantics = semanticsKey(this.page, 'away_plan_planned_care_expand');
+    const byButton = this.page.getByRole('button', { name: label }).first();
+    const byText = this.page.getByText(label).first();
+    if (await bySemantics.isVisible().catch(() => false)) {
+      await bySemantics.click();
+    } else if (await byButton.isVisible().catch(() => false)) {
+      await byButton.click();
+    } else if (await byText.isVisible().catch(() => false)) {
+      await byText.click();
     }
+    await refreshFlutterAccessibility(this.page);
   }
 
   private async ensurePlannedCareRowAccessible(entryId: string, entryName?: string): Promise<void> {
     await refreshFlutterAccessibility(this.page);
     const row = this.plannedCareRow(entryId, entryName);
-    if ((await row.count()) === 0) {
+    const visible = await row
+      .first()
+      .isVisible()
+      .catch(() => false);
+    if (!visible) {
       await this.expandAllPlannedCareIfCollapsed();
     }
   }

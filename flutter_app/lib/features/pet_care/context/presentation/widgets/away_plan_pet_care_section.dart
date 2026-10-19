@@ -306,9 +306,14 @@ class _PlannedCareScheduleBlock extends StatelessWidget {
     return ExpansionTile(
       key: const Key('away_plan_planned_care_expand'),
       initiallyExpanded: initiallyExpanded,
-      title: Text(
-        l.careContextAwayPlannedCareExpand,
-        style: theme.textTheme.titleSmall,
+      title: Semantics(
+        button: true,
+        identifier: 'away_plan_planned_care_expand',
+        label: l.careContextAwayPlannedCareExpand,
+        child: Text(
+          l.careContextAwayPlannedCareExpand,
+          style: theme.textTheme.titleSmall,
+        ),
       ),
       children: [scheduleBody],
     );
