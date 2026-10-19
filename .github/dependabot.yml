@@ -10,6 +10,9 @@ updates:
       - dependencies
       - server
     ignore:
+      # Express 5 needs a dedicated migration PR (breaking API / test failures).
+      - dependency-name: "express"
+        update-types: ["version-update:semver-major"]
       # ESLint 10 + @eslint/js 10 need a coordinated config migration.
       - dependency-name: "eslint"
         update-types: ["version-update:semver-major"]
