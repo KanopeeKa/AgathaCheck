@@ -55,6 +55,8 @@ Decision: `DOCUMENTATION-STANDARDS-D-008` in [standards.md](../domains/documenta
 6. **Platform-specific files must actually load.** Copilot path files need `applyTo:`; Claude path rules need `paths:`
    (a symlinked `.mdc` or an `@import` inside a rule file does **not** load — verified 2026-10-13); Replit reads only
    root `replit.md`.
+7. **Mechanism over prose.** Execute-plan liveness or integrity failures are fixed with a mechanism, never with more
+   instruction text.
 
 ## Owner map
 
