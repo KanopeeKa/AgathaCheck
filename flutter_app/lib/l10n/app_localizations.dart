@@ -12561,6 +12561,72 @@ abstract class AppLocalizations {
   /// **'Here\'s care for each pet during those dates.'**
   String get careContextAwayPreviewIntro;
 
+  /// No description provided for @careContextAwayCreateReassuranceIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'After you save, you can review care that falls during these dates.'**
+  String get careContextAwayCreateReassuranceIntro;
+
+  /// No description provided for @careContextAwayReviewSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Care to review'**
+  String get careContextAwayReviewSectionTitle;
+
+  /// No description provided for @careContextAwayReviewImpactedDates.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 date during your absence} other{{count} dates during your absence}}'**
+  String careContextAwayReviewImpactedDates(int count);
+
+  /// No description provided for @careContextAwayReviewDatesAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Review dates'**
+  String get careContextAwayReviewDatesAction;
+
+  /// No description provided for @careContextAwayReviewBulkMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Select'**
+  String get careContextAwayReviewBulkMode;
+
+  /// No description provided for @careContextAwayReviewBulkKeepCarer.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep with carer'**
+  String get careContextAwayReviewBulkKeepCarer;
+
+  /// No description provided for @careContextAwayReviewBulkSelectAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Select all'**
+  String get careContextAwayReviewBulkSelectAll;
+
+  /// No description provided for @careContextAwayReviewBulkClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear selection'**
+  String get careContextAwayReviewBulkClear;
+
+  /// No description provided for @careContextAwayReviewBulkKeepCarerDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Assign a carer or change your selection to use this action.'**
+  String get careContextAwayReviewBulkKeepCarerDisabled;
+
+  /// No description provided for @careContextAwayPlannedCareExpand.
+  ///
+  /// In en, this message translates to:
+  /// **'All planned care'**
+  String get careContextAwayPlannedCareExpand;
+
+  /// No description provided for @careContextCoverageHasCareItemsToReview.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 care item to review} other{{count} care items to review}}'**
+  String careContextCoverageHasCareItemsToReview(int count);
+
   /// No description provided for @careContextAwayPreviewDateRange.
   ///
   /// In en, this message translates to:

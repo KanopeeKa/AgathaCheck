@@ -1,9 +1,12 @@
 import {
   COVERAGE_POLICY_VERSION,
+  COVERAGE_STATE_HAS_ITEMS_TO_REVIEW,
   COVERAGE_STATE_NO_UNRESOLVED_ITEMS,
   REASON_NO_PENDING_ITEMS,
+  REASON_PENDING_ITEMS_IN_WINDOW,
   evaluateCarePeriodCoverage,
 } from '../carePeriodCoverage.js';
+import { reviewCareItemCount } from '../awayPlan/reviewQueue.js';
 import { deriveResolutionUiState } from './deriveResolutionState.js';
 import { UI_STATE_RESOLVED } from './constants.js';
 import { isCareItemAffectedByAbsence } from './affectedCareItem.js';
@@ -73,4 +76,35 @@ export function evaluateCarePeriodCoverageWithResolutions(
     ...projection,
     items: filteredItems,
   });
+}
+
+/**
+ * Apply care-item review queue to coverage copy/count (CARE-CONTEXT-D-005).
+ *
+ * @param {object} coverage
+ * @param {object[]} reviewQueue
+ */
+export function applyReviewQueueToCoverage(coverage, reviewQueue) {
+  const reviewCount = reviewCareItemCount(reviewQueue);
+  const next = {
+    ...coverage,
+    review_care_item_count: reviewCount,
+  };
+  if (reviewCount > 0) {
+    return {
+      ...next,
+      coverage_state: COVERAGE_STATE_HAS_ITEMS_TO_REVIEW,
+      reason_codes: [REASON_PENDING_ITEMS_IN_WINDOW],
+      reassurance_available: true,
+    };
+  }
+  if (coverage.coverage_state === COVERAGE_STATE_HAS_ITEMS_TO_REVIEW) {
+    return {
+      ...next,
+      coverage_state: COVERAGE_STATE_NO_UNRESOLVED_ITEMS,
+      reason_codes: [REASON_NO_PENDING_ITEMS],
+      reassurance_available: true,
+    };
+  }
+  return next;
 }

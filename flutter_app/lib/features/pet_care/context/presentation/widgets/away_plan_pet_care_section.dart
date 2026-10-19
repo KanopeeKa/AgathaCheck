@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../core/router/shell_return_navigation.dart';
 import 'away_plan_carer_tasks_summary.dart';
+import 'away_plan_care_review_section.dart';
 import '../../../../../l10n/app_localizations.dart';
 import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
@@ -37,6 +38,7 @@ class AwayPlanPetCareSection extends ConsumerWidget {
         petId: petId,
         startsOn: startsOn,
         endsOn: endsOn,
+        plannedAbsenceId: absenceId,
       )),
     );
 
@@ -208,7 +210,83 @@ class _PetCareBody extends StatelessWidget {
             ),
           ),
         ],
+        if (result.reviewQueue.isNotEmpty) ...[
+          const SizedBox(height: 16),
+          AwayPlanCareReviewSection(
+            absenceId: absenceId,
+            petId: petId,
+            reviewQueue: result.reviewQueue,
+          ),
+        ],
         if (result.plannedCareItems.isNotEmpty) ...[
+          _PlannedCareScheduleBlock(
+            absenceId: absenceId,
+            petId: petId,
+            result: result,
+            initiallyExpanded: result.reviewQueue.isEmpty,
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class _PlannedCareScheduleBlock extends StatelessWidget {
+  const _PlannedCareScheduleBlock({
+    required this.absenceId,
+    required this.petId,
+    required this.result,
+    required this.initiallyExpanded,
+  });
+
+  final String absenceId;
+  final String petId;
+  final CarePeriodCoverageResult result;
+  final bool initiallyExpanded;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+
+    final scheduleBody = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          l.awayPlanningDuringAbsenceSubtitle,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
+        AwayPlanCarerTasksSummary(absenceId: absenceId, petId: petId),
+        const SizedBox(height: 8),
+        ...result.plannedCareItems.map(
+          (item) => _PlannedCareRow(petId: petId, item: item),
+        ),
+        if (result.showsEstimateFootnote) ...[
+          const SizedBox(height: 8),
+          Text(
+            l.awayPlanningEstimateFootnote,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ] else if (result.showsChainAnchorExplainer) ...[
+          const SizedBox(height: 8),
+          Text(
+            l.awayPlanningChainAnchorExplainer,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ],
+    );
+
+    if (result.reviewQueue.isEmpty) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
           const SizedBox(height: 16),
           Semantics(
             header: true,
@@ -220,36 +298,19 @@ class _PetCareBody extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 4),
-          Text(
-            l.awayPlanningDuringAbsenceSubtitle,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
-          AwayPlanCarerTasksSummary(absenceId: absenceId, petId: petId),
-          const SizedBox(height: 8),
-          ...result.plannedCareItems.map(
-            (item) => _PlannedCareRow(petId: petId, item: item),
-          ),
-          if (result.showsEstimateFootnote) ...[
-            const SizedBox(height: 8),
-            Text(
-              l.awayPlanningEstimateFootnote,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ] else if (result.showsChainAnchorExplainer) ...[
-            const SizedBox(height: 8),
-            Text(
-              l.awayPlanningChainAnchorExplainer,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ],
+          scheduleBody,
         ],
-      ],
+      );
+    }
+
+    return ExpansionTile(
+      key: const Key('away_plan_planned_care_expand'),
+      initiallyExpanded: initiallyExpanded,
+      title: Text(
+        l.careContextAwayPlannedCareExpand,
+        style: theme.textTheme.titleSmall,
+      ),
+      children: [scheduleBody],
     );
   }
 }

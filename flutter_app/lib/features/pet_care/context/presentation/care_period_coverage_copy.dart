@@ -12,8 +12,10 @@ class CarePeriodCoverageCopy {
       CarePeriodCoverageState.allCompleted => l.careContextCoverageAllCompleted,
       CarePeriodCoverageState.noUnresolvedItems =>
         l.careContextCoverageNoUnresolved,
-      CarePeriodCoverageState.hasItemsToReview =>
-        l.careContextCoverageHasItemsToReview(_pendingCount(result)),
+      CarePeriodCoverageState.hasItemsToReview => _hasItemsToReviewCopy(
+        l,
+        result,
+      ),
       CarePeriodCoverageState.indeterminate =>
         l.careContextCoverageIndeterminate,
     };
@@ -27,7 +29,26 @@ class CarePeriodCoverageCopy {
     return l.careContextCoverageIndeterminateQualifier;
   }
 
+  static String _hasItemsToReviewCopy(
+    AppLocalizations l,
+    CarePeriodCoverageResult result,
+  ) {
+    final count = _pendingCount(result);
+    if (result.reviewQueue.isNotEmpty ||
+        result.coverage.reviewCareItemCount != null) {
+      return l.careContextCoverageHasCareItemsToReview(count);
+    }
+    return l.careContextCoverageHasItemsToReview(count);
+  }
+
   static int _pendingCount(CarePeriodCoverageResult result) {
+    final fromCoverage = result.coverage.reviewCareItemCount;
+    if (fromCoverage != null) {
+      return fromCoverage;
+    }
+    if (result.reviewQueue.isNotEmpty) {
+      return result.reviewQueue.length;
+    }
     return result.items.where((item) => item.isPending).length;
   }
 }

@@ -108,6 +108,7 @@ class _FakeCareContextRepository implements CareContextRepository {
     required String petId,
     required String startsOn,
     required String endsOn,
+    String? plannedAbsenceId,
   }) {
     throw UnimplementedError();
   }

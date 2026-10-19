@@ -83,7 +83,7 @@ Serialize merge attempts when multiple PRs reach the CI gate at the same time. D
 |------|---------|
 | Before merge (babysit+ §7) | `./scripts/babysit_merge_preflight.sh --pr <url> --claim` |
 | Preflight exit `1` (behind base) | `./scripts/babysit_sync_base.sh --pr <url> --push` once; re-run CI if required checks re-triggered; then `--claim` again |
-| Preflight exit `2` (wait) | Subscribe (`cursor-subscriptions` → `subscribe_github_pr` on lease holder or `subscribe_github_ci` on base) and **§Halt** (merge coordination) — do **not** rebase yet |
+| Preflight exit `2` (wait) | Subscribe (`cursor-subscriptions` → `subscribe_github_pr` on lease holder or `subscribe_github_ci` on base) and wait for the lease holder; this is not a halt (merge coordination) — do **not** rebase yet |
 | After successful merge | `./scripts/babysit_merge_preflight.sh --pr <url> --release` (no-op if PR closed) |
 | Stale lease (≥45 min, holder idle) | `--claim --force` |
 

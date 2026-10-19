@@ -57,6 +57,11 @@ you decide, proceed, and record (PR body, issue or debt issue). Ask one question
 
 ### Execute-plan (gate exit `0`)
 
+v2 plans: `tick` decides; workers do one agent action per launch and end the turn when the actor is `driver`;
+no chat rules apply. Spec: `docs/agent-efficiency/plans/execute-plan-v2.md`.
+
+v1 plans (below):
+
 If `node scripts/execute_plan_runtime.js gate <plan_id>` exits `0`, run until blocked in the same session:
 implement → PR → babysit → merge → next phase. Valid stops and in-loop steps: `.cursor/skills/execute-plan/SKILL.md`
 §Stop rules (halt/escalation, revoke, expired grant, `session_limit`, gate `2`, `complete-plan`).

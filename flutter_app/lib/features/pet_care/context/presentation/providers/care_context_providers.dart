@@ -26,7 +26,12 @@ final careContextRepositoryProvider = Provider<CareContextRepository>(
       CareContextRepositoryImpl(ref.watch(careContextRemoteDataSourceProvider)),
 );
 
-typedef CarePeriodPreviewKey = ({String petId, String startsOn, String endsOn});
+typedef CarePeriodPreviewKey = ({
+  String petId,
+  String startsOn,
+  String endsOn,
+  String? plannedAbsenceId,
+});
 
 final carePeriodCoverageProvider =
     FutureProvider.family<CarePeriodCoverageResult, CarePeriodPreviewKey>((
@@ -39,6 +44,7 @@ final carePeriodCoverageProvider =
             petId: key.petId,
             startsOn: key.startsOn,
             endsOn: key.endsOn,
+            plannedAbsenceId: key.plannedAbsenceId,
           );
     });
 
