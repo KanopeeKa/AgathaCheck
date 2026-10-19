@@ -241,10 +241,13 @@ class _ReviewCard extends StatelessWidget {
                     alignment: Alignment.centerLeft,
                     child: Semantics(
                       button: true,
-                      identifier: 'away_plan_review_dates_${item.healthEntryId}',
+                      identifier:
+                          'away_plan_review_dates_${item.healthEntryId}',
                       label: l.careContextAwayReviewDatesAction,
                       child: TextButton(
-                        key: Key('away_plan_review_dates_${item.healthEntryId}'),
+                        key: Key(
+                          'away_plan_review_dates_${item.healthEntryId}',
+                        ),
                         onPressed: openCare,
                         child: Text(l.careContextAwayReviewDatesAction),
                       ),
