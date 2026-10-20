@@ -1,0 +1,43 @@
+{
+  "schema_version": 2,
+  "plan_id": "scope-probe-0000",
+  "title": "WP8 scope sandbox",
+  "plan_file": ".agents/plans/scope-probe-0000.md",
+  "plan_file_sha256": "2de49cd10c4384e5bb7bf2fa2e4be969f9e5995750918c0682c6412e7f766e74",
+  "release_branch": "main",
+  "integration_branch": "cursor/scope-probe-0000-integration-0000",
+  "control_issue": 1941,
+  "created_at": "2026-10-20T12:23:31Z",
+  "approved_until": "2026-10-21T12:23:00Z",
+  "settings": {
+    "release_owner_review": false,
+    "tier3_blocking": false,
+    "budgets": {
+      "ci_per_phase": 3,
+      "launches_per_phase": 5,
+      "remedial_rounds": 3,
+      "sync_attempts": 2,
+      "daily_launches": 20
+    }
+  },
+  "protected_paths_version": 1,
+  "phases": [
+    {
+      "id": "1",
+      "title": "Scope fixtures",
+      "branch": "cursor/scope-probe-0000-p1",
+      "allowed_paths": [
+        ".agents/plans/wp8-scope-probe-marker.txt"
+      ],
+      "forbidden_paths": [],
+      "allowed_exceptions": [],
+      "companions": [
+        "docs/architecture/openapi/*.json"
+      ],
+      "exit_checklist": [
+        "WP8 fixtures (a)–(f) recorded on control issue"
+      ]
+    }
+  ],
+  "approval_hash": "sha256:c1db61ed92d40be3ee48f966f27c8a8caba97a50d72f1900bdea6df88a3993df"
+}
