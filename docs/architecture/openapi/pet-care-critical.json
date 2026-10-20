@@ -1,11 +1,15 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "Agatha Track — Pet Care critical API subset",
+    "title": "Agatha Track \u2014 Pet Care critical API subset",
     "version": "1.0.0",
     "description": "Stable DTO contract for pets CRUD, lifecycle, and auth session tokens (F-14). Mounted at /api and /backend/api."
   },
-  "servers": [{ "url": "/api" }],
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
   "paths": {
     "/auth/signup": {
       "post": {
@@ -15,7 +19,9 @@
             "description": "User created",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/AuthSessionResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/AuthSessionResponse"
+                }
               }
             }
           }
@@ -30,7 +36,9 @@
             "description": "Authenticated",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/AuthSessionResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/AuthSessionResponse"
+                }
               }
             }
           }
@@ -45,7 +53,9 @@
             "description": "Tokens rotated",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/AuthTokenPair" }
+                "schema": {
+                  "$ref": "#/components/schemas/AuthTokenPair"
+                }
               }
             }
           }
@@ -61,7 +71,9 @@
             "description": "Erasure accepted",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/AccountErasureAcceptedResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErasureAcceptedResponse"
+                }
               }
             }
           },
@@ -71,11 +83,23 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["error", "code"],
+                  "required": [
+                    "error",
+                    "code"
+                  ],
                   "properties": {
-                    "error": { "type": "string" },
-                    "code": { "const": "household_pets_require_confirmation" },
-                    "pets": { "type": "array", "items": { "type": "object" } }
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "const": "household_pets_require_confirmation"
+                    },
+                    "pets": {
+                      "type": "array",
+                      "items": {
+                        "type": "object"
+                      }
+                    }
                   }
                 }
               }
@@ -92,13 +116,18 @@
             "name": "operationId",
             "in": "path",
             "required": true,
-            "schema": { "type": "string", "format": "uuid" }
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
           },
           {
             "name": "X-Erasure-Status-Token",
             "in": "header",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -106,7 +135,9 @@
             "description": "Erasure progress",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/AccountErasureStatusResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErasureStatusResponse"
+                }
               }
             }
           },
@@ -116,9 +147,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["error"],
+                  "required": [
+                    "error"
+                  ],
                   "properties": {
-                    "error": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    }
                   }
                 }
               }
@@ -137,7 +172,9 @@
               "application/json": {
                 "schema": {
                   "type": "array",
-                  "items": { "$ref": "#/components/schemas/Pet" }
+                  "items": {
+                    "$ref": "#/components/schemas/Pet"
+                  }
                 }
               }
             }
@@ -151,7 +188,9 @@
             "description": "Pet created",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Pet" }
+                "schema": {
+                  "$ref": "#/components/schemas/Pet"
+                }
               }
             }
           },
@@ -161,9 +200,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["error"],
+                  "required": [
+                    "error"
+                  ],
                   "properties": {
-                    "error": { "const": "Pet id already in use" }
+                    "error": {
+                      "const": "Pet id already in use"
+                    }
                   }
                 }
               }
@@ -182,7 +225,9 @@
               "application/json": {
                 "schema": {
                   "type": "array",
-                  "items": { "$ref": "#/components/schemas/Pet" }
+                  "items": {
+                    "$ref": "#/components/schemas/Pet"
+                  }
                 }
               }
             }
@@ -193,13 +238,19 @@
     "/pets/{id}": {
       "get": {
         "operationId": "getPet",
-        "parameters": [{ "$ref": "#/components/parameters/PetId" }],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PetId"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Pet detail",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Pet" }
+                "schema": {
+                  "$ref": "#/components/schemas/Pet"
+                }
               }
             }
           }
@@ -208,13 +259,19 @@
       "put": {
         "operationId": "updatePet",
         "description": "Partial-safe merge: omitted keys keep stored values; explicit null clears nullable fields (see pet-profile D40).",
-        "parameters": [{ "$ref": "#/components/parameters/PetId" }],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PetId"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Pet updated",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Pet" }
+                "schema": {
+                  "$ref": "#/components/schemas/Pet"
+                }
               }
             }
           }
@@ -222,13 +279,19 @@
       },
       "delete": {
         "operationId": "deletePet",
-        "parameters": [{ "$ref": "#/components/parameters/PetId" }],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PetId"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Pet deleted (data cascade on server)",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/DeletePetResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/DeletePetResponse"
+                }
               }
             }
           }
@@ -238,13 +301,19 @@
     "/pets/{id}/data": {
       "delete": {
         "operationId": "deletePetData",
-        "parameters": [{ "$ref": "#/components/parameters/PetId" }],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PetId"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Pet-related rows and files removed; pet row retained until DELETE /pets/{id}",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/PetDataDeleteResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/PetDataDeleteResponse"
+                }
               }
             }
           }
@@ -254,13 +323,19 @@
     "/pets/{id}/passed-away": {
       "post": {
         "operationId": "notifyPassedAway",
-        "parameters": [{ "$ref": "#/components/parameters/PetId" }],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PetId"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Collaborators notified",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/PassedAwayResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/PassedAwayResponse"
+                }
               }
             }
           }
@@ -270,13 +345,19 @@
     "/pets/{id}/vet-visits": {
       "get": {
         "operationId": "listPetVetVisits",
-        "parameters": [{ "$ref": "#/components/parameters/PetId" }],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PetId"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Vet visits with linked occurrence summaries",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/PetVetVisitsResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/PetVetVisitsResponse"
+                }
               }
             }
           }
@@ -284,12 +365,18 @@
       },
       "post": {
         "operationId": "createPetVetVisit",
-        "parameters": [{ "$ref": "#/components/parameters/PetId" }],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PetId"
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/PetVetVisitCreate" }
+              "schema": {
+                "$ref": "#/components/schemas/PetVetVisitCreate"
+              }
             }
           }
         },
@@ -298,7 +385,9 @@
             "description": "Visit created",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/PetVetVisit" }
+                "schema": {
+                  "$ref": "#/components/schemas/PetVetVisit"
+                }
               }
             }
           }
@@ -309,15 +398,21 @@
       "get": {
         "operationId": "getPetVetVisit",
         "parameters": [
-          { "$ref": "#/components/parameters/PetId" },
-          { "$ref": "#/components/parameters/VetVisitId" }
+          {
+            "$ref": "#/components/parameters/PetId"
+          },
+          {
+            "$ref": "#/components/parameters/VetVisitId"
+          }
         ],
         "responses": {
           "200": {
             "description": "Single vet visit",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/PetVetVisit" }
+                "schema": {
+                  "$ref": "#/components/schemas/PetVetVisit"
+                }
               }
             }
           }
@@ -328,13 +423,19 @@
       "post": {
         "operationId": "completePetVetVisit",
         "parameters": [
-          { "$ref": "#/components/parameters/PetId" },
-          { "$ref": "#/components/parameters/VetVisitId" }
+          {
+            "$ref": "#/components/parameters/PetId"
+          },
+          {
+            "$ref": "#/components/parameters/VetVisitId"
+          }
         ],
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/PetVetVisitComplete" }
+              "schema": {
+                "$ref": "#/components/schemas/PetVetVisitComplete"
+              }
             }
           }
         },
@@ -343,7 +444,9 @@
             "description": "Visit marked completed; linked occurrences unchanged",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/PetVetVisit" }
+                "schema": {
+                  "$ref": "#/components/schemas/PetVetVisit"
+                }
               }
             }
           }
@@ -354,14 +457,20 @@
       "post": {
         "operationId": "linkPetVetVisitOccurrences",
         "parameters": [
-          { "$ref": "#/components/parameters/PetId" },
-          { "$ref": "#/components/parameters/VetVisitId" }
+          {
+            "$ref": "#/components/parameters/PetId"
+          },
+          {
+            "$ref": "#/components/parameters/VetVisitId"
+          }
         ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/PetVetVisitOccurrenceLinkRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/PetVetVisitOccurrenceLinkRequest"
+              }
             }
           }
         },
@@ -370,7 +479,9 @@
             "description": "Visit with updated links",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/PetVetVisit" }
+                "schema": {
+                  "$ref": "#/components/schemas/PetVetVisit"
+                }
               }
             }
           }
@@ -381,16 +492,24 @@
       "delete": {
         "operationId": "unlinkPetVetVisitOccurrence",
         "parameters": [
-          { "$ref": "#/components/parameters/PetId" },
-          { "$ref": "#/components/parameters/VetVisitId" },
-          { "$ref": "#/components/parameters/OccurrenceId" }
+          {
+            "$ref": "#/components/parameters/PetId"
+          },
+          {
+            "$ref": "#/components/parameters/VetVisitId"
+          },
+          {
+            "$ref": "#/components/parameters/OccurrenceId"
+          }
         ],
         "responses": {
           "200": {
             "description": "Visit after link removed",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/PetVetVisit" }
+                "schema": {
+                  "$ref": "#/components/schemas/PetVetVisit"
+                }
               }
             }
           }
@@ -400,13 +519,19 @@
     "/pets/{id}/vaccination-records": {
       "get": {
         "operationId": "listPetVaccinationRecords",
-        "parameters": [{ "$ref": "#/components/parameters/PetId" }],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PetId"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Vaccination records with computed summary",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/PetVaccinationRecordsResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/PetVaccinationRecordsResponse"
+                }
               }
             }
           }
@@ -414,12 +539,18 @@
       },
       "post": {
         "operationId": "createPetVaccinationRecord",
-        "parameters": [{ "$ref": "#/components/parameters/PetId" }],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PetId"
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/PetVaccinationRecordCreate" }
+              "schema": {
+                "$ref": "#/components/schemas/PetVaccinationRecordCreate"
+              }
             }
           }
         },
@@ -428,7 +559,9 @@
             "description": "Record created",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/PetVaccinationRecord" }
+                "schema": {
+                  "$ref": "#/components/schemas/PetVaccinationRecord"
+                }
               }
             }
           }
@@ -480,7 +613,7 @@
             }
           },
           "400": {
-            "description": "Refused, nothing saved — e.g. next_choice_not_available when an explicit next_choice does not fit this completion (D-CSM-026)",
+            "description": "Refused, nothing saved \u2014 e.g. next_choice_not_available when an explicit next_choice does not fit this completion (D-CSM-026)",
             "content": {
               "application/json": {
                 "schema": {
@@ -495,7 +628,7 @@
     "/health-entries/{id}/occurrences/{occId}": {
       "get": {
         "operationId": "getOccurrence",
-        "description": "One occurrence for the occurrence screen (§18.7.1). Same access as the occurrence list.",
+        "description": "One occurrence for the occurrence screen (\u00a718.7.1). Same access as the occurrence list.",
         "parameters": [
           {
             "$ref": "#/components/parameters/HealthEntryId"
@@ -579,7 +712,7 @@
             }
           },
           "409": {
-            "description": "occurrence_not_completed — only a completed occurrence can change when it was done",
+            "description": "occurrence_not_completed \u2014 only a completed occurrence can change when it was done",
             "content": {
               "application/json": {
                 "schema": {
@@ -599,7 +732,9 @@
             "description": "People hub roster read model",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/PeopleRoster" }
+                "schema": {
+                  "$ref": "#/components/schemas/PeopleRoster"
+                }
               }
             }
           }
@@ -614,7 +749,10 @@
             "name": "householdId",
             "in": "path",
             "required": true,
-            "schema": { "type": "string", "format": "uuid" }
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
           }
         ],
         "requestBody": {
@@ -623,12 +761,28 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["invitee_email"],
+                "required": [
+                  "invitee_email"
+                ],
                 "properties": {
-                  "invitee_email": { "type": "string", "format": "email" },
-                  "access_tier": { "type": "string", "enum": ["full_access", "can_log_care"] },
-                  "is_organiser": { "type": "boolean" },
-                  "contact_id": { "type": "string", "format": "uuid" }
+                  "invitee_email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "access_tier": {
+                    "type": "string",
+                    "enum": [
+                      "full_access",
+                      "can_log_care"
+                    ]
+                  },
+                  "is_organiser": {
+                    "type": "boolean"
+                  },
+                  "contact_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
                 }
               }
             }
@@ -641,12 +795,26 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["invite_id", "code", "expires_at"],
+                  "required": [
+                    "invite_id",
+                    "code",
+                    "expires_at"
+                  ],
                   "properties": {
-                    "invite_id": { "type": "string", "format": "uuid" },
-                    "code": { "type": "string" },
-                    "expires_at": { "type": "string", "format": "date-time" },
-                    "delivery": { "type": "object" }
+                    "invite_id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "expires_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "delivery": {
+                      "type": "object"
+                    }
                   }
                 }
               }
@@ -656,7 +824,9 @@
             "description": "Forbidden",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HouseholdApiError"
+                }
               }
             }
           },
@@ -664,7 +834,9 @@
             "description": "Member or pending invite conflict",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HouseholdApiError"
+                }
               }
             }
           }
@@ -679,7 +851,9 @@
             "name": "code",
             "in": "path",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -687,7 +861,9 @@
             "description": "Household invite preview",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HouseholdInvitePreview" }
+                "schema": {
+                  "$ref": "#/components/schemas/HouseholdInvitePreview"
+                }
               }
             }
           },
@@ -695,7 +871,9 @@
             "description": "Not found",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HouseholdApiError"
+                }
               }
             }
           },
@@ -703,7 +881,9 @@
             "description": "Invite no longer valid",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HouseholdApiError"
+                }
               }
             }
           }
@@ -718,7 +898,9 @@
             "name": "code",
             "in": "path",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -726,7 +908,9 @@
             "description": "Invite accepted",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HouseholdInviteAcceptResult" }
+                "schema": {
+                  "$ref": "#/components/schemas/HouseholdInviteAcceptResult"
+                }
               }
             }
           },
@@ -734,7 +918,9 @@
             "description": "Unauthorized",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HouseholdApiError"
+                }
               }
             }
           },
@@ -742,7 +928,9 @@
             "description": "Forbidden",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HouseholdApiError"
+                }
               }
             }
           },
@@ -750,7 +938,9 @@
             "description": "Already a member",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HouseholdApiError"
+                }
               }
             }
           }
@@ -765,13 +955,19 @@
             "name": "householdId",
             "in": "path",
             "required": true,
-            "schema": { "type": "string", "format": "uuid" }
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
           },
           {
             "name": "inviteId",
             "in": "path",
             "required": true,
-            "schema": { "type": "string", "format": "uuid" }
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
           }
         ],
         "responses": {
@@ -781,10 +977,21 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["invite_id", "status"],
+                  "required": [
+                    "invite_id",
+                    "status"
+                  ],
                   "properties": {
-                    "invite_id": { "type": "string", "format": "uuid" },
-                    "status": { "type": "string", "enum": ["revoked"] }
+                    "invite_id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "revoked"
+                      ]
+                    }
                   }
                 }
               }
@@ -794,7 +1001,9 @@
             "description": "Forbidden",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HouseholdApiError"
+                }
               }
             }
           },
@@ -802,7 +1011,9 @@
             "description": "Not found",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HouseholdApiError"
+                }
               }
             }
           }
@@ -817,13 +1028,19 @@
             "name": "householdId",
             "in": "path",
             "required": true,
-            "schema": { "type": "string", "format": "uuid" }
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
           },
           {
             "name": "userId",
             "in": "path",
             "required": true,
-            "schema": { "type": "string", "format": "uuid" }
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
           }
         ],
         "responses": {
@@ -831,7 +1048,9 @@
             "description": "Access the member keeps after household removal",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HouseholdMemberRemovalPreview" }
+                "schema": {
+                  "$ref": "#/components/schemas/HouseholdMemberRemovalPreview"
+                }
               }
             }
           },
@@ -839,7 +1058,9 @@
             "description": "Forbidden",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HouseholdApiError"
+                }
               }
             }
           },
@@ -847,7 +1068,9 @@
             "description": "Member not found",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HouseholdApiError"
+                }
               }
             }
           }
@@ -864,7 +1087,9 @@
               "application/json": {
                 "schema": {
                   "type": "array",
-                  "items": { "$ref": "#/components/schemas/PeopleContactSummary" }
+                  "items": {
+                    "$ref": "#/components/schemas/PeopleContactSummary"
+                  }
                 }
               }
             }
@@ -880,7 +1105,10 @@
             "name": "vetId",
             "in": "path",
             "required": true,
-            "schema": { "type": "string", "format": "uuid" }
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
           }
         ],
         "responses": {
@@ -890,9 +1118,14 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["id"],
+                  "required": [
+                    "id"
+                  ],
                   "properties": {
-                    "id": { "type": "string", "format": "uuid" }
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
                   }
                 }
               }
@@ -902,7 +1135,9 @@
             "description": "contact_not_found",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/PeopleApiError" }
+                "schema": {
+                  "$ref": "#/components/schemas/PeopleApiError"
+                }
               }
             }
           }
@@ -917,7 +1152,10 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "string", "format": "uuid" }
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
           }
         ],
         "responses": {
@@ -925,7 +1163,9 @@
             "description": "Enriched contact detail",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/PeopleContactDetail" }
+                "schema": {
+                  "$ref": "#/components/schemas/PeopleContactDetail"
+                }
               }
             }
           },
@@ -933,7 +1173,9 @@
             "description": "contact_not_found",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/PeopleApiError" }
+                "schema": {
+                  "$ref": "#/components/schemas/PeopleApiError"
+                }
               }
             }
           }
@@ -946,7 +1188,10 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "string", "format": "uuid" }
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
           }
         ],
         "responses": {
@@ -954,7 +1199,9 @@
             "description": "Updated contact",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/PeopleContact" }
+                "schema": {
+                  "$ref": "#/components/schemas/PeopleContact"
+                }
               }
             }
           },
@@ -962,7 +1209,9 @@
             "description": "validation_failed",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/PeopleApiError" }
+                "schema": {
+                  "$ref": "#/components/schemas/PeopleApiError"
+                }
               }
             }
           },
@@ -970,7 +1219,9 @@
             "description": "linked_identity_read_only",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/PeopleApiError" }
+                "schema": {
+                  "$ref": "#/components/schemas/PeopleApiError"
+                }
               }
             }
           }
@@ -983,7 +1234,10 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "string", "format": "uuid" }
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
           }
         ],
         "responses": {
@@ -993,9 +1247,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["message"],
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
-                    "message": { "type": "string" }
+                    "message": {
+                      "type": "string"
+                    }
                   }
                 }
               }
@@ -1005,7 +1263,9 @@
             "description": "contact_in_use",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/PeopleApiError" }
+                "schema": {
+                  "$ref": "#/components/schemas/PeopleApiError"
+                }
               }
             }
           }
@@ -1020,7 +1280,10 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "string", "format": "uuid" }
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
           }
         ],
         "responses": {
@@ -1028,7 +1291,9 @@
             "description": "Related care for a contact",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/PeopleRelatedCare" }
+                "schema": {
+                  "$ref": "#/components/schemas/PeopleRelatedCare"
+                }
               }
             }
           },
@@ -1036,7 +1301,9 @@
             "description": "contact_not_found",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/PeopleApiError" }
+                "schema": {
+                  "$ref": "#/components/schemas/PeopleApiError"
+                }
               }
             }
           }
@@ -1051,7 +1318,10 @@
             "name": "petId",
             "in": "path",
             "required": true,
-            "schema": { "type": "string", "format": "uuid" }
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
           }
         ],
         "responses": {
@@ -1059,7 +1329,9 @@
             "description": "People around a pet (scope-aware)",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/PetPeople" }
+                "schema": {
+                  "$ref": "#/components/schemas/PetPeople"
+                }
               }
             }
           },
@@ -1067,7 +1339,9 @@
             "description": "forbidden",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/PeopleApiError" }
+                "schema": {
+                  "$ref": "#/components/schemas/PeopleApiError"
+                }
               }
             }
           }
@@ -1082,7 +1356,10 @@
             "name": "petId",
             "in": "path",
             "required": true,
-            "schema": { "type": "string", "format": "uuid" }
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
           },
           {
             "name": "kind",
@@ -1090,7 +1367,10 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": ["primary_vet", "out_of_hours_vet"]
+              "enum": [
+                "primary_vet",
+                "out_of_hours_vet"
+              ]
             }
           }
         ],
@@ -1100,7 +1380,11 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "contact_id": { "type": "string", "format": "uuid", "nullable": true }
+                  "contact_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "nullable": true
+                  }
                 }
               }
             }
@@ -1113,7 +1397,9 @@
               "application/json": {
                 "schema": {
                   "type": "array",
-                  "items": { "$ref": "#/components/schemas/PetContactRelationship" }
+                  "items": {
+                    "$ref": "#/components/schemas/PetContactRelationship"
+                  }
                 }
               }
             }
@@ -1129,7 +1415,10 @@
             "name": "petId",
             "in": "path",
             "required": true,
-            "schema": { "type": "string", "format": "uuid" }
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
           }
         ],
         "requestBody": {
@@ -1137,10 +1426,18 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["contact_id", "relationship_kind"],
+                "required": [
+                  "contact_id",
+                  "relationship_kind"
+                ],
                 "properties": {
-                  "contact_id": { "type": "string", "format": "uuid" },
-                  "relationship_kind": { "type": "string" }
+                  "contact_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "relationship_kind": {
+                    "type": "string"
+                  }
                 }
               }
             }
@@ -1153,16 +1450,20 @@
               "application/json": {
                 "schema": {
                   "type": "array",
-                  "items": { "$ref": "#/components/schemas/PetContactRelationship" }
+                  "items": {
+                    "$ref": "#/components/schemas/PetContactRelationship"
+                  }
                 }
               }
             }
           },
           "409": {
-            "description": "slot_conflict — use slots endpoint for primary_vet / out_of_hours_vet",
+            "description": "slot_conflict \u2014 use slots endpoint for primary_vet / out_of_hours_vet",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/PeopleApiError" }
+                "schema": {
+                  "$ref": "#/components/schemas/PeopleApiError"
+                }
               }
             }
           }
@@ -1177,13 +1478,19 @@
             "name": "petId",
             "in": "path",
             "required": true,
-            "schema": { "type": "string", "format": "uuid" }
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
           },
           {
             "name": "relationshipId",
             "in": "path",
             "required": true,
-            "schema": { "type": "string", "format": "uuid" }
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
           }
         ],
         "responses": {
@@ -1193,7 +1500,9 @@
               "application/json": {
                 "schema": {
                   "type": "array",
-                  "items": { "$ref": "#/components/schemas/PetContactRelationship" }
+                  "items": {
+                    "$ref": "#/components/schemas/PetContactRelationship"
+                  }
                 }
               }
             }
@@ -1208,7 +1517,10 @@
         "name": "id",
         "in": "path",
         "required": true,
-        "schema": { "type": "string", "format": "uuid" }
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
       },
       "HealthEntryId": {
         "name": "id",
@@ -1232,7 +1544,10 @@
         "name": "visitId",
         "in": "path",
         "required": true,
-        "schema": { "type": "string", "format": "uuid" }
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
       }
     },
     "schemas": {
@@ -1243,78 +1558,173 @@
       },
       "User": {
         "type": "object",
-        "required": ["id", "email"],
+        "required": [
+          "id",
+          "email"
+        ],
         "additionalProperties": true,
         "properties": {
-          "id": { "type": "string", "format": "uuid" },
-          "email": { "type": "string", "format": "email" },
-          "first_name": { "type": "string" },
-          "last_name": { "type": "string" },
-          "category": { "type": "string" },
-          "locale": { "type": "string" }
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "first_name": {
+            "type": "string"
+          },
+          "last_name": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "locale": {
+            "type": "string"
+          }
         }
       },
       "AuthTokenPair": {
         "type": "object",
-        "required": ["access_token", "refresh_token"],
+        "required": [
+          "access_token",
+          "refresh_token"
+        ],
         "additionalProperties": false,
         "properties": {
-          "access_token": { "type": "string" },
-          "refresh_token": { "type": "string" }
+          "access_token": {
+            "type": "string"
+          },
+          "refresh_token": {
+            "type": "string"
+          }
         }
       },
       "AuthSessionResponse": {
         "type": "object",
-        "required": ["user", "access_token", "refresh_token"],
+        "required": [
+          "user",
+          "access_token",
+          "refresh_token"
+        ],
         "additionalProperties": false,
         "properties": {
-          "user": { "$ref": "#/components/schemas/User" },
-          "access_token": { "type": "string" },
-          "refresh_token": { "type": "string" }
+          "user": {
+            "$ref": "#/components/schemas/User"
+          },
+          "access_token": {
+            "type": "string"
+          },
+          "refresh_token": {
+            "type": "string"
+          }
         }
       },
       "AccountErasureAcceptedResponse": {
         "type": "object",
-        "required": ["message", "erasure"],
+        "required": [
+          "message",
+          "erasure"
+        ],
         "additionalProperties": false,
         "properties": {
-          "message": { "type": "string" },
+          "message": {
+            "type": "string"
+          },
           "erasure": {
             "type": "object",
-            "required": ["operation_id", "status"],
+            "required": [
+              "operation_id",
+              "status"
+            ],
             "properties": {
-              "operation_id": { "type": "string", "format": "uuid" },
-              "status": { "type": "string", "enum": ["accepted", "in_progress", "completed", "failed"] },
-              "status_token": { "type": "string", "description": "One-time token; omitted on idempotent retry" }
+              "operation_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "accepted",
+                  "in_progress",
+                  "completed",
+                  "failed"
+                ]
+              },
+              "status_token": {
+                "type": "string",
+                "description": "One-time token; omitted on idempotent retry"
+              }
             }
           }
         }
       },
       "AccountErasureStatusResponse": {
         "type": "object",
-        "required": ["operation_id", "status", "steps"],
+        "required": [
+          "operation_id",
+          "status",
+          "steps"
+        ],
         "additionalProperties": false,
         "properties": {
-          "operation_id": { "type": "string", "format": "uuid" },
-          "status": { "type": "string", "enum": ["accepted", "in_progress", "completed", "failed"] },
+          "operation_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "accepted",
+              "in_progress",
+              "completed",
+              "failed"
+            ]
+          },
           "steps": {
             "type": "object",
-            "required": ["database", "files", "analytics"],
+            "required": [
+              "database",
+              "files",
+              "analytics"
+            ],
             "properties": {
-              "database": { "const": "completed" },
+              "database": {
+                "const": "completed"
+              },
               "files": {
                 "type": "object",
-                "required": ["total", "succeeded", "pending", "dead"],
+                "required": [
+                  "total",
+                  "succeeded",
+                  "pending",
+                  "dead"
+                ],
                 "properties": {
-                  "total": { "type": "integer" },
-                  "succeeded": { "type": "integer" },
-                  "pending": { "type": "integer" },
-                  "dead": { "type": "integer" }
+                  "total": {
+                    "type": "integer"
+                  },
+                  "succeeded": {
+                    "type": "integer"
+                  },
+                  "pending": {
+                    "type": "integer"
+                  },
+                  "dead": {
+                    "type": "integer"
+                  }
                 }
               },
               "analytics": {
                 "type": "string",
-                "enum": ["pending", "completed", "failed", "not_configured"]
+                "enum": [
+                  "pending",
+                  "completed",
+                  "failed",
+                  "not_configured"
+                ]
               }
             }
           }
@@ -1322,70 +1732,258 @@
       },
       "Pet": {
         "type": "object",
-        "required": ["id", "name", "species"],
+        "required": [
+          "id",
+          "name",
+          "species"
+        ],
         "additionalProperties": true,
         "properties": {
-          "id": { "type": "string", "format": "uuid" },
-          "user_id": { "type": "string", "format": "uuid" },
-          "name": { "type": "string" },
-          "species": { "type": "string" },
-          "breed": { "type": "string" },
-          "age": { "type": ["number", "null"] },
-          "dateOfBirth": { "oneOf": [{ "$ref": "#/components/schemas/CalendarDate" }, { "type": "null" }] },
-          "date_of_birth": { "oneOf": [{ "$ref": "#/components/schemas/CalendarDate" }, { "type": "null" }] },
-          "weight": { "type": ["number", "null"] },
-          "gender": { "type": ["string", "null"] },
-          "bio": { "type": "string" },
-          "insurance": { "type": "string" },
-          "neuteredDate": { "oneOf": [{ "$ref": "#/components/schemas/CalendarDate" }, { "type": "null" }] },
-          "neuterDismissed": { "type": "boolean" },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "species": {
+            "type": "string"
+          },
+          "breed": {
+            "type": "string"
+          },
+          "age": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "dateOfBirth": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/CalendarDate"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "date_of_birth": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/CalendarDate"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "weight": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "gender": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "bio": {
+            "type": "string"
+          },
+          "insurance": {
+            "type": "string"
+          },
+          "neuteredDate": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/CalendarDate"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "neuterDismissed": {
+            "type": "boolean"
+          },
           "identificationStatus": {
             "type": "string",
-            "enum": ["yes", "no", "unknown"]
+            "enum": [
+              "yes",
+              "no",
+              "unknown"
+            ]
           },
           "identification_status": {
             "type": "string",
-            "enum": ["yes", "no", "unknown"]
+            "enum": [
+              "yes",
+              "no",
+              "unknown"
+            ]
           },
           "neuterStatus": {
             "type": "string",
-            "enum": ["yes", "no", "unknown"]
+            "enum": [
+              "yes",
+              "no",
+              "unknown"
+            ]
           },
           "neuter_status": {
             "type": "string",
-            "enum": ["yes", "no", "unknown"]
+            "enum": [
+              "yes",
+              "no",
+              "unknown"
+            ]
           },
-          "identificationStatusSource": { "type": ["string", "null"] },
-          "neuterStatusSource": { "type": ["string", "null"] },
-          "chipId": { "type": "string" },
-          "chipDismissed": { "type": "boolean" },
-          "photoPath": { "type": ["string", "null"] },
-          "vetId": { "type": ["string", "null"] },
-          "colorValue": { "type": ["integer", "null"] },
-          "passedAway": { "type": "boolean" },
-          "organization_id": { "type": ["string", "null"], "format": "uuid" },
-          "organization_name": { "type": ["string", "null"] },
-          "is_shared": { "type": "boolean" },
-          "is_foster": { "type": "boolean" },
-          "foster_placement_status": { "type": ["string", "null"] },
-          "foster_name": { "type": ["string", "null"] },
-          "primary_holder_name": { "type": ["string", "null"], "description": "Deprecated alias for pet_parent_name" },
-          "pet_parent_name": { "type": ["string", "null"] },
-          "access_role": { "type": ["string", "null"], "enum": ["carer", "co_parent", null] },
-          "created_at": { "type": "string" },
-          "updated_at": { "type": "string" }
+          "identificationStatusSource": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "neuterStatusSource": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "chipId": {
+            "type": "string"
+          },
+          "chipDismissed": {
+            "type": "boolean"
+          },
+          "photoPath": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "vetId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "colorValue": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "passedAway": {
+            "type": "boolean"
+          },
+          "organization_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          },
+          "organization_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "is_shared": {
+            "type": "boolean"
+          },
+          "is_foster": {
+            "type": "boolean"
+          },
+          "foster_placement_status": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "foster_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "primary_holder_name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Deprecated alias for pet_parent_name"
+          },
+          "pet_parent_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "access_role": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "carer",
+              "co_parent",
+              null
+            ]
+          },
+          "created_at": {
+            "type": "string"
+          },
+          "updated_at": {
+            "type": "string"
+          }
         }
       },
       "DeletePetResponse": {
         "type": "object",
-        "required": ["deleted", "pet_id", "rows_removed", "files_scheduled", "file_cleanup", "files_removed"],
+        "required": [
+          "deleted",
+          "pet_id",
+          "rows_removed",
+          "files_scheduled",
+          "file_cleanup",
+          "files_removed"
+        ],
         "additionalProperties": false,
         "properties": {
-          "deleted": { "type": "boolean", "const": true },
-          "pet_id": { "type": "string", "format": "uuid" },
-          "rows_removed": { "type": "object", "additionalProperties": { "type": "integer" } },
-          "files_scheduled": { "type": "integer", "minimum": 0 },
-          "file_cleanup": { "type": "string", "enum": ["scheduled", "none"] },
+          "deleted": {
+            "type": "boolean",
+            "const": true
+          },
+          "pet_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "rows_removed": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer"
+            }
+          },
+          "files_scheduled": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "file_cleanup": {
+            "type": "string",
+            "enum": [
+              "scheduled",
+              "none"
+            ]
+          },
           "files_removed": {
             "type": "integer",
             "minimum": 0,
@@ -1395,14 +1993,41 @@
       },
       "PetDataDeleteResponse": {
         "type": "object",
-        "required": ["deleted", "pet_id", "rows_removed", "files_scheduled", "file_cleanup", "files_removed"],
+        "required": [
+          "deleted",
+          "pet_id",
+          "rows_removed",
+          "files_scheduled",
+          "file_cleanup",
+          "files_removed"
+        ],
         "additionalProperties": false,
         "properties": {
-          "deleted": { "type": "boolean", "const": true },
-          "pet_id": { "type": "string", "format": "uuid" },
-          "rows_removed": { "type": "object", "additionalProperties": { "type": "integer" } },
-          "files_scheduled": { "type": "integer", "minimum": 0 },
-          "file_cleanup": { "type": "string", "enum": ["scheduled", "none"] },
+          "deleted": {
+            "type": "boolean",
+            "const": true
+          },
+          "pet_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "rows_removed": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer"
+            }
+          },
+          "files_scheduled": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "file_cleanup": {
+            "type": "string",
+            "enum": [
+              "scheduled",
+              "none"
+            ]
+          },
           "files_removed": {
             "type": "integer",
             "minimum": 0,
@@ -1425,12 +2050,25 @@
             "type": "boolean",
             "description": "True only when at least one in-app notification row was created (completed delivery)."
           },
-          "pet_id": { "type": "string", "format": "uuid" },
-          "notified_count": { "type": "integer", "minimum": 0 },
-          "already_notified_count": { "type": "integer", "minimum": 0 },
+          "pet_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "notified_count": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "already_notified_count": {
+            "type": "integer",
+            "minimum": 0
+          },
           "delivery_status": {
             "type": "string",
-            "enum": ["delivered", "already_notified", "no_recipients"]
+            "enum": [
+              "delivered",
+              "already_notified",
+              "no_recipients"
+            ]
           }
         }
       },
@@ -1444,40 +2082,94 @@
           "record_source"
         ],
         "properties": {
-          "id": { "type": "string" },
-          "pet_id": { "type": "string", "format": "uuid" },
-          "vaccine_name": { "type": "string", "maxLength": 255 },
-          "administered_on": { "type": "string", "format": "date" },
-          "record_source": { "type": "string", "enum": ["user", "imported"] },
-          "created_at": { "type": "string", "format": "date-time" },
-          "updated_at": { "type": "string", "format": "date-time" }
+          "id": {
+            "type": "string"
+          },
+          "pet_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "vaccine_name": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "administered_on": {
+            "type": "string",
+            "format": "date"
+          },
+          "record_source": {
+            "type": "string",
+            "enum": [
+              "user",
+              "imported"
+            ]
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       },
       "PetVaccinationRecordCreate": {
         "type": "object",
-        "required": ["vaccine_name", "administered_on"],
+        "required": [
+          "vaccine_name",
+          "administered_on"
+        ],
         "properties": {
-          "id": { "type": "string" },
-          "vaccine_name": { "type": "string", "maxLength": 255 },
-          "administered_on": { "type": "string", "format": "date" },
-          "record_source": { "type": "string", "enum": ["user", "imported"] }
+          "id": {
+            "type": "string"
+          },
+          "vaccine_name": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "administered_on": {
+            "type": "string",
+            "format": "date"
+          },
+          "record_source": {
+            "type": "string",
+            "enum": [
+              "user",
+              "imported"
+            ]
+          }
         }
       },
       "PetVaccinationRecordsResponse": {
         "type": "object",
-        "required": ["records", "summary"],
+        "required": [
+          "records",
+          "summary"
+        ],
         "properties": {
           "records": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/PetVaccinationRecord" }
+            "items": {
+              "$ref": "#/components/schemas/PetVaccinationRecord"
+            }
           },
           "summary": {
             "type": "object",
-            "required": ["record_count", "last_administered_on"],
+            "required": [
+              "record_count",
+              "last_administered_on"
+            ],
             "properties": {
-              "record_count": { "type": "integer", "minimum": 0 },
+              "record_count": {
+                "type": "integer",
+                "minimum": 0
+              },
               "last_administered_on": {
-                "type": ["string", "null"],
+                "type": [
+                  "string",
+                  "null"
+                ],
                 "format": "date"
               }
             }
@@ -1493,13 +2185,25 @@
           "scheduled_date"
         ],
         "properties": {
-          "occurrence_id": { "type": "string", "format": "uuid" },
-          "health_entry_id": { "type": "string", "format": "uuid" },
+          "occurrence_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "health_entry_id": {
+            "type": "string",
+            "format": "uuid"
+          },
           "status": {
             "type": "string",
-            "enum": ["pending", "completed", "skipped"]
+            "enum": [
+              "pending",
+              "completed",
+              "skipped"
+            ]
           },
-          "scheduled_date": { "$ref": "#/components/schemas/CalendarDate" }
+          "scheduled_date": {
+            "$ref": "#/components/schemas/CalendarDate"
+          }
         }
       },
       "PetVetVisit": {
@@ -1514,62 +2218,114 @@
           "linked_occurrences"
         ],
         "properties": {
-          "id": { "type": "string", "format": "uuid" },
-          "pet_id": { "type": "string", "format": "uuid" },
-          "visited_on": { "$ref": "#/components/schemas/CalendarDate" },
-          "status": { "type": "string", "enum": ["open", "completed"] },
-          "completed_on": {
-            "oneOf": [
-              { "$ref": "#/components/schemas/CalendarDate" },
-              { "type": "null" }
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "pet_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "visited_on": {
+            "$ref": "#/components/schemas/CalendarDate"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "open",
+              "completed"
             ]
           },
-          "notes": { "type": "string" },
+          "completed_on": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/CalendarDate"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "notes": {
+            "type": "string"
+          },
           "linked_occurrences": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/PetVetVisitLinkedOccurrence" }
+            "items": {
+              "$ref": "#/components/schemas/PetVetVisitLinkedOccurrence"
+            }
           },
-          "created_at": { "type": "string", "format": "date-time" },
-          "updated_at": { "type": "string", "format": "date-time" }
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       },
       "PetVetVisitCreate": {
         "type": "object",
-        "required": ["visited_on"],
+        "required": [
+          "visited_on"
+        ],
         "properties": {
-          "id": { "type": "string", "format": "uuid" },
-          "visited_on": { "$ref": "#/components/schemas/CalendarDate" },
-          "notes": { "type": "string", "maxLength": 4000 },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "visited_on": {
+            "$ref": "#/components/schemas/CalendarDate"
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 4000
+          },
           "occurrence_ids": {
             "type": "array",
-            "items": { "type": "string", "format": "uuid" }
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
           }
         }
       },
       "PetVetVisitComplete": {
         "type": "object",
         "properties": {
-          "completed_on": { "$ref": "#/components/schemas/CalendarDate" }
+          "completed_on": {
+            "$ref": "#/components/schemas/CalendarDate"
+          }
         }
       },
       "PetVetVisitOccurrenceLinkRequest": {
         "type": "object",
-        "required": ["occurrence_ids"],
+        "required": [
+          "occurrence_ids"
+        ],
         "properties": {
           "occurrence_ids": {
             "type": "array",
             "minItems": 1,
-            "items": { "type": "string", "format": "uuid" }
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
           }
         }
       },
       "PetVetVisitsResponse": {
         "type": "object",
-        "required": ["visits"],
+        "required": [
+          "visits"
+        ],
         "properties": {
           "visits": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/PetVetVisit" }
+            "items": {
+              "$ref": "#/components/schemas/PetVetVisit"
+            }
           }
         }
       },
@@ -1904,10 +2660,15 @@
       },
       "PeopleApiError": {
         "type": "object",
-        "required": ["error", "code"],
+        "required": [
+          "error",
+          "code"
+        ],
         "additionalProperties": true,
         "properties": {
-          "error": { "type": "string" },
+          "error": {
+            "type": "string"
+          },
           "code": {
             "type": "string",
             "enum": [
@@ -1919,87 +2680,202 @@
               "linked_identity_read_only"
             ]
           },
-          "details": { "type": "object" }
+          "details": {
+            "type": "object"
+          }
         }
       },
       "PetContactRelationship": {
         "type": "object",
-        "required": ["id", "pet_id", "contact_id", "relationship_kind", "active"],
+        "required": [
+          "id",
+          "pet_id",
+          "contact_id",
+          "relationship_kind",
+          "active"
+        ],
         "additionalProperties": true,
         "properties": {
-          "id": { "type": "string", "format": "uuid" },
-          "pet_id": { "type": "string", "format": "uuid" },
-          "contact_id": { "type": "string", "format": "uuid" },
-          "relationship_kind": { "type": "string" },
-          "is_primary": { "type": "boolean" },
-          "active": { "type": "boolean" },
-          "sort_order": { "type": "integer" }
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "pet_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "contact_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "relationship_kind": {
+            "type": "string"
+          },
+          "is_primary": {
+            "type": "boolean"
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "sort_order": {
+            "type": "integer"
+          }
         }
       },
       "PeopleContact": {
         "type": "object",
-        "required": ["id", "kind", "name", "roles"],
+        "required": [
+          "id",
+          "kind",
+          "name",
+          "roles"
+        ],
         "additionalProperties": true,
         "properties": {
-          "id": { "type": "string" },
-          "kind": { "type": "string" },
-          "name": { "type": "string" },
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
           "roles": {
             "type": "array",
-            "items": { "type": "string" }
+            "items": {
+              "type": "string"
+            }
           }
         }
       },
       "PeopleContactDirectory": {
         "type": "object",
-        "required": ["type", "household_id"],
+        "required": [
+          "type",
+          "household_id"
+        ],
         "properties": {
-          "type": { "type": "string", "enum": ["personal", "household"] },
-          "household_id": { "type": ["string", "null"], "format": "uuid" }
+          "type": {
+            "type": "string",
+            "enum": [
+              "personal",
+              "household"
+            ]
+          },
+          "household_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          }
         }
       },
       "PeopleContactSummary": {
         "allOf": [
-          { "$ref": "#/components/schemas/PeopleContact" },
+          {
+            "$ref": "#/components/schemas/PeopleContact"
+          },
           {
             "type": "object",
-            "required": ["directory", "group", "status"],
+            "required": [
+              "directory",
+              "group",
+              "status"
+            ],
             "properties": {
-              "directory": { "$ref": "#/components/schemas/PeopleContactDirectory" },
-              "group": { "type": "string", "enum": ["carer", "professional"] },
-              "status": { "type": "string", "enum": ["active", "inactive"] },
-              "pets": { "type": "array", "items": { "type": "object" } }
+              "directory": {
+                "$ref": "#/components/schemas/PeopleContactDirectory"
+              },
+              "group": {
+                "type": "string",
+                "enum": [
+                  "carer",
+                  "professional"
+                ]
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "active",
+                  "inactive"
+                ]
+              },
+              "pets": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              }
             }
           }
         ]
       },
       "PeopleContactDetail": {
         "allOf": [
-          { "$ref": "#/components/schemas/PeopleContact" },
+          {
+            "$ref": "#/components/schemas/PeopleContact"
+          },
           {
             "type": "object",
             "properties": {
-              "directory": { "$ref": "#/components/schemas/PeopleContactDirectory" },
-              "group": { "type": "string" },
-              "status": { "type": "string" },
-              "works_at": { "type": ["object", "null"] },
-              "staff": { "type": "array", "items": { "type": "object" } },
-              "usage_counts": { "type": "object" },
-              "household_note": { "type": ["string", "null"] },
-              "linked_account": { "type": ["object", "null"] }
+              "directory": {
+                "$ref": "#/components/schemas/PeopleContactDirectory"
+              },
+              "group": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string"
+              },
+              "works_at": {
+                "type": [
+                  "object",
+                  "null"
+                ]
+              },
+              "staff": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              },
+              "usage_counts": {
+                "type": "object"
+              },
+              "household_note": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "linked_account": {
+                "type": [
+                  "object",
+                  "null"
+                ]
+              }
             }
           }
         ]
       },
       "HouseholdApiError": {
         "type": "object",
-        "required": ["error"],
+        "required": [
+          "error"
+        ],
         "additionalProperties": true,
         "properties": {
-          "error": { "type": "string" },
+          "error": {
+            "type": "string"
+          },
           "code": {
             "type": "string",
-            "enum": ["successor_required", "validation_failed"]
+            "enum": [
+              "successor_required",
+              "validation_failed"
+            ]
           }
         }
       },
@@ -2013,16 +2889,33 @@
           "requires_successor"
         ],
         "properties": {
-          "target_user_id": { "type": "string", "format": "uuid" },
-          "household_id": { "type": "string", "format": "uuid" },
-          "loses_household_access": { "type": "boolean" },
+          "target_user_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "household_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "loses_household_access": {
+            "type": "boolean"
+          },
           "remaining_access": {
             "type": "array",
-            "items": { "type": "object", "additionalProperties": true }
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
           },
-          "requires_successor": { "type": "boolean" },
-          "target_access_tier": { "type": "string" },
-          "target_is_organiser": { "type": "boolean" }
+          "requires_successor": {
+            "type": "boolean"
+          },
+          "target_access_tier": {
+            "type": "string"
+          },
+          "target_is_organiser": {
+            "type": "boolean"
+          }
         }
       },
       "HouseholdInvitePreview": {
@@ -2039,61 +2932,173 @@
           "expires_at"
         ],
         "properties": {
-          "invite_id": { "type": "string", "format": "uuid" },
-          "code": { "type": "string" },
-          "household_id": { "type": "string", "format": "uuid" },
-          "household_name": { "type": "string" },
-          "inviter_name": { "type": "string" },
-          "access_tier": { "type": "string", "enum": ["full_access", "can_log_care"] },
-          "is_organiser": { "type": "boolean" },
-          "invitee_email": { "type": "string", "format": "email" },
-          "expires_at": { "type": "string", "format": "date-time" }
+          "invite_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "code": {
+            "type": "string"
+          },
+          "household_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "household_name": {
+            "type": "string"
+          },
+          "inviter_name": {
+            "type": "string"
+          },
+          "access_tier": {
+            "type": "string",
+            "enum": [
+              "full_access",
+              "can_log_care"
+            ]
+          },
+          "is_organiser": {
+            "type": "boolean"
+          },
+          "invitee_email": {
+            "type": "string",
+            "format": "email"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       },
       "HouseholdInviteAcceptResult": {
         "type": "object",
-        "required": ["household_id", "status", "access_tier", "is_organiser"],
+        "required": [
+          "household_id",
+          "status",
+          "access_tier",
+          "is_organiser"
+        ],
         "properties": {
-          "household_id": { "type": "string", "format": "uuid" },
-          "status": { "type": "string", "enum": ["accepted"] },
-          "access_tier": { "type": "string", "enum": ["full_access", "can_log_care"] },
-          "is_organiser": { "type": "boolean" }
+          "household_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "accepted"
+            ]
+          },
+          "access_tier": {
+            "type": "string",
+            "enum": [
+              "full_access",
+              "can_log_care"
+            ]
+          },
+          "is_organiser": {
+            "type": "boolean"
+          }
         }
       },
       "PeopleRoster": {
         "type": "object",
-        "required": ["households", "contacts", "pending_invites"],
+        "required": [
+          "households",
+          "contacts",
+          "pending_invites"
+        ],
         "properties": {
-          "households": { "type": "array", "items": { "type": "object" } },
+          "households": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
           "contacts": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/PeopleContactSummary" }
+            "items": {
+              "$ref": "#/components/schemas/PeopleContactSummary"
+            }
           },
-          "pending_invites": { "type": "array", "items": { "type": "object" } }
+          "pending_invites": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
         }
       },
       "PeopleRelatedCare": {
         "type": "object",
-        "required": ["pets", "care_items", "absences", "history_count"],
+        "required": [
+          "pets",
+          "care_items",
+          "absences",
+          "history_count"
+        ],
         "properties": {
-          "pets": { "type": "array", "items": { "type": "object" } },
-          "care_items": { "type": "array", "items": { "type": "object" } },
-          "absences": { "type": "array", "items": { "type": "object" } },
-          "history_count": { "type": "integer" }
+          "pets": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "care_items": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "absences": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "history_count": {
+            "type": "integer"
+          }
         }
       },
       "PetPeople": {
         "type": "object",
-        "required": ["pet_id", "pet_name", "scope", "owner", "household_members", "relationships"],
+        "required": [
+          "pet_id",
+          "pet_name",
+          "scope",
+          "owner",
+          "household_members",
+          "relationships"
+        ],
         "properties": {
-          "pet_id": { "type": "string", "format": "uuid" },
-          "pet_name": { "type": "string" },
-          "scope": { "type": "string", "enum": ["full", "handover"] },
-          "owner": { "type": "object" },
-          "household_members": { "type": "array", "items": { "type": "object" } },
+          "pet_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "pet_name": {
+            "type": "string"
+          },
+          "scope": {
+            "type": "string",
+            "enum": [
+              "full",
+              "handover"
+            ]
+          },
+          "owner": {
+            "type": "object"
+          },
+          "household_members": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
           "relationships": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/PetContactRelationship" }
+            "items": {
+              "$ref": "#/components/schemas/PetContactRelationship"
+            }
           }
         }
       },
@@ -2417,5 +3422,6 @@
         }
       }
     }
-  }
+  },
+  "_wp8_fixture_d": "scope-probe-0000"
 }
