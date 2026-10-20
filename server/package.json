@@ -25,17 +25,17 @@
     "multer": "^2.4.0",
     "nodemailer": "^10.1.2",
     "pg": "^8.23.1",
-    "pino": "^10.3.1",
+    "pino": "^10.4.0",
     "sinon": "^22.1.0",
     "uuid": "^14.0.3"
   },
   "devDependencies": {
     "@babel/core": "^8.0.7",
-    "@babel/preset-env": "^8.0.6",
+    "@babel/preset-env": "^8.0.7",
     "@eslint/js": "^10.0.1",
     "babel-jest": "^30.5.2",
     "babel-plugin-transform-import-meta": "^3.1.0",
-    "eslint": "^10.12.0",
+    "eslint": "^10.13.0",
     "jest": "^30.5.2",
     "supertest": "^7.3.1"
   },
