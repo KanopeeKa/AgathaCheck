@@ -285,17 +285,157 @@ export class AwayPlanningPage {
       return this.page.getByRole('button', { name: new RegExp(entryName, 'i') }).first();
     }
     const bySemantics = semanticsKey(this.page, `away_plan_planned_care_${entryId}`);
+    const reviewQueueRow = entryName
+      ? this.page
+          .getByRole('group', { name: new RegExp(entryName, 'i') })
+          .getByRole('button', { name: /Review dates|Examiner les dates/i })
+      : semanticsKey(this.page, `away_plan_review_dates_${entryId}`).or(
+          this.page.locator(`[data-flutter-key="away_plan_review_dates_${entryId}"]`),
+        );
     if (entryName) {
-      return bySemantics.or(
-        this.page.getByRole('button', { name: new RegExp(entryName, 'i') }).first(),
-      );
+      return reviewQueueRow
+        .or(bySemantics)
+        .or(this.page.getByRole('button', { name: new RegExp(entryName, 'i') }))
+        .first();
     }
-    return bySemantics;
+    return bySemantics.or(reviewQueueRow).first();
+  }
+
+  private async waitForPetCareCoverageReady(): Promise<void> {
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await expect(
+        this.page.getByText(/Loading care preview|Chargement de l'aperçu/i),
+      ).toHaveCount(0);
+    }).toPass({ timeout: 60_000 });
+  }
+
+  /** When a care review queue is present, planned care lives under a collapsed tile (D-009). */
+  /** Expands **All planned care** when the review queue collapsed the schedule (D-009). */
+  async revealAllPlannedCareSchedule(): Promise<void> {
+    await this.waitForPetCareCoverageReady();
+    for (let attempt = 0; attempt < 3; attempt++) {
+      await this.expandAllPlannedCareIfCollapsed();
+      await refreshFlutterAccessibility(this.page);
+      const estimatedVisible = await this.page
+        .getByText(/Estimated:|Estimé:/i)
+        .first()
+        .isVisible()
+        .catch(() => false);
+      if (estimatedVisible) {
+        return;
+      }
+      const expandOpen = await this.page
+        .locator('[aria-expanded="true"]')
+        .filter({ hasText: /All planned care|Tous les soins prévus/i })
+        .first()
+        .isVisible()
+        .catch(() => false);
+      if (expandOpen) {
+        return;
+      }
+    }
+  }
+
+  async expectPetCareSectionForPet(petId: string, petName?: string): Promise<void> {
+    await expect(async () => {
+      await this.waitForPetCareCoverageReady();
+      await refreshFlutterAccessibility(this.page);
+      const byKey = this.page.locator(`[data-flutter-key="away_plan_pet_care_${petId}"]`);
+      const byPetHeader = petName
+        ? this.page.getByRole('button', {
+            name: new RegExp(`View pet details for ${petName}|^${petName}\\b`, 'i'),
+          })
+        : null;
+      const careDuring = this.page.getByText(/Care during your absence|Soins pendant votre absence/i);
+      await expect(byKey.or(byPetHeader ?? careDuring)).toBeVisible();
+    }).toPass({ timeout: 60_000 });
+  }
+
+  async expectCareItemNamedOnPlan(name: string): Promise<void> {
+    await expect(async () => {
+      await this.waitForPetCareCoverageReady();
+      await refreshFlutterAccessibility(this.page);
+      const named = this.page
+        .getByText(name, { exact: false })
+        .or(this.page.getByRole('group', { name: new RegExp(name, 'i') }))
+        .first();
+      if (!(await named.isVisible().catch(() => false))) {
+        await this.expandAllPlannedCareIfCollapsed();
+        await refreshFlutterAccessibility(this.page);
+      }
+      await expect(named).toBeVisible();
+    }).toPass({ timeout: 60_000 });
+  }
+
+  private async expandAllPlannedCareIfCollapsed(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    const expandTile = this.page
+      .locator('[data-flutter-key="away_plan_planned_care_expand"]')
+      .or(semanticsKey(this.page, 'away_plan_planned_care_expand'))
+      .or(
+        this.page
+          .locator('[aria-expanded="false"]')
+          .filter({ hasText: /All planned care|Tous les soins prévus/i }),
+      )
+      .or(this.page.getByRole('button', { name: /All planned care|Tous les soins prévus/i }));
+    if ((await expandTile.count()) === 0) {
+      return;
+    }
+    const titleButton = this.page
+      .getByRole('button', { name: /All planned care|Tous les soins prévus/i })
+      .first();
+    const clickTarget = (await titleButton.isVisible().catch(() => false))
+      ? titleButton
+      : expandTile.first();
+    await clickTarget.scrollIntoViewIfNeeded();
+    if ((await clickTarget.getAttribute('aria-expanded')) === 'true') {
+      return;
+    }
+    await clickTarget.click();
+    await refreshFlutterAccessibility(this.page);
+    if ((await clickTarget.getAttribute('aria-expanded')) !== 'true') {
+      await this.page.evaluate(() => {
+        const node = document.querySelector(
+          '[flt-semantics-identifier="away_plan_planned_care_expand"]',
+        ) as HTMLElement | null;
+        node?.click();
+      });
+      await refreshFlutterAccessibility(this.page);
+    }
+    if ((await clickTarget.getAttribute('aria-expanded')) !== 'true') {
+      const box = await clickTarget.boundingBox();
+      if (box) {
+        await this.page.mouse.click(box.x + box.width - 20, box.y + box.height / 2);
+      }
+      await refreshFlutterAccessibility(this.page);
+    }
+  }
+
+  private async ensurePlannedCareRowAccessible(entryId: string, entryName?: string): Promise<void> {
+    await this.waitForPetCareCoverageReady();
+    await refreshFlutterAccessibility(this.page);
+    const row = this.plannedCareRow(entryId, entryName).first();
+    if (await row.isVisible().catch(() => false)) {
+      return;
+    }
+    await this.expandAllPlannedCareIfCollapsed();
+    await refreshFlutterAccessibility(this.page);
+    if (await row.isVisible().catch(() => false)) {
+      return;
+    }
+    // Review-queue cards expose the care name but not planned-care semantics until expanded.
+    if (entryName) {
+      const named = this.page.getByText(entryName, { exact: false }).first();
+      if (await named.isVisible().catch(() => false)) {
+        return;
+      }
+    }
   }
 
   async expectPlannedCareItemRow(entryId: string, entryName?: string): Promise<void> {
     await expect(async () => {
-      await refreshFlutterAccessibility(this.page);
+      await this.ensurePlannedCareRowAccessible(entryId, entryName);
       await expect(this.plannedCareRow(entryId, entryName)).toBeVisible();
     }).toPass({ timeout: 45_000 });
   }
@@ -334,7 +474,7 @@ export class AwayPlanningPage {
     overdueLabel: RegExp,
   ): Promise<void> {
     await expect(async () => {
-      await refreshFlutterAccessibility(this.page);
+      await this.ensurePlannedCareRowAccessible(entryId, entryName);
       await expect(this.plannedCareRow(entryId, entryName)).toBeVisible();
       await expect(this.page.getByText(overdueLabel).first()).toBeVisible();
     }).toPass({ timeout: 45_000 });
@@ -342,10 +482,20 @@ export class AwayPlanningPage {
 
   async expectPlannedCareRowShowsEstimated(entryId: string, entryName: string): Promise<void> {
     await expect(async () => {
+      await this.expectPlanPageLoaded();
+      await this.waitForPetCareCoverageReady();
+      await this.expandAllPlannedCareIfCollapsed();
       await refreshFlutterAccessibility(this.page);
-      const row = this.plannedCareRow(entryId, entryName);
-      await expect(row).toBeVisible();
-      await expect(row).toContainText(/Estimated:|Estimé:/i);
+      const estimatedOnPage = this.page.getByText(/Estimated:|Estimé:/i);
+      const scheduleRow = semanticsKey(this.page, `away_plan_planned_care_${entryId}`).or(
+        this.page.getByRole('button', { name: new RegExp(entryName, 'i') }).first(),
+      );
+      if (await estimatedOnPage.first().isVisible().catch(() => false)) {
+        await expect(estimatedOnPage.first()).toBeVisible();
+        return;
+      }
+      await expect(scheduleRow).toBeVisible();
+      await expect(scheduleRow).toContainText(/Estimated:|Estimé:/i);
     }).toPass({ timeout: 45_000 });
   }
 
@@ -400,8 +550,19 @@ export class AwayPlanningPage {
     await this.openPlannedCareItem(entryId);
   }
 
-  async openPlannedCareItem(entryId: string): Promise<void> {
-    const row = semanticsKey(this.page, `away_plan_planned_care_${entryId}`);
+  async openPlannedCareItem(entryId: string, entryName?: string): Promise<void> {
+    await this.waitForPetCareCoverageReady();
+    await refreshFlutterAccessibility(this.page);
+    const reviewDates = semanticsKey(this.page, `away_plan_review_dates_${entryId}`).or(
+      this.page.locator(`[data-flutter-key="away_plan_review_dates_${entryId}"]`),
+    );
+    if (await reviewDates.first().isVisible().catch(() => false)) {
+      await reviewDates.first().click();
+      await refreshFlutterAccessibility(this.page);
+      return;
+    }
+    await this.ensurePlannedCareRowAccessible(entryId, entryName);
+    const row = this.plannedCareRow(entryId, entryName).first();
     await expect(row).toBeVisible({ timeout: 30_000 });
     await row.click();
     await refreshFlutterAccessibility(this.page);

@@ -77,7 +77,7 @@ test.describe('Away plan detail V2', () => {
     const away = new AwayPlanningPage(page);
     await away.openPlan(absence.id);
     await away.expectPlannedCareItemRow(entry.id, 'Away Window Meds');
-    await away.openPlannedCareItem(entry.id);
+    await away.openPlannedCareItem(entry.id, 'Away Window Meds');
     await away.expectPlannedCareItemDetail('Away Window Meds');
   });
 
