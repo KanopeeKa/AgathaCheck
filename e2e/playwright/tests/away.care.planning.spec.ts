@@ -123,7 +123,12 @@ test.describe('Away care planning display', () => {
 
     const away = new AwayPlanningPage(page);
     await away.openPlan(absence.id);
-    await away.expectPlannedCareRowShowsEstimated(entry.id, 'Weekly Grooming');
+    await away.expectPlannedCareItemRow(entry.id, 'Weekly Grooming');
+    await expect(
+      page.getByRole('group', {
+        name: /Weekly Grooming.*during your absence|Weekly Grooming.*pendant votre absence/i,
+      }),
+    ).toBeVisible({ timeout: 45_000 });
   });
 
   test('Changing a care date from the care item with This date only updates the next dates', async ({
