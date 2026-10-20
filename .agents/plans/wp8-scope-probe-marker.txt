@@ -1,0 +1,7 @@
+# WP8 execute-plan scope sandbox marker (plan scope-probe-0000)
+# Allowed-path touchpoint for live scope verification fixtures (a)–(f).
+
+plan_id=scope-probe-0000
+phase=1
+fixture=baseline-in-scope
+revision=1
