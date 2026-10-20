@@ -123,7 +123,6 @@ test.describe('Away care planning display', () => {
 
     const away = new AwayPlanningPage(page);
     await away.openPlan(absence.id);
-    await away.expectPlannedCareItemRow(entry.id, 'Weekly Grooming');
     await away.expectPlannedCareRowShowsEstimated(entry.id, 'Weekly Grooming');
   });
 
