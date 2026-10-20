@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "plan_id": "scope-probe-0000",
-  "title": "WP8 scope sandbox",
+  "title": "WP8 scope sandbox DRIFT",
   "plan_file": ".agents/plans/scope-probe-0000.md",
   "plan_file_sha256": "2de49cd10c4384e5bb7bf2fa2e4be969f9e5995750918c0682c6412e7f766e74",
   "release_branch": "main",
@@ -35,7 +35,7 @@
         "docs/architecture/openapi/*.json"
       ],
       "exit_checklist": [
-        "WP8 fixtures (a)–(f) recorded on control issue"
+        "WP8 fixtures (a)\u2013(f) recorded on control issue"
       ]
     }
   ],
