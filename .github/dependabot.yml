@@ -10,6 +10,9 @@ updates:
       - dependencies
       - server
     ignore:
+      # Express 5 needs a dedicated migration PR (breaking API / test failures).
+      - dependency-name: "express"
+        update-types: ["version-update:semver-major"]
       # ESLint 10 + @eslint/js 10 need a coordinated config migration.
       - dependency-name: "eslint"
         update-types: ["version-update:semver-major"]
@@ -50,3 +53,6 @@ updates:
       # Riverpod 3.x needs a dedicated migration PR (Provider API changes).
       - dependency-name: "flutter_riverpod"
         update-types: ["version-update:semver-major"]
+      # posthog_flutter 5.55.0 exceeds CI main.dart.js bundle budget (needs trim or budget bump).
+      - dependency-name: "posthog_flutter"
+        versions: ["5.55.0"]
