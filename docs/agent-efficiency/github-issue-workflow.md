@@ -397,6 +397,7 @@ Editing or deleting an approve or resume comment stops the plan on the next pass
 | Reads, `workflow_dispatch` (Pre-UAT, Deploy UAT), the `execute-plan-scope` check run | `GITHUB_TOKEN` |
 | Branches, sync/release PRs, `update-branch`, auto-merge, labels, comments, status comment | `EXECUTE_PLAN_BOT_TOKEN` |
 | Cursor API (worker launch) | `cursor_api_key` |
+| Plan workers | the bot token, passed by the driver at launch (`envVars`: `GH_TOKEN`, `EXECUTE_PLAN_TOKEN`); a worker `tick` refuses to run unless its token is `bot_login` |
 
 Per-plan serialization comes from the single `execute-plan-driver` concurrency group plus the lease in the status
 comment; the driver never waits inside a job. One action per plan per pass; the next event or heartbeat continues.

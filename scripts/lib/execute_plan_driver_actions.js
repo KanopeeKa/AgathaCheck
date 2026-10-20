@@ -5,8 +5,9 @@
  * driver action, or launch the worker for an agent action with `launch: true`.
  * The driver never waits inside a job. Spec: work-packages-platform.md §WP7b, contracts.md §3.5-3.8.
  *
- * `clients` = { bot, read, cursorApiKey, deps? }
+ * `clients` = { bot, read, cursorApiKey, botToken, deps? }
  *   bot  — GitHub client on EXECUTE_PLAN_BOT_TOKEN (writes that must trigger workflows, status, labels)
+ *   botToken — EXECUTE_PLAN_BOT_TOKEN itself, handed to each launched worker (never the GITHUB_TOKEN fallback)
  *   read — GitHub client on GITHUB_TOKEN (reads, workflow_dispatch, the execute-plan-scope check run)
  *   deps — test seams: tick, completePlan, loadPlanContext, publishScopeCheck, launchPlanAgent, getAgentRunStatus
  */
@@ -151,11 +152,13 @@ async function enforceStop(clients, decision, now) {
 }
 
 async function launchWorker(clients, ctx, decision, now) {
-  const { bot, deps, cursorApiKey } = clients;
+  const { bot, deps, cursorApiKey, botToken } = clients;
   const { snapshot, config } = ctx;
   const { action } = decision;
   const a = action.args || {};
   if (!cursorApiKey) throw new Error('cursor_api_key is not available: cannot launch a worker');
+  // A worker holding the owner's token could forge approvals: it must act as the bot or not launch at all.
+  if (!botToken) throw new Error('EXECUTE_PLAN_BOT_TOKEN is not set: refusing to launch a worker');
 
   // New branches for sync resolution and remedial work; the others already exist.
   if (action.kind === 'resolve-sync' || action.kind === 'remedial') {
@@ -173,6 +176,7 @@ async function launchWorker(clients, ctx, decision, now) {
     startingRef: a.branch,
     prompt,
     model,
+    envVars: { GH_TOKEN: botToken, EXECUTE_PLAN_TOKEN: botToken },
   });
   const key = decision.phase || 'release';
   await updateStatus(bot, ctx, (s) => ({

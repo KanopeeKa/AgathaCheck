@@ -332,3 +332,9 @@ test('fake fetch throws on unrecorded request', async () => {
   );
   assert.equal(fake.calls.length, 1);
 });
+
+test('getAuthenticatedUser reads GET /user', async () => {
+  const { gh, fake } = client({ 'GET /user': { body: { login: 'pawpet-bot' } } });
+  assert.equal((await gh.getAuthenticatedUser()).login, 'pawpet-bot');
+  assert.equal(fake.calls[0].key, 'GET /user');
+});

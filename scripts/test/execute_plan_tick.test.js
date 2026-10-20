@@ -36,7 +36,7 @@ const baseStatus = (over = {}) => ({
 });
 const file = (content) => ({ content: typeof content === 'string' ? content : JSON.stringify(content), sha: 's' });
 
-function stubClient({ status = baseStatus(), labels = [], authorized = true, snapshotAtRef = SNAP } = {}) {
+function stubClient({ status = baseStatus(), labels = [], authorized = true, snapshotAtRef = SNAP, identity = 'pawpet-bot' } = {}) {
   const writes = [];
   const refs = [];
   const body = formatStatusComment(status, '');
@@ -48,6 +48,7 @@ function stubClient({ status = baseStatus(), labels = [], authorized = true, sna
       if (path.endsWith('.snapshot.json')) return file(snapshotAtRef);
       return file(PLAN_MD);
     },
+    getAuthenticatedUser: async () => ({ login: identity }),
     getIssue: async () => ({ number: 9, labels: labels.map((name) => ({ name })) }),
     listIssueComments: async () => [
       { id: 1, user: { login: 'pawpet-bot' }, created_at: '2026-10-16T09:01:00Z', updated_at: '2026-10-16T09:01:00Z', body },
@@ -135,4 +136,16 @@ test('watch-ci returns success on completion and failure early', async () => {
   assert.deepEqual(ok, { timedOut: false, conclusion: 'success', failing: [] });
   const bad = await watchCi(ciClient([[ck('ci', 'completed', 'failure')]]), { pr: 5, sleep });
   assert.deepEqual(bad, { timedOut: false, conclusion: 'failure', failing: ['ci'] });
+});
+
+test('worker tick refuses to run unless its token is the bot (exit 3, no writes)', async () => {
+  const owner = stubClient({ identity: 'KanopeeKa' });
+  await assert.rejects(
+    tick(owner.client, { planId: PLAN_ID, controlIssue: 9, now: NOW, actor: 'agent' }),
+    (e) => e.exitCode === 3 && /KanopeeKa, not pawpet-bot/.test(e.message),
+  );
+  assert.deepEqual(owner.writes, []);
+  // the driver is not a worker: its identity is the Actions job, not checked here
+  const driver = stubClient({ identity: 'KanopeeKa' });
+  await tick(driver.client, { planId: PLAN_ID, controlIssue: 9, now: NOW, actor: 'driver' });
 });
