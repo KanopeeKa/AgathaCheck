@@ -3,7 +3,7 @@ title: Execute-plan v2 — platform work packages WP6–WP8 and workflows
 owner: Kanopee
 audience: agent
 status: active
-last_updated: 2026-10-15
+last_updated: 2026-10-20
 tags: [agent, execute-plan, autonomy, github-actions]
 ---
 # Execute-plan v2 — platform work packages WP6–WP8 and workflows
@@ -409,15 +409,24 @@ Each step is a decision; on any unexpected outcome, stop and report.
    then re-check. Close the probe PR without merging.
 3. **Owner** applies runbooks §7.2 (both rulesets, contexts pinned to `integration_id: 15368`) and §7.3.
 4. **Sandbox plan** `scope-probe-0000` (init on `cursor/scope-probe-0000-init`, approved by the owner
-   with a 1-day window, `EXECUTE_PLAN_DRIVER=on` for the duration). Fixture PRs and expected results:
-   (a) out-of-scope file → `execute-plan-scope` red `unclassified`; (b) snapshot edit → red `drift`
-   and the control issue gets `needs-owner`; (c) push of `.github/workflows/x.yml` with the bot
-   token → rejected by GitHub (no `workflow` scope); (d) `docs/architecture/openapi/*.json`
-   companion → green, companion listed; (e) non-plan PR → green; (f) the bot posts a commit status
-   `execute-plan-scope = success` on PR (a)'s head → PR (a) still blocked. Record PR numbers on the
-   control issue, comment `revoke-autonomous scope-probe-0000`, delete the branches, set
-   `EXECUTE_PLAN_DRIVER=dry-run` again.
+   with a 1-day window, `EXECUTE_PLAN_DRIVER=on` for the duration). Fixture files live only in the paths the
+   fixture names: anything under `.agents/plans/` is protected and turns the scope check red `protected`.
+   Run the fixtures in this order, because (b) stops the plan and later plan PRs then show `plan-stopped`:
+   (a) out-of-scope file → `execute-plan-scope` red `unclassified`; (d) `docs/architecture/openapi/*.json`
+   companion only → green `ok`, companion listed; (e) non-plan PR → green; (f) the bot posts a commit status
+   `execute-plan-scope = success` on PR (a)'s head → PR (a) still blocked; (c) push of
+   `.github/workflows/x.yml` **with the bot token in the push URL** → rejected by GitHub (no `workflow`
+   scope); a plain `git push` from a Cursor agent goes through the Cursor GitHub App (`cursor[bot]`) and is
+   accepted, so it does not test the bot token; (b) snapshot edit, last → the plan stops (`drift` in the
+   status comment `stop.reason`), the control issue gets `needs-owner`, and the scope check on the PR reads
+   red `plan-stopped`, because `enforce-stop` re-publishes the check with that title. Record PR numbers on
+   the control issue. The **owner** comments `revoke-autonomous scope-probe-0000`: a revoke posted by the bot
+   is ignored. Then delete the branches and set `EXECUTE_PLAN_DRIVER=dry-run` again.
 5. **Owner** sets `EXECUTE_PLAN_DRIVER=on` when WP9 starts.
 
 **Acceptance:** the six fixture outcomes recorded on the sandbox control issue; both rulesets active
 (`Main protection`, `Execute-plan integration`).
+
+**Result (2026-10-20):** fixtures recorded on #1941. (a), (d) (re-run on #1949), (e) and (f) passed. (b) behaved as
+described above. (c) showed that `cursor[bot]` pushes can add workflow files; the security follow-up is tracked
+outside WP8.
