@@ -16,4 +16,4 @@ tags: [agent-efficiency,plans]
 
 Policies, execute-plan schema, and skills references: [/docs/agent-efficiency/](/docs/agent-efficiency/) (parent folder).
 
-Execute-plan snapshots remain in `.agents/plans/` (link-out only).
+Execute-plan snapshots remain in `.agents/plans/` (link-out only). 
