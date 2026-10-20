@@ -1,0 +1,1 @@
+WP8 fixture (a) out-of-scope
