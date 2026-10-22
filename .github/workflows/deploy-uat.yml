@@ -1,9 +1,6 @@
 name: Deploy UAT (uat.agathatrack.com)
 
 on:
-  push:
-    tags:
-      - 'uat-*'
   workflow_run:
     workflows:
       - 'Promote UAT (tag on merge to main)'
@@ -99,6 +96,7 @@ jobs:
           sparse-checkout: |
             scripts/ci/assert-uat-tag.sh
             scripts/ci/assert-git-ref-exists.sh
+            scripts/ci/assert-uat-tag-commit-on-main.sh
           sparse-checkout-cone-mode: false
 
       - name: Validate UAT tag format
@@ -108,6 +106,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: bash scripts/ci/assert-git-ref-exists.sh "${{ needs.resolve-trigger.outputs.deploy_ref }}" "tags/uat-"
+
+      - name: Verify UAT tag commit is on main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash scripts/ci/assert-uat-tag-commit-on-main.sh "${{ needs.resolve-trigger.outputs.deploy_ref }}"
 
   build-web:
     name: Build Flutter web
@@ -672,6 +675,7 @@ jobs:
     if: >-
       always() && startsWith(needs.resolve-trigger.outputs.deploy_ref, 'uat-')
     runs-on: ubuntu-latest
+    environment: automation
     permissions:
       issues: write
     steps:

@@ -379,7 +379,7 @@ one script under `.github/scripts/`, and the logic lives in `scripts/lib/execute
 | Workflow | Events | Does |
 |----------|--------|------|
 | [`execute-plan-approve.yml`](../../.github/workflows/execute-plan-approve.yml) | `issue_comment` (created, edited, deleted) by the repo owner | Validates `approve-autonomous` / `resume-autonomous` / `revoke-autonomous` on a control issue, creates the integration branch, status comment and labels on approve, then runs one driver pass |
-| [`execute-plan-driver.yml`](../../.github/workflows/execute-plan-driver.yml) | PR, review, `workflow_run` (CI, Pre-UAT, Promote UAT, Deploy UAT), `issues` labels, 30-minute heartbeat, manual dispatch | Runs `tick` for each affected active plan and executes the one driver action it returns |
+| [`execute-plan-driver.yml`](../../.github/workflows/execute-plan-driver.yml) | `pull_request_target` (not fork PRs), `workflow_run` (CI, Pre-UAT, Promote UAT, Deploy UAT), `issues` labels, 30-minute heartbeat, manual dispatch | Runs `tick` for each affected active plan and executes the one driver action it returns |
 
 **Control comments** (one line, on the control issue, by an owner in `.github/execute-plan.config.json`):
 `approve-autonomous <plan> sha256:<hash> until <ISO>`, `resume-autonomous <plan> sha256:<hash> until <ISO>`
@@ -390,14 +390,27 @@ Editing or deleting an approve or resume comment stops the plan on the next pass
 **Kill switch:** repository variable `EXECUTE_PLAN_DRIVER` — `off` (default when unset or unknown: nothing runs),
 `dry-run` (validate and decide, write only the job summary), `on`. Checked first in both scripts.
 
+**Environment and secrets**
+
+Jobs that read automation secrets use GitHub Environment **`automation`** (deployment branches: `main` only). Repository-level copies may exist during migration; environment secrets take precedence once configured.
+
+| Secret / variable | Location |
+|-------------------|----------|
+| `EXECUTE_PLAN_BOT_TOKEN`, `cursor_api_key` / `CURSOR_API_KEY`, `GH_PROJECTS_PAT`, `GH_PROJECT_ID`, `GH_STATUS_FIELD_ID` | `automation` environment |
+| `E2E_BYPASS_TOKEN` | `UAT` environment |
+| Deploy SSH keys and prod/UAT deploy secrets | `UAT` / `PROD` environments |
+| `POSTHOG_*`, PR CI build secrets | repository (unchanged) |
+
 **Tokens**
 
 | Operation | Token |
 |-----------|-------|
 | Reads, `workflow_dispatch` (Pre-UAT, Deploy UAT), the `execute-plan-scope` check run | `GITHUB_TOKEN` |
-| Branches, sync/release PRs, `update-branch`, auto-merge, labels, comments, status comment | `EXECUTE_PLAN_BOT_TOKEN` |
-| Cursor API (worker launch) | `cursor_api_key` |
+| Branches, sync/release PRs, `update-branch`, auto-merge, labels, comments, status comment | `EXECUTE_PLAN_BOT_TOKEN` (from `automation`) |
+| Cursor API (worker launch) | `cursor_api_key` (from `automation`) |
 | Plan workers | the bot token, passed by the driver at launch (`envVars`: `GH_TOKEN`, `EXECUTE_PLAN_TOKEN`); a worker `tick` refuses to run unless its token is `bot_login` |
+
+**Identity (owner):** invite `pawpet-bot` on every repo Cursor uses, add it to the owner's GitHub Project, then set Cursor Cloud Agents `GH_TOKEN` to the bot PAT (see runbooks §7.1).
 
 Per-plan serialization comes from the single `execute-plan-driver` concurrency group plus the lease in the status
 comment; the driver never waits inside a job. One action per plan per pass; the next event or heartbeat continues.

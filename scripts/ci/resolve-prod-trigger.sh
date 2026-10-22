@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Resolve deploy-prod trigger context (workflow_dispatch or release).
+# Resolve deploy-prod trigger context (workflow_dispatch only).
 #
 # Environment:
 #   EVENT_NAME — github.event_name
 #   DISPATCH_REF, DISPATCH_UAT_RUN_ID — workflow_dispatch inputs
-#   RELEASE_SHA — github.sha for release events
+#   DEPLOY_PROOF_JOB — optional; default Prod ready (see execute-plan.config.json)
 #   GITHUB_TOKEN, GITHUB_REPOSITORY
 #
 # Outputs to GITHUB_OUTPUT:
@@ -12,6 +12,8 @@
 set -euo pipefail
 
 EVENT_NAME="${EVENT_NAME:?EVENT_NAME is required}"
+DEPLOY_PROOF_JOB="${DEPLOY_PROOF_JOB:-Prod ready}"
+ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 
 emit_output() {
   local key="$1"
@@ -22,12 +24,9 @@ emit_output() {
   printf '%s=%s\n' "$key" "$value"
 }
 
-skip() {
-  local reason="${1:-skipped}"
-  emit_output proceed false
-  emit_output skip_reason "$reason"
-  echo "::notice::deploy-prod skipped (${reason})"
-  exit 0
+fail() {
+  echo "::error::$1" >&2
+  exit 1
 }
 
 resolve_remote_ref_to_sha() {
@@ -39,54 +38,40 @@ resolve_remote_ref_to_sha() {
   ref="${ref#refs/tags/}"
 
   if ! sha="$(gh api "repos/${repo}/commits/${ref}" --jq .sha 2>/dev/null)"; then
-    echo "::error::Could not resolve git ref '${ref}' on ${repo}" >&2
-    exit 1
+    fail "Could not resolve git ref '${ref}' on ${repo}"
   fi
   if [[ -z "$sha" || "$sha" == "null" ]]; then
-    echo "::error::Could not resolve git ref '${ref}' on ${repo}" >&2
-    exit 1
+    fail "Could not resolve git ref '${ref}' on ${repo}"
   fi
   printf '%s\n' "$sha"
-}
-
-assert_prod_ready_success() {
-  local uat_run_id="$1"
-  local repo="${GITHUB_REPOSITORY:?GITHUB_REPOSITORY is required}"
-  local prod_ready
-  prod_ready="$(
-    gh run view "$uat_run_id" --repo "$repo" --json jobs \
-      --jq '.jobs[] | select(.name=="Prod ready") | .conclusion' | head -1
-  )"
-  if [[ "$prod_ready" != "success" ]]; then
-    skip "prod_ready_not_success"
-  fi
 }
 
 case "$EVENT_NAME" in
   workflow_dispatch)
     DISPATCH_REF="${DISPATCH_REF:?DISPATCH_REF is required for workflow_dispatch}"
-    COMMIT_SHA="$(resolve_remote_ref_to_sha "$DISPATCH_REF")"
-    if [[ -n "${DISPATCH_UAT_RUN_ID:-}" ]]; then
-      assert_prod_ready_success "$DISPATCH_UAT_RUN_ID"
+    DISPATCH_UAT_RUN_ID="${DISPATCH_UAT_RUN_ID:-}"
+    if [[ -z "$DISPATCH_UAT_RUN_ID" ]]; then
+      fail "uat_run_id is required for deploy-prod workflow_dispatch"
     fi
+
+    COMMIT_SHA="$(resolve_remote_ref_to_sha "$DISPATCH_REF")"
+
+    UAT_RUN_ID="$DISPATCH_UAT_RUN_ID" \
+    DISPATCH_REF="$DISPATCH_REF" \
+    REQUESTED_COMMIT_SHA="$COMMIT_SHA" \
+    DEPLOY_PROOF_JOB="$DEPLOY_PROOF_JOB" \
+    GITHUB_REPOSITORY="${GITHUB_REPOSITORY:?}" \
+    GITHUB_TOKEN="${GITHUB_TOKEN:?}" \
+      node "$ROOT/scripts/ci/resolve-prod-dispatch-guard.js"
+
     emit_output proceed true
     emit_output commit_sha "$COMMIT_SHA"
-    emit_output uat_run_id "${DISPATCH_UAT_RUN_ID:-}"
+    emit_output uat_run_id "$DISPATCH_UAT_RUN_ID"
     emit_output target_ref "$DISPATCH_REF"
     emit_output trigger_source workflow_dispatch
     ;;
 
-  release)
-    COMMIT_SHA="${RELEASE_SHA:?RELEASE_SHA is required for release}"
-    emit_output proceed true
-    emit_output commit_sha "$COMMIT_SHA"
-    emit_output uat_run_id ""
-    emit_output target_ref "$COMMIT_SHA"
-    emit_output trigger_source release
-    ;;
-
   *)
-    echo "::error::Unsupported EVENT_NAME: ${EVENT_NAME}" >&2
-    exit 1
+    fail "Unsupported EVENT_NAME for deploy-prod: ${EVENT_NAME}"
     ;;
 esac

@@ -410,13 +410,15 @@ Each step is a decision; on any unexpected outcome, stop and report.
 3. **Owner** applies runbooks §7.2 (both rulesets, contexts pinned to `integration_id: 15368`) and §7.3.
 4. **Sandbox plan** `scope-probe-0000` (init on `cursor/scope-probe-0000-init`, approved by the owner
    with a 1-day window, `EXECUTE_PLAN_DRIVER=on` for the duration). Fixture PRs and expected results:
+   Run **(d) before (b)**. No fixture files under `.agents/plans/` (use `docs/` or `changes/` only).
    (a) out-of-scope file → `execute-plan-scope` red `unclassified`; (b) snapshot edit → red `drift`
-   and the control issue gets `needs-owner`; (c) push of `.github/workflows/x.yml` with the bot
-   token → rejected by GitHub (no `workflow` scope); (d) `docs/architecture/openapi/*.json`
-   companion → green, companion listed; (e) non-plan PR → green; (f) the bot posts a commit status
-   `execute-plan-scope = success` on PR (a)'s head → PR (a) still blocked. Record PR numbers on the
-   control issue, comment `revoke-autonomous scope-probe-0000`, delete the branches, set
-   `EXECUTE_PLAN_DRIVER=dry-run` again.
+   and the control issue gets `needs-owner` (title `plan-stopped` on the status comment); (c) push of
+   `.github/workflows/x.yml` with the bot token → rejected by GitHub (no `workflow` scope); a
+   `cursor[bot]` push may land workflow files but cannot read `automation` secrets on non-`main`
+   branches; (d) `docs/architecture/openapi/*.json` companion → green, companion listed; (e) non-plan
+   PR → green; (f) the bot posts a commit status `execute-plan-scope = success` on PR (a)'s head → PR
+   (a) still blocked. Record PR numbers on the control issue, comment `revoke-autonomous scope-probe-0000`,
+   delete the branches, set `EXECUTE_PLAN_DRIVER=dry-run` again.
 5. **Owner** sets `EXECUTE_PLAN_DRIVER=on` when WP9 starts.
 
 **Acceptance:** the six fixture outcomes recorded on the sandbox control issue; both rulesets active
