@@ -57,6 +57,16 @@ jobs:
             echo "pr_number=$num" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Ensure guard-rail-change label exists
+        if: steps.paths.outputs.has_changes == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          if ! gh label list --repo "$GITHUB_REPOSITORY" --json name --jq '.[].name' | grep -Fxq guard-rail-change; then
+            gh label create guard-rail-change --repo "$GITHUB_REPOSITORY" --color B60205 --description "Alert for .github/** changes on main"
+          fi
+
       - name: Open or update guard-rail issue
         if: steps.paths.outputs.has_changes == 'true'
         env:
