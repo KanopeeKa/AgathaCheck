@@ -27,11 +27,12 @@ owned by another personal account (`owner.type = User`, live read), so this is t
 3. Bot account → Settings → Developer settings → Personal access tokens (classic) → scopes:
    **`repo` only** (no `workflow`, no `admin:*`); expiry 90 days; put the renewal date in a calendar.
 4. Repo → Settings → Secrets and variables → Actions → secret `EXECUTE_PLAN_BOT_TOKEN` = that token.
-5. **Do not change the Cursor `GH_TOKEN`** (it is the owner's identity for all Cursor work). Plan
-   workers act as the bot because the driver passes `GH_TOKEN` and `EXECUTE_PLAN_TOKEN` (the bot
-   token) in the launch request (`envVars` take precedence over dashboard secrets). The only other
-   place the bot token goes in Cursor is a **temporary** secret named `BOT_GH_TOKEN` for WP8
-   (set it before WP8, delete it after). Keep `cursor_api_key` as it is.
+5. **Cursor `GH_TOKEN` (post–#1941):** set Cloud Agents → Secrets → `GH_TOKEN` to the `pawpet-bot`
+   classic PAT after inviting the bot as Write on every repository Cursor touches and adding it to the
+   owner's GitHub Project. Plan workers still receive the bot token from the driver at launch
+   (`envVars` take precedence over dashboard secrets). A **temporary** `BOT_GH_TOKEN` secret in Cursor
+   remains for WP8 verification only (delete after WP8). Keep `cursor_api_key` in the `automation`
+   environment (not the owner dashboard) once environment secrets are configured.
 6. Verify from any shell with the token in `T`:
    - `curl -s -H "Authorization: Bearer $T" https://api.github.com/user | jq -r .login` → the bot login.
    - Pushing a branch that edits `.github/workflows/actionlint.yml` with this token is rejected
@@ -45,6 +46,14 @@ requests RW, Issues RW, Metadata R, Workflows **none**; install on `AgathaCheck`
 `<app-slug>[bot]`. Only worth it if PAT renewal becomes a burden.
 
 ### 7.2 Rulesets
+
+**Guard-rail review (`.github/**`):** create ruleset **Guard-rail review** on `main` with
+`require_code_owner_review` (`.github/CODEOWNERS` → `@KanopeeKa`), **no bypass actors**, enforcement
+**Disabled** while actively editing workflows; switch **Active** when not touching `.github/**` and leave
+Active from WP10 onward. Probe once while Active (0 required approvals still blocks without owner review).
+
+**Execute-plan integration:** after WP8, drop the `deletion` rule from this ruleset and delete branch
+`cursor/scope-probe-0000-integration-0000`.
 
 Every required context is **pinned to GitHub Actions** (`integration_id: 15368`, the id the live
 `main` ruleset already uses). Without the pin, the bot's PAT could post a commit status with the
@@ -97,11 +106,18 @@ lists three contexts, each with `integration_id: 15368`. Do this only after WP8 
 
 ### 7.4 Secrets and variables
 
-| Name | Kind | Value |
-|------|------|-------|
-| `EXECUTE_PLAN_BOT_TOKEN` | secret | §7.1 |
-| `cursor_api_key` | secret | exists |
-| `EXECUTE_PLAN_DRIVER` | variable | `dry-run` after WP7b; `on` for WP8 step 4 and from WP9; `off` = kill switch |
+| Name | Location | Notes |
+|------|----------|-------|
+| `EXECUTE_PLAN_BOT_TOKEN` | `automation` env | §7.1; rotate when moving from repository scope |
+| `cursor_api_key` / `CURSOR_API_KEY` | `automation` env | Cursor User API key for Actions |
+| `GH_PROJECTS_PAT` | `automation` env | fine-grained PAT, Projects read/write |
+| `GH_PROJECT_ID`, `GH_STATUS_FIELD_ID` | `automation` env | from `discover-project-ids.js` |
+| `E2E_BYPASS_TOKEN` | `UAT` env | pre-UAT / E2E bypass paths |
+| `UAT_*` / `PROD_*` deploy secrets | `UAT` / `PROD` envs | deployment branches `main` only |
+| `POSTHOG_API_KEY`, `POSTHOG_PROJECT_ID` | repository | PR CI builds; public key by design |
+| `EXECUTE_PLAN_DRIVER` | repository variable | `dry-run` after WP7b; `on` for WP8 step 4 and from WP9; `off` = kill switch |
+
+Keep repository-level copies of moved secrets until the #1941 PR is merged and verified; then delete repo copies (owner checklist on the PR).
 
 ### 7.5 Day-to-day: approve, resume, revoke
 

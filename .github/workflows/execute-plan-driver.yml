@@ -5,10 +5,8 @@ on:
   workflow_dispatch:
     inputs:
       plan_id: { description: Plan id (empty = all active), required: false }
-  pull_request:
+  pull_request_target:
     types: [opened, ready_for_review, converted_to_draft, synchronize, closed]
-  pull_request_review:
-    types: [submitted]
   workflow_run:
     workflows: ['CI', 'Pre-UAT E2E', 'Promote UAT (tag on merge to main)', 'Deploy UAT (uat.agathatrack.com)']
     types: [completed]
@@ -28,6 +26,7 @@ jobs:
     name: execute-plan-driver
     if: github.event.pull_request == null || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
+    environment: automation
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v5

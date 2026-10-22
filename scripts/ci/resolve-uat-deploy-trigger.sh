@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Resolve deploy-uat trigger context (tag push, workflow_run from promote-uat, dispatch).
+# Resolve deploy-uat trigger context (workflow_run from promote-uat, workflow_dispatch).
 #
 # GitHub does not fire tag-push workflows for refs created with the default
 # GITHUB_TOKEN (see promotion-contract.md). workflow_run from promote-uat is the
@@ -126,15 +126,6 @@ PY
 }
 
 case "$EVENT_NAME" in
-  push)
-    DEPLOY_REF="${GITHUB_REF_NAME:?GITHUB_REF_NAME is required for push}"
-    bash "$(cd "$(dirname "$0")/../.." && pwd)/scripts/ci/assert-uat-tag.sh" "$DEPLOY_REF"
-    emit_output proceed true
-    emit_output deploy_ref "$DEPLOY_REF"
-    emit_output trigger_source tag_push
-    emit_output promote_run_id ""
-    ;;
-
   workflow_dispatch)
     DEPLOY_REF="${DISPATCH_REF:?DISPATCH_REF is required for workflow_dispatch}"
     bash "$(cd "$(dirname "$0")/../.." && pwd)/scripts/ci/assert-uat-tag.sh" "$DEPLOY_REF"

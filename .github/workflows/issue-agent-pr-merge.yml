@@ -1,7 +1,7 @@
 name: Agent PR merge handler
 
 on:
-  pull_request:
+  pull_request_target:
     types: [closed]
     branches: [main]
 
@@ -12,11 +12,17 @@ permissions:
 jobs:
   on-merge:
     name: Update linked issue after merge
-    if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'cursor/')
+    if: >-
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      startsWith(github.event.pull_request.head.ref, 'cursor/')
     runs-on: ubuntu-latest
+    environment: automation
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v5
+        with:
+          ref: main
 
       - uses: actions/setup-node@v5
         with:

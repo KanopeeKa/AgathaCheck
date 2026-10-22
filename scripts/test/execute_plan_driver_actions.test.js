@@ -313,8 +313,12 @@ test('plansForEvent per event type; fork PRs are ignored', async () => {
   const prEvent = (head, base, repo = 'o/r') => ({ pull_request: { head: { ref: head, repo: { full_name: repo } }, base: { ref: base } } });
 
   assert.deepEqual(await run('pull_request', prEvent('cursor/plan-aaa-p1', 'cursor/plan-aaa-integration-1234')), [active[0]]);
+  assert.deepEqual(
+    await run('pull_request_target', prEvent('cursor/plan-aaa-p1', 'cursor/plan-aaa-integration-1234')),
+    [active[0]],
+  );
   assert.deepEqual(await run('pull_request_review', prEvent('cursor/plan-bbb-sync-1', 'cursor/plan-bbb-integration-1234')), [active[1]]);
-  assert.deepEqual(await run('pull_request', prEvent('cursor/plan-aaa-p1', 'x', 'fork/r')), []);
+  assert.deepEqual(await run('pull_request_target', prEvent('cursor/plan-aaa-p1', 'x', 'fork/r')), []);
   assert.deepEqual(await run('pull_request', prEvent('feature/x', 'main')), []);
   const ci = (prs) => ({ workflow_run: { name: 'CI', pull_requests: prs } });
   assert.deepEqual(await run('workflow_run', ci([{ head: { ref: 'cursor/plan-bbb-p2' }, base: { ref: 'cursor/plan-bbb-integration-1234' } }])), [active[1]]);

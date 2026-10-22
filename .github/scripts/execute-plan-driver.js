@@ -26,7 +26,7 @@ async function plansForEvent({ eventName, payload, inputPlanId, repo, client }) 
     return (await active()).filter((p) => ids.has(p.planId));
   };
 
-  if (eventName === 'pull_request' || eventName === 'pull_request_review') {
+  if (eventName === 'pull_request' || eventName === 'pull_request_target' || eventName === 'pull_request_review') {
     const pr = payload.pull_request;
     if (!pr || !pr.head.repo || pr.head.repo.full_name !== repo) return []; // fork PRs are ignored
     return fromRefs([{ head_ref: pr.head.ref, base_ref: pr.base.ref }]);
