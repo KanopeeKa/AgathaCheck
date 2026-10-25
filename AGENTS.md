@@ -121,6 +121,13 @@ Web build: `flutter build web --release --no-tree-shake-icons`
 
 User-facing dates are calendar days (`YYYY-MM-DD` on the wire). See `docs/architecture/calendar-dates.md`.
 
+### Cursor Cloud GitHub identity
+
+On **Cursor Cloud**, default git/`gh` identity is **`pawpet-bot`** (dashboard **`GH_TOKEN`** = bot classic PAT, **`repo` only**). GitHub Actions agent launches pass the same token via **`EXECUTE_PLAN_BOT_TOKEN`** → Cursor `envVars`.
+
+- **Owner mode:** user must opt in with **`/runasme`** — follow `.cursor/skills/run-as-me/SKILL.md` and use **`OWNER_GH_TOKEN`**.
+- **Policy and secret layout:** `.cursor/skills/cloud-github-identity/SKILL.md` · `docs/engineering/cursor-cloud-environment.md`.
+
 ## GitHub issues
 
 Agents can comment, close and add/remove labels; they cannot move GitHub Project board columns (no Projects write on

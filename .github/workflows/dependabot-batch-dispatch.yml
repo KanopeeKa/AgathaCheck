@@ -34,6 +34,7 @@ jobs:
 
       - name: Launch Cursor agent (/dependabot-batch)
         env:
+          EXECUTE_PLAN_BOT_TOKEN: ${{ secrets.EXECUTE_PLAN_BOT_TOKEN }}
           cursor_api_key: ${{ secrets.cursor_api_key }}
           CURSOR_AGENT_MODEL: composer-2.5
           DRY_RUN: ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run == true) && 'true' || 'false' }}

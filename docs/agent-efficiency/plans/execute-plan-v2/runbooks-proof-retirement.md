@@ -27,12 +27,15 @@ owned by another personal account (`owner.type = User`, live read), so this is t
 3. Bot account → Settings → Developer settings → Personal access tokens (classic) → scopes:
    **`repo` only** (no `workflow`, no `admin:*`); expiry 90 days; put the renewal date in a calendar.
 4. Repo → Settings → Secrets and variables → Actions → secret `EXECUTE_PLAN_BOT_TOKEN` = that token.
-5. **Cursor `GH_TOKEN` (post–#1941):** set Cloud Agents → Secrets → `GH_TOKEN` to the `pawpet-bot`
-   classic PAT after inviting the bot as Write on every repository Cursor touches and adding it to the
-   owner's GitHub Project. Plan workers still receive the bot token from the driver at launch
-   (`envVars` take precedence over dashboard secrets). A **temporary** `BOT_GH_TOKEN` secret in Cursor
-   remains for WP8 verification only (delete after WP8). Keep `cursor_api_key` in the `automation`
-   environment (not the owner dashboard) once environment secrets are configured.
+5. **Cursor Cloud identity (post–#1941):** invite `pawpet-bot` as Write on every repository Cursor touches
+   and add it to the owner's GitHub Project. Dashboard secrets:
+   - **`GH_TOKEN`** = `pawpet-bot` classic PAT (`repo` only) — **default** for Cloud Agents.
+   - **`OWNER_GH_TOKEN`** = owner PAT — only when the user invokes **`/runasme`** (skill:
+     `.cursor/skills/run-as-me/SKILL.md`).
+   - **`BOT_GH_TOKEN`** optional legacy alias of the bot PAT; prefer a single bot value in `GH_TOKEN`.
+   Plan workers and Actions-dispatched agents receive the bot token from **`EXECUTE_PLAN_BOT_TOKEN`**
+   via launch `envVars` (`GH_TOKEN`, `EXECUTE_PLAN_TOKEN`). Keep `cursor_api_key` in the `automation`
+   environment once environment secrets are configured.
 6. Verify from any shell with the token in `T`:
    - `curl -s -H "Authorization: Bearer $T" https://api.github.com/user | jq -r .login` → the bot login.
    - Pushing a branch that edits `.github/workflows/actionlint.yml` with this token is rejected

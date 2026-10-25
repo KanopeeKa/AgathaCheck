@@ -11,6 +11,20 @@ tags: [agent, engineering, cursor, environment]
 
 Cursor Cloud Agents only. Shared toolchain and commands: [`AGENTS.md`](../../AGENTS.md) §Toolchain.
 
+## GitHub identity secrets (dashboard)
+
+Configure under **Cursor → Cloud Agents → Secrets** (runtime secrets apply to all repos in the dashboard scope).
+
+| Secret | Set to | Used when |
+|--------|--------|-----------|
+| **`GH_TOKEN`** | `pawpet-bot` classic PAT (`repo` only) | **Default** Cloud Agent git/`gh` |
+| **`OWNER_GH_TOKEN`** | Owner classic PAT (`repo`; avoid `workflow` unless accepted) | User invokes **`/runasme`** — `.cursor/skills/run-as-me/SKILL.md` |
+| **`BOT_GH_TOKEN`** | Optional; same as bot PAT | Legacy; prefer only **`GH_TOKEN`** for bot |
+
+GitHub Actions uses **`EXECUTE_PLAN_BOT_TOKEN`** in the **`automation`** environment (not the dashboard) for execute-plan and for `envVars` on issue/dispatch agent launches. Project board updates use **`GH_PROJECTS_PAT`** in **`automation`**, not the bot PAT.
+
+Full policy: `.cursor/skills/cloud-github-identity/SKILL.md`.
+
 - Flutter 3.44.0 at `/opt/flutter/bin`, provisioned by `.cursor/Dockerfile`
 - Environment: `.cursor/environment.json` + `.cursor/Dockerfile` — install/start via `.cursor/scripts/cloud-*.sh`
 

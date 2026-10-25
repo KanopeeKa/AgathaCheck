@@ -43,7 +43,20 @@ async function cursorApi(method, path, apiKey, body) {
   return payload;
 }
 
-async function launchAgent({ apiKey, repoUrl, promptText, model }) {
+/**
+ * Bot token for Cursor launch envVars (matches execute-plan driver).
+ * @param {NodeJS.ProcessEnv} [env]
+ * @returns {Record<string, string>|undefined}
+ */
+function botLaunchEnvVars(env = process.env) {
+  const botToken = env.EXECUTE_PLAN_BOT_TOKEN;
+  if (!botToken || !String(botToken).trim()) {
+    return undefined;
+  }
+  return { GH_TOKEN: botToken, EXECUTE_PLAN_TOKEN: botToken };
+}
+
+async function launchAgent({ apiKey, repoUrl, promptText, model, envVars }) {
   const body = {
     prompt: { text: promptText },
     repos: [{ url: repoUrl, startingRef: 'main' }],
@@ -53,6 +66,11 @@ async function launchAgent({ apiKey, repoUrl, promptText, model }) {
 
   if (model) {
     body.model = { id: model };
+  }
+
+  const launchEnv = envVars ?? botLaunchEnvVars();
+  if (launchEnv && Object.keys(launchEnv).length > 0) {
+    body.envVars = launchEnv;
   }
 
   return cursorApi('POST', '/v1/agents', apiKey, body);
@@ -169,4 +187,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { launchAgent };
+module.exports = { launchAgent, botLaunchEnvVars };

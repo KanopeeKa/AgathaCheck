@@ -410,7 +410,10 @@ Jobs that read automation secrets use GitHub Environment **`automation`** (deplo
 | Cursor API (worker launch) | `cursor_api_key` (from `automation`) |
 | Plan workers | the bot token, passed by the driver at launch (`envVars`: `GH_TOKEN`, `EXECUTE_PLAN_TOKEN`); a worker `tick` refuses to run unless its token is `bot_login` |
 
-**Identity (owner):** invite `pawpet-bot` on every repo Cursor uses, add it to the owner's GitHub Project, then set Cursor Cloud Agents `GH_TOKEN` to the bot PAT (see runbooks §7.1).
+**Identity:** invite `pawpet-bot` on every repo Cursor uses and add it to your GitHub Project. Cursor dashboard:
+**`GH_TOKEN`** = bot PAT (default); **`OWNER_GH_TOKEN`** = your PAT for **`/runasme`** only (`.cursor/skills/run-as-me/SKILL.md`).
+Issue/dispatch launches pass **`EXECUTE_PLAN_BOT_TOKEN`** as Cursor `envVars`. See runbooks §7.1 and
+`docs/engineering/cursor-cloud-environment.md`.
 
 Per-plan serialization comes from the single `execute-plan-driver` concurrency group plus the lease in the status
 comment; the driver never waits inside a job. One action per plan per pass; the next event or heartbeat continues.
