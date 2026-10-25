@@ -113,7 +113,7 @@ lists three contexts, each with `integration_id: 15368`. Do this only after WP8 
 |------|----------|-------|
 | `EXECUTE_PLAN_BOT_TOKEN` | `automation` env | §7.1; rotate when moving from repository scope |
 | `cursor_api_key` / `CURSOR_API_KEY` | `automation` env | Cursor User API key for Actions |
-| `GH_PROJECTS_PAT` | `automation` env | fine-grained PAT, Projects read/write |
+| `GH_PROJECTS_PAT` | `automation` env | classic PAT (`project`, `repo`) — fine-grained PATs cannot reach user-owned Projects |
 | `GH_PROJECT_ID`, `GH_STATUS_FIELD_ID` | `automation` env | from `discover-project-ids.js` |
 | `E2E_BYPASS_TOKEN` | `UAT` env | pre-UAT / E2E bypass paths |
 | `UAT_*` / `PROD_*` deploy secrets | `UAT` / `PROD` envs | deployment branches `main` only |

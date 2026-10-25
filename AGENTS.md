@@ -123,7 +123,7 @@ User-facing dates are calendar days (`YYYY-MM-DD` on the wire). See `docs/archit
 
 ### Cursor Cloud GitHub identity
 
-On **Cursor Cloud**, default git/`gh` identity is **`pawpet-bot`** (dashboard **`GH_TOKEN`** = bot classic PAT, **`repo` only**). GitHub Actions agent launches pass the same token via **`EXECUTE_PLAN_BOT_TOKEN`** → Cursor `envVars`.
+On **Cursor Cloud**, default `gh`/API identity is **`pawpet-bot`** (dashboard **`GH_TOKEN`** = bot classic PAT, **`repo` only**); git pushes and Cursor-created PRs always go through the Cursor GitHub App. GitHub Actions agent launches pass the bot token via **`EXECUTE_PLAN_BOT_TOKEN`** → Cursor `envVars`.
 
 - **Owner mode:** user must opt in with **`/runasme`** — follow `.cursor/skills/run-as-me/SKILL.md` and use **`OWNER_GH_TOKEN`**.
 - **Policy and secret layout:** `.cursor/skills/cloud-github-identity/SKILL.md` · `docs/engineering/cursor-cloud-environment.md`.

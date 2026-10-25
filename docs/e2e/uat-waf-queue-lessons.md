@@ -127,7 +127,7 @@ WAF-only smoke failures should be `infra_failed` (#331) so later merges keep pro
 **Fixes:**
 
 - **#344:** `enqueueEntry` auto-`setBarrier` when a newer merge follows a `failed` head (not `remedial`)
-- **Manual recovery:** `set-barrier --sha <good-merge>` + push `uat-YYMMDD-PR` tag if promote was already skipped
+- **Manual recovery:** `set-barrier --sha <good-merge>` + push `uat-YYMMDD-PR` tag if promote was already skipped, then dispatch `deploy-uat.yml` on `main` with `deploy_ref=<tag>` (a tag push alone no longer deploys; the tag commit must be on `main`)
 
 ### 9. Coordinator dispatch crashed on `require()` — fix launch guard (#346)
 
@@ -241,9 +241,10 @@ node scripts/uat_queue_runtime.js health-check
 # If head is failed and blocking:
 node scripts/uat_queue_runtime.js set-barrier --sha <merge-on-main> --write --issue 313
 
-# Manual tag if promote already skipped (repo admin)
+# Manual tag if promote already skipped (repo admin); <merge-sha> must be on main
 git tag uat-YYMMDD-<pr> <merge-sha>
 git push origin uat-YYMMDD-<pr>
+gh workflow run deploy-uat.yml --ref main -f deploy_ref=uat-YYMMDD-<pr>
 ```
 
 ### After merging a WAF fix

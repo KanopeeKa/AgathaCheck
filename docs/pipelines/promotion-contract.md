@@ -127,6 +127,20 @@ No manual version input at deploy time.
 
 ## Prod deploy behaviour
 
+**Trigger and proof (#1941).** `deploy-prod.yml` runs only on `workflow_dispatch` with both `ref` and
+`uat_run_id` (dispatched by `deploy-uat.yml` → `trigger-prod-promotion` after a green `Prod ready`; there is no
+`release` trigger). `resolve-trigger` runs the guard from `main` (`scripts/lib/resolve_prod_dispatch_guard.js`) and
+refuses unless:
+
+1. `uat_run_id` is a `.github/workflows/deploy-uat.yml` run on `main` whose `uat.deploy_proof_job`
+   (`.github/execute-plan.config.json`, today `Prod ready`) concluded `success`;
+2. the deployed `uat-*` tag, read from that job's log (`DEPLOY_REF:`), resolves via `refs/tags/` to the same commit as `ref`;
+3. that commit is on `main` — `compare(<sha>...main)` is `ahead` or `identical` (never `branches-where-head`,
+   which only matches branch tips).
+
+The deploy job checks out the validated `commit_sha`, not `ref`. `deploy-uat.yml` applies the same on-`main` check
+to every `uat-*` tag before building (`scripts/ci/assert-uat-tag-commit-on-main.js`).
+
 | `PROD_DEPLOY_ENABLED` | FTP/SSH deploy | Release tag | Workflow conclusion |
 |-----------------------|----------------|-------------|---------------------|
 | unset / `false` | **Skipped** | `vX.Y.Z-rc.N` | **Success** — job `Production deploy skipped (intentional)` |
