@@ -1,6 +1,7 @@
 ---
 name: babysit-plus
 description: Autonomous PR operator — mandatory pre-PR critical self-review, triage review comments (must-fix / nits / ignore), apply fixes, track debt issues, CI retry loop, and squash merge when gates pass. Use during /execute-plan intermediate phases or when full autonomous PR hygiene is needed without pre-UAT. Policy lives in docs/agent-efficiency/autonomous-pr-policy.md.
+disable-model-invocation: true
 ---
 
 # Babysit+
@@ -10,7 +11,7 @@ Autonomous PR operator. Extends lightweight `/babysit` with mandatory triage, de
 **Canonical policy (do not restate here):** `docs/agent-efficiency/autonomous-pr-policy.md`  
 **Phase exit profiles:** `docs/agent-efficiency/phase-exit-checklists.md`  
 **Labels / dedupe:** `docs/agent-efficiency/github-labels.md`  
-**Lightweight sibling:** `.cursor/commands/babysit.md` — use plain babysit when debt tracking and merge automation are not required.  
+**Lightweight sibling:** `/babysit` (`.cursor/skills/babysit/SKILL.md`) or built-in `/autopilot` for cloud handoff — use when debt tracking and merge automation are not required.  
 **Pre-UAT sibling:** `.cursor/skills/babysit-uat/SKILL.md` — final merge to `main` when pre-UAT E2E must pass.
 
 During `/execute-plan`, use **/babysit-plus** for intermediate phase PRs and **/babysit-uat** for the **final** PR to `main` — never plain `/babysit` alone.
