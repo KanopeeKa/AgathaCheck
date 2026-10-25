@@ -96,21 +96,27 @@ jobs:
           sparse-checkout: |
             scripts/ci/assert-uat-tag.sh
             scripts/ci/assert-git-ref-exists.sh
-            scripts/ci/assert-uat-tag-commit-on-main.sh
+            scripts/ci/assert-uat-tag-commit-on-main.js
+            scripts/lib/execute_plan_github.js
+            scripts/lib/main_ancestry.js
           sparse-checkout-cone-mode: false
 
       - name: Validate UAT tag format
-        run: bash scripts/ci/assert-uat-tag.sh "${{ needs.resolve-trigger.outputs.deploy_ref }}"
+        env:
+          DEPLOY_REF: ${{ needs.resolve-trigger.outputs.deploy_ref }}
+        run: bash scripts/ci/assert-uat-tag.sh "$DEPLOY_REF"
 
       - name: Verify UAT tag exists on origin
         env:
+          DEPLOY_REF: ${{ needs.resolve-trigger.outputs.deploy_ref }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: bash scripts/ci/assert-git-ref-exists.sh "${{ needs.resolve-trigger.outputs.deploy_ref }}" "tags/uat-"
+        run: bash scripts/ci/assert-git-ref-exists.sh "$DEPLOY_REF" "tags/uat-"
 
       - name: Verify UAT tag commit is on main
         env:
+          DEPLOY_REF: ${{ needs.resolve-trigger.outputs.deploy_ref }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: bash scripts/ci/assert-uat-tag-commit-on-main.sh "${{ needs.resolve-trigger.outputs.deploy_ref }}"
+        run: node scripts/ci/assert-uat-tag-commit-on-main.js
 
   build-web:
     name: Build Flutter web

@@ -1,84 +1,29 @@
 'use strict';
 
-const { rest } = require('../../.github/scripts/github-project-lib');
+/**
+ * deploy-prod workflow_dispatch proof: the requested ref must be the commit a green deploy-uat
+ * run on main actually deployed, and that commit must be on main.
+ *
+ * The deployed ref is read from the proof job log (`DEPLOY_REF: uat-…` env echo, the same
+ * source execute-plan uses), not inferred from the run's head_sha: workflow_run and
+ * workflow_dispatch runs carry main's head at trigger time, not the tag commit.
+ */
+
+const { parseProofJobLog } = require('./execute_plan_uat_observe');
+const { UAT_TAG, stripRefPrefix, commitIsOnMain } = require('./main_ancestry');
 
 const DEPLOY_UAT_WORKFLOW_PATH = '.github/workflows/deploy-uat.yml';
-
-function yymmddFromIso(iso) {
-  if (!iso || iso.length < 10) {
-    return null;
-  }
-  return iso.slice(2, 4) + iso.slice(5, 7) + iso.slice(8, 10);
-}
-
-async function tagCommitSha(owner, repo, tagName, token) {
-  const ref = await rest('GET', `/repos/${owner}/${repo}/git/ref/tags/${tagName}`, token);
-  let obj = ref.object;
-  if (obj.type === 'tag') {
-    const tagObj = await rest('GET', `/repos/${owner}/${repo}/git/tags/${obj.sha}`, token);
-    obj = tagObj.object;
-  }
-  return obj.sha;
-}
-
-async function resolvePrForCommit(owner, repo, commitSha, token) {
-  const pulls = await rest('GET', `/repos/${owner}/${repo}/commits/${commitSha}/pulls`, token);
-  if (!Array.isArray(pulls) || pulls.length !== 1) {
-    return null;
-  }
-  return pulls[0].number;
-}
-
-async function resolveUatTagForCommit(owner, repo, commitSha, yymmdd, token) {
-  const prNumber = await resolvePrForCommit(owner, repo, commitSha, token);
-  if (!prNumber || !yymmdd) {
-    return null;
-  }
-  const tag = `uat-${yymmdd}-${prNumber}`;
-  try {
-    const tagSha = await tagCommitSha(owner, repo, tag, token);
-    if (tagSha === commitSha) {
-      return tag;
-    }
-  } catch {
-    return null;
-  }
-  return null;
-}
-
-/** Same resolution path as scripts/lib/uat_deploy_run_resolve.js extractDeployRefFromWorkflowRun. */
-async function extractDeployRefFromWorkflowRun(owner, repo, runId, token) {
-  const run = await rest('GET', `/repos/${owner}/${repo}/actions/runs/${runId}`, token);
-  const commitSha = run.head_sha;
-  if (!commitSha) {
-    return null;
-  }
-  if (run.head_branch && /^uat-\d{6}-\d+$/.test(run.head_branch)) {
-    return run.head_branch;
-  }
-  const yymmdd = yymmddFromIso(run.created_at || run.run_started_at);
-  const fastTag = await resolveUatTagForCommit(owner, repo, commitSha, yymmdd, token);
-  if (fastTag) {
-    return fastTag;
-  }
-  return null;
-}
+const LOG_RETRY_DELAYS_MS = [5000, 10000, 20000];
 
 function normalizeSha(sha) {
   return String(sha || '').trim().toLowerCase();
 }
 
-/**
- * @param {Array<{ name?: string, conclusion?: string }>} jobs
- */
-function prodReadyConclusion(jobs, deployProofJob) {
-  const job = (jobs || []).find((j) => j.name === deployProofJob);
-  return job ? job.conclusion : null;
+function findJob(jobs, name) {
+  return (jobs || []).find((j) => j.name === name) || null;
 }
 
-/**
- * Pure validation of a deploy-uat workflow run record (GitHub API shape).
- */
+/** Pure validation of a deploy-uat workflow run record (GitHub API shape plus `jobs`). */
 function validateUatRunRecord(run, deployProofJob) {
   const reasons = [];
   if (!run || typeof run !== 'object') {
@@ -91,116 +36,92 @@ function validateUatRunRecord(run, deployProofJob) {
   if ((run.head_branch || '') !== 'main') {
     reasons.push(`head_branch_not_main:${run.head_branch || '<missing>'}`);
   }
-  const prodReady = prodReadyConclusion(run.jobs, deployProofJob);
-  if (prodReady !== 'success') {
-    reasons.push(`prod_ready_not_success:${prodReady || 'missing'}`);
+  const proof = findJob(run.jobs, deployProofJob);
+  const conclusion = proof ? proof.conclusion : null;
+  if (conclusion !== 'success') {
+    reasons.push(`prod_ready_not_success:${conclusion || 'missing'}`);
   }
   return { ok: reasons.length === 0, reasons };
 }
 
-function assertDispatchProof({
-  uatRunId,
-  dispatchRef,
-  requestedCommitSha,
-  deployedCommitSha,
-  commitOnMain,
-}) {
-  if (!uatRunId || !String(uatRunId).trim()) {
-    return { ok: false, code: 'uat_run_id_required' };
-  }
-  if (!dispatchRef || !String(dispatchRef).trim()) {
-    return { ok: false, code: 'dispatch_ref_required' };
-  }
-  if (!requestedCommitSha) {
-    return { ok: false, code: 'requested_commit_unresolved' };
-  }
-  if (!deployedCommitSha) {
-    return { ok: false, code: 'deployed_commit_unresolved' };
-  }
+function assertDispatchProof({ uatRunId, dispatchRef, requestedCommitSha, deployedCommitSha, commitOnMain }) {
+  if (!uatRunId || !String(uatRunId).trim()) return { ok: false, code: 'uat_run_id_required' };
+  if (!dispatchRef || !String(dispatchRef).trim()) return { ok: false, code: 'dispatch_ref_required' };
+  if (!requestedCommitSha) return { ok: false, code: 'requested_commit_unresolved' };
+  if (!deployedCommitSha) return { ok: false, code: 'deployed_commit_unresolved' };
   if (normalizeSha(requestedCommitSha) !== normalizeSha(deployedCommitSha)) {
-    return {
-      ok: false,
-      code: 'deployed_commit_mismatch',
-      requestedCommitSha,
-      deployedCommitSha,
-    };
+    return { ok: false, code: 'deployed_commit_mismatch', requestedCommitSha, deployedCommitSha };
   }
-  if (!commitOnMain) {
-    return { ok: false, code: 'commit_not_on_main', requestedCommitSha };
-  }
-  return { ok: true, commitSha: requestedCommitSha };
+  if (!commitOnMain) return { ok: false, code: 'commit_not_on_main', requestedCommitSha };
+  return { ok: true, commitSha: normalizeSha(requestedCommitSha) };
 }
 
-function parseRepo(fullName) {
-  const [owner, repo] = String(fullName || '').split('/');
-  if (!owner || !repo) {
-    throw new Error(`Invalid GITHUB_REPOSITORY: ${fullName}`);
+/** The proof job log can 404 for a few seconds after the job completes. */
+async function readProofLog(client, jobId, sleep) {
+  for (let attempt = 0; ; attempt += 1) {
+    try {
+      return await client.getJobLog(jobId);
+    } catch (e) {
+      const missing = e && (e.status === 404 || e.status === 410);
+      if (!missing) throw e;
+      if (attempt >= LOG_RETRY_DELAYS_MS.length) return null;
+      await sleep(LOG_RETRY_DELAYS_MS[attempt]);
+    }
   }
-  return { owner, repo };
 }
 
-async function resolveRefToCommitSha(owner, repo, ref, token) {
-  const cleaned = String(ref).replace(/^refs\/(heads|tags)\//, '');
-  const commit = await rest('GET', `/repos/${owner}/${repo}/commits/${cleaned}`, token);
-  return commit.sha;
-}
-
-async function commitIsOnMainBranch(owner, repo, commitSha, token) {
-  const branches = await rest(
-    'GET',
-    `/repos/${owner}/${repo}/commits/${commitSha}/branches-where-head`,
-    token,
-  );
-  return Array.isArray(branches) && branches.some((b) => b.name === 'main');
+async function resolveCommitOrNull(client, ref) {
+  try {
+    return await client.getCommitSha(ref);
+  } catch (e) {
+    if (e && (e.status === 404 || e.status === 422)) return null;
+    throw e;
+  }
 }
 
 /**
- * Validate workflow_dispatch promotion inputs against a green deploy-uat run on main.
+ * @param {object} client createGitHubClient() result
+ * @returns {Promise<{ ok: boolean, code?: string, commitSha?: string, deployRef?: string }>}
  */
-async function validateProdDispatchFromApi({
-  uatRunId,
-  dispatchRef,
-  requestedCommitSha,
-  deployProofJob,
-  repository,
-  token,
-}) {
-  const { owner, repo } = parseRepo(repository);
-  const run = await rest('GET', `/repos/${owner}/${repo}/actions/runs/${uatRunId}`, token);
-  const jobsPayload = await rest(
-    'GET',
-    `/repos/${owner}/${repo}/actions/runs/${uatRunId}/jobs?per_page=100`,
-    token,
-  );
-  const runWithJobs = { ...run, jobs: jobsPayload.jobs || [] };
-  const meta = validateUatRunRecord(runWithJobs, deployProofJob);
-  if (!meta.ok) {
-    return { ok: false, code: meta.reasons.join(';') };
+async function validateProdDispatch(client, { uatRunId, dispatchRef, deployProofJob, sleep }) {
+  const wait = sleep || ((ms) => new Promise((r) => setTimeout(r, ms)));
+  const runId = String(uatRunId || '').trim();
+  const ref = stripRefPrefix(dispatchRef);
+  if (!/^\d+$/.test(runId)) return { ok: false, code: 'uat_run_id_required' };
+  if (!ref) return { ok: false, code: 'dispatch_ref_required' };
+
+  let run;
+  try {
+    run = await client.getWorkflowRun(runId);
+  } catch (e) {
+    if (e && e.status === 404) return { ok: false, code: 'uat_run_not_found' };
+    throw e;
   }
+  const jobs = await client.listRunJobs(runId);
+  const meta = validateUatRunRecord({ ...run, jobs }, deployProofJob);
+  if (!meta.ok) return { ok: false, code: meta.reasons.join(';') };
 
-  const deployRef = await extractDeployRefFromWorkflowRun(owner, repo, uatRunId, token);
-  if (!deployRef) {
-    return { ok: false, code: 'deploy_ref_not_resolved' };
-  }
+  const log = await readProofLog(client, findJob(jobs, deployProofJob).id, wait);
+  const { deploy_ref: deployRef } = parseProofJobLog(log);
+  if (!deployRef || !UAT_TAG.test(deployRef)) return { ok: false, code: 'deploy_ref_not_resolved' };
 
-  const deployedCommitSha = await resolveRefToCommitSha(owner, repo, deployRef, token);
-  const commitOnMain = await commitIsOnMainBranch(owner, repo, deployedCommitSha, token);
-
-  return assertDispatchProof({
-    uatRunId,
-    dispatchRef,
+  const requestedCommitSha = await resolveCommitOrNull(client, ref);
+  const deployedCommitSha = await resolveCommitOrNull(client, `refs/tags/${deployRef}`);
+  const commitOnMain = deployedCommitSha ? await commitIsOnMain(client, deployedCommitSha) : false;
+  const result = assertDispatchProof({
+    uatRunId: runId,
+    dispatchRef: ref,
     requestedCommitSha,
     deployedCommitSha,
     commitOnMain,
   });
+  return result.ok ? { ...result, deployRef } : result;
 }
 
 module.exports = {
   DEPLOY_UAT_WORKFLOW_PATH,
+  LOG_RETRY_DELAYS_MS,
   validateUatRunRecord,
   assertDispatchProof,
-  validateProdDispatchFromApi,
-  resolveRefToCommitSha,
-  commitIsOnMainBranch,
-  prodReadyConclusion,
+  validateProdDispatch,
 };

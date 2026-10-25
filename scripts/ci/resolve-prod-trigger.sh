@@ -4,7 +4,7 @@
 # Environment:
 #   EVENT_NAME — github.event_name
 #   DISPATCH_REF, DISPATCH_UAT_RUN_ID — workflow_dispatch inputs
-#   DEPLOY_PROOF_JOB — optional; default Prod ready (see execute-plan.config.json)
+#   DEPLOY_PROOF_JOB — optional override; default uat.deploy_proof_job in .github/execute-plan.config.json
 #   GITHUB_TOKEN, GITHUB_REPOSITORY
 #
 # Outputs to GITHUB_OUTPUT:
@@ -12,7 +12,6 @@
 set -euo pipefail
 
 EVENT_NAME="${EVENT_NAME:?EVENT_NAME is required}"
-DEPLOY_PROOF_JOB="${DEPLOY_PROOF_JOB:-Prod ready}"
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 
 emit_output() {
@@ -29,23 +28,6 @@ fail() {
   exit 1
 }
 
-resolve_remote_ref_to_sha() {
-  local ref="$1"
-  local repo="${GITHUB_REPOSITORY:?GITHUB_REPOSITORY is required}"
-  local sha
-
-  ref="${ref#refs/heads/}"
-  ref="${ref#refs/tags/}"
-
-  if ! sha="$(gh api "repos/${repo}/commits/${ref}" --jq .sha 2>/dev/null)"; then
-    fail "Could not resolve git ref '${ref}' on ${repo}"
-  fi
-  if [[ -z "$sha" || "$sha" == "null" ]]; then
-    fail "Could not resolve git ref '${ref}' on ${repo}"
-  fi
-  printf '%s\n' "$sha"
-}
-
 case "$EVENT_NAME" in
   workflow_dispatch)
     DISPATCH_REF="${DISPATCH_REF:?DISPATCH_REF is required for workflow_dispatch}"
@@ -54,15 +36,15 @@ case "$EVENT_NAME" in
       fail "uat_run_id is required for deploy-prod workflow_dispatch"
     fi
 
-    COMMIT_SHA="$(resolve_remote_ref_to_sha "$DISPATCH_REF")"
-
-    UAT_RUN_ID="$DISPATCH_UAT_RUN_ID" \
-    DISPATCH_REF="$DISPATCH_REF" \
-    REQUESTED_COMMIT_SHA="$COMMIT_SHA" \
-    DEPLOY_PROOF_JOB="$DEPLOY_PROOF_JOB" \
-    GITHUB_REPOSITORY="${GITHUB_REPOSITORY:?}" \
-    GITHUB_TOKEN="${GITHUB_TOKEN:?}" \
-      node "$ROOT/scripts/ci/resolve-prod-dispatch-guard.js"
+    COMMIT_SHA="$(
+      UAT_RUN_ID="$DISPATCH_UAT_RUN_ID" \
+      DISPATCH_REF="$DISPATCH_REF" \
+      DEPLOY_PROOF_JOB="${DEPLOY_PROOF_JOB:-}" \
+      GITHUB_REPOSITORY="${GITHUB_REPOSITORY:?GITHUB_REPOSITORY is required}" \
+      GITHUB_TOKEN="${GITHUB_TOKEN:?GITHUB_TOKEN is required}" \
+        node "$ROOT/scripts/ci/resolve-prod-dispatch-guard.js"
+    )" || fail "deploy-prod dispatch guard refused ref '${DISPATCH_REF}' (uat_run_id=${DISPATCH_UAT_RUN_ID})"
+    [[ "$COMMIT_SHA" =~ ^[0-9a-f]{40}$ ]] || fail "deploy-prod dispatch guard returned no commit SHA"
 
     emit_output proceed true
     emit_output commit_sha "$COMMIT_SHA"
