@@ -22,9 +22,29 @@ concurrency:
   group: execute-plan-driver
   cancel-in-progress: false
 jobs:
+  # The automation environment only admits ref main, and pull_request_target runs on the PR base ref,
+  # so PRs into integration branches wake the driver through a dispatch on main instead.
+  relay:
+    name: execute-plan-driver relay
+    if: >-
+      github.event_name == 'pull_request_target' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.base.ref != 'main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: write
+    steps:
+      - name: Dispatch driver on main
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run execute-plan-driver.yml --repo "$GITHUB_REPOSITORY" --ref main
   drive:
     name: execute-plan-driver
-    if: github.event.pull_request == null || github.event.pull_request.head.repo.full_name == github.repository
+    if: >-
+      github.event_name != 'pull_request_target' ||
+      (github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.base.ref == 'main')
     runs-on: ubuntu-latest
     environment: automation
     timeout-minutes: 15
