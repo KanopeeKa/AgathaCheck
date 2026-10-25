@@ -89,6 +89,7 @@ async function validateProdDispatch(client, { uatRunId, dispatchRef, deployProof
   const ref = stripRefPrefix(dispatchRef);
   if (!/^\d+$/.test(runId)) return { ok: false, code: 'uat_run_id_required' };
   if (!ref) return { ok: false, code: 'dispatch_ref_required' };
+  if (!/^[A-Za-z0-9._/-]+$/.test(ref) || ref.includes('..')) return { ok: false, code: 'dispatch_ref_invalid' };
 
   let run;
   try {

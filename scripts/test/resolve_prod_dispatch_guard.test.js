@@ -109,6 +109,8 @@ test('validateProdDispatch refuses bad run id, unknown run and wrong run shape',
   assert.equal((await run(gh, { uatRunId: '' })).code, 'uat_run_id_required');
   assert.equal((await run(gh, { uatRunId: '42/../1' })).code, 'uat_run_id_required');
   assert.equal((await run(gh, { dispatchRef: '' })).code, 'dispatch_ref_required');
+  assert.equal((await run(gh, { dispatchRef: '../../actions/runs/42' })).code, 'dispatch_ref_invalid');
+  assert.equal((await run(gh, { dispatchRef: 'uat-1$(id)' })).code, 'dispatch_ref_invalid');
   assert.equal((await run(gh, { uatRunId: '43' })).code, 'uat_run_not_found');
   const other = client({ [`GET ${R}/actions/runs/42`]: { body: { path: '.github/workflows/ci.yml', head_branch: 'main' } } });
   assert.match((await run(other.gh)).code, /wrong_workflow/);
