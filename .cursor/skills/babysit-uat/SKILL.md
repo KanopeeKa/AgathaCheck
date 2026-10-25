@@ -1,6 +1,7 @@
 ---
 name: babysit-uat
 description: Babysit+ through merge, then gate on pre-UAT E2E on main. On failure delegates remedial work to /e2e-debug, then merges remedial PR and re-watches. Does not poll promote-uat or deploy-uat.
+disable-model-invocation: true
 ---
 
 # Babysit-UAT

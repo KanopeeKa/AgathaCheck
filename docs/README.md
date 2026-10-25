@@ -198,7 +198,7 @@ Agent-focused documentation and skills:
 | Location | Purpose |
 |----------|---------|
 | [/.cursor/skills/](/.cursor/skills/) | Reusable agent skills (split screens, BDD, etc.) |
-| [/.cursor/commands/](/.cursor/commands/) | Agent command definitions |
+| [/.cursor/skills/](/.cursor/skills/) | Agent skills (Tier 1 slash workflows) |
 | [/.cursor/BUGBOT.md](/.cursor/BUGBOT.md) | BugBot configuration |
 | [/AGENTS.md](/AGENTS.md) | Agent quick-start and workflows |
 

@@ -26,7 +26,7 @@ Decision: `DOCUMENTATION-STANDARDS-D-008` in [standards.md](../domains/documenta
 | L1 Shared entry | `AGENTS.md` | Operating rules, toolchain, commands, policy index | Always, every agent |
 | L1 Agent entry | `CLAUDE.md`, `.github/copilot-instructions.md`, `replit.md`, `.cursor/rules/agent-core.mdc` | **Only** that agent's mechanics + a pointer to `AGENTS.md` | Always, that agent |
 | L2 Rules | `.cursor/rules/*.mdc` | One home per engineering rule, path-scoped | By path (Claude via `.claude/rules/` pointer wrappers) |
-| L3 Procedures | `.cursor/skills/*/SKILL.md` (canonical), `.claude/skills/*` (pointers + adaptations), `.cursor/commands/*` | Step-by-step workflows | On invocation |
+| L3 Procedures | `.cursor/skills/*/SKILL.md` (canonical), `.claude/skills/*` (pointers + adaptations) | Step-by-step workflows | On invocation (`disable-model-invocation: true` for Tier 1 slash skills) |
 | L4 Reference | `docs/agent-efficiency/*`, `docs/architecture/*`, `.cursor/agent-kernel/*` | Policy detail, schemas, checklists | Read on demand — never imported |
 | L5 Memory | `.agents/memory/` | Agent lessons only (standards rule 10) | Index on demand |
 
