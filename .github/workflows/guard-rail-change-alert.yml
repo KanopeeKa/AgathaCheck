@@ -28,10 +28,11 @@ jobs:
           BEFORE_SHA: ${{ github.event.before }}
         run: |
           set -euo pipefail
-          if [ "${BEFORE_SHA}" = "0000000000000000000000000000000000000000" ] || [ -z "${BEFORE_SHA}" ]; then
-            mapfile -t files < <(git diff --name-only HEAD -- '.github/**' | sort -u)
-          else
+          # First push, force-push or unreachable before: fall back to the files of the pushed commit.
+          if [ -n "${BEFORE_SHA}" ] && git cat-file -e "${BEFORE_SHA}^{commit}" 2>/dev/null; then
             mapfile -t files < <(git diff --name-only "${BEFORE_SHA}" "${GITHUB_SHA}" -- '.github/**' | sort -u)
+          else
+            mapfile -t files < <(git show --name-only --format= "${GITHUB_SHA}" -- '.github/**' | sort -u)
           fi
           if [ "${#files[@]}" -eq 0 ]; then
             echo "has_changes=false" >> "$GITHUB_OUTPUT"
@@ -44,18 +45,19 @@ jobs:
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 
-      - name: Find linked PR number
+      - name: Find linked PR and commit author
         id: pr
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          num="$(gh api "repos/${GITHUB_REPOSITORY}/commits/${GITHUB_SHA}/pulls" --jq '.[0].number' 2>/dev/null || true)"
-          if [ -z "$num" ] || [ "$num" = "null" ]; then
-            echo "pr_number=" >> "$GITHUB_OUTPUT"
-          else
-            echo "pr_number=$num" >> "$GITHUB_OUTPUT"
-          fi
+          pr="$(gh api "repos/${GITHUB_REPOSITORY}/commits/${GITHUB_SHA}/pulls" --jq '.[0] | select(.) | "\(.number) \(.user.login)"' 2>/dev/null || true)"
+          author="$(gh api "repos/${GITHUB_REPOSITORY}/commits/${GITHUB_SHA}" --jq '.author.login // .commit.author.name' 2>/dev/null || true)"
+          {
+            echo "pr_number=${pr%% *}"
+            echo "pr_author=$([ -n "$pr" ] && echo "${pr#* }")"
+            echo "commit_author=${author:-unknown}"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Ensure guard-rail-change label exists
         if: steps.paths.outputs.has_changes == 'true'
@@ -73,12 +75,14 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CHANGED_FILES: ${{ steps.paths.outputs.files }}
           PR_NUMBER: ${{ steps.pr.outputs.pr_number }}
+          PR_AUTHOR: ${{ steps.pr.outputs.pr_author }}
+          COMMIT_AUTHOR: ${{ steps.pr.outputs.commit_author }}
         run: |
           set -euo pipefail
           title="Guard-rail change on main (${GITHUB_SHA:0:7})"
-          pr_line="PR: n/a"
+          pr_cell="n/a"
           if [ -n "${PR_NUMBER}" ]; then
-            pr_line="PR: #${PR_NUMBER}"
+            pr_cell="#${PR_NUMBER} by @${PR_AUTHOR}"
           fi
           body=$(cat <<EOF
           Guard-rail paths changed on \`main\`.
@@ -86,8 +90,9 @@ jobs:
           | Field | Value |
           |-------|-------|
           | Commit | \`${GITHUB_SHA}\` |
-          | Author | \`${GITHUB_ACTOR}\` |
-          | ${pr_line} | |
+          | Commit author | \`${COMMIT_AUTHOR}\` |
+          | Pushed / merged by | \`${GITHUB_ACTOR}\` |
+          | PR | ${pr_cell} |
 
           ### Changed files
           \`\`\`
