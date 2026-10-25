@@ -234,8 +234,8 @@ from GitHub Actions, required on `main` and integration branches after WP8).
    `status.launches` and set `status.lease` (bot).
 4. One action per plan per pass; the next event or heartbeat continues.
 
-**`.github/scripts/execute-plan-driver.js` — `plansForEvent`:** `pull_request` /
-`pull_request_review` → plan from the PR refs (`planIdFromRefs`); `workflow_run` of `CI` → the
+**`.github/scripts/execute-plan-driver.js` — `plansForEvent`:** `pull_request` / `pull_request_target` /
+`pull_request_review` → plan from the PR refs (PR events now arrive as a relayed `workflow_dispatch`, see above) (`planIdFromRefs`); `workflow_run` of `CI` → the
 plans of `workflow_run.pull_requests[]` (all active plans when empty); other `workflow_run`,
 `schedule`, `workflow_dispatch` without `plan_id` → `listActivePlans`; `workflow_dispatch` with
 `plan_id` → that plan; `issues` → the plan from the issue's `plan:<id>` label. Fork PRs are ignored.
@@ -283,7 +283,9 @@ jobs:
 `tick` re-validates the authorizing comment on every pass, so an edit that changes the comment
 prefix (and therefore skips this workflow) is still caught by the next driver pass.
 
-**`.github/workflows/execute-plan-driver.yml`**
+**`.github/workflows/execute-plan-driver.yml`** (as designed; hardened in #1941 — the workflow file is the source of
+truth: `pull_request_target` replaces `pull_request`/`pull_request_review` and only runs a secret-less `relay` job that
+dispatches the driver on `main`; `drive` runs in the `main`-only `automation` environment with job-level concurrency)
 ```yaml
 name: Execute-plan driver
 on:
@@ -410,13 +412,15 @@ Each step is a decision; on any unexpected outcome, stop and report.
 3. **Owner** applies runbooks §7.2 (both rulesets, contexts pinned to `integration_id: 15368`) and §7.3.
 4. **Sandbox plan** `scope-probe-0000` (init on `cursor/scope-probe-0000-init`, approved by the owner
    with a 1-day window, `EXECUTE_PLAN_DRIVER=on` for the duration). Fixture PRs and expected results:
+   Run **(d) before (b)**. No fixture files under `.agents/plans/` (use `docs/` or `changes/` only).
    (a) out-of-scope file → `execute-plan-scope` red `unclassified`; (b) snapshot edit → red `drift`
-   and the control issue gets `needs-owner`; (c) push of `.github/workflows/x.yml` with the bot
-   token → rejected by GitHub (no `workflow` scope); (d) `docs/architecture/openapi/*.json`
-   companion → green, companion listed; (e) non-plan PR → green; (f) the bot posts a commit status
-   `execute-plan-scope = success` on PR (a)'s head → PR (a) still blocked. Record PR numbers on the
-   control issue, comment `revoke-autonomous scope-probe-0000`, delete the branches, set
-   `EXECUTE_PLAN_DRIVER=dry-run` again.
+   and the control issue gets `needs-owner` (title `plan-stopped` on the status comment); (c) push of
+   `.github/workflows/x.yml` with the bot token → rejected by GitHub (no `workflow` scope); a
+   `cursor[bot]` push may land workflow files but cannot read `automation` secrets on non-`main`
+   branches; (d) `docs/architecture/openapi/*.json` companion → green, companion listed; (e) non-plan
+   PR → green; (f) the bot posts a commit status `execute-plan-scope = success` on PR (a)'s head → PR
+   (a) still blocked. Record PR numbers on the control issue, comment `revoke-autonomous scope-probe-0000`,
+   delete the branches, set `EXECUTE_PLAN_DRIVER=dry-run` again.
 5. **Owner** sets `EXECUTE_PLAN_DRIVER=on` when WP9 starts.
 
 **Acceptance:** the six fixture outcomes recorded on the sandbox control issue; both rulesets active

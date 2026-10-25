@@ -8,15 +8,12 @@ on:
         description: 'Git ref validated on UAT (commit SHA, tag, or branch)'
         required: true
       uat_run_id:
-        description: UAT workflow run ID with green Prod ready (recommended)
-        required: false
+        description: UAT workflow run ID with green Prod ready (required)
+        required: true
       rebuild_if_missing:
         description: Rebuild web if promoted artifact is missing/expired (audited fallback)
         type: boolean
         default: false
-  release:
-    types: [published]
-
 env:
   FLUTTER_VERSION: '3.44.0'
   PROD_BASE_URL: https://agathatrack.com
@@ -49,7 +46,13 @@ jobs:
           fetch-depth: 1
           sparse-checkout: |
             scripts/ci/resolve-prod-trigger.sh
+            scripts/ci/resolve-prod-dispatch-guard.js
             scripts/ci/append-summary.sh
+            scripts/lib/resolve_prod_dispatch_guard.js
+            scripts/lib/execute_plan_github.js
+            scripts/lib/execute_plan_uat_observe.js
+            scripts/lib/main_ancestry.js
+            .github/execute-plan.config.json
           sparse-checkout-cone-mode: false
 
       - name: Begin job timing
@@ -61,7 +64,6 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           DISPATCH_REF: ${{ github.event_name == 'workflow_dispatch' && inputs.ref || '' }}
           DISPATCH_UAT_RUN_ID: ${{ github.event_name == 'workflow_dispatch' && inputs.uat_run_id || '' }}
-          RELEASE_SHA: ${{ github.sha }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: bash scripts/ci/resolve-prod-trigger.sh
 
@@ -146,7 +148,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          ref: ${{ needs.resolve-trigger.outputs.target_ref }}
+          ref: ${{ needs.resolve-trigger.outputs.commit_sha }}
 
       - name: Begin job timing
         run: echo "JOB_START_EPOCH=$(date +%s)" >> "$GITHUB_ENV"

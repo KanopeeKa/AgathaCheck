@@ -5,10 +5,8 @@ on:
   workflow_dispatch:
     inputs:
       plan_id: { description: Plan id (empty = all active), required: false }
-  pull_request:
+  pull_request_target:
     types: [opened, ready_for_review, converted_to_draft, synchronize, closed]
-  pull_request_review:
-    types: [submitted]
   workflow_run:
     workflows: ['CI', 'Pre-UAT E2E', 'Promote UAT (tag on merge to main)', 'Deploy UAT (uat.agathatrack.com)']
     types: [completed]
@@ -20,14 +18,31 @@ permissions:
   pull-requests: write
   actions: write
   checks: write
-concurrency:
-  group: execute-plan-driver
-  cancel-in-progress: false
 jobs:
+  # PR events never get secrets: pull_request_target runs on the PR base ref (rejected by the main-only
+  # automation environment for integration bases), so a secret-less relay re-dispatches the driver on main.
+  relay:
+    name: execute-plan-driver relay
+    if: >-
+      github.event_name == 'pull_request_target' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: write
+    steps:
+      - name: Dispatch driver on main
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run execute-plan-driver.yml --repo "$GITHUB_REPOSITORY" --ref main
   drive:
     name: execute-plan-driver
-    if: github.event.pull_request == null || github.event.pull_request.head.repo.full_name == github.repository
+    if: github.event_name != 'pull_request_target'
     runs-on: ubuntu-latest
+    environment: automation
+    concurrency:
+      group: execute-plan-driver
+      cancel-in-progress: false
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v5

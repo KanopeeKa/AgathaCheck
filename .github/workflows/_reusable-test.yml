@@ -98,6 +98,11 @@ jobs:
       - name: Execute-plan runtime tests
         run: node --test scripts/execute_plan_runtime.test.js scripts/test/execute_plan_*.test.js
 
+      - name: Deploy guard and bot identity tests
+        run: >-
+          node --test scripts/test/resolve_prod_dispatch_guard.test.js scripts/test/main_ancestry.test.js
+          scripts/test/launch_cursor_agent_bot_env.test.js
+
       - name: CI gate assertion tests
         run: node --test scripts/ci/assert-ci-gate.test.js
 

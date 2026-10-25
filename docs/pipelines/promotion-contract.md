@@ -75,11 +75,8 @@ After merge, **`pre-uat-e2e.yml`** runs full Playwright localhost shards on `ori
 HEAD (async, non-blocking). **`promote-uat.yml`** chains via `workflow_run` when Pre-UAT
 is green at current HEAD (throttle skips stale runs).
 
-**Tag push → deploy chain:** `promote-uat.yml` creates `uat-*` tags after Pre-UAT E2E green
-(auto `workflow_run` or manual `workflow_dispatch` with `commit_sha` + `pr_number`). GitHub does **not** fire `on: push: tags` workflows for those refs
-(to prevent recursive runs). **`deploy-uat.yml`** therefore also listens for
-`workflow_run` after **Promote UAT** completes and resolves the tag for the merge
-commit. Manual tag pushes (non-`GITHUB_TOKEN`) still trigger `deploy-uat` via tag push.
+**Promote → deploy chain:** `promote-uat.yml` creates `uat-*` tags after Pre-UAT E2E green
+(auto `workflow_run` or manual `workflow_dispatch` with `commit_sha` + `pr_number`). GitHub does **not** fire `on: push: tags` workflows for tags created with the default `GITHUB_TOKEN`. **`deploy-uat.yml`** listens for `workflow_run` after **Promote UAT** completes and resolves the tag for the merge commit. Manual UAT deploy uses **Run workflow** on `main` with a `uat-*` tag whose commit is on `main` (tag-push trigger removed; see issue #1941).
 
 We rely on:
 
@@ -129,6 +126,20 @@ No manual version input at deploy time.
 ---
 
 ## Prod deploy behaviour
+
+**Trigger and proof (#1941).** `deploy-prod.yml` runs only on `workflow_dispatch` with both `ref` and
+`uat_run_id` (dispatched by `deploy-uat.yml` → `trigger-prod-promotion` after a green `Prod ready`; there is no
+`release` trigger). `resolve-trigger` runs the guard from `main` (`scripts/lib/resolve_prod_dispatch_guard.js`) and
+refuses unless:
+
+1. `uat_run_id` is a `.github/workflows/deploy-uat.yml` run on `main` whose `uat.deploy_proof_job`
+   (`.github/execute-plan.config.json`, today `Prod ready`) concluded `success`;
+2. the deployed `uat-*` tag, read from that job's log (`DEPLOY_REF:`), resolves via `refs/tags/` to the same commit as `ref`;
+3. that commit is on `main` — `compare(<sha>...main)` is `ahead` or `identical` (never `branches-where-head`,
+   which only matches branch tips).
+
+The deploy job checks out the validated `commit_sha`, not `ref`. `deploy-uat.yml` applies the same on-`main` check
+to every `uat-*` tag before building (`scripts/ci/assert-uat-tag-commit-on-main.js`).
 
 | `PROD_DEPLOY_ENABLED` | FTP/SSH deploy | Release tag | Workflow conclusion |
 |-----------------------|----------------|-------------|---------------------|

@@ -285,6 +285,8 @@ function createGitHubClient(opts) {
         files: (data.files || []).map((f) => ({ filename: f.filename, status: f.status })),
       };
     },
+    /** Commit SHA a branch, tag (annotated tags are peeled) or SHA resolves to. */
+    getCommitSha: async (ref) => (await rest('GET', `/commits/${String(ref).split('/').map(enc).join('/')}`)).sha,
     listTags: ({ pages } = {}) => paginate('/tags', { pages }),
     getBranch: (branch) => rest('GET', `/branches/${enc(branch)}`, { nullOn404: true }),
     createRef: (ref, sha) => rest('POST', '/git/refs', { body: { ref, sha } }),
@@ -305,6 +307,7 @@ function createGitHubClient(opts) {
         itemsKey: 'workflow_runs',
         query: { branch, event, status, per_page },
       }),
+    getWorkflowRun: (runId) => rest('GET', `/actions/runs/${enc(runId)}`),
     listRunJobs: (runId, { pages } = {}) => paginate(`/actions/runs/${runId}/jobs`, { pages, itemsKey: 'jobs' }),
     async getJobLog(jobId) {
       const first = await send('GET', `${repoPath}/actions/jobs/${jobId}/logs`, { redirect: 'manual' });

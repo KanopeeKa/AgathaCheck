@@ -13,6 +13,7 @@ jobs:
     name: Deterministic issue triage
     if: github.event.label.name == 'human-reviewed'
     runs-on: ubuntu-latest
+    environment: automation
     timeout-minutes: 10
     steps:
       - name: Checkout repository

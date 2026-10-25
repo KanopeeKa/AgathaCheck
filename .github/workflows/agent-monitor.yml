@@ -15,6 +15,7 @@ jobs:
   monitor:
     name: Monitor Cursor agent runs
     runs-on: ubuntu-latest
+    environment: automation
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v5

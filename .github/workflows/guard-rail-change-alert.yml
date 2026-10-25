@@ -1,0 +1,111 @@
+# Secondary control: alerts when .github/** changes on main. A malicious commit can remove
+# this workflow in the same push; primary signal is PR merge notifications (owner watches repo).
+name: Guard-rail change alert
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/**'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  alert:
+    name: Open guard-rail change issue
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Collect changed paths under .github
+        id: paths
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+        run: |
+          set -euo pipefail
+          # First push, force-push or unreachable before: fall back to the files of the pushed commit.
+          if [ -n "${BEFORE_SHA}" ] && git cat-file -e "${BEFORE_SHA}^{commit}" 2>/dev/null; then
+            mapfile -t files < <(git diff --name-only "${BEFORE_SHA}" "${GITHUB_SHA}" -- '.github/**' | sort -u)
+          else
+            mapfile -t files < <(git show --name-only --format= "${GITHUB_SHA}" -- '.github/**' | sort -u)
+          fi
+          if [ "${#files[@]}" -eq 0 ]; then
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          {
+            echo "has_changes=true"
+            echo "files<<EOF"
+            printf '%s\n' "${files[@]}"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Find linked PR and commit author
+        id: pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          pr="$(gh api "repos/${GITHUB_REPOSITORY}/commits/${GITHUB_SHA}/pulls" --jq '.[0] | select(.) | "\(.number) \(.user.login)"' 2>/dev/null || true)"
+          author="$(gh api "repos/${GITHUB_REPOSITORY}/commits/${GITHUB_SHA}" --jq '.author.login // .commit.author.name' 2>/dev/null || true)"
+          {
+            echo "pr_number=${pr%% *}"
+            echo "pr_author=$([ -n "$pr" ] && echo "${pr#* }")"
+            echo "commit_author=${author:-unknown}"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Ensure guard-rail-change label exists
+        if: steps.paths.outputs.has_changes == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          if ! gh label list --repo "$GITHUB_REPOSITORY" --json name --jq '.[].name' | grep -Fxq guard-rail-change; then
+            gh label create guard-rail-change --repo "$GITHUB_REPOSITORY" --color B60205 --description "Alert for .github/** changes on main"
+          fi
+
+      - name: Open or update guard-rail issue
+        if: steps.paths.outputs.has_changes == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CHANGED_FILES: ${{ steps.paths.outputs.files }}
+          PR_NUMBER: ${{ steps.pr.outputs.pr_number }}
+          PR_AUTHOR: ${{ steps.pr.outputs.pr_author }}
+          COMMIT_AUTHOR: ${{ steps.pr.outputs.commit_author }}
+        run: |
+          set -euo pipefail
+          title="Guard-rail change on main (${GITHUB_SHA:0:7})"
+          pr_cell="n/a"
+          if [ -n "${PR_NUMBER}" ]; then
+            pr_cell="#${PR_NUMBER} by @${PR_AUTHOR}"
+          fi
+          body=$(cat <<EOF
+          Guard-rail paths changed on \`main\`.
+
+          | Field | Value |
+          |-------|-------|
+          | Commit | \`${GITHUB_SHA}\` |
+          | Commit author | \`${COMMIT_AUTHOR}\` |
+          | Pushed / merged by | \`${GITHUB_ACTOR}\` |
+          | PR | ${pr_cell} |
+
+          ### Changed files
+          \`\`\`
+          ${CHANGED_FILES}
+          \`\`\`
+
+          This issue is opened/updated automatically by \`guard-rail-change-alert.yml\` (secondary control).
+          EOF
+          )
+          existing="$(gh issue list --repo "$GITHUB_REPOSITORY" --label guard-rail-change --state open --json number,title --jq '.[0].number' 2>/dev/null || true)"
+          if [ -n "$existing" ] && [ "$existing" != "null" ]; then
+            gh issue comment "$existing" --repo "$GITHUB_REPOSITORY" --body "$body"
+            gh issue edit "$existing" --repo "$GITHUB_REPOSITORY" --title "$title"
+          else
+            gh issue create --repo "$GITHUB_REPOSITORY" --title "$title" --label guard-rail-change --body "$body"
+          fi
