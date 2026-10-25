@@ -5,12 +5,7 @@ description: >-
   and at-risk shards, parallel shard workers on one remedial branch, local isolated
   shard replay. Use when pre-UAT is red, proactively before CI finishes on high-risk
   merges, or when /babysit-uat or /execute-plan delegates remedial work.
-paths:
-  - e2e/**
-  - scripts/babysit_uat*.sh
-  - scripts/babysit_uat*.mjs
-  - scripts/e2e_debug*.mjs
-  - scripts/e2e_debug_status.mjs
+disable-model-invocation: true
 ---
 
 # E2E debug

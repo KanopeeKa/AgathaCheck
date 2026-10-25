@@ -1,9 +1,7 @@
 ---
 name: ui-design-deep
 description: In-depth UX, accessibility, and design-system review for new flows, landing/auth refresh, theme changes, or multi-screen consistency. Router design-scoped profile; use accessibility protocol quick pass for routine polish.
-paths:
-  - flutter_app/lib/**
-  - docs/design/**
+disable-model-invocation: true
 ---
 
 # UI design deep

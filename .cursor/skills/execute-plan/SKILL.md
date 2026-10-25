@@ -3,6 +3,7 @@ name: execute-plan
 description: >-
   Multi-phase autonomous orchestrator — frozen snapshot, phase loop, babysit+/uat.
   Contract: AGENTS.md §Operating rules › Execute-plan. Valid stops: §Stop rules below.
+disable-model-invocation: true
 ---
 
 # Execute-plan

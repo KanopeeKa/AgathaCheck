@@ -18,8 +18,9 @@ alwaysApply: true
 | Command | Use for |
 |---------|---------|
 | `/execute-plan` | Multi-phase plans — [`execute-plan` skill](../skills/execute-plan/SKILL.md) |
-| `/babysit-plus` | PR triage, CI, merge |
-| `/babysit-uat` | Final merge to `main` + pre-UAT |
+| `/babysit` or `/autopilot` | Lightweight PR merge-ready loop — [`babysit` skill](../skills/babysit/SKILL.md); cloud handoff via built-in `/autopilot` |
+| `/babysit-plus` | PR triage, CI, merge — [`babysit-plus` skill](../skills/babysit-plus/SKILL.md) |
+| `/babysit-uat` | Final merge to `main` + pre-UAT — [`babysit-uat` skill](../skills/babysit-uat/SKILL.md) |
 | `/e2e-debug` | Pre-UAT remedial → chain babysit-uat |
 | `/ui-design-deep` | Multi-screen design + implementation |
 

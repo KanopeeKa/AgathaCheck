@@ -19,6 +19,7 @@ Normal day-to-day workflows:
 | Command | Purpose |
 |---------|---------|
 | `/execute-plan` | Multi-phase plans — skill + `AGENTS.md` §Execute-plan; platform deltas: [instruction stack](../agent-efficiency/execute-plan-instruction-stack.md) |
+| `/babysit` or `/autopilot` | Lightweight PR merge-ready loop — `.cursor/skills/babysit/SKILL.md`; cloud handoff via built-in `/autopilot` |
 | `/babysit-plus` | Bounded autonomous work: implement or PR triage → CI → merge |
 | `/babysit-uat` | Final merge to `main` + pre-UAT E2E watch + remedial loop |
 | `/e2e-debug` | Pre-UAT forensic fix on one remedial branch (hands off to babysit-uat) |
@@ -32,7 +33,7 @@ You do **not** invoke internal protocols (`security`, `authorization`, etc.) —
 
 ### Tier 1 — primary (document prominently)
 
-The five commands above.
+The commands above (Tier 1 skills live under `.cursor/skills/` with `disable-model-invocation: true`).
 
 ### Tier 2 — internal / advanced (orchestrator may invoke)
 

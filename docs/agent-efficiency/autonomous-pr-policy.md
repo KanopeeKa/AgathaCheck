@@ -17,7 +17,7 @@ Single source of truth for `/babysit`, `/babysit-plus`, and `/execute-plan`. Ski
 | Plan snapshot schema | [execute-plan-schema.md](./execute-plan-schema.md) |
 | Phase exit profiles | [phase-exit-checklists.md](./phase-exit-checklists.md) |
 | GitHub labels | [github-labels.md](./github-labels.md) |
-| Lightweight PR loop | `.cursor/commands/babysit.md` |
+| Lightweight PR loop | `.cursor/skills/babysit/SKILL.md` (cloud handoff: built-in `/autopilot`) |
 | Babysit+ skill | `.cursor/skills/babysit-plus/SKILL.md` |
 | Execute-plan skill | `.cursor/skills/execute-plan/SKILL.md` |
 | Runtime CLI | [execute-plan-runtime.md](./execute-plan-runtime.md) |
@@ -28,7 +28,7 @@ Single source of truth for `/babysit`, `/babysit-plus`, and `/execute-plan`. Ski
 
 | Entry | Role |
 |-------|------|
-| `/babysit` | Lightweight: sync, conflicts, comments, CI, push |
+| `/babysit` | Lightweight: sync, conflicts, comments, CI, push (skill; optional cloud handoff via `/autopilot`) |
 | `/babysit-plus` | Autonomous PR operator: triage, fixes, debt issues, CI budget, **always merge** |
 | `/babysit-uat` | Babysit+ + pre-UAT E2E gate on final merge to `main` |
 | `/execute-plan` | Multi-phase orchestrator; babysit+ on phases; babysit-uat on final main merge |

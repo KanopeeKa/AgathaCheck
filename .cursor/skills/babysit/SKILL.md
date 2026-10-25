@@ -1,11 +1,18 @@
 ---
 name: babysit
-description: Keep a PR merge-ready by triaging comments, resolving clear conflicts, and fixing CI in a loop.
+description: Lightweight AgathaTrack PR loop — sync base, conflicts, review threads, CI, push until merge-ready. For Cursor cloud PR handoff use built-in /autopilot first; use this skill for in-repo scripts and policy.
+disable-model-invocation: true
 ---
 
-# Babysit PR
+# Babysit PR (lightweight)
 
-Your job is to get this PR to a merge-ready state.
+Your job is to get this PR to a **merge-ready** state (do not merge unless the user explicitly asks).
+
+## Cursor cloud handoff
+
+When the user wants a **background cloud agent** on the PR (monitor feedback, CI, conflicts remotely), run built-in **`/autopilot`** on that PR, then continue with AgathaTrack checks below in this repo when you remain in session.
+
+For **in-session** babysitting (scripts, Router, pre-push), follow the steps below.
 
 **Model:** **`composer-2.5` only** — switch before starting if needed. See `docs/agent-efficiency/pr-review-cost-efficiency.md`.
 
@@ -27,6 +34,8 @@ Check PR status, comments, and latest CI and resolve any issues until the PR is 
 8. **Push** scoped fixes and re-watch CI until mergeable + green + comments triaged. Run `./scripts/babysit_sync_base.sh --pr <url> --check` before each push; `--push` only when behind.
 
 **After merge to `main`:** CI runs Pre-UAT E2E and promotion automatically — babysit+ does not spawn agents or poll deploy (babysit-plus §8).
+
+**Heavier workflows:** `/babysit-plus` (phase PRs, merge automation) · `/babysit-uat` (final merge to `main` + pre-UAT) — see `docs/agent-efficiency/autonomous-pr-policy.md`.
 
 Escalate to human when: security/crypto changes, breaking API contracts, migration risk, or product/legal decisions.
 
