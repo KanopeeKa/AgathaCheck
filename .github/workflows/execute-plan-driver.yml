@@ -18,18 +18,14 @@ permissions:
   pull-requests: write
   actions: write
   checks: write
-concurrency:
-  group: execute-plan-driver
-  cancel-in-progress: false
 jobs:
-  # The automation environment only admits ref main, and pull_request_target runs on the PR base ref,
-  # so PRs into integration branches wake the driver through a dispatch on main instead.
+  # PR events never get secrets: pull_request_target runs on the PR base ref (rejected by the main-only
+  # automation environment for integration bases), so a secret-less relay re-dispatches the driver on main.
   relay:
     name: execute-plan-driver relay
     if: >-
       github.event_name == 'pull_request_target' &&
-      github.event.pull_request.head.repo.full_name == github.repository &&
-      github.event.pull_request.base.ref != 'main'
+      github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
@@ -41,12 +37,12 @@ jobs:
         run: gh workflow run execute-plan-driver.yml --repo "$GITHUB_REPOSITORY" --ref main
   drive:
     name: execute-plan-driver
-    if: >-
-      github.event_name != 'pull_request_target' ||
-      (github.event.pull_request.head.repo.full_name == github.repository &&
-      github.event.pull_request.base.ref == 'main')
+    if: github.event_name != 'pull_request_target'
     runs-on: ubuntu-latest
     environment: automation
+    concurrency:
+      group: execute-plan-driver
+      cancel-in-progress: false
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v5

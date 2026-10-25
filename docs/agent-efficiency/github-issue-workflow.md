@@ -379,7 +379,7 @@ one script under `.github/scripts/`, and the logic lives in `scripts/lib/execute
 | Workflow | Events | Does |
 |----------|--------|------|
 | [`execute-plan-approve.yml`](../../.github/workflows/execute-plan-approve.yml) | `issue_comment` (created, edited, deleted) by the repo owner | Validates `approve-autonomous` / `resume-autonomous` / `revoke-autonomous` on a control issue, creates the integration branch, status comment and labels on approve, then runs one driver pass |
-| [`execute-plan-driver.yml`](../../.github/workflows/execute-plan-driver.yml) | `pull_request_target` (not fork PRs), `workflow_run` (CI, Pre-UAT, Promote UAT, Deploy UAT), `issues` labels, 30-minute heartbeat, manual dispatch | Runs `tick` for each affected active plan and executes the one driver action it returns |
+| [`execute-plan-driver.yml`](../../.github/workflows/execute-plan-driver.yml) | `pull_request_target` (not fork PRs; a secret-less relay job re-dispatches the driver on `main`), `workflow_run` (CI, Pre-UAT, Promote UAT, Deploy UAT), `issues` labels, 30-minute heartbeat, manual dispatch | Runs `tick` for each affected active plan and executes the one driver action it returns |
 
 **Control comments** (one line, on the control issue, by an owner in `.github/execute-plan.config.json`):
 `approve-autonomous <plan> sha256:<hash> until <ISO>`, `resume-autonomous <plan> sha256:<hash> until <ISO>`

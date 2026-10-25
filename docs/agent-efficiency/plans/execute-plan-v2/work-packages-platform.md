@@ -234,8 +234,8 @@ from GitHub Actions, required on `main` and integration branches after WP8).
    `status.launches` and set `status.lease` (bot).
 4. One action per plan per pass; the next event or heartbeat continues.
 
-**`.github/scripts/execute-plan-driver.js` — `plansForEvent`:** `pull_request` /
-`pull_request_review` → plan from the PR refs (`planIdFromRefs`); `workflow_run` of `CI` → the
+**`.github/scripts/execute-plan-driver.js` — `plansForEvent`:** `pull_request` / `pull_request_target` /
+`pull_request_review` → plan from the PR refs (PR events now arrive as a relayed `workflow_dispatch`, see above) (`planIdFromRefs`); `workflow_run` of `CI` → the
 plans of `workflow_run.pull_requests[]` (all active plans when empty); other `workflow_run`,
 `schedule`, `workflow_dispatch` without `plan_id` → `listActivePlans`; `workflow_dispatch` with
 `plan_id` → that plan; `issues` → the plan from the issue's `plan:<id>` label. Fork PRs are ignored.
@@ -283,7 +283,9 @@ jobs:
 `tick` re-validates the authorizing comment on every pass, so an edit that changes the comment
 prefix (and therefore skips this workflow) is still caught by the next driver pass.
 
-**`.github/workflows/execute-plan-driver.yml`**
+**`.github/workflows/execute-plan-driver.yml`** (as designed; hardened in #1941 — the workflow file is the source of
+truth: `pull_request_target` replaces `pull_request`/`pull_request_review` and only runs a secret-less `relay` job that
+dispatches the driver on `main`; `drive` runs in the `main`-only `automation` environment with job-level concurrency)
 ```yaml
 name: Execute-plan driver
 on:
