@@ -30,7 +30,7 @@ dependencies:
   url_launcher: ^6.3.3
   posthog_flutter: ^5.39.0
 
-  web: any
+  web: 1.1.2
   http_parser: any
 dev_dependencies:
   flutter_test:
