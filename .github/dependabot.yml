@@ -47,6 +47,9 @@ updates:
       - dependency-name: "go_router"
         update-types: ["version-update:semver-major"]
       - dependency-name: "intl"
+      # web 1.1.2 requires Dart ^3.13; CI pins Flutter 3.44 / Dart 3.12.
+      - dependency-name: "web"
+        versions: ["1.1.2"]
       # file_picker 12.1.2 breaks web/android builds (darwinOptions API mismatch).
       - dependency-name: "file_picker"
         versions: ["12.1.2"]
@@ -55,4 +58,4 @@ updates:
         update-types: ["version-update:semver-major"]
       # posthog_flutter 5.55.0 exceeds CI main.dart.js bundle budget (needs trim or budget bump).
       - dependency-name: "posthog_flutter"
-        versions: ["5.55.0"]
+        versions: ["5.55.0", "5.56.2"]
