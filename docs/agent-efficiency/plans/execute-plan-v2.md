@@ -3,7 +3,7 @@ title: Execute-plan v2 — build spec (merged + deployed to UAT)
 owner: Kanopee
 audience: agent
 status: active
-last_updated: 2026-10-15
+last_updated: 2026-10-28
 tags: [agent, execute-plan, autonomy, uat]
 ---
 # Execute-plan v2 — build spec
@@ -28,8 +28,11 @@ Anything still unverified is a **VERIFY** with a decision for each outcome.
 
 **Round 3 (owner Phase 0 decisions, 2026-10-15):** launches per phase 5 (cap 6); daily launches 20
 (cap 30) and the daily cap waits instead of stopping; bot account `pawpet-bot` created with the repo
-secret; the owner's Cursor `GH_TOKEN` stays untouched (a global switch would turn every Cursor agent into the bot): the driver passes the bot token to plan workers at launch (`envVars`), and WP8 uses a temporary, separately named secret `BOT_GH_TOKEN`;
-runbook §7.1 corrected for personal-account repos (no collaborator role picker). All other Phase 0
+secret; **Cursor Cloud identity** (runbooks §7.1, post-#1941/#1952): dashboard **`GH_TOKEN`** =
+`pawpet-bot` classic PAT by default; **`OWNER_GH_TOKEN`** + **`/runasme`** for owner-only GitHub
+API actions; the driver passes the bot token to plan workers at launch (`envVars` from
+**`EXECUTE_PLAN_BOT_TOKEN`**); git pushes and Cursor-opened PRs use the Cursor GitHub App regardless
+of `GH_TOKEN`. Runbook §7.1 corrected for personal-account repos (no collaborator role picker). All other Phase 0
 defaults confirmed.
 
 **Round 1 (Fable, accepted by Opus):** the spec is split into a folder (500-line limit, one
@@ -139,7 +142,7 @@ comment on the draft PR with the command and its output, and end the session.
 
 | Decision | Default | Where it lands |
 |----------|---------|----------------|
-| Identity | Machine user **`pawpet-bot`** (created; collaborator with write), classic PAT `repo` scope, **no** `workflow`; repo secret `EXECUTE_PLAN_BOT_TOKEN` (set); owner's own Cursor `GH_TOKEN` is **not** changed: plan workers get the bot token from the driver at launch; WP8 uses a temporary Cursor secret `BOT_GH_TOKEN` | runbooks §7.1 |
+| Identity | Machine user **`pawpet-bot`** (created; collaborator with write), classic PAT `repo` scope, **no** `workflow`; repo secret **`EXECUTE_PLAN_BOT_TOKEN`** (set); Cursor dashboard **`GH_TOKEN`** = bot PAT (default Cloud Agents); **`OWNER_GH_TOKEN`** + **`/runasme`** for owner API actions; plan workers get the bot token from the driver at launch (`envVars`); optional legacy alias **`BOT_GH_TOKEN`** — prefer **`GH_TOKEN`** | runbooks §7.1 |
 | Owners | `["KanopeeKa"]` | config `owners` |
 | Window | default 7 days, cap 14 | `V2_DEFAULTS` / `V2_CAPS` |
 | Budgets | CI attempts 3 per PR, launches **5** per phase (cap 6), remedial 3, sync resolves 2, daily launches **20** per plan (cap 30) — reaching the daily cap **waits** until the next UTC day, it never stops the plan | snapshot `settings.budgets` (≤ caps) |
@@ -154,7 +157,7 @@ comment on the draft PR with the command and its output, and end the session.
 ## Order and hand-off points
 
 ```
-Phase 0 decisions ✔ → §7.1 identity + repo secret ✔ (Cursor `GH_TOKEN` stays the owner's)
+Phase 0 decisions ✔ → §7.1 identity + repo secret ✔ (Cursor `GH_TOKEN` = bot; owner via `/runasme`)
 WP1 client ─┐                          WP7c Cursor launch adapter (parallel, Cursor)
 WP2 scope ──┼→ WP3 approval/init → WP4a decide → WP4b tick → WP5 UAT
             │                                                   ↓
