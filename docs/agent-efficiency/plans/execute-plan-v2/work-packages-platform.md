@@ -3,7 +3,7 @@ title: Execute-plan v2 — platform work packages WP6–WP8 and workflows
 owner: Kanopee
 audience: agent
 status: active
-last_updated: 2026-10-15
+last_updated: 2026-10-28
 tags: [agent, execute-plan, autonomy, github-actions]
 ---
 # Execute-plan v2 — platform work packages WP6–WP8 and workflows
@@ -393,14 +393,16 @@ async function getAgentRunStatus({ apiKey, agentId, runId, fetchImpl })
 
 ## WP8 — Rulesets and live verification
 
-**Depends on:** WP7b merged, identity in place (runbooks §7.1), driver in `dry-run` · **Recommended executor:** Cursor (using the temporary secret `BOT_GH_TOKEN`, which some checks need) with the owner
+**Depends on:** WP7b merged, identity in place (runbooks §7.1), driver in `dry-run` · **Recommended executor:** Cursor for bot-token verification steps; owner for runbooks §7.2–7.3 (**`/runasme`** when the GitHub API must act as the owner)
 
 Each step is a decision; on any unexpected outcome, stop and report.
-0. **Owner, before starting WP8:** Cursor → Cloud Agents → Secrets → add a **new** secret named
-   `BOT_GH_TOKEN` with the `pawpet-bot` token (do not touch `GH_TOKEN`). The WP8 agent runs every
-   bot action as `GH_TOKEN="$BOT_GH_TOKEN" gh ...` / `curl -H "Authorization: Bearer $BOT_GH_TOKEN"`.
-   Its first command, `curl -s -H "Authorization: Bearer $BOT_GH_TOKEN" https://api.github.com/user`,
-   must print `pawpet-bot`. After WP8 the owner deletes `BOT_GH_TOKEN`.
+0. **Before starting WP8:** Confirm Cursor Cloud secrets match runbooks §7.1: **`GH_TOKEN`** =
+   `pawpet-bot` classic PAT (`repo` only); **`OWNER_GH_TOKEN`** = owner PAT for **`/runasme`** only
+   (skill: `.cursor/skills/run-as-me/SKILL.md`). The WP8 agent runs bot actions with the default
+   dashboard token — `curl -s -H "Authorization: Bearer $GH_TOKEN" https://api.github.com/user`
+   must print `pawpet-bot`. Owner-only ruleset and repo settings steps use **`/runasme`**
+   (`export GH_TOKEN="$OWNER_GH_TOKEN"`). Git pushes and Cursor-opened PRs still use the Cursor
+   GitHub App regardless of `GH_TOKEN`.
 1. **Check placement.** Open a probe PR with the bot token from `cursor/execute-plan-v2-probe-<4>`
    (one whitespace change in `docs/agent-efficiency/plans/README.md`) into `main`.
    Expected: a check run named `execute-plan-scope`, app `github-actions`, conclusion `success`,

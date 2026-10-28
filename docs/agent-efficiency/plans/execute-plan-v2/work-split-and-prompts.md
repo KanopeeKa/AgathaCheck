@@ -3,7 +3,7 @@ title: Execute-plan v2 — work split and kickoff prompts
 owner: Kanopee
 audience: both
 status: active
-last_updated: 2026-10-15
+last_updated: 2026-10-28
 tags: [agent, execute-plan, autonomy, cursor, claude-code]
 ---
 # Execute-plan v2 — work split and kickoff prompts
@@ -27,13 +27,13 @@ agents never need this conversation.
 | WP7a Scope check + CI wiring | Claude Code | `pull_request_target` hardening | WP6a, WP6b |
 | WP7b Approve + driver | Claude Code | Control-flow and token rules | — |
 | WP7c Cursor launch adapter | **Cursor** | Needs Cursor API docs and dashboard checks | WP1–WP6 |
-| WP8 Rulesets + live verification | **Cursor** + owner | Acts as the bot through the temporary secret `BOT_GH_TOKEN` | — |
+| WP8 Rulesets + live verification | **Cursor** + owner | Bot checks use dashboard `GH_TOKEN`; owner steps use `/runasme` (runbooks §7.1) | — |
 | WP9 Proof run (init step) | **Cursor** + owner | Exercises the real worker path | — |
 | WP10 Retirement | Claude Code | Deletions across code and docs | — |
 
-Owner steps in order: Phase 0 decisions ✔ → identity and repo secret ✔ (bot `pawpet-bot`) → merge
-each WP PR → after WP7b: `EXECUTE_PLAN_DRIVER=dry-run` → before WP8: add Cursor secret `BOT_GH_TOKEN` = bot
-token → WP8 rulesets (§7.2) and auto-merge (§7.3) →
+Owner steps in order: Phase 0 decisions ✔ → identity and repo secret ✔ (bot `pawpet-bot`; Cursor
+`GH_TOKEN` = bot, `/runasme` for owner API) → merge each WP PR → after WP7b:
+`EXECUTE_PLAN_DRIVER=dry-run` → WP8 rulesets (§7.2) and auto-merge (§7.3) →
 approval comment of the proof run → go / no-go after WP9.
 
 ## Plan-first rule (all executors)
@@ -122,7 +122,8 @@ draft PR into main; mark ready; do not merge. This is not an execute-plan run.
 ### WP8 — Rulesets and live verification (with the owner)
 
 ```
-You are a Cursor Cloud Agent. Every bot action uses the secret BOT_GH_TOKEN (never your own GH_TOKEN). Run WP8 of the
+You are a Cursor Cloud Agent. Bot GitHub API actions use the dashboard GH_TOKEN (login must be
+pawpet-bot); owner-only steps use /runasme. Run WP8 of the
 execute-plan v2 build: docs/agent-efficiency/plans/execute-plan-v2/work-packages-platform.md
 (section WP8) and docs/agent-efficiency/plans/execute-plan-v2/runbooks-proof-retirement.md
 (sections 7.2–7.4). Verification only: do not change code.
