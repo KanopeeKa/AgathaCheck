@@ -3,7 +3,7 @@ title: UAT deploy tiers
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-10-16
+last_updated: 2026-10-28
 tags: [e2e, uat, deploy]
 ---
 # UAT deploy tiers
@@ -135,6 +135,8 @@ flowchart TD
 Execute-plan v2 (`scripts/lib/execute_plan_uat_observe.js`, rules in
 [state-machine.md](../agent-efficiency/plans/execute-plan-v2/state-machine.md) §4.2 U-rules) reads
 this pipeline after a plan PR merges into `main`; it never changes it.
+
+Proof run: proof-build-label-7f3a (2026-10-28).
 
 - **Reads:** `pre-uat-e2e.yml` runs on `main` (with their failed jobs, excluding `Pre-UAT E2E gate`),
   `uat-*` tags, `deploy-uat.yml` runs with their job conclusions, and `uat-live-e2e.yml` runs.
