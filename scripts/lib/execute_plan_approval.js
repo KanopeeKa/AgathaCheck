@@ -65,7 +65,7 @@ function validateControlComment({ comment, snapshot, config }) {
   return result(null);
 }
 
-/** Latest approve/resume comment (valid or not) and the newest valid revoke. */
+/** Latest valid authorizing comment and the newest valid revoke. Later duplicate approve comments do not replace an existing valid epoch; resume may. */
 function findControlComments(comments, snapshot, config) {
   let authorizing = null;
   let revokeAt = null;
@@ -76,7 +76,17 @@ function findControlComments(comments, snapshot, config) {
     const res = validateControlComment({ comment, snapshot, config });
     if (parsed.verb === 'revoke') {
       if (res.valid) revokeAt = comment.created_at;
-    } else {
+    } else if (parsed.verb === 'resume') {
+      authorizing = {
+        comment_id: comment.id,
+        verb: parsed.verb,
+        valid: res.valid,
+        invalid_reason: res.reason,
+        created_at: comment.created_at,
+        until: parsed.until,
+      };
+    } else if (parsed.verb === 'approve') {
+      if (authorizing && authorizing.valid) continue;
       authorizing = {
         comment_id: comment.id,
         verb: parsed.verb,

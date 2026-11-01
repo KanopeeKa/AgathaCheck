@@ -1,0 +1,31 @@
+{
+  "name": "valid approve then duplicate approve → epoch unchanged",
+  "rule": "§4.1 control",
+  "snapshot_patch": {},
+  "observations_patch": {
+    "control": {
+      "authorizing": {
+        "comment_id": 9001,
+        "verb": "approve",
+        "valid": true,
+        "created_at": "2026-10-16T09:05:00Z",
+        "until": "2026-10-23T09:00:00Z"
+      },
+      "status": {
+        "launches": [
+          { "at": "2026-10-16T09:20:00Z", "phase": "1", "kind": "implement" },
+          { "at": "2026-10-16T09:40:00Z", "phase": "1", "kind": "fix-ci" }
+        ]
+      }
+    }
+  },
+  "opts": { "actor": "driver", "lease": null, "now": "2026-10-16T10:00:00Z" },
+  "expected": {
+    "launch": false,
+    "stop": null,
+    "state": "phase:pending",
+    "actor": "driver",
+    "kind": "create-phase-branch",
+    "phase": "1"
+  }
+}

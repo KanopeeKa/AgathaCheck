@@ -46,7 +46,7 @@ Times are ISO-8601 UTC strings. `null` means "does not exist". Example = the sce
 | Field | Source (WP4b) |
 |-------|---------------|
 | `control.labels` | `GET /issues/{control_issue}` labels. |
-| `control.authorizing` | Latest comment matching APPROVE_RE or RESUME_RE (contracts §3.3), validated; `null` if none. If the latest such comment is invalid, it is reported with `valid: false` and `invalid_reason` ∈ `not-owner`, `bot`, `edited`, `plan`, `hash`, `until`, `window`. |
+| `control.authorizing` | First valid `approve-autonomous`, or the latest `resume-autonomous` after that; later duplicate `approve-autonomous` comments (including rejected repeats) do not replace a valid epoch. If the effective comment is invalid, it is reported with `valid: false` and `invalid_reason` ∈ `not-owner`, `bot`, `edited`, `plan`, `hash`, `until`, `window`. |
 | `control.revoke_comment_at` | `created_at` of the latest valid REVOKE_RE comment, else `null`. |
 | `control.status` | Parsed JSON block of the status comment (contracts §3.5), else `null`. |
 | `init_sha` | `control.status.init_sha`; observe fails with exit `3` when absent. |
@@ -309,6 +309,7 @@ WP5 writes U):
 | `d-approval-edited-stop.json` | D1 | stop `approval-invalid` |
 | `d-expired-stop.json` | D1 | stop `expired` |
 | `d-resume-clears-stop-and-budget.json` | §4.1 | old `ci-budget` stop ignored; attempts counted after the epoch |
+| `d-duplicate-approve-epoch-locked.json` | §4.1 control | valid approve unchanged by later duplicate approve |
 | `d-replay-1895-ready.json` | PR-ladder 9 | the 2026-10-14 situation (phase PR ready, CI green, no threads) → driver `arm-auto-merge`, not a stop |
 | `u-merged-wait-preuat.json` | U2 | `awaiting-preuat` / driver `wait` (`preuat`) |
 | `u-preuat-cancelled-still-waiting.json` | U2 | cancelled runs ignored |
