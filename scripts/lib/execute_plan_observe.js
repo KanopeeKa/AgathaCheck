@@ -80,12 +80,13 @@ function latestRuns(runs, names) {
   return names.map((name) => {
     const mine = runs.filter((r) => r.name === name);
     const run = mine.reduce((a, b) => (!a || Number(b.id) > Number(a.id) ? b : a), null);
-    if (!run) return { name, status: 'missing', conclusion: null, reason: null };
+    if (!run) return { name, status: 'missing', conclusion: null, reason: null, completed_at: null };
     return {
       name,
       status: run.status,
       conclusion: run.conclusion || null,
       reason: name === SCOPE_CHECK ? (run.output && run.output.title) || null : null,
+      completed_at: run.completed_at || null,
     };
   });
 }

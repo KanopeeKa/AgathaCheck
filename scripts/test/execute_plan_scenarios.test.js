@@ -11,7 +11,7 @@ const { decide, prLadder } = require('../lib/execute_plan_state');
 const files = scenarioFiles();
 
 test('scenario files: 32 P/L/S/R/D present', () => {
-  assert.equal(files.filter((f) => /[\\/][plsrd]-/.test(f)).length, 36);
+  assert.equal(files.filter((f) => /[\\/][plsrd]-/.test(f)).length, 37);
 });
 
 for (const file of files) {
@@ -86,7 +86,14 @@ test('prLadder rules 1–10 each', () => {
   assert.equal(ladder({}, { kind: 'release', snapPatch: { settings: { release_owner_review: true } } }).action.args.reason, 'owner-review'); // 8
   assert.equal(ladder({ owner_approved: true, ready_at: '2026-10-16T08:00:00Z' }, { kind: 'release', snapPatch: { settings: { release_owner_review: true } } }).action.kind, 'arm-auto-merge'); // 8 approved
   assert.equal(ladder({}).action.kind, 'arm-auto-merge'); // 9
-  assert.equal(ladder({ auto_merge_enabled: true }).action.args.reason, 'checks'); // 10
+  assert.equal(ladder({ auto_merge_enabled: true }).action.args.reason, 'checks'); // 10 young
+  assert.equal(
+    ladder(
+      { auto_merge_enabled: true, checks: [{ name: 'ci-gate / CI passed', status: 'completed', conclusion: 'success', completed_at: '2026-10-16T09:45:00Z' }, { name: 'execute-plan-scope', status: 'completed', conclusion: 'success', reason: 'ok', completed_at: '2026-10-16T09:46:00Z' }] },
+      { opts: { actor: 'driver', lease: null, now: '2026-10-16T10:00:00Z' } },
+    ).action.kind,
+    'merge',
+  );
 });
 
 test('decide is pure of the clock and does not mutate inputs', () => {

@@ -206,6 +206,18 @@ async function executeDriverAction(clients, ctx, decision, now) {
         return `#${a.pr} already clean: merged (${a.method})`;
       }
     }
+    case 'merge': {
+      try {
+        await bot.mergePull(a.pr, { method: a.method });
+        return `merged #${a.pr} (${a.method})`;
+      } catch (e) {
+        const detail = e instanceof GitHubError ? e.message : String(e);
+        const err = new Error(detail);
+        err.code = 'merge-blocked';
+        err.detail = detail;
+        throw err;
+      }
+    }
     case 'update-branch':
       await bot.updateBranch(a.pr);
       return `updated branch of #${a.pr}`;
@@ -274,15 +286,27 @@ async function runDriverPass(clients, { planId, issueNumber, now = isoNow(), kil
   }
   const decision = await deps.tick(bot, { planId, controlIssue: ctx.issueNumber, actor: 'driver', lease, now, dryRun: sw === 'dry-run' });
   const action = decision.action;
-  const label = action ? `${action.actor}:${action.kind}${action.launch ? ' (launch)' : ''}` : 'none';
+  let label = 'none';
+  if (action) {
+    if (action.kind === 'wait' && action.args && action.args.reason) label = `${action.actor}:wait(${action.args.reason})`;
+    else label = `${action.actor}:${action.kind}${action.launch ? ' (launch)' : ''}`;
+  }
   log(`plan ${planId}: state ${decision.state}, action ${label}${decision.stop ? `, stop ${decision.stop.reason}` : ''}`);
   if (sw === 'dry-run') return { planId, decision, executed: false };
 
   let outcome = null;
-  if (action && action.actor === 'driver' && action.kind !== 'wait') {
-    outcome = await executeDriverAction(all, ctx, decision, now);
-  } else if (action && action.actor === 'agent' && action.launch) {
-    outcome = await launchWorker(all, ctx, decision, now);
+  try {
+    if (action && action.actor === 'driver' && action.kind !== 'wait') {
+      outcome = await executeDriverAction(all, ctx, decision, now);
+    } else if (action && action.actor === 'agent' && action.launch) {
+      outcome = await launchWorker(all, ctx, decision, now);
+    }
+  } catch (e) {
+    if (e.code === 'merge-blocked') {
+      await updateStatus(bot, ctx, (s) => ({ ...s, state: 'stopped', stop: { reason: 'merge-blocked', detail: e.detail, at: now } }), now);
+      await bot.addLabels(ctx.issueNumber, ['needs-owner']);
+      outcome = `merge blocked: ${e.detail}`;
+    } else throw e;
   }
   if (outcome) log(`plan ${planId}: ${outcome}`);
   return { planId, decision, executed: Boolean(outcome), outcome };

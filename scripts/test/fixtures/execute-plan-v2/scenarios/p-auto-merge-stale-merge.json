@@ -1,0 +1,41 @@
+{
+  "name": "auto-merge armed, checks green ≥10 min → merge",
+  "rule": "PR-ladder 10",
+  "snapshot_patch": {},
+  "observations_patch": {
+    "phases": [
+      {
+        "id": "1",
+        "branch_exists": true,
+        "pr": {
+          "auto_merge_enabled": true,
+          "checks": [
+            {
+              "name": "ci-gate / CI passed",
+              "status": "completed",
+              "conclusion": "success",
+              "completed_at": "2026-10-16T09:45:00Z"
+            },
+            {
+              "name": "execute-plan-scope",
+              "status": "completed",
+              "conclusion": "success",
+              "reason": "ok",
+              "completed_at": "2026-10-16T09:46:00Z"
+            }
+          ]
+        }
+      },
+      { "id": "2", "branch_exists": false, "pr": null }
+    ]
+  },
+  "opts": { "actor": "driver", "lease": null, "now": "2026-10-16T10:00:00Z" },
+  "expected": {
+    "launch": false,
+    "stop": null,
+    "state": "phase:ready",
+    "actor": "driver",
+    "kind": "merge",
+    "method": "squash"
+  }
+}

@@ -18,13 +18,15 @@
       "name": "ci-gate / CI passed",
       "status": "completed",
       "conclusion": "success",
-      "reason": null
+      "reason": null,
+      "completed_at": "2026-10-16T10:00:00Z"
     },
     {
       "name": "execute-plan-scope",
       "status": "completed",
       "conclusion": "success",
-      "reason": "ok"
+      "reason": "ok",
+      "completed_at": "2026-10-16T10:00:00Z"
     }
   ],
   "failed_attempts_since_epoch": 0,
