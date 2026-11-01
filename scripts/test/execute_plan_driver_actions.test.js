@@ -241,7 +241,12 @@ test('launch: starts the worker on the action branch, records launch and lease',
 test('launch: the worker gets the bot token in envVars, and the token is never logged', async () => {
   const h = harness({}, agentAction('implement', { phase: '1', branch: 'b', base: 'i' }, { phase: '1' }));
   await drive(h);
-  assert.deepEqual(h.seen.launch[0].envVars, { GH_TOKEN: 'bot-secret-token', EXECUTE_PLAN_TOKEN: 'bot-secret-token' });
+  assert.deepEqual(h.seen.launch[0].envVars, {
+    GH_TOKEN: 'bot-secret-token',
+    EXECUTE_PLAN_TOKEN: 'bot-secret-token',
+    OWNER_GH_TOKEN: '',
+    BOT_GH_TOKEN: '',
+  });
   assert.ok(!h.log.join('\n').includes('bot-secret-token'));
   assert.ok(!h.seen.launch[0].prompt.includes('bot-secret-token'));
 });

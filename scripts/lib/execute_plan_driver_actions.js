@@ -15,6 +15,7 @@
 const { GitHubError } = require('./execute_plan_github');
 const { HOLD_LABEL } = require('./execute_plan_state');
 const { formatStatusComment, parseStatusComment } = require('./execute_plan_status');
+const { workerLaunchEnvVars } = require('../../.github/scripts/execute-plan-launch');
 
 const MAX_LAUNCHES = 50;
 const MAX_LISTED_FILES = 100;
@@ -71,7 +72,7 @@ function buildHandoffPrompt(decision, snapshot, planMarkdown, { base } = {}) {
     `/execute-plan ${id}`,
     '',
     `You are a worker for execute-plan ${id}. Do exactly the action below. Then run`,
-    `\`node scripts/execute_plan_runtime.js tick ${id} --json --actor agent\` and continue with what`,
+    `\`env -u OWNER_GH_TOKEN -u BOT_GH_TOKEN node scripts/execute_plan_runtime.js tick ${id} --json --actor agent\` and continue with what`,
     'it returns, until it returns an action whose actor is "driver", or a stop. Then end your turn',
     'with one line: "worker done: <state>".',
     '',
@@ -177,7 +178,7 @@ async function launchWorker(clients, ctx, decision, now) {
     startingRef: a.branch,
     prompt,
     model,
-    envVars: { GH_TOKEN: botToken, EXECUTE_PLAN_TOKEN: botToken },
+    envVars: workerLaunchEnvVars(botToken),
   });
   const key = decision.phase || 'release';
   await updateStatus(bot, ctx, (s) => ({

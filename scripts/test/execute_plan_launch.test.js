@@ -7,6 +7,8 @@ const {
   launchPlanAgent,
   getAgentRunStatus,
   CURSOR_API_BASE,
+  workerLaunchEnvVars,
+  BLANKED_LAUNCH_KEYS,
 } = require('../../.github/scripts/execute-plan-launch');
 
 const API_KEY = 'test-api-key';
@@ -272,4 +274,23 @@ test('status unknown value → UNKNOWN', async () => {
   });
 
   assert.equal(status, 'UNKNOWN');
+});
+
+test('workerLaunchEnvVars with bot token', () => {
+  assert.deepEqual(workerLaunchEnvVars('bot-tok'), {
+    GH_TOKEN: 'bot-tok',
+    EXECUTE_PLAN_TOKEN: 'bot-tok',
+    OWNER_GH_TOKEN: '',
+    BOT_GH_TOKEN: '',
+  });
+});
+
+test('workerLaunchEnvVars without bot token', () => {
+  assert.deepEqual(workerLaunchEnvVars(''), { OWNER_GH_TOKEN: '', BOT_GH_TOKEN: '' });
+  assert.deepEqual(workerLaunchEnvVars(undefined), { OWNER_GH_TOKEN: '', BOT_GH_TOKEN: '' });
+  assert.deepEqual(workerLaunchEnvVars('  '), { OWNER_GH_TOKEN: '', BOT_GH_TOKEN: '' });
+});
+
+test('BLANKED_LAUNCH_KEYS', () => {
+  assert.deepEqual(BLANKED_LAUNCH_KEYS, ['OWNER_GH_TOKEN', 'BOT_GH_TOKEN']);
 });

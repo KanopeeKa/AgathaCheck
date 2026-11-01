@@ -7,6 +7,26 @@ const FETCH_TIMEOUT_MS = 30_000;
 const TERMINAL_STATUSES = new Set(['FINISHED', 'ERROR', 'CANCELLED', 'EXPIRED']);
 const RUNNING_STATUSES = new Set(['CREATING', 'RUNNING']);
 
+const BLANKED_LAUNCH_KEYS = Object.freeze(['OWNER_GH_TOKEN', 'BOT_GH_TOKEN']);
+
+/**
+ * Cursor launch envVars for plan workers and issue/dispatch agents.
+ * Blanks owner/bot dashboard secrets so workers cannot act as the owner.
+ * @param {string} [botToken]
+ * @returns {Record<string, string>}
+ */
+function workerLaunchEnvVars(botToken) {
+  const blanked = { OWNER_GH_TOKEN: '', BOT_GH_TOKEN: '' };
+  if (botToken && String(botToken).trim()) {
+    return {
+      GH_TOKEN: botToken,
+      EXECUTE_PLAN_TOKEN: botToken,
+      ...blanked,
+    };
+  }
+  return blanked;
+}
+
 /**
  * @param {typeof fetch} fetchImpl
  */
@@ -138,4 +158,6 @@ module.exports = {
   launchPlanAgent,
   getAgentRunStatus,
   CURSOR_API_BASE,
+  workerLaunchEnvVars,
+  BLANKED_LAUNCH_KEYS,
 };

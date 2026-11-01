@@ -21,6 +21,9 @@ Configure under **Cursor → Cloud Agents → Secrets** (runtime secrets apply t
 | **`OWNER_GH_TOKEN`** | Owner classic PAT (`repo`; avoid `workflow` unless accepted) | User invokes **`/runasme`** — `.cursor/skills/run-as-me/SKILL.md` |
 | **`BOT_GH_TOKEN`** | Optional; same as bot PAT | Not read by any code; prefer only **`GH_TOKEN`** for bot |
 
+Agents launched by the execute-plan driver or by issue/dispatch workflows receive `OWNER_GH_TOKEN` and
+`BOT_GH_TOKEN` blanked through launch `envVars`; owner mode (`/runasme`) is for interactive sessions only.
+
 GitHub Actions uses **`EXECUTE_PLAN_BOT_TOKEN`** in the **`automation`** environment (not the dashboard) for execute-plan and for `envVars` on issue/dispatch agent launches. Project board updates use **`GH_PROJECTS_PAT`** in **`automation`**, not the bot PAT.
 
 Full policy: `.cursor/skills/cloud-github-identity/SKILL.md`.
