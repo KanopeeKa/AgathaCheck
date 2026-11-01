@@ -36,11 +36,12 @@ function probe(fn, ...args) {
 }
 
 /**
- * @param {{ mode: 'teaser'|'flutter'; serveDartJs?: boolean }} opts
+ * @param {{ mode: 'teaser'|'flutter'; serveDartJs?: boolean; assetTeaserFallback?: boolean }} opts
  * @returns {Promise<{ baseUrl: string, close: () => Promise<void> }>}
  */
 function startFixtureServer(opts) {
   const serveDartJs = opts.serveDartJs === true;
+  const assetTeaserFallback = opts.assetTeaserFallback === true;
   const server = http.createServer((req, res) => {
     const url = req.url || '/';
     if (url.startsWith('/backend/health')) {
@@ -48,10 +49,13 @@ function startFixtureServer(opts) {
       res.end(HEALTH_OK);
       return;
     }
-    if (url.startsWith('/main.dart.js')) {
+    if (url.startsWith('/main.dart.js') || url.startsWith('/flutter_bootstrap.js')) {
       if (serveDartJs) {
         res.writeHead(200, { 'Content-Type': 'application/javascript' });
         res.end('// flutter');
+      } else if (assetTeaserFallback) {
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.end(TEASER_HTML);
       } else {
         res.writeHead(404, { 'Content-Type': 'text/plain' });
         res.end('not found');
@@ -158,6 +162,60 @@ test('coming_soon mode: flutter root → teaser_mismatch exit 1', async () => {
 
 test('coming_soon mode: main.dart.js still 200 → flutter_served_in_teaser_mode', async () => {
   const fx = await startFixtureServer({ mode: 'teaser', serveDartJs: true });
+  try {
+    const r = await runSmoke(fx.baseUrl, 'coming_soon');
+    assert.equal(r.status, 1, `stderr=${r.stderr}\nstdout=${r.stdout}`);
+    assert.match(`${r.stdout}\n${r.stderr}`, /flutter_served_in_teaser_mode/);
+  } finally {
+    await fx.close();
+  }
+});
+
+test('coming_soon mode: SPA fallback teaser on bootstrap paths → exit 0', async () => {
+  const fx = await startFixtureServer({ mode: 'teaser', assetTeaserFallback: true });
+  try {
+    const r = await runSmoke(fx.baseUrl, 'coming_soon');
+    assert.equal(r.status, 0, `stderr=${r.stderr}\nstdout=${r.stdout}`);
+    assert.match(r.stdout, /teaser_fallback/);
+    assert.match(r.stdout, /Production post-deploy smoke passed/);
+  } finally {
+    await fx.close();
+  }
+});
+
+test('coming_soon mode: non-teaser HTML 200 on bootstrap path → flutter_served_in_teaser_mode', async () => {
+  const server = http.createServer((req, res) => {
+    const url = req.url || '/';
+    if (url.startsWith('/backend/health')) {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(HEALTH_OK);
+      return;
+    }
+    if (url.startsWith('/main.dart.js') || url.startsWith('/flutter_bootstrap.js')) {
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.end('<html><body>not the teaser</body></html>');
+      return;
+    }
+    res.writeHead(200, { 'Content-Type': 'text/html' });
+    res.end(TEASER_HTML);
+  });
+  const fx = await new Promise((resolve, reject) => {
+    server.listen(0, '127.0.0.1', () => {
+      const addr = server.address();
+      if (!addr || typeof addr === 'string') {
+        reject(new Error('failed to bind fixture server'));
+        return;
+      }
+      resolve({
+        baseUrl: `http://127.0.0.1:${addr.port}`,
+        close: () =>
+          new Promise((resClose, rejClose) => {
+            server.close((err) => (err ? rejClose(err) : resClose()));
+          }),
+      });
+    });
+    server.on('error', reject);
+  });
   try {
     const r = await runSmoke(fx.baseUrl, 'coming_soon');
     assert.equal(r.status, 1, `stderr=${r.stderr}\nstdout=${r.stdout}`);
