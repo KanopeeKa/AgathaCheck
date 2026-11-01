@@ -37,7 +37,7 @@ function pasClassifyHttpCode(code) {
 
 function pasClassifyFlutterAssetResponse(code, body) {
   if (String(code) !== '200') return 'absent';
-  if (pasIsTeaserHtml(body)) return 'teaser_fallback';
+  if (pasIsTeaserHtml(body) && !pasBodyMentionsFlutterMain(body)) return 'teaser_fallback';
   return 'served';
 }
 
@@ -99,6 +99,13 @@ test('JS: pasClassifyFlutterAssetResponse', () => {
     pasClassifyFlutterAssetResponse(200, '<html data-site-mode="coming-soon">'),
     'teaser_fallback',
   );
+  assert.equal(
+    pasClassifyFlutterAssetResponse(
+      200,
+      '<html data-site-mode="coming-soon"><script src="main.dart.js"></script>',
+    ),
+    'served',
+  );
   assert.equal(pasClassifyFlutterAssetResponse(200, '// flutter'), 'served');
   assert.equal(
     pasClassifyFlutterAssetResponse(200, '<html><script src="main.dart.js"></script></html>'),
@@ -126,6 +133,14 @@ test('bash probe: pas_classify_flutter_asset_response', () => {
   assert.equal(
     probe('pas_classify_flutter_asset_response', '200', '<html data-site-mode="coming-soon">'),
     'teaser_fallback',
+  );
+  assert.equal(
+    probe(
+      'pas_classify_flutter_asset_response',
+      '200',
+      '<html data-site-mode="coming-soon"><script src="main.dart.js"></script>',
+    ),
+    'served',
   );
   assert.equal(probe('pas_classify_flutter_asset_response', '200', '// flutter'), 'served');
 });

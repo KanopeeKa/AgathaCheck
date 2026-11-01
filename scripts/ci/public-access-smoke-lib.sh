@@ -49,7 +49,7 @@ pas_classify_flutter_asset_response() {
     printf '%s\n' 'absent'
     return 0
   fi
-  if pas_is_teaser_html "$body"; then
+  if pas_is_teaser_html "$body" && ! pas_body_mentions_flutter_main "$body"; then
     printf '%s\n' 'teaser_fallback'
     return 0
   fi
