@@ -34,7 +34,8 @@ owned by another personal account (`owner.type = User`, live read), so this is t
      `.cursor/skills/run-as-me/SKILL.md`).
    - **`BOT_GH_TOKEN`** optional legacy alias of the bot PAT; prefer a single bot value in `GH_TOKEN`.
    Plan workers and Actions-dispatched agents receive the bot token from **`EXECUTE_PLAN_BOT_TOKEN`**
-   via launch `envVars` (`GH_TOKEN`, `EXECUTE_PLAN_TOKEN`). Keep `cursor_api_key` in the `automation`
+   via launch `envVars` (`GH_TOKEN`, `EXECUTE_PLAN_TOKEN`, with **`OWNER_GH_TOKEN`** and **`BOT_GH_TOKEN`**
+   blanked). Keep `cursor_api_key` in the `automation`
    environment once environment secrets are configured.
 6. Verify from any shell with the token in `T`:
    - `curl -s -H "Authorization: Bearer $T" https://api.github.com/user | jq -r .login` → the bot login.

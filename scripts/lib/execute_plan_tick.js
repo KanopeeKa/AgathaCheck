@@ -19,6 +19,9 @@ const STOP_EXIT_CODE = 2;
 
 const isoNow = () => new Date().toISOString().replace(/\.\d+Z$/, 'Z');
 
+const OWNER_TOKEN_MESSAGE = (planId) =>
+  `OWNER_GH_TOKEN is set: execute-plan workers must not hold the owner token. Run tick as:\nenv -u OWNER_GH_TOKEN -u BOT_GH_TOKEN node scripts/execute_plan_runtime.js tick ${planId} --json --actor agent`;
+
 function statusTable(snapshot, obs, decision) {
   const launches = decision.budgets.launches_phase || {};
   return snapshot.phases.map((def) => {
@@ -61,7 +64,10 @@ async function assertWorkerIsBot(client, config) {
 }
 
 /** @returns {Promise<object>} contracts §3.7 output (plus `writes` on dry-run) */
-async function tick(client, { planId, controlIssue, now = isoNow(), actor = 'agent', lease, dryRun = false, sleep } = {}) {
+async function tick(client, { planId, controlIssue, now = isoNow(), actor = 'agent', lease, dryRun = false, sleep, env = process.env } = {}) {
+  if (actor === 'agent' && String(env.OWNER_GH_TOKEN || '').trim() !== '') {
+    throw configError(OWNER_TOKEN_MESSAGE(planId));
+  }
   const ctx = await loadPlanContext(client, { planId, controlIssue });
   if (actor === 'agent') await assertWorkerIsBot(client, ctx.config);
   const obs = await observe(client, ctx, { now, sleep });

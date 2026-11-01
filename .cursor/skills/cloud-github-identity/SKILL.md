@@ -31,7 +31,9 @@ only; a VM started before a secret change keeps the old values.
 | **`GH_PROJECTS_PAT`**, **`GH_PROJECT_ID`**, **`GH_STATUS_FIELD_ID`** | Project board updates (not the bot PAT) |
 | **`cursor_api_key`** | Cursor API (secret names are case-insensitive) |
 
-Launch `envVars` override dashboard secrets. The field is beta: where it is not enabled it is silently ignored, and
+Launch `envVars` override dashboard secrets. Agents launched by the driver or by issue/dispatch get
+`OWNER_GH_TOKEN` and `BOT_GH_TOKEN` blanked through launch `envVars`; owner mode is for interactive sessions only.
+The field is beta: where it is not enabled it is silently ignored, and
 the agent falls back to dashboard `GH_TOKEN` — which is why that must also be the bot PAT.
 
 ## Bot PAT scopes (classic)

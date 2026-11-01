@@ -196,7 +196,7 @@ Built by `buildHandoffPrompt(decision, snapshot, planMarkdown)`; placeholders in
 /execute-plan <plan_id>
 
 You are a worker for execute-plan <plan_id>. Do exactly the action below. Then run
-`node scripts/execute_plan_runtime.js tick <plan_id> --json --actor agent` and continue with what
+`env -u OWNER_GH_TOKEN -u BOT_GH_TOKEN node scripts/execute_plan_runtime.js tick <plan_id> --json --actor agent` and continue with what
 it returns, until it returns an action whose actor is "driver", or a stop. Then end your turn
 with one line: "worker done: <state>".
 

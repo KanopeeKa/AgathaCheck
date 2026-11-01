@@ -15,9 +15,11 @@ Write the plan files on branch `cursor/<plan_id>-init`, run
 
 ## Worker session
 
-Run `node scripts/execute_plan_runtime.js tick <plan_id> --json --actor agent`, do the one `agent`
+Run `env -u OWNER_GH_TOKEN -u BOT_GH_TOKEN node scripts/execute_plan_runtime.js tick <plan_id> --json --actor agent`, do the one `agent`
 action returned, run `tick` again, end the turn with one line when the decision `actor` is
 `driver` or `stop` is set.
+
+Each command may run in a fresh shell, so prefix every `tick` with `env -u`; `unset` does not carry over.
 
 `gate <plan_id>` is an alias of `tick` (no `--labels`).
 

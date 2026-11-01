@@ -7,7 +7,9 @@ description: Run a multi-phase autonomous v2 plan from a frozen snapshot in Clau
 
 Read and follow `.cursor/skills/execute-plan/SKILL.md` (v2 loop). Contract: `AGENTS.md` §Execute-plan.
 
-**Worker:** `node scripts/execute_plan_runtime.js tick <plan_id> --json --actor agent` → one `agent` action → `tick` again.
+**Worker:** `env -u OWNER_GH_TOKEN -u BOT_GH_TOKEN node scripts/execute_plan_runtime.js tick <plan_id> --json --actor agent` → one `agent` action → `tick` again.
+
+Each command may run in a fresh shell, so prefix every `tick` with `env -u`; `unset` does not carry over.
 
 **Planning:** `init <plan_id>` on branch `cursor/<plan_id>-init`; end with the printed approval line.
 
