@@ -72,7 +72,7 @@ wait_for_health() {
 }
 
 smoke_coming_soon() {
-  local raw code body kind dart_code
+  local raw code body kind
 
   wait_for_health
 
@@ -89,12 +89,30 @@ smoke_coming_soon() {
   fi
   echo "Teaser HTML OK (data-site-mode=coming-soon)"
 
-  dart_code="$(probe_code "${PROD_BASE_URL}/main.dart.js")"
-  echo "GET /main.dart.js → HTTP ${dart_code}"
-  if [[ "$dart_code" == "200" ]]; then
-    fail "flutter_served_in_teaser_mode" "Flutter main.dart.js still returns HTTP 200 while PROD_PUBLIC_MODE=coming_soon"
-  fi
-  echo "Flutter asset not served (expected in teaser mode)"
+  assert_flutter_asset_not_served "/main.dart.js"
+  assert_flutter_asset_not_served "/flutter_bootstrap.js"
+  echo "Flutter bootstrap paths not served (absent or teaser SPA fallback only)"
+}
+
+# Probe a Flutter bootstrap path; fail when real app bytes are served.
+assert_flutter_asset_not_served() {
+  local path="$1"
+  local raw code body kind
+  raw="$(probe "${PROD_BASE_URL}${path}")"
+  code="${raw%%$'\t'*}"
+  body="${raw#*$'\t'}"
+  kind="$(pas_classify_flutter_asset_response "$code" "$body")"
+  echo "GET ${path} → HTTP ${code} (${kind})"
+  case "$kind" in
+    absent|teaser_fallback) ;;
+    served)
+      fail "flutter_served_in_teaser_mode" \
+        "Flutter asset ${path} is served while PROD_PUBLIC_MODE=coming_soon"
+      ;;
+    *)
+      fail "flutter_served_in_teaser_mode" "Unexpected classification for ${path}: ${kind}"
+      ;;
+  esac
 }
 
 smoke_app() {

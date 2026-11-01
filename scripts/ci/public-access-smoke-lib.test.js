@@ -35,6 +35,12 @@ function pasClassifyHttpCode(code) {
   return String(code) === '401' ? 'basic_auth' : '';
 }
 
+function pasClassifyFlutterAssetResponse(code, body) {
+  if (String(code) !== '200') return 'absent';
+  if (pasIsTeaserHtml(body) && !pasBodyMentionsFlutterMain(body)) return 'teaser_fallback';
+  return 'served';
+}
+
 function pasClassifyTeaserBody(mode, body) {
   if (mode === 'coming_soon') {
     if (!pasIsTeaserHtml(body)) return 'teaser_mismatch';
@@ -86,6 +92,27 @@ test('JS: pasClassifyTeaserBody failure kinds', () => {
   assert.equal(pasClassifyTeaserBody('app', '<html>'), 'ok');
 });
 
+test('JS: pasClassifyFlutterAssetResponse', () => {
+  assert.equal(pasClassifyFlutterAssetResponse(404, ''), 'absent');
+  assert.equal(pasClassifyFlutterAssetResponse('404', ''), 'absent');
+  assert.equal(
+    pasClassifyFlutterAssetResponse(200, '<html data-site-mode="coming-soon">'),
+    'teaser_fallback',
+  );
+  assert.equal(
+    pasClassifyFlutterAssetResponse(
+      200,
+      '<html data-site-mode="coming-soon"><script src="main.dart.js"></script>',
+    ),
+    'served',
+  );
+  assert.equal(pasClassifyFlutterAssetResponse(200, '// flutter'), 'served');
+  assert.equal(
+    pasClassifyFlutterAssetResponse(200, '<html><script src="main.dart.js"></script></html>'),
+    'served',
+  );
+});
+
 test('bash probe: pas_is_teaser_html', () => {
   assert.equal(probe('pas_is_teaser_html', '<html data-site-mode="coming-soon">'), 'true');
   assert.equal(probe('pas_is_teaser_html', '<html>'), 'false');
@@ -99,6 +126,23 @@ test('bash probe: pas_is_flutter_asset_path', () => {
 test('bash probe: pas_classify_http_code', () => {
   assert.equal(probe('pas_classify_http_code', '401'), 'basic_auth');
   assert.equal(probe('pas_classify_http_code', '200'), '');
+});
+
+test('bash probe: pas_classify_flutter_asset_response', () => {
+  assert.equal(probe('pas_classify_flutter_asset_response', '404', ''), 'absent');
+  assert.equal(
+    probe('pas_classify_flutter_asset_response', '200', '<html data-site-mode="coming-soon">'),
+    'teaser_fallback',
+  );
+  assert.equal(
+    probe(
+      'pas_classify_flutter_asset_response',
+      '200',
+      '<html data-site-mode="coming-soon"><script src="main.dart.js"></script>',
+    ),
+    'served',
+  );
+  assert.equal(probe('pas_classify_flutter_asset_response', '200', '// flutter'), 'served');
 });
 
 test('bash probe: pas_classify_teaser_body', () => {
