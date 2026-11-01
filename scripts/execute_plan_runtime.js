@@ -1,22 +1,17 @@
 #!/usr/bin/env node
 /**
- * Execute-plan control issue + plan artifact runtime.
+ * Execute-plan control issue + plan artifact runtime (v2).
  *
  * Usage:
- *   node scripts/execute_plan_runtime.js gate <plan_id> [--labels a,b]
- *   node scripts/execute_plan_runtime.js resume-check <plan_id> --phase <id> [--pr-head <sha>] [--labels a,b] [--accept-head]
- *   node scripts/execute_plan_runtime.js halt <plan_id> --reason <status_reason> [--autonomy halted|revoked] [--detail text] [--write]
- *   node scripts/execute_plan_runtime.js pause <plan_id> --reason <status_reason> [--phase <id>] [--detail text] [--write]
- *   node scripts/execute_plan_runtime.js resume-uat <plan_id> [--phase <id>] [--write]
- *   node scripts/execute_plan_runtime.js set-phase <plan_id> --phase <id> --status <status> [--reason r] [--pr-url u] [--pr-head sha] [--write]
- *   node scripts/execute_plan_runtime.js sync-runtime <plan_id> [--branch b] [--write]
- *   node scripts/execute_plan_runtime.js render-control-issue <plan_id> [--title]
- *   node scripts/execute_plan_runtime.js render-halt-comment <plan_id> --reason <status_reason> [--detail text]
- *   node scripts/execute_plan_runtime.js current-phase <plan_id>
- *   node scripts/execute_plan_runtime.js init-control-issue <plan_id>
- *   node scripts/execute_plan_runtime.js set-project-status <plan_id> --status <name> [--issue N]
- *   node scripts/execute_plan_runtime.js complete-plan <plan_id> [--write] [--skip-close]
- *   node scripts/execute_plan_runtime.js init <plan_id> [--window-days N] [--dry-run]   (v2)
+ *   node scripts/execute_plan_runtime.js gate <plan_id> [--json] [--actor agent|driver] [--dry-run]
+ *   node scripts/execute_plan_runtime.js tick <plan_id> [--issue N] [--json] [--actor agent|driver] [--dry-run]
+ *   node scripts/execute_plan_runtime.js init <plan_id> [--window-days N] [--dry-run]
+ *   node scripts/execute_plan_runtime.js complete-plan <plan_id> [--write] [--dry-run]
+ *   node scripts/execute_plan_runtime.js check-diff --pr <n> [--repo owner/name] [--publish]
+ *   node scripts/execute_plan_runtime.js watch-ci <plan_id> --pr <n> [--timeout-min 25]
+ *   node scripts/execute_plan_runtime.js watch-preuat <plan_id> [--issue N] [--timeout-min 90]
+ *   node scripts/execute_plan_runtime.js watch-preuat-sha <merge_sha> [--json] [--timeout-min 90]
+ *   node scripts/execute_plan_runtime.js watch-deploy <plan_id> [--issue N] [--timeout-min 45]
  *   node scripts/execute_plan_runtime.js roadmap-status <roadmap_id>
  *   node scripts/execute_plan_runtime.js roadmap-next-child <roadmap_id>
  *   node scripts/execute_plan_runtime.js roadmap-set-child <roadmap_id> --child <plan_id> --status <status> [--pr-url u] [--merge-commit sha] [--write]
@@ -25,63 +20,31 @@
 'use strict';
 
 const {
-  checkAutonomyGate,
-  checkResume,
-  computeNextAction,
-  controlIssueLabels,
-  findCurrentPhase,
-  findNextPendingPhase,
+  computeHash,
   loadSnapshot,
-  renderControlIssueBody,
-  renderControlIssueTitle,
-  renderHaltComment,
-  renderCompletePlanComment,
-  renderPauseComment,
-  renderUatResumeComment,
-  resumeFromUatPause,
-  saveSnapshot,
-  setAutonomyHalted,
-  setAutonomyCompleted,
-  setPhasePaused,
-  setPhaseStatus,
-  syncRuntimeState,
-  validateSnapshot,
   ExecutePlanError,
 } = require('./lib/execute_plan_lib');
 const {
   findNextPendingChild,
   roadmapStatus,
   setRoadmapChildStatus,
+  validateRoadmap,
 } = require('./lib/execute_plan_roadmap');
-const {
-  closeIssueWithComment,
-  postIssueComment,
-  updateIssueProjectStatus,
-} = require('./lib/execute_plan_project');
+const { atomicWriteFile, planPaths } = require('./lib/execute_plan_schema');
 
 function usage() {
   console.error(`Usage: node scripts/execute_plan_runtime.js <command> [options]
 
 Commands:
-  gate <plan_id> [--labels label1,label2]
-  resume-check <plan_id> --phase <id> [--pr-head <sha>] [--labels ...] [--accept-head]
-  halt <plan_id> --reason <status_reason> [--autonomy halted|revoked] [--detail text] [--write] [--post-comment]
-  pause <plan_id> --reason <status_reason> [--phase <id>] [--detail text] [--write] [--post-comment]
-  resume-uat <plan_id> [--phase <id>] [--write] [--post-comment]
-  set-phase <plan_id> --phase <id> --status <status> [--reason r] [--detail t] [--pr-url u] [--pr-head sha] [--write]
-  sync-runtime <plan_id> [--branch b] [--write]
-  render-control-issue <plan_id> [--title]
-  render-halt-comment <plan_id> --reason <status_reason> [--detail text]
-  current-phase <plan_id>
-  init-control-issue <plan_id>
-  set-project-status <plan_id> --status <name> [--issue N]
-  complete-plan <plan_id> [--write] [--skip-close] [--post-comment]
-  init <plan_id> [--window-days N] [--dry-run]
-  check-diff --pr <n> [--repo owner/name] [--publish]
+  gate <plan_id> [--json] [--actor agent|driver] [--dry-run]   (alias of tick)
   tick <plan_id> [--issue N] [--json] [--actor agent|driver] [--dry-run]
+  init <plan_id> [--window-days N] [--dry-run]
+  complete-plan <plan_id> [--write] [--dry-run]
+  check-diff --pr <n> [--repo owner/name] [--publish]
   watch-ci <plan_id> --pr <n> [--timeout-min 25]
-  watch-preuat <plan_id> [--issue N] [--timeout-min 90]   (v2)
-  watch-deploy <plan_id> [--issue N] [--timeout-min 45]   (v2)
+  watch-preuat <plan_id> [--issue N] [--timeout-min 90]
+  watch-preuat-sha <merge_sha> [--json] [--timeout-min 90]
+  watch-deploy <plan_id> [--issue N] [--timeout-min 45]
   roadmap-status <roadmap_id>
   roadmap-next-child <roadmap_id>
   roadmap-set-child <roadmap_id> --child <plan_id> --status <status> [--pr-url u] [--merge-commit sha] [--write]
@@ -119,22 +82,52 @@ function printJson(obj) {
   console.log(JSON.stringify(obj, null, 2));
 }
 
+function assertLegacyRoadmap(snapshot) {
+  if (snapshot.schema_version !== 1 || snapshot.plan_kind !== 'roadmap') {
+    throw new ExecutePlanError(
+      'roadmap CLI requires a legacy schema-1 roadmap snapshot on disk; v2 plans use tick only'
+    );
+  }
+  validateRoadmap(snapshot);
+}
+
+function saveLegacyRoadmapSnapshot(planId, snapshot) {
+  assertLegacyRoadmap(snapshot);
+  const { snapshotJson } = planPaths(planId);
+  snapshot.content_hash = computeHash(snapshot);
+  atomicWriteFile(snapshotJson, `${JSON.stringify(snapshot, null, 2)}\n`);
+}
+
 function main() {
   const { positional, flags } = parseArgs(process.argv.slice(2));
   const cmd = positional[0];
-  const planId = positional[1];
+  const arg1 = positional[1];
   if (!cmd) usage();
 
-  const asyncCmds = new Set(['set-project-status', 'complete-plan', 'init', 'check-diff', 'tick', 'watch-ci', 'watch-preuat', 'watch-deploy']);
+  if (flags.labels) {
+    fail('--labels is removed; use tick (gate is an alias of tick)');
+  }
+
+  const asyncCmds = new Set([
+    'gate',
+    'tick',
+    'init',
+    'check-diff',
+    'complete-plan',
+    'watch-ci',
+    'watch-preuat',
+    'watch-preuat-sha',
+    'watch-deploy',
+  ]);
   if (asyncCmds.has(cmd)) {
-    runAsync(cmd, planId, flags).catch((e) => {
+    runAsync(cmd, arg1, flags, positional).catch((e) => {
       fail(e.message, e.exitCode || 1);
     });
     return;
   }
 
   try {
-    runSync(cmd, planId, flags);
+    runSync(cmd, arg1, flags);
   } catch (e) {
     fail(e instanceof ExecutePlanError ? e.message : e.message);
   }
@@ -142,372 +135,48 @@ function main() {
 
 function runSync(cmd, planId, flags) {
   switch (cmd) {
-      case 'gate': {
-        if (!planId) usage();
-        const snapshot = loadSnapshot(planId);
-        validateSnapshot(snapshot);
-        const result = checkAutonomyGate(snapshot, { labels: flags.labels });
-        printJson(result);
-        if (result.ok && result.agent_next_step) {
-          console.log(`NEXT: ${result.agent_next_step}`);
-        }
-        if (!result.ok && result.code === 'expired' && result.unblock) {
-          console.log(`UNBLOCK: ${result.unblock}`);
-        }
-        process.exit(result.ok ? 0 : 2);
-      }
+    case 'roadmap-status': {
+      if (!planId) usage();
+      const snapshot = loadSnapshot(planId);
+      assertLegacyRoadmap(snapshot);
+      printJson(roadmapStatus(snapshot));
+      break;
+    }
 
-      case 'resume-check': {
-        if (!planId || !flags.phase) usage();
-        const snapshot = loadSnapshot(planId);
-        validateSnapshot(snapshot);
-        const result = checkResume(snapshot, flags.phase, {
-          labels: flags.labels,
-          prHeadOid: flags['pr-head'],
-          acceptHead: Boolean(flags['accept-head']),
-        });
-        printJson(result);
-        process.exit(result.ok ? 0 : 2);
-      }
+    case 'roadmap-next-child': {
+      if (!planId) usage();
+      const snapshot = loadSnapshot(planId);
+      assertLegacyRoadmap(snapshot);
+      const next = findNextPendingChild(snapshot);
+      printJson({
+        roadmap_id: planId,
+        next_child_plan_id: next?.plan_id ?? null,
+        child: next,
+      });
+      break;
+    }
 
-      case 'halt': {
-        if (!planId || !flags.reason) usage();
-        const snapshot = loadSnapshot(planId);
-        const autonomy = flags.autonomy || 'halted';
-        setAutonomyHalted(snapshot, {
-          autonomy,
-          reason: flags.reason,
-          detail: flags.detail,
-          phaseId: flags.phase,
-        });
-        const comment = renderHaltComment(snapshot, {
-          reason: flags.reason,
-          detail: flags.detail,
-        });
-        if (flags.write) {
-          saveSnapshot(planId, snapshot);
-          syncRuntimeState(planId);
-        }
-        const posted = maybePostControlComment(snapshot, comment, flags);
-        printJson({ comment_preview: comment, posted });
-        if (!flags.write) {
-          console.error('execute_plan_runtime: dry-run (pass --write to persist)');
-        }
-        break;
-      }
-
-      case 'pause': {
-        if (!planId || !flags.reason) usage();
-        const snapshot = loadSnapshot(planId);
-        setPhasePaused(snapshot, {
-          reason: flags.reason,
-          detail: flags.detail,
-          phaseId: flags.phase,
-        });
-        const comment = renderPauseComment(snapshot, {
-          reason: flags.reason,
-          detail: flags.detail,
-        });
-        if (flags.write) {
-          saveSnapshot(planId, snapshot);
-          syncRuntimeState(planId);
-        }
-        const posted = maybePostControlComment(snapshot, comment, flags);
-        printJson({ comment_preview: comment, posted });
-        if (!flags.write) {
-          console.error('execute_plan_runtime: dry-run (pass --write to persist)');
-        }
-        break;
-      }
-
-      case 'resume-uat': {
-        if (!planId) usage();
-        const snapshot = loadSnapshot(planId);
-        const { phase } = resumeFromUatPause(snapshot, { phaseId: flags.phase });
-        const comment = renderUatResumeComment(snapshot, { phase });
-        if (flags.write) {
-          saveSnapshot(planId, snapshot);
-          syncRuntimeState(planId);
-        }
+    case 'roadmap-set-child': {
+      if (!planId || !flags.child || !flags.status) usage();
+      const snapshot = loadSnapshot(planId);
+      assertLegacyRoadmap(snapshot);
+      setRoadmapChildStatus(snapshot, flags.child, flags.status, {
+        pr_url: flags['pr-url'],
+        merge_commit: flags['merge-commit'],
+      });
+      if (flags.write) {
+        saveLegacyRoadmapSnapshot(planId, snapshot);
         printJson({
           ok: true,
-          phase: { id: phase.id, status: phase.status, branch: phase.branch },
-          next_action: computeNextAction(snapshot),
-          comment_preview: comment,
-          posted: maybePostControlComment(snapshot, comment, flags),
+          ...roadmapStatus(snapshot),
         });
-        if (!flags.write) {
-          console.error('execute_plan_runtime: dry-run (pass --write to persist)');
-        }
-        break;
-      }
-
-      case 'set-phase': {
-        if (!planId || !flags.phase || !flags.status) usage();
-        const snapshot = loadSnapshot(planId);
-        setPhaseStatus(snapshot, flags.phase, flags.status, {
-          statusReason: flags.reason,
-          statusDetail: flags.detail,
-          prUrl: flags['pr-url'],
-          prHeadSha: flags['pr-head'],
-          mergeCommit: flags['merge-commit'],
-        });
-        if (snapshot.autonomy === 'active' && flags.status === 'in_progress') {
-          snapshot.phases.forEach((p) => {
-            if (p.id !== flags.phase && p.status === 'in_progress') {
-              p.status = 'pending';
-              p.status_reason = null;
-              p.status_detail = null;
-            }
-          });
-        }
-        if (flags.write) {
-          saveSnapshot(planId, snapshot);
-          syncRuntimeState(planId);
-        } else {
-          printJson(getPhaseSummary(snapshot, flags.phase));
-          console.error('execute_plan_runtime: dry-run (pass --write to persist)');
-        }
-        break;
-      }
-
-      case 'sync-runtime': {
-        if (!planId) usage();
-        loadSnapshot(planId);
-        const runtime = syncRuntimeState(planId, {
-          branch: flags.branch,
-        });
-        printJson(runtime);
-        break;
-      }
-
-      case 'render-control-issue': {
-        if (!planId) usage();
-        const snapshot = loadSnapshot(planId);
-        if (flags.title) {
-          console.log(renderControlIssueTitle(planId));
-        } else {
-          console.log(renderControlIssueBody(snapshot));
-        }
-        break;
-      }
-
-      case 'render-halt-comment': {
-        if (!planId || !flags.reason) usage();
-        const snapshot = loadSnapshot(planId);
-        console.log(
-          renderHaltComment(snapshot, { reason: flags.reason, detail: flags.detail })
-        );
-        break;
-      }
-
-      case 'current-phase': {
-        if (!planId) usage();
-        const snapshot = loadSnapshot(planId);
-        const current = findCurrentPhase(snapshot);
-        const next = findNextPendingPhase(snapshot);
+      } else {
         printJson({
-          current_phase: current ? { id: current.id, status: current.status } : null,
-          next_pending: next ? { id: next.id, branch: next.branch } : null,
-          next_action: computeNextAction(snapshot),
+          ok: true,
+          dry_run: true,
+          ...roadmapStatus(snapshot),
         });
-        break;
-      }
-
-      case 'init-control-issue': {
-        if (!planId) usage();
-        const snapshot = loadSnapshot(planId);
-        const labels = controlIssueLabels(planId);
-        printJson({
-          title: renderControlIssueTitle(planId),
-          body: renderControlIssueBody(snapshot),
-          labels,
-          project_status: 'Backlog',
-          gh_command: `gh issue create --title "${renderControlIssueTitle(planId)}" --body-file - --label ${labels.map((l) => `"${l}"`).join(' --label ')}`,
-          project_status_note:
-            'New control issues enter Project status Backlog (human/Actions). Agents use start-work (comment + busy) when work begins.',
-        });
-        break;
-      }
-
-      case 'roadmap-status': {
-        if (!planId) usage();
-        const snapshot = loadSnapshot(planId);
-        validateSnapshot(snapshot);
-        printJson(roadmapStatus(snapshot));
-        break;
-      }
-
-      case 'roadmap-next-child': {
-        if (!planId) usage();
-        const snapshot = loadSnapshot(planId);
-        validateSnapshot(snapshot);
-        const next = findNextPendingChild(snapshot);
-        printJson({
-          roadmap_id: planId,
-          next_child_plan_id: next?.plan_id ?? null,
-          child: next,
-          next_action: computeNextAction(snapshot),
-        });
-        break;
-      }
-
-      case 'roadmap-set-child': {
-        if (!planId || !flags.child || !flags.status) usage();
-        const snapshot = loadSnapshot(planId);
-        validateSnapshot(snapshot);
-        setRoadmapChildStatus(snapshot, flags.child, flags.status, {
-          pr_url: flags['pr-url'],
-          merge_commit: flags['merge-commit'],
-        });
-        if (flags.write) {
-          saveSnapshot(planId, snapshot);
-          syncRuntimeState(planId);
-          printJson({
-            ok: true,
-            ...roadmapStatus(snapshot),
-            next_action: computeNextAction(snapshot),
-          });
-        } else {
-          printJson({
-            ok: true,
-            dry_run: true,
-            ...roadmapStatus(snapshot),
-            next_action: computeNextAction(snapshot),
-          });
-          console.error('execute_plan_runtime: dry-run (pass --write to persist)');
-        }
-        break;
-      }
-
-      default:
-        usage();
-    }
-}
-
-function maybePostControlComment(snapshot, comment, flags) {
-  if (!flags['post-comment']) return { skipped: true };
-  const issueNumber = snapshot.control_issue;
-  if (!Number.isInteger(issueNumber) || issueNumber < 1) {
-    return { skipped: true, reason: 'no_control_issue' };
-  }
-  try {
-    return postIssueComment(issueNumber, comment);
-  } catch (e) {
-    return { ok: false, error: e.message };
-  }
-}
-
-async function runAsync(cmd, planId, flags) {
-  switch (cmd) {
-    case 'set-project-status': {
-      if (!planId || !flags.status) usage();
-      const snapshot = loadSnapshot(planId);
-      validateSnapshot(snapshot);
-      const issueNumber = Number(flags.issue || snapshot.control_issue);
-      if (!Number.isInteger(issueNumber) || issueNumber < 1) {
-        throw new ExecutePlanError('issue number required (--issue or snapshot.control_issue)');
-      }
-      const result = await updateIssueProjectStatus(issueNumber, flags.status);
-      printJson(result);
-      if (!result.ok && !result.skipped) {
-        process.exit(1);
-      }
-      break;
-    }
-
-    case 'init': {
-      if (!planId) usage();
-      await require('./lib/execute_plan_init').cliInit(planId, flags);
-      break;
-    }
-
-    case 'check-diff':
-      await require('./lib/execute_plan_scope_run').cliCheckDiff(flags);
-      break;
-
-    case 'tick': {
-      if (!planId) usage();
-      await require('./lib/execute_plan_tick').cliTick(planId, flags);
-      break;
-    }
-
-    case 'watch-ci': {
-      if (!planId) usage();
-      await require('./lib/execute_plan_tick').cliWatchCi(planId, flags);
-      break;
-    }
-
-    case 'watch-preuat': {
-      if (!planId) usage();
-      await require('./lib/execute_plan_tick').cliWatchPreUat(planId, flags);
-      break;
-    }
-
-    case 'watch-deploy': {
-      if (!planId) usage();
-      await require('./lib/execute_plan_tick').cliWatchDeploy(planId, flags);
-      break;
-    }
-
-    case 'complete-plan': {
-      if (!planId) usage();
-      if (isV2Plan(planId)) {
-        await require('./lib/execute_plan_tick').cliCompletePlan(planId, flags);
-        break;
-      }
-      const snapshot = loadSnapshot(planId);
-      validateSnapshot(snapshot);
-      setAutonomyCompleted(snapshot);
-      const comment = renderCompletePlanComment(snapshot, planId);
-      const issueNumber = snapshot.control_issue;
-      if (flags.write) {
-        saveSnapshot(planId, snapshot);
-        syncRuntimeState(planId);
-      }
-      const statusResult = await updateIssueProjectStatus(issueNumber, 'Done');
-      let closeResult = { skipped: true, reason: 'skip_close_flag' };
-      let ok = true;
-      const errors = [];
-
-      if (!statusResult.ok && !statusResult.skipped) {
-        ok = false;
-        errors.push('project_status_failed');
-      }
-
-      if (!flags['skip-close']) {
-        try {
-          closeResult = closeIssueWithComment(issueNumber, comment);
-        } catch (e) {
-          closeResult = { ok: false, error: e.message, gh_hint: `gh issue close ${issueNumber}` };
-          ok = false;
-          errors.push('issue_close_failed');
-        }
-      } else if (flags['post-comment']) {
-        try {
-          closeResult = postIssueComment(issueNumber, comment);
-        } catch (e) {
-          closeResult = { ok: false, error: e.message };
-          ok = false;
-          errors.push('issue_comment_failed');
-        }
-      }
-
-      printJson({
-        ok,
-        plan_id: planId,
-        autonomy: snapshot.autonomy,
-        control_issue: issueNumber,
-        project_status: statusResult,
-        issue_close: closeResult,
-        errors: errors.length ? errors : undefined,
-        comment,
-      });
-      if (!flags.write) {
-        console.error('execute_plan_runtime: dry-run (pass --write to persist snapshot)');
-      }
-      if (!ok) {
-        process.exit(1);
+        console.error('execute_plan_runtime: dry-run (pass --write to persist)');
       }
       break;
     }
@@ -517,18 +186,71 @@ async function runAsync(cmd, planId, flags) {
   }
 }
 
-/** v2 snapshots carry `schema_version: 2`; v1 (no field or 1) keeps the old behaviour. */
+async function runAsync(cmd, arg1, flags, positional) {
+  switch (cmd) {
+    case 'gate':
+    case 'tick': {
+      if (!arg1) usage();
+      await require('./lib/execute_plan_tick').cliTick(arg1, flags);
+      break;
+    }
+
+    case 'init': {
+      if (!arg1) usage();
+      await require('./lib/execute_plan_init').cliInit(arg1, flags);
+      break;
+    }
+
+    case 'check-diff':
+      await require('./lib/execute_plan_scope_run').cliCheckDiff(flags);
+      break;
+
+    case 'watch-ci': {
+      if (!arg1) usage();
+      await require('./lib/execute_plan_tick').cliWatchCi(arg1, flags);
+      break;
+    }
+
+    case 'watch-preuat': {
+      if (!arg1) usage();
+      await require('./lib/execute_plan_tick').cliWatchPreUat(arg1, flags);
+      break;
+    }
+
+    case 'watch-preuat-sha': {
+      if (!arg1) usage();
+      await require('./lib/execute_plan_tick').cliWatchPreUatSha(arg1, flags);
+      break;
+    }
+
+    case 'watch-deploy': {
+      if (!arg1) usage();
+      await require('./lib/execute_plan_tick').cliWatchDeploy(arg1, flags);
+      break;
+    }
+
+    case 'complete-plan': {
+      if (!arg1) usage();
+      if (!isV2Plan(arg1)) {
+        throw new ExecutePlanError(
+          'complete-plan requires a v2 snapshot (schema_version 2); v1 plans are retired'
+        );
+      }
+      await require('./lib/execute_plan_tick').cliCompletePlan(arg1, flags);
+      break;
+    }
+
+    default:
+      usage();
+  }
+}
+
 function isV2Plan(planId) {
   try {
     return loadSnapshot(planId).schema_version === 2;
   } catch {
     return false;
   }
-}
-
-function getPhaseSummary(snapshot, phaseId) {
-  const phase = snapshot.phases.find((p) => p.id === phaseId);
-  return phase || null;
 }
 
 main();

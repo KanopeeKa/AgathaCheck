@@ -9,7 +9,7 @@ Multi-phase autonomous work artifacts for `/execute-plan`.
 
 **Convention:** `artifact_branch_policy: phase-branch` — commit plan files on the active phase branch. Control issue is the index (see [github-labels.md](../../docs/agent-efficiency/github-labels.md)).
 
-**Example:** `_example.md` + `_example.snapshot.json` (validated in CI via `scripts/validate_execute_plan_snapshot.js`).
+**Example:** `_example.v2.md` + `_example.v2.snapshot.json` (validated in CI via `scripts/validate_execute_plan_snapshot.js`).
 
 **Docs:**
 
@@ -19,9 +19,9 @@ Multi-phase autonomous work artifacts for `/execute-plan`.
 - [plan-template.md](../../docs/agent-efficiency/plan-template.md)
 - [autonomous-pr-policy.md](../../docs/agent-efficiency/autonomous-pr-policy.md)
 
-**Approval expiry:** 48 hours from `approved_at` (autonomy window). **Session limit:** ~24h continuous work → `halt --reason session_limit`; resume via `resume-plan` on control issue.
+**Owner control (v2):** approve with the line from `init`; resume with `resume-autonomous <plan_id> sha256:… until <ISO>`; revoke with label `autonomous-revoked` or `revoke-autonomous <plan_id>`. See [runbooks §7.5](../../docs/agent-efficiency/plans/execute-plan-v2/runbooks-proof-retirement.md).
 
-**Autonomy contract:** `.agents/memory/execute-plan-autonomy.md`
+**Autonomy contract:** `docs/agent-efficiency/plans/execute-plan-v2.md`
 
 ## Closed stale plans (2026-09-29)
 

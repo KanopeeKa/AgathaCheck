@@ -51,5 +51,5 @@ The canonical doc is the product spec (`docs/domains/documentation/standards.md`
 - **Before every behaviour commit or push:** canonical-docs sync, then `./scripts/pre-push-changed.sh`; `## Docs` in
   the PR body (or `Docs: N/A — <reason>`). A missing or stale doc update on a behaviour PR is blocking.
 - **Final message:** name the canonical doc(s) updated and change docs folded or deleted — or why behaviour changed
-  without docs. During execute-plan (gate `0`) this is deferred to `complete-plan` or a halt.
+  without docs. During an active execute-plan v2 worker session this is deferred to driver `complete-plan` or a stop.
 - A stale canonical doc outside the task's scope: say so and suggest a `consolidate` PR; never mass-migrate.

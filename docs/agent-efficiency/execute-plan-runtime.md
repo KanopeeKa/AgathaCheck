@@ -3,25 +3,29 @@ title: Execute Plan Runtime
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-10-15
+last_updated: 2026-11-01
 tags: [agent-efficiency, policy]
 ---
-# Execute-plan runtime (Phase C)
+# Execute-plan runtime
 
-Control issue + plan artifact runtime for `/execute-plan` and `/babysit-plus`. The [execute-plan skill](../../.cursor/skills/execute-plan/SKILL.md) orchestrates these commands; agents call them directly during autonomous runs.
+Control issue + plan artifact runtime for `/execute-plan` v2 and `/babysit-plus`. Spec:
+[execute-plan-v2.md](./plans/execute-plan-v2.md).
 
 **Canonical policy:** [autonomous-pr-policy.md](./autonomous-pr-policy.md)  
-**Snapshot schema:** [execute-plan-schema.md](./execute-plan-schema.md)  
+**Snapshot schema (v2):** [execute-plan-v2/contracts.md](./plans/execute-plan-v2/contracts.md) §3.1  
 **Labels:** [github-labels.md](./github-labels.md)
+
+Historical schema-1 snapshots under `.agents/plans/*.snapshot.json` are **records only** — not validated or loaded by active tooling except legacy roadmap CLI (see below).
 
 ---
 
 ## Library
 
-Shared logic lives in `scripts/lib/execute_plan_lib.js` (validation, drift classification, gate checks, runtime YAML sync). The validator re-exports this library:
+Shared logic: `scripts/lib/execute_plan_lib.js` (drift classification, roadmap helpers). v2 snapshots:
+`scripts/lib/execute_plan_snapshot_v2.js`.
 
 ```bash
-node scripts/validate_execute_plan_snapshot.js .agents/plans/<plan_id>.snapshot.json
+node scripts/validate_execute_plan_snapshot.js .agents/plans/_example.v2.snapshot.json
 node scripts/validate_execute_plan_snapshot.js --drift-test
 ```
 
@@ -29,214 +33,42 @@ node scripts/validate_execute_plan_snapshot.js --drift-test
 
 ## CLI — `scripts/execute_plan_runtime.js`
 
-### Resolve plan_id (orchestrator)
+### v2 core
 
-When `/execute-plan` is invoked without `plan_id`, the orchestrator infers it before gate (skill §Resolve plan_id):
+| Command | Purpose |
+|---------|---------|
+| `init <plan_id>` | Create control issue + v2 snapshot |
+| `tick <plan_id> [--json] [--actor agent\|driver]` | Observe → decide → persist (worker/driver) |
+| `gate <plan_id>` | Alias of `tick` (no `--labels`) |
+| `watch-ci <plan_id> --pr <n>` | Wait for required checks on a PR |
+| `watch-preuat <plan_id>` | Wait for Pre-UAT on merged release |
+| `watch-preuat-sha <merge_sha> [--json]` | Pre-UAT watch by merge SHA (also via `babysit_uat_watch_preuat.sh`) |
+| `watch-deploy <plan_id>` | Wait for Deploy UAT proof job |
+| `complete-plan <plan_id> [--write]` | v2 Definition of Done + close control issue |
+| `check-diff --pr <n>` | Scope check helper for plan PRs |
 
-1. Conversation / linked control issue body or title
-2. Checked-out `cursor/*` branch — fetch branch and load `.agents/plans/<plan_id>.snapshot.json`
-3. `plan:<id>` label on control issue
-4. Roadmap parent → `roadmap-next-child`
-5. Single open issue with `execute-plan` + `autonomous-approved` + `busy`
+Exit codes (`tick`): `0` action, `2` stop, `3` config/worker token.
 
-Checkout the artifact branch **before** `gate` — snapshots on `artifact_branch_policy: phase-branch` plans may not exist on `main`.
+### Legacy roadmap (schema 1 on disk)
 
-### Autonomy gate (preflight)
-
-Confirms snapshot `autonomy: active`, `approved_until` in the future, and control issue labels (`autonomous-approved`, not `autonomous-revoked`).
-
-```bash
-node scripts/execute_plan_runtime.js gate example-plan \
-  --labels execute-plan,plan:example-plan,autonomous-approved
-```
-
-Exit `0` = proceed; exit `2` = halt (JSON on stdout).
-
-On exit `0`, stdout includes JSON (`next_action`, `agent_next_step`) and a final line `NEXT: <concrete tool step>` — run that immediately; preflight is not a deliverable. `/execute-plan` means **resume** the programme, not permission to start the next phase.
-
-On exit `2` with `code: expired`, a `UNBLOCK:` line gives `approve-autonomous` + `resume-plan` only (no phase re-selection).
-
-While gate exit is `0`, see `AGENTS.md` §Execute-plan and [execute-plan-instruction-stack.md](./execute-plan-instruction-stack.md).
-
-### Resume check
-
-Validates gate + PR `headRefOid` against recorded `pr_head_sha` (override with human `accept-head` on control issue).
+For closed programmes that still have `plan_kind: roadmap` snapshots:
 
 ```bash
-node scripts/execute_plan_runtime.js resume-check example-plan \
-  --phase 1 --pr-head <sha> --labels autonomous-approved
+node scripts/execute_plan_runtime.js roadmap-status <roadmap_id>
+node scripts/execute_plan_runtime.js roadmap-next-child <roadmap_id>
+node scripts/execute_plan_runtime.js roadmap-set-child <roadmap_id> --child <id> --status <status> [--write]
 ```
 
-### Control issue bootstrap
-
-Renders title, body, labels, and suggested `gh issue create` command:
-
-```bash
-node scripts/execute_plan_runtime.js init-control-issue <plan_id>
-node scripts/execute_plan_runtime.js render-control-issue <plan_id>
-node scripts/execute_plan_runtime.js render-control-issue <plan_id> --title
-```
-
-After creating the issue, set `control_issue` in the snapshot JSON and re-run validation.
-
-### Session limit (~24h)
-
-Voluntary checkpoint when the orchestrator has run **~24 hours** continuously on the same plan, or the pod is near timeout. Not a revoke — `approved_until` (48h default) may still be valid.
-
-```bash
-node scripts/execute_plan_runtime.js halt <plan_id> \
-  --reason session_limit --detail "checkpoint: phase N, next: babysit+ | phase N+1 implement" --write --post-comment
-```
-
-Human comments `resume-plan <plan_id>` on the control issue. Do **not** ask in user chat.
-
-### Halt (graceful shutdown)
-
-Updates snapshot + live plan runtime block; prints JSON with `comment_preview`. Pass `--post-comment` to post on the control issue via `gh`.
-
-```bash
-node scripts/execute_plan_runtime.js halt <plan_id> \
-  --reason session_limit --detail "checkpoint" --write --post-comment
-```
-
-`--autonomy` defaults to `halted`; use `revoked` when `autonomous-revoked` label applied.
-
-### Pause phase (legacy — keeps autonomy active)
-
-> **Note (2026-07):** UAT failure no longer pauses execute-plan — see [uat-coordinator-plan.md](./uat-coordinator-plan.md). Work agents use `barrier-check` before merge; the UAT coordinator owns remedial work. The `pause`/`resume-uat` CLI below remains for non-UAT halts and legacy snapshots.
-
-Pauses the in-progress phase without setting snapshot `autonomy` to `halted`. **Not invoked for UAT prod-ready failure** under the queue-coordinator model.
-
-```bash
-node scripts/execute_plan_runtime.js pause <plan_id> \
-  --reason uat_paused --detail "prod-ready: smoke shard 3 failed" --write --post-comment
-```
-
-### Resume UAT (auto-resume — no human `resume-plan`)
-
-Clears `uat_paused` on the halted phase and restores `in_progress`. **Legacy** — UAT coordination now uses `barrier-check` instead of `resume-uat`.
-
-```bash
-node scripts/execute_plan_runtime.js resume-uat <plan_id> --write --post-comment
-```
-
-Prints one JSON object (`next_action`, phase, `comment_preview`, optional `posted`). Main agent continues via `/execute-plan <plan_id> resume` without manual intervention.
-
-### Phase status + artifact sync
-
-```bash
-node scripts/execute_plan_runtime.js set-phase <plan_id> \
-  --phase 1 --status in_progress --pr-url <url> --pr-head <sha> --write
-
-node scripts/execute_plan_runtime.js sync-runtime <plan_id> --write
-node scripts/execute_plan_runtime.js current-phase <plan_id>
-```
-
-`sync-runtime` writes the `## Runtime state` YAML block in `.agents/plans/<plan_id>.md` including `artifact_ref` (branch + commit SHAs from current git context).
-
-### Project status (control issue)
-
-Aligns with `docs/agent-efficiency/github-issue-workflow.md` status field. **Cloud Agents skip board updates** — comments + `busy` label only.
-
-| When | Agent action |
-|------|----------------|
-| Control issue created | `gh issue create` / `init-control-issue` |
-| Work starts (after gate) | `start-work` — comment + `busy` |
-| All phases merged | `complete-plan <plan_id> --write` — close with summary |
-
-```bash
-node scripts/github_issue_workflow.js start-work --issue <control_issue> --body "…"
-node scripts/execute_plan_runtime.js complete-plan <plan_id> --write
-```
-
-`set-project-status` is for GitHub Actions (repo secret `GH_PROJECTS_PAT`) — not agent sessions.
-
-**Issue comments:** use `--post-comment` on `halt`, `pause`, `resume-uat`; `complete-plan --write` closes with summary. For ad-hoc updates: `node scripts/github_issue_workflow.js comment --issue <n> --body "…"`.
-
-### Roadmap orchestrator (`plan_kind: roadmap`)
-
-Parent snapshots that chain multiple child `plan_id`s under one standing grant:
-
-```bash
-node scripts/execute_plan_runtime.js roadmap-status pet-care-hardening-roadmap
-node scripts/execute_plan_runtime.js roadmap-next-child pet-care-hardening-roadmap
-node scripts/execute_plan_runtime.js roadmap-set-child pet-care-hardening-roadmap \
-  --child pet-care-observability-taxonomy --status merged \
-  --pr-url <url> --merge-commit <sha> --write
-```
-
-After each child merge: `complete-plan` on the child, then `roadmap-set-child` on the parent. When `roadmap-status` reports `complete: true`, run `complete-plan` on the roadmap parent.
+New programmes use v2 `init` only.
 
 ---
 
-## Agent workflow (summary)
+## Pre-push
 
-1. Human approves → freeze snapshot → `init-control-issue` → create GitHub issue (**Backlog**) → set `control_issue` number
-2. Each session: `gate` → `start-work` on control issue → `current-phase` → work on phase branch
-3. On push: `set-phase` + `sync-runtime --write`
-4. On revoke/expiry/escalation: `halt --write` + add `autonomous-revoked` label (halt only — do not close PRs)
-5. All phases merged: `complete-plan <plan_id> --write` → **Done** + close control issue
-6. Resume: remove revoke label → `resume-check` → continue from `next_action`
-
-Full halt/resume semantics: [autonomous-pr-policy.md](./autonomous-pr-policy.md) §Halt and resume.
+Validates `.agents/plans/_example.v2.snapshot.json` only (v1 example removed in WP10).
 
 ---
 
-## v2 GitHub client
+## Related
 
-`scripts/lib/execute_plan_github.js` is the only way execute-plan v2 code talks to GitHub (REST and
-GraphQL, Node 22 built-ins only, so it also runs in Actions without `npm ci`). New v2 code never
-shells out to `gh`; v1 modules such as `execute_plan_project.js` keep their `gh` calls until v2
-retires them. Build spec: [execute-plan-v2 WP1](./plans/execute-plan-v2/work-packages-runtime.md).
-
-- **Client:** `createGitHubClient({ repo: 'owner/name', token?, fetchImpl?, baseUrl?, sleep? })`.
-  List methods follow `Link: rel="next"` unless given `pages`.
-- **Token order:** `token` option → `EXECUTE_PLAN_TOKEN` → `GH_TOKEN` → `GITHUB_TOKEN`. With none, the
-  first request (not construction) throws `MissingToken`. Errors name the method and path only, never
-  the token.
-- **Errors and retries:** 502/503/504 and secondary rate limits are retried at most 3 times (2 s,
-  4 s, 8 s); an exhausted primary rate limit throws `RateLimited` (`resetAt`); other failures throw
-  `GitHubError` (`status`). `getBranch`, `getFileAtRef` return `null` on 404, and `removeLabel`
-  ignores 404. `listPullFiles` throws `PullFilesOverflow` above GitHub's 3000-file listing limit.
-  Every request has a 30 s timeout (`AbortSignal.timeout`); a timeout propagates and is never retried.
-- **Tests:** `scripts/test/helpers/execute_plan_fake_fetch.js` — `createFakeFetch(routes)` maps
-  `'<METHOD> <path>?<sorted query>'` (or `'POST /graphql'`) to a response or a function, records
-  `fake.calls`, and throws `Unrecorded request: <key>` for anything else. v2 tests are offline.
-
----
-
-## v2 `tick` and `watch-ci`
-
-Modules: `scripts/lib/execute_plan_observe.js` (reads), `execute_plan_status.js` (status comment), `execute_plan_tick.js` (decide + persist).
-
-```bash
-node scripts/execute_plan_runtime.js tick <plan_id> [--issue N] [--json] [--actor agent|driver] [--dry-run]
-node scripts/execute_plan_runtime.js watch-ci <plan_id> --pr <n> [--timeout-min 25]
-```
-
-- `tick` loads config from `main`, the control issue (`--issue`, else the open issue labelled `plan:<plan_id>`), the bot-authored status comment and the snapshot at its `init_sha`; observes GitHub; calls `decide()`; then edits the status comment, posts one log comment on a state change and adds `needs-owner` on a stop. It returns driver actions; it never performs them. `--dry-run` prints the would-be writes. `--actor` defaults to `agent` (a worker tick also refreshes `lease.last_tick_at`).
-- `watch-ci` polls the PR head's required checks; it returns on completion, on the first failing required check, or on timeout (exit `0`, `timedOut: true`, so the worker runs `tick` next).
-- Exit codes: `0` action (including `wait`) or complete; `2` stop; `3` config/approval error (missing config, status comment, `init_sha` or snapshot).
-
-## v2 decision logic
-
-`scripts/lib/execute_plan_state.js` (`decide`, `prLadder`) and `scripts/lib/execute_plan_control.js`
-(`deriveControl`, `leaseAlive`, `launchCounts`) are the pure core of execute-plan v2: they read only
-their arguments (no GitHub, `fs`, `process.env` or clock; time is `opts.now`). The rules, STOP reasons,
-observation shapes and the scenario table are normative in
-[state-machine.md](./plans/execute-plan-v2/state-machine.md); output and actions are in
-[contracts.md](./plans/execute-plan-v2/contracts.md) §3.7. Rule ids appear as comments in the code and
-as `rule` in each scenario file under `scripts/test/fixtures/execute-plan-v2/scenarios/`.
-`execute_plan_uat.js` holds a stub `decideUat` until WP5.
-
----
-
-## Tests
-
-```bash
-node --test scripts/execute_plan_runtime.test.js
-node --test scripts/test/execute_plan_github.test.js
-node --test scripts/test/execute_plan_scenarios.test.js
-```
-
-Wired into `./scripts/pre-push-changed.sh` and `./scripts/pre-push.sh` governance gates.
+[execute-plan-instruction-stack.md](./execute-plan-instruction-stack.md) · [execute-plan skill](../../.cursor/skills/execute-plan/SKILL.md)

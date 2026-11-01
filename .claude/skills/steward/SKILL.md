@@ -31,5 +31,5 @@ push; never defer it to a debt issue.
 - Triage and debt conventions: `docs/agent-efficiency/autonomous-pr-policy.md`.
 - Cursor-only mechanics do not apply to Claude Code (see `CLAUDE.md` §Claude Code mechanics).
 - Merging: `AGENTS.md` §Autonomy and merging — when the user asked you to merge
-  or babysit the PR, or execute-plan gate exits `0`; squash once merge gates pass
+  or babysit the PR, or an active execute-plan v2 session requires it; squash once merge gates pass
   (CI green, no open review thread).

@@ -66,13 +66,13 @@ async function main() {
     case 'comment': {
       const body = readBody(flags);
       if (!body) usage();
-      printJson(postIssueComment(issueNumber, body));
+      printJson(await postIssueComment(issueNumber, body));
       break;
     }
 
     case 'start-work': {
       const body = readBody(flags) || 'Work started.';
-      const commentResult = postIssueComment(issueNumber, body);
+      const commentResult = await postIssueComment(issueNumber, body);
       const labelResult = editIssueLabels(issueNumber, { add: ['busy'] });
       printJson({ comment: commentResult, labels: labelResult });
       break;

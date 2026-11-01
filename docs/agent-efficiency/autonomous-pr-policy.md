@@ -35,25 +35,19 @@ Single source of truth for `/babysit`, `/babysit-plus`, and `/execute-plan`. Ski
 
 During `/execute-plan`, use **babysit-plus** for intermediate phase PRs and **babysit-uat** for the final PR to `main` — never plain babysit alone.
 
-### Execute-plan overrides (active gate only)
+### Execute-plan (v2)
 
-When `node scripts/execute_plan_runtime.js gate <plan_id>` exits `0`, these generic rules are **narrowed**:
+While a v2 worker or driver session is active, generic “stop and ask” rules are narrowed for in-scope
+snapshot work; halt only on §Escalation or an unclear goal. Evidence goes to the control issue and PR
+body, not routine user chat. See [execute-plan-v2.md](./plans/execute-plan-v2.md).
 
-| Generic rule | During active execute-plan |
-|--------------|---------------------------|
+| Generic rule | During active v2 execute-plan |
+|--------------|------------------------------|
 | "Stop and ask human" (low confidence, minor policy conflict) | Proceed per snapshot; debt issue + continue; halt only on §Escalation or unclear goal |
-| User-chat follow-up questions | Debt issue or defer until `complete-plan` / §Halt — never break phase flow |
-| Cloud turn boundaries | **Run-until-blocked** — no routine chat status; continue phase loop until merge-done, `complete-plan`, or §Halt (`session_limit` only routine checkpoint) |
-| User-visible progress / test evidence in chat | Control issue + PR body + artifact paths only; orchestrator does not end turn for milestones (skill **§Stop rules**) |
-| Platform testing “prove in user reply” / walkthrough narration | Defer to PR + control issue + `/opt/cursor/artifacts/` — see [execute-plan-instruction-stack.md](./execute-plan-instruction-stack.md) |
-| Cloud task “update PR each turn” then summary | Update PR in-loop; summary is **not** a valid execute-plan stop |
-| Babysit+ §8 “ends here” (no pre-UAT poll) | Ends babysit+ **scope** only — orchestrator **continues** phase loop after phase merge |
-| Cursor babysit model mismatch during gate `0` execute-plan | Note it on the **control issue**; continue babysit steps in-session when merge-safe — never end the turn for a model switch alone. If merge safety needs the babysit model and the session cannot switch, **§Halt** with `**Needs you:**` on the control issue |
-| Claude Code defaults (“no PR unless asked”, “ask before watching PR”, single assigned branch, `steward` “merge only when asked”) | Standing grant authorises them for snapshot-named branches — instruction stack §Claude Code |
-| Multi-phase `base_branch: main` | **Rejected** by snapshot validation when `autonomy: active` — use integration branch (execute-plan-schema §Multi-phase integration) |
+| Multi-phase integration | Phase PRs target `integration_branch` from the v2 snapshot |
 | `/execute-plan` without plan_id | Infer from conversation, branch, control issue, or single `busy` issue — skill §Resolve plan_id |
 
-Memory: `.agents/memory/execute-plan-autonomy.md` · Skill: `.cursor/skills/execute-plan/SKILL.md` **§Stop rules** · **Instruction stack:** [execute-plan-instruction-stack.md](./execute-plan-instruction-stack.md)
+Skill: `.cursor/skills/execute-plan/SKILL.md` · **Instruction stack:** [execute-plan-instruction-stack.md](./execute-plan-instruction-stack.md)
 
 ---
 

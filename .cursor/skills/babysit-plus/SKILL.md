@@ -16,7 +16,7 @@ Autonomous PR operator. Extends lightweight `/babysit` with mandatory triage, de
 
 During `/execute-plan`, use **/babysit-plus** for intermediate phase PRs and **/babysit-uat** for the **final** PR to `main` — never plain `/babysit` alone.
 
-**Execute-plan override (gate `0`):** Not a routine stop — after merge, return to the execute-plan phase loop. Low-confidence triage → debt issue + continue; `**Needs you:**` on **control issue** only when merge safety is ambiguous. See autonomous-pr-policy §Execute-plan overrides.
+**Execute-plan v2:** After phase PR merge, return to the tick loop — not a routine babysit+ stop. See autonomous-pr-policy §Execute-plan (v2).
 
 ---
 
@@ -75,7 +75,7 @@ Use **`composer-2.5` only** for steps §0–7 (sync, poll, triage, fixes, CI, me
    ./scripts/babysit_sync_base.sh --pr <url> --check
    ```
    When exit `1` (behind), rebase once: `./scripts/babysit_sync_base.sh --pr <url> --push`. Re-run `--check` before every push, before the CI wait loop, and after long automatic-review polls. See autonomous-pr-policy §Proactive base sync and §Merge coordination.
-2. If execute-plan: confirm control issue has `autonomous-approved`, not `autonomous-revoked`, and `approved_until` is in the future (`node scripts/execute_plan_runtime.js gate <plan_id> --labels ...`).
+2. If execute-plan v2: confirm control issue approval via `tick` / driver status (not revoked; window valid).
 3. `gh pr view <url> --json state,isDraft,labels,headRefOid,baseRefName`
 4. **§Halt if:** `do-not-merge`, draft (when merge intended), revoked, or expired.
 
@@ -214,7 +214,7 @@ When babysit+ or babysit-uat merges a **child** plan PR (not the roadmap parent)
 3. `roadmap-next-child <roadmap_id>` — bootstrap and gate the next pending child without permission prompts when the standing grant covers remaining scope
 4. When `roadmap-status` reports `complete: true`, `complete-plan <roadmap_id> --write` on the parent
 
-**During `/execute-plan` (gate exit `0`):** Phase PR squash-merge is **not** session completion — return to the execute-plan phase loop (next `pending` phase or `complete-plan`). See `docs/agent-efficiency/execute-plan-instruction-stack.md` §Babysit+ inside execute-plan.
+**During `/execute-plan` (v2):** Phase PR squash-merge is not session completion — continue the tick loop. See `docs/agent-efficiency/plans/execute-plan-v2.md`.
 
 **Babysit+ scope ends here** (not the session) — no pre-UAT polling or deploy. Final merge to `main` when pre-UAT must pass → **/babysit-uat**.
 
