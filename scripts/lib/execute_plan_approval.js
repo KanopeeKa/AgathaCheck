@@ -77,7 +77,7 @@ function findControlComments(comments, snapshot, config) {
     if (parsed.verb === 'revoke') {
       if (res.valid) revokeAt = comment.created_at;
     } else if (parsed.verb === 'resume') {
-      authorizing = {
+      const candidate = {
         comment_id: comment.id,
         verb: parsed.verb,
         valid: res.valid,
@@ -85,6 +85,12 @@ function findControlComments(comments, snapshot, config) {
         created_at: comment.created_at,
         until: parsed.until,
       };
+      if (!authorizing) continue;
+      if (!authorizing.valid) {
+        authorizing = candidate;
+        continue;
+      }
+      if (res.valid) authorizing = candidate;
     } else if (parsed.verb === 'approve') {
       if (authorizing && authorizing.valid) continue;
       authorizing = {
