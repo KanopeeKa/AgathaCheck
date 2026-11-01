@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 # Watch pre-uat-e2e.yml for a specific merge commit SHA (the PR you merged).
-# Thin wrapper around execute-plan v2 `watch-preuat-sha` (GitHub API client, no gh).
+# Thin wrapper around execute-plan v2 `watch-preuat-sha` (GitHub REST client; no `gh` CLI).
+#
+# Requires GH_TOKEN or EXECUTE_PLAN_TOKEN in the environment (repo read + Actions).
+# Pass the full merge commit SHA (40 hex chars), not a short prefix.
 #
 # Usage:
 #   ./scripts/babysit_uat_watch_preuat.sh <merge_sha> [--json] [--timeout-min 90]

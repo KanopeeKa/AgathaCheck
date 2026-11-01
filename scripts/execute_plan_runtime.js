@@ -6,7 +6,7 @@
  *   node scripts/execute_plan_runtime.js gate <plan_id> [--json] [--actor agent|driver] [--dry-run]
  *   node scripts/execute_plan_runtime.js tick <plan_id> [--issue N] [--json] [--actor agent|driver] [--dry-run]
  *   node scripts/execute_plan_runtime.js init <plan_id> [--window-days N] [--dry-run]
- *   node scripts/execute_plan_runtime.js complete-plan <plan_id> [--write] [--skip-close]
+ *   node scripts/execute_plan_runtime.js complete-plan <plan_id> [--write] [--dry-run]
  *   node scripts/execute_plan_runtime.js check-diff --pr <n> [--repo owner/name] [--publish]
  *   node scripts/execute_plan_runtime.js watch-ci <plan_id> --pr <n> [--timeout-min 25]
  *   node scripts/execute_plan_runtime.js watch-preuat <plan_id> [--issue N] [--timeout-min 90]
@@ -39,7 +39,7 @@ Commands:
   gate <plan_id> [--json] [--actor agent|driver] [--dry-run]   (alias of tick)
   tick <plan_id> [--issue N] [--json] [--actor agent|driver] [--dry-run]
   init <plan_id> [--window-days N] [--dry-run]
-  complete-plan <plan_id> [--write] [--skip-close] [--dry-run]
+  complete-plan <plan_id> [--write] [--dry-run]
   check-diff --pr <n> [--repo owner/name] [--publish]
   watch-ci <plan_id> --pr <n> [--timeout-min 25]
   watch-preuat <plan_id> [--issue N] [--timeout-min 90]
