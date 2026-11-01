@@ -16,6 +16,7 @@ const FAILED = new Set(['failure', 'timed_out', 'action_required']);
 const SCOPE_CHECK = 'execute-plan-scope';
 const SCOPE_STOP = new Set(['drift', 'protected', 'forbidden']);
 const SCOPE_FIXABLE = new Set(['unclassified', 'companion-cap', 'too-many-files']);
+const HOLD_LABEL = 'execute-plan-hold';
 
 const driver = (kind, args = {}) => ({ actor: 'driver', kind, launch: false, args });
 const agent = (kind, args = {}) => ({ actor: 'agent', kind, launch: false, args });
@@ -110,6 +111,8 @@ function prLadder(pr, rawCtx) {
 
   // PR-ladder 1
   if ((pr.labels || []).includes('do-not-merge')) return stop('pr-blocked', `PR #${pr.number} has the do-not-merge label`);
+  // PR-ladder 1b — owner drill hold (no STOP; budgets unchanged)
+  if ((pr.labels || []).includes(HOLD_LABEL)) return finish(ctx, { ...base, action: wait('hold'), looked });
   // PR-ladder 2
   if (pr.draft) {
     if (!ctx.draftAction) return finish(ctx, { ...base, action: wait('checks'), looked });
@@ -229,4 +232,4 @@ function decide(snapshot, obs, opts) {
   return prLadder(cur.pr, { ...ctx, kind: 'phase', phase: cur.id, launchKey: cur.id, draftAction: { kind: 'implement', args: draftArgs }, method: 'squash' });
 }
 
-module.exports = { decide, prLadder, applyLeaseRules };
+module.exports = { decide, prLadder, applyLeaseRules, HOLD_LABEL };

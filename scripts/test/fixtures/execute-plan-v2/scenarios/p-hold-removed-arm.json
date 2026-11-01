@@ -1,0 +1,23 @@
+{
+  "name": "hold removed → normal arm-auto-merge",
+  "rule": "PR-ladder 9",
+  "snapshot_patch": {},
+  "observations_patch": {
+    "phases": [
+      {
+        "id": "1",
+        "branch_exists": true,
+        "pr": { "labels": [], "draft": false, "auto_merge_enabled": false, "ready_at": "2026-10-16T08:00:00Z" }
+      },
+      { "id": "2", "branch_exists": false, "pr": null }
+    ]
+  },
+  "opts": { "actor": "driver", "lease": null, "now": "2026-10-16T10:30:00Z" },
+  "expected": {
+    "launch": false,
+    "stop": null,
+    "state": "phase:ready",
+    "actor": "driver",
+    "kind": "arm-auto-merge"
+  }
+}

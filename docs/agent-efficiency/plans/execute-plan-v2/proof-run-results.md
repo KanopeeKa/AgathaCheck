@@ -86,6 +86,6 @@ Deploy-prod run https://github.com/KanopeeKa/AgathaCheck/actions/runs/4088149431
 
 ## `proof-build-label-7f3b`
 
-**Blocked on driver fixes:** (a) find PRs by head branch name when the integration branch is gone; (b) fallback when auto-merge is armed and checks are green; (c) a rejected repeat `approve-autonomous` must **not** restart the clock and budgets; (d) a **hold** label so the owner can perform drills.
+**Driver fixes (a)–(d) merged:** [#1971](https://github.com/KanopeeKa/AgathaCheck/pull/1971), [#1972](https://github.com/KanopeeKa/AgathaCheck/pull/1972), [#1973](https://github.com/KanopeeKa/AgathaCheck/pull/1973), [#1974](https://github.com/KanopeeKa/AgathaCheck/pull/1974); ready for rerun.
 
 The plan must change something **new**: `proof_label` is already on `main` (e.g. value `execute-plan-v2-proof-2`).
