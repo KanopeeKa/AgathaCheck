@@ -3,220 +3,162 @@ title: Plan Template
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-10-15
+last_updated: 2026-11-01
 tags: [agent-efficiency, policy]
 ---
-# Plan template — execute-plan
+# Plan template — execute-plan v2
 
-Copy to `.agents/plans/<plan_id>.md` and fill in. Pair with `<plan_id>.snapshot.json` at approval time (see [execute-plan-schema.md](./execute-plan-schema.md)).
+Author plans as `.agents/plans/<plan_id>.md` only. The snapshot JSON is **generated** by
+`init` — do not hand-write or edit `.snapshot.json`.
 
-**Sizing:** Medium features only. If sanity check warns `proceed-high-risk` or work exceeds **48h** `approved_until`, split the plan or re-approve after reviewing scope, duplication, and blockers.
+**Layout:** [execute-plan-v2/contracts.md](./plans/execute-plan-v2/contracts.md) §3.2 · **Example:**
+[`.agents/plans/_example.v2.md`](../../.agents/plans/_example.v2.md) · **Procedure:**
+[`.cursor/skills/execute-plan/SKILL.md`](../../.cursor/skills/execute-plan/SKILL.md)
 
----
-
-## Metadata
-
-| Field | Value |
-|-------|-------|
-| **plan_id** | `my-feature-plan` |
-| **title** | Short human title |
-| **author** | |
-| **created** | YYYY-MM-DD |
-| **base_branch** | `main` (1 phase) **or** `cursor/<plan_id>-integration-<suffix>` (**required** for 2+ phases) |
-| **default_merge_mode** | `auto` (only valid value — agents always merge when gates pass) |
-| **artifact_branch_policy** | `phase-branch` (default) |
-| **plan_kind** | omit for single plans; `roadmap` for multi-plan parent orchestrators |
-
-**Multi-phase (2+):** **require** `base_branch: cursor/<plan_id>-integration-<suffix>` — phase PRs merge to integration; one final PR integration → `main`. Snapshot validation rejects `main` while `autonomy: active`. See execute-plan skill §Multi-phase integration branch.
-
-**Roadmap parent (`plan_kind: roadmap`):** one standing grant chains multiple child `plan_id`s. Snapshot includes `child_plans[]` with `{plan_id, status}` per slice; runtime CLI tracks progress (`roadmap-status`, `roadmap-set-child`). See [execute-plan-runtime.md](./execute-plan-runtime.md) §Roadmap orchestrator.
+**Sizing:** Medium features that fit one integration branch and the default budgets. If scope is
+uncertain, split into a second plan id rather than expanding paths mid-run.
 
 ---
 
-## Goal
+## Authoring workflow
 
-One paragraph: what this plan achieves and why it is split into phases.
+1. Branch `cursor/<plan_id>-init` from `main`.
+2. Copy the skeleton below into `.agents/plans/<plan_id>.md` and fill it in.
+3. Run `node scripts/execute_plan_runtime.js init <plan_id> [--window-days N]`.
+   - Default window: **7** days (`approved_until`).
+   - Cap: **14** days (`--window-days` cannot exceed the cap in code).
+4. Commit and push the init branch; end the planning session with the **exact approval line** printed by `init`.
+5. Owner posts that line on the control issue. `init` creates the issue with label `execute-plan` only;
+   after a valid approval comment, the approve workflow adds `plan:<plan_id>` and `autonomous-approved`.
 
----
-
-## Canonical docs
-
-List canonical feature doc(s) this plan will update (`docs/domains/<domain>/features/…`). At **strengthen**, record per-phase `docs_targets` on the control issue.
-
-If the plan needs a proposal or delivery write-up before merge, create `docs/domains/<domain>/changes/<name>.md` with `status: proposed` and state which canonical doc it folds into. On plan completion, every delivered `changes/` doc must be folded and deleted or left `in-delivery` with tracked scope (deletion guard — `.cursor/skills/canonical-docs/SKILL.md`).
-
----
-
-## Autonomy (filled at approval)
-
-| Field | Value |
-|-------|-------|
-| **approved_at** | |
-| **approved_until** | `approved_at + 48h` (mandatory) |
-| **control_issue** | # |
-| **content_hash** | `sha256:…` from snapshot |
-| **autonomy** | `active` |
-
-**Grant keyword:** `approve-autonomous <plan_id>`
+Optional: `init --dry-run` validates the markdown and prints the snapshot and approval line without
+creating an issue or pushing.
 
 ---
 
-## Phases
+## Plan file skeleton
 
-Repeat for each phase. IDs must match snapshot JSON.
-
-### Phase 1 — `<title>`
-
-| Field | Value |
-|-------|-------|
-| **id** | `1` |
-| **branch** | `cursor/<descriptive-name>-aec1` |
-| **merge_mode** | Deprecated — always `auto`; omit on new plans |
-| **spawn_allowed** | `false` |
-| **exit_checklist** | `default` \| see [phase-exit-checklists.md](./phase-exit-checklists.md) |
-
-**allowed_paths:**
-
-```
-flutter_app/lib/features/example/**
-flutter_app/test/features/example/**
-```
-
-**forbidden_paths:**
-
-```
-server/**
-.github/workflows/**
-```
-
-**allowed_exceptions:**
-
-```
-tests
-docs
-file-split
-```
-
-**Scope:**
-
-- Bullet list of concrete deliverables
-
-**Exit criteria:**
-
-- [ ] Measurable outcome 1
-- [ ] Measurable outcome 2
-
----
-
-### Phase 2 — `<title>`
-
-(duplicate phase section)
-
----
-
-## Spawn phase (optional)
-
-If a phase uses parallel agents:
-
-| Field | Value |
-|-------|-------|
-| **spawn_allowed** | `true` |
-| **integration_branch** | `cursor/sprint-N-topic-integration-aec1` |
-| **ownership_ref** | `docs/debt/refactoring-log.md#sprint-N` |
-
-Publish ownership map **before** spawning. See `/spawn-sprint-agents`.
-
----
-
-## Runtime state (agent-updated)
-
-Do not edit manually during a run except on resume after halt.
-
-```yaml
-autonomy: active
-current_phase: "1"
-last_completed_phase: null
-halt_reason: null
-next_action: null
-artifact_ref:
-  branch: null
-  plan_path: .agents/plans/<plan_id>.md
-  plan_commit: null
-  snapshot_path: .agents/plans/<plan_id>.snapshot.json
-  snapshot_commit: null
-open_prs: []
-merge_commits: {}
-debt_issue_refs: []
-```
-
----
-
-## Sanity check expectations
-
-Agent evaluates before autonomy grant:
-
-- Every phase has `allowed_paths`, `forbidden_paths`, `allowed_exceptions`, `exit_checklist`
-- No overlapping `allowed_paths` across non-spawn phases
-- **1 phase** → `base_branch: main` (or documented integration parent for spawn children)
-- **2+ phases** → `base_branch` matches `cursor/<plan_id>-integration-<suffix>`; integration branch exists on origin; final integration → `main` PR noted in Goal or last phase
-- Pessimistic scope estimate (domains × phases × CI factor)
-- Migrations / auth / API breaks flagged
-
-Output: `proceed` | `proceed-high-risk` | `reject`
-
----
-
-## Turn boundary / orchestrator contract
-
-When this plan runs under execute-plan v2, the worker/driver loop is `tick` — see `.cursor/skills/execute-plan/SKILL.md` and [execute-plan-v2.md](./plans/execute-plan-v2.md).
-
----
-
-## Revoke and resume
-
-| Action | How |
-|--------|-----|
-| **Revoke** | Add `autonomous-revoked` on control issue; optional `do-not-merge` on open PRs. **Halt only** — do not close PRs. |
-| **Resume** | Remove revoke label; comment `resume-plan <plan_id>`; invoke `/execute-plan <plan_id> resume` |
-
-See [autonomous-pr-policy.md](./autonomous-pr-policy.md) §Halt and resume.
-
----
-
-## Checklist before `approve-autonomous`
-
-- [ ] Snapshot JSON validates: `node scripts/validate_execute_plan_snapshot.js .agents/plans/<plan_id>.snapshot.json`
-- [ ] Control issue created with labels `execute-plan`, `plan:<id>`, `autonomous-approved`
-- [ ] `default_merge_mode: auto` on snapshot (required)
-- [ ] Plan fits medium feature scope (< 48h expected)
-
----
-
-## v2 plan file
-
-Execute-plan v2 plans (`schema_version: 2` snapshots, created by `node scripts/execute_plan_runtime.js init <plan_id>`) use a fixed layout in `.agents/plans/<plan_id>.md`:
+Replace placeholders; keep heading names and phase heading pattern.
 
 ````markdown
 # <title>
 
 ## Goal
-<one paragraph>
+<One paragraph: outcome, why phased, integration → main → UAT.>
 
 ## Phases
 
 ### Phase 1 — <phase title>
 ```json
-{ "allowed_paths": ["…"], "forbidden_paths": [], "allowed_exceptions": ["tests"],
+{
+  "allowed_paths": ["path/glob/**"],
+  "forbidden_paths": [],
+  "allowed_exceptions": ["tests"],
+  "companions": [],
+  "exit_checklist": ["measurable check 1", "pre-push-changed green"]
+}
+```
+Scope: <what to build or change — concrete deliverables.>
+Out of scope: <explicit exclusions.>
+
+### Phase 2 — <phase title>
+```json
+{ "allowed_paths": ["…"], "forbidden_paths": ["…"], "allowed_exceptions": ["docs"],
   "companions": [], "exit_checklist": ["…"] }
 ```
-Scope: <what to build>
-Out of scope: <what not to touch>
+Scope: …
+Out of scope: …
 
 ## Proof on UAT
-<how the result is observed on https://uat.agathatrack.com>
+<How a human verifies the result on https://uat.agathatrack.com — curl, UI path, or E2E note.>
 ````
 
-- Phase headings are `### Phase <id> — <title>` with an em dash (U+2014) between single spaces; ids run `1`, `2`, … in order.
-- The first fenced `json` block after each phase heading is the phase scope (`JSON.parse`; no YAML). `allowed_paths` and `exit_checklist` are required.
-- The file must not contain a heading named `Contract`, `Rules` or `Process` at any level; `init` fails with `plan file must not contain process rules (heading "<name>")`. Process rules belong in code, not plans.
-- Immutable after approval: the snapshot's `plan_file_sha256` is covered by `approval_hash`. Contracts: `docs/agent-efficiency/plans/execute-plan-v2/contracts.md` §3.1–3.4.
+### Phase JSON fields
+
+| Field | Required | Notes |
+|-------|----------|-------|
+| `allowed_paths` | yes | Glob paths under repo root; must not overlap across phases. |
+| `forbidden_paths` | no | Extra deny list (`.github/workflows/**` is always protected). |
+| `allowed_exceptions` | no | Subset of `tests`, `docs` only (`PHASE_EXCEPTIONS` in `scripts/lib/execute_plan_snapshot_v2.js`). |
+| `companions` | no | Paths that may change with the phase without counting as scope violations (see contracts). |
+| `exit_checklist` | yes | Short strings the worker uses as done criteria; include `pre-push-changed green` when code changes. |
+
+### Markdown rules
+
+- Phase headings: `### Phase <id> — <title>` with an em dash (U+2014) between single spaces; ids `1`, `2`, … in order.
+- The first fenced ` ```json ` block after each phase heading is parsed with `JSON.parse` (no YAML).
+- **Forbidden headings** anywhere in the file: `Contract`, `Rules`, `Process` — `init` fails with
+  `plan file must not contain process rules`. Process belongs in skills and code, not plan files.
+- After approval, the plan bytes are immutable (`plan_file_sha256` in `approval_hash`). Scope changes → new `plan_id` and new `init`.
+
+---
+
+## Branches (created by runtime, not in the markdown)
+
+| Artifact | Pattern |
+|----------|---------|
+| Init | `cursor/<plan_id>-init` |
+| Integration | `cursor/<plan_id>-integration-<suffix>` |
+| Phase *n* | `cursor/<plan_id>-p<n>` |
+| Release | integration → `main` (one PR) |
+| Remedial | `cursor/<plan_id>-remedial-<n>` → `main` (UAT stage only) |
+
+Phase PRs target the integration branch; one release PR merges integration to `main`. The driver
+merges — workers and humans do not babysit plan PRs.
+
+---
+
+## Budgets (snapshot defaults, overridable at init)
+
+Defaults from `V2_DEFAULTS` in `scripts/lib/execute_plan_constants.js` (each value ≤ `V2_CAPS`):
+
+| Budget | Default | Cap |
+|--------|---------|-----|
+| `window_days` | 7 | 14 |
+| `ci_per_phase` | 3 | 3 |
+| `launches_per_phase` | 5 | 6 |
+| `remedial_rounds` | 3 | 3 |
+| `sync_attempts` | 2 | 2 |
+| `daily_launches` | 20 | 30 |
+
+Raising a budget above its cap fails validation. After STOP, owner **`resume-autonomous`** with the
+**same** approval hash renews time and budgets (see runbooks §7.5).
+
+---
+
+## Canonical docs and `changes/`
+
+List canonical feature doc(s) each phase will update in **Scope** or **Goal**. Workers run
+`/canonical-docs sync` before push when behaviour changes.
+
+If a proposal is needed before delivery, use `docs/domains/<domain>/changes/<name>.md` with
+`status: proposed` and fold into the canonical doc before the programme completes (deletion guard in
+`.cursor/skills/canonical-docs/SKILL.md`).
+
+---
+
+## Owner: approve, pause, resume, revoke
+
+| Action | How |
+|--------|-----|
+| **Approve** | Post the exact `approve-autonomous <plan_id> sha256:… until …` line from `init`. |
+| **Pause merges** | Label **`execute-plan-hold`** on the relevant plan PR. |
+| **Hard stop on a PR** | Label **`do-not-merge`** on that PR. |
+| **Revoke programme** | Label **`autonomous-revoked`** or comment **`revoke-autonomous <plan_id>`**. |
+| **Resume after STOP** | Fix cause; remove `needs-owner` and **`autonomous-revoked`** if present; comment **`resume-autonomous <plan_id> sha256:<same> until <ISO≤14d>`**. |
+| **Kill switch** | Set repository variable **`EXECUTE_PLAN_DRIVER=off`**. |
+
+Detail: [runbooks-proof-retirement.md §7.5](./plans/execute-plan-v2/runbooks-proof-retirement.md).
+
+---
+
+## Pre-flight checklist (planner)
+
+- [ ] Plan id is unique and matches filename `.agents/plans/<plan_id>.md`.
+- [ ] Every phase has JSON with `allowed_paths` and `exit_checklist`; Scope and Out of scope lines present.
+- [ ] No forbidden process headings; paths do not overlap across phases.
+- [ ] **Proof on UAT** is observable after release deploy.
+- [ ] `init --dry-run` succeeds before the real `init`.
+- [ ] Window days chosen (default 7; max 14).
+
+After `init`: owner approves on the control issue; driver takes over — no babysit skills on plan PRs.

@@ -13,4 +13,7 @@ Read and follow `.cursor/skills/execute-plan/SKILL.md` (v2 loop). Contract: `AGE
 
 **CI wait:** `watch-ci` / subscribe — never `sleep`.
 
+**Plan PRs:** do not babysit or merge; owner controls (`execute-plan-hold`, `do-not-merge`,
+approve / `resume-autonomous` / `revoke-autonomous`, `EXECUTE_PLAN_DRIVER=off`) — see cursor skill §Owner controls.
+
 Spec: [`execute-plan-v2.md`](../../../docs/agent-efficiency/plans/execute-plan-v2.md).
