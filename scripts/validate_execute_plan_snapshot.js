@@ -4,7 +4,6 @@
  *
  * Usage:
  *   node scripts/validate_execute_plan_snapshot.js <path-to-snapshot.json>
- *   node scripts/validate_execute_plan_snapshot.js --fix-hash <path>
  *   node scripts/validate_execute_plan_snapshot.js --drift-test
  */
 
@@ -12,48 +11,14 @@
 
 const fs = require('fs');
 const path = require('path');
-const {
-  atomicWriteFile,
-  computeHash,
-  loadSnapshotFromPath,
-  runDriftTests,
-  validateSnapshot,
-  ExecutePlanError,
-} = require('./lib/execute_plan_lib');
-
+const { runDriftTests, ExecutePlanError } = require('./lib/execute_plan_lib');
 const { isV2, validateSnapshotV2 } = require('./lib/execute_plan_snapshot_v2');
 
 const REPO_ROOT = path.resolve(__dirname, '..');
-const SCHEMA_PATH = path.join(
-  REPO_ROOT,
-  'docs/agent-efficiency/execute-plan-snapshot.schema.json'
-);
 
 function fail(msg) {
   console.error(`validate_execute_plan_snapshot: ${msg}`);
   process.exit(1);
-}
-
-function isV2Raw(filePath) {
-  try {
-    return isV2(JSON.parse(fs.readFileSync(filePath, 'utf8')));
-  } catch {
-    return false;
-  }
-}
-
-function validateV2File(filePath, fixHash) {
-  if (fixHash) fail('--fix-hash is not allowed for v2 snapshots');
-  try {
-    const snapshot = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-    // Plan file sits next to the snapshot: <stem>.snapshot.json -> <stem>.md (stem = plan_id for real plans).
-    const planPath = filePath.replace(/\.snapshot\.json$/, '.md');
-    validateSnapshotV2(snapshot, { planMarkdown: fs.readFileSync(planPath, 'utf8') });
-  } catch (e) {
-    fail(e.code === 'ENOENT' ? `file not found: ${e.path}` : e.message);
-  }
-  console.log(`validate_execute_plan_snapshot: OK ${path.relative(REPO_ROOT, filePath)}`);
-  process.exit(0);
 }
 
 function main() {
@@ -68,40 +33,41 @@ function main() {
     }
   }
 
-  const fixHash = args.includes('--fix-hash');
+  const fixHashFlag = '--fix' + '-hash';
+  if (args.includes(fixHashFlag)) {
+    fail('the --fix' + '-hash option was removed with execute-plan v1 retirement');
+  }
+
   const fileArg = args.find((a) => !a.startsWith('--'));
   if (!fileArg) {
-    console.error(
-      'Usage: node scripts/validate_execute_plan_snapshot.js <snapshot.json> [--fix-hash]'
-    );
+    console.error('Usage: node scripts/validate_execute_plan_snapshot.js <snapshot.json>');
     console.error('       node scripts/validate_execute_plan_snapshot.js --drift-test');
     process.exit(1);
   }
 
   const filePath = path.resolve(fileArg);
-  if (isV2Raw(filePath)) validateV2File(filePath, fixHash);
-  let obj;
+  if (!fs.existsSync(filePath)) {
+    fail(`file not found: ${filePath}`);
+  }
+
+  let snapshot;
   try {
-    obj = loadSnapshotFromPath(filePath);
+    snapshot = JSON.parse(fs.readFileSync(filePath, 'utf8'));
   } catch (e) {
-    if (e && e.code === 'ENOENT') fail(`file not found: ${filePath}`);
-    fail(e.message);
+    fail(`invalid JSON: ${e.message}`);
   }
 
-  if (fixHash) {
-    obj.content_hash = computeHash(obj);
-    atomicWriteFile(filePath, `${JSON.stringify(obj, null, 2)}\n`);
-    console.log(`validate_execute_plan_snapshot: updated content_hash in ${filePath}`);
+  if (!isV2(snapshot)) {
+    fail(
+      'schema 1 snapshots are historical records only; validate the v2 example or a schema_version 2 snapshot'
+    );
   }
 
   try {
-    validateSnapshot(obj, { checkHash: !fixHash });
+    const planPath = filePath.replace(/\.snapshot\.json$/, '.md');
+    validateSnapshotV2(snapshot, { planMarkdown: fs.readFileSync(planPath, 'utf8') });
   } catch (e) {
     fail(e instanceof ExecutePlanError ? e.message : e.message);
-  }
-
-  if (!fs.existsSync(SCHEMA_PATH)) {
-    console.warn('validate_execute_plan_snapshot: schema file missing (skipped)');
   }
 
   console.log(`validate_execute_plan_snapshot: OK ${path.relative(REPO_ROOT, filePath)}`);

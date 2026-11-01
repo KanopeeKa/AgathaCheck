@@ -22,7 +22,7 @@ When written instructions conflict, the higher one wins; then fix the losing tex
 
 1. The user's explicit instruction in the current conversation
 2. Safety gates — sensitive paths (`.github/scripts/agent-safety-lib.js`), §Escalation in `docs/agent-efficiency/autonomous-pr-policy.md`
-3. Active execute-plan (gate exit `0`) — §Execute-plan below
+3. Active execute-plan v2 worker or driver session — §Execute-plan below
 4. This file
 5. Path-scoped rules (`.cursor/rules/*.mdc`)
 6. Skills and procedures
@@ -47,7 +47,7 @@ you decide, proceed, and record (PR body, issue or debt issue). Ask one question
 ### Autonomy and merging
 
 - Work you were asked to do includes opening the PR, pushing fixes and driving CI to green.
-- **Merge** (squash, when `autonomous-pr-policy.md` §Merge gates pass) only if the user asked you to merge or babysit that PR, or execute-plan gate exits `0`. Otherwise the user merges.
+- **Merge** (squash, when `autonomous-pr-policy.md` §Merge gates pass) only if the user asked you to merge or babysit that PR, or an active execute-plan v2 worker/driver session requires it. Otherwise the user merges.
 - One validated push per logical fix (`./scripts/pre-push-changed.sh` first) — every push costs full CI minutes. No push for comment/label-only changes.
 
 ### Reporting
@@ -55,21 +55,11 @@ you decide, proceed, and record (PR body, issue or debt issue). Ask one question
 - Evidence goes in the PR body (and the control issue for plans), not only in chat.
 - Final message: outcome, verification run, docs updated (or why not), blockers. Do not end with an optional offer or a question unless it meets *When to ask*.
 
-### Execute-plan (gate exit `0`)
+### Execute-plan (v2)
 
-v2 plans: `tick` decides; workers do one agent action per launch and end the turn when the actor is `driver`;
-no chat rules apply. Spec: `docs/agent-efficiency/plans/execute-plan-v2.md`.
-
-v1 plans (below):
-
-If `node scripts/execute_plan_runtime.js gate <plan_id>` exits `0`, run until blocked in the same session:
-implement → PR → babysit → merge → next phase. Valid stops and in-loop steps: `.cursor/skills/execute-plan/SKILL.md`
-§Stop rules (halt/escalation, revoke, expired grant, `session_limit`, gate `2`, `complete-plan`).
-
-- **No user-visible message until a valid stop.** Progress goes to the control issue. PR opened, CI green, a merge, a returned worker or a finished preflight are not stops.
-- If your platform forces a turn to end while waiting (e.g. on CI), send only your agent file's parking line.
-- **Forbidden closers** while in-loop: "next session", "follow-up run", "say if you want", "when you want", "let me know", "shall I continue", "want me to", "run /execute-plan again".
-- Platform-vs-repo overrides and Claude Code mechanics: `docs/agent-efficiency/execute-plan-instruction-stack.md`.
+v2 plans: `node scripts/execute_plan_runtime.js tick <plan_id> --json --actor agent` decides; workers do
+one agent action per launch and end the turn when the decision `actor` is `driver` or `stop` is set.
+`gate` is an alias of `tick`. Spec: `docs/agent-efficiency/plans/execute-plan-v2.md` (shipped 2026-11-01).
 
 ## Toolchain
 
@@ -144,7 +134,7 @@ Full lifecycle: `docs/agent-efficiency/github-issue-workflow.md`.
 
 | Topic | Home |
 |-------|------|
-| Execute-plan (gate exit `0` → run-until-blocked; babysit+ / babysit-uat) | `.cursor/skills/execute-plan/SKILL.md` · `.agents/memory/execute-plan-autonomy.md` |
+| Execute-plan v2 (`tick`, driver, babysit+ / babysit-uat) | `.cursor/skills/execute-plan/SKILL.md` · `docs/agent-efficiency/plans/execute-plan-v2.md` |
 | Pre-PR self-review, review triage (Copilot; Bugbot retired) | `.cursor/rules/pr-hygiene.mdc` · `docs/agent-efficiency/pr-review-cost-efficiency.md` |
 | One outcome per PR, snag ladder, zero untracked debt | `docs/agent-efficiency/atomic-pr-policy.md` |
 | Canonical docs (product spec) | `docs/domains/documentation/standards.md` · canonical-docs skill |

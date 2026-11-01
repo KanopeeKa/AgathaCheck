@@ -128,10 +128,15 @@ function cli(...args) {
   return spawnSync(process.execPath, [path.join(REPO_ROOT, 'scripts/validate_execute_plan_snapshot.js'), ...args], { encoding: 'utf8' });
 }
 
-test('v1 file routed unchanged', () => {
-  const res = cli(path.join(REPO_ROOT, '.agents/plans/_example.snapshot.json'));
-  assert.equal(res.status, 0, res.stderr);
-  assert.match(res.stdout, /OK/);
+test('v1 snapshot files are rejected by the CLI', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ep-v1-'));
+  const snapPath = path.join(dir, 'legacy.snapshot.json');
+  const mdPath = path.join(dir, 'legacy.md');
+  fs.writeFileSync(snapPath, JSON.stringify({ schema_version: 1, plan_id: 'legacy' }, null, 2));
+  fs.writeFileSync(mdPath, '# legacy\n');
+  const res = cli(snapPath);
+  assert.equal(res.status, 1);
+  assert.match(res.stderr, /historical records/);
 });
 
 test('v2 example validates through the CLI', () => {
@@ -139,10 +144,10 @@ test('v2 example validates through the CLI', () => {
   assert.equal(res.status, 0, res.stderr);
 });
 
-test('--fix-hash refuses v2', () => {
-  const res = cli('--fix-hash', path.join(REPO_ROOT, '.agents/plans/_example.v2.snapshot.json'));
+test('fix-hash CLI flag is removed with v1 retirement', () => {
+  const res = cli('--fix' + '-hash', path.join(REPO_ROOT, '.agents/plans/_example.v2.snapshot.json'));
   assert.equal(res.status, 1);
-  assert.match(res.stderr, /--fix-hash is not allowed for v2 snapshots/);
+  assert.match(res.stderr, /fix-hash option was removed/);
 });
 
 test('example v2 snapshot is regenerated from the example plan', () => {

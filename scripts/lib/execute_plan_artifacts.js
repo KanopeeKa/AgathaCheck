@@ -294,91 +294,6 @@ function normalizeLabels(labels) {
     .filter(Boolean);
 }
 
-function formatAgentNextStep(snapshot, nextAction) {
-  if (!nextAction) return 'run complete-plan or open integration→main release PR';
-  if (nextAction === 'plan complete') {
-    return 'open integration→main PR if applicable; then complete-plan';
-  }
-  const startMatch = /^start phase ([^:]+): checkout (.+)$/.exec(nextAction);
-  if (startMatch) {
-    const [, phaseId, branch] = startMatch;
-    return `git checkout ${branch}; set-phase ${phaseId} in_progress; implement scoped work`;
-  }
-  const continueMatch = /^continue phase (\S+) on branch (.+)$/.exec(nextAction);
-  if (continueMatch) {
-    const [, phaseId, branch] = continueMatch;
-    return `git checkout ${branch}; continue phase ${phaseId} (implement, PR, or babysit+)`;
-  }
-  return nextAction;
-}
-
-function checkAutonomyGate(snapshot, { now = new Date(), labels = [] } = {}) {
-  const labelSet = new Set(normalizeLabels(labels));
-  if (labelSet.has('autonomous-revoked')) {
-    return { ok: false, code: 'revoked', message: 'control issue has autonomous-revoked' };
-  }
-  if (!labelSet.has('autonomous-approved')) {
-    return {
-      ok: false,
-      code: 'not_approved',
-      message: 'control issue missing autonomous-approved label',
-    };
-  }
-  if (snapshot.autonomy === 'revoked' || snapshot.autonomy === 'halted') {
-    return {
-      ok: false,
-      code: snapshot.autonomy,
-      message: `snapshot autonomy is ${snapshot.autonomy}`,
-    };
-  }
-  if (snapshot.autonomy === 'completed') {
-    return { ok: false, code: 'completed', message: 'plan already completed' };
-  }
-  if (snapshot.autonomy !== 'active') {
-    return { ok: false, code: 'inactive', message: `snapshot autonomy is ${snapshot.autonomy}` };
-  }
-  if (new Date(snapshot.approved_until) <= now) {
-    const planId = snapshot.plan_id;
-    return {
-      ok: false,
-      code: 'expired',
-      message: `approved_until ${snapshot.approved_until} is in the past`,
-      unblock: `Comment approve-autonomous ${planId} on the control issue, then resume-plan ${planId}. Do not re-select phases.`,
-    };
-  }
-  const nextAction = computeNextAction(snapshot);
-  return {
-    ok: true,
-    next_action: nextAction,
-    agent_next_step: formatAgentNextStep(snapshot, nextAction),
-  };
-}
-
-function checkResume(snapshot, phaseId, options = {}) {
-  const gate = checkAutonomyGate(snapshot, options);
-  if (!gate.ok) return { ok: false, code: gate.code, message: gate.message };
-
-  const phase = getPhase(snapshot, phaseId);
-  if (phase.status === 'merged') {
-    return { ok: false, code: 'phase_merged', message: `phase ${phaseId} already merged` };
-  }
-
-  const { prHeadOid, acceptHead = false } = options;
-  if (
-    phase.pr_head_sha &&
-    prHeadOid &&
-    phase.pr_head_sha !== prHeadOid &&
-    !acceptHead
-  ) {
-    return {
-      ok: false,
-      code: 'resume_mismatch',
-      message: `PR head ${prHeadOid} != recorded ${phase.pr_head_sha}; comment accept-head to override`,
-    };
-  }
-  return { ok: true, phase };
-}
-
 function computeNextAction(snapshot) {
   if (isRoadmap(snapshot)) {
     const roadmapAction = computeRoadmapNextAction(snapshot);
@@ -528,8 +443,6 @@ function syncRuntimeState(planId, overrides = {}) {
 
 module.exports = {
   buildArtifactRef,
-  checkAutonomyGate,
-  checkResume,
   computeNextAction,
   controlIssueLabels,
   effectiveMergeMode,

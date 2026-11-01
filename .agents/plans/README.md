@@ -21,7 +21,7 @@ Multi-phase autonomous work artifacts for `/execute-plan`.
 
 **Approval expiry:** 48 hours from `approved_at` (autonomy window). **Session limit:** ~24h continuous work → `halt --reason session_limit`; resume via `resume-plan` on control issue.
 
-**Autonomy contract:** `.agents/memory/execute-plan-autonomy.md`
+**Autonomy contract:** `docs/agent-efficiency/plans/execute-plan-v2.md`
 
 ## Closed stale plans (2026-09-29)
 

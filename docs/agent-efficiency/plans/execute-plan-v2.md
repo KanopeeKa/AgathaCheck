@@ -8,6 +8,8 @@ tags: [agent, execute-plan, autonomy, uat]
 ---
 # Execute-plan v2 — build spec
 
+**Shipped:** 2026-11-01 — proof run GO ([proof-run-results.md](./execute-plan-v2/proof-run-results.md), issue #1979); v1 runtime retired in WP10.
+
 Self-contained build specification. Executors (Cursor Cloud Agents on the model named by the Cloud Agent model policy, or Claude Code
 sessions — one session per work package) have **no access** to the conversation that produced it.
 Facts are cited as `path:line` on `main` @ `6fa8236` or as live GitHub reads on 2026-10-15.
@@ -209,6 +211,13 @@ prompts to paste: [work-split-and-prompts.md](./execute-plan-v2/work-split-and-p
 | A STOP strands merged phases | `resume-autonomous` with the same hash | — |
 | v1 plans break during the build | v1 code untouched until WP10 | revert WP10 |
 | Cursor API shape changes | one adapter (WP7c) with request tests | driver `dry-run` |
+
+## Decision log
+
+| Date | Decision | Rationale |
+|------|----------|-----------|
+| 2026-11-01 | **WP10:** Keep both `execute-plan-scope` (required, trusted-code for plan PRs) and `agent-pr-safety-gate.yml` (advisory forbidden-path for non-plan agent PRs) until [#1980](https://github.com/KanopeeKa/AgathaCheck/issues/1980) ships a single owner-override gate. | Plan PRs need strict scope enforcement now; prefix-based advisory gate still catches non-plan agent edits without blocking every PR on day one. |
+| 2026-11-01 | **WP10:** Remove `proof_label` from `/backend/health`; v1 CLI (`set-phase`, `sync-runtime`, `--fix-hash`, label-based `gate`) removed; `gate` aliases `tick`. | Owner GO after proof run 7f3b; historical schema-1 snapshots remain on disk as records only. |
 
 Residual: on Cursor cloud a turn can end at any time; the design makes that cost minutes, not the
 programme. Each WP is one PR and reverts independently; safe reversal order is WP10 → WP8 → WP7b →

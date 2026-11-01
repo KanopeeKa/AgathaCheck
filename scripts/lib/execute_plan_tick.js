@@ -211,6 +211,83 @@ async function watchTarget(planId, flags) {
   return { client, ctx, args: { mergeSha: found.mergeSha, mergedAt: found.mergedAt, config: ctx.config } };
 }
 
+async function loadConfig(client) {
+  const file = await client.getFileAtRef(CONFIG_PATH, 'main');
+  if (!file) throw new ExecutePlanError(`${CONFIG_PATH} not found on main`);
+  return JSON.parse(file.content);
+}
+
+function shardIndicesFromFailedJobs(failedJobs) {
+  const failed = [];
+  for (const name of failedJobs || []) {
+    const m = /shard[\s/_-]*(\d+)/i.exec(name);
+    if (m) failed.push(Number(m[1]));
+    else if (/Full localhost E2E/i.test(name) || /e2e-full/i.test(name)) failed.push(-1);
+  }
+  return [...new Set(failed)].sort((a, b) => a - b);
+}
+
+/**
+ * CLI: `watch-preuat-sha <merge_sha> [--json] [--timeout-min 90]`.
+ * Matches babysit_uat_watch_preuat.sh exit codes: 0 success, 1 failure, 2 timeout/no run.
+ */
+async function cliWatchPreUatSha(mergeSha, flags) {
+  const client = makeClient();
+  const config = await loadConfig(client);
+  const timeoutMin = flags['timeout-min'] === undefined ? 90 : Number(flags['timeout-min']);
+  const pollSec = 30;
+  const result = await watchPreUat(client, {
+    mergeSha: String(mergeSha).trim(),
+    config,
+    timeoutMin,
+    pollSec,
+  });
+  const jsonOut = Boolean(flags.json);
+  if (result.timedOut || !result.run) {
+    if (jsonOut) {
+      console.log(JSON.stringify({ status: 'timeout', merge_sha: mergeSha }));
+    } else {
+      console.error(`timeout waiting for pre-uat-e2e on ${String(mergeSha).slice(0, 7)}`);
+    }
+    process.exit(2);
+  }
+  const run = result.run;
+  const url = `https://github.com/${client.repo}/actions/runs/${run.id}`;
+  if (run.conclusion === 'success') {
+    if (jsonOut) {
+      console.log(
+        JSON.stringify({
+          status: 'success',
+          run_id: run.id,
+          url,
+          merge_sha: mergeSha,
+        })
+      );
+    } else {
+      console.log(`Pre-UAT E2E passed for ${String(mergeSha).slice(0, 7)} (run ${run.id})`);
+      console.log(url);
+    }
+    return;
+  }
+  const failed_shards = shardIndicesFromFailedJobs(run.failed_jobs);
+  if (jsonOut) {
+    console.log(
+      JSON.stringify({
+        status: 'failure',
+        run_id: run.id,
+        url,
+        merge_sha: mergeSha,
+        failed_shards,
+      })
+    );
+  } else {
+    console.error(`Pre-UAT E2E failed for ${String(mergeSha).slice(0, 7)} (run ${run.id})`);
+    console.error(`failed_shards=${JSON.stringify(failed_shards)}`);
+    console.error(url);
+  }
+  process.exit(1);
+}
+
 /** CLI: `watch-preuat <plan_id> [--timeout-min 90]`. Timeout exits 0 with `timedOut: true`. */
 async function cliWatchPreUat(planId, flags) {
   const { client, args } = await watchTarget(planId, flags);
@@ -225,4 +302,4 @@ async function cliWatchDeploy(planId, flags) {
   console.log(JSON.stringify(await watchDeploy(client, { ...args, timeoutMin }), null, 2));
 }
 
-module.exports = { tick, watchCi, completePlan, cliTick, cliWatchCi, cliCompletePlan, cliWatchPreUat, cliWatchDeploy, STOP_EXIT_CODE, NOT_COMPLETE_EXIT_CODE };
+module.exports = { tick, watchCi, completePlan, cliTick, cliWatchCi, cliCompletePlan, cliWatchPreUat, cliWatchPreUatSha, cliWatchDeploy, STOP_EXIT_CODE, NOT_COMPLETE_EXIT_CODE };

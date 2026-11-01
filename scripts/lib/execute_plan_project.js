@@ -1,11 +1,12 @@
 'use strict';
 
-const { execSync, spawnSync } = require('child_process');
+const { execSync } = require('child_process');
 const {
   fetchIssue,
   updateProjectStatus,
   parseRepo,
 } = require('../../.github/scripts/github-project-lib');
+const { createGitHubClient } = require('./execute_plan_github');
 
 const STATUS_ALIASES = {
   backlog: 'Backlog',
@@ -25,15 +26,18 @@ function resolveRepository() {
     return parseRepo(process.env.GITHUB_REPOSITORY);
   }
   try {
-    const remote = execSync('gh repo view --json nameWithOwner -q .nameWithOwner', {
-      encoding: 'utf8',
-    }).trim();
-    return parseRepo(remote);
+    const remote = execSync('git remote get-url origin', { encoding: 'utf8' }).trim();
+    const m = /github\.com[:/]([^/]+\/[^/]+?)(?:\.git)?$/.exec(remote);
+    if (m) return parseRepo(m[1]);
   } catch {
-    throw new Error(
-      'Could not resolve repository; set GITHUB_REPOSITORY or authenticate gh CLI'
-    );
+    /* fall through */
   }
+  throw new Error('Could not resolve repository; set GITHUB_REPOSITORY');
+}
+
+function makeClient() {
+  const { owner, repo } = resolveRepository();
+  return createGitHubClient({ repo: `${owner}/${repo}` });
 }
 
 function getProjectConfig() {
@@ -73,36 +77,18 @@ async function updateIssueProjectStatus(issueNumber, statusName) {
   return { ok: true, issueNumber, status };
 }
 
-function closeIssueWithComment(issueNumber, comment) {
-  const { owner, repo } = resolveRepository();
-  const args = ['issue', 'close', String(issueNumber), '--repo', `${owner}/${repo}`];
+async function closeIssueWithComment(issueNumber, comment) {
+  const client = makeClient();
   if (comment) {
-    args.push('--comment', comment);
+    await client.createComment(issueNumber, comment);
   }
-  const result = spawnSync('gh', args, { stdio: 'inherit' });
-  if (result.status !== 0) {
-    throw new Error(`gh issue close failed with exit ${result.status}`);
-  }
+  await client.closeIssue(issueNumber);
   return { ok: true, issueNumber, closed: true };
 }
 
-function postIssueComment(issueNumber, comment) {
-  const { owner, repo } = resolveRepository();
-  const args = [
-    'issue',
-    'comment',
-    String(issueNumber),
-    '--repo',
-    `${owner}/${repo}`,
-    '--body',
-    comment,
-  ];
-  const result = spawnSync('gh', args, { encoding: 'utf8' });
-  if (result.status !== 0) {
-    throw new Error(
-      `gh issue comment failed with exit ${result.status}: ${result.stderr || result.stdout}`
-    );
-  }
+async function postIssueComment(issueNumber, comment) {
+  const client = makeClient();
+  await client.createComment(issueNumber, comment);
   return { ok: true, issueNumber };
 }
 
