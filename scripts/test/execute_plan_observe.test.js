@@ -94,8 +94,8 @@ test('observe maps a phase PR into PrObs (fake fetch)', async () => {
   assert.equal(pr.mergeable_state, 'clean');
   assert.deepEqual(pr.labels, ['x']);
   assert.deepEqual(pr.checks, [
-    { name: 'ci-gate / CI passed', status: 'completed', conclusion: 'success', reason: null },
-    { name: 'execute-plan-scope', status: 'completed', conclusion: 'success', reason: 'ok' },
+    { name: 'ci-gate / CI passed', status: 'completed', conclusion: 'success', reason: null, completed_at: '2026-10-16T09:30:00Z' },
+    { name: 'execute-plan-scope', status: 'completed', conclusion: 'success', reason: 'ok', completed_at: '2026-10-16T09:40:00Z' },
   ]);
   assert.deepEqual(pr.unresolved_threads, [{ url: 'https://t/1', path: 'a.js', author: 'rev' }]);
   assert.equal(pr.copilot_review_submitted, true);
@@ -106,7 +106,7 @@ test('observe maps a phase PR into PrObs (fake fetch)', async () => {
 test('missing required check is reported as missing', async () => {
   const { client, sleep } = setup();
   const pr = await observePr(client, { number: 50 }, { ...PR_OPTS, requiredChecks: ['nope'], sleep });
-  assert.deepEqual(pr.checks, [{ name: 'nope', status: 'missing', conclusion: null, reason: null }]);
+  assert.deepEqual(pr.checks, [{ name: 'nope', status: 'missing', conclusion: null, reason: null, completed_at: null }]);
 });
 
 test('failed_attempts counts distinct SHAs after epoch', async () => {

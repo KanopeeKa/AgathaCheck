@@ -83,7 +83,7 @@ Times are ISO-8601 UTC strings. `null` means "does not exist". Example = the sce
 |-------|------|
 | `ready_at` | Latest `ready_for_review` timeline event, else `created_at` when the PR was never a draft, else `null`. |
 | `mergeable_state` | From `GET /pulls/{n}`; when GitHub returns `unknown`, observe re-reads once after 3 s, then keeps `unknown`. |
-| `checks` | One entry per name in `config.required_checks.integration` (base = integration) or `.main` (base = `main`): the latest check run with that name on `head_sha`. Absent → `{ "status": "missing", "conclusion": null }`. For `execute-plan-scope`, `reason` = the check run `output.title` (`ok`, `unclassified`, `companion-cap`, `drift`, `protected`, `forbidden`, `plan-stopped`, `too-many-files`). |
+| `checks` | One entry per name in `config.required_checks.integration` (base = integration) or `.main` (base = `main`): the latest check run with that name on `head_sha`. Absent → `{ "status": "missing", "conclusion": null }`. Includes `completed_at` when GitHub provides it. For `execute-plan-scope`, `reason` = the check run `output.title` (`ok`, `unclassified`, `companion-cap`, `drift`, `protected`, `forbidden`, `plan-stopped`, `too-many-files`). |
 | `failed_attempts_since_epoch` | Number of **distinct commit SHAs** of the PR (`GET /pulls/{n}/commits`) with at least one required check run concluding `failure`, `timed_out` or `action_required` and `completed_at` after the epoch. One push = one attempt. |
 | `unresolved_threads` | GraphQL `reviewThreads(first:100)` where `isResolved == false` → `[{ "url", "path", "author" }]`. |
 | `copilot_review_submitted` | A review whose author login starts with `copilot` exists. |
@@ -188,7 +188,10 @@ method `merge` (scope is always green for sync PRs). S2 `release.pr == null` and
 8. Release PR and `settings.release_owner_review` and not `owner_approved` → `wait(owner-review)`.
 9. `auto_merge_enabled == false`: base `main` and not `copilot_review_submitted` and
    `now − ready_at < 15 min` → `wait(copilot)`; else driver `arm-auto-merge`.
-10. Otherwise → `wait(checks)`.
+10. `auto_merge_enabled == true`: any required check not `success` on `head_sha`, or the newest
+   successful check completed less than 10 min ago → `wait(checks)`; else driver `merge` (same
+   method as arm-auto-merge). If GitHub refuses the merge → STOP `merge-blocked` (driver adds
+   `needs-owner`; detail = GitHub message).
 
 **U — UAT stage** (`uat` non-null; `C` = newest `preuat_runs` entry with `contains_merge` and
 `status == "completed"` and `conclusion ∉ {cancelled, skipped}`).
@@ -228,6 +231,7 @@ State names written to the status comment: `stopped`, `phase:pending`, `phase:im
 | `ci-budget` | PR-ladder 4 |
 | `launch-budget` | L4 (per-phase launches only; the daily cap waits) |
 | `pr-blocked` | PR-ladder 1 |
+| `merge-blocked` | PR-ladder 10 — direct merge after auto-merge stall |
 | `sync-conflict` | S1b |
 | `integration-missing` | P2 — integration branch gone and `head_sha` unavailable |
 | `preuat-budget` | U3 / U7 |
@@ -288,6 +292,7 @@ WP5 writes U):
 | `p-threads-triage.json` | PR-ladder 5 | agent `triage-review` |
 | `p-dirty-resolve-conflict.json` | PR-ladder 6 | agent `resolve-conflict` |
 | `p-auto-merge-armed-wait.json` | PR-ladder 10 | driver `wait` (`checks`) |
+| `p-auto-merge-stale-merge.json` | PR-ladder 10 | driver `merge` after green ≥ 10 min |
 | `p-merged-next-phase.json` | P1–P2 | phase 2 / driver `create-phase-branch` |
 | `r-release-merged-integ-deleted.json` | D3, observe | `release:merged` / driver `wait` (`preuat`) when integration branch deleted |
 | `p-integ-deleted-stop-create.json` | P2 | stop `integration-missing` (no `create-phase-branch` with null `from_sha`) |

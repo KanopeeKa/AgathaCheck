@@ -55,6 +55,7 @@ function fakeClient(name, { status = baseStatus(), pulls = {}, enableError = nul
     dispatchWorkflow: rec('dispatchWorkflow'),
     listIssueComments: async () => [{ id: 55, body }],
     updateComment: async (id, b) => { calls.push(['updateComment', id]); body = b; },
+    addLabels: rec('addLabels'),
   };
   client.statusNow = () => parseStatusComment(body);
   client.bodyNow = () => body;
@@ -126,6 +127,29 @@ test('arm-auto-merge: clean status falls back to merging with the same method', 
 test('arm-auto-merge: other errors propagate', async () => {
   const h = harness({ pulls: { 5: { node_id: 'PR_5' } }, enableError: new GitHubError(200, 'boom') }, driverAction('arm-auto-merge', { pr: 5, method: 'squash' }));
   await assert.rejects(drive(h), /boom/);
+});
+
+test('merge action uses mergePull with the requested method', async () => {
+  const h = harness({}, driverAction('merge', { pr: 5, method: 'squash' }));
+  await drive(h);
+  assert.deepEqual(h.bot.calls, [['mergePull', 5, { method: 'squash' }]]);
+});
+
+test('merge blocked records stop and needs-owner', async () => {
+  const bot = fakeClient('bot');
+  bot.mergePull = async () => { throw new GitHubError(405, 'Refusing to merge'); };
+  const h = harness({}, driverAction('merge', { pr: 5, method: 'squash' }));
+  h.clients.bot = bot;
+  const res = await drive(h);
+  assert.match(res.outcome, /merge blocked/);
+  assert.deepEqual(bot.calls.filter((c) => c[0] === 'addLabels'), [['addLabels', 9, ['needs-owner']]]);
+  assert.equal(bot.statusNow().stop.reason, 'merge-blocked');
+});
+
+test('driver log prints wait(reason)', async () => {
+  const h = harness({}, driverAction('wait', { reason: 'checks' }));
+  await drive(h);
+  assert.match(h.log[0], /action driver:wait\(checks\)/);
 });
 
 test('update-branch uses the bot token', async () => {

@@ -11,6 +11,7 @@ const { decideUat } = require('./execute_plan_uat');
 
 const DEFAULT_REPO = 'KanopeeKa/AgathaCheck';
 const COPILOT_WAIT_MS = 15 * 60 * 1000;
+const AUTO_MERGE_FALLBACK_MS = 10 * 60 * 1000;
 const FAILED = new Set(['failure', 'timed_out', 'action_required']);
 const SCOPE_CHECK = 'execute-plan-scope';
 const SCOPE_STOP = new Set(['drift', 'protected', 'forbidden']);
@@ -149,8 +150,15 @@ function prLadder(pr, rawCtx) {
     if (pr.base_ref === 'main' && !pr.copilot_review_submitted && young) return finish(ctx, { ...base, action: wait('copilot'), looked });
     return finish(ctx, { ...base, action: driver('arm-auto-merge', { pr: pr.number, method: ctx.method }), looked });
   }
-  // PR-ladder 10
-  return finish(ctx, { ...base, action: wait('checks'), looked });
+  // PR-ladder 10 — auto-merge armed: wait for checks, then merge if GitHub does not
+  const pending = checks.some((c) => c.status !== 'completed' || c.conclusion !== 'success');
+  if (pending) return finish(ctx, { ...base, action: wait('checks'), looked });
+  const times = checks.map((c) => c.completed_at).filter(Boolean).map((t) => Date.parse(t));
+  const newest = times.length ? Math.max(...times) : 0;
+  if (!newest || Date.parse(opts.now) - newest < AUTO_MERGE_FALLBACK_MS) {
+    return finish(ctx, { ...base, action: wait('checks'), looked });
+  }
+  return finish(ctx, { ...base, action: driver('merge', { pr: pr.number, method: ctx.method }), looked });
 }
 
 function stopReasonDetail(ctx) {
