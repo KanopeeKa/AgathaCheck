@@ -3,7 +3,7 @@ title: Execute-plan v2 — owner runbooks, proof run, retirement
 owner: Kanopee
 audience: both
 status: active
-last_updated: 2026-10-15
+last_updated: 2026-11-02
 tags: [agent, execute-plan, autonomy, runbook]
 ---
 # Execute-plan v2 — owner runbooks, proof run, retirement
@@ -31,7 +31,11 @@ owned by another personal account (`owner.type = User`, live read), so this is t
    and add it to the owner's GitHub Project. Dashboard secrets:
    - **`GH_TOKEN`** = `pawpet-bot` classic PAT (`repo` only) — **default** for Cloud Agents.
    - **`OWNER_GH_TOKEN`** = owner PAT — only when the user invokes **`/runasme`** (skill:
-     `.cursor/skills/run-as-me/SKILL.md`).
+     `.cursor/skills/run-as-me/SKILL.md`). Classic PAT (fine-grained PATs are not an option here):
+     scope **`repo` only** — no `workflow`, no `admin:*`, no `delete_repo` — and an expiry of 90 days
+     at most. Approvals and resumes are typed by the owner in the GitHub web interface, never posted
+     by an agent. **Accepted risk:** a session in owner mode holds the full owner token for that
+     session; the owner opts in per message and supervises it.
    - **`BOT_GH_TOKEN`** optional legacy alias of the bot PAT; prefer a single bot value in `GH_TOKEN`.
    Plan workers and Actions-dispatched agents receive the bot token from **`EXECUTE_PLAN_BOT_TOKEN`**
    via launch `envVars` (`GH_TOKEN`, `EXECUTE_PLAN_TOKEN`, with **`OWNER_GH_TOKEN`** and **`BOT_GH_TOKEN`**

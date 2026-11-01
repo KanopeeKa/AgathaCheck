@@ -3,7 +3,7 @@ title: Execute-plan v2 — build spec (merged + deployed to UAT)
 owner: Kanopee
 audience: agent
 status: active
-last_updated: 2026-10-28
+last_updated: 2026-11-02
 tags: [agent, execute-plan, autonomy, uat]
 ---
 # Execute-plan v2 — build spec
@@ -25,6 +25,7 @@ Anything still unverified is a **VERIFY** with a decision for each outcome.
 | WP6a–WP8 (skills, workflows, rulesets) | [`execute-plan-v2/work-packages-platform.md`](./execute-plan-v2/work-packages-platform.md) | WP6a–WP8 |
 | Owner runbooks, proof run, retirement | [`execute-plan-v2/runbooks-proof-retirement.md`](./execute-plan-v2/runbooks-proof-retirement.md) | Phase 0, WP8–WP10 |
 | Work split and kickoff prompts | [`execute-plan-v2/work-split-and-prompts.md`](./execute-plan-v2/work-split-and-prompts.md) | Owner, before each WP |
+| WP11–WP12 worker identity hardening (+ kickoff prompt) | [`execute-plan-v2/work-packages-hardening.md`](./execute-plan-v2/work-packages-hardening.md) | WP11, WP12 |
 
 ## Review history
 
@@ -219,6 +220,7 @@ prompts to paste: [work-split-and-prompts.md](./execute-plan-v2/work-split-and-p
 | 2026-11-01 | **WP10:** Keep both `execute-plan-scope` (required, trusted-code for plan PRs) and `agent-pr-safety-gate.yml` (advisory forbidden-path for non-plan agent PRs) until [#1980](https://github.com/KanopeeKa/AgathaCheck/issues/1980) ships a single owner-override gate. | Plan PRs need strict scope enforcement now; prefix-based advisory gate still catches non-plan agent edits without blocking every PR on day one. |
 | 2026-11-01 | **WP10:** Remove `proof_label` from `/backend/health`; v1 CLI (`set-phase`, `sync-runtime`, `--fix-hash`, label-based `gate`) removed; `gate` aliases `tick`. | Owner GO after proof run 7f3b; historical schema-1 snapshots remain on disk as records only. |
 | 2026-11-02 | **WP11:** Agents launched by the driver or by issue/dispatch get `OWNER_GH_TOKEN` and `BOT_GH_TOKEN` blanked through launch `envVars`; a worker `tick` exits 3 without reading or writing when `OWNER_GH_TOKEN` is set, and skills run it as `env -u OWNER_GH_TOKEN -u BOT_GH_TOKEN … tick`. Shipped in [#1986](https://github.com/KanopeeKa/AgathaCheck/pull/1986). | Least privilege: workers act as `bot_login` only; the check fails closed if a launch cannot blank a secret; `env -u` works per command because agent shells are often fresh. |
+| 2026-11-02 | **WP12 (planned):** An approve or resume comment counts only with an acknowledgement from the approve workflow on `main`, posted when the comment arrived and no plan worker was running (Cursor run status only; `UNKNOWN` counts as running). Posted while a worker runs: ignored with a note if the plan is already stopped, otherwise the plan stops with `needs-owner`. | Authorizations come from the owner and are confirmed by trusted code at the time they are posted; a re-post after the worker finishes is the only cost of a false rejection, and a stopped plan never loops into a second stop. |
 
 Residual: on Cursor cloud a turn can end at any time; the design makes that cost minutes, not the
 programme. Each WP is one PR and reverts independently; safe reversal order is WP10 → WP8 → WP7b →

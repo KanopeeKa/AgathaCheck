@@ -3,7 +3,7 @@ title: Cursor Cloud environment
 owner: Documentation Team
 audience: agent
 status: active
-last_updated: 2026-10-13
+last_updated: 2026-11-02
 tags: [agent, engineering, cursor, environment]
 ---
 
@@ -18,7 +18,7 @@ Configure under **Cursor → Cloud Agents → Secrets** (runtime secrets apply t
 | Secret | Set to | Used when |
 |--------|--------|-----------|
 | **`GH_TOKEN`** | `pawpet-bot` classic PAT (`repo` only) | **Default** Cloud Agent `gh`/API identity (git pushes use the Cursor GitHub App) |
-| **`OWNER_GH_TOKEN`** | Owner classic PAT (`repo`; avoid `workflow` unless accepted) | User invokes **`/runasme`** — `.cursor/skills/run-as-me/SKILL.md` |
+| **`OWNER_GH_TOKEN`** | Owner classic PAT (`repo` only; no `workflow`, `admin:*` or `delete_repo`; ≤ 90-day expiry) — runbooks §7.1 | User invokes **`/runasme`** — `.cursor/skills/run-as-me/SKILL.md` |
 | **`BOT_GH_TOKEN`** | Optional; same as bot PAT | Not read by any code; prefer only **`GH_TOKEN`** for bot |
 
 Agents launched by the execute-plan driver or by issue/dispatch workflows receive `OWNER_GH_TOKEN` and
