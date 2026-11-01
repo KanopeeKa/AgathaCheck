@@ -88,16 +88,16 @@ Deploy-prod run https://github.com/KanopeeKa/AgathaCheck/actions/runs/4088149431
 
 **Control issue:** [#1975](https://github.com/KanopeeKa/AgathaCheck/issues/1975) (closed by the driver, 2026-11-01T21:22:15Z)  
 **Init:** `8c825bd1` on `cursor/proof-build-label-7f3b-init` (branch deleted after this doc PR)  
-**Driver fixes exercised:** [#1971](https://github.com/KanopeeKa/AgathaCheck/pull/1971)–[#1974](https://github.com/KanopeeKa/AgathaCheck/pull/1974) (observe after integration delete, merge fallback, epoch/approval, `wait(hold)`).
+**Driver fixes exercised:** [#1971](https://github.com/KanopeeKa/AgathaCheck/pull/1971) (observe after integration delete), [#1972](https://github.com/KanopeeKa/AgathaCheck/pull/1972) (epoch lock: no reset), [#1974](https://github.com/KanopeeKa/AgathaCheck/pull/1974) (`wait(hold)`), and [#1973](https://github.com/KanopeeKa/AgathaCheck/pull/1973) `wait(<reason>)` logging only. **#1973 merge fallback:** not exercised (auto-merge completed normally; scenario-only).
 
-**Verdict (runbook §8):** **PASS** — driver closed #1975 with the four evidence links; `stop: null`; launches within budget; UAT curl prints `execute-plan-v2-proof-2`. **Drill 2 not exercised** (see below).
+**Verdict (runbook §8):** **PASS** on the §8 pass/fail rules (driver closed #1975 with the four evidence links; no STOP; launches within budget; UAT curl prints `execute-plan-v2-proof-2`). **Drills: 1 passed, 2 not exercised.** The owner accepted this result and decided GO on 2026-11-01; drill 2 is tracked in [#1981](https://github.com/KanopeeKa/AgathaCheck/issues/1981).
 
 ### Owner drills (§8 steps 3–4)
 
 | Drill | Exercised? | Notes |
 |-------|------------|--------|
 | **1 — injected phase-CI failure** | **Yes — PASS** | Hold on [#1976](https://github.com/KanopeeKa/AgathaCheck/pull/1976) **19:51:35Z**; PR ready **20:02:02Z** (worker); drill commit [`bcffee8`](https://github.com/KanopeeKa/AgathaCheck/commit/bcffee8) **20:03:34Z**; `ci-gate` red **~20:06:03Z**; hold removed **20:06:20Z**; `fix-ci` launch **20:06:43Z** (`bc-f6761640`); fix [`5d7393c`](https://github.com/KanopeeKa/AgathaCheck/commit/5d7393c); merged **20:12:11Z**. Driver run [41344745956](https://github.com/KanopeeKa/AgathaCheck/actions/runs/41344745956) logged **`driver:wait(hold)`**. |
-| **2 — cancel phase-2 worker** | **No** | Phase-2 worker `bc-ae2eefc8-a42b-4b1e-9e62-390cab85c8a3` (launched **20:33:33Z**) is **hidden** from the owner Cursor dashboard (API-launched workers). Owner cancelled a **different** agent (no effect). [#1977](https://github.com/KanopeeKa/AgathaCheck/pull/1977) marked ready **20:40:16Z**, merged **20:40:47Z** without relaunch. Relaunch path covered only by scenario `p-draft-lease-stale-relaunch.json`. **Follow-up:** drill-2 cancel must use the driver's Cursor API key (e.g. `workflow_dispatch` drill job). |
+| **2 — cancel phase-2 worker** | **No** | Phase-2 worker `bc-ae2eefc8-a42b-4b1e-9e62-390cab85c8a3` (launched **20:33:33Z**) is **hidden** from the owner Cursor dashboard (API-launched workers). Owner cancelled a **different** agent (no effect). [#1977](https://github.com/KanopeeKa/AgathaCheck/pull/1977) marked ready **20:40:16Z**, merged **20:40:47Z** without relaunch. Relaunch path covered only by scenario `p-draft-lease-stale-relaunch.json`. **Follow-up:** [#1981](https://github.com/KanopeeKa/AgathaCheck/issues/1981). |
 
 **Expected launches (full drills):** phase 1 = **2**, phase 2 = **2**, release = **0**.  
 **Observed launches:** phase 1 = **2**, phase 2 = **1**, release = **0**.
