@@ -203,6 +203,15 @@ function decide(snapshot, obs, opts) {
   const base = { state: 'phase:pending', phase: cur.id };
   // P2
   if (!cur.pr && !cur.branch_exists) {
+    if (!obs.integration.head_sha) {
+      return finish(ctx, {
+        ...base,
+        stop: {
+          reason: 'integration-missing',
+          detail: `integration branch ${snapshot.integration_branch} is gone and cannot seed phase ${cur.id}`,
+        },
+      });
+    }
     return finish(ctx, { ...base, action: driver('create-phase-branch', { phase: cur.id, branch: def.branch, from_sha: obs.integration.head_sha }) });
   }
   const draftArgs = { phase: cur.id, branch: def.branch, base: snapshot.integration_branch, pr: cur.pr ? cur.pr.number : null };

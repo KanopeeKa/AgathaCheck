@@ -1,0 +1,26 @@
+{
+  "name": "integration gone, phase 2 pending → stop (no create with null from_sha)",
+  "rule": "P2",
+  "snapshot_patch": {},
+  "observations_patch": {
+    "integration": { "exists": false, "head_sha": null, "behind_main_by": 0 },
+    "phases": [
+      {
+        "id": "1",
+        "branch_exists": false,
+        "pr": { "state": "merged", "merged_at": "2026-10-28T13:00:00Z", "number": 1968 }
+      },
+      { "id": "2", "branch_exists": false, "pr": null }
+    ],
+    "release": { "pr": null }
+  },
+  "opts": { "actor": "driver", "lease": null },
+  "expected": {
+    "launch": false,
+    "stop": "integration-missing",
+    "state": "stopped",
+    "actor": "driver",
+    "kind": "enforce-stop",
+    "phase": "2"
+  }
+}

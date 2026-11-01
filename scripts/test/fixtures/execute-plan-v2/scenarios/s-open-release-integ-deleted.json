@@ -1,0 +1,29 @@
+{
+  "name": "all phases merged, integration deleted → open release PR",
+  "rule": "S2, observe",
+  "snapshot_patch": {},
+  "observations_patch": {
+    "integration": { "exists": false, "head_sha": null, "behind_main_by": 0 },
+    "phases": [
+      {
+        "id": "1",
+        "branch_exists": false,
+        "pr": { "state": "merged", "merged_at": "2026-10-28T13:00:00Z", "number": 1968 }
+      },
+      {
+        "id": "2",
+        "branch_exists": false,
+        "pr": { "state": "merged", "merged_at": "2026-10-28T13:30:00Z", "number": 1967 }
+      }
+    ],
+    "release": { "pr": null }
+  },
+  "opts": { "actor": "driver", "lease": null },
+  "expected": {
+    "launch": false,
+    "stop": null,
+    "state": "phase:merged",
+    "actor": "driver",
+    "kind": "open-release-pr"
+  }
+}

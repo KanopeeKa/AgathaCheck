@@ -183,13 +183,13 @@ async function observe(client, ctx, { now, sleep }) {
 
   const phases = [];
   for (const def of snapshot.phases) {
-    const exists = integration.exists && Boolean(await client.getBranch(def.branch));
-    const pr = integration.exists ? await mostRecent({ head: def.branch, base: integ }) : null;
-    phases.push({ id: def.id, branch_exists: exists || Boolean(pr), pr });
+    const branchExists = Boolean(await client.getBranch(def.branch));
+    const pr = await mostRecent({ head: def.branch, base: integ });
+    phases.push({ id: def.id, branch_exists: branchExists || Boolean(pr), pr });
   }
 
-  const syncOpen = integration.exists ? (await client.listPulls({ head: 'main', base: integ, state: 'open', pages: 1 }))[0] : null;
-  const intoInteg = integration.exists ? await client.listPulls({ base: integ, state: 'all', pages: 3 }) : [];
+  const syncOpen = (await client.listPulls({ head: 'main', base: integ, state: 'open', pages: 1 }))[0] || null;
+  const intoInteg = await client.listPulls({ base: integ, state: 'all', pages: 3 });
   const syncPrefix = `cursor/${snapshot.plan_id}-sync-`;
   const resolves = intoInteg.filter((p) => p.head.ref.startsWith(syncPrefix) && epoch && ms(p.created_at) > ms(epoch)).length;
 
@@ -212,7 +212,7 @@ async function observe(client, ctx, { now, sleep }) {
     integration,
     phases,
     sync: { open_pr: syncOpen ? await observePr(client, syncOpen, prOpts(integ)) : null, resolve_prs_since_epoch: resolves },
-    release: { pr: integration.exists ? await mostRecent({ head: integ, base: 'main' }) : null },
+    release: { pr: await mostRecent({ head: integ, base: 'main' }) },
     remedial: { open_pr: remOpen ? await observePr(client, remOpen, prOpts('main')) : null, merged_since_epoch: mergedRem },
     uat: null,
   };

@@ -56,7 +56,9 @@ requests RW, Issues RW, Metadata R, Workflows **none**; install on `AgathaCheck`
 Active from WP10 onward. Probe once while Active (0 required approvals still blocks without owner review).
 
 **Execute-plan integration:** after WP8, drop the `deletion` rule from this ruleset and delete branch
-`cursor/scope-probe-0000-integration-0000`.
+`cursor/scope-probe-0000-integration-0000`. Until then, `delete_branch_on_merge` may remove
+integration and phase branches after their PRs merge; the v2 driver still finds those PRs by head
+ref and tolerates missing branches (see state-machine P2 and observe §4.0).
 
 Every required context is **pinned to GitHub Actions** (`integration_id: 15368`, the id the live
 `main` ruleset already uses). Without the pin, the bot's PAT could post a commit status with the
@@ -105,7 +107,8 @@ lists three contexts, each with `integration_id: 15368`. Do this only after WP8 
 
 `gh api -X PATCH repos/KanopeeKa/AgathaCheck -F allow_auto_merge=true` (currently `false`). Keep
 `allow_squash_merge` and `allow_merge_commit` true (sync PRs use merge commits) and
-`delete_branch_on_merge` true (snapshots are read at `init_sha`, so deleted branches do not matter).
+`delete_branch_on_merge` true (snapshots are read at `init_sha`; merged PRs remain queryable by
+head ref even when GitHub deletes the branch — the driver does not depend on branch refs surviving).
 
 ### 7.4 Secrets and variables
 
