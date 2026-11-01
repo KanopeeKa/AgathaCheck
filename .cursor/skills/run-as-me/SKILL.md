@@ -36,5 +36,5 @@ Cursor-created PRs are unchanged** — they go through the Cursor GitHub App (`c
 
 ## If `OWNER_GH_TOKEN` is missing
 
-Stop and ask the user to add it under Cursor → Cloud Agents → Secrets (owner classic PAT, `repo`; add `workflow`
-only if they accept workflow-edit risk). Secrets reach new VMs only — an already-running agent will not see it.
+Stop and ask the user to add it under Cursor → Cloud Agents → Secrets (owner classic PAT, `repo` only — see
+`docs/agent-efficiency/plans/execute-plan-v2/runbooks-proof-retirement.md` §7.1). Secrets reach new VMs only — an already-running agent will not see it.
