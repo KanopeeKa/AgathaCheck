@@ -195,3 +195,47 @@ test('observe fills every Observations field (all phases pending, then a phase P
   assert.deepEqual(obs.remedial, { open_pr: null, merged_since_epoch: 1 });
   assert.equal(obs.uat, null);
 });
+
+test('observe finds release PR when integration branch ref is gone', async () => {
+  const releasePull = {
+    number: 1969,
+    node_id: 'N1969',
+    state: 'closed',
+    draft: false,
+    merged_at: '2026-10-28T14:00:00Z',
+    merge_commit_sha: 'r1',
+    created_at: '2026-10-28T13:50:00Z',
+    head: { ref: INTEG, sha: 'r1' },
+    base: { ref: 'main' },
+    mergeable_state: 'unknown',
+    auto_merge: null,
+    labels: [],
+  };
+  const base = {
+    'GET /repos/o/r/branches/main': { body: { commit: { sha: 'm1' } } },
+    'GET /repos/o/r/actions/workflows/pre-uat-e2e.yml/runs?branch=main&per_page=100': { body: { workflow_runs: [] } },
+    [`GET /repos/o/r/branches/${encodeURIComponent(INTEG)}`]: { status: 404, body: {} },
+    [`GET /repos/o/r/branches/${encodeURIComponent(SNAP.phases[0].branch)}`]: { status: 404, body: {} },
+    [`GET /repos/o/r/pulls?base=${INTEG}&head=o:${SNAP.phases[0].branch}&per_page=100&state=all`]: { body: [] },
+    [`GET /repos/o/r/pulls?base=${INTEG}&head=o:main&per_page=100&state=open`]: { body: [] },
+    [`GET /repos/o/r/pulls?base=${INTEG}&per_page=100&state=all`]: { body: [] },
+    [`GET /repos/o/r/pulls?base=main&head=o:${INTEG}&per_page=100&state=all`]: { body: [releasePull] },
+    'GET /repos/o/r/pulls?base=main&per_page=100&state=all': { body: [] },
+    'GET /repos/o/r/pulls/1969': { body: releasePull },
+    'GET /repos/o/r/commits/r1/check-runs?per_page=100': { body: { check_runs: [
+      run(1, 'ci-gate / CI passed', 'success', '2026-10-28T13:55:00Z'),
+      run(2, 'execute-plan-scope', 'success', '2026-10-28T13:55:00Z', 'ok'),
+    ] } },
+    'GET /repos/o/r/pulls/1969/commits?per_page=100': { body: [{ sha: 'r1' }] },
+    'GET /repos/o/r/pulls/1969/reviews?per_page=100': { body: [] },
+    'GET /repos/o/r/issues/1969/timeline?per_page=100': { body: [] },
+    'POST /graphql': { body: { data: { repository: { pullRequest: { reviewThreads: { nodes: [] } } } } } },
+  };
+  const { client, sleep } = setup(base);
+  const ctx = await loadPlanContext(client, { planId: PLAN_ID, controlIssue: 9 });
+  const obs = await observe(client, ctx, { now: NOW, sleep });
+  assert.equal(obs.integration.exists, false);
+  assert.equal(obs.integration.head_sha, null);
+  assert.equal(obs.release.pr.number, 1969);
+  assert.equal(obs.release.pr.state, 'merged');
+});

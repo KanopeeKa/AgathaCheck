@@ -1,0 +1,43 @@
+{
+  "name": "release merged, integration branch deleted → preuat wait",
+  "rule": "D3, observe",
+  "snapshot_patch": {},
+  "observations_patch": {
+    "control": {
+      "authorizing": {
+        "until": "2026-11-05T09:00:00Z"
+      }
+    },
+    "integration": { "exists": false, "head_sha": null, "behind_main_by": 0 },
+    "phases": [
+      {
+        "id": "1",
+        "branch_exists": false,
+        "pr": { "state": "merged", "merged_at": "2026-10-28T13:00:00Z", "number": 1968 }
+      },
+      {
+        "id": "2",
+        "branch_exists": false,
+        "pr": { "state": "merged", "merged_at": "2026-10-28T13:30:00Z", "number": 1967 }
+      }
+    ],
+    "release": {
+      "pr": {
+        "state": "merged",
+        "merged_at": "2026-10-28T14:00:00Z",
+        "number": 1969,
+        "head_ref": "cursor/proof-build-label-7f3a-integration-7f3a",
+        "base_ref": "main"
+      }
+    }
+  },
+  "opts": { "actor": "driver", "lease": null, "now": "2026-10-28T14:05:00Z" },
+  "expected": {
+    "launch": false,
+    "stop": null,
+    "state": "release:merged",
+    "actor": "driver",
+    "kind": "wait",
+    "reason": "preuat"
+  }
+}

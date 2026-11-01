@@ -52,9 +52,9 @@ Times are ISO-8601 UTC strings. `null` means "does not exist". Example = the sce
 | `init_sha` | `control.status.init_sha`; observe fails with exit `3` when absent. |
 | `main.preuat_queued_for_head` | A `pre-uat-e2e.yml` run on `main` with `status ∈ {queued, in_progress}` whose `head_sha` = `main.head_sha`. |
 | `integration.behind_main_by` | `GET /compare/{integration}...main` → `ahead_by` (commits on `main` not in integration). |
-| `phases[i].pr` | Most recent PR with head = `phase.branch`, base = integration (open or merged; ignore closed-unmerged). Shape `PrObs`. |
+| `phases[i].pr` | Most recent PR with head = `phase.branch`, base = integration (open or merged; ignore closed-unmerged). Looked up by branch name even when the integration ref no longer exists. |
 | `sync.open_pr` | Open PR head `main`, base integration. `resolve_prs_since_epoch` = PRs from `cursor/<id>-sync-*` created after the epoch. |
-| `release.pr` | Most recent PR head = integration, base `main` (open or merged). |
+| `release.pr` | Most recent PR head = integration, base `main` (open or merged). Same head/base lookup when the integration branch was deleted after merge. |
 | `remedial` | PRs from `cursor/<id>-remedial-*` into `main`: the open one, and the count merged after the epoch. |
 | `uat` | `null` until a release or remedial PR of this plan is merged; then `UatObservations` (WP5). |
 
@@ -161,9 +161,10 @@ draft action `implement` is not used — a release PR is never draft). D4 all ph
 **S-rules**. D5 otherwise → **P-rules**.
 
 **P — phases.** P1 current phase = first phase whose `pr.merged_at` is null. P2 `pr == null` and
-`branch_exists == false` → driver `create-phase-branch` (from `integration.head_sha`). P3 `pr ==
-null` and branch exists → agent `implement` (L-rules). P4 `pr` exists → PR-ladder, draft action
-`implement`, method `squash`.
+`branch_exists == false`: when `integration.head_sha` is null (integration branch deleted and no
+ref to seed from) → STOP `integration-missing`; else driver `create-phase-branch` (from
+`integration.head_sha`). P3 `pr == null` and branch exists → agent `implement` (L-rules). P4 `pr`
+exists → PR-ladder, draft action `implement`, method `squash`.
 
 **S — sync and release (all phases merged).** S1 `release.pr == null` and `behind_main_by > 0`:
 S1a no open sync PR → driver `open-sync-pr`; S1b sync PR `mergeable_state == "dirty"` →
@@ -228,6 +229,7 @@ State names written to the status comment: `stopped`, `phase:pending`, `phase:im
 | `launch-budget` | L4 (per-phase launches only; the daily cap waits) |
 | `pr-blocked` | PR-ladder 1 |
 | `sync-conflict` | S1b |
+| `integration-missing` | P2 — integration branch gone and `head_sha` unavailable |
 | `preuat-budget` | U3 / U7 |
 | `main-red` | U3 |
 | `uat-infra` | U7 |
@@ -287,6 +289,9 @@ WP5 writes U):
 | `p-dirty-resolve-conflict.json` | PR-ladder 6 | agent `resolve-conflict` |
 | `p-auto-merge-armed-wait.json` | PR-ladder 10 | driver `wait` (`checks`) |
 | `p-merged-next-phase.json` | P1–P2 | phase 2 / driver `create-phase-branch` |
+| `r-release-merged-integ-deleted.json` | D3, observe | `release:merged` / driver `wait` (`preuat`) when integration branch deleted |
+| `p-integ-deleted-stop-create.json` | P2 | stop `integration-missing` (no `create-phase-branch` with null `from_sha`) |
+| `s-open-release-integ-deleted.json` | S2, observe | all phases merged, integration deleted / driver `open-release-pr` |
 | `p-do-not-merge-stop.json` | PR-ladder 1 | stop `pr-blocked` |
 | `l-launch-budget-phase-stop.json` | L4 | stop `launch-budget` |
 | `l-daily-cap-wait.json` | L4 | driver `wait` (`daily-cap`), no stop |
