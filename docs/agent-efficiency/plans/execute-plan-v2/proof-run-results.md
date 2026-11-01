@@ -86,6 +86,65 @@ Deploy-prod run https://github.com/KanopeeKa/AgathaCheck/actions/runs/4088149431
 
 ## `proof-build-label-7f3b`
 
-**Driver fixes (a)–(d) merged:** [#1971](https://github.com/KanopeeKa/AgathaCheck/pull/1971), [#1972](https://github.com/KanopeeKa/AgathaCheck/pull/1972), [#1973](https://github.com/KanopeeKa/AgathaCheck/pull/1973), [#1974](https://github.com/KanopeeKa/AgathaCheck/pull/1974); ready for rerun.
+**Control issue:** [#1975](https://github.com/KanopeeKa/AgathaCheck/issues/1975) (closed by the driver, 2026-11-01T21:22:15Z)  
+**Init:** `8c825bd1` on `cursor/proof-build-label-7f3b-init` (branch deleted after this doc PR)  
+**Driver fixes exercised:** [#1971](https://github.com/KanopeeKa/AgathaCheck/pull/1971) (observe after integration delete), [#1972](https://github.com/KanopeeKa/AgathaCheck/pull/1972) (epoch lock: no reset), [#1974](https://github.com/KanopeeKa/AgathaCheck/pull/1974) (`wait(hold)`), and [#1973](https://github.com/KanopeeKa/AgathaCheck/pull/1973) `wait(<reason>)` logging only. **#1973 merge fallback:** not exercised (auto-merge completed normally; scenario-only).
 
-The plan must change something **new**: `proof_label` is already on `main` (e.g. value `execute-plan-v2-proof-2`).
+**Verdict (runbook §8):** **PASS** on the §8 pass/fail rules (driver closed #1975 with the four evidence links; no STOP; launches within budget; UAT curl prints `execute-plan-v2-proof-2`). **Drills: 1 passed, 2 not exercised.** The owner accepted this result and decided GO on 2026-11-01; drill 2 is tracked in [#1981](https://github.com/KanopeeKa/AgathaCheck/issues/1981).
+
+### Owner drills (§8 steps 3–4)
+
+| Drill | Exercised? | Notes |
+|-------|------------|--------|
+| **1 — injected phase-CI failure** | **Yes — PASS** | Hold on [#1976](https://github.com/KanopeeKa/AgathaCheck/pull/1976) **19:51:35Z**; PR ready **20:02:02Z** (worker); drill commit [`bcffee8`](https://github.com/KanopeeKa/AgathaCheck/commit/bcffee8) **20:03:34Z**; `ci-gate` red **~20:06:03Z**; hold removed **20:06:20Z**; `fix-ci` launch **20:06:43Z** (`bc-f6761640`); fix [`5d7393c`](https://github.com/KanopeeKa/AgathaCheck/commit/5d7393c); merged **20:12:11Z**. Driver run [41344745956](https://github.com/KanopeeKa/AgathaCheck/actions/runs/41344745956) logged **`driver:wait(hold)`**. |
+| **2 — cancel phase-2 worker** | **No** | Phase-2 worker `bc-ae2eefc8-a42b-4b1e-9e62-390cab85c8a3` (launched **20:33:33Z**) is **hidden** from the owner Cursor dashboard (API-launched workers). Owner cancelled a **different** agent (no effect). [#1977](https://github.com/KanopeeKa/AgathaCheck/pull/1977) marked ready **20:40:16Z**, merged **20:40:47Z** without relaunch. Relaunch path covered only by scenario `p-draft-lease-stale-relaunch.json`. **Follow-up:** [#1981](https://github.com/KanopeeKa/AgathaCheck/issues/1981). |
+
+**Expected launches (full drills):** phase 1 = **2**, phase 2 = **2**, release = **0**.  
+**Observed launches:** phase 1 = **2**, phase 2 = **1**, release = **0**.
+
+| Phase | Kind | Agent id | Launched |
+|-------|------|----------|----------|
+| 1 | implement | `bc-da40ebd6-cad3-4eab-bec8-c852dfdb8218` | 2026-11-01T19:50:46Z |
+| 1 | fix-ci | `bc-f6761640-8954-4bf8-9ddf-155ee49bebf3` | 2026-11-01T20:06:43Z |
+| 2 | implement | `bc-ae2eefc8-a42b-4b1e-9e62-390cab85c8a3` | 2026-11-01T20:33:33Z |
+
+### Human actions (actual)
+
+| Action | When | Effect |
+|--------|------|--------|
+| Approval (`approve-autonomous`) | 2026-11-01T19:50:17Z | Plan started (single approval; **no epoch reset**) |
+| Drill 1 — hold + injected test break | 19:51:35Z – 20:06:20Z | Red `ci-gate` → `fix-ci` → merge #1976 |
+| Drill 2 — dashboard cancel (wrong agent) | During phase 2 | No effect on lease; drill 2 not exercised |
+| Drills 1–2 (expected) | Drill 1 only | See table above |
+
+### Timeline and wall time
+
+- **Approval:** 2026-11-01T19:50:17Z → **issue closed** 2026-11-01T21:22:15Z (**~1 h 32 min** wall time).
+- **Phase 1:** [#1976](https://github.com/KanopeeKa/AgathaCheck/pull/1976) merged **20:12:11Z** (`5ea9389`).
+- **Phase 2:** [#1977](https://github.com/KanopeeKa/AgathaCheck/pull/1977) merged **20:40:47Z** (`c189d2b`).
+- **Release:** [#1978](https://github.com/KanopeeKa/AgathaCheck/pull/1978) merged **21:05:31Z** (`37ef096`); integration branch delete-on-merge; driver continued through UAT stage.
+- **Pre-UAT E2E:** [41350180669](https://github.com/KanopeeKa/AgathaCheck/actions/runs/41350180669) (success **21:05:33Z** – **21:16:41Z**).
+- **UAT tag:** `uat-261101-1978` → `37ef096`.
+- **Deploy UAT:** [41351232460](https://github.com/KanopeeKa/AgathaCheck/actions/runs/41351232460) (success **21:17:19Z** – **21:21:28Z**; smoke + **Prod ready** green).
+
+### Fix checks (WP9 driver patches)
+
+| Check | Result |
+|-------|--------|
+| **(a)** Tracking after integration branch auto-deleted on release merge | **Pass** — release #1978 merged **21:05:31Z**; transitions `release:open → awaiting-preuat → … → complete` without losing PR/UAT state. |
+| **(b)** `driver:merge` fallback | **Not fired** — no `driver:merge` in driver logs for this plan. |
+| **(c)** No epoch reset on approval | **Pass** — single approval comment; launch budget accumulated (3 launches), not zeroed. |
+| **(d)** `wait(hold)` observability | **Pass** — `driver:wait(hold)` on run [41344745956](https://github.com/KanopeeKa/AgathaCheck/actions/runs/41344745956). |
+
+**Every `driver:wait(<reason>)` seen in driver logs:** `hold`, `agent-alive`, `checks`, `copilot`, `preuat`, `deploy`.
+
+### Evidence
+
+| Item | Value |
+|------|--------|
+| Pre-UAT E2E | https://github.com/KanopeeKa/AgathaCheck/actions/runs/41350180669 |
+| UAT tag | `uat-261101-1978` → `37ef096b0071e94862b024e4c0250b2e13ee1305` |
+| Deploy UAT | https://github.com/KanopeeKa/AgathaCheck/actions/runs/41351232460 (smoke + Prod ready) |
+| `curl -s https://uat.agathatrack.com/backend/health \| jq -r .proof_label` | `execute-plan-v2-proof-2` (owner-confirmed 2026-11-01) |
+| Cursor cost | Model Composer 2.5 fast. P1 implement (`bc-da40ebd6`) ~49.1K / 200K; P1 fix-ci (`bc-f6761640`) ~43.3K / 200K; P2 implement (`bc-ae2eefc8`) ~42.6K / 200K (total ~135.0K; 7f3a was ~82K for 2 workers). Dashboard figures are context-window use, not exact billing. Manual sessions not included (e.g. `bc-2170c664` ~58.2K / 200K). |
+| Final driver state | `state: complete`, `stop: null` (status JSON on #1975, updated **21:21:39Z**) |
