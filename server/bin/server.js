@@ -156,7 +156,7 @@ export function createApp(customPool, comparePassword) {
   });
 
   app.get('/backend/health', (req, res) => {
-    res.status(200).json({ status: 'OK' });
+    res.status(200).json({ status: 'OK', proof_label: 'execute-plan-v2-proof' });
   });
 
   app.get('/backend/', (req, res) => {
