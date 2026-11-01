@@ -28,7 +28,8 @@ uncertain, split into a second plan id rather than expanding paths mid-run.
    - Default window: **7** days (`approved_until`).
    - Cap: **14** days (`--window-days` cannot exceed the cap in code).
 4. Commit and push the init branch; end the planning session with the **exact approval line** printed by `init`.
-5. Owner posts that line on the control issue (label `plan:<plan_id>` is added at init).
+5. Owner posts that line on the control issue. `init` creates the issue with label `execute-plan` only;
+   after a valid approval comment, the approve workflow adds `plan:<plan_id>` and `autonomous-approved`.
 
 Optional: `init --dry-run` validates the markdown and prints the snapshot and approval line without
 creating an issue or pushing.
@@ -76,9 +77,9 @@ Out of scope: …
 
 | Field | Required | Notes |
 |-------|----------|-------|
-| `allowed_paths` | yes | Glob paths under repo root; no overlap across phases unless `spawn_allowed` (use `/spawn-sprint-agents` outside v2 plan file). |
+| `allowed_paths` | yes | Glob paths under repo root; must not overlap across phases. |
 | `forbidden_paths` | no | Extra deny list (`.github/workflows/**` is always protected). |
-| `allowed_exceptions` | no | Subset of `tests`, `docs`, `file-split`, `governance-allowlist`, `spawn-integration`. |
+| `allowed_exceptions` | no | Subset of `tests`, `docs` only (`PHASE_EXCEPTIONS` in `scripts/lib/execute_plan_snapshot_v2.js`). |
 | `companions` | no | Paths that may change with the phase without counting as scope violations (see contracts). |
 | `exit_checklist` | yes | Short strings the worker uses as done criteria; include `pre-push-changed green` when code changes. |
 
@@ -144,7 +145,7 @@ If a proposal is needed before delivery, use `docs/domains/<domain>/changes/<nam
 | **Pause merges** | Label **`execute-plan-hold`** on the relevant plan PR. |
 | **Hard stop on a PR** | Label **`do-not-merge`** on that PR. |
 | **Revoke programme** | Label **`autonomous-revoked`** or comment **`revoke-autonomous <plan_id>`**. |
-| **Resume after STOP** | Fix cause; remove `needs-owner` / revoke; comment **`resume-autonomous <plan_id> sha256:<same> until <ISO≤14d>`**. |
+| **Resume after STOP** | Fix cause; remove `needs-owner` and **`autonomous-revoked`** if present; comment **`resume-autonomous <plan_id> sha256:<same> until <ISO≤14d>`**. |
 | **Kill switch** | Set repository variable **`EXECUTE_PLAN_DRIVER=off`**. |
 
 Detail: [runbooks-proof-retirement.md §7.5](./plans/execute-plan-v2/runbooks-proof-retirement.md).
