@@ -138,6 +138,26 @@ test('findControlComments picks latest authorizing', () => {
   assert.equal(res.revoke_comment_at, '2026-10-17T09:00:00Z');
 });
 
+test('findControlComments ignores resume before the first approve', () => {
+  const early = comment({
+    id: 1,
+    created_at: '2026-10-16T09:00:00Z',
+    updated_at: '2026-10-16T09:00:00Z',
+    body: line('resume', '2026-10-23T09:00:00Z'),
+  });
+  const approve = comment({ id: 2, created_at: '2026-10-16T09:05:00Z', updated_at: '2026-10-16T09:05:00Z' });
+  const res = findControlComments([early, approve], SNAP, CONFIG);
+  assert.equal(res.authorizing.comment_id, 2);
+  assert.equal(res.authorizing.verb, 'approve');
+});
+
+test('findControlComments ignores duplicate approve after a valid approve', () => {
+  const first = comment({ id: 1, created_at: '2026-10-16T09:05:00Z', updated_at: '2026-10-16T09:05:00Z' });
+  const dup = comment({ id: 2, created_at: '2026-10-16T09:30:00Z', updated_at: '2026-10-16T09:30:00Z' });
+  const res = findControlComments([first, dup], SNAP, CONFIG);
+  assert.equal(res.authorizing.comment_id, 1);
+});
+
 test('findControlComments reports an invalid latest comment', () => {
   const res = findControlComments([comment({ user: { login: 'rando' } })], SNAP, CONFIG);
   assert.equal(res.authorizing.valid, false);

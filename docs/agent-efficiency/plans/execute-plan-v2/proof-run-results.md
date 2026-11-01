@@ -61,7 +61,7 @@ A lookup by head branch name (`GET /pulls?head=KanopeeKa:<branch>&state=all`) st
 | UAT tag | `uat-261029-1969` → `dddf7f9` |
 | Deploy UAT | https://github.com/KanopeeKa/AgathaCheck/actions/runs/40880897299 (success 13:19–13:23Z; smoke and `Prod ready` green) |
 | `curl -s https://uat.agathatrack.com/backend/health \| jq -r .proof_label` | `execute-plan-v2-proof` |
-| Cursor cost | P1 implement (`bc-8d41f63b`) and P2 implement (`bc-29a98d66`): dashboard **used / 200K** per run — approximate **context-window utilization**, not exact billing; adequate for sizing the next run. |
+| Cursor cost | Model Composer 2.5 fast. P1 implement (`bc-8d41f63b`) ~47.4K / 200K tokens; P2 implement (`bc-29a98d66`) ~34.7K / 200K tokens (~82K total). Dashboard figures are context-window use, not exact billing. Manual sessions (init, retrigger, results doc) not included. |
 | `wait` reasons | Driver log on #1968 stall: only **`action driver:wait`** (no reason in log); final stop **`expired`** |
 
 ### Drills not run — would they likely have failed?
