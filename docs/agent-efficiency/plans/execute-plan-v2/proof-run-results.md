@@ -60,8 +60,8 @@ A lookup by head branch name (`GET /pulls?head=KanopeeKa:<branch>&state=all`) st
 | Pre-UAT E2E | https://github.com/KanopeeKa/AgathaCheck/actions/runs/40879099352 (success, 2026-10-29 13:07–13:19Z, push on `dddf7f9`; **not** dispatched by the driver) |
 | UAT tag | `uat-261029-1969` → `dddf7f9` |
 | Deploy UAT | https://github.com/KanopeeKa/AgathaCheck/actions/runs/40880897299 (success 13:19–13:23Z; smoke and `Prod ready` green) |
-| `curl -s https://uat.agathatrack.com/backend/health \| jq -r .proof_label` | _owner to confirm_ (expect `execute-plan-v2-proof`) |
-| Cursor cost | _owner to fill_ |
+| `curl -s https://uat.agathatrack.com/backend/health \| jq -r .proof_label` | `execute-plan-v2-proof` |
+| Cursor cost | P1 implement (`bc-8d41f63b`) and P2 implement (`bc-29a98d66`): dashboard **used / 200K** per run — approximate **context-window utilization**, not exact billing; adequate for sizing the next run. |
 | `wait` reasons | Driver log on #1968 stall: only **`action driver:wait`** (no reason in log); final stop **`expired`** |
 
 ### Drills not run — would they likely have failed?
