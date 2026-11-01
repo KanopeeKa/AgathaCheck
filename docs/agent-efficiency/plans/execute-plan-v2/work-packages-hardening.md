@@ -115,10 +115,13 @@ node --test scripts/execute_plan_runtime.test.js scripts/test/execute_plan_*.tes
 node scripts/check_docs_canonical.js --instructions
 bash scripts/validate_docs.sh
 ./scripts/pre-push-changed.sh
-rg -n "execute_plan_runtime.js tick <plan_id> --json --actor agent" AGENTS.md .cursor/skills .claude/skills docs/agent-efficiency/execute-plan-instruction-stack.md docs/agent-efficiency/plans/execute-plan-v2/contracts.md
+FILES="AGENTS.md .cursor/skills .claude/skills docs/agent-efficiency/execute-plan-instruction-stack.md docs/agent-efficiency/plans/execute-plan-v2/contracts.md"
+rg -n 'env -u OWNER_GH_TOKEN -u BOT_GH_TOKEN node scripts/execute_plan_runtime.js tick ' $FILES
+unprefixed=$(rg -n 'execute_plan_runtime.js tick .*--json --actor agent' $FILES 2>/dev/null | grep -v 'env -u OWNER_GH_TOKEN' || true)
+if [ -n "$unprefixed" ]; then echo "$unprefixed" >&2; echo 'unprefixed worker tick command found' >&2; exit 1; fi
 ```
 
-The last command prints only lines that start with the `env -u` prefix.
+The `rg`/`grep` block fails if any worker `tick` line lacks the `env -u` prefix.
 
 ---
 
