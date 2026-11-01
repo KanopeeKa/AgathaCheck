@@ -14,6 +14,6 @@ describe('GET /backend/health proof_label', () => {
     const res = await request(app).get('/backend/health');
     expect(res.statusCode).toBe(200);
     expect(res.body.status).toBe('OK');
-    expect(res.body.proof_label).toBe('drill-1-wrong');
+    expect(res.body.proof_label).toBe('execute-plan-v2-proof-2');
   });
 });
