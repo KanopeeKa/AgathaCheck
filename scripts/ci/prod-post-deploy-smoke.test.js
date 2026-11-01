@@ -137,7 +137,7 @@ test('bash lib: teaser classification helpers', () => {
   );
 });
 
-test('coming_soon mode: teaser OK + health OK + dart.js not 200 → exit 0', async () => {
+test('coming_soon mode: teaser OK + health OK + bootstrap absent → exit 0', async () => {
   const fx = await startFixtureServer({ mode: 'teaser', serveDartJs: false });
   try {
     const r = await runSmoke(fx.baseUrl, 'coming_soon');
