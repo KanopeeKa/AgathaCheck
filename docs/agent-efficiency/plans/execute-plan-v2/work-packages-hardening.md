@@ -161,8 +161,8 @@ Authorizations posted before WP12 have no acknowledgement and would no longer co
 
 - **Running worker** = the status comment has a `lease` **and** Cursor reports that run as
   `CREATING` or `RUNNING` (state-machine L1) **or** `UNKNOWN` (API error or no key — fail closed).
-  For authorizations only Cursor's run status is used; the `last_tick_at` time window of L2 is not
-  (it is written by the worker's own ticks). A lease whose run is `FINISHED`, `ERROR`, `CANCELLED`
+  For authorizations only the run status reported by Cursor is used; the `last_tick_at` time
+  window of L2 stays a relaunch rule only. A lease whose run is `FINISHED`, `ERROR`, `CANCELLED`
   or `EXPIRED` is not running (a stale lease left in the status comment does not block).
 - On every **created** `approve-autonomous` / `resume-autonomous` comment that passes
   `validateControlComment` (`scripts/lib/execute_plan_approval.js:45`), the approve handler decides:
