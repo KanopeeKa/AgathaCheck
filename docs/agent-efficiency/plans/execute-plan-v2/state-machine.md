@@ -175,7 +175,9 @@ method `merge` (scope is always green for sync PRs). S2 `release.pr == null` and
 
 **PR-ladder** (applied to one PR; "attempts" = `failed_attempts_since_epoch`):
 1. Label `do-not-merge` → STOP `pr-blocked`.
-2. `draft` → the draft action (agent, L-rules).
+1b. Label `execute-plan-hold` → `wait(hold)` (no STOP, no launch; budgets unchanged). The driver
+   ensures the repo label exists. Removing the label resumes on the next event/heartbeat.
+2. `draft` → the draft action (agent, L-rules), unless rule 1b applies.
 3. Scope check `reason ∈ {drift, protected, forbidden}` → STOP `drift`.
 4. Any required check concluded `failure`/`timed_out`/`action_required` on `head_sha`:
    attempts ≥ `ci_per_phase` → STOP `ci-budget`; else, when the only failing check is
@@ -298,6 +300,9 @@ WP5 writes U):
 | `p-integ-deleted-stop-create.json` | P2 | stop `integration-missing` (no `create-phase-branch` with null `from_sha`) |
 | `s-open-release-integ-deleted.json` | S2, observe | all phases merged, integration deleted / driver `open-release-pr` |
 | `p-do-not-merge-stop.json` | PR-ladder 1 | stop `pr-blocked` |
+| `p-hold-ready-wait.json` | PR-ladder 1b | driver `wait` (`hold`) |
+| `p-hold-draft-wait.json` | PR-ladder 1b, 2 | draft PR held → `wait(hold)` not `implement` |
+| `p-hold-removed-arm.json` | PR-ladder 1b off, 9 | driver `arm-auto-merge` |
 | `l-launch-budget-phase-stop.json` | L4 | stop `launch-budget` |
 | `l-daily-cap-wait.json` | L4 | driver `wait` (`daily-cap`), no stop |
 | `s-behind-open-sync.json` | S1a | `sync` / driver `open-sync-pr` |

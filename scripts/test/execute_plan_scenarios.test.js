@@ -11,7 +11,7 @@ const { decide, prLadder } = require('../lib/execute_plan_state');
 const files = scenarioFiles();
 
 test('scenario files: 32 P/L/S/R/D present', () => {
-  assert.equal(files.filter((f) => /[\\/][plsrd]-/.test(f)).length, 37);
+  assert.equal(files.filter((f) => /[\\/][plsrd]-/.test(f)).length, 40);
 });
 
 for (const file of files) {
@@ -75,6 +75,7 @@ const red = [{ name: 'ci-gate / CI passed', status: 'completed', conclusion: 'fa
 
 test('prLadder rules 1–10 each', () => {
   assert.equal(ladder({ labels: ['do-not-merge'] }).stop.reason, 'pr-blocked'); // 1
+  assert.equal(ladder({ labels: ['execute-plan-hold'] }).action.args.reason, 'hold'); // 1b
   assert.equal(ladder({ draft: true }).action.kind, 'implement'); // 2
   assert.equal(ladder({ checks: [{ name: 'execute-plan-scope', conclusion: 'failure', reason: 'protected' }] }).stop.reason, 'drift'); // 3
   assert.equal(ladder({ checks: red }).action.kind, 'fix-ci'); // 4

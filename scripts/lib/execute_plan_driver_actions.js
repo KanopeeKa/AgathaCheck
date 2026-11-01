@@ -13,6 +13,7 @@
  */
 
 const { GitHubError } = require('./execute_plan_github');
+const { HOLD_LABEL } = require('./execute_plan_state');
 const { formatStatusComment, parseStatusComment } = require('./execute_plan_status');
 
 const MAX_LAUNCHES = 50;
@@ -274,6 +275,7 @@ async function runDriverPass(clients, { planId, issueNumber, now = isoNow(), kil
   const deps = { ...defaultDeps(), ...(clients.deps || {}) };
   const all = { ...clients, deps };
   const { bot } = all;
+  if (typeof bot.ensureLabel === 'function') await bot.ensureLabel(HOLD_LABEL);
   const ctx = await deps.loadPlanContext(bot, { planId, controlIssue: issueNumber });
 
   let lease = null;

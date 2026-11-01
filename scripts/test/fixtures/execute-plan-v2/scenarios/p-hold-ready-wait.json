@@ -1,0 +1,24 @@
+{
+  "name": "ready PR with execute-plan-hold → wait hold",
+  "rule": "PR-ladder 1b",
+  "snapshot_patch": {},
+  "observations_patch": {
+    "phases": [
+      {
+        "id": "1",
+        "branch_exists": true,
+        "pr": { "labels": ["execute-plan-hold"], "draft": false, "auto_merge_enabled": false }
+      },
+      { "id": "2", "branch_exists": false, "pr": null }
+    ]
+  },
+  "opts": { "actor": "driver", "lease": null },
+  "expected": {
+    "launch": false,
+    "stop": null,
+    "state": "phase:ready",
+    "actor": "driver",
+    "kind": "wait",
+    "reason": "hold"
+  }
+}

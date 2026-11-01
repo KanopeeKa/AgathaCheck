@@ -187,12 +187,8 @@ Out of scope: everything else.
    `node scripts/execute_plan_runtime.js init proof-build-label-7f3a --window-days 3`. The session ends.
 2. Owner: paste the printed approval line on the control issue. **From here the only human actions
    are the two drill actions.**
-3. Drill 1 — injected phase-CI failure: when phase 1's PR is marked ready, the owner pushes one
-   commit to the phase-1 branch that changes the expected value in the new test. Expected: red
-   `ci-gate` → `fix-ci` → worker launched → fixed → green → auto-merge.
-4. Drill 2 — forced turn end: while phase 2's worker runs (draft PR exists), the owner cancels the
-   Cursor agent from the dashboard. Expected: within 30 min the heartbeat sees a dead lease and
-   relaunches with the handoff; phase 2 completes.
+3. **Drill 1 — injected phase-CI failure:** add label **`execute-plan-hold`** on phase 1's PR when it is ready (or before marking ready). Push one commit to the phase-1 branch that changes the expected value in the new test. Remove **`execute-plan-hold`** when fixed. Expected: red `ci-gate` → `fix-ci` → worker launched → fixed → green → auto-merge.
+4. **Drill 2 — forced turn end:** add **`execute-plan-hold`** on phase 2's PR while the draft PR exists. Cancel the Cursor agent from the dashboard. Remove the label after verifying relaunch. Expected: within 30 min the heartbeat sees a dead lease and relaunches with the handoff; phase 2 completes.
 5. Expected log on the control issue: `phase:pending … phase:merged` (×2) → `sync` (only if `main`
    moved) → `release:open` → `awaiting-preuat` → `awaiting-promote` (only if the throttle skipped)
    → `awaiting-deploy` → `complete`; the issue is closed by the driver.

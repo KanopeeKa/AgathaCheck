@@ -196,6 +196,11 @@ function createGitHubClient(opts) {
     createComment: (n, body) => rest('POST', `/issues/${n}/comments`, { body: { body } }),
     updateComment: (id, body) => rest('PATCH', `/issues/comments/${id}`, { body: { body } }),
     addLabels: (n, labels) => rest('POST', `/issues/${n}/labels`, { body: { labels } }),
+    async ensureLabel(name, { color = 'FEF2C0', description = 'Execute-plan owner drill hold' } = {}) {
+      const existing = await rest('GET', `/labels/${enc(name)}`, { nullOn404: true });
+      if (existing) return existing;
+      return rest('POST', '/labels', { body: { name, color, description } });
+    },
     async removeLabel(n, label) {
       await rest('DELETE', `/issues/${n}/labels/${enc(label)}`, { nullOn404: true });
     },
