@@ -137,6 +137,7 @@ Execute-plan v2 (`scripts/lib/execute_plan_uat_observe.js`, rules in
 this pipeline after a plan PR merges into `main`; it never changes it.
 
 Proof run: proof-build-label-7f3a (2026-10-28).
+Proof run: proof-build-label-7f3b (2026-11-01).
 
 - **Reads:** `pre-uat-e2e.yml` runs on `main` (with their failed jobs, excluding `Pre-UAT E2E gate`),
   `uat-*` tags, `deploy-uat.yml` runs with their job conclusions, and `uat-live-e2e.yml` runs.
