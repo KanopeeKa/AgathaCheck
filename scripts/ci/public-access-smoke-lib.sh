@@ -39,6 +39,23 @@ pas_classify_http_code() {
   esac
 }
 
+# Classify GET on a Flutter bootstrap path during coming_soon prod smoke.
+# SPA fallback may return teaser index.html with HTTP 200 — not real Flutter.
+# Prints: absent | teaser_fallback | served
+pas_classify_flutter_asset_response() {
+  local code="${1:-}"
+  local body="${2:-}"
+  if [[ "$code" != "200" ]]; then
+    printf '%s\n' 'absent'
+    return 0
+  fi
+  if pas_is_teaser_html "$body" && ! pas_body_mentions_flutter_main "$body"; then
+    printf '%s\n' 'teaser_fallback'
+    return 0
+  fi
+  printf '%s\n' 'served'
+}
+
 # Classify teaser vs Flutter mismatch given expected mode and observed body.
 # Prints: ok | teaser_mismatch | flutter_served_in_teaser_mode
 pas_classify_teaser_body() {
@@ -75,6 +92,9 @@ if [[ "${PAS_SMOKE_LIB_PROBE:-}" != "" && "${BASH_SOURCE[0]}" == "${0}" ]]; then
       ;;
     pas_classify_teaser_body)
       pas_classify_teaser_body "${1:-}" "${2:-}"
+      ;;
+    pas_classify_flutter_asset_response)
+      pas_classify_flutter_asset_response "${1:-}" "${2:-}"
       ;;
     *)
       echo "unknown probe: $fn" >&2

@@ -80,7 +80,7 @@ A lookup by head branch name (`GET /pulls?head=KanopeeKa:<branch>&state=all`) st
 
 ### Side note (outside WP9)
 
-Deploy-prod run https://github.com/KanopeeKa/AgathaCheck/actions/runs/40881494315 failed only at **“Production post-deploy smoke”** (`main.dart.js returns 200 while PROD_PUBLIC_MODE=coming_soon`). The same failure has occurred on every deploy-prod run since at least **2026-10-27**. Track in a **separate issue** (not part of WP9 proof).
+Deploy-prod run https://github.com/KanopeeKa/AgathaCheck/actions/runs/40881494315 failed only at **“Production post-deploy smoke”** (`main.dart.js returns 200 while PROD_PUBLIC_MODE=coming_soon`). The same failure occurred on every deploy-prod run from **2026-10-14** through **2026-11-01** until smoke classified SPA fallback (teaser HTML with HTTP 200 on bootstrap paths) separately from real Flutter bytes — see prod smoke fix on `main`.
 
 ---
 

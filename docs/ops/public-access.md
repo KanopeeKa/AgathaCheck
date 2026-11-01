@@ -3,7 +3,7 @@ title: Public access rules
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-22
+last_updated: 2026-11-01
 tags: [ops, public-access]
 ---
 # Public access posture (canonical)
@@ -41,7 +41,7 @@ Fail closed if deploy is enabled and `PROD_PUBLIC_MODE` is unset.
 | `PROD_DEPLOY_ENABLED` | `PROD_PUBLIC_MODE` | Deploy web root | Prod smoke expects |
 |-----------------------|--------------------|-----------------|--------------------|
 | `false` / unset | any | No prod deploy | N/A |
-| `true` | `coming_soon` | `public/coming-soon/` (no Flutter artifact required) | Teaser marker on `/`; **fail** if Flutter `main.dart.js` still 200 |
+| `true` | `coming_soon` | `public/coming-soon/` (no Flutter artifact required) | Teaser marker on `/`; bootstrap paths (`/main.dart.js`, `/flutter_bootstrap.js`) must **not** return real Flutter bytes — **404/non-200 OK**, or HTTP 200 only when the body is still the teaser (legacy SPA `.htaccess` fallback to `index.html`) |
 | `true` | `app` | Flutter web (promote path) | Existing landing / app smoke |
 | `true` | unset / other | **Deploy job fails closed** | N/A |
 
@@ -83,7 +83,7 @@ Shared helpers: `scripts/ci/public-access-smoke-lib.sh`.
 |------|---------|
 | `basic_auth` | HTTP **401** (expected anonymous proof when UAT Basic Auth is on; unexpected elsewhere) |
 | `teaser_mismatch` | Expected teaser HTML (`data-site-mode="coming-soon"`) missing when mode is `coming_soon` |
-| `flutter_served_in_teaser_mode` | Flutter asset (e.g. `main.dart.js`) still reachable while prod is in teaser mode |
+| `flutter_served_in_teaser_mode` | Real Flutter bootstrap/asset bytes served (e.g. JavaScript or non-teaser HTML) while prod is in teaser mode — not mere HTTP 200 with teaser HTML from SPA fallback |
 
 Do not map 401 to WAF. Tiger Protect challenges are separate (HTML markers / browser warmup).
 
