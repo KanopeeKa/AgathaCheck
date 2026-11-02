@@ -130,7 +130,6 @@ describe('closeHousehold (integration)', () => {
       expect(inProvider.rows[0].provider_contact_id).not.toBe(householdContactId);
       expect(staleProvider.rows[0].provider_contact_id).not.toBe(householdContactId);
 
-      const ownerInDir = await ensurePersonalDirectory(pool, ownerIn.userId);
       const ownerOutDir = await ensurePersonalDirectory(pool, ownerOut.userId);
 
       const inContactDir = await pool.query(
