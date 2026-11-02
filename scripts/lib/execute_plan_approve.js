@@ -4,7 +4,7 @@
  * Execute-plan v2 control-issue comments: approve, resume, revoke, plus edits and deletions of them.
  * Runs in Actions from trusted `main` code. Spec: work-packages-platform.md §WP7b, contracts.md §3.3.
  *
- * `clients` = { bot, read, cursorApiKey, deps? } as in execute_plan_driver_actions.js.
+ * `clients` = { bot, read, deps? } as in execute_plan_driver_actions.js; `read` (GITHUB_TOKEN) dispatches the driver.
  */
 
 const { parseControlComment, validateControlComment } = require('./execute_plan_approval');
@@ -12,8 +12,9 @@ const { loadSnapshotAtRef } = require('./execute_plan_snapshot_v2');
 const { loadPlanContext, CONFIG_PATH } = require('./execute_plan_observe');
 const { formatStatusComment, STATUS_MARKER } = require('./execute_plan_status');
 const { labelNames } = require('./execute_plan_plans');
-const { runDriverPass, normalizeKillSwitch, isoNow } = require('./execute_plan_driver_actions');
+const { normalizeKillSwitch, isoNow } = require('./execute_plan_driver_actions');
 
+const DRIVER_WORKFLOW = 'execute-plan-driver.yml';
 const INIT_LINE_RE = /^Init branch: (\S+) @ ([0-9a-f]{40})\s*$/m;
 const IGNORED_REASONS = new Set(['not-owner', 'bot']); // never answered: no comment loops, no noise
 
@@ -112,9 +113,13 @@ async function handleControlComment(clients, event, { now = isoNow(), killSwitch
   if (!parsed) return done(false, 'not a control comment');
 
   const config = await loadConfig(clients.read);
+  // The pass runs in the driver workflow's concurrency group, never inline: two passes for one plan
+  // would race on the status comment and could pick the same action (issue #2005).
   const pass = async (planId) => {
-    await runDriverPass(clients, { planId, issueNumber: issue.number, now, killSwitch: sw, log });
-    return dry ? done(false, 'dry-run: driver pass decided only') : done(true, 'driver pass run');
+    if (dry) return done(false, `dry-run: would dispatch ${DRIVER_WORKFLOW} for ${planId}`);
+    await clients.read.dispatchWorkflow(DRIVER_WORKFLOW, 'main', { plan_id: planId });
+    log(`plan ${planId}: dispatched ${DRIVER_WORKFLOW}`);
+    return done(true, 'driver pass dispatched');
   };
 
   if (event.action === 'edited' || event.action === 'deleted') {
