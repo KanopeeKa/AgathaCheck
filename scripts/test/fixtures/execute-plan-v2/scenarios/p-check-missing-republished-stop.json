@@ -1,0 +1,62 @@
+{
+  "name": "scope status still missing after a republish on this head → STOP check-missing",
+  "rule": "PR-ladder 10a",
+  "snapshot_patch": {},
+  "observations_patch": {
+    "phases": [
+      {
+        "id": "1",
+        "branch_exists": true,
+        "pr": {
+          "auto_merge_enabled": true,
+          "checks": [
+            {
+              "name": "ci-gate / CI passed",
+              "status": "completed",
+              "conclusion": "success",
+              "reason": null,
+              "completed_at": "2026-10-16T09:40:00Z"
+            },
+            {
+              "name": "execute-plan-scope",
+              "status": "missing",
+              "conclusion": null,
+              "reason": null,
+              "completed_at": null
+            }
+          ],
+          "checks_settled_at": "2026-10-16T09:44:00Z"
+        }
+      },
+      {
+        "id": "2",
+        "branch_exists": false,
+        "pr": null
+      }
+    ],
+    "control": {
+      "status": {
+        "dispatched": {
+          "scope_republish": [
+            {
+              "sha": "cccc000000000000000000000000000000000001",
+              "at": "2026-10-16T09:30:00Z"
+            }
+          ]
+        },
+        "stop": null
+      }
+    }
+  },
+  "opts": {
+    "actor": "driver",
+    "lease": null
+  },
+  "expected": {
+    "launch": false,
+    "stop": "check-missing",
+    "state": "stopped",
+    "actor": "driver",
+    "kind": "enforce-stop"
+  }
+}

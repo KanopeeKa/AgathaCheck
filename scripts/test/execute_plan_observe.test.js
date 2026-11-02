@@ -116,6 +116,21 @@ const status = (id, state, description, created_at, login = 'github-actions[bot]
   id, context: 'execute-plan-scope', state, description, created_at, updated_at: created_at, creator: { login },
 });
 
+test('checks_settled_at waits for every head check run; head_activity_at is the newest head event', async () => {
+  const { client, sleep } = setup({
+    'GET /repos/o/r/pulls/50/commits?per_page=100': { body: [{ sha: 'c00' }, { sha: 'c0' }, { sha: 'c1', commit: { committer: { date: '2026-10-16T09:29:00Z' } } }] },
+  });
+  const pr = await observePr(client, { number: 50 }, { ...PR_OPTS, sleep });
+  assert.equal(pr.checks_settled_at, '2026-10-16T09:40:00Z');
+  assert.equal(pr.head_activity_at, '2026-10-16T09:40:00Z');
+  const running = setup({
+    'GET /repos/o/r/commits/c1/check-runs?per_page=100': { body: { check_runs: [run(1, 'ci-gate / CI passed', 'success', '2026-10-16T09:30:00Z'), run(7, 'flutter-test', null, null)] } },
+  });
+  const busy = await observePr(running.client, { number: 50 }, { ...PR_OPTS, sleep: running.sleep });
+  assert.equal(busy.checks_settled_at, null);
+  assert.equal(busy.head_activity_at, '2026-10-16T09:30:00Z');
+});
+
 test('scope commit status from GitHub Actions wins over the legacy check run', async () => {
   const { client, sleep } = setup({
     'GET /repos/o/r/commits/c1/statuses?per_page=100': { body: [

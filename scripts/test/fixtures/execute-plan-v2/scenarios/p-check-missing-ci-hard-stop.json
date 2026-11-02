@@ -1,0 +1,50 @@
+{
+  "name": "ci-gate never reported 2 h without activity on the head → STOP check-missing (no republish for CI)",
+  "rule": "PR-ladder 10a",
+  "snapshot_patch": {},
+  "observations_patch": {
+    "phases": [
+      {
+        "id": "1",
+        "branch_exists": true,
+        "pr": {
+          "auto_merge_enabled": true,
+          "checks": [
+            {
+              "name": "ci-gate / CI passed",
+              "status": "missing",
+              "conclusion": null,
+              "reason": null,
+              "completed_at": null
+            },
+            {
+              "name": "execute-plan-scope",
+              "status": "completed",
+              "conclusion": "success",
+              "reason": "ok",
+              "completed_at": "2026-10-16T09:40:00Z"
+            }
+          ],
+          "checks_settled_at": null,
+          "head_activity_at": "2026-10-16T07:50:00Z"
+        }
+      },
+      {
+        "id": "2",
+        "branch_exists": false,
+        "pr": null
+      }
+    ]
+  },
+  "opts": {
+    "actor": "driver",
+    "lease": null
+  },
+  "expected": {
+    "launch": false,
+    "stop": "check-missing",
+    "state": "stopped",
+    "actor": "driver",
+    "kind": "enforce-stop"
+  }
+}
