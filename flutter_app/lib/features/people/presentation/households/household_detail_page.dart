@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../auth/auth.dart';
 import '../../../pet_profile/pet_profile.dart';
+import '../../application/people_api_exception.dart';
 import '../../application/people_commands.dart';
 import '../../application/people_providers.dart';
 import '../../domain/entities/household.dart';
@@ -171,6 +172,85 @@ class _HouseholdDetailBodyState extends ConsumerState<_HouseholdDetailBody> {
     }
   }
 
+  Future<void> _editMember(HouseholdMember member) async {
+    final l = AppLocalizations.of(context)!;
+    var tier = member.tier;
+    var organiser = member.isOrganiser;
+    final saved = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setState) => AlertDialog(
+          title: Text(member.displayName),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              RadioListTile<String>(
+                value: 'full_access',
+                groupValue: tier,
+                onChanged: organiser ? null : (v) => setState(() => tier = v!),
+                title: Text(l.householdFullAccessLabel),
+              ),
+              RadioListTile<String>(
+                value: 'can_log_care',
+                groupValue: tier,
+                onChanged: organiser ? null : (v) => setState(() => tier = v!),
+                title: Text(l.householdCanLogCareLabel),
+              ),
+              CheckboxListTile(
+                value: organiser,
+                onChanged: (v) => setState(() {
+                  organiser = v == true;
+                  if (organiser) tier = 'full_access';
+                }),
+                title: Text(l.peopleHouseholdInviteOrganiserLabel),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(l.cancel),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: Text(l.save),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (saved != true || !mounted) return;
+    try {
+      await ref
+          .read(peopleCommandsProvider)
+          .patchHouseholdMember(
+            householdId: widget.household.id,
+            memberUserId: member.userId,
+            accessTier: organiser ? 'full_access' : tier,
+            isOrganiser: organiser,
+          );
+      ref.invalidate(householdDetailProvider(widget.household.id));
+    } on PeopleApiException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              e.code == 'last_organiser'
+                  ? l.peopleSaveError
+                  : l.peopleSaveError,
+            ),
+          ),
+        );
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.peopleSaveError)));
+      }
+    }
+  }
+
   Future<void> _removeMember({
     required HouseholdMember member,
     required bool removingSelf,
@@ -284,6 +364,9 @@ class _HouseholdDetailBodyState extends ConsumerState<_HouseholdDetailBody> {
             subtitle: Text(
               householdTierLabel(l, member.tier, organiser: member.isOrganiser),
             ),
+            onTap: household.myIsOrganiser && !member.isYou
+                ? () => _editMember(member)
+                : null,
             trailing: household.myIsOrganiser && !member.isYou
                 ? IconButton(
                     tooltip: l.peopleMemberRemovalAction,

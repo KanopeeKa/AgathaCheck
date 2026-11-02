@@ -4,10 +4,59 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../pet_profile/pet_profile.dart';
 import '../../application/people_commands.dart';
 import '../../application/people_providers.dart';
 import '../../domain/entities/household_invite_preview.dart';
 import 'household_tier_labels.dart';
+
+Future<List<String>?> _sharePetsAfterInvite(
+  BuildContext context,
+  List<Pet> pets,
+) {
+  if (pets.isEmpty) return Future.value(const []);
+  final selected = <String>{};
+  final l = AppLocalizations.of(context)!;
+  return showDialog<List<String>>(
+    context: context,
+    barrierDismissible: false,
+    builder: (ctx) => StatefulBuilder(
+      builder: (ctx, setState) => AlertDialog(
+        title: Text(l.peopleHouseholdPetReviewTitle),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (final pet in pets)
+              CheckboxListTile(
+                key: Key('household_share_pet_${pet.id}'),
+                value: selected.contains(pet.id),
+                onChanged: (v) => setState(() {
+                  if (v == true) {
+                    selected.add(pet.id);
+                  } else {
+                    selected.remove(pet.id);
+                  }
+                }),
+                title: Text(pet.name),
+              ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            key: const Key('household_share_pets_skip'),
+            onPressed: () => Navigator.pop(ctx, const []),
+            child: Text(l.later),
+          ),
+          FilledButton(
+            key: const Key('household_share_pets_confirm'),
+            onPressed: () => Navigator.pop(ctx, selected.toList()),
+            child: Text(l.continueButton),
+          ),
+        ],
+      ),
+    ),
+  );
+}
 
 class HouseholdInviteLandingScreen extends ConsumerStatefulWidget {
   const HouseholdInviteLandingScreen({super.key, required this.inviteCode});
@@ -52,10 +101,30 @@ class _HouseholdInviteLandingScreenState
   Future<void> _accept() async {
     setState(() => _busy = true);
     try {
+      final preview = _preview!;
       await ref
           .read(peopleCommandsProvider)
           .acceptHouseholdInvite(widget.inviteCode);
-      if (mounted) context.go('/pc/people/households/${_preview!.householdId}');
+      if (!mounted) return;
+
+      final ownedPets = ref.read(petListProvider).valueOrNull ?? const <Pet>[];
+      final selectedPetIds = await _sharePetsAfterInvite(context, ownedPets);
+      if (!mounted || selectedPetIds == null) return;
+
+      if (selectedPetIds.isNotEmpty) {
+        final detail = await ref
+            .read(householdsRepositoryProvider)
+            .fetchHouseholdDetail(preview.householdId);
+        final existingPetIds = detail.pets.map((p) => p.petId).toSet();
+        existingPetIds.addAll(selectedPetIds);
+        await ref
+            .read(peopleCommandsProvider)
+            .setHouseholdPets(
+              householdId: preview.householdId,
+              petIds: existingPetIds.toList(),
+            );
+      }
+      if (mounted) context.go('/pc/people/households/${preview.householdId}');
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

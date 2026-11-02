@@ -6,6 +6,7 @@ import '../domain/entities/household.dart';
 import '../domain/entities/household_invite_preview.dart';
 import '../domain/repositories/people_repository.dart';
 import 'dto/people_dtos.dart';
+import 'people_api_exception.dart';
 
 class HouseholdsApi {
   HouseholdsApi({required this.baseUrl, required this.client, this.token});
@@ -149,8 +150,7 @@ class HouseholdsApi {
       throw Exception('Removal preview ${response.statusCode}');
     }
     final decoded = json.decode(response.body) as Map<String, dynamic>;
-    final remainingRaw = decoded['remaining_access'] as List? ?? [];
-    final remaining = remainingRaw.whereType<Map<String, dynamic>>().map((row) {
+    HouseholdRemainingAccess mapAccessRow(Map<String, dynamic> row) {
       return HouseholdRemainingAccess(
         petId: row['pet_id']?.toString() ?? '',
         petName: row['pet_name']?.toString() ?? '',
@@ -158,10 +158,32 @@ class HouseholdsApi {
         role: row['role']?.toString(),
         until: row['until']?.toString(),
       );
+    }
+
+    final remainingRaw = decoded['remaining_access'] as List? ?? [];
+    final remaining = remainingRaw
+        .whereType<Map<String, dynamic>>()
+        .map(mapAccessRow)
+        .toList();
+    final petsLeavingRaw = decoded['pets_leaving'] as List? ?? [];
+    final petsLeaving = petsLeavingRaw.whereType<Map<String, dynamic>>().map((
+      row,
+    ) {
+      return HouseholdPetLeaving(
+        petId: row['pet_id']?.toString() ?? '',
+        petName: row['pet_name']?.toString() ?? '',
+      );
     }).toList();
+    final revokeRaw = decoded['access_to_revoke_if_remove_all'] as List? ?? [];
+    final revoke = revokeRaw
+        .whereType<Map<String, dynamic>>()
+        .map(mapAccessRow)
+        .toList();
     return HouseholdMemberRemovalPreview(
       remainingAccess: remaining,
       requiresSuccessor: decoded['requires_successor'] == true,
+      petsLeaving: petsLeaving,
+      accessToRevokeIfRemoveAll: revoke,
     );
   }
 
@@ -225,6 +247,34 @@ class HouseholdsApi {
     );
     if (response.statusCode >= 400) {
       throw Exception('Decline household invite ${response.statusCode}');
+    }
+  }
+
+  Future<void> patchMember({
+    required String householdId,
+    required String memberUserId,
+    String? accessTier,
+    bool? isOrganiser,
+  }) async {
+    final body = <String, dynamic>{};
+    if (accessTier != null) body['access_tier'] = accessTier;
+    if (isOrganiser != null) body['is_organiser'] = isOrganiser;
+    final response = await client.patch(
+      Uri.parse('$baseUrl/api/households/$householdId/members/$memberUserId'),
+      headers: _headers,
+      body: json.encode(body),
+    );
+    if (response.statusCode >= 400) {
+      Map<String, dynamic>? decoded;
+      try {
+        decoded = json.decode(response.body) as Map<String, dynamic>?;
+      } catch (_) {}
+      final code = decoded?['code']?.toString() ?? 'household_member_patch';
+      throw PeopleApiException(
+        code: code,
+        statusCode: response.statusCode,
+        message: decoded?['error']?.toString(),
+      );
     }
   }
 }
@@ -311,4 +361,17 @@ class HouseholdsRepositoryImpl implements HouseholdsRepository {
 
   @override
   Future<void> declineHouseholdInvite(String code) => _api.declineInvite(code);
+
+  @override
+  Future<void> patchHouseholdMember({
+    required String householdId,
+    required String memberUserId,
+    String? accessTier,
+    bool? isOrganiser,
+  }) => _api.patchMember(
+    householdId: householdId,
+    memberUserId: memberUserId,
+    accessTier: accessTier,
+    isOrganiser: isOrganiser,
+  );
 }
