@@ -934,6 +934,86 @@
         }
       }
     },
+    "/households/{householdId}/members/{userId}": {
+      "patch": {
+        "operationId": "patchHouseholdMember",
+        "parameters": [
+          {
+            "name": "householdId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "access_tier": {
+                    "type": "string",
+                    "enum": ["full_access", "can_log_care"]
+                  },
+                  "is_organiser": { "type": "boolean" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated household member",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HouseholdMember" }
+              }
+            }
+          },
+          "403": {
+            "description": "Caller is not an organiser",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+              }
+            }
+          },
+          "404": {
+            "description": "Member not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+              }
+            }
+          },
+          "409": {
+            "description": "Last organiser cannot be demoted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/HouseholdApiError" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "code": { "type": "string", "enum": ["last_organiser"] }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/households/{householdId}/members/{userId}/removal-preview": {
       "get": {
         "operationId": "getHouseholdMemberRemovalPreview",
@@ -2134,6 +2214,26 @@
           "code": {
             "type": "string",
             "enum": ["successor_required", "validation_failed"]
+          }
+        }
+      },
+      "HouseholdMember": {
+        "type": "object",
+        "required": ["user_id", "access_tier", "is_organiser", "joined_at", "user"],
+        "properties": {
+          "user_id": { "type": "string", "format": "uuid" },
+          "access_tier": { "type": "string", "enum": ["full_access", "can_log_care"] },
+          "is_organiser": { "type": "boolean" },
+          "joined_at": { "type": "string", "format": "date-time" },
+          "user": {
+            "type": "object",
+            "required": ["first_name", "last_name", "email", "photo_url"],
+            "properties": {
+              "first_name": { "type": "string" },
+              "last_name": { "type": "string" },
+              "email": { "type": "string" },
+              "photo_url": { "type": "string" }
+            }
           }
         }
       },

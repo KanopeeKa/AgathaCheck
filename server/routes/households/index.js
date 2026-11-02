@@ -13,6 +13,7 @@ import {
   setHouseholdPets,
 } from '../../lib/households/householdService.js';
 import { registerHouseholdInviteRoutes } from './inviteRoutes.js';
+import { registerHouseholdMemberRoutes } from './memberRoutes.js';
 import { registerHouseholdPetRoutes } from './petRoutes.js';
 
 export default function householdsRoutes(pool) {
@@ -21,6 +22,7 @@ export default function householdsRoutes(pool) {
 
   registerHouseholdInviteRoutes(router, pool);
   registerHouseholdPetRoutes(router, pool);
+  registerHouseholdMemberRoutes(router, pool);
 
   router.post('/', async (req, res) => {
     const userId = extractUserId(req);
