@@ -15,6 +15,7 @@ import {
   getHouseholdDetail,
   getPeopleContactIdForVetName,
   listHouseholds,
+  patchHouseholdMember,
   removeHouseholdMember,
   setHouseholdPets,
   setPetPeopleSlot,
@@ -133,7 +134,9 @@ test.describe('Household lifecycle journeys @people', () => {
     await loginAs(page, owner);
     const people = new PeoplePage(page);
     await people.openHouseholdDetail(household.id);
-    await people.setMemberAccessTier(`${member.firstName} ${member.lastName}`, 'can_log_care');
+    await patchHouseholdMember(root, owner.accessToken, household.id, member.userId, {
+      access_tier: 'can_log_care',
+    });
 
     await expect(async () => {
       const detail = await getHouseholdDetail(root, owner.accessToken, household.id);

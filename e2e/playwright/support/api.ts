@@ -3480,12 +3480,7 @@ export async function createHousehold(
     const body = await res.text();
     throw new Error(`createHousehold failed (${res.status}): ${body}`);
   }
-  const household = await res.json<TestHousehold>();
-  // POST body uses pet_ids; createHousehold service reads petIds — attach via PUT when needed.
-  if (petIds.length > 0) {
-    await setHouseholdPets(baseURL, token, household.id, petIds);
-  }
-  return household;
+  return res.json<TestHousehold>();
 }
 
 export async function createHouseholdInvite(
