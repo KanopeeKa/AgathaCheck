@@ -166,9 +166,7 @@ class HouseholdsApi {
         .map(mapAccessRow)
         .toList();
     final petsLeavingRaw = decoded['pets_leaving'] as List? ?? [];
-    final petsLeaving = petsLeavingRaw.whereType<Map<String, dynamic>>().map((
-      row,
-    ) {
+    final petsLeaving = petsLeavingRaw.whereType<Map<String, dynamic>>().map((row) {
       return HouseholdPetLeaving(
         petId: row['pet_id']?.toString() ?? '',
         petName: row['pet_name']?.toString() ?? '',
@@ -250,7 +248,7 @@ class HouseholdsApi {
     }
   }
 
-  Future<HouseholdMember> patchMember({
+  Future<void> patchMember({
     required String householdId,
     required String memberUserId,
     String? accessTier,
@@ -275,21 +273,6 @@ class HouseholdsApi {
         statusCode: response.statusCode,
         message: decoded?['error']?.toString(),
       );
-    }
-    final decoded = json.decode(response.body) as Map<String, dynamic>;
-    return HouseholdDto.memberFromApiRow(decoded);
-  }
-
-  Future<void> removeOwnerPetFromHousehold({
-    required String householdId,
-    required String petId,
-  }) async {
-    final response = await client.delete(
-      Uri.parse('$baseUrl/api/households/$householdId/pets/$petId'),
-      headers: _headers,
-    );
-    if (response.statusCode >= 400) {
-      throw Exception('Remove pet from household ${response.statusCode}');
     }
   }
 }
@@ -378,7 +361,7 @@ class HouseholdsRepositoryImpl implements HouseholdsRepository {
   Future<void> declineHouseholdInvite(String code) => _api.declineInvite(code);
 
   @override
-  Future<HouseholdMember> patchHouseholdMember({
+  Future<void> patchHouseholdMember({
     required String householdId,
     required String memberUserId,
     String? accessTier,
@@ -389,11 +372,4 @@ class HouseholdsRepositoryImpl implements HouseholdsRepository {
     accessTier: accessTier,
     isOrganiser: isOrganiser,
   );
-
-  @override
-  Future<void> removeOwnerPetFromHousehold({
-    required String householdId,
-    required String petId,
-  }) =>
-      _api.removeOwnerPetFromHousehold(householdId: householdId, petId: petId);
 }

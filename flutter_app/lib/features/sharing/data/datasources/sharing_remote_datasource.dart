@@ -345,21 +345,6 @@ class SharingRemoteDataSource {
       throw Exception(data['error'] ?? 'Failed to cancel invitation');
     }
   }
-
-  Future<void> removeOwnerPetFromHousehold({
-    required String householdId,
-    required String petId,
-    required String token,
-  }) async {
-    final response = await _client.delete(
-      Uri.parse('$baseUrl/api/households/$householdId/pets/$petId'),
-      headers: {'Authorization': 'Bearer $token'},
-    );
-    if (response.statusCode >= 400) {
-      final data = json.decode(response.body);
-      throw Exception(data['error'] ?? 'Failed to remove pet from household');
-    }
-  }
 }
 
 class SharePreviewExpiredException implements Exception {}

@@ -3134,7 +3134,7 @@
   "peopleAddAppAccessHousehold": "Inviter dans un foyer",
   "peopleAddHouseholdName": "Nom du foyer",
   "peopleHouseholdPetReviewTitle": "Animaux du foyer",
-  "peopleHouseholdPetReviewBody": "Ces animaux seront partagés avec les membres du foyer. Vous pourrez modifier plus tard.",
+  "peopleHouseholdPetReviewBody": "Choisissez les animaux qui appartiennent à ce foyer. Vous pourrez modifier plus tard.",
   "peopleHouseholdMembersTitle": "Membres",
   "peopleHouseholdPetsTitle": "Animaux",
   "peopleHouseholdPetOwnerYou": "Cet animal est à vous",
@@ -3165,48 +3165,6 @@
   },
   "peopleHouseholdInviteAccept": "Accepter l'invitation",
   "peopleHouseholdInviteDecline": "Refuser",
-  "peopleHouseholdSharePetsAfterInviteTitle": "Partager certains de vos animaux avec {householdName} ?",
-  "@peopleHouseholdSharePetsAfterInviteTitle": {
-    "placeholders": { "householdName": { "type": "String" } }
-  },
-  "peopleHouseholdSharePetsAfterInviteBody": "Rien n'est partagé tant que vous n'avez pas choisi d'animaux ici.",
-  "peopleHouseholdSharePetsSkip": "Pas maintenant",
-  "peopleHouseholdEditMemberAction": "Modifier l'accès",
-  "peopleHouseholdLastOrganiserError": "Il doit rester au moins un organisateur dans le foyer.",
-  "peopleMemberRemovalPetsLeaving": "Animaux qui quittent le foyer :",
-  "peopleMemberRemovalRevokeIfAllAccess": "Également retiré si vous choisissez « Retirer tout accès à mes animaux » :",
-  "peopleMemberRemovalRemainingDirectShare": "{petName} · {role} (partage direct)",
-  "@peopleMemberRemovalRemainingDirectShare": {
-    "placeholders": {
-      "petName": { "type": "String" },
-      "role": { "type": "String" }
-    }
-  },
-  "peopleMemberRemovalRemainingAbsence": "{petName} · accès pendant une absence",
-  "@peopleMemberRemovalRemainingAbsence": {
-    "placeholders": { "petName": { "type": "String" } }
-  },
-  "peopleMemberRemovalRemainingAbsenceUntil": "{petName} · accès jusqu'au {until}",
-  "@peopleMemberRemovalRemainingAbsenceUntil": {
-    "placeholders": {
-      "petName": { "type": "String" },
-      "until": { "type": "String" }
-    }
-  },
-  "whoHasAccessPetInHousehold": "Cet animal fait partie de ce foyer",
-  "peopleHouseholdRemovePetTitle": "Retirer {petName} de « {householdName} » ?",
-  "@peopleHouseholdRemovePetTitle": {
-    "placeholders": {
-      "petName": { "type": "String" },
-      "householdName": { "type": "String" }
-    }
-  },
-  "peopleHouseholdRemovePetAction": "Retirer {petName}",
-  "@peopleHouseholdRemovePetAction": {
-    "placeholders": {
-      "petName": { "type": "String" }
-    }
-  },
   "peopleAddPetsEmpty": "Aucun animal à lier pour l'instant.",
   "peopleAddPetLinkKind": "Rôle pour cet animal",
   "peopleAddEmergencyContact": "Contact d'urgence pour cet animal",

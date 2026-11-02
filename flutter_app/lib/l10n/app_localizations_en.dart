@@ -8352,7 +8352,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get peopleHouseholdPetReviewBody =>
-      'These pets will be shared with household members. You can change this later.';
+      'Choose which of your pets belong in this household. You can change this later.';
 
   @override
   String get peopleHouseholdMembersTitle => 'Members';
@@ -8422,63 +8422,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get peopleHouseholdInviteDecline => 'Decline';
-
-  @override
-  String peopleHouseholdSharePetsAfterInviteTitle(String householdName) {
-    return 'Share any of your pets with $householdName?';
-  }
-
-  @override
-  String get peopleHouseholdSharePetsAfterInviteBody =>
-      'Nothing is shared until you choose pets here.';
-
-  @override
-  String get peopleHouseholdSharePetsSkip => 'Not now';
-
-  @override
-  String get peopleHouseholdEditMemberAction => 'Change access';
-
-  @override
-  String get peopleHouseholdLastOrganiserError =>
-      'At least one organiser must stay in the household.';
-
-  @override
-  String get peopleMemberRemovalPetsLeaving => 'Pets leaving the household:';
-
-  @override
-  String get peopleMemberRemovalRevokeIfAllAccess =>
-      'Also removed if you choose “Remove all access to my pets”:';
-
-  @override
-  String peopleMemberRemovalRemainingDirectShare(String petName, String role) {
-    return '$petName · $role (direct share)';
-  }
-
-  @override
-  String peopleMemberRemovalRemainingAbsence(String petName) {
-    return '$petName · access during an absence';
-  }
-
-  @override
-  String peopleMemberRemovalRemainingAbsenceUntil(
-    String petName,
-    String until,
-  ) {
-    return '$petName · access until $until';
-  }
-
-  @override
-  String get whoHasAccessPetInHousehold => 'This pet is in this household';
-
-  @override
-  String peopleHouseholdRemovePetTitle(String petName, String householdName) {
-    return 'Remove $petName from \"$householdName\"?';
-  }
-
-  @override
-  String peopleHouseholdRemovePetAction(String petName) {
-    return 'Remove $petName';
-  }
 
   @override
   String get peopleAddPetsEmpty => 'No pets to link yet.';
