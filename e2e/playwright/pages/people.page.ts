@@ -610,6 +610,45 @@ export class PeoplePage {
     await refreshFlutterAccessibility(this.page);
   }
 
+  async openHouseholdDetail(householdId: string): Promise<void> {
+    await this.page.goto(flutterGotoUrl(`/pc/people/households/${householdId}`));
+    await waitForFlutterRoutePattern(this.page, /\/pc\/people\/households\/[^/?]+/, 30_000);
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async leaveHouseholdFromDetail(): Promise<void> {
+    await this.page.getByRole('button', { name: /^Leave household$/i }).click();
+    await expect(
+      this.page.getByRole('button', { name: /^Leave household$/i }).last(),
+    ).toBeVisible({ timeout: 15_000 });
+    await this.page.getByRole('button', { name: /^Leave household$/i }).last().click();
+    await waitForFlutterRoutePattern(this.page, /\/pc\/people\/households(?:\?|$)/, 45_000);
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async setMemberAccessTier(
+    memberDisplayName: string,
+    tier: 'full_access' | 'can_log_care',
+  ): Promise<void> {
+    const namePattern = new RegExp(escapeRegExp(memberDisplayName), 'i');
+    await this.page.getByText(namePattern).first().click();
+    const tierLabel = tier === 'can_log_care' ? /^Can log care$/i : /^Full access$/i;
+    await this.page.getByRole('radio', { name: tierLabel }).click();
+    await this.page.getByRole('button', { name: /^Save$/i }).click();
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async setHouseholdPetShared(petName: string, shared: boolean): Promise<void> {
+    const checkbox = this.page.getByRole('checkbox', {
+      name: new RegExp(escapeRegExp(petName), 'i'),
+    });
+    const checked = await checkbox.isChecked();
+    if (checked !== shared) {
+      await checkbox.click();
+    }
+    await refreshFlutterAccessibility(this.page);
+  }
+
   // ── Add / edit form (from retired vet-form.page.ts) ─────────────────────
 
   async expectFormLoaded(): Promise<void> {

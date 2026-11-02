@@ -279,6 +279,10 @@
     "Edit a contact's roles and name; its kind is unchanged": "P1",
     "Removing a contact in use lists where it's used; mark it inactive; it shows as Inactive": "P1",
     "Create a household, invite a member by email (accepted via API helper), then remove them with the remaining-access preview": "P1",
+    "A household member leaves and their own pet is no longer listed in the household": "P1",
+    "The last member leaves, the household closes, and the pet keeps its vet and care provider": "P1",
+    "An organiser changes a member from Full access to Can log care": "P1",
+    "The record owner removes their pet from the household on the household detail page": "P1",
     "Today desk Vet team and Trusted carers cards open person detail": "P1"
   },
   "veterinarian_management.feature": {

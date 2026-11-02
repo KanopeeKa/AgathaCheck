@@ -55,6 +55,31 @@ Feature: People directory
     And the invitee accepts via the API helper
     Then I can remove the member and see the remaining-access preview
 
+  @P1
+  Scenario: A household member leaves and their own pet is no longer listed in the household
+    Given a household has two members and the leaver shared their pet into it
+    When the leaver leaves the household from the detail page
+    Then the household no longer lists the leaver's pet
+
+  @P1
+  Scenario: The last member leaves, the household closes, and the pet keeps its vet and care provider
+    Given I am the only member of a household with a pet that has a primary vet and a care provider
+    When I leave the household from the detail page
+    Then the household is gone from my list
+    And the pet still has the same primary vet and care provider
+
+  @P1
+  Scenario: An organiser changes a member from Full access to Can log care
+    Given I am an organiser with another full-access member in my household
+    When I change that member to Can log care on the household detail page
+    Then the member's tier is Can log care
+
+  @P1
+  Scenario: The record owner removes their pet from the household on the household detail page
+    Given I own a pet shared into my household
+    When I unshare the pet on the household detail page
+    Then the household no longer lists that pet
+
   @smoke-ci
   @P1
   Scenario: Today desk Vet team and Trusted carers cards open person detail

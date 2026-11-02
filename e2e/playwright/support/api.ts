@@ -3322,11 +3322,23 @@ export interface HouseholdInviteResult {
   expires_at?: string;
 }
 
+export interface HouseholdDetailResponse {
+  id: string;
+  name: string;
+  pets?: { pet_id: string; name?: string }[];
+  members: {
+    user_id: string;
+    display_name?: string;
+    access_tier?: string;
+    is_organiser?: boolean;
+  }[];
+}
+
 export async function getHouseholdDetail(
   baseURL: string,
   token: string,
   householdId: string,
-): Promise<{ members: { display_name?: string; user_id: string }[] }> {
+): Promise<HouseholdDetailResponse> {
   const res = await apiFetch(apiUrl(`/households/${householdId}`, baseURL), {
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -3334,7 +3346,116 @@ export async function getHouseholdDetail(
     const body = await res.text();
     throw new Error(`getHouseholdDetail failed (${res.status}): ${body}`);
   }
+  return res.json<HouseholdDetailResponse>();
+}
+
+export async function listHouseholds(
+  baseURL: string,
+  token: string,
+): Promise<{ households: { id: string; name: string }[] }> {
+  const res = await apiFetch(apiUrl('/households', baseURL), {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`listHouseholds failed (${res.status}): ${body}`);
+  }
   return res.json();
+}
+
+export async function setHouseholdPets(
+  baseURL: string,
+  token: string,
+  householdId: string,
+  petIds: string[],
+): Promise<void> {
+  const res = await apiFetch(apiUrl(`/households/${householdId}/pets`, baseURL), {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ pet_ids: petIds }),
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`setHouseholdPets failed (${res.status}): ${body}`);
+  }
+}
+
+export async function patchHouseholdMember(
+  baseURL: string,
+  token: string,
+  householdId: string,
+  memberUserId: string,
+  body: { access_tier?: string; is_organiser?: boolean },
+): Promise<void> {
+  const res = await apiFetch(
+    apiUrl(`/households/${householdId}/members/${memberUserId}`, baseURL),
+    {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(body),
+    },
+  );
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`patchHouseholdMember failed (${res.status}): ${text}`);
+  }
+}
+
+export async function removeHouseholdMember(
+  baseURL: string,
+  token: string,
+  householdId: string,
+  memberUserId: string,
+  options: {
+    removeAllAccessToMyPets?: boolean;
+    successorUserId?: string;
+  } = {},
+): Promise<void> {
+  const res = await apiFetch(
+    apiUrl(`/households/${householdId}/members/${memberUserId}`, baseURL),
+    {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        remove_all_access_to_my_pets: options.removeAllAccessToMyPets === true,
+        ...(options.successorUserId
+          ? { successor_user_id: options.successorUserId }
+          : {}),
+      }),
+    },
+  );
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`removeHouseholdMember failed (${res.status}): ${text}`);
+  }
+}
+
+export async function removeOwnerPetFromHousehold(
+  baseURL: string,
+  token: string,
+  householdId: string,
+  petId: string,
+): Promise<void> {
+  const res = await apiFetch(
+    apiUrl(`/households/${householdId}/pets/${petId}`, baseURL),
+    {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${token}` },
+    },
+  );
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`removeOwnerPetFromHousehold failed (${res.status}): ${text}`);
+  }
 }
 
 export async function createHousehold(
