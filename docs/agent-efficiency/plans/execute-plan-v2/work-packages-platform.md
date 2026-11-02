@@ -360,8 +360,8 @@ correctness never depends on those events. One global concurrency group is accep
 (Fable's disagreement); the driver never waits inside a job (no watchers).
 
 **Tests:** approve `valid → branch + status + labels + driver dispatched`, `not owner → ignored`,
-`invalid hash → rejected comment`, `init branch with extra files → rejected`, `resume → driver pass`,
-`revoke → label + driver pass`, `kill switch off → no-op`, `dry-run → no writes`; driver
+`invalid hash → rejected comment`, `init branch with extra files → rejected`, `resume → driver dispatched`,
+`revoke → label + driver dispatched`, `kill switch off → no-op`, `dry-run → no writes, no dispatch`; driver
 `plansForEvent per event type`, `fork PR ignored`, `arm-auto-merge clean status falls back to merge`,
 `enforce-stop disables auto-merge and publishes plan-stopped`, `launch records lease and launches`,
 `lease alive → no launch`, `dispatch-preuat recorded once per head`.
