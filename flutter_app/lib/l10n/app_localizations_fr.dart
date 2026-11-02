@@ -8604,17 +8604,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String peopleHouseholdRemovePetBody(String petName, String householdName) {
-    return 'Les autres membres du foyer perdront l\'accès à $petName. Vous pourrez le rajouter plus tard.';
-  }
-
-  @override
-  String peopleHouseholdRemovePetConfirm(String petName, String householdName) {
-    return 'Retirer $petName de « $householdName »';
-  }
-
-  @override
-  String peopleHouseholdRemovePetAction(String petName, String householdName) {
+  String peopleHouseholdRemovePetAction(String petName) {
     return 'Retirer $petName';
   }
 

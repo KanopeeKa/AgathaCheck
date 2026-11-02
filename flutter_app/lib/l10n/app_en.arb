@@ -3417,25 +3417,10 @@
       "householdName": { "type": "String" }
     }
   },
-  "peopleHouseholdRemovePetBody": "Other household members will lose access to {petName}. You can add the pet again later.",
-  "@peopleHouseholdRemovePetBody": {
-    "placeholders": {
-      "petName": { "type": "String" },
-      "householdName": { "type": "String" }
-    }
-  },
-  "peopleHouseholdRemovePetConfirm": "Remove {petName} from \"{householdName}\"",
-  "@peopleHouseholdRemovePetConfirm": {
-    "placeholders": {
-      "petName": { "type": "String" },
-      "householdName": { "type": "String" }
-    }
-  },
   "peopleHouseholdRemovePetAction": "Remove {petName}",
   "@peopleHouseholdRemovePetAction": {
     "placeholders": {
-      "petName": { "type": "String" },
-      "householdName": { "type": "String" }
+      "petName": { "type": "String" }
     }
   },
   "peopleAddPetsEmpty": "No pets to link yet.",

@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../auth/auth.dart';
 import '../../domain/entities/household_pet_access.dart';
+import '../providers/sharing_providers.dart';
+import 'owner_sharing_content.dart';
 
 /// When set, shows a control to remove the record owner's pet from a household.
 class RemovePetFromHouseholdOffer {
@@ -20,7 +24,7 @@ class RemovePetFromHouseholdOffer {
   final Future<void> Function() onConfirmRemove;
 }
 
-class WhoHasAccessSection extends StatelessWidget {
+class WhoHasAccessSection extends ConsumerWidget {
   const WhoHasAccessSection({
     super.key,
     required this.householdAccess,
@@ -31,14 +35,39 @@ class WhoHasAccessSection extends StatelessWidget {
   final RemovePetFromHouseholdOffer? removePetFromHousehold;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     if (householdAccess.isEmpty) return const SizedBox.shrink();
 
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final householdId = householdAccess.first.householdId;
     final householdName = householdAccess.first.householdName;
-    final removeOffer = removePetFromHousehold;
+    var removeOffer = removePetFromHousehold;
+    if (removeOffer == null) {
+      final owner = context.findAncestorWidgetOfExactType<OwnerSharingContent>();
+      if (owner != null &&
+          !owner.pet.isShared &&
+          householdAccess.isNotEmpty) {
+        final row = householdAccess.first;
+        removeOffer = RemovePetFromHouseholdOffer(
+          petId: owner.petId,
+          petName: owner.pet.name,
+          householdId: row.householdId,
+          householdName: row.householdName,
+          onConfirmRemove: () async {
+            final token =
+                await ref.read(authProvider.notifier).getValidAccessToken();
+            if (token == null) return;
+            await ref.read(sharingRepositoryProvider).removeOwnerPetFromHousehold(
+                  householdId: row.householdId,
+                  petId: owner.petId,
+                  token: token,
+                );
+            ref.invalidate(petAccessOverviewProvider(owner.petId));
+          },
+        );
+      }
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -62,13 +91,8 @@ class WhoHasAccessSection extends StatelessWidget {
                   OutlinedButton(
                     key: Key('remove_pet_from_household_${removeOffer.petId}'),
                     onPressed: () =>
-                        _confirmRemoveFromHousehold(context, l, removeOffer),
-                    child: Text(
-                      l.peopleHouseholdRemovePetAction(
-                        removeOffer.petName,
-                        householdName,
-                      ),
-                    ),
+                        _confirmRemoveFromHousehold(context, l, removeOffer!),
+                    child: Text(l.peopleHouseholdRemovePetAction(removeOffer.petName)),
                   ),
                 ],
               ),
@@ -103,9 +127,6 @@ class WhoHasAccessSection extends StatelessWidget {
         title: Text(
           l.peopleHouseholdRemovePetTitle(offer.petName, offer.householdName),
         ),
-        content: Text(
-          l.peopleHouseholdRemovePetBody(offer.petName, offer.householdName),
-        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
@@ -113,12 +134,7 @@ class WhoHasAccessSection extends StatelessWidget {
           ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text(
-              l.peopleHouseholdRemovePetConfirm(
-                offer.petName,
-                offer.householdName,
-              ),
-            ),
+            child: Text(l.removeAccess),
           ),
         ],
       ),
