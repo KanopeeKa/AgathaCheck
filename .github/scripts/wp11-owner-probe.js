@@ -2,11 +2,15 @@
 'use strict';
 
 /**
- * WP11 owner probe: launch a read-only Cloud agent with workerLaunchEnvVars and print its env report.
- * Requires CURSOR_API_KEY (Actions automation secret). Never logs token values.
+ * WP11 owner probe: launch a read-only Cloud agent with workerLaunchEnvVars and classify its env report.
+ * Requires CURSOR_API_KEY (Actions automation secret). Never logs token values or raw agent text.
  */
 
-const { launchPlanAgent, getAgentRunStatus, CURSOR_API_BASE, workerLaunchEnvVars } = require('./execute-plan-launch');
+const {
+  getAgentRunStatus,
+  CURSOR_API_BASE,
+  workerLaunchEnvVars,
+} = require('./execute-plan-launch');
 
 const REPO_URL = 'https://github.com/KanopeeKa/AgathaCheck';
 const POLL_MS = 15_000;
@@ -18,6 +22,45 @@ const PROMPT = [
   'for v in OWNER_GH_TOKEN BOT_GH_TOKEN GH_TOKEN EXECUTE_PLAN_TOKEN; do if [ -n "${!v}" ]; then echo "$v present"; else echo "$v absent"; fi; done; echo "injected: $CLOUD_AGENT_INJECTED_SECRET_NAMES"',
 ].join('\n');
 
+/** Plan-worker launcher with workOnCurrentBranch disabled for this one-off probe. */
+async function launchProbeAgent(params) {
+  const fetchFn = globalThis.fetch;
+  const body = {
+    prompt: { text: params.prompt },
+    repos: [{ url: params.repoUrl, startingRef: params.startingRef }],
+    autoCreatePR: false,
+    workOnCurrentBranch: false,
+    model: { id: params.model },
+    envVars: params.envVars,
+  };
+  const response = await fetchFn(`${CURSOR_API_BASE}/v1/agents`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${params.apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+    signal: AbortSignal.timeout(30_000),
+  });
+  const text = await response.text();
+  let payload;
+  try {
+    payload = text ? JSON.parse(text) : {};
+  } catch {
+    payload = { raw: text };
+  }
+  if (!response.ok) {
+    throw new Error(`Cursor API POST /v1/agents failed (${response.status})`);
+  }
+  const agentId = payload.agent?.id;
+  const runId = payload.run?.id;
+  const agentUrl = payload.agent?.url ?? null;
+  if (!agentId || !runId) {
+    throw new Error('Cursor API response missing agent/run id');
+  }
+  return { agentId, runId, agentUrl };
+}
+
 async function fetchRun(apiKey, agentId, runId) {
   const response = await fetch(`${CURSOR_API_BASE}/v1/agents/${agentId}/runs/${runId}`, {
     headers: { Authorization: `Bearer ${apiKey}` },
@@ -25,7 +68,7 @@ async function fetchRun(apiKey, agentId, runId) {
   });
   const text = await response.text();
   if (!response.ok) {
-    throw new Error(`Cursor run GET failed (${response.status}): ${text.slice(0, 500)}`);
+    throw new Error(`Cursor run GET failed (${response.status})`);
   }
   return text ? JSON.parse(text) : {};
 }
@@ -46,7 +89,7 @@ function classifyProbeOutput(text) {
     map.GH_TOKEN === 'present' &&
     map.EXECUTE_PLAN_TOKEN === 'present';
   const failOwner = map.OWNER_GH_TOKEN === 'present';
-  return { map, pass, failOwner, lines };
+  return { map, pass, failOwner };
 }
 
 async function main() {
@@ -56,7 +99,7 @@ async function main() {
     process.exit(1);
   }
 
-  const launched = await launchPlanAgent({
+  const launched = await launchProbeAgent({
     apiKey,
     repoUrl: REPO_URL,
     startingRef: 'main',
@@ -71,7 +114,7 @@ async function main() {
 
   const deadline = Date.now() + TIMEOUT_MS;
   let lastStatus = 'UNKNOWN';
-  while Date.now() < deadline) {
+  while (Date.now() < deadline) {
     lastStatus = await getAgentRunStatus({
       apiKey,
       agentId: launched.agentId,
@@ -91,9 +134,6 @@ async function main() {
 
   const run = await fetchRun(apiKey, launched.agentId, launched.runId);
   const reply = run.result?.text || run.text || '';
-  console.log('--- probe reply ---');
-  console.log(reply.trim() || '(empty reply)');
-
   const { pass, failOwner, map } = classifyProbeOutput(reply);
   console.log('--- classification ---');
   console.log(JSON.stringify({ ...map, pass, failOwner }, null, 2));
