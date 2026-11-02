@@ -753,6 +753,14 @@
                 "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
               }
             }
+          },
+          "410": {
+            "description": "Invite no longer valid (expired, revoked, or concurrent accept)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+              }
+            }
           }
         }
       }
@@ -803,6 +811,203 @@
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/households/{householdId}/pets": {
+      "put": {
+        "operationId": "setHouseholdPets",
+        "parameters": [
+          {
+            "name": "householdId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["pet_ids"],
+                "properties": {
+                  "pet_ids": {
+                    "type": "array",
+                    "items": { "type": "string", "format": "uuid" }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Household pet list after update",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["pets"],
+                  "properties": {
+                    "pets": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/HouseholdPetSummary" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+              }
+            }
+          },
+          "409": {
+            "description": "Pet already in another household",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/households/{householdId}/pets/{petId}": {
+      "delete": {
+        "operationId": "removeOwnerPetFromHousehold",
+        "parameters": [
+          {
+            "name": "householdId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          },
+          {
+            "name": "petId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Pet removed from household",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["message", "pet_id"],
+                  "properties": {
+                    "message": { "type": "string" },
+                    "pet_id": { "type": "string", "format": "uuid" }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not the record owner",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+              }
+            }
+          },
+          "404": {
+            "description": "Pet or household not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/households/{householdId}/members/{userId}": {
+      "patch": {
+        "operationId": "patchHouseholdMember",
+        "parameters": [
+          {
+            "name": "householdId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "access_tier": {
+                    "type": "string",
+                    "enum": ["full_access", "can_log_care"]
+                  },
+                  "is_organiser": { "type": "boolean" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated household member",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HouseholdMember" }
+              }
+            }
+          },
+          "403": {
+            "description": "Caller is not an organiser",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+              }
+            }
+          },
+          "404": {
+            "description": "Member not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+              }
+            }
+          },
+          "409": {
+            "description": "Last organiser cannot be demoted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/HouseholdApiError" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "code": { "type": "string", "enum": ["last_organiser"] }
+                      }
+                    }
+                  ]
+                }
               }
             }
           }
@@ -1991,6 +2196,15 @@
           }
         ]
       },
+      "HouseholdPetSummary": {
+        "type": "object",
+        "required": ["pet_id", "name", "owner_user_id"],
+        "properties": {
+          "pet_id": { "type": "string", "format": "uuid" },
+          "name": { "type": "string" },
+          "owner_user_id": { "type": "string", "format": "uuid" }
+        }
+      },
       "HouseholdApiError": {
         "type": "object",
         "required": ["error"],
@@ -2003,20 +2217,50 @@
           }
         }
       },
+      "HouseholdMember": {
+        "type": "object",
+        "required": ["user_id", "access_tier", "is_organiser", "joined_at", "user"],
+        "properties": {
+          "user_id": { "type": "string", "format": "uuid" },
+          "access_tier": { "type": "string", "enum": ["full_access", "can_log_care"] },
+          "is_organiser": { "type": "boolean" },
+          "joined_at": { "type": "string", "format": "date-time" },
+          "user": {
+            "type": "object",
+            "required": ["first_name", "last_name", "email", "photo_url"],
+            "properties": {
+              "first_name": { "type": "string" },
+              "last_name": { "type": "string" },
+              "email": { "type": "string" },
+              "photo_url": { "type": "string" }
+            }
+          }
+        }
+      },
       "HouseholdMemberRemovalPreview": {
         "type": "object",
         "required": [
           "target_user_id",
           "household_id",
           "loses_household_access",
+          "pets_leaving",
           "remaining_access",
+          "access_to_revoke_if_remove_all",
           "requires_successor"
         ],
         "properties": {
           "target_user_id": { "type": "string", "format": "uuid" },
           "household_id": { "type": "string", "format": "uuid" },
           "loses_household_access": { "type": "boolean" },
+          "pets_leaving": {
+            "type": "array",
+            "items": { "type": "object", "additionalProperties": true }
+          },
           "remaining_access": {
+            "type": "array",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "access_to_revoke_if_remove_all": {
             "type": "array",
             "items": { "type": "object", "additionalProperties": true }
           },

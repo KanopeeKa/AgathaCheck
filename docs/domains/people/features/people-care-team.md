@@ -5,7 +5,7 @@ audience: both
 domain: people
 feature_id: people_care_team
 status: implemented
-related_prs: []
+last_updated: 2026-11-02
 related_bdd: [away_planning.feature, away_plan_detail_v2.feature, sharing.feature, veterinarian_management.feature, notifications.feature]
 ---
 
@@ -77,6 +77,18 @@ There are 28 decisions. D1, D4, D7 and D10 were revised after an external review
 | D26 | Direct co-parent shares keep onward sharing, as today (`userCanSharePet`) | There are four access levels: Owner, Co-parent, Full access and Can log care. Shares a co-parent makes appear in the owner's Who has access view, and the owner can revoke them |
 | D27 | "Stop following" applies to direct shares only | A household member can't stop following one household pet. They can mute its notifications or leave the household |
 | D28 | Until phase 4, a contact with no linked account behaves exactly like today's `note_only` carer | The PDF handover is its only channel. A contact whose linked account already has access to the pet behaves like today's `shared_user` |
+
+## Decision log
+
+| ID | Decision | Rationale | Status | Date | PR |
+| --- | --- | --- | --- | --- | --- |
+| PEOPLE-CARE-TEAM-D-029 | **H4:** When a pet leaves a household, every reference from that pet's data to a household-directory contact is re-pointed to a copy in the target user's personal directory (relationships, care-item providers, absence carer rows, pending carer invites for absences that include the pet) | Extends D23 to all pet-scoped references; composable on a caller-supplied transaction client | Live | 2026-11-02 | household-cleanup-609f |
+| PEOPLE-CARE-TEAM-D-030 | **H5:** Closing a household re-points every remaining reference to a household-directory contact — from any pet, in the household or not — to a copy in the referencing pet owner's personal directory, then deletes the household; D22 notices only for pets still in the household when close begins | Avoids `RESTRICT` failures and silent nulling of providers or carers when the last member leaves | Live | 2026-11-02 | household-cleanup-609f |
+| PEOPLE-CARE-TEAM-D-031 | **G1–G2, H3:** Member removal runs in one transaction: successor promotion when required, the leaver's own pets leave via `removePetFromHousehold`, optional H3 revocations when an organiser removes someone else (`remove_all_access_to_my_pets` on every pet the organiser owns), `closeHousehold` when no members remain; member-left and pet-removed notices only after commit | Closes the leave-with-pets-shared bug, last-member household close failures, and pre-commit notices | Live | 2026-11-02 | household-cleanup-609f |
+| PEOPLE-CARE-TEAM-D-032 | **Write integrity:** `createHousehold`, `setHouseholdPets` and invite accept run in one transaction with notices after commit; set-pets uses `ON CONFLICT (pet_id) DO NOTHING` and returns `409` when the pet belongs to another household; invite accept uses a conditional pending + unexpired update; record owners may `DELETE …/pets/:petId` without household membership; direct `POST …/members` removed (invites only) | Closes non-transactional writes, pet moves between households, and bypass of the invite flow | Live | 2026-11-02 | household-cleanup-609f |
+| PEOPLE-CARE-TEAM-D-033 | **Member tier and organiser management:** Organisers may `PATCH …/members/:userId` with `{ access_tier?, is_organiser? }`; organisers are always stored as `full_access` (D13); demoting the last organiser returns `409 last_organiser`; self-demotion allowed only when another organiser remains | Closes the gap where tiers and organisers could not change after joining | Live | 2026-11-02 | household-cleanup-609f |
+| PEOPLE-CARE-TEAM-D-034 | **H1:** Pet transfer removes the pet from its household when the new owner is not already a member, copying household-directory contacts to the new owner; remaining members get a neutral D22 notice after commit | Stops transferred pets stranding in households the new owner cannot leave | Live | 2026-11-02 | household-cleanup-609f |
+| PEOPLE-CARE-TEAM-D-035 | **H2 / H6:** Account erasure captures household memberships before `DELETE FROM users`, then releases households in the same transaction: promote the longest-standing Full access member (else Can log care → Full access) when no organiser remains, close empty households, and notify the promoted organiser after commit; no contact copy into the deleted user's directory and no pet-removed notice for pets deleted with the user | Closes organiser-less households and unsafe erasure ordering | Live | 2026-11-02 | household-cleanup-609f |
 
 ## Where we start
 
@@ -451,12 +463,10 @@ One **roster** on `/pc/people` backed by a UI aggregate **PersonRosterEntry** (c
     - Show the owner quietly, e.g. "Buddy · Alex's dog".
     - Add emergency contacts, the primary vet and the out-of-hours vet.
 - **Keep:** Related care on Greenhill's detail page.
-- **Missing screens:**
+- **Shipped (household-cleanup-609f, 2026-11-02):** leave household; remove pet from household (record owner, household detail); remove member with remaining-access preview; organiser tier and organiser flag editing on household detail.
+- **Still missing screens:**
     - emergency contacts
     - "Invite for this absence"
-    - leave household
-    - remove pet from household
-    - remove person, listing the access that remains
     - needs-review states
 
 ## Data lifecycle and privacy
@@ -516,7 +526,7 @@ Away UI keeps **care team** / **équipe de soins**; People surfaces never use th
 
 ## Still open
 
-No product decisions are open. Engineering gaps vs target UX: [people-domain-refactor.md](../changes/people-domain-refactor.md).
+No product decisions are open. Household lifecycle, management and UI gaps from the 2026-11-02 review are closed on the integration branch (`household-cleanup-609f`, phases 1–7). Remaining engineering gaps vs the broader People refactor target: [people-domain-refactor.md](../changes/people-domain-refactor.md) §4 and §9.
 
 ## Related
 

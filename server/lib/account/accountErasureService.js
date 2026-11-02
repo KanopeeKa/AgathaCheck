@@ -11,6 +11,10 @@ import { emitAccountDeletionRequestedEmail } from './accountSecurityNotification
 import { revokeAllUserRefreshSessions } from '../refreshSessions.js';
 import { redactJobError } from '../jobs/redactJobError.js';
 import { isPostHogPersonDeleteConfigured } from '../posthogServer.js';
+import {
+  emitErasureHouseholdNotices,
+  releaseHouseholdsForDepartingUser,
+} from '../households/erasure/index.js';
 
 const ERASURE_MESSAGE =
   'Your account has been deleted. Remaining files and analytics data are being removed in the background.';
@@ -217,9 +221,44 @@ export async function findErasureOperationForUser(pool, userId) {
  * @param {import('pg').Pool} pool
  * @param {{ userId: string, userEmail: string, req?: import('express').Request }} params
  */
+async function captureHouseholdReleaseContext(client, userId) {
+  const memberships = await client.query(
+    `SELECT household_id, access_tier, is_organiser, joined_at
+     FROM household_members WHERE user_id = $1`,
+    [userId],
+  );
+  /** @type {Map<string, { householdName: string, recipientUserIds: string[] }>} */
+  const householdMeta = new Map();
+  for (const row of memberships.rows) {
+    const householdId = row.household_id;
+    if (householdMeta.has(householdId)) continue;
+    const householdRow = await client.query(
+      'SELECT name FROM households WHERE id = $1',
+      [householdId],
+    );
+    const members = await client.query(
+      `SELECT user_id FROM household_members
+       WHERE household_id = $1 AND user_id <> $2`,
+      [householdId, userId],
+    );
+    householdMeta.set(householdId, {
+      householdName: householdRow.rows[0]?.name || 'Household',
+      recipientUserIds: members.rows.map((r) => r.user_id).filter(Boolean),
+    });
+  }
+  return { memberships: memberships.rows, householdMeta };
+}
+
 export async function acceptAccountErasure(pool, { userId, userEmail, req = null }) {
   const operationId = uuidv4();
   const { token: statusToken, hash: statusTokenHash } = generateStatusToken();
+
+  /** @type {import('../households/departure/notices.js').HouseholdPetRemovedNotice[]} */
+  let erasurePetNotices = [];
+  /** @type {Array<{ householdId: string, householdName: string, promotedUserId: string }>} */
+  let erasurePromotions = [];
+  /** @type {Map<string, { householdName: string, recipientUserIds: string[] }>} */
+  let erasureHouseholdMeta = new Map();
 
   await withTransaction(pool, async (client) => {
     maybeFault('lock_user');
@@ -268,11 +307,21 @@ export async function acceptAccountErasure(pool, { userId, userEmail, req = null
     maybeFault('explicit_erasure');
     await applyExplicitErasurePii(client, userId, userEmail);
 
+    const householdContext = await captureHouseholdReleaseContext(client, userId);
+    erasureHouseholdMeta = householdContext.householdMeta;
+
     maybeFault('delete_user');
     const deleted = await client.query('DELETE FROM users WHERE id = $1', [userId]);
     if ((deleted.rowCount ?? 0) === 0) {
       throw new Error('user delete affected zero rows');
     }
+
+    maybeFault('release_households');
+    const releaseResult = await releaseHouseholdsForDepartingUser(client, {
+      memberships: householdContext.memberships,
+    });
+    erasurePetNotices = releaseResult.petNotices;
+    erasurePromotions = releaseResult.promotions;
     await client.query(
       `UPDATE account_erasure_operations
        SET db_erased_at = now(), status = 'in_progress'
@@ -292,6 +341,12 @@ export async function acceptAccountErasure(pool, { userId, userEmail, req = null
     if (!auditId) {
       throw new Error('required audit event was not written');
     }
+  });
+
+  await emitErasureHouseholdNotices(pool, {
+    petNotices: erasurePetNotices,
+    promotions: erasurePromotions,
+    householdMeta: erasureHouseholdMeta,
   });
 
   kickCleanupJobs();

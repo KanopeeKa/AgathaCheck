@@ -71,28 +71,34 @@ class _HouseholdMemberRemovalDialogState
                   ? l.peopleHouseholdLeaveBody
                   : l.peopleMemberRemovalBody,
             ),
+            if (preview.petsLeaving.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              Text(l.peopleHouseholdPetsTitle),
+              for (final pet in preview.petsLeaving) Text('• ${pet.petName}'),
+            ],
             if (preview.remainingAccess.isNotEmpty) ...[
               const SizedBox(height: 12),
               Text(l.peopleMemberRemovalRemaining),
               for (final access in preview.remainingAccess)
-                Text('• ${access.petName} (${access.source})'),
+                Text('• ${access.petName}'),
+            ],
+            if (!widget.removingSelf &&
+                preview.accessToRevokeIfRemoveAll.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              Text(l.peopleMemberRemovalAllAccess),
+              for (final access in preview.accessToRevokeIfRemoveAll)
+                Text('• ${access.petName}'),
             ],
             if (needsSuccessor) ...[
               const SizedBox(height: 16),
               Text(l.peopleHouseholdSuccessorLabel),
-              const SizedBox(height: 8),
-              DropdownMenu<String>(
-                initialSelection: _successorUserId,
-                label: Text(l.peopleHouseholdSuccessorLabel),
-                dropdownMenuEntries: [
-                  for (final member in widget.successorCandidates)
-                    DropdownMenuEntry(
-                      value: member.userId,
-                      label: member.displayName,
-                    ),
-                ],
-                onSelected: (value) => setState(() => _successorUserId = value),
-              ),
+              for (final member in widget.successorCandidates)
+                RadioListTile<String>(
+                  value: member.userId,
+                  groupValue: _successorUserId,
+                  onChanged: (v) => setState(() => _successorUserId = v),
+                  title: Text(member.displayName),
+                ),
             ],
           ],
         ),

@@ -6,7 +6,7 @@ status: proposed
 folds_into: docs/domains/people/features/people-care-team.md
 plan: people-domain-refactor-7f3b
 status_since: 2026-09-29
-last_updated: 2026-10-08
+last_updated: 2026-11-02
 ---
 
 # People domain refactor — target model, gap analysis and delivery plan
@@ -446,8 +446,8 @@ Opened from a picker, the flow is replaced by `QuickAddPersonSheet` and returns 
 | Relationships API | PUT replaces everything (drops synced primary vet) | Slot/add/remove endpoints; PUT through service; unique active slot index | s3 |
 | Read models | Client derives groups, counts, "linked pets" from `legacyVetId` | `roster`, contact detail, `related`, `pets/:id/people` from server | s4 |
 | Household directory | Schema only; hub shows empty placeholders | Household contacts visible and creatable per access policy; household notes | s5 |
-| Household membership rules | Removal not transactional; last organiser can leave with members remaining (spec: must name a successor); no remaining-access preview (D16) | Transactional removal, successor rule, removal preview endpoint | s5 |
-| Household invites | Members added by `user_id` only ("invite tokens ship in a later phase") | Email invites with code, accept and decline, revoke; roster shows them as pending | s6 |
+| Household membership rules | ~~Removal not transactional; last organiser can leave with members remaining; no remaining-access preview (D16)~~ | Transactional removal, successor rule, removal preview endpoint | s5 · **Shipped** [household-cleanup-609f](/.agents/plans/household-cleanup-609f.md) |
+| Household invites | ~~Members added by `user_id` only ("invite tokens ship in a later phase")~~ | Email invites with code, accept and decline, revoke; roster shows them as pending | s6 · **Shipped** [household-cleanup-609f](/.agents/plans/household-cleanup-609f.md) |
 | Invite ↔ contact | Add flow jumps to generic `/pc/invite`, no link | Share and household invites carry `contact_id`; acceptance links the account | s6, c6 |
 | Flutter layering | Datasource called from notifier; strings everywhere; no equality; People imports Vet widgets | Typed domain, repository, application layer, façade, architecture test | c1 |
 | Detail refetch loop | `people_providers.dart:92-96` loops until rate-limited | Single fetch per open; regression test | c1 |
@@ -461,7 +461,7 @@ Opened from a picker, the flow is replaced by `QuickAddPersonSheet` and returns 
 | Edit | Roles/kind not editable; no reactivate; raw error text | Full form, relationship editor, danger zone with usages | c5 |
 | Add | Name + 4 roles, default Sitter; no pets; silent failure; kind toggle bug | 5-step flow; picker quick add; sharing and household-invite handoff | c6 |
 | Pet profile | Vet dropdown only | People around {pet} + emergency card | i2 |
-| Households UI | `/pc/pets/households` list + create only (Sharing) | Full household management inside People | c7 |
+| Households UI | ~~`/pc/pets/households` list + create only (Sharing)~~ | Full household management inside People | c7 · **Shipped** [household-cleanup-609f](/.agents/plans/household-cleanup-609f.md) |
 | Legacy | Dead vet feature (~2.4k lines), `PetCareMyVetsSection`, `PersonRosterEntry`, client kind inference | Deleted; boundary tests strict | i3 |
 | Tests | 3 small People test files; 3 BDD scenarios | Unit + widget + architecture + BDD/Playwright journeys | every phase, c8, i4 |
 
@@ -537,6 +537,20 @@ The execute-plan contract is a roadmap, [`.agents/plans/people-domain-refactor-7
 - Dropping `vets` and `pets.vet_id` (needs a minimum-client-version gate).
 - Notification routing changes (D21, D25) and backup carers or date ranges in the UI (spec phase 5).
 - Contact photo upload (private-files work).
+
+### After household-cleanup-609f (not in that programme)
+
+Tracked as separate plans or debt — see [household-cleanup-609f §Decisions](/.agents/plans/household-cleanup-609f.md):
+
+| Follow-up | Track |
+| --- | --- |
+| Can log care / carer-share narrowed to care handover scope (D7) | Plan `household-log-care-scope` (proposed) |
+| Per-pet transfer-or-delete on `DELETE /me` | Auth route change; debt when prioritised |
+| Server-side 18+ confirmation (D14) | Needs migration |
+| Two-sided pet transfer (R13 / notifications R13) | Product + API |
+| Merging duplicate contacts | Out of v1 |
+| `absenceCarer.js` + `contactUsableForPet` household contacts | Engineering spike |
+| Record owner removes pet from **Who has access** on pet profile | UI follow-up (phase 6 deferred for bundle size) |
 
 ---
 

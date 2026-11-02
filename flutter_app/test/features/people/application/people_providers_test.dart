@@ -247,6 +247,14 @@ class FakeHouseholdsRepository implements HouseholdsRepository {
 
   @override
   Future<void> declineHouseholdInvite(String code) async {}
+
+  @override
+  Future<void> patchHouseholdMember({
+    required String householdId,
+    required String memberUserId,
+    String? accessTier,
+    bool? isOrganiser,
+  }) async {}
 }
 
 void main() {

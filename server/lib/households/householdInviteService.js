@@ -2,6 +2,7 @@ import crypto from 'crypto';
 import { v4 as uuidv4 } from 'uuid';
 
 import { findUserByEmail } from '../../db/sharing/shareInviteQueries.js';
+import { withTransaction } from '../db/withTransaction.js';
 import { emitHouseholdMemberJoined } from '../notifications/relationshipEmitters.js';
 import { buildHouseholdInvitationEmail } from '../email/templates/householdInvitation.js';
 import { resolveEmailLocale } from '../email/locale.js';
@@ -305,19 +306,44 @@ export async function acceptHouseholdInvite(pool, {
     return { error: 'User is already a member', status: 409 };
   }
 
-  await pool.query(
-    `INSERT INTO household_members (
-       household_id, user_id, access_tier, is_organiser, joined_at
-     ) VALUES ($1, $2, $3, $4, NOW())`,
-    [invite.household_id, userId, invite.access_tier, invite.is_organiser],
-  );
+  let acceptedInvite = invite;
 
-  await pool.query(
-    `UPDATE household_invites
-     SET status = $2, invitee_user_id = $3, responded_at = NOW()
-     WHERE id = $1`,
-    [invite.id, INVITE_ACCEPTED, userId],
-  );
+  try {
+    await withTransaction(pool, async (client) => {
+      const updated = await client.query(
+        `UPDATE household_invites
+         SET status = $2, invitee_user_id = $3, responded_at = NOW()
+         WHERE id = $1 AND status = $4 AND expires_at > NOW()
+         RETURNING *`,
+        [invite.id, INVITE_ACCEPTED, userId, INVITE_PENDING],
+      );
+      if (updated.rows.length === 0) {
+        const err = new Error('Invitation is no longer valid');
+        err.status = 410;
+        throw err;
+      }
+      acceptedInvite = updated.rows[0];
+
+      const memberExists = await getHouseholdMembership(client, invite.household_id, userId);
+      if (memberExists) {
+        const err = new Error('User is already a member');
+        err.status = 409;
+        throw err;
+      }
+
+      await client.query(
+        `INSERT INTO household_members (
+           household_id, user_id, access_tier, is_organiser, joined_at
+         ) VALUES ($1, $2, $3, $4, NOW())`,
+        [invite.household_id, userId, invite.access_tier, invite.is_organiser],
+      );
+    });
+  } catch (err) {
+    if (err.status) {
+      return { error: err.message, status: err.status };
+    }
+    throw err;
+  }
 
   await tryLinkInviteContact(pool, invite.contact_id, userId, {
     inviteId: invite.id,
@@ -345,8 +371,8 @@ export async function acceptHouseholdInvite(pool, {
   return {
     household_id: invite.household_id,
     status: INVITE_ACCEPTED,
-    access_tier: invite.access_tier,
-    is_organiser: invite.is_organiser === true,
+    access_tier: acceptedInvite.access_tier,
+    is_organiser: acceptedInvite.is_organiser === true,
   };
 }
 

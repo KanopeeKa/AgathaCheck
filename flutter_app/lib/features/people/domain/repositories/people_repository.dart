@@ -53,14 +53,25 @@ abstract class PeopleRepository {
   Future<String?> contactIdForLegacyVet(String vetId);
 }
 
+class HouseholdPetLeaving {
+  const HouseholdPetLeaving({required this.petId, required this.petName});
+
+  final String petId;
+  final String petName;
+}
+
 class HouseholdMemberRemovalPreview {
   const HouseholdMemberRemovalPreview({
     required this.remainingAccess,
     required this.requiresSuccessor,
+    this.petsLeaving = const [],
+    this.accessToRevokeIfRemoveAll = const [],
   });
 
   final List<HouseholdRemainingAccess> remainingAccess;
   final bool requiresSuccessor;
+  final List<HouseholdPetLeaving> petsLeaving;
+  final List<HouseholdRemainingAccess> accessToRevokeIfRemoveAll;
 }
 
 class HouseholdRemainingAccess {
@@ -129,4 +140,11 @@ abstract class HouseholdsRepository {
   Future<void> acceptHouseholdInvite(String code);
 
   Future<void> declineHouseholdInvite(String code);
+
+  Future<void> patchHouseholdMember({
+    required String householdId,
+    required String memberUserId,
+    String? accessTier,
+    bool? isOrganiser,
+  });
 }

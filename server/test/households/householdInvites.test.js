@@ -1,6 +1,7 @@
 import request from 'supertest';
 import jwt from 'jsonwebtoken';
 import { createApp } from '../../bin/server.js';
+import { createTransactionalMockPool } from '../helpers/transactionMockPool.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'default_secret';
 const organiserId = 'organiser-uuid';
@@ -50,8 +51,7 @@ describe('Household invites API', () => {
   });
 
   beforeAll(() => {
-    const mockPool = {
-      query: async (sql, params = []) => {
+    const queryHandler = async (sql, params = []) => {
         const s = sql.replace(/\s+/g, ' ');
 
         if (s.includes('FROM household_members') && s.includes('household_id = $1 AND user_id = $2')) {
@@ -132,19 +132,20 @@ describe('Household invites API', () => {
         }
         if (s.includes('UPDATE household_invites') && s.includes('responded_at')) {
           const invite = invites.get(params[0]);
-          if (invite) {
-            invite.status = params[1];
-            invite.invitee_user_id = params[2] ?? invite.invitee_user_id;
+          if (!invite) return { rows: [] };
+          if (s.includes('RETURNING') && invite.status !== 'pending') {
+            return { rows: [] };
           }
-          return { rows: [] };
+          invite.status = params[1];
+          invite.invitee_user_id = params[2] ?? invite.invitee_user_id;
+          return { rows: s.includes('RETURNING') ? [invite] : [] };
         }
         if (s.includes('INSERT INTO notifications')) {
           return { rows: [] };
         }
         return { rows: [] };
-      },
     };
-    app = createApp(mockPool);
+    app = createApp(createTransactionalMockPool(queryHandler));
   });
 
   it('creates invite for organiser', async () => {
