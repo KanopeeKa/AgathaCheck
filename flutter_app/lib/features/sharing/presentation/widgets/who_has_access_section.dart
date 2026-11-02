@@ -1,24 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../people/application/people_commands.dart';
+import '../../../pet_profile/pet_profile.dart';
 import '../../domain/entities/household_pet_access.dart';
 import '../providers/sharing_providers.dart';
 
 class WhoHasAccessSection extends ConsumerWidget {
-  const WhoHasAccessSection({
-    super.key,
-    required this.petId,
-    required this.petName,
-    required this.householdAccess,
-    this.canRemoveFromHousehold = false,
-  });
+  const WhoHasAccessSection({super.key, required this.householdAccess});
 
-  final String petId;
-  final String petName;
   final List<HouseholdPetAccess> householdAccess;
-  final bool canRemoveFromHousehold;
+
+  String? _petIdFromRoute(BuildContext context) {
+    final params = GoRouterState.of(context).pathParameters;
+    return params['petId'];
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -28,6 +26,20 @@ class WhoHasAccessSection extends ConsumerWidget {
     final theme = Theme.of(context);
     final householdId = householdAccess.first.householdId;
     final householdName = householdAccess.first.householdName;
+
+    final routePetId = _petIdFromRoute(context);
+    final pets = ref.watch(petListProvider).valueOrNull ?? const <Pet>[];
+    Pet? routePet;
+    if (routePetId != null) {
+      for (final pet in pets) {
+        if (pet.id == routePetId) {
+          routePet = pet;
+          break;
+        }
+      }
+    }
+    final canRemoveFromHousehold =
+        routePet != null && !routePet.isShared && routePetId != null;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -49,16 +61,21 @@ class WhoHasAccessSection extends ConsumerWidget {
                   ),
                   const SizedBox(height: 8),
                   OutlinedButton(
-                    key: Key('remove_pet_from_household_$petId'),
+                    key: Key('remove_pet_from_household_$routePetId'),
                     onPressed: () => _confirmRemoveFromHousehold(
                       context,
                       ref,
                       l,
+                      petId: routePetId!,
+                      petName: routePet!.name,
                       householdId: householdId,
                       householdName: householdName,
                     ),
                     child: Text(
-                      l.peopleHouseholdRemovePetAction(petName, householdName),
+                      l.peopleHouseholdRemovePetAction(
+                        routePet.name,
+                        householdName,
+                      ),
                     ),
                   ),
                 ],
@@ -87,6 +104,8 @@ class WhoHasAccessSection extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
     AppLocalizations l, {
+    required String petId,
+    required String petName,
     required String householdId,
     required String householdName,
   }) async {
@@ -102,7 +121,9 @@ class WhoHasAccessSection extends ConsumerWidget {
           ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text(l.peopleHouseholdRemovePetConfirm(petName, householdName)),
+            child: Text(
+              l.peopleHouseholdRemovePetConfirm(petName, householdName),
+            ),
           ),
         ],
       ),

@@ -74,7 +74,9 @@ class _HouseholdInviteLandingScreenState
             .fetchHouseholdDetail(preview.householdId);
         final existingPetIds = detail.pets.map((p) => p.petId).toSet();
         existingPetIds.addAll(selectedPetIds);
-        await ref.read(peopleCommandsProvider).setHouseholdPets(
+        await ref
+            .read(peopleCommandsProvider)
+            .setHouseholdPets(
               householdId: preview.householdId,
               petIds: existingPetIds.toList(),
             );
