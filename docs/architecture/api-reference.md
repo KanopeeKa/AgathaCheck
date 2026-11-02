@@ -301,13 +301,13 @@ Share links are **single-use**: once accepted, the same link cannot be used by a
 | GET | `/` | List households for caller `{ households: [...] }` |
 | GET | `/:id` | Detail with `members` and `pets` (members only) |
 | PATCH | `/:id` | Rename (organisers) |
-| POST | `/:id/members` | Add member by `user_id`; body `{ access_tier?, is_organiser? }` |
 | GET | `/:id/members/:userId/removal-preview` | Leave/remove preview (D16): `pets_leaving[]` (target's pets in the household), `remaining_access[]` per pet (`source`: `direct_share` \| `absence`), `access_to_revoke_if_remove_all[]` when an organiser removes someone else (H3), `requires_successor` when last organiser leaves with other members |
 | DELETE | `/:id/members/:userId` | Leave or remove; body optional `{ remove_all_access_to_my_pets: true, successor_user_id? }`; last organiser with other members → `409 successor_required` without successor |
-| PUT | `/:id/pets` | Body `{ pet_ids: [] }` — record owner adds/removes their pets |
+| PUT | `/:id/pets` | Body `{ pet_ids: [] }` — record owner adds/removes their pets (transactional); `409` if a pet is already in another household (never moved via upsert) |
+| DELETE | `/:id/pets/:petId` | Record owner removes their pet from the household (membership not required); D22 notices after commit |
 | POST | `/:id/invites` | Organisers only — email invite; body `{ invitee_email, access_tier?, is_organiser?, contact_id? }`; 14-day expiry; rate-limited |
 | GET | `/invites/code/:code` | Public preview for household invite landing |
-| POST | `/invites/code/:code/accept` | Authenticated accept (adds membership) |
+| POST | `/invites/code/:code/accept` | Authenticated accept (transactional); conditional update on pending + unexpired invite; `409` if already a member; `410` if invite no longer valid |
 | POST | `/invites/code/:code/decline` | Authenticated decline |
 | DELETE | `/:id/invites/:inviteId` | Revoke pending invite (organisers) |
 

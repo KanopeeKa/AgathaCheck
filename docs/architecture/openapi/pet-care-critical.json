@@ -753,6 +753,14 @@
                 "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
               }
             }
+          },
+          "410": {
+            "description": "Invite no longer valid (expired, revoked, or concurrent accept)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+              }
+            }
           }
         }
       }
@@ -800,6 +808,123 @@
           },
           "404": {
             "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/households/{householdId}/pets": {
+      "put": {
+        "operationId": "setHouseholdPets",
+        "parameters": [
+          {
+            "name": "householdId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["pet_ids"],
+                "properties": {
+                  "pet_ids": {
+                    "type": "array",
+                    "items": { "type": "string", "format": "uuid" }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Household pet list after update",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["pets"],
+                  "properties": {
+                    "pets": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/HouseholdPetSummary" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+              }
+            }
+          },
+          "409": {
+            "description": "Pet already in another household",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/households/{householdId}/pets/{petId}": {
+      "delete": {
+        "operationId": "removeOwnerPetFromHousehold",
+        "parameters": [
+          {
+            "name": "householdId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          },
+          {
+            "name": "petId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Pet removed from household",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["message", "pet_id"],
+                  "properties": {
+                    "message": { "type": "string" },
+                    "pet_id": { "type": "string", "format": "uuid" }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not the record owner",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
+              }
+            }
+          },
+          "404": {
+            "description": "Pet or household not found",
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/HouseholdApiError" }
@@ -1990,6 +2115,15 @@
             }
           }
         ]
+      },
+      "HouseholdPetSummary": {
+        "type": "object",
+        "required": ["pet_id", "name", "owner_user_id"],
+        "properties": {
+          "pet_id": { "type": "string", "format": "uuid" },
+          "name": { "type": "string" },
+          "owner_user_id": { "type": "string", "format": "uuid" }
+        }
       },
       "HouseholdApiError": {
         "type": "object",

@@ -4,7 +4,6 @@ import { createApiLimiter } from '../../config/rateLimit.js';
 import { publicError } from '../../config/security.js';
 import { extractUserId } from '../../lib/requireAuth.js';
 import {
-  addHouseholdMember,
   createHousehold,
   getHouseholdDetail,
   listHouseholdsForUser,
@@ -14,12 +13,14 @@ import {
   setHouseholdPets,
 } from '../../lib/households/householdService.js';
 import { registerHouseholdInviteRoutes } from './inviteRoutes.js';
+import { registerHouseholdPetRoutes } from './petRoutes.js';
 
 export default function householdsRoutes(pool) {
   const router = express.Router();
   router.use(createApiLimiter());
 
   registerHouseholdInviteRoutes(router, pool);
+  registerHouseholdPetRoutes(router, pool);
 
   router.post('/', async (req, res) => {
     const userId = extractUserId(req);
@@ -63,18 +64,6 @@ export default function householdsRoutes(pool) {
       const result = await patchHousehold(pool, userId, req.params.id, req.body || {});
       if (result.error) return res.status(result.status).json({ error: result.error });
       return res.json(result.household);
-    } catch (err) {
-      return res.status(500).json({ error: publicError(err) });
-    }
-  });
-
-  router.post('/:id/members', async (req, res) => {
-    const userId = extractUserId(req);
-    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    try {
-      const result = await addHouseholdMember(pool, userId, req.params.id, req.body || {});
-      if (result.error) return res.status(result.status).json({ error: result.error });
-      return res.status(201).json(result.member);
     } catch (err) {
       return res.status(500).json({ error: publicError(err) });
     }
