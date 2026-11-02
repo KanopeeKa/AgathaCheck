@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../auth/auth.dart';
 import '../../../pet_profile/pet_profile.dart';
 import '../../domain/entities/pet_access.dart';
 import '../../domain/entities/share_link.dart';
@@ -41,8 +42,36 @@ class OwnerSharingContent extends ConsumerWidget {
         overviewAsync.when(
           loading: () => const SizedBox.shrink(),
           error: (_, __) => const SizedBox.shrink(),
-          data: (overview) =>
-              WhoHasAccessSection(householdAccess: overview.householdAccess),
+          data: (overview) {
+            RemovePetFromHouseholdOffer? removeOffer;
+            if (!pet.isShared && overview.householdAccess.isNotEmpty) {
+              final row = overview.householdAccess.first;
+              removeOffer = RemovePetFromHouseholdOffer(
+                petId: petId,
+                petName: pet.name,
+                householdId: row.householdId,
+                householdName: row.householdName,
+                onConfirmRemove: () async {
+                  final token = await ref
+                      .read(authProvider.notifier)
+                      .getValidAccessToken();
+                  if (token == null) return;
+                  await ref
+                      .read(sharingRepositoryProvider)
+                      .removeOwnerPetFromHousehold(
+                        householdId: row.householdId,
+                        petId: petId,
+                        token: token,
+                      );
+                  ref.invalidate(petAccessOverviewProvider(petId));
+                },
+              );
+            }
+            return WhoHasAccessSection(
+              householdAccess: overview.householdAccess,
+              removePetFromHousehold: removeOffer,
+            );
+          },
         ),
         if (shareLinks.isEmpty && accessList.isEmpty)
           Padding(

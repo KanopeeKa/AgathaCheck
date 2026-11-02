@@ -133,6 +133,13 @@ class FakeSharingRepository implements SharingRepository {
 
   @override
   Future<void> cancelInvite(String inviteId, String token) async {}
+
+  @override
+  Future<void> removeOwnerPetFromHousehold({
+    required String householdId,
+    required String petId,
+    required String token,
+  }) async {}
 }
 
 Widget buildTestApp(Widget child, {required List<Override> overrides}) {

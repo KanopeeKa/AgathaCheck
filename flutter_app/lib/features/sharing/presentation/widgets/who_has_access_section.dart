@@ -1,52 +1,51 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
-import '../../../people/application/people_commands.dart';
-import '../../../pet_profile/pet_profile.dart';
 import '../../domain/entities/household_pet_access.dart';
-import '../providers/sharing_providers.dart';
 
-class WhoHasAccessSection extends ConsumerWidget {
-  const WhoHasAccessSection({super.key, required this.householdAccess});
+/// When set, shows a control to remove the record owner's pet from a household.
+class RemovePetFromHouseholdOffer {
+  const RemovePetFromHouseholdOffer({
+    required this.petId,
+    required this.petName,
+    required this.householdId,
+    required this.householdName,
+    required this.onConfirmRemove,
+  });
+
+  final String petId;
+  final String petName;
+  final String householdId;
+  final String householdName;
+  final Future<void> Function() onConfirmRemove;
+}
+
+class WhoHasAccessSection extends StatelessWidget {
+  const WhoHasAccessSection({
+    super.key,
+    required this.householdAccess,
+    this.removePetFromHousehold,
+  });
 
   final List<HouseholdPetAccess> householdAccess;
-
-  String? _petIdFromRoute(BuildContext context) {
-    final params = GoRouterState.of(context).pathParameters;
-    return params['petId'];
-  }
+  final RemovePetFromHouseholdOffer? removePetFromHousehold;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     if (householdAccess.isEmpty) return const SizedBox.shrink();
 
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final householdId = householdAccess.first.householdId;
     final householdName = householdAccess.first.householdName;
-
-    final routePetId = _petIdFromRoute(context);
-    final pets = ref.watch(petListProvider).valueOrNull ?? const <Pet>[];
-    Pet? routePet;
-    if (routePetId != null) {
-      for (final pet in pets) {
-        if (pet.id == routePetId) {
-          routePet = pet;
-          break;
-        }
-      }
-    }
-    final canRemoveFromHousehold =
-        routePet != null && !routePet.isShared && routePetId != null;
+    final removeOffer = removePetFromHousehold;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(l.whoHasAccessHouseholdTitle, style: theme.textTheme.titleSmall),
         const SizedBox(height: 8),
-        if (canRemoveFromHousehold) ...[
+        if (removeOffer != null && removeOffer.householdId == householdId) ...[
           Card(
             margin: const EdgeInsets.only(bottom: 8),
             child: Padding(
@@ -61,19 +60,12 @@ class WhoHasAccessSection extends ConsumerWidget {
                   ),
                   const SizedBox(height: 8),
                   OutlinedButton(
-                    key: Key('remove_pet_from_household_$routePetId'),
-                    onPressed: () => _confirmRemoveFromHousehold(
-                      context,
-                      ref,
-                      l,
-                      petId: routePetId!,
-                      petName: routePet!.name,
-                      householdId: householdId,
-                      householdName: householdName,
-                    ),
+                    key: Key('remove_pet_from_household_${removeOffer.petId}'),
+                    onPressed: () =>
+                        _confirmRemoveFromHousehold(context, l, removeOffer),
                     child: Text(
                       l.peopleHouseholdRemovePetAction(
-                        routePet.name,
+                        removeOffer.petName,
                         householdName,
                       ),
                     ),
@@ -102,18 +94,18 @@ class WhoHasAccessSection extends ConsumerWidget {
 
   Future<void> _confirmRemoveFromHousehold(
     BuildContext context,
-    WidgetRef ref,
-    AppLocalizations l, {
-    required String petId,
-    required String petName,
-    required String householdId,
-    required String householdName,
-  }) async {
+    AppLocalizations l,
+    RemovePetFromHouseholdOffer offer,
+  ) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(l.peopleHouseholdRemovePetTitle(petName, householdName)),
-        content: Text(l.peopleHouseholdRemovePetBody(petName, householdName)),
+        title: Text(
+          l.peopleHouseholdRemovePetTitle(offer.petName, offer.householdName),
+        ),
+        content: Text(
+          l.peopleHouseholdRemovePetBody(offer.petName, offer.householdName),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
@@ -122,7 +114,10 @@ class WhoHasAccessSection extends ConsumerWidget {
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
             child: Text(
-              l.peopleHouseholdRemovePetConfirm(petName, householdName),
+              l.peopleHouseholdRemovePetConfirm(
+                offer.petName,
+                offer.householdName,
+              ),
             ),
           ),
         ],
@@ -130,16 +125,12 @@ class WhoHasAccessSection extends ConsumerWidget {
     );
     if (confirmed != true || !context.mounted) return;
     try {
-      await ref.read(peopleCommandsProvider).removeOwnerPetFromHousehold(
-            householdId: householdId,
-            petId: petId,
-          );
-      ref.invalidate(petAccessOverviewProvider(petId));
+      await offer.onConfirmRemove();
     } catch (_) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.peopleSaveError)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.peopleSaveError)));
       }
     }
   }
