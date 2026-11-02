@@ -56,7 +56,9 @@ class _HouseholdMemberEditSheetState
     final l = AppLocalizations.of(context)!;
     setState(() => _busy = true);
     try {
-      await ref.read(peopleCommandsProvider).patchHouseholdMember(
+      await ref
+          .read(peopleCommandsProvider)
+          .patchHouseholdMember(
             householdId: widget.householdId,
             memberUserId: widget.member.userId,
             accessTier: _organiser ? 'full_access' : _tier,
@@ -124,9 +126,9 @@ class _HouseholdMemberEditSheetState
               onChanged: _busy
                   ? null
                   : (v) => setState(() {
-                        _organiser = v == true;
-                        if (_organiser) _tier = 'full_access';
-                      }),
+                      _organiser = v == true;
+                      if (_organiser) _tier = 'full_access';
+                    }),
               title: Text(l.peopleHouseholdInviteOrganiserLabel),
               controlAffinity: ListTileControlAffinity.leading,
             ),

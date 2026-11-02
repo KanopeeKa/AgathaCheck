@@ -75,8 +75,7 @@ class _HouseholdMemberRemovalDialogState
             if (preview.petsLeaving.isNotEmpty) ...[
               const SizedBox(height: 12),
               Text(l.peopleMemberRemovalPetsLeaving),
-              for (final pet in preview.petsLeaving)
-                Text('• ${pet.petName}'),
+              for (final pet in preview.petsLeaving) Text('• ${pet.petName}'),
             ],
             if (preview.remainingAccess.isNotEmpty) ...[
               const SizedBox(height: 12),

@@ -175,7 +175,10 @@ class HouseholdsApi {
       );
     }).toList();
     final revokeRaw = decoded['access_to_revoke_if_remove_all'] as List? ?? [];
-    final revoke = revokeRaw.whereType<Map<String, dynamic>>().map(mapAccessRow).toList();
+    final revoke = revokeRaw
+        .whereType<Map<String, dynamic>>()
+        .map(mapAccessRow)
+        .toList();
     return HouseholdMemberRemovalPreview(
       remainingAccess: remaining,
       requiresSuccessor: decoded['requires_successor'] == true,
@@ -391,8 +394,6 @@ class HouseholdsRepositoryImpl implements HouseholdsRepository {
   Future<void> removeOwnerPetFromHousehold({
     required String householdId,
     required String petId,
-  }) => _api.removeOwnerPetFromHousehold(
-    householdId: householdId,
-    petId: petId,
-  );
+  }) =>
+      _api.removeOwnerPetFromHousehold(householdId: householdId, petId: petId);
 }
