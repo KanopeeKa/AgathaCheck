@@ -44,10 +44,9 @@ class WhoHasAccessSection extends ConsumerWidget {
     final householdName = householdAccess.first.householdName;
     var removeOffer = removePetFromHousehold;
     if (removeOffer == null) {
-      final owner = context.findAncestorWidgetOfExactType<OwnerSharingContent>();
-      if (owner != null &&
-          !owner.pet.isShared &&
-          householdAccess.isNotEmpty) {
+      final owner = context
+          .findAncestorWidgetOfExactType<OwnerSharingContent>();
+      if (owner != null && !owner.pet.isShared && householdAccess.isNotEmpty) {
         final row = householdAccess.first;
         removeOffer = RemovePetFromHouseholdOffer(
           petId: owner.petId,
@@ -55,10 +54,13 @@ class WhoHasAccessSection extends ConsumerWidget {
           householdId: row.householdId,
           householdName: row.householdName,
           onConfirmRemove: () async {
-            final token =
-                await ref.read(authProvider.notifier).getValidAccessToken();
+            final token = await ref
+                .read(authProvider.notifier)
+                .getValidAccessToken();
             if (token == null) return;
-            await ref.read(sharingRepositoryProvider).removeOwnerPetFromHousehold(
+            await ref
+                .read(sharingRepositoryProvider)
+                .removeOwnerPetFromHousehold(
                   householdId: row.householdId,
                   petId: owner.petId,
                   token: token,
@@ -92,7 +94,9 @@ class WhoHasAccessSection extends ConsumerWidget {
                     key: Key('remove_pet_from_household_${removeOffer.petId}'),
                     onPressed: () =>
                         _confirmRemoveFromHousehold(context, l, removeOffer!),
-                    child: Text(l.peopleHouseholdRemovePetAction(removeOffer.petName)),
+                    child: Text(
+                      l.peopleHouseholdRemovePetAction(removeOffer.petName),
+                    ),
                   ),
                 ],
               ),
