@@ -182,6 +182,35 @@ export async function emitHouseholdPetRemoved(pool, {
 }
 
 /**
+ * After-commit pet departure notices when the household row may already be deleted (phase 2).
+ *
+ * @param {import('pg').Pool|import('pg').PoolClient} pool
+ * @param {{ householdName: string, notices: import('../households/departure/notices.js').HouseholdPetRemovedNotice[], recipientUserIds: string[], actorUserId?: string|null }} params
+ */
+export async function emitHouseholdPetRemovedNotices(pool, {
+  householdName,
+  notices,
+  recipientUserIds,
+  actorUserId = null,
+}) {
+  if (!notices?.length || !recipientUserIds?.length) return;
+  for (const notice of notices) {
+    const message = `${notice.petName || 'A pet'} is no longer in the ${householdName} household.`;
+    for (const userId of recipientUserIds) {
+      if (userId === actorUserId) continue;
+      await createNotification(pool, {
+        userId,
+        petId: notice.petId,
+        petName: notice.petName,
+        title: 'Household update',
+        message,
+        type: NOTIFICATION_TYPE_HOUSEHOLD_PET_REMOVED,
+      });
+    }
+  }
+}
+
+/**
  * R16 — named carer on a planned absence period (D21).
  */
 export async function emitCareAssignmentAssigned(pool, {

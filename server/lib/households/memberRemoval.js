@@ -74,6 +74,67 @@ export async function getHouseholdMemberRemovalPreview(db, actorId, householdId,
     }
   }
 
+  const petsLeaving = await db.query(
+    `SELECT hp.pet_id, p.name AS pet_name
+     FROM household_pets hp
+     INNER JOIN pets p ON p.id = hp.pet_id
+     WHERE hp.household_id = $1 AND p.user_id = $2`,
+    [householdId, targetUserId],
+  );
+
+  const accessToRevokeIfRemoveAll = [];
+  if (!selfPreview && actorMembership.is_organiser) {
+    const actorOwned = await db.query(
+      `SELECT hp.pet_id, p.name AS pet_name
+       FROM household_pets hp
+       INNER JOIN pets p ON p.id = hp.pet_id
+       WHERE hp.household_id = $1 AND p.user_id = $2`,
+      [householdId, actorId],
+    );
+    for (const pet of actorOwned.rows) {
+      const direct = await db.query(
+        `SELECT role FROM pet_access
+         WHERE pet_id = $1 AND user_id = $2
+           AND COALESCE(hidden, false) = false
+           AND role IN ('carer', 'co_parent')
+         LIMIT 1`,
+        [pet.pet_id, targetUserId],
+      );
+      if (direct.rows.length > 0) {
+        accessToRevokeIfRemoveAll.push({
+          pet_id: pet.pet_id,
+          pet_name: pet.pet_name,
+          source: 'direct_share',
+          role: direct.rows[0].role,
+        });
+      }
+      const absenceGrant = await db.query(
+        `SELECT pa.id AS absence_id, pa.ends_on
+         FROM planned_absence_guest_grants g
+         INNER JOIN planned_absences pa ON pa.id = g.planned_absence_id
+         WHERE g.grantee_user_id = $1
+           AND g.pet_id = $2
+           AND g.status = 'active'
+           AND pa.status = 'active'
+           AND pa.cancelled_at IS NULL
+           AND pa.ends_on >= CURRENT_DATE
+         ORDER BY pa.ends_on DESC
+         LIMIT 1`,
+        [targetUserId, pet.pet_id],
+      );
+      if (absenceGrant.rows.length > 0) {
+        const endsOn = absenceGrant.rows[0].ends_on;
+        accessToRevokeIfRemoveAll.push({
+          pet_id: pet.pet_id,
+          pet_name: pet.pet_name,
+          source: 'absence',
+          absence_id: absenceGrant.rows[0].absence_id,
+          until: endsOn ? String(endsOn).split(/[T ]/)[0] : null,
+        });
+      }
+    }
+  }
+
   const organisers = await db.query(
     `SELECT user_id FROM household_members
      WHERE household_id = $1 AND is_organiser = true`,
@@ -92,6 +153,11 @@ export async function getHouseholdMemberRemovalPreview(db, actorId, householdId,
     household_id: householdId,
     loses_household_access: true,
     remaining_access: remainingAccess,
+    pets_leaving: petsLeaving.rows.map((r) => ({
+      pet_id: r.pet_id,
+      pet_name: r.pet_name,
+    })),
+    access_to_revoke_if_remove_all: accessToRevokeIfRemoveAll,
     requires_successor: requiresSuccessor,
     target_access_tier: targetMembership.access_tier,
     target_is_organiser: targetMembership.is_organiser === true,

@@ -2010,6 +2010,8 @@
           "household_id",
           "loses_household_access",
           "remaining_access",
+          "pets_leaving",
+          "access_to_revoke_if_remove_all",
           "requires_successor"
         ],
         "properties": {
@@ -2017,6 +2019,14 @@
           "household_id": { "type": "string", "format": "uuid" },
           "loses_household_access": { "type": "boolean" },
           "remaining_access": {
+            "type": "array",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "pets_leaving": {
+            "type": "array",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "access_to_revoke_if_remove_all": {
             "type": "array",
             "items": { "type": "object", "additionalProperties": true }
           },
