@@ -463,12 +463,10 @@ One **roster** on `/pc/people` backed by a UI aggregate **PersonRosterEntry** (c
     - Show the owner quietly, e.g. "Buddy · Alex's dog".
     - Add emergency contacts, the primary vet and the out-of-hours vet.
 - **Keep:** Related care on Greenhill's detail page.
-- **Missing screens:**
+- **Shipped (household-cleanup-609f, 2026-11-02):** leave household; remove pet from household (record owner, household detail); remove member with remaining-access preview; organiser tier and organiser flag editing on household detail.
+- **Still missing screens:**
     - emergency contacts
     - "Invite for this absence"
-    - leave household
-    - remove pet from household
-    - remove person, listing the access that remains
     - needs-review states
 
 ## Data lifecycle and privacy
@@ -528,7 +526,7 @@ Away UI keeps **care team** / **équipe de soins**; People surfaces never use th
 
 ## Still open
 
-No product decisions are open. Engineering gaps vs target UX: [people-domain-refactor.md](../changes/people-domain-refactor.md).
+No product decisions are open. Household lifecycle, management and UI gaps from the 2026-11-02 review are closed on the integration branch (`household-cleanup-609f`, phases 1–7). Remaining engineering gaps vs the broader People refactor target: [people-domain-refactor.md](../changes/people-domain-refactor.md) §4 and §9.
 
 ## Related
 
