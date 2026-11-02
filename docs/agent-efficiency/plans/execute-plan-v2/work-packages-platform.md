@@ -154,6 +154,7 @@ permissions:
   pull-requests: read
   issues: read
   statuses: write
+  checks: write                # unused since the check-run fallback was removed; dropped once the owner confirms (issue #2002)
 concurrency:
   group: execute-plan-scope-${{ github.event.pull_request.number }}
   cancel-in-progress: true
