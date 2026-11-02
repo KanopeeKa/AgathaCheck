@@ -142,7 +142,7 @@ test('merge action uses mergePull with the requested method', async () => {
 });
 
 test('merge blocked records stop and needs-owner', async () => {
-  const bot = fakeClient('bot');
+  const bot = fakeClient('bot', { pulls: { 5: { node_id: 'PR_5', head: { sha: 'f'.repeat(40) } } } });
   bot.mergePull = async () => { throw new GitHubError(405, 'Refusing to merge'); };
   const h = harness({}, driverAction('merge', { pr: 5, method: 'squash' }));
   h.clients.bot = bot;
@@ -193,14 +193,17 @@ test('merge refused because execute-plan-scope is expected: republish once, no s
   assert.deepEqual(h.bot.calls.filter((c) => c[0] === 'addLabels'), []);
 });
 
-test('merge refused again after a republish, or for another check: STOP check-missing', async () => {
-  const again = harness({ pulls: { 5: scopePull } }, driverAction('merge', { pr: 5, method: 'squash', head_sha: HEAD, scope_republished: true }));
+test('merge refused again after a republish, or for another check: STOP check-missing, enforced on the PR', async () => {
+  const armed = { ...scopePull, auto_merge: { merge_method: 'squash' } };
+  const again = harness({ pulls: { 5: armed } }, driverAction('merge', { pr: 5, method: 'squash', head_sha: HEAD, scope_republished: true }));
   refusing(again, expected('execute-plan-scope'));
   const res = await drive(again);
   assert.match(res.outcome, /check missing/);
   assert.equal(again.bot.statusNow().stop.reason, 'check-missing');
   assert.deepEqual(again.bot.calls.filter((c) => c[0] === 'addLabels'), [['addLabels', 9, ['needs-owner']]]);
-  assert.equal(again.seen.scope.length, 0);
+  assert.deepEqual(again.bot.calls.filter((c) => c[0] === 'disableAutoMerge'), [['disableAutoMerge', 'PR_5']]);
+  assert.deepEqual(again.seen.scope.map((s) => [s.client, s.headSha, s.conclusion, s.title]), [['read', HEAD, 'failure', 'plan-stopped']]);
+  assert.equal(again.seen.scope[0].summary, 'plan stopped: check-missing');
 
   const ci = harness({ pulls: { 5: scopePull } }, driverAction('merge', { pr: 5, method: 'squash', head_sha: HEAD, scope_republished: false }));
   refusing(ci, new GitHubError(405, 'Repository rule violations found\n\nRequired status check "ci-gate / CI passed" was not set by the expected GitHub app.'));
@@ -218,6 +221,7 @@ test('arm-auto-merge clean-status fallback gets the same recovery and stops inst
   refusing(other, new GitHubError(405, 'Pull Request is not mergeable'));
   assert.match((await drive(other)).outcome, /merge blocked/);
   assert.equal(other.bot.statusNow().stop.reason, 'merge-blocked');
+  assert.deepEqual(other.seen.scope.map((s) => s.title), ['plan-stopped']);
 });
 
 test('driver log prints wait(reason)', async () => {

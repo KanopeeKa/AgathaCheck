@@ -187,10 +187,11 @@ async function republishScope(clients, ctx, { pr, headSha }, now) {
   return `republished ${SCOPE_CHECK} on #${pr}: ${outcome.conclusion} (${outcome.title})`;
 }
 
-function stopError(code, detail) {
+function stopError(code, detail, pr) {
   const err = new Error(detail);
   err.code = code;
   err.detail = detail;
+  err.pr = pr;
   return err;
 }
 
@@ -205,12 +206,12 @@ async function mergeOrRecover(clients, ctx, a, now) {
   } catch (e) {
     const detail = e instanceof GitHubError ? e.message : String(e);
     const m = e instanceof GitHubError && e.status === 405 ? UNCOUNTED_CHECK_RE.exec(detail) : null;
-    if (!m) throw stopError('merge-blocked', detail);
+    if (!m) throw stopError('merge-blocked', detail, a.pr);
     if (m[1] === SCOPE_CHECK && !a.scope_republished) {
       const done = await republishScope(clients, ctx, { pr: a.pr, headSha: a.head_sha }, now);
       return `merge refused (${SCOPE_CHECK} not counted); ${done}`;
     }
-    throw stopError('check-missing', detail);
+    throw stopError('check-missing', detail, a.pr);
   }
 }
 
@@ -360,6 +361,8 @@ async function runDriverPass(clients, { planId, issueNumber, now = isoNow(), kil
     if (STOP_CODES.has(e.code)) {
       await updateStatus(bot, ctx, (s) => ({ ...s, state: 'stopped', stop: { reason: e.code, detail: e.detail, at: now } }), now);
       await bot.addLabels(ctx.issueNumber, ['needs-owner']);
+      // Auto-merge may already be armed: GitHub would merge once the missing check shows up.
+      if (e.pr) await enforceStop(all, { stop: { reason: e.code }, action: { args: { prs: [e.pr] } } }, now);
       outcome = `${e.code === 'merge-blocked' ? 'merge blocked' : 'check missing'}: ${e.detail}`;
     } else throw e;
   }

@@ -204,7 +204,8 @@ method `merge` (scope is always green for sync PRs). S2 `release.pr == null` and
    method as arm-auto-merge). `arm-auto-merge` and `merge` carry `head_sha` and
    `scope_republished`. If GitHub refuses the merge (either action), contracts §3.7 `merge`: an
    uncounted `execute-plan-scope` is republished once per head; then STOP `check-missing`; any
-   other refusal STOP `merge-blocked` (driver adds `needs-owner`; detail = GitHub message).
+   other refusal STOP `merge-blocked` (driver adds `needs-owner`, then enforces the stop on that PR
+   in the same pass: auto-merge off, `execute-plan-scope` = `plan-stopped`; detail = GitHub message).
 
 **U — UAT stage** (`uat` non-null; `C` = newest `preuat_runs` entry with `contains_merge` and
 `status == "completed"` and `conclusion ∉ {cancelled, skipped}`).
