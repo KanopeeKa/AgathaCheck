@@ -41,6 +41,7 @@ const event = (comment, over = {}) => ({ action: 'created', issue: mkIssue(), co
 
 function setup({ files = PLAN_FILES, integration = null, issueComments = [], snapshotAtSha = SNAP } = {}) {
   const writes = [];
+  const dispatches = [];
   const rec = (kind) => async (...args) => { writes.push([kind, ...args]); return {}; };
   const read = {
     getFileAtRef: async (path, ref) => {
@@ -50,6 +51,7 @@ function setup({ files = PLAN_FILES, integration = null, issueComments = [], sna
     },
     compare: async () => ({ files: files.map((filename) => ({ filename })) }),
     getBranch: async () => integration,
+    dispatchWorkflow: async (file, ref, inputs) => { dispatches.push([file, ref, inputs]); },
   };
   const bot = {
     createRef: rec('createRef'),
@@ -61,17 +63,17 @@ function setup({ files = PLAN_FILES, integration = null, issueComments = [], sna
   const passes = [];
   const deps = {
     loadPlanContext: async (_c, args) => { passes.push(['load', args.planId]); return { planId: PLAN_ID, issueNumber: 9, snapshot: SNAP, config: CONFIG, status: { lease: null }, statusComment: { id: 1 } }; },
-    tick: async () => ({ state: 'phase:pending', phase: '1', action: { actor: 'driver', kind: 'wait', args: { reason: 'checks' } }, stop: null }),
   };
-  return { clients: { bot, read, cursorApiKey: null, deps }, writes, passes };
+  return { clients: { bot, read, deps }, writes, passes, dispatches };
 }
 const run = (s, ev, killSwitch = 'on') => handleControlComment(s.clients, ev, { now: NOW, killSwitch });
 const kinds = (s) => s.writes.map((w) => w[0]);
+const DISPATCH = [['execute-plan-driver.yml', 'main', { plan_id: PLAN_ID }]];
 
-test('valid approve → branch, status comment, labels, approval line, driver pass', async () => {
+test('valid approve → branch, status comment, labels, approval line, then the driver is dispatched', async () => {
   const s = setup();
   const res = await run(s, event(mkComment(APPROVE)));
-  assert.deepEqual(res, { handled: true, detail: 'driver pass run' });
+  assert.deepEqual(res, { handled: true, detail: 'driver pass dispatched' });
   assert.deepEqual(s.writes[0], ['createRef', `refs/heads/${SNAP.integration_branch}`, SHA]);
   const [, , statusBody] = s.writes.find((w) => w[0] === 'createComment');
   assert.match(statusBody, new RegExp(`^<!-- execute-plan-status:${PLAN_ID} -->`));
@@ -80,7 +82,8 @@ test('valid approve → branch, status comment, labels, approval line, driver pa
   assert.deepEqual(s.writes.find((w) => w[0] === 'addLabels'), ['addLabels', 9, ['autonomous-approved', `plan:${PLAN_ID}`]]);
   const [, , patch] = s.writes.find((w) => w[0] === 'updateIssue');
   assert.match(patch.body, /Approval: valid \(comment 4242\)$/);
-  assert.deepEqual(s.passes, [['load', PLAN_ID]]);
+  assert.deepEqual(s.passes, [], 'no inline driver pass');
+  assert.deepEqual(s.dispatches, DISPATCH);
   assert.ok(kinds(s).indexOf('createRef') < kinds(s).indexOf('addLabels'));
 });
 
@@ -123,7 +126,7 @@ test('invalid hash → exactly one rejected comment, nothing else', async () => 
   const res = await run(s, event(mkComment(bad)));
   assert.equal(res.handled, true);
   assert.deepEqual(s.writes, [['createComment', 9, 'approve-autonomous rejected: hash']]);
-  assert.deepEqual(s.passes, []);
+  assert.deepEqual(s.dispatches, []);
 });
 
 test('approve with a wrong until is rejected', async () => {
@@ -164,12 +167,13 @@ test('comments on PRs and on issues without the execute-plan label are ignored',
   assert.deepEqual(s.writes, []);
 });
 
-test('resume (valid) → one driver pass and no other write', async () => {
+test('resume (valid) → driver dispatched and no other write', async () => {
   const s = setup();
   const res = await run(s, event(mkComment(RESUME), { issue: mkIssue(['execute-plan', 'autonomous-approved', `plan:${PLAN_ID}`]) }));
   assert.equal(res.handled, true);
   assert.deepEqual(s.writes, []);
-  assert.equal(s.passes.length, 2); // approvedContext + the pass
+  assert.deepEqual(s.passes, [['load', PLAN_ID]]); // approvedContext only
+  assert.deepEqual(s.dispatches, DISPATCH);
 });
 
 test('resume: invalid or on an unapproved issue → no pass', async () => {
@@ -182,27 +186,29 @@ test('resume: invalid or on an unapproved issue → no pass', async () => {
   assert.equal(unapproved.detail, 'issue not approved');
   assert.deepEqual(s.writes, []);
   assert.deepEqual(s.passes, [['load', PLAN_ID]]);
+  assert.deepEqual(s.dispatches, []);
 });
 
-test('revoke (valid) → label autonomous-revoked then a driver pass; not owner → nothing', async () => {
+test('revoke (valid) → label autonomous-revoked then the driver is dispatched; not owner → nothing', async () => {
   const approved = mkIssue(['execute-plan', 'autonomous-approved', `plan:${PLAN_ID}`]);
   const s = setup();
   const res = await run(s, event(mkComment(REVOKE), { issue: approved }));
   assert.equal(res.handled, true);
   assert.deepEqual(s.writes, [['addLabels', 9, ['autonomous-revoked']]]);
+  assert.deepEqual(s.dispatches, DISPATCH);
   const other = setup();
   await run(other, event(mkComment(REVOKE, { user: { login: 'mallory' } }), { issue: approved }));
-  assert.deepEqual(other.writes, []);
+  assert.deepEqual([other.writes, other.dispatches], [[], []]);
 });
 
-test('edited / deleted approve or resume → one driver pass; revoke edits and unapproved issues → none', async () => {
+test('edited / deleted approve or resume → driver dispatched; revoke edits and unapproved issues → none', async () => {
   const approved = mkIssue(['execute-plan', 'autonomous-approved', `plan:${PLAN_ID}`]);
   for (const action of ['edited', 'deleted']) {
     for (const body of [APPROVE, RESUME]) {
       const s = setup();
       const res = await run(s, event(mkComment(body), { action, issue: approved }));
       assert.equal(res.handled, true);
-      assert.deepEqual(s.passes, [['load', PLAN_ID]]);
+      assert.deepEqual(s.dispatches, DISPATCH);
       assert.deepEqual(s.writes, []);
     }
   }
@@ -210,13 +216,13 @@ test('edited / deleted approve or resume → one driver pass; revoke edits and u
   assert.equal((await run(revoke, event(mkComment(REVOKE), { action: 'edited', issue: approved }))).handled, false);
   const unapproved = setup();
   assert.equal((await run(unapproved, event(mkComment(APPROVE), { action: 'edited' }))).handled, false);
-  assert.deepEqual(unapproved.passes.concat(revoke.passes), []);
+  assert.deepEqual(unapproved.dispatches.concat(revoke.dispatches), []);
 });
 
 test('kill switch off → no-op; dry-run → validates, no writes', async () => {
   const off = setup();
   const res = await run(off, event(mkComment(APPROVE)), 'off');
-  assert.deepEqual([res.handled, off.writes, off.passes], [false, [], []]);
+  assert.deepEqual([res.handled, off.writes, off.dispatches], [false, [], []]);
   const unset = setup();
   assert.equal((await handleControlComment(unset.clients, event(mkComment(APPROVE)), { now: NOW })).handled, false);
   assert.deepEqual(unset.writes, []);
@@ -225,7 +231,7 @@ test('kill switch off → no-op; dry-run → validates, no writes', async () => 
   const dryRes = await run(dry, event(mkComment(APPROVE)), 'dry-run');
   assert.equal(dryRes.handled, false);
   assert.deepEqual(dry.writes, []);
-  assert.deepEqual(dry.passes, [], 'approve in dry-run stops after validation');
+  assert.deepEqual(dry.dispatches, [], 'approve in dry-run stops after validation');
 
   const dryBad = setup();
   await run(dryBad, event(mkComment(APPROVE.replace(/sha256:[0-9a-f]{4}/, 'sha256:0000'))), 'dry-run');
@@ -233,6 +239,7 @@ test('kill switch off → no-op; dry-run → validates, no writes', async () => 
 
   const dryRevoke = setup();
   const approved = mkIssue(['execute-plan', 'autonomous-approved', `plan:${PLAN_ID}`]);
-  await run(dryRevoke, event(mkComment(REVOKE), { issue: approved }), 'dry-run');
-  assert.deepEqual(dryRevoke.writes, []);
+  const dryRevokeRes = await run(dryRevoke, event(mkComment(REVOKE), { issue: approved }), 'dry-run');
+  assert.deepEqual([dryRevoke.writes, dryRevoke.dispatches], [[], []]);
+  assert.match(dryRevokeRes.detail, /^dry-run: would dispatch execute-plan-driver\.yml/);
 });

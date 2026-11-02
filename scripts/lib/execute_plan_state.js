@@ -12,10 +12,20 @@ const { decideUat } = require('./execute_plan_uat');
 const DEFAULT_REPO = 'KanopeeKa/AgathaCheck';
 const COPILOT_WAIT_MS = 15 * 60 * 1000;
 const AUTO_MERGE_FALLBACK_MS = 10 * 60 * 1000;
+const MISSING_CHECK_MS = 15 * 60 * 1000;
+const MISSING_CHECK_HARD_MS = 2 * 60 * 60 * 1000;
 const FAILED = new Set(['failure', 'timed_out', 'action_required']);
 const SCOPE_CHECK = 'execute-plan-scope';
 const SCOPE_STOP = new Set(['drift', 'protected', 'forbidden']);
 const SCOPE_FIXABLE = new Set(['unclassified', 'companion-cap', 'too-many-files']);
+const SCOPE_CAUSE = {
+  unclassified: 'the phase touches files outside its scope',
+  'companion-cap': 'the phase exceeds its companion-file allowance',
+  'too-many-files': 'the diff is too large for the scope check to list',
+};
+const SCOPE_SIDE_FIX_HINT = (reason) => `execute-plan-scope is ${reason}: ${SCOPE_CAUSE[reason] || 'see the check summary'}. `
+  + 'If the change is needed to deliver the plan, split it into a plan-linked side PR into the integration branch '
+  + '(body: "Unblocks: plan <id> phase <n>" and the blocker; runbooks 7.5), then resume';
 const HOLD_LABEL = 'execute-plan-hold';
 
 const driver = (kind, args = {}) => ({ actor: 'driver', kind, launch: false, args });
@@ -98,6 +108,22 @@ const LADDER_STATE = (ctx, pr) => ({
   remedial: 'remedial',
 }[ctx.kind]);
 
+/** True when the driver already republished the scope status on `sha` since the epoch (`dispatched.scope_republish`). */
+function scopeRepublished(ctx, sha) {
+  const list = (ctx.status && ctx.status.dispatched && ctx.status.dispatched.scope_republish) || [];
+  const epoch = ctx.control.epoch;
+  return list.some((r) => r.sha === sha && (!epoch || Date.parse(r.at) > Date.parse(epoch)));
+}
+
+/**
+ * PR-ladder 10a: a required check is still absent once every check run on the head has been
+ * complete for 15 min, or after 2 h without any activity on the head (a run that never starts).
+ */
+function missingTimedOut(pr, now) {
+  const age = (t) => (t ? Date.parse(now) - Date.parse(t) : -1);
+  return age(pr.checks_settled_at) >= MISSING_CHECK_MS || age(pr.head_activity_at) >= MISSING_CHECK_HARD_MS;
+}
+
 /** PR-ladder, applied to one open PR. ctx = { kind, draftAction, method, snapshot, obs, opts, control, phase? } */
 function prLadder(pr, rawCtx) {
   const ctx = normalize(rawCtx);
@@ -121,12 +147,21 @@ function prLadder(pr, rawCtx) {
   // PR-ladder 3
   const scope = checks.find((c) => c.name === SCOPE_CHECK);
   if (scope && SCOPE_STOP.has(scope.reason)) return stop('drift', `scope check reports ${scope.reason} on PR #${pr.number}`);
+  const republished = scopeRepublished(ctx, pr.head_sha);
+  // PR-ladder 3b — the plan is not stopped (D1), so `plan-stopped` is left over from an earlier STOP
+  if (scope && scope.conclusion === 'failure' && scope.reason === 'plan-stopped') {
+    if (republished) return stop('scope-stale', `execute-plan-scope still reports plan-stopped on PR #${pr.number} after a republish`);
+    return finish(ctx, { ...base, action: driver('republish-scope', { pr: pr.number, head_sha: pr.head_sha }), looked });
+  }
   // PR-ladder 4
   const failing = checks.filter((c) => FAILED.has(c.conclusion));
   if (failing.length) {
     const attempts = pr.failed_attempts_since_epoch || 0;
-    if (attempts >= budget) return stop('ci-budget', `${attempts} failed attempts on PR #${pr.number} (limit ${budget})`);
     const only = failing.length === 1 && failing[0].name === SCOPE_CHECK && SCOPE_FIXABLE.has(failing[0].reason);
+    if (attempts >= budget) {
+      const detail = `${attempts} failed attempts on PR #${pr.number} (limit ${budget})`;
+      return stop('ci-budget', only ? `${detail}; ${SCOPE_SIDE_FIX_HINT(failing[0].reason)}` : detail);
+    }
     const args = { pr: pr.number, branch: pr.head_ref };
     if (only) return launchOrStop(ctx, base, agent('fix-scope', { ...args, violations: [], scope_reason: failing[0].reason }), looked);
     return launchOrStop(ctx, base, agent('fix-ci', { ...args, failing: failing.map((c) => c.name) }), looked);
@@ -151,7 +186,16 @@ function prLadder(pr, rawCtx) {
   if (!pr.auto_merge_enabled) {
     const young = pr.ready_at && Date.parse(opts.now) - Date.parse(pr.ready_at) < COPILOT_WAIT_MS;
     if (pr.base_ref === 'main' && !pr.copilot_review_submitted && young) return finish(ctx, { ...base, action: wait('copilot'), looked });
-    return finish(ctx, { ...base, action: driver('arm-auto-merge', { pr: pr.number, method: ctx.method }), looked });
+    const args = { pr: pr.number, method: ctx.method, head_sha: pr.head_sha, scope_republished: republished };
+    return finish(ctx, { ...base, action: driver('arm-auto-merge', args), looked });
+  }
+  // PR-ladder 10a
+  const missing = checks.filter((c) => c.status === 'missing').map((c) => c.name);
+  if (missing.length && missingTimedOut(pr, opts.now)) {
+    if (missing.includes(SCOPE_CHECK) && !republished) {
+      return finish(ctx, { ...base, action: driver('republish-scope', { pr: pr.number, head_sha: pr.head_sha }), looked });
+    }
+    return stop('check-missing', `required check(s) ${missing.join(', ')} never reported on PR #${pr.number} head ${String(pr.head_sha).slice(0, 7)}`);
   }
   // PR-ladder 10 — auto-merge armed: wait for checks, then merge if GitHub does not
   const pending = checks.some((c) => c.status !== 'completed' || c.conclusion !== 'success');
@@ -161,7 +205,8 @@ function prLadder(pr, rawCtx) {
   if (!newest || Date.parse(opts.now) - newest < AUTO_MERGE_FALLBACK_MS) {
     return finish(ctx, { ...base, action: wait('checks'), looked });
   }
-  return finish(ctx, { ...base, action: driver('merge', { pr: pr.number, method: ctx.method }), looked });
+  const args = { pr: pr.number, method: ctx.method, head_sha: pr.head_sha, scope_republished: republished };
+  return finish(ctx, { ...base, action: driver('merge', args), looked });
 }
 
 function stopReasonDetail(ctx) {

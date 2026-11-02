@@ -5,9 +5,8 @@ on:
 permissions:
   contents: read
   issues: write
-  pull-requests: write
-  actions: write
-  checks: write
+  pull-requests: read
+  actions: write   # dispatches execute-plan-driver.yml: every driver pass runs in its concurrency group
 concurrency:
   group: execute-plan-approve-${{ github.event.issue.number }}
   cancel-in-progress: false
@@ -32,7 +31,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           EXECUTE_PLAN_BOT_TOKEN: ${{ secrets.EXECUTE_PLAN_BOT_TOKEN }}
-          CURSOR_API_KEY: ${{ secrets.cursor_api_key }}
           EXECUTE_PLAN_DRIVER: ${{ vars.EXECUTE_PLAN_DRIVER }}
           EVENT_PATH: ${{ github.event_path }}
         run: node .github/scripts/execute-plan-approve.js

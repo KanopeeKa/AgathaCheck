@@ -10,7 +10,8 @@ const { execFileSync } = require('child_process');
 const { ExecutePlanError } = require('./execute_plan_constants');
 const { decide } = require('./execute_plan_state');
 const { deriveControl } = require('./execute_plan_control');
-const { loadPlanContext, observe, configError, CONFIG_PATH } = require('./execute_plan_observe');
+const { loadPlanContext, observe, configError, latestRuns, CONFIG_PATH } = require('./execute_plan_observe');
+const { SCOPE_CONTEXT } = require('./execute_plan_scope_status');
 const { formatStatusComment, formatLogLine, applyDecisionToStatus } = require('./execute_plan_status');
 const { verifyComplete, resolveMergeSource, watchPreUat, watchDeploy } = require('./execute_plan_uat_observe');
 
@@ -18,6 +19,9 @@ const FAILED = new Set(['failure', 'timed_out', 'action_required']);
 const STOP_EXIT_CODE = 2;
 
 const isoNow = () => new Date().toISOString().replace(/\.\d+Z$/, 'Z');
+
+const OWNER_TOKEN_MESSAGE = (planId) =>
+  `OWNER_GH_TOKEN is set: execute-plan workers must not hold the owner token. Run tick as:\nenv -u OWNER_GH_TOKEN -u BOT_GH_TOKEN node scripts/execute_plan_runtime.js tick ${planId} --json --actor agent`;
 
 function statusTable(snapshot, obs, decision) {
   const launches = decision.budgets.launches_phase || {};
@@ -61,7 +65,10 @@ async function assertWorkerIsBot(client, config) {
 }
 
 /** @returns {Promise<object>} contracts §3.7 output (plus `writes` on dry-run) */
-async function tick(client, { planId, controlIssue, now = isoNow(), actor = 'agent', lease, dryRun = false, sleep } = {}) {
+async function tick(client, { planId, controlIssue, now = isoNow(), actor = 'agent', lease, dryRun = false, sleep, env = process.env } = {}) {
+  if (actor === 'agent' && String(env.OWNER_GH_TOKEN || '').trim() !== '') {
+    throw configError(OWNER_TOKEN_MESSAGE(planId));
+  }
   const ctx = await loadPlanContext(client, { planId, controlIssue });
   if (actor === 'agent') await assertWorkerIsBot(client, ctx.config);
   const obs = await observe(client, ctx, { now, sleep });
@@ -116,10 +123,11 @@ async function watchCi(client, { pr, timeoutMin = 25, pollSec = 60, sleep = (ms)
     const pull = await client.getPull(pr);
     const names = pull.base.ref === 'main' ? config.required_checks.main : config.required_checks.integration;
     const runs = await client.listCheckRuns(pull.head.sha);
-    const latest = names.map((n) => runs.filter((r) => r.name === n).reduce((a, b) => (!a || Number(b.id) > Number(a.id) ? b : a), null));
-    const failing = names.filter((n, k) => latest[k] && latest[k].status === 'completed' && FAILED.has(latest[k].conclusion));
+    const statuses = names.includes(SCOPE_CONTEXT) ? await client.listCommitStatuses(pull.head.sha) : [];
+    const latest = latestRuns(runs, names, statuses);
+    const failing = latest.filter((c) => c.status === 'completed' && FAILED.has(c.conclusion)).map((c) => c.name);
     if (failing.length) return { timedOut: false, conclusion: 'failure', failing };
-    if (latest.every((r) => r && r.status === 'completed')) return { timedOut: false, conclusion: 'success', failing: [] };
+    if (latest.every((c) => c.status === 'completed')) return { timedOut: false, conclusion: 'success', failing: [] };
     if (i < polls - 1) await sleep(pollSec * 1000);
   }
   return { timedOut: true, conclusion: null, failing: [] };

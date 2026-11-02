@@ -28,6 +28,7 @@ const CONFIG = {
   required_checks: { integration: ['ci'], main: ['ci', 'scope'] }, uat: { preuat_workflow: 'pre-uat-e2e.yml' },
 };
 const NOW = '2026-10-16T10:00:00Z';
+const AGENT_ENV = { OWNER_GH_TOKEN: '', BOT_GH_TOKEN: '' };
 const EPOCH = '2026-10-16T09:05:00Z';
 const HEX = SNAP.approval_hash.replace('sha256:', '');
 const baseStatus = (over = {}) => ({
@@ -67,7 +68,7 @@ function stubClient({ status = baseStatus(), labels = [], authorized = true, sna
 
 test('tick reads snapshot at init_sha not the checkout', async () => {
   const { client, refs } = stubClient();
-  const out = await tick(client, { planId: PLAN_ID, controlIssue: 9, now: NOW, actor: 'agent' });
+  const out = await tick(client, { planId: PLAN_ID, controlIssue: 9, now: NOW, actor: 'agent', env: AGENT_ENV });
   assert.ok(refs.includes('a'.repeat(40)));
   assert.equal(refs.filter((r) => r !== 'main' && r !== 'a'.repeat(40)).length, 0);
   assert.equal(out.schema, 1);
@@ -96,7 +97,7 @@ test('tick dry-run performs no writes', async () => {
 test('worker tick refreshes last_tick_at', async () => {
   const lease = { platform: 'cursor', agent_id: 'bc', run_id: 'r', launched_at: '2026-10-16T09:10:00Z', last_tick_at: '2026-10-16T09:40:00Z' };
   const { client, writes } = stubClient({ status: baseStatus({ lease }) });
-  await tick(client, { planId: PLAN_ID, controlIssue: 9, now: NOW, actor: 'agent' });
+  await tick(client, { planId: PLAN_ID, controlIssue: 9, now: NOW, actor: 'agent', env: AGENT_ENV });
   const upd = writes.find((w) => w.kind === 'update');
   assert.equal(parseStatusComment(upd.body).lease.last_tick_at, NOW);
 });
@@ -113,12 +114,13 @@ test('stop labels needs-owner and records stop once', async () => {
   assert.equal(again.writes.filter((w) => w.kind === 'label').length, 0);
 });
 
-function ciClient(runsPerPoll) {
+function ciClient(runsPerPoll, { config = CONFIG, statuses = [] } = {}) {
   let i = 0;
   return {
-    getFileAtRef: async () => file(CONFIG),
+    getFileAtRef: async () => file(config),
     getPull: async () => ({ base: { ref: 'main' }, head: { sha: 'h' } }),
     listCheckRuns: async () => runsPerPoll[Math.min(i++, runsPerPoll.length - 1)],
+    listCommitStatuses: async () => statuses,
   };
 }
 const ck = (name, status, conclusion = null) => ({ id: 1, name, status, conclusion });
@@ -138,14 +140,64 @@ test('watch-ci returns success on completion and failure early', async () => {
   assert.deepEqual(bad, { timedOut: false, conclusion: 'failure', failing: ['ci'] });
 });
 
+test('watch-ci reads execute-plan-scope from its commit status', async () => {
+  const sleep = async () => {};
+  const config = { ...CONFIG, required_checks: { ...CONFIG.required_checks, main: ['ci', 'execute-plan-scope'] } };
+  const scope = (state) => [{ id: 1, context: 'execute-plan-scope', state, description: state === 'success' ? 'ok' : 'drift', creator: { login: 'github-actions[bot]' } }];
+  const ci = [ck('ci', 'completed', 'success'), ck('execute-plan-scope', 'completed', 'success')];
+  assert.deepEqual(await watchCi(ciClient([ci], { config, statuses: scope('failure') }), { pr: 5, sleep }), { timedOut: false, conclusion: 'failure', failing: ['execute-plan-scope'] });
+  assert.deepEqual(await watchCi(ciClient([[ck('ci', 'completed', 'success')]], { config, statuses: scope('success') }), { pr: 5, sleep }), { timedOut: false, conclusion: 'success', failing: [] });
+});
+
 test('worker tick refuses to run unless its token is the bot (exit 3, no writes)', async () => {
   const owner = stubClient({ identity: 'KanopeeKa' });
   await assert.rejects(
-    tick(owner.client, { planId: PLAN_ID, controlIssue: 9, now: NOW, actor: 'agent' }),
+    tick(owner.client, { planId: PLAN_ID, controlIssue: 9, now: NOW, actor: 'agent', env: AGENT_ENV }),
     (e) => e.exitCode === 3 && /KanopeeKa, not pawpet-bot/.test(e.message),
   );
   assert.deepEqual(owner.writes, []);
   // the driver is not a worker: its identity is the Actions job, not checked here
   const driver = stubClient({ identity: 'KanopeeKa' });
   await tick(driver.client, { planId: PLAN_ID, controlIssue: 9, now: NOW, actor: 'driver' });
+});
+
+test('worker tick refuses when OWNER_GH_TOKEN is set (exit 3, no client calls, secret not in message)', async () => {
+  const secret = 'owner-secret-value';
+  const client = {
+    repo: 'o/r',
+    getFileAtRef: async () => {
+      throw new Error('must not load plan context when OWNER_GH_TOKEN is set');
+    },
+  };
+  await assert.rejects(
+    tick(client, {
+      planId: PLAN_ID,
+      controlIssue: 9,
+      now: NOW,
+      actor: 'agent',
+      env: { OWNER_GH_TOKEN: secret },
+    }),
+    (e) => e.exitCode === 3 && /env -u OWNER_GH_TOKEN/.test(e.message) && !e.message.includes(secret),
+  );
+});
+
+test('worker tick proceeds when OWNER_GH_TOKEN is whitespace-only', async () => {
+  const { client } = stubClient();
+  await tick(client, { planId: PLAN_ID, controlIssue: 9, now: NOW, actor: 'agent', env: { OWNER_GH_TOKEN: '  ' } });
+});
+
+test('worker tick proceeds when env omits OWNER_GH_TOKEN', async () => {
+  const { client } = stubClient();
+  await tick(client, { planId: PLAN_ID, controlIssue: 9, now: NOW, actor: 'agent', env: {} });
+});
+
+test('driver tick proceeds when OWNER_GH_TOKEN is set', async () => {
+  const driver = stubClient({ identity: 'KanopeeKa' });
+  await tick(driver.client, {
+    planId: PLAN_ID,
+    controlIssue: 9,
+    now: NOW,
+    actor: 'driver',
+    env: { OWNER_GH_TOKEN: 'owner-secret-value' },
+  });
 });

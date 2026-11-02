@@ -42,6 +42,9 @@ const FIXED_COMPANIONS = Object.freeze([
   'flutter_app/lib/features/*/*.dart',
 ]);
 
+/** Web bundle ratchet: a companion only for plans with a phase scoped under flutter_app/ (rule 3g). */
+const BUNDLE_BUDGET_FILE = 'scripts/ci/web-bundle-budget.json';
+
 /** Exception codes a phase may list in allowed_exceptions (rule 3f). */
 const EXCEPTION_GLOBS = Object.freeze({
   tests: Object.freeze([
@@ -55,7 +58,7 @@ const EXCEPTION_GLOBS = Object.freeze({
   docs: Object.freeze(['docs/**', '**/*.md']),
 });
 
-const COMPANION_CAP = 5;
+const COMPANION_CAP = 30;
 
 /** Most serious first (rule 4). */
 const VIOLATION_PRIORITY = ['drift', 'protected', 'forbidden', 'unclassified', 'companion-cap'];
@@ -155,6 +158,7 @@ function classifyPath(file, { snapshot, category, phaseId }) {
   }
 
   const companions = [...collect(phases, 'companions'), ...FIXED_COMPANIONS];
+  if (collect(phases, 'allowed_paths').some((g) => g.startsWith('flutter_app/'))) companions.push(BUNDLE_BUDGET_FILE);
   if (matchesAny(file, companions)) return verdict('companion');
   return verdict('unclassified');
 }
@@ -203,6 +207,7 @@ function evaluateDiff({ files, snapshot, category, phaseId, ownPlanFilesVerified
 module.exports = {
   PROTECTED_PATHS,
   FIXED_COMPANIONS,
+  BUNDLE_BUDGET_FILE,
   EXCEPTION_GLOBS,
   categorizePull,
   classifyPath,

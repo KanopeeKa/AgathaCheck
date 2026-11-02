@@ -16,8 +16,9 @@ tags: [agent-efficiency, execute-plan, cloud-agents]
 
 ## v2 loop
 
-Worker: `node scripts/execute_plan_runtime.js tick <plan_id> --json --actor agent` → do the returned
+Worker: `env -u OWNER_GH_TOKEN -u BOT_GH_TOKEN node scripts/execute_plan_runtime.js tick <plan_id> --json --actor agent` → do the returned
 `agent` action → `tick` again. Stop when the action's actor is `driver` or `stop` is set.
+Each command may run in a fresh shell, so prefix every `tick` with `env -u`; `unset` does not carry over.
 `gate` is an alias of `tick`.
 
 Details: [execute-plan-runtime.md](./execute-plan-runtime.md) · [execute-plan-v2.md](./plans/execute-plan-v2.md).

@@ -44,20 +44,21 @@ const MERGE_MODES = new Set(['auto']);
 const AUTONOMY = new Set(['active', 'completed', 'halted', 'revoked']);
 const ARTIFACT_POLICY = new Set(['phase-branch', 'main']);
 
-// Execute-plan v2 (contracts §3.1): hard caps in code, defaults for new plans.
+// Execute-plan v2 (contracts §3.1): hard caps in code, defaults for new plans. Generous on purpose:
+// they only stop a run that loops or makes no progress, never ordinary day-to-day work.
 const V2_CAPS = {
   window_days: 14,
-  ci_per_phase: 3,
-  launches_per_phase: 6,
-  remedial_rounds: 3,
-  sync_attempts: 2,
-  daily_launches: 30,
+  ci_per_phase: 15,
+  launches_per_phase: 25,
+  remedial_rounds: 10,
+  sync_attempts: 8,
+  daily_launches: 150,
   phases: 8,
-  companions: 5,
+  companions: 12,
 };
 const V2_DEFAULTS = {
   window_days: 7,
-  budgets: { ci_per_phase: 3, launches_per_phase: 5, remedial_rounds: 3, sync_attempts: 2, daily_launches: 20 },
+  budgets: { ci_per_phase: 8, launches_per_phase: 15, remedial_rounds: 6, sync_attempts: 5, daily_launches: 80 },
 };
 
 module.exports = {

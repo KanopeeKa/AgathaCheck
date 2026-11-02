@@ -57,7 +57,7 @@ you decide, proceed, and record (PR body, issue or debt issue). Ask one question
 
 ### Execute-plan (v2)
 
-v2 plans: `node scripts/execute_plan_runtime.js tick <plan_id> --json --actor agent` decides; workers do
+v2 plans: `env -u OWNER_GH_TOKEN -u BOT_GH_TOKEN node scripts/execute_plan_runtime.js tick <plan_id> --json --actor agent` decides; workers do
 one agent action per launch and end the turn when the decision `actor` is `driver` or `stop` is set.
 `gate` is an alias of `tick`. Spec: `docs/agent-efficiency/plans/execute-plan-v2.md` (shipped 2026-11-01).
 

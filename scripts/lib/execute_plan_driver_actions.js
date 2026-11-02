@@ -9,14 +9,21 @@
  *   bot  — GitHub client on EXECUTE_PLAN_BOT_TOKEN (writes that must trigger workflows, status, labels)
  *   botToken — EXECUTE_PLAN_BOT_TOKEN itself, handed to each launched worker (never the GITHUB_TOKEN fallback)
  *   read — GitHub client on GITHUB_TOKEN (reads, workflow_dispatch, the execute-plan-scope check run)
- *   deps — test seams: tick, completePlan, loadPlanContext, publishScopeCheck, launchPlanAgent, getAgentRunStatus
+ *   deps — test seams: tick, completePlan, loadPlanContext, runScopeCheck, publishScopeCheck, publishScopeResult,
+ *          launchPlanAgent, getAgentRunStatus
  */
 
 const { GitHubError } = require('./execute_plan_github');
 const { HOLD_LABEL } = require('./execute_plan_state');
 const { formatStatusComment, parseStatusComment } = require('./execute_plan_status');
+const { workerLaunchEnvVars } = require('../../.github/scripts/execute-plan-launch');
 
 const MAX_LAUNCHES = 50;
+const MAX_REPUBLISHES = 20;
+const SCOPE_CHECK = 'execute-plan-scope';
+// 405 wording when a required check has no usable result (probed 2026-11-02, see the v2 decision log).
+const UNCOUNTED_CHECK_RE = /Required status check "([^"]+)" (?:is expected|was not set by the expected GitHub app)/;
+const STOP_CODES = new Set(['merge-blocked', 'check-missing']);
 const MAX_LISTED_FILES = 100;
 const FENCE_RE = /```json\s*\n[\s\S]*?\n```/;
 const FIX_KINDS = new Set(['fix-ci', 'fix-scope', 'triage-review', 'resolve-conflict', 'remedial']);
@@ -33,15 +40,15 @@ function normalizeKillSwitch(value) {
 function defaultDeps() {
   const { tick, completePlan } = require('./execute_plan_tick');
   const { loadPlanContext } = require('./execute_plan_observe');
-  const { publishScopeCheck } = require('./execute_plan_scope_run');
+  const { runScopeCheck, publishScopeCheck, publishScopeResult } = require('./execute_plan_scope_run');
   const { launchPlanAgent, getAgentRunStatus } = require('../../.github/scripts/execute-plan-launch');
-  return { tick, completePlan, loadPlanContext, publishScopeCheck, launchPlanAgent, getAgentRunStatus };
+  return { tick, completePlan, loadPlanContext, runScopeCheck, publishScopeCheck, publishScopeResult, launchPlanAgent, getAgentRunStatus };
 }
 
 const ACTION_TEXT = {
   implement: 'build the phase on its branch (draft PR first)',
   'fix-ci': 'make the failing required checks green',
-  'fix-scope': 'remove or move out-of-scope files',
+  'fix-scope': 'remove out-of-scope files; if one is required for the phase, keep it out of this PR, name it in the PR description and end with "worker done: blocked execute-plan-scope: <file>" so the owner can land it as a plan-linked side PR',
   'triage-review': 'address and resolve the unresolved review threads',
   'resolve-conflict': 'merge the base into the branch and fix the conflicts',
   'resolve-sync': 'merge main into a new branch off the integration branch, fix conflicts, open a PR into integration',
@@ -71,7 +78,7 @@ function buildHandoffPrompt(decision, snapshot, planMarkdown, { base } = {}) {
     `/execute-plan ${id}`,
     '',
     `You are a worker for execute-plan ${id}. Do exactly the action below. Then run`,
-    `\`node scripts/execute_plan_runtime.js tick ${id} --json --actor agent\` and continue with what`,
+    `\`env -u OWNER_GH_TOKEN -u BOT_GH_TOKEN node scripts/execute_plan_runtime.js tick ${id} --json --actor agent\` and continue with what`,
     'it returns, until it returns an action whose actor is "driver", or a stop. Then end your turn',
     'with one line: "worker done: <state>".',
     '',
@@ -82,9 +89,20 @@ function buildHandoffPrompt(decision, snapshot, planMarkdown, { base } = {}) {
     `Evidence: ${evidenceText(action)}`,
     `Plan file: .agents/plans/${id}.md (read it first; never edit it or the snapshot)`,
     '',
-    `Rules: if no PR exists, open a draft PR into ${resolvedBase} right after your first commit; push often;`,
-    'mark the PR ready only after ./scripts/pre-push-changed.sh is green; never touch protected',
-    'paths; never approve, label, merge or close anything; never edit the control issue yourself.',
+    `Rules: if no PR exists, open a draft PR into ${resolvedBase} right after your first commit. Run`,
+    './scripts/pre-push-changed.sh before every push and push only when it is green (one push per batch of',
+    'fixes: every push costs a full CI run and counts as an attempt against the phase budget); mark the PR',
+    'ready only after it is green; never touch protected paths; never approve, label, merge or close',
+    'anything; never edit the control issue yourself.',
+    'If a failing check cannot be fixed inside your scope (it needs a protected path, a CI gate or another',
+    'budget file; the web bundle budget below is the exception), do not work around it and do not retry: describe the cause in the PR description and end your',
+    'turn with "worker done: blocked <check>: <reason>".',
+    '',
+    'Web bundle budget (scripts/ci/web-bundle-budget.json): when only check-web-bundle-budget fails and the',
+    'overshoot comes from this phase\'s planned code (no new package or asset), raise the cap in this PR to',
+    'the measured size plus about 1% and give before/after bytes in the PR body. Never cut planned scope to',
+    'fit. A jump over about 1.5% of main.dart.js, or one you cannot explain, gets one trimming attempt',
+    '(deferred import, drop the asset); if it is still over, report it as blocked with the numbers.',
   ].join('\n');
 }
 
@@ -152,6 +170,62 @@ async function enforceStop(clients, decision, now) {
   return `stop enforced (${reason}) on ${done.length ? done.join(', ') : 'no open PR'} at ${now}`;
 }
 
+/** Re-evaluate and publish `execute-plan-scope` on the PR head (trusted `main` code, `GITHUB_TOKEN`); recorded once per head. */
+async function republishScope(clients, ctx, { pr, headSha }, now) {
+  const { bot, read, deps } = clients;
+  const pull = await bot.getPull(pr);
+  if (headSha && pull.head.sha !== headSha) return `#${pr} head moved to ${pull.head.sha.slice(0, 7)}: nothing republished`;
+  let outcome;
+  try {
+    outcome = await deps.runScopeCheck(read, {
+      prNumber: pr,
+      headSha: pull.head.sha,
+      headRef: pull.head.ref,
+      baseRef: pull.base.ref,
+      headRepo: pull.head.repo && pull.head.repo.full_name,
+      repo: read.repo,
+      now: new Date(now),
+    });
+  } catch (e) {
+    outcome = { conclusion: 'failure', title: 'drift', summary: `scope check could not complete: ${e.message}` };
+  }
+  outcome = await deps.publishScopeResult(read, { headSha: pull.head.sha, outcome, now: new Date(now) });
+  await updateStatus(bot, ctx, (s) => {
+    const d = s.dispatched || {};
+    const list = [...(d.scope_republish || []), { sha: pull.head.sha, at: now }].slice(-MAX_REPUBLISHES);
+    return { ...s, dispatched: { ...d, scope_republish: list } };
+  }, now);
+  return `republished ${SCOPE_CHECK} on #${pr}: ${outcome.conclusion} (${outcome.title})`;
+}
+
+function stopError(code, detail, pr) {
+  const err = new Error(detail);
+  err.code = code;
+  err.detail = detail;
+  err.pr = pr;
+  return err;
+}
+
+/**
+ * Merge directly. A 405 for an uncounted `execute-plan-scope` republishes it once per head; any
+ * other uncounted check, or a second refusal, stops `check-missing`; every other refusal `merge-blocked`.
+ */
+async function mergeOrRecover(clients, ctx, a, now) {
+  try {
+    await clients.bot.mergePull(a.pr, { method: a.method });
+    return null;
+  } catch (e) {
+    const detail = e instanceof GitHubError ? e.message : String(e);
+    const m = e instanceof GitHubError && e.status === 405 ? UNCOUNTED_CHECK_RE.exec(detail) : null;
+    if (!m) throw stopError('merge-blocked', detail, a.pr);
+    if (m[1] === SCOPE_CHECK && !a.scope_republished) {
+      const done = await republishScope(clients, ctx, { pr: a.pr, headSha: a.head_sha }, now);
+      return `merge refused (${SCOPE_CHECK} not counted); ${done}`;
+    }
+    throw stopError('check-missing', detail, a.pr);
+  }
+}
+
 async function launchWorker(clients, ctx, decision, now) {
   const { bot, deps, cursorApiKey, botToken } = clients;
   const { snapshot, config } = ctx;
@@ -177,7 +251,7 @@ async function launchWorker(clients, ctx, decision, now) {
     startingRef: a.branch,
     prompt,
     model,
-    envVars: { GH_TOKEN: botToken, EXECUTE_PLAN_TOKEN: botToken },
+    envVars: workerLaunchEnvVars(botToken),
   });
   const key = decision.phase || 'release';
   await updateStatus(bot, ctx, (s) => ({
@@ -203,22 +277,13 @@ async function executeDriverAction(clients, ctx, decision, now) {
         return `auto-merge armed on #${a.pr} (${a.method})`;
       } catch (e) {
         if (!(e instanceof GitHubError && /clean status/i.test(e.message))) throw e;
-        await bot.mergePull(a.pr, { method: a.method });
-        return `#${a.pr} already clean: merged (${a.method})`;
+        return (await mergeOrRecover(clients, ctx, a, now)) || `#${a.pr} already clean: merged (${a.method})`;
       }
     }
-    case 'merge': {
-      try {
-        await bot.mergePull(a.pr, { method: a.method });
-        return `merged #${a.pr} (${a.method})`;
-      } catch (e) {
-        const detail = e instanceof GitHubError ? e.message : String(e);
-        const err = new Error(detail);
-        err.code = 'merge-blocked';
-        err.detail = detail;
-        throw err;
-      }
-    }
+    case 'merge':
+      return (await mergeOrRecover(clients, ctx, a, now)) || `merged #${a.pr} (${a.method})`;
+    case 'republish-scope':
+      return republishScope(clients, ctx, { pr: a.pr, headSha: a.head_sha }, now);
     case 'update-branch':
       await bot.updateBranch(a.pr);
       return `updated branch of #${a.pr}`;
@@ -304,10 +369,12 @@ async function runDriverPass(clients, { planId, issueNumber, now = isoNow(), kil
       outcome = await launchWorker(all, ctx, decision, now);
     }
   } catch (e) {
-    if (e.code === 'merge-blocked') {
-      await updateStatus(bot, ctx, (s) => ({ ...s, state: 'stopped', stop: { reason: 'merge-blocked', detail: e.detail, at: now } }), now);
+    if (STOP_CODES.has(e.code)) {
+      await updateStatus(bot, ctx, (s) => ({ ...s, state: 'stopped', stop: { reason: e.code, detail: e.detail, at: now } }), now);
       await bot.addLabels(ctx.issueNumber, ['needs-owner']);
-      outcome = `merge blocked: ${e.detail}`;
+      // Auto-merge may already be armed: GitHub would merge once the missing check shows up.
+      if (e.pr) await enforceStop(all, { stop: { reason: e.code }, action: { args: { prs: [e.pr] } } }, now);
+      outcome = `${e.code === 'merge-blocked' ? 'merge blocked' : 'check missing'}: ${e.detail}`;
     } else throw e;
   }
   if (outcome) log(`plan ${planId}: ${outcome}`);

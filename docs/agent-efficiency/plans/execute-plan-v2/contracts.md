@@ -3,7 +3,7 @@ title: Execute-plan v2 — data contracts
 owner: Kanopee
 audience: agent
 status: active
-last_updated: 2026-10-15
+last_updated: 2026-11-02
 tags: [agent, execute-plan, autonomy]
 ---
 # Execute-plan v2 — data contracts
@@ -14,7 +14,7 @@ decision logic that consumes these contracts is in [state-machine.md](./state-ma
 ## 3.1 Snapshot v2 (`.agents/plans/<plan_id>.snapshot.json`)
 
 Every field is immutable after approval. There are **no runtime fields**: progress is derived from
-GitHub (state-machine §4). This exact object is the worked example of the hash vector in §3.4.
+GitHub (state-machine §4). This exact object is the worked example of the hash vector in §3.4 (its budgets are explicit values, not the current `V2_DEFAULTS`).
 
 ```json
 {
@@ -60,7 +60,7 @@ GitHub (state-machine §4). This exact object is the worked example of the hash 
 | `approved_until` | `created_at + window_days`; window ≤ 14 days (cap in code). Must equal the `until` of the **approve** comment (§3.3). |
 | `settings.budgets.*` | Integers ≥ 1, each ≤ the cap in `V2_CAPS` (`scripts/lib/execute_plan_constants.js`); validation rejects higher values. |
 | `protected_paths_version` | Informational. The scope check always uses the protected set from `main`. |
-| `phases[]` | 1–8 entries, ordered; one PR each. `id` = `"1"`, `"2"`, …; `branch` = `cursor/<plan_id>-p<id>`; `allowed_paths` non-empty globs; `allowed_exceptions` ⊆ `{"tests","docs"}`; `companions` ≤ 5 globs; `exit_checklist` non-empty strings. |
+| `phases[]` | 1–8 entries, ordered; one PR each. `id` = `"1"`, `"2"`, …; `branch` = `cursor/<plan_id>-p<id>`; `allowed_paths` non-empty globs; `allowed_exceptions` ⊆ `{"tests","docs"}`; `companions` ≤ 12 globs (`V2_CAPS.companions`); `exit_checklist` non-empty strings. |
 | `approval_hash` | §3.4. The only field excluded from its own input. |
 
 Globs: `**` matches any number of path segments, `*` matches within one segment. Reuse
@@ -179,6 +179,7 @@ writes use the bot token (one identity, item 13). Valid example of the JSON bloc
 | `launches` | array, newest last, keep last 50 | driver | One entry per launch. |
 | `dispatched.preuat_heads` | array of SHAs | driver | `main` heads for which Pre-UAT was dispatched (once per head). |
 | `dispatched.deploy_tags` | array of tags | driver | Tags re-dispatched to Deploy UAT (once per tag). |
+| `dispatched.scope_republish` | array of `{ sha, at }` (last 20; absent until first use) | driver | PR heads whose `execute-plan-scope` status the driver re-evaluated and republished; an entry counts only when `at` is after the epoch (state-machine PR-ladder 3b/10a). |
 | `release` | `{ "pr": n, "merge_sha": s }`\|null | tick | Set when the release PR merges. |
 | `uat` | `{ "preuat_run": id, "tag": s, "deploy_run": id, "tier3": "pending"\|"success"\|"failure" }`\|null | tick | Evidence so far. |
 | `stop` | `{ "reason": s, "detail": s, "at": ISO }`\|null | tick | Last STOP; ignored when older than the epoch. |
@@ -196,7 +197,7 @@ Built by `buildHandoffPrompt(decision, snapshot, planMarkdown)`; placeholders in
 /execute-plan <plan_id>
 
 You are a worker for execute-plan <plan_id>. Do exactly the action below. Then run
-`node scripts/execute_plan_runtime.js tick <plan_id> --json --actor agent` and continue with what
+`env -u OWNER_GH_TOKEN -u BOT_GH_TOKEN node scripts/execute_plan_runtime.js tick <plan_id> --json --actor agent` and continue with what
 it returns, until it returns an action whose actor is "driver", or a stop. Then end your turn
 with one line: "worker done: <state>".
 
@@ -207,9 +208,20 @@ Forbidden: the protected set (scripts/lib/execute_plan_scope.js) + <forbidden_pa
 Evidence: <failing check names / unresolved thread urls / conflict files / failing shards>
 Plan file: .agents/plans/<plan_id>.md (read it first; never edit it or the snapshot)
 
-Rules: if no PR exists, open a draft PR into <base> right after your first commit; push often;
-mark the PR ready only after ./scripts/pre-push-changed.sh is green; never touch protected
-paths; never approve, label, merge or close anything; never edit the control issue yourself.
+Rules: if no PR exists, open a draft PR into <base> right after your first commit. Run
+./scripts/pre-push-changed.sh before every push and push only when it is green (one push per batch of
+fixes: every push costs a full CI run and counts as an attempt against the phase budget); mark the PR
+ready only after it is green; never touch protected paths; never approve, label, merge or close
+anything; never edit the control issue yourself.
+If a failing check cannot be fixed inside your scope (it needs a protected path, a CI gate or another
+budget file; the web bundle budget below is the exception), do not work around it and do not retry: describe the cause in the PR description and end your
+turn with "worker done: blocked <check>: <reason>".
+
+Web bundle budget (scripts/ci/web-bundle-budget.json): when only check-web-bundle-budget fails and the
+overshoot comes from this phase's planned code (no new package or asset), raise the cap in this PR to
+the measured size plus about 1% and give before/after bytes in the PR body. Never cut planned scope to
+fit. A jump over about 1.5% of main.dart.js, or one you cannot explain, gets one trimming attempt
+(deferred import, drop the asset); if it is still over, report it as blocked with the numbers.
 ```
 
 ## 3.7 `tick` output (`--json`) and actions
@@ -230,13 +242,15 @@ non-null except in state `complete`; on a stop, `action.kind` is `enforce-stop`.
 |-------|------|------|---------|
 | agent | `implement` | phase, branch, base, pr? | Build the phase on its branch; draft PR first. |
 | agent | `fix-ci` | pr, branch, failing (check names) | Make the failing required checks green. |
-| agent | `fix-scope` | pr, branch, violations `[{file, reason}]` | Remove or move out-of-scope files. |
+| agent | `fix-scope` | pr, branch, violations `[{file, reason}]` | Remove out-of-scope files; a file the phase truly needs is left out, named in the PR description and reported as `worker done: blocked execute-plan-scope: <file>` so the owner lands it as a plan-linked side PR (runbooks §7.5). |
 | agent | `triage-review` | pr, branch, threads (urls) | Address and resolve review threads. |
 | agent | `resolve-conflict` | pr, branch, base | Merge the base into the branch and fix conflicts. |
 | agent | `resolve-sync` | sync_pr, branch `cursor/<id>-sync-<n>` | Merge `main` into a new branch off integration, fix conflicts, PR into integration. |
 | agent | `remedial` | branch `cursor/<id>-remedial-<n>`, failing (shards or `deploy-smoke`), evidence urls | Fix the UAT failure; PR into `main`. |
 | driver | `create-phase-branch` | phase, branch, from_sha (integration head) | Create the phase branch before the first launch. |
-| driver | `arm-auto-merge` | pr, method (`squash` / `merge` for sync PRs) | Enable auto-merge; if GitHub answers that the PR is already clean, merge it directly. |
+| driver | `arm-auto-merge` | pr, method (`squash` / `merge` for sync PRs), head_sha, scope_republished | Enable auto-merge; if GitHub answers that the PR is already clean, merge it directly (same refusal handling as `merge`). |
+| driver | `merge` | pr, method, head_sha, scope_republished | Merge directly after an auto-merge stall. A 405 naming an uncounted `execute-plan-scope` (`is expected` / `was not set by the expected GitHub app`) with `scope_republished: false` → run `republish-scope` instead; any other uncounted required check, or a second refusal → STOP `check-missing`; any other refusal → STOP `merge-blocked`. Both stops add `needs-owner` and are enforced on that PR in the same pass (auto-merge disabled, `plan-stopped` published), since an armed auto-merge would otherwise merge once the check appears. |
+| driver | `republish-scope` | pr, head_sha | Re-run the scope evaluation from trusted `main` code and post the `execute-plan-scope` status with `GITHUB_TOKEN` through `publishScopeResult` (a green result is re-checked against STOP first); record the head in `dispatched.scope_republish`. No-op when the head moved. |
 | driver | `update-branch` | pr | PR is behind a strict base. |
 | driver | `open-sync-pr` | head `main`, base integration | Integration is behind `main` before the release. |
 | driver | `open-release-pr` | head integration, base `main` | All phases merged and integration not behind. |

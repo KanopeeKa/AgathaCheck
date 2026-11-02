@@ -28,10 +28,13 @@ Cursor-created PRs are unchanged** — they go through the Cursor GitHub App (`c
 5. **Needs a second explicit confirmation in the same message:**
    - Any write that changes `.github/workflows/**`, `.github/scripts/agent-safety-lib.js`, environments or secrets
    - Force-push, deleting others' branches, merging a security/CI PR the user did not name
-6. **Execute-plan:** never run `tick` or worker steps in owner mode — workers must act as `bot_login`.
-7. The next chat defaults back to the bot (dashboard `GH_TOKEN`).
+6. **Never in owner mode:** posting `approve-autonomous` / `resume-autonomous` comments, and removing the
+   `needs-owner` or `autonomous-revoked` labels (do these in the GitHub web interface). Revoking stays allowed.
+7. **Execute-plan:** never run `tick` or worker steps in owner mode — workers must act as `bot_login`.
+   `tick` refuses to run while `OWNER_GH_TOKEN` is set.
+8. The next chat defaults back to the bot (dashboard `GH_TOKEN`).
 
 ## If `OWNER_GH_TOKEN` is missing
 
-Stop and ask the user to add it under Cursor → Cloud Agents → Secrets (owner classic PAT, `repo`; add `workflow`
-only if they accept workflow-edit risk). Secrets reach new VMs only — an already-running agent will not see it.
+Stop and ask the user to add it under Cursor → Cloud Agents → Secrets (owner classic PAT, `repo` only — see
+`docs/agent-efficiency/plans/execute-plan-v2/runbooks-proof-retirement.md` §7.1). Secrets reach new VMs only — an already-running agent will not see it.

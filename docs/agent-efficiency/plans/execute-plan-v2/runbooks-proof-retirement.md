@@ -3,7 +3,7 @@ title: Execute-plan v2 — owner runbooks, proof run, retirement
 owner: Kanopee
 audience: both
 status: active
-last_updated: 2026-10-15
+last_updated: 2026-11-02
 tags: [agent, execute-plan, autonomy, runbook]
 ---
 # Execute-plan v2 — owner runbooks, proof run, retirement
@@ -31,10 +31,15 @@ owned by another personal account (`owner.type = User`, live read), so this is t
    and add it to the owner's GitHub Project. Dashboard secrets:
    - **`GH_TOKEN`** = `pawpet-bot` classic PAT (`repo` only) — **default** for Cloud Agents.
    - **`OWNER_GH_TOKEN`** = owner PAT — only when the user invokes **`/runasme`** (skill:
-     `.cursor/skills/run-as-me/SKILL.md`).
+     `.cursor/skills/run-as-me/SKILL.md`). Classic PAT (fine-grained PATs are not an option here):
+     scope **`repo` only** — no `workflow`, no `admin:*`, no `delete_repo` — and an expiry of 90 days
+     at most. Approvals and resumes are typed by the owner in the GitHub web interface, never posted
+     by an agent. **Accepted risk:** a session in owner mode holds the full owner token for that
+     session; the owner opts in per message and supervises it.
    - **`BOT_GH_TOKEN`** optional legacy alias of the bot PAT; prefer a single bot value in `GH_TOKEN`.
    Plan workers and Actions-dispatched agents receive the bot token from **`EXECUTE_PLAN_BOT_TOKEN`**
-   via launch `envVars` (`GH_TOKEN`, `EXECUTE_PLAN_TOKEN`). Keep `cursor_api_key` in the `automation`
+   via launch `envVars` (`GH_TOKEN`, `EXECUTE_PLAN_TOKEN`, with **`OWNER_GH_TOKEN`** and **`BOT_GH_TOKEN`**
+   blanked). Keep `cursor_api_key` in the `automation`
    environment once environment secrets are configured.
 6. Verify from any shell with the token in `T`:
    - `curl -s -H "Authorization: Bearer $T" https://api.github.com/user | jq -r .login` → the bot login.
@@ -131,7 +136,17 @@ Keep repository-level copies of moved secrets until the #1941 PR is merged and v
 - **When a run stops** (label `needs-owner`, reason in the status comment): fix the cause if needed
   (for example merge a fix to `main`), then remove `needs-owner` (and `autonomous-revoked` if
   present) and comment `resume-autonomous <plan_id> sha256:<same hash> until <ISO date ≤ 14 days ahead>`.
-  Scope stays the same; time and budgets restart from that comment. Changing scope means a new plan.
+  Scope stays the same; time and budgets restart from that comment. Changing the plan's **goal** means a new plan.
+- **Out-of-scope fix the plan needs** (a `ci-budget` stop whose detail names `execute-plan-scope`
+  `unclassified`/`companion-cap`/`too-many-files`): not a scope change. Split the fix into an ordinary PR from a
+  non-plan branch into the plan's integration branch (not `main`). Order matters: (1) add the `execute-plan-hold`
+  label to the phase PR so no worker is launched; (2) `resume-autonomous` (a side PR's scope check is red
+  `plan-stopped` while the plan is stopped); (3) merge the side PR; (4) remove the hold. The phase PR picks the fix
+  up via `update-branch`/`resolve-conflict`.
+  Convention, **not enforced yet**: body says `Unblocks: plan <plan_id> phase <n>` and names the failing check or
+  checklist item; one outcome; no protected or forbidden paths. The scope check does not evaluate such a PR (category
+  `null`), so the owner reviews it; the advisory `Forbidden path check` still applies. An enforced `support`
+  category is deferred (decision log 2026-11-02). A fix for a different goal is a new plan.
 - **Revoke**: add label `autonomous-revoked` or comment `revoke-autonomous <plan_id>`. Auto-merge
   is disabled and the scope check turns red on every open plan PR within one driver pass.
 - **Kill switch**: set `EXECUTE_PLAN_DRIVER=off` — the approve and driver workflows stop acting at once.

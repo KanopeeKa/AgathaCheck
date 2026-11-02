@@ -7,6 +7,36 @@ const FETCH_TIMEOUT_MS = 30_000;
 const TERMINAL_STATUSES = new Set(['FINISHED', 'ERROR', 'CANCELLED', 'EXPIRED']);
 const RUNNING_STATUSES = new Set(['CREATING', 'RUNNING']);
 
+const BLANKED_LAUNCH_KEYS = Object.freeze(['OWNER_GH_TOKEN', 'BOT_GH_TOKEN']);
+
+/**
+ * Cursor launch envVars for plan workers and issue/dispatch agents.
+ * Blanks owner/bot dashboard secrets so workers cannot act as the owner.
+ * @param {string} [botToken]
+ * @returns {Record<string, string>}
+ */
+function workerLaunchEnvVars(botToken) {
+  const blanked = { OWNER_GH_TOKEN: '', BOT_GH_TOKEN: '' };
+  if (botToken && String(botToken).trim()) {
+    return {
+      GH_TOKEN: botToken,
+      EXECUTE_PLAN_TOKEN: botToken,
+      ...blanked,
+    };
+  }
+  return blanked;
+}
+
+/** Cursor API rejects empty envVars values; omit blanks at the HTTP boundary only. */
+function envVarsForCursorLaunch(envVars) {
+  if (!envVars || typeof envVars !== 'object') return undefined;
+  const out = {};
+  for (const [key, value] of Object.entries(envVars)) {
+    if (value !== '') out[key] = value;
+  }
+  return Object.keys(out).length > 0 ? out : undefined;
+}
+
 /**
  * @param {typeof fetch} fetchImpl
  */
@@ -82,8 +112,9 @@ async function launchPlanAgent({
   if (model) {
     body.model = { id: model };
   }
-  if (envVars && Object.keys(envVars).length > 0) {
-    body.envVars = envVars;
+  const launchEnv = envVarsForCursorLaunch(envVars);
+  if (launchEnv) {
+    body.envVars = launchEnv;
   }
 
   const launched = await cursorApi(fetchFn, 'POST', '/v1/agents', apiKey, body);
@@ -138,4 +169,7 @@ module.exports = {
   launchPlanAgent,
   getAgentRunStatus,
   CURSOR_API_BASE,
+  workerLaunchEnvVars,
+  BLANKED_LAUNCH_KEYS,
+  envVarsForCursorLaunch,
 };

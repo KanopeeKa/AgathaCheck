@@ -3,7 +3,7 @@ title: Execute-plan v2 — observations, state machine, scenarios
 owner: Kanopee
 audience: agent
 status: active
-last_updated: 2026-10-15
+last_updated: 2026-11-02
 tags: [agent, execute-plan, autonomy]
 ---
 # Execute-plan v2 — observations, state machine, scenarios
@@ -83,8 +83,10 @@ Times are ISO-8601 UTC strings. `null` means "does not exist". Example = the sce
 |-------|------|
 | `ready_at` | Latest `ready_for_review` timeline event, else `created_at` when the PR was never a draft, else `null`. |
 | `mergeable_state` | From `GET /pulls/{n}`; when GitHub returns `unknown`, observe re-reads once after 3 s, then keeps `unknown`. |
-| `checks` | One entry per name in `config.required_checks.integration` (base = integration) or `.main` (base = `main`): the latest check run with that name on `head_sha`. Absent → `{ "status": "missing", "conclusion": null }`. Includes `completed_at` when GitHub provides it. For `execute-plan-scope`, `reason` = the check run `output.title` (`ok`, `unclassified`, `companion-cap`, `drift`, `protected`, `forbidden`, `plan-stopped`, `too-many-files`). |
-| `failed_attempts_since_epoch` | Number of **distinct commit SHAs** of the PR (`GET /pulls/{n}/commits`) with at least one required check run concluding `failure`, `timed_out` or `action_required` and `completed_at` after the epoch. One push = one attempt. |
+| `checks` | One entry per name in `config.required_checks.integration` (base = integration) or `.main` (base = `main`): the latest check run with that name on `head_sha`. `execute-plan-scope` is a **commit status**: the newest status with that context whose creator is `github-actions[bot]` (statuses from any other account are ignored, matching the rulesets' GitHub Actions pin); `success` → `conclusion: success`, `failure`/`error` → `failure`, `pending` → `status: in_progress`; `completed_at` = the status time. A head without such a status falls back to a check run of that name (heads published before 2026-11-02). Absent → `{ "status": "missing", "conclusion": null }`. Includes `completed_at` when GitHub provides it. For `execute-plan-scope`, `reason` = the status description up to the first `:` (the check run `output.title` on the fallback) (`ok`, `unclassified`, `companion-cap`, `drift`, `protected`, `forbidden`, `plan-stopped`, `too-many-files`). |
+| `checks_settled_at` | Newest `completed_at` over **every** check run on `head_sha` once all of them are `completed`; `null` while any is queued or running, or when the head has none. (`ci-gate / CI passed` only appears when CI ends, so "missing" alone means nothing while CI runs.) |
+| `head_activity_at` | Newest of the head commit's committer date (`GET /pulls/{n}/commits`) and every head check run's `started_at` / `completed_at`; `null` when none is known. |
+| `failed_attempts_since_epoch` | Number of **distinct commit SHAs** of the PR (`GET /pulls/{n}/commits`) with at least one required check run concluding `failure`, `timed_out` or `action_required` and `completed_at` after the epoch, or a trusted `execute-plan-scope` status in `failure`/`error` created after the epoch. One push = one attempt. |
 | `unresolved_threads` | GraphQL `reviewThreads(first:100)` where `isResolved == false` → `[{ "url", "path", "author" }]`. |
 | `copilot_review_submitted` | A review whose author login starts with `copilot` exists. |
 | `owner_approved` | A review in state `APPROVED` by a login in `config.owners`. |
@@ -179,10 +181,13 @@ method `merge` (scope is always green for sync PRs). S2 `release.pr == null` and
    ensures the repo label exists. Removing the label resumes on the next event/heartbeat.
 2. `draft` → the draft action (agent, L-rules), unless rule 1b applies.
 3. Scope check `reason ∈ {drift, protected, forbidden}` → STOP `drift`.
+3b. Scope check `failure` with reason `plan-stopped` (left by an earlier `enforce-stop`; the plan is
+   running, D1) → head already in `status.dispatched.scope_republish` after the epoch ? STOP
+   `scope-stale` : driver `republish-scope`.
 4. Any required check concluded `failure`/`timed_out`/`action_required` on `head_sha`:
    attempts ≥ `ci_per_phase` → STOP `ci-budget`; else, when the only failing check is
    `execute-plan-scope` with reason `unclassified`/`companion-cap`/`too-many-files` → agent
-   `fix-scope`; else agent `fix-ci` (L-rules).
+   `fix-scope`; else agent `fix-ci` (L-rules). The `ci-budget` STOP for a fixable scope failure carries the side-PR hint in its detail.
 5. `unresolved_threads` non-empty → agent `triage-review` (L-rules).
 6. `mergeable_state == "dirty"` → release PR: driver `open-sync-pr`; other PRs: agent
    `resolve-conflict` (L-rules).
@@ -190,10 +195,17 @@ method `merge` (scope is always green for sync PRs). S2 `release.pr == null` and
 8. Release PR and `settings.release_owner_review` and not `owner_approved` → `wait(owner-review)`.
 9. `auto_merge_enabled == false`: base `main` and not `copilot_review_submitted` and
    `now − ready_at < 15 min` → `wait(copilot)`; else driver `arm-auto-merge`.
+10a. `auto_merge_enabled == true` and a required check is `missing` and (`now − checks_settled_at ≥ 15 min`
+   or `now − head_activity_at ≥ 2 h`) → the missing set includes `execute-plan-scope` and the head is not yet in
+   `dispatched.scope_republish` after the epoch ? driver `republish-scope` : STOP `check-missing`.
+   The driver wakes on its 30-min heartbeat or on events, so this fires 15–45 min after CI settles.
 10. `auto_merge_enabled == true`: any required check not `success` on `head_sha`, or the newest
    successful check completed less than 10 min ago → `wait(checks)`; else driver `merge` (same
-   method as arm-auto-merge). If GitHub refuses the merge → STOP `merge-blocked` (driver adds
-   `needs-owner`; detail = GitHub message).
+   method as arm-auto-merge). `arm-auto-merge` and `merge` carry `head_sha` and
+   `scope_republished`. If GitHub refuses the merge (either action), contracts §3.7 `merge`: an
+   uncounted `execute-plan-scope` is republished once per head; then STOP `check-missing`; any
+   other refusal STOP `merge-blocked` (driver adds `needs-owner`, then enforces the stop on that PR
+   in the same pass: auto-merge off, `execute-plan-scope` = `plan-stopped`; detail = GitHub message).
 
 **U — UAT stage** (`uat` non-null; `C` = newest `preuat_runs` entry with `contains_merge` and
 `status == "completed"` and `conclusion ∉ {cancelled, skipped}`).
@@ -233,7 +245,9 @@ State names written to the status comment: `stopped`, `phase:pending`, `phase:im
 | `ci-budget` | PR-ladder 4 |
 | `launch-budget` | L4 (per-phase launches only; the daily cap waits) |
 | `pr-blocked` | PR-ladder 1 |
-| `merge-blocked` | PR-ladder 10 — direct merge after auto-merge stall |
+| `merge-blocked` | PR-ladder 10 — GitHub refused the direct merge for a reason other than an uncounted required check |
+| `check-missing` | PR-ladder 10a, or PR-ladder 10 merge refused for an uncounted required check after the one allowed `republish-scope` |
+| `scope-stale` | PR-ladder 3b — `plan-stopped` still on the head after a republish |
 | `sync-conflict` | S1b |
 | `integration-missing` | P2 — integration branch gone and `head_sha` unavailable |
 | `preuat-budget` | U3 / U7 |
@@ -295,6 +309,12 @@ WP5 writes U):
 | `p-dirty-resolve-conflict.json` | PR-ladder 6 | agent `resolve-conflict` |
 | `p-auto-merge-armed-wait.json` | PR-ladder 10 | driver `wait` (`checks`) |
 | `p-auto-merge-stale-merge.json` | PR-ladder 10 | driver `merge` after green ≥ 10 min |
+| `p-scope-plan-stopped-republish.json` | PR-ladder 3b | driver `republish-scope` (pre-epoch ledger entry ignored) |
+| `p-scope-plan-stopped-twice-stop.json` | PR-ladder 3b | stop `scope-stale` |
+| `p-check-missing-running-wait.json` | PR-ladder 10a | driver `wait` (`checks`) while a check run is unfinished |
+| `p-check-missing-settled-republish.json` | PR-ladder 10a | driver `republish-scope` |
+| `p-check-missing-republished-stop.json` | PR-ladder 10a | stop `check-missing` |
+| `p-check-missing-ci-hard-stop.json` | PR-ladder 10a | stop `check-missing` (2 h without activity on the head; CI is never republished) |
 | `p-merged-next-phase.json` | P1–P2 | phase 2 / driver `create-phase-branch` |
 | `r-release-merged-integ-deleted.json` | D3, observe | `release:merged` / driver `wait` (`preuat`) when integration branch deleted |
 | `p-integ-deleted-stop-create.json` | P2 | stop `integration-missing` (no `create-phase-branch` with null `from_sha`) |

@@ -7,6 +7,8 @@ const {
   launchPlanAgent,
   getAgentRunStatus,
   CURSOR_API_BASE,
+  workerLaunchEnvVars,
+  BLANKED_LAUNCH_KEYS,
 } = require('../../.github/scripts/execute-plan-launch');
 
 const API_KEY = 'test-api-key';
@@ -65,7 +67,10 @@ test('launch sends envVars in the request body when given, and omits them otherw
     },
   });
   const base = { apiKey: API_KEY, repoUrl: REPO_URL, startingRef: STARTING_REF, prompt: 'p', fetchImpl };
-  await launchPlanAgent({ ...base, envVars: { GH_TOKEN: 't', EXECUTE_PLAN_TOKEN: 't' } });
+  await launchPlanAgent({
+    ...base,
+    envVars: { GH_TOKEN: 't', EXECUTE_PLAN_TOKEN: 't', OWNER_GH_TOKEN: '', BOT_GH_TOKEN: '' },
+  });
   await launchPlanAgent(base);
   await launchPlanAgent({ ...base, envVars: {} });
   assert.deepEqual(bodies[0].envVars, { GH_TOKEN: 't', EXECUTE_PLAN_TOKEN: 't' });
@@ -272,4 +277,23 @@ test('status unknown value → UNKNOWN', async () => {
   });
 
   assert.equal(status, 'UNKNOWN');
+});
+
+test('workerLaunchEnvVars with bot token', () => {
+  assert.deepEqual(workerLaunchEnvVars('bot-tok'), {
+    GH_TOKEN: 'bot-tok',
+    EXECUTE_PLAN_TOKEN: 'bot-tok',
+    OWNER_GH_TOKEN: '',
+    BOT_GH_TOKEN: '',
+  });
+});
+
+test('workerLaunchEnvVars without bot token', () => {
+  assert.deepEqual(workerLaunchEnvVars(''), { OWNER_GH_TOKEN: '', BOT_GH_TOKEN: '' });
+  assert.deepEqual(workerLaunchEnvVars(undefined), { OWNER_GH_TOKEN: '', BOT_GH_TOKEN: '' });
+  assert.deepEqual(workerLaunchEnvVars('  '), { OWNER_GH_TOKEN: '', BOT_GH_TOKEN: '' });
+});
+
+test('BLANKED_LAUNCH_KEYS', () => {
+  assert.deepEqual(BLANKED_LAUNCH_KEYS, ['OWNER_GH_TOKEN', 'BOT_GH_TOKEN']);
 });

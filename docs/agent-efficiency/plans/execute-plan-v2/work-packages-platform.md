@@ -22,7 +22,7 @@ lives in `scripts/lib/execute_plan_*.js` (protected, tested) with a small wrappe
 | Operation | Token | Why |
 |-----------|-------|-----|
 | Reads | `GITHUB_TOKEN` | — |
-| Create/update the `execute-plan-scope` **check run** | `GITHUB_TOKEN` | A PAT cannot create check runs, so the bot cannot forge it. |
+| Post the `execute-plan-scope` **commit status** (was a check run until 2026-11-02, see the v2 decision log) | `GITHUB_TOKEN` | The rulesets pin the context to GitHub Actions, so a status the bot posts with its PAT never counts. |
 | `workflow_dispatch` (Pre-UAT, Deploy UAT) | `GITHUB_TOKEN` | Dispatch events do start workflows. |
 | Create branches, open sync/release PRs, `update-branch`, enable/disable auto-merge, merge | `EXECUTE_PLAN_BOT_TOKEN` | Must trigger CI and Pre-UAT (B1). |
 | Issue comments, labels, status comment, closing the control issue | `EXECUTE_PLAN_BOT_TOKEN` | One identity edits the status comment (item 13). |
@@ -122,8 +122,15 @@ async function listActivePlans(client)              // open issues labelled exec
 // execute_plan_scope_run.js
 /** @returns {{ conclusion, title, summary, planId|null }} */
 async function runScopeCheck(client, { prNumber, headSha, headRef, baseRef, headRepo, repo, now })
-async function publishScopeCheck(client, { headSha, conclusion, title, summary }) // create or update the check run named execute-plan-scope
+async function publishScopeCheck(client, { headSha, conclusion, title, summary, targetUrl }) // post the commit status execute-plan-scope; update a legacy check run of that name
+async function publishScopeResult(client, { headSha, outcome, targetUrl, now }) // re-check STOP for a green plan outcome, then publishScopeCheck; → final outcome
 ```
+
+**`publishScopeResult` rule (stale-run guard):** a `success` outcome with a `planId` reloads the plan
+control state just before posting. Stopped → publish `failure` / `plan-stopped`; the re-check throws →
+`failure` / `drift` (fail closed). So a run that evaluated before a STOP cannot post green after
+`enforce-stop` turned the head red. `check-diff --publish` only runs inside GitHub Actions
+(`GITHUB_ACTIONS=true`): a status posted with a personal token is not counted by the rulesets.
 
 **`runScopeCheck` rules**
 1. `headRepo !== repo` (fork) → `success`, title `ok`, summary `not an execute-plan PR (fork)`.
@@ -146,7 +153,8 @@ permissions:
   contents: read
   pull-requests: read
   issues: read
-  checks: write
+  statuses: write
+  checks: write                # legacy check runs only (issue #2002)
 concurrency:
   group: execute-plan-scope-${{ github.event.pull_request.number }}
   cancel-in-progress: true
@@ -171,14 +179,18 @@ jobs:
         run: node .github/scripts/execute-plan-scope.js
 ```
 The job is named `scope-runner` so its own check run never shares the required check's name; the
-script publishes the check run `execute-plan-scope` on `HEAD_SHA` and exits `0` either way.
+script publishes the commit status `execute-plan-scope` on `HEAD_SHA` through `publishScopeResult`
+and exits `0` either way. A status has no check suite, so cancelling another workflow's run on the
+same commit cannot orphan it.
 
 **CI wiring** (`_reusable-test.yml`, governance job): new step `Execute-plan runtime tests` running
 `node --test scripts/execute_plan_runtime.test.js scripts/test/execute_plan_*.test.js`.
 
 **Tests:** `fork → success ok`, `non-plan PR → success ok`, `phase PR in scope → success`,
 `phase PR unclassified → failure`, `drift on plan file edit`, `release PR with verified plan files → success`,
-`overflow → too-many-files`, `stopped plan → plan-stopped`, `publish creates then updates the check run`
+`overflow → too-many-files`, `stopped plan → plan-stopped`, `publish posts the commit status and turns
+a legacy check run`, `publishScopeResult` (stopped meanwhile → `plan-stopped`; running → green; re-check
+error → `drift`; failures skip the re-check), `check-diff --publish refuses outside Actions`
 (all with the WP1 fake fetch).
 
 **Acceptance:** `node --test scripts/test/execute_plan_scope_run.test.js && ./scripts/pre-push-changed.sh`;
@@ -186,8 +198,8 @@ actionlint: **decision** — if `actionlint -version` works locally, run
 `actionlint .github/workflows/execute-plan-scope.yml .github/workflows/_reusable-test.yml`; otherwise
 rely on the `actionlint.yml` workflow on the PR and do not mark ready until it is green.
 
-**Docs:** `docs/pipelines/ci-cd-gates.md` — row for `execute-plan-scope` (what it checks, check run
-from GitHub Actions, required on `main` and integration branches after WP8).
+**Docs:** `docs/pipelines/ci-cd-gates.md` — row for `execute-plan-scope` (what it checks, commit
+status from GitHub Actions, required on `main` and integration branches after WP8).
 
 ## WP7b — Approve and driver workflows
 
@@ -202,18 +214,25 @@ from GitHub Actions, required on `main` and integration branches after WP8).
 **Do not touch:** `.github/scripts/execute-plan-launch.js` (WP7c; import only), other workflows.
 
 **`execute_plan_approve.js` — `handleControlComment(clients, event, { now, killSwitch })`**
-1. Kill switch `off` → return. `dry-run` → validate and write the job summary only.
+1. Kill switch `off` → return. `dry-run` → validate and write the job summary only (no dispatch).
 2. Ignore comments on PRs and on issues without label `execute-plan`.
 3. `approve`: read `Init branch: <name> @ <sha>` from the issue body; `loadSnapshotAtRef` at `<sha>`;
    `validateControlComment`; `compare(main...<sha>).files` must be exactly the two own plan files;
    the integration branch must not exist (exists at `<sha>` → idempotent success). Then, with the
    bot token: `createRef(refs/heads/<integration_branch>, <sha>)`; create the status comment
    (`init_sha`, `state: phase:pending`); labels `autonomous-approved`, `plan:<plan_id>`; append
-   `Approval: valid (comment <id>)` to the issue body; run one driver pass for this plan.
+   `Approval: valid (comment <id>)` to the issue body; dispatch the driver for this plan.
 4. Invalid approve → one comment `approve-autonomous rejected: <reason>`; nothing else.
-5. `resume` (valid) → one driver pass. `revoke` (valid) → label `autonomous-revoked`, one driver pass.
-6. `edited` / `deleted` of an approve or resume comment → one driver pass (`tick` stops with
+5. `resume` (valid) → dispatch the driver. `revoke` (valid) → label `autonomous-revoked`, dispatch the driver.
+6. `edited` / `deleted` of an approve or resume comment → dispatch the driver (`tick` stops with
    `approval-invalid` and the driver enforces it).
+7. "Dispatch the driver" = `workflow_dispatch` of `execute-plan-driver.yml` on `main` with `plan_id`
+   (`GITHUB_TOKEN`). The approve job never runs a pass inline, so every pass shares the driver's
+   `execute-plan-driver` concurrency group and two passes never run for one plan at once (issue #2005).
+   The approve job keeps its own per-issue group: GitHub keeps one pending job per group and cancels
+   the older pending one, which must never drop an approval. A dispatched pass that is replaced while
+   pending costs at most the 30-minute heartbeat; `revoke` is also enforced by the `issues: labeled`
+   event of `autonomous-revoked`.
 
 **`execute_plan_driver_actions.js` — `runDriverPass(clients, { planId, now, killSwitch })`**
 1. `lease` = status `lease` present ? `{ ...status.lease, status: await getAgentRunStatus(...) }` : `null`.
@@ -249,9 +268,8 @@ on:
 permissions:
   contents: read
   issues: write
-  pull-requests: write
-  actions: write
-  checks: write
+  pull-requests: read
+  actions: write               # dispatches execute-plan-driver.yml
 concurrency:
   group: execute-plan-approve-${{ github.event.issue.number }}
   cancel-in-progress: false
@@ -275,7 +293,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           EXECUTE_PLAN_BOT_TOKEN: ${{ secrets.EXECUTE_PLAN_BOT_TOKEN }}
-          CURSOR_API_KEY: ${{ secrets.cursor_api_key }}
           EXECUTE_PLAN_DRIVER: ${{ vars.EXECUTE_PLAN_DRIVER }}
           EVENT_PATH: ${{ github.event_path }}
         run: node .github/scripts/execute-plan-approve.js
@@ -308,6 +325,7 @@ permissions:
   issues: write
   pull-requests: write
   actions: write
+  statuses: write
   checks: write
 concurrency:
   group: execute-plan-driver
@@ -341,9 +359,9 @@ fourth), so driver runs after Deploy UAT may not fire; the 30-minute heartbeat c
 correctness never depends on those events. One global concurrency group is accepted for v1
 (Fable's disagreement); the driver never waits inside a job (no watchers).
 
-**Tests:** approve `valid → branch + status + labels + driver pass`, `not owner → ignored`,
-`invalid hash → rejected comment`, `init branch with extra files → rejected`, `resume → driver pass`,
-`revoke → label + driver pass`, `kill switch off → no-op`, `dry-run → no writes`; driver
+**Tests:** approve `valid → branch + status + labels + driver dispatched`, `not owner → ignored`,
+`invalid hash → rejected comment`, `init branch with extra files → rejected`, `resume → driver dispatched`,
+`revoke → label + driver dispatched`, `kill switch off → no-op`, `dry-run → no writes, no dispatch`; driver
 `plansForEvent per event type`, `fork PR ignored`, `arm-auto-merge clean status falls back to merge`,
 `enforce-stop disables auto-merge and publishes plan-stopped`, `launch records lease and launches`,
 `lease alive → no launch`, `dispatch-preuat recorded once per head`.
@@ -405,8 +423,8 @@ Each step is a decision; on any unexpected outcome, stop and report.
    GitHub App regardless of `GH_TOKEN`.
 1. **Check placement.** Open a probe PR with the bot token from `cursor/execute-plan-v2-probe-<4>`
    (one whitespace change in `docs/agent-efficiency/plans/README.md`) into `main`.
-   Expected: a check run named `execute-plan-scope`, app `github-actions`, conclusion `success`,
-   title `ok`. Seen → continue. Not seen → stop and report the workflow run link.
+   Expected: a commit status `execute-plan-scope`, creator `github-actions[bot]`, state `success`,
+   description `ok: …` (a check run before 2026-11-02). Seen → continue. Not seen → stop and report the workflow run link.
 2. **Unattributed-changes rule.** On the same probe PR, with every check green, read
    `GET /pulls/{n}` → `mergeable_state`. `clean` → continue. `blocked` → report; the owner sets
    `require_extra_approval_for_unattributed_changes: false` on the `main` ruleset (runbooks §7.2),

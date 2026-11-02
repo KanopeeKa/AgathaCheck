@@ -10,8 +10,8 @@ const { decide, prLadder } = require('../lib/execute_plan_state');
 
 const files = scenarioFiles();
 
-test('scenario files: 32 P/L/S/R/D present', () => {
-  assert.equal(files.filter((f) => /[\\/][plsrd]-/.test(f)).length, 40);
+test('scenario files: P/L/S/R/D present', () => {
+  assert.equal(files.filter((f) => /[\\/][plsrd]-/.test(f)).length, 46);
 });
 
 for (const file of files) {
@@ -73,6 +73,18 @@ function ladder(prPatch, { kind = 'phase', snapPatch, obsPatch, opts } = {}) {
 }
 const red = [{ name: 'ci-gate / CI passed', status: 'completed', conclusion: 'failure', reason: null }];
 
+test('ci-budget stop on a fixable scope failure names the plan-linked side PR route', () => {
+  const scopeRed = [{ name: 'execute-plan-scope', conclusion: 'failure', reason: 'unclassified' }];
+  const s = ladder({ checks: scopeRed, failed_attempts_since_epoch: 3 }).stop;
+  assert.equal(s.reason, 'ci-budget');
+  assert.match(s.detail, /execute-plan-scope is unclassified/);
+  assert.match(s.detail, /Unblocks: plan <id> phase <n>/);
+  const cap = ladder({ checks: [{ name: 'execute-plan-scope', conclusion: 'failure', reason: 'companion-cap' }], failed_attempts_since_epoch: 3 }).stop;
+  assert.match(cap.detail, /companion-file allowance/);
+  assert.doesNotMatch(cap.detail, /outside its scope/);
+  assert.doesNotMatch(ladder({ checks: red, failed_attempts_since_epoch: 3 }).stop.detail, /side PR/);
+});
+
 test('prLadder rules 1–10 each', () => {
   assert.equal(ladder({ labels: ['do-not-merge'] }).stop.reason, 'pr-blocked'); // 1
   assert.equal(ladder({ labels: ['execute-plan-hold'] }).action.args.reason, 'hold'); // 1b
@@ -95,6 +107,17 @@ test('prLadder rules 1–10 each', () => {
     ).action.kind,
     'merge',
   );
+});
+
+test('merge actions carry the head and whether its scope status was republished this epoch', () => {
+  const green = { auto_merge_enabled: true, checks: [{ name: 'ci-gate / CI passed', status: 'completed', conclusion: 'success', completed_at: '2026-10-16T09:45:00Z' }, { name: 'execute-plan-scope', status: 'completed', conclusion: 'success', reason: 'ok', completed_at: '2026-10-16T09:46:00Z' }] };
+  const head = 'cccc000000000000000000000000000000000001';
+  const ledger = (at) => ({ control: { status: { stop: null, dispatched: { scope_republish: [{ sha: head, at }] } } } });
+  const merge = ladder(green).action.args;
+  assert.deepEqual(merge, { pr: 1950, method: 'squash', head_sha: head, scope_republished: false });
+  assert.equal(ladder(green, { obsPatch: ledger('2026-10-16T09:30:00Z') }).action.args.scope_republished, true);
+  assert.equal(ladder(green, { obsPatch: ledger('2026-10-16T09:00:00Z') }).action.args.scope_republished, false);
+  assert.equal(ladder({}, { obsPatch: ledger('2026-10-16T09:30:00Z') }).action.args.scope_republished, true);
 });
 
 test('decide is pure of the clock and does not mutate inputs', () => {

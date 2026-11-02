@@ -65,7 +65,7 @@ function fakeClient(name, { status = baseStatus(), pulls = {}, enableError = nul
 function harness(opts = {}, tickResult, extra = {}) {
   const bot = fakeClient('bot', opts);
   const read = fakeClient('read');
-  const seen = { tick: [], launch: [], scope: [], leaseQueries: [] };
+  const seen = { tick: [], launch: [], scope: [], scopeRuns: [], leaseQueries: [] };
   const deps = {
     loadPlanContext: async () => ({
       planId: PLAN_ID, issueNumber: 9, snapshot: SNAP, config: CONFIG, planMarkdown: PLAN_MD,
@@ -75,6 +75,12 @@ function harness(opts = {}, tickResult, extra = {}) {
     getAgentRunStatus: async (a) => { seen.leaseQueries.push(a); return extra.runStatus || 'RUNNING'; },
     launchPlanAgent: async (a) => { seen.launch.push(a); return { agentId: 'bc-1', runId: 'run-1', agentUrl: null }; },
     publishScopeCheck: async (c, a) => { seen.scope.push({ client: c.name, ...a }); },
+    publishScopeResult: async (c, { headSha, outcome }) => {
+      const final = extra.scopeFinal || outcome;
+      seen.scope.push({ client: c.name, headSha, conclusion: final.conclusion, title: final.title, summary: final.summary });
+      return final;
+    },
+    runScopeCheck: async (c, a) => { seen.scopeRuns.push({ client: c.name, ...a }); return { conclusion: 'success', title: 'ok', summary: 'No violations.', planId: PLAN_ID }; },
     completePlan: async () => ({ complete: true }),
   };
   return { bot, read, seen, clients: { bot, read, cursorApiKey: extra.noKey ? null : 'key', botToken: extra.noBotToken ? null : 'bot-secret-token', deps }, log: [] };
@@ -136,7 +142,7 @@ test('merge action uses mergePull with the requested method', async () => {
 });
 
 test('merge blocked records stop and needs-owner', async () => {
-  const bot = fakeClient('bot');
+  const bot = fakeClient('bot', { pulls: { 5: { node_id: 'PR_5', head: { sha: 'f'.repeat(40) } } } });
   bot.mergePull = async () => { throw new GitHubError(405, 'Refusing to merge'); };
   const h = harness({}, driverAction('merge', { pr: 5, method: 'squash' }));
   h.clients.bot = bot;
@@ -144,6 +150,78 @@ test('merge blocked records stop and needs-owner', async () => {
   assert.match(res.outcome, /merge blocked/);
   assert.deepEqual(bot.calls.filter((c) => c[0] === 'addLabels'), [['addLabels', 9, ['needs-owner']]]);
   assert.equal(bot.statusNow().stop.reason, 'merge-blocked');
+});
+
+const HEAD = 'd'.repeat(40);
+const scopePull = { node_id: 'PR_5', head: { sha: HEAD, ref: 'cursor/p-p1', repo: { full_name: 'o/r' } }, base: { ref: 'cursor/p-integration-x' } };
+const expected = (name) => new GitHubError(405, `PUT /repos/o/r/pulls/5/merge failed with 405: Repository rule violations found\n\nRequired status check "${name}" is expected.\n\n`);
+const refusing = (h, err) => { h.bot.mergePull = async (...a) => { h.bot.calls.push(['mergePull', ...a]); throw err; }; };
+
+test('republish-scope re-runs the check with the read token and records the head', async () => {
+  const h = harness({ pulls: { 5: scopePull } }, driverAction('republish-scope', { pr: 5, head_sha: HEAD }));
+  const res = await drive(h);
+  assert.equal(h.seen.scopeRuns[0].client, 'read');
+  assert.equal(h.seen.scopeRuns[0].headSha, HEAD);
+  assert.equal(h.seen.scopeRuns[0].baseRef, 'cursor/p-integration-x');
+  assert.deepEqual(h.seen.scope, [{ client: 'read', headSha: HEAD, conclusion: 'success', title: 'ok', summary: 'No violations.' }]);
+  assert.deepEqual(h.bot.statusNow().dispatched.scope_republish, [{ sha: HEAD, at: NOW }]);
+  assert.match(res.outcome, /republished execute-plan-scope on #5: success \(ok\)/);
+});
+
+test('republish-scope reports the published outcome when the STOP re-check turns it red', async () => {
+  const stopped = { conclusion: 'failure', title: 'plan-stopped', summary: 'plan stopped: revoked', planId: PLAN_ID };
+  const h = harness({ pulls: { 5: scopePull } }, driverAction('republish-scope', { pr: 5, head_sha: HEAD }), { scopeFinal: stopped });
+  const res = await drive(h);
+  assert.equal(h.seen.scope[0].title, 'plan-stopped');
+  assert.match(res.outcome, /republished execute-plan-scope on #5: failure \(plan-stopped\)/);
+});
+
+test('republish-scope does nothing when the head moved', async () => {
+  const h = harness({ pulls: { 5: scopePull } }, driverAction('republish-scope', { pr: 5, head_sha: 'e'.repeat(40) }));
+  const res = await drive(h);
+  assert.deepEqual(h.seen.scope, []);
+  assert.match(res.outcome, /head moved/);
+});
+
+test('merge refused because execute-plan-scope is expected: republish once, no stop', async () => {
+  const h = harness({ pulls: { 5: scopePull } }, driverAction('merge', { pr: 5, method: 'squash', head_sha: HEAD, scope_republished: false }));
+  refusing(h, expected('execute-plan-scope'));
+  const res = await drive(h);
+  assert.match(res.outcome, /merge refused \(execute-plan-scope not counted\); republished/);
+  assert.equal(h.seen.scope.length, 1);
+  assert.equal(h.bot.statusNow().stop, null);
+  assert.deepEqual(h.bot.calls.filter((c) => c[0] === 'addLabels'), []);
+});
+
+test('merge refused again after a republish, or for another check: STOP check-missing, enforced on the PR', async () => {
+  const armed = { ...scopePull, auto_merge: { merge_method: 'squash' } };
+  const again = harness({ pulls: { 5: armed } }, driverAction('merge', { pr: 5, method: 'squash', head_sha: HEAD, scope_republished: true }));
+  refusing(again, expected('execute-plan-scope'));
+  const res = await drive(again);
+  assert.match(res.outcome, /check missing/);
+  assert.equal(again.bot.statusNow().stop.reason, 'check-missing');
+  assert.deepEqual(again.bot.calls.filter((c) => c[0] === 'addLabels'), [['addLabels', 9, ['needs-owner']]]);
+  assert.deepEqual(again.bot.calls.filter((c) => c[0] === 'disableAutoMerge'), [['disableAutoMerge', 'PR_5']]);
+  assert.deepEqual(again.seen.scope.map((s) => [s.client, s.headSha, s.conclusion, s.title]), [['read', HEAD, 'failure', 'plan-stopped']]);
+  assert.equal(again.seen.scope[0].summary, 'plan stopped: check-missing');
+
+  const ci = harness({ pulls: { 5: scopePull } }, driverAction('merge', { pr: 5, method: 'squash', head_sha: HEAD, scope_republished: false }));
+  refusing(ci, new GitHubError(405, 'Repository rule violations found\n\nRequired status check "ci-gate / CI passed" was not set by the expected GitHub app.'));
+  await drive(ci);
+  assert.equal(ci.bot.statusNow().stop.reason, 'check-missing');
+});
+
+test('arm-auto-merge clean-status fallback gets the same recovery and stops instead of failing the pass', async () => {
+  const clean = new GitHubError(200, 'POST /graphql failed: Pull request is in clean status');
+  const h = harness({ pulls: { 5: scopePull }, enableError: clean }, driverAction('arm-auto-merge', { pr: 5, method: 'squash', head_sha: HEAD, scope_republished: false }));
+  refusing(h, expected('execute-plan-scope'));
+  assert.match((await drive(h)).outcome, /republished/);
+
+  const other = harness({ pulls: { 5: scopePull }, enableError: clean }, driverAction('arm-auto-merge', { pr: 5, method: 'squash' }));
+  refusing(other, new GitHubError(405, 'Pull Request is not mergeable'));
+  assert.match((await drive(other)).outcome, /merge blocked/);
+  assert.equal(other.bot.statusNow().stop.reason, 'merge-blocked');
+  assert.deepEqual(other.seen.scope.map((s) => s.title), ['plan-stopped']);
 });
 
 test('driver log prints wait(reason)', async () => {
@@ -241,7 +319,12 @@ test('launch: starts the worker on the action branch, records launch and lease',
 test('launch: the worker gets the bot token in envVars, and the token is never logged', async () => {
   const h = harness({}, agentAction('implement', { phase: '1', branch: 'b', base: 'i' }, { phase: '1' }));
   await drive(h);
-  assert.deepEqual(h.seen.launch[0].envVars, { GH_TOKEN: 'bot-secret-token', EXECUTE_PLAN_TOKEN: 'bot-secret-token' });
+  assert.deepEqual(h.seen.launch[0].envVars, {
+    GH_TOKEN: 'bot-secret-token',
+    EXECUTE_PLAN_TOKEN: 'bot-secret-token',
+    OWNER_GH_TOKEN: '',
+    BOT_GH_TOKEN: '',
+  });
   assert.ok(!h.log.join('\n').includes('bot-secret-token'));
   assert.ok(!h.seen.launch[0].prompt.includes('bot-secret-token'));
 });
@@ -324,6 +407,9 @@ test('buildHandoffPrompt follows contracts §3.6', () => {
   assert.match(text, /Scope \(allowed\): a\/\*\* {3}Companions: b\.md/);
   assert.match(text, /Evidence: https:\/\/x\/1, https:\/\/x\/2/);
   assert.match(text, /tick proof-build-label-7f3a --json --actor agent/);
+  assert.match(text, /Run\n\.\/scripts\/pre-push-changed\.sh before every push and push only when it is green/);
+  assert.match(text, /worker done: blocked <check>: <reason>/);
+  assert.match(text, /Web bundle budget .*raise the cap in this PR/s);
 });
 
 test('plansForEvent per event type; fork PRs are ignored', async () => {

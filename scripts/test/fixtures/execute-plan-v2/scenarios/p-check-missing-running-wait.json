@@ -1,0 +1,51 @@
+{
+  "name": "scope status missing while a check run is still running → wait",
+  "rule": "PR-ladder 10a",
+  "snapshot_patch": {},
+  "observations_patch": {
+    "phases": [
+      {
+        "id": "1",
+        "branch_exists": true,
+        "pr": {
+          "auto_merge_enabled": true,
+          "checks": [
+            {
+              "name": "ci-gate / CI passed",
+              "status": "completed",
+              "conclusion": "success",
+              "reason": null,
+              "completed_at": "2026-10-16T09:40:00Z"
+            },
+            {
+              "name": "execute-plan-scope",
+              "status": "missing",
+              "conclusion": null,
+              "reason": null,
+              "completed_at": null
+            }
+          ],
+          "checks_settled_at": null,
+          "head_activity_at": "2026-10-16T09:20:00Z"
+        }
+      },
+      {
+        "id": "2",
+        "branch_exists": false,
+        "pr": null
+      }
+    ]
+  },
+  "opts": {
+    "actor": "driver",
+    "lease": null
+  },
+  "expected": {
+    "launch": false,
+    "stop": null,
+    "state": "phase:ready",
+    "actor": "driver",
+    "kind": "wait",
+    "reason": "checks"
+  }
+}
