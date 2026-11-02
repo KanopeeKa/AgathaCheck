@@ -9,9 +9,10 @@ const { ExecutePlanError } = require('./execute_plan_constants');
 const { findControlComments } = require('./execute_plan_approval');
 const { loadSnapshotAtRef } = require('./execute_plan_snapshot_v2');
 const { parseStatusComment, STATUS_MARKER } = require('./execute_plan_status');
+const { SCOPE_CONTEXT, scopeEntryFromStatuses, scopeFailedSince } = require('./execute_plan_scope_status');
 
 const CONFIG_PATH = '.github/execute-plan.config.json';
-const SCOPE_CHECK = 'execute-plan-scope';
+const SCOPE_CHECK = SCOPE_CONTEXT;
 const FAILED = new Set(['failure', 'timed_out', 'action_required']);
 const UNKNOWN_RETRY_MS = 3000;
 const PREUAT_ACTIVE = new Set(['queued', 'in_progress']);
@@ -76,8 +77,13 @@ async function readPull(client, number, sleep) {
   return pull;
 }
 
-function latestRuns(runs, names) {
+/** `statuses` = the head's commit statuses; the scope status wins over a legacy check run of the same name. */
+function latestRuns(runs, names, statuses = []) {
   return names.map((name) => {
+    if (name === SCOPE_CHECK) {
+      const entry = scopeEntryFromStatuses(statuses);
+      if (entry) return entry;
+    }
     const mine = runs.filter((r) => r.name === name);
     const run = mine.reduce((a, b) => (!a || Number(b.id) > Number(a.id) ? b : a), null);
     if (!run) return { name, status: 'missing', conclusion: null, reason: null, completed_at: null };
@@ -91,14 +97,15 @@ function latestRuns(runs, names) {
   });
 }
 
-async function failedAttempts(client, pr, names, epoch, headRuns) {
+async function failedAttempts(client, pr, names, epoch, headRuns, headStatuses) {
   if (!epoch) return 0;
   const commits = await client.listPullCommits(pr.number);
   const shas = [...new Set(commits.map((c) => c.sha))];
   let attempts = 0;
   for (const sha of shas) {
     const runs = sha === pr.head.sha ? headRuns : await client.listCheckRuns(sha);
-    const failed = runs.some(
+    const statuses = !names.includes(SCOPE_CHECK) ? [] : sha === pr.head.sha ? headStatuses : await client.listCommitStatuses(sha);
+    const failed = scopeFailedSince(statuses, epoch) || runs.some(
       (r) => names.includes(r.name) && FAILED.has(r.conclusion) && r.completed_at && ms(r.completed_at) > ms(epoch),
     );
     if (failed) attempts += 1;
@@ -118,11 +125,12 @@ async function observePr(client, pr, { requiredChecks, epoch, owners = [], sleep
   const pull = await readPull(client, pr.number, sleep);
   const headSha = pull.head.sha;
   const headRuns = await client.listCheckRuns(headSha);
+  const headStatuses = requiredChecks.includes(SCOPE_CHECK) ? await client.listCommitStatuses(headSha) : [];
   const [threads, reviews, ready, attempts] = await Promise.all([
     client.listUnresolvedThreads(pull.number),
     client.listPullReviews(pull.number),
     readyAt(client, pull),
-    failedAttempts(client, { number: pull.number, head: { sha: headSha } }, requiredChecks, epoch, headRuns),
+    failedAttempts(client, { number: pull.number, head: { sha: headSha } }, requiredChecks, epoch, headRuns, headStatuses),
   ]);
   const lastByUser = new Map();
   for (const r of reviews) {
@@ -145,7 +153,7 @@ async function observePr(client, pr, { requiredChecks, epoch, owners = [], sleep
     mergeable_state: pull.mergeable_state || 'unknown',
     auto_merge_enabled: Boolean(pull.auto_merge),
     labels: labelNames(pull.labels),
-    checks: latestRuns(headRuns, requiredChecks),
+    checks: latestRuns(headRuns, requiredChecks, headStatuses),
     failed_attempts_since_epoch: attempts,
     unresolved_threads: threads,
     copilot_review_submitted: reviews.some((r) => r.user && /^copilot/i.test(r.user.login)),
@@ -219,4 +227,4 @@ async function observe(client, ctx, { now, sleep }) {
   };
 }
 
-module.exports = { CONFIG_PATH, configError, loadPlanContext, observe, observePr };
+module.exports = { CONFIG_PATH, configError, latestRuns, loadPlanContext, observe, observePr };

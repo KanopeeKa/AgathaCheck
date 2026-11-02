@@ -10,7 +10,8 @@ const { execFileSync } = require('child_process');
 const { ExecutePlanError } = require('./execute_plan_constants');
 const { decide } = require('./execute_plan_state');
 const { deriveControl } = require('./execute_plan_control');
-const { loadPlanContext, observe, configError, CONFIG_PATH } = require('./execute_plan_observe');
+const { loadPlanContext, observe, configError, latestRuns, CONFIG_PATH } = require('./execute_plan_observe');
+const { SCOPE_CONTEXT } = require('./execute_plan_scope_status');
 const { formatStatusComment, formatLogLine, applyDecisionToStatus } = require('./execute_plan_status');
 const { verifyComplete, resolveMergeSource, watchPreUat, watchDeploy } = require('./execute_plan_uat_observe');
 
@@ -122,10 +123,11 @@ async function watchCi(client, { pr, timeoutMin = 25, pollSec = 60, sleep = (ms)
     const pull = await client.getPull(pr);
     const names = pull.base.ref === 'main' ? config.required_checks.main : config.required_checks.integration;
     const runs = await client.listCheckRuns(pull.head.sha);
-    const latest = names.map((n) => runs.filter((r) => r.name === n).reduce((a, b) => (!a || Number(b.id) > Number(a.id) ? b : a), null));
-    const failing = names.filter((n, k) => latest[k] && latest[k].status === 'completed' && FAILED.has(latest[k].conclusion));
+    const statuses = names.includes(SCOPE_CONTEXT) ? await client.listCommitStatuses(pull.head.sha) : [];
+    const latest = latestRuns(runs, names, statuses);
+    const failing = latest.filter((c) => c.status === 'completed' && FAILED.has(c.conclusion)).map((c) => c.name);
     if (failing.length) return { timedOut: false, conclusion: 'failure', failing };
-    if (latest.every((r) => r && r.status === 'completed')) return { timedOut: false, conclusion: 'success', failing: [] };
+    if (latest.every((c) => c.status === 'completed')) return { timedOut: false, conclusion: 'success', failing: [] };
     if (i < polls - 1) await sleep(pollSec * 1000);
   }
   return { timedOut: true, conclusion: null, failing: [] };

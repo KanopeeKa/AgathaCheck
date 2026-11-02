@@ -3,7 +3,7 @@ title: Execute-plan v2 — observations, state machine, scenarios
 owner: Kanopee
 audience: agent
 status: active
-last_updated: 2026-10-15
+last_updated: 2026-11-02
 tags: [agent, execute-plan, autonomy]
 ---
 # Execute-plan v2 — observations, state machine, scenarios
@@ -83,8 +83,8 @@ Times are ISO-8601 UTC strings. `null` means "does not exist". Example = the sce
 |-------|------|
 | `ready_at` | Latest `ready_for_review` timeline event, else `created_at` when the PR was never a draft, else `null`. |
 | `mergeable_state` | From `GET /pulls/{n}`; when GitHub returns `unknown`, observe re-reads once after 3 s, then keeps `unknown`. |
-| `checks` | One entry per name in `config.required_checks.integration` (base = integration) or `.main` (base = `main`): the latest check run with that name on `head_sha`. Absent → `{ "status": "missing", "conclusion": null }`. Includes `completed_at` when GitHub provides it. For `execute-plan-scope`, `reason` = the check run `output.title` (`ok`, `unclassified`, `companion-cap`, `drift`, `protected`, `forbidden`, `plan-stopped`, `too-many-files`). |
-| `failed_attempts_since_epoch` | Number of **distinct commit SHAs** of the PR (`GET /pulls/{n}/commits`) with at least one required check run concluding `failure`, `timed_out` or `action_required` and `completed_at` after the epoch. One push = one attempt. |
+| `checks` | One entry per name in `config.required_checks.integration` (base = integration) or `.main` (base = `main`): the latest check run with that name on `head_sha`. `execute-plan-scope` is a **commit status**: the newest status with that context whose creator is `github-actions[bot]` (statuses from any other account are ignored, matching the rulesets' GitHub Actions pin); `success` → `conclusion: success`, `failure`/`error` → `failure`, `pending` → `status: in_progress`; `completed_at` = the status time. A head without such a status falls back to a check run of that name (heads published before 2026-11-02). Absent → `{ "status": "missing", "conclusion": null }`. Includes `completed_at` when GitHub provides it. For `execute-plan-scope`, `reason` = the status description up to the first `:` (the check run `output.title` on the fallback) (`ok`, `unclassified`, `companion-cap`, `drift`, `protected`, `forbidden`, `plan-stopped`, `too-many-files`). |
+| `failed_attempts_since_epoch` | Number of **distinct commit SHAs** of the PR (`GET /pulls/{n}/commits`) with at least one required check run concluding `failure`, `timed_out` or `action_required` and `completed_at` after the epoch, or a trusted `execute-plan-scope` status in `failure`/`error` created after the epoch. One push = one attempt. |
 | `unresolved_threads` | GraphQL `reviewThreads(first:100)` where `isResolved == false` → `[{ "url", "path", "author" }]`. |
 | `copilot_review_submitted` | A review whose author login starts with `copilot` exists. |
 | `owner_approved` | A review in state `APPROVED` by a login in `config.owners`. |

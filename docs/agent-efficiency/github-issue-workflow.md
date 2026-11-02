@@ -3,7 +3,7 @@ title: GitHub issue workflow
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-10-18
+last_updated: 2026-11-02
 tags: [documentation]
 ---
 # GitHub issue workflow
@@ -405,7 +405,7 @@ Jobs that read automation secrets use GitHub Environment **`automation`** (deplo
 
 | Operation | Token |
 |-----------|-------|
-| Reads, `workflow_dispatch` (Pre-UAT, Deploy UAT), the `execute-plan-scope` check run | `GITHUB_TOKEN` |
+| Reads, `workflow_dispatch` (Pre-UAT, Deploy UAT), the `execute-plan-scope` commit status | `GITHUB_TOKEN` |
 | Branches, sync/release PRs, `update-branch`, auto-merge, labels, comments, status comment | `EXECUTE_PLAN_BOT_TOKEN` (from `automation`) |
 | Cursor API (worker launch) | `cursor_api_key` (from `automation`) |
 | Plan workers | the bot token, passed by the driver at launch (`envVars`: `GH_TOKEN`, `EXECUTE_PLAN_TOKEN`); a worker `tick` refuses to run unless its token is `bot_login` |

@@ -189,25 +189,30 @@ test('stopped plan → plan-stopped (revoked label, expiry, escalation)', async 
   assert.match((await runScopeCheck(c3, phasePr)).summary, /escalation/);
 });
 
-test('publish creates then updates the check run', async () => {
+test('publish posts the commit status and turns a legacy check run the same way', async () => {
   const sha = 'b'.repeat(40);
-  const out = { headSha: sha, conclusion: 'success', title: 'ok', summary: 's' };
-  const created = createFakeFetch({
+  const out = { headSha: sha, conclusion: 'success', title: 'ok', summary: 'No violations.\n\nCompanions used (1):', targetUrl: 'https://run/1' };
+  const fresh = createFakeFetch({
+    [`POST ${R}/statuses/${sha}`]: { status: 201, body: { id: 7 } },
     [`GET ${R}/commits/${sha}/check-runs?per_page=100`]: { body: { check_runs: [{ id: 1, name: 'other' }] } },
-    [`POST ${R}/check-runs`]: { status: 201, body: { id: 2 } },
   });
-  await publishScopeCheck(createGitHubClient({ repo: REPO, token: 't', fetchImpl: created }), out);
-  assert.deepEqual(created.calls[1].body, {
-    name: 'execute-plan-scope', head_sha: sha, status: 'completed', conclusion: 'success', output: { title: 'ok', summary: 's' },
+  await publishScopeCheck(createGitHubClient({ repo: REPO, token: 't', fetchImpl: fresh }), out);
+  assert.deepEqual(fresh.calls[0].body, {
+    state: 'success', context: 'execute-plan-scope', description: 'ok: No violations.', target_url: 'https://run/1',
   });
+  assert.equal(fresh.calls.length, 2);
 
-  const updated = createFakeFetch({
+  const legacy = createFakeFetch({
+    [`POST ${R}/statuses/${sha}`]: { status: 201, body: { id: 8 } },
     [`GET ${R}/commits/${sha}/check-runs?per_page=100`]: { body: { check_runs: [{ id: 42, name: 'execute-plan-scope' }] } },
     [`PATCH ${R}/check-runs/42`]: { body: { id: 42 } },
   });
-  await publishScopeCheck(createGitHubClient({ repo: REPO, token: 't', fetchImpl: updated }), { ...out, conclusion: 'failure', title: 'drift' });
-  assert.equal(updated.calls[1].method, 'PATCH');
-  assert.equal(updated.calls[1].body.conclusion, 'failure');
+  await publishScopeCheck(createGitHubClient({ repo: REPO, token: 't', fetchImpl: legacy }), {
+    headSha: sha, conclusion: 'failure', title: 'plan-stopped', summary: 'plan stopped: revoked',
+  });
+  assert.deepEqual(legacy.calls[0].body, { state: 'failure', context: 'execute-plan-scope', description: 'plan-stopped: plan stopped: revoked' });
+  assert.equal(legacy.calls[2].method, 'PATCH');
+  assert.equal(legacy.calls[2].body.conclusion, 'failure');
 });
 
 test('planIdFromRefs covers every plan branch shape', () => {

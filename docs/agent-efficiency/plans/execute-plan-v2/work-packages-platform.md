@@ -22,7 +22,7 @@ lives in `scripts/lib/execute_plan_*.js` (protected, tested) with a small wrappe
 | Operation | Token | Why |
 |-----------|-------|-----|
 | Reads | `GITHUB_TOKEN` | — |
-| Create/update the `execute-plan-scope` **check run** | `GITHUB_TOKEN` | A PAT cannot create check runs, so the bot cannot forge it. |
+| Post the `execute-plan-scope` **commit status** (was a check run until 2026-11-02, see the v2 decision log) | `GITHUB_TOKEN` | The rulesets pin the context to GitHub Actions, so a status the bot posts with its PAT never counts. |
 | `workflow_dispatch` (Pre-UAT, Deploy UAT) | `GITHUB_TOKEN` | Dispatch events do start workflows. |
 | Create branches, open sync/release PRs, `update-branch`, enable/disable auto-merge, merge | `EXECUTE_PLAN_BOT_TOKEN` | Must trigger CI and Pre-UAT (B1). |
 | Issue comments, labels, status comment, closing the control issue | `EXECUTE_PLAN_BOT_TOKEN` | One identity edits the status comment (item 13). |

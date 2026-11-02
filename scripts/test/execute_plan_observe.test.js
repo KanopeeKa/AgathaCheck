@@ -66,6 +66,9 @@ function routes(over = {}) {
     ] } },
     'GET /repos/o/r/commits/c0/check-runs?per_page=100': { body: { check_runs: [run(5, 'ci-gate / CI passed', 'failure', '2026-10-16T09:25:00Z')] } },
     'GET /repos/o/r/commits/c00/check-runs?per_page=100': { body: { check_runs: [run(6, 'ci-gate / CI passed', 'failure', '2026-10-16T09:00:00Z')] } },
+    'GET /repos/o/r/commits/c1/statuses?per_page=100': { body: [] },
+    'GET /repos/o/r/commits/c0/statuses?per_page=100': { body: [] },
+    'GET /repos/o/r/commits/c00/statuses?per_page=100': { body: [] },
     'GET /repos/o/r/pulls/50/commits?per_page=100': { body: [{ sha: 'c00' }, { sha: 'c0' }, { sha: 'c1' }] },
     'GET /repos/o/r/pulls/50/reviews?per_page=100': { body: [
       { user: { login: 'copilot-pull-request-reviewer[bot]' }, state: 'COMMENTED', submitted_at: '2026-10-16T09:30:00Z' },
@@ -107,6 +110,48 @@ test('missing required check is reported as missing', async () => {
   const { client, sleep } = setup();
   const pr = await observePr(client, { number: 50 }, { ...PR_OPTS, requiredChecks: ['nope'], sleep });
   assert.deepEqual(pr.checks, [{ name: 'nope', status: 'missing', conclusion: null, reason: null, completed_at: null }]);
+});
+
+const status = (id, state, description, created_at, login = 'github-actions[bot]') => ({
+  id, context: 'execute-plan-scope', state, description, created_at, updated_at: created_at, creator: { login },
+});
+
+test('scope commit status from GitHub Actions wins over the legacy check run', async () => {
+  const { client, sleep } = setup({
+    'GET /repos/o/r/commits/c1/statuses?per_page=100': { body: [
+      status(12, 'failure', 'unclassified: 1 violation(s):', '2026-10-16T09:45:00Z'),
+      status(11, 'success', 'ok: No violations.', '2026-10-16T09:41:00Z'),
+    ] },
+  });
+  const pr = await observePr(client, { number: 50 }, { ...PR_OPTS, sleep });
+  assert.deepEqual(pr.checks[1], {
+    name: 'execute-plan-scope', status: 'completed', conclusion: 'failure', reason: 'unclassified', completed_at: '2026-10-16T09:45:00Z',
+  });
+});
+
+test('a scope status set by any other account is ignored', async () => {
+  const { client, sleep } = setup({
+    'GET /repos/o/r/commits/c1/statuses?per_page=100': { body: [status(13, 'success', 'ok', '2026-10-16T09:50:00Z', 'pawpet-bot')] },
+  });
+  const pr = await observePr(client, { number: 50 }, { ...PR_OPTS, requiredChecks: ['execute-plan-scope'], sleep });
+  assert.equal(pr.checks[0].completed_at, '2026-10-16T09:40:00Z');
+  const none = setup({
+    'GET /repos/o/r/commits/c1/check-runs?per_page=100': { body: { check_runs: [] } },
+    'GET /repos/o/r/commits/c1/statuses?per_page=100': { body: [status(13, 'success', 'ok', '2026-10-16T09:50:00Z', 'pawpet-bot')] },
+  });
+  const missing = await observePr(none.client, { number: 50 }, { ...PR_OPTS, requiredChecks: ['execute-plan-scope'], sleep });
+  assert.equal(missing.checks[0].status, 'missing');
+});
+
+test('a failing scope status after the epoch counts as a failed attempt', async () => {
+  const forged = setup({
+    'GET /repos/o/r/commits/c00/statuses?per_page=100': { body: [status(21, 'failure', 'drift', '2026-10-16T09:12:00Z', 'pawpet-bot')] },
+  });
+  assert.equal((await observePr(forged.client, { number: 50 }, { ...PR_OPTS, sleep: forged.sleep })).failed_attempts_since_epoch, 2);
+  const trusted = setup({
+    'GET /repos/o/r/commits/c00/statuses?per_page=100': { body: [status(20, 'failure', 'unclassified', '2026-10-16T09:10:00Z')] },
+  });
+  assert.equal((await observePr(trusted.client, { number: 50 }, { ...PR_OPTS, sleep: trusted.sleep })).failed_attempts_since_epoch, 3);
 });
 
 test('failed_attempts counts distinct SHAs after epoch', async () => {

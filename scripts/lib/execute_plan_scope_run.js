@@ -2,7 +2,7 @@
 
 /**
  * Execute-plan v2 scope check: gather GitHub state, run the pure matcher, publish the
- * `execute-plan-scope` check run. Runs in Actions from trusted `main` code; PR code is never executed.
+ * `execute-plan-scope` commit status. Runs in Actions from trusted `main` code; PR code is never executed.
  * Spec: docs/agent-efficiency/plans/execute-plan-v2/work-packages-platform.md §WP7a.
  */
 
@@ -13,8 +13,9 @@ const { loadSnapshotAtRef } = require('./execute_plan_snapshot_v2');
 const { categorizePull, evaluateDiff } = require('./execute_plan_scope');
 const { deriveControl } = require('./execute_plan_control');
 const { planIdFromRefs, findControlIssue, labelNames } = require('./execute_plan_plans');
+const { SCOPE_CONTEXT, describeScope } = require('./execute_plan_scope_status');
 
-const CHECK_NAME = 'execute-plan-scope';
+const CHECK_NAME = SCOPE_CONTEXT;
 const CONFIG_PATH = '.github/execute-plan.config.json';
 const SUMMARY_MAX_LINES = 50;
 
@@ -139,12 +140,20 @@ async function runScopeCheck(client, { prNumber, headSha, headRef, baseRef, head
   return result(evaluation.conclusion, evaluation.title, summary, planId);
 }
 
-/** Create or update the check run named `execute-plan-scope` on `headSha`. */
-async function publishScopeCheck(client, { headSha, conclusion, title, summary }) {
-  const runs = await client.listCheckRuns(headSha);
-  const existing = runs.find((r) => r.name === CHECK_NAME);
-  if (existing) return client.updateCheckRun(existing.id, { conclusion, title, summary });
-  return client.createCheckRun({ name: CHECK_NAME, head_sha: headSha, conclusion, title, summary });
+/**
+ * Post the `execute-plan-scope` commit status on `headSha`. A check run of the same name left by the
+ * pre-status publisher is updated too, so a STOP still turns red a head that only carries that run.
+ */
+async function publishScopeCheck(client, { headSha, conclusion, title, summary, targetUrl }) {
+  const status = await client.createCommitStatus(headSha, {
+    state: conclusion === 'success' ? 'success' : 'failure',
+    context: CHECK_NAME,
+    description: describeScope(title, summary),
+    target_url: targetUrl,
+  });
+  const legacy = (await client.listCheckRuns(headSha)).find((r) => r.name === CHECK_NAME);
+  if (legacy) await client.updateCheckRun(legacy.id, { conclusion, title, summary });
+  return status;
 }
 
 /** `check-diff --pr <n> [--repo owner/name] [--publish]`: run the check for a PR from a terminal. */

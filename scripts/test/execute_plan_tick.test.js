@@ -114,12 +114,13 @@ test('stop labels needs-owner and records stop once', async () => {
   assert.equal(again.writes.filter((w) => w.kind === 'label').length, 0);
 });
 
-function ciClient(runsPerPoll) {
+function ciClient(runsPerPoll, { config = CONFIG, statuses = [] } = {}) {
   let i = 0;
   return {
-    getFileAtRef: async () => file(CONFIG),
+    getFileAtRef: async () => file(config),
     getPull: async () => ({ base: { ref: 'main' }, head: { sha: 'h' } }),
     listCheckRuns: async () => runsPerPoll[Math.min(i++, runsPerPoll.length - 1)],
+    listCommitStatuses: async () => statuses,
   };
 }
 const ck = (name, status, conclusion = null) => ({ id: 1, name, status, conclusion });
@@ -137,6 +138,15 @@ test('watch-ci returns success on completion and failure early', async () => {
   assert.deepEqual(ok, { timedOut: false, conclusion: 'success', failing: [] });
   const bad = await watchCi(ciClient([[ck('ci', 'completed', 'failure')]]), { pr: 5, sleep });
   assert.deepEqual(bad, { timedOut: false, conclusion: 'failure', failing: ['ci'] });
+});
+
+test('watch-ci reads execute-plan-scope from its commit status', async () => {
+  const sleep = async () => {};
+  const config = { ...CONFIG, required_checks: { ...CONFIG.required_checks, main: ['ci', 'execute-plan-scope'] } };
+  const scope = (state) => [{ id: 1, context: 'execute-plan-scope', state, description: state === 'success' ? 'ok' : 'drift', creator: { login: 'github-actions[bot]' } }];
+  const ci = [ck('ci', 'completed', 'success'), ck('execute-plan-scope', 'completed', 'success')];
+  assert.deepEqual(await watchCi(ciClient([ci], { config, statuses: scope('failure') }), { pr: 5, sleep }), { timedOut: false, conclusion: 'failure', failing: ['execute-plan-scope'] });
+  assert.deepEqual(await watchCi(ciClient([[ck('ci', 'completed', 'success')]], { config, statuses: scope('success') }), { pr: 5, sleep }), { timedOut: false, conclusion: 'success', failing: [] });
 });
 
 test('worker tick refuses to run unless its token is the bot (exit 3, no writes)', async () => {
