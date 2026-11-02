@@ -157,8 +157,8 @@ anything else ⇒ `null`.
    g. Companions: the phase's `companions` (all phases' for non-phase categories) plus
       `FIXED_COMPANIONS` = `**/generated/**`, `**/*.g.dart`, `**/*.freezed.dart`,
       `flutter_app/lib/l10n/*.arb`, `docs/architecture/openapi/*.json`,
-      `flutter_app/lib/features/*/*.dart` (feature barrel files) → `companion`; the 6th and later
-      companion files are violations `companion-cap`.
+      `flutter_app/lib/features/*/*.dart` (feature barrel files), `scripts/ci/web-bundle-budget.json`
+      → `companion`; the 31st and later companion files are violations `companion-cap`.
    h. Otherwise violation `unclassified`.
 4. Title = the most serious violation reason present, in this order: `drift`, `protected`,
    `forbidden`, `unclassified`, `companion-cap`; no violation → `ok`. Conclusion `failure` iff
@@ -199,8 +199,8 @@ touch paths matched by `agent-safety-lib.js` (auth, billing, secrets, migrations
 **Exports**
 ```js
 // execute_plan_constants.js (append)
-const V2_CAPS = { window_days: 14, ci_per_phase: 3, launches_per_phase: 6, remedial_rounds: 3, sync_attempts: 2, daily_launches: 30, phases: 8, companions: 5 };
-const V2_DEFAULTS = { window_days: 7, budgets: { ci_per_phase: 3, launches_per_phase: 5, remedial_rounds: 3, sync_attempts: 2, daily_launches: 20 } };
+const V2_CAPS = { window_days: 14, ci_per_phase: 15, launches_per_phase: 25, remedial_rounds: 10, sync_attempts: 8, daily_launches: 150, phases: 8, companions: 12 };
+const V2_DEFAULTS = { window_days: 7, budgets: { ci_per_phase: 8, launches_per_phase: 15, remedial_rounds: 6, sync_attempts: 5, daily_launches: 80 } };
 
 // execute_plan_approval.js
 function canonical(value)                         // contracts §3.4

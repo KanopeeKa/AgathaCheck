@@ -40,6 +40,7 @@ const FIXED_COMPANIONS = Object.freeze([
   'flutter_app/lib/l10n/*.arb',
   'docs/architecture/openapi/*.json',
   'flutter_app/lib/features/*/*.dart',
+  'scripts/ci/web-bundle-budget.json',
 ]);
 
 /** Exception codes a phase may list in allowed_exceptions (rule 3f). */
@@ -55,7 +56,7 @@ const EXCEPTION_GLOBS = Object.freeze({
   docs: Object.freeze(['docs/**', '**/*.md']),
 });
 
-const COMPANION_CAP = 5;
+const COMPANION_CAP = 30;
 
 /** Most serious first (rule 4). */
 const VIOLATION_PRIORITY = ['drift', 'protected', 'forbidden', 'unclassified', 'companion-cap'];

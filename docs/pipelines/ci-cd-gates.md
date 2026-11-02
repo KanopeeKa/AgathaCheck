@@ -436,6 +436,9 @@ starting the Node server. **Setup steps fail the job**; scan steps use step-leve
 
 Web release builds also run `scripts/ci/check-web-bundle-budget.mjs` (ratchet via
 `scripts/ci/web-bundle-budget.json`) inside `_reusable-build-web.yml`.
+The ratchet guards against unplanned growth, not planned features: a PR that grows the bundle on purpose
+raises the cap in the same diff and states before/after bytes in its body (execute-plan phase PRs may
+edit the file as a fixed companion).
 
 ---
 

@@ -317,7 +317,7 @@ check run that call it arrive in a later work package (build spec:
    6. Exceptions the phase lists (`phase`: that phase; otherwise any phase; `remedial` always
       gets `tests`) → `exception:tests` / `exception:docs`.
    7. Companions (the phase's `companions` — every phase's for other categories — plus the fixed
-      list) → `companion`; the 6th and later companion files are `companion-cap`.
+      list) → `companion`; the 31st and later companion files are `companion-cap`.
    8. Otherwise `unclassified`.
 4. Conclusion `failure` iff any violation. Title = the most serious reason present:
    `drift` > `protected` > `forbidden` > `unclassified` > `companion-cap`; none → `ok`.
@@ -333,8 +333,8 @@ check run that call it arrive in a later work package (build spec:
 
 **Fixed companions** (`FIXED_COMPANIONS`): `**/generated/**`, `**/*.g.dart`,
 `**/*.freezed.dart`, `flutter_app/lib/l10n/*.arb`, `docs/architecture/openapi/*.json`,
-`flutter_app/lib/features/*/*.dart` (feature barrel files). Companions are reported in
-`companionsUsed`; at most 5 per PR.
+`flutter_app/lib/features/*/*.dart` (feature barrel files), `scripts/ci/web-bundle-budget.json`
+(a phase may raise the web bundle cap). Companions are reported in `companionsUsed`; at most 30 per PR.
 
 **Exception globs** (`EXCEPTION_GLOBS`): `tests` = `**/test/**`, `**/*.test.js`,
 `**/*.test.mjs`, `**/*.test.ts`, `**/*_test.dart`, `e2e/**/*.spec.ts`; `docs` = `docs/**`,

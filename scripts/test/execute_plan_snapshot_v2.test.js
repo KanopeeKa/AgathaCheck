@@ -53,7 +53,7 @@ test('buildSnapshotFromPlan produces a valid snapshot', () => {
   assert.equal(s.phases[1].branch, `cursor/${PLAN_ID}-p2`);
   assert.equal(s.created_at, '2026-10-16T09:00:30Z');
   assert.equal(s.approved_until, '2026-10-23T09:00:00Z');
-  assert.equal(s.settings.budgets.launches_per_phase, 5);
+  assert.equal(s.settings.budgets.launches_per_phase, 15);
   assert.deepEqual(s.phases[1].allowed_exceptions, []);
   validateSnapshotV2(s, { planMarkdown: PLAN_MD });
 });
@@ -87,7 +87,7 @@ test('snapshot rejects hash, plan file and window violations', () => {
   assert.throws(() => validateSnapshotV2(s, { planMarkdown: `${PLAN_MD}\n` }), /plan_file_sha256/);
   bad((x) => { x.approved_until = '2026-11-16T09:00:30Z'; }, /window cap/);
   bad((x) => { x.phases[0].allowed_exceptions = ['file-split']; }, /allowed_exceptions/);
-  bad((x) => { x.phases[0].companions = ['a', 'b', 'c', 'd', 'e', 'f']; }, /companions/);
+  bad((x) => { x.phases[0].companions = Array.from({ length: V2_CAPS.companions + 1 }, (_, i) => `g${i}`); }, /companions/);
   bad((x) => { x.release_branch = 'develop'; }, /release_branch/);
   bad((x) => { x.extra = 1; }, /unknown snapshot field/);
 });

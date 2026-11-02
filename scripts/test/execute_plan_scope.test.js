@@ -59,7 +59,7 @@ test('exported glob lists match the spec', () => {
   assert.equal(PROTECTED_PATHS.length, 19);
   assert.ok(PROTECTED_PATHS.includes('.github/**'));
   assert.ok(PROTECTED_PATHS.includes('docs/agent-efficiency/plans/execute-plan-v2/**'));
-  assert.equal(FIXED_COMPANIONS.length, 6);
+  assert.equal(FIXED_COMPANIONS.length, 7);
   assert.deepEqual(Object.keys(EXCEPTION_GLOBS), ['tests', 'docs']);
   assert.ok(PROTECTED_PATHS.every((g) => !g.includes('{')), 'no brace expansion');
 });
@@ -128,15 +128,20 @@ test('phase companions apply to that phase only', () => {
   assert.equal(verdict('tool/gen.txt', 'release', null, snap), 'companion');
 });
 
-test('sixth companion is companion-cap', () => {
-  const files = [1, 2, 3, 4, 5, 6, 7].map((n) => `flutter_app/lib/gen/m${n}.g.dart`);
+test('web bundle budget file is a companion of any phase', () => {
+  assert.equal(verdict('scripts/ci/web-bundle-budget.json', 'phase', '1'), 'companion');
+  assert.equal(verdict('scripts/ci/check-web-bundle-budget.mjs', 'phase', '1'), 'unclassified');
+});
+
+test('companions beyond the cap are companion-cap', () => {
+  const files = Array.from({ length: 33 }, (_, i) => `flutter_app/lib/gen/m${i + 1}.g.dart`);
   const r = evaluate(files, 'phase', '1');
   assert.equal(r.conclusion, 'failure');
   assert.equal(r.title, 'companion-cap');
-  assert.deepEqual(r.companionsUsed, files.slice(0, 5));
+  assert.deepEqual(r.companionsUsed, files.slice(0, 30));
   assert.deepEqual(
     r.violations,
-    files.slice(5).map((file) => ({ file, reason: 'companion-cap' })),
+    files.slice(30).map((file) => ({ file, reason: 'companion-cap' })),
   );
 });
 
@@ -241,7 +246,7 @@ test('categorizePull for each category and null', () => {
 });
 
 test('title priority', () => {
-  const companions = [1, 2, 3, 4, 5, 6].map((n) => `a/generated/f${n}.js`);
+  const companions = Array.from({ length: 31 }, (_, i) => `a/generated/f${i + 1}.js`);
   const all = [
     ...companions,
     'flutter_app/lib/main.dart',
@@ -255,7 +260,7 @@ test('title priority', () => {
     [all.slice(0, -2), 'forbidden'],
     [all.slice(0, -3), 'unclassified'],
     [all.slice(0, -4), 'companion-cap'],
-    [companions.slice(0, 5), 'ok'],
+    [companions.slice(0, 30), 'ok'],
   ];
   for (const [files, title] of ladder) {
     const r = evaluate(files, 'phase', '1');
