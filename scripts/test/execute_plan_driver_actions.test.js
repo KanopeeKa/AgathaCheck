@@ -407,6 +407,8 @@ test('buildHandoffPrompt follows contracts §3.6', () => {
   assert.match(text, /Scope \(allowed\): a\/\*\* {3}Companions: b\.md/);
   assert.match(text, /Evidence: https:\/\/x\/1, https:\/\/x\/2/);
   assert.match(text, /tick proof-build-label-7f3a --json --actor agent/);
+  assert.match(text, /Run\n\.\/scripts\/pre-push-changed\.sh before every push and push only when it is green/);
+  assert.match(text, /worker done: blocked <check>: <reason>/);
 });
 
 test('plansForEvent per event type; fork PRs are ignored', async () => {
