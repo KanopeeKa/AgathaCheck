@@ -304,7 +304,7 @@ Does stop new commits, merge attempts, and new phases.
 4. `gh pr view` → `headRefOid` == `phase.pr_head_sha` else `resume_mismatch` (human `accept-head` to override)
 5. Continue from `next_action`; do not redo `merged` phases
 
-Plan changes after approval → new snapshot + `approve-autonomous` again. v2: plans are immutable after approval; changing scope means a new plan; time and budgets are renewed with `resume-autonomous`.
+Plan changes after approval → new snapshot + `approve-autonomous` again. v2: plans are immutable after approval; changing the plan's goal means a new plan. A fix outside the approved scope that the plan needs in order to land is not a scope change: land it as a plan-linked side PR (runbooks §7.5); time and budgets are renewed with `resume-autonomous`.
 
 ---
 

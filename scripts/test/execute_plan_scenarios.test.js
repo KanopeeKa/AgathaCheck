@@ -73,6 +73,15 @@ function ladder(prPatch, { kind = 'phase', snapPatch, obsPatch, opts } = {}) {
 }
 const red = [{ name: 'ci-gate / CI passed', status: 'completed', conclusion: 'failure', reason: null }];
 
+test('ci-budget stop on a fixable scope failure names the plan-linked side PR route', () => {
+  const scopeRed = [{ name: 'execute-plan-scope', conclusion: 'failure', reason: 'unclassified' }];
+  const s = ladder({ checks: scopeRed, failed_attempts_since_epoch: 3 }).stop;
+  assert.equal(s.reason, 'ci-budget');
+  assert.match(s.detail, /execute-plan-scope is unclassified/);
+  assert.match(s.detail, /Unblocks: plan <id> phase <n>/);
+  assert.doesNotMatch(ladder({ checks: red, failed_attempts_since_epoch: 3 }).stop.detail, /side PR/);
+});
+
 test('prLadder rules 1–10 each', () => {
   assert.equal(ladder({ labels: ['do-not-merge'] }).stop.reason, 'pr-blocked'); // 1
   assert.equal(ladder({ labels: ['execute-plan-hold'] }).action.args.reason, 'hold'); // 1b

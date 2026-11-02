@@ -18,6 +18,9 @@ const FAILED = new Set(['failure', 'timed_out', 'action_required']);
 const SCOPE_CHECK = 'execute-plan-scope';
 const SCOPE_STOP = new Set(['drift', 'protected', 'forbidden']);
 const SCOPE_FIXABLE = new Set(['unclassified', 'companion-cap', 'too-many-files']);
+const SCOPE_SIDE_FIX_HINT = (reason) => `execute-plan-scope is ${reason}: the phase touches files outside its scope. `
+  + 'If the change is needed to deliver the plan, land it as a plan-linked side PR into the integration branch '
+  + '(body: "Unblocks: plan <id> phase <n>" and the blocker), then resume';
 const HOLD_LABEL = 'execute-plan-hold';
 
 const driver = (kind, args = {}) => ({ actor: 'driver', kind, launch: false, args });
@@ -149,8 +152,11 @@ function prLadder(pr, rawCtx) {
   const failing = checks.filter((c) => FAILED.has(c.conclusion));
   if (failing.length) {
     const attempts = pr.failed_attempts_since_epoch || 0;
-    if (attempts >= budget) return stop('ci-budget', `${attempts} failed attempts on PR #${pr.number} (limit ${budget})`);
     const only = failing.length === 1 && failing[0].name === SCOPE_CHECK && SCOPE_FIXABLE.has(failing[0].reason);
+    if (attempts >= budget) {
+      const detail = `${attempts} failed attempts on PR #${pr.number} (limit ${budget})`;
+      return stop('ci-budget', only ? `${detail}; ${SCOPE_SIDE_FIX_HINT(failing[0].reason)}` : detail);
+    }
     const args = { pr: pr.number, branch: pr.head_ref };
     if (only) return launchOrStop(ctx, base, agent('fix-scope', { ...args, violations: [], scope_reason: failing[0].reason }), looked);
     return launchOrStop(ctx, base, agent('fix-ci', { ...args, failing: failing.map((c) => c.name) }), looked);

@@ -236,7 +236,7 @@ non-null except in state `complete`; on a stop, `action.kind` is `enforce-stop`.
 |-------|------|------|---------|
 | agent | `implement` | phase, branch, base, pr? | Build the phase on its branch; draft PR first. |
 | agent | `fix-ci` | pr, branch, failing (check names) | Make the failing required checks green. |
-| agent | `fix-scope` | pr, branch, violations `[{file, reason}]` | Remove or move out-of-scope files. |
+| agent | `fix-scope` | pr, branch, violations `[{file, reason}]` | Remove out-of-scope files; a file the phase truly needs is left out and reported in a PR comment so the owner lands it as a plan-linked side PR (runbooks §7.5). |
 | agent | `triage-review` | pr, branch, threads (urls) | Address and resolve review threads. |
 | agent | `resolve-conflict` | pr, branch, base | Merge the base into the branch and fix conflicts. |
 | agent | `resolve-sync` | sync_pr, branch `cursor/<id>-sync-<n>` | Merge `main` into a new branch off integration, fix conflicts, PR into integration. |

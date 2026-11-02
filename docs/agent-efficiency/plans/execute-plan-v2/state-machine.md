@@ -187,7 +187,7 @@ method `merge` (scope is always green for sync PRs). S2 `release.pr == null` and
 4. Any required check concluded `failure`/`timed_out`/`action_required` on `head_sha`:
    attempts ≥ `ci_per_phase` → STOP `ci-budget`; else, when the only failing check is
    `execute-plan-scope` with reason `unclassified`/`companion-cap`/`too-many-files` → agent
-   `fix-scope`; else agent `fix-ci` (L-rules).
+   `fix-scope`; else agent `fix-ci` (L-rules). The `ci-budget` STOP for a fixable scope failure carries the side-PR hint in its detail.
 5. `unresolved_threads` non-empty → agent `triage-review` (L-rules).
 6. `mergeable_state == "dirty"` → release PR: driver `open-sync-pr`; other PRs: agent
    `resolve-conflict` (L-rules).
