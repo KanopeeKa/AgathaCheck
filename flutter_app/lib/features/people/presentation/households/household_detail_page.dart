@@ -207,15 +207,23 @@ class _HouseholdDetailBodyState extends ConsumerState<_HouseholdDetailBody> {
             ],
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l.cancel)),
-            FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(l.save)),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(l.cancel),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: Text(l.save),
+            ),
           ],
         ),
       ),
     );
     if (saved != true || !mounted) return;
     try {
-      await ref.read(peopleCommandsProvider).patchHouseholdMember(
+      await ref
+          .read(peopleCommandsProvider)
+          .patchHouseholdMember(
             householdId: widget.household.id,
             memberUserId: member.userId,
             accessTier: organiser ? 'full_access' : tier,
@@ -225,12 +233,20 @@ class _HouseholdDetailBodyState extends ConsumerState<_HouseholdDetailBody> {
     } on PeopleApiException catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.code == 'last_organiser' ? l.peopleSaveError : l.peopleSaveError)),
+          SnackBar(
+            content: Text(
+              e.code == 'last_organiser'
+                  ? l.peopleSaveError
+                  : l.peopleSaveError,
+            ),
+          ),
         );
       }
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l.peopleSaveError)));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.peopleSaveError)));
       }
     }
   }

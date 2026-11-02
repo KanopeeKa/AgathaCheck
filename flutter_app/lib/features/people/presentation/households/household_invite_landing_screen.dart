@@ -10,7 +10,10 @@ import '../../application/people_providers.dart';
 import '../../domain/entities/household_invite_preview.dart';
 import 'household_tier_labels.dart';
 
-Future<List<String>?> _sharePetsAfterInvite(BuildContext context, List<Pet> pets) {
+Future<List<String>?> _sharePetsAfterInvite(
+  BuildContext context,
+  List<Pet> pets,
+) {
   if (pets.isEmpty) return Future.value(const []);
   final selected = <String>{};
   final l = AppLocalizations.of(context)!;

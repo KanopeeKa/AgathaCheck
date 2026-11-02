@@ -166,7 +166,9 @@ class HouseholdsApi {
         .map(mapAccessRow)
         .toList();
     final petsLeavingRaw = decoded['pets_leaving'] as List? ?? [];
-    final petsLeaving = petsLeavingRaw.whereType<Map<String, dynamic>>().map((row) {
+    final petsLeaving = petsLeavingRaw.whereType<Map<String, dynamic>>().map((
+      row,
+    ) {
       return HouseholdPetLeaving(
         petId: row['pet_id']?.toString() ?? '',
         petName: row['pet_name']?.toString() ?? '',
