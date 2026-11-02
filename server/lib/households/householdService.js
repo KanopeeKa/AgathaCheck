@@ -1,29 +1,18 @@
 import { v4 as uuidv4 } from 'uuid';
 
-import { userOwnsPet } from '../petAccess.js';
-import { copyHouseholdContactsForPetLeave } from '../people/contactCopyOnPetLeave.js';
-import { recordPetAccessEvent } from './accessAudit.js';
+import { withTransaction } from '../db/withTransaction.js';
 import {
   ensureHouseholdDirectory,
-  getHouseholdMembership,
   userIsHouseholdMember,
   userIsHouseholdOrganiser,
 } from './authz.js';
-import {
-  HOUSEHOLD_TIER_FULL,
-  isHouseholdTier,
-  normalizeMemberTier,
-} from './constants.js';
-import { getPetHouseholdId } from './petAccessGrants.js';
+import { HOUSEHOLD_TIER_FULL } from './constants.js';
 import { getHouseholdMemberRemovalPreview } from './memberRemoval.js';
 import { removeHouseholdMember } from './lifecycle/index.js';
-import {
-  emitHouseholdMemberJoined,
-  emitHouseholdPetAdded,
-  emitHouseholdPetRemoved,
-} from '../notifications/relationshipEmitters.js';
+import { applySetHouseholdPets, setHouseholdPets } from './pets/setHouseholdPets.js';
+import { emitHouseholdPetAdded } from '../notifications/relationshipEmitters.js';
 
-export { getHouseholdMemberRemovalPreview, removeHouseholdMember };
+export { getHouseholdMemberRemovalPreview, removeHouseholdMember, setHouseholdPets };
 
 function mapHouseholdRow(row) {
   return {
@@ -49,34 +38,58 @@ function mapMemberRow(row) {
   };
 }
 
-export async function createHousehold(db, userId, { name, petIds = [] }) {
+export async function createHousehold(pool, userId, { name, petIds = [] }) {
   const trimmed = (name || '').trim();
   if (!trimmed) return { error: 'name is required', status: 400 };
 
   const householdId = uuidv4();
-  await db.query(
-    `INSERT INTO households (id, name, created_at, updated_at)
-     VALUES ($1, $2, NOW(), NOW())`,
-    [householdId, trimmed],
-  );
-  await db.query(
-    `INSERT INTO household_members (
-       household_id, user_id, access_tier, is_organiser, joined_at
-     ) VALUES ($1, $2, $3, true, NOW())`,
-    [householdId, userId, HOUSEHOLD_TIER_FULL],
-  );
-  await ensureHouseholdDirectory(db, householdId);
-
   const uniquePetIds = [...new Set((petIds || []).filter(Boolean))];
-  if (uniquePetIds.length > 0) {
-    const putResult = await setHouseholdPets(db, userId, householdId, uniquePetIds);
-    if (putResult.error) {
-      await db.query('DELETE FROM households WHERE id = $1', [householdId]);
-      return putResult;
+
+  /** @type {Awaited<ReturnType<typeof applySetHouseholdPets>>['addedNotices']} */
+  let addedNotices = [];
+
+  try {
+    await withTransaction(pool, async (client) => {
+      await client.query(
+        `INSERT INTO households (id, name, created_at, updated_at)
+         VALUES ($1, $2, NOW(), NOW())`,
+        [householdId, trimmed],
+      );
+      await client.query(
+        `INSERT INTO household_members (
+           household_id, user_id, access_tier, is_organiser, joined_at
+         ) VALUES ($1, $2, $3, true, NOW())`,
+        [householdId, userId, HOUSEHOLD_TIER_FULL],
+      );
+      await ensureHouseholdDirectory(client, householdId);
+
+      if (uniquePetIds.length > 0) {
+        const putResult = await applySetHouseholdPets(client, userId, householdId, uniquePetIds);
+        if (putResult.error) {
+          const err = new Error(putResult.error);
+          err.status = putResult.status;
+          throw err;
+        }
+        addedNotices = putResult.addedNotices;
+      }
+    });
+  } catch (err) {
+    if (err.status) {
+      return { error: err.message, status: err.status };
     }
+    throw err;
   }
 
-  const household = await getHouseholdDetail(db, userId, householdId);
+  for (const notice of addedNotices) {
+    await emitHouseholdPetAdded(pool, {
+      householdId: notice.householdId,
+      petId: notice.petId,
+      petName: notice.petName,
+      actorUserId: notice.actorUserId,
+    });
+  }
+
+  const household = await getHouseholdDetail(pool, userId, householdId);
   return { household };
 }
 
@@ -148,135 +161,4 @@ export async function patchHousehold(db, userId, householdId, body) {
   );
   const household = await getHouseholdDetail(db, userId, householdId);
   return { household };
-}
-
-export async function addHouseholdMember(db, actorId, householdId, body) {
-  if (!(await userIsHouseholdOrganiser(db, householdId, actorId))) {
-    return { error: 'Forbidden', status: 403 };
-  }
-  const targetUserId = body.user_id || body.userId;
-  if (!targetUserId) {
-    return { error: 'user_id is required (invite tokens ship in a later phase)', status: 400 };
-  }
-  const userExists = await db.query('SELECT 1 FROM users WHERE id = $1', [targetUserId]);
-  if (userExists.rows.length === 0) {
-    return { error: 'User not found', status: 404 };
-  }
-  const existing = await getHouseholdMembership(db, householdId, targetUserId);
-  if (existing) return { error: 'User is already a member', status: 409 };
-
-  let accessTier = body.access_tier || body.accessTier || HOUSEHOLD_TIER_FULL;
-  const isOrganiser = Boolean(body.is_organiser ?? body.isOrganiser);
-  if (!isHouseholdTier(accessTier) && !isOrganiser) {
-    return { error: 'Invalid access_tier', status: 400 };
-  }
-  accessTier = normalizeMemberTier({ accessTier, isOrganiser });
-
-  await db.query(
-    `INSERT INTO household_members (
-       household_id, user_id, access_tier, is_organiser, joined_at
-     ) VALUES ($1, $2, $3, $4, NOW())`,
-    [householdId, targetUserId, accessTier, isOrganiser],
-  );
-
-  const member = await db.query(
-    `SELECT hm.*, u.first_name, u.last_name, u.email, u.photo_url
-     FROM household_members hm
-     INNER JOIN users u ON u.id = hm.user_id
-     WHERE hm.household_id = $1 AND hm.user_id = $2`,
-    [householdId, targetUserId],
-  );
-  await emitHouseholdMemberJoined(db, {
-    householdId,
-    memberUserId: targetUserId,
-  });
-  return { member: mapMemberRow(member.rows[0]) };
-}
-
-export async function setHouseholdPets(db, userId, householdId, petIds) {
-  if (!(await userIsHouseholdMember(db, householdId, userId))) {
-    return { error: 'Forbidden', status: 403 };
-  }
-
-  const desired = [...new Set((petIds || []).filter(Boolean))];
-
-  for (const petId of desired) {
-    if (!(await userOwnsPet(db, petId, userId))) {
-      return { error: 'You can only add pets you own', status: 403 };
-    }
-    const otherHousehold = await getPetHouseholdId(db, petId);
-    if (otherHousehold && otherHousehold !== householdId) {
-      return { error: 'Pet is already in another household', status: 409 };
-    }
-  }
-
-  const current = await db.query(
-    'SELECT pet_id FROM household_pets WHERE household_id = $1',
-    [householdId],
-  );
-  const currentIds = new Set(current.rows.map((r) => r.pet_id));
-  const desiredSet = new Set(desired);
-
-  for (const petId of currentIds) {
-    if (!desiredSet.has(petId)) {
-      const ownerRow = await db.query('SELECT user_id FROM pets WHERE id = $1', [petId]);
-      const ownerId = ownerRow.rows[0]?.user_id;
-      if (ownerId === userId) {
-        const petNameRow = await db.query('SELECT name FROM pets WHERE id = $1', [petId]);
-        await copyHouseholdContactsForPetLeave(db, petId, ownerId, householdId);
-        await db.query('DELETE FROM household_pets WHERE pet_id = $1', [petId]);
-        await recordPetAccessEvent(db, {
-          petId,
-          eventType: 'pet_left_household',
-          accessSource: 'household',
-          detail: { household_id: householdId },
-        });
-        await emitHouseholdPetRemoved(db, {
-          householdId,
-          petId,
-          petName: petNameRow.rows[0]?.name,
-          actorUserId: userId,
-        });
-      }
-    }
-  }
-
-  for (const petId of desired) {
-    if (!currentIds.has(petId)) {
-      const petNameRow = await db.query('SELECT name FROM pets WHERE id = $1', [petId]);
-      await db.query(
-        `INSERT INTO household_pets (household_id, pet_id, added_at)
-         VALUES ($1, $2, NOW())
-         ON CONFLICT (pet_id) DO UPDATE SET household_id = EXCLUDED.household_id`,
-        [householdId, petId],
-      );
-      await recordPetAccessEvent(db, {
-        petId,
-        eventType: 'pet_joined_household',
-        accessSource: 'household',
-        detail: { household_id: householdId },
-      });
-      await emitHouseholdPetAdded(db, {
-        householdId,
-        petId,
-        petName: petNameRow.rows[0]?.name,
-        actorUserId: userId,
-      });
-    }
-  }
-
-  const pets = await db.query(
-    `SELECT hp.pet_id, p.name, p.user_id AS owner_user_id
-     FROM household_pets hp
-     INNER JOIN pets p ON p.id = hp.pet_id
-     WHERE hp.household_id = $1`,
-    [householdId],
-  );
-  return {
-    pets: pets.rows.map((r) => ({
-      pet_id: r.pet_id,
-      name: r.name,
-      owner_user_id: r.owner_user_id,
-    })),
-  };
 }
