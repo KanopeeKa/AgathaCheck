@@ -141,15 +141,10 @@ abstract class HouseholdsRepository {
 
   Future<void> declineHouseholdInvite(String code);
 
-  Future<HouseholdMember> patchHouseholdMember({
+  Future<void> patchHouseholdMember({
     required String householdId,
     required String memberUserId,
     String? accessTier,
     bool? isOrganiser,
-  });
-
-  Future<void> removeOwnerPetFromHousehold({
-    required String householdId,
-    required String petId,
   });
 }

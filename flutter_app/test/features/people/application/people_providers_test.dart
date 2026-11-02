@@ -249,19 +249,11 @@ class FakeHouseholdsRepository implements HouseholdsRepository {
   Future<void> declineHouseholdInvite(String code) async {}
 
   @override
-  Future<HouseholdMember> patchHouseholdMember({
+  Future<void> patchHouseholdMember({
     required String householdId,
     required String memberUserId,
     String? accessTier,
     bool? isOrganiser,
-  }) async {
-    return detail!.members.firstWhere((m) => m.userId == memberUserId);
-  }
-
-  @override
-  Future<void> removeOwnerPetFromHousehold({
-    required String householdId,
-    required String petId,
   }) async {}
 }
 

@@ -8,8 +8,52 @@ import '../../../pet_profile/pet_profile.dart';
 import '../../application/people_commands.dart';
 import '../../application/people_providers.dart';
 import '../../domain/entities/household_invite_preview.dart';
-import 'household_share_pets_dialog.dart';
 import 'household_tier_labels.dart';
+
+Future<List<String>?> _sharePetsAfterInvite(BuildContext context, List<Pet> pets) {
+  if (pets.isEmpty) return Future.value(const []);
+  final selected = <String>{};
+  final l = AppLocalizations.of(context)!;
+  return showDialog<List<String>>(
+    context: context,
+    barrierDismissible: false,
+    builder: (ctx) => StatefulBuilder(
+      builder: (ctx, setState) => AlertDialog(
+        title: Text(l.peopleHouseholdPetReviewTitle),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (final pet in pets)
+              CheckboxListTile(
+                key: Key('household_share_pet_${pet.id}'),
+                value: selected.contains(pet.id),
+                onChanged: (v) => setState(() {
+                  if (v == true) {
+                    selected.add(pet.id);
+                  } else {
+                    selected.remove(pet.id);
+                  }
+                }),
+                title: Text(pet.name),
+              ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            key: const Key('household_share_pets_skip'),
+            onPressed: () => Navigator.pop(ctx, const []),
+            child: Text(l.later),
+          ),
+          FilledButton(
+            key: const Key('household_share_pets_confirm'),
+            onPressed: () => Navigator.pop(ctx, selected.toList()),
+            child: Text(l.continueButton),
+          ),
+        ],
+      ),
+    ),
+  );
+}
 
 class HouseholdInviteLandingScreen extends ConsumerStatefulWidget {
   const HouseholdInviteLandingScreen({super.key, required this.inviteCode});
@@ -61,13 +105,7 @@ class _HouseholdInviteLandingScreenState
       if (!mounted) return;
 
       final ownedPets = ref.read(petListProvider).valueOrNull ?? const <Pet>[];
-      final selectedPetIds = await showHouseholdSharePetsAfterInviteDialog(
-        context: context,
-        householdName: preview.householdName,
-        ownedPets: ownedPets
-            .map((p) => HouseholdSharePetOption(id: p.id, name: p.name))
-            .toList(),
-      );
+      final selectedPetIds = await _sharePetsAfterInvite(context, ownedPets);
       if (!mounted || selectedPetIds == null) return;
 
       if (selectedPetIds.isNotEmpty) {

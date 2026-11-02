@@ -14635,7 +14635,7 @@ abstract class AppLocalizations {
   /// No description provided for @peopleHouseholdPetReviewBody.
   ///
   /// In en, this message translates to:
-  /// **'These pets will be shared with household members. You can change this later.'**
+  /// **'Choose which of your pets belong in this household. You can change this later.'**
   String get peopleHouseholdPetReviewBody;
 
   /// No description provided for @peopleHouseholdMembersTitle.
@@ -14763,84 +14763,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Decline'**
   String get peopleHouseholdInviteDecline;
-
-  /// No description provided for @peopleHouseholdSharePetsAfterInviteTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Share any of your pets with {householdName}?'**
-  String peopleHouseholdSharePetsAfterInviteTitle(String householdName);
-
-  /// No description provided for @peopleHouseholdSharePetsAfterInviteBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Nothing is shared until you choose pets here.'**
-  String get peopleHouseholdSharePetsAfterInviteBody;
-
-  /// No description provided for @peopleHouseholdSharePetsSkip.
-  ///
-  /// In en, this message translates to:
-  /// **'Not now'**
-  String get peopleHouseholdSharePetsSkip;
-
-  /// No description provided for @peopleHouseholdEditMemberAction.
-  ///
-  /// In en, this message translates to:
-  /// **'Change access'**
-  String get peopleHouseholdEditMemberAction;
-
-  /// No description provided for @peopleHouseholdLastOrganiserError.
-  ///
-  /// In en, this message translates to:
-  /// **'At least one organiser must stay in the household.'**
-  String get peopleHouseholdLastOrganiserError;
-
-  /// No description provided for @peopleMemberRemovalPetsLeaving.
-  ///
-  /// In en, this message translates to:
-  /// **'Pets leaving the household:'**
-  String get peopleMemberRemovalPetsLeaving;
-
-  /// No description provided for @peopleMemberRemovalRevokeIfAllAccess.
-  ///
-  /// In en, this message translates to:
-  /// **'Also removed if you choose “Remove all access to my pets”:'**
-  String get peopleMemberRemovalRevokeIfAllAccess;
-
-  /// No description provided for @peopleMemberRemovalRemainingDirectShare.
-  ///
-  /// In en, this message translates to:
-  /// **'{petName} · {role} (direct share)'**
-  String peopleMemberRemovalRemainingDirectShare(String petName, String role);
-
-  /// No description provided for @peopleMemberRemovalRemainingAbsence.
-  ///
-  /// In en, this message translates to:
-  /// **'{petName} · access during an absence'**
-  String peopleMemberRemovalRemainingAbsence(String petName);
-
-  /// No description provided for @peopleMemberRemovalRemainingAbsenceUntil.
-  ///
-  /// In en, this message translates to:
-  /// **'{petName} · access until {until}'**
-  String peopleMemberRemovalRemainingAbsenceUntil(String petName, String until);
-
-  /// No description provided for @whoHasAccessPetInHousehold.
-  ///
-  /// In en, this message translates to:
-  /// **'This pet is in this household'**
-  String get whoHasAccessPetInHousehold;
-
-  /// No description provided for @peopleHouseholdRemovePetTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Remove {petName} from \"{householdName}\"?'**
-  String peopleHouseholdRemovePetTitle(String petName, String householdName);
-
-  /// No description provided for @peopleHouseholdRemovePetAction.
-  ///
-  /// In en, this message translates to:
-  /// **'Remove {petName}'**
-  String peopleHouseholdRemovePetAction(String petName);
 
   /// No description provided for @peopleAddPetsEmpty.
   ///
