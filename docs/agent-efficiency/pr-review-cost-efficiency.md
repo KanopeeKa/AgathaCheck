@@ -3,7 +3,7 @@ title: Pr Review Cost Efficiency
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-10-13
+last_updated: 2026-11-02
 tags: [agent-efficiency, policy, actions-cost]
 ---
 # PR review & cost efficiency
@@ -45,11 +45,12 @@ Implementation
 Copilot PR review (when enabled) → triage when threads exist
 
 Babysit+ (composer-2.5 for babysit steps — see below)
-  → babysit_pr_reviews.js collect --pr <url>
-  → fix + pre-push-changed.sh → CI → pre-push.sh before merge to main
+  → babysit_pr_reviews.js wait --pr <url>   (Copilot done → triage every thread)
+  → fix + pre-push-changed.sh → reply + resolve threads → push → wait again → CI
+  → babysit_pr_reviews.js gate --pr <url>   (exit 0) → pre-push.sh → merge
 ```
 
-When Copilot is unavailable or posts no threads: proceed after self-review + CI green (§Copilot unavailable).
+When Copilot is unavailable or posts no threads: proceed after self-review + CI green + review gate (§Copilot unavailable). Full procedure: autonomous-pr-policy §Automatic reviews.
 
 ---
 
@@ -89,6 +90,7 @@ Copilot credits and Actions minutes are separate meters. Levers: batch pushes, i
 |----|----------|--------|
 | AEC-D-001 | Oct 2026 Actions spike mainly `ci.yml` volume, not Copilot runners | Live |
 | AEC-D-002 | Trim triggers, push batching, Pre-UAT cancel-in-progress, PR E2E max 2 legs | Live |
+| AEC-D-003 | Babysit skills wait for Copilot before triage, re-check reviews after every push and gate merge on `babysit_pr_reviews.js gate` (PR #2017 merged 1 s before Copilot's 3 threads; `collect` also failed under the `repo`-only bot token) | Live |
 
 ---
 
@@ -96,7 +98,7 @@ Copilot credits and Actions minutes are separate meters. Levers: batch pushes, i
 
 1. Do not request Copilot reviewer without credits.
 2. Self-review + CI + `./scripts/pre-push.sh` before merge to `main`.
-3. `collect --pr` — triage any existing threads before merge.
+3. `wait --pr` timed out with Copilot still pending, or Copilot absent — triage any existing threads; `collect --pr` must show zero unresolved threads before merge.
 4. Optional PR comment: Copilot unavailable; CI + pre-push only.
 
 ---

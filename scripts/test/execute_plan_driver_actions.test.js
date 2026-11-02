@@ -402,7 +402,8 @@ test('agent action without launch (worker is alive elsewhere) launches nothing',
 test('buildHandoffPrompt follows contracts §3.6', () => {
   const decision = { phase: '1', action: { actor: 'agent', kind: 'triage-review', launch: true, args: { pr: 4, branch: 'cursor/p-p1', threads: ['https://x/1', 'https://x/2'] } } };
   const text = buildHandoffPrompt(decision, SNAP, PLAN_MD, { base: SNAP.integration_branch });
-  assert.match(text, /Action: triage-review — /);
+  assert.match(text, /Action: triage-review — triage every unresolved review thread \(autonomous-pr-policy §Review triage/);
+  assert.match(text, /reply on and resolve each one/);
   assert.match(text, /Branch: cursor\/p-p1 {3}Base: cursor\/proof-build-label-7f3a-integration-7f3a {3}PR: #4 {3}Phase: 1 "First"/);
   assert.match(text, /Scope \(allowed\): a\/\*\* {3}Companions: b\.md/);
   assert.match(text, /Evidence: https:\/\/x\/1, https:\/\/x\/2/);

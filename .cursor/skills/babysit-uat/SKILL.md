@@ -72,8 +72,8 @@ e2e-debug path only when `tick` returns a `remedial` action.
 
 Run **all** of `/babysit-plus` **§Pre-PR critical review** (including `/canonical-docs sync`), then §0–7. Remedial PRs from `/e2e-debug` use the same docs gate — usually `Docs: N/A — test/infra fix` unless the remedy changes behaviour.
 
-1. Sync, triage, debt, CI loop, `pre-push.sh`
-2. **Always squash-merge** when gates pass (no `manual` / `labeled` modes)
+1. Sync, wait for automatic reviews (§0b), triage, debt, CI loop with review re-check after every push (§5), `pre-push.sh`
+2. **Always squash-merge** when gates pass, including the review gate (`node scripts/babysit_pr_reviews.js gate --pr <url>` exits `0`, babysit+ §7) — CI green alone is not enough (no `manual` / `labeled` modes)
 3. Record `merge_sha` from merged PR
 
 **Babysit-plus scope ends here** (not the session or turn) — continue into Phase 2 of this skill only.
@@ -124,7 +124,7 @@ Run **/e2e-debug** with:
 
 On the **remedial PR** from `/e2e-debug`:
 
-1. Full **Phase 1** (babysit+ merge remedial to `main`) — mark draft **ready**, triage reviews, squash-merge when CI green
+1. Full **Phase 1** (babysit+ merge remedial to `main`) — mark draft **ready**, wait for and triage reviews, squash-merge when CI is green and the review gate passes
 2. Record `merge_sha` from the remedial merge
 3. `./scripts/babysit_uat_watch_preuat.sh <merge_sha> --json --timeout-min 90`
 4. On failure → **Phase 3** again (`/e2e-debug` with `round >= 2`, failed shards only) → return to step 1

@@ -79,21 +79,19 @@ Use **`composer-2.5` only** for steps §0–7 (sync, poll, triage, fixes, CI, me
 3. `gh pr view <url> --json state,isDraft,labels,headRefOid,baseRefName`
 4. **§Halt if:** `do-not-merge`, draft (when merge intended), revoked, or expired.
 
-### 0b. Ready for review + collect automatic reviews (mandatory)
+### 0b. Ready for review + wait for automatic reviews (mandatory)
 
-Applies to **both** `/babysit` and `/babysit-plus`. **Copilot** is the primary automatic reviewer when enabled; **must be triaged when threads exist**. Policy: `docs/agent-efficiency/pr-review-cost-efficiency.md`.
+Applies to `/babysit`, `/babysit-plus` and `/babysit-uat`. **Copilot** is the primary automatic reviewer when enabled; it posts 2–7 min after the PR opens and **must be triaged**. Policy: autonomous-pr-policy §Automatic reviews.
 
 1. Confirm session model is **`composer-2.5`** before this step (see §Model). During an active execute-plan (any schema), never switch model or spawn a fresh agent for this step; v2 workers never merge — the driver arms auto-merge.
 2. If `isDraft`: `gh pr ready <url>` (or equivalent).
-3. **Collect review threads** (mandatory — do not hand-roll `gh api` calls):
+3. **Wait for reviews, then collect** (mandatory — do not hand-roll `gh api` calls):
    ```bash
-   node scripts/babysit_pr_reviews.js collect --pr <url>
+   node scripts/babysit_pr_reviews.js wait --pr <url>
    ```
-   The JSON `threads` array lists **every unresolved thread** from Copilot and humans. Triage **each** thread — never declare “no automated review” while `summary.copilotCount > 0` or `threads` is non-empty.
-4. **Copilot unavailable / no threads:** Proceed when `collect` returns zero unresolved threads (or Copilot never posted). Comment `Copilot unavailable; babysit+ triage used CI + pre-push only.` only when Copilot was expected but never posted — do **not** halt.
+   Returns once no Copilot review is in progress. The JSON `threads` array lists **every unresolved thread** from Copilot and humans. Never declare “no automated review” while `reviewers.copilot.state` is `pending` or `threads` is non-empty. A script error is never “no threads” — fix it and re-run.
+4. **Copilot unavailable:** `wait` exits `1` with Copilot still pending after 15 min → comment `Copilot review did not finish within 15 min; proceeding on triage + CI + pre-push.` once and continue — do **not** halt. Copilot absent (never requested) → proceed.
 5. **Autofix:** Off — babysit+ owns fixes; do not re-run adversarial review in agent turns (slim babysit).
-
-Automatic review: Copilot when enabled — see pr-review-cost-efficiency.md (Bugbot retired).
 
 ### 1. Sync and conflicts
 
@@ -101,7 +99,7 @@ Same as `/babysit`: resolve merge conflicts preserving intent; escalate if inten
 
 ### 2. Triage (mandatory before fixes)
 
-Run `node scripts/babysit_pr_reviews.js collect --pr <url>` and triage **every** entry in `threads` (Copilot, human — filter resolved threads via the script output).
+Triage **every** entry in `threads` from the latest `wait` output (Copilot, human; resolved threads are already filtered out).
 
 Post a **triage comment** on the PR summarizing every active unresolved thread:
 
@@ -131,6 +129,7 @@ Deferred items will be tracked per autonomous-pr-policy §Debt issues.
 - Nits in touched files when safe per policy heuristics.
 - Run `./scripts/pre-push-changed.sh` after each logical batch.
 - Never weaken CI gates to pass.
+- **Close every thread** once its fix is pushed or its debt issue exists: reply (`Fixed in <sha>` / `False positive: …` / `Deferred to #<n>`) and resolve it (GraphQL `resolveReviewThread`, or the GitHub UI). Rulesets block merge while any thread is unresolved.
 
 ### 4. Debt issues
 
@@ -161,8 +160,9 @@ Deferred debt issues that are not being worked yet need no label.
 
 1. **Before watching CI:** `./scripts/babysit_sync_base.sh --pr <url> --check` — if behind, `--push` once instead of waiting for a failure.
 2. Push fixes; watch CI (`ManagePullRequest get_ci_status` or `gh pr checks`).
-3. Rebase on latest base before counting unrelated failures (`--check` then `--push` when behind).
-4. Exhaust budget → halt; comment on PR + control issue.
+3. **After every push**, `node scripts/babysit_pr_reviews.js wait --pr <url>` — new threads (human, re-requested Copilot) go back through §2–§4 in the same batch as CI fixes. CI green alone never ends the loop.
+4. Rebase on latest base before counting unrelated failures (`--check` then `--push` when behind).
+5. Exhaust budget → halt; comment on PR + control issue.
 
 ### 6. Exit checklist
 
@@ -175,6 +175,18 @@ Always before merge attempt: `./scripts/pre-push.sh` green locally.
 ### 7. Merge (always)
 
 When all merge gates pass (autonomous-pr-policy §Merge gates), **always squash-merge** — babysit+ never stops at “merge-ready” without merging.
+
+**Review gate** (mandatory, immediately before claiming the lease):
+
+```bash
+node scripts/babysit_pr_reviews.js gate --pr <url>
+```
+
+| Exit | Action |
+|------|--------|
+| `0` | No Copilot review in progress; every thread resolved — proceed |
+| `2` | Unresolved threads → back to §2 (triage, fix, reply + resolve, push, CI) |
+| `1` | Copilot still pending after the timeout → §0b step 4, then `collect` must show `summary.unresolvedCount == 0`; script error → fix and re-run |
 
 **Merge coordination** (mandatory — see autonomous-pr-policy §Merge coordination):
 
