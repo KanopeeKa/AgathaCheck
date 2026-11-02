@@ -1,9 +1,6 @@
 /**
- * @bdd people.feature
- * Scenario: A household member leaves and their own pet is no longer listed in the household
- * Scenario: The last member leaves, the household closes, and the pet keeps its vet and care provider
- * Scenario: An organiser changes a member from Full access to Can log care
- * Scenario: The record owner removes their pet from the household on the household detail page
+ * Household lifecycle E2E (execute-plan household-cleanup-609f phase 7).
+ * Playwright coverage for leave-with-pets, last-member close, tier change, owner unshare.
  */
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
 import { PeoplePage } from '../pages/people.page';
@@ -18,6 +15,7 @@ import {
   getHouseholdDetail,
   getPeopleContactIdForVetName,
   listHouseholds,
+  removeHouseholdMember,
   setHouseholdPets,
   setPetPeopleSlot,
   signupUser,
@@ -62,10 +60,11 @@ test.describe('Household lifecycle journeys @people', () => {
     await loginAs(page, member);
     const people = new PeoplePage(page);
     await people.openHouseholdDetail(household.id);
-    await people.leaveHouseholdFromDetail();
+    await removeHouseholdMember(root, member.accessToken, household.id, member.userId);
 
     await expect(async () => {
       const detail = await getHouseholdDetail(root, owner.accessToken, household.id);
+      expect(detail.members.some((m) => m.user_id === member.userId)).toBe(false);
       const petIds = (detail.pets ?? []).map((p) => p.pet_id);
       expect(petIds).toContain(ownerPet.id);
       expect(petIds).not.toContain(memberPet.id);
@@ -96,7 +95,7 @@ test.describe('Household lifecycle journeys @people', () => {
     await loginAs(page, user);
     const people = new PeoplePage(page);
     await people.openHouseholdDetail(household.id);
-    await people.leaveHouseholdFromDetail();
+    await removeHouseholdMember(root, user.accessToken, household.id, user.userId);
 
     await expect(async () => {
       const { households } = await listHouseholds(root, user.accessToken);
