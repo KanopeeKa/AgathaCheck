@@ -27,6 +27,16 @@ function workerLaunchEnvVars(botToken) {
   return blanked;
 }
 
+/** Cursor API rejects empty envVars values; omit blanks at the HTTP boundary only. */
+function envVarsForCursorLaunch(envVars) {
+  if (!envVars || typeof envVars !== 'object') return undefined;
+  const out = {};
+  for (const [key, value] of Object.entries(envVars)) {
+    if (value !== '') out[key] = value;
+  }
+  return Object.keys(out).length > 0 ? out : undefined;
+}
+
 /**
  * @param {typeof fetch} fetchImpl
  */
@@ -102,8 +112,9 @@ async function launchPlanAgent({
   if (model) {
     body.model = { id: model };
   }
-  if (envVars && Object.keys(envVars).length > 0) {
-    body.envVars = envVars;
+  const launchEnv = envVarsForCursorLaunch(envVars);
+  if (launchEnv) {
+    body.envVars = launchEnv;
   }
 
   const launched = await cursorApi(fetchFn, 'POST', '/v1/agents', apiKey, body);
@@ -160,4 +171,5 @@ module.exports = {
   CURSOR_API_BASE,
   workerLaunchEnvVars,
   BLANKED_LAUNCH_KEYS,
+  envVarsForCursorLaunch,
 };

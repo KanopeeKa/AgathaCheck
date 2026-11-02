@@ -67,7 +67,10 @@ test('launch sends envVars in the request body when given, and omits them otherw
     },
   });
   const base = { apiKey: API_KEY, repoUrl: REPO_URL, startingRef: STARTING_REF, prompt: 'p', fetchImpl };
-  await launchPlanAgent({ ...base, envVars: { GH_TOKEN: 't', EXECUTE_PLAN_TOKEN: 't' } });
+  await launchPlanAgent({
+    ...base,
+    envVars: { GH_TOKEN: 't', EXECUTE_PLAN_TOKEN: 't', OWNER_GH_TOKEN: '', BOT_GH_TOKEN: '' },
+  });
   await launchPlanAgent(base);
   await launchPlanAgent({ ...base, envVars: {} });
   assert.deepEqual(bodies[0].envVars, { GH_TOKEN: 't', EXECUTE_PLAN_TOKEN: 't' });
