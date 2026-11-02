@@ -115,11 +115,14 @@ Defaults from `V2_DEFAULTS` in `scripts/lib/execute_plan_constants.js` (each val
 | Budget | Default | Cap |
 |--------|---------|-----|
 | `window_days` | 7 | 14 |
-| `ci_per_phase` | 3 | 3 |
-| `launches_per_phase` | 5 | 6 |
-| `remedial_rounds` | 3 | 3 |
-| `sync_attempts` | 2 | 2 |
-| `daily_launches` | 20 | 30 |
+| `ci_per_phase` | 8 | 15 |
+| `launches_per_phase` | 15 | 25 |
+| `remedial_rounds` | 6 | 10 |
+| `sync_attempts` | 5 | 8 |
+| `daily_launches` | 80 | 150 |
+
+These are loop breakers, not working limits: ordinary phases use a fraction of them, and only a run
+that loops or makes no progress should reach one.
 
 Raising a budget above its cap fails validation. After STOP, owner **`resume-autonomous`** with the
 **same** approval hash renews time and budgets (see runbooks §7.5).

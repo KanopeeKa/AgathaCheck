@@ -409,6 +409,7 @@ test('buildHandoffPrompt follows contracts §3.6', () => {
   assert.match(text, /tick proof-build-label-7f3a --json --actor agent/);
   assert.match(text, /Run\n\.\/scripts\/pre-push-changed\.sh before every push and push only when it is green/);
   assert.match(text, /worker done: blocked <check>: <reason>/);
+  assert.match(text, /Web bundle budget .*raise the cap in this PR/s);
 });
 
 test('plansForEvent per event type; fork PRs are ignored', async () => {

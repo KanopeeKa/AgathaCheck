@@ -94,9 +94,15 @@ function buildHandoffPrompt(decision, snapshot, planMarkdown, { base } = {}) {
     'fixes: every push costs a full CI run and counts as an attempt against the phase budget); mark the PR',
     'ready only after it is green; never touch protected paths; never approve, label, merge or close',
     'anything; never edit the control issue yourself.',
-    'If a failing check cannot be fixed inside your scope (it needs a protected path, a CI gate or a budget',
-    'file), do not work around it and do not retry: describe the cause in the PR description and end your',
+    'If a failing check cannot be fixed inside your scope (it needs a protected path, a CI gate or another',
+    'budget file; the web bundle budget below is the exception), do not work around it and do not retry: describe the cause in the PR description and end your',
     'turn with "worker done: blocked <check>: <reason>".',
+    '',
+    'Web bundle budget (scripts/ci/web-bundle-budget.json): when only check-web-bundle-budget fails and the',
+    'overshoot comes from this phase\'s planned code (no new package or asset), raise the cap in this PR to',
+    'the measured size plus about 1% and give before/after bytes in the PR body. Never cut planned scope to',
+    'fit. A jump over about 1.5% of main.dart.js, or one you cannot explain, gets one trimming attempt',
+    '(deferred import, drop the asset); if it is still over, report it as blocked with the numbers.',
   ].join('\n');
 }
 
