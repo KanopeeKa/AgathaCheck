@@ -237,6 +237,10 @@ class HouseholdDto {
     );
   }
 
+  /// PATCH member response (no household pet list for owns/shares derivation).
+  static HouseholdMember memberFromApiRow(Map<String, dynamic> m) =>
+      _memberFromJson(m, const []);
+
   static HouseholdMember _memberFromJson(
     Map<String, dynamic> m,
     List<HouseholdPet> pets,

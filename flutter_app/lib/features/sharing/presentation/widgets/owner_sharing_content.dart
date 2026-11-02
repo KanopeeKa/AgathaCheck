@@ -41,8 +41,12 @@ class OwnerSharingContent extends ConsumerWidget {
         overviewAsync.when(
           loading: () => const SizedBox.shrink(),
           error: (_, __) => const SizedBox.shrink(),
-          data: (overview) =>
-              WhoHasAccessSection(householdAccess: overview.householdAccess),
+          data: (overview) => WhoHasAccessSection(
+            petId: petId,
+            petName: pet.name,
+            householdAccess: overview.householdAccess,
+            canRemoveFromHousehold: !pet.isShared,
+          ),
         ),
         if (shareLinks.isEmpty && accessList.isEmpty)
           Padding(

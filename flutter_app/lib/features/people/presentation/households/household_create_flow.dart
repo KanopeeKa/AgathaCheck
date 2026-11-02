@@ -111,7 +111,12 @@ class _CreateHouseholdDialogState
                 ? null
                 : () {
                     if (_nameController.text.trim().isEmpty) return;
-                    setState(() => _step = 1);
+                    setState(() {
+                      _step = 1;
+                      _selectedPetIds
+                        ..clear()
+                        ..addAll(pets.map((p) => p.id));
+                    });
                   },
             child: Text(l.continueButton),
           )

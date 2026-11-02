@@ -136,6 +136,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Pets in this household'), findsOneWidget);
+    expect(find.byType(CheckboxListTile), findsOneWidget);
+    expect(tester.widget<CheckboxListTile>(find.byType(CheckboxListTile)).value, isTrue);
     await tester.tap(
       find.descendant(
         of: find.byType(AlertDialog),

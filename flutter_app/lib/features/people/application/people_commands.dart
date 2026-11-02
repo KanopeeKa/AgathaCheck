@@ -242,6 +242,34 @@ class PeopleCommands {
       memberUserId: memberUserId,
     );
   }
+
+  Future<HouseholdMember> patchHouseholdMember({
+    required String householdId,
+    required String memberUserId,
+    String? accessTier,
+    bool? isOrganiser,
+  }) async {
+    final member = await _households.patchHouseholdMember(
+      householdId: householdId,
+      memberUserId: memberUserId,
+      accessTier: accessTier,
+      isOrganiser: isOrganiser,
+    );
+    _ref.invalidate(householdDetailProvider(householdId));
+    await refreshRoster();
+    return member;
+  }
+
+  Future<void> removeOwnerPetFromHousehold({
+    required String householdId,
+    required String petId,
+  }) async {
+    await _households.removeOwnerPetFromHousehold(
+      householdId: householdId,
+      petId: petId,
+    );
+    await _invalidateHouseholds();
+  }
 }
 
 final peopleCommandsProvider = Provider<PeopleCommands>(
