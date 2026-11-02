@@ -48,7 +48,7 @@ function defaultDeps() {
 const ACTION_TEXT = {
   implement: 'build the phase on its branch (draft PR first)',
   'fix-ci': 'make the failing required checks green',
-  'fix-scope': 'remove out-of-scope files; if one is required for the phase, keep it out of this PR and say so in a PR comment (file, reason) so the owner can land it as a plan-linked side PR',
+  'fix-scope': 'remove out-of-scope files; if one is required for the phase, keep it out of this PR, name it in the PR description and end with "worker done: blocked execute-plan-scope: <file>" so the owner can land it as a plan-linked side PR',
   'triage-review': 'address and resolve the unresolved review threads',
   'resolve-conflict': 'merge the base into the branch and fix the conflicts',
   'resolve-sync': 'merge main into a new branch off the integration branch, fix conflicts, open a PR into integration',
