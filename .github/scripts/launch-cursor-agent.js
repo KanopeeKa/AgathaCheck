@@ -14,7 +14,7 @@ const {
   buildAgentPrompt,
   buildDispatchComment,
 } = require('./agent-payload-lib');
-const { workerLaunchEnvVars } = require('./execute-plan-launch');
+const { workerLaunchEnvVars, envVarsForCursorLaunch } = require('./execute-plan-launch');
 
 const CURSOR_API_BASE = 'https://api.cursor.com';
 
@@ -65,7 +65,10 @@ async function launchAgent({ apiKey, repoUrl, promptText, model, envVars }) {
     body.model = { id: model };
   }
 
-  body.envVars = envVars ?? botLaunchEnvVars();
+  const launchEnv = envVarsForCursorLaunch(envVars ?? botLaunchEnvVars());
+  if (launchEnv) {
+    body.envVars = launchEnv;
+  }
 
   return cursorApi('POST', '/v1/agents', apiKey, body);
 }

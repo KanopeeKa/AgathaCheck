@@ -68,6 +68,11 @@ async function main() {
     prompt: PROMPT,
     model: 'composer-2.5',
     envVars: workerLaunchEnvVars('probe-not-a-token'),
+  }).catch((e) => {
+    if (/envVars value cannot be empty/i.test(String(e.message))) {
+      console.log('WP11_PROBE_LAUNCH=API_REJECTS_EMPTY_ENVVARS');
+    }
+    throw e;
   });
 
   console.log(`probe_agent_id=${launched.agentId}`);
