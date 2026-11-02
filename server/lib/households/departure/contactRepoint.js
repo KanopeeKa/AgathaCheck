@@ -1,3 +1,4 @@
+import { repointProviderContactForPet } from '../../care/occurrence/repointProviderContact.js';
 import {
   copyContactToPersonalDirectory,
   ensurePersonalDirectory,
@@ -139,15 +140,11 @@ export async function repointPetReferences(client, petId, sourceContactId, targe
     [targetContactId, petId, sourceContactId],
   );
 
-  await client.query(
-    `UPDATE health_occurrences ho
-     SET provider_contact_id = $1, updated_at = NOW()
-     FROM health_entries he
-     WHERE ho.health_entry_id = he.id
-       AND he.pet_id = $2
-       AND ho.provider_contact_id = $3`,
-    [targetContactId, petId, sourceContactId],
-  );
+  await repointProviderContactForPet(client, {
+    petId,
+    sourceContactId,
+    targetContactId,
+  });
 
   await client.query(
     `UPDATE planned_absence_pets
