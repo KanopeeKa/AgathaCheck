@@ -279,6 +279,9 @@ function createGitHubClient(opts) {
       if (title !== undefined || summary !== undefined) body.output = { title, summary };
       return rest('PATCH', `/check-runs/${id}`, { body });
     },
+    listCommitStatuses: (sha, { pages } = {}) => paginate(`/commits/${sha}/statuses`, { pages }),
+    createCommitStatus: (sha, { state, context, description, target_url }) =>
+      rest('POST', `/statuses/${sha}`, { body: { state, context, description, ...(target_url ? { target_url } : {}) } }),
 
     // Commits, refs, contents
     async compare(base, head) {

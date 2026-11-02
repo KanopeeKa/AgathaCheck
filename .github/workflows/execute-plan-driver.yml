@@ -17,6 +17,7 @@ permissions:
   issues: write
   pull-requests: write
   actions: write
+  statuses: write
   checks: write
 jobs:
   # PR events never get secrets: pull_request_target runs on the PR base ref (rejected by the main-only

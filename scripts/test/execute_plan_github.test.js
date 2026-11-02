@@ -300,6 +300,18 @@ test('list endpoints unwrap wrapped pages and build queries', async () => {
   assert.deepEqual(await gh.listPulls({ head: 'cursor/x-p1', base: 'main', state: 'open' }), [{ number: 8 }]);
 });
 
+test('commit statuses: list and create (target_url only when given)', async () => {
+  const { gh, fake } = client({
+    [`GET ${R}/commits/abc/statuses?per_page=100`]: { body: [{ id: 1, context: 'execute-plan-scope' }] },
+    [`POST ${R}/statuses/abc`]: { status: 201, body: { id: 2 } },
+  });
+  assert.deepEqual(await gh.listCommitStatuses('abc'), [{ id: 1, context: 'execute-plan-scope' }]);
+  await gh.createCommitStatus('abc', { state: 'failure', context: 'execute-plan-scope', description: 'drift' });
+  await gh.createCommitStatus('abc', { state: 'success', context: 'execute-plan-scope', description: 'ok', target_url: 'https://r/1' });
+  assert.deepEqual(fake.calls[1].body, { state: 'failure', context: 'execute-plan-scope', description: 'drift' });
+  assert.equal(fake.calls[2].body.target_url, 'https://r/1');
+});
+
 test('listIssues sends labels and state and drops pull requests', async () => {
   const { gh, fake } = client({
     [`GET ${R}/issues?labels=execute-plan,plan:abc&per_page=100&state=open`]: {

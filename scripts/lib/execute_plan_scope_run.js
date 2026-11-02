@@ -2,7 +2,7 @@
 
 /**
  * Execute-plan v2 scope check: gather GitHub state, run the pure matcher, publish the
- * `execute-plan-scope` check run. Runs in Actions from trusted `main` code; PR code is never executed.
+ * `execute-plan-scope` commit status. Runs in Actions from trusted `main` code; PR code is never executed.
  * Spec: docs/agent-efficiency/plans/execute-plan-v2/work-packages-platform.md §WP7a.
  */
 
@@ -13,8 +13,9 @@ const { loadSnapshotAtRef } = require('./execute_plan_snapshot_v2');
 const { categorizePull, evaluateDiff } = require('./execute_plan_scope');
 const { deriveControl } = require('./execute_plan_control');
 const { planIdFromRefs, findControlIssue, labelNames } = require('./execute_plan_plans');
+const { SCOPE_CONTEXT, describeScope } = require('./execute_plan_scope_status');
 
-const CHECK_NAME = 'execute-plan-scope';
+const CHECK_NAME = SCOPE_CONTEXT;
 const CONFIG_PATH = '.github/execute-plan.config.json';
 const SUMMARY_MAX_LINES = 50;
 
@@ -93,6 +94,18 @@ function renderSummary(evaluation) {
   return lines.join('\n');
 }
 
+/** Control issue → config, status comment, snapshot at `init_sha`, and the derived STOP state. Throws when any is unusable. */
+async function loadPlanControl(client, issue, planId, now) {
+  const config = await loadConfig(client);
+  const comments = await client.listIssueComments(issue.number);
+  const status = parseStatusComment(comments, planId, config.bot_login);
+  if (!status || typeof status.init_sha !== 'string') throw new Error('status comment with init_sha not found');
+  const { snapshot } = await loadSnapshotAtRef(client, planId, status.init_sha);
+  const control = findControlComments(comments, snapshot, config);
+  const stopped = deriveControl({ ...control, labels: labelNames(issue), status }, { now: new Date(now).toISOString() });
+  return { snapshot, stopped };
+}
+
 /** @returns {Promise<{ conclusion: string, title: string, summary: string, planId: string|null }>} */
 async function runScopeCheck(client, { prNumber, headSha, headRef, baseRef, headRepo, repo, now }) {
   if (headRepo !== repo) return result('success', 'ok', 'not an execute-plan PR (fork)');
@@ -101,25 +114,13 @@ async function runScopeCheck(client, { prNumber, headSha, headRef, baseRef, head
   const issue = await findControlIssue(client, planId);
   if (!issue) return result('success', 'ok', 'not an execute-plan PR');
 
-  let config;
   let snapshot;
-  let status;
-  let comments;
+  let stopped;
   try {
-    config = await loadConfig(client);
-    comments = await client.listIssueComments(issue.number);
-    status = parseStatusComment(comments, planId, config.bot_login);
-    if (!status || typeof status.init_sha !== 'string') throw new Error('status comment with init_sha not found');
-    ({ snapshot } = await loadSnapshotAtRef(client, planId, status.init_sha));
+    ({ snapshot, stopped } = await loadPlanControl(client, issue, planId, now));
   } catch (e) {
     return result('failure', 'drift', e.message, planId);
   }
-
-  const control = findControlComments(comments, snapshot, config);
-  const stopped = deriveControl(
-    { ...control, labels: labelNames(issue), status },
-    { now: new Date(now).toISOString() },
-  );
 
   let files;
   try {
@@ -139,12 +140,41 @@ async function runScopeCheck(client, { prNumber, headSha, headRef, baseRef, head
   return result(evaluation.conclusion, evaluation.title, summary, planId);
 }
 
-/** Create or update the check run named `execute-plan-scope` on `headSha`. */
-async function publishScopeCheck(client, { headSha, conclusion, title, summary }) {
-  const runs = await client.listCheckRuns(headSha);
-  const existing = runs.find((r) => r.name === CHECK_NAME);
-  if (existing) return client.updateCheckRun(existing.id, { conclusion, title, summary });
-  return client.createCheckRun({ name: CHECK_NAME, head_sha: headSha, conclusion, title, summary });
+/**
+ * Post the `execute-plan-scope` commit status on `headSha`. A check run of the same name left by the
+ * pre-status publisher is updated too, so a STOP still turns red a head that only carries that run.
+ */
+async function publishScopeCheck(client, { headSha, conclusion, title, summary, targetUrl }) {
+  const status = await client.createCommitStatus(headSha, {
+    state: conclusion === 'success' ? 'success' : 'failure',
+    context: CHECK_NAME,
+    description: describeScope(title, summary),
+    target_url: targetUrl,
+  });
+  const legacy = (await client.listCheckRuns(headSha)).find((r) => r.name === CHECK_NAME);
+  if (legacy) await client.updateCheckRun(legacy.id, { conclusion, title, summary });
+  return status;
+}
+
+/**
+ * Publish an evaluated outcome. A green result for a plan PR is re-checked against the plan's STOP
+ * state just before posting: a run that evaluated before a STOP must not post after `enforce-stop`'s
+ * `plan-stopped` and turn the head green again. A failing re-check publishes a failure (fail closed).
+ */
+async function publishScopeResult(client, { headSha, outcome, targetUrl, now }) {
+  let final = outcome;
+  if (outcome.conclusion === 'success' && outcome.planId) {
+    try {
+      const issue = await findControlIssue(client, outcome.planId);
+      if (!issue) throw new Error(`control issue for ${outcome.planId} not found`);
+      const { stopped } = await loadPlanControl(client, issue, outcome.planId, now);
+      if (stopped.stopped) final = result('failure', 'plan-stopped', `plan stopped: ${stopped.reason}`, outcome.planId);
+    } catch (e) {
+      final = result('failure', 'drift', `scope check could not confirm the plan state: ${e.message}`, outcome.planId);
+    }
+  }
+  await publishScopeCheck(client, { headSha, conclusion: final.conclusion, title: final.title, summary: final.summary, targetUrl });
+  return final;
 }
 
 /** `check-diff --pr <n> [--repo owner/name] [--publish]`: run the check for a PR from a terminal. */
@@ -153,6 +183,10 @@ async function cliCheckDiff(flags, { client: injected } = {}) {
   const prNumber = Number(flags.pr);
   if (!repo || !Number.isInteger(prNumber) || prNumber < 1) {
     throw new Error('check-diff requires --pr <number> and --repo <owner/name> (or GITHUB_REPOSITORY)');
+  }
+  // Only a status set with a workflow GITHUB_TOKEN counts (ruleset app pin); one posted with a PAT is ignored.
+  if (flags.publish && process.env.GITHUB_ACTIONS !== 'true') {
+    throw new Error('check-diff --publish only runs inside GitHub Actions: a status posted with a personal token never counts');
   }
   const client = injected || require('./execute_plan_github').createGitHubClient({ repo });
   const pull = await client.getPull(prNumber);
@@ -165,9 +199,9 @@ async function cliCheckDiff(flags, { client: injected } = {}) {
     repo,
     now: new Date(),
   });
-  if (flags.publish) await publishScopeCheck(client, { headSha: pull.head.sha, ...outcome });
-  console.log(JSON.stringify(outcome, null, 2));
-  if (outcome.conclusion !== 'success') process.exitCode = 1;
+  const final = flags.publish ? await publishScopeResult(client, { headSha: pull.head.sha, outcome, now: new Date() }) : outcome;
+  console.log(JSON.stringify(final, null, 2));
+  if (final.conclusion !== 'success') process.exitCode = 1;
 }
 
 module.exports = {
@@ -175,5 +209,6 @@ module.exports = {
   cliCheckDiff,
   parseStatusComment,
   publishScopeCheck,
+  publishScopeResult,
   runScopeCheck,
 };
