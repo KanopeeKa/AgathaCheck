@@ -275,5 +275,5 @@ async function runInit({ client, planId, windowDays = 7, dryRun = false, git, no
 **Docs:** `docs/agent-efficiency/plan-template.md` — new section "v2 plan file" (contracts §3.2
 layout and the error for process-rule headings); `docs/agent-efficiency/autonomous-pr-policy.md:313`
 — replace "Plan changes after approval → new snapshot + `approve-autonomous` again" with
-"v2: plans are immutable after approval; changing scope means a new plan; time and budgets are
+"v2: plans are immutable after approval; changing the plan's goal means a new plan, while plan-linked side fixes are allowed (runbooks §7.5); time and budgets are
 renewed with `resume-autonomous`".
