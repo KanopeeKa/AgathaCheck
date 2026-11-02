@@ -214,18 +214,25 @@ status from GitHub Actions, required on `main` and integration branches after WP
 **Do not touch:** `.github/scripts/execute-plan-launch.js` (WP7c; import only), other workflows.
 
 **`execute_plan_approve.js` — `handleControlComment(clients, event, { now, killSwitch })`**
-1. Kill switch `off` → return. `dry-run` → validate and write the job summary only.
+1. Kill switch `off` → return. `dry-run` → validate and write the job summary only (no dispatch).
 2. Ignore comments on PRs and on issues without label `execute-plan`.
 3. `approve`: read `Init branch: <name> @ <sha>` from the issue body; `loadSnapshotAtRef` at `<sha>`;
    `validateControlComment`; `compare(main...<sha>).files` must be exactly the two own plan files;
    the integration branch must not exist (exists at `<sha>` → idempotent success). Then, with the
    bot token: `createRef(refs/heads/<integration_branch>, <sha>)`; create the status comment
    (`init_sha`, `state: phase:pending`); labels `autonomous-approved`, `plan:<plan_id>`; append
-   `Approval: valid (comment <id>)` to the issue body; run one driver pass for this plan.
+   `Approval: valid (comment <id>)` to the issue body; dispatch the driver for this plan.
 4. Invalid approve → one comment `approve-autonomous rejected: <reason>`; nothing else.
-5. `resume` (valid) → one driver pass. `revoke` (valid) → label `autonomous-revoked`, one driver pass.
-6. `edited` / `deleted` of an approve or resume comment → one driver pass (`tick` stops with
+5. `resume` (valid) → dispatch the driver. `revoke` (valid) → label `autonomous-revoked`, dispatch the driver.
+6. `edited` / `deleted` of an approve or resume comment → dispatch the driver (`tick` stops with
    `approval-invalid` and the driver enforces it).
+7. "Dispatch the driver" = `workflow_dispatch` of `execute-plan-driver.yml` on `main` with `plan_id`
+   (`GITHUB_TOKEN`). The approve job never runs a pass inline, so every pass shares the driver's
+   `execute-plan-driver` concurrency group and two passes never run for one plan at once (issue #2005).
+   The approve job keeps its own per-issue group: GitHub keeps one pending job per group and cancels
+   the older pending one, which must never drop an approval. A dispatched pass that is replaced while
+   pending costs at most the 30-minute heartbeat; `revoke` is also enforced by the `issues: labeled`
+   event of `autonomous-revoked`.
 
 **`execute_plan_driver_actions.js` — `runDriverPass(clients, { planId, now, killSwitch })`**
 1. `lease` = status `lease` present ? `{ ...status.lease, status: await getAgentRunStatus(...) }` : `null`.
@@ -261,10 +268,8 @@ on:
 permissions:
   contents: read
   issues: write
-  pull-requests: write
-  actions: write
-  statuses: write              # enforce-stop posts execute-plan-scope from the driver pass
-  checks: write
+  pull-requests: read
+  actions: write               # dispatches execute-plan-driver.yml
 concurrency:
   group: execute-plan-approve-${{ github.event.issue.number }}
   cancel-in-progress: false
@@ -288,7 +293,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           EXECUTE_PLAN_BOT_TOKEN: ${{ secrets.EXECUTE_PLAN_BOT_TOKEN }}
-          CURSOR_API_KEY: ${{ secrets.cursor_api_key }}
           EXECUTE_PLAN_DRIVER: ${{ vars.EXECUTE_PLAN_DRIVER }}
           EVENT_PATH: ${{ github.event_path }}
         run: node .github/scripts/execute-plan-approve.js
@@ -355,7 +359,7 @@ fourth), so driver runs after Deploy UAT may not fire; the 30-minute heartbeat c
 correctness never depends on those events. One global concurrency group is accepted for v1
 (Fable's disagreement); the driver never waits inside a job (no watchers).
 
-**Tests:** approve `valid → branch + status + labels + driver pass`, `not owner → ignored`,
+**Tests:** approve `valid → branch + status + labels + driver dispatched`, `not owner → ignored`,
 `invalid hash → rejected comment`, `init branch with extra files → rejected`, `resume → driver pass`,
 `revoke → label + driver pass`, `kill switch off → no-op`, `dry-run → no writes`; driver
 `plansForEvent per event type`, `fork PR ignored`, `arm-auto-merge clean status falls back to merge`,
