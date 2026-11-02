@@ -3,7 +3,7 @@ title: Execute-plan v2 — data contracts
 owner: Kanopee
 audience: agent
 status: active
-last_updated: 2026-10-15
+last_updated: 2026-11-02
 tags: [agent, execute-plan, autonomy]
 ---
 # Execute-plan v2 — data contracts
@@ -179,6 +179,7 @@ writes use the bot token (one identity, item 13). Valid example of the JSON bloc
 | `launches` | array, newest last, keep last 50 | driver | One entry per launch. |
 | `dispatched.preuat_heads` | array of SHAs | driver | `main` heads for which Pre-UAT was dispatched (once per head). |
 | `dispatched.deploy_tags` | array of tags | driver | Tags re-dispatched to Deploy UAT (once per tag). |
+| `dispatched.scope_republish` | array of `{ sha, at }` (last 20; absent until first use) | driver | PR heads whose `execute-plan-scope` status the driver re-evaluated and republished; an entry counts only when `at` is after the epoch (state-machine PR-ladder 3b/10a). |
 | `release` | `{ "pr": n, "merge_sha": s }`\|null | tick | Set when the release PR merges. |
 | `uat` | `{ "preuat_run": id, "tag": s, "deploy_run": id, "tier3": "pending"\|"success"\|"failure" }`\|null | tick | Evidence so far. |
 | `stop` | `{ "reason": s, "detail": s, "at": ISO }`\|null | tick | Last STOP; ignored when older than the epoch. |
@@ -236,7 +237,9 @@ non-null except in state `complete`; on a stop, `action.kind` is `enforce-stop`.
 | agent | `resolve-sync` | sync_pr, branch `cursor/<id>-sync-<n>` | Merge `main` into a new branch off integration, fix conflicts, PR into integration. |
 | agent | `remedial` | branch `cursor/<id>-remedial-<n>`, failing (shards or `deploy-smoke`), evidence urls | Fix the UAT failure; PR into `main`. |
 | driver | `create-phase-branch` | phase, branch, from_sha (integration head) | Create the phase branch before the first launch. |
-| driver | `arm-auto-merge` | pr, method (`squash` / `merge` for sync PRs) | Enable auto-merge; if GitHub answers that the PR is already clean, merge it directly. |
+| driver | `arm-auto-merge` | pr, method (`squash` / `merge` for sync PRs), head_sha, scope_republished | Enable auto-merge; if GitHub answers that the PR is already clean, merge it directly (same refusal handling as `merge`). |
+| driver | `merge` | pr, method, head_sha, scope_republished | Merge directly after an auto-merge stall. A 405 naming an uncounted `execute-plan-scope` (`is expected` / `was not set by the expected GitHub app`) with `scope_republished: false` → run `republish-scope` instead; any other uncounted required check, or a second refusal → STOP `check-missing`; any other refusal → STOP `merge-blocked`. Both stops add `needs-owner` and are enforced on that PR in the same pass (auto-merge disabled, `plan-stopped` published), since an armed auto-merge would otherwise merge once the check appears. |
+| driver | `republish-scope` | pr, head_sha | Re-run the scope evaluation from trusted `main` code and post the `execute-plan-scope` status with `GITHUB_TOKEN` through `publishScopeResult` (a green result is re-checked against STOP first); record the head in `dispatched.scope_republish`. No-op when the head moved. |
 | driver | `update-branch` | pr | PR is behind a strict base. |
 | driver | `open-sync-pr` | head `main`, base integration | Integration is behind `main` before the release. |
 | driver | `open-release-pr` | head integration, base `main` | All phases merged and integration not behind. |

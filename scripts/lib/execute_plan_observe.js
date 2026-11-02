@@ -97,9 +97,8 @@ function latestRuns(runs, names, statuses = []) {
   });
 }
 
-async function failedAttempts(client, pr, names, epoch, headRuns, headStatuses) {
+async function failedAttempts(client, pr, names, epoch, headRuns, headStatuses, commits) {
   if (!epoch) return 0;
-  const commits = await client.listPullCommits(pr.number);
   const shas = [...new Set(commits.map((c) => c.sha))];
   let attempts = 0;
   for (const sha of shas) {
@@ -120,17 +119,27 @@ async function readyAt(client, pull) {
   return ready ? ready.created_at : pull.created_at;
 }
 
+const latestOf = (times) => times.filter(Boolean).reduce((a, b) => (!a || ms(b) > ms(a) ? b : a), null);
+
+/** Newest `completed_at` once every check run on the head is complete; null while any is queued or running. */
+function settledAt(runs) {
+  if (!runs.length || runs.some((r) => r.status !== 'completed')) return null;
+  return latestOf(runs.map((r) => r.completed_at));
+}
+
 /** @returns {Promise<object>} PrObs (state-machine §4.0) */
 async function observePr(client, pr, { requiredChecks, epoch, owners = [], sleep = (t) => new Promise((r) => setTimeout(r, t)) }) {
   const pull = await readPull(client, pr.number, sleep);
   const headSha = pull.head.sha;
   const headRuns = await client.listCheckRuns(headSha);
   const headStatuses = requiredChecks.includes(SCOPE_CHECK) ? await client.listCommitStatuses(headSha) : [];
+  const commits = await client.listPullCommits(pull.number);
+  const headCommit = commits.find((c) => c.sha === headSha);
   const [threads, reviews, ready, attempts] = await Promise.all([
     client.listUnresolvedThreads(pull.number),
     client.listPullReviews(pull.number),
     readyAt(client, pull),
-    failedAttempts(client, { number: pull.number, head: { sha: headSha } }, requiredChecks, epoch, headRuns, headStatuses),
+    failedAttempts(client, { number: pull.number, head: { sha: headSha } }, requiredChecks, epoch, headRuns, headStatuses, commits),
   ]);
   const lastByUser = new Map();
   for (const r of reviews) {
@@ -154,6 +163,11 @@ async function observePr(client, pr, { requiredChecks, epoch, owners = [], sleep
     auto_merge_enabled: Boolean(pull.auto_merge),
     labels: labelNames(pull.labels),
     checks: latestRuns(headRuns, requiredChecks, headStatuses),
+    checks_settled_at: settledAt(headRuns),
+    head_activity_at: latestOf([
+      headCommit && headCommit.commit && headCommit.commit.committer && headCommit.commit.committer.date,
+      ...headRuns.flatMap((r) => [r.started_at, r.completed_at]),
+    ]),
     failed_attempts_since_epoch: attempts,
     unresolved_threads: threads,
     copilot_review_submitted: reviews.some((r) => r.user && /^copilot/i.test(r.user.login)),

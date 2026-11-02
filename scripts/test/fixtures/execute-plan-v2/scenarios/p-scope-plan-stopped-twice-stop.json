@@ -1,0 +1,60 @@
+{
+  "name": "plan-stopped again after a republish on this head → STOP scope-stale",
+  "rule": "PR-ladder 3b",
+  "snapshot_patch": {},
+  "observations_patch": {
+    "phases": [
+      {
+        "id": "1",
+        "branch_exists": true,
+        "pr": {
+          "checks": [
+            {
+              "name": "ci-gate / CI passed",
+              "status": "completed",
+              "conclusion": "success",
+              "reason": null,
+              "completed_at": "2026-10-16T09:40:00Z"
+            },
+            {
+              "name": "execute-plan-scope",
+              "status": "completed",
+              "conclusion": "failure",
+              "reason": "plan-stopped",
+              "completed_at": "2026-10-16T09:00:00Z"
+            }
+          ]
+        }
+      },
+      {
+        "id": "2",
+        "branch_exists": false,
+        "pr": null
+      }
+    ],
+    "control": {
+      "status": {
+        "dispatched": {
+          "scope_republish": [
+            {
+              "sha": "cccc000000000000000000000000000000000001",
+              "at": "2026-10-16T09:30:00Z"
+            }
+          ]
+        },
+        "stop": null
+      }
+    }
+  },
+  "opts": {
+    "actor": "driver",
+    "lease": null
+  },
+  "expected": {
+    "launch": false,
+    "stop": "scope-stale",
+    "state": "stopped",
+    "actor": "driver",
+    "kind": "enforce-stop"
+  }
+}
