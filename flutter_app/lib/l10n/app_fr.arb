@@ -3201,25 +3201,10 @@
       "householdName": { "type": "String" }
     }
   },
-  "peopleHouseholdRemovePetBody": "Les autres membres du foyer perdront l'accès à {petName}. Vous pourrez le rajouter plus tard.",
-  "@peopleHouseholdRemovePetBody": {
-    "placeholders": {
-      "petName": { "type": "String" },
-      "householdName": { "type": "String" }
-    }
-  },
-  "peopleHouseholdRemovePetConfirm": "Retirer {petName} de « {householdName} »",
-  "@peopleHouseholdRemovePetConfirm": {
-    "placeholders": {
-      "petName": { "type": "String" },
-      "householdName": { "type": "String" }
-    }
-  },
   "peopleHouseholdRemovePetAction": "Retirer {petName}",
   "@peopleHouseholdRemovePetAction": {
     "placeholders": {
-      "petName": { "type": "String" },
-      "householdName": { "type": "String" }
+      "petName": { "type": "String" }
     }
   },
   "peopleAddPetsEmpty": "Aucun animal à lier pour l'instant.",

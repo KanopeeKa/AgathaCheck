@@ -14836,23 +14836,11 @@ abstract class AppLocalizations {
   /// **'Remove {petName} from \"{householdName}\"?'**
   String peopleHouseholdRemovePetTitle(String petName, String householdName);
 
-  /// No description provided for @peopleHouseholdRemovePetBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Other household members will lose access to {petName}. You can add the pet again later.'**
-  String peopleHouseholdRemovePetBody(String petName, String householdName);
-
-  /// No description provided for @peopleHouseholdRemovePetConfirm.
-  ///
-  /// In en, this message translates to:
-  /// **'Remove {petName} from \"{householdName}\"'**
-  String peopleHouseholdRemovePetConfirm(String petName, String householdName);
-
   /// No description provided for @peopleHouseholdRemovePetAction.
   ///
   /// In en, this message translates to:
   /// **'Remove {petName}'**
-  String peopleHouseholdRemovePetAction(String petName, String householdName);
+  String peopleHouseholdRemovePetAction(String petName);
 
   /// No description provided for @peopleAddPetsEmpty.
   ///
