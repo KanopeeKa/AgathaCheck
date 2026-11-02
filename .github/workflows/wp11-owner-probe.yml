@@ -1,0 +1,22 @@
+name: WP11 owner probe
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    name: wp11-owner-probe
+    runs-on: ubuntu-latest
+    environment: automation
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+        with: { ref: main }
+      - uses: actions/setup-node@v5
+        with: { node-version: 22 }
+      - name: Run WP11 owner probe
+        env:
+          CURSOR_API_KEY: ${{ secrets.cursor_api_key }}
+        run: node .github/scripts/wp11-owner-probe.js
