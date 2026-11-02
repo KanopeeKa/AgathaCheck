@@ -5,92 +5,72 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const {
   classifyReviewer,
-  detectBugbotUnavailableFromIssueComments,
-  assessBugbotStatus,
   assessCopilotStatus,
   normalizeReviewThreads,
   buildCollectReport,
   parsePrRef,
 } = require('./lib/babysit_pr_reviews_lib');
 
-test('classifyReviewer maps cursor and copilot logins', () => {
-  assert.equal(classifyReviewer('cursor'), 'bugbot');
-  assert.equal(classifyReviewer('cursor[bot]'), 'bugbot');
+const COPILOT_BOT = 'copilot-pull-request-reviewer[bot]';
+
+function thread(overrides = {}) {
+  return {
+    isResolved: false,
+    reviewer: 'copilot',
+    author: 'copilot-pull-request-reviewer',
+    path: 'a.dart',
+    line: 1,
+    body: 'issue',
+    url: 'https://example.com',
+    commentCount: 1,
+    ...overrides,
+  };
+}
+
+test('classifyReviewer maps copilot logins and everyone else to human', () => {
   assert.equal(classifyReviewer('copilot-pull-request-reviewer'), 'copilot');
-  assert.equal(classifyReviewer('copilot-pull-request-reviewer[bot]'), 'copilot');
+  assert.equal(classifyReviewer(COPILOT_BOT), 'copilot');
+  assert.equal(classifyReviewer('Copilot'), 'copilot');
+  assert.equal(classifyReviewer('cursor[bot]'), 'human');
   assert.equal(classifyReviewer('human-dev'), 'human');
-});
-
-test('detectBugbotUnavailableFromIssueComments finds usage limit comment', () => {
-  const result = detectBugbotUnavailableFromIssueComments([
-    {
-      user: { login: 'cursor' },
-      body: '<h3>Bugbot could not run - usage limit reached</h3>',
-      html_url: 'https://example.com/comment',
-    },
-  ]);
-  assert.equal(result.unavailable, true);
-  assert.equal(result.reason, 'usage_limit');
-});
-
-test('assessBugbotStatus marks unavailable when cursor posts usage limit', () => {
-  const status = assessBugbotStatus({
-    reviews: [],
-    issueComments: [
-      { user: { login: 'cursor' }, body: 'Bugbot hit a usage limit' },
-    ],
-    checkRuns: [],
-  });
-  assert.equal(status.state, 'unavailable');
-});
-
-test('detectBugbotUnavailableFromIssueComments ignores non-bugbot cursor logins', () => {
-  const result = detectBugbotUnavailableFromIssueComments([
-    {
-      user: { login: 'cursor-fan' },
-      body: 'Bugbot hit a usage limit',
-    },
-  ]);
-  assert.equal(result.unavailable, false);
-});
-
-test('assessBugbotStatus ignores human review mentioning bugbot', () => {
-  const status = assessBugbotStatus({
-    reviews: [{ user: { login: 'human-dev' }, body: 'Waiting on bugbot here' }],
-    issueComments: [],
-    checkRuns: [],
-  });
-  assert.equal(status.state, 'pending');
-});
-
-test('assessBugbotStatus complete when bugbot check cancelled', () => {
-  const status = assessBugbotStatus({
-    reviews: [],
-    issueComments: [],
-    checkRuns: [{ name: 'Cursor Bugbot', status: 'COMPLETED', conclusion: 'CANCELLED' }],
-  });
-  assert.equal(status.state, 'complete');
-});
-
-test('assessBugbotStatus pending when bugbot check is in progress', () => {
-  const status = assessBugbotStatus({
-    reviews: [],
-    issueComments: [],
-    checkRuns: [{ name: 'Cursor Bugbot', status: 'IN_PROGRESS', conclusion: null }],
-  });
-  assert.equal(status.state, 'pending');
 });
 
 test('assessCopilotStatus complete when copilot review exists', () => {
   const status = assessCopilotStatus({
-    reviews: [{ user: { login: 'copilot-pull-request-reviewer[bot]' }, body: 'overview' }],
-    reviewComments: [
-      { user: { login: 'copilot-pull-request-reviewer[bot]' }, body: 'nit' },
-    ],
-    reviewRequests: [],
+    reviews: [{ user: { login: COPILOT_BOT }, body: 'overview' }],
+    reviewComments: [{ user: { login: COPILOT_BOT }, body: 'nit' }],
+    requestedReviewers: [],
   });
   assert.equal(status.state, 'complete');
   assert.equal(status.inlineCommentCount, 1);
+});
+
+test('assessCopilotStatus pending while Copilot is a requested reviewer (REST login "Copilot")', () => {
+  const status = assessCopilotStatus({
+    reviews: [],
+    reviewComments: [],
+    requestedReviewers: [{ login: 'Copilot', type: 'Bot' }],
+  });
+  assert.equal(status.state, 'pending');
+  assert.equal(status.reason, 'review_requested');
+});
+
+test('assessCopilotStatus pending on a re-review even after an earlier review', () => {
+  const status = assessCopilotStatus({
+    reviews: [{ user: { login: COPILOT_BOT } }],
+    reviewComments: [],
+    requestedReviewers: [{ login: 'Copilot' }],
+  });
+  assert.equal(status.state, 'pending');
+});
+
+test('assessCopilotStatus absent when Copilot never involved', () => {
+  const status = assessCopilotStatus({
+    reviews: [{ user: { login: 'human-dev' } }],
+    reviewComments: [],
+    requestedReviewers: [{ login: 'human-dev' }],
+  });
+  assert.equal(status.state, 'absent');
 });
 
 test('normalizeReviewThreads maps graphql nodes', () => {
@@ -115,40 +95,69 @@ test('normalizeReviewThreads maps graphql nodes', () => {
   assert.equal(threads[0].path, 'lib/a.dart');
 });
 
-test('buildCollectReport warns when bugbot unavailable but copilot threads exist', () => {
+test('buildCollectReport: Copilot in progress with no threads yet is neither triage- nor merge-ready', () => {
   const report = buildCollectReport({
-    prNumber: 531,
-    bugbot: { state: 'unavailable', reason: 'usage_limit' },
-    copilot: { state: 'complete', reason: 'review_submitted', inlineCommentCount: 4 },
-    threads: [
-      {
-        isResolved: false,
-        reviewer: 'copilot',
-        author: 'copilot-pull-request-reviewer',
-        path: 'a.dart',
-        line: 1,
-        body: 'issue',
-        url: 'https://example.com',
-        commentCount: 1,
-      },
-    ],
+    prNumber: 2017,
+    copilot: { state: 'pending', reason: 'review_requested', inlineCommentCount: 0 },
+    threads: [],
   });
-  assert.equal(report.readyForTriage, true);
-  assert.equal(report.summary.copilotCount, 1);
-  assert.match(report.warnings[0], /Copilot/);
+  assert.equal(report.readyForTriage, false);
+  assert.equal(report.mergeReady, false);
+  assert.match(report.warnings[0], /in progress/);
 });
 
-test('buildCollectReport halts on bugbot timeout', () => {
+test('buildCollectReport: completed review with unresolved threads is triage-ready, not merge-ready', () => {
   const report = buildCollectReport({
     prNumber: 1,
-    bugbot: { state: 'pending', reason: 'not_seen_yet' },
-    copilot: { state: 'absent', reason: 'no_review' },
+    copilot: { state: 'complete', reason: 'review_submitted', inlineCommentCount: 2 },
+    threads: [thread(), thread({ reviewer: 'human', author: 'owner' }), thread({ isResolved: true })],
+  });
+  assert.equal(report.readyForTriage, true);
+  assert.equal(report.mergeReady, false);
+  assert.deepEqual(report.summary, { unresolvedCount: 2, copilotCount: 1, humanCount: 1, truncated: false });
+  assert.equal(report.threads.length, 2);
+});
+
+test('buildCollectReport: merge-ready when review done and every thread resolved', () => {
+  const report = buildCollectReport({
+    prNumber: 1,
+    copilot: { state: 'complete', reason: 'review_submitted', inlineCommentCount: 1 },
+    threads: [thread({ isResolved: true })],
+  });
+  assert.equal(report.mergeReady, true);
+});
+
+test('buildCollectReport: merge-ready when Copilot absent and no threads', () => {
+  const report = buildCollectReport({
+    prNumber: 1,
+    copilot: { state: 'absent', reason: 'no_review', inlineCommentCount: 0 },
+    threads: [],
+  });
+  assert.equal(report.readyForTriage, true);
+  assert.equal(report.mergeReady, true);
+});
+
+test('buildCollectReport: truncated thread list is never merge-ready', () => {
+  const report = buildCollectReport({
+    prNumber: 1,
+    copilot: { state: 'complete', reason: 'review_submitted', inlineCommentCount: 0 },
+    threads: [],
+    truncated: true,
+  });
+  assert.equal(report.readyForTriage, true);
+  assert.equal(report.mergeReady, false);
+});
+
+test('buildCollectReport: timeout with Copilot still pending flags Copilot unavailable', () => {
+  const report = buildCollectReport({
+    prNumber: 1,
+    copilot: { state: 'pending', reason: 'review_requested', inlineCommentCount: 0 },
     threads: [],
     timedOut: true,
   });
-  assert.equal(report.halt, true);
+  assert.equal(report.timedOut, true);
   assert.equal(report.readyForTriage, false);
-  assert.equal(report.haltReason, 'bugbot_timeout');
+  assert.match(report.warnings[0], /unavailable/);
 });
 
 test('parsePrRef accepts url, slug, and number', () => {

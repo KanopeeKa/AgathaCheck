@@ -163,12 +163,18 @@ sync_base() {
 collect_and_triage() {
   echo -e "${YELLOW}Collecting review threads...${NC}"
   
-  local collect_output
-  collect_output=$(node "$REPO_ROOT/scripts/babysit_pr_reviews.js" collect --pr "$PR_NUMBER" 2>/dev/null || echo "{}")
+  # gate waits for an in-progress Copilot review: exit 0 = nothing unresolved, 2 = threads to triage, 1 = timeout/error
+  local collect_output gate_status=0
+  collect_output=$(node "$REPO_ROOT/scripts/babysit_pr_reviews.js" gate --pr "$PR_NUMBER") || gate_status=$?
   
-  if [[ -z "$collect_output" || "$collect_output" == "{}" ]]; then
-    echo "  No review threads found"
+  if [[ $gate_status -eq 0 ]]; then
+    echo "  No unresolved review threads"
     return 0
+  fi
+  if [[ $gate_status -ne 2 ]]; then
+    echo -e "  ${RED}Review collection failed or Copilot review still pending — not merge-ready${NC}"
+    rm -f "/tmp/review_threads_$PR_NUMBER.json"
+    return 1
   fi
   
   # Save to file for processing
@@ -582,27 +588,21 @@ main() {
       continue
     fi
     
-    # Step 7: Check if all issues resolved
-    echo -e "${YELLOW}Checking if all issues resolved...${NC}"
+    # Step 7: the review gate passed in step 6 (no unresolved threads, no Copilot review in progress)
+    echo -e "${GREEN}All review threads resolved!${NC}"
     
-    local has_threads=$(echo "$PR_DATA" | jq -r '.reviewRequests.totalCount // 0')
-    
-    if [[ "$has_threads" == "0" ]]; then
-      echo -e "${GREEN}All review threads resolved!${NC}"
-      
-      # Step 8: Merge if requested
-      if [[ "$MERGE_AFTER_FIX" == true ]]; then
-        if merge_pr; then
-          echo -e "${GREEN}=== PR #$PR_NUMBER MERGED SUCCESSFULLY ===${NC}"
-          exit 0
-        else
-          echo -e "${YELLOW}Merge failed or blocked${NC}"
-          exit 1
-        fi
-      else
-        echo -e "${GREEN}=== PR #$PR_NUMBER READY FOR MERGE ===${NC}"
+    # Step 8: Merge if requested
+    if [[ "$MERGE_AFTER_FIX" == true ]]; then
+      if merge_pr; then
+        echo -e "${GREEN}=== PR #$PR_NUMBER MERGED SUCCESSFULLY ===${NC}"
         exit 0
+      else
+        echo -e "${YELLOW}Merge failed or blocked${NC}"
+        exit 1
       fi
+    else
+      echo -e "${GREEN}=== PR #$PR_NUMBER READY FOR MERGE ===${NC}"
+      exit 0
     fi
     
   done
