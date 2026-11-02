@@ -36,22 +36,25 @@ async function fetchRun(apiKey, agentId, runId) {
 }
 
 function classifyProbeOutput(text) {
-  const lines = String(text || '')
-    .split('\n')
-    .map((l) => l.trim())
-    .filter(Boolean);
-  const map = {};
-  for (const line of lines) {
-    const m = /^(OWNER_GH_TOKEN|BOT_GH_TOKEN|GH_TOKEN|EXECUTE_PLAN_TOKEN) (present|absent)$/.exec(line);
-    if (m) map[m[1]] = m[2];
-  }
+  const raw = String(text || '');
+  const status = (name) => {
+    if (new RegExp(`${name} present`).test(raw)) return 'present';
+    if (new RegExp(`${name} absent`).test(raw)) return 'absent';
+    return undefined;
+  };
+  const map = {
+    OWNER_GH_TOKEN: status('OWNER_GH_TOKEN'),
+    BOT_GH_TOKEN: status('BOT_GH_TOKEN'),
+    GH_TOKEN: status('GH_TOKEN'),
+    EXECUTE_PLAN_TOKEN: status('EXECUTE_PLAN_TOKEN'),
+  };
   const pass =
     map.OWNER_GH_TOKEN === 'absent' &&
     map.BOT_GH_TOKEN === 'absent' &&
     map.GH_TOKEN === 'present' &&
     map.EXECUTE_PLAN_TOKEN === 'present';
   const failOwner = map.OWNER_GH_TOKEN === 'present';
-  return { map, pass, failOwner };
+  return { map, pass, failOwner, replyLength: raw.trim().length };
 }
 
 async function main() {
@@ -101,7 +104,8 @@ async function main() {
 
   const run = await fetchRun(apiKey, launched.agentId, launched.runId);
   const reply = run.result?.text || run.text || '';
-  const { pass, failOwner, map } = classifyProbeOutput(reply);
+  const { pass, failOwner, map, replyLength } = classifyProbeOutput(reply);
+  console.log(`probe_reply_length=${replyLength}`);
   console.log('--- classification ---');
   console.log(JSON.stringify({ ...map, pass, failOwner }, null, 2));
 
