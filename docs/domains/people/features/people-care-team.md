@@ -5,6 +5,7 @@ audience: both
 domain: people
 feature_id: people_care_team
 status: implemented
+last_updated: 2026-11-02
 related_prs: []
 related_bdd: [away_planning.feature, away_plan_detail_v2.feature, sharing.feature, veterinarian_management.feature, notifications.feature]
 ---
@@ -77,6 +78,13 @@ There are 28 decisions. D1, D4, D7 and D10 were revised after an external review
 | D26 | Direct co-parent shares keep onward sharing, as today (`userCanSharePet`) | There are four access levels: Owner, Co-parent, Full access and Can log care. Shares a co-parent makes appear in the owner's Who has access view, and the owner can revoke them |
 | D27 | "Stop following" applies to direct shares only | A household member can't stop following one household pet. They can mute its notifications or leave the household |
 | D28 | Until phase 4, a contact with no linked account behaves exactly like today's `note_only` carer | The PDF handover is its only channel. A contact whose linked account already has access to the pet behaves like today's `shared_user` |
+
+## Decision log
+
+| ID | Decision | Rationale | Status | Date | PR |
+| --- | --- | --- | --- | --- | --- |
+| PEOPLE-CARE-TEAM-D-029 | **H4:** When a pet leaves a household, every reference from that pet's data to a household-directory contact is re-pointed to a copy in the target user's personal directory (relationships, care-item providers, absence carer rows, pending carer invites for absences that include the pet) | Extends D23 to all pet-scoped references; composable on a caller-supplied transaction client | Live | 2026-11-02 | household-cleanup-609f |
+| PEOPLE-CARE-TEAM-D-030 | **H5:** Closing a household re-points every remaining reference to a household-directory contact — from any pet, in the household or not — to a copy in the referencing pet owner's personal directory, then deletes the household; D22 notices only for pets still in the household when close begins | Avoids `RESTRICT` failures and silent nulling of providers or carers when the last member leaves | Live | 2026-11-02 | household-cleanup-609f |
 
 ## Where we start
 
