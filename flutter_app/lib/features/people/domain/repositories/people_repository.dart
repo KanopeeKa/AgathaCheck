@@ -53,25 +53,18 @@ abstract class PeopleRepository {
   Future<String?> contactIdForLegacyVet(String vetId);
 }
 
-class HouseholdPetLeaving {
-  const HouseholdPetLeaving({required this.petId, required this.petName});
-
-  final String petId;
-  final String petName;
-}
-
 class HouseholdMemberRemovalPreview {
   const HouseholdMemberRemovalPreview({
     required this.remainingAccess,
     required this.requiresSuccessor,
-    this.petsLeaving = const [],
-    this.accessToRevokeIfRemoveAll = const [],
+    this.petsLeavingNames = const [],
+    this.canRemoveAllAccessToMyPets = false,
   });
 
   final List<HouseholdRemainingAccess> remainingAccess;
   final bool requiresSuccessor;
-  final List<HouseholdPetLeaving> petsLeaving;
-  final List<HouseholdRemainingAccess> accessToRevokeIfRemoveAll;
+  final List<String> petsLeavingNames;
+  final bool canRemoveAllAccessToMyPets;
 }
 
 class HouseholdRemainingAccess {

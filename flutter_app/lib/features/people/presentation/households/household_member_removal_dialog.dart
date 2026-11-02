@@ -54,6 +54,11 @@ class _HouseholdMemberRemovalDialogState
     final l = AppLocalizations.of(context)!;
     final preview = widget.preview;
     final needsSuccessor = preview.requiresSuccessor;
+    final successorUserId =
+        _successorUserId ??
+        (needsSuccessor && widget.successorCandidates.length == 1
+            ? widget.successorCandidates.first.userId
+            : null);
 
     return AlertDialog(
       title: Text(
@@ -61,82 +66,80 @@ class _HouseholdMemberRemovalDialogState
             ? l.peopleHouseholdLeaveTitle
             : l.peopleMemberRemovalTitle,
       ),
-      content: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              widget.removingSelf
-                  ? l.peopleHouseholdLeaveBody
-                  : l.peopleMemberRemovalBody,
-            ),
-            if (preview.petsLeaving.isNotEmpty) ...[
-              const SizedBox(height: 12),
-              Text(l.peopleHouseholdPetsTitle),
-              for (final pet in preview.petsLeaving) Text('• ${pet.petName}'),
-            ],
-            if (preview.remainingAccess.isNotEmpty) ...[
-              const SizedBox(height: 12),
-              Text(l.peopleMemberRemovalRemaining),
-              for (final access in preview.remainingAccess)
-                Text('• ${access.petName}'),
-            ],
-            if (!widget.removingSelf &&
-                preview.accessToRevokeIfRemoveAll.isNotEmpty) ...[
-              const SizedBox(height: 12),
-              Text(l.peopleMemberRemovalAllAccess),
-              for (final access in preview.accessToRevokeIfRemoveAll)
-                Text('• ${access.petName}'),
-            ],
-            if (needsSuccessor) ...[
-              const SizedBox(height: 16),
-              Text(l.peopleHouseholdSuccessorLabel),
-              for (final member in widget.successorCandidates)
-                RadioListTile<String>(
-                  value: member.userId,
-                  groupValue: _successorUserId,
-                  onChanged: (v) => setState(() => _successorUserId = v),
-                  title: Text(member.displayName),
-                ),
-            ],
+      content: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            widget.removingSelf
+                ? l.peopleHouseholdLeaveBody
+                : l.peopleMemberRemovalBody,
+          ),
+          if (preview.petsLeavingNames.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            Text(l.peopleHouseholdPetsTitle),
+            for (final name in preview.petsLeavingNames) Text('• $name'),
           ],
-        ),
+          if (preview.remainingAccess.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            Text(l.peopleMemberRemovalRemaining),
+            for (final access in preview.remainingAccess)
+              Text('• ${access.petName}'),
+          ],
+          if (needsSuccessor && widget.successorCandidates.length > 1) ...[
+            const SizedBox(height: 16),
+            DropdownButton<String>(
+              value: _successorUserId,
+              items: [
+                for (final member in widget.successorCandidates)
+                  DropdownMenuItem(
+                    value: member.userId,
+                    child: Text(member.displayName),
+                  ),
+              ],
+              onChanged: (v) => setState(() => _successorUserId = v),
+            ),
+          ],
+        ],
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
           child: Text(l.cancel),
         ),
-        if (!widget.removingSelf)
+        if (!widget.removingSelf && preview.canRemoveAllAccessToMyPets)
           TextButton(
-            onPressed: needsSuccessor && _successorUserId == null
+            onPressed: needsSuccessor && successorUserId == null
                 ? null
                 : () => Navigator.pop(
                     context,
                     HouseholdRemovalResult(
                       choice: HouseholdRemovalChoice.householdOnly,
-                      successorUserId: _successorUserId,
+                      successorUserId: successorUserId,
                     ),
                   ),
             child: Text(l.peopleMemberRemovalHouseholdOnly),
           ),
         FilledButton(
-          onPressed: needsSuccessor && _successorUserId == null
+          onPressed: needsSuccessor && successorUserId == null
               ? null
               : () => Navigator.pop(
                   context,
                   HouseholdRemovalResult(
                     choice: widget.removingSelf
                         ? HouseholdRemovalChoice.householdOnly
-                        : HouseholdRemovalChoice.allAccess,
-                    successorUserId: _successorUserId,
+                        : (preview.canRemoveAllAccessToMyPets
+                              ? HouseholdRemovalChoice.allAccess
+                              : HouseholdRemovalChoice.householdOnly),
+                    successorUserId: successorUserId,
                   ),
                 ),
           child: Text(
             widget.removingSelf
                 ? l.peopleHouseholdLeaveAction
-                : l.peopleMemberRemovalAllAccess,
+                : (preview.canRemoveAllAccessToMyPets
+                      ? l.peopleMemberRemovalAllAccess
+                      : l.peopleMemberRemovalAction),
           ),
         ),
       ],

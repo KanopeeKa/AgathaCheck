@@ -242,22 +242,6 @@ class PeopleCommands {
       memberUserId: memberUserId,
     );
   }
-
-  Future<void> patchHouseholdMember({
-    required String householdId,
-    required String memberUserId,
-    String? accessTier,
-    bool? isOrganiser,
-  }) async {
-    await _households.patchHouseholdMember(
-      householdId: householdId,
-      memberUserId: memberUserId,
-      accessTier: accessTier,
-      isOrganiser: isOrganiser,
-    );
-    _ref.invalidate(householdDetailProvider(householdId));
-    await refreshRoster();
-  }
 }
 
 final peopleCommandsProvider = Provider<PeopleCommands>(

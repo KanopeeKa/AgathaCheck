@@ -6,7 +6,6 @@ import '../domain/entities/household.dart';
 import '../domain/entities/household_invite_preview.dart';
 import '../domain/repositories/people_repository.dart';
 import 'dto/people_dtos.dart';
-import 'people_api_exception.dart';
 
 class HouseholdsApi {
   HouseholdsApi({required this.baseUrl, required this.client, this.token});
@@ -150,7 +149,8 @@ class HouseholdsApi {
       throw Exception('Removal preview ${response.statusCode}');
     }
     final decoded = json.decode(response.body) as Map<String, dynamic>;
-    HouseholdRemainingAccess mapAccessRow(Map<String, dynamic> row) {
+    final remainingRaw = decoded['remaining_access'] as List? ?? [];
+    final remaining = remainingRaw.whereType<Map<String, dynamic>>().map((row) {
       return HouseholdRemainingAccess(
         petId: row['pet_id']?.toString() ?? '',
         petName: row['pet_name']?.toString() ?? '',
@@ -158,30 +158,19 @@ class HouseholdsApi {
         role: row['role']?.toString(),
         until: row['until']?.toString(),
       );
-    }
-
-    final remainingRaw = decoded['remaining_access'] as List? ?? [];
-    final remaining = remainingRaw
-        .whereType<Map<String, dynamic>>()
-        .map(mapAccessRow)
-        .toList();
-    final petsLeavingRaw = decoded['pets_leaving'] as List? ?? [];
-    final petsLeaving = petsLeavingRaw.whereType<Map<String, dynamic>>().map((row) {
-      return HouseholdPetLeaving(
-        petId: row['pet_id']?.toString() ?? '',
-        petName: row['pet_name']?.toString() ?? '',
-      );
     }).toList();
-    final revokeRaw = decoded['access_to_revoke_if_remove_all'] as List? ?? [];
-    final revoke = revokeRaw
+    final petsLeavingRaw = decoded['pets_leaving'] as List? ?? [];
+    final petsLeavingNames = petsLeavingRaw
         .whereType<Map<String, dynamic>>()
-        .map(mapAccessRow)
+        .map((row) => row['pet_name']?.toString() ?? '')
+        .where((name) => name.isNotEmpty)
         .toList();
+    final revokeRaw = decoded['access_to_revoke_if_remove_all'] as List? ?? [];
     return HouseholdMemberRemovalPreview(
       remainingAccess: remaining,
       requiresSuccessor: decoded['requires_successor'] == true,
-      petsLeaving: petsLeaving,
-      accessToRevokeIfRemoveAll: revoke,
+      petsLeavingNames: petsLeavingNames,
+      canRemoveAllAccessToMyPets: revokeRaw.isNotEmpty,
     );
   }
 
@@ -263,16 +252,7 @@ class HouseholdsApi {
       body: json.encode(body),
     );
     if (response.statusCode >= 400) {
-      Map<String, dynamic>? decoded;
-      try {
-        decoded = json.decode(response.body) as Map<String, dynamic>?;
-      } catch (_) {}
-      final code = decoded?['code']?.toString() ?? 'household_member_patch';
-      throw PeopleApiException(
-        code: code,
-        statusCode: response.statusCode,
-        message: decoded?['error']?.toString(),
-      );
+      throw Exception('Patch household member ${response.statusCode}');
     }
   }
 }
