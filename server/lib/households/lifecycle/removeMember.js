@@ -92,14 +92,14 @@ export async function removeHouseholdMember(db, actorId, householdId, targetUser
       petNotices.push(...result.notices);
     }
 
+    if (removeAllAccess) {
+      await revokeRemoveAllAccessToMyPets(client, actorId, targetUserId);
+    }
+
     await client.query(
       'DELETE FROM household_members WHERE household_id = $1 AND user_id = $2',
       [householdId, targetUserId],
     );
-
-    if (removeAllAccess) {
-      await revokeRemoveAllAccessToMyPets(client, actorId, targetUserId, householdId);
-    }
 
     const memberCount = await client.query(
       'SELECT count(*)::int AS c FROM household_members WHERE household_id = $1',
@@ -113,8 +113,10 @@ export async function removeHouseholdMember(db, actorId, householdId, targetUser
 
   await emitHouseholdMemberLeft(db, {
     householdId,
+    householdName,
     memberUserId: targetUserId,
     removedByActorId: actorId,
+    recipientUserIds: petNoticeRecipients,
   });
 
   await emitHouseholdPetRemovedNotices(db, {

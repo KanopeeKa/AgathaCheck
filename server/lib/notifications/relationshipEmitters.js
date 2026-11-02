@@ -103,12 +103,14 @@ export async function emitHouseholdMemberLeft(pool, {
   householdId,
   memberUserId,
   removedByActorId = null,
+  householdName = null,
+  recipientUserIds = null,
 }) {
-  const householdName = await loadHouseholdName(pool, householdId);
+  const resolvedHouseholdName = householdName ?? await loadHouseholdName(pool, householdId);
   const memberName = await actorDisplayName(pool, memberUserId);
-  const message = `${memberName} left the ${householdName} household.`;
+  const message = `${memberName} left the ${resolvedHouseholdName} household.`;
 
-  const remainingIds = (await listHouseholdMemberIds(pool, householdId))
+  const remainingIds = recipientUserIds ?? (await listHouseholdMemberIds(pool, householdId))
     .filter((id) => id !== memberUserId);
   for (const userId of remainingIds) {
     await createNotification(pool, {
@@ -123,7 +125,7 @@ export async function emitHouseholdMemberLeft(pool, {
     await createNotification(pool, {
       userId: memberUserId,
       title: 'Household update',
-      message: `You left the ${householdName} household.`,
+      message: `You left the ${resolvedHouseholdName} household.`,
       type: NOTIFICATION_TYPE_HOUSEHOLD_MEMBER_LEFT,
     });
   }
@@ -163,10 +165,12 @@ export async function emitHouseholdPetRemoved(pool, {
   petId,
   petName,
   actorUserId = null,
+  householdName = null,
+  recipientUserIds = null,
 }) {
-  const householdName = await loadHouseholdName(pool, householdId);
-  const message = `${petName || 'A pet'} is no longer in the ${householdName} household.`;
-  const recipients = await listHouseholdMemberIds(pool, householdId, {
+  const resolvedHouseholdName = householdName ?? await loadHouseholdName(pool, householdId);
+  const message = `${petName || 'A pet'} is no longer in the ${resolvedHouseholdName} household.`;
+  const recipients = recipientUserIds ?? await listHouseholdMemberIds(pool, householdId, {
     excludeUserId: actorUserId,
   });
   for (const userId of recipients) {

@@ -5,20 +5,17 @@ import {
 } from '../../people/absenceGuestGrants.js';
 
 /**
- * H3: revoke direct shares and active absence guest grants the target holds on the actor's pets
- * in this household.
+ * H3: revoke direct shares and active absence guest grants the target holds on every pet the
+ * organiser owns (not limited to pets currently in the household).
  *
  * @param {import('pg').PoolClient} client
  * @param {string} actorId
  * @param {string} targetUserId
- * @param {string} householdId
  */
-export async function revokeRemoveAllAccessToMyPets(client, actorId, targetUserId, householdId) {
+export async function revokeRemoveAllAccessToMyPets(client, actorId, targetUserId) {
   const owned = await client.query(
-    `SELECT hp.pet_id FROM household_pets hp
-     INNER JOIN pets p ON p.id = hp.pet_id
-     WHERE hp.household_id = $1 AND p.user_id = $2`,
-    [householdId, actorId],
+    'SELECT id AS pet_id FROM pets WHERE user_id = $1',
+    [actorId],
   );
   for (const row of owned.rows) {
     await deleteAccessForTargetUser(client, row.pet_id, targetUserId);

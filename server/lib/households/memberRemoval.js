@@ -21,7 +21,7 @@ export async function getHouseholdMemberRemovalPreview(db, actorId, householdId,
   if (!targetMembership) return { error: 'Member not found', status: 404 };
 
   const householdPets = await db.query(
-    `SELECT hp.pet_id, p.name AS pet_name
+    `SELECT hp.pet_id, p.name AS pet_name, p.user_id AS owner_user_id
      FROM household_pets hp
      INNER JOIN pets p ON p.id = hp.pet_id
      WHERE hp.household_id = $1`,
@@ -29,8 +29,17 @@ export async function getHouseholdMemberRemovalPreview(db, actorId, householdId,
   );
 
   const remainingAccess = [];
+  const petsLeaving = [];
+  const accessToRevokeIfRemoveAll = [];
 
   for (const pet of householdPets.rows) {
+    if (pet.owner_user_id === targetUserId) {
+      petsLeaving.push({
+        pet_id: pet.pet_id,
+        pet_name: pet.pet_name,
+      });
+    }
+
     const direct = await db.query(
       `SELECT role FROM pet_access
        WHERE pet_id = $1 AND user_id = $2
@@ -74,22 +83,10 @@ export async function getHouseholdMemberRemovalPreview(db, actorId, householdId,
     }
   }
 
-  const petsLeaving = await db.query(
-    `SELECT hp.pet_id, p.name AS pet_name
-     FROM household_pets hp
-     INNER JOIN pets p ON p.id = hp.pet_id
-     WHERE hp.household_id = $1 AND p.user_id = $2`,
-    [householdId, targetUserId],
-  );
-
-  const accessToRevokeIfRemoveAll = [];
   if (!selfPreview && actorMembership.is_organiser) {
     const actorOwned = await db.query(
-      `SELECT hp.pet_id, p.name AS pet_name
-       FROM household_pets hp
-       INNER JOIN pets p ON p.id = hp.pet_id
-       WHERE hp.household_id = $1 AND p.user_id = $2`,
-      [householdId, actorId],
+      'SELECT id AS pet_id, name AS pet_name FROM pets WHERE user_id = $1',
+      [actorId],
     );
     for (const pet of actorOwned.rows) {
       const direct = await db.query(
@@ -108,6 +105,7 @@ export async function getHouseholdMemberRemovalPreview(db, actorId, householdId,
           role: direct.rows[0].role,
         });
       }
+
       const absenceGrant = await db.query(
         `SELECT pa.id AS absence_id, pa.ends_on
          FROM planned_absence_guest_grants g
@@ -152,11 +150,8 @@ export async function getHouseholdMemberRemovalPreview(db, actorId, householdId,
     target_user_id: targetUserId,
     household_id: householdId,
     loses_household_access: true,
+    pets_leaving: petsLeaving,
     remaining_access: remainingAccess,
-    pets_leaving: petsLeaving.rows.map((r) => ({
-      pet_id: r.pet_id,
-      pet_name: r.pet_name,
-    })),
     access_to_revoke_if_remove_all: accessToRevokeIfRemoveAll,
     requires_successor: requiresSuccessor,
     target_access_tier: targetMembership.access_tier,

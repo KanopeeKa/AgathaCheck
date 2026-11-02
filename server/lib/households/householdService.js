@@ -1,6 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
 
-import { withTransaction } from '../db/withTransaction.js';
 import { userOwnsPet } from '../petAccess.js';
 import { copyHouseholdContactsForPetLeave } from '../people/contactCopyOnPetLeave.js';
 import { recordPetAccessEvent } from './accessAudit.js';
@@ -17,14 +16,14 @@ import {
 } from './constants.js';
 import { getPetHouseholdId } from './petAccessGrants.js';
 import { getHouseholdMemberRemovalPreview } from './memberRemoval.js';
+import { removeHouseholdMember } from './lifecycle/index.js';
 import {
   emitHouseholdMemberJoined,
   emitHouseholdPetAdded,
   emitHouseholdPetRemoved,
 } from '../notifications/relationshipEmitters.js';
 
-export { getHouseholdMemberRemovalPreview };
-export { removeHouseholdMember } from './lifecycle/removeMember.js';
+export { getHouseholdMemberRemovalPreview, removeHouseholdMember };
 
 function mapHouseholdRow(row) {
   return {
