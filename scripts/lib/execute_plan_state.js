@@ -18,9 +18,14 @@ const FAILED = new Set(['failure', 'timed_out', 'action_required']);
 const SCOPE_CHECK = 'execute-plan-scope';
 const SCOPE_STOP = new Set(['drift', 'protected', 'forbidden']);
 const SCOPE_FIXABLE = new Set(['unclassified', 'companion-cap', 'too-many-files']);
-const SCOPE_SIDE_FIX_HINT = (reason) => `execute-plan-scope is ${reason}: the phase touches files outside its scope. `
-  + 'If the change is needed to deliver the plan, land it as a plan-linked side PR into the integration branch '
-  + '(body: "Unblocks: plan <id> phase <n>" and the blocker), then resume';
+const SCOPE_CAUSE = {
+  unclassified: 'the phase touches files outside its scope',
+  'companion-cap': 'the phase exceeds its companion-file allowance',
+  'too-many-files': 'the diff is too large for the scope check to list',
+};
+const SCOPE_SIDE_FIX_HINT = (reason) => `execute-plan-scope is ${reason}: ${SCOPE_CAUSE[reason] || 'see the check summary'}. `
+  + 'If the change is needed to deliver the plan, split it into a plan-linked side PR into the integration branch '
+  + '(body: "Unblocks: plan <id> phase <n>" and the blocker; runbooks 7.5), then resume';
 const HOLD_LABEL = 'execute-plan-hold';
 
 const driver = (kind, args = {}) => ({ actor: 'driver', kind, launch: false, args });

@@ -138,11 +138,15 @@ Keep repository-level copies of moved secrets until the #1941 PR is merged and v
   present) and comment `resume-autonomous <plan_id> sha256:<same hash> until <ISO date ≤ 14 days ahead>`.
   Scope stays the same; time and budgets restart from that comment. Changing the plan's **goal** means a new plan.
 - **Out-of-scope fix the plan needs** (a `ci-budget` stop whose detail names `execute-plan-scope`
-  `unclassified`/`companion-cap`/`too-many-files`): not a scope change. Land it as an ordinary PR from a
-  non-plan branch into the plan's integration branch (not `main`); the scope check is green for such PRs.
-  Body must say `Unblocks: plan <plan_id> phase <n>` and name the failing check or checklist item it fixes; no
-  protected or forbidden paths; one outcome only. Merge it, then `resume-autonomous`; the phase PR picks it up via
-  `update-branch`/`resolve-conflict`. A fix for a different goal is a new plan.
+  `unclassified`/`companion-cap`/`too-many-files`): not a scope change. Split the fix into an ordinary PR from a
+  non-plan branch into the plan's integration branch (not `main`). Order matters: (1) add the `execute-plan-hold`
+  label to the phase PR so no worker is launched; (2) `resume-autonomous` (a side PR's scope check is red
+  `plan-stopped` while the plan is stopped); (3) merge the side PR; (4) remove the hold. The phase PR picks the fix
+  up via `update-branch`/`resolve-conflict`.
+  Convention, **not enforced yet**: body says `Unblocks: plan <plan_id> phase <n>` and names the failing check or
+  checklist item; one outcome; no protected or forbidden paths. The scope check does not evaluate such a PR (category
+  `null`), so the owner reviews it; the advisory `Forbidden path check` still applies. An enforced `support`
+  category is deferred (decision log 2026-11-02). A fix for a different goal is a new plan.
 - **Revoke**: add label `autonomous-revoked` or comment `revoke-autonomous <plan_id>`. Auto-merge
   is disabled and the scope check turns red on every open plan PR within one driver pass.
 - **Kill switch**: set `EXECUTE_PLAN_DRIVER=off` — the approve and driver workflows stop acting at once.
