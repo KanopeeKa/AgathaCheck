@@ -9,7 +9,7 @@
 
 const fs = require('fs');
 const { createGitHubClient } = require('../../scripts/lib/execute_plan_github');
-const { runScopeCheck, publishScopeCheck } = require('../../scripts/lib/execute_plan_scope_run');
+const { runScopeCheck, publishScopeResult } = require('../../scripts/lib/execute_plan_scope_run');
 
 async function main(env = process.env) {
   const repo = env.GITHUB_REPOSITORY;
@@ -34,7 +34,7 @@ async function main(env = process.env) {
   const targetUrl = env.GITHUB_SERVER_URL && env.GITHUB_RUN_ID
     ? `${env.GITHUB_SERVER_URL}/${repo}/actions/runs/${env.GITHUB_RUN_ID}`
     : undefined;
-  await publishScopeCheck(client, { headSha, ...outcome, targetUrl });
+  outcome = await publishScopeResult(client, { headSha, outcome, targetUrl, now: new Date() });
   if (env.GITHUB_STEP_SUMMARY) {
     fs.appendFileSync(env.GITHUB_STEP_SUMMARY, `## execute-plan-scope: ${outcome.conclusion} (${outcome.title})\n\n${outcome.summary}\n`);
   }

@@ -5,7 +5,7 @@ const assert = require('node:assert/strict');
 const { createGitHubClient } = require('../lib/execute_plan_github');
 const { buildSnapshotFromPlan } = require('../lib/execute_plan_snapshot_v2');
 const { planIdFromRefs, listActivePlans } = require('../lib/execute_plan_plans');
-const { runScopeCheck, publishScopeCheck } = require('../lib/execute_plan_scope_run');
+const { cliCheckDiff, runScopeCheck, publishScopeCheck, publishScopeResult } = require('../lib/execute_plan_scope_run');
 const { createFakeFetch } = require('./helpers/execute_plan_fake_fetch');
 
 const REPO = 'acme/app';
@@ -213,6 +213,59 @@ test('publish posts the commit status and turns a legacy check run the same way'
   assert.deepEqual(legacy.calls[0].body, { state: 'failure', context: 'execute-plan-scope', description: 'plan-stopped: plan stopped: revoked' });
   assert.equal(legacy.calls[2].method, 'PATCH');
   assert.equal(legacy.calls[2].body.conclusion, 'failure');
+});
+
+const SHA = phasePr.headSha;
+const publishRoutes = {
+  [`POST ${R}/statuses/${SHA}`]: { status: 201, body: { id: 9 } },
+  [`GET ${R}/commits/${SHA}/check-runs?per_page=100`]: { body: { check_runs: [] } },
+};
+const posted = (fake) => fake.calls.find((c) => c.method === 'POST').body;
+const ok = { conclusion: 'success', title: 'ok', summary: 'No violations.', planId: PLAN };
+
+test('publishScopeResult re-checks STOP before posting green: a plan stopped meanwhile posts plan-stopped', async () => {
+  const revoked = { ...CONTROL_ISSUE, labels: [...CONTROL_ISSUE.labels, { name: 'autonomous-revoked' }] };
+  const { client, fake } = setup({ issue: revoked, extra: publishRoutes });
+  const final = await publishScopeResult(client, { headSha: SHA, outcome: ok, now: NOW });
+  assert.deepEqual([final.conclusion, final.title], ['failure', 'plan-stopped']);
+  assert.equal(posted(fake).state, 'failure');
+  assert.match(posted(fake).description, /^plan-stopped: plan stopped: .*revoked/);
+});
+
+test('publishScopeResult posts green when the plan is still running', async () => {
+  const { client, fake } = setup({ extra: publishRoutes });
+  const final = await publishScopeResult(client, { headSha: SHA, outcome: ok, now: NOW });
+  assert.equal(final, ok);
+  assert.equal(posted(fake).state, 'success');
+});
+
+test('publishScopeResult fails closed when the re-check cannot load the plan', async () => {
+  const { client, fake } = setup({ comments: [APPROVE], extra: publishRoutes });
+  const final = await publishScopeResult(client, { headSha: SHA, outcome: ok, now: NOW });
+  assert.deepEqual([final.conclusion, final.title], ['failure', 'drift']);
+  assert.match(posted(fake).description, /^drift: scope check could not confirm the plan state/);
+});
+
+test('publishScopeResult skips the re-check for failures and non-plan PRs', async () => {
+  for (const outcome of [{ ...ok, conclusion: 'failure', title: 'unclassified' }, { ...ok, planId: null }]) {
+    const fake = createFakeFetch(publishRoutes);
+    const client = createGitHubClient({ repo: REPO, token: 't', fetchImpl: fake });
+    assert.equal(await publishScopeResult(client, { headSha: SHA, outcome, now: NOW }), outcome);
+    assert.equal(fake.calls.length, 2);
+  }
+});
+
+test('check-diff --publish refuses to run outside GitHub Actions', async () => {
+  const saved = process.env.GITHUB_ACTIONS;
+  delete process.env.GITHUB_ACTIONS;
+  try {
+    const fake = createFakeFetch({});
+    const client = createGitHubClient({ repo: REPO, token: 't', fetchImpl: fake });
+    await assert.rejects(cliCheckDiff({ pr: '5', repo: REPO, publish: true }, { client }), /only runs inside GitHub Actions/);
+    assert.equal(fake.calls.length, 0);
+  } finally {
+    if (saved !== undefined) process.env.GITHUB_ACTIONS = saved;
+  }
 });
 
 test('planIdFromRefs covers every plan branch shape', () => {
