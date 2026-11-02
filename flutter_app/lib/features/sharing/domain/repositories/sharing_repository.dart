@@ -60,4 +60,10 @@ abstract class SharingRepository {
   Future<void> declineInvite(String inviteId, String token);
 
   Future<void> cancelInvite(String inviteId, String token);
+
+  Future<void> removeOwnerPetFromHousehold({
+    required String householdId,
+    required String petId,
+    required String token,
+  });
 }

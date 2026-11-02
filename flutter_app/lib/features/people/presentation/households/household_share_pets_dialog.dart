@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
 
 import '../../../../l10n/app_localizations.dart';
-import '../../../pet_profile/domain/entities/pet.dart';
+
+/// Minimal pet row for the post-invite share dialog (avoids pet_profile import).
+class HouseholdSharePetOption {
+  const HouseholdSharePetOption({required this.id, required this.name});
+
+  final String id;
+  final String name;
+}
 
 /// G5: after accepting a household invite, optionally share owned pets (none pre-selected).
 Future<List<String>?> showHouseholdSharePetsAfterInviteDialog({
   required BuildContext context,
   required String householdName,
-  required List<Pet> ownedPets,
+  required List<HouseholdSharePetOption> ownedPets,
 }) {
   if (ownedPets.isEmpty) return Future.value(const []);
   return showDialog<List<String>>(
@@ -27,7 +34,7 @@ class _HouseholdSharePetsDialog extends StatefulWidget {
   });
 
   final String householdName;
-  final List<Pet> ownedPets;
+  final List<HouseholdSharePetOption> ownedPets;
 
   @override
   State<_HouseholdSharePetsDialog> createState() =>

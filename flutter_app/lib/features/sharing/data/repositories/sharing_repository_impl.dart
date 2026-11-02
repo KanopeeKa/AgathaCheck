@@ -152,4 +152,17 @@ class SharingRepositoryImpl implements SharingRepository {
   Future<void> cancelInvite(String inviteId, String token) {
     return _dataSource.cancelInvite(inviteId, token);
   }
+
+  @override
+  Future<void> removeOwnerPetFromHousehold({
+    required String householdId,
+    required String petId,
+    required String token,
+  }) {
+    return _dataSource.removeOwnerPetFromHousehold(
+      householdId: householdId,
+      petId: petId,
+      token: token,
+    );
+  }
 }

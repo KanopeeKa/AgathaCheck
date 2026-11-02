@@ -64,7 +64,9 @@ class _HouseholdInviteLandingScreenState
       final selectedPetIds = await showHouseholdSharePetsAfterInviteDialog(
         context: context,
         householdName: preview.householdName,
-        ownedPets: ownedPets,
+        ownedPets: ownedPets
+            .map((p) => HouseholdSharePetOption(id: p.id, name: p.name))
+            .toList(),
       );
       if (!mounted || selectedPetIds == null) return;
 
