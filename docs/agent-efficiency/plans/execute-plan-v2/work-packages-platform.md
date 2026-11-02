@@ -122,7 +122,7 @@ async function listActivePlans(client)              // open issues labelled exec
 // execute_plan_scope_run.js
 /** @returns {{ conclusion, title, summary, planId|null }} */
 async function runScopeCheck(client, { prNumber, headSha, headRef, baseRef, headRepo, repo, now })
-async function publishScopeCheck(client, { headSha, conclusion, title, summary, targetUrl }) // post the commit status execute-plan-scope; update a legacy check run of that name
+async function publishScopeCheck(client, { headSha, conclusion, title, summary, targetUrl }) // post the commit status execute-plan-scope
 async function publishScopeResult(client, { headSha, outcome, targetUrl, now }) // re-check STOP for a green plan outcome, then publishScopeCheck; → final outcome
 ```
 
@@ -154,7 +154,6 @@ permissions:
   pull-requests: read
   issues: read
   statuses: write
-  checks: write                # legacy check runs only (issue #2002)
 concurrency:
   group: execute-plan-scope-${{ github.event.pull_request.number }}
   cancel-in-progress: true
@@ -188,8 +187,8 @@ same commit cannot orphan it.
 
 **Tests:** `fork → success ok`, `non-plan PR → success ok`, `phase PR in scope → success`,
 `phase PR unclassified → failure`, `drift on plan file edit`, `release PR with verified plan files → success`,
-`overflow → too-many-files`, `stopped plan → plan-stopped`, `publish posts the commit status and turns
-a legacy check run`, `publishScopeResult` (stopped meanwhile → `plan-stopped`; running → green; re-check
+`overflow → too-many-files`, `stopped plan → plan-stopped`, `publish posts only the commit status
+(no check-run calls)`, `publishScopeResult` (stopped meanwhile → `plan-stopped`; running → green; re-check
 error → `drift`; failures skip the re-check), `check-diff --publish refuses outside Actions`
 (all with the WP1 fake fetch).
 

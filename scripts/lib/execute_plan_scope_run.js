@@ -140,20 +140,14 @@ async function runScopeCheck(client, { prNumber, headSha, headRef, baseRef, head
   return result(evaluation.conclusion, evaluation.title, summary, planId);
 }
 
-/**
- * Post the `execute-plan-scope` commit status on `headSha`. A check run of the same name left by the
- * pre-status publisher is updated too, so a STOP still turns red a head that only carries that run.
- */
+/** Post the `execute-plan-scope` commit status on `headSha`. */
 async function publishScopeCheck(client, { headSha, conclusion, title, summary, targetUrl }) {
-  const status = await client.createCommitStatus(headSha, {
+  return client.createCommitStatus(headSha, {
     state: conclusion === 'success' ? 'success' : 'failure',
     context: CHECK_NAME,
     description: describeScope(title, summary),
     target_url: targetUrl,
   });
-  const legacy = (await client.listCheckRuns(headSha)).find((r) => r.name === CHECK_NAME);
-  if (legacy) await client.updateCheckRun(legacy.id, { conclusion, title, summary });
-  return status;
 }
 
 /**

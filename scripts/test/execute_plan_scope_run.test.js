@@ -189,36 +189,27 @@ test('stopped plan → plan-stopped (revoked label, expiry, escalation)', async 
   assert.match((await runScopeCheck(c3, phasePr)).summary, /escalation/);
 });
 
-test('publish posts the commit status and turns a legacy check run the same way', async () => {
+test('publish posts only the commit status and never touches check runs', async () => {
   const sha = 'b'.repeat(40);
   const out = { headSha: sha, conclusion: 'success', title: 'ok', summary: 'No violations.\n\nCompanions used (1):', targetUrl: 'https://run/1' };
-  const fresh = createFakeFetch({
-    [`POST ${R}/statuses/${sha}`]: { status: 201, body: { id: 7 } },
-    [`GET ${R}/commits/${sha}/check-runs?per_page=100`]: { body: { check_runs: [{ id: 1, name: 'other' }] } },
-  });
-  await publishScopeCheck(createGitHubClient({ repo: REPO, token: 't', fetchImpl: fresh }), out);
-  assert.deepEqual(fresh.calls[0].body, {
+  const ok = createFakeFetch({ [`POST ${R}/statuses/${sha}`]: { status: 201, body: { id: 7 } } });
+  await publishScopeCheck(createGitHubClient({ repo: REPO, token: 't', fetchImpl: ok }), out);
+  assert.equal(ok.calls.length, 1);
+  assert.deepEqual(ok.calls[0].body, {
     state: 'success', context: 'execute-plan-scope', description: 'ok: No violations.', target_url: 'https://run/1',
   });
-  assert.equal(fresh.calls.length, 2);
 
-  const legacy = createFakeFetch({
-    [`POST ${R}/statuses/${sha}`]: { status: 201, body: { id: 8 } },
-    [`GET ${R}/commits/${sha}/check-runs?per_page=100`]: { body: { check_runs: [{ id: 42, name: 'execute-plan-scope' }] } },
-    [`PATCH ${R}/check-runs/42`]: { body: { id: 42 } },
-  });
-  await publishScopeCheck(createGitHubClient({ repo: REPO, token: 't', fetchImpl: legacy }), {
+  const red = createFakeFetch({ [`POST ${R}/statuses/${sha}`]: { status: 201, body: { id: 8 } } });
+  await publishScopeCheck(createGitHubClient({ repo: REPO, token: 't', fetchImpl: red }), {
     headSha: sha, conclusion: 'failure', title: 'plan-stopped', summary: 'plan stopped: revoked',
   });
-  assert.deepEqual(legacy.calls[0].body, { state: 'failure', context: 'execute-plan-scope', description: 'plan-stopped: plan stopped: revoked' });
-  assert.equal(legacy.calls[2].method, 'PATCH');
-  assert.equal(legacy.calls[2].body.conclusion, 'failure');
+  assert.equal(red.calls.length, 1);
+  assert.deepEqual(red.calls[0].body, { state: 'failure', context: 'execute-plan-scope', description: 'plan-stopped: plan stopped: revoked' });
 });
 
 const SHA = phasePr.headSha;
 const publishRoutes = {
   [`POST ${R}/statuses/${SHA}`]: { status: 201, body: { id: 9 } },
-  [`GET ${R}/commits/${SHA}/check-runs?per_page=100`]: { body: { check_runs: [] } },
 };
 const posted = (fake) => fake.calls.find((c) => c.method === 'POST').body;
 const ok = { conclusion: 'success', title: 'ok', summary: 'No violations.', planId: PLAN };
@@ -251,7 +242,7 @@ test('publishScopeResult skips the re-check for failures and non-plan PRs', asyn
     const fake = createFakeFetch(publishRoutes);
     const client = createGitHubClient({ repo: REPO, token: 't', fetchImpl: fake });
     assert.equal(await publishScopeResult(client, { headSha: SHA, outcome, now: NOW }), outcome);
-    assert.equal(fake.calls.length, 2);
+    assert.equal(fake.calls.length, 1);
   }
 });
 
