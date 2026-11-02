@@ -1,7 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
 
-import { withTransaction } from '../db/withTransaction.js';
-import { deleteAccessForTargetUser } from '../../db/sharing/shareAccessQueries.js';
 import { userOwnsPet } from '../petAccess.js';
 import { copyHouseholdContactsForPetLeave } from '../people/contactCopyOnPetLeave.js';
 import { recordPetAccessEvent } from './accessAudit.js';
@@ -18,14 +16,14 @@ import {
 } from './constants.js';
 import { getPetHouseholdId } from './petAccessGrants.js';
 import { getHouseholdMemberRemovalPreview } from './memberRemoval.js';
+import { removeHouseholdMember } from './lifecycle/index.js';
 import {
   emitHouseholdMemberJoined,
-  emitHouseholdMemberLeft,
   emitHouseholdPetAdded,
   emitHouseholdPetRemoved,
 } from '../notifications/relationshipEmitters.js';
 
-export { getHouseholdMemberRemovalPreview };
+export { getHouseholdMemberRemovalPreview, removeHouseholdMember };
 
 function mapHouseholdRow(row) {
   return {
@@ -193,86 +191,6 @@ export async function addHouseholdMember(db, actorId, householdId, body) {
     memberUserId: targetUserId,
   });
   return { member: mapMemberRow(member.rows[0]) };
-}
-
-export async function removeHouseholdMember(db, actorId, householdId, targetUserId, options = {}) {
-  const preview = await getHouseholdMemberRemovalPreview(db, actorId, householdId, targetUserId);
-  if (preview.error) return preview;
-
-  const removePetAccess = options.remove_all_access_to_my_pets === true
-    || options.removeAllAccessToMyPets === true;
-
-  const successorUserId = options.successor_user_id || options.successorUserId || null;
-
-  if (preview.requires_successor && !successorUserId) {
-    return {
-      error: 'A successor organiser is required',
-      status: 409,
-      code: 'successor_required',
-    };
-  }
-
-  if (successorUserId) {
-    const successorMembership = await getHouseholdMembership(db, householdId, successorUserId);
-    if (!successorMembership || successorUserId === targetUserId) {
-      return {
-        error: 'Invalid successor_user_id',
-        status: 400,
-        code: 'validation_failed',
-      };
-    }
-  }
-
-  await emitHouseholdMemberLeft(db, {
-    householdId,
-    memberUserId: targetUserId,
-    removedByActorId: actorId,
-  });
-
-  await withTransaction(db, async (client) => {
-    if (preview.requires_successor && successorUserId) {
-      await client.query(
-        `UPDATE household_members
-         SET is_organiser = true, access_tier = $3, joined_at = joined_at
-         WHERE household_id = $1 AND user_id = $2`,
-        [householdId, successorUserId, HOUSEHOLD_TIER_FULL],
-      );
-    }
-
-    await client.query(
-      'DELETE FROM household_members WHERE household_id = $1 AND user_id = $2',
-      [householdId, targetUserId],
-    );
-
-    if (removePetAccess) {
-      const ownedPets = await client.query(
-        `SELECT hp.pet_id FROM household_pets hp
-         INNER JOIN pets p ON p.id = hp.pet_id
-         WHERE hp.household_id = $1 AND p.user_id = $2`,
-        [householdId, actorId],
-      );
-      for (const row of ownedPets.rows) {
-        await deleteAccessForTargetUser(client, row.pet_id, targetUserId);
-      }
-    }
-
-    const remainingOrganisers = await client.query(
-      `SELECT user_id FROM household_members
-       WHERE household_id = $1 AND is_organiser = true`,
-      [householdId],
-    );
-    if (remainingOrganisers.rows.length === 0) {
-      const memberCount = await client.query(
-        'SELECT count(*)::int AS c FROM household_members WHERE household_id = $1',
-        [householdId],
-      );
-      if (memberCount.rows[0].c === 0) {
-        await client.query('DELETE FROM households WHERE id = $1', [householdId]);
-      }
-    }
-  });
-
-  return { message: 'Member removed' };
 }
 
 export async function setHouseholdPets(db, userId, householdId, petIds) {
