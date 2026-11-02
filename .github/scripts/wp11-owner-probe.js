@@ -102,8 +102,13 @@ async function main() {
     process.exit(2);
   }
 
-  const run = await fetchRun(apiKey, launched.agentId, launched.runId);
-  const reply = run.result?.text || run.text || '';
+  let reply = '';
+  for (let attempt = 0; attempt < 20; attempt += 1) {
+    const run = await fetchRun(apiKey, launched.agentId, launched.runId);
+    reply = run.result?.text || run.text || '';
+    if (String(reply).trim()) break;
+    await new Promise((r) => setTimeout(r, 3000));
+  }
   const { pass, failOwner, map, replyLength } = classifyProbeOutput(reply);
   console.log(`probe_reply_length=${replyLength}`);
   console.log('--- classification ---');
