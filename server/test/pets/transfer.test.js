@@ -6,12 +6,23 @@ import { createMockPool, makePetRow, token, userId, petId, petId2 } from './help
 const recipientId = 'recipient-user-id';
 const recipientEmail = 'newowner@example.com';
 
-function createTransferPool(customEmailHandler) {
+const householdId = 'household-for-transfer';
+
+function createTransferPool(customEmailHandler, { petInHousehold = false } = {}) {
   let updatedOwnerId = null;
   let archivedInsert = null;
   let sharedAccessInsert = null;
+  let householdPetRemoved = false;
 
   const pool = createMockPool(async (sql, params) => {
+    if (sql.includes('FROM household_pets hp') && sql.includes('INNER JOIN households')) {
+      return petInHousehold
+        ? { rows: [{ household_id: householdId, household_name: 'Fam' }] }
+        : { rows: [] };
+    }
+    if (sql.includes('FROM household_members') && sql.includes('user_id <>')) {
+      return { rows: [{ user_id: 'other-member' }] };
+    }
     if (sql.includes('SELECT id, name, species, organization_id, user_id FROM pets')) {
       return { rows: [makePetRow({ name: 'Fluffy', user_id: userId })] };
     }
@@ -24,6 +35,28 @@ function createTransferPool(customEmailHandler) {
     if (sql.includes('UPDATE pets SET user_id')) {
       updatedOwnerId = params[0];
       return { rows: [makePetRow({ user_id: params[0] })] };
+    }
+    if (sql.includes('FROM household_members') && sql.includes('user_id = $2')) {
+      return { rows: [] };
+    }
+    if (sql.includes('DELETE FROM household_pets')) {
+      householdPetRemoved = true;
+      return { rows: [] };
+    }
+    if (sql.includes('SELECT name FROM pets WHERE id = $1')) {
+      return { rows: [{ name: 'Fluffy' }] };
+    }
+    if (sql.includes('INSERT INTO pet_access_events')) {
+      return { rows: [] };
+    }
+    if (sql.includes('INSERT INTO people_directories') || sql.includes('owner_user_id = $1')) {
+      return { rows: [{ id: 'dir-personal' }] };
+    }
+    if (sql.includes('FROM pet_contact_relationships')) {
+      return { rows: [] };
+    }
+    if (sql.includes('DELETE FROM pet_access_events')) {
+      return { rows: [] };
     }
     if (sql.includes('DELETE FROM pet_access WHERE pet_id = $1 AND user_id = $2')) {
       return { rows: [] };
@@ -55,6 +88,7 @@ function createTransferPool(customEmailHandler) {
     get updatedOwnerId() { return updatedOwnerId; },
     get archivedInsert() { return archivedInsert; },
     get sharedAccessInsert() { return sharedAccessInsert; },
+    get householdPetRemoved() { return householdPetRemoved; },
   };
 }
 
@@ -95,6 +129,17 @@ describe('Pets API', () => {
         .set('Authorization', `Bearer ${token}`)
         .send({ recipient_email: 'missing@example.com', confirmation_name: 'Fluffy' });
       expect(res.statusCode).toBe(404);
+    });
+
+    it('removes the pet from its household when the recipient is not a member (H1)', async () => {
+      const transferPool = createTransferPool(undefined, { petInHousehold: true });
+      const app = createApp(transferPool.pool);
+      const res = await request(app)
+        .post(`/api/pets/${petId}/transfer`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ recipient_email: recipientEmail, confirmation_name: 'Fluffy' });
+      expect(res.statusCode).toBe(200);
+      expect(transferPool.householdPetRemoved).toBe(true);
     });
 
     it('returns 403 when caller is not the owner', async () => {

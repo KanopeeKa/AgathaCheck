@@ -10,6 +10,8 @@ import { transferPetToOrganization } from '../../lib/orgPetTransfer.js';
 import { userOwnsPet } from '../../lib/petAccess.js';
 import { rejectFrozenShelterApi } from '../../lib/frozenDomains.js';
 import { withTransaction } from '../../lib/db/withTransaction.js';
+import { removePetFromHousehold } from '../../lib/households/departure/index.js';
+import { emitHouseholdPetRemovedNotices } from '../../lib/notifications/relationshipEmitters.js';
 import { extractUserId, petRowToMap } from './shared.js';
 
 export function registerTransferRoutes(router, pool) {
@@ -95,6 +97,28 @@ export function registerTransferRoutes(router, pool) {
       const ownerName = userDisplayName(ownerResult.rows[0] || {});
       const recipientName = userDisplayName(recipient);
 
+      const householdRow = await pool.query(
+        `SELECT hp.household_id, h.name AS household_name
+         FROM household_pets hp
+         INNER JOIN households h ON h.id = hp.household_id
+         WHERE hp.pet_id = $1`,
+        [petId],
+      );
+      const transferHouseholdId = householdRow.rows[0]?.household_id ?? null;
+      const transferHouseholdName = householdRow.rows[0]?.household_name ?? 'Household';
+      let transferPetNoticeRecipients = [];
+      if (transferHouseholdId) {
+        const recipients = await pool.query(
+          `SELECT user_id FROM household_members
+           WHERE household_id = $1 AND user_id <> $2 AND user_id <> $3`,
+          [transferHouseholdId, ownerId, recipient.id],
+        );
+        transferPetNoticeRecipients = recipients.rows.map((r) => r.user_id).filter(Boolean);
+      }
+
+      /** @type {import('../../lib/households/departure/notices.js').HouseholdPetRemovedNotice[]} */
+      let transferPetNotices = [];
+
       const updatedPet = await withTransaction(pool, async (db) => {
         const updateResult = await db.query(
           'UPDATE pets SET user_id = $1, updated_at = NOW() WHERE id = $2 RETURNING *',
@@ -114,6 +138,23 @@ export function registerTransferRoutes(router, pool) {
            DO UPDATE SET role = 'carer', hidden = false, invited_by = $4, updated_at = NOW()`,
           [formerAccessId, petId, ownerId, recipient.id],
         );
+
+        if (transferHouseholdId) {
+          const memberCheck = await db.query(
+            `SELECT 1 FROM household_members
+             WHERE household_id = $1 AND user_id = $2`,
+            [transferHouseholdId, recipient.id],
+          );
+          if (memberCheck.rows.length === 0) {
+            const leaveResult = await removePetFromHousehold(db, {
+              householdId: transferHouseholdId,
+              petId,
+              ownerUserId: recipient.id,
+              copyToUserId: recipient.id,
+            });
+            transferPetNotices = leaveResult.notices;
+          }
+        }
 
         const archiveId = uuidv4();
         await db.query(
@@ -136,6 +177,15 @@ export function registerTransferRoutes(router, pool) {
 
         return updateResult.rows[0];
       });
+
+      if (transferPetNotices.length > 0 && transferPetNoticeRecipients.length > 0) {
+        await emitHouseholdPetRemovedNotices(pool, {
+          householdName: transferHouseholdName,
+          notices: transferPetNotices,
+          recipientUserIds: transferPetNoticeRecipients,
+          actorUserId: ownerId,
+        });
+      }
 
       await createNotification(pool, {
         userId: recipient.id,

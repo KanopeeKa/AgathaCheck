@@ -10,9 +10,14 @@ import { afterAll, afterEach, beforeAll, describe, expect, it, jest } from '@jes
 
 import { createApp } from '../../bin/server.js';
 import {
+  acceptAccountErasure,
   clearAccountErasureFaultStep,
   setAccountErasureFaultStep,
 } from '../../lib/account/accountErasureService.js';
+import {
+  NOTIFICATION_TYPE_HOUSEHOLD_ORGANISER_PROMOTED,
+  NOTIFICATION_TYPE_HOUSEHOLD_PET_REMOVED,
+} from '../../lib/notificationKind.js';
 import * as posthogServer from '../../lib/posthogServer.js';
 import { createDbPool } from './helpers/careHarness.js';
 import {
@@ -188,6 +193,92 @@ describe('account erasure (real PG)', () => {
       clearAccountErasureFaultStep();
     }
     expect(posthogServer.deletePostHogPersonForJob).not.toHaveBeenCalled();
+  });
+
+  it('erasing sole organiser promotes a remaining member and skips pet-removed notices for deleted pets (H6)', async () => {
+    const organiser = await createUserWithPassword();
+    const successorId = randomUUID();
+    await pool.query(
+      `INSERT INTO users (id, email, password_hash, first_name, last_name)
+       VALUES ($1, $2, 'hash', 'Remain', 'Member')`,
+      [successorId, `succ-${successorId}@example.com`],
+    );
+
+    const householdId = randomUUID();
+    const directoryId = randomUUID();
+    const householdContactId = randomUUID();
+    const petId = randomUUID();
+    const entryId = randomUUID();
+
+    await pool.query('INSERT INTO households (id, name) VALUES ($1, $2)', [householdId, 'Erase HH']);
+    await pool.query(
+      `INSERT INTO household_members (household_id, user_id, access_tier, is_organiser, joined_at)
+       VALUES ($1, $2, 'full_access', true, now() - interval '2 days'),
+              ($1, $3, 'full_access', false, now() - interval '1 day')`,
+      [householdId, organiser.userId, successorId],
+    );
+    await pool.query(
+      `INSERT INTO pets (id, user_id, name, species, home_timezone) VALUES ($1, $2, 'VetPet', 'dog', 'UTC')`,
+      [petId, organiser.userId],
+    );
+    await pool.query(
+      'INSERT INTO household_pets (household_id, pet_id) VALUES ($1, $2)',
+      [householdId, petId],
+    );
+    await pool.query(
+      'INSERT INTO people_directories (id, household_id) VALUES ($1, $2)',
+      [directoryId, householdId],
+    );
+    await pool.query(
+      `INSERT INTO people_contacts (id, directory_id, kind, name)
+       VALUES ($1, $2, 'organisation', 'Household Vet')`,
+      [householdContactId, directoryId],
+    );
+    await pool.query(
+      `INSERT INTO health_entries (
+         id, pet_id, user_id, name, type, frequency, status,
+         care_family, care_setting, care_planning, care_importance,
+         importance_overridden, care_source, schedule_policy_version,
+         provider_contact_id
+       ) VALUES (
+         $1, $2, $3, 'Checkup', 'vet_visit', 'yearly', 'active',
+         'wellness_review', 'vet', 'planned', 'recommended',
+         false, 'guardian_defined', 1, $4
+       )`,
+      [entryId, petId, organiser.userId, householdContactId],
+    );
+
+    await acceptAccountErasure(pool, {
+      userId: organiser.userId,
+      userEmail: organiser.email,
+    });
+
+    const successor = await pool.query(
+      'SELECT is_organiser, access_tier FROM household_members WHERE household_id = $1 AND user_id = $2',
+      [householdId, successorId],
+    );
+    expect(successor.rows[0].is_organiser).toBe(true);
+    expect(successor.rows[0].access_tier).toBe('full_access');
+
+    const deletedUserDirs = await pool.query(
+      'SELECT id FROM people_directories WHERE owner_user_id = $1',
+      [organiser.userId],
+    );
+    expect(deletedUserDirs.rows).toHaveLength(0);
+
+    const petRemoved = await pool.query(
+      `SELECT 1 FROM notifications
+       WHERE user_id = $1 AND type = $2 AND pet_id = $3`,
+      [successorId, NOTIFICATION_TYPE_HOUSEHOLD_PET_REMOVED, petId],
+    );
+    expect(petRemoved.rows).toHaveLength(0);
+
+    const promotedNotice = await pool.query(
+      `SELECT 1 FROM notifications
+       WHERE user_id = $1 AND type = $2`,
+      [successorId, NOTIFICATION_TYPE_HOUSEHOLD_ORGANISER_PROMOTED],
+    );
+    expect(promotedNotice.rows.length).toBeGreaterThanOrEqual(1);
   });
 
   it('profile photo upload removes file when user row is gone', async () => {
