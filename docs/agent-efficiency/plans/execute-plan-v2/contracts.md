@@ -239,7 +239,7 @@ non-null except in state `complete`; on a stop, `action.kind` is `enforce-stop`.
 | driver | `create-phase-branch` | phase, branch, from_sha (integration head) | Create the phase branch before the first launch. |
 | driver | `arm-auto-merge` | pr, method (`squash` / `merge` for sync PRs), head_sha, scope_republished | Enable auto-merge; if GitHub answers that the PR is already clean, merge it directly (same refusal handling as `merge`). |
 | driver | `merge` | pr, method, head_sha, scope_republished | Merge directly after an auto-merge stall. A 405 naming an uncounted `execute-plan-scope` (`is expected` / `was not set by the expected GitHub app`) with `scope_republished: false` → run `republish-scope` instead; any other uncounted required check, or a second refusal → STOP `check-missing`; any other refusal → STOP `merge-blocked`. Both stops add `needs-owner`. |
-| driver | `republish-scope` | pr, head_sha | Re-run the scope evaluation from trusted `main` code and post the `execute-plan-scope` status with `GITHUB_TOKEN`; record the head in `dispatched.scope_republish`. No-op when the head moved. |
+| driver | `republish-scope` | pr, head_sha | Re-run the scope evaluation from trusted `main` code and post the `execute-plan-scope` status with `GITHUB_TOKEN` through `publishScopeResult` (a green result is re-checked against STOP first); record the head in `dispatched.scope_republish`. No-op when the head moved. |
 | driver | `update-branch` | pr | PR is behind a strict base. |
 | driver | `open-sync-pr` | head `main`, base integration | Integration is behind `main` before the release. |
 | driver | `open-release-pr` | head integration, base `main` | All phases merged and integration not behind. |

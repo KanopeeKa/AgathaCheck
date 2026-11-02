@@ -9,7 +9,8 @@
  *   bot  — GitHub client on EXECUTE_PLAN_BOT_TOKEN (writes that must trigger workflows, status, labels)
  *   botToken — EXECUTE_PLAN_BOT_TOKEN itself, handed to each launched worker (never the GITHUB_TOKEN fallback)
  *   read — GitHub client on GITHUB_TOKEN (reads, workflow_dispatch, the execute-plan-scope check run)
- *   deps — test seams: tick, completePlan, loadPlanContext, runScopeCheck, publishScopeCheck, launchPlanAgent, getAgentRunStatus
+ *   deps — test seams: tick, completePlan, loadPlanContext, runScopeCheck, publishScopeCheck, publishScopeResult,
+ *          launchPlanAgent, getAgentRunStatus
  */
 
 const { GitHubError } = require('./execute_plan_github');
@@ -39,9 +40,9 @@ function normalizeKillSwitch(value) {
 function defaultDeps() {
   const { tick, completePlan } = require('./execute_plan_tick');
   const { loadPlanContext } = require('./execute_plan_observe');
-  const { runScopeCheck, publishScopeCheck } = require('./execute_plan_scope_run');
+  const { runScopeCheck, publishScopeCheck, publishScopeResult } = require('./execute_plan_scope_run');
   const { launchPlanAgent, getAgentRunStatus } = require('../../.github/scripts/execute-plan-launch');
-  return { tick, completePlan, loadPlanContext, runScopeCheck, publishScopeCheck, launchPlanAgent, getAgentRunStatus };
+  return { tick, completePlan, loadPlanContext, runScopeCheck, publishScopeCheck, publishScopeResult, launchPlanAgent, getAgentRunStatus };
 }
 
 const ACTION_TEXT = {
@@ -177,7 +178,7 @@ async function republishScope(clients, ctx, { pr, headSha }, now) {
   } catch (e) {
     outcome = { conclusion: 'failure', title: 'drift', summary: `scope check could not complete: ${e.message}` };
   }
-  await deps.publishScopeCheck(read, { headSha: pull.head.sha, conclusion: outcome.conclusion, title: outcome.title, summary: outcome.summary });
+  outcome = await deps.publishScopeResult(read, { headSha: pull.head.sha, outcome, now: new Date(now) });
   await updateStatus(bot, ctx, (s) => {
     const d = s.dispatched || {};
     const list = [...(d.scope_republish || []), { sha: pull.head.sha, at: now }].slice(-MAX_REPUBLISHES);

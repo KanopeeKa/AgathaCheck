@@ -75,6 +75,11 @@ function harness(opts = {}, tickResult, extra = {}) {
     getAgentRunStatus: async (a) => { seen.leaseQueries.push(a); return extra.runStatus || 'RUNNING'; },
     launchPlanAgent: async (a) => { seen.launch.push(a); return { agentId: 'bc-1', runId: 'run-1', agentUrl: null }; },
     publishScopeCheck: async (c, a) => { seen.scope.push({ client: c.name, ...a }); },
+    publishScopeResult: async (c, { headSha, outcome }) => {
+      const final = extra.scopeFinal || outcome;
+      seen.scope.push({ client: c.name, headSha, conclusion: final.conclusion, title: final.title, summary: final.summary });
+      return final;
+    },
     runScopeCheck: async (c, a) => { seen.scopeRuns.push({ client: c.name, ...a }); return { conclusion: 'success', title: 'ok', summary: 'No violations.', planId: PLAN_ID }; },
     completePlan: async () => ({ complete: true }),
   };
@@ -161,6 +166,14 @@ test('republish-scope re-runs the check with the read token and records the head
   assert.deepEqual(h.seen.scope, [{ client: 'read', headSha: HEAD, conclusion: 'success', title: 'ok', summary: 'No violations.' }]);
   assert.deepEqual(h.bot.statusNow().dispatched.scope_republish, [{ sha: HEAD, at: NOW }]);
   assert.match(res.outcome, /republished execute-plan-scope on #5: success \(ok\)/);
+});
+
+test('republish-scope reports the published outcome when the STOP re-check turns it red', async () => {
+  const stopped = { conclusion: 'failure', title: 'plan-stopped', summary: 'plan stopped: revoked', planId: PLAN_ID };
+  const h = harness({ pulls: { 5: scopePull } }, driverAction('republish-scope', { pr: 5, head_sha: HEAD }), { scopeFinal: stopped });
+  const res = await drive(h);
+  assert.equal(h.seen.scope[0].title, 'plan-stopped');
+  assert.match(res.outcome, /republished execute-plan-scope on #5: failure \(plan-stopped\)/);
 });
 
 test('republish-scope does nothing when the head moved', async () => {
