@@ -617,7 +617,10 @@ export class PeoplePage {
   }
 
   async leaveHouseholdFromDetail(): Promise<void> {
-    await this.page.getByRole('button', { name: /^Leave household$/i }).click();
+    await this.page
+      .locator('[data-flutter-key="household_leave"]')
+      .click()
+      .catch(() => this.page.getByRole('button', { name: /^Leave household$/i }).first().click());
     await expect(
       this.page.getByRole('button', { name: /^Leave household$/i }).last(),
     ).toBeVisible({ timeout: 15_000 });
@@ -631,7 +634,8 @@ export class PeoplePage {
     tier: 'full_access' | 'can_log_care',
   ): Promise<void> {
     const namePattern = new RegExp(escapeRegExp(memberDisplayName), 'i');
-    await this.page.getByText(namePattern).first().click();
+    await refreshFlutterAccessibility(this.page);
+    await semanticsByName(this.page, namePattern).first().click();
     const tierLabel = tier === 'can_log_care' ? /^Can log care$/i : /^Full access$/i;
     await this.page.getByRole('radio', { name: tierLabel }).click();
     await this.page.getByRole('button', { name: /^Save$/i }).click();

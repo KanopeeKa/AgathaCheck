@@ -31,7 +31,7 @@ const dateOffset = (days: number): string => {
 };
 
 test.describe('Household lifecycle journeys @people', () => {
-  test('@P1 a member leaves and their pet is no longer listed in the household', async ({
+  test('@P1 A household member leaves and their own pet is no longer listed in the household', async ({
     page,
   }) => {
     test.setTimeout(120_000);
@@ -71,7 +71,7 @@ test.describe('Household lifecycle journeys @people', () => {
     }).toPass({ timeout: 30_000 });
   });
 
-  test('@P1 last member leave closes household; pet keeps vet and care provider', async ({
+  test('@P1 The last member leaves, the household closes, and the pet keeps its vet and care provider', async ({
     page,
   }) => {
     test.setTimeout(120_000);
@@ -110,7 +110,7 @@ test.describe('Household lifecycle journeys @people', () => {
     }).toPass({ timeout: 15_000 });
   });
 
-  test('@P1 organiser changes a member to Can log care', async ({ page }) => {
+  test('@P1 An organiser changes a member from Full access to Can log care', async ({ page }) => {
     test.setTimeout(120_000);
     const root = baseURL();
     const owner = await signupUser(root);
@@ -142,7 +142,7 @@ test.describe('Household lifecycle journeys @people', () => {
     }).toPass({ timeout: 30_000 });
   });
 
-  test('@P1 record owner unshares their pet on the household detail page', async ({ page }) => {
+  test('@P1 The record owner removes their pet from the household on the household detail page', async ({ page }) => {
     test.setTimeout(120_000);
     const root = baseURL();
     const owner = await signupUser(root);

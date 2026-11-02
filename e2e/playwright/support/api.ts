@@ -3472,7 +3472,8 @@ export async function createHousehold(
     },
     body: JSON.stringify({
       name,
-      ...(petIds.length > 0 ? { pet_ids: petIds } : {}),
+      // Route passes req.body into createHousehold, which reads camelCase `petIds`.
+      ...(petIds.length > 0 ? { petIds, pet_ids: petIds } : {}),
     }),
   });
   if (!res.ok) {
