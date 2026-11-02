@@ -59,7 +59,7 @@ test('exported glob lists match the spec', () => {
   assert.equal(PROTECTED_PATHS.length, 19);
   assert.ok(PROTECTED_PATHS.includes('.github/**'));
   assert.ok(PROTECTED_PATHS.includes('docs/agent-efficiency/plans/execute-plan-v2/**'));
-  assert.equal(FIXED_COMPANIONS.length, 7);
+  assert.equal(FIXED_COMPANIONS.length, 6);
   assert.deepEqual(Object.keys(EXCEPTION_GLOBS), ['tests', 'docs']);
   assert.ok(PROTECTED_PATHS.every((g) => !g.includes('{')), 'no brace expansion');
 });
@@ -128,9 +128,15 @@ test('phase companions apply to that phase only', () => {
   assert.equal(verdict('tool/gen.txt', 'release', null, snap), 'companion');
 });
 
-test('web bundle budget file is a companion of any phase', () => {
-  assert.equal(verdict('scripts/ci/web-bundle-budget.json', 'phase', '1'), 'companion');
-  assert.equal(verdict('scripts/ci/check-web-bundle-budget.mjs', 'phase', '1'), 'unclassified');
+test('web bundle budget file is a companion only where a phase is scoped under flutter_app/', () => {
+  const budget = 'scripts/ci/web-bundle-budget.json';
+  assert.equal(verdict(budget, 'phase', '2'), 'companion');
+  assert.equal(verdict(budget, 'phase', '1'), 'unclassified');
+  assert.equal(verdict(budget, 'release', null), 'companion');
+  const serverOnly = snapshot([phase('1', { allowed_paths: ['server/**'] })]);
+  assert.equal(verdict(budget, 'phase', '1', serverOnly), 'unclassified');
+  assert.equal(verdict(budget, 'release', null, serverOnly), 'unclassified');
+  assert.equal(verdict('scripts/ci/check-web-bundle-budget.mjs', 'phase', '2'), 'unclassified');
 });
 
 test('companions beyond the cap are companion-cap', () => {

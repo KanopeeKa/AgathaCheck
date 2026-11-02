@@ -362,7 +362,7 @@ wait for one green **CI** run — GitHub only lists checks that have reported at
 |----------------|----------|----------|
 | `Governance hints (advisory)` | `pr-governance-hints.yml` | PR comment only; does not block merge |
 | `Forbidden path check` | `agent-pr-safety-gate.yml` | **Blocks** PRs from `cursor/*` branches that touch forbidden paths (migrations, `server/config/security.js`, `infra/`, auth/billing/secrets routes). Workflow edits under `.github/workflows/` are allowed when paired with gate doc updates. Human branches unaffected |
-| `execute-plan-scope` | `execute-plan-scope.yml` (`pull_request_target`, job `scope-runner`; **commit status** posted with `GITHUB_TOKEN`, so it is set by the GitHub Actions app; description `<reason>: <first summary line>`, full summary in the run's job summary) | Execute-plan v2 PRs only (`cursor/<plan_id>-p<n>`, `-sync-<n>`, `-remedial-<n>`, integration → `main`): every changed file must fit the approved snapshot scope (no protected, forbidden or unclassified paths; plan files unchanged except on the release PR; at most 5 companions); red `plan-stopped` once the plan is stopped. Other PRs get a green `ok`. Runs trusted `main` code only. **Advisory until WP8**, then required on `main` and on integration branches (pinned to the GitHub Actions app). Logic: `scripts/lib/execute_plan_scope_run.js`; spec: [execute-plan-v2](../agent-efficiency/plans/execute-plan-v2.md) |
+| `execute-plan-scope` | `execute-plan-scope.yml` (`pull_request_target`, job `scope-runner`; **commit status** posted with `GITHUB_TOKEN`, so it is set by the GitHub Actions app; description `<reason>: <first summary line>`, full summary in the run's job summary) | Execute-plan v2 PRs only (`cursor/<plan_id>-p<n>`, `-sync-<n>`, `-remedial-<n>`, integration → `main`): every changed file must fit the approved snapshot scope (no protected, forbidden or unclassified paths; plan files unchanged except on the release PR; at most 30 companions); red `plan-stopped` once the plan is stopped. Other PRs get a green `ok`. Runs trusted `main` code only. **Advisory until WP8**, then required on `main` and on integration branches (pinned to the GitHub Actions app). Logic: `scripts/lib/execute_plan_scope_run.js`; spec: [execute-plan-v2](../agent-efficiency/plans/execute-plan-v2.md) |
 
 ---
 
@@ -437,8 +437,8 @@ starting the Node server. **Setup steps fail the job**; scan steps use step-leve
 Web release builds also run `scripts/ci/check-web-bundle-budget.mjs` (ratchet via
 `scripts/ci/web-bundle-budget.json`) inside `_reusable-build-web.yml`.
 The ratchet guards against unplanned growth, not planned features: a PR that grows the bundle on purpose
-raises the cap in the same diff and states before/after bytes in its body (execute-plan phase PRs may
-edit the file as a fixed companion).
+raises the cap in the same diff and states before/after bytes in its body (execute-plan PRs may edit the file only when an in-scope phase
+is scoped under `flutter_app/`).
 
 ---
 

@@ -157,8 +157,9 @@ anything else ⇒ `null`.
    g. Companions: the phase's `companions` (all phases' for non-phase categories) plus
       `FIXED_COMPANIONS` = `**/generated/**`, `**/*.g.dart`, `**/*.freezed.dart`,
       `flutter_app/lib/l10n/*.arb`, `docs/architecture/openapi/*.json`,
-      `flutter_app/lib/features/*/*.dart` (feature barrel files), `scripts/ci/web-bundle-budget.json`
-      → `companion`; the 31st and later companion files are violations `companion-cap`.
+      `flutter_app/lib/features/*/*.dart` (feature barrel files) → `companion`; plus
+      `scripts/ci/web-bundle-budget.json` when an in-scope phase's `allowed_paths` has a glob under
+      `flutter_app/` (`BUNDLE_BUDGET_FILE`) → `companion`; the 31st and later companion files are violations `companion-cap`.
    h. Otherwise violation `unclassified`.
 4. Title = the most serious violation reason present, in this order: `drift`, `protected`,
    `forbidden`, `unclassified`, `companion-cap`; no violation → `ok`. Conclusion `failure` iff
@@ -167,7 +168,7 @@ anything else ⇒ `null`.
 **Tests:** `forbidden beats allowed (server/** allowed, server/routes/auth/x.js)`,
 `protected beats allowed (.github/workflows/x.yml in allowed_paths)`, `exception tests matches only test files`,
 `exception docs rejects care_item.dart`, `barrel care_item.dart is a companion and reported`,
-`openapi json is a companion`, `sixth companion is companion-cap`, `own plan file in phase PR is drift`,
+`openapi json is a companion`, `31st companion is companion-cap`, `own plan file in phase PR is drift`,
 `own plan file in release PR verified is allowed`, `own plan file in release PR unverified is drift`,
 `other plan file is protected`, `release uses union`, `remedial allows e2e and tests`,
 `sync category green without evaluation`, `stopped plan red plan-stopped`, `unclassified red`,

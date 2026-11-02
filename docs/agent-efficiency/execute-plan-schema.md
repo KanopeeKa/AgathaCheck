@@ -333,8 +333,9 @@ check run that call it arrive in a later work package (build spec:
 
 **Fixed companions** (`FIXED_COMPANIONS`): `**/generated/**`, `**/*.g.dart`,
 `**/*.freezed.dart`, `flutter_app/lib/l10n/*.arb`, `docs/architecture/openapi/*.json`,
-`flutter_app/lib/features/*/*.dart` (feature barrel files), `scripts/ci/web-bundle-budget.json`
-(a phase may raise the web bundle cap). Companions are reported in `companionsUsed`; at most 30 per PR.
+`flutter_app/lib/features/*/*.dart` (feature barrel files). `scripts/ci/web-bundle-budget.json` is
+also a companion when an in-scope phase has an `allowed_paths` glob under `flutter_app/` (the phase
+may raise the web bundle cap). Companions are reported in `companionsUsed`; at most 30 per PR.
 
 **Exception globs** (`EXCEPTION_GLOBS`): `tests` = `**/test/**`, `**/*.test.js`,
 `**/*.test.mjs`, `**/*.test.ts`, `**/*_test.dart`, `e2e/**/*.spec.ts`; `docs` = `docs/**`,

@@ -14,7 +14,7 @@ decision logic that consumes these contracts is in [state-machine.md](./state-ma
 ## 3.1 Snapshot v2 (`.agents/plans/<plan_id>.snapshot.json`)
 
 Every field is immutable after approval. There are **no runtime fields**: progress is derived from
-GitHub (state-machine §4). This exact object is the worked example of the hash vector in §3.4.
+GitHub (state-machine §4). This exact object is the worked example of the hash vector in §3.4 (its budgets are explicit values, not the current `V2_DEFAULTS`).
 
 ```json
 {
@@ -31,7 +31,7 @@ GitHub (state-machine §4). This exact object is the worked example of the hash 
   "settings": {
     "release_owner_review": false,
     "tier3_blocking": false,
-    "budgets": { "ci_per_phase": 8, "launches_per_phase": 15, "remedial_rounds": 6, "sync_attempts": 5, "daily_launches": 80 }
+    "budgets": { "ci_per_phase": 3, "launches_per_phase": 5, "remedial_rounds": 3, "sync_attempts": 2, "daily_launches": 20 }
   },
   "protected_paths_version": 1,
   "phases": [
@@ -60,7 +60,7 @@ GitHub (state-machine §4). This exact object is the worked example of the hash 
 | `approved_until` | `created_at + window_days`; window ≤ 14 days (cap in code). Must equal the `until` of the **approve** comment (§3.3). |
 | `settings.budgets.*` | Integers ≥ 1, each ≤ the cap in `V2_CAPS` (`scripts/lib/execute_plan_constants.js`); validation rejects higher values. |
 | `protected_paths_version` | Informational. The scope check always uses the protected set from `main`. |
-| `phases[]` | 1–8 entries, ordered; one PR each. `id` = `"1"`, `"2"`, …; `branch` = `cursor/<plan_id>-p<id>`; `allowed_paths` non-empty globs; `allowed_exceptions` ⊆ `{"tests","docs"}`; `companions` ≤ 5 globs; `exit_checklist` non-empty strings. |
+| `phases[]` | 1–8 entries, ordered; one PR each. `id` = `"1"`, `"2"`, …; `branch` = `cursor/<plan_id>-p<id>`; `allowed_paths` non-empty globs; `allowed_exceptions` ⊆ `{"tests","docs"}`; `companions` ≤ 12 globs (`V2_CAPS.companions`); `exit_checklist` non-empty strings. |
 | `approval_hash` | §3.4. The only field excluded from its own input. |
 
 Globs: `**` matches any number of path segments, `*` matches within one segment. Reuse
