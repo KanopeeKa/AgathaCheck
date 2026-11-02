@@ -3350,7 +3350,7 @@
   "peopleAddAppAccessHousehold": "Invite to a household",
   "peopleAddHouseholdName": "Household name",
   "peopleHouseholdPetReviewTitle": "Pets in this household",
-  "peopleHouseholdPetReviewBody": "Choose which of your pets belong in this household. You can change this later.",
+  "peopleHouseholdPetReviewBody": "These pets will be shared with household members. You can change this later.",
   "peopleHouseholdMembersTitle": "Members",
   "peopleHouseholdPetsTitle": "Pets",
   "peopleHouseholdPetOwnerYou": "You own this pet",
@@ -3381,6 +3381,63 @@
   },
   "peopleHouseholdInviteAccept": "Accept invitation",
   "peopleHouseholdInviteDecline": "Decline",
+  "peopleHouseholdSharePetsAfterInviteTitle": "Share any of your pets with {householdName}?",
+  "@peopleHouseholdSharePetsAfterInviteTitle": {
+    "placeholders": { "householdName": { "type": "String" } }
+  },
+  "peopleHouseholdSharePetsAfterInviteBody": "Nothing is shared until you choose pets here.",
+  "peopleHouseholdSharePetsSkip": "Not now",
+  "peopleHouseholdEditMemberAction": "Change access",
+  "peopleHouseholdLastOrganiserError": "At least one organiser must stay in the household.",
+  "peopleMemberRemovalPetsLeaving": "Pets leaving the household:",
+  "peopleMemberRemovalRevokeIfAllAccess": "Also removed if you choose “Remove all access to my pets”:",
+  "peopleMemberRemovalRemainingDirectShare": "{petName} · {role} (direct share)",
+  "@peopleMemberRemovalRemainingDirectShare": {
+    "placeholders": {
+      "petName": { "type": "String" },
+      "role": { "type": "String" }
+    }
+  },
+  "peopleMemberRemovalRemainingAbsence": "{petName} · access during an absence",
+  "@peopleMemberRemovalRemainingAbsence": {
+    "placeholders": { "petName": { "type": "String" } }
+  },
+  "peopleMemberRemovalRemainingAbsenceUntil": "{petName} · access until {until}",
+  "@peopleMemberRemovalRemainingAbsenceUntil": {
+    "placeholders": {
+      "petName": { "type": "String" },
+      "until": { "type": "String" }
+    }
+  },
+  "whoHasAccessPetInHousehold": "This pet is in this household",
+  "peopleHouseholdRemovePetTitle": "Remove {petName} from \"{householdName}\"?",
+  "@peopleHouseholdRemovePetTitle": {
+    "placeholders": {
+      "petName": { "type": "String" },
+      "householdName": { "type": "String" }
+    }
+  },
+  "peopleHouseholdRemovePetBody": "Other household members will lose access to {petName}. You can add the pet again later.",
+  "@peopleHouseholdRemovePetBody": {
+    "placeholders": {
+      "petName": { "type": "String" },
+      "householdName": { "type": "String" }
+    }
+  },
+  "peopleHouseholdRemovePetConfirm": "Remove {petName} from \"{householdName}\"",
+  "@peopleHouseholdRemovePetConfirm": {
+    "placeholders": {
+      "petName": { "type": "String" },
+      "householdName": { "type": "String" }
+    }
+  },
+  "peopleHouseholdRemovePetAction": "Remove {petName}",
+  "@peopleHouseholdRemovePetAction": {
+    "placeholders": {
+      "petName": { "type": "String" },
+      "householdName": { "type": "String" }
+    }
+  },
   "peopleAddPetsEmpty": "No pets to link yet.",
   "peopleAddPetLinkKind": "How they help with this pet",
   "peopleAddEmergencyContact": "Emergency contact for this pet",

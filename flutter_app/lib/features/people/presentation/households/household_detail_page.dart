@@ -12,6 +12,7 @@ import '../../domain/entities/household_invite.dart';
 import '../../domain/entities/roster.dart';
 import '../../domain/repositories/people_repository.dart';
 import 'household_invite_member_sheet.dart';
+import 'household_member_edit_sheet.dart';
 import 'household_member_removal_dialog.dart';
 import 'household_tier_labels.dart';
 
@@ -284,16 +285,39 @@ class _HouseholdDetailBodyState extends ConsumerState<_HouseholdDetailBody> {
             subtitle: Text(
               householdTierLabel(l, member.tier, organiser: member.isOrganiser),
             ),
+            onTap: household.myIsOrganiser && !member.isYou
+                ? () => showHouseholdMemberEditSheet(
+                    context: context,
+                    householdId: household.id,
+                    member: member,
+                  )
+                : null,
             trailing: household.myIsOrganiser && !member.isYou
-                ? IconButton(
-                    tooltip: l.peopleMemberRemovalAction,
-                    onPressed: _busy
-                        ? null
-                        : () => _removeMember(
-                            member: member,
-                            removingSelf: false,
-                          ),
-                    icon: const Icon(Icons.person_remove_outlined),
+                ? Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        tooltip: l.peopleHouseholdEditMemberAction,
+                        onPressed: _busy
+                            ? null
+                            : () => showHouseholdMemberEditSheet(
+                                context: context,
+                                householdId: household.id,
+                                member: member,
+                              ),
+                        icon: const Icon(Icons.edit_outlined),
+                      ),
+                      IconButton(
+                        tooltip: l.peopleMemberRemovalAction,
+                        onPressed: _busy
+                            ? null
+                            : () => _removeMember(
+                                member: member,
+                                removingSelf: false,
+                              ),
+                        icon: const Icon(Icons.person_remove_outlined),
+                      ),
+                    ],
                   )
                 : null,
           ),

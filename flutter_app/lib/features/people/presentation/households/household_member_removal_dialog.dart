@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/household.dart';
 import '../../domain/repositories/people_repository.dart';
+import 'household_removal_preview_labels.dart';
 
 enum HouseholdRemovalChoice { householdOnly, allAccess }
 
@@ -71,11 +72,24 @@ class _HouseholdMemberRemovalDialogState
                   ? l.peopleHouseholdLeaveBody
                   : l.peopleMemberRemovalBody,
             ),
+            if (preview.petsLeaving.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              Text(l.peopleMemberRemovalPetsLeaving),
+              for (final pet in preview.petsLeaving)
+                Text('• ${pet.petName}'),
+            ],
             if (preview.remainingAccess.isNotEmpty) ...[
               const SizedBox(height: 12),
               Text(l.peopleMemberRemovalRemaining),
               for (final access in preview.remainingAccess)
-                Text('• ${access.petName} (${access.source})'),
+                Text('• ${formatHouseholdRemainingAccessLine(l, access)}'),
+            ],
+            if (!widget.removingSelf &&
+                preview.accessToRevokeIfRemoveAll.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              Text(l.peopleMemberRemovalRevokeIfAllAccess),
+              for (final access in preview.accessToRevokeIfRemoveAll)
+                Text('• ${formatHouseholdRemainingAccessLine(l, access)}'),
             ],
             if (needsSuccessor) ...[
               const SizedBox(height: 16),

@@ -8479,7 +8479,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get peopleHouseholdPetReviewBody =>
-      'Choisissez les animaux qui appartiennent à ce foyer. Vous pourrez modifier plus tard.';
+      'Ces animaux seront partagés avec les membres du foyer. Vous pourrez modifier plus tard.';
 
   @override
   String get peopleHouseholdMembersTitle => 'Membres';
@@ -8549,6 +8549,74 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get peopleHouseholdInviteDecline => 'Refuser';
+
+  @override
+  String peopleHouseholdSharePetsAfterInviteTitle(String householdName) {
+    return 'Partager certains de vos animaux avec $householdName ?';
+  }
+
+  @override
+  String get peopleHouseholdSharePetsAfterInviteBody =>
+      'Rien n\'est partagé tant que vous n\'avez pas choisi d\'animaux ici.';
+
+  @override
+  String get peopleHouseholdSharePetsSkip => 'Pas maintenant';
+
+  @override
+  String get peopleHouseholdEditMemberAction => 'Modifier l\'accès';
+
+  @override
+  String get peopleHouseholdLastOrganiserError =>
+      'Il doit rester au moins un organisateur dans le foyer.';
+
+  @override
+  String get peopleMemberRemovalPetsLeaving =>
+      'Animaux qui quittent le foyer :';
+
+  @override
+  String get peopleMemberRemovalRevokeIfAllAccess =>
+      'Également retiré si vous choisissez « Retirer tout accès à mes animaux » :';
+
+  @override
+  String peopleMemberRemovalRemainingDirectShare(String petName, String role) {
+    return '$petName · $role (partage direct)';
+  }
+
+  @override
+  String peopleMemberRemovalRemainingAbsence(String petName) {
+    return '$petName · accès pendant une absence';
+  }
+
+  @override
+  String peopleMemberRemovalRemainingAbsenceUntil(
+    String petName,
+    String until,
+  ) {
+    return '$petName · accès jusqu\'au $until';
+  }
+
+  @override
+  String get whoHasAccessPetInHousehold => 'Cet animal fait partie de ce foyer';
+
+  @override
+  String peopleHouseholdRemovePetTitle(String petName, String householdName) {
+    return 'Retirer $petName de « $householdName » ?';
+  }
+
+  @override
+  String peopleHouseholdRemovePetBody(String petName, String householdName) {
+    return 'Les autres membres du foyer perdront l\'accès à $petName. Vous pourrez le rajouter plus tard.';
+  }
+
+  @override
+  String peopleHouseholdRemovePetConfirm(String petName, String householdName) {
+    return 'Retirer $petName de « $householdName »';
+  }
+
+  @override
+  String peopleHouseholdRemovePetAction(String petName, String householdName) {
+    return 'Retirer $petName';
+  }
 
   @override
   String get peopleAddPetsEmpty => 'Aucun animal à lier pour l\'instant.';

@@ -4,9 +4,11 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../pet_profile/pet_profile.dart';
 import '../../application/people_commands.dart';
 import '../../application/people_providers.dart';
 import '../../domain/entities/household_invite_preview.dart';
+import 'household_share_pets_dialog.dart';
 import 'household_tier_labels.dart';
 
 class HouseholdInviteLandingScreen extends ConsumerStatefulWidget {
@@ -52,10 +54,32 @@ class _HouseholdInviteLandingScreenState
   Future<void> _accept() async {
     setState(() => _busy = true);
     try {
+      final preview = _preview!;
       await ref
           .read(peopleCommandsProvider)
           .acceptHouseholdInvite(widget.inviteCode);
-      if (mounted) context.go('/pc/people/households/${_preview!.householdId}');
+      if (!mounted) return;
+
+      final ownedPets = ref.read(petListProvider).valueOrNull ?? const <Pet>[];
+      final selectedPetIds = await showHouseholdSharePetsAfterInviteDialog(
+        context: context,
+        householdName: preview.householdName,
+        ownedPets: ownedPets,
+      );
+      if (!mounted || selectedPetIds == null) return;
+
+      if (selectedPetIds.isNotEmpty) {
+        final detail = await ref
+            .read(householdsRepositoryProvider)
+            .fetchHouseholdDetail(preview.householdId);
+        final existingPetIds = detail.pets.map((p) => p.petId).toSet();
+        existingPetIds.addAll(selectedPetIds);
+        await ref.read(peopleCommandsProvider).setHouseholdPets(
+              householdId: preview.householdId,
+              petIds: existingPetIds.toList(),
+            );
+      }
+      if (mounted) context.go('/pc/people/households/${preview.householdId}');
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
