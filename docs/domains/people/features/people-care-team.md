@@ -6,7 +6,6 @@ domain: people
 feature_id: people_care_team
 status: implemented
 last_updated: 2026-11-02
-related_prs: []
 related_bdd: [away_planning.feature, away_plan_detail_v2.feature, sharing.feature, veterinarian_management.feature, notifications.feature]
 ---
 
