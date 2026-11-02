@@ -302,6 +302,7 @@ Share links are **single-use**: once accepted, the same link cannot be used by a
 | GET | `/:id` | Detail with `members` and `pets` (members only) |
 | PATCH | `/:id` | Rename (organisers) |
 | GET | `/:id/members/:userId/removal-preview` | Leave/remove preview (D16): `pets_leaving[]` (target's pets in the household), `remaining_access[]` per pet (`source`: `direct_share` \| `absence`), `access_to_revoke_if_remove_all[]` when an organiser removes someone else (H3), `requires_successor` when last organiser leaves with other members |
+| PATCH | `/:id/members/:userId` | Organisers only (D3) — body `{ access_tier?, is_organiser? }`; organisers normalised to `full_access` (D13); demoting the last organiser → `409 last_organiser`; returns updated member DTO |
 | DELETE | `/:id/members/:userId` | Leave or remove; body optional `{ remove_all_access_to_my_pets: true, successor_user_id? }`; last organiser with other members → `409 successor_required` without successor |
 | PUT | `/:id/pets` | Body `{ pet_ids: [] }` — record owner adds/removes their pets (transactional); `409` if a pet is already in another household (never moved via upsert) |
 | DELETE | `/:id/pets/:petId` | Record owner removes their pet from the household (membership not required); D22 notices after commit |
