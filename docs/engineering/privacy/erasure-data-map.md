@@ -3,7 +3,7 @@ title: Account erasure data map
 owner: Privacy / Backend
 audience: both
 status: active
-last_updated: 2026-10-04
+last_updated: 2026-11-02
 tags: [privacy, erasure, gdpr]
 ---
 
@@ -45,7 +45,9 @@ Frozen foster/org schema fields called out in the active codebase review remain 
 ## Shared pets and households
 
 - **Household pets** — `DELETE /api/auth/me` keeps today’s **`409 household_pets_require_confirmation`** when the account still has household-owned pets without explicit confirmation (unchanged product rule).
+- **Household release (H6)** — Inside the acceptance transaction, after `DELETE FROM users`, `releaseHouseholdsForDepartingUser` runs on memberships captured **before** the delete: empty households are closed via departure primitives; when no organiser remains, H2 successor promotion runs and a `householdOrganiserPromoted` notification is emitted **after** commit. The erased user’s pets are already gone (`pets.user_id` cascade), so no household contact is copied into the deleted account and no D22 pet-removed notice is sent for those pets.
 - **Shared access** — `pet_access`, share invites, and absence carers are removed or unlinked via cascades and explicit steps in the map; other members’ pets and data are not deleted.
+- **Legacy repair** — `node server/scripts/reconcileHouseholds.js` (dry-run by default; `--apply` in ops) reports organiser-less households, member-empty households, pets whose owner is not a member, and stale household-directory contact references; apply mode uses the same departure primitives as production flows.
 
 ## GDPR export
 
