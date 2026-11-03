@@ -241,6 +241,11 @@ test('unclassified red', () => {
   assert.equal(evaluate(['server/a.js'], 'phase', '9').title, 'unclassified');
 });
 
+test('unsupported integration PR fails closed', () => {
+  const r = evaluate(['server/a.js'], 'unsupported');
+  assert.deepEqual([r.conclusion, r.title], ['failure', 'unsupported']);
+});
+
 test('categorizePull for each category and null', () => {
   const cases = [
     [`cursor/${PLAN}-p1`, I, { category: 'phase', phaseId: '1' }],
@@ -250,10 +255,10 @@ test('categorizePull for each category and null', () => {
     [I, 'main', { category: 'release', phaseId: null }],
     [`cursor/${PLAN}-remedial-1`, 'main', { category: 'remedial', phaseId: null }],
     [`cursor/${PLAN}-p1`, 'main', { category: null, phaseId: null }],
-    [`cursor/${PLAN}-remedial-1`, I, { category: null, phaseId: null }],
-    [`cursor/other-plan-p1`, I, { category: null, phaseId: null }],
-    [`cursor/${PLAN}-p1-extra`, I, { category: null, phaseId: null }],
-    [`cursor/${PLAN}-sync-x`, I, { category: null, phaseId: null }],
+    [`cursor/${PLAN}-remedial-1`, I, { category: 'unsupported', phaseId: null }],
+    [`cursor/other-plan-p1`, I, { category: 'unsupported', phaseId: null }],
+    [`cursor/${PLAN}-p1-extra`, I, { category: 'unsupported', phaseId: null }],
+    [`cursor/${PLAN}-sync-x`, I, { category: 'unsupported', phaseId: null }],
     ['feature/x', 'main', { category: null, phaseId: null }],
     [I, 'cursor/other-integration-abcd', { category: null, phaseId: null }],
   ];
