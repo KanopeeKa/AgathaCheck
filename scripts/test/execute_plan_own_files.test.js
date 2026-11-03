@@ -32,3 +32,16 @@ test('formatInitBranchOnlyPlanFilesMessage names extras to move', () => {
   assert.match(msg, /docs\/foo\.md/);
   assert.match(msg, /docs PR against `main`/);
 });
+
+test('formatInitBranchOnlyPlanFilesMessage asks for missing snapshot, not docs PR', () => {
+  const planRel = `.agents/plans/${PLAN_ID}.md`;
+  const snapRel = `.agents/plans/${PLAN_ID}.snapshot.json`;
+  const msg = formatInitBranchOnlyPlanFilesMessage({
+    planId: PLAN_ID,
+    files: [planRel],
+    committedFilenames: [planRel],
+  });
+  assert.match(msg, /missing file/);
+  assert.match(msg, new RegExp(snapRel.replace(/\./g, '\\.')));
+  assert.doesNotMatch(msg, /Move .* docs PR/);
+});

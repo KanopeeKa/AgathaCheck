@@ -166,6 +166,7 @@ test('init branch with only one plan file → rejected', async () => {
   const s = setup({ files: [PLAN_FILES[0]] });
   await run(s, event(mkComment(APPROVE)));
   assert.match(s.writes[0][2], /exactly the two plan files/);
+  assert.match(s.writes[0][2], /missing file/);
 });
 
 test('missing Init branch line or a snapshot that is not at the sha → rejected', async () => {
