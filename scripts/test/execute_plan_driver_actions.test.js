@@ -6,6 +6,7 @@ const { buildSnapshotFromPlan } = require('../lib/execute_plan_snapshot_v2');
 const { formatStatusComment, parseStatusComment } = require('../lib/execute_plan_status');
 const { GitHubError } = require('../lib/execute_plan_github');
 const { runDriverPass, buildHandoffPrompt, normalizeKillSwitch } = require('../lib/execute_plan_driver_actions');
+const { MAX_LAUNCH_HISTORY } = require('../lib/execute_plan_constants');
 const { plansForEvent } = require('../../.github/scripts/execute-plan-driver');
 
 const PLAN_ID = 'proof-build-label-7f3a';
@@ -357,13 +358,13 @@ test('launch: resolve-sync creates its branch off the integration head first', a
   assert.deepEqual(h.bot.calls.find((c) => c[0] === 'createRef'), ['createRef', `refs/heads/${branch}`, `sha-of-${SNAP.integration_branch}`]);
 });
 
-test('launch: keeps only the last 50 launches', async () => {
-  const many = Array.from({ length: 50 }, (_, i) => ({ at: `2026-10-15T00:00:${String(i).padStart(2, '0')}Z`, phase: '1', kind: 'implement', agent_id: `a${i}`, run_id: 'r' }));
+test(`launch: keeps only the last ${MAX_LAUNCH_HISTORY} launches`, async () => {
+  const many = Array.from({ length: MAX_LAUNCH_HISTORY }, (_, i) => ({ at: `2026-10-15T00:00:${String(i % 60).padStart(2, '0')}Z`, phase: '1', kind: 'implement', agent_id: `a${i}`, run_id: 'r' }));
   const h = harness({ status: baseStatus({ launches: many }) }, agentAction('implement', { phase: '1', branch: 'b', base: 'i' }, { phase: '1' }));
   await drive(h);
   const { launches } = h.bot.statusNow();
-  assert.equal(launches.length, 50);
-  assert.equal(launches[49].agent_id, 'bc-1');
+  assert.equal(launches.length, MAX_LAUNCH_HISTORY);
+  assert.equal(launches.at(-1).agent_id, 'bc-1');
   assert.equal(launches[0].agent_id, 'a1');
 });
 
