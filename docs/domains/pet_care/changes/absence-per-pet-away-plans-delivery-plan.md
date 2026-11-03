@@ -3,11 +3,13 @@ title: Absences and per-pet away plans — delivery plan
 owner: Product / Agent
 audience: both
 status: in-delivery
+status_since: 2026-11-03
+folds_into: docs/domains/pet_care/features/care-context.md
+plan: absence-per-pet-away-plans-a7566
 last_updated: 2026-11-03
-tags: [pet_care, delivery, away]
 ---
 
-**Execute-plan id:** `absence-per-pet-away-plans-a7566` · **Folds into:** [care-context.md](../features/care-context.md)
+**Related spec:** [absence-per-pet-away-plans-spec.md](./absence-per-pet-away-plans-spec.md) (merge before phase 1).
 
 # Absences and per-pet away plans — delivery plan
 
