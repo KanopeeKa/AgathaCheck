@@ -57,6 +57,7 @@ function setup({ files = PLAN_FILES, integration = null, issueComments = [], sna
     createRef: rec('createRef'),
     createComment: rec('createComment'),
     addLabels: rec('addLabels'),
+    removeLabel: rec('removeLabel'),
     updateIssue: rec('updateIssue'),
     listIssueComments: async () => issueComments,
   };
@@ -167,13 +168,27 @@ test('comments on PRs and on issues without the execute-plan label are ignored',
   assert.deepEqual(s.writes, []);
 });
 
-test('resume (valid) → driver dispatched and no other write', async () => {
+test('resume (valid) → clears needs-owner and dispatches driver', async () => {
   const s = setup();
-  const res = await run(s, event(mkComment(RESUME), { issue: mkIssue(['execute-plan', 'autonomous-approved', `plan:${PLAN_ID}`]) }));
+  const res = await run(s, event(mkComment(RESUME), {
+    issue: mkIssue(['execute-plan', 'autonomous-approved', `plan:${PLAN_ID}`, 'needs-owner']),
+  }));
   assert.equal(res.handled, true);
-  assert.deepEqual(s.writes, []);
-  assert.deepEqual(s.passes, [['load', PLAN_ID]]); // approvedContext only
+  assert.deepEqual(s.writes, [['removeLabel', 9, 'needs-owner']]);
+  assert.deepEqual(s.passes, [['load', PLAN_ID]]);
   assert.deepEqual(s.dispatches, DISPATCH);
+});
+
+test('resume (valid) → clears needs-owner and autonomous-revoked', async () => {
+  const s = setup();
+  const res = await run(s, event(mkComment(RESUME), {
+    issue: mkIssue(['execute-plan', 'autonomous-approved', `plan:${PLAN_ID}`, 'needs-owner', 'autonomous-revoked']),
+  }));
+  assert.equal(res.handled, true);
+  assert.deepEqual(s.writes.filter((w) => w[0] === 'removeLabel'), [
+    ['removeLabel', 9, 'needs-owner'],
+    ['removeLabel', 9, 'autonomous-revoked'],
+  ]);
 });
 
 test('resume: invalid or on an unapproved issue → no pass', async () => {

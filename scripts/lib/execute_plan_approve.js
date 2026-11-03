@@ -144,6 +144,10 @@ async function handleControlComment(clients, event, { now = isoNow(), killSwitch
     return done(false, `invalid ${parsed.verb}: ${res.reason}`);
   }
   if (parsed.verb === 'revoke' && !dry) await clients.bot.addLabels(issue.number, ['autonomous-revoked']);
+  if (parsed.verb === 'resume' && !dry) {
+    if (labels.includes('needs-owner')) await clients.bot.removeLabel(issue.number, 'needs-owner');
+    if (labels.includes('autonomous-revoked')) await clients.bot.removeLabel(issue.number, 'autonomous-revoked');
+  }
   return pass(parsed.plan);
 }
 

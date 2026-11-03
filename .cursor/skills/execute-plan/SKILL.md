@@ -66,7 +66,7 @@ Ambiguous → `**Needs you:**` on control issue; do not guess.
 | **`execute-plan-hold`** (PR label) | Pause auto-merge and worker launch for that PR; budgets unchanged. Remove when ready. |
 | **`do-not-merge`** (PR label) | STOP — driver treats PR as blocked (`pr-blocked`). |
 | **`approve-autonomous`** comment | Exact line printed by `init`; starts the programme. |
-| **`resume-autonomous`** comment | After STOP: remove `needs-owner` and **`autonomous-revoked`** if present; same `sha256:` hash, new `until` (≤ 14 days); renews time and budgets. |
+| **`resume-autonomous`** comment | After STOP/revoke: valid resume clears **`needs-owner`** and **`autonomous-revoked`** via the approve workflow; same `sha256:` hash, new `until` (≤ 14 days); renews time and budgets. |
 | **`revoke-autonomous`** comment or **`autonomous-revoked`** label | Disables auto-merge; scope check red on open plan PRs. |
 | **`EXECUTE_PLAN_DRIVER`** repo variable | `off` = kill switch (approve + driver workflows stop immediately). |
 
