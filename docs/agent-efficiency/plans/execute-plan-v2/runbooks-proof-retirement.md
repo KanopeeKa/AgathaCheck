@@ -134,8 +134,9 @@ Keep repository-level copies of moved secrets until the #1941 PR is merged and v
 
 - **Approve** a new plan: paste the exact line printed by `init` as a comment on its control issue.
 - **When a run stops** (label `needs-owner`, reason in the status comment): fix the cause if needed
-  (for example merge a fix to `main`), then remove `needs-owner` (and `autonomous-revoked` if
-  present) and comment `resume-autonomous <plan_id> sha256:<same hash> until <ISO date ≤ 14 days ahead>`.
+  (for example merge a fix to `main`), then comment `resume-autonomous <plan_id> sha256:<same hash> until <ISO date ≤ 14 days ahead>`.
+  The approve workflow removes `needs-owner` and `autonomous-revoked` when the resume is valid. You may
+  still remove `needs-owner` manually if a label was re-applied before the workflow ran.
   Scope stays the same; time and budgets restart from that comment. Changing the plan's **goal** means a new plan.
 - **Out-of-scope fix the plan needs** (a `ci-budget` stop whose detail names `execute-plan-scope`
   `unclassified`/`companion-cap`/`too-many-files`): open an ordinary PR **into `main`** (not
