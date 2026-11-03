@@ -150,6 +150,7 @@ run_governance() {
   node --test scripts/test/main_ancestry.test.js
   node --test scripts/test/launch_cursor_agent_bot_env.test.js
   node --test scripts/test/execute_plan_approve.test.js
+  node --test scripts/test/execute_plan_own_files.test.js
   node --test scripts/uat_queue_runtime.test.js
   node --test scripts/uat_coordinator_payload.test.js
   node --test scripts/ci/evaluate-uat-promote-hold.test.js
