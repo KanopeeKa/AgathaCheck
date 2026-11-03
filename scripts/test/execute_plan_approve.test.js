@@ -40,17 +40,18 @@ const mkComment = (body, over = {}) => ({
 });
 const event = (comment, over = {}) => ({ action: 'created', issue: mkIssue(), comment, ...over });
 
-function setup({ files = PLAN_FILES, integration = null, issueComments = [], snapshotAtSha = SNAP } = {}) {
+function setup({ files = PLAN_FILES, compareFiles = null, integration = null, issueComments = [], snapshotAtSha = SNAP } = {}) {
   const writes = [];
   const dispatches = [];
   const rec = (kind) => async (...args) => { writes.push([kind, ...args]); return {}; };
+  const comparePayload = compareFiles || files.map((filename) => ({ filename }));
   const read = {
     getFileAtRef: async (path, ref) => {
       if (path.endsWith('execute-plan.config.json')) return { content: JSON.stringify(CONFIG), sha: 's' };
       if (ref !== SHA) return null;
       return { content: path.endsWith('.json') ? JSON.stringify(snapshotAtSha) : PLAN_MD, sha: 's' };
     },
-    compare: async () => ({ files: files.map((filename) => ({ filename })) }),
+    compare: async () => ({ files: comparePayload }),
     getBranch: async () => integration,
     dispatchWorkflow: async (file, ref, inputs) => { dispatches.push([file, ref, inputs]); },
     createComment: rec('readComment'),
@@ -158,8 +159,17 @@ test('init branch with extra files → rejected', async () => {
   await run(s, event(mkComment(APPROVE)));
   assert.deepEqual(kinds(s), ['createComment']);
   assert.match(s.writes[0][2], /exactly the two plan files \(found: .*server\/evil\.js\)/);
-  assert.match(s.writes[0][2], /docs PR against `main`/);
+  assert.match(s.writes[0][2], /separate PR against `main`/);
   assert.match(s.writes[0][2], /server\/evil\.js/);
+});
+
+test('init branch rename source counts as extra → rejected', async () => {
+  const s = setup({
+    compareFiles: [{ filename: PLAN_FILES[0], previous_filename: 'server/evil.js' }, { filename: PLAN_FILES[1] }],
+  });
+  await run(s, event(mkComment(APPROVE)));
+  assert.match(s.writes[0][2], /server\/evil\.js/);
+  assert.match(s.writes[0][2], /separate PR against `main`/);
 });
 
 test('init branch with only one plan file → rejected', async () => {

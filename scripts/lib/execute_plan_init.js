@@ -56,8 +56,7 @@ function assertInitBranchCommittedOnlyPlanFiles(planId, git) {
   if (extras.length > 0) {
     throw initError(formatInitBranchOnlyPlanFilesMessage({
       planId,
-      files: committed,
-      committedFilenames: committed,
+      paths: committed,
     }));
   }
 }
@@ -83,7 +82,7 @@ async function runInit({ client, planId, windowDays = V2_DEFAULTS.window_days, d
       .map((l) => l.replace(/^\S+\s+/, ''))
       .filter((file) => file !== planRel && file !== snapRel);
     if (dirty.length > 0) {
-      throw initError(`working tree must be clean except ${planRel} (and ${snapRel} while init runs) (found: ${dirty.join(', ')})`);
+      throw initError(`working tree must be clean except ${planRel} (and an uncommitted ${snapRel} left over from a failed prior init is OK) (found: ${dirty.join(', ')})`);
     }
   }
 
@@ -144,7 +143,7 @@ function realGit(cwd = process.cwd()) {
           throw initError('cannot compare init branch to main (fetch origin main first)');
         }
       }
-      const out = run('diff', '--name-only', `${base}..HEAD`).trim();
+      const out = run('diff', '--name-only', '--no-renames', `${base}..HEAD`).trim();
       return out ? out.split('\n').filter(Boolean) : [];
     },
     add: (paths) => run('add', '--', ...paths),

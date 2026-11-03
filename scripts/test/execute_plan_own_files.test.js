@@ -5,6 +5,7 @@ const assert = require('node:assert/strict');
 const {
   ownPlanFilePaths,
   extraInitBranchFiles,
+  pathsFromCompareFiles,
   formatInitBranchOnlyPlanFilesMessage,
 } = require('../lib/execute_plan_own_files');
 
@@ -22,26 +23,32 @@ test('extraInitBranchFiles ignores plan md only', () => {
   assert.deepEqual(extraInitBranchFiles(PLAN_ID, [planRel]), []);
 });
 
+test('pathsFromCompareFiles includes previous_filename on renames', () => {
+  const planRel = `.agents/plans/${PLAN_ID}.md`;
+  assert.deepEqual(
+    pathsFromCompareFiles([{ filename: planRel, previous_filename: 'keep.yml' }]),
+    [planRel, 'keep.yml'],
+  );
+});
+
 test('formatInitBranchOnlyPlanFilesMessage names extras to move', () => {
   const planRel = `.agents/plans/${PLAN_ID}.md`;
   const msg = formatInitBranchOnlyPlanFilesMessage({
     planId: PLAN_ID,
-    files: [planRel, 'docs/foo.md'],
-    committedFilenames: [planRel, 'docs/foo.md'],
+    paths: [planRel, 'docs/foo.md'],
   });
   assert.match(msg, /docs\/foo\.md/);
-  assert.match(msg, /docs PR against `main`/);
+  assert.match(msg, /separate PR against `main`/);
 });
 
-test('formatInitBranchOnlyPlanFilesMessage asks for missing snapshot, not docs PR', () => {
+test('formatInitBranchOnlyPlanFilesMessage asks for missing snapshot, not separate PR', () => {
   const planRel = `.agents/plans/${PLAN_ID}.md`;
   const snapRel = `.agents/plans/${PLAN_ID}.snapshot.json`;
   const msg = formatInitBranchOnlyPlanFilesMessage({
     planId: PLAN_ID,
-    files: [planRel],
-    committedFilenames: [planRel],
+    paths: [planRel],
   });
   assert.match(msg, /missing file/);
   assert.match(msg, new RegExp(snapRel.replace(/\./g, '\\.')));
-  assert.doesNotMatch(msg, /Move .* docs PR/);
+  assert.doesNotMatch(msg, /Move .* separate PR/);
 });
