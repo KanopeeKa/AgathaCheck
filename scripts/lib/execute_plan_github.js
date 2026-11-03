@@ -214,8 +214,17 @@ function createGitHubClient(opts) {
     listIssueTimeline: (n, { pages } = {}) => paginate(`/issues/${n}/timeline`, { pages }),
 
     // Pull requests
-    listPulls: ({ head, base, state, pages } = {}) =>
-      paginate('/pulls', { pages, query: { head: head ? `${owner}:${head}` : undefined, base, state } }),
+    listPulls: ({ head, base, state, sort, direction, pages } = {}) =>
+      paginate('/pulls', {
+        pages,
+        query: {
+          head: head ? `${owner}:${head}` : undefined,
+          base,
+          state,
+          sort,
+          direction,
+        },
+      }),
     getPull: (n) => rest('GET', `/pulls/${n}`),
     listPullCommits: (n, { pages } = {}) => paginate(`/pulls/${n}/commits`, { pages }),
     listPullReviews: (n, { pages } = {}) => paginate(`/pulls/${n}/reviews`, { pages }),

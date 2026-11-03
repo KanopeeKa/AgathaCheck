@@ -10,11 +10,11 @@
 const { parseControlComment, validateControlComment, findControlComments } = require('./execute_plan_approval');
 const { loadSnapshotAtRef } = require('./execute_plan_snapshot_v2');
 const { loadPlanContext, CONFIG_PATH } = require('./execute_plan_observe');
-const { formatStatusComment, STATUS_MARKER } = require('./execute_plan_status');
+const { formatStatusComment, STATUS_MARKER, parseStatusComment } = require('./execute_plan_status');
 const { labelNames } = require('./execute_plan_plans');
 const { normalizeKillSwitch, isoNow } = require('./execute_plan_driver_actions');
 const { deriveControl } = require('./execute_plan_control');
-const { formatAck, formatIgnoredNote, formatStoppedNote } = require('./execute_plan_ack');
+const { formatAck, formatIgnoredNote, formatStoppedNote, acceptedAuthorizationIds } = require('./execute_plan_ack');
 
 const RUNNING = new Set(['CREATING', 'RUNNING', 'UNKNOWN']);
 
@@ -36,7 +36,8 @@ async function reject(bot, issueNumber, verb, reason) {
 }
 
 async function gateAuthorization(clients, ctx, { issue, comment, parsed, now, log, dry, runId }) {
-  if (dry || !runId) return null;
+  if (dry) return null;
+  if (!runId) throw new Error('authorization gate requires GITHUB_RUN_ID');
   const { read, bot, cursorApiKey, deps } = clients;
   const lease = ctx && ctx.status && ctx.status.lease;
   let running = false;
@@ -105,12 +106,24 @@ async function handleApprove(clients, { issue, comment, parsed, config }, { now,
     return rejectWith(`integration branch ${snapshot.integration_branch} already exists at ${existing.commit.sha}`);
   }
   if (dry) return done(false, 'dry-run: approve is valid');
-  const blocked = await gateAuthorization(clients, null, { issue, comment, parsed, now, log, dry, runId });
+  const comments = await read.listIssueComments(issue.number);
+  const accepted = await acceptedAuthorizationIds(read, comments);
+  const marker = STATUS_MARKER(snapshot.plan_id);
+  const statusRow = comments.find(
+    (c) => String(c.body || '').trimStart().startsWith(marker) && c.user && c.user.login === config.bot_login,
+  );
+  const status = statusRow ? parseStatusComment(statusRow.body) : null;
+  const gateCtx = {
+    snapshot,
+    config,
+    comments,
+    status: status || { lease: null, stop: null },
+    acceptedAuthorizations: accepted,
+  };
+  const blocked = await gateAuthorization(clients, gateCtx, { issue, comment, parsed, now, log, dry, runId });
   if (blocked) return blocked;
 
   if (!existing) await bot.createRef(`refs/heads/${snapshot.integration_branch}`, sha);
-  const marker = STATUS_MARKER(snapshot.plan_id);
-  const comments = await bot.listIssueComments(issue.number);
   const hasStatus = comments.some((c) => String(c.body || '').trimStart().startsWith(marker) && c.user && c.user.login === config.bot_login);
   if (!hasStatus) {
     await bot.createComment(issue.number, formatStatusComment({
@@ -183,14 +196,17 @@ async function handleControlComment(clients, event, { now = isoNow(), killSwitch
 
   const ctx = await approvedContext(clients, issue, parsed.plan);
   if (!ctx) return done(false, 'issue not approved');
-  const res = validateControlComment({ comment, snapshot: ctx.snapshot, config });
+  const res = validateControlComment({ comment, snapshot: ctx.snapshot, config: ctx.config });
   if (!res.valid) {
     log(`${parsed.verb} comment ${comment.id} ignored: ${res.reason}`);
     return done(false, `invalid ${parsed.verb}: ${res.reason}`);
   }
+  if (parsed.verb === 'revoke') {
+    if (!dry) await clients.bot.addLabels(issue.number, ['autonomous-revoked']);
+    return pass(parsed.plan);
+  }
   const blocked = await gateAuthorization(clients, ctx, { issue, comment, parsed, now, log, dry, runId });
   if (blocked) return blocked;
-  if (parsed.verb === 'revoke' && !dry) await clients.bot.addLabels(issue.number, ['autonomous-revoked']);
   if (parsed.verb === 'resume' && !dry) {
     if (labels.includes('needs-owner')) await clients.bot.removeLabel(issue.number, 'needs-owner');
     if (labels.includes('autonomous-revoked')) await clients.bot.removeLabel(issue.number, 'autonomous-revoked');

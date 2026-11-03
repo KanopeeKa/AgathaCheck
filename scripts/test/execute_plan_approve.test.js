@@ -54,6 +54,7 @@ function setup({ files = PLAN_FILES, integration = null, issueComments = [], sna
     getBranch: async () => integration,
     dispatchWorkflow: async (file, ref, inputs) => { dispatches.push([file, ref, inputs]); },
     createComment: rec('readComment'),
+    listIssueComments: async () => issueComments,
   };
   const bot = {
     createRef: rec('createRef'),
@@ -81,7 +82,8 @@ function setup({ files = PLAN_FILES, integration = null, issueComments = [], sna
   };
   return { clients: { bot, read, deps }, writes, passes, dispatches };
 }
-const run = (s, ev, killSwitch = 'on') => handleControlComment(s.clients, ev, { now: NOW, killSwitch });
+const run = (s, ev, killSwitch = 'on', runId = 900) =>
+  handleControlComment(s.clients, ev, { now: NOW, killSwitch, runId: killSwitch === 'dry-run' ? null : runId });
 const kinds = (s) => s.writes.map((w) => w[0]);
 const DISPATCH = [['execute-plan-driver.yml', 'main', { plan_id: PLAN_ID }]];
 
@@ -89,7 +91,7 @@ test('valid approve → branch, status comment, labels, approval line, then the 
   const s = setup();
   const res = await run(s, event(mkComment(APPROVE)));
   assert.deepEqual(res, { handled: true, detail: 'driver pass dispatched' });
-  assert.deepEqual(s.writes[0], ['createRef', `refs/heads/${SNAP.integration_branch}`, SHA]);
+  assert.deepEqual(s.writes.find((w) => w[0] === 'createRef'), ['createRef', `refs/heads/${SNAP.integration_branch}`, SHA]);
   const [, , statusBody] = s.writes.find((w) => w[0] === 'createComment');
   assert.match(statusBody, new RegExp(`^<!-- execute-plan-status:${PLAN_ID} -->`));
   assert.match(statusBody, new RegExp(`"init_sha": "${SHA}"`));
@@ -108,7 +110,7 @@ test('approve is idempotent: branch already at the init sha, status comment pres
   const ev = event(mkComment(APPROVE), { issue: mkIssue(['execute-plan'], `${issueBody}\nApproval: valid (comment 4242)`) });
   const res = await run(s, ev);
   assert.equal(res.handled, true);
-  assert.deepEqual(kinds(s), ['addLabels']);
+  assert.deepEqual(kinds(s), ['readComment', 'addLabels']);
 });
 
 test('a status-looking comment from someone else does not count as the status comment', async () => {
@@ -188,7 +190,8 @@ test('resume (valid) → clears needs-owner and dispatches driver', async () => 
     issue: mkIssue(['execute-plan', 'autonomous-approved', `plan:${PLAN_ID}`, 'needs-owner']),
   }));
   assert.equal(res.handled, true);
-  assert.deepEqual(s.writes, [['removeLabel', 9, 'needs-owner']]);
+  assert.ok(s.writes.some((w) => w[0] === 'readComment'));
+  assert.deepEqual(s.writes.filter((w) => w[0] === 'removeLabel'), [['removeLabel', 9, 'needs-owner']]);
   assert.deepEqual(s.passes, [['load', PLAN_ID]]);
   assert.deepEqual(s.dispatches, DISPATCH);
 });
