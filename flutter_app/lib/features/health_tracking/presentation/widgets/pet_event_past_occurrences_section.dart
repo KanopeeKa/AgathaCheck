@@ -24,8 +24,8 @@ class PetEventPastOccurrencesSection extends ConsumerWidget {
   /// When set, each line opens its occurrence screen (§History, D-CIE-010).
   final String? petId;
 
-  static int visibleCapForWidth(double layoutWidth) {
-    return layoutWidth >= kCareItemTwoColumnBreakpoint ? 5 : 3;
+  static int visibleCapForLayout({required bool wideLayout}) {
+    return wideLayout ? 5 : 3;
   }
 
   @override
@@ -44,29 +44,24 @@ class PetEventPastOccurrencesSection extends ConsumerWidget {
             .toList();
         if (rows.isEmpty) return const SizedBox.shrink();
 
-        return LayoutBuilder(
-          builder: (context, constraints) {
-            final layoutWidth = constraints.maxWidth.isFinite
-                ? constraints.maxWidth
-                : MediaQuery.sizeOf(context).width;
-            final cap = visibleCapForWidth(layoutWidth);
-            final visible = rows.take(cap).toList();
+        final wideLayout =
+            MediaQuery.sizeOf(context).width >= kCareItemTwoColumnBreakpoint;
+        final cap = visibleCapForLayout(wideLayout: wideLayout);
+        final visible = rows.take(cap).toList();
 
-            return Padding(
-              padding: CareSurfaceTokens.collectionInsetRowPadding,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  for (final occ in visible)
-                    _PastOccurrenceCard(
-                      occurrence: occ,
-                      muted: muted,
-                      petId: petId,
-                    ),
-                ],
-              ),
-            );
-          },
+        return Padding(
+          padding: CareSurfaceTokens.collectionInsetRowPadding,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (final occ in visible)
+                _PastOccurrenceCard(
+                  occurrence: occ,
+                  muted: muted,
+                  petId: petId,
+                ),
+            ],
+          ),
         );
       },
     );

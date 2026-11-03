@@ -60,9 +60,9 @@ Widget _wrap({
 }
 
 void main() {
-  test('visibleCapForWidth uses 3 below breakpoint and 5 at web width', () {
-    expect(PetEventPastOccurrencesSection.visibleCapForWidth(899), 3);
-    expect(PetEventPastOccurrencesSection.visibleCapForWidth(900), 5);
+  test('visibleCapForLayout uses 3 on mobile and 5 on wide layout', () {
+    expect(PetEventPastOccurrencesSection.visibleCapForLayout(wideLayout: false), 3);
+    expect(PetEventPastOccurrencesSection.visibleCapForLayout(wideLayout: true), 5);
   });
 
   testWidgets('hides list when there are no past occurrences', (tester) async {
@@ -106,7 +106,7 @@ void main() {
 
     await tester.pumpWidget(
       _wrap(
-        width: 1200,
+        width: 690,
         past: _pastRows(7),
         child: const PetEventPastOccurrencesSection(
           entryId: 'entry-1',
