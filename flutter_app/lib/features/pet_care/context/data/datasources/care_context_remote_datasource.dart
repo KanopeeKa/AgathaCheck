@@ -116,6 +116,11 @@ class CareContextRemoteDataSource {
   Future<List<PlannedAbsence>> listPlannedAbsences({
     String scope = 'all',
   }) async {
+    if (scope == 'all') {
+      final upcoming = await listPlannedAbsences(scope: 'upcoming');
+      final past = await listPlannedAbsences(scope: 'past');
+      return _mergePlannedAbsenceLists(upcoming, past);
+    }
     final response = await _client.get(
       Uri.parse(
         '$baseUrl/api/planned-absences?scope=${Uri.encodeQueryComponent(scope)}',
@@ -127,6 +132,17 @@ class CareContextRemoteDataSource {
     return list
         .map((raw) => PlannedAbsenceModel.fromJson(raw as Map<String, dynamic>))
         .toList(growable: false);
+  }
+
+  List<PlannedAbsence> _mergePlannedAbsenceLists(
+    List<PlannedAbsence> upcoming,
+    List<PlannedAbsence> past,
+  ) {
+    final byId = <String, PlannedAbsence>{};
+    for (final absence in [...upcoming, ...past]) {
+      byId[absence.id] = absence;
+    }
+    return byId.values.toList(growable: false);
   }
 
   Future<PlannedAbsence> fetchPlannedAbsence(String absenceId) async {
