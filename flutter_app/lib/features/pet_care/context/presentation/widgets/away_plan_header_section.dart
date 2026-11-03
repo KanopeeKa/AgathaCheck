@@ -19,8 +19,7 @@ class AwayPlanHeaderSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    // D-AWD-001: attention-only coverage summary. Each line renders only
-    // when it isn't already fully reassured by the per-pet cards below.
+    // D-AWD-001: attention-only combined status for the absence screen.
     final showCarerCoverage =
         readiness.carerCoverage.state != 'all_have_carers';
     final showCareCoverage =

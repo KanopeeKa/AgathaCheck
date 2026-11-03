@@ -7350,6 +7350,66 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careContextAwayBack => 'Retour';
 
   @override
+  String get careContextAbsenceDefaultTitle => 'Absence';
+
+  @override
+  String get careContextTravellerYouAway => 'Vous serez absent';
+
+  @override
+  String careContextTravellerNameAway(String name) {
+    return '$name sera absent';
+  }
+
+  @override
+  String get careContextAbsencePetsSectionTitle => 'Animaux sur cette absence';
+
+  @override
+  String careContextSeePetAwayPlan(String pet) {
+    return 'Voir le plan d\'absence de $pet';
+  }
+
+  @override
+  String careContextPetAwayPlanTitle(String pet) {
+    return 'Plan d\'absence de $pet';
+  }
+
+  @override
+  String get careContextSeeAbsence => 'Voir l\'absence';
+
+  @override
+  String get careContextTripNotesForWholeTrip =>
+      'Notes de voyage (tout le séjour)';
+
+  @override
+  String careContextPetNotesSectionTitle(String pet) {
+    return 'Notes pour $pet';
+  }
+
+  @override
+  String get careContextPetNotesSaveFailed =>
+      'Impossible d\'enregistrer les notes. Réessayez.';
+
+  @override
+  String get careContextCareItemOpenAwayPlan => 'Ouvrir le plan d\'absence';
+
+  @override
+  String get awayPlanningPetStatusNoCarer => 'Pas encore de gardien';
+
+  @override
+  String get awayPlanningPetStatusCarerUnavailable => 'Gardien plus disponible';
+
+  @override
+  String awayPlanningPetStatusReviewCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count à revoir',
+      one: '1 à revoir',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get careContextAwayPlanTitle => 'Plan d\'absence';
 
   @override

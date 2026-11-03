@@ -316,6 +316,16 @@ void main() {
         '/pc/away/abs-1',
       );
     });
+
+    test('petCarePetAwayPlan resolves to /pc/away/:id/pets/:petId', () {
+      expect(
+        router.namedLocation(
+          'petCarePetAwayPlan',
+          pathParameters: {'id': 'abs-1', 'petId': 'pet-1'},
+        ),
+        '/pc/away/abs-1/pets/pet-1',
+      );
+    });
   });
 
   group('legacy guardian named route registration', () {

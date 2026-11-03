@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/features/pet_care/context/domain/entities/away_plan_readiness.dart';
 import 'package:pet_profile_app/features/pet_care/context/domain/entities/care_period_coverage.dart';
+import 'package:pet_profile_app/features/pet_care/context/domain/entities/per_pet_away_plan_status.dart';
 import 'package:pet_profile_app/features/pet_care/context/domain/entities/planned_absence.dart';
 import 'package:pet_profile_app/features/pet_care/context/domain/entities/planned_absence_pet_carer.dart';
 import 'package:pet_profile_app/features/pet_care/context/presentation/providers/care_context_providers.dart';
@@ -22,6 +23,8 @@ void main() {
     provenance: 'user_declared',
     status: 'active',
     petIds: const ['pet-1'],
+    isOwnAbsence: true,
+    canEditTrip: true,
     petCarers: const [
       PlannedAbsencePetCarer(
         petId: 'pet-1',
@@ -120,12 +123,18 @@ void main() {
           'abs-1',
         ).overrideWith((ref) async => readiness),
         allPetsIncludingOrgProvider.overrideWith((ref) async => [pet]),
-        carePeriodCoverageProvider((
+        perPetAwayPlanStatusProvider((
+          absenceId: 'abs-1',
           petId: 'pet-1',
-          startsOn: '2026-10-01',
-          endsOn: '2026-10-05',
-          plannedAbsenceId: 'abs-1',
-        )).overrideWith((ref) async => coverage),
+        )).overrideWith(
+          (ref) async => const PerPetAwayPlanStatus(
+            priority: 'care_review',
+            carerState: 'set',
+            reviewCareItemCount: 1,
+            copyKey: 'awayPlanningPetStatusReviewCount',
+            copyParams: {'count': 1},
+          ),
+        ),
       ],
       child: MaterialApp.router(
         theme: AppTheme.lightTheme,
@@ -157,22 +166,18 @@ void main() {
     );
   }
 
-  testWidgets('renders plan page sections without reschedule affordance', (
+  testWidgets('absence screen shows pet pill without multi-pet care sections', (
     tester,
   ) async {
     await tester.pumpWidget(buildScreen());
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('away_plan_page')), findsOneWidget);
-    expect(find.text("Who's caring"), findsOneWidget);
-    expect(find.text('Care during your absence'), findsOneWidget);
-    expect(find.text('Luna'), findsWidgets);
-    expect(find.text('Planned care'), findsOneWidget);
-    expect(find.textContaining('Tom'), findsOneWidget);
-
-    expect(find.text('Plan details'), findsNothing);
-    expect(find.textContaining('Reschedule'), findsNothing);
-    expect(find.textContaining('Move'), findsNothing);
+    expect(find.byKey(const Key('absence_screen_page')), findsOneWidget);
+    expect(find.byKey(const Key('absence_pet_pill_pet-1')), findsOneWidget);
+    expect(find.text("See Luna's away plan"), findsOneWidget);
+    expect(find.text("Who's caring"), findsNothing);
+    expect(find.text('Care during your absence'), findsNothing);
+    expect(find.text('Planned care'), findsNothing);
   });
 
   testWidgets('display screen has no editable note field or save button', (

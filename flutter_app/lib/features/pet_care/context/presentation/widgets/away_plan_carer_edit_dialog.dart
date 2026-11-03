@@ -79,6 +79,12 @@ class _AwayPlanCarerEditDialogState
       if (!mounted) return;
       ref.invalidate(plannedAbsenceDetailProvider(widget.absenceId));
       ref.invalidate(awayPlanReadinessProvider(widget.absenceId));
+      ref.invalidate(
+        perPetAwayPlanStatusProvider((
+          absenceId: widget.absenceId,
+          petId: widget.petId,
+        )),
+      );
       Navigator.of(context).pop(true);
     } on CareContextApiException catch (err) {
       if (!mounted) return;

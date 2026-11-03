@@ -2,6 +2,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../people/people.dart';
 import '../domain/entities/away_plan_readiness.dart';
 import '../domain/entities/care_period_coverage.dart';
+import '../domain/entities/per_pet_away_plan_status.dart';
 import '../domain/entities/planned_absence_pet_carer.dart';
 
 class AwayPlanCopy {
@@ -134,5 +135,22 @@ class AwayPlanCopy {
       lines.add(l.awayPlanningHandoverContactLine(roleLabel, detail));
     }
     return lines;
+  }
+
+  static String? petPillStatusLine(
+    AppLocalizations l,
+    PerPetAwayPlanStatus status,
+  ) {
+    final key = status.copyKey;
+    if (key == null || key.isEmpty) return null;
+    return switch (key) {
+      'awayPlanningPetStatusNoCarer' => l.awayPlanningPetStatusNoCarer,
+      'awayPlanningPetStatusCarerUnavailable' =>
+        l.awayPlanningPetStatusCarerUnavailable,
+      'awayPlanningPetStatusReviewCount' => l.awayPlanningPetStatusReviewCount(
+        status.reviewCareItemCount,
+      ),
+      _ => null,
+    };
   }
 }

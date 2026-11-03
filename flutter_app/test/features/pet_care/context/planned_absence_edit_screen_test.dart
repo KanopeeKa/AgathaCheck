@@ -8,6 +8,7 @@ import 'package:pet_profile_app/features/pet_care/context/domain/entities/absenc
 import 'package:pet_profile_app/features/pet_care/context/domain/entities/away_plan_readiness.dart';
 import 'package:pet_profile_app/features/pet_care/context/domain/entities/care_period_coverage.dart';
 import 'package:pet_profile_app/features/pet_care/context/domain/entities/carer_candidate.dart';
+import 'package:pet_profile_app/features/pet_care/context/domain/entities/per_pet_away_plan_status.dart';
 import 'package:pet_profile_app/features/pet_care/context/domain/entities/planned_absence.dart';
 import 'package:pet_profile_app/features/pet_care/context/domain/repositories/care_context_repository.dart';
 import 'package:pet_profile_app/features/pet_care/context/presentation/providers/care_context_providers.dart';
@@ -31,6 +32,16 @@ class _FakeCareContextRepository implements CareContextRepository {
 
   @override
   Future<PlannedAbsence> getPlannedAbsence(String absenceId) async => absence;
+
+  @override
+  Future<PerPetAwayPlanStatus> getPerPetAwayPlanStatus({
+    required String absenceId,
+    required String petId,
+  }) async => const PerPetAwayPlanStatus(
+    priority: 'none',
+    carerState: 'unset',
+    reviewCareItemCount: 0,
+  );
 
   @override
   Future<PlannedAbsence> updateHandoverNote({

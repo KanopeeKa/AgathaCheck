@@ -264,6 +264,16 @@ Stable semantics identifiers for Playwright (`enableFlutterAccessibility()` firs
 | `people_action_email` | Contact action bar — email |
 | `people_action_directions` | Contact action bar — directions |
 
+## Away planning (per-pet absence)
+
+| Route | Named route | Ready locator |
+|-------|-------------|---------------|
+| `/pc/away/:id` | `petCarePlannedAbsenceDetail` | `absence_screen_page` |
+| `/pc/away/:id/pets/:petId` | `petCarePetAwayPlan` | `pet_away_plan_page_<petId>` |
+| `/pc/away/:id/edit` | `petCarePlannedAbsenceEdit` | trip details form |
+
+Deep links from care items use `care_item_absence_open_away_plan` → pet away plan with `returnTo` preserved.
+
 ## TODO (next candidates)
 
 - `pet-list.openVets`, `help.goBack`, `notifications.expectBadgeVisible` throw paths

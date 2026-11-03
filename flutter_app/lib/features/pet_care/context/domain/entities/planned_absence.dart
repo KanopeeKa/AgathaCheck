@@ -14,6 +14,9 @@ class PlannedAbsence {
     this.handoverNote,
     this.title,
     this.timezone = 'UTC',
+    this.isOwnAbsence,
+    this.declarerDisplayName,
+    this.canEditTrip,
   });
 
   final String id;
@@ -28,6 +31,9 @@ class PlannedAbsence {
   final String? handoverNote;
   final String? title;
   final String timezone;
+  final bool? isOwnAbsence;
+  final String? declarerDisplayName;
+  final bool? canEditTrip;
 
   bool get isCancelled => status == 'cancelled';
 }

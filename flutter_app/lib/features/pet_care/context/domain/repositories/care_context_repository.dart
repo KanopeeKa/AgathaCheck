@@ -2,6 +2,7 @@ import '../entities/absence_care_plan.dart';
 import '../entities/away_plan_readiness.dart';
 import '../entities/care_period_coverage.dart';
 import '../entities/carer_candidate.dart';
+import '../entities/per_pet_away_plan_status.dart';
 import '../entities/planned_absence.dart';
 
 abstract class CareContextRepository {
@@ -22,6 +23,11 @@ abstract class CareContextRepository {
   Future<List<PlannedAbsence>> listPlannedAbsences({String scope = 'all'});
 
   Future<PlannedAbsence> getPlannedAbsence(String absenceId);
+
+  Future<PerPetAwayPlanStatus> getPerPetAwayPlanStatus({
+    required String absenceId,
+    required String petId,
+  });
 
   Future<AwayPlanReadiness> getAwayPlanReadiness(String absenceId);
 

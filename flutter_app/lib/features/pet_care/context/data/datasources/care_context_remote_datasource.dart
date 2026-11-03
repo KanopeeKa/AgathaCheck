@@ -5,11 +5,13 @@ import 'package:http/http.dart' as http;
 import '../models/absence_care_plan_model.dart';
 import '../models/away_plan_readiness_model.dart';
 import '../models/care_period_coverage_model.dart';
+import '../models/per_pet_away_plan_status_model.dart';
 import '../models/planned_absence_model.dart';
 import '../../domain/entities/absence_care_plan.dart';
 import '../../domain/entities/away_plan_readiness.dart';
 import '../../domain/entities/care_period_coverage.dart';
 import '../../domain/entities/carer_candidate.dart';
+import '../../domain/entities/per_pet_away_plan_status.dart';
 import '../../domain/entities/planned_absence.dart';
 
 class CareContextApiException implements Exception {
@@ -134,6 +136,20 @@ class CareContextRemoteDataSource {
     return PlannedAbsenceModel.fromJson(
       json.decode(response.body) as Map<String, dynamic>,
     );
+  }
+
+  Future<PerPetAwayPlanStatus> fetchPerPetAwayPlanStatus({
+    required String absenceId,
+    required String petId,
+  }) async {
+    final response = await _client.get(
+      Uri.parse('$baseUrl/api/planned-absences/$absenceId/pets/$petId/status'),
+      headers: _headers(),
+    );
+    _check(response);
+    final body = json.decode(response.body) as Map<String, dynamic>;
+    final statusJson = body['status'] as Map<String, dynamic>? ?? body;
+    return PerPetAwayPlanStatusModel.fromStatusJson(statusJson);
   }
 
   Future<AbsenceCarePlan> fetchAbsenceCarePlan(String absenceId) async {
