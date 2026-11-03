@@ -90,4 +90,3 @@ HealthHistoryEntry? lastCompletedHistory(List<HealthHistoryEntry> history) {
     });
   return completed.isEmpty ? null : completed.first;
 }
-

@@ -332,7 +332,9 @@ void main() {
             ),
           ),
           entryOccurrencesProvider('entry-1').overrideWith((ref) async => []),
-          entryPastOccurrencesProvider('entry-1').overrideWith((ref) async => past),
+          entryPastOccurrencesProvider(
+            'entry-1',
+          ).overrideWith((ref) async => past),
           healthEntryPhotosProvider('entry-1').overrideWith((ref) async => []),
         ],
         child: MaterialApp(
@@ -355,9 +357,18 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('care_item_history_module')), findsOneWidget);
-    expect(find.byKey(const Key('pet_event_past_iterations_header')), findsNothing);
-    expect(find.byKey(const Key('pet_event_past_occurrences_header')), findsNothing);
-    expect(find.byKey(const Key('pet_event_past_occurrence_hist-0')), findsOneWidget);
+    expect(
+      find.byKey(const Key('pet_event_past_iterations_header')),
+      findsNothing,
+    );
+    expect(
+      find.byKey(const Key('pet_event_past_occurrences_header')),
+      findsNothing,
+    );
+    expect(
+      find.byKey(const Key('pet_event_past_occurrence_hist-0')),
+      findsOneWidget,
+    );
     expect(find.byKey(const Key('unmark_done_hist-0')), findsNothing);
   });
 }
