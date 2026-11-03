@@ -1,10 +1,7 @@
 import { asyncHandler } from '../../lib/http/asyncHandler.js';
+import { loadAbsenceForViewer } from '../../lib/care/absence/absenceVisibility.js';
 import { loadPerPetAwayPlan } from '../../lib/care/awayPlan/loadPerPetAwayPlan.js';
 import { extractUserId } from '../../lib/requireAuth.js';
-import {
-  loadAbsenceForUser,
-  loadAbsencePets,
-} from './plannedAbsenceStore.js';
 
 /**
  * @param {import('express').Router} router
@@ -15,14 +12,13 @@ export function registerPerPetAwayPlanRoutes(router, pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
-    const absenceRow = await loadAbsenceForUser(pool, req.params.id, userId);
-    if (!absenceRow) return res.status(404).json({ error: 'Not found' });
+    const viewed = await loadAbsenceForViewer(pool, req.params.id, userId);
+    if (!viewed) return res.status(404).json({ error: 'Not found' });
 
-    const petRows = await loadAbsencePets(pool, absenceRow.id);
-    const petRow = petRows.find((row) => row.pet_id === req.params.petId);
-    if (!petRow) return res.status(404).json({ error: 'Pet is not on this absence' });
+    const petRow = viewed.petRows.find((row) => row.pet_id === req.params.petId);
+    if (!petRow) return res.status(404).json({ error: 'Not found' });
 
-    const payload = await loadPerPetAwayPlan(pool, absenceRow, petRow, userId);
+    const payload = await loadPerPetAwayPlan(pool, viewed.row, petRow, userId);
     res.json(payload);
   }));
 
@@ -30,14 +26,13 @@ export function registerPerPetAwayPlanRoutes(router, pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
-    const absenceRow = await loadAbsenceForUser(pool, req.params.id, userId);
-    if (!absenceRow) return res.status(404).json({ error: 'Not found' });
+    const viewed = await loadAbsenceForViewer(pool, req.params.id, userId);
+    if (!viewed) return res.status(404).json({ error: 'Not found' });
 
-    const petRows = await loadAbsencePets(pool, absenceRow.id);
-    const petRow = petRows.find((row) => row.pet_id === req.params.petId);
-    if (!petRow) return res.status(404).json({ error: 'Pet is not on this absence' });
+    const petRow = viewed.petRows.find((row) => row.pet_id === req.params.petId);
+    if (!petRow) return res.status(404).json({ error: 'Not found' });
 
-    const payload = await loadPerPetAwayPlan(pool, absenceRow, petRow, userId);
+    const payload = await loadPerPetAwayPlan(pool, viewed.row, petRow, userId);
     res.json({
       absence_id: payload.absence_id,
       pet_id: payload.pet_id,

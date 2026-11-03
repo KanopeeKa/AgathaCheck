@@ -12,7 +12,7 @@ import { buildCareReviewQueue } from './reviewQueue.js';
 import { petHasCarer } from './readiness.js';
 
 /**
- * Per-pet away plan read model (phase 1 — declarer-scoped absence access unchanged).
+ * Per-pet away plan read model (caller must enforce viewer access to absence + pet).
  *
  * @param {import('pg').Pool|import('pg').PoolClient} pool
  * @param {object} absenceRow planned_absences row

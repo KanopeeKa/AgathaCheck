@@ -4,11 +4,13 @@ import {
   applyReviewQueueToCoverage,
   evaluateCarePeriodCoverageWithResolutions,
 } from '../absence/absenceCoverage.js';
+import { petProfileAccessSql } from '../absence/absenceVisibility.js';
 import {
   PLANNED_ABSENCE_STATUS_CANCELLED,
   absenceToMap,
   resolvePlannedAbsenceTodayIso,
 } from '../plannedAbsence.js';
+import { fetchUserSnapshot } from '../../people/userSnapshot.js';
 import { loadPetHomeTimezone, wallClockInTimeZone } from '../../petHomeTimezone.js';
 import { derivePerPetAwayPlanStatus } from './derivePerPetAwayPlanStatus.js';
 import { loadAwayPlanProjection } from './loadAwayPlanProjection.js';
@@ -16,7 +18,7 @@ import { buildCareReviewQueue } from './reviewQueue.js';
 import { petHasCarer } from './readiness.js';
 
 /**
- * Current and upcoming away plans for one pet (declarer-owned absences only in phase 1).
+ * Current and upcoming away plans for one pet (declarer-owned and co-visible absences).
  *
  * @param {import('pg').Pool|import('pg').PoolClient} pool
  * @param {string} petId
@@ -24,14 +26,19 @@ import { petHasCarer } from './readiness.js';
  */
 export async function listPetPlannedAbsences(pool, petId, userId) {
   const todayIso = await resolvePlannedAbsenceTodayIso(pool, userId);
+  const profileSql = petProfileAccessSql('p', '$1');
   const result = await pool.query(
     `SELECT pa.*
      FROM planned_absences pa
      INNER JOIN planned_absence_pets pap
        ON pap.planned_absence_id = pa.id AND pap.pet_id = $2
-     WHERE pa.user_id = $1
-       AND pa.status != $3
+     INNER JOIN pets p ON p.id = pap.pet_id
+     WHERE pa.status != $3
        AND pa.ends_on >= $4::date
+       AND (
+         pa.user_id = $1
+         OR (pa.user_id != $1 AND ${profileSql})
+       )
      ORDER BY pa.starts_on ASC`,
     [userId, petId, PLANNED_ABSENCE_STATUS_CANCELLED, todayIso],
   );
@@ -89,6 +96,13 @@ export async function listPetPlannedAbsences(pool, petId, userId) {
       coverage_state: coverage.coverage_state,
     });
 
+    const isOwn = absenceRow.user_id === userId;
+    let declarerDisplayName = null;
+    if (!isOwn) {
+      const snapshot = await fetchUserSnapshot(pool, absenceRow.user_id);
+      declarerDisplayName = snapshot?.display_name ?? null;
+    }
+
     items.push({
       absence_id: absenceRow.id,
       pet_id: petId,
@@ -96,6 +110,8 @@ export async function listPetPlannedAbsences(pool, petId, userId) {
         ...absenceToMap(absenceRow, [petRow]),
         handover_note: absenceRow.handover_note ?? null,
         last_handover_downloaded_at: timestampToIso(absenceRow.last_handover_downloaded_at),
+        is_own_absence: isOwn,
+        declarer_display_name: declarerDisplayName,
       },
       status,
       review_care_item_count: reviewCareItemCount,

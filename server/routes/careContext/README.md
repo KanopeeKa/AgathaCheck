@@ -32,8 +32,8 @@ HTTP translation for **planned absences**, absence care plans, handover, carer i
 | Absence CRUD | `POST/GET/PATCH/DELETE /planned-absences` | `plannedAbsenceUseCases` — `withTransaction` |
 | Care plan | nested `/…/care-plan` routes | absence services |
 | Handover / PDF | handover routes | mixed read + transactional writes |
-| Per-pet away read (phase 1) | `GET /:id/pets/:petId/away-plan`, `GET /:id/pets/:petId/status` | read — declarer-scoped |
-| Pet away list | `GET /pets/:petId/planned-absences` (pets router) | read — declarer-owned absences |
+| Per-pet away read | `GET /:id/pets/:petId/away-plan`, `GET /:id/pets/:petId/status` | read — Full access to pet (`absenceVisibility.js`) |
+| Pet away list | `GET /pets/:petId/planned-absences` (pets router) | read — Full access; own + co-visible absences |
 | Carer invites | invite acceptance flows | transactional |
 | Coverage / projection | pet-scoped period APIs | read-heavy + transactional updates |
 

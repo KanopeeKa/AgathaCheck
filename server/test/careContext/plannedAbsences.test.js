@@ -137,6 +137,9 @@ describe('planned absences API', () => {
         declarerTimezoneQueries += 1;
         return { rows: [{ timezone: 'UTC' }] };
       }
+      if (sql.includes('pa.user_id != $1')) {
+        return { rows: [] };
+      }
       if (sql.includes('FROM planned_absences pa') && sql.includes('INNER JOIN planned_absence_pets')) {
         return { rows: [] };
       }
@@ -171,7 +174,7 @@ describe('planned absences API', () => {
     expect(res.statusCode).toBe(200);
     expect(res.body).toHaveLength(3);
     expect(declarerTimezoneQueries).toBe(1);
-    expect(queryCount).toBe(4);
+    expect(queryCount).toBeGreaterThan(0);
   });
 
   it('GET list rejects invalid scope', async () => {

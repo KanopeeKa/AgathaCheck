@@ -1,6 +1,6 @@
 import { asyncHandler } from '../../lib/http/asyncHandler.js';
 import { listPetPlannedAbsences } from '../../lib/care/awayPlan/listPetPlannedAbsences.js';
-import { userCanManageCare } from '../../lib/petAccess.js';
+import { userCanManageProfile } from '../../lib/petAccess.js';
 import { extractUserId } from '../../lib/requireAuth.js';
 
 /**
@@ -13,7 +13,7 @@ export function registerPetPlannedAbsencesRoutes(router, pool) {
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
     const { petId } = req.params;
-    if (!(await userCanManageCare(pool, petId, userId))) {
+    if (!(await userCanManageProfile(pool, petId, userId))) {
       return res.status(403).json({ error: 'Forbidden' });
     }
 

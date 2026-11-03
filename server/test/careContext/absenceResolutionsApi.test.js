@@ -3,6 +3,10 @@ import request from 'supertest';
 import { createApp } from '../../bin/server.js';
 import { addCalendarDaysIso, todayCalendarIso } from '../../lib/calendarDate.js';
 import { createMockPool, petId, token, userId } from '../pets/helpers.js';
+import {
+  mockViewerAbsenceLoad,
+  mockViewerFullAccessOnPets,
+} from './plannedAbsenceViewerMocks.js';
 
 function authHeader() {
   return { Authorization: `Bearer ${token}` };
@@ -22,18 +26,27 @@ describe('absence resolutions API', () => {
   });
 
   it('GET lists resolutions for absence owner', async () => {
+    const absenceRow = {
+      id: absenceId,
+      user_id: userId,
+      starts_on: startsOn,
+      ends_on: endsOn,
+      status: 'active',
+    };
     const app = createApp(
-      createMockPool(async (sql) => {
+      createMockPool(async (sql, params) => {
+        const viewerAbsence = mockViewerAbsenceLoad(sql, absenceRow);
+        if (viewerAbsence) return viewerAbsence;
+        const access = mockViewerFullAccessOnPets(sql, params, userId, petId);
+        if (access) return access;
         if (sql.includes('FROM planned_absences WHERE id')) {
-          return {
-            rows: [{
-              id: absenceId,
-              user_id: userId,
-              starts_on: startsOn,
-              ends_on: endsOn,
-              status: 'active',
-            }],
-          };
+          return { rows: [absenceRow] };
+        }
+        if (sql.includes('FROM planned_absence_pets')) {
+          return { rows: [{ pet_id: petId }] };
+        }
+        if (sql.includes('SELECT pet_id FROM health_entries WHERE id = $1')) {
+          return { rows: [{ pet_id: petId }] };
         }
         if (sql.includes('FROM health_entry_absence_resolutions')) {
           return {

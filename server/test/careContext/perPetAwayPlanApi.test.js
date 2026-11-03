@@ -2,6 +2,10 @@ import request from 'supertest';
 
 import { createApp } from '../../bin/server.js';
 import { createMockPool, petId, token, userId } from '../pets/helpers.js';
+import {
+  mockViewerAbsenceLoad,
+  mockViewerFullAccessOnPets,
+} from './plannedAbsenceViewerMocks.js';
 
 function authHeader() {
   return { Authorization: `Bearer ${token}` };
@@ -43,7 +47,14 @@ describe('per-pet away plan read API (phase 1)', () => {
     };
   }
 
-  async function mockAwayPlanQueries(sql, overrides = {}) {
+  async function mockAwayPlanQueries(sql, params, overrides = {}) {
+    if (sql.includes('FROM planned_absences pa') && sql.includes('pap.pet_id = $2')) {
+      return { rows: [absenceRow({ title: 'Trip', ...overrides.absence })] };
+    }
+    const viewerAbsence = mockViewerAbsenceLoad(sql, absenceRow(overrides.absence));
+    if (viewerAbsence) return viewerAbsence;
+    const access = mockViewerFullAccessOnPets(sql, params, userId, petId);
+    if (access) return access;
     if (sql.includes('FROM planned_absences WHERE id = $1 AND user_id = $2')) {
       return { rows: [absenceRow(overrides.absence)] };
     }
@@ -65,6 +76,12 @@ describe('per-pet away plan read API (phase 1)', () => {
     if (sql.includes('health_entry_absence_resolutions')) {
       return { rows: [] };
     }
+    if (sql.includes('FROM planned_absences pa') && sql.includes('pap.pet_id = $2')) {
+      return { rows: [absenceRow({ title: 'Trip', ...overrides.absence })] };
+    }
+    if (sql.includes('INNER JOIN planned_absence_pets') && sql.includes('INNER JOIN pets p')) {
+      return { rows: [absenceRow({ title: 'Trip', ...overrides.absence })] };
+    }
     if (sql.includes('INNER JOIN planned_absence_pets')) {
       return { rows: [absenceRow({ title: 'Trip', ...overrides.absence })] };
     }
@@ -84,7 +101,7 @@ describe('per-pet away plan read API (phase 1)', () => {
   });
 
   it('GET away-plan returns payload for declarer-owned absence pet', async () => {
-    const app = createTestApp(async (sql) => mockAwayPlanQueries(sql));
+    const app = createTestApp(async (sql, params) => mockAwayPlanQueries(sql, params));
 
     const res = await request(app)
       .get(`/api/planned-absences/${absenceId}/pets/${petId}/away-plan`)
@@ -100,7 +117,7 @@ describe('per-pet away plan read API (phase 1)', () => {
   });
 
   it('GET status returns compact status facts', async () => {
-    const app = createTestApp(async (sql) => mockAwayPlanQueries(sql, {
+    const app = createTestApp(async (sql, params) => mockAwayPlanQueries(sql, params, {
       absence: { title: null },
       pet: { carer_kind: 'note_only', carer_name: 'Alex' },
     }));
@@ -115,7 +132,7 @@ describe('per-pet away plan read API (phase 1)', () => {
   });
 
   it('GET /api/pets/:petId/planned-absences lists declarer absences for pet', async () => {
-    const app = createTestApp(async (sql) => mockAwayPlanQueries(sql));
+    const app = createTestApp(async (sql, params) => mockAwayPlanQueries(sql, params));
 
     const res = await request(app)
       .get(`/api/pets/${petId}/planned-absences`)
