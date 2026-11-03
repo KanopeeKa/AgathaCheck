@@ -114,6 +114,39 @@ test('ci-budget stop on a fixable scope failure names the plan-linked side PR ro
   assert.doesNotMatch(ladder({ checks: red, failed_attempts_since_epoch: 3 }).stop.detail, /side PR/);
 });
 
+test('ci-stuck stops after the same failure signature on three heads', () => {
+  const sig = 'ci-gate / CI passed:failure';
+  const b = buildBase({
+    observations_patch: {
+      control: {
+        status: {
+          ci_stuck_track: {
+            1: [
+              { sha: 'a'.repeat(40), sig, at: '2026-10-16T09:10:00Z' },
+              { sha: 'b'.repeat(40), sig, at: '2026-10-16T09:15:00Z' },
+            ],
+          },
+        },
+      },
+    },
+  });
+  const pr = deepMerge(JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures/execute-plan-v2/scenarios/_base.pr.json'), 'utf8')), {
+    head_sha: 'c'.repeat(40),
+    checks: [{ name: 'ci-gate / CI passed', status: 'completed', conclusion: 'failure', reason: null }],
+    failed_attempts_since_epoch: 1,
+  });
+  const r = prLadder(pr, {
+    kind: 'phase',
+    phase: '1',
+    draftAction: { kind: 'implement', args: { phase: '1', branch: pr.head_ref, base: pr.base_ref, pr: pr.number } },
+    method: 'squash',
+    snapshot: b.snapshot,
+    obs: b.obs,
+    opts: b.opts,
+  });
+  assert.equal(r.stop.reason, 'ci-stuck');
+});
+
 test('prLadder rules 1–10 each', () => {
   assert.equal(ladder({ labels: ['do-not-merge'] }).stop.reason, 'pr-blocked'); // 1
   assert.equal(ladder({ labels: ['execute-plan-hold'] }).action.args.reason, 'hold'); // 1b

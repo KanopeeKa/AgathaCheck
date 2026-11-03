@@ -14,7 +14,7 @@
  */
 
 const { GitHubError } = require('./execute_plan_github');
-const { HOLD_LABEL, BLOCKED_LABEL } = require('./execute_plan_state');
+const { HOLD_LABEL, BLOCKED_LABEL, appendCiStuckTrack, failureSignature } = require('./execute_plan_state');
 const { formatStatusComment, parseStatusComment } = require('./execute_plan_status');
 const { MAX_LAUNCH_HISTORY } = require('./execute_plan_constants');
 const { workerLaunchEnvVars } = require('../../.github/scripts/execute-plan-launch');
@@ -31,6 +31,16 @@ const KILL_SWITCH_VALUES = new Set(['off', 'dry-run', 'on']);
 
 const isoNow = () => new Date().toISOString().replace(/\.\d+Z$/, 'Z');
 
+function prObsFromCtx(obs, prNumber) {
+  const n = Number(prNumber);
+  if (!obs || !Number.isInteger(n)) return null;
+  for (const p of obs.phases || []) if (p.pr && p.pr.number === n) return p.pr;
+  if (obs.sync && obs.sync.open_pr && obs.sync.open_pr.number === n) return obs.sync.open_pr;
+  if (obs.release && obs.release.pr && obs.release.pr.number === n) return obs.release.pr;
+  if (obs.remedial && obs.remedial.open_pr && obs.remedial.open_pr.number === n) return obs.remedial.open_pr;
+  return null;
+}
+
 /** Anything but `on` / `dry-run` (unset, typo) is `off`: the safe reading of the kill switch. */
 function normalizeKillSwitch(value) {
   const v = String(value == null ? '' : value).trim().toLowerCase();
@@ -39,10 +49,10 @@ function normalizeKillSwitch(value) {
 
 function defaultDeps() {
   const { tick, completePlan } = require('./execute_plan_tick');
-  const { loadPlanContext } = require('./execute_plan_observe');
+  const { loadPlanContext, observe } = require('./execute_plan_observe');
   const { runScopeCheck, publishScopeCheck, publishScopeResult } = require('./execute_plan_scope_run');
   const { launchPlanAgent, getAgentRunStatus } = require('../../.github/scripts/execute-plan-launch');
-  return { tick, completePlan, loadPlanContext, runScopeCheck, publishScopeCheck, publishScopeResult, launchPlanAgent, getAgentRunStatus };
+  return { tick, completePlan, loadPlanContext, observe, runScopeCheck, publishScopeCheck, publishScopeResult, launchPlanAgent, getAgentRunStatus };
 }
 
 const ACTION_TEXT = {
@@ -255,11 +265,17 @@ async function launchWorker(clients, ctx, decision, now) {
     envVars: workerLaunchEnvVars(botToken),
   });
   const key = decision.phase || 'release';
-  await updateStatus(bot, ctx, (s) => ({
-    ...s,
-    launches: [...(s.launches || []), { at: now, phase: key, kind: action.kind, agent_id: launched.agentId, run_id: launched.runId }].slice(-MAX_LAUNCH_HISTORY),
-    lease: { platform: 'cursor', agent_id: launched.agentId, run_id: launched.runId, launched_at: now, last_tick_at: now },
-  }), now);
+  const obs = await deps.observe(bot, ctx, { now });
+  const prObs = pullNumber ? prObsFromCtx(obs, pullNumber) : null;
+  const sig = prObs ? failureSignature(prObs) : null;
+  await updateStatus(bot, ctx, (s) => {
+    const tracked = appendCiStuckTrack(s, key, prObs && prObs.head_sha, sig, now);
+    return {
+      ...tracked,
+      launches: [...(tracked.launches || []), { at: now, phase: key, kind: action.kind, agent_id: launched.agentId, run_id: launched.runId }].slice(-MAX_LAUNCH_HISTORY),
+      lease: { platform: 'cursor', agent_id: launched.agentId, run_id: launched.runId, launched_at: now, last_tick_at: now },
+    };
+  }, now);
   return `launched ${action.kind} on ${a.branch} (agent ${launched.agentId})`;
 }
 
