@@ -71,7 +71,7 @@ function setup({ issue = CONTROL_ISSUE, comments = planComments(), files = [], e
     [`GET ${R}/contents/.agents/plans/${PLAN}.snapshot.json?ref=${INIT_SHA}`]: file(SNAP_JSON),
     [`GET ${R}/contents/.agents/plans/${PLAN}.md?ref=${INIT_SHA}`]: file(PLAN_MD),
     [`GET ${R}/pulls/5/files?per_page=100`]: { body: files.map((filename) => ({ filename })) },
-    [`GET ${R}/pulls?base=main&per_page=100&state=closed`]: { body: [] },
+    [`GET ${R}/pulls?base=main&direction=desc&per_page=100&sort=updated&state=closed`]: { body: [] },
     ...extra,
   };
   const fake = createFakeFetch(routes);
@@ -173,7 +173,7 @@ test('release PR allows paths from merged side PRs that unblock the plan', async
     files: [...planFileDiff, sideFile],
     extra: {
       ...planFilesRoutes(SNAP_JSON, PLAN_MD),
-      [`GET ${R}/pulls?base=main&per_page=100&state=closed`]: { body: [mergedSide] },
+      [`GET ${R}/pulls?base=main&direction=desc&per_page=100&sort=updated&state=closed`]: { body: [mergedSide] },
       [`GET ${R}/pulls/99/files?per_page=100`]: { body: [{ filename: sideFile }] },
     },
   });
