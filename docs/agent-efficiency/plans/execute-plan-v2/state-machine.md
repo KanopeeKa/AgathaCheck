@@ -191,7 +191,11 @@ method `merge` (scope is always green for sync PRs). S2 `release.pr == null` and
    control before posting green) → head already republished after the epoch ? STOP `check-missing` :
    driver `republish-scope` (does not launch `fix-ci`).
 4. Any required check concluded `failure`/`timed_out`/`action_required` on `head_sha`:
-   attempts ≥ `ci_per_phase` → STOP `ci-budget`; else, when the only failing check is
+   Build a **failure signature** from sorted `checkName:reason|conclusion` pairs on the head. If the same
+   signature already appears on **three distinct heads** for this phase since the authorization epoch
+   (`status.ci_stuck_track`, recorded when the driver launches `fix-ci` / `fix-scope`), STOP `ci-stuck`
+   before counting `failed_attempts_since_epoch`. Entries before the epoch are ignored (same window as launch
+   budgets). Otherwise: attempts ≥ `ci_per_phase` → STOP `ci-budget`; else, when the only failing check is
    `execute-plan-scope` with reason `unclassified`/`companion-cap`/`too-many-files` → agent
    `fix-scope`; else agent `fix-ci` (L-rules). The `ci-budget` STOP for a fixable scope failure carries the side-PR hint in its detail.
 5. `unresolved_threads` non-empty → agent `triage-review` (L-rules).

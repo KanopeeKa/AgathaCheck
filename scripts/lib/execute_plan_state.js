@@ -42,6 +42,39 @@ function workerBlockedDetail(pr) {
   return fromMarker || null;
 }
 
+/** Stable signature of failing required checks on a PR head (for ci-stuck detection). */
+function failureSignature(pr) {
+  const failing = (pr.checks || []).filter((c) => FAILED.has(c.conclusion));
+  if (!failing.length) return null;
+  return failing.map((c) => `${c.name}:${c.reason || c.conclusion}`).sort().join('|');
+}
+
+/** Entries for this phase since the current authorization epoch. */
+function ciStuckList(status, phase, epoch) {
+  const list = (status && status.ci_stuck_track && status.ci_stuck_track[phase]) || [];
+  if (!epoch) return list;
+  return list.filter((e) => e.at && Date.parse(e.at) > Date.parse(epoch));
+}
+
+/** @returns {string|null} stop detail when the same signature appears on three distinct heads */
+function ciStuckDetail(status, phase, headSha, signature, epoch) {
+  if (!signature || !phase || !headSha) return null;
+  const list = ciStuckList(status, phase, epoch);
+  const projected = list.some((e) => e.sha === headSha) ? list : [...list, { sha: headSha, sig: signature }];
+  const count = projected.filter((e) => e.sig === signature).length;
+  if (count >= 3) return `same failing checks on ${count} heads for phase ${phase} (${signature})`;
+  return null;
+}
+
+function appendCiStuckTrack(status, phase, headSha, signature, at) {
+  if (!signature || !phase || !headSha) return status;
+  const track = { ...(status.ci_stuck_track || {}) };
+  const list = [...(track[phase] || [])];
+  if (!list.some((e) => e.sha === headSha)) list.push({ sha: headSha, sig: signature, at: at || new Date().toISOString() });
+  track[phase] = list.slice(-12);
+  return { ...status, ci_stuck_track: track };
+}
+
 const driver = (kind, args = {}) => ({ actor: 'driver', kind, launch: false, args });
 const agent = (kind, args = {}) => ({ actor: 'agent', kind, launch: false, args });
 const wait = (reason) => driver('wait', { reason });
@@ -177,6 +210,10 @@ function prLadder(pr, rawCtx) {
   const failing = checks.filter((c) => FAILED.has(c.conclusion));
   if (failing.length) {
     const attempts = pr.failed_attempts_since_epoch || 0;
+    const phaseKey = kind === 'phase' ? ctx.phase : ctx.launchKey;
+    const sig = failureSignature(pr);
+    const stuck = ciStuckDetail(ctx.status, phaseKey, pr.head_sha, sig, ctx.control && ctx.control.epoch);
+    if (stuck) return stop('ci-stuck', stuck);
     const only = failing.length === 1 && failing[0].name === SCOPE_CHECK && SCOPE_FIXABLE.has(failing[0].reason);
     if (attempts >= budget) {
       const detail = `${attempts} failed attempts on PR #${pr.number} (limit ${budget})`;
@@ -297,4 +334,14 @@ function decide(snapshot, obs, opts) {
   return prLadder(cur.pr, { ...ctx, kind: 'phase', phase: cur.id, launchKey: cur.id, draftAction: { kind: 'implement', args: draftArgs }, method: 'squash' });
 }
 
-module.exports = { decide, prLadder, applyLeaseRules, HOLD_LABEL, BLOCKED_LABEL, workerBlockedDetail };
+module.exports = {
+  decide,
+  prLadder,
+  applyLeaseRules,
+  HOLD_LABEL,
+  BLOCKED_LABEL,
+  workerBlockedDetail,
+  failureSignature,
+  ciStuckDetail,
+  appendCiStuckTrack,
+};
