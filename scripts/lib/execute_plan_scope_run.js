@@ -10,7 +10,7 @@ const crypto = require('crypto');
 const { PullFilesOverflow } = require('./execute_plan_github');
 const { computeApprovalHash, findControlComments } = require('./execute_plan_approval');
 const { loadSnapshotAtRef } = require('./execute_plan_snapshot_v2');
-const { categorizePull, evaluateDiff } = require('./execute_plan_scope');
+const { categorizePull, evaluateDiff, BUNDLE_BUDGET_FILE, validateBundleBudgetRatchet } = require('./execute_plan_scope');
 const { deriveControl } = require('./execute_plan_control');
 const { planIdFromRefs, findControlIssue, labelNames } = require('./execute_plan_plans');
 const { SCOPE_CONTEXT, describeScope } = require('./execute_plan_scope_status');
@@ -135,7 +135,20 @@ async function runScopeCheck(client, { prNumber, headSha, headRef, baseRef, head
   const ownPlanFilesVerified = category === 'release' && files.length > 0
     ? await verifyOwnPlanFiles(client, snapshot, headSha, files)
     : false;
-  const evaluation = evaluateDiff({ files, snapshot, category, phaseId, ownPlanFilesVerified, stopped });
+  const evaluation = evaluateDiff({ files, snapshot, category, phaseId, ownPlanFilesVerified, stopped, supportFiles: new Set() });
+  if (category === 'phase' && files.includes(BUNDLE_BUDGET_FILE)) {
+    const pull = await client.getPull(prNumber);
+    const mergeBase = pull.merge_base_sha || headSha;
+    const headFile = await client.getFileAtRef(BUNDLE_BUDGET_FILE, headSha);
+    const baseFile = await client.getFileAtRef(BUNDLE_BUDGET_FILE, mergeBase);
+    if (!headFile || !baseFile) {
+      return result('failure', 'drift', 'web-bundle-budget.json missing on base or head', planId);
+    }
+    const err = validateBundleBudgetRatchet(baseFile.content, headFile.content);
+    if (err) {
+      return result('failure', 'forbidden', err, planId);
+    }
+  }
   const summary = stopped.stopped ? `plan stopped: ${stopped.reason}` : renderSummary(evaluation);
   return result(evaluation.conclusion, evaluation.title, summary, planId);
 }
