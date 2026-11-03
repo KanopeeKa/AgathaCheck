@@ -434,6 +434,16 @@ One **roster** on `/pc/people` backed by a UI aggregate **PersonRosterEntry** (c
     - the "Looked after by" picker
 - **Desktop:** rail/sidebar **People** plus master–detail on `/pc/people`.
 
+### Picker feedback
+
+| ID | Requirement | Status |
+| --- | --- | --- |
+| PEOPLE-CARE-TEAM-R-003 | A contact picker with nothing to choose says so: vet pickers read "No vets in your contacts yet. Type a name to add one."; other pickers use a generic line. "None" stays available when allowed. The pet form's vet field is labelled **Primary vet** (not the generic "Contact") | Live |
+
+**Acceptance criteria**
+
+- *Given* a directory with no active vets, *when* the user opens a vet picker, *then* the empty-state line shows and None is still offered (PEOPLE-CARE-TEAM-R-003; test: `flutter_app/test/features/people/presentation/people_picker_test.dart#vet picker explains an empty directory`).
+
 ### Grouping
 
 - **People:** one section per household, headed by the household's name, then carers, then professionals.

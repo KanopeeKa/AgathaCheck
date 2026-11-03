@@ -8153,6 +8153,14 @@ class AppLocalizationsFr extends AppLocalizations {
   String get peoplePickerFieldLabel => 'Contact';
 
   @override
+  String get peoplePickerEmptyVets =>
+      'Aucun vétérinaire dans vos contacts. Saisissez un nom pour en ajouter un.';
+
+  @override
+  String get peoplePickerEmptyGeneric =>
+      'Personne à choisir pour l\'instant. Saisissez un nom pour ajouter quelqu\'un.';
+
+  @override
   String get peoplePickerNone => 'Aucun';
 
   @override

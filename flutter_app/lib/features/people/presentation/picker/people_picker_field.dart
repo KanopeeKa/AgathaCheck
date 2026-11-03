@@ -18,6 +18,7 @@ class PeoplePickerField extends ConsumerWidget {
     required this.query,
     this.value,
     this.placeholder,
+    this.label,
     required this.onChanged,
     this.quickAddGroup,
   });
@@ -26,6 +27,9 @@ class PeoplePickerField extends ConsumerWidget {
   final PeopleQuery query;
   final ContactSummary? value;
   final String? placeholder;
+
+  /// Overrides the generic "Contact" field label (e.g. "Primary vet").
+  final String? label;
   final ValueChanged<PeoplePickerResult?> onChanged;
   final ContactGroup? quickAddGroup;
 
@@ -45,7 +49,7 @@ class PeoplePickerField extends ConsumerWidget {
         onTap: () => _open(context, ref),
         child: InputDecorator(
           decoration: InputDecoration(
-            labelText: l.peoplePickerFieldLabel,
+            labelText: label ?? l.peoplePickerFieldLabel,
             border: const OutlineInputBorder(),
             suffixIcon: const Icon(Icons.expand_more),
           ),

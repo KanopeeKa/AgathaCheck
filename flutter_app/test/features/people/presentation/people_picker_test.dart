@@ -122,6 +122,34 @@ void main() {
     expect(find.text('Inactive'), findsWidgets);
   });
 
+  testWidgets('vet picker explains an empty directory', (tester) async {
+    final roster = Roster(
+      households: const [],
+      contacts: [_active(id: 'a', name: 'Alex')],
+      pendingInvites: const [],
+    );
+
+    await tester.pumpWidget(
+      _pickerHarness(
+        repo: PickerFakeRepository(roster),
+        roster: roster,
+        child: PeoplePickerSheet(
+          query: const PeopleQuery(
+            groups: {ContactGroup.professional},
+            roles: {ContactRole.vet},
+            allowNone: true,
+          ),
+          purpose: 'test',
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('people_picker_empty')), findsOneWidget);
+    expect(find.textContaining('No vets in your contacts'), findsOneWidget);
+    expect(find.byKey(const Key('people_picker_option_none')), findsOneWidget);
+  });
+
   testWidgets('picker none option when allowNone', (tester) async {
     PeoplePickerResult? result;
     final roster = Roster(
