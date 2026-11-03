@@ -102,8 +102,7 @@ async function handleApprove(clients, { issue, comment, parsed, config }, { now,
   if (files.length !== own.size || !files.every((f) => own.has(f))) {
     return rejectWith(formatInitBranchOnlyPlanFilesMessage({
       planId: snapshot.plan_id,
-      files,
-      committedFilenames: files,
+      paths: files,
     }));
   }
   const existing = await read.getBranch(snapshot.integration_branch);
