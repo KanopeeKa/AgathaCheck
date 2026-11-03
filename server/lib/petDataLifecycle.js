@@ -1,7 +1,6 @@
 /**
  * Pet-related data and file lifecycle (F-09, F-10, F-12).
  */
-import fs from 'fs';
 import path from 'path';
 import { NOTIFICATION_TYPE_PET_PASSED_AWAY } from './notificationKind.js';
 
@@ -21,7 +20,6 @@ import {
 import {
   parseHealthFileIdFromUrl,
   privateHealthDir,
-  removePrivateHealthFile,
   resolvePrivateHealthFile,
 } from './privateHealthStorage.js';
 
