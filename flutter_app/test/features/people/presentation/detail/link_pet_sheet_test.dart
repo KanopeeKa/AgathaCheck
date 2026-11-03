@@ -4,7 +4,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/features/people/application/people_providers.dart';
 import 'package:pet_profile_app/features/people/domain/entities/contact_detail.dart';
 import 'package:pet_profile_app/features/people/domain/entities/contact_summary.dart';
-import 'package:pet_profile_app/features/people/domain/entities/contact_summary.dart';
 import 'package:pet_profile_app/features/people/domain/entities/pet_people.dart';
 import 'package:pet_profile_app/features/people/domain/entities/roster.dart';
 import 'package:pet_profile_app/features/people/domain/enums/contact_group.dart';
@@ -12,7 +11,6 @@ import 'package:pet_profile_app/features/people/domain/enums/contact_kind.dart';
 import 'package:pet_profile_app/features/people/domain/enums/contact_role.dart';
 import 'package:pet_profile_app/features/people/domain/enums/contact_status.dart';
 import 'package:pet_profile_app/features/people/domain/enums/relationship_kind.dart';
-import 'package:pet_profile_app/features/people/domain/repositories/people_repository.dart';
 import 'package:pet_profile_app/features/people/presentation/detail/linkable_pets_provider.dart';
 import 'package:pet_profile_app/features/people/presentation/detail/person_detail_target.dart';
 import 'package:pet_profile_app/features/people/presentation/detail/widgets/link_pet_sheet.dart';
@@ -142,16 +140,15 @@ void main() {
         overrides: [
           linkablePetOptionsProvider.overrideWith((ref) async => _threePets),
           rosterProvider.overrideWith(
-            () => TestRosterNotifier(_rosterWithVet(vetId, 'Second Vet Clinic')),
+            () =>
+                TestRosterNotifier(_rosterWithVet(vetId, 'Second Vet Clinic')),
           ),
           peopleRepositoryProvider.overrideWithValue(repo),
           householdsRepositoryProvider.overrideWithValue(
             FakeHouseholdsRepository(),
           ),
         ],
-        child: peopleTestApp(
-          child: const _OpenLinkPetSheet(contactId: vetId),
-        ),
+        child: peopleTestApp(child: const _OpenLinkPetSheet(contactId: vetId)),
       ),
     );
     await _openSheet(tester);
@@ -171,16 +168,15 @@ void main() {
         overrides: [
           linkablePetOptionsProvider.overrideWith((ref) async => _threePets),
           rosterProvider.overrideWith(
-            () => TestRosterNotifier(_rosterWithVet(vetId, 'Second Vet Clinic')),
+            () =>
+                TestRosterNotifier(_rosterWithVet(vetId, 'Second Vet Clinic')),
           ),
           peopleRepositoryProvider.overrideWithValue(repo),
           householdsRepositoryProvider.overrideWithValue(
             FakeHouseholdsRepository(),
           ),
         ],
-        child: peopleTestApp(
-          child: const _OpenLinkPetSheet(contactId: vetId),
-        ),
+        child: peopleTestApp(child: const _OpenLinkPetSheet(contactId: vetId)),
       ),
     );
     await _openSheet(tester);
@@ -196,6 +192,71 @@ void main() {
     expect(repo.setSlotCalls, 1);
     expect(repo.lastSlotKind, RelationshipKind.primaryVet);
     expect(repo.lastLinkPetId, 'pet-2');
+    expect(repo.addLinkCalls, 0);
+  });
+
+  testWidgets('pet without primary vet preselects Primary vet', (tester) async {
+    const vetId = 'vet-2';
+    final repo = LinkPetSheetFakeRepository(detail: _vetDetail());
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          linkablePetOptionsProvider.overrideWith((ref) async => _threePets),
+          rosterProvider.overrideWith(
+            () =>
+                TestRosterNotifier(_rosterWithVet(vetId, 'Second Vet Clinic')),
+          ),
+          peopleRepositoryProvider.overrideWithValue(repo),
+          householdsRepositoryProvider.overrideWithValue(
+            FakeHouseholdsRepository(),
+          ),
+        ],
+        child: peopleTestApp(child: const _OpenLinkPetSheet(contactId: vetId)),
+      ),
+    );
+    await _openSheet(tester);
+
+    await tester.tap(find.widgetWithText(RadioListTile<String>, 'Whiskers'));
+    await tester.pumpAndSettle();
+
+    final chip = tester.widget<FilterChip>(
+      find.widgetWithText(FilterChip, 'Primary vet'),
+    );
+    expect(chip.selected, isTrue);
+  });
+
+  testWidgets('out-of-hours vet calls setPetSlot(outOfHoursVet)', (
+    tester,
+  ) async {
+    const vetId = 'vet-2';
+    final repo = LinkPetSheetFakeRepository(detail: _vetDetail());
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          linkablePetOptionsProvider.overrideWith((ref) async => _threePets),
+          rosterProvider.overrideWith(
+            () =>
+                TestRosterNotifier(_rosterWithVet(vetId, 'Second Vet Clinic')),
+          ),
+          peopleRepositoryProvider.overrideWithValue(repo),
+          householdsRepositoryProvider.overrideWithValue(
+            FakeHouseholdsRepository(),
+          ),
+        ],
+        child: peopleTestApp(child: const _OpenLinkPetSheet(contactId: vetId)),
+      ),
+    );
+    await _openSheet(tester);
+
+    await tester.tap(find.widgetWithText(RadioListTile<String>, 'Whiskers'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(FilterChip, 'Out-of-hours vet'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('people_detail_link_pet_confirm')));
+    await tester.pumpAndSettle();
+
+    expect(repo.setSlotCalls, 1);
+    expect(repo.lastSlotKind, RelationshipKind.outOfHoursVet);
     expect(repo.addLinkCalls, 0);
   });
 
@@ -223,16 +284,15 @@ void main() {
         overrides: [
           linkablePetOptionsProvider.overrideWith((ref) async => _threePets),
           rosterProvider.overrideWith(
-            () => TestRosterNotifier(_rosterWithVet(vetId, 'Second Vet Clinic')),
+            () =>
+                TestRosterNotifier(_rosterWithVet(vetId, 'Second Vet Clinic')),
           ),
           peopleRepositoryProvider.overrideWithValue(repo),
           householdsRepositoryProvider.overrideWithValue(
             FakeHouseholdsRepository(),
           ),
         ],
-        child: peopleTestApp(
-          child: const _OpenLinkPetSheet(contactId: vetId),
-        ),
+        child: peopleTestApp(child: const _OpenLinkPetSheet(contactId: vetId)),
       ),
     );
     await _openSheet(tester);
@@ -276,16 +336,15 @@ void main() {
         overrides: [
           linkablePetOptionsProvider.overrideWith((ref) async => _threePets),
           rosterProvider.overrideWith(
-            () => TestRosterNotifier(_rosterWithVet(vetId, 'Second Vet Clinic')),
+            () =>
+                TestRosterNotifier(_rosterWithVet(vetId, 'Second Vet Clinic')),
           ),
           peopleRepositoryProvider.overrideWithValue(repo),
           householdsRepositoryProvider.overrideWithValue(
             FakeHouseholdsRepository(),
           ),
         ],
-        child: peopleTestApp(
-          child: const _OpenLinkPetSheet(contactId: vetId),
-        ),
+        child: peopleTestApp(child: const _OpenLinkPetSheet(contactId: vetId)),
       ),
     );
     await _openSheet(tester);
@@ -338,7 +397,10 @@ void main() {
 
     expect(find.widgetWithText(FilterChip, 'Primary vet'), findsNothing);
     expect(find.widgetWithText(FilterChip, 'Provides care'), findsOneWidget);
-    expect(find.widgetWithText(FilterChip, 'Emergency contact'), findsOneWidget);
+    expect(
+      find.widgetWithText(FilterChip, 'Emergency contact'),
+      findsOneWidget,
+    );
     expect(find.widgetWithText(FilterChip, 'Other link'), findsOneWidget);
   });
 
@@ -368,16 +430,15 @@ void main() {
         overrides: [
           linkablePetOptionsProvider.overrideWith((ref) async => _threePets),
           rosterProvider.overrideWith(
-            () => TestRosterNotifier(_rosterWithVet(vetId, 'Second Vet Clinic')),
+            () =>
+                TestRosterNotifier(_rosterWithVet(vetId, 'Second Vet Clinic')),
           ),
           peopleRepositoryProvider.overrideWithValue(repo),
           householdsRepositoryProvider.overrideWithValue(
             FakeHouseholdsRepository(),
           ),
         ],
-        child: peopleTestApp(
-          child: const _OpenLinkPetSheet(contactId: vetId),
-        ),
+        child: peopleTestApp(child: const _OpenLinkPetSheet(contactId: vetId)),
       ),
     );
     await _openSheet(tester);
@@ -389,10 +450,7 @@ void main() {
       find.byKey(const Key('people_detail_link_pet_confirm')),
     );
     expect(button.onPressed, isNull);
-    expect(
-      find.text("Choose how they're linked to continue."),
-      findsOneWidget,
-    );
+    expect(find.text("Choose how they're linked to continue."), findsOneWidget);
   });
 
   testWidgets('lists all owned pets and omits subtitle for unlinked pet', (
@@ -417,7 +475,8 @@ void main() {
         overrides: [
           linkablePetOptionsProvider.overrideWith((ref) async => _threePets),
           rosterProvider.overrideWith(
-            () => TestRosterNotifier(_rosterWithVet(vetId, 'Second Vet Clinic')),
+            () =>
+                TestRosterNotifier(_rosterWithVet(vetId, 'Second Vet Clinic')),
           ),
           peopleRepositoryProvider.overrideWithValue(repo),
           householdsRepositoryProvider.overrideWithValue(
@@ -425,10 +484,7 @@ void main() {
           ),
         ],
         child: peopleTestApp(
-          child: const _OpenLinkPetSheet(
-            contactId: vetId,
-            linkedPets: linked,
-          ),
+          child: const _OpenLinkPetSheet(contactId: vetId, linkedPets: linked),
         ),
       ),
     );

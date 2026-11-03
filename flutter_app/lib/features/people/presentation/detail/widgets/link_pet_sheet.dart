@@ -5,6 +5,7 @@ import '../../../../../l10n/app_localizations.dart';
 import '../../../application/people_commands.dart';
 import '../../../application/people_providers.dart';
 import '../../../domain/entities/contact_summary.dart';
+import '../../../domain/entities/pet_people.dart';
 import '../../../domain/enums/contact_role.dart';
 import '../../../domain/enums/relationship_kind.dart';
 import '../linkable_pets_provider.dart';
@@ -66,12 +67,12 @@ List<RelationshipKind> linkPetRelationshipKindOptions({required bool isVet}) {
   ];
 }
 
-bool contactHasVetRole(WidgetRef ref, String contactId) {
-  final summary = ref.watch(personSummaryProvider(contactId));
+bool readContactHasVetRole(WidgetRef ref, String contactId) {
+  final summary = ref.read(personSummaryProvider(contactId));
   if (summary != null) {
     return summary.roles.contains(ContactRole.vet);
   }
-  final detail = ref.watch(personDetailProvider(contactId)).valueOrNull;
+  final detail = ref.read(personDetailProvider(contactId)).valueOrNull;
   return detail?.roles.contains(ContactRole.vet) ?? false;
 }
 
@@ -109,11 +110,16 @@ class _LinkPetSheetBodyState extends ConsumerState<_LinkPetSheetBody> {
       _selectedKind = null;
     });
     if (petId == null) return;
-    if (!contactHasVetRole(ref, widget.contactId)) return;
+    if (!readContactHasVetRole(ref, widget.contactId)) return;
 
-    final repo = ref.read(peopleRepositoryProvider);
-    final relationships = await repo.fetchPetRelationships(petId);
-    if (!mounted) return;
+    List<PetRelationship> relationships;
+    try {
+      final repo = ref.read(peopleRepositoryProvider);
+      relationships = await repo.fetchPetRelationships(petId);
+    } catch (_) {
+      return;
+    }
+    if (!mounted || _selectedPetId != petId || _selectedKind != null) return;
     final hasPrimaryVet = relationships.any(
       (r) => r.active && r.relationshipKind == RelationshipKind.primaryVet,
     );
@@ -160,7 +166,11 @@ class _LinkPetSheetBodyState extends ConsumerState<_LinkPetSheetBody> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    final isVet = contactHasVetRole(ref, widget.contactId);
+    final summary = ref.watch(personSummaryProvider(widget.contactId));
+    final detailAsync = ref.watch(personDetailProvider(widget.contactId));
+    final isVet = summary != null
+        ? summary.roles.contains(ContactRole.vet)
+        : (detailAsync.valueOrNull?.roles.contains(ContactRole.vet) ?? false);
     final kindOptions = linkPetRelationshipKindOptions(isVet: isVet);
     final maxHeight = MediaQuery.sizeOf(context).height * 0.85;
 
@@ -201,8 +211,7 @@ class _LinkPetSheetBodyState extends ConsumerState<_LinkPetSheetBody> {
                     return FilterChip(
                       label: Text(kind.label(l)),
                       selected: _selectedKind == kind,
-                      onSelected: (_) =>
-                          setState(() => _selectedKind = kind),
+                      onSelected: (_) => setState(() => _selectedKind = kind),
                     );
                   }).toList(),
                 ),
