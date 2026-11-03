@@ -87,7 +87,7 @@ Times are ISO-8601 UTC strings. `null` means "does not exist". Example = the sce
 | `checks_settled_at` | Newest `completed_at` over **every** check run on `head_sha` once all of them are `completed`; `null` while any is queued or running, or when the head has none. (`ci-gate / CI passed` only appears when CI ends, so "missing" alone means nothing while CI runs.) |
 | `head_activity_at` | Newest of the head commit's committer date (`GET /pulls/{n}/commits`) and every head check run's `started_at` / `completed_at`; `null` when none is known. |
 | `failed_attempts_since_epoch` | Number of **distinct commit SHAs** of the PR (`GET /pulls/{n}/commits`) with at least one required check run concluding `failure`, `timed_out` or `action_required` and `completed_at` after the epoch, or a trusted `execute-plan-scope` status in `failure`/`error` created after the epoch. One push = one attempt. |
-| `unresolved_threads` | GraphQL `reviewThreads(first:100)` where `isResolved == false` → `[{ "url", "path", "author" }]`. |
+| `unresolved_threads` | GraphQL `reviewThreads` (every page of 100; more than 2000 threads fails the observation) where `isResolved == false` → `[{ "url", "path", "author" }]`. |
 | `copilot_review_submitted` | A review whose author login starts with `copilot` exists. |
 | `owner_approved` | A review in state `APPROVED` by a login in `config.owners`. |
 

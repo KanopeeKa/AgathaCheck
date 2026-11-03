@@ -3,7 +3,7 @@ title: Autonomous Pr Policy
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-10-13
+last_updated: 2026-11-02
 tags: [agent-efficiency, policy]
 ---
 # Autonomous PR policy (canonical)
@@ -48,6 +48,15 @@ body, not routine user chat. See [execute-plan-v2.md](./plans/execute-plan-v2.md
 | `/execute-plan` without plan_id | Infer from conversation, branch, control issue, or single `busy` issue — skill §Resolve plan_id |
 
 Skill: `.cursor/skills/execute-plan/SKILL.md` · **Instruction stack:** [execute-plan-instruction-stack.md](./execute-plan-instruction-stack.md)
+
+#### Review threads on plan PRs
+
+`tick` owns the review gate for plan PRs: any unresolved thread returns agent `triage-review` before the
+driver arms or performs a merge (state-machine PR-ladder 5), PRs into `main` wait up to 15 min for Copilot
+(PR-ladder 9), and the rulesets block merge while a thread is unresolved. The `triage-review` worker applies
+§Review triage and §Debt issues to every listed thread, then replies on and resolves each one — an
+unresolved thread relaunches the action. Copilot reviews only PRs into `main` (the release PR); phase PRs
+into the integration branch carry human threads only.
 
 ---
 
@@ -97,7 +106,7 @@ Linux runner usage scales with **open PR count**, **pushes per PR**, and **jobs 
 
 See [pr-review-cost-efficiency.md](./pr-review-cost-efficiency.md) § GitHub Actions minutes.
 
-**§0–§5 sync:** `./scripts/babysit_sync_base.sh --pr <url> --check` at preflight and before push; `--push` only when `--check` exits `1` (behind). **§7:** `--claim` → one `--push` rebase if needed → `gh pr merge` → `--release`.
+**§0–§5 sync:** `./scripts/babysit_sync_base.sh --pr <url> --check` at preflight and before push; `--push` only when `--check` exits `1` (behind). **§7:** `--claim` → one `--push` rebase if needed → review `gate` → `gh pr merge` → `--release`.
 
 ---
 
@@ -111,32 +120,40 @@ Only after self-review passes: commit, push, create/update PR. Then continue wit
 
 ---
 
-## Automatic reviews (mandatory collect)
+## Automatic reviews (mandatory wait, triage and gate)
 
-Applies to `/babysit` and `/babysit-plus`.
+Applies to `/babysit`, `/babysit-plus` and `/babysit-uat`. Execute-plan v2 plan PRs: §Execute-plan (v2) review threads.
 
-**Primary reviewer:** GitHub **Copilot** PR review (`copilot-pull-request-reviewer`) when enabled — **must be triaged when it posts review threads**.
+**Primary reviewer:** GitHub **Copilot** PR review (`copilot-pull-request-reviewer`) when enabled — **must be triaged when it posts review threads**. The `main` ruleset requests Copilot once when the PR opens (drafts included, not on later pushes); it posts 2–7 minutes later. Both the `main` and integration rulesets require every review thread to be **resolved** before merge.
 
 **Model (Cursor):** [pr-review-cost-efficiency.md](./pr-review-cost-efficiency.md) §Cloud Agent model policy.
 
+`scripts/babysit_pr_reviews.js` (REST + review-thread GraphQL; works with the `repo`-scoped bot token):
+
+| Command | Use | Exit |
+|---------|-----|------|
+| `wait --pr <url>` | Before triage — polls until no Copilot review is in progress (a PR younger than 3 min counts as awaiting the Copilot request) | `0` ready · `3` Copilot still pending at the timeout (default 15 min) — threads listed are triageable · `1` error |
+| `gate --pr <url>` | Merge gate — `wait`, then require no unresolved threads (`mergeReady`) | `0` merge-ready · `2` unresolved threads → triage · `3` Copilot still pending at the timeout, nothing unresolved · `1` error |
+| `collect --pr <url>` | One snapshot (no waiting) | `0` · `1` error |
+
+Every review-thread page is read. A fetch or GraphQL error exits `1` and is never “no threads”: fix the error (identity, network) before continuing.
+
 1. Mark PR **ready for review** before merge gates (`gh pr ready <url>` when draft).
-2. **Collect all review threads before triage** (mandatory):
-   ```bash
-   node scripts/babysit_pr_reviews.js collect --pr <url>
-   ```
-   Triage **every** unresolved thread in the JSON `threads` array (Copilot, human). Never declare “no automated review” while Copilot threads exist (`summary.copilotCount > 0`).
-3. **Copilot unavailable / no threads:** Proceed when `collect` returns zero unresolved threads. Comment on the PR only when Copilot was expected but never posted. See [pr-review-cost-efficiency.md](./pr-review-cost-efficiency.md) §Copilot unavailable.
-4. **Cursor Bugbot:** Disabled for this repo — do **not** wait on `babysit_pr_reviews.js wait` or halt when Bugbot is pending.
-5. After fix pushes, rely on triage + `./scripts/pre-push-changed.sh` + CI.
-6. **Autofix:** Off by policy — babysit+ owns fixes (no duplicate Cloud Agent spend).
+2. **Wait, then triage** — `wait --pr <url>`; triage **every** unresolved thread in the JSON `threads` array (Copilot, human) per §Review triage. Never declare “no automated review” while Copilot is pending (`reviewers.copilot.state == "pending"`) or threads exist.
+3. **Close every thread** — reply on the thread (fixed in `<sha>` / false positive because … / deferred to #issue) and resolve it. Unresolved threads block merge (ruleset) and the merge gate.
+4. **After every push** — run `wait` again and triage any new threads before entering or continuing the CI wait loop (human or re-requested Copilot reviews arrive at any time).
+5. **Before merge** — `gate --pr <url>` must exit `0` as the last step before `gh pr merge`, after any sync push (§Merge gates → Execution). Exit `2` → back to triage.
+6. **Copilot unavailable** — `wait` / `gate` exit `3`: comment `Copilot review did not finish within 15 min; proceeding on triage + CI + pre-push.` once; triage the listed threads; `gate` exit `3` (nothing unresolved) then counts as passing. Copilot absent (never requested, no credits): proceed. See [pr-review-cost-efficiency.md](./pr-review-cost-efficiency.md) §Copilot unavailable.
+7. **Cursor Bugbot:** Retired — the script ignores it; never wait on it.
+8. **Autofix:** Off by policy — babysit+ owns fixes (no duplicate Cloud Agent spend).
 
 ---
 
 ## Review triage
 
-Run `node scripts/babysit_pr_reviews.js collect --pr <url>` and triage **every** unresolved thread in the output before applying fixes.
+Run `node scripts/babysit_pr_reviews.js wait --pr <url>` and triage **every** unresolved thread in the output before applying fixes.
 
-Post a **triage comment** on the PR before applying fixes.
+Post a **triage comment** on the PR before applying fixes. After acting on each thread, reply with the outcome and resolve it (§Automatic reviews step 3).
 
 | Bucket | Signals | Action |
 |--------|---------|--------|
@@ -212,7 +229,7 @@ Do **not** merge when: `do-not-merge` label, control issue `autonomous-revoked`,
 
 - CI green on PR
 - Required approvals present
-- No unresolved must-fix / critical threads
+- Review gate: `node scripts/babysit_pr_reviews.js gate --pr <url>` exits `0` (no Copilot review in progress, every thread triaged and resolved; `3` after the Copilot-unavailable comment) — the last check before `gh pr merge`
 - Not draft; no `do-not-merge`
 - `./scripts/pre-push.sh` green locally
 - BDD gate unchanged or intentionally updated
@@ -227,7 +244,8 @@ Run merge coordination first (§Merge coordination):
 
 ```bash
 ./scripts/babysit_merge_preflight.sh --pr <url> --claim
-./scripts/babysit_sync_base.sh --pr <url> --push    # when behind; skip if up to date
+./scripts/babysit_sync_base.sh --pr <url> --push    # when behind; skip if up to date (a push → wait for CI green)
+node scripts/babysit_pr_reviews.js gate --pr <url>  # must exit 0 — after the last push; 2 → release the lease, back to triage
 gh pr merge <url> --squash
 ./scripts/babysit_merge_preflight.sh --pr <url> --release
 gh pr view <url> --json state,mergedAt,mergeCommit

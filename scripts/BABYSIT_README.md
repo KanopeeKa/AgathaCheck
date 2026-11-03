@@ -84,7 +84,7 @@ These scripts integrate with Agatha Track's existing agent infrastructure:
 
 | Existing Script | Used By | Purpose |
 |----------------|---------|---------|
-| `babysit_pr_reviews.js` | `universal_babysit.sh`, `auto_fix_docs.sh` | Collect review threads |
+| `babysit_pr_reviews.js` | `universal_babysit.sh` (`gate`), `auto_fix_docs.sh` (`collect`) | Wait for Copilot, collect and gate on review threads |
 | `babysit_sync_base.sh` | `universal_babysit.sh` | Sync with base branch |
 | `pre-push-changed.sh` | `universal_babysit.sh` | Pre-push validation |
 

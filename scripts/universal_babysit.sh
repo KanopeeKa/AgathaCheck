@@ -76,7 +76,7 @@ echo ""
 
 # Get PR data using gh CLI
 get_pr_data() {
-  PR_DATA=$(gh pr view "$PR_NUMBER" --repo KanopeeKa/AgathaCheck --json number,title,state,isDraft,baseRefName,headRefName,mergeable,mergeStateStatus,reviewRequests,statusCheckRollup 2>/dev/null || echo "{}")
+  PR_DATA=$(gh pr view "$PR_NUMBER" --repo KanopeeKa/AgathaCheck --json number,title,state,isDraft,baseRefName,headRefName,mergeable,mergeStateStatus,labels,statusCheckRollup 2>/dev/null || echo "{}")
   
   if [[ -z "$PR_DATA" || "$PR_DATA" == "{}" ]]; then
     echo "${RED}Error: Could not fetch PR data${NC}"
@@ -163,13 +163,27 @@ sync_base() {
 collect_and_triage() {
   echo -e "${YELLOW}Collecting review threads...${NC}"
   
-  local collect_output
-  collect_output=$(node "$REPO_ROOT/scripts/babysit_pr_reviews.js" collect --pr "$PR_NUMBER" 2>/dev/null || echo "{}")
+  # gate waits for an in-progress Copilot review. Exit 0 = nothing unresolved; 2 = threads to triage;
+  # 3 = Copilot still pending at the timeout with nothing unresolved (Copilot unavailable); 1 = error
+  local collect_output gate_status=0
+  collect_output=$(node "$REPO_ROOT/scripts/babysit_pr_reviews.js" gate --pr "$PR_NUMBER") || gate_status=$?
   
-  if [[ -z "$collect_output" || "$collect_output" == "{}" ]]; then
-    echo "  No review threads found"
-    return 0
-  fi
+  case $gate_status in
+    0)
+      echo "  No unresolved review threads"
+      return 0
+      ;;
+    3)
+      echo -e "  ${YELLOW}Copilot review did not finish before the timeout; no unresolved threads — proceeding (Copilot unavailable)${NC}"
+      return 0
+      ;;
+    2) ;;
+    *)
+      echo -e "  ${RED}Review collection failed — not merge-ready${NC}"
+      rm -f "/tmp/review_threads_$PR_NUMBER.json"
+      return 1
+      ;;
+  esac
   
   # Save to file for processing
   echo "$collect_output" > /tmp/review_threads_$PR_NUMBER.json
@@ -180,11 +194,10 @@ collect_and_triage() {
   
   echo "  Found $total_threads total threads ($copilot_count from Copilot)"
   
-  if [[ $copilot_count -gt 0 || $total_threads -gt 0 ]]; then
-    echo "  Triage required"
-    
-    # Post triage comment
-    local triage_comment="## Babysit Triage Summary
+  echo "  Triage required — this script never replies to or resolves threads; an agent or human must (babysit+ §3)"
+  
+  # Post triage comment
+  local triage_comment="## Babysit Triage Summary
 
 PR: #$PR_NUMBER  
 Timestamp: $(date -u +'%Y-%m-%dT%H:%M:%SZ')  
@@ -198,19 +211,16 @@ Next Steps
 - Triaging all unresolved threads
 - Applying fixes for must-fix issues
 - Creating debt issues for deferred concerns
-- Pushing fixes and re-running CI"
-    
-    if [[ "$DRY_RUN" == false ]]; then
-      echo "$triage_comment" | gh pr comment "$PR_NUMBER" --repo KanopeeKa/AgathaCheck --body-file -
-    else
-      echo "  [DRY RUN] Would post triage comment"
-    fi
-    
-    return 1
+- Pushing fixes and re-running CI
+- Replying on and resolving every thread (merge stays blocked until then)"
+  
+  if [[ "$DRY_RUN" == false ]]; then
+    echo "$triage_comment" | gh pr comment "$PR_NUMBER" --repo KanopeeKa/AgathaCheck --body-file -
+  else
+    echo "  [DRY RUN] Would post triage comment"
   fi
   
-  echo -e "${GREEN}  No unresolved threads${NC}"
-  return 0
+  return 1
 }
 
 # Apply fixes based on review threads
@@ -582,27 +592,21 @@ main() {
       continue
     fi
     
-    # Step 7: Check if all issues resolved
-    echo -e "${YELLOW}Checking if all issues resolved...${NC}"
+    # Step 7: the review gate passed in step 6 (no unresolved threads, no Copilot review in progress)
+    echo -e "${GREEN}All review threads resolved!${NC}"
     
-    local has_threads=$(echo "$PR_DATA" | jq -r '.reviewRequests.totalCount // 0')
-    
-    if [[ "$has_threads" == "0" ]]; then
-      echo -e "${GREEN}All review threads resolved!${NC}"
-      
-      # Step 8: Merge if requested
-      if [[ "$MERGE_AFTER_FIX" == true ]]; then
-        if merge_pr; then
-          echo -e "${GREEN}=== PR #$PR_NUMBER MERGED SUCCESSFULLY ===${NC}"
-          exit 0
-        else
-          echo -e "${YELLOW}Merge failed or blocked${NC}"
-          exit 1
-        fi
-      else
-        echo -e "${GREEN}=== PR #$PR_NUMBER READY FOR MERGE ===${NC}"
+    # Step 8: Merge if requested
+    if [[ "$MERGE_AFTER_FIX" == true ]]; then
+      if merge_pr; then
+        echo -e "${GREEN}=== PR #$PR_NUMBER MERGED SUCCESSFULLY ===${NC}"
         exit 0
+      else
+        echo -e "${YELLOW}Merge failed or blocked${NC}"
+        exit 1
       fi
+    else
+      echo -e "${GREEN}=== PR #$PR_NUMBER READY FOR MERGE ===${NC}"
+      exit 0
     fi
     
   done

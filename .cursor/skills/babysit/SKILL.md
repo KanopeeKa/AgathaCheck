@@ -27,11 +27,12 @@ Check PR status, comments, and latest CI and resolve any issues until the PR is 
    When exit `1`, rebase once: `./scripts/babysit_sync_base.sh --pr <url> --push`. Uses the PR's base branch (`main` or integration parent). Re-run `--check` before every push, before entering the CI wait loop, and after long polls. For babysit+ merge, see autonomous-pr-policy §Merge coordination.
 2. **Merge conflicts:** Intelligently resolve, preserving intent of both sides. If intents conflict, stop and ask.
 3. **Ready for review:** If the PR is still a draft, mark it ready (`gh pr ready <url>`).
-4. **Collect threads:** `node scripts/babysit_pr_reviews.js collect --pr <url>` — triage **every** unresolved thread in the JSON output (Copilot, humans). Never skip Copilot threads when present.
-5. **Comments:** Apply triage buckets to collected threads. Validate findings — fix valid issues; explain false positives. Do not re-run full adversarial review in agent turns (slim babysit).
+4. **Wait for reviews:** `node scripts/babysit_pr_reviews.js wait --pr <url>` — returns once no Copilot review is in progress (Copilot posts 2–7 min after open); triage **every** unresolved thread in the JSON output (Copilot, humans). A script error is never “no threads”. Exit `3` (Copilot still pending after 15 min) → autonomous-pr-policy §Automatic reviews step 6.
+5. **Comments:** Apply triage buckets (autonomous-pr-policy §Review triage) to every thread. Validate findings — fix valid issues; explain false positives. Then reply on and **resolve** each thread — rulesets block merge while any is unresolved. Do not re-run full adversarial review in agent turns (slim babysit).
 6. **CI:** Fix failures caused by this PR's scope. Never weaken CI gates to pass. If failure seems unrelated, run `./scripts/babysit_sync_base.sh --pr <url> --check` and `--push` when behind — do not wait for a red CI run to discover staleness.
 7. **Verify locally:** `./scripts/pre-push-changed.sh` for scoped fix; `./scripts/pre-push.sh` before final push when near merge.
-8. **Push** scoped fixes and re-watch CI until mergeable + green + comments triaged. Run `./scripts/babysit_sync_base.sh --pr <url> --check` before each push; `--push` only when behind.
+8. **Push** scoped fixes, then repeat step 4 (new threads) and re-watch CI. Run `./scripts/babysit_sync_base.sh --pr <url> --check` before each push; `--push` only when behind.
+9. **Merge-ready** only when CI is green **and** `node scripts/babysit_pr_reviews.js gate --pr <url>` exits `0` after the last push (exit `2` → back to step 5; `3` → step 4's Copilot-unavailable rule).
 
 **After merge to `main`:** CI runs Pre-UAT E2E and promotion automatically — babysit+ does not spawn agents or poll deploy (babysit-plus §8).
 
