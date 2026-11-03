@@ -31,7 +31,8 @@ class PlannedAbsencePlanScreen extends ConsumerWidget {
         experience: AppExperience.petCare,
         currentLocation: GoRouterState.of(context).uri.path,
         screenTitle: absenceAsync.maybeWhen(
-          data: (absence) => PlannedAbsenceDisplay.absenceScreenTitle(l, absence),
+          data: (absence) =>
+              PlannedAbsenceDisplay.absenceScreenTitle(l, absence),
           orElse: () => l.careContextAbsenceDefaultTitle,
         ),
         backPath: '/pc/away',
@@ -73,7 +74,8 @@ class PlannedAbsencePlanScreen extends ConsumerWidget {
             final petNamesById = {for (final pet in pets) pet.id: pet.name};
             final orderedPetIds = [...absence.petIds]
               ..sort(
-                (a, b) => (petNamesById[a] ?? a).compareTo(petNamesById[b] ?? b),
+                (a, b) =>
+                    (petNamesById[a] ?? a).compareTo(petNamesById[b] ?? b),
               );
 
             Future<void> downloadHandover() =>

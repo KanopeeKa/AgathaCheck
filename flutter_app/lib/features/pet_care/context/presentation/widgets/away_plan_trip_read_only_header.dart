@@ -8,10 +8,7 @@ import '../planned_absence_display.dart';
 
 /// Read-only trip summary on a pet away plan screen with [See absence].
 class AwayPlanTripReadOnlyHeader extends StatelessWidget {
-  const AwayPlanTripReadOnlyHeader({
-    super.key,
-    required this.absence,
-  });
+  const AwayPlanTripReadOnlyHeader({super.key, required this.absence});
 
   final PlannedAbsence absence;
 

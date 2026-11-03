@@ -62,7 +62,8 @@ class PetAwayPlanScreen extends ConsumerWidget {
       error: (_, __) => shell(
         child: _ErrorBody(
           message: l.careContextAwayPlanLoadError,
-          onRetry: () => ref.invalidate(plannedAbsenceDetailProvider(absenceId)),
+          onRetry: () =>
+              ref.invalidate(plannedAbsenceDetailProvider(absenceId)),
         ),
       ),
       data: (absence) {
@@ -107,10 +108,8 @@ class PetAwayPlanScreen extends ConsumerWidget {
               );
             }
 
-            Future<void> downloadPetPlan() => carerPanel.downloadPetHandover(
-                  context,
-                  ref,
-                );
+            Future<void> downloadPetPlan() =>
+                carerPanel.downloadPetHandover(context, ref);
 
             final tripNote = absence.handoverNote?.trim();
 
@@ -147,8 +146,7 @@ class PetAwayPlanScreen extends ConsumerWidget {
                               Expanded(
                                 child: Text(
                                   petName,
-                                  style:
-                                      Theme.of(context).textTheme.titleLarge,
+                                  style: Theme.of(context).textTheme.titleLarge,
                                 ),
                               ),
                             ],

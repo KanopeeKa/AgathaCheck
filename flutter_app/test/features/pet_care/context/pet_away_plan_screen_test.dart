@@ -70,9 +70,9 @@ void main() {
   Widget buildScreen({PlannedAbsence? overrideAbsence}) {
     return ProviderScope(
       overrides: [
-        plannedAbsenceDetailProvider('abs-1').overrideWith(
-          (ref) async => overrideAbsence ?? absence,
-        ),
+        plannedAbsenceDetailProvider(
+          'abs-1',
+        ).overrideWith((ref) async => overrideAbsence ?? absence),
         allPetsIncludingOrgProvider.overrideWith((ref) async => [pet]),
         carePeriodCoverageProvider((
           petId: 'pet-1',

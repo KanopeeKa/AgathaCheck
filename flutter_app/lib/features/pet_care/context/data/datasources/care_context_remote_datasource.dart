@@ -143,9 +143,7 @@ class CareContextRemoteDataSource {
     required String petId,
   }) async {
     final response = await _client.get(
-      Uri.parse(
-        '$baseUrl/api/planned-absences/$absenceId/pets/$petId/status',
-      ),
+      Uri.parse('$baseUrl/api/planned-absences/$absenceId/pets/$petId/status'),
       headers: _headers(),
     );
     _check(response);

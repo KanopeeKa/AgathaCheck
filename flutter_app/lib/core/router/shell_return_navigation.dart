@@ -140,11 +140,7 @@ void openAwayPlanDetail(BuildContext context, String absenceId) {
 }
 
 /// Builds `/pc/away/:absenceId/pets/:petId` with optional encoded `returnTo`.
-String petAwayPlanLocation(
-  String absenceId,
-  String petId, {
-  String? returnTo,
-}) {
+String petAwayPlanLocation(String absenceId, String petId, {String? returnTo}) {
   final base = '/pc/away/$absenceId/pets/$petId';
   if (returnTo == null || returnTo.isEmpty) {
     return base;
@@ -153,15 +149,9 @@ String petAwayPlanLocation(
 }
 
 /// Opens one pet's away plan preserving the current screen as `returnTo`.
-void openPetAwayPlan(
-  BuildContext context,
-  String absenceId,
-  String petId,
-) {
+void openPetAwayPlan(BuildContext context, String absenceId, String petId) {
   final returnTo = currentShellLocation(context);
-  context.push(
-    petAwayPlanLocation(absenceId, petId, returnTo: returnTo),
-  );
+  context.push(petAwayPlanLocation(absenceId, petId, returnTo: returnTo));
 }
 
 /// Replaces the route with pet detail, preserving `returnTo` from the current

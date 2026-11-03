@@ -37,12 +37,11 @@ class _FakeCareContextRepository implements CareContextRepository {
   Future<PerPetAwayPlanStatus> getPerPetAwayPlanStatus({
     required String absenceId,
     required String petId,
-  }) async =>
-      const PerPetAwayPlanStatus(
-        priority: 'none',
-        carerState: 'unset',
-        reviewCareItemCount: 0,
-      );
+  }) async => const PerPetAwayPlanStatus(
+    priority: 'none',
+    carerState: 'unset',
+    reviewCareItemCount: 0,
+  );
 
   @override
   Future<PlannedAbsence> updateHandoverNote({

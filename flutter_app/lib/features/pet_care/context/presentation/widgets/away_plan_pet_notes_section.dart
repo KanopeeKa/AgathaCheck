@@ -27,14 +27,17 @@ class AwayPlanPetNotesSection extends ConsumerStatefulWidget {
       _AwayPlanPetNotesSectionState();
 }
 
-class _AwayPlanPetNotesSectionState extends ConsumerState<AwayPlanPetNotesSection> {
+class _AwayPlanPetNotesSectionState
+    extends ConsumerState<AwayPlanPetNotesSection> {
   late final TextEditingController _controller;
   bool _saving = false;
 
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController(text: widget.currentCarer.petNote ?? '');
+    _controller = TextEditingController(
+      text: widget.currentCarer.petNote ?? '',
+    );
   }
 
   @override
@@ -58,7 +61,9 @@ class _AwayPlanPetNotesSectionState extends ConsumerState<AwayPlanPetNotesSectio
     setState(() => _saving = true);
     try {
       final note = _controller.text.trim();
-      await ref.read(careContextRepositoryProvider).updatePetCarers(
+      await ref
+          .read(careContextRepositoryProvider)
+          .updatePetCarers(
             absenceId: widget.absenceId,
             petCarers: [
               {

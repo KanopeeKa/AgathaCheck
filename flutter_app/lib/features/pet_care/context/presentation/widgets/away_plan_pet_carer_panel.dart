@@ -50,10 +50,7 @@ class AwayPlanPetCarerPanel extends ConsumerWidget {
                   child: Semantics(
                     identifier: 'away_plan_pet_carer_label_$petId',
                     label: carerLabel,
-                    child: Text(
-                      carerLabel,
-                      style: theme.textTheme.bodyLarge,
-                    ),
+                    child: Text(carerLabel, style: theme.textTheme.bodyLarge),
                   ),
                 ),
                 IconButton(
@@ -61,14 +58,14 @@ class AwayPlanPetCarerPanel extends ConsumerWidget {
                   tooltip: l.awayPlanningCarerEditButtonLabel(petName),
                   onPressed: canEdit
                       ? () => showDialog<bool>(
-                            context: context,
-                            builder: (_) => AwayPlanCarerEditDialog(
-                              absenceId: absence.id,
-                              petId: petId,
-                              petName: petName,
-                              currentCarer: carer,
-                            ),
-                          )
+                          context: context,
+                          builder: (_) => AwayPlanCarerEditDialog(
+                            absenceId: absence.id,
+                            petId: petId,
+                            petName: petName,
+                            currentCarer: carer,
+                          ),
+                        )
                       : null,
                   icon: const Icon(Icons.edit_outlined),
                 ),

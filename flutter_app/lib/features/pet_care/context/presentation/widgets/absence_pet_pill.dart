@@ -58,15 +58,9 @@ class AbsencePetPill extends ConsumerWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          petName,
-                          style: theme.textTheme.titleSmall,
-                        ),
+                        Text(petName, style: theme.textTheme.titleSmall),
                         const SizedBox(height: 2),
-                        Text(
-                          actionLabel,
-                          style: theme.textTheme.bodyMedium,
-                        ),
+                        Text(actionLabel, style: theme.textTheme.bodyMedium),
                         if (statusLine != null) ...[
                           const SizedBox(height: 4),
                           Text(

@@ -71,10 +71,7 @@ final perPetAwayPlanStatusProvider =
     ) async {
       return ref
           .read(careContextRepositoryProvider)
-          .getPerPetAwayPlanStatus(
-            absenceId: key.absenceId,
-            petId: key.petId,
-          );
+          .getPerPetAwayPlanStatus(absenceId: key.absenceId, petId: key.petId);
     });
 
 final awayPlanReadinessProvider =
