@@ -12,7 +12,6 @@ import '../widgets/contact_action_bar.dart';
 import '../widgets/person_skeleton.dart';
 import 'person_detail_header.dart';
 import 'person_detail_shell.dart';
-import 'person_detail_target.dart';
 import 'tabs/person_detail_notes_tab.dart';
 import 'tabs/person_detail_overview_tab.dart';
 import 'tabs/person_detail_pets_access_tab.dart';
@@ -104,7 +103,6 @@ class PersonDetailContactView extends ConsumerWidget {
           contactId: contactId,
           pets: headerSummary.pets,
           access: headerSummary.access,
-          rosterPetOptions: rosterPetOptions(roster),
         ),
       ),
       if (showRelated)

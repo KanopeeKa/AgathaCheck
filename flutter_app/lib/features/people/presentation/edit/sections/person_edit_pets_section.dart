@@ -9,19 +9,16 @@ import '../../../domain/entities/contact_summary.dart';
 import '../../../domain/enums/relationship_kind.dart';
 import '../../labels/people_labels.dart';
 import '../../detail/widgets/link_pet_sheet.dart';
-import '../../detail/person_detail_target.dart';
 
 class PersonEditPetsSection extends ConsumerStatefulWidget {
   const PersonEditPetsSection({
     super.key,
     required this.contactId,
     required this.petLinks,
-    required this.rosterPetOptions,
   });
 
   final String contactId;
   final List<ContactPetLink> petLinks;
-  final List<RosterPetOption> rosterPetOptions;
 
   @override
   ConsumerState<PersonEditPetsSection> createState() =>
@@ -200,7 +197,7 @@ class _PersonEditPetsSectionState extends ConsumerState<PersonEditPetsSection> {
                   context: context,
                   ref: ref,
                   contactId: widget.contactId,
-                  pets: widget.rosterPetOptions,
+                  linkedPets: widget.petLinks,
                 ),
           icon: const Icon(Icons.link),
           label: Text(l.peopleDetailLinkToPet),
