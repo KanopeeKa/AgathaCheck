@@ -127,6 +127,7 @@ Four principles:
 | D-BULK-004 | Coming up cap **3** rows then "Show {n} more" | — | Live | — | — |
 | D-BULK-005 | Bulk Mark/Skip success with undo uses shared undo snackbar (5 s, close control, `snackBarSurface`) | Same helper as single Done (regression guard after #1671) | Live | 2026-10-08 | — |
 | D-CIE-039 | Vet visit completion is not bulk occurrence completion | Visit records group care done at the clinic; each occurrence still uses CSM Mark as done / Skip (AC-FB-02) | Live | 2026-10-13 | PR-14 |
+| D-CIE-040 | History has no inline Unmark done | Past-occurrence rows in Care item History open the occurrence record; undo Done and other edits happen there, not via list shortcuts | Live | 2026-11-03 | — |
 
 ## Vet visit schema (API slice — PR-14)
 
@@ -329,6 +330,7 @@ Instructions are not yet on the wire; defer until the field exists.
 ### History (D-CIE-010)
 
 - Resolved past occurrences, newest first. Mobile shows 3, web shows 5, then "See full history".
+- **No inline shortcuts** (e.g. Unmark done) in the list; changes, including undoing Done, happen on the occurrence's screen (D-CIE-040).
 - Each row shows:
   - the date and status (Done, Skipped, Not given or Not recorded)
   - the due date when it differs
@@ -337,6 +339,7 @@ Instructions are not yet on the wire; defer until the field exists.
 - A row opens that occurrence's record, which can be edited.
 - An unresolved overdue occurrence never appears here.
 - A **Not recorded** dose offers **Record as given** (D-CSM-023). It becomes Done; nothing else changes.
+- **Row detail gaps (In delivery):** due-when-different, key recorded value, and dual attribution are tracked in [#2056](https://github.com/KanopeeKa/AgathaCheck/issues/2056).
 
 ### Access levels
 

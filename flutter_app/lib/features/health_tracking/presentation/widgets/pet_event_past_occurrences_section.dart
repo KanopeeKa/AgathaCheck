@@ -3,74 +3,56 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/router/shell_return_navigation.dart';
-
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/health_occurrence.dart';
 import 'care_event_status_line.dart';
 import 'pet_event_view_providers.dart';
 
-/// Collapsible past occurrences (completed + skipped, LIFO).
-class PetEventPastOccurrencesSection extends ConsumerStatefulWidget {
+/// Inline past occurrences (completed + skipped, newest first) for History.
+class PetEventPastOccurrencesSection extends ConsumerWidget {
   const PetEventPastOccurrencesSection({
     super.key,
     required this.entryId,
     required this.muted,
+    required this.maxVisibleRows,
     this.petId,
   });
 
   final String entryId;
   final bool muted;
 
-  /// When set, each line opens its occurrence screen (§18.6.5 History).
+  /// Inline row cap from the care item layout (3 mobile / 5 wide).
+  final int maxVisibleRows;
+
+  /// When set, each line opens its occurrence screen (§History, D-CIE-010).
   final String? petId;
 
   @override
-  ConsumerState<PetEventPastOccurrencesSection> createState() =>
-      _PetEventPastOccurrencesSectionState();
-}
-
-class _PetEventPastOccurrencesSectionState
-    extends ConsumerState<PetEventPastOccurrencesSection> {
-  bool _expanded = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final pastAsync = ref.watch(entryPastOccurrencesProvider(widget.entryId));
+  Widget build(BuildContext context, WidgetRef ref) {
+    final pastAsync = ref.watch(entryPastOccurrencesProvider(entryId));
 
     return pastAsync.when(
       loading: () => const SizedBox.shrink(),
       error: (_, __) => const SizedBox.shrink(),
       data: (past) {
-        if (past.isEmpty) return const SizedBox.shrink();
+        // Server returns completed + skipped only; guard unresolved overdue.
+        final rows = past
+            .where((o) => o.status == 'completed' || o.status == 'skipped')
+            .toList();
+        if (rows.isEmpty) return const SizedBox.shrink();
 
-        return Card(
-          elevation: 0,
-          color: theme.colorScheme.surfaceContainerLow,
+        final visible = rows.take(maxVisibleRows).toList();
+
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              ListTile(
-                key: const Key('pet_event_past_occurrences_header'),
-                title: Text(l.pastIterations),
-                trailing: Icon(
-                  _expanded ? Icons.expand_less : Icons.expand_more,
-                ),
-                onTap: () => setState(() => _expanded = !_expanded),
-              ),
-              if (_expanded)
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-                  child: Column(
-                    children: [
-                      for (final occ in past)
-                        _PastOccurrenceCard(
-                          occurrence: occ,
-                          muted: widget.muted,
-                          petId: widget.petId,
-                        ),
-                    ],
-                  ),
+              for (final occ in visible)
+                _PastOccurrenceCard(
+                  occurrence: occ,
+                  muted: muted,
+                  petId: petId,
                 ),
             ],
           ),
