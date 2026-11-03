@@ -211,11 +211,12 @@ Plan file: .agents/plans/<plan_id>.md (read it first; never edit it or the snaps
 Rules: if no PR exists, open a draft PR into <base> right after your first commit. Run
 ./scripts/pre-push-changed.sh before every push and push only when it is green (one push per batch of
 fixes: every push costs a full CI run and counts as an attempt against the phase budget); mark the PR
-ready only after it is green; never touch protected paths; never approve, label, merge or close
-anything; never edit the control issue yourself.
+ready only after it is green; never touch protected paths; never approve, merge or close anything;
+never add labels except `execute-plan-blocked` when blocked per below; never edit the control issue yourself.
 If a failing check cannot be fixed inside your scope (it needs a protected path, a CI gate or another
-budget file; the web bundle budget below is the exception), do not work around it and do not retry: describe the cause in the PR description and end your
-turn with "worker done: blocked <check>: <reason>".
+budget file; the web bundle budget below is the exception), do not work around it and do not retry:
+add the `execute-plan-blocked` label to the PR, put `<!-- execute-plan-blocked: <reason> -->` in the
+PR body, describe the cause, and end your turn with "worker done: blocked <check>: <reason>".
 
 Web bundle budget (scripts/ci/web-bundle-budget.json): when only check-web-bundle-budget fails and the
 overshoot comes from this phase's planned code (no new package or asset), raise the cap in this PR to

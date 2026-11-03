@@ -92,8 +92,8 @@ function buildHandoffPrompt(decision, snapshot, planMarkdown, { base } = {}) {
     `Rules: if no PR exists, open a draft PR into ${resolvedBase} right after your first commit. Run`,
     './scripts/pre-push-changed.sh before every push and push only when it is green (one push per batch of',
     'fixes: every push costs a full CI run and counts as an attempt against the phase budget); mark the PR',
-    'ready only after it is green; never touch protected paths; never approve, label, merge or close',
-    'anything; never edit the control issue yourself.',
+    'ready only after it is green; never touch protected paths; never approve, merge or close anything;',
+    'never add labels except `execute-plan-blocked` when blocked per below; never edit the control issue yourself.',
     'If a failing check cannot be fixed inside your scope (it needs a protected path, a CI gate or another',
     'budget file; the web bundle budget below is the exception), do not work around it and do not retry:',
     'add the `execute-plan-blocked` label to the PR, put `<!-- execute-plan-blocked: <reason> -->` in the',
@@ -343,7 +343,10 @@ async function runDriverPass(clients, { planId, issueNumber, now = isoNow(), kil
   const { bot } = all;
   if (typeof bot.ensureLabel === 'function') {
     await bot.ensureLabel(HOLD_LABEL);
-    await bot.ensureLabel(BLOCKED_LABEL);
+    await bot.ensureLabel(BLOCKED_LABEL, {
+      color: 'B60205',
+      description: 'Worker cannot fix the PR inside scope; driver STOP worker-blocked',
+    });
   }
   const ctx = await deps.loadPlanContext(bot, { planId, controlIssue: issueNumber });
 

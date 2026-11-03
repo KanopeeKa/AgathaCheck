@@ -35,9 +35,11 @@ function workerBlockedDetail(pr) {
   const body = pr && pr.body ? String(pr.body) : '';
   const fromBody = BLOCKED_BODY_RE.exec(body);
   if ((pr.labels || []).includes(BLOCKED_LABEL)) {
-    return fromBody ? fromBody[1].trim() : 'worker reported blocked (see PR description)';
+    const detail = fromBody ? fromBody[1].trim() : '';
+    return detail || 'worker reported blocked (see PR description)';
   }
-  return fromBody ? fromBody[1].trim() : null;
+  const fromMarker = fromBody ? fromBody[1].trim() : '';
+  return fromMarker || null;
 }
 
 const driver = (kind, args = {}) => ({ actor: 'driver', kind, launch: false, args });
