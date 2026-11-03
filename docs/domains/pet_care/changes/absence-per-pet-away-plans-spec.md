@@ -140,16 +140,15 @@ Cancelled absence: everything is read-only and downloads are disabled, as today.
 
 ### 4.4 Away hub and dashboard tile
 
-- **Away hub (`/pc/away`):** lists absences the viewer logged, **and** absences that include a pet the viewer has Full access to. The second kind show "{Name} is away" and only the pets the viewer can access. Tapping a card opens the absence screen.
+- **Away hub (`/pc/away`):** two sections — **Your absences** and **Other people's absences** (FR **Absences des autres**). The first lists absences the viewer logged. The second lists absences that include a pet the viewer has Full access to but did not log; cards show "{Name} is away" and only the pets the viewer can access. One card per absence (never duplicated under both sections). Tapping a card opens the absence screen.
 - **Dashboard away tile:** unchanged. It nudges the person going away about their own absences only.
 
 ### 4.5 Navigation
 
-- Away plan screens are pushed full screens on mobile and web, like care item detail. Back returns to where the person came from (absence screen, pet page, care item, notification) using the existing return-path pattern.
+- Away plan screens are pushed full screens on mobile and web, like care item detail. Back returns to where the person came from (absence screen, pet page, care item) using the existing return-path pattern.
 - **See absence** always opens the absence screen.
 - Links that today open the whole absence for a specific pet open **that pet's away plan** instead:
   - the care item's absence module
-  - the S7 "no one is assigned to {Pet}" notification
   - pet-specific overlap warnings
 - The hub and the dashboard tile still open the absence screen.
 
@@ -158,7 +157,7 @@ Cancelled absence: everything is read-only and downloads are disabled, as today.
 | Action | Person going away | Full access to the pet (record owner, co-parent, household Full access) | Can log care / absence guest |
 |---|---|---|---|
 | See the absence (summary, trip notes) | Yes | Yes, when at least one pet on it is theirs to see | No |
-| See pills | All pets they can access | Only pets they have Full access to | — |
+| See pills | All pets they can access | Only pets they have Full access to | No |
 | View this pet's away plan | Yes, while they have Full access to the pet | Yes | No (care handover scope only) |
 | Edit this pet's away plan (carer, notes, care decisions, invite a carer) | Yes | Yes | No |
 | Edit trip (title, dates, trip notes) and delete the absence | Yes | No | No |
@@ -228,7 +227,7 @@ The one-line pill status uses the existing priority: carer gap first, then care 
 | AP-10 | When the last pet is removed, then the confirmation states the absence will be deleted and the absence is deleted | CARE-CONTEXT-R-035 |
 | AP-11 | When a pet on a one-pet absence is deleted, then the absence is deleted | CARE-CONTEXT-R-036 |
 | AP-12 | Pill and pet-page status show carer gap first, then review count | CARE-CONTEXT-R-037 |
-| AP-13 | From a care item's absence module and from S7, the link opens that pet's away plan | CARE-CONTEXT-R-038 |
+| AP-13 | From a care item's absence module, the link opens that pet's away plan | CARE-CONTEXT-R-038 |
 | AP-14 | Hub lists absences including a pet the viewer has Full access to, labelled with the traveller | CARE-CONTEXT-R-039 |
 | AP-15 | Full-trip PDF by Sam contains Buddy only | CARE-CONTEXT-R-040 |
 | AP-16 | The person going away is never offered or accepted as a carer on their own absence | AWAY-PLANNING-CARER-R-016 |
@@ -237,71 +236,14 @@ The one-line pill status uses the existing priority: carer gap first, then care 
 
 The delivery PR moves these into the canonical acceptance tables with `bdd:` / `test:` coverage.
 
-## 11. Delivery plan outline (for the technical plan)
+## 11. Delivery
 
-The technical plan will turn this into atomic PRs. Every slice includes its own tests, docs and seed changes; none of those is deferred to a final "docs PR".
+Engineering sequencing, phase paths, security gates, and per-slice test and documentation checklists are **not** duplicated here. They live in:
 
-### 11.1 Slices (suggested order)
+- [absence-per-pet-away-plans-delivery-plan.md](./absence-per-pet-away-plans-delivery-plan.md) (human programme + UAT proof)
+- Execute-plan `.agents/plans/absence-per-pet-away-plans-a7566.md` (control issue [#2036](https://github.com/KanopeeKa/AgathaCheck/issues/2036))
 
-1. **Spec (this PR).** Change doc, `Planned` rows and decisions in the canonical docs.
-2. **Server — per-pet read and status.** Per-pet away plan read, per-pet status facts, pet-scoped list of away plans for the pet page. Additive only.
-3. **Server — visibility.** Full-access viewers can read and edit a pet's away plan; absence reads filtered to accessible pets; full-trip PDF data filtered. Requires a security review (`.cursor/agent-kernel/protocols/security.md`); this is an escalation item already approved in principle on 2026-11-03.
-4. **Server — add and remove pets.** Including last-pet deletion, access revocation, invite clean-up, pet-deletion cascade to the absence, and traveller ≠ carer validation.
-5. **Flutter — away plan screen and absence wrapper.** New route, pills, moving sections, inline pet notes, return-path navigation, deep-link retargeting.
-6. **Flutter — add/remove pets, hub and pet page section.** Includes the Plan an absence entry point.
-7. **Fold.** Requirements to `Live`, acceptance criteria with coverage, retire CARE-CONTEXT-R-005 / R-008 wording that no longer holds, delete this change doc.
-
-### 11.2 Checklist that each slice must cover
-
-**Database**
-- [ ] Migration(s) with matching `_down.sql` and migration tests (`server/test/migrations/`), numbered after the current manifest head. UUIDs generated in code, never `gen_random_uuid()`.
-- [ ] Integrity of existing rows: every existing absence keeps its pets as away plans with no data loss. Absences already with zero pets (if any) are listed and handled explicitly.
-- [ ] Account erasure, GDPR export, household departure and contact re-pointing still cover every away-plan reference (`docs/engineering/privacy/erasure-data-map.md`).
-
-**Server tests** (`server/test/careContext/**`, `server/test/people/**`)
-- [ ] Per-pet read, per-pet status facts, and pet-page list.
-- [ ] Visibility matrix of §5: declarer, Full access to some pets, Can log care, absence guest, no access. Non-disclosure of other pets asserted.
-- [ ] Add pet (overlap warning, guest access confirmation), remove pet (cascade, access revoked, invites trimmed, care dates unchanged), last-pet deletion, pet deletion.
-- [ ] Traveller ≠ carer rejection.
-- [ ] Existing suites stay green: `plannedAbsences`, `plannedAbsenceCarers`, `awayPlanReadiness`, `absenceResolutionsApi`, `plannedAbsenceHandover`, carer invites.
-
-**Flutter tests** (`flutter_app/test/features/pet_care/context/**`, pet page)
-- [ ] Widget tests: absence screen pills and status, away plan screen sections, read-only trip header, inline notes, remove/add flows, last-pet confirmation copy, pet page section shown/hidden, hidden for Can log care.
-- [ ] Handover tests: full-trip PDF filtered to accessible pets; per-pet PDF unchanged.
-- [ ] Regenerated mocks where repositories change.
-
-**BDD** (`flutter_app/test/bdd/features/`)
-- [ ] Update `away_planning.feature`, `away_plan_detail_v2.feature`, `away_care_planning.feature`, `care_item_absence.feature`.
-- [ ] New scenarios for AP-1 … AP-18. `node e2e/scripts/check_bdd_coverage.js --report-only` shows no new gaps.
-
-**E2E** (`e2e/playwright/tests/`)
-- [ ] Update `away.planning.spec.ts`, `away.plan.detail.v2.spec.ts`, `away.care.planning.spec.ts`, `care.item.absence.spec.ts` for the new screens and keys.
-- [ ] New spec for the reference journey (§3.1) on mobile and desktop viewports, plus the co-parent visibility journey (§3.5).
-- [ ] Update `docs/e2e/navigation-contract.md` with the new route and locators (EN and FR).
-
-**UAT and demo data** (`server/db/seeds/`, `docs/e2e/uat-demo-data.md`)
-- [ ] An upcoming absence for Frederique with Buddy, Whiskers and Pebble (Pebble = empty-care state). Pebble already exists in `care-item-model-fixture`; the absence seed runs after it.
-- [ ] A Full-access collaborator on **one** of those pets only, to demonstrate §3.5 non-disclosure.
-- [ ] A single-pet absence (lands on the pet plan) and existing absences re-checked under the new screens.
-- [ ] Seed facts and `uat-demo-data.md` "What the dataset covers" updated; `node server/scripts/sync-demo-credentials-doc.js` if a demo user is added.
-
-**Localisation**
-- [ ] EN and FR strings for: Absence, {Pet}'s away plan, See {Pet}'s away plan, See absence, You're away, {Name} is away, Add a pet, Remove {Pet} from this absence, last-pet confirmation, Plan an absence, pill statuses, trip notes label on the pet screen.
-
-**Canonical documentation** (each slice updates what it changes; the fold slice finishes)
-- [ ] [care-context.md](../features/care-context.md): requirements R-025 … R-041 from `Planned` to `Live`; R-005 and R-008 `Retired` (superseded by R-032 and R-034); R-007 and R-016 re-worded for the absence screen; UX surfaces table (new route); acceptance criteria with coverage.
-- [ ] [away-planning-carer-model.md](../features/away-planning-carer-model.md): R-016 … R-018; UI surfaces table; R-012 presentation retired.
-- [ ] [people-care-team.md](/docs/domains/people/features/people-care-team.md): who sees absence plans (Full access), D16 pet add/remove now live, Away Planning integration table.
-- [ ] [care-item-evolution.md](../features/care-item-evolution.md): absence module link target and Full-access visibility.
-- [ ] [notifications-v2-spec.md](/docs/domains/notifications/features/notifications-v2-spec.md): S7 deep link to the pet's away plan.
-- [ ] [terminology.md](/docs/design/terminology.md): Absence / away plan, EN and FR.
-- [ ] [api-reference.md](/docs/architecture/api-reference.md) § Planned absences: new and changed endpoints, visibility, add/remove pets.
-- [ ] `server/routes/careContext/README.md`: permissions and module layout.
-- [ ] [pet_care README](../README.md): active delivery row updated, then removed when folded.
-- [ ] `docs/engineering/privacy/erasure-data-map.md` if storage changes.
-- [ ] This change doc deleted in the fold slice.
-
-**Every push:** canonical-docs sync, then `./scripts/pre-push-changed.sh`; `## Docs` section in each PR body.
+This document remains the **functional** product contract (`AP-1`–`AP-18`, §5 visibility). The delivery plan is the implementation programme.
 
 ---
 
