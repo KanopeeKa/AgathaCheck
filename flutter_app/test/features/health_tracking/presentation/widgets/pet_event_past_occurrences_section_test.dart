@@ -60,11 +60,6 @@ Widget _wrap({
 }
 
 void main() {
-  test('visibleCapForLayout uses 3 on mobile and 5 on wide layout', () {
-    expect(PetEventPastOccurrencesSection.visibleCapForLayout(wideLayout: false), 3);
-    expect(PetEventPastOccurrencesSection.visibleCapForLayout(wideLayout: true), 5);
-  });
-
   testWidgets('hides list when there are no past occurrences', (tester) async {
     await tester.pumpWidget(
       _wrap(
@@ -73,6 +68,7 @@ void main() {
           entryId: 'entry-1',
           petId: 'pet-1',
           muted: false,
+          maxVisibleRows: 3,
         ),
       ),
     );
@@ -80,7 +76,7 @@ void main() {
     expect(find.byKey(const Key('pet_event_past_occurrence_past-0')), findsNothing);
   });
 
-  testWidgets('shows at most three rows on mobile width', (tester) async {
+  testWidgets('shows at most three rows when maxVisibleRows is 3', (tester) async {
     await tester.pumpWidget(
       _wrap(
         width: 400,
@@ -89,6 +85,7 @@ void main() {
           entryId: 'entry-1',
           petId: 'pet-1',
           muted: false,
+          maxVisibleRows: 3,
         ),
       ),
     );
@@ -99,11 +96,7 @@ void main() {
     expect(find.byKey(const Key('pet_event_past_occurrence_past-3')), findsNothing);
   });
 
-  testWidgets('shows at most five rows at web width', (tester) async {
-    tester.view.physicalSize = const Size(1200, 800);
-    tester.view.devicePixelRatio = 1.0;
-    addTearDown(tester.view.resetPhysicalSize);
-
+  testWidgets('shows at most five rows when maxVisibleRows is 5', (tester) async {
     await tester.pumpWidget(
       _wrap(
         width: 690,
@@ -112,6 +105,7 @@ void main() {
           entryId: 'entry-1',
           petId: 'pet-1',
           muted: false,
+          maxVisibleRows: 5,
         ),
       ),
     );
@@ -128,6 +122,7 @@ void main() {
           entryId: 'entry-1',
           petId: 'pet-1',
           muted: false,
+          maxVisibleRows: 3,
         ),
       ),
     );
@@ -147,6 +142,7 @@ void main() {
           entryId: 'entry-1',
           petId: 'pet-1',
           muted: false,
+          maxVisibleRows: 3,
         ),
       ),
     );

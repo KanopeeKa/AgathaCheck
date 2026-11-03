@@ -4,7 +4,6 @@ import 'package:intl/intl.dart';
 
 import '../../../../core/router/shell_return_navigation.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../pet_care/pet_care.dart';
 import '../../domain/entities/health_occurrence.dart';
 import 'care_event_status_line.dart';
 import 'pet_event_view_providers.dart';
@@ -15,18 +14,18 @@ class PetEventPastOccurrencesSection extends ConsumerWidget {
     super.key,
     required this.entryId,
     required this.muted,
+    required this.maxVisibleRows,
     this.petId,
   });
 
   final String entryId;
   final bool muted;
 
+  /// Inline row cap from the care item layout (3 mobile / 5 wide).
+  final int maxVisibleRows;
+
   /// When set, each line opens its occurrence screen (§History, D-CIE-010).
   final String? petId;
-
-  static int visibleCapForLayout({required bool wideLayout}) {
-    return wideLayout ? 5 : 3;
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -44,13 +43,10 @@ class PetEventPastOccurrencesSection extends ConsumerWidget {
             .toList();
         if (rows.isEmpty) return const SizedBox.shrink();
 
-        final wideLayout =
-            MediaQuery.sizeOf(context).width >= kCareItemTwoColumnBreakpoint;
-        final cap = visibleCapForLayout(wideLayout: wideLayout);
-        final visible = rows.take(cap).toList();
+        final visible = rows.take(maxVisibleRows).toList();
 
         return Padding(
-          padding: CareSurfaceTokens.collectionInsetRowPadding,
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [

@@ -70,11 +70,6 @@ class CareItemDetailBody extends ConsumerWidget {
       pet: pet,
       isEstablished: isEstablished,
     );
-    final historyModule = _HistoryModule(
-      entry: entry,
-      muted: muted,
-      onSeeHistory: onSeeHistory,
-    );
 
     final observationSlot = _CareItemObservationSlot(
       petId: petId,
@@ -113,6 +108,13 @@ class CareItemDetailBody extends ConsumerWidget {
               ? constraints.maxWidth
               : MediaQuery.sizeOf(context).width;
           final wide = layoutWidth >= kCareItemTwoColumnBreakpoint;
+          final pastOccurrencesVisibleCap = wide ? 5 : 3;
+          final historyModule = _HistoryModule(
+            entry: entry,
+            muted: muted,
+            onSeeHistory: onSeeHistory,
+            pastOccurrencesVisibleCap: pastOccurrencesVisibleCap,
+          );
 
           Widget detailsModule({required bool includeEstablished}) {
             return _DetailsModule(
@@ -254,11 +256,13 @@ class _HistoryModule extends ConsumerWidget {
     required this.entry,
     required this.muted,
     required this.onSeeHistory,
+    required this.pastOccurrencesVisibleCap,
   });
 
   final HealthEntry entry;
   final bool muted;
   final VoidCallback onSeeHistory;
+  final int pastOccurrencesVisibleCap;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -299,6 +303,7 @@ class _HistoryModule extends ConsumerWidget {
                     entryId: entry.id,
                     petId: entry.petId,
                     muted: muted,
+                    maxVisibleRows: pastOccurrencesVisibleCap,
                   ),
                 ),
             ],
