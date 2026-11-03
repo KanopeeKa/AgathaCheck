@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/utils/calendar_date.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/health_history_entry.dart';
@@ -92,23 +91,3 @@ HealthHistoryEntry? lastCompletedHistory(List<HealthHistoryEntry> history) {
   return completed.isEmpty ? null : completed.first;
 }
 
-/// Past iterations exclude the current/next occurrence due date when open.
-List<HealthHistoryEntry> pastIterationsForEntry(
-  HealthEntry entry,
-  List<HealthHistoryEntry> history,
-) {
-  if (entry.frequency == HealthFrequency.once) return const [];
-  final sorted = sortedHistoryDesc(history);
-  if (!isHealthEntrySeriesClosed(entry) && entry.nextDueDate != null) {
-    final nextDay = calendarDateOnly(entry.nextDueDate!);
-    return sorted
-        .where(
-          (h) =>
-              h.dueDate == null ||
-              !calendarDateOnly(h.dueDate!).isAtSameMomentAs(nextDay),
-        )
-        .toList();
-  }
-  if (sorted.length <= 1) return const [];
-  return sorted.sublist(1);
-}
