@@ -3,7 +3,7 @@ title: Pet Care domain
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-10-08
+last_updated: 2026-11-03
 tags: [domain, pet_care, experience]
 ---
 
@@ -33,6 +33,7 @@ Part of the AgathaTrack domain-first documentation tree. Cross-cutting architect
 | Care Foundation roadmap (v0.4) | [care-foundation-roadmap.md](changes/care-foundation-roadmap.md) | Phases A–E sequencing |
 | Care progression slices | [care-progression-delivery-plan.md](changes/care-progression-delivery-plan.md) | CP-0–CP-7; rules in canonical |
 | Away planning (AW) | [away-planning-delivery-plan.md](changes/away-planning-delivery-plan.md) | AW-EMERGENCY–AW-10 |
+| Absences and per-pet away plans | [absence-per-pet-away-plans-spec.md](changes/absence-per-pet-away-plans-spec.md) | Proposed — functional spec under review; CARE-CONTEXT-R-025–R-041 |
 | Away planning — People amendments | [people-care-team.md](/docs/domains/people/features/people-care-team.md) § Away Planning integration | Folded from `amends-away-planning` |
 | Care Intelligence Phase D | [phase-d-review-relevance-plan.md](changes/phase-d-review-relevance-plan.md) | Research and delivery |
 | Classification taxonomy | [care-classification-taxonomy-spec.md](changes/care-classification-taxonomy-spec.md) | Spec → fold when delivered |
