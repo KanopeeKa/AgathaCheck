@@ -456,6 +456,17 @@ One **roster** on `/pc/people` backed by a UI aggregate **PersonRosterEntry** (c
 - **Removing someone** lists the access they'll still have and offers two choices: remove from the household only, or remove all access to my pets.
 - **Changing an absence** asks for confirmation whenever the change would widen access.
 
+### Linking a contact to a pet
+
+| ID | Requirement | Status |
+| --- | --- | --- |
+| PEOPLE-CARE-TEAM-R-002 | **Link to a pet** on contact detail and contact edit lists every personal pet the user can attach (the same set and names as the Add person pets step), not only pets already linked to some contact. Pets already linked to this contact show their current relationship; another relationship kind can still be added. With no linkable pets the button explains "No pets to link yet." instead of doing nothing. The sheet offers Provides care, Emergency contact and Other; primary and out-of-hours vet are set from the pet (Manage) or the contact's linked-pet row menu | Live |
+
+**Acceptance criteria**
+
+- *Given* a roster where only Buddy has a contact link and the user owns Buddy and Whiskers, *when* they open Link to a pet on a contact, *then* both pets are listed by name (PEOPLE-CARE-TEAM-R-002; test: `flutter_app/test/features/people/presentation/detail/person_detail_test.dart#link sheet lists every owned pet, not only already-linked ones`).
+- *Given* the user has no linkable pets, *when* they tap Link to a pet, *then* a "No pets to link yet." message appears (PEOPLE-CARE-TEAM-R-002; test: `flutter_app/test/features/people/presentation/detail/person_detail_test.dart#link to a pet with no owned pets explains instead of hanging`).
+
 ### Mockup corrections
 
 - **Filter sheet:** "Organisation" is a Kind, not a Relationship.
