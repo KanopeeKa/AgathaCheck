@@ -110,7 +110,7 @@ function buildHandoffPrompt(decision, snapshot, planMarkdown, { base } = {}) {
     'PR body, describe the cause, and end your turn with "worker done: blocked <check>: <reason>".',
     '',
     'Web bundle budget (scripts/ci/web-bundle-budget.json): when the flutter-build-web job fails on',
-    'check-web-bundle-budget.mjs and the overshoot comes from this phase\'s planned code, raise the cap to',
+    'check-web-bundle-budget.mjs and the overshoot comes from this phase\'s planned code (no new package or asset), raise the cap in this PR to',
     'the measured size plus about 1% and give before/after bytes in the PR body. Never cut planned scope to',
     'fit. A jump over about 1.5% of main.dart.js, or one you cannot explain, gets one trimming attempt',
     '(deferred import, drop the asset); if it is still over, report it as blocked with the numbers.',
