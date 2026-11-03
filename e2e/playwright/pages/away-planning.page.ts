@@ -67,6 +67,18 @@ export class AwayPlanningPage {
     ).toBeVisible({ timeout: 30_000 });
   }
 
+  async expectYourAbsencesSection(): Promise<void> {
+    await expect(
+      this.page.getByText(/Your absences|Vos absences/i).first(),
+    ).toBeVisible({ timeout: 30_000 });
+  }
+
+  async expectHubCardForAbsence(): Promise<void> {
+    await expect(
+      this.page.locator('[flt-semantics-identifier^="planned_absence_hub_card_"]').first(),
+    ).toBeVisible({ timeout: 30_000 });
+  }
+
   async openCreateForm(): Promise<void> {
     await this.page.goto(flutterGotoUrl('/pc/away/new'));
     await refreshFlutterAccessibility(this.page);

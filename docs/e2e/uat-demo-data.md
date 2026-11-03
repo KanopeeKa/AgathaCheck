@@ -81,7 +81,7 @@ node server/scripts/sync-demo-credentials-doc.js
 | **Care occurrences** | Every care behaviour of the care occurrences programme — see [Care occurrences](#care-occurrences) below |
 | **Health** | Vet visit record, active health issue |
 | **Care scheduling (CSM)** | Multi-time weekly course and a daily After-it's-done item (away-planning inputs); established weekly weight check |
-| **Away Planning** | Carer mix (all/some/none), five coverage-state windows, multi-time intersection, past/upcoming/cancelled absences, downloaded-then-edited handover timestamp |
+| **Away Planning** | Carer mix (all/some/none), five coverage-state windows, multi-time intersection, past/upcoming/cancelled absences, downloaded-then-edited handover timestamp; **per-pet UAT:** Frederique 3-pet absence (`starts_on = today+12`, `ends_on = today+18`, Buddy + Whiskers + Pebble), single-pet Buddy absence (`today+20` … `today+24`); Dave **co_parent** on Buddy only |
 | **Weight** | Weight history for Buddy and Whiskers |
 | **Vets** | Dr. Sarah Mitchell linked to Buddy |
 | **Timeline & family** | Buddy adoption milestone; Frederique holiday family event |

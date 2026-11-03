@@ -9,6 +9,7 @@ import 'package:pet_profile_app/features/pet_care/context/domain/entities/away_p
 import 'package:pet_profile_app/features/pet_care/context/domain/entities/care_period_coverage.dart';
 import 'package:pet_profile_app/features/pet_care/context/domain/entities/carer_candidate.dart';
 import 'package:pet_profile_app/features/pet_care/context/domain/entities/per_pet_away_plan_status.dart';
+import 'package:pet_profile_app/features/pet_care/context/domain/entities/pet_planned_absence_row.dart';
 import 'package:pet_profile_app/features/pet_care/context/domain/entities/planned_absence.dart';
 import 'package:pet_profile_app/features/pet_care/context/domain/repositories/care_context_repository.dart';
 import 'package:pet_profile_app/features/pet_care/context/presentation/providers/care_context_providers.dart';
@@ -181,6 +182,31 @@ class _FakeCareContextRepository implements CareContextRepository {
   }) {
     throw UnimplementedError();
   }
+
+  @override
+  Future<PetPlannedAbsenceListResult> listPetPlannedAbsences(String petId) async =>
+      PetPlannedAbsenceListResult(petId: petId, today: '2026-01-01', items: const []);
+
+  @override
+  Future<AddPetToAbsenceResult> addPetToPlannedAbsence({
+    required String absenceId,
+    required String petId,
+    bool confirmGuestAccessWiden = false,
+  }) async =>
+      AddPetToAbsenceResult(absence: absence, overlapWarnings: const []);
+
+  @override
+  Future<RemovePetFromAbsenceResult> removePetFromPlannedAbsence({
+    required String absenceId,
+    required String petId,
+    bool confirmDeleteAbsence = false,
+  }) async =>
+      RemovePetFromAbsenceResult(
+        absenceDeleted: false,
+        absenceId: absenceId,
+        petId: petId,
+        absence: absence,
+      );
 }
 
 const absence = PlannedAbsence(

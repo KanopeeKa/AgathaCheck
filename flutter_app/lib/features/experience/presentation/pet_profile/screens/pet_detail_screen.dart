@@ -66,6 +66,15 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
         final showExport = viewerContext.can(PetDetailAction.downloadReport);
 
         final overflowActions = <ScreenOverflowAction>[
+          if (viewerContext.can(PetDetailAction.planAbsence))
+            ScreenOverflowAction(
+              key: const Key('pet_detail_plan_absence_action'),
+              menuItemKey: const Key('pet_detail_plan_absence_menu_item'),
+              semanticsIdentifier: 'pet_detail_plan_absence_menu_item',
+              label: l.careContextPlanAnAbsence,
+              icon: Icons.flight_takeoff_outlined,
+              onPressed: () => context.push('/pc/away/new?petId=${widget.petId}'),
+            ),
           if (showSharing)
             ScreenOverflowAction(
               key: const Key('pet_detail_sharing_action'),

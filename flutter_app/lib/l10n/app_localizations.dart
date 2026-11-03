@@ -12763,6 +12763,114 @@ abstract class AppLocalizations {
   /// **'{name} is away'**
   String careContextTravellerNameAway(String name);
 
+  /// No description provided for @careContextHubYourAbsences.
+  ///
+  /// In en, this message translates to:
+  /// **'Your absences'**
+  String get careContextHubYourAbsences;
+
+  /// No description provided for @careContextHubOtherPeoplesAbsences.
+  ///
+  /// In en, this message translates to:
+  /// **'Other people\'s absences'**
+  String get careContextHubOtherPeoplesAbsences;
+
+  /// No description provided for @careContextPlanAnAbsence.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan an absence'**
+  String get careContextPlanAnAbsence;
+
+  /// No description provided for @careContextAddPetToAbsence.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a pet'**
+  String get careContextAddPetToAbsence;
+
+  /// No description provided for @careContextAddPetToAbsenceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a pet to this absence'**
+  String get careContextAddPetToAbsenceTitle;
+
+  /// No description provided for @careContextAddPetNoneAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No other pets are available to add.'**
+  String get careContextAddPetNoneAvailable;
+
+  /// No description provided for @careContextAddPetSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Pet added to this absence.'**
+  String get careContextAddPetSuccess;
+
+  /// No description provided for @careContextAddPetFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not add pet. Try again.'**
+  String get careContextAddPetFailed;
+
+  /// No description provided for @careContextRemovePetFromAbsence.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {pet} from this absence'**
+  String careContextRemovePetFromAbsence(String pet);
+
+  /// No description provided for @careContextRemovePetConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {pet} from this absence?'**
+  String careContextRemovePetConfirmTitle(String pet);
+
+  /// No description provided for @careContextRemovePetConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This removes this pet\'s carer assignment, notes for this pet, and care decisions made for this trip. Care items and their dates won\'t change.'**
+  String get careContextRemovePetConfirmBody;
+
+  /// No description provided for @careContextRemovePetLastConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{pet} is the only pet on this absence. Removing it deletes the absence.'**
+  String careContextRemovePetLastConfirmBody(String pet);
+
+  /// No description provided for @careContextRemovePetConfirmAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove pet'**
+  String get careContextRemovePetConfirmAction;
+
+  /// No description provided for @careContextRemovePetSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'{pet} was removed from this absence.'**
+  String careContextRemovePetSuccess(String pet);
+
+  /// No description provided for @careContextRemovePetAbsenceDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'This absence was deleted.'**
+  String get careContextRemovePetAbsenceDeleted;
+
+  /// No description provided for @careContextRemovePetFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not remove pet. Try again.'**
+  String get careContextRemovePetFailed;
+
+  /// No description provided for @careContextPetPageAwaySectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Away plans'**
+  String get careContextPetPageAwaySectionTitle;
+
+  /// No description provided for @careContextPetPageAllAbsences.
+  ///
+  /// In en, this message translates to:
+  /// **'All absences'**
+  String get careContextPetPageAllAbsences;
+
   /// No description provided for @careContextAbsencePetsSectionTitle.
   ///
   /// In en, this message translates to:

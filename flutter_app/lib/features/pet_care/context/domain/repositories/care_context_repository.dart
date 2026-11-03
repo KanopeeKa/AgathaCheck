@@ -3,6 +3,7 @@ import '../entities/away_plan_readiness.dart';
 import '../entities/care_period_coverage.dart';
 import '../entities/carer_candidate.dart';
 import '../entities/per_pet_away_plan_status.dart';
+import '../entities/pet_planned_absence_row.dart';
 import '../entities/planned_absence.dart';
 
 abstract class CareContextRepository {
@@ -62,4 +63,18 @@ abstract class CareContextRepository {
   Future<PlannedAbsence> cancelPlannedAbsence(String absenceId);
 
   Future<Map<String, String>> getAbsenceResolutionNotes(String absenceId);
+
+  Future<PetPlannedAbsenceListResult> listPetPlannedAbsences(String petId);
+
+  Future<AddPetToAbsenceResult> addPetToPlannedAbsence({
+    required String absenceId,
+    required String petId,
+    bool confirmGuestAccessWiden = false,
+  });
+
+  Future<RemovePetFromAbsenceResult> removePetFromPlannedAbsence({
+    required String absenceId,
+    required String petId,
+    bool confirmDeleteAbsence = false,
+  });
 }

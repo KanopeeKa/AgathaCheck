@@ -7245,6 +7245,70 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get careContextHubYourAbsences => 'Your absences';
+
+  @override
+  String get careContextHubOtherPeoplesAbsences => 'Other people\'s absences';
+
+  @override
+  String get careContextPlanAnAbsence => 'Plan an absence';
+
+  @override
+  String get careContextAddPetToAbsence => 'Add a pet';
+
+  @override
+  String get careContextAddPetToAbsenceTitle => 'Add a pet to this absence';
+
+  @override
+  String get careContextAddPetNoneAvailable =>
+      'No other pets are available to add.';
+
+  @override
+  String get careContextAddPetSuccess => 'Pet added to this absence.';
+
+  @override
+  String get careContextAddPetFailed => 'Could not add pet. Try again.';
+
+  @override
+  String careContextRemovePetFromAbsence(String pet) {
+    return 'Remove $pet from this absence';
+  }
+
+  @override
+  String careContextRemovePetConfirmTitle(String pet) {
+    return 'Remove $pet from this absence?';
+  }
+
+  @override
+  String get careContextRemovePetConfirmBody =>
+      'This removes this pet\'s carer assignment, notes for this pet, and care decisions made for this trip. Care items and their dates won\'t change.';
+
+  @override
+  String careContextRemovePetLastConfirmBody(String pet) {
+    return '$pet is the only pet on this absence. Removing it deletes the absence.';
+  }
+
+  @override
+  String get careContextRemovePetConfirmAction => 'Remove pet';
+
+  @override
+  String careContextRemovePetSuccess(String pet) {
+    return '$pet was removed from this absence.';
+  }
+
+  @override
+  String get careContextRemovePetAbsenceDeleted => 'This absence was deleted.';
+
+  @override
+  String get careContextRemovePetFailed => 'Could not remove pet. Try again.';
+
+  @override
+  String get careContextPetPageAwaySectionTitle => 'Away plans';
+
+  @override
+  String get careContextPetPageAllAbsences => 'All absences';
+
+  @override
   String get careContextAbsencePetsSectionTitle => 'Pets on this absence';
 
   @override

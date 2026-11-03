@@ -28,6 +28,7 @@ export 'presentation/widgets/care_surface/care_item_stat_row.dart';
 export 'presentation/widgets/care_surface/care_item_status_pill.dart';
 export 'presentation/widgets/care_surface/care_surface_tokens.dart';
 export 'context/presentation/widgets/planned_absence_entry_tile.dart';
+export 'context/presentation/widgets/pet_page_away_plans_section.dart';
 export 'presentation/widgets/care_agenda/care_agenda_inset_items.dart';
 export 'context/presentation/providers/care_context_providers.dart';
 export 'core/care_family_capabilities.dart';
