@@ -15,7 +15,18 @@ Future<void> showLinkPetSheet({
   required String contactId,
   List<ContactPetLink> linkedPets = const [],
 }) async {
-  final pets = await ref.read(linkablePetOptionsProvider.future);
+  final List<RosterPetOption> pets;
+  try {
+    pets = await ref.read(linkablePetOptionsProvider.future);
+  } catch (_) {
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(AppLocalizations.of(context)!.peopleListLoadError),
+      ),
+    );
+    return;
+  }
   if (!context.mounted) return;
   if (pets.isEmpty) {
     ScaffoldMessenger.of(context).showSnackBar(

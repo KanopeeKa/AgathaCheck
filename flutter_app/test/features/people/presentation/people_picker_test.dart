@@ -150,6 +150,33 @@ void main() {
     expect(find.byKey(const Key('people_picker_option_none')), findsOneWidget);
   });
 
+  testWidgets('field shows the supplied label, not the selected name', (
+    tester,
+  ) async {
+    final roster = Roster(
+      households: const [],
+      contacts: [_active(id: 'a', name: 'Alex')],
+      pendingInvites: const [],
+    );
+    await tester.pumpWidget(
+      _pickerHarness(
+        repo: PickerFakeRepository(roster),
+        roster: roster,
+        child: PeoplePickerField(
+          purpose: 'test',
+          query: const PeopleQuery(),
+          label: 'Primary vet',
+          value: roster.contacts.first,
+          onChanged: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Primary vet'), findsOneWidget);
+    expect(find.text('Alex'), findsOneWidget);
+  });
+
   testWidgets('picker none option when allowNone', (tester) async {
     PeoplePickerResult? result;
     final roster = Roster(

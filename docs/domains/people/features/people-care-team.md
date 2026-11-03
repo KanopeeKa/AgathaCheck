@@ -470,7 +470,7 @@ One **roster** on `/pc/people` backed by a UI aggregate **PersonRosterEntry** (c
 
 | ID | Requirement | Status |
 | --- | --- | --- |
-| PEOPLE-CARE-TEAM-R-002 | **Link to a pet** on contact detail and contact edit lists every personal pet the user can attach (the same set and names as the Add person pets step), not only pets already linked to some contact. Pets already linked to this contact show their current relationship; another relationship kind can still be added. With no linkable pets the button explains "No pets to link yet." instead of doing nothing. The sheet offers Provides care, Emergency contact and Other; primary and out-of-hours vet are set from the pet (Manage) or the contact's linked-pet row menu | Live |
+| PEOPLE-CARE-TEAM-R-002 | **Link to a pet** on contact detail and contact edit lists every personal pet the user can attach (the same set and names as the Add person pets step), not only pets already linked to some contact. Pets already linked to this contact show their current relationship; another relationship kind can still be added. With no linkable pets the button explains "No pets to link yet." instead of doing nothing. If the pet list fails to load, the contacts load-error message is shown. The sheet offers Provides care, Emergency contact and Other; primary and out-of-hours vet are set from the pet (Manage) or the contact's linked-pet row menu | Live |
 
 **Acceptance criteria**
 

@@ -36,7 +36,7 @@ class PeoplePickerField extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
-    final label = value == null
+    final displayText = value == null
         ? (placeholder ?? l.peoplePickerPlaceholder)
         : value!.name;
     final subtitle = value == null ? null : contactRolesLine(l, value!.roles);
@@ -44,7 +44,7 @@ class PeoplePickerField extends ConsumerWidget {
     return Semantics(
       identifier: 'people_picker_field_$purpose',
       button: true,
-      label: label,
+      label: displayText,
       child: InkWell(
         onTap: () => _open(context, ref),
         child: InputDecorator(
@@ -63,7 +63,7 @@ class PeoplePickerField extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(label),
+                    Text(displayText),
                     if (subtitle != null && subtitle.isNotEmpty)
                       Text(
                         subtitle,

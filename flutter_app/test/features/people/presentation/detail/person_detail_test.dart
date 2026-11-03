@@ -229,6 +229,30 @@ void main() {
     expect(find.text('No pets to link yet.'), findsOneWidget);
   });
 
+  testWidgets('link to a pet reports a pet-list load failure', (tester) async {
+    final roster = sampleHubRoster();
+    final repo = DetailFakePeopleRepository({'carer-1': _vetDetail()});
+    await tester.pumpWidget(
+      _detailApp(
+        overrides: [
+          ..._baseOverrides(roster, repo),
+          linkablePetOptionsProvider.overrideWith(
+            (ref) async => throw Exception('network'),
+          ),
+        ],
+        child: const PersonDetailPage(personId: 'carer-1'),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Pets & access'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('people_detail_link_to_pet')));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(RadioListTile<String>), findsNothing);
+    expect(find.text('Could not load contacts. Try again.'), findsOneWidget);
+  });
+
   testWidgets('pending invite variant shows single-page status', (
     tester,
   ) async {
