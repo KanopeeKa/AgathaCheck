@@ -11,6 +11,11 @@ const { execFileSync } = require('child_process');
 const path = require('path');
 const { ExecutePlanError, V2_DEFAULTS } = require('./execute_plan_constants');
 const { buildSnapshotFromPlan, parsePlanMarkdown } = require('./execute_plan_snapshot_v2');
+const {
+  ownPlanFilePaths,
+  extraInitBranchFiles,
+  formatInitBranchOnlyPlanFilesMessage,
+} = require('./execute_plan_own_files');
 
 const INIT_EXIT_CODE = 3;
 
@@ -45,24 +50,40 @@ function renderIssueBody(snapshot, hashText) {
  *           cwd?: string, fsImpl?: typeof fs }} args
  * `git` exposes: currentBranch(), statusPorcelain(), add(paths), commit(message), pushUpstream(), headSha().
  */
+function assertInitBranchCommittedOnlyPlanFiles(planId, git) {
+  const committed = git.committedFilesVsMain();
+  const extras = extraInitBranchFiles(planId, committed);
+  if (extras.length > 0) {
+    throw initError(formatInitBranchOnlyPlanFilesMessage({
+      planId,
+      files: committed,
+      committedFilenames: committed,
+    }));
+  }
+}
+
 async function runInit({ client, planId, windowDays = V2_DEFAULTS.window_days, dryRun = false, git, now = new Date(), cwd = process.cwd(), fsImpl = fs }) {
-  const planRel = `.agents/plans/${planId}.md`;
-  const snapRel = `.agents/plans/${planId}.snapshot.json`;
+  const [planRel, snapRel] = ownPlanFilePaths(planId);
+
+  const initBranch = `cursor/${planId}-init`;
+  const branch = git.currentBranch();
+  if (!dryRun && branch !== initBranch) {
+    throw initError(`init must run on branch ${initBranch} (current: ${branch || 'detached'})`);
+  }
+  if (branch === initBranch) {
+    assertInitBranchCommittedOnlyPlanFiles(planId, git);
+  }
 
   if (!dryRun) {
-    const branch = git.currentBranch();
-    if (branch !== `cursor/${planId}-init`) {
-      throw initError(`init must run on branch cursor/${planId}-init (current: ${branch || 'detached'})`);
-    }
     const dirty = git
       .statusPorcelain()
       .split('\n')
       .map((l) => l.trim())
       .filter(Boolean)
       .map((l) => l.replace(/^\S+\s+/, ''))
-      .filter((file) => file !== planRel);
+      .filter((file) => file !== planRel && file !== snapRel);
     if (dirty.length > 0) {
-      throw initError(`working tree must be clean except ${planRel} (found: ${dirty.join(', ')})`);
+      throw initError(`working tree must be clean except ${planRel} (and ${snapRel} while init runs) (found: ${dirty.join(', ')})`);
     }
   }
 
@@ -112,6 +133,20 @@ function realGit(cwd = process.cwd()) {
   return {
     currentBranch: () => run('rev-parse', '--abbrev-ref', 'HEAD').trim().replace(/^HEAD$/, ''),
     statusPorcelain: () => run('status', '--porcelain'),
+    committedFilesVsMain: () => {
+      let base;
+      try {
+        base = run('merge-base', 'HEAD', 'origin/main').trim();
+      } catch {
+        try {
+          base = run('merge-base', 'HEAD', 'main').trim();
+        } catch (e) {
+          throw initError('cannot compare init branch to main (fetch origin main first)');
+        }
+      }
+      const out = run('diff', '--name-only', `${base}..HEAD`).trim();
+      return out ? out.split('\n').filter(Boolean) : [];
+    },
     add: (paths) => run('add', '--', ...paths),
     commit: (message) => run('commit', '-m', message),
     pushUpstream: () => run('push', '-u', 'origin', 'HEAD'),
@@ -140,4 +175,4 @@ async function cliInit(planId, flags) {
   console.log(result.output);
 }
 
-module.exports = { INIT_EXIT_CODE, approvalLine, cliInit, runInit };
+module.exports = { INIT_EXIT_CODE, approvalLine, cliInit, runInit, assertInitBranchCommittedOnlyPlanFiles };

@@ -3,7 +3,7 @@ title: Plan Template
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-11-01
+last_updated: 2026-11-03
 tags: [agent-efficiency, policy]
 ---
 # Plan template — execute-plan v2
@@ -24,9 +24,13 @@ uncertain, split into a second plan id rather than expanding paths mid-run.
 
 1. Branch `cursor/<plan_id>-init` from `main`.
 2. Copy the skeleton below into `.agents/plans/<plan_id>.md` and fill it in.
+   **Do not** commit delivery plans (`docs/**/changes/*-delivery-plan.md`), README index rows, or
+   other docs on the init branch — merge those to `main` in a normal PR first.
 3. Run `node scripts/execute_plan_runtime.js init <plan_id> [--window-days N]`.
    - Default window: **7** days (`approved_until`).
    - Cap: **14** days (`--window-days` cannot exceed the cap in code).
+   - `init` refuses when the branch’s committed diff vs `main` is not only the plan markdown
+     (and an existing snapshot if present). Fix before `init` creates the control issue.
 4. Commit and push the init branch; end the planning session with the **exact approval line** printed by `init`.
 5. Owner posts that line on the control issue. `init` creates the issue with label `execute-plan` only;
    after a valid approval comment, the approve workflow adds `plan:<plan_id>` and `autonomous-approved`.
