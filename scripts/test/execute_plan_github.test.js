@@ -229,6 +229,7 @@ test('compare maps fields', async () => {
     status: 'ahead',
     ahead_by: 2,
     behind_by: 0,
+    merge_base_commit: null,
     files: [{ filename: 'a.js', status: 'modified' }],
   });
 });

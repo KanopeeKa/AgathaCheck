@@ -15,6 +15,19 @@ const formatIgnoredNote = (verb, commentId, agentId, now) =>
 const formatStoppedNote = (verb, commentId, agentId) =>
   `execute-plan: ${verb}-autonomous comment ${commentId} not accepted — posted while worker ${agentId} was running; plan stopped (needs-owner).`;
 
+const formatKeyUnavailableNote = (verb, commentId) =>
+  `execute-plan: ${verb}-autonomous comment ${commentId} not accepted — CURSOR_API_KEY unavailable; authorization not accepted.`;
+
+const NOT_ACCEPTED_RE = /execute-plan: (\w+)-autonomous comment (\d+) not accepted —/;
+
+function commentHasRejectionNote(comments, commentId) {
+  for (const c of comments || []) {
+    const m = NOT_ACCEPTED_RE.exec(String(c.body || '').trim());
+    if (m && Number(m[2]) === commentId) return true;
+  }
+  return false;
+}
+
 function parseAckBody(body) {
   const m = ACK_RE.exec(String(body || '').trim());
   return m ? { commentId: Number(m[1]), runId: Number(m[2]) } : null;
@@ -42,6 +55,7 @@ async function acceptedAuthorizationIds(client, comments, { botLogin = 'github-a
     if (!run || run.path !== '.github/workflows/execute-plan-approve.yml' || run.head_branch !== 'main' || run.event !== 'issue_comment') {
       continue;
     }
+    if (commentHasRejectionNote(comments, parsed.commentId)) continue;
     accepted.add(parsed.commentId);
   }
   return accepted;
@@ -52,6 +66,8 @@ module.exports = {
   formatAck,
   formatIgnoredNote,
   formatStoppedNote,
+  formatKeyUnavailableNote,
   parseAckBody,
+  commentHasRejectionNote,
   acceptedAuthorizationIds,
 };
