@@ -117,17 +117,13 @@ export async function loadDeclarerDisplayName(pool, viewerUserId, declarerUserId
  */
 export function coVisibleAbsencesListSql(scope, todayIso) {
   const profileSql = petProfileAccessSql('p', '$1');
-  // DISTINCT pet joins can duplicate absence rows; select ids first so ORDER BY is valid.
-  const visibleIds = `SELECT DISTINCT pa.id
+  const base = `SELECT DISTINCT pa.*
      FROM planned_absences pa
      INNER JOIN planned_absence_pets pap ON pap.planned_absence_id = pa.id
      INNER JOIN pets p ON p.id = pap.pet_id
      WHERE pa.user_id != $1
        AND pa.status != $2
        AND ${profileSql}`;
-  const base = `SELECT pa.*
-     FROM planned_absences pa
-     WHERE pa.id IN (${visibleIds})`;
   if (scope === 'upcoming') {
     return {
       sql: `${base}
