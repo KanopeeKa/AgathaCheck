@@ -14,7 +14,9 @@ import 'package:pet_profile_app/features/people/domain/enums/contact_role.dart';
 import 'package:pet_profile_app/features/people/domain/enums/contact_status.dart';
 import 'package:pet_profile_app/features/people/domain/enums/relationship_kind.dart';
 import 'package:pet_profile_app/features/people/domain/repositories/people_repository.dart';
+import 'package:pet_profile_app/features/people/presentation/detail/linkable_pets_provider.dart';
 import 'package:pet_profile_app/features/people/presentation/detail/person_detail_page.dart';
+import 'package:pet_profile_app/features/people/presentation/detail/person_detail_target.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -92,8 +94,18 @@ Widget _detailApp({required Widget child, required List<Override> overrides}) {
   );
 }
 
-List<Override> _baseOverrides(Roster roster, PeopleRepository repo) {
+const _ownedPets = [
+  RosterPetOption(petId: 'pet-1', petName: 'Buddy'),
+  RosterPetOption(petId: 'pet-2', petName: 'Whiskers'),
+];
+
+List<Override> _baseOverrides(
+  Roster roster,
+  PeopleRepository repo, {
+  List<RosterPetOption> pets = _ownedPets,
+}) {
   return [
+    linkablePetOptionsProvider.overrideWith((ref) async => pets),
     rosterProvider.overrideWith(() => TestRosterNotifier(roster)),
     peopleRepositoryProvider.overrideWithValue(repo),
     householdsRepositoryProvider.overrideWithValue(FakeHouseholdsRepository()),
@@ -172,6 +184,73 @@ void main() {
     expect(repo.linkCalls, 1);
     expect(repo.lastPetId, 'pet-1');
     expect(container.read(personDetailProvider('carer-1')).isLoading, isTrue);
+  });
+
+  testWidgets(
+    'link sheet lists every owned pet, not only already-linked ones',
+    (tester) async {
+      final roster = sampleHubRoster();
+      final repo = DetailFakePeopleRepository({'carer-1': _vetDetail()});
+      await tester.pumpWidget(
+        _detailApp(
+          overrides: _baseOverrides(roster, repo),
+          child: const PersonDetailPage(personId: 'carer-1'),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Pets & access'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('people_detail_link_to_pet')));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(RadioListTile<String>), findsNWidgets(2));
+      expect(find.text('Whiskers'), findsOneWidget);
+    },
+  );
+
+  testWidgets('link to a pet with no owned pets explains instead of hanging', (
+    tester,
+  ) async {
+    final roster = sampleHubRoster();
+    final repo = DetailFakePeopleRepository({'carer-1': _vetDetail()});
+    await tester.pumpWidget(
+      _detailApp(
+        overrides: _baseOverrides(roster, repo, pets: const []),
+        child: const PersonDetailPage(personId: 'carer-1'),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Pets & access'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('people_detail_link_to_pet')));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(RadioListTile<String>), findsNothing);
+    expect(find.text('No pets to link yet.'), findsOneWidget);
+  });
+
+  testWidgets('link to a pet reports a pet-list load failure', (tester) async {
+    final roster = sampleHubRoster();
+    final repo = DetailFakePeopleRepository({'carer-1': _vetDetail()});
+    await tester.pumpWidget(
+      _detailApp(
+        overrides: [
+          ..._baseOverrides(roster, repo),
+          linkablePetOptionsProvider.overrideWith(
+            (ref) async => throw Exception('network'),
+          ),
+        ],
+        child: const PersonDetailPage(personId: 'carer-1'),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Pets & access'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('people_detail_link_to_pet')));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(RadioListTile<String>), findsNothing);
+    expect(find.text('Could not load contacts. Try again.'), findsOneWidget);
   });
 
   testWidgets('pending invite variant shows single-page status', (

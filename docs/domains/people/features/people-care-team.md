@@ -5,7 +5,7 @@ audience: both
 domain: people
 feature_id: people_care_team
 status: implemented
-last_updated: 2026-11-02
+last_updated: 2026-11-03
 related_bdd: [away_planning.feature, away_plan_detail_v2.feature, sharing.feature, veterinarian_management.feature, notifications.feature]
 ---
 
@@ -295,6 +295,16 @@ Contacts have five layers (D11). This means no shared fact depends on whoever ty
 - **An inactive contact that is still in use stays visible.** It's marked "Inactive" and the screen suggests choosing a replacement. It's never silently cleared or swapped (D18).
 - Inactive contacts don't appear in pickers.
 
+### Pet slot pickers
+
+| ID | Requirement | Status |
+| --- | --- | --- |
+| PEOPLE-CARE-TEAM-R-001 | The pet profile **Emergency contacts → Manage** pickers (primary vet, out-of-hours vet, emergency contact) list the whole directory — active professionals with the `vet` role for the two vet slots, carers for emergency contacts — not only contacts already linked to that pet. Choosing one creates the pet link as part of the slot write | Live |
+
+**Acceptance criteria**
+
+- *Given* a pet with no contact links and a directory containing a vet clinic and a vet person, *when* the owner opens Manage and taps the primary-vet picker, *then* both vets are listed and non-vet professionals are not (PEOPLE-CARE-TEAM-R-001; test: `flutter_app/test/features/people/presentation/pet/pet_people_section_test.dart#primary vet picker lists directory vets for an unlinked pet`).
+
 ## Absences and guest access
 
 A sitter gets Can log care on the absence's pets, for the absence's dates, through their own account. Access never widens silently. If they don't sign up, they get the PDF handover (D8).
@@ -424,6 +434,16 @@ One **roster** on `/pc/people` backed by a UI aggregate **PersonRosterEntry** (c
     - the "Looked after by" picker
 - **Desktop:** rail/sidebar **People** plus master–detail on `/pc/people`.
 
+### Picker feedback
+
+| ID | Requirement | Status |
+| --- | --- | --- |
+| PEOPLE-CARE-TEAM-R-003 | A contact picker with nothing to choose says so: vet pickers read "No vets in your contacts yet. Type a name to add one."; other pickers use a generic line. "None" stays available when allowed. The pet form's vet field is labelled **Primary vet** (not the generic "Contact") | Live |
+
+**Acceptance criteria**
+
+- *Given* a directory with no active vets, *when* the user opens a vet picker, *then* the empty-state line shows and None is still offered (PEOPLE-CARE-TEAM-R-003; test: `flutter_app/test/features/people/presentation/people_picker_test.dart#vet picker explains an empty directory`).
+
 ### Grouping
 
 - **People:** one section per household, headed by the household's name, then carers, then professionals.
@@ -445,6 +465,17 @@ One **roster** on `/pc/people` backed by a UI aggregate **PersonRosterEntry** (c
 - **Creating a household** includes the review step for which pets will be shared.
 - **Removing someone** lists the access they'll still have and offers two choices: remove from the household only, or remove all access to my pets.
 - **Changing an absence** asks for confirmation whenever the change would widen access.
+
+### Linking a contact to a pet
+
+| ID | Requirement | Status |
+| --- | --- | --- |
+| PEOPLE-CARE-TEAM-R-002 | **Link to a pet** on contact detail and contact edit lists every personal pet the user can attach (the same set and names as the Add person pets step), not only pets already linked to some contact. Pets already linked to this contact show their current relationship; another relationship kind can still be added. With no linkable pets the button explains "No pets to link yet." instead of doing nothing. If the pet list fails to load, the contacts load-error message is shown. The sheet offers Provides care, Emergency contact and Other; primary and out-of-hours vet are set from the pet (Manage) or the contact's linked-pet row menu | Live |
+
+**Acceptance criteria**
+
+- *Given* a roster where only Buddy has a contact link and the user owns Buddy and Whiskers, *when* they open Link to a pet on a contact, *then* both pets are listed by name (PEOPLE-CARE-TEAM-R-002; test: `flutter_app/test/features/people/presentation/detail/person_detail_test.dart#link sheet lists every owned pet, not only already-linked ones`).
+- *Given* the user has no linkable pets, *when* they tap Link to a pet, *then* a "No pets to link yet." message appears (PEOPLE-CARE-TEAM-R-002; test: `flutter_app/test/features/people/presentation/detail/person_detail_test.dart#link to a pet with no owned pets explains instead of hanging`).
 
 ### Mockup corrections
 

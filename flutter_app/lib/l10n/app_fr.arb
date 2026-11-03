@@ -3008,6 +3008,8 @@
   "peoplePickerPlaceholder": "Choisir quelqu'un",
   "peoplePickerTitle": "Choisir un contact",
   "peoplePickerFieldLabel": "Contact",
+  "peoplePickerEmptyVets": "Aucun vétérinaire dans vos contacts. Saisissez un nom pour en ajouter un.",
+  "peoplePickerEmptyGeneric": "Personne à choisir pour l'instant. Saisissez un nom pour ajouter quelqu'un.",
   "peoplePickerNone": "Aucun",
   "peoplePickerSearchHint": "Rechercher des personnes ou rôles",
   "peoplePickerCurrentSelection": "Sélection actuelle",
