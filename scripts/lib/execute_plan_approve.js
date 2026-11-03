@@ -7,12 +7,16 @@
  * `clients` = { bot, read, deps? } as in execute_plan_driver_actions.js; `read` (GITHUB_TOKEN) dispatches the driver.
  */
 
-const { parseControlComment, validateControlComment } = require('./execute_plan_approval');
+const { parseControlComment, validateControlComment, findControlComments } = require('./execute_plan_approval');
 const { loadSnapshotAtRef } = require('./execute_plan_snapshot_v2');
 const { loadPlanContext, CONFIG_PATH } = require('./execute_plan_observe');
-const { formatStatusComment, STATUS_MARKER } = require('./execute_plan_status');
+const { formatStatusComment, STATUS_MARKER, parseStatusComment } = require('./execute_plan_status');
 const { labelNames } = require('./execute_plan_plans');
 const { normalizeKillSwitch, isoNow } = require('./execute_plan_driver_actions');
+const { deriveControl } = require('./execute_plan_control');
+const { formatAck, formatIgnoredNote, formatStoppedNote, acceptedAuthorizationIds } = require('./execute_plan_ack');
+
+const RUNNING = new Set(['CREATING', 'RUNNING', 'UNKNOWN']);
 
 const DRIVER_WORKFLOW = 'execute-plan-driver.yml';
 const INIT_LINE_RE = /^Init branch: (\S+) @ ([0-9a-f]{40})\s*$/m;
@@ -31,7 +35,47 @@ async function reject(bot, issueNumber, verb, reason) {
   return done(true, `rejected: ${reason}`);
 }
 
-async function handleApprove(clients, { issue, comment, parsed, config }, { now, log, dry }) {
+async function gateAuthorization(clients, ctx, { issue, comment, parsed, now, log, dry, runId }) {
+  if (dry) return null;
+  if (!runId) throw new Error('authorization gate requires GITHUB_RUN_ID');
+  const { read, bot, cursorApiKey, deps } = clients;
+  const lease = ctx && ctx.status && ctx.status.lease;
+  let running = false;
+  const agentId = (lease && lease.agent_id) || 'unknown';
+  if (lease && lease.agent_id && lease.run_id && cursorApiKey) {
+    const getStatus = (deps && deps.getAgentRunStatus) || require('../../.github/scripts/execute-plan-launch').getAgentRunStatus;
+    const st = await getStatus({ apiKey: cursorApiKey, agentId: lease.agent_id, runId: lease.run_id });
+    running = RUNNING.has(st);
+  }
+  const labels = labelNames(issue);
+  let stopped = false;
+  if (ctx) {
+    const control = findControlComments(ctx.comments, ctx.snapshot, ctx.config, {
+      accepted: ctx.acceptedAuthorizations || new Set(),
+    });
+    stopped = deriveControl(
+      { ...control, labels, status: ctx.status, revoke_comment_at: control.revoke_comment_at },
+      { now },
+    ).stopped;
+  }
+  if (running) {
+    if (stopped) {
+      await read.createComment(issue.number, formatIgnoredNote(parsed.verb, comment.id, agentId, now));
+      log(`plan ${parsed.plan}: ${parsed.verb} ignored while worker ${agentId} running (plan stopped)`);
+      return done(true, 'authorization ignored (worker running, plan stopped)');
+    }
+    await bot.addLabels(issue.number, ['needs-owner']);
+    await read.createComment(issue.number, formatStoppedNote(parsed.verb, comment.id, agentId));
+    await read.dispatchWorkflow(DRIVER_WORKFLOW, 'main', { plan_id: parsed.plan });
+    log(`plan ${parsed.plan}: stopped: ${parsed.verb} while worker ${agentId} running`);
+    return done(true, 'authorization rejected (worker running)');
+  }
+  await read.createComment(issue.number, formatAck(comment.id, runId));
+  log(`plan ${parsed.plan}: authorization ack for comment ${comment.id}`);
+  return null;
+}
+
+async function handleApprove(clients, { issue, comment, parsed, config }, { now, log, dry, runId }) {
   const { bot, read } = clients;
   const rejectWith = (reason) => (dry ? done(false, `would reject: ${reason}`) : reject(bot, issue.number, 'approve', reason));
 
@@ -62,10 +106,24 @@ async function handleApprove(clients, { issue, comment, parsed, config }, { now,
     return rejectWith(`integration branch ${snapshot.integration_branch} already exists at ${existing.commit.sha}`);
   }
   if (dry) return done(false, 'dry-run: approve is valid');
+  const comments = await read.listIssueComments(issue.number);
+  const accepted = await acceptedAuthorizationIds(read, comments);
+  const marker = STATUS_MARKER(snapshot.plan_id);
+  const statusRow = comments.find(
+    (c) => String(c.body || '').trimStart().startsWith(marker) && c.user && c.user.login === config.bot_login,
+  );
+  const status = statusRow ? parseStatusComment(statusRow.body) : null;
+  const gateCtx = {
+    snapshot,
+    config,
+    comments,
+    status: status || { lease: null, stop: null },
+    acceptedAuthorizations: accepted,
+  };
+  const blocked = await gateAuthorization(clients, gateCtx, { issue, comment, parsed, now, log, dry, runId });
+  if (blocked) return blocked;
 
   if (!existing) await bot.createRef(`refs/heads/${snapshot.integration_branch}`, sha);
-  const marker = STATUS_MARKER(snapshot.plan_id);
-  const comments = await bot.listIssueComments(issue.number);
   const hasStatus = comments.some((c) => String(c.body || '').trimStart().startsWith(marker) && c.user && c.user.login === config.bot_login);
   if (!hasStatus) {
     await bot.createComment(issue.number, formatStatusComment({
@@ -101,7 +159,7 @@ async function approvedContext(clients, issue, planId) {
  * @param {{ action: string, issue: object, comment: object }} event  parsed issue_comment payload
  * @returns {Promise<{ handled: boolean, detail: string }>}
  */
-async function handleControlComment(clients, event, { now = isoNow(), killSwitch, log = () => {} } = {}) {
+async function handleControlComment(clients, event, { now = isoNow(), killSwitch, log = () => {}, runId = null } = {}) {
   const sw = normalizeKillSwitch(killSwitch);
   if (sw === 'off') return done(false, 'kill switch off');
   const dry = sw === 'dry-run';
@@ -132,18 +190,23 @@ async function handleControlComment(clients, event, { now = isoNow(), killSwitch
   if (event.action !== 'created') return done(false, `ignored action ${event.action}`);
 
   if (parsed.verb === 'approve') {
-    const res = await handleApprove(clients, { issue, comment, parsed, config }, { now, log, dry });
+    const res = await handleApprove(clients, { issue, comment, parsed, config }, { now, log, dry, runId });
     return res.handled && res.detail === 'approved' ? pass(parsed.plan) : res;
   }
 
   const ctx = await approvedContext(clients, issue, parsed.plan);
   if (!ctx) return done(false, 'issue not approved');
-  const res = validateControlComment({ comment, snapshot: ctx.snapshot, config });
+  const res = validateControlComment({ comment, snapshot: ctx.snapshot, config: ctx.config });
   if (!res.valid) {
     log(`${parsed.verb} comment ${comment.id} ignored: ${res.reason}`);
     return done(false, `invalid ${parsed.verb}: ${res.reason}`);
   }
-  if (parsed.verb === 'revoke' && !dry) await clients.bot.addLabels(issue.number, ['autonomous-revoked']);
+  if (parsed.verb === 'revoke') {
+    if (!dry) await clients.bot.addLabels(issue.number, ['autonomous-revoked']);
+    return pass(parsed.plan);
+  }
+  const blocked = await gateAuthorization(clients, ctx, { issue, comment, parsed, now, log, dry, runId });
+  if (blocked) return blocked;
   if (parsed.verb === 'resume' && !dry) {
     if (labels.includes('needs-owner')) await clients.bot.removeLabel(issue.number, 'needs-owner');
     if (labels.includes('autonomous-revoked')) await clients.bot.removeLabel(issue.number, 'autonomous-revoked');

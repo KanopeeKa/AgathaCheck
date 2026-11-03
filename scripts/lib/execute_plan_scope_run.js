@@ -9,6 +9,8 @@
 const crypto = require('crypto');
 const { PullFilesOverflow } = require('./execute_plan_github');
 const { computeApprovalHash, findControlComments } = require('./execute_plan_approval');
+const { acceptedAuthorizationIds } = require('./execute_plan_ack');
+const { supportFilesForPlan } = require('./execute_plan_support');
 const { loadSnapshotAtRef } = require('./execute_plan_snapshot_v2');
 const { categorizePull, evaluateDiff, BUNDLE_BUDGET_FILE, validateBundleBudgetRatchet } = require('./execute_plan_scope');
 const { deriveControl } = require('./execute_plan_control');
@@ -103,12 +105,13 @@ function renderSummary(evaluation) {
 async function loadPlanControl(client, issue, planId, now) {
   const config = await loadConfig(client);
   const comments = await client.listIssueComments(issue.number);
+  const accepted = await acceptedAuthorizationIds(client, comments);
   const status = parseStatusComment(comments, planId, config.bot_login);
   if (!status || typeof status.init_sha !== 'string') throw new Error('status comment with init_sha not found');
   const { snapshot } = await loadSnapshotAtRef(client, planId, status.init_sha);
-  const control = findControlComments(comments, snapshot, config);
+  const control = findControlComments(comments, snapshot, config, { accepted });
   const stopped = deriveControl({ ...control, labels: labelNames(issue), status }, { now: new Date(now).toISOString() });
-  return { snapshot, stopped };
+  return { snapshot, stopped, control, accepted };
 }
 
 /** @returns {Promise<{ conclusion: string, title: string, summary: string, planId: string|null }>} */
@@ -121,8 +124,9 @@ async function runScopeCheck(client, { prNumber, headSha, headRef, baseRef, head
 
   let snapshot;
   let stopped;
+  let control;
   try {
-    ({ snapshot, stopped } = await loadPlanControl(client, issue, planId, now));
+    ({ snapshot, stopped, control } = await loadPlanControl(client, issue, planId, now));
   } catch (e) {
     return result('failure', 'drift', e.message, planId);
   }
@@ -140,7 +144,14 @@ async function runScopeCheck(client, { prNumber, headSha, headRef, baseRef, head
   const ownPlanFilesVerified = category === 'release' && files.length > 0
     ? await verifyOwnPlanFiles(client, snapshot, headSha, files)
     : false;
-  const evaluation = evaluateDiff({ files, snapshot, category, phaseId, ownPlanFilesVerified, stopped, supportFiles: new Set() });
+  let supportFiles = new Set();
+  if (category === 'release') {
+    const epoch = control.authorizing && control.authorizing.valid ? control.authorizing.created_at : null;
+    supportFiles = await supportFilesForPlan(client, planId, { since: epoch });
+  }
+  const evaluation = evaluateDiff({
+    files, snapshot, category, phaseId, ownPlanFilesVerified, stopped, supportFiles,
+  });
   if (category === 'phase' && files.includes(BUNDLE_BUDGET_FILE)) {
     const pull = await client.getPull(prNumber);
     const mergeBase = pull.merge_base_sha || headSha;

@@ -7,6 +7,7 @@ const { buildSnapshotFromPlan } = require('../lib/execute_plan_snapshot_v2');
 const { planIdFromRefs, listActivePlans } = require('../lib/execute_plan_plans');
 const { cliCheckDiff, runScopeCheck, publishScopeCheck, publishScopeResult } = require('../lib/execute_plan_scope_run');
 const { createFakeFetch } = require('./helpers/execute_plan_fake_fetch');
+const { ackComment, workflowRunRoute } = require('./helpers/execute_plan_wp12');
 
 const REPO = 'acme/app';
 const R = `/repos/${REPO}`;
@@ -57,14 +58,20 @@ function statusComment(extra = {}) {
 
 const ISSUES_KEY = `GET ${R}/issues?labels=execute-plan,plan:${PLAN}&per_page=100&state=open`;
 
-function setup({ issue = CONTROL_ISSUE, comments = [APPROVE, statusComment()], files = [], extra = {} } = {}) {
+function planComments(extra = []) {
+  return [APPROVE, ackComment(APPROVE.id), statusComment(), ...extra];
+}
+
+function setup({ issue = CONTROL_ISSUE, comments = planComments(), files = [], extra = {} } = {}) {
   const routes = {
+    ...workflowRunRoute(REPO),
     [ISSUES_KEY]: { body: [issue] },
     [`GET ${R}/contents/.github/execute-plan.config.json?ref=main`]: file(JSON.stringify(CONFIG)),
     [`GET ${R}/issues/77/comments?per_page=100`]: { body: comments },
     [`GET ${R}/contents/.agents/plans/${PLAN}.snapshot.json?ref=${INIT_SHA}`]: file(SNAP_JSON),
     [`GET ${R}/contents/.agents/plans/${PLAN}.md?ref=${INIT_SHA}`]: file(PLAN_MD),
     [`GET ${R}/pulls/5/files?per_page=100`]: { body: files.map((filename) => ({ filename })) },
+    [`GET ${R}/pulls?base=main&direction=desc&per_page=100&sort=updated&state=closed`]: { body: [] },
     ...extra,
   };
   const fake = createFakeFetch(routes);
@@ -151,6 +158,25 @@ const planFileDiff = ['server/bin/server.js', `.agents/plans/${PLAN}.md`, `.agen
 
 test('release PR with verified plan files → success', async () => {
   const { client } = setup({ files: planFileDiff, extra: planFilesRoutes(SNAP_JSON, PLAN_MD) });
+  const res = await runScopeCheck(client, release);
+  assert.deepEqual([res.conclusion, res.title], ['success', 'ok']);
+});
+
+test('release PR allows paths from merged side PRs that unblock the plan', async () => {
+  const sideFile = 'scripts/ci/web-bundle-budget.json';
+  const mergedSide = {
+    number: 99,
+    merged_at: '2026-10-16T09:30:00Z',
+    body: `Fix budget.\n\nUnblocks: plan ${PLAN} phase 6`,
+  };
+  const { client } = setup({
+    files: [...planFileDiff, sideFile],
+    extra: {
+      ...planFilesRoutes(SNAP_JSON, PLAN_MD),
+      [`GET ${R}/pulls?base=main&direction=desc&per_page=100&sort=updated&state=closed`]: { body: [mergedSide] },
+      [`GET ${R}/pulls/99/files?per_page=100`]: { body: [{ filename: sideFile }] },
+    },
+  });
   const res = await runScopeCheck(client, release);
   assert.deepEqual([res.conclusion, res.title], ['success', 'ok']);
 });

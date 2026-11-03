@@ -7,6 +7,7 @@
 
 const { ExecutePlanError } = require('./execute_plan_constants');
 const { findControlComments } = require('./execute_plan_approval');
+const { acceptedAuthorizationIds } = require('./execute_plan_ack');
 const { loadSnapshotAtRef } = require('./execute_plan_snapshot_v2');
 const { parseStatusComment, STATUS_MARKER } = require('./execute_plan_status');
 const { SCOPE_CONTEXT, scopeEntryFromStatuses, scopeFailedSince } = require('./execute_plan_scope_status');
@@ -65,7 +66,18 @@ async function loadPlanContext(client, { planId, controlIssue }) {
   } catch (e) {
     throw configError(e.message);
   }
-  return { planId, config, issueNumber, issue, comments, statusComment, status, snapshot: loaded.snapshot, planMarkdown: loaded.planMarkdown };
+  return {
+    planId,
+    config,
+    issueNumber,
+    issue,
+    comments,
+    statusComment,
+    status,
+    snapshot: loaded.snapshot,
+    planMarkdown: loaded.planMarkdown,
+    acceptedAuthorizations: await acceptedAuthorizationIds(client, comments),
+  };
 }
 
 async function readPull(client, number, sleep) {
@@ -182,7 +194,7 @@ const usable = (p) => p.state === 'open' || Boolean(p.merged_at); // closed-unme
 async function observe(client, ctx, { now, sleep }) {
   const { snapshot, config, status } = ctx;
   const integ = snapshot.integration_branch;
-  const auth = findControlComments(ctx.comments, snapshot, config);
+  const auth = findControlComments(ctx.comments, snapshot, config, { accepted: ctx.acceptedAuthorizations || new Set() });
   const epoch = auth.authorizing && auth.authorizing.valid ? auth.authorizing.created_at : null;
   const prOpts = (base) => ({
     requiredChecks: (base === 'main' ? config.required_checks.main : config.required_checks.integration),

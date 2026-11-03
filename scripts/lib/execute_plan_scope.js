@@ -167,6 +167,7 @@ function ownPlanFiles(snapshot) {
  */
 function classifyPath(file, { snapshot, category, phaseId, supportFiles }) {
   const verdict = (v) => ({ file, verdict: v });
+  if (supportFiles && supportFiles.has(file) && category === 'release') return verdict('allowed');
   if (ownPlanFiles(snapshot).includes(file)) return verdict('own-plan-file');
   if (matchesAny(file, PROTECTED_PATHS)) return verdict('protected');
   if (isForbiddenPath(file)) return verdict('forbidden');

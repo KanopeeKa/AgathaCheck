@@ -133,16 +133,23 @@ Keep repository-level copies of moved secrets until the #1941 PR is merged and v
 ### 7.5 Day-to-day: approve, resume, revoke
 
 - **Approve** a new plan: paste the exact line printed by `init` as a comment on its control issue.
+  Wait for the acknowledgement comment from `github-actions[bot]`
+  (`execute-plan: authorization accepted — comment … — run …`) before the plan is considered
+  authorized. If a "not accepted" note appears, post the same approve/resume line again once the
+  worker has finished.
 - **When a run stops** (label `needs-owner`, reason in the status comment): fix the cause if needed
-  (for example merge a fix to `main`), then comment `resume-autonomous <plan_id> sha256:<same hash> until <ISO date ≤ 14 days ahead>`.
-  The approve workflow removes `needs-owner` and `autonomous-revoked` when the resume is valid. You may
-  still remove `needs-owner` manually if a label was re-applied before the workflow ran.
+  (for example merge a fix to **`main`** and sync integration), then comment
+  `resume-autonomous <plan_id> sha256:<same hash> until <ISO date ≤ 14 days ahead>`.
+  The approve workflow removes `needs-owner` and `autonomous-revoked` when the resume is valid.
+  Resume only applies to a **stopped** plan; a resume posted while a worker is still running is
+  ignored with a note when the plan is already stopped, or stops the plan with `needs-owner` otherwise.
+  You may still remove `needs-owner` manually if a label was re-applied before the workflow ran.
   Scope stays the same; time and budgets restart from that comment. Changing the plan's **goal** means a new plan.
-- **Out-of-scope fix the plan needs** (a `ci-budget` stop whose detail names `execute-plan-scope`
-  `unclassified`/`companion-cap`/`too-many-files`): open an ordinary PR **into `main`** (not
-  integration; `execute-plan-scope` is red `unsupported` on integration targets). Body:
-  `Unblocks: plan <plan_id> phase <n>`. Merge to `main`, sync integration, then resume. Hold the
-  phase PR with `execute-plan-hold` while the plan is stopped if needed.
+- **Out-of-scope fix the plan needs** (scope stop or `ci-budget` naming scope violations): open an
+  ordinary PR **into `main`** (not integration; `execute-plan-scope` is red `unsupported` on integration
+  targets), body `Unblocks: plan <plan_id> phase <n>`, merge it, then sync integration. Release PRs
+  include those paths automatically (contracts §3.3a). Until merged, hold the phase PR with
+  `execute-plan-hold` if a worker would otherwise relaunch.
 - **Revoke**: add label `autonomous-revoked` or comment `revoke-autonomous <plan_id>`. Auto-merge
   is disabled and the scope check turns red on every open plan PR within one driver pass.
 - **Kill switch**: set `EXECUTE_PLAN_DRIVER=off` — the approve and driver workflows stop acting at once.

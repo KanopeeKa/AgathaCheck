@@ -5,6 +5,7 @@ const assert = require('node:assert/strict');
 const { buildSnapshotFromPlan } = require('../lib/execute_plan_snapshot_v2');
 const { tick, watchCi } = require('../lib/execute_plan_tick');
 const { formatStatusComment, parseStatusComment } = require('../lib/execute_plan_status');
+const { ackComment, VALID_ACK_RUN } = require('./helpers/execute_plan_wp12');
 
 const PLAN_ID = 'proof-build-label-7f3a';
 const PLAN_MD = `# Proof
@@ -53,8 +54,12 @@ function stubClient({ status = baseStatus(), labels = [], authorized = true, sna
     getIssue: async () => ({ number: 9, labels: labels.map((name) => ({ name })) }),
     listIssueComments: async () => [
       { id: 1, user: { login: 'pawpet-bot' }, created_at: '2026-10-16T09:01:00Z', updated_at: '2026-10-16T09:01:00Z', body },
-      ...(authorized ? [{ id: 2, user: { login: 'KanopeeKa' }, author_association: 'OWNER', created_at: EPOCH, updated_at: EPOCH, body: `approve-autonomous ${PLAN_ID} sha256:${HEX} until ${SNAP.approved_until}` }] : []),
+      ...(authorized ? [
+        { id: 2, user: { login: 'KanopeeKa' }, author_association: 'OWNER', created_at: EPOCH, updated_at: EPOCH, body: `approve-autonomous ${PLAN_ID} sha256:${HEX} until ${SNAP.approved_until}` },
+        ackComment(2),
+      ] : []),
     ],
+    getWorkflowRun: async () => VALID_ACK_RUN,
     getBranch: async (b) => (b === 'main' ? { commit: { sha: 'm1' } } : b === SNAP.integration_branch ? { commit: { sha: 'i1' } } : null),
     listWorkflowRuns: async () => [],
     compare: async () => ({ ahead_by: 0 }),

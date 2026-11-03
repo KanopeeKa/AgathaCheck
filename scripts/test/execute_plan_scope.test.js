@@ -206,6 +206,16 @@ test('release uses union', () => {
   assert.equal(verdict('flutter_app/lib/features/care/widgets/x.dart', 'phase', '1'), 'unclassified');
 });
 
+test('release allows supportFiles union from side PRs merged to main', () => {
+  const side = 'scripts/ci/web-bundle-budget.json';
+  const support = new Set([side]);
+  const r = evaluate([side], 'release', null, { supportFiles: support, ownPlanFilesVerified: true });
+  assert.equal(r.conclusion, 'success');
+  assert.deepEqual(r.violations, []);
+  const phaseOnly = evaluate([side], 'phase', '1', { supportFiles: support });
+  assert.equal(phaseOnly.title, 'unclassified');
+});
+
 test('remedial allows e2e and tests', () => {
   const snap = snapshot([phase('1', { allowed_paths: ['server/**'] })]);
   const remedial = (f) => verdict(f, 'remedial', null, snap);

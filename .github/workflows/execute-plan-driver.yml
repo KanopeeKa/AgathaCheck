@@ -42,7 +42,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: automation
     concurrency:
-      group: execute-plan-driver
+      group: execute-plan-driver-${{ github.event.inputs.plan_id || 'all-plans' }}
       cancel-in-progress: false
     timeout-minutes: 15
     steps:

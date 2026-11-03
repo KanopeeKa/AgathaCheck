@@ -7,6 +7,7 @@ const { createFakeFetch } = require('./helpers/execute_plan_fake_fetch');
 const { buildSnapshotFromPlan } = require('../lib/execute_plan_snapshot_v2');
 const { loadPlanContext, observe, observePr } = require('../lib/execute_plan_observe');
 const { formatStatusComment } = require('../lib/execute_plan_status');
+const { ackComment, workflowRunRoute } = require('./helpers/execute_plan_wp12');
 
 const PLAN_ID = 'proof-build-label-7f3a';
 const PLAN_MD = `# Proof
@@ -39,6 +40,7 @@ const STATUS = { schema: 1, plan_id: PLAN_ID, init_sha: 'a'.repeat(40), state: '
 const comments = [
   { id: 1, user: { login: 'pawpet-bot' }, created_at: '2026-10-16T09:01:00Z', updated_at: '2026-10-16T09:01:00Z', body: formatStatusComment(STATUS, '') },
   { id: 2, user: { login: 'KanopeeKa' }, author_association: 'OWNER', created_at: EPOCH, updated_at: EPOCH, body: `approve-autonomous ${PLAN_ID} sha256:${HEX} until ${SNAP.approved_until}` },
+  ackComment(2),
 ];
 const PULL = {
   number: 50, node_id: 'N50', state: 'open', draft: false, merged_at: null, merge_commit_sha: null, created_at: '2026-10-16T09:20:00Z',
@@ -56,6 +58,7 @@ const gql = { body: { data: { repository: { pullRequest: { reviewThreads: { node
 
 function routes(over = {}) {
   return {
+    ...workflowRunRoute('o/r'),
     'GET /repos/o/r/contents/.github/execute-plan.config.json?ref=main': file(CONFIG),
     'GET /repos/o/r/issues/9': { body: { number: 9, labels: [{ name: 'execute-plan' }] } },
     'GET /repos/o/r/issues/9/comments?per_page=100': { body: comments },

@@ -33,7 +33,8 @@ async function main(env = process.env) {
   log(`### Execute-plan approve (EXECUTE_PLAN_DRIVER=${killSwitch})`);
   if (killSwitch === 'off') return log('Kill switch is off: nothing done.');
   const event = JSON.parse(fs.readFileSync(env.EVENT_PATH, 'utf8'));
-  const res = await handleControlComment(makeClients(env, killSwitch), event, { killSwitch, log });
+  const runId = env.GITHUB_RUN_ID ? Number(env.GITHUB_RUN_ID) : null;
+  const res = await handleControlComment(makeClients(env, killSwitch), event, { killSwitch, log, runId });
   log(`Result: ${res.detail}`);
 }
 
