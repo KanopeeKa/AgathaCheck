@@ -27,6 +27,23 @@ function workerLaunchEnvVars(botToken) {
   return blanked;
 }
 
+/**
+ * Cursor launch envVars for weekly dependabot-batch dispatch only.
+ * Passes the bot PAT for default gh identity; does not blank dashboard OWNER_GH_TOKEN so
+ * the dispatch prompt's /run-as-me step can export OWNER_GH_TOKEN for merge and PR cleanup.
+ * @param {string} [botToken]
+ * @returns {Record<string, string>}
+ */
+function dependabotBatchLaunchEnvVars(botToken) {
+  if (botToken && String(botToken).trim()) {
+    return {
+      GH_TOKEN: botToken,
+      EXECUTE_PLAN_TOKEN: botToken,
+    };
+  }
+  return {};
+}
+
 /** Cursor API rejects empty envVars values; omit blanks at the HTTP boundary only. */
 function envVarsForCursorLaunch(envVars) {
   if (!envVars || typeof envVars !== 'object') return undefined;
@@ -170,6 +187,7 @@ module.exports = {
   getAgentRunStatus,
   CURSOR_API_BASE,
   workerLaunchEnvVars,
+  dependabotBatchLaunchEnvVars,
   BLANKED_LAUNCH_KEYS,
   envVarsForCursorLaunch,
 };

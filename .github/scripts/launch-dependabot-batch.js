@@ -2,6 +2,7 @@
 'use strict';
 
 const { launchAgent } = require('./launch-cursor-agent');
+const { dependabotBatchLaunchEnvVars } = require('./execute-plan-launch');
 const { parseRepo } = require('./github-project-lib');
 const {
   buildDependabotBatchPayload,
@@ -38,11 +39,13 @@ async function launchDependabotBatch({
   }
 
   const model = process.env.CURSOR_AGENT_MODEL || REQUIRED_MODEL;
+  const envVars = dependabotBatchLaunchEnvVars(process.env.EXECUTE_PLAN_BOT_TOKEN);
   const launched = await launchAgent({
     apiKey,
     repoUrl,
     promptText,
     model,
+    envVars,
   });
 
   const agentId = launched.agent?.id;

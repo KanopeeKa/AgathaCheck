@@ -24,6 +24,10 @@ Configure under **Cursor → Cloud Agents → Secrets** (runtime secrets apply t
 Agents launched by the execute-plan driver or by issue/dispatch workflows receive `OWNER_GH_TOKEN` and
 `BOT_GH_TOKEN` blanked through launch `envVars`; owner mode (`/runasme`) is for interactive sessions only.
 
+**Exception — dependabot batch:** `.github/workflows/dependabot-batch-dispatch.yml` launches agents with
+`dependabotBatchLaunchEnvVars()` (bot PAT only; does not blank owner). The dispatch prompt opts into `/run-as-me`;
+`OWNER_GH_TOKEN` must remain configured in the Cursor dashboard for merge and cleanup steps.
+
 GitHub Actions uses **`EXECUTE_PLAN_BOT_TOKEN`** in the **`automation`** environment (not the dashboard) for execute-plan and for `envVars` on issue/dispatch agent launches. Project board updates use **`GH_PROJECTS_PAT`** in **`automation`**, not the bot PAT.
 
 Full policy: `.cursor/skills/cloud-github-identity/SKILL.md`.

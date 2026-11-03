@@ -33,6 +33,8 @@ only; a VM started before a secret change keeps the old values.
 
 Launch `envVars` override dashboard secrets. Agents launched by the driver or by issue/dispatch get
 `OWNER_GH_TOKEN` and `BOT_GH_TOKEN` blanked through launch `envVars`; owner mode is for interactive sessions only.
+**Exception:** weekly **dependabot-batch** dispatch uses `dependabotBatchLaunchEnvVars()` (bot PAT only, no owner
+blanking) plus a dispatch prompt that opts into `/run-as-me`.
 The field is beta: where it is not enabled it is silently ignored, and
 the agent falls back to dashboard `GH_TOKEN` — which is why that must also be the bot PAT.
 

@@ -3,6 +3,7 @@
 const { buildSafetyConstraints } = require('../../.github/scripts/agent-safety-lib');
 
 const SKILL_PATH = '.cursor/skills/dependabot-batch/SKILL.md';
+const RUN_AS_ME_SKILL_PATH = '.cursor/skills/run-as-me/SKILL.md';
 const REQUIRED_MODEL = 'composer-2.5';
 
 /**
@@ -29,6 +30,8 @@ function buildDependabotBatchPayload(context) {
     },
     policy: {
       ci_gate_before_dispatch: false,
+      run_as_me: true,
+      run_as_me_skill: RUN_AS_ME_SKILL_PATH,
       note:
         'Inventory may include red CI; classify Drop/Include/Defer per skill — do not skip dispatch waiting for green Dependabot checks.',
     },
@@ -56,6 +59,22 @@ function buildDependabotBatchPrompt(payload) {
     `- **Base branch:** \`${payload.constraints.baseBranch}\``,
     `- **Suggested batch branch:** \`${payload.constraints.suggestedBranch}\``,
     '',
+    '## GitHub identity (required)',
+    '',
+    'This dispatch opts into owner mode: **`/run-as-me`**. Read and follow',
+    `**${payload.policy.run_as_me_skill}** for every \`gh\` command and GitHub API action`,
+    '(merge, close superseded PRs, comments). In each shell block that touches GitHub:',
+    '',
+    '```bash',
+    'export GH_TOKEN="$OWNER_GH_TOKEN" GITHUB_TOKEN="$OWNER_GH_TOKEN"',
+    '```',
+    '',
+    '**Launch contract:** Actions passes bot `GH_TOKEN` via `dependabotBatchLaunchEnvVars()` only;',
+    'it does **not** blank dashboard `OWNER_GH_TOKEN` (unlike issue/dispatch launches).',
+    'Owner PAT must be present in Cursor dashboard secrets for merge steps.',
+    '',
+    'Do **not** run `execute_plan_runtime.js tick` while `OWNER_GH_TOKEN` is exported (run-as-me skill).',
+    '',
     '## Required flow',
     '',
     '1. Phase 0–1: inventory and close Drop PRs (with `dependabot.yml` ignore when needed).',
@@ -78,6 +97,7 @@ function buildDependabotBatchPrompt(payload) {
 
 module.exports = {
   SKILL_PATH,
+  RUN_AS_ME_SKILL_PATH,
   REQUIRED_MODEL,
   buildDependabotBatchPayload,
   buildDependabotBatchPrompt,
