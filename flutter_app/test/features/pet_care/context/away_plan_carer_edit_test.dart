@@ -184,8 +184,13 @@ class _FakeCareContextRepository implements CareContextRepository {
   ) async => const {};
 
   @override
-  Future<PetPlannedAbsenceListResult> listPetPlannedAbsences(String petId) async =>
-      PetPlannedAbsenceListResult(petId: petId, today: '2026-01-01', items: const []);
+  Future<PetPlannedAbsenceListResult> listPetPlannedAbsences(
+    String petId,
+  ) async => PetPlannedAbsenceListResult(
+    petId: petId,
+    today: '2026-01-01',
+    items: const [],
+  );
 
   @override
   Future<AddPetToAbsenceResult> addPetToPlannedAbsence({
@@ -200,13 +205,12 @@ class _FakeCareContextRepository implements CareContextRepository {
     required String absenceId,
     required String petId,
     bool confirmDeleteAbsence = false,
-  }) async =>
-      RemovePetFromAbsenceResult(
-        absenceDeleted: false,
-        absenceId: absenceId,
-        petId: petId,
-        absence: absence,
-      );
+  }) async => RemovePetFromAbsenceResult(
+    absenceDeleted: false,
+    absenceId: absenceId,
+    petId: petId,
+    absence: absence,
+  );
 }
 
 const absence = PlannedAbsence(

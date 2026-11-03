@@ -111,7 +111,13 @@ void main() {
       t.element(find.byType(PlannedAbsenceHubScreen)),
     )!;
     expect(find.text(l.careContextHubYourAbsences), findsOneWidget);
-    expect(find.byKey(const Key('planned_absence_hub_card_up')), findsOneWidget);
-    expect(find.byKey(const Key('planned_absence_hub_card_past')), findsOneWidget);
+    expect(
+      find.byKey(const Key('planned_absence_hub_card_up')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const Key('planned_absence_hub_card_past')),
+      findsOneWidget,
+    );
   });
 }
