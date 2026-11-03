@@ -1,6 +1,6 @@
 {
   "_comment": "ESLint ratchet for active server/lib, services and routes (J.2-1). Only shrinks: run --update-baseline after fixing a violation.",
-  "generated_at": "2026-11-03",
+  "generated_at": "2026-10-07",
   "violations": [
     {
       "file": "server/lib/care/awayPlan/presentation.js",
@@ -155,6 +155,20 @@
       "line": 133,
       "column": 59,
       "message": "'userId' is defined but never used. Allowed unused args must match /^_/u."
+    },
+    {
+      "file": "server/lib/petDataLifecycle.js",
+      "rule": "no-unused-vars",
+      "line": 20,
+      "column": 3,
+      "message": "'removePrivateHealthFile' is defined but never used."
+    },
+    {
+      "file": "server/lib/petDataLifecycle.js",
+      "rule": "no-unused-vars",
+      "line": 4,
+      "column": 8,
+      "message": "'fs' is defined but never used."
     },
     {
       "file": "server/lib/petWeightSync.js",

@@ -1,13 +1,10 @@
 /**
  * Pet-related data and file lifecycle (F-09, F-10, F-12).
  */
+import fs from 'fs';
 import path from 'path';
 import { NOTIFICATION_TYPE_PET_PASSED_AWAY } from './notificationKind.js';
 
-import {
-  cancelEmptyActiveAbsences,
-  listActiveAbsenceIdsForPet,
-} from './care/absence/absencePetLifecycle.js';
 import { logAuditEvent } from './audit.js';
 import { withTransaction } from './db/withTransaction.js';
 import { enqueueCleanupJob } from './jobs/cleanupJobsApi.js';
@@ -20,6 +17,7 @@ import {
 import {
   parseHealthFileIdFromUrl,
   privateHealthDir,
+  removePrivateHealthFile,
   resolvePrivateHealthFile,
 } from './privateHealthStorage.js';
 
@@ -185,7 +183,6 @@ async function runPetDataDeletionTransaction(client, petId, {
   auditAction = null,
   deletePetRow = false,
 } = {}) {
-  const absenceIdsBeforeDelete = await listActiveAbsenceIdsForPet(client, petId);
   const fileRefs = await collectPetFileRefs(client, petId);
   await enqueuePetFileDeletes(client, petId, fileRefs);
   maybePetDeletionFault('enqueue_jobs');
@@ -198,6 +195,10 @@ async function runPetDataDeletionTransaction(client, petId, {
   }
 
   if (deletePetRow) {
+    const { cancelEmptyActiveAbsences, listActiveAbsenceIdsForPet } = await import(
+      './care/absence/absencePetLifecycle.js'
+    );
+    const absenceIdsBeforeDelete = await listActiveAbsenceIdsForPet(client, petId);
     const scopedOwnerId = ownerUserId ?? actorUserId;
     const del = await client.query(
       'DELETE FROM pets WHERE id = $1 AND user_id = $2',
