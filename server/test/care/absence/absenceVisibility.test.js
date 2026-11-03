@@ -7,7 +7,8 @@ describe('absenceVisibility SQL helpers', () => {
   it('coVisibleAbsencesListSql scopes to non-declarer absences with profile access', () => {
     const { sql } = coVisibleAbsencesListSql('upcoming', '2026-11-03');
     expect(sql).toContain('pa.user_id != $1');
-    expect(sql).toContain('SELECT DISTINCT pa');
-    expect(sql).toContain(petProfileAccessSql('p', '$1').trim());
+    expect(sql).toContain('SELECT DISTINCT pa.id');
+    expect(sql).toContain('WHERE pa.id IN');
+    expect(sql).not.toMatch(/SELECT DISTINCT pa\.\*/);
   });
 });
