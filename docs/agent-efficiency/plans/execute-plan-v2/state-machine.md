@@ -246,6 +246,8 @@ State names written to the status comment: `stopped`, `phase:pending`, `phase:im
 | `expired` | §4.1 — `now ≥` effective deadline |
 | `drift` | PR-ladder 3 |
 | `ci-budget` | PR-ladder 4 |
+| `ci-stuck` | PR-ladder 4 (same failing signature on three distinct heads) |
+| `worker-blocked` | PR-ladder 1c (label `execute-plan-blocked` or body marker) |
 | `launch-budget` | L4 (per-phase launches only; the daily cap waits) |
 | `pr-blocked` | PR-ladder 1 |
 | `merge-blocked` | PR-ladder 10 — GitHub refused the direct merge for a reason other than an uncounted required check |
