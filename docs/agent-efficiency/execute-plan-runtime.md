@@ -37,7 +37,7 @@ node scripts/validate_execute_plan_snapshot.js --drift-test
 
 | Command | Purpose |
 |---------|---------|
-| `init <plan_id>` | Create control issue + v2 snapshot (init branch diff vs `main` must be plan markdown only, plus snapshot if already committed) |
+| `init <plan_id>` | Create control issue + v2 snapshot (init branch committed diff vs `main` must be only the two plan paths; uses `--no-renames`) |
 | `tick <plan_id> [--json] [--actor agent\|driver]` | Observe → decide → persist (worker/driver) |
 | `gate <plan_id>` | Alias of `tick` (no `--labels`) |
 | `watch-ci <plan_id> --pr <n>` | Wait for required checks on a PR |

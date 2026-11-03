@@ -204,7 +204,7 @@ test('init refuses extra committed files vs main on init branch', async () => {
       now: NOW,
       cwd: tmpRepo(),
     }),
-    (e) => e.exitCode === 3 && /docs PR against `main`/.test(e.message) && /README\.md/.test(e.message),
+    (e) => e.exitCode === 3 && /separate PR against `main`/.test(e.message) && /README\.md/.test(e.message),
   );
 });
 

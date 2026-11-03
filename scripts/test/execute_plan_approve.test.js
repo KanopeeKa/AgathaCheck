@@ -158,7 +158,7 @@ test('init branch with extra files → rejected', async () => {
   await run(s, event(mkComment(APPROVE)));
   assert.deepEqual(kinds(s), ['createComment']);
   assert.match(s.writes[0][2], /exactly the two plan files \(found: .*server\/evil\.js\)/);
-  assert.match(s.writes[0][2], /docs PR against `main`/);
+  assert.match(s.writes[0][2], /separate PR against `main`/);
   assert.match(s.writes[0][2], /server\/evil\.js/);
 });
 
