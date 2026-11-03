@@ -20,8 +20,9 @@ const formatKeyUnavailableNote = (verb, commentId) =>
 
 const NOT_ACCEPTED_RE = /execute-plan: (\w+)-autonomous comment (\d+) not accepted —/;
 
-function commentHasRejectionNote(comments, commentId) {
+function commentHasRejectionNote(comments, commentId, { botLogin = 'github-actions[bot]' } = {}) {
   for (const c of comments || []) {
+    if (!c.user || c.user.login !== botLogin) continue;
     const m = NOT_ACCEPTED_RE.exec(String(c.body || '').trim());
     if (m && Number(m[2]) === commentId) return true;
   }

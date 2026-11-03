@@ -95,11 +95,7 @@ async function filesUnchangedOnMain(client, headSha, files) {
       continue;
     }
     if (!head || !main) continue;
-    if (head.sha && main.sha && head.sha === main.sha) {
-      unchanged.add(file);
-      continue;
-    }
-    if (sha256Hex(head.content) === sha256Hex(main.content)) unchanged.add(file);
+    if (head.sha && main.sha && head.sha === main.sha) unchanged.add(file);
   }
   return unchanged;
 }
