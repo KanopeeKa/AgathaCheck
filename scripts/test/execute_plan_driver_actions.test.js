@@ -83,6 +83,22 @@ function harness(opts = {}, tickResult, extra = {}) {
     },
     runScopeCheck: async (c, a) => { seen.scopeRuns.push({ client: c.name, ...a }); return { conclusion: 'success', title: 'ok', summary: 'No violations.', planId: PLAN_ID }; },
     completePlan: async () => ({ complete: true }),
+    observe: async (_c, ctx) => {
+      const pull = (n) => {
+        const p = opts.pulls && opts.pulls[n];
+        return p ? { number: n, head_sha: p.head_sha || 'h'.repeat(40), checks: p.checks || [], head_ref: p.head_ref || 'b', base_ref: p.base_ref || 'main' } : null;
+      };
+      const a = tickResult && tickResult.action && tickResult.action.args;
+      const n = a && (a.pr || a.sync_pr);
+      const pr = n ? pull(n) : null;
+      return {
+        phases: pr ? [{ id: '1', pr }] : [],
+        sync: pr && a.sync_pr ? { open_pr: pr } : {},
+        release: {},
+        remedial: {},
+        control: { labels: [], authorizing: { valid: true, created_at: NOW }, status: ctx.status },
+      };
+    },
   };
   return { bot, read, seen, clients: { bot, read, cursorApiKey: extra.noKey ? null : 'key', botToken: extra.noBotToken ? null : 'bot-secret-token', deps }, log: [] };
 }
