@@ -1,4 +1,5 @@
 import { registerPlannedAbsenceCarerInviteRoutes } from './plannedAbsenceCarerInviteRoutes.js';
+import { registerPerPetAwayPlanRoutes } from './perPetAwayPlanRouter.js';
 import { registerAbsenceCarePlanRoutes } from './absenceCarePlanRouter.js';
 import { registerPlannedAbsenceHandoverRoutes } from './plannedAbsenceHandoverRoutes.js';
 import { registerAbsenceResolutionsRoutes } from './absenceResolutionsRouter.js';
@@ -10,6 +11,7 @@ import {
 
 export function registerPlannedAbsenceRoutes(router, pool) {
   registerPlannedAbsenceCarerInviteRoutes(router, pool);
+  registerPerPetAwayPlanRoutes(router, pool);
   registerPlannedAbsenceCoreRoutes(router, pool);
   registerPlannedAbsenceHandoverRoutes(router, pool, {
     loadAbsenceForUser,

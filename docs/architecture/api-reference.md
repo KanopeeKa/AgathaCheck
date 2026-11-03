@@ -459,6 +459,16 @@ Server-authoritative two-fact readiness for hub, plan page, and dashboard tile (
 
 Tile copy uses fixed actionability priority: carer gap first, else coverage sentence. See [away-planning-carer-model.md](/docs/domains/pet_care/features/away-planning-carer-model.md).
 
+**Per-pet away plan read (absence-per-pet-away-plans phase 1 — draft)** — additive; declarer-scoped like `GET /:id` until phase 2 visibility work.
+
+| Method | Path | Notes |
+|---|---|---|
+| GET | `/:id/pets/:petId/away-plan` | Trip header (`absence`), single `pet_carer`, `status`, `coverage`, `review_queue`, `review_care_item_count`, and away-plan `projection` for that pet |
+| GET | `/:id/pets/:petId/status` | Compact `{ status, review_care_item_count, coverage_state }` for pills and pet-page rows |
+| GET | `/api/pets/:petId/planned-absences` | Declarer-owned absences including this pet, `ends_on >= today`, ordered by `starts_on`; each item has `absence`, `status`, `review_care_item_count` |
+
+`status.priority` is `carer_gap` \| `care_review` \| `none`. `status.copy_key` uses `awayPlanningPetStatus*` keys (Flutter l10n in phase 4). Hub list `GET /` behaviour unchanged in phase 1.
+
 **Absence resolutions (`GET|PATCH /:id/resolutions`)** — Care Item evolution phase E (D-CIE-012/013)
 
 Declarer-scoped; same auth as `GET /:id`. Stores per–care-item decisions for one absence (`health_entry_absence_resolutions`).
