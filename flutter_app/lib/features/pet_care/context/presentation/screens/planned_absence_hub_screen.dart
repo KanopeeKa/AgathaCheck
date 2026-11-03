@@ -91,12 +91,17 @@ class _HubList extends StatelessWidget {
         if (yourAbsences.isNotEmpty) ...[
           Semantics(
             identifier: 'planned_absence_hub_your_absences_heading',
+            label: l.careContextHubYourAbsences,
             header: true,
-            child: Text(
-              l.careContextHubYourAbsences,
-              style: Theme.of(
-                context,
-              ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+            container: true,
+            child: ExcludeSemantics(
+              child: Text(
+                l.careContextHubYourAbsences,
+                key: const Key('planned_absence_hub_your_absences_heading'),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+              ),
             ),
           ),
           const SizedBox(height: 8),
@@ -106,12 +111,17 @@ class _HubList extends StatelessWidget {
           if (yourAbsences.isNotEmpty) const SizedBox(height: 24),
           Semantics(
             identifier: 'planned_absence_hub_other_absences_heading',
+            label: l.careContextHubOtherPeoplesAbsences,
             header: true,
-            child: Text(
-              l.careContextHubOtherPeoplesAbsences,
-              style: Theme.of(
-                context,
-              ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+            container: true,
+            child: ExcludeSemantics(
+              child: Text(
+                l.careContextHubOtherPeoplesAbsences,
+                key: const Key('planned_absence_hub_other_absences_heading'),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+              ),
             ),
           ),
           const SizedBox(height: 8),

@@ -68,11 +68,13 @@ export class AwayPlanningPage {
   }
 
   async expectYourAbsencesSection(): Promise<void> {
-    await expect(
-      semanticsKey(this.page, 'planned_absence_hub_your_absences_heading').or(
-        this.page.getByText(/Your absences|Vos absences/i).first(),
-      ),
-    ).toBeVisible({ timeout: 30_000 });
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      const heading = semanticsKey(this.page, 'planned_absence_hub_your_absences_heading')
+        .or(this.page.locator('[data-flutter-key="planned_absence_hub_your_absences_heading"]'))
+        .or(this.page.getByText(/Your absences|Vos absences/i).first());
+      await expect(heading).toBeVisible();
+    }).toPass({ timeout: 60_000 });
   }
 
   async expectHubCardForAbsence(petName: string): Promise<void> {
