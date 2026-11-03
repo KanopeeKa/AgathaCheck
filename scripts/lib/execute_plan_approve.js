@@ -13,7 +13,7 @@ const { loadPlanContext, CONFIG_PATH } = require('./execute_plan_observe');
 const { formatStatusComment, STATUS_MARKER, parseStatusComment } = require('./execute_plan_status');
 const { labelNames } = require('./execute_plan_plans');
 const { normalizeKillSwitch, isoNow } = require('./execute_plan_driver_actions');
-const { ownPlanFilePaths, formatInitBranchOnlyPlanFilesMessage } = require('./execute_plan_own_files');
+const { ownPlanFilePaths, formatInitBranchOnlyPlanFilesMessage, pathsFromCompareFiles } = require('./execute_plan_own_files');
 const { deriveControl } = require('./execute_plan_control');
 const { formatAck, formatIgnoredNote, formatStoppedNote, acceptedAuthorizationIds } = require('./execute_plan_ack');
 
@@ -98,11 +98,12 @@ async function handleApprove(clients, { issue, comment, parsed, config }, { now,
   }
 
   const own = new Set(ownPlanFilePaths(snapshot.plan_id));
-  const files = (await read.compare('main', sha)).files.map((f) => f.filename);
-  if (files.length !== own.size || !files.every((f) => own.has(f))) {
+  const compareFiles = (await read.compare('main', sha)).files;
+  const paths = pathsFromCompareFiles(compareFiles);
+  if (paths.length !== own.size || !paths.every((f) => own.has(f))) {
     return rejectWith(formatInitBranchOnlyPlanFilesMessage({
       planId: snapshot.plan_id,
-      paths: files,
+      paths,
     }));
   }
   const existing = await read.getBranch(snapshot.integration_branch);
