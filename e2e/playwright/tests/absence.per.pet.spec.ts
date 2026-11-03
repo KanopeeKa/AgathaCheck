@@ -1,6 +1,6 @@
 /**
- * @bdd absence_per_pet.feature
- * Scenario: Away hub groups absences under your absences
+ * @bdd away_planning.feature
+ * Scenario: Away planning hub lists a saved upcoming absence
  */
 import { test, loginAs } from '../fixtures/auth.fixture';
 import { AwayPlanningPage } from '../pages/away-planning.page';
@@ -15,7 +15,10 @@ const dateOffset = (days: number): string => {
 };
 
 test.describe('Per-pet away plans', () => {
-  test('Away hub groups absences under your absences', async ({ page, testUser }) => {
+  test('Away planning hub lists a saved upcoming absence (ownership sections)', async ({
+    page,
+    testUser,
+  }) => {
     const root = baseURL();
     const pet = await createPet(root, testUser.accessToken, 'HubOwnPet');
     await createPlannedAbsence(root, testUser.accessToken, {

@@ -23,9 +23,6 @@
     "ACJ-CO-01 — same-day date header": "P1",
     "ACJ-CO-02 — coordination banner links only": "P1"
   },
-  "absence_per_pet.feature": {
-    "Away hub groups absences under your absences": "P1"
-  },
   "away_planning.feature": {
     "Dashboard away planning tile opens the hub": "P0",
     "Guardian can save a planned absence from the create form": "P0",

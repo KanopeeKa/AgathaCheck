@@ -67,6 +67,7 @@ test.describe('Away planning', () => {
     const away = new AwayPlanningPage(page);
     await away.openHub();
     await away.expectHubLoaded();
+    await away.expectYourAbsencesSection();
     await away.expectUpcomingAbsenceVisible('HubPet');
   });
 
