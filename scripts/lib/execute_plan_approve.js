@@ -14,10 +14,10 @@ const { formatStatusComment, STATUS_MARKER, parseStatusComment } = require('./ex
 const { labelNames } = require('./execute_plan_plans');
 const { normalizeKillSwitch, isoNow } = require('./execute_plan_driver_actions');
 const { ownPlanFilePaths, formatInitBranchOnlyPlanFilesMessage, pathsFromCompareFiles } = require('./execute_plan_own_files');
-const { deriveControl } = require('./execute_plan_control');
-const { formatAck, formatIgnoredNote, formatStoppedNote, acceptedAuthorizationIds } = require('./execute_plan_ack');
+const { deriveControl, LEASE_TTL_MS } = require('./execute_plan_control');
+const { formatAck, formatIgnoredNote, formatStoppedNote, formatKeyUnavailableNote, acceptedAuthorizationIds } = require('./execute_plan_ack');
 
-const RUNNING = new Set(['CREATING', 'RUNNING', 'UNKNOWN']);
+const HARD_RUNNING = new Set(['CREATING', 'RUNNING']);
 
 const DRIVER_WORKFLOW = 'execute-plan-driver.yml';
 const INIT_LINE_RE = /^Init branch: (\S+) @ ([0-9a-f]{40})\s*$/m;
@@ -41,12 +41,22 @@ async function gateAuthorization(clients, ctx, { issue, comment, parsed, now, lo
   if (!runId) throw new Error('authorization gate requires GITHUB_RUN_ID');
   const { read, bot, cursorApiKey, deps } = clients;
   const lease = ctx && ctx.status && ctx.status.lease;
-  let running = false;
+  const statusLease = ctx && ctx.status && ctx.status.lease;
   const agentId = (lease && lease.agent_id) || 'unknown';
+  if (lease && lease.agent_id && lease.run_id && !cursorApiKey) {
+    await read.createComment(issue.number, formatKeyUnavailableNote(parsed.verb, comment.id));
+    log(`plan ${parsed.plan}: ${parsed.verb} not acked (CURSOR_API_KEY unavailable)`);
+    return done(true, 'authorization rejected (no CURSOR_API_KEY)');
+  }
+  let blocks = false;
   if (lease && lease.agent_id && lease.run_id && cursorApiKey) {
     const getStatus = (deps && deps.getAgentRunStatus) || require('../../.github/scripts/execute-plan-launch').getAgentRunStatus;
     const st = await getStatus({ apiKey: cursorApiKey, agentId: lease.agent_id, runId: lease.run_id });
-    running = RUNNING.has(st);
+    if (HARD_RUNNING.has(st)) blocks = true;
+    else if (st === 'UNKNOWN') {
+      const last = statusLease && (statusLease.last_tick_at || statusLease.launched_at);
+      if (!last || Date.parse(now) - Date.parse(last) < LEASE_TTL_MS) blocks = true;
+    }
   }
   const labels = labelNames(issue);
   let stopped = false;
@@ -59,7 +69,7 @@ async function gateAuthorization(clients, ctx, { issue, comment, parsed, now, lo
       { now },
     ).stopped;
   }
-  if (running) {
+  if (blocks) {
     if (stopped) {
       await read.createComment(issue.number, formatIgnoredNote(parsed.verb, comment.id, agentId, now));
       log(`plan ${parsed.plan}: ${parsed.verb} ignored while worker ${agentId} running (plan stopped)`);
