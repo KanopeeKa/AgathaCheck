@@ -122,8 +122,9 @@ epoch (state-machine §4.1). A resume never changes scope (same hash); it renews
 
 **Revocation** is in force when label `autonomous-revoked` is present (anyone may add it) **or**
 a valid revoke comment is newer than the epoch. **Escalation**: label `needs-owner` present
-(added by `tick` on every STOP, or by a human). To resume after a STOP or revoke, the owner
-removes `needs-owner` / `autonomous-revoked` and posts a resume comment (runbooks §7.5).
+(added by `tick` on every STOP, or by a human). To resume after a STOP or revoke, the owner posts a
+valid `resume-autonomous` comment; the approve workflow removes `needs-owner` and
+`autonomous-revoked` when present (runbooks §7.5).
 
 Labels written by the approve workflow: `autonomous-approved`, `plan:<plan_id>`.
 
