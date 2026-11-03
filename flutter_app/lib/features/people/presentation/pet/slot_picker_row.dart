@@ -66,6 +66,8 @@ class SlotPickerRow extends ConsumerWidget {
     );
   }
 
+  /// Slots are established from the whole directory — a contact need not be
+  /// linked to the pet yet (the slot write creates the link).
   PeopleQuery _queryForSlot(RelationshipKind kind, String? currentId) {
     switch (kind) {
       case RelationshipKind.primaryVet:
@@ -75,17 +77,15 @@ class SlotPickerRow extends ConsumerWidget {
           roles: const {ContactRole.vet},
           allowNone: allowClear,
           currentId: currentId,
-          petId: petId,
         );
       case RelationshipKind.emergencyContact:
         return PeopleQuery(
           groups: const {ContactGroup.carer},
           allowNone: false,
           currentId: currentId,
-          petId: petId,
         );
       default:
-        return PeopleQuery(currentId: currentId, petId: petId);
+        return PeopleQuery(currentId: currentId);
     }
   }
 

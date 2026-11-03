@@ -5,7 +5,7 @@ audience: both
 domain: people
 feature_id: people_care_team
 status: implemented
-last_updated: 2026-11-02
+last_updated: 2026-11-03
 related_bdd: [away_planning.feature, away_plan_detail_v2.feature, sharing.feature, veterinarian_management.feature, notifications.feature]
 ---
 
@@ -294,6 +294,16 @@ Contacts have five layers (D11). This means no shared fact depends on whoever ty
 - Each pet has an **out-of-hours vet** and **emergency contacts**.
 - **An inactive contact that is still in use stays visible.** It's marked "Inactive" and the screen suggests choosing a replacement. It's never silently cleared or swapped (D18).
 - Inactive contacts don't appear in pickers.
+
+### Pet slot pickers
+
+| ID | Requirement | Status |
+| --- | --- | --- |
+| PEOPLE-CARE-TEAM-R-001 | The pet profile **Emergency contacts → Manage** pickers (primary vet, out-of-hours vet, emergency contact) list the whole directory — active professionals with the `vet` role for the two vet slots, carers for emergency contacts — not only contacts already linked to that pet. Choosing one creates the pet link as part of the slot write | Live |
+
+**Acceptance criteria**
+
+- *Given* a pet with no contact links and a directory containing a vet clinic and a vet person, *when* the owner opens Manage and taps the primary-vet picker, *then* both vets are listed and non-vet professionals are not (PEOPLE-CARE-TEAM-R-001; test: `flutter_app/test/features/people/presentation/pet/pet_people_section_test.dart#primary vet picker lists directory vets for an unlinked pet`).
 
 ## Absences and guest access
 
