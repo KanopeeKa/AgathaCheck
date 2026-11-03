@@ -66,7 +66,8 @@ function validateControlComment({ comment, snapshot, config }) {
 }
 
 /** Latest valid authorizing comment and the newest valid revoke. Later duplicate approve comments do not replace an existing valid epoch; resume may. */
-function findControlComments(comments, snapshot, config) {
+function findControlComments(comments, snapshot, config, { accepted }) {
+  if (!(accepted instanceof Set)) throw new TypeError('findControlComments requires { accepted: Set<number> }');
   let authorizing = null;
   let revokeAt = null;
   const ordered = [...comments].sort((a, b) => Date.parse(a.created_at) - Date.parse(b.created_at));
@@ -80,8 +81,8 @@ function findControlComments(comments, snapshot, config) {
       const candidate = {
         comment_id: comment.id,
         verb: parsed.verb,
-        valid: res.valid,
-        invalid_reason: res.reason,
+        valid: res.valid && accepted.has(comment.id),
+        invalid_reason: res.valid && !accepted.has(comment.id) ? 'not-acknowledged' : res.reason,
         created_at: comment.created_at,
         until: parsed.until,
       };
@@ -90,14 +91,14 @@ function findControlComments(comments, snapshot, config) {
         authorizing = candidate;
         continue;
       }
-      if (res.valid) authorizing = candidate;
+      if (candidate.valid) authorizing = candidate;
     } else if (parsed.verb === 'approve') {
       if (authorizing && authorizing.valid) continue;
       authorizing = {
         comment_id: comment.id,
         verb: parsed.verb,
-        valid: res.valid,
-        invalid_reason: res.reason,
+        valid: res.valid && accepted.has(comment.id),
+        invalid_reason: res.valid && !accepted.has(comment.id) ? 'not-acknowledged' : res.reason,
         created_at: comment.created_at,
         until: parsed.until,
       };

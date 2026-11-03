@@ -5,6 +5,7 @@ const assert = require('node:assert/strict');
 const { buildSnapshotFromPlan } = require('../lib/execute_plan_snapshot_v2');
 const { formatStatusComment } = require('../lib/execute_plan_status');
 const { handleControlComment } = require('../lib/execute_plan_approve');
+const { formatAck, formatIgnoredNote, formatStoppedNote } = require('../lib/execute_plan_ack');
 
 const PLAN_ID = 'proof-build-label-7f3a';
 const PLAN_MD = `# Proof
@@ -52,6 +53,7 @@ function setup({ files = PLAN_FILES, integration = null, issueComments = [], sna
     compare: async () => ({ files: files.map((filename) => ({ filename })) }),
     getBranch: async () => integration,
     dispatchWorkflow: async (file, ref, inputs) => { dispatches.push([file, ref, inputs]); },
+    createComment: rec('readComment'),
   };
   const bot = {
     createRef: rec('createRef'),
@@ -63,7 +65,19 @@ function setup({ files = PLAN_FILES, integration = null, issueComments = [], sna
   };
   const passes = [];
   const deps = {
-    loadPlanContext: async (_c, args) => { passes.push(['load', args.planId]); return { planId: PLAN_ID, issueNumber: 9, snapshot: SNAP, config: CONFIG, status: { lease: null }, statusComment: { id: 1 } }; },
+    loadPlanContext: async (_c, args) => {
+      passes.push(['load', args.planId]);
+      return {
+        planId: PLAN_ID,
+        issueNumber: 9,
+        snapshot: SNAP,
+        config: CONFIG,
+        status: { lease: null, stop: null },
+        statusComment: { id: 1 },
+        comments: [],
+        acceptedAuthorizations: new Set(),
+      };
+    },
   };
   return { clients: { bot, read, deps }, writes, passes, dispatches };
 }
@@ -257,4 +271,71 @@ test('kill switch off → no-op; dry-run → validates, no writes', async () => 
   const dryRevokeRes = await run(dryRevoke, event(mkComment(REVOKE), { issue: approved }), 'dry-run');
   assert.deepEqual([dryRevoke.writes, dryRevoke.dispatches], [[], []]);
   assert.match(dryRevokeRes.detail, /^dry-run: would dispatch execute-plan-driver\.yml/);
+});
+
+test('WP12: resume with runId posts acknowledgement when no worker lease', async () => {
+  const approved = mkIssue(['execute-plan', 'autonomous-approved', `plan:${PLAN_ID}`]);
+  const s = setup();
+  const res = await handleControlComment(s.clients, event(mkComment(RESUME), { issue: approved }), { now: NOW, killSwitch: 'on', runId: 501 });
+  assert.equal(res.handled, true);
+  const ack = s.writes.find((w) => w[0] === 'readComment');
+  assert.equal(ack[2], formatAck(4242, 501));
+  assert.deepEqual(s.dispatches, DISPATCH);
+});
+
+test('WP12: running worker on stopped plan → ignore note, no needs-owner', async () => {
+  const approved = mkIssue(['execute-plan', 'autonomous-approved', `plan:${PLAN_ID}`, 'needs-owner']);
+  const s = setup();
+  s.clients.cursorApiKey = 'key';
+  s.clients.deps.getAgentRunStatus = async () => 'RUNNING';
+  s.clients.deps.loadPlanContext = async () => ({
+    planId: PLAN_ID,
+    snapshot: SNAP,
+    config: CONFIG,
+    status: {
+      lease: { agent_id: 'bc-9', run_id: 'run-9' },
+      stop: { at: '2026-10-16T09:00:00Z', reason: 'ci-budget' },
+    },
+    comments: [
+      mkComment(APPROVE, { id: 100, created_at: '2026-10-16T09:00:00Z', updated_at: '2026-10-16T09:00:00Z' }),
+    ],
+    acceptedAuthorizations: new Set([100]),
+  });
+  const res = await handleControlComment(s.clients, event(mkComment(RESUME), { issue: approved }), { now: NOW, killSwitch: 'on', runId: 502 });
+  assert.match(res.detail, /ignored \(worker running, plan stopped\)/);
+  assert.equal(s.writes.find((w) => w[0] === 'addLabels'), undefined);
+  assert.equal(s.writes.find((w) => w[0] === 'readComment')[2], formatIgnoredNote('resume', 4242, 'bc-9', NOW));
+});
+
+test('WP12: running worker on active plan → needs-owner and stopped note', async () => {
+  const approved = mkIssue(['execute-plan', 'autonomous-approved', `plan:${PLAN_ID}`]);
+  const s = setup();
+  s.clients.cursorApiKey = 'key';
+  s.clients.deps.getAgentRunStatus = async () => 'UNKNOWN';
+  s.clients.deps.loadPlanContext = async () => ({
+    planId: PLAN_ID,
+    snapshot: SNAP,
+    config: CONFIG,
+    status: { lease: { agent_id: 'bc-2', run_id: 'run-2' }, stop: null },
+    comments: [
+      mkComment(APPROVE, { id: 100, created_at: '2026-10-16T09:00:00Z', updated_at: '2026-10-16T09:00:00Z' }),
+    ],
+    acceptedAuthorizations: new Set([100]),
+  });
+  const res = await handleControlComment(s.clients, event(mkComment(RESUME), { issue: approved }), { now: NOW, killSwitch: 'on', runId: 503 });
+  assert.match(res.detail, /rejected \(worker running\)/);
+  assert.deepEqual(s.writes.find((w) => w[0] === 'addLabels'), ['addLabels', 9, ['needs-owner']]);
+  assert.equal(s.writes.find((w) => w[0] === 'readComment')[2], formatStoppedNote('resume', 4242, 'bc-2'));
+  assert.deepEqual(s.dispatches, DISPATCH);
+});
+
+test('WP12: resume clears needs-owner and autonomous-revoked on accept', async () => {
+  const approved = mkIssue(['execute-plan', 'autonomous-approved', `plan:${PLAN_ID}`, 'needs-owner', 'autonomous-revoked']);
+  const s = setup();
+  const res = await handleControlComment(s.clients, event(mkComment(RESUME), { issue: approved }), { now: NOW, killSwitch: 'on', runId: 504 });
+  assert.equal(res.handled, true);
+  assert.deepEqual(
+    s.writes.filter((w) => w[0] === 'removeLabel'),
+    [['removeLabel', 9, 'needs-owner'], ['removeLabel', 9, 'autonomous-revoked']],
+  );
 });

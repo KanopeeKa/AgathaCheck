@@ -5,6 +5,7 @@ const assert = require('node:assert/strict');
 const {
   APPROVE_RE, canonical, computeApprovalHash, findControlComments, parseControlComment, validateControlComment,
 } = require('../lib/execute_plan_approval');
+const { acceptedForComments, acceptedIds } = require('./helpers/execute_plan_wp12');
 
 const HEX = 'f'.repeat(64);
 const SNAP = {
@@ -131,7 +132,7 @@ test('findControlComments picks latest authorizing', () => {
     comment({ id: 2, created_at: '2026-10-17T09:00:00Z', updated_at: '2026-10-17T09:00:00Z', body: `revoke-autonomous ${SNAP.plan_id}` }),
     comment({ id: 4, user: { login: 'rando' }, created_at: '2026-10-19T09:00:00Z', updated_at: '2026-10-19T09:00:00Z', body: `revoke-autonomous ${SNAP.plan_id}` }),
   ];
-  const res = findControlComments(comments, SNAP, CONFIG);
+  const res = findControlComments(comments, SNAP, CONFIG, { accepted: acceptedForComments(comments) });
   assert.equal(res.authorizing.comment_id, 3);
   assert.equal(res.authorizing.verb, 'resume');
   assert.equal(res.authorizing.valid, true);
@@ -146,7 +147,7 @@ test('findControlComments ignores resume before the first approve', () => {
     body: line('resume', '2026-10-23T09:00:00Z'),
   });
   const approve = comment({ id: 2, created_at: '2026-10-16T09:05:00Z', updated_at: '2026-10-16T09:05:00Z' });
-  const res = findControlComments([early, approve], SNAP, CONFIG);
+  const res = findControlComments([early, approve], SNAP, CONFIG, { accepted: acceptedIds(2) });
   assert.equal(res.authorizing.comment_id, 2);
   assert.equal(res.authorizing.verb, 'approve');
 });
@@ -154,13 +155,34 @@ test('findControlComments ignores resume before the first approve', () => {
 test('findControlComments ignores duplicate approve after a valid approve', () => {
   const first = comment({ id: 1, created_at: '2026-10-16T09:05:00Z', updated_at: '2026-10-16T09:05:00Z' });
   const dup = comment({ id: 2, created_at: '2026-10-16T09:30:00Z', updated_at: '2026-10-16T09:30:00Z' });
-  const res = findControlComments([first, dup], SNAP, CONFIG);
+  const res = findControlComments([first, dup], SNAP, CONFIG, { accepted: acceptedIds(1) });
   assert.equal(res.authorizing.comment_id, 1);
 });
 
 test('findControlComments reports an invalid latest comment', () => {
-  const res = findControlComments([comment({ user: { login: 'rando' } })], SNAP, CONFIG);
+  const res = findControlComments([comment({ user: { login: 'rando' } })], SNAP, CONFIG, { accepted: new Set() });
   assert.equal(res.authorizing.valid, false);
   assert.equal(res.authorizing.invalid_reason, 'not-owner');
-  assert.equal(findControlComments([], SNAP, CONFIG).authorizing, null);
+  assert.equal(findControlComments([], SNAP, CONFIG, { accepted: new Set() }).authorizing, null);
+});
+
+test('findControlComments: missing accepted throws', () => {
+  assert.throws(() => findControlComments([], SNAP, CONFIG), /accepted/);
+});
+
+test('findControlComments: unacknowledged approve → not-acknowledged', () => {
+  const c = comment({ id: 42 });
+  const res = findControlComments([c], SNAP, CONFIG, { accepted: new Set() });
+  assert.equal(res.authorizing.valid, false);
+  assert.equal(res.authorizing.invalid_reason, 'not-acknowledged');
+});
+
+test('findControlComments: revoke unaffected by acknowledgement', () => {
+  const comments = [
+    comment({ id: 1 }),
+    comment({ id: 2, created_at: '2026-10-17T09:00:00Z', updated_at: '2026-10-17T09:00:00Z', body: `revoke-autonomous ${SNAP.plan_id}` }),
+  ];
+  const res = findControlComments(comments, SNAP, CONFIG, { accepted: acceptedIds(1) });
+  assert.equal(res.authorizing.valid, true);
+  assert.equal(res.revoke_comment_at, '2026-10-17T09:00:00Z');
 });

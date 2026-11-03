@@ -116,6 +116,9 @@ REVOKE_RE  = ^revoke-autonomous (?<plan>[a-z0-9][a-z0-9-]{2,48})$
 4. Approve: `until == snapshot.approved_until`. Resume: `until ≤ comment.created_at + 14 days`.
 5. `until > comment.created_at`.
 
+6. **Acknowledgement (WP12):** the comment id appears in a valid acknowledgement on the control
+   issue (§3.3a). Revoke comments do not require acknowledgement.
+
 **Authorizing comment** = the most recent valid approve **or** resume comment. Its `created_at` is
 the **epoch**; its `until` is the **effective deadline**. Budgets count only events after the
 epoch (state-machine §4.1). A resume never changes scope (same hash); it renews time and budgets.
@@ -127,6 +130,35 @@ valid `resume-autonomous` comment; the approve workflow removes `needs-owner` an
 `autonomous-revoked` when present (runbooks §7.5).
 
 Labels written by the approve workflow: `autonomous-approved`, `plan:<plan_id>`.
+
+## 3.3a Authorization acknowledgement and concurrent workers (WP12)
+
+When the owner posts `approve-autonomous` or `resume-autonomous`, the approve workflow on `main`
+either accepts it, ignores it, or stops the plan:
+
+| Worker running? | Plan stopped? (`deriveControl`, excluding this comment) | Result |
+|-----------------|---------------------------------------------------------|--------|
+| no | any | Post acknowledgement; continue (driver pass as today) |
+| yes | yes | Post “not accepted — post again” note; no new stop |
+| yes | no | Add `needs-owner`; post “plan stopped” note; dispatch driver |
+
+**Running worker** = status `lease` present **and** Cursor run status ∈ `{CREATING, RUNNING, UNKNOWN}`.
+
+**Acknowledgement:** a comment on the control issue by `github-actions[bot]` with body exactly:
+
+```
+execute-plan: authorization accepted — comment <comment_id> — run <run_id>
+```
+
+`<run_id>` must be the `GITHUB_RUN_ID` of that approve workflow run; `getWorkflowRun(run_id)` must
+report `path === '.github/workflows/execute-plan-approve.yml'`, `head_branch === 'main'`,
+`event === 'issue_comment'`.
+
+Approve/resume without a valid acknowledgement are invalid with `invalid_reason: not-acknowledged`.
+
+**Release-scope union:** on a release PR (`integration` → `main`), files touched by merged PRs to
+`main` whose body matches `Unblocks: plan <plan_id> phase <n>` since the epoch are allowed (side
+fixes merged ahead of the release).
 
 ## 3.4 `approval_hash`
 

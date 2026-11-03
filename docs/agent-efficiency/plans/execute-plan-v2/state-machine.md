@@ -46,7 +46,7 @@ Times are ISO-8601 UTC strings. `null` means "does not exist". Example = the sce
 | Field | Source (WP4b) |
 |-------|---------------|
 | `control.labels` | `GET /issues/{control_issue}` labels. |
-| `control.authorizing` | First valid `approve-autonomous` sets the epoch; a later valid `resume-autonomous` replaces it after a stop. Later duplicate `approve-autonomous` comments do not replace a valid epoch. `resume-autonomous` before the first approve is ignored. If the effective comment is invalid, it is reported with `valid: false` and `invalid_reason` ∈ `not-owner`, `bot`, `edited`, `plan`, `hash`, `until`, `window`. |
+| `control.authorizing` | First valid `approve-autonomous` sets the epoch; a later valid `resume-autonomous` replaces it after a stop. Later duplicate `approve-autonomous` comments do not replace a valid epoch. `resume-autonomous` before the first approve is ignored. If the effective comment is invalid, it is reported with `valid: false` and `invalid_reason` ∈ `not-owner`, `bot`, `edited`, `plan`, `hash`, `until`, `window`, `not-acknowledged`. |
 | `control.revoke_comment_at` | `created_at` of the latest valid REVOKE_RE comment, else `null`. |
 | `control.status` | Parsed JSON block of the status comment (contracts §3.5), else `null`. |
 | `init_sha` | `control.status.init_sha`; observe fails with exit `3` when absent. |

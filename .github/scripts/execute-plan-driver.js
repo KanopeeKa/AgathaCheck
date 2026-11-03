@@ -4,7 +4,8 @@
 /**
  * Wrapper for .github/workflows/execute-plan-driver.yml. Runs from trusted `main` code only.
  * Picks the plans an event concerns and runs one driver pass for each (the workflow's single
- * concurrency group serializes passes). Event fields arrive through EVENT_PATH / env, never a shell.
+ * concurrency group serializes passes for the same `plan_id` (workflow_dispatch input); distinct
+ * plans may run in parallel. Event fields arrive through EVENT_PATH / env, never a shell.
  */
 
 const fs = require('fs');
