@@ -29,6 +29,6 @@ test.describe('Per-pet away plans', () => {
     await away.openHub();
     await away.expectHubLoaded();
     await away.expectYourAbsencesSection();
-    await away.expectHubCardForAbsence();
+    await away.expectHubCardForAbsence('HubOwnPet');
   });
 });

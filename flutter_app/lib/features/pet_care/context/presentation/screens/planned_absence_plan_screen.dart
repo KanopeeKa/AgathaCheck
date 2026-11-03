@@ -93,10 +93,9 @@ class PlannedAbsencePlanScreen extends ConsumerWidget {
             final todayIso = PlannedAbsenceDateRules.startsOnWire(
               PlannedAbsenceDateRules.todayCalendar(),
             );
-            final isPast = todayIso != null &&
-                absence.endsOn.compareTo(todayIso) < 0;
-            final showAddPet =
-                canEditTrip && !absence.isCancelled && !isPast;
+            final isPast =
+                todayIso != null && absence.endsOn.compareTo(todayIso) < 0;
+            final showAddPet = canEditTrip && !absence.isCancelled && !isPast;
 
             return shell(
               actions: [

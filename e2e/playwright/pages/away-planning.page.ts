@@ -73,10 +73,22 @@ export class AwayPlanningPage {
     ).toBeVisible({ timeout: 30_000 });
   }
 
-  async expectHubCardForAbsence(): Promise<void> {
+  async expectHubCardForAbsence(petName: string): Promise<void> {
+    await expect(this.page.getByText(petName).first()).toBeVisible({ timeout: 30_000 });
+  }
+
+  async expectPetAwayPlanScreen(petName: string): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
     await expect(
-      this.page.locator('[flt-semantics-identifier^="planned_absence_hub_card_"]').first(),
-    ).toBeVisible({ timeout: 30_000 });
+      this.page.getByText(new RegExp(`${petName}.*away plan|Plan d.absence de ${petName}`, 'i')).first(),
+    ).toBeVisible({ timeout: 60_000 });
+  }
+
+  async expectAbsenceScreenLoaded(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    await expect(semanticsKey(this.page, 'absence_screen_page')).toBeVisible({
+      timeout: 60_000,
+    });
   }
 
   async openCreateForm(): Promise<void> {

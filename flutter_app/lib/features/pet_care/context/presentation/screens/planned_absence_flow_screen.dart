@@ -272,8 +272,9 @@ class _PlannedAbsenceFlowScreenState
     final endsOn = _endsOnWire();
     final petNamesById = {for (final pet in selectablePets) pet.id: pet.name};
 
-    final preselectPetId =
-        GoRouterState.of(context).uri.queryParameters['petId'];
+    final preselectPetId = GoRouterState.of(
+      context,
+    ).uri.queryParameters['petId'];
 
     if (!_hasInitializedPetSelection && selectablePets.isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {

@@ -74,7 +74,8 @@ class _AwayPlanRow extends StatelessWidget {
     final l = AppLocalizations.of(context)!;
     final absence = row.absence;
     final primary = PlannedAbsenceDisplay.primaryLabel(l, absence);
-    final dates = PlannedAbsenceDisplay.secondaryDateLine(l, absence) ??
+    final dates =
+        PlannedAbsenceDisplay.secondaryDateLine(l, absence) ??
         PlannedAbsenceDisplay.dateRangeLabel(l, absence);
     final traveller = PlannedAbsenceDisplay.travellerLine(l, absence);
     final statusLine = AwayPlanCopy.petPillStatusLine(l, row.status);
@@ -91,9 +92,8 @@ class _AwayPlanRow extends StatelessWidget {
         margin: EdgeInsets.zero,
         child: InkWell(
           key: Key('pet_page_away_row_${row.absenceId}'),
-          onTap: () => context.push(
-            '/pc/away/${row.absenceId}/pets/${row.petId}',
-          ),
+          onTap: () =>
+              context.push('/pc/away/${row.absenceId}/pets/${row.petId}'),
           borderRadius: BorderRadius.circular(12),
           child: Padding(
             padding: const EdgeInsets.all(16),
@@ -102,9 +102,9 @@ class _AwayPlanRow extends StatelessWidget {
               children: [
                 Text(
                   primary,
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 4),
                 Text(

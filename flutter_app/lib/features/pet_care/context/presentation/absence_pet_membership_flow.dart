@@ -20,14 +20,15 @@ class AbsencePetMembershipFlow {
   }) async {
     final l = AppLocalizations.of(context)!;
     final onAbsence = absence.petIds.toSet();
-    final candidates = allPets
-        .where((pet) => !pet.passedAway && !onAbsence.contains(pet.id))
-        .toList(growable: false)
-      ..sort((a, b) => a.name.compareTo(b.name));
+    final candidates =
+        allPets
+            .where((pet) => !pet.passedAway && !onAbsence.contains(pet.id))
+            .toList(growable: false)
+          ..sort((a, b) => a.name.compareTo(b.name));
     if (candidates.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.careContextAddPetNoneAvailable)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.careContextAddPetNoneAvailable)));
       return;
     }
 
@@ -91,9 +92,9 @@ class AbsencePetMembershipFlow {
       ref.invalidate(petPlannedAbsencesProvider(petId));
       if (!context.mounted) return;
       _showOverlapWarnings(context, l, result.overlapWarnings, allPets);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.careContextAddPetSuccess)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.careContextAddPetSuccess)));
     } on CareContextApiException catch (e) {
       if (!context.mounted) return;
       if (e.code == 'guest_access_widen_required') {
@@ -110,14 +111,14 @@ class AbsencePetMembershipFlow {
         }
         return;
       }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.careContextAddPetFailed)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.careContextAddPetFailed)));
     } catch (_) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.careContextAddPetFailed)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.careContextAddPetFailed)));
     }
   }
 
@@ -193,14 +194,14 @@ class AbsencePetMembershipFlow {
         );
         return;
       }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.careContextRemovePetFailed)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.careContextRemovePetFailed)));
     } catch (_) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.careContextRemovePetFailed)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.careContextRemovePetFailed)));
     }
   }
 

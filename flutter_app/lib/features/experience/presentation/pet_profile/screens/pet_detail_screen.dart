@@ -73,7 +73,8 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
               semanticsIdentifier: 'pet_detail_plan_absence_menu_item',
               label: l.careContextPlanAnAbsence,
               icon: Icons.flight_takeoff_outlined,
-              onPressed: () => context.push('/pc/away/new?petId=${widget.petId}'),
+              onPressed: () =>
+                  context.push('/pc/away/new?petId=${widget.petId}'),
             ),
           if (showSharing)
             ScreenOverflowAction(

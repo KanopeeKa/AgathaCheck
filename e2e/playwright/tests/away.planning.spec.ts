@@ -49,7 +49,7 @@ test.describe('Away planning', () => {
     await away.selectPet(pet.id, pet.name);
     await away.saveAbsence();
 
-    await away.expectPlanPageLoaded();
+    await away.expectPetAwayPlanScreen('WizardPet');
     await away.expectWhoIsCaringSection();
     await away.expectPetCarerRow(pet.id, 'WizardPet', 'No carer assigned');
   });
@@ -82,10 +82,10 @@ test.describe('Away planning', () => {
     await loginAs(page, user, { experience: 'guardian' });
 
     const away = new AwayPlanningPage(page);
-    await page.goto(flutterGotoUrl(`/pc/away/${absence.id}`));
+    await page.goto(flutterGotoUrl(`/pc/away/${absence.id}/pets/${pet.id}`));
     await refreshFlutterAccessibility(page);
 
-    await away.expectPlanPageLoaded();
+    await away.expectPetAwayPlanScreen('PlanPet');
     await away.expectWhoIsCaringSection();
     await away.expectPetCarerRow(pet.id, 'PlanPet', 'No carer assigned');
   });

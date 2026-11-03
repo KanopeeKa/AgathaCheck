@@ -10,8 +10,7 @@ class PlannedAbsenceHubOwnershipGroups {
   final List<PlannedAbsence> yourAbsences;
   final List<PlannedAbsence> otherPeoplesAbsences;
 
-  bool get isEmpty =>
-      yourAbsences.isEmpty && otherPeoplesAbsences.isEmpty;
+  bool get isEmpty => yourAbsences.isEmpty && otherPeoplesAbsences.isEmpty;
 }
 
 class PlannedAbsenceHubPartition {
