@@ -3,11 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../l10n/app_localizations.dart';
 import '../../../application/people_commands.dart';
+import '../../../application/people_providers.dart';
 import '../../../domain/entities/contact_summary.dart';
+import '../../../domain/enums/contact_role.dart';
 import '../../../domain/enums/relationship_kind.dart';
 import '../linkable_pets_provider.dart';
 import '../person_detail_target.dart';
 import '../../labels/people_labels.dart';
+import '../../pet/confirm_replace_pet_slot.dart';
 
 Future<void> showLinkPetSheet({
   required BuildContext context,
@@ -39,7 +42,6 @@ Future<void> showLinkPetSheet({
     context: context,
     isScrollControlled: true,
     builder: (ctx) => _LinkPetSheetBody(
-      ref: ref,
       contactId: contactId,
       pets: pets,
       linkedPets: linkedPets,
@@ -47,24 +49,48 @@ Future<void> showLinkPetSheet({
   );
 }
 
-class _LinkPetSheetBody extends StatefulWidget {
+List<RelationshipKind> linkPetRelationshipKindOptions({required bool isVet}) {
+  if (isVet) {
+    return const [
+      RelationshipKind.primaryVet,
+      RelationshipKind.outOfHoursVet,
+      RelationshipKind.careProvider,
+      RelationshipKind.emergencyContact,
+      RelationshipKind.other,
+    ];
+  }
+  return const [
+    RelationshipKind.careProvider,
+    RelationshipKind.emergencyContact,
+    RelationshipKind.other,
+  ];
+}
+
+bool contactHasVetRole(WidgetRef ref, String contactId) {
+  final summary = ref.watch(personSummaryProvider(contactId));
+  if (summary != null) {
+    return summary.roles.contains(ContactRole.vet);
+  }
+  final detail = ref.watch(personDetailProvider(contactId)).valueOrNull;
+  return detail?.roles.contains(ContactRole.vet) ?? false;
+}
+
+class _LinkPetSheetBody extends ConsumerStatefulWidget {
   const _LinkPetSheetBody({
-    required this.ref,
     required this.contactId,
     required this.pets,
     required this.linkedPets,
   });
 
-  final WidgetRef ref;
   final String contactId;
   final List<RosterPetOption> pets;
   final List<ContactPetLink> linkedPets;
 
   @override
-  State<_LinkPetSheetBody> createState() => _LinkPetSheetBodyState();
+  ConsumerState<_LinkPetSheetBody> createState() => _LinkPetSheetBodyState();
 }
 
-class _LinkPetSheetBodyState extends State<_LinkPetSheetBody> {
+class _LinkPetSheetBodyState extends ConsumerState<_LinkPetSheetBody> {
   String? _selectedPetId;
   RelationshipKind? _selectedKind;
 
@@ -77,72 +103,130 @@ class _LinkPetSheetBodyState extends State<_LinkPetSheetBody> {
     return Text(labels.join(', '));
   }
 
+  Future<void> _onPetSelected(String? petId) async {
+    setState(() {
+      _selectedPetId = petId;
+      _selectedKind = null;
+    });
+    if (petId == null) return;
+    if (!contactHasVetRole(ref, widget.contactId)) return;
+
+    final repo = ref.read(peopleRepositoryProvider);
+    final relationships = await repo.fetchPetRelationships(petId);
+    if (!mounted) return;
+    final hasPrimaryVet = relationships.any(
+      (r) => r.active && r.relationshipKind == RelationshipKind.primaryVet,
+    );
+    if (!hasPrimaryVet) {
+      setState(() => _selectedKind = RelationshipKind.primaryVet);
+    }
+  }
+
+  Future<void> _confirmLink() async {
+    final petId = _selectedPetId!;
+    final kind = _selectedKind!;
+    final petName = widget.pets.firstWhere((p) => p.petId == petId).petName;
+    final commands = ref.read(peopleCommandsProvider);
+
+    if (kind == RelationshipKind.primaryVet ||
+        kind == RelationshipKind.outOfHoursVet) {
+      final ok = await confirmReplacePetSlotIfNeeded(
+        context: context,
+        ref: ref,
+        petId: petId,
+        petName: petName,
+        slotKind: kind,
+        incomingContactId: widget.contactId,
+      );
+      if (!ok || !mounted) return;
+      Navigator.of(context).pop();
+      await commands.setPetSlot(
+        contactId: widget.contactId,
+        petId: petId,
+        slotKind: kind,
+        slotContactId: widget.contactId,
+      );
+      return;
+    }
+
+    Navigator.of(context).pop();
+    await commands.linkContactToPet(
+      contactId: widget.contactId,
+      petId: petId,
+      relationshipKind: kind,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
+    final isVet = contactHasVetRole(ref, widget.contactId);
+    final kindOptions = linkPetRelationshipKindOptions(isVet: isVet);
+    final maxHeight = MediaQuery.sizeOf(context).height * 0.85;
+
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              l.peopleDetailLinkPetTitle,
-              style: Theme.of(
-                context,
-              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 12),
-            for (final pet in widget.pets)
-              RadioListTile<String>(
-                value: pet.petId,
-                groupValue: _selectedPetId,
-                title: Text(pet.petName),
-                subtitle: _linkedSubtitle(l, pet.petId),
-                onChanged: (value) => setState(() => _selectedPetId = value),
-              ),
-            const SizedBox(height: 8),
-            Text(
-              l.peopleDetailLinkPetChooseKind,
-              style: Theme.of(context).textTheme.titleSmall,
-            ),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              children:
-                  [
-                    RelationshipKind.careProvider,
-                    RelationshipKind.emergencyContact,
-                    RelationshipKind.other,
-                  ].map((kind) {
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxHeight: maxHeight),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  l.peopleDetailLinkPetTitle,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                for (final pet in widget.pets)
+                  RadioListTile<String>(
+                    value: pet.petId,
+                    groupValue: _selectedPetId,
+                    title: Text(pet.petName),
+                    subtitle: _linkedSubtitle(l, pet.petId),
+                    onChanged: _onPetSelected,
+                  ),
+                const SizedBox(height: 8),
+                Text(
+                  l.peopleDetailLinkPetChooseKind,
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  children: kindOptions.map((kind) {
                     return FilterChip(
                       label: Text(kind.label(l)),
                       selected: _selectedKind == kind,
-                      onSelected: (_) => setState(() => _selectedKind = kind),
+                      onSelected: (_) =>
+                          setState(() => _selectedKind = kind),
                     );
                   }).toList(),
+                ),
+                if (_selectedPetId != null && _selectedKind == null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Text(
+                      l.peopleDetailLinkPetKindRequired,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
+                const SizedBox(height: 16),
+                FilledButton(
+                  key: const Key('people_detail_link_pet_confirm'),
+                  onPressed: _selectedPetId == null || _selectedKind == null
+                      ? null
+                      : _confirmLink,
+                  child: Text(l.peopleDetailLinkToPet),
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
-            FilledButton(
-              key: const Key('people_detail_link_pet_confirm'),
-              onPressed: _selectedPetId == null || _selectedKind == null
-                  ? null
-                  : () async {
-                      final petId = _selectedPetId!;
-                      final kind = _selectedKind!;
-                      Navigator.of(context).pop();
-                      await widget.ref
-                          .read(peopleCommandsProvider)
-                          .linkContactToPet(
-                            contactId: widget.contactId,
-                            petId: petId,
-                            relationshipKind: kind,
-                          );
-                    },
-              child: Text(l.peopleDetailLinkToPet),
-            ),
-          ],
+          ),
         ),
       ),
     );

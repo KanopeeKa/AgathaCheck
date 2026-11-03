@@ -8202,6 +8202,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get peopleDetailLinkPetChooseKind => 'How are they linked?';
 
   @override
+  String get peopleDetailLinkPetKindRequired =>
+      'Choose how they\'re linked to continue.';
+
+  @override
   String peopleDetailRelatedCareHistory(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,

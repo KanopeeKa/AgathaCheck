@@ -14368,6 +14368,12 @@ abstract class AppLocalizations {
   /// **'How are they linked?'**
   String get peopleDetailLinkPetChooseKind;
 
+  /// No description provided for @peopleDetailLinkPetKindRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose how they\'re linked to continue.'**
+  String get peopleDetailLinkPetKindRequired;
+
   /// No description provided for @peopleDetailRelatedCareHistory.
   ///
   /// In en, this message translates to:

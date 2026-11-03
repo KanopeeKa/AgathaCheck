@@ -3295,6 +3295,7 @@
   "peopleDetailLinkToPet": "Link to a pet",
   "peopleDetailLinkPetTitle": "Link to a pet",
   "peopleDetailLinkPetChooseKind": "How are they linked?",
+  "peopleDetailLinkPetKindRequired": "Choose how they're linked to continue.",
   "peopleDetailRelatedCareHistory": "{count, plural, =1{1 past visit} other{{count} past visits}}",
   "@peopleDetailRelatedCareHistory": {
     "placeholders": {
