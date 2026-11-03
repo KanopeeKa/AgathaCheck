@@ -3084,6 +3084,7 @@
   "peopleDetailLinkToPet": "Lier à un animal",
   "peopleDetailLinkPetTitle": "Lier à un animal",
   "peopleDetailLinkPetChooseKind": "Quel lien ?",
+  "peopleDetailLinkPetKindRequired": "Choisissez le type de lien pour continuer.",
   "peopleDetailRelatedCareHistory": "{count, plural, =1{1 visite passée} other{{count} visites passées}}",
   "peopleDetailHouseholdNoteLabel": "Note du foyer",
   "peopleDetailHouseholdNoteHelper": "Visible par votre foyer.",
