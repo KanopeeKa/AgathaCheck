@@ -128,6 +128,8 @@ function evaluateDiff(args)
 **`categorizePull`** (`<id>` = `snapshot.plan_id`, `I` = `snapshot.integration_branch`):
 `cursor/<id>-p<n>` → `I` ⇒ `phase` (phaseId `n`); `main` → `I` ⇒ `sync`; `cursor/<id>-sync-<n>` → `I` ⇒
 `sync-resolve`; `I` → `main` ⇒ `release`; `cursor/<id>-remedial-<n>` → `main` ⇒ `remedial`;
+anything else targeting `I` with a head other than `cursor/<id>-p<n>`, `main`, or `cursor/<id>-sync-<n>` ⇒
+`unsupported` (fail closed; side PRs into `main` per runbooks §7.5);
 anything else ⇒ `null`.
 
 **`evaluateDiff` rules** (globs via `globToRegExp` from `scripts/lib/execute_plan_schema.js:72`; **no brace expansion** — list every glob separately):

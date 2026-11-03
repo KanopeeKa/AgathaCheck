@@ -21,12 +21,13 @@ const PLAN_LABEL_PREFIX = 'plan:';
 
 /** Candidate plan id from the PR refs (same shapes as categorizePull), or null. */
 function planIdFromRefs({ head_ref, base_ref }) {
+  const fromBase = INTEGRATION_RE.exec(base_ref || '');
+  if (fromBase) return fromBase[1];
   for (const re of HEAD_RES) {
     const m = re.exec(head_ref || '');
     if (m) return m[1];
   }
-  const m = INTEGRATION_RE.exec(base_ref || '');
-  return m ? m[1] : null;
+  return null;
 }
 
 function labelNames(issue) {
