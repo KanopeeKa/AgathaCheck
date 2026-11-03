@@ -270,9 +270,8 @@ class _HistoryModule extends ConsumerWidget {
     final showPast = ref
         .watch(entryPastOccurrencesProvider(entry.id))
         .maybeWhen(
-          data: (past) => past.any(
-            (o) => o.status == 'completed' || o.status == 'skipped',
-          ),
+          data: (past) =>
+              past.any((o) => o.status == 'completed' || o.status == 'skipped'),
           orElse: () => false,
         );
 

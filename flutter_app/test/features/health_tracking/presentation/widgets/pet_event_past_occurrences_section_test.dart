@@ -40,10 +40,7 @@ Widget _wrap({
               GoRoute(
                 path: '/',
                 builder: (context, state) => Scaffold(
-                  body: SizedBox(
-                    width: width,
-                    child: child,
-                  ),
+                  body: SizedBox(width: width, child: child),
                 ),
               ),
               GoRoute(
@@ -73,10 +70,15 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('pet_event_past_occurrence_past-0')), findsNothing);
+    expect(
+      find.byKey(const Key('pet_event_past_occurrence_past-0')),
+      findsNothing,
+    );
   });
 
-  testWidgets('shows at most three rows when maxVisibleRows is 3', (tester) async {
+  testWidgets('shows at most three rows when maxVisibleRows is 3', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       _wrap(
         width: 400,
@@ -90,13 +92,27 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('pet_event_past_occurrence_past-0')), findsOneWidget);
-    expect(find.byKey(const Key('pet_event_past_occurrence_past-1')), findsOneWidget);
-    expect(find.byKey(const Key('pet_event_past_occurrence_past-2')), findsOneWidget);
-    expect(find.byKey(const Key('pet_event_past_occurrence_past-3')), findsNothing);
+    expect(
+      find.byKey(const Key('pet_event_past_occurrence_past-0')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const Key('pet_event_past_occurrence_past-1')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const Key('pet_event_past_occurrence_past-2')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const Key('pet_event_past_occurrence_past-3')),
+      findsNothing,
+    );
   });
 
-  testWidgets('shows at most five rows when maxVisibleRows is 5', (tester) async {
+  testWidgets('shows at most five rows when maxVisibleRows is 5', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       _wrap(
         width: 690,
@@ -110,8 +126,14 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('pet_event_past_occurrence_past-4')), findsOneWidget);
-    expect(find.byKey(const Key('pet_event_past_occurrence_past-5')), findsNothing);
+    expect(
+      find.byKey(const Key('pet_event_past_occurrence_past-4')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const Key('pet_event_past_occurrence_past-5')),
+      findsNothing,
+    );
   });
 
   testWidgets('row tap opens occurrence screen', (tester) async {
@@ -147,8 +169,14 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('pet_event_past_iterations_header')), findsNothing);
-    expect(find.byKey(const Key('pet_event_past_occurrences_header')), findsNothing);
+    expect(
+      find.byKey(const Key('pet_event_past_iterations_header')),
+      findsNothing,
+    );
+    expect(
+      find.byKey(const Key('pet_event_past_occurrences_header')),
+      findsNothing,
+    );
     expect(find.byKey(const Key('unmark_done_past-0')), findsNothing);
   });
 }

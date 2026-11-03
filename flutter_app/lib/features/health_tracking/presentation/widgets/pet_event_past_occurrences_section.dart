@@ -37,9 +37,7 @@ class PetEventPastOccurrencesSection extends ConsumerWidget {
       data: (past) {
         // Server returns completed + skipped only; guard unresolved overdue.
         final rows = past
-            .where(
-              (o) => o.status == 'completed' || o.status == 'skipped',
-            )
+            .where((o) => o.status == 'completed' || o.status == 'skipped')
             .toList();
         if (rows.isEmpty) return const SizedBox.shrink();
 
