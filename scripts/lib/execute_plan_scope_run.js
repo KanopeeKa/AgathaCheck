@@ -164,7 +164,7 @@ async function publishScopeResult(client, { headSha, outcome, targetUrl, now }) 
       const { stopped } = await loadPlanControl(client, issue, outcome.planId, now);
       if (stopped.stopped) final = result('failure', 'plan-stopped', `plan stopped: ${stopped.reason}`, outcome.planId);
     } catch (e) {
-      final = result('failure', 'drift', `scope check could not confirm the plan state: ${e.message}`, outcome.planId);
+      final = result('failure', 'recheck-error', `scope check could not confirm the plan state: ${e.message}`, outcome.planId);
     }
   }
   await publishScopeCheck(client, { headSha, conclusion: final.conclusion, title: final.title, summary: final.summary, targetUrl });

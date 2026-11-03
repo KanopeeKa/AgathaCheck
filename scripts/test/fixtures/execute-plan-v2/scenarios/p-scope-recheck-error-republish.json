@@ -1,0 +1,54 @@
+{
+  "name": "scope recheck-error on a running plan → republish once",
+  "rule": "PR-ladder 3c",
+  "snapshot_patch": {},
+  "observations_patch": {
+    "phases": [
+      {
+        "id": "1",
+        "branch_exists": true,
+        "pr": {
+          "head_sha": "cccc000000000000000000000000000000000001",
+          "checks": [
+            {
+              "name": "ci-gate / CI passed",
+              "status": "completed",
+              "conclusion": "success",
+              "reason": null,
+              "completed_at": "2026-10-16T09:40:00Z"
+            },
+            {
+              "name": "execute-plan-scope",
+              "status": "completed",
+              "conclusion": "failure",
+              "reason": "recheck-error",
+              "completed_at": "2026-10-16T09:00:00Z"
+            }
+          ]
+        }
+      },
+      {
+        "id": "2",
+        "branch_exists": false,
+        "pr": null
+      }
+    ],
+    "control": {
+      "status": {
+        "dispatched": { "scope_republish": [] },
+        "stop": null
+      }
+    }
+  },
+  "opts": {
+    "actor": "driver",
+    "lease": null
+  },
+  "expected": {
+    "launch": false,
+    "stop": null,
+    "state": "phase:ready",
+    "actor": "driver",
+    "kind": "republish-scope"
+  }
+}
