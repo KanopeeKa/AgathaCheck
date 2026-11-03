@@ -3,6 +3,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { STATUS_MARKER, parseStatusComment, formatStatusComment, formatLogLine, applyDecisionToStatus } = require('../lib/execute_plan_status');
+const { MAX_LAUNCH_HISTORY } = require('../lib/execute_plan_constants');
 
 const PLAN = 'proof-build-label-7f3a';
 const NOW = '2026-10-16T10:00:00Z';
@@ -50,12 +51,12 @@ test('applyDecisionToStatus is pure and only refreshes last_tick_at for workers'
 });
 
 test('applyDecisionToStatus records the merged release PR once and caps launches', () => {
-  const launches = Array.from({ length: 60 }, (_, i) => ({ at: NOW, phase: '1', kind: 'implement', agent_id: String(i), run_id: 'r' }));
+  const launches = Array.from({ length: MAX_LAUNCH_HISTORY + 10 }, (_, i) => ({ at: NOW, phase: '1', kind: 'implement', agent_id: String(i), run_id: 'r' }));
   const obs = { release: { pr: { number: 7, merged_at: NOW, merge_commit_sha: 'abc' } } };
   const n = applyDecisionToStatus(status({ launches }), { state: 'release:merged', phase: null, stop: null }, { now: NOW, actor: 'driver', observations: obs });
   assert.deepEqual(n.release, { pr: 7, merge_sha: 'abc' });
-  assert.equal(n.launches.length, 50);
-  assert.equal(n.launches.at(-1).agent_id, '59');
+  assert.equal(n.launches.length, MAX_LAUNCH_HISTORY);
+  assert.equal(n.launches.at(-1).agent_id, String(MAX_LAUNCH_HISTORY + 9));
 });
 
 test('formatLogLine', () => {
