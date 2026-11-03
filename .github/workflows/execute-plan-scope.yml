@@ -7,7 +7,6 @@ permissions:
   pull-requests: read
   issues: read
   statuses: write
-  checks: write   # legacy check runs on heads published before the commit-status switch
 concurrency:
   group: execute-plan-scope-${{ github.event.pull_request.number }}
   cancel-in-progress: true
