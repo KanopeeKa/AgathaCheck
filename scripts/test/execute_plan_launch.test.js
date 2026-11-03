@@ -8,6 +8,7 @@ const {
   getAgentRunStatus,
   CURSOR_API_BASE,
   workerLaunchEnvVars,
+  dependabotBatchLaunchEnvVars,
   BLANKED_LAUNCH_KEYS,
 } = require('../../.github/scripts/execute-plan-launch');
 
@@ -292,6 +293,15 @@ test('workerLaunchEnvVars without bot token', () => {
   assert.deepEqual(workerLaunchEnvVars(''), { OWNER_GH_TOKEN: '', BOT_GH_TOKEN: '' });
   assert.deepEqual(workerLaunchEnvVars(undefined), { OWNER_GH_TOKEN: '', BOT_GH_TOKEN: '' });
   assert.deepEqual(workerLaunchEnvVars('  '), { OWNER_GH_TOKEN: '', BOT_GH_TOKEN: '' });
+});
+
+test('dependabotBatchLaunchEnvVars passes bot only without blanking owner', () => {
+  assert.deepEqual(dependabotBatchLaunchEnvVars('bot-tok'), {
+    GH_TOKEN: 'bot-tok',
+    EXECUTE_PLAN_TOKEN: 'bot-tok',
+  });
+  assert.deepEqual(dependabotBatchLaunchEnvVars(''), {});
+  assert.deepEqual(dependabotBatchLaunchEnvVars(undefined), {});
 });
 
 test('BLANKED_LAUNCH_KEYS', () => {

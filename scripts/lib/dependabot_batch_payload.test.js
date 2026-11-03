@@ -41,6 +41,6 @@ describe('dependabot_batch_payload', () => {
     assert.match(prompt, /No pre-dispatch CI gate/);
     assert.match(prompt, /\/run-as-me/);
     assert.match(prompt, /run-as-me\/SKILL\.md/);
-    assert.match(prompt, /OWNER_GH_TOKEN/);
+    assert.match(prompt, /dependabotBatchLaunchEnvVars/);
   });
 });

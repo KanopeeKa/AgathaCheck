@@ -6,7 +6,9 @@ description: Run Cloud Agent GitHub API operations as the repo owner (OWNER_GH_T
 # Run as me (owner GitHub identity)
 
 Applies **only** when the **current** user message opts in: `/runasme`, `run-as-me`, or “act as me on GitHub”
-for this task. Opt-in is never implied from earlier chats. Default identity: `.cursor/skills/cloud-github-identity/SKILL.md`.
+for this task — **or** when the agent was launched by **Dependabot batch dispatch** (weekly prompt includes
+`/run-as-me`; launch uses `dependabotBatchLaunchEnvVars()` so dashboard `OWNER_GH_TOKEN` remains available).
+Opt-in is never implied from earlier chats. Default identity: `.cursor/skills/cloud-github-identity/SKILL.md`.
 
 ## What owner mode changes
 

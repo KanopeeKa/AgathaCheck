@@ -54,6 +54,10 @@ Every run — **including weekly Actions dispatch** — opts into **`/run-as-me`
 `.cursor/skills/run-as-me/SKILL.md` for all `gh` and GitHub API work (inventory, close Drop PRs,
 squash-merge batch PR, Phase 6 cleanup). Git pushes and Cursor-opened PRs still use the Cursor GitHub App.
 
+**Launch contract:** `.github/scripts/launch-dependabot-batch.js` uses `dependabotBatchLaunchEnvVars()`
+(bot PAT only; does not blank dashboard `OWNER_GH_TOKEN`). The dispatch prompt is the standing opt-in for
+that agent session (see run-as-me skill).
+
 Do **not** run `execute_plan_runtime.js tick` in owner mode.
 
 ---
