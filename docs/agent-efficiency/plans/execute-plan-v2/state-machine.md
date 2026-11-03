@@ -179,6 +179,9 @@ method `merge` (scope is always green for sync PRs). S2 `release.pr == null` and
 1. Label `do-not-merge` → STOP `pr-blocked`.
 1b. Label `execute-plan-hold` → `wait(hold)` (no STOP, no launch; budgets unchanged). The driver
    ensures the repo label exists. Removing the label resumes on the next event/heartbeat.
+1c. Label `execute-plan-blocked` or body marker `<!-- execute-plan-blocked: … -->` (after 1b, before
+   draft/CI rules) → STOP `worker-blocked` with detail from the marker text, or a default when the label
+   alone is present. Workers may add only this label when reporting an unblockable failure (contracts §3.6).
 2. `draft` → the draft action (agent, L-rules), unless rule 1b applies.
 3. Scope check `reason ∈ {drift, protected, forbidden}` → STOP `drift`.
 3b. Scope check `failure` with reason `plan-stopped` (left by an earlier `enforce-stop`; the plan is
@@ -246,6 +249,8 @@ State names written to the status comment: `stopped`, `phase:pending`, `phase:im
 | `expired` | §4.1 — `now ≥` effective deadline |
 | `drift` | PR-ladder 3 |
 | `ci-budget` | PR-ladder 4 |
+| `ci-stuck` | PR-ladder 4 (same failing signature on three distinct heads) |
+| `worker-blocked` | PR-ladder 1c (label `execute-plan-blocked` or body marker) |
 | `launch-budget` | L4 (per-phase launches only; the daily cap waits) |
 | `pr-blocked` | PR-ladder 1 |
 | `merge-blocked` | PR-ladder 10 — GitHub refused the direct merge for a reason other than an uncounted required check |

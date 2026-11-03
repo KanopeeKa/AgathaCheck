@@ -162,6 +162,7 @@ async function observePr(client, pr, { requiredChecks, epoch, owners = [], sleep
     mergeable_state: pull.mergeable_state || 'unknown',
     auto_merge_enabled: Boolean(pull.auto_merge),
     labels: labelNames(pull.labels),
+    body: pull.body || '',
     checks: latestRuns(headRuns, requiredChecks, headStatuses),
     checks_settled_at: settledAt(headRuns),
     head_activity_at: latestOf([

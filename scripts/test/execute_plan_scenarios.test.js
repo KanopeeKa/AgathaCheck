@@ -84,6 +84,24 @@ function ladder(prPatch, { kind = 'phase', snapPatch, obsPatch, opts } = {}) {
 }
 const red = [{ name: 'ci-gate / CI passed', status: 'completed', conclusion: 'failure', reason: null }];
 
+test('worker-blocked label stops the phase without another worker launch', () => {
+  const s = ladder({
+    labels: ['execute-plan-blocked'],
+    body: '<!-- execute-plan-blocked: flutter-build-web needs budget on main -->',
+  }).stop;
+  assert.equal(s.reason, 'worker-blocked');
+  assert.match(s.detail, /budget on main/);
+});
+
+test('worker-blocked label alone stops even when body marker is empty', () => {
+  const s = ladder({
+    labels: ['execute-plan-blocked'],
+    body: '<!-- execute-plan-blocked:   -->',
+  }).stop;
+  assert.equal(s.reason, 'worker-blocked');
+  assert.match(s.detail, /worker reported blocked/);
+});
+
 test('ci-budget stop on a fixable scope failure names the plan-linked side PR route', () => {
   const scopeRed = [{ name: 'execute-plan-scope', conclusion: 'failure', reason: 'unclassified' }];
   const s = ladder({ checks: scopeRed, failed_attempts_since_epoch: 3 }).stop;

@@ -27,6 +27,20 @@ const SCOPE_SIDE_FIX_HINT = (reason) => `execute-plan-scope is ${reason}: ${SCOP
   + 'If the change is needed to deliver the plan, split it into a plan-linked side PR into the integration branch '
   + '(body: "Unblocks: plan <id> phase <n>" and the blocker; runbooks 7.5), then resume';
 const HOLD_LABEL = 'execute-plan-hold';
+const BLOCKED_LABEL = 'execute-plan-blocked';
+const BLOCKED_BODY_RE = /<!-- execute-plan-blocked:\s*([\s\S]*?)-->/;
+
+/** Detail text when the worker marked the PR blocked (label or HTML comment). */
+function workerBlockedDetail(pr) {
+  const body = pr && pr.body ? String(pr.body) : '';
+  const fromBody = BLOCKED_BODY_RE.exec(body);
+  if ((pr.labels || []).includes(BLOCKED_LABEL)) {
+    const detail = fromBody ? fromBody[1].trim() : '';
+    return detail || 'worker reported blocked (see PR description)';
+  }
+  const fromMarker = fromBody ? fromBody[1].trim() : '';
+  return fromMarker || null;
+}
 
 const driver = (kind, args = {}) => ({ actor: 'driver', kind, launch: false, args });
 const agent = (kind, args = {}) => ({ actor: 'agent', kind, launch: false, args });
@@ -139,6 +153,8 @@ function prLadder(pr, rawCtx) {
   if ((pr.labels || []).includes('do-not-merge')) return stop('pr-blocked', `PR #${pr.number} has the do-not-merge label`);
   // PR-ladder 1b — owner drill hold (no STOP; budgets unchanged)
   if ((pr.labels || []).includes(HOLD_LABEL)) return finish(ctx, { ...base, action: wait('hold'), looked });
+  const blockedDetail = workerBlockedDetail(pr);
+  if (blockedDetail) return stop('worker-blocked', blockedDetail);
   // PR-ladder 2
   if (pr.draft) {
     if (!ctx.draftAction) return finish(ctx, { ...base, action: wait('checks'), looked });
@@ -281,4 +297,4 @@ function decide(snapshot, obs, opts) {
   return prLadder(cur.pr, { ...ctx, kind: 'phase', phase: cur.id, launchKey: cur.id, draftAction: { kind: 'implement', args: draftArgs }, method: 'squash' });
 }
 
-module.exports = { decide, prLadder, applyLeaseRules, HOLD_LABEL };
+module.exports = { decide, prLadder, applyLeaseRules, HOLD_LABEL, BLOCKED_LABEL, workerBlockedDetail };
