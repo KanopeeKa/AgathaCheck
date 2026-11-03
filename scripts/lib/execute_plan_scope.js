@@ -75,11 +75,13 @@ function validateBundleBudgetRatchet(baseText, headText) {
     return 'web-bundle-budget.json must be valid JSON';
   }
   const headKeys = Object.keys(head);
-  if (headKeys.some((k) => !BUNDLE_NUMERIC_KEYS.includes(k)) || BUNDLE_NUMERIC_KEYS.some((k) => !(k in head))) {
-    return 'only maxMainDartJsBytes and maxTotalBytes may change';
+  const allowedExtra = new Set(['version', 'description']);
+  if (headKeys.some((k) => !BUNDLE_NUMERIC_KEYS.includes(k) && !allowedExtra.has(k))) {
+    return 'only maxMainDartJsBytes, maxTotalBytes, version, and description may appear in web-bundle-budget.json';
   }
   for (const key of BUNDLE_NUMERIC_KEYS) {
-    if (typeof head[key] !== 'number' || typeof base[key] !== 'number') return `${key} must be a number`;
+    if (!(key in head) || !(key in base)) return `${key} must be present`;
+    if (!Number.isFinite(head[key]) || !Number.isFinite(base[key])) return `${key} must be a finite number`;
     if (head[key] < base[key]) return `${key} may only increase`;
     const cap = Math.ceil(base[key] * (1 + BUNDLE_MAX_INCREASE));
     if (head[key] > cap) return `${key} increase exceeds 1.5% (${base[key]} → ${head[key]}, cap ${cap})`;
@@ -165,10 +167,10 @@ function ownPlanFiles(snapshot) {
  */
 function classifyPath(file, { snapshot, category, phaseId, supportFiles }) {
   const verdict = (v) => ({ file, verdict: v });
-  if (supportFiles && supportFiles.has(file) && category === 'release') return verdict('allowed');
   if (ownPlanFiles(snapshot).includes(file)) return verdict('own-plan-file');
   if (matchesAny(file, PROTECTED_PATHS)) return verdict('protected');
   if (isForbiddenPath(file)) return verdict('forbidden');
+  if (supportFiles && supportFiles.has(file) && category === 'release') return verdict('allowed');
 
   const phases = scopePhases(snapshot, category, phaseId);
   if (matchesAny(file, collect(phases, 'forbidden_paths'))) return verdict('forbidden');

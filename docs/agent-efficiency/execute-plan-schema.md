@@ -337,6 +337,12 @@ check run that call it arrive in a later work package (build spec:
 also a companion when an in-scope phase has an `allowed_paths` glob under `flutter_app/` (the phase
 may raise the web bundle cap). Companions are reported in `companionsUsed`; at most 30 per PR.
 
+**Web bundle ratchet** (`runScopeCheck` in `scripts/lib/execute_plan_scope_run.js`): when a `phase`
+PR touches `scripts/ci/web-bundle-budget.json`, the scope runner loads base (merge-base) and head
+bytes and applies `validateBundleBudgetRatchet`: only `maxMainDartJsBytes` and `maxTotalBytes` are
+ratcheted (each may increase by at most 1.5% vs base; metadata keys `version` / `description` may
+differ); non-finite numbers fail closed. A ratchet violation is `forbidden`, not `protected`.
+
 **Exception globs** (`EXCEPTION_GLOBS`): `tests` = `**/test/**`, `**/*.test.js`,
 `**/*.test.mjs`, `**/*.test.ts`, `**/*_test.dart`, `e2e/**/*.spec.ts`; `docs` = `docs/**`,
 `**/*.md`. Globs use `globToRegExp` (`**` any segments, `*` one segment); there is no brace

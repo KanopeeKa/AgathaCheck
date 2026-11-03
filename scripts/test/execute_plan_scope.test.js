@@ -130,13 +130,14 @@ test('phase companions apply to that phase only', () => {
 });
 
 test('validateBundleBudgetRatchet allows a small increase only', () => {
-  const base = JSON.stringify({ maxTotalBytes: 66000000, maxMainDartJsBytes: 7015000 });
-  const ok = JSON.stringify({ maxTotalBytes: 66000000, maxMainDartJsBytes: 7018000 });
+  const base = JSON.stringify({ version: 1, description: 'x', maxTotalBytes: 66000000, maxMainDartJsBytes: 7015000 });
+  const ok = JSON.stringify({ version: 1, description: 'y', maxTotalBytes: 66000000, maxMainDartJsBytes: 7018000 });
   const badDecrease = JSON.stringify({ maxTotalBytes: 66000000, maxMainDartJsBytes: 7010000 });
   const badHuge = JSON.stringify({ maxTotalBytes: 66000000, maxMainDartJsBytes: 7200000 });
   assert.equal(validateBundleBudgetRatchet(base, ok), null);
   assert.match(validateBundleBudgetRatchet(base, badDecrease), /may only increase/);
   assert.match(validateBundleBudgetRatchet(base, badHuge), /1\.5%/);
+  assert.match(validateBundleBudgetRatchet(base, JSON.stringify({ maxMainDartJsBytes: 1e400, maxTotalBytes: 66000000 })), /finite/);
 });
 
 test('web bundle budget file is a companion only where a phase is scoped under flutter_app/', () => {
