@@ -98,6 +98,14 @@ test('phase PR in scope → success', async () => {
   assert.deepEqual([res.conclusion, res.title, res.planId], ['success', 'ok', PLAN]);
 });
 
+test('cross-plan head into integration → unsupported with remediation summary', async () => {
+  const { client } = setup({ files: ['server/bin/server.js'] });
+  const res = await runScopeCheck(client, { ...phasePr, headRef: 'cursor/other-plan-p9' });
+  assert.deepEqual([res.conclusion, res.title, res.planId], ['failure', 'unsupported', PLAN]);
+  assert.match(res.summary, /main/);
+  assert.doesNotMatch(res.summary, /No violations/);
+});
+
 test('phase PR unclassified → failure, summary lists the file', async () => {
   const { client } = setup({ files: ['server/bin/server.js', 'flutter_app/lib/main.dart'] });
   const res = await runScopeCheck(client, phasePr);
@@ -266,6 +274,7 @@ test('planIdFromRefs covers every plan branch shape', () => {
   assert.equal(ref('main', INTEGRATION), PLAN);
   assert.equal(ref(`cursor/${PLAN}-remedial-3`), PLAN);
   assert.equal(ref(INTEGRATION), PLAN);
+  assert.equal(ref(`cursor/other-plan-p1`, INTEGRATION), PLAN);
   assert.equal(ref('feature/x'), null);
   assert.equal(ref('cursor/other-thing'), null);
 });

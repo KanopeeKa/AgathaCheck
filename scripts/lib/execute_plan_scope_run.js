@@ -19,6 +19,10 @@ const CHECK_NAME = SCOPE_CONTEXT;
 const CONFIG_PATH = '.github/execute-plan.config.json';
 const SUMMARY_MAX_LINES = 50;
 
+const UNSUPPORTED_INTEGRATION_SUMMARY =
+  'PR targets the integration branch but is not a recognized phase, sync, or sync-resolve head. '
+  + 'Plan-linked side fixes merge to main (runbooks §7.5); open the PR against main or use the documented branch shape.';
+
 const result = (conclusion, title, summary, planId = null) => ({ conclusion, title, summary, planId });
 const sha256Hex = (text) => crypto.createHash('sha256').update(text, 'utf8').digest('hex');
 
@@ -78,6 +82,7 @@ async function verifyOwnPlanFiles(client, snapshot, headSha, files) {
 }
 
 function renderSummary(evaluation) {
+  if (evaluation.title === 'unsupported') return UNSUPPORTED_INTEGRATION_SUMMARY;
   const lines = [];
   if (evaluation.violations.length === 0) lines.push('No violations.');
   else {

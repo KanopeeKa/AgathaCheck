@@ -300,12 +300,15 @@ check run that call it arrive in a later work package (build spec:
 | `cursor/<id>-sync-<n>` → `I` | `sync-resolve` |
 | `I` → `main` | `release` |
 | `cursor/<id>-remedial-<n>` → `main` | `remedial` |
+| `cursor/<id>-p<n>`, `main`, or other heads → `I` when the head is not a recognized plan branch | `unsupported` — fail closed (side fixes target `main`; runbooks §7.5) |
 | anything else | none — not a plan PR |
 
 **Evaluation order** (`evaluateDiff`):
 
 1. Plan stopped → `failure`, title `plan-stopped`; no file is evaluated.
 2. No category, or `sync` → `success`, title `ok`; no file is evaluated.
+2b. Category `unsupported` (integration target with unrecognized head) → `failure`, title `unsupported`;
+   summary names the main-target side-PR route (runbooks §7.5); no file is evaluated.
 3. Per file, first match wins:
    1. The plan's own `.agents/plans/<id>.md` / `<id>.snapshot.json` → allowed only in the
       `release` PR when their bytes equal the approved content; otherwise `drift`.

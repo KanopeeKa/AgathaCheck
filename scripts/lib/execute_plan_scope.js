@@ -111,7 +111,7 @@ function escapeRegExp(s) {
 }
 
 /**
- * @returns {{ category: 'phase'|'sync'|'sync-resolve'|'release'|'remedial'|null, phaseId: string|null }}
+ * @returns {{ category: 'phase'|'sync'|'sync-resolve'|'release'|'remedial'|'unsupported'|null, phaseId: string|null }}
  */
 function categorizePull({ head_ref, base_ref }, snapshot) {
   const none = { category: null, phaseId: null };
@@ -127,7 +127,7 @@ function categorizePull({ head_ref, base_ref }, snapshot) {
     if (new RegExp(`^cursor/${id}-sync-\\d+$`).test(head_ref)) {
       return { category: 'sync-resolve', phaseId: null };
     }
-    return none;
+    return { category: 'unsupported', phaseId: null };
   }
   if (base_ref === 'main') {
     if (head_ref === integration) return { category: 'release', phaseId: null };
@@ -208,6 +208,9 @@ function evaluateDiff({ files, snapshot, category, phaseId, ownPlanFilesVerified
   }
   if (category == null || category === 'sync') {
     return { conclusion: 'success', title: 'ok', violations: [], companionsUsed: [] };
+  }
+  if (category === 'unsupported') {
+    return { conclusion: 'failure', title: 'unsupported', violations: [], companionsUsed: [] };
   }
 
   const violations = [];

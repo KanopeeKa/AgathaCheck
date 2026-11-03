@@ -24,8 +24,7 @@ const SCOPE_CAUSE = {
   'too-many-files': 'the diff is too large for the scope check to list',
 };
 const SCOPE_SIDE_FIX_HINT = (reason) => `execute-plan-scope is ${reason}: ${SCOPE_CAUSE[reason] || 'see the check summary'}. `
-  + 'If the change is needed to deliver the plan, split it into a plan-linked side PR into the integration branch '
-  + '(body: "Unblocks: plan <id> phase <n>" and the blocker; runbooks 7.5), then resume';
+  + 'Plan-linked side fixes belong in a PR into **main** (not integration; body "Unblocks: plan <id> phase <n>"), then sync integration and resume (runbooks §7.5)';
 const HOLD_LABEL = 'execute-plan-hold';
 const BLOCKED_LABEL = 'execute-plan-blocked';
 const BLOCKED_BODY_RE = /<!-- execute-plan-blocked:\s*([\s\S]*?)-->/;
