@@ -5,7 +5,7 @@ audience: both
 domain: pet_care
 feature_id: away_planning_carer
 status: active
-last_updated: 2026-10-07
+last_updated: 2026-11-03
 ---
 
 # Away Planning — Carer model
@@ -76,6 +76,9 @@ Absence-level `handover_note` and `last_handover_downloaded_at` live on `planned
 | AWAY-PLANNING-CARER-R-013 | Vet surfaces renamed to Veterinary team before carer UI; personal-scope collection filter uses `collectionFilterPersonal` not `myVets` (D-AWAY-012) | Live |
 | AWAY-PLANNING-CARER-R-014 | People phase 2: primary + backup carers, directory contacts, optional date ranges within absence; `carer_coverage` gains `unavailable`; migration rules in [people-care-team.md](../../people/features/people-care-team.md) § Away Planning integration | Planned |
 | AWAY-PLANNING-CARER-R-015 | People phase 2+: carer as contact; `shared_user`-like behaviour when linked account has `pet_access`; absence-scoped app access via explicit invite (unchanged principle: assignment never grants access) | Planned |
+| AWAY-PLANNING-CARER-R-016 | The person going away is never a carer on their own absence: not a carer candidate, and a contact linked to their account is rejected (CARE-CONTEXT-D-012); spec [absence-per-pet-away-plans-spec.md](../changes/absence-per-pet-away-plans-spec.md) | Planned |
+| AWAY-PLANNING-CARER-R-017 | Who's caring and notes for the pet are edited on the pet's away plan screen (`/pc/away/:id/pets/:petId`), notes shown inline; supersedes AWAY-PLANNING-CARER-R-012 presentation when live (CARE-CONTEXT-D-011) | Planned |
+| AWAY-PLANNING-CARER-R-018 | Inviting a carer from one pet's away plan offers the other pets on the same absence where that contact is already the carer and the inviter can grant access | Planned |
 
 ## API summary
 
@@ -146,6 +149,7 @@ Coverage gaps: [#1770](https://github.com/KanopeeKa/AgathaCheck/issues/1770) (sh
 | AWAY-PLANNING-CARER-D-014 | Per-pet handover PDF content and privacy | Former D-AWAY-014a; one pet's carer in Who's caring | Live | 2026-09-22 | #1266 |
 | AWAY-PLANNING-CARER-D-015 | Download timestamp full-plan only | Former D-AWAY-014b | Live | 2026-09-22 | #1266 |
 | AWAY-PLANNING-CARER-D-016 | People phase 2 amends D-AWAY-002/003/005 presentation | Primary+backup model, `unavailable` carer fact, contact-backed carers; UI one carer until later | Live | 2026-10-08 | documentation-migration |
+| AWAY-PLANNING-CARER-D-017 | Traveller is never a carer on their own absence | Who is going away = person logging it (CARE-CONTEXT-D-012); assigning them as carer is incoherent | Live | 2026-11-03 | — |
 
 ## Related
 

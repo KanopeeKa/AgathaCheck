@@ -33,7 +33,7 @@ Part of the AgathaTrack domain-first documentation tree. Cross-cutting architect
 | Care Foundation roadmap (v0.4) | [care-foundation-roadmap.md](changes/care-foundation-roadmap.md) | Phases A–E sequencing |
 | Care progression slices | [care-progression-delivery-plan.md](changes/care-progression-delivery-plan.md) | CP-0–CP-7; rules in canonical |
 | Away planning (AW) | [away-planning-delivery-plan.md](changes/away-planning-delivery-plan.md) | AW-EMERGENCY–AW-10 |
-| Absences / per-pet away plans (spec) | [absence-per-pet-away-plans-spec.md](changes/absence-per-pet-away-plans-spec.md) | Proposed — PR #2035; folds to care-context |
+| Absences / per-pet away plans (spec) | [absence-per-pet-away-plans-spec.md](changes/absence-per-pet-away-plans-spec.md) | Proposed — folds to care-context; CARE-CONTEXT-R-025–R-041 |
 | Absences / per-pet away plans (delivery) | [absence-per-pet-away-plans-delivery-plan.md](changes/absence-per-pet-away-plans-delivery-plan.md) | `in-delivery` — execute-plan `absence-per-pet-away-plans-a7566` · #2036 |
 | Away planning — People amendments | [people-care-team.md](/docs/domains/people/features/people-care-team.md) § Away Planning integration | Folded from `amends-away-planning` |
 | Care Intelligence Phase D | [phase-d-review-relevance-plan.md](changes/phase-d-review-relevance-plan.md) | Research and delivery |
