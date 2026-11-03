@@ -184,6 +184,9 @@ method `merge` (scope is always green for sync PRs). S2 `release.pr == null` and
 3b. Scope check `failure` with reason `plan-stopped` (left by an earlier `enforce-stop`; the plan is
    running, D1) → head already in `status.dispatched.scope_republish` after the epoch ? STOP
    `scope-stale` : driver `republish-scope`.
+3c. Scope check `failure` with reason `recheck-error` (`publishScopeResult` could not reload plan
+   control before posting green) → head already republished after the epoch ? STOP `check-missing` :
+   driver `republish-scope` (does not launch `fix-ci`).
 4. Any required check concluded `failure`/`timed_out`/`action_required` on `head_sha`:
    attempts ≥ `ci_per_phase` → STOP `ci-budget`; else, when the only failing check is
    `execute-plan-scope` with reason `unclassified`/`companion-cap`/`too-many-files` → agent
@@ -310,6 +313,8 @@ WP5 writes U):
 | `p-auto-merge-armed-wait.json` | PR-ladder 10 | driver `wait` (`checks`) |
 | `p-auto-merge-stale-merge.json` | PR-ladder 10 | driver `merge` after green ≥ 10 min |
 | `p-scope-plan-stopped-republish.json` | PR-ladder 3b | driver `republish-scope` (pre-epoch ledger entry ignored) |
+| `p-scope-recheck-error-republish.json` | PR-ladder 3c | driver `republish-scope` |
+| `p-scope-recheck-error-persist-stop.json` | PR-ladder 3c | STOP `check-missing` |
 | `p-scope-plan-stopped-twice-stop.json` | PR-ladder 3b | stop `scope-stale` |
 | `p-check-missing-running-wait.json` | PR-ladder 10a | driver `wait` (`checks`) while a check run is unfinished |
 | `p-check-missing-settled-republish.json` | PR-ladder 10a | driver `republish-scope` |

@@ -128,7 +128,8 @@ async function publishScopeResult(client, { headSha, outcome, targetUrl, now }) 
 
 **`publishScopeResult` rule (stale-run guard):** a `success` outcome with a `planId` reloads the plan
 control state just before posting. Stopped → publish `failure` / `plan-stopped`; the re-check throws →
-`failure` / `drift` (fail closed). So a run that evaluated before a STOP cannot post green after
+`failure` / `recheck-error` (fail closed; PR-ladder 3c republishes once, then STOP `check-missing`).
+So a run that evaluated before a STOP cannot post green after
 `enforce-stop` turned the head red. `check-diff --publish` only runs inside GitHub Actions
 (`GITHUB_ACTIONS=true`): a status posted with a personal token is not counted by the rulesets.
 
