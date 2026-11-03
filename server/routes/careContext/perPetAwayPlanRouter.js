@@ -2,12 +2,40 @@ import { asyncHandler } from '../../lib/http/asyncHandler.js';
 import { loadAbsenceForViewer } from '../../lib/care/absence/absenceVisibility.js';
 import { loadPerPetAwayPlan } from '../../lib/care/awayPlan/loadPerPetAwayPlan.js';
 import { extractUserId } from '../../lib/requireAuth.js';
+import {
+  addPetToPlannedAbsence,
+  removePetFromPlannedAbsence,
+} from './plannedAbsencePetUseCases.js';
 
 /**
  * @param {import('express').Router} router
  * @param {import('pg').Pool} pool
  */
 export function registerPerPetAwayPlanRoutes(router, pool) {
+  router.post('/:id/pets', asyncHandler(async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    const out = await addPetToPlannedAbsence(pool, userId, req.params.id, req.body || {});
+    if (out.error) return res.status(out.status).json({ error: out.error });
+    if (out.payload) return res.status(out.status).json(out.payload);
+    res.json(out.body);
+  }));
+
+  router.delete('/:id/pets/:petId', asyncHandler(async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    const out = await removePetFromPlannedAbsence(
+      pool,
+      userId,
+      req.params.id,
+      req.params.petId,
+      req.body || {},
+    );
+    if (out.error) return res.status(out.status).json({ error: out.error });
+    if (out.payload) return res.status(out.status).json(out.payload);
+    res.json(out.body);
+  }));
+
   router.get('/:id/pets/:petId/away-plan', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });

@@ -152,6 +152,13 @@ export async function resolveCarerWrite(pool, { declarerUserId, petId, item }) {
     }
 
     if (contact.linked_user_id) {
+      if (contact.linked_user_id === declarerUserId) {
+        return {
+          ok: false,
+          status: 400,
+          error: 'The person going away cannot be a carer on their own absence',
+        };
+      }
       if (!(await isCarerCandidate(pool, petId, contact.linked_user_id))) {
         return { ok: false, status: 403, error: 'Forbidden' };
       }
@@ -199,6 +206,13 @@ export async function resolveCarerWrite(pool, { declarerUserId, petId, item }) {
     const carerUserId = item.carer_user_id || item.carerUserId || null;
     if (!carerUserId) {
       return { ok: false, status: 400, error: 'carer_user_id is required for shared_user carers' };
+    }
+    if (carerUserId === declarerUserId) {
+      return {
+        ok: false,
+        status: 400,
+        error: 'The person going away cannot be a carer on their own absence',
+      };
     }
     if (!(await isCarerCandidate(pool, petId, carerUserId))) {
       return { ok: false, status: 403, error: 'Forbidden' };
