@@ -89,22 +89,30 @@ class _HubList extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 96),
       children: [
         if (yourAbsences.isNotEmpty) ...[
-          Text(
-            l.careContextHubYourAbsences,
-            style: Theme.of(
-              context,
-            ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+          Semantics(
+            identifier: 'planned_absence_hub_your_absences_heading',
+            header: true,
+            child: Text(
+              l.careContextHubYourAbsences,
+              style: Theme.of(
+                context,
+              ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+            ),
           ),
           const SizedBox(height: 8),
           ..._cards(yourAbsences, false),
         ],
         if (otherPeoplesAbsences.isNotEmpty) ...[
           if (yourAbsences.isNotEmpty) const SizedBox(height: 24),
-          Text(
-            l.careContextHubOtherPeoplesAbsences,
-            style: Theme.of(
-              context,
-            ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+          Semantics(
+            identifier: 'planned_absence_hub_other_absences_heading',
+            header: true,
+            child: Text(
+              l.careContextHubOtherPeoplesAbsences,
+              style: Theme.of(
+                context,
+              ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+            ),
           ),
           const SizedBox(height: 8),
           ..._cards(otherPeoplesAbsences, false),

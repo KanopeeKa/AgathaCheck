@@ -203,10 +203,15 @@ class _PetCareBody extends StatelessWidget {
           const SizedBox(height: 8),
           Align(
             alignment: Alignment.centerLeft,
-            child: TextButton(
-              key: Key('away_plan_pre_absence_overdue_$petId'),
-              onPressed: () => openPetDetail(context, petId),
-              child: Text(l.awayPlanningPreAbsenceOverdueAction),
+            child: Semantics(
+              identifier: 'away_plan_pre_absence_overdue_$petId',
+              button: true,
+              label: l.awayPlanningPreAbsenceOverdueAction,
+              child: TextButton(
+                key: Key('away_plan_pre_absence_overdue_$petId'),
+                onPressed: () => openPetDetail(context, petId),
+                child: Text(l.awayPlanningPreAbsenceOverdueAction),
+              ),
             ),
           ),
         ],
