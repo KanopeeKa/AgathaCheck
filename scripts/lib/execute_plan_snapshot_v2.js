@@ -6,7 +6,7 @@
  */
 
 const crypto = require('crypto');
-const { ExecutePlanError, V2_CAPS, V2_DEFAULTS } = require('./execute_plan_constants');
+const { ExecutePlanError, V2_CAPS, V2_DEFAULTS, MAX_LAUNCH_HISTORY } = require('./execute_plan_constants');
 const { computeApprovalHash } = require('./execute_plan_approval');
 
 const PLAN_ID_RE = /^[a-z0-9][a-z0-9-]{2,48}$/;
@@ -103,6 +103,9 @@ function validateSnapshotV2(snapshot, { planMarkdown } = {}) {
     const value = budgets[key];
     if (!Number.isInteger(value) || value < 1) fail(`settings.budgets.${key} must be an integer >= 1`);
     if (value > V2_CAPS[key]) fail(`settings.budgets.${key} exceeds the cap of ${V2_CAPS[key]}`);
+  }
+  if (budgets.daily_launches > MAX_LAUNCH_HISTORY) {
+    fail(`settings.budgets.daily_launches exceeds launch history limit ${MAX_LAUNCH_HISTORY}`);
   }
   for (const key of Object.keys(budgets)) {
     if (!BUDGET_KEYS.includes(key)) fail(`unknown budget "${key}"`);

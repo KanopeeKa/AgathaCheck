@@ -176,7 +176,7 @@ writes use the bot token (one identity, item 13). Valid example of the JSON bloc
 | `init_sha` | string | approve | Commit holding the approved plan files (§3.1/§3.2). All readers load the snapshot here and re-verify the hash. |
 | `state`, `phase` | string / string\|null | tick | Last decided state (state-machine §4.2). |
 | `lease` | object\|null | driver (launch), worker tick (`last_tick_at`) | The live worker, if any. |
-| `launches` | array, newest last, keep last 50 | driver | One entry per launch. |
+| `launches` | array, newest last, keep last `MAX_LAUNCH_HISTORY` (see `execute_plan_constants.js`) | driver | One entry per launch. |
 | `dispatched.preuat_heads` | array of SHAs | driver | `main` heads for which Pre-UAT was dispatched (once per head). |
 | `dispatched.deploy_tags` | array of tags | driver | Tags re-dispatched to Deploy UAT (once per tag). |
 | `dispatched.scope_republish` | array of `{ sha, at }` (last 20; absent until first use) | driver | PR heads whose `execute-plan-scope` status the driver re-evaluated and republished; an entry counts only when `at` is after the epoch (state-machine PR-ladder 3b/10a). |

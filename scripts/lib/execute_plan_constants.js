@@ -61,9 +61,16 @@ const V2_DEFAULTS = {
   budgets: { ci_per_phase: 8, launches_per_phase: 15, remedial_rounds: 6, sync_attempts: 5, daily_launches: 80 },
 };
 
+/** Status comment retains this many launch rows; must cover daily_launches and per-phase totals (contracts §3.1). */
+const MAX_LAUNCH_HISTORY = Math.max(
+  V2_CAPS.daily_launches,
+  V2_CAPS.launches_per_phase * V2_CAPS.phases,
+);
+
 module.exports = {
   V2_CAPS,
   V2_DEFAULTS,
+  MAX_LAUNCH_HISTORY,
   ALLOWED_EXCEPTIONS,
   ARTIFACT_POLICY,
   AUTONOMY,

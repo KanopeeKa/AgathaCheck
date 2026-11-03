@@ -5,8 +5,9 @@
  * Spec: docs/agent-efficiency/plans/execute-plan-v2/contracts.md §3.5.
  */
 
+const { MAX_LAUNCH_HISTORY } = require('./execute_plan_constants');
+
 const STATUS_MARKER = (planId) => `<!-- execute-plan-status:${planId} -->`;
-const MAX_LAUNCHES = 50;
 const FENCE_RE = /```json\s*\n([\s\S]*?)\n```/;
 
 /** @returns {object|null} the JSON block of a status comment, or null when absent or malformed. */
@@ -50,7 +51,7 @@ function formatLogLine(oldState, newState, url) {
  * `observations` (optional) lets the release PR merge be recorded; `epoch` keeps a stop's `at` only while it is current.
  */
 function applyDecisionToStatus(status, decision, { now, actor, observations, epoch } = {}) {
-  const next = { ...status, launches: [...(status.launches || [])].slice(-MAX_LAUNCHES) };
+  const next = { ...status, launches: [...(status.launches || [])].slice(-MAX_LAUNCH_HISTORY) };
   next.state = decision.state;
   next.phase = decision.phase === undefined ? null : decision.phase;
   if (actor === 'agent' && next.lease) next.lease = { ...next.lease, last_tick_at: now };

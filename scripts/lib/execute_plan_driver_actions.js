@@ -16,9 +16,9 @@
 const { GitHubError } = require('./execute_plan_github');
 const { HOLD_LABEL } = require('./execute_plan_state');
 const { formatStatusComment, parseStatusComment } = require('./execute_plan_status');
+const { MAX_LAUNCH_HISTORY } = require('./execute_plan_constants');
 const { workerLaunchEnvVars } = require('../../.github/scripts/execute-plan-launch');
 
-const MAX_LAUNCHES = 50;
 const MAX_REPUBLISHES = 20;
 const SCOPE_CHECK = 'execute-plan-scope';
 // 405 wording when a required check has no usable result (probed 2026-11-02, see the v2 decision log).
@@ -256,7 +256,7 @@ async function launchWorker(clients, ctx, decision, now) {
   const key = decision.phase || 'release';
   await updateStatus(bot, ctx, (s) => ({
     ...s,
-    launches: [...(s.launches || []), { at: now, phase: key, kind: action.kind, agent_id: launched.agentId, run_id: launched.runId }].slice(-MAX_LAUNCHES),
+    launches: [...(s.launches || []), { at: now, phase: key, kind: action.kind, agent_id: launched.agentId, run_id: launched.runId }].slice(-MAX_LAUNCH_HISTORY),
     lease: { platform: 'cursor', agent_id: launched.agentId, run_id: launched.runId, launched_at: now, last_tick_at: now },
   }), now);
   return `launched ${action.kind} on ${a.branch} (agent ${launched.agentId})`;

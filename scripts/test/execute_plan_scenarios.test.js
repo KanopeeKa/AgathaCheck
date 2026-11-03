@@ -64,6 +64,17 @@ test('launchCounts ignores launches before epoch', () => {
   assert.deepEqual(c, { phase: { 1: 1, 2: 1 }, today: 3 });
 });
 
+test('launchCounts daily total is not truncated below configured daily_launches cap', () => {
+  const { MAX_LAUNCH_HISTORY } = require('../lib/execute_plan_constants');
+  const launches = Array.from({ length: 85 }, (_, i) => ({
+    at: `2026-10-16T${String(9 + (i % 10)).padStart(2, '0')}:${String(i % 60).padStart(2, '0')}:00Z`,
+    phase: String((i % 8) + 1),
+  }));
+  const kept = launches.slice(-MAX_LAUNCH_HISTORY);
+  const c = launchCounts(kept, { epoch: '2026-10-16T08:00:00Z', now: NOW });
+  assert.equal(c.today, 85);
+});
+
 function ladder(prPatch, { kind = 'phase', snapPatch, obsPatch, opts } = {}) {
   const b = buildBase({ snapshot_patch: snapPatch, observations_patch: obsPatch, opts });
   const pr = deepMerge(JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures/execute-plan-v2/scenarios/_base.pr.json'), 'utf8')), prPatch);
