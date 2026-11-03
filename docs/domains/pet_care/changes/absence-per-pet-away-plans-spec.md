@@ -76,7 +76,7 @@ From the absence screen: **Add a pet** → choose from pets the person can manag
 
 - A new away plan is created for that pet with no carer and no notes.
 - If the dates overlap another active absence for that pet, the usual warning shows. It does not block.
-- If carers on this absence already have absence access, the app asks before any of them can see the new pet (PEOPLE D16). Declining still adds the pet; it just doesn't widen anyone's access.
+- If carers on this absence already have absence access, the app asks before any of them can see the new pet (PEOPLE-D16). Declining still adds the pet; it just doesn't widen anyone's access.
 
 ### 3.4 Remove a pet from an absence
 
@@ -97,7 +97,7 @@ Sam has Full access to Buddy only (as co-parent or household Full access). Frede
 - **See absence** shows the trip title, dates, trip-wide notes and **only Buddy's pill**. Whiskers and Pebble are not named, counted or hinted at.
 - Sam cannot change the trip itself (title, dates, trip notes, delete) and cannot add or remove pets. Those belong to the person going away (§5).
 
-People with **Can log care** (household tier, care-only share, or absence guest access) do not see away plan screens or the pet page section. Their care handover scope is unchanged (PEOPLE D7).
+People with **Can log care** (household tier, care-only share, or absence guest access) do not see away plan screens or the pet page section. Their care handover scope is unchanged (PEOPLE-D7).
 
 ## 4. Screens
 
@@ -166,7 +166,8 @@ Cancelled absence: everything is read-only and downloads are disabled, as today.
 | Per-pet PDF | Yes | Yes | No |
 
 - Access is checked **when the page is read**, not stored on the plan. If someone loses Full access to a pet, they stop seeing its plan immediately. If they gain it, the plan appears.
-- When a person other than the one going away edits a plan, the plan shows the change. "Last changed by" stays in the audit trail only (PEOPLE D17); there is no new notification in this change.
+- The **person who declared the absence** always sees it under **Your absences** and can edit the trip or delete it, even when they no longer have Full access to one or more pets on the trip.
+- When a person other than the one going away edits a plan, the plan shows the change. "Last changed by" stays in the audit trail only (PEOPLE-D17); there is no new notification in this change.
 - **The person going away is never a carer on their own absence.** They are not offered as a carer candidate, and a contact linked to their account cannot be assigned (AWAY-PLANNING-CARER-R-016).
 - This replaces "planned absences are visible only to the person who logged them" (CARE-CONTEXT-R-005). That rule is retired when this ships.
 
@@ -190,9 +191,9 @@ The one-line pill status uses the existing priority: carer gap first, then care 
 | Pet removed from the absence | §3.4 |
 | Last pet removed | Absence deleted (§3.4) |
 | Pet deleted from the app | Its away plans are removed. If that was the last pet on an absence, the absence is deleted and its absence access ends |
-| Pet leaves a household or is transferred | The plan stays with the pet (PEOPLE D17). Who can see it is re-evaluated (§5). Carer contacts are re-pointed as today (PEOPLE-CARE-TEAM-D-029, D-034) |
+| Pet leaves a household or is transferred | The plan stays with the pet (PEOPLE-D17). Who can see it is re-evaluated (§5). Carer contacts are re-pointed as today (PEOPLE-CARE-TEAM-D-029, D-034) |
 | Person going away loses Full access to a pet | They stop seeing that pet's plan and pill. The plan remains visible to people who still have Full access |
-| Carer leaves, loses access, or contact removed | Pet's carer state becomes `unavailable` (PEOPLE D18), shown on the pill |
+| Carer leaves, loses access, or contact removed | Pet's carer state becomes `unavailable` (PEOPLE-D18), shown on the pill |
 | Same carer for several pets | Inviting a carer from one pet's plan offers to include the other pets on this absence where they are already the carer and the inviter can grant access (AWAY-PLANNING-CARER-R-018) |
 | Two absences overlap for one pet | Both plans appear on the pet page section; the overlap warning stays non-blocking |
 | Past absence | Visible from the hub's past list; plans read-only; not on the pet page section |
@@ -200,7 +201,7 @@ The one-line pill status uses the existing priority: carer gap first, then care 
 ## 8. Handover PDFs
 
 - **Full-trip PDF** (absence screen): same content as today, limited to the pets the downloader can access. Recording `last_handover_downloaded_at` is unchanged (AWAY-PLANNING-CARER-R-008).
-- **Per-pet PDF** (away plan screen): unchanged content and privacy rules (AWAY-PLANNING-CARER-R-009). It does not record a download (R-010).
+- **Per-pet PDF** (away plan screen): unchanged privacy rules for the declarer and for carers (AWAY-PLANNING-CARER-R-009). When the downloader has Full access to some pets only, trip context and pet-name lists in that PDF are limited to **pets they can access** (same rule as the full-trip PDF in R-040). It does not record a download (R-010).
 
 ## 9. Out of scope
 
