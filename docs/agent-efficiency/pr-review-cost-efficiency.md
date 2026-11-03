@@ -98,7 +98,7 @@ Copilot credits and Actions minutes are separate meters. Levers: batch pushes, i
 
 1. Do not request Copilot reviewer without credits.
 2. Self-review + CI + `./scripts/pre-push.sh` before merge to `main`.
-3. `wait --pr` timed out with Copilot still pending, or Copilot absent — triage any existing threads; `collect --pr` must show zero unresolved threads before merge.
+3. `wait --pr` exits `3` (Copilot still pending at the timeout) or Copilot absent — triage any existing threads; `gate --pr` must exit `0`, or `3` with nothing unresolved, before merge.
 4. Optional PR comment: Copilot unavailable; CI + pre-push only.
 
 ---

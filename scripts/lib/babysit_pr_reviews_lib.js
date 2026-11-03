@@ -15,11 +15,14 @@ function loginOf(entry) {
   return entry?.user?.login || entry?.author?.login || entry?.login || '';
 }
 
+// The ruleset's Copilot request lands seconds after the PR opens; until then a young PR is not "no review".
+const COPILOT_REQUEST_GRACE_MS = 3 * 60 * 1000;
+
 /**
  * A pending request wins over an earlier review: GitHub keeps Copilot in `requested_reviewers`
  * until the (re-)review is submitted, so threads from that review are not in yet.
  */
-function assessCopilotStatus({ reviews, reviewComments, requestedReviewers }) {
+function assessCopilotStatus({ reviews, reviewComments, requestedReviewers, createdAt, now = Date.now() }) {
   const copilotComments = (reviewComments || []).filter((c) => isCopilotLogin(loginOf(c)));
   if ((requestedReviewers || []).some((r) => isCopilotLogin(loginOf(r)))) {
     return { state: 'pending', reason: 'review_requested', inlineCommentCount: copilotComments.length };
@@ -29,6 +32,10 @@ function assessCopilotStatus({ reviews, reviewComments, requestedReviewers }) {
   }
   if (copilotComments.length > 0) {
     return { state: 'complete', reason: 'inline_comments_only', inlineCommentCount: copilotComments.length };
+  }
+  const age = createdAt ? now - Date.parse(createdAt) : Infinity;
+  if (age < COPILOT_REQUEST_GRACE_MS) {
+    return { state: 'pending', reason: 'awaiting_request', inlineCommentCount: 0 };
   }
   return { state: 'absent', reason: 'no_review', inlineCommentCount: 0 };
 }
@@ -54,30 +61,46 @@ function normalizeReviewThreads(graphqlThreads) {
 }
 
 /**
- * `readyForTriage` — no automatic review still in progress, so `threads` is the full set to triage.
- * `mergeReady` — ready for triage, nothing unresolved, and the thread list was not truncated.
+ * One `reviewThreads` page. `gh api graphql` can exit 0 with an `errors` array and no `data`:
+ * that must throw, never read as zero threads.
  */
-function buildCollectReport({ prNumber, copilot, threads, timedOut = false, truncated = false }) {
+function readReviewThreadPage(graphql, prNumber) {
+  if (Array.isArray(graphql?.errors) && graphql.errors.length > 0) {
+    throw new Error(`review threads query failed: ${graphql.errors.map((e) => e.message).join('; ')}`);
+  }
+  const connection = graphql?.data?.repository?.pullRequest?.reviewThreads;
+  if (!connection || !Array.isArray(connection.nodes)) {
+    throw new Error(`review threads query returned no reviewThreads for PR #${prNumber}`);
+  }
+  const nextCursor = connection.pageInfo?.hasNextPage ? connection.pageInfo.endCursor || null : null;
+  if (connection.pageInfo?.hasNextPage && !nextCursor) {
+    throw new Error(`review threads page for PR #${prNumber} has a next page but no cursor`);
+  }
+  return { nodes: connection.nodes, nextCursor };
+}
+
+/**
+ * `readyForTriage` — `threads` is the full set to triage: no Copilot review in progress, or the wait
+ *   timed out and Copilot counts as unavailable (`copilotUnavailable`).
+ * `mergeReady` — no Copilot review in progress and nothing unresolved.
+ */
+function buildCollectReport({ prNumber, copilot, threads, timedOut = false }) {
   const unresolvedThreads = threads.filter((thread) => !thread.isResolved);
   const copilotThreads = unresolvedThreads.filter((thread) => thread.reviewer === 'copilot');
   const humanThreads = unresolvedThreads.filter((thread) => thread.reviewer === 'human');
 
   const copilotPending = copilot.state === 'pending';
-  const readyForTriage = !copilotPending;
-  const mergeReady = readyForTriage && unresolvedThreads.length === 0 && !truncated;
+  const copilotUnavailable = copilotPending && timedOut;
+  const readyForTriage = !copilotPending || copilotUnavailable;
+  const mergeReady = !copilotPending && unresolvedThreads.length === 0;
 
   const warnings = [];
-  if (copilotPending) {
+  if (copilotUnavailable) {
     warnings.push(
-      timedOut
-        ? 'Copilot review still pending after the wait timeout — treat Copilot as unavailable (pr-review-cost-efficiency.md §Copilot unavailable) and triage the threads present.'
-        : 'Copilot review in progress — more threads may arrive. Run `wait` before triage or merge.'
+      'Copilot review still pending after the wait timeout — treat Copilot as unavailable (pr-review-cost-efficiency.md §Copilot unavailable) and triage the threads present.'
     );
-  }
-  if (truncated) {
-    warnings.push(
-      'Review thread collection was truncated (GraphQL page limit). Inspect the GitHub UI for additional threads.'
-    );
+  } else if (copilotPending) {
+    warnings.push('Copilot review in progress — more threads may arrive. Run `wait` before triage or merge.');
   }
 
   return {
@@ -88,10 +111,10 @@ function buildCollectReport({ prNumber, copilot, threads, timedOut = false, trun
       unresolvedCount: unresolvedThreads.length,
       copilotCount: copilotThreads.length,
       humanCount: humanThreads.length,
-      truncated,
     },
     readyForTriage,
     mergeReady,
+    copilotUnavailable,
     timedOut,
     warnings,
   };
@@ -124,10 +147,12 @@ function parsePrRef(prRef, defaultOwner, defaultRepo) {
 }
 
 module.exports = {
+  COPILOT_REQUEST_GRACE_MS,
   classifyReviewer,
   isCopilotLogin,
   assessCopilotStatus,
   normalizeReviewThreads,
   buildCollectReport,
   parsePrRef,
+  readReviewThreadPage,
 };

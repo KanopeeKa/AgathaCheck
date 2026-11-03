@@ -11,6 +11,7 @@ const RETRY_DELAYS_MS = [2000, 4000, 8000];
 const RETRY_STATUSES = new Set([502, 503, 504]);
 const REQUEST_TIMEOUT_MS = 30_000; // a hung call must not hold the driver until the job timeout
 const PULL_FILES_LIMIT = 3000;
+const REVIEW_THREAD_PAGE_CAP = 20;
 
 class MissingToken extends Error {
   constructor(message = 'No GitHub token: set EXECUTE_PLAN_TOKEN, GH_TOKEN or GITHUB_TOKEN') {
@@ -236,14 +237,26 @@ function createGitHubClient(opts) {
       rest('PUT', `/pulls/${n}/merge`, { body: { merge_method: method } }),
     updateBranch: (n) => rest('PUT', `/pulls/${n}/update-branch`, { body: {} }),
 
+    /** Every page: an unresolved thread past the first 100 must still block merge (fails closed past the cap). */
     async listUnresolvedThreads(n) {
-      const data = await graphql(
-        `query($owner:String!,$name:String!,$number:Int!){repository(owner:$owner,name:$name){pullRequest(number:$number){reviewThreads(first:100){nodes{isResolved path comments(first:1){nodes{url author{login}}}}}}}}`,
-        { owner, name, number: Number(n) },
-      );
-      const pr = data && data.repository && data.repository.pullRequest;
-      if (!pr) throw new GitHubError(404, `POST /graphql: pull request #${n} not found`);
-      return pr.reviewThreads.nodes
+      const nodes = [];
+      let after = null;
+      for (let page = 0; ; page += 1) {
+        if (page >= REVIEW_THREAD_PAGE_CAP) {
+          throw new GitHubError(422, `POST /graphql: PR #${n} has more than ${REVIEW_THREAD_PAGE_CAP * 100} review threads`);
+        }
+        const data = await graphql(
+          `query($owner:String!,$name:String!,$number:Int!,$after:String){repository(owner:$owner,name:$name){pullRequest(number:$number){reviewThreads(first:100,after:$after){pageInfo{hasNextPage endCursor} nodes{isResolved path comments(first:1){nodes{url author{login}}}}}}}}`,
+          { owner, name, number: Number(n), after },
+        );
+        const pr = data && data.repository && data.repository.pullRequest;
+        if (!pr) throw new GitHubError(404, `POST /graphql: pull request #${n} not found`);
+        nodes.push(...pr.reviewThreads.nodes);
+        const info = pr.reviewThreads.pageInfo;
+        if (!info || !info.hasNextPage) break;
+        after = info.endCursor;
+      }
+      return nodes
         .filter((t) => !t.isResolved)
         .map((t) => {
           const first = (t.comments && t.comments.nodes && t.comments.nodes[0]) || {};

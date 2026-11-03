@@ -257,8 +257,30 @@ test('unresolved threads mapping', async () => {
     { url: 'u2', path: 'b.js', author: 'copilot' },
     { url: 'u3', path: 'c.js', author: null },
   ]);
-  assert.deepEqual(fake.calls[0].body.variables, { owner: 'acme', name: 'app', number: 12 });
-  assert.match(fake.calls[0].body.query, /reviewThreads\(first:100\)/);
+  assert.deepEqual(fake.calls[0].body.variables, { owner: 'acme', name: 'app', number: 12, after: null });
+  assert.match(fake.calls[0].body.query, /reviewThreads\(first:100,after:\$after\)/);
+});
+
+test('unresolved threads are collected across pages', async () => {
+  const page = (nodes, hasNextPage, endCursor) => ({
+    body: { data: { repository: { pullRequest: { reviewThreads: { pageInfo: { hasNextPage, endCursor }, nodes } } } } },
+  });
+  const { gh, fake } = client({
+    'POST /graphql': [
+      page([{ isResolved: true, path: 'a.js', comments: { nodes: [{ url: 'u1', author: { login: 'x' } }] } }], true, 'c1'),
+      page([{ isResolved: false, path: 'b.js', comments: { nodes: [{ url: 'u2', author: { login: 'y' } }] } }], false, 'c2'),
+    ],
+  });
+  assert.deepEqual(await gh.listUnresolvedThreads(12), [{ url: 'u2', path: 'b.js', author: 'y' }]);
+  assert.equal(fake.calls.length, 2);
+  assert.equal(fake.calls[1].body.variables.after, 'c1');
+});
+
+test('unresolved threads fail closed past the page cap', async () => {
+  const { gh } = client({
+    'POST /graphql': { body: { data: { repository: { pullRequest: { reviewThreads: { pageInfo: { hasNextPage: true, endCursor: 'c' }, nodes: [] } } } } } },
+  });
+  await assert.rejects(gh.listUnresolvedThreads(12), (e) => e instanceof GitHubError && /more than 2000 review threads/.test(e.message));
 });
 
 test('enableAutoMerge sends the GraphQL mutation', async () => {

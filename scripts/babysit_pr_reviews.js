@@ -19,19 +19,23 @@ const {
   buildCollectReport,
   normalizeReviewThreads,
   parsePrRef,
+  readReviewThreadPage,
 } = require('./lib/babysit_pr_reviews_lib');
 const { resolveRepository } = require('./lib/execute_plan_project');
 
-const EXIT_TIMEOUT_OR_ERROR = 1;
+const EXIT_ERROR = 1;
 const EXIT_UNRESOLVED = 2;
+const EXIT_COPILOT_UNAVAILABLE = 3;
+const THREAD_PAGE_CAP = 20;
 
 const REVIEW_THREADS_QUERY = `
-query($owner: String!, $repo: String!, $number: Int!) {
+query($owner: String!, $repo: String!, $number: Int!, $after: String) {
   repository(owner: $owner, name: $repo) {
     pullRequest(number: $number) {
-      reviewThreads(first: 100) {
+      reviewThreads(first: 100, after: $after) {
         pageInfo {
           hasNextPage
+          endCursor
         }
         nodes {
           isResolved
@@ -58,10 +62,11 @@ function usage() {
 
 Outputs JSON with Copilot status and unresolved review threads (Copilot, human).
   collect  one snapshot; exit 0 on success.
-  wait     poll until no Copilot review is in progress (readyForTriage); exit 0, or 1 on timeout.
-  gate     wait, then exit 0 only when mergeReady (no unresolved threads); 2 when threads remain.
-Fetch failures exit 1.`);
-  process.exit(EXIT_TIMEOUT_OR_ERROR);
+  wait     poll until no Copilot review is in progress; exit 0, or 3 when Copilot is still pending at the timeout.
+  gate     wait, then exit 0 when mergeReady; 2 when unresolved threads remain;
+           3 when Copilot is still pending at the timeout and nothing is unresolved.
+Fetch or GraphQL failures exit 1 — never read them as "no threads".`);
+  process.exit(EXIT_ERROR);
 }
 
 function ghJson(args) {
@@ -81,26 +86,28 @@ function resolvePr(flags) {
   return parsePrRef(flags.pr, owner, repo);
 }
 
+/** All pages; fails closed past the cap. */
+function fetchReviewThreads({ owner, repo, number }) {
+  const nodes = [];
+  let after = null;
+  for (let page = 0; page < THREAD_PAGE_CAP; page += 1) {
+    const args = ['api', 'graphql', '-f', `query=${REVIEW_THREADS_QUERY}`, '-f', `owner=${owner}`, '-f', `repo=${repo}`, '-F', `number=${number}`];
+    if (after) args.push('-f', `after=${after}`);
+    const { nodes: pageNodes, nextCursor } = readReviewThreadPage(ghJson(args), number);
+    nodes.push(...pageNodes);
+    if (!nextCursor) return nodes;
+    after = nextCursor;
+  }
+  throw new Error(`PR #${number} has more than ${THREAD_PAGE_CAP * 100} review threads; inspect the GitHub UI`);
+}
+
 /** REST + reviewThreads GraphQL only: both work with the `repo`-scoped bot token (no `read:org`). */
-function fetchReviewSnapshot({ owner, repo, number }, { timedOut = false } = {}) {
+function fetchReviewSnapshot(pr, { timedOut = false } = {}) {
+  const { owner, repo, number } = pr;
   const repoSlug = `${owner}/${repo}`;
   const pull = ghJson(['api', `repos/${repoSlug}/pulls/${number}`]);
   const reviews = ghPaginated(`repos/${repoSlug}/pulls/${number}/reviews`);
   const reviewComments = ghPaginated(`repos/${repoSlug}/pulls/${number}/comments`);
-
-  const graphql = ghJson([
-    'api',
-    'graphql',
-    '-f',
-    `query=${REVIEW_THREADS_QUERY}`,
-    '-f',
-    `owner=${owner}`,
-    '-f',
-    `repo=${repo}`,
-    '-F',
-    `number=${number}`,
-  ]);
-  const reviewThreads = graphql?.data?.repository?.pullRequest?.reviewThreads;
 
   return buildCollectReport({
     prNumber: number,
@@ -108,9 +115,9 @@ function fetchReviewSnapshot({ owner, repo, number }, { timedOut = false } = {})
       reviews,
       reviewComments,
       requestedReviewers: pull.requested_reviewers || [],
+      createdAt: pull.created_at,
     }),
-    threads: normalizeReviewThreads(reviewThreads?.nodes || []),
-    truncated: Boolean(reviewThreads?.pageInfo?.hasNextPage),
+    threads: normalizeReviewThreads(fetchReviewThreads(pr)),
     timedOut,
   });
 }
@@ -151,17 +158,18 @@ async function run(cmd, flags) {
     case 'wait': {
       const report = await waitForReviews(flags);
       print(report);
-      return report.readyForTriage ? 0 : EXIT_TIMEOUT_OR_ERROR;
+      return report.copilotUnavailable ? EXIT_COPILOT_UNAVAILABLE : 0;
     }
     case 'gate': {
       const report = await waitForReviews(flags);
       print(report);
       if (report.mergeReady) return 0;
-      return report.readyForTriage ? EXIT_UNRESOLVED : EXIT_TIMEOUT_OR_ERROR;
+      if (report.summary.unresolvedCount > 0) return EXIT_UNRESOLVED;
+      return EXIT_COPILOT_UNAVAILABLE;
     }
     default:
       usage();
-      return EXIT_TIMEOUT_OR_ERROR;
+      return EXIT_ERROR;
   }
 }
 
@@ -174,14 +182,14 @@ function main() {
     execSync('gh --version', { stdio: 'ignore' });
   } catch {
     console.error('babysit_pr_reviews: gh CLI is required');
-    process.exit(EXIT_TIMEOUT_OR_ERROR);
+    process.exit(EXIT_ERROR);
   }
 
   run(cmd, flags)
     .then((code) => process.exit(code))
     .catch((error) => {
       console.error(error.message);
-      process.exit(EXIT_TIMEOUT_OR_ERROR);
+      process.exit(EXIT_ERROR);
     });
 }
 

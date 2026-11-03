@@ -89,8 +89,8 @@ Applies to `/babysit`, `/babysit-plus` and `/babysit-uat`. **Copilot** is the pr
    ```bash
    node scripts/babysit_pr_reviews.js wait --pr <url>
    ```
-   Returns once no Copilot review is in progress. The JSON `threads` array lists **every unresolved thread** from Copilot and humans. Never declare “no automated review” while `reviewers.copilot.state` is `pending` or `threads` is non-empty. A script error is never “no threads” — fix it and re-run.
-4. **Copilot unavailable:** `wait` exits `1` with Copilot still pending after 15 min → comment `Copilot review did not finish within 15 min; proceeding on triage + CI + pre-push.` once and continue — do **not** halt. Copilot absent (never requested) → proceed.
+   Returns once no Copilot review is in progress (a PR younger than 3 min counts as awaiting Copilot). The JSON `threads` array lists **every unresolved thread** from Copilot and humans. Never declare “no automated review” while `reviewers.copilot.state` is `pending` or `threads` is non-empty. A script error is never “no threads” — fix it and re-run.
+4. **Copilot unavailable:** `wait` exits `3` (Copilot still pending after 15 min) → comment `Copilot review did not finish within 15 min; proceeding on triage + CI + pre-push.` once and continue — do **not** halt. Copilot absent (never requested) → proceed.
 5. **Autofix:** Off — babysit+ owns fixes; do not re-run adversarial review in agent turns (slim babysit).
 
 ### 1. Sync and conflicts
@@ -176,18 +176,6 @@ Always before merge attempt: `./scripts/pre-push.sh` green locally.
 
 When all merge gates pass (autonomous-pr-policy §Merge gates), **always squash-merge** — babysit+ never stops at “merge-ready” without merging.
 
-**Review gate** (mandatory, immediately before claiming the lease):
-
-```bash
-node scripts/babysit_pr_reviews.js gate --pr <url>
-```
-
-| Exit | Action |
-|------|--------|
-| `0` | No Copilot review in progress; every thread resolved — proceed |
-| `2` | Unresolved threads → back to §2 (triage, fix, reply + resolve, push, CI) |
-| `1` | Copilot still pending after the timeout → §0b step 4, then `collect` must show `summary.unresolvedCount == 0`; script error → fix and re-run |
-
 **Merge coordination** (mandatory — see autonomous-pr-policy §Merge coordination):
 
 ```bash
@@ -201,14 +189,24 @@ node scripts/babysit_pr_reviews.js gate --pr <url>
 | `2` | Another PR holds `merge-lease` or FIFO yield — subscribe and wait for the lease holder; this is not a halt (merge coordination); do not rebase yet |
 | `3` | Halt (`do-not-merge` or error) |
 
-Then merge:
+Then sync, run the review gate, and merge:
 
 ```bash
-./scripts/babysit_sync_base.sh --pr <url> --push    # skip when already up to date
+./scripts/babysit_sync_base.sh --pr <url> --push    # skip when already up to date; a push → wait for CI green
+node scripts/babysit_pr_reviews.js gate --pr <url>  # last check before merge — after any push
 gh pr merge <url> --squash
 ./scripts/babysit_merge_preflight.sh --pr <url> --release
 gh pr view <url> --json state,mergedAt,mergeCommit
 ```
+
+**Review gate** exits (mandatory — the last step before `gh pr merge`):
+
+| Exit | Action |
+|------|--------|
+| `0` | No Copilot review in progress; every thread resolved — merge |
+| `2` | Unresolved threads → `--release`, back to §2 (triage, fix, reply + resolve, push, CI) |
+| `3` | Copilot still pending after the timeout, nothing unresolved → §0b step 4 comment, then merge |
+| `1` | Script error → fix and re-run; never merge on an error |
 
 Verify merge commit is ancestor of `origin/<base_branch>` before execute-plan advances to the next phase.
 
