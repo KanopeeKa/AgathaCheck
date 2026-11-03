@@ -74,6 +74,16 @@ Delete remains an action, not a status.
 | CARE-STATUS-R-011 | Closed is final and read-only: no reopen, no restore, no edit, no date actions; History is frozen | Planned |
 | CARE-STATUS-R-012 | No reason is asked when the user skips a date | Planned |
 | CARE-STATUS-R-013 | Existing data migrates: `skipped/user` → Skipped; `skipped/not_recorded` → Not recorded; `skipped/system` or `skipped/paused` already due → Not recorded, not yet due → removed; `completed` → Done; items Finished → Closed · Ended; items Archived → Closed · Stopped by you | Planned |
+| CARE-STATUS-R-014 | Care details shows a **Close care** button at the bottom of the screen, in danger colour, on Active and Paused items; not shown on Closed items | Planned |
+| CARE-STATUS-R-015 | Only the pet's owner can close a care; other people with access (carers, shared users) do not see the button and the server refuses the command | Planned |
+| CARE-STATUS-R-016 | Close care asks for confirmation. The dialog says the care cannot be reopened. When Open dates have already started, it says "N dates will be marked Not recorded" and offers **Record them first** (goes to those dates) alongside **Close care** and Cancel | Planned |
+| CARE-STATUS-R-017 | Closing sets the item to Closed · Stopped by you with a closed date and time (pet's home timezone); the schedule ends at that instant and no new dates are generated; reminders for the item stop | Planned |
+| CARE-STATUS-R-018 | On close: Done, Skipped and Not recorded dates are unchanged and frozen; Open dates that have started become Not recorded; Open dates not yet started (later today, future, planned boosters) are removed. An untimed date has started from the beginning of its day | Planned |
+| CARE-STATUS-R-019 | A Paused care can be closed; R-018 applies to any Open dates it still has | Planned |
+| CARE-STATUS-R-020 | A Closed care leaves the agenda, Actions counts and dashboard. Care details is read-only: no Edit, Pause/Resume, Plan another date, date actions, Restore or Delete (Delete hidden for now) | Planned |
+| CARE-STATUS-R-021 | All care for a pet ends with a **Closed care** link (with count) when the pet has Closed items. It opens a list of Closed items using the care list row design, a Closed chip with its subtitle (Ended / Stopped by you) and closed date, and no due dates. Tapping a row opens the read-only Care details | Planned |
+| CARE-STATUS-R-022 | Away plans: a Closed care is dropped from away plans that have not started; away plans already started or past keep it as it was | Planned |
+| CARE-STATUS-R-023 | A care reaches Closed · Ended without user action when a one-off is Done or a recurring care passes its end date; R-020 and R-021 apply | Planned |
 
 ## Decision log
 
@@ -87,10 +97,14 @@ Delete remains an action, not a status.
 | CARE-STATUS-D-006 | Care item statuses: Active, Paused, Closed | Merges Finished, Archived and "close care" into one final state | Planned | 2026-11-03 | — |
 | CARE-STATUS-D-007 | Closed subtitle: **Ended** (natural end, one-off or recurring, no distinction) or **Stopped by you** | One status, reason as context | Planned | 2026-11-03 | — |
 | CARE-STATUS-D-008 | No skip reason for now | Keep the first version simple | Planned | 2026-11-03 | — |
+| CARE-STATUS-D-009 | List name: **Closed care** | Simpler; matches the status word | Planned | 2026-11-03 | — |
+| CARE-STATUS-D-010 | An untimed date today counts as started when closing → Not recorded | Same "started" rule as timed slots (beginning of day) | Planned | 2026-11-03 | — |
+| CARE-STATUS-D-011 | Close confirmation counts dates becoming Not recorded and offers Record them first | Closing freezes them; give one last chance to record | Planned | 2026-11-03 | — |
+| CARE-STATUS-D-012 | Owner only can close a care | Irreversible action | Planned | 2026-11-03 | — |
+| CARE-STATUS-D-013 | Paused care can be closed | No reason to resume first | Planned | 2026-11-03 | — |
+| CARE-STATUS-D-014 | Delete hidden on Closed care for now | Closed is the archive; revisit later | Planned | 2026-11-03 | — |
+| CARE-STATUS-D-015 | Away plans not yet started drop a Closed care; started or past plans keep it | Past plans are history | Planned | 2026-11-03 | — |
 
 ## Open questions
 
-| Topic | Options | Notes |
-|---|---|---|
-| Name of the list of Closed items under All care | "Previous care" · "Closed care" | Product owner undecided (2026-11-03) |
-| "Close care" flow on Care details | Button, confirmation, permissions | Next step of the wider plan |
+None at present (2026-11-03).

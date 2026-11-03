@@ -38,7 +38,7 @@ Part of the AgathaTrack domain-first documentation tree. Cross-cutting architect
 | Away planning — People amendments | [people-care-team.md](/docs/domains/people/features/people-care-team.md) § Away Planning integration | Folded from `amends-away-planning` |
 | Care Intelligence Phase D | [phase-d-review-relevance-plan.md](changes/phase-d-review-relevance-plan.md) | Research and delivery |
 | Classification taxonomy | [care-classification-taxonomy-spec.md](changes/care-classification-taxonomy-spec.md) | Spec → fold when delivered |
-| Care status model (item: Active/Paused/Closed; date: outcome + timing) | [care-status-model-spec.md](changes/care-status-model-spec.md) | Proposed — CARE-STATUS-R-001 … R-013; folds to care-item-evolution |
+| Care status model (item: Active/Paused/Closed; date: outcome + timing) | [care-status-model-spec.md](changes/care-status-model-spec.md) | Proposed — CARE-STATUS-R-001 … R-023 (incl. Close care, Closed care list); folds to care-item-evolution |
 
 ## Frozen delivery history
 
