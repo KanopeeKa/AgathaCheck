@@ -64,6 +64,7 @@ Institutional knowledge for cloud agents. Domain workflows live in **Skills** (`
 - [Error-leak redaction patterns](error-leak-redaction-patterns.md) — grep err.message + e.toString() + $e + details on the backend; one pattern misses sites. Also: `/security-error-audit` skill.
 - [Localization & enum .label](localization-enum-labels.md) — "fully localize" must also map enum `.label` getters (dropdowns/displays) to ARB keys, not just inline literals.
 - Replit operating rules now live in `replit.md` (Replit mechanics) + `AGENTS.md` (shared rules).
+- [Flutter root warning vs version gate](flutter-root-warning-bot.md) — gate says `found: Woah! You appear to be … root` = Flutter's root warning, not a wrong SDK; `export BOT=true` and rerun.
 - [Flutter pub cache Matrix4 quirk](flutter-pubcache-matrix4.md) — `flutter test` failing inside the SDK's painting lib (Matrix4/Vector4 undefined) = stale cache; run `flutter pub get` first.
 - [Replit Flutter preview compatibility](replit-flutter-preview-compatibility.md) — preview toolchain can lag the app’s Dart requirement; never treat an older CI bundle as current-source visual verification.
 - [Replit test runtime](replit-test-runtime.md) — keep disposable PostgreSQL alive across shell calls; supply Nix libraries to the matching Playwright browser.
