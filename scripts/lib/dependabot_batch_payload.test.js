@@ -8,6 +8,7 @@ const {
   buildDependabotBatchPayload,
   buildDependabotBatchPrompt,
   REQUIRED_MODEL,
+  RUN_AS_ME_SKILL_PATH,
   SKILL_PATH,
 } = require('./dependabot_batch_payload');
 
@@ -22,6 +23,8 @@ describe('dependabot_batch_payload', () => {
     assert.equal(payload.task, 'dependabot-batch');
     assert.equal(payload.skill, SKILL_PATH);
     assert.equal(payload.policy.ci_gate_before_dispatch, false);
+    assert.equal(payload.policy.run_as_me, true);
+    assert.equal(payload.policy.run_as_me_skill, RUN_AS_ME_SKILL_PATH);
     assert.equal(payload.constraints.model, REQUIRED_MODEL);
     assert.equal(payload.constraints.suggestedBranch, 'cursor/deps-batch-2026-10-14-6409');
   });
@@ -36,5 +39,8 @@ describe('dependabot_batch_payload', () => {
     assert.match(prompt, /dependabot-batch\/SKILL\.md/);
     assert.match(prompt, /Drop \/ Include \/ Defer/);
     assert.match(prompt, /No pre-dispatch CI gate/);
+    assert.match(prompt, /\/run-as-me/);
+    assert.match(prompt, /run-as-me\/SKILL\.md/);
+    assert.match(prompt, /OWNER_GH_TOKEN/);
   });
 });
