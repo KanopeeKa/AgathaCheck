@@ -59,6 +59,33 @@ const EXCEPTION_GLOBS = Object.freeze({
 });
 
 const COMPANION_CAP = 30;
+const BUNDLE_NUMERIC_KEYS = ['maxMainDartJsBytes', 'maxTotalBytes'];
+const BUNDLE_MAX_INCREASE = 0.015;
+
+/**
+ * @returns {string|null} violation message, or null when the ratchet passes
+ */
+function validateBundleBudgetRatchet(baseText, headText) {
+  let base;
+  let head;
+  try {
+    base = JSON.parse(baseText);
+    head = JSON.parse(headText);
+  } catch {
+    return 'web-bundle-budget.json must be valid JSON';
+  }
+  const headKeys = Object.keys(head);
+  if (headKeys.some((k) => !BUNDLE_NUMERIC_KEYS.includes(k)) || BUNDLE_NUMERIC_KEYS.some((k) => !(k in head))) {
+    return 'only maxMainDartJsBytes and maxTotalBytes may change';
+  }
+  for (const key of BUNDLE_NUMERIC_KEYS) {
+    if (typeof head[key] !== 'number' || typeof base[key] !== 'number') return `${key} must be a number`;
+    if (head[key] < base[key]) return `${key} may only increase`;
+    const cap = Math.ceil(base[key] * (1 + BUNDLE_MAX_INCREASE));
+    if (head[key] > cap) return `${key} increase exceeds 1.5% (${base[key]} → ${head[key]}, cap ${cap})`;
+  }
+  return null;
+}
 
 /** Most serious first (rule 4). */
 const VIOLATION_PRIORITY = ['drift', 'protected', 'forbidden', 'unclassified', 'companion-cap'];
@@ -136,8 +163,9 @@ function ownPlanFiles(snapshot) {
  * Rules 3a–3h for one file, before the companion cap and the own-plan-file verification.
  * @returns {{ file, verdict: 'own-plan-file'|'protected'|'forbidden'|'allowed'|'exception:tests'|'exception:docs'|'companion'|'unclassified' }}
  */
-function classifyPath(file, { snapshot, category, phaseId }) {
+function classifyPath(file, { snapshot, category, phaseId, supportFiles }) {
   const verdict = (v) => ({ file, verdict: v });
+  if (supportFiles && supportFiles.has(file) && category === 'release') return verdict('allowed');
   if (ownPlanFiles(snapshot).includes(file)) return verdict('own-plan-file');
   if (matchesAny(file, PROTECTED_PATHS)) return verdict('protected');
   if (isForbiddenPath(file)) return verdict('forbidden');
@@ -172,7 +200,7 @@ function titleFor(violations) {
  * @param {{ files: string[], snapshot, category, phaseId, ownPlanFilesVerified: boolean, stopped: { stopped: boolean, reason: string|null } }} args
  * @returns {{ conclusion: 'success'|'failure', title: string, violations: {file:string, reason:string}[], companionsUsed: string[] }}
  */
-function evaluateDiff({ files, snapshot, category, phaseId, ownPlanFilesVerified, stopped }) {
+function evaluateDiff({ files, snapshot, category, phaseId, ownPlanFilesVerified, stopped, supportFiles }) {
   if (stopped && stopped.stopped) {
     return { conclusion: 'failure', title: 'plan-stopped', violations: [], companionsUsed: [] };
   }
@@ -183,7 +211,7 @@ function evaluateDiff({ files, snapshot, category, phaseId, ownPlanFilesVerified
   const violations = [];
   const companionsUsed = [];
   for (const file of files || []) {
-    const { verdict } = classifyPath(file, { snapshot, category, phaseId });
+    const { verdict } = classifyPath(file, { snapshot, category, phaseId, supportFiles });
     if (verdict === 'own-plan-file') {
       if (!(category === 'release' && ownPlanFilesVerified === true)) {
         violations.push({ file, reason: 'drift' });
@@ -208,6 +236,7 @@ module.exports = {
   PROTECTED_PATHS,
   FIXED_COMPANIONS,
   BUNDLE_BUDGET_FILE,
+  validateBundleBudgetRatchet,
   EXCEPTION_GLOBS,
   categorizePull,
   classifyPath,
