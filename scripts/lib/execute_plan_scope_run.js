@@ -85,7 +85,7 @@ async function verifyOwnPlanFiles(client, snapshot, headSha, files) {
 /** Files in the PR whose blob matches `main` tip (release no-ops; side fixes already on main). */
 async function filesUnchangedOnMain(client, headSha, files) {
   const unchanged = new Set();
-  for (const file of files || []) {
+  for (const file of files) {
     let head;
     let main;
     try {
