@@ -44,6 +44,11 @@ class AwayPlanSummaryCard extends StatelessWidget {
                       ),
                     ),
                   ],
+                  const SizedBox(height: 8),
+                  Text(
+                    PlannedAbsenceDisplay.travellerLine(l, absence),
+                    style: theme.textTheme.bodyLarge,
+                  ),
                   if (absence.isCancelled) ...[
                     const SizedBox(height: 8),
                     Text(

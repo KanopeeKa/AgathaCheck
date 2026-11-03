@@ -21,7 +21,8 @@ import 'package:pet_profile_app/features/pet_care/context/domain/entities/planne
 import 'package:pet_profile_app/features/pet_care/context/domain/entities/planned_absence_pet_carer.dart';
 import 'package:pet_profile_app/features/pet_care/context/domain/repositories/care_context_repository.dart';
 import 'package:pet_profile_app/features/pet_care/context/presentation/providers/care_context_providers.dart';
-import 'package:pet_profile_app/features/pet_care/context/presentation/screens/planned_absence_plan_screen.dart';
+import 'package:pet_profile_app/features/pet_care/context/domain/entities/per_pet_away_plan_status.dart';
+import 'package:pet_profile_app/features/pet_care/context/presentation/screens/pet_away_plan_screen.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
@@ -106,6 +107,16 @@ class _FakeCareContextRepository implements CareContextRepository {
       );
 
   @override
+  Future<PerPetAwayPlanStatus> getPerPetAwayPlanStatus({
+    required String absenceId,
+    required String petId,
+  }) async =>
+      const PerPetAwayPlanStatus(
+        priority: 'none',
+        carerState: 'unset',
+        reviewCareItemCount: 0,
+      );
+
   @override
   Future<AbsenceCarePlan> getAbsenceCarePlan(String absenceId) async =>
       const AbsenceCarePlan(
@@ -250,6 +261,26 @@ Widget buildScreen(_FakeCareContextRepository repo, {PlannedAbsence? detail}) {
         'abs-1',
       ).overrideWith((ref) async => repo.getAwayPlanReadiness('abs-1')),
       allPetsIncludingOrgProvider.overrideWith((ref) async => [pet]),
+      carePeriodCoverageProvider((
+        petId: 'pet-1',
+        startsOn: '2026-10-01',
+        endsOn: '2026-10-05',
+        plannedAbsenceId: 'abs-1',
+      )).overrideWith(
+        (ref) async => const CarePeriodCoverageResult(
+          startsOn: '2026-10-01',
+          endsOn: '2026-10-05',
+          projectionStatus: CarePeriodProjectionStatus.complete,
+          items: [],
+          plannedCareItems: [],
+          coverage: CarePeriodCoverageSummary(
+            policyVersion: '1',
+            coverageState: CarePeriodCoverageState.nothingScheduled,
+            reasonCodes: [],
+            reassuranceAvailable: true,
+          ),
+        ),
+      ),
     ],
     child: peopleTestApp(
       child: MaterialApp.router(
@@ -259,13 +290,14 @@ Widget buildScreen(_FakeCareContextRepository repo, {PlannedAbsence? detail}) {
         routerConfig: GoRouter(
           routes: [
             GoRoute(
-              path: '/pc/away/:id',
-              builder: (_, state) => PlannedAbsencePlanScreen(
+              path: '/pc/away/:id/pets/:petId',
+              builder: (_, state) => PetAwayPlanScreen(
                 absenceId: state.pathParameters['id']!,
+                petId: state.pathParameters['petId']!,
               ),
             ),
           ],
-          initialLocation: '/pc/away/abs-1',
+          initialLocation: '/pc/away/abs-1/pets/pet-1',
         ),
       ),
     ),
@@ -280,7 +312,7 @@ void main() {
     await tester.pumpWidget(buildScreen(repo));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('away_plan_carer_edit_pet-1')));
+    await tester.tap(find.byKey(const Key('away_plan_pet_carer_edit_pet-1')));
     await tester.pumpAndSettle();
 
     expect(find.textContaining("Who's caring for Luna"), findsOneWidget);
@@ -307,7 +339,7 @@ void main() {
     await tester.pumpWidget(buildScreen(repo));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('away_plan_carer_edit_pet-1')));
+    await tester.tap(find.byKey(const Key('away_plan_pet_carer_edit_pet-1')));
     await tester.pumpAndSettle();
 
     await _pickCarerContact(tester);
@@ -334,7 +366,7 @@ void main() {
     await tester.pumpWidget(buildScreen(repo));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('away_plan_carer_edit_pet-1')));
+    await tester.tap(find.byKey(const Key('away_plan_pet_carer_edit_pet-1')));
     await tester.pumpAndSettle();
 
     final saveButton = find.byKey(const Key('away_plan_carer_edit_save'));
@@ -374,7 +406,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('away_plan_carer_edit_pet-1')));
+    await tester.tap(find.byKey(const Key('away_plan_pet_carer_edit_pet-1')));
     await tester.pumpAndSettle();
 
     await _clearCarerContact(tester);
@@ -398,7 +430,7 @@ void main() {
     await tester.pumpWidget(buildScreen(repo));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('away_plan_carer_edit_pet-1')));
+    await tester.tap(find.byKey(const Key('away_plan_pet_carer_edit_pet-1')));
     await tester.pumpAndSettle();
 
     await _pickCarerContact(tester);
@@ -417,7 +449,7 @@ void main() {
     await tester.pumpAndSettle();
 
     final editButton = tester.widget<IconButton>(
-      find.byKey(const Key('away_plan_carer_edit_pet-1')),
+      find.byKey(const Key('away_plan_pet_carer_edit_pet-1')),
     );
     expect(editButton.onPressed, isNull);
   });

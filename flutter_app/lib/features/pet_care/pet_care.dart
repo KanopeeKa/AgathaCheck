@@ -6,6 +6,7 @@ export 'context/presentation/screens/absence_invite_landing_screen.dart';
 export 'context/presentation/screens/planned_absence_edit_screen.dart';
 export 'context/presentation/screens/planned_absence_flow_screen.dart';
 export 'context/presentation/screens/planned_absence_hub_screen.dart';
+export 'context/presentation/screens/pet_away_plan_screen.dart';
 export 'context/presentation/screens/planned_absence_plan_screen.dart';
 export 'domain/services/care_establishment_helpers.dart';
 export 'domain/services/care_status_service.dart';

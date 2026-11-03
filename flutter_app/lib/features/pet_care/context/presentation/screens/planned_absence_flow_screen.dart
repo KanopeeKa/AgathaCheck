@@ -131,10 +131,18 @@ class _PlannedAbsenceFlowScreenState
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(l.careContextAwaySaveSuccess)));
-      context.goNamed(
-        'petCarePlannedAbsenceDetail',
-        pathParameters: {'id': result.absence.id},
-      );
+      final petIds = result.absence.petIds;
+      if (petIds.length == 1) {
+        context.goNamed(
+          'petCarePetAwayPlan',
+          pathParameters: {'id': result.absence.id, 'petId': petIds.first},
+        );
+      } else {
+        context.goNamed(
+          'petCarePlannedAbsenceDetail',
+          pathParameters: {'id': result.absence.id},
+        );
+      }
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(

@@ -2597,6 +2597,45 @@
   "careContextPreviewItemSkipped": "Ignoré le {date}",
   "careContextAwayContinue": "Continuer",
   "careContextAwayBack": "Retour",
+  "careContextAbsenceDefaultTitle": "Absence",
+  "careContextTravellerYouAway": "Vous serez absent",
+  "careContextTravellerNameAway": "{name} sera absent",
+  "@careContextTravellerNameAway": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "careContextAbsencePetsSectionTitle": "Animaux sur cette absence",
+  "careContextSeePetAwayPlan": "Voir le plan d'absence de {pet}",
+  "@careContextSeePetAwayPlan": {
+    "placeholders": {
+      "pet": { "type": "String" }
+    }
+  },
+  "careContextPetAwayPlanTitle": "Plan d'absence de {pet}",
+  "@careContextPetAwayPlanTitle": {
+    "placeholders": {
+      "pet": { "type": "String" }
+    }
+  },
+  "careContextSeeAbsence": "Voir l'absence",
+  "careContextTripNotesForWholeTrip": "Notes de voyage (tout le séjour)",
+  "careContextPetNotesSectionTitle": "Notes pour {pet}",
+  "@careContextPetNotesSectionTitle": {
+    "placeholders": {
+      "pet": { "type": "String" }
+    }
+  },
+  "careContextPetNotesSaveFailed": "Impossible d'enregistrer les notes. Réessayez.",
+  "careContextCareItemOpenAwayPlan": "Ouvrir le plan d'absence",
+  "awayPlanningPetStatusNoCarer": "Pas encore de gardien",
+  "awayPlanningPetStatusCarerUnavailable": "Gardien plus disponible",
+  "awayPlanningPetStatusReviewCount": "{count, plural, =1{1 à revoir} other{{count} à revoir}}",
+  "@awayPlanningPetStatusReviewCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
   "careContextAwayPlanTitle": "Plan d'absence",
   "careContextAwayPlanLoadError": "Impossible de charger ce plan d'absence. Réessayez.",
   "careContextAwayPlanCareDuringTitle": "Soins pendant votre absence",
