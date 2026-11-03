@@ -4,6 +4,7 @@ import { createApiLimiter } from '../../config/rateLimit.js';
 import { registerPlannedAbsenceRoutes } from './plannedAbsencesRouter.js';
 import { registerCarePeriodProjectionRoutes } from './carePeriodProjectionRouter.js';
 import { registerCarePeriodCoverageRoutes } from './carePeriodCoverageRouter.js';
+import { registerPetPlannedAbsencesRoutes } from './petPlannedAbsencesRouter.js';
 
 export default function careContextRoutes(pool) {
   const router = express.Router();
@@ -13,6 +14,7 @@ export default function careContextRoutes(pool) {
 }
 
 export function registerCareContextPetRoutes(router, pool) {
+  registerPetPlannedAbsencesRoutes(router, pool);
   registerCarePeriodProjectionRoutes(router, pool);
   registerCarePeriodCoverageRoutes(router, pool);
 }

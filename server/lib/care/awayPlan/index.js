@@ -24,3 +24,6 @@ export {
   TILE_COPY_CARER_SOME,
 } from './readiness.js';
 export { loadAwayPlanReadiness, loadAwayPlanReadinessForAbsence } from './loadAwayPlanReadiness.js';
+export { loadPerPetAwayPlan } from './loadPerPetAwayPlan.js';
+export { listPetPlannedAbsences } from './listPetPlannedAbsences.js';
+export { derivePerPetAwayPlanStatus } from './derivePerPetAwayPlanStatus.js';
