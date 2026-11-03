@@ -30,7 +30,8 @@ uncertain, split into a second plan id rather than expanding paths mid-run.
    - Default window: **7** days (`approved_until`).
    - Cap: **14** days (`--window-days` cannot exceed the cap in code).
    - `init` refuses when the branch’s committed diff vs `main` is not only the plan markdown
-     (and an existing snapshot if present). Fix before `init` creates the control issue.
+     and snapshot paths (`git diff --no-renames`). Fix before `init` creates the control issue.
+     Each `init` run creates a new control issue — close any stale issue from a prior attempt.
 4. Commit and push the init branch; end the planning session with the **exact approval line** printed by `init`.
 5. Owner posts that line on the control issue. `init` creates the issue with label `execute-plan` only;
    after a valid approval comment, the approve workflow adds `plan:<plan_id>` and `autonomous-approved`.
