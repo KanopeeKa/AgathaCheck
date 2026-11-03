@@ -5,6 +5,10 @@ import fs from 'fs';
 import path from 'path';
 import { NOTIFICATION_TYPE_PET_PASSED_AWAY } from './notificationKind.js';
 
+import {
+  cancelEmptyActiveAbsences,
+  listActiveAbsenceIdsForPet,
+} from './care/absence/absencePetLifecycle.js';
 import { logAuditEvent } from './audit.js';
 import { withTransaction } from './db/withTransaction.js';
 import { enqueueCleanupJob } from './jobs/cleanupJobsApi.js';
@@ -183,6 +187,7 @@ async function runPetDataDeletionTransaction(client, petId, {
   auditAction = null,
   deletePetRow = false,
 } = {}) {
+  const absenceIdsBeforeDelete = await listActiveAbsenceIdsForPet(client, petId);
   const fileRefs = await collectPetFileRefs(client, petId);
   await enqueuePetFileDeletes(client, petId, fileRefs);
   maybePetDeletionFault('enqueue_jobs');
@@ -204,6 +209,7 @@ async function runPetDataDeletionTransaction(client, petId, {
       throw new PetNotFoundError();
     }
     maybePetDeletionFault('delete_pet_row');
+    await cancelEmptyActiveAbsences(client, absenceIdsBeforeDelete);
   } else {
     await client.query(
       `UPDATE pets

@@ -192,18 +192,14 @@ export async function patchPlannedAbsence(pool, userId, absenceId, body) {
   const window = validateAbsenceDateWindow(startsOn, endsOn, todayIso);
   if (!window.ok) return { status: 400, error: window.error };
 
-  let petRows = await loadAbsencePets(pool, existing.id);
-  const originalPetIds = petRows.map((row) => row.pet_id);
-  let petIds = [...originalPetIds];
   if (body.pet_ids != null || body.petIds != null) {
-    const petsCheck = await assertManageablePets(pool, userId, body.pet_ids || body.petIds);
-    if (!petsCheck.ok) return { status: petsCheck.status, error: petsCheck.error };
-    petIds = petsCheck.petIds;
-    petRows = petIds.map((petId) => {
-      const existingRow = petRows.find((row) => row.pet_id === petId);
-      return existingRow || { pet_id: petId };
-    });
+    return {
+      status: 400,
+      error: 'Use POST /:id/pets or DELETE /:id/pets/:petId to change pets on an absence',
+    };
   }
+  const petRows = await loadAbsencePets(pool, existing.id);
+  const petIds = petRows.map((row) => row.pet_id);
 
   const petCarersInput = body.pet_carers ?? body.petCarers ?? null;
   const handoverNote = normalizeHandoverNoteInput(body.handover_note ?? body.handoverNote);
@@ -223,7 +219,7 @@ export async function patchPlannedAbsence(pool, userId, absenceId, body) {
   const widenGate = await evaluateGuestAccessWidenGate(pool, {
     existing,
     body,
-    oldPetIds: originalPetIds,
+    oldPetIds: petIds,
     newPetIds: petIds,
     window,
   });
@@ -251,7 +247,6 @@ export async function patchPlannedAbsence(pool, userId, absenceId, body) {
          RETURNING *`,
         updateParams,
       );
-      await replaceAbsencePets(client, existing.id, petIds);
       if (petCarersInput != null) {
         const carerResult = await updateAbsenceCarers(
           client,
@@ -272,10 +267,10 @@ export async function patchPlannedAbsence(pool, userId, absenceId, body) {
       });
       return result.rows[0];
     });
-    petRows = await loadAbsencePets(pool, existing.id);
+    const updatedPetRows = await loadAbsencePets(pool, existing.id);
     return {
       body: {
-        absence: absenceResponse(updated, petRows),
+        absence: absenceResponse(updated, updatedPetRows),
         overlap_warnings: overlapWarnings,
       },
     };

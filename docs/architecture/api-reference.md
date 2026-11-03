@@ -383,7 +383,7 @@ Raw `items[]` entries may include `window_relation: before_window` on materialis
 
 ### Planned absences (`/api/planned-absences`) — CC-1
 
-**Writes** remain declarer-only: `POST /`, `PATCH /:id`, `POST /:id/cancel`, `POST /:id/record-handover-download`.
+**Writes** remain declarer-only: `POST /`, `PATCH /:id`, `POST /:id/cancel`, `POST /:id/record-handover-download`, `POST /:id/pets`, `DELETE /:id/pets/:petId`.
 
 **Reads** (CARE-CONTEXT-R-032 / R-039 server, phase 2): Full-access viewers (record owner, co-parent, household `full_access`) see absences that include a pet they can manage at profile level. Responses include only `pet_ids` / `pet_carers` the caller may access; other pets are omitted from JSON (no ids or names). List and detail add `is_own_absence`, `declarer_display_name` (null when own), and `can_edit_trip` (declarer only on detail). Co-visible hub rows use `is_own_absence: false` and `declarer_display_name` for “{Name} is away”. Trip mutations stay declarer-only (`404`/`403` unchanged for strangers).
 
@@ -402,7 +402,16 @@ Raw `items[]` entries may include `window_relation: before_window` on materialis
 | DELETE | `/carer-invites/:inviteId` | Revoke pending invite |
 | DELETE | `/guest-grants/:grantId` | Early revoke active grant |
 
-`PATCH /:id` with active guest grants requires `confirm_guest_access_widen: true` when extending `ends_on` or adding pets (`409`, `code: guest_access_widen_required`). Cancelling an absence revokes active guest grants immediately.
+`PATCH /:id` with active guest grants requires `confirm_guest_access_widen: true` when extending `ends_on` (`409`, `code: guest_access_widen_required`). **`PATCH` no longer accepts `pet_ids`** — use add/remove pet endpoints below. Cancelling an absence revokes active guest grants immediately.
+
+**Add/remove pets (phase 3, declarer-only)** — adding requires Full access on the pet (`403` otherwise).
+
+| Method | Path | Body | Notes |
+|---|---|---|---|
+| POST | `/:id/pets` | `{ pet_id, confirm_guest_access_widen? }` | Empty away plan for the pet; non-blocking `overlap_warnings`; D16 widen gate when guest grants exist (`409 guest_access_widen_required`) |
+| DELETE | `/:id/pets/:petId` | `{ confirm_delete_absence? }` | Clears carer, `pet_note`, trip resolutions for that pet; revokes guest grants and trims pending carer invites for the pet; care item dates unchanged. Last pet requires `confirm_delete_absence: true` (`409 last_pet_removal_requires_confirm`) then cancels the absence |
+
+Pet deletion cascades `planned_absence_pets`; absences left with no pets are cancelled and guest access revoked (R-036).
 
 **List (`GET /`)**
 
