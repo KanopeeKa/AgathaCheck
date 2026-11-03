@@ -4,6 +4,7 @@ import { registerAbsenceCarePlanRoutes } from './absenceCarePlanRouter.js';
 import { registerPlannedAbsenceHandoverRoutes } from './plannedAbsenceHandoverRoutes.js';
 import { registerAbsenceResolutionsRoutes } from './absenceResolutionsRouter.js';
 import { registerPlannedAbsenceCoreRoutes } from './plannedAbsenceCoreRouter.js';
+import { loadAbsenceForViewer } from '../../lib/care/absence/absenceVisibility.js';
 import {
   loadAbsenceForUser,
   loadAbsencePets,
@@ -18,11 +19,11 @@ export function registerPlannedAbsenceRoutes(router, pool) {
     loadAbsencePets,
   });
   registerAbsenceCarePlanRoutes(router, pool, {
-    loadAbsenceForUser,
+    loadAbsenceForViewer,
     loadAbsencePets,
   });
   registerAbsenceResolutionsRoutes(router, pool, {
-    loadAbsenceForUser,
+    loadAbsenceForViewer,
     loadAbsencePets,
   });
 }

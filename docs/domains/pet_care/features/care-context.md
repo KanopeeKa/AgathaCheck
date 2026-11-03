@@ -217,6 +217,7 @@ Away planning chrome uses **away-context** plum tokens (`docs/design/tokens.md` 
 | CARE-CONTEXT-D-008 | Opt-in bulk mode; Select all/Clear; V1 bulk **Keep with carer** only (amendment approved 2026-10-18) | D-008 | Live | 2026-10-18 | |
 | CARE-CONTEXT-D-009 | Review queue before schedule; **All planned care** collapsed when queue non-empty | D-009 | Live | 2026-10-18 | |
 | CARE-CONTEXT-D-010 | Retire in-delivery doc `changes/away-plan-care-review-delivery-plan.md` after D-004–D-009 folded here | canonical-docs fold | Live | 2026-10-19 | |
+| CARE-CONTEXT-D-015 | Server away-plan visibility: Full-access reads filter pets; hub co-visible list; health-entry absence context; trip writes stay declarer-only | absence-per-pet-away-plans phase 2 | In delivery | 2026-11-03 | |
 
 ## Related
 
