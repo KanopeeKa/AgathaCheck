@@ -5,7 +5,7 @@ audience: both
 domain: people
 feature_id: people_care_team
 status: implemented
-last_updated: 2026-11-02
+last_updated: 2026-11-03
 related_bdd: [away_planning.feature, away_plan_detail_v2.feature, sharing.feature, veterinarian_management.feature, notifications.feature]
 ---
 
@@ -423,6 +423,16 @@ One **roster** on `/pc/people` backed by a UI aggregate **PersonRosterEntry** (c
     - the care item provider picker
     - the "Looked after by" picker
 - **Desktop:** rail/sidebar **People** plus master–detail on `/pc/people`.
+
+### Picker feedback
+
+| ID | Requirement | Status |
+| --- | --- | --- |
+| PEOPLE-CARE-TEAM-R-003 | A contact picker with nothing to choose says so: vet pickers read "No vets in your contacts yet. Type a name to add one."; other pickers use a generic line. "None" stays available when allowed. The pet form's vet field is labelled **Primary vet** (not the generic "Contact") | Live |
+
+**Acceptance criteria**
+
+- *Given* a directory with no active vets, *when* the user opens a vet picker, *then* the empty-state line shows and None is still offered (PEOPLE-CARE-TEAM-R-003; test: `flutter_app/test/features/people/presentation/people_picker_test.dart#vet picker explains an empty directory`).
 
 ### Grouping
 

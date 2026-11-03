@@ -3193,6 +3193,8 @@
   "peoplePickerPlaceholder": "Choose someone",
   "peoplePickerTitle": "Choose a contact",
   "peoplePickerFieldLabel": "Contact",
+  "peoplePickerEmptyVets": "No vets in your contacts yet. Type a name to add one.",
+  "peoplePickerEmptyGeneric": "Nobody to choose from yet. Type a name to add someone.",
   "peoplePickerNone": "None",
   "peoplePickerSearchHint": "Search people and roles",
   "peoplePickerCurrentSelection": "Current selection",
