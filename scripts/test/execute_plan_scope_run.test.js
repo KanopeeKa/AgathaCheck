@@ -233,8 +233,8 @@ test('publishScopeResult posts green when the plan is still running', async () =
 test('publishScopeResult fails closed when the re-check cannot load the plan', async () => {
   const { client, fake } = setup({ comments: [APPROVE], extra: publishRoutes });
   const final = await publishScopeResult(client, { headSha: SHA, outcome: ok, now: NOW });
-  assert.deepEqual([final.conclusion, final.title], ['failure', 'drift']);
-  assert.match(posted(fake).description, /^drift: scope check could not confirm the plan state/);
+  assert.deepEqual([final.conclusion, final.title], ['failure', 'recheck-error']);
+  assert.match(posted(fake).description, /^recheck-error: scope check could not confirm the plan state/);
 });
 
 test('publishScopeResult skips the re-check for failures and non-plan PRs', async () => {

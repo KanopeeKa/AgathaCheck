@@ -153,6 +153,10 @@ function prLadder(pr, rawCtx) {
     if (republished) return stop('scope-stale', `execute-plan-scope still reports plan-stopped on PR #${pr.number} after a republish`);
     return finish(ctx, { ...base, action: driver('republish-scope', { pr: pr.number, head_sha: pr.head_sha }), looked });
   }
+  if (scope && scope.conclusion === 'failure' && scope.reason === 'recheck-error') {
+    if (republished) return stop('check-missing', `execute-plan-scope recheck-error persists on PR #${pr.number} after a republish`);
+    return finish(ctx, { ...base, action: driver('republish-scope', { pr: pr.number, head_sha: pr.head_sha }), looked });
+  }
   // PR-ladder 4
   const failing = checks.filter((c) => FAILED.has(c.conclusion));
   if (failing.length) {
