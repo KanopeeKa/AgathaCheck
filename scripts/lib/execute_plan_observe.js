@@ -77,21 +77,21 @@ async function readPull(client, number, sleep) {
   return pull;
 }
 
-/** `statuses` = the head's commit statuses; the scope status wins over a legacy check run of the same name. */
+/** `statuses` = the head's commit statuses: the scope result is read from the trusted status only, never from a check run. */
 function latestRuns(runs, names, statuses = []) {
   return names.map((name) => {
     if (name === SCOPE_CHECK) {
-      const entry = scopeEntryFromStatuses(statuses);
-      if (entry) return entry;
+      return scopeEntryFromStatuses(statuses)
+        || { name, status: 'missing', conclusion: null, reason: null, completed_at: null };
     }
     const mine = runs.filter((r) => r.name === name);
-    const run = mine.reduce((a, b) => (!a || Number(b.id) > Number(a.id) ? b : a), null);
+    const run = mine.reduce((x, y) => (!x || Number(y.id) > Number(x.id) ? y : x), null);
     if (!run) return { name, status: 'missing', conclusion: null, reason: null, completed_at: null };
     return {
       name,
       status: run.status,
       conclusion: run.conclusion || null,
-      reason: name === SCOPE_CHECK ? (run.output && run.output.title) || null : null,
+      reason: null,
       completed_at: run.completed_at || null,
     };
   });
@@ -105,7 +105,7 @@ async function failedAttempts(client, pr, names, epoch, headRuns, headStatuses, 
     const runs = sha === pr.head.sha ? headRuns : await client.listCheckRuns(sha);
     const statuses = !names.includes(SCOPE_CHECK) ? [] : sha === pr.head.sha ? headStatuses : await client.listCommitStatuses(sha);
     const failed = scopeFailedSince(statuses, epoch) || runs.some(
-      (r) => names.includes(r.name) && FAILED.has(r.conclusion) && r.completed_at && ms(r.completed_at) > ms(epoch),
+      (r) => r.name !== SCOPE_CHECK && names.includes(r.name) && FAILED.has(r.conclusion) && r.completed_at && ms(r.completed_at) > ms(epoch),
     );
     if (failed) attempts += 1;
   }

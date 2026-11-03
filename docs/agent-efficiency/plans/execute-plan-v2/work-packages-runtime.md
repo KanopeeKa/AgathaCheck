@@ -59,7 +59,6 @@ Client methods (all `async`; list methods follow `Link: rel="next"` until exhaus
 | `listUnresolvedThreads(n)` | GraphQL `repository.pullRequest(number).reviewThreads(first:100){nodes{isResolved path comments(first:1){nodes{url author{login}}}}}` → `[{ url, path, author }]` for unresolved |
 | `enableAutoMerge(nodeId, method)` / `disableAutoMerge(nodeId)` | GraphQL `enablePullRequestAutoMerge(input:{pullRequestId, mergeMethod: SQUASH\|MERGE})` / `disablePullRequestAutoMerge` |
 | `listCheckRuns(sha)` | `GET /commits/{sha}/check-runs?per_page=100` |
-| `createCheckRun({ name, head_sha, conclusion, title, summary })`, `updateCheckRun(id, {…})` | `POST /check-runs` (`status: completed`), `PATCH /check-runs/{id}` |
 | `listCommitStatuses(sha)`, `createCommitStatus(sha, { state, context, description, target_url })` | `GET /commits/{sha}/statuses?per_page=100`, `POST /statuses/{sha}` |
 | `compare(base, head)` | `GET /compare/{base}...{head}` → `{ status, ahead_by, behind_by, files: [{ filename, status }] }` |
 | `listWorkflowRuns(file, { branch, event, status, per_page, pages })` | `GET /actions/workflows/{file}/runs` |

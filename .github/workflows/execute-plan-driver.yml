@@ -18,7 +18,7 @@ permissions:
   pull-requests: write
   actions: write
   statuses: write
-  checks: write
+  checks: read
 jobs:
   # PR events never get secrets: pull_request_target runs on the PR base ref (rejected by the main-only
   # automation environment for integration bases), so a secret-less relay re-dispatches the driver on main.

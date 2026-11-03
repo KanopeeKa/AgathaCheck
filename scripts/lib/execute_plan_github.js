@@ -269,16 +269,6 @@ function createGitHubClient(opts) {
     // Checks
     listCheckRuns: (sha, { pages } = {}) =>
       paginate(`/commits/${sha}/check-runs`, { pages, itemsKey: 'check_runs' }),
-    createCheckRun: ({ name: checkName, head_sha, conclusion, title, summary }) =>
-      rest('POST', '/check-runs', {
-        body: { name: checkName, head_sha, status: 'completed', conclusion, output: { title, summary } },
-      }),
-    updateCheckRun(id, { conclusion, title, summary, ...extra } = {}) {
-      const body = { ...extra };
-      if (conclusion !== undefined) Object.assign(body, { status: 'completed', conclusion });
-      if (title !== undefined || summary !== undefined) body.output = { title, summary };
-      return rest('PATCH', `/check-runs/${id}`, { body });
-    },
     listCommitStatuses: (sha, { pages } = {}) => paginate(`/commits/${sha}/statuses`, { pages }),
     createCommitStatus: (sha, { state, context, description, target_url }) =>
       rest('POST', `/statuses/${sha}`, { body: { state, context, description, ...(target_url ? { target_url } : {}) } }),
