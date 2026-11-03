@@ -10,7 +10,6 @@ const crypto = require('crypto');
 const { PullFilesOverflow } = require('./execute_plan_github');
 const { computeApprovalHash, findControlComments } = require('./execute_plan_approval');
 const { acceptedAuthorizationIds } = require('./execute_plan_ack');
-const { supportFilesForPlan } = require('./execute_plan_support');
 const { loadSnapshotAtRef } = require('./execute_plan_snapshot_v2');
 const { categorizePull, evaluateDiff, BUNDLE_BUDGET_FILE, validateBundleBudgetRatchet } = require('./execute_plan_scope');
 const { deriveControl } = require('./execute_plan_control');
@@ -83,6 +82,28 @@ async function verifyOwnPlanFiles(client, snapshot, headSha, files) {
   return true;
 }
 
+/** Files in the PR whose blob matches `main` tip (release no-ops; side fixes already on main). */
+async function filesUnchangedOnMain(client, headSha, files) {
+  const unchanged = new Set();
+  for (const file of files || []) {
+    let head;
+    let main;
+    try {
+      head = await client.getFileAtRef(file, headSha);
+      main = await client.getFileAtRef(file, 'main');
+    } catch {
+      continue;
+    }
+    if (!head || !main) continue;
+    if (head.sha && main.sha && head.sha === main.sha) {
+      unchanged.add(file);
+      continue;
+    }
+    if (sha256Hex(head.content) === sha256Hex(main.content)) unchanged.add(file);
+  }
+  return unchanged;
+}
+
 function renderSummary(evaluation) {
   if (evaluation.title === 'unsupported') return UNSUPPORTED_INTEGRATION_SUMMARY;
   const lines = [];
@@ -144,17 +165,18 @@ async function runScopeCheck(client, { prNumber, headSha, headRef, baseRef, head
   const ownPlanFilesVerified = category === 'release' && files.length > 0
     ? await verifyOwnPlanFiles(client, snapshot, headSha, files)
     : false;
-  let supportFiles = new Set();
-  if (category === 'release') {
-    const epoch = control.authorizing && control.authorizing.valid ? control.authorizing.created_at : null;
-    supportFiles = await supportFilesForPlan(client, planId, { since: epoch });
-  }
+  const unchangedOnMain = category === 'release'
+    ? await filesUnchangedOnMain(client, headSha, files)
+    : new Set();
   const evaluation = evaluateDiff({
-    files, snapshot, category, phaseId, ownPlanFilesVerified, stopped, supportFiles,
+    files, snapshot, category, phaseId, ownPlanFilesVerified, stopped, unchangedOnMain,
   });
   if (category === 'phase' && files.includes(BUNDLE_BUDGET_FILE)) {
-    const pull = await client.getPull(prNumber);
-    const mergeBase = pull.merge_base_sha || headSha;
+    const cmp = await client.compare(baseRef, headSha);
+    const mergeBase = cmp.merge_base_commit && cmp.merge_base_commit.sha;
+    if (!mergeBase) {
+      return result('failure', 'drift', 'could not resolve merge base for bundle ratchet', planId);
+    }
     const headFile = await client.getFileAtRef(BUNDLE_BUDGET_FILE, headSha);
     const baseFile = await client.getFileAtRef(BUNDLE_BUDGET_FILE, mergeBase);
     if (!headFile || !baseFile) {

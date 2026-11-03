@@ -26,7 +26,7 @@ Demo.
 
 ### Phase 1 — Server
 \`\`\`json
-{ "allowed_paths": ["server/bin/**"], "forbidden_paths": [], "allowed_exceptions": ["tests"],
+{ "allowed_paths": ["server/bin/**", "scripts/ci/web-bundle-budget.json"], "forbidden_paths": [], "allowed_exceptions": ["tests"],
   "companions": [], "exit_checklist": ["ok"] }
 \`\`\`
 Scope: x
@@ -71,7 +71,6 @@ function setup({ issue = CONTROL_ISSUE, comments = planComments(), files = [], e
     [`GET ${R}/contents/.agents/plans/${PLAN}.snapshot.json?ref=${INIT_SHA}`]: file(SNAP_JSON),
     [`GET ${R}/contents/.agents/plans/${PLAN}.md?ref=${INIT_SHA}`]: file(PLAN_MD),
     [`GET ${R}/pulls/5/files?per_page=100`]: { body: files.map((filename) => ({ filename })) },
-    [`GET ${R}/pulls?base=main&direction=desc&per_page=100&sort=updated&state=closed`]: { body: [] },
     ...extra,
   };
   const fake = createFakeFetch(routes);
@@ -162,23 +161,38 @@ test('release PR with verified plan files → success', async () => {
   assert.deepEqual([res.conclusion, res.title], ['success', 'ok']);
 });
 
-test('release PR allows paths from merged side PRs that unblock the plan', async () => {
+test('release PR treats files identical to main as no-ops', async () => {
   const sideFile = 'scripts/ci/web-bundle-budget.json';
-  const mergedSide = {
-    number: 99,
-    merged_at: '2026-10-16T09:30:00Z',
-    body: `Fix budget.\n\nUnblocks: plan ${PLAN} phase 6`,
-  };
+  const budget = '{"maxMainDartJsBytes":1000000,"maxTotalBytes":2000000,"version":1}';
   const { client } = setup({
     files: [...planFileDiff, sideFile],
     extra: {
       ...planFilesRoutes(SNAP_JSON, PLAN_MD),
-      [`GET ${R}/pulls?base=main&direction=desc&per_page=100&sort=updated&state=closed`]: { body: [mergedSide] },
-      [`GET ${R}/pulls/99/files?per_page=100`]: { body: [{ filename: sideFile }] },
+      [`GET ${R}/contents/${sideFile}?ref=${release.headSha}`]: file(budget),
+      [`GET ${R}/contents/${sideFile}?ref=main`]: file(budget),
     },
   });
   const res = await runScopeCheck(client, release);
   assert.deepEqual([res.conclusion, res.title], ['success', 'ok']);
+});
+
+test('phase PR bundle ratchet fails when increase exceeds 1.5% vs merge base', async () => {
+  const mergeBase = 'b'.repeat(40);
+  const baseBudget = '{"maxMainDartJsBytes":1000000,"maxTotalBytes":2000000,"version":1}';
+  const headBudget = '{"maxMainDartJsBytes":2000000,"maxTotalBytes":4000000,"version":1}';
+  const comparePath = `${R}/compare/cursor%2F${PLAN}-integration-7f3a...${phasePr.headSha}`;
+  const { client } = setup({
+    files: ['server/bin/server.js', 'scripts/ci/web-bundle-budget.json'],
+    extra: {
+      [`GET ${comparePath}`]: {
+        body: { merge_base_commit: { sha: mergeBase }, files: [] },
+      },
+      [`GET ${R}/contents/scripts/ci/web-bundle-budget.json?ref=${mergeBase}`]: file(baseBudget),
+      [`GET ${R}/contents/scripts/ci/web-bundle-budget.json?ref=${phasePr.headSha}`]: file(headBudget),
+    },
+  });
+  const res = await runScopeCheck(client, phasePr);
+  assert.equal(res.title, 'forbidden');
 });
 
 test('release PR with tampered plan file → failure drift', async () => {

@@ -54,6 +54,15 @@ test('acceptedAuthorizationIds rejects runs with wrong workflow metadata', async
   assert.equal(i, 3);
 });
 
+test('acceptedAuthorizationIds ignores ack when a not-accepted note exists for that comment', async () => {
+  const client = { getWorkflowRun: async () => VALID_ACK_RUN };
+  const comments = [
+    { id: 1, user: { login: 'github-actions[bot]' }, body: formatStoppedNote('resume', 9001, 'bc-1') },
+    { id: 2, user: { login: 'github-actions[bot]' }, body: formatAck(9001, 555) },
+  ];
+  assert.equal((await acceptedAuthorizationIds(client, comments)).size, 0);
+});
+
 test('acceptedAuthorizationIds fetches each run id once for multiple acks', async () => {
   const calls = [];
   const client = {
