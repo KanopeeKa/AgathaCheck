@@ -513,6 +513,8 @@ The people-data layers must be settled before vets are migrated, so the data is 
 
 Canonical carer wire rules: [away-planning-carer-model.md](/docs/domains/pet_care/features/away-planning-carer-model.md) (`AWAY-PLANNING-CARER-R-014`, `R-015`).
 
+**Shipped (per-pet away plans, 2026-11):** Full-access viewers (record owner, co-parent, household Full access) see and edit **that pet's away plan** only; other pets on the same absence are omitted from JSON and UI (CARE-CONTEXT-R-032, PEOPLE-D17). The declarer retains trip edit/delete and **Your absences** hub placement even when they lose Full access to a pet on the trip. Adding a pet to a saved absence runs the **guest access widen** confirmation when existing absence guests would gain a new pet (PEOPLE-D16). Co-parents are **not** notified when an absence that includes their pet is created or edited — see [care-context.md](/docs/domains/pet_care/features/care-context.md) out of scope.
+
 | Frozen Away decision | People amendment (in effect) |
 | --- | --- |
 | D-AWAY-002 readiness facts | Extended: per-pet carer fact gains `unavailable`; `carer_coverage` counts uncovered; still no stored verdict (D18) |

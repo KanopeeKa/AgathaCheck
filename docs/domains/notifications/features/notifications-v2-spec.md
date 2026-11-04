@@ -990,7 +990,7 @@ Agreed but not implemented — see [People & Care Team](/docs/domains/people/fea
 - **D21:** when someone is named as looking after an occurrence, only they get its reminder.
 - **D25:** when nobody is named, the record owner and Full access members get the reminder. Can log care members don't, unless they opt in.
 - **Setting:** pet parents can opt in to notifications for all events on their pets (new `notification_preferences` key).
-- **Household notices:** pet removed from household (D22); absence access granted by someone else notifies the record owner (D19).
+- **Household notices:** pet removed from household (D22); absence access granted by someone else notifies the record owner (D19). Co-parent / Full-access members are **not** notified when someone else creates or edits an absence that includes their pet (product out of scope — [care-context.md](/docs/domains/pet_care/features/care-context.md)).
 
 Today, `petNotificationRecipientIds` in `server/lib/petAccess.js` sends to every sharer.
 
