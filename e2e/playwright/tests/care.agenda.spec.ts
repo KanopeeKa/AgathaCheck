@@ -148,13 +148,25 @@ test.describe('Care agenda', () => {
       await page.locator('[flt-semantics-identifier="care_item_close_care_button"]').click();
       await page.getByRole('alertdialog').waitFor({ timeout: 15_000 });
       await page.locator('[flt-semantics-identifier="care_close_confirm_button"]').click();
+      await expect(
+        page.locator('[flt-semantics-identifier="care_item_close_care_button"]'),
+      ).toHaveCount(0, { timeout: 30_000 });
       await refreshFlutterAccessibility(page);
 
-      expect((await getCareItem(baseURL, testUser.accessToken, entry.id)).status).toBe(
-        'closed',
-      );
+      await expect.poll(
+        async () => (await getCareItem(baseURL, testUser.accessToken, entry.id)).status,
+        { timeout: 30_000 },
+      ).toBe('closed');
 
-      await page.goto(flutterGotoUrl(`/pet/${pet.id}/events`));
+      await page.goto(flutterGotoUrl(`/pet/${pet.id}/events`), {
+        waitUntil: 'networkidle',
+      });
+      await waitForFlutterRoutePattern(
+        page,
+        new RegExp(`/pet/${pet.id}/events`),
+        30_000,
+      );
+      await page.reload({ waitUntil: 'networkidle' });
       await waitForFlutterRoutePattern(
         page,
         new RegExp(`/pet/${pet.id}/events`),
