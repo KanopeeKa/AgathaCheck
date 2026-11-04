@@ -26,7 +26,7 @@ Historical profile refactor and 2026-09-13 delivery plan text: [archive/care-ite
 | ID | Rule | Status |
 |----|------|--------|
 | CARE-ITEM-R-001 | App bar uses `careItemScreenTitle`; care name lives in the context strip (D-CIH-001 … D-CIH-014) | Live |
-| CARE-ITEM-R-002 | At most one strip status chip: **Closed** or Paused (CARE-STATUS-R-010; supersedes Finished/Archived chip) | Live |
+| CARE-ITEM-R-002 | At most one strip status chip: **Closed** or Paused (CARE-STATUS-MODEL-R-010; supersedes Finished/Archived chip) | Live |
 | CARE-ITEM-R-003 | Agenda: Today (Overdue first), Due soon (7d), Upcoming collapsed (D-CIE-025) | Live |
 | CARE-ITEM-R-004 | List rows: one trailing action; server confirms before row updates (D-CIE-026) | Live |
 | CARE-ITEM-R-005 | Status words Coming up, Due, Overdue, Not recorded, Done, Skipped, Paused (D-CIE-024) | Live |
