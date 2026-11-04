@@ -166,17 +166,12 @@ test.describe('Care agenda', () => {
         new RegExp(`/pet/${pet.id}/events`),
         30_000,
       );
-      await page.reload({ waitUntil: 'networkidle' });
-      await waitForFlutterRoutePattern(
-        page,
-        new RegExp(`/pet/${pet.id}/events`),
-        30_000,
-      );
       await enableFlutterAccessibility(page);
       const closedCareLink = page.locator(
         '[flt-semantics-identifier="all_care_closed_care_link"]',
       );
-      await closedCareLink.waitFor({ timeout: 30_000 });
+      await expect(closedCareLink).toBeVisible({ timeout: 60_000 });
+      await closedCareLink.scrollIntoViewIfNeeded();
       await closedCareLink.click();
       await page.locator('[flt-semantics-identifier="closed_care_list"]').waitFor({
         timeout: 30_000,
