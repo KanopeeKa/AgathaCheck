@@ -7,7 +7,6 @@ import {
   isFixedSchedule,
   scheduleAnchorIso,
 } from '../../schedule/fixedSlots.js';
-import { instantMinutes } from '../../schedule/lateCompletion.js';
 import { scheduleTimesFromEntry } from '../../schedule/scheduleTimes.js';
 import {
   SCHEDULE_EVENT_POSTPONED,
@@ -22,16 +21,12 @@ import {
 import { CareCommandError, badRequest } from '../careCommandError.js';
 import { updateEntryFields } from '../entryRepository.js';
 import {
+  applyOpenOccurrencePauseCloseRule,
   insertOpenOccurrence,
-  markNotRecorded,
   moveOpenOccurrence,
 } from '../occurrenceRepository.js';
 
 export const POSTPONE_REASONS = ['pause', 'absence', 'manual'];
-
-function nowMinutes(asOf) {
-  return instantMinutes(asOf.todayIso, asOf.nowTimeIso ?? '00:00');
-}
 
 /**
  * @param {object} ctx
@@ -75,20 +70,25 @@ export async function postponeCommand(ctx, {
       trace.markEntryChanged();
     }
   } else {
-    if (fixed) {
-      const now = nowMinutes(asOf);
-      const future = openRows.filter((o) => o.origin === 'schedule'
-        && instantMinutes(o.scheduled_date, o.scheduled_time) > now
-        && (!until || o.scheduled_date < until));
-      for (const row of future) {
-        await markNotRecorded(db, { entryId: entry.id, occurrenceId: row.id });
-        trace.closedRow(row);
-      }
-    }
+    const pauseRows = fixed
+      ? openRows.filter((o) => o.origin === 'schedule')
+      : openRows;
+    await applyOpenOccurrencePauseCloseRule(db, {
+      entryId: entry.id,
+      rows: pauseRows,
+      asOf,
+      trace,
+      until: fixed ? until : null,
+      onlyOrigin: fixed ? 'schedule' : null,
+    });
+    const pauseResumeAnchor = !fixed && openRows[0]?.scheduled_date
+      ? dateToIsoDate(openRows[0].scheduled_date)
+      : null;
     await updateEntryFields(db, entry.id, {
       status: 'paused',
       paused_since: entry.status === 'paused' ? dateToIsoDate(entry.paused_since) : asOf.todayIso,
       paused_until: fixed ? until : null,
+      ...(pauseResumeAnchor ? { series_resumed_on: pauseResumeAnchor } : {}),
     });
     trace.markEntryChanged();
   }
@@ -126,7 +126,14 @@ export function defaultResumeDate(entry, openRows, asOf) {
     }
     return today;
   }
-  let date = openRows[0]?.scheduled_date ?? asOf.todayIso;
+  if (!openRows.length) {
+    const anchor = dateToIsoDate(entry.series_resumed_on)
+      || dateToIsoDate(entry.next_due_date)
+      || dateToIsoDate(entry.start_date)
+      || asOf.todayIso;
+    return seriesDateOnOrAfter(anchor, entry, asOf.todayIso);
+  }
+  let date = openRows[0].scheduled_date;
   let guard = 0;
   while (date < asOf.todayIso && guard < 1000) {
     date = addSteps(date, entry, 1);
@@ -147,7 +154,7 @@ export async function resumeCommand(ctx, { date = null, reasonNote = null }) {
   const resumeOn = date || defaultResumeDate(entry, openRows, asOf);
   if (resumeOn < asOf.todayIso) throw badRequest('invalid_date', 'Resume date cannot be in the past');
 
-  const fields = { status: 'active', paused_since: null, paused_until: null };
+  const fields = { status: 'active', paused_since: null, paused_until: null, series_resumed_on: null };
   if (isFixedSchedule(entry)) {
     const anchor = scheduleAnchorIso(entry);
     if (anchor && isSeriesDate(anchor, entry, resumeOn)) {
