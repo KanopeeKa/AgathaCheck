@@ -175,7 +175,6 @@ describe('POST /api/pets/:petId/care-rhythms/:entryId/occurrences/:occurrenceId/
           occurrence = {
             ...occurrence,
             status: 'completed',
-            close_reason: 'user',
             completed_on: new Date(params[0]),
             completion_timing: params[1] ?? null,
             marked_at: params[2],
@@ -184,7 +183,7 @@ describe('POST /api/pets/:petId/care-rhythms/:entryId/occurrences/:occurrenceId/
           };
           return { rows: [occurrence] };
         }
-        if (sql.includes("COALESCE(close_reason, 'user') = 'user'")) {
+        if (sql.includes("status = 'completed' OR status = 'skipped'")) {
           return { rows: occurrence.status === 'completed' ? [occurrence] : [] };
         }
         if (sql.includes('INSERT INTO health_occurrences') && sql.includes('RETURNING id')) {

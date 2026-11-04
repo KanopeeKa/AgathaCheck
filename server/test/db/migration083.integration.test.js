@@ -120,7 +120,16 @@ beforeAll(async () => {
     ['health_occurrences', ['origin', 'series_date']],
     ['care_schedule_events', ['payload', 'undone_at']],
   ]) {
-    for (const column of columns) await db.query(`ALTER TABLE ${table} DROP COLUMN ${column} CASCADE`);
+    for (const column of columns) {
+      const exists = await db.query(
+        `SELECT 1 FROM information_schema.columns
+         WHERE table_schema = current_schema() AND table_name = $1 AND column_name = $2`,
+        [table, column],
+      );
+      if (exists.rows.length > 0) {
+        await db.query(`ALTER TABLE ${table} DROP COLUMN ${column} CASCADE`);
+      }
+    }
   }
   await db.query('ALTER TABLE health_occurrences DROP COLUMN IF EXISTS close_reason CASCADE');
   await db.query('CREATE TABLE migration083_markers (health_entry_id uuid NOT NULL)');

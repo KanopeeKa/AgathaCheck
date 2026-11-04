@@ -92,6 +92,7 @@ describe('Health Entries API', () => {
           return { rows: [] };
         }
         if (sql.includes('AS slot_date')) return { rows: [] };
+        if (sql.includes("status = 'completed' OR status = 'skipped'")) return { rows: [] };
         if (sql.includes("COALESCE(close_reason, 'user') = 'user'")) return { rows: [] };
         if (sql.includes('UPDATE health_entries SET') && sql.includes('RETURNING *') && !sql.includes('SET name')) {
           const id = params[params.length - 1];
