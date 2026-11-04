@@ -18,6 +18,9 @@ class _FakeHealthEntriesNotifier extends HealthEntriesNotifier {
 
   @override
   Future<List<HealthEntry>> build() async => _entries;
+
+  @override
+  Future<void> refresh() async {}
 }
 
 HealthEntry _entry({
@@ -126,6 +129,7 @@ void main() {
     await tester.pumpWidget(_wrap([doneOneOff]));
     await tester.pumpAndSettle();
 
+    expect(find.bySemanticsIdentifier('all_care_list'), findsOneWidget);
     expect(find.byKey(const Key('all_care_closed_care_link')), findsOneWidget);
     expect(find.text('Closed care (1)'), findsOneWidget);
     expect(find.byKey(const Key('all_care_inactive_section')), findsNothing);

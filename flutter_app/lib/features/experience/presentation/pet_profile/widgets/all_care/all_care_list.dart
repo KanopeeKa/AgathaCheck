@@ -63,40 +63,44 @@ class _AllCareListState extends ConsumerState<AllCareList> {
               .toList(),
         );
 
-        return SingleChildScrollView(
-          key: const Key('all_care_list'),
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              if (entries.isEmpty)
-                PetCareIllustratedEmptyState(
-                  key: const Key('all_care_empty'),
-                  title: l.petCareEmptyCareTitle,
-                  body: l.petCareEmptyCareBody,
-                  actionLabel: l.addAnEvent,
-                  actionIcon: Icons.add,
-                  onAction: () =>
-                      navigateToAddHealthEntry(context, petId: widget.petId),
-                )
-              else ...[
-                if (active.isNotEmpty)
-                  CareAgendaCollection(
-                    entries: active,
-                    source: CareCommandSource.agenda,
+        return Semantics(
+          identifier: 'all_care_list',
+          container: true,
+          child: SingleChildScrollView(
+            key: const Key('all_care_list'),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (entries.isEmpty)
+                  PetCareIllustratedEmptyState(
+                    key: const Key('all_care_empty'),
+                    title: l.petCareEmptyCareTitle,
+                    body: l.petCareEmptyCareBody,
+                    actionLabel: l.addAnEvent,
+                    actionIcon: Icons.add,
+                    onAction: () =>
+                        navigateToAddHealthEntry(context, petId: widget.petId),
+                  )
+                else ...[
+                  if (active.isNotEmpty)
+                    CareAgendaCollection(
+                      entries: active,
+                      source: CareCommandSource.agenda,
+                    ),
+                  AllCareInactiveSection(
+                    entries: inactive,
+                    establishedEntryIds: establishedIds,
+                    onViewEntry: (entry) =>
+                        HomeEventActions.viewEntry(context, entry),
                   ),
-                AllCareInactiveSection(
-                  entries: inactive,
-                  establishedEntryIds: establishedIds,
-                  onViewEntry: (entry) =>
-                      HomeEventActions.viewEntry(context, entry),
-                ),
-                AllCareClosedFooter(
-                  petId: widget.petId,
-                  closedCount: closed.length,
-                ),
+                  AllCareClosedFooter(
+                    petId: widget.petId,
+                    closedCount: closed.length,
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
         );
       },
