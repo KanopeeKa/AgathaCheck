@@ -191,6 +191,7 @@ test.describe('Care agenda', () => {
       await expect(row).toBeVisible();
       await expect(row).toContainText(/Closed · Stopped by you|Fermé · Arrêté par vous/i);
       await expect(row).not.toContainText(/Jun|juin|2026-06/i);
+<<<<<<< HEAD
       await row.click({ force: true });
       await waitForFlutterRoutePattern(
         page,
@@ -201,6 +202,9 @@ test.describe('Care agenda', () => {
       await expect(
         page.getByText(/^Care details$|^Détail du soin$/i).first(),
       ).toBeVisible({ timeout: 30_000 });
+=======
+      await careItem.open(pet.id, entry.id);
+>>>>>>> 50cdfe4f (fix(e2e): assert read-only detail via careItem.open after list checks)
       await expect(page.locator('[flt-semantics-identifier="care_item_close_care_button"]')).toHaveCount(
         0,
       );
