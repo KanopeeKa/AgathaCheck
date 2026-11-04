@@ -40,11 +40,7 @@ beforeAll(async () => {
   }
   client = await pool.connect();
   await client.query('BEGIN');
-<<<<<<< HEAD
-  await relaxHealthEntryStatusForLegacySeeds(client);
-=======
   await migrateCareItemClosed(client);
->>>>>>> b2e801ae (fix: normalize legacy completed inserts via migration 085 trigger)
   process.env.SEED_CARE_CLOCK = `${CLOCK.todayIso}T${CLOCK.nowTimeIso}`;
   await seedGuardian(client);
   await seedCareOccurrences(client);
@@ -139,10 +135,8 @@ describe('care occurrences seed (Whiskers)', () => {
   it('Vet visit is recorded only', async () => {
     if (!dbReady) return;
     const visit = await item(ids.vetVisit);
-    expect(['closed', 'completed']).toContain(visit.entry.status);
-    if (visit.entry.status === 'closed') {
-      expect(visit.entry.care_closed_reason).toBe('ended');
-    }
+    expect(visit.entry.status).toBe('closed');
+    expect(visit.entry.care_closed_reason).toBe('ended');
     expect(visit.open_occurrences).toEqual([]);
   });
 });
