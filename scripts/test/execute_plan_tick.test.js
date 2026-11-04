@@ -64,6 +64,7 @@ function stubClient({ status = baseStatus(), labels = [], authorized = true, sna
     listWorkflowRuns: async () => [],
     compare: async () => ({ ahead_by: 0 }),
     listPulls: async () => [],
+    getIssueComment: async (id) => ({ id, body: formatStatusComment(status, '') }),
     updateComment: async (id, b) => writes.push({ kind: 'update', id, body: b }),
     createComment: async (n, b) => writes.push({ kind: 'comment', n, body: b }),
     addLabels: async (n, l) => writes.push({ kind: 'label', n, labels: l }),
@@ -105,6 +106,33 @@ test('worker tick refreshes last_tick_at', async () => {
   await tick(client, { planId: PLAN_ID, controlIssue: 9, now: NOW, actor: 'agent', env: AGENT_ENV });
   const upd = writes.find((w) => w.kind === 'update');
   assert.equal(parseStatusComment(upd.body).lease.last_tick_at, NOW);
+});
+
+test('agent status write preserves a concurrent driver drift stop', async () => {
+  const driftStop = { reason: 'drift', detail: 'scope check reports forbidden on PR #2083', at: '2026-10-16T10:05:00Z' };
+  const lease = { platform: 'cursor', agent_id: 'bc', run_id: 'r', launched_at: '2026-10-16T09:10:00Z', last_tick_at: '2026-10-16T09:40:00Z' };
+  const { client, writes } = stubClient({ status: baseStatus({ lease }) });
+  client.getIssueComment = async (id) => ({
+    id,
+    body: formatStatusComment(baseStatus({ lease, stop: driftStop, state: 'stopped' }), ''),
+  });
+  await tick(client, { planId: PLAN_ID, controlIssue: 9, now: NOW, actor: 'agent', env: AGENT_ENV });
+  const upd = writes.find((w) => w.kind === 'update');
+  assert.ok(upd);
+  assert.equal(parseStatusComment(upd.body).stop.reason, 'drift');
+});
+
+test('escalation stop detail includes prior stop on the status comment', async () => {
+  const prior = { reason: 'drift', detail: 'scope check reports forbidden on PR #2083', at: '2026-10-16T09:00:00Z' };
+  const { client, writes } = stubClient({
+    status: baseStatus({ stop: prior, state: 'stopped' }),
+    labels: ['needs-owner'],
+  });
+  const out = await tick(client, { planId: PLAN_ID, controlIssue: 9, now: NOW, actor: 'driver' });
+  assert.equal(out.stop.reason, 'escalation');
+  assert.match(out.stop.detail, /prior stop at .*drift/);
+  const written = parseStatusComment(writes.find((w) => w.kind === 'update').body);
+  assert.equal(written.stop.reason, 'escalation');
 });
 
 test('stop labels needs-owner and records stop once', async () => {

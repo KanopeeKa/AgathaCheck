@@ -2,7 +2,7 @@
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { STATUS_MARKER, parseStatusComment, formatStatusComment, formatLogLine, applyDecisionToStatus } = require('../lib/execute_plan_status');
+const { STATUS_MARKER, parseStatusComment, formatStatusComment, formatLogLine, applyDecisionToStatus, mergeStatusBeforeWrite } = require('../lib/execute_plan_status');
 const { MAX_LAUNCH_HISTORY } = require('../lib/execute_plan_constants');
 
 const PLAN = 'proof-build-label-7f3a';
@@ -66,4 +66,21 @@ test('formatLogLine', () => {
 test('table cells escape backslashes, pipes and newlines', () => {
   const body = formatStatusComment(status(), [{ phase: '1', branch: 'a\\|b\nc', pr: null, state: 's', failed: 0, launches: 0 }]);
   assert.match(body, /\| a\\\\\\\|b c \|/);
+});
+
+test('mergeStatusBeforeWrite keeps a concurrent current stop when the decision has none', () => {
+  const epoch = '2026-11-03T23:56:53Z';
+  const drift = { reason: 'drift', detail: 'scope forbidden', at: '2026-11-04T08:15:44Z' };
+  const proposed = status({ stop: null, lease: { platform: 'cursor', agent_id: 'a', run_id: 'r', launched_at: '2026-11-04T08:07:46Z', last_tick_at: '2026-11-04T08:15:58Z' } });
+  const fresh = status({ stop: drift, state: 'stopped' });
+  const merged = mergeStatusBeforeWrite(proposed, fresh, { epoch, decisionHasStop: false });
+  assert.deepEqual(merged.stop, drift);
+});
+
+test('mergeStatusBeforeWrite does not override a new decision stop', () => {
+  const epoch = '2026-10-16T09:05:00Z';
+  const fresh = status({ stop: { reason: 'drift', detail: 'old', at: NOW } });
+  const proposed = status({ stop: { reason: 'ci-budget', detail: 'new', at: NOW } });
+  const merged = mergeStatusBeforeWrite(proposed, fresh, { epoch, decisionHasStop: true });
+  assert.equal(merged.stop.reason, 'ci-budget');
 });

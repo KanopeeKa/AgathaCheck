@@ -115,7 +115,9 @@ async function watchCi(client, { pr, timeoutMin = 25, pollSec = 60, sleep })    
 2. `observe` fills every field of `Observations` with the sources listed in state-machine §4.0, and
    nothing else. Checks per PR use `config.required_checks.integration` or `.main` by the PR base.
 3. Persist (skipped with `dryRun`, which prints the would-be writes):
-   a. `applyDecisionToStatus` → update the status comment (bot token; one identity).
+   a. `applyDecisionToStatus`, then **`mergeStatusBeforeWrite` after re-reading the status comment**
+      (so a stale worker tick cannot erase a concurrent driver `stop` or regress lease / launches) →
+      update the status comment (bot token; one identity).
    b. If `state` changed → one log comment.
    c. Worker ticks (`actor: 'agent'`) set `status.lease.last_tick_at = now` when a lease exists.
    d. On a stop: label `needs-owner`, `status.stop = { reason, detail, at: now }`. The other parts

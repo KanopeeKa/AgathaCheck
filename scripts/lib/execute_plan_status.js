@@ -67,4 +67,44 @@ function applyDecisionToStatus(status, decision, { now, actor, observations, epo
   return next;
 }
 
-module.exports = { STATUS_MARKER, parseStatusComment, formatStatusComment, formatLogLine, applyDecisionToStatus };
+/**
+ * Fold a just-read status comment into a proposed write so a stale in-memory copy cannot drop a
+ * concurrent driver's stop or regress lease / launch history.
+ */
+function mergeStatusBeforeWrite(proposed, fresh, { epoch, decisionHasStop }) {
+  if (!fresh || typeof fresh !== 'object') return proposed;
+  const next = { ...proposed };
+  const stopIsCurrent = (stop) =>
+    stop &&
+    epoch &&
+    Number.isFinite(Date.parse(stop.at)) &&
+    Number.isFinite(Date.parse(epoch)) &&
+    Date.parse(stop.at) > Date.parse(epoch);
+
+  if (!decisionHasStop && stopIsCurrent(fresh.stop)) {
+    next.stop = fresh.stop;
+  }
+
+  const len = (a) => (Array.isArray(a) ? a.length : 0);
+  if (len(fresh.launches) > len(next.launches)) {
+    next.launches = fresh.launches;
+  }
+
+  const tickAt = (lease) => (lease && (lease.last_tick_at || lease.launched_at)) || null;
+  const freshTick = tickAt(fresh.lease);
+  const nextTick = tickAt(next.lease);
+  if (fresh.lease && freshTick && (!nextTick || Date.parse(freshTick) > Date.parse(nextTick))) {
+    next.lease = { ...next.lease, ...fresh.lease, last_tick_at: freshTick };
+  }
+
+  return next;
+}
+
+module.exports = {
+  STATUS_MARKER,
+  parseStatusComment,
+  formatStatusComment,
+  formatLogLine,
+  applyDecisionToStatus,
+  mergeStatusBeforeWrite,
+};
