@@ -8154,6 +8154,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get peoplePickerFieldLabel => 'Contact';
 
   @override
+  String get peoplePickerEmptyVets =>
+      'No vets in your contacts yet. Type a name to add one.';
+
+  @override
+  String get peoplePickerEmptyGeneric =>
+      'Nobody to choose from yet. Type a name to add someone.';
+
+  @override
   String get peoplePickerNone => 'None';
 
   @override
@@ -8316,6 +8324,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get peopleDetailLinkPetChooseKind => 'How are they linked?';
+
+  @override
+  String get peopleDetailLinkPetKindRequired =>
+      'Choose how they\'re linked to continue.';
 
   @override
   String peopleDetailRelatedCareHistory(int count) {

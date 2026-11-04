@@ -144,11 +144,14 @@ Keep repository-level copies of moved secrets until the #1941 PR is merged and v
   Resume only applies to a **stopped** plan; a resume posted while a worker is still running is
   ignored with a note when the plan is already stopped, or stops the plan with `needs-owner` otherwise.
   You may still remove `needs-owner` manually if a label was re-applied before the workflow ran.
+  Before resuming after a **worker-blocked** stop, remove the `execute-plan-blocked` label and the
+  `<!-- execute-plan-blocked: … -->` marker from the open phase PR (the ladder still treats them
+  as a stop signal until cleared).
   Scope stays the same; time and budgets restart from that comment. Changing the plan's **goal** means a new plan.
 - **Out-of-scope fix the plan needs** (scope stop or `ci-budget` naming scope violations): open an
   ordinary PR **into `main`** (not integration; `execute-plan-scope` is red `unsupported` on integration
-  targets), body `Unblocks: plan <plan_id> phase <n>`, merge it, then sync integration. Release PRs
-  include those paths automatically (contracts §3.3a). Until merged, hold the phase PR with
+  targets), body `Unblocks: plan <plan_id> phase <n>` for the audit trail, merge it, then sync integration.
+  Release PRs treat paths identical to `main` as no-ops (contracts §3.3a). Until merged, hold the phase PR with
   `execute-plan-hold` if a worker would otherwise relaunch.
 - **Revoke**: add label `autonomous-revoked` or comment `revoke-autonomous <plan_id>`. Auto-merge
   is disabled and the scope check turns red on every open plan PR within one driver pass.

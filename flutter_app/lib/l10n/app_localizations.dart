@@ -14260,6 +14260,18 @@ abstract class AppLocalizations {
   /// **'Contact'**
   String get peoplePickerFieldLabel;
 
+  /// No description provided for @peoplePickerEmptyVets.
+  ///
+  /// In en, this message translates to:
+  /// **'No vets in your contacts yet. Type a name to add one.'**
+  String get peoplePickerEmptyVets;
+
+  /// No description provided for @peoplePickerEmptyGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'Nobody to choose from yet. Type a name to add someone.'**
+  String get peoplePickerEmptyGeneric;
+
   /// No description provided for @peoplePickerNone.
   ///
   /// In en, this message translates to:
@@ -14547,6 +14559,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'How are they linked?'**
   String get peopleDetailLinkPetChooseKind;
+
+  /// No description provided for @peopleDetailLinkPetKindRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose how they\'re linked to continue.'**
+  String get peopleDetailLinkPetKindRequired;
 
   /// No description provided for @peopleDetailRelatedCareHistory.
   ///

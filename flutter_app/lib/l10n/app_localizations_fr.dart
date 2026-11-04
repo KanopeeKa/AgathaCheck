@@ -8281,6 +8281,14 @@ class AppLocalizationsFr extends AppLocalizations {
   String get peoplePickerFieldLabel => 'Contact';
 
   @override
+  String get peoplePickerEmptyVets =>
+      'Aucun vétérinaire dans vos contacts. Saisissez un nom pour en ajouter un.';
+
+  @override
+  String get peoplePickerEmptyGeneric =>
+      'Personne à choisir pour l\'instant. Saisissez un nom pour ajouter quelqu\'un.';
+
+  @override
   String get peoplePickerNone => 'Aucun';
 
   @override
@@ -8445,6 +8453,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get peopleDetailLinkPetChooseKind => 'Quel lien ?';
+
+  @override
+  String get peopleDetailLinkPetKindRequired =>
+      'Choisissez le type de lien pour continuer.';
 
   @override
   String peopleDetailRelatedCareHistory(int count) {

@@ -7,11 +7,11 @@ import '../../application/people_providers.dart';
 import '../../domain/enums/contact_group.dart';
 import '../../domain/enums/contact_role.dart';
 import '../../domain/enums/relationship_kind.dart';
-import '../../domain/repositories/people_repository.dart';
 import '../../domain/services/people_query.dart';
 import '../labels/people_labels.dart';
 import '../picker/people_picker_field.dart';
 import '../picker/people_picker_result.dart';
+import 'confirm_replace_pet_slot.dart';
 
 /// One vet or emergency slot inside the pet emergency manage sheet.
 class SlotPickerRow extends ConsumerWidget {
@@ -66,6 +66,8 @@ class SlotPickerRow extends ConsumerWidget {
     );
   }
 
+  /// Slots are established from the whole directory — a contact need not be
+  /// linked to the pet yet (the slot write creates the link).
   PeopleQuery _queryForSlot(RelationshipKind kind, String? currentId) {
     switch (kind) {
       case RelationshipKind.primaryVet:
@@ -75,17 +77,15 @@ class SlotPickerRow extends ConsumerWidget {
           roles: const {ContactRole.vet},
           allowNone: allowClear,
           currentId: currentId,
-          petId: petId,
         );
       case RelationshipKind.emergencyContact:
         return PeopleQuery(
           groups: const {ContactGroup.carer},
           allowNone: false,
           currentId: currentId,
-          petId: petId,
         );
       default:
-        return PeopleQuery(currentId: currentId, petId: petId);
+        return PeopleQuery(currentId: currentId);
     }
   }
 
@@ -95,7 +95,6 @@ class SlotPickerRow extends ConsumerWidget {
     PeoplePickerResult? result,
   ) async {
     final commands = ref.read(peopleCommandsProvider);
-    final l = AppLocalizations.of(context)!;
 
     switch (result) {
       case PeoplePickerContactResult(:final contact):
@@ -107,7 +106,14 @@ class SlotPickerRow extends ConsumerWidget {
           );
           return;
         }
-        final ok = await _confirmReplaceSlot(context, ref, l, contact.id);
+        final ok = await confirmReplacePetSlotIfNeeded(
+          context: context,
+          ref: ref,
+          petId: petId,
+          petName: petName,
+          slotKind: slotKind,
+          incomingContactId: contact.id,
+        );
         if (!ok) return;
         await commands.setPetSlot(
           contactId: contact.id,
@@ -126,44 +132,5 @@ class SlotPickerRow extends ConsumerWidget {
       case PeoplePickerTypedNameResult():
         break;
     }
-  }
-
-  Future<bool> _confirmReplaceSlot(
-    BuildContext context,
-    WidgetRef ref,
-    AppLocalizations l,
-    String incomingContactId,
-  ) async {
-    if (slotKind == RelationshipKind.emergencyContact) return true;
-    final repo = ref.read(peopleRepositoryProvider);
-    final relationships = await repo.fetchPetRelationships(petId);
-    final incumbent = relationships
-        .where(
-          (r) =>
-              r.active &&
-              r.relationshipKind == slotKind &&
-              r.contactId != incomingContactId,
-        )
-        .firstOrNull;
-    if (incumbent == null) return true;
-    if (!context.mounted) return false;
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l.peopleReplaceSlotTitle),
-        content: Text(l.peopleReplaceSlotBody(incumbent.contactName, petName)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text(l.cancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: Text(l.peopleReplaceSlotConfirm),
-          ),
-        ],
-      ),
-    );
-    return ok == true;
   }
 }
