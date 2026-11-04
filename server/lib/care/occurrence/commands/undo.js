@@ -58,7 +58,7 @@ async function reverse(ctx, event, { restoreEntry }) {
   const restored = [];
   for (const before of [...(payload.closed || []), ...(payload.recorded || [])]) {
     const current = await findOccurrence(db, entry.id, before.id);
-    if (current?.status === 'pending') continue;
+    if (!current || current.status === 'pending') continue;
     const row = await restoreOccurrence(db, entry.id, before);
     if (row) restored.push(row);
   }

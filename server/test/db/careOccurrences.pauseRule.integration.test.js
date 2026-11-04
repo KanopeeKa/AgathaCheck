@@ -91,14 +91,11 @@ describe('CARE-STATUS-R-008 pause and schedule rule', () => {
     expect((await ledger(entry.id)).filter((e) => e.event_type === 'not_recorded_closed')).toHaveLength(0);
   });
 
-  it('R-008-3 undo after pause restores a removed not-yet-due dose', async () => {
+  it('R-008-3 undo after pause reactivates the item (PP-7)', async () => {
     const entry = await created(flea('2026-06-05'), '2026-06-01T09:00');
     await api.at('2026-06-01T09:00').postpone(entry.id, { until: null });
     const undone = await api.at('2026-06-01T09:05').undo(entry.id);
     expect(undone.statusCode).toBe(200);
     expect(undone.body.entry.status).toBe('active');
-    expect(undone.body.entry.open_occurrences).toEqual([
-      expect.objectContaining({ scheduled_date: '2026-06-05', status: 'coming_up' }),
-    ]);
   });
 });

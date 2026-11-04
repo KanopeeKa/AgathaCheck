@@ -97,7 +97,9 @@ export async function findOccurrence(db, entryId, occurrenceId) {
     'SELECT * FROM health_occurrences WHERE id = $1 AND health_entry_id = $2',
     [occurrenceId, entryId],
   );
-  return normalizeOccurrenceRow(result.rows[0] || null);
+  const row = result.rows[0];
+  if (!row) return null;
+  return normalizeOccurrenceRow(row);
 }
 
 /**
