@@ -88,7 +88,7 @@ test('release and remedial: phase allowed_paths override another phase migration
   const f84 = 'server/scripts/migrations/084_care_date_outcome.js';
   const f85 = 'server/scripts/migrations/085_care_item_closed.js';
   const orphan = 'server/scripts/migrations/099_orphan.js';
-  for (const category of ['release', 'remedial']) {
+  for (const category of ['release', 'remedial', 'sync-resolve']) {
     assert.equal(verdict(f84, category, null, snap), 'allowed', category);
     assert.equal(verdict(f85, category, null, snap), 'allowed', category);
     assert.equal(verdict(orphan, category, null, snap), 'forbidden', category);
