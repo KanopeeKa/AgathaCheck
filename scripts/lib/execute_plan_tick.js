@@ -12,7 +12,7 @@ const { decide } = require('./execute_plan_state');
 const { deriveControl } = require('./execute_plan_control');
 const { loadPlanContext, observe, configError, latestRuns, CONFIG_PATH } = require('./execute_plan_observe');
 const { SCOPE_CONTEXT } = require('./execute_plan_scope_status');
-const { formatStatusComment, formatLogLine, applyDecisionToStatus, parseStatusComment, readMergedStatusForWrite } = require('./execute_plan_status');
+const { formatStatusComment, formatLogLine, applyDecisionToStatus, readMergedStatusForWrite } = require('./execute_plan_status');
 const { verifyComplete, resolveMergeSource, watchPreUat, watchDeploy } = require('./execute_plan_uat_observe');
 
 const FAILED = new Set(['failure', 'timed_out', 'action_required']);
