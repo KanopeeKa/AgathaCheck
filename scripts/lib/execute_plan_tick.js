@@ -12,7 +12,7 @@ const { decide } = require('./execute_plan_state');
 const { deriveControl } = require('./execute_plan_control');
 const { loadPlanContext, observe, configError, latestRuns, CONFIG_PATH } = require('./execute_plan_observe');
 const { SCOPE_CONTEXT } = require('./execute_plan_scope_status');
-const { formatStatusComment, formatLogLine, applyDecisionToStatus, parseStatusComment, mergeStatusBeforeWrite } = require('./execute_plan_status');
+const { formatStatusComment, formatLogLine, applyDecisionToStatus, parseStatusComment, readMergedStatusForWrite } = require('./execute_plan_status');
 const { verifyComplete, resolveMergeSource, watchPreUat, watchDeploy } = require('./execute_plan_uat_observe');
 
 const FAILED = new Set(['failure', 'timed_out', 'action_required']);
@@ -82,9 +82,13 @@ async function tick(client, { planId, controlIssue, now = isoNow(), actor = 'age
   if (!sameStatus(ctx.status, next)) {
     let statusForWrite = next;
     if (!dryRun) {
-      const live = await client.getIssueComment(ctx.statusComment.id);
-      const fresh = parseStatusComment(live.body);
-      statusForWrite = mergeStatusBeforeWrite(next, fresh, { epoch, decisionHasStop: Boolean(decision.stop) });
+      statusForWrite = await readMergedStatusForWrite(client, ctx.statusComment.id, next, {
+        epoch,
+        baseline: ctx.status,
+      });
+      if (actor === 'agent' && next.lease) {
+        statusForWrite.lease = { ...statusForWrite.lease, ...next.lease, last_tick_at: next.lease.last_tick_at };
+      }
     }
     writes.push({
       kind: 'update-status',

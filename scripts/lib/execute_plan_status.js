@@ -69,9 +69,10 @@ function applyDecisionToStatus(status, decision, { now, actor, observations, epo
 
 /**
  * Fold a just-read status comment into a proposed write so a stale in-memory copy cannot drop a
- * concurrent driver's stop or regress lease / launch history.
+ * concurrent driver's stop or regress driver-owned fields (launches, dispatched, release).
+ * `baseline` is the status loaded at the start of the tick.
  */
-function mergeStatusBeforeWrite(proposed, fresh, { epoch, decisionHasStop }) {
+function mergeStatusBeforeWrite(proposed, fresh, { epoch, baseline }) {
   if (!fresh || typeof fresh !== 'object') return proposed;
   const next = { ...proposed };
   const stopIsCurrent = (stop) =>
@@ -80,15 +81,44 @@ function mergeStatusBeforeWrite(proposed, fresh, { epoch, decisionHasStop }) {
     Number.isFinite(Date.parse(stop.at)) &&
     Number.isFinite(Date.parse(epoch)) &&
     Date.parse(stop.at) > Date.parse(epoch);
+  const stopAt = (stop) => (stop && stop.at && Date.parse(stop.at)) || 0;
 
-  if (!decisionHasStop && stopIsCurrent(fresh.stop)) {
-    next.stop = fresh.stop;
+  const freshStopCurrent = stopIsCurrent(fresh.stop);
+  if (freshStopCurrent) {
+    const baselineStopAt = stopAt(baseline && baseline.stop);
+    const freshStopAt = stopAt(fresh.stop);
+    const proposedStopAt = stopAt(proposed.stop);
+    const driverWroteAfterLoad = freshStopAt > baselineStopAt;
+    const proposedWouldDrop = !stopIsCurrent(proposed.stop);
+    const liveNotOlderThanProposed = freshStopAt >= proposedStopAt;
+    if (driverWroteAfterLoad || proposedWouldDrop || liveNotOlderThanProposed) {
+      next.stop = fresh.stop;
+      if (fresh.state === 'stopped') {
+        next.state = fresh.state;
+        next.phase = fresh.phase;
+      }
+    }
   }
 
-  const len = (a) => (Array.isArray(a) ? a.length : 0);
-  if (len(fresh.launches) > len(next.launches)) {
-    next.launches = fresh.launches;
+  const lastLaunchAt = (arr) => Date.parse((Array.isArray(arr) && arr.at(-1) && arr.at(-1).at) || 0);
+  const freshLaunches = fresh.launches || [];
+  const nextLaunches = next.launches || [];
+  if (
+    Date.parse(fresh.updated_at || 0) > Date.parse((baseline && baseline.updated_at) || 0) ||
+    lastLaunchAt(freshLaunches) > lastLaunchAt(nextLaunches)
+  ) {
+    next.launches = freshLaunches;
   }
+
+  const mergeList = (a, b) => [...new Set([...(Array.isArray(a) ? a : []), ...(Array.isArray(b) ? b : [])])];
+  const fd = fresh.dispatched || {};
+  const nd = next.dispatched || {};
+  next.dispatched = {
+    preuat_heads: mergeList(fd.preuat_heads, nd.preuat_heads),
+    deploy_tags: mergeList(fd.deploy_tags, nd.deploy_tags),
+    ...(fd.scope_republish || nd.scope_republish ? { scope_republish: fd.scope_republish || nd.scope_republish } : {}),
+  };
+  if (fresh.release && !next.release) next.release = fresh.release;
 
   const tickAt = (lease) => (lease && (lease.last_tick_at || lease.launched_at)) || null;
   const freshTick = tickAt(fresh.lease);
@@ -100,6 +130,18 @@ function mergeStatusBeforeWrite(proposed, fresh, { epoch, decisionHasStop }) {
   return next;
 }
 
+async function readMergedStatusForWrite(client, commentId, proposed, { epoch, baseline }) {
+  const live = await client.getIssueComment(commentId);
+  let fresh = parseStatusComment(live.body);
+  let merged = mergeStatusBeforeWrite(proposed, fresh, { epoch, baseline });
+  const again = await client.getIssueComment(commentId);
+  if (again.updated_at !== live.updated_at) {
+    fresh = parseStatusComment(again.body);
+    merged = mergeStatusBeforeWrite(proposed, fresh, { epoch, baseline });
+  }
+  return merged;
+}
+
 module.exports = {
   STATUS_MARKER,
   parseStatusComment,
@@ -107,4 +149,5 @@ module.exports = {
   formatLogLine,
   applyDecisionToStatus,
   mergeStatusBeforeWrite,
+  readMergedStatusForWrite,
 };

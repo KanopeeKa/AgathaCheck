@@ -117,7 +117,9 @@ async function watchCi(client, { pr, timeoutMin = 25, pollSec = 60, sleep })    
 3. Persist (skipped with `dryRun`, which prints the would-be writes):
    a. `applyDecisionToStatus`, then **`mergeStatusBeforeWrite` after re-reading the status comment**
       (so a stale worker tick cannot erase a concurrent driver `stop` or regress lease / launches) →
-      update the status comment (bot token; one identity).
+      update the status comment (bot token; one identity). Re-read the comment and
+      `mergeStatusBeforeWrite` against the tick-start baseline; if `updated_at` changed between
+      two consecutive reads, merge again once before PATCH.
    b. If `state` changed → one log comment.
    c. Worker ticks (`actor: 'agent'`) set `status.lease.last_tick_at = now` when a lease exists.
    d. On a stop: label `needs-owner`, `status.stop = { reason, detail, at: now }`. The other parts

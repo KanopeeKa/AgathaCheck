@@ -64,7 +64,7 @@ function stubClient({ status = baseStatus(), labels = [], authorized = true, sna
     listWorkflowRuns: async () => [],
     compare: async () => ({ ahead_by: 0 }),
     listPulls: async () => [],
-    getIssueComment: async (id) => ({ id, body: formatStatusComment(status, '') }),
+    getIssueComment: async (id) => ({ id, updated_at: '2026-10-16T09:40:00Z', body: formatStatusComment(status, '') }),
     updateComment: async (id, b) => writes.push({ kind: 'update', id, body: b }),
     createComment: async (n, b) => writes.push({ kind: 'comment', n, body: b }),
     addLabels: async (n, l) => writes.push({ kind: 'label', n, labels: l }),
@@ -114,12 +114,14 @@ test('agent status write preserves a concurrent driver drift stop', async () => 
   const { client, writes } = stubClient({ status: baseStatus({ lease }) });
   client.getIssueComment = async (id) => ({
     id,
+    updated_at: '2026-11-04T08:15:45Z',
     body: formatStatusComment(baseStatus({ lease, stop: driftStop, state: 'stopped' }), ''),
   });
   await tick(client, { planId: PLAN_ID, controlIssue: 9, now: NOW, actor: 'agent', env: AGENT_ENV });
   const upd = writes.find((w) => w.kind === 'update');
   assert.ok(upd);
   assert.equal(parseStatusComment(upd.body).stop.reason, 'drift');
+  assert.equal(parseStatusComment(upd.body).state, 'stopped');
 });
 
 test('escalation stop detail includes prior stop on the status comment', async () => {
