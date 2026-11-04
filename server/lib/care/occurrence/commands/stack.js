@@ -1,5 +1,5 @@
 /**
- * Record earlier doses (stack review) and Record as given (D-CSM-023).
+ * Record as given and confirm skip for doses closed as Not recorded (D-CSM-023).
  */
 
 import {
@@ -15,10 +15,7 @@ import {
 } from '../occurrenceRepository.js';
 import { closeAsDone } from './complete.js';
 
-/**
- * @param {object} ctx
- * @param {{ given?: string[], notGiven?: string[], completedOnById?: Record<string,string> }} params
- */
+/** @deprecated HTTP route removed — seeds/tests only; clients use per-occurrence complete/skip. */
 export async function resolveStackCommand(ctx, { given = [], notGiven = [], completedOnById = {} }) {
   const { db, entry, openRows, trace, userId, asOf } = ctx;
   const ids = [...given, ...notGiven];
@@ -38,9 +35,8 @@ export async function resolveStackCommand(ctx, { given = [], notGiven = [], comp
     trace.closedRow(row);
   }
   for (const id of openNotGiven) {
-    const row = byId.get(id);
     await markSkipped(db, { entryId: entry.id, occurrenceId: id, userId });
-    trace.closedRow(row);
+    trace.closedRow(byId.get(id));
   }
   return {
     event: {
@@ -55,10 +51,6 @@ export async function resolveStackCommand(ctx, { given = [], notGiven = [], comp
   };
 }
 
-/**
- * @param {object} ctx
- * @param {{ occurrenceId: string, completedOn?: string|null }} params
- */
 /**
  * @param {object} ctx
  * @param {{ occurrenceId: string }} params
