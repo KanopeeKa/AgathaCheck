@@ -198,9 +198,7 @@ test.describe('Care agenda', () => {
         60_000,
       );
       await refreshFlutterAccessibility(page);
-      await expect(
-        page.getByText(/^Care details$|^Détail du soin$/i).first(),
-      ).toBeVisible({ timeout: 30_000 });
+      await careItem.expectCareDetailsScreenTitle();
       await expect(page.locator('[flt-semantics-identifier="care_item_close_care_button"]')).toHaveCount(
         0,
       );
