@@ -224,6 +224,24 @@ Coverage gaps: [#1770](https://github.com/KanopeeKa/AgathaCheck/issues/1770) (ab
 | CARE-CONTEXT-D-001 | Absence UX evolution: title, summary card, CRUD create, trip-details edit | Product programme absence-ux-evolution | Live | 2026-10-07 | #1772 |
 | CARE-CONTEXT-D-002 | Away plan in-window filter; pre-departure overdue via profile link | Reduces plan noise; PDF parity with screen | Live | 2026-09-26 | scope-simplify |
 | CC-UI-D-001 | Away surfaces use away-context plum aliases, not Agatha teal or warm accent | User-declared trip vs Agatha suggestions | Live | 2026-10-08 | |
+
+Carer, handover, and programme decisions (D-AWAY-003–005, D-AWAY-008–009, D-AWAY-012–014): [away-planning-carer-model.md](./away-planning-carer-model.md). Display amendments D-ACP-*: [away-care-planning-decisions.md](../changes/away-care-planning-decisions.md).
+
+## Presentation (Flutter)
+
+Away planning chrome uses **away-context** plum tokens (`docs/design/tokens.md` § Away planning context), shared `AwayContextIconChip`, and **not** Agatha message teal or coral warm accent.
+
+| Surface | Chrome |
+|---------|--------|
+| Dashboard `PlannedAbsenceEntryTile`, hub cards, hub empty state | `AwayContextIconChip` (`event_busy_outlined`) |
+| Care-item absence modules | `flight_takeoff_outlined` + `awayContextAccent` |
+| Away planner “Suggested by Agatha” heading | `awayContextAccent` (plum; distinct from inbox/profile Agatha cards) |
+
+## Decision log
+
+| ID | Decision | Rationale | Status | Date | PR |
+|----|----------|-----------|--------|------|-----|
+| CC-UI-D-001 | Away surfaces use away-context plum aliases, not Agatha teal or warm accent | User-declared trip vs Agatha suggestions | Live | 2026-10-08 | |
 | CARE-CONTEXT-D-003 | Declarer `todayIso` once per absence request; pet access before declarer TZ on care-period preview; undo audit uses undo result occurrence id | Programme 9100 phase 2 | Live | 2026-10-13 | |
 | CARE-CONTEXT-D-004 | No care/date enumeration on create before save; reassurance only | Away plan care review UX | Live | 2026-10-18 | |
 | CARE-CONTEXT-D-005 | Away “to review” counts = unresolved affected care items, not `items[]` rows | D-005 | Live | 2026-10-18 | |
@@ -238,18 +256,6 @@ Coverage gaps: [#1770](https://github.com/KanopeeKa/AgathaCheck/issues/1770) (ab
 | CARE-CONTEXT-D-014 | Pets can be added to and removed from a saved absence in this phase; removing the last pet deletes the absence | Per-pet plans make add/remove natural; an absence never exists with no plan | Live | 2026-11-03 | — |
 | CARE-CONTEXT-D-015 | After save, land on the absence screen; on the pet's away plan when only one pet; naming Absence / {Pet}'s away plan (FR Absence / Plan d'absence de {Pet}) | Shortest path for single-pet trips; one locked vocabulary | Live | 2026-11-03 | — |
 | CARE-CONTEXT-D-016 | Server away-plan visibility: Full-access reads filter pets; hub co-visible list; health-entry absence context; trip writes stay declarer-only | absence-per-pet-away-plans execute-plan | Live | 2026-11-03 | #2045 |
-
-Carer, handover, and programme decisions (D-AWAY-003–005, D-AWAY-008–009, D-AWAY-012–014): [away-planning-carer-model.md](./away-planning-carer-model.md). Display amendments D-ACP-*: [away-care-planning-decisions.md](../changes/away-care-planning-decisions.md).
-
-## Presentation (Flutter)
-
-Away planning chrome uses **away-context** plum tokens (`docs/design/tokens.md` § Away planning context), shared `AwayContextIconChip`, and **not** Agatha message teal or coral warm accent.
-
-| Surface | Chrome |
-|---------|--------|
-| Dashboard `PlannedAbsenceEntryTile`, hub cards, hub empty state | `AwayContextIconChip` (`event_busy_outlined`) |
-| Care-item absence modules | `flight_takeoff_outlined` + `awayContextAccent` |
-| Away planner “Suggested by Agatha” heading | `awayContextAccent` (plum; distinct from inbox/profile Agatha cards) |
 
 ## Related
 
