@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:pet_profile_app/features/care_taxonomy/care_taxonomy.dart';
 import 'package:pet_profile_app/features/experience/presentation/care_item/detail/care_item_closed_reason_provider.dart';
-import 'package:pet_profile_app/features/health_tracking/domain/health_entry_series_closed.dart';
 import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import 'package:pet_profile_app/features/pet_care/pet_care.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
@@ -59,8 +58,11 @@ class ClosedCareRow extends ConsumerWidget {
   }
 }
 
+/// API wire value for user-initiated close (CARE-STATUS-R-010).
+const _careClosedReasonStoppedByUser = 'stopped_by_user';
+
 String closedCareStatusLabel(AppLocalizations l, String? careClosedReason) {
-  if (careClosedReason == kCareClosedReasonStoppedByUser) {
+  if (careClosedReason == _careClosedReasonStoppedByUser) {
     return l.careItemClosedStatusStoppedByYou;
   }
   return l.careItemClosedStatusEnded;
