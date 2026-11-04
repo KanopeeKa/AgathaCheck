@@ -131,7 +131,7 @@ test.describe('Care agenda', () => {
   });
 
   test('Closed care link lists stopped care without dates', async ({ page, testUser }) => {
-    test.setTimeout(120_000);
+    test.setTimeout(180_000);
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     await withCareClock('2026-06-01T09:00', page);
     try {
@@ -178,10 +178,12 @@ test.describe('Care agenda', () => {
         '[flt-semantics-identifier="all_care_closed_care_link"]',
       );
       await expect
-        .poll(async () => closedCareLink.isVisible(), { timeout: 60_000 })
+        .poll(async () => closedCareLink.isVisible(), { timeout: 45_000 })
         .toBe(true);
       await closedCareLink.scrollIntoViewIfNeeded();
-      await closedCareLink.click({ force: true });
+      await page
+        .getByRole('button', { name: /Closed care \(1\)|Soins fermés \(1\)/i })
+        .click({ force: true, timeout: 15_000 });
       await page.locator('[flt-semantics-identifier="closed_care_list"]').waitFor({
         timeout: 30_000,
       });

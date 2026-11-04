@@ -26,8 +26,7 @@ class AllCareClosedFooter extends StatelessWidget {
       padding: const EdgeInsets.only(top: 24),
       child: Semantics(
         identifier: 'all_care_closed_care_link',
-        button: true,
-        label: allCareClosedCareLinkLabel(l, closedCount),
+        container: true,
         child: PetCareDashboardSectionLink(
           linkKey: const Key('all_care_closed_care_link'),
           label: allCareClosedCareLinkLabel(l, closedCount),
