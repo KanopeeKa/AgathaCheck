@@ -38,9 +38,12 @@ describe('migration 084 care date outcome', () => {
     occId = randomUUID();
     owner = await createOwner(pool);
     await pool.query(
-      `INSERT INTO health_entries (id, pet_id, name, type, frequency, status, start_date, next_due_date)
-       VALUES ($1, $2, 'M084', 'medication', 'once', 'active', CURRENT_DATE, CURRENT_DATE)`,
-      [entryId, owner.petId],
+      `INSERT INTO health_entries
+         (id, pet_id, user_id, name, type, frequency, status, care_planning, care_importance,
+          start_date, next_due_date)
+       VALUES ($1, $2, $3, 'M084', 'medication', 'once', 'active', 'planned', 'essential',
+         CURRENT_DATE, CURRENT_DATE)`,
+      [entryId, owner.petId, owner.userId],
     );
     await pool.query(
       `INSERT INTO health_occurrences
