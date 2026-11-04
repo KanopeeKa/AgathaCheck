@@ -39,14 +39,18 @@ class ClosedCareListScreen extends ConsumerWidget {
           if (closed.isEmpty) {
             return Center(child: Text(l.allCareClosedCareEmpty));
           }
-          return ListView.separated(
-            key: const Key('closed_care_list'),
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-            itemCount: closed.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 8),
-            itemBuilder: (context, index) => ClosedCareRow(
-              entry: closed[index],
-              establishedEntryIds: establishedIds,
+          return Semantics(
+            identifier: 'closed_care_list',
+            container: true,
+            child: ListView.separated(
+              key: const Key('closed_care_list'),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+              itemCount: closed.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 8),
+              itemBuilder: (context, index) => ClosedCareRow(
+                entry: closed[index],
+                establishedEntryIds: establishedIds,
+              ),
             ),
           );
         },

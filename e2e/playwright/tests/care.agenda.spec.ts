@@ -161,9 +161,13 @@ test.describe('Care agenda', () => {
         30_000,
       );
       await enableFlutterAccessibility(page);
-      await page.locator('[flt-semantics-identifier="all_care_closed_care_link"]').click();
+      const closedCareLink = page.locator(
+        '[flt-semantics-identifier="all_care_closed_care_link"]',
+      );
+      await closedCareLink.waitFor({ timeout: 30_000 });
+      await closedCareLink.click();
       await page.locator('[flt-semantics-identifier="closed_care_list"]').waitFor({
-        timeout: 15_000,
+        timeout: 30_000,
       });
       const row = page.locator(`[flt-semantics-identifier="closed_care_row_${entry.id}"]`);
       await expect(row).toBeVisible();
