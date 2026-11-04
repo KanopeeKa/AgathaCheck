@@ -5,7 +5,7 @@ audience: both
 domain: pet_care
 feature_id: care_context
 status: active
-last_updated: 2026-10-13
+last_updated: 2026-11-04
 related_prs: []
 ---
 
@@ -43,10 +43,10 @@ A declared absence does not create HealthEntries, alter Care Status, change recu
 | CARE-CONTEXT-R-002 | Care-period preview is `pet_id + starts_on + ends_on`; preview never auto-creates a planned-absence record | Live |
 | CARE-CONTEXT-R-003 | `planned_absences`: `active` or `cancelled`; `ends_on >= starts_on`; request horizon max 12 months; optional `title` (max 60, trimmed); multi-pet via join table | Live |
 | CARE-CONTEXT-R-004 | Overlapping active absences per pet allowed; non-blocking overlap warning on save (no 409 for overlap alone) | Live |
-| CARE-CONTEXT-R-005 | Planned absences declarer-scoped in V1 — collaborators do not see each other's absences | Live |
+| CARE-CONTEXT-R-005 | Planned absences declarer-scoped in V1 — collaborators do not see each other's absences (superseded by CARE-CONTEXT-R-032) | Retired |
 | CARE-CONTEXT-R-006 | `title` on wire; display title primary, dates secondary; surfaces: hub tile, dashboard tile, plan summary, handover PDF, carer invite preview; Care Item Absence sections use date range only (CARE-CONTEXT-D-001) | Live |
-| CARE-CONTEXT-R-007 | Plan page summary card (title, dates, notes preview) with local Edit; no app-bar edit or duplicate details blocks (CARE-CONTEXT-D-001) | Live |
-| CARE-CONTEXT-R-008 | Full-screen trip details: title, dates, notes, delete (cancel); V1 edit excludes pets; date-change confirms cover carer window and plan review (CARE-CONTEXT-D-001) | Live |
+| CARE-CONTEXT-R-007 | Absence screen summary card (title, dates, who's away, notes preview) with local Edit → trip details; per-pet away plan shows read-only trip header and **See absence** (CARE-CONTEXT-D-001, D-015) | Live |
+| CARE-CONTEXT-R-008 | Full-screen trip details: title, dates, notes, delete (cancel); add/remove pets via absence and away-plan flows (R-033–R-035); date-change confirms cover carer window and plan review (CARE-CONTEXT-D-001) | Live |
 | CARE-CONTEXT-R-009 | Create uses single CRUD form with inline care **reassurance** only (no care/date enumeration before save) — not a step wizard (CARE-CONTEXT-D-001, D-004) | Live |
 | CARE-CONTEXT-R-010 | Absence-wide notes labelled **Notes** (`handover_note`); per-pet notes stay in carer dialog (CARE-CONTEXT-D-001) | Live |
 | CARE-CONTEXT-R-011 | Projection: `starts_on <= scheduled_date <= ends_on`; materialised occurrences win; default anchor `from_completion` → indeterminate tail; `projection_status` + `uncertainties[]` on wire | Live |
@@ -54,7 +54,7 @@ A declared absence does not create HealthEntries, alter Care Status, change recu
 | CARE-CONTEXT-R-013 | Coverage states server-authoritative: `nothing_scheduled`, `all_completed`, `no_unresolved_items`, `has_items_to_review`; per pet, not global | Live |
 | CARE-CONTEXT-R-014 | No absence pointer on projection APIs; schedule facts via `explainGap(entry, fromDate?, toDate?)` only (D-AWAY-011) | Live |
 | CARE-CONTEXT-R-015 | Readiness: two facts at read time — carer coverage + care coverage — no single “prepared” verdict (D-AWAY-001, D-AWAY-002) | Live |
-| CARE-CONTEXT-R-016 | Plan header readiness attention-only: carer line only when not all pets have carers; care line only for `has_items_to_review` or indeterminate (D-AWD-001); PDF keeps both lines | Live |
+| CARE-CONTEXT-R-016 | Absence screen attention-only combined status across pets the viewer can access (carer line when not all have carers; care line for `has_items_to_review` or indeterminate); away plan header shows per-pet facts (D-AWD-001, D-AWAY-002); PDF keeps both lines | Live |
 | CARE-CONTEXT-R-017 | `planned_care_items[]` one row per `health_entry_id` with `kind` discriminant; server sort; `items[]` for projection only — away UI counts use care items (`review_queue` / `review_care_item_count`, D-005) (D-AWD-002) | Live |
 | CARE-CONTEXT-R-018 | Unified **Planned care** section; row tap → `/pet/:petId/events/:entryId` (D-AWD-004, D-AWD-005); pet header photo + profile link (D-AWD-006) | Live |
 | CARE-CONTEXT-R-019 | Away plan row contract R-A1–R-A9: open/overdue/pre-window rules, date_basis labels, section footnote for estimates, PDF parity, paused rows (see § Away plan display) | Live |
@@ -63,23 +63,23 @@ A declared absence does not create HealthEntries, alter Care Status, change recu
 | CARE-CONTEXT-R-022 | Saving absence requires dates + pets only; carers, note, download optional (D-AWAY-010) | Live |
 | CARE-CONTEXT-R-023 | Saved plan: per-pet **Care to review** queue (care-item cards: title, in-trip impacted date count, Review dates, opt-in bulk select) before full schedule (D-004…D-009) | Live |
 | CARE-CONTEXT-R-024 | Optional `planned_absence_id` on care-period coverage loads `review_queue[]` and care-item review counts | Live |
-| CARE-CONTEXT-R-025 | **Absence** wraps the trip (title, dates, who is going away, trip-wide notes); each pet on it has one **away plan** (carer, notes for the pet, care to review, planned care); an absence has at least one away plan, one per pet (CARE-CONTEXT-D-011); spec [absence-per-pet-away-plans-spec.md](../changes/absence-per-pet-away-plans-spec.md) | Planned |
-| CARE-CONTEXT-R-026 | Who is going away is the person who logs the absence — one person, not editable; shown as "You're away" / "{Name} is away" (CARE-CONTEXT-D-012); spec [absence-per-pet-away-plans-spec.md](../changes/absence-per-pet-away-plans-spec.md) | Planned |
-| CARE-CONTEXT-R-027 | Create form: title, dates, pets, trip notes; ticking N pets creates N away plans; save lands on the absence screen, or on the pet's away plan when exactly one pet; opening from a pet pre-ticks it (CARE-CONTEXT-D-015); spec [absence-per-pet-away-plans-spec.md](../changes/absence-per-pet-away-plans-spec.md) | Planned |
-| CARE-CONTEXT-R-028 | Absence screen `/pc/away/:id`: summary card, combined attention line, one pill per accessible pet ("See {Pet}'s away plan" + one-line status), Add a pet, full-trip PDF; per-pet content not duplicated; spec [absence-per-pet-away-plans-spec.md](../changes/absence-per-pet-away-plans-spec.md) | Planned |
-| CARE-CONTEXT-R-029 | Away plan screen: read-only trip header with See absence; pet header; Who's caring; notes for the pet inline; trip notes read-only; Care to review and Planned care for this pet; per-pet PDF; Remove pet; spec [absence-per-pet-away-plans-spec.md](../changes/absence-per-pet-away-plans-spec.md) | Planned |
-| CARE-CONTEXT-R-030 | Away plan route `/pc/away/:id/pets/:petId`; pushed full screen on mobile and web; Back follows origin via return path; See absence opens the absence screen; spec [absence-per-pet-away-plans-spec.md](../changes/absence-per-pet-away-plans-spec.md) | Planned |
-| CARE-CONTEXT-R-031 | Pet page section above "People around {Pet}": current and upcoming away plans for that pet, soonest first, max two + All absences; hidden when none or viewer not allowed; Plan an absence in the pet actions menu (Full access); spec [absence-per-pet-away-plans-spec.md](../changes/absence-per-pet-away-plans-spec.md) | Planned |
-| CARE-CONTEXT-R-032 | Away plans visible and editable by the person going away and anyone with Full access to that pet; absence screens show only accessible pets and never disclose others; Can log care and absence guests unchanged; access evaluated at read time; supersedes CARE-CONTEXT-R-005 when live (CARE-CONTEXT-D-013); spec [absence-per-pet-away-plans-spec.md](../changes/absence-per-pet-away-plans-spec.md) | In delivery |
-| CARE-CONTEXT-R-033 | Trip fields (title, dates, trip notes), delete, and add/remove pets are for the person going away only; adding a pet also needs Full access to it; spec [absence-per-pet-away-plans-spec.md](../changes/absence-per-pet-away-plans-spec.md) | Planned |
-| CARE-CONTEXT-R-034 | Pets can be added to a saved absence: new empty away plan; non-blocking overlap warning; existing guest carers gain no access to the new pet without confirmation (PEOPLE D16); supersedes the "V1 edit excludes pets" part of CARE-CONTEXT-R-008 when live (CARE-CONTEXT-D-014); spec [absence-per-pet-away-plans-spec.md](../changes/absence-per-pet-away-plans-spec.md) | Planned |
-| CARE-CONTEXT-R-035 | Removing a pet removes its carer, notes and trip decisions, ends its absence access and trims pending invites; care item dates unchanged; removing the last pet deletes the absence after an explicit confirmation (CARE-CONTEXT-D-014); spec [absence-per-pet-away-plans-spec.md](../changes/absence-per-pet-away-plans-spec.md) | Planned |
-| CARE-CONTEXT-R-036 | Pet deletion removes its away plans and deletes an absence left with no pets; pet household moves or transfers keep the plan with the pet and re-evaluate visibility; spec [absence-per-pet-away-plans-spec.md](../changes/absence-per-pet-away-plans-spec.md) | Planned |
-| CARE-CONTEXT-R-037 | Per-pet status facts (carer state, care coverage, review count) on pill, pet page row and away plan header; carer gap first, then review count; absence-level combined facts unchanged (D-AWAY-002); spec [absence-per-pet-away-plans-spec.md](../changes/absence-per-pet-away-plans-spec.md) | Planned |
-| CARE-CONTEXT-R-038 | Pet-specific links (care item absence module, pet overlap warnings) open that pet's away plan; hub and dashboard tile open the absence; spec [absence-per-pet-away-plans-spec.md](../changes/absence-per-pet-away-plans-spec.md) | Planned |
-| CARE-CONTEXT-R-039 | Away hub lists absences the viewer logged and absences including a pet the viewer has Full access to (labelled with who is away, accessible pets only); dashboard away tile stays the person going away's own; spec [absence-per-pet-away-plans-spec.md](../changes/absence-per-pet-away-plans-spec.md) | In delivery |
-| CARE-CONTEXT-R-040 | Full-trip handover PDF covers only pets the downloader can access; per-pet PDF rules unchanged (AWAY-PLANNING-CARER-R-009, R-010); spec [absence-per-pet-away-plans-spec.md](../changes/absence-per-pet-away-plans-spec.md) | In delivery |
-| CARE-CONTEXT-R-041 | Care item absence module visible to Full-access viewers of the pet, consistent with CARE-CONTEXT-R-032; spec [absence-per-pet-away-plans-spec.md](../changes/absence-per-pet-away-plans-spec.md) | In delivery |
+| CARE-CONTEXT-R-025 | **Absence** wraps the trip (title, dates, who is going away, trip-wide notes); each pet on it has one **away plan** (carer, notes for the pet, care to review, planned care); an absence has at least one away plan, one per pet (CARE-CONTEXT-D-011) | Live |
+| CARE-CONTEXT-R-026 | Who is going away is the person who logs the absence — one person, not editable; shown as "You're away" / "{Name} is away" (CARE-CONTEXT-D-012) | Live |
+| CARE-CONTEXT-R-027 | Create form: title, dates, pets, trip notes; ticking N pets creates N away plans; save lands on the absence screen, or on the pet's away plan when exactly one pet; opening from a pet pre-ticks it (CARE-CONTEXT-D-015) | Live |
+| CARE-CONTEXT-R-028 | Absence screen `/pc/away/:id`: summary card, combined attention line, one pill per accessible pet ("See {Pet}'s away plan" + one-line status), Add a pet, full-trip PDF; per-pet content not duplicated | Live |
+| CARE-CONTEXT-R-029 | Away plan screen: read-only trip header with See absence; pet header; Who's caring; notes for the pet inline; trip notes read-only; Care to review and Planned care for this pet; per-pet PDF; Remove pet | Live |
+| CARE-CONTEXT-R-030 | Away plan route `/pc/away/:id/pets/:petId`; pushed full screen on mobile and web; Back follows origin via return path; See absence opens the absence screen | Live |
+| CARE-CONTEXT-R-031 | Pet page section above "People around {Pet}": current and upcoming away plans for that pet, soonest first, max two + All absences; hidden when none or viewer not allowed; Plan an absence in the pet actions menu (Full access) | Live |
+| CARE-CONTEXT-R-032 | Away plans visible and editable by the person going away and anyone with Full access to that pet; absence screens show only accessible pets and never disclose others; Can log care and absence guests unchanged; access evaluated at read time; supersedes CARE-CONTEXT-R-005 (CARE-CONTEXT-D-013) | Live |
+| CARE-CONTEXT-R-033 | Trip fields (title, dates, trip notes), delete, and add/remove pets are for the person going away only; adding a pet also needs Full access to it | Live |
+| CARE-CONTEXT-R-034 | Pets can be added to a saved absence: new empty away plan; non-blocking overlap warning; existing guest carers gain no access to the new pet without confirmation (PEOPLE D16); supersedes pet-edit exclusion on CARE-CONTEXT-R-008 (CARE-CONTEXT-D-014) | Live |
+| CARE-CONTEXT-R-035 | Removing a pet removes its carer, notes and trip decisions, ends its absence access and trims pending invites; care item dates unchanged; removing the last pet deletes the absence after an explicit confirmation (CARE-CONTEXT-D-014) | Live |
+| CARE-CONTEXT-R-036 | Pet deletion removes its away plans and deletes an absence left with no pets; pet household moves or transfers keep the plan with the pet and re-evaluate visibility | Live |
+| CARE-CONTEXT-R-037 | Per-pet status facts (carer state, care coverage, review count) on pill, pet page row and away plan header; carer gap first, then review count; absence-level combined facts unchanged (D-AWAY-002) | Live |
+| CARE-CONTEXT-R-038 | Pet-specific links (care item absence module, pet overlap warnings) open that pet's away plan; hub and dashboard tile open the absence | Live |
+| CARE-CONTEXT-R-039 | Away hub lists absences the viewer logged and absences including a pet the viewer has Full access to (labelled with who is away, accessible pets only); dashboard away tile stays the person going away's own | Live |
+| CARE-CONTEXT-R-040 | Full-trip handover PDF covers only pets the downloader can access; per-pet PDF rules unchanged (AWAY-PLANNING-CARER-R-009, R-010) | Live |
+| CARE-CONTEXT-R-041 | Care item absence module visible to Full-access viewers of the pet, consistent with CARE-CONTEXT-R-032 | Live |
 
 ## Planned absence model
 
@@ -125,12 +125,13 @@ Reverse lookup (which absence overlapped an event): query `planned_absences` by 
 
 | Screen | Route |
 |--------|-------|
-| Away hub | `/pc/away` |
-| Plan (read) | `/pc/away/:id` |
-| Trip details (edit) | `/pc/away/:id/edit` — title, dates, notes, cancel |
+| Away hub | `/pc/away` — **Your absences** / **Other people's absences** |
+| Absence (trip) | `/pc/away/:id` — summary, pills, Add pet, full-trip PDF |
+| Per-pet away plan | `/pc/away/:id/pets/:petId` — carer, notes, care sections, per-pet PDF |
+| Trip details (edit) | `/pc/away/:id/edit` — title, dates, notes, cancel (declarer only) |
 | Create | `/pc/away/new` |
 
-Per-pet coverage on the plan page: one request per pet (V1). Carer assignment UI: [away-planning-carer-model.md](./away-planning-carer-model.md).
+Per-pet away plan loads one coverage/projection request per pet. Carer assignment UI: [away-planning-carer-model.md](./away-planning-carer-model.md).
 
 ## Away plan display (R-A1–R-A9)
 
@@ -162,7 +163,7 @@ Sort: kind bucket order → `name.localeCompare()`. Least-certain-wins among con
 
 ## Out of scope (V1)
 
-Pet Sitting workflow, environmental context, calendar integrations, AI interpretation, proactive trip detection, arrangement fields (travelling with me / sitter), progression moments, entitlements runtime, editing pets on an existing absence.
+Pet Sitting workflow, environmental context, calendar integrations, AI interpretation, proactive trip detection, arrangement fields (travelling with me / sitter), progression moments, entitlements runtime, notifying co-parents when an absence that includes their pet is created or edited.
 
 **Pet Sitting boundary:** read-only care summary for dates = Pet Care; sending to a sitter with permissions = Pet Sitting (future).
 
@@ -180,8 +181,23 @@ Pet Sitting workflow, environmental context, calendar integrations, AI interpret
 | CC-8 — When guardian saves create form then Absence appears on hub | CARE-CONTEXT-R-009 | bdd: away_planning.feature#Guardian can save a planned absence from the create form |
 | CC-9 — When plan detail v2 scenarios then Unified list and edit route | CARE-CONTEXT-R-018 | test: e2e/playwright/tests/away.plan.detail.v2.spec.ts |
 | CC-10 — When away care planning scenarios then Row labels and open occurrence visible | CARE-CONTEXT-R-019 | test: e2e/playwright/tests/away.care.planning.spec.ts |
+| AP-1 — Given three pets ticked, when the absence is saved, then one absence and three away plans exist and the absence screen shows three pills | CARE-CONTEXT-R-025, CARE-CONTEXT-R-027, CARE-CONTEXT-R-028 | test: flutter_app/test/features/pet_care/context/planned_absence_plan_screen_test.dart#absence screen shows pet pill without multi-pet care sections |
+| AP-2 — Given one pet ticked, when saved, then the person lands on that pet's away plan screen | CARE-CONTEXT-R-027 | test: flutter_app/test/core/router/guardian_routes_test.dart#petCarePetAwayPlan resolves to /pc/away/:id/pets/:petId |
+| AP-3 — When a pill is tapped, then the away plan screen shows only that pet's carer, notes, care to review and planned care; trip fields are read-only; See absence returns to the absence | CARE-CONTEXT-R-029, CARE-CONTEXT-R-030 | test: flutter_app/test/features/pet_care/context/pet_away_plan_screen_test.dart#pet away plan shows carer, notes, and planned care |
+| AP-4 — Given the person logging, then "You're away" is shown and no traveller picker exists; others see "{Name} is away" | CARE-CONTEXT-R-026 | none — #1770 |
+| AP-5 — Given an upcoming away plan for Buddy, when Buddy's page opens, then the section shows above People around Buddy and opens Buddy's plan; given none, the section is absent | CARE-CONTEXT-R-031 | none — #1770 |
+| AP-6 — Given Sam has Full access to Buddy only, when Sam opens the absence, then only Buddy's pill shows and other pets are not disclosed; Sam can edit Buddy's carer and notes but not trip fields | CARE-CONTEXT-R-032, CARE-CONTEXT-R-033 | test: server/test/careContext/plannedAbsenceVisibility.test.js#GET /api/planned-absences/:id omits inaccessible pets for co-parent viewer |
+| AP-7 — Given Can log care on Buddy, then no away plan section or screen is available | CARE-CONTEXT-R-032 | test: server/test/care/absence/loadHealthEntryAbsenceContext.test.js#returns empty absences when viewer lacks Full access to the pet |
+| AP-8 — When a pet is added to a saved absence, then a new empty plan exists, overlap warns, and existing guest carers get no access without confirmation | CARE-CONTEXT-R-034 | test: server/test/careContext/plannedAbsencePetLifecycle.test.js#POST /:id/pets adds pet with overlap warnings |
+| AP-9 — When a pet is removed, then its carer, notes and decisions for this trip go, its absence access ends, and care item dates are unchanged | CARE-CONTEXT-R-035 | test: server/test/careContext/plannedAbsencePetLifecycle.test.js#DELETE /:id/pets/:petId cancels absence when last pet confirmed |
+| AP-10 — When the last pet is removed, then the confirmation states the absence will be deleted and the absence is deleted | CARE-CONTEXT-R-035 | test: server/test/careContext/plannedAbsencePetLifecycle.test.js#DELETE /:id/pets/:petId requires confirm when last pet |
+| AP-11 — When a pet on a one-pet absence is deleted, then the absence is deleted | CARE-CONTEXT-R-036 | none — #1770 |
+| AP-12 — Pill and pet-page status show carer gap first, then review count | CARE-CONTEXT-R-037 | test: flutter_app/test/features/pet_care/context/planned_absence_plan_screen_test.dart#absence screen shows pet pill without multi-pet care sections |
+| AP-13 — From a care item's absence module, the link opens that pet's away plan | CARE-CONTEXT-R-038 | test: e2e/playwright/tests/care.item.absence.spec.ts |
+| AP-14 — Hub lists absences including a pet the viewer has Full access to, labelled with the traveller | CARE-CONTEXT-R-039 | test: flutter_app/test/features/pet_care/context/planned_absence_hub_screen_test.dart#ownership sections |
+| AP-15 — Full-trip PDF by Sam contains Buddy only | CARE-CONTEXT-R-040 | none — #1770 |
 
-Coverage gaps: [#1770](https://github.com/KanopeeKa/AgathaCheck/issues/1770) (absence title on all surfaces, overlap E2E, trip-details delete confirm).
+Coverage gaps: [#1770](https://github.com/KanopeeKa/AgathaCheck/issues/1770) (absence title on all surfaces, overlap E2E, trip-details delete confirm, co-parent PDF scope, multi-pet invite UX).
 
 ## Still open
 
@@ -239,7 +255,7 @@ Away planning chrome uses **away-context** plum tokens (`docs/design/tokens.md` 
 | CARE-CONTEXT-D-013 | Anyone with Full access to a pet sees and edits its away plan; other pets on the absence are not disclosed | PEOPLE D17 (plans belong to the pet); pet page section must be coherent for co-parents; same privacy spirit as AWAY-PLANNING-CARER-D-014 | Live | 2026-11-03 | — |
 | CARE-CONTEXT-D-014 | Pets can be added to and removed from a saved absence in this phase; removing the last pet deletes the absence | Per-pet plans make add/remove natural; an absence never exists with no plan | Live | 2026-11-03 | — |
 | CARE-CONTEXT-D-015 | After save, land on the absence screen; on the pet's away plan when only one pet; naming Absence / {Pet}'s away plan (FR Absence / Plan d'absence de {Pet}) | Shortest path for single-pet trips; one locked vocabulary | Live | 2026-11-03 | — |
-| CARE-CONTEXT-D-016 | Server away-plan visibility (phase 2): Full-access reads filter pets; hub co-visible list; health-entry absence context; trip writes stay declarer-only | absence-per-pet-away-plans execute-plan phase 2 | In delivery | 2026-11-03 | #2045 |
+| CARE-CONTEXT-D-016 | Server away-plan visibility: Full-access reads filter pets; hub co-visible list; health-entry absence context; trip writes stay declarer-only | absence-per-pet-away-plans execute-plan | Live | 2026-11-03 | #2045 |
 
 ## Related
 

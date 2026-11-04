@@ -89,6 +89,7 @@ There are 28 decisions. D1, D4, D7 and D10 were revised after an external review
 | PEOPLE-CARE-TEAM-D-033 | **Member tier and organiser management:** Organisers may `PATCH …/members/:userId` with `{ access_tier?, is_organiser? }`; organisers are always stored as `full_access` (D13); demoting the last organiser returns `409 last_organiser`; self-demotion allowed only when another organiser remains | Closes the gap where tiers and organisers could not change after joining | Live | 2026-11-02 | household-cleanup-609f |
 | PEOPLE-CARE-TEAM-D-034 | **H1:** Pet transfer removes the pet from its household when the new owner is not already a member, copying household-directory contacts to the new owner; remaining members get a neutral D22 notice after commit | Stops transferred pets stranding in households the new owner cannot leave | Live | 2026-11-02 | household-cleanup-609f |
 | PEOPLE-CARE-TEAM-D-035 | **H2 / H6:** Account erasure captures household memberships before `DELETE FROM users`, then releases households in the same transaction: promote the longest-standing Full access member (else Can log care → Full access) when no organiser remains, close empty households, and notify the promoted organiser after commit; no contact copy into the deleted user's directory and no pet-removed notice for pets deleted with the user | Closes organiser-less households and unsafe erasure ordering | Live | 2026-11-02 | household-cleanup-609f |
+| PEOPLE-CARE-TEAM-D-036 | Vet contacts can set **Primary vet** and **Out-of-hours vet** from **Link to a pet** via the pet slot API (replace confirmation matches Manage); required-kind hint when a pet is chosen without a link type | Ends R-002 deferral of vet kinds on the link sheet | Live | 2026-11-03 | link-pet-vet-slots-f0fb |
 
 ## Where we start
 
@@ -512,6 +513,8 @@ The people-data layers must be settled before vets are migrated, so the data is 
 ## Away Planning integration (People phase 2+)
 
 Canonical carer wire rules: [away-planning-carer-model.md](/docs/domains/pet_care/features/away-planning-carer-model.md) (`AWAY-PLANNING-CARER-R-014`, `R-015`).
+
+**Shipped (per-pet away plans, 2026-11):** Full-access viewers (record owner, co-parent, household Full access) see and edit **that pet's away plan** only; other pets on the same absence are omitted from JSON and UI (CARE-CONTEXT-R-032, PEOPLE-D17). The declarer retains trip edit/delete and **Your absences** hub placement even when they lose Full access to a pet on the trip. Adding a pet to a saved absence runs the **guest access widen** confirmation when existing absence guests would gain a new pet (PEOPLE-D16). Co-parents are **not** notified when an absence that includes their pet is created or edited — see [care-context.md](/docs/domains/pet_care/features/care-context.md) out of scope.
 
 | Frozen Away decision | People amendment (in effect) |
 | --- | --- |
