@@ -1,5 +1,6 @@
 import { asyncHandler } from '../../lib/http/asyncHandler.js';
-import { careItemWire } from '../../lib/care/item/index.js';
+import { careItemWire, isItemClosed } from '../../lib/care/item/index.js';
+import { getHealthEntryForUser } from '../../lib/health/healthEntryReadService.js';
 import { sendCareCommandError } from '../../lib/care/occurrence/index.js';
 import { updateHealthEntry } from '../../lib/health/healthEntryWriteService.js';
 import { extractUserId } from './shared.js';
@@ -9,6 +10,16 @@ export function registerCrudUpdateRoutes(router, pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
+      const existing = await getHealthEntryForUser(pool, userId, req.params.id);
+      if (existing.error) {
+        return res.status(existing.status).json({ error: existing.error });
+      }
+      if (isItemClosed(existing.row)) {
+        return res.status(409).json({
+          error: 'This care is closed',
+          code: 'care_item_closed',
+        });
+      }
       const out = await updateHealthEntry(pool, userId, req.params.id, req.body, req);
       if (out.error) {
         return res.status(out.status).json({

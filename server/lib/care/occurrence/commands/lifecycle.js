@@ -9,6 +9,12 @@ import { slotHasStarted } from '../../schedule/occurrenceStatus.js';
 import { scheduleTimesFromEntry } from '../../schedule/scheduleTimes.js';
 import { seriesStep } from '../../schedule/seriesDates.js';
 import { insertCareScheduleEvent } from '../../schedule/scheduleEventLedger.js';
+import {
+  CARE_CLOSED_REASON_STOPPED,
+  CARE_ITEM_STATUS_CLOSED,
+  isItemClosed,
+} from '../../item/itemStatus.js';
+import { assertItemOpen } from './assertItemOpen.js';
 import { CareCommandError } from '../careCommandError.js';
 import { updateEntryFields } from '../entryRepository.js';
 import {
@@ -28,7 +34,7 @@ import {
 export async function createInitialOccurrences(ctx, { firstDate: requested, plannedDates = [] }) {
   const { db, entry, trace, asOf } = ctx;
   const firstDate = requested || asOf.todayIso;
-  if ((entry.care_planning || 'planned') === 'unplanned' || entry.status === 'completed') {
+  if ((entry.care_planning || 'planned') === 'unplanned' || isItemClosed(entry)) {
     return { event: null };
   }
   const times = scheduleTimesFromEntry(entry);
@@ -71,9 +77,10 @@ function cadenceChanged(before, after) {
  * @param {{ before: object, requestedNextDate?: string|null }} params
  */
 export async function reconcileScheduleEdit(ctx, { before, requestedNextDate = null }) {
+  assertItemOpen(ctx.entry);
   const { db, entry, openRows, asOf, trace } = ctx;
   const changes = [];
-  if ((entry.care_planning || 'planned') === 'unplanned' || entry.status === 'completed') {
+  if ((entry.care_planning || 'planned') === 'unplanned' || isItemClosed(entry)) {
     return { event: null, result: { changes } };
   }
   const wasFixed = isFixedSchedule(before);
@@ -160,17 +167,19 @@ export async function reconcileScheduleEdit(ctx, { before, requestedNextDate = n
  * @param {object} ctx
  */
 export async function closeSeriesCommand(ctx) {
+  assertItemOpen(ctx.entry);
   const { db, entry, userId, asOf, trace } = ctx;
   await closeAllOpen(db, entry.id, userId, 'system', { asOf, trace });
   const once = !seriesStep(entry);
   await db.query(
-    `UPDATE health_entries SET status = 'completed',
+    `UPDATE health_entries SET status = $4,
+       care_closed_reason = $5,
        completed_on = CASE WHEN $1 THEN COALESCE(completed_on, $2::date) ELSE completed_on END,
        completed_at = CASE WHEN $1 THEN COALESCE(completed_at, NOW()) ELSE completed_at END,
        repeat_end_date = CASE WHEN $1 THEN NULL ELSE ($2::date - 1) END,
        next_due_date = NULL, paused_since = NULL, paused_until = NULL, updated_at = NOW()
      WHERE id = $3`,
-    [once, asOf.todayIso, entry.id],
+    [once, asOf.todayIso, entry.id, CARE_ITEM_STATUS_CLOSED, CARE_CLOSED_REASON_STOPPED],
   );
   return { event: null };
 }
@@ -181,6 +190,7 @@ export async function closeSeriesCommand(ctx) {
  * @param {object} ctx
  */
 export async function reopenSeriesCommand(ctx) {
+  assertItemOpen(ctx.entry);
   const { db, entry, asOf } = ctx;
   await db.query(
     `UPDATE health_entries SET status = 'active', repeat_end_date = NULL,

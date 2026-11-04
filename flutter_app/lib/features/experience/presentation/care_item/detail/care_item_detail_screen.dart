@@ -11,6 +11,7 @@ import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import 'package:pet_profile_app/features/pet_care/pet_care.dart';
 import 'package:pet_profile_app/features/care_item/care_item.dart';
 import '../care_item_history.dart';
+import 'care_item_closed_reason_provider.dart';
 import 'care_item_detail_body.dart';
 import 'care_item_menu.dart';
 
@@ -72,6 +73,10 @@ class CareItemDetailScreen extends ConsumerWidget {
             }
 
             final isClosed = isHealthEntrySeriesClosed(entry);
+            final closedReasonAsync = ref.watch(
+              careItemClosedReasonProvider(entryId),
+            );
+            final careClosedReason = closedReasonAsync.valueOrNull;
             final openOccurrencesAsync = ref.watch(
               entryOccurrencesProvider(entryId),
             );
@@ -203,12 +208,13 @@ class CareItemDetailScreen extends ConsumerWidget {
 
             return routeShell(
               actions: [
-                IconButton(
-                  key: const Key('care_item_edit_app_bar'),
-                  tooltip: l.edit,
-                  icon: const Icon(Icons.edit_outlined),
-                  onPressed: onEdit,
-                ),
+                if (!isClosed)
+                  IconButton(
+                    key: const Key('care_item_edit_app_bar'),
+                    tooltip: l.edit,
+                    icon: const Icon(Icons.edit_outlined),
+                    onPressed: onEdit,
+                  ),
                 CareItemMenu(
                   entry: entry,
                   isClosed: isClosed,
@@ -232,6 +238,7 @@ class CareItemDetailScreen extends ConsumerWidget {
                   isClosed: isClosed,
                   isEstablished: isEstablished,
                   onSeeHistory: onSeeHistory,
+                  careClosedReason: careClosedReason,
                 ),
               ),
             );

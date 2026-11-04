@@ -24,6 +24,9 @@ import { nextComputedDate } from '../schedule/nextComputed.js';
 import { scheduleTimesFromEntry } from '../schedule/scheduleTimes.js';
 import { seriesDateAfter, seriesStep } from '../schedule/seriesDates.js';
 import { insertCareScheduleEvent } from '../schedule/scheduleEventLedger.js';
+import { closeItemAsEnded } from '../item/closeItemWrite.js';
+import { ensureItemClosedSchema } from '../item/ensureItemClosedSchema.js';
+import { isItemClosed } from '../item/itemStatus.js';
 import { reloadEntry, updateEntryFields } from './entryRepository.js';
 import {
   deleteOpenOccurrences,
@@ -184,15 +187,14 @@ async function finishIfNothingLeft(db, entry, asOf) {
     );
     if (closed.rows.length === 0) return entry;
     const row = closed.rows[0];
-    return updateEntryFields(db, entry.id, {
-      status: 'completed',
-      completed_on: dateToIsoDate(row.completed_on) || dateToIsoDate(row.scheduled_date) || asOf.todayIso,
-      completed_at: new Date(),
+    return closeItemAsEnded(db, entry.id, {
+      completedOn: dateToIsoDate(row.completed_on) || dateToIsoDate(row.scheduled_date) || asOf.todayIso,
+      completedAt: new Date(),
     });
   }
   const endIso = dateToIsoDate(entry.repeat_end_date);
   if (!endIso) return entry;
-  return updateEntryFields(db, entry.id, { status: 'completed' });
+  return closeItemAsEnded(db, entry.id, { repeatEndDate: endIso });
 }
 
 async function writeNextDueDate(db, entry) {
@@ -214,9 +216,10 @@ async function writeNextDueDate(db, entry) {
  * @returns {Promise<{ entry: object, created: string[], createdComputed: string[], closedNotRecorded: string[] }>}
  */
 export async function syncOpenOccurrences(db, entryRow, asOf) {
+  await ensureItemClosedSchema(db);
   let entry = entryRow;
   const result = { created: [], createdComputed: [], closedNotRecorded: [] };
-  if (!isPlannedCare(entry) || entry.status === 'completed') {
+  if (!isPlannedCare(entry) || isItemClosed(entry)) {
     await writeNextDueDate(db, entry);
     return { entry: await reloadEntry(db, entry.id), ...result };
   }

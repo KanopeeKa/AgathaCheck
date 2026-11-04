@@ -11,6 +11,7 @@ import { createApp } from '../../../bin/server.js';
 import { createAppPool } from '../../../lib/db/createPool.js';
 import { dateToIsoDate } from '../../../lib/calendarDate.js';
 import { migrateCareDateOutcome } from '../../../scripts/migrations/084_care_date_outcome.js';
+import { migrateCareItemClosed } from '../../../scripts/migrations/085_care_item_closed.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'default_secret';
 
@@ -61,12 +62,27 @@ async function ensureCareDateOutcomeMigration(pool) {
   }
 }
 
+async function ensureCareItemClosedMigration(pool) {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    await migrateCareItemClosed(client);
+    await client.query('COMMIT');
+  } catch (err) {
+    await client.query('ROLLBACK');
+    throw err;
+  } finally {
+    client.release();
+  }
+}
+
 export async function openStrictHarness() {
   const harness = await openHarness();
   if (!harness.pool) {
     throw new Error('Care DB integration tests require a migrated PostgreSQL (health_occurrences.origin)');
   }
   await ensureCareDateOutcomeMigration(harness.pool);
+  await ensureCareItemClosedMigration(harness.pool);
   return harness;
 }
 
@@ -212,10 +228,12 @@ export async function invariantViolations(pool, entryId) {
   const plannedCare = (entry.care_planning || 'planned') !== 'unplanned';
   if (entry.status === 'active' && plannedCare && open.length === 0) violations.push('INV-1 no open occurrence');
   if (open.filter((r) => r.origin === 'computed').length > 1) violations.push('INV-2 two computed');
-  if (entry.status === 'completed' && open.length > 0) violations.push('INV-4 finished item has open occurrences');
+  if ((entry.status === 'completed' || entry.status === 'closed') && open.length > 0) {
+    violations.push('INV-4 finished item has open occurrences');
+  }
   const nextDue = dateToIsoDate(entry.next_due_date);
   const earliest = open[0]?.date ?? null;
-  if (entry.status !== 'completed' && nextDue !== earliest) {
+  if (entry.status !== 'completed' && entry.status !== 'closed' && nextDue !== earliest) {
     violations.push(`INV-5 next_due_date ${nextDue} != ${earliest}`);
   }
   return violations;

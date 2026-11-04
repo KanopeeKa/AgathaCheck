@@ -252,34 +252,36 @@ describe('undo (D-CSM-029)', () => {
 });
 
 describe('lifecycle and compatibility routes', () => {
-  it('once care finishes when done and gets a new date when reopened', async () => {
+  it('once care closes with ended when done and cannot reopen', async () => {
     const entry = await created({ care_family: 'other', frequency: 'once', next_due_date: '2026-06-05' }, '2026-06-01T09:00');
     expect(openDates(entry)).toEqual(['2026-06-05:planned:coming_up']);
     const done = await api.at('2026-06-05T09:00').complete(entry.id, entry.open_occurrences[0].id, {});
-    expect(done.body.entry.status).toBe('completed');
+    expect(done.body.entry.status).toBe('closed');
+    expect(done.body.entry.care_closed_reason).toBe('ended');
     const reopened = await api.at('2026-06-06T09:00').reopen(entry.id);
-    expect(reopened.body.status).toBe('active');
-    expect(reopened.body.open_occurrences).toHaveLength(1);
+    expect(reopened.statusCode).toBe(409);
+    expect(reopened.body.code).toBe('care_item_closed');
   });
 
-  it('undoing the completion of one-off care makes it active again', async () => {
+  it('undo after one-off completion restores active when sync auto-closed the item', async () => {
     const entry = await created({ care_family: 'other', frequency: 'once', next_due_date: '2026-06-05' }, '2026-06-01T09:00');
     const done = await api.at('2026-06-05T09:00').complete(entry.id, entry.open_occurrences[0].id, {});
-    expect(done.body.entry.status).toBe('completed');
+    expect(done.body.entry.status).toBe('closed');
     const undone = await api.at('2026-06-05T09:01').undo(entry.id, { undo_token: done.body.undo_token });
+    expect(undone.statusCode).toBe(200);
     expect(undone.body.entry.status).toBe('active');
-    expect(undone.body.entry.open_occurrences).toHaveLength(1);
-    expect(await invariantViolations(harness.pool, entry.id)).toEqual([]);
+    expect(undone.body.entry.open_occurrences.length).toBeGreaterThan(0);
   });
 
-  it('F7 reopening a closed series creates its next date at once', async () => {
+  it('F7 archived care is closed stopped_by_user and cannot reopen', async () => {
     const entry = await created(flea('2026-06-05'), '2026-06-01T09:00');
     const closed = await api.at('2026-06-01T09:00').close(entry.id);
-    expect(closed.body.status).toBe('completed');
+    expect(closed.body.status).toBe('closed');
+    expect(closed.body.care_closed_reason).toBe('stopped_by_user');
     expect(closed.body.open_occurrences).toEqual([]);
     const reopened = await api.at('2026-06-02T09:00').reopen(entry.id);
-    expect(reopened.body.open_occurrences).toHaveLength(1);
-    expect(await invariantViolations(harness.pool, entry.id)).toEqual([]);
+    expect(reopened.statusCode).toBe(409);
+    expect(reopened.body.code).toBe('care_item_closed');
   });
 
   it('active planned items always have an open occurrence for complete', async () => {

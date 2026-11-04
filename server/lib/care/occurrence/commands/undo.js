@@ -21,6 +21,7 @@ import {
   reopenClosedOccurrence,
   restoreOccurrence,
 } from '../occurrenceRepository.js';
+import { assertItemOpen } from './assertItemOpen.js';
 
 async function loadUndoableEvents(db, entryId) {
   const result = await db.query(
@@ -65,6 +66,12 @@ async function reverse(ctx, event, { restoreEntry }) {
 
   if (payload.entry_before && restoreEntry) {
     await updateEntryFields(db, entry.id, payload.entry_before);
+    if ((payload.entry_before.status || 'active') === 'active') {
+      await db.query(
+        'UPDATE health_entries SET care_closed_reason = NULL WHERE id = $1',
+        [entry.id],
+      );
+    }
   }
   await runObservationUndoHooks(ctx, event);
   return restored;
@@ -114,6 +121,7 @@ export async function undoCommand(ctx, { undoToken = null, occurrenceId = null }
  * @param {{ occurrenceId: string }} params
  */
 export async function undoCompletionOfOccurrence(ctx, { occurrenceId }) {
+  assertItemOpen(ctx.entry);
   const events = await loadUndoableEvents(ctx.db, ctx.entry.id);
   const event = events.find((e) => e.health_occurrence_id === occurrenceId
     && e.event_type === 'completed');

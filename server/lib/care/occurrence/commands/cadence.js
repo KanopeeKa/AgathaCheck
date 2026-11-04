@@ -10,6 +10,7 @@ import { badRequest } from '../careCommandError.js';
 import { reloadEntry } from '../entryRepository.js';
 import { listOpenRows } from '../occurrenceRepository.js';
 import { reconcileScheduleEdit } from './lifecycle.js';
+import { assertItemOpen } from './assertItemOpen.js';
 
 /**
  * @param {object} ctx
@@ -24,6 +25,7 @@ export async function adjustCadenceCommand(ctx, {
   reasonCode = null,
   reasonNote = null,
 }) {
+  assertItemOpen(ctx.entry);
   const { db, entry, asOf, userId } = ctx;
   if ((entry.status || 'active') !== 'active' || !seriesStep(entry)) {
     throw badRequest('cadence_not_adjustable', 'Entry cadence cannot be adjusted');

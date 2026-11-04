@@ -24,6 +24,7 @@ import {
   moveOpenOccurrence,
   updateCompletedOn,
 } from '../occurrenceRepository.js';
+import { assertItemOpen } from './assertItemOpen.js';
 
 /**
  * The open computed date created by this occurrence's completion, when that
@@ -57,6 +58,7 @@ async function nextCreatedByLatestCompletion(db, entryId, occurrenceId) {
  * @param {{ occurrenceId: string, completedOn: string|null }} params
  */
 export async function changeCompletionDateCommand(ctx, { occurrenceId, completedOn }) {
+  assertItemOpen(ctx.entry);
   const { db, entry, asOf, trace } = ctx;
   if (!completedOn) throw badRequest('invalid_completed_on', 'completed_on must be a date (YYYY-MM-DD)');
   if (completedOn > asOf.todayIso) {

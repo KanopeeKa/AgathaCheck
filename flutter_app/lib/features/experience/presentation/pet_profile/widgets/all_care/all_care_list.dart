@@ -40,7 +40,15 @@ class AllCareList extends ConsumerWidget {
         ).rows.map((r) => r.item.id).toSet();
         final active = entries.where((e) => agendaIds.contains(e.id)).toList();
         final inactive = sortInactiveAllCareEntries(
-          entries.where((e) => !agendaIds.contains(e.id)).toList(),
+          entries
+              .where(
+                (e) =>
+                    !agendaIds.contains(e.id) &&
+                    e.status != 'closed' &&
+                    e.status != 'completed' &&
+                    !isHealthEntrySeriesClosed(e),
+              )
+              .toList(),
         );
 
         return SingleChildScrollView(

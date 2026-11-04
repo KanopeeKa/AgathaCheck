@@ -27,6 +27,7 @@ class CareItemDetailBody extends ConsumerWidget {
     required this.isClosed,
     required this.isEstablished,
     required this.onSeeHistory,
+    this.careClosedReason,
   });
 
   final String petId;
@@ -36,6 +37,7 @@ class CareItemDetailBody extends ConsumerWidget {
   final bool isClosed;
   final bool isEstablished;
   final VoidCallback onSeeHistory;
+  final String? careClosedReason;
 
   static const _sectionGap = SizedBox(height: 16);
 
@@ -49,7 +51,11 @@ class CareItemDetailBody extends ConsumerWidget {
       orElse: () => false,
     );
 
-    final contextStrip = CareItemContextStrip(entry: entry, pet: pet);
+    final contextStrip = CareItemContextStrip(
+      entry: entry,
+      pet: pet,
+      careClosedReason: careClosedReason,
+    );
     final schedule = entry.schedule;
     final needsSection = showNeedsAttention
         ? (schedule != null && !entry.isPaused

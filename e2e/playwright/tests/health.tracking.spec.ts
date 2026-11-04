@@ -79,7 +79,7 @@ test.describe('Health tracking', () => {
 
     await completeNextOccurrence(baseURL, testUser.accessToken, entry.id);
     const updated = await getHealthEntry(baseURL, testUser.accessToken, entry.id);
-    expect(updated.status).toBe('completed');
+    expect(updated.status).toBe('closed');
     expect(updated.completed_on).toBeTruthy();
   });
 
@@ -248,7 +248,7 @@ test.describe('Health tracking', () => {
 
     await completeNextOccurrence(baseURL, testUser.accessToken, entry.id);
     const completed = await getHealthEntry(baseURL, testUser.accessToken, entry.id);
-    expect(completed.status).toBe('completed');
+    expect(completed.status).toBe('closed');
 
     await undoLast(baseURL, testUser.accessToken, entry.id);
     const restored = await getHealthEntry(baseURL, testUser.accessToken, entry.id);

@@ -21,6 +21,7 @@ import {
   insertOpenOccurrence,
   moveOpenOccurrence,
 } from '../occurrenceRepository.js';
+import { assertItemOpen } from './assertItemOpen.js';
 
 export const CHANGE_SCOPE_THIS = 'this';
 export const CHANGE_SCOPE_FOLLOWING = 'following';
@@ -43,6 +44,7 @@ export async function changeDateCommand(ctx, {
   reasonNote = null,
   skipHopLimit = false,
 }) {
+  assertItemOpen(ctx.entry);
   const { db, entry, openRows, trace, asOf } = ctx;
   const row = openRows.find((o) => o.id === occurrenceId);
   if (!row) throw notOpen();
@@ -123,6 +125,7 @@ export async function changeDateCommand(ctx, {
  * @param {{ date: string, time?: string|null, reasonCode?: string|null }} params
  */
 export async function planAnotherDateCommand(ctx, { date, time = null, reasonCode = null }) {
+  assertItemOpen(ctx.entry);
   const { db, entry, openRows, trace, asOf } = ctx;
   if (!date) throw badRequest('scheduled_date_required', 'scheduled_date is required');
   if (date < asOf.todayIso) throw badRequest('invalid_date', 'scheduled_date cannot be in the past');

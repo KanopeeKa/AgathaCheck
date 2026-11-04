@@ -65,13 +65,19 @@ ProviderContainer _buildContainer(List<HealthEntry> entries) {
 
 void main() {
   testWidgets(
-    'planned care uses the agenda; ended care follows without a tick',
+    'planned care uses the agenda; paused care follows without a tick',
     (tester) async {
       await tester.pumpWidget(
         _wrap([
           scheduledEntry(id: 'overdue', name: 'overdue', dueInDays: -1),
           scheduledEntry(id: 'today', name: 'today', dueInDays: 0),
           scheduledEntry(id: 'upcoming', name: 'upcoming', dueInDays: 2),
+          scheduledEntry(
+            id: 'paused-care',
+            name: 'paused-care',
+            dueInDays: 5,
+            entryStatus: 'paused',
+          ),
           _entry(
             id: 'one-off-done',
             nextDue: DateTime(9999),
@@ -92,11 +98,11 @@ void main() {
         findsOneWidget,
       );
       expect(
-        find.byKey(const Key('pet_care_action_one-off-done')),
+        find.byKey(const Key('pet_care_action_paused-care')),
         findsOneWidget,
       );
       expect(
-        find.byKey(const Key('pet_care_action_done_one-off-done')),
+        find.byKey(const Key('pet_care_action_one-off-done')),
         findsNothing,
       );
       expect(find.byType(CareMarkDoneButton), findsNWidgets(3));
