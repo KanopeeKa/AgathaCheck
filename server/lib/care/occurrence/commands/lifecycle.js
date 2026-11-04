@@ -10,7 +10,6 @@ import { scheduleTimesFromEntry } from '../../schedule/scheduleTimes.js';
 import { seriesStep } from '../../schedule/seriesDates.js';
 import { insertCareScheduleEvent } from '../../schedule/scheduleEventLedger.js';
 import {
-  CARE_CLOSED_REASON_ENDED,
   CARE_CLOSED_REASON_STOPPED,
   CARE_ITEM_STATUS_CLOSED,
   isItemClosed,
