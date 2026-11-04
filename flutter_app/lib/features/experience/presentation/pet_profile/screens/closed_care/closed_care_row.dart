@@ -8,7 +8,6 @@ import 'package:pet_profile_app/features/pet_care/pet_care.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import '../../widgets/all_care/all_care_closed_copy.dart';
-import '../../widgets/pet_list/home_event_actions.dart';
 
 /// One closed care row: family subtitle only, status line without dates (R-021).
 class ClosedCareRow extends ConsumerWidget {
@@ -16,10 +15,12 @@ class ClosedCareRow extends ConsumerWidget {
     super.key,
     required this.entry,
     required this.establishedEntryIds,
+    required this.onOpenEntry,
   });
 
   final HealthEntry entry;
   final Set<String> establishedEntryIds;
+  final void Function(HealthEntry entry) onOpenEntry;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -44,17 +45,25 @@ class ClosedCareRow extends ConsumerWidget {
     }
     final subtitle = subtitleParts.join(' · ');
     final semanticLabel = '${entry.name}, $statusLabel';
+    final onOpen = () => onOpenEntry(entry);
 
-    return CareActionRow(
-      key: Key('closed_care_row_${entry.id}'),
-      title: entry.name,
-      subtitle: subtitle,
-      statusLabel: statusLabel,
-      statusTreatment: completedStatusTreatment(),
-      semanticLabel: semanticLabel,
-      leading: CareFamilyIcon.forEntry(entry),
-      rowSemanticsIdentifier: 'closed_care_row_${entry.id}',
-      onTap: () => HomeEventActions.viewEntry(context, entry),
+    return Semantics(
+      identifier: 'closed_care_row_${entry.id}',
+      label: semanticLabel,
+      button: true,
+      onTap: onOpen,
+      child: ExcludeSemantics(
+        child: CareActionRow(
+          key: Key('closed_care_row_${entry.id}'),
+          title: entry.name,
+          subtitle: subtitle,
+          statusLabel: statusLabel,
+          statusTreatment: completedStatusTreatment(),
+          semanticLabel: semanticLabel,
+          leading: CareFamilyIcon.forEntry(entry),
+          onTap: onOpen,
+        ),
+      ),
     );
   }
 }

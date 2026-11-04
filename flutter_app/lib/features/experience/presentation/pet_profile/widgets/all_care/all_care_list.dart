@@ -69,6 +69,10 @@ class _AllCareListState extends ConsumerState<AllCareList> {
           return ClosedCareListBody(
             petId: widget.petId,
             onBack: () => setState(() => _showClosedCare = false),
+            onOpenEntry: (entry) {
+              HomeEventActions.viewEntry(context, entry);
+              setState(() => _showClosedCare = false);
+            },
           );
         }
 

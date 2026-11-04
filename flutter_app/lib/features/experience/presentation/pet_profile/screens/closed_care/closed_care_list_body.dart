@@ -16,10 +16,12 @@ class ClosedCareListBody extends ConsumerWidget {
     super.key,
     required this.petId,
     required this.onBack,
+    required this.onOpenEntry,
   });
 
   final String petId;
   final VoidCallback onBack;
+  final void Function(HealthEntry entry) onOpenEntry;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -74,6 +76,7 @@ class ClosedCareListBody extends ConsumerWidget {
                 ClosedCareRow(
                   entry: closed[i],
                   establishedEntryIds: establishedIds,
+                  onOpenEntry: onOpenEntry,
                 ),
               ],
             ],

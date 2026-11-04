@@ -192,9 +192,14 @@ test.describe('Care agenda', () => {
       await expect(row).toBeVisible();
       await expect(row).toContainText(/Closed · Stopped by you|Fermé · Arrêté par vous/i);
       await expect(row).not.toContainText(/Jun|juin|2026-06/i);
-      // Row tap → detail is covered in widget tests; go_router hash is flaky from the
-      // Material Closed care list overlay — open detail the same way as other agenda specs.
-      await careItem.open(pet.id, entry.id);
+      await refreshFlutterAccessibility(page);
+      await page
+        .getByRole('button', {
+          name: new RegExp(`${entry.name}.*(Closed|Fermé)`, 'i'),
+        })
+        .click({ force: true, timeout: 15_000 });
+      await refreshFlutterAccessibility(page);
+      await careItem.expectCareDetailsScreenTitle();
       await expect(page.locator('[flt-semantics-identifier="care_item_close_care_button"]')).toHaveCount(
         0,
       );
