@@ -19,6 +19,7 @@ import {
   CARER_COVERAGE_NONE_HAVE_CARERS,
   CARER_COVERAGE_SOME_HAVE_CARERS,
 } from '../../../lib/care/awayPlan/readiness.js';
+import { relaxHealthEntryStatusForLegacySeeds } from '../helpers/post085SeedConstraints.js';
 
 function createPool() {
   return createAppPool();
@@ -71,6 +72,7 @@ describe('away-planning seed idempotency', () => {
     const client = await pool.connect();
     try {
       await client.query('BEGIN');
+      await relaxHealthEntryStatusForLegacySeeds(client);
       await seedGuardian(client);
       await seedAwayPlanning(client);
       const first = await countAwayPlanningSeedRows(client);

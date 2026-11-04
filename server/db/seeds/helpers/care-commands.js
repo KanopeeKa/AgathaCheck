@@ -74,60 +74,39 @@ export async function createSeedCareItem(client, item, clock) {
     explicitAnchor: item.scheduleType || null,
   });
   await client.query('DELETE FROM health_entries WHERE id = $1', [item.id]);
-  const closedReasonCol = await client.query(
-    `SELECT 1 FROM information_schema.columns
-     WHERE table_name = 'health_entries' AND column_name = 'care_closed_reason'`,
+  await client.query(
+    `INSERT INTO health_entries (
+       id, pet_id, user_id, type, name, dosage, frequency, frequency_interval,
+       start_date, next_due_date, completed_on, status, remind_days_before, notes,
+       care_family, care_setting, care_planning, care_importance, recurrence_anchor,
+       schedule_times, late_completion_choice, schedule_policy_version
+     ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14,
+       $15, $16, $17, $18, $19, $20::jsonb, $21, $22)`,
+    [
+      item.id,
+      item.petId,
+      item.userId,
+      deriveLegacyHealthEntryType(item.careFamily, setting),
+      item.name,
+      item.dosage || '',
+      frequency,
+      item.interval || 1,
+      item.firstDate || item.completedOn,
+      planning === 'planned' ? item.firstDate : null,
+      item.completedOn || null,
+      planning === 'planned' ? 'active' : 'completed',
+      planning === 'planned' ? (item.remindDaysBefore ?? 1) : 0,
+      item.notes || '',
+      item.careFamily,
+      setting,
+      planning,
+      item.importance || defaults.care_importance || 'recommended',
+      anchor,
+      item.times ? JSON.stringify(item.times) : null,
+      item.lateChoice || null,
+      SCHEDULE_POLICY_VERSION,
+    ],
   );
-  const usesClosedStatus = closedReasonCol.rows.length > 0;
-  const unplannedStatus = usesClosedStatus ? 'closed' : 'completed';
-  const status = planning === 'planned' ? 'active' : unplannedStatus;
-  const baseParams = [
-    item.id,
-    item.petId,
-    item.userId,
-    deriveLegacyHealthEntryType(item.careFamily, setting),
-    item.name,
-    item.dosage || '',
-    frequency,
-    item.interval || 1,
-    item.firstDate || item.completedOn,
-    planning === 'planned' ? item.firstDate : null,
-    item.completedOn || null,
-    status,
-    planning === 'planned' ? (item.remindDaysBefore ?? 1) : 0,
-    item.notes || '',
-    item.careFamily,
-    setting,
-    planning,
-    item.importance || defaults.care_importance || 'recommended',
-    anchor,
-    item.times ? JSON.stringify(item.times) : null,
-    item.lateChoice || null,
-    SCHEDULE_POLICY_VERSION,
-  ];
-  if (usesClosedStatus && status === 'closed') {
-    await client.query(
-      `INSERT INTO health_entries (
-         id, pet_id, user_id, type, name, dosage, frequency, frequency_interval,
-         start_date, next_due_date, completed_on, status, care_closed_reason, remind_days_before, notes,
-         care_family, care_setting, care_planning, care_importance, recurrence_anchor,
-         schedule_times, late_completion_choice, schedule_policy_version
-       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15,
-         $16, $17, $18, $19, $20, $21::jsonb, $22, $23)`,
-      [...baseParams.slice(0, 12), 'ended', ...baseParams.slice(12)],
-    );
-  } else {
-    await client.query(
-      `INSERT INTO health_entries (
-         id, pet_id, user_id, type, name, dosage, frequency, frequency_interval,
-         start_date, next_due_date, completed_on, status, remind_days_before, notes,
-         care_family, care_setting, care_planning, care_importance, recurrence_anchor,
-         schedule_times, late_completion_choice, schedule_policy_version
-       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14,
-         $15, $16, $17, $18, $19, $20::jsonb, $21, $22)`,
-      baseParams,
-    );
-  }
   if (planning === 'unplanned') return null;
   return applyCareCommand(client, { entryId: item.id, userId: item.userId, asOf: clock }, (ctx) =>
     createInitialOccurrences(ctx, { firstDate: item.firstDate, plannedDates: item.plannedDates || [] }));
