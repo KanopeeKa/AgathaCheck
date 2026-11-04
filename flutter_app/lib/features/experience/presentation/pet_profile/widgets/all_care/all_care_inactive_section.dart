@@ -4,8 +4,8 @@ import 'package:pet_profile_app/l10n/app_localizations.dart';
 import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import '../pet_care_section/pet_care_action_row_builder.dart';
 
-/// Care items outside the agenda (paused, ended, recorded only): no tick;
-/// the row opens the Care Item view (§18.6.3).
+/// Care items outside the agenda (paused only): no tick; row opens Care details.
+/// Closed, finished and recorded items live under **Closed care** (R-024).
 class AllCareInactiveSection extends StatelessWidget {
   const AllCareInactiveSection({
     super.key,
@@ -74,16 +74,12 @@ class _InactiveRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final closed = isHealthEntrySeriesClosed(entry);
-
     return PetCareActionRowBuilder(
       entry: entry,
       l10n: l,
       colorScheme: colorScheme,
       isEstablished: isEstablished,
-      statusLineOverride: closed ? l.eventStatusClosed : null,
-      statusTreatmentOverride: closed ? completedStatusTreatment() : null,
-      // Paused, ended and recorded-only rows carry no tick (DN-8, §18.6.3).
+      // Paused rows carry no tick (DN-8, §18.6.3).
       onTap: () => onViewEntry(entry),
     ).build();
   }
@@ -92,9 +88,6 @@ class _InactiveRow extends StatelessWidget {
 List<HealthEntry> sortInactiveAllCareEntries(List<HealthEntry> entries) {
   final sorted = [...entries];
   sorted.sort((a, b) {
-    final aClosed = isHealthEntrySeriesClosed(a);
-    final bClosed = isHealthEntrySeriesClosed(b);
-    if (aClosed != bClosed) return aClosed ? 1 : -1;
     final ad = a.nextDueDate ?? a.startDate;
     final bd = b.nextDueDate ?? b.startDate;
     return bd.compareTo(ad);

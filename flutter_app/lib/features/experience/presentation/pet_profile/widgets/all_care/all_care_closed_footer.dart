@@ -1,0 +1,37 @@
+import 'package:flutter/material.dart';
+
+import 'package:pet_profile_app/core/widgets/pet_care_dashboard_section_header.dart';
+import 'package:pet_profile_app/l10n/app_localizations.dart';
+
+import 'all_care_closed_copy.dart';
+
+/// Footer link on All care when the pet has closed care items (CARE-STATUS-R-021).
+class AllCareClosedFooter extends StatelessWidget {
+  const AllCareClosedFooter({
+    super.key,
+    required this.closedCount,
+    required this.onOpenClosedCare,
+  });
+
+  final int closedCount;
+  final VoidCallback onOpenClosedCare;
+
+  @override
+  Widget build(BuildContext context) {
+    if (closedCount <= 0) return const SizedBox.shrink();
+
+    final l = AppLocalizations.of(context)!;
+    return Padding(
+      padding: const EdgeInsets.only(top: 24),
+      child: Semantics(
+        identifier: 'all_care_closed_care_link',
+        container: true,
+        child: PetCareDashboardSectionLink(
+          linkKey: const Key('all_care_closed_care_link'),
+          label: allCareClosedCareLinkLabel(l, closedCount),
+          onPressed: onOpenClosedCare,
+        ),
+      ),
+    );
+  }
+}

@@ -19,6 +19,7 @@ Part of the AgathaTrack domain-first documentation tree. Cross-cutting architect
 |------------|----------|
 | Care Item (series, detail, absence resolutions) | [care-item-evolution.md](features/care-item-evolution.md) |
 | Care Schedule Management (CSM) | [care-schedule-management.md](features/care-schedule-management.md) |
+| Care status model (outcomes, Closed, Close care) | [care-status-model.md](features/care-status-model.md) |
 | Care Context / Care Through Change | [care-context.md](features/care-context.md) |
 | Away planning — carer model and handover | [away-planning-carer-model.md](features/away-planning-carer-model.md) |
 | Care Progression | [care-progression.md](features/care-progression.md) |
