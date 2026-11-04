@@ -169,9 +169,10 @@ test.describe('Care agenda', () => {
         );
       }).toPass({ timeout: 60_000 });
       await enableFlutterAccessibility(page);
-      await page
-        .locator('[flt-semantics-identifier="all_care_list"]')
-        .waitFor({ timeout: 30_000 });
+      const allCareList = page.locator('[flt-semantics-identifier="all_care_list"]');
+      await expect
+        .poll(async () => allCareList.isVisible(), { timeout: 60_000 })
+        .toBe(true);
       const closedCareLink = page.locator(
         '[flt-semantics-identifier="all_care_closed_care_link"]',
       );

@@ -14,18 +14,25 @@ import 'all_care_inactive_section.dart';
 
 /// Pet-scoped All care: agenda groups (D-CIE-025), then Other care (paused only),
 /// then a **Closed care** link when the pet has closed items (CARE-STATUS-R-021).
-class AllCareList extends ConsumerWidget {
+class AllCareList extends ConsumerStatefulWidget {
   const AllCareList({super.key, required this.petId});
 
   final String petId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AllCareList> createState() => _AllCareListState();
+}
+
+class _AllCareListState extends ConsumerState<AllCareList> {
+  var _requestedRefresh = false;
+
+  @override
+  Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    final entriesAsync = ref.watch(petHealthEntriesByIdProvider(petId));
+    final entriesAsync = ref.watch(petHealthEntriesByIdProvider(widget.petId));
     final allEntries = entriesAsync.valueOrNull ?? const <HealthEntry>[];
     final establishedIds = ref
-        .watch(petCareEstablishmentsProvider(petId))
+        .watch(petCareEstablishmentsProvider(widget.petId))
         .maybeWhen(
           data: (establishments) =>
               establishedRhythmEntryIds(establishments, allEntries),
@@ -36,6 +43,12 @@ class AllCareList extends ConsumerWidget {
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, _) => Center(child: Text(l.errorWithMessage('$error'))),
       data: (entries) {
+        if (!_requestedRefresh) {
+          _requestedRefresh = true;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            ref.read(healthEntriesNotifierProvider.notifier).refresh();
+          });
+        }
         final agendaIds = buildCareAgenda<HealthEntry>(
           entries,
           (e) => e.schedule,
@@ -64,7 +77,7 @@ class AllCareList extends ConsumerWidget {
                   actionLabel: l.addAnEvent,
                   actionIcon: Icons.add,
                   onAction: () =>
-                      navigateToAddHealthEntry(context, petId: petId),
+                      navigateToAddHealthEntry(context, petId: widget.petId),
                 )
               else ...[
                 if (active.isNotEmpty)
@@ -78,7 +91,10 @@ class AllCareList extends ConsumerWidget {
                   onViewEntry: (entry) =>
                       HomeEventActions.viewEntry(context, entry),
                 ),
-                AllCareClosedFooter(petId: petId, closedCount: closed.length),
+                AllCareClosedFooter(
+                  petId: widget.petId,
+                  closedCount: closed.length,
+                ),
               ],
             ],
           ),
