@@ -56,12 +56,17 @@ class ClosedCareRow extends ConsumerWidget {
       leading: CareFamilyIcon.forEntry(entry),
       rowSemanticsIdentifier: 'closed_care_row_${entry.id}',
       onTap: () {
-        // Closed care list is a modal route; pop before go_router push so
-        // Care details updates the shell location (E2E + browser back).
+        // Closed care list is a modal route; capture router before pop.
+        final router = GoRouter.of(context);
+        final location = petEventViewLocation(
+          entry.petId,
+          entry.id,
+          returnTo: currentShellLocation(context),
+        );
         if (context.canPop()) {
           context.pop();
         }
-        openPetEventView(context, petId: entry.petId, entryId: entry.id);
+        router.push(location);
       },
     );
   }
