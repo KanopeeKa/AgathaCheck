@@ -4,14 +4,16 @@
  * Scenario: Care that needs a weight opens Care date from Mark as done
  * Scenario: Several dates to sort out open the care item
  * Scenario: Upcoming care can be marked as done early
+ * care_close.feature (@frozen): Closed care link and list — see closed care list test below
  */
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
 import { CareAgendaPage } from '../pages/care-agenda.page';
 import { CareItemPage } from '../pages/care-item.page';
 import { GuardianDashboardPage } from '../pages/guardian-dashboard.page';
 import { OccurrencePage } from '../pages/occurrence.page';
-import { createCareItem, withCareClock } from '../support/care-api';
+import { createCareItem, getCareItem, withCareClock } from '../support/care-api';
 import { createPet } from '../support/api';
+import { enableFlutterAccessibility, refreshFlutterAccessibility } from '../support/flutter';
 
 test.describe('Care agenda', () => {
   test('A care row opens Care details', async ({ page, testUser }) => {
@@ -118,6 +120,50 @@ test.describe('Care agenda', () => {
       await expect(
         page.getByText(/Planned for .+\. Mark it as done today\?|Prévu pour .+\. Le marquer comme fait aujourd'hui \?/i),
       ).toBeVisible({ timeout: 15_000 });
+    } finally {
+      await withCareClock(null, page);
+    }
+  });
+
+  test('Closed care link lists stopped care without dates', async ({ page, testUser }) => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    await withCareClock('2026-06-01T09:00', page);
+    try {
+      const pet = await createPet(baseURL, testUser.accessToken, 'Milo');
+      const entry = await createCareItem(baseURL, testUser.accessToken, pet.id, {
+        name: 'Monthly flea',
+        careFamily: 'parasite_prevention',
+        frequency: 'monthly',
+        dueDate: '2026-06-05',
+      });
+      await loginAs(page, testUser, { experience: 'guardian' });
+      const careItem = new CareItemPage(page);
+      await careItem.open(pet.id, entry.id);
+      await refreshFlutterAccessibility(page);
+      await page.locator('[flt-semantics-identifier="care_item_close_care_button"]').click();
+      await page.getByRole('alertdialog').waitFor({ timeout: 15_000 });
+      await page.locator('[flt-semantics-identifier="care_close_confirm_button"]').click();
+      await refreshFlutterAccessibility(page);
+
+      expect((await getCareItem(baseURL, testUser.accessToken, entry.id)).status).toBe(
+        'closed',
+      );
+
+      await page.goto(`${baseURL}/pet/${pet.id}/events`);
+      await enableFlutterAccessibility(page);
+      await page.locator('[flt-semantics-identifier="all_care_closed_care_link"]').click();
+      await page.locator('[flt-semantics-identifier="closed_care_list"]').waitFor({
+        timeout: 15_000,
+      });
+      const row = page.locator(`[flt-semantics-identifier="closed_care_row_${entry.id}"]`);
+      await expect(row).toBeVisible();
+      await expect(row).toContainText(/Closed · Stopped by you|Fermé · Arrêté par vous/i);
+      await expect(row).not.toContainText(/Jun|juin|2026-06/i);
+      await row.click();
+      await careItem.expectCareDetailsScreenTitle();
+      await expect(page.locator('[flt-semantics-identifier="care_item_close_care_button"]')).toHaveCount(
+        0,
+      );
     } finally {
       await withCareClock(null, page);
     }

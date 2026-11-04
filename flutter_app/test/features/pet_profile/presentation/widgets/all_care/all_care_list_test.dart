@@ -109,6 +109,35 @@ void main() {
     },
   );
 
+  testWidgets('shows Closed care link for closed items not in Other care', (
+    tester,
+  ) async {
+    final doneOneOff = HealthEntry(
+      id: 'closed-one-off',
+      petId: 'pet-1',
+      name: 'Rabies done',
+      type: HealthEntryType.vetVisit,
+      frequency: HealthFrequency.once,
+      startDate: DateTime(2024, 1, 1),
+      nextDueDate: DateTime(2024, 1, 1),
+      completedOn: DateTime(2024, 1, 2),
+      remindDaysBefore: 1,
+    );
+    await tester.pumpWidget(_wrap([doneOneOff]));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('all_care_closed_care_link')), findsOneWidget);
+    expect(find.text('Closed care (1)'), findsOneWidget);
+    expect(
+      find.byKey(const Key('all_care_inactive_section')),
+      findsNothing,
+    );
+    expect(
+      find.byKey(const Key('pet_care_action_closed-one-off')),
+      findsNothing,
+    );
+  });
+
   testWidgets('shows empty state when pet has no care items', (tester) async {
     await tester.pumpWidget(_wrap([]));
     await tester.pumpAndSettle();
