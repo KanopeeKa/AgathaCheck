@@ -134,6 +134,7 @@ describe('care occurrences seed (Whiskers)', () => {
     if (!dbReady) return;
     const visit = await item(ids.vetVisit);
     expect(visit.entry.status).toBe('closed');
+    expect(visit.entry.care_closed_reason).toBe('ended');
     expect(visit.open_occurrences).toEqual([]);
   });
 });

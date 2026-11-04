@@ -56,7 +56,11 @@ class CareItemContextStrip extends StatelessWidget {
     final colorScheme = theme.colorScheme;
     final family = entry.careFamily ?? inferCareFamily(entry);
     final familyLabel = careFamilyLabel(l, family);
-    final chipLabel = careItemStripChipLabel(l, entry, careClosedReason: careClosedReason);
+    final chipLabel = careItemStripChipLabel(
+      l,
+      entry,
+      careClosedReason: careClosedReason,
+    );
 
     return LayoutBuilder(
       builder: (context, constraints) {
