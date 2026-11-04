@@ -3270,6 +3270,8 @@
   "peoplePickerPlaceholder": "Choose someone",
   "peoplePickerTitle": "Choose a contact",
   "peoplePickerFieldLabel": "Contact",
+  "peoplePickerEmptyVets": "No vets in your contacts yet. Type a name to add one.",
+  "peoplePickerEmptyGeneric": "Nobody to choose from yet. Type a name to add someone.",
   "peoplePickerNone": "None",
   "peoplePickerSearchHint": "Search people and roles",
   "peoplePickerCurrentSelection": "Current selection",
@@ -3370,6 +3372,7 @@
   "peopleDetailLinkToPet": "Link to a pet",
   "peopleDetailLinkPetTitle": "Link to a pet",
   "peopleDetailLinkPetChooseKind": "How are they linked?",
+  "peopleDetailLinkPetKindRequired": "Choose how they're linked to continue.",
   "peopleDetailRelatedCareHistory": "{count, plural, =1{1 past visit} other{{count} past visits}}",
   "@peopleDetailRelatedCareHistory": {
     "placeholders": {

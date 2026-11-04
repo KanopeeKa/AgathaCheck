@@ -43,7 +43,6 @@ export 'presentation/widgets/pet_event_close_confirm_dialog.dart';
 export 'presentation/widgets/pet_event_documents_strip.dart';
 export 'presentation/widgets/pet_event_lifecycle.dart';
 export 'presentation/widgets/pet_event_occurrence_actions.dart';
-export 'presentation/widgets/pet_event_past_iterations_section.dart';
 export 'presentation/widgets/pet_event_past_occurrences_section.dart';
 export 'presentation/widgets/pet_event_pet_card.dart';
 export 'presentation/widgets/pet_event_view_providers.dart';

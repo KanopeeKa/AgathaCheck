@@ -302,7 +302,12 @@ function createGitHubClient(opts) {
         status: data.status,
         ahead_by: data.ahead_by,
         behind_by: data.behind_by,
-        files: (data.files || []).map((f) => ({ filename: f.filename, status: f.status })),
+        merge_base_commit: data.merge_base_commit ? { sha: data.merge_base_commit.sha } : null,
+        files: (data.files || []).map((f) => ({
+          filename: f.filename,
+          status: f.status,
+          ...(f.previous_filename ? { previous_filename: f.previous_filename } : {}),
+        })),
       };
     },
     /** Commit SHA a branch, tag (annotated tags are peeled) or SHA resolves to. */

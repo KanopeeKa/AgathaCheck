@@ -156,9 +156,16 @@ report `path === '.github/workflows/execute-plan-approve.yml'`, `head_branch ===
 
 Approve/resume without a valid acknowledgement are invalid with `invalid_reason: not-acknowledged`.
 
-**Release-scope union:** on a release PR (`integration` → `main`), files touched by merged PRs to
-`main` whose body matches `Unblocks: plan <plan_id> phase <n>` since the epoch are allowed (side
-fixes merged ahead of the release).
+**Release-scope no-ops:** on a release PR (`integration` → `main`), any file in the diff whose
+content at the PR head is **byte-identical** to `main` at its current tip is skipped (no scope
+rule applies). Files that differ from `main` are evaluated normally (protected, forbidden, phase
+union, own-plan verification). PR bodies may still cite `Unblocks: plan …` for humans; enforcement
+does not parse them.
+
+**Phase web bundle ratchet:** when a phase PR touches `scripts/ci/web-bundle-budget.json`, each
+numeric cap may increase by at most 1.5% versus the merge base of the PR base branch (integration)
+and head. The ratchet runs per phase PR only (not on release); successive phases may compound
+budget increases across the integration branch.
 
 ## 3.4 `approval_hash`
 
