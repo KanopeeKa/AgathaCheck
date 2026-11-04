@@ -14,6 +14,13 @@ export {
   repeatEndDateIso,
 } from './seriesLifecycle.js';
 export {
+  CARE_CLOSED_REASON_ENDED,
+  CARE_CLOSED_REASON_STOPPED,
+  CARE_ITEM_STATUS_CLOSED,
+  careClosedReasonForWire,
+  isItemClosed,
+} from './itemStatus.js';
+export {
   isMultiPerDayEntry,
   isOccurrenceMissed,
   isOnceEntry,

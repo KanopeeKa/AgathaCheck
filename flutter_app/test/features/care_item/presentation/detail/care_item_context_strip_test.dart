@@ -36,6 +36,7 @@ void main() {
     required double viewportWidth,
     required double stripWidth,
     double textScale = 1.0,
+    String? careClosedReason,
   }) async {
     await tester.binding.setSurfaceSize(Size(viewportWidth, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -54,7 +55,11 @@ void main() {
             home: Scaffold(
               body: SizedBox(
                 width: stripWidth,
-                child: CareItemContextStrip(entry: entry, pet: pet),
+                child: CareItemContextStrip(
+                  entry: entry,
+                  pet: pet,
+                  careClosedReason: careClosedReason,
+                ),
               ),
             ),
           ),
@@ -65,16 +70,16 @@ void main() {
   }
 
   group('careItemStripChip', () {
-    test('Finished when status is completed', () {
-      expect(careItemStripChip(baseEntry(status: 'completed')), isNotNull);
+    test('Closed when status is closed', () {
+      expect(careItemStripChip(baseEntry(status: 'closed')), isNotNull);
     });
 
     test('Paused when status is paused', () {
       expect(careItemStripChip(baseEntry(status: 'paused')), isNotNull);
     });
 
-    test('Finished wins over paused when completed', () {
-      final entry = baseEntry(status: 'completed');
+    test('Closed wins over paused when closed', () {
+      final entry = baseEntry(status: 'closed');
       expect(entry.isPaused, isFalse);
       expect(careItemStripChip(entry), isNotNull);
     });
@@ -84,15 +89,16 @@ void main() {
     });
   });
 
-  testWidgets('shows Finished chip when status is completed', (tester) async {
+  testWidgets('shows Closed subtitle when status is closed', (tester) async {
     await pumpStrip(
       tester,
-      entry: baseEntry(status: 'completed'),
+      entry: baseEntry(status: 'closed'),
       viewportWidth: 400,
       stripWidth: 400,
+      careClosedReason: 'ended',
     );
 
-    expect(find.text('Finished'), findsOneWidget);
+    expect(find.text('Closed · Ended'), findsOneWidget);
     expect(find.text('Heart tablet'), findsOneWidget);
   });
 
@@ -116,7 +122,7 @@ void main() {
       stripWidth: 400,
     );
 
-    expect(find.text('Finished'), findsNothing);
+    expect(find.textContaining('Closed'), findsNothing);
     expect(find.text('Paused'), findsNothing);
     expect(find.byKey(const Key('care_item_context_strip_chip')), findsNothing);
   });

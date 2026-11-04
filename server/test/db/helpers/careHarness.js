@@ -11,6 +11,7 @@ import { createApp } from '../../../bin/server.js';
 import { createAppPool } from '../../../lib/db/createPool.js';
 import { dateToIsoDate } from '../../../lib/calendarDate.js';
 import { migrateCareDateOutcome } from '../../../scripts/migrations/084_care_date_outcome.js';
+import { migrateCareItemClosed } from '../../../scripts/migrations/085_care_item_closed.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'default_secret';
 
@@ -61,12 +62,32 @@ async function ensureCareDateOutcomeMigration(pool) {
   }
 }
 
+async function ensureCareItemClosedMigration(pool) {
+  const col = await pool.query(
+    `SELECT 1 FROM information_schema.columns
+     WHERE table_name = 'health_entries' AND column_name = 'care_closed_reason'`,
+  );
+  if (col.rows.length > 0) return;
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    await migrateCareItemClosed(client);
+    await client.query('COMMIT');
+  } catch (err) {
+    await client.query('ROLLBACK');
+    throw err;
+  } finally {
+    client.release();
+  }
+}
+
 export async function openStrictHarness() {
   const harness = await openHarness();
   if (!harness.pool) {
     throw new Error('Care DB integration tests require a migrated PostgreSQL (health_occurrences.origin)');
   }
   await ensureCareDateOutcomeMigration(harness.pool);
+  await ensureCareItemClosedMigration(harness.pool);
   return harness;
 }
 

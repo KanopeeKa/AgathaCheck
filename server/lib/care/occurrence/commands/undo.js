@@ -21,6 +21,7 @@ import {
   reopenClosedOccurrence,
   restoreOccurrence,
 } from '../occurrenceRepository.js';
+import { assertItemOpen } from './assertItemOpen.js';
 
 async function loadUndoableEvents(db, entryId) {
   const result = await db.query(
@@ -75,6 +76,7 @@ async function reverse(ctx, event, { restoreEntry }) {
  * @param {{ undoToken?: string|null, occurrenceId?: string|null }} params
  */
 export async function undoCommand(ctx, { undoToken = null, occurrenceId = null } = {}) {
+  assertItemOpen(ctx.entry);
   const { db } = ctx;
   const events = await loadUndoableEvents(db, ctx.entry.id);
   let event = events[0] || null;
@@ -114,6 +116,7 @@ export async function undoCommand(ctx, { undoToken = null, occurrenceId = null }
  * @param {{ occurrenceId: string }} params
  */
 export async function undoCompletionOfOccurrence(ctx, { occurrenceId }) {
+  assertItemOpen(ctx.entry);
   const events = await loadUndoableEvents(ctx.db, ctx.entry.id);
   const event = events.find((e) => e.health_occurrence_id === occurrenceId
     && e.event_type === 'completed');

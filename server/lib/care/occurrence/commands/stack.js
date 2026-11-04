@@ -14,9 +14,11 @@ import {
   markSkipped,
 } from '../occurrenceRepository.js';
 import { closeAsDone } from './complete.js';
+import { assertItemOpen } from './assertItemOpen.js';
 
 /** @deprecated HTTP route removed — seeds/tests only; clients use per-occurrence complete/skip. */
 export async function resolveStackCommand(ctx, { given = [], notGiven = [], completedOnById = {} }) {
+  assertItemOpen(ctx.entry);
   const { db, entry, openRows, trace, userId, asOf } = ctx;
   const ids = [...given, ...notGiven];
   if (ids.length === 0) throw badRequest('nothing_to_record', 'given or not_given is required');
@@ -56,6 +58,7 @@ export async function resolveStackCommand(ctx, { given = [], notGiven = [], comp
  * @param {{ occurrenceId: string }} params
  */
 export async function confirmSkipCommand(ctx, { occurrenceId }) {
+  assertItemOpen(ctx.entry);
   const { db, entry, trace, userId } = ctx;
   const row = await findOccurrence(db, entry.id, occurrenceId);
   if (!row || row.status !== 'not_recorded') {
@@ -82,6 +85,7 @@ export async function confirmSkipCommand(ctx, { occurrenceId }) {
 }
 
 export async function recordAsGivenCommand(ctx, { occurrenceId, completedOn = null }) {
+  assertItemOpen(ctx.entry);
   const { db, entry, trace, asOf } = ctx;
   const row = await findOccurrence(db, entry.id, occurrenceId);
   if (!row || row.status !== 'not_recorded') {

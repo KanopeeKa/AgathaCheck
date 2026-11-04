@@ -4,6 +4,7 @@
  */
 
 import { dateToIsoDate, todayCalendarIso } from '../../calendarDate.js';
+import { isItemClosed } from './itemStatus.js';
 
 function isOnceEntry(row) {
   return (row.frequency || 'once') === 'once';
@@ -25,7 +26,7 @@ export function repeatEndDateIso(row) {
  * @returns {boolean}
  */
 export function isEntrySeriesClosed(row, todayIso = todayCalendarIso()) {
-  if ((row.status || 'active') === 'completed') return true;
+  if (isItemClosed(row)) return true;
   if (isOnceEntry(row)) {
     return Boolean(dateToIsoDate(row.completed_on));
   }

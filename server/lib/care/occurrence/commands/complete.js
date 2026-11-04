@@ -24,6 +24,7 @@ import { badRequest, notOpen } from '../careCommandError.js';
 import { applyNextChoice } from './nextChoice.js';
 import { markCompleted, markSkipped } from '../occurrenceRepository.js';
 import { updateEntryFields } from '../entryRepository.js';
+import { assertItemOpen } from './assertItemOpen.js';
 
 export const EARLIER_CHOICE_KEEP = 'keep';
 export const EARLIER_CHOICES = ['complete', 'skip', EARLIER_CHOICE_KEEP];
@@ -79,6 +80,7 @@ export async function completeOccurrenceCommand(ctx, {
   earlierChoice = null,
   body = {},
 }) {
+  assertItemOpen(ctx.entry);
   const { db, entry, asOf, trace, openRows } = ctx;
   const row = openRows.find((o) => o.id === occurrenceId);
   if (!row) throw notOpen();

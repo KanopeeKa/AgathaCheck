@@ -20,6 +20,7 @@ import {
 } from '../../schedule/seriesDates.js';
 import { CareCommandError, badRequest } from '../careCommandError.js';
 import { updateEntryFields } from '../entryRepository.js';
+import { assertItemOpen } from './assertItemOpen.js';
 import {
   applyOpenOccurrencePauseCloseRule,
   insertOpenOccurrence,
@@ -39,6 +40,7 @@ export const POSTPONE_REASONS = ['pause', 'absence', 'manual'];
 export async function postponeCommand(ctx, {
   until = null, reason = 'manual', absenceId = null, occurrenceId = null,
 }) {
+  assertItemOpen(ctx.entry);
   const { db, entry, openRows, trace, asOf } = ctx;
   if (!POSTPONE_REASONS.includes(reason)) {
     throw badRequest('invalid_reason', `reason must be one of ${POSTPONE_REASONS.join(', ')}`);
@@ -147,6 +149,7 @@ export function defaultResumeDate(entry, openRows, asOf) {
  * @param {{ date?: string|null, reasonNote?: string|null }} params
  */
 export async function resumeCommand(ctx, { date = null, reasonNote = null }) {
+  assertItemOpen(ctx.entry);
   const { db, entry, openRows, trace, asOf } = ctx;
   if (entry.status !== 'paused') {
     throw badRequest('not_paused', 'This care item is not paused');

@@ -24,6 +24,11 @@ import { nextComputedDate } from '../schedule/nextComputed.js';
 import { scheduleTimesFromEntry } from '../schedule/scheduleTimes.js';
 import { seriesDateAfter, seriesStep } from '../schedule/seriesDates.js';
 import { insertCareScheduleEvent } from '../schedule/scheduleEventLedger.js';
+import {
+  CARE_CLOSED_REASON_ENDED,
+  CARE_ITEM_STATUS_CLOSED,
+  isItemClosed,
+} from '../item/itemStatus.js';
 import { reloadEntry, updateEntryFields } from './entryRepository.js';
 import {
   deleteOpenOccurrences,
@@ -185,14 +190,18 @@ async function finishIfNothingLeft(db, entry, asOf) {
     if (closed.rows.length === 0) return entry;
     const row = closed.rows[0];
     return updateEntryFields(db, entry.id, {
-      status: 'completed',
+      status: CARE_ITEM_STATUS_CLOSED,
+      care_closed_reason: CARE_CLOSED_REASON_ENDED,
       completed_on: dateToIsoDate(row.completed_on) || dateToIsoDate(row.scheduled_date) || asOf.todayIso,
       completed_at: new Date(),
     });
   }
   const endIso = dateToIsoDate(entry.repeat_end_date);
   if (!endIso) return entry;
-  return updateEntryFields(db, entry.id, { status: 'completed' });
+  return updateEntryFields(db, entry.id, {
+    status: CARE_ITEM_STATUS_CLOSED,
+    care_closed_reason: CARE_CLOSED_REASON_ENDED,
+  });
 }
 
 async function writeNextDueDate(db, entry) {
@@ -216,7 +225,7 @@ async function writeNextDueDate(db, entry) {
 export async function syncOpenOccurrences(db, entryRow, asOf) {
   let entry = entryRow;
   const result = { created: [], createdComputed: [], closedNotRecorded: [] };
-  if (!isPlannedCare(entry) || entry.status === 'completed') {
+  if (!isPlannedCare(entry) || isItemClosed(entry)) {
     await writeNextDueDate(db, entry);
     return { entry: await reloadEntry(db, entry.id), ...result };
   }

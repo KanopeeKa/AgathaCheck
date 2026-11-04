@@ -52,9 +52,12 @@ class CareItemMenu extends StatelessWidget {
           }
         },
         itemBuilder: (context) {
-          final items = <PopupMenuEntry<CareItemMenuAction>>[
-            PopupMenuItem(value: CareItemMenuAction.edit, child: Text(l.edit)),
-          ];
+          final items = <PopupMenuEntry<CareItemMenuAction>>[];
+          if (!isClosed) {
+            items.add(
+              PopupMenuItem(value: CareItemMenuAction.edit, child: Text(l.edit)),
+            );
+          }
           if (onPlanAnotherDate != null && !isClosed && !entry.isPaused) {
             items.add(
               PopupMenuItem(
@@ -84,13 +87,6 @@ class CareItemMenu extends StatelessWidget {
               PopupMenuItem(
                 value: CareItemMenuAction.archive,
                 child: Text(l.careItemMenuArchive),
-              ),
-            );
-          } else {
-            items.add(
-              PopupMenuItem(
-                value: CareItemMenuAction.restore,
-                child: Text(l.careItemMenuRestore),
               ),
             );
           }
