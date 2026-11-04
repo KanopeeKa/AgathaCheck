@@ -13,7 +13,12 @@ import { GuardianDashboardPage } from '../pages/guardian-dashboard.page';
 import { OccurrencePage } from '../pages/occurrence.page';
 import { createCareItem, getCareItem, withCareClock } from '../support/care-api';
 import { createPet } from '../support/api';
-import { enableFlutterAccessibility, refreshFlutterAccessibility } from '../support/flutter';
+import {
+  enableFlutterAccessibility,
+  flutterGotoUrl,
+  refreshFlutterAccessibility,
+  waitForFlutterRoutePattern,
+} from '../support/flutter';
 
 test.describe('Care agenda', () => {
   test('A care row opens Care details', async ({ page, testUser }) => {
@@ -149,7 +154,12 @@ test.describe('Care agenda', () => {
         'closed',
       );
 
-      await page.goto(`${baseURL}/pet/${pet.id}/events`);
+      await page.goto(flutterGotoUrl(`/pet/${pet.id}/events`));
+      await waitForFlutterRoutePattern(
+        page,
+        new RegExp(`/pet/${pet.id}/events`),
+        30_000,
+      );
       await enableFlutterAccessibility(page);
       await page.locator('[flt-semantics-identifier="all_care_closed_care_link"]').click();
       await page.locator('[flt-semantics-identifier="closed_care_list"]').waitFor({
