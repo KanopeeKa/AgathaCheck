@@ -165,13 +165,11 @@ function ownPlanFiles(snapshot) {
  * Rules 3a–3h for one file, before the companion cap and the own-plan-file verification.
  * @returns {{ file, verdict: 'own-plan-file'|'protected'|'forbidden'|'allowed'|'exception:tests'|'exception:docs'|'companion'|'unclassified' }}
  */
-function classifyPath(file, { snapshot, category, phaseId, supportFiles }) {
+function classifyPath(file, { snapshot, category, phaseId }) {
   const verdict = (v) => ({ file, verdict: v });
-  if (supportFiles && supportFiles.has(file) && category === 'release') return verdict('allowed');
   if (ownPlanFiles(snapshot).includes(file)) return verdict('own-plan-file');
   if (matchesAny(file, PROTECTED_PATHS)) return verdict('protected');
   if (isForbiddenPath(file)) return verdict('forbidden');
-  if (supportFiles && supportFiles.has(file) && category === 'release') return verdict('allowed');
 
   const phases = scopePhases(snapshot, category, phaseId);
   if (matchesAny(file, collect(phases, 'forbidden_paths'))) return verdict('forbidden');
@@ -203,7 +201,7 @@ function titleFor(violations) {
  * @param {{ files: string[], snapshot, category, phaseId, ownPlanFilesVerified: boolean, stopped: { stopped: boolean, reason: string|null } }} args
  * @returns {{ conclusion: 'success'|'failure', title: string, violations: {file:string, reason:string}[], companionsUsed: string[] }}
  */
-function evaluateDiff({ files, snapshot, category, phaseId, ownPlanFilesVerified, stopped, supportFiles }) {
+function evaluateDiff({ files, snapshot, category, phaseId, ownPlanFilesVerified, stopped, unchangedOnMain }) {
   if (stopped && stopped.stopped) {
     return { conclusion: 'failure', title: 'plan-stopped', violations: [], companionsUsed: [] };
   }
@@ -214,10 +212,12 @@ function evaluateDiff({ files, snapshot, category, phaseId, ownPlanFilesVerified
     return { conclusion: 'failure', title: 'unsupported', violations: [], companionsUsed: [] };
   }
 
+  const skip = unchangedOnMain || new Set();
   const violations = [];
   const companionsUsed = [];
   for (const file of files || []) {
-    const { verdict } = classifyPath(file, { snapshot, category, phaseId, supportFiles });
+    if (skip.has(file)) continue;
+    const { verdict } = classifyPath(file, { snapshot, category, phaseId });
     if (verdict === 'own-plan-file') {
       if (!(category === 'release' && ownPlanFilesVerified === true)) {
         violations.push({ file, reason: 'drift' });

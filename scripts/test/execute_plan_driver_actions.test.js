@@ -333,6 +333,15 @@ test('launch: starts the worker on the action branch, records launch and lease',
   assert.deepEqual(status.lease, { platform: 'cursor', agent_id: 'bc-1', run_id: 'run-1', launched_at: NOW, last_tick_at: NOW });
 });
 
+test('launch: records lease when observe throws after launch', async () => {
+  const args = { phase: '1', branch: 'cursor/p-p1', base: SNAP.integration_branch, pr: null };
+  const h = harness({}, agentAction('implement', args, { phase: '1' }));
+  h.clients.deps.observe = async () => { throw new Error('observe failed'); };
+  await drive(h);
+  assert.equal(h.seen.launch.length, 1);
+  assert.deepEqual(h.bot.statusNow().lease.agent_id, 'bc-1');
+});
+
 test('launch: the worker gets the bot token in envVars, and the token is never logged', async () => {
   const h = harness({}, agentAction('implement', { phase: '1', branch: 'b', base: 'i' }, { phase: '1' }));
   await drive(h);

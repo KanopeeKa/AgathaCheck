@@ -3,7 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/features/people/application/people_commands.dart';
 import 'package:pet_profile_app/features/people/application/people_providers.dart';
+import 'package:pet_profile_app/features/people/domain/entities/contact_summary.dart';
 import 'package:pet_profile_app/features/people/domain/entities/pet_people.dart';
+import 'package:pet_profile_app/features/people/domain/entities/roster.dart';
+import 'package:pet_profile_app/features/people/domain/enums/contact_group.dart';
+import 'package:pet_profile_app/features/people/domain/enums/contact_kind.dart';
+import 'package:pet_profile_app/features/people/domain/enums/contact_role.dart';
+import 'package:pet_profile_app/features/people/domain/enums/contact_status.dart';
 import 'package:pet_profile_app/features/people/domain/enums/relationship_kind.dart';
 import 'package:pet_profile_app/features/people/domain/repositories/people_repository.dart';
 import 'package:pet_profile_app/features/people/presentation/pet/pet_emergency_manage_sheet.dart';
@@ -209,6 +215,41 @@ void main() {
     expect(tracking.lastSlotContactId, isNull);
   });
 
+  testWidgets('primary vet picker lists directory vets for an unlinked pet', (
+    tester,
+  ) async {
+    // Whiskers-like pet: no relationships at all.
+    await tester.pumpWidget(
+      _wrap(
+        people: _samplePeople(),
+        canManage: true,
+        repo: _DirectoryVetRepository(),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('pet_emergency_manage_button')));
+    await tester.pumpAndSettle();
+
+    await tester.tap(
+      find.bySemanticsIdentifier('people_picker_field_pet_slot_primary_vet'),
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byKey(const Key('people_picker_option_clinic-1')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const Key('people_picker_option_vet-person-1')),
+      findsOneWidget,
+    );
+    // Non-vet professionals stay out of the vet slot.
+    expect(
+      find.byKey(const Key('people_picker_option_groomer-1')),
+      findsNothing,
+    );
+  });
+
   testWidgets('emergency contacts show reorder controls in manage sheet', (
     tester,
   ) async {
@@ -262,4 +303,51 @@ class _TrackingPeopleRepository extends FakePeopleRepository {
     lastSlotContactId = contactId;
     return const [];
   }
+}
+
+class _DirectoryVetRepository extends FakePeopleRepository {
+  static ContactSummary _c(
+    String id,
+    String name,
+    ContactKind kind,
+    ContactRole role,
+    ContactGroup group,
+  ) => ContactSummary(
+    id: id,
+    directory: const ContactDirectoryRef(type: 'personal'),
+    kind: kind,
+    name: name,
+    roles: [role],
+    group: group,
+    status: ContactStatus.active,
+  );
+
+  @override
+  Future<Roster> fetchRoster({bool includeInactive = false}) async => Roster(
+    households: const [],
+    contacts: [
+      _c(
+        'clinic-1',
+        'Happy Paws',
+        ContactKind.organisation,
+        ContactRole.vet,
+        ContactGroup.professional,
+      ),
+      _c(
+        'vet-person-1',
+        'Dr. Mitchell',
+        ContactKind.person,
+        ContactRole.vet,
+        ContactGroup.professional,
+      ),
+      _c(
+        'groomer-1',
+        'Fluffy Groom',
+        ContactKind.person,
+        ContactRole.groomer,
+        ContactGroup.professional,
+      ),
+    ],
+    pendingInvites: const [],
+  );
 }

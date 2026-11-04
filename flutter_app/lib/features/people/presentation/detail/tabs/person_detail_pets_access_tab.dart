@@ -5,7 +5,6 @@ import '../../../../../core/utils/calendar_date.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../domain/entities/contact_summary.dart';
 import '../../labels/people_labels.dart';
-import '../person_detail_target.dart';
 import '../widgets/link_pet_sheet.dart';
 
 class PersonDetailPetsAccessTab extends ConsumerWidget {
@@ -14,14 +13,12 @@ class PersonDetailPetsAccessTab extends ConsumerWidget {
     required this.contactId,
     required this.pets,
     required this.access,
-    required this.rosterPetOptions,
     this.allowLink = true,
   });
 
   final String contactId;
   final List<ContactPetLink> pets;
   final ContactAccessLine? access;
-  final List<RosterPetOption> rosterPetOptions;
   final bool allowLink;
 
   @override
@@ -49,7 +46,7 @@ class PersonDetailPetsAccessTab extends ConsumerWidget {
               context: context,
               ref: ref,
               contactId: contactId,
-              pets: rosterPetOptions,
+              linkedPets: pets,
             ),
             icon: const Icon(Icons.link),
             label: Text(l.peopleDetailLinkToPet),

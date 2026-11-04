@@ -55,4 +55,4 @@ function launchCounts(statusLaunches, { epoch, now }) {
   return { phase, today };
 }
 
-module.exports = { RUNNING_SET, deriveControl, leaseAlive, launchCounts };
+module.exports = { RUNNING_SET, LEASE_TTL_MS, deriveControl, leaseAlive, launchCounts };

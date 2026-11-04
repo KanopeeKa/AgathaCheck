@@ -6,6 +6,7 @@ import '../../application/people_providers.dart';
 import '../../domain/entities/roster.dart';
 import '../../domain/enums/contact_group.dart';
 import '../../domain/enums/contact_kind.dart';
+import '../../domain/enums/contact_role.dart';
 import '../../domain/services/people_query.dart';
 import '../labels/people_labels.dart';
 import '../widgets/person_avatar.dart';
@@ -117,6 +118,17 @@ class _PeoplePickerSheetState extends ConsumerState<PeoplePickerSheet> {
                     semanticsId: 'people_picker_option_none',
                     title: l.peoplePickerNone,
                     onTap: () => _pop(const PeoplePickerNoneResult()),
+                  ),
+                if (data.pinned == null && data.sections.isEmpty)
+                  Padding(
+                    key: const Key('people_picker_empty'),
+                    padding: const EdgeInsets.all(16),
+                    child: Text(
+                      (widget.query.roles?.contains(ContactRole.vet) ?? false)
+                          ? l.peoplePickerEmptyVets
+                          : l.peoplePickerEmptyGeneric,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
                   ),
                 if (data.pinned != null) _buildPinned(context, l, data.pinned!),
                 for (final section in data.sections) ...[

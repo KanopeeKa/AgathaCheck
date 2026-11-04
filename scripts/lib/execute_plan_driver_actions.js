@@ -265,17 +265,23 @@ async function launchWorker(clients, ctx, decision, now) {
     envVars: workerLaunchEnvVars(botToken),
   });
   const key = decision.phase || 'release';
-  const obs = await deps.observe(bot, ctx, { now });
-  const prObs = pullNumber ? prObsFromCtx(obs, pullNumber) : null;
-  const sig = prObs ? failureSignature(prObs) : null;
-  await updateStatus(bot, ctx, (s) => {
-    const tracked = appendCiStuckTrack(s, key, prObs && prObs.head_sha, sig, now);
-    return {
-      ...tracked,
-      launches: [...(tracked.launches || []), { at: now, phase: key, kind: action.kind, agent_id: launched.agentId, run_id: launched.runId }].slice(-MAX_LAUNCH_HISTORY),
-      lease: { platform: 'cursor', agent_id: launched.agentId, run_id: launched.runId, launched_at: now, last_tick_at: now },
-    };
-  }, now);
+  await updateStatus(bot, ctx, (s) => ({
+    ...s,
+    launches: [...(s.launches || []), {
+      at: now, phase: key, kind: action.kind, agent_id: launched.agentId, run_id: launched.runId,
+    }].slice(-MAX_LAUNCH_HISTORY),
+    lease: {
+      platform: 'cursor', agent_id: launched.agentId, run_id: launched.runId, launched_at: now, last_tick_at: now,
+    },
+  }), now);
+  try {
+    const obs = await deps.observe(bot, ctx, { now });
+    const prObs = pullNumber ? prObsFromCtx(obs, pullNumber) : null;
+    const sig = prObs ? failureSignature(prObs) : null;
+    await updateStatus(bot, ctx, (s) => appendCiStuckTrack(s, key, prObs && prObs.head_sha, sig, now), now);
+  } catch {
+    // ci-stuck track is best-effort; lease is already recorded
+  }
   return `launched ${action.kind} on ${a.branch} (agent ${launched.agentId})`;
 }
 

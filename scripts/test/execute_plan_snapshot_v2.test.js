@@ -159,12 +159,13 @@ test('example v2 snapshot is regenerated from the example plan', () => {
 });
 
 // ---- init ----
-function fakeGit({ branch = `cursor/${PLAN_ID}-init`, status = ' M .agents/plans/proof-build-label-7f3a.md\n' } = {}) {
+function fakeGit({ branch = `cursor/${PLAN_ID}-init`, status = ' M .agents/plans/proof-build-label-7f3a.md\n', committed = [] } = {}) {
   const calls = [];
   return {
     calls,
     currentBranch: () => branch,
     statusPorcelain: () => status,
+    committedFilesVsMain: () => committed,
     add: (p) => calls.push(['add', p]),
     commit: (m) => calls.push(['commit', m]),
     pushUpstream: () => calls.push(['push']),
@@ -190,6 +191,35 @@ test('init refuses dirty tree', async () => {
   await assert.rejects(
     runInit({ client: {}, planId: PLAN_ID, git: fakeGit({ status: ' M README.md\n' }), now: NOW, cwd: tmpRepo() }),
     (e) => e.exitCode === 3 && /README\.md/.test(e.message),
+  );
+});
+
+test('init refuses extra committed files vs main on init branch', async () => {
+  const planRel = `.agents/plans/${PLAN_ID}.md`;
+  await assert.rejects(
+    runInit({
+      client: {},
+      planId: PLAN_ID,
+      git: fakeGit({ committed: [planRel, 'docs/domains/pet_care/README.md'] }),
+      now: NOW,
+      cwd: tmpRepo(),
+    }),
+    (e) => e.exitCode === 3 && /separate PR against `main`/.test(e.message) && /README\.md/.test(e.message),
+  );
+});
+
+test('init dry-run on init branch refuses extra committed files', async () => {
+  const planRel = `.agents/plans/${PLAN_ID}.md`;
+  await assert.rejects(
+    runInit({
+      client: null,
+      planId: PLAN_ID,
+      dryRun: true,
+      git: fakeGit({ committed: [planRel, 'server/evil.js'] }),
+      now: NOW,
+      cwd: tmpRepo(),
+    }),
+    (e) => e.exitCode === 3 && /server\/evil\.js/.test(e.message),
   );
 });
 

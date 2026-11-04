@@ -18,6 +18,7 @@ class PeoplePickerField extends ConsumerWidget {
     required this.query,
     this.value,
     this.placeholder,
+    this.label,
     required this.onChanged,
     this.quickAddGroup,
   });
@@ -26,13 +27,16 @@ class PeoplePickerField extends ConsumerWidget {
   final PeopleQuery query;
   final ContactSummary? value;
   final String? placeholder;
+
+  /// Overrides the generic "Contact" field label (e.g. "Primary vet").
+  final String? label;
   final ValueChanged<PeoplePickerResult?> onChanged;
   final ContactGroup? quickAddGroup;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
-    final label = value == null
+    final displayText = value == null
         ? (placeholder ?? l.peoplePickerPlaceholder)
         : value!.name;
     final subtitle = value == null ? null : contactRolesLine(l, value!.roles);
@@ -40,12 +44,12 @@ class PeoplePickerField extends ConsumerWidget {
     return Semantics(
       identifier: 'people_picker_field_$purpose',
       button: true,
-      label: label,
+      label: displayText,
       child: InkWell(
         onTap: () => _open(context, ref),
         child: InputDecorator(
           decoration: InputDecoration(
-            labelText: l.peoplePickerFieldLabel,
+            labelText: label ?? l.peoplePickerFieldLabel,
             border: const OutlineInputBorder(),
             suffixIcon: const Icon(Icons.expand_more),
           ),
@@ -59,7 +63,7 @@ class PeoplePickerField extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(label),
+                    Text(displayText),
                     if (subtitle != null && subtitle.isNotEmpty)
                       Text(
                         subtitle,

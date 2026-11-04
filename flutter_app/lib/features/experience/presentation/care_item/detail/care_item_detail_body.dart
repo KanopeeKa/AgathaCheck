@@ -70,13 +70,6 @@ class CareItemDetailBody extends ConsumerWidget {
       pet: pet,
       isEstablished: isEstablished,
     );
-    final historyModule = _HistoryModule(
-      entry: entry,
-      history: history,
-      isClosed: isClosed,
-      muted: muted,
-      onSeeHistory: onSeeHistory,
-    );
 
     final observationSlot = _CareItemObservationSlot(
       petId: petId,
@@ -115,6 +108,13 @@ class CareItemDetailBody extends ConsumerWidget {
               ? constraints.maxWidth
               : MediaQuery.sizeOf(context).width;
           final wide = layoutWidth >= kCareItemTwoColumnBreakpoint;
+          final pastOccurrencesVisibleCap = wide ? 5 : 3;
+          final historyModule = _HistoryModule(
+            entry: entry,
+            muted: muted,
+            onSeeHistory: onSeeHistory,
+            pastOccurrencesVisibleCap: pastOccurrencesVisibleCap,
+          );
 
           Widget detailsModule({required bool includeEstablished}) {
             return _DetailsModule(
@@ -251,24 +251,29 @@ class _DetailsModule extends StatelessWidget {
   }
 }
 
-class _HistoryModule extends StatelessWidget {
+class _HistoryModule extends ConsumerWidget {
   const _HistoryModule({
     required this.entry,
-    required this.history,
-    required this.isClosed,
     required this.muted,
     required this.onSeeHistory,
+    required this.pastOccurrencesVisibleCap,
   });
 
   final HealthEntry entry;
-  final List<HealthHistoryEntry> history;
-  final bool isClosed;
   final bool muted;
   final VoidCallback onSeeHistory;
+  final int pastOccurrencesVisibleCap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
+    final showPast = ref
+        .watch(entryPastOccurrencesProvider(entry.id))
+        .maybeWhen(
+          data: (past) =>
+              past.any((o) => o.status == 'completed' || o.status == 'skipped'),
+          orElse: () => false,
+        );
 
     return CareItemModule(
       key: const Key('care_item_history_module'),
@@ -290,22 +295,16 @@ class _HistoryModule extends StatelessWidget {
                   child: PetEventDocumentsStrip(entryId: entry.id),
                 ),
               ),
-              CareCollectionInsetItem(
-                showDividerBefore: true,
-                child: PetEventPastOccurrencesSection(
-                  entryId: entry.id,
-                  petId: entry.petId,
-                  muted: muted,
+              if (showPast)
+                CareCollectionInsetItem(
+                  showDividerBefore: true,
+                  child: PetEventPastOccurrencesSection(
+                    entryId: entry.id,
+                    petId: entry.petId,
+                    muted: muted,
+                    maxVisibleRows: pastOccurrencesVisibleCap,
+                  ),
                 ),
-              ),
-              CareCollectionInsetItem(
-                showDividerBefore: true,
-                child: PetEventPastIterationsSection(
-                  entry: entry,
-                  history: history,
-                  isClosed: isClosed,
-                ),
-              ),
             ],
           ),
           const SizedBox(height: 12),
