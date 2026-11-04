@@ -10,8 +10,8 @@ import { careOccurrencesSeedFacts, seedCareOccurrences } from '../../../db/seeds
 import { seedGuardian } from '../../../db/seeds/scenarios/guardian.js';
 import { dateToIsoDate } from '../../../lib/calendarDate.js';
 import { careItemReadAdditions, listOpenRows } from '../../../lib/care/occurrence/index.js';
+import { migrateCareItemClosed } from '../../../scripts/migrations/085_care_item_closed.js';
 import { createDbPool } from '../helpers/careHarness.js';
-import { relaxHealthEntryStatusForLegacySeeds } from '../helpers/post085SeedConstraints.js';
 
 const CLOCK = { todayIso: '2026-06-10', nowTimeIso: '15:00', timeZone: 'Europe/Paris' };
 let pool;
@@ -40,7 +40,11 @@ beforeAll(async () => {
   }
   client = await pool.connect();
   await client.query('BEGIN');
+<<<<<<< HEAD
   await relaxHealthEntryStatusForLegacySeeds(client);
+=======
+  await migrateCareItemClosed(client);
+>>>>>>> b2e801ae (fix: normalize legacy completed inserts via migration 085 trigger)
   process.env.SEED_CARE_CLOCK = `${CLOCK.todayIso}T${CLOCK.nowTimeIso}`;
   await seedGuardian(client);
   await seedCareOccurrences(client);

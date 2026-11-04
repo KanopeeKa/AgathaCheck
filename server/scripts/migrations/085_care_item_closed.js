@@ -74,4 +74,30 @@ export async function migrateCareItemClosed(client) {
         status <> 'closed' OR care_closed_reason IS NOT NULL
       );
   `);
+
+  await client.query(`
+    CREATE OR REPLACE FUNCTION health_entries_normalize_closed_status()
+    RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+    BEGIN
+      IF NEW.status = 'completed' THEN
+        NEW.status := 'closed';
+        NEW.care_closed_reason := COALESCE(NEW.care_closed_reason, 'ended');
+      END IF;
+      RETURN NEW;
+    END;
+    $$;
+  `);
+
+  await client.query(`
+    DROP TRIGGER IF EXISTS health_entries_normalize_closed_status ON health_entries;
+  `);
+
+  await client.query(`
+    CREATE TRIGGER health_entries_normalize_closed_status
+      BEFORE INSERT OR UPDATE OF status, care_closed_reason ON health_entries
+      FOR EACH ROW
+      EXECUTE FUNCTION health_entries_normalize_closed_status();
+  `);
 }

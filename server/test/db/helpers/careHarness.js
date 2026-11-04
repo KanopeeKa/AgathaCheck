@@ -63,11 +63,6 @@ async function ensureCareDateOutcomeMigration(pool) {
 }
 
 async function ensureCareItemClosedMigration(pool) {
-  const col = await pool.query(
-    `SELECT 1 FROM information_schema.columns
-     WHERE table_name = 'health_entries' AND column_name = 'care_closed_reason'`,
-  );
-  if (col.rows.length > 0) return;
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
