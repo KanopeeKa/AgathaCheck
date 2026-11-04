@@ -82,7 +82,6 @@ async function reverse(ctx, event, { restoreEntry }) {
  * @param {{ undoToken?: string|null, occurrenceId?: string|null }} params
  */
 export async function undoCommand(ctx, { undoToken = null, occurrenceId = null } = {}) {
-  assertItemOpen(ctx.entry);
   const { db } = ctx;
   const events = await loadUndoableEvents(db, ctx.entry.id);
   let event = events[0] || null;

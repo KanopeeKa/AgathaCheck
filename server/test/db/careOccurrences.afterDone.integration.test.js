@@ -263,13 +263,14 @@ describe('lifecycle and compatibility routes', () => {
     expect(reopened.body.code).toBe('care_item_closed');
   });
 
-  it('undo is refused after one-off care closes on completion', async () => {
+  it('undo after one-off completion restores active when sync auto-closed the item', async () => {
     const entry = await created({ care_family: 'other', frequency: 'once', next_due_date: '2026-06-05' }, '2026-06-01T09:00');
     const done = await api.at('2026-06-05T09:00').complete(entry.id, entry.open_occurrences[0].id, {});
     expect(done.body.entry.status).toBe('closed');
     const undone = await api.at('2026-06-05T09:01').undo(entry.id, { undo_token: done.body.undo_token });
-    expect(undone.statusCode).toBe(409);
-    expect(undone.body.code).toBe('care_item_closed');
+    expect(undone.statusCode).toBe(200);
+    expect(undone.body.entry.status).toBe('active');
+    expect(undone.body.entry.open_occurrences.length).toBeGreaterThan(0);
   });
 
   it('F7 archived care is closed stopped_by_user and cannot reopen', async () => {
