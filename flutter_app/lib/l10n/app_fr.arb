@@ -160,6 +160,16 @@
     }
   },
   "allCareInactiveSection": "Autres soins",
+  "allCareClosedCareLink": "Soins fermés ({count})",
+  "@allCareClosedCareLink": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "allCareClosedCareTitle": "Soins fermés",
+  "allCareClosedCareEmpty": "Aucun soin fermé pour le moment.",
+  "careItemClosedStatusEnded": "Fermé · Terminé",
+  "careItemClosedStatusStoppedByYou": "Fermé · Arrêté par vous",
   "eventFilterClosed": "Fermé",
   "eventFilterRecurring": "Récurrent",
   "eventFilterOneTime": "Ponctuel",
