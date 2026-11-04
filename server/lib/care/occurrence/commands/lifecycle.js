@@ -12,10 +12,10 @@ import { insertCareScheduleEvent } from '../../schedule/scheduleEventLedger.js';
 import { CareCommandError } from '../careCommandError.js';
 import { updateEntryFields } from '../entryRepository.js';
 import {
+  applyOpenOccurrencePauseCloseRule,
   closeAllOpen,
   deleteOpenOccurrences,
   insertOpenOccurrence,
-  markNotRecorded,
   moveOpenOccurrence,
 } from '../occurrenceRepository.js';
 
@@ -71,7 +71,7 @@ function cadenceChanged(before, after) {
  * @param {{ before: object, requestedNextDate?: string|null }} params
  */
 export async function reconcileScheduleEdit(ctx, { before, requestedNextDate = null }) {
-  const { db, entry, openRows, asOf } = ctx;
+  const { db, entry, openRows, asOf, trace } = ctx;
   const changes = [];
   if ((entry.care_planning || 'planned') === 'unplanned' || entry.status === 'completed') {
     return { event: null, result: { changes } };
@@ -82,9 +82,13 @@ export async function reconcileScheduleEdit(ctx, { before, requestedNextDate = n
   let anchorFields = null;
 
   if (wasFixed && !isFixed) {
-    for (const row of openRows.filter((o) => o.origin === 'schedule')) {
-      await markNotRecorded(db, { entryId: entry.id, occurrenceId: row.id });
-    }
+    await applyOpenOccurrencePauseCloseRule(db, {
+      entryId: entry.id,
+      rows: openRows,
+      asOf,
+      trace,
+      onlyOrigin: 'schedule',
+    });
     changes.push('fixed_to_after_done');
   } else if (!wasFixed && isFixed) {
     const computed = openRows.filter((o) => o.origin === 'computed');
@@ -131,9 +135,12 @@ export async function reconcileScheduleEdit(ctx, { before, requestedNextDate = n
 
   const endIso = dateToIsoDate(entry.repeat_end_date);
   if (endIso) {
-    for (const row of openRows.filter((o) => o.scheduled_date > endIso)) {
-      await markNotRecorded(db, { entryId: entry.id, occurrenceId: row.id });
-    }
+    await applyOpenOccurrencePauseCloseRule(db, {
+      entryId: entry.id,
+      rows: openRows.filter((o) => o.scheduled_date > endIso),
+      asOf,
+      trace,
+    });
   }
   if (anchorFields) await updateEntryFields(db, entry.id, anchorFields);
   if (changes.length) {
@@ -153,8 +160,8 @@ export async function reconcileScheduleEdit(ctx, { before, requestedNextDate = n
  * @param {object} ctx
  */
 export async function closeSeriesCommand(ctx) {
-  const { db, entry, userId, asOf } = ctx;
-  await closeAllOpen(db, entry.id, userId, 'system');
+  const { db, entry, userId, asOf, trace } = ctx;
+  await closeAllOpen(db, entry.id, userId, 'system', { asOf, trace });
   const once = !seriesStep(entry);
   await db.query(
     `UPDATE health_entries SET status = 'completed',

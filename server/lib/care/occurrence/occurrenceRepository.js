@@ -6,12 +6,17 @@
 import { v4 as uuidv4 } from 'uuid';
 
 import { dateToIsoDate } from '../../calendarDate.js';
+import { slotHasStarted } from '../schedule/occurrenceStatus.js';
 import { normalizeOccurrenceRow } from './occurrenceRowNormalize.js';
 
 export { normalizeOccurrenceRow, rowSlot } from './occurrenceRowNormalize.js';
 export {
   confirmNotRecordedAsSkipped,
   markCompleted,
+  markNotRecorded,
+  markSkipped,
+} from './occurrenceStatusWrites.js';
+import {
   markNotRecorded,
   markSkipped,
 } from './occurrenceStatusWrites.js';
@@ -92,7 +97,9 @@ export async function findOccurrence(db, entryId, occurrenceId) {
     'SELECT * FROM health_occurrences WHERE id = $1 AND health_entry_id = $2',
     [occurrenceId, entryId],
   );
-  return normalizeOccurrenceRow(result.rows[0] || null);
+  const row = result.rows[0];
+  if (!row) return null;
+  return normalizeOccurrenceRow(row);
 }
 
 /**
@@ -187,6 +194,26 @@ export async function insertOpenOccurrence(db, {
  * @param {object} before row snapshot taken before the command
  */
 export async function restoreOccurrence(db, entryId, before) {
+  const existing = await findOccurrence(db, entryId, before.id);
+  if (!existing && before.status === 'pending') {
+    const result = await db.query(
+      `INSERT INTO health_occurrences
+         (id, health_entry_id, scheduled_date, scheduled_time, status, origin, series_date)
+       VALUES ($1, $2, $3, $4, 'pending', $5, $6)
+       ON CONFLICT DO NOTHING
+       RETURNING *`,
+      [
+        before.id,
+        entryId,
+        before.scheduled_date,
+        before.scheduled_time ?? null,
+        before.origin || 'computed',
+        before.series_date ?? null,
+      ],
+    );
+    if (result.rows[0]) return normalizeOccurrenceRow(result.rows[0]);
+    return null;
+  }
   if (before.status === 'pending') {
     const clash = await db.query(
       `SELECT 1 FROM health_occurrences
@@ -331,23 +358,86 @@ export async function updateCompletedOn(db, {
 }
 
 /**
+ * CARE-STATUS-R-008: started open dates → Not recorded (or Skipped when the user
+ * closes); not-yet-due dates are removed with no ledger row.
+ *
+ * @param {import('pg').PoolClient} db
+ * @param {object} params
+ * @param {string} params.entryId
+ * @param {object[]} params.rows open rows to consider
+ * @param {{ todayIso: string, nowTimeIso?: string|null, timeZone?: string }} params.asOf
+ * @param {{ closedRow(object): void }|null} [params.trace]
+ * @param {string|null} [params.until] pause-until date: slots on or after this stay open
+ * @param {string|null} [params.onlyOrigin] limit to one origin
+ * @param {'not_recorded'|'skipped'} [params.startedStatus]
+ * @param {string|null} [params.userId]
+ */
+export async function applyOpenOccurrencePauseCloseRule(db, {
+  entryId,
+  rows,
+  asOf,
+  trace = null,
+  until = null,
+  onlyOrigin = null,
+  startedStatus = 'not_recorded',
+  userId = null,
+}) {
+  const closedIds = [];
+  for (const row of rows) {
+    if (onlyOrigin && row.origin !== onlyOrigin) continue;
+    const date = dateToIsoDate(row.scheduled_date);
+    if (until && date >= until) continue;
+    const slot = { date, time: row.scheduled_time ?? null };
+    if (slotHasStarted(slot, asOf)) {
+      const done = startedStatus === 'skipped'
+        ? await markSkipped(db, { entryId, occurrenceId: row.id, userId })
+        : await markNotRecorded(db, { entryId, occurrenceId: row.id, userId });
+      if (done) {
+        closedIds.push(row.id);
+        trace?.closedRow(row);
+      }
+    } else {
+      const deleted = await deleteOpenOccurrences(db, entryId, [row.id]);
+      if (deleted.length) {
+        closedIds.push(row.id);
+        trace?.closedRow(row);
+      }
+    }
+  }
+  return closedIds;
+}
+
+/**
  * Close every open occurrence of an item (series closed / archived).
  *
  * @param {import('pg').PoolClient} db
  * @param {string} entryId
  * @param {string|null} userId
  * @param {'system'|'user'} closeReason
+ * @param {{ todayIso: string, nowTimeIso?: string|null, timeZone?: string }} asOf
+ * @param {{ closedRow(object): void }|null} [trace]
  */
-export async function closeAllOpen(db, entryId, userId, closeReason = 'system') {
-  const status = closeReason === 'user' ? 'skipped' : 'not_recorded';
-  const result = await db.query(
-    `UPDATE health_occurrences SET status = $1,
-       marked_at = NOW(), marked_by_user_id = $2, updated_at = NOW()
-     WHERE health_entry_id = $3 AND status = 'pending'
-     RETURNING id`,
-    [status, userId, entryId],
-  );
-  return result.rows.map((r) => r.id);
+export async function closeAllOpen(db, entryId, userId, closeReason = 'system', { asOf, trace } = {}) {
+  if (!asOf) {
+    const status = closeReason === 'user' ? 'skipped' : 'not_recorded';
+    const result = await db.query(
+      `UPDATE health_occurrences SET status = $1,
+         marked_at = NOW(), marked_by_user_id = $2, updated_at = NOW()
+       WHERE health_entry_id = $3 AND status = 'pending'
+       RETURNING id`,
+      [status, userId, entryId],
+    );
+    return result.rows.map((r) => r.id);
+  }
+  const open = await listOpenRows(db, entryId);
+  return applyOpenOccurrencePauseCloseRule(db, {
+    entryId,
+    rows: open,
+    asOf,
+    trace,
+    startedStatus: closeReason === 'user' ? 'skipped' : 'not_recorded',
+    userId,
+  });
 }
 
 /**

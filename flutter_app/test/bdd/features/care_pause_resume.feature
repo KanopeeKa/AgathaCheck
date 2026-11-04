@@ -12,5 +12,6 @@ Feature: Care item pause and resume
     Given "Rex" has monthly flea treatment due on "2026-06-05"
     When the user pauses the care item from the item menu without an end date
     Then the care item shows as paused
+    And the care item has no open dates
     When the user resumes the care item with the suggested date
     Then the care item has an open date on the resume date
