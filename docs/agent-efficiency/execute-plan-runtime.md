@@ -3,7 +3,7 @@ title: Execute Plan Runtime
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-11-01
+last_updated: 2026-11-03
 tags: [agent-efficiency, policy]
 ---
 # Execute-plan runtime
@@ -37,7 +37,7 @@ node scripts/validate_execute_plan_snapshot.js --drift-test
 
 | Command | Purpose |
 |---------|---------|
-| `init <plan_id>` | Create control issue + v2 snapshot |
+| `init <plan_id>` | Create control issue + v2 snapshot (init branch committed diff vs `main` must be only the two plan paths; uses `--no-renames`) |
 | `tick <plan_id> [--json] [--actor agent\|driver]` | Observe → decide → persist (worker/driver) |
 | `gate <plan_id>` | Alias of `tick` (no `--labels`) |
 | `watch-ci <plan_id> --pr <n>` | Wait for required checks on a PR |
@@ -47,7 +47,9 @@ node scripts/validate_execute_plan_snapshot.js --drift-test
 | `complete-plan <plan_id> [--write]` | v2 Definition of Done + close control issue |
 | `check-diff --pr <n>` | Scope check helper for plan PRs |
 
-Exit codes (`tick`): `0` action, `2` stop, `3` config/worker token.
+Exit codes (`tick`): `0` action, `2` stop, `3` config/worker token.  
+`init` also exits `3` when the init branch has committed paths other than `.agents/plans/<plan_id>.md`
+(and the snapshot if already on the branch), or when the working tree is dirty outside those paths.
 
 ### Legacy roadmap (schema 1 on disk)
 

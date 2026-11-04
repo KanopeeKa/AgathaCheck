@@ -242,8 +242,12 @@ async function runInit({ client, planId, windowDays = 7, dryRun = false, git, no
 4. `validate_execute_plan_snapshot.js`: `schema_version === 2` → v2 validator (reads the plan file
    next to it); `--fix-hash` on a v2 file exits `1` with `--fix-hash is not allowed for v2 snapshots`.
 5. `runInit` (CLI `node scripts/execute_plan_runtime.js init <plan_id> [--window-days N] [--dry-run]`):
-   a. Current branch must be `cursor/<plan_id>-init`; `git status --porcelain` may list only
-      `.agents/plans/<plan_id>.md`; otherwise exit `3` with the reason.
+   a. Current branch must be `cursor/<plan_id>-init`. Compare committed diff vs `main`
+      (`git diff --no-renames` on `merge-base..HEAD`): only `.agents/plans/<plan_id>.md` and
+      `.agents/plans/<plan_id>.snapshot.json`. Any other path (including a rename source path)
+      → exit `3` with a message to move extras in a separate PR on `main`. Each `init` run
+      creates a new control issue. `git status --porcelain` may list only the plan markdown and
+      an uncommitted snapshot left from a failed prior `init`; otherwise exit `3`.
    b. Parse and validate the plan markdown (rule 2).
    c. Create the control issue: title `execute-plan: <title> (<plan_id>)`, label `execute-plan`,
       body = phase table (id, title, branch, allowed paths), window, `Approval hash: pending`.

@@ -206,14 +206,24 @@ test('release uses union', () => {
   assert.equal(verdict('flutter_app/lib/features/care/widgets/x.dart', 'phase', '1'), 'unclassified');
 });
 
-test('release allows supportFiles union from side PRs merged to main', () => {
+test('release skips files unchanged on main; protected files that differ stay protected', () => {
   const side = 'scripts/ci/web-bundle-budget.json';
-  const support = new Set([side]);
-  const r = evaluate([side], 'release', null, { supportFiles: support, ownPlanFilesVerified: true });
+  const unchanged = new Set([side]);
+  const r = evaluate([side], 'release', null, { unchangedOnMain: unchanged, ownPlanFilesVerified: true });
   assert.equal(r.conclusion, 'success');
   assert.deepEqual(r.violations, []);
-  const phaseOnly = evaluate([side], 'phase', '1', { supportFiles: support });
-  assert.equal(phaseOnly.title, 'unclassified');
+  const protectedPath = '.github/workflows/ci.yml';
+  const r2 = evaluate([protectedPath], 'release', null, { unchangedOnMain: new Set(), ownPlanFilesVerified: true });
+  assert.equal(r2.title, 'protected');
+  const noopProtected = evaluate([protectedPath], 'release', null, {
+    unchangedOnMain: new Set([protectedPath]),
+    ownPlanFilesVerified: true,
+  });
+  assert.equal(noopProtected.conclusion, 'success');
+});
+
+test('RUNNING worker gate: classify unchanged protected separately from diff', () => {
+  assert.equal(verdict('.github/workflows/ci.yml', 'release'), 'protected');
 });
 
 test('remedial allows e2e and tests', () => {

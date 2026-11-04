@@ -11,7 +11,6 @@ import '../../application/people_commands.dart';
 import '../../application/people_providers.dart';
 import '../../domain/entities/contact_detail.dart';
 import '../../domain/entities/roster.dart';
-import '../detail/person_detail_target.dart';
 import 'person_edit_danger_zone.dart';
 import 'person_form_controller.dart';
 import 'person_form_errors.dart';
@@ -111,7 +110,6 @@ class _PersonEditContactFormState extends ConsumerState<PersonEditContactForm> {
   }) {
     final summary = widget.roster.summaryById(widget.contactId);
     final petLinks = summary?.pets ?? const [];
-    final petOptions = rosterPetOptions(widget.roster);
 
     return Form(
       key: _formKey,
@@ -132,7 +130,6 @@ class _PersonEditContactFormState extends ConsumerState<PersonEditContactForm> {
           PersonEditPetsSection(
             contactId: widget.contactId,
             petLinks: petLinks,
-            rosterPetOptions: petOptions,
           ),
           const SizedBox(height: 16),
           PersonEditDangerZone(

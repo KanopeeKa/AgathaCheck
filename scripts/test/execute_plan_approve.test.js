@@ -40,17 +40,18 @@ const mkComment = (body, over = {}) => ({
 });
 const event = (comment, over = {}) => ({ action: 'created', issue: mkIssue(), comment, ...over });
 
-function setup({ files = PLAN_FILES, integration = null, issueComments = [], snapshotAtSha = SNAP } = {}) {
+function setup({ files = PLAN_FILES, compareFiles = null, integration = null, issueComments = [], snapshotAtSha = SNAP } = {}) {
   const writes = [];
   const dispatches = [];
   const rec = (kind) => async (...args) => { writes.push([kind, ...args]); return {}; };
+  const comparePayload = compareFiles || files.map((filename) => ({ filename }));
   const read = {
     getFileAtRef: async (path, ref) => {
       if (path.endsWith('execute-plan.config.json')) return { content: JSON.stringify(CONFIG), sha: 's' };
       if (ref !== SHA) return null;
       return { content: path.endsWith('.json') ? JSON.stringify(snapshotAtSha) : PLAN_MD, sha: 's' };
     },
-    compare: async () => ({ files: files.map((filename) => ({ filename })) }),
+    compare: async () => ({ files: comparePayload }),
     getBranch: async () => integration,
     dispatchWorkflow: async (file, ref, inputs) => { dispatches.push([file, ref, inputs]); },
     createComment: rec('readComment'),
@@ -158,12 +159,24 @@ test('init branch with extra files → rejected', async () => {
   await run(s, event(mkComment(APPROVE)));
   assert.deepEqual(kinds(s), ['createComment']);
   assert.match(s.writes[0][2], /exactly the two plan files \(found: .*server\/evil\.js\)/);
+  assert.match(s.writes[0][2], /separate PR against `main`/);
+  assert.match(s.writes[0][2], /server\/evil\.js/);
+});
+
+test('init branch rename source counts as extra → rejected', async () => {
+  const s = setup({
+    compareFiles: [{ filename: PLAN_FILES[0], previous_filename: 'server/evil.js' }, { filename: PLAN_FILES[1] }],
+  });
+  await run(s, event(mkComment(APPROVE)));
+  assert.match(s.writes[0][2], /server\/evil\.js/);
+  assert.match(s.writes[0][2], /separate PR against `main`/);
 });
 
 test('init branch with only one plan file → rejected', async () => {
   const s = setup({ files: [PLAN_FILES[0]] });
   await run(s, event(mkComment(APPROVE)));
   assert.match(s.writes[0][2], /exactly the two plan files/);
+  assert.match(s.writes[0][2], /missing file/);
 });
 
 test('missing Init branch line or a snapshot that is not at the sha → rejected', async () => {
@@ -319,7 +332,10 @@ test('WP12: running worker on active plan → needs-owner and stopped note', asy
     planId: PLAN_ID,
     snapshot: SNAP,
     config: CONFIG,
-    status: { lease: { agent_id: 'bc-2', run_id: 'run-2' }, stop: null },
+    status: {
+      lease: { agent_id: 'bc-2', run_id: 'run-2', last_tick_at: NOW, launched_at: NOW },
+      stop: null,
+    },
     comments: [
       mkComment(APPROVE, { id: 100, created_at: '2026-10-16T09:00:00Z', updated_at: '2026-10-16T09:00:00Z' }),
     ],
@@ -341,4 +357,64 @@ test('WP12: resume clears needs-owner and autonomous-revoked on accept', async (
     s.writes.filter((w) => w[0] === 'removeLabel'),
     [['removeLabel', 9, 'needs-owner'], ['removeLabel', 9, 'autonomous-revoked']],
   );
+});
+
+test('WP12: RUNNING worker blocks even with stale last_tick_at', async () => {
+  const approved = mkIssue(['execute-plan', 'autonomous-approved', `plan:${PLAN_ID}`]);
+  const s = setup();
+  s.clients.cursorApiKey = 'key';
+  s.clients.deps.getAgentRunStatus = async () => 'RUNNING';
+  s.clients.deps.loadPlanContext = async () => ({
+    planId: PLAN_ID,
+    snapshot: SNAP,
+    config: CONFIG,
+    status: {
+      lease: { agent_id: 'bc-2', run_id: 'run-2', last_tick_at: '2026-10-16T08:00:00Z', launched_at: '2026-10-16T08:00:00Z' },
+      stop: null,
+    },
+    comments: [mkComment(APPROVE, { id: 100, created_at: '2026-10-16T09:00:00Z', updated_at: '2026-10-16T09:00:00Z' })],
+    acceptedAuthorizations: new Set([100]),
+  });
+  const res = await handleControlComment(s.clients, event(mkComment(RESUME), { issue: approved }), { now: NOW, killSwitch: 'on', runId: 505 });
+  assert.match(res.detail, /rejected \(worker running\)/);
+});
+
+test('WP12: UNKNOWN after lease TTL allows ack', async () => {
+  const approved = mkIssue(['execute-plan', 'autonomous-approved', `plan:${PLAN_ID}`]);
+  const s = setup();
+  s.clients.cursorApiKey = 'key';
+  s.clients.deps.getAgentRunStatus = async () => 'UNKNOWN';
+  s.clients.deps.loadPlanContext = async () => ({
+    planId: PLAN_ID,
+    snapshot: SNAP,
+    config: CONFIG,
+    status: {
+      lease: { agent_id: 'bc-2', run_id: 'run-2', last_tick_at: '2026-10-16T08:00:00Z', launched_at: '2026-10-16T08:00:00Z' },
+      stop: null,
+    },
+    comments: [mkComment(APPROVE, { id: 100, created_at: '2026-10-16T09:00:00Z', updated_at: '2026-10-16T09:00:00Z' })],
+    acceptedAuthorizations: new Set([100]),
+  });
+  const res = await handleControlComment(s.clients, event(mkComment(RESUME), { issue: approved }), { now: NOW, killSwitch: 'on', runId: 506 });
+  assert.equal(res.handled, true);
+  assert.equal(s.writes.find((w) => w[0] === 'readComment')[2], formatAck(4242, 506));
+});
+
+test('WP12: missing CURSOR_API_KEY with lease posts key-unavailable note, no needs-owner', async () => {
+  const approved = mkIssue(['execute-plan', 'autonomous-approved', `plan:${PLAN_ID}`]);
+  const s = setup();
+  delete s.clients.cursorApiKey;
+  s.clients.deps.loadPlanContext = async () => ({
+    planId: PLAN_ID,
+    snapshot: SNAP,
+    config: CONFIG,
+    status: { lease: { agent_id: 'bc-2', run_id: 'run-2' }, stop: null },
+    comments: [mkComment(APPROVE, { id: 100, created_at: '2026-10-16T09:00:00Z', updated_at: '2026-10-16T09:00:00Z' })],
+    acceptedAuthorizations: new Set([100]),
+  });
+  const { formatKeyUnavailableNote } = require('../lib/execute_plan_ack');
+  const res = await handleControlComment(s.clients, event(mkComment(RESUME), { issue: approved }), { now: NOW, killSwitch: 'on', runId: 507 });
+  assert.match(res.detail, /no CURSOR_API_KEY/);
+  assert.equal(s.writes.find((w) => w[0] === 'addLabels'), undefined);
+  assert.equal(s.writes.find((w) => w[0] === 'readComment')[2], formatKeyUnavailableNote('resume', 4242));
 });
