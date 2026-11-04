@@ -7,6 +7,7 @@ import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import '../../widgets/all_care/all_care_closed.dart';
+import '../../widgets/all_care/all_care_closed_copy.dart';
 import 'closed_care_row.dart';
 
 /// Pet-scoped list of closed care items (CARE-STATUS-R-021).
@@ -30,14 +31,14 @@ class ClosedCareListScreen extends ConsumerWidget {
         );
 
     return Scaffold(
-      appBar: AppBar(title: Text(l.allCareClosedCareTitle)),
+      appBar: AppBar(title: Text(allCareClosedCareTitleLabel(l))),
       body: entriesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, _) => Center(child: Text(l.errorWithMessage('$error'))),
         data: (entries) {
           final closed = partitionClosedCareEntries(entries);
           if (closed.isEmpty) {
-            return Center(child: Text(l.allCareClosedCareEmpty));
+            return Center(child: Text(allCareClosedCareEmptyLabel(l)));
           }
           return Semantics(
             identifier: 'closed_care_list',

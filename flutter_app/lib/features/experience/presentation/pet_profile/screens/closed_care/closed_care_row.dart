@@ -7,6 +7,7 @@ import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import 'package:pet_profile_app/features/pet_care/pet_care.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
+import '../../widgets/all_care/all_care_closed_copy.dart';
 import '../../widgets/pet_list/home_event_actions.dart';
 
 /// One closed care row: family subtitle only, status line without dates (R-021).
@@ -58,12 +59,6 @@ class ClosedCareRow extends ConsumerWidget {
   }
 }
 
-/// API wire value for user-initiated close (CARE-STATUS-R-010).
-const _careClosedReasonStoppedByUser = 'stopped_by_user';
-
 String closedCareStatusLabel(AppLocalizations l, String? careClosedReason) {
-  if (careClosedReason == _careClosedReasonStoppedByUser) {
-    return l.careItemClosedStatusStoppedByYou;
-  }
-  return l.careItemClosedStatusEnded;
+  return closedCareRowStatusLabel(l, careClosedReason);
 }
