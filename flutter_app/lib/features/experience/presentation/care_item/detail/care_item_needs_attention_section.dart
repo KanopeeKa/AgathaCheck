@@ -143,10 +143,7 @@ class _CareItemNeedsAttentionSectionState
         content: message,
         undoLabel: l.snackbarUndo,
         onUndo: () async {
-          await service.undo(
-            entryId: _s.entryId,
-            undoToken: undoToken,
-          );
+          await service.undo(entryId: _s.entryId, undoToken: undoToken);
           await _refresh();
         },
       );

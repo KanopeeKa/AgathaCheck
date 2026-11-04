@@ -129,14 +129,11 @@ void main() {
     await tester.tap(find.byKey(const Key('care_item_bulk_mark_done')));
     await tester.pumpAndSettle();
     expect(requests, hasLength(3));
-    expect(
-      requests.map((r) => r.url.path),
-      [
-        endsWith('/occurrences/slot-0/complete'),
-        endsWith('/occurrences/slot-1/complete'),
-        endsWith('/occurrences/slot-2/complete'),
-      ],
-    );
+    expect(requests.map((r) => r.url.path), [
+      endsWith('/occurrences/slot-0/complete'),
+      endsWith('/occurrences/slot-1/complete'),
+      endsWith('/occurrences/slot-2/complete'),
+    ]);
     expect(find.text('3 marked done'), findsOneWidget);
     expect(find.byIcon(Icons.close), findsOneWidget);
     await tester.pump(kUndoSnackBarDuration);
