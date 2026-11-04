@@ -2,8 +2,6 @@
  * Persist care item Closed status (CARE-STATUS-R-009, R-010).
  */
 
-import { dateToIsoDate } from '../../calendarDate.js';
-import { reloadEntry } from '../occurrence/entryRepository.js';
 import {
   CARE_CLOSED_REASON_ENDED,
   CARE_ITEM_STATUS_CLOSED,
@@ -40,24 +38,4 @@ export async function closeItemAsEnded(db, entryId, fields = {}) {
     ],
   );
   return result.rows[0] || null;
-}
-
-/**
- * @param {import('pg').PoolClient} db
- * @param {object} entry health_entries row
- * @param {{ todayIso: string }} asOf
- */
-export async function closeItemIfSeriesFinished(db, entry, asOf) {
-  if ((entry.status || 'active') !== 'active') return entry;
-  const completedOn = dateToIsoDate(entry.completed_on);
-  const endIso = dateToIsoDate(entry.repeat_end_date);
-  if ((entry.frequency || 'once') === 'once' || entry.frequency == null) {
-    if (!completedOn) return entry;
-    return closeItemAsEnded(db, entry.id, {
-      completedOn,
-      completedAt: entry.completed_at ?? new Date(),
-    });
-  }
-  if (!endIso) return entry;
-  return closeItemAsEnded(db, entry.id, { repeatEndDate: endIso });
 }
