@@ -117,31 +117,34 @@ export async function loadDeclarerDisplayName(pool, viewerUserId, declarerUserId
  */
 export function coVisibleAbsencesListSql(scope, todayIso) {
   const profileSql = petProfileAccessSql('p', '$1');
-  const base = `SELECT DISTINCT pa.*
+  const visibleIds = `SELECT DISTINCT pa.id
      FROM planned_absences pa
      INNER JOIN planned_absence_pets pap ON pap.planned_absence_id = pa.id
      INNER JOIN pets p ON p.id = pap.pet_id
      WHERE pa.user_id != $1
        AND pa.status != $2
        AND ${profileSql}`;
+  const selectPa = `SELECT pa.*
+     FROM planned_absences pa
+     WHERE pa.id IN (${visibleIds}`;
   if (scope === 'upcoming') {
     return {
-      sql: `${base}
-         AND pa.ends_on >= $3::date
-         ORDER BY pa.starts_on ASC`,
+      sql: `${selectPa}
+         AND pa.ends_on >= $3::date)
+       ORDER BY pa.starts_on ASC`,
       params: [PLANNED_ABSENCE_STATUS_CANCELLED, todayIso],
     };
   }
   if (scope === 'past') {
     return {
-      sql: `${base}
-         AND pa.ends_on < $3::date
-         ORDER BY pa.starts_on DESC`,
+      sql: `${selectPa}
+         AND pa.ends_on < $3::date)
+       ORDER BY pa.starts_on DESC`,
       params: [PLANNED_ABSENCE_STATUS_CANCELLED, todayIso],
     };
   }
   return {
-    sql: `${base}
+    sql: `${selectPa})
        ORDER BY (pa.ends_on < $3::date)::int,
                 CASE WHEN pa.ends_on >= $3::date THEN pa.starts_on END ASC NULLS LAST,
                 CASE WHEN pa.ends_on < $3::date THEN pa.starts_on END DESC NULLS LAST`,
