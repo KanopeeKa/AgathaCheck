@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
-import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
+import 'package:pet_profile_app/features/auth/application/auth_providers.dart';
 
 /// Loads `care_closed_reason` for detail subtitle (phase-4 scope: detail layer only).
 final careItemClosedReasonProvider = FutureProvider.autoDispose
