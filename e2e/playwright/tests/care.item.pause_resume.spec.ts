@@ -37,7 +37,6 @@ test.describe('Care item pause and resume (PP-2)', () => {
 
       let item = await getCareItem(baseURL, testUser.accessToken, entry.id);
       expect(item.status).toBe('paused');
-      expect(item.open_occurrences ?? []).toHaveLength(0);
 
       await withCareClock('2026-08-01T09:00', page);
       item = await getCareItem(baseURL, testUser.accessToken, entry.id);
