@@ -11,6 +11,7 @@ import '../../widgets/pet_list/home_event_actions.dart';
 import 'all_care_closed.dart';
 import 'all_care_closed_footer.dart';
 import 'all_care_inactive_section.dart';
+import '../../screens/closed_care/closed_care_list_body.dart';
 
 /// Pet-scoped All care: agenda groups (D-CIE-025), then Other care (paused only),
 /// then a **Closed care** link when the pet has closed items (CARE-STATUS-R-021).
@@ -25,6 +26,7 @@ class AllCareList extends ConsumerStatefulWidget {
 
 class _AllCareListState extends ConsumerState<AllCareList> {
   var _requestedRefresh = false;
+  var _showClosedCare = false;
 
   @override
   Widget build(BuildContext context) {
@@ -63,6 +65,13 @@ class _AllCareListState extends ConsumerState<AllCareList> {
               .toList(),
         );
 
+        if (_showClosedCare) {
+          return ClosedCareListBody(
+            petId: widget.petId,
+            onBack: () => setState(() => _showClosedCare = false),
+          );
+        }
+
         return Semantics(
           identifier: 'all_care_list',
           container: true,
@@ -95,8 +104,9 @@ class _AllCareListState extends ConsumerState<AllCareList> {
                         HomeEventActions.viewEntry(context, entry),
                   ),
                   AllCareClosedFooter(
-                    petId: widget.petId,
                     closedCount: closed.length,
+                    onOpenClosedCare: () =>
+                        setState(() => _showClosedCare = true),
                   ),
                 ],
               ],

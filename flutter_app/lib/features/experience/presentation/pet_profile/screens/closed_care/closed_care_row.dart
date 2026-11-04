@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
-import 'package:pet_profile_app/core/router/shell_return_navigation.dart';
 import 'package:pet_profile_app/features/care_taxonomy/care_taxonomy.dart';
 import 'package:pet_profile_app/features/experience/presentation/care_item/detail/care_item_closed_reason_provider.dart';
 import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
@@ -10,6 +8,7 @@ import 'package:pet_profile_app/features/pet_care/pet_care.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import '../../widgets/all_care/all_care_closed_copy.dart';
+import '../../widgets/pet_list/home_event_actions.dart';
 
 /// One closed care row: family subtitle only, status line without dates (R-021).
 class ClosedCareRow extends ConsumerWidget {
@@ -55,21 +54,9 @@ class ClosedCareRow extends ConsumerWidget {
       semanticLabel: semanticLabel,
       leading: CareFamilyIcon.forEntry(entry),
       rowSemanticsIdentifier: 'closed_care_row_${entry.id}',
-      onTap: () => openClosedCareEntryDetail(context, entry),
+      onTap: () => HomeEventActions.viewEntry(context, entry),
     );
   }
-}
-
-/// Pops the Material [ClosedCareListScreen], then pushes Care details on
-/// go_router (CARE-STATUS-R-021).
-void openClosedCareEntryDetail(BuildContext context, HealthEntry entry) {
-  final petId = entry.petId;
-  if (petId.isEmpty) return;
-  final router = GoRouter.of(context);
-  final returnTo = currentShellLocation(context);
-  final location = petEventViewLocation(petId, entry.id, returnTo: returnTo);
-  Navigator.of(context, rootNavigator: true).pop();
-  router.push(location);
 }
 
 String closedCareStatusLabel(AppLocalizations l, String? careClosedReason) {
