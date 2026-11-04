@@ -20,6 +20,7 @@ export {
   careClosedReasonForWire,
   isItemClosed,
 } from './itemStatus.js';
+export { closeItemAsEnded, closeItemIfSeriesFinished } from './closeItemWrite.js';
 export {
   isMultiPerDayEntry,
   isOccurrenceMissed,

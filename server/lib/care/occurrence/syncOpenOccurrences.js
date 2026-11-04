@@ -24,11 +24,8 @@ import { nextComputedDate } from '../schedule/nextComputed.js';
 import { scheduleTimesFromEntry } from '../schedule/scheduleTimes.js';
 import { seriesDateAfter, seriesStep } from '../schedule/seriesDates.js';
 import { insertCareScheduleEvent } from '../schedule/scheduleEventLedger.js';
-import {
-  CARE_CLOSED_REASON_ENDED,
-  CARE_ITEM_STATUS_CLOSED,
-  isItemClosed,
-} from '../item/itemStatus.js';
+import { closeItemAsEnded } from '../item/closeItemWrite.js';
+import { isItemClosed } from '../item/itemStatus.js';
 import { reloadEntry, updateEntryFields } from './entryRepository.js';
 import {
   deleteOpenOccurrences,
@@ -189,28 +186,14 @@ async function finishIfNothingLeft(db, entry, asOf) {
     );
     if (closed.rows.length === 0) return entry;
     const row = closed.rows[0];
-    await db.query(
-      `UPDATE health_entries SET status = $1, care_closed_reason = $2,
-         completed_on = COALESCE(completed_on, $3::date),
-         completed_at = COALESCE(completed_at, NOW()), updated_at = NOW()
-       WHERE id = $4`,
-      [
-        CARE_ITEM_STATUS_CLOSED,
-        CARE_CLOSED_REASON_ENDED,
-        dateToIsoDate(row.completed_on) || dateToIsoDate(row.scheduled_date) || asOf.todayIso,
-        entry.id,
-      ],
-    );
-    return reloadEntry(db, entry.id);
+    return closeItemAsEnded(db, entry.id, {
+      completedOn: dateToIsoDate(row.completed_on) || dateToIsoDate(row.scheduled_date) || asOf.todayIso,
+      completedAt: new Date(),
+    });
   }
   const endIso = dateToIsoDate(entry.repeat_end_date);
   if (!endIso) return entry;
-  await db.query(
-    `UPDATE health_entries SET status = $1, care_closed_reason = $2, updated_at = NOW()
-     WHERE id = $3`,
-    [CARE_ITEM_STATUS_CLOSED, CARE_CLOSED_REASON_ENDED, entry.id],
-  );
-  return reloadEntry(db, entry.id);
+  return closeItemAsEnded(db, entry.id, { repeatEndDate: endIso });
 }
 
 async function writeNextDueDate(db, entry) {

@@ -66,6 +66,12 @@ async function reverse(ctx, event, { restoreEntry }) {
 
   if (payload.entry_before && restoreEntry) {
     await updateEntryFields(db, entry.id, payload.entry_before);
+    if ((payload.entry_before.status || 'active') === 'active') {
+      await db.query(
+        'UPDATE health_entries SET care_closed_reason = NULL WHERE id = $1',
+        [entry.id],
+      );
+    }
   }
   await runObservationUndoHooks(ctx, event);
   return restored;
