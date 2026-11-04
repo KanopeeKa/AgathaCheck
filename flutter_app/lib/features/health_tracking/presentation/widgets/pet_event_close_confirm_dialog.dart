@@ -3,11 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../l10n/app_localizations.dart';
 
 /// User choice from the Close care confirmation dialog (CARE-STATUS-R-016).
-enum CloseCareDialogResult {
-  cancel,
-  recordFirst,
-  confirmClose,
-}
+enum CloseCareDialogResult { cancel, recordFirst, confirmClose }
 
 /// Confirms closing a care item; offers [CloseCareDialogResult.recordFirst]
 /// when [startedOpenCount] is greater than zero.

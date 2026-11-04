@@ -1,7 +1,4 @@
-/**
- * @bdd care_close.feature
- * Scenario: CC-1 owner closes active care from the detail screen
- */
+/** Close care owner journey (phase 5); Gherkin deferred until bdd map side PR. */
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
 import { CareItemPage } from '../pages/care-item.page';
 import {

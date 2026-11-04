@@ -252,10 +252,12 @@ class CareItemDetailScreen extends ConsumerWidget {
                             child: FilledButton(
                               key: const Key('care_item_close_care_button'),
                               style: FilledButton.styleFrom(
-                                backgroundColor:
-                                    Theme.of(context).colorScheme.error,
-                                foregroundColor:
-                                    Theme.of(context).colorScheme.onError,
+                                backgroundColor: Theme.of(
+                                  context,
+                                ).colorScheme.error,
+                                foregroundColor: Theme.of(
+                                  context,
+                                ).colorScheme.onError,
                                 minimumSize: const Size.fromHeight(48),
                               ),
                               onPressed: onCloseCare,
