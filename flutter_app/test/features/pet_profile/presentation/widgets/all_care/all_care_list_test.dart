@@ -128,10 +128,7 @@ void main() {
 
     expect(find.byKey(const Key('all_care_closed_care_link')), findsOneWidget);
     expect(find.text('Closed care (1)'), findsOneWidget);
-    expect(
-      find.byKey(const Key('all_care_inactive_section')),
-      findsNothing,
-    );
+    expect(find.byKey(const Key('all_care_inactive_section')), findsNothing);
     expect(
       find.byKey(const Key('pet_care_action_closed-one-off')),
       findsNothing,

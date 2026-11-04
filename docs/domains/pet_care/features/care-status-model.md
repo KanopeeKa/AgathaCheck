@@ -1,13 +1,12 @@
 ---
 title: Care status model
+owner: Product / Documentation
+audience: both
 domain: pet_care
 feature_id: care-status-model
 status: active
-related_prs: []
-related_bdd:
-  - care_close.feature
 last_updated: 2026-11-04
-tags: [pet_care, care_item, csm]
+related_prs: []
 ---
 
 # Care status model
