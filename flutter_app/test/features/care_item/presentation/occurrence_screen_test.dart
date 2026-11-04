@@ -211,10 +211,7 @@ void main() {
 
   testWidgets('closed not recorded: Record as done', (tester) async {
     final server = _Server([
-      detail(
-        status: 'not_recorded',
-        occStatus: 'not_recorded',
-      ),
+      detail(status: 'not_recorded', occStatus: 'not_recorded'),
     ]);
     await tester.pumpWidget(_wrap(server));
     await tester.pumpAndSettle();

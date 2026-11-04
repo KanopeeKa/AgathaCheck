@@ -40,8 +40,7 @@ class HealthHistoryEntry {
   /// Weight recorded with a completed weigh-in occurrence (kg value).
   final HealthHistoryLinkedWeight? linkedWeight;
 
-  bool get isSkipped =>
-      (outcome ?? status) == 'skipped' || status == 'skipped';
+  bool get isSkipped => (outcome ?? status) == 'skipped' || status == 'skipped';
   bool get isNotRecorded =>
       (outcome ?? status) == 'not_recorded' || status == 'not_recorded';
   bool get isCompleted => status == 'completed' || outcome == 'done';

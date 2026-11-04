@@ -117,11 +117,12 @@ beforeAll(async () => {
   }
   for (const [table, columns] of [
     ['health_entries', ['schedule_anchor_date', 'late_completion_choice', 'paused_until', 'series_resumed_on']],
-    ['health_occurrences', ['origin', 'close_reason', 'series_date']],
+    ['health_occurrences', ['origin', 'series_date']],
     ['care_schedule_events', ['payload', 'undone_at']],
   ]) {
     for (const column of columns) await db.query(`ALTER TABLE ${table} DROP COLUMN ${column} CASCADE`);
   }
+  await db.query('ALTER TABLE health_occurrences DROP COLUMN IF EXISTS close_reason CASCADE');
   await db.query('CREATE TABLE migration083_markers (health_entry_id uuid NOT NULL)');
   await db.query(`
     CREATE FUNCTION migration083_observe() RETURNS trigger LANGUAGE plpgsql AS $$

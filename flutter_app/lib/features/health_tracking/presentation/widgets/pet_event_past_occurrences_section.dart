@@ -87,7 +87,8 @@ class _PastOccurrenceCard extends StatelessWidget {
     final scheduled = formatOccurrenceInstant(occurrence, l, context: context);
 
     final isNotRecorded =
-        occurrence.status == 'not_recorded' || occurrence.outcome == 'not_recorded';
+        occurrence.status == 'not_recorded' ||
+        occurrence.outcome == 'not_recorded';
     final statusLabel = isNotRecorded
         ? l.careStatusNotRecorded
         : occurrence.status == 'skipped'

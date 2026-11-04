@@ -16,7 +16,6 @@ import {
   deleteOpenOccurrences,
   insertOpenOccurrence,
   markNotRecorded,
-  markSkipped,
   moveOpenOccurrence,
 } from '../occurrenceRepository.js';
 
