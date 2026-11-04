@@ -259,8 +259,7 @@ describe('lifecycle and compatibility routes', () => {
     expect(done.body.entry.status).toBe('closed');
     expect(done.body.entry.care_closed_reason).toBe('ended');
     const reopened = await api.at('2026-06-06T09:00').reopen(entry.id);
-    expect(reopened.statusCode).toBe(409);
-    expect(reopened.body.code).toBe('care_item_closed');
+    expect(reopened.statusCode).toBe(404);
   });
 
   it('undo after one-off completion restores active when sync auto-closed the item', async () => {
@@ -280,8 +279,7 @@ describe('lifecycle and compatibility routes', () => {
     expect(closed.body.care_closed_reason).toBe('stopped_by_user');
     expect(closed.body.open_occurrences).toEqual([]);
     const reopened = await api.at('2026-06-02T09:00').reopen(entry.id);
-    expect(reopened.statusCode).toBe(409);
-    expect(reopened.body.code).toBe('care_item_closed');
+    expect(reopened.statusCode).toBe(404);
   });
 
   it('active planned items always have an open occurrence for complete', async () => {

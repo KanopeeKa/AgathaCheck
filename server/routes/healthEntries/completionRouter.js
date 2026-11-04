@@ -1,9 +1,7 @@
 import { asyncHandler } from '../../lib/http/asyncHandler.js';
-import { userCanManageHealthEntry } from '../../lib/petAccess.js';
-import {
-  closeSeriesCommand,
-  reopenSeriesCommand,
-} from '../../lib/care/occurrence/index.js';
+import { userCanCloseHealthEntry, userCanManageHealthEntry } from '../../lib/petAccess.js';
+import { CareCommandError } from '../../lib/care/occurrence/careCommandError.js';
+import { closeSeriesCommand } from '../../lib/care/occurrence/index.js';
 import { careItemWire } from '../../lib/care/item/index.js';
 import { loadLinkedWeightsForOccurrences } from '../../lib/care/observations/weightFulfilmentService.js';
 import { extractUserId, historyToMap } from './shared.js';
@@ -14,17 +12,29 @@ async function entryBody(pool, out, req) {
 }
 
 export function registerCompletionRoutes(router, pool) {
-  router.post('/:id/close', (req, res) => handleCommand(pool, req, res, {
-    command: (ctx) => closeSeriesCommand(ctx),
-    audit: () => ({ action: 'health_entry.closed', metadata: {}, activity: 'close' }),
-    respond: async (out) => ({ body: await entryBody(pool, out, req) }),
-  }));
-
-  router.post('/:id/reopen', (req, res) => handleCommand(pool, req, res, {
-    command: (ctx) => reopenSeriesCommand(ctx),
-    audit: () => ({ action: 'health_entry.reopened', metadata: {}, activity: 'reopen' }),
-    respond: async (out) => ({ body: await entryBody(pool, out, req) }),
-  }));
+  router.post('/:id/close', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    try {
+      if (!(await userCanCloseHealthEntry(pool, req.params.id, userId))) {
+        throw new CareCommandError(
+          403,
+          'owner_only',
+          'Only the pet owner can close care',
+        );
+      }
+    } catch (err) {
+      if (err instanceof CareCommandError) {
+        return res.status(err.status).json(err.toBody());
+      }
+      throw err;
+    }
+    return handleCommand(pool, req, res, {
+      command: (ctx) => closeSeriesCommand(ctx),
+      audit: () => ({ action: 'health_entry.closed', metadata: {}, activity: 'close' }),
+      respond: async (out) => ({ body: await entryBody(pool, out, req) }),
+    });
+  });
 
   router.get('/:id/history', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);

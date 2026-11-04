@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 
-/// Care item overflow menu (D-CIE-017): Edit, Pause/Resume, Archive/Restore.
+/// Care item overflow menu (D-CIE-017): Edit, Pause/Resume, Plan another date.
 class CareItemMenu extends StatelessWidget {
   const CareItemMenu({
     super.key,
@@ -12,8 +12,6 @@ class CareItemMenu extends StatelessWidget {
     required this.onEdit,
     required this.onPause,
     required this.onResume,
-    required this.onArchive,
-    required this.onRestore,
     this.onPlanAnotherDate,
   });
 
@@ -22,8 +20,6 @@ class CareItemMenu extends StatelessWidget {
   final VoidCallback onEdit;
   final VoidCallback onPause;
   final VoidCallback onResume;
-  final VoidCallback onArchive;
-  final VoidCallback onRestore;
   final VoidCallback? onPlanAnotherDate;
 
   @override
@@ -43,10 +39,6 @@ class CareItemMenu extends StatelessWidget {
               onPause();
             case CareItemMenuAction.resume:
               onResume();
-            case CareItemMenuAction.archive:
-              onArchive();
-            case CareItemMenuAction.restore:
-              onRestore();
             case CareItemMenuAction.planAnotherDate:
               onPlanAnotherDate?.call();
           }
@@ -85,14 +77,6 @@ class CareItemMenu extends StatelessWidget {
               ),
             );
           }
-          if (!isClosed) {
-            items.add(
-              PopupMenuItem(
-                value: CareItemMenuAction.archive,
-                child: Text(l.careItemMenuArchive),
-              ),
-            );
-          }
           return items;
         },
       ),
@@ -100,11 +84,4 @@ class CareItemMenu extends StatelessWidget {
   }
 }
 
-enum CareItemMenuAction {
-  edit,
-  pause,
-  resume,
-  archive,
-  restore,
-  planAnotherDate,
-}
+enum CareItemMenuAction { edit, pause, resume, planAnotherDate }
