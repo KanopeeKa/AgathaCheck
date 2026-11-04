@@ -166,12 +166,6 @@ test.describe('Care agenda', () => {
         new RegExp(`/pet/${pet.id}/events`),
         30_000,
       );
-      await page.reload({ waitUntil: 'networkidle' });
-      await waitForFlutterRoutePattern(
-        page,
-        new RegExp(`/pet/${pet.id}/events`),
-        30_000,
-      );
       await enableFlutterAccessibility(page);
       await page
         .locator('[flt-semantics-identifier="all_care_list"]')
