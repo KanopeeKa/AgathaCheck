@@ -16,7 +16,6 @@ import { createPet } from '../support/api';
 import {
   enableFlutterAccessibility,
   flutterGotoUrl,
-  flutterRoutePath,
   refreshFlutterAccessibility,
   waitForFlutterRoutePattern,
 } from '../support/flutter';

@@ -1,0 +1,62 @@
+{
+  "name": "sync PR dirty, resolve PR open and green \u2192 PR-ladder arms merge on the resolve PR (no new resolve branch)",
+  "rule": "S1b",
+  "snapshot_patch": {},
+  "observations_patch": {
+    "phases": [
+      {
+        "id": "1",
+        "branch_exists": true,
+        "pr": {
+          "state": "merged",
+          "merged_at": "2026-10-16T09:55:00Z",
+          "merge_commit_sha": "eeee000000000000000000000000000000000001",
+          "number": 1950
+        }
+      },
+      {
+        "id": "2",
+        "branch_exists": true,
+        "pr": {
+          "state": "merged",
+          "merged_at": "2026-10-16T09:55:00Z",
+          "merge_commit_sha": "eeee000000000000000000000000000000000001",
+          "number": 1951
+        }
+      }
+    ],
+    "integration": {
+      "behind_main_by": 2
+    },
+    "sync": {
+      "open_pr": {
+        "number": 1955,
+        "head_ref": "main",
+        "base_ref": "cursor/proof-build-label-7f3a-integration-7f3a",
+        "created_at": "2026-10-16T09:58:00Z",
+        "mergeable_state": "dirty"
+      },
+      "resolve_prs_since_epoch": 1,
+      "resolve_pr": {
+        "number": 1956,
+        "head_ref": "cursor/proof-build-label-7f3a-sync-1",
+        "head_sha": "dddd000000000000000000000000000000000001",
+        "base_ref": "cursor/proof-build-label-7f3a-integration-7f3a",
+        "created_at": "2026-10-16T09:59:00Z",
+        "mergeable_state": "clean"
+      }
+    }
+  },
+  "opts": {
+    "actor": "driver",
+    "lease": null
+  },
+  "expected": {
+    "launch": false,
+    "stop": null,
+    "state": "sync",
+    "actor": "driver",
+    "kind": "arm-auto-merge",
+    "method": "merge"
+  }
+}

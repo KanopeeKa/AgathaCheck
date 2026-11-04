@@ -176,6 +176,35 @@ test('release PR treats files identical to main as no-ops', async () => {
   assert.deepEqual([res.conclusion, res.title], ['success', 'ok']);
 });
 
+const syncResolve = { ...phasePr, headRef: `cursor/${PLAN}-sync-2`, baseRef: INTEGRATION };
+const blob = (text, sha) => ({ body: { type: 'file', encoding: 'base64', content: b64(text), sha } });
+const atRef = (path, ref) => `GET ${R}/contents/${path.split('/').map(encodeURIComponent).join('/')}?ref=${ref}`;
+
+test('sync-resolve PR treats files merged from main (identical to main) as no-ops', async () => {
+  const fromMain = ['.github/workflows/ci.yml', 'scripts/lib/execute_plan_state.js', 'flutter_app/lib/main.dart'];
+  const extra = {};
+  for (const f of fromMain) {
+    extra[atRef(f, syncResolve.headSha)] = blob('same', 'b1');
+    extra[atRef(f, 'main')] = blob('same', 'b1');
+  }
+  extra[atRef('server/bin/server.js', syncResolve.headSha)] = blob('resolved', 'h1');
+  extra[atRef('server/bin/server.js', 'main')] = blob('main', 'm1');
+  const { client } = setup({ files: [...fromMain, 'server/bin/server.js'], extra });
+  const res = await runScopeCheck(client, syncResolve);
+  assert.deepEqual([res.conclusion, res.title], ['success', 'ok']);
+});
+
+test('sync-resolve PR still fails a protected file that differs from main', async () => {
+  const f = 'scripts/lib/execute_plan_state.js';
+  const { client } = setup({
+    files: [f],
+    extra: { [atRef(f, syncResolve.headSha)]: blob('edited', 'h1'), [atRef(f, 'main')]: blob('main', 'm1') },
+  });
+  const res = await runScopeCheck(client, syncResolve);
+  assert.deepEqual([res.conclusion, res.title], ['failure', 'protected']);
+  assert.match(res.summary, /execute_plan_state\.js.*protected/);
+});
+
 test('phase PR bundle ratchet fails when increase exceeds 1.5% vs merge base', async () => {
   const mergeBase = 'b'.repeat(40);
   const baseBudget = '{"maxMainDartJsBytes":1000000,"maxTotalBytes":2000000,"version":1}';

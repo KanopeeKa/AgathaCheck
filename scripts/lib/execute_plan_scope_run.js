@@ -82,7 +82,7 @@ async function verifyOwnPlanFiles(client, snapshot, headSha, files) {
   return true;
 }
 
-/** Files in the PR whose blob matches `main` tip (release no-ops; side fixes already on main). */
+/** Files in the PR whose blob matches `main` tip (release no-ops; side fixes and sync merges already on main). */
 async function filesUnchangedOnMain(client, headSha, files) {
   const unchanged = new Set();
   for (const file of files) {
@@ -161,7 +161,8 @@ async function runScopeCheck(client, { prNumber, headSha, headRef, baseRef, head
   const ownPlanFilesVerified = category === 'release' && files.length > 0
     ? await verifyOwnPlanFiles(client, snapshot, headSha, files)
     : false;
-  const unchangedOnMain = category === 'release'
+  // Release and sync-resolve PRs carry `main`'s own commits: files identical to `main` are not plan changes.
+  const unchangedOnMain = category === 'release' || category === 'sync-resolve'
     ? await filesUnchangedOnMain(client, headSha, files)
     : new Set();
   const evaluation = evaluateDiff({

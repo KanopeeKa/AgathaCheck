@@ -36,7 +36,7 @@ Times are ISO-8601 UTC strings. `null` means "does not exist". Example = the sce
     { "id": "1", "branch_exists": false, "pr": null },
     { "id": "2", "branch_exists": false, "pr": null }
   ],
-  "sync": { "open_pr": null, "resolve_prs_since_epoch": 0 },
+  "sync": { "open_pr": null, "resolve_pr": null, "resolve_prs_since_epoch": 0 },
   "release": { "pr": null },
   "remedial": { "open_pr": null, "merged_since_epoch": 0 },
   "uat": null
@@ -53,7 +53,7 @@ Times are ISO-8601 UTC strings. `null` means "does not exist". Example = the sce
 | `main.preuat_queued_for_head` | A `pre-uat-e2e.yml` run on `main` with `status ∈ {queued, in_progress}` whose `head_sha` = `main.head_sha`. |
 | `integration.behind_main_by` | `GET /compare/{integration}...main` → `ahead_by` (commits on `main` not in integration). |
 | `phases[i].pr` | Most recent PR with head = `phase.branch`, base = integration (open or merged; ignore closed-unmerged). Looked up by branch name even when the integration ref no longer exists. |
-| `sync.open_pr` | Open PR head `main`, base integration. `resolve_prs_since_epoch` = PRs from `cursor/<id>-sync-*` created after the epoch. |
+| `sync.open_pr` | Open PR head `main`, base integration. `resolve_pr` = newest open PR from `cursor/<id>-sync-*` into integration, else `null`. `resolve_prs_since_epoch` = PRs from `cursor/<id>-sync-*` created after the epoch. |
 | `release.pr` | Most recent PR head = integration, base `main` (open or merged). Same head/base lookup when the integration branch was deleted after merge. |
 | `remedial` | PRs from `cursor/<id>-remedial-*` into `main`: the open one, and the count merged after the epoch. |
 | `uat` | `null` until a release or remedial PR of this plan is merged; then `UatObservations` (WP5). |
@@ -169,7 +169,9 @@ ref to seed from) → STOP `integration-missing`; else driver `create-phase-bran
 exists → PR-ladder, draft action `implement`, method `squash`.
 
 **S — sync and release (all phases merged).** S1 `release.pr == null` and `behind_main_by > 0`:
-S1a no open sync PR → driver `open-sync-pr`; S1b sync PR `mergeable_state == "dirty"` →
+S1a no open sync PR → driver `open-sync-pr`; S1b sync PR `mergeable_state == "dirty"` → when
+`sync.resolve_pr` is open: PR-ladder on that resolve PR (draft action `resolve-sync` on its branch,
+method `merge`) — never a second resolve branch while one is open; otherwise
 `resolve_prs_since_epoch ≥ sync_attempts` ? STOP `sync-conflict` : agent `resolve-sync` (branch
 `cursor/<id>-sync-<resolve_prs_since_epoch + 1>`); S1c otherwise → PR-ladder on the sync PR with
 method `merge` (scope is always green for sync PRs). S2 `release.pr == null` and `behind_main_by
@@ -342,6 +344,8 @@ WP5 writes U):
 | `s-behind-open-sync.json` | S1a | `sync` / driver `open-sync-pr` |
 | `s-sync-dirty-resolve.json` | S1b | agent `resolve-sync` |
 | `s-sync-budget-stop.json` | S1b | stop `sync-conflict` |
+| `s-sync-resolve-open-arm-merge.json` | S1b | open green resolve PR → driver `arm-auto-merge` method `merge` |
+| `s-sync-resolve-open-fix-scope.json` | S1b | open resolve PR failing scope → agent `fix-scope` |
 | `s-sync-clean-arm-merge.json` | S1c | driver `arm-auto-merge` method `merge` |
 | `s-open-release.json` | S2 | driver `open-release-pr` |
 | `r-release-behind-update.json` | PR-ladder 7 | `release:open` / driver `update-branch` |
