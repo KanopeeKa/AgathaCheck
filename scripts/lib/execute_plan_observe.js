@@ -228,6 +228,7 @@ async function observe(client, ctx, { now, sleep }) {
   const intoInteg = await client.listPulls({ base: integ, state: 'all', pages: 3 });
   const syncPrefix = `cursor/${snapshot.plan_id}-sync-`;
   const resolves = intoInteg.filter((p) => p.head.ref.startsWith(syncPrefix) && epoch && ms(p.created_at) > ms(epoch)).length;
+  const resolveOpen = newest(intoInteg.filter((p) => p.state === 'open' && p.head.ref.startsWith(syncPrefix)));
 
   const intoMain = await client.listPulls({ base: 'main', state: 'all', pages: 3 });
   const remPrefix = `cursor/${snapshot.plan_id}-remedial-`;
@@ -247,7 +248,11 @@ async function observe(client, ctx, { now, sleep }) {
     main: { head_sha: mainHead, preuat_queued_for_head: preuatQueued },
     integration,
     phases,
-    sync: { open_pr: syncOpen ? await observePr(client, syncOpen, prOpts(integ)) : null, resolve_prs_since_epoch: resolves },
+    sync: {
+      open_pr: syncOpen ? await observePr(client, syncOpen, prOpts(integ)) : null,
+      resolve_pr: resolveOpen ? await observePr(client, resolveOpen, prOpts(integ)) : null,
+      resolve_prs_since_epoch: resolves,
+    },
     release: { pr: await mostRecent({ head: integ, base: 'main' }) },
     remedial: { open_pr: remOpen ? await observePr(client, remOpen, prOpts('main')) : null, merged_since_epoch: mergedRem },
     uat: null,

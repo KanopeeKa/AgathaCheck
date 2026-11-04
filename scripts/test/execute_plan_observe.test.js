@@ -255,7 +255,7 @@ test('observe fills every Observations field (all phases pending, then a phase P
   assert.deepEqual(obs.main, { head_sha: 'm1', preuat_queued_for_head: true });
   assert.deepEqual(obs.integration, { exists: true, head_sha: 'i1', behind_main_by: 2 });
   assert.deepEqual(obs.phases, [{ id: '1', branch_exists: false, pr: null }]);
-  assert.deepEqual(obs.sync, { open_pr: null, resolve_prs_since_epoch: 1 });
+  assert.deepEqual(obs.sync, { open_pr: null, resolve_pr: null, resolve_prs_since_epoch: 1 });
   assert.deepEqual(obs.release, { pr: null });
   assert.deepEqual(obs.remedial, { open_pr: null, merged_since_epoch: 1 });
   assert.equal(obs.uat, null);

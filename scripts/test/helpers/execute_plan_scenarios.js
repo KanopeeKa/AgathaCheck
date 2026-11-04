@@ -46,6 +46,7 @@ function withPrBases(patch, basePr, baseUat) {
   const fix = (o, key) => { if (o && isObj(o[key])) o[key] = deepMerge(basePr, o[key]); };
   (p.phases || []).forEach((ph) => fix(ph, 'pr'));
   fix(p.sync, 'open_pr');
+  fix(p.sync, 'resolve_pr');
   fix(p.release, 'pr');
   fix(p.remedial, 'open_pr');
   if (isObj(p.uat)) p.uat = deepMerge(baseUat, p.uat);

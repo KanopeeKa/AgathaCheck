@@ -41,6 +41,7 @@
   ],
   "sync": {
     "open_pr": null,
+    "resolve_pr": null,
     "resolve_prs_since_epoch": 0
   },
   "release": {
