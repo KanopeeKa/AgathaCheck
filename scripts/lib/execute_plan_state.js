@@ -280,6 +280,12 @@ function decideSync(ctx) {
   const looked = [{ label: 'sync PR', pr: sync.open_pr }];
   // S1b
   if (sync.open_pr.mergeable_state === 'dirty') {
+    // S1b-open: drive the open resolve PR to merge; a new resolve branch only once none is open
+    const open = sync.resolve_pr;
+    if (open) {
+      const draftAction = { kind: 'resolve-sync', args: { sync_pr: sync.open_pr.number, branch: open.head_ref } };
+      return prLadder(open, { ...ctx, kind: 'sync', draftAction, method: 'merge' });
+    }
     const n = sync.resolve_prs_since_epoch || 0;
     const limit = snapshot.settings.budgets.sync_attempts;
     if (n >= limit) return finish(ctx, { ...base, stop: { reason: 'sync-conflict', detail: `${n} sync resolutions since the epoch (limit ${limit})` }, looked });

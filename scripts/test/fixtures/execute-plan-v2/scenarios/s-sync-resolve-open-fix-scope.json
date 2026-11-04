@@ -1,0 +1,78 @@
+{
+  "name": "sync PR dirty, resolve PR open and failing scope \u2192 fix-scope on the resolve PR",
+  "rule": "S1b",
+  "snapshot_patch": {},
+  "observations_patch": {
+    "phases": [
+      {
+        "id": "1",
+        "branch_exists": true,
+        "pr": {
+          "state": "merged",
+          "merged_at": "2026-10-16T09:55:00Z",
+          "merge_commit_sha": "eeee000000000000000000000000000000000001",
+          "number": 1950
+        }
+      },
+      {
+        "id": "2",
+        "branch_exists": true,
+        "pr": {
+          "state": "merged",
+          "merged_at": "2026-10-16T09:55:00Z",
+          "merge_commit_sha": "eeee000000000000000000000000000000000001",
+          "number": 1951
+        }
+      }
+    ],
+    "integration": {
+      "behind_main_by": 2
+    },
+    "sync": {
+      "open_pr": {
+        "number": 1955,
+        "head_ref": "main",
+        "base_ref": "cursor/proof-build-label-7f3a-integration-7f3a",
+        "created_at": "2026-10-16T09:58:00Z",
+        "mergeable_state": "dirty"
+      },
+      "resolve_prs_since_epoch": 1,
+      "resolve_pr": {
+        "number": 1956,
+        "head_ref": "cursor/proof-build-label-7f3a-sync-1",
+        "head_sha": "dddd000000000000000000000000000000000001",
+        "base_ref": "cursor/proof-build-label-7f3a-integration-7f3a",
+        "created_at": "2026-10-16T09:59:00Z",
+        "mergeable_state": "clean",
+        "checks": [
+          {
+            "name": "ci-gate / CI passed",
+            "status": "completed",
+            "conclusion": "success",
+            "reason": null,
+            "completed_at": "2026-10-16T10:00:00Z"
+          },
+          {
+            "name": "execute-plan-scope",
+            "status": "completed",
+            "conclusion": "failure",
+            "reason": "unclassified",
+            "completed_at": "2026-10-16T10:00:00Z"
+          }
+        ],
+        "failed_attempts_since_epoch": 1
+      }
+    }
+  },
+  "opts": {
+    "actor": "driver",
+    "lease": null
+  },
+  "expected": {
+    "launch": true,
+    "stop": null,
+    "state": "sync",
+    "actor": "agent",
+    "kind": "fix-scope"
+  }
+}
