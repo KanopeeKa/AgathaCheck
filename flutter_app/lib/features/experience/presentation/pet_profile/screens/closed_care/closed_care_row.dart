@@ -55,21 +55,27 @@ class ClosedCareRow extends ConsumerWidget {
       semanticLabel: semanticLabel,
       leading: CareFamilyIcon.forEntry(entry),
       rowSemanticsIdentifier: 'closed_care_row_${entry.id}',
-      onTap: () {
-        // Closed care list is a modal route; capture router before pop.
-        final router = GoRouter.of(context);
-        final location = petEventViewLocation(
-          entry.petId,
-          entry.id,
-          returnTo: currentShellLocation(context),
-        );
-        if (context.canPop()) {
-          context.pop();
-        }
-        router.push(location);
-      },
+      onTap: () => openClosedCareEntryDetail(context, entry),
     );
   }
+}
+
+/// Pops the Material [ClosedCareListScreen], then pushes Care details on the
+/// next frame so go_router updates the shell location (CARE-STATUS-R-021).
+void openClosedCareEntryDetail(BuildContext context, HealthEntry entry) {
+  final petId = entry.petId;
+  if (petId.isEmpty) return;
+  final router = GoRouter.of(context);
+  final returnTo = currentShellLocation(context);
+  final location = petEventViewLocation(
+    petId,
+    entry.id,
+    returnTo: returnTo,
+  );
+  Navigator.of(context).pop();
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    router.push(location);
+  });
 }
 
 String closedCareStatusLabel(AppLocalizations l, String? careClosedReason) {
