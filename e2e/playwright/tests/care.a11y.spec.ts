@@ -1,14 +1,14 @@
 /**
  * Care surfaces — axe (@smoke-a11y). No @bdd header (journey specs live in care.*.spec.ts).
  */
-import { test, loginAs } from '../fixtures/auth.fixture';
+import { test, expect, loginAs } from '../fixtures/auth.fixture';
 import { CareAgendaPage } from '../pages/care-agenda.page';
 import { CareItemPage } from '../pages/care-item.page';
 import { CompletionDateSheetPage } from '../pages/completion-date.sheet';
 import { GuardianDashboardPage } from '../pages/guardian-dashboard.page';
 import { HealthDashboardPage } from '../pages/health-dashboard.page';
 import { HealthEntryFormPage } from '../pages/health-entry-form.page';
-import { createCareItem, withCareClock } from '../support/care-api';
+import { createCareItem, getCareItem, withCareClock } from '../support/care-api';
 import { createPet } from '../support/api';
 import { checkA11y } from '../support/axe';
 import { enableFlutterAccessibility, refreshFlutterAccessibility } from '../support/flutter';
@@ -185,6 +185,34 @@ test.describe('Care accessibility', () => {
       await page.locator('[flt-semantics-identifier="care_item_close_care_button"]').click();
       await page.getByRole('alertdialog').waitFor({ timeout: 15_000 });
       await checkA11y(page, 'close care dialog');
+    } finally {
+      await withCareClock(null, page);
+    }
+  });
+
+  test('owner closes care with stopped_by_user', async ({ page, testUser }) => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    await withCareClock('2026-06-01T09:00', page);
+    try {
+      const pet = await createPet(baseURL, testUser.accessToken, 'Rex');
+      const entry = await createCareItem(baseURL, testUser.accessToken, pet.id, {
+        name: 'Flea',
+        careFamily: 'parasite_prevention',
+        frequency: 'monthly',
+        dueDate: '2026-06-05',
+      });
+      await loginAs(page, testUser, { experience: 'guardian' });
+      const careItem = new CareItemPage(page);
+      await careItem.open(pet.id, entry.id);
+      await refreshFlutterAccessibility(page);
+      await page.locator('[flt-semantics-identifier="care_item_close_care_button"]').click();
+      await refreshFlutterAccessibility(page);
+      await page.locator('[flt-semantics-identifier="care_close_confirm_button"]').click();
+      await refreshFlutterAccessibility(page);
+      const item = await getCareItem(baseURL, testUser.accessToken, entry.id);
+      expect(item.status).toBe('closed');
+      expect(item.care_closed_reason).toBe('stopped_by_user');
+      expect(item.open_occurrences).toEqual([]);
     } finally {
       await withCareClock(null, page);
     }

@@ -4,7 +4,9 @@ import 'package:pet_profile_app/features/health_tracking/presentation/widgets/pe
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 void main() {
-  testWidgets('shows Record them first when started dates exist', (tester) async {
+  testWidgets('shows Record them first when started dates exist', (
+    tester,
+  ) async {
     CloseCareDialogResult? result;
     await tester.pumpWidget(
       MaterialApp(
@@ -28,7 +30,10 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Close care?'), findsOneWidget);
-    expect(find.byKey(const Key('care_close_record_first_button')), findsOneWidget);
+    expect(
+      find.byKey(const Key('care_close_record_first_button')),
+      findsOneWidget,
+    );
 
     await tester.tap(find.byKey(const Key('care_close_confirm_button')));
     await tester.pumpAndSettle();
