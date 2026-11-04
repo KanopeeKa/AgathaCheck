@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import 'package:pet_profile_app/core/router/shell_return_navigation.dart';
 import 'package:pet_profile_app/core/widgets/pet_care_dashboard_section_header.dart';
+import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import 'all_care_closed_copy.dart';
@@ -31,9 +33,20 @@ class AllCareClosedFooter extends StatelessWidget {
           linkKey: const Key('all_care_closed_care_link'),
           label: allCareClosedCareLinkLabel(l, closedCount),
           onPressed: () {
-            Navigator.of(context).push<void>(
+            final hostContext = context;
+            Navigator.of(hostContext).push<void>(
               MaterialPageRoute<void>(
-                builder: (context) => ClosedCareListScreen(petId: petId),
+                builder: (listContext) => ClosedCareListScreen(
+                  petId: petId,
+                  onOpenEntry: (HealthEntry entry) {
+                    openPetEventView(
+                      hostContext,
+                      petId: petId,
+                      entryId: entry.id,
+                    );
+                    Navigator.of(listContext).pop();
+                  },
+                ),
               ),
             );
           },

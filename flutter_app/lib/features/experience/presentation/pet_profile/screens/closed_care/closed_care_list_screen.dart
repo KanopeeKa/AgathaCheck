@@ -12,9 +12,14 @@ import 'closed_care_row.dart';
 
 /// Pet-scoped list of closed care items (CARE-STATUS-R-021).
 class ClosedCareListScreen extends ConsumerWidget {
-  const ClosedCareListScreen({super.key, required this.petId});
+  const ClosedCareListScreen({
+    super.key,
+    required this.petId,
+    required this.onOpenEntry,
+  });
 
   final String petId;
+  final void Function(HealthEntry entry) onOpenEntry;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -51,6 +56,7 @@ class ClosedCareListScreen extends ConsumerWidget {
               itemBuilder: (context, index) => ClosedCareRow(
                 entry: closed[index],
                 establishedEntryIds: establishedIds,
+                onOpenEntry: onOpenEntry,
               ),
             ),
           );

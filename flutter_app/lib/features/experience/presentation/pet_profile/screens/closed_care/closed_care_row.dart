@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-
-import 'package:pet_profile_app/core/router/shell_return_navigation.dart';
 import 'package:pet_profile_app/features/care_taxonomy/care_taxonomy.dart';
 import 'package:pet_profile_app/features/experience/presentation/care_item/detail/care_item_closed_reason_provider.dart';
 import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
@@ -17,10 +14,12 @@ class ClosedCareRow extends ConsumerWidget {
     super.key,
     required this.entry,
     required this.establishedEntryIds,
+    required this.onOpenEntry,
   });
 
   final HealthEntry entry;
   final Set<String> establishedEntryIds;
+  final void Function(HealthEntry entry) onOpenEntry;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -45,33 +44,28 @@ class ClosedCareRow extends ConsumerWidget {
     }
     final subtitle = subtitleParts.join(' · ');
     final semanticLabel = '${entry.name}, $statusLabel';
+    final onOpen = () => onOpenEntry(entry);
 
-    return CareActionRow(
-      key: Key('closed_care_row_${entry.id}'),
-      title: entry.name,
-      subtitle: subtitle,
-      statusLabel: statusLabel,
-      statusTreatment: completedStatusTreatment(),
-      semanticLabel: semanticLabel,
-      leading: CareFamilyIcon.forEntry(entry),
-      rowSemanticsIdentifier: 'closed_care_row_${entry.id}',
-      onTap: () => openClosedCareEntryDetail(context, entry),
+    // One semantic button for Flutter web a11y (avoid nested buttons on [CareActionRow]).
+    return Semantics(
+      identifier: 'closed_care_row_${entry.id}',
+      label: semanticLabel,
+      button: true,
+      onTap: onOpen,
+      child: ExcludeSemantics(
+        child: CareActionRow(
+          key: Key('closed_care_row_${entry.id}'),
+          title: entry.name,
+          subtitle: subtitle,
+          statusLabel: statusLabel,
+          statusTreatment: completedStatusTreatment(),
+          semanticLabel: semanticLabel,
+          leading: CareFamilyIcon.forEntry(entry),
+          onTap: onOpen,
+        ),
+      ),
     );
   }
-}
-
-/// Pops the Material [ClosedCareListScreen], then pushes Care details on the
-/// next frame so go_router updates the shell location (CARE-STATUS-R-021).
-void openClosedCareEntryDetail(BuildContext context, HealthEntry entry) {
-  final petId = entry.petId;
-  if (petId.isEmpty) return;
-  final router = GoRouter.of(context);
-  final returnTo = currentShellLocation(context);
-  final location = petEventViewLocation(petId, entry.id, returnTo: returnTo);
-  Navigator.of(context).pop();
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    router.push(location);
-  });
 }
 
 String closedCareStatusLabel(AppLocalizations l, String? careClosedReason) {
