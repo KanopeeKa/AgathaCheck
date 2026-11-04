@@ -60,18 +60,16 @@ class ClosedCareRow extends ConsumerWidget {
   }
 }
 
-/// Pushes Care details on go_router, then pops the Material list route
-/// (CARE-STATUS-R-021).
+/// Pops the Material [ClosedCareListScreen], then pushes Care details on
+/// go_router (CARE-STATUS-R-021).
 void openClosedCareEntryDetail(BuildContext context, HealthEntry entry) {
   final petId = entry.petId;
   if (petId.isEmpty) return;
   final router = GoRouter.of(context);
   final returnTo = currentShellLocation(context);
   final location = petEventViewLocation(petId, entry.id, returnTo: returnTo);
+  Navigator.of(context, rootNavigator: true).pop();
   router.push(location);
-  if (Navigator.of(context).canPop()) {
-    Navigator.of(context).pop();
-  }
 }
 
 String closedCareStatusLabel(AppLocalizations l, String? careClosedReason) {

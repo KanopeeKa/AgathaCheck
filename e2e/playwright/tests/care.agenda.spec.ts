@@ -16,6 +16,7 @@ import { createPet } from '../support/api';
 import {
   enableFlutterAccessibility,
   flutterGotoUrl,
+  flutterRoutePath,
   refreshFlutterAccessibility,
   waitForFlutterRoutePattern,
 } from '../support/flutter';
@@ -191,12 +192,26 @@ test.describe('Care agenda', () => {
       await expect(row).toBeVisible();
       await expect(row).toContainText(/Closed · Stopped by you|Fermé · Arrêté par vous/i);
       await expect(row).not.toContainText(/Jun|juin|2026-06/i);
-      await row.click({ force: true });
-      await waitForFlutterRoutePattern(
-        page,
-        new RegExp(`/pet/${pet.id}/events/${entry.id}`),
-        60_000,
-      );
+      const detailRoute = new RegExp(`/pet/${pet.id}/events/${entry.id}(\\?|$)`);
+      await expect(async () => {
+        await refreshFlutterAccessibility(page);
+        const target = page.locator(
+          `[flt-semantics-identifier="closed_care_row_${entry.id}"]`,
+        );
+        await expect(target).toBeVisible();
+        const box = await target.boundingBox();
+        if (box != null) {
+          await page.mouse.click(box.x + 20, box.y + box.height / 2);
+        } else {
+          await target.click({ force: true });
+        }
+        await refreshFlutterAccessibility(page);
+        const path = flutterRoutePath(page.url());
+        if (!detailRoute.test(path)) {
+          throw new Error(`Care details route not open (path=${path})`);
+        }
+      }).toPass({ timeout: 60_000 });
+      await waitForFlutterRoutePattern(page, detailRoute, 15_000);
       await refreshFlutterAccessibility(page);
       await careItem.expectCareDetailsScreenTitle();
       await expect(page.locator('[flt-semantics-identifier="care_item_close_care_button"]')).toHaveCount(
