@@ -13,7 +13,9 @@ import '../providers/care_context_providers.dart';
 import '../widgets/away_plan_pet_care_section.dart';
 import '../widgets/away_plan_pet_carer_panel.dart';
 import '../widgets/away_plan_pet_notes_section.dart';
+import '../absence_pet_membership_flow.dart';
 import '../widgets/away_plan_trip_read_only_header.dart';
+import '../../../../../core/widgets/screen_overflow_actions.dart';
 
 class PetAwayPlanScreen extends ConsumerWidget {
   const PetAwayPlanScreen({
@@ -89,6 +91,8 @@ class PetAwayPlanScreen extends ConsumerWidget {
               (row) => row.petId == petId,
               orElse: () => PlannedAbsencePetCarer(petId: petId),
             );
+            final canEditTrip =
+                absence.canEditTrip ?? absence.isOwnAbsence ?? false;
             final canEdit = !absence.isCancelled;
             final carerPanel = AwayPlanPetCarerPanel(
               absence: absence,
@@ -113,6 +117,24 @@ class PetAwayPlanScreen extends ConsumerWidget {
 
             final tripNote = absence.handoverNote?.trim();
 
+            final overflowActions = <ScreenOverflowAction>[
+              if (canEditTrip && !absence.isCancelled)
+                ScreenOverflowAction(
+                  key: Key('remove_pet_from_absence_$petId'),
+                  menuItemKey: Key('remove_pet_from_absence_menu_$petId'),
+                  semanticsIdentifier: 'remove_pet_from_absence_$petId',
+                  label: l.careContextRemovePetFromAbsence(petName),
+                  icon: Icons.person_remove_outlined,
+                  onPressed: () => AbsencePetMembershipFlow.confirmAndRemovePet(
+                    context: context,
+                    ref: ref,
+                    absence: absence,
+                    petId: petId,
+                    petName: petName,
+                  ),
+                ),
+            ];
+
             return shell(
               actions: [
                 IconButton(
@@ -121,6 +143,13 @@ class PetAwayPlanScreen extends ConsumerWidget {
                   icon: const Icon(Icons.picture_as_pdf_outlined),
                   onPressed: canEdit ? downloadPetPlan : null,
                 ),
+                if (overflowActions.isNotEmpty)
+                  ScreenOverflowActions(
+                    menuKey: Key('pet_away_plan_overflow_$petId'),
+                    menuSemanticsIdentifier: 'pet_away_plan_overflow_$petId',
+                    tooltip: l.moreActions,
+                    actions: overflowActions,
+                  ),
               ],
               child: ListView(
                 key: Key('pet_away_plan_page_$petId'),

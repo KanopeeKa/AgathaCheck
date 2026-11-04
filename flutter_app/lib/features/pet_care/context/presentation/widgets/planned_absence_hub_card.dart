@@ -35,6 +35,9 @@ class PlannedAbsenceHubCard extends StatelessWidget {
     final dateRange = formatDateRange(l, absence);
     final primary = PlannedAbsenceDisplay.primaryLabel(l, absence);
     final secondaryDates = PlannedAbsenceDisplay.secondaryDateLine(l, absence);
+    final travellerLine = absence.isOwnAbsence == false
+        ? PlannedAbsenceDisplay.travellerLine(l, absence)
+        : null;
     final petLines = _petLines(l);
     final titleStyle = theme.textTheme.titleSmall?.copyWith(
       fontWeight: FontWeight.w700,
@@ -69,6 +72,10 @@ class PlannedAbsenceHubCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(primary, style: titleStyle),
+                      if (travellerLine != null) ...[
+                        const SizedBox(height: 4),
+                        Text(travellerLine, style: bodyStyle),
+                      ],
                       if (secondaryDates != null) ...[
                         const SizedBox(height: 4),
                         Text(secondaryDates, style: bodyStyle),

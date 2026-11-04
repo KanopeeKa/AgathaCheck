@@ -59,6 +59,7 @@ export const AREAS = {
       'away.planning.spec.ts',
       'away.plan.detail.v2.spec.ts',
       'away.care.planning.spec.ts',
+      'absence.per.pet.spec.ts',
       'care.item.absence.spec.ts',
       'care.agenda.spec.ts',
       'care.date.spec.ts',

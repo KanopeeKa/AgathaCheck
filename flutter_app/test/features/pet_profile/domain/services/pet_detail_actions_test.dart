@@ -89,6 +89,7 @@ void main() {
       expect(actions, contains(PetDetailAction.editHealth));
       expect(actions, contains(PetDetailAction.assignVet));
       expect(actions, contains(PetDetailAction.manageSharing));
+      expect(actions, contains(PetDetailAction.planAbsence));
       expect(actions, isNot(contains(PetDetailAction.fosterPlacement)));
     });
 
@@ -100,6 +101,7 @@ void main() {
       );
       expect(actions, contains(PetDetailAction.editProfile));
       expect(actions, contains(PetDetailAction.manageSharing));
+      expect(actions, contains(PetDetailAction.planAbsence));
       expect(actions, contains(PetDetailAction.editHealth));
       expect(actions, isNot(contains(PetDetailAction.fosterPlacement)));
     });
@@ -224,6 +226,7 @@ void main() {
               PetDetailAction.editHealth,
               PetDetailAction.assignVet,
               PetDetailAction.manageSharing,
+              PetDetailAction.planAbsence,
               PetDetailAction.downloadReport,
             },
           ),
@@ -282,6 +285,7 @@ void main() {
               PetDetailAction.editHealth,
               PetDetailAction.assignVet,
               PetDetailAction.manageSharing,
+              PetDetailAction.planAbsence,
               PetDetailAction.downloadReport,
             },
           ),
@@ -295,6 +299,7 @@ void main() {
               PetDetailAction.editProfile,
               PetDetailAction.assignVet,
               PetDetailAction.manageSharing,
+              PetDetailAction.planAbsence,
               PetDetailAction.downloadReport,
             },
           ),

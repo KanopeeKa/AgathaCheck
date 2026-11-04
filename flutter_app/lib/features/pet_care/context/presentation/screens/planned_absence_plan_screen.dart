@@ -11,6 +11,8 @@ import '../planned_absence_display.dart';
 import '../providers/care_context_providers.dart';
 import '../widgets/absence_pet_pill.dart';
 import '../widgets/away_plan_header_section.dart';
+import '../absence_pet_membership_flow.dart';
+import '../planned_absence_date_rules.dart';
 import '../widgets/away_plan_summary_card.dart';
 
 /// Absence (trip) screen at `/pc/away/:id` — summary, status, pet pills.
@@ -88,6 +90,12 @@ class PlannedAbsencePlanScreen extends ConsumerWidget {
 
             final canEditTrip =
                 absence.canEditTrip ?? absence.isOwnAbsence ?? false;
+            final todayIso = PlannedAbsenceDateRules.startsOnWire(
+              PlannedAbsenceDateRules.todayCalendar(),
+            );
+            final isPast =
+                todayIso != null && absence.endsOn.compareTo(todayIso) < 0;
+            final showAddPet = canEditTrip && !absence.isCancelled && !isPast;
 
             return shell(
               actions: [
@@ -125,6 +133,20 @@ class PlannedAbsencePlanScreen extends ConsumerWidget {
                       petName: petNamesById[petId] ?? '',
                     ),
                     const SizedBox(height: 12),
+                  ],
+                  if (showAddPet) ...[
+                    const SizedBox(height: 4),
+                    OutlinedButton.icon(
+                      key: const Key('absence_add_pet'),
+                      onPressed: () => AbsencePetMembershipFlow.showAddPetSheet(
+                        context: context,
+                        ref: ref,
+                        absence: absence,
+                        allPets: pets,
+                      ),
+                      icon: const Icon(Icons.add),
+                      label: Text(l.careContextAddPetToAbsence),
+                    ),
                   ],
                 ],
               ),

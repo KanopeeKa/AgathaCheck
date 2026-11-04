@@ -2777,6 +2777,44 @@
       "name": { "type": "String" }
     }
   },
+  "careContextHubYourAbsences": "Your absences",
+  "careContextHubOtherPeoplesAbsences": "Other people's absences",
+  "careContextPlanAnAbsence": "Plan an absence",
+  "careContextAddPetToAbsence": "Add a pet",
+  "careContextAddPetToAbsenceTitle": "Add a pet to this absence",
+  "careContextAddPetNoneAvailable": "No other pets are available to add.",
+  "careContextAddPetSuccess": "Pet added to this absence.",
+  "careContextAddPetFailed": "Could not add pet. Try again.",
+  "careContextRemovePetFromAbsence": "Remove {pet} from this absence",
+  "@careContextRemovePetFromAbsence": {
+    "placeholders": {
+      "pet": { "type": "String" }
+    }
+  },
+  "careContextRemovePetConfirmTitle": "Remove {pet} from this absence?",
+  "@careContextRemovePetConfirmTitle": {
+    "placeholders": {
+      "pet": { "type": "String" }
+    }
+  },
+  "careContextRemovePetConfirmBody": "This removes this pet's carer assignment, notes for this pet, and care decisions made for this trip. Care items and their dates won't change.",
+  "careContextRemovePetLastConfirmBody": "{pet} is the only pet on this absence. Removing it deletes the absence.",
+  "@careContextRemovePetLastConfirmBody": {
+    "placeholders": {
+      "pet": { "type": "String" }
+    }
+  },
+  "careContextRemovePetConfirmAction": "Remove pet",
+  "careContextRemovePetSuccess": "{pet} was removed from this absence.",
+  "@careContextRemovePetSuccess": {
+    "placeholders": {
+      "pet": { "type": "String" }
+    }
+  },
+  "careContextRemovePetAbsenceDeleted": "This absence was deleted.",
+  "careContextRemovePetFailed": "Could not remove pet. Try again.",
+  "careContextPetPageAwaySectionTitle": "Away plans",
+  "careContextPetPageAllAbsences": "All absences",
   "careContextAbsencePetsSectionTitle": "Pets on this absence",
   "careContextSeePetAwayPlan": "See {pet}'s away plan",
   "@careContextSeePetAwayPlan": {

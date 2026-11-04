@@ -7361,6 +7361,74 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String get careContextHubYourAbsences => 'Vos absences';
+
+  @override
+  String get careContextHubOtherPeoplesAbsences => 'Absences des autres';
+
+  @override
+  String get careContextPlanAnAbsence => 'Planifier une absence';
+
+  @override
+  String get careContextAddPetToAbsence => 'Ajouter un animal';
+
+  @override
+  String get careContextAddPetToAbsenceTitle =>
+      'Ajouter un animal à cette absence';
+
+  @override
+  String get careContextAddPetNoneAvailable =>
+      'Aucun autre animal disponible à ajouter.';
+
+  @override
+  String get careContextAddPetSuccess => 'Animal ajouté à cette absence.';
+
+  @override
+  String get careContextAddPetFailed =>
+      'Impossible d\'ajouter l\'animal. Réessayez.';
+
+  @override
+  String careContextRemovePetFromAbsence(String pet) {
+    return 'Retirer $pet de cette absence';
+  }
+
+  @override
+  String careContextRemovePetConfirmTitle(String pet) {
+    return 'Retirer $pet de cette absence ?';
+  }
+
+  @override
+  String get careContextRemovePetConfirmBody =>
+      'Cela retire l\'assignation du gardien, les notes pour cet animal et les décisions de soins pour ce voyage. Les éléments de soins et leurs dates ne changent pas.';
+
+  @override
+  String careContextRemovePetLastConfirmBody(String pet) {
+    return '$pet est le seul animal sur cette absence. Le retirer supprime l\'absence.';
+  }
+
+  @override
+  String get careContextRemovePetConfirmAction => 'Retirer l\'animal';
+
+  @override
+  String careContextRemovePetSuccess(String pet) {
+    return '$pet a été retiré de cette absence.';
+  }
+
+  @override
+  String get careContextRemovePetAbsenceDeleted =>
+      'Cette absence a été supprimée.';
+
+  @override
+  String get careContextRemovePetFailed =>
+      'Impossible de retirer l\'animal. Réessayez.';
+
+  @override
+  String get careContextPetPageAwaySectionTitle => 'Plans d\'absence';
+
+  @override
+  String get careContextPetPageAllAbsences => 'Toutes les absences';
+
+  @override
   String get careContextAbsencePetsSectionTitle => 'Animaux sur cette absence';
 
   @override

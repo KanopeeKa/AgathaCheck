@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 
+import 'package:pet_profile_app/features/pet_care/pet_care.dart';
 import 'package:pet_profile_app/features/people/people.dart';
 import 'package:pet_profile_app/features/care_intelligence/care_intelligence.dart';
 import 'package:pet_profile_app/features/pet_tags/pet_tags.dart';
@@ -38,6 +39,8 @@ class PetDetailScrollBody extends StatelessWidget {
           PetCareSection(petId: pet.id, pet: pet),
           PetProfileCareSuggestionSection(petId: pet.id),
           PetProfileCompletenessSection(pet: pet, viewerContext: viewerContext),
+          if (viewerContext.can(PetDetailAction.planAbsence))
+            PetPageAwayPlansSection(petId: pet.id),
           PetPeopleSection(
             petId: pet.id,
             petName: pet.name,

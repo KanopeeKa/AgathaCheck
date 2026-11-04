@@ -168,6 +168,11 @@ export const DEMO_IDS = {
   awIndeterminateAbsence: 'a9000001-0001-4001-8001-000000000006',
   awNoUnresolvedAbsence: 'a9000001-0001-4001-8001-000000000007',
   awDownloadedEditedAbsence: 'a9000001-0001-4001-8001-000000000008',
+  /** UAT: Frederique 3-pet absence (Buddy, Whiskers, Pebble) — relative dates in seed */
+  awPerPetMultiAbsence: 'a9000001-0001-4001-8001-000000000009',
+  /** UAT: single-pet absence for last-pet removal proof */
+  awPerPetSingleAbsence: 'a9000001-0001-4001-8001-00000000000a',
+  daveBuddyCoParentAccess: 'a8000001-0001-4001-8001-000000000004',
   awNoUnresolvedEntry: 'a6000001-0001-4001-8001-000000000030',
   awNoUnresolvedOccCompleted: 'a6300001-0001-4001-8001-000000000030',
   awNoUnresolvedOccSkipped: 'a6300001-0001-4001-8001-000000000031',

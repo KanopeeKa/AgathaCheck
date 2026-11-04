@@ -10,6 +10,7 @@ import '../../domain/entities/away_plan_readiness.dart';
 import '../../domain/entities/care_period_coverage.dart';
 import '../../domain/entities/carer_candidate.dart';
 import '../../domain/entities/per_pet_away_plan_status.dart';
+import '../../domain/entities/pet_planned_absence_row.dart';
 import '../../domain/entities/planned_absence.dart';
 import '../../domain/repositories/care_context_repository.dart';
 
@@ -54,6 +55,16 @@ final plannedAbsencesListProvider = FutureProvider<List<PlannedAbsence>>((
 ) async {
   return ref.read(careContextRepositoryProvider).listPlannedAbsences();
 });
+
+final petPlannedAbsencesProvider =
+    FutureProvider.family<PetPlannedAbsenceListResult, String>((
+      ref,
+      petId,
+    ) async {
+      return ref
+          .read(careContextRepositoryProvider)
+          .listPetPlannedAbsences(petId);
+    });
 
 final plannedAbsenceDetailProvider =
     FutureProvider.family<PlannedAbsence, String>((ref, absenceId) async {
