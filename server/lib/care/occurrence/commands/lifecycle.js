@@ -184,3 +184,8 @@ export async function closeSeriesCommand(ctx) {
   return { event: null };
 }
 
+/** @deprecated Reopen removed (CARE-STATUS-R-011); route deleted — stub for barrel export. */
+export async function reopenSeriesCommand() {
+  throw new CareCommandError(404, 'route_removed', 'Reopen is not available');
+}
+

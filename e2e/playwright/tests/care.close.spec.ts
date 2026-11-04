@@ -10,6 +10,23 @@ import {
   withCareClock,
 } from '../support/care-api';
 import { createPet } from '../support/api';
+import { refreshFlutterAccessibility } from '../support/flutter';
+
+async function confirmCloseCare(page: import('@playwright/test').Page): Promise<void> {
+  await refreshFlutterAccessibility(page);
+  const closeButton = page
+    .locator('[flt-semantics-identifier="care_item_close_care_button"]')
+    .or(page.getByRole('button', { name: /^Close care$|^Clore le soin$/i }));
+  await expect(closeButton.first()).toBeVisible({ timeout: 30_000 });
+  await closeButton.first().click();
+  await refreshFlutterAccessibility(page);
+  const confirm = page
+    .locator('[flt-semantics-identifier="care_close_confirm_button"]')
+    .or(page.getByRole('button', { name: /^Close care$|^Clore le soin$/i }).last());
+  await expect(confirm).toBeVisible({ timeout: 15_000 });
+  await confirm.click();
+  await refreshFlutterAccessibility(page);
+}
 
 test.describe('Close care (CC-1)', () => {
   test('owner closes care with stopped_by_user', async ({ page, testUser }) => {
@@ -27,7 +44,7 @@ test.describe('Close care (CC-1)', () => {
       await loginAs(page, testUser, { experience: 'guardian' });
       const careItem = new CareItemPage(page);
       await careItem.open(pet.id, entry.id);
-      await careItem.closeCare();
+      await confirmCloseCare(page);
 
       const item = await getCareItem(baseURL, testUser.accessToken, entry.id);
       expect(item.status).toBe('closed');

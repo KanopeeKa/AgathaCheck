@@ -62,6 +62,7 @@ export {
   closeSeriesCommand,
   createInitialOccurrences,
   reconcileScheduleEdit,
+  reopenSeriesCommand,
 } from './commands/lifecycle.js';
 export { runCareTick } from './careTick.js';
 

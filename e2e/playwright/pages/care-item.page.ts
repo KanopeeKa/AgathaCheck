@@ -488,25 +488,4 @@ export class CareItemPage {
       await expect(semanticsKey(this.page, 'care_item_absence_keep_date')).toHaveCount(0);
     }).toPass({ timeout: 45_000 });
   }
-
-  async closeCare(): Promise<void> {
-    await refreshFlutterAccessibility(this.page);
-    const closeButton = this.page
-      .locator('[flt-semantics-identifier="care_item_close_care_button"]')
-      .or(this.page.getByRole('button', { name: /^Close care$|^Clore le soin$/i }));
-    await expect(closeButton.first()).toBeVisible({ timeout: 30_000 });
-    await closeButton.first().click();
-    await refreshFlutterAccessibility(this.page);
-    const confirm = this.page
-      .locator('[flt-semantics-identifier="care_close_confirm_button"]')
-      .or(this.page.getByRole('button', { name: /^Close care$|^Clore le soin$/i }).last());
-    await expect(confirm).toBeVisible({ timeout: 15_000 });
-    await confirm.click();
-    await refreshFlutterAccessibility(this.page);
-  }
-
-  async expectCloseCareHidden(): Promise<void> {
-    await refreshFlutterAccessibility(this.page);
-    await expect(semanticsKey(this.page, 'care_item_close_care_button')).toHaveCount(0);
-  }
 }
