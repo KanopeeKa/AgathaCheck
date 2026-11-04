@@ -47,7 +47,8 @@ async function loadEligiblePets(pool, {
 
 async function loadHealthEntries(pool, petId) {
   const result = await pool.query(
-    `SELECT care_family, frequency, care_source FROM health_entries WHERE pet_id = $1`,
+    `SELECT care_family, frequency, care_source, status
+     FROM health_entries WHERE pet_id = $1`,
     [petId],
   );
   return result.rows;
@@ -68,7 +69,9 @@ function isRecurringParasitePrevention(entries) {
   return entries.some(
     (e) => e.care_family === 'parasite_prevention'
       && e.frequency
-      && e.frequency !== 'once',
+      && e.frequency !== 'once'
+      && e.status !== 'closed'
+      && e.status !== 'completed',
   );
 }
 

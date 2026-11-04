@@ -599,9 +599,9 @@ describe('Health Entries API', () => {
       expect(res.statusCode).toBe(401);
     });
 
-    it('POST /api/health-entries/:id/reopen returns 401 without token', async () => {
+    it('POST /api/health-entries/:id/reopen route is removed', async () => {
       const res = await request(app).post('/api/health-entries/he-1/reopen');
-      expect(res.statusCode).toBe(401);
+      expect(res.statusCode).toBe(404);
     });
 
   });

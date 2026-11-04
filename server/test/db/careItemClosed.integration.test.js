@@ -55,10 +55,9 @@ describe('care item closed status', () => {
     expect(res.body.open_occurrences).toEqual([]);
   });
 
-  it('POST complete on closed item returns 409 care_item_closed', async () => {
+  it('POST reopen route is removed', async () => {
     if (!app) return;
     const res = await api.reopen(entryId);
-    expect(res.status).toBe(409);
-    expect(res.body.code).toBe('care_item_closed');
+    expect(res.statusCode).toBe(404);
   });
 });

@@ -150,6 +150,23 @@ describe('planAbsenceCare (BR-1…BR-7)', () => {
   });
 });
 
+describe('planAbsenceCare closed care (CARE-STATUS-R-022)', () => {
+  it('skips closed items', () => {
+    const entry = weeklyEntry({ status: 'closed' });
+    const result = planAbsenceCare({
+      absence,
+      today,
+      pets: [petWithEntries([{
+        entry,
+        open_occurrence: null,
+        last_closed_date: '2026-06-01',
+      }])],
+    });
+    expect(result.pets[0].carer_tasks.count).toBe(0);
+    expect(result.pets[0].suggestions).toHaveLength(0);
+  });
+});
+
 describe('planAbsenceCare carer_task entries', () => {
   it('daily rhythm counts as carer_task without suggestions', () => {
     const entry = weeklyEntry({ frequency: 'daily' });

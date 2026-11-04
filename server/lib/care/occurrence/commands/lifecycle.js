@@ -1,5 +1,5 @@
 /**
- * Create, edit reconciliation, close and reopen (D-CSM-019, D-CSM-032).
+ * Create, edit reconciliation, and close (D-CSM-019, D-CSM-032).
  * None of these is undoable; they write no primary ledger event.
  */
 
@@ -184,25 +184,3 @@ export async function closeSeriesCommand(ctx) {
   return { event: null };
 }
 
-/**
- * Reopen a closed item; the sync creates its next date at once.
- *
- * @param {object} ctx
- */
-export async function reopenSeriesCommand(ctx) {
-  assertItemOpen(ctx.entry);
-  const { db, entry, asOf } = ctx;
-  await db.query(
-    `UPDATE health_entries SET status = 'active', repeat_end_date = NULL,
-       completed_on = CASE WHEN frequency = 'once' OR frequency IS NULL THEN NULL ELSE completed_on END,
-       completed_at = NULL, updated_at = NOW()
-     WHERE id = $1`,
-    [entry.id],
-  );
-  if (!seriesStep(entry)) {
-    await insertOpenOccurrence(db, {
-      entryId: entry.id, date: asOf.todayIso, time: null, origin: 'planned',
-    });
-  }
-  return { event: null };
-}

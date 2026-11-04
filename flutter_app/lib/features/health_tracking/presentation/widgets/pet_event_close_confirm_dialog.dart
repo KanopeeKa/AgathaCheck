@@ -2,30 +2,60 @@ import 'package:flutter/material.dart';
 
 import '../../../../l10n/app_localizations.dart';
 
-/// Confirms closing a care event when associated occurrences will also close.
-Future<bool?> showCloseEventConfirmDialog(
+/// User choice from the Close care confirmation dialog (CARE-STATUS-R-016).
+enum CloseCareDialogResult {
+  cancel,
+  recordFirst,
+  confirmClose,
+}
+
+/// Confirms closing a care item; offers [CloseCareDialogResult.recordFirst]
+/// when [startedOpenCount] is greater than zero.
+Future<CloseCareDialogResult?> showCloseCareConfirmDialog(
   BuildContext context, {
-  required int openOccurrenceCount,
+  required int startedOpenCount,
 }) {
   final l = AppLocalizations.of(context)!;
-  final message = openOccurrenceCount > 0
-      ? l.closeEventConfirmMessageWithCount(openOccurrenceCount)
-      : l.closeEventConfirmMessage;
+  final notRecordedLine = startedOpenCount > 0
+      ? l.careCloseConfirmStartedDates(startedOpenCount)
+      : null;
 
-  return showDialog<bool>(
+  return showDialog<CloseCareDialogResult>(
     context: context,
     builder: (ctx) => AlertDialog(
-      title: Text(l.closeEventConfirmTitle),
-      content: Text(message),
+      title: Text(l.careCloseConfirmTitle),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(l.careCloseConfirmNoReopen),
+          if (notRecordedLine != null) ...[
+            const SizedBox(height: 12),
+            Text(notRecordedLine),
+          ],
+        ],
+      ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.of(ctx).pop(false),
+          onPressed: () => Navigator.of(ctx).pop(CloseCareDialogResult.cancel),
           child: Text(l.cancel),
         ),
+        if (startedOpenCount > 0)
+          TextButton(
+            key: const Key('care_close_record_first_button'),
+            onPressed: () =>
+                Navigator.of(ctx).pop(CloseCareDialogResult.recordFirst),
+            child: Text(l.careCloseConfirmRecordFirst),
+          ),
         FilledButton(
-          key: const Key('pet_event_close_confirm_button'),
-          onPressed: () => Navigator.of(ctx).pop(true),
-          child: Text(l.closeEventAction),
+          key: const Key('care_close_confirm_button'),
+          style: FilledButton.styleFrom(
+            backgroundColor: Theme.of(ctx).colorScheme.error,
+            foregroundColor: Theme.of(ctx).colorScheme.onError,
+          ),
+          onPressed: () =>
+              Navigator.of(ctx).pop(CloseCareDialogResult.confirmClose),
+          child: Text(l.careCloseConfirmAction),
         ),
       ],
     ),

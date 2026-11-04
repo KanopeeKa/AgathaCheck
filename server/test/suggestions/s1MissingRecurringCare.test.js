@@ -23,9 +23,18 @@ describe('evaluateS1MissingRecurringCare', () => {
   it('returns null when recurring parasite prevention exists', () => {
     const result = evaluateS1MissingRecurringCare(
       pet,
-      [{ care_family: 'parasite_prevention', frequency: 'monthly' }],
+      [{ care_family: 'parasite_prevention', frequency: 'monthly', status: 'active' }],
       new Date('2026-06-01'),
     );
     expect(result).toBeNull();
+  });
+
+  it('R-025 ignores closed recurring parasite prevention', () => {
+    const result = evaluateS1MissingRecurringCare(
+      pet,
+      [{ care_family: 'parasite_prevention', frequency: 'monthly', status: 'closed' }],
+      new Date('2026-06-01'),
+    );
+    expect(result).not.toBeNull();
   });
 });

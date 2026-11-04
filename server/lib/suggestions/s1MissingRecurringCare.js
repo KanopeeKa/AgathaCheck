@@ -14,6 +14,7 @@ function monthsBetween(startDate, endDate) {
 }
 
 function isRecurringEntry(entry) {
+  if (entry.status === 'closed' || entry.status === 'completed') return false;
   return entry.frequency && entry.frequency !== 'once';
 }
 

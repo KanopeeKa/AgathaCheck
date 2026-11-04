@@ -2090,6 +2090,17 @@
   "careItemMenuResume": "Resume",
   "careItemMenuArchive": "Archive",
   "careItemMenuRestore": "Restore",
+  "careCloseCareButton": "Close care",
+  "careCloseConfirmTitle": "Close care?",
+  "careCloseConfirmNoReopen": "This care cannot be reopened.",
+  "careCloseConfirmStartedDates": "{count, plural, one{1 date will be marked Not recorded.} other{{count} dates will be marked Not recorded.}}",
+  "@careCloseConfirmStartedDates": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "careCloseConfirmRecordFirst": "Record them first",
+  "careCloseConfirmAction": "Close care",
   "careItemPausedStatus": "Paused",
   "careItemPausedSince": "Paused since {date}",
   "@careItemPausedSince": {

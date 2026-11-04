@@ -166,4 +166,27 @@ test.describe('Care accessibility', () => {
       await withCareClock(null, page);
     }
   });
+
+  test('@smoke-a11y close care dialog passes axe', async ({ page, testUser }) => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    await withCareClock('2026-06-01T09:00', page);
+    try {
+      const pet = await createPet(baseURL, testUser.accessToken, 'Rex');
+      const entry = await createCareItem(baseURL, testUser.accessToken, pet.id, {
+        name: 'Flea',
+        careFamily: 'parasite_prevention',
+        frequency: 'monthly',
+        dueDate: '2026-06-05',
+      });
+      await loginAs(page, testUser, { experience: 'guardian' });
+      const careItem = new CareItemPage(page);
+      await careItem.open(pet.id, entry.id);
+      await refreshFlutterAccessibility(page);
+      await page.locator('[flt-semantics-identifier="care_item_close_care_button"]').click();
+      await page.getByRole('alertdialog').waitFor({ timeout: 15_000 });
+      await checkA11y(page, 'close care dialog');
+    } finally {
+      await withCareClock(null, page);
+    }
+  });
 });
