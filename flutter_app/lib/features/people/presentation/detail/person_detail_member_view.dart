@@ -78,7 +78,6 @@ class PersonDetailMemberView extends ConsumerWidget {
                     contactId: target.member.userId,
                     pets: _memberPetLinks(target, roster),
                     access: null,
-                    rosterPetOptions: rosterPetOptions(roster),
                     allowLink: false,
                   ),
                   Center(

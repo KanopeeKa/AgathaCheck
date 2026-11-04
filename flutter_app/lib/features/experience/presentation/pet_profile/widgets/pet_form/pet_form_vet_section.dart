@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:pet_profile_app/features/people/people.dart';
+import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 class PetFormVetSection extends ConsumerWidget {
   const PetFormVetSection({
@@ -20,6 +21,7 @@ class PetFormVetSection extends ConsumerWidget {
         : ref.watch(personSummaryProvider(selectedPrimaryVetContactId!));
 
     return PeoplePickerField(
+      label: AppLocalizations.of(context)!.peopleRelationshipPrimaryVet,
       purpose: 'pet_primary_vet',
       query: PeopleQuery(
         groups: const {ContactGroup.professional},

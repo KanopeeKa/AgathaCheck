@@ -221,7 +221,7 @@ test('compare maps fields', async () => {
         ahead_by: 2,
         behind_by: 0,
         total_commits: 2,
-        files: [{ filename: 'a.js', status: 'modified', patch: '@@' }],
+        files: [{ filename: 'a.js', status: 'modified', previous_filename: 'old.js', patch: '@@' }],
       },
     },
   });
@@ -229,7 +229,8 @@ test('compare maps fields', async () => {
     status: 'ahead',
     ahead_by: 2,
     behind_by: 0,
-    files: [{ filename: 'a.js', status: 'modified' }],
+    merge_base_commit: null,
+    files: [{ filename: 'a.js', status: 'modified', previous_filename: 'old.js' }],
   });
 });
 

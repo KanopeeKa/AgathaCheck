@@ -217,7 +217,8 @@ status from GitHub Actions, required on `main` and integration branches after WP
 1. Kill switch `off` → return. `dry-run` → validate and write the job summary only (no dispatch).
 2. Ignore comments on PRs and on issues without label `execute-plan`.
 3. `approve`: read `Init branch: <name> @ <sha>` from the issue body; `loadSnapshotAtRef` at `<sha>`;
-   `validateControlComment`; `compare(main...<sha>).files` must be exactly the two own plan files;
+   `validateControlComment`; `compare(main...<sha>)` paths (each file's `filename` and
+   `previous_filename`) must be exactly the two own plan files;
    the integration branch must not exist (exists at `<sha>` → idempotent success). Then, with the
    bot token: `createRef(refs/heads/<integration_branch>, <sha>)`; create the status comment
    (`init_sha`, `state: phase:pending`); labels `autonomous-approved`, `plan:<plan_id>`; append

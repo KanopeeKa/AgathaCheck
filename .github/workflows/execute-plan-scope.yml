@@ -7,6 +7,7 @@ permissions:
   pull-requests: read
   issues: read
   statuses: write
+  actions: read
 concurrency:
   group: execute-plan-scope-${{ github.event.pull_request.number }}
   cancel-in-progress: true

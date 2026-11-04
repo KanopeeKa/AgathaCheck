@@ -65,25 +65,6 @@ class RosterPetOption {
   final String petName;
 }
 
-List<RosterPetOption> rosterPetOptions(Roster roster) {
-  final byId = <String, String>{};
-  for (final contact in roster.contacts) {
-    for (final pet in contact.pets) {
-      byId.putIfAbsent(pet.petId, () => pet.petName);
-    }
-  }
-  for (final household in roster.households) {
-    for (final member in household.members) {
-      for (final petId in [...member.ownsPetIds, ...member.sharesPetIds]) {
-        byId.putIfAbsent(petId, () => petId);
-      }
-    }
-  }
-  return byId.entries
-      .map((e) => RosterPetOption(petId: e.key, petName: e.value))
-      .toList();
-}
-
 String? rosterPetName(Roster roster, String petId) {
   for (final contact in roster.contacts) {
     for (final pet in contact.pets) {

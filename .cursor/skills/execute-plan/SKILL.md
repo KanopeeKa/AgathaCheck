@@ -10,8 +10,11 @@ disable-model-invocation: true
 
 ## Planning session
 
-Write the plan files on branch `cursor/<plan_id>-init`, run
-`node scripts/execute_plan_runtime.js init <plan_id>`, end the session with the printed approval line.
+Write the plan file on branch `cursor/<plan_id>-init`. Delivery plans, README index rows, and other
+docs belong on `main` first (normal docs PR) — **never** on `-init`; see
+[`plan-template.md`](../../../docs/agent-efficiency/plan-template.md) § Authoring workflow.
+
+Run `node scripts/execute_plan_runtime.js init <plan_id>`, end the session with the printed approval line.
 
 ## Worker session
 
