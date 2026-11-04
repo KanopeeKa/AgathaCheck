@@ -67,11 +67,7 @@ void openClosedCareEntryDetail(BuildContext context, HealthEntry entry) {
   if (petId.isEmpty) return;
   final router = GoRouter.of(context);
   final returnTo = currentShellLocation(context);
-  final location = petEventViewLocation(
-    petId,
-    entry.id,
-    returnTo: returnTo,
-  );
+  final location = petEventViewLocation(petId, entry.id, returnTo: returnTo);
   Navigator.of(context).pop();
   WidgetsBinding.instance.addPostFrameCallback((_) {
     router.push(location);
