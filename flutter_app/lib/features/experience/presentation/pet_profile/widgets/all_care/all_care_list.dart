@@ -14,31 +14,18 @@ import 'all_care_inactive_section.dart';
 
 /// Pet-scoped All care: agenda groups (D-CIE-025), then Other care (paused only),
 /// then a **Closed care** link when the pet has closed items (CARE-STATUS-R-021).
-class AllCareList extends ConsumerStatefulWidget {
+class AllCareList extends ConsumerWidget {
   const AllCareList({super.key, required this.petId});
 
   final String petId;
 
   @override
-  ConsumerState<AllCareList> createState() => _AllCareListState();
-}
-
-class _AllCareListState extends ConsumerState<AllCareList> {
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(healthEntriesNotifierProvider.notifier).refresh();
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
-    final entriesAsync = ref.watch(petHealthEntriesByIdProvider(widget.petId));
+    final entriesAsync = ref.watch(petHealthEntriesByIdProvider(petId));
     final allEntries = entriesAsync.valueOrNull ?? const <HealthEntry>[];
     final establishedIds = ref
-        .watch(petCareEstablishmentsProvider(widget.petId))
+        .watch(petCareEstablishmentsProvider(petId))
         .maybeWhen(
           data: (establishments) =>
               establishedRhythmEntryIds(establishments, allEntries),
@@ -77,7 +64,7 @@ class _AllCareListState extends ConsumerState<AllCareList> {
                   actionLabel: l.addAnEvent,
                   actionIcon: Icons.add,
                   onAction: () =>
-                      navigateToAddHealthEntry(context, petId: widget.petId),
+                      navigateToAddHealthEntry(context, petId: petId),
                 )
               else ...[
                 if (active.isNotEmpty)
@@ -91,10 +78,7 @@ class _AllCareListState extends ConsumerState<AllCareList> {
                   onViewEntry: (entry) =>
                       HomeEventActions.viewEntry(context, entry),
                 ),
-                AllCareClosedFooter(
-                  petId: widget.petId,
-                  closedCount: closed.length,
-                ),
+                AllCareClosedFooter(petId: petId, closedCount: closed.length),
               ],
             ],
           ),

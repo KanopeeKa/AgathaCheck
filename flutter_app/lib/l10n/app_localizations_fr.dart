@@ -426,6 +426,23 @@ class AppLocalizationsFr extends AppLocalizations {
   String get allCareInactiveSection => 'Autres soins';
 
   @override
+  String allCareClosedCareLink(int count) {
+    return 'Soins fermés ($count)';
+  }
+
+  @override
+  String get allCareClosedCareTitle => 'Soins fermés';
+
+  @override
+  String get allCareClosedCareEmpty => 'Aucun soin fermé pour le moment.';
+
+  @override
+  String get careItemClosedStatusEnded => 'Fermé · Terminé';
+
+  @override
+  String get careItemClosedStatusStoppedByYou => 'Fermé · Arrêté par vous';
+
+  @override
   String get eventFilterClosed => 'Fermé';
 
   @override

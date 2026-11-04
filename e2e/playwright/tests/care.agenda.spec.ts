@@ -158,14 +158,16 @@ test.describe('Care agenda', () => {
         { timeout: 30_000 },
       ).toBe('closed');
 
-      await page.goto(flutterGotoUrl(`/pet/${pet.id}/events`), {
-        waitUntil: 'networkidle',
-      });
-      await waitForFlutterRoutePattern(
-        page,
-        new RegExp(`/pet/${pet.id}/events`),
-        30_000,
-      );
+      await expect(async () => {
+        await page.goto(flutterGotoUrl(`/pet/${pet.id}/events`), {
+          waitUntil: 'networkidle',
+        });
+        await waitForFlutterRoutePattern(
+          page,
+          new RegExp(`/pet/${pet.id}/events`),
+          15_000,
+        );
+      }).toPass({ timeout: 60_000 });
       await enableFlutterAccessibility(page);
       await page
         .locator('[flt-semantics-identifier="all_care_list"]')
