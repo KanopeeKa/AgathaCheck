@@ -115,10 +115,22 @@ describe('care occurrence invariants under random commands (OR-4)', () => {
         await runCareTick(harness.pool, { clock: { todayIso: today, nowTimeIso: time } });
       } else if (action === 'stack') {
         const stack = open.filter((o) => o.status === 'not_recorded' || o.status === 'overdue');
-        if (stack.length) {
-          const given = stack.filter(() => random() < 0.5).map((o) => o.id);
-          const notGiven = stack.filter((o) => !given.includes(o.id)).map((o) => o.id);
-          res = await api.at(clock()).resolveStack(id, { given, not_given: notGiven });
+        for (const row of stack) {
+          if (random() < 0.5) {
+            const one = await api.at(clock()).complete(id, row.id, {
+              completed_on: row.scheduled_date,
+            });
+            if (one.statusCode >= 500) {
+              res = one;
+              break;
+            }
+          } else {
+            const one = await api.at(clock()).skip(id, row.id);
+            if (one.statusCode >= 500) {
+              res = one;
+              break;
+            }
+          }
         }
       } else if (action === 'record') {
         const rows = await occurrenceRows(harness.pool, id);

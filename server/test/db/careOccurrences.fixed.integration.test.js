@@ -103,14 +103,16 @@ describe('fixed schedule (D-CSM-023)', () => {
     expect(after).toMatchObject({ status: 'skipped' });
   });
 
-  it('FX-12 record earlier doses: given and not given', async () => {
+  it('FX-12 bulk stack: complete one slot and skip another', async () => {
     const entry = await created(twiceDaily('2026-06-01'), '2026-06-01T07:00');
     const read = await api.at('2026-06-02T19:00').get(entry.id);
     const stack = read.body.open_occurrences.filter((o) => o.status === 'not_recorded');
-    const res = await api.at('2026-06-02T19:00').resolveStack(entry.id, {
-      given: [stack[0].id], not_given: [stack[1].id],
+    const done = await api.at('2026-06-02T19:00').complete(entry.id, stack[0].id, {
+      completed_on: stack[0].scheduled_date,
     });
-    expect(res.statusCode).toBe(200);
+    expect(done.statusCode).toBe(200);
+    const skipped = await api.at('2026-06-02T19:00').skip(entry.id, stack[1].id);
+    expect(skipped.statusCode).toBe(200);
     const rows = await occurrenceRows(harness.pool, entry.id);
     expect(rows.find((r) => r.id === stack[0].id)).toMatchObject({ status: 'completed', completed_on: '2026-06-01' });
     expect(rows.find((r) => r.id === stack[1].id)).toMatchObject({ status: 'skipped' });
