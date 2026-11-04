@@ -70,21 +70,20 @@ describe('migration 085 care item closed', () => {
   it('maps completed to closed with ended or stopped_by_user and is idempotent', async () => {
     if (!pool || !runnable) return;
     const client = await pool.connect();
+    let byId;
     try {
       await client.query('BEGIN');
       await migrateCareItemClosed(client);
-      await client.query('COMMIT');
-      await client.query('BEGIN');
       await migrateCareItemClosed(client);
-      await client.query('COMMIT');
+      const rows = await client.query(
+        'SELECT id, status, care_closed_reason FROM health_entries WHERE id = ANY($1::uuid[])',
+        [[endedId, stoppedId]],
+      );
+      byId = Object.fromEntries(rows.rows.map((r) => [r.id, r]));
+      await client.query('ROLLBACK');
     } finally {
       client.release();
     }
-    const rows = await pool.query(
-      'SELECT id, status, care_closed_reason FROM health_entries WHERE id = ANY($1::uuid[])',
-      [[endedId, stoppedId]],
-    );
-    const byId = Object.fromEntries(rows.rows.map((r) => [r.id, r]));
     expect(byId[endedId]).toMatchObject({ status: 'closed', care_closed_reason: 'ended' });
     expect(byId[stoppedId]).toMatchObject({
       status: 'closed',

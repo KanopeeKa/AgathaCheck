@@ -133,7 +133,7 @@ describe('care occurrences seed (Whiskers)', () => {
   it('Vet visit is recorded only', async () => {
     if (!dbReady) return;
     const visit = await item(ids.vetVisit);
-    expect(visit.entry.status).toBe('completed');
+    expect(visit.entry.status).toBe('closed');
     expect(visit.open_occurrences).toEqual([]);
   });
 });
@@ -146,7 +146,7 @@ describe('care occurrences seed invariants', () => {
       const { entry, open_occurrences: open } = await item(id);
       if (entry.status === 'active') expect(open.length).toBeGreaterThan(0);
       expect(open.filter((o) => o.origin === 'computed').length).toBeLessThanOrEqual(1);
-      if (entry.status !== 'completed') {
+      if (entry.status !== 'completed' && entry.status !== 'closed') {
         expect(dateToIsoDate(entry.next_due_date)).toBe(open[0]?.scheduled_date ?? null);
       }
     }

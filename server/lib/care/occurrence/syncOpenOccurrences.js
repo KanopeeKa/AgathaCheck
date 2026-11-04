@@ -189,19 +189,28 @@ async function finishIfNothingLeft(db, entry, asOf) {
     );
     if (closed.rows.length === 0) return entry;
     const row = closed.rows[0];
-    return updateEntryFields(db, entry.id, {
-      status: CARE_ITEM_STATUS_CLOSED,
-      care_closed_reason: CARE_CLOSED_REASON_ENDED,
-      completed_on: dateToIsoDate(row.completed_on) || dateToIsoDate(row.scheduled_date) || asOf.todayIso,
-      completed_at: new Date(),
-    });
+    await db.query(
+      `UPDATE health_entries SET status = $1, care_closed_reason = $2,
+         completed_on = COALESCE(completed_on, $3::date),
+         completed_at = COALESCE(completed_at, NOW()), updated_at = NOW()
+       WHERE id = $4`,
+      [
+        CARE_ITEM_STATUS_CLOSED,
+        CARE_CLOSED_REASON_ENDED,
+        dateToIsoDate(row.completed_on) || dateToIsoDate(row.scheduled_date) || asOf.todayIso,
+        entry.id,
+      ],
+    );
+    return reloadEntry(db, entry.id);
   }
   const endIso = dateToIsoDate(entry.repeat_end_date);
   if (!endIso) return entry;
-  return updateEntryFields(db, entry.id, {
-    status: CARE_ITEM_STATUS_CLOSED,
-    care_closed_reason: CARE_CLOSED_REASON_ENDED,
-  });
+  await db.query(
+    `UPDATE health_entries SET status = $1, care_closed_reason = $2, updated_at = NOW()
+     WHERE id = $3`,
+    [CARE_ITEM_STATUS_CLOSED, CARE_CLOSED_REASON_ENDED, entry.id],
+  );
+  return reloadEntry(db, entry.id);
 }
 
 async function writeNextDueDate(db, entry) {

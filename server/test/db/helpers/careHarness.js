@@ -233,10 +233,12 @@ export async function invariantViolations(pool, entryId) {
   const plannedCare = (entry.care_planning || 'planned') !== 'unplanned';
   if (entry.status === 'active' && plannedCare && open.length === 0) violations.push('INV-1 no open occurrence');
   if (open.filter((r) => r.origin === 'computed').length > 1) violations.push('INV-2 two computed');
-  if (entry.status === 'completed' && open.length > 0) violations.push('INV-4 finished item has open occurrences');
+  if ((entry.status === 'completed' || entry.status === 'closed') && open.length > 0) {
+    violations.push('INV-4 finished item has open occurrences');
+  }
   const nextDue = dateToIsoDate(entry.next_due_date);
   const earliest = open[0]?.date ?? null;
-  if (entry.status !== 'completed' && nextDue !== earliest) {
+  if (entry.status !== 'completed' && entry.status !== 'closed' && nextDue !== earliest) {
     violations.push(`INV-5 next_due_date ${nextDue} != ${earliest}`);
   }
   return violations;
