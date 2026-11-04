@@ -7,6 +7,7 @@ import {
 import { extractUserId } from '../../lib/requireAuth.js';
 import { dateToIsoDate } from '../../lib/calendarDate.js';
 import { healthEntryToMap as careItemHealthEntryToMap, normalizeHealthEntryTypeForRead } from '../../lib/care/item/index.js';
+import { occurrenceOutcomeFromRow } from '../../lib/care/occurrence/occurrenceOutcome.js';
 import { extensionForMime } from '../../lib/safeUpload.js';
 import {
   HEALTH_DOCUMENT_EXTENSIONS,
@@ -130,6 +131,7 @@ export function historyToMap(row) {
     health_entry_id: row.health_entry_id,
     entry_id: row.health_entry_id,
     status: row.status,
+    outcome: occurrenceOutcomeFromRow(row),
     notes: row.notes || '',
     due_date: row.due_date ? dateToIsoDate(row.due_date) : null,
     completed_on: row.completed_on ? dateToIsoDate(row.completed_on) : null,

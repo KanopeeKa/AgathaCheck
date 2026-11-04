@@ -122,7 +122,7 @@ describe('care occurrence invariants under random commands (OR-4)', () => {
         }
       } else if (action === 'record') {
         const rows = await occurrenceRows(harness.pool, id);
-        const closed = rows.find((r) => r.close_reason === 'not_recorded');
+        const closed = rows.find((r) => r.status === 'not_recorded');
         if (closed) res = await api.at(clock()).record(id, closed.id);
       } else if (action === 'done_date') {
         // Change when care was done (D-CSM-034): any recent date, refusals allowed.

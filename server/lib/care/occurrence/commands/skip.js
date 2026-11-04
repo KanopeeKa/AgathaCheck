@@ -17,7 +17,6 @@ export async function skipOccurrenceCommand(ctx, { occurrenceId, notes = '', rea
   const skipped = await markSkipped(db, {
     entryId: entry.id,
     occurrenceId,
-    closeReason: 'user',
     userId,
     notes,
   });

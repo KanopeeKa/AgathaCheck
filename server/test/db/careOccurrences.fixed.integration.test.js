@@ -73,7 +73,7 @@ describe('fixed schedule (D-CSM-023)', () => {
     expect(wed.body.open_occurrences.filter((o) => o.status === 'not_recorded')).toHaveLength(4);
     await tick('2026-06-05T12:00');
     const rows = await occurrenceRows(harness.pool, entry.id);
-    const closed = rows.filter((r) => r.close_reason === 'not_recorded');
+    const closed = rows.filter((r) => r.status === 'not_recorded');
     expect(closed.map((r) => `${r.date} ${r.time}`)).toEqual(['2026-06-01 08:00', '2026-06-01 18:00']);
     expect(await invariantViolations(harness.pool, entry.id)).toEqual([]);
   });
@@ -82,7 +82,7 @@ describe('fixed schedule (D-CSM-023)', () => {
     const entry = await created(twiceDaily('2026-06-01'), '2026-06-01T07:00');
     await tick('2026-06-06T09:00');
     const rows = await occurrenceRows(harness.pool, entry.id);
-    const old = rows.find((r) => r.close_reason === 'not_recorded');
+    const old = rows.find((r) => r.status === 'not_recorded');
     const res = await api.at('2026-06-06T09:00').record(entry.id, old.id);
     expect(res.statusCode).toBe(200);
     expect(res.body.occurrence.status).toBe('completed');
@@ -95,12 +95,12 @@ describe('fixed schedule (D-CSM-023)', () => {
     const entry = await created(twiceDaily('2026-06-01'), '2026-06-01T07:00');
     await tick('2026-06-06T09:00');
     const rows = await occurrenceRows(harness.pool, entry.id);
-    const old = rows.find((r) => r.close_reason === 'not_recorded');
+    const old = rows.find((r) => r.status === 'not_recorded');
     const res = await api.at('2026-06-06T09:00').confirmSkip(entry.id, old.id);
     expect(res.statusCode).toBe(200);
-    expect(res.body.occurrence).toMatchObject({ status: 'skipped', close_reason: 'user' });
+    expect(res.body.occurrence).toMatchObject({ status: 'skipped', outcome: 'skipped' });
     const after = (await occurrenceRows(harness.pool, entry.id)).find((r) => r.id === old.id);
-    expect(after).toMatchObject({ status: 'skipped', close_reason: 'user' });
+    expect(after).toMatchObject({ status: 'skipped' });
   });
 
   it('FX-12 record earlier doses: given and not given', async () => {
@@ -113,7 +113,7 @@ describe('fixed schedule (D-CSM-023)', () => {
     expect(res.statusCode).toBe(200);
     const rows = await occurrenceRows(harness.pool, entry.id);
     expect(rows.find((r) => r.id === stack[0].id)).toMatchObject({ status: 'completed', completed_on: '2026-06-01' });
-    expect(rows.find((r) => r.id === stack[1].id)).toMatchObject({ status: 'skipped', close_reason: 'user' });
+    expect(rows.find((r) => r.id === stack[1].id)).toMatchObject({ status: 'skipped' });
   });
 
   it('ME-1 a monthly schedule anchored on the 31st clamps to month ends', async () => {
@@ -256,7 +256,7 @@ describe('change date, postpone, type switch', () => {
       expect.objectContaining({ scheduled_date: '2026-06-02', origin: 'computed', status: 'overdue' }),
     ]);
     const rows = await occurrenceRows(harness.pool, entry.id);
-    expect(rows.filter((r) => r.close_reason === 'not_recorded').length).toBeGreaterThan(0);
+    expect(rows.filter((r) => r.status === 'not_recorded').length).toBeGreaterThan(0);
   });
 });
 

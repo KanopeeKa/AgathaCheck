@@ -6,34 +6,15 @@
 import { v4 as uuidv4 } from 'uuid';
 
 import { dateToIsoDate } from '../../calendarDate.js';
+import { normalizeOccurrenceRow } from './occurrenceRowNormalize.js';
 
-/**
- * @param {object} row
- * @returns {{ date: string, time: string|null }}
- */
-export function rowSlot(row) {
-  return {
-    date: dateToIsoDate(row.scheduled_date),
-    time: row.scheduled_time ? String(row.scheduled_time).slice(0, 5) : null,
-  };
-}
-
-/**
- * @param {object} row DB row
- * @returns {object} row with calendar strings
- */
-export function normalizeOccurrenceRow(row) {
-  if (!row) return row;
-  const slot = rowSlot(row);
-  return {
-    ...row,
-    scheduled_date: slot.date,
-    scheduled_time: slot.time,
-    series_date: row.series_date ? dateToIsoDate(row.series_date) : null,
-    completed_on: row.completed_on ? dateToIsoDate(row.completed_on) : null,
-    origin: row.origin || 'computed',
-  };
-}
+export { normalizeOccurrenceRow, rowSlot } from './occurrenceRowNormalize.js';
+export {
+  confirmNotRecordedAsSkipped,
+  markCompleted,
+  markNotRecorded,
+  markSkipped,
+} from './occurrenceStatusWrites.js';
 
 const ORDER_ASC = `ORDER BY scheduled_date ASC, COALESCE(scheduled_time, '00:00:00'::time) ASC`;
 
@@ -149,7 +130,7 @@ export async function lastRuleClosedRow(db, entryId) {
   const result = await db.query(
     `SELECT * FROM health_occurrences
      WHERE health_entry_id = $1
-       AND (status = 'completed' OR (status = 'skipped' AND COALESCE(close_reason, 'user') = 'user'))
+       AND (status = 'completed' OR status = 'skipped')
      ORDER BY scheduled_date DESC, COALESCE(scheduled_time, '00:00:00'::time) DESC,
        marked_at DESC NULLS LAST
      LIMIT 1`,
@@ -165,7 +146,7 @@ export async function lastRuleClosedRow(db, entryId) {
 export async function countClosedRows(db, entryId) {
   const result = await db.query(
     `SELECT COUNT(*)::int AS n FROM health_occurrences
-     WHERE health_entry_id = $1 AND status IN ('completed', 'skipped')`,
+     WHERE health_entry_id = $1 AND status IN ('completed', 'skipped', 'not_recorded')`,
     [entryId],
   );
   return result.rows[0]?.n ?? 0;
@@ -199,99 +180,6 @@ export async function insertOpenOccurrence(db, {
 }
 
 /**
- * Close an open occurrence as skipped.
- *
- * @param {import('pg').PoolClient} db
- * @param {object} params
- * @returns {Promise<object|null>}
- */
-/**
- * Reclassify an auto-closed Not recorded dose as an intentional skip (FR-3, AC-C5).
- *
- * @param {import('pg').PoolClient} db
- * @param {object} params
- * @returns {Promise<object|null>}
- */
-export async function confirmNotRecordedAsSkipped(db, {
-  entryId, occurrenceId, userId = null, markedAt = new Date(),
-}) {
-  const result = await db.query(
-    `UPDATE health_occurrences SET close_reason = 'user',
-       marked_at = $1, marked_by_user_id = $2, updated_at = NOW()
-     WHERE id = $3 AND health_entry_id = $4
-       AND status = 'skipped' AND close_reason = 'not_recorded'
-     RETURNING *`,
-    [markedAt, userId, occurrenceId, entryId],
-  );
-  return normalizeOccurrenceRow(result.rows[0] || null);
-}
-
-export async function markSkipped(db, {
-  entryId, occurrenceId, closeReason, userId = null, notes = null, markedAt = new Date(),
-}) {
-  const result = await db.query(
-    `UPDATE health_occurrences SET status = 'skipped', close_reason = $1,
-       marked_at = $2, marked_by_user_id = $3, notes = COALESCE($4, notes), updated_at = NOW()
-     WHERE id = $5 AND health_entry_id = $6 AND status = 'pending'
-     RETURNING *`,
-    [closeReason, markedAt, userId, notes, occurrenceId, entryId],
-  );
-  return normalizeOccurrenceRow(result.rows[0] || null);
-}
-
-/**
- * Close an open (or Not recorded) occurrence as done.
- *
- * @param {import('pg').PoolClient} db
- * @param {object} params
- * @returns {Promise<object|null>}
- */
-export async function markCompleted(db, {
-  entryId,
-  occurrenceId,
-  completedOn,
-  completionTiming,
-  userId,
-  notes = '',
-  markedAt = new Date(),
-  performedByUserId = null,
-  markedSnapshot = null,
-  performedSnapshot = null,
-  provider = { contactId: null, typedName: null, snapshot: null },
-  fromNotRecorded = false,
-}) {
-  const statusClause = fromNotRecorded
-    ? "status = 'skipped' AND close_reason = 'not_recorded'"
-    : "status = 'pending'";
-  const result = await db.query(
-    `UPDATE health_occurrences SET status = 'completed', close_reason = 'user',
-       completed_on = $1, completion_timing = $2, marked_at = $3, marked_by_user_id = $4,
-       notes = $5, performed_by_user_id = $6,
-       marked_by_snapshot = $7::jsonb, performed_by_snapshot = $8::jsonb,
-       provider_contact_id = $9, provider_typed_name = $10, provider_contact_snapshot = $11::jsonb,
-       updated_at = NOW()
-     WHERE id = $12 AND health_entry_id = $13 AND ${statusClause}
-     RETURNING *`,
-    [
-      completedOn,
-      completionTiming,
-      markedAt,
-      userId,
-      notes,
-      performedByUserId,
-      markedSnapshot ? JSON.stringify(markedSnapshot) : null,
-      performedSnapshot ? JSON.stringify(performedSnapshot) : null,
-      provider.contactId ?? null,
-      provider.typedName ?? null,
-      provider.snapshot ? JSON.stringify(provider.snapshot) : null,
-      occurrenceId,
-      entryId,
-    ],
-  );
-  return normalizeOccurrenceRow(result.rows[0] || null);
-}
-
-/**
  * Restore a closed occurrence to a previous state (undo).
  *
  * @param {import('pg').PoolClient} db
@@ -311,16 +199,15 @@ export async function restoreOccurrence(db, entryId, before) {
     if (clash.rows.length > 0) return null;
   }
   const result = await db.query(
-    `UPDATE health_occurrences SET status = $1, close_reason = $2, completed_on = $3,
-       completion_timing = $4, marked_at = $5, marked_by_user_id = $6, notes = $7,
-       performed_by_user_id = $8, marked_by_snapshot = $9::jsonb, performed_by_snapshot = $10::jsonb,
-       provider_contact_id = $11, provider_typed_name = $12, provider_contact_snapshot = $13::jsonb,
-       scheduled_date = $14, origin = $15, updated_at = NOW()
-     WHERE id = $16 AND health_entry_id = $17
+    `UPDATE health_occurrences SET status = $1, completed_on = $2,
+       completion_timing = $3, marked_at = $4, marked_by_user_id = $5, notes = $6,
+       performed_by_user_id = $7, marked_by_snapshot = $8::jsonb, performed_by_snapshot = $9::jsonb,
+       provider_contact_id = $10, provider_typed_name = $11, provider_contact_snapshot = $12::jsonb,
+       scheduled_date = $13, origin = $14, updated_at = NOW()
+     WHERE id = $15 AND health_entry_id = $16
      RETURNING *`,
     [
       before.status,
-      before.close_reason ?? null,
       before.completed_on ?? null,
       before.completion_timing ?? null,
       before.marked_at ?? null,
@@ -452,12 +339,13 @@ export async function updateCompletedOn(db, {
  * @param {'system'|'user'} closeReason
  */
 export async function closeAllOpen(db, entryId, userId, closeReason = 'system') {
+  const status = closeReason === 'user' ? 'skipped' : 'not_recorded';
   const result = await db.query(
-    `UPDATE health_occurrences SET status = 'skipped', close_reason = $1,
+    `UPDATE health_occurrences SET status = $1,
        marked_at = NOW(), marked_by_user_id = $2, updated_at = NOW()
      WHERE health_entry_id = $3 AND status = 'pending'
      RETURNING id`,
-    [closeReason, userId, entryId],
+    [status, userId, entryId],
   );
   return result.rows.map((r) => r.id);
 }
@@ -471,10 +359,10 @@ export async function closeAllOpen(db, entryId, userId, closeReason = 'system') 
  */
 export async function reopenClosedOccurrence(db, occurrenceId) {
   const result = await db.query(
-    `UPDATE health_occurrences SET status = 'pending', close_reason = NULL, completed_on = NULL,
+    `UPDATE health_occurrences SET status = 'pending', completed_on = NULL,
        completion_timing = NULL, marked_at = NULL, marked_by_user_id = NULL, notes = '',
        updated_at = NOW()
-     WHERE id = $1 AND status IN ('completed', 'skipped')
+     WHERE id = $1 AND status IN ('completed', 'skipped', 'not_recorded')
      RETURNING *`,
     [occurrenceId],
   );
@@ -493,7 +381,7 @@ export async function deleteNotRecordedScheduleOccurrence(db, entryId, occurrenc
   const result = await db.query(
     `DELETE FROM health_occurrences
      WHERE id = $1 AND health_entry_id = $2 AND origin = 'schedule'
-       AND status = 'skipped' AND close_reason = 'not_recorded'
+       AND status = 'not_recorded'
      RETURNING id`,
     [occurrenceId, entryId],
   );

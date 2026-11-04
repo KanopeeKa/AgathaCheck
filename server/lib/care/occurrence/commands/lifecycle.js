@@ -15,7 +15,7 @@ import {
   closeAllOpen,
   deleteOpenOccurrences,
   insertOpenOccurrence,
-  markSkipped,
+  markNotRecorded,
   moveOpenOccurrence,
 } from '../occurrenceRepository.js';
 
@@ -83,7 +83,7 @@ export async function reconcileScheduleEdit(ctx, { before, requestedNextDate = n
 
   if (wasFixed && !isFixed) {
     for (const row of openRows.filter((o) => o.origin === 'schedule')) {
-      await markSkipped(db, { entryId: entry.id, occurrenceId: row.id, closeReason: 'not_recorded' });
+      await markNotRecorded(db, { entryId: entry.id, occurrenceId: row.id });
     }
     changes.push('fixed_to_after_done');
   } else if (!wasFixed && isFixed) {
@@ -132,7 +132,7 @@ export async function reconcileScheduleEdit(ctx, { before, requestedNextDate = n
   const endIso = dateToIsoDate(entry.repeat_end_date);
   if (endIso) {
     for (const row of openRows.filter((o) => o.scheduled_date > endIso)) {
-      await markSkipped(db, { entryId: entry.id, occurrenceId: row.id, closeReason: 'system' });
+      await markNotRecorded(db, { entryId: entry.id, occurrenceId: row.id });
     }
   }
   if (anchorFields) await updateEntryFields(db, entry.id, anchorFields);

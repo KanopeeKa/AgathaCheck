@@ -58,7 +58,7 @@ describe('stale open doses without tick', () => {
     expect(openDates).not.toContain('2026-09-30');
     const rows = await occurrenceRows(harness.pool, entryId);
     expect(rows.filter((r) => r.date === '2026-09-30' && r.status === 'pending')).toHaveLength(0);
-    expect(rows.filter((r) => r.date === '2026-09-30' && r.close_reason === 'not_recorded')).toHaveLength(2);
+    expect(rows.filter((r) => r.date === '2026-09-30' && r.status === 'not_recorded')).toHaveLength(2);
     expect(await invariantViolations(harness.pool, entryId)).toEqual([]);
   });
 
@@ -75,7 +75,7 @@ describe('stale open doses without tick', () => {
     expect(res.statusCode).toBe(409);
     expect(res.body.code).toBe('occurrence_not_open');
     const row = (await occurrenceRows(harness.pool, entryId)).find((r) => r.id === morningId);
-    expect(row).toMatchObject({ status: 'skipped', close_reason: 'not_recorded' });
+    expect(row).toMatchObject({ status: 'not_recorded' });
   });
 
   it('NR-3 resolve-stack ignores already-closed ids and completes the rest', async () => {

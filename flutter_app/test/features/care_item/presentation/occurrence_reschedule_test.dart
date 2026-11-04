@@ -8,7 +8,6 @@ void main() {
     final detail = _detail(
       status: CareOccurrenceStatus.notRecorded,
       isOpen: false,
-      closeReason: 'not_recorded',
     );
     expect(occurrenceShowsReschedule(detail), isFalse);
   });
@@ -27,7 +26,6 @@ void main() {
 OccurrenceDetail _detail({
   required CareOccurrenceStatus status,
   required bool isOpen,
-  String? closeReason,
 }) {
   return OccurrenceDetail(
     item: CareItemSummary(
@@ -49,7 +47,6 @@ OccurrenceDetail _detail({
       status: status,
       origin: CareOccurrenceOrigin.schedule,
       isOpen: isOpen,
-      closeReason: closeReason,
     ),
   );
 }

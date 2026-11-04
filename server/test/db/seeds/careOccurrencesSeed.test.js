@@ -109,7 +109,7 @@ describe('care occurrences seed (Whiskers)', () => {
     expect(meth.open_occurrences.filter((o) => o.status === 'not_recorded')).toHaveLength(6);
     const closed = await client.query(
       `SELECT to_char(scheduled_date, 'YYYY-MM-DD') AS d, to_char(scheduled_time, 'HH24:MI') AS t
-       FROM health_occurrences WHERE health_entry_id = $1 AND close_reason = 'not_recorded'`,
+       FROM health_occurrences WHERE health_entry_id = $1 AND status = 'not_recorded'`,
       [ids.methimazole],
     );
     expect(closed.rows).toEqual([{ d: '2026-06-06', t: '20:00' }]);

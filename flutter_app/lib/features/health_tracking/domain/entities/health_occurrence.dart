@@ -12,6 +12,7 @@ class HealthOccurrence {
     this.markedByName,
     this.notes = '',
     this.missed = false,
+    this.outcome,
   });
 
   final String id;
@@ -23,8 +24,11 @@ class HealthOccurrence {
   /// Local wall-clock `HH:mm`, or null for all-day.
   final String? scheduledTime;
 
-  /// `pending`, `completed`, or `skipped`.
+  /// Stored status: `pending`, `completed`, `skipped`, or `not_recorded`.
   final String status;
+
+  /// Wire outcome when present (`done`, `skipped`, `not_recorded`, `open`).
+  final String? outcome;
 
   final DateTime? completedOn;
   final DateTime? markedAt;
