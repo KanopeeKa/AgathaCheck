@@ -245,6 +245,9 @@ export class AwayPlanningPage {
     petName: string,
     carerLabel: string,
   ): Promise<void> {
+    const carerLabelLocator = semanticsKey(this.page, `away_plan_carer_label_${petId}`).or(
+      semanticsKey(this.page, `away_plan_pet_carer_label_${petId}`),
+    );
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
       await expect(
@@ -252,10 +255,8 @@ export class AwayPlanningPage {
           this.page.getByText(petName, { exact: false }).first(),
         ),
       ).toBeVisible();
-      await expect(semanticsKey(this.page, `away_plan_carer_label_${petId}`)).toBeVisible();
-      await expect(semanticsKey(this.page, `away_plan_carer_label_${petId}`)).toContainText(
-        carerLabel,
-      );
+      await expect(carerLabelLocator).toBeVisible();
+      await expect(carerLabelLocator).toContainText(carerLabel);
     }).toPass({ timeout: 30_000 });
   }
 
