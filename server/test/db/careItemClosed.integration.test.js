@@ -60,4 +60,11 @@ describe('care item closed status', () => {
     const res = await api.reopen(entryId);
     expect(res.statusCode).toBe(404);
   });
+
+  it('POST schedule undo is rejected when care is closed (R-011)', async () => {
+    if (!app) return;
+    const res = await api.undo(entryId);
+    expect(res.statusCode).toBe(409);
+    expect(res.body.code).toBe('care_item_closed');
+  });
 });

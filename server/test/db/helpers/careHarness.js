@@ -10,8 +10,8 @@ import request from 'supertest';
 import { createApp } from '../../../bin/server.js';
 import { createAppPool } from '../../../lib/db/createPool.js';
 import { dateToIsoDate } from '../../../lib/calendarDate.js';
-import { migrateCareDateOutcome } from '../../../scripts/migrations/084_care_date_outcome.js';
-import { migrateCareItemClosed } from '../../../scripts/migrations/085_care_item_closed.js';
+import { migrateCareDateOutcome } from '../../../scripts/migrations/104_care_date_outcome.js';
+import { migrateCareItemClosed } from '../../../scripts/migrations/105_care_item_closed.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'default_secret';
 

@@ -5,7 +5,7 @@ import { randomUUID } from 'crypto';
 
 import { afterAll, beforeAll, describe, expect, it } from '@jest/globals';
 
-import { migrateCareItemClosed } from '../../scripts/migrations/085_care_item_closed.js';
+import { migrateCareItemClosed } from '../../scripts/migrations/105_care_item_closed.js';
 import { createDbPool, createOwner, removeOwner } from './helpers/careHarness.js';
 
 describe('migration 085 care item closed', () => {
