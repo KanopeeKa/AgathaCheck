@@ -18,6 +18,9 @@ class _FakeHealthEntriesNotifier extends HealthEntriesNotifier {
 
   @override
   Future<List<HealthEntry>> build() async => _entries;
+
+  @override
+  Future<void> refresh() async {}
 }
 
 HealthEntry _entry({
