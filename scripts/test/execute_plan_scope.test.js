@@ -73,11 +73,28 @@ test('forbidden beats allowed (server/** allowed, server/routes/auth/x.js)', () 
   assert.deepEqual(r.violations, [{ file: 'server/routes/auth/x.js', reason: 'forbidden' }]);
 });
 
-test('phase forbidden_paths beat allowed_paths', () => {
+test('phase forbidden_paths beat allowed_paths; release allows when any phase allowed', () => {
   const snap = snapshot([phase('1', { allowed_paths: ['server/**'], forbidden_paths: ['server/legacy/**'] })]);
   assert.equal(verdict('server/legacy/a.js', 'phase', '1', snap), 'forbidden');
-  // Non-phase categories apply every phase's forbidden_paths.
-  assert.equal(verdict('server/legacy/a.js', 'release', null, snap), 'forbidden');
+  assert.equal(verdict('server/legacy/a.js', 'release', null, snap), 'allowed');
+});
+
+test('release and remedial: phase allowed_paths override another phase migration ban', () => {
+  const snap = snapshot([
+    phase('1', { allowed_paths: ['server/scripts/migrations/084_*'] }),
+    phase('2', { allowed_paths: ['flutter_app/**'], forbidden_paths: ['server/scripts/migrations/**'] }),
+    phase('4', { allowed_paths: ['server/scripts/migrations/085_*'], forbidden_paths: [] }),
+  ]);
+  const f84 = 'server/scripts/migrations/084_care_date_outcome.js';
+  const f85 = 'server/scripts/migrations/085_care_item_closed.js';
+  const orphan = 'server/scripts/migrations/099_orphan.js';
+  for (const category of ['release', 'remedial', 'sync-resolve']) {
+    assert.equal(verdict(f84, category, null, snap), 'allowed', category);
+    assert.equal(verdict(f85, category, null, snap), 'allowed', category);
+    assert.equal(verdict(orphan, category, null, snap), 'forbidden', category);
+  }
+  assert.equal(verdict(f84, 'phase', '2', snap), 'forbidden', 'phase 2 ban applies to its own PR');
+  assert.equal(verdict(f84, 'phase', '1', snap), 'allowed');
 });
 
 test('protected beats allowed (.github/workflows/x.yml in allowed_paths)', () => {

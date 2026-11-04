@@ -148,9 +148,14 @@ anything else ⇒ `null`.
       `docs/agent-efficiency/plans/execute-plan-v2/**`.
    c. `isForbiddenPath(file)` from `.github/scripts/agent-safety-lib.js` (migrations, security
       config, infra, `/auth/`, `/billing/`, `/secret(s)/`) → violation `forbidden`.
-   d. Any phase's `forbidden_paths` (for `phase`: that phase; otherwise all phases) → `forbidden`.
+   d. Phase `forbidden_paths`: for `phase`, that phase's `forbidden_paths` (checked before its
+      `allowed_paths`, step e) → `forbidden`. For `release`, `sync-resolve`, and `remedial`, any
+      phase's `forbidden_paths` → `forbidden` only when the file matches no phase's `allowed_paths`
+      (step e); a path one phase allowed for its work must not be blocked on release because a later
+      phase banned the directory for itself.
    e. Scope globs: `phase` → that phase's `allowed_paths`; `release` and `sync-resolve` → union of
-      all phases' `allowed_paths`; `remedial` → that union plus `e2e/**` → `allowed`.
+      all phases' `allowed_paths`; `remedial` → that union plus `e2e/**` → `allowed` (for non-`phase`
+      categories, checked before step d's forbidden union).
    f. Exceptions, only when listed (`phase`: by that phase; otherwise by any phase; `remedial`
       always gets `tests`): `tests` = `**/test/**`, `**/*.test.js`, `**/*.test.mjs`,
       `**/*.test.ts`, `**/*_test.dart`, `e2e/**/*.spec.ts`; `docs` = `docs/**`, `**/*.md` →
