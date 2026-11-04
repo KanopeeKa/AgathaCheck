@@ -83,7 +83,6 @@ export async function applyNextChoice(ctx, {
     await markSkipped(ctx.db, {
       entryId: ctx.entry.id,
       occurrenceId: waiting.id,
-      closeReason: 'user',
       userId: ctx.userId,
     });
     ctx.trace.closedRow(waiting);

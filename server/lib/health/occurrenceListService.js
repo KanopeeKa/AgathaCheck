@@ -55,7 +55,7 @@ export async function listOccurrencesForEntry(pool, entry, { status, req }) {
       TRIM(COALESCE(u.first_name, '') || ' ' || COALESCE(u.last_name, '')) AS marked_by_name
      FROM health_occurrences ho
      LEFT JOIN users u ON u.id = ho.marked_by_user_id
-     WHERE ho.health_entry_id = $1 AND ho.status IN ('completed', 'skipped')
+     WHERE ho.health_entry_id = $1 AND ho.status IN ('completed', 'skipped', 'not_recorded')
      ORDER BY ho.scheduled_date DESC,
        COALESCE(ho.scheduled_time, '00:00:00'::time) DESC`,
     [entry.id],

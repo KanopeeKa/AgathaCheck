@@ -9,6 +9,7 @@ import {
   todayCalendarIso,
 } from '../../calendarDate.js';
 import { normalizeTime, scheduleTimesFromEntry } from '../schedule/scheduleTimes.js';
+import { occurrenceOutcomeFromRow } from '../occurrence/occurrenceOutcome.js';
 
 export { normalizeTime, scheduleTimesFromEntry };
 
@@ -74,7 +75,7 @@ export function occurrenceToMap(row) {
     provider_typed_name: row.provider_typed_name ?? null,
     provider_contact_snapshot: row.provider_contact_snapshot ?? null,
     origin: row.origin ?? null,
-    close_reason: row.close_reason ?? null,
+    outcome: occurrenceOutcomeFromRow(row),
   };
 }
 

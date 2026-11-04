@@ -33,7 +33,6 @@ Map<String, dynamic> detail({
   String occStatus = 'due',
   String family = 'parasite_prevention',
   String? completedOn,
-  String? closeReason,
   Map<String, dynamic>? lastAction,
   Map<String, dynamic>? linkedWeight,
   Map<String, dynamic>? skipReason,
@@ -60,7 +59,7 @@ Map<String, dynamic> detail({
       'status': status,
       'occurrence_status': occStatus,
       'completed_on': completedOn,
-      'close_reason': closeReason,
+      'outcome': occStatus,
       'origin': 'computed',
       'notes': '',
     },
@@ -213,9 +212,8 @@ void main() {
   testWidgets('closed not recorded: Record as done', (tester) async {
     final server = _Server([
       detail(
-        status: 'skipped',
+        status: 'not_recorded',
         occStatus: 'not_recorded',
-        closeReason: 'not_recorded',
       ),
     ]);
     await tester.pumpWidget(_wrap(server));

@@ -11,6 +11,7 @@ class HealthHistoryEntry {
     this.markedByName,
     this.notes = '',
     this.status = 'completed',
+    this.outcome,
     this.linkedWeight,
   });
 
@@ -30,14 +31,20 @@ class HealthHistoryEntry {
   final String? markedByName;
   final String notes;
 
-  /// History row status: `completed`, `skipped`, or `undone`.
+  /// Stored row status: `completed`, `skipped`, `not_recorded`, …
   final String status;
+
+  /// Wire outcome (`done`, `skipped`, `not_recorded`); falls back to [status].
+  final String? outcome;
 
   /// Weight recorded with a completed weigh-in occurrence (kg value).
   final HealthHistoryLinkedWeight? linkedWeight;
 
-  bool get isSkipped => status == 'skipped';
-  bool get isCompleted => status == 'completed';
+  bool get isSkipped =>
+      (outcome ?? status) == 'skipped' || status == 'skipped';
+  bool get isNotRecorded =>
+      (outcome ?? status) == 'not_recorded' || status == 'not_recorded';
+  bool get isCompleted => status == 'completed' || outcome == 'done';
 
   /// Legacy alias for [markedAt].
   DateTime get takenAt => markedAt;

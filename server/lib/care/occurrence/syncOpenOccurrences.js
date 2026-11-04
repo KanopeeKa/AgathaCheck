@@ -31,7 +31,7 @@ import {
   insertOpenOccurrence,
   lastRuleClosedRow,
   listOpenRows,
-  markSkipped,
+  markNotRecorded,
 } from './occurrenceRepository.js';
 import { wouldAutoCloseAsNotRecorded } from './readSync.js';
 
@@ -82,10 +82,9 @@ async function closeStackOutsideWindow(db, entry, asOf) {
   const closed = [];
   for (const row of open) {
     if (!wouldAutoCloseAsNotRecorded(entry, row, asOf)) continue;
-    const done = await markSkipped(db, {
+    const done = await markNotRecorded(db, {
       entryId: entry.id,
       occurrenceId: row.id,
-      closeReason: 'not_recorded',
     });
     if (done) closed.push(row.id);
   }

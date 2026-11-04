@@ -102,7 +102,7 @@ describe('catch-up, timezone boundaries and simultaneous commands', () => {
       '2026-06-01 08:00', '2026-06-02 08:00', '2026-06-03 08:00',
       '2026-06-04 08:00', '2026-06-05 08:00', '2026-06-06 08:00',
     ]);
-    expect(first[0]).toMatchObject({ status: 'skipped', close_reason: 'not_recorded' });
+    expect(first[0]).toMatchObject({ status: 'not_recorded' });
     const firstLedger = await ledger(entry.id);
     expect(firstLedger.filter((e) => e.event_type === 'not_recorded_closed')).toHaveLength(1);
     await runCareTick(harness.pool, { clock: { todayIso: '2026-06-05', nowTimeIso: '09:00' } });
@@ -129,7 +129,7 @@ describe('catch-up, timezone boundaries and simultaneous commands', () => {
     expect(keys(rows)).toEqual([
       '2026-06-05 08:00', '2026-06-06 08:00', '2026-06-07 08:00', '2026-06-08 08:00',
     ]);
-    expect(rows[0]).toMatchObject({ id: first.id, status: 'skipped', close_reason: 'user' });
+    expect(rows[0]).toMatchObject({ id: first.id, status: 'skipped' });
     expect(open(rows)).toHaveLength(3);
     expectUniqueSlots(rows);
     expect((await ledger(entry.id)).filter((e) => e.event_type === 'skipped'))
@@ -277,7 +277,7 @@ describe('catch-up, timezone boundaries and simultaneous commands', () => {
       '2026-10-20 02:30', '2026-10-21 02:30', '2026-10-22 02:30',
       '2026-10-23 02:30', '2026-10-24 02:30', '2026-10-25 02:30', '2026-10-26 02:30',
     ]);
-    expect(first.filter((row) => row.close_reason === 'not_recorded').map((row) => row.date))
+    expect(first.filter((row) => row.status === 'not_recorded').map((row) => row.date))
       .toEqual(['2026-10-20', '2026-10-21']);
     const firstLedger = await ledger(entry.id);
     expect(firstLedger.filter((e) => e.event_type === 'not_recorded_closed')).toHaveLength(1);

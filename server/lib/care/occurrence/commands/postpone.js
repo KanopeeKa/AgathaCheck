@@ -23,7 +23,7 @@ import { CareCommandError, badRequest } from '../careCommandError.js';
 import { updateEntryFields } from '../entryRepository.js';
 import {
   insertOpenOccurrence,
-  markSkipped,
+  markNotRecorded,
   moveOpenOccurrence,
 } from '../occurrenceRepository.js';
 
@@ -81,7 +81,7 @@ export async function postponeCommand(ctx, {
         && instantMinutes(o.scheduled_date, o.scheduled_time) > now
         && (!until || o.scheduled_date < until));
       for (const row of future) {
-        await markSkipped(db, { entryId: entry.id, occurrenceId: row.id, closeReason: 'paused' });
+        await markNotRecorded(db, { entryId: entry.id, occurrenceId: row.id });
         trace.closedRow(row);
       }
     }

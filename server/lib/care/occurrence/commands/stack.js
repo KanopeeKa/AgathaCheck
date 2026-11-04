@@ -39,7 +39,7 @@ export async function resolveStackCommand(ctx, { given = [], notGiven = [], comp
   }
   for (const id of openNotGiven) {
     const row = byId.get(id);
-    await markSkipped(db, { entryId: entry.id, occurrenceId: id, closeReason: 'user', userId });
+    await markSkipped(db, { entryId: entry.id, occurrenceId: id, userId });
     trace.closedRow(row);
   }
   return {
@@ -66,7 +66,7 @@ export async function resolveStackCommand(ctx, { given = [], notGiven = [], comp
 export async function confirmSkipCommand(ctx, { occurrenceId }) {
   const { db, entry, trace, userId } = ctx;
   const row = await findOccurrence(db, entry.id, occurrenceId);
-  if (!row || row.status !== 'skipped' || row.close_reason !== 'not_recorded') {
+  if (!row || row.status !== 'not_recorded') {
     throw badRequest('not_a_not_recorded_dose', 'Only a dose closed as Not recorded can be confirmed as skipped');
   }
   const skipped = await confirmNotRecordedAsSkipped(db, {
@@ -92,7 +92,7 @@ export async function confirmSkipCommand(ctx, { occurrenceId }) {
 export async function recordAsGivenCommand(ctx, { occurrenceId, completedOn = null }) {
   const { db, entry, trace, asOf } = ctx;
   const row = await findOccurrence(db, entry.id, occurrenceId);
-  if (!row || row.status !== 'skipped' || row.close_reason !== 'not_recorded') {
+  if (!row || row.status !== 'not_recorded') {
     throw badRequest('not_a_not_recorded_dose', 'Only a dose closed as Not recorded can be recorded as given');
   }
   const date = completedOn || row.scheduled_date;

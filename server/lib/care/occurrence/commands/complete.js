@@ -110,7 +110,7 @@ export async function completeOccurrenceCommand(ctx, {
           await closeAsDone(ctx, e, { completedOn: completedOnIso });
           trace.closedRow(e);
         } else if (appliedEarlier === 'skip') {
-          await markSkipped(db, { entryId: entry.id, occurrenceId: e.id, closeReason: 'user', userId: ctx.userId });
+          await markSkipped(db, { entryId: entry.id, occurrenceId: e.id, userId: ctx.userId });
           trace.closedRow(e);
         }
       }

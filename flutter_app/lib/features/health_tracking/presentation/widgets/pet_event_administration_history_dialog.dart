@@ -44,13 +44,19 @@ Future<void> showPetEventAdministrationHistoryDialog(
                             ? Key('history_row_linked_weight_${h.id}')
                             : null,
                         leading: Icon(
-                          h.isSkipped ? Icons.skip_next : Icons.check_circle,
-                          color: h.isSkipped
+                          h.isNotRecorded
+                              ? Icons.help_outline
+                              : h.isSkipped
+                              ? Icons.skip_next
+                              : Icons.check_circle,
+                          color: h.isNotRecorded || h.isSkipped
                               ? Theme.of(ctx).colorScheme.onSurfaceVariant
                               : AppColorTokens.success,
                         ),
                         title: Text(
-                          h.isSkipped
+                          h.isNotRecorded
+                              ? '${l.careStatusNotRecorded}: ${h.dueDate != null ? dateFormat.format(h.dueDate!) : l.notSet}'
+                              : h.isSkipped
                               ? '${l.occurrenceSkipped}: ${h.dueDate != null ? dateFormat.format(h.dueDate!) : l.notSet}'
                               : formatEventHistoryLine(
                                   h,
