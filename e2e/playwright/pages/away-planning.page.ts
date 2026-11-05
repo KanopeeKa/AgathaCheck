@@ -777,4 +777,98 @@ export class AwayPlanningPage {
     await refreshFlutterAccessibility(this.page);
     await expect(this.page.getByText(petName)).toHaveCount(0, { timeout: 30_000 });
   }
+
+  async openAbsencePlan(absenceId: string): Promise<void> {
+    await this.page.goto(flutterGotoUrl(`/pc/away/${absenceId}`));
+    await refreshFlutterAccessibility(this.page);
+    await this.expectAbsenceScreenLoaded();
+  }
+
+  async expectAbsencePetPillCount(count: number): Promise<void> {
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      const pills = this.page.locator('[flt-semantics-identifier^="absence_pet_pill_"]');
+      await expect(pills).toHaveCount(count);
+    }).toPass({ timeout: 30_000 });
+  }
+
+  async expectTripEditHidden(): Promise<void> {
+    await expect(semanticsKey(this.page, 'away_plan_summary_edit')).toHaveCount(0, {
+      timeout: 15_000,
+    });
+  }
+
+  async expectAddPetHidden(): Promise<void> {
+    await expect(semanticsKey(this.page, 'absence_add_pet')).toHaveCount(0, {
+      timeout: 15_000,
+    });
+  }
+
+  async expectOtherPeoplesAbsencesHeading(): Promise<void> {
+    await expect(
+      semanticsKey(this.page, 'planned_absence_hub_other_absences_heading').or(
+        this.page.getByText(/Other people.s absences|Absences des autres/i),
+      ),
+    ).toBeVisible({ timeout: 30_000 });
+  }
+
+  async expectTravellerAwayLine(name: string): Promise<void> {
+    await expect(
+      this.page.getByText(new RegExp(`${name} is away|Absence de ${name}`, 'i')).first(),
+    ).toBeVisible({ timeout: 30_000 });
+  }
+
+  async savePetNote(petId: string, note: string): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    const field = semanticsKey(this.page, `away_plan_pet_notes_${petId}`).or(
+      this.page.locator(`[data-flutter-key="away_plan_pet_notes_${petId}"]`),
+    );
+    await expect(field).toBeVisible({ timeout: 30_000 });
+    await field.click();
+    await field.fill(note);
+    await semanticsKey(this.page, `away_plan_pet_notes_save_${petId}`)
+      .or(this.page.locator(`[data-flutter-key="away_plan_pet_notes_save_${petId}"]`))
+      .click();
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async clickSeeAbsence(): Promise<void> {
+    await semanticsKey(this.page, 'away_plan_see_absence').click();
+    await refreshFlutterAccessibility(this.page);
+    await this.expectAbsenceScreenLoaded();
+  }
+
+  async downloadFullTripHandover() {
+    const downloadPromise = this.page.waitForEvent('download', { timeout: 90_000 });
+    await semanticsKey(this.page, 'away_plan_download_handover').click();
+    return downloadPromise;
+  }
+
+  async clickAddPetOnAbsence(): Promise<void> {
+    await semanticsKey(this.page, 'absence_add_pet').click();
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async pickAddPetCandidate(petId: string): Promise<void> {
+    await semanticsKey(this.page, `add_pet_to_absence_${petId}`).click();
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async expectPetPageAwayRow(absenceId: string): Promise<void> {
+    await expect(semanticsKey(this.page, `pet_page_away_row_${absenceId}`)).toBeVisible({
+      timeout: 45_000,
+    });
+  }
+
+  async expectPetPageAwaySectionHidden(): Promise<void> {
+    await expect(semanticsKey(this.page, 'pet_page_away_row_')).toHaveCount(0, {
+      timeout: 15_000,
+    });
+  }
+
+  async expectNoPdfExportErrorSnackBar(): Promise<void> {
+    await expect(this.page.getByText(/PDF export failed|Échec.*PDF/i)).toHaveCount(0, {
+      timeout: 5_000,
+    });
+  }
 }
