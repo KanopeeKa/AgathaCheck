@@ -60,7 +60,6 @@ class _AwayPlanCarerEditDialogState
 
   Map<String, dynamic> _payload() {
     return {
-      'pet_id': widget.petId,
       'contact_id': _selectedContactId,
       'pet_note': _normalizedPetNote,
     };
@@ -72,9 +71,10 @@ class _AwayPlanCarerEditDialogState
     try {
       await ref
           .read(careContextRepositoryProvider)
-          .updatePetCarers(
+          .patchPerPetAwayPlan(
             absenceId: widget.absenceId,
-            petCarers: [_payload()],
+            petId: widget.petId,
+            body: _payload(),
           );
       if (!mounted) return;
       ref.invalidate(plannedAbsenceDetailProvider(widget.absenceId));

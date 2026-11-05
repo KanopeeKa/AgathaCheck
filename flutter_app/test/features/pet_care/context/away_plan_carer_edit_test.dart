@@ -37,13 +37,33 @@ class _FakeCareContextRepository implements CareContextRepository {
   PlannedAbsence? Function(String absenceId)? updateResult;
   Object? Function()? updateThrows;
   List<Map<String, dynamic>> savedPetCarers = [];
+  List<Map<String, dynamic>> savedPerPetPatches = [];
   int updateCallCount = 0;
+  int patchPerPetCallCount = 0;
   int getCarerCandidatesCallCount = 0;
+  String? lastCarerCandidatesPlannedAbsenceId;
+  int recordHandoverDownloadCount = 0;
 
   @override
-  Future<List<CarerCandidate>> getCarerCandidates(String petId) async {
+  Future<List<CarerCandidate>> getCarerCandidates(
+    String petId, {
+    String? plannedAbsenceId,
+  }) async {
     getCarerCandidatesCallCount++;
+    lastCarerCandidatesPlannedAbsenceId = plannedAbsenceId;
     return candidates;
+  }
+
+  @override
+  Future<void> patchPerPetAwayPlan({
+    required String absenceId,
+    required String petId,
+    required Map<String, dynamic> body,
+  }) async {
+    patchPerPetCallCount++;
+    final throws = updateThrows?.call();
+    if (throws != null) throw throws;
+    savedPerPetPatches.add(body);
   }
 
   @override
@@ -171,7 +191,9 @@ class _FakeCareContextRepository implements CareContextRepository {
   }
 
   @override
-  Future<void> recordHandoverDownload(String absenceId) async {}
+  Future<void> recordHandoverDownload(String absenceId) async {
+    recordHandoverDownloadCount++;
+  }
 
   @override
   Future<PlannedAbsence> cancelPlannedAbsence(String absenceId) async {
@@ -334,6 +356,37 @@ Widget buildScreen(_FakeCareContextRepository repo, {PlannedAbsence? detail}) {
 }
 
 void main() {
+  testWidgets('co-parent saves pet note via per-pet PATCH route', (tester) async {
+    final repo = _FakeCareContextRepository();
+    await tester.pumpWidget(
+      buildScreen(
+        repo,
+        detail: const PlannedAbsence(
+          id: 'abs-1',
+          userId: 'user-traveller',
+          startsOn: '2026-10-01',
+          endsOn: '2026-10-05',
+          provenance: 'user_declared',
+          status: 'active',
+          petIds: ['pet-1'],
+          petCarers: [PlannedAbsencePetCarer(petId: 'pet-1')],
+          isOwnAbsence: false,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.enterText(
+      find.byKey(const Key('away_plan_pet_notes_pet-1')),
+      'Buddy gets pills at 8',
+    );
+    await tester.tap(find.byKey(const Key('away_plan_pet_notes_save_pet-1')));
+    await tester.pumpAndSettle();
+
+    expect(repo.patchPerPetCallCount, 1);
+    expect(repo.savedPerPetPatches.single['pet_note'], 'Buddy gets pills at 8');
+  });
+
   testWidgets('edit affordance per pet row saves a contact carer', (
     tester,
   ) async {
@@ -355,9 +408,8 @@ void main() {
     await tester.tap(find.byKey(const Key('away_plan_carer_edit_save')));
     await tester.pumpAndSettle();
 
-    expect(repo.updateCallCount, 1);
-    expect(repo.savedPetCarers.single, {
-      'pet_id': 'pet-1',
+    expect(repo.patchPerPetCallCount, 1);
+    expect(repo.savedPerPetPatches.single, {
       'contact_id': 'contact-1',
       'pet_note': null,
     });
@@ -381,8 +433,7 @@ void main() {
     await tester.tap(find.byKey(const Key('away_plan_carer_edit_save')));
     await tester.pumpAndSettle();
 
-    expect(repo.savedPetCarers.single, {
-      'pet_id': 'pet-1',
+    expect(repo.savedPerPetPatches.single, {
       'contact_id': 'contact-1',
       'pet_note': 'Feeds twice daily',
     });
@@ -443,8 +494,7 @@ void main() {
     await tester.tap(find.byKey(const Key('away_plan_carer_edit_save')));
     await tester.pumpAndSettle();
 
-    expect(repo.savedPetCarers.single, {
-      'pet_id': 'pet-1',
+    expect(repo.savedPerPetPatches.single, {
       'contact_id': null,
       'pet_note': null,
     });
@@ -469,7 +519,7 @@ void main() {
 
     expect(find.byType(SnackBar), findsOneWidget);
     expect(find.textContaining('no longer has shared access'), findsOneWidget);
-    expect(repo.updateCallCount, 1);
+    expect(repo.patchPerPetCallCount, 1);
   });
 
   testWidgets('cancelled absence disables the edit affordance', (tester) async {

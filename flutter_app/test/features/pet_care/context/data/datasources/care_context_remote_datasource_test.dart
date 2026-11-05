@@ -99,6 +99,60 @@ void main() {
 
       expect(authHeader, 'Bearer test-token');
     });
+
+    test('includes planned_absence_id query when provided', () async {
+      String? requestedUrl;
+
+      final client = MockClient((request) async {
+        requestedUrl = request.url.toString();
+        return http.Response(json.encode([]), 200);
+      });
+
+      final datasource = CareContextRemoteDataSource(
+        baseUrl: baseUrl,
+        client: client,
+      );
+
+      await datasource.fetchCarerCandidates(
+        'pet-1',
+        plannedAbsenceId: 'abs-9',
+      );
+
+      expect(
+        requestedUrl,
+        '$baseUrl/api/pets/pet-1/carer-candidates?planned_absence_id=abs-9',
+      );
+    });
+  });
+
+  group('patchPerPetAwayPlan', () {
+    test('PATCHes /api/planned-absences/:id/pets/:petId with body', () async {
+      String? method;
+      String? url;
+      Map<String, dynamic>? body;
+
+      final client = MockClient((request) async {
+        method = request.method;
+        url = request.url.toString();
+        body = json.decode(request.body) as Map<String, dynamic>;
+        return http.Response('{}', 200);
+      });
+
+      final datasource = CareContextRemoteDataSource(
+        baseUrl: baseUrl,
+        client: client,
+      );
+
+      await datasource.patchPerPetAwayPlan(
+        absenceId: 'abs-1',
+        petId: 'pet-1',
+        body: {'pet_note': 'note'},
+      );
+
+      expect(method, 'PATCH');
+      expect(url, '$baseUrl/api/planned-absences/abs-1/pets/pet-1');
+      expect(body, {'pet_note': 'note'});
+    });
   });
 
   group('updatePetCarers', () {

@@ -169,7 +169,9 @@ class AwayPlanHandoverController {
       final filename = 'away_plan_${absence.startsOn}_${absence.endsOn}.pdf'
           .replaceAll(':', '-');
       await pdf_saver.savePdf(pdfBytes, filename);
-      await repository.recordHandoverDownload(absence.id);
+      if (absence.isOwnAbsence == true) {
+        await repository.recordHandoverDownload(absence.id);
+      }
 
       if (context.mounted) {
         Navigator.of(context, rootNavigator: true).pop();

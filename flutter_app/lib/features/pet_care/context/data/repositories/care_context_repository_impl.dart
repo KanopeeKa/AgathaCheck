@@ -98,8 +98,24 @@ class CareContextRepositoryImpl implements CareContextRepository {
       _remote.recordHandoverDownload(absenceId);
 
   @override
-  Future<List<CarerCandidate>> getCarerCandidates(String petId) =>
-      _remote.fetchCarerCandidates(petId);
+  Future<List<CarerCandidate>> getCarerCandidates(
+    String petId, {
+    String? plannedAbsenceId,
+  }) => _remote.fetchCarerCandidates(
+    petId,
+    plannedAbsenceId: plannedAbsenceId,
+  );
+
+  @override
+  Future<void> patchPerPetAwayPlan({
+    required String absenceId,
+    required String petId,
+    required Map<String, dynamic> body,
+  }) => _remote.patchPerPetAwayPlan(
+    absenceId: absenceId,
+    petId: petId,
+    body: body,
+  );
 
   @override
   Future<PlannedAbsence> updatePetCarers({
