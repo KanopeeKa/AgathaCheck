@@ -21,6 +21,11 @@ import {
   reopenClosedOccurrence,
   restoreOccurrence,
 } from '../occurrenceRepository.js';
+import {
+  CARE_CLOSED_REASON_ENDED,
+  CARE_CLOSED_REASON_STOPPED,
+  isItemClosed,
+} from '../../item/itemStatus.js';
 import { assertItemOpen } from './assertItemOpen.js';
 
 async function loadUndoableEvents(db, entryId) {
@@ -81,8 +86,21 @@ async function reverse(ctx, event, { restoreEntry }) {
  * @param {object} ctx command context
  * @param {{ undoToken?: string|null, occurrenceId?: string|null }} params
  */
+function assertUndoAllowedOnClosedItem(entry, event, isLatest) {
+  const reason = entry.care_closed_reason || CARE_CLOSED_REASON_ENDED;
+  if (reason === CARE_CLOSED_REASON_STOPPED) {
+    throw new CareCommandError(409, 'care_item_closed', 'This care is closed');
+  }
+  const undoReopensFromCompletion = isLatest
+    && event.event_type === 'completed'
+    && event.payload?.entry_before
+    && (event.payload.entry_before.status || 'active') === 'active';
+  if (!undoReopensFromCompletion) {
+    throw new CareCommandError(409, 'care_item_closed', 'This care is closed');
+  }
+}
+
 export async function undoCommand(ctx, { undoToken = null, occurrenceId = null } = {}) {
-  assertItemOpen(ctx.entry);
   const { db } = ctx;
   const events = await loadUndoableEvents(db, ctx.entry.id);
   let event = events[0] || null;
@@ -93,9 +111,17 @@ export async function undoCommand(ctx, { undoToken = null, occurrenceId = null }
     event = events.find((e) => e.health_occurrence_id === occurrenceId
       && e.event_type === 'completed') || null;
   }
-  if (!event) throw badRequest('nothing_to_undo', 'No schedule action to undo');
+  if (!event) {
+    if (isItemClosed(ctx.entry)) {
+      throw new CareCommandError(409, 'care_item_closed', 'This care is closed');
+    }
+    throw badRequest('nothing_to_undo', 'No schedule action to undo');
+  }
 
   const isLatest = events[0]?.id === event.id;
+  if (isItemClosed(ctx.entry)) {
+    assertUndoAllowedOnClosedItem(ctx.entry, event, isLatest);
+  }
   const restored = await reverse(ctx, event, { restoreEntry: isLatest });
   await db.query('UPDATE care_schedule_events SET undone_at = NOW() WHERE id = $1', [event.id]);
   const stillThere = event.health_occurrence_id
