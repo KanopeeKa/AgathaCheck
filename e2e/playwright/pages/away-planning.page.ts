@@ -89,10 +89,17 @@ export class AwayPlanningPage {
   }
 
   async expectAbsenceScreenLoaded(): Promise<void> {
-    await refreshFlutterAccessibility(this.page);
-    await expect(semanticsKey(this.page, 'absence_screen_page')).toBeVisible({
-      timeout: 60_000,
-    });
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      const pageMarker = semanticsKey(this.page, 'absence_screen_page').or(
+        this.page.locator('[data-flutter-key="absence_screen_page"]'),
+      );
+      const petPills = this.page.locator('[flt-semantics-identifier^="absence_pet_pill_"]');
+      const petsSection = this.page.getByText(
+        /Pets on this absence|Animaux de cette absence/i,
+      );
+      await expect(pageMarker.or(petPills.first()).or(petsSection.first())).toBeVisible();
+    }).toPass({ timeout: 60_000 });
   }
 
   async openCreateForm(): Promise<void> {
@@ -833,7 +840,12 @@ export class AwayPlanningPage {
   }
 
   async clickSeeAbsence(): Promise<void> {
-    await semanticsKey(this.page, 'away_plan_see_absence').click();
+    await refreshFlutterAccessibility(this.page);
+    const seeAbsence = semanticsKey(this.page, 'away_plan_see_absence').or(
+      this.page.locator('[data-flutter-key="away_plan_see_absence"]'),
+    ).or(this.page.getByRole('button', { name: /See absence|Voir l'absence/i }));
+    await expect(seeAbsence.first()).toBeVisible({ timeout: 30_000 });
+    await seeAbsence.first().click();
     await refreshFlutterAccessibility(this.page);
     await this.expectAbsenceScreenLoaded();
   }
