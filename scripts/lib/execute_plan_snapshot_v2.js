@@ -8,6 +8,8 @@
 const crypto = require('crypto');
 const { ExecutePlanError, V2_CAPS, V2_DEFAULTS, MAX_LAUNCH_HISTORY } = require('./execute_plan_constants');
 const { computeApprovalHash } = require('./execute_plan_approval');
+const { isForbiddenPath } = require('../../.github/scripts/agent-safety-lib');
+const { globToRegExp } = require('./execute_plan_schema');
 
 const PLAN_ID_RE = /^[a-z0-9][a-z0-9-]{2,48}$/;
 const ISO_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/;
@@ -26,6 +28,42 @@ const isStringArray = (v) => Array.isArray(v) && v.every((s) => typeof s === 'st
 
 function fail(message) {
   throw new ExecutePlanError(message);
+}
+
+/** Sample path used to test whether a glob matches only globally forbidden paths. */
+function samplePathForGlob(glob) {
+  const g = String(glob).replace(/\*\*/g, 'x').replace(/\*/g, 'x');
+  return g.replace(/\/+/g, '/').replace(/^x\//, '').replace(/\/x/g, '/sample');
+}
+
+function globMatchesPath(glob, file) {
+  return globToRegExp(glob).test(file);
+}
+
+function warnPhaseScopePaths(phases) {
+  for (let i = 0; i < phases.length; i += 1) {
+    const phase = phases[i];
+    const at = `phases[${i}]`;
+    const sensitive = new Set(phase.approved_sensitive_paths || []);
+    for (const glob of phase.allowed_paths || []) {
+      if (/migrations/.test(glob) && !glob.startsWith('db/migrations/')) {
+        console.warn(`validate_execute_plan_snapshot: warn: ${at} migration glob "${glob}" is not under db/migrations/`);
+      }
+      const sample = samplePathForGlob(glob);
+      if (isForbiddenPath(sample) && globMatchesPath(glob, sample) && !sensitive.has(glob)) {
+        console.warn(
+          `validate_execute_plan_snapshot: warn: ${at} allowed_paths "${glob}" matches globally forbidden paths; `
+          + 'list it in approved_sensitive_paths when amending the plan',
+        );
+      }
+    }
+    for (const glob of phase.allowed_paths || []) {
+      const sample = samplePathForGlob(glob);
+      if (isForbiddenPath(sample) && globMatchesPath(glob, sample) && sensitive.size > 0 && !sensitive.has(glob)) {
+        fail(`${at} allowed_paths "${glob}" matches forbidden paths but is missing from approved_sensitive_paths`);
+      }
+    }
+  }
 }
 
 function isV2(snapshot) {
@@ -53,6 +91,11 @@ function validatePhase(phase, index, planId) {
   }
   if (!isStringArray(phase.exit_checklist) || phase.exit_checklist.length === 0) {
     fail(`${at}.exit_checklist must be a non-empty array of strings`);
+  }
+  if (phase.approved_sensitive_paths !== undefined) {
+    if (!isStringArray(phase.approved_sensitive_paths)) {
+      fail(`${at}.approved_sensitive_paths must be an array of globs when present`);
+    }
   }
 }
 
@@ -119,6 +162,7 @@ function validateSnapshotV2(snapshot, { planMarkdown } = {}) {
     fail(`phases must have 1 to ${V2_CAPS.phases} entries`);
   }
   phases.forEach((phase, i) => validatePhase(phase, i, planId));
+  warnPhaseScopePaths(phases);
 
   if (computeApprovalHash(snapshot) !== snapshot.approval_hash) {
     fail('approval_hash does not match the snapshot content');

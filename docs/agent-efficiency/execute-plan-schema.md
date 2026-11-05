@@ -375,6 +375,15 @@ The driver waits (`scope-ack`) until an owner listed in `.github/execute-plan.co
 treat ≤10 harmless `unclassified` files as **advisory** (green `ok`, files listed under
 `Unclassified (advisory)` in the job summary) when no other violations apply.
 
+Optional phase field **`approved_sensitive_paths`** (glob array): paths that match
+`agent-safety-lib.js` forbidden rules but are pre-approved in the snapshot (included in
+`approval_hash`). Use when amending a running plan's scope (init-branch republish → new hash →
+resume). Validator warns when `allowed_paths` matches forbidden paths without
+`approved_sensitive_paths`; rejects when `approved_sensitive_paths` is present but incomplete.
+
+**Release PRs** evaluate **protected paths and own-plan file drift only**; phase PRs already
+checked the integration diff.
+
 ---
 
 ## JSON Schema (draft)

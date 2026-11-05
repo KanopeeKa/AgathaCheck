@@ -169,9 +169,13 @@ function classifyPath(file, { snapshot, category, phaseId }) {
   const verdict = (v) => ({ file, verdict: v });
   if (ownPlanFiles(snapshot).includes(file)) return verdict('own-plan-file');
   if (matchesAny(file, PROTECTED_PATHS)) return verdict('protected');
-  if (isForbiddenPath(file)) return verdict('forbidden');
-
   const phases = scopePhases(snapshot, category, phaseId);
+  if (isForbiddenPath(file)) {
+    const approvedSensitive = collect(phases, 'approved_sensitive_paths');
+    if (approvedSensitive.length && matchesAny(file, approvedSensitive)) return verdict('allowed');
+    return verdict('forbidden');
+  }
+
   const allowed = collect(phases, 'allowed_paths');
   if (category === 'remedial') allowed.push('e2e/**');
   const forbidden = collect(phases, 'forbidden_paths');
@@ -232,6 +236,24 @@ function evaluateDiff({ files, snapshot, category, phaseId, ownPlanFilesVerified
   const skip = unchangedOnMain || new Set();
   const violations = [];
   const companionsUsed = [];
+
+  if (category === 'release') {
+    for (const file of files || []) {
+      if (skip.has(file)) continue;
+      if (ownPlanFiles(snapshot).includes(file)) {
+        if (!ownPlanFilesVerified) violations.push({ file, reason: 'drift' });
+      } else if (matchesAny(file, PROTECTED_PATHS)) {
+        violations.push({ file, reason: 'protected' });
+      }
+    }
+    return {
+      conclusion: violations.length > 0 ? 'failure' : 'success',
+      title: titleFor(violations),
+      violations,
+      companionsUsed,
+    };
+  }
+
   for (const file of files || []) {
     if (skip.has(file)) continue;
     const { verdict } = classifyPath(file, { snapshot, category, phaseId });
