@@ -11,6 +11,8 @@ import {
   revokeGuestGrantsForAbsencePet,
   trimCarerInvitesForAbsencePet,
 } from '../../lib/care/absence/absencePetLifecycle.js';
+import { loadAbsenceForViewer } from '../../lib/care/absence/absenceVisibility.js';
+import { loadPerPetAwayPlan } from '../../lib/care/awayPlan/loadPerPetAwayPlan.js';
 import {
   PLANNED_ABSENCE_STATUS_CANCELLED,
   resolvePlannedAbsenceTodayIso,
@@ -24,6 +26,7 @@ import { absenceResponse } from './plannedAbsenceHandoverFields.js';
 import {
   loadAbsenceForUser,
   loadAbsencePets,
+  updateAbsenceCarers,
 } from './plannedAbsenceStore.js';
 import {
   findOverlapWarnings,
@@ -178,4 +181,77 @@ export async function removePetFromPlannedAbsence(pool, userId, absenceId, petId
       pet_id: petId,
     },
   };
+}
+
+function buildPerPetCarerPatchItem(petId, body) {
+  const item = { pet_id: petId, petId };
+  const keys = [
+    'contact_id',
+    'contactId',
+    'carer_kind',
+    'carerKind',
+    'carer_user_id',
+    'carerUserId',
+    'carer_name',
+    'carerName',
+    'carer_note',
+    'carerNote',
+    'pet_note',
+    'petNote',
+  ];
+  let any = false;
+  for (const key of keys) {
+    if (Object.hasOwn(body, key)) {
+      item[key] = body[key];
+      any = true;
+    }
+  }
+  if (!any) {
+    return { ok: false, status: 400, error: 'No editable fields in body' };
+  }
+  return { ok: true, item };
+}
+
+/**
+ * Full-access co-parent (or declarer) updates one pet's carer / pet note on a visible absence.
+ */
+export async function patchPerPetPlannedAbsence(pool, actorUserId, absenceId, petId, body) {
+  const viewed = await loadAbsenceForViewer(pool, absenceId, actorUserId);
+  if (!viewed) return { status: 404, error: 'Not found' };
+
+  const petRow = viewed.petRows.find((row) => row.pet_id === petId);
+  if (!petRow) return { status: 404, error: 'Not found' };
+
+  if (!(await userCanManageProfile(pool, petId, actorUserId))) {
+    return { status: 404, error: 'Not found' };
+  }
+
+  if (viewed.row.status === PLANNED_ABSENCE_STATUS_CANCELLED) {
+    return { status: 400, error: 'Cannot edit a cancelled absence' };
+  }
+
+  const built = buildPerPetCarerPatchItem(petId, body || {});
+  if (!built.ok) return { status: built.status, error: built.error };
+
+  const travellerUserId = viewed.row.user_id;
+  const carerResult = await updateAbsenceCarers(
+    pool,
+    absenceId,
+    [built.item],
+    [petId],
+    { actorUserId, travellerUserId },
+  );
+  if (!carerResult.ok) {
+    return { status: carerResult.status, error: carerResult.error };
+  }
+
+  await pool.query(
+    'UPDATE planned_absences SET updated_at = NOW() WHERE id = $1',
+    [absenceId],
+  );
+
+  const updatedRows = await loadAbsencePets(pool, absenceId);
+  const updatedPetRow = updatedRows.find((row) => row.pet_id === petId);
+  const payload = await loadPerPetAwayPlan(pool, viewed.row, updatedPetRow, actorUserId);
+  return { status: 200, body: payload };
 }

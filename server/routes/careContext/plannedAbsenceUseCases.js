@@ -253,7 +253,7 @@ export async function patchPlannedAbsence(pool, userId, absenceId, body) {
           existing.id,
           petCarersInput,
           petIds,
-          userId,
+          { actorUserId: userId, travellerUserId: userId },
         );
         if (!carerResult.ok) {
           throw Object.assign(new Error(carerResult.error), { status: carerResult.status });

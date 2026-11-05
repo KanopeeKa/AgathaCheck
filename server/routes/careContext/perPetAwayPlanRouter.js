@@ -4,6 +4,7 @@ import { loadPerPetAwayPlan } from '../../lib/care/awayPlan/loadPerPetAwayPlan.j
 import { extractUserId } from '../../lib/requireAuth.js';
 import {
   addPetToPlannedAbsence,
+  patchPerPetPlannedAbsence,
   removePetFromPlannedAbsence,
 } from './plannedAbsencePetUseCases.js';
 
@@ -33,6 +34,20 @@ export function registerPerPetAwayPlanRoutes(router, pool) {
     );
     if (out.error) return res.status(out.status).json({ error: out.error });
     if (out.payload) return res.status(out.status).json(out.payload);
+    res.json(out.body);
+  }));
+
+  router.patch('/:id/pets/:petId', asyncHandler(async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    const out = await patchPerPetPlannedAbsence(
+      pool,
+      userId,
+      req.params.id,
+      req.params.petId,
+      req.body || {},
+    );
+    if (out.error) return res.status(out.status).json({ error: out.error });
     res.json(out.body);
   }));
 
