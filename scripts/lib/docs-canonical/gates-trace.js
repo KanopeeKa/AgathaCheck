@@ -153,6 +153,75 @@ function runGateTrace(ctx) {
       }
     }
   }
+
+  findings.push(...runGateLiveRequirementCoverage(ctx));
+  return findings;
+}
+
+function acCitesRequirement(acReqCell, reqId) {
+  return String(acReqCell || '')
+    .split(',')
+    .map((s) => s.trim())
+    .includes(reqId);
+}
+
+function runGateLiveRequirementCoverage(ctx) {
+  const findings = [];
+  const { root, diff, baseRef } = ctx;
+  const bddIndex = loadFeatureIndex(root);
+  const { parseCanonicalDocFromText } = require('./parse');
+
+  for (const relPath of [...diff.modified, ...diff.added]) {
+    if (!relPath.includes('/features/') || !relPath.endsWith('.md')) continue;
+    const headPath = path.join(root, relPath);
+    if (!fs.existsSync(headPath)) continue;
+    const headDoc = parseCanonicalDoc(headPath, root);
+    if (!headDoc.requirements || !headDoc.acceptance) continue;
+
+    const baseText = fileAtRef(root, baseRef, relPath);
+    const baseStatusById = new Map();
+    if (baseText) {
+      const baseDoc = parseCanonicalDocFromText(baseText, root);
+      if (baseDoc.requirements) {
+        for (const row of baseDoc.requirements.rows) {
+          baseStatusById.set(row.cells[0], row.cells[2]);
+        }
+      }
+    }
+
+    const newlyLive = [];
+    for (const row of headDoc.requirements.rows) {
+      const id = row.cells[0];
+      const status = row.cells[2];
+      if (status !== 'Live') continue;
+      const prev = baseStatusById.get(id);
+      if (prev === 'Live') continue;
+      newlyLive.push(id);
+    }
+
+    for (const reqId of newlyLive) {
+      const citing = headDoc.acceptance.rows.filter((row) =>
+        acCitesRequirement(row.cells[1], reqId),
+      );
+      if (citing.length === 0) continue;
+      const uncovered = [];
+      for (const row of citing) {
+        const cov = normalizeCoverageText(row.cells[2] || '');
+        const ok =
+          (/^test:/i.test(cov) || /^bdd:/i.test(cov)) &&
+          resolveCoverage(root, row.cells[2] || '', bddIndex);
+        if (!ok) uncovered.push(row.cells[0]);
+      }
+      if (uncovered.length > 0) {
+        findings.push({
+          ruleId: 'R-T5',
+          severity: SEVERITY.BLOCK,
+          file: relPath,
+          message: `Requirement ${reqId} became Live but acceptance row(s) lack resolving test:/bdd: coverage: ${uncovered.join('; ')}`,
+        });
+      }
+    }
+  }
   return findings;
 }
 
