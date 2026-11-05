@@ -13,6 +13,12 @@ import {
   resolvePlannedAbsenceTodayIso,
   validateAbsenceDateWindow,
 } from '../../lib/care/plannedAbsence.js';
+import {
+  coVisibleAbsencesListSql,
+  filterPetRowsForAwayPlanViewer,
+  loadAbsenceForViewer,
+  loadDeclarerDisplayName,
+} from '../../lib/care/absence/absenceVisibility.js';
 import { loadUserTimezone } from '../../lib/people/absenceCarerInviteService.js';
 import {
   applyGuestAccessWidenAfterPatch,
@@ -42,23 +48,50 @@ import {
 export async function listPlannedAbsences(pool, userId, scopeResult) {
   const todayIso = await resolvePlannedAbsenceTodayIso(pool, userId);
   const { sql, params } = listAbsencesSql(scopeResult.scope, todayIso);
-  const result = await pool.query(sql, [userId, ...params]);
-  const absenceIds = result.rows.map((row) => row.id);
+  const ownResult = await pool.query(sql, [userId, ...params]);
+  const coVisibleQuery = coVisibleAbsencesListSql(scopeResult.scope, todayIso);
+  const coVisibleResult = await pool.query(coVisibleQuery.sql, [userId, ...coVisibleQuery.params]);
+
+  const ownIds = new Set(ownResult.rows.map((row) => row.id));
+  const mergedRows = [...ownResult.rows];
+  for (const row of coVisibleResult.rows) {
+    if (!ownIds.has(row.id)) mergedRows.push(row);
+  }
+
+  const absenceIds = mergedRows.map((row) => row.id);
   const petsByAbsence = await loadPetsByAbsenceIds(pool, absenceIds);
   const overlapCandidates = await loadOverlapCandidatesForAbsences(
     pool,
     userId,
-    result.rows,
+    ownResult.rows,
     petsByAbsence,
     todayIso,
   );
-  return result.rows.map((row) => {
-    const petRows = petsByAbsence.get(row.id) || [];
-    return {
-      ...absenceResponse(row, petRows),
-      overlap_warnings: overlapWarningsForAbsence(row, petRows, overlapCandidates),
-    };
-  });
+
+  const declarerNameByAbsenceId = new Map();
+  await Promise.all(
+    mergedRows
+      .filter((row) => row.user_id !== userId)
+      .map(async (row) => {
+        const name = await loadDeclarerDisplayName(pool, userId, row.user_id);
+        declarerNameByAbsenceId.set(row.id, name);
+      }),
+  );
+
+  const items = [];
+  for (const row of mergedRows) {
+    const allPetRows = petsByAbsence.get(row.id) || [];
+    const isOwn = row.user_id === userId;
+    const visiblePetRows = await filterPetRowsForAwayPlanViewer(pool, allPetRows, userId);
+    const overlapPetRows = isOwn ? allPetRows : visiblePetRows;
+    items.push({
+      ...absenceResponse(row, visiblePetRows),
+      is_own_absence: isOwn,
+      declarer_display_name: isOwn ? null : (declarerNameByAbsenceId.get(row.id) ?? null),
+      overlap_warnings: overlapWarningsForAbsence(row, overlapPetRows, overlapCandidates),
+    });
+  }
+  return items;
 }
 
 export async function createPlannedAbsence(pool, userId, body) {
@@ -120,17 +153,29 @@ export async function createPlannedAbsence(pool, userId, body) {
 }
 
 export async function getPlannedAbsenceDetail(pool, userId, absenceId) {
-  const row = await loadAbsenceForUser(pool, absenceId, userId);
-  if (!row) return { status: 404, error: 'Not found' };
-  const petRows = await loadAbsencePets(pool, row.id);
-  return { absence: absenceResponse(row, petRows) };
+  const viewed = await loadAbsenceForViewer(pool, absenceId, userId);
+  if (!viewed) return { status: 404, error: 'Not found' };
+  const declarerDisplayName = viewed.isDeclarer
+    ? null
+    : await loadDeclarerDisplayName(pool, userId, viewed.row.user_id);
+  return {
+    absence: {
+      ...absenceResponse(viewed.row, viewed.petRows),
+      is_own_absence: viewed.isDeclarer,
+      declarer_display_name: declarerDisplayName,
+      can_edit_trip: viewed.canEditTrip,
+    },
+  };
 }
 
 export async function getPlannedAbsenceReadiness(pool, userId, absenceId) {
-  const row = await loadAbsenceForUser(pool, absenceId, userId);
-  if (!row) return { status: 404, error: 'Not found' };
-  const petRows = await loadAbsencePets(pool, row.id);
-  const readiness = await loadAwayPlanReadinessForAbsence(pool, row, petRows);
+  const viewed = await loadAbsenceForViewer(pool, absenceId, userId);
+  if (!viewed) return { status: 404, error: 'Not found' };
+  const readiness = await loadAwayPlanReadinessForAbsence(
+    pool,
+    viewed.row,
+    viewed.petRows,
+  );
   return { readiness };
 }
 
@@ -147,18 +192,14 @@ export async function patchPlannedAbsence(pool, userId, absenceId, body) {
   const window = validateAbsenceDateWindow(startsOn, endsOn, todayIso);
   if (!window.ok) return { status: 400, error: window.error };
 
-  let petRows = await loadAbsencePets(pool, existing.id);
-  const originalPetIds = petRows.map((row) => row.pet_id);
-  let petIds = [...originalPetIds];
   if (body.pet_ids != null || body.petIds != null) {
-    const petsCheck = await assertManageablePets(pool, userId, body.pet_ids || body.petIds);
-    if (!petsCheck.ok) return { status: petsCheck.status, error: petsCheck.error };
-    petIds = petsCheck.petIds;
-    petRows = petIds.map((petId) => {
-      const existingRow = petRows.find((row) => row.pet_id === petId);
-      return existingRow || { pet_id: petId };
-    });
+    return {
+      status: 400,
+      error: 'Use POST /:id/pets or DELETE /:id/pets/:petId to change pets on an absence',
+    };
   }
+  const petRows = await loadAbsencePets(pool, existing.id);
+  const petIds = petRows.map((row) => row.pet_id);
 
   const petCarersInput = body.pet_carers ?? body.petCarers ?? null;
   const handoverNote = normalizeHandoverNoteInput(body.handover_note ?? body.handoverNote);
@@ -178,7 +219,7 @@ export async function patchPlannedAbsence(pool, userId, absenceId, body) {
   const widenGate = await evaluateGuestAccessWidenGate(pool, {
     existing,
     body,
-    oldPetIds: originalPetIds,
+    oldPetIds: petIds,
     newPetIds: petIds,
     window,
   });
@@ -206,7 +247,6 @@ export async function patchPlannedAbsence(pool, userId, absenceId, body) {
          RETURNING *`,
         updateParams,
       );
-      await replaceAbsencePets(client, existing.id, petIds);
       if (petCarersInput != null) {
         const carerResult = await updateAbsenceCarers(
           client,
@@ -227,10 +267,10 @@ export async function patchPlannedAbsence(pool, userId, absenceId, body) {
       });
       return result.rows[0];
     });
-    petRows = await loadAbsencePets(pool, existing.id);
+    const updatedPetRows = await loadAbsencePets(pool, existing.id);
     return {
       body: {
-        absence: absenceResponse(updated, petRows),
+        absence: absenceResponse(updated, updatedPetRows),
         overlap_warnings: overlapWarnings,
       },
     };

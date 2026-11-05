@@ -7376,6 +7376,134 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careContextAwayBack => 'Retour';
 
   @override
+  String get careContextAbsenceDefaultTitle => 'Absence';
+
+  @override
+  String get careContextTravellerYouAway => 'Vous serez absent';
+
+  @override
+  String careContextTravellerNameAway(String name) {
+    return '$name sera absent';
+  }
+
+  @override
+  String get careContextHubYourAbsences => 'Vos absences';
+
+  @override
+  String get careContextHubOtherPeoplesAbsences => 'Absences des autres';
+
+  @override
+  String get careContextPlanAnAbsence => 'Planifier une absence';
+
+  @override
+  String get careContextAddPetToAbsence => 'Ajouter un animal';
+
+  @override
+  String get careContextAddPetToAbsenceTitle =>
+      'Ajouter un animal à cette absence';
+
+  @override
+  String get careContextAddPetNoneAvailable =>
+      'Aucun autre animal disponible à ajouter.';
+
+  @override
+  String get careContextAddPetSuccess => 'Animal ajouté à cette absence.';
+
+  @override
+  String get careContextAddPetFailed =>
+      'Impossible d\'ajouter l\'animal. Réessayez.';
+
+  @override
+  String careContextRemovePetFromAbsence(String pet) {
+    return 'Retirer $pet de cette absence';
+  }
+
+  @override
+  String careContextRemovePetConfirmTitle(String pet) {
+    return 'Retirer $pet de cette absence ?';
+  }
+
+  @override
+  String get careContextRemovePetConfirmBody =>
+      'Cela retire l\'assignation du gardien, les notes pour cet animal et les décisions de soins pour ce voyage. Les éléments de soins et leurs dates ne changent pas.';
+
+  @override
+  String careContextRemovePetLastConfirmBody(String pet) {
+    return '$pet est le seul animal sur cette absence. Le retirer supprime l\'absence.';
+  }
+
+  @override
+  String get careContextRemovePetConfirmAction => 'Retirer l\'animal';
+
+  @override
+  String careContextRemovePetSuccess(String pet) {
+    return '$pet a été retiré de cette absence.';
+  }
+
+  @override
+  String get careContextRemovePetAbsenceDeleted =>
+      'Cette absence a été supprimée.';
+
+  @override
+  String get careContextRemovePetFailed =>
+      'Impossible de retirer l\'animal. Réessayez.';
+
+  @override
+  String get careContextPetPageAwaySectionTitle => 'Plans d\'absence';
+
+  @override
+  String get careContextPetPageAllAbsences => 'Toutes les absences';
+
+  @override
+  String get careContextAbsencePetsSectionTitle => 'Animaux sur cette absence';
+
+  @override
+  String careContextSeePetAwayPlan(String pet) {
+    return 'Voir le plan d\'absence de $pet';
+  }
+
+  @override
+  String careContextPetAwayPlanTitle(String pet) {
+    return 'Plan d\'absence de $pet';
+  }
+
+  @override
+  String get careContextSeeAbsence => 'Voir l\'absence';
+
+  @override
+  String get careContextTripNotesForWholeTrip =>
+      'Notes de voyage (tout le séjour)';
+
+  @override
+  String careContextPetNotesSectionTitle(String pet) {
+    return 'Notes pour $pet';
+  }
+
+  @override
+  String get careContextPetNotesSaveFailed =>
+      'Impossible d\'enregistrer les notes. Réessayez.';
+
+  @override
+  String get careContextCareItemOpenAwayPlan => 'Ouvrir le plan d\'absence';
+
+  @override
+  String get awayPlanningPetStatusNoCarer => 'Pas encore de gardien';
+
+  @override
+  String get awayPlanningPetStatusCarerUnavailable => 'Gardien plus disponible';
+
+  @override
+  String awayPlanningPetStatusReviewCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count à revoir',
+      one: '1 à revoir',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get careContextAwayPlanTitle => 'Plan d\'absence';
 
   @override

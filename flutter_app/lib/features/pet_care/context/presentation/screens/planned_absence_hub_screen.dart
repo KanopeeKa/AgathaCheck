@@ -31,8 +31,10 @@ class PlannedAbsenceHubScreen extends ConsumerWidget {
       backPath: '/pc/home',
       floatingActionButton: absencesAsync.maybeWhen(
         data: (absences) {
-          final grouped = PlannedAbsenceHubPartition.partition(absences);
-          if (grouped.upcoming.isEmpty && grouped.past.isEmpty) return null;
+          final grouped = PlannedAbsenceHubPartition.partitionByOwnership(
+            absences,
+          );
+          if (grouped.isEmpty) return null;
           return FloatingActionButton.extended(
             key: const Key('planned_absence_hub_add'),
             onPressed: () => context.push('/pc/away/new'),
@@ -49,15 +51,17 @@ class PlannedAbsenceHubScreen extends ConsumerWidget {
           onRetry: () => ref.invalidate(plannedAbsencesListProvider),
         ),
         data: (absences) {
-          final grouped = PlannedAbsenceHubPartition.partition(absences);
-          if (grouped.upcoming.isEmpty && grouped.past.isEmpty) {
+          final grouped = PlannedAbsenceHubPartition.partitionByOwnership(
+            absences,
+          );
+          if (grouped.isEmpty) {
             return _HubEmptyState(
               onPlanAbsence: () => context.push('/pc/away/new'),
             );
           }
           return _HubList(
-            upcoming: grouped.upcoming,
-            past: grouped.past,
+            yourAbsences: grouped.yourAbsences,
+            otherPeoplesAbsences: grouped.otherPeoplesAbsences,
             petsById: petsById,
           );
         },
@@ -68,12 +72,13 @@ class PlannedAbsenceHubScreen extends ConsumerWidget {
 
 class _HubList extends StatelessWidget {
   const _HubList({
-    required this.upcoming,
-    required this.past,
+    required this.yourAbsences,
+    required this.otherPeoplesAbsences,
     required this.petsById,
   });
-  final List<PlannedAbsence> upcoming;
-  final List<PlannedAbsence> past;
+
+  final List<PlannedAbsence> yourAbsences;
+  final List<PlannedAbsence> otherPeoplesAbsences;
   final Map<String, Pet> petsById;
 
   @override
@@ -83,26 +88,44 @@ class _HubList extends StatelessWidget {
       key: const Key('planned_absence_hub_list'),
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 96),
       children: [
-        if (upcoming.isNotEmpty) ...[
-          Text(
-            l.upcomingEvents,
-            style: Theme.of(
-              context,
-            ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+        if (yourAbsences.isNotEmpty) ...[
+          Semantics(
+            identifier: 'planned_absence_hub_your_absences_heading',
+            label: l.careContextHubYourAbsences,
+            header: true,
+            container: true,
+            child: ExcludeSemantics(
+              child: Text(
+                l.careContextHubYourAbsences,
+                key: const Key('planned_absence_hub_your_absences_heading'),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+              ),
+            ),
           ),
           const SizedBox(height: 8),
-          ..._cards(upcoming, false),
+          ..._cards(yourAbsences, false),
         ],
-        if (past.isNotEmpty) ...[
-          if (upcoming.isNotEmpty) const SizedBox(height: 24),
-          Text(
-            l.pastIterations,
-            style: Theme.of(
-              context,
-            ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+        if (otherPeoplesAbsences.isNotEmpty) ...[
+          if (yourAbsences.isNotEmpty) const SizedBox(height: 24),
+          Semantics(
+            identifier: 'planned_absence_hub_other_absences_heading',
+            label: l.careContextHubOtherPeoplesAbsences,
+            header: true,
+            container: true,
+            child: ExcludeSemantics(
+              child: Text(
+                l.careContextHubOtherPeoplesAbsences,
+                key: const Key('planned_absence_hub_other_absences_heading'),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+              ),
+            ),
           ),
           const SizedBox(height: 8),
-          ..._cards(past, true),
+          ..._cards(otherPeoplesAbsences, false),
         ],
       ],
     );

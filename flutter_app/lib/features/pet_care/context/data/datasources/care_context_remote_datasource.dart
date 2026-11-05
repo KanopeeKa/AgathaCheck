@@ -5,11 +5,15 @@ import 'package:http/http.dart' as http;
 import '../models/absence_care_plan_model.dart';
 import '../models/away_plan_readiness_model.dart';
 import '../models/care_period_coverage_model.dart';
+import '../models/per_pet_away_plan_status_model.dart';
+import '../models/pet_planned_absence_list_model.dart';
 import '../models/planned_absence_model.dart';
+import '../../domain/entities/pet_planned_absence_row.dart';
 import '../../domain/entities/absence_care_plan.dart';
 import '../../domain/entities/away_plan_readiness.dart';
 import '../../domain/entities/care_period_coverage.dart';
 import '../../domain/entities/carer_candidate.dart';
+import '../../domain/entities/per_pet_away_plan_status.dart';
 import '../../domain/entities/planned_absence.dart';
 
 class CareContextApiException implements Exception {
@@ -112,6 +116,11 @@ class CareContextRemoteDataSource {
   Future<List<PlannedAbsence>> listPlannedAbsences({
     String scope = 'all',
   }) async {
+    if (scope == 'all') {
+      final upcoming = await listPlannedAbsences(scope: 'upcoming');
+      final past = await listPlannedAbsences(scope: 'past');
+      return _mergePlannedAbsenceLists(upcoming, past);
+    }
     final response = await _client.get(
       Uri.parse(
         '$baseUrl/api/planned-absences?scope=${Uri.encodeQueryComponent(scope)}',
@@ -125,6 +134,17 @@ class CareContextRemoteDataSource {
         .toList(growable: false);
   }
 
+  List<PlannedAbsence> _mergePlannedAbsenceLists(
+    List<PlannedAbsence> upcoming,
+    List<PlannedAbsence> past,
+  ) {
+    final byId = <String, PlannedAbsence>{};
+    for (final absence in [...upcoming, ...past]) {
+      byId[absence.id] = absence;
+    }
+    return byId.values.toList(growable: false);
+  }
+
   Future<PlannedAbsence> fetchPlannedAbsence(String absenceId) async {
     final response = await _client.get(
       Uri.parse('$baseUrl/api/planned-absences/$absenceId'),
@@ -134,6 +154,20 @@ class CareContextRemoteDataSource {
     return PlannedAbsenceModel.fromJson(
       json.decode(response.body) as Map<String, dynamic>,
     );
+  }
+
+  Future<PerPetAwayPlanStatus> fetchPerPetAwayPlanStatus({
+    required String absenceId,
+    required String petId,
+  }) async {
+    final response = await _client.get(
+      Uri.parse('$baseUrl/api/planned-absences/$absenceId/pets/$petId/status'),
+      headers: _headers(),
+    );
+    _check(response);
+    final body = json.decode(response.body) as Map<String, dynamic>;
+    final statusJson = body['status'] as Map<String, dynamic>? ?? body;
+    return PerPetAwayPlanStatusModel.fromStatusJson(statusJson);
   }
 
   Future<AbsenceCarePlan> fetchAbsenceCarePlan(String absenceId) async {
@@ -287,6 +321,60 @@ class CareContextRemoteDataSource {
     );
     _check(response);
     return Map<String, dynamic>.from(
+      json.decode(response.body) as Map<String, dynamic>,
+    );
+  }
+
+  Future<PetPlannedAbsenceListResult> fetchPetPlannedAbsences(
+    String petId,
+  ) async {
+    final response = await _client.get(
+      Uri.parse('$baseUrl/api/pets/$petId/planned-absences'),
+      headers: _headers(),
+    );
+    _check(response);
+    return PetPlannedAbsenceListModel.fromJson(
+      json.decode(response.body) as Map<String, dynamic>,
+    );
+  }
+
+  Future<AddPetToAbsenceResult> addPetToPlannedAbsence({
+    required String absenceId,
+    required String petId,
+    bool confirmGuestAccessWiden = false,
+  }) async {
+    final payload = <String, dynamic>{
+      'pet_id': petId,
+      if (confirmGuestAccessWiden) 'confirm_guest_access_widen': true,
+    };
+    final response = await _client.post(
+      Uri.parse('$baseUrl/api/planned-absences/$absenceId/pets'),
+      headers: _headers(jsonBody: true),
+      body: json.encode(payload),
+    );
+    _check(response);
+    return PetPlannedAbsenceListModel.addPetResultFromJson(
+      json.decode(response.body) as Map<String, dynamic>,
+    );
+  }
+
+  Future<RemovePetFromAbsenceResult> removePetFromPlannedAbsence({
+    required String absenceId,
+    required String petId,
+    bool confirmDeleteAbsence = false,
+  }) async {
+    final request = http.Request(
+      'DELETE',
+      Uri.parse('$baseUrl/api/planned-absences/$absenceId/pets/$petId'),
+    );
+    request.headers.addAll(_headers(jsonBody: true));
+    if (confirmDeleteAbsence) {
+      request.body = json.encode({'confirm_delete_absence': true});
+    }
+    final streamed = await _client.send(request);
+    final response = await http.Response.fromStream(streamed);
+    _check(response);
+    return PetPlannedAbsenceListModel.removePetResultFromJson(
       json.decode(response.body) as Map<String, dynamic>,
     );
   }

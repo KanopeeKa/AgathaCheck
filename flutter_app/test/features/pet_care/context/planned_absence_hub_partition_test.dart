@@ -7,6 +7,7 @@ PlannedAbsence _a({
   required String s,
   required String e,
   String status = 'active',
+  bool own = true,
 }) => PlannedAbsence(
   id: id,
   userId: 'u',
@@ -15,6 +16,7 @@ PlannedAbsence _a({
   provenance: 'user_declared',
   status: status,
   petIds: const ['p'],
+  isOwnAbsence: own,
 );
 void main() {
   test('cancelled hidden', () {
@@ -24,6 +26,14 @@ void main() {
     ], today: DateTime(2026, 9, 15));
     expect(r.upcoming.map((a) => a.id), ['a']);
     expect(r.past, isEmpty);
+  });
+  test('ownership groups', () {
+    final r = PlannedAbsenceHubPartition.partitionByOwnership([
+      _a(id: 'own', s: '2026-09-20', e: '2026-09-25', own: true),
+      _a(id: 'other', s: '2026-09-22', e: '2026-09-28', own: false),
+    ], today: DateTime(2026, 9, 15));
+    expect(r.yourAbsences.map((a) => a.id), ['own']);
+    expect(r.otherPeoplesAbsences.map((a) => a.id), ['other']);
   });
   test('sort', () {
     final r = PlannedAbsenceHubPartition.partition([

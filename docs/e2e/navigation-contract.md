@@ -264,6 +264,26 @@ Stable semantics identifiers for Playwright (`enableFlutterAccessibility()` firs
 | `people_action_email` | Contact action bar — email |
 | `people_action_directions` | Contact action bar — directions |
 
+## Away planning (per-pet absence)
+
+| Route | Named route | Ready locator |
+|-------|-------------|---------------|
+| `/pc/away/:id` | `petCarePlannedAbsenceDetail` | `absence_screen_page` |
+| `/pc/away/:id/pets/:petId` | `petCarePetAwayPlan` | `pet_away_plan_page_<petId>` |
+| `/pc/away/:id/edit` | `petCarePlannedAbsenceEdit` | trip details form |
+| `/pc/away/new?petId=:petId` | `petCarePlannedAbsenceNew` | `planned_absence_create_page` (pre-ticks pet) |
+
+| Locator / label (EN · FR) | When |
+|---------------------------|------|
+| Hub section **Your absences** · **Vos absences** | Own absences list |
+| Hub section **Other people's absences** · **Absences des autres** | Co-visible absences |
+| `absence_add_pet` | Declarer adds pet on absence screen |
+| `pet_page_away_row_<absenceId>` | Pet profile away plan row |
+| `pet_detail_plan_absence_menu_item` | Pet overflow — plan an absence |
+| `remove_pet_from_absence_menu_<petId>` | Pet away plan overflow — remove pet |
+
+Deep links from care items use `care_item_absence_open_away_plan` → pet away plan with `returnTo` preserved.
+
 ## TODO (next candidates)
 
 - `pet-list.openVets`, `help.goBack`, `notifications.expectBadgeVisible` throw paths

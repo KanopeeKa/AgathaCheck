@@ -383,7 +383,9 @@ Raw `items[]` entries may include `window_relation: before_window` on materialis
 
 ### Planned absences (`/api/planned-absences`) — CC-1
 
-Declarer-scoped absence context (not visible to collaborators in V1): `GET /`, `POST /`, `GET /:id`, `PATCH /:id`, `POST /:id/cancel`.
+**Writes** remain declarer-only: `POST /`, `PATCH /:id`, `POST /:id/cancel`, `POST /:id/record-handover-download`, `POST /:id/pets`, `DELETE /:id/pets/:petId`.
+
+**Reads** (CARE-CONTEXT-R-032 / R-039 server, phase 2): Full-access viewers (record owner, co-parent, household `full_access`) see absences that include a pet they can manage at profile level. Responses include only `pet_ids` / `pet_carers` the caller may access; other pets are omitted from JSON (no ids or names). List and detail add `is_own_absence`, `declarer_display_name` (null when own), and `can_edit_trip` (declarer only on detail). Co-visible hub rows use `is_own_absence: false` and `declarer_display_name` for “{Name} is away”. Trip mutations stay declarer-only (`404`/`403` unchanged for strangers).
 
 **Title (CARE-CONTEXT-D-001)** — optional `title` on `POST` / `PATCH` (max 60 characters after trim; empty string → `null`). Omitted on `PATCH` leaves the stored title unchanged.
 
@@ -400,7 +402,16 @@ Declarer-scoped absence context (not visible to collaborators in V1): `GET /`, `
 | DELETE | `/carer-invites/:inviteId` | Revoke pending invite |
 | DELETE | `/guest-grants/:grantId` | Early revoke active grant |
 
-`PATCH /:id` with active guest grants requires `confirm_guest_access_widen: true` when extending `ends_on` or adding pets (`409`, `code: guest_access_widen_required`). Cancelling an absence revokes active guest grants immediately.
+`PATCH /:id` with active guest grants requires `confirm_guest_access_widen: true` when extending `ends_on` (`409`, `code: guest_access_widen_required`). **`PATCH` no longer accepts `pet_ids`** — use add/remove pet endpoints below. Cancelling an absence revokes active guest grants immediately.
+
+**Add/remove pets (phase 3, declarer-only)** — adding requires Full access on the pet (`403` otherwise).
+
+| Method | Path | Body | Notes |
+|---|---|---|---|
+| POST | `/:id/pets` | `{ pet_id, confirm_guest_access_widen? }` | Empty away plan for the pet; non-blocking `overlap_warnings`; D16 widen gate when guest grants exist (`409 guest_access_widen_required`) |
+| DELETE | `/:id/pets/:petId` | `{ confirm_delete_absence? }` | Clears carer, `pet_note`, trip resolutions for that pet; revokes guest grants and trims pending carer invites for the pet; care item dates unchanged. Last pet requires `confirm_delete_absence: true` (`409 last_pet_removal_requires_confirm`) then cancels the absence |
+
+Pet deletion cascades `planned_absence_pets`; absences left with no pets are cancelled and guest access revoked (R-036).
 
 **List (`GET /`)**
 
@@ -412,7 +423,7 @@ Declarer-scoped absence context (not visible to collaborators in V1): `GET /`, `
 - `past` — non-cancelled where `ends_on < today`, ordered by `starts_on` descending.
 - `all` — all non-cancelled absences; upcoming first (`starts_on` asc), then past (`starts_on` desc).
 
-Each list item includes `overlap_warnings` **recomputed on read** (not persisted): non-blocking conflicts with other active absences (`status != cancelled` and `ends_on >= today`) for the same pet. Same shape as `POST`/`PATCH` overlap entries.
+Each list item includes `is_own_absence`, `declarer_display_name` (set when `is_own_absence` is false), and `overlap_warnings` **recomputed on read** (not persisted): non-blocking conflicts with other active absences (`status != cancelled` and `ends_on >= today`) for the same pet. Same shape as `POST`/`PATCH` overlap entries. Own absences are listed once (never duplicated as co-visible).
 
 `POST` and `PATCH` also return non-blocking `overlap_warnings` when active absences overlap for the same pet.
 
@@ -432,7 +443,7 @@ Each list item includes `overlap_warnings` **recomputed on read** (not persisted
 
 **Readiness (`GET /:id/readiness`)** — AW-8
 
-Server-authoritative two-fact readiness for hub, plan page, and dashboard tile (D-AWAY-002). Declarer-scoped; `404` when absence is not owned by caller.
+Server-authoritative two-fact readiness for hub, plan page, and dashboard tile (D-AWAY-002). Same visibility as `GET /:id`; carer/care coverage facts are computed over **accessible pets only** (handover PDF scope, R-040).
 
 ```json
 {
@@ -459,9 +470,21 @@ Server-authoritative two-fact readiness for hub, plan page, and dashboard tile (
 
 Tile copy uses fixed actionability priority: carer gap first, else coverage sentence. See [away-planning-carer-model.md](/docs/domains/pet_care/features/away-planning-carer-model.md).
 
+**Per-pet away plan read** — Full access to the pet required; `404` when absence or pet is invisible (non-disclosure).
+
+| Method | Path | Notes |
+|---|---|---|
+| GET | `/:id/pets/:petId/away-plan` | Trip header (`absence`), single `pet_carer`, `status`, `coverage`, `review_queue`, `review_care_item_count`, and away-plan `projection` for that pet |
+| GET | `/:id/pets/:petId/status` | Compact `{ status, review_care_item_count, coverage_state }` for pills and pet-page rows |
+| GET | `/api/pets/:petId/planned-absences` | Full access on pet; own + co-visible absences for this pet, `ends_on >= today`; each item includes nested `absence` with `is_own_absence` / `declarer_display_name` when applicable |
+
+`status.priority` is `carer_gap` \| `care_review` \| `none`. `status.copy_key` uses `awayPlanningPetStatus*` keys (Flutter l10n in phase 4).
+
+**Health entry absence context (`GET /api/health-entries/:id/absence-context`)** — R-041: returns active absences for the entry’s pet when the caller has Full access; otherwise `{ absences: [] }` (Can log care / guest unchanged).
+
 **Absence resolutions (`GET|PATCH /:id/resolutions`)** — Care Item evolution phase E (D-CIE-012/013)
 
-Declarer-scoped; same auth as `GET /:id`. Stores per–care-item decisions for one absence (`health_entry_absence_resolutions`).
+Same read visibility as `GET /:id`; resolution writes require Full access on the care item’s pet. Stores per–care-item decisions for one absence (`health_entry_absence_resolutions`).
 
 - **GET** — `{ resolutions: [{ id, health_entry_id, planned_absence_id, decision, looked_after_by, absence_note, dates_decided_for }] }`
 - **PATCH** — upsert one or more rows: `{ resolutions: [{ health_entry_id, decision, looked_after_by?, absence_note? }] }` or a single object with `health_entry_id`. `decision` is `keep_date` \| `move_before` \| `move_after` \| `nothing_needed`. `looked_after_by` mirrors `pet_carers` carer shape (`shared_user` \| `note_only`). `dates_decided_for` is set server-side from the current in-window pending dates when saved.

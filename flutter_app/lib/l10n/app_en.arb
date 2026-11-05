@@ -2780,6 +2780,83 @@
   },
   "careContextAwayContinue": "Continue",
   "careContextAwayBack": "Back",
+  "careContextAbsenceDefaultTitle": "Absence",
+  "careContextTravellerYouAway": "You're away",
+  "careContextTravellerNameAway": "{name} is away",
+  "@careContextTravellerNameAway": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "careContextHubYourAbsences": "Your absences",
+  "careContextHubOtherPeoplesAbsences": "Other people's absences",
+  "careContextPlanAnAbsence": "Plan an absence",
+  "careContextAddPetToAbsence": "Add a pet",
+  "careContextAddPetToAbsenceTitle": "Add a pet to this absence",
+  "careContextAddPetNoneAvailable": "No other pets are available to add.",
+  "careContextAddPetSuccess": "Pet added to this absence.",
+  "careContextAddPetFailed": "Could not add pet. Try again.",
+  "careContextRemovePetFromAbsence": "Remove {pet} from this absence",
+  "@careContextRemovePetFromAbsence": {
+    "placeholders": {
+      "pet": { "type": "String" }
+    }
+  },
+  "careContextRemovePetConfirmTitle": "Remove {pet} from this absence?",
+  "@careContextRemovePetConfirmTitle": {
+    "placeholders": {
+      "pet": { "type": "String" }
+    }
+  },
+  "careContextRemovePetConfirmBody": "This removes this pet's carer assignment, notes for this pet, and care decisions made for this trip. Care items and their dates won't change.",
+  "careContextRemovePetLastConfirmBody": "{pet} is the only pet on this absence. Removing it deletes the absence.",
+  "@careContextRemovePetLastConfirmBody": {
+    "placeholders": {
+      "pet": { "type": "String" }
+    }
+  },
+  "careContextRemovePetConfirmAction": "Remove pet",
+  "careContextRemovePetSuccess": "{pet} was removed from this absence.",
+  "@careContextRemovePetSuccess": {
+    "placeholders": {
+      "pet": { "type": "String" }
+    }
+  },
+  "careContextRemovePetAbsenceDeleted": "This absence was deleted.",
+  "careContextRemovePetFailed": "Could not remove pet. Try again.",
+  "careContextPetPageAwaySectionTitle": "Away plans",
+  "careContextPetPageAllAbsences": "All absences",
+  "careContextAbsencePetsSectionTitle": "Pets on this absence",
+  "careContextSeePetAwayPlan": "See {pet}'s away plan",
+  "@careContextSeePetAwayPlan": {
+    "placeholders": {
+      "pet": { "type": "String" }
+    }
+  },
+  "careContextPetAwayPlanTitle": "{pet}'s away plan",
+  "@careContextPetAwayPlanTitle": {
+    "placeholders": {
+      "pet": { "type": "String" }
+    }
+  },
+  "careContextSeeAbsence": "See absence",
+  "careContextTripNotesForWholeTrip": "Trip notes (whole trip)",
+  "careContextPetNotesSectionTitle": "Notes for {pet}",
+  "@careContextPetNotesSectionTitle": {
+    "placeholders": {
+      "pet": { "type": "String" }
+    }
+  },
+  "careContextPetNotesSaveFailed": "Could not save notes. Try again.",
+  "careContextCareItemOpenAwayPlan": "Open away plan",
+  "awayPlanningPetStatusNoCarer": "No carer yet",
+  "awayPlanningPetStatusCarerUnavailable": "Carer no longer available",
+  "awayPlanningPetStatusReviewCount": "{count, plural, =1{1 to review} other{{count} to review}}",
+  "@awayPlanningPetStatusReviewCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
   "careContextAwayPlanTitle": "Away plan",
   "careContextAwayPlanLoadError": "Could not load this away plan. Try again.",
   "careContextAwayPlanCareDuringTitle": "Care during your absence",

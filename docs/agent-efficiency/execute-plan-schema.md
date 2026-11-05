@@ -317,14 +317,20 @@ check run that call it arrive in a later work package (build spec:
       `release` PR when their bytes equal the approved content; otherwise `drift`.
    2. Protected set → `protected`.
    3. `isForbiddenPath` from `.github/scripts/agent-safety-lib.js` → `forbidden`.
-   4. A phase's `forbidden_paths` (`phase`: that phase; otherwise every phase) → `forbidden`.
+   4. Phase `forbidden_paths`: for `phase`, that phase's list (checked before its `allowed_paths`,
+      step 5) → `forbidden`. For `release`, `sync-resolve`, and `remedial`, every phase's
+      `forbidden_paths` → `forbidden` only when the file matches no phase's `allowed_paths` (step 5)
+      and is not covered by step 6 (exceptions) or step 7 (companions).
    5. Scope: `phase` → that phase's `allowed_paths`; `release` / `sync-resolve` → union of all
-      phases' `allowed_paths`; `remedial` → that union plus `e2e/**` → allowed.
+      phases' `allowed_paths`; `remedial` → that union plus `e2e/**` → `allowed` (for non-`phase`
+      categories, checked before steps 6–7 and before step 4's forbidden union).
    6. Exceptions the phase lists (`phase`: that phase; otherwise any phase; `remedial` always
       gets `tests`) → `exception:tests` / `exception:docs`.
    7. Companions (the phase's `companions` — every phase's for other categories — plus the fixed
       list) → `companion`; the 31st and later companion files are `companion-cap`.
-   8. Otherwise `unclassified`.
+   8. For `release`, `sync-resolve`, and `remedial` only: any remaining match on a phase's
+      `forbidden_paths` → `forbidden`.
+   9. Otherwise `unclassified`.
 4. Conclusion `failure` iff any violation. Title = the most serious reason present:
    `drift` > `protected` > `forbidden` > `unclassified` > `companion-cap`; none → `ok`.
 

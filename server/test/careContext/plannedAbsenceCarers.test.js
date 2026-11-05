@@ -9,6 +9,10 @@ import {
   token,
   userId,
 } from '../pets/helpers.js';
+import {
+  mockViewerAbsenceLoad,
+  mockViewerFullAccessOnPets,
+} from './plannedAbsenceViewerMocks.js';
 
 function authHeader() {
   return { Authorization: `Bearer ${token}` };
@@ -584,7 +588,11 @@ describe('planned absence carers', () => {
   });
 
   it('GET absence marks shared_user with null user_id as carer_removed', async () => {
-    const app = createTestApp(async (sql) => {
+    const app = createTestApp(async (sql, params) => {
+      const viewerAbsence = mockViewerAbsenceLoad(sql, absenceRow());
+      if (viewerAbsence) return viewerAbsence;
+      const access = mockViewerFullAccessOnPets(sql, params, userId, petId);
+      if (access) return access;
       if (sql.includes('FROM planned_absences WHERE id = $1 AND user_id = $2')) {
         return { rows: [absenceRow()] };
       }

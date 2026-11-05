@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import 'package:pet_profile_app/core/router/shell_return_navigation.dart';
 import 'package:pet_profile_app/core/theme/app_color_tokens.dart';
 import 'package:pet_profile_app/core/utils/calendar_date.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
@@ -69,6 +70,19 @@ class _CareItemAbsenceSectionState
                 )
               else
                 Text(summary, style: Theme.of(context).textTheme.bodyMedium),
+              const SizedBox(height: 12),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: TextButton(
+                  key: const Key('care_item_absence_open_away_plan'),
+                  onPressed: () => openPetAwayPlan(
+                    context,
+                    primary.plannedAbsenceId,
+                    widget.entry.petId,
+                  ),
+                  child: Text(l.careContextCareItemOpenAwayPlan),
+                ),
+              ),
               if (needsAttention && !widget.muted) ...[
                 const SizedBox(height: 12),
                 Wrap(

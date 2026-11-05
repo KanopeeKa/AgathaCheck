@@ -67,6 +67,34 @@ export class AwayPlanningPage {
     ).toBeVisible({ timeout: 30_000 });
   }
 
+  async expectYourAbsencesSection(): Promise<void> {
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      const heading = semanticsKey(this.page, 'planned_absence_hub_your_absences_heading')
+        .or(this.page.locator('[data-flutter-key="planned_absence_hub_your_absences_heading"]'))
+        .or(this.page.getByText(/Your absences|Vos absences/i).first());
+      await expect(heading).toBeVisible();
+    }).toPass({ timeout: 60_000 });
+  }
+
+  async expectHubCardForAbsence(petName: string): Promise<void> {
+    await expect(this.page.getByText(petName).first()).toBeVisible({ timeout: 30_000 });
+  }
+
+  async expectPetAwayPlanScreen(petName: string): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    await expect(
+      this.page.getByText(new RegExp(`${petName}.*away plan|Plan d.absence de ${petName}`, 'i')).first(),
+    ).toBeVisible({ timeout: 60_000 });
+  }
+
+  async expectAbsenceScreenLoaded(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    await expect(semanticsKey(this.page, 'absence_screen_page')).toBeVisible({
+      timeout: 60_000,
+    });
+  }
+
   async openCreateForm(): Promise<void> {
     await this.page.goto(flutterGotoUrl('/pc/away/new'));
     await refreshFlutterAccessibility(this.page);
@@ -144,7 +172,8 @@ export class AwayPlanningPage {
         .first()
         .click();
     }
-    await this.expectPlanPageLoaded();
+    await waitForFlutterRoutePattern(this.page, /\/pc\/away\/[^/?#]+/, 60_000);
+    await refreshFlutterAccessibility(this.page);
   }
 
   async expectPlanPageLoaded(): Promise<void> {
@@ -183,6 +212,16 @@ export class AwayPlanningPage {
   }
 
   async assignContactCarer(petId: string, petName: string, contactId: string): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    const editCarer = this.page.getByRole('button', {
+      name: new RegExp(`Edit carer for ${petName}`, 'i'),
+    });
+    if (!(await editCarer.isVisible().catch(() => false))) {
+      const match = this.page.url().match(/\/pc\/away\/([^/?#]+)/);
+      if (match) {
+        await this.openPetAwayPlan(match[1], petId);
+      }
+    }
     await this.openCarerEditDialog(petId, petName);
     await this.page.locator('[flt-semantics-identifier="people_picker_field_away_plan_carer"]').click();
     await refreshFlutterAccessibility(this.page);
@@ -206,6 +245,9 @@ export class AwayPlanningPage {
     petName: string,
     carerLabel: string,
   ): Promise<void> {
+    const carerLabelLocator = semanticsKey(this.page, `away_plan_carer_label_${petId}`).or(
+      semanticsKey(this.page, `away_plan_pet_carer_label_${petId}`),
+    );
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
       await expect(
@@ -213,10 +255,8 @@ export class AwayPlanningPage {
           this.page.getByText(petName, { exact: false }).first(),
         ),
       ).toBeVisible();
-      await expect(semanticsKey(this.page, `away_plan_carer_label_${petId}`)).toBeVisible();
-      await expect(semanticsKey(this.page, `away_plan_carer_label_${petId}`)).toContainText(
-        carerLabel,
-      );
+      await expect(carerLabelLocator).toBeVisible();
+      await expect(carerLabelLocator).toContainText(carerLabel);
     }).toPass({ timeout: 30_000 });
   }
 
@@ -224,7 +264,27 @@ export class AwayPlanningPage {
     await expect(this.page.getByText(petName)).toBeVisible({ timeout: 30_000 });
   }
 
-  async openPlan(absenceId: string): Promise<void> {
+  async openPetAwayPlan(absenceId: string, petId: string): Promise<void> {
+    await this.page.goto(flutterGotoUrl(`/pc/away/${absenceId}/pets/${petId}`));
+    await refreshFlutterAccessibility(this.page);
+    await waitForFlutterRoutePattern(
+      this.page,
+      new RegExp(`/pc/away/${absenceId}/pets/${petId}`),
+      60_000,
+    );
+    await expect(
+      semanticsKey(this.page, `pet_away_plan_page_${petId}`).or(
+        this.page.getByText(/away plan|Plan d.absence/i).first(),
+      ),
+    ).toBeVisible({ timeout: 60_000 });
+  }
+
+  /** Trip summary at `/pc/away/:id`; pass `petId` for per-pet care/carer UI. */
+  async openPlan(absenceId: string, petId?: string): Promise<void> {
+    if (petId) {
+      await this.openPetAwayPlan(absenceId, petId);
+      return;
+    }
     await this.page.goto(flutterGotoUrl(`/pc/away/${absenceId}`));
     await refreshFlutterAccessibility(this.page);
     await this.expectPlanPageLoaded();

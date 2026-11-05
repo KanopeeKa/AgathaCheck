@@ -58,7 +58,40 @@ void main() {
     )!;
     expect(find.text(l.careContextAwayEntryTitle), findsOneWidget);
   });
-  testWidgets('sections', (t) async {
+  testWidgets('ownership sections', (t) async {
+    final now = DateTime.now();
+    String w(DateTime d) =>
+        '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+    await _pump(t, [
+      PlannedAbsence(
+        id: 'own',
+        userId: 'u',
+        startsOn: w(now.add(const Duration(days: 5))),
+        endsOn: w(now.add(const Duration(days: 10))),
+        provenance: 'user_declared',
+        status: 'active',
+        petIds: const ['p'],
+        isOwnAbsence: true,
+      ),
+      PlannedAbsence(
+        id: 'other',
+        userId: 'u2',
+        startsOn: w(now.add(const Duration(days: 6))),
+        endsOn: w(now.add(const Duration(days: 11))),
+        provenance: 'user_declared',
+        status: 'active',
+        petIds: const ['p'],
+        isOwnAbsence: false,
+        declarerDisplayName: 'Sam',
+      ),
+    ]);
+    final l = AppLocalizations.of(
+      t.element(find.byType(PlannedAbsenceHubScreen)),
+    )!;
+    expect(find.text(l.careContextHubYourAbsences), findsOneWidget);
+    expect(find.text(l.careContextHubOtherPeoplesAbsences), findsOneWidget);
+  });
+  testWidgets('lists own upcoming and past under your absences', (t) async {
     final now = DateTime.now();
     String w(DateTime d) =>
         '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
@@ -77,7 +110,14 @@ void main() {
     final l = AppLocalizations.of(
       t.element(find.byType(PlannedAbsenceHubScreen)),
     )!;
-    expect(find.text(l.upcomingEvents), findsOneWidget);
-    expect(find.text(l.pastIterations), findsOneWidget);
+    expect(find.text(l.careContextHubYourAbsences), findsOneWidget);
+    expect(
+      find.byKey(const Key('planned_absence_hub_card_up')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const Key('planned_absence_hub_card_past')),
+      findsOneWidget,
+    );
   });
 }

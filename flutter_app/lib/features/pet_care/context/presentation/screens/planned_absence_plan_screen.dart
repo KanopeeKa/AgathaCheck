@@ -6,13 +6,16 @@ import '../../../../../l10n/app_localizations.dart';
 import 'package:pet_profile_app/core/experience/app_experience.dart';
 import 'package:pet_profile_app/core/router/experience_shell_scaffold.dart';
 import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
-import '../providers/care_context_providers.dart';
 import '../controllers/away_plan_handover_controller.dart';
-import '../widgets/away_plan_carers_section.dart';
+import '../planned_absence_display.dart';
+import '../providers/care_context_providers.dart';
+import '../widgets/absence_pet_pill.dart';
 import '../widgets/away_plan_header_section.dart';
+import '../absence_pet_membership_flow.dart';
+import '../planned_absence_date_rules.dart';
 import '../widgets/away_plan_summary_card.dart';
-import '../widgets/away_plan_pet_care_section.dart';
 
+/// Absence (trip) screen at `/pc/away/:id` — summary, status, pet pills.
 class PlannedAbsencePlanScreen extends ConsumerWidget {
   const PlannedAbsencePlanScreen({super.key, required this.absenceId});
 
@@ -29,7 +32,11 @@ class PlannedAbsencePlanScreen extends ConsumerWidget {
       return ExperienceShellScaffold(
         experience: AppExperience.petCare,
         currentLocation: GoRouterState.of(context).uri.path,
-        screenTitle: l.careContextAwayPlanTitle,
+        screenTitle: absenceAsync.maybeWhen(
+          data: (absence) =>
+              PlannedAbsenceDisplay.absenceScreenTitle(l, absence),
+          orElse: () => l.careContextAbsenceDefaultTitle,
+        ),
         backPath: '/pc/away',
         contextualActions: actions,
         child: child,
@@ -67,19 +74,11 @@ class PlannedAbsencePlanScreen extends ConsumerWidget {
               shell(child: Center(child: Text(l.errorWithMessage('$error')))),
           data: (pets) {
             final petNamesById = {for (final pet in pets) pet.id: pet.name};
-            final orderedPetIds = [...absence.petIds]..sort();
-            void retryPetCoverage() {
-              for (final petId in orderedPetIds) {
-                ref.invalidate(
-                  carePeriodCoverageProvider((
-                    petId: petId,
-                    startsOn: absence.startsOn,
-                    endsOn: absence.endsOn,
-                    plannedAbsenceId: absenceId,
-                  )),
-                );
-              }
-            }
+            final orderedPetIds = [...absence.petIds]
+              ..sort(
+                (a, b) =>
+                    (petNamesById[a] ?? a).compareTo(petNamesById[b] ?? b),
+              );
 
             Future<void> downloadHandover() =>
                 AwayPlanHandoverController(ref).downloadHandover(
@@ -88,6 +87,15 @@ class PlannedAbsencePlanScreen extends ConsumerWidget {
                   readiness: readiness,
                   petNamesById: petNamesById,
                 );
+
+            final canEditTrip =
+                absence.canEditTrip ?? absence.isOwnAbsence ?? false;
+            final todayIso = PlannedAbsenceDateRules.startsOnWire(
+              PlannedAbsenceDateRules.todayCalendar(),
+            );
+            final isPast =
+                todayIso != null && absence.endsOn.compareTo(todayIso) < 0;
+            final showAddPet = canEditTrip && !absence.isCancelled && !isPast;
 
             return shell(
               actions: [
@@ -99,44 +107,47 @@ class PlannedAbsencePlanScreen extends ConsumerWidget {
                 ),
               ],
               child: ListView(
-                key: const Key('away_plan_page'),
+                key: const Key('absence_screen_page'),
                 padding: const EdgeInsets.all(16),
                 children: [
                   AwayPlanSummaryCard(
                     absence: absence,
-                    onEdit: absence.isCancelled
+                    onEdit: absence.isCancelled || !canEditTrip
                         ? null
                         : () => context.pushNamed(
                             'petCarePlannedAbsenceEdit',
                             pathParameters: {'id': absenceId},
                           ),
                   ),
-                  const SizedBox(height: 16),
                   AwayPlanHeaderSection(absence: absence, readiness: readiness),
                   const SizedBox(height: 24),
-                  AwayPlanCarersSection(
-                    absence: absence,
-                    petNamesById: petNamesById,
-                  ),
-                  const SizedBox(height: 24),
                   Text(
-                    l.careContextAwayPlanCareDuringTitle,
+                    l.careContextAbsencePetsSectionTitle,
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   const SizedBox(height: 12),
-                  ...orderedPetIds.map(
-                    (petId) => Padding(
-                      padding: const EdgeInsets.only(bottom: 16),
-                      child: AwayPlanPetCareSection(
-                        absenceId: absenceId,
-                        petId: petId,
-                        petName: petNamesById[petId] ?? '',
-                        startsOn: absence.startsOn,
-                        endsOn: absence.endsOn,
-                        onRetry: retryPetCoverage,
-                      ),
+                  for (final petId in orderedPetIds) ...[
+                    AbsencePetPill(
+                      absenceId: absenceId,
+                      petId: petId,
+                      petName: petNamesById[petId] ?? '',
                     ),
-                  ),
+                    const SizedBox(height: 12),
+                  ],
+                  if (showAddPet) ...[
+                    const SizedBox(height: 4),
+                    OutlinedButton.icon(
+                      key: const Key('absence_add_pet'),
+                      onPressed: () => AbsencePetMembershipFlow.showAddPetSheet(
+                        context: context,
+                        ref: ref,
+                        absence: absence,
+                        allPets: pets,
+                      ),
+                      icon: const Icon(Icons.add),
+                      label: Text(l.careContextAddPetToAbsence),
+                    ),
+                  ],
                 ],
               ),
             );

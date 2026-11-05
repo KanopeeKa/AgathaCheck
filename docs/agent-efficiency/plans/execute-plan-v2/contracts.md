@@ -159,7 +159,9 @@ Approve/resume without a valid acknowledgement are invalid with `invalid_reason:
 **Release-scope no-ops:** on a release PR (`integration` → `main`), any file in the diff whose
 content at the PR head is **byte-identical** to `main` at its current tip is skipped (no scope
 rule applies). Files that differ from `main` are evaluated normally (protected, forbidden, phase
-union, own-plan verification). PR bodies may still cite `Unblocks: plan …` for humans; enforcement
+union with **allowed_paths from any phase overriding another phase's `forbidden_paths` on release,
+remedial, and sync-resolve**; within a single phase PR, that phase's `forbidden_paths` still beat its
+own `allowed_paths`), own-plan verification). PR bodies may still cite `Unblocks: plan …` for humans; enforcement
 does not parse them.
 
 **Phase web bundle ratchet:** when a phase PR touches `scripts/ci/web-bundle-budget.json`, each

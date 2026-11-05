@@ -50,7 +50,7 @@ test.describe('Away plan detail V2', () => {
     await loginAs(page, user, { experience: 'guardian' });
 
     const away = new AwayPlanningPage(page);
-    await away.openPlan(absence.id);
+    await away.openPlan(absence.id, pet.id);
     await away.expectCoverageHeadersHidden();
   });
 
@@ -75,7 +75,7 @@ test.describe('Away plan detail V2', () => {
     await loginAs(page, user, { experience: 'guardian' });
 
     const away = new AwayPlanningPage(page);
-    await away.openPlan(absence.id);
+    await away.openPlan(absence.id, pet.id);
     await away.expectPlannedCareItemRow(entry.id, 'Away Window Meds');
     await away.openPlannedCareItem(entry.id, 'Away Window Meds');
     await away.expectPlannedCareItemDetail('Away Window Meds');

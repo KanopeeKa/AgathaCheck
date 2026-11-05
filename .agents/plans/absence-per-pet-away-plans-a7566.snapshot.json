@@ -1,0 +1,220 @@
+{
+  "schema_version": 2,
+  "plan_id": "absence-per-pet-away-plans-a7566",
+  "title": "Absences and per-pet away plans",
+  "plan_file": ".agents/plans/absence-per-pet-away-plans-a7566.md",
+  "plan_file_sha256": "dc93b70e42059393bc86342b6f137d95285788a1b0e359ba3711ce50977f576c",
+  "release_branch": "main",
+  "integration_branch": "cursor/absence-per-pet-away-plans-a7566-integration-f9d1",
+  "control_issue": 2036,
+  "created_at": "2026-11-03T18:51:07Z",
+  "approved_until": "2026-11-10T18:51:00Z",
+  "settings": {
+    "release_owner_review": true,
+    "tier3_blocking": false,
+    "budgets": {
+      "ci_per_phase": 8,
+      "launches_per_phase": 15,
+      "remedial_rounds": 6,
+      "sync_attempts": 5,
+      "daily_launches": 80
+    }
+  },
+  "protected_paths_version": 1,
+  "phases": [
+    {
+      "id": "1",
+      "title": "Server per-pet read (additive)",
+      "branch": "cursor/absence-per-pet-away-plans-a7566-p1",
+      "allowed_paths": [
+        "server/routes/careContext/**",
+        "server/lib/care/**",
+        "server/test/careContext/**",
+        "docs/architecture/api-reference.md",
+        "server/routes/careContext/README.md"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests"
+      ],
+      "companions": [],
+      "exit_checklist": [
+        "GET per-pet away plan + pet-page away list + per-pet status facts (additive endpoints or fields)",
+        "No change to declarer-only hub list behaviour yet",
+        "server Jest careContext green",
+        "pre-push-changed green",
+        "api-reference draft for new read shapes"
+      ]
+    },
+    {
+      "id": "2",
+      "title": "Server visibility and security",
+      "branch": "cursor/absence-per-pet-away-plans-a7566-p2",
+      "allowed_paths": [
+        "server/routes/careContext/**",
+        "server/routes/people/**",
+        "server/lib/care/**",
+        "server/lib/people/**",
+        "server/test/careContext/**",
+        "server/test/people/**",
+        "docs/architecture/api-reference.md",
+        "docs/domains/pet_care/features/care-context.md",
+        "docs/domains/people/features/people-care-team.md"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests"
+      ],
+      "companions": [],
+      "exit_checklist": [
+        "Security review per .cursor/agent-kernel/protocols/security.md — owner sign-off on phase 2 PR before merge to integration",
+        "Full-access viewers read/edit one pet's plan; absence payloads omit inaccessible pet ids/names",
+        "Hub list API includes co-visible absences with declarer display name",
+        "Full-trip handover assembly filtered server-side for accessible pets only",
+        "CARE-CONTEXT-R-041 server: loadHealthEntryAbsenceContext allows Full access to pet (not declarer-only)",
+        "Tests: declarer, Full partial, Can log care, guest, no access — non-disclosure asserted on JSON",
+        "pre-push-changed green"
+      ]
+    },
+    {
+      "id": "3",
+      "title": "Server add/remove pets and lifecycle",
+      "branch": "cursor/absence-per-pet-away-plans-a7566-p3",
+      "allowed_paths": [
+        "server/routes/careContext/**",
+        "server/lib/care/**",
+        "server/lib/people/**",
+        "server/lib/pets/**",
+        "server/lib/petDataLifecycle.js",
+        "server/lib/account/accountErasureService.js",
+        "server/test/careContext/**",
+        "server/test/people/**",
+        "db/migrations/**",
+        "server/test/migrations/**",
+        "server/scripts/migrations/**",
+        "docs/architecture/api-reference.md",
+        "docs/engineering/privacy/erasure-data-map.md"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "e2e/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests"
+      ],
+      "companions": [],
+      "exit_checklist": [
+        "Add pet to saved absence (empty plan, overlap warn, guest access confirm per PEOPLE D16)",
+        "Remove pet: carer/notes/decisions cleared, access revoked, invites trimmed, care dates unchanged",
+        "Last pet removes absence; pet delete cascades absence when empty",
+        "AWAY-PLANNING-CARER-R-016 traveller not carer enforced",
+        "Migration tests if schema touched",
+        "pre-push-changed green"
+      ]
+    },
+    {
+      "id": "4",
+      "title": "Flutter absence and away plan screens",
+      "branch": "cursor/absence-per-pet-away-plans-a7566-p4",
+      "allowed_paths": [
+        "flutter_app/lib/features/pet_care/context/**",
+        "flutter_app/lib/core/router/**",
+        "flutter_app/lib/features/experience/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/pet_care/context/**",
+        "flutter_app/test/bdd/features/away*.feature",
+        "flutter_app/test/bdd/features/care_item_absence.feature",
+        "docs/e2e/navigation-contract.md"
+      ],
+      "forbidden_paths": [
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests"
+      ],
+      "companions": [],
+      "exit_checklist": [
+        "Route /pc/away/:id/pets/:petId with return-path navigation",
+        "Absence screen: pills, summary Edit -> /pc/away/:id/edit, no duplicated multi-pet sections",
+        "Away plan screen: read-only trip, See absence, inline pet notes (R-017), move care sections",
+        "Deep links: care item absence module -> that pet's away plan (R-038; S7 not in app today)",
+        "Widget tests + BDD updates for AP-1–AP-4, AP-6–AP-7, AP-12–AP-13, AP-16–AP-17",
+        "flutter analyze + flutter test context suite green",
+        "pre-push-changed green"
+      ]
+    },
+    {
+      "id": "5",
+      "title": "Flutter hub, pet page, add/remove",
+      "branch": "cursor/absence-per-pet-away-plans-a7566-p5",
+      "allowed_paths": [
+        "flutter_app/lib/features/pet_care/context/**",
+        "flutter_app/lib/features/pet_profile/**",
+        "flutter_app/lib/features/experience/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/pet_care/**",
+        "flutter_app/test/bdd/**",
+        "e2e/playwright/tests/away*.spec.ts",
+        "e2e/playwright/tests/care.item.absence.spec.ts",
+        "e2e/playwright/tests/absence.per.pet*.spec.ts",
+        "e2e/playwright/pages/**",
+        "e2e/scripts/spec-domains.mjs",
+        "e2e/scripts/spec-durations.json",
+        "docs/e2e/navigation-contract.md",
+        "docs/e2e/uat-demo-data.md",
+        "server/db/seeds/**"
+      ],
+      "forbidden_paths": [],
+      "allowed_exceptions": [
+        "docs",
+        "tests"
+      ],
+      "companions": [],
+      "exit_checklist": [
+        "Hub: co-visible absences, dedupe, sections Your absences / Other people's absences (FR: Absences des autres)",
+        "Pet page away section + Plan an absence menu (R-031); create form pre-ticks pet when opened from pet (R-027)",
+        "Add pet + Remove pet flows including last-pet confirmation copy",
+        "Care item module UI for Full access (R-041) aligned with phase 2 server",
+        "UAT seed: Frederique 3-pet absence (relative dates); Dave co_parent on Buddy only; single-pet absence for AP-2 / last-pet proof",
+        "Register new Playwright spec in spec-domains.mjs; reference + co-parent journeys; navigation-contract EN+FR keys",
+        "BDD/E2E check_bdd_coverage report-only no new gaps",
+        "pre-push-changed green"
+      ]
+    },
+    {
+      "id": "6",
+      "title": "Fold and release",
+      "branch": "cursor/absence-per-pet-away-plans-a7566-p6",
+      "allowed_paths": [
+        "docs/domains/pet_care/**",
+        "docs/domains/people/features/people-care-team.md",
+        "docs/design/terminology.md",
+        "docs/domains/notifications/features/notifications-v2-spec.md",
+        "docs/architecture/api-reference.md"
+      ],
+      "forbidden_paths": [],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "companions": [],
+      "exit_checklist": [
+        "CARE-CONTEXT-R-025–R-041 and AWAY-PLANNING-CARER-R-016–R-018 -> Live with acceptance coverage",
+        "Retire R-005, R-008 pet-edit clause, R-012 presentation; reword R-007, R-016 for absence screen",
+        "Delete absence-per-pet-away-plans-spec.md and absence-per-pet-away-plans-delivery-plan.md; update README delivery table",
+        "check_docs_canonical.js 0 block",
+        "pre-push.sh green on release PR"
+      ]
+    }
+  ],
+  "approval_hash": "sha256:eab75d0bc577e20b44e66bba8421b13d60f0d4ced730e675b8b160758e61ecd2"
+}

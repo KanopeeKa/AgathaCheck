@@ -1,9 +1,9 @@
 import { dateToIsoDate } from '../../calendarDate.js';
-import { loadPetHomeTimezone, wallClockInTimeZone } from '../../petHomeTimezone.js';
+import { loadPetHomeTimezone, normalizePetHomeTimezone, wallClockInTimeZone } from '../../petHomeTimezone.js';
+import { userCanManageProfile } from '../../petAccess.js';
 import { loadAwayPlanProjection } from '../awayPlan/loadAwayPlanProjection.js';
 import {
   PLANNED_ABSENCE_STATUS_CANCELLED,
-  resolvePlannedAbsenceTodayIso,
 } from '../plannedAbsence.js';
 import { buildAbsenceCareView } from './buildAbsenceCareView.js';
 import { loadResolutionsByEntryIds } from './resolutionRepository.js';
@@ -13,26 +13,40 @@ import { loadResolutionsByEntryIds } from './resolutionRepository.js';
  * @param {object} entry health_entries row
  * @param {string} userId
  */
+function absenceActiveTodayIso(absenceRow) {
+  const tz = normalizePetHomeTimezone(absenceRow.timezone);
+  return wallClockInTimeZone(tz).todayIso;
+}
+
 export async function loadHealthEntryAbsenceContext(pool, entry, userId) {
-  const activeTodayIso = await resolvePlannedAbsenceTodayIso(pool, userId);
+  if (!(await userCanManageProfile(pool, entry.pet_id, userId))) {
+    return {
+      health_entry_id: entry.id,
+      pet_id: entry.pet_id,
+      absences: [],
+    };
+  }
+
   const petTimeZone = await loadPetHomeTimezone(pool, entry.pet_id);
   const careTodayIso = wallClockInTimeZone(petTimeZone).todayIso;
   const result = await pool.query(
     `SELECT pa.*
      FROM planned_absences pa
      INNER JOIN planned_absence_pets pap ON pap.planned_absence_id = pa.id
-     WHERE pa.user_id = $1
-       AND pap.pet_id = $2
-       AND pa.status != $3
-       AND pa.ends_on >= $4::date
+     WHERE pap.pet_id = $1
+       AND pa.status != $2
      ORDER BY pa.starts_on ASC`,
-    [userId, entry.pet_id, PLANNED_ABSENCE_STATUS_CANCELLED, activeTodayIso],
+    [entry.pet_id, PLANNED_ABSENCE_STATUS_CANCELLED],
   );
 
   const absences = [];
   for (const absenceRow of result.rows) {
+    const activeTodayIso = absenceActiveTodayIso(absenceRow);
+    const endsOnDate = dateToIsoDate(absenceRow.ends_on);
+    if (!endsOnDate || endsOnDate < activeTodayIso) continue;
+
     const startsOn = dateToIsoDate(absenceRow.starts_on);
-    const endsOn = dateToIsoDate(absenceRow.ends_on);
+    const endsOn = endsOnDate;
     if (!startsOn || !endsOn) continue;
 
     const projection = await loadAwayPlanProjection(

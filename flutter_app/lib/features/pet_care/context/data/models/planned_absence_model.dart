@@ -56,6 +56,9 @@ class PlannedAbsenceModel {
       handoverNote: json['handover_note'] as String?,
       title: json['title'] as String?,
       timezone: json['timezone'] as String? ?? 'UTC',
+      isOwnAbsence: json['is_own_absence'] as bool?,
+      declarerDisplayName: json['declarer_display_name'] as String?,
+      canEditTrip: json['can_edit_trip'] as bool?,
     );
   }
 
