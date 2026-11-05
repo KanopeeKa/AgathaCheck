@@ -97,6 +97,29 @@ test('release and remedial: phase allowed_paths override another phase migration
   assert.equal(verdict(f84, 'phase', '1', snap), 'allowed');
 });
 
+test('release: tests and flutter barrels before cross-phase forbidden globs', () => {
+  const snap = snapshot([
+    phase('1', {
+      allowed_paths: ['server/lib/care/**', 'server/test/careContext/**'],
+      forbidden_paths: ['flutter_app/**', 'e2e/**'],
+      allowed_exceptions: ['tests'],
+    }),
+    phase('4', {
+      allowed_paths: ['flutter_app/lib/features/pet_care/context/**'],
+      forbidden_paths: ['server/**'],
+      allowed_exceptions: ['tests'],
+    }),
+  ]);
+  const serverTest = 'server/test/care/absence/absenceVisibility.test.js';
+  const flutterTest = 'flutter_app/test/core/router/guardian_routes_test.dart';
+  const barrel = 'flutter_app/lib/features/pet_care/pet_care.dart';
+  for (const category of ['release', 'sync-resolve']) {
+    assert.equal(verdict(serverTest, category, null, snap), 'exception:tests', category);
+    assert.equal(verdict(flutterTest, category, null, snap), 'exception:tests', category);
+    assert.equal(verdict(barrel, category, null, snap), 'companion', category);
+  }
+});
+
 test('protected beats allowed (.github/workflows/x.yml in allowed_paths)', () => {
   assert.equal(verdict('.github/workflows/x.yml', 'phase', '1'), 'protected');
   const r = evaluate(['.github/workflows/x.yml'], 'phase', '1');

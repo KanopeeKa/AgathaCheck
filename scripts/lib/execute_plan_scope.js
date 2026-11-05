@@ -182,9 +182,8 @@ function classifyPath(file, { snapshot, category, phaseId }) {
   if (category === 'phase') {
     if (matchesAny(file, forbidden)) return verdict('forbidden');
     if (matchesAny(file, allowed)) return verdict('allowed');
-  } else {
-    if (matchesAny(file, allowed)) return verdict('allowed');
-    if (matchesAny(file, forbidden)) return verdict('forbidden');
+  } else if (matchesAny(file, allowed)) {
+    return verdict('allowed');
   }
 
   const exceptions = new Set(collect(phases, 'allowed_exceptions'));
@@ -198,6 +197,8 @@ function classifyPath(file, { snapshot, category, phaseId }) {
   const companions = [...collect(phases, 'companions'), ...FIXED_COMPANIONS];
   if (collect(phases, 'allowed_paths').some((g) => g.startsWith('flutter_app/'))) companions.push(BUNDLE_BUDGET_FILE);
   if (matchesAny(file, companions)) return verdict('companion');
+
+  if (category !== 'phase' && matchesAny(file, forbidden)) return verdict('forbidden');
   return verdict('unclassified');
 }
 
