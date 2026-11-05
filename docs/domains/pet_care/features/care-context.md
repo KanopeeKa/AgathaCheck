@@ -70,7 +70,7 @@ A declared absence does not create HealthEntries, alter Care Status, change recu
 | CARE-CONTEXT-R-029 | Away plan screen: read-only trip header with See absence; pet header; Who's caring; notes for the pet inline; trip notes read-only; Care to review and Planned care for this pet; per-pet PDF; Remove pet | Live |
 | CARE-CONTEXT-R-030 | Away plan route `/pc/away/:id/pets/:petId`; pushed full screen on mobile and web; Back follows origin via return path; See absence opens the absence screen | Live |
 | CARE-CONTEXT-R-031 | Pet page section above "People around {Pet}": current and upcoming away plans for that pet, soonest first, max two + All absences; hidden when none or viewer not allowed; Plan an absence in the pet actions menu (Full access) | Live |
-| CARE-CONTEXT-R-032 | Away plans visible and editable by the person going away and anyone with Full access to that pet; absence screens show only accessible pets and never disclose others; Can log care and absence guests unchanged; access evaluated at read time; supersedes CARE-CONTEXT-R-005 (CARE-CONTEXT-D-013) | Live |
+| CARE-CONTEXT-R-032 | Away plans visible to the person going away and anyone with Full access to that pet; Full-access viewers may edit that pet's carer and `pet_note` on a non-cancelled absence via `PATCH /:id/pets/:petId`; trip fields, add/remove pets, cancel, and declarer `PATCH /:id` stay declarer-only; absence screens show only accessible pets and never disclose others; Can log care and absence guests unchanged; access evaluated at read time; supersedes CARE-CONTEXT-R-005 (CARE-CONTEXT-D-013) | Live |
 | CARE-CONTEXT-R-033 | Trip fields (title, dates, trip notes), delete, and add/remove pets are for the person going away only; adding a pet also needs Full access to it | Live |
 | CARE-CONTEXT-R-034 | Pets can be added to a saved absence: new empty away plan; non-blocking overlap warning; existing guest carers gain no access to the new pet without confirmation (PEOPLE D16); supersedes pet-edit exclusion on CARE-CONTEXT-R-008 (CARE-CONTEXT-D-014) | Live |
 | CARE-CONTEXT-R-035 | Removing a pet removes its carer, notes and trip decisions, ends its absence access and trims pending invites; care item dates unchanged; removing the last pet deletes the absence after an explicit confirmation (CARE-CONTEXT-D-014) | Live |
@@ -224,6 +224,7 @@ Coverage gaps: [#1770](https://github.com/KanopeeKa/AgathaCheck/issues/1770) (ab
 | CARE-CONTEXT-D-001 | Absence UX evolution: title, summary card, CRUD create, trip-details edit | Product programme absence-ux-evolution | Live | 2026-10-07 | #1772 |
 | CARE-CONTEXT-D-002 | Away plan in-window filter; pre-departure overdue via profile link | Reduces plan noise; PDF parity with screen | Live | 2026-09-26 | scope-simplify |
 | CC-UI-D-001 | Away surfaces use away-context plum aliases, not Agatha teal or warm accent | User-declared trip vs Agatha suggestions | Live | 2026-10-08 | |
+| CARE-CONTEXT-D-017 | Per-pet carer writes split actor vs traveller; co-parent private contact notes never copied to `carer_note` | `resolveCarerWrite` uses actor for directory/usability and traveller for "never a carer"; `PATCH /:id/pets/:petId` for Full access | Live | 2026-11-06 | away-plans co-parent fix |
 
 Carer, handover, and programme decisions (D-AWAY-003–005, D-AWAY-008–009, D-AWAY-012–014): [away-planning-carer-model.md](./away-planning-carer-model.md). Display amendments D-ACP-*: [away-care-planning-decisions.md](../changes/away-care-planning-decisions.md).
 
@@ -242,6 +243,7 @@ Away planning chrome uses **away-context** plum tokens (`docs/design/tokens.md` 
 | ID | Decision | Rationale | Status | Date | PR |
 |----|----------|-----------|--------|------|-----|
 | CC-UI-D-001 | Away surfaces use away-context plum aliases, not Agatha teal or warm accent | User-declared trip vs Agatha suggestions | Live | 2026-10-08 | |
+| CARE-CONTEXT-D-017 | Per-pet carer writes split actor vs traveller; co-parent private contact notes never copied to `carer_note` | `resolveCarerWrite` uses actor for directory/usability and traveller for "never a carer"; `PATCH /:id/pets/:petId` for Full access | Live | 2026-11-06 | away-plans co-parent fix |
 | CARE-CONTEXT-D-003 | Declarer `todayIso` once per absence request; pet access before declarer TZ on care-period preview; undo audit uses undo result occurrence id | Programme 9100 phase 2 | Live | 2026-10-13 | |
 | CARE-CONTEXT-D-004 | No care/date enumeration on create before save; reassurance only | Away plan care review UX | Live | 2026-10-18 | |
 | CARE-CONTEXT-D-005 | Away “to review” counts = unresolved affected care items, not `items[]` rows | D-005 | Live | 2026-10-18 | |

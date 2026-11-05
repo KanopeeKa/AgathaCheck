@@ -109,11 +109,12 @@ export async function enrichAbsencePetCarerContacts(pool, petRows) {
  *
  * @param {import('pg').Pool|import('pg').PoolClient} pool
  * @param {object} params
- * @param {string} params.declarerUserId
+ * @param {string} params.actorUserId — directory + contact usability for the writer
+ * @param {string} params.travellerUserId — planned_absences.user_id; never a carer
  * @param {string} params.petId
  * @param {object} params.item
  */
-export async function resolveCarerWrite(pool, { declarerUserId, petId, item }) {
+export async function resolveCarerWrite(pool, { actorUserId, travellerUserId, petId, item }) {
   const hasContactId = Object.hasOwn(item, 'contact_id') || Object.hasOwn(item, 'contactId');
   const hasCarerKind = Object.hasOwn(item, 'carer_kind') || Object.hasOwn(item, 'carerKind');
 
@@ -131,7 +132,7 @@ export async function resolveCarerWrite(pool, { declarerUserId, petId, item }) {
     }
     const contactId = String(rawContactId);
     const petOwnerId = await getPetOwnerUserId(pool, petId);
-    if (!(await contactUsableForPet(pool, contactId, declarerUserId, petOwnerId))) {
+    if (!(await contactUsableForPet(pool, contactId, actorUserId, petOwnerId))) {
       return { ok: false, status: 403, error: 'Forbidden' };
     }
     const contactResult = await pool.query(
@@ -141,7 +142,7 @@ export async function resolveCarerWrite(pool, { declarerUserId, petId, item }) {
        LEFT JOIN people_contact_private_notes pcpn
          ON pcpn.contact_id = pc.id AND pcpn.user_id = $2
        WHERE pc.id = $1`,
-      [contactId, declarerUserId],
+      [contactId, actorUserId],
     );
     const contact = contactResult.rows[0];
     if (!contact) {
@@ -152,7 +153,7 @@ export async function resolveCarerWrite(pool, { declarerUserId, petId, item }) {
     }
 
     if (contact.linked_user_id) {
-      if (contact.linked_user_id === declarerUserId) {
+      if (contact.linked_user_id === travellerUserId) {
         return {
           ok: false,
           status: 400,
@@ -172,12 +173,13 @@ export async function resolveCarerWrite(pool, { declarerUserId, petId, item }) {
       };
     }
 
+    const carerNote = actorUserId === travellerUserId ? (contact.private_note ?? null) : null;
     return {
       ok: true,
       carer_kind: CARER_KIND_NOTE_ONLY,
       carer_user_id: null,
       carer_name: contact.name,
-      carer_note: contact.private_note ?? null,
+      carer_note: carerNote,
       contact_id: contactId,
     };
   }
@@ -207,7 +209,7 @@ export async function resolveCarerWrite(pool, { declarerUserId, petId, item }) {
     if (!carerUserId) {
       return { ok: false, status: 400, error: 'carer_user_id is required for shared_user carers' };
     }
-    if (carerUserId === declarerUserId) {
+    if (carerUserId === travellerUserId) {
       return {
         ok: false,
         status: 400,
@@ -217,7 +219,7 @@ export async function resolveCarerWrite(pool, { declarerUserId, petId, item }) {
     if (!(await isCarerCandidate(pool, petId, carerUserId))) {
       return { ok: false, status: 403, error: 'Forbidden' };
     }
-    const contactId = await ensureLinkedUserContact(pool, declarerUserId, carerUserId);
+    const contactId = await ensureLinkedUserContact(pool, actorUserId, carerUserId);
     return {
       ok: true,
       carer_kind: CARER_KIND_SHARED_USER,
@@ -235,7 +237,7 @@ export async function resolveCarerWrite(pool, { declarerUserId, petId, item }) {
   const note = item.carer_note ?? item.carerNote ?? null;
   const contactId = await ensureNoteOnlyContact(
     pool,
-    declarerUserId,
+    actorUserId,
     name,
     note == null || note === '' ? null : String(note),
   );
