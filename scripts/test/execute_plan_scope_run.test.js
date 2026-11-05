@@ -266,6 +266,14 @@ test('stopped plan → plan-stopped (revoked label, expiry, escalation)', async 
   assert.match((await runScopeCheck(c3, phasePr)).summary, /escalation/);
 });
 
+test('stopped plan still evaluates sync-resolve PR', async () => {
+  const revoked = { ...CONTROL_ISSUE, labels: [...CONTROL_ISSUE.labels, { name: 'autonomous-revoked' }] };
+  const { client } = setup({ issue: revoked, files: ['server/bin/server.js'] });
+  const res = await runScopeCheck(client, syncResolve);
+  assert.deepEqual([res.conclusion, res.title], ['success', 'ok']);
+  assert.equal(res.exemptStopPublish, true);
+});
+
 test('publish posts only the commit status and never touches check runs', async () => {
   const sha = 'b'.repeat(40);
   const out = { headSha: sha, conclusion: 'success', title: 'ok', summary: 'No violations.\n\nCompanions used (1):', targetUrl: 'https://run/1' };
@@ -304,6 +312,15 @@ test('publishScopeResult posts green when the plan is still running', async () =
   const { client, fake } = setup({ extra: publishRoutes });
   const final = await publishScopeResult(client, { headSha: SHA, outcome: ok, now: NOW });
   assert.equal(final, ok);
+  assert.equal(posted(fake).state, 'success');
+});
+
+test('publishScopeResult skips STOP re-check for sync-resolve/remedial exempt outcomes', async () => {
+  const revoked = { ...CONTROL_ISSUE, labels: [...CONTROL_ISSUE.labels, { name: 'autonomous-revoked' }] };
+  const { client, fake } = setup({ issue: revoked, extra: publishRoutes });
+  const exempt = { ...ok, exemptStopPublish: true };
+  const final = await publishScopeResult(client, { headSha: SHA, outcome: exempt, now: NOW });
+  assert.equal(final.conclusion, 'success');
   assert.equal(posted(fake).state, 'success');
 });
 

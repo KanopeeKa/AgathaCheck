@@ -24,7 +24,12 @@ const UNSUPPORTED_INTEGRATION_SUMMARY =
   'PR targets the integration branch but is not a recognized phase, sync, or sync-resolve head. '
   + 'Plan-linked side fixes merge to main (runbooks §7.5); open the PR against main or use the documented branch shape.';
 
-const result = (conclusion, title, summary, planId = null) => ({ conclusion, title, summary, planId });
+const result = (conclusion, title, summary, planId = null, extra = {}) => ({ conclusion, title, summary, planId, ...extra });
+
+/** Sync-resolve and remedial PRs keep a normal scope evaluation while the plan is stopped (PR4). */
+function exemptFromStopPublish(category) {
+  return category === 'sync-resolve' || category === 'remedial';
+}
 const sha256Hex = (text) => crypto.createHash('sha256').update(text, 'utf8').digest('hex');
 
 function statusMarker(planId) {
@@ -158,6 +163,7 @@ async function runScopeCheck(client, { prNumber, headSha, headRef, baseRef, head
   }
 
   const { category, phaseId } = categorizePull({ head_ref: headRef, base_ref: baseRef }, snapshot);
+  const stopExempt = exemptFromStopPublish(category);
   const ownPlanFilesVerified = category === 'release' && files.length > 0
     ? await verifyOwnPlanFiles(client, snapshot, headSha, files)
     : false;
@@ -184,8 +190,8 @@ async function runScopeCheck(client, { prNumber, headSha, headRef, baseRef, head
       return result('failure', 'forbidden', err, planId);
     }
   }
-  const summary = stopped.stopped ? `plan stopped: ${stopped.reason}` : renderSummary(evaluation);
-  return result(evaluation.conclusion, evaluation.title, summary, planId);
+  const summary = stopped.stopped && !stopExempt ? `plan stopped: ${stopped.reason}` : renderSummary(evaluation);
+  return result(evaluation.conclusion, evaluation.title, summary, planId, { exemptStopPublish: stopExempt });
 }
 
 /** Post the `execute-plan-scope` commit status on `headSha`. */
@@ -205,7 +211,7 @@ async function publishScopeCheck(client, { headSha, conclusion, title, summary, 
  */
 async function publishScopeResult(client, { headSha, outcome, targetUrl, now }) {
   let final = outcome;
-  if (outcome.conclusion === 'success' && outcome.planId) {
+  if (outcome.conclusion === 'success' && outcome.planId && !outcome.exemptStopPublish) {
     try {
       const issue = await findControlIssue(client, outcome.planId);
       if (!issue) throw new Error(`control issue for ${outcome.planId} not found`);

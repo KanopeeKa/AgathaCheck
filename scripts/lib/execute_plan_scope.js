@@ -212,7 +212,7 @@ function titleFor(violations) {
  * @returns {{ conclusion: 'success'|'failure', title: string, violations: {file:string, reason:string}[], companionsUsed: string[] }}
  */
 function evaluateDiff({ files, snapshot, category, phaseId, ownPlanFilesVerified, stopped, unchangedOnMain }) {
-  if (stopped && stopped.stopped) {
+  if (stopped && stopped.stopped && category !== 'sync-resolve' && category !== 'remedial') {
     return { conclusion: 'failure', title: 'plan-stopped', violations: [], companionsUsed: [] };
   }
   if (category == null || category === 'sync') {

@@ -293,6 +293,16 @@ test('stopped plan red plan-stopped', () => {
   }
 });
 
+test('stopped plan still evaluates sync-resolve and remedial', () => {
+  const snap = snapshot([phase('1', { allowed_paths: ['server/**'] })]);
+  for (const category of ['sync-resolve', 'remedial']) {
+    const r = evaluate(['server/a.js'], category, null, {
+      stopped: { stopped: true, reason: 'revoked' },
+    }, snap);
+    assert.equal(r.title, 'ok', category);
+  }
+});
+
 test('unclassified red', () => {
   const r = evaluate(['flutter_app/lib/main.dart'], 'phase', '1');
   assert.equal(r.conclusion, 'failure');
