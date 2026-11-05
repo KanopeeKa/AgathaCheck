@@ -194,6 +194,7 @@ function createGitHubClient(opts) {
     },
     closeIssue: (n) => rest('PATCH', `/issues/${n}`, { body: { state: 'closed' } }),
     listIssueComments: (n, { pages } = {}) => paginate(`/issues/${n}/comments`, { pages }),
+    getIssueComment: (id) => rest('GET', `/issues/comments/${id}`),
     createComment: (n, body) => rest('POST', `/issues/${n}/comments`, { body: { body } }),
     updateComment: (id, body) => rest('PATCH', `/issues/comments/${id}`, { body: { body } }),
     addLabels: (n, labels) => rest('POST', `/issues/${n}/labels`, { body: { labels } }),

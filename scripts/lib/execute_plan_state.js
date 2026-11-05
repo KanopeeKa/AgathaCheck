@@ -268,6 +268,10 @@ function prLadder(pr, rawCtx) {
 function stopReasonDetail(ctx) {
   const stop = ctx.status && ctx.status.stop;
   if (stop && stop.reason === ctx.control.reason && stop.detail) return stop.detail;
+  if (ctx.control.reason === 'escalation' && stop && stop.reason) {
+    const prior = stop.detail ? `${stop.reason} — ${stop.detail}` : stop.reason;
+    return `control derivation: escalation (prior stop at ${stop.at}: ${prior})`;
+  }
   return `control derivation: ${ctx.control.reason}`;
 }
 

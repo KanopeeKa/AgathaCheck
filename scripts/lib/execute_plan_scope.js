@@ -172,11 +172,19 @@ function classifyPath(file, { snapshot, category, phaseId }) {
   if (isForbiddenPath(file)) return verdict('forbidden');
 
   const phases = scopePhases(snapshot, category, phaseId);
-  if (matchesAny(file, collect(phases, 'forbidden_paths'))) return verdict('forbidden');
-
   const allowed = collect(phases, 'allowed_paths');
   if (category === 'remedial') allowed.push('e2e/**');
-  if (matchesAny(file, allowed)) return verdict('allowed');
+  const forbidden = collect(phases, 'forbidden_paths');
+
+  // Phase PRs: that phase's forbidden_paths beat its allowed_paths. Release / remedial /
+  // sync-resolve: union of allowed_paths from every phase wins over another phase's ban
+  // (e.g. phase 1 adds a migration, phase 2 forbids migrations — release must still pass).
+  if (category === 'phase') {
+    if (matchesAny(file, forbidden)) return verdict('forbidden');
+    if (matchesAny(file, allowed)) return verdict('allowed');
+  } else if (matchesAny(file, allowed)) {
+    return verdict('allowed');
+  }
 
   const exceptions = new Set(collect(phases, 'allowed_exceptions'));
   if (category === 'remedial') exceptions.add('tests');
@@ -189,6 +197,8 @@ function classifyPath(file, { snapshot, category, phaseId }) {
   const companions = [...collect(phases, 'companions'), ...FIXED_COMPANIONS];
   if (collect(phases, 'allowed_paths').some((g) => g.startsWith('flutter_app/'))) companions.push(BUNDLE_BUDGET_FILE);
   if (matchesAny(file, companions)) return verdict('companion');
+
+  if (category !== 'phase' && matchesAny(file, forbidden)) return verdict('forbidden');
   return verdict('unclassified');
 }
 
