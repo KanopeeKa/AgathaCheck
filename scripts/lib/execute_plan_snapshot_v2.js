@@ -59,7 +59,12 @@ function warnPhaseScopePaths(phases) {
     }
     for (const glob of phase.allowed_paths || []) {
       const sample = samplePathForGlob(glob);
-      if (isForbiddenPath(sample) && globMatchesPath(glob, sample) && sensitive.size > 0 && !sensitive.has(glob)) {
+      if (
+        phase.approved_sensitive_paths !== undefined
+        && isForbiddenPath(sample)
+        && globMatchesPath(glob, sample)
+        && !sensitive.has(glob)
+      ) {
         fail(`${at} allowed_paths "${glob}" matches forbidden paths but is missing from approved_sensitive_paths`);
       }
     }
@@ -255,16 +260,22 @@ function buildSnapshotFromPlan({ planId, planMarkdown, controlIssue, now, window
       budgets: { ...V2_DEFAULTS.budgets, ...(settings.budgets || {}) },
     },
     protected_paths_version: 1,
-    phases: parsed.phases.map((p) => ({
-      id: p.id,
-      title: p.title,
-      branch: `cursor/${planId}-p${p.id}`,
-      allowed_paths: p.scope.allowed_paths,
-      forbidden_paths: p.scope.forbidden_paths || [],
-      allowed_exceptions: p.scope.allowed_exceptions || [],
-      companions: p.scope.companions || [],
-      exit_checklist: p.scope.exit_checklist,
-    })),
+    phases: parsed.phases.map((p) => {
+      const phase = {
+        id: p.id,
+        title: p.title,
+        branch: `cursor/${planId}-p${p.id}`,
+        allowed_paths: p.scope.allowed_paths,
+        forbidden_paths: p.scope.forbidden_paths || [],
+        allowed_exceptions: p.scope.allowed_exceptions || [],
+        companions: p.scope.companions || [],
+        exit_checklist: p.scope.exit_checklist,
+      };
+      if (p.scope.approved_sensitive_paths !== undefined) {
+        phase.approved_sensitive_paths = p.scope.approved_sensitive_paths;
+      }
+      return phase;
+    }),
   };
   snapshot.approval_hash = computeApprovalHash(snapshot);
   return snapshot;

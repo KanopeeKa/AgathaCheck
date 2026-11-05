@@ -184,7 +184,7 @@ async function runScopeCheck(client, { prNumber, headSha, headRef, baseRef, head
   }
 
   const { category, phaseId } = categorizePull({ head_ref: headRef, base_ref: baseRef }, snapshot);
-  const stopExempt = exemptFromStopPublish(category);
+  const stopExempt = stopped.stopped && exemptFromStopPublish(category);
   const ownPlanFilesVerified = category === 'release' && files.length > 0
     ? await verifyOwnPlanFiles(client, snapshot, headSha, files)
     : false;

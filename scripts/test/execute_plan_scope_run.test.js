@@ -276,6 +276,12 @@ test('stopped plan still evaluates sync-resolve PR', async () => {
   assert.equal(res.exemptStopPublish, true);
 });
 
+test('sync-resolve while plan running is not exempt from STOP re-check on publish', async () => {
+  const { client } = setup({ files: ['server/bin/server.js'] });
+  const res = await runScopeCheck(client, syncResolve);
+  assert.equal(res.exemptStopPublish, false);
+});
+
 test('publish posts only the commit status and never touches check runs', async () => {
   const sha = 'b'.repeat(40);
   const out = { headSha: sha, conclusion: 'success', title: 'ok', summary: 'No violations.\n\nCompanions used (1):', targetUrl: 'https://run/1' };

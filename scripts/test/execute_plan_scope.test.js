@@ -326,6 +326,24 @@ test('scopeAck clears forbidden violations', () => {
   assert.deepEqual([r.conclusion, r.title], ['success', 'ok']);
 });
 
+test('approved_sensitive_paths still requires matching phase allowed_paths', () => {
+  const snap = snapshot([phase('1', {
+    allowed_paths: ['db/migrations/104_*'],
+    approved_sensitive_paths: ['db/migrations/**'],
+  })]);
+  assert.equal(verdict('db/migrations/105_x.sql', 'phase', '1', snap), 'forbidden');
+  assert.equal(verdict('db/migrations/104_x.sql', 'phase', '1', snap), 'allowed');
+});
+
+test('approved_sensitive_paths respects phase forbidden_paths', () => {
+  const snap = snapshot([phase('1', {
+    allowed_paths: ['db/migrations/**'],
+    approved_sensitive_paths: ['db/migrations/**'],
+    forbidden_paths: ['db/migrations/099_*'],
+  })]);
+  assert.equal(verdict('db/migrations/099_x.sql', 'phase', '1', snap), 'forbidden');
+});
+
 test('unsupported integration PR fails closed', () => {
   const r = evaluate(['server/a.js'], 'unsupported');
   assert.deepEqual([r.conclusion, r.title], ['failure', 'unsupported']);
