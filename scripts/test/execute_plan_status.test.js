@@ -2,7 +2,7 @@
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { STATUS_MARKER, parseStatusComment, formatStatusComment, formatLogLine, applyDecisionToStatus } = require('../lib/execute_plan_status');
+const { STATUS_MARKER, parseStatusComment, formatStatusComment, formatLogLine, applyDecisionToStatus, mergeStatusBeforeWrite } = require('../lib/execute_plan_status');
 const { MAX_LAUNCH_HISTORY } = require('../lib/execute_plan_constants');
 
 const PLAN = 'proof-build-label-7f3a';
@@ -66,4 +66,53 @@ test('formatLogLine', () => {
 test('table cells escape backslashes, pipes and newlines', () => {
   const body = formatStatusComment(status(), [{ phase: '1', branch: 'a\\|b\nc', pr: null, state: 's', failed: 0, launches: 0 }]);
   assert.match(body, /\| a\\\\\\\|b c \|/);
+});
+
+test('mergeStatusBeforeWrite keeps a concurrent current stop and stopped state', () => {
+  const epoch = '2026-11-03T23:56:53Z';
+  const drift = { reason: 'drift', detail: 'scope forbidden', at: '2026-11-04T08:15:44Z' };
+  const baseline = status({ stop: null, state: 'release:open' });
+  const proposed = status({
+    stop: null,
+    state: 'release:open',
+    lease: { platform: 'cursor', agent_id: 'a', run_id: 'r', launched_at: '2026-11-04T08:07:46Z', last_tick_at: '2026-11-04T08:15:58Z' },
+  });
+  const fresh = status({ stop: drift, state: 'stopped', phase: null });
+  const merged = mergeStatusBeforeWrite(proposed, fresh, { epoch, baseline });
+  assert.deepEqual(merged.stop, drift);
+  assert.equal(merged.state, 'stopped');
+});
+
+test('mergeStatusBeforeWrite keeps driver drift over stale escalation write', () => {
+  const epoch = '2026-10-16T09:05:00Z';
+  const baseline = status({ stop: null, state: 'release:open' });
+  const drift = { reason: 'drift', detail: 'scope', at: '2026-10-16T10:05:00Z' };
+  const fresh = status({ stop: drift, state: 'stopped', updated_at: '2026-10-16T10:05:01Z' });
+  const proposed = status({
+    stop: { reason: 'escalation', detail: 'control derivation: escalation', at: '2026-10-16T10:06:00Z' },
+    state: 'stopped',
+  });
+  const merged = mergeStatusBeforeWrite(proposed, fresh, { epoch, baseline });
+  assert.equal(merged.stop.reason, 'drift');
+});
+
+test('mergeStatusBeforeWrite keeps a newer decision stop when it wins on timestamp', () => {
+  const epoch = '2026-10-16T09:05:00Z';
+  const baseline = status({ stop: { reason: 'drift', detail: 'old', at: '2026-10-16T09:50:00Z' } });
+  const fresh = status({ stop: { reason: 'drift', detail: 'old', at: '2026-10-16T09:50:00Z' } });
+  const proposed = status({ stop: { reason: 'ci-budget', detail: 'new', at: '2026-10-16T10:00:00Z' }, state: 'stopped' });
+  const merged = mergeStatusBeforeWrite(proposed, fresh, { epoch, baseline });
+  assert.equal(merged.stop.reason, 'ci-budget');
+});
+
+test('mergeStatusBeforeWrite prefers fresher launch tail at equal history length', () => {
+  const epoch = '2026-10-16T09:05:00Z';
+  const launch = (at, id) => ({ at, phase: '1', kind: 'implement', agent_id: id, run_id: 'r' });
+  const cap = Array.from({ length: MAX_LAUNCH_HISTORY }, (_, i) => launch(`2026-10-16T09:${String(i).padStart(2, '0')}:00Z`, String(i)));
+  const baseline = status({ launches: cap, updated_at: '2026-10-16T09:30:00Z' });
+  const freshCap = cap.slice(1).concat([launch('2026-10-16T10:00:00Z', 'new')]);
+  const fresh = status({ launches: freshCap, updated_at: '2026-10-16T10:00:01Z' });
+  const proposed = status({ launches: cap, updated_at: NOW });
+  const merged = mergeStatusBeforeWrite(proposed, fresh, { epoch, baseline });
+  assert.equal(merged.launches.at(-1).agent_id, 'new');
 });

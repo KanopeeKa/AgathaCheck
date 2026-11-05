@@ -12,7 +12,7 @@ const { decide } = require('./execute_plan_state');
 const { deriveControl } = require('./execute_plan_control');
 const { loadPlanContext, observe, configError, latestRuns, CONFIG_PATH } = require('./execute_plan_observe');
 const { SCOPE_CONTEXT } = require('./execute_plan_scope_status');
-const { formatStatusComment, formatLogLine, applyDecisionToStatus } = require('./execute_plan_status');
+const { formatStatusComment, formatLogLine, applyDecisionToStatus, readMergedStatusForWrite } = require('./execute_plan_status');
 const { verifyComplete, resolveMergeSource, watchPreUat, watchDeploy } = require('./execute_plan_uat_observe');
 
 const FAILED = new Set(['failure', 'timed_out', 'action_required']);
@@ -80,7 +80,21 @@ async function tick(client, { planId, controlIssue, now = isoNow(), actor = 'age
   const next = applyDecisionToStatus(ctx.status, decision, { now, actor, observations: obs, epoch });
   const writes = [];
   if (!sameStatus(ctx.status, next)) {
-    writes.push({ kind: 'update-status', comment_id: ctx.statusComment.id, body: formatStatusComment(next, statusTable(ctx.snapshot, obs, decision)) });
+    let statusForWrite = next;
+    if (!dryRun) {
+      statusForWrite = await readMergedStatusForWrite(client, ctx.statusComment.id, next, {
+        epoch,
+        baseline: ctx.status,
+      });
+      if (actor === 'agent' && next.lease) {
+        statusForWrite.lease = { ...statusForWrite.lease, ...next.lease, last_tick_at: next.lease.last_tick_at };
+      }
+    }
+    writes.push({
+      kind: 'update-status',
+      comment_id: ctx.statusComment.id,
+      body: formatStatusComment(statusForWrite, statusTable(ctx.snapshot, obs, decision)),
+    });
   }
   if (ctx.status.state !== decision.state) {
     const url = (decision.evidence[0] && decision.evidence[0].url) || ctx.issue.html_url || `https://github.com/${client.repo}/issues/${ctx.issueNumber}`;
