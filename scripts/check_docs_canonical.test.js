@@ -493,3 +493,85 @@ test('R-M3 stale backlog entry warns; R-M4 lists live entries only with --all', 
   assert.match(weekly.out, /\[R-M4\].*docs\/z\.md/);
   assert.equal(weekly.code, 0);
 });
+
+test('R-T5 blocks requirement newly Live without resolving coverage', () => {
+  const baseDoc = fs.readFileSync(path.join(FIX, 'minimal-feature.md'), 'utf8');
+  const { root } = initRepo({ 'docs/domains/x/features/a.md': baseDoc });
+  const prBase = spawnSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).stdout.trim();
+  const headDoc = `${baseDoc.replace(
+    '| EXAMPLE-CAP-R-001 | Rule one | Live |',
+    '| EXAMPLE-CAP-R-001 | Rule one | Live |\n| EXAMPLE-CAP-R-018 | Invite offer for other pets | Live |',
+  ).replace(
+    '| Given x When y Then z | EXAMPLE-CAP-R-001 | none — #1 |',
+    '| Given x When y Then z | EXAMPLE-CAP-R-001 | none — #1 |\n| Given fold When Live Then none | EXAMPLE-CAP-R-018 | none — #1770 |',
+  )}`;
+  fs.writeFileSync(path.join(root, 'docs/domains/x/features/a.md'), headDoc);
+  spawnSync('git', ['add', 'docs/domains/x/features/a.md'], { cwd: root });
+  spawnSync('git', ['commit', '-m', 'live without coverage'], { cwd: root });
+  const bad = run({ DOCS_CANONICAL_ROOT: root, DOCS_BASE: prBase }, ['--trace']);
+  assert.match(bad.out, /R-T5/);
+  assert.match(bad.out, /EXAMPLE-CAP-R-018/);
+});
+
+test('R-T5 allows Live when citing AC has resolving test coverage', () => {
+  const baseDoc = fs.readFileSync(path.join(FIX, 'minimal-feature.md'), 'utf8');
+  const { root } = initRepo({
+    'docs/domains/x/features/a.md': baseDoc,
+    'scripts/tmp-cov-test.js':
+      "const { test } = require('node:test');\ntest('Example scenario', () => {});\n",
+  });
+  const prBase = spawnSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).stdout.trim();
+  const headDoc = baseDoc.replace(
+    'none — #1',
+    'test: scripts/tmp-cov-test.js#Example scenario',
+  );
+  fs.writeFileSync(path.join(root, 'docs/domains/x/features/a.md'), headDoc);
+  spawnSync('git', ['add', 'docs/domains/x/features/a.md'], { cwd: root });
+  spawnSync('git', ['commit', '-m', 'live with test'], { cwd: root });
+  const ok = run({ DOCS_CANONICAL_ROOT: root, DOCS_BASE: prBase }, ['--trace']);
+  assert.doesNotMatch(ok.out, /R-T5/);
+});
+
+test('R-B6 blocks README unlink while change doc remains', () => {
+  const stale = `---
+status: proposed
+status_since: 2026-01-01
+folds_into: docs/domains/x/features/a.md
+---
+# Spec
+`;
+  const readme = '# Domain\n\n- [Spec](changes/stale-spec.md)\n';
+  const { root } = initRepo({
+    'docs/domains/x/features/a.md': fs.readFileSync(path.join(FIX, 'minimal-feature.md'), 'utf8'),
+    'docs/domains/x/changes/stale-spec.md': stale,
+    'docs/domains/x/README.md': readme,
+  });
+  const prBase = spawnSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).stdout.trim();
+  fs.writeFileSync(path.join(root, 'docs/domains/x/README.md'), '# Domain\n\n');
+  spawnSync('git', ['add', 'docs/domains/x/README.md'], { cwd: root });
+  spawnSync('git', ['commit', '-m', 'unlink change doc'], { cwd: root });
+  const bad = run({ DOCS_CANONICAL_ROOT: root, DOCS_BASE: prBase }, ['--changes']);
+  assert.match(bad.out, /R-B6/);
+});
+
+test('R-B6 allows unlink when change doc is deleted', () => {
+  const stale = `---
+status: proposed
+status_since: 2026-01-01
+folds_into: docs/domains/x/features/a.md
+---
+`;
+  const readme = '# Domain\n\n- [Spec](changes/stale-spec.md)\n';
+  const { root } = initRepo({
+    'docs/domains/x/features/a.md': fs.readFileSync(path.join(FIX, 'minimal-feature.md'), 'utf8'),
+    'docs/domains/x/changes/stale-spec.md': stale,
+    'docs/domains/x/README.md': readme,
+  });
+  const prBase = spawnSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).stdout.trim();
+  fs.unlinkSync(path.join(root, 'docs/domains/x/changes/stale-spec.md'));
+  fs.writeFileSync(path.join(root, 'docs/domains/x/README.md'), '# Domain\n\n');
+  spawnSync('git', ['add', '-A'], { cwd: root });
+  spawnSync('git', ['commit', '-m', 'fold delete'], { cwd: root });
+  const ok = run({ DOCS_CANONICAL_ROOT: root, DOCS_BASE: prBase }, ['--changes']);
+  assert.doesNotMatch(ok.out, /R-B6.*BLOCK/);
+});
