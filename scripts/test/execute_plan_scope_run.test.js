@@ -71,6 +71,7 @@ function setup({ issue = CONTROL_ISSUE, comments = planComments(), files = [], e
     [`GET ${R}/contents/.agents/plans/${PLAN}.snapshot.json?ref=${INIT_SHA}`]: file(SNAP_JSON),
     [`GET ${R}/contents/.agents/plans/${PLAN}.md?ref=${INIT_SHA}`]: file(PLAN_MD),
     [`GET ${R}/pulls/5/files?per_page=100`]: { body: files.map((filename) => ({ filename })) },
+    [`GET ${R}/pulls/5/reviews?per_page=100`]: { body: [] },
     ...extra,
   };
   const fake = createFakeFetch(routes);
@@ -113,10 +114,11 @@ test('cross-plan head into integration → unsupported with remediation summary'
 });
 
 test('phase PR unclassified → failure, summary lists the file', async () => {
-  const { client } = setup({ files: ['server/bin/server.js', 'flutter_app/lib/main.dart'] });
+  const many = Array.from({ length: 11 }, (_, i) => ({ filename: `docs/extra-${i}.md` }));
+  const { client } = setup({ files: ['server/bin/server.js', ...many.map((f) => f.filename)] });
   const res = await runScopeCheck(client, phasePr);
   assert.deepEqual([res.conclusion, res.title], ['failure', 'unclassified']);
-  assert.match(res.summary, /flutter_app\/lib\/main\.dart.*unclassified/);
+  assert.match(res.summary, /docs\/extra-0\.md.*unclassified/);
 });
 
 test('drift on plan file edit in a phase PR', async () => {

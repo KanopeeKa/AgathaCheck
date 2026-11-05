@@ -369,6 +369,12 @@ the check (missing status comment, snapshot load error, wrapper catch), it publi
 title **`error`**, not `drift`. The driver republishes once per head per epoch; a persistent `error`
 → STOP `check-missing`. Own-plan tampering and evaluation `drift` are unchanged.
 
+**Forbidden (sensitive) paths:** `forbidden` fails the PR scope check but does **not** STOP the plan.
+The driver waits (`scope-ack`) until an owner listed in `.github/execute-plan.config.json` submits an
+**APPROVING** pull request review on the PR head (`review.commit_id === head.sha`). Phase PRs may
+treat ≤10 harmless `unclassified` files as **advisory** (green `ok`, files listed under
+`Unclassified (advisory)` in the job summary) when no other violations apply.
+
 ---
 
 ## JSON Schema (draft)

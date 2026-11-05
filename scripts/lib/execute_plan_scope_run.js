@@ -12,6 +12,7 @@ const { computeApprovalHash, findControlComments } = require('./execute_plan_app
 const { acceptedAuthorizationIds } = require('./execute_plan_ack');
 const { loadSnapshotAtRef } = require('./execute_plan_snapshot_v2');
 const { categorizePull, evaluateDiff, BUNDLE_BUDGET_FILE, validateBundleBudgetRatchet } = require('./execute_plan_scope');
+const { findOwnerScopeAckReview } = require('./execute_plan_scope_ack');
 const { deriveControl } = require('./execute_plan_control');
 const { planIdFromRefs, findControlIssue, labelNames } = require('./execute_plan_plans');
 const { SCOPE_CONTEXT, describeScope } = require('./execute_plan_scope_status');
@@ -116,6 +117,13 @@ function renderSummary(evaluation) {
       lines.push(`- … and ${evaluation.violations.length - SUMMARY_MAX_LINES} more`);
     }
   }
+  if (evaluation.advisoryUnclassified && evaluation.advisoryUnclassified.length) {
+    lines.push('', 'Unclassified (advisory):');
+    for (const f of evaluation.advisoryUnclassified.slice(0, SUMMARY_MAX_LINES)) lines.push(`- \`${f}\``);
+    if (evaluation.advisoryUnclassified.length > SUMMARY_MAX_LINES) {
+      lines.push(`- … and ${evaluation.advisoryUnclassified.length - SUMMARY_MAX_LINES} more`);
+    }
+  }
   if (evaluation.companionsUsed.length > 0) {
     lines.push('', `Companions used (${evaluation.companionsUsed.length}):`);
     for (const f of evaluation.companionsUsed) lines.push(`- \`${f}\``);
@@ -162,6 +170,19 @@ async function runScopeCheck(client, { prNumber, headSha, headRef, baseRef, head
     throw e;
   }
 
+  const config = await loadConfig(client);
+  let scopeAck = false;
+  try {
+    const reviews = await client.listPullReviews(prNumber);
+    scopeAck = Boolean(findOwnerScopeAckReview(reviews, {
+      headSha,
+      owners: config.owners || [],
+      botLogin: config.bot_login,
+    }));
+  } catch {
+    scopeAck = false;
+  }
+
   const { category, phaseId } = categorizePull({ head_ref: headRef, base_ref: baseRef }, snapshot);
   const stopExempt = exemptFromStopPublish(category);
   const ownPlanFilesVerified = category === 'release' && files.length > 0
@@ -172,7 +193,7 @@ async function runScopeCheck(client, { prNumber, headSha, headRef, baseRef, head
     ? await filesUnchangedOnMain(client, headSha, files)
     : new Set();
   const evaluation = evaluateDiff({
-    files, snapshot, category, phaseId, ownPlanFilesVerified, stopped, unchangedOnMain,
+    files, snapshot, category, phaseId, ownPlanFilesVerified, stopped, unchangedOnMain, scopeAck,
   });
   if (category === 'phase' && files.includes(BUNDLE_BUDGET_FILE)) {
     const cmp = await client.compare(baseRef, headSha);

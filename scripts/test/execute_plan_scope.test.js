@@ -43,7 +43,7 @@ const NOT_STOPPED = { stopped: false, reason: null };
 function evaluate(files, category, phaseId = null, extra = {}) {
   return evaluateDiff({
     files,
-    snapshot: SNAP,
+    snapshot: extra.snapshot || SNAP,
     category,
     phaseId,
     ownPlanFilesVerified: false,
@@ -298,17 +298,33 @@ test('stopped plan still evaluates sync-resolve and remedial', () => {
   for (const category of ['sync-resolve', 'remedial']) {
     const r = evaluate(['server/a.js'], category, null, {
       stopped: { stopped: true, reason: 'revoked' },
-    }, snap);
+      snapshot: snap,
+    });
     assert.equal(r.title, 'ok', category);
   }
 });
 
 test('unclassified red', () => {
-  const r = evaluate(['flutter_app/lib/main.dart'], 'phase', '1');
+  const snap = snapshot([phase('1', { allowed_paths: ['server/**'] })]);
+  const many = Array.from({ length: 11 }, (_, i) => `docs/extra-${i}.md`);
+  const r = evaluate(many, 'phase', '1', { snapshot: snap });
   assert.equal(r.conclusion, 'failure');
   assert.equal(r.title, 'unclassified');
-  // A phase id missing from the snapshot fails closed.
-  assert.equal(evaluate(['server/a.js'], 'phase', '9').title, 'unclassified');
+  const over = Array.from({ length: 11 }, (_, i) => `docs/x-${i}.md`);
+  assert.equal(evaluate(over, 'phase', '9').title, 'unclassified');
+});
+
+test('phase PR: ≤10 harmless unclassified files are advisory success', () => {
+  const snap = snapshot([phase('1', { allowed_paths: ['server/**'] })]);
+  const side = ['docs/extra.md', 'docs/notes.md'];
+  const r = evaluate(side, 'phase', '1', { snapshot: snap });
+  assert.deepEqual([r.conclusion, r.title], ['success', 'ok']);
+  assert.deepEqual(r.advisoryUnclassified, side);
+});
+
+test('scopeAck clears forbidden violations', () => {
+  const r = evaluate(['db/migrations/099_x.sql'], 'phase', '1', { scopeAck: true });
+  assert.deepEqual([r.conclusion, r.title], ['success', 'ok']);
 });
 
 test('unsupported integration PR fails closed', () => {
