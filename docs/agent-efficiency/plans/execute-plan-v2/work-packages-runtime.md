@@ -151,11 +151,10 @@ anything else ⇒ `null`.
    d. Phase `forbidden_paths`: for `phase`, that phase's `forbidden_paths` (checked before its
       `allowed_paths`, step e) → `forbidden`. For `release`, `sync-resolve`, and `remedial`, any
       phase's `forbidden_paths` → `forbidden` only when the file matches no phase's `allowed_paths`
-      (step e); a path one phase allowed for its work must not be blocked on release because a later
-      phase banned the directory for itself.
+      (step e) and is not covered by step f (exceptions) or step g (companions).
    e. Scope globs: `phase` → that phase's `allowed_paths`; `release` and `sync-resolve` → union of
       all phases' `allowed_paths`; `remedial` → that union plus `e2e/**` → `allowed` (for non-`phase`
-      categories, checked before step d's forbidden union).
+      categories, checked before steps f–g and before step d's forbidden union).
    f. Exceptions, only when listed (`phase`: by that phase; otherwise by any phase; `remedial`
       always gets `tests`): `tests` = `**/test/**`, `**/*.test.js`, `**/*.test.mjs`,
       `**/*.test.ts`, `**/*_test.dart`, `e2e/**/*.spec.ts`; `docs` = `docs/**`, `**/*.md` →
@@ -166,7 +165,9 @@ anything else ⇒ `null`.
       `flutter_app/lib/features/*/*.dart` (feature barrel files) → `companion`; plus
       `scripts/ci/web-bundle-budget.json` when an in-scope phase's `allowed_paths` has a glob under
       `flutter_app/` (`BUNDLE_BUDGET_FILE`) → `companion`; the 31st and later companion files are violations `companion-cap`.
-   h. Otherwise violation `unclassified`.
+   h. For `release`, `sync-resolve`, and `remedial` only: any remaining match on a phase's
+      `forbidden_paths` → `forbidden`.
+   i. Otherwise violation `unclassified`.
 4. Title = the most serious violation reason present, in this order: `drift`, `protected`,
    `forbidden`, `unclassified`, `companion-cap`; no violation → `ok`. Conclusion `failure` iff
    any violation.
