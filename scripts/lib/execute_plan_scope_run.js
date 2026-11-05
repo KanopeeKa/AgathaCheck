@@ -145,7 +145,7 @@ async function runScopeCheck(client, { prNumber, headSha, headRef, baseRef, head
   try {
     ({ snapshot, stopped, control } = await loadPlanControl(client, issue, planId, now));
   } catch (e) {
-    return result('failure', 'drift', e.message, planId);
+    return result('failure', 'error', e.message, planId);
   }
 
   let files;

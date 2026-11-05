@@ -125,26 +125,26 @@ test('drift on plan file edit in a phase PR', async () => {
   assert.deepEqual([res.conclusion, res.title], ['failure', 'drift']);
 });
 
-test('snapshot not loadable → failure drift with the error', async () => {
+test('snapshot not loadable → failure error with the error', async () => {
   const { client } = setup({
     extra: { [`GET ${R}/contents/.agents/plans/${PLAN}.snapshot.json?ref=${INIT_SHA}`]: { status: 404, body: {} } },
   });
   const res = await runScopeCheck(client, phasePr);
-  assert.deepEqual([res.conclusion, res.title], ['failure', 'drift']);
+  assert.deepEqual([res.conclusion, res.title], ['failure', 'error']);
   assert.match(res.summary, /snapshot .* not found/);
 });
 
-test('missing status comment → failure drift', async () => {
+test('missing status comment → failure error', async () => {
   const { client } = setup({ comments: [APPROVE] });
   const res = await runScopeCheck(client, phasePr);
-  assert.deepEqual([res.conclusion, res.title], ['failure', 'drift']);
+  assert.deepEqual([res.conclusion, res.title], ['failure', 'error']);
 });
 
-test('status comment written by someone other than the bot is ignored → failure drift', async () => {
+test('status comment written by someone other than the bot is ignored → failure error', async () => {
   const forged = { ...statusComment(), user: { login: 'stranger' } };
   const { client } = setup({ comments: [APPROVE, forged] });
   const res = await runScopeCheck(client, phasePr);
-  assert.deepEqual([res.conclusion, res.title], ['failure', 'drift']);
+  assert.deepEqual([res.conclusion, res.title], ['failure', 'error']);
   assert.match(res.summary, /status comment/);
 });
 

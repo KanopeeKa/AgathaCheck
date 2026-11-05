@@ -364,6 +364,11 @@ expansion.
 migrations, infra, `server/config/security.js` — are rejected before any scope or exception
 glob is consulted, so no plan can authorise them.
 
+**Infrastructure failures:** when the scope runner cannot load the plan control state or complete
+the check (missing status comment, snapshot load error, wrapper catch), it publishes `failure` with
+title **`error`**, not `drift`. The driver republishes once per head per epoch; a persistent `error`
+→ STOP `check-missing`. Own-plan tampering and evaluation `drift` are unchanged.
+
 ---
 
 ## JSON Schema (draft)

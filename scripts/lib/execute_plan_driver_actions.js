@@ -198,7 +198,7 @@ async function republishScope(clients, ctx, { pr, headSha }, now) {
       now: new Date(now),
     });
   } catch (e) {
-    outcome = { conclusion: 'failure', title: 'drift', summary: `scope check could not complete: ${e.message}` };
+    outcome = { conclusion: 'failure', title: 'error', summary: `scope check could not complete: ${e.message}` };
   }
   outcome = await deps.publishScopeResult(read, { headSha: pull.head.sha, outcome, now: new Date(now) });
   await updateStatus(bot, ctx, (s) => {
