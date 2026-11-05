@@ -2609,8 +2609,8 @@
   "careContextAwayContinue": "Continuer",
   "careContextAwayBack": "Retour",
   "careContextAbsenceDefaultTitle": "Absence",
-  "careContextTravellerYouAway": "Vous serez absent",
-  "careContextTravellerNameAway": "{name} sera absent",
+  "careContextTravellerYouAway": "Votre absence",
+  "careContextTravellerNameAway": "Absence de {name}",
   "@careContextTravellerNameAway": {
     "placeholders": {
       "name": { "type": "String" }

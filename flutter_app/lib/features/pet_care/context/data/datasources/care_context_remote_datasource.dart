@@ -246,11 +246,18 @@ class CareContextRemoteDataSource {
     _check(response);
   }
 
-  Future<List<CarerCandidate>> fetchCarerCandidates(String petId) async {
-    final response = await _client.get(
-      Uri.parse('$baseUrl/api/pets/$petId/carer-candidates'),
-      headers: _headers(),
-    );
+  Future<List<CarerCandidate>> fetchCarerCandidates(
+    String petId, {
+    String? plannedAbsenceId,
+  }) async {
+    final query = <String, String>{};
+    if (plannedAbsenceId != null && plannedAbsenceId.isNotEmpty) {
+      query['planned_absence_id'] = plannedAbsenceId;
+    }
+    final uri = Uri.parse(
+      '$baseUrl/api/pets/$petId/carer-candidates',
+    ).replace(queryParameters: query.isEmpty ? null : query);
+    final response = await _client.get(uri, headers: _headers());
     _check(response);
     final list = json.decode(response.body) as List<dynamic>;
     return list
@@ -261,6 +268,19 @@ class CareContextRemoteDataSource {
           ),
         )
         .toList(growable: false);
+  }
+
+  Future<void> patchPerPetAwayPlan({
+    required String absenceId,
+    required String petId,
+    required Map<String, dynamic> body,
+  }) async {
+    final response = await _client.patch(
+      Uri.parse('$baseUrl/api/planned-absences/$absenceId/pets/$petId'),
+      headers: _headers(jsonBody: true),
+      body: json.encode(body),
+    );
+    _check(response);
   }
 
   Future<PlannedAbsence> updatePetCarers({

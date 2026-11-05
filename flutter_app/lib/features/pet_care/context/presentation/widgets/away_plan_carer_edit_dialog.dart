@@ -59,11 +59,7 @@ class _AwayPlanCarerEditDialogState
       _petNoteController.text.trim().isEmpty ? null : _petNoteController.text;
 
   Map<String, dynamic> _payload() {
-    return {
-      'pet_id': widget.petId,
-      'contact_id': _selectedContactId,
-      'pet_note': _normalizedPetNote,
-    };
+    return {'contact_id': _selectedContactId, 'pet_note': _normalizedPetNote};
   }
 
   Future<void> _save() async {
@@ -72,9 +68,10 @@ class _AwayPlanCarerEditDialogState
     try {
       await ref
           .read(careContextRepositoryProvider)
-          .updatePetCarers(
+          .patchPerPetAwayPlan(
             absenceId: widget.absenceId,
-            petCarers: [_payload()],
+            petId: widget.petId,
+            body: _payload(),
           );
       if (!mounted) return;
       ref.invalidate(plannedAbsenceDetailProvider(widget.absenceId));
