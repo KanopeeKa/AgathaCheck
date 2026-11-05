@@ -2,6 +2,8 @@ import '../../domain/entities/absence_care_plan.dart';
 import '../../domain/entities/away_plan_readiness.dart';
 import '../../domain/entities/care_period_coverage.dart';
 import '../../domain/entities/carer_candidate.dart';
+import '../../domain/entities/per_pet_away_plan_status.dart';
+import '../../domain/entities/pet_planned_absence_row.dart';
 import '../../domain/entities/planned_absence.dart';
 import '../../domain/repositories/care_context_repository.dart';
 import '../datasources/care_context_remote_datasource.dart';
@@ -50,6 +52,12 @@ class CareContextRepositoryImpl implements CareContextRepository {
   Future<PlannedAbsence> getPlannedAbsence(String absenceId) {
     return _remote.fetchPlannedAbsence(absenceId);
   }
+
+  @override
+  Future<PerPetAwayPlanStatus> getPerPetAwayPlanStatus({
+    required String absenceId,
+    required String petId,
+  }) => _remote.fetchPerPetAwayPlanStatus(absenceId: absenceId, petId: petId);
 
   @override
   Future<AwayPlanReadiness> getAwayPlanReadiness(String absenceId) =>
@@ -106,4 +114,30 @@ class CareContextRepositoryImpl implements CareContextRepository {
   @override
   Future<Map<String, String>> getAbsenceResolutionNotes(String absenceId) =>
       _remote.fetchAbsenceResolutionNotes(absenceId);
+
+  @override
+  Future<PetPlannedAbsenceListResult> listPetPlannedAbsences(String petId) =>
+      _remote.fetchPetPlannedAbsences(petId);
+
+  @override
+  Future<AddPetToAbsenceResult> addPetToPlannedAbsence({
+    required String absenceId,
+    required String petId,
+    bool confirmGuestAccessWiden = false,
+  }) => _remote.addPetToPlannedAbsence(
+    absenceId: absenceId,
+    petId: petId,
+    confirmGuestAccessWiden: confirmGuestAccessWiden,
+  );
+
+  @override
+  Future<RemovePetFromAbsenceResult> removePetFromPlannedAbsence({
+    required String absenceId,
+    required String petId,
+    bool confirmDeleteAbsence = false,
+  }) => _remote.removePetFromPlannedAbsence(
+    absenceId: absenceId,
+    petId: petId,
+    confirmDeleteAbsence: confirmDeleteAbsence,
+  );
 }

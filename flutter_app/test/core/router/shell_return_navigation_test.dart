@@ -59,6 +59,15 @@ void main() {
     });
   });
 
+  group('petAwayPlanLocation', () {
+    test('encodes returnTo query', () {
+      expect(
+        petAwayPlanLocation('abs-1', 'pet-1', returnTo: '/pc/home'),
+        '/pc/away/abs-1/pets/pet-1?returnTo=%2Fpc%2Fhome',
+      );
+    });
+  });
+
   group('petEventViewLocation', () {
     test('omits query when returnTo absent', () {
       expect(

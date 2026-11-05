@@ -30,6 +30,15 @@ List<RouteBase> buildAwayPlanningRoutes() {
                 return PlannedAbsenceEditScreen(absenceId: absenceId);
               },
             ),
+            GoRoute(
+              path: 'pets/:petId',
+              name: 'petCarePetAwayPlan',
+              builder: (context, state) {
+                final absenceId = state.pathParameters['id']!;
+                final petId = state.pathParameters['petId']!;
+                return PetAwayPlanScreen(absenceId: absenceId, petId: petId);
+              },
+            ),
           ],
         ),
       ],

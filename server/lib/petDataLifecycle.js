@@ -195,6 +195,10 @@ async function runPetDataDeletionTransaction(client, petId, {
   }
 
   if (deletePetRow) {
+    const { cancelEmptyActiveAbsences, listActiveAbsenceIdsForPet } = await import(
+      './care/absence/absencePetLifecycle.js'
+    );
+    const absenceIdsBeforeDelete = await listActiveAbsenceIdsForPet(client, petId);
     const scopedOwnerId = ownerUserId ?? actorUserId;
     const del = await client.query(
       'DELETE FROM pets WHERE id = $1 AND user_id = $2',
@@ -204,6 +208,7 @@ async function runPetDataDeletionTransaction(client, petId, {
       throw new PetNotFoundError();
     }
     maybePetDeletionFault('delete_pet_row');
+    await cancelEmptyActiveAbsences(client, absenceIdsBeforeDelete);
   } else {
     await client.query(
       `UPDATE pets

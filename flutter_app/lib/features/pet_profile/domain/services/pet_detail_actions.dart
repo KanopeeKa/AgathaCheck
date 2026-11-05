@@ -10,6 +10,7 @@ enum PetDetailAction {
   downloadReport,
   manageSharing,
   fosterPlacement,
+  planAbsence,
 }
 
 /// Registry of which pet-detail actions are visible per experience and role.
@@ -66,6 +67,7 @@ class PetDetailActions {
           PetDetailAction.editProfile,
           PetDetailAction.assignVet,
           PetDetailAction.manageSharing,
+          PetDetailAction.planAbsence,
         });
       case PetViewerRole.sharedCarer:
       case PetViewerRole.fosterCarer:

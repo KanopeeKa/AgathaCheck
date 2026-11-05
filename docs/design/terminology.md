@@ -146,6 +146,10 @@ Keep these EN/FR labels distinct in copy and l10n:
 | Due-items block | CARE ACTIONS (eyebrow) | SOINS | `careEyebrow` |
 | Away-planning block | AWAY PLANNING (eyebrow) | PLANIFICATION D'ABSENCE | `awayPlanningEyebrow` |
 | Away-planning hub link | All absences | Toutes les absences | `allAbsences` |
+| Trip screen (no custom title) | Absence | Absence | `careContextAbsenceDefaultTitle` |
+| Per-pet plan screen | {Pet}'s away plan | Plan d'absence de {Pet} | `careContextSeePetAwayPlan`, pet away plan app bar keys |
+| Hub — own trips | Your absences | Vos absences | `careContextHubYourAbsences` |
+| Hub — co-visible trips | Other people's absences | Absences des autres | `careContextHubOtherPeoplesAbsences` |
 | Full due list link | All Actions | Tous les soins | `allCare` |
 | Global queue screen (`/pc/events`) | All Actions | Tous les soins | `allCare` |
 | Bottom nav | Actions | Soins | `careNavLabel` |

@@ -111,6 +111,9 @@ export async function seedCareItemModelFixture(client) {
     ],
   );
 
+  const { seedPerPetAwayPlansUat } = await import('./away-planning.js');
+  await seedPerPetAwayPlansUat(client);
+
   console.log(
     'seed: care-item-model-fixture ready (Buddy weight establishment + Pebble empty pet)',
   );

@@ -50,10 +50,18 @@ class _PlannedAbsenceFlowScreenState
         .toList(growable: false);
   }
 
-  void _initializePetSelection(List<Pet> selectablePets) {
+  void _initializePetSelection(
+    List<Pet> selectablePets, {
+    String? preselectPetId,
+  }) {
     if (_hasInitializedPetSelection || selectablePets.isEmpty) return;
     _hasInitializedPetSelection = true;
-    _selectedPetIds = selectablePets.map((pet) => pet.id).toSet();
+    if (preselectPetId != null &&
+        selectablePets.any((pet) => pet.id == preselectPetId)) {
+      _selectedPetIds = {preselectPetId};
+    } else {
+      _selectedPetIds = selectablePets.map((pet) => pet.id).toSet();
+    }
   }
 
   String? _startsOnWire() => PlannedAbsenceDateRules.startsOnWire(_startsOn);
@@ -131,10 +139,18 @@ class _PlannedAbsenceFlowScreenState
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(l.careContextAwaySaveSuccess)));
-      context.goNamed(
-        'petCarePlannedAbsenceDetail',
-        pathParameters: {'id': result.absence.id},
-      );
+      final petIds = result.absence.petIds;
+      if (petIds.length == 1) {
+        context.goNamed(
+          'petCarePetAwayPlan',
+          pathParameters: {'id': result.absence.id, 'petId': petIds.first},
+        );
+      } else {
+        context.goNamed(
+          'petCarePlannedAbsenceDetail',
+          pathParameters: {'id': result.absence.id},
+        );
+      }
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(
@@ -256,10 +272,19 @@ class _PlannedAbsenceFlowScreenState
     final endsOn = _endsOnWire();
     final petNamesById = {for (final pet in selectablePets) pet.id: pet.name};
 
+    final preselectPetId = GoRouterState.of(
+      context,
+    ).uri.queryParameters['petId'];
+
     if (!_hasInitializedPetSelection && selectablePets.isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted || _hasInitializedPetSelection) return;
-        setState(() => _initializePetSelection(selectablePets));
+        setState(
+          () => _initializePetSelection(
+            selectablePets,
+            preselectPetId: preselectPetId,
+          ),
+        );
       });
     }
 

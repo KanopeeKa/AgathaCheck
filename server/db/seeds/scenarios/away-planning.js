@@ -35,6 +35,8 @@ export const AWAY_PLANNING_ABSENCE_IDS = [
   DEMO_IDS.awIndeterminateAbsence,
   DEMO_IDS.awNoUnresolvedAbsence,
   DEMO_IDS.awDownloadedEditedAbsence,
+  DEMO_IDS.awPerPetMultiAbsence,
+  DEMO_IDS.awPerPetSingleAbsence,
 ];
 
 export function awayPlanningSeedFacts() {
@@ -315,4 +317,25 @@ export async function seedAwayPlanning(client) {
   }
 
   console.log('seed: away-planning ready (carer mix, coverage states, multi-time, lifecycle)');
+}
+
+/** Called after Pebble exists (care-item-model-fixture). */
+export async function seedPerPetAwayPlansUat(client) {
+  await upsertAbsence(client, {
+    id: DEMO_IDS.awPerPetMultiAbsence,
+    userId: DEMO_IDS.alice,
+    startsOn: calendarDaysFromToday(12),
+    endsOn: calendarDaysFromToday(18),
+  });
+  await upsertAbsencePet(client, DEMO_IDS.awPerPetMultiAbsence, DEMO_IDS.buddyPet);
+  await upsertAbsencePet(client, DEMO_IDS.awPerPetMultiAbsence, DEMO_IDS.whiskersPet);
+  await upsertAbsencePet(client, DEMO_IDS.awPerPetMultiAbsence, DEMO_IDS.pebblePet);
+
+  await upsertAbsence(client, {
+    id: DEMO_IDS.awPerPetSingleAbsence,
+    userId: DEMO_IDS.alice,
+    startsOn: calendarDaysFromToday(20),
+    endsOn: calendarDaysFromToday(24),
+  });
+  await upsertAbsencePet(client, DEMO_IDS.awPerPetSingleAbsence, DEMO_IDS.buddyPet);
 }

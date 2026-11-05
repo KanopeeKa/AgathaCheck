@@ -1,6 +1,24 @@
-import { DEMO_IDS } from '../demo-constants.js';
+import { DEMO_IDS, DEMO_USERS } from '../demo-constants.js';
+import { upsertUser } from '../helpers.js';
 
 export async function seedSharingNotifications(client) {
+  await upsertUser(client, DEMO_USERS.dave);
+
+  await client.query(
+    `INSERT INTO pet_access (id, pet_id, user_id, role, invited_by)
+     VALUES ($1, $2, $3, 'co_parent', $4)
+     ON CONFLICT (pet_id, user_id) DO UPDATE SET
+       role = EXCLUDED.role,
+       hidden = false,
+       updated_at = NOW()`,
+    [
+      DEMO_IDS.daveBuddyCoParentAccess,
+      DEMO_IDS.buddyPet,
+      DEMO_IDS.dave,
+      DEMO_IDS.alice,
+    ],
+  );
+
   // Share link for Whiskers (pending)
   await client.query(
     `INSERT INTO pet_share_links (id, pet_id, code, created_by, status)

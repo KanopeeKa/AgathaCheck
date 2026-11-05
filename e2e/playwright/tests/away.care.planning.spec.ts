@@ -66,7 +66,7 @@ test.describe('Away care planning display', () => {
     await loginAs(page, user, { experience: 'guardian' });
 
     const away = new AwayPlanningPage(page);
-    await away.openPlan(absence.id);
+    await away.openPlan(absence.id, pet.id);
     await away.expectPreAbsenceOverdueAction(pet.id);
     await away.expectPlannedCareItemRowHidden(entry.id, 'Overdue Rabies Booster');
     await expect(page.getByText(/Timing not yet known|Horaire pas encore connu/i)).toHaveCount(0);
@@ -122,7 +122,7 @@ test.describe('Away care planning display', () => {
     await loginAs(page, user, { experience: 'guardian' });
 
     const away = new AwayPlanningPage(page);
-    await away.openPlan(absence.id);
+    await away.openPlan(absence.id, pet.id);
     await away.expectPlannedCareItemRow(entry.id, 'Weekly Grooming');
     await expect(
       page.getByRole('group', {
@@ -161,7 +161,7 @@ test.describe('Away care planning display', () => {
     await careItem.openRescheduleSheet();
     await careItem.pickRescheduleDateInSheet(5);
     await careItem.confirmReschedule();
-    await away.openPlan(absence.id);
+    await away.openPlan(absence.id, pet.id);
     await expect(page.getByText(/Overdue|En retard/i)).toHaveCount(0);
   });
 
@@ -189,7 +189,7 @@ test.describe('Away care planning display', () => {
     await loginAs(page, user, { experience: 'guardian' });
 
     const away = new AwayPlanningPage(page);
-    await away.openPlan(absence.id);
+    await away.openPlan(absence.id, pet.id);
     await away.expectPlannedCareItemRow(entry.id, 'Weekly Grooming');
   });
 
@@ -235,7 +235,7 @@ test.describe('Away care planning display', () => {
 
       await loginAs(page, user, { experience: 'guardian' });
       const away = new AwayPlanningPage(page);
-      await away.openPlan(absence.id);
+      await away.openPlan(absence.id, pet.id);
       await away.expectPlannedCareItemRow(entry.id, 'Weekly coat care');
     } finally {
       await withCareClock(null, page);

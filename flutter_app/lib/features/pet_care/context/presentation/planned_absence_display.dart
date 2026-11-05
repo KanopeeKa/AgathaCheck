@@ -30,4 +30,21 @@ class PlannedAbsenceDisplay {
     if (trimmed == null || trimmed.isEmpty) return null;
     return dateRangeLabel(l, absence);
   }
+
+  static String travellerLine(AppLocalizations l, PlannedAbsence absence) {
+    if (absence.isOwnAbsence == true) {
+      return l.careContextTravellerYouAway;
+    }
+    final name = absence.declarerDisplayName?.trim();
+    if (name != null && name.isNotEmpty) {
+      return l.careContextTravellerNameAway(name);
+    }
+    return l.careContextTravellerYouAway;
+  }
+
+  static String absenceScreenTitle(AppLocalizations l, PlannedAbsence absence) {
+    final trimmed = absence.title?.trim();
+    if (trimmed != null && trimmed.isNotEmpty) return trimmed;
+    return l.careContextAbsenceDefaultTitle;
+  }
 }

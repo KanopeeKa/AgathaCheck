@@ -10,7 +10,7 @@ import {
   upsertResolution,
   validateResolutionPayload,
 } from '../../lib/care/absence/resolutionRepository.js';
-import { PET_ACCESS_ROLES, userCanManageCare } from '../../lib/petAccess.js';
+import { PET_ACCESS_ROLES, userCanManageProfile } from '../../lib/petAccess.js';
 import { withTransaction } from '../../lib/db/withTransaction.js';
 import { extractUserId } from '../../lib/requireAuth.js';
 
@@ -41,7 +41,7 @@ async function isCarerCandidate(pool, petId, carerUserId) {
  * @param {import('express').Router} router
  * @param {import('pg').Pool} pool
  * @param {{
- *   loadAbsenceForUser: Function,
+ *   loadAbsenceForViewer: Function,
  *   loadAbsencePets: Function,
  * }} deps
  */
@@ -50,10 +50,21 @@ export function registerAbsenceResolutionsRoutes(router, pool, deps) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      const row = await deps.loadAbsenceForUser(pool, req.params.id, userId);
-      if (!row) return res.status(404).json({ error: 'Not found' });
-      const resolutions = await listResolutionsForAbsence(pool, row.id);
-      res.json({ resolutions });
+      const viewed = await deps.loadAbsenceForViewer(pool, req.params.id, userId);
+      if (!viewed) return res.status(404).json({ error: 'Not found' });
+      const accessiblePetIds = new Set(viewed.petRows.map((row) => row.pet_id));
+      const filtered = [];
+      for (const resolution of await listResolutionsForAbsence(pool, viewed.row.id)) {
+        const entryResult = await pool.query(
+          'SELECT pet_id FROM health_entries WHERE id = $1',
+          [resolution.health_entry_id],
+        );
+        const petId = entryResult.rows[0]?.pet_id;
+        if (petId && accessiblePetIds.has(petId)) {
+          filtered.push(resolution);
+        }
+      }
+      res.json({ resolutions: filtered });
     } catch (err) {
       throw err;
     }
@@ -64,10 +75,11 @@ export function registerAbsenceResolutionsRoutes(router, pool, deps) {
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     const body = req.body || {};
     try {
-      const absenceRow = await deps.loadAbsenceForUser(pool, req.params.id, userId);
-      if (!absenceRow) return res.status(404).json({ error: 'Not found' });
+      const viewed = await deps.loadAbsenceForViewer(pool, req.params.id, userId);
+      if (!viewed) return res.status(404).json({ error: 'Not found' });
 
-      const petRows = await deps.loadAbsencePets(pool, absenceRow.id);
+      const absenceRow = viewed.row;
+      const petRows = viewed.petRows;
       const startsOn = dateToIsoDate(absenceRow.starts_on);
       const endsOn = dateToIsoDate(absenceRow.ends_on);
       const rawItems = body.resolutions ?? (body.health_entry_id || body.healthEntryId ? [body] : null);
@@ -94,7 +106,7 @@ export function registerAbsenceResolutionsRoutes(router, pool, deps) {
         if (!onAbsence) {
           return res.status(400).json({ error: 'Health entry pet is not on this absence' });
         }
-        if (!(await userCanManageCare(pool, entry.pet_id, userId))) {
+        if (!(await userCanManageProfile(pool, entry.pet_id, userId))) {
           return res.status(403).json({ error: 'Forbidden' });
         }
 

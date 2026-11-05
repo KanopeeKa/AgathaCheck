@@ -25,6 +25,10 @@ import {
   deriveCarerCoverage,
 } from '../../lib/care/awayPlan/readiness.js';
 import { createMockPool, petId, token, userId } from '../pets/helpers.js';
+import {
+  mockViewerAbsenceLoad,
+  mockViewerFullAccessOnPets,
+} from './plannedAbsenceViewerMocks.js';
 
 function authHeader() {
   return { Authorization: `Bearer ${token}` };
@@ -164,22 +168,25 @@ describe('GET /api/planned-absences/:id/readiness', () => {
   }
 
   it('returns readiness triple for a manageable absence', async () => {
-    const app = createTestApp(async (sql) => {
+    const absenceRow = {
+      id: absenceId,
+      user_id: userId,
+      starts_on: startsOn,
+      ends_on: endsOn,
+      provenance: 'user_declared',
+      source_ref: null,
+      status: 'active',
+      created_at: new Date(),
+      updated_at: new Date(),
+      cancelled_at: null,
+    };
+    const app = createTestApp(async (sql, params) => {
+      const viewerAbsence = mockViewerAbsenceLoad(sql, absenceRow);
+      if (viewerAbsence) return viewerAbsence;
+      const access = mockViewerFullAccessOnPets(sql, params, userId, petId);
+      if (access) return access;
       if (sql.includes('FROM planned_absences WHERE id = $1 AND user_id = $2')) {
-        return {
-          rows: [{
-            id: absenceId,
-            user_id: userId,
-            starts_on: startsOn,
-            ends_on: endsOn,
-            provenance: 'user_declared',
-            source_ref: null,
-            status: 'active',
-            created_at: new Date(),
-            updated_at: new Date(),
-            cancelled_at: null,
-          }],
-        };
+        return { rows: [absenceRow] };
       }
       if (sql.includes('FROM planned_absence_pets')) {
         return {
@@ -219,7 +226,11 @@ describe('GET /api/planned-absences/:id/readiness', () => {
   });
 
   it('returns 404 when absence is not owned by caller', async () => {
-    const app = createTestApp(async (sql) => {
+    const app = createTestApp(async (sql, params) => {
+      const viewerAbsence = mockViewerAbsenceLoad(sql, null);
+      if (viewerAbsence) return viewerAbsence;
+      const access = mockViewerFullAccessOnPets(sql, params, userId, petId);
+      if (access) return access;
       if (sql.includes('FROM planned_absences WHERE id = $1 AND user_id = $2')) {
         return { rows: [] };
       }

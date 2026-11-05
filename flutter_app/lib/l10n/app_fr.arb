@@ -2597,6 +2597,83 @@
   "careContextPreviewItemSkipped": "Ignoré le {date}",
   "careContextAwayContinue": "Continuer",
   "careContextAwayBack": "Retour",
+  "careContextAbsenceDefaultTitle": "Absence",
+  "careContextTravellerYouAway": "Vous serez absent",
+  "careContextTravellerNameAway": "{name} sera absent",
+  "@careContextTravellerNameAway": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "careContextHubYourAbsences": "Vos absences",
+  "careContextHubOtherPeoplesAbsences": "Absences des autres",
+  "careContextPlanAnAbsence": "Planifier une absence",
+  "careContextAddPetToAbsence": "Ajouter un animal",
+  "careContextAddPetToAbsenceTitle": "Ajouter un animal à cette absence",
+  "careContextAddPetNoneAvailable": "Aucun autre animal disponible à ajouter.",
+  "careContextAddPetSuccess": "Animal ajouté à cette absence.",
+  "careContextAddPetFailed": "Impossible d'ajouter l'animal. Réessayez.",
+  "careContextRemovePetFromAbsence": "Retirer {pet} de cette absence",
+  "@careContextRemovePetFromAbsence": {
+    "placeholders": {
+      "pet": { "type": "String" }
+    }
+  },
+  "careContextRemovePetConfirmTitle": "Retirer {pet} de cette absence ?",
+  "@careContextRemovePetConfirmTitle": {
+    "placeholders": {
+      "pet": { "type": "String" }
+    }
+  },
+  "careContextRemovePetConfirmBody": "Cela retire l'assignation du gardien, les notes pour cet animal et les décisions de soins pour ce voyage. Les éléments de soins et leurs dates ne changent pas.",
+  "careContextRemovePetLastConfirmBody": "{pet} est le seul animal sur cette absence. Le retirer supprime l'absence.",
+  "@careContextRemovePetLastConfirmBody": {
+    "placeholders": {
+      "pet": { "type": "String" }
+    }
+  },
+  "careContextRemovePetConfirmAction": "Retirer l'animal",
+  "careContextRemovePetSuccess": "{pet} a été retiré de cette absence.",
+  "@careContextRemovePetSuccess": {
+    "placeholders": {
+      "pet": { "type": "String" }
+    }
+  },
+  "careContextRemovePetAbsenceDeleted": "Cette absence a été supprimée.",
+  "careContextRemovePetFailed": "Impossible de retirer l'animal. Réessayez.",
+  "careContextPetPageAwaySectionTitle": "Plans d'absence",
+  "careContextPetPageAllAbsences": "Toutes les absences",
+  "careContextAbsencePetsSectionTitle": "Animaux sur cette absence",
+  "careContextSeePetAwayPlan": "Voir le plan d'absence de {pet}",
+  "@careContextSeePetAwayPlan": {
+    "placeholders": {
+      "pet": { "type": "String" }
+    }
+  },
+  "careContextPetAwayPlanTitle": "Plan d'absence de {pet}",
+  "@careContextPetAwayPlanTitle": {
+    "placeholders": {
+      "pet": { "type": "String" }
+    }
+  },
+  "careContextSeeAbsence": "Voir l'absence",
+  "careContextTripNotesForWholeTrip": "Notes de voyage (tout le séjour)",
+  "careContextPetNotesSectionTitle": "Notes pour {pet}",
+  "@careContextPetNotesSectionTitle": {
+    "placeholders": {
+      "pet": { "type": "String" }
+    }
+  },
+  "careContextPetNotesSaveFailed": "Impossible d'enregistrer les notes. Réessayez.",
+  "careContextCareItemOpenAwayPlan": "Ouvrir le plan d'absence",
+  "awayPlanningPetStatusNoCarer": "Pas encore de gardien",
+  "awayPlanningPetStatusCarerUnavailable": "Gardien plus disponible",
+  "awayPlanningPetStatusReviewCount": "{count, plural, =1{1 à revoir} other{{count} à revoir}}",
+  "@awayPlanningPetStatusReviewCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
   "careContextAwayPlanTitle": "Plan d'absence",
   "careContextAwayPlanLoadError": "Impossible de charger ce plan d'absence. Réessayez.",
   "careContextAwayPlanCareDuringTitle": "Soins pendant votre absence",
