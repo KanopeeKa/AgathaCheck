@@ -113,7 +113,7 @@ test('release: tests and flutter barrels before cross-phase forbidden globs', ()
   const serverTest = 'server/test/care/absence/absenceVisibility.test.js';
   const flutterTest = 'flutter_app/test/core/router/guardian_routes_test.dart';
   const barrel = 'flutter_app/lib/features/pet_care/pet_care.dart';
-  for (const category of ['release', 'sync-resolve']) {
+  for (const category of ['release', 'sync-resolve', 'remedial']) {
     assert.equal(verdict(serverTest, category, null, snap), 'exception:tests', category);
     assert.equal(verdict(flutterTest, category, null, snap), 'exception:tests', category);
     assert.equal(verdict(barrel, category, null, snap), 'companion', category);
