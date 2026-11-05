@@ -171,8 +171,13 @@ function classifyPath(file, { snapshot, category, phaseId }) {
   if (matchesAny(file, PROTECTED_PATHS)) return verdict('protected');
   const phases = scopePhases(snapshot, category, phaseId);
   if (isForbiddenPath(file)) {
-    const approvedSensitive = collect(phases, 'approved_sensitive_paths');
-    if (approvedSensitive.length && matchesAny(file, approvedSensitive)) return verdict('allowed');
+    for (const p of phases) {
+      const sensitive = p.approved_sensitive_paths || [];
+      if (!sensitive.length || !matchesAny(file, sensitive)) continue;
+      if (matchesAny(file, p.forbidden_paths || [])) continue;
+      if (!matchesAny(file, p.allowed_paths || [])) continue;
+      return verdict('allowed');
+    }
     return verdict('forbidden');
   }
 

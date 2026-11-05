@@ -25,3 +25,11 @@ test('findOwnerScopeAckReview picks the newest qualifying review', () => {
   ];
   assert.equal(findOwnerScopeAckReview(reviews, { headSha: HEAD, owners, botLogin: bot }).id, 3);
 });
+
+test('findOwnerScopeAckReview ignores stale approval after CHANGES_REQUESTED', () => {
+  const reviews = [
+    { id: 1, state: 'APPROVED', commit_id: HEAD, user: { login: 'KanopeeKa' } },
+    { id: 2, state: 'CHANGES_REQUESTED', commit_id: HEAD, user: { login: 'KanopeeKa' } },
+  ];
+  assert.equal(findOwnerScopeAckReview(reviews, { headSha: HEAD, owners, botLogin: bot }), null);
+});

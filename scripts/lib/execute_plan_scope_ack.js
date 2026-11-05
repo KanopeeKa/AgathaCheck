@@ -18,10 +18,22 @@ function qualifiesOwnerScopeAck(review, { headSha, owners, botLogin }) {
   return (owners || []).includes(login);
 }
 
-/** Newest qualifying approving review on `headSha`, or null. */
+/** Latest review per owner on `headSha`; scope ack only if that review is APPROVING. */
 function findOwnerScopeAckReview(reviews, opts) {
+  const latestByOwner = new Map();
   const list = [...(reviews || [])].sort((a, b) => Number(b.id) - Number(a.id));
-  return list.find((r) => qualifiesOwnerScopeAck(r, opts)) || null;
+  for (const r of list) {
+    if (!r || r.commit_id !== opts.headSha) continue;
+    const login = r.user && r.user.login;
+    if (!login || login === opts.botLogin) continue;
+    if (!(opts.owners || []).includes(login)) continue;
+    if (!latestByOwner.has(login)) latestByOwner.set(login, r);
+  }
+  for (const login of opts.owners || []) {
+    const latest = latestByOwner.get(login);
+    if (latest && qualifiesOwnerScopeAck(latest, opts)) return latest;
+  }
+  return null;
 }
 
 module.exports = { qualifiesOwnerScopeAck, findOwnerScopeAckReview };
