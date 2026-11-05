@@ -62,7 +62,8 @@ describe('AWAY-PLANNING-CARER-R-016 traveller not carer', () => {
       query: async () => ({ rows: [{ user_id: userId }] }),
     };
     const result = await resolveCarerWrite(pool, {
-      declarerUserId: userId,
+      actorUserId: userId,
+      travellerUserId: userId,
       petId,
       item: { carer_kind: CARER_KIND_SHARED_USER, carer_user_id: userId },
     });
