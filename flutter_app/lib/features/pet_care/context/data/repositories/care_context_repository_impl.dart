@@ -101,10 +101,7 @@ class CareContextRepositoryImpl implements CareContextRepository {
   Future<List<CarerCandidate>> getCarerCandidates(
     String petId, {
     String? plannedAbsenceId,
-  }) => _remote.fetchCarerCandidates(
-    petId,
-    plannedAbsenceId: plannedAbsenceId,
-  );
+  }) => _remote.fetchCarerCandidates(petId, plannedAbsenceId: plannedAbsenceId);
 
   @override
   Future<void> patchPerPetAwayPlan({

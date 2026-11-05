@@ -254,12 +254,10 @@ class CareContextRemoteDataSource {
     if (plannedAbsenceId != null && plannedAbsenceId.isNotEmpty) {
       query['planned_absence_id'] = plannedAbsenceId;
     }
-    final uri = Uri.parse('$baseUrl/api/pets/$petId/carer-candidates')
-        .replace(queryParameters: query.isEmpty ? null : query);
-    final response = await _client.get(
-      uri,
-      headers: _headers(),
-    );
+    final uri = Uri.parse(
+      '$baseUrl/api/pets/$petId/carer-candidates',
+    ).replace(queryParameters: query.isEmpty ? null : query);
+    final response = await _client.get(uri, headers: _headers());
     _check(response);
     final list = json.decode(response.body) as List<dynamic>;
     return list

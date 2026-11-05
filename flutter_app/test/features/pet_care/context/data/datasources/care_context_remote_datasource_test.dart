@@ -113,10 +113,7 @@ void main() {
         client: client,
       );
 
-      await datasource.fetchCarerCandidates(
-        'pet-1',
-        plannedAbsenceId: 'abs-9',
-      );
+      await datasource.fetchCarerCandidates('pet-1', plannedAbsenceId: 'abs-9');
 
       expect(
         requestedUrl,

@@ -176,8 +176,7 @@ class _FakeCareContextRepository implements CareContextRepository {
   Future<List<CarerCandidate>> getCarerCandidates(
     String petId, {
     String? plannedAbsenceId,
-  }) async =>
-      [];
+  }) async => [];
 
   @override
   Future<void> patchPerPetAwayPlan({

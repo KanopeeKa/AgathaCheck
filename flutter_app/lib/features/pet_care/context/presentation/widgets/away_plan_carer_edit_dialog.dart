@@ -59,10 +59,7 @@ class _AwayPlanCarerEditDialogState
       _petNoteController.text.trim().isEmpty ? null : _petNoteController.text;
 
   Map<String, dynamic> _payload() {
-    return {
-      'contact_id': _selectedContactId,
-      'pet_note': _normalizedPetNote,
-    };
+    return {'contact_id': _selectedContactId, 'pet_note': _normalizedPetNote};
   }
 
   Future<void> _save() async {

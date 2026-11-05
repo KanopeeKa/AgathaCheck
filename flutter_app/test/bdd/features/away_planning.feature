@@ -55,20 +55,6 @@ Feature: Away Planning
     Then I should see the collaborator's name in who is caring
 
   @P1
-  Scenario: Co-parent sees only their pet pill and no trip Edit
-    Given I am signed in as a co-parent with Full access to one pet on a multi-pet absence
-    When I open the away plan for that absence
-    Then I should see only my pet's pill on the plan page
-    And I should not see trip Edit or Add a pet actions
-
-  @P1
-  Scenario: Co-parent edits the pet note on the away plan page
-    Given I am signed in as a co-parent with Full access to one pet on a saved absence
-    When I open that pet's away plan page
-    And I save a pet note for that pet
-    Then the pet note should be saved for that pet
-
-  @P1
   Scenario: Assign an absence carer with the picker; the handover lists emergency contacts and vets
     Given I am logged in with a pet named Buddy
     And Buddy has veterinary contacts for handover

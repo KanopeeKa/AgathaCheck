@@ -356,7 +356,9 @@ Widget buildScreen(_FakeCareContextRepository repo, {PlannedAbsence? detail}) {
 }
 
 void main() {
-  testWidgets('co-parent saves pet note via per-pet PATCH route', (tester) async {
+  testWidgets('co-parent saves pet note via per-pet PATCH route', (
+    tester,
+  ) async {
     final repo = _FakeCareContextRepository();
     await tester.pumpWidget(
       buildScreen(
