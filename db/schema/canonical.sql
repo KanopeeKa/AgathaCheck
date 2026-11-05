@@ -22,6 +22,17 @@ CREATE FUNCTION public.clear_pinned_org_on_membership_loss() RETURNS trigger
       RETURN NEW;
     END;
     $$;
+CREATE FUNCTION public.health_entries_normalize_closed_status() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+    BEGIN
+      IF NEW.status = 'completed' THEN
+        NEW.status := 'closed';
+        NEW.care_closed_reason := COALESCE(NEW.care_closed_reason, 'ended');
+      END IF;
+      RETURN NEW;
+    END;
+    $$;
 CREATE TABLE public._migrations (
     id uuid NOT NULL,
     name character varying(255) NOT NULL,
@@ -396,7 +407,11 @@ CREATE TABLE public.health_entries (
     late_completion_choice character varying(16),
     paused_until date,
     series_resumed_on date,
-    CONSTRAINT health_entries_late_completion_choice_check CHECK (((late_completion_choice IS NULL) OR ((late_completion_choice)::text = ANY ((ARRAY['keep'::character varying, 'skip_next'::character varying, 'shift_following'::character varying])::text[]))))
+    care_closed_reason character varying(50),
+    CONSTRAINT health_entries_care_closed_reason_check CHECK (((care_closed_reason IS NULL) OR ((care_closed_reason)::text = ANY ((ARRAY['ended'::character varying, 'stopped_by_user'::character varying])::text[])))),
+    CONSTRAINT health_entries_closed_reason_required CHECK ((((status)::text <> 'closed'::text) OR (care_closed_reason IS NOT NULL))),
+    CONSTRAINT health_entries_late_completion_choice_check CHECK (((late_completion_choice IS NULL) OR ((late_completion_choice)::text = ANY ((ARRAY['keep'::character varying, 'skip_next'::character varying, 'shift_following'::character varying])::text[])))),
+    CONSTRAINT health_entries_status_check CHECK (((status)::text = ANY ((ARRAY['active'::character varying, 'paused'::character varying, 'closed'::character varying])::text[])))
 );
 CREATE TABLE public.health_entry_absence_resolutions (
     id uuid NOT NULL,
@@ -468,12 +483,10 @@ CREATE TABLE public.health_occurrences (
     provider_typed_name text,
     provider_contact_snapshot jsonb,
     origin character varying(16) DEFAULT 'computed'::character varying NOT NULL,
-    close_reason character varying(16),
     series_date date,
-    CONSTRAINT health_occurrences_close_reason_check CHECK (((close_reason IS NULL) OR ((close_reason)::text = ANY ((ARRAY['user'::character varying, 'not_recorded'::character varying, 'paused'::character varying, 'covered'::character varying, 'system'::character varying])::text[])))),
     CONSTRAINT health_occurrences_completion_timing_check CHECK (((completion_timing IS NULL) OR ((completion_timing)::text = ANY ((ARRAY['early'::character varying, 'on_time'::character varying, 'late'::character varying])::text[])))),
     CONSTRAINT health_occurrences_origin_check CHECK (((origin)::text = ANY ((ARRAY['schedule'::character varying, 'computed'::character varying, 'planned'::character varying])::text[]))),
-    CONSTRAINT health_occurrences_status_check CHECK (((status)::text = ANY ((ARRAY['pending'::character varying, 'completed'::character varying, 'skipped'::character varying])::text[])))
+    CONSTRAINT health_occurrences_status_check CHECK (((status)::text = ANY ((ARRAY['pending'::character varying, 'completed'::character varying, 'skipped'::character varying, 'not_recorded'::character varying])::text[])))
 );
 CREATE TABLE public.household_invites (
     id uuid NOT NULL,
@@ -1400,6 +1413,7 @@ CREATE INDEX vet_visit_occurrence_links_visit_idx ON public.vet_visit_occurrence
 CREATE INDEX vet_visits_pet_visited_idx ON public.vet_visits USING btree (pet_id, visited_on DESC);
 CREATE UNIQUE INDEX welfare_suggestions_pet_dedupe_idx ON public.welfare_suggestions USING btree (pet_id, dedupe_key);
 CREATE INDEX welfare_suggestions_pet_status_idx ON public.welfare_suggestions USING btree (pet_id, status);
+CREATE TRIGGER health_entries_normalize_closed_status BEFORE INSERT OR UPDATE OF status, care_closed_reason ON public.health_entries FOR EACH ROW EXECUTE FUNCTION public.health_entries_normalize_closed_status();
 CREATE TRIGGER trg_clear_pinned_org_on_membership_loss AFTER DELETE OR UPDATE OF role ON public.organization_users FOR EACH ROW EXECUTE FUNCTION public.clear_pinned_org_on_membership_loss();
 ALTER TABLE ONLY public.account_device_labels
     ADD CONSTRAINT account_device_labels_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;

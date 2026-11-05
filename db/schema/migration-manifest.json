@@ -109,7 +109,9 @@
     "100_pet_profile_facts.sql",
     "101_welfare_suggestions.sql",
     "102_pet_vaccination_records.sql",
-    "103_vet_visits.sql"
+    "103_vet_visits.sql",
+    "104_care_date_outcome.sql",
+    "105_care_item_closed.sql"
   ],
   "code_migrations": [
     "016_migrate_family_events_placements.sql",
@@ -126,6 +128,8 @@
     "051_share_link_expiry.sql",
     "073_people_vet_backfill.sql",
     "075_planned_absence_contact_carers.sql",
-    "083_care_occurrence_model.sql"
+    "083_care_occurrence_model.sql",
+    "104_care_date_outcome.sql",
+    "105_care_item_closed.sql"
   ]
 }

@@ -60,4 +60,32 @@ describe('care item closed status', () => {
     const res = await api.reopen(entryId);
     expect(res.statusCode).toBe(404);
   });
+
+  it('POST schedule undo is rejected when care is closed (R-011)', async () => {
+    if (!app) return;
+    const res = await api.undo(entryId);
+    expect(res.statusCode).toBe(409);
+    expect(res.body.code).toBe('care_item_closed');
+  });
+
+  it('undo after Close care does not reopen stopped_by_user items (R-011)', async () => {
+    if (!app) return;
+    const created = await api.at('2026-06-01T09:00').create({
+      name: 'Flea',
+      care_family: 'parasite_prevention',
+      frequency: 'monthly',
+      next_due_date: '2026-06-05',
+    });
+    expect(created.statusCode).toBe(201);
+    const entry = created.body;
+    const occId = entry.open_occurrences[0].id;
+    const done = await api.at('2026-06-05T10:00').complete(entry.id, occId, {});
+    expect(done.statusCode).toBe(200);
+    const closed = await api.at('2026-06-05T10:01').close(entry.id);
+    expect(closed.body.status).toBe('closed');
+    expect(closed.body.care_closed_reason).toBe('stopped_by_user');
+    const undone = await api.at('2026-06-05T10:02').undo(entry.id, { undo_token: done.body.undo_token });
+    expect(undone.statusCode).toBe(409);
+    expect(undone.body.code).toBe('care_item_closed');
+  });
 });

@@ -10,7 +10,7 @@ import { careOccurrencesSeedFacts, seedCareOccurrences } from '../../../db/seeds
 import { seedGuardian } from '../../../db/seeds/scenarios/guardian.js';
 import { dateToIsoDate } from '../../../lib/calendarDate.js';
 import { careItemReadAdditions, listOpenRows } from '../../../lib/care/occurrence/index.js';
-import { migrateCareItemClosed } from '../../../scripts/migrations/085_care_item_closed.js';
+import { migrateCareItemClosed } from '../../../scripts/migrations/105_care_item_closed.js';
 import { createDbPool } from '../helpers/careHarness.js';
 
 const CLOCK = { todayIso: '2026-06-10', nowTimeIso: '15:00', timeZone: 'Europe/Paris' };

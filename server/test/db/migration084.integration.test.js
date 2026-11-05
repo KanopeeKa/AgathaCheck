@@ -5,7 +5,7 @@ import { randomUUID } from 'crypto';
 
 import { afterAll, beforeAll, describe, expect, it } from '@jest/globals';
 
-import { migrateCareDateOutcome } from '../../scripts/migrations/084_care_date_outcome.js';
+import { migrateCareDateOutcome } from '../../scripts/migrations/104_care_date_outcome.js';
 import { createDbPool, createOwner, removeOwner } from './helpers/careHarness.js';
 
 describe('migration 084 care date outcome', () => {

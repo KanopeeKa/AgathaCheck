@@ -1,5 +1,5 @@
 /**
- * Migration 085 — care item Closed status (CARE-STATUS-R-009, R-013 items).
+ * Migration 105 — care item Closed status (CARE-STATUS-R-009, R-013 items).
  * Adds `care_closed_reason`, migrates `completed` → `closed` with ended / stopped_by_user.
  *
  * @param {import('pg').PoolClient} client

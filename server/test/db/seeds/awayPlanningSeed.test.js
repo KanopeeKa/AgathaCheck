@@ -19,7 +19,7 @@ import {
   CARER_COVERAGE_NONE_HAVE_CARERS,
   CARER_COVERAGE_SOME_HAVE_CARERS,
 } from '../../../lib/care/awayPlan/readiness.js';
-import { migrateCareItemClosed } from '../../../scripts/migrations/085_care_item_closed.js';
+import { migrateCareItemClosed } from '../../../scripts/migrations/105_care_item_closed.js';
 
 function createPool() {
   return createAppPool();

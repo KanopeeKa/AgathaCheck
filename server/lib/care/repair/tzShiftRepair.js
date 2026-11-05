@@ -28,7 +28,7 @@ function slotKey(row) {
 function personActedOn(row) {
   if (row.status === 'completed') return true;
   if (row.marked_by_user_id) return true;
-  return row.status === 'skipped' && row.close_reason === 'user';
+  return row.status === 'skipped' && Boolean(row.marked_by_user_id);
 }
 
 function wouldCloseAsNotRecorded(entry, row, todayIso) {
@@ -77,7 +77,7 @@ export function planWronglyClosedReopens({ entry, rows, deletedIds, todayIso }) 
     if (surviving.some((r) => r.status === 'pending')) continue;
     const candidate = pickKeeper(surviving);
     if (personActedOn(candidate)) continue;
-    if (candidate.close_reason !== 'not_recorded') continue;
+    if (candidate.status !== 'not_recorded') continue;
     if (wouldCloseAsNotRecorded(entry, candidate, todayIso)) continue;
     reopened.push(candidate.id);
   }
@@ -160,7 +160,7 @@ export async function repairTzShift(pool, {
             report.flagged.push({ id: row.id, reason: 'person_acted_duplicate' });
             continue;
           }
-          if (row.close_reason !== 'not_recorded' || row.marked_by_user_id) {
+          if (row.status !== 'not_recorded' || row.marked_by_user_id) {
             report.flagged.push({ id: row.id, reason: 'not_safe_to_delete' });
             continue;
           }
@@ -183,7 +183,7 @@ export async function repairTzShift(pool, {
           report.flagged.push({ id: row.id, reason: 'off_series_person_acted' });
           continue;
         }
-        if (row.close_reason !== 'not_recorded' || row.marked_by_user_id) {
+        if (row.status !== 'not_recorded' || row.marked_by_user_id) {
           report.flagged.push({ id: row.id, reason: 'off_series_not_safe' });
           continue;
         }

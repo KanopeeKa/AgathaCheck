@@ -16,8 +16,8 @@ const dailyEntry = {
 function row(id, overrides = {}) {
   return {
     id,
-    status: 'skipped',
-    close_reason: 'not_recorded',
+    status: 'not_recorded',
+    close_reason: null,
     scheduled_date: '2026-06-01',
     scheduled_time: '08:00:00',
     series_date: '2026-06-01',

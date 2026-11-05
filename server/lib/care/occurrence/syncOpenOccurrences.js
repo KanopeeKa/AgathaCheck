@@ -25,7 +25,6 @@ import { scheduleTimesFromEntry } from '../schedule/scheduleTimes.js';
 import { seriesDateAfter, seriesStep } from '../schedule/seriesDates.js';
 import { insertCareScheduleEvent } from '../schedule/scheduleEventLedger.js';
 import { closeItemAsEnded } from '../item/closeItemWrite.js';
-import { ensureItemClosedSchema } from '../item/ensureItemClosedSchema.js';
 import { isItemClosed } from '../item/itemStatus.js';
 import { reloadEntry, updateEntryFields } from './entryRepository.js';
 import {
@@ -216,7 +215,6 @@ async function writeNextDueDate(db, entry) {
  * @returns {Promise<{ entry: object, created: string[], createdComputed: string[], closedNotRecorded: string[] }>}
  */
 export async function syncOpenOccurrences(db, entryRow, asOf) {
-  await ensureItemClosedSchema(db);
   let entry = entryRow;
   const result = { created: [], createdComputed: [], closedNotRecorded: [] };
   if (!isPlannedCare(entry) || isItemClosed(entry)) {

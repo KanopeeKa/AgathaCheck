@@ -1,5 +1,5 @@
 /**
- * Migration 084 — care date outcome in place (CARE-STATUS-R-001, R-013, R-026).
+ * Migration 104 — care date outcome in place (CARE-STATUS-R-001, R-013, R-026).
  * Adds stored status `not_recorded`, backfills from skipped + close_reason, drops close_reason.
  *
  * Tests and dev call this hook directly; production pairs it with db/migrations ledger SQL.
