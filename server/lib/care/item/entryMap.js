@@ -5,6 +5,7 @@
 import { dateToIsoDate, todayCalendarIso } from '../../calendarDate.js';
 import { careBlocksForApi } from '../categoryBlocks/index.js';
 import { resolveScheduleFlexibility } from '../schedule/scheduleFlexibility.js';
+import { careClosedReasonForWire } from './itemStatus.js';
 
 const LEGACY_HEALTH_ENTRY_TYPES = new Set(['family_event', 'procedure']);
 
@@ -44,6 +45,7 @@ export function healthEntryToMap(row) {
     remind_days_before: row.remind_days_before ?? 1,
     schedule_times: row.schedule_times ?? null,
     status: row.status || 'active',
+    care_closed_reason: careClosedReasonForWire(row),
     care_family: row.care_family ?? null,
     care_setting: row.care_setting ?? null,
     care_planning: row.care_planning ?? null,

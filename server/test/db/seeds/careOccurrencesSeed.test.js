@@ -10,6 +10,7 @@ import { careOccurrencesSeedFacts, seedCareOccurrences } from '../../../db/seeds
 import { seedGuardian } from '../../../db/seeds/scenarios/guardian.js';
 import { dateToIsoDate } from '../../../lib/calendarDate.js';
 import { careItemReadAdditions, listOpenRows } from '../../../lib/care/occurrence/index.js';
+import { migrateCareItemClosed } from '../../../scripts/migrations/105_care_item_closed.js';
 import { createDbPool } from '../helpers/careHarness.js';
 
 const CLOCK = { todayIso: '2026-06-10', nowTimeIso: '15:00', timeZone: 'Europe/Paris' };
@@ -39,6 +40,7 @@ beforeAll(async () => {
   }
   client = await pool.connect();
   await client.query('BEGIN');
+  await migrateCareItemClosed(client);
   process.env.SEED_CARE_CLOCK = `${CLOCK.todayIso}T${CLOCK.nowTimeIso}`;
   await seedGuardian(client);
   await seedCareOccurrences(client);
@@ -109,7 +111,7 @@ describe('care occurrences seed (Whiskers)', () => {
     expect(meth.open_occurrences.filter((o) => o.status === 'not_recorded')).toHaveLength(6);
     const closed = await client.query(
       `SELECT to_char(scheduled_date, 'YYYY-MM-DD') AS d, to_char(scheduled_time, 'HH24:MI') AS t
-       FROM health_occurrences WHERE health_entry_id = $1 AND close_reason = 'not_recorded'`,
+       FROM health_occurrences WHERE health_entry_id = $1 AND status = 'not_recorded'`,
       [ids.methimazole],
     );
     expect(closed.rows).toEqual([{ d: '2026-06-06', t: '20:00' }]);
@@ -133,7 +135,8 @@ describe('care occurrences seed (Whiskers)', () => {
   it('Vet visit is recorded only', async () => {
     if (!dbReady) return;
     const visit = await item(ids.vetVisit);
-    expect(visit.entry.status).toBe('completed');
+    expect(visit.entry.status).toBe('closed');
+    expect(visit.entry.care_closed_reason).toBe('ended');
     expect(visit.open_occurrences).toEqual([]);
   });
 });
@@ -146,7 +149,7 @@ describe('care occurrences seed invariants', () => {
       const { entry, open_occurrences: open } = await item(id);
       if (entry.status === 'active') expect(open.length).toBeGreaterThan(0);
       expect(open.filter((o) => o.origin === 'computed').length).toBeLessThanOrEqual(1);
-      if (entry.status !== 'completed') {
+      if (entry.status !== 'completed' && entry.status !== 'closed') {
         expect(dateToIsoDate(entry.next_due_date)).toBe(open[0]?.scheduled_date ?? null);
       }
     }

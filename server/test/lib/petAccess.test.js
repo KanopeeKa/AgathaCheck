@@ -7,6 +7,7 @@ import {
   petAccessRolesSql,
   petNotificationRecipientIds,
   userCanManageCare,
+  userCanCloseHealthEntry,
   userCanManageProfile,
   userCanSharePet,
   userIsOwnerOrCoParent,
@@ -116,6 +117,36 @@ describe('petAccess', () => {
         return { rows: [] };
       });
       expect(await userCanSharePet(pool, petId, 'foster-1')).toBe(true);
+    });
+  });
+
+  describe('userCanCloseHealthEntry', () => {
+    it('returns true for owner only', async () => {
+      const entryId = 'entry-1';
+      const pool = mockPool(async (sql) => {
+        if (sql.includes('FROM health_entries WHERE id = $1')) {
+          return { rows: [{ pet_id: petId }] };
+        }
+        if (sql.includes('FROM pets WHERE id = $1 AND user_id = $2')) {
+          return { rows: [{ '?column?': 1 }] };
+        }
+        return { rows: [] };
+      });
+      expect(await userCanCloseHealthEntry(pool, entryId, ownerId)).toBe(true);
+    });
+
+    it('returns false for carer', async () => {
+      const entryId = 'entry-1';
+      const pool = mockPool(async (sql) => {
+        if (sql.includes('FROM health_entries WHERE id = $1')) {
+          return { rows: [{ pet_id: petId }] };
+        }
+        if (sql.includes('FROM pets WHERE id = $1 AND user_id = $2')) {
+          return { rows: [] };
+        }
+        return { rows: [] };
+      });
+      expect(await userCanCloseHealthEntry(pool, entryId, carerId)).toBe(false);
     });
   });
 

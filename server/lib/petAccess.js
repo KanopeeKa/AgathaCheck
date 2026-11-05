@@ -214,6 +214,17 @@ export async function userCanManageHealthEntry(pool, entryId, userId) {
   return userCanManageCare(pool, petId, userId);
 }
 
+/** Pet parent (owner) only — close care is irreversible (CARE-STATUS-R-015). */
+export async function userCanCloseHealthEntry(pool, entryId, userId) {
+  const result = await pool.query(
+    'SELECT pet_id FROM health_entries WHERE id = $1 LIMIT 1',
+    [entryId],
+  );
+  const petId = result.rows[0]?.pet_id;
+  if (!petId) return false;
+  return userOwnsPet(pool, petId, userId);
+}
+
 export async function userCanManageHealthIssue(pool, issueId, userId) {
   const result = await pool.query(
     'SELECT pet_id FROM health_issues WHERE id = $1 LIMIT 1',

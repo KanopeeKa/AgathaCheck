@@ -1,6 +1,8 @@
 /// Public API for health tracking (entries, issues, documents).
 library;
 
+export 'domain/health_entry_series_closed.dart'
+    show careItemClosedSubtitleLabel, isHealthEntrySeriesClosedAt;
 export 'domain/care_temporal_group.dart';
 export 'domain/models/care_temporal_buckets.dart';
 export 'domain/services/care_temporal_grouping_service.dart';

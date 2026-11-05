@@ -10,9 +10,8 @@ import { occurrenceToMap } from '../care/item/index.js';
 
 function occurrenceStatusFor(row, entry, asOf) {
   if (row.status === 'completed') return 'done';
-  if (row.status === 'skipped') {
-    return row.close_reason === 'not_recorded' ? 'not_recorded' : 'skipped';
-  }
+  if (row.status === 'not_recorded') return 'not_recorded';
+  if (row.status === 'skipped') return 'skipped';
   return openOccurrenceToWire(normalizeOccurrenceRow(row), entry, asOf).status;
 }
 

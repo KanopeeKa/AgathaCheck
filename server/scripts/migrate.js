@@ -37,6 +37,8 @@ import { migrateShareLinkExpiry } from './migrations/051_share_link_expiry.js';
 import { backfillPeopleFromVets } from './migrations/073_people_vet_backfill.js';
 import { migratePlannedAbsenceCarerContacts } from './migrations/075_planned_absence_carer_contacts.js';
 import { migrateCareOccurrenceModel } from './migrations/083_care_occurrence_model.js';
+import { migrateCareDateOutcome } from './migrations/104_care_date_outcome.js';
+import { migrateCareItemClosed } from './migrations/105_care_item_closed.js';
 import { maybeAutoSeedMigrationLedger } from './lib/migration-ledger.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -116,6 +118,8 @@ const CODE_MIGRATIONS = {
   '073_people_vet_backfill.sql': backfillPeopleFromVets,
   '075_planned_absence_contact_carers.sql': migratePlannedAbsenceCarerContacts,
   '083_care_occurrence_model.sql': migrateCareOccurrenceModel,
+  '104_care_date_outcome.sql': migrateCareDateOutcome,
+  '105_care_item_closed.sql': migrateCareItemClosed,
 };
 
 async function applyMigration(client, name, sql) {

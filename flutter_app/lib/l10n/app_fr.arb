@@ -1969,6 +1969,17 @@
   "careItemMenuResume": "Reprendre",
   "careItemMenuArchive": "Archiver",
   "careItemMenuRestore": "Restaurer",
+  "careCloseCareButton": "Clore le soin",
+  "careCloseConfirmTitle": "Clore le soin ?",
+  "careCloseConfirmNoReopen": "Ce soin ne pourra pas être rouvert.",
+  "careCloseConfirmStartedDates": "{count, plural, one{1 date sera marquée Non enregistrée.} other{{count} dates seront marquées Non enregistrées.}}",
+  "@careCloseConfirmStartedDates": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "careCloseConfirmRecordFirst": "Les enregistrer d'abord",
+  "careCloseConfirmAction": "Clore le soin",
   "careItemPausedStatus": "En pause",
   "careItemPausedSince": "En pause depuis le {date}",
   "@careItemPausedSince": {

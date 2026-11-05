@@ -31,9 +31,8 @@ void main() {
               builder: (context) {
                 final d = occurrenceDetailFromJson(
                   detail(
-                    status: 'skipped',
+                    status: 'not_recorded',
                     occStatus: 'not_recorded',
-                    closeReason: 'not_recorded',
                     scheduledDate: '2026-09-30',
                   ),
                 );
@@ -99,9 +98,8 @@ void main() {
     () {
       final d = occurrenceDetailFromJson(
         detail(
-          status: 'skipped',
+          status: 'not_recorded',
           occStatus: 'not_recorded',
-          closeReason: 'not_recorded',
           scheduledDate: '2026-09-30',
         ),
       );
@@ -123,7 +121,6 @@ class _Server {
 Map<String, dynamic> detail({
   required String status,
   required String occStatus,
-  String? closeReason,
   required String scheduledDate,
 }) => {
   'occurrence': {
@@ -132,7 +129,7 @@ Map<String, dynamic> detail({
     'scheduled_time': '08:00',
     'status': status,
     'occurrence_status': occStatus,
-    'close_reason': closeReason,
+    'outcome': occStatus,
     'completed_on': null,
     'origin': 'schedule',
     'notes': '',

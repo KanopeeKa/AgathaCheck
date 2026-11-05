@@ -47,7 +47,7 @@ Future<void> _pumpSection(WidgetTester tester, HealthEntry entry) async {
 }
 
 void main() {
-  testWidgets('bulk Mark 3 as done sends resolve-stack for started only', (
+  testWidgets('bulk Mark 3 as done completes each started slot', (
     tester,
   ) async {
     final today = careToday();
@@ -92,7 +92,7 @@ void main() {
       return http.Response(
         json.encode({
           'undo_token': 'u',
-          'given': ['slot-2', 'slot-1', 'slot-0'],
+          'entry': {'id': 'pill', 'open_occurrences': []},
         }),
         200,
       );
@@ -128,10 +128,12 @@ void main() {
 
     await tester.tap(find.byKey(const Key('care_item_bulk_mark_done')));
     await tester.pumpAndSettle();
-    expect(requests, hasLength(1));
-    expect(requests.single.url.path, endsWith('/occurrences/resolve-stack'));
-    final body = json.decode(requests.single.body) as Map<String, dynamic>;
-    expect(body['given'], ['slot-2', 'slot-1', 'slot-0']);
+    expect(requests, hasLength(3));
+    expect(requests.map((r) => r.url.path), [
+      endsWith('/occurrences/slot-0/complete'),
+      endsWith('/occurrences/slot-1/complete'),
+      endsWith('/occurrences/slot-2/complete'),
+    ]);
     expect(find.text('3 marked done'), findsOneWidget);
     expect(find.byIcon(Icons.close), findsOneWidget);
     await tester.pump(kUndoSnackBarDuration);

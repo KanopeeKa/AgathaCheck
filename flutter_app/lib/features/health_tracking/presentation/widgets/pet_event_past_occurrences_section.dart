@@ -37,7 +37,12 @@ class PetEventPastOccurrencesSection extends ConsumerWidget {
       data: (past) {
         // Server returns completed + skipped only; guard unresolved overdue.
         final rows = past
-            .where((o) => o.status == 'completed' || o.status == 'skipped')
+            .where(
+              (o) =>
+                  o.status == 'completed' ||
+                  o.status == 'skipped' ||
+                  o.status == 'not_recorded',
+            )
             .toList();
         if (rows.isEmpty) return const SizedBox.shrink();
 
@@ -81,7 +86,12 @@ class _PastOccurrenceCard extends StatelessWidget {
     final dateFormat = DateFormat.yMMMd();
     final scheduled = formatOccurrenceInstant(occurrence, l, context: context);
 
-    final statusLabel = occurrence.status == 'skipped'
+    final isNotRecorded =
+        occurrence.status == 'not_recorded' ||
+        occurrence.outcome == 'not_recorded';
+    final statusLabel = isNotRecorded
+        ? l.careStatusNotRecorded
+        : occurrence.status == 'skipped'
         ? l.occurrenceSkipped
         : occurrence.completedOn != null
         ? l.doneOn(dateFormat.format(occurrence.completedOn!))

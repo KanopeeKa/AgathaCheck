@@ -25,6 +25,9 @@ class _TestHealthEntriesNotifier extends HealthEntriesNotifier {
 
   @override
   Future<List<HealthEntry>> build() async => _entries;
+
+  @override
+  Future<void> refresh() async {}
 }
 
 Future<List<HealthHistoryEntry>> _historyFor(Ref ref, String entryId) async =>

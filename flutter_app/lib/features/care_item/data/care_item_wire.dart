@@ -153,6 +153,15 @@ OccurrenceNeighborSummary? _neighborSummary(Object? raw) {
   );
 }
 
+CareOccurrenceStatus _occurrenceScreenStatus(Map<String, dynamic> occ) {
+  final stored = occ['status'] as String?;
+  if (stored == 'not_recorded') return CareOccurrenceStatus.notRecorded;
+  if (stored == 'completed') return CareOccurrenceStatus.done;
+  if (stored == 'skipped') return CareOccurrenceStatus.skipped;
+  final wire = occ['occurrence_status'] as String? ?? occ['outcome'] as String?;
+  return careOccurrenceStatusFromApi(wire);
+}
+
 /// `GET /api/health-entries/:id/occurrences/:occId`.
 OccurrenceDetail occurrenceDetailFromJson(Map<String, dynamic> json) {
   final occ = json['occurrence'] as Map<String, dynamic>;
@@ -168,12 +177,11 @@ OccurrenceDetail occurrenceDetailFromJson(Map<String, dynamic> json) {
       id: occ['id'] as String,
       date: _requiredDate(occ['scheduled_date'], 'scheduled_date'),
       time: _time(occ['scheduled_time']),
-      status: careOccurrenceStatusFromApi(occ['occurrence_status'] as String?),
+      status: _occurrenceScreenStatus(occ),
       origin: careOccurrenceOriginFromApi(occ['origin'] as String?),
       isOpen: occ['status'] == 'pending',
       completedOn: parseCalendarDate(occ['completed_on']),
       notes: occ['notes'] as String? ?? '',
-      closeReason: occ['close_reason'] as String?,
     ),
     item: CareItemSummary(
       id: entry['id'] as String,

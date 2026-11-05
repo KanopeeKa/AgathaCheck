@@ -1,5 +1,5 @@
 /**
- * Record earlier doses (stack review) and Record as given (D-CSM-023).
+ * Record as given and confirm skip for doses closed as Not recorded (D-CSM-023).
  */
 
 import {
@@ -14,12 +14,11 @@ import {
   markSkipped,
 } from '../occurrenceRepository.js';
 import { closeAsDone } from './complete.js';
+import { assertItemOpen } from './assertItemOpen.js';
 
-/**
- * @param {object} ctx
- * @param {{ given?: string[], notGiven?: string[], completedOnById?: Record<string,string> }} params
- */
+/** @deprecated HTTP route removed — seeds/tests only; clients use per-occurrence complete/skip. */
 export async function resolveStackCommand(ctx, { given = [], notGiven = [], completedOnById = {} }) {
+  assertItemOpen(ctx.entry);
   const { db, entry, openRows, trace, userId, asOf } = ctx;
   const ids = [...given, ...notGiven];
   if (ids.length === 0) throw badRequest('nothing_to_record', 'given or not_given is required');
@@ -38,9 +37,8 @@ export async function resolveStackCommand(ctx, { given = [], notGiven = [], comp
     trace.closedRow(row);
   }
   for (const id of openNotGiven) {
-    const row = byId.get(id);
-    await markSkipped(db, { entryId: entry.id, occurrenceId: id, closeReason: 'user', userId });
-    trace.closedRow(row);
+    await markSkipped(db, { entryId: entry.id, occurrenceId: id, userId });
+    trace.closedRow(byId.get(id));
   }
   return {
     event: {
@@ -57,16 +55,13 @@ export async function resolveStackCommand(ctx, { given = [], notGiven = [], comp
 
 /**
  * @param {object} ctx
- * @param {{ occurrenceId: string, completedOn?: string|null }} params
- */
-/**
- * @param {object} ctx
  * @param {{ occurrenceId: string }} params
  */
 export async function confirmSkipCommand(ctx, { occurrenceId }) {
+  assertItemOpen(ctx.entry);
   const { db, entry, trace, userId } = ctx;
   const row = await findOccurrence(db, entry.id, occurrenceId);
-  if (!row || row.status !== 'skipped' || row.close_reason !== 'not_recorded') {
+  if (!row || row.status !== 'not_recorded') {
     throw badRequest('not_a_not_recorded_dose', 'Only a dose closed as Not recorded can be confirmed as skipped');
   }
   const skipped = await confirmNotRecordedAsSkipped(db, {
@@ -90,9 +85,10 @@ export async function confirmSkipCommand(ctx, { occurrenceId }) {
 }
 
 export async function recordAsGivenCommand(ctx, { occurrenceId, completedOn = null }) {
+  assertItemOpen(ctx.entry);
   const { db, entry, trace, asOf } = ctx;
   const row = await findOccurrence(db, entry.id, occurrenceId);
-  if (!row || row.status !== 'skipped' || row.close_reason !== 'not_recorded') {
+  if (!row || row.status !== 'not_recorded') {
     throw badRequest('not_a_not_recorded_dose', 'Only a dose closed as Not recorded can be recorded as given');
   }
   const date = completedOn || row.scheduled_date;

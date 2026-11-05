@@ -1,5 +1,5 @@
 /**
- * Create, edit reconciliation, close and reopen (D-CSM-019, D-CSM-032).
+ * Create, edit reconciliation, and close (D-CSM-019, D-CSM-032).
  * None of these is undoable; they write no primary ledger event.
  */
 
@@ -9,13 +9,19 @@ import { slotHasStarted } from '../../schedule/occurrenceStatus.js';
 import { scheduleTimesFromEntry } from '../../schedule/scheduleTimes.js';
 import { seriesStep } from '../../schedule/seriesDates.js';
 import { insertCareScheduleEvent } from '../../schedule/scheduleEventLedger.js';
+import {
+  CARE_CLOSED_REASON_STOPPED,
+  CARE_ITEM_STATUS_CLOSED,
+  isItemClosed,
+} from '../../item/itemStatus.js';
+import { assertItemOpen } from './assertItemOpen.js';
 import { CareCommandError } from '../careCommandError.js';
 import { updateEntryFields } from '../entryRepository.js';
 import {
+  applyOpenOccurrencePauseCloseRule,
   closeAllOpen,
   deleteOpenOccurrences,
   insertOpenOccurrence,
-  markSkipped,
   moveOpenOccurrence,
 } from '../occurrenceRepository.js';
 
@@ -28,7 +34,7 @@ import {
 export async function createInitialOccurrences(ctx, { firstDate: requested, plannedDates = [] }) {
   const { db, entry, trace, asOf } = ctx;
   const firstDate = requested || asOf.todayIso;
-  if ((entry.care_planning || 'planned') === 'unplanned' || entry.status === 'completed') {
+  if ((entry.care_planning || 'planned') === 'unplanned' || isItemClosed(entry)) {
     return { event: null };
   }
   const times = scheduleTimesFromEntry(entry);
@@ -71,9 +77,10 @@ function cadenceChanged(before, after) {
  * @param {{ before: object, requestedNextDate?: string|null }} params
  */
 export async function reconcileScheduleEdit(ctx, { before, requestedNextDate = null }) {
-  const { db, entry, openRows, asOf } = ctx;
+  assertItemOpen(ctx.entry);
+  const { db, entry, openRows, asOf, trace } = ctx;
   const changes = [];
-  if ((entry.care_planning || 'planned') === 'unplanned' || entry.status === 'completed') {
+  if ((entry.care_planning || 'planned') === 'unplanned' || isItemClosed(entry)) {
     return { event: null, result: { changes } };
   }
   const wasFixed = isFixedSchedule(before);
@@ -82,9 +89,13 @@ export async function reconcileScheduleEdit(ctx, { before, requestedNextDate = n
   let anchorFields = null;
 
   if (wasFixed && !isFixed) {
-    for (const row of openRows.filter((o) => o.origin === 'schedule')) {
-      await markSkipped(db, { entryId: entry.id, occurrenceId: row.id, closeReason: 'not_recorded' });
-    }
+    await applyOpenOccurrencePauseCloseRule(db, {
+      entryId: entry.id,
+      rows: openRows,
+      asOf,
+      trace,
+      onlyOrigin: 'schedule',
+    });
     changes.push('fixed_to_after_done');
   } else if (!wasFixed && isFixed) {
     const computed = openRows.filter((o) => o.origin === 'computed');
@@ -131,9 +142,12 @@ export async function reconcileScheduleEdit(ctx, { before, requestedNextDate = n
 
   const endIso = dateToIsoDate(entry.repeat_end_date);
   if (endIso) {
-    for (const row of openRows.filter((o) => o.scheduled_date > endIso)) {
-      await markSkipped(db, { entryId: entry.id, occurrenceId: row.id, closeReason: 'system' });
-    }
+    await applyOpenOccurrencePauseCloseRule(db, {
+      entryId: entry.id,
+      rows: openRows.filter((o) => o.scheduled_date > endIso),
+      asOf,
+      trace,
+    });
   }
   if (anchorFields) await updateEntryFields(db, entry.id, anchorFields);
   if (changes.length) {
@@ -153,39 +167,25 @@ export async function reconcileScheduleEdit(ctx, { before, requestedNextDate = n
  * @param {object} ctx
  */
 export async function closeSeriesCommand(ctx) {
-  const { db, entry, userId, asOf } = ctx;
-  await closeAllOpen(db, entry.id, userId, 'system');
+  assertItemOpen(ctx.entry);
+  const { db, entry, userId, asOf, trace } = ctx;
+  await closeAllOpen(db, entry.id, userId, 'system', { asOf, trace });
   const once = !seriesStep(entry);
   await db.query(
-    `UPDATE health_entries SET status = 'completed',
+    `UPDATE health_entries SET status = $4,
+       care_closed_reason = $5,
        completed_on = CASE WHEN $1 THEN COALESCE(completed_on, $2::date) ELSE completed_on END,
        completed_at = CASE WHEN $1 THEN COALESCE(completed_at, NOW()) ELSE completed_at END,
        repeat_end_date = CASE WHEN $1 THEN NULL ELSE ($2::date - 1) END,
        next_due_date = NULL, paused_since = NULL, paused_until = NULL, updated_at = NOW()
      WHERE id = $3`,
-    [once, asOf.todayIso, entry.id],
+    [once, asOf.todayIso, entry.id, CARE_ITEM_STATUS_CLOSED, CARE_CLOSED_REASON_STOPPED],
   );
   return { event: null };
 }
 
-/**
- * Reopen a closed item; the sync creates its next date at once.
- *
- * @param {object} ctx
- */
-export async function reopenSeriesCommand(ctx) {
-  const { db, entry, asOf } = ctx;
-  await db.query(
-    `UPDATE health_entries SET status = 'active', repeat_end_date = NULL,
-       completed_on = CASE WHEN frequency = 'once' OR frequency IS NULL THEN NULL ELSE completed_on END,
-       completed_at = NULL, updated_at = NOW()
-     WHERE id = $1`,
-    [entry.id],
-  );
-  if (!seriesStep(entry)) {
-    await insertOpenOccurrence(db, {
-      entryId: entry.id, date: asOf.todayIso, time: null, origin: 'planned',
-    });
-  }
-  return { event: null };
+/** @deprecated Reopen removed (CARE-STATUS-R-011); route deleted — stub for barrel export. */
+export async function reopenSeriesCommand() {
+  throw new CareCommandError(404, 'route_removed', 'Reopen is not available');
 }
+

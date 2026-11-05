@@ -24,6 +24,8 @@ import { nextComputedDate } from '../schedule/nextComputed.js';
 import { scheduleTimesFromEntry } from '../schedule/scheduleTimes.js';
 import { seriesDateAfter, seriesStep } from '../schedule/seriesDates.js';
 import { insertCareScheduleEvent } from '../schedule/scheduleEventLedger.js';
+import { closeItemAsEnded } from '../item/closeItemWrite.js';
+import { isItemClosed } from '../item/itemStatus.js';
 import { reloadEntry, updateEntryFields } from './entryRepository.js';
 import {
   deleteOpenOccurrences,
@@ -31,7 +33,7 @@ import {
   insertOpenOccurrence,
   lastRuleClosedRow,
   listOpenRows,
-  markSkipped,
+  markNotRecorded,
 } from './occurrenceRepository.js';
 import { wouldAutoCloseAsNotRecorded } from './readSync.js';
 
@@ -82,10 +84,9 @@ async function closeStackOutsideWindow(db, entry, asOf) {
   const closed = [];
   for (const row of open) {
     if (!wouldAutoCloseAsNotRecorded(entry, row, asOf)) continue;
-    const done = await markSkipped(db, {
+    const done = await markNotRecorded(db, {
       entryId: entry.id,
       occurrenceId: row.id,
-      closeReason: 'not_recorded',
     });
     if (done) closed.push(row.id);
   }
@@ -185,15 +186,14 @@ async function finishIfNothingLeft(db, entry, asOf) {
     );
     if (closed.rows.length === 0) return entry;
     const row = closed.rows[0];
-    return updateEntryFields(db, entry.id, {
-      status: 'completed',
-      completed_on: dateToIsoDate(row.completed_on) || dateToIsoDate(row.scheduled_date) || asOf.todayIso,
-      completed_at: new Date(),
+    return closeItemAsEnded(db, entry.id, {
+      completedOn: dateToIsoDate(row.completed_on) || dateToIsoDate(row.scheduled_date) || asOf.todayIso,
+      completedAt: new Date(),
     });
   }
   const endIso = dateToIsoDate(entry.repeat_end_date);
   if (!endIso) return entry;
-  return updateEntryFields(db, entry.id, { status: 'completed' });
+  return closeItemAsEnded(db, entry.id, { repeatEndDate: endIso });
 }
 
 async function writeNextDueDate(db, entry) {
@@ -217,7 +217,7 @@ async function writeNextDueDate(db, entry) {
 export async function syncOpenOccurrences(db, entryRow, asOf) {
   let entry = entryRow;
   const result = { created: [], createdComputed: [], closedNotRecorded: [] };
-  if (!isPlannedCare(entry) || entry.status === 'completed') {
+  if (!isPlannedCare(entry) || isItemClosed(entry)) {
     await writeNextDueDate(db, entry);
     return { entry: await reloadEntry(db, entry.id), ...result };
   }

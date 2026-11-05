@@ -11,6 +11,7 @@ import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import 'package:pet_profile_app/features/pet_care/pet_care.dart';
 import 'package:pet_profile_app/features/care_item/care_item.dart';
 import '../care_item_history.dart';
+import 'care_item_closed_reason_provider.dart';
 import 'care_item_detail_body.dart';
 import 'care_item_menu.dart';
 
@@ -72,13 +73,22 @@ class CareItemDetailScreen extends ConsumerWidget {
             }
 
             final isClosed = isHealthEntrySeriesClosed(entry);
+            final closedReasonAsync = ref.watch(
+              careItemClosedReasonProvider(entryId),
+            );
+            final careClosedReason = closedReasonAsync.valueOrNull;
             final openOccurrencesAsync = ref.watch(
               entryOccurrencesProvider(entryId),
             );
-            final openOccurrenceCount = openOccurrencesAsync.maybeWhen(
-              data: (list) => list.length,
-              orElse: () => null,
+            final viewerRole = PetViewerRoleResolver.resolve(
+              pet: pet,
+              experience: experience,
             );
+            final canCloseCare =
+                !isClosed && viewerRole == PetViewerRole.guardian;
+            final startedOpenCount = entry.schedule != null
+                ? partitionOpenOccurrences(entry.schedule!).started.length
+                : 0;
             final establishmentsAsync = ref.watch(
               petCareEstablishmentsProvider(petId),
             );
@@ -97,25 +107,18 @@ class CareItemDetailScreen extends ConsumerWidget {
 
             void onSeeHistory() => showPetEventHistory(context, ref, entryId);
 
-            Future<void> onArchive() async {
-              if (closeEventWillCloseOccurrences(entry, openOccurrenceCount)) {
-                final confirmed = await showCloseEventConfirmDialog(
-                  context,
-                  openOccurrenceCount: openOccurrenceCount ?? 0,
-                );
-                if (confirmed != true || !context.mounted) return;
+            Future<void> onCloseCare() async {
+              final choice = await showCloseCareConfirmDialog(
+                context,
+                startedOpenCount: startedOpenCount,
+              );
+              if (choice != CloseCareDialogResult.confirmClose ||
+                  !context.mounted) {
+                return;
               }
               await ref
                   .read(healthEntriesNotifierProvider.notifier)
                   .closeEvent(entryId);
-              PetEventOccurrenceActions.invalidateOccurrenceData(ref, entryId);
-              ref.invalidate(petHealthEntryByIdProvider);
-            }
-
-            Future<void> onRestore() async {
-              await ref
-                  .read(healthEntriesNotifierProvider.notifier)
-                  .reopenEvent(entryId);
               PetEventOccurrenceActions.invalidateOccurrenceData(ref, entryId);
               ref.invalidate(petHealthEntryByIdProvider);
             }
@@ -203,20 +206,19 @@ class CareItemDetailScreen extends ConsumerWidget {
 
             return routeShell(
               actions: [
-                IconButton(
-                  key: const Key('care_item_edit_app_bar'),
-                  tooltip: l.edit,
-                  icon: const Icon(Icons.edit_outlined),
-                  onPressed: onEdit,
-                ),
+                if (!isClosed)
+                  IconButton(
+                    key: const Key('care_item_edit_app_bar'),
+                    tooltip: l.edit,
+                    icon: const Icon(Icons.edit_outlined),
+                    onPressed: onEdit,
+                  ),
                 CareItemMenu(
                   entry: entry,
                   isClosed: isClosed,
                   onEdit: onEdit,
                   onPause: onPause,
                   onResume: onResume,
-                  onArchive: onArchive,
-                  onRestore: onRestore,
                   onPlanAnotherDate: onPlanAnotherDate,
                 ),
               ],
@@ -224,14 +226,47 @@ class CareItemDetailScreen extends ConsumerWidget {
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (error, _) =>
                     Center(child: Text(l.failedToLoadHistory('$error'))),
-                data: (history) => CareItemDetailBody(
-                  petId: petId,
-                  entry: entry,
-                  pet: pet,
-                  history: history,
-                  isClosed: isClosed,
-                  isEstablished: isEstablished,
-                  onSeeHistory: onSeeHistory,
+                data: (history) => Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(
+                      child: CareItemDetailBody(
+                        petId: petId,
+                        entry: entry,
+                        pet: pet,
+                        history: history,
+                        isClosed: isClosed,
+                        isEstablished: isEstablished,
+                        onSeeHistory: onSeeHistory,
+                        careClosedReason: careClosedReason,
+                      ),
+                    ),
+                    if (canCloseCare)
+                      SafeArea(
+                        top: false,
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                          child: Semantics(
+                            identifier: 'care_item_close_care_button',
+                            button: true,
+                            child: FilledButton(
+                              key: const Key('care_item_close_care_button'),
+                              style: FilledButton.styleFrom(
+                                backgroundColor: Theme.of(
+                                  context,
+                                ).colorScheme.error,
+                                foregroundColor: Theme.of(
+                                  context,
+                                ).colorScheme.onError,
+                                minimumSize: const Size.fromHeight(48),
+                              ),
+                              onPressed: onCloseCare,
+                              child: Text(l.careCloseCareButton),
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
               ),
             );

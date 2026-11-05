@@ -7,17 +7,30 @@ import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import 'care_item_pet_context_tile.dart';
 
-enum _CareItemStripChip { finished, paused }
+enum _CareItemStripChip { closed, paused }
 
 /// Visual size for pet avatar and care-family icon in the context strip row.
 const double _kContextStripEndcapSize = CareItemPetContextTile.avatarSize;
 
 _CareItemStripChip? careItemStripChip(HealthEntry entry) {
-  final finished =
-      entry.status == 'completed' || isHealthEntrySeriesClosed(entry);
-  if (finished) return _CareItemStripChip.finished;
+  if (entry.status == 'closed' || entry.status == 'completed') {
+    return _CareItemStripChip.closed;
+  }
   if (entry.isPaused) return _CareItemStripChip.paused;
+  if (isHealthEntrySeriesClosed(entry)) return _CareItemStripChip.closed;
   return null;
+}
+
+String? careItemStripChipLabel(
+  AppLocalizations l,
+  HealthEntry entry, {
+  String? careClosedReason,
+}) {
+  return switch (careItemStripChip(entry)) {
+    _CareItemStripChip.closed => careItemClosedSubtitleLabel(careClosedReason),
+    _CareItemStripChip.paused => l.careItemPausedStatus,
+    null => null,
+  };
 }
 
 /// Context strip: pet chip, care name, category icon, optional status chip.
@@ -26,10 +39,12 @@ class CareItemContextStrip extends StatelessWidget {
     super.key,
     required this.entry,
     required this.pet,
+    this.careClosedReason,
   });
 
   final HealthEntry entry;
   final Pet pet;
+  final String? careClosedReason;
 
   static const _stackedMaxWidth = 360.0;
   static const _largeTextScaleThreshold = 1.3;
@@ -41,12 +56,11 @@ class CareItemContextStrip extends StatelessWidget {
     final colorScheme = theme.colorScheme;
     final family = entry.careFamily ?? inferCareFamily(entry);
     final familyLabel = careFamilyLabel(l, family);
-    final chip = careItemStripChip(entry);
-    final chipLabel = switch (chip) {
-      _CareItemStripChip.finished => l.careItemStatusFinished,
-      _CareItemStripChip.paused => l.careItemPausedStatus,
-      null => null,
-    };
+    final chipLabel = careItemStripChipLabel(
+      l,
+      entry,
+      careClosedReason: careClosedReason,
+    );
 
     return LayoutBuilder(
       builder: (context, constraints) {

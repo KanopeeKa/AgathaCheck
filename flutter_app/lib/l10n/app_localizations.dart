@@ -9825,6 +9825,42 @@ abstract class AppLocalizations {
   /// **'Restore'**
   String get careItemMenuRestore;
 
+  /// No description provided for @careCloseCareButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Close care'**
+  String get careCloseCareButton;
+
+  /// No description provided for @careCloseConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Close care?'**
+  String get careCloseConfirmTitle;
+
+  /// No description provided for @careCloseConfirmNoReopen.
+  ///
+  /// In en, this message translates to:
+  /// **'This care cannot be reopened.'**
+  String get careCloseConfirmNoReopen;
+
+  /// No description provided for @careCloseConfirmStartedDates.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 date will be marked Not recorded.} other{{count} dates will be marked Not recorded.}}'**
+  String careCloseConfirmStartedDates(int count);
+
+  /// No description provided for @careCloseConfirmRecordFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Record them first'**
+  String get careCloseConfirmRecordFirst;
+
+  /// No description provided for @careCloseConfirmAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Close care'**
+  String get careCloseConfirmAction;
+
   /// No description provided for @careItemPausedStatus.
   ///
   /// In en, this message translates to:

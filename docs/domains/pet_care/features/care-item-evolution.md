@@ -5,7 +5,7 @@ audience: both
 domain: pet_care
 feature_id: care_item
 status: active
-last_updated: 2026-10-14
+last_updated: 2026-11-04
 related_prs: [1797, 1805, 1812, 1817]
 ---
 
@@ -15,7 +15,7 @@ related_prs: [1797, 1805, 1812, 1817]
 
 ## Summary / scope
 
-- **Owns:** Care Item detail and agenda presentation, occurrence status copy, Needs attention layout, context strip, completing care UX (including Care date screen), absence resolutions per item, providers and category blocks on the item, lifecycle copy (Pause, Archive, Finished).
+- **Owns:** Care Item detail and agenda presentation, occurrence status copy, Needs attention layout, context strip, completing care UX (including Care date screen), absence resolutions per item, providers and category blocks on the item, lifecycle copy (Pause, Closed). Item **Closed** lifecycle and **Closed care** list: [care-status-model.md](./care-status-model.md).
 - **Does not own:** schedule commands, tick, or timing rules ([care-schedule-management.md](./care-schedule-management.md)); establishment ([care-progression.md](./care-progression.md)); absence invariants ([care-context.md](./care-context.md)).
 - **Depends on:** People & Care Team ([people-care-team.md](../../people/features/people-care-team.md)); pet home timezone ([calendar-dates.md](/docs/architecture/calendar-dates.md)); CSM `as_of` and occurrence status on the wire (D-CIE-028).
 
@@ -26,7 +26,7 @@ Historical profile refactor and 2026-09-13 delivery plan text: [archive/care-ite
 | ID | Rule | Status |
 |----|------|--------|
 | CARE-ITEM-R-001 | App bar uses `careItemScreenTitle`; care name lives in the context strip (D-CIH-001 … D-CIH-014) | Live |
-| CARE-ITEM-R-002 | At most one strip status chip: Finished or Paused; no Archived chip until API `closed_reason` (D-CIH-007, D-CIH-013) | Live |
+| CARE-ITEM-R-002 | At most one strip status chip: **Closed** or Paused (CARE-STATUS-MODEL-R-010; supersedes Finished/Archived chip) | Live |
 | CARE-ITEM-R-003 | Agenda: Today (Overdue first), Due soon (7d), Upcoming collapsed (D-CIE-025) | Live |
 | CARE-ITEM-R-004 | List rows: one trailing action; server confirms before row updates (D-CIE-026) | Live |
 | CARE-ITEM-R-005 | Status words Coming up, Due, Overdue, Not recorded, Done, Skipped, Paused (D-CIE-024) | Live |

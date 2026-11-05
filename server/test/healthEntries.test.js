@@ -92,6 +92,7 @@ describe('Health Entries API', () => {
           return { rows: [] };
         }
         if (sql.includes('AS slot_date')) return { rows: [] };
+        if (sql.includes("status = 'completed' OR status = 'skipped'")) return { rows: [] };
         if (sql.includes("COALESCE(close_reason, 'user') = 'user'")) return { rows: [] };
         if (sql.includes('UPDATE health_entries SET') && sql.includes('RETURNING *') && !sql.includes('SET name')) {
           const id = params[params.length - 1];
@@ -598,9 +599,9 @@ describe('Health Entries API', () => {
       expect(res.statusCode).toBe(401);
     });
 
-    it('POST /api/health-entries/:id/reopen returns 401 without token', async () => {
+    it('POST /api/health-entries/:id/reopen route is removed', async () => {
       const res = await request(app).post('/api/health-entries/he-1/reopen');
-      expect(res.statusCode).toBe(401);
+      expect(res.statusCode).toBe(404);
     });
 
   });

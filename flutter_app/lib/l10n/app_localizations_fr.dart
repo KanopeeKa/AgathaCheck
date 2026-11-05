@@ -5619,6 +5619,32 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careItemMenuRestore => 'Restaurer';
 
   @override
+  String get careCloseCareButton => 'Clore le soin';
+
+  @override
+  String get careCloseConfirmTitle => 'Clore le soin ?';
+
+  @override
+  String get careCloseConfirmNoReopen => 'Ce soin ne pourra pas être rouvert.';
+
+  @override
+  String careCloseConfirmStartedDates(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count dates seront marquées Non enregistrées.',
+      one: '1 date sera marquée Non enregistrée.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get careCloseConfirmRecordFirst => 'Les enregistrer d\'abord';
+
+  @override
+  String get careCloseConfirmAction => 'Clore le soin';
+
+  @override
   String get careItemPausedStatus => 'En pause';
 
   @override

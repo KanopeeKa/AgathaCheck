@@ -58,7 +58,7 @@ describe('stale open doses without tick', () => {
     expect(openDates).not.toContain('2026-09-30');
     const rows = await occurrenceRows(harness.pool, entryId);
     expect(rows.filter((r) => r.date === '2026-09-30' && r.status === 'pending')).toHaveLength(0);
-    expect(rows.filter((r) => r.date === '2026-09-30' && r.close_reason === 'not_recorded')).toHaveLength(2);
+    expect(rows.filter((r) => r.date === '2026-09-30' && r.status === 'not_recorded')).toHaveLength(2);
     expect(await invariantViolations(harness.pool, entryId)).toEqual([]);
   });
 
@@ -75,10 +75,10 @@ describe('stale open doses without tick', () => {
     expect(res.statusCode).toBe(409);
     expect(res.body.code).toBe('occurrence_not_open');
     const row = (await occurrenceRows(harness.pool, entryId)).find((r) => r.id === morningId);
-    expect(row).toMatchObject({ status: 'skipped', close_reason: 'not_recorded' });
+    expect(row).toMatchObject({ status: 'not_recorded' });
   });
 
-  it('NR-3 resolve-stack ignores already-closed ids and completes the rest', async () => {
+  it('NR-3 completing an already-closed slot returns occurrence_not_open', async () => {
     const owner = await createOwner(harness.pool);
     owners.push(owner);
     const api = careApi(harness.app, owner);
@@ -89,29 +89,26 @@ describe('stale open doses without tick', () => {
     expect(stack.length).toBeGreaterThanOrEqual(2);
     const [first, second] = stack;
     await api.at('2026-06-02T19:00').skip(entryId, first.id);
-    const partial = await api.at('2026-06-02T19:01').resolveStack(entryId, {
-      given: [first.id, second.id],
-      not_given: [],
+    const blocked = await api.at('2026-06-02T19:01').complete(entryId, first.id, {});
+    expect(blocked.statusCode).toBe(409);
+    expect(blocked.body.code).toBe('occurrence_not_open');
+    const ok = await api.at('2026-06-02T19:01').complete(entryId, second.id, {
+      completed_on: second.scheduled_date,
     });
-    expect(partial.statusCode).toBe(200);
-    expect(partial.body.ignored).toEqual([first.id]);
-    expect(partial.body.given).toEqual([second.id]);
+    expect(ok.statusCode).toBe(200);
     expect(await invariantViolations(harness.pool, entryId)).toEqual([]);
   });
 
-  it('NR-4 resolve-stack with every id closed returns nothing_to_update', async () => {
+  it('NR-4 resolve-stack route is removed', async () => {
     const owner = await createOwner(harness.pool);
     owners.push(owner);
     const api = careApi(harness.app, owner);
     const created = await api.at('2026-09-30T07:00').create(twiceDaily('2026-09-30'));
     const entryId = created.body.id;
-    const slots = created.body.open_occurrences.filter((o) => o.scheduled_date === '2026-09-30');
-    await api.at('2026-10-04T12:00').get(entryId);
     const res = await api.at('2026-10-04T12:01').resolveStack(entryId, {
-      given: slots.map((o) => o.id),
+      given: [],
       not_given: [],
     });
-    expect(res.statusCode).toBe(400);
-    expect(res.body.code).toBe('nothing_to_update');
+    expect(res.statusCode).toBe(404);
   });
 });

@@ -5,7 +5,7 @@ audience: both
 domain: pet_care
 feature_id: care_schedule_management
 status: active
-last_updated: 2026-10-07
+last_updated: 2026-11-04
 related_prs: []
 ---
 
@@ -16,7 +16,7 @@ related_prs: []
 ## Summary / scope
 
 - **Owns:** occurrence lifecycle, schedule types, commands (complete, skip, reschedule, postpone, undo, cadence), care tick, `projectSchedule`, `explainGap`, `health_entries` schedule cache, occurrence-backed history reads.
-- **Does not own:** care meaning (`care_core`), agenda copy and completion UX ([care-item-evolution.md](./care-item-evolution.md)), maturity ([care-progression.md](./care-progression.md)), suggestions ([care-intelligence.md](./care-intelligence.md)).
+- **Does not own:** care meaning (`care_core`), agenda copy and completion UX ([care-item-evolution.md](./care-item-evolution.md)), item Closed/Close care UX ([care-status-model.md](./care-status-model.md)), maturity ([care-progression.md](./care-progression.md)), suggestions ([care-intelligence.md](./care-intelligence.md)).
 - **Depends on:** pet home timezone ([calendar-dates.md](/docs/architecture/calendar-dates.md)); entitlements gates ([care-entitlements.md](./care-entitlements.md)).
 
 CSM defines how AgathaTrack **creates, projects, changes, and explains the timing of care** — recurring and non-recurring, single and multiple times per day — while preserving a trustworthy care history.

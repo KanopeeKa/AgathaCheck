@@ -18,6 +18,9 @@ class _FakeHealthEntriesNotifier extends HealthEntriesNotifier {
 
   @override
   Future<List<HealthEntry>> build() async => _entries;
+
+  @override
+  Future<void> refresh() async {}
 }
 
 HealthEntry _entry({
@@ -65,13 +68,19 @@ ProviderContainer _buildContainer(List<HealthEntry> entries) {
 
 void main() {
   testWidgets(
-    'planned care uses the agenda; ended care follows without a tick',
+    'planned care uses the agenda; paused care follows without a tick',
     (tester) async {
       await tester.pumpWidget(
         _wrap([
           scheduledEntry(id: 'overdue', name: 'overdue', dueInDays: -1),
           scheduledEntry(id: 'today', name: 'today', dueInDays: 0),
           scheduledEntry(id: 'upcoming', name: 'upcoming', dueInDays: 2),
+          scheduledEntry(
+            id: 'paused-care',
+            name: 'paused-care',
+            dueInDays: 5,
+            entryStatus: 'paused',
+          ),
           _entry(
             id: 'one-off-done',
             nextDue: DateTime(9999),
@@ -92,16 +101,43 @@ void main() {
         findsOneWidget,
       );
       expect(
-        find.byKey(const Key('pet_care_action_one-off-done')),
+        find.byKey(const Key('pet_care_action_paused-care')),
         findsOneWidget,
       );
       expect(
-        find.byKey(const Key('pet_care_action_done_one-off-done')),
+        find.byKey(const Key('pet_care_action_one-off-done')),
         findsNothing,
       );
       expect(find.byType(CareMarkDoneButton), findsNWidgets(3));
     },
   );
+
+  testWidgets('shows Closed care link for closed items not in Other care', (
+    tester,
+  ) async {
+    final doneOneOff = HealthEntry(
+      id: 'closed-one-off',
+      petId: 'pet-1',
+      name: 'Rabies done',
+      type: HealthEntryType.vetVisit,
+      frequency: HealthFrequency.once,
+      startDate: DateTime(2024, 1, 1),
+      nextDueDate: DateTime(2024, 1, 1),
+      completedOn: DateTime(2024, 1, 2),
+      remindDaysBefore: 1,
+    );
+    await tester.pumpWidget(_wrap([doneOneOff]));
+    await tester.pumpAndSettle();
+
+    expect(find.bySemanticsIdentifier('all_care_list'), findsOneWidget);
+    expect(find.byKey(const Key('all_care_closed_care_link')), findsOneWidget);
+    expect(find.text('Closed care (1)'), findsOneWidget);
+    expect(find.byKey(const Key('all_care_inactive_section')), findsNothing);
+    expect(
+      find.byKey(const Key('pet_care_action_closed-one-off')),
+      findsNothing,
+    );
+  });
 
   testWidgets('shows empty state when pet has no care items', (tester) async {
     await tester.pumpWidget(_wrap([]));

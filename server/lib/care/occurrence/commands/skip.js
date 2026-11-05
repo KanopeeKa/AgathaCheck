@@ -5,19 +5,20 @@
 import { SCHEDULE_EVENT_SKIPPED } from '../../schedule/scheduleEventLedger.js';
 import { notOpen } from '../careCommandError.js';
 import { markSkipped } from '../occurrenceRepository.js';
+import { assertItemOpen } from './assertItemOpen.js';
 
 /**
  * @param {object} ctx
  * @param {{ occurrenceId: string, notes?: string, reasonCode?: string|null }} params
  */
 export async function skipOccurrenceCommand(ctx, { occurrenceId, notes = '', reasonCode = null }) {
+  assertItemOpen(ctx.entry);
   const { db, entry, openRows, trace, userId } = ctx;
   const row = openRows.find((o) => o.id === occurrenceId);
   if (!row) throw notOpen();
   const skipped = await markSkipped(db, {
     entryId: entry.id,
     occurrenceId,
-    closeReason: 'user',
     userId,
     notes,
   });

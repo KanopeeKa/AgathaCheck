@@ -10,6 +10,8 @@ import request from 'supertest';
 import { createApp } from '../../../bin/server.js';
 import { createAppPool } from '../../../lib/db/createPool.js';
 import { dateToIsoDate } from '../../../lib/calendarDate.js';
+import { migrateCareDateOutcome } from '../../../scripts/migrations/104_care_date_outcome.js';
+import { migrateCareItemClosed } from '../../../scripts/migrations/105_care_item_closed.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'default_secret';
 
@@ -41,11 +43,46 @@ export async function openHarness() {
  *
  * @returns {Promise<{ pool: import('pg').Pool, app: any }>}
  */
+async function ensureCareDateOutcomeMigration(pool) {
+  const legacy = await pool.query(
+    `SELECT 1 FROM information_schema.columns
+     WHERE table_name = 'health_occurrences' AND column_name = 'close_reason'`,
+  );
+  if (legacy.rows.length === 0) return;
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    await migrateCareDateOutcome(client);
+    await client.query('COMMIT');
+  } catch (err) {
+    await client.query('ROLLBACK');
+    throw err;
+  } finally {
+    client.release();
+  }
+}
+
+async function ensureCareItemClosedMigration(pool) {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    await migrateCareItemClosed(client);
+    await client.query('COMMIT');
+  } catch (err) {
+    await client.query('ROLLBACK');
+    throw err;
+  } finally {
+    client.release();
+  }
+}
+
 export async function openStrictHarness() {
   const harness = await openHarness();
   if (!harness.pool) {
     throw new Error('Care DB integration tests require a migrated PostgreSQL (health_occurrences.origin)');
   }
+  await ensureCareDateOutcomeMigration(harness.pool);
+  await ensureCareItemClosedMigration(harness.pool);
   return harness;
 }
 
@@ -167,7 +204,7 @@ export function careApi(app, owner) {
 export async function occurrenceRows(pool, entryId) {
   const result = await pool.query(
     `SELECT id, to_char(scheduled_date, 'YYYY-MM-DD') AS date,
-       to_char(scheduled_time, 'HH24:MI') AS time, status, origin, close_reason,
+       to_char(scheduled_time, 'HH24:MI') AS time, status, origin,
        to_char(completed_on, 'YYYY-MM-DD') AS completed_on
      FROM health_occurrences WHERE health_entry_id = $1
      ORDER BY scheduled_date, scheduled_time NULLS FIRST`,
@@ -191,10 +228,12 @@ export async function invariantViolations(pool, entryId) {
   const plannedCare = (entry.care_planning || 'planned') !== 'unplanned';
   if (entry.status === 'active' && plannedCare && open.length === 0) violations.push('INV-1 no open occurrence');
   if (open.filter((r) => r.origin === 'computed').length > 1) violations.push('INV-2 two computed');
-  if (entry.status === 'completed' && open.length > 0) violations.push('INV-4 finished item has open occurrences');
+  if ((entry.status === 'completed' || entry.status === 'closed') && open.length > 0) {
+    violations.push('INV-4 finished item has open occurrences');
+  }
   const nextDue = dateToIsoDate(entry.next_due_date);
   const earliest = open[0]?.date ?? null;
-  if (entry.status !== 'completed' && nextDue !== earliest) {
+  if (entry.status !== 'completed' && entry.status !== 'closed' && nextDue !== earliest) {
     violations.push(`INV-5 next_due_date ${nextDue} != ${earliest}`);
   }
   return violations;

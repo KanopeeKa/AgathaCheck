@@ -14,6 +14,7 @@ class HealthOccurrenceModel extends HealthOccurrence {
     super.markedByName,
     super.notes,
     super.missed,
+    super.outcome,
   });
 
   factory HealthOccurrenceModel.fromJson(Map<String, dynamic> json) {
@@ -36,6 +37,7 @@ class HealthOccurrenceModel extends HealthOccurrence {
       markedByName: json['marked_by_name'] as String?,
       notes: json['notes'] as String? ?? '',
       missed: json['missed'] as bool? ?? false,
+      outcome: json['outcome'] as String?,
     );
   }
 }

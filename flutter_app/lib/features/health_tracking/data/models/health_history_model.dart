@@ -14,6 +14,7 @@ class HealthHistoryModel extends HealthHistoryEntry {
     super.markedByName,
     super.notes,
     super.status,
+    super.outcome,
     super.linkedWeight,
   });
 
@@ -30,6 +31,7 @@ class HealthHistoryModel extends HealthHistoryEntry {
       markedByName: json['marked_by_name'] as String?,
       notes: json['notes'] as String? ?? '',
       status: json['status'] as String? ?? 'completed',
+      outcome: json['outcome'] as String?,
       linkedWeight: _parseLinkedWeight(json['linked_weight']),
     );
   }
