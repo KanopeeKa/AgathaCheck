@@ -98,6 +98,6 @@ export async function migrateCareItemClosed(client) {
     CREATE TRIGGER health_entries_normalize_closed_status
       BEFORE INSERT OR UPDATE OF status, care_closed_reason ON health_entries
       FOR EACH ROW
-      EXECUTE FUNCTION health_entries_normalize_closed_status();
+      EXECUTE PROCEDURE health_entries_normalize_closed_status();
   `);
 }
