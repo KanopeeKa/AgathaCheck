@@ -3,7 +3,7 @@
   "plan_id": "care-status-model",
   "title": "Care status model (six vertical slices)",
   "plan_file": ".agents/plans/care-status-model.md",
-  "plan_file_sha256": "c67fccf26e8d7919d843aaf71610ab83239b4e7c5a55d6639c61def9046bca24",
+  "plan_file_sha256": "9dbba7d3a5d83213334aa2d0bcb758c297e24f486e3b030753f265c55862302a",
   "release_branch": "main",
   "integration_branch": "cursor/care-status-model-integration-2201",
   "control_issue": 2067,
@@ -27,16 +27,29 @@
       "title": "Truthful History",
       "branch": "cursor/care-status-model-p1",
       "allowed_paths": [
-        "server/scripts/migrations/084_*",
+        "server/scripts/migrations/104_*",
+        "server/scripts/migrations/105_*",
+        "server/scripts/migrate.js",
+        "db/migrations/104_*",
+        "db/migrations/105_*",
+        "db/schema/migration-manifest.json",
+        "db/schema/canonical.sql",
         "server/lib/care/occurrence/**",
         "server/lib/care/item/scheduling.js",
+        "server/lib/care/schedule/validateReschedule.js",
+        "server/lib/care/schedule/scheduleEventLedger.js",
+        "server/lib/care/repair/tzShiftRepair.js",
+        "server/lib/care/progression/weightEstablishmentService.js",
         "server/lib/health/**",
         "server/routes/healthEntries/**",
         "server/test/db/**",
         "server/test/healthEntries/**",
+        "server/test/careSchedule/**",
+        "server/test/scripts/migrateCareStatusMigrations.test.js",
         "flutter_app/lib/features/care_item/**",
         "flutter_app/lib/features/experience/presentation/care_item/**",
         "flutter_app/lib/features/health_tracking/**",
+        "flutter_app/lib/features/pet_care/**",
         "flutter_app/test/features/care_item/**",
         "flutter_app/test/bdd/features/care_date_screen.feature",
         "e2e/playwright/tests/care.date.spec.ts"
@@ -50,7 +63,7 @@
         "docs/architecture/openapi/**"
       ],
       "exit_checklist": [
-        "Migration 084 backfill idempotent",
+        "Migration 104 backfill idempotent",
         "History wire shows outcome not_recorded",
         "CSV says Not recorded for system rows",
         "Record Not recorded as Done from History",
@@ -68,10 +81,15 @@
         "server/lib/care/occurrence/commands/stack.js",
         "server/routes/healthEntries/occurrenceCommandRouter.js",
         "server/test/db/careOccurrences.*",
+        "flutter_app/lib/features/care_item/application/care_completion_service.dart",
+        "flutter_app/lib/features/care_item/application/care_stack_feedback.dart",
         "flutter_app/lib/features/care_item/domain/stack_rule.dart",
         "flutter_app/lib/features/care_item/domain/care_agenda.dart",
+        "flutter_app/lib/features/care_item/domain/done_decision.dart",
         "flutter_app/lib/features/experience/presentation/care_item/detail/care_item_needs_attention_section.dart",
         "flutter_app/lib/features/pet_care/presentation/widgets/care_agenda/**",
+        "flutter_app/lib/features/health_tracking/domain/entities/health_entry.dart",
+        "flutter_app/lib/l10n/**",
         "flutter_app/test/features/care_item/**",
         "flutter_app/test/bdd/features/care_agenda.feature",
         "flutter_app/test/bdd/features/care_schedules.feature",
@@ -80,9 +98,7 @@
         "e2e/playwright/tests/care.schedules.spec.ts",
         "e2e/playwright/tests/health.tracking.spec.ts"
       ],
-      "forbidden_paths": [
-        "server/scripts/migrations/**"
-      ],
+      "forbidden_paths": [],
       "allowed_exceptions": [
         "docs",
         "tests"
@@ -110,9 +126,7 @@
         "e2e/playwright/tests/care.item.pause_resume.spec.ts",
         "e2e/playwright/tests/care.schedules.spec.ts"
       ],
-      "forbidden_paths": [
-        "server/scripts/migrations/**"
-      ],
+      "forbidden_paths": [],
       "allowed_exceptions": [
         "docs",
         "tests"
@@ -131,14 +145,27 @@
       "title": "Care item Closed status",
       "branch": "cursor/care-status-model-p4",
       "allowed_paths": [
-        "server/scripts/migrations/085_*",
+        "server/scripts/migrations/104_*",
+        "server/scripts/migrations/105_*",
         "server/lib/care/occurrence/syncOpenOccurrences.js",
         "server/lib/care/item/**",
         "server/lib/care/occurrence/commands/**",
+        "server/lib/care/carePeriodCoverage.js",
+        "server/lib/care/schedule/nextComputed.js",
+        "server/lib/health/healthEntryWriteService.js",
+        "server/lib/care/observations/weightObservationRepository.js",
+        "server/lib/pets/vetVisits.js",
+        "server/routes/careIntelligence/**",
+        "server/routes/pets/familyEventsRouter.js",
+        "server/lib/account/accountErasureService.js",
         "server/test/db/**",
         "flutter_app/lib/features/experience/presentation/care_item/detail/**",
         "flutter_app/lib/features/experience/presentation/pet_profile/widgets/all_care/**",
         "flutter_app/lib/features/health_tracking/domain/health_entry_series_closed.dart",
+        "flutter_app/lib/features/health_tracking/domain/entities/health_entry.dart",
+        "flutter_app/lib/features/health_tracking/domain/services/care_temporal_grouping_service.dart",
+        "flutter_app/lib/features/care_item/domain/**",
+        "flutter_app/lib/features/experience/presentation/care_item/occurrence/**",
         "flutter_app/test/features/care_item/presentation/detail/**",
         "e2e/playwright/tests/care.item.booster.spec.ts"
       ],
@@ -151,7 +178,7 @@
         "server/routes/healthEntries/**"
       ],
       "exit_checklist": [
-        "Item status closed with care_closed_reason",
+        "Owner approved migration 105 merge on control issue",
         "Audit-only stopped_by_user backfill",
         "Read-only detail hides pencil menu Edit schedule Needs attention",
         "Other care no finished archived recorded",
@@ -179,9 +206,7 @@
         "e2e/playwright/tests/care.a11y.spec.ts",
         "e2e/playwright/tests/away.*.spec.ts"
       ],
-      "forbidden_paths": [
-        "server/scripts/migrations/**"
-      ],
+      "forbidden_paths": [],
       "allowed_exceptions": [
         "docs",
         "tests"
@@ -201,6 +226,8 @@
       "title": "Closed care list and canonical docs",
       "branch": "cursor/care-status-model-p6",
       "allowed_paths": [
+        "flutter_app/lib/core/router/**",
+        "flutter_app/lib/l10n/**",
         "flutter_app/lib/features/experience/presentation/pet_profile/widgets/all_care/**",
         "flutter_app/lib/features/experience/presentation/**/closed*",
         "docs/domains/pet_care/**",
@@ -227,5 +254,5 @@
       ]
     }
   ],
-  "approval_hash": "sha256:1380c790cc26631c202e79f2ee3f2b1de96f916610b08b099c24fd13fa002851"
+  "approval_hash": "sha256:5ad8e94d005c88b8e42655577431eef7ddae1322363d0cfd7eb0ada3e1b1ae37"
 }
