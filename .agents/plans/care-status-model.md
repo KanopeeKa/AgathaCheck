@@ -6,8 +6,24 @@ Deliver the agreed care date outcome and care item Closed model from
 `docs/domains/pet_care/changes/care-status-model-spec.md` (R-001 … R-028) in six
 vertical slices on integration branch `cursor/care-status-model-integration-*`, then one
 release PR to `main` and UAT. Flutter web ships with the server (no compatibility layer).
-Slice 1 migrates production care date rows — owner must explicitly approve that phase merge
-in addition to `approve-autonomous`.
+
+**Production data migrations (owner phase-merge approval, in addition to `approve-autonomous`):**
+- **Slice 1 — ledger `104_care_date_outcome`:** in-place care date outcome backfill + drop
+  `close_reason` (JS hook `server/scripts/migrations/104_care_date_outcome.js`; ledger numbers
+  **104/105** — slots 084/085 were already used by unrelated migrations).
+- **Slice 4 — ledger `105_care_item_closed`:** health entry status `completed` → `closed` for
+  finished / archived / recorded care (audit-only item backfill per spec).
+
+Record explicit owner consent on control issue **#2067** before each of those phase PRs merges.
+Sync-resolve **#2091** landed the production wiring on integration.
+
+## Release scope note
+
+Release PR **#2083** carries plan files plus integration programme code. Phase allowed paths
+below cover JS hooks, `server/scripts/migrate.js`, and schema manifest/canonical updates.
+**`db/migrations/104_*` and `105_*` remain globally forbidden in `execute-plan-scope`** until
+policy adds a programme exception; owner may bypass required checks on **#2083** for those
+ledger files only after product CI is green (see control issue **#2067**).
 
 ## Phases
 
@@ -15,16 +31,29 @@ in addition to `approve-autonomous`.
 ```json
 {
   "allowed_paths": [
-    "server/scripts/migrations/084_*",
+    "server/scripts/migrations/104_*",
+    "server/scripts/migrations/105_*",
+    "server/scripts/migrate.js",
+    "db/migrations/104_*",
+    "db/migrations/105_*",
+    "db/schema/migration-manifest.json",
+    "db/schema/canonical.sql",
     "server/lib/care/occurrence/**",
     "server/lib/care/item/scheduling.js",
+    "server/lib/care/schedule/validateReschedule.js",
+    "server/lib/care/schedule/scheduleEventLedger.js",
+    "server/lib/care/repair/tzShiftRepair.js",
+    "server/lib/care/progression/weightEstablishmentService.js",
     "server/lib/health/**",
     "server/routes/healthEntries/**",
     "server/test/db/**",
     "server/test/healthEntries/**",
+    "server/test/careSchedule/**",
+    "server/test/scripts/migrateCareStatusMigrations.test.js",
     "flutter_app/lib/features/care_item/**",
     "flutter_app/lib/features/experience/presentation/care_item/**",
     "flutter_app/lib/features/health_tracking/**",
+    "flutter_app/lib/features/pet_care/**",
     "flutter_app/test/features/care_item/**",
     "flutter_app/test/bdd/features/care_date_screen.feature",
     "e2e/playwright/tests/care.date.spec.ts"
@@ -33,7 +62,7 @@ in addition to `approve-autonomous`.
   "allowed_exceptions": ["docs", "tests"],
   "companions": ["docs/architecture/openapi/**"],
   "exit_checklist": [
-    "Migration 084 backfill idempotent",
+    "Migration 104 backfill idempotent",
     "History wire shows outcome not_recorded",
     "CSV says Not recorded for system rows",
     "Record Not recorded as Done from History",
@@ -42,6 +71,12 @@ in addition to `approve-autonomous`.
 }
 ```
 Scope: In-place occurrence outcome migration; history and CSV truthful; Not recorded → Done from History.
+
+**Slice 1 interim (until slice 3 pause delete rule):** dropping `close_reason` means every writer
+that used `close_reason` (`not_recorded`, `system`, `paused`, `user`) must set stored
+`status` instead on the same paths touched in this slice — system/pause closes become
+`not_recorded` (not user `skipped`); user skip stays `skipped`. No dual-write.
+
 Out of scope: Stack removal, item Closed status, Close care button.
 
 ### Phase 2 — Not recorded at next dose
@@ -54,10 +89,15 @@ Out of scope: Stack removal, item Closed status, Close care button.
     "server/lib/care/occurrence/commands/stack.js",
     "server/routes/healthEntries/occurrenceCommandRouter.js",
     "server/test/db/careOccurrences.*",
+    "flutter_app/lib/features/care_item/application/care_completion_service.dart",
+    "flutter_app/lib/features/care_item/application/care_stack_feedback.dart",
     "flutter_app/lib/features/care_item/domain/stack_rule.dart",
     "flutter_app/lib/features/care_item/domain/care_agenda.dart",
+    "flutter_app/lib/features/care_item/domain/done_decision.dart",
     "flutter_app/lib/features/experience/presentation/care_item/detail/care_item_needs_attention_section.dart",
     "flutter_app/lib/features/pet_care/presentation/widgets/care_agenda/**",
+    "flutter_app/lib/features/health_tracking/domain/entities/health_entry.dart",
+    "flutter_app/lib/l10n/**",
     "flutter_app/test/features/care_item/**",
     "flutter_app/test/bdd/features/care_agenda.feature",
     "flutter_app/test/bdd/features/care_schedules.feature",
@@ -66,7 +106,7 @@ Out of scope: Stack removal, item Closed status, Close care button.
     "e2e/playwright/tests/care.schedules.spec.ts",
     "e2e/playwright/tests/health.tracking.spec.ts"
   ],
-  "forbidden_paths": ["server/scripts/migrations/**"],
+  "forbidden_paths": [],
   "allowed_exceptions": ["docs", "tests"],
   "companions": [],
   "exit_checklist": [
@@ -94,7 +134,7 @@ Out of scope: Pause delete rule, Close care.
     "e2e/playwright/tests/care.item.pause_resume.spec.ts",
     "e2e/playwright/tests/care.schedules.spec.ts"
   ],
-  "forbidden_paths": ["server/scripts/migrations/**"],
+  "forbidden_paths": [],
   "allowed_exceptions": ["docs", "tests"],
   "companions": ["flutter_app/lib/features/care_item/**"],
   "exit_checklist": [
@@ -111,14 +151,27 @@ Out of scope: Item closed migration, Close care UI.
 ```json
 {
   "allowed_paths": [
-    "server/scripts/migrations/085_*",
+    "server/scripts/migrations/104_*",
+    "server/scripts/migrations/105_*",
     "server/lib/care/occurrence/syncOpenOccurrences.js",
     "server/lib/care/item/**",
     "server/lib/care/occurrence/commands/**",
+    "server/lib/care/carePeriodCoverage.js",
+    "server/lib/care/schedule/nextComputed.js",
+    "server/lib/health/healthEntryWriteService.js",
+    "server/lib/care/observations/weightObservationRepository.js",
+    "server/lib/pets/vetVisits.js",
+    "server/routes/careIntelligence/**",
+    "server/routes/pets/familyEventsRouter.js",
+    "server/lib/account/accountErasureService.js",
     "server/test/db/**",
     "flutter_app/lib/features/experience/presentation/care_item/detail/**",
     "flutter_app/lib/features/experience/presentation/pet_profile/widgets/all_care/**",
     "flutter_app/lib/features/health_tracking/domain/health_entry_series_closed.dart",
+    "flutter_app/lib/features/health_tracking/domain/entities/health_entry.dart",
+    "flutter_app/lib/features/health_tracking/domain/services/care_temporal_grouping_service.dart",
+    "flutter_app/lib/features/care_item/domain/**",
+    "flutter_app/lib/features/experience/presentation/care_item/occurrence/**",
     "flutter_app/test/features/care_item/presentation/detail/**",
     "e2e/playwright/tests/care.item.booster.spec.ts"
   ],
@@ -126,6 +179,7 @@ Out of scope: Item closed migration, Close care UI.
   "allowed_exceptions": ["docs", "tests"],
   "companions": ["server/routes/healthEntries/**"],
   "exit_checklist": [
+    "Owner approved migration 105 merge on control issue",
     "Item status closed with care_closed_reason",
     "Audit-only stopped_by_user backfill",
     "Read-only detail hides pencil menu Edit schedule Needs attention",
@@ -157,7 +211,7 @@ Out of scope: Close care button, Closed care list footer.
     "e2e/playwright/tests/care.a11y.spec.ts",
     "e2e/playwright/tests/away.*.spec.ts"
   ],
-  "forbidden_paths": ["server/scripts/migrations/**"],
+  "forbidden_paths": [],
   "allowed_exceptions": ["docs", "tests"],
   "companions": [],
   "exit_checklist": [
@@ -177,6 +231,8 @@ Out of scope: Closed care list screen, canonical fold.
 ```json
 {
   "allowed_paths": [
+    "flutter_app/lib/core/router/**",
+    "flutter_app/lib/l10n/**",
     "flutter_app/lib/features/experience/presentation/pet_profile/widgets/all_care/**",
     "flutter_app/lib/features/experience/presentation/**/closed*",
     "docs/domains/pet_care/**",
