@@ -82,7 +82,7 @@ test.describe('Away plan journeys', () => {
     await away.pickAbsenceDates(dateOffset(5), dateOffset(12));
     await away.selectPet(pet.id, pet.name);
     await away.saveAbsence();
-    await away.expectAbsencePetPillCount(1);
+    await away.expectPetAwayPlanScreen('MobPet');
   });
 
   test('Co-parent Dave sees Frederique away, one pill, no Edit or Add pet', async ({ page }) => {
