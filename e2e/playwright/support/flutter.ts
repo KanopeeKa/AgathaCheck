@@ -930,8 +930,9 @@ export async function dismissConsentBannerIfPresent(page: Page): Promise<void> {
 
 /**
  * Type into a Flutter web field so onChanged fires (fill() alone is unreliable).
+ * Exported for page objects that resolve the locator by role/pattern first.
  */
-async function typeIntoField(
+export async function typeIntoField(
   field: import('@playwright/test').Locator,
   value: string,
 ): Promise<void> {
