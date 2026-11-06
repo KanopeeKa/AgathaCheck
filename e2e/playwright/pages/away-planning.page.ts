@@ -921,11 +921,23 @@ export class AwayPlanningPage {
   async pickAddPetCandidate(petId: string): Promise<void> {
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      const opt = semanticsKey(this.page, `add_pet_to_absence_${petId}`).or(
-        this.page.locator(`[data-flutter-key="add_pet_to_absence_${petId}"]`),
-      );
+      const opt = semanticsKey(this.page, `add_pet_to_absence_${petId}`);
       await expect(opt.first()).toBeVisible({ timeout: 30_000 });
       await opt.first().click({ force: true });
+      await refreshFlutterAccessibility(this.page);
+    }).toPass({ timeout: 45_000 });
+  }
+
+  async removePetFromAbsence(petId: string): Promise<void> {
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      const trigger = semanticsKey(this.page, `remove_pet_from_absence_${petId}`);
+      await expect(trigger.first()).toBeVisible({ timeout: 30_000 });
+      await trigger.first().click({ force: true });
+      await refreshFlutterAccessibility(this.page);
+      const confirm = semanticsKey(this.page, 'remove_pet_from_absence_confirm');
+      await expect(confirm.first()).toBeVisible({ timeout: 15_000 });
+      await confirm.first().click({ force: true });
       await refreshFlutterAccessibility(this.page);
     }).toPass({ timeout: 45_000 });
   }

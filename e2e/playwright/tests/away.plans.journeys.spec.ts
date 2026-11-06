@@ -136,21 +136,11 @@ test.describe('Away plan journeys', () => {
     await away.expectAbsencePetPillCount(2);
 
     await away.openPetAwayPlan(absence.id, extra.id);
-    await page
-      .locator('[flt-semantics-identifier^="remove_pet_from_absence_"]')
-      .first()
-      .click();
-    await page.getByRole('button', { name: /Remove pet|Retirer/i }).click();
-    await page.locator('[data-flutter-key="remove_pet_from_absence_confirm"]').click();
+    await away.removePetFromAbsence(extra.id);
     await away.expectAbsencePetPillCount(1);
 
     await away.openPetAwayPlan(absence.id, keep.id);
-    await page
-      .locator('[flt-semantics-identifier^="remove_pet_from_absence_"]')
-      .first()
-      .click();
-    await page.getByRole('button', { name: /Remove pet|Retirer/i }).click();
-    await page.locator('[data-flutter-key="remove_pet_from_absence_confirm"]').click();
+    await away.removePetFromAbsence(keep.id);
     await away.openHub();
     await away.expectAbsenceNotListed('KeepPet');
   });
