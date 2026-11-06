@@ -5,6 +5,70 @@ import '../../../../../core/widgets/form/app_form_section.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../person_form_controller.dart';
 
+/// Phone field must use a [TextEditingController] on web — `initialValue` + CanvasKit can leave the
+/// hidden `<input>` out of sync with [PersonFormController], so saves keep the old number (E2E).
+class _PersonEditPhoneField extends StatefulWidget {
+  const _PersonEditPhoneField({
+    required this.controller,
+    required this.label,
+  });
+
+  final PersonFormController controller;
+  final String label;
+
+  @override
+  State<_PersonEditPhoneField> createState() => _PersonEditPhoneFieldState();
+}
+
+class _PersonEditPhoneFieldState extends State<_PersonEditPhoneField> {
+  late final TextEditingController _textController;
+
+  @override
+  void initState() {
+    super.initState();
+    _textController = TextEditingController(text: widget.controller.phone);
+    widget.controller.addListener(_syncFromModel);
+  }
+
+  void _syncFromModel() {
+    final next = widget.controller.phone;
+    if (_textController.text == next) return;
+    _textController.value = TextEditingValue(
+      text: next,
+      selection: TextSelection.collapsed(offset: next.length),
+    );
+  }
+
+  @override
+  void dispose() {
+    widget.controller.removeListener(_syncFromModel);
+    _textController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AppFormLabeledField(
+      label: widget.label,
+      isTextField: false,
+      child: Semantics(
+        identifier: 'people_edit_phone_field',
+        label: widget.label,
+        textField: true,
+        child: TextFormField(
+          key: const Key('people_edit_phone_field'),
+          controller: _textController,
+          keyboardType: TextInputType.phone,
+          decoration: const InputDecoration(
+            prefixIcon: Icon(Icons.phone_outlined),
+          ),
+          onChanged: widget.controller.setPhone,
+        ),
+      ),
+    );
+  }
+}
+
 class PersonEditContactDetailsSection extends StatelessWidget {
   const PersonEditContactDetailsSection({super.key, required this.controller});
 
@@ -18,25 +82,9 @@ class PersonEditContactDetailsSection extends StatelessWidget {
     return AppFormSection(
       title: l.peopleEditSectionContact,
       children: [
-        AppFormLabeledField(
+        _PersonEditPhoneField(
+          controller: controller,
           label: l.peoplePhoneLabel,
-          // E2E + CanvasKit: expose a stable `flt-semantics-identifier` on the field host
-          // (AppFormLabeledField's default Semantics wrapper only carries the visual label).
-          isTextField: false,
-          child: Semantics(
-            identifier: 'people_edit_phone_field',
-            label: l.peoplePhoneLabel,
-            textField: true,
-            child: TextFormField(
-              key: const Key('people_edit_phone_field'),
-              initialValue: controller.phone,
-              keyboardType: TextInputType.phone,
-              decoration: const InputDecoration(
-                prefixIcon: Icon(Icons.phone_outlined),
-              ),
-              onChanged: controller.setPhone,
-            ),
-          ),
         ),
         const SizedBox(height: 16),
         AppFormLabeledField(
