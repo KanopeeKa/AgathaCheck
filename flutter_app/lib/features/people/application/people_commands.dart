@@ -25,18 +25,18 @@ class PeopleCommands {
     String contactId, {
     List<String>? petIds,
     ContactDetail? optimisticFromPatch,
-  }) {
+  }) async {
     if (optimisticFromPatch != null) {
       _ref
           .read(rosterProvider.notifier)
           .applyOptimisticContactPatch(contactId, optimisticFromPatch);
     }
+    await refreshRoster();
     _ref.invalidate(personDetailProvider(contactId));
     _ref.invalidate(relatedCareProvider(contactId));
     for (final petId in petIds ?? const []) {
       _ref.invalidate(petPeopleProvider(petId));
     }
-    return refreshRoster();
   }
 
   Future<void> afterPetLinkChange(String contactId, String petId) {

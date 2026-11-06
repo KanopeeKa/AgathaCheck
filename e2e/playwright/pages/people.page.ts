@@ -78,8 +78,11 @@ export class PeoplePage {
     await refreshFlutterAccessibility(this.page);
     await this.ensurePeopleDetailOverviewTab();
     const phoneFlexible = this.phoneDigitsFlexiblePattern(phone);
-    const phoneLocator = this.page
-      .getByText(phoneFlexible)
+    const overviewPhoneValue = this.page.locator(
+      '[flt-semantics-identifier="people_detail_value_phone"]',
+    );
+    const phoneLocator = overviewPhoneValue
+      .or(this.page.getByText(phoneFlexible))
       .or(semanticsByName(this.page, phoneFlexible));
     const d = phone.replace(/\D/g, '');
     const phoneLabelSeg = '(?:Phone|Téléphone|Telephone)';
@@ -108,6 +111,10 @@ export class PeoplePage {
       if (value.replace(/\D/g, '').includes(phoneDigits)) {
         return;
       }
+    }
+    if (await overviewPhoneValue.first().isVisible({ timeout: 2_000 }).catch(() => false)) {
+      await expect(overviewPhoneValue.first()).toHaveText(phoneFlexible, { timeout: 15_000 });
+      return;
     }
     await expect(phoneLocator.first()).toBeVisible({ timeout: 15_000 });
   }

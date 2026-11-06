@@ -32,6 +32,7 @@ class PersonDetailContactRows extends StatelessWidget {
       VoidCallback? onAction,
       IconData actionIcon = Icons.open_in_new,
       String? actionTooltip,
+      String? valueSemanticsIdentifier,
     }) {
       if (value.trim().isEmpty) return;
       rows.add(
@@ -42,6 +43,7 @@ class PersonDetailContactRows extends StatelessWidget {
           onAction: onAction,
           actionIcon: actionIcon,
           actionTooltip: actionTooltip,
+          valueSemanticsIdentifier: valueSemanticsIdentifier,
           onCopy: () => _copyToClipboard(context, value.trim(), l),
         ),
       );
@@ -56,6 +58,7 @@ class PersonDetailContactRows extends StatelessWidget {
         onAction: () => _launchTel(context, phoneVal, l),
         actionIcon: Icons.call_outlined,
         actionTooltip: l.peopleActionCall,
+        valueSemanticsIdentifier: 'people_detail_value_phone',
       );
     }
 
@@ -187,6 +190,7 @@ class _ContactRow extends StatelessWidget {
     this.onAction,
     required this.actionIcon,
     this.actionTooltip,
+    this.valueSemanticsIdentifier,
     required this.onCopy,
   });
 
@@ -196,6 +200,9 @@ class _ContactRow extends StatelessWidget {
   final VoidCallback? onAction;
   final IconData actionIcon;
   final String? actionTooltip;
+
+  /// Stable id for E2E (e.g. phone digits in overview `SelectableText`).
+  final String? valueSemanticsIdentifier;
   final VoidCallback onCopy;
 
   @override
@@ -217,10 +224,14 @@ class _ContactRow extends StatelessWidget {
                 children: [
                   Text(label, style: theme.textTheme.labelMedium),
                   const SizedBox(height: 2),
-                  SelectableText(
-                    value,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: theme.colorScheme.primary,
+                  Semantics(
+                    identifier: valueSemanticsIdentifier,
+                    label: value,
+                    child: SelectableText(
+                      value,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: theme.colorScheme.primary,
+                      ),
                     ),
                   ),
                 ],
