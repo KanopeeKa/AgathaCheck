@@ -51,102 +51,59 @@ class _CareItemNeedsAttentionSectionState
     if (started.length < 2) return;
     setState(() => _busy = true);
     final service = ref.read(careCompletionServiceProvider);
-    final resolvedGiven = <String>[];
-    final resolvedNotGiven = <String>[];
-    final ignoredIds = <String>[];
-    String? undoToken;
-    var failed = false;
-
-    for (final occurrence in started) {
-      if (done) {
-        final outcome = await service.complete(
-          CareCompletionRequest(
-            petId: _s.petId,
-            entryId: _s.entryId,
-            occurrenceId: occurrence.id,
-            careFamily: _s.careFamily,
-            source: CareCommandSource.careItem,
-            path: CareCommandPath.oneTap,
-            completedOn: occurrence.date,
-          ),
-        );
-        switch (outcome) {
-          case CareSucceeded(:final value):
-            resolvedGiven.add(occurrence.id);
-            undoToken = value.undoToken ?? undoToken;
-          case CareFailed(failure: CareNotOpenFailure()):
-            ignoredIds.add(occurrence.id);
-          case CareFailed():
-            failed = true;
-        }
-      } else {
-        final outcome = await service.skip(
-          entryId: _s.entryId,
-          occurrenceId: occurrence.id,
-        );
-        switch (outcome) {
-          case CareSucceeded(:final value):
-            resolvedNotGiven.add(occurrence.id);
-            undoToken = value.undoToken ?? undoToken;
-          case CareFailed(failure: CareNotOpenFailure()):
-            ignoredIds.add(occurrence.id);
-          case CareFailed():
-            failed = true;
-        }
-      }
-      if (failed) break;
-    }
-
+    final ids = started.map((o) => o.id).toList(growable: false);
+    final outcome = await service.resolveStack(
+      entryId: _s.entryId,
+      given: done ? ids : const [],
+      notGiven: done ? const [] : ids,
+    );
     await _refresh();
     if (!mounted) return;
     setState(() => _busy = false);
     final messenger = ScaffoldMessenger.of(context)..hideCurrentSnackBar();
-    if (failed) {
-      messenger.showSnackBar(SnackBar(content: Text(l.careCommandFailed)));
-      return;
-    }
-    if (resolvedGiven.isEmpty && resolvedNotGiven.isEmpty) {
-      messenger.showSnackBar(SnackBar(content: Text(l.careAlreadyUpdated)));
-      return;
-    }
-    final aggregate = CareCommandResult(
-      entryId: _s.entryId,
-      resolvedGiven: resolvedGiven,
-      resolvedNotGiven: resolvedNotGiven,
-      ignoredIds: ignoredIds,
-      undoToken: undoToken,
-    );
-    ref.read(analyticsServiceProvider).capture('care_stack_resolved', {
-      'count': aggregate.stackChangedCount,
-      'ignored': aggregate.ignoredIds.length,
-      'done': done,
-    });
-    final message = Semantics(
-      identifier: 'care_stack_snackbar',
-      child: Text(
-        careStackSuccessMessage(
-          l,
-          done: done,
-          result: aggregate,
-          itemName: _s.name,
-        ),
-      ),
-    );
-    if (undoToken == null) {
-      messenger.showAppSnackBar(
-        snackBarKey: const Key('care_stack_snackbar'),
-        content: message,
-      );
-    } else {
-      messenger.showUndoSnackBar(
-        snackBarKey: const Key('care_stack_snackbar'),
-        content: message,
-        undoLabel: l.snackbarUndo,
-        onUndo: () async {
-          await service.undo(entryId: _s.entryId, undoToken: undoToken);
-          await _refresh();
-        },
-      );
+    switch (outcome) {
+      case CareFailed():
+        messenger.showSnackBar(SnackBar(content: Text(l.careCommandFailed)));
+        return;
+      case CareSucceeded(:final value):
+        final aggregate = value;
+        if (aggregate.stackChangedCount == 0 && aggregate.ignoredIds.isEmpty) {
+          messenger.showSnackBar(SnackBar(content: Text(l.careAlreadyUpdated)));
+          return;
+        }
+        ref.read(analyticsServiceProvider).capture('care_stack_resolved', {
+          'count': aggregate.stackChangedCount,
+          'ignored': aggregate.ignoredIds.length,
+          'done': done,
+        });
+        final message = Semantics(
+          identifier: 'care_stack_snackbar',
+          child: Text(
+            careStackSuccessMessage(
+              l,
+              done: done,
+              result: aggregate,
+              itemName: _s.name,
+            ),
+          ),
+        );
+        final undoToken = aggregate.undoToken;
+        if (undoToken == null) {
+          messenger.showAppSnackBar(
+            snackBarKey: const Key('care_stack_snackbar'),
+            content: message,
+          );
+        } else {
+          messenger.showUndoSnackBar(
+            snackBarKey: const Key('care_stack_snackbar'),
+            content: message,
+            undoLabel: l.snackbarUndo,
+            onUndo: () async {
+              await service.undo(entryId: _s.entryId, undoToken: undoToken);
+              await _refresh();
+            },
+          );
+        }
     }
   }
 
