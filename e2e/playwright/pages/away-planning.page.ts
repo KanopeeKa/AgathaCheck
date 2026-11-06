@@ -91,14 +91,23 @@ export class AwayPlanningPage {
   async expectAbsenceScreenLoaded(): Promise<void> {
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
+      const petPills = this.page.locator('[flt-semantics-identifier^="absence_pet_pill_"]');
+      const pillCount = await petPills.count();
+      if (pillCount > 0) {
+        await expect(petPills.first()).toBeVisible();
+        return;
+      }
       const pageMarker = semanticsKey(this.page, 'absence_screen_page').or(
         this.page.locator('[data-flutter-key="absence_screen_page"]'),
       );
-      const petPills = this.page.locator('[flt-semantics-identifier^="absence_pet_pill_"]');
       const petsSection = this.page.getByText(
         /Pets on this absence|Animaux de cette absence/i,
       );
-      await expect(pageMarker.or(petPills.first()).or(petsSection.first())).toBeVisible();
+      if (await pageMarker.first().isVisible().catch(() => false)) {
+        await expect(pageMarker.first()).toBeVisible();
+        return;
+      }
+      await expect(petsSection.first()).toBeVisible();
     }).toPass({ timeout: 60_000 });
   }
 
