@@ -961,9 +961,16 @@ export async function fillSemanticsField(
   identifier: string,
   value: string,
 ): Promise<void> {
-  const field = page.locator(`[flt-semantics-identifier="${identifier}"]`);
-  await field.waitFor({ state: 'visible' });
-  await typeIntoField(field, value);
+  const host = page.locator(`[flt-semantics-identifier="${identifier}"]`);
+  await host.waitFor({ state: 'visible' });
+  // Semantics node is often a non-input wrapper — type into the real `<input>` / `<textarea>` child.
+  const input = host.locator('input, textarea').first();
+  if ((await input.count()) > 0) {
+    await input.waitFor({ state: 'visible', timeout: 15_000 });
+    await typeIntoField(input, value);
+    return;
+  }
+  await typeIntoField(host, value);
 }
 
 async function fieldHasValue(
