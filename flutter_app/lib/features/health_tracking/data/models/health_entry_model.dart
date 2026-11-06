@@ -30,6 +30,7 @@ class HealthEntryModel extends HealthEntry {
     super.scheduleTimes,
     super.status,
     super.pausedSince,
+    super.careClosedReason,
     super.careFamily,
     super.careSetting,
     super.carePlanning,
@@ -78,6 +79,7 @@ class HealthEntryModel extends HealthEntry {
       pausedSince: parseCalendarDate(
         json['paused_since'] ?? json['pausedSince'],
       ),
+      careClosedReason: json['care_closed_reason'] as String?,
       careFamily: CareFamilyWire.fromWire(json['care_family'] as String?),
       careSetting: CareSettingWire.fromWire(json['care_setting'] as String?),
       carePlanning: CarePlanningModeWire.fromWire(
@@ -129,6 +131,7 @@ class HealthEntryModel extends HealthEntry {
       scheduleTimes: entry.scheduleTimes,
       status: entry.status,
       pausedSince: entry.pausedSince,
+      careClosedReason: entry.careClosedReason,
       careFamily: entry.careFamily,
       careSetting: entry.careSetting,
       carePlanning: entry.carePlanning,
