@@ -87,6 +87,11 @@ export class PeoplePage {
     return /^\/pc\/people(?:\?|$)/.test(flutterRoutePath(this.page.url()));
   }
 
+  /** People hub contact detail (`/pc/people/<id>`), not list or `/edit`. */
+  private async onPeopleDetail(): Promise<boolean> {
+    return /^\/pc\/people\/[^/?]+$/.test(flutterRoutePath(this.page.url()));
+  }
+
   /** Org list cards (`Veterinarian: …`) or guardian compact rows (`Name · town`). */
   private vetRowLocator(name: string): Locator {
     const escaped = escapeRegExp(name);
@@ -231,7 +236,7 @@ export class PeoplePage {
     const inlineEdit = this.editVetButtonLocator(card);
     if (await inlineEdit.isVisible({ timeout: 2_000 }).catch(() => false)) {
       await inlineEdit.click();
-    } else if (await this.onPeopleHub()) {
+    } else if ((await this.onPeopleHub()) || (await this.onPeopleDetail())) {
       await this.openPeopleEditForVet(name);
     } else {
       await this.vetRowLocator(name).click();
