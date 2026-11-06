@@ -8,6 +8,7 @@
 
 import { loadPetHomeTimezone } from '../../petHomeTimezone.js';
 import { logger } from '../../logger.js';
+import { withTransaction } from '../../db/withTransaction.js';
 import { careAsOfForZone } from './careAsOf.js';
 import { syncOpenOccurrences } from './syncOpenOccurrences.js';
 
@@ -37,30 +38,24 @@ export async function runCareTick(pool, { now = new Date(), clock = null } = {})
     );
 
     for (const { id } of candidates.rows) {
-      const client = await pool.connect();
       try {
-        await client.query('BEGIN');
-        const row = await client.query(
-          'SELECT * FROM health_entries WHERE id = $1 FOR UPDATE SKIP LOCKED',
-          [id],
-        );
-        const entry = row.rows[0];
-        if (!entry) {
-          await client.query('ROLLBACK');
-          continue;
-        }
-        const zone = await loadPetHomeTimezone(client, entry.pet_id);
-        const asOf = careAsOfForZone(zone, clock, now);
-        const synced = await syncOpenOccurrences(client, entry, asOf);
-        await client.query('COMMIT');
+        const itemStats = await withTransaction(pool, async (client) => {
+          const row = await client.query(
+            'SELECT * FROM health_entries WHERE id = $1 FOR UPDATE SKIP LOCKED',
+            [id],
+          );
+          const entry = row.rows[0];
+          if (!entry) return null;
+          const zone = await loadPetHomeTimezone(client, entry.pet_id);
+          const asOf = careAsOfForZone(zone, clock, now);
+          return syncOpenOccurrences(client, entry, asOf);
+        });
+        if (!itemStats) continue;
         stats.processed += 1;
-        stats.created += synced.created.length;
-        stats.closed += synced.closedNotRecorded.length;
+        stats.created += itemStats.created.length;
+        stats.closed += itemStats.closedNotRecorded.length;
       } catch (err) {
-        await client.query('ROLLBACK').catch(() => {});
         logger.error({ err, entryId: id }, 'care tick failed for one item');
-      } finally {
-        client.release();
       }
     }
     return stats;

@@ -135,7 +135,6 @@ test.describe('Veterinarian management', () => {
     await vetList.openVetDetail('Dr. Smith');
 
     const vetForm = new PeoplePage(page);
-    // People hub: edit form can hang on GET /contacts/:id; persist phone via API after opening detail.
     await vetForm.updatePhone('555-5678', { vetName: 'Dr. Smith' });
 
     await vetList.expectLoaded();

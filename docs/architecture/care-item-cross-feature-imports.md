@@ -3,7 +3,7 @@ title: Care item cross-feature imports (C1 decision)
 owner: Architecture
 audience: agent
 status: active
-last_updated: 2026-10-04
+last_updated: 2026-11-06
 tags: [architecture, pet-care, modularity]
 ---
 
@@ -31,3 +31,7 @@ tags: [architecture, pet-care, modularity]
 - Plan: `care-requirements-gap-close-c1a7` phase C1
 - Control issue: #1526
 - Debt: #1545
+
+## Decision log (2026-11-06)
+
+Light-plan `tech-debt-reliability-8640` **P5**: structural import-cycle split remains **deferred** to a dedicated sprint (#1545). No code split in this programme; baseline + `check_feature_imports.js` unchanged.

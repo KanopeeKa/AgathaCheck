@@ -769,27 +769,11 @@ export class PeoplePage {
   }
 
   async updatePhone(newPhone: string, options?: { vetName: string }): Promise<void> {
-    const vetName = options?.vetName;
-    if (vetName) {
-      const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
-      const token = await readAccessTokenFromPage(this.page);
-      const matches = (await getVets(baseURL, token)).filter((v) => v.name === vetName);
-      if (matches.length !== 1) {
-        throw new Error(
-          `updatePhone: expected exactly one vet named "${vetName}", found ${matches.length}`,
-        );
-      }
-      const vet = matches[0];
-      await updateVetDetails(baseURL, token, vet.id, {
-        name: vet.name,
-        phone: newPhone,
-      });
-      await this.page.goto(flutterGotoUrl('/pc/people?filter=professionals'));
-      await refreshFlutterAccessibility(this.page);
-      await waitForFlutterRoutePattern(this.page, /\/pc\/people(?:\?|$)/, 30_000);
-      return;
-    }
     await this.expectFormLoaded();
+    if (options?.vetName) {
+      await this.openVetDetail(options.vetName);
+      await this.expectFormLoaded();
+    }
     await fillTextbox(this.page, 'Phone', newPhone);
     await this.saveForm();
     await this.expectFormSaved('edit');

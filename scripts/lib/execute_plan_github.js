@@ -325,6 +325,20 @@ function createGitHubClient(opts) {
       }
       return { content: Buffer.from(data.content || '', data.encoding || 'base64').toString('utf8'), sha: data.sha };
     },
+    /** Blob SHAs for many paths at one ref (parallel contents API). */
+    async getFileShasAtRef(paths, ref) {
+      const pairs = await Promise.all(
+        paths.map(async (path) => {
+          try {
+            const file = await this.getFileAtRef(path, ref);
+            return [path, file?.sha ?? null];
+          } catch {
+            return [path, null];
+          }
+        }),
+      );
+      return new Map(pairs);
+    },
 
     // Actions
     listWorkflowRuns: (file, { branch, event, status, per_page = 100, pages } = {}) =>
