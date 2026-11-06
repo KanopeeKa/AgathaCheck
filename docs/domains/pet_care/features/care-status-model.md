@@ -17,8 +17,6 @@ related_prs: [2083, 2095, 2107, 2108, 2109, 2110, 2111]
 - **Does not own:** Care Intelligence copy, away-plan layout (see [care-context.md](./care-context.md)), taxonomy blocks.
 - **Depends on:** [care-schedule-management.md](./care-schedule-management.md) (occurrence sync), [care-item-evolution.md](./care-item-evolution.md) (detail and agenda presentation).
 
-Delivered by execute-plan `care-status-model` (six vertical slices, 2026-11). Hardening integration (#2107–#2111): migration runner transaction safety, repair/readSync, R-025, closed-list wire shape, resolve-stack bulk.
-
 ## Requirements
 
 | ID | Rule | Status |

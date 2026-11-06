@@ -22,7 +22,6 @@ function classifyMigrationSqlLine(line, inDollarQuote, dollarTag) {
   let omitLine = false;
   let violation = null;
   let rest = line;
-  let lineIndexViolation = null;
 
   while (rest.length > 0) {
     if (inDollarQuote) {

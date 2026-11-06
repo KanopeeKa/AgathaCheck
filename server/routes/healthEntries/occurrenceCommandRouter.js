@@ -167,6 +167,7 @@ router.post('/:id/occurrences/:occId/complete', asyncHandler(async (req, res) =>
     const notGivenRaw = body.not_given ?? body.notGiven;
     const notGiven = Array.isArray(notGivenRaw) ? notGivenRaw.map(String) : [];
     return handleCommand(pool, req, res, {
+      guard: weightGuard,
       command: (ctx) => resolveStackCommand(ctx, { given, notGiven }),
       audit: () => ({
         action: 'health_occurrence.stack_resolved',

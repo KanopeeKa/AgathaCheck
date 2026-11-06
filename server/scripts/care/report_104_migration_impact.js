@@ -6,6 +6,9 @@
  * Usage: node scripts/care/report_104_migration_impact.js
  */
 import { createAppPool } from '../../lib/db/createPool.js';
+import { loadBackendEnv } from '../lib/loadBackendEnv.js';
+
+loadBackendEnv();
 
 async function main() {
   const pool = createAppPool();
