@@ -99,7 +99,8 @@ export class PeoplePage {
       await refreshFlutterAccessibility(this.page);
       let value = '';
       if ((await phoneField.count()) > 0) {
-        value = await phoneField.first().inputValue();
+        // Short timeout: default action timeout inside `toPass` retries can exhaust the test budget.
+        value = await phoneField.first().inputValue({ timeout: 3_000 }).catch(() => '');
       }
       if (!value) {
         value =

@@ -1024,6 +1024,8 @@ export async function fillLabelledField(
  * Use when CanvasKit hides painted text but the edit form still wires inputs with aria-label.
  */
 export async function readLabelledTextboxValue(page: Page, label: string): Promise<string> {
+  /** Avoid Playwright's default ~15s action timeout inside tight `expect().toPass` loops. */
+  const readVal = (field: Locator) => field.inputValue({ timeout: 3_000 }).catch(() => '');
   const byRole = page
     .getByRole('textbox', { name: label, exact: false })
     .or(page.getByRole('textbox', { name: new RegExp(`^${escapeRegExp(label)}`, 'i') }));
@@ -1031,7 +1033,7 @@ export async function readLabelledTextboxValue(page: Page, label: string): Promi
   for (let i = 0; i < roleCount; i += 1) {
     const field = byRole.nth(i);
     if (await field.isVisible().catch(() => false)) {
-      return field.inputValue();
+      return readVal(field);
     }
   }
 
@@ -1050,7 +1052,7 @@ export async function readLabelledTextboxValue(page: Page, label: string): Promi
     for (let j = 0; j < count; j += 1) {
       const field = locator.nth(j);
       if (await field.isVisible().catch(() => false)) {
-        return field.inputValue();
+        return readVal(field);
       }
     }
   }
