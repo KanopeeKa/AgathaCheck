@@ -57,6 +57,7 @@ export const AREAS = {
     paths: ['flutter_app/lib/features/pet_care/', 'server/routes/careContext/'],
     specs: [
       'away.planning.spec.ts',
+      'away.plans.journeys.spec.ts',
       'away.plan.detail.v2.spec.ts',
       'away.care.planning.spec.ts',
       'absence.per.pet.spec.ts',

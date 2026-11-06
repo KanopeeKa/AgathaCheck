@@ -26,8 +26,11 @@
   "away_planning.feature": {
     "Dashboard away planning tile opens the hub": "P0",
     "Guardian can save a planned absence from the create form": "P0",
+    "Away planning hub shows Your absences for an owned absence": "P1",
     "Away planning hub lists a saved upcoming absence": "P1",
     "Away plan page shows who is caring for each pet": "P1",
+    "Co-parent sees only their pet pill and no trip Edit": "P1",
+    "Co-parent edits the pet note on the away plan page": "P1",
     "Guardian assigns a shared carer on the away plan page": "P2",
     "Guardian assigns a contact carer on the away plan page": "P2",
     "Assign an absence carer with the picker; the handover lists emergency contacts and vets": "P1"

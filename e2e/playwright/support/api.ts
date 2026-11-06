@@ -564,6 +564,37 @@ export async function createPlannedAbsence(
   return json.absence;
 }
 
+export async function patchPerPetAwayPlan(
+  baseURL: string,
+  token: string,
+  absenceId: string,
+  petId: string,
+  body: Record<string, unknown>,
+): Promise<void> {
+  const res = await apiFetch(apiUrl(`/planned-absences/${absenceId}/pets/${petId}`, baseURL), {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`patchPerPetAwayPlan failed (${res.status}): ${text}`);
+  }
+}
+
+export async function seedCoParentOnPet(
+  baseURL: string,
+  owner: TestUser,
+  coParent: TestUser,
+  petId: string,
+): Promise<void> {
+  const invite = await createPetShareInvite(baseURL, owner.accessToken, [petId], coParent.email, 'co_parent');
+  await acceptPetShareInviteByCode(baseURL, coParent.accessToken, invite.code);
+}
+
 export async function updatePetProfile(
   baseURL: string,
   token: string,

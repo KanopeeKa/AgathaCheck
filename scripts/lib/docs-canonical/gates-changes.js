@@ -97,6 +97,8 @@ function runGateChanges(ctx) {
       }
     }
   }
+
+  findings.push(...require('./gates-readme-links').runGateReadmeLinks(ctx));
   return findings;
 }
 
