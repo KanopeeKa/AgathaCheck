@@ -14,27 +14,35 @@ import { findTopLevelSqlTransactionViolations } from '../server/scripts/lib/migr
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
-function resolveDiffBaseRef() {
+function resolveDiffRange() {
+  const baseSha =
+    process.env.MIGRATION_LINT_BASE_SHA
+    || process.env.GITHUB_EVENT_PULL_REQUEST_BASE_SHA;
+  if (baseSha) {
+    return `${baseSha}...HEAD`;
+  }
   const raw = process.env.MIGRATION_LINT_BASE || process.env.GITHUB_BASE_REF || 'main';
-  return raw.startsWith('origin/') ? raw : `origin/${raw}`;
+  const base = raw.startsWith('origin/') ? raw : `origin/${raw}`;
+  return `${base}...HEAD`;
 }
 
 function changedMigrationSqlFiles() {
-  const base = resolveDiffBaseRef();
+  const diffRange = resolveDiffRange();
   let out = '';
-  let errText = '';
   try {
-    out = execSync(`git diff --name-only ${base}...HEAD -- db/migrations/`, {
+    out = execSync(`git diff --name-only ${diffRange} -- db/migrations/`, {
       cwd: repoRoot,
       encoding: 'utf8',
       stdio: ['pipe', 'pipe', 'pipe'],
     });
   } catch (err) {
-    errText = err.stderr?.toString() || err.message || String(err);
+    const errText = err.stderr?.toString() || err.message || String(err);
     console.error(
-      `check_migration_sql_transactions: git diff ${base}...HEAD failed: ${errText.trim()}`,
+      `check_migration_sql_transactions: git diff ${diffRange} failed: ${errText.trim()}`,
     );
-    console.error(`Fetch the PR base (e.g. git fetch origin ${base.replace(/^origin\//, '')}) and retry.`);
+    console.error(
+      'Set MIGRATION_LINT_BASE_SHA to the PR base commit, or fetch the merge base locally.',
+    );
     process.exit(2);
   }
   return out

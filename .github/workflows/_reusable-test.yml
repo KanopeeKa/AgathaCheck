@@ -85,12 +85,14 @@ jobs:
       - name: File size gate (500 lines)
         run: node scripts/check_file_size.js
 
-      - name: Fetch PR base for migration SQL lint
-        run: git fetch origin "${{ github.base_ref }}" --depth=1
+      - name: Fetch PR base commit for migration SQL lint
+        if: github.event_name == 'pull_request'
+        run: git fetch --depth=1 origin "${{ github.event.pull_request.base.sha }}"
 
       - name: Migration SQL transaction lint (changed NNN_*.sql)
+        if: github.event_name == 'pull_request'
         env:
-          MIGRATION_LINT_BASE: origin/${{ github.base_ref }}
+          MIGRATION_LINT_BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: node scripts/check_migration_sql_transactions.js
 
       - name: Migration SQL transaction lint fixtures
