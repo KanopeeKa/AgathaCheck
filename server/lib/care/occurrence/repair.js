@@ -2,10 +2,11 @@
  * Invariant report / repair (INV-1, INV-2, INV-4, INV-5) for runbooks.
  */
 import { dateToIsoDate } from '../../calendarDate.js';
+import { isItemClosed } from '../item/itemStatus.js';
 import { loadPetHomeTimezone } from '../../petHomeTimezone.js';
 import { careAsOfForZone } from './careAsOf.js';
 import { withCareItemLock } from './careItemLock.js';
-import { listOpenRows } from './occurrenceRepository.js';
+import { closeAllOpen, listOpenRows } from './occurrenceRepository.js';
 import { syncOpenOccurrences } from './syncOpenOccurrences.js';
 
 /**
@@ -18,9 +19,9 @@ export function invariantViolationsFor(entry, open) {
   const planned = (entry.care_planning || 'planned') !== 'unplanned';
   if (planned && entry.status === 'active' && open.length === 0) out.push('INV-1');
   if (open.filter((o) => o.origin === 'computed').length > 1) out.push('INV-2');
-  if (entry.status === 'completed' && open.length > 0) out.push('INV-4');
+  if (isItemClosed(entry) && open.length > 0) out.push('INV-4');
   const earliest = open[0]?.scheduled_date ?? null;
-  if (entry.status !== 'completed' && dateToIsoDate(entry.next_due_date) !== earliest) out.push('INV-5');
+  if (!isItemClosed(entry) && dateToIsoDate(entry.next_due_date) !== earliest) out.push('INV-5');
   return out;
 }
 
@@ -78,7 +79,12 @@ export async function repairOccurrences(pool, { apply = false } = {}) {
     if (!apply) continue;
     await withCareItemLock(pool, entry.id, async (db, locked) => {
       const zone = await loadPetHomeTimezone(db, locked.pet_id);
-      await syncOpenOccurrences(db, locked, careAsOfForZone(zone));
+      const asOf = careAsOfForZone(zone);
+      if (isItemClosed(locked)) {
+        await closeAllOpen(db, locked.id, null, 'system', { asOf });
+      } else {
+        await syncOpenOccurrences(db, locked, asOf);
+      }
     });
     repaired += 1;
   }
