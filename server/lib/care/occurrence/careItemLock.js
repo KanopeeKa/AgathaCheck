@@ -24,8 +24,8 @@ class CareItemNotFoundForLock extends Error {
  * @returns {Promise<T|null>}
  */
 export async function withCareItemLock(pool, entryId, fn, { beforeLock = null } = {}) {
-  if (!pool || typeof pool.connect !== 'function') {
-    throw new Error('withCareItemLock requires a pg.Pool with connect()');
+  if (!pool) {
+    throw new Error('withCareItemLock requires a pool');
   }
   try {
     return await withTransaction(pool, async (client) => {

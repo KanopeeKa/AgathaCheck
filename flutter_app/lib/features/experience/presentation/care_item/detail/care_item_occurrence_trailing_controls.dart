@@ -52,18 +52,20 @@ class CareItemOccurrenceTrailingControls extends ConsumerWidget {
       runSpacing: 8,
       children: [
         CareMarkDoneButton(
-          key: Key('care_item_occurrence_mark_done_${occurrence.id}'),
+          key: Key('care_item_occurrence_done_${occurrence.id}'),
           semanticLabel: l.careMarkDateTimeDone(whenSemantic),
           semanticsIdentifier: 'care_item_occurrence_done_${occurrence.id}',
           onPressed: muted
               ? null
-              : () => ref.read(careCompletionFlowProvider).done(
-                    context,
-                    schedule: schedule,
-                    occurrence: occurrence,
-                    onChanged: onChanged,
-                    source: CareCommandSource.careItem,
-                  ),
+              : () => ref
+                    .read(careCompletionFlowProvider)
+                    .done(
+                      context,
+                      schedule: schedule,
+                      occurrence: occurrence,
+                      onChanged: onChanged,
+                      source: CareCommandSource.careItem,
+                    ),
         ),
         CareSkipButton(
           key: Key('care_item_occurrence_skip_${occurrence.id}'),
@@ -77,11 +79,11 @@ class CareItemOccurrenceTrailingControls extends ConsumerWidget {
             onPressed: muted
                 ? null
                 : () => PetEventOccurrenceActions.changeDate(
-                      context,
-                      ref,
-                      entry,
-                      healthOccurrence!,
-                    ),
+                    context,
+                    ref,
+                    entry,
+                    healthOccurrence!,
+                  ),
             child: Text(l.rescheduleActionLabel),
           ),
       ],
