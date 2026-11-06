@@ -82,8 +82,9 @@ export class PeoplePage {
       .getByText(phoneFlexible)
       .or(semanticsByName(this.page, phoneFlexible));
     const d = phone.replace(/\D/g, '');
+    const phoneLabelSeg = '(?:Phone|Téléphone|Telephone)';
     const detailGroupPattern = new RegExp(
-      `${escapeRegExp(vetName)}[\\s\\S]*Phone[\\s\\S]*${d.split('').join('[\\s\\-.()]*')}`,
+      `${escapeRegExp(vetName)}[\\s\\S]*${phoneLabelSeg}[\\s\\S]*${d.split('').join('[\\s\\-.()]*')}`,
       'i',
     );
     const callAction = this.page
@@ -99,7 +100,9 @@ export class PeoplePage {
       return;
     }
     const phoneDigits = phone.replace(/\D/g, '');
-    const phoneField = this.page.getByRole('textbox', { name: /phone/i });
+    const phoneField = this.page.getByRole('textbox', {
+      name: /phone|téléphone|telephone/i,
+    });
     if (await phoneField.first().isVisible().catch(() => false)) {
       const value = await phoneField.first().inputValue();
       if (value.replace(/\D/g, '').includes(phoneDigits)) {
