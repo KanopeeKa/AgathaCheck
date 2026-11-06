@@ -969,12 +969,22 @@ export async function fillSemanticsField(
   const input = host.locator('input, textarea').first();
   if ((await input.count()) > 0) {
     await input.waitFor({ state: 'visible', timeout: 15_000 });
-    // Flutter web: keyboard simulation sometimes misses `onChanged`; `fill` + `input` event is reliable.
     await input.click({ force: true, timeout: 10_000 });
-    await input.fill(value);
-    await input.evaluate((el) => {
-      el.dispatchEvent(new Event('input', { bubbles: true }));
-    });
+    // Flutter web: set the native value + input/change so framework listeners fire (fill() alone is flaky).
+    await input.evaluate((el, val) => {
+      if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) {
+        const proto = el.constructor.prototype as HTMLInputElement | HTMLTextAreaElement;
+        const desc = Object.getOwnPropertyDescriptor(proto, 'value');
+        const setter = desc?.set;
+        if (setter) {
+          setter.call(el, val);
+        } else {
+          el.value = val;
+        }
+        el.dispatchEvent(new Event('input', { bubbles: true }));
+        el.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+    }, value);
     return;
   }
   await typeIntoField(host, value);
