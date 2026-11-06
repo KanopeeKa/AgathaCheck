@@ -830,7 +830,9 @@ export class PeoplePage {
       await this.clickEditVet(vetName);
     }
     await this.expectFormLoaded();
-    await fillTextbox(this.page, 'Phone', newPhone);
+    // Prefer labelled discovery — `getByRole('textbox', { name: 'Phone', exact: true })` can resolve
+    // a non-interactive node and hang on `click()` (CI: veterinarian phone edit).
+    await fillLabelledField(this.page, 'Phone', newPhone);
     await this.saveForm();
     await this.expectFormSaved('edit');
   }
