@@ -27,10 +27,15 @@ function resolveDiffRange() {
 }
 
 function changedMigrationSqlFiles() {
-  const diffRange = resolveDiffRange();
+  const baseSha =
+    process.env.MIGRATION_LINT_BASE_SHA
+    || process.env.GITHUB_EVENT_PULL_REQUEST_BASE_SHA;
+  const diffCmd = baseSha
+    ? `git diff --name-only ${baseSha} HEAD -- db/migrations/`
+    : `git diff --name-only ${resolveDiffRange()} -- db/migrations/`;
   let out = '';
   try {
-    out = execSync(`git diff --name-only ${diffRange} -- db/migrations/`, {
+    out = execSync(diffCmd, {
       cwd: repoRoot,
       encoding: 'utf8',
       stdio: ['pipe', 'pipe', 'pipe'],
@@ -38,7 +43,7 @@ function changedMigrationSqlFiles() {
   } catch (err) {
     const errText = err.stderr?.toString() || err.message || String(err);
     console.error(
-      `check_migration_sql_transactions: git diff ${diffRange} failed: ${errText.trim()}`,
+      `check_migration_sql_transactions: ${diffCmd} failed: ${errText.trim()}`,
     );
     console.error(
       'Set MIGRATION_LINT_BASE_SHA to the PR base commit, or fetch the merge base locally.',
