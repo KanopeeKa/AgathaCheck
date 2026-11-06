@@ -113,7 +113,11 @@ export class PeoplePage {
       }
     }
     if (await overviewPhoneValue.first().isVisible({ timeout: 2_000 }).catch(() => false)) {
-      await expect(overviewPhoneValue.first()).toHaveText(phoneFlexible, { timeout: 15_000 });
+      // Flutter web: phone digits often sit under the semantics node (SelectableText), so
+      // `innerText` on `flt-semantics` can be empty while `aria-label` / accessible name matches.
+      await expect(overviewPhoneValue.first()).toHaveAccessibleName(phoneFlexible, {
+        timeout: 15_000,
+      });
       return;
     }
     await expect(phoneLocator.first()).toBeVisible({ timeout: 15_000 });
