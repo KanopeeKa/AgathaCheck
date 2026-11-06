@@ -9,13 +9,13 @@ import {
   dismissConsentBannerIfPresent,
   escapeRegExp,
   fillLabelledField,
+  fillSemanticsField,
   fillTextbox,
   flutterGotoUrl,
   flutterRoutePath,
   readLabelledTextboxValue,
   refreshFlutterAccessibility,
   semanticsByName,
-  typeIntoField,
   waitForFlutterRoutePattern,
 } from '../support/flutter';
 import { readAccessTokenFromPage } from '../support/ui-auth';
@@ -835,22 +835,21 @@ export class PeoplePage {
       await this.clickEditVet(vetName);
     }
     await this.expectFormLoaded();
-    // Edit screen: labelled-field discovery can miss CanvasKit; prefer role name pattern, then labelled.
-    const byRole = this.page.getByRole('textbox', { name: /phone|téléphone/i }).first();
-    if (await byRole.isVisible({ timeout: 5_000 }).catch(() => false)) {
-      await typeIntoField(byRole, newPhone);
-    } else {
-      try {
-        await fillLabelledField(this.page, 'Phone', newPhone);
-      } catch {
-        await fillLabelledField(this.page, 'Téléphone', newPhone);
-      }
-    }
+    await refreshFlutterAccessibility(this.page);
+    // Stable semantics id + inner `input` — matches Flutter `people_edit_phone_field` + TextEditingController.
+    await fillSemanticsField(this.page, 'people_edit_phone_field', newPhone);
     const newDigits = newPhone.replace(/\D/g, '');
     await expect(async () => {
-      const v =
-        (await readLabelledTextboxValue(this.page, 'Phone')) ||
-        (await readLabelledTextboxValue(this.page, 'Téléphone'));
+      const input = this.page
+        .locator('[flt-semantics-identifier="people_edit_phone_field"]')
+        .locator('input, textarea')
+        .first();
+      let v = await input.inputValue({ timeout: 3_000 }).catch(() => '');
+      if (!v.replace(/\D/g, '').includes(newDigits)) {
+        v =
+          (await readLabelledTextboxValue(this.page, 'Phone')) ||
+          (await readLabelledTextboxValue(this.page, 'Téléphone'));
+      }
       expect(v.replace(/\D/g, '')).toContain(newDigits);
     }).toPass({ timeout: 15_000 });
     await this.saveForm();

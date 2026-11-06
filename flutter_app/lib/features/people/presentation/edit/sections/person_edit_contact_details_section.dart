@@ -24,21 +24,13 @@ class _PersonEditPhoneFieldState extends State<_PersonEditPhoneField> {
   void initState() {
     super.initState();
     _textController = TextEditingController(text: widget.controller.phone);
-    widget.controller.addListener(_syncFromModel);
-  }
-
-  void _syncFromModel() {
-    final next = widget.controller.phone;
-    if (_textController.text == next) return;
-    _textController.value = TextEditingValue(
-      text: next,
-      selection: TextSelection.collapsed(offset: next.length),
-    );
+    // Do not listen to [ChangeNotifier] here: other fields call `notifyListeners` while the user
+    // types; resetting `_textController` from `controller.phone` in those ticks races `onChanged`
+    // and can snap the web `<input>` back to the old digits (E2E / automation).
   }
 
   @override
   void dispose() {
-    widget.controller.removeListener(_syncFromModel);
     _textController.dispose();
     super.dispose();
   }
