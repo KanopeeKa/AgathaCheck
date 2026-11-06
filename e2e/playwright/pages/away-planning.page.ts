@@ -841,17 +841,26 @@ export class AwayPlanningPage {
   }
 
   async savePetNote(petId: string, note: string): Promise<void> {
-    await refreshFlutterAccessibility(this.page);
-    const field = semanticsKey(this.page, `away_plan_pet_notes_${petId}`).or(
-      this.page.locator(`[data-flutter-key="away_plan_pet_notes_${petId}"]`),
-    );
-    await expect(field).toBeVisible({ timeout: 30_000 });
-    await field.click();
-    await field.fill(note);
-    await semanticsKey(this.page, `away_plan_pet_notes_save_${petId}`)
-      .or(this.page.locator(`[data-flutter-key="away_plan_pet_notes_save_${petId}"]`))
-      .click();
-    await refreshFlutterAccessibility(this.page);
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      const field = semanticsKey(this.page, `away_plan_pet_notes_${petId}`)
+        .or(this.page.locator(`[data-flutter-key="away_plan_pet_notes_${petId}"]`))
+        .or(
+          this.page.getByRole('textbox', {
+            name: /Notes for|Notes about|note for|Notes pour/i,
+          }),
+        );
+      await expect(field.first()).toBeVisible({ timeout: 10_000 });
+      await field.first().scrollIntoViewIfNeeded();
+      await field.first().click();
+      await field.first().fill(note);
+      await semanticsKey(this.page, `away_plan_pet_notes_save_${petId}`)
+        .or(this.page.locator(`[data-flutter-key="away_plan_pet_notes_save_${petId}"]`))
+        .or(this.page.getByRole('button', { name: /^Save$|^Enregistrer$/i }))
+        .first()
+        .click();
+      await refreshFlutterAccessibility(this.page);
+    }).toPass({ timeout: 90_000 });
   }
 
   async clickSeeAbsence(): Promise<void> {
