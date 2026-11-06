@@ -137,7 +137,7 @@ test.describe('Veterinarian management', () => {
     const vetForm = new PeoplePage(page);
     await vetForm.updatePhone('555-5678', { vetName: 'Dr. Smith' });
 
-    await vetList.expectLoaded();
+    await vetList.expectPeopleDetailLoaded();
     await expect(async () => {
       const vets = await getVets(baseURL, user.accessToken);
       expect(vets.find((v) => v.name === 'Dr. Smith')?.phone).toBe('555-5678');

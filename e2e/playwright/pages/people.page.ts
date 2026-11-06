@@ -115,6 +115,13 @@ export class PeoplePage {
       .waitFor({ timeout: 30_000 });
   }
 
+  /** After save on People hub edit, the app returns here — not the `/pc/people` list. */
+  async expectPeopleDetailLoaded(): Promise<void> {
+    await dismissConsentBannerIfPresent(this.page);
+    await waitForFlutterRoutePattern(this.page, /\/pc\/people\/[^/?]+$/, 30_000);
+    await refreshFlutterAccessibility(this.page);
+  }
+
   async expectEmptyState(): Promise<void> {
     await this.page.goto(flutterGotoUrl('/pc/people?filter=professionals'));
     await refreshFlutterAccessibility(this.page);
