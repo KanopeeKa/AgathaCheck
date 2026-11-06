@@ -9,6 +9,7 @@ import {
   dismissConsentBannerIfPresent,
   escapeRegExp,
   fillLabelledField,
+  fillSemanticsField,
   fillTextbox,
   flutterGotoUrl,
   flutterRoutePath,
@@ -830,9 +831,8 @@ export class PeoplePage {
       await this.clickEditVet(vetName);
     }
     await this.expectFormLoaded();
-    // Prefer labelled discovery — `getByRole('textbox', { name: 'Phone', exact: true })` can resolve
-    // a non-interactive node and hang on `click()` (CI: veterinarian phone edit).
-    await fillLabelledField(this.page, 'Phone', newPhone);
+    // Stable semantics id on the phone field (CanvasKit + guardian locales vary aria-label text).
+    await fillSemanticsField(this.page, 'people_edit_phone_field', newPhone);
     await this.saveForm();
     await this.expectFormSaved('edit');
   }
