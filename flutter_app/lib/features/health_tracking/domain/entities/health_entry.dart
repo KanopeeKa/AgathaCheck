@@ -46,6 +46,7 @@ class HealthEntry {
     this.scheduleTimes,
     this.status = 'active',
     this.pausedSince,
+    this.careClosedReason,
     this.careFamily,
     this.careSetting,
     this.carePlanning,
@@ -124,6 +125,9 @@ class HealthEntry {
 
   /// Calendar day pause started when [status] is `paused`.
   final DateTime? pausedSince;
+
+  /// When [status] is `closed`: `ended` or `stopped_by_user` from the list API.
+  final String? careClosedReason;
 
   /// Semantic care family (optional until backfilled).
   final CareFamily? careFamily;
@@ -261,6 +265,8 @@ class HealthEntry {
     String? status,
     DateTime? pausedSince,
     bool clearPausedSince = false,
+    String? careClosedReason,
+    bool clearCareClosedReason = false,
     CareFamily? careFamily,
     bool clearCareFamily = false,
     CareSetting? careSetting,
@@ -313,6 +319,9 @@ class HealthEntry {
           : (scheduleTimes ?? this.scheduleTimes),
       status: status ?? this.status,
       pausedSince: clearPausedSince ? null : (pausedSince ?? this.pausedSince),
+      careClosedReason: clearCareClosedReason
+          ? null
+          : (careClosedReason ?? this.careClosedReason),
       careFamily: clearCareFamily ? null : (careFamily ?? this.careFamily),
       careSetting: clearCareSetting ? null : (careSetting ?? this.careSetting),
       carePlanning: clearCarePlanning

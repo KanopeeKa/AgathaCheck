@@ -16,7 +16,7 @@ import {
 import { closeAsDone } from './complete.js';
 import { assertItemOpen } from './assertItemOpen.js';
 
-/** @deprecated HTTP route removed — seeds/tests only; clients use per-occurrence complete/skip. */
+/** @deprecated Prefer HTTP resolve-stack; kept for seeds and integration tests. */
 export async function resolveStackCommand(ctx, { given = [], notGiven = [], completedOnById = {} }) {
   assertItemOpen(ctx.entry);
   const { db, entry, openRows, trace, userId, asOf } = ctx;
