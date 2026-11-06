@@ -28,7 +28,7 @@ function slotKey(row) {
 function personActedOn(row) {
   if (row.status === 'completed') return true;
   if (row.marked_by_user_id) return true;
-  return row.status === 'skipped' && Boolean(row.marked_by_user_id);
+  return false;
 }
 
 function wouldCloseAsNotRecorded(entry, row, todayIso) {

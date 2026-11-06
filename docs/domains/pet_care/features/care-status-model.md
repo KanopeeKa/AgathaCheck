@@ -5,7 +5,7 @@ audience: both
 domain: pet_care
 feature_id: care-status-model
 status: active
-last_updated: 2026-11-04
+last_updated: 2026-11-06
 related_prs: []
 ---
 
@@ -58,6 +58,7 @@ Delivered by execute-plan `care-status-model` (six vertical slices, 2026-11).
 |----|----------|-----------|--------|------|-----|
 | CARE-STATUS-MODEL-D-009 | List name **Closed care** | Matches status word | Live | 2026-11-03 | — |
 | CARE-STATUS-MODEL-D-018 | Closed list rows show no dates | Clear archive rows | Live | 2026-11-04 | — |
+| CARE-STATUS-MODEL-D-019 | Migration 104 uses `CURRENT_DATE` / `LOCALTIME` at apply time | Known limitation for TZ edge cases; run `node server/scripts/care/report_104_migration_impact.js` before PROD and attach grouped counts to the release | Live | 2026-11-06 | — |
 
 ## Still open
 

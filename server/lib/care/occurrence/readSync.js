@@ -7,6 +7,7 @@ import { resolveCareAsOf } from './careAsOf.js';
 import { withCareItemLock } from './careItemLock.js';
 import { listOpenRows } from './occurrenceRepository.js';
 import { isPlannedCare, syncOpenOccurrences } from './syncOpenOccurrences.js';
+import { isItemClosed } from '../item/itemStatus.js';
 import { isFixedSchedule, nextSeriesSlotAfter, stackWindowStart } from '../schedule/fixedSlots.js';
 
 /**
@@ -17,7 +18,7 @@ import { isFixedSchedule, nextSeriesSlotAfter, stackWindowStart } from '../sched
  * @param {{ todayIso: string }} asOf
  */
 export function wouldAutoCloseAsNotRecorded(entry, row, asOf) {
-  if (!isPlannedCare(entry) || entry.status === 'completed') return false;
+  if (!isPlannedCare(entry) || isItemClosed(entry)) return false;
   if (!isFixedSchedule(entry)) return false;
   const windowStart = stackWindowStart(asOf.todayIso);
   if (row.scheduled_date >= windowStart) return false;
