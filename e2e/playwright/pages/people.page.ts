@@ -91,9 +91,12 @@ export class PeoplePage {
     await waitForFlutterRoutePattern(this.page, /\/pc\/people\/[^/]+\/edit(?:\?|$)/, 30_000);
     await this.expectFormLoaded();
 
-    const phoneField = this.page.getByRole('textbox', {
-      name: /phone|téléphone|telephone/i,
-    });
+    // TextFormField is wrapped (AppFormLabeledField + Semantics); prefer the stable
+    // Widget key which maps to `data-flutter-key` on Flutter web.
+    const phoneField = this.page
+      .locator('[data-flutter-key="people_edit_phone_field"]')
+      .locator('input, textarea')
+      .or(this.page.getByRole('textbox', { name: /phone|téléphone|telephone/i }));
     await expect(async () => {
       const value = await phoneField.first().inputValue();
       expect(value.replace(/\D/g, '')).toContain(phoneDigits);
