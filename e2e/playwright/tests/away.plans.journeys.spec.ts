@@ -156,7 +156,6 @@ test.describe('Away plan journeys', () => {
     await loginAs(page, testUser, { experience: 'guardian' });
 
     const petList = new PetListPage(page);
-    await petList.openPetList();
     await petList.openPet('PagePet', pet.id);
 
     const away = new AwayPlanningPage(page);
