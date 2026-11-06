@@ -940,22 +940,12 @@ async function typeIntoField(
   await field.focus({ timeout: 10_000 });
   await field.click({ force: true, timeout: 10_000 });
   await page.waitForTimeout(150);
-  // Replace existing text: native `select()` works when the locator is the real `<input>`; otherwise
-  // fall back to keyboard select-all (Flutter web can lose focus from Control+a).
-  await field
-    .evaluate((el) => {
-      if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) {
-        el.focus();
-        el.select();
-      }
-    })
-    .catch(() => undefined);
-  await field.selectText().catch(async () => {
-    await page.keyboard.press('Control+a');
-    await page.keyboard.press('Backspace');
-  });
-  await page.keyboard.type(value, { delay: 45 });
-  await page.keyboard.press('Tab');
+  // Use locator `press` / `pressSequentially` — `page.keyboard.*` can miss Flutter’s focused `<input>`
+  // (CanvasKit), so the DOM `value` never updates and `onChanged` never fires.
+  await field.press('Control+a');
+  await field.press('Backspace');
+  await field.pressSequentially(value, { delay: 45 });
+  await field.press('Tab');
   await page.waitForTimeout(150);
 }
 
