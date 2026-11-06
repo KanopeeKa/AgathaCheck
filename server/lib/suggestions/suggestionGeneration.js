@@ -69,9 +69,7 @@ function isRecurringParasitePrevention(entries) {
   return entries.some(
     (e) => e.care_family === 'parasite_prevention'
       && e.frequency
-      && e.frequency !== 'once'
-      && e.status !== 'closed'
-      && e.status !== 'completed',
+      && e.frequency !== 'once',
   );
 }
 

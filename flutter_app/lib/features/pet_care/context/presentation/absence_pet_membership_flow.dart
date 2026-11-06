@@ -48,11 +48,16 @@ class AbsencePetMembershipFlow {
                 ),
               ),
               for (final pet in candidates)
-                ListTile(
-                  key: Key('add_pet_to_absence_${pet.id}'),
-                  title: Text(pet.name),
-                  subtitle: Text(pet.species),
-                  onTap: () => Navigator.of(ctx).pop(pet.id),
+                Semantics(
+                  identifier: 'add_pet_to_absence_${pet.id}',
+                  button: true,
+                  label: pet.name,
+                  child: ListTile(
+                    key: Key('add_pet_to_absence_${pet.id}'),
+                    title: Text(pet.name),
+                    subtitle: Text(pet.species),
+                    onTap: () => Navigator.of(ctx).pop(pet.id),
+                  ),
                 ),
             ],
           ),
@@ -145,10 +150,15 @@ class AbsencePetMembershipFlow {
             onPressed: () => Navigator.of(ctx).pop(false),
             child: Text(l.cancel),
           ),
-          FilledButton(
-            key: const Key('remove_pet_from_absence_confirm'),
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text(l.careContextRemovePetConfirmAction),
+          Semantics(
+            identifier: 'remove_pet_from_absence_confirm',
+            button: true,
+            label: l.careContextRemovePetConfirmAction,
+            child: FilledButton(
+              key: const Key('remove_pet_from_absence_confirm'),
+              onPressed: () => Navigator.of(ctx).pop(true),
+              child: Text(l.careContextRemovePetConfirmAction),
+            ),
           ),
         ],
       ),

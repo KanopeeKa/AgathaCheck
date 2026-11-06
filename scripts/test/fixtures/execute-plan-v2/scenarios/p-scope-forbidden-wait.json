@@ -1,0 +1,50 @@
+{
+  "name": "scope forbidden without owner ack → wait scope-ack (no STOP)",
+  "rule": "PR-ladder 3e",
+  "snapshot_patch": {},
+  "observations_patch": {
+    "phases": [
+      {
+        "id": "1",
+        "branch_exists": true,
+        "pr": {
+          "number": 12,
+          "head_sha": "eeee000000000000000000000000000000000001",
+          "checks": [
+            {
+              "name": "ci-gate / CI passed",
+              "status": "completed",
+              "conclusion": "success",
+              "reason": null,
+              "completed_at": "2026-10-16T09:40:00Z"
+            },
+            {
+              "name": "execute-plan-scope",
+              "status": "completed",
+              "conclusion": "failure",
+              "reason": "forbidden",
+              "completed_at": "2026-10-16T09:00:00Z"
+            }
+          ]
+        }
+      },
+      {
+        "id": "2",
+        "branch_exists": false,
+        "pr": null
+      }
+    ]
+  },
+  "opts": {
+    "actor": "driver",
+    "lease": null
+  },
+  "expected": {
+    "launch": false,
+    "stop": null,
+    "state": "phase:ready",
+    "actor": "driver",
+    "kind": "wait",
+    "reason": "scope-ack"
+  }
+}

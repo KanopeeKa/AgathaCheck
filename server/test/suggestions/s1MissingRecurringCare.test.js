@@ -29,12 +29,12 @@ describe('evaluateS1MissingRecurringCare', () => {
     expect(result).toBeNull();
   });
 
-  it('R-025 ignores closed recurring parasite prevention', () => {
+  it('R-025 closed recurring parasite prevention still satisfies S1 (no suggestion)', () => {
     const result = evaluateS1MissingRecurringCare(
       pet,
       [{ care_family: 'parasite_prevention', frequency: 'monthly', status: 'closed' }],
       new Date('2026-06-01'),
     );
-    expect(result).not.toBeNull();
+    expect(result).toBeNull();
   });
 });

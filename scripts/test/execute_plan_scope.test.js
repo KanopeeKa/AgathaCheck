@@ -43,12 +43,13 @@ const NOT_STOPPED = { stopped: false, reason: null };
 function evaluate(files, category, phaseId = null, extra = {}) {
   return evaluateDiff({
     files,
-    snapshot: SNAP,
+    snapshot: extra.snapshot || SNAP,
     category,
     phaseId,
-    ownPlanFilesVerified: false,
-    stopped: NOT_STOPPED,
-    ...extra,
+    ownPlanFilesVerified: extra.ownPlanFilesVerified || false,
+    stopped: extra.stopped || NOT_STOPPED,
+    unchangedOnMain: extra.unchangedOnMain || new Set(),
+    scopeAckReview: extra.scopeAckReview || null,
   });
 }
 
@@ -73,10 +74,10 @@ test('forbidden beats allowed (server/** allowed, server/routes/auth/x.js)', () 
   assert.deepEqual(r.violations, [{ file: 'server/routes/auth/x.js', reason: 'forbidden' }]);
 });
 
-test('phase forbidden_paths beat allowed_paths; release allows when any phase allowed', () => {
+test('phase forbidden_paths beat allowed_paths; release skips non-protected files', () => {
   const snap = snapshot([phase('1', { allowed_paths: ['server/**'], forbidden_paths: ['server/legacy/**'] })]);
   assert.equal(verdict('server/legacy/a.js', 'phase', '1', snap), 'forbidden');
-  assert.equal(verdict('server/legacy/a.js', 'release', null, snap), 'allowed');
+  assert.equal(evaluate(['server/legacy/a.js'], 'release', null, { snapshot: snap, ownPlanFilesVerified: true }).title, 'ok');
 });
 
 test('release and remedial: phase allowed_paths override another phase migration ban', () => {
@@ -88,16 +89,17 @@ test('release and remedial: phase allowed_paths override another phase migration
   const f84 = 'server/scripts/migrations/084_care_date_outcome.js';
   const f85 = 'server/scripts/migrations/085_care_item_closed.js';
   const orphan = 'server/scripts/migrations/099_orphan.js';
-  for (const category of ['release', 'remedial', 'sync-resolve']) {
+  for (const category of ['remedial', 'sync-resolve']) {
     assert.equal(verdict(f84, category, null, snap), 'allowed', category);
     assert.equal(verdict(f85, category, null, snap), 'allowed', category);
     assert.equal(verdict(orphan, category, null, snap), 'forbidden', category);
   }
+  assert.equal(evaluate([f84, f85], 'release', null, { snapshot: snap, ownPlanFilesVerified: true }).title, 'ok');
   assert.equal(verdict(f84, 'phase', '2', snap), 'forbidden', 'phase 2 ban applies to its own PR');
   assert.equal(verdict(f84, 'phase', '1', snap), 'allowed');
 });
 
-test('release: tests and flutter barrels before cross-phase forbidden globs', () => {
+test('release ignores non-protected files; sync-resolve keeps union scope', () => {
   const snap = snapshot([
     phase('1', {
       allowed_paths: ['server/lib/care/**', 'server/test/careContext/**'],
@@ -113,7 +115,8 @@ test('release: tests and flutter barrels before cross-phase forbidden globs', ()
   const serverTest = 'server/test/care/absence/absenceVisibility.test.js';
   const flutterTest = 'flutter_app/test/core/router/guardian_routes_test.dart';
   const barrel = 'flutter_app/lib/features/pet_care/pet_care.dart';
-  for (const category of ['release', 'sync-resolve', 'remedial']) {
+  assert.equal(evaluate([serverTest, flutterTest, barrel], 'release', null, { ownPlanFilesVerified: true }).conclusion, 'success');
+  for (const category of ['sync-resolve', 'remedial']) {
     assert.equal(verdict(serverTest, category, null, snap), 'exception:tests', category);
     assert.equal(verdict(flutterTest, category, null, snap), 'exception:tests', category);
     assert.equal(verdict(barrel, category, null, snap), 'companion', category);
@@ -235,14 +238,10 @@ test('other plan file is protected', () => {
   assert.equal(r.title, 'protected');
 });
 
-test('release uses union', () => {
+test('release checks protected and own-plan only; sync-resolve keeps union', () => {
   const files = ['server/a.js', 'flutter_app/lib/features/care/widgets/x.dart', 'docs/y.md', 'server/test/a.test.js'];
-  for (const category of ['release', 'sync-resolve']) {
-    const r = evaluate(files, category);
-    assert.equal(r.conclusion, 'success', category);
-    assert.deepEqual(r.violations, []);
-  }
-  // A phase PR sees only its own phase's scope.
+  assert.equal(evaluate(files, 'release', null, { ownPlanFilesVerified: true }).conclusion, 'success');
+  assert.equal(evaluate(files, 'sync-resolve').conclusion, 'success');
   assert.equal(verdict('flutter_app/lib/features/care/widgets/x.dart', 'phase', '1'), 'unclassified');
 });
 
@@ -293,12 +292,59 @@ test('stopped plan red plan-stopped', () => {
   }
 });
 
+test('stopped plan still evaluates sync-resolve and remedial', () => {
+  const snap = snapshot([phase('1', { allowed_paths: ['server/**'] })]);
+  for (const category of ['sync-resolve', 'remedial']) {
+    const r = evaluate(['server/a.js'], category, null, {
+      stopped: { stopped: true, reason: 'revoked' },
+      snapshot: snap,
+    });
+    assert.equal(r.title, 'ok', category);
+  }
+});
+
 test('unclassified red', () => {
-  const r = evaluate(['flutter_app/lib/main.dart'], 'phase', '1');
+  const snap = snapshot([phase('1', { allowed_paths: ['server/**'] })]);
+  const many = Array.from({ length: 11 }, (_, i) => `docs/extra-${i}.md`);
+  const r = evaluate(many, 'phase', '1', { snapshot: snap });
   assert.equal(r.conclusion, 'failure');
   assert.equal(r.title, 'unclassified');
-  // A phase id missing from the snapshot fails closed.
-  assert.equal(evaluate(['server/a.js'], 'phase', '9').title, 'unclassified');
+  const over = Array.from({ length: 11 }, (_, i) => `docs/x-${i}.md`);
+  assert.equal(evaluate(over, 'phase', '9').title, 'unclassified');
+});
+
+test('phase PR: ≤10 harmless unclassified files are advisory success', () => {
+  const snap = snapshot([phase('1', { allowed_paths: ['server/**'] })]);
+  const side = ['docs/extra.md', 'docs/notes.md'];
+  const r = evaluate(side, 'phase', '1', { snapshot: snap });
+  assert.deepEqual([r.conclusion, r.title], ['success', 'ok']);
+  assert.deepEqual(r.advisoryUnclassified, side);
+});
+
+test('owner scope-ack review clears forbidden violations but lists them for audit', () => {
+  const review = { id: 42, state: 'APPROVED', commit_id: 'a'.repeat(40), user: { login: 'KanopeeKa' } };
+  const r = evaluate(['db/migrations/099_x.sql'], 'phase', '1', { scopeAckReview: review });
+  assert.deepEqual([r.conclusion, r.title], ['success', 'ok']);
+  assert.deepEqual(r.ownerApprovedForbidden, ['db/migrations/099_x.sql']);
+  assert.equal(r.scopeAckReviewId, 42);
+});
+
+test('approved_sensitive_paths still requires matching phase allowed_paths', () => {
+  const snap = snapshot([phase('1', {
+    allowed_paths: ['db/migrations/104_*'],
+    approved_sensitive_paths: ['db/migrations/**'],
+  })]);
+  assert.equal(verdict('db/migrations/105_x.sql', 'phase', '1', snap), 'forbidden');
+  assert.equal(verdict('db/migrations/104_x.sql', 'phase', '1', snap), 'allowed');
+});
+
+test('approved_sensitive_paths respects phase forbidden_paths', () => {
+  const snap = snapshot([phase('1', {
+    allowed_paths: ['db/migrations/**'],
+    approved_sensitive_paths: ['db/migrations/**'],
+    forbidden_paths: ['db/migrations/099_*'],
+  })]);
+  assert.equal(verdict('db/migrations/099_x.sql', 'phase', '1', snap), 'forbidden');
 });
 
 test('unsupported integration PR fails closed', () => {

@@ -136,16 +136,22 @@ class PlannedAbsencePlanScreen extends ConsumerWidget {
                   ],
                   if (showAddPet) ...[
                     const SizedBox(height: 4),
-                    OutlinedButton.icon(
-                      key: const Key('absence_add_pet'),
-                      onPressed: () => AbsencePetMembershipFlow.showAddPetSheet(
-                        context: context,
-                        ref: ref,
-                        absence: absence,
-                        allPets: pets,
+                    Semantics(
+                      identifier: 'absence_add_pet',
+                      button: true,
+                      label: l.careContextAddPetToAbsence,
+                      child: OutlinedButton.icon(
+                        key: const Key('absence_add_pet'),
+                        onPressed: () =>
+                            AbsencePetMembershipFlow.showAddPetSheet(
+                              context: context,
+                              ref: ref,
+                              absence: absence,
+                              allPets: pets,
+                            ),
+                        icon: const Icon(Icons.add),
+                        label: Text(l.careContextAddPetToAbsence),
                       ),
-                      icon: const Icon(Icons.add),
-                      label: Text(l.careContextAddPetToAbsence),
                     ),
                   ],
                 ],

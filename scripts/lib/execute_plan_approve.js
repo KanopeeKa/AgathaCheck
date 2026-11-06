@@ -7,7 +7,7 @@
  * `clients` = { bot, read, deps? } as in execute_plan_driver_actions.js; `read` (GITHUB_TOKEN) dispatches the driver.
  */
 
-const { parseControlComment, validateControlComment, findControlComments } = require('./execute_plan_approval');
+const { parseControlComment, validateControlComment, findControlComments, formatAuthorizationRejection } = require('./execute_plan_approval');
 const { loadSnapshotAtRef } = require('./execute_plan_snapshot_v2');
 const { loadPlanContext, CONFIG_PATH } = require('./execute_plan_observe');
 const { formatStatusComment, STATUS_MARKER, parseStatusComment } = require('./execute_plan_status');
@@ -104,7 +104,10 @@ async function handleApprove(clients, { issue, comment, parsed, config }, { now,
   const res = validateControlComment({ comment, snapshot, config });
   if (!res.valid) {
     if (IGNORED_REASONS.has(res.reason)) return done(false, `ignored: ${res.reason}`);
-    return rejectWith(res.reason);
+    const detail = formatAuthorizationRejection({
+      reason: res.reason, verb: 'approve', snapshot, initSha: sha, labels: labelNames(issue),
+    });
+    return rejectWith(detail);
   }
 
   const own = new Set(ownPlanFilePaths(snapshot.plan_id));
@@ -213,8 +216,18 @@ async function handleControlComment(clients, event, { now = isoNow(), killSwitch
   if (!ctx) return done(false, 'issue not approved');
   const res = validateControlComment({ comment, snapshot: ctx.snapshot, config: ctx.config });
   if (!res.valid) {
-    log(`${parsed.verb} comment ${comment.id} ignored: ${res.reason}`);
-    return done(false, `invalid ${parsed.verb}: ${res.reason}`);
+    if (IGNORED_REASONS.has(res.reason)) return done(false, `ignored: ${res.reason}`);
+    if (dry) return done(false, `would reject: ${res.reason}`);
+    const initSha = ctx.status && ctx.status.init_sha;
+    const detail = formatAuthorizationRejection({
+      reason: res.reason,
+      verb: parsed.verb,
+      snapshot: ctx.snapshot,
+      initSha,
+      labels,
+    });
+    log(`${parsed.verb} comment ${comment.id} rejected: ${detail}`);
+    return reject(clients.bot, issue.number, parsed.verb, detail);
   }
   if (parsed.verb === 'revoke') {
     if (!dry) await clients.bot.addLabels(issue.number, ['autonomous-revoked']);

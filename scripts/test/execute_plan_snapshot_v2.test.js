@@ -58,6 +58,62 @@ test('buildSnapshotFromPlan produces a valid snapshot', () => {
   validateSnapshotV2(s, { planMarkdown: PLAN_MD });
 });
 
+test('buildSnapshotFromPlan copies approved_sensitive_paths from phase scope JSON', () => {
+  const md = `# Sensitive
+
+## Goal
+x
+
+## Phases
+
+### Phase 1 — One
+\`\`\`json
+{ "allowed_paths": ["db/migrations/104_*"], "forbidden_paths": [], "approved_sensitive_paths": ["db/migrations/104_*"],
+  "allowed_exceptions": [], "companions": [], "exit_checklist": ["ok"] }
+\`\`\`
+Scope: x
+
+## Proof on UAT
+Look.
+`;
+  const s = buildSnapshotFromPlan({
+    planId: 'sensitive-plan-ab12',
+    planMarkdown: md,
+    controlIssue: 3,
+    now: '2026-10-16T09:00:00Z',
+  });
+  assert.deepEqual(s.phases[0].approved_sensitive_paths, ['db/migrations/104_*']);
+  validateSnapshotV2(rehash(s), { planMarkdown: md });
+});
+
+test('validateSnapshotV2 rejects forbidden allowed_paths when approved_sensitive_paths is empty array', () => {
+  const s = build();
+  s.phases[0].allowed_paths = ['db/migrations/104_*'];
+  s.phases[0].approved_sensitive_paths = [];
+  assert.throws(
+    () => validateSnapshotV2(rehash(s), { planMarkdown: PLAN_MD }),
+    /missing from approved_sensitive_paths/,
+  );
+});
+
+test('validateSnapshotV2 warns when migration globs list only runner or only ledger paths', () => {
+  const warns = [];
+  const prev = console.warn;
+  console.warn = (msg) => warns.push(String(msg));
+  try {
+    const s = build();
+    s.phases[0].allowed_paths = ['server/scripts/migrations/104_*', 'flutter_app/**'];
+    validateSnapshotV2(rehash(s), { planMarkdown: PLAN_MD });
+    assert.ok(warns.some((w) => /no db\/migrations globs/.test(w)));
+    warns.length = 0;
+    s.phases[0].allowed_paths = ['db/migrations/104_*'];
+    validateSnapshotV2(rehash(s), { planMarkdown: PLAN_MD });
+    assert.ok(warns.some((w) => /no server\/scripts\/migrations globs/.test(w)));
+  } finally {
+    console.warn = prev;
+  }
+});
+
 test('integration suffix falls back to sha256 of plan id', () => {
   const s = buildSnapshotFromPlan({ planId: 'alpha-beta-q', planMarkdown: PLAN_MD, controlIssue: 1, now: '2026-10-16T09:00:00Z' });
   assert.match(s.integration_branch, /^cursor\/alpha-beta-q-integration-[0-9a-f]{4}$/);

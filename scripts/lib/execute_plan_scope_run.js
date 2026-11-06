@@ -12,6 +12,7 @@ const { computeApprovalHash, findControlComments } = require('./execute_plan_app
 const { acceptedAuthorizationIds } = require('./execute_plan_ack');
 const { loadSnapshotAtRef } = require('./execute_plan_snapshot_v2');
 const { categorizePull, evaluateDiff, BUNDLE_BUDGET_FILE, validateBundleBudgetRatchet } = require('./execute_plan_scope');
+const { findOwnerScopeAckReview } = require('./execute_plan_scope_ack');
 const { deriveControl } = require('./execute_plan_control');
 const { planIdFromRefs, findControlIssue, labelNames } = require('./execute_plan_plans');
 const { SCOPE_CONTEXT, describeScope } = require('./execute_plan_scope_status');
@@ -24,7 +25,12 @@ const UNSUPPORTED_INTEGRATION_SUMMARY =
   'PR targets the integration branch but is not a recognized phase, sync, or sync-resolve head. '
   + 'Plan-linked side fixes merge to main (runbooks §7.5); open the PR against main or use the documented branch shape.';
 
-const result = (conclusion, title, summary, planId = null) => ({ conclusion, title, summary, planId });
+const result = (conclusion, title, summary, planId = null, extra = {}) => ({ conclusion, title, summary, planId, ...extra });
+
+/** Sync-resolve and remedial PRs keep a normal scope evaluation while the plan is stopped (PR4). */
+function exemptFromStopPublish(category) {
+  return category === 'sync-resolve' || category === 'remedial';
+}
 const sha256Hex = (text) => crypto.createHash('sha256').update(text, 'utf8').digest('hex');
 
 function statusMarker(planId) {
@@ -111,6 +117,24 @@ function renderSummary(evaluation) {
       lines.push(`- … and ${evaluation.violations.length - SUMMARY_MAX_LINES} more`);
     }
   }
+  if (evaluation.advisoryUnclassified && evaluation.advisoryUnclassified.length) {
+    lines.push('', 'Unclassified (advisory):');
+    for (const f of evaluation.advisoryUnclassified.slice(0, SUMMARY_MAX_LINES)) lines.push(`- \`${f}\``);
+    if (evaluation.advisoryUnclassified.length > SUMMARY_MAX_LINES) {
+      lines.push(`- … and ${evaluation.advisoryUnclassified.length - SUMMARY_MAX_LINES} more`);
+    }
+  }
+  if (evaluation.ownerApprovedForbidden && evaluation.ownerApprovedForbidden.length) {
+    const reviewId = evaluation.scopeAckReviewId;
+    const heading = reviewId
+      ? `Forbidden — owner-approved (review #${reviewId}):`
+      : 'Forbidden — owner-approved:';
+    lines.push('', heading);
+    for (const file of evaluation.ownerApprovedForbidden.slice(0, SUMMARY_MAX_LINES)) lines.push(`- \`${file}\``);
+    if (evaluation.ownerApprovedForbidden.length > SUMMARY_MAX_LINES) {
+      lines.push(`- … and ${evaluation.ownerApprovedForbidden.length - SUMMARY_MAX_LINES} more`);
+    }
+  }
   if (evaluation.companionsUsed.length > 0) {
     lines.push('', `Companions used (${evaluation.companionsUsed.length}):`);
     for (const f of evaluation.companionsUsed) lines.push(`- \`${f}\``);
@@ -145,7 +169,7 @@ async function runScopeCheck(client, { prNumber, headSha, headRef, baseRef, head
   try {
     ({ snapshot, stopped, control } = await loadPlanControl(client, issue, planId, now));
   } catch (e) {
-    return result('failure', 'drift', e.message, planId);
+    return result('failure', 'error', e.message, planId);
   }
 
   let files;
@@ -157,7 +181,21 @@ async function runScopeCheck(client, { prNumber, headSha, headRef, baseRef, head
     throw e;
   }
 
+  const config = await loadConfig(client);
+  let scopeAckReview = null;
+  try {
+    const reviews = await client.listPullReviews(prNumber);
+    scopeAckReview = findOwnerScopeAckReview(reviews, {
+      headSha,
+      owners: config.owners || [],
+      botLogin: config.bot_login,
+    });
+  } catch {
+    scopeAckReview = null;
+  }
+
   const { category, phaseId } = categorizePull({ head_ref: headRef, base_ref: baseRef }, snapshot);
+  const stopExempt = stopped.stopped && exemptFromStopPublish(category);
   const ownPlanFilesVerified = category === 'release' && files.length > 0
     ? await verifyOwnPlanFiles(client, snapshot, headSha, files)
     : false;
@@ -166,7 +204,7 @@ async function runScopeCheck(client, { prNumber, headSha, headRef, baseRef, head
     ? await filesUnchangedOnMain(client, headSha, files)
     : new Set();
   const evaluation = evaluateDiff({
-    files, snapshot, category, phaseId, ownPlanFilesVerified, stopped, unchangedOnMain,
+    files, snapshot, category, phaseId, ownPlanFilesVerified, stopped, unchangedOnMain, scopeAckReview,
   });
   if (category === 'phase' && files.includes(BUNDLE_BUDGET_FILE)) {
     const cmp = await client.compare(baseRef, headSha);
@@ -184,8 +222,8 @@ async function runScopeCheck(client, { prNumber, headSha, headRef, baseRef, head
       return result('failure', 'forbidden', err, planId);
     }
   }
-  const summary = stopped.stopped ? `plan stopped: ${stopped.reason}` : renderSummary(evaluation);
-  return result(evaluation.conclusion, evaluation.title, summary, planId);
+  const summary = stopped.stopped && !stopExempt ? `plan stopped: ${stopped.reason}` : renderSummary(evaluation);
+  return result(evaluation.conclusion, evaluation.title, summary, planId, { exemptStopPublish: stopExempt });
 }
 
 /** Post the `execute-plan-scope` commit status on `headSha`. */
@@ -205,7 +243,7 @@ async function publishScopeCheck(client, { headSha, conclusion, title, summary, 
  */
 async function publishScopeResult(client, { headSha, outcome, targetUrl, now }) {
   let final = outcome;
-  if (outcome.conclusion === 'success' && outcome.planId) {
+  if (outcome.conclusion === 'success' && outcome.planId && !outcome.exemptStopPublish) {
     try {
       const issue = await findControlIssue(client, outcome.planId);
       if (!issue) throw new Error(`control issue for ${outcome.planId} not found`);

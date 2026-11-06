@@ -65,6 +65,20 @@ function validateControlComment({ comment, snapshot, config }) {
   return result(null);
 }
 
+/** Human-readable rejection detail for control-issue authorization comments. */
+function formatAuthorizationRejection({ reason, verb, snapshot, initSha, labels }) {
+  if (reason === 'hash') {
+    const expected = snapshot.approval_hash;
+    let msg = `hash mismatch: expected ${expected}`;
+    if (initSha) msg += ` (status init_sha ${initSha})`;
+    if (verb === 'approve' && (labels || []).includes('autonomous-approved')) {
+      msg += '; an approved plan uses resume-autonomous with the current hash';
+    }
+    return msg;
+  }
+  return reason;
+}
+
 /** Latest valid authorizing comment and the newest valid revoke. Later duplicate approve comments do not replace an existing valid epoch; resume may. */
 function findControlComments(comments, snapshot, config, { accepted }) {
   if (!(accepted instanceof Set)) throw new TypeError('findControlComments requires { accepted: Set<number> }');
@@ -116,4 +130,5 @@ module.exports = {
   findControlComments,
   parseControlComment,
   validateControlComment,
+  formatAuthorizationRejection,
 };

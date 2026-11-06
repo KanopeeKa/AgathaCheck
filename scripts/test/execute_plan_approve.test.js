@@ -74,7 +74,7 @@ function setup({ files = PLAN_FILES, compareFiles = null, integration = null, is
         issueNumber: 9,
         snapshot: SNAP,
         config: CONFIG,
-        status: { lease: null, stop: null },
+        status: { lease: null, stop: null, init_sha: SHA },
         statusComment: { id: 1 },
         comments: [],
         acceptedAuthorizations: new Set(),
@@ -138,12 +138,24 @@ test('not owner → ignored, no comment', async () => {
   }
 });
 
-test('invalid hash → exactly one rejected comment, nothing else', async () => {
+test('invalid hash → exactly one rejected comment with expected hash', async () => {
   const s = setup();
   const bad = APPROVE.replace(/sha256:[0-9a-f]{4}/, 'sha256:0000');
   const res = await run(s, event(mkComment(bad)));
   assert.equal(res.handled, true);
-  assert.deepEqual(s.writes, [['createComment', 9, 'approve-autonomous rejected: hash']]);
+  assert.equal(s.writes.length, 1);
+  assert.match(s.writes[0][2], /^approve-autonomous rejected: hash mismatch: expected sha256:/);
+  assert.match(s.writes[0][2], new RegExp(`status init_sha ${SHA}`));
+  assert.deepEqual(s.dispatches, []);
+});
+
+test('resume with wrong hash → rejected comment on control issue', async () => {
+  const approved = mkIssue(['execute-plan', 'autonomous-approved', `plan:${PLAN_ID}`]);
+  const s = setup();
+  const bad = RESUME.replace(/sha256:[0-9a-f]{4}/, 'sha256:0000');
+  const res = await run(s, event(mkComment(bad), { issue: approved }));
+  assert.equal(res.handled, true);
+  assert.match(s.writes[0][2], /^resume-autonomous rejected: hash mismatch: expected/);
   assert.deepEqual(s.dispatches, []);
 });
 
@@ -226,12 +238,13 @@ test('resume: invalid or on an unapproved issue → no pass', async () => {
   const s = setup();
   const tooLong = RESUME.replace(/until .*$/, 'until 2027-01-01T00:00:00Z');
   const res = await run(s, event(mkComment(tooLong), { issue: approved }));
-  assert.match(res.detail, /invalid resume: window/);
-  const unapproved = await run(s, event(mkComment(RESUME)));
+  assert.match(res.detail, /rejected: window/);
+  const s2 = setup();
+  const unapproved = await run(s2, event(mkComment(RESUME)));
   assert.equal(unapproved.detail, 'issue not approved');
-  assert.deepEqual(s.writes, []);
-  assert.deepEqual(s.passes, [['load', PLAN_ID]]);
-  assert.deepEqual(s.dispatches, []);
+  assert.deepEqual(s2.writes, []);
+  assert.deepEqual(s2.passes, []);
+  assert.deepEqual(s2.dispatches, []);
 });
 
 test('revoke (valid) → label autonomous-revoked then the driver is dispatched; not owner → nothing', async () => {

@@ -12,7 +12,7 @@ const { decide } = require('./execute_plan_state');
 const { deriveControl } = require('./execute_plan_control');
 const { loadPlanContext, observe, configError, latestRuns, CONFIG_PATH } = require('./execute_plan_observe');
 const { SCOPE_CONTEXT } = require('./execute_plan_scope_status');
-const { formatStatusComment, formatLogLine, applyDecisionToStatus, readMergedStatusForWrite } = require('./execute_plan_status');
+const { formatStatusComment, formatLogLine, formatScopeAckNotifyComment, applyDecisionToStatus, readMergedStatusForWrite } = require('./execute_plan_status');
 const { verifyComplete, resolveMergeSource, watchPreUat, watchDeploy } = require('./execute_plan_uat_observe');
 
 const FAILED = new Set(['failure', 'timed_out', 'action_required']);
@@ -99,6 +99,17 @@ async function tick(client, { planId, controlIssue, now = isoNow(), actor = 'age
   if (ctx.status.state !== decision.state) {
     const url = (decision.evidence[0] && decision.evidence[0].url) || ctx.issue.html_url || `https://github.com/${client.repo}/issues/${ctx.issueNumber}`;
     writes.push({ kind: 'log-comment', body: formatLogLine(ctx.status.state || 'new', decision.state, url) });
+  }
+  const prevAck = ctx.status.scope_ack_notify;
+  const nextAck = next.scope_ack_notify;
+  if (
+    nextAck
+    && (!prevAck || prevAck.pr !== nextAck.pr || prevAck.head_sha !== nextAck.head_sha)
+  ) {
+    writes.push({
+      kind: 'log-comment',
+      body: formatScopeAckNotifyComment({ repo: client.repo, pr: nextAck.pr, headSha: nextAck.head_sha }),
+    });
   }
   if (decision.stop && !obs.control.labels.includes('needs-owner')) writes.push({ kind: 'add-label', label: 'needs-owner' });
 
