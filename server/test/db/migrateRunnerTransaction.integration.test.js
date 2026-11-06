@@ -38,14 +38,19 @@ describe('migrate runner transaction', () => {
     }
   });
 
-  it('rejects SQL that COMMITs out of the runner transaction', async () => {
+  it('strips standalone COMMIT so it cannot end the runner transaction', async () => {
     const { pool } = await openStrictHarness();
     const client = await pool.connect();
     try {
       await client.query('BEGIN');
-      await expect(
-        applyMigrationForRunner(client, '999_commit.sql', 'COMMIT;'),
-      ).rejects.toThrow(/runner transaction/);
+      const txBefore = (
+        await client.query('SELECT txid_current()::text AS tx')
+      ).rows[0].tx;
+      await applyMigrationForRunner(client, '999_commit_only.sql', 'COMMIT;\nSELECT 1;');
+      const txAfter = (
+        await client.query('SELECT txid_current()::text AS tx')
+      ).rows[0].tx;
+      expect(txAfter).toBe(txBefore);
       await client.query('ROLLBACK');
     } finally {
       client.release();
@@ -76,7 +81,7 @@ describe('migrate runner transaction', () => {
       await applyMigrationForRunner(
         client,
         '999_noop_update.sql',
-        'UPDATE health_entries SET notes = notes WHERE false;',
+        'UPDATE _migrations SET name = name WHERE false;',
       );
       await client.query('ROLLBACK');
     } finally {

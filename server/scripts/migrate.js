@@ -43,6 +43,7 @@ import { maybeAutoSeedMigrationLedger } from './lib/migration-ledger.js';
 import {
   assertRunnerTransactionUnchanged,
   captureRunnerTransactionId,
+  stripTopLevelSqlTransactionWrappers,
 } from './lib/migration_sql.js';
 
 const migrateScriptPath = fileURLToPath(import.meta.url);
@@ -128,8 +129,9 @@ const CODE_MIGRATIONS = {
 
 async function applyMigration(client, name, sql, { runHook = null } = {}) {
   const txBefore = await captureRunnerTransactionId(client);
+  const cleaned = stripTopLevelSqlTransactionWrappers(sql);
   const codeRunner = runHook ?? CODE_MIGRATIONS[name];
-  await client.query(sql);
+  await client.query(cleaned);
   if (codeRunner) {
     await codeRunner(client);
   }

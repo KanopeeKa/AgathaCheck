@@ -2,7 +2,22 @@ import {
   assertRunnerTransactionUnchanged,
   captureRunnerTransactionId,
   findTopLevelSqlTransactionViolations,
+  stripTopLevelSqlTransactionWrappers,
 } from '../../scripts/lib/migration_sql.js';
+
+describe('stripTopLevelSqlTransactionWrappers', () => {
+  it('removes semicolon BEGIN/COMMIT outside dollar quotes', () => {
+    const raw = `-- header\n\nBEGIN;\nALTER TABLE t ADD COLUMN x int;\nCOMMIT;\n`;
+    expect(stripTopLevelSqlTransactionWrappers(raw)).toBe(
+      '-- header\n\nALTER TABLE t ADD COLUMN x int;',
+    );
+  });
+
+  it('preserves PL/pgSQL BEGIN inside DO $$', () => {
+    const raw = 'DO $$\nBEGIN\n  PERFORM 1;\nEND\n$$;\n';
+    expect(stripTopLevelSqlTransactionWrappers(raw)).toBe(raw.trim());
+  });
+});
 
 describe('findTopLevelSqlTransactionViolations', () => {
   it('flags semicolon BEGIN/COMMIT outside dollar quotes', () => {
