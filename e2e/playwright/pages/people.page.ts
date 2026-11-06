@@ -419,7 +419,10 @@ export class PeoplePage {
 
     const detailRoute = flutterRoutePath(this.page.url());
     if (/^\/pc\/people\/[^/?]+$/.test(detailRoute)) {
-      await this.expectPeopleDetailPhoneVisible(phone, vetName);
+      // After edit save, `personDetailProvider` refetches async; first paint can still show stale digits.
+      await expect(async () => {
+        await this.expectPeopleDetailPhoneVisible(phone, vetName);
+      }).toPass({ timeout: 45_000 });
       return;
     }
 
