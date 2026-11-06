@@ -91,6 +91,10 @@ export class PeoplePage {
     await this.page.goto(flutterGotoUrl(`/pc/people/${contactId}/edit`));
     await refreshFlutterAccessibility(this.page);
     await waitForFlutterRoutePattern(this.page, /\/pc\/people\/[^/]+\/edit(?:\?|$)/, 30_000);
+    // Riverpod can serve cached form state briefly after save — reload so the edit form refetches.
+    await this.page.reload();
+    await refreshFlutterAccessibility(this.page);
+    await waitForFlutterRoutePattern(this.page, /\/pc\/people\/[^/]+\/edit(?:\?|$)/, 30_000);
 
     const phoneField = this.page
       .locator('[flt-semantics-identifier="people_edit_phone_field"]')
@@ -833,6 +837,15 @@ export class PeoplePage {
     await this.expectFormLoaded();
     // Stable semantics id on the phone field (CanvasKit + guardian locales vary aria-label text).
     await fillSemanticsField(this.page, 'people_edit_phone_field', newPhone);
+    const newDigits = newPhone.replace(/\D/g, '');
+    await expect(async () => {
+      const input = this.page
+        .locator('[flt-semantics-identifier="people_edit_phone_field"]')
+        .locator('input, textarea')
+        .first();
+      const v = await input.inputValue({ timeout: 5_000 }).catch(() => '');
+      expect(v.replace(/\D/g, '')).toContain(newDigits);
+    }).toPass({ timeout: 15_000 });
     await this.saveForm();
     await this.expectFormSaved('edit');
   }
