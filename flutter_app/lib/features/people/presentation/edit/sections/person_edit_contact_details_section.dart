@@ -8,10 +8,7 @@ import '../person_form_controller.dart';
 /// Phone field must use a [TextEditingController] on web — `initialValue` + CanvasKit can leave the
 /// hidden `<input>` out of sync with [PersonFormController], so saves keep the old number (E2E).
 class _PersonEditPhoneField extends StatefulWidget {
-  const _PersonEditPhoneField({
-    required this.controller,
-    required this.label,
-  });
+  const _PersonEditPhoneField({required this.controller, required this.label});
 
   final PersonFormController controller;
   final String label;
