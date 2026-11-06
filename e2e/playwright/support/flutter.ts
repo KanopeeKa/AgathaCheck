@@ -936,7 +936,8 @@ async function typeIntoField(
   value: string,
 ): Promise<void> {
   const page = field.page();
-  await field.click();
+  // `click` without `force` can wait until the test timeout when Flutter overlays intercept hits.
+  await field.click({ force: true, timeout: 10_000 });
   await page.waitForTimeout(150);
   await field.press('Control+a');
   await page.keyboard.press('Backspace');
