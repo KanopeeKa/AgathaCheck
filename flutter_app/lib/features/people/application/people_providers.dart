@@ -59,6 +59,45 @@ class RosterNotifier extends AsyncNotifier<Roster> {
       return repo.fetchRoster(includeInactive: true);
     });
   }
+
+  /// Merge [detail] into the cached roster row so detail loading UI matches PATCH
+  /// response before [refresh] finishes (avoids stale phone digits).
+  void applyOptimisticContactPatch(String contactId, ContactDetail detail) {
+    final current = state.valueOrNull;
+    if (current == null) return;
+    final idx = current.contacts.indexWhere((c) => c.id == contactId);
+    if (idx < 0) return;
+    final prev = current.contacts[idx];
+    final merged = ContactSummary(
+      id: prev.id,
+      directory: prev.directory,
+      kind: detail.kind,
+      name: detail.name,
+      roles: detail.roles,
+      group: detail.group,
+      status: detail.status,
+      linkedUserId: detail.linkedUserId,
+      pets: prev.pets,
+      worksAt: prev.worksAt,
+      nextAbsence: prev.nextAbsence,
+      access: prev.access,
+      linkedVetRecordId: detail.linkedVetRecordId,
+      inactiveAt: detail.inactiveAt,
+      phone: detail.phone ?? prev.phone,
+      email: detail.email ?? prev.email,
+      address: detail.address ?? prev.address,
+      website: detail.website ?? prev.website,
+    );
+    final nextContacts = List<ContactSummary>.from(current.contacts);
+    nextContacts[idx] = merged;
+    state = AsyncData(
+      Roster(
+        households: current.households,
+        contacts: nextContacts,
+        pendingInvites: current.pendingInvites,
+      ),
+    );
+  }
 }
 
 final personSummaryProvider = Provider.family<ContactSummary?, String>((
