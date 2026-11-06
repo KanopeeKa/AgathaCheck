@@ -30,7 +30,7 @@ Layer model and budgets: `docs/agent-efficiency/agent-instructions.md`.
 ## Claude Code mechanics
 
 - **Skills:** `/execute-plan` (`.claude/skills/execute-plan/`), `/canonical-docs`, steward (PRs Claude opens or
-  drives). Other Cursor skills (`/babysit-plus`, `/babysit-uat`, `/e2e-debug`, `/ui-design-deep`): follow their
+  drives). Other Cursor skills (`/light-plan`, `/babysit-plus`, `/babysit-uat`, `/e2e-debug`, `/ui-design-deep`): follow their
   `SKILL.md` procedure with Claude Code tools.
 - **Not applicable:** `composer-2.5`, `ManagePullRequest`, merge-lease scripts, `/opt/cursor/artifacts/`.
 - **GitHub:** GitHub MCP tools; `gh` as fallback.

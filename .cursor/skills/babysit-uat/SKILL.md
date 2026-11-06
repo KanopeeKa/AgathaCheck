@@ -35,6 +35,8 @@ e2e-debug path only when `tick` returns a `remedial` action.
 | **Remedial PR from `/e2e-debug`** (standalone or delegated) | **`/babysit-uat` — mandatory same-session follow-up; merge + watch** |
 | `/execute-plan` **intermediate** phase PR (integration parent) | `/babysit-plus` only |
 | `/execute-plan` **final** PR → `main` | `/babysit-uat` |
+| `/light-plan` **release** PR → `main` | `/babysit-uat` |
+| `/light-plan` phase or sync PR → integration | Light merge in [light-plan skill](../light-plan/SKILL.md) (not this skill) |
 | Narrow PR CI-only / docs | `/babysit-plus` (avoids pre-UAT queue pressure) |
 
 ---
