@@ -85,9 +85,9 @@ export class AwayPlanningPage {
     await refreshFlutterAccessibility(this.page);
     if (petId) {
       await expect(
-        semanticsKey(this.page, `pet_away_plan_page_${petId}`).or(
-          this.page.locator(`[data-flutter-key="pet_away_plan_page_${petId}"]`),
-        ),
+        semanticsKey(this.page, `pet_away_plan_page_${petId}`)
+          .or(this.page.locator(`[data-flutter-key="pet_away_plan_page_${petId}"]`))
+          .or(semanticsKey(this.page, `away_plan_pet_header_${petId}`)),
       ).toBeVisible({ timeout: 60_000 });
       return;
     }
@@ -297,9 +297,9 @@ export class AwayPlanningPage {
       60_000,
     );
     await expect(
-      semanticsKey(this.page, `pet_away_plan_page_${petId}`).or(
-        this.page.getByText(/away plan|Plan d.absence/i).first(),
-      ),
+      semanticsKey(this.page, `away_plan_pet_header_${petId}`).or(
+        semanticsKey(this.page, `pet_away_plan_page_${petId}`),
+      ).or(this.page.getByText(/away plan|Plan d.absence/i).first()),
     ).toBeVisible({ timeout: 60_000 });
   }
 
