@@ -769,11 +769,17 @@ export class PeoplePage {
   }
 
   async updatePhone(newPhone: string, options?: { vetName: string }): Promise<void> {
-    await this.expectFormLoaded();
-    if (options?.vetName) {
-      await this.openVetDetail(options.vetName);
-      await this.expectFormLoaded();
+    const vetName = options?.vetName;
+    if (vetName) {
+      await this.openVetDetail(vetName);
     }
+    if (!/\/pc\/people\/[^/]+\/edit/.test(this.page.url())) {
+      if (!vetName) {
+        throw new Error('updatePhone: on person detail — pass vetName to open edit');
+      }
+      await this.clickEditVet(vetName);
+    }
+    await this.expectFormLoaded();
     await fillTextbox(this.page, 'Phone', newPhone);
     await this.saveForm();
     await this.expectFormSaved('edit');
