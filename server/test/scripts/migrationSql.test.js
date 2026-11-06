@@ -1,35 +1,48 @@
 import {
-  assertClientInTransaction,
-  stripTopLevelTransactionWrappers,
+  assertRunnerTransactionUnchanged,
+  captureRunnerTransactionId,
+  findTopLevelSqlTransactionViolations,
 } from '../../scripts/lib/migration_sql.js';
 
-describe('stripTopLevelTransactionWrappers', () => {
-  it('removes standalone BEGIN and COMMIT lines', () => {
+describe('findTopLevelSqlTransactionViolations', () => {
+  it('flags semicolon BEGIN/COMMIT outside dollar quotes', () => {
     const raw = `-- header\n\nBEGIN;\nALTER TABLE t ADD COLUMN x int;\nCOMMIT;\n`;
-    expect(stripTopLevelTransactionWrappers(raw)).toBe(
-      '-- header\n\nALTER TABLE t ADD COLUMN x int;',
-    );
+    const v = findTopLevelSqlTransactionViolations(raw);
+    expect(v.map((x) => x.kind)).toEqual(['BEGIN', 'COMMIT']);
+  });
+
+  it('allows PL/pgSQL BEGIN inside DO $$', () => {
+    const raw = 'DO $$\nBEGIN\n  PERFORM 1;\nEND\n$$;\n';
+    expect(findTopLevelSqlTransactionViolations(raw)).toEqual([]);
   });
 });
 
-describe('assertClientInTransaction', () => {
-  it('passes inside BEGIN', async () => {
+describe('assertRunnerTransactionUnchanged', () => {
+  it('passes when txid is unchanged', async () => {
     const client = {
       query: async (sql) => {
-        if (sql.includes('txid_current_if_assigned')) return { rows: [{ tx: '123' }] };
+        if (sql.includes('txid_current()')) return { rows: [{ tx: '99' }] };
         return { rows: [] };
       },
     };
-    await assertClientInTransaction(client);
+    const txBefore = await captureRunnerTransactionId(client);
+    await assertRunnerTransactionUnchanged(client, txBefore);
   });
 
-  it('throws after nested COMMIT', async () => {
+  it('throws when txid changes after COMMIT', async () => {
+    let pass = 0;
     const client = {
       query: async (sql) => {
-        if (sql.includes('txid_current_if_assigned')) return { rows: [{ tx: null }] };
+        if (sql.includes('txid_current()')) {
+          pass += 1;
+          return { rows: [{ tx: pass === 1 ? '10' : '11' }] };
+        }
         return { rows: [] };
       },
     };
-    await expect(assertClientInTransaction(client)).rejects.toThrow(/runner transaction/);
+    const txBefore = await captureRunnerTransactionId(client);
+    await expect(assertRunnerTransactionUnchanged(client, txBefore)).rejects.toThrow(
+      /runner transaction/,
+    );
   });
 });

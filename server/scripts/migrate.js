@@ -41,8 +41,8 @@ import { migrateCareDateOutcome } from './migrations/104_care_date_outcome.js';
 import { migrateCareItemClosed } from './migrations/105_care_item_closed.js';
 import { maybeAutoSeedMigrationLedger } from './lib/migration-ledger.js';
 import {
-  assertClientInTransaction,
-  stripTopLevelTransactionWrappers,
+  assertRunnerTransactionUnchanged,
+  captureRunnerTransactionId,
 } from './lib/migration_sql.js';
 
 const migrateScriptPath = fileURLToPath(import.meta.url);
@@ -126,23 +126,21 @@ const CODE_MIGRATIONS = {
   '105_care_item_closed.sql': migrateCareItemClosed,
 };
 
-async function applyMigration(client, name, sql) {
-  const cleaned = stripTopLevelTransactionWrappers(sql);
-  const codeRunner = CODE_MIGRATIONS[name];
+async function applyMigration(client, name, sql, { runHook = null } = {}) {
+  const txBefore = await captureRunnerTransactionId(client);
+  const codeRunner = runHook ?? CODE_MIGRATIONS[name];
+  await client.query(sql);
   if (codeRunner) {
-    // Some migrations ship DDL in SQL plus app backfill in JS (e.g. 047).
-    await client.query(cleaned);
     await codeRunner(client);
-    await assertClientInTransaction(client);
-    return;
   }
-  await client.query(cleaned);
-  await assertClientInTransaction(client);
+  await assertRunnerTransactionUnchanged(client, txBefore);
 }
 
 /** @internal Test seam — one migration inside the runner's outer transaction. */
-export async function applyMigrationForRunner(client, name, rawSql) {
-  return applyMigration(client, name, rawSql);
+export async function applyMigrationForRunner(client, name, rawSql, options = {}) {
+  return applyMigration(client, name, rawSql, {
+    runHook: options.runHook ?? null,
+  });
 }
 
 async function runUp(pool) {
