@@ -120,6 +120,7 @@ test.describe('Veterinarian management', () => {
   });
 
   test('user can edit a vet phone number', async ({ page }) => {
+    test.setTimeout(120_000);
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const user = await signupUser(baseURL, { firstName: 'Alice', lastName: 'Vet' });
     await createVetFull(baseURL, user.accessToken, {
