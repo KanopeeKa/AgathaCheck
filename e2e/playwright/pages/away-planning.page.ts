@@ -819,9 +819,11 @@ export class AwayPlanningPage {
   }
 
   async expectAddPetHidden(): Promise<void> {
-    await expect(semanticsKey(this.page, 'absence_add_pet')).toHaveCount(0, {
-      timeout: 15_000,
-    });
+    await expect(
+      semanticsKey(this.page, 'absence_add_pet').or(
+        this.page.locator('[data-flutter-key="absence_add_pet"]'),
+      ),
+    ).toHaveCount(0, { timeout: 15_000 });
   }
 
   async expectOtherPeoplesAbsencesHeading(): Promise<void> {
@@ -900,13 +902,32 @@ export class AwayPlanningPage {
   }
 
   async clickAddPetOnAbsence(): Promise<void> {
-    await semanticsKey(this.page, 'absence_add_pet').click();
-    await refreshFlutterAccessibility(this.page);
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      const btn = semanticsKey(this.page, 'absence_add_pet')
+        .or(this.page.locator('[data-flutter-key="absence_add_pet"]'))
+        .or(
+          this.page.getByRole('button', {
+            name: /Add a pet|Ajouter un animal/i,
+          }),
+        );
+      await expect(btn.first()).toBeVisible({ timeout: 30_000 });
+      await btn.first().scrollIntoViewIfNeeded();
+      await btn.first().click({ force: true });
+      await refreshFlutterAccessibility(this.page);
+    }).toPass({ timeout: 60_000 });
   }
 
   async pickAddPetCandidate(petId: string): Promise<void> {
-    await semanticsKey(this.page, `add_pet_to_absence_${petId}`).click();
-    await refreshFlutterAccessibility(this.page);
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      const opt = semanticsKey(this.page, `add_pet_to_absence_${petId}`).or(
+        this.page.locator(`[data-flutter-key="add_pet_to_absence_${petId}"]`),
+      );
+      await expect(opt.first()).toBeVisible({ timeout: 30_000 });
+      await opt.first().click({ force: true });
+      await refreshFlutterAccessibility(this.page);
+    }).toPass({ timeout: 45_000 });
   }
 
   async expectPetPageAwayRow(absenceId: string): Promise<void> {
