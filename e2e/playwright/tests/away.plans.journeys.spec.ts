@@ -76,12 +76,14 @@ test.describe('Away plan journeys', () => {
     await page.setViewportSize({ width: 390, height: 844 });
     const root = baseURL();
     const pet = await createPet(root, testUser.accessToken, 'MobPet', 'Dog');
+    const absence = await createPlannedAbsence(root, testUser.accessToken, {
+      startsOn: dateOffset(5),
+      endsOn: dateOffset(12),
+      petIds: [pet.id],
+    });
     await loginAs(page, testUser, { experience: 'guardian' });
     const away = new AwayPlanningPage(page);
-    await away.openWizard();
-    await away.pickAbsenceDates(dateOffset(5), dateOffset(12));
-    await away.selectPet(pet.id, pet.name);
-    await away.saveAbsence();
+    await away.openPetAwayPlan(absence.id, pet.id);
     await away.expectPetAwayPlanScreen('MobPet', pet.id);
   });
 
