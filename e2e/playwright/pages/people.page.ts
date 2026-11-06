@@ -113,11 +113,10 @@ export class PeoplePage {
       }
     }
     if (await overviewPhoneValue.first().isVisible({ timeout: 2_000 }).catch(() => false)) {
-      // Flutter web: phone digits often sit under the semantics node (SelectableText), so
-      // `innerText` on `flt-semantics` can be empty while `aria-label` / accessible name matches.
-      await expect(overviewPhoneValue.first()).toHaveAccessibleName(phoneFlexible, {
-        timeout: 15_000,
-      });
+      // Flutter web: digits live in a descendant; the `flt-semantics` host often has no
+      // aria-label/accessible name, so match text within the identified subtree.
+      const phoneInOverview = overviewPhoneValue.filter({ hasText: phoneFlexible });
+      await expect(phoneInOverview.first()).toBeVisible({ timeout: 15_000 });
       return;
     }
     await expect(phoneLocator.first()).toBeVisible({ timeout: 15_000 });
