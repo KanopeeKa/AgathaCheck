@@ -224,10 +224,10 @@ function isAdvisoryUnclassifiedFile(file) {
 }
 
 /**
- * @param {{ files: string[], snapshot, category, phaseId, ownPlanFilesVerified: boolean, stopped: { stopped: boolean, reason: string|null }, unchangedOnMain, scopeAck?: boolean }} args
- * @returns {{ conclusion: 'success'|'failure', title: string, violations: {file:string, reason:string}[], companionsUsed: string[], advisoryUnclassified?: string[] }}
+ * @param {{ files: string[], snapshot, category, phaseId, ownPlanFilesVerified: boolean, stopped: { stopped: boolean, reason: string|null }, unchangedOnMain, scopeAckReview?: object|null }} args
+ * @returns {{ conclusion: 'success'|'failure', title: string, violations: {file:string, reason:string}[], companionsUsed: string[], advisoryUnclassified?: string[], ownerApprovedForbidden?: string[], scopeAckReviewId?: number }}
  */
-function evaluateDiff({ files, snapshot, category, phaseId, ownPlanFilesVerified, stopped, unchangedOnMain, scopeAck }) {
+function evaluateDiff({ files, snapshot, category, phaseId, ownPlanFilesVerified, stopped, unchangedOnMain, scopeAckReview }) {
   if (stopped && stopped.stopped && category !== 'sync-resolve' && category !== 'remedial') {
     return { conclusion: 'failure', title: 'plan-stopped', violations: [], companionsUsed: [] };
   }
@@ -241,6 +241,8 @@ function evaluateDiff({ files, snapshot, category, phaseId, ownPlanFilesVerified
   const skip = unchangedOnMain || new Set();
   const violations = [];
   const companionsUsed = [];
+  const ownerApprovedForbidden = [];
+  const scopeAckActive = Boolean(scopeAckReview);
 
   if (category === 'release') {
     for (const file of files || []) {
@@ -270,7 +272,10 @@ function evaluateDiff({ files, snapshot, category, phaseId, ownPlanFilesVerified
       if (companionsUsed.length < COMPANION_CAP) companionsUsed.push(file);
       else violations.push({ file, reason: 'companion-cap' });
     } else if (verdict === 'protected' || verdict === 'forbidden' || verdict === 'unclassified') {
-      if (verdict === 'forbidden' && scopeAck) continue;
+      if (verdict === 'forbidden' && scopeAckActive) {
+        ownerApprovedForbidden.push(file);
+        continue;
+      }
       violations.push({ file, reason: verdict });
     }
   }
@@ -290,6 +295,10 @@ function evaluateDiff({ files, snapshot, category, phaseId, ownPlanFilesVerified
     violations,
     companionsUsed,
     ...(advisoryUnclassified.length ? { advisoryUnclassified } : {}),
+    ...(ownerApprovedForbidden.length ? {
+      ownerApprovedForbidden,
+      scopeAckReviewId: scopeAckReview && scopeAckReview.id,
+    } : {}),
   };
 }
 

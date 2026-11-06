@@ -105,6 +105,22 @@ test('phase PR in scope → success', async () => {
   assert.deepEqual([res.conclusion, res.title, res.planId], ['success', 'ok', PLAN]);
 });
 
+test('owner approving review lists forbidden files in summary', async () => {
+  const headSha = phasePr.headSha;
+  const { client } = setup({
+    files: ['db/migrations/099_x.sql'],
+    extra: {
+      [`GET ${R}/pulls/5/reviews?per_page=100`]: {
+        body: [{ id: 88, state: 'APPROVED', commit_id: headSha, user: { login: 'KanopeeKa' } }],
+      },
+    },
+  });
+  const res = await runScopeCheck(client, phasePr);
+  assert.deepEqual([res.conclusion, res.title], ['success', 'ok']);
+  assert.match(res.summary, /Forbidden — owner-approved \(review #88\)/);
+  assert.match(res.summary, /db\/migrations\/099_x\.sql/);
+});
+
 test('cross-plan head into integration → unsupported with remediation summary', async () => {
   const { client } = setup({ files: ['server/bin/server.js'] });
   const res = await runScopeCheck(client, { ...phasePr, headRef: 'cursor/other-plan-p9' });

@@ -49,7 +49,7 @@ function evaluate(files, category, phaseId = null, extra = {}) {
     ownPlanFilesVerified: extra.ownPlanFilesVerified || false,
     stopped: extra.stopped || NOT_STOPPED,
     unchangedOnMain: extra.unchangedOnMain || new Set(),
-    scopeAck: extra.scopeAck || false,
+    scopeAckReview: extra.scopeAckReview || null,
   });
 }
 
@@ -321,9 +321,12 @@ test('phase PR: ≤10 harmless unclassified files are advisory success', () => {
   assert.deepEqual(r.advisoryUnclassified, side);
 });
 
-test('scopeAck clears forbidden violations', () => {
-  const r = evaluate(['db/migrations/099_x.sql'], 'phase', '1', { scopeAck: true });
+test('owner scope-ack review clears forbidden violations but lists them for audit', () => {
+  const review = { id: 42, state: 'APPROVED', commit_id: 'a'.repeat(40), user: { login: 'KanopeeKa' } };
+  const r = evaluate(['db/migrations/099_x.sql'], 'phase', '1', { scopeAckReview: review });
   assert.deepEqual([r.conclusion, r.title], ['success', 'ok']);
+  assert.deepEqual(r.ownerApprovedForbidden, ['db/migrations/099_x.sql']);
+  assert.equal(r.scopeAckReviewId, 42);
 });
 
 test('approved_sensitive_paths still requires matching phase allowed_paths', () => {

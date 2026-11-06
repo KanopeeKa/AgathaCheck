@@ -96,6 +96,24 @@ test('validateSnapshotV2 rejects forbidden allowed_paths when approved_sensitive
   );
 });
 
+test('validateSnapshotV2 warns when migration globs list only runner or only ledger paths', () => {
+  const warns = [];
+  const prev = console.warn;
+  console.warn = (msg) => warns.push(String(msg));
+  try {
+    const s = build();
+    s.phases[0].allowed_paths = ['server/scripts/migrations/104_*', 'flutter_app/**'];
+    validateSnapshotV2(rehash(s), { planMarkdown: PLAN_MD });
+    assert.ok(warns.some((w) => /no db\/migrations globs/.test(w)));
+    warns.length = 0;
+    s.phases[0].allowed_paths = ['db/migrations/104_*'];
+    validateSnapshotV2(rehash(s), { planMarkdown: PLAN_MD });
+    assert.ok(warns.some((w) => /no server\/scripts\/migrations globs/.test(w)));
+  } finally {
+    console.warn = prev;
+  }
+});
+
 test('integration suffix falls back to sha256 of plan id', () => {
   const s = buildSnapshotFromPlan({ planId: 'alpha-beta-q', planMarkdown: PLAN_MD, controlIssue: 1, now: '2026-10-16T09:00:00Z' });
   assert.match(s.integration_branch, /^cursor\/alpha-beta-q-integration-[0-9a-f]{4}$/);
