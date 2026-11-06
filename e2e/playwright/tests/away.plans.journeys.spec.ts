@@ -82,7 +82,7 @@ test.describe('Away plan journeys', () => {
     await away.pickAbsenceDates(dateOffset(5), dateOffset(12));
     await away.selectPet(pet.id, pet.name);
     await away.saveAbsence();
-    await away.expectPetAwayPlanScreen('MobPet');
+    await away.expectPetAwayPlanScreen('MobPet', pet.id);
   });
 
   test('Co-parent Dave sees Frederique away, one pill, no Edit or Add pet', async ({ page }) => {
@@ -99,7 +99,7 @@ test.describe('Away plan journeys', () => {
     await away.expectTripEditHidden();
     await away.expectAddPetHidden();
     await away.openPetAwayPlan(absence.id, buddy.id);
-    await away.expectPetAwayPlanScreen('Buddy');
+    await away.expectPetAwayPlanScreen('Buddy', buddy.id);
   });
 
   test('Co-parent edits Buddy pet note and full-trip PDF succeeds', async ({ page }) => {
@@ -172,6 +172,6 @@ test.describe('Away plan journeys', () => {
     const people = new PeoplePage(page);
     await people.expectPeopleAroundPetSection('PagePet');
     await page.locator(`[flt-semantics-identifier="pet_page_away_row_${absence.id}"]`).click();
-    await away.expectPetAwayPlanScreen('PagePet');
+    await away.expectPetAwayPlanScreen('PagePet', pet.id);
   });
 });

@@ -81,8 +81,16 @@ export class AwayPlanningPage {
     await expect(this.page.getByText(petName).first()).toBeVisible({ timeout: 30_000 });
   }
 
-  async expectPetAwayPlanScreen(petName: string): Promise<void> {
+  async expectPetAwayPlanScreen(petName: string, petId?: string): Promise<void> {
     await refreshFlutterAccessibility(this.page);
+    if (petId) {
+      await expect(
+        semanticsKey(this.page, `pet_away_plan_page_${petId}`).or(
+          this.page.locator(`[data-flutter-key="pet_away_plan_page_${petId}"]`),
+        ),
+      ).toBeVisible({ timeout: 60_000 });
+      return;
+    }
     await expect(
       this.page.getByText(new RegExp(`${petName}.*away plan|Plan d.absence de ${petName}`, 'i')).first(),
     ).toBeVisible({ timeout: 60_000 });
