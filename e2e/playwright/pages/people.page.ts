@@ -12,6 +12,7 @@ import {
   fillTextbox,
   flutterGotoUrl,
   flutterRoutePath,
+  readLabelledTextboxValue,
   refreshFlutterAccessibility,
   semanticsByName,
   waitForFlutterRoutePattern,
@@ -91,14 +92,11 @@ export class PeoplePage {
     await waitForFlutterRoutePattern(this.page, /\/pc\/people\/[^/]+\/edit(?:\?|$)/, 30_000);
     await this.expectFormLoaded();
 
-    // TextFormField is wrapped (AppFormLabeledField + Semantics); prefer the stable
-    // Widget key which maps to `data-flutter-key` on Flutter web.
-    const phoneField = this.page
-      .locator('[data-flutter-key="people_edit_phone_field"]')
-      .locator('input, textarea')
-      .or(this.page.getByRole('textbox', { name: /phone|téléphone|telephone/i }));
     await expect(async () => {
-      const value = await phoneField.first().inputValue();
+      await refreshFlutterAccessibility(this.page);
+      const value =
+        (await readLabelledTextboxValue(this.page, 'Phone')) ||
+        (await readLabelledTextboxValue(this.page, 'Téléphone'));
       expect(value.replace(/\D/g, '')).toContain(phoneDigits);
     }).toPass({ timeout: 15_000 });
 

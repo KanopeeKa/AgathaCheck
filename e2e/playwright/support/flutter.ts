@@ -1019,6 +1019,45 @@ export async function fillLabelledField(
   throw new Error(`Could not find visible field for label: ${label}`);
 }
 
+/**
+ * Read the current value of a labelled textbox (mirrors discovery in [fillLabelledField]).
+ * Use when CanvasKit hides painted text but the edit form still wires inputs with aria-label.
+ */
+export async function readLabelledTextboxValue(page: Page, label: string): Promise<string> {
+  const byRole = page
+    .getByRole('textbox', { name: label, exact: false })
+    .or(page.getByRole('textbox', { name: new RegExp(`^${escapeRegExp(label)}`, 'i') }));
+  const roleCount = await byRole.count();
+  for (let i = 0; i < roleCount; i += 1) {
+    const field = byRole.nth(i);
+    if (await field.isVisible().catch(() => false)) {
+      return field.inputValue();
+    }
+  }
+
+  const ariaSelectors = [
+    `input[aria-label="${label}"]`,
+    `input[aria-label="${label} *"]`,
+    `input[aria-label^="${label}"]`,
+    `textarea[aria-label="${label}"]`,
+    `textarea[aria-label="${label} *"]`,
+    `textarea[aria-label^="${label}"]`,
+  ];
+
+  for (const selector of ariaSelectors) {
+    const locator = page.locator(selector);
+    const count = await locator.count();
+    for (let j = 0; j < count; j += 1) {
+      const field = locator.nth(j);
+      if (await field.isVisible().catch(() => false)) {
+        return field.inputValue();
+      }
+    }
+  }
+
+  return '';
+}
+
 /** Open a Flutter dropdown and choose an option by visible label. */
 export async function selectDropdownOption(
   page: Page,
