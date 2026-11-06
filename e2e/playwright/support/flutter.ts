@@ -1032,7 +1032,7 @@ export async function readLabelledTextboxValue(page: Page, label: string): Promi
   const roleCount = await byRole.count();
   for (let i = 0; i < roleCount; i += 1) {
     const field = byRole.nth(i);
-    if (await field.isVisible().catch(() => false)) {
+    if (await field.isVisible({ timeout: 1_500 }).catch(() => false)) {
       return readVal(field);
     }
   }
@@ -1051,7 +1051,7 @@ export async function readLabelledTextboxValue(page: Page, label: string): Promi
     const count = await locator.count();
     for (let j = 0; j < count; j += 1) {
       const field = locator.nth(j);
-      if (await field.isVisible().catch(() => false)) {
+      if (await field.isVisible({ timeout: 1_500 }).catch(() => false)) {
         return readVal(field);
       }
     }

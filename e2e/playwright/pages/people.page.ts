@@ -90,11 +90,11 @@ export class PeoplePage {
     await this.page.goto(flutterGotoUrl(`/pc/people/${contactId}/edit`));
     await refreshFlutterAccessibility(this.page);
     await waitForFlutterRoutePattern(this.page, /\/pc\/people\/[^/]+\/edit(?:\?|$)/, 30_000);
-    await this.expectFormLoaded();
 
     const phoneField = this.page
       .locator('[flt-semantics-identifier="people_edit_phone_field"]')
       .locator('input, textarea');
+    await phoneField.first().waitFor({ state: 'visible', timeout: 20_000 });
     await expect(async () => {
       // Do not call `refreshFlutterAccessibility` here — each retry adds ~800ms and can exhaust
       // the spec-level timeout while digits converge after save.
@@ -735,7 +735,7 @@ export class PeoplePage {
 
   async saveForm(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
-    const onPeopleEdit = /\/pc\/people\/[^/]+\/edit/.test(this.page.url());
+    const onPeopleEdit = /\/pc\/people\/[^/]+\/edit(?:\?|$)/.test(flutterRoutePath(this.page.url()));
     if (onPeopleEdit) {
       const save = this.page.getByRole('button', { name: 'Save', exact: true });
       await expect(save).toBeEnabled({ timeout: 20_000 });
@@ -750,9 +750,9 @@ export class PeoplePage {
   }
 
   async expectFormSaved(mode: 'create' | 'edit' = 'create'): Promise<void> {
-    if (mode === 'edit' && /\/pc\/people\/[^/]+\/edit/.test(this.page.url())) {
+    if (mode === 'edit' && /\/pc\/people\/[^/]+\/edit(?:\?|$)/.test(flutterRoutePath(this.page.url()))) {
       await expect(async () => {
-        expect(this.page.url()).not.toMatch(/\/edit(?:\?|$)/);
+        expect(flutterRoutePath(this.page.url())).not.toMatch(/\/edit(?:\?|$)/);
       }).toPass({ timeout: 30_000 });
       await refreshFlutterAccessibility(this.page);
       return;
@@ -781,7 +781,7 @@ export class PeoplePage {
     notes?: string;
   }): Promise<void> {
     await this.expectFormLoaded();
-    const onPeopleAdd = /\/pc\/people\/new/.test(this.page.url());
+    const onPeopleAdd = /\/pc\/people\/new(?:\?|$)/.test(flutterRoutePath(this.page.url()));
     if (onPeopleAdd) {
       await fillLabelledField(this.page, 'Name', options.name);
       if (options.phone) await this.fillPhone(options.phone);
@@ -823,7 +823,7 @@ export class PeoplePage {
     if (vetName) {
       await this.openVetDetail(vetName);
     }
-    if (!/\/pc\/people\/[^/]+\/edit/.test(this.page.url())) {
+    if (!/\/pc\/people\/[^/]+\/edit(?:\?|$)/.test(flutterRoutePath(this.page.url()))) {
       if (!vetName) {
         throw new Error('updatePhone: on person detail — pass vetName to open edit');
       }

@@ -148,8 +148,7 @@ test.describe('Veterinarian management', () => {
       expect(contact?.phone).toBe('555-5678');
     }).toPass({ timeout: 15_000 });
 
-    await vetList.openVetDetail('Dr. Smith');
-    // After saving, the app is already on /pc/people/<id>; openVetDetail returns immediately.
+    // Still on `/pc/people/<id>` after save — avoid redundant hub round-trip via `openVetDetail`.
     await vetList.expectPhoneVisible('555-5678', 'Dr. Smith');
   });
 
