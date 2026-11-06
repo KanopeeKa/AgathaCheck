@@ -105,15 +105,17 @@ describe('stale open doses without tick', () => {
     const api = careApi(harness.app, owner);
     const created = await api.at('2026-09-30T07:00').create(twiceDaily('2026-09-30'));
     const entryId = created.body.id;
+    await api.at('2026-10-04T12:01').get(entryId);
     const rows = await occurrenceRows(harness.pool, entryId);
     const openIds = rows.filter((r) => r.status === 'pending').map((r) => r.id);
     expect(openIds.length).toBeGreaterThanOrEqual(2);
+    const given = openIds.slice(0, 2);
     const res = await api.at('2026-10-04T12:01').resolveStack(entryId, {
-      given: openIds.slice(0, 2),
+      given,
       not_given: [],
     });
     expect(res.statusCode).toBe(200);
-    expect(res.body.given).toEqual(openIds.slice(0, 2));
+    expect(res.body.given).toEqual(given);
     expect(await invariantViolations(harness.pool, entryId)).toEqual([]);
   });
 });

@@ -16,11 +16,10 @@ export function registerCompletionRoutes(router, pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     if (!(await userCanCloseHealthEntry(pool, req.params.id, userId))) {
-      throw new CareCommandError(
-        403,
-        'owner_only',
-        'Only the pet owner can close care',
-      );
+      return res.status(403).json({
+        error: 'Only the pet owner can close care',
+        code: 'owner_only',
+      });
     }
     return handleCommand(pool, req, res, {
       command: (ctx) => closeSeriesCommand(ctx),
