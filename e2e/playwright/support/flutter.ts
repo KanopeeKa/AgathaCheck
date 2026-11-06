@@ -960,24 +960,48 @@ export async function fillTextbox(
   await typeIntoField(field, value);
 }
 
+/**
+ * Resolve the `<input>` / `<textarea>` Playwright should drive under a semantics host.
+ * CanvasKit web may create more than one node; prefer the last **visible** one (matches real focus).
+ */
+export async function resolveVisibleSemanticsTextInput(
+  page: Page,
+  identifier: string,
+): Promise<import('@playwright/test').Locator> {
+  const host = page.locator(`[flt-semantics-identifier="${identifier}"]`);
+  await host.waitFor({ state: 'visible' });
+  const inputs = host.locator('input, textarea');
+  const n = await inputs.count();
+  for (let i = n - 1; i >= 0; i -= 1) {
+    const input = inputs.nth(i);
+    if (await input.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      return input;
+    }
+  }
+  if (n > 0) {
+    const fallback = inputs.nth(n - 1);
+    await fallback.waitFor({ state: 'visible', timeout: 15_000 });
+    return fallback;
+  }
+  return host;
+}
+
 /** Fill a borderless Flutter field located by `flt-semantics-identifier` (Widget Key on web). */
 export async function fillSemanticsField(
   page: Page,
   identifier: string,
   value: string,
 ): Promise<void> {
-  const host = page.locator(`[flt-semantics-identifier="${identifier}"]`);
-  await host.waitFor({ state: 'visible' });
   // Semantics node is often a non-input wrapper — type into the real `<input>` / `<textarea>` child.
-  const input = host.locator('input, textarea').first();
-  if ((await input.count()) > 0) {
-    await input.waitFor({ state: 'visible', timeout: 15_000 });
-    // Must go through real key events — assigning DOM `value` updates the `<input>` but Flutter’s
-    // TextEditingController can stay stale, so Save persists the old phone (CI: contact API still `555-1234`).
-    await typeIntoField(input, value);
+  const field = await resolveVisibleSemanticsTextInput(page, identifier);
+  const tag = await field.evaluate((el) => el.tagName.toLowerCase()).catch(() => '');
+  if (tag !== 'input' && tag !== 'textarea') {
+    await typeIntoField(field, value);
     return;
   }
-  await typeIntoField(host, value);
+  // Must go through real key events — assigning DOM `value` updates the `<input>` but Flutter’s
+  // TextEditingController can stay stale, so Save persists the old phone (CI: contact API still `555-1234`).
+  await typeIntoField(field, value);
 }
 
 async function fieldHasValue(

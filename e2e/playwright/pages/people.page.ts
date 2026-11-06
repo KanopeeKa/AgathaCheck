@@ -15,6 +15,7 @@ import {
   flutterRoutePath,
   readLabelledTextboxValue,
   refreshFlutterAccessibility,
+  resolveVisibleSemanticsTextInput,
   semanticsByName,
   waitForFlutterRoutePattern,
 } from '../support/flutter';
@@ -96,18 +97,14 @@ export class PeoplePage {
     await refreshFlutterAccessibility(this.page);
     await waitForFlutterRoutePattern(this.page, /\/pc\/people\/[^/]+\/edit(?:\?|$)/, 30_000);
 
-    const phoneField = this.page
-      .locator('[flt-semantics-identifier="people_edit_phone_field"]')
-      .locator('input, textarea');
-    await phoneField.first().waitFor({ state: 'visible', timeout: 20_000 });
+    const phoneField = await resolveVisibleSemanticsTextInput(this.page, 'people_edit_phone_field');
+    await phoneField.waitFor({ state: 'visible', timeout: 20_000 });
     await expect(async () => {
       // Do not call `refreshFlutterAccessibility` here — each retry adds ~800ms and can exhaust
       // the spec-level timeout while digits converge after save.
       let value = '';
-      if ((await phoneField.count()) > 0) {
-        // Short timeout: default action timeout inside `toPass` retries can exhaust the test budget.
-        value = await phoneField.first().inputValue({ timeout: 3_000 }).catch(() => '');
-      }
+      // Short timeout: default action timeout inside `toPass` retries can exhaust the test budget.
+      value = await phoneField.inputValue({ timeout: 3_000 }).catch(() => '');
       if (!value) {
         value =
           (await readLabelledTextboxValue(this.page, 'Phone')) ||
@@ -839,12 +836,9 @@ export class PeoplePage {
     // Stable semantics id + inner `input` — matches Flutter `people_edit_phone_field` + TextEditingController.
     await fillSemanticsField(this.page, 'people_edit_phone_field', newPhone);
     const newDigits = newPhone.replace(/\D/g, '');
+    const phoneInput = await resolveVisibleSemanticsTextInput(this.page, 'people_edit_phone_field');
     await expect(async () => {
-      const input = this.page
-        .locator('[flt-semantics-identifier="people_edit_phone_field"]')
-        .locator('input, textarea')
-        .first();
-      let v = await input.inputValue({ timeout: 3_000 }).catch(() => '');
+      let v = await phoneInput.inputValue({ timeout: 3_000 }).catch(() => '');
       if (!v.replace(/\D/g, '').includes(newDigits)) {
         v =
           (await readLabelledTextboxValue(this.page, 'Phone')) ||
