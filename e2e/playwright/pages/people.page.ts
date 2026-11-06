@@ -96,7 +96,8 @@ export class PeoplePage {
       .locator('[flt-semantics-identifier="people_edit_phone_field"]')
       .locator('input, textarea');
     await expect(async () => {
-      await refreshFlutterAccessibility(this.page);
+      // Do not call `refreshFlutterAccessibility` here — each retry adds ~800ms and can exhaust
+      // the spec-level timeout while digits converge after save.
       let value = '';
       if ((await phoneField.count()) > 0) {
         // Short timeout: default action timeout inside `toPass` retries can exhaust the test budget.
