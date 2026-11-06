@@ -9,7 +9,6 @@ import {
   dismissConsentBannerIfPresent,
   escapeRegExp,
   fillLabelledField,
-  fillSemanticsField,
   fillTextbox,
   flutterGotoUrl,
   flutterRoutePath,
@@ -835,15 +834,18 @@ export class PeoplePage {
       await this.clickEditVet(vetName);
     }
     await this.expectFormLoaded();
-    // Stable semantics id on the phone field (CanvasKit + guardian locales vary aria-label text).
-    await fillSemanticsField(this.page, 'people_edit_phone_field', newPhone);
+    // Drive the textbox by accessible name (same as `fillPhone` on create) — the semantics host’s
+    // child `input` is not reliably targetable for typing on Flutter web CI.
+    try {
+      await fillLabelledField(this.page, 'Phone', newPhone);
+    } catch {
+      await fillLabelledField(this.page, 'Téléphone', newPhone);
+    }
     const newDigits = newPhone.replace(/\D/g, '');
     await expect(async () => {
-      const input = this.page
-        .locator('[flt-semantics-identifier="people_edit_phone_field"]')
-        .locator('input, textarea')
-        .first();
-      const v = await input.inputValue({ timeout: 5_000 }).catch(() => '');
+      const v =
+        (await readLabelledTextboxValue(this.page, 'Phone')) ||
+        (await readLabelledTextboxValue(this.page, 'Téléphone'));
       expect(v.replace(/\D/g, '')).toContain(newDigits);
     }).toPass({ timeout: 15_000 });
     await this.saveForm();
