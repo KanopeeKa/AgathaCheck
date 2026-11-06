@@ -169,9 +169,18 @@ function classifyPath(file, { snapshot, category, phaseId }) {
   const verdict = (v) => ({ file, verdict: v });
   if (ownPlanFiles(snapshot).includes(file)) return verdict('own-plan-file');
   if (matchesAny(file, PROTECTED_PATHS)) return verdict('protected');
-  if (isForbiddenPath(file)) return verdict('forbidden');
-
   const phases = scopePhases(snapshot, category, phaseId);
+  if (isForbiddenPath(file)) {
+    for (const p of phases) {
+      const sensitive = p.approved_sensitive_paths || [];
+      if (!sensitive.length || !matchesAny(file, sensitive)) continue;
+      if (matchesAny(file, p.forbidden_paths || [])) continue;
+      if (!matchesAny(file, p.allowed_paths || [])) continue;
+      return verdict('allowed');
+    }
+    return verdict('forbidden');
+  }
+
   const allowed = collect(phases, 'allowed_paths');
   if (category === 'remedial') allowed.push('e2e/**');
   const forbidden = collect(phases, 'forbidden_paths');
@@ -207,12 +216,19 @@ function titleFor(violations) {
   return VIOLATION_PRIORITY.find((r) => present.has(r)) || 'ok';
 }
 
+function isAdvisoryUnclassifiedFile(file) {
+  if (matchesAny(file, PROTECTED_PATHS)) return false;
+  if (isForbiddenPath(file)) return false;
+  if (file.startsWith('.github/')) return false;
+  return true;
+}
+
 /**
- * @param {{ files: string[], snapshot, category, phaseId, ownPlanFilesVerified: boolean, stopped: { stopped: boolean, reason: string|null } }} args
- * @returns {{ conclusion: 'success'|'failure', title: string, violations: {file:string, reason:string}[], companionsUsed: string[] }}
+ * @param {{ files: string[], snapshot, category, phaseId, ownPlanFilesVerified: boolean, stopped: { stopped: boolean, reason: string|null }, unchangedOnMain, scopeAck?: boolean }} args
+ * @returns {{ conclusion: 'success'|'failure', title: string, violations: {file:string, reason:string}[], companionsUsed: string[], advisoryUnclassified?: string[] }}
  */
-function evaluateDiff({ files, snapshot, category, phaseId, ownPlanFilesVerified, stopped, unchangedOnMain }) {
-  if (stopped && stopped.stopped) {
+function evaluateDiff({ files, snapshot, category, phaseId, ownPlanFilesVerified, stopped, unchangedOnMain, scopeAck }) {
+  if (stopped && stopped.stopped && category !== 'sync-resolve' && category !== 'remedial') {
     return { conclusion: 'failure', title: 'plan-stopped', violations: [], companionsUsed: [] };
   }
   if (category == null || category === 'sync') {
@@ -225,6 +241,24 @@ function evaluateDiff({ files, snapshot, category, phaseId, ownPlanFilesVerified
   const skip = unchangedOnMain || new Set();
   const violations = [];
   const companionsUsed = [];
+
+  if (category === 'release') {
+    for (const file of files || []) {
+      if (skip.has(file)) continue;
+      if (ownPlanFiles(snapshot).includes(file)) {
+        if (!ownPlanFilesVerified) violations.push({ file, reason: 'drift' });
+      } else if (matchesAny(file, PROTECTED_PATHS)) {
+        violations.push({ file, reason: 'protected' });
+      }
+    }
+    return {
+      conclusion: violations.length > 0 ? 'failure' : 'success',
+      title: titleFor(violations),
+      violations,
+      companionsUsed,
+    };
+  }
+
   for (const file of files || []) {
     if (skip.has(file)) continue;
     const { verdict } = classifyPath(file, { snapshot, category, phaseId });
@@ -236,7 +270,17 @@ function evaluateDiff({ files, snapshot, category, phaseId, ownPlanFilesVerified
       if (companionsUsed.length < COMPANION_CAP) companionsUsed.push(file);
       else violations.push({ file, reason: 'companion-cap' });
     } else if (verdict === 'protected' || verdict === 'forbidden' || verdict === 'unclassified') {
+      if (verdict === 'forbidden' && scopeAck) continue;
       violations.push({ file, reason: verdict });
+    }
+  }
+
+  let advisoryUnclassified = [];
+  if (category === 'phase' && violations.length > 0 && violations.every((v) => v.reason === 'unclassified')) {
+    const filesU = violations.map((v) => v.file);
+    if (filesU.length <= 10 && filesU.every(isAdvisoryUnclassifiedFile)) {
+      advisoryUnclassified = filesU;
+      violations.length = 0;
     }
   }
 
@@ -245,6 +289,7 @@ function evaluateDiff({ files, snapshot, category, phaseId, ownPlanFilesVerified
     title: titleFor(violations),
     violations,
     companionsUsed,
+    ...(advisoryUnclassified.length ? { advisoryUnclassified } : {}),
   };
 }
 

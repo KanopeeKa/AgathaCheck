@@ -14,6 +14,7 @@
  */
 
 const { GitHubError } = require('./execute_plan_github');
+const { categorizePull } = require('./execute_plan_scope');
 const { HOLD_LABEL, BLOCKED_LABEL, appendCiStuckTrack, failureSignature } = require('./execute_plan_state');
 const { formatStatusComment, parseStatusComment } = require('./execute_plan_status');
 const { MAX_LAUNCH_HISTORY } = require('./execute_plan_constants');
@@ -163,13 +164,38 @@ function releaseBody(ctx, files) {
   ].join('\n');
 }
 
-async function enforceStop(clients, decision, now) {
+async function enforceStop(clients, ctx, decision, now) {
   const { bot, read, deps } = clients;
   const reason = (decision.stop && decision.stop.reason) || 'stopped';
+  const snapshot = ctx && ctx.snapshot;
   const done = [];
   for (const number of decision.action.args.prs || []) {
     const pull = await bot.getPull(number);
     if (pull.auto_merge) await bot.disableAutoMerge(pull.node_id);
+    const headRef = (pull.head && pull.head.ref) || pull.head_ref || '';
+    const baseRef = (pull.base && pull.base.ref) || pull.base_ref || '';
+    const { category } = snapshot
+      ? categorizePull({ head_ref: headRef, base_ref: baseRef }, snapshot)
+      : { category: null };
+    if (category === 'sync-resolve' || category === 'remedial') {
+      let outcome;
+      try {
+        outcome = await deps.runScopeCheck(read, {
+          prNumber: number,
+          headSha: pull.head.sha,
+          headRef,
+          baseRef,
+          headRepo: pull.head.repo && pull.head.repo.full_name,
+          repo: read.repo,
+          now: new Date(now),
+        });
+      } catch (e) {
+        outcome = { conclusion: 'failure', title: 'error', summary: `scope check could not complete: ${e.message}` };
+      }
+      await deps.publishScopeResult(read, { headSha: pull.head.sha, outcome, now: new Date(now) });
+      done.push(`#${number} (scope re-evaluated)`);
+      continue;
+    }
     await deps.publishScopeCheck(read, {
       headSha: pull.head.sha,
       conclusion: 'failure',
@@ -198,7 +224,7 @@ async function republishScope(clients, ctx, { pr, headSha }, now) {
       now: new Date(now),
     });
   } catch (e) {
-    outcome = { conclusion: 'failure', title: 'drift', summary: `scope check could not complete: ${e.message}` };
+    outcome = { conclusion: 'failure', title: 'error', summary: `scope check could not complete: ${e.message}` };
   }
   outcome = await deps.publishScopeResult(read, { headSha: pull.head.sha, outcome, now: new Date(now) });
   await updateStatus(bot, ctx, (s) => {
@@ -341,7 +367,7 @@ async function executeDriverAction(clients, ctx, decision, now) {
       }, now);
       return `re-dispatched ${ctx.config.uat.deploy_workflow} for ${a.tag}`;
     case 'enforce-stop':
-      return enforceStop(clients, decision, now);
+      return enforceStop(clients, ctx, decision, now);
     case 'complete-plan': {
       const res = await clients.deps.completePlan(bot, { planId: ctx.planId, controlIssue: ctx.issueNumber, now });
       return res.complete ? 'plan complete' : `not complete: ${res.missing}`;
@@ -402,7 +428,7 @@ async function runDriverPass(clients, { planId, issueNumber, now = isoNow(), kil
       await updateStatus(bot, ctx, (s) => ({ ...s, state: 'stopped', stop: { reason: e.code, detail: e.detail, at: now } }), now);
       await bot.addLabels(ctx.issueNumber, ['needs-owner']);
       // Auto-merge may already be armed: GitHub would merge once the missing check shows up.
-      if (e.pr) await enforceStop(all, { stop: { reason: e.code }, action: { args: { prs: [e.pr] } } }, now);
+      if (e.pr) await enforceStop(all, ctx, { stop: { reason: e.code }, action: { args: { prs: [e.pr] } } }, now);
       outcome = `${e.code === 'merge-blocked' ? 'merge blocked' : 'check missing'}: ${e.detail}`;
     } else throw e;
   }

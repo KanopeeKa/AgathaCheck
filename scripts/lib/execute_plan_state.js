@@ -16,7 +16,7 @@ const MISSING_CHECK_MS = 15 * 60 * 1000;
 const MISSING_CHECK_HARD_MS = 2 * 60 * 60 * 1000;
 const FAILED = new Set(['failure', 'timed_out', 'action_required']);
 const SCOPE_CHECK = 'execute-plan-scope';
-const SCOPE_STOP = new Set(['drift', 'protected', 'forbidden']);
+const SCOPE_STOP = new Set(['drift', 'protected']);
 const SCOPE_FIXABLE = new Set(['unclassified', 'companion-cap', 'too-many-files']);
 const SCOPE_CAUSE = {
   unclassified: 'the phase touches files outside its scope',
@@ -204,6 +204,13 @@ function prLadder(pr, rawCtx) {
   if (scope && scope.conclusion === 'failure' && scope.reason === 'recheck-error') {
     if (republished) return stop('check-missing', `execute-plan-scope recheck-error persists on PR #${pr.number} after a republish`);
     return finish(ctx, { ...base, action: driver('republish-scope', { pr: pr.number, head_sha: pr.head_sha }), looked });
+  }
+  if (scope && scope.conclusion === 'failure' && scope.reason === 'error') {
+    if (republished) return stop('check-missing', `execute-plan-scope error persists on PR #${pr.number} after a republish`);
+    return finish(ctx, { ...base, action: driver('republish-scope', { pr: pr.number, head_sha: pr.head_sha }), looked });
+  }
+  if (scope && scope.conclusion === 'failure' && scope.reason === 'forbidden') {
+    return finish(ctx, { ...base, action: wait('scope-ack'), looked });
   }
   // PR-ladder 4
   const failing = checks.filter((c) => FAILED.has(c.conclusion));

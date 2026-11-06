@@ -11,7 +11,7 @@ const { decide, prLadder } = require('../lib/execute_plan_state');
 const files = scenarioFiles();
 
 test('scenario files: P/L/S/R/D present', () => {
-  assert.equal(files.filter((f) => /[\\/][plsrd]-/.test(f)).length, 50);
+  assert.equal(files.filter((f) => /[\\/][plsrd]-/.test(f)).length, 52);
 });
 
 for (const file of files) {

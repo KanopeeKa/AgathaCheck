@@ -255,8 +255,8 @@ test('update-branch uses the bot token', async () => {
 
 test('enforce-stop disables auto-merge and publishes plan-stopped on each head', async () => {
   const pulls = {
-    3: { node_id: 'PR_3', auto_merge: { merge_method: 'squash' }, head: { sha: 's3' } },
-    4: { node_id: 'PR_4', auto_merge: null, head: { sha: 's4' } },
+    3: { node_id: 'PR_3', auto_merge: { merge_method: 'squash' }, head: { sha: 's3', ref: `cursor/${PLAN_ID}-p1` }, base: { ref: SNAP.integration_branch } },
+    4: { node_id: 'PR_4', auto_merge: null, head: { sha: 's4', ref: `cursor/${PLAN_ID}-p2` }, base: { ref: SNAP.integration_branch } },
   };
   const h = harness({ pulls }, { ...driverAction('enforce-stop', { prs: [3, 4] }), stop: { reason: 'revoked', detail: 'd' } });
   await drive(h);
@@ -266,6 +266,21 @@ test('enforce-stop disables auto-merge and publishes plan-stopped on each head',
     ['read', 's4', 'failure', 'plan-stopped'],
   ]);
   assert.match(h.seen.scope[0].summary, /revoked/);
+});
+
+test('enforce-stop re-evaluates scope on sync-resolve PRs instead of plan-stopped', async () => {
+  const pulls = {
+    9: {
+      node_id: 'PR_9',
+      auto_merge: null,
+      head: { sha: 's9', ref: `cursor/${PLAN_ID}-sync-1` },
+      base: { ref: SNAP.integration_branch },
+    },
+  };
+  const h = harness({ pulls }, { ...driverAction('enforce-stop', { prs: [9] }), stop: { reason: 'drift', detail: 'd' } });
+  await drive(h);
+  assert.equal(h.seen.scopeRuns.length, 1);
+  assert.deepEqual(h.seen.scope[0].title, 'ok');
 });
 
 test('open-sync-pr opens once with the marker; an existing open PR is left alone', async () => {

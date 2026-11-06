@@ -29,7 +29,7 @@ async function main(env = process.env) {
       now: new Date(),
     });
   } catch (e) {
-    outcome = { conclusion: 'failure', title: 'drift', summary: `scope check could not complete: ${e.message}` };
+    outcome = { conclusion: 'failure', title: 'error', summary: `scope check could not complete: ${e.message}` };
   }
   const targetUrl = env.GITHUB_SERVER_URL && env.GITHUB_RUN_ID
     ? `${env.GITHUB_SERVER_URL}/${repo}/actions/runs/${env.GITHUB_RUN_ID}`
