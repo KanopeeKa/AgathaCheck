@@ -936,13 +936,14 @@ async function typeIntoField(
   value: string,
 ): Promise<void> {
   const page = field.page();
-  // `click` without `force` can wait until the test timeout when Flutter overlays intercept hits.
+  // Focus first so Select-All + typing hit the real `<input>` (not `document.body` after a stray click).
+  await field.focus({ timeout: 10_000 });
   await field.click({ force: true, timeout: 10_000 });
   await page.waitForTimeout(150);
-  await field.press('Control+a');
+  await page.keyboard.press('Control+a');
   await page.keyboard.press('Backspace');
   await page.keyboard.type(value, { delay: 45 });
-  await field.press('Tab');
+  await page.keyboard.press('Tab');
   await page.waitForTimeout(150);
 }
 
