@@ -102,7 +102,7 @@ test.describe('Away plan journeys', () => {
     await away.expectTripEditHidden();
     await away.expectAddPetHidden();
     await away.openPetAwayPlan(absence.id, buddy.id);
-    await away.expectPetAwayPlanScreen('Buddy', buddy.id);
+    await away.savePetNote(buddy.id, 'Dave co-parent UI note');
   });
 
   test('Co-parent edits Buddy pet note and full-trip PDF succeeds', async ({ page }) => {
