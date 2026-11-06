@@ -1,6 +1,5 @@
 import { asyncHandler } from '../../lib/http/asyncHandler.js';
 import { userCanCloseHealthEntry, userCanManageHealthEntry } from '../../lib/petAccess.js';
-import { CareCommandError } from '../../lib/care/occurrence/careCommandError.js';
 import { closeSeriesCommand } from '../../lib/care/occurrence/index.js';
 import { careItemWire } from '../../lib/care/item/index.js';
 import { loadLinkedWeightsForOccurrences } from '../../lib/care/observations/weightFulfilmentService.js';
