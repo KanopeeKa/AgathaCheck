@@ -147,33 +147,6 @@ export async function refreshFlutterAccessibility(page: Page): Promise<void> {
   await page.waitForTimeout(300);
 }
 
-/**
- * Concatenates text under a Flutter `flt-semantics` host, including shadow roots.
- * Playwright's `getByText` / `locator.filter({ hasText })` often miss Flutter web's
- * canvas-based text layout; DOM walks still surface `SelectableText` content.
- */
-export async function flutterSemanticsSubtreeText(locator: Locator): Promise<string> {
-  return locator.evaluate((el: Element) => {
-    const parts: string[] = [];
-    const visit = (node: Node): void => {
-      if (node.nodeType === Node.TEXT_NODE) {
-        const t = node.textContent;
-        if (t && t.trim()) parts.push(t);
-        return;
-      }
-      if (node instanceof Element) {
-        const root = node.shadowRoot;
-        if (root) {
-          for (const c of root.childNodes) visit(c);
-        }
-      }
-      for (const c of node.childNodes) visit(c);
-    };
-    visit(el);
-    return parts.join('');
-  });
-}
-
 /** Escape user text for use inside RegExp. */
 export function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');

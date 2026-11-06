@@ -12,7 +12,6 @@ import {
   fillTextbox,
   flutterGotoUrl,
   flutterRoutePath,
-  flutterSemanticsSubtreeText,
   refreshFlutterAccessibility,
   semanticsByName,
   waitForFlutterRoutePattern,
@@ -74,17 +73,41 @@ export class PeoplePage {
     await this.waitForVetFormLoaded();
   }
 
+  /**
+   * CanvasKit builds paint most labels into the engine; the saved phone on `/pc/people/:id`
+   * is not reliably visible to Playwright as DOM text. The edit form uses real `<input>`s.
+   */
+  private async expectPhoneDigitsViaPeopleEditForm(phone: string): Promise<void> {
+    const path = flutterRoutePath(this.page.url());
+    const m = path.match(/^\/pc\/people\/([^/?]+)$/);
+    const contactId = m?.[1];
+    if (!contactId) {
+      throw new Error('expectPhoneDigitsViaPeopleEditForm: not on /pc/people/<id>');
+    }
+    const phoneDigits = phone.replace(/\D/g, '');
+
+    await this.page.goto(flutterGotoUrl(`/pc/people/${contactId}/edit`));
+    await refreshFlutterAccessibility(this.page);
+    await waitForFlutterRoutePattern(this.page, /\/pc\/people\/[^/]+\/edit(?:\?|$)/, 30_000);
+    await this.expectFormLoaded();
+
+    const phoneField = this.page.getByRole('textbox', {
+      name: /phone|téléphone|telephone/i,
+    });
+    await expect(async () => {
+      const value = await phoneField.first().inputValue();
+      expect(value.replace(/\D/g, '')).toContain(phoneDigits);
+    }).toPass({ timeout: 15_000 });
+
+    await this.page.goto(flutterGotoUrl(`/pc/people/${contactId}`));
+    await refreshFlutterAccessibility(this.page);
+    await waitForFlutterRoutePattern(this.page, /^\/pc\/people\/[^/?]+$/, 30_000);
+  }
+
   /** People hub detail: phone row shows value text plus a Call action. */
   private async expectPeopleDetailPhoneVisible(phone: string, vetName: string): Promise<void> {
     await refreshFlutterAccessibility(this.page);
     await this.ensurePeopleDetailOverviewTab();
-    const phoneFlexible = this.phoneDigitsFlexiblePattern(phone);
-    const overviewPhoneValue = this.page.locator(
-      '[flt-semantics-identifier="people_detail_value_phone"]',
-    );
-    const phoneLocator = overviewPhoneValue
-      .or(this.page.getByText(phoneFlexible))
-      .or(semanticsByName(this.page, phoneFlexible));
     const d = phone.replace(/\D/g, '');
     const phoneLabelSeg = '(?:Phone|Téléphone|Telephone)';
     const detailGroupPattern = new RegExp(
@@ -113,16 +136,7 @@ export class PeoplePage {
         return;
       }
     }
-    if (await overviewPhoneValue.first().isVisible({ timeout: 2_000 }).catch(() => false)) {
-      const phoneDigits = phone.replace(/\D/g, '');
-      await expect(async () => {
-        await refreshFlutterAccessibility(this.page);
-        const combined = await flutterSemanticsSubtreeText(overviewPhoneValue.first());
-        expect(combined.replace(/\D/g, '')).toContain(phoneDigits);
-      }).toPass({ timeout: 15_000 });
-      return;
-    }
-    await expect(phoneLocator.first()).toBeVisible({ timeout: 15_000 });
+    await this.expectPhoneDigitsViaPeopleEditForm(phone);
   }
 
   private async onPeopleHub(): Promise<boolean> {

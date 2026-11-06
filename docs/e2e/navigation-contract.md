@@ -263,7 +263,7 @@ Stable semantics identifiers for Playwright (`enableFlutterAccessibility()` firs
 | `people_action_message` | Contact action bar — message |
 | `people_action_email` | Contact action bar — email |
 | `people_action_directions` | Contact action bar — directions |
-| `people_detail_value_phone` | Person detail overview — phone value (`SelectableText`) |
+| `people_detail_value_phone` | Person detail overview — phone value (`SelectableText`). **E2E note:** CanvasKit paints this off-DOM; affected specs assert saved digits via `/pc/people/:id/edit` Phone `input` when overview text is not queryable. |
 
 ## Away planning (per-pet absence)
 
