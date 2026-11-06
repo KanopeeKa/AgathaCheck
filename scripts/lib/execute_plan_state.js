@@ -76,7 +76,7 @@ function appendCiStuckTrack(status, phase, headSha, signature, at) {
 
 const driver = (kind, args = {}) => ({ actor: 'driver', kind, launch: false, args });
 const agent = (kind, args = {}) => ({ actor: 'agent', kind, launch: false, args });
-const wait = (reason) => driver('wait', { reason });
+const wait = (reason, extra = {}) => driver('wait', { reason, ...extra });
 const prUrl = (opts, n) => `https://github.com/${opts.repo || DEFAULT_REPO}/pull/${n}`;
 
 /** Fill what callers of prLadder / decideUat may omit. */
@@ -210,7 +210,7 @@ function prLadder(pr, rawCtx) {
     return finish(ctx, { ...base, action: driver('republish-scope', { pr: pr.number, head_sha: pr.head_sha }), looked });
   }
   if (scope && scope.conclusion === 'failure' && scope.reason === 'forbidden') {
-    return finish(ctx, { ...base, action: wait('scope-ack'), looked });
+    return finish(ctx, { ...base, action: wait('scope-ack', { pr: pr.number, head_sha: pr.head_sha }), looked });
   }
   // PR-ladder 4
   const failing = checks.filter((c) => FAILED.has(c.conclusion));

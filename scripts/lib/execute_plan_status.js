@@ -45,6 +45,21 @@ function formatLogLine(oldState, newState, url) {
   return `execute-plan: ${oldState} → ${newState} — ${url}`;
 }
 
+/** Control-issue comment when a PR head needs an owner approving review for forbidden scope (once per head). */
+function formatScopeAckNotifyComment({ repo, pr, headSha }) {
+  const url = `https://github.com/${repo}/pull/${pr}`;
+  const short = String(headSha || '').slice(0, 7);
+  return [
+    'execute-plan: **Scope acknowledgment needed** — forbidden path(s) on a plan PR.',
+    '',
+    `- PR: #${pr} (head \`${short}\`)`,
+    `- Action: submit an **Approve** pull request review on that head (owners in \`.github/execute-plan.config.json\`).`,
+    `- Plan is **not** stopped; the driver waits until scope clears or the approval window expires.`,
+    '',
+    url,
+  ].join('\n');
+}
+
 /**
  * Pure. Folds one decision into the status. Driver-written fields (lease, launches, dispatched)
  * are carried over untouched; a worker tick refreshes `lease.last_tick_at`.
@@ -62,6 +77,19 @@ function applyDecisionToStatus(status, decision, { now, actor, observations, epo
     const current = prev && (!epoch || Date.parse(prev.at) > Date.parse(epoch));
     const same = current && prev.reason === decision.stop.reason && prev.detail === decision.stop.detail;
     next.stop = same ? prev : { reason: decision.stop.reason, detail: decision.stop.detail, at: now };
+  }
+  const waitingScopeAck = decision.action
+    && decision.action.kind === 'wait'
+    && decision.action.args
+    && decision.action.args.reason === 'scope-ack';
+  if (waitingScopeAck && decision.action.args.pr && decision.action.args.head_sha) {
+    const { pr, head_sha: headSha } = decision.action.args;
+    const prev = status.scope_ack_notify;
+    if (!prev || prev.pr !== pr || prev.head_sha !== headSha) {
+      next.scope_ack_notify = { pr, head_sha: headSha, at: now };
+    }
+  } else if (next.scope_ack_notify) {
+    delete next.scope_ack_notify;
   }
   next.updated_at = now;
   return next;
@@ -120,6 +148,12 @@ function mergeStatusBeforeWrite(proposed, fresh, { epoch, baseline }) {
   };
   if (fresh.release && !next.release) next.release = fresh.release;
 
+  if (fresh.scope_ack_notify) {
+    const p = next.scope_ack_notify;
+    const f = fresh.scope_ack_notify;
+    if (!p || (f.at && Date.parse(f.at) >= Date.parse(p.at || 0))) next.scope_ack_notify = f;
+  }
+
   const tickAt = (lease) => (lease && (lease.last_tick_at || lease.launched_at)) || null;
   const freshTick = tickAt(fresh.lease);
   const nextTick = tickAt(next.lease);
@@ -147,6 +181,7 @@ module.exports = {
   parseStatusComment,
   formatStatusComment,
   formatLogLine,
+  formatScopeAckNotifyComment,
   applyDecisionToStatus,
   mergeStatusBeforeWrite,
   readMergedStatusForWrite,

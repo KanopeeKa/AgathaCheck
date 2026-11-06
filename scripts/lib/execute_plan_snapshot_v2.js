@@ -40,15 +40,32 @@ function globMatchesPath(glob, file) {
   return globToRegExp(glob).test(file);
 }
 
+function migrationGlobSite(glob) {
+  if (/server\/scripts\/migrations/.test(glob)) return 'runner';
+  if (/db\/migrations/.test(glob)) return 'ledger';
+  return null;
+}
+
 function warnPhaseScopePaths(phases) {
   for (let i = 0; i < phases.length; i += 1) {
     const phase = phases[i];
     const at = `phases[${i}]`;
     const sensitive = new Set(phase.approved_sensitive_paths || []);
-    for (const glob of phase.allowed_paths || []) {
-      if (/migrations/.test(glob) && !glob.startsWith('db/migrations/')) {
-        console.warn(`validate_execute_plan_snapshot: warn: ${at} migration glob "${glob}" is not under db/migrations/`);
-      }
+    const allowed = phase.allowed_paths || [];
+    const migrationSites = new Set(allowed.map(migrationGlobSite).filter(Boolean));
+    if (migrationSites.has('runner') && !migrationSites.has('ledger')) {
+      console.warn(
+        `validate_execute_plan_snapshot: warn: ${at} lists server/scripts/migrations globs but no db/migrations globs; `
+        + 'SQL ledger paths live under db/migrations/',
+      );
+    }
+    if (migrationSites.has('ledger') && !migrationSites.has('runner')) {
+      console.warn(
+        `validate_execute_plan_snapshot: warn: ${at} lists db/migrations globs but no server/scripts/migrations globs; `
+        + 'runner migration JS lives under server/scripts/migrations/',
+      );
+    }
+    for (const glob of allowed) {
       const sample = samplePathForGlob(glob);
       if (isForbiddenPath(sample) && globMatchesPath(glob, sample) && !sensitive.has(glob)) {
         console.warn(

@@ -8,6 +8,7 @@
         "id": "1",
         "branch_exists": true,
         "pr": {
+          "number": 12,
           "head_sha": "eeee000000000000000000000000000000000001",
           "checks": [
             {

@@ -124,6 +124,17 @@ function renderSummary(evaluation) {
       lines.push(`- … and ${evaluation.advisoryUnclassified.length - SUMMARY_MAX_LINES} more`);
     }
   }
+  if (evaluation.ownerApprovedForbidden && evaluation.ownerApprovedForbidden.length) {
+    const reviewId = evaluation.scopeAckReviewId;
+    const heading = reviewId
+      ? `Forbidden — owner-approved (review #${reviewId}):`
+      : 'Forbidden — owner-approved:';
+    lines.push('', heading);
+    for (const file of evaluation.ownerApprovedForbidden.slice(0, SUMMARY_MAX_LINES)) lines.push(`- \`${file}\``);
+    if (evaluation.ownerApprovedForbidden.length > SUMMARY_MAX_LINES) {
+      lines.push(`- … and ${evaluation.ownerApprovedForbidden.length - SUMMARY_MAX_LINES} more`);
+    }
+  }
   if (evaluation.companionsUsed.length > 0) {
     lines.push('', `Companions used (${evaluation.companionsUsed.length}):`);
     for (const f of evaluation.companionsUsed) lines.push(`- \`${f}\``);
@@ -171,16 +182,16 @@ async function runScopeCheck(client, { prNumber, headSha, headRef, baseRef, head
   }
 
   const config = await loadConfig(client);
-  let scopeAck = false;
+  let scopeAckReview = null;
   try {
     const reviews = await client.listPullReviews(prNumber);
-    scopeAck = Boolean(findOwnerScopeAckReview(reviews, {
+    scopeAckReview = findOwnerScopeAckReview(reviews, {
       headSha,
       owners: config.owners || [],
       botLogin: config.bot_login,
-    }));
+    });
   } catch {
-    scopeAck = false;
+    scopeAckReview = null;
   }
 
   const { category, phaseId } = categorizePull({ head_ref: headRef, base_ref: baseRef }, snapshot);
@@ -193,7 +204,7 @@ async function runScopeCheck(client, { prNumber, headSha, headRef, baseRef, head
     ? await filesUnchangedOnMain(client, headSha, files)
     : new Set();
   const evaluation = evaluateDiff({
-    files, snapshot, category, phaseId, ownPlanFilesVerified, stopped, unchangedOnMain, scopeAck,
+    files, snapshot, category, phaseId, ownPlanFilesVerified, stopped, unchangedOnMain, scopeAckReview,
   });
   if (category === 'phase' && files.includes(BUNDLE_BUDGET_FILE)) {
     const cmp = await client.compare(baseRef, headSha);

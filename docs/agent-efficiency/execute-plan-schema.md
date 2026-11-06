@@ -371,15 +371,20 @@ title **`error`**, not `drift`. The driver republishes once per head per epoch; 
 
 **Forbidden (sensitive) paths:** `forbidden` fails the PR scope check but does **not** STOP the plan.
 The driver waits (`scope-ack`) until an owner listed in `.github/execute-plan.config.json` submits an
-**APPROVING** pull request review on the PR head (`review.commit_id === head.sha`). Phase PRs may
-treat ≤10 harmless `unclassified` files as **advisory** (green `ok`, files listed under
-`Unclassified (advisory)` in the job summary) when no other violations apply.
+**APPROVING** pull request review on the PR head (`review.commit_id === head.sha`). The first time a
+given PR head needs that review, the driver posts **one** comment on the control issue (tracked in the
+status JSON field `scope_ack_notify`; no `needs-owner` label). Phase PRs may treat ≤10 harmless
+`unclassified` files as **advisory** (green `ok`, files listed under `Unclassified (advisory)` in the
+job summary) when no other violations apply. When an owner review clears `forbidden` files, the check
+is green but the job summary lists them under **`Forbidden — owner-approved (review #…)`** for audit.
 
 Optional phase field **`approved_sensitive_paths`** (glob array): paths that match
 `agent-safety-lib.js` forbidden rules but are pre-approved in the snapshot (included in
 `approval_hash`). Use when amending a running plan's scope (init-branch republish → new hash →
 resume). Validator warns when `allowed_paths` matches forbidden paths without
 `approved_sensitive_paths`; rejects when `approved_sensitive_paths` is present but incomplete.
+When a phase lists migration globs under **only** `server/scripts/migrations/` or **only**
+`db/migrations/`, the validator warns that both trees are usually needed (runner JS vs SQL ledger).
 
 **Release PRs** evaluate **protected paths and own-plan file drift only**; phase PRs already
 checked the integration diff.

@@ -2,7 +2,7 @@
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { STATUS_MARKER, parseStatusComment, formatStatusComment, formatLogLine, applyDecisionToStatus, mergeStatusBeforeWrite } = require('../lib/execute_plan_status');
+const { STATUS_MARKER, parseStatusComment, formatStatusComment, formatLogLine, formatScopeAckNotifyComment, applyDecisionToStatus, mergeStatusBeforeWrite } = require('../lib/execute_plan_status');
 const { MAX_LAUNCH_HISTORY } = require('../lib/execute_plan_constants');
 
 const PLAN = 'proof-build-label-7f3a';
@@ -61,6 +61,28 @@ test('applyDecisionToStatus records the merged release PR once and caps launches
 
 test('formatLogLine', () => {
   assert.equal(formatLogLine('a', 'b', 'https://x'), 'execute-plan: a → b — https://x');
+});
+
+test('formatScopeAckNotifyComment names PR and head', () => {
+  const body = formatScopeAckNotifyComment({ repo: 'o/r', pr: 12, headSha: 'a'.repeat(40) });
+  assert.match(body, /- PR: #12/);
+  assert.match(body, /Approve/);
+  assert.match(body, /\*\*not\*\* stopped/);
+});
+
+test('applyDecisionToStatus records scope_ack_notify once per PR head while waiting scope-ack', () => {
+  const waitAck = {
+    state: 'phase:ready',
+    phase: '1',
+    stop: null,
+    action: { actor: 'driver', kind: 'wait', args: { reason: 'scope-ack', pr: 12, head_sha: 'abc1234' } },
+  };
+  const a = applyDecisionToStatus(status(), waitAck, { now: NOW, actor: 'driver' });
+  assert.deepEqual(a.scope_ack_notify, { pr: 12, head_sha: 'abc1234', at: NOW });
+  const b = applyDecisionToStatus(a, waitAck, { now: '2026-10-16T10:01:00Z', actor: 'driver' });
+  assert.deepEqual(b.scope_ack_notify, a.scope_ack_notify);
+  const c = applyDecisionToStatus(a, { state: 'phase:ready', phase: '1', stop: null, action: { actor: 'driver', kind: 'wait', args: { reason: 'checks' } } }, { now: '2026-10-16T10:02:00Z', actor: 'driver' });
+  assert.equal(c.scope_ack_notify, undefined);
 });
 
 test('table cells escape backslashes, pipes and newlines', () => {
