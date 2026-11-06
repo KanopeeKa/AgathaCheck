@@ -102,6 +102,10 @@ class ContactSummaryDto {
       inactiveAt: json['inactive_at'] != null
           ? DateTime.tryParse(json['inactive_at'].toString())
           : null,
+      phone: json['phone']?.toString(),
+      email: json['email']?.toString(),
+      address: json['address']?.toString(),
+      website: json['website']?.toString(),
     );
   }
 
@@ -115,6 +119,10 @@ class ContactSummaryDto {
     'status': summary.status.wireValue,
     'linked_user_id': summary.linkedUserId,
     'pets': summary.pets.map(ContactPetLinkDto.toJson).toList(),
+    'phone': summary.phone,
+    'email': summary.email,
+    'address': summary.address,
+    'website': summary.website,
     if (summary.worksAt != null)
       'works_at': {'id': summary.worksAt!.id, 'name': summary.worksAt!.name},
     if (summary.nextAbsence != null)

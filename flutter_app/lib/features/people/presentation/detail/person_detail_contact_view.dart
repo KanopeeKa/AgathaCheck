@@ -64,6 +64,12 @@ class PersonDetailContactView extends ConsumerWidget {
       return const Center(child: PersonSkeleton());
     }
     final l = AppLocalizations.of(context)!;
+    final hasContactLines = [
+      summary.phone,
+      summary.email,
+      summary.address,
+      summary.website,
+    ].any((v) => (v?.trim().isNotEmpty ?? false));
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -71,6 +77,16 @@ class PersonDetailContactView extends ConsumerWidget {
           padding: const EdgeInsets.all(16),
           child: PersonDetailHeader.fromSummary(l, summary),
         ),
+        if (hasContactLines)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: ContactActionBar(
+              phone: summary.phone,
+              email: summary.email,
+              address: summary.address,
+              website: summary.website,
+            ),
+          ),
         const Expanded(child: Center(child: CircularProgressIndicator())),
       ],
     );
