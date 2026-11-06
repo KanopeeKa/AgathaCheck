@@ -5,7 +5,7 @@ audience: both
 domain: people
 feature_id: people_care_team
 status: implemented
-last_updated: 2026-11-06
+last_updated: 2026-11-03
 related_bdd: [away_planning.feature, away_plan_detail_v2.feature, sharing.feature, veterinarian_management.feature, notifications.feature]
 ---
 
@@ -413,8 +413,6 @@ Never drop a tab on narrow phones; reduce padding and font sizes instead. `/pc/p
 
 One **roster** on `/pc/people` backed by a UI aggregate **PersonRosterEntry** (contact, household member, or pending invite — backend tables stay separate). Rows are **directory cards** matching the vet team card pattern (`vet_team_card.dart`): avatar, primary line, role · pets, optional status chip (**Inactive**, **Needs review**, pending invite).
 
-**GET `/api/people/roster` contact entries** include the same identity lines as `people_contacts` (`phone`, `email`, `address`, `website`, `legacy_vet_id`) so the client can render stable quick actions while `personDetailProvider` refetches after a save (PEOPLE-CARE-TEAM-R-037).
-
 | Route | Purpose |
 |-------|---------|
 | `/pc/people` | Hub list — search, filter chips, household-named sections |
@@ -442,12 +440,12 @@ One **roster** on `/pc/people` backed by a UI aggregate **PersonRosterEntry** (c
 | ID | Requirement | Status |
 | --- | --- | --- |
 | PEOPLE-CARE-TEAM-R-003 | A contact picker with nothing to choose says so: vet pickers read "No vets in your contacts yet. Type a name to add one."; other pickers use a generic line. "None" stays available when allowed. The pet form's vet field is labelled **Primary vet** (not the generic "Contact") | Live |
-| PEOPLE-CARE-TEAM-R-037 | **Roster identity + detail loading:** each roster contact includes `phone`, `email`, `address`, `website`, and `legacy_vet_id` when present; after `PATCH /people/contacts/:id`, the **PATCH response** merges into the cached roster row before refetch so digits match the server during loading; Person detail shows **contact rows** (label + phone text) and the **contact action bar** (Call, etc.) from roster values while the detail request is loading after invalidation, so accessibility ids such as `people_action_call` and visible digits stay in the tree during refetch | Live |
+| PEOPLE-CARE-TEAM-R-038 | **Detail contact rows are readable by assistive tech:** each Overview contact row (Phone, Email, Address, Website) is one merged semantics node whose label carries both the field name and the value (e.g. "Phone 555-5678"); the value stays selectable on screen | Live |
 
 **Acceptance criteria**
 
 - *Given* a directory with no active vets, *when* the user opens a vet picker, *then* the empty-state line shows and None is still offered (PEOPLE-CARE-TEAM-R-003; test: `flutter_app/test/features/people/presentation/people_picker_test.dart#vet picker explains an empty directory`).
-- *Given* a contact with a phone number, *when* `GET /api/people/roster` returns that contact, *then* the JSON includes `phone` (and other identity fields when set) so the Flutter roster model can drive the detail quick-action bar during loading (PEOPLE-CARE-TEAM-R-037; test: `server/test/people/readModels.test.js`).
+- *Given* a contact with a phone number, *when* Person detail shows the Overview tab, *then* the Phone row exposes "Phone" and the number in one accessibility label (PEOPLE-CARE-TEAM-R-038; test: `flutter_app/test/features/people/presentation/detail/person_detail_contact_rows_test.dart#contact row exposes label and value as one semantics node`).
 
 ### Grouping
 
