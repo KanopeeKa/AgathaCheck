@@ -86,7 +86,10 @@ export class PeoplePage {
       `${escapeRegExp(vetName)}[\\s\\S]*Phone[\\s\\S]*${d.split('').join('[\\s\\-.()]*')}`,
       'i',
     );
-    await expect(this.page.getByRole('button', { name: /^Call$/i })).toBeVisible({
+    const callAction = this.page
+      .locator('[flt-semantics-identifier="people_action_call"]')
+      .or(this.page.getByRole('button', { name: /^(Call|Appeler)/i }));
+    await expect(callAction.first()).toBeVisible({
       timeout: 30_000,
     });
     const mergedVisible = await semanticsByName(this.page, detailGroupPattern)
