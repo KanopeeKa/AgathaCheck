@@ -876,7 +876,15 @@ export class AwayPlanningPage {
 
   async triggerFullTripHandoverDownload(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
-    await semanticsKey(this.page, 'away_plan_download_handover').click();
+    const download = semanticsKey(this.page, 'away_plan_download_handover')
+      .or(this.page.locator('[data-flutter-key="away_plan_download_handover"]'))
+      .or(
+        this.page.getByRole('button', {
+          name: /download report|télécharger le rapport|picture_as_pdf/i,
+        }),
+      );
+    await expect(download.first()).toBeVisible({ timeout: 30_000 });
+    await download.first().click();
     await expect(
       this.page.getByText(/report generated|rapport généré|Report generated/i).first(),
     ).toBeVisible({ timeout: 90_000 });
