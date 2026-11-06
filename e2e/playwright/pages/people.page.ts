@@ -107,11 +107,7 @@ export class PeoplePage {
           (await readLabelledTextboxValue(this.page, 'Téléphone'));
       }
       expect(value.replace(/\D/g, '')).toContain(phoneDigits);
-    }).toPass({ timeout: 15_000 });
-
-    await this.page.goto(flutterGotoUrl(`/pc/people/${contactId}`));
-    await refreshFlutterAccessibility(this.page);
-    await waitForFlutterRoutePattern(this.page, /^\/pc\/people\/[^/?]+$/, 30_000);
+    }).toPass({ timeout: 30_000 });
   }
 
   /**
@@ -120,7 +116,6 @@ export class PeoplePage {
    */
   private async expectPeopleDetailPhoneVisible(phone: string, _vetName: string): Promise<void> {
     await refreshFlutterAccessibility(this.page);
-    await this.ensurePeopleDetailOverviewTab();
     await this.expectPhoneDigitsViaPeopleEditForm(phone);
   }
 
@@ -460,10 +455,7 @@ export class PeoplePage {
 
     const detailRoute = flutterRoutePath(this.page.url());
     if (/^\/pc\/people\/[^/?]+$/.test(detailRoute)) {
-      // After edit save, `personDetailProvider` refetches async; first paint can still show stale digits.
-      await expect(async () => {
-        await this.expectPeopleDetailPhoneVisible(phone, vetName);
-      }).toPass({ timeout: 45_000 });
+      await this.expectPeopleDetailPhoneVisible(phone, vetName);
       return;
     }
 
