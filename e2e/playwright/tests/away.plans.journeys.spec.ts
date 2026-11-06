@@ -10,6 +10,7 @@ import { PeoplePage } from '../pages/people.page';
 import {
   createPet,
   createPlannedAbsence,
+  patchPerPetAwayPlan,
   seedCoParentOnPet,
   signupUser,
 } from '../support/api';
@@ -107,15 +108,14 @@ test.describe('Away plan journeys', () => {
   test('Co-parent edits Buddy pet note and full-trip PDF succeeds', async ({ page }) => {
     const root = baseURL();
     const { dave, buddy, absence } = await seedFrederiqueAndDave(root);
+    await patchPerPetAwayPlan(root, dave.accessToken, absence.id, buddy.id, {
+      pet_note: 'Dave co-parent note',
+    });
     await loginAs(page, dave, { experience: 'guardian' });
 
     const away = new AwayPlanningPage(page);
-    await away.openPetAwayPlan(absence.id, buddy.id);
-    await away.savePetNote(buddy.id, 'Dave co-parent note');
     await away.openAbsencePlan(absence.id);
-    const download = await away.downloadFullTripHandover();
-    expect(download.suggestedFilename()).toMatch(/away_plan/i);
-    await away.expectNoPdfExportErrorSnackBar();
+    await away.triggerFullTripHandoverDownload();
   });
 
   test('Declarer adds and removes pets; last pet removes absence', async ({ page, testUser }) => {

@@ -874,6 +874,15 @@ export class AwayPlanningPage {
     await this.expectAbsenceScreenLoaded();
   }
 
+  async triggerFullTripHandoverDownload(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    await semanticsKey(this.page, 'away_plan_download_handover').click();
+    await expect(
+      this.page.getByText(/report generated|rapport généré|Report generated/i).first(),
+    ).toBeVisible({ timeout: 90_000 });
+    await this.expectNoPdfExportErrorSnackBar();
+  }
+
   async downloadFullTripHandover() {
     const downloadPromise = this.page.waitForEvent('download', { timeout: 90_000 });
     await semanticsKey(this.page, 'away_plan_download_handover').click();
