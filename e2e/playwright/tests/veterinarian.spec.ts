@@ -147,9 +147,8 @@ test.describe('Veterinarian management', () => {
     }).toPass({ timeout: 15_000 });
 
     await vetList.openVetDetail('Dr. Smith');
-    await expect(page.getByRole('button', { name: /^Call$/i })).toBeVisible({
-      timeout: 30_000,
-    });
+    // After saving, the app is already on /pc/people/<id>; openVetDetail returns immediately.
+    await vetList.expectPhoneVisible('555-5678', 'Dr. Smith');
   });
 
   test('user can delete a vet', async ({ page }) => {
