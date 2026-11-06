@@ -29,29 +29,29 @@ One GitHub issue: one-sentence goal, then `- [ ] P<n> — <outcome> — scope: <
 
 **Sync first:** if integration is behind `main`, PR `main` → integration and **light merge** below (merge, never rebase — ruleset `non_fast_forward`); unclear conflict → stop and ask. Merge integration into local dev.
 
-Implement phase scope only (more files → update checklist or stop). Pre-PR self-review ([`pr-hygiene.mdc`](../../rules/pr-hygiene.mdc)) + `./scripts/pre-push-changed.sh`; PR dev → integration.
+Implement phase scope only (more files → update checklist or stop). Pre-PR self-review ([`pr-hygiene.mdc`](../../rules/pr-hygiene.mdc)) + `./scripts/pre-push-changed.sh`; open PR dev → integration (ready for review, not draft).
 
 **Light merge (not `/babysit-plus`):** even if the integration ruleset is inactive, still require green CI and resolved threads.
 
-1. `gh pr checks <url> --watch` — red → fix, one push per batch; same check red on **3 pushes** → stop (§7).
-2. `node scripts/babysit_pr_reviews.js gate --pr <url>` — `0` merge; `2` fix or reply+resolve, re-run; `3` (Copilot pending, nothing unresolved) merge anyway; `1` fix script, never merge on error.
-3. `gh pr merge <url> --merge`.
+1. `gh pr checks <url> --watch` — red → fix, one push per batch; same check red on **3 pushes** → stop (**Stop and ask**).
+2. `node scripts/babysit_pr_reviews.js gate --pr <url>` — `0` merge; `2` fix or reply+resolve, re-run; `3` → post once `Copilot review did not finish within 15 min; proceeding on triage + CI + pre-push.` then merge; `1` fix script, never merge on error.
+3. If draft: `gh pr ready <url>`. `gh pr merge <url> --merge`.
 
 No merge lease, Copilot wait, triage comment, exit checklist or `./scripts/pre-push.sh` here. Deferred review → comment on tracking issue.
 
 Remote dev deleted on merge: `git fetch origin <integration>`, merge into local dev, `git push -u origin cursor/<slug>-dev`. Tick checklist with PR link.
 
-Self-review fixes (§5) use the same dev → integration light merge.
+Self-review fixes use the same dev → integration light merge.
 
 ## Final self-review (before release PR)
 
-Review whole `origin/main...<integration>` diff:
+**Sync integration:** if behind `main`, light-merge a sync PR, then re-review `origin/main...<integration>`.
 
 - Goal + checklist done; cross-phase seams (dead code, dup helpers, half renames, TODOs)
 - Files outside any phase scope (justify or revert)
 - `/canonical-docs sync`; `## Docs` ready; combined test coverage; sensitive paths (`.github/scripts/agent-safety-lib.js`)
 - Tracking deferrals: fix now or note in release PR body
-- `./scripts/pre-push.sh` (or pre-push-changed + what could not run)
+- `./scripts/pre-push.sh` green — if blocked, stop and record on tracking issue (release also runs full suite via `/babysit-uat`)
 
 Record under `## Self-review` on the release PR.
 
