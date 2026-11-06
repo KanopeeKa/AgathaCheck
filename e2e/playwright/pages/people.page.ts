@@ -12,6 +12,7 @@ import {
   fillTextbox,
   flutterGotoUrl,
   flutterRoutePath,
+  flutterSemanticsSubtreeText,
   refreshFlutterAccessibility,
   semanticsByName,
   waitForFlutterRoutePattern,
@@ -113,10 +114,12 @@ export class PeoplePage {
       }
     }
     if (await overviewPhoneValue.first().isVisible({ timeout: 2_000 }).catch(() => false)) {
-      // Flutter web: digits live in a descendant; the `flt-semantics` host often has no
-      // aria-label/accessible name, so match text within the identified subtree.
-      const phoneInOverview = overviewPhoneValue.filter({ hasText: phoneFlexible });
-      await expect(phoneInOverview.first()).toBeVisible({ timeout: 15_000 });
+      const phoneDigits = phone.replace(/\D/g, '');
+      await expect(async () => {
+        await refreshFlutterAccessibility(this.page);
+        const combined = await flutterSemanticsSubtreeText(overviewPhoneValue.first());
+        expect(combined.replace(/\D/g, '')).toContain(phoneDigits);
+      }).toPass({ timeout: 15_000 });
       return;
     }
     await expect(phoneLocator.first()).toBeVisible({ timeout: 15_000 });
