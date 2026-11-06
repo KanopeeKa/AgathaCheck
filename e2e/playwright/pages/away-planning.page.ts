@@ -886,7 +886,9 @@ export class AwayPlanningPage {
     await expect(download.first()).toBeVisible({ timeout: 30_000 });
     await download.first().click();
     await expect(
-      this.page.getByText(/report generated|rapport généré|Report generated/i).first(),
+      this.page
+        .getByText(/report downloaded|rapport téléchargé|report generated|rapport généré/i)
+        .first(),
     ).toBeVisible({ timeout: 90_000 });
     await this.expectNoPdfExportErrorSnackBar();
   }
