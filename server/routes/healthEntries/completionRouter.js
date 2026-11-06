@@ -12,29 +12,22 @@ async function entryBody(pool, out, req) {
 }
 
 export function registerCompletionRoutes(router, pool) {
-  router.post('/:id/close', async (req, res) => {
+  router.post('/:id/close', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    try {
-      if (!(await userCanCloseHealthEntry(pool, req.params.id, userId))) {
-        throw new CareCommandError(
-          403,
-          'owner_only',
-          'Only the pet owner can close care',
-        );
-      }
-    } catch (err) {
-      if (err instanceof CareCommandError) {
-        return res.status(err.status).json(err.toBody());
-      }
-      throw err;
+    if (!(await userCanCloseHealthEntry(pool, req.params.id, userId))) {
+      throw new CareCommandError(
+        403,
+        'owner_only',
+        'Only the pet owner can close care',
+      );
     }
     return handleCommand(pool, req, res, {
       command: (ctx) => closeSeriesCommand(ctx),
       audit: () => ({ action: 'health_entry.closed', metadata: {}, activity: 'close' }),
       respond: async (out) => ({ body: await entryBody(pool, out, req) }),
     });
-  });
+  }));
 
   router.get('/:id/history', asyncHandler(async (req, res) => {
     const userId = extractUserId(req);

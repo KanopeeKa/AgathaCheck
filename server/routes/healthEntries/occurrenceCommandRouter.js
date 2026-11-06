@@ -6,6 +6,7 @@ import {
   confirmSkipCommand,
   planAnotherDateCommand,
   recordAsGivenCommand,
+  resolveStackCommand,
   skipOccurrenceCommand,
   undoCommand,
 } from '../../lib/care/occurrence/index.js';
@@ -156,6 +157,28 @@ router.post('/:id/occurrences/:occId/complete', asyncHandler(async (req, res) =>
       },
       respond: async (out) => ({
         body: out.occurrence ? occurrenceToMap(out.occurrence) : { undone: out.undoneType },
+      }),
+    });
+  }));
+
+  router.post('/:id/occurrences/resolve-stack', asyncHandler(async (req, res) => {
+    const body = req.body || {};
+    const given = Array.isArray(body.given) ? body.given.map(String) : [];
+    const notGivenRaw = body.not_given ?? body.notGiven;
+    const notGiven = Array.isArray(notGivenRaw) ? notGivenRaw.map(String) : [];
+    return handleCommand(pool, req, res, {
+      command: (ctx) => resolveStackCommand(ctx, { given, notGiven }),
+      audit: () => ({
+        action: 'health_occurrence.stack_resolved',
+        metadata: {},
+        activity: 'resolve_stack',
+      }),
+      respond: async (out) => ({
+        body: await commandResponse(pool, out, req, {
+          given: out.given ?? [],
+          not_given: out.notGiven ?? [],
+          ignored: out.ignored ?? [],
+        }),
       }),
     });
   }));
