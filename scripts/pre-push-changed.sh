@@ -172,6 +172,7 @@ run_governance() {
   node --test scripts/github_issue_workflow.test.js
   node --test scripts/db/normalize-schema-dump.test.js
   node scripts/db/check-migration-manifest.js
+  node scripts/check_migration_sql_transactions.js
   node scripts/check_occurrence_writes.js
   node scripts/check_pg_pool_bootstrap.js
   node scripts/check_cpanel_startup_entry.js

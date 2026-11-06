@@ -40,9 +40,13 @@ import { migrateCareOccurrenceModel } from './migrations/083_care_occurrence_mod
 import { migrateCareDateOutcome } from './migrations/104_care_date_outcome.js';
 import { migrateCareItemClosed } from './migrations/105_care_item_closed.js';
 import { maybeAutoSeedMigrationLedger } from './lib/migration-ledger.js';
+import {
+  assertClientInTransaction,
+  stripTopLevelTransactionWrappers,
+} from './lib/migration_sql.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const migrateScriptPath = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(migrateScriptPath);
 
 // Load the same .env the app uses. When the deploy runs this over SSH, the
 // process does NOT inherit cPanel's Node-app environment, so we read the .env
@@ -123,14 +127,22 @@ const CODE_MIGRATIONS = {
 };
 
 async function applyMigration(client, name, sql) {
+  const cleaned = stripTopLevelTransactionWrappers(sql);
   const codeRunner = CODE_MIGRATIONS[name];
   if (codeRunner) {
     // Some migrations ship DDL in SQL plus app backfill in JS (e.g. 047).
-    await client.query(sql);
+    await client.query(cleaned);
     await codeRunner(client);
+    await assertClientInTransaction(client);
     return;
   }
-  await client.query(sql);
+  await client.query(cleaned);
+  await assertClientInTransaction(client);
+}
+
+/** @internal Test seam — one migration inside the runner's outer transaction. */
+export async function applyMigrationForRunner(client, name, rawSql) {
+  return applyMigration(client, name, rawSql);
 }
 
 async function runUp(pool) {
@@ -225,4 +237,11 @@ async function main() {
   }
 }
 
-main();
+function isCliEntry() {
+  const entry = process.argv[1] ? path.resolve(process.argv[1]) : '';
+  return entry && migrateScriptPath === entry;
+}
+
+if (isCliEntry()) {
+  main();
+}
