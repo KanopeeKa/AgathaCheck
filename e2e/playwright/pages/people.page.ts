@@ -92,11 +92,20 @@ export class PeoplePage {
     await waitForFlutterRoutePattern(this.page, /\/pc\/people\/[^/]+\/edit(?:\?|$)/, 30_000);
     await this.expectFormLoaded();
 
+    const phoneField = this.page
+      .locator('[flt-semantics-identifier="people_edit_phone_field"]')
+      .locator('input, textarea');
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      const value =
-        (await readLabelledTextboxValue(this.page, 'Phone')) ||
-        (await readLabelledTextboxValue(this.page, 'Téléphone'));
+      let value = '';
+      if ((await phoneField.count()) > 0) {
+        value = await phoneField.first().inputValue();
+      }
+      if (!value) {
+        value =
+          (await readLabelledTextboxValue(this.page, 'Phone')) ||
+          (await readLabelledTextboxValue(this.page, 'Téléphone'));
+      }
       expect(value.replace(/\D/g, '')).toContain(phoneDigits);
     }).toPass({ timeout: 15_000 });
 

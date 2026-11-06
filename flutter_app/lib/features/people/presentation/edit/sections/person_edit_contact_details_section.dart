@@ -20,14 +20,22 @@ class PersonEditContactDetailsSection extends StatelessWidget {
       children: [
         AppFormLabeledField(
           label: l.peoplePhoneLabel,
-          child: TextFormField(
-            key: const Key('people_edit_phone_field'),
-            initialValue: controller.phone,
-            keyboardType: TextInputType.phone,
-            decoration: const InputDecoration(
-              prefixIcon: Icon(Icons.phone_outlined),
+          // E2E + CanvasKit: expose a stable `flt-semantics-identifier` on the field host
+          // (AppFormLabeledField's default Semantics wrapper only carries the visual label).
+          isTextField: false,
+          child: Semantics(
+            identifier: 'people_edit_phone_field',
+            label: l.peoplePhoneLabel,
+            textField: true,
+            child: TextFormField(
+              key: const Key('people_edit_phone_field'),
+              initialValue: controller.phone,
+              keyboardType: TextInputType.phone,
+              decoration: const InputDecoration(
+                prefixIcon: Icon(Icons.phone_outlined),
+              ),
+              onChanged: controller.setPhone,
             ),
-            onChanged: controller.setPhone,
           ),
         ),
         const SizedBox(height: 16),
