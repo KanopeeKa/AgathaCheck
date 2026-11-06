@@ -6,7 +6,7 @@ domain: pet_care
 feature_id: care-status-model
 status: active
 last_updated: 2026-11-06
-related_prs: []
+related_prs: [2083, 2095, 2107, 2108, 2109, 2110, 2111]
 ---
 
 # Care status model
@@ -17,7 +17,7 @@ related_prs: []
 - **Does not own:** Care Intelligence copy, away-plan layout (see [care-context.md](./care-context.md)), taxonomy blocks.
 - **Depends on:** [care-schedule-management.md](./care-schedule-management.md) (occurrence sync), [care-item-evolution.md](./care-item-evolution.md) (detail and agenda presentation).
 
-Delivered by execute-plan `care-status-model` (six vertical slices, 2026-11).
+Delivered by execute-plan `care-status-model` (six vertical slices, 2026-11). Hardening integration (#2107–#2111): migration runner transaction safety, repair/readSync, R-025, closed-list wire shape, resolve-stack bulk.
 
 ## Requirements
 
@@ -46,6 +46,7 @@ Delivered by execute-plan `care-status-model` (six vertical slices, 2026-11).
 |---------------------|-------------|----------|
 | Given a pet with a user-closed item, When All care is opened, Then Closed care (1) opens a list without due dates and read-only detail | CARE-STATUS-MODEL-R-021 | test: e2e/playwright/tests/care.agenda.spec.ts#Closed care link lists stopped care without dates |
 | Given a one-off Done item, When All care is opened, Then it is not under Other care and appears under Closed care | CARE-STATUS-MODEL-R-024 | test: flutter_app/test/features/pet_profile/presentation/widgets/all_care/all_care_list_test.dart#shows Closed care link for closed items not in Other care |
+| Given owner closes recurring parasite prevention care, When S1 missing-recurring runs, Then no new suggestion for that item | CARE-STATUS-MODEL-R-025 | test: server/test/suggestions/s1MissingRecurringCare.test.js |
 
 ## UX surfaces
 
@@ -58,8 +59,9 @@ Delivered by execute-plan `care-status-model` (six vertical slices, 2026-11).
 |----|----------|-----------|--------|------|-----|
 | CARE-STATUS-MODEL-D-009 | List name **Closed care** | Matches status word | Live | 2026-11-03 | — |
 | CARE-STATUS-MODEL-D-018 | Closed list rows show no dates | Clear archive rows | Live | 2026-11-04 | — |
-| CARE-STATUS-MODEL-D-019 | Migration 104 uses `CURRENT_DATE` / `LOCALTIME` at apply time | Known limitation for TZ edge cases; run `node server/scripts/care/report_104_migration_impact.js` before PROD and attach grouped counts to the release | Live | 2026-11-06 | — |
-| CARE-STATUS-MODEL-D-020 | R-025: closed recurring care still counts for S1 missing-recurring | Close care must not re-open Care Intelligence parasite-prevention nudge | Live | 2026-11-06 | — |
+| CARE-STATUS-MODEL-D-019 | Migration 104 uses `CURRENT_DATE` / `LOCALTIME` at apply time | Known limitation for TZ edge cases; run `node server/scripts/care/report_104_migration_impact.js` before PROD and attach grouped counts to the release | Live | 2026-11-06 | #2108 |
+| CARE-STATUS-MODEL-D-020 | R-025: closed recurring care still counts for S1 missing-recurring | Close care must not re-open Care Intelligence parasite-prevention nudge | Live | 2026-11-06 | #2109 |
+| CARE-STATUS-MODEL-D-021 | Ledger NNN SQL runs inside the migrate runner outer transaction | Strip semicolon-only top-level `BEGIN`/`COMMIT` at apply; lint changed files; `txid_current()` guard detects inner commits | Live | 2026-11-06 | #2107 |
 
 ## Still open
 
