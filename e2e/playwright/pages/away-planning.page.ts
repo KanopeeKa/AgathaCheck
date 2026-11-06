@@ -834,7 +834,9 @@ export class AwayPlanningPage {
 
   async expectTravellerAwayLine(name: string): Promise<void> {
     await expect(
-      this.page.getByText(new RegExp(`${name} is away|Absence de ${name}`, 'i')).first(),
+      this.page
+        .getByText(new RegExp(`${name}.*(is away|est absent)|Absence de ${name}`, 'i'))
+        .first(),
     ).toBeVisible({ timeout: 30_000 });
   }
 
