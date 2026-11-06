@@ -50,7 +50,16 @@ abstract class CareContextRepository {
 
   Future<void> recordHandoverDownload(String absenceId);
 
-  Future<List<CarerCandidate>> getCarerCandidates(String petId);
+  Future<List<CarerCandidate>> getCarerCandidates(
+    String petId, {
+    String? plannedAbsenceId,
+  });
+
+  Future<void> patchPerPetAwayPlan({
+    required String absenceId,
+    required String petId,
+    required Map<String, dynamic> body,
+  });
 
   Future<PlannedAbsence> updatePetCarers({
     required String absenceId,

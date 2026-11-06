@@ -84,7 +84,7 @@ export async function updateAbsenceCarers(
   absenceId,
   petCarersInput,
   allowedPetIds,
-  declarerUserId,
+  { actorUserId, travellerUserId },
 ) {
   if (!Array.isArray(petCarersInput)) {
     return { ok: false, status: 400, error: 'pet_carers must be an array' };
@@ -112,7 +112,8 @@ export async function updateAbsenceCarers(
 
     if (hasCarerKind || hasContactId) {
       const resolved = await resolveCarerWrite(pool, {
-        declarerUserId,
+        actorUserId,
+        travellerUserId,
         petId,
         item,
       });
@@ -179,7 +180,7 @@ export async function updateAbsenceCarers(
       if (startsOn && endsOn) {
         await emitCareAssignmentAssigned(pool, {
           assigneeUserId: newCarerId,
-          actorUserId: declarerUserId,
+          actorUserId,
           petId,
           petName: petRow.rows[0]?.name,
           startsOn: String(startsOn).split(/[T ]/)[0],

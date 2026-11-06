@@ -63,15 +63,13 @@ class _AwayPlanPetNotesSectionState
       final note = _controller.text.trim();
       await ref
           .read(careContextRepositoryProvider)
-          .updatePetCarers(
+          .patchPerPetAwayPlan(
             absenceId: widget.absenceId,
-            petCarers: [
-              {
-                'pet_id': widget.petId,
-                'contact_id': widget.currentCarer.contactId,
-                'pet_note': note.isEmpty ? null : note,
-              },
-            ],
+            petId: widget.petId,
+            body: {
+              'contact_id': widget.currentCarer.contactId,
+              'pet_note': note.isEmpty ? null : note,
+            },
           );
       if (!mounted) return;
       ref.invalidate(plannedAbsenceDetailProvider(widget.absenceId));
