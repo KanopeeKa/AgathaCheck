@@ -10,6 +10,7 @@ import '../../domain/entities/roster.dart';
 import '../../domain/enums/contact_group.dart';
 import '../widgets/contact_action_bar.dart';
 import '../widgets/person_skeleton.dart';
+import 'widgets/person_detail_contact_rows.dart';
 import 'person_detail_header.dart';
 import 'person_detail_shell.dart';
 import 'tabs/person_detail_notes_tab.dart';
@@ -77,7 +78,7 @@ class PersonDetailContactView extends ConsumerWidget {
           padding: const EdgeInsets.all(16),
           child: PersonDetailHeader.fromSummary(l, summary),
         ),
-        if (hasContactLines)
+        if (hasContactLines) ...[
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: ContactActionBar(
@@ -87,6 +88,16 @@ class PersonDetailContactView extends ConsumerWidget {
               website: summary.website,
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            child: PersonDetailContactRows(
+              phone: summary.phone,
+              email: summary.email,
+              address: summary.address,
+              website: summary.website,
+            ),
+          ),
+        ],
         const Expanded(child: Center(child: CircularProgressIndicator())),
       ],
     );
