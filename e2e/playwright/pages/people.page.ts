@@ -24,6 +24,25 @@ export class PeoplePage {
 
   constructor(private readonly page: Page) {}
 
+  /** Match stored digits with optional separators (UI may render `5555678` vs `555-5678`). */
+  private phoneDigitsFlexiblePattern(phone: string): RegExp {
+    const d = phone.replace(/\D/g, '');
+    if (d.length === 0) {
+      return /$^/;
+    }
+    return new RegExp(d.split('').join('\\D*'), 'i');
+  }
+
+  private async ensurePeopleDetailOverviewTab(): Promise<void> {
+    const overviewTab = this.page.locator(
+      '[flt-semantics-identifier="people_detail_tab_overview"]',
+    );
+    if (await overviewTab.isVisible({ timeout: 3_000 }).catch(() => false)) {
+      await overviewTab.click();
+      await refreshFlutterAccessibility(this.page);
+    }
+  }
+
   private baseURL(): string {
     return process.env.E2E_BASE_URL ?? 'http://localhost:3000';
   }
@@ -57,10 +76,14 @@ export class PeoplePage {
   /** People hub detail: phone row shows value text plus a Call action. */
   private async expectPeopleDetailPhoneVisible(phone: string, vetName: string): Promise<void> {
     await refreshFlutterAccessibility(this.page);
-    const phonePattern = new RegExp(escapeRegExp(phone), 'i');
-    const phoneLocator = this.page.getByText(phonePattern).or(semanticsByName(this.page, phonePattern));
+    await this.ensurePeopleDetailOverviewTab();
+    const phoneFlexible = this.phoneDigitsFlexiblePattern(phone);
+    const phoneLocator = this.page
+      .getByText(phoneFlexible)
+      .or(semanticsByName(this.page, phoneFlexible));
+    const d = phone.replace(/\D/g, '');
     const detailGroupPattern = new RegExp(
-      `${escapeRegExp(vetName)}[\\s\\S]*Phone[\\s\\S]*${escapeRegExp(phone)}`,
+      `${escapeRegExp(vetName)}[\\s\\S]*Phone[\\s\\S]*${d.split('').join('[\\s\\-.()]*')}`,
       'i',
     );
     await expect(this.page.getByRole('button', { name: /^Call$/i })).toBeVisible({
