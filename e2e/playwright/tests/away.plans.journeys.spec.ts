@@ -3,7 +3,7 @@
  * Scenario: Co-parent sees only their pet pill and no trip Edit
  * Scenario: Co-parent edits the pet note on the away plan page
  */
-import { test, expect, loginAs } from '../fixtures/auth.fixture';
+import { test, loginAs } from '../fixtures/auth.fixture';
 import { AwayPlanningPage } from '../pages/away-planning.page';
 import { PetListPage } from '../pages/pet-list.page';
 import { PeoplePage } from '../pages/people.page';
@@ -90,7 +90,7 @@ test.describe('Away plan journeys', () => {
 
   test('Co-parent Dave sees Frederique away, one pill, no Edit or Add pet', async ({ page }) => {
     const root = baseURL();
-    const { dave, frederique, buddy, absence } = await seedFrederiqueAndDave(root);
+    const { dave, buddy, absence } = await seedFrederiqueAndDave(root);
     await loginAs(page, dave, { experience: 'guardian' });
 
     const away = new AwayPlanningPage(page);
