@@ -6,7 +6,7 @@ domain: pet_care
 feature_id: care_item
 status: active
 last_updated: 2026-11-07
-related_prs: [1797, 1805, 1812, 1817]
+related_prs: [1797, 1805, 1812, 1817, 2129]
 ---
 
 # Care Item — functional spec
