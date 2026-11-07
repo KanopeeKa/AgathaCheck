@@ -92,8 +92,9 @@ export class PeoplePage {
     await this.page.goto(flutterGotoUrl(`/pc/people/${contactId}/edit`));
     await refreshFlutterAccessibility(this.page);
     await waitForFlutterRoutePattern(this.page, /\/pc\/people\/[^/]+\/edit(?:\?|$)/, 30_000);
-    // Riverpod can serve cached form state briefly after save — reload so the edit form refetches.
-    await this.page.reload();
+    // Riverpod can serve cached form state briefly after save — a second navigation refetches without
+    // `location.reload()`, which can bounce Flutter web to `/pc/home` (CI: veterinarian phone assert).
+    await this.page.goto(flutterGotoUrl(`/pc/people/${contactId}/edit`));
     await refreshFlutterAccessibility(this.page);
     await waitForFlutterRoutePattern(this.page, /\/pc\/people\/[^/]+\/edit(?:\?|$)/, 30_000);
 
