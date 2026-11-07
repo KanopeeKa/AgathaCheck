@@ -26,10 +26,15 @@ class CareItemCloseCareButton extends StatelessWidget {
             style: FilledButton.styleFrom(
               backgroundColor: colorScheme.error,
               foregroundColor: colorScheme.onError,
-              minimumSize: const Size.fromHeight(48),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+              minimumSize: const Size(0, 48),
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
             onPressed: onPressed,
-            child: Text(l.careCloseCareButton),
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(l.careCloseCareButton),
+            ),
           ),
         ),
       ),
