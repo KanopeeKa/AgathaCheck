@@ -6,6 +6,7 @@ import 'package:pet_profile_app/features/health_tracking/domain/entities/health_
 import 'package:pet_profile_app/features/health_tracking/data/models/health_entry_absence_context_model.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/care_item_absence_providers.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/occurrence_providers.dart';
+import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry_photo.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/pet_event_view_providers.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_occurrence.dart';
 import 'package:pet_profile_app/core/care/care_item_observation_section.dart';
@@ -370,5 +371,178 @@ void main() {
       findsOneWidget,
     );
     expect(find.byKey(const Key('unmark_done_hist-0')), findsNothing);
+  });
+
+  testWidgets('Documents module appears above History when files exist', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(400, 900);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final photo = EventPhoto(
+      id: 'p1',
+      eventId: 'entry-1',
+      photoPath: '/files/a.pdf',
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          apiBaseUrlProvider.overrideWithValue('http://test.local'),
+          careItemAbsenceContextProvider('entry-1').overrideWith(
+            (ref) async => const HealthEntryAbsenceContext(
+              healthEntryId: 'entry-1',
+              petId: 'pet-1',
+              absences: [],
+            ),
+          ),
+          entryOccurrencesProvider('entry-1').overrideWith((ref) async => []),
+          entryPastOccurrencesProvider(
+            'entry-1',
+          ).overrideWith((ref) async => []),
+          healthEntryPhotosProvider(
+            'entry-1',
+          ).overrideWith((ref) async => [photo]),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: CareItemDetailBody(
+              petId: 'pet-1',
+              entry: entry,
+              pet: pet,
+              history: const <HealthHistoryEntry>[],
+              isClosed: false,
+              isEstablished: false,
+              onSeeHistory: () {},
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final documentsRect = tester.getRect(
+      find.byKey(const Key('care_item_documents_module')),
+    );
+    final historyRect = tester.getRect(
+      find.byKey(const Key('care_item_history_module')),
+    );
+    expect(documentsRect.top, lessThan(historyRect.top));
+    expect(
+      find.descendant(
+        of: find.byKey(const Key('care_item_documents_module')),
+        matching: find.text('Documents'),
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('History lists not_recorded past occurrences', (tester) async {
+    tester.view.physicalSize = const Size(400, 900);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final past = [
+      HealthOccurrence(
+        id: 'hist-nr',
+        entryId: 'entry-1',
+        scheduledDate: DateTime(2025, 4, 1),
+        status: 'not_recorded',
+      ),
+    ];
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          apiBaseUrlProvider.overrideWithValue('http://test.local'),
+          careItemAbsenceContextProvider('entry-1').overrideWith(
+            (ref) async => const HealthEntryAbsenceContext(
+              healthEntryId: 'entry-1',
+              petId: 'pet-1',
+              absences: [],
+            ),
+          ),
+          entryOccurrencesProvider('entry-1').overrideWith((ref) async => []),
+          entryPastOccurrencesProvider(
+            'entry-1',
+          ).overrideWith((ref) async => past),
+          healthEntryPhotosProvider('entry-1').overrideWith((ref) async => []),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: CareItemDetailBody(
+              petId: 'pet-1',
+              entry: entry,
+              pet: pet,
+              history: const <HealthHistoryEntry>[],
+              isClosed: false,
+              isEstablished: false,
+              onSeeHistory: () {},
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byKey(const Key('pet_event_past_occurrence_hist-nr')),
+      findsOneWidget,
+    );
+    expect(find.text('No history yet.'), findsNothing);
+  });
+
+  testWidgets('History shows empty copy and hides documents strip', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(400, 900);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          apiBaseUrlProvider.overrideWithValue('http://test.local'),
+          careItemAbsenceContextProvider('entry-1').overrideWith(
+            (ref) async => const HealthEntryAbsenceContext(
+              healthEntryId: 'entry-1',
+              petId: 'pet-1',
+              absences: [],
+            ),
+          ),
+          entryOccurrencesProvider('entry-1').overrideWith((ref) async => []),
+          entryPastOccurrencesProvider(
+            'entry-1',
+          ).overrideWith((ref) async => []),
+          healthEntryPhotosProvider('entry-1').overrideWith((ref) async => []),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: CareItemDetailBody(
+              petId: 'pet-1',
+              entry: entry,
+              pet: pet,
+              history: const <HealthHistoryEntry>[],
+              isClosed: false,
+              isEstablished: false,
+              onSeeHistory: () {},
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('care_item_documents_module')), findsNothing);
+    expect(find.byKey(const Key('care_item_history_module')), findsOneWidget);
+    expect(find.text('No history yet.'), findsOneWidget);
+    expect(find.text('up to 4 documents'), findsNothing);
   });
 }

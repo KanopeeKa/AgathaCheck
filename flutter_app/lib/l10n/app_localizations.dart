@@ -9783,6 +9783,12 @@ abstract class AppLocalizations {
   /// **'Details of {category}: {name}'**
   String careItemDetailsIdentity(String category, String name);
 
+  /// No description provided for @careItemDocumentsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Documents'**
+  String get careItemDocumentsTitle;
+
   /// No description provided for @careItemHistoryTitle.
   ///
   /// In en, this message translates to:

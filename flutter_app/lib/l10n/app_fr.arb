@@ -1962,6 +1962,7 @@
       }
     }
   },
+  "careItemDocumentsTitle": "Documents",
   "careItemHistoryTitle": "Historique",
   "careItemEditSchedule": "Modifier le planning",
   "careItemMenuTooltip": "Actions sur le soin",

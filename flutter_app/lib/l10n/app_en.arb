@@ -2083,6 +2083,7 @@
       }
     }
   },
+  "careItemDocumentsTitle": "Documents",
   "careItemHistoryTitle": "History",
   "careItemEditSchedule": "Edit schedule",
   "careItemMenuTooltip": "Care item actions",

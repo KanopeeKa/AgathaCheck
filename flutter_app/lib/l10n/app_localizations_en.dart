@@ -5515,6 +5515,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get careItemDocumentsTitle => 'Documents';
+
+  @override
   String get careItemHistoryTitle => 'History';
 
   @override

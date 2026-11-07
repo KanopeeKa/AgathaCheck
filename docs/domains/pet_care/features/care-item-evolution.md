@@ -5,7 +5,7 @@ audience: both
 domain: pet_care
 feature_id: care_item
 status: active
-last_updated: 2026-11-04
+last_updated: 2026-11-07
 related_prs: [1797, 1805, 1812, 1817]
 ---
 
@@ -128,6 +128,7 @@ Four principles:
 | D-BULK-005 | Bulk Mark/Skip success with undo uses shared undo snackbar (5 s, close control, `snackBarSurface`) | Same helper as single Done (regression guard after #1671) | Live | 2026-10-08 | — |
 | D-CIE-039 | Vet visit completion is not bulk occurrence completion | Visit records group care done at the clinic; each occurrence still uses CSM Mark as done / Skip (AC-FB-02) | Live | 2026-10-13 | PR-14 |
 | D-CIE-040 | History has no inline Unmark done | Past-occurrence rows in Care item History open the occurrence record; undo Done and other edits happen there, not via list shortcuts | Live | 2026-11-03 | — |
+| D-CIE-041 | Documents on Care item view | Own **Documents** module directly above **History** (mobile and web main column). Hidden when the entry has no attachments; while loading, the section shows the strip progress indicator. Closed care: same muted styling as other modules. History lists only resolved past occurrences plus **See history**; shows **No history yet** when none qualify. Supersedes placing documents under History / future Details placement (line §Details). | Live | 2026-11-07 | — |
 
 ## Vet visit schema (API slice — PR-14)
 
@@ -260,7 +261,8 @@ Accessibility: section and group headings are headers; Upcoming exposes expanded
 4. **Agatha:** a suggestion or safeguard for this item, only when there is one.
 5. **Absence:** placed here when it needs a decision. Otherwise it sits after Schedule.
 6. **Schedule**
-7. **History**
+7. **Documents** — when attachments exist (or loading); see D-CIE-041
+8. **History**
 
 ### Needs attention
 
@@ -323,13 +325,19 @@ Read view order (label : value rows unless noted):
 7. **Notes** — when non-empty (Full access only).
 8. **Health issue** — "Related to …", linked to the issue when set.
 
-Documents remain under **History** on the current client (canonical target: Details — track if moved).
-
 Instructions are not yet on the wire; defer until the field exists.
+
+### Documents (D-CIE-041)
+
+- **Documents** is its own module on the Care item view, directly above **History** (same position on mobile and in the web main column).
+- The module is omitted when the entry has no care-item attachments. While the list is loading, the module is shown and uses the documents strip progress indicator.
+- Attach and manage files in Create/Edit (**Advanced settings** · Documents); the detail view is read-only thumbnails.
+- On **Closed** care, document content uses the same muted treatment as other modules.
 
 ### History (D-CIE-010)
 
-- Resolved past occurrences, newest first. Mobile shows 3, web shows 5, then "See full history".
+- Resolved past occurrences, newest first. Mobile shows 3, web shows 5, then **See history**.
+- When no resolved past occurrences qualify, the module shows **No history yet** and still offers **See history**.
 - **No inline shortcuts** (e.g. Unmark done) in the list; changes, including undoing Done, happen on the occurrence's screen (D-CIE-040).
 - Each row shows:
   - the date and status (Done, Skipped, Not given or Not recorded)
