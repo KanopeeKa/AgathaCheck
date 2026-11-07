@@ -137,7 +137,8 @@ export class PeoplePage {
     const escaped = escapeRegExp(name);
     const cardPattern = new RegExp(`Veterinarian:\\s*${escaped}`, 'i');
     const rowPattern = new RegExp(escaped, 'i');
-    return semanticsByName(this.page, cardPattern)
+    return this.peopleHubDirectoryCard(name)
+      .or(semanticsByName(this.page, cardPattern))
       .or(this.page.getByRole('button', { name: rowPattern }))
       .or(this.page.getByRole('group', { name: rowPattern }))
       .or(this.page.getByRole('listitem', { name: rowPattern }))
@@ -232,7 +233,7 @@ export class PeoplePage {
       if (await this.onPeopleHub()) {
         await this.openPersonDetailFromHub(name);
       }
-      await expect(semanticsByName(this.page, new RegExp(escapeRegExp(name), 'i')).first()).toBeVisible({
+      await expect(this.vetRowLocator(name)).toBeVisible({
         timeout: 5_000,
       });
     }).toPass({ timeout: 45_000 });
