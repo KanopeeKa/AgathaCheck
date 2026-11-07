@@ -43,15 +43,20 @@ class AwayPlanTripReadOnlyHeader extends StatelessWidget {
             const SizedBox(height: 12),
             Align(
               alignment: Alignment.centerLeft,
-              child: TextButton(
-                key: const Key('away_plan_see_absence'),
-                onPressed: () {
-                  final returnTo = currentShellLocation(context);
-                  context.push(
-                    awayPlanDetailLocation(absence.id, returnTo: returnTo),
-                  );
-                },
-                child: Text(l.careContextSeeAbsence),
+              child: Semantics(
+                identifier: 'away_plan_see_absence',
+                button: true,
+                label: l.careContextSeeAbsence,
+                child: TextButton(
+                  key: const Key('away_plan_see_absence'),
+                  onPressed: () {
+                    final returnTo = currentShellLocation(context);
+                    context.push(
+                      awayPlanDetailLocation(absence.id, returnTo: returnTo),
+                    );
+                  },
+                  child: Text(l.careContextSeeAbsence),
+                ),
               ),
             ),
           ],

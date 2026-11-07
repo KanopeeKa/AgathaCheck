@@ -71,7 +71,6 @@ export class AwayPlanningPage {
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
       const heading = semanticsKey(this.page, 'planned_absence_hub_your_absences_heading')
-        .or(this.page.locator('[data-flutter-key="planned_absence_hub_your_absences_heading"]'))
         .or(this.page.getByText(/Your absences|Vos absences/i).first());
       await expect(heading).toBeVisible();
     }).toPass({ timeout: 60_000 });
@@ -103,9 +102,7 @@ export class AwayPlanningPage {
         await expect(petPills.first()).toBeVisible();
         return;
       }
-      const pageMarker = semanticsKey(this.page, 'absence_screen_page').or(
-        this.page.locator('[data-flutter-key="absence_screen_page"]'),
-      );
+      const pageMarker = semanticsKey(this.page, 'absence_screen_page');
       const petsSection = this.page.getByText(
         /Pets on this absence|Animaux de cette absence/i,
       );
@@ -157,11 +154,6 @@ export class AwayPlanningPage {
     }
     await dialog.getByRole('button', { name: /^OK$|^Save$|Enregistrer/i }).first().click();
     await expect(dialog).not.toBeVisible({ timeout: 15_000 });
-  }
-
-  /** @deprecated Create is a single scroll form — use pickAbsenceDates + selectPet + saveAbsence. */
-  async continueWizard(): Promise<void> {
-    await refreshFlutterAccessibility(this.page);
   }
 
   async openWizard(): Promise<void> {
@@ -228,7 +220,6 @@ export class AwayPlanningPage {
   async saveCarerEditDialog(): Promise<void> {
     await this.page
       .getByRole('button', { name: /^Save carer$/i })
-      .or(this.page.locator('[data-flutter-key="away_plan_carer_edit_save"]'))
       .click();
     await refreshFlutterAccessibility(this.page);
   }
@@ -369,9 +360,7 @@ export class AwayPlanningPage {
       ? this.page
           .getByRole('group', { name: new RegExp(entryName, 'i') })
           .getByRole('button', { name: /Review dates|Examiner les dates/i })
-      : semanticsKey(this.page, `away_plan_review_dates_${entryId}`).or(
-          this.page.locator(`[data-flutter-key="away_plan_review_dates_${entryId}"]`),
-        );
+      : semanticsKey(this.page, `away_plan_review_dates_${entryId}`);
     if (entryName) {
       return reviewQueueRow
         .or(bySemantics)
@@ -421,14 +410,13 @@ export class AwayPlanningPage {
     await expect(async () => {
       await this.waitForPetCareCoverageReady();
       await refreshFlutterAccessibility(this.page);
-      const byKey = this.page.locator(`[data-flutter-key="away_plan_pet_care_${petId}"]`);
       const byPetHeader = petName
         ? this.page.getByRole('button', {
             name: new RegExp(`View pet details for ${petName}|^${petName}\\b`, 'i'),
           })
         : null;
       const careDuring = this.page.getByText(/Care during your absence|Soins pendant votre absence/i);
-      await expect(byKey.or(byPetHeader ?? careDuring)).toBeVisible();
+      await expect((byPetHeader ?? careDuring)).toBeVisible();
     }).toPass({ timeout: 60_000 });
   }
 
@@ -450,9 +438,7 @@ export class AwayPlanningPage {
 
   private async expandAllPlannedCareIfCollapsed(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
-    const expandTile = this.page
-      .locator('[data-flutter-key="away_plan_planned_care_expand"]')
-      .or(semanticsKey(this.page, 'away_plan_planned_care_expand'))
+    const expandTile = semanticsKey(this.page, 'away_plan_planned_care_expand')
       .or(
         this.page
           .locator('[aria-expanded="false"]')
@@ -633,9 +619,7 @@ export class AwayPlanningPage {
   async openPlannedCareItem(entryId: string, entryName?: string): Promise<void> {
     await this.waitForPetCareCoverageReady();
     await refreshFlutterAccessibility(this.page);
-    const reviewDates = semanticsKey(this.page, `away_plan_review_dates_${entryId}`).or(
-      this.page.locator(`[data-flutter-key="away_plan_review_dates_${entryId}"]`),
-    );
+    const reviewDates = semanticsKey(this.page, `away_plan_review_dates_${entryId}`);
     if (await reviewDates.first().isVisible().catch(() => false)) {
       await reviewDates.first().click();
       await refreshFlutterAccessibility(this.page);
@@ -820,9 +804,7 @@ export class AwayPlanningPage {
 
   async expectAddPetHidden(): Promise<void> {
     await expect(
-      semanticsKey(this.page, 'absence_add_pet').or(
-        this.page.locator('[data-flutter-key="absence_add_pet"]'),
-      ),
+      semanticsKey(this.page, 'absence_add_pet'),
     ).toHaveCount(0, { timeout: 15_000 });
   }
 
@@ -845,19 +827,16 @@ export class AwayPlanningPage {
   async savePetNote(petId: string, note: string): Promise<void> {
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      const field = semanticsKey(this.page, `away_plan_pet_notes_${petId}`)
-        .or(this.page.locator(`[data-flutter-key="away_plan_pet_notes_${petId}"]`))
-        .or(
-          this.page.getByRole('textbox', {
-            name: /Notes for|Notes about|note for|Notes pour/i,
-          }),
-        );
+      const field = this.page
+        .getByRole('textbox', {
+          name: /Notes for|Notes about|note for|Notes pour/i,
+        })
+        .or(semanticsKey(this.page, `away_plan_pet_notes_${petId}`).getByRole('textbox'));
       await expect(field.first()).toBeVisible({ timeout: 10_000 });
       await field.first().scrollIntoViewIfNeeded();
       await field.first().click();
       await field.first().fill(note);
       await semanticsKey(this.page, `away_plan_pet_notes_save_${petId}`)
-        .or(this.page.locator(`[data-flutter-key="away_plan_pet_notes_save_${petId}"]`))
         .or(this.page.getByRole('button', { name: /^Save$|^Enregistrer$/i }))
         .first()
         .click();
@@ -867,9 +846,7 @@ export class AwayPlanningPage {
 
   async clickSeeAbsence(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
-    const seeAbsence = semanticsKey(this.page, 'away_plan_see_absence').or(
-      this.page.locator('[data-flutter-key="away_plan_see_absence"]'),
-    ).or(this.page.getByRole('button', { name: /See absence|Voir l'absence/i }));
+    const seeAbsence = semanticsKey(this.page, 'away_plan_see_absence').or(this.page.getByRole('button', { name: /See absence|Voir l'absence/i }));
     await expect(seeAbsence.first()).toBeVisible({ timeout: 30_000 });
     await seeAbsence.first().click();
     await refreshFlutterAccessibility(this.page);
@@ -878,9 +855,7 @@ export class AwayPlanningPage {
 
   async triggerFullTripHandoverDownload(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
-    const download = semanticsKey(this.page, 'away_plan_download_handover')
-      .or(this.page.locator('[data-flutter-key="away_plan_download_handover"]'))
-      .or(
+    const download = semanticsKey(this.page, 'away_plan_download_handover').or(
         this.page.getByRole('button', {
           name: /download report|télécharger le rapport|picture_as_pdf/i,
         }),
@@ -895,17 +870,10 @@ export class AwayPlanningPage {
     await this.expectNoPdfExportErrorSnackBar();
   }
 
-  async downloadFullTripHandover() {
-    const downloadPromise = this.page.waitForEvent('download', { timeout: 90_000 });
-    await semanticsKey(this.page, 'away_plan_download_handover').click();
-    return downloadPromise;
-  }
-
   async clickAddPetOnAbsence(): Promise<void> {
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
       const btn = semanticsKey(this.page, 'absence_add_pet')
-        .or(this.page.locator('[data-flutter-key="absence_add_pet"]'))
         .or(
           this.page.getByRole('button', {
             name: /Add a pet|Ajouter un animal/i,
@@ -945,12 +913,6 @@ export class AwayPlanningPage {
   async expectPetPageAwayRow(absenceId: string): Promise<void> {
     await expect(semanticsKey(this.page, `pet_page_away_row_${absenceId}`)).toBeVisible({
       timeout: 45_000,
-    });
-  }
-
-  async expectPetPageAwaySectionHidden(): Promise<void> {
-    await expect(semanticsKey(this.page, 'pet_page_away_row_')).toHaveCount(0, {
-      timeout: 15_000,
     });
   }
 
