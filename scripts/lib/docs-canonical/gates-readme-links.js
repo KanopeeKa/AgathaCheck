@@ -58,7 +58,6 @@ function runGateReadmeLinks(ctx) {
     for (const filePath of listChangeDocs(root)) {
       const relPath = rel(root, filePath);
       if (relPath.includes('/changes/archive/')) continue;
-      const domain = domainFromReadmeRel(relPath.replace(/\/changes\/.*$/, '/README.md'));
       const domainDir = path.dirname(path.dirname(filePath));
       const readmePath = path.join(domainDir, 'README.md');
       if (!fs.existsSync(readmePath)) continue;

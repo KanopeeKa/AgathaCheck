@@ -66,10 +66,7 @@ class _AwayPlanPetNotesSectionState
           .patchPerPetAwayPlan(
             absenceId: widget.absenceId,
             petId: widget.petId,
-            body: {
-              'contact_id': widget.currentCarer.contactId,
-              'pet_note': note.isEmpty ? null : note,
-            },
+            body: {'pet_note': note.isEmpty ? null : note},
           );
       if (!mounted) return;
       ref.invalidate(plannedAbsenceDetailProvider(widget.absenceId));

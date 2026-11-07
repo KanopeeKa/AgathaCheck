@@ -234,21 +234,29 @@ export async function patchPerPetPlannedAbsence(pool, actorUserId, absenceId, pe
   if (!built.ok) return { status: built.status, error: built.error };
 
   const travellerUserId = viewed.row.user_id;
-  const carerResult = await updateAbsenceCarers(
-    pool,
-    absenceId,
-    [built.item],
-    [petId],
-    { actorUserId, travellerUserId },
-  );
-  if (!carerResult.ok) {
-    return { status: carerResult.status, error: carerResult.error };
+  try {
+    await withTransaction(pool, async (client) => {
+      const carerResult = await updateAbsenceCarers(
+        client,
+        absenceId,
+        [built.item],
+        [petId],
+        { actorUserId, travellerUserId },
+      );
+      if (!carerResult.ok) {
+        throw Object.assign(new Error(carerResult.error), { status: carerResult.status });
+      }
+      await client.query(
+        'UPDATE planned_absences SET updated_at = NOW() WHERE id = $1',
+        [absenceId],
+      );
+    });
+  } catch (err) {
+    if (err.status) {
+      return { status: err.status, error: err.message };
+    }
+    throw err;
   }
-
-  await pool.query(
-    'UPDATE planned_absences SET updated_at = NOW() WHERE id = $1',
-    [absenceId],
-  );
 
   const updatedRows = await loadAbsencePets(pool, absenceId);
   const updatedPetRow = updatedRows.find((row) => row.pet_id === petId);

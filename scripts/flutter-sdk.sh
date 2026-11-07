@@ -85,13 +85,13 @@ agatha_flutter_use() {
 agatha_flutter_verify() {
   local dart_version
   local flutter_version
-  # As root, dart/flutter print a stderr banner that would break version parsing.
-  dart_version="$(dart --version 2>/dev/null)"
-  flutter_version="$(flutter --version 2>/dev/null | head -n1)"
+  # Merge streams so version on stderr still counts; skip root warning lines.
+  dart_version="$(dart --version 2>&1 | grep -E '^Dart SDK version:' | head -n1)"
+  flutter_version="$(flutter --version 2>&1 | grep -E '^Flutter ' | head -n1)"
   echo "${flutter_version}"
   echo "${dart_version}"
 
-  if ! dart --version 2>/dev/null | grep -Eq 'Dart SDK version: 3\.(1[2-9]|[2-9][0-9])(\.| )'; then
+  if ! grep -Eq 'Dart SDK version: 3\.(1[2-9]|[2-9][0-9])(\.| )' <<<"${dart_version}"; then
     echo "Expected Dart 3.12 or newer; found: ${dart_version}" >&2
     return 1
   fi
