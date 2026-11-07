@@ -14,6 +14,8 @@ import 'care_item_dates_section.dart';
 import 'care_item_needs_attention_section.dart';
 import 'care_item_established_section.dart';
 import 'care_item_info_section.dart';
+import 'care_item_documents_section.dart';
+import 'care_item_history_section.dart';
 import 'care_item_schedule_section.dart';
 import 'care_item_close_care_button.dart';
 
@@ -118,7 +120,11 @@ class CareItemDetailBody extends ConsumerWidget {
               : MediaQuery.sizeOf(context).width;
           final wide = layoutWidth >= kCareItemTwoColumnBreakpoint;
           final pastOccurrencesVisibleCap = wide ? 5 : 3;
-          final historyModule = _HistoryModule(
+          final documentsSection = CareItemDocumentsSection(
+            entryId: entry.id,
+            muted: muted,
+          );
+          final historyModule = CareItemHistorySection(
             entry: entry,
             muted: muted,
             onSeeHistory: onSeeHistory,
@@ -169,6 +175,8 @@ class CareItemDetailBody extends ConsumerWidget {
                                 CareItemModule(child: establishedSection),
                               ],
                               _sectionGap,
+                              documentsSection,
+                              _sectionGap,
                               historyModule,
                               if (closeCareSection != null) closeCareSection,
                             ],
@@ -190,6 +198,8 @@ class CareItemDetailBody extends ConsumerWidget {
                     needsSection,
                     _sectionGap,
                     sideScheduleAbsenceColumn(),
+                    _sectionGap,
+                    documentsSection,
                     _sectionGap,
                     historyModule,
                     if (closeCareSection != null) closeCareSection,
@@ -267,75 +277,6 @@ class _DetailsModule extends StatelessWidget {
               muted: muted,
             ),
           ],
-        ],
-      ),
-    );
-  }
-}
-
-class _HistoryModule extends ConsumerWidget {
-  const _HistoryModule({
-    required this.entry,
-    required this.muted,
-    required this.onSeeHistory,
-    required this.pastOccurrencesVisibleCap,
-  });
-
-  final HealthEntry entry;
-  final bool muted;
-  final VoidCallback onSeeHistory;
-  final int pastOccurrencesVisibleCap;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l = AppLocalizations.of(context)!;
-    final showPast = ref
-        .watch(entryPastOccurrencesProvider(entry.id))
-        .maybeWhen(
-          data: (past) =>
-              past.any((o) => o.status == 'completed' || o.status == 'skipped'),
-          orElse: () => false,
-        );
-
-    return CareItemModule(
-      key: const Key('care_item_history_module'),
-      semanticLabel: l.careItemHistoryTitle,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          CareItemSectionHeader(
-            title: l.careItemHistoryTitle,
-            icon: Icons.history,
-          ),
-          const SizedBox(height: 12),
-          CareCollectionInsetList(
-            semanticLabel: l.careItemHistoryTitle,
-            children: [
-              CareCollectionInsetItem(
-                child: Padding(
-                  padding: CareSurfaceTokens.collectionInsetRowPadding,
-                  child: PetEventDocumentsStrip(entryId: entry.id),
-                ),
-              ),
-              if (showPast)
-                CareCollectionInsetItem(
-                  showDividerBefore: true,
-                  child: PetEventPastOccurrencesSection(
-                    entryId: entry.id,
-                    petId: entry.petId,
-                    muted: muted,
-                    maxVisibleRows: pastOccurrencesVisibleCap,
-                  ),
-                ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          OutlinedButton.icon(
-            key: const Key('care_item_see_history'),
-            onPressed: onSeeHistory,
-            icon: const Icon(Icons.history),
-            label: Text(l.seeHistory),
-          ),
         ],
       ),
     );
