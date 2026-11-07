@@ -174,7 +174,18 @@ const planFilesRoutes = (snapJson, md) => ({
 const planFileDiff = ['server/bin/server.js', `.agents/plans/${PLAN}.md`, `.agents/plans/${PLAN}.snapshot.json`];
 
 test('release PR with verified plan files → success', async () => {
-  const { client } = setup({ files: planFileDiff, extra: planFilesRoutes(SNAP_JSON, PLAN_MD) });
+  const planBlobs = {
+    'server/bin/server.js': 'srv-h',
+    [`.agents/plans/${PLAN}.md`]: 'plan-h',
+    [`.agents/plans/${PLAN}.snapshot.json`]: 'snap-h',
+  };
+  const { client } = setup({
+    files: planFileDiff,
+    extra: {
+      ...planFilesRoutes(SNAP_JSON, PLAN_MD),
+      ...blobShaTreeRoutes({ headRef: release.headSha, headBlobs: planBlobs, mainBlobs: { ...planBlobs } }),
+    },
+  });
   const res = await runScopeCheck(client, release);
   assert.deepEqual([res.conclusion, res.title], ['success', 'ok']);
 });
@@ -182,12 +193,21 @@ test('release PR with verified plan files → success', async () => {
 test('release PR treats files identical to main as no-ops', async () => {
   const sideFile = 'scripts/ci/web-bundle-budget.json';
   const budget = '{"maxMainDartJsBytes":1000000,"maxTotalBytes":2000000,"version":1}';
+  const planBlobs = {
+    'server/bin/server.js': 'srv-h',
+    [`.agents/plans/${PLAN}.md`]: 'plan-h',
+    [`.agents/plans/${PLAN}.snapshot.json`]: 'snap-h',
+    [sideFile]: 'budget-sha',
+  };
   const { client } = setup({
     files: [...planFileDiff, sideFile],
     extra: {
       ...planFilesRoutes(SNAP_JSON, PLAN_MD),
-      [`GET ${R}/contents/${sideFile}?ref=${release.headSha}`]: file(budget),
-      [`GET ${R}/contents/${sideFile}?ref=main`]: file(budget),
+      ...blobShaTreeRoutes({
+        headRef: release.headSha,
+        headBlobs: planBlobs,
+        mainBlobs: { ...planBlobs },
+      }),
     },
   });
   const res = await runScopeCheck(client, release);
@@ -197,17 +217,34 @@ test('release PR treats files identical to main as no-ops', async () => {
 const syncResolve = { ...phasePr, headRef: `cursor/${PLAN}-sync-2`, baseRef: INTEGRATION };
 const blob = (text, sha) => ({ body: { type: 'file', encoding: 'base64', content: b64(text), sha } });
 const atRef = (path, ref) => `GET ${R}/contents/${path.split('/').map(encodeURIComponent).join('/')}?ref=${ref}`;
+const MAIN_TIP_SHA = 'f'.repeat(40);
+
+/** Git trees for `filesUnchangedOnMain` (replaces paired per-file contents lookups). */
+function blobShaTreeRoutes({ headRef, headBlobs = {}, mainBlobs = {} }) {
+  const extra = {};
+  const headCommit = headRef;
+  extra[`GET ${R}/commits/${headRef.split('/').map(encodeURIComponent).join('/')}`] = { body: { sha: headCommit } };
+  extra[`GET ${R}/commits/main`] = { body: { sha: MAIN_TIP_SHA } };
+  const toTree = (blobs) => ({
+    truncated: false,
+    tree: Object.entries(blobs).map(([path, sha]) => ({ path, type: 'blob', sha })),
+  });
+  extra[`GET ${R}/git/trees/${encodeURIComponent(headCommit)}?recursive=1`] = { body: toTree(headBlobs) };
+  extra[`GET ${R}/git/trees/${encodeURIComponent(MAIN_TIP_SHA)}?recursive=1`] = { body: toTree(mainBlobs) };
+  return extra;
+}
 
 test('sync-resolve PR treats files merged from main (identical to main) as no-ops', async () => {
   const fromMain = ['.github/workflows/ci.yml', 'scripts/lib/execute_plan_state.js', 'flutter_app/lib/main.dart'];
-  const extra = {};
-  for (const f of fromMain) {
-    extra[atRef(f, syncResolve.headSha)] = blob('same', 'b1');
-    extra[atRef(f, 'main')] = blob('same', 'b1');
-  }
-  extra[atRef('server/bin/server.js', syncResolve.headSha)] = blob('resolved', 'h1');
-  extra[atRef('server/bin/server.js', 'main')] = blob('main', 'm1');
-  const { client } = setup({ files: [...fromMain, 'server/bin/server.js'], extra });
+  const shared = Object.fromEntries(fromMain.map((f) => [f, 'b1']));
+  const { client } = setup({
+    files: [...fromMain, 'server/bin/server.js'],
+    extra: blobShaTreeRoutes({
+      headRef: syncResolve.headSha,
+      headBlobs: { ...shared, 'server/bin/server.js': 'h1' },
+      mainBlobs: { ...shared, 'server/bin/server.js': 'm1' },
+    }),
+  });
   const res = await runScopeCheck(client, syncResolve);
   assert.deepEqual([res.conclusion, res.title], ['success', 'ok']);
 });
@@ -216,7 +253,11 @@ test('sync-resolve PR still fails a protected file that differs from main', asyn
   const f = 'scripts/lib/execute_plan_state.js';
   const { client } = setup({
     files: [f],
-    extra: { [atRef(f, syncResolve.headSha)]: blob('edited', 'h1'), [atRef(f, 'main')]: blob('main', 'm1') },
+    extra: blobShaTreeRoutes({
+      headRef: syncResolve.headSha,
+      headBlobs: { [f]: 'h1' },
+      mainBlobs: { [f]: 'm1' },
+    }),
   });
   const res = await runScopeCheck(client, syncResolve);
   assert.deepEqual([res.conclusion, res.title], ['failure', 'protected']);
@@ -243,14 +284,46 @@ test('phase PR bundle ratchet fails when increase exceeds 1.5% vs merge base', a
 });
 
 test('release PR with tampered plan file → failure drift', async () => {
-  const { client } = setup({ files: planFileDiff, extra: planFilesRoutes(SNAP_JSON, `${PLAN_MD}\nextra`) });
+  const headBlobs = {
+    'server/bin/server.js': 'srv-h',
+    [`.agents/plans/${PLAN}.md`]: 'plan-h',
+    [`.agents/plans/${PLAN}.snapshot.json`]: 'snap-h',
+  };
+  const mainBlobs = {
+    ...headBlobs,
+    [`.agents/plans/${PLAN}.md`]: 'plan-main',
+    [`.agents/plans/${PLAN}.snapshot.json`]: 'snap-main',
+  };
+  const { client } = setup({
+    files: planFileDiff,
+    extra: {
+      ...planFilesRoutes(SNAP_JSON, `${PLAN_MD}\nextra`),
+      ...blobShaTreeRoutes({ headRef: release.headSha, headBlobs, mainBlobs }),
+    },
+  });
   const res = await runScopeCheck(client, release);
   assert.deepEqual([res.conclusion, res.title], ['failure', 'drift']);
 });
 
 test('release PR with tampered snapshot → failure drift', async () => {
   const tampered = JSON.stringify({ ...SNAPSHOT, title: 'Other' });
-  const { client } = setup({ files: planFileDiff, extra: planFilesRoutes(tampered, PLAN_MD) });
+  const headBlobs = {
+    'server/bin/server.js': 'srv-h',
+    [`.agents/plans/${PLAN}.md`]: 'plan-h',
+    [`.agents/plans/${PLAN}.snapshot.json`]: 'snap-h',
+  };
+  const mainBlobs = {
+    ...headBlobs,
+    [`.agents/plans/${PLAN}.md`]: 'plan-main',
+    [`.agents/plans/${PLAN}.snapshot.json`]: 'snap-main',
+  };
+  const { client } = setup({
+    files: planFileDiff,
+    extra: {
+      ...planFilesRoutes(tampered, PLAN_MD),
+      ...blobShaTreeRoutes({ headRef: release.headSha, headBlobs, mainBlobs }),
+    },
+  });
   const res = await runScopeCheck(client, release);
   assert.deepEqual([res.conclusion, res.title], ['failure', 'drift']);
 });
@@ -286,14 +359,31 @@ test('stopped plan → plan-stopped (revoked label, expiry, escalation)', async 
 
 test('stopped plan still evaluates sync-resolve PR', async () => {
   const revoked = { ...CONTROL_ISSUE, labels: [...CONTROL_ISSUE.labels, { name: 'autonomous-revoked' }] };
-  const { client } = setup({ issue: revoked, files: ['server/bin/server.js'] });
+  const f = 'server/bin/server.js';
+  const { client } = setup({
+    issue: revoked,
+    files: [f],
+    extra: blobShaTreeRoutes({
+      headRef: syncResolve.headSha,
+      headBlobs: { [f]: 'h1' },
+      mainBlobs: { [f]: 'h1' },
+    }),
+  });
   const res = await runScopeCheck(client, syncResolve);
   assert.deepEqual([res.conclusion, res.title], ['success', 'ok']);
   assert.equal(res.exemptStopPublish, true);
 });
 
 test('sync-resolve while plan running is not exempt from STOP re-check on publish', async () => {
-  const { client } = setup({ files: ['server/bin/server.js'] });
+  const f = 'server/bin/server.js';
+  const { client } = setup({
+    files: [f],
+    extra: blobShaTreeRoutes({
+      headRef: syncResolve.headSha,
+      headBlobs: { [f]: 'h1' },
+      mainBlobs: { [f]: 'm1' },
+    }),
+  });
   const res = await runScopeCheck(client, syncResolve);
   assert.equal(res.exemptStopPublish, false);
 });

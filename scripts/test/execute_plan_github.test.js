@@ -373,3 +373,57 @@ test('getAuthenticatedUser reads GET /user', async () => {
   assert.equal((await gh.getAuthenticatedUser()).login, 'pawpet-bot');
   assert.equal(fake.calls[0].key, 'GET /user');
 });
+
+test('getFileShasAtRef uses git tree with two requests per ref', async () => {
+  const commitSha = 'ccc111deadbeef';
+  const { gh, fake } = client({
+    [`GET ${R}/commits/main`]: { body: { sha: commitSha } },
+    [`GET ${R}/git/trees/${encodeURIComponent(commitSha)}?recursive=1`]: {
+      body: {
+        truncated: false,
+        tree: [
+          { path: 'a.js', type: 'blob', sha: 'sha-a' },
+          { path: 'b.js', type: 'blob', sha: 'sha-b' },
+        ],
+      },
+    },
+  });
+  const map = await gh.getFileShasAtRef(['a.js', 'b.js', 'missing.js'], 'main');
+  assert.equal(map.get('a.js'), 'sha-a');
+  assert.equal(map.get('b.js'), 'sha-b');
+  assert.equal(map.get('missing.js'), null);
+  assert.equal(fake.calls.length, 2);
+});
+
+test('getFileShasAtRef falls back to per-file when tree is truncated', async () => {
+  const commitSha = 'ccc222deadbeef';
+  const paths = ['f0.js', 'f1.js', 'f2.js'];
+  const routes = {
+    [`GET ${R}/commits/head`]: { body: { sha: commitSha } },
+    [`GET ${R}/git/trees/${encodeURIComponent(commitSha)}?recursive=1`]: { body: { truncated: true, tree: [] } },
+  };
+  for (const p of paths) {
+    routes[`GET ${R}/contents/${p}?ref=head`] = { body: { type: 'file', content: '', encoding: 'base64', sha: `blob-${p}` } };
+  }
+  const { gh, fake } = client(routes);
+  const map = await gh.getFileShasAtRef(paths, 'head');
+  assert.equal(map.get('f0.js'), 'blob-f0.js');
+  assert.equal(map.get('f1.js'), 'blob-f1.js');
+  const contentGets = fake.calls.filter((c) => c.key.includes('/contents/'));
+  assert.equal(contentGets.length, paths.length);
+});
+
+test('getFileShasAtRef propagates RateLimited on per-file fallback', async () => {
+  const commitSha = 'ccc333deadbeef';
+  const reset = String(Math.floor(Date.now() / 1000) + 60);
+  const { gh } = client({
+    [`GET ${R}/commits/main`]: { body: { sha: commitSha } },
+    [`GET ${R}/git/trees/${encodeURIComponent(commitSha)}?recursive=1`]: { body: { truncated: true, tree: [] } },
+    [`GET ${R}/contents/a.js?ref=main`]: {
+      status: 403,
+      headers: { 'x-ratelimit-remaining': '0', 'x-ratelimit-reset': reset },
+      body: { message: 'rate limit' },
+    },
+  });
+  await assert.rejects(gh.getFileShasAtRef(['a.js'], 'main'), (err) => err instanceof RateLimited);
+});
