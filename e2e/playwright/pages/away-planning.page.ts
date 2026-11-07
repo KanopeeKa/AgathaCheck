@@ -827,12 +827,11 @@ export class AwayPlanningPage {
   async savePetNote(petId: string, note: string): Promise<void> {
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      const field = semanticsKey(this.page, `away_plan_pet_notes_${petId}`)
-        .or(
-          this.page.getByRole('textbox', {
-            name: /Notes for|Notes about|note for|Notes pour/i,
-          }),
-        );
+      const field = this.page
+        .getByRole('textbox', {
+          name: /Notes for|Notes about|note for|Notes pour/i,
+        })
+        .or(semanticsKey(this.page, `away_plan_pet_notes_${petId}`).getByRole('textbox'));
       await expect(field.first()).toBeVisible({ timeout: 10_000 });
       await field.first().scrollIntoViewIfNeeded();
       await field.first().click();
