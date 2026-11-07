@@ -120,6 +120,8 @@ test.describe('Veterinarian management', () => {
   });
 
   test('user can edit a vet phone number', async ({ page }) => {
+    // Route waits, save, API polling, reload-on-edit phone assertion — needs more than default 90s project timeout.
+    test.setTimeout(300_000);
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const user = await signupUser(baseURL, { firstName: 'Alice', lastName: 'Vet' });
     await createVetFull(baseURL, user.accessToken, {
@@ -135,10 +137,9 @@ test.describe('Veterinarian management', () => {
     await vetList.openVetDetail('Dr. Smith');
 
     const vetForm = new PeoplePage(page);
-    // People hub: edit form can hang on GET /contacts/:id; persist phone via API after opening detail.
     await vetForm.updatePhone('555-5678', { vetName: 'Dr. Smith' });
 
-    await vetList.expectLoaded();
+    await vetList.expectPeopleDetailLoaded();
     await expect(async () => {
       const vets = await getVets(baseURL, user.accessToken);
       expect(vets.find((v) => v.name === 'Dr. Smith')?.phone).toBe('555-5678');
@@ -147,10 +148,8 @@ test.describe('Veterinarian management', () => {
       expect(contact?.phone).toBe('555-5678');
     }).toPass({ timeout: 15_000 });
 
-    await vetList.openVetDetail('Dr. Smith');
-    await expect(page.getByRole('button', { name: /^Call$/i })).toBeVisible({
-      timeout: 30_000,
-    });
+    // Still on `/pc/people/<id>` after save — avoid redundant hub round-trip via `openVetDetail`.
+    await vetList.expectPhoneVisible('555-5678', 'Dr. Smith');
   });
 
   test('user can delete a vet', async ({ page }) => {

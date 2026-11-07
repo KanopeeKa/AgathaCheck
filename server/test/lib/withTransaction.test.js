@@ -69,10 +69,22 @@ describe('withTransaction', () => {
     ).rejects.toThrow('work failed');
   });
 
-  it('rejects pools without connect()', async () => {
-    await expect(
-      withTransaction({ query: async () => ({ rows: [] }) }, async () => {}),
-    ).rejects.toThrow('withTransaction requires a pg.Pool with connect()');
+  it('runs inline BEGIN/COMMIT when pool has no connect() (Jest mocks)', async () => {
+    const queryLog = [];
+    const pool = {
+      query: async (sql) => {
+        queryLog.push(String(sql).trim());
+        return { rows: [] };
+      },
+    };
+
+    const result = await withTransaction(pool, async (db) => {
+      await db.query('SELECT 1');
+      return { ok: true };
+    });
+
+    expect(result).toEqual({ ok: true });
+    expect(queryLog).toEqual(['BEGIN', 'SELECT 1', 'COMMIT']);
   });
 
   it('throws TransactionAbortedError when COMMIT is turned into ROLLBACK', async () => {

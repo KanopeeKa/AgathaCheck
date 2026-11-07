@@ -126,6 +126,10 @@ class ContactSummary {
     this.access,
     this.linkedVetRecordId,
     this.inactiveAt,
+    this.phone,
+    this.email,
+    this.address,
+    this.website,
   });
 
   final String id;
@@ -142,6 +146,12 @@ class ContactSummary {
   final ContactAccessLine? access;
   final String? linkedVetRecordId;
   final DateTime? inactiveAt;
+
+  /// Identity lines mirrored from roster / contacts list (optional).
+  final String? phone;
+  final String? email;
+  final String? address;
+  final String? website;
 
   bool get isInactive => status == ContactStatus.inactive;
 
@@ -161,7 +171,11 @@ class ContactSummary {
         other.nextAbsence == nextAbsence &&
         other.access == access &&
         other.linkedVetRecordId == linkedVetRecordId &&
-        other.inactiveAt == inactiveAt;
+        other.inactiveAt == inactiveAt &&
+        other.phone == phone &&
+        other.email == email &&
+        other.address == address &&
+        other.website == website;
   }
 
   @override
@@ -180,6 +194,10 @@ class ContactSummary {
     access,
     linkedVetRecordId,
     inactiveAt,
+    phone,
+    email,
+    address,
+    website,
   );
 }
 

@@ -169,7 +169,7 @@ OccurrenceDetail occurrenceDetailFromJson(Map<String, dynamic> json) {
   final last = json['last_action'] as Map<String, dynamic>?;
   final weight = json['linked_weight'] as Map<String, dynamic>?;
   final skipRaw = json['skip_reason'] as Map<String, dynamic>?;
-  final schedule = entry.containsKey('open_occurrences')
+  final CareItemSchedule? schedule = entry['as_of'] is Map<String, dynamic>
       ? careItemScheduleFromJson(entry)
       : null;
   return OccurrenceDetail(
