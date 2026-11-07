@@ -106,6 +106,33 @@ export async function updateAbsenceCarers(
       continue;
     }
 
+    const prevRow = await pool.query(
+      `SELECT carer_user_id, contact_id
+       FROM planned_absence_pets
+       WHERE planned_absence_id = $1 AND pet_id = $2`,
+      [absenceId, petId],
+    );
+    const existing = prevRow.rows[0] || {};
+    const previousCarerId = existing.carer_user_id || null;
+
+    if (hasContactId && !hasCarerKind) {
+      const rawContact = Object.hasOwn(item, 'contact_id') ? item.contact_id : item.contactId;
+      const incomingContactId =
+        rawContact === null || rawContact === '' ? null : String(rawContact);
+      const storedContactId = existing.contact_id != null ? String(existing.contact_id) : null;
+      if (incomingContactId === storedContactId) {
+        if (hasPetNote) {
+          const rawPetNote = Object.hasOwn(item, 'pet_note') ? item.pet_note : item.petNote;
+          await pool.query(
+            `UPDATE planned_absence_pets SET pet_note = $1
+             WHERE planned_absence_id = $2 AND pet_id = $3`,
+            [normalizePetNoteInput(rawPetNote), absenceId, petId],
+          );
+        }
+        continue;
+      }
+    }
+
     const columns = [];
     const values = [];
     let resolvedCarer = null;
@@ -145,13 +172,6 @@ export async function updateAbsenceCarers(
       columns.push('pet_note');
       values.push(normalizePetNoteInput(rawPetNote));
     }
-
-    const prevRow = await pool.query(
-      `SELECT carer_user_id FROM planned_absence_pets
-       WHERE planned_absence_id = $1 AND pet_id = $2`,
-      [absenceId, petId],
-    );
-    const previousCarerId = prevRow.rows[0]?.carer_user_id || null;
 
     const setSql = columns.map((column, index) => `${column} = $${index + 1}`).join(', ');
     await pool.query(

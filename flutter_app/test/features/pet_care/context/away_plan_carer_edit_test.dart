@@ -417,6 +417,52 @@ void main() {
     });
   });
 
+  testWidgets('unchanged contact omits contact_id when only pet note changes', (
+    tester,
+  ) async {
+    final repo = _FakeCareContextRepository();
+    await tester.pumpWidget(
+      buildScreen(
+        repo,
+        detail: const PlannedAbsence(
+          id: 'abs-1',
+          userId: 'user-traveller',
+          startsOn: '2026-10-01',
+          endsOn: '2026-10-05',
+          provenance: 'user_declared',
+          status: 'active',
+          petIds: ['pet-1'],
+          petCarers: [
+            PlannedAbsencePetCarer(
+              petId: 'pet-1',
+              carerKind: 'note_only',
+              carerName: 'Sarah M.',
+              carerState: 'set',
+              contactId: 'contact-1',
+            ),
+          ],
+          isOwnAbsence: false,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('away_plan_pet_carer_edit_pet-1')));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(
+      find.byKey(const Key('away_plan_carer_pet_note')),
+      'Walk before dinner',
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('away_plan_carer_edit_save')));
+    await tester.pumpAndSettle();
+
+    expect(repo.savedPerPetPatches.single.keys, ['pet_note']);
+    expect(repo.savedPerPetPatches.single['pet_note'], 'Walk before dinner');
+  });
+
   testWidgets('pet note field saves with contact assignment', (tester) async {
     final repo = _FakeCareContextRepository();
     await tester.pumpWidget(buildScreen(repo));
