@@ -483,6 +483,7 @@ BDD: `flutter_app/test/bdd/features/care_date_screen.feature` · E2E: `e2e/playw
 | CARE-ITEM-D-005 | **Reopen** = undo when `canUndoHere`; completion-date change keeps `careUndoDateChange` (2026-10-14) | Live |
 | CARE-ITEM-D-006 | Leaf completion uses inline date; DN-3 sheet only off-leaf (2026-10-14) | Live |
 | CARE-ITEM-D-007 | Default completion date `min(due_date, as_of.date)`; scheduled time read-only; R-021 deferred (2026-10-14) | Live |
+| CARE-ITEM-D-008 | Occurrence route builder keys `OccurrenceScreen` by `occurrenceId` so consecutive `replaceOccurrenceScreen` hops reload data (go_router page reuse) | Live |
 
 Historical D-OCC / D-OSM detail (2026-10-06): D-OCC-001 App bar **Care date**; D-OCC-006 Reschedule this occurrence only; D-OCC-014 … D-OCC-015 Away; D-OCC-016 No ⋯ menu; D-OCC-OUT-1 series actions on Care details only. v1 acceptance: plan `occurrence-screen-context-6b05.md`.
 
@@ -769,6 +770,7 @@ New FR wording is proposed and needs the FR copy pass.
 | STALE-1 — When care item read runs catch-up then Stale Sep 30 slots drop on Oct 4 (NR-1) | CARE-ITEM-R-011 | test: server/test/db/careOccurrences.staleOpen.integration.test.js#NR-1 care item read commits catch-up and drops Sep 30 slots on Oct 4 |
 | DOSE-1 — When two pending doses same calendar day then Selector opens; future-day head uses date confirmation not missed stack | CARE-ITEM-R-012 | none — #1770 |
 | MOB-1 — When mobile row marked done then Item stays in preview with Undo until server refresh completes | CARE-ITEM-R-013 | none — #1770 |
+| NBR-1 — When Care date neighbour replace hops A→B→C then Each screen loads that occurrence; Previous returns to B | CARE-ITEM-R-020 | test: flutter_app/test/features/experience/presentation/care_item/occurrence/occurrence_neighbor_go_router_test.dart#replace neighbour hops reload occurrence data through two next and one previous |
 
 Coverage gaps: [#1770](https://github.com/KanopeeKa/AgathaCheck/issues/1770).
 

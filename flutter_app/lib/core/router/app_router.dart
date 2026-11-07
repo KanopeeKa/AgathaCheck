@@ -263,6 +263,9 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/pet/:petId/events/:entryId/occurrences/:occurrenceId',
         name: 'occurrenceDetail',
         builder: (context, state) => OccurrenceScreen(
+          key: ValueKey(
+            'occurrence-${state.pathParameters['occurrenceId']}',
+          ),
           petId: state.pathParameters['petId']!,
           entryId: state.pathParameters['entryId']!,
           occurrenceId: state.pathParameters['occurrenceId']!,
