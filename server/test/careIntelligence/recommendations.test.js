@@ -2,6 +2,7 @@ import request from 'supertest';
 import jwt from 'jsonwebtoken';
 import { createApp } from '../../bin/server.js';
 import { handlePetAccessQuery } from '../helpers/petAccessMocks.js';
+import { createTransactionalMockPool } from '../helpers/transactionMockPool.js';
 import {
   evaluateCareRecommendationCandidates,
   hasActiveRecurringCare,
@@ -174,8 +175,7 @@ describe('Care recommendations API', () => {
     healthEntries = [];
     pets = [makePet()];
 
-    const mockPool = {
-      query: async (sql, params) => {
+    const mockPool = createTransactionalMockPool(async (sql, params) => {
         const access = handlePetAccessQuery(sql, params, {
           userId,
           ownedPetIds: ['pet-1'],
@@ -275,8 +275,7 @@ describe('Care recommendations API', () => {
         }
 
         return { rows: [] };
-      },
-    };
+    });
 
     app = createApp(mockPool);
   });

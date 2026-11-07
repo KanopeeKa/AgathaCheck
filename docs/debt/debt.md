@@ -62,7 +62,6 @@ tags: [debt, deferred, tech-debt]
 | weight_tracking | weight-unify | tech debt | P4 | **Analytics:** no event when a weight that counted as a weigh-in is undone (`weight_save_fulfilled` / `weight_save_not_counted` / `weight_fulfil_check_timed_out` / `weigh_in_skipped` exist) — needed to see whether the default "Counts as" is being reverted |
 | platform | ARCH #1446 | tech debt | P2 | **I1 / D20:** entrypoint README↔export checker; narrow public feature barrels (`health_tracking`, `people`, `pet_profile` wide re-exports vs README surfaces) — audit `active-codebase-completion-e41f.audit.md` §5 I1 |
 | platform | ARCH #1446 | tech debt | P2 | **Batch K residuals:** 10/20 K-extracted widgets without dedicated tests; route/build size overruns (`registerFamilyEventsRoutes`, weight router, `manage_events_filter_dimensions.dart`, long `build` methods) — see K `metrics-headline.md` |
-| platform | #1735 | tech debt | P2 | **ADR 0003 deferral:** migrate `careItemLock.js` / `careTick.js` from hand-written `BEGIN` to `withTransaction` |
 | platform | #1706 | tech debt | P2 | Trunk Playwright shard failures on post-K `main` (e.g. guardian dashboard care preview) — product CI; **not** ARCH programme exit 9 (evidence: pre-UAT run 653 on K merge `58427e42`) |
 
 ## Type legend
