@@ -205,7 +205,10 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('care_item_close_care_button')), findsOneWidget);
+    expect(
+      find.byKey(const Key('care_item_close_care_button')),
+      findsOneWidget,
+    );
     final historyBottom = tester
         .getRect(find.byKey(const Key('care_item_history_module')))
         .bottom;

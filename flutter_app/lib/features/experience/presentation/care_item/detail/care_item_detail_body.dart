@@ -192,7 +192,7 @@ class CareItemDetailBody extends ConsumerWidget {
                     sideScheduleAbsenceColumn(),
                     _sectionGap,
                     historyModule,
-                    if (closeCareSection != null) closeCareSection!,
+                    if (closeCareSection != null) closeCareSection,
                   ],
                 );
 
