@@ -21,32 +21,20 @@ class CareItemDocumentsSection extends ConsumerWidget {
     final photosAsync = ref.watch(healthEntryPhotosProvider(entryId));
 
     return photosAsync.when(
-      loading: () => _DocumentsModule(
-        entryId: entryId,
-        muted: muted,
-      ),
-      error: (_, __) => _DocumentsModule(
-        entryId: entryId,
-        muted: muted,
-      ),
+      loading: () => _DocumentsModule(entryId: entryId, muted: muted),
+      error: (_, __) => _DocumentsModule(entryId: entryId, muted: muted),
       data: (photos) {
         if (photos.isEmpty) {
           return const SizedBox.shrink();
         }
-        return _DocumentsModule(
-          entryId: entryId,
-          muted: muted,
-        );
+        return _DocumentsModule(entryId: entryId, muted: muted);
       },
     );
   }
 }
 
 class _DocumentsModule extends StatelessWidget {
-  const _DocumentsModule({
-    required this.entryId,
-    required this.muted,
-  });
+  const _DocumentsModule({required this.entryId, required this.muted});
 
   final String entryId;
   final bool muted;

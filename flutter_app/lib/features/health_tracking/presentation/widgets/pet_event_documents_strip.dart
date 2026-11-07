@@ -40,7 +40,9 @@ class PetEventDocumentsStrip extends ConsumerWidget {
               Icon(
                 Icons.description,
                 size: 20,
-                color: muted ? colorScheme.onSurfaceVariant : colorScheme.primary,
+                color: muted
+                    ? colorScheme.onSurfaceVariant
+                    : colorScheme.primary,
               ),
               const SizedBox(width: 8),
               Text(
