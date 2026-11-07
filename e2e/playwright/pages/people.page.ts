@@ -98,14 +98,18 @@ export class PeoplePage {
     await refreshFlutterAccessibility(this.page);
     await waitForFlutterRoutePattern(this.page, /\/pc\/people\/[^/]+\/edit(?:\?|$)/, 30_000);
 
-    const phoneField = await resolveVisibleSemanticsTextInput(this.page, 'people_edit_phone_field');
-    await phoneField.waitFor({ state: 'visible', timeout: 20_000 });
+    await this.page
+      .locator('[flt-semantics-identifier="people_edit_phone_field"]')
+      .first()
+      .waitFor({ state: 'visible', timeout: 20_000 });
     await expect(async () => {
       // Do not call `refreshFlutterAccessibility` here — each retry adds ~800ms and can exhaust
       // the spec-level timeout while digits converge after save.
-      let value = '';
+      // Re-resolve every attempt — Flutter can rebuild the `<input>` after navigation; a stale
+      // locator reads "" forever (CI: expectPhoneDigitsViaPeopleEditForm).
+      const phoneField = await resolveVisibleSemanticsTextInput(this.page, 'people_edit_phone_field');
       // Short timeout: default action timeout inside `toPass` retries can exhaust the test budget.
-      value = await phoneField.inputValue({ timeout: 3_000 }).catch(() => '');
+      let value = await phoneField.inputValue({ timeout: 3_000 }).catch(() => '');
       if (!value) {
         value =
           (await readLabelledTextboxValue(this.page, 'Phone')) ||
@@ -838,8 +842,8 @@ export class PeoplePage {
     // Stable semantics id + inner `input` — matches Flutter `people_edit_phone_field` + TextEditingController.
     await fillSemanticsField(this.page, 'people_edit_phone_field', newPhone);
     const newDigits = newPhone.replace(/\D/g, '');
-    const phoneInput = await resolveVisibleSemanticsTextInput(this.page, 'people_edit_phone_field');
     await expect(async () => {
+      const phoneInput = await resolveVisibleSemanticsTextInput(this.page, 'people_edit_phone_field');
       let v = await phoneInput.inputValue({ timeout: 3_000 }).catch(() => '');
       if (!v.replace(/\D/g, '').includes(newDigits)) {
         v =
