@@ -244,7 +244,9 @@ class _ContactRow extends StatelessWidget {
                     tooltip: actionTooltip,
                     onPressed: onAction,
                     icon: Icon(actionIcon),
-                    style: IconButton.styleFrom(minimumSize: const Size(48, 48)),
+                    style: IconButton.styleFrom(
+                      minimumSize: const Size(48, 48),
+                    ),
                   ),
               ],
             ),
