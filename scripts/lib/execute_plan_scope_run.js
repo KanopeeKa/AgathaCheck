@@ -91,17 +91,15 @@ async function verifyOwnPlanFiles(client, snapshot, headSha, files) {
 /** Files in the PR whose blob matches `main` tip (release no-ops; side fixes and sync merges already on main). */
 async function filesUnchangedOnMain(client, headSha, files) {
   const unchanged = new Set();
+  if (!files.length) return unchanged;
+  const [headShas, mainShas] = await Promise.all([
+    client.getFileShasAtRef(files, headSha),
+    client.getFileShasAtRef(files, 'main'),
+  ]);
   for (const file of files) {
-    let head;
-    let main;
-    try {
-      head = await client.getFileAtRef(file, headSha);
-      main = await client.getFileAtRef(file, 'main');
-    } catch {
-      continue;
-    }
-    if (!head || !main) continue;
-    if (head.sha && main.sha && head.sha === main.sha) unchanged.add(file);
+    const headShaBlob = headShas.get(file);
+    const mainShaBlob = mainShas.get(file);
+    if (headShaBlob && mainShaBlob && headShaBlob === mainShaBlob) unchanged.add(file);
   }
   return unchanged;
 }

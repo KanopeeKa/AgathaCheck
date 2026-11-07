@@ -57,6 +57,7 @@ class _PersonEditContactFormState extends ConsumerState<PersonEditContactForm> {
   Future<void> _save() async {
     final controller = _controller;
     if (controller == null) return;
+    _formKey.currentState?.save();
     if (!_formKey.currentState!.validate() || !controller.validate()) {
       setState(() {});
       return;

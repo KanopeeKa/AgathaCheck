@@ -930,17 +930,22 @@ export async function dismissConsentBannerIfPresent(page: Page): Promise<void> {
 
 /**
  * Type into a Flutter web field so onChanged fires (fill() alone is unreliable).
+ * Exported for page objects that resolve the locator by role/pattern first.
  */
-async function typeIntoField(
+export async function typeIntoField(
   field: import('@playwright/test').Locator,
   value: string,
 ): Promise<void> {
   const page = field.page();
-  await field.click();
+  // Focus first so Select-All + typing hit the real `<input>` (not `document.body` after a stray click).
+  await field.focus({ timeout: 10_000 });
+  await field.click({ force: true, timeout: 10_000 });
   await page.waitForTimeout(150);
+  // Use locator `press` / `pressSequentially` — `page.keyboard.*` can miss Flutter’s focused `<input>`
+  // (CanvasKit), so the DOM `value` never updates and `onChanged` never fires.
   await field.press('Control+a');
-  await page.keyboard.press('Backspace');
-  await page.keyboard.type(value, { delay: 45 });
+  await field.press('Backspace');
+  await field.pressSequentially(value, { delay: 45 });
   await field.press('Tab');
   await page.waitForTimeout(150);
 }
@@ -955,14 +960,47 @@ export async function fillTextbox(
   await typeIntoField(field, value);
 }
 
+/**
+ * Resolve the `<input>` / `<textarea>` Playwright should drive under a semantics host.
+ * CanvasKit web may create more than one node; prefer the last **visible** one (matches real focus).
+ */
+export async function resolveVisibleSemanticsTextInput(
+  page: Page,
+  identifier: string,
+): Promise<import('@playwright/test').Locator> {
+  const host = page.locator(`[flt-semantics-identifier="${identifier}"]`);
+  await host.waitFor({ state: 'visible' });
+  const inputs = host.locator('input, textarea');
+  const n = await inputs.count();
+  for (let i = n - 1; i >= 0; i -= 1) {
+    const input = inputs.nth(i);
+    if (await input.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      return input;
+    }
+  }
+  if (n > 0) {
+    const fallback = inputs.nth(n - 1);
+    await fallback.waitFor({ state: 'visible', timeout: 15_000 });
+    return fallback;
+  }
+  return host;
+}
+
 /** Fill a borderless Flutter field located by `flt-semantics-identifier` (Widget Key on web). */
 export async function fillSemanticsField(
   page: Page,
   identifier: string,
   value: string,
 ): Promise<void> {
-  const field = page.locator(`[flt-semantics-identifier="${identifier}"]`);
-  await field.waitFor({ state: 'visible' });
+  // Semantics node is often a non-input wrapper — type into the real `<input>` / `<textarea>` child.
+  const field = await resolveVisibleSemanticsTextInput(page, identifier);
+  const tag = await field.evaluate((el) => el.tagName.toLowerCase()).catch(() => '');
+  if (tag !== 'input' && tag !== 'textarea') {
+    await typeIntoField(field, value);
+    return;
+  }
+  // Must go through real key events — assigning DOM `value` updates the `<input>` but Flutter’s
+  // TextEditingController can stay stale, so Save persists the old phone (CI: contact API still `555-1234`).
   await typeIntoField(field, value);
 }
 
@@ -1017,6 +1055,47 @@ export async function fillLabelledField(
   }
 
   throw new Error(`Could not find visible field for label: ${label}`);
+}
+
+/**
+ * Read the current value of a labelled textbox (mirrors discovery in [fillLabelledField]).
+ * Use when CanvasKit hides painted text but the edit form still wires inputs with aria-label.
+ */
+export async function readLabelledTextboxValue(page: Page, label: string): Promise<string> {
+  /** Avoid Playwright's default ~15s action timeout inside tight `expect().toPass` loops. */
+  const readVal = (field: Locator) => field.inputValue({ timeout: 3_000 }).catch(() => '');
+  const byRole = page
+    .getByRole('textbox', { name: label, exact: false })
+    .or(page.getByRole('textbox', { name: new RegExp(`^${escapeRegExp(label)}`, 'i') }));
+  const roleCount = await byRole.count();
+  for (let i = 0; i < roleCount; i += 1) {
+    const field = byRole.nth(i);
+    if (await field.isVisible({ timeout: 1_500 }).catch(() => false)) {
+      return readVal(field);
+    }
+  }
+
+  const ariaSelectors = [
+    `input[aria-label="${label}"]`,
+    `input[aria-label="${label} *"]`,
+    `input[aria-label^="${label}"]`,
+    `textarea[aria-label="${label}"]`,
+    `textarea[aria-label="${label} *"]`,
+    `textarea[aria-label^="${label}"]`,
+  ];
+
+  for (const selector of ariaSelectors) {
+    const locator = page.locator(selector);
+    const count = await locator.count();
+    for (let j = 0; j < count; j += 1) {
+      const field = locator.nth(j);
+      if (await field.isVisible({ timeout: 1_500 }).catch(() => false)) {
+        return readVal(field);
+      }
+    }
+  }
+
+  return '';
 }
 
 /** Open a Flutter dropdown and choose an option by visible label. */
