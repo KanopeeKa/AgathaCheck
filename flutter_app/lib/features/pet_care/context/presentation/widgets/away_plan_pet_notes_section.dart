@@ -103,7 +103,7 @@ class _AwayPlanPetNotesSectionState
         const SizedBox(height: 8),
         Semantics(
           identifier: 'away_plan_pet_notes_${widget.petId}',
-          textField: true,
+          container: true,
           child: TextField(
             key: Key('away_plan_pet_notes_${widget.petId}'),
             controller: _controller,
