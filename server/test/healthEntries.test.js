@@ -5,6 +5,7 @@ import os from 'os';
 import path from 'path';
 import { createApp } from '../bin/server.js';
 import { handlePetAccessQuery, handleManageEntryQuery } from './helpers/petAccessMocks.js';
+import { createTransactionalMockPool } from './helpers/transactionMockPool.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'default_secret';
 const userId = 'test-user-id';
@@ -14,6 +15,18 @@ function stubAccountExistenceQuery(sql) {
   if (sql.includes('SELECT 1 FROM users WHERE id')) {
     return { rows: [{ '?column?': 1 }] };
   }
+  return null;
+}
+
+function stubCareOccurrenceEngineQueries(sql) {
+  if (sql.includes('SELECT home_timezone FROM pets')) return { rows: [{ home_timezone: 'UTC' }] };
+  if (sql.includes('FROM health_occurrences') && sql.includes('ANY($1::uuid[])')) return { rows: [] };
+  if (sql.includes('SELECT * FROM health_occurrences') && sql.includes("WHERE health_entry_id = $1 AND status = 'pending'")) {
+    return { rows: [] };
+  }
+  if (sql.includes('AS slot_date')) return { rows: [] };
+  if (sql.includes("status = 'completed' OR status = 'skipped'")) return { rows: [] };
+  if (sql.includes("COALESCE(close_reason, 'user') = 'user'")) return { rows: [] };
   return null;
 }
 
@@ -69,8 +82,7 @@ describe('Health Entries API', () => {
   beforeAll(() => {
     uploadDir = fs.mkdtempSync(path.join(os.tmpdir(), 'health-documents-'));
     process.env.HEALTH_UPLOAD_DIR = uploadDir;
-    const mockPool = {
-      query: async (sql, params) => {
+    const mockPool = createTransactionalMockPool(async (sql, params) => {
         lastQuery = { sql, params };
         if (queryLog) queryLog.push({ sql, params });
 
@@ -84,16 +96,8 @@ describe('Health Entries API', () => {
         const manageEntry = handleManageEntryQuery(sql, params, { tableName: 'health_entries he' });
         if (manageEntry) return manageEntry;
 
-        // Care occurrence engine (transaction, pet clock, open occurrence reads).
-        if (/^\s*(BEGIN|COMMIT|ROLLBACK)/.test(sql)) return { rows: [] };
-        if (sql.includes('SELECT home_timezone FROM pets')) return { rows: [{ home_timezone: 'UTC' }] };
-        if (sql.includes('FROM health_occurrences') && sql.includes('ANY($1::uuid[])')) return { rows: [] };
-        if (sql.includes('SELECT * FROM health_occurrences') && sql.includes("WHERE health_entry_id = $1 AND status = 'pending'")) {
-          return { rows: [] };
-        }
-        if (sql.includes('AS slot_date')) return { rows: [] };
-        if (sql.includes("status = 'completed' OR status = 'skipped'")) return { rows: [] };
-        if (sql.includes("COALESCE(close_reason, 'user') = 'user'")) return { rows: [] };
+        const occurrenceStub = stubCareOccurrenceEngineQueries(sql);
+        if (occurrenceStub) return occurrenceStub;
         if (sql.includes('UPDATE health_entries SET') && sql.includes('RETURNING *') && !sql.includes('SET name')) {
           const id = params[params.length - 1];
           if (lastInsertedEntry && lastInsertedEntry.id === id) return { rows: [lastInsertedEntry] };
@@ -546,9 +550,7 @@ describe('Health Entries API', () => {
         }
 
         return { rows: [] };
-      },
-      end: async () => {},
-    };
+    });
     app = createApp(mockPool);
   });
 
@@ -753,27 +755,26 @@ describe('Health Entries API', () => {
     });
 
     it('returns null care_family when uncategorised in the database', async () => {
-      const pool = {
-        query: async (sql, params) => {
-          const existence = stubAccountExistenceQuery(sql);
-          if (existence) return existence;
-          const access = handlePetAccessQuery(sql, params, { userId, ownedPetIds: ['pet-1'] });
-          if (access) return access;
-          const manageEntry = handleManageEntryQuery(sql, params, { tableName: 'health_entries he' });
-          if (manageEntry) return manageEntry;
-          if (sql.includes('SELECT he.*') && sql.includes('WHERE he.id')) {
-            return {
-              rows: [makeHealthRow({
-                id: params[0],
-                type: 'other',
-                care_family: null,
-              })],
-            };
-          }
-          return { rows: [] };
-        },
-        end: async () => {},
-      };
+      const pool = createTransactionalMockPool(async (sql, params) => {
+        const existence = stubAccountExistenceQuery(sql);
+        if (existence) return existence;
+        const access = handlePetAccessQuery(sql, params, { userId, ownedPetIds: ['pet-1'] });
+        if (access) return access;
+        const manageEntry = handleManageEntryQuery(sql, params, { tableName: 'health_entries he' });
+        if (manageEntry) return manageEntry;
+        const occurrenceStub = stubCareOccurrenceEngineQueries(sql);
+        if (occurrenceStub) return occurrenceStub;
+        if (sql.includes('SELECT he.*') && sql.includes('WHERE he.id')) {
+          return {
+            rows: [makeHealthRow({
+              id: params[0],
+              type: 'other',
+              care_family: null,
+            })],
+          };
+        }
+        return { rows: [] };
+      });
       const a = createApp(pool);
       const res = await request(a)
         .get('/api/health-entries/he-null-family')
@@ -784,21 +785,20 @@ describe('Health Entries API', () => {
 
     it('maps legacy family_event and procedure types to other on read', async () => {
       for (const legacyType of ['family_event', 'procedure']) {
-        const pool = {
-          query: async (sql, params) => {
-            const existence = stubAccountExistenceQuery(sql);
-            if (existence) return existence;
-            const access = handlePetAccessQuery(sql, params, { userId, ownedPetIds: ['pet-1'] });
-            if (access) return access;
-            const manageEntry = handleManageEntryQuery(sql, params, { tableName: 'health_entries he' });
-            if (manageEntry) return manageEntry;
-            if (sql.includes('SELECT he.*') && sql.includes('WHERE he.id')) {
-              return { rows: [makeHealthRow({ id: params[0], type: legacyType })] };
-            }
-            return { rows: [] };
-          },
-          end: async () => {},
-        };
+        const pool = createTransactionalMockPool(async (sql, params) => {
+          const existence = stubAccountExistenceQuery(sql);
+          if (existence) return existence;
+          const access = handlePetAccessQuery(sql, params, { userId, ownedPetIds: ['pet-1'] });
+          if (access) return access;
+          const manageEntry = handleManageEntryQuery(sql, params, { tableName: 'health_entries he' });
+          if (manageEntry) return manageEntry;
+          const occurrenceStub = stubCareOccurrenceEngineQueries(sql);
+          if (occurrenceStub) return occurrenceStub;
+          if (sql.includes('SELECT he.*') && sql.includes('WHERE he.id')) {
+            return { rows: [makeHealthRow({ id: params[0], type: legacyType })] };
+          }
+          return { rows: [] };
+        });
         const a = createApp(pool);
         const res = await request(a)
           .get('/api/health-entries/he-legacy')
@@ -887,28 +887,27 @@ describe('Health Entries API', () => {
     });
 
     it('exposes legacy dosage as product dose on read for medication', async () => {
-      const pool = {
-        query: async (sql, params) => {
-          const existence = stubAccountExistenceQuery(sql);
-          if (existence) return existence;
-          const access = handlePetAccessQuery(sql, params, { userId, ownedPetIds: ['pet-1'] });
-          if (access) return access;
-          const manageEntry = handleManageEntryQuery(sql, params, { tableName: 'health_entries he' });
-          if (manageEntry) return manageEntry;
-          if (sql.includes('SELECT he.*') && sql.includes('WHERE he.id')) {
-            return {
-              rows: [makeHealthRow({
-                id: params[0],
-                care_family: 'medication',
-                dosage: '2 ml',
-                care_blocks: {},
-              })],
-            };
-          }
-          return { rows: [] };
-        },
-        end: async () => {},
-      };
+      const pool = createTransactionalMockPool(async (sql, params) => {
+        const existence = stubAccountExistenceQuery(sql);
+        if (existence) return existence;
+        const access = handlePetAccessQuery(sql, params, { userId, ownedPetIds: ['pet-1'] });
+        if (access) return access;
+        const manageEntry = handleManageEntryQuery(sql, params, { tableName: 'health_entries he' });
+        if (manageEntry) return manageEntry;
+        const occurrenceStub = stubCareOccurrenceEngineQueries(sql);
+        if (occurrenceStub) return occurrenceStub;
+        if (sql.includes('SELECT he.*') && sql.includes('WHERE he.id')) {
+          return {
+            rows: [makeHealthRow({
+              id: params[0],
+              care_family: 'medication',
+              dosage: '2 ml',
+              care_blocks: {},
+            })],
+          };
+        }
+        return { rows: [] };
+      });
       const a = createApp(pool);
       const res = await request(a)
         .get('/api/health-entries/he-med')
