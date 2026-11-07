@@ -30,6 +30,20 @@ class _PersonEditPhoneFieldState extends State<_PersonEditPhoneField> {
   }
 
   @override
+  void didUpdateWidget(covariant _PersonEditPhoneField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Refetch can land after `initState` — sync digits once the form model catches up.
+    // Do not use [ChangeNotifier.addListener]: unrelated fields call `notifyListeners` while typing.
+    final next = widget.controller.phone;
+    if (oldWidget.controller.phone != next && _textController.text != next) {
+      _textController.value = TextEditingValue(
+        text: next,
+        selection: TextSelection.collapsed(offset: next.length),
+      );
+    }
+  }
+
+  @override
   void dispose() {
     _textController.dispose();
     super.dispose();

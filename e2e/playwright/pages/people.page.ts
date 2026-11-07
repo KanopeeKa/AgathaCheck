@@ -4,7 +4,7 @@
  */
 import type { Locator, Page } from '@playwright/test';
 import { expect } from '@playwright/test';
-import { deleteVet, getAllPets, getVets, updateVetDetails } from '../support/api';
+import { deleteVet, getAllPets, getPeopleContacts, getVets, updateVetDetails } from '../support/api';
 import {
   dismissConsentBannerIfPresent,
   escapeRegExp,
@@ -123,7 +123,15 @@ export class PeoplePage {
    * On `/pc/people/:id` the overview row is CanvasKit-painted; assert digits via edit form only
    * (do not wait on `people_action_call` — can stall and exceed the spec's 90s timeout).
    */
-  private async expectPeopleDetailPhoneVisible(phone: string, _vetName: string): Promise<void> {
+  private async expectPeopleDetailPhoneVisible(phone: string, vetName: string): Promise<void> {
+    const phoneDigits = phone.replace(/\D/g, '');
+    // API is authoritative after save; edit-form DOM can lag Riverpod refetch on web (CI).
+    await expect(async () => {
+      const token = await readAccessTokenFromPage(this.page);
+      const contacts = await getPeopleContacts(this.baseURL(), token);
+      const row = contacts.find((c) => c.name === vetName);
+      expect(row?.phone?.replace(/\D/g, '') ?? '').toContain(phoneDigits);
+    }).toPass({ timeout: 15_000 });
     await refreshFlutterAccessibility(this.page);
     await this.expectPhoneDigitsViaPeopleEditForm(phone);
   }
