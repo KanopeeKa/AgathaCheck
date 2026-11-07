@@ -388,6 +388,16 @@ export class CareItemPage {
     }).toPass({ timeout: 45_000 });
   }
 
+  async openCloseCare(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    const closeCare = this.page.locator(
+      '[flt-semantics-identifier="care_item_close_care_button"]',
+    );
+    await closeCare.scrollIntoViewIfNeeded();
+    await closeCare.click();
+    await refreshFlutterAccessibility(this.page);
+  }
+
   async markLeadingDone(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
     const markDone = this.page

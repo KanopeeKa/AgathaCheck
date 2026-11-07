@@ -17,6 +17,7 @@ import 'care_item_info_section.dart';
 import 'care_item_documents_section.dart';
 import 'care_item_history_section.dart';
 import 'care_item_schedule_section.dart';
+import 'care_item_close_care_button.dart';
 
 /// Care Item detail body — module segmentation on warm canvas (mobile order).
 class CareItemDetailBody extends ConsumerWidget {
@@ -30,6 +31,7 @@ class CareItemDetailBody extends ConsumerWidget {
     required this.isEstablished,
     required this.onSeeHistory,
     this.careClosedReason,
+    this.onCloseCare,
   });
 
   final String petId;
@@ -40,6 +42,7 @@ class CareItemDetailBody extends ConsumerWidget {
   final bool isEstablished;
   final VoidCallback onSeeHistory;
   final String? careClosedReason;
+  final VoidCallback? onCloseCare;
 
   static const _sectionGap = SizedBox(height: 16);
 
@@ -127,6 +130,16 @@ class CareItemDetailBody extends ConsumerWidget {
             onSeeHistory: onSeeHistory,
             pastOccurrencesVisibleCap: pastOccurrencesVisibleCap,
           );
+          final closeCareSection = onCloseCare == null
+              ? null
+              : Column(
+                  key: const Key('care_item_close_care_section'),
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _sectionGap,
+                    CareItemCloseCareButton(onPressed: onCloseCare!),
+                  ],
+                );
 
           Widget detailsModule({required bool includeEstablished}) {
             return _DetailsModule(
@@ -165,6 +178,7 @@ class CareItemDetailBody extends ConsumerWidget {
                               documentsSection,
                               _sectionGap,
                               historyModule,
+                              if (closeCareSection != null) closeCareSection,
                             ],
                           ),
                         ),
@@ -188,12 +202,14 @@ class CareItemDetailBody extends ConsumerWidget {
                     documentsSection,
                     _sectionGap,
                     historyModule,
+                    if (closeCareSection != null) closeCareSection,
                   ],
                 );
 
+          final bottomInset = MediaQuery.paddingOf(context).bottom;
           return SingleChildScrollView(
             key: const Key('care_item_detail_body'),
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + bottomInset),
             child: content,
           );
         },
