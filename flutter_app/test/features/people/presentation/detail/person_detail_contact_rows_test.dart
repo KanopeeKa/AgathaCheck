@@ -23,7 +23,7 @@ void main() {
     // SelectableText alone exposes an empty read-only field on web, so the
     // value must be carried by a label merged with the row's "Phone" label.
     final node = tester.getSemantics(
-      find.bySemanticsLabel(RegExp(r'Phone.*555-5678')),
+      find.bySemanticsIdentifier('people_detail_value_phone'),
     );
     expect(node.label, contains('Phone'));
     expect(node.label, contains('555-5678'));

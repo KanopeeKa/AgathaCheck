@@ -39,6 +39,7 @@ export function contactRowToSummary(row, extras = {}) {
     status: contactStatusFromRow(row),
     linked_user_id: row.linked_user_id ?? null,
     pets: extras.pets || [],
+    legacy_vet_id: row.legacy_vet_id ?? null,
   };
   if (extras.works_at) summary.works_at = extras.works_at;
   if (extras.next_absence) summary.next_absence = extras.next_absence;
