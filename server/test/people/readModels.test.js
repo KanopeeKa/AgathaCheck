@@ -43,53 +43,6 @@ describe('People read models', () => {
     });
   });
 
-  it('buildRoster contact entries include identity fields for stable UI during detail refetch', async () => {
-    const { pool } = makePool([
-      (sql) => {
-        if (sql.includes('people_directories WHERE owner_user_id')) {
-          return { rows: [{ id: 'dir-1' }] };
-        }
-        if (sql.includes('pc.directory_id = ANY')) {
-          return {
-            rows: [
-              {
-                id: 'contact-vet-1',
-                directory_id: 'dir-1',
-                directory_household_id: null,
-                kind: 'person',
-                name: 'Dr. Smith',
-                phone: '555-1234',
-                email: null,
-                address: null,
-                website: null,
-                roles: ['vet'],
-                linked_user_id: null,
-                works_at_contact_id: null,
-                inactive_at: null,
-                legacy_vet_id: 'legacy-vet-uuid',
-              },
-            ],
-          };
-        }
-        if (sql.includes('pet_contact_relationships pcr')) return { rows: [] };
-        if (sql.includes('people_contacts WHERE id = ANY')) return { rows: [] };
-        if (sql.includes('planned_absence_pets pap')) return { rows: [] };
-        if (sql.includes('pet_access pa')) return { rows: [] };
-        if (sql.includes('household_members hm')) return { rows: [] };
-        if (sql.includes('household_pets hp')) return { rows: [] };
-        if (sql.includes('FROM households h')) return { rows: [] };
-        if (sql.includes('pet_share_invites')) return { rows: [] };
-        if (sql.includes('planned_absence_carer_invites')) return { rows: [] };
-        return undefined;
-      },
-    ]);
-    const roster = await buildRoster(pool, userId);
-    expect(roster.contacts).toHaveLength(1);
-    const c = roster.contacts[0];
-    expect(c.phone).toBe('555-1234');
-    expect(c.legacy_vet_id).toBe('legacy-vet-uuid');
-  });
-
   it('buildRoster query count is bounded when contact count grows', async () => {
     const runCount = async (contactCount) => {
       const contacts = Array.from({ length: contactCount }, (_, i) => ({

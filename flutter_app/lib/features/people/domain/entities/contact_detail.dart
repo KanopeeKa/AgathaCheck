@@ -141,10 +141,6 @@ class ContactDetail {
     status: status,
     linkedUserId: linkedUserId,
     linkedVetRecordId: linkedVetRecordId,
-    phone: phone,
-    email: email,
-    address: address,
-    website: website,
   );
 
   @override
