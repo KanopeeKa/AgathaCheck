@@ -438,7 +438,7 @@ export class AwayPlanningPage {
 
   private async expandAllPlannedCareIfCollapsed(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
-    const expandTile = semanticsKey(this.page, 'away_plan_planned_care_expand'))
+    const expandTile = semanticsKey(this.page, 'away_plan_planned_care_expand')
       .or(
         this.page
           .locator('[aria-expanded="false"]')
