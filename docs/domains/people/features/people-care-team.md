@@ -5,7 +5,7 @@ audience: both
 domain: people
 feature_id: people_care_team
 status: implemented
-last_updated: 2026-11-03
+last_updated: 2026-11-06
 related_bdd: [away_planning.feature, away_plan_detail_v2.feature, sharing.feature, veterinarian_management.feature, notifications.feature]
 ---
 
@@ -90,6 +90,7 @@ There are 28 decisions. D1, D4, D7 and D10 were revised after an external review
 | PEOPLE-CARE-TEAM-D-034 | **H1:** Pet transfer removes the pet from its household when the new owner is not already a member, copying household-directory contacts to the new owner; remaining members get a neutral D22 notice after commit | Stops transferred pets stranding in households the new owner cannot leave | Live | 2026-11-02 | household-cleanup-609f |
 | PEOPLE-CARE-TEAM-D-035 | **H2 / H6:** Account erasure captures household memberships before `DELETE FROM users`, then releases households in the same transaction: promote the longest-standing Full access member (else Can log care → Full access) when no organiser remains, close empty households, and notify the promoted organiser after commit; no contact copy into the deleted user's directory and no pet-removed notice for pets deleted with the user | Closes organiser-less households and unsafe erasure ordering | Live | 2026-11-02 | household-cleanup-609f |
 | PEOPLE-CARE-TEAM-D-036 | Vet contacts can set **Primary vet** and **Out-of-hours vet** from **Link to a pet** via the pet slot API (replace confirmation matches Manage); required-kind hint when a pet is chosen without a link type | Ends R-002 deferral of vet kinds on the link sheet | Live | 2026-11-03 | link-pet-vet-slots-f0fb |
+| PEOPLE-CARE-TEAM-D-037 | **Person edit phone:** the phone **`TextFormField`** on `/pc/people/:id/edit` uses a **`TextEditingController`** owned by a small stateful widget (**initialized** from `PersonFormController` in `initState`, **`onChanged` → `setPhone`**, **`didUpdateWidget`** sync when `controller.phone` changes after async refetch); do **not** attach a **`PersonFormController` listener** that overwrites the text controller — other fields call `notifyListeners` during the same frame as typing, which can race `onChanged` and snap the web `<input>` back to the old phone; do not use **`initialValue` only** for that field on web — CanvasKit can also leave the hidden `<input>` out of sync, so Save persists the previous phone | Closes silent “edit phone” failures on Flutter web; E2E veterinarian flow | Live | 2026-11-06 | #2114 |
 
 ## Where we start
 
@@ -413,6 +414,8 @@ Never drop a tab on narrow phones; reduce padding and font sizes instead. `/pc/p
 
 One **roster** on `/pc/people` backed by a UI aggregate **PersonRosterEntry** (contact, household member, or pending invite — backend tables stay separate). Rows are **directory cards** matching the vet team card pattern (`vet_team_card.dart`): avatar, primary line, role · pets, optional status chip (**Inactive**, **Needs review**, pending invite).
 
+**GET `/api/people/roster` contact entries** include the same identity lines as `people_contacts` (`phone`, `email`, `address`, `website`, `legacy_vet_id`) so the client can render stable quick actions while `personDetailProvider` refetches after a save (PEOPLE-CARE-TEAM-R-037).
+
 | Route | Purpose |
 |-------|---------|
 | `/pc/people` | Hub list — search, filter chips, household-named sections |
@@ -440,10 +443,12 @@ One **roster** on `/pc/people` backed by a UI aggregate **PersonRosterEntry** (c
 | ID | Requirement | Status |
 | --- | --- | --- |
 | PEOPLE-CARE-TEAM-R-003 | A contact picker with nothing to choose says so: vet pickers read "No vets in your contacts yet. Type a name to add one."; other pickers use a generic line. "None" stays available when allowed. The pet form's vet field is labelled **Primary vet** (not the generic "Contact") | Live |
+| PEOPLE-CARE-TEAM-R-037 | **Roster identity + detail loading:** each roster contact includes `phone`, `email`, `address`, `website`, and `legacy_vet_id` when present; after `PATCH /people/contacts/:id`, the **PATCH response** merges into the cached roster row, **`GET /roster` completes**, then `personDetailProvider` invalidates so the loading state uses fresh roster digits; overview phone value exposes **`people_detail_value_phone`** (`SelectableText`; E2E may assert digits via **`/pc/people/:id/edit`** — **`people_edit_phone_field`** uses a **`TextEditingController`** initialized from `PersonFormController`, **`onChanged` writes** to the form model, and **does not listen back** from `PersonFormController` while editing — `notifyListeners` from other fields must not reset the text field or CanvasKit/web automation can see stale digits); Person detail shows **contact rows** and **ContactActionBar** from roster while detail refetches | Live |
 
 **Acceptance criteria**
 
 - *Given* a directory with no active vets, *when* the user opens a vet picker, *then* the empty-state line shows and None is still offered (PEOPLE-CARE-TEAM-R-003; test: `flutter_app/test/features/people/presentation/people_picker_test.dart#vet picker explains an empty directory`).
+- *Given* a contact with a phone number, *when* `GET /api/people/roster` returns that contact, *then* the JSON includes `phone` (and other identity fields when set) so the Flutter roster model can drive the detail quick-action bar during loading (PEOPLE-CARE-TEAM-R-037; test: `server/test/people/readModels.test.js`).
 
 ### Grouping
 

@@ -14,14 +14,10 @@ function normalizeRelPath(relativePath) {
 }
 
 /**
- * Care occurrence commands use a dedicated lock primitive (D-CSM-033); migrate with care-schedule work.
- * @see https://github.com/KanopeeKa/AgathaCheck/issues/1735
+ * Care occurrence commands use a dedicated lock primitive (D-CSM-033).
  * @see server/lib/care/occurrence/careItemLock.js
  */
-const CARE_OCCURRENCE_TRANSACTION_DEFERRED = new Set([
-  'lib/care/occurrence/careItemLock.js',
-  'lib/care/occurrence/careTick.js',
-]);
+const CARE_OCCURRENCE_TRANSACTION_DEFERRED = new Set([]);
 
 const ALWAYS_ALLOWED = new Set([
   'lib/db/withTransaction.js',

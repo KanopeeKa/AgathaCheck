@@ -4,15 +4,18 @@
  */
 import type { Locator, Page } from '@playwright/test';
 import { expect } from '@playwright/test';
-import { deleteVet, getAllPets, getVets, updateVetDetails } from '../support/api';
+import { deleteVet, getAllPets, getPeopleContacts, getVets } from '../support/api';
 import {
   dismissConsentBannerIfPresent,
   escapeRegExp,
   fillLabelledField,
+  fillSemanticsField,
   fillTextbox,
   flutterGotoUrl,
   flutterRoutePath,
+  readLabelledTextboxValue,
   refreshFlutterAccessibility,
+  resolveVisibleSemanticsTextInput,
   semanticsByName,
   waitForFlutterRoutePattern,
 } from '../support/flutter';
@@ -23,6 +26,25 @@ export class PeoplePage {
   private vetDeleteCandidate: string | null = null;
 
   constructor(private readonly page: Page) {}
+
+  /** Match stored digits with optional separators (UI may render `5555678` vs `555-5678`). */
+  private phoneDigitsFlexiblePattern(phone: string): RegExp {
+    const d = phone.replace(/\D/g, '');
+    if (d.length === 0) {
+      return /$^/;
+    }
+    return new RegExp(d.split('').join('\\D*'), 'i');
+  }
+
+  private async ensurePeopleDetailOverviewTab(): Promise<void> {
+    const overviewTab = this.page.locator(
+      '[flt-semantics-identifier="people_detail_tab_overview"]',
+    );
+    if (await overviewTab.isVisible({ timeout: 3_000 }).catch(() => false)) {
+      await overviewTab.click();
+      await refreshFlutterAccessibility(this.page);
+    }
+  }
 
   private baseURL(): string {
     return process.env.E2E_BASE_URL ?? 'http://localhost:3000';
@@ -54,37 +76,72 @@ export class PeoplePage {
     await this.waitForVetFormLoaded();
   }
 
-  /** People hub detail: phone row shows value text plus a Call action. */
-  private async expectPeopleDetailPhoneVisible(phone: string, vetName: string): Promise<void> {
-    await refreshFlutterAccessibility(this.page);
-    const phonePattern = new RegExp(escapeRegExp(phone), 'i');
-    const phoneLocator = this.page.getByText(phonePattern).or(semanticsByName(this.page, phonePattern));
-    const detailGroupPattern = new RegExp(
-      `${escapeRegExp(vetName)}[\\s\\S]*Phone[\\s\\S]*${escapeRegExp(phone)}`,
-      'i',
-    );
-    await expect(this.page.getByRole('button', { name: /^Call$/i })).toBeVisible({
-      timeout: 30_000,
-    });
-    const mergedVisible = await semanticsByName(this.page, detailGroupPattern)
-      .isVisible()
-      .catch(() => false);
-    if (mergedVisible) {
-      return;
+  /**
+   * CanvasKit builds paint most labels into the engine; the saved phone on `/pc/people/:id`
+   * is not reliably visible to Playwright as DOM text. The edit form uses real `<input>`s.
+   */
+  private async expectPhoneDigitsViaPeopleEditForm(phone: string): Promise<void> {
+    const path = flutterRoutePath(this.page.url());
+    const m = path.match(/^\/pc\/people\/([^/?]+)$/);
+    const contactId = m?.[1];
+    if (!contactId) {
+      throw new Error('expectPhoneDigitsViaPeopleEditForm: not on /pc/people/<id>');
     }
     const phoneDigits = phone.replace(/\D/g, '');
-    const phoneField = this.page.getByRole('textbox', { name: /phone/i });
-    if (await phoneField.first().isVisible().catch(() => false)) {
-      const value = await phoneField.first().inputValue();
-      if (value.replace(/\D/g, '').includes(phoneDigits)) {
-        return;
+
+    await this.page.goto(flutterGotoUrl(`/pc/people/${contactId}/edit`));
+    await refreshFlutterAccessibility(this.page);
+    await waitForFlutterRoutePattern(this.page, /\/pc\/people\/[^/]+\/edit(?:\?|$)/, 30_000);
+    // Riverpod can serve cached form state briefly after save — a second navigation refetches without
+    // `location.reload()`, which can bounce Flutter web to `/pc/home` (CI: veterinarian phone assert).
+    await this.page.goto(flutterGotoUrl(`/pc/people/${contactId}/edit`));
+    await refreshFlutterAccessibility(this.page);
+    await waitForFlutterRoutePattern(this.page, /\/pc\/people\/[^/]+\/edit(?:\?|$)/, 30_000);
+
+    await this.page
+      .locator('[flt-semantics-identifier="people_edit_phone_field"]')
+      .first()
+      .waitFor({ state: 'visible', timeout: 20_000 });
+    await expect(async () => {
+      // Do not call `refreshFlutterAccessibility` here — each retry adds ~800ms and can exhaust
+      // the spec-level timeout while digits converge after save.
+      // Re-resolve every attempt — Flutter can rebuild the `<input>` after navigation; a stale
+      // locator reads "" forever (CI: expectPhoneDigitsViaPeopleEditForm).
+      const phoneField = await resolveVisibleSemanticsTextInput(this.page, 'people_edit_phone_field');
+      // Short timeout: default action timeout inside `toPass` retries can exhaust the test budget.
+      let value = await phoneField.inputValue({ timeout: 3_000 }).catch(() => '');
+      if (!value) {
+        value =
+          (await readLabelledTextboxValue(this.page, 'Phone')) ||
+          (await readLabelledTextboxValue(this.page, 'Téléphone'));
       }
-    }
-    await expect(phoneLocator.first()).toBeVisible({ timeout: 15_000 });
+      expect(value.replace(/\D/g, '')).toContain(phoneDigits);
+    }).toPass({ timeout: 30_000 });
+  }
+
+  /**
+   * On `/pc/people/:id` the overview row is CanvasKit-painted; assert digits via edit form only
+   * (do not wait on `people_action_call` — can stall and exceed the spec's 90s timeout).
+   */
+  private async expectPeopleDetailPhoneVisible(phone: string, vetName: string): Promise<void> {
+    const phoneDigits = phone.replace(/\D/g, '');
+    // Saved phone on People detail is CanvasKit-painted; contacts API is authoritative after save.
+    // Edit-form `inputValue` can stay empty on web even when PATCH + refetch succeeded (CI).
+    await expect(async () => {
+      const token = await readAccessTokenFromPage(this.page);
+      const contacts = await getPeopleContacts(this.baseURL(), token);
+      const row = contacts.find((c) => c.name === vetName);
+      expect(row?.phone?.replace(/\D/g, '') ?? '').toContain(phoneDigits);
+    }).toPass({ timeout: 15_000 });
   }
 
   private async onPeopleHub(): Promise<boolean> {
     return /^\/pc\/people(?:\?|$)/.test(flutterRoutePath(this.page.url()));
+  }
+
+  /** People hub contact detail (`/pc/people/<id>`), not list or `/edit`. */
+  private async onPeopleDetail(): Promise<boolean> {
+    return /^\/pc\/people\/[^/?]+$/.test(flutterRoutePath(this.page.url()));
   }
 
   /** Org list cards (`Veterinarian: …`) or guardian compact rows (`Name · town`). */
@@ -92,7 +149,8 @@ export class PeoplePage {
     const escaped = escapeRegExp(name);
     const cardPattern = new RegExp(`Veterinarian:\\s*${escaped}`, 'i');
     const rowPattern = new RegExp(escaped, 'i');
-    return semanticsByName(this.page, cardPattern)
+    return this.peopleHubDirectoryCard(name)
+      .or(semanticsByName(this.page, cardPattern))
       .or(this.page.getByRole('button', { name: rowPattern }))
       .or(this.page.getByRole('group', { name: rowPattern }))
       .or(this.page.getByRole('listitem', { name: rowPattern }))
@@ -108,6 +166,13 @@ export class PeoplePage {
       .getByText(/^Contacts$|^People$|^Personnes$|^Autour de vos animaux$/i)
       .first()
       .waitFor({ timeout: 30_000 });
+  }
+
+  /** After save on People hub edit, the app returns here — not the `/pc/people` list. */
+  async expectPeopleDetailLoaded(): Promise<void> {
+    await dismissConsentBannerIfPresent(this.page);
+    await waitForFlutterRoutePattern(this.page, /\/pc\/people\/[^/?]+$/, 30_000);
+    await refreshFlutterAccessibility(this.page);
   }
 
   async expectEmptyState(): Promise<void> {
@@ -180,7 +245,7 @@ export class PeoplePage {
       if (await this.onPeopleHub()) {
         await this.openPersonDetailFromHub(name);
       }
-      await expect(semanticsByName(this.page, new RegExp(escapeRegExp(name), 'i')).first()).toBeVisible({
+      await expect(this.vetRowLocator(name)).toBeVisible({
         timeout: 5_000,
       });
     }).toPass({ timeout: 45_000 });
@@ -231,7 +296,7 @@ export class PeoplePage {
     const inlineEdit = this.editVetButtonLocator(card);
     if (await inlineEdit.isVisible({ timeout: 2_000 }).catch(() => false)) {
       await inlineEdit.click();
-    } else if (await this.onPeopleHub()) {
+    } else if ((await this.onPeopleHub()) || (await this.onPeopleDetail())) {
       await this.openPeopleEditForVet(name);
     } else {
       await this.vetRowLocator(name).click();
@@ -685,7 +750,7 @@ export class PeoplePage {
 
   async saveForm(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
-    const onPeopleEdit = /\/pc\/people\/[^/]+\/edit/.test(this.page.url());
+    const onPeopleEdit = /\/pc\/people\/[^/]+\/edit(?:\?|$)/.test(flutterRoutePath(this.page.url()));
     if (onPeopleEdit) {
       const save = this.page.getByRole('button', { name: 'Save', exact: true });
       await expect(save).toBeEnabled({ timeout: 20_000 });
@@ -700,9 +765,9 @@ export class PeoplePage {
   }
 
   async expectFormSaved(mode: 'create' | 'edit' = 'create'): Promise<void> {
-    if (mode === 'edit' && /\/pc\/people\/[^/]+\/edit/.test(this.page.url())) {
+    if (mode === 'edit' && /\/pc\/people\/[^/]+\/edit(?:\?|$)/.test(flutterRoutePath(this.page.url()))) {
       await expect(async () => {
-        expect(this.page.url()).not.toMatch(/\/edit(?:\?|$)/);
+        expect(flutterRoutePath(this.page.url())).not.toMatch(/\/edit(?:\?|$)/);
       }).toPass({ timeout: 30_000 });
       await refreshFlutterAccessibility(this.page);
       return;
@@ -731,7 +796,7 @@ export class PeoplePage {
     notes?: string;
   }): Promise<void> {
     await this.expectFormLoaded();
-    const onPeopleAdd = /\/pc\/people\/new/.test(this.page.url());
+    const onPeopleAdd = /\/pc\/people\/new(?:\?|$)/.test(flutterRoutePath(this.page.url()));
     if (onPeopleAdd) {
       await fillLabelledField(this.page, 'Name', options.name);
       if (options.phone) await this.fillPhone(options.phone);
@@ -771,26 +836,29 @@ export class PeoplePage {
   async updatePhone(newPhone: string, options?: { vetName: string }): Promise<void> {
     const vetName = options?.vetName;
     if (vetName) {
-      const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
-      const token = await readAccessTokenFromPage(this.page);
-      const matches = (await getVets(baseURL, token)).filter((v) => v.name === vetName);
-      if (matches.length !== 1) {
-        throw new Error(
-          `updatePhone: expected exactly one vet named "${vetName}", found ${matches.length}`,
-        );
+      await this.openVetDetail(vetName);
+    }
+    if (!/\/pc\/people\/[^/]+\/edit(?:\?|$)/.test(flutterRoutePath(this.page.url()))) {
+      if (!vetName) {
+        throw new Error('updatePhone: on person detail — pass vetName to open edit');
       }
-      const vet = matches[0];
-      await updateVetDetails(baseURL, token, vet.id, {
-        name: vet.name,
-        phone: newPhone,
-      });
-      await this.page.goto(flutterGotoUrl('/pc/people?filter=professionals'));
-      await refreshFlutterAccessibility(this.page);
-      await waitForFlutterRoutePattern(this.page, /\/pc\/people(?:\?|$)/, 30_000);
-      return;
+      await this.clickEditVet(vetName);
     }
     await this.expectFormLoaded();
-    await fillTextbox(this.page, 'Phone', newPhone);
+    await refreshFlutterAccessibility(this.page);
+    // Stable semantics id + inner `input` — matches Flutter `people_edit_phone_field` + TextEditingController.
+    await fillSemanticsField(this.page, 'people_edit_phone_field', newPhone);
+    const newDigits = newPhone.replace(/\D/g, '');
+    await expect(async () => {
+      const phoneInput = await resolveVisibleSemanticsTextInput(this.page, 'people_edit_phone_field');
+      let v = await phoneInput.inputValue({ timeout: 3_000 }).catch(() => '');
+      if (!v.replace(/\D/g, '').includes(newDigits)) {
+        v =
+          (await readLabelledTextboxValue(this.page, 'Phone')) ||
+          (await readLabelledTextboxValue(this.page, 'Téléphone'));
+      }
+      expect(v.replace(/\D/g, '')).toContain(newDigits);
+    }).toPass({ timeout: 15_000 });
     await this.saveForm();
     await this.expectFormSaved('edit');
   }

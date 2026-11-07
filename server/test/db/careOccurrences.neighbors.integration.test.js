@@ -35,6 +35,30 @@ const flea = (due) => ({
 });
 
 describe('occurrence neighbours on GET', () => {
+  it('returns entry.open_occurrences on GET occurrence detail (#1476)', async () => {
+    const create = await api
+        .at('2026-06-05T09:00')
+        .create({
+          ...flea('2026-06-05'),
+          start_date: '2026-06-05',
+          recurrence_anchor: 'from_completion',
+        });
+    expect(create.statusCode).toBe(201);
+    const entry = create.body;
+    const first = entry.open_occurrences[0];
+    const done = await api
+        .at('2026-06-10T09:00')
+        .complete(entry.id, first.id, { completed_on: '2026-06-10' });
+    expect(done.statusCode).toBe(200);
+    expect(done.body.entry.open_occurrences.length).toBeGreaterThanOrEqual(1);
+    const second = done.body.entry.open_occurrences[0];
+    const detail = await api.at('2026-06-12T09:00').occurrence(entry.id, second.id);
+    expect(detail.statusCode).toBe(200);
+    expect(detail.body.entry.open_occurrences.length).toBeGreaterThanOrEqual(1);
+    expect(detail.body.entry.frequency).toBe('monthly');
+    expect(detail.body.entry.as_of).toMatchObject({ date: expect.any(String) });
+  });
+
   it('returns previous and next across completed and open rows', async () => {
     const create = await api
         .at('2026-06-05T09:00')

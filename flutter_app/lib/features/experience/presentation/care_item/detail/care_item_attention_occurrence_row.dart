@@ -3,12 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import 'package:pet_profile_app/core/router/shell_return_navigation.dart';
-import 'package:pet_profile_app/core/widgets/care_mark_done_button.dart';
-import 'package:pet_profile_app/core/widgets/care_skip_button.dart';
 import 'package:pet_profile_app/features/care_item/care_item.dart';
 import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import 'package:pet_profile_app/features/pet_care/pet_care.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
+
+import 'care_item_occurrence_trailing_controls.dart';
 
 CareItemStatusTone careItemStatusToneForPill(OccurrencePillTone tone) =>
     switch (tone) {
@@ -90,29 +90,13 @@ class CareItemAttentionOccurrenceRow extends ConsumerWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              CareMarkDoneButton(
-                key: Key('care_item_occurrence_done_${occurrence.id}'),
-                semanticLabel: l.careMarkDateTimeDone(whenSemantic),
-                semanticsIdentifier:
-                    'care_item_occurrence_done_${occurrence.id}',
-                onPressed: muted
-                    ? null
-                    : () => ref
-                          .read(careCompletionFlowProvider)
-                          .done(
-                            context,
-                            schedule: schedule,
-                            occurrence: occurrence,
-                            onChanged: onChanged,
-                            source: CareCommandSource.careItem,
-                          ),
-              ),
-              CareSkipButton(
-                key: Key('care_item_occurrence_skip_${occurrence.id}'),
-                semanticLabel: l.careSkipDateTime(whenSemantic),
-                semanticsIdentifier:
-                    'care_item_occurrence_skip_${occurrence.id}',
-                onPressed: muted ? null : () => onSkip(),
+              CareItemOccurrenceTrailingControls(
+                entry: entry,
+                schedule: schedule,
+                occurrence: occurrence,
+                muted: muted,
+                onChanged: onChanged,
+                onSkip: onSkip,
               ),
             ],
           ),

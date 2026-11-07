@@ -163,7 +163,7 @@ All routes mount under `/api/health-entries` and `/backend/api/health-entries`. 
 
 **Undo route parity (C3):** `POST …/schedule/undo` is canonical; per-occurrence undo uses the occurrence command surface (legacy `POST …/occurrences/:occId/undo` removed — see debt #1547). After a single completion they restore the same open occurrence. After a **multi-step** sequence (for example complete then reschedule the next date), `schedule/undo` without a token reverses only the **most recent** command (the reschedule), while per-occurrence undo targets the **completion** event for that occurrence id. Prefer `schedule/undo` with the `undo_token` from the command response in new clients.
 
-**Compatibility routes (deleted when the new client ships, D-CSM-033):** `POST /:id/mark-taken` (completes the most urgent open slot; never 400 for an active planned item), `POST /:id/occurrences/ensure-open` (returns the open occurrences, `created: false`), `POST /:id/pause` (= postpone `until: null`), `POST /:id/occurrences/skip-missed`, `POST /:id/undo-complete`, `POST /:id/occurrences/:occId/undo`.
+**Compatibility routes (removed D-CSM-033; do not document as live endpoints):** formerly `POST /:id/mark-taken`, `POST /:id/occurrences/ensure-open`, `POST /:id/pause`, `POST /:id/occurrences/skip-missed`, `POST /:id/undo-complete`, and legacy `POST /:id/occurrences/:occId/undo` — use occurrence commands and `POST /:id/schedule/undo` instead. Pause: `POST /:id/postpone` with `until: null`.
 
 `PUT /:id` does **not** write `next_due_date`; schedule edits are applied as commands (D-CSM-032).
 

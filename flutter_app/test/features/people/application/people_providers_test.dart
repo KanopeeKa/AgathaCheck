@@ -16,6 +16,19 @@ import 'package:pet_profile_app/features/people/domain/enums/contact_status.dart
 import 'package:pet_profile_app/features/people/domain/enums/relationship_kind.dart';
 import 'package:pet_profile_app/features/people/domain/repositories/people_repository.dart';
 
+class _RosterPhoneFake extends FakePeopleRepository {
+  _RosterPhoneFake(this.summary);
+
+  final ContactSummary summary;
+
+  @override
+  Future<Roster> fetchRoster({bool includeInactive = false}) async => Roster(
+    households: const [],
+    contacts: [summary],
+    pendingInvites: const [],
+  );
+}
+
 class FakePeopleRepository implements PeopleRepository {
   FakePeopleRepository();
 
@@ -276,6 +289,52 @@ void main() {
     sub.close();
     expect(fake.detailFetchCount, 1);
   });
+
+  test(
+    'applyOptimisticContactPatch clears phone when PATCH returns null',
+    () async {
+      final summary = ContactSummary(
+        id: 'c1',
+        directory: const ContactDirectoryRef(type: 'personal'),
+        kind: ContactKind.person,
+        name: 'Jamie',
+        roles: [ContactRole.sitter],
+        group: ContactGroup.carer,
+        status: ContactStatus.active,
+        phone: '555-1234',
+      );
+      final fake = _RosterPhoneFake(summary);
+      final container = ProviderContainer(
+        overrides: [
+          peopleRepositoryProvider.overrideWithValue(fake),
+          householdsRepositoryProvider.overrideWithValue(
+            FakeHouseholdsRepository(),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await container.read(rosterProvider.future);
+      final notifier = container.read(rosterProvider.notifier);
+      notifier.applyOptimisticContactPatch(
+        'c1',
+        ContactDetail(
+          id: 'c1',
+          directoryId: 'dir-1',
+          directory: const ContactDirectoryRef(type: 'personal'),
+          kind: ContactKind.person,
+          name: 'Jamie',
+          roles: [ContactRole.sitter],
+          group: ContactGroup.carer,
+          status: ContactStatus.active,
+          phone: null,
+        ),
+      );
+
+      final row = container.read(rosterProvider).value!.contacts.single;
+      expect(row.phone, isNull);
+    },
+  );
 
   test(
     'peopleCommands invalidates roster, detail, relatedCare, petPeople',
