@@ -5,7 +5,7 @@ audience: both
 domain: pet_care
 feature_id: away_planning_carer
 status: active
-last_updated: 2026-11-04
+last_updated: 2026-11-07
 ---
 
 # Away Planning — Carer model
@@ -78,7 +78,7 @@ Absence-level `handover_note` and `last_handover_downloaded_at` live on `planned
 | AWAY-PLANNING-CARER-R-015 | People phase 2+: carer as contact; `shared_user`-like behaviour when linked account has `pet_access`; absence-scoped app access via explicit invite (unchanged principle: assignment never grants access) | Planned |
 | AWAY-PLANNING-CARER-R-016 | The person going away is never a carer on their own absence: excluded from `GET …/carer-candidates` when `planned_absence_id` is visible for the pet, and a contact linked to their account is rejected on save (CARE-CONTEXT-D-012) | Live |
 | AWAY-PLANNING-CARER-R-017 | Who's caring and notes for the pet are edited on the pet's away plan screen (`/pc/away/:id/pets/:petId`); notes shown inline; supersedes AWAY-PLANNING-CARER-R-012 presentation (CARE-CONTEXT-D-011) | Live |
-| AWAY-PLANNING-CARER-R-018 | Inviting a carer from one pet's away plan offers the other pets on the same absence where that contact is already the carer and the inviter can grant access | Live |
+| AWAY-PLANNING-CARER-R-018 | Inviting a carer from one pet's away plan offers the other pets on the same absence where that contact is already the carer and the inviter can grant access | Planned |
 
 ## API summary
 
@@ -125,13 +125,13 @@ Per-care-item permanent carer assignment (Pet Sitting). Public share links from 
 | APC-13 — When per-pet PDF generated then pet_note and trip note sections | AWAY-PLANNING-CARER-R-009 | test: flutter_app/test/features/pet_care/context/away_plan_handover_service_test.dart#pet note is passed to PDF verbatim (D-AWAY-008) |
 | APC-14 — When away plan screen opened then Who's caring visible | AWAY-PLANNING-CARER-R-017 | test: flutter_app/test/features/pet_care/context/pet_away_plan_screen_test.dart#pet away plan shows carer, notes, and planned care |
 | APC-15 — When shared carer assigned on away plan then Name on carer row | AWAY-PLANNING-CARER-R-017 | test: flutter_app/test/features/pet_care/context/away_plan_carer_edit_test.dart#edit affordance per pet row saves a contact carer |
-| APC-16 — When contact carer assigned on away plan then Name on carer row | AWAY-PLANNING-CARER-R-017 | none — #1770 |
+| APC-16 — When contact carer assigned on away plan then Name on carer row | AWAY-PLANNING-CARER-R-017 | test: flutter_app/test/features/pet_care/context/away_plan_carer_edit_test.dart#edit affordance per pet row saves a contact carer |
 | AP-16 — When declarer PATCH assigns self as carer then Rejected | AWAY-PLANNING-CARER-R-016 | test: server/test/careContext/plannedAbsencePetLifecycle.test.js#rejects declarer as shared_user carer |
-| AP-17 — When away plan screen opened then Who's caring and pet notes editable inline | AWAY-PLANNING-CARER-R-017 | test: flutter_app/test/features/pet_care/context/away_plan_carer_edit_test.dart#edit affordance per pet row saves a contact carer |
-| AP-18 — When carer invite from one pet then Other pets on absence offered where applicable | AWAY-PLANNING-CARER-R-018 | none — #1770 |
+| AP-17 — When away plan screen opened then Who's caring and pet notes editable inline | AWAY-PLANNING-CARER-R-017 | test: flutter_app/test/features/pet_care/context/away_plan_carer_edit_test.dart#edit affordance per pet row saves a contact carer; bdd: away_planning.feature#Co-parent edits the pet note on the away plan page |
+| AP-18 — When carer invite from one pet then Other pets on absence offered where applicable | AWAY-PLANNING-CARER-R-018 | none — [#2103](https://github.com/KanopeeKa/AgathaCheck/issues/2103) |
 | APC-17 — When handover downloaded then Emergency contacts and vets listed | AWAY-PLANNING-CARER-R-009 | none — #1770 |
 
-Coverage gaps: [#1770](https://github.com/KanopeeKa/AgathaCheck/issues/1770) (shared/contact carer E2E, handover emergency contacts and vets on PDF).
+Coverage gaps: [#1770](https://github.com/KanopeeKa/AgathaCheck/issues/1770) (handover PDF emergency contacts and vets); [#2103](https://github.com/KanopeeKa/AgathaCheck/issues/2103) (multi-pet carer invite offer, AWAY-PLANNING-CARER-R-018).
 
 ## Still open
 
@@ -155,6 +155,7 @@ Coverage gaps: [#1770](https://github.com/KanopeeKa/AgathaCheck/issues/1770) (sh
 | AWAY-PLANNING-CARER-D-016 | People phase 2 amends D-AWAY-002/003/005 presentation | Primary+backup model, `unavailable` carer fact, contact-backed carers; UI one carer until later | Live | 2026-10-08 | documentation-migration |
 | AWAY-PLANNING-CARER-D-017 | Traveller is never a carer on their own absence | Who is going away = person logging it (CARE-CONTEXT-D-012); assigning them as carer is incoherent | Live | 2026-11-03 | — |
 | AWAY-PLANNING-CARER-D-018 | Carer candidate list omits traveller when absence context is visible | `planned_absence_id` query on `GET /api/pets/:id/carer-candidates`; silent ignore when absence not visible | Live | 2026-11-06 | away-plans co-parent fix |
+| AWAY-PLANNING-CARER-D-019 | Multi-pet carer invite offer deferred | AWAY-PLANNING-CARER-R-018 tracked as Planned until UX ships; issue [#2103](https://github.com/KanopeeKa/AgathaCheck/issues/2103) | Live | 2026-11-06 | docs honesty |
 
 ## Related
 
