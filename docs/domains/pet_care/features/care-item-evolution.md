@@ -5,7 +5,7 @@ audience: both
 domain: pet_care
 feature_id: care_item
 status: active
-last_updated: 2026-11-04
+last_updated: 2026-11-07
 related_prs: [1797, 1805, 1812, 1817]
 ---
 
@@ -261,6 +261,7 @@ Accessibility: section and group headings are headers; Upcoming exposes expanded
 5. **Absence:** placed here when it needs a decision. Otherwise it sits after Schedule.
 6. **Schedule**
 7. **History**
+8. **Close care** (owner, Active or Paused) — after History, not pinned to the viewport; one-third width, end-aligned (room for further actions in this zone).
 
 ### Needs attention
 
@@ -358,7 +359,7 @@ People tiers decide what each person sees.
 
 - A breadcrumb shows the pet: "Pets › Buddy › Wellness review". The title is the care item's name, without "View".
 - On wide screens **Details** is full width under the context strip, then two columns:
-  - The main column holds Needs attention, Agatha and History. Needs attention stays visible while the page scrolls.
+  - The main column holds Needs attention, Agatha and History, then **Close care** at the end when the owner may close an Active or Paused item (not pinned). Needs attention stays visible while the page scrolls.
   - The side column holds Schedule, Absence and observation modules.
 - Text and fields keep a comfortable reading width.
 - Below the breakpoint, the page becomes one column in the mobile order, with the same components and words.

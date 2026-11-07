@@ -371,4 +371,151 @@ void main() {
     );
     expect(find.byKey(const Key('unmark_done_hist-0')), findsNothing);
   });
+
+  testWidgets('Close care sits below History on mobile when callback set', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(400, 900);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          apiBaseUrlProvider.overrideWithValue('http://test.local'),
+          careItemAbsenceContextProvider('entry-1').overrideWith(
+            (ref) async => const HealthEntryAbsenceContext(
+              healthEntryId: 'entry-1',
+              petId: 'pet-1',
+              absences: [],
+            ),
+          ),
+          entryOccurrencesProvider('entry-1').overrideWith((ref) async => []),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: CareItemDetailBody(
+              petId: 'pet-1',
+              entry: entry,
+              pet: pet,
+              history: const <HealthHistoryEntry>[],
+              isClosed: false,
+              isEstablished: false,
+              onSeeHistory: () {},
+              onCloseCare: () {},
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('care_item_close_care_button')), findsOneWidget);
+    final historyBottom = tester
+        .getRect(find.byKey(const Key('care_item_history_module')))
+        .bottom;
+    final closeButtonTop = tester
+        .getRect(find.byKey(const Key('care_item_close_care_button')))
+        .top;
+    expect(closeButtonTop, greaterThan(historyBottom));
+  });
+
+  testWidgets('Close care sits below History in main column on wide layout', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1200, 900);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          apiBaseUrlProvider.overrideWithValue('http://test.local'),
+          careItemAbsenceContextProvider('entry-1').overrideWith(
+            (ref) async => const HealthEntryAbsenceContext(
+              healthEntryId: 'entry-1',
+              petId: 'pet-1',
+              absences: [],
+            ),
+          ),
+          entryOccurrencesProvider('entry-1').overrideWith((ref) async => []),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: CareItemDetailBody(
+              petId: 'pet-1',
+              entry: entry,
+              pet: pet,
+              history: const <HealthHistoryEntry>[],
+              isClosed: false,
+              isEstablished: false,
+              onSeeHistory: () {},
+              onCloseCare: () {},
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final closeButton = find.byKey(const Key('care_item_close_care_button'));
+    expect(closeButton, findsOneWidget);
+    final closeCenterX = tester.getCenter(closeButton).dx;
+    final rowRect = tester.getRect(
+      find.byKey(const Key('care_item_detail_two_column')),
+    );
+    expect(closeCenterX, lessThan(rowRect.left + rowRect.width * 0.7));
+
+    final historyBottom = tester
+        .getRect(find.byKey(const Key('care_item_history_module')))
+        .bottom;
+    final closeButtonTop = tester
+        .getRect(find.byKey(const Key('care_item_close_care_button')))
+        .top;
+    expect(closeButtonTop, greaterThan(historyBottom));
+  });
+
+  testWidgets('omits Close care when no callback', (tester) async {
+    tester.view.physicalSize = const Size(400, 900);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          apiBaseUrlProvider.overrideWithValue('http://test.local'),
+          careItemAbsenceContextProvider('entry-1').overrideWith(
+            (ref) async => const HealthEntryAbsenceContext(
+              healthEntryId: 'entry-1',
+              petId: 'pet-1',
+              absences: [],
+            ),
+          ),
+          entryOccurrencesProvider('entry-1').overrideWith((ref) async => []),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: CareItemDetailBody(
+              petId: 'pet-1',
+              entry: entry,
+              pet: pet,
+              history: const <HealthHistoryEntry>[],
+              isClosed: false,
+              isEstablished: false,
+              onSeeHistory: () {},
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('care_item_close_care_button')), findsNothing);
+  });
 }

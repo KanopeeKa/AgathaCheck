@@ -146,7 +146,7 @@ test.describe('Care agenda', () => {
       const careItem = new CareItemPage(page);
       await careItem.open(pet.id, entry.id);
       await refreshFlutterAccessibility(page);
-      await page.locator('[flt-semantics-identifier="care_item_close_care_button"]').click();
+      await careItem.openCloseCare();
       await page.getByRole('alertdialog').waitFor({ timeout: 15_000 });
       await page.locator('[flt-semantics-identifier="care_close_confirm_button"]').click();
       await expect(

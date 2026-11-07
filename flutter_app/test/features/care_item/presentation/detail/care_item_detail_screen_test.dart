@@ -193,4 +193,59 @@ void main() {
     expect(find.text('Care details'), findsOneWidget);
     expect(find.byType(CircularProgressIndicator), findsWidgets);
   });
+
+  testWidgets('guardian on active care sees Close care below History', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      buildApp(
+        initialLocation: '/pet/pet-1/events/entry-1',
+        overrides: baseOverrides(petsFuture: (ref) async => [pet]),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('care_item_close_care_button')), findsOneWidget);
+    final historyBottom = tester
+        .getRect(find.byKey(const Key('care_item_history_module')))
+        .bottom;
+    final closeButtonTop = tester
+        .getRect(find.byKey(const Key('care_item_close_care_button')))
+        .top;
+    expect(closeButtonTop, greaterThan(historyBottom));
+  });
+
+  testWidgets('hides Close care on closed care', (tester) async {
+    final closedEntry = entry.copyWith(status: 'closed');
+    await tester.pumpWidget(
+      buildApp(
+        initialLocation: '/pet/pet-1/events/entry-1',
+        overrides: baseOverrides(
+          petsFuture: (ref) async => [pet],
+          healthEntries: () => _TestHealthEntriesNotifier([closedEntry]),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('care_item_close_care_button')), findsNothing);
+  });
+
+  testWidgets('hides Close care for shared carer', (tester) async {
+    const sharedPet = Pet(
+      id: 'pet-1',
+      name: 'Rex',
+      species: 'Dog',
+      isShared: true,
+    );
+    await tester.pumpWidget(
+      buildApp(
+        initialLocation: '/pet/pet-1/events/entry-1',
+        overrides: baseOverrides(petsFuture: (ref) async => [sharedPet]),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('care_item_close_care_button')), findsNothing);
+  });
 }
