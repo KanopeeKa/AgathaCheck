@@ -3,7 +3,7 @@ title: Care Item view — UI modules
 owner: Design Team
 audience: both
 status: active
-last_updated: 2026-10-14
+last_updated: 2026-11-07
 tags: [design, pet-care, care-item]
 ---
 
@@ -44,13 +44,14 @@ Document hex values only in [`tokens.md`](./tokens.md) when promoted globally; C
 3. **Absence** — module or callout; resolution actions inside module body.
 4. **Schedule** — header row with **Edit schedule** trailing; body = stat grid (Frequency · Type · Reminder) + prose lines (next date, flexibility).
 5. **Details** — definition-list rows; **no duplicate recurrence** (schedule owns rhythm).
-6. **History** — inset list (`CareCollectionInsetList` pattern) + **See full history** in module footer.
+6. **Documents** — module when attachments exist (D-CIE-041); horizontal read-only strip; hidden when empty; loading shows strip progress in module.
+7. **History** — inset list for past occurrences when any qualify; **No history yet** otherwise; **See history** in module footer.
 
 ## Web (≥ `kCareItemTwoColumnBreakpoint`)
 
 | Main column | Side column |
 |-------------|-------------|
-| Needs attention, Agatha (when present), History | Schedule, Absence, Details |
+| Needs attention, Agatha (when present), Documents (when present), History | Schedule, Absence, Observation |
 
 Pet context: full-width context strip above the two-column row (not in side column). Canonical: [care-item-evolution.md](../domains/pet_care/features/care-item-evolution.md).
 

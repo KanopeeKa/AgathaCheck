@@ -14,6 +14,7 @@ import 'care_item_dates_section.dart';
 import 'care_item_needs_attention_section.dart';
 import 'care_item_established_section.dart';
 import 'care_item_info_section.dart';
+import 'care_item_documents_section.dart';
 import 'care_item_schedule_section.dart';
 
 /// Care Item detail body — module segmentation on warm canvas (mobile order).
@@ -115,6 +116,10 @@ class CareItemDetailBody extends ConsumerWidget {
               : MediaQuery.sizeOf(context).width;
           final wide = layoutWidth >= kCareItemTwoColumnBreakpoint;
           final pastOccurrencesVisibleCap = wide ? 5 : 3;
+          final documentsSection = CareItemDocumentsSection(
+            entryId: entry.id,
+            muted: muted,
+          );
           final historyModule = _HistoryModule(
             entry: entry,
             muted: muted,
@@ -156,6 +161,8 @@ class CareItemDetailBody extends ConsumerWidget {
                                 CareItemModule(child: establishedSection),
                               ],
                               _sectionGap,
+                              documentsSection,
+                              _sectionGap,
                               historyModule,
                             ],
                           ),
@@ -176,6 +183,8 @@ class CareItemDetailBody extends ConsumerWidget {
                     needsSection,
                     _sectionGap,
                     sideScheduleAbsenceColumn(),
+                    _sectionGap,
+                    documentsSection,
                     _sectionGap,
                     historyModule,
                   ],
@@ -273,6 +282,8 @@ class _HistoryModule extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final showPast = ref
         .watch(entryPastOccurrencesProvider(entry.id))
         .maybeWhen(
@@ -292,18 +303,11 @@ class _HistoryModule extends ConsumerWidget {
             icon: Icons.history,
           ),
           const SizedBox(height: 12),
-          CareCollectionInsetList(
-            semanticLabel: l.careItemHistoryTitle,
-            children: [
-              CareCollectionInsetItem(
-                child: Padding(
-                  padding: CareSurfaceTokens.collectionInsetRowPadding,
-                  child: PetEventDocumentsStrip(entryId: entry.id),
-                ),
-              ),
-              if (showPast)
+          if (showPast)
+            CareCollectionInsetList(
+              semanticLabel: l.careItemHistoryTitle,
+              children: [
                 CareCollectionInsetItem(
-                  showDividerBefore: true,
                   child: PetEventPastOccurrencesSection(
                     entryId: entry.id,
                     petId: entry.petId,
@@ -311,8 +315,15 @@ class _HistoryModule extends ConsumerWidget {
                     maxVisibleRows: pastOccurrencesVisibleCap,
                   ),
                 ),
-            ],
-          ),
+              ],
+            )
+          else
+            Text(
+              l.noHistoryYet,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
+            ),
           const SizedBox(height: 12),
           OutlinedButton.icon(
             key: const Key('care_item_see_history'),

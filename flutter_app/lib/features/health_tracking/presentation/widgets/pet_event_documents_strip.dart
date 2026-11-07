@@ -11,33 +11,49 @@ import 'pet_event_view_providers.dart';
 
 /// Read-only horizontal documents strip for a health entry (view screen).
 class PetEventDocumentsStrip extends ConsumerWidget {
-  const PetEventDocumentsStrip({super.key, required this.entryId});
+  const PetEventDocumentsStrip({
+    super.key,
+    required this.entryId,
+    this.muted = false,
+    this.showHeading = true,
+  });
 
   final String entryId;
+  final bool muted;
+  final bool showHeading;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final photosAsync = ref.watch(healthEntryPhotosProvider(entryId));
     final baseUrl = ref.watch(apiBaseUrlProvider);
+    final mutedColor = muted ? colorScheme.onSurfaceVariant : null;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Icon(Icons.description, size: 20, color: theme.colorScheme.primary),
-            const SizedBox(width: 8),
-            Text(
-              l.photos,
-              style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w600,
+        if (showHeading) ...[
+          Row(
+            children: [
+              Icon(
+                Icons.description,
+                size: 20,
+                color: muted ? colorScheme.onSurfaceVariant : colorScheme.primary,
               ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
+              const SizedBox(width: 8),
+              Text(
+                l.photos,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: mutedColor,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+        ],
         photosAsync.when(
           loading: () => const LinearProgressIndicator(),
           error: (e, _) => Text(
@@ -49,11 +65,11 @@ class PetEventDocumentsStrip extends ConsumerWidget {
               return Text(
                 l.upTo4Photos,
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
+                  color: mutedColor ?? colorScheme.onSurfaceVariant,
                 ),
               );
             }
-            return SizedBox(
+            final list = SizedBox(
               height: 112,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
@@ -63,6 +79,10 @@ class PetEventDocumentsStrip extends ConsumerWidget {
                     _DocumentTile(photo: photos[index], baseUrl: baseUrl),
               ),
             );
+            if (!muted) {
+              return list;
+            }
+            return Opacity(opacity: 0.72, child: list);
           },
         ),
       ],
