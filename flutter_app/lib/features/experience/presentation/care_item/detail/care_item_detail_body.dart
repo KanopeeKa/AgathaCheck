@@ -279,18 +279,21 @@ class _HistoryModule extends ConsumerWidget {
   final VoidCallback onSeeHistory;
   final int pastOccurrencesVisibleCap;
 
+  static bool _hasInlinePastOccurrences(List<HealthOccurrence> past) {
+    return past.any(
+      (o) =>
+          o.status == 'completed' ||
+          o.status == 'skipped' ||
+          o.status == 'not_recorded',
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final showPast = ref
-        .watch(entryPastOccurrencesProvider(entry.id))
-        .maybeWhen(
-          data: (past) =>
-              past.any((o) => o.status == 'completed' || o.status == 'skipped'),
-          orElse: () => false,
-        );
+    final pastAsync = ref.watch(entryPastOccurrencesProvider(entry.id));
 
     return CareItemModule(
       key: const Key('care_item_history_module'),
@@ -303,27 +306,38 @@ class _HistoryModule extends ConsumerWidget {
             icon: Icons.history,
           ),
           const SizedBox(height: 12),
-          if (showPast)
-            CareCollectionInsetList(
-              semanticLabel: l.careItemHistoryTitle,
-              children: [
-                CareCollectionInsetItem(
-                  child: PetEventPastOccurrencesSection(
-                    entryId: entry.id,
-                    petId: entry.petId,
-                    muted: muted,
-                    maxVisibleRows: pastOccurrencesVisibleCap,
-                  ),
-                ),
-              ],
-            )
-          else
-            Text(
-              l.noHistoryYet,
+          pastAsync.when(
+            loading: () => const LinearProgressIndicator(),
+            error: (error, _) => Text(
+              l.failedToLoadHistory('$error'),
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant,
+                color: colorScheme.error,
               ),
             ),
+            data: (past) {
+              if (_hasInlinePastOccurrences(past)) {
+                return CareCollectionInsetList(
+                  semanticLabel: l.careItemHistoryTitle,
+                  children: [
+                    CareCollectionInsetItem(
+                      child: PetEventPastOccurrencesSection(
+                        entryId: entry.id,
+                        petId: entry.petId,
+                        muted: muted,
+                        maxVisibleRows: pastOccurrencesVisibleCap,
+                      ),
+                    ),
+                  ],
+                );
+              }
+              return Text(
+                l.noHistoryYet,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              );
+            },
+          ),
           const SizedBox(height: 12),
           OutlinedButton.icon(
             key: const Key('care_item_see_history'),
