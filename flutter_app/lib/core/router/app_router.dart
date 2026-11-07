@@ -20,6 +20,7 @@ import '../widgets/consent_banner.dart';
 import '../providers/analytics_providers.dart';
 import 'experience_routes.dart';
 import 'frozen_domain_route_stubs.dart';
+import 'occurrence_screen_route.dart';
 import 'vet_routes.dart';
 
 bool get _designReviewEnabled {
@@ -262,15 +263,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/pet/:petId/events/:entryId/occurrences/:occurrenceId',
         name: 'occurrenceDetail',
-        builder: (context, state) => OccurrenceScreen(
-          key: ValueKey(
-            'occurrence-${state.pathParameters['occurrenceId']}',
-          ),
-          petId: state.pathParameters['petId']!,
-          entryId: state.pathParameters['entryId']!,
-          occurrenceId: state.pathParameters['occurrenceId']!,
-          focus: state.uri.queryParameters['focus'],
-        ),
+        builder: buildOccurrenceDetailScreen,
       ),
       GoRoute(
         path: '/pet/:petId/events/:entryId',

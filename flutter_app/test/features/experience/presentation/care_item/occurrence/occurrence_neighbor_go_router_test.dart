@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
+import 'package:pet_profile_app/core/router/occurrence_screen_route.dart';
 import 'package:pet_profile_app/core/router/shell_return_navigation.dart';
 import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/features/care_item/care_item.dart';
@@ -101,14 +102,7 @@ Widget _harness(_NeighborNavServer server) => ProviderScope(
           routes: [
             GoRoute(
               path: '/pet/:petId/events/:entryId/occurrences/:occurrenceId',
-              builder: (context, state) => OccurrenceScreen(
-                key: ValueKey(
-                  'occurrence-${state.pathParameters['occurrenceId']}',
-                ),
-                petId: state.pathParameters['petId']!,
-                entryId: state.pathParameters['entryId']!,
-                occurrenceId: state.pathParameters['occurrenceId']!,
-              ),
+              builder: buildOccurrenceDetailScreen,
             ),
           ],
         ),
