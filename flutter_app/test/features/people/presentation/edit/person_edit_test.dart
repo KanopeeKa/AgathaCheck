@@ -278,6 +278,34 @@ void main() {
     expect(controller.buildReactivatePatch()['active'], isTrue);
   });
 
+  testWidgets('phone field keeps digits when another contact field rebuilds', (
+    tester,
+  ) async {
+    final roster = sampleHubRoster();
+    final repo = EditFakePeopleRepository({'carer-1': _editableContact()});
+    await tester.pumpWidget(
+      _editApp(
+        overrides: _overrides(roster, repo),
+        child: const PersonEditPage(personId: 'carer-1'),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.byKey(const Key('people_edit_phone_field')),
+      '555-9999',
+    );
+    await tester.enterText(
+      find.byKey(const Key('people_edit_email_field')),
+      'vet@example.com',
+    );
+    await tester.pump();
+    final phoneField = tester.widget<TextFormField>(
+      find.byKey(const Key('people_edit_phone_field')),
+    );
+    expect(phoneField.controller!.text, '555-9999');
+    expect(find.bySemanticsIdentifier('people_edit_phone_field'), findsOneWidget);
+  });
+
   testWidgets('roles can be toggled on edit form', (tester) async {
     final roster = sampleHubRoster();
     final repo = EditFakePeopleRepository({'carer-1': _editableContact()});

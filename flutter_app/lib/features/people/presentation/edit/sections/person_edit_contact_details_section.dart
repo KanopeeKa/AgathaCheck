@@ -35,7 +35,8 @@ class _PersonEditPhoneFieldState extends State<_PersonEditPhoneField> {
     // Refetch can land after `initState` — sync digits once the form model catches up.
     // Do not use [ChangeNotifier.addListener]: unrelated fields call `notifyListeners` while typing.
     final next = widget.controller.phone;
-    if (oldWidget.controller.phone != next && _textController.text != next) {
+    // Same [PersonFormController] instance on rebuild — compare field text to model, not `oldWidget`.
+    if (_textController.text != next) {
       _textController.value = TextEditingValue(
         text: next,
         selection: TextSelection.collapsed(offset: next.length),

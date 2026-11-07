@@ -83,10 +83,10 @@ class RosterNotifier extends AsyncNotifier<Roster> {
       access: prev.access,
       linkedVetRecordId: detail.linkedVetRecordId,
       inactiveAt: detail.inactiveAt,
-      phone: detail.phone ?? prev.phone,
-      email: detail.email ?? prev.email,
-      address: detail.address ?? prev.address,
-      website: detail.website ?? prev.website,
+      phone: detail.phone,
+      email: detail.email,
+      address: detail.address,
+      website: detail.website,
     );
     final nextContacts = List<ContactSummary>.from(current.contacts);
     nextContacts[idx] = merged;
