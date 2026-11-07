@@ -383,7 +383,9 @@ Raw `items[]` entries may include `window_relation: before_window` on materialis
 
 ### Planned absences (`/api/planned-absences`) — CC-1
 
-**Writes** remain declarer-only: `POST /`, `PATCH /:id`, `POST /:id/cancel`, `POST /:id/record-handover-download`, `POST /:id/pets`, `DELETE /:id/pets/:petId`.
+**Writes** remain declarer-only for trip scope: `POST /`, `PATCH /:id`, `POST /:id/cancel`, `POST /:id/record-handover-download` (declarer only — co-parent downloads are not recorded), `POST /:id/pets`, `DELETE /:id/pets/:petId`.
+
+**Per-pet writes (Full access)** — `PATCH /:id/pets/:petId` accepts the same carer / `pet_note` keys as one `pet_carers[]` entry on declarer `PATCH /:id` (without `pet_id`). Visibility matches `GET …/away-plan`; cancelled absences → `400`; inaccessible pet → `404` (non-disclosure). Bumps `planned_absences.updated_at`. When the actor is not the traveller, private contact notes are not copied into `carer_note` (CARE-CONTEXT-D-017).
 
 **Reads** (CARE-CONTEXT-R-032 / R-039 server, phase 2): Full-access viewers (record owner, co-parent, household `full_access`) see absences that include a pet they can manage at profile level. Responses include only `pet_ids` / `pet_carers` the caller may access; other pets are omitted from JSON (no ids or names). List and detail add `is_own_absence`, `declarer_display_name` (null when own), and `can_edit_trip` (declarer only on detail). Co-visible hub rows use `is_own_absence: false` and `declarer_display_name` for “{Name} is away”. Trip mutations stay declarer-only (`404`/`403` unchanged for strangers).
 
@@ -475,6 +477,7 @@ Tile copy uses fixed actionability priority: carer gap first, else coverage sent
 | Method | Path | Notes |
 |---|---|---|
 | GET | `/:id/pets/:petId/away-plan` | Trip header (`absence`), single `pet_carer`, `status`, `coverage`, `review_queue`, `review_care_item_count`, and away-plan `projection` for that pet |
+| PATCH | `/:id/pets/:petId` | Full access on pet; body `{ contact_id?, carer_kind?, carer_user_id?, carer_name?, carer_note?, pet_note? }` with same key-presence rules as one `pet_carers[]` row; response matches `GET …/away-plan` |
 | GET | `/:id/pets/:petId/status` | Compact `{ status, review_care_item_count, coverage_state }` for pills and pet-page rows |
 | GET | `/api/pets/:petId/planned-absences` | Full access on pet; own + co-visible absences for this pet, `ends_on >= today`; each item includes nested `absence` with `is_own_absence` / `declarer_display_name` when applicable |
 
@@ -537,6 +540,8 @@ Accepting a suggestion: `POST /api/health-entries/:entryId/occurrences/:occId/re
 ### Carer candidates (`GET /api/pets/:id/carer-candidates`) — AW-4
 
 Scoped to `userCanManagePet` (same as absence declaration). Returns minimal collaborator list for assigning `shared_user` carers:
+
+Optional query `planned_absence_id` (or `plannedAbsenceId`): when the viewer can see that absence for this pet, the person going away on that absence is **omitted** from candidates. If the parameter is absent or the absence is not visible for this pet, it is ignored (no existence probe).
 
 ```json
 [{ "user_id": "…", "display_name": "Sarah M." }]
