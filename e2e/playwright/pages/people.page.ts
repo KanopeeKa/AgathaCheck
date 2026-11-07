@@ -504,8 +504,7 @@ export class PeoplePage {
   async searchHub(query: string): Promise<void> {
     const field = this.page
       .getByRole('textbox', { name: /search people/i })
-      .or(this.page.getByLabel(/search people/i))
-      .or(this.page.locator('[data-flutter-key="people_list_search"]'));
+      .or(this.page.getByLabel(/search people/i));
     await field.first().click();
     await field.first().fill('');
     await field.first().pressSequentially(query, { delay: 40 });
@@ -546,8 +545,7 @@ export class PeoplePage {
   async expectSearchFieldValue(query: string): Promise<void> {
     const field = this.page
       .getByRole('textbox', { name: /search people/i })
-      .or(this.page.getByLabel(/search people/i))
-      .or(this.page.locator('[data-flutter-key="people_list_search"]'));
+      .or(this.page.getByLabel(/search people/i));
     await expect(field.first()).toHaveValue(query, { timeout: 10_000 });
   }
 
@@ -601,19 +599,6 @@ export class PeoplePage {
     await refreshFlutterAccessibility(this.page);
   }
 
-  async inviteHouseholdMemberByEmail(email: string): Promise<void> {
-    await this.page.locator('[data-flutter-key="household_invite_member"]').click().catch(() =>
-      this.page.getByRole('button', { name: /^Invite member$/i }).click(),
-    );
-    await this.page.locator('[data-flutter-key="household_invite_email"]').fill(email);
-    const adult = this.page.getByRole('checkbox', { name: /adult|18/i });
-    if (await adult.isVisible({ timeout: 2_000 }).catch(() => false)) {
-      await adult.click();
-    }
-    await this.page.locator('[data-flutter-key="household_invite_submit"]').click();
-    await refreshFlutterAccessibility(this.page);
-  }
-
   async removeHouseholdMember(displayName: string): Promise<void> {
     const namePattern = new RegExp(escapeRegExp(displayName), 'i');
     const memberTile = this.page.locator('flt-semantics').filter({ hasText: namePattern }).first();
@@ -633,19 +618,6 @@ export class PeoplePage {
   async openHouseholdDetail(householdId: string): Promise<void> {
     await this.page.goto(flutterGotoUrl(`/pc/people/households/${householdId}`));
     await waitForFlutterRoutePattern(this.page, /\/pc\/people\/households\/[^/?]+/, 30_000);
-    await refreshFlutterAccessibility(this.page);
-  }
-
-  async leaveHouseholdFromDetail(): Promise<void> {
-    await this.page
-      .locator('[data-flutter-key="household_leave"]')
-      .click()
-      .catch(() => this.page.getByRole('button', { name: /^Leave household$/i }).first().click());
-    await expect(
-      this.page.getByRole('button', { name: /^Leave household$/i }).last(),
-    ).toBeVisible({ timeout: 15_000 });
-    await this.page.getByRole('button', { name: /^Leave household$/i }).last().click();
-    await waitForFlutterRoutePattern(this.page, /\/pc\/people\/households(?:\?|$)/, 45_000);
     await refreshFlutterAccessibility(this.page);
   }
 
@@ -820,18 +792,6 @@ export class PeoplePage {
 
   async startAddProfessional(): Promise<void> {
     await this.openAddForm();
-  }
-
-  async startAddCarer(): Promise<void> {
-    await this.page.goto(flutterGotoUrl('/pc/people/new'));
-    await refreshFlutterAccessibility(this.page);
-    await waitForFlutterRoutePattern(this.page, /\/pc\/people\/new(?:\?|$)/, 30_000);
-    await this.page
-      .locator('[data-flutter-key="people_add_tile_carer"]')
-      .click()
-      .catch(() => this.page.getByText(/trusted carer|pet sitter/i).first().click());
-    await this.page.getByRole('button', { name: /continue|continuer/i }).click();
-    await this.expectFormLoaded();
   }
 
   async advanceAddFlowSteps(count: number): Promise<void> {
