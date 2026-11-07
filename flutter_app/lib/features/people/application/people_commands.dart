@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../domain/entities/contact_detail.dart';
 import '../domain/entities/household.dart';
 import '../domain/entities/pet_people.dart';
 import '../domain/enums/relationship_kind.dart';
@@ -21,22 +20,13 @@ class PeopleCommands {
     await _ref.read(rosterProvider.notifier).refresh();
   }
 
-  Future<void> afterContactMutation(
-    String contactId, {
-    List<String>? petIds,
-    ContactDetail? optimisticFromPatch,
-  }) async {
-    if (optimisticFromPatch != null) {
-      _ref
-          .read(rosterProvider.notifier)
-          .applyOptimisticContactPatch(contactId, optimisticFromPatch);
-    }
-    await refreshRoster();
+  Future<void> afterContactMutation(String contactId, {List<String>? petIds}) {
     _ref.invalidate(personDetailProvider(contactId));
     _ref.invalidate(relatedCareProvider(contactId));
     for (final petId in petIds ?? const []) {
       _ref.invalidate(petPeopleProvider(petId));
     }
+    return refreshRoster();
   }
 
   Future<void> afterPetLinkChange(String contactId, String petId) {
@@ -65,8 +55,8 @@ class PeopleCommands {
     if (privateNote != null) patch['private_note'] = privateNote;
     if (householdNote != null) patch['household_note'] = householdNote;
     if (patch.isEmpty) return;
-    final detail = await _repo.patchContact(contactId, patch);
-    await afterContactMutation(contactId, optimisticFromPatch: detail);
+    await _repo.patchContact(contactId, patch);
+    await afterContactMutation(contactId);
   }
 
   Future<void> patchContact(
@@ -74,8 +64,8 @@ class PeopleCommands {
     Map<String, dynamic> patch,
   ) async {
     if (patch.isEmpty) return;
-    final detail = await _repo.patchContact(contactId, patch);
-    await afterContactMutation(contactId, optimisticFromPatch: detail);
+    await _repo.patchContact(contactId, patch);
+    await afterContactMutation(contactId);
   }
 
   Future<void> deleteContact(String contactId) async {

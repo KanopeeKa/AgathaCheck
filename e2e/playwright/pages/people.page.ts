@@ -76,63 +76,18 @@ export class PeoplePage {
     await this.waitForVetFormLoaded();
   }
 
-  /**
-   * CanvasKit builds paint most labels into the engine; the saved phone on `/pc/people/:id`
-   * is not reliably visible to Playwright as DOM text. The edit form uses real `<input>`s.
-   */
-  private async expectPhoneDigitsViaPeopleEditForm(phone: string): Promise<void> {
-    const path = flutterRoutePath(this.page.url());
-    const m = path.match(/^\/pc\/people\/([^/?]+)$/);
-    const contactId = m?.[1];
-    if (!contactId) {
-      throw new Error('expectPhoneDigitsViaPeopleEditForm: not on /pc/people/<id>');
-    }
-    const phoneDigits = phone.replace(/\D/g, '');
-
-    await this.page.goto(flutterGotoUrl(`/pc/people/${contactId}/edit`));
+  /** Person detail Overview tab: one merged semantics node carries "Phone" and the digits (R-038). */
+  private async expectPeopleDetailPhoneVisible(phone: string, _vetName: string): Promise<void> {
+    const digitPattern = phone
+      .replace(/\D/g, '')
+      .split('')
+      .map((d) => `${d}\\D*`)
+      .join('');
+    const rowPattern = new RegExp(`Phone[\\s\\S]*${digitPattern}`, 'i');
     await refreshFlutterAccessibility(this.page);
-    await waitForFlutterRoutePattern(this.page, /\/pc\/people\/[^/]+\/edit(?:\?|$)/, 30_000);
-    // Riverpod can serve cached form state briefly after save — a second navigation refetches without
-    // `location.reload()`, which can bounce Flutter web to `/pc/home` (CI: veterinarian phone assert).
-    await this.page.goto(flutterGotoUrl(`/pc/people/${contactId}/edit`));
-    await refreshFlutterAccessibility(this.page);
-    await waitForFlutterRoutePattern(this.page, /\/pc\/people\/[^/]+\/edit(?:\?|$)/, 30_000);
-
-    await this.page
-      .locator('[flt-semantics-identifier="people_edit_phone_field"]')
-      .first()
-      .waitFor({ state: 'visible', timeout: 20_000 });
-    await expect(async () => {
-      // Do not call `refreshFlutterAccessibility` here — each retry adds ~800ms and can exhaust
-      // the spec-level timeout while digits converge after save.
-      // Re-resolve every attempt — Flutter can rebuild the `<input>` after navigation; a stale
-      // locator reads "" forever (CI: expectPhoneDigitsViaPeopleEditForm).
-      const phoneField = await resolveVisibleSemanticsTextInput(this.page, 'people_edit_phone_field');
-      // Short timeout: default action timeout inside `toPass` retries can exhaust the test budget.
-      let value = await phoneField.inputValue({ timeout: 3_000 }).catch(() => '');
-      if (!value) {
-        value =
-          (await readLabelledTextboxValue(this.page, 'Phone')) ||
-          (await readLabelledTextboxValue(this.page, 'Téléphone'));
-      }
-      expect(value.replace(/\D/g, '')).toContain(phoneDigits);
-    }).toPass({ timeout: 30_000 });
-  }
-
-  /**
-   * On `/pc/people/:id` the overview row is CanvasKit-painted; assert digits via edit form only
-   * (do not wait on `people_action_call` — can stall and exceed the spec's 90s timeout).
-   */
-  private async expectPeopleDetailPhoneVisible(phone: string, vetName: string): Promise<void> {
-    const phoneDigits = phone.replace(/\D/g, '');
-    // Saved phone on People detail is CanvasKit-painted; contacts API is authoritative after save.
-    // Edit-form `inputValue` can stay empty on web even when PATCH + refetch succeeded (CI).
-    await expect(async () => {
-      const token = await readAccessTokenFromPage(this.page);
-      const contacts = await getPeopleContacts(this.baseURL(), token);
-      const row = contacts.find((c) => c.name === vetName);
-      expect(row?.phone?.replace(/\D/g, '') ?? '').toContain(phoneDigits);
-    }).toPass({ timeout: 15_000 });
+    await expect(semanticsByName(this.page, rowPattern).first()).toBeVisible({
+      timeout: 15_000,
+    });
   }
 
   private async onPeopleHub(): Promise<boolean> {

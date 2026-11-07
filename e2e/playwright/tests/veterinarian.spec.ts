@@ -120,8 +120,6 @@ test.describe('Veterinarian management', () => {
   });
 
   test('user can edit a vet phone number', async ({ page }) => {
-    // Route waits, save, API polling, reload-on-edit phone assertion — needs more than default 90s project timeout.
-    test.setTimeout(300_000);
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const user = await signupUser(baseURL, { firstName: 'Alice', lastName: 'Vet' });
     await createVetFull(baseURL, user.accessToken, {

@@ -210,41 +210,44 @@ class _ContactRow extends StatelessWidget {
     final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
-      child: InkWell(
-        onLongPress: onCopy,
-        onTap: onAction,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(icon, size: 22, color: theme.colorScheme.onSurfaceVariant),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(label, style: theme.textTheme.labelMedium),
-                  const SizedBox(height: 2),
-                  Semantics(
-                    identifier: valueSemanticsIdentifier,
-                    label: value,
-                    child: SelectableText(
-                      value,
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        color: theme.colorScheme.primary,
+      child: Semantics(
+        identifier: valueSemanticsIdentifier,
+        label: '$label $value',
+        explicitChildNodes: true,
+        child: InkWell(
+          onLongPress: onCopy,
+          onTap: onAction,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(icon, size: 22, color: theme.colorScheme.onSurfaceVariant),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(label, style: theme.textTheme.labelMedium),
+                    const SizedBox(height: 2),
+                    ExcludeSemantics(
+                      child: SelectableText(
+                        value,
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          color: theme.colorScheme.primary,
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            if (onAction != null)
-              IconButton(
-                tooltip: actionTooltip,
-                onPressed: onAction,
-                icon: Icon(actionIcon),
-                style: IconButton.styleFrom(minimumSize: const Size(48, 48)),
-              ),
-          ],
+              if (onAction != null)
+                IconButton(
+                  tooltip: actionTooltip,
+                  onPressed: onAction,
+                  icon: Icon(actionIcon),
+                  style: IconButton.styleFrom(minimumSize: const Size(48, 48)),
+                ),
+            ],
+          ),
         ),
       ),
     );
