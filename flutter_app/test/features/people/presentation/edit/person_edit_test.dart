@@ -303,7 +303,10 @@ void main() {
       find.byKey(const Key('people_edit_phone_field')),
     );
     expect(phoneField.controller!.text, '555-9999');
-    expect(find.bySemanticsIdentifier('people_edit_phone_field'), findsOneWidget);
+    expect(
+      find.bySemanticsIdentifier('people_edit_phone_field'),
+      findsOneWidget,
+    );
   });
 
   testWidgets('roles can be toggled on edit form', (tester) async {
