@@ -4,7 +4,7 @@
  */
 import type { Locator, Page } from '@playwright/test';
 import { expect } from '@playwright/test';
-import { deleteVet, getAllPets, getPeopleContacts, getVets, updateVetDetails } from '../support/api';
+import { deleteVet, getAllPets, getPeopleContacts, getVets } from '../support/api';
 import {
   dismissConsentBannerIfPresent,
   escapeRegExp,
