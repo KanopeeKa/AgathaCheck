@@ -25,10 +25,10 @@ Living metrics for Agatha Track quality. Update when CI or test counts change ma
 | Flutter frozen / excluded tests | 62 / 2 | frozen-domains manifest |
 | Flutter unowned tests | 0 | `flutter-shards.mjs check` |
 | Flutter integration flows | 1 | `flutter-integration` job |
-| Jest (active / frozen) | 301 / 46 | `jest.config.active.cjs` |
-| Playwright (active / frozen) | 39 / 21 | `shard-files.mjs` + frozen list |
-| BDD active scenarios | 237 (29 frozen excluded) | `check_bdd_coverage.js` |
-| BDD mapped (active) | 85.2% (202/237) | gate **161/237 (68%)** |
+| Jest (active / frozen) | 303 / 46 | `jest.config.active.cjs` |
+| Playwright (active / frozen) | 40 / 21 | `shard-files.mjs` + frozen list |
+| BDD active scenarios | 240 (29 frozen excluded) | `check_bdd_coverage.js` |
+| BDD mapped (active) | 85.4% (205/240) | gate **163/240 (68%)** |
 | BDD title drift (active) | 0 | `generate-scorecard-metrics.mjs --check` |
 | BDD uncovered (active) | 35 | informational |
 | Pre-UAT shard orphans | 0 | `validate-shard-manifest.mjs` |

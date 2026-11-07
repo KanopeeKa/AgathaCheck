@@ -1,6 +1,6 @@
 /**
  * @bdd away_planning.feature
- * Scenario: Away planning hub lists a saved upcoming absence
+ * Scenario: Away planning hub shows Your absences for an owned absence
  */
 import { test, loginAs } from '../fixtures/auth.fixture';
 import { AwayPlanningPage } from '../pages/away-planning.page';

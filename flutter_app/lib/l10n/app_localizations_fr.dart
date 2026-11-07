@@ -7379,11 +7379,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careContextAbsenceDefaultTitle => 'Absence';
 
   @override
-  String get careContextTravellerYouAway => 'Vous serez absent';
+  String get careContextTravellerYouAway => 'Votre absence';
 
   @override
   String careContextTravellerNameAway(String name) {
-    return '$name sera absent';
+    return 'Absence de $name';
   }
 
   @override

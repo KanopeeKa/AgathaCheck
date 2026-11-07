@@ -1,5 +1,6 @@
 import { asyncHandler } from '../../lib/http/asyncHandler.js';
 import { formatCarerCandidateDisplayName } from '../../lib/care/plannedAbsence.js';
+import { loadAbsenceForViewer } from '../../lib/care/absence/absenceVisibility.js';
 import { PET_ACCESS_ROLES, userCanManageCare } from '../../lib/petAccess.js';
 import { extractUserId } from './shared.js';
 
@@ -14,6 +15,14 @@ export function registerCarerCandidatesRoutes(router, pool) {
       if (!(await userCanManageCare(pool, petId, userId))) {
         return res.status(403).json({ error: 'Forbidden' });
       }
+      let excludeTravellerId = null;
+      const plannedAbsenceId = req.query.planned_absence_id || req.query.plannedAbsenceId;
+      if (plannedAbsenceId) {
+        const viewed = await loadAbsenceForViewer(pool, String(plannedAbsenceId), userId);
+        if (viewed && viewed.petRows.some((row) => row.pet_id === petId)) {
+          excludeTravellerId = viewed.row.user_id;
+        }
+      }
       const result = await pool.query(
         `SELECT u.id AS user_id, u.first_name, u.last_name, u.email
          FROM pet_access pa
@@ -24,10 +33,12 @@ export function registerCarerCandidatesRoutes(router, pool) {
          ORDER BY u.first_name, u.last_name, u.email`,
         [petId]
       );
-      res.json(result.rows.map((row) => ({
-        user_id: row.user_id,
-        display_name: formatCarerCandidateDisplayName(row),
-      })));
+      res.json(result.rows
+        .filter((row) => !excludeTravellerId || row.user_id !== excludeTravellerId)
+        .map((row) => ({
+          user_id: row.user_id,
+          display_name: formatCarerCandidateDisplayName(row),
+        })));
     } catch (err) {
       throw err;
     }

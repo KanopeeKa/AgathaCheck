@@ -81,18 +81,40 @@ export class AwayPlanningPage {
     await expect(this.page.getByText(petName).first()).toBeVisible({ timeout: 30_000 });
   }
 
-  async expectPetAwayPlanScreen(petName: string): Promise<void> {
+  async expectPetAwayPlanScreen(petName: string, petId?: string): Promise<void> {
     await refreshFlutterAccessibility(this.page);
+    if (petId) {
+      await expect(semanticsKey(this.page, `away_plan_pet_header_${petId}`).first()).toBeVisible({
+        timeout: 60_000,
+      });
+      return;
+    }
     await expect(
       this.page.getByText(new RegExp(`${petName}.*away plan|Plan d.absence de ${petName}`, 'i')).first(),
     ).toBeVisible({ timeout: 60_000 });
   }
 
   async expectAbsenceScreenLoaded(): Promise<void> {
-    await refreshFlutterAccessibility(this.page);
-    await expect(semanticsKey(this.page, 'absence_screen_page')).toBeVisible({
-      timeout: 60_000,
-    });
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      const petPills = this.page.locator('[flt-semantics-identifier^="absence_pet_pill_"]');
+      const pillCount = await petPills.count();
+      if (pillCount > 0) {
+        await expect(petPills.first()).toBeVisible();
+        return;
+      }
+      const pageMarker = semanticsKey(this.page, 'absence_screen_page').or(
+        this.page.locator('[data-flutter-key="absence_screen_page"]'),
+      );
+      const petsSection = this.page.getByText(
+        /Pets on this absence|Animaux de cette absence/i,
+      );
+      if (await pageMarker.first().isVisible().catch(() => false)) {
+        await expect(pageMarker.first()).toBeVisible();
+        return;
+      }
+      await expect(petsSection.first()).toBeVisible();
+    }).toPass({ timeout: 60_000 });
   }
 
   async openCreateForm(): Promise<void> {
@@ -272,11 +294,9 @@ export class AwayPlanningPage {
       new RegExp(`/pc/away/${absenceId}/pets/${petId}`),
       60_000,
     );
-    await expect(
-      semanticsKey(this.page, `pet_away_plan_page_${petId}`).or(
-        this.page.getByText(/away plan|Plan d.absence/i).first(),
-      ),
-    ).toBeVisible({ timeout: 60_000 });
+    await expect(semanticsKey(this.page, `away_plan_pet_header_${petId}`).first()).toBeVisible({
+      timeout: 60_000,
+    });
   }
 
   /** Trip summary at `/pc/away/:id`; pass `petId` for per-pet care/carer UI. */
@@ -776,5 +796,167 @@ export class AwayPlanningPage {
   async expectAbsenceNotListed(petName: string): Promise<void> {
     await refreshFlutterAccessibility(this.page);
     await expect(this.page.getByText(petName)).toHaveCount(0, { timeout: 30_000 });
+  }
+
+  async openAbsencePlan(absenceId: string): Promise<void> {
+    await this.page.goto(flutterGotoUrl(`/pc/away/${absenceId}`));
+    await refreshFlutterAccessibility(this.page);
+    await this.expectAbsenceScreenLoaded();
+  }
+
+  async expectAbsencePetPillCount(count: number): Promise<void> {
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      const pills = this.page.locator('[flt-semantics-identifier^="absence_pet_pill_"]');
+      await expect(pills).toHaveCount(count);
+    }).toPass({ timeout: 30_000 });
+  }
+
+  async expectTripEditHidden(): Promise<void> {
+    await expect(semanticsKey(this.page, 'away_plan_summary_edit')).toHaveCount(0, {
+      timeout: 15_000,
+    });
+  }
+
+  async expectAddPetHidden(): Promise<void> {
+    await expect(
+      semanticsKey(this.page, 'absence_add_pet').or(
+        this.page.locator('[data-flutter-key="absence_add_pet"]'),
+      ),
+    ).toHaveCount(0, { timeout: 15_000 });
+  }
+
+  async expectOtherPeoplesAbsencesHeading(): Promise<void> {
+    await expect(
+      semanticsKey(this.page, 'planned_absence_hub_other_absences_heading').or(
+        this.page.getByText(/Other people.s absences|Absences des autres/i),
+      ),
+    ).toBeVisible({ timeout: 30_000 });
+  }
+
+  async expectTravellerAwayLine(name: string): Promise<void> {
+    await expect(
+      this.page
+        .getByText(new RegExp(`${name}.*(is away|est absent)|Absence de ${name}`, 'i'))
+        .first(),
+    ).toBeVisible({ timeout: 30_000 });
+  }
+
+  async savePetNote(petId: string, note: string): Promise<void> {
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      const field = semanticsKey(this.page, `away_plan_pet_notes_${petId}`)
+        .or(this.page.locator(`[data-flutter-key="away_plan_pet_notes_${petId}"]`))
+        .or(
+          this.page.getByRole('textbox', {
+            name: /Notes for|Notes about|note for|Notes pour/i,
+          }),
+        );
+      await expect(field.first()).toBeVisible({ timeout: 10_000 });
+      await field.first().scrollIntoViewIfNeeded();
+      await field.first().click();
+      await field.first().fill(note);
+      await semanticsKey(this.page, `away_plan_pet_notes_save_${petId}`)
+        .or(this.page.locator(`[data-flutter-key="away_plan_pet_notes_save_${petId}"]`))
+        .or(this.page.getByRole('button', { name: /^Save$|^Enregistrer$/i }))
+        .first()
+        .click();
+      await refreshFlutterAccessibility(this.page);
+    }).toPass({ timeout: 90_000 });
+  }
+
+  async clickSeeAbsence(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    const seeAbsence = semanticsKey(this.page, 'away_plan_see_absence').or(
+      this.page.locator('[data-flutter-key="away_plan_see_absence"]'),
+    ).or(this.page.getByRole('button', { name: /See absence|Voir l'absence/i }));
+    await expect(seeAbsence.first()).toBeVisible({ timeout: 30_000 });
+    await seeAbsence.first().click();
+    await refreshFlutterAccessibility(this.page);
+    await this.expectAbsenceScreenLoaded();
+  }
+
+  async triggerFullTripHandoverDownload(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    const download = semanticsKey(this.page, 'away_plan_download_handover')
+      .or(this.page.locator('[data-flutter-key="away_plan_download_handover"]'))
+      .or(
+        this.page.getByRole('button', {
+          name: /download report|télécharger le rapport|picture_as_pdf/i,
+        }),
+      );
+    await expect(download.first()).toBeVisible({ timeout: 30_000 });
+    await download.first().click();
+    await expect(
+      this.page
+        .getByText(/report downloaded|rapport téléchargé|report generated|rapport généré/i)
+        .first(),
+    ).toBeVisible({ timeout: 90_000 });
+    await this.expectNoPdfExportErrorSnackBar();
+  }
+
+  async downloadFullTripHandover() {
+    const downloadPromise = this.page.waitForEvent('download', { timeout: 90_000 });
+    await semanticsKey(this.page, 'away_plan_download_handover').click();
+    return downloadPromise;
+  }
+
+  async clickAddPetOnAbsence(): Promise<void> {
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      const btn = semanticsKey(this.page, 'absence_add_pet')
+        .or(this.page.locator('[data-flutter-key="absence_add_pet"]'))
+        .or(
+          this.page.getByRole('button', {
+            name: /Add a pet|Ajouter un animal/i,
+          }),
+        );
+      await expect(btn.first()).toBeVisible({ timeout: 30_000 });
+      await btn.first().scrollIntoViewIfNeeded();
+      await btn.first().click({ force: true });
+      await refreshFlutterAccessibility(this.page);
+    }).toPass({ timeout: 60_000 });
+  }
+
+  async pickAddPetCandidate(petId: string): Promise<void> {
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      const opt = semanticsKey(this.page, `add_pet_to_absence_${petId}`);
+      await expect(opt.first()).toBeVisible({ timeout: 30_000 });
+      await opt.first().click({ force: true });
+      await refreshFlutterAccessibility(this.page);
+    }).toPass({ timeout: 45_000 });
+  }
+
+  async removePetFromAbsence(petId: string): Promise<void> {
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      const trigger = semanticsKey(this.page, `remove_pet_from_absence_${petId}`);
+      await expect(trigger.first()).toBeVisible({ timeout: 30_000 });
+      await trigger.first().click({ force: true });
+      await refreshFlutterAccessibility(this.page);
+      const confirm = semanticsKey(this.page, 'remove_pet_from_absence_confirm');
+      await expect(confirm.first()).toBeVisible({ timeout: 15_000 });
+      await confirm.first().click({ force: true });
+      await refreshFlutterAccessibility(this.page);
+    }).toPass({ timeout: 45_000 });
+  }
+
+  async expectPetPageAwayRow(absenceId: string): Promise<void> {
+    await expect(semanticsKey(this.page, `pet_page_away_row_${absenceId}`)).toBeVisible({
+      timeout: 45_000,
+    });
+  }
+
+  async expectPetPageAwaySectionHidden(): Promise<void> {
+    await expect(semanticsKey(this.page, 'pet_page_away_row_')).toHaveCount(0, {
+      timeout: 15_000,
+    });
+  }
+
+  async expectNoPdfExportErrorSnackBar(): Promise<void> {
+    await expect(this.page.getByText(/PDF export failed|Échec.*PDF/i)).toHaveCount(0, {
+      timeout: 5_000,
+    });
   }
 }

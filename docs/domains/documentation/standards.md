@@ -103,10 +103,10 @@ Declare canonical path(s) updated or `N/A — <reason>` (≥10 characters after 
 
 | Gate | Mode | Rules (summary) |
 |------|------|-----------------|
-| B `changes/` | `--changes` | **R-B1**–**R-B5** — `proposed` \| `in-delivery` only; no new `*-decisions.md` |
+| B `changes/` | `--changes` | **R-B1**–**R-B6** — change-doc hygiene; **R-B6** blocks unlinking a `changes/*.md` that still exists (orphan); weekly `--all` reports unlinked change docs |
 | C shape | `--shape` | **R-C1**–**R-C7** — template tables; **R-C7** decision-ID format (rule 6); **R-C6-legacy** WARN on touched baseline docs |
 | D IDs | `--ids` | **R-D1**–**R-D4** — append-only; use `Retired` not row delete; **R-D3** blocks a requirement **or decision** ID that this PR introduces and another doc already defines (checked on new docs too; renames are followed) |
-| E trace | `--trace` | **R-T2**–**R-T4** — `bdd:` / `test:` / `none — #n` on new/changed AC rows |
+| E trace | `--trace` | **R-T2**–**R-T5** — coverage on new/changed AC rows; **R-T5** blocks a requirement newly marked **Live** when citing AC rows lack resolving `test:` / `bdd:` |
 
 | M memory | `--memory` | **R-M1** WARN: a new/modified memory file cites a decision/requirement ID (it is carrying a product rule). **R-M2** WARN: a canonical doc gains a `.agents/memory/` source. **R-M3** WARN: stale `docs-memory-backlog.json` entry. **R-M4** weekly report: backlog entries still waiting to move |
 
@@ -126,6 +126,7 @@ Declare canonical path(s) updated or `N/A — <reason>` (≥10 characters after 
 | DOCUMENTATION-STANDARDS-D-006 | `.agents/memory/` holds lessons only; product rules move to canonical docs | Memory had become a hidden second spec; non-blocking guards (R-M1–R-M4) plus a backlog worked down during consolidation | Live | 2026-10-07 | — |
 | DOCUMENTATION-STANDARDS-D-007 | Documentation migration handover supersedes 2025 consolidation plan | Single authoritative migrate plan for agents; integration branch + two-phase gates | Live | 2026-10-07 | #1762 |
 | DOCUMENTATION-STANDARDS-D-008 | Agent instruction files: one shared rulebook (`AGENTS.md`), agent-specific deltas only, budgets and gate A | Restated rules drifted and contradicted across Cursor, Claude Code, Copilot and Replit layers; override layers did not stop wrongful agent stops | Live | 2026-10-13 | — |
+| DOCUMENTATION-STANDARDS-D-009 | **R-T5** and **R-B6** block Live-without-coverage and orphaned change docs | Away programme fold set R-018 Live with `none — #1770` and dropped README link while keeping the spec | Live | 2026-11-06 | away-plans co-parent fix |
 
 ## Still open
 
