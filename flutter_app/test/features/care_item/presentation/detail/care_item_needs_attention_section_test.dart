@@ -92,6 +92,9 @@ void main() {
       return http.Response(
         json.encode({
           'undo_token': 'u',
+          'given': ['slot-0', 'slot-1', 'slot-2'],
+          'not_given': [],
+          'ignored': [],
           'entry': {'id': 'pill', 'open_occurrences': []},
         }),
         200,
@@ -128,12 +131,12 @@ void main() {
 
     await tester.tap(find.byKey(const Key('care_item_bulk_mark_done')));
     await tester.pumpAndSettle();
-    expect(requests, hasLength(3));
-    expect(requests.map((r) => r.url.path), [
-      endsWith('/occurrences/slot-0/complete'),
-      endsWith('/occurrences/slot-1/complete'),
-      endsWith('/occurrences/slot-2/complete'),
-    ]);
+    expect(requests, hasLength(1));
+    expect(requests.single.url.path, endsWith('/occurrences/resolve-stack'));
+    expect(requests.single.method, 'POST');
+    final body = json.decode(requests.single.body) as Map<String, dynamic>;
+    expect(body['given'], ['slot-0', 'slot-1', 'slot-2']);
+    expect(body['not_given'], isEmpty);
     expect(find.text('3 marked done'), findsOneWidget);
     expect(find.byIcon(Icons.close), findsOneWidget);
     await tester.pump(kUndoSnackBarDuration);
