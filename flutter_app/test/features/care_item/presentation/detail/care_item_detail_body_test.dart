@@ -398,12 +398,12 @@ void main() {
             ),
           ),
           entryOccurrencesProvider('entry-1').overrideWith((ref) async => []),
-          entryPastOccurrencesProvider('entry-1').overrideWith(
-            (ref) async => [],
-          ),
-          healthEntryPhotosProvider('entry-1').overrideWith(
-            (ref) async => [photo],
-          ),
+          entryPastOccurrencesProvider(
+            'entry-1',
+          ).overrideWith((ref) async => []),
+          healthEntryPhotosProvider(
+            'entry-1',
+          ).overrideWith((ref) async => [photo]),
         ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -466,9 +466,9 @@ void main() {
             ),
           ),
           entryOccurrencesProvider('entry-1').overrideWith((ref) async => []),
-          entryPastOccurrencesProvider('entry-1').overrideWith(
-            (ref) async => past,
-          ),
+          entryPastOccurrencesProvider(
+            'entry-1',
+          ).overrideWith((ref) async => past),
           healthEntryPhotosProvider('entry-1').overrideWith((ref) async => []),
         ],
         child: MaterialApp(
@@ -516,9 +516,9 @@ void main() {
             ),
           ),
           entryOccurrencesProvider('entry-1').overrideWith((ref) async => []),
-          entryPastOccurrencesProvider('entry-1').overrideWith(
-            (ref) async => [],
-          ),
+          entryPastOccurrencesProvider(
+            'entry-1',
+          ).overrideWith((ref) async => []),
           healthEntryPhotosProvider('entry-1').overrideWith((ref) async => []),
         ],
         child: MaterialApp(
