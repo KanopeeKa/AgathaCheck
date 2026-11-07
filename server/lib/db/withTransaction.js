@@ -19,22 +19,8 @@ export async function withTransaction(pool, fn) {
   if (!pool) {
     throw new Error('withTransaction requires a pool');
   }
-  // Jest pools sometimes omit `connect()`; serial BEGIN/fn/COMMIT on one mock is enough for unit tests.
-  // Production code must use a real pg.Pool (see `createTransactionalMockPool` for tests).
   if (typeof pool.connect !== 'function') {
-    await pool.query('BEGIN');
-    try {
-      const result = await fn(pool);
-      await pool.query('COMMIT');
-      return result;
-    } catch (err) {
-      try {
-        await pool.query('ROLLBACK');
-      } catch {
-        // connection already unusable; the original error matters
-      }
-      throw err;
-    }
+    throw new Error('withTransaction requires a pg.Pool with connect()');
   }
 
   const client = await pool.connect();

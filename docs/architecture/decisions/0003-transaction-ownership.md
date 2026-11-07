@@ -46,10 +46,6 @@ Route modules translate HTTP; **services and lib own transactions** unless the o
 - `server/test/architecture/transactionOwnership.test.js` — no `BEGIN` / `withOptionalTransaction` in active production roots (manifest exclusions and documented deferrals only).
 - `server/test/db/petLifecycle.integration.test.js` — rollback and client-release behaviour on real PostgreSQL.
 
-### Deferrals
-
-Care occurrence locking (`careItemLock.js`, `careTick.js`) may use dedicated primitives until migrated; listed in the architecture test allowlist. Tracked in [GitHub #1735](https://github.com/KanopeeKa/AgathaCheck/issues/1735).
-
 ## Consequences
 
 - New routes must not call `pool.connect()` directly for business transactions.
