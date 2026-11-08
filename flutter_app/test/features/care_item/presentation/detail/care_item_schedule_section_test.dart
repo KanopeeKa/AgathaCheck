@@ -10,9 +10,7 @@ import 'package:pet_profile_app/features/pet_care/presentation/widgets/care_surf
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 void main() {
-  testWidgets('CareItemScheduleSection renders stat row', (
-    tester,
-  ) async {
+  testWidgets('CareItemScheduleSection renders stat row', (tester) async {
     final entry = HealthEntry(
       id: 'entry-1',
       petId: 'pet-1',
