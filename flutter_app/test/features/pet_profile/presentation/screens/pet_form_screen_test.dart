@@ -168,8 +168,12 @@ void main() {
     expect(find.text('Change photo'), findsOneWidget);
     expect(_fieldText(tester, const Key('pet_name_field')), 'Bella');
     expect(_fieldText(tester, const Key('pet_breed_field')), 'Collie');
-    expect(find.byKey(const Key('pet_weight_readonly')), findsOneWidget);
-    expect(find.text('Record weight'), findsOneWidget);
+    expect(find.byKey(const Key('pet_weight_readonly')), findsNothing);
+    expect(find.text('Record weight'), findsNothing);
+    expect(
+      find.bySemanticsIdentifier('people_picker_field_pet_primary_vet'),
+      findsNothing,
+    );
     expect(_fieldText(tester, const Key('pet_bio_field')), 'Loves long walks');
     expect(
       _fieldText(tester, const Key('pet_insurance_field')),
@@ -187,7 +191,6 @@ void main() {
       find.text(formatCalendarDateMedium(DateTime(2021, 6, 20))),
       findsOneWidget,
     );
-    expect(find.text('Dr Smith'), findsWidgets);
   });
 
   testWidgets('save is disabled until the form is dirty', (tester) async {

@@ -33,6 +33,7 @@ import {
   getPetPeopleRelationships,
 } from '../support/api';
 import { PetFormPage } from '../pages/pet-form.page';
+import { PeoplePage } from '../pages/people.page';
 import { PetDetailPage } from '../pages/pet-detail.page';
 import { PetListPage } from '../pages/pet-list.page';
 import { getPetRecord, updatePetFields } from '../pages/pet-profile.seed';
@@ -454,7 +455,6 @@ test.describe('Pet profiles', () => {
     const detail = new PetDetailPage(page);
     await detail.expectLoaded('Bella');
 
-    const { PeoplePage } = await import('../pages/people.page');
     const people = new PeoplePage(page);
     await people.openPetEmergencyManage();
     await people.setPetSlotFromManageSheet(

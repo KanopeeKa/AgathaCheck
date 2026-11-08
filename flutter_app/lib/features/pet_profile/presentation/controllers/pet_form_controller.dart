@@ -203,13 +203,6 @@ class PetFormController {
     return toKg(parsed, deps.readWeightUnit());
   }
 
-  double? _parsedReferenceValue() {
-    final value = state.weightReferenceValue.trim();
-    if (value.isEmpty) return null;
-    final parsed = double.tryParse(value);
-    if (parsed == null || parsed <= 0) return null;
-    return parsed;
-  }
 }
 
 class PetFormState {
