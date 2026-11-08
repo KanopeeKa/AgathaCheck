@@ -435,7 +435,10 @@ test.describe('Pet profiles', () => {
     await detail.expectAllCareLoaded('Bella');
   });
 
-  test('user can link a veterinarian to a pet from the edit form', async ({ page, testUser }) => {
+  test('user can link a veterinarian to a pet from the emergency people card', async ({
+    page,
+    testUser,
+  }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const pet = await createPet(baseURL, testUser.accessToken, 'Bella', 'Dog');
     await createVet(baseURL, testUser.accessToken, 'Dr. Jones');
@@ -450,12 +453,15 @@ test.describe('Pet profiles', () => {
 
     const detail = new PetDetailPage(page);
     await detail.expectLoaded('Bella');
-    await detail.openEdit();
 
-    const editForm = new PetFormPage(page);
-    await editForm.expectLoaded();
-    await editForm.selectPrimaryVetContact(vetContactId);
-    await editForm.saveEditWithPeopleSlot(pet.id);
+    const { PeoplePage } = await import('../pages/people.page');
+    const people = new PeoplePage(page);
+    await people.openPetEmergencyManage();
+    await people.setPetSlotFromManageSheet(
+      'pet_slot_primary_vet',
+      vetContactId,
+      'Dr. Jones',
+    );
 
     await detail.expectLoaded('Bella');
     await detail.expectLinkedVet('Dr. Jones');

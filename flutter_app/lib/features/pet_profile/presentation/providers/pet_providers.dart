@@ -176,6 +176,24 @@ class PetListNotifier extends AsyncNotifier<List<Pet>> {
     ref.invalidate(allPetsIncludingOrgProvider);
   }
 
+  Future<void> updatePetWeightContext({
+    required String petId,
+    double? weightReferenceValue,
+    String? weightReferenceAuthority,
+    required String weightManagementContext,
+  }) async {
+    await ref.read(petRepositoryProvider).updatePetWeightContext(
+      petId: petId,
+      weightReferenceValue: weightReferenceValue,
+      weightReferenceAuthority: weightReferenceAuthority,
+      weightManagementContext: weightManagementContext,
+      clearWeightReferenceValue: weightReferenceValue == null,
+      clearWeightReferenceAuthority: weightReferenceAuthority == null,
+    );
+    ref.invalidateSelf();
+    ref.invalidate(allPetsIncludingOrgProvider);
+  }
+
   Future<void> deletePet(String id) async {
     await ref.read(petRepositoryProvider).deletePetWithDataCleanup(id);
     ref.invalidateSelf();

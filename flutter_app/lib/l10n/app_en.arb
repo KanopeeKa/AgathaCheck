@@ -218,6 +218,8 @@
   "rainbowBridge": "Rainbow bridge",
 
   "weightTracking": "Weight Tracking",
+  "weightHubSettingsTitle": "Weight settings",
+  "weightHubSettingsEditTitle": "Edit weight settings",
   "addEntry": "Add Health Event",
   "errorLoadingWeightData": "Error loading weight data: {error}",
   "@errorLoadingWeightData": { "placeholders": { "error": { "type": "String" } } },

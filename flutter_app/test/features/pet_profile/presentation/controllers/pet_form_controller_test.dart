@@ -208,6 +208,37 @@ void main() {
       expect(repository.added.single.organizationId, 'org-1');
     });
 
+    test('edit save preserves weight context without sending it', () async {
+      final existing = Pet(
+        id: 'pet-1',
+        name: 'Rex',
+        species: 'dog',
+        weightReferenceValue: 5.0,
+        weightReferenceAuthority: 'vet_target',
+        weightManagementContext: 'vet_managed',
+      );
+      repository = RecordingPetRepository(initial: [existing]);
+      container.dispose();
+      container = makeContainer(repo: repository);
+      controller = PetFormController();
+      deps = makeDeps(repository);
+      controller.state = controller.state.copyWith(
+        name: 'Rexy',
+        selectedSpecies: 'dog',
+        weightReferenceValue: '',
+        weightReferenceAuthority: null,
+        weightManagementContext: 'none',
+      );
+
+      await controller.submit(deps, isEditing: true, petId: 'pet-1');
+
+      final updated = repository.updated.single;
+      expect(updated.name, 'Rexy');
+      expect(updated.weightReferenceValue, 5.0);
+      expect(updated.weightReferenceAuthority, 'vet_target');
+      expect(updated.weightManagementContext, 'vet_managed');
+    });
+
     test(
       'FW-5 edit keeps cached weight on pet without reading form weight',
       () async {

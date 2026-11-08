@@ -49,6 +49,28 @@ class RecordingPetRepository implements PetRepository {
   }
 
   @override
+  Future<Pet> updatePetWeightContext({
+    required String petId,
+    double? weightReferenceValue,
+    String? weightReferenceAuthority,
+    required String weightManagementContext,
+    bool clearWeightReferenceValue = false,
+    bool clearWeightReferenceAuthority = false,
+  }) async {
+    final existing = await getPetById(petId);
+    if (existing == null) throw StateError('missing pet');
+    final next = existing.copyWith(
+      weightReferenceValue: weightReferenceValue,
+      weightReferenceAuthority: weightReferenceAuthority,
+      weightManagementContext: weightManagementContext,
+      clearWeightReferenceValue: clearWeightReferenceValue,
+      clearWeightReferenceAuthority: clearWeightReferenceAuthority,
+    );
+    updated.add(next);
+    return next;
+  }
+
+  @override
   Future<void> deletePet(String id) async {
     deleted.add(id);
   }

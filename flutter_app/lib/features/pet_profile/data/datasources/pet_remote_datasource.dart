@@ -19,6 +19,17 @@ abstract class PetRemoteDataSource {
   Future<List<PetModel>> getAllPetsIncludingOrg(String token);
   Future<PetModel> createPet(PetModel pet, String token);
   Future<PetModel> updatePet(PetModel pet, String token);
+
+  /// Partial PUT: only weight-context columns (server preserves omitted profile fields).
+  Future<PetModel> updatePetWeightContext({
+    required String petId,
+    required String token,
+    double? weightReferenceValue,
+    String? weightReferenceAuthority,
+    required String weightManagementContext,
+    bool clearWeightReferenceValue = false,
+    bool clearWeightReferenceAuthority = false,
+  });
   Future<PetModel> uploadPetPhoto(
     String petId,
     Uint8List bytes,
@@ -69,10 +80,52 @@ class PetRemoteDataSourceImpl implements PetRemoteDataSource {
   Map<String, dynamic> _petUpdatePayload(PetModel pet) {
     final payload = pet.toJson(includeWeightEntryDate: false);
     payload.remove('weight');
+    payload.remove('weight_reference_value');
+    payload.remove('weight_reference_authority');
+    payload.remove('weight_management_context');
+    payload.remove('vetId');
     if (isPendingPetPhotoUpload(pet.photoPath)) {
       payload.remove('photoPath');
     }
     return payload;
+  }
+
+  @override
+  Future<PetModel> updatePetWeightContext({
+    required String petId,
+    required String token,
+    double? weightReferenceValue,
+    String? weightReferenceAuthority,
+    required String weightManagementContext,
+    bool clearWeightReferenceValue = false,
+    bool clearWeightReferenceAuthority = false,
+  }) async {
+    final payload = <String, dynamic>{
+      'weight_management_context': weightManagementContext,
+    };
+    if (clearWeightReferenceValue) {
+      payload['weight_reference_value'] = null;
+    } else if (weightReferenceValue != null) {
+      payload['weight_reference_value'] = weightReferenceValue;
+    } else {
+      payload['weight_reference_value'] = null;
+    }
+    if (clearWeightReferenceAuthority) {
+      payload['weight_reference_authority'] = null;
+    } else {
+      payload['weight_reference_authority'] = weightReferenceAuthority;
+    }
+    final response = await _client.put(
+      Uri.parse('$baseUrl/api/pets/$petId'),
+      headers: _headers(token),
+      body: json.encode(payload),
+    );
+    if (response.statusCode >= 400) {
+      throw _errorFromResponse(response, 'Failed to update weight settings');
+    }
+    return PetModel.fromJson(
+      json.decode(response.body) as Map<String, dynamic>,
+    );
   }
 
   @override

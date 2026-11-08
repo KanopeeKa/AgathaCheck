@@ -15,6 +15,11 @@ import 'package:pet_profile_app/features/notifications/presentation/providers/no
 import 'package:pet_profile_app/features/organization/domain/entities/organization.dart';
 import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
+import 'package:pet_profile_app/features/pet_profile/domain/entities/pet_viewer_role.dart';
+import 'package:pet_profile_app/features/pet_profile/domain/services/pet_detail_actions.dart';
+import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
+import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_detail_viewer_context_provider.dart';
+import 'package:pet_profile_app/core/experience/app_experience.dart';
 import 'package:pet_profile_app/features/weight_tracking/domain/entities/weight_entry.dart';
 import 'package:pet_profile_app/features/weight_tracking/domain/entities/weight_fulfils.dart';
 import 'package:pet_profile_app/features/weight_tracking/domain/entities/weight_overview.dart';
@@ -146,6 +151,41 @@ void main() {
       ),
     );
   }
+
+  testWidgets('shows weight settings card from pet profile fields', (tester) async {
+    const pet = Pet(
+      id: 'pet-1',
+      name: 'Rex',
+      species: 'Dog',
+      weightReferenceValue: 4,
+      weightReferenceAuthority: 'vet_target',
+      weightManagementContext: 'vet_managed',
+    );
+    await tester.pumpWidget(
+      buildApp(
+        entries: const [],
+        initialLocation: '/pet/pet-1/weight',
+        extraOverrides: [
+          allPetsIncludingOrgProvider.overrideWith((ref) async => [pet]),
+          petDetailViewerContextProvider('pet-1').overrideWithValue(
+            PetDetailContext(
+              role: PetViewerRole.guardian,
+              experience: AppExperience.petCare,
+              actions: {PetDetailAction.editProfile},
+              isPolicyResolved: true,
+            ),
+          ),
+        ],
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('weight_hub_settings_card')), findsOneWidget);
+    expect(find.text('4.0 kg'), findsOneWidget);
+    expect(find.text('Vet target'), findsOneWidget);
+    expect(find.byKey(const Key('weight_hub_settings_edit')), findsOneWidget);
+    expect(find.text('No weight data yet'), findsOneWidget);
+  });
 
   testWidgets('FW-6 hub shows summary, chart, routines and history chips', (
     tester,

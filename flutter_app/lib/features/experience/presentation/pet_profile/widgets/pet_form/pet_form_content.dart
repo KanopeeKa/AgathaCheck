@@ -3,7 +3,6 @@ import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 import 'package:pet_profile_app/features/experience/presentation/pet_profile/widgets/pet_form/pet_form_vet_section.dart';
-import 'package:pet_profile_app/features/experience/presentation/pet_profile/widgets/pet_form/pet_form_weight_context_section.dart';
 import 'package:pet_profile_app/features/experience/presentation/pet_profile/widgets/pet_form/pet_form_weight_section.dart';
 
 /// Shared form fields for add/edit pet — layout-aware row grouping for tablet+.
@@ -124,11 +123,13 @@ class PetFormContent extends StatelessWidget {
           PetFormSection(
             title: l.petFormCareAndRecords,
             children: [
-              PetFormVetSection(
-                selectedPrimaryVetContactId: selectedPrimaryVetContactId,
-                onPrimaryVetContactIdChanged: onPrimaryVetContactIdChanged,
-              ),
-              const SizedBox(height: 16),
+              if (!isEditing) ...[
+                PetFormVetSection(
+                  selectedPrimaryVetContactId: selectedPrimaryVetContactId,
+                  onPrimaryVetContactIdChanged: onPrimaryVetContactIdChanged,
+                ),
+                const SizedBox(height: 16),
+              ],
               PetFormInsuranceSection(
                 textController: insuranceController,
                 onChanged: (value) {
@@ -218,15 +219,17 @@ class PetFormContent extends StatelessWidget {
       },
     );
 
-    final weightField = PetFormWeightSection(
-      isEditing: isEditing,
-      petId: petId,
-      showWeightInput: showWeightInput,
-      newWeightController: newWeightController,
-      controller: controller,
-      onShowWeightInput: onShowWeightInput,
-      onHideWeightInput: onHideWeightInput,
-    );
+    final weightField = isEditing
+        ? null
+        : PetFormWeightSection(
+            isEditing: false,
+            petId: petId,
+            showWeightInput: showWeightInput,
+            newWeightController: newWeightController,
+            controller: controller,
+            onShowWeightInput: onShowWeightInput,
+            onHideWeightInput: onHideWeightInput,
+          );
 
     if (!_usePairedRows) {
       return [
@@ -257,28 +260,33 @@ class PetFormContent extends StatelessWidget {
       const SizedBox(height: 16),
       genderField,
       const SizedBox(height: 16),
-      Row(
-        key: const Key('pet_form_dob_weight_row'),
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(child: dobField),
-          const SizedBox(width: 16),
-          Expanded(child: weightField),
-        ],
-      ),
+      if (isEditing)
+        dobField
+      else
+        Row(
+          key: const Key('pet_form_dob_weight_row'),
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(child: dobField),
+            const SizedBox(width: 16),
+            Expanded(child: weightField!),
+          ],
+        ),
     ];
   }
 
   List<Widget> _healthDetailsChildren(BuildContext context) {
-    final weightField = PetFormWeightSection(
-      isEditing: isEditing,
-      petId: petId,
-      showWeightInput: showWeightInput,
-      newWeightController: newWeightController,
-      controller: controller,
-      onShowWeightInput: onShowWeightInput,
-      onHideWeightInput: onHideWeightInput,
-    );
+    final weightField = !isEditing
+        ? PetFormWeightSection(
+            isEditing: false,
+            petId: petId,
+            showWeightInput: showWeightInput,
+            newWeightController: newWeightController,
+            controller: controller,
+            onShowWeightInput: onShowWeightInput,
+            onHideWeightInput: onHideWeightInput,
+          )
+        : null;
 
     final neuteredField = PetFormNeuteredSection(
       species: controller.state.selectedSpecies,
@@ -290,29 +298,16 @@ class PetFormContent extends StatelessWidget {
     );
 
     if (!_usePairedRows) {
-      return [
-        weightField,
-        const SizedBox(height: 16),
-        neuteredField,
-        if (isEditing) ...[
+      if (weightField != null) {
+        return [
+          weightField,
           const SizedBox(height: 16),
-          PetFormWeightContextSection(
-            controller: controller,
-            onMarkDirty: onMarkDirty,
-          ),
-        ],
-      ];
+          neuteredField,
+        ];
+      }
+      return [neuteredField];
     }
 
-    return [
-      neuteredField,
-      if (isEditing) ...[
-        const SizedBox(height: 16),
-        PetFormWeightContextSection(
-          controller: controller,
-          onMarkDirty: onMarkDirty,
-        ),
-      ],
-    ];
+    return [neuteredField];
   }
 }

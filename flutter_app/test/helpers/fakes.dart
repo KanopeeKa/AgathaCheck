@@ -38,6 +38,23 @@ class FakePetRepository implements PetRepository {
   @override
   Future<Pet> updatePet(Pet pet) async => pet;
   @override
+  Future<Pet> updatePetWeightContext({
+    required String petId,
+    double? weightReferenceValue,
+    String? weightReferenceAuthority,
+    required String weightManagementContext,
+    bool clearWeightReferenceValue = false,
+    bool clearWeightReferenceAuthority = false,
+  }) async =>
+      Pet(
+        id: petId,
+        name: 'n',
+        species: 'Dog',
+        weightReferenceValue: weightReferenceValue,
+        weightReferenceAuthority: weightReferenceAuthority,
+        weightManagementContext: weightManagementContext,
+      );
+  @override
   Future<void> deletePet(String id) async {}
   @override
   Future<void> deletePetWithDataCleanup(String id) async {}

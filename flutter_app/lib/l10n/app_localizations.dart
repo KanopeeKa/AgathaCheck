@@ -1046,6 +1046,18 @@ abstract class AppLocalizations {
   /// **'Weight Tracking'**
   String get weightTracking;
 
+  /// No description provided for @weightHubSettingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight settings'**
+  String get weightHubSettingsTitle;
+
+  /// No description provided for @weightHubSettingsEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit weight settings'**
+  String get weightHubSettingsEditTitle;
+
   /// No description provided for @addEntry.
   ///
   /// In en, this message translates to:

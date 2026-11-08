@@ -130,7 +130,6 @@ class PetFormController {
           );
         }
 
-        final referenceValue = _parsedReferenceValue();
         final updated = existing.copyWith(
           name: state.name.trim(),
           species: state.selectedSpecies,
@@ -146,11 +145,6 @@ class PetFormController {
           photoPath: state.photoBase64,
           passedAway: state.passedAway,
           organizationId: state.selectedOrgId,
-          weightReferenceValue: referenceValue,
-          weightReferenceAuthority: state.weightReferenceAuthority,
-          weightManagementContext: state.weightManagementContext,
-          clearWeightReferenceValue: referenceValue == null,
-          clearWeightReferenceAuthority: state.weightReferenceAuthority == null,
           clearGender: state.selectedGender == null,
           clearNeuteredDate: state.neuteredDate == null,
           clearDateOfBirth: state.dateOfBirth == null,

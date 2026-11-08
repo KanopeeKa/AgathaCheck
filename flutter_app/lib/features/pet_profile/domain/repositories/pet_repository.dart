@@ -30,6 +30,16 @@ abstract class PetRepository {
   /// Returns the updated [Pet].
   Future<Pet> updatePet(Pet pet);
 
+  /// Updates only weight-context columns on the pet profile (partial PUT).
+  Future<Pet> updatePetWeightContext({
+    required String petId,
+    double? weightReferenceValue,
+    String? weightReferenceAuthority,
+    required String weightManagementContext,
+    bool clearWeightReferenceValue = false,
+    bool clearWeightReferenceAuthority = false,
+  });
+
   /// Deletes a pet profile by its [id].
   Future<void> deletePet(String id);
 
