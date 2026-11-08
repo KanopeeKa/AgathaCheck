@@ -503,8 +503,10 @@ export class PeoplePage {
 
   async searchHub(query: string): Promise<void> {
     const field = this.page
-      .getByRole('textbox', { name: /search people/i })
-      .or(this.page.getByLabel(/search people/i));
+      .getByRole('textbox', {
+        name: /search people|Rechercher personnes/i,
+      })
+      .or(this.page.getByLabel(/search people|Rechercher personnes/i));
     await field.first().click();
     await field.first().fill('');
     await field.first().pressSequentially(query, { delay: 40 });
@@ -544,8 +546,10 @@ export class PeoplePage {
 
   async expectSearchFieldValue(query: string): Promise<void> {
     const field = this.page
-      .getByRole('textbox', { name: /search people/i })
-      .or(this.page.getByLabel(/search people/i));
+      .getByRole('textbox', {
+        name: /search people|Rechercher personnes/i,
+      })
+      .or(this.page.getByLabel(/search people|Rechercher personnes/i));
     await expect(field.first()).toHaveValue(query, { timeout: 10_000 });
   }
 

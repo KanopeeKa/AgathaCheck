@@ -173,6 +173,11 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('absence_screen_page')), findsOneWidget);
+    expect(find.bySemanticsIdentifier('absence_screen_page'), findsOneWidget);
+    expect(
+      find.bySemanticsIdentifier('away_plan_download_handover'),
+      findsOneWidget,
+    );
     expect(find.byKey(const Key('absence_pet_pill_pet-1')), findsOneWidget);
     expect(find.text("See Luna's away plan"), findsOneWidget);
     expect(find.text("Who's caring"), findsNothing);
@@ -242,5 +247,73 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('away_plan_summary_edit')), findsNothing);
+  });
+
+  testWidgets('active future absence exposes absence_add_pet semantics', (
+    tester,
+  ) async {
+    const futureAbsence = PlannedAbsence(
+      id: 'abs-future',
+      userId: 'user-1',
+      startsOn: '2027-01-10',
+      endsOn: '2027-01-20',
+      provenance: 'user_declared',
+      status: 'active',
+      petIds: ['pet-1'],
+      isOwnAbsence: true,
+      canEditTrip: true,
+      petCarers: const [
+        PlannedAbsencePetCarer(
+          petId: 'pet-1',
+          carerKind: 'note_only',
+          carerName: 'Tom',
+          carerState: 'set',
+        ),
+      ],
+    );
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          plannedAbsenceDetailProvider(
+            'abs-future',
+          ).overrideWith((ref) async => futureAbsence),
+          awayPlanReadinessProvider(
+            'abs-future',
+          ).overrideWith((ref) async => readiness),
+          allPetsIncludingOrgProvider.overrideWith((ref) async => [pet]),
+          perPetAwayPlanStatusProvider((
+            absenceId: 'abs-future',
+            petId: 'pet-1',
+          )).overrideWith(
+            (ref) async => const PerPetAwayPlanStatus(
+              priority: 'care_review',
+              carerState: 'set',
+              reviewCareItemCount: 1,
+              copyKey: 'awayPlanningPetStatusReviewCount',
+              copyParams: {'count': 1},
+            ),
+          ),
+        ],
+        child: MaterialApp.router(
+          theme: AppTheme.lightTheme,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          routerConfig: GoRouter(
+            routes: [
+              GoRoute(
+                path: '/pc/away/:id',
+                builder: (_, state) => PlannedAbsencePlanScreen(
+                  absenceId: state.pathParameters['id']!,
+                ),
+              ),
+            ],
+            initialLocation: '/pc/away/abs-future',
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.bySemanticsIdentifier('absence_add_pet'), findsOneWidget);
   });
 }
