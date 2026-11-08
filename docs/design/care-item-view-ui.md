@@ -45,7 +45,7 @@ Document hex values only in [`tokens.md`](./tokens.md) when promoted globally; C
 4. **Schedule** — header row (no section edit link; **Edit** in the care item top menu); body = stat grid (Frequency · Type · Reminder) + prose lines (next date, flexibility).
 5. **Details** — definition-list rows; **no duplicate recurrence** (schedule owns rhythm).
 6. **Documents** — module when attachments exist (D-CIE-041); horizontal read-only strip; hidden when empty; loading shows strip progress in module.
-7. **History** — inset list for past occurrences when any qualify; **No history yet** otherwise; **See history** in module footer.
+7. **History** — inset one-line pills for past occurrences when any qualify; **No history yet** otherwise; **See history** only when more rows exist than the inline cap (opens pop-up with full list).
 
 ## Web (≥ `kCareItemTwoColumnBreakpoint`)
 
