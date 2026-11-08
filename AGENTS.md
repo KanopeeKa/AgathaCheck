@@ -47,7 +47,7 @@ you decide, proceed, and record (PR body, issue or debt issue). Ask one question
 ### Autonomy and merging
 
 - Work you were asked to do includes opening the PR, pushing fixes and driving CI to green.
-- **Merge** (squash, when `autonomous-pr-policy.md` §Merge gates pass) only if the user asked you to merge or babysit that PR, or an active execute-plan v2 worker/driver session requires it. Otherwise the user merges.
+- **Merge** (squash, when `autonomous-pr-policy.md` §Merge gates pass) only when: the user asked you to merge or babysit that PR (invoking `/babysit`, `/babysit-plus` or `/babysit-uat` on it counts); an active execute-plan v2 worker/driver session requires it; or `/light-plan`, `/e2e-debug` or `/dependabot-batch` is in an **active session** (user invoked or resumed the skill; `/e2e-debug` delegated from `/babysit-uat` or execute-plan; `/dependabot-batch` started by `dependabot-batch-dispatch.yml`), and then only for PRs that skill opens (light-plan: phase/sync PRs into its integration branch, release PR via `/babysit-uat`; e2e-debug and dependabot-batch: PRs that skill opens, merge via `/babysit-uat` when the skill says so). Otherwise the user merges.
 - One validated push per logical fix (`./scripts/pre-push-changed.sh` first) — every push costs full CI minutes. No push for comment/label-only changes.
 
 ### Reporting
