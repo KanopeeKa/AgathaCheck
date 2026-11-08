@@ -213,10 +213,10 @@ export class WeightHubPage {
 
   async expectSettingsCardOnHub(): Promise<void> {
     await this.openHub();
-    await expect(
-      this.page
+    const card = this.page
         .locator('[flt-semantics-identifier="weight_hub_setting_reference_weight"]')
-        .or(this.page.getByText(/Weight settings|Paramètres de poids/i)),
-    ).toBeVisible({ timeout: 45_000 });
+        .or(this.page.getByText(/Weight settings|Paramètres de poids/i))
+        .first();
+    await expect(card).toBeVisible({ timeout: 45_000 });
   }
 }
