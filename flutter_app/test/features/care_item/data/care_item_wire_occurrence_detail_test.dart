@@ -113,4 +113,29 @@ void main() {
     expect(detail.previousOccurrence?.id, 'occ-prev');
     expect(detail.nextOccurrence?.scheduledTime, '08:00');
   });
+
+  test('occurrenceDetailFromJson parses marked_at and marked_by_name', () {
+    final detail = occurrenceDetailFromJson({
+      'occurrence': {
+        'id': 'occ-1',
+        'scheduled_date': '2026-06-10',
+        'status': 'completed',
+        'occurrence_status': 'done',
+        'marked_at': '2026-11-03T22:07:00.000Z',
+        'marked_by_name': 'Frederique Prevost',
+        'origin': 'computed',
+      },
+      'entry': {
+        'id': 'entry-1',
+        'pet_id': 'pet-1',
+        'name': 'Meds',
+        'status': 'active',
+        'as_of': {'date': '2026-06-10', 'time': '09:00', 'timezone': 'UTC'},
+      },
+    });
+
+    expect(detail.occurrence.markedByName, 'Frederique Prevost');
+    expect(detail.occurrence.markedAt, isNotNull);
+    expect(detail.occurrence.showsRecordedAttribution, isTrue);
+  });
 }

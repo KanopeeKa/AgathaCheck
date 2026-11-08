@@ -1972,6 +1972,26 @@
   },
   "careItemDocumentsTitle": "Documents",
   "careItemHistoryTitle": "Historique",
+  "historyPillA11yDone": "Échéance {due}, fait le {close}",
+  "@historyPillA11yDone": {
+    "placeholders": {
+      "due": { "type": "String" },
+      "close": { "type": "String" }
+    }
+  },
+  "historyPillA11ySkipped": "Échéance {due}, ignoré le {close}",
+  "@historyPillA11ySkipped": {
+    "placeholders": {
+      "due": { "type": "String" },
+      "close": { "type": "String" }
+    }
+  },
+  "historyPillA11yNotRecorded": "Échéance {due}, non enregistré",
+  "@historyPillA11yNotRecorded": {
+    "placeholders": {
+      "due": { "type": "String" }
+    }
+  },
   "careItemEditSchedule": "Modifier le planning",
   "careItemMenuTooltip": "Actions sur le soin",
   "careItemMenuPause": "Mettre en pause",
@@ -2485,6 +2505,14 @@
   "occurrenceViewNext": "Voir",
   "occurrenceOpenCareDetails": "Voir les détails du soin",
   "occurrenceDueLabel": "Échéance",
+  "occurrenceRecordedAttribution": "Enregistré le {date} à {time} par {user}",
+  "@occurrenceRecordedAttribution": {
+    "placeholders": {
+      "date": { "type": "String" },
+      "time": { "type": "String" },
+      "user": { "type": "String" }
+    }
+  },
   "occurrenceOtherOpenDatesHint": "Les autres dates ouvertes figurent sur cet élément de soin.",
   "occurrenceScheduleRecurring": "Soin récurrent",
   "occurrenceSchedulePlannedDate": "Date planifiée",

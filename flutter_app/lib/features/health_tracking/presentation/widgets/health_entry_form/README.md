@@ -10,7 +10,6 @@ Extracted from `health_entry_form_screen.dart` to reduce screen size.
 | `HealthEntryFrequencySection` | `health_entry_frequency_section.dart` |
 | `HealthEntryHealthIssueDropdown` | `health_entry_health_issue_dropdown.dart` |
 | `HealthEntryRemindField` | `health_entry_remind_field.dart` |
-| `HealthEntryEditActions` | `health_entry_edit_actions.dart` |
 | `HealthEntryDocumentHandler` | `health_entry_document_handler.dart` |
 | Frequency label helpers | `health_entry_frequency_labels.dart` |
 
