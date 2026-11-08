@@ -9,6 +9,7 @@ import 'package:http/testing.dart';
 import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/features/care_item/care_item.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
+import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/care_progression_providers.dart';
@@ -75,6 +76,9 @@ Widget _wrap({
         (ref, petId) => Future.value(const []),
       ),
       careItemHttpClientProvider.overrideWithValue(client),
+      careDataChangedProvider.overrideWith(
+        (ref) => () => invalidateAllCareItemDetailCaches(ref),
+      ),
     ],
     child: MaterialApp.router(
       theme: AppTheme.lightTheme,
