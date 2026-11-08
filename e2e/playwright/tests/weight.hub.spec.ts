@@ -7,7 +7,7 @@
  * Scenario: Deleting a weight that counted as a weigh-in asks for confirmation
  * Scenario: Weight unit preference follows the user
  * Scenario: Weight screen suggests a weigh-in routine when there is none
- * Scenario: Pet profile weight is read-only and links to the weight screen
+ * Scenario: Pet edit omits weight fields; weight hub shows settings
  */
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
 import {
@@ -290,7 +290,7 @@ test.describe('Weight hub', () => {
     await hub.expectSetUpWeighInRoutinePrompt();
   });
 
-  test('Pet profile weight is read-only and links to the weight screen', async ({
+  test('Pet edit omits weight fields; weight hub shows settings', async ({
     page,
     testUser,
   }) => {
@@ -309,7 +309,10 @@ test.describe('Weight hub', () => {
     await petDetail.openEdit();
 
     const hub = new WeightHubPage(page);
-    await hub.expectReadOnlyWeightOnPetEdit();
-    await hub.followRecordWeightLinkOnEditForm();
+    await hub.expectNoWeightFieldsOnPetEdit();
+    await page.getByRole('button', { name: /Cancel|Annuler/i }).click();
+
+    await hub.expectWeightDisplayed(24.0, 'kg');
+    await hub.expectSettingsCardOnHub();
   });
 });

@@ -201,23 +201,22 @@ export class WeightHubPage {
     await expect(setup.first()).toBeVisible();
   }
 
-  async expectReadOnlyWeightOnPetEdit(): Promise<void> {
-    const weightSection = this.page.getByRole('group', {
-      name: /Weight.*\d|No weight recorded|Poids non enregistré|recorded|enregistré/i,
-    });
-    await expect(weightSection.first()).toBeVisible({ timeout: 45_000 });
+  async expectNoWeightFieldsOnPetEdit(): Promise<void> {
     await expect(this.page.getByRole('textbox', { name: /Weight today|Poids du jour/i })).toHaveCount(
       0,
     );
-    await this.page
-      .getByRole('button', { name: /Record weight|Enregistrer le poids/i })
-      .waitFor();
+    const weightSection = this.page.getByRole('group', {
+      name: /Weight.*\d|No weight recorded|Poids non enregistré|recorded|enregistré/i,
+    });
+    await expect(weightSection).toHaveCount(0);
   }
 
-  async followRecordWeightLinkOnEditForm(): Promise<void> {
-    await this.page
-      .getByRole('button', { name: /Record weight|Enregistrer le poids/i })
-      .click();
-    await this.tracking.expectLoaded();
+  async expectSettingsCardOnHub(): Promise<void> {
+    await this.openHub();
+    await expect(
+      this.page
+        .locator('[flt-semantics-identifier="weight_hub_setting_reference_weight"]')
+        .or(this.page.getByText(/Weight settings|Paramètres de poids/i)),
+    ).toBeVisible({ timeout: 45_000 });
   }
 }
