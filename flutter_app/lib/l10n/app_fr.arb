@@ -1964,6 +1964,26 @@
   },
   "careItemDocumentsTitle": "Documents",
   "careItemHistoryTitle": "Historique",
+  "historyPillA11yDone": "Échéance {due}, fait le {close}",
+  "@historyPillA11yDone": {
+    "placeholders": {
+      "due": { "type": "String" },
+      "close": { "type": "String" }
+    }
+  },
+  "historyPillA11ySkipped": "Échéance {due}, ignoré le {close}",
+  "@historyPillA11ySkipped": {
+    "placeholders": {
+      "due": { "type": "String" },
+      "close": { "type": "String" }
+    }
+  },
+  "historyPillA11yNotRecorded": "Échéance {due}, non enregistré",
+  "@historyPillA11yNotRecorded": {
+    "placeholders": {
+      "due": { "type": "String" }
+    }
+  },
   "careItemEditSchedule": "Modifier le planning",
   "careItemMenuTooltip": "Actions sur le soin",
   "careItemMenuPause": "Mettre en pause",

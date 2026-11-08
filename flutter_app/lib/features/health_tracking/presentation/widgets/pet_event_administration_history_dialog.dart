@@ -1,85 +1,61 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 
-import '../../../../core/theme/app_color_tokens.dart';
-import '../../../../core/weight/weight_unit.dart';
-import '../../../../core/weight/weight_unit_preference.dart';
+import '../../../../core/router/shell_return_navigation.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../domain/entities/health_history_entry.dart';
-import 'event_history_formatter.dart';
+import '../../domain/entities/health_occurrence.dart';
+import 'past_occurrence_history_pill.dart';
 
-/// Administration log dialog shared by edit and view entry screens.
-Future<void> showPetEventAdministrationHistoryDialog(
+const double _kHistoryDialogMaxHeight = 420;
+
+/// Scrollable full history pop-up (same shell as legacy administration log).
+Future<void> showPetEventPastHistoryDialog(
   BuildContext context, {
-  required List<HealthHistoryEntry> history,
+  required List<HealthOccurrence> occurrences,
+  required String petId,
+  required bool muted,
 }) {
   final l = AppLocalizations.of(context)!;
-  final dateFormat = DateFormat.yMMMd();
-  final dateTimeFormat = DateFormat.yMMMd().add_jm();
+  final maxHeight = MediaQuery.sizeOf(context).height * 0.55;
 
   return showDialog<void>(
     context: context,
-    builder: (ctx) => Consumer(
-      builder: (ctx, ref, _) {
-        final unit = ref.watch(weightUnitPreferenceProvider);
-        return AlertDialog(
-          title: Text(l.administrationHistory),
-          content: SizedBox(
-            width: double.maxFinite,
-            child: history.isEmpty
-                ? Text(l.noHistoryYet)
-                : ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: history.length,
-                    itemBuilder: (_, i) {
-                      final h = history[i];
-                      final linked = h.linkedWeight;
-                      final subtitleLines = <String>[
-                        if (linked != null) formatWeight(linked.valueKg, unit),
-                        if (h.notes.isNotEmpty) h.notes,
-                      ];
-                      return ListTile(
-                        key: linked != null
-                            ? Key('history_row_linked_weight_${h.id}')
-                            : null,
-                        leading: Icon(
-                          h.isNotRecorded
-                              ? Icons.help_outline
-                              : h.isSkipped
-                              ? Icons.skip_next
-                              : Icons.check_circle,
-                          color: h.isNotRecorded || h.isSkipped
-                              ? Theme.of(ctx).colorScheme.onSurfaceVariant
-                              : AppColorTokens.success,
-                        ),
-                        title: Text(
-                          h.isNotRecorded
-                              ? '${l.careStatusNotRecorded}: ${h.dueDate != null ? dateFormat.format(h.dueDate!) : l.notSet}'
-                              : h.isSkipped
-                              ? '${l.occurrenceSkipped}: ${h.dueDate != null ? dateFormat.format(h.dueDate!) : l.notSet}'
-                              : formatEventHistoryLine(
-                                  h,
-                                  l,
-                                  dateFormat,
-                                  dateTimeFormat,
-                                ),
-                        ),
-                        subtitle: subtitleLines.isEmpty
-                            ? null
-                            : Text(subtitleLines.join('\n')),
-                      );
-                    },
-                  ),
+    builder: (ctx) {
+      return AlertDialog(
+        key: const Key('pet_event_history_dialog'),
+        title: Text(l.careItemHistoryTitle),
+        content: SizedBox(
+          width: double.maxFinite,
+          height: maxHeight.clamp(200, _kHistoryDialogMaxHeight),
+          child: occurrences.isEmpty
+              ? Align(alignment: Alignment.topLeft, child: Text(l.noHistoryYet))
+              : ListView.builder(
+                  itemCount: occurrences.length,
+                  itemBuilder: (_, i) {
+                    final occ = occurrences[i];
+                    return PastOccurrenceHistoryPill(
+                      occurrence: occ,
+                      muted: muted,
+                      onTap: () {
+                        Navigator.of(ctx).pop();
+                        openOccurrenceScreen(
+                          context,
+                          petId: petId,
+                          entryId: occ.entryId,
+                          occurrenceId: occ.id,
+                        );
+                      },
+                    );
+                  },
+                ),
+        ),
+        actions: [
+          TextButton(
+            key: const Key('pet_event_history_dialog_close'),
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(l.close),
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(ctx).pop(),
-              child: Text(l.close),
-            ),
-          ],
-        );
-      },
-    ),
+        ],
+      );
+    },
   );
 }
