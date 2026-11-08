@@ -14,6 +14,7 @@ import 'package:pet_profile_app/features/experience/presentation/providers/exper
 import 'package:pet_profile_app/features/notifications/presentation/providers/notification_providers.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/organization.dart';
 import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
+import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/weight_tracking/domain/entities/weight_entry.dart';
 import 'package:pet_profile_app/features/weight_tracking/domain/entities/weight_fulfils.dart';
 import 'package:pet_profile_app/features/weight_tracking/domain/entities/weight_overview.dart';
