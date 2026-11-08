@@ -262,6 +262,10 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
           _controller.markCareFamilyValidationAttempted();
         }
         _formKey.currentState!.validate();
+      case HealthEntrySubmitDocumentError():
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.documentAddFailed)));
       case HealthEntrySubmitError(:final error):
         ScaffoldMessenger.of(
           context,

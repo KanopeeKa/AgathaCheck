@@ -74,7 +74,7 @@ Dedicated UI: `PetHealthIssuesScreen`, entry from pet profile **Health & history
 | ID | Decision | Status |
 |----|----------|--------|
 | **HT-D-001** | Expanded card shows title in body (W13); description appears only in expanded body, not duplicated in the collapsed header. | Live |
-| **HT-D-002** | User-facing errors on health-issue screens do not include raw exception text. | Live |
+| **HT-D-002** | User-facing errors on health-issue and care-entry document surfaces do not include raw exception text. | Live |
 | **HT-D-003** | Document strip delete controls use a shared ≥48dp overlay (`HealthDocumentStripDeleteButton`). | Live |
 | **HT-D-004** | Max attachment snackbar for health issues uses health-issue-specific copy (not “per event”). | Live |
 | **HT-D-005** | Collapsed visible status pill — pending; see HT-8. | Planned |
