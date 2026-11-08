@@ -14,25 +14,20 @@ import '../widgets/weight_chart.dart';
 import '../widgets/weight_hub_empty_state.dart';
 import '../widgets/weight_hub_history_list.dart';
 import '../widgets/weight_hub_routines_card.dart';
-import '../widgets/weight_hub_settings_card.dart';
 import '../widgets/weight_hub_summary_card.dart';
-import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 
 /// Weight hub for a pet (summary, chart, routines, history).
 class WeightHubScreen extends ConsumerWidget {
-  const WeightHubScreen({super.key, required this.petId});
+  const WeightHubScreen({super.key, required this.petId, this.settingsCard});
 
   final String petId;
+  final Widget? settingsCard;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final entriesAsync = ref.watch(weightEntriesNotifierProvider(petId));
     final overviewAsync = ref.watch(weightOverviewProvider(petId));
-    final viewerContext = ref.watch(petDetailViewerContextProvider(petId));
-    final canEditSettings =
-        viewerContext.isPolicyResolved &&
-        viewerContext.can(PetDetailAction.editProfile);
 
     void onRecord() => showRecordWeightSheet(context, ref, petId: petId);
 
@@ -53,7 +48,7 @@ class WeightHubScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            WeightHubSettingsCard(petId: petId, canEdit: canEditSettings),
+            if (settingsCard != null) settingsCard!,
             entriesAsync.when(
               loading: () => const Padding(
                 padding: EdgeInsets.all(32),
@@ -67,10 +62,7 @@ class WeightHubScreen extends ConsumerWidget {
                 final sorted = sortWeightEntriesNewestFirst(entries);
                 final overview = overviewAsync.valueOrNull;
                 final unit = ref.watch(weightUnitPreferenceProvider);
-                final pets = ref.watch(allPetsIncludingOrgProvider).valueOrNull;
-                final pet = pets?.where((p) => p.id == petId).firstOrNull;
-                final targetKg =
-                    overview?.reference?.valueKg ?? pet?.weightReferenceValue;
+                final targetKg = overview?.reference?.valueKg;
 
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,

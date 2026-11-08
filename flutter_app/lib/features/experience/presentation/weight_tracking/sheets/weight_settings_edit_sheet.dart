@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pet_profile_app/core/widgets/form/app_form_actions_bar.dart';
+import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
+import 'package:pet_profile_app/features/weight_tracking/weight_tracking.dart';
+import 'package:pet_profile_app/l10n/app_localizations.dart';
 
-import '../../../../core/widgets/form/app_form_actions_bar.dart';
-import '../../../../l10n/app_localizations.dart';
-import '../../../pet_profile/domain/entities/pet.dart';
-import '../../../pet_profile/presentation/providers/pet_providers.dart';
-import '../providers/weight_providers.dart';
 import '../widgets/weight_context_form_fields.dart';
 
 Future<void> showWeightSettingsEditSheet({
@@ -89,13 +88,13 @@ class _WeightSettingsEditSheetState
       return;
     }
 
+    final messenger = ScaffoldMessenger.of(context);
+    final l = AppLocalizations.of(context)!;
+
     setState(() => _saving = true);
     try {
       final refText = fields.referenceValueText.trim();
       final referenceValue = refText.isEmpty ? null : double.tryParse(refText);
-      if (refText.isNotEmpty && referenceValue == null) {
-        return;
-      }
 
       await ref
           .read(petListProvider.notifier)
@@ -108,18 +107,12 @@ class _WeightSettingsEditSheetState
       ref.invalidate(weightOverviewProvider(widget.pet.id));
       if (mounted) {
         Navigator.of(context).pop();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)!.petFormPetSaved),
-          ),
-        );
+        messenger.showSnackBar(SnackBar(content: Text(l.petFormPetSaved)));
       }
-    } catch (_) {
+    } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)!.petPhotoNetworkError),
-          ),
+        messenger.showSnackBar(
+          SnackBar(content: Text(l.failedToSave(e.toString()))),
         );
       }
     } finally {

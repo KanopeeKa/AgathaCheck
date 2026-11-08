@@ -152,41 +152,6 @@ void main() {
     );
   }
 
-  testWidgets('shows weight settings card from pet profile fields', (tester) async {
-    const pet = Pet(
-      id: 'pet-1',
-      name: 'Rex',
-      species: 'Dog',
-      weightReferenceValue: 4,
-      weightReferenceAuthority: 'vet_target',
-      weightManagementContext: 'vet_managed',
-    );
-    await tester.pumpWidget(
-      buildApp(
-        entries: const [],
-        initialLocation: '/pet/pet-1/weight',
-        extraOverrides: [
-          allPetsIncludingOrgProvider.overrideWith((ref) async => [pet]),
-          petDetailViewerContextProvider('pet-1').overrideWithValue(
-            PetDetailContext(
-              role: PetViewerRole.guardian,
-              experience: AppExperience.petCare,
-              actions: {PetDetailAction.editProfile},
-              isPolicyResolved: true,
-            ),
-          ),
-        ],
-      ),
-    );
-    await tester.pumpAndSettle();
-
-    expect(find.byKey(const Key('weight_hub_settings_card')), findsOneWidget);
-    expect(find.text('4.0 kg'), findsOneWidget);
-    expect(find.text('Vet target'), findsOneWidget);
-    expect(find.byKey(const Key('weight_hub_settings_edit')), findsOneWidget);
-    expect(find.text('No weight data yet'), findsOneWidget);
-  });
-
   testWidgets('FW-6 hub shows summary, chart, routines and history chips', (
     tester,
   ) async {

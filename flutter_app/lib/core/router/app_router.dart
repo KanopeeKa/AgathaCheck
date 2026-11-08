@@ -287,7 +287,10 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'petWeightTracking',
         builder: (context, state) {
           final petId = state.pathParameters['petId']!;
-          return WeightHubScreen(petId: petId);
+          return WeightHubScreen(
+            petId: petId,
+            settingsCard: WeightHubSettingsCard(petId: petId),
+          );
         },
       ),
       GoRoute(

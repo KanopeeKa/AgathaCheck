@@ -182,14 +182,14 @@ class PetListNotifier extends AsyncNotifier<List<Pet>> {
     String? weightReferenceAuthority,
     required String weightManagementContext,
   }) async {
-    await ref.read(petRepositoryProvider).updatePetWeightContext(
-      petId: petId,
-      weightReferenceValue: weightReferenceValue,
-      weightReferenceAuthority: weightReferenceAuthority,
-      weightManagementContext: weightManagementContext,
-      clearWeightReferenceValue: weightReferenceValue == null,
-      clearWeightReferenceAuthority: weightReferenceAuthority == null,
-    );
+    await ref
+        .read(petRepositoryProvider)
+        .updatePetWeightContext(
+          petId: petId,
+          weightReferenceValue: weightReferenceValue,
+          weightReferenceAuthority: weightReferenceAuthority,
+          weightManagementContext: weightManagementContext,
+        );
     ref.invalidateSelf();
     ref.invalidate(allPetsIncludingOrgProvider);
   }

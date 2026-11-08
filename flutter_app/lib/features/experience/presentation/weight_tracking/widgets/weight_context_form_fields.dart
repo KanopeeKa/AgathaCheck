@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-
+import 'package:pet_profile_app/features/care_intelligence/care_intelligence.dart';
 import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
-import '../../../../l10n/app_localizations.dart';
-import '../../../care_intelligence/care_intelligence.dart';
+import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 /// The three weight-context fields shared by the hub settings sheet.
 class WeightContextFormFields extends StatefulWidget {
@@ -28,6 +27,7 @@ class WeightContextFormFieldsState extends State<WeightContextFormFields> {
   String get referenceValueText => _referenceValueController.text;
   String? get referenceAuthority => _referenceAuthority;
   String get managementContextWire => _managementContext.wireValue;
+
   late final TextEditingController _referenceValueController;
   late String? _referenceAuthority;
   late ManagementContext _managementContext;

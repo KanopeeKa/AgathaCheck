@@ -1,5 +1,5 @@
-import '../../../../l10n/app_localizations.dart';
-import '../../../care_intelligence/care_intelligence.dart';
+import 'package:pet_profile_app/features/care_intelligence/care_intelligence.dart';
+import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 /// User-facing labels for pet weight-context fields on the weight hub.
 class WeightContextLabels {

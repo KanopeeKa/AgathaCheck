@@ -27,8 +27,6 @@ abstract class PetRemoteDataSource {
     double? weightReferenceValue,
     String? weightReferenceAuthority,
     required String weightManagementContext,
-    bool clearWeightReferenceValue = false,
-    bool clearWeightReferenceAuthority = false,
   });
   Future<PetModel> uploadPetPhoto(
     String petId,
@@ -97,24 +95,12 @@ class PetRemoteDataSourceImpl implements PetRemoteDataSource {
     double? weightReferenceValue,
     String? weightReferenceAuthority,
     required String weightManagementContext,
-    bool clearWeightReferenceValue = false,
-    bool clearWeightReferenceAuthority = false,
   }) async {
     final payload = <String, dynamic>{
       'weight_management_context': weightManagementContext,
+      'weight_reference_value': weightReferenceValue,
+      'weight_reference_authority': weightReferenceAuthority,
     };
-    if (clearWeightReferenceValue) {
-      payload['weight_reference_value'] = null;
-    } else if (weightReferenceValue != null) {
-      payload['weight_reference_value'] = weightReferenceValue;
-    } else {
-      payload['weight_reference_value'] = null;
-    }
-    if (clearWeightReferenceAuthority) {
-      payload['weight_reference_authority'] = null;
-    } else {
-      payload['weight_reference_authority'] = weightReferenceAuthority;
-    }
     final response = await _client.put(
       Uri.parse('$baseUrl/api/pets/$petId'),
       headers: _headers(token),

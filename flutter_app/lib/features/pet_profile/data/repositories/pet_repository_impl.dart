@@ -210,8 +210,6 @@ class PetRepositoryImpl implements PetRepository {
     double? weightReferenceValue,
     String? weightReferenceAuthority,
     required String weightManagementContext,
-    bool clearWeightReferenceValue = false,
-    bool clearWeightReferenceAuthority = false,
   }) async {
     if (remoteDataSource == null || token == null || token!.isEmpty) {
       throw StateError('Cannot update weight settings offline');
@@ -222,50 +220,7 @@ class PetRepositoryImpl implements PetRepository {
       weightReferenceValue: weightReferenceValue,
       weightReferenceAuthority: weightReferenceAuthority,
       weightManagementContext: weightManagementContext,
-      clearWeightReferenceValue: clearWeightReferenceValue,
-      clearWeightReferenceAuthority: clearWeightReferenceAuthority,
     );
-    final prior = await _localDataSource.getPetById(petId);
-    if (prior != null) {
-      final merged = PetModel(
-        id: prior.id,
-        name: prior.name,
-        species: prior.species,
-        breed: prior.breed,
-        dateOfBirth: prior.dateOfBirth,
-        weight: remotePet.weight ?? prior.weight,
-        gender: prior.gender,
-        bio: prior.bio,
-        insurance: prior.insurance,
-        neuteredDate: prior.neuteredDate,
-        neuterDismissed: prior.neuterDismissed,
-        chipId: prior.chipId,
-        chipDismissed: prior.chipDismissed,
-        photoPath: prior.photoPath,
-        vetId: prior.vetId,
-        colorValue: prior.colorValue,
-        passedAway: prior.passedAway,
-        isShared: prior.isShared,
-        isFoster: prior.isFoster,
-        organizationId: prior.organizationId,
-        organizationName: prior.organizationName,
-        fosterPlacementStatus: prior.fosterPlacementStatus,
-        fosterName: prior.fosterName,
-        petParentName: prior.petParentName,
-        accessRole: prior.accessRole,
-        createdAt: prior.createdAt,
-        weightReferenceValue: remotePet.weightReferenceValue,
-        weightReferenceAuthority: remotePet.weightReferenceAuthority,
-        weightManagementContext: remotePet.weightManagementContext,
-        homeTimezone: prior.homeTimezone,
-        identificationStatus: prior.identificationStatus,
-        neuterStatus: prior.neuterStatus,
-        identificationStatusSource: prior.identificationStatusSource,
-        neuterStatusSource: prior.neuterStatusSource,
-      );
-      await _localDataSource.updatePet(merged);
-      return merged.toEntity();
-    }
     await _localDataSource.updatePet(remotePet);
     return remotePet.toEntity();
   }

@@ -47,9 +47,6 @@ class PetFormController {
       passedAway: pet.passedAway,
       isShared: pet.isShared,
       selectedOrgId: pet.organizationId,
-      weightReferenceValue: pet.weightReferenceValue?.toString() ?? '',
-      weightReferenceAuthority: pet.weightReferenceAuthority,
-      weightManagementContext: pet.weightManagementContext,
       identificationStatus: pet.identificationStatus,
       neuterStatus: pet.neuterStatus,
     );
@@ -202,7 +199,6 @@ class PetFormController {
     if (parsed == null) return null;
     return toKg(parsed, deps.readWeightUnit());
   }
-
 }
 
 class PetFormState {
@@ -228,9 +224,6 @@ class PetFormState {
   final bool passedAway;
   final bool isShared;
   final String? selectedOrgId;
-  final String weightReferenceValue;
-  final String? weightReferenceAuthority;
-  final String weightManagementContext;
   final String identificationStatus;
   final String neuterStatus;
 
@@ -257,9 +250,6 @@ class PetFormState {
     this.passedAway = false,
     this.isShared = false,
     this.selectedOrgId,
-    this.weightReferenceValue = '',
-    this.weightReferenceAuthority,
-    this.weightManagementContext = 'none',
     this.identificationStatus = profileFactStatusUnknown,
     this.neuterStatus = profileFactStatusUnknown,
   });
@@ -282,9 +272,6 @@ class PetFormState {
         neuterDismissed == other.neuterDismissed &&
         chipDismissed == other.chipDismissed &&
         selectedOrgId == other.selectedOrgId &&
-        weightReferenceValue == other.weightReferenceValue &&
-        weightReferenceAuthority == other.weightReferenceAuthority &&
-        weightManagementContext == other.weightManagementContext &&
         identificationStatus == other.identificationStatus &&
         neuterStatus == other.neuterStatus;
   }
@@ -312,12 +299,8 @@ class PetFormState {
     bool? passedAway,
     bool? isShared,
     String? selectedOrgId,
-    String? weightReferenceValue,
-    String? weightReferenceAuthority,
-    String? weightManagementContext,
     String? identificationStatus,
     String? neuterStatus,
-    bool clearWeightReferenceAuthority = false,
   }) {
     return PetFormState(
       name: name ?? this.name,
@@ -343,12 +326,6 @@ class PetFormState {
       passedAway: passedAway ?? this.passedAway,
       isShared: isShared ?? this.isShared,
       selectedOrgId: selectedOrgId ?? this.selectedOrgId,
-      weightReferenceValue: weightReferenceValue ?? this.weightReferenceValue,
-      weightReferenceAuthority: clearWeightReferenceAuthority
-          ? null
-          : (weightReferenceAuthority ?? this.weightReferenceAuthority),
-      weightManagementContext:
-          weightManagementContext ?? this.weightManagementContext,
       identificationStatus: identificationStatus ?? this.identificationStatus,
       neuterStatus: neuterStatus ?? this.neuterStatus,
     );

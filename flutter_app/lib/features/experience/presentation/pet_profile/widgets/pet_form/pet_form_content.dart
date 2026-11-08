@@ -299,11 +299,7 @@ class PetFormContent extends StatelessWidget {
 
     if (!_usePairedRows) {
       if (weightField != null) {
-        return [
-          weightField,
-          const SizedBox(height: 16),
-          neuteredField,
-        ];
+        return [weightField, const SizedBox(height: 16), neuteredField];
       }
       return [neuteredField];
     }

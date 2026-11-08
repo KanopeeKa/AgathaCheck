@@ -36,8 +36,6 @@ abstract class PetRepository {
     double? weightReferenceValue,
     String? weightReferenceAuthority,
     required String weightManagementContext,
-    bool clearWeightReferenceValue = false,
-    bool clearWeightReferenceAuthority = false,
   });
 
   /// Deletes a pet profile by its [id].

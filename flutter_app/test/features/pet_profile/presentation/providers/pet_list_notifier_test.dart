@@ -54,8 +54,6 @@ class RecordingPetRepository implements PetRepository {
     double? weightReferenceValue,
     String? weightReferenceAuthority,
     required String weightManagementContext,
-    bool clearWeightReferenceValue = false,
-    bool clearWeightReferenceAuthority = false,
   }) async {
     final existing = await getPetById(petId);
     if (existing == null) throw StateError('missing pet');
@@ -63,8 +61,6 @@ class RecordingPetRepository implements PetRepository {
       weightReferenceValue: weightReferenceValue,
       weightReferenceAuthority: weightReferenceAuthority,
       weightManagementContext: weightManagementContext,
-      clearWeightReferenceValue: clearWeightReferenceValue,
-      clearWeightReferenceAuthority: clearWeightReferenceAuthority,
     );
     updated.add(next);
     return next;

@@ -22,11 +22,14 @@ void main() {
 
     expect(captured, isNotEmpty);
     final body = jsonDecode(captured.first) as Map<String, dynamic>;
-    expect(body.keys, containsAll([
-      'weight_reference_value',
-      'weight_reference_authority',
-      'weight_management_context',
-    ]));
+    expect(
+      body.keys,
+      containsAll([
+        'weight_reference_value',
+        'weight_reference_authority',
+        'weight_management_context',
+      ]),
+    );
     expect(body.containsKey('name'), isFalse);
     expect(body.containsKey('vetId'), isFalse);
     expect(body['weight_reference_value'], 4.0);

@@ -34,6 +34,7 @@ Canonical product and API model for **one weight record**, optional **link to a 
 ## Flutter boundaries
 
 - Weight UI lives in `features/weight_tracking/` (hub screen, record sheet).
+- **Weight settings** card, edit sheet, and form fields are composed from `features/experience/presentation/weight_tracking/` (wired in `app_router.dart` via the hub `settingsCard` slot).
 - Care ↔ weight coordination uses `core` providers (`PetCareSync`, `careItemObservationSectionProvider`) — no direct feature imports.
 
 ## Programme
@@ -71,7 +72,7 @@ Weights are still recorded on the hub or via deprecated API fields for legacy cl
 
 ### Flutter (target after WEIGHT B/C)
 
-- Hub: `WeightHubScreen`, record sheet with counts-as UX
+- Hub: `WeightHubScreen`, record sheet with counts-as UX; weight settings UI from experience composition layer
 - User unit preference via profile API
 - Care item observation slot (`numeric_weight`) and history weight rows (WEIGHT C)
 

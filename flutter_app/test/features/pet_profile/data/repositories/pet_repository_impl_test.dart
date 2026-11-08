@@ -66,8 +66,6 @@ class FakeRemoteDataSource implements PetRemoteDataSource {
     double? weightReferenceValue,
     String? weightReferenceAuthority,
     required String weightManagementContext,
-    bool clearWeightReferenceValue = false,
-    bool clearWeightReferenceAuthority = false,
   }) async {
     return PetModel(
       id: petId,

@@ -1,27 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
-import '../../../../l10n/app_localizations.dart';
+import 'package:pet_profile_app/l10n/app_localizations.dart';
+
 import '../sheets/weight_settings_edit_sheet.dart';
 import 'weight_context_labels.dart';
 
 /// Weight reference and management settings for a pet (read from [Pet], not overview).
 class WeightHubSettingsCard extends ConsumerWidget {
-  const WeightHubSettingsCard({
-    super.key,
-    required this.petId,
-    required this.canEdit,
-  });
+  const WeightHubSettingsCard({super.key, required this.petId});
 
   final String petId;
-  final bool canEdit;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final petsAsync = ref.watch(allPetsIncludingOrgProvider);
+    final viewerContext = ref.watch(petDetailViewerContextProvider(petId));
+    final canEdit =
+        viewerContext.isPolicyResolved &&
+        viewerContext.can(PetDetailAction.editProfile);
 
     return petsAsync.when(
       loading: () => const Padding(
