@@ -1,13 +1,16 @@
 import 'package:intl/intl.dart';
 
-import '../../features/health_tracking/presentation/widgets/health_entry_status.dart';
+import 'calendar_date.dart';
+
+/// Matches [formatHealthEntryStatusDate] / history rows (`dd MMM yy`).
+final DateFormat careCalendarDateFormat = DateFormat('dd MMM yy');
 
 /// Wall-clock time for care UI (`HH:mm`, 24-hour, not locale 12h).
 final DateFormat careWallClockTimeFormat = DateFormat('HH:mm');
 
 /// Calendar label (`dd MMM yy`) for a wall-clock instant in the local zone.
 String formatCareRecordedCalendarDate(DateTime markedAt) =>
-    formatHealthEntryStatusDate(markedAt);
+    careCalendarDateFormat.format(calendarDateOnly(markedAt));
 
 /// 24-hour time for a wall-clock instant in the local zone.
 String formatCareWallClockTime24(DateTime markedAt) =>
@@ -30,7 +33,7 @@ String formatCareDueInstant({
   required String Function(String date) dateOnly,
   required String Function(String date, String time) dateAtTime,
 }) {
-  final date = formatHealthEntryStatusDate(scheduledDate);
+  final date = careCalendarDateFormat.format(calendarDateOnly(scheduledDate));
   final time = formatCareScheduledTime24(scheduledTime);
   if (time.isEmpty) return dateOnly(date);
   return dateAtTime(date, time);
