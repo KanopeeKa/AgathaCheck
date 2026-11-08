@@ -15,6 +15,8 @@ e2e-debug path only when `tick` returns a `remedial` action.
 **Shard risk:** `scripts/babysit_uat_shard_risk.mjs` · **Scope resolve:** `scripts/e2e_debug_resolve.mjs`  
 **Manual ops sibling:** `scripts/agent-uat-babysit.sh` (full replay; ops only)
 
+Agent merge on the PR under babysit-uat is permitted when [`AGENTS.md`](../../../AGENTS.md) §Autonomy and merging allows.
+
 ---
 
 ## Router (babysit-uat)
