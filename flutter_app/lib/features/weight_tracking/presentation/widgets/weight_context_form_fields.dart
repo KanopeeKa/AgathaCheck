@@ -20,7 +20,8 @@ class WeightContextFormFields extends StatefulWidget {
   final String initialManagementContext;
 
   @override
-  State<WeightContextFormFields> createState() => WeightContextFormFieldsState();
+  State<WeightContextFormFields> createState() =>
+      WeightContextFormFieldsState();
 }
 
 class WeightContextFormFieldsState extends State<WeightContextFormFields> {
@@ -65,7 +66,9 @@ class WeightContextFormFieldsState extends State<WeightContextFormFields> {
               key: const Key('weight_settings_reference_value_field'),
               controller: _referenceValueController,
               decoration: const InputDecoration(suffixText: 'kg'),
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               validator: (value) {
                 if (value != null && value.trim().isNotEmpty) {
                   final num = double.tryParse(value);

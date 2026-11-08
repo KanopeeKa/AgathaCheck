@@ -92,24 +92,26 @@ class _WeightSettingsEditSheetState
     setState(() => _saving = true);
     try {
       final refText = fields.referenceValueText.trim();
-      final referenceValue = refText.isEmpty
-          ? null
-          : double.tryParse(refText);
+      final referenceValue = refText.isEmpty ? null : double.tryParse(refText);
       if (refText.isNotEmpty && referenceValue == null) {
         return;
       }
 
-      await ref.read(petListProvider.notifier).updatePetWeightContext(
-        petId: widget.pet.id,
-        weightReferenceValue: referenceValue,
-        weightReferenceAuthority: fields.referenceAuthority,
-        weightManagementContext: fields.managementContextWire,
-      );
+      await ref
+          .read(petListProvider.notifier)
+          .updatePetWeightContext(
+            petId: widget.pet.id,
+            weightReferenceValue: referenceValue,
+            weightReferenceAuthority: fields.referenceAuthority,
+            weightManagementContext: fields.managementContextWire,
+          );
       ref.invalidate(weightOverviewProvider(widget.pet.id));
       if (mounted) {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.petFormPetSaved)),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.petFormPetSaved),
+          ),
         );
       }
     } catch (_) {

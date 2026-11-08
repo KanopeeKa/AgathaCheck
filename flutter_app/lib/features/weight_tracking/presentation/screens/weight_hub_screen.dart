@@ -53,10 +53,7 @@ class WeightHubScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            WeightHubSettingsCard(
-              petId: petId,
-              canEdit: canEditSettings,
-            ),
+            WeightHubSettingsCard(petId: petId, canEdit: canEditSettings),
             entriesAsync.when(
               loading: () => const Padding(
                 padding: EdgeInsets.all(32),
@@ -81,10 +78,7 @@ class WeightHubScreen extends ConsumerWidget {
                     if (sorted.isEmpty)
                       const WeightHubEmptyState()
                     else ...[
-                      WeightHubSummaryCard(
-                        entries: sorted,
-                        overview: overview,
-                      ),
+                      WeightHubSummaryCard(entries: sorted, overview: overview),
                       if (sorted.length >= 2)
                         Padding(
                           padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
