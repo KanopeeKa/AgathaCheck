@@ -59,7 +59,10 @@ test('validateBabysitSkillFamily fails when babysit-plus drops resolve-all wordi
       .filter((line) => !RESOLVE_ALL_RE.test(line))
       .join('\n');
     fs.writeFileSync(skillPath, text);
-    assert.throws(() => validateBabysitSkillFamily(tmp), new RegExp(skill.replace(/\./g, '\\.')));
+    assert.throws(
+      () => validateBabysitSkillFamily(tmp),
+      (err) => err.message.includes(skill) && /missing required marker/.test(err.message),
+    );
   });
 });
 
