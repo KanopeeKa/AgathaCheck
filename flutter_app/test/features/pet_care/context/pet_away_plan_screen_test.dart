@@ -126,6 +126,15 @@ void main() {
     expect(find.text("Who's caring"), findsOneWidget);
     expect(find.textContaining('Tom'), findsOneWidget);
     expect(find.byKey(const Key('away_plan_see_absence')), findsOneWidget);
+    expect(find.bySemanticsIdentifier('away_plan_see_absence'), findsOneWidget);
     expect(find.byKey(const Key('away_plan_pet_notes_pet-1')), findsOneWidget);
+    expect(
+      find.bySemanticsIdentifier('away_plan_pet_notes_pet-1'),
+      findsOneWidget,
+    );
+    expect(
+      find.bySemanticsIdentifier('away_plan_pet_notes_save_pet-1'),
+      findsOneWidget,
+    );
   });
 }

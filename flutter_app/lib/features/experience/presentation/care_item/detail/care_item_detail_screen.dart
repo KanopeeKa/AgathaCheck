@@ -222,47 +222,16 @@ class CareItemDetailScreen extends ConsumerWidget {
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (error, _) =>
                     Center(child: Text(l.failedToLoadHistory('$error'))),
-                data: (history) => Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Expanded(
-                      child: CareItemDetailBody(
-                        petId: petId,
-                        entry: entry,
-                        pet: pet,
-                        history: history,
-                        isClosed: isClosed,
-                        isEstablished: isEstablished,
-                        onSeeHistory: onSeeHistory,
-                        careClosedReason: careClosedReason,
-                      ),
-                    ),
-                    if (canCloseCare)
-                      SafeArea(
-                        top: false,
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                          child: Semantics(
-                            identifier: 'care_item_close_care_button',
-                            button: true,
-                            child: FilledButton(
-                              key: const Key('care_item_close_care_button'),
-                              style: FilledButton.styleFrom(
-                                backgroundColor: Theme.of(
-                                  context,
-                                ).colorScheme.error,
-                                foregroundColor: Theme.of(
-                                  context,
-                                ).colorScheme.onError,
-                                minimumSize: const Size.fromHeight(48),
-                              ),
-                              onPressed: onCloseCare,
-                              child: Text(l.careCloseCareButton),
-                            ),
-                          ),
-                        ),
-                      ),
-                  ],
+                data: (history) => CareItemDetailBody(
+                  petId: petId,
+                  entry: entry,
+                  pet: pet,
+                  history: history,
+                  isClosed: isClosed,
+                  isEstablished: isEstablished,
+                  onSeeHistory: onSeeHistory,
+                  careClosedReason: careClosedReason,
+                  onCloseCare: canCloseCare ? onCloseCare : null,
                 ),
               ),
             );

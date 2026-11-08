@@ -5,7 +5,7 @@ audience: both
 domain: pet_care
 feature_id: care-status-model
 status: active
-last_updated: 2026-11-06
+last_updated: 2026-11-07
 related_prs: [2083, 2095, 2107, 2108, 2109, 2110, 2111]
 ---
 
@@ -60,6 +60,7 @@ related_prs: [2083, 2095, 2107, 2108, 2109, 2110, 2111]
 | CARE-STATUS-MODEL-D-019 | Migration 104 uses `CURRENT_DATE` / `LOCALTIME` at apply time | Known limitation for TZ edge cases; run `node server/scripts/care/report_104_migration_impact.js` before PROD and attach grouped counts to the release | Live | 2026-11-06 | #2108 |
 | CARE-STATUS-MODEL-D-020 | R-025: closed recurring care still counts for S1 missing-recurring | Close care must not re-open Care Intelligence parasite-prevention nudge | Live | 2026-11-06 | #2109 |
 | CARE-STATUS-MODEL-D-021 | Ledger NNN SQL runs inside the migrate runner outer transaction | Strip semicolon-only top-level `BEGIN`/`COMMIT` at apply; lint changed files; `txid_current()` guard detects inner commits | Live | 2026-11-06 | #2107 |
+| CARE-STATUS-MODEL-D-022 | R-014: Close care at end of detail page | Under History in the scrolling content; not pinned to the bottom of the screen | Live | 2026-11-07 | — |
 
 ## Still open
 
