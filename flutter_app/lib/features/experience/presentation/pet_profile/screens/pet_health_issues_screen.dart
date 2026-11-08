@@ -5,8 +5,9 @@ import 'package:go_router/go_router.dart';
 import 'package:pet_profile_app/core/router/shell_return_navigation.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 import 'package:pet_profile_app/core/router/experience_shell_scaffold.dart';
+import 'package:pet_profile_app/core/widgets/pet_care_illustrated_empty_state.dart';
 import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
-import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
+import 'package:pet_profile_app/features/pet_care/pet_care.dart';
 import 'package:pet_profile_app/core/experience/app_experience.dart';
 
 /// Dedicated health issues screen with expandable issue cards.
@@ -39,11 +40,11 @@ class PetHealthIssuesScreen extends ConsumerWidget {
       ],
       child: issuesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(
+        error: (_, __) => Center(
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: Text(
-              l.errorWithMessage(e.toString()),
+              l.healthIssuesLoadFailed,
               style: TextStyle(color: Theme.of(context).colorScheme.error),
               textAlign: TextAlign.center,
             ),
@@ -51,32 +52,44 @@ class PetHealthIssuesScreen extends ConsumerWidget {
         ),
         data: (issues) {
           if (issues.isEmpty) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Text(
-                  l.noEntriesYet,
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-                  textAlign: TextAlign.center,
+            return ColoredBox(
+              color: CareSurfaceTokens.collectionBackground(),
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+                child: PetCareIllustratedEmptyState(
+                  key: const Key('health_issues_empty'),
+                  title: l.healthIssuesEmptyTitle,
+                  body: l.healthIssuesEmptyBody,
+                  actionLabel: l.addHealthIssue,
+                  actionIcon: Icons.add,
+                  actionKey: const Key('health_issues_empty_add'),
+                  onAction: onAddIssue,
                 ),
               ),
             );
           }
 
-          return ListView.builder(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            itemCount: issues.length,
-            itemBuilder: (context, index) {
-              final issue = issues[index];
-              return HealthIssueCard(
-                key: Key('health_issue_list_${issue.id}'),
-                petId: petId,
-                issue: issue,
-                controller: controller,
-              );
-            },
+          return ColoredBox(
+            color: CareSurfaceTokens.collectionBackground(),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+              child: CareCollectionInsetList(
+                semanticLabel: l.healthIssues,
+                children: [
+                  for (var i = 0; i < issues.length; i++)
+                    CareCollectionInsetItem(
+                      showDividerBefore: i > 0,
+                      child: HealthIssueCard(
+                        key: Key('health_issue_list_${issues[i].id}'),
+                        petId: petId,
+                        issue: issues[i],
+                        controller: controller,
+                        inCollection: true,
+                      ),
+                    ),
+                ],
+              ),
+            ),
           );
         },
       ),

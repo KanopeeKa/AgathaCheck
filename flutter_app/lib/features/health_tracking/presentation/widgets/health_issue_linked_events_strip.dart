@@ -45,8 +45,8 @@ class HealthIssueLinkedEventsStrip extends ConsumerWidget {
         const SizedBox(height: 8),
         entriesAsync.when(
           loading: () => const LinearProgressIndicator(),
-          error: (e, _) => Text(
-            e.toString(),
+          error: (_, __) => Text(
+            l.linkedEventsLoadFailed,
             style: TextStyle(color: theme.colorScheme.error),
           ),
           data: (entries) {

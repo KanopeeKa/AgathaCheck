@@ -9369,6 +9369,54 @@ abstract class AppLocalizations {
   /// **'Maximum 4 documents per event'**
   String get maxPhotosReached;
 
+  /// No description provided for @maxHealthIssueDocumentsReached.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum 4 documents per health issue'**
+  String get maxHealthIssueDocumentsReached;
+
+  /// No description provided for @documentsLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load documents. Try again.'**
+  String get documentsLoadFailed;
+
+  /// No description provided for @documentAddFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t add document. Try again.'**
+  String get documentAddFailed;
+
+  /// No description provided for @documentDeleteFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t remove document. Try again.'**
+  String get documentDeleteFailed;
+
+  /// No description provided for @healthIssuesLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load health issues. Try again.'**
+  String get healthIssuesLoadFailed;
+
+  /// No description provided for @healthIssuesEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No health issues yet'**
+  String get healthIssuesEmptyTitle;
+
+  /// No description provided for @healthIssuesEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Record allergies, injuries, or ongoing conditions so care stays linked to the right context.'**
+  String get healthIssuesEmptyBody;
+
+  /// No description provided for @linkedEventsLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load linked events. Try again.'**
+  String get linkedEventsLoadFailed;
+
   /// No description provided for @failedToLoadPhotos.
   ///
   /// In en, this message translates to:
@@ -9414,7 +9462,7 @@ abstract class AppLocalizations {
   /// No description provided for @createHealthIssuesHint.
   ///
   /// In en, this message translates to:
-  /// **'You can create health issues from the pet\'s profile page'**
+  /// **'Open Health issues on the pet profile to add one'**
   String get createHealthIssuesHint;
 
   /// No description provided for @noPetsFoundAddFirst.
