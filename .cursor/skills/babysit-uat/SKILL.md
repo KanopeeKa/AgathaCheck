@@ -15,6 +15,8 @@ e2e-debug path only when `tick` returns a `remedial` action.
 **Shard risk:** `scripts/babysit_uat_shard_risk.mjs` · **Scope resolve:** `scripts/e2e_debug_resolve.mjs`  
 **Manual ops sibling:** `scripts/agent-uat-babysit.sh` (full replay; ops only)
 
+Agent merge on the PR under babysit-uat is permitted when [`AGENTS.md`](../../../AGENTS.md) §Autonomy and merging allows.
+
 ---
 
 ## Router (babysit-uat)
@@ -150,7 +152,7 @@ Matches the workflow run triggered by **your** merge commit on `main`, not unrel
 
 ## CI retry budget
 
-Inherits babysit+ §5 (5 PR-caused / 3 flaky). **Additional** pre-UAT remedial rounds: max **3** full babysit-uat loops per original PR; then halt with control-issue / PR comment.
+PR-head red pushes: `autonomous-pr-policy.md` §**CI retry budget**. **Additional** pre-UAT remedial rounds on `main`: max **3** full babysit-uat loops per original feature PR; then halt with control-issue / PR comment.
 
 ---
 

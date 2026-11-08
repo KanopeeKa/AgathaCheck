@@ -34,19 +34,20 @@ When `./scripts/pre-push-changed.sh` detects edits under `flutter_app/lib/featur
 | `server/routes/**`, `server/test/**` | Targeted or full Jest |
 | `server/lib/**` | Jest |
 | `flutter_app/lib/features/<x>/**` | analyze + `test/features/<x>/` (domain-scoped) |
-| `e2e/**` | BDD coverage + file size gates |
+| `e2e/**` | BDD coverage + file size gates (+ cheap gates via `scripts/ci/governance-blocking-steps.mjs`) |
 | `scripts/**`, `.github/**` | Governance gates |
 
 **E2E remedial:** `/e2e-debug` uses `./scripts/pre-push-changed.sh --e2e-shards <list>` after `./scripts/babysit_uat_bootstrap_stack.sh`. This is **not** part of normal iteration pushes.
 
 **Local vs PR CI:** `pre-push-changed.sh` targets **feature domains** touched in the diff. PR CI currently runs **all Flutter test shards** whenever the Flutter stack runs — Phase F2 of `ci-test-depth-abc9` will align PR shards with changed domains.
 
+**Cheap CI parity:** When Flutter/governance/docs scope applies, the script runs the same commands as CI for format, BDD priority tags and strict docs validation (registry: `scripts/ci/governance-blocking-steps.mjs`). On success it prints `parity: n/n cheap CI gates run for <sha>` — paste into the PR body. Playwright repro on streak 2: `./scripts/pre-push-changed.sh --e2e-specs <spec.ts …>` (stack on `localhost:3000`).
+
 ## Full script includes
 
-- `check_file_size.js`, `check_bdd_coverage.js`, `check_bdd_priority_tags.js`
+- Gates from `scripts/ci/governance-blocking-steps.mjs` (full-only coverage jobs stay in CI)
 - `npm audit --audit-level=high` + full Jest
 - `build_runner`, `flutter analyze`, full `flutter test`
-- `dart format` check (Flutter code only)
 
 ## CI is authoritative
 

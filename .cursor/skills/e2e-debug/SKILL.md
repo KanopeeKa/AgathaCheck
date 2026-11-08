@@ -263,7 +263,7 @@ Full symptom map: `.agents/memory/uat-live-e2e-triage.md`
 2. `node scripts/e2e_debug_resolve.mjs --merge-sha <remedial_merge_sha> --json`
 3. **Only** fix `failed_shards` from watch — no proactive expansion
 4. Same remedial branch or new `cursor/preuat-fix-<sha>-6bba` from current `origin/main`
-5. Max **3** full loops per original feature PR (inherits `/babysit-uat` budget)
+5. Pre-UAT remedial round cap: `autonomous-pr-policy.md` §CI retry budget (pre-UAT subsection); same limit as `/babysit-uat`
 
 ---
 

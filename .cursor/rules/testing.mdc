@@ -9,7 +9,7 @@ globs: flutter_app/test/**,server/test/**,e2e/**
 
 ## Pre-push
 
-Run `./scripts/pre-push-changed.sh` during iteration or `./scripts/pre-push.sh` before merge to `main`. See `/pre-push-verify` skill.
+Run `./scripts/pre-push-changed.sh` during iteration or `./scripts/pre-push.sh` before merge to `main`. Cheap CI gates match the registry in `scripts/ci/governance-blocking-steps.mjs` (see `/pre-push-verify` skill).
 
 ## Layer expectations
 

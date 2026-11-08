@@ -40,7 +40,7 @@ node --test scripts/db/normalize-schema-dump.test.js
 node scripts/db/check-migration-manifest.js
 node scripts/check_occurrence_writes.js
 node e2e/scripts/check_bdd_coverage.js
-node scripts/check_bdd_priority_tags.js
+node scripts/ci/run-governance-gate.mjs bdd-priority-tags
 bash scripts/ci/check-uat-ssh-action-pin.sh
 bash scripts/ci/shellcheck-uat-deploy-scripts.sh
 bash scripts/ci/assert-prod-deploy-db-commands.sh
@@ -64,6 +64,6 @@ echo "==> Flutter (codegen + analyze + active CI shards)"
 )
 
 echo "==> Format check"
-dart format --output=none --set-exit-if-changed flutter_app/lib flutter_app/test
+node scripts/ci/run-governance-gate.mjs dart-format
 
 echo "✓ Full pre-push passed"

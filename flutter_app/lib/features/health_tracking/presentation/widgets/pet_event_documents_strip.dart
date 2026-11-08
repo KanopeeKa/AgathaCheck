@@ -58,8 +58,8 @@ class PetEventDocumentsStrip extends ConsumerWidget {
         ],
         photosAsync.when(
           loading: () => const LinearProgressIndicator(),
-          error: (e, _) => Text(
-            l.failedToLoadPhotos('$e'),
+          error: (_, __) => Text(
+            l.documentsLoadFailed,
             style: TextStyle(color: theme.colorScheme.error),
           ),
           data: (photos) {
