@@ -9,6 +9,7 @@ import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import 'package:pet_profile_app/core/utils/calendar_date.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
+@Deprecated('Use PetHealthIssuesScreen at /pet/:petId/health-issues')
 class HealthIssuesSection extends ConsumerStatefulWidget {
   const HealthIssuesSection({required this.petId, this.pet, super.key});
 
