@@ -226,14 +226,8 @@ void main() {
     ]);
     await tester.pumpWidget(_wrap(server));
     await tester.pumpAndSettle();
-    expect(
-      find.textContaining('Recorded'),
-      findsOneWidget,
-    );
-    expect(
-      find.textContaining('Frederique Prevost'),
-      findsOneWidget,
-    );
+    expect(find.textContaining('Recorded'), findsOneWidget);
+    expect(find.textContaining('Frederique Prevost'), findsOneWidget);
   });
 
   testWidgets('closed not recorded: Record as done', (tester) async {
