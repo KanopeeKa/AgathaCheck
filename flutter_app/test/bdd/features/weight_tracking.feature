@@ -37,12 +37,12 @@ Feature: Weight Tracking
     Then a line chart should be displayed showing weight over time
 
   @P2
-  Scenario: Pet profile weight is read-only and links to the weight screen
+  Scenario: Pet edit omits weight fields; weight hub shows settings
     Given "Bella" has a weight entry of 24.0 kg on "2025-04-01"
     When the user opens the pet edit screen for "Bella"
-    Then the weight field should be read-only with a link to record weight
-    When the user follows the record weight link
-    Then the user should be on "Bella"'s weight tracking section
+    Then the pet edit form should not include weight fields
+    When the user opens "Bella"'s weight tracking section
+    Then the weight hub should show the recorded weight and weight settings
 
   @P2
   Scenario: Profile updates from older apps still record the weight
