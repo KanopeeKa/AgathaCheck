@@ -86,9 +86,8 @@ void main() {
             ),
             GoRoute(
               path: '/pet/:petId/events/:entryId/occurrences/:occId',
-              builder: (context, state) => Scaffold(
-                body: Text('occ ${state.pathParameters['occId']}'),
-              ),
+              builder: (context, state) =>
+                  Scaffold(body: Text('occ ${state.pathParameters['occId']}')),
             ),
           ],
         ),
