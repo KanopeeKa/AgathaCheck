@@ -46,6 +46,7 @@ function summarizeRuns(runs, cutoffMs) {
   const durations = [];
   let success = 0;
   let failure = 0;
+  let cancelled = 0;
   for (const run of runs) {
     const started = Date.parse(run.run_started_at || run.created_at);
     if (Number.isNaN(started) || started < cutoffMs) continue;
@@ -56,11 +57,15 @@ function summarizeRuns(runs, cutoffMs) {
     }
     if (run.conclusion === 'success') success += 1;
     else if (run.conclusion === 'failure') failure += 1;
+    else if (run.conclusion === 'cancelled') cancelled += 1;
   }
   durations.sort((a, b) => a - b);
   const decided = success + failure;
   return {
     samples: durations.length,
+    success,
+    failure,
+    cancelled,
     passRate: decided > 0 ? success / decided : null,
     p50Sec: percentile(durations, 50),
     p90Sec: percentile(durations, 90),
@@ -91,6 +96,21 @@ function remediationShare(days) {
   }
 }
 
+function ciprPassRateNote(ci) {
+  const decided = (ci.success ?? 0) + (ci.failure ?? 0);
+  if (!decided) return null;
+  const rate = ci.passRate;
+  const lines = [
+    '',
+    '### CIPR pass-rate (PR CI)',
+    '',
+    `Raw pass rate (success ÷ success+failure): **${(rate * 100).toFixed(1)}%** (${ci.success} / ${decided} in window).`,
+    'Targets and baseline: `docs/agent-efficiency/plans/ci-pass-rate-improvement.md` §2.',
+    '',
+  ];
+  return lines.join('\n');
+}
+
 function formatSummary(kpis) {
   const lines = ['## CI health KPIs (advisory)', ''];
   if (!kpis.tokenPresent) {
@@ -113,6 +133,8 @@ function formatSummary(kpis) {
   lines.push(
     `Post-merge remedial commits (grep preuat/e2e): **${kpis.remediation.remedialCommits}** / ${kpis.remediation.mainCommits} on main (${fmtPct(kpis.remediation.share)}).`,
   );
+  const cipr = ciprPassRateNote(kpis.ci);
+  if (cipr) lines.push(cipr);
   return lines.join('\n');
 }
 
