@@ -556,6 +556,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get weightTracking => 'Weight Tracking';
 
   @override
+  String get weightHubSettingsTitle => 'Weight settings';
+
+  @override
+  String get weightHubSettingsEditTitle => 'Edit weight settings';
+
+  @override
   String get addEntry => 'Add Health Event';
 
   @override

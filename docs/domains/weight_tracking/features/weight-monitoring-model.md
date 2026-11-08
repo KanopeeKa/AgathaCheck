@@ -3,7 +3,7 @@ title: Weight monitoring model
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-10-08
+last_updated: 2026-11-08
 tags: [domain, weight_tracking, pet_care]
 domain: weight_tracking
 feature_id: weight-monitoring-model
@@ -34,6 +34,7 @@ Canonical product and API model for **one weight record**, optional **link to a 
 ## Flutter boundaries
 
 - Weight UI lives in `features/weight_tracking/` (hub screen, record sheet).
+- **Weight settings** card, edit sheet, and form fields are composed from `features/experience/presentation/weight_tracking/` (wired in `app_router.dart` via the hub `settingsCard` slot).
 - Care ↔ weight coordination uses `core` providers (`PetCareSync`, `careItemObservationSectionProvider`) — no direct feature imports.
 
 ## Programme
@@ -54,9 +55,11 @@ Same sheet; turn off counts-as or pick **Don't count** when multiple routines ma
 
 Occurrence screen: enter weight in user unit, or skip with reason. Linked weight visible on occurrence and in care item history (after WEIGHT C).
 
-### Read-only profile weight
+### Weight settings on Weight tracking
 
-Pet edit form shows latest weight + link to weight screen; weights are recorded on the hub or via deprecated API fields for legacy clients.
+Guardian opens **Weight tracking** → **Weight settings** card at the top of the hub (always visible, including empty state). Reference weight, reference source, and weight management are read from the pet profile and edited via **Edit** (partial `PUT` with only those three fields). **Edit pet** no longer shows weight context or a weight block; optional starting weight on **Add pet** is unchanged.
+
+Weights are still recorded on the hub or via deprecated API fields for legacy clients.
 
 ## Implementation reference
 
@@ -69,7 +72,7 @@ Pet edit form shows latest weight + link to weight screen; weights are recorded 
 
 ### Flutter (target after WEIGHT B/C)
 
-- Hub: `WeightHubScreen`, record sheet with counts-as UX
+- Hub: `WeightHubScreen`, record sheet with counts-as UX; weight settings UI from experience composition layer
 - User unit preference via profile API
 - Care item observation slot (`numeric_weight`) and history weight rows (WEIGHT C)
 

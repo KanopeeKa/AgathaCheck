@@ -85,6 +85,42 @@ describe('petCoreCommandService behaviour', () => {
       expect(capturedParams[22]).toBe('org-uuid-1');
     });
 
+    it('preserves weight_reference fields when omitted from the body', async () => {
+      let capturedParams;
+      const existing = {
+        ...existingRow,
+        weight_reference_value: 5.5,
+        weight_reference_authority: 'vet_target',
+        weight_management_context: 'vet_managed',
+      };
+      const app = createApp(createMockPool(async (sql, params) => {
+        const access = handlePetAccessQuery(sql, params, { userId, ownedPetIds: [petId] });
+        if (access) return access;
+        if (sql.includes('SELECT') && sql.includes('FROM pets WHERE id = $1')) {
+          return { rows: [existing] };
+        }
+        if (sql.includes('FROM weight_entries')) return { rows: [{ weight: 4.5 }] };
+        if (sql.includes('INSERT INTO weight_entries')) return { rows: [] };
+        if (sql.includes('UPDATE pets SET weight = (')) return { rows: [] };
+        if (sql.includes('UPDATE pets SET name=$1')) {
+          capturedParams = params;
+          return { rows: [makePetRow({ name: params[0] })] };
+        }
+        if (sql.includes('SELECT * FROM pets WHERE id = $1')) {
+          return { rows: [makePetRow()] };
+        }
+        return null;
+      }));
+      const res = await request(app)
+        .put(`/api/pets/${petId}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ name: 'Renamed only' });
+      expect(res.statusCode).toBe(200);
+      expect(capturedParams[23]).toBe(5.5);
+      expect(capturedParams[24]).toBe('vet_target');
+      expect(capturedParams[25]).toBe('vet_managed');
+    });
+
     it('clears organization_id and chipId when explicit null is sent', async () => {
       let capturedParams;
       const app = buildUpdateApp((params) => { capturedParams = params; });

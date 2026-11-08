@@ -230,7 +230,7 @@ extension _PetFormScreenActions on _PetFormScreenState {
           );
         case PetFormSubmitSuccess(:final petId):
           final targetPetId = petId ?? widget.petId;
-          if (targetPetId != null) {
+          if (targetPetId != null && !_isEditing) {
             await _savePrimaryVetSlotIfNeeded(targetPetId);
           }
           if (!mounted) return;

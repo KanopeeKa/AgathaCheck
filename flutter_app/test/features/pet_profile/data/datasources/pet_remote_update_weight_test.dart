@@ -26,6 +26,10 @@ void main() {
       final body = captured.first;
       expect(body.contains('"weight"'), isFalse);
       expect(body.contains('weightEntryDate'), isFalse);
+      expect(body.contains('weight_reference_value'), isFalse);
+      expect(body.contains('weight_reference_authority'), isFalse);
+      expect(body.contains('weight_management_context'), isFalse);
+      expect(body.contains('vetId'), isFalse);
     });
   });
 }

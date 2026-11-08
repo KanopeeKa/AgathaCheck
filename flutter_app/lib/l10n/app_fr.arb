@@ -206,6 +206,8 @@
   "rainbowBridge": "Au-delà des nuages",
 
   "weightTracking": "Suivi du poids",
+  "weightHubSettingsTitle": "Paramètres de poids",
+  "weightHubSettingsEditTitle": "Modifier les paramètres de poids",
   "addEntry": "Ajouter un événement santé",
   "errorLoadingWeightData": "Erreur de chargement des données de poids : {error}",
   "noWeightDataYet": "Aucune donnée de poids",

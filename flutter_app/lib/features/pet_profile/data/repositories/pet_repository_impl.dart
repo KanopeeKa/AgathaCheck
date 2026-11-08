@@ -205,6 +205,27 @@ class PetRepositoryImpl implements PetRepository {
   }
 
   @override
+  Future<Pet> updatePetWeightContext({
+    required String petId,
+    double? weightReferenceValue,
+    String? weightReferenceAuthority,
+    required String weightManagementContext,
+  }) async {
+    if (remoteDataSource == null || token == null || token!.isEmpty) {
+      throw StateError('Cannot update weight settings offline');
+    }
+    final remotePet = await remoteDataSource!.updatePetWeightContext(
+      petId: petId,
+      token: token!,
+      weightReferenceValue: weightReferenceValue,
+      weightReferenceAuthority: weightReferenceAuthority,
+      weightManagementContext: weightManagementContext,
+    );
+    await _localDataSource.updatePet(remotePet);
+    return remotePet.toEntity();
+  }
+
+  @override
   Future<void> deletePet(String id) async {
     final prior = await _localDataSource.getPetById(id);
     await _localDataSource.deletePet(id);

@@ -94,19 +94,6 @@ void main() {
       expect(copy.name, 'Rex');
       expect(copy.selectedSpecies, 'dog');
     });
-
-    test('clears weightReferenceAuthority via clear flag', () {
-      final original = PetFormState(
-        weightReferenceAuthority: 'vet_target',
-        weightReferenceValue: '5.0',
-        weightManagementContext: 'vet_managed',
-      );
-      final cleared = original.copyWith(clearWeightReferenceAuthority: true);
-
-      expect(cleared.weightReferenceAuthority, isNull);
-      expect(cleared.weightReferenceValue, '5.0');
-      expect(cleared.weightManagementContext, 'vet_managed');
-    });
   });
 
   group('PetFormController.submit', () {
@@ -206,6 +193,34 @@ void main() {
       expect(repository.added, hasLength(1));
       expect(repository.added.single.name, 'Bella');
       expect(repository.added.single.organizationId, 'org-1');
+    });
+
+    test('edit save preserves weight context without sending it', () async {
+      final existing = Pet(
+        id: 'pet-1',
+        name: 'Rex',
+        species: 'dog',
+        weightReferenceValue: 5.0,
+        weightReferenceAuthority: 'vet_target',
+        weightManagementContext: 'vet_managed',
+      );
+      repository = RecordingPetRepository(initial: [existing]);
+      container.dispose();
+      container = makeContainer(repo: repository);
+      controller = PetFormController();
+      deps = makeDeps(repository);
+      controller.state = controller.state.copyWith(
+        name: 'Rexy',
+        selectedSpecies: 'dog',
+      );
+
+      await controller.submit(deps, isEditing: true, petId: 'pet-1');
+
+      final updated = repository.updated.single;
+      expect(updated.name, 'Rexy');
+      expect(updated.weightReferenceValue, 5.0);
+      expect(updated.weightReferenceAuthority, 'vet_target');
+      expect(updated.weightManagementContext, 'vet_managed');
     });
 
     test(
