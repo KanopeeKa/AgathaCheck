@@ -21,11 +21,12 @@ class OccurrenceRecordedAttributionLine extends StatelessWidget {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final markedAt = occurrence.markedAt!;
+    final displayInstant = markedAt.isUtc ? markedAt.toLocal() : markedAt;
     final user = occurrence.markedByName?.trim().isNotEmpty == true
         ? occurrence.markedByName!.trim()
         : l.unknownUser;
-    final date = formatCareRecordedCalendarDate(markedAt);
-    final time = formatCareWallClockTime24(markedAt);
+    final date = formatCareRecordedCalendarDate(displayInstant);
+    final time = formatCareWallClockTime24(displayInstant);
     final line = l.occurrenceRecordedAttribution(date, time, user);
 
     final isDone = occurrence.isDone;
