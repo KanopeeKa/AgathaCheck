@@ -25,11 +25,13 @@ action returned, run `tick` again, end the turn with one line when the decision 
 Each command may run in a fresh shell, so prefix every `tick` with `env -u`; `unset` does not carry over.
 
 **`triage-review` action** (unresolved review threads; `tick` returns it before any merge): run
-`node scripts/babysit_pr_reviews.js wait --pr <n>` and handle every thread it lists, not only the ones in
-the evidence. Apply [autonomous-pr-policy](../../../docs/agent-efficiency/autonomous-pr-policy.md) §Review triage —
+`node scripts/babysit_pr_reviews.js wait --pr <n>` and handle **every** review conversation it lists, not only the ones in
+the evidence. Apply [autonomous-pr-policy](../../../docs/agent-efficiency/autonomous-pr-policy.md) §Babysit skill family and §Review triage —
 fix must-fix and safe nits on the branch (`./scripts/pre-push-changed.sh` before the push), debt issue per
 §Debt issues for ignored or skipped items — then reply on each thread (`Fixed in <sha>` / `False positive: …` /
-`Deferred to #<n>`) and resolve it. `tick` relaunches the action while any thread stays unresolved.
+`Deferred to #<n>`) and resolve it. `tick` relaunches the action while any conversation stays unresolved.
+
+The **driver** arms merge only after `node scripts/babysit_pr_reviews.js gate --pr <url>` exit `0` (or allowed `3`) on that PR — same resolve-all invariant as `/babysit-plus`.
 
 `gate <plan_id>` is an alias of `tick` (no `--labels`).
 

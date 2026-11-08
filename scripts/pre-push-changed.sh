@@ -165,6 +165,8 @@ run_governance() {
   node --test scripts/ci/flutter-shards.test.mjs scripts/ci/flutter-shard-runner.test.mjs
   node --test scripts/ci/detect-deploy-package-changed.test.js
   node scripts/check_skill_frontmatter.js
+  node --test scripts/check_babysit_skill_family.test.js
+  node scripts/check_babysit_skill_family.js
   node scripts/validate_openapi.js
   node --test scripts/validate_openapi.test.js
   node scripts/validate_eslint.js

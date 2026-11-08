@@ -8,6 +8,8 @@ disable-model-invocation: true
 
 Autonomous PR operator. Extends lightweight `/babysit` with mandatory triage, debt-issue tracking, CI budgets, and merge gates.
 
+**Resolve all review conversations** before merge (reply + resolve every thread; `gate --pr` exit `0` last) — autonomous-pr-policy §Babysit skill family.
+
 **Canonical policy (do not restate here):** `docs/agent-efficiency/autonomous-pr-policy.md`  
 **Phase exit profiles:** `docs/agent-efficiency/phase-exit-checklists.md`  
 **Labels / dedupe:** `docs/agent-efficiency/github-labels.md`  

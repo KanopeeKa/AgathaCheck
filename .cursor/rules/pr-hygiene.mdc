@@ -18,7 +18,9 @@ Only after this review passes: commit, push, create/update the PR.
 ## Automatic review (Copilot-first)
 
 - **Primary:** GitHub **Copilot** PR review when enabled — triage when threads exist.
-- **Collect:** `node scripts/babysit_pr_reviews.js collect --pr <url>` — triage Copilot + human threads (autonomous-pr-policy §Automatic reviews).
+- **Resolve all review conversations:** every babysit-family skill must triage, reply on, and **resolve** every unresolved review thread before merge (autonomous-pr-policy §Babysit skill family · §Automatic reviews).
+- **Wait / gate:** `node scripts/babysit_pr_reviews.js wait --pr <url>` after each push; `gate --pr <url>` exit `0` (or allowed `3`) immediately before merge — never merge on CI green alone.
+- **Collect:** `node scripts/babysit_pr_reviews.js collect --pr <url>` — one snapshot when debugging (autonomous-pr-policy §Automatic reviews).
 - **Autofix:** Off — babysit+ owns fixes.
 
 ## Model for PR babysitting
