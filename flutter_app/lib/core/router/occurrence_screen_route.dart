@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../features/experience/presentation/care_item/occurrence/occurrence_screen.dart';
+import '../../features/experience/experience.dart';
 
 /// Production route builder for Care date (`occurrenceDetail`).
 ///
