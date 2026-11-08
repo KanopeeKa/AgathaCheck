@@ -10,6 +10,7 @@ import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/features/care_item/care_item.dart';
 import 'package:pet_profile_app/features/experience/presentation/screens/pet_care/pet_care_upcoming_events_section.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
+import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
@@ -63,6 +64,10 @@ Widget _wrap(
     overrides: [
       healthEntriesNotifierProvider.overrideWith(() => notifier),
       careItemHttpClientProvider.overrideWithValue(client),
+      careDataChangedProvider.overrideWith(
+        (ref) =>
+            () => invalidateAllCareItemDetailCaches(ref),
+      ),
     ],
     child: MaterialApp.router(
       theme: AppTheme.lightTheme,
