@@ -6999,6 +6999,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get occurrenceDueLabel => 'Échéance';
 
   @override
+  String occurrenceRecordedAttribution(String date, String time, String user) {
+    return 'Enregistré le $date à $time par $user';
+  }
+
+  @override
   String get occurrenceOtherOpenDatesHint =>
       'Les autres dates ouvertes figurent sur cet élément de soin.';
 

@@ -33,6 +33,9 @@ Map<String, dynamic> detail({
   String occStatus = 'due',
   String family = 'parasite_prevention',
   String? completedOn,
+  String? markedAt,
+  String? markedByName,
+  String notes = '',
   Map<String, dynamic>? lastAction,
   Map<String, dynamic>? linkedWeight,
   Map<String, dynamic>? skipReason,
@@ -61,7 +64,9 @@ Map<String, dynamic> detail({
       'completed_on': completedOn,
       'outcome': occStatus,
       'origin': 'computed',
-      'notes': '',
+      'notes': notes,
+      if (markedAt != null) 'marked_at': markedAt,
+      if (markedByName != null) 'marked_by_name': markedByName,
     },
     'entry': {
       'id': 'entry-1',
@@ -205,6 +210,28 @@ void main() {
     expect(find.text('Undo date change'), findsOneWidget);
     expect(
       find.byKey(const Key('occurrence_field_completed_on')),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('done shows recorded-by footer from wire', (tester) async {
+    final server = _Server([
+      detail(
+        status: 'completed',
+        occStatus: 'done',
+        completedOn: '2026-06-10',
+        markedAt: '2026-11-03T22:07:00.000Z',
+        markedByName: 'Frederique Prevost',
+      ),
+    ]);
+    await tester.pumpWidget(_wrap(server));
+    await tester.pumpAndSettle();
+    expect(
+      find.textContaining('Recorded'),
+      findsOneWidget,
+    );
+    expect(
+      find.textContaining('Frederique Prevost'),
       findsOneWidget,
     );
   });

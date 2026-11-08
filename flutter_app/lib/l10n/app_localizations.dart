@@ -12177,6 +12177,12 @@ abstract class AppLocalizations {
   /// **'Due'**
   String get occurrenceDueLabel;
 
+  /// No description provided for @occurrenceRecordedAttribution.
+  ///
+  /// In en, this message translates to:
+  /// **'Recorded {date} at {time} by {user}'**
+  String occurrenceRecordedAttribution(String date, String time, String user);
+
   /// No description provided for @occurrenceOtherOpenDatesHint.
   ///
   /// In en, this message translates to:

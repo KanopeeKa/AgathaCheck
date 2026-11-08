@@ -73,6 +73,14 @@ export class OccurrencePage {
     }).toPass({ timeout: 60_000 });
   }
 
+  async expectRecordedAttributionVisible(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    const line = this.page.locator(
+      '[flt-semantics-identifier="occurrence_recorded_attribution"]',
+    );
+    await expect(line.first()).toBeVisible({ timeout: 15_000 });
+  }
+
   async markDone(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
     const done = this.doneControl();

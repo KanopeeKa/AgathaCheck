@@ -6889,6 +6889,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get occurrenceDueLabel => 'Due';
 
   @override
+  String occurrenceRecordedAttribution(String date, String time, String user) {
+    return 'Recorded $date at $time by $user';
+  }
+
+  @override
   String get occurrenceOtherOpenDatesHint =>
       'Other open dates are on this care item.';
 

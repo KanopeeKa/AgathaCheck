@@ -28,6 +28,12 @@ Feature: Care date screen (v4)
     Then the completion date sheet should not appear
 
   @P1
+  Scenario: CD-4a Done care date shows who recorded it
+    Given "Bella" has a completed grooming care "Spa day" on "2026-06-10"
+    When the user opens the care date for "Spa day"
+    Then the care date screen should show the recorded-by line
+
+  @P1
   Scenario: CD-4 Neighbour chevron opens the adjacent occurrence on the same route
     Given "Bella" has planned care dates "2026-06-01", "2026-06-15", and "2026-07-01" for "Course"
     When the user opens the middle care date for "Course"

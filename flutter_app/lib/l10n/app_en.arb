@@ -2599,6 +2599,14 @@
   "occurrenceViewNext": "View",
   "occurrenceOpenCareDetails": "View care details",
   "occurrenceDueLabel": "Due",
+  "occurrenceRecordedAttribution": "Recorded {date} at {time} by {user}",
+  "@occurrenceRecordedAttribution": {
+    "placeholders": {
+      "date": { "type": "String" },
+      "time": { "type": "String" },
+      "user": { "type": "String" }
+    }
+  },
   "occurrenceOtherOpenDatesHint": "Other open dates are on this care item.",
   "occurrenceScheduleRecurring": "Recurring care",
   "occurrenceSchedulePlannedDate": "Planned date",

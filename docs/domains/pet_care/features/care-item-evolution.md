@@ -6,7 +6,7 @@ domain: pet_care
 feature_id: care_item
 status: active
 last_updated: 2026-11-08
-related_prs: [1797, 1805, 1812, 1817, 2129]
+related_prs: [1797, 1805, 1812, 1817, 2129, 2144]
 ---
 
 # Care Item — functional spec
@@ -46,6 +46,7 @@ Historical profile refactor and 2026-09-13 delivery plan text: [archive/care-ite
 | CARE-ITEM-R-019 | Care date Block 3: inline **completion date** (default `min(due, as_of.date)`); scheduled time read-only; complete icon; no DN-3 sheet on leaf | Live |
 | CARE-ITEM-R-020 | Care date Block 4: server `previous_occurrence` / `next_occurrence`; empty-state copy when none; replace-route navigation | Live |
 | CARE-ITEM-R-021 | Persisted **completion time of day** on occurrences (display + API) | Planned |
+| CARE-ITEM-R-022 | Care date footer for person-closed **Done** / **Skipped**: `Recorded {dd MMM yy} at {HH:mm} by {name}` (`marked_at`, `marked_by_name`); notes on a second line; hidden for open dates and system-closed Not recorded; `Unknown user` when name missing (CARE-ITEM-D-009) | In delivery |
 
 ## Verdict
 
@@ -434,7 +435,7 @@ Leaf route for one calendar date of care (`OccurrenceScreen`). Shell: `Experienc
 
 ### Layout (v4 four blocks, CARE-ITEM-D-001)
 
-Phone column order: **Context** → **Schedule** (includes Away when applicable) → **Complete** → **Neighbours**. No section labels **Status** or **Actions** (D-OSM-008).
+Phone column order: **Context** → **Schedule** (includes Away when applicable) → **Complete** → **Neighbours** → **Recorded-by** footer when applicable (CARE-ITEM-R-022). No section labels **Status** or **Actions** (D-OSM-008).
 
 **Wide (≥ `kCareItemTwoColumnBreakpoint`, 900px):** Blocks 1–2 full width; **Complete** and **Neighbours** share one row (flex 3:2) when neighbours render; otherwise **Complete** is full width.
 
@@ -464,7 +465,7 @@ When the series is **finished** and `!canUndoHere`, show static copy only — no
 | Kind | Names |
 |------|--------|
 | Analytics events | `occurrence_screen_opened`, `occurrence_neighbor_opened`, `care_completion_date_changed`, `care_stack_resolved` |
-| Widget / E2E keys | `occurrence_screen`, `occurrence_care_context_card`, `occurrence_care_name_link`, `occurrence_schedule_section`, `occurrence_neighbors_section`, `occurrence_neighbor_previous`, `occurrence_neighbor_next`, `occurrence_field_completion_date`, `occurrence_reschedule`, `occurrence_done`, `occurrence_skip`, `occurrence_undo`, `occurrence_confirm_skip` |
+| Widget / E2E keys | `occurrence_screen`, `occurrence_care_context_card`, `occurrence_care_name_link`, `occurrence_schedule_section`, `occurrence_neighbors_section`, `occurrence_neighbor_previous`, `occurrence_neighbor_next`, `occurrence_field_completion_date`, `occurrence_reschedule`, `occurrence_done`, `occurrence_skip`, `occurrence_undo`, `occurrence_confirm_skip`, `occurrence_recorded_attribution` |
 
 BDD: `flutter_app/test/bdd/features/care_date_screen.feature` · E2E: `e2e/playwright/tests/care.date.spec.ts` · Page object: `e2e/playwright/pages/occurrence.page.ts`.
 
@@ -484,6 +485,7 @@ BDD: `flutter_app/test/bdd/features/care_date_screen.feature` · E2E: `e2e/playw
 | CARE-ITEM-D-006 | Leaf completion uses inline date; DN-3 sheet only off-leaf (2026-10-14) | Live |
 | CARE-ITEM-D-007 | Default completion date `min(due_date, as_of.date)`; scheduled time read-only; R-021 deferred (2026-10-14) | Live |
 | CARE-ITEM-D-008 | Occurrence route builder keys `OccurrenceScreen` by `occurrenceId` so consecutive `replaceOccurrenceScreen` hops reload data (go_router page reuse) | Live |
+| CARE-ITEM-D-009 | **Recorded-by** footer after neighbours: uses server `marked_at` (24h `HH:mm`, calendar `dd MMM yy`) and `marked_by_name`; ✓ for Done, ⏭ for Skipped; no footer for open or system-closed Not recorded; History attribution detail moves off list rows (#2056) | In delivery | 2026-11-08 | #2144 |
 
 Historical D-OCC / D-OSM detail (2026-10-06): D-OCC-001 App bar **Care date**; D-OCC-006 Reschedule this occurrence only; D-OCC-014 … D-OCC-015 Away; D-OCC-016 No ⋯ menu; D-OCC-OUT-1 series actions on Care details only. v1 acceptance: plan `occurrence-screen-context-6b05.md`.
 

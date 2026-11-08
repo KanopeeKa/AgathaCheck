@@ -2477,6 +2477,14 @@
   "occurrenceViewNext": "Voir",
   "occurrenceOpenCareDetails": "Voir les détails du soin",
   "occurrenceDueLabel": "Échéance",
+  "occurrenceRecordedAttribution": "Enregistré le {date} à {time} par {user}",
+  "@occurrenceRecordedAttribution": {
+    "placeholders": {
+      "date": { "type": "String" },
+      "time": { "type": "String" },
+      "user": { "type": "String" }
+    }
+  },
   "occurrenceOtherOpenDatesHint": "Les autres dates ouvertes figurent sur cet élément de soin.",
   "occurrenceScheduleRecurring": "Soin récurrent",
   "occurrenceSchedulePlannedDate": "Date planifiée",
