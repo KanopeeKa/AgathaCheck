@@ -11,7 +11,7 @@ Minimal sequential programme — tracking issue only; no execute-plan runtime. P
 ## Run to completion
 
 - `/light-plan` delivers a release merged to `main` with Pre-UAT green, not a plan.
-- Do not end the turn or ask the owner at a step boundary (setup done, phase merged, checklist tick, sync PR, waiting on CI or review — `gh pr checks --watch` is how you wait).
+- Do not end the turn or ask the owner at a step boundary (setup done, phase merged, checklist tick, sync PR, waiting on CI — `gh pr checks --watch`; waiting on review — `node scripts/babysit_pr_reviews.js wait --pr <url>`).
 - End the turn only for stops in §Stop and ask, blocked `./scripts/pre-push.sh` in §Final self-review, or Done (§Release).
 - Put status on the tracking issue (checklist ticks with PR links). Never ask for acknowledgement.
 
