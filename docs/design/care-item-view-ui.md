@@ -3,7 +3,7 @@ title: Care Item view — UI modules
 owner: Design Team
 audience: both
 status: active
-last_updated: 2026-11-07
+last_updated: 2026-11-08
 tags: [design, pet-care, care-item]
 ---
 
@@ -42,7 +42,7 @@ Document hex values only in [`tokens.md`](./tokens.md) when promoted globally; C
 1. **Pet context** — context strip on canvas (not a module): **`CareItemPetContextTile`** (dashboard `UnifiedPetTile` unchanged) + care name (typography per spec D-CIH-014, 600 px shell breakpoint) + decorative `CareFamilyIcon` + optional chip (**Finished** or **Paused**; no Archived chip until API). Stacked layout per spec §5.2.1. `openPetDetail`. Canonical: [care-item-evolution.md](../domains/pet_care/features/care-item-evolution.md).
 2. **Needs attention (hero)** — lists every **open occurrence** as a line (date · status · trailing Done). **Stack** (≥2 started open dates on Fixed schedule): all lines + **Mark all as done** / **Skip all** (one `resolve-stack`, one Undo). **Single** leading open slot: outlined **Change date** (reschedule sheet). Occurrence line tap opens the **Care date** screen; Done follows `decideDone` (one tap unless weight/date/early dialog). Paused: "Paused since …" / "Paused until …" + Resume.
 3. **Absence** — module or callout; resolution actions inside module body.
-4. **Schedule** — header row with **Edit schedule** trailing; body = stat grid (Frequency · Type · Reminder) + prose lines (next date, flexibility).
+4. **Schedule** — header row (no section edit link; **Edit** in the care item top menu); body = stat grid (Frequency · Type · Reminder) + prose lines (next date, flexibility).
 5. **Details** — definition-list rows; **no duplicate recurrence** (schedule owns rhythm).
 6. **Documents** — module when attachments exist (D-CIE-041); horizontal read-only strip; hidden when empty; loading shows strip progress in module.
 7. **History** — inset list for past occurrences when any qualify; **No history yet** otherwise; **See history** in module footer.
