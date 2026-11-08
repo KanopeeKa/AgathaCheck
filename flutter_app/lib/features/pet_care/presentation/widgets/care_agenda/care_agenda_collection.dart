@@ -53,7 +53,7 @@ class _CareAgendaCollectionState extends ConsumerState<CareAgendaCollection> {
       final elapsed = DateTime.now().difference(_readAt);
       if (elapsed >= const Duration(minutes: 15) ||
           _crossedPetHomeMidnight(elapsed)) {
-        _refresh();
+        _refreshHealthEntries();
       } else {
         setState(() {});
       }
@@ -74,8 +74,15 @@ class _CareAgendaCollectionState extends ConsumerState<CareAgendaCollection> {
     super.dispose();
   }
 
-  Future<void> _refresh() async {
+  /// D-CIE-028 polling: refresh agenda rows only (no detail-family invalidation).
+  Future<void> _refreshHealthEntries() async {
     await ref.read(healthEntriesNotifierProvider.notifier).refresh();
+    if (mounted) _readAt = DateTime.now();
+  }
+
+  /// After Done on a row (D-CIE-042): reconcile detail occurrence caches.
+  Future<void> _refreshAfterCareCommand() async {
+    await ref.read(careDataChangedProvider)();
     if (mounted) _readAt = DateTime.now();
   }
 
@@ -102,7 +109,7 @@ class _CareAgendaCollectionState extends ConsumerState<CareAgendaCollection> {
         .done(
           context,
           schedule: row.schedule,
-          onChanged: _refresh,
+          onChanged: _refreshAfterCareCommand,
           source: widget.source,
         );
   }
