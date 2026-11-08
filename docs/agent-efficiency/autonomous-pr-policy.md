@@ -10,6 +10,8 @@ tags: [agent-efficiency, policy]
 
 Single source of truth for `/babysit`, `/babysit-plus`, and `/execute-plan`. Skills and commands **link here**; they do not restate full policy in different wording.
 
+Whether an agent may merge is defined in [`AGENTS.md`](../../AGENTS.md) §Autonomy and merging; the babysit workflows below assume that gate is satisfied when the skill is active.
+
 | Topic | Canonical location |
 |-------|-------------------|
 | Pre-PR self-review, review bots, Cursor model policy | [pr-review-cost-efficiency.md](./pr-review-cost-efficiency.md) |
