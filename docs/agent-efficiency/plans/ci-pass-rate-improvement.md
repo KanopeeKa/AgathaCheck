@@ -18,6 +18,13 @@ folds_into: [docs/pipelines/ci-cd-gates.md, docs/agent-efficiency/autonomous-pr-
 `ci-gate` job) touch CI workflows — §Escalation in `autonomous-pr-policy.md` ("CI workflow gate
 changes"). S1 and S4 need no escalation.
 
+**Programme coordination:** S3 and S4 touch shared E2E infrastructure owned by the TEST programme —
+follow [parallel-programmes.md](../parallel-programmes.md) §4–§6 before delivery. Measurement extends the
+TEST programme's phase-4 KPI generator (#1468), not a second report.
+
+**Review:** 2026-11-08 review folded in (existing registries reused, exit code, detector edge cases,
+PR split, metric caveats).
+
 ## 1. Evidence (baseline)
 
 **Window:** last 300 runs of workflow `CI` (`ci.yml`, all `pull_request`), 2026-11-03 22:31 →
@@ -71,8 +78,9 @@ it does run (so the script was not run, or not re-run after the last edit).
 - Every failure was a **new commit**: 46 distinct SHAs; from 14:52 on 2026-11-06 to 00:40 the next day,
   one push roughly every 12–15 min.
 - Light-plan already says "same check red on **3 pushes** → stop" (`.cursor/skills/light-plan/SKILL.md`
-  l.43, l.75). `autonomous-pr-policy.md` §CI retry budget says 5 / 3. `babysit` has no number. The rule
-  existed in three forms and nothing enforced it.
+  l.43, l.75). `autonomous-pr-policy.md` §CI retry budget says 5 / 3 iterations (an "iteration" is not
+  defined). `e2e-debug` says max 3 full remedial loops per feature PR (l.266, inherited by
+  `babysit-uat`). `babysit` has no number. The rule existed in four forms and nothing enforced it.
 - The vet failures were **not mainly flakiness**. 2026-11-06 10:38: route mismatch (app on
   `/pc/people/<id>`, test expected the list). 2026-11-07 00:40: phone value empty in the edit form.
   #2114 (the streak's own PR) changed the test's expected route **and** added product-side "roster
@@ -93,7 +101,7 @@ without weakening `ci-gate / CI passed`.
 | CIPR-M1 | Branches green on first completed run | 68% | ≥ 85% |
 | CIPR-M2 | First failures caused only by cheap checks | 12 / 25 (48%) | ≤ 10% |
 | CIPR-M3 | Longest consecutive red-push streak on one branch | 46 | ≤ 5 |
-| CIPR-M4 | Raw pass rate | 48% | ≥ 75% |
+| CIPR-M4 | Raw pass rate (secondary — may lag M1–M3 if remaining failures are substantive) | 48% | ≥ 75% |
 | CIPR-M5 | p90 time first push → first green | measure first | trend down |
 
 **Non-goals:** making CI faster per run; changing which jobs `ci-gate` requires; base-branch health
@@ -111,10 +119,11 @@ validation non-strict. An agent following the rules still fails CI.
 | CIPR-R-001 | When Flutter paths are in scope (`needs_flutter`), `pre-push-changed.sh` runs the **same** format command as CI: `dart format --output=none --set-exit-if-changed flutter_app/lib flutter_app/test`. It runs **before** `flutter analyze` and tests (fail fast; CI step takes 3–5 s). | Planned |
 | CIPR-R-002 | `run_governance` runs `node scripts/check_bdd_priority_tags.js`. | Planned |
 | CIPR-R-003 | When `docs/**` is touched, local docs validation uses `--strict`, matching `_reusable-test.yml:62`. | Planned |
-| CIPR-R-004 | Each cheap CI command is defined **once** and called by both CI and the local scripts (e.g. a shared `scripts/ci/cheap-gates.sh <gate>` entry). No duplicated command strings. "Cheap" = runs in ≤ 60 s and needs no services, build or browser. | Planned |
-| CIPR-R-005 | A parity manifest (`scripts/ci/prepush-parity.json`) lists every `run:` step in `_reusable-test.yml` and `_reusable-flutter-analyze.yml` as either `local: <gate>` or `exempt: <reason ≥ 10 chars>`. A governance test fails when a CI step has no entry, so the drift cannot come back silently. | Planned |
-| CIPR-R-006 | Known exemption, recorded in the manifest: web bundle budget (needs a release web build; 1 / 25 first failures). | Planned |
+| CIPR-R-004 | Extend the existing registry `scripts/ci/governance-blocking-steps.mjs` (already consumed by `assert-ci-gate` tests and `governance-gates.md`) — **no new manifest or wrapper**. Add entries for `dart format` (CI: `_reusable-flutter-analyze.yml`) and `check_bdd_priority_tags.js` (CI: `_reusable-test.yml`), and a `prepush` field on every entry: `changed` (run by `pre-push-changed.sh`), `full-only`, or `exempt` with a reason ≥ 10 chars. `pre-push-changed.sh` runs the registry's `command` strings rather than restating them. "Cheap" = ≤ 60 s, no services, build or browser. | Planned |
+| CIPR-R-005 | Extend `scripts/ci/governance-blocking-steps.test.mjs`: fails when a cheap `run:` step in `_reusable-test.yml` or `_reusable-flutter-analyze.yml` has no registry entry, or when an entry marked `prepush: changed` is not invoked by `pre-push-changed.sh`. Drift cannot come back silently. | Planned |
+| CIPR-R-006 | Known exemption, recorded in the registry: web bundle budget (needs a release web build; 1 / 25 first failures). | Planned |
 | CIPR-R-007 | On success the script prints `parity: <n>/<n> cheap CI gates run for <HEAD sha>`, which agents paste into the PR body as evidence (`AGENTS.md` §Reporting). | Planned |
+| CIPR-R-008 | The same PR updates `.cursor/skills/pre-push-verify/SKILL.md`, `docs/agent-efficiency/governance-gates.md` and `.cursor/rules/testing.mdc` so they point at the registry instead of listing gates. | Planned |
 
 ### Acceptance criteria
 
@@ -122,16 +131,16 @@ validation non-strict. An agent following the rules still fails CI.
 |----|---------------------|
 | CIPR-AC-001 | Given a branch with one unformatted `.dart` file, when `./scripts/pre-push-changed.sh` runs, then it exits non-zero at the format step with the same file list CI would print. |
 | CIPR-AC-002 | Given a `.feature` scenario without `@P0/@P1/@P2`, when the script runs, then it fails in governance. |
-| CIPR-AC-003 | Given a new `run:` step added to `_reusable-test.yml` with no manifest entry, when governance runs (locally or CI), then the parity test fails and names the step. |
-| CIPR-AC-004 | Replaying the 12 cheap-only first-failure SHAs from §1.1: the script fails locally on every one of them. |
+| CIPR-AC-003 | Given a new cheap `run:` step added to `_reusable-test.yml` with no registry entry, when governance runs (locally or CI), then the registry test fails and names the step. |
+| CIPR-AC-004 | Replaying the 12 cheap-only first-failure SHAs from §1.1: the script fails locally on every one of them. This proves detection only; whether agents run it is measured by CIPR-M2 (2 of the 12 already failed on gates the script runs). |
 | CIPR-AC-005 | On a Flutter-touching change, the script takes ≤ 15 s longer than before. |
 
-**Out of scope:** forcing agents to run the script (S2 covers the loop; an optional git `pre-push`
-hook is a separate owner decision because Cursor Cloud pushes go through the Cursor GitHub App).
+**Out of scope:** forcing agents to run the script. S2 covers the loop and R-007 the evidence line. A
+git `pre-push` hook is deferred (CIPR-D-006): Cursor Cloud pushes go through the Cursor GitHub App.
 
 **Expected effect (from data):** an upper bound of 12 / 25 first-push failures. 7 would be caught by
 the parity changes alone; the other 5 also need the script actually run. CIPR-M1 rises from 68%
-toward ~83% if nothing else fails on those branches.
+toward ~83% if nothing else fails on those branches — an upper bound, not a success criterion.
 
 ## 4. S2 — CI loop breaker (one budget, enforced)
 
@@ -146,23 +155,23 @@ required check (`ci-gate / CI passed`) stayed the same while the symptom changed
 | CIPR-R-010 | **One definition** in `autonomous-pr-policy.md` §CI retry budget. `light-plan`, `babysit`, `babysit-plus`, `execute-plan` and `e2e-debug` skills link to it instead of restating numbers. | Planned |
 | CIPR-R-011 | Definitions. **Red push**: a push whose `CI` run concludes `failure` (`cancelled` does not count). **Streak**: consecutive red pushes on one PR head branch, reset by a green run. **Same signature**: the same failing job name, or for Playwright the same test id (`file:line › title`). | Planned |
 | CIPR-R-012 | Streak **2** with a Playwright failure: before the next push, the agent must reproduce locally against the localhost stack with the same project and specs as CI, and record the classification (`.cursor/agent-kernel/protocols/e2e.md` §1) in the PR. | Planned |
-| CIPR-R-013 | Streak **3** on the same signature, or streak **5** on any signature: **halt**. The agent stops pushing, posts one summary comment (failing tests, classification, hypotheses tried) and hands off: `/e2e-debug` for E2E, otherwise `**Needs you:**`. | Planned |
+| CIPR-R-013 | Streak **3** on the same signature, or streak **5** on any signature: **halt**. This **replaces** the 5 / 3 table in `autonomous-pr-policy.md` §CI retry budget, the light-plan "3 pushes" rule and the `e2e-debug` "max 3 full loops" line (which keeps its own scope: remedial loops after merge, linked to the same section). The agent stops pushing, posts one summary comment (failing tests, classification, hypotheses tried) and hands off: `/e2e-debug` for E2E, otherwise `**Needs you:**`. | Planned |
 | CIPR-R-014 | `pre-push-changed.sh --e2e-specs <spec ...>` runs the named specs against `localhost:3000` exactly as CI does (`--project=full`). This is the documented local reproduction path for CIPR-R-012. | Planned |
-| CIPR-R-015 | Mechanical detection: a **non-blocking** workflow (`ci-loop-detector.yml`, on `workflow_run` of `CI` completed) computes the streak for the PR. At threshold it adds label `ci-loop` and creates or updates **one** marker comment (`<!-- ci-loop -->`) with the streak and signatures. It removes the label on green. It never fails or blocks a check. | Planned |
-| CIPR-R-016 | `pre-push-changed.sh` checks the PR for the `ci-loop` label when `gh` is available. If present, it exits `3` unless run with `--ci-loop-override "<reason>"`, and the reason is echoed for the PR body. | Planned |
+| CIPR-R-015 | Mechanical detection: a **non-blocking** workflow (`ci-loop-detector.yml`, on `workflow_run` of `CI` completed) computes the streak for the PR. At threshold it adds label `ci-loop` and creates or updates **one** marker comment (`<!-- ci-loop -->`) with the streak and signatures. It removes the label on green. It never fails or blocks a check. Edge cases: one streak **per PR** (not per branch name) when several PRs share a head branch; fork PRs are skipped (no write token); permissions limited to `pull-requests: write` and `issues: write`; signatures from `results.json` test ids (S3), falling back to failing job names. | Planned |
+| CIPR-R-016 | `pre-push-changed.sh` checks the PR for the `ci-loop` label. **Fail-open:** if `gh` is missing, unauthenticated or no open PR matches the branch, it warns and continues. **Block** only when the label is found: exit `4` (distinct from exit `3`, already used by `babysit_pr_reviews.js` for Copilot unavailable and by execute-plan `tick` / `init`), unless run with `--ci-loop-override "<reason>"`; the reason is echoed for the PR body. | Planned |
 
 ### Acceptance criteria
 
 | ID | Given / when / then |
 |----|---------------------|
-| CIPR-AC-010 | Replaying the `tech-debt-reliability-8640-dev` run history: the detector labels the PR no later than red push 5 (instead of 46). |
+| CIPR-AC-010 | Replaying the `tech-debt-reliability-8640-dev` run history from a **committed fixture** captured from this window (not live API calls, so the test cannot rot): the detector labels the PR no later than red push 5 (instead of 46). |
 | CIPR-AC-011 | Replaying `care-status-model-p6`: labelled at push 3 or 5 depending on signatures; never later than push 5. |
 | CIPR-AC-012 | A cancelled run between two red runs does not reset or advance the streak. |
 | CIPR-AC-013 | A green run removes `ci-loop` and edits the marker comment to "resolved". |
-| CIPR-AC-014 | `rg -n "red on \*\*3 pushes|Max iterations" .cursor/skills` finds only links to the policy section, no restated numbers. |
+| CIPR-AC-014 | After R-010, no skill under `.cursor/skills/` and no rule under `.cursor/rules/` states its own numeric CI push or retry budget; each links to `autonomous-pr-policy.md` §CI retry budget. Checked by a governance test that searches for push / retry / loop counts outside that section. |
 
 **Expected effect (from data):** halting the 3 worst branches at push ≤ 5 removes up to ~60 of the 118
-failures (51%). It does **not** by itself make the failing test pass. The time saved comes from local
+failures (51%). Upper bound: pushes after the halt (once the fix is found locally) can still fail. It does **not** by itself make the failing test pass. The time saved comes from local
 iterations (one spec in 2–6 min with a trace, versus 8–10 min CI round trips that show one failure
 each).
 
@@ -183,6 +192,8 @@ without reproducing.
 | CIPR-R-022 | Add a JSON reporter (`playwright-report/results.json`) alongside `list` and `html`. It is uploaded in the existing report artifact and is the machine-readable input for CIPR-R-015 signatures and the S4 ledger. | Planned |
 | CIPR-R-023 | `ci-canary` (`@smoke-ci`) keeps `retries: 0` and `--max-failures` unchanged. | Planned |
 | CIPR-R-024 | No automatic retries on the `full` project (`retries` stays `0`). See decision CIPR-D-003. | Planned |
+| CIPR-R-025 | Out of scope, unchanged: `e2e/scripts/run-ci-shard.mjs` (Pre-UAT shards) and `run-org-e2e.mjs` (org journey) keep `--max-failures=1`. They run after merge, not in the PR iteration loop. | Planned |
+| CIPR-R-026 | The job summary states that `deterministic` / `flaky-suspect` tags are diagnostics only; a `flaky-suspect` result never counts toward merge readiness. | Planned |
 
 ### Acceptance criteria
 
@@ -192,6 +203,7 @@ without reproducing.
 | CIPR-AC-021 | Given a test that fails then passes on rerun, `ci-gate` is still red and the summary shows `flaky-suspect`. |
 | CIPR-AC-022 | Given an all-green leg, wall time is within ±5% of baseline. |
 | CIPR-AC-023 | `results.json` is in the artifact and lists test id, status and error message for every executed test. |
+| CIPR-AC-024 | Before owner approval, a trial PR on the heaviest affected-spec leg with 3 forced failures shows the red-leg wall time; the owner approves on that number. |
 
 **Escalation:** changes `_reusable-e2e-local.yml`, a `ci-gate` dependency → owner sign-off.
 
@@ -218,7 +230,7 @@ the full failure population is unknown.
 
 | ID | Given / when / then |
 |----|---------------------|
-| CIPR-AC-030 | The ledger exists and covers ≥ 90% of E2E failures in the window. |
+| CIPR-AC-030 | The ledger exists. Before S3 it is built from HTML report artifacts and records its own coverage; after S3 (`results.json`) it covers ≥ 90% of E2E failures in the window. |
 | CIPR-AC-031 | Each of the top 3 signatures has a classification and a fixing PR, or a debt issue with evidence. |
 | CIPR-AC-032 | Each fixed signature: 0 recurrences across PR CI and Pre-UAT for 14 days after merge, and `--repeat-each=20` passes locally. |
 | CIPR-AC-033 | `check_nested_waits.mjs` baseline count is recorded and shrinks only. |
@@ -242,7 +254,7 @@ the goal in §2.
 | Spec | Failures in window it addresses | What it does **not** fix |
 |------|---------------------------------|--------------------------|
 | S1 | Up to 12 / 25 first-push failures (cheap only); format present in 12, the sole cause in 4 | Branches where the script isn't run (needs S2 / evidence line) |
-| S2 | Caps the 3 streaks at ≤ 5 → removes up to ~60 / 118 failures | Does not make a failing test pass |
+| S2 | Caps the 3 streaks at ≤ 5 → removes up to ~60 / 118 failures (upper bound) | Does not make a failing test pass; post-halt pushes can still fail |
 | S3 | Cuts round trips per defect (vet: ≥ 2 defects surfaced one per run) | Needs owner sign-off; does not reduce defect count |
 | S4 | Root causes behind the streaks | Slow (evidence first); success measured over 14 days |
 
@@ -269,15 +281,20 @@ the goal in §2.
 
 | # | PR | Depends on | Escalation |
 |---|----|------------|------------|
-| 1 | S1 parity (R-001…R-007) | — | No |
-| 2 | S2 policy unification (R-010…R-014, R-016 without the label check) | — | No |
-| 3 | S3 diagnostics (R-020…R-024) | — | **Yes** — CI workflow |
-| 4 | S2 detector workflow (R-015, R-016 label check) | 3 (JSON signatures) | **Yes** — new workflow |
-| 5 | S4 ledger + nested-wait checker (R-030, R-033) | 3 | No |
-| 6+ | S4 one PR per signature (R-031, R-032, R-034) | 5 | No |
+| 1 | S1 parity (R-001…R-008) + KPI extension | — | No |
+| 2 | S2 policy unification (R-010…R-013) — docs and skills only, can land **in parallel** with 1 | — | No |
+| 3 | S2 local repro path (R-014) — touches `pre-push-changed.sh`, so after 1 | 1 | No |
+| 4 | S3 diagnostics (R-020…R-026) | — | **Yes** — CI workflow |
+| 5 | S2 detector workflow + label check (R-015, R-016) | 3, 4 (JSON signatures) | **Yes** — new workflow |
+| 6 | S4 ledger + nested-wait checker (R-030, R-033) | 4 for full fidelity | No |
+| 7+ | S4 one PR per signature (R-031, R-032, R-034) | 6 | No |
 
-Measurement (CIPR-M1…M5): one report-only script under `scripts/quality/`, added to the weekly
-`quality-kpis.yml` run with the PR in row 1. Recheck against the §1 baseline after 2 weeks.
+No row combines S1 with S3 or S4: escalation boundaries and one outcome per PR stay clean.
+
+Measurement (CIPR-M1…M5): **extend** `scripts/quality/ci-health-kpis.mjs` (already weekly in
+`quality-kpis.yml`; TEST programme phase 4, #1468) with first-run-green, cheap-only first failure and
+streak metrics — no second report. Lands with row 1. Recheck after 2 weeks with the §1 method (last 300
+`CI` runs, `pull_request`) for comparability, alongside the rolling 14-day view.
 
 ## Decisions
 
@@ -287,3 +304,5 @@ Measurement (CIPR-M1…M5): one report-only script under `scripts/quality/`, add
 | CIPR-D-002 | One CI retry budget, defined once, enforced by label | Three conflicting statements; light-plan rule ignored over 46 pushes | Proposed | 2026-11-08 |
 | CIPR-D-003 | No automatic Playwright retries on PR legs; diagnostic rerun only | Vet streak was real defects; retries would hide signal; protocol §3 | Proposed | 2026-11-08 |
 | CIPR-D-004 | E2E stabilisation starts from a ledger, not helper rewrites | Only 4 logs inspected; classification-first is mandatory | Proposed | 2026-11-08 |
+| CIPR-D-005 | Reuse `governance-blocking-steps.mjs` and `ci-health-kpis.mjs` instead of new manifests or reports | A third gate list or second KPI job would drift; both registries already have tests and consumers | Proposed | 2026-11-08 |
+| CIPR-D-006 | No git `pre-push` hook for now | Cursor Cloud pushes go through the Cursor GitHub App; parity + registry test + evidence line suffice | Proposed | 2026-11-08 |
