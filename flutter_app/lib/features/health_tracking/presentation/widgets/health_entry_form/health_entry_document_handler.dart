@@ -57,7 +57,7 @@ class HealthEntryDocumentHandler {
       if (isMounted()) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.failedToAddPhoto('$e')),
+            content: Text(AppLocalizations.of(context)!.documentAddFailed),
           ),
         );
       }
@@ -79,7 +79,7 @@ class HealthEntryDocumentHandler {
       if (isMounted()) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.failedToAddPhoto('$e')),
+            content: Text(AppLocalizations.of(context)!.documentAddFailed),
           ),
         );
       }
@@ -100,7 +100,7 @@ class HealthEntryDocumentHandler {
       if (isMounted()) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.failedToAddPhoto('$e')),
+            content: Text(AppLocalizations.of(context)!.documentAddFailed),
           ),
         );
       }
@@ -136,7 +136,7 @@ class HealthEntryDocumentHandler {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              AppLocalizations.of(context)!.failedToDeletePhoto('$e'),
+              AppLocalizations.of(context)!.documentDeleteFailed,
             ),
           ),
         );
