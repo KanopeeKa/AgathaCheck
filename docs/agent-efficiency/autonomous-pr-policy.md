@@ -232,10 +232,29 @@ If create and update both fail → `status: blocked`, `status_reason: issue_crea
 
 ## CI retry budget
 
-| Failure type | Max iterations |
-|--------------|----------------|
-| Caused by this PR's changes | 5 |
-| Flaky / unrelated (after rebase on latest base) | 3 |
+Canonical rules for **red pushes on the PR head branch** before merge. Skills link here — do not restate numeric budgets elsewhere.
+
+### Definitions
+
+| Term | Meaning |
+|------|---------|
+| **Red push** | A push whose `CI` workflow run for the PR concludes **failure** (`cancelled` does not count). |
+| **Streak** | Consecutive red pushes on one PR head branch; resets on the first green `CI` run. |
+| **Same signature** | The same failing required **job name**, or for Playwright the same test id (`file:line › title`). |
+
+### Limits
+
+| Condition | Action |
+|-----------|--------|
+| Streak **2** with a Playwright failure | Before the next push, reproduce locally on `localhost:3000` (`./scripts/pre-push-changed.sh --e2e-specs …`, `--project=full` as CI). Record classification per `.cursor/agent-kernel/protocols/e2e.md` §1 in the PR. |
+| Streak **3** on the **same signature**, or streak **5** on **any** signature | **Halt** pushing. One summary comment (failing tests, classification, hypotheses tried). Hand off: `/e2e-debug` for E2E; otherwise `**Needs you:**`. |
+| `ci-loop` label on the PR (when `ci-loop-detector` is deployed) | `./scripts/pre-push-changed.sh` exits **4** unless `--ci-loop-override "<reason>"` (distinct from exit `3` on `babysit_pr_reviews.js`). |
+
+Mechanical labelling (non-blocking workflow) is specified in `docs/agent-efficiency/plans/ci-pass-rate-improvement.md` §S2.
+
+### Pre-UAT remedial (separate counter)
+
+After merge to `main`, **pre-UAT remedial rounds** are capped by `/babysit-uat` (max **3** full `babysit-uat` loops per original feature PR). That budget does not share the PR-head red-push streak counter above.
 
 Then halt. Never weaken CI gates to pass.
 

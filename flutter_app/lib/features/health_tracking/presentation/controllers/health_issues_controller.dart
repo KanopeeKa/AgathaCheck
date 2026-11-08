@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
 import 'package:pet_profile_app/core/utils/calendar_date.dart';
+import 'package:pet_profile_app/core/widgets/form/app_form_labeled_field.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
@@ -41,21 +42,27 @@ class HealthIssuesController {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              TextFormField(
-                controller: titleController,
-                decoration: InputDecoration(labelText: l.issueTitle),
-                validator: (v) => (v == null || v.trim().isEmpty)
-                    ? l.issueTitleRequired
-                    : null,
+              AppFormLabeledField(
+                label: l.issueTitle,
+                child: TextFormField(
+                  controller: titleController,
+                  decoration: const InputDecoration(),
+                  validator: (v) => (v == null || v.trim().isEmpty)
+                      ? l.issueTitleRequired
+                      : null,
+                ),
               ),
               const SizedBox(height: 8),
-              TextFormField(
-                controller: descController,
-                decoration: InputDecoration(labelText: l.issueDescription),
-                maxLines: 3,
-                validator: (v) => (v == null || v.trim().isEmpty)
-                    ? l.issueDescriptionRequired
-                    : null,
+              AppFormLabeledField(
+                label: l.issueDescription,
+                child: TextFormField(
+                  controller: descController,
+                  decoration: const InputDecoration(),
+                  maxLines: 3,
+                  validator: (v) => (v == null || v.trim().isEmpty)
+                      ? l.issueDescriptionRequired
+                      : null,
+                ),
               ),
             ],
           ),
@@ -164,7 +171,7 @@ class HealthIssuesController {
     if (currentCount >= healthEntryMaxPhotos) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(l.maxPhotosReached)));
+      ).showSnackBar(SnackBar(content: Text(l.maxHealthIssueDocumentsReached)));
       return;
     }
 
@@ -197,7 +204,7 @@ class HealthIssuesController {
       if (context.mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text(l.failedToAddPhoto('$e'))));
+        ).showSnackBar(SnackBar(content: Text(l.documentAddFailed)));
       }
     }
   }
@@ -239,7 +246,7 @@ class HealthIssuesController {
       if (context.mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text(l.failedToDeletePhoto('$e'))));
+        ).showSnackBar(SnackBar(content: Text(l.documentDeleteFailed)));
       }
     }
   }

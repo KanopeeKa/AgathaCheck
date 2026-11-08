@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/widgets/authenticated_network_image.dart';
+import '../../../../core/widgets/health_document_strip_delete_button.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../health_tracking/domain/entities/health_issue_document.dart';
@@ -45,8 +46,8 @@ class HealthIssueDocumentsStrip extends ConsumerWidget {
         const SizedBox(height: 8),
         docsAsync.when(
           loading: () => const LinearProgressIndicator(),
-          error: (e, _) => Text(
-            l.failedToLoadPhotos('$e'),
+          error: (_, __) => Text(
+            l.documentsLoadFailed,
             style: TextStyle(color: theme.colorScheme.error),
           ),
           data: (docs) => SizedBox(
@@ -186,28 +187,9 @@ class _DocumentTile extends StatelessWidget {
                   errorBuilder: (_, __, ___) =>
                       Icon(Icons.broken_image, color: colorScheme.outline),
                 ),
-              Positioned(
-                top: 2,
-                right: 2,
-                child: Semantics(
-                  label: AppLocalizations.of(context)!.removePhoto,
-                  button: true,
-                  child: GestureDetector(
-                    onTap: onDelete,
-                    child: Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        color: Colors.black54,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Icon(
-                        Icons.close,
-                        size: 14,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
+              HealthDocumentStripDeleteButton(
+                semanticsLabel: AppLocalizations.of(context)!.removePhoto,
+                onPressed: onDelete,
               ),
             ],
           ),
@@ -238,7 +220,7 @@ class _AddDocumentTile extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.add_a_photo, color: colorScheme.primary),
+            Icon(Icons.attach_file, color: colorScheme.primary),
             const SizedBox(height: 4),
             Text(
               l.addPhoto,

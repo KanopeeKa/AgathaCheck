@@ -152,7 +152,7 @@ Matches the workflow run triggered by **your** merge commit on `main`, not unrel
 
 ## CI retry budget
 
-Inherits babysit+ §5 (5 PR-caused / 3 flaky). **Additional** pre-UAT remedial rounds: max **3** full babysit-uat loops per original PR; then halt with control-issue / PR comment.
+PR-head red pushes: `autonomous-pr-policy.md` §**CI retry budget**. **Additional** pre-UAT remedial rounds on `main`: max **3** full babysit-uat loops per original feature PR; then halt with control-issue / PR comment.
 
 ---
 

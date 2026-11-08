@@ -153,10 +153,7 @@ Deferred debt issues that are not being worked yet need no label.
 
 ### 5. CI loop
 
-| Failure type | Max iterations |
-|--------------|----------------|
-| Caused by this PR | 5 |
-| Flaky / unrelated (after rebase on latest base) | 3 |
+Follow `autonomous-pr-policy.md` §**CI retry budget** (red-push streak, same signature, Playwright local repro on streak 2, halt at 3/5). Respect `ci-loop` via `./scripts/pre-push-changed.sh` (exit `4` when labelled).
 
 **Push batching (Actions cost):** Accumulate fixes locally until `./scripts/pre-push-changed.sh` is green, then **one push** per logical batch — do not push after every single-file triage fix. Re-run pre-push after the batch, not after each file.
 
@@ -164,7 +161,7 @@ Deferred debt issues that are not being worked yet need no label.
 2. Push fixes; watch CI (`ManagePullRequest get_ci_status` or `gh pr checks`).
 3. **After every push**, `node scripts/babysit_pr_reviews.js wait --pr <url>` — new threads (human, re-requested Copilot) go back through §2–§4 in the same batch as CI fixes. CI green alone never ends the loop.
 4. Rebase on latest base before counting unrelated failures (`--check` then `--push` when behind).
-5. Exhaust budget → halt; comment on PR + control issue.
+5. Exhaust policy streak budget → halt; comment on PR + control issue (`**Needs you:**` or `/e2e-debug` handoff).
 
 ### 6. Exit checklist
 

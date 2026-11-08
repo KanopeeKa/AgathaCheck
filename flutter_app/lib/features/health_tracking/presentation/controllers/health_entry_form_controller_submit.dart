@@ -151,10 +151,14 @@ mixin HealthEntryFormSubmitMixin
         );
         await notifier.updateEntry(entry);
         if (state.pendingPhotos.isNotEmpty && entryId != null) {
-          final filesToUpload = List<XFile>.from(state.pendingPhotos);
-          await uploadPendingPhotosToEntry(entryId!, filesToUpload);
-          clearPendingPhotos();
-          await loadPhotos();
+          try {
+            final filesToUpload = List<XFile>.from(state.pendingPhotos);
+            await uploadPendingPhotosToEntry(entryId!, filesToUpload);
+            clearPendingPhotos();
+            await loadPhotos();
+          } catch (_) {
+            return HealthEntrySubmitDocumentError();
+          }
         }
       } else {
         final recommendationId = suggestionAcceptId;
@@ -236,11 +240,15 @@ mixin HealthEntryFormSubmitMixin
           createdEntryIds.add(created.id);
         }
         if (state.pendingPhotos.isNotEmpty) {
-          final filesToUpload = List<XFile>.from(state.pendingPhotos);
-          for (final createdId in createdEntryIds) {
-            await uploadPendingPhotosToEntry(createdId, filesToUpload);
+          try {
+            final filesToUpload = List<XFile>.from(state.pendingPhotos);
+            for (final createdId in createdEntryIds) {
+              await uploadPendingPhotosToEntry(createdId, filesToUpload);
+            }
+            clearPendingPhotos();
+          } catch (_) {
+            return HealthEntrySubmitDocumentError();
           }
-          clearPendingPhotos();
         }
         await notifier.refresh();
       }

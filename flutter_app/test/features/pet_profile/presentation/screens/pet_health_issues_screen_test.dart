@@ -96,6 +96,20 @@ void main() {
     expect(find.text('Skin allergy'), findsOneWidget);
   });
 
+  testWidgets('shows empty state with add action', (tester) async {
+    await tester.pumpWidget(buildApp(issues: const []));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('health_issues_empty')), findsOneWidget);
+    expect(find.text('No health issues yet'), findsOneWidget);
+    expect(find.byKey(const Key('health_issues_empty_add')), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('health_issues_empty_add')));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AlertDialog), findsOneWidget);
+  });
+
   testWidgets('expands and collapses an issue card', (tester) async {
     await tester.pumpWidget(buildApp(issues: [issue]));
     await tester.pumpAndSettle();

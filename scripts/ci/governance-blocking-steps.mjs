@@ -1,11 +1,27 @@
 /**
- * Canonical blocking governance gates for Batch J phase 4.
- * Consumed by assert-ci-gate.test.js and docs/agent-efficiency/governance-gates.md.
+ * Canonical CI governance gate registry.
+ * Consumed by assert-ci-gate tests, prepush parity, and docs/agent-efficiency/governance-gates.md.
+ *
+ * @typedef {'flutter' | 'governance' | 'docs-strict' | 'full-only' | 'exempt'} PrepushScope
  */
-export const BLOCKING_GOVERNANCE_STEPS = [
+
+/** @type {Array<{
+ *   id: string,
+ *   command: string,
+ *   cheap?: boolean,
+ *   prepush: PrepushScope,
+ *   exemptReason?: string,
+ *   blocking?: boolean,
+ *   ci?: { workflow: string, jobId: string, runIncludes: string[], runExcludes?: string[] },
+ *   fixture?: string,
+ * }>} */
+export const GOVERNANCE_GATE_REGISTRY = [
   {
     id: 'docs-validation',
     command: 'bash scripts/validate_docs.sh --strict',
+    cheap: true,
+    prepush: 'docs-strict',
+    blocking: true,
     ci: {
       workflow: '.github/workflows/_reusable-test.yml',
       jobId: 'governance',
@@ -14,8 +30,36 @@ export const BLOCKING_GOVERNANCE_STEPS = [
     fixture: 'node --test scripts/validate_docs.fixture.test.mjs',
   },
   {
+    id: 'dart-format',
+    command:
+      'dart format --output=none --set-exit-if-changed flutter_app/lib flutter_app/test',
+    cheap: true,
+    prepush: 'flutter',
+    blocking: true,
+    ci: {
+      workflow: '.github/workflows/_reusable-flutter-analyze.yml',
+      jobId: 'analyze',
+      runIncludes: ['dart format'],
+    },
+  },
+  {
+    id: 'bdd-priority-tags',
+    command: 'node scripts/check_bdd_priority_tags.js',
+    cheap: true,
+    prepush: 'governance',
+    blocking: true,
+    ci: {
+      workflow: '.github/workflows/_reusable-test.yml',
+      jobId: 'governance',
+      runIncludes: ['check_bdd_priority_tags.js'],
+    },
+  },
+  {
     id: 'frozen-boundaries',
     command: 'bash scripts/check_frozen_domain_boundaries.sh',
+    cheap: true,
+    prepush: 'governance',
+    blocking: true,
     ci: {
       workflow: '.github/workflows/_reusable-test.yml',
       jobId: 'governance',
@@ -26,6 +70,9 @@ export const BLOCKING_GOVERNANCE_STEPS = [
   {
     id: 'feature-imports',
     command: 'node scripts/check_feature_imports.js',
+    cheap: true,
+    prepush: 'governance',
+    blocking: true,
     ci: {
       workflow: '.github/workflows/_reusable-test.yml',
       jobId: 'governance',
@@ -36,6 +83,9 @@ export const BLOCKING_GOVERNANCE_STEPS = [
   {
     id: 'file-size',
     command: 'node scripts/check_file_size.js',
+    cheap: true,
+    prepush: 'governance',
+    blocking: true,
     ci: {
       workflow: '.github/workflows/_reusable-test.yml',
       jobId: 'governance',
@@ -44,8 +94,24 @@ export const BLOCKING_GOVERNANCE_STEPS = [
     fixture: 'node --test scripts/check_file_size.test.js',
   },
   {
+    id: 'web-bundle-budget',
+    command: 'node scripts/ci/check-web-bundle-budget.mjs',
+    cheap: false,
+    prepush: 'exempt',
+    exemptReason: 'needs release web build artifact',
+    blocking: true,
+    ci: {
+      workflow: '.github/workflows/_reusable-build-web.yml',
+      jobId: 'build-web',
+      runIncludes: ['check-web-bundle-budget.mjs'],
+    },
+  },
+  {
     id: 'eslint',
     command: 'node scripts/validate_eslint.js',
+    cheap: true,
+    prepush: 'governance',
+    blocking: true,
     ci: {
       workflow: '.github/workflows/_reusable-test.yml',
       jobId: 'lint',
@@ -57,6 +123,9 @@ export const BLOCKING_GOVERNANCE_STEPS = [
   {
     id: 'bdd-coverage',
     command: 'node e2e/scripts/check_bdd_coverage.js',
+    cheap: true,
+    prepush: 'governance',
+    blocking: true,
     ci: {
       workflow: '.github/workflows/_reusable-test.yml',
       jobId: 'governance',
@@ -68,6 +137,9 @@ export const BLOCKING_GOVERNANCE_STEPS = [
   {
     id: 'flutter-domain-coverage',
     command: 'bash flutter_app/scripts/merge_flutter_coverage.sh',
+    cheap: false,
+    prepush: 'full-only',
+    blocking: true,
     ci: {
       workflow: '.github/workflows/_reusable-flutter-coverage.yml',
       jobId: 'coverage',
@@ -79,6 +151,9 @@ export const BLOCKING_GOVERNANCE_STEPS = [
   {
     id: 'backend-coverage-ratchet',
     command: 'node server/scripts/check_coverage_ratchet.js',
+    cheap: false,
+    prepush: 'full-only',
+    blocking: true,
     ci: {
       workflow: '.github/workflows/_reusable-test.yml',
       jobId: 'backend',
@@ -89,6 +164,9 @@ export const BLOCKING_GOVERNANCE_STEPS = [
   {
     id: 'architecture-tests',
     command: 'npx jest test/architecture --forceExit',
+    cheap: false,
+    prepush: 'full-only',
+    blocking: true,
     ci: {
       workflow: '.github/workflows/_reusable-test.yml',
       jobId: 'backend',
@@ -96,6 +174,17 @@ export const BLOCKING_GOVERNANCE_STEPS = [
     },
     fixture: 'node --test scripts/test/architecture-checkers.fixture.test.mjs',
   },
+];
+
+/** Blocking CI gates validated against workflow jobs (fixture optional). */
+export const BLOCKING_GOVERNANCE_STEPS = GOVERNANCE_GATE_REGISTRY.filter(
+  (g) => g.blocking && g.ci,
+);
+
+/** Cheap gates listed in CI workflows used for prepush parity accounting. */
+export const CHEAP_CI_WORKFLOWS = [
+  '.github/workflows/_reusable-test.yml',
+  '.github/workflows/_reusable-flutter-analyze.yml',
 ];
 
 /** Jobs that must succeed for the umbrella ci-gate when scope is FULL. */
