@@ -49,6 +49,8 @@ class CareOccurrence {
     required this.isOpen,
     this.time,
     this.completedOn,
+    this.markedAt,
+    this.markedByName,
     this.notes = '',
   });
 
@@ -64,6 +66,8 @@ class CareOccurrence {
   /// Still pending on the server.
   final bool isOpen;
   final DateTime? completedOn;
+  final DateTime? markedAt;
+  final String? markedByName;
   final String notes;
 
   bool get isDone => status == CareOccurrenceStatus.done;
@@ -75,6 +79,13 @@ class CareOccurrence {
   /// Open slot whose next dose has started (still actionable).
   bool get isOpenNotRecorded =>
       isOpen && status == CareOccurrenceStatus.notRecorded;
+
+  /// Footer “Recorded … by …” for person-closed Done / Skipped (not system Not recorded).
+  bool get showsRecordedAttribution {
+    if (isOpen || isClosedNotRecorded) return false;
+    if (!isDone && status != CareOccurrenceStatus.skipped) return false;
+    return markedAt != null;
+  }
 }
 
 /// The care item fields the occurrence screen needs.

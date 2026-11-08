@@ -9,6 +9,7 @@ import 'occurrence_care_context_card.dart';
 import 'occurrence_complete_care_module.dart';
 import 'occurrence_neighbors_module.dart';
 import 'occurrence_schedule_section.dart';
+import 'occurrence_recorded_attribution_line.dart';
 import 'occurrence_skip_command.dart';
 
 /// Module layout for the Care date screen (phone + wide breakpoints).
@@ -150,6 +151,9 @@ class _OccurrenceScreenBodyState extends ConsumerState<OccurrenceScreenBody> {
       entryId: widget.entryId,
       detail: detail,
     );
+    final recorded = OccurrenceRecordedAttributionLine(
+      occurrence: detail.occurrence,
+    );
 
     return CareItemDetailCanvas(
       child: ListView(
@@ -162,6 +166,10 @@ class _OccurrenceScreenBodyState extends ConsumerState<OccurrenceScreenBody> {
           complete,
           _kOccurrenceModuleGap,
           neighbors,
+          if (detail.occurrence.showsRecordedAttribution) ...[
+            _kOccurrenceModuleGap,
+            recorded,
+          ],
         ],
       ),
     );

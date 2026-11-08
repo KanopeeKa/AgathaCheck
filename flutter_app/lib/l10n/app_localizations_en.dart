@@ -5555,6 +5555,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careItemHistoryTitle => 'History';
 
   @override
+  String historyPillA11yDone(String due, String close) {
+    return 'Due $due, done $close';
+  }
+
+  @override
+  String historyPillA11ySkipped(String due, String close) {
+    return 'Due $due, skipped $close';
+  }
+
+  @override
+  String historyPillA11yNotRecorded(String due) {
+    return 'Due $due, not recorded';
+  }
+
+  @override
   String get careItemEditSchedule => 'Edit schedule';
 
   @override
@@ -6921,6 +6936,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get occurrenceDueLabel => 'Due';
+
+  @override
+  String occurrenceRecordedAttribution(String date, String time, String user) {
+    return 'Recorded $date at $time by $user';
+  }
 
   @override
   String get occurrenceOtherOpenDatesHint =>

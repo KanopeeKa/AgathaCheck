@@ -1,45 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
-import 'package:pet_profile_app/core/weight/weight_unit_preference.dart';
-import 'package:pet_profile_app/core/weight/weight_unit.dart';
-import 'package:pet_profile_app/features/health_tracking/domain/entities/health_history_entry.dart';
+import 'package:pet_profile_app/features/health_tracking/domain/entities/health_occurrence.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/widgets/pet_event_administration_history_dialog.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 void main() {
-  testWidgets('FW-19 history dialog shows weight for completed weigh-in rows', (
+  testWidgets('history dialog lists pills and uses History title', (
     tester,
   ) async {
-    final history = [
-      HealthHistoryEntry(
+    final rows = [
+      HealthOccurrence(
         id: 'h1',
         entryId: 'entry-1',
-        markedAt: DateTime(2026, 3, 1, 10),
-        dueDate: DateTime(2026, 3, 1),
+        scheduledDate: DateTime(2026, 3, 1),
+        status: 'completed',
         completedOn: DateTime(2026, 3, 1),
-        linkedWeight: const HealthHistoryLinkedWeight(valueKg: 12.4),
       ),
     ];
 
     await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          weightUnitPreferenceProvider.overrideWith((ref) => WeightUnit.kg),
-        ],
-        child: MaterialApp(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: Builder(
-            builder: (context) => Scaffold(
-              body: TextButton(
-                onPressed: () => showPetEventAdministrationHistoryDialog(
-                  context,
-                  history: history,
-                ),
-                child: const Text('open'),
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Builder(
+          builder: (context) => Scaffold(
+            body: TextButton(
+              onPressed: () => showPetEventPastHistoryDialog(
+                context,
+                occurrences: rows,
+                petId: 'pet-1',
+                muted: false,
               ),
+              child: const Text('open'),
             ),
           ),
         ),
@@ -49,10 +43,65 @@ void main() {
     await tester.tap(find.text('open'));
     await tester.pumpAndSettle();
 
-    expect(find.text('12.4 kg'), findsOneWidget);
+    expect(find.text('History'), findsOneWidget);
     expect(
-      find.byKey(const Key('history_row_linked_weight_h1')),
+      find.byKey(const Key('pet_event_past_occurrence_h1')),
       findsOneWidget,
     );
+    expect(find.textContaining('Administration'), findsNothing);
+  });
+
+  testWidgets('dialog pill tap closes dialog and opens occurrence', (
+    tester,
+  ) async {
+    final rows = [
+      HealthOccurrence(
+        id: 'h1',
+        entryId: 'entry-1',
+        scheduledDate: DateTime(2026, 3, 1),
+        status: 'completed',
+        completedOn: DateTime(2026, 3, 1),
+      ),
+    ];
+
+    await tester.pumpWidget(
+      MaterialApp.router(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        routerConfig: GoRouter(
+          routes: [
+            GoRoute(
+              path: '/',
+              builder: (context, state) => Scaffold(
+                body: TextButton(
+                  onPressed: () => showPetEventPastHistoryDialog(
+                    context,
+                    occurrences: rows,
+                    petId: 'pet-1',
+                    muted: false,
+                  ),
+                  child: const Text('open'),
+                ),
+              ),
+            ),
+            GoRoute(
+              path: '/pet/:petId/events/:entryId/occurrences/:occId',
+              builder: (context, state) =>
+                  Scaffold(body: Text('occ ${state.pathParameters['occId']}')),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('pet_event_history_dialog')), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('pet_event_past_occurrence_h1')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('pet_event_history_dialog')), findsNothing);
+    expect(find.text('occ h1'), findsOneWidget);
   });
 }

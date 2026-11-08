@@ -9855,6 +9855,24 @@ abstract class AppLocalizations {
   /// **'History'**
   String get careItemHistoryTitle;
 
+  /// No description provided for @historyPillA11yDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Due {due}, done {close}'**
+  String historyPillA11yDone(String due, String close);
+
+  /// No description provided for @historyPillA11ySkipped.
+  ///
+  /// In en, this message translates to:
+  /// **'Due {due}, skipped {close}'**
+  String historyPillA11ySkipped(String due, String close);
+
+  /// No description provided for @historyPillA11yNotRecorded.
+  ///
+  /// In en, this message translates to:
+  /// **'Due {due}, not recorded'**
+  String historyPillA11yNotRecorded(String due);
+
   /// No description provided for @careItemEditSchedule.
   ///
   /// In en, this message translates to:
@@ -12236,6 +12254,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Due'**
   String get occurrenceDueLabel;
+
+  /// No description provided for @occurrenceRecordedAttribution.
+  ///
+  /// In en, this message translates to:
+  /// **'Recorded {date} at {time} by {user}'**
+  String occurrenceRecordedAttribution(String date, String time, String user);
 
   /// No description provided for @occurrenceOtherOpenDatesHint.
   ///
