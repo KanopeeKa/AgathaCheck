@@ -41,24 +41,28 @@ void main() {
     );
   });
 
-  testWidgets('date range control exposes planned_absence_date_range semantics', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      _wrapDatesStep(
-        PlannedAbsenceDatesStep(
-          startsOn: DateTime(2026, 9, 18),
-          endsOn: DateTime(2026, 9, 25),
-          onRangeChanged: (_, __) {},
+  testWidgets(
+    'date range control exposes planned_absence_date_range semantics',
+    (tester) async {
+      await tester.pumpWidget(
+        _wrapDatesStep(
+          PlannedAbsenceDatesStep(
+            startsOn: DateTime(2026, 9, 18),
+            endsOn: DateTime(2026, 9, 25),
+            onRangeChanged: (_, __) {},
+          ),
         ),
-      ),
-    );
-    await tester.pumpAndSettle();
+      );
+      await tester.pumpAndSettle();
 
-    expect(
-      find.bySemanticsIdentifier('planned_absence_date_range'),
-      findsOneWidget,
-    );
-    expect(find.byKey(const Key('planned_absence_date_range')), findsOneWidget);
-  });
+      expect(
+        find.bySemanticsIdentifier('planned_absence_date_range'),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const Key('planned_absence_date_range')),
+        findsOneWidget,
+      );
+    },
+  );
 }
