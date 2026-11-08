@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/utils/resolve_health_file_url.dart';
 import '../../../../core/widgets/authenticated_network_image.dart';
+import '../../../../core/widgets/health_document_strip_delete_button.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/datasources/health_remote_datasource.dart';
 
@@ -231,24 +232,9 @@ class EntryDocumentSection extends StatelessWidget {
                     ),
                   ),
           ),
-          Positioned(
-            top: 4,
-            right: 4,
-            child: Semantics(
-              label: AppLocalizations.of(context)!.removePhoto,
-              button: true,
-              child: GestureDetector(
-                onTap: () => onDelete(photo),
-                child: Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    color: Colors.black54,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(Icons.close, size: 16, color: Colors.white),
-                ),
-              ),
-            ),
+          HealthDocumentStripDeleteButton(
+            semanticsLabel: AppLocalizations.of(context)!.removePhoto,
+            onPressed: () => onDelete(photo),
           ),
         ],
       ),
@@ -303,28 +289,9 @@ class EntryDocumentSection extends StatelessWidget {
                 ),
               ),
             ),
-            Positioned(
-              top: 4,
-              right: 4,
-              child: Semantics(
-                label: AppLocalizations.of(context)!.removePhoto,
-                button: true,
-                child: GestureDetector(
-                  onTap: () => onRemovePending(pendingIndex),
-                  child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      color: Colors.black54,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Icon(
-                      Icons.close,
-                      size: 16,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
+            HealthDocumentStripDeleteButton(
+              semanticsLabel: AppLocalizations.of(context)!.removePhoto,
+              onPressed: () => onRemovePending(pendingIndex),
             ),
           ],
         );
