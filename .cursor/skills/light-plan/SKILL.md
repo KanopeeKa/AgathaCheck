@@ -40,7 +40,7 @@ Implement the current phase per its checklist scope (files needed for that outco
 
 **Light merge (not `/babysit-plus`):** even if the integration ruleset is inactive, still require green CI and **every review conversation resolved** (autonomous-pr-policy §Babysit skill family).
 
-1. `gh pr checks <url> --watch` — red → fix, one push per batch; same check red on **3 pushes** → stop (**Stop and ask**).
+1. `gh pr checks <url> --watch` — red → fix, one push per batch; obey `autonomous-pr-policy.md` §**CI retry budget** (halt at streak 3 same signature or 5 any).
 2. `node scripts/babysit_pr_reviews.js gate --pr <url>` — `0` merge; `2` fix or reply+resolve, re-run; `3` → post once `Copilot review did not finish within 15 min; proceeding on triage + CI + pre-push.` then merge; `1` fix script, never merge on error.
 3. If draft: `gh pr ready <url>`. `gh pr merge <url> --merge`.
 
@@ -64,7 +64,9 @@ Record under `## Self-review` on the release PR.
 
 ## Release
 
-Open integration → `main` only now. Body: goal, phase links, `## Self-review`, `## Docs`, `Closes #<issue>`. Run **`/babysit-uat`** in the same turn (full [`/babysit-plus`](../babysit-plus/SKILL.md): Copilot triage, debt rules, squash, Pre-UAT, [`/e2e-debug`](../e2e-debug/SKILL.md) remedial). Done when Pre-UAT green on release merge SHA.
+Open integration → `main` only now. Body: goal, phase links, `## Self-review`, `## Docs`, `Closes #<issue>`. Read and follow [`/babysit-uat`](../babysit-uat/SKILL.md) in the same turn (builds on [`/babysit-plus`](../babysit-plus/SKILL.md); remedial via [`/e2e-debug`](../e2e-debug/SKILL.md) when needed). Programme-owned merges: [`AGENTS.md`](../../../AGENTS.md) §Autonomy and merging.
+
+Do not end the turn while the release PR is open, except [§Stop and ask](#stop-and-ask). Never ask the owner to merge or to run `/babysit-uat`. Done when Pre-UAT green on release merge SHA.
 
 ## Recovery
 
@@ -72,7 +74,7 @@ If the run is cut off (platform limit, crash, or the owner stops it), a new sess
 
 ## Stop and ask
 
-[`AGENTS.md`](../../../AGENTS.md) §When to ask, plus: same check red on 3 pushes of one PR; a change to the goal; unresolvable main/integration conflict. One question + recommendation on the tracking issue.
+[`AGENTS.md`](../../../AGENTS.md) §When to ask, plus: CI retry budget exhausted per `autonomous-pr-policy.md` §CI retry budget; a change to the goal; unresolvable main/integration conflict. One question + recommendation on the tracking issue.
 
 ## Not included
 

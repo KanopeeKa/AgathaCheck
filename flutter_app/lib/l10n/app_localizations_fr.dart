@@ -5356,6 +5356,37 @@ class AppLocalizationsFr extends AppLocalizations {
   String get maxPhotosReached => 'Maximum 4 documents par événement';
 
   @override
+  String get maxHealthIssueDocumentsReached =>
+      'Maximum 4 documents par problème de santé';
+
+  @override
+  String get documentsLoadFailed =>
+      'Impossible de charger les documents. Réessayez.';
+
+  @override
+  String get documentAddFailed =>
+      'Impossible d\'ajouter le document. Réessayez.';
+
+  @override
+  String get documentDeleteFailed =>
+      'Impossible de supprimer le document. Réessayez.';
+
+  @override
+  String get healthIssuesLoadFailed =>
+      'Impossible de charger les problèmes de santé. Réessayez.';
+
+  @override
+  String get healthIssuesEmptyTitle => 'Aucun problème de santé pour le moment';
+
+  @override
+  String get healthIssuesEmptyBody =>
+      'Consignez les allergies, les blessures ou les affections en cours pour garder le contexte des soins.';
+
+  @override
+  String get linkedEventsLoadFailed =>
+      'Impossible de charger les événements liés. Réessayez.';
+
+  @override
   String failedToLoadPhotos(String error) {
     return 'Échec du chargement des documents : $error';
   }
@@ -5389,7 +5420,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get createHealthIssuesHint =>
-      'Vous pouvez créer des problèmes de santé depuis la page de profil de l\'animal';
+      'Ouvrez Problèmes de santé sur le profil de l\'animal pour en ajouter un';
 
   @override
   String get noPetsFoundAddFirst =>

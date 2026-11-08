@@ -57,6 +57,8 @@ class HealthEntrySubmitSuccess extends HealthEntrySubmitOutcome {
   int get createdCount => petIds.length;
 }
 
+class HealthEntrySubmitDocumentError extends HealthEntrySubmitOutcome {}
+
 class HealthEntrySubmitError extends HealthEntrySubmitOutcome {
   HealthEntrySubmitError(this.error);
   final Object error;

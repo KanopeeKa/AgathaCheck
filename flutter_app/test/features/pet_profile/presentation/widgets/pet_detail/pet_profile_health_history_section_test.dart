@@ -1,17 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/features/experience/presentation/pet_profile/widgets/pet_detail/pet_profile_health_history_section.dart';
+import 'package:pet_profile_app/features/health_tracking/domain/entities/health_issue.dart';
+import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_issue_providers.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
+class _FakeHealthIssueNotifier extends HealthIssueNotifier {
+  _FakeHealthIssueNotifier(this._issues);
+
+  final List<HealthIssue> _issues;
+
+  @override
+  Future<List<HealthIssue>> build(String arg) async => _issues;
+}
+
 void main() {
-  Widget buildSection({required GoRouter router}) {
-    return MaterialApp.router(
-      theme: AppTheme.lightTheme,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      routerConfig: router,
+  Widget buildSection({
+    required GoRouter router,
+    List<HealthIssue> issues = const [],
+  }) {
+    return ProviderScope(
+      overrides: [
+        healthIssueNotifierProvider.overrideWith(
+          () => _FakeHealthIssueNotifier(issues),
+        ),
+      ],
+      child: MaterialApp.router(
+        theme: AppTheme.lightTheme,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        routerConfig: router,
+      ),
     );
   }
 
@@ -48,6 +70,31 @@ void main() {
     expect(find.text('Health Issues'), findsOneWidget);
     expect(find.text('Timeline'), findsOneWidget);
     expect(find.byIcon(Icons.chevron_right), findsNWidgets(2));
+  });
+
+  testWidgets('shows issue count when issues exist', (tester) async {
+    final issues = [
+      HealthIssue(id: 'i1', petId: 'pet-1', title: 'A', description: ''),
+      HealthIssue(id: 'i2', petId: 'pet-1', title: 'B', description: ''),
+    ];
+    final router = GoRouter(
+      initialLocation: '/pet/pet-1',
+      routes: [
+        GoRoute(
+          path: '/pet/:petId',
+          builder: (context, state) => Scaffold(
+            body: PetProfileHealthHistorySection(
+              petId: state.pathParameters['petId']!,
+            ),
+          ),
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(buildSection(router: router, issues: issues));
+    await tester.pumpAndSettle();
+
+    expect(find.text('2'), findsOneWidget);
   });
 
   testWidgets('timeline row navigates to dedicated route', (tester) async {
