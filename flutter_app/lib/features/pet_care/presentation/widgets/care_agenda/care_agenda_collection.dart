@@ -75,7 +75,7 @@ class _CareAgendaCollectionState extends ConsumerState<CareAgendaCollection> {
   }
 
   Future<void> _refresh() async {
-    await ref.read(healthEntriesNotifierProvider.notifier).refresh();
+    await ref.read(careDataChangedProvider)();
     if (mounted) _readAt = DateTime.now();
   }
 
