@@ -110,9 +110,12 @@ class PastOccurrenceHistoryPill extends StatelessWidget {
       color: colorScheme.surfaceContainerHighest.withValues(
         alpha: muted ? 0.5 : 1,
       ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        child: line,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(minHeight: onTap != null ? 48 : 0),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          child: Align(alignment: Alignment.centerLeft, child: line),
+        ),
       ),
     );
 
