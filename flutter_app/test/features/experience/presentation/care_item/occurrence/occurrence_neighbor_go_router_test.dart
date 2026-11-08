@@ -85,29 +85,28 @@ class _NeighborNavServer {
 }
 
 Widget _harness(_NeighborNavServer server) => ProviderScope(
-      overrides: [
-        careItemHttpClientProvider.overrideWithValue(server.client),
-        petByIdProvider('pet-1').overrideWith(
-          (ref) async =>
-              Pet(id: 'pet-1', name: 'Buddy', species: 'dog', photoPath: null),
+  overrides: [
+    careItemHttpClientProvider.overrideWithValue(server.client),
+    petByIdProvider('pet-1').overrideWith(
+      (ref) async =>
+          Pet(id: 'pet-1', name: 'Buddy', species: 'dog', photoPath: null),
+    ),
+  ],
+  child: MaterialApp.router(
+    theme: AppTheme.lightTheme,
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    supportedLocales: AppLocalizations.supportedLocales,
+    routerConfig: GoRouter(
+      initialLocation: '/pet/pet-1/events/entry-1/occurrences/occ-a',
+      routes: [
+        GoRoute(
+          path: '/pet/:petId/events/:entryId/occurrences/:occurrenceId',
+          builder: buildOccurrenceDetailScreen,
         ),
       ],
-      child: MaterialApp.router(
-        theme: AppTheme.lightTheme,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        routerConfig: GoRouter(
-          initialLocation:
-              '/pet/pet-1/events/entry-1/occurrences/occ-a',
-          routes: [
-            GoRoute(
-              path: '/pet/:petId/events/:entryId/occurrences/:occurrenceId',
-              builder: buildOccurrenceDetailScreen,
-            ),
-          ],
-        ),
-      ),
-    );
+    ),
+  ),
+);
 
 Future<void> _tapNeighbor(WidgetTester tester, String semanticsId) async {
   await tester.scrollUntilVisible(
@@ -190,18 +189,11 @@ void main() {
       await _tapNeighbor(tester, 'occurrence_neighbor_previous');
       await tester.pumpAndSettle();
 
-      expect(server.fetchedOccurrenceIds, [
-        'occ-a',
-        'occ-b',
-        'occ-c',
-        'occ-b',
-      ]);
+      expect(server.fetchedOccurrenceIds, ['occ-a', 'occ-b', 'occ-c', 'occ-b']);
       expect(
-        GoRouter.of(tester.element(find.byType(OccurrenceScreen)))
-            .routerDelegate
-            .currentConfiguration
-            .uri
-            .path,
+        GoRouter.of(
+          tester.element(find.byType(OccurrenceScreen)),
+        ).routerDelegate.currentConfiguration.uri.path,
         endsWith('/occurrences/occ-b'),
       );
     },
