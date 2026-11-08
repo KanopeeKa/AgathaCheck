@@ -60,6 +60,24 @@ class FakeRemoteDataSource implements PetRemoteDataSource {
   }
 
   @override
+  Future<PetModel> updatePetWeightContext({
+    required String petId,
+    required String token,
+    double? weightReferenceValue,
+    String? weightReferenceAuthority,
+    required String weightManagementContext,
+  }) async {
+    return PetModel(
+      id: petId,
+      name: 'n',
+      species: 'Dog',
+      weightReferenceValue: weightReferenceValue,
+      weightReferenceAuthority: weightReferenceAuthority,
+      weightManagementContext: weightManagementContext,
+    );
+  }
+
+  @override
   Future<void> deletePet(String id, String token) async {
     if (failDelete) {
       throw PetRemoteException('boom', statusCode: 500);

@@ -37,6 +37,8 @@ export 'presentation/pet_profile/screens/widgets/manage_events_collection_filter
 export 'presentation/pet_profile/screens/widgets/org_events_collection_filter.dart';
 export 'presentation/pet_profile/widgets/pet_care_section/pet_care_action_row_builder.dart';
 export 'presentation/pet_profile/widgets/pet_list/home_event_actions.dart';
+export 'presentation/weight_tracking/widgets/weight_hub_settings_card.dart';
+export 'presentation/weight_tracking/sheets/weight_settings_edit_sheet.dart';
 export 'presentation/pet_profile/screens/widgets/pet_event_entry_list.dart';
 export 'presentation/pet_profile/screens/widgets/manage_events_filters.dart';
 export 'presentation/pet_profile/screens/widgets/health_events_section.dart';

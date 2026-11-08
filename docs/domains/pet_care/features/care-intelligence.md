@@ -113,11 +113,11 @@ Who or what produced **this measurement**? Values: `guardian`, `clinic`, `device
 
 ### referenceAuthority (pet weight reference)
 
-What is the **reference or target** being compared against, and who established it? Values: `vet_target`, `guardian_reference`, `historical_baseline`. Storage: `pets.weight_reference_authority` + `pets.weight_reference_value`. Persist **provenance**, not only the numeric reference.
+What is the **reference or target** being compared against, and who established it? Values: `vet_target`, `guardian_reference`, `historical_baseline`. Storage: `pets.weight_reference_authority` + `pets.weight_reference_value`. **Capture UI:** Weight tracking **Weight settings** card (partial profile PUT). Edit pet no longer captures these fields. Persist **provenance**, not only the numeric reference.
 
 ### managementContext (active weight management)
 
-Is an **intentional management plan** already active for this concern? Values: `none`, `vet_managed`, `care_plan`, `treatment_related`. Storage: `pets.weight_management_context`.
+Is an **intentional management plan** already active for this concern? Values: `none`, `vet_managed`, `care_plan`, `treatment_related`. Storage: `pets.weight_management_context`. **Capture UI:** same Weight tracking settings card as reference authority (rules unchanged).
 
 **D0.5 gate:** Before research using production user data — product/governance sign-off on the provenance contract; execute-plan halt `governance_approval_required`. Progressive capture UI ships in parallel micro-PRs; D0 establishes persistence and wire contract only. Code artifacts: [d0-provenance-contract.md](../changes/d0-provenance-contract.md).
 

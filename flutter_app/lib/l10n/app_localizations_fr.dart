@@ -565,6 +565,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get weightTracking => 'Suivi du poids';
 
   @override
+  String get weightHubSettingsTitle => 'Paramètres de poids';
+
+  @override
+  String get weightHubSettingsEditTitle => 'Modifier les paramètres de poids';
+
+  @override
   String get addEntry => 'Ajouter un événement santé';
 
   @override

@@ -18,9 +18,10 @@ import '../widgets/weight_hub_summary_card.dart';
 
 /// Weight hub for a pet (summary, chart, routines, history).
 class WeightHubScreen extends ConsumerWidget {
-  const WeightHubScreen({super.key, required this.petId});
+  const WeightHubScreen({super.key, required this.petId, this.settingsCard});
 
   final String petId;
+  final Widget? settingsCard;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -43,46 +44,55 @@ class WeightHubScreen extends ConsumerWidget {
           onPressed: onRecord,
         ),
       ],
-      child: entriesAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => Padding(
-          padding: const EdgeInsets.all(16),
-          child: Text(l.errorLoadingWeightData(error.toString())),
-        ),
-        data: (entries) {
-          final sorted = sortWeightEntriesNewestFirst(entries);
-          final overview = overviewAsync.valueOrNull;
-          final unit = ref.watch(weightUnitPreferenceProvider);
-          final targetKg = overview?.reference?.valueKg;
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (settingsCard != null) settingsCard!,
+            entriesAsync.when(
+              loading: () => const Padding(
+                padding: EdgeInsets.all(32),
+                child: Center(child: CircularProgressIndicator()),
+              ),
+              error: (error, _) => Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text(l.errorLoadingWeightData(error.toString())),
+              ),
+              data: (entries) {
+                final sorted = sortWeightEntriesNewestFirst(entries);
+                final overview = overviewAsync.valueOrNull;
+                final unit = ref.watch(weightUnitPreferenceProvider);
+                final targetKg = overview?.reference?.valueKg;
 
-          return SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                if (sorted.isEmpty)
-                  const WeightHubEmptyState()
-                else ...[
-                  WeightHubSummaryCard(entries: sorted, overview: overview),
-                  if (sorted.length >= 2)
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                      child: WeightChart(
-                        entries: sorted,
-                        unit: unit,
-                        targetKg: targetKg,
-                      ),
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (sorted.isEmpty)
+                      const WeightHubEmptyState()
+                    else ...[
+                      WeightHubSummaryCard(entries: sorted, overview: overview),
+                      if (sorted.length >= 2)
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                          child: WeightChart(
+                            entries: sorted,
+                            unit: unit,
+                            targetKg: targetKg,
+                          ),
+                        ),
+                      WeightHubHistoryList(petId: petId, entries: sorted),
+                    ],
+                    WeightHubRoutinesCard(petId: petId, overview: overview),
+                    WeightHubAddFooterButton(
+                      onPressed: onRecord,
+                      label: l.weightRecordAction,
                     ),
-                  WeightHubHistoryList(petId: petId, entries: sorted),
-                ],
-                WeightHubRoutinesCard(petId: petId, overview: overview),
-                WeightHubAddFooterButton(
-                  onPressed: onRecord,
-                  label: l.weightRecordAction,
-                ),
-              ],
+                  ],
+                );
+              },
             ),
-          );
-        },
+          ],
+        ),
       ),
     );
   }
