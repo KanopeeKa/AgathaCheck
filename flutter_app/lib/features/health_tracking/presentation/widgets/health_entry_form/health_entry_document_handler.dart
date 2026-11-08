@@ -135,9 +135,7 @@ class HealthEntryDocumentHandler {
       if (isMounted()) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              AppLocalizations.of(context)!.documentDeleteFailed,
-            ),
+            content: Text(AppLocalizations.of(context)!.documentDeleteFailed),
           ),
         );
       }
