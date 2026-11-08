@@ -129,6 +129,7 @@ Four principles:
 | D-CIE-039 | Vet visit completion is not bulk occurrence completion | Visit records group care done at the clinic; each occurrence still uses CSM Mark as done / Skip (AC-FB-02) | Live | 2026-10-13 | PR-14 |
 | D-CIE-040 | History has no inline Unmark done | Past-occurrence rows in Care item History open the occurrence record; undo Done and other edits happen there, not via list shortcuts | Live | 2026-11-03 | — |
 | D-CIE-041 | Documents on Care item view | Own **Documents** module directly above **History** (mobile and web main column). Hidden when the entry has no attachments; while loading, the section shows the strip progress indicator. Closed care: same muted styling as other modules. History lists only resolved past occurrences plus **See history**; shows **No history yet** when none qualify. Supersedes placing documents under History / future Details placement (line §Details). | Live | 2026-11-07 | — |
+| D-CIE-042 | History refreshes after care commands | After a successful Done, Skip, or Undo (including snackbar undo), the Care item **History** module and other detail occurrence surfaces reflect server state without leaving the screen or reloading the page. Shared `careDataChangedProvider` invalidates past/open occurrence caches. | Live | 2026-11-08 | — |
 
 ## Vet visit schema (API slice — PR-14)
 
@@ -338,6 +339,7 @@ Instructions are not yet on the wire; defer until the field exists.
 ### History (D-CIE-010)
 
 - Resolved past occurrences, newest first. Mobile shows 3, web shows 5, then **See history**.
+- After Done, Skip, or Undo on the same item, **History** updates as soon as the server confirms (D-CIE-042); no navigation or full reload required.
 - When no resolved past occurrences qualify, the module shows **No history yet** and still offers **See history**.
 - **No inline shortcuts** (e.g. Unmark done) in the list; changes, including undoing Done, happen on the occurrence's screen (D-CIE-040).
 - Each row shows:

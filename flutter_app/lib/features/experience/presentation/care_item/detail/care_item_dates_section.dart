@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import 'package:pet_profile_app/core/utils/calendar_date.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
+import 'package:pet_profile_app/features/care_item/care_item.dart';
 import 'package:pet_profile_app/features/pet_care/pet_care.dart';
 import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 
@@ -260,10 +261,7 @@ class _OccurrenceRow extends ConsumerWidget {
                   healthOccurrence: occurrence,
                   showChangeDate: true,
                   onChanged: () async {
-                    await ref
-                        .read(healthEntriesNotifierProvider.notifier)
-                        .refresh();
-                    ref.invalidate(petHealthEntryByIdProvider);
+                    await ref.read(careDataChangedProvider)();
                   },
                   onSkip: () => PetEventOccurrenceActions.skip(
                     context,
