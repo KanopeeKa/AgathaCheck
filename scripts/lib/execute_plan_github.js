@@ -81,7 +81,7 @@ async function mapWithConcurrency(items, limit, fn) {
     while (next < items.length) {
       const i = next;
       next += 1;
-      results[i] = await fn(items[i], i);
+      results[i] = await fn(items[i]);
     }
   }
   const workers = Math.min(limit, items.length);

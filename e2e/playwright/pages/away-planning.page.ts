@@ -219,7 +219,8 @@ export class AwayPlanningPage {
 
   async saveCarerEditDialog(): Promise<void> {
     await this.page
-      .getByRole('button', { name: /^Save carer$/i })
+      .getByRole('button', { name: /^Save carer$|Enregistrer le soignant/i })
+      .or(this.page.locator('[data-flutter-key="away_plan_carer_edit_save"]'))
       .click();
     await refreshFlutterAccessibility(this.page);
   }
