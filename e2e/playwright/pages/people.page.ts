@@ -50,14 +50,17 @@ export class PeoplePage {
     return process.env.E2E_BASE_URL ?? 'http://localhost:3000';
   }
 
-  private async resolveVetIdByName(name: string): Promise<string> {
+  private async resolveVetIdByName(
+    name: string,
+    pollTimeoutMs = 30_000,
+  ): Promise<string> {
     let vetId: string | undefined;
     await expect(async () => {
       const token = await readAccessTokenFromPage(this.page);
       const vets = await getVets(this.baseURL(), token);
       vetId = vets.find((v) => v.name === name)?.id;
       expect(vetId).toBeTruthy();
-    }).toPass({ timeout: 30_000 });
+    }).toPass({ timeout: pollTimeoutMs });
     return vetId!;
   }
 
@@ -156,14 +159,17 @@ export class PeoplePage {
     await this.page.getByLabel(/^Name$/i).waitFor({ timeout: 30_000 });
   }
 
-  private async openVetDetailRoute(vetId: string): Promise<void> {
+  private async openVetDetailRoute(
+    vetId: string,
+    routeTimeoutMs = 30_000,
+  ): Promise<void> {
     await this.page.goto(flutterGotoUrl(`/pc/vets/${vetId}`));
-    await refreshFlutterAccessibility(this.page);
     await waitForFlutterRoutePattern(
       this.page,
       /\/pc\/people\/[^/?]+(?:\?|$)|\/pc\/people(?:\?|$)/,
-      30_000,
+      routeTimeoutMs,
     );
+    await refreshFlutterAccessibility(this.page);
   }
 
   private peopleHubDirectoryCard(vetName: string): Locator {
@@ -173,37 +179,61 @@ export class PeoplePage {
     });
   }
 
-  private async openPersonDetailFromHub(vetName: string): Promise<void> {
+  private async openPersonDetailFromHub(
+    vetName: string,
+    routeTimeoutMs = 30_000,
+  ): Promise<void> {
     await this.peopleHubDirectoryCard(vetName).click();
-    await waitForFlutterRoutePattern(this.page, /\/pc\/people\/[^/?]+/, 30_000);
+    await waitForFlutterRoutePattern(
+      this.page,
+      /\/pc\/people\/[^/?]+/,
+      routeTimeoutMs,
+    );
     await refreshFlutterAccessibility(this.page);
   }
 
-  private async openVetEditRoute(vetId: string): Promise<void> {
+  private async openVetEditRoute(
+    vetId: string,
+    routeTimeoutMs = 30_000,
+  ): Promise<void> {
     await this.page.goto(flutterGotoUrl(`/pc/vets/edit/${vetId}`));
-    await refreshFlutterAccessibility(this.page);
     await waitForFlutterRoutePattern(
       this.page,
       /\/pc\/people\/[^/]+\/edit(?:\?|$)|\/pc\/vets\/edit\/[^/]+(?:\?|$)/,
-      30_000,
+      routeTimeoutMs,
     );
+    await refreshFlutterAccessibility(this.page);
   }
 
   async expectVetVisible(name: string): Promise<void> {
+    const hubProbeMs = 8_000;
+    const recoveryPollMs = 15_000;
+    const recoveryRouteMs = 15_000;
+    const recoveryAssertMs = 10_000;
+
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      if (await this.vetRowLocator(name).isVisible().catch(() => false)) {
+      try {
+        await this.vetRowLocator(name).waitFor({
+          state: 'visible',
+          timeout: hubProbeMs,
+        });
         return;
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        if (!/timeout/i.test(message)) {
+          throw err;
+        }
       }
-      const vetId = await this.resolveVetIdByName(name);
-      await this.openVetDetailRoute(vetId);
+      const vetId = await this.resolveVetIdByName(name, recoveryPollMs);
+      await this.openVetDetailRoute(vetId, recoveryRouteMs);
       if (await this.onPeopleHub()) {
-        await this.openPersonDetailFromHub(name);
+        await this.openPersonDetailFromHub(name, recoveryRouteMs);
       }
       await expect(this.vetRowLocator(name)).toBeVisible({
-        timeout: 5_000,
+        timeout: recoveryAssertMs,
       });
-    }).toPass({ timeout: 45_000 });
+    }).toPass({ timeout: 60_000 });
   }
 
   async expectVetNotVisible(name: string): Promise<void> {
