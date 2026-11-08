@@ -196,7 +196,35 @@ def scan_files(
     return violations
 
 
-def run_check(root: Path, manifest_path: Path) -> int:
+def report_violations(violations: list[str], *, gh_annotations: bool) -> None:
+    if gh_annotations:
+        print("::error::Frozen domain boundary violation(s):")
+        for line in violations:
+            print(f"::error::{line}")
+        print(
+            "::error::Active production code must not import frozen "
+            "organization/fostering_session modules (see manifest.json)."
+        )
+        return
+    print("Frozen domain boundary violation(s):", file=sys.stderr)
+    for line in violations:
+        print(line, file=sys.stderr)
+    print(
+        "Active production code must not import frozen "
+        "organization/fostering_session modules (see manifest.json).",
+        file=sys.stderr,
+    )
+
+
+def is_production_check(root: Path, manifest_path: Path, default_root: Path) -> bool:
+    return (
+        root.resolve() == default_root.resolve()
+        and manifest_path.resolve()
+        == (default_root / "docs/engineering/frozen-domains/manifest.json").resolve()
+    )
+
+
+def run_check(root: Path, manifest_path: Path, default_root: Path) -> int:
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     dart_tokens = dart_frozen_tokens(manifest.get("sourceRoots", []))
     server_tokens = server_frozen_tokens(manifest.get("serverRoots", []))
@@ -209,12 +237,9 @@ def run_check(root: Path, manifest_path: Path) -> int:
     violations.extend(scan_files(server_files, root, "server", server_tokens, js_import_violations))
 
     if violations:
-        print("::error::Frozen domain boundary violation(s):")
-        for line in violations:
-            print(f"::error::{line}")
-        print(
-            "::error::Active production code must not import frozen "
-            "organization/fostering_session modules (see manifest.json)."
+        report_violations(
+            violations,
+            gh_annotations=is_production_check(root, manifest_path, default_root),
         )
         return 1
 
@@ -227,11 +252,12 @@ def run_check(root: Path, manifest_path: Path) -> int:
 
 
 def main() -> None:
+    default_root = repo_root_from_argv()
     root, manifest_path = parse_args(sys.argv)
     if not manifest_path.is_file():
         print(f"::error::Missing manifest: {manifest_path}", file=sys.stderr)
         raise SystemExit(2)
-    raise SystemExit(run_check(root, manifest_path))
+    raise SystemExit(run_check(root, manifest_path, default_root))
 
 
 if __name__ == "__main__":

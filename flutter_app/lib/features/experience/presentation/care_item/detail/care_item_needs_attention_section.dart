@@ -39,8 +39,7 @@ class _CareItemNeedsAttentionSectionState
   CareItemSchedule get _s => widget.schedule;
 
   Future<void> _refresh() async {
-    await ref.read(healthEntriesNotifierProvider.notifier).refresh();
-    ref.invalidate(petHealthEntryByIdProvider);
+    await ref.read(careDataChangedProvider)();
   }
 
   Future<void> _bulk({required bool done}) async {

@@ -44,7 +44,7 @@ Future<void> main() async {
         ),
         careDataChangedProvider.overrideWith(
           (ref) => () async {
-            await ref.read(healthEntriesNotifierProvider.notifier).refresh();
+            await invalidateAllCareItemDetailCaches(ref);
             ref.invalidate(weightEntriesNotifierProvider);
             ref.invalidate(weightOverviewProvider);
             ref.invalidate(weightFulfilmentCandidatesProvider);
