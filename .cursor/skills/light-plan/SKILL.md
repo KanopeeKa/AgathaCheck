@@ -64,7 +64,9 @@ Record under `## Self-review` on the release PR.
 
 ## Release
 
-Open integration → `main` only now. Body: goal, phase links, `## Self-review`, `## Docs`, `Closes #<issue>`. Run **`/babysit-uat`** in the same turn (full [`/babysit-plus`](../babysit-plus/SKILL.md): Copilot triage, debt rules, squash, Pre-UAT, [`/e2e-debug`](../e2e-debug/SKILL.md) remedial). Done when Pre-UAT green on release merge SHA.
+Open integration → `main` only now. Body: goal, phase links, `## Self-review`, `## Docs`, `Closes #<issue>`. Read and follow [`/babysit-uat`](../babysit-uat/SKILL.md) in the same turn (builds on [`/babysit-plus`](../babysit-plus/SKILL.md); remedial via [`/e2e-debug`](../e2e-debug/SKILL.md) when needed). Programme-owned merges: [`AGENTS.md`](../../../AGENTS.md) §Autonomy and merging.
+
+Do not end the turn while the release PR is open, except [§Stop and ask](#stop-and-ask). Never ask the owner to merge or to run `/babysit-uat`. Done when Pre-UAT green on release merge SHA.
 
 ## Recovery
 
