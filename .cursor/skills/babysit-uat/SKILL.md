@@ -74,6 +74,8 @@ e2e-debug path only when `tick` returns a `remedial` action.
 
 Run **all** of `/babysit-plus` **§Pre-PR critical review** (including `/canonical-docs sync`), then §0–7. Remedial PRs from `/e2e-debug` use the same docs gate — usually `Docs: N/A — test/infra fix` unless the remedy changes behaviour.
 
+**Resolve all review conversations** on every merge this skill performs (feature PR, remedial PR, round 2+): triage every thread, reply, resolve, re-check after each push, then `gate --pr` exit `0` before `gh pr merge` (autonomous-pr-policy §Babysit skill family).
+
 1. Sync, wait for automatic reviews (§0b), triage, debt, CI loop with review re-check after every push (§5), `pre-push.sh`
 2. **Always squash-merge** when gates pass, including the review gate (`node scripts/babysit_pr_reviews.js gate --pr <url>` exits `0`, babysit+ §7) — CI green alone is not enough (no `manual` / `labeled` modes)
 3. Record `merge_sha` from merged PR

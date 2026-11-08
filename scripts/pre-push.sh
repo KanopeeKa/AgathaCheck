@@ -34,6 +34,7 @@ node scripts/quality/generate-scorecard-metrics.mjs --check
 node scripts/ci/flutter-shards.mjs check
 node --test scripts/ci/flutter-shards.test.mjs scripts/ci/flutter-shard-runner.test.mjs
 node scripts/check_skill_frontmatter.js
+node --test scripts/check_babysit_skill_family.test.js
 node --test scripts/github_issue_workflow.test.js
 node --test scripts/db/normalize-schema-dump.test.js
 node scripts/db/check-migration-manifest.js

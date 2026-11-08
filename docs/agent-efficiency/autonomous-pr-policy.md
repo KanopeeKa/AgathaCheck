@@ -3,7 +3,7 @@ title: Autonomous Pr Policy
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-11-02
+last_updated: 2026-11-08
 tags: [agent-efficiency, policy]
 ---
 # Autonomous PR policy (canonical)
@@ -57,6 +57,28 @@ driver arms or performs a merge (state-machine PR-ladder 5), PRs into `main` wai
 §Review triage and §Debt issues to every listed thread, then replies on and resolves each one — an
 unresolved thread relaunches the action. Copilot reviews only PRs into `main` (the release PR); phase PRs
 into the integration branch carry human threads only.
+
+---
+
+## Babysit skill family
+
+**Review conversations** = GitHub pull request **review threads** (`reviewThreads`). Rulesets on `main` and integration branches block merge while **any** review conversation is unresolved.
+
+The **babysit skill family** is every agent entry that opens, updates, or merges a PR through a babysit workflow. **Procedure** (wait, triage every thread, reply and resolve each one, re-check after every push, `babysit_pr_reviews.js gate` before merge) is defined once in §Automatic reviews — skills link here; they do not duplicate those steps in different wording.
+
+| Member | Resolve-all conversations |
+|--------|---------------------------|
+| `/babysit` | Yes — merge-ready = `gate` exit `0`; `/autopilot` handoff does not waive reply+resolve when you remain in session |
+| `/babysit-plus` | Yes — §7 review gate; exit `2` → triage and resolve |
+| `/babysit-uat` | Yes — babysit+ §0–7 on every merge, including remedial PRs |
+| `/light-plan` light merge | Yes — `gate --pr` before `gh pr merge` on phase/sync PRs |
+| `/dependabot-batch` | Yes — Phase 3 babysit+ (wait, reply+resolve, `gate`) + Phase 5 `/babysit-uat` |
+| `/execute-plan` workers (`triage-review`) | Yes — reply and resolve every listed conversation; `tick` relaunches while any stay unresolved |
+| `/execute-plan` driver | Yes — `tick` PR-ladder 5 blocks on GraphQL `unresolved_threads`; ladder 9 waits for Copilot on young PRs to **`main` only**; driver arms auto-merge when the ladder passes (does **not** invoke `babysit_pr_reviews.js`; workers + ruleset enforce resolve-all) |
+| `.cursor/rules/pr-hygiene.mdc` | Points agents at §Babysit skill family and §Automatic reviews |
+| Claude **steward** skill | Same pointers for Claude-driven PRs |
+
+**Doc drift guard:** `node scripts/check_babysit_skill_family.js` (pre-push and CI governance — see `_reusable-test.yml`).
 
 ---
 

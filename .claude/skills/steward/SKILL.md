@@ -28,8 +28,8 @@ push; never defer it to a debt issue.
 
 ## Everything else
 
-- Triage and debt conventions: `docs/agent-efficiency/autonomous-pr-policy.md` (§Automatic reviews: wait for
-  Copilot, triage, reply + resolve every thread, re-check after each push).
+- Triage and debt conventions: `docs/agent-efficiency/autonomous-pr-policy.md` (§Babysit skill family · §Automatic reviews:
+  wait for Copilot, triage, reply + resolve every review conversation, re-check after each push, `gate --pr` before merge).
 - Cursor-only mechanics do not apply to Claude Code (see `CLAUDE.md` §Claude Code mechanics).
 - Merging: `AGENTS.md` §Autonomy and merging — when the user asked you to merge
   or babysit the PR, or an active execute-plan v2 session requires it; squash once merge gates pass

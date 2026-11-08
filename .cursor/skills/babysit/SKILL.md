@@ -10,7 +10,7 @@ Your job is to get this PR to a **merge-ready** state (do not merge unless the u
 
 ## Cursor cloud handoff
 
-When the user wants a **background cloud agent** on the PR (monitor feedback, CI, conflicts remotely), run built-in **`/autopilot`** on that PR, then continue with AgathaTrack checks below in this repo when you remain in session.
+When the user wants a **background cloud agent** on the PR (monitor feedback, CI, conflicts remotely), run built-in **`/autopilot`** on that PR, then continue with AgathaTrack checks below in this repo when you remain in session. **`/autopilot` does not waive resolve-all review conversations** — still run `wait`, reply+resolve every thread, and `gate` before merge-ready (autonomous-pr-policy §Babysit skill family).
 
 For **in-session** babysitting (scripts, Router, pre-push), follow the steps below.
 
