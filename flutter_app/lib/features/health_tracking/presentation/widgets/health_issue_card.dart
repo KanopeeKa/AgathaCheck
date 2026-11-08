@@ -15,12 +15,14 @@ class HealthIssueCard extends ConsumerStatefulWidget {
     required this.issue,
     required this.controller,
     this.initiallyExpanded = false,
+    this.inCollection = false,
   });
 
   final String petId;
   final HealthIssue issue;
   final HealthIssuesController controller;
   final bool initiallyExpanded;
+  final bool inCollection;
 
   @override
   ConsumerState<HealthIssueCard> createState() => _HealthIssueCardState();
@@ -121,6 +123,7 @@ class _HealthIssueCardState extends ConsumerState<HealthIssueCard> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final dateFormat = DateFormat.yMMMd();
@@ -130,15 +133,26 @@ class _HealthIssueCardState extends ConsumerState<HealthIssueCard> {
       orElse: () => false,
     );
     final displayDate = widget.controller.displayDate(widget.issue, dateFormat);
+    final statusLabel = _isResolved ? l.issueStatusResolved : l.issueStatusOpen;
+    final headerLabel = displayDate.isEmpty
+        ? '${widget.issue.title}. $statusLabel'
+        : '${widget.issue.title}. $statusLabel. $displayDate';
 
     return Card(
       key: Key('health_issue_card_${widget.issue.id}'),
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      margin: widget.inCollection
+          ? const EdgeInsets.only(bottom: 12)
+          : const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       clipBehavior: Clip.antiAlias,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          InkWell(
+          Semantics(
+            button: true,
+            expanded: _expanded,
+            label: headerLabel,
+            onTap: _toggleExpanded,
+            child: InkWell(
             key: Key('health_issue_header_${widget.issue.id}'),
             onTap: _toggleExpanded,
             child: Padding(
@@ -156,7 +170,8 @@ class _HealthIssueCardState extends ConsumerState<HealthIssueCard> {
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        if (widget.issue.description.isNotEmpty) ...[
+                        if (widget.issue.description.isNotEmpty &&
+                            !_expanded) ...[
                           const SizedBox(height: 4),
                           HealthIssueDescriptionPreview(
                             text: widget.issue.description,
@@ -197,6 +212,7 @@ class _HealthIssueCardState extends ConsumerState<HealthIssueCard> {
                 ],
               ),
             ),
+          ),
           ),
           if (_expanded) ...[
             const Divider(height: 1),
