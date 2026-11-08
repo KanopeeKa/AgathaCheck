@@ -21,9 +21,9 @@ Medication and treatment entries, health issues, completion semantics, and remin
 | **HT-2** | Due/overdue entries surface on Pet Care dashboard and `/pc/events` (D17). | delivered |
 | **HT-3** | Completion uses occurrence model and CSM APIs — not legacy entry-only `mark-taken` advance. | delivered |
 | **HT-4** | Health issues are separate CRUD from entries (`healthIssues.js`). | delivered |
-| **HT-5** | Pet carers manage health issues on `/pet/:petId/health-issues` with expandable cards, documents (max 4), linked events, and open/resolved dates. | In delivery |
-| **HT-6** | Collapsed list cards show title, up to five description lines, date, and document icon without duplicating the full description in the header when expanded. | In delivery |
-| **HT-7** | Health Issues list uses Pet Care collection canvas and actionable empty state. | Planned |
+| **HT-5** | Pet carers manage health issues on `/pet/:petId/health-issues` with expandable cards, documents (max 4), linked events, and open/resolved dates. | Live |
+| **HT-6** | Collapsed list cards show title, up to five description lines, date, and document icon without duplicating the full description in the header when expanded. | Live |
+| **HT-7** | Health Issues list uses Pet Care collection canvas and actionable empty state. | Live |
 | **HT-8** | Collapsed rows may show open/resolved status at a glance (product change from initial W13 wireframe). | Planned |
 
 ## User journeys

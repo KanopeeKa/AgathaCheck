@@ -72,6 +72,31 @@ void main() {
     expect(find.byIcon(Icons.chevron_right), findsNWidgets(2));
   });
 
+  testWidgets('shows issue count when issues exist', (tester) async {
+    final issues = [
+      HealthIssue(id: 'i1', petId: 'pet-1', title: 'A', description: ''),
+      HealthIssue(id: 'i2', petId: 'pet-1', title: 'B', description: ''),
+    ];
+    final router = GoRouter(
+      initialLocation: '/pet/pet-1',
+      routes: [
+        GoRoute(
+          path: '/pet/:petId',
+          builder: (context, state) => Scaffold(
+            body: PetProfileHealthHistorySection(
+              petId: state.pathParameters['petId']!,
+            ),
+          ),
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(buildSection(router: router, issues: issues));
+    await tester.pumpAndSettle();
+
+    expect(find.text('2'), findsOneWidget);
+  });
+
   testWidgets('timeline row navigates to dedicated route', (tester) async {
     final router = GoRouter(
       initialLocation: '/pet/pet-1',
