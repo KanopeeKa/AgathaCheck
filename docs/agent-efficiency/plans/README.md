@@ -13,6 +13,7 @@ tags: [agent-efficiency,plans]
 |------|---------|
 | [agent-efficiency-plan.md](./agent-efficiency-plan.md) | Master implementation plan (Sprints 8–12+) |
 | [execute-plan-v2.md](./execute-plan-v2.md) | Execute-plan v2 build spec — run to merged + deployed on UAT without stops (work packages, contracts, prompts) |
+| [ci-pass-rate-improvement.md](./ci-pass-rate-improvement.md) | Proposed specs S1–S4 to raise PR CI pass rate (pre-push parity, CI loop breaker, E2E diagnostics, Flutter-web E2E stabilisation) |
 
 Policies, execute-plan schema, and skills references: [/docs/agent-efficiency/](/docs/agent-efficiency/) (parent folder).
 
