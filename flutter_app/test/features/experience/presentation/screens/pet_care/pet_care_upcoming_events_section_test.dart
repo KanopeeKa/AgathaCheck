@@ -65,7 +65,8 @@ Widget _wrap(
       healthEntriesNotifierProvider.overrideWith(() => notifier),
       careItemHttpClientProvider.overrideWithValue(client),
       careDataChangedProvider.overrideWith(
-        (ref) => () => invalidateAllCareItemDetailCaches(ref),
+        (ref) =>
+            () => invalidateAllCareItemDetailCaches(ref),
       ),
     ],
     child: MaterialApp.router(
