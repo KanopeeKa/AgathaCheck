@@ -3,7 +3,7 @@ title: Calendar dates in Agatha Track
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-10-13
+last_updated: 2026-11-08
 tags: [documentation]
 ---
 # Calendar dates in Agatha Track
@@ -100,6 +100,10 @@ language.
 `toLocal()` before reading Y-M-D. On Flutter web, a picked calendar day can be
 represented as a UTC `DateTime` (e.g. July 8 00:00 CEST → `…T22:00:00.000Z`);
 reading UTC `.day` would shift the stored date back one day east of UTC.
+
+## Display format (`dd MMM yy`)
+
+Care Item **History** pills and the Care date **Recorded** footer use `DateFormat('dd MMM yy')` with **English month abbreviations** in all app locales (same as existing due-date lines). French UI copy may still use French sentences around those literals. Localised month names are tracked as debt (not changed in History pill work).
 
 ## Tests
 

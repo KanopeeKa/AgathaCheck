@@ -2085,6 +2085,26 @@
   },
   "careItemDocumentsTitle": "Documents",
   "careItemHistoryTitle": "History",
+  "historyPillA11yDone": "Due {due}, done {close}",
+  "@historyPillA11yDone": {
+    "placeholders": {
+      "due": { "type": "String" },
+      "close": { "type": "String" }
+    }
+  },
+  "historyPillA11ySkipped": "Due {due}, skipped {close}",
+  "@historyPillA11ySkipped": {
+    "placeholders": {
+      "due": { "type": "String" },
+      "close": { "type": "String" }
+    }
+  },
+  "historyPillA11yNotRecorded": "Due {due}, not recorded",
+  "@historyPillA11yNotRecorded": {
+    "placeholders": {
+      "due": { "type": "String" }
+    }
+  },
   "careItemEditSchedule": "Edit schedule",
   "careItemMenuTooltip": "Care item actions",
   "careItemMenuPause": "Pause",

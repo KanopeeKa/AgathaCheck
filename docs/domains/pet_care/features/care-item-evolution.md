@@ -46,7 +46,8 @@ Historical profile refactor and 2026-09-13 delivery plan text: [archive/care-ite
 | CARE-ITEM-R-019 | Care date Block 3: inline **completion date** (default `min(due, as_of.date)`); scheduled time read-only; complete icon; no DN-3 sheet on leaf | Live |
 | CARE-ITEM-R-020 | Care date Block 4: server `previous_occurrence` / `next_occurrence`; empty-state copy when none; replace-route navigation | Live |
 | CARE-ITEM-R-021 | Persisted **completion time of day** on occurrences (display + API) | Planned |
-| CARE-ITEM-R-022 | Care date footer for person-closed **Done** / **Skipped**: `Recorded {dd MMM yy} at {HH:mm} by {name}` (`marked_at`, `marked_by_name`); notes on a second line; hidden for open dates and system-closed Not recorded; `Unknown user` when name missing (CARE-ITEM-D-009). Coverage: `test: flutter_app/test/features/experience/presentation/care_item/occurrence/occurrence_recorded_attribution_line_test.dart`, `test: flutter_app/test/features/care_item/presentation/occurrence_screen_test.dart` | In delivery |
+| CARE-ITEM-R-022 | Care date footer for person-closed **Done** / **Skipped**: `Recorded {dd MMM yy} at {HH:mm} by {name}` (`marked_at`, `marked_by_name`); notes on a second line; hidden for open dates and system-closed Not recorded; `Unknown user` when name missing (CARE-ITEM-D-009). Coverage: `test: flutter_app/test/features/experience/presentation/care_item/occurrence/occurrence_recorded_attribution_line_test.dart`, `test: flutter_app/test/features/care_item/presentation/occurrence_screen_test.dart` | Live |
+| CARE-ITEM-R-023 | History one-line pills (inline + pop-up): `dd MMM yy` / `HH:mm`; icons not words; **See history** only over inline cap; pop-up from `status=past` list (CARE-ITEM-D-010). Coverage: `test: past_occurrence_history_pill_test.dart`, `test: pet_event_administration_history_dialog_test.dart`, `test: pet_event_past_occurrences_section_test.dart` | In delivery |
 
 ## Verdict
 
@@ -339,19 +340,16 @@ Instructions are not yet on the wire; defer until the field exists.
 
 ### History (D-CIE-010)
 
-- Resolved past occurrences, newest first. Mobile shows 3, web shows 5, then **See history**.
+- Resolved past occurrences, newest first. Mobile shows 3, web shows 5 inline (**CARE-ITEM-R-023**).
+- **See history** appears only when there are more past rows than the inline cap; it opens a scrollable pop-up titled **History** with the same one-line pills (no administration log lines).
 - After Done, Skip, or Undo on the same item, **History** updates as soon as the server confirms (D-CIE-042); no navigation or full reload required.
-- When no resolved past occurrences qualify, the module shows **No history yet** and still offers **See history**.
+- When no resolved past occurrences qualify, the module shows **No history yet** (no **See history**).
 - **No inline shortcuts** (e.g. Unmark done) in the list; changes, including undoing Done, happen on the occurrence's screen (D-CIE-040).
-- Each row shows:
-  - the date and status (Done, Skipped, Not given or Not recorded)
-  - the due date when it differs
-  - one key recorded value, such as "12.4 kg"
-  - both people when they differ (People D15), e.g. "Given by Jamie · logged by Alex"
-- A row opens that occurrence's record, which can be edited.
+- Each row is one pill: `{due dd MMM yy}` or `{due} at {HH:mm}` – **icon** `{close dd MMM yy when applicable}` — ✓ (green) for Done, ⏭ (grey) for Skipped / Not given, ? (grey) with no close date for Not recorded. No status words on the row; screen readers get full meaning via semantics (CARE-ITEM-R-023).
+- Attribution (**who recorded, when**) lives on the Care date screen footer (CARE-ITEM-R-022), not on History rows — narrows [#2056](https://github.com/KanopeeKa/AgathaCheck/issues/2056).
+- A row opens that occurrence's record (inline or from the pop-up; pop-up closes first).
 - An unresolved overdue occurrence never appears here.
-- A **Not recorded** dose offers **Record as given** (D-CSM-023). It becomes Done; nothing else changes.
-- **Row detail gaps (In delivery):** due-when-different, key recorded value, and dual attribution are tracked in [#2056](https://github.com/KanopeeKa/AgathaCheck/issues/2056).
+- A **Not recorded** dose offers **Record as given** (D-CSM-023) from its occurrence screen; it becomes Done; nothing else changes.
 
 ### Access levels
 
@@ -487,7 +485,8 @@ BDD: `flutter_app/test/bdd/features/care_date_screen.feature` · E2E: `e2e/playw
 | CARE-ITEM-D-006 | Leaf completion uses inline date; DN-3 sheet only off-leaf (2026-10-14) | Live |
 | CARE-ITEM-D-007 | Default completion date `min(due_date, as_of.date)`; scheduled time read-only; R-021 deferred (2026-10-14) | Live |
 | CARE-ITEM-D-008 | Occurrence route builder keys `OccurrenceScreen` by `occurrenceId` so consecutive `replaceOccurrenceScreen` hops reload data (go_router page reuse) | Live |
-| CARE-ITEM-D-009 | **Recorded-by** footer after neighbours: uses server `marked_at` (24h `HH:mm`, calendar `dd MMM yy`) and `marked_by_name`; ✓ for Done, ⏭ for Skipped; no footer for open or system-closed Not recorded; History attribution detail moves off list rows (#2056) | In delivery | 2026-11-08 | #2144 |
+| CARE-ITEM-D-009 | **Recorded-by** footer after neighbours: uses server `marked_at` (24h `HH:mm`, calendar `dd MMM yy`) and `marked_by_name`; ✓ for Done, ⏭ for Skipped; no footer for open or system-closed Not recorded; History attribution detail moves off list rows (#2056) | Live | 2026-11-08 | #2145 |
+| CARE-ITEM-D-010 | **History pills:** one due line + status icon + close calendar date; no status words; pop-up lists all `status=past` rows with lazy `ListView`; **See history** only when count exceeds inline cap; title **History** | In delivery | 2026-11-08 | P2 #2144 |
 
 Historical D-OCC / D-OSM detail (2026-10-06): D-OCC-001 App bar **Care date**; D-OCC-006 Reschedule this occurrence only; D-OCC-014 … D-OCC-015 Away; D-OCC-016 No ⋯ menu; D-OCC-OUT-1 series actions on Care details only. v1 acceptance: plan `occurrence-screen-context-6b05.md`.
 

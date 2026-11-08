@@ -6,14 +6,21 @@ import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 
 Future<void> showPetEventHistory(
   BuildContext context,
-  WidgetRef ref,
-  String entryId,
-) async {
+  WidgetRef ref, {
+  required String petId,
+  required String entryId,
+  required bool muted,
+}) async {
   final l = AppLocalizations.of(context)!;
   try {
-    final history = await ref.read(entryHistoryProvider(entryId).future);
+    final past = await ref.read(entryPastOccurrencesProvider(entryId).future);
     if (!context.mounted) return;
-    await showPetEventAdministrationHistoryDialog(context, history: history);
+    await showPetEventPastHistoryDialog(
+      context,
+      occurrences: resolvedPastOccurrences(past),
+      petId: petId,
+      muted: muted,
+    );
   } catch (error) {
     if (!context.mounted) return;
     ScaffoldMessenger.of(
