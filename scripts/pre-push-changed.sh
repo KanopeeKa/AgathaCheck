@@ -6,6 +6,8 @@
 #   ./scripts/pre-push-changed.sh           # vs origin/main
 #   ./scripts/pre-push-changed.sh --full    # delegate to pre-push.sh
 #   ./scripts/pre-push-changed.sh --e2e-shards 3,8   # run listed pre-UAT shards (stack must be up)
+#   ./scripts/pre-push-changed.sh --e2e-specs playwright/tests/foo.spec.ts  # PR-leg repro (stack up)
+#   ./scripts/pre-push-changed.sh --ci-loop-override "reproduced vet locally"
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -18,14 +20,29 @@ agatha_flutter_verify
 source "$ROOT/scripts/ci/ci-scope-lib.sh"
 
 E2E_SHARDS=""
+E2E_SPECS=()
+CI_LOOP_EXTRA=()
 ARGS=()
+RUN_FULL=false
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --full)
-      exec "$ROOT/scripts/pre-push.sh"
+      RUN_FULL=true
+      shift
       ;;
     --e2e-shards)
       E2E_SHARDS="${2:?--e2e-shards requires comma-separated shard indices}"
+      shift 2
+      ;;
+    --e2e-specs)
+      shift
+      while [[ $# -gt 0 && "$1" != --* ]]; do
+        E2E_SPECS+=("$1")
+        shift
+      done
+      ;;
+    --ci-loop-override)
+      CI_LOOP_EXTRA=(--ci-loop-override "${2:?--ci-loop-override requires a reason}")
       shift 2
       ;;
     *)
@@ -36,9 +53,20 @@ while [[ $# -gt 0 ]]; do
 done
 set -- "${ARGS[@]}"
 
-if [[ "${1:-}" == "--full" ]]; then
+if $RUN_FULL; then
+  node "$ROOT/scripts/ci/check-ci-loop-label.mjs" "${CI_LOOP_EXTRA[@]}"
   exec "$ROOT/scripts/pre-push.sh"
 fi
+
+PREPUSH_PARITY_RUN=0
+
+run_prepush_gate() {
+  echo "==> Gate: $1"
+  node "$ROOT/scripts/ci/run-governance-gate.mjs" "$1"
+  PREPUSH_PARITY_RUN=$((PREPUSH_PARITY_RUN + 1))
+}
+
+node "$ROOT/scripts/ci/check-ci-loop-label.mjs" "${CI_LOOP_EXTRA[@]}"
 
 git fetch origin main --quiet 2>/dev/null || true
 MERGE_BASE="$(git merge-base HEAD origin/main 2>/dev/null || echo HEAD)"
@@ -47,11 +75,15 @@ CHANGED="$(echo "$CHANGED" | sort -u | grep -v '^$' || true)"
 
 if [[ -z "$CHANGED" ]]; then
   echo "No changed files detected — running governance gates only"
-  node scripts/check_file_size.js
+  run_prepush_gate file-size
+  run_prepush_gate bdd-priority-tags
   node e2e/scripts/check_bdd_coverage.js
   node e2e/scripts/check_test_quality.js --report-only
   node e2e/scripts/validate-shard-manifest.mjs --report-only
   node e2e/scripts/check-smoke-tags.mjs
+  HEAD_SHA="$(git rev-parse --short HEAD)"
+  PARITY_TOTAL="$PREPUSH_PARITY_RUN"
+  node "$ROOT/scripts/ci/prepush-parity-summary.mjs" --emit --run "$PREPUSH_PARITY_RUN" --total "$PARITY_TOTAL" --sha "$HEAD_SHA"
   exit 0
 fi
 
@@ -60,9 +92,10 @@ echo "$CHANGED" | sed 's/^/  /'
 
 bash "$ROOT/scripts/check_ui_touch_reminder.sh" "$MERGE_BASE" || true
 
+docs_touched=false
 if echo "$CHANGED" | grep -qE '^docs/'; then
-  echo "==> Docs validation (docs/** touched)"
-  bash "$ROOT/scripts/validate_docs.sh" || exit 1
+  docs_touched=true
+  run_prepush_gate docs-validation
 fi
 
 needs_governance=false
@@ -124,11 +157,12 @@ fi
 
 run_governance() {
   echo "==> Governance"
-  node scripts/check_file_size.js
+  run_prepush_gate bdd-priority-tags
+  run_prepush_gate file-size
   node scripts/check_hardcoded_shell_return_to.js
-  bash scripts/check_frozen_domain_boundaries.sh
+  run_prepush_gate frozen-boundaries
   bash scripts/check_care_item_boundary.sh
-  node scripts/check_feature_imports.js
+  run_prepush_gate feature-imports
   node --test scripts/check_feature_imports.test.js
   node scripts/validate_execute_plan_snapshot.js .agents/plans/_example.v2.snapshot.json
   node scripts/validate_execute_plan_snapshot.js --drift-test
@@ -156,6 +190,9 @@ run_governance() {
   node --test scripts/ci/evaluate-uat-promote-hold.test.js
   node --test scripts/ci/resolve-promote-commit-sha.test.js
   node --test scripts/ci/assert-ci-gate.test.js
+  node --test scripts/ci/governance-blocking-steps.test.mjs
+  node --test scripts/ci/prepush-parity.test.mjs
+  node --test scripts/ci/check-ci-retry-budget-refs.test.mjs
   node --test scripts/ci/ci-scope.test.js
   node --test e2e/scripts/select-affected-specs.test.mjs
   node --test scripts/quality/generate-scorecard-metrics.test.mjs
@@ -168,7 +205,7 @@ run_governance() {
   node --test scripts/check_babysit_skill_family.test.js
   node scripts/validate_openapi.js
   node --test scripts/validate_openapi.test.js
-  node scripts/validate_eslint.js
+  run_prepush_gate eslint
   node --test scripts/validate_eslint.test.js
   node --test scripts/github_issue_workflow.test.js
   node --test scripts/db/normalize-schema-dump.test.js
@@ -178,7 +215,7 @@ run_governance() {
   node scripts/check_pg_pool_bootstrap.js
   node scripts/check_cpanel_startup_entry.js
   node --test scripts/check_cpanel_startup_entry.test.js
-  node e2e/scripts/check_bdd_coverage.js
+  run_prepush_gate bdd-coverage
   node e2e/scripts/check_test_quality.js --report-only
   node e2e/scripts/validate-shard-manifest.mjs --report-only
   node e2e/scripts/check-smoke-tags.mjs
@@ -225,6 +262,7 @@ run_server() {
 
 run_flutter() {
   echo "==> Flutter"
+  run_prepush_gate dart-format
   (
     cd flutter_app
     if $needs_codegen; then
@@ -270,8 +308,28 @@ if $needs_schema; then
   fi
 fi
 
+HEAD_SHA="$(git rev-parse --short HEAD)"
+PARITY_FLUTTER=$([[ "$needs_flutter" == true ]] && echo 1 || echo 0)
+PARITY_GOV=$([[ "$needs_governance" == true ]] && echo 1 || echo 0)
+PARITY_DOCS=$([[ "$docs_touched" == true ]] && echo 1 || echo 0)
+PARITY_TOTAL="$(node "$ROOT/scripts/ci/prepush-parity-summary.mjs" --plan --flutter "$PARITY_FLUTTER" --governance "$PARITY_GOV" --docs "$PARITY_DOCS")"
+node "$ROOT/scripts/ci/prepush-parity-summary.mjs" --emit --run "$PREPUSH_PARITY_RUN" --total "$PARITY_TOTAL" --sha "$HEAD_SHA"
+
 echo "✓ Changed-files pre-push passed"
 echo "  Run ./scripts/pre-push.sh before merging to main"
+
+if [[ ${#E2E_SPECS[@]} -gt 0 ]]; then
+  echo "==> Playwright affected-spec replay (--e2e-specs)"
+  if ! curl -sf http://localhost:3000/ >/dev/null 2>&1; then
+    echo "WARN: localhost:3000 not reachable — run ./scripts/babysit_uat_bootstrap_stack.sh first" >&2
+    exit 1
+  fi
+  (
+    cd "$ROOT/e2e"
+    npx playwright test --project=full --max-failures=1 "${E2E_SPECS[@]}"
+  )
+  echo "✓ E2E spec replay passed"
+fi
 
 if [[ -n "$E2E_SHARDS" ]]; then
   echo "==> Pre-UAT shard replay (--e2e-shards)"
