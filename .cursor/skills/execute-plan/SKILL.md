@@ -31,7 +31,7 @@ fix must-fix and safe nits on the branch (`./scripts/pre-push-changed.sh` before
 §Debt issues for ignored or skipped items — then reply on each thread (`Fixed in <sha>` / `False positive: …` /
 `Deferred to #<n>`) and resolve it. `tick` relaunches the action while any conversation stays unresolved.
 
-The **driver** arms merge only after `node scripts/babysit_pr_reviews.js gate --pr <url>` exit `0` (or allowed `3`) on that PR — same resolve-all invariant as `/babysit-plus`.
+The **driver** does **not** shell out to `babysit_pr_reviews.js`; `tick` blocks on GraphQL `unresolved_threads` (PR-ladder 5), waits for Copilot on young PRs to `main` only (ladder 9), then arms auto-merge. Resolve-all is enforced by workers plus the ruleset merge gate — see autonomous-pr-policy §Babysit skill family.
 
 `gate <plan_id>` is an alias of `tick` (no `--labels`).
 

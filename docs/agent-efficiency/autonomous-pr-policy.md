@@ -35,31 +35,6 @@ Single source of truth for `/babysit`, `/babysit-plus`, and `/execute-plan`. Ski
 
 During `/execute-plan`, use **babysit-plus** for intermediate phase PRs and **babysit-uat** for the final PR to `main` — never plain babysit alone.
 
-## Babysit skill family
-
-**Review conversations** = GitHub pull request **review threads** (`reviewThreads` / inline review comments grouped as a conversation). Rulesets on `main` and integration branches block merge while **any** review conversation is unresolved.
-
-The **babysit skill family** is every agent entry that opens, updates, or merges a PR through a babysit workflow. Each member must enforce the same invariant:
-
-1. **Wait** — `node scripts/babysit_pr_reviews.js wait --pr <url>` until Copilot is not in progress (or the Copilot-unavailable path in §Automatic reviews step 6).
-2. **Triage every conversation** — every unresolved thread in the JSON `threads` array (Copilot and human), per §Review triage.
-3. **Reply and resolve every conversation** — respond on the thread, then resolve it (`resolveReviewThread` or GitHub UI). Deferred items still need a reply and resolve once a debt issue exists.
-4. **Re-check after every push** — run `wait` again; new conversations go back through steps 2–3 in the same batch as CI fixes.
-5. **Gate before merge** — `node scripts/babysit_pr_reviews.js gate --pr <url>` must exit `0` (or exit `3` only on the Copilot-unavailable path with nothing unresolved) immediately before `gh pr merge`. CI green alone never satisfies merge.
-
-| Member | Resolve-all conversations |
-|--------|---------------------------|
-| `/babysit` | Yes — merge-ready = gate exit `0`; `/autopilot` handoff does not waive steps 3–5 when you remain in session |
-| `/babysit-plus` | Yes — §7 review gate; exit `2` → back to triage and resolve |
-| `/babysit-uat` | Yes — inherits babysit+ §0–7 (including review gate) on every merge, including remedial PRs |
-| `/light-plan` light merge | Yes — `gate --pr` before `gh pr merge` on phase/sync PRs |
-| `/execute-plan` workers (`triage-review`) | Yes — same triage and resolve; `tick` relaunches while any conversation stays unresolved |
-| `/execute-plan` driver / release | Yes — arms merge only after gate exit `0` on the PR |
-| `.cursor/rules/pr-hygiene.mdc` | Points agents at §Automatic reviews and resolve-all |
-| Claude **steward** skill | Same pointers for Claude-driven PRs |
-
-CI enforces aligned wording: `node scripts/check_babysit_skill_family.js`.
-
 ### Execute-plan (v2)
 
 While a v2 worker or driver session is active, generic “stop and ask” rules are narrowed for in-scope
@@ -82,6 +57,28 @@ driver arms or performs a merge (state-machine PR-ladder 5), PRs into `main` wai
 §Review triage and §Debt issues to every listed thread, then replies on and resolves each one — an
 unresolved thread relaunches the action. Copilot reviews only PRs into `main` (the release PR); phase PRs
 into the integration branch carry human threads only.
+
+---
+
+## Babysit skill family
+
+**Review conversations** = GitHub pull request **review threads** (`reviewThreads`). Rulesets on `main` and integration branches block merge while **any** review conversation is unresolved.
+
+The **babysit skill family** is every agent entry that opens, updates, or merges a PR through a babysit workflow. **Procedure** (wait, triage every thread, reply and resolve each one, re-check after every push, `babysit_pr_reviews.js gate` before merge) is defined once in §Automatic reviews — skills link here; they do not duplicate those steps in different wording.
+
+| Member | Resolve-all conversations |
+|--------|---------------------------|
+| `/babysit` | Yes — merge-ready = `gate` exit `0`; `/autopilot` handoff does not waive reply+resolve when you remain in session |
+| `/babysit-plus` | Yes — §7 review gate; exit `2` → triage and resolve |
+| `/babysit-uat` | Yes — babysit+ §0–7 on every merge, including remedial PRs |
+| `/light-plan` light merge | Yes — `gate --pr` before `gh pr merge` on phase/sync PRs |
+| `/dependabot-batch` | Yes — Phase 3 babysit+ (wait, reply+resolve, `gate`) + Phase 5 `/babysit-uat` |
+| `/execute-plan` workers (`triage-review`) | Yes — reply and resolve every listed conversation; `tick` relaunches while any stay unresolved |
+| `/execute-plan` driver | Yes — `tick` PR-ladder 5 blocks on GraphQL `unresolved_threads`; ladder 9 waits for Copilot on young PRs to **`main` only**; driver arms auto-merge when the ladder passes (does **not** invoke `babysit_pr_reviews.js`; workers + ruleset enforce resolve-all) |
+| `.cursor/rules/pr-hygiene.mdc` | Points agents at §Babysit skill family and §Automatic reviews |
+| Claude **steward** skill | Same pointers for Claude-driven PRs |
+
+**Doc drift guard:** `node scripts/check_babysit_skill_family.js` (pre-push and CI governance — see `_reusable-test.yml`).
 
 ---
 

@@ -121,13 +121,15 @@ chore(deps): batch weekly dependabot (<packages>) (supersedes #746, #747, …)
 
 ## Phase 3 — PR CI (`/babysit-plus`)
 
+Resolve all review conversations before merge (autonomous-pr-policy §Babysit skill family · §Automatic reviews).
+
 1. Pre-PR critical self-review (`.cursor/rules/pr-hygiene.mdc`).
 2. `./scripts/babysit_sync_base.sh --pr <url> --push`
 3. `./scripts/pre-push-changed.sh`
 4. Open/update PR to `main`; `gh pr ready`.
-5. `node scripts/babysit_pr_reviews.js collect --pr <url>` — triage threads.
-6. CI loop until `ci-gate / CI passed` + CodeQL green.
-7. `./scripts/pre-push.sh` before merge attempt.
+5. `node scripts/babysit_pr_reviews.js wait --pr <url>` — triage every thread; reply on and **resolve** each one; re-run after every push.
+6. CI loop until `ci-gate / CI passed` + CodeQL green (review re-check in the same batch as CI fixes).
+7. `./scripts/pre-push.sh` before merge attempt; `node scripts/babysit_pr_reviews.js gate --pr <url>` exit `0` immediately before Phase 5 merge.
 
 ---
 
@@ -160,7 +162,7 @@ On failure: fix on the **same batch branch** (test/locator drift first; rollback
 
 ## Phase 5 — Merge + pre-UAT (`/babysit-uat`)
 
-1. Squash-merge batch PR when PR CI green and Phase 4 passed.
+1. Squash-merge batch PR when PR CI green, Phase 4 passed, and `node scripts/babysit_pr_reviews.js gate --pr <url>` exit `0` (or allowed Copilot-unavailable `3` with nothing unresolved).
 2. Record `merge_sha`.
 3. `./scripts/babysit_uat_watch_preuat.sh <merge_sha> --json --timeout-min 90`
 4. On failure → **/e2e-debug** (reactive) → remedial PR → **/babysit-uat** Phase 4 (max 3 rounds).
