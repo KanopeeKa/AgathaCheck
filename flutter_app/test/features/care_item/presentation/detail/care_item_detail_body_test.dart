@@ -373,6 +373,74 @@ void main() {
     expect(find.byKey(const Key('unmark_done_hist-0')), findsNothing);
   });
 
+  testWidgets(
+    'Schedule and History use one section gap when optional modules hidden',
+    (tester) async {
+      tester.view.physicalSize = const Size(400, 900);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      final medicationEntry = HealthEntry(
+        id: 'med-gap',
+        petId: 'pet-1',
+        name: 'Daily pill',
+        type: HealthEntryType.medication,
+        frequency: HealthFrequency.daily,
+        frequencyInterval: 1,
+        startDate: DateTime(2025, 1, 1),
+        nextDueDate: DateTime(2025, 6, 1),
+        careFamily: CareFamily.medication,
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            apiBaseUrlProvider.overrideWithValue('http://test.local'),
+            careItemAbsenceContextProvider('med-gap').overrideWith(
+              (ref) async => const HealthEntryAbsenceContext(
+                healthEntryId: 'med-gap',
+                petId: 'pet-1',
+                absences: [],
+              ),
+            ),
+            entryOccurrencesProvider('med-gap').overrideWith((ref) async => []),
+            entryPastOccurrencesProvider(
+              'med-gap',
+            ).overrideWith((ref) async => []),
+            healthEntryPhotosProvider(
+              'med-gap',
+            ).overrideWith((ref) async => []),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(
+              body: CareItemDetailBody(
+                petId: 'pet-1',
+                entry: medicationEntry,
+                pet: pet,
+                history: const <HealthHistoryEntry>[],
+                isClosed: false,
+                isEstablished: false,
+                onSeeHistory: () {},
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final scheduleBottom = tester
+          .getRect(find.byKey(const Key('care_item_schedule_section')))
+          .bottom;
+      final historyTop = tester
+          .getRect(find.byKey(const Key('care_item_history_module')))
+          .top;
+      expect(historyTop - scheduleBottom, closeTo(16.0, 0.1));
+    },
+  );
+
   testWidgets('Documents module appears above History when files exist', (
     tester,
   ) async {
