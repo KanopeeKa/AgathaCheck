@@ -21,12 +21,7 @@ class CareItemHistorySection extends ConsumerWidget {
   final int pastOccurrencesVisibleCap;
 
   static bool hasInlinePastOccurrences(List<HealthOccurrence> past) {
-    return past.any(
-      (o) =>
-          o.status == 'completed' ||
-          o.status == 'skipped' ||
-          o.status == 'not_recorded',
-    );
+    return resolvedPastOccurrences(past).isNotEmpty;
   }
 
   @override
@@ -56,18 +51,34 @@ class CareItemHistorySection extends ConsumerWidget {
               ),
             ),
             data: (past) {
-              if (hasInlinePastOccurrences(past)) {
-                return CareCollectionInsetList(
-                  semanticLabel: l.careItemHistoryTitle,
+              final rows = resolvedPastOccurrences(past);
+              if (rows.isNotEmpty) {
+                final seeFull = rows.length > pastOccurrencesVisibleCap;
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    CareCollectionInsetItem(
-                      child: PetEventPastOccurrencesSection(
-                        entryId: entry.id,
-                        petId: entry.petId,
-                        muted: muted,
-                        maxVisibleRows: pastOccurrencesVisibleCap,
-                      ),
+                    CareCollectionInsetList(
+                      semanticLabel: l.careItemHistoryTitle,
+                      children: [
+                        CareCollectionInsetItem(
+                          child: PetEventPastOccurrencesSection(
+                            entryId: entry.id,
+                            petId: entry.petId,
+                            muted: muted,
+                            maxVisibleRows: pastOccurrencesVisibleCap,
+                          ),
+                        ),
+                      ],
                     ),
+                    if (seeFull) ...[
+                      const SizedBox(height: 12),
+                      OutlinedButton.icon(
+                        key: const Key('care_item_see_history'),
+                        onPressed: onSeeHistory,
+                        icon: const Icon(Icons.history),
+                        label: Text(l.seeHistory),
+                      ),
+                    ],
                   ],
                 );
               }
@@ -78,13 +89,6 @@ class CareItemHistorySection extends ConsumerWidget {
                 ),
               );
             },
-          ),
-          const SizedBox(height: 12),
-          OutlinedButton.icon(
-            key: const Key('care_item_see_history'),
-            onPressed: onSeeHistory,
-            icon: const Icon(Icons.history),
-            label: Text(l.seeHistory),
           ),
         ],
       ),

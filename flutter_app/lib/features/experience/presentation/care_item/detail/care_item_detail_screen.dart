@@ -101,7 +101,13 @@ class CareItemDetailScreen extends ConsumerWidget {
 
             void onEdit() => context.push(healthEntryEditRoute(entry, petId));
 
-            void onSeeHistory() => showPetEventHistory(context, ref, entryId);
+            void onSeeHistory() => showPetEventHistory(
+              context,
+              ref,
+              petId: petId,
+              entryId: entryId,
+              muted: isClosed,
+            );
 
             Future<void> onCloseCare() async {
               final choice = await showCloseCareConfirmDialog(

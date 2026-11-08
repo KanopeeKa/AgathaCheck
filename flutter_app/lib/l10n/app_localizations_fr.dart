@@ -5641,6 +5641,21 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careItemHistoryTitle => 'Historique';
 
   @override
+  String historyPillA11yDone(String due, String close) {
+    return 'Échéance $due, fait le $close';
+  }
+
+  @override
+  String historyPillA11ySkipped(String due, String close) {
+    return 'Échéance $due, ignoré le $close';
+  }
+
+  @override
+  String historyPillA11yNotRecorded(String due) {
+    return 'Échéance $due, non enregistré';
+  }
+
+  @override
   String get careItemEditSchedule => 'Modifier le planning';
 
   @override
@@ -7034,6 +7049,11 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get occurrenceDueLabel => 'Échéance';
+
+  @override
+  String occurrenceRecordedAttribution(String date, String time, String user) {
+    return 'Enregistré le $date à $time par $user';
+  }
 
   @override
   String get occurrenceOtherOpenDatesHint =>

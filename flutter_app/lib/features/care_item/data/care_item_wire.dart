@@ -181,6 +181,10 @@ OccurrenceDetail occurrenceDetailFromJson(Map<String, dynamic> json) {
       origin: careOccurrenceOriginFromApi(occ['origin'] as String?),
       isOpen: occ['status'] == 'pending',
       completedOn: parseCalendarDate(occ['completed_on']),
+      markedAt: occ['marked_at'] != null
+          ? DateTime.tryParse(occ['marked_at'] as String)
+          : null,
+      markedByName: occ['marked_by_name'] as String?,
       notes: occ['notes'] as String? ?? '',
     ),
     item: CareItemSummary(
