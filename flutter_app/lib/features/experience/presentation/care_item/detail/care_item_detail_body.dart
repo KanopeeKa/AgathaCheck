@@ -46,6 +46,23 @@ class CareItemDetailBody extends ConsumerWidget {
 
   static const _sectionGap = SizedBox(height: 16);
 
+  /// Module rhythm on the care canvas — one gap between adjacent visible sections.
+  static List<Widget> _sectionsWithGaps(Iterable<Widget> sections) {
+    final out = <Widget>[];
+    for (final section in sections) {
+      if (out.isNotEmpty) out.add(_sectionGap);
+      out.add(section);
+    }
+    return out;
+  }
+
+  static Widget _sectionColumn(List<Widget> sections) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: _sectionsWithGaps(sections),
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final muted = isClosed;
@@ -82,36 +99,6 @@ class CareItemDetailBody extends ConsumerWidget {
       isEstablished: isEstablished,
     );
 
-    final observationSlot = _CareItemObservationSlot(
-      petId: petId,
-      entry: entry,
-    );
-
-    Widget sideScheduleAbsenceColumn() {
-      if (absenceBeforeSchedule) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            absenceSection,
-            _sectionGap,
-            scheduleSection,
-            _sectionGap,
-            observationSlot,
-          ],
-        );
-      }
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          scheduleSection,
-          _sectionGap,
-          observationSlot,
-          _sectionGap,
-          absenceSection,
-        ],
-      );
-    }
-
     return CareItemDetailCanvas(
       child: LayoutBuilder(
         builder: (context, constraints) {
@@ -120,6 +107,23 @@ class CareItemDetailBody extends ConsumerWidget {
               : MediaQuery.sizeOf(context).width;
           final wide = layoutWidth >= kCareItemTwoColumnBreakpoint;
           final pastOccurrencesVisibleCap = wide ? 5 : 3;
+          final showAbsenceSection = absenceContext.maybeWhen(
+            data: (model) => model.absences.isNotEmpty,
+            orElse: () => false,
+          );
+          final observationModule = _buildObservationModule(context, ref);
+          final showDocumentsSection = ref
+              .watch(healthEntryPhotosProvider(entry.id))
+              .maybeWhen(
+                data: (photos) => photos.isNotEmpty,
+                orElse: () => true,
+              );
+          final scheduleSideSections = <Widget>[
+            if (absenceBeforeSchedule && showAbsenceSection) absenceSection,
+            scheduleSection,
+            if (observationModule != null) observationModule,
+            if (!absenceBeforeSchedule && showAbsenceSection) absenceSection,
+          ];
           final documentsSection = CareItemDocumentsSection(
             entryId: entry.id,
             muted: muted,
@@ -130,16 +134,9 @@ class CareItemDetailBody extends ConsumerWidget {
             onSeeHistory: onSeeHistory,
             pastOccurrencesVisibleCap: pastOccurrencesVisibleCap,
           );
-          final closeCareSection = onCloseCare == null
+          final closeCareButton = onCloseCare == null
               ? null
-              : Column(
-                  key: const Key('care_item_close_care_section'),
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    _sectionGap,
-                    CareItemCloseCareButton(onPressed: onCloseCare!),
-                  ],
-                );
+              : CareItemCloseCareButton(onPressed: onCloseCare!);
 
           Widget detailsModule({required bool includeEstablished}) {
             return _DetailsModule(
@@ -153,58 +150,41 @@ class CareItemDetailBody extends ConsumerWidget {
           }
 
           final content = wide
-              ? Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    contextStrip,
-                    _sectionGap,
-                    detailsModule(includeEstablished: false),
-                    _sectionGap,
-                    Row(
-                      key: const Key('care_item_detail_two_column'),
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          flex: 3,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              needsSection,
-                              if (isEstablished) ...[
-                                _sectionGap,
-                                CareItemModule(child: establishedSection),
-                              ],
-                              _sectionGap,
-                              documentsSection,
-                              _sectionGap,
-                              historyModule,
-                              if (closeCareSection != null) closeCareSection,
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(flex: 2, child: sideScheduleAbsenceColumn()),
-                      ],
-                    ),
-                  ],
-                )
-              : Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    contextStrip,
-                    _sectionGap,
-                    detailsModule(includeEstablished: true),
-                    _sectionGap,
-                    needsSection,
-                    _sectionGap,
-                    sideScheduleAbsenceColumn(),
-                    _sectionGap,
-                    documentsSection,
-                    _sectionGap,
-                    historyModule,
-                    if (closeCareSection != null) closeCareSection,
-                  ],
-                );
+              ? _sectionColumn([
+                  contextStrip,
+                  detailsModule(includeEstablished: false),
+                  Row(
+                    key: const Key('care_item_detail_two_column'),
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: _sectionColumn([
+                          needsSection,
+                          if (isEstablished)
+                            CareItemModule(child: establishedSection),
+                          if (showDocumentsSection) documentsSection,
+                          historyModule,
+                          if (closeCareButton != null) closeCareButton,
+                        ]),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        flex: 2,
+                        child: _sectionColumn(scheduleSideSections),
+                      ),
+                    ],
+                  ),
+                ])
+              : _sectionColumn([
+                  contextStrip,
+                  detailsModule(includeEstablished: true),
+                  needsSection,
+                  ...scheduleSideSections,
+                  if (showDocumentsSection) documentsSection,
+                  historyModule,
+                  if (closeCareButton != null) closeCareButton,
+                ]);
 
           final bottomInset = MediaQuery.paddingOf(context).bottom;
           return SingleChildScrollView(
@@ -213,6 +193,41 @@ class CareItemDetailBody extends ConsumerWidget {
             child: content,
           );
         },
+      ),
+    );
+  }
+
+  Widget? _buildObservationModule(BuildContext context, WidgetRef ref) {
+    final family = entry.careFamily;
+    if (family == null) return null;
+
+    final caps = CareFamilyCapabilityPolicy.forFamily(family);
+    if (caps == null || !caps.supportsObservations) return null;
+
+    final kind = caps.observationKind;
+    if (kind == null) return null;
+
+    final section = ref.watch(careItemObservationSectionProvider)(
+      context,
+      petId: petId,
+      entryId: entry.id,
+      observationKind: kind,
+    );
+    if (section == null) return null;
+
+    final l = AppLocalizations.of(context)!;
+    return CareItemModule(
+      semanticLabel: l.weight,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          CareItemSectionHeader(
+            title: l.weight,
+            icon: Icons.monitor_weight_outlined,
+          ),
+          const SizedBox(height: 12),
+          section,
+        ],
       ),
     );
   }
@@ -328,51 +343,6 @@ class _ClosedNeedsAttentionModule extends StatelessWidget {
                 color: colorScheme.onSurfaceVariant,
               ),
             ),
-        ],
-      ),
-    );
-  }
-}
-
-class _CareItemObservationSlot extends ConsumerWidget {
-  const _CareItemObservationSlot({required this.petId, required this.entry});
-
-  final String petId;
-  final HealthEntry entry;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final family = entry.careFamily;
-    if (family == null) return const SizedBox.shrink();
-
-    final caps = CareFamilyCapabilityPolicy.forFamily(family);
-    if (caps == null || !caps.supportsObservations) {
-      return const SizedBox.shrink();
-    }
-
-    final kind = caps.observationKind;
-    if (kind == null) return const SizedBox.shrink();
-
-    final section = ref.watch(careItemObservationSectionProvider)(
-      context,
-      petId: petId,
-      entryId: entry.id,
-      observationKind: kind,
-    );
-    if (section == null) return const SizedBox.shrink();
-
-    final l = AppLocalizations.of(context)!;
-    return CareItemModule(
-      semanticLabel: l.weight,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          CareItemSectionHeader(
-            title: l.weight,
-            icon: Icons.monitor_weight_outlined,
-          ),
-          const SizedBox(height: 12),
-          section,
         ],
       ),
     );
