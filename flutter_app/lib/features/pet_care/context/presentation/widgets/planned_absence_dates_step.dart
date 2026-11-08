@@ -59,6 +59,7 @@ class PlannedAbsenceDatesStep extends StatelessWidget {
         ),
         const SizedBox(height: 24),
         Semantics(
+          identifier: 'planned_absence_date_range',
           button: true,
           label: l.careContextAwayDatesRangeLabel,
           value: rangeLabel,

@@ -101,32 +101,41 @@ class _AwayPlanPetNotesSectionState
           style: theme.textTheme.titleLarge,
         ),
         const SizedBox(height: 8),
-        TextField(
-          key: Key('away_plan_pet_notes_${widget.petId}'),
-          controller: _controller,
-          readOnly: !widget.canEdit || _saving,
-          minLines: 2,
-          maxLines: 5,
-          decoration: InputDecoration(
-            hintText: l.awayPlanningCarerEditPetNoteLabel(widget.petName),
-            border: const OutlineInputBorder(),
+        Semantics(
+          identifier: 'away_plan_pet_notes_${widget.petId}',
+          container: true,
+          child: TextField(
+            key: Key('away_plan_pet_notes_${widget.petId}'),
+            controller: _controller,
+            readOnly: !widget.canEdit || _saving,
+            minLines: 2,
+            maxLines: 5,
+            decoration: InputDecoration(
+              hintText: l.awayPlanningCarerEditPetNoteLabel(widget.petName),
+              border: const OutlineInputBorder(),
+            ),
+            onSubmitted: widget.canEdit ? (_) => _save() : null,
           ),
-          onSubmitted: widget.canEdit ? (_) => _save() : null,
         ),
         if (widget.canEdit) ...[
           const SizedBox(height: 8),
           Align(
             alignment: Alignment.centerRight,
-            child: FilledButton(
-              key: Key('away_plan_pet_notes_save_${widget.petId}'),
-              onPressed: _saving ? null : _save,
-              child: _saving
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : Text(l.save),
+            child: Semantics(
+              identifier: 'away_plan_pet_notes_save_${widget.petId}',
+              button: true,
+              label: l.save,
+              child: FilledButton(
+                key: Key('away_plan_pet_notes_save_${widget.petId}'),
+                onPressed: _saving ? null : _save,
+                child: _saving
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : Text(l.save),
+              ),
             ),
           ),
         ],

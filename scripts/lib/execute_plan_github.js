@@ -12,6 +12,7 @@ const RETRY_STATUSES = new Set([502, 503, 504]);
 const REQUEST_TIMEOUT_MS = 30_000; // a hung call must not hold the driver until the job timeout
 const PULL_FILES_LIMIT = 3000;
 const REVIEW_THREAD_PAGE_CAP = 20;
+const FILE_SHA_CONCURRENCY = 8;
 
 class MissingToken extends Error {
   constructor(message = 'No GitHub token: set EXECUTE_PLAN_TOKEN, GH_TOKEN or GITHUB_TOKEN') {
@@ -70,6 +71,22 @@ function buildQuery(query) {
   }
   const text = params.toString();
   return text ? `?${text}` : '';
+}
+
+async function mapWithConcurrency(items, limit, fn) {
+  if (!items.length) return [];
+  const results = new Array(items.length);
+  let next = 0;
+  async function worker() {
+    while (next < items.length) {
+      const i = next;
+      next += 1;
+      results[i] = await fn(items[i]);
+    }
+  }
+  const workers = Math.min(limit, items.length);
+  await Promise.all(Array.from({ length: workers }, () => worker()));
+  return results;
 }
 
 async function readBody(res) {
@@ -325,18 +342,30 @@ function createGitHubClient(opts) {
       }
       return { content: Buffer.from(data.content || '', data.encoding || 'base64').toString('utf8'), sha: data.sha };
     },
-    /** Blob SHAs for many paths at one ref (parallel contents API). */
+    async blobShaMapForRef(ref) {
+      const commitSha = await this.getCommitSha(ref);
+      const tree = await rest('GET', `/git/trees/${enc(commitSha)}${buildQuery({ recursive: '1' })}`);
+      if (!tree || tree.truncated) return null;
+      const map = new Map();
+      for (const entry of tree.tree || []) {
+        if (entry.type === 'blob') map.set(entry.path, entry.sha);
+      }
+      return map;
+    },
+
+    /** Blob SHAs for many paths at one ref (git tree when possible; capped per-file fallback). */
     async getFileShasAtRef(paths, ref) {
-      const pairs = await Promise.all(
-        paths.map(async (path) => {
-          try {
-            const file = await this.getFileAtRef(path, ref);
-            return [path, file?.sha ?? null];
-          } catch {
-            return [path, null];
-          }
-        }),
-      );
+      if (!paths.length) return new Map();
+      const treeMap = await this.blobShaMapForRef(ref);
+      if (treeMap) {
+        const out = new Map();
+        for (const path of paths) out.set(path, treeMap.get(path) ?? null);
+        return out;
+      }
+      const pairs = await mapWithConcurrency(paths, FILE_SHA_CONCURRENCY, async (path) => {
+        const file = await this.getFileAtRef(path, ref);
+        return [path, file?.sha ?? null];
+      });
       return new Map(pairs);
     },
 

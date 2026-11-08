@@ -99,62 +99,73 @@ class PlannedAbsencePlanScreen extends ConsumerWidget {
 
             return shell(
               actions: [
-                IconButton(
-                  key: const Key('away_plan_download_handover'),
-                  tooltip: l.downloadReport,
-                  icon: const Icon(Icons.picture_as_pdf_outlined),
-                  onPressed: absence.isCancelled ? null : downloadHandover,
+                Semantics(
+                  identifier: 'away_plan_download_handover',
+                  button: true,
+                  label: l.downloadReport,
+                  child: IconButton(
+                    key: const Key('away_plan_download_handover'),
+                    tooltip: l.downloadReport,
+                    icon: const Icon(Icons.picture_as_pdf_outlined),
+                    onPressed: absence.isCancelled ? null : downloadHandover,
+                  ),
                 ),
               ],
-              child: ListView(
-                key: const Key('absence_screen_page'),
-                padding: const EdgeInsets.all(16),
-                children: [
-                  AwayPlanSummaryCard(
-                    absence: absence,
-                    onEdit: absence.isCancelled || !canEditTrip
-                        ? null
-                        : () => context.pushNamed(
-                            'petCarePlannedAbsenceEdit',
-                            pathParameters: {'id': absenceId},
-                          ),
-                  ),
-                  AwayPlanHeaderSection(absence: absence, readiness: readiness),
-                  const SizedBox(height: 24),
-                  Text(
-                    l.careContextAbsencePetsSectionTitle,
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 12),
-                  for (final petId in orderedPetIds) ...[
-                    AbsencePetPill(
-                      absenceId: absenceId,
-                      petId: petId,
-                      petName: petNamesById[petId] ?? '',
+              child: Semantics(
+                identifier: 'absence_screen_page',
+                child: ListView(
+                  key: const Key('absence_screen_page'),
+                  padding: const EdgeInsets.all(16),
+                  children: [
+                    AwayPlanSummaryCard(
+                      absence: absence,
+                      onEdit: absence.isCancelled || !canEditTrip
+                          ? null
+                          : () => context.pushNamed(
+                              'petCarePlannedAbsenceEdit',
+                              pathParameters: {'id': absenceId},
+                            ),
+                    ),
+                    AwayPlanHeaderSection(
+                      absence: absence,
+                      readiness: readiness,
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      l.careContextAbsencePetsSectionTitle,
+                      style: Theme.of(context).textTheme.titleLarge,
                     ),
                     const SizedBox(height: 12),
-                  ],
-                  if (showAddPet) ...[
-                    const SizedBox(height: 4),
-                    Semantics(
-                      identifier: 'absence_add_pet',
-                      button: true,
-                      label: l.careContextAddPetToAbsence,
-                      child: OutlinedButton.icon(
-                        key: const Key('absence_add_pet'),
-                        onPressed: () =>
-                            AbsencePetMembershipFlow.showAddPetSheet(
-                              context: context,
-                              ref: ref,
-                              absence: absence,
-                              allPets: pets,
-                            ),
-                        icon: const Icon(Icons.add),
-                        label: Text(l.careContextAddPetToAbsence),
+                    for (final petId in orderedPetIds) ...[
+                      AbsencePetPill(
+                        absenceId: absenceId,
+                        petId: petId,
+                        petName: petNamesById[petId] ?? '',
                       ),
-                    ),
+                      const SizedBox(height: 12),
+                    ],
+                    if (showAddPet) ...[
+                      const SizedBox(height: 4),
+                      Semantics(
+                        identifier: 'absence_add_pet',
+                        button: true,
+                        label: l.careContextAddPetToAbsence,
+                        child: OutlinedButton.icon(
+                          key: const Key('absence_add_pet'),
+                          onPressed: () =>
+                              AbsencePetMembershipFlow.showAddPetSheet(
+                                context: context,
+                                ref: ref,
+                                absence: absence,
+                                allPets: pets,
+                              ),
+                          icon: const Icon(Icons.add),
+                          label: Text(l.careContextAddPetToAbsence),
+                        ),
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
             );
           },
