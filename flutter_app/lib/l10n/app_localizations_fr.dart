@@ -5374,7 +5374,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get healthIssuesEmptyBody =>
-      'Consignez allergies, blessures ou affections en cours pour garder le contexte des soins.';
+      'Consignez les allergies, les blessures ou les affections en cours pour garder le contexte des soins.';
 
   @override
   String get linkedEventsLoadFailed =>
