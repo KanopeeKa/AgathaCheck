@@ -11,7 +11,7 @@ folds_into: [docs/pipelines/ci-cd-gates.md, docs/agent-efficiency/autonomous-pr-
 
 # CI pass-rate improvement — specs
 
-**Status:** proposed — no code. Four specs (S1–S4) plus shared measurement. Each spec is one PR outcome
+**Status:** in delivery — S1 and S2 policy (rows 1–3) shipped in #2159; S3/S4/detector still planned.
 (`atomic-pr-policy.md`) except S4, which is a short sequence.
 
 **Owner decisions needed before delivery:** S2 (new non-blocking workflow) and S3 (change to a
@@ -116,14 +116,14 @@ validation non-strict. An agent following the rules still fails CI.
 
 | ID | Requirement | Status |
 |----|-------------|--------|
-| CIPR-R-001 | When Flutter paths are in scope (`needs_flutter`), `pre-push-changed.sh` runs the **same** format command as CI: `dart format --output=none --set-exit-if-changed flutter_app/lib flutter_app/test`. It runs **before** `flutter analyze` and tests (fail fast; CI step takes 3–5 s). | Planned |
-| CIPR-R-002 | `run_governance` runs `node scripts/check_bdd_priority_tags.js`. | Planned |
-| CIPR-R-003 | When `docs/**` is touched, local docs validation uses `--strict`, matching `_reusable-test.yml:62`. | Planned |
-| CIPR-R-004 | Extend the existing registry `scripts/ci/governance-blocking-steps.mjs` (already consumed by `assert-ci-gate` tests and `governance-gates.md`) — **no new manifest or wrapper**. Add entries for `dart format` (CI: `_reusable-flutter-analyze.yml`) and `check_bdd_priority_tags.js` (CI: `_reusable-test.yml`), and a `prepush` field on every entry: `changed` (run by `pre-push-changed.sh`), `full-only`, or `exempt` with a reason ≥ 10 chars. `pre-push-changed.sh` runs the registry's `command` strings rather than restating them. "Cheap" = ≤ 60 s, no services, build or browser. | Planned |
-| CIPR-R-005 | Extend `scripts/ci/governance-blocking-steps.test.mjs`: fails when a cheap `run:` step in `_reusable-test.yml` or `_reusable-flutter-analyze.yml` has no registry entry, or when an entry marked `prepush: changed` is not invoked by `pre-push-changed.sh`. Drift cannot come back silently. | Planned |
-| CIPR-R-006 | Known exemption, recorded in the registry: web bundle budget (needs a release web build; 1 / 25 first failures). | Planned |
-| CIPR-R-007 | On success the script prints `parity: <n>/<n> cheap CI gates run for <HEAD sha>`, which agents paste into the PR body as evidence (`AGENTS.md` §Reporting). | Planned |
-| CIPR-R-008 | The same PR updates `.cursor/skills/pre-push-verify/SKILL.md`, `docs/agent-efficiency/governance-gates.md` and `.cursor/rules/testing.mdc` so they point at the registry instead of listing gates. | Planned |
+| CIPR-R-001 | When Flutter paths are in scope (`needs_flutter`), `pre-push-changed.sh` runs the **same** format command as CI: `dart format --output=none --set-exit-if-changed flutter_app/lib flutter_app/test`. It runs **before** `flutter analyze` and tests (fail fast; CI step takes 3–5 s). | **Delivered** (#2159) |
+| CIPR-R-002 | `run_governance` runs `node scripts/check_bdd_priority_tags.js`. | **Delivered** (#2159) |
+| CIPR-R-003 | When `docs/**` is touched, local docs validation uses `--strict`, matching `_reusable-test.yml:62`. | **Delivered** (#2159) |
+| CIPR-R-004 | Extend the existing registry `scripts/ci/governance-blocking-steps.mjs` (already consumed by `assert-ci-gate` tests and `governance-gates.md`) — **no new manifest or wrapper**. Add entries for `dart format` (CI: `_reusable-flutter-analyze.yml`) and `check_bdd_priority_tags.js` (CI: `_reusable-test.yml`), and a `prepush` field on every entry: `changed` (run by `pre-push-changed.sh`), `full-only`, or `exempt` with a reason ≥ 10 chars. `pre-push-changed.sh` runs the registry's `command` strings rather than restating them. "Cheap" = ≤ 60 s, no services, build or browser. | **Delivered** (#2159) |
+| CIPR-R-005 | Extend `scripts/ci/governance-blocking-steps.test.mjs`: fails when a cheap `run:` step in `_reusable-test.yml` or `_reusable-flutter-analyze.yml` has no registry entry, or when an entry marked `prepush: changed` is not invoked by `pre-push-changed.sh`. Drift cannot come back silently. | **Delivered** (#2159) |
+| CIPR-R-006 | Known exemption, recorded in the registry: web bundle budget (needs a release web build; 1 / 25 first failures). | **Delivered** (#2159) |
+| CIPR-R-007 | On success the script prints `parity: <n>/<n> cheap CI gates run for <HEAD sha>`, which agents paste into the PR body as evidence (`AGENTS.md` §Reporting). | **Delivered** (#2159) |
+| CIPR-R-008 | The same PR updates `.cursor/skills/pre-push-verify/SKILL.md`, `docs/agent-efficiency/governance-gates.md` and `.cursor/rules/testing.mdc` so they point at the registry instead of listing gates. | **Delivered** (#2159) |
 
 ### Acceptance criteria
 
@@ -152,13 +152,13 @@ required check (`ci-gate / CI passed`) stayed the same while the symptom changed
 
 | ID | Requirement | Status |
 |----|-------------|--------|
-| CIPR-R-010 | **One definition** in `autonomous-pr-policy.md` §CI retry budget. `light-plan`, `babysit`, `babysit-plus`, `execute-plan` and `e2e-debug` skills link to it instead of restating numbers. | Planned |
-| CIPR-R-011 | Definitions. **Red push**: a push whose `CI` run concludes `failure` (`cancelled` does not count). **Streak**: consecutive red pushes on one PR head branch, reset by a green run. **Same signature**: the same failing job name, or for Playwright the same test id (`file:line › title`). | Planned |
-| CIPR-R-012 | Streak **2** with a Playwright failure: before the next push, the agent must reproduce locally against the localhost stack with the same project and specs as CI, and record the classification (`.cursor/agent-kernel/protocols/e2e.md` §1) in the PR. | Planned |
-| CIPR-R-013 | Streak **3** on the same signature, or streak **5** on any signature: **halt**. This **replaces** the 5 / 3 table in `autonomous-pr-policy.md` §CI retry budget, the light-plan "3 pushes" rule and the `e2e-debug` "max 3 full loops" line (which keeps its own scope: remedial loops after merge, linked to the same section). The agent stops pushing, posts one summary comment (failing tests, classification, hypotheses tried) and hands off: `/e2e-debug` for E2E, otherwise `**Needs you:**`. | Planned |
-| CIPR-R-014 | `pre-push-changed.sh --e2e-specs <spec ...>` runs the named specs against `localhost:3000` exactly as CI does (`--project=full`). This is the documented local reproduction path for CIPR-R-012. | Planned |
+| CIPR-R-010 | **One definition** in `autonomous-pr-policy.md` §CI retry budget. `light-plan`, `babysit`, `babysit-plus`, `execute-plan` and `e2e-debug` skills link to it instead of restating numbers. | **Delivered** (#2159) |
+| CIPR-R-011 | Definitions. **Red push**: a push whose `CI` run concludes `failure` (`cancelled` does not count). **Streak**: consecutive red pushes on one PR head branch, reset by a green run. **Same signature**: the same failing job name, or for Playwright the same test id (`file:line › title`). | **Delivered** (#2159) |
+| CIPR-R-012 | Streak **2** with a Playwright failure: before the next push, the agent must reproduce locally against the localhost stack with the same project and specs as CI, and record the classification (`.cursor/agent-kernel/protocols/e2e.md` §1) in the PR. | **Delivered** (#2159) |
+| CIPR-R-013 | Streak **3** on the same signature, or streak **5** on any signature: **halt**. This **replaces** the 5 / 3 table in `autonomous-pr-policy.md` §CI retry budget, the light-plan "3 pushes" rule and the `e2e-debug` "max 3 full loops" line (which keeps its own scope: remedial loops after merge, linked to the same section). The agent stops pushing, posts one summary comment (failing tests, classification, hypotheses tried) and hands off: `/e2e-debug` for E2E, otherwise `**Needs you:**`. | **Delivered** (#2159) |
+| CIPR-R-014 | `pre-push-changed.sh --e2e-specs <spec ...>` runs the named specs against `localhost:3000` exactly as CI does (`--project=full`). This is the documented local reproduction path for CIPR-R-012. | **Delivered** (#2159) |
 | CIPR-R-015 | Mechanical detection: a **non-blocking** workflow (`ci-loop-detector.yml`, on `workflow_run` of `CI` completed) computes the streak for the PR. At threshold it adds label `ci-loop` and creates or updates **one** marker comment (`<!-- ci-loop -->`) with the streak and signatures. It removes the label on green. It never fails or blocks a check. Edge cases: one streak **per PR** (not per branch name) when several PRs share a head branch; fork PRs are skipped (no write token); permissions limited to `pull-requests: write` and `issues: write`; signatures from `results.json` test ids (S3), falling back to failing job names. | Planned |
-| CIPR-R-016 | `pre-push-changed.sh` checks the PR for the `ci-loop` label. **Fail-open:** if `gh` is missing, unauthenticated or no open PR matches the branch, it warns and continues. **Block** only when the label is found: exit `4` (distinct from exit `3`, already used by `babysit_pr_reviews.js` for Copilot unavailable and by execute-plan `tick` / `init`), unless run with `--ci-loop-override "<reason>"`; the reason is echoed for the PR body. | Planned |
+| CIPR-R-016 | `pre-push-changed.sh` checks the PR for the `ci-loop` label. **Fail-open:** if `gh` is missing, unauthenticated or no open PR matches the branch, it warns and continues. **Block** only when the label is found: exit `4` (distinct from exit `3`, already used by `babysit_pr_reviews.js` for Copilot unavailable and by execute-plan `tick` / `init`), unless run with `--ci-loop-override "<reason>"`; the reason is echoed for the PR body. | **Delivered** (#2159); detector (R-015) still planned |
 
 ### Acceptance criteria
 

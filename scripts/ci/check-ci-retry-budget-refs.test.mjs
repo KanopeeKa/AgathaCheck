@@ -49,7 +49,7 @@ test('skills and rules do not restate numeric CI push budgets (link to policy)',
     if (FORBIDDEN_BUDGET_RE.test(text)) {
       assert.match(
         text,
-        /autonomous-pr-policy\.md.*§CI retry budget|§CI retry budget in.*autonomous-pr-policy/,
+        /autonomous-pr-policy\.md.*§\*{0,2}CI retry budget\*{0,2}|§\*{0,2}CI retry budget\*{0,2}.*autonomous-pr-policy/,
         `${rel} restates a CI budget without linking to autonomous-pr-policy §CI retry budget`,
       );
     }

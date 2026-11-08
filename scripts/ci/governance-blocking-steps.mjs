@@ -176,9 +176,9 @@ export const GOVERNANCE_GATE_REGISTRY = [
   },
 ];
 
-/** @deprecated name kept for importers — blocking CI gates with fixture contracts. */
+/** Blocking CI gates validated against workflow jobs (fixture optional). */
 export const BLOCKING_GOVERNANCE_STEPS = GOVERNANCE_GATE_REGISTRY.filter(
-  (g) => g.blocking && g.fixture,
+  (g) => g.blocking && g.ci,
 );
 
 /** Cheap gates listed in CI workflows used for prepush parity accounting. */

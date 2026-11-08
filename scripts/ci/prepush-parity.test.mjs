@@ -49,3 +49,30 @@ test('exempt web bundle budget has a reason', () => {
   const gate = GOVERNANCE_GATE_REGISTRY.find((g) => g.id === 'web-bundle-budget');
   assert.ok(gate?.exemptReason && gate.exemptReason.length >= 10);
 });
+
+test('cheap CI run steps in parity workflows map to registry needles', () => {
+  const needles = GOVERNANCE_GATE_REGISTRY.filter((g) => g.cheap && g.ci).flatMap(
+    (g) => g.ci.runIncludes,
+  );
+  for (const wfPath of CHEAP_CI_WORKFLOWS) {
+    const wf = readWorkflow(wfPath);
+    const runs = wf.match(/^\s+run:\s*(.+)$/gm) ?? [];
+    for (const line of runs) {
+      const cmd = line.replace(/^\s+run:\s*/, '');
+      if (!needles.some((n) => cmd.includes(n))) continue;
+      const matched = GOVERNANCE_GATE_REGISTRY.some(
+        (g) => g.cheap && g.ci?.workflow === wfPath && g.ci.runIncludes.some((n) => cmd.includes(n)),
+      );
+      assert.ok(matched, `unregistered cheap CI step in ${wfPath}: ${cmd.slice(0, 80)}`);
+    }
+  }
+});
+
+test('pre-push-changed empty-tree parity uses run count for total', () => {
+  const script = fs.readFileSync(PREPUSH_SH, 'utf8');
+  assert.match(
+    script,
+    /PARITY_TOTAL="\$PREPUSH_PARITY_RUN"/,
+    'empty changed-files path must not inflate parity denominator',
+  );
+});

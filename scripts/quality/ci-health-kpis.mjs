@@ -72,8 +72,10 @@ function summarizeRuns(runs, cutoffMs) {
   };
 }
 
-function fetchWorkflowRuns(workflowFile, perPage = 100) {
-  return ghApi(`/repos/${REPO}/actions/workflows/${workflowFile}/runs?per_page=${perPage}&exclude_pull_requests=false`);
+function fetchWorkflowRuns(workflowFile, { perPage = 100, event } = {}) {
+  const base = `/repos/${REPO}/actions/workflows/${workflowFile}/runs?per_page=${perPage}`;
+  const path = event ? `${base}&event=${encodeURIComponent(event)}` : `${base}&exclude_pull_requests=false`;
+  return ghApi(path);
 }
 
 function remediationShare(days) {
@@ -143,7 +145,7 @@ function main() {
   const cutoffMs = Date.now() - days * 86400000;
   const tokenPresent = Boolean(process.env.GITHUB_TOKEN || process.env.GH_TOKEN);
 
-  const ciRuns = fetchWorkflowRuns('ci.yml');
+  const ciRuns = fetchWorkflowRuns('ci.yml', { event: 'pull_request' });
   const preRuns = fetchWorkflowRuns('pre-uat-e2e.yml');
 
   const kpis = {

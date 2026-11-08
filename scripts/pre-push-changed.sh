@@ -23,10 +23,12 @@ E2E_SHARDS=""
 E2E_SPECS=()
 CI_LOOP_EXTRA=()
 ARGS=()
+RUN_FULL=false
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --full)
-      exec "$ROOT/scripts/pre-push.sh"
+      RUN_FULL=true
+      shift
       ;;
     --e2e-shards)
       E2E_SHARDS="${2:?--e2e-shards requires comma-separated shard indices}"
@@ -51,6 +53,11 @@ while [[ $# -gt 0 ]]; do
 done
 set -- "${ARGS[@]}"
 
+if $RUN_FULL; then
+  node "$ROOT/scripts/ci/check-ci-loop-label.mjs" "${CI_LOOP_EXTRA[@]}"
+  exec "$ROOT/scripts/pre-push.sh"
+fi
+
 PREPUSH_PARITY_RUN=0
 
 run_prepush_gate() {
@@ -60,10 +67,6 @@ run_prepush_gate() {
 }
 
 node "$ROOT/scripts/ci/check-ci-loop-label.mjs" "${CI_LOOP_EXTRA[@]}"
-
-if [[ "${1:-}" == "--full" ]]; then
-  exec "$ROOT/scripts/pre-push.sh"
-fi
 
 git fetch origin main --quiet 2>/dev/null || true
 MERGE_BASE="$(git merge-base HEAD origin/main 2>/dev/null || echo HEAD)"
@@ -79,7 +82,7 @@ if [[ -z "$CHANGED" ]]; then
   node e2e/scripts/validate-shard-manifest.mjs --report-only
   node e2e/scripts/check-smoke-tags.mjs
   HEAD_SHA="$(git rev-parse --short HEAD)"
-  PARITY_TOTAL="$(node "$ROOT/scripts/ci/prepush-parity-summary.mjs" --plan --governance 1 --flutter 0 --docs 0)"
+  PARITY_TOTAL="$PREPUSH_PARITY_RUN"
   node "$ROOT/scripts/ci/prepush-parity-summary.mjs" --emit --run "$PREPUSH_PARITY_RUN" --total "$PARITY_TOTAL" --sha "$HEAD_SHA"
   exit 0
 fi
@@ -323,7 +326,7 @@ if [[ ${#E2E_SPECS[@]} -gt 0 ]]; then
   fi
   (
     cd "$ROOT/e2e"
-    npx playwright test --project=full "${E2E_SPECS[@]}"
+    npx playwright test --project=full --max-failures=1 "${E2E_SPECS[@]}"
   )
   echo "✓ E2E spec replay passed"
 fi

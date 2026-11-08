@@ -46,7 +46,7 @@ function main() {
     '--json',
     'number,labels',
     '--limit',
-    '1',
+    '50',
   ]);
   if (prList.status !== 0) {
     console.warn(`ci-loop check: gh unavailable (${prList.stderr?.trim() || 'error'}) — continuing`);
@@ -62,8 +62,10 @@ function main() {
   if (!Array.isArray(parsed) || parsed.length === 0) {
     return;
   }
-  const labels = parsed[0].labels?.map((l) => l.name) ?? [];
-  if (!labels.includes('ci-loop')) {
+  const hasCiLoop = parsed.some((pr) =>
+    (pr.labels ?? []).some((l) => l.name === 'ci-loop'),
+  );
+  if (!hasCiLoop) {
     return;
   }
   console.error(
