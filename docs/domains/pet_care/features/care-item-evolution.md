@@ -6,7 +6,7 @@ domain: pet_care
 feature_id: care_item
 status: active
 last_updated: 2026-11-08
-related_prs: [1797, 1805, 1812, 1817, 2129, 2144]
+related_prs: [1797, 1805, 1812, 1817, 2129, 2145]
 ---
 
 # Care Item — functional spec
@@ -46,7 +46,7 @@ Historical profile refactor and 2026-09-13 delivery plan text: [archive/care-ite
 | CARE-ITEM-R-019 | Care date Block 3: inline **completion date** (default `min(due, as_of.date)`); scheduled time read-only; complete icon; no DN-3 sheet on leaf | Live |
 | CARE-ITEM-R-020 | Care date Block 4: server `previous_occurrence` / `next_occurrence`; empty-state copy when none; replace-route navigation | Live |
 | CARE-ITEM-R-021 | Persisted **completion time of day** on occurrences (display + API) | Planned |
-| CARE-ITEM-R-022 | Care date footer for person-closed **Done** / **Skipped**: `Recorded {dd MMM yy} at {HH:mm} by {name}` (`marked_at`, `marked_by_name`); notes on a second line; hidden for open dates and system-closed Not recorded; `Unknown user` when name missing (CARE-ITEM-D-009) | In delivery |
+| CARE-ITEM-R-022 | Care date footer for person-closed **Done** / **Skipped**: `Recorded {dd MMM yy} at {HH:mm} by {name}` (`marked_at`, `marked_by_name`); notes on a second line; hidden for open dates and system-closed Not recorded; `Unknown user` when name missing (CARE-ITEM-D-009). Coverage: `test: flutter_app/test/features/experience/presentation/care_item/occurrence/occurrence_recorded_attribution_line_test.dart`, `test: flutter_app/test/features/care_item/presentation/occurrence_screen_test.dart` | In delivery |
 
 ## Verdict
 
