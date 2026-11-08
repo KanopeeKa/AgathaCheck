@@ -49,9 +49,7 @@ class OccurrenceRecordedAttributionLine extends StatelessWidget {
             children: [
               icon,
               const SizedBox(width: 8),
-              Expanded(
-                child: Text(line, style: theme.textTheme.bodyMedium),
-              ),
+              Expanded(child: Text(line, style: theme.textTheme.bodyMedium)),
             ],
           ),
           if (occurrence.notes.isNotEmpty) ...[
