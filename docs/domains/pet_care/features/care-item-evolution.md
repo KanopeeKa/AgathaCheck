@@ -5,7 +5,7 @@ audience: both
 domain: pet_care
 feature_id: care_item
 status: active
-last_updated: 2026-11-07
+last_updated: 2026-11-08
 related_prs: [1797, 1805, 1812, 1817, 2129]
 ---
 
@@ -304,7 +304,7 @@ The app writes a summary from the schedule. Controls stay in Edit.
 - **Source,** when it isn't the pet parent: "Set by your vet".
 - **End:** "Until 30 Sep" when there's an end date.
 - **The Established marker,** once earned, as a quiet line.
-- **Edit schedule** opens Edit at the Schedule section.
+- **Edit** (care item top menu) opens Edit; schedule changes stay in the Edit form's schedule section — no duplicate link in the read-only Schedule module.
 
 **Copy fix for the schedule type.** Moving one date of a fixed schedule asks **This date only** (the default; the other dates stay) or **This and following** (the schedule moves from that date) (D-CSM-027, amending D-ACP-007).
 

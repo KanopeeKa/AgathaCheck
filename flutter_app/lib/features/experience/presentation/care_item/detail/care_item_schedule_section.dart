@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import 'package:pet_profile_app/core/utils/calendar_date.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
@@ -55,14 +54,6 @@ class CareItemScheduleSection extends ConsumerWidget {
     final colorScheme = theme.colorScheme;
     final textColor = muted ? colorScheme.onSurfaceVariant : null;
 
-    final editSchedule = muted
-        ? null
-        : TextButton(
-            key: const Key('care_item_edit_schedule'),
-            onPressed: () => context.push(healthEntryEditRoute(entry, petId)),
-            child: Text(l.careItemEditSchedule),
-          );
-
     return CareItemModule(
       key: const Key('care_item_schedule_section'),
       semanticLabel: l.careItemScheduleTitle,
@@ -72,7 +63,6 @@ class CareItemScheduleSection extends ConsumerWidget {
           CareItemSectionHeader(
             title: l.careItemScheduleTitle,
             icon: Icons.event_repeat_outlined,
-            trailing: editSchedule,
           ),
           const SizedBox(height: 12),
           CareItemStatRow(
