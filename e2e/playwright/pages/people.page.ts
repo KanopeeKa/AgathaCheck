@@ -206,27 +206,32 @@ export class PeoplePage {
   }
 
   async expectVetVisible(name: string): Promise<void> {
-    const hubVisibleMs = 15_000;
-    const slowRouteMs = 15_000;
-    const slowAssertMs = 10_000;
+    const hubProbeMs = 8_000;
+    const recoveryPollMs = 15_000;
+    const recoveryRouteMs = 15_000;
+    const recoveryAssertMs = 10_000;
 
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
       try {
-        await expect(this.vetRowLocator(name)).toBeVisible({
-          timeout: hubVisibleMs,
+        await this.vetRowLocator(name).waitFor({
+          state: 'visible',
+          timeout: hubProbeMs,
         });
         return;
-      } catch {
-        // Hub list not ready — fall through to vet-id deep link recovery.
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        if (!/timeout/i.test(message)) {
+          throw err;
+        }
       }
-      const vetId = await this.resolveVetIdByName(name, slowRouteMs);
-      await this.openVetDetailRoute(vetId, slowRouteMs);
+      const vetId = await this.resolveVetIdByName(name, recoveryPollMs);
+      await this.openVetDetailRoute(vetId, recoveryRouteMs);
       if (await this.onPeopleHub()) {
-        await this.openPersonDetailFromHub(name, slowRouteMs);
+        await this.openPersonDetailFromHub(name, recoveryRouteMs);
       }
       await expect(this.vetRowLocator(name)).toBeVisible({
-        timeout: slowAssertMs,
+        timeout: recoveryAssertMs,
       });
     }).toPass({ timeout: 60_000 });
   }
