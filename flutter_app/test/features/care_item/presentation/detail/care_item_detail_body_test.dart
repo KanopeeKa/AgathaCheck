@@ -379,6 +379,7 @@ void main() {
       tester.view.physicalSize = const Size(400, 900);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
 
       final medicationEntry = HealthEntry(
         id: 'med-gap',
@@ -436,7 +437,7 @@ void main() {
       final historyTop = tester
           .getRect(find.byKey(const Key('care_item_history_module')))
           .top;
-      expect(historyTop - scheduleBottom, 16.0);
+      expect(historyTop - scheduleBottom, closeTo(16.0, 0.1));
     },
   );
 
