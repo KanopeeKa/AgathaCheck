@@ -176,6 +176,13 @@ void main() {
   });
 
   testWidgets('discard dialog when dirty back', (tester) async {
+    tester.view.physicalSize = const Size(1280, 800);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
     final roster = sampleHubRoster();
     final repo = EditFakePeopleRepository({'carer-1': _editableContact()});
     await tester.pumpWidget(

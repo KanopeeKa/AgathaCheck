@@ -21,13 +21,11 @@ class PersonDetailContactView extends ConsumerWidget {
   const PersonDetailContactView({
     super.key,
     required this.contactId,
-    required this.embedded,
     required this.roster,
     this.memberTabsOnly = false,
   });
 
   final String contactId;
-  final bool embedded;
   final Roster roster;
   final bool memberTabsOnly;
 
@@ -38,9 +36,7 @@ class PersonDetailContactView extends ConsumerWidget {
     final detailAsync = ref.watch(personDetailProvider(contactId));
 
     return PersonDetailShell(
-      embedded: embedded,
       personId: contactId,
-      title: summary?.name ?? detailAsync.valueOrNull?.name,
       editAction: IconButton(
         tooltip: l.peopleEditPerson,
         onPressed: () => context.push('/pc/people/$contactId/edit'),

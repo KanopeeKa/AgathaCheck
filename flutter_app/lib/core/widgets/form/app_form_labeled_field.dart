@@ -7,11 +7,13 @@ class AppFormLabeledField extends StatelessWidget {
     required this.label,
     required this.child,
     this.subtitle,
+    this.labelTrailing,
     this.isTextField = true,
   });
 
   final String label;
   final String? subtitle;
+  final Widget? labelTrailing;
   final Widget child;
 
   /// When true (default), associates [label] with a single text-field semantics
@@ -22,14 +24,24 @@ class AppFormLabeledField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final gapBeforeChild = labelTrailing != null ? 4.0 : 8.0;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          label,
-          style: theme.textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: Text(
+                label,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            if (labelTrailing != null) labelTrailing!,
+          ],
         ),
         if (subtitle != null) ...[
           const SizedBox(height: 4),
@@ -40,7 +52,7 @@ class AppFormLabeledField extends StatelessWidget {
             ),
           ),
         ],
-        const SizedBox(height: 8),
+        SizedBox(height: gapBeforeChild),
         if (isTextField)
           Semantics(
             label: subtitle == null ? label : '$label. $subtitle',

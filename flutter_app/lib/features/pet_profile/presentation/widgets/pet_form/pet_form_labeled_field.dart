@@ -6,5 +6,7 @@ class PetFormLabeledField extends AppFormLabeledField {
     required super.label,
     required super.child,
     super.subtitle,
+    super.labelTrailing,
+    super.isTextField,
   });
 }
