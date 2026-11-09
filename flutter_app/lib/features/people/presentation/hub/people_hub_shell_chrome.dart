@@ -14,12 +14,14 @@ class PeopleHubShellChrome {
     this.contextualActions = const [],
     this.backPath,
     this.forceBackPath = false,
+    this.preferNavigatorPop = false,
   });
 
   final String screenTitle;
   final List<Widget> contextualActions;
   final String? backPath;
   final bool forceBackPath;
+  final bool preferNavigatorPop;
 }
 
 PeopleHubShellChrome resolvePeopleHubCompactChrome({
@@ -39,7 +41,7 @@ PeopleHubShellChrome resolvePeopleHubCompactChrome({
     return PeopleHubShellChrome(
       screenTitle: l.peopleAddPerson,
       backPath: listBackPath,
-      forceBackPath: true,
+      preferNavigatorPop: true,
     );
   }
 
@@ -62,9 +64,15 @@ PeopleHubShellChrome resolvePeopleHubCompactChrome({
 
   if (path.endsWith('/edit')) {
     final personId = state.pathParameters['personId'];
+    final detailBack = personId == null
+        ? listBackPath
+        : peopleHubNavigatePath(
+            personId: personId,
+            queryParameters: hubQuery.toQueryParameters(),
+          );
     return PeopleHubShellChrome(
       screenTitle: l.peopleEditPerson,
-      backPath: personId == null ? listBackPath : '/pc/people/$personId',
+      backPath: detailBack,
       forceBackPath: true,
     );
   }
@@ -79,7 +87,13 @@ PeopleHubShellChrome resolvePeopleHubCompactChrome({
         ? IconButton(
             key: const Key('people_hub_edit_person'),
             tooltip: l.peopleEditPerson,
-            onPressed: () => context.push('/pc/people/$personId/edit'),
+            onPressed: () {
+              final query = state.uri.query;
+              final editPath = query.isEmpty
+                  ? '/pc/people/$personId/edit'
+                  : '/pc/people/$personId/edit?$query';
+              context.push(editPath);
+            },
             icon: const Icon(Icons.edit_outlined),
           )
         : null;

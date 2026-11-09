@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pet_profile_app/core/widgets/app_logo_title.dart';
 import 'package:pet_profile_app/features/people/application/people_providers.dart';
 
 import 'people_hub_test_support.dart';
@@ -28,7 +29,42 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(BottomNavigationBar), findsOneWidget);
-    expect(find.text('Jamie Taylor'), findsWidgets);
+    expect(
+      find.byWidgetPredicate(
+        (w) => w is AppLogoTitle && w.title == 'Jamie Taylor',
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('compact detail back keeps roster search query', (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    final router = buildTestPeopleRouter(
+      initialLocation: '/pc/people/carer-1?q=jam',
+    );
+    await tester.pumpWidget(
+      peopleHubTestApp(
+        router: router,
+        overrides: [
+          rosterProvider.overrideWith(
+            () => TestRosterNotifier(sampleHubRoster()),
+          ),
+        ],
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('experience_back_button')));
+    await tester.pumpAndSettle();
+
+    expect(router.state.uri.path, '/pc/people');
+    expect(router.state.uri.queryParameters['q'], 'jam');
   });
 
   testWidgets('wide hub keeps search query when selecting a person (B4)', (

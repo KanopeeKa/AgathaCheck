@@ -65,6 +65,7 @@ class PeopleHubLayout extends ConsumerWidget {
     List<Widget> contextualActions = const [];
     String? backPath;
     var forceBackPath = false;
+    VoidCallback? onShellBack;
 
     if (!wide && !isIndex) {
       final chrome = resolvePeopleHubCompactChrome(
@@ -77,6 +78,15 @@ class PeopleHubLayout extends ConsumerWidget {
       contextualActions = chrome.contextualActions;
       backPath = chrome.backPath;
       forceBackPath = chrome.forceBackPath;
+      if (chrome.preferNavigatorPop) {
+        onShellBack = () {
+          if (context.canPop()) {
+            context.pop();
+          } else if (backPath != null) {
+            context.go(backPath!);
+          }
+        };
+      }
     }
 
     return ExperienceShellScaffold(
@@ -86,6 +96,7 @@ class PeopleHubLayout extends ConsumerWidget {
       contextualActions: contextualActions,
       backPath: backPath,
       forceBackPath: forceBackPath,
+      onBackPressed: onShellBack,
       child: body,
       floatingActionButton: showCompactFab
           ? FloatingActionButton.extended(
