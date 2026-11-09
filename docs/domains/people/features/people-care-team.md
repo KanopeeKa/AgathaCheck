@@ -5,7 +5,7 @@ audience: both
 domain: people
 feature_id: people_care_team
 status: implemented
-last_updated: 2026-11-07
+last_updated: 2026-11-09
 related_bdd: [away_planning.feature, away_plan_detail_v2.feature, sharing.feature, veterinarian_management.feature, notifications.feature]
 ---
 
@@ -92,6 +92,7 @@ There are 28 decisions. D1, D4, D7 and D10 were revised after an external review
 | PEOPLE-CARE-TEAM-D-036 | Vet contacts can set **Primary vet** and **Out-of-hours vet** from **Link to a pet** via the pet slot API (replace confirmation matches Manage); required-kind hint when a pet is chosen without a link type | Ends R-002 deferral of vet kinds on the link sheet | Live | 2026-11-03 | link-pet-vet-slots-f0fb |
 | PEOPLE-CARE-TEAM-D-037 | **Person edit phone:** the phone **`TextFormField`** on `/pc/people/:id/edit` uses a **`TextEditingController`** owned by a small stateful widget (**initialized** from `PersonFormController` in `initState`, **`onChanged` → `setPhone`**, **`didUpdateWidget`** sync when `controller.phone` changes after async refetch); do **not** attach a **`PersonFormController` listener** that overwrites the text controller — other fields call `notifyListeners` during the same frame as typing, which can race `onChanged` and snap the web `<input>` back to the old phone; do not use **`initialValue` only** for that field on web — CanvasKit can also leave the hidden `<input>` out of sync, so Save persists the previous phone | Closes silent “edit phone” failures on Flutter web; E2E veterinarian flow | Superseded | 2026-11-06 | #2114 |
 | PEOPLE-CARE-TEAM-D-038 | **Person edit phone (web):** the phone field uses a **`TextEditingController`** with **`onChanged` → `setPhone`**; do not rely on **`initialValue` alone** on web, and do not attach a form-wide listener that rewrites the phone controller while other fields notify | Stable Save and automation on Flutter web without refetch/roster workarounds | Live | 2026-11-07 | people detail a11y remedial |
+| PEOPLE-CARE-TEAM-D-039 | **People hub frame:** routes under `/pc/people` sit inside one experience shell from `PeopleHubLayout` at every width; screen width chooses layout (list-only, detail-only, or master–detail), not whether a frame is drawn; child routes must not nest a second `ExperienceShellScaffold` (no duplicate bottom nav); on compact widths the hub shell owns title, back (preserving roster `q` / filter query), and primary actions such as Edit for contacts | Implements PEOPLE-CARE-TEAM-R-039; closes double chrome on phones after hub `ShellRoute` remodel | Live | 2026-11-09 | people hub single frame |
 
 ## Where we start
 
@@ -427,6 +428,14 @@ One **roster** on `/pc/people` backed by a UI aggregate **PersonRosterEntry** (c
 **Today desk:** same card component; first sub-block label **Vet team** (desk exception). Card tap → person detail.
 
 **Desktop (≥840px):** master–detail — list selection opens detail pane; edit in secondary route or pane.
+
+| ID | Requirement | Status |
+| --- | --- | --- |
+| PEOPLE-CARE-TEAM-R-039 | **One experience frame under `/pc/people`:** every People hub sub-route is drawn inside exactly one experience shell (top bar + bottom nav or rail). Child routes must not instantiate a second experience shell or duplicate bottom navigation. On compact widths (&lt;840px) the hub shell shows the active sub-route title (person name on detail, not the hub label), **Edit** for contact detail, and back to `/pc/people` with roster search/filter query preserved. On wide widths (≥840px), in-pane `AppBar` headers for add/edit remain allowed; person-detail **Edit** stays in the detail pane header | Live |
+
+**Acceptance criteria**
+
+- *Given* a phone-width viewport, *when* the user opens `/pc/people/:id` for a roster contact, *then* exactly one bottom navigation bar and one shell title matching the person name are shown (PEOPLE-CARE-TEAM-R-039; test: `flutter_app/test/features/people/presentation/hub/people_hub_layout_test.dart#compact person detail uses one experience shell frame`).
 
 ### Placement
 

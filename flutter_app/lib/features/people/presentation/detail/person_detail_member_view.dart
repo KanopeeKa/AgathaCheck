@@ -15,12 +15,10 @@ class PersonDetailMemberView extends ConsumerWidget {
   const PersonDetailMemberView({
     super.key,
     required this.target,
-    required this.embedded,
     required this.roster,
   });
 
   final PersonDetailHouseholdMemberTarget target;
-  final bool embedded;
   final Roster roster;
 
   @override
@@ -31,16 +29,13 @@ class PersonDetailMemberView extends ConsumerWidget {
     if (contact != null) {
       return PersonDetailContactView(
         contactId: contact.id,
-        embedded: embedded,
         roster: roster,
         memberTabsOnly: true,
       );
     }
 
     return PersonDetailShell(
-      embedded: embedded,
       personId: target.member.userId,
-      title: target.member.displayName,
       body: DefaultTabController(
         length: 2,
         child: Column(

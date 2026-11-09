@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/widgets/form/app_form_destructive_button.dart';
 import '../../../../core/widgets/form/app_form_section.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../hub/people_hub_shell_chrome.dart';
 import '../../application/people_commands.dart';
 import '../../domain/repositories/people_repository.dart';
 import '../../domain/entities/household.dart';
@@ -111,8 +112,9 @@ class _PersonEditMemberFormState extends ConsumerState<PersonEditMemberForm> {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      appBar: AppBar(title: Text(l.peopleEditPerson)),
+    return peopleHubPaneScaffold(
+      context: context,
+      title: Text(l.peopleEditPerson),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
