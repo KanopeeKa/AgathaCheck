@@ -5,35 +5,21 @@ import 'package:pet_profile_app/features/pet_profile/presentation/widgets/pet_fo
 import 'package:pet_profile_app/features/pet_profile/presentation/widgets/pet_form/pet_form_section.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
-Widget _wrapNeutered({
-  required Locale locale,
-  PetNeuterSelection? initialSelection,
-}) {
-  bool? isNeutered;
-  switch (initialSelection) {
-    case PetNeuterSelection.yes:
-      isNeutered = true;
-    case PetNeuterSelection.no:
-      isNeutered = false;
-    case PetNeuterSelection.unknown:
-    case null:
-      isNeutered = null;
-  }
-
+Widget _wrapNeutered({required Locale locale}) {
   return MaterialApp(
     locale: locale,
     localizationsDelegates: AppLocalizations.localizationsDelegates,
     supportedLocales: AppLocalizations.supportedLocales,
     home: Scaffold(
-      body: MediaQuery(
-        data: const MediaQueryData(size: Size(320, 800)),
+      body: SizedBox(
+        width: 320,
         child: SingleChildScrollView(
           child: PetFormSection(
             title: 'Health',
             children: [
               PetFormNeuteredSection(
                 species: 'Dog',
-                isNeutered: isNeutered,
+                isNeutered: null,
                 neuteredDate: null,
                 onNeuteredChanged: (_) {},
                 onPickNeuteredDate: () {},
@@ -51,6 +37,9 @@ void main() {
   testWidgets('places info control on label row with full-width segments', (
     tester,
   ) async {
+    await tester.binding.setSurfaceSize(const Size(320, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
     await tester.pumpWidget(_wrapNeutered(locale: const Locale('en')));
     await tester.pumpAndSettle();
 
@@ -65,12 +54,19 @@ void main() {
     final segmentRect = tester.getRect(
       find.byKey(const Key('pet_neuter_segmented')),
     );
+    final sectionRect = tester.getRect(find.byType(PetFormSection));
+    const sectionHorizontalPadding = 32.0;
+    final expectedContentWidth = sectionRect.width - sectionHorizontalPadding;
+
     final infoRect = tester.getRect(find.byType(AppFormInfoButton));
     expect(segmentRect.top, greaterThan(infoRect.bottom));
-    expect(segmentRect.width, greaterThan(200));
+    expect(segmentRect.width, closeTo(expectedContentWidth, 1));
   });
 
   testWidgets('info is not in the same row as SegmentedButton', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(320, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
     await tester.pumpWidget(_wrapNeutered(locale: const Locale('fr')));
     await tester.pumpAndSettle();
 
