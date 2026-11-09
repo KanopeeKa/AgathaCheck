@@ -61,6 +61,14 @@ class _AddPersonFlowState extends ConsumerState<AddPersonFlow> {
       setState(() {});
       return;
     }
+    if (!_controller.validatePetLinksForSave()) {
+      setState(() {});
+      final l = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l.peopleDetailLinkPetKindRequired)),
+      );
+      return;
+    }
     setState(() => _saving = true);
     final l = AppLocalizations.of(context)!;
     try {
