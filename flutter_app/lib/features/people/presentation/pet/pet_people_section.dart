@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../auth/auth.dart';
 import '../../application/people_providers.dart';
 import '../../domain/entities/pet_people.dart';
 import '../../domain/services/group_pet_people.dart';
@@ -18,13 +19,11 @@ class PetPeopleSection extends ConsumerWidget {
     required this.petId,
     required this.petName,
     required this.canManage,
-    this.viewerUserId,
   });
 
   final String petId;
   final String petName;
   final bool canManage;
-  final String? viewerUserId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -72,7 +71,6 @@ class PetPeopleSection extends ConsumerWidget {
               people: people,
               canManage: canManage && people.scope == 'full',
               petId: petId,
-              viewerUserId: viewerUserId,
             );
           },
         ),
@@ -110,16 +108,15 @@ class _PetPeopleData extends ConsumerWidget {
     required this.people,
     required this.canManage,
     required this.petId,
-    this.viewerUserId,
   });
 
   final PetPeople people;
   final bool canManage;
   final String petId;
-  final String? viewerUserId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final viewerUserId = ref.watch(authProvider.select((s) => s.user?.id));
     final l = AppLocalizations.of(context)!;
     final grouped = groupPetPeople(people);
     final useRoster = people.scope == 'full';

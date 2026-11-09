@@ -45,7 +45,6 @@ class PetDetailScrollBody extends StatelessWidget {
             petId: pet.id,
             petName: pet.name,
             canManage: canManagePeople,
-            viewerUserId: viewerContext.viewerUserId,
           ),
         ];
 
