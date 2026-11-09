@@ -19,6 +19,7 @@ import 'sections/person_edit_identity_section.dart';
 import 'sections/person_edit_notes_section.dart';
 import 'sections/person_edit_pets_section.dart';
 import 'sections/person_edit_works_at_section.dart';
+import '../hub/people_hub_shell_chrome.dart';
 
 class PersonEditContactForm extends ConsumerStatefulWidget {
   const PersonEditContactForm({
@@ -158,18 +159,21 @@ class _PersonEditContactFormState extends ConsumerState<PersonEditContactForm> {
         await _handleBack();
       },
       child: detailAsync.when(
-        loading: () => Scaffold(
-          appBar: AppBar(title: Text(l.peopleEditPerson)),
+        loading: () => peopleHubPaneScaffold(
+          context: context,
+          title: Text(l.peopleEditPerson),
           body: const Center(child: CircularProgressIndicator()),
         ),
-        error: (_, __) => Scaffold(
-          appBar: AppBar(title: Text(l.peopleEditPerson)),
+        error: (_, __) => peopleHubPaneScaffold(
+          context: context,
+          title: Text(l.peopleEditPerson),
           body: Center(child: Text(l.peopleListLoadError)),
         ),
         data: (detail) {
           if (detail == null) {
-            return Scaffold(
-              appBar: AppBar(title: Text(l.peopleEditPerson)),
+            return peopleHubPaneScaffold(
+              context: context,
+              title: Text(l.peopleEditPerson),
               body: Center(child: Text(l.peopleDetailNotFound)),
             );
           }
@@ -183,11 +187,24 @@ class _PersonEditContactFormState extends ConsumerState<PersonEditContactForm> {
               AppFormLayoutSize.phone;
           final includeActions = !isPhone;
 
-          return Scaffold(
-            appBar: AppBar(
-              title: Text(l.peopleEditPerson),
-              leading: BackButton(onPressed: _handleBack),
-            ),
+          final stickyBar = isPhone
+              ? AppFormStickyActionsBar(
+                  stickyKey: const Key('people_edit_sticky_actions'),
+                  isLoading: _busy,
+                  isDirty: controller.isDirty,
+                  onSave: _save,
+                  onCancel: _handleBack,
+                  saveLabel: l.save,
+                  cancelKey: const Key('people_edit_cancel'),
+                  saveKey: const Key('people_edit_save'),
+                )
+              : null;
+
+          return peopleHubPaneScaffold(
+            context: context,
+            title: Text(l.peopleEditPerson),
+            onBack: _handleBack,
+            bottomNavigationBar: stickyBar,
             body: LayoutBuilder(
               builder: (context, constraints) {
                 final form = _formBody(
@@ -216,18 +233,6 @@ class _PersonEditContactFormState extends ConsumerState<PersonEditContactForm> {
                 );
               },
             ),
-            bottomNavigationBar: isPhone
-                ? AppFormStickyActionsBar(
-                    stickyKey: const Key('people_edit_sticky_actions'),
-                    isLoading: _busy,
-                    isDirty: controller.isDirty,
-                    onSave: _save,
-                    onCancel: _handleBack,
-                    saveLabel: l.save,
-                    cancelKey: const Key('people_edit_cancel'),
-                    saveKey: const Key('people_edit_save'),
-                  )
-                : null,
           );
         },
       ),

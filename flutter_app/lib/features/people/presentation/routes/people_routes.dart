@@ -33,15 +33,14 @@ RouteBase buildPeopleHubShellRoute() {
           GoRoute(
             path: 'households',
             name: 'petCarePeopleHouseholds',
-            builder: (context, state) =>
-                HouseholdsPage(embedded: peopleDetailShouldEmbed(context)),
+            builder: (context, state) => const HouseholdsPage(embedded: true),
             routes: [
               GoRoute(
                 path: ':householdId',
                 name: 'petCarePeopleHouseholdDetail',
                 builder: (context, state) => HouseholdDetailPage(
                   householdId: state.pathParameters['householdId']!,
-                  embedded: peopleDetailShouldEmbed(context),
+                  embedded: true,
                 ),
               ),
             ],
@@ -51,10 +50,7 @@ RouteBase buildPeopleHubShellRoute() {
             name: 'petCarePeopleDetail',
             builder: (context, state) {
               final personId = state.pathParameters['personId']!;
-              return PersonDetailPage(
-                personId: personId,
-                embedded: peopleDetailShouldEmbed(context),
-              );
+              return PersonDetailPage(personId: personId);
             },
             routes: [
               GoRoute(

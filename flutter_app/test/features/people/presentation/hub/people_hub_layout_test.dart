@@ -5,6 +5,32 @@ import 'package:pet_profile_app/features/people/application/people_providers.dar
 import 'people_hub_test_support.dart';
 
 void main() {
+  testWidgets('compact person detail uses one experience shell frame', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await tester.pumpWidget(
+      peopleHubTestApp(
+        router: buildTestPeopleRouter(initialLocation: '/pc/people/carer-1'),
+        overrides: [
+          rosterProvider.overrideWith(
+            () => TestRosterNotifier(sampleHubRoster()),
+          ),
+        ],
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(BottomNavigationBar), findsOneWidget);
+    expect(find.text('Jamie Taylor'), findsWidgets);
+  });
+
   testWidgets('wide hub keeps search query when selecting a person (B4)', (
     tester,
   ) async {

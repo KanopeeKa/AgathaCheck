@@ -15,6 +15,7 @@ import 'add_person_flow_controller.dart';
 import 'add_person_route_args.dart';
 import 'add_person_step_finalize.dart';
 import 'add_person_steps.dart';
+import '../hub/people_hub_shell_chrome.dart';
 
 class AddPersonFlow extends ConsumerStatefulWidget {
   const AddPersonFlow({super.key, this.args});
@@ -182,6 +183,10 @@ class _AddPersonFlowState extends ConsumerState<AddPersonFlow> {
           child: content,
         ),
       );
+    }
+
+    if (peopleHubSkipsInnerAppBar(context)) {
+      return content;
     }
 
     return Scaffold(
