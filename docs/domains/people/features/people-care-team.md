@@ -45,7 +45,7 @@ The payoff is in Away Planning. You're not sharing an account with a sitter. You
 
 ## Decisions
 
-There are 30 decisions. D1, D4, D7 and D10 were revised after an external review. D11–D18 came from that review, D19–D23 from the detailed-design questions, and D24–D28 from the implementation review. D12 was revised in that same round.
+There are 32 decisions. D1, D4, D7 and D10 were revised after an external review. D11–D18 came from that review, D19–D23 from the detailed-design questions, and D24–D28 from the implementation review. D12 was revised in that same round.
 
 | # | Decision | Consequence |
 | --- | --- | --- |
@@ -92,9 +92,11 @@ There are 30 decisions. D1, D4, D7 and D10 were revised after an external review
 | PEOPLE-CARE-TEAM-D-036 | Vet contacts can set **Primary vet** and **Out-of-hours vet** from **Link to a pet** via the pet slot API (replace confirmation matches Manage); required-kind hint when a pet is chosen without a link type | Ends R-002 deferral of vet kinds on the link sheet | Live | 2026-11-03 | link-pet-vet-slots-f0fb |
 | PEOPLE-CARE-TEAM-D-037 | **Person edit phone:** the phone **`TextFormField`** on `/pc/people/:id/edit` uses a **`TextEditingController`** owned by a small stateful widget (**initialized** from `PersonFormController` in `initState`, **`onChanged` → `setPhone`**, **`didUpdateWidget`** sync when `controller.phone` changes after async refetch); do **not** attach a **`PersonFormController` listener** that overwrites the text controller — other fields call `notifyListeners` during the same frame as typing, which can race `onChanged` and snap the web `<input>` back to the old phone; do not use **`initialValue` only** for that field on web — CanvasKit can also leave the hidden `<input>` out of sync, so Save persists the previous phone | Closes silent “edit phone” failures on Flutter web; E2E veterinarian flow | Superseded | 2026-11-06 | #2114 |
 | PEOPLE-CARE-TEAM-D-038 | **Person edit phone (web):** the phone field uses a **`TextEditingController`** with **`onChanged` → `setPhone`**; do not rely on **`initialValue` alone** on web, and do not attach a form-wide listener that rewrites the phone controller while other fields notify | Stable Save and automation on Flutter web without refetch/roster workarounds | Live | 2026-11-07 | people detail a11y remedial |
-| PEOPLE-CARE-TEAM-D-039 | **People hub frame:** routes under `/pc/people` sit inside one experience shell from `PeopleHubLayout` at every width; screen width chooses layout (list-only, detail-only, or master–detail), not whether a frame is drawn; child routes must not nest a second `ExperienceShellScaffold` (no duplicate bottom nav); on compact widths the hub shell owns title, back (preserving roster `q` / filter query), and primary actions such as Edit for contacts | Implements PEOPLE-CARE-TEAM-R-039; closes double chrome on phones after hub `ShellRoute` remodel | Live | 2026-11-09 | people hub single frame |
-| PEOPLE-CARE-TEAM-D-040 | **People around {pet} layout:** one white box; group order Vets → Emergency contact → At home → Trusted carers → Other professionals; one row per contact with slot pills; record owner first in At home; only Primary vet empty slot shown when empty; removes separate Emergency card and owner subtitle | Removes duplicate slot vets, prioritises primary vet, matches pet profile surfaces | Live | 2026-11-09 | people-around-pet-p2b |
-| PEOPLE-CARE-TEAM-D-041 | **Grouping uses contact roles:** `GET /pets/:petId/people` adds `contact.roles`; professional vs carer classification follows `ROLE_GROUP` / `ContactGroup`; vets via `vet` or `vet_nurse` roles or vet slots | Individual vets and groomers land in the correct group | Live | 2026-11-09 | people-around-pet-p1 |
+| PEOPLE-CARE-TEAM-D-039 | **People around {pet} layout:** one white box; group order Vets → Emergency contact → At home → Trusted carers → Other professionals; one row per contact with slot pills; record owner first in At home; only Primary vet empty slot shown when empty; removes separate Emergency card and owner subtitle | Removes duplicate slot vets, prioritises primary vet, matches pet profile surfaces | Superseded | 2026-11-09 | superseded — ID reused on `main` for hub frame (D-041) |
+| PEOPLE-CARE-TEAM-D-040 | **Grouping uses contact roles:** `GET /pets/:petId/people` adds `contact.roles`; professional vs carer classification follows `ROLE_GROUP` / `ContactGroup`; vets via `vet` or `vet_nurse` roles or vet slots | Individual vets and groomers land in the correct group | Superseded | 2026-11-09 | superseded — renumbered to D-043 |
+| PEOPLE-CARE-TEAM-D-041 | **People hub frame:** routes under `/pc/people` sit inside one experience shell from `PeopleHubLayout` at every width; screen width chooses layout (list-only, detail-only, or master–detail), not whether a frame is drawn; child routes must not nest a second `ExperienceShellScaffold` (no duplicate bottom nav); on compact widths the hub shell owns title, back (preserving roster `q` / filter query), and primary actions such as Edit for contacts | Implements PEOPLE-CARE-TEAM-R-039; closes double chrome on phones after hub `ShellRoute` remodel | Live | 2026-11-09 | people hub single frame |
+| PEOPLE-CARE-TEAM-D-042 | **People around {pet} layout:** one white box; group order Vets → Emergency contact → At home → Trusted carers → Other professionals; one row per contact with slot pills; record owner first in At home; only Primary vet empty slot shown when empty; removes separate Emergency card and owner subtitle | Removes duplicate slot vets, prioritises primary vet, matches pet profile surfaces | Live | 2026-11-09 | people-around-pet-p2b |
+| PEOPLE-CARE-TEAM-D-043 | **Grouping uses contact roles:** `GET /pets/:petId/people` adds `contact.roles`; professional vs carer classification follows `ROLE_GROUP` / `ContactGroup`; vets via `vet` or `vet_nurse` roles or vet slots | Individual vets and groomers land in the correct group | Live | 2026-11-09 | people-around-pet-p1 |
 
 ## Where we start
 
@@ -465,7 +467,7 @@ One **roster** on `/pc/people` backed by a UI aggregate **PersonRosterEntry** (c
 
 - **People:** one section per household, headed by the household's name, then carers, then professionals.
 - **Pets:** your pets first, then one group per household. The group headers appear only when someone is in more than one household.
-- **Pet profile (D-040, Live):** "People around {pet}" — section header above one bordered module; groups inside the box: **Vets**, **Emergency contact(s)**, **At home**, **Trusted carers**, **Other professionals**. Placement uses `groupPetPeople` (merge relationships by `contact_id`, then rules V1–P1). Account holders are not merged with contacts (logged as debt at release). Handover scope: **At home** shows the record owner only (owner row uses **Parent of {pet}** / **Parent de {pet}**).
+- **Pet profile (D-042, Live):** "People around {pet}" — section header above one bordered module; groups inside the box: **Vets**, **Emergency contact(s)**, **At home**, **Trusted carers**, **Other professionals**. Placement uses `groupPetPeople` (merge relationships by `contact_id`, then rules V1–P1). Account holders are not merged with contacts (logged as debt at release). Handover scope: **At home** shows the record owner only (owner row uses **Parent of {pet}** / **Parent de {pet}**).
 - There's no household switcher.
 
 #### People around {pet} — requirements (Live)
@@ -478,7 +480,7 @@ One **roster** on `/pc/people` backed by a UI aggregate **PersonRosterEntry** (c
 | PEOPLE-CARE-TEAM-R-043 | Vets always visible; empty primary slot row when no primary vet | Live |
 | PEOPLE-CARE-TEAM-R-044 | Emergency group when emergency contacts not under Vets only | Live |
 | PEOPLE-CARE-TEAM-R-045 | At home: owner row first; full scope household members; handover owner only | Live |
-| PEOPLE-CARE-TEAM-R-046 | Trusted carers / Other professionals hidden when empty; D-041 classification | Live |
+| PEOPLE-CARE-TEAM-R-046 | Trusted carers / Other professionals hidden when empty; D-043 classification | Live |
 | PEOPLE-CARE-TEAM-R-047 | Person row layout, call/chevron, tap via `resolvePersonDetailTarget` | Live |
 | PEOPLE-CARE-TEAM-R-048 | Neutral slot pills; star on Primary vet | Live |
 | PEOPLE-CARE-TEAM-R-049 | `+ Add someone` with `AddPersonRouteArgs.initialPetIds` | Live |
