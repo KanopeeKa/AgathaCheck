@@ -62,7 +62,9 @@ void main() {
     );
     expect(segmented.showSelectedIcon, isTrue);
 
-    final segmentRect = tester.getRect(find.byKey(const Key('pet_neuter_segmented')));
+    final segmentRect = tester.getRect(
+      find.byKey(const Key('pet_neuter_segmented')),
+    );
     final infoRect = tester.getRect(find.byType(AppFormInfoButton));
     expect(segmentRect.top, greaterThan(infoRect.bottom));
     expect(segmentRect.width, greaterThan(200));

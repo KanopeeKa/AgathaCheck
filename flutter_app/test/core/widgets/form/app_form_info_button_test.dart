@@ -26,10 +26,7 @@ void main() {
     expect(icon.color, isNot(theme.colorScheme.outline));
 
     final iconButton = tester.widget<IconButton>(find.byType(IconButton));
-    expect(
-      iconButton.style?.minimumSize?.resolve({}),
-      const Size(48, 48),
-    );
+    expect(iconButton.style?.minimumSize?.resolve({}), const Size(48, 48));
   });
 
   testWidgets('keyboard activates dialog', (tester) async {

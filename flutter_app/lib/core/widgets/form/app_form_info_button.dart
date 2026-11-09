@@ -28,9 +28,7 @@ class AppFormInfoButton extends StatelessWidget {
         color: theme.colorScheme.onSurfaceVariant,
       ),
       tooltip: message,
-      style: IconButton.styleFrom(
-        minimumSize: const Size(48, 48),
-      ),
+      style: IconButton.styleFrom(minimumSize: const Size(48, 48)),
       onPressed: () {
         showDialog<void>(
           context: context,
