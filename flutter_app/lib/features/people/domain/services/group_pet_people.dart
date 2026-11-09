@@ -4,12 +4,7 @@ import '../enums/relationship_kind.dart';
 import 'pet_people_slots.dart';
 
 const _vetRoles = {'vet', 'vet_nurse'};
-const _otherProRoles = {
-  'groomer',
-  'trainer',
-  'behaviourist',
-  'boarding',
-};
+const _otherProRoles = {'groomer', 'trainer', 'behaviourist', 'boarding'};
 
 /// Pure placement for D-039 / D-040. Legacy lists in [pet_people_grouping.dart]
 /// stay until the pet profile section migrates (P2b).
@@ -53,19 +48,19 @@ PetPeopleGroupedSection groupPetPeople(PetPeople people) {
     emergencyContacts: emergencyOrdered.isEmpty
         ? null
         : emergencyOrdered
-            .map((id) => _toContactRow(aggregates[id]!))
-            .toList(growable: false),
+              .map((id) => _toContactRow(aggregates[id]!))
+              .toList(growable: false),
     atHome: PetPeopleAtHomeGroup(rows: _atHomeRows(people)),
     trustedCarers: carerOrdered.isEmpty
         ? null
         : carerOrdered
-            .map((id) => _toContactRow(aggregates[id]!))
-            .toList(growable: false),
+              .map((id) => _toContactRow(aggregates[id]!))
+              .toList(growable: false),
     otherProfessionals: proOrdered.isEmpty
         ? null
         : proOrdered
-            .map((id) => _toContactRow(aggregates[id]!))
-            .toList(growable: false),
+              .map((id) => _toContactRow(aggregates[id]!))
+              .toList(growable: false),
   );
 }
 
@@ -138,7 +133,10 @@ _Placement _placementFor(_ContactAggregate contact) {
   return _Placement.otherProfessionals;
 }
 
-List<String> _orderVets(Map<String, _ContactAggregate> aggregates, List<String> ids) {
+List<String> _orderVets(
+  Map<String, _ContactAggregate> aggregates,
+  List<String> ids,
+) {
   String? primaryId;
   String? oohId;
   final rest = <String>[];
@@ -177,7 +175,7 @@ List<String> _orderEmergency(
     final ao = aggregates[a]!.minSortOrder(RelationshipKind.emergencyContact);
     final bo = aggregates[b]!.minSortOrder(RelationshipKind.emergencyContact);
     if (ao != bo) return ao.compareTo(bo);
-  return aggregates[a]!.name.toLowerCase().compareTo(
+    return aggregates[a]!.name.toLowerCase().compareTo(
       aggregates[b]!.name.toLowerCase(),
     );
   });

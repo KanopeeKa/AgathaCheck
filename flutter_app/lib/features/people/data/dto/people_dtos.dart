@@ -410,7 +410,9 @@ class PetPeopleDto {
                   : contact?['inactive_at'] != null
                   ? DateTime.tryParse(contact!['inactive_at'].toString())
                   : null,
-              contactRoles: _rolesFromWire(contact?['roles'] ?? r['contact_roles']),
+              contactRoles: _rolesFromWire(
+                contact?['roles'] ?? r['contact_roles'],
+              ),
               sortOrder: (r['sort_order'] as num?)?.toInt() ?? 0,
             );
           })

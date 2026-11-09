@@ -67,10 +67,7 @@ void main() {
     expect(grouped.vets.rows, hasLength(2));
     expect(grouped.vets.rows[0].name, 'Dr Sarah Mitchell');
     expect(grouped.vets.rows[1].name, 'Happy Paws');
-    expect(
-      grouped.trustedCarers,
-      isNull,
-    );
+    expect(grouped.trustedCarers, isNull);
     expect(grouped.otherProfessionals, isNull);
   });
 

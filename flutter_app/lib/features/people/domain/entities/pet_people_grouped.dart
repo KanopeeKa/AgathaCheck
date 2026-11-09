@@ -18,10 +18,7 @@ class PetPeopleGroupedSection {
 }
 
 class PetPeopleVetsGroup {
-  const PetPeopleVetsGroup({
-    required this.hasPrimaryVet,
-    required this.rows,
-  });
+  const PetPeopleVetsGroup({required this.hasPrimaryVet, required this.rows});
 
   final bool hasPrimaryVet;
   final List<PetPeopleGroupedContactRow> rows;
