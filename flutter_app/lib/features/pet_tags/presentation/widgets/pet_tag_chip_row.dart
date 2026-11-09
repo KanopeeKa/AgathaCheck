@@ -14,7 +14,6 @@ class PetTagChipRow extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final tagsAsync = ref.watch(petTagListProvider);
-    final theme = Theme.of(context);
 
     return tagsAsync.when(
       loading: () => const SizedBox.shrink(),
@@ -25,40 +24,28 @@ class PetTagChipRow extends ConsumerWidget {
             .toList();
         return Padding(
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Wrap(
+            spacing: 8,
+            runSpacing: 8,
             children: [
-              Text(
-                l.petTagsMyTags,
-                style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
+              for (final tag in assigned)
+                InputChip(
+                  key: Key('pet_tag_chip_${tag.id}'),
+                  label: Text(tag.name),
+                  onDeleted: () => ref
+                      .read(petTagListProvider.notifier)
+                      .unassignTag(petId, tag.id),
                 ),
-              ),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  for (final tag in assigned)
-                    InputChip(
-                      key: Key('pet_tag_chip_${tag.id}'),
-                      label: Text(tag.name),
-                      onDeleted: () => ref
-                          .read(petTagListProvider.notifier)
-                          .unassignTag(petId, tag.id),
-                    ),
-                  ActionChip(
-                    key: const Key('pet_tag_add_chip'),
-                    avatar: const Icon(Icons.add, size: 18),
-                    label: Text(l.petTagsAssign),
-                    onPressed: () => showPetTagPickerSheet(
-                      context: context,
-                      ref: ref,
-                      petId: petId,
-                      allTags: allTags,
-                    ),
-                  ),
-                ],
+              ActionChip(
+                key: const Key('pet_tag_add_chip'),
+                avatar: const Icon(Icons.add, size: 18),
+                label: Text(l.petTagsAssign),
+                onPressed: () => showPetTagPickerSheet(
+                  context: context,
+                  ref: ref,
+                  petId: petId,
+                  allTags: allTags,
+                ),
               ),
             ],
           ),

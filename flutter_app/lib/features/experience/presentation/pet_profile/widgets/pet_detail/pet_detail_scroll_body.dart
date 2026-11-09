@@ -46,7 +46,6 @@ class PetDetailScrollBody extends StatelessWidget {
             petName: pet.name,
             canManage: canManagePeople,
           ),
-          PetTagChipRow(petId: pet.id),
         ];
 
         final secondaryColumn = <Widget>[
@@ -54,12 +53,15 @@ class PetDetailScrollBody extends StatelessWidget {
           PetProfileHealthHistorySection(petId: pet.id),
         ];
 
+        final tagRow = PetTagChipRow(petId: pet.id);
+
         if (!useSidebar) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               ...primaryColumn,
               ...secondaryColumn,
+              tagRow,
               const SizedBox(height: 32),
             ],
           );
@@ -67,24 +69,31 @@ class PetDetailScrollBody extends StatelessWidget {
 
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Expanded(
-                flex: 3,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: primaryColumn,
-                ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    flex: 3,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: primaryColumn,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    flex: 2,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: secondaryColumn,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                flex: 2,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [...secondaryColumn, const SizedBox(height: 32)],
-                ),
-              ),
+              tagRow,
+              const SizedBox(height: 32),
             ],
           ),
         );

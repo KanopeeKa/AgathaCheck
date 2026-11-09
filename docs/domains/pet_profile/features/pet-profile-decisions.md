@@ -3,7 +3,7 @@ title: Pet profile decisions
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-10-14
+last_updated: 2026-11-09
 tags: [pet_profile, decisions]
 domain: pet_profile
 feature_id: pet-profile-decisions
@@ -191,7 +191,7 @@ Private per-user labels for organizing and filtering pets on `/pc/pets`. No shar
 |-------|--------|
 | Data | `pet_tags` (user-owned definitions); `pet_tag_assignments` (many-to-many). Assignments are not cleaned up when `pet_access` is revoked (lazy ignore). CASCADE on user, pet, or tag delete. |
 | API | `GET/POST/PATCH/DELETE /api/pet-tags`; `POST/DELETE /api/pets/:petId/tags` (assign/unassign). Client uses `GET /api/pet-tags` with `pet_ids[]` for filter, profile, and manage UI. |
-| UI | Account → Preferences → Pet tags (catalog CRUD); pet profile → My tags; `/pc/pets` → tag filter (Match any / Match all). |
+| UI | Account → Preferences → Pet tags (catalog CRUD); pet profile → tag chips at end of scroll (no section title); `/pc/pets` → tag filter (Match any / Match all). |
 
 ## Profile facts (server — PR-01)
 
