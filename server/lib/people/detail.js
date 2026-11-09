@@ -264,6 +264,7 @@ function mapHouseholdMemberRow(row) {
     first_name: row.first_name || '',
     tier: row.access_tier,
     is_organiser: row.is_organiser === true,
+    photo_url: row.photo_url?.trim() ? row.photo_url : null,
   };
 }
 
