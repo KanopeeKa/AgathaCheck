@@ -8,12 +8,16 @@ import 'add_person_entry.dart';
 import 'add_person_pet_selection.dart';
 
 class AddPersonFlowController extends ChangeNotifier {
-  AddPersonFlowController({AddPersonEntry? initialEntry})
-    : _entry = initialEntry,
+  AddPersonFlowController({
+    AddPersonEntry? initialEntry,
+    List<String> initialPetIds = const [],
+  })  : _initialPetIds = List.unmodifiable(initialPetIds),
+        _entry = initialEntry,
       _form = PersonFormController.forNewContact(
         kind: initialEntry?.contactKind ?? ContactKind.person,
       );
 
+  final List<String> _initialPetIds;
   AddPersonEntry? _entry;
   int _stepIndex = 0;
   final PersonFormController _form;
@@ -26,6 +30,7 @@ class AddPersonFlowController extends ChangeNotifier {
   int get stepIndex => _stepIndex;
   PersonFormController get form => _form;
   List<AddPersonPetSelection> get pets => List.unmodifiable(_pets);
+  List<String> get initialPetIds => _initialPetIds;
   AddPersonAppAccessChoice get appAccess => _appAccess;
   String? get householdName => _householdName;
   String? get rolesError => _rolesError;

@@ -8335,15 +8335,29 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String peoplePetOwnerQuiet(String petName, String ownerName) {
-    return '$petName · $ownerName\'s pet';
-  }
-
-  @override
   String get peopleGroupAtHome => 'At home';
 
   @override
-  String get peoplePetEmergencyCardTitle => 'Emergency';
+  String get peopleGroupVets => 'Vets';
+
+  @override
+  String get peopleGroupEmergencyContacts => 'Emergency contacts';
+
+  @override
+  String get peopleGroupPetProfessionals => 'Pet professionals';
+
+  @override
+  String peopleParentOf(String petName) {
+    return 'Parent of $petName';
+  }
+
+  @override
+  String peopleCallPerson(String name) {
+    return 'Call $name';
+  }
+
+  @override
+  String get peopleAddSomeonePet => '+ Add someone';
 
   @override
   String get peoplePetEmergencyManage => 'Manage';
@@ -8363,9 +8377,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get peoplePetAddEmergencyContact => 'Add emergency contact';
-
-  @override
-  String get peoplePetEmptyAtHome => 'No household members for this pet yet.';
 
   @override
   String get peopleReorderUp => 'Move up';

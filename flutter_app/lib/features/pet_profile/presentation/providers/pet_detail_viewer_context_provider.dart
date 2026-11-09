@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:pet_profile_app/features/auth/auth.dart';
 import '../../../../core/experience/app_experience.dart';
 import '../../domain/services/pet_detail_actions.dart';
 import '../providers/pet_providers.dart';
@@ -33,5 +34,6 @@ final petDetailViewerContextProvider =
         experience: experience,
         isOrgAdmin: false,
         policyInputsResolved: true,
+        viewerUserId: ref.watch(authProvider).user?.id,
       );
     });

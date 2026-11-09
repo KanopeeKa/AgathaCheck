@@ -5,21 +5,24 @@ class AddPersonPetSelection {
     required this.petId,
     required this.petName,
     this.selected = false,
-    this.relationshipKind = RelationshipKind.careProvider,
+    this.relationshipKind,
     this.emergencyContact = false,
   });
 
   final String petId;
   final String petName;
   bool selected;
-  RelationshipKind relationshipKind;
+  RelationshipKind? relationshipKind;
   bool emergencyContact;
 
+  bool get linkKindChosen =>
+      emergencyContact || relationshipKind != null;
+
   Map<String, dynamic>? toPetLinkJson() {
-    if (!selected) return null;
+    if (!selected || !linkKindChosen) return null;
     final kind = emergencyContact
         ? RelationshipKind.emergencyContact
-        : relationshipKind;
+        : relationshipKind!;
     return {'pet_id': petId, 'relationship_kind': kind.wireValue};
   }
 }

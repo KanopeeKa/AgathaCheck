@@ -2,7 +2,7 @@
  * @bdd pet_profiles.feature
  * @bdd health_tracking.feature
  * @bdd away_planning.feature
- * Scenario: Buddy's emergency card shows the primary vet set from Contacts, with a call action
+ * Scenario: Buddy's people around box shows the primary vet from Contacts, with a call action
  * Scenario: Set Buddy's out-of-hours vet from People around Buddy
  * Scenario: Pick a care provider and add a new one inline from the Care Item form
  * Scenario: An inactive contact isn't offered in the care provider picker but stays visible on items already using it
@@ -40,7 +40,7 @@ const dateOffset = (days: number): string => {
 };
 
 test.describe('People client integration journeys', () => {
-  test("@P1 Buddy's emergency card shows primary vet from Contacts with call action", async ({
+  test("@P1 Buddy's people around box shows primary vet from Contacts with call action", async ({
     page,
   }) => {
     test.setTimeout(120_000);
@@ -67,7 +67,7 @@ test.describe('People client integration journeys', () => {
 
     const people = new PeoplePage(page);
     await people.expectPeopleAroundPetSection('Buddy');
-    await people.expectEmergencyCardShowsContact('Buddy Primary Vet');
+    await people.expectPeopleAroundBoxShowsContact('Buddy Primary Vet');
     await people.expectEmergencyPrimaryVetCallAction();
   });
 
@@ -106,7 +106,7 @@ test.describe('People client integration journeys', () => {
       oohContactId,
       'Night Vet Clinic',
     );
-    await people.expectEmergencyCardShowsContact('Night Vet Clinic');
+    await people.expectPeopleAroundBoxShowsContact('Night Vet Clinic');
   });
 
   test('@P1 pick care provider and add inline from care item form', async ({ page }) => {

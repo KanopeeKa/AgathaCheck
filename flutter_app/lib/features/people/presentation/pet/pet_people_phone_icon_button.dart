@@ -20,7 +20,7 @@ class PetPeoplePhoneIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    final label = '$name — ${l.peopleActionCall}';
+    final label = l.peopleCallPerson(name);
     return Semantics(
       identifier: semanticsIdentifier,
       button: true,

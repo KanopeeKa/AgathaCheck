@@ -95,6 +95,7 @@ class PetDetailActions {
     required AppExperience experience,
     bool isOrgAdmin = false,
     bool policyInputsResolved = true,
+    String? viewerUserId,
   }) {
     final role = PetViewerRoleResolver.resolve(
       pet: pet,
@@ -111,6 +112,7 @@ class PetDetailActions {
         policyInputsResolved: policyInputsResolved,
       ),
       isPolicyResolved: policyInputsResolved,
+      viewerUserId: viewerUserId,
     );
   }
 }
@@ -122,12 +124,14 @@ class PetDetailContext {
     required this.role,
     required this.actions,
     required this.isPolicyResolved,
+    this.viewerUserId,
   });
 
   final AppExperience experience;
   final PetViewerRole role;
   final Set<PetDetailAction> actions;
   final bool isPolicyResolved;
+  final String? viewerUserId;
 
   bool can(PetDetailAction action) =>
       isPolicyResolved && actions.contains(action);
