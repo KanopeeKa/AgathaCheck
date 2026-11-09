@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/widgets/form/app_form_info_button.dart';
 import '../../../../../l10n/app_localizations.dart';
-import 'pet_form_info_tooltip.dart';
 
 class PetFormChipSection extends StatelessWidget {
   const PetFormChipSection({
@@ -23,7 +23,7 @@ class PetFormChipSection extends StatelessWidget {
       decoration: InputDecoration(
         labelText: l.idMicrochip,
         helperText: 'Identification number for your pet',
-        suffixIcon: PetFormInfoTooltip(
+        suffixIcon: AppFormInfoButton(
           message:
               'Enter the identification number relevant to your pet:\n\n'
               '\u2022 Dogs & Cats: microchip number (usually 15 digits), often required by law\n'
