@@ -297,7 +297,7 @@ void main() {
     tester,
   ) async {
     final vetRepo = _DirectoryVetRepository();
-  final vetRoster = await vetRepo.fetchRoster();
+    final vetRoster = await vetRepo.fetchRoster();
     await tester.pumpWidget(
       _wrap(
         people: _samplePeople(),

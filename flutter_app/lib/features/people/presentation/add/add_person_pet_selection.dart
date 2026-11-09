@@ -15,8 +15,7 @@ class AddPersonPetSelection {
   RelationshipKind? relationshipKind;
   bool emergencyContact;
 
-  bool get linkKindChosen =>
-      emergencyContact || relationshipKind != null;
+  bool get linkKindChosen => emergencyContact || relationshipKind != null;
 
   Map<String, dynamic>? toPetLinkJson() {
     if (!selected || !linkKindChosen) return null;

@@ -27,7 +27,15 @@ List<PeopleGroupSection> buildPetPeopleGroupSections({
   final sections = <PeopleGroupSection>[];
 
   sections.add(
-    _vetsSection(context, l, people, grouped, rosterReady, roster, viewerUserId),
+    _vetsSection(
+      context,
+      l,
+      people,
+      grouped,
+      rosterReady,
+      roster,
+      viewerUserId,
+    ),
   );
 
   final emergency = grouped.emergencyContacts;
@@ -203,11 +211,7 @@ Widget _memberRow({
   final isViewer = viewerUserId != null && member.userId == viewerUserId;
   final subtitle = member.isOwner
       ? l.peopleParentOf(people.petName)
-      : householdTierLabel(
-          l,
-          member.tier,
-          organiser: member.isOrganiser,
-        );
+      : householdTierLabel(l, member.tier, organiser: member.isOrganiser);
   final onTap = isViewer
       ? null
       : _memberTapHandler(

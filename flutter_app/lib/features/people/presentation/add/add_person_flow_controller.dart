@@ -11,11 +11,11 @@ class AddPersonFlowController extends ChangeNotifier {
   AddPersonFlowController({
     AddPersonEntry? initialEntry,
     List<String> initialPetIds = const [],
-  })  : _initialPetIds = List.unmodifiable(initialPetIds),
-        _entry = initialEntry,
-      _form = PersonFormController.forNewContact(
-        kind: initialEntry?.contactKind ?? ContactKind.person,
-      );
+  }) : _initialPetIds = List.unmodifiable(initialPetIds),
+       _entry = initialEntry,
+       _form = PersonFormController.forNewContact(
+         kind: initialEntry?.contactKind ?? ContactKind.person,
+       );
 
   final List<String> _initialPetIds;
   AddPersonEntry? _entry;

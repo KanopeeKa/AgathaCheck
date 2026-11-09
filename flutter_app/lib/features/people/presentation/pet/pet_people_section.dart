@@ -64,7 +64,8 @@ class PetPeopleSection extends ConsumerWidget {
         ),
         async.when(
           loading: () => const _PetPeopleBoxState(child: _LoadingBody()),
-          error: (_, __) => _PetPeopleBoxState(child: Text(l.peopleListLoadError)),
+          error: (_, __) =>
+              _PetPeopleBoxState(child: Text(l.peopleListLoadError)),
           data: (people) {
             if (people == null) return const SizedBox.shrink();
             return _PetPeopleData(
