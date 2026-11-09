@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../auth/auth.dart';
 import '../../application/people_providers.dart';
 import '../../domain/entities/pet_people.dart';
-import '../../domain/services/pet_people_grouping.dart';
-import '../households/household_tier_labels.dart';
-import '../labels/people_labels.dart';
-import 'pet_emergency_card.dart';
+import '../../domain/services/group_pet_people.dart';
+import '../add/add_person_route_args.dart';
+import 'pet_emergency_manage_sheet.dart';
+import 'pet_people_section_rows.dart';
+import 'widgets/people_group_box.dart';
 
-/// "People around {pet}" on the pet profile: emergency card and grouped contacts.
+/// "People around {pet}" on the pet profile — one grouped module (D-042).
 class PetPeopleSection extends ConsumerWidget {
   const PetPeopleSection({
     super.key,
@@ -25,100 +28,51 @@ class PetPeopleSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(petPeopleProvider(petId));
-    return async.when(
-      loading: () => const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-        child: Center(child: CircularProgressIndicator()),
-      ),
-      error: (_, __) => const SizedBox.shrink(),
-      data: (people) {
-        if (people == null) return const SizedBox.shrink();
-        return _PetPeopleBody(
-          people: people,
-          canManage: canManage && people.scope == 'full',
-        );
-      },
-    );
-  }
-}
-
-class _PetPeopleBody extends StatelessWidget {
-  const _PetPeopleBody({required this.people, required this.canManage});
-
-  final PetPeople people;
-  final bool canManage;
-
-  @override
-  Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    final carers = trustedCarerRelationships(people);
-    final professionals = professionalRelationships(people);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-          child: Column(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+          child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                l.peopleAroundPetTitle(people.petName),
-                style: Theme.of(
-                  context,
-                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                l.peoplePetOwnerQuiet(people.petName, people.owner.displayName),
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+              Expanded(
+                child: Text(
+                  l.peopleAroundPetTitle(petName),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
+              if (canManage && async.valueOrNull?.scope == 'full')
+                TextButton(
+                  key: const Key('pet_emergency_manage_button'),
+                  onPressed: async.valueOrNull == null
+                      ? null
+                      : () => showPetEmergencyManageSheet(
+                          context: context,
+                          ref: ref,
+                          people: async.valueOrNull!,
+                        ),
+                  child: Text(l.peoplePetEmergencyManage),
+                ),
             ],
           ),
         ),
-        PetEmergencyCard(people: people, canManage: canManage),
-        if (people.scope == 'full')
-          _PeopleGroup(
-            title: l.peopleGroupAtHome,
-            emptyLabel: l.peoplePetEmptyAtHome,
-            children: people.householdMembers
-                .map(
-                  (m) => _PersonLine(
-                    name: m.displayName,
-                    subtitle: householdTierLabel(
-                      l,
-                      m.tier,
-                      organiser: m.isOrganiser,
-                    ),
-                  ),
-                )
-                .toList(),
-          ),
-        _PeopleGroup(
-          title: l.peopleGroupCarers,
-          emptyLabel: l.peopleEmptyCarers,
-          children: carers
-              .map(
-                (r) => _PersonLine(
-                  name: r.contactName,
-                  subtitle: r.relationshipKind.label(l),
-                ),
-              )
-              .toList(),
-        ),
-        _PeopleGroup(
-          title: l.peopleGroupProfessionals,
-          emptyLabel: l.peopleEmptyProfessionals,
-          children: professionals
-              .map(
-                (r) => _PersonLine(
-                  name: r.contactName,
-                  subtitle: r.relationshipKind.label(l),
-                ),
-              )
-              .toList(),
+        async.when(
+          loading: () => const _PetPeopleBoxState(child: _LoadingBody()),
+          error: (_, __) =>
+              _PetPeopleBoxState(child: Text(l.peopleListLoadError)),
+          data: (people) {
+            if (people == null) return const SizedBox.shrink();
+            return _PetPeopleData(
+              people: people,
+              canManage: canManage && people.scope == 'full',
+              petId: petId,
+            );
+          },
         ),
         const SizedBox(height: 8),
       ],
@@ -126,60 +80,74 @@ class _PetPeopleBody extends StatelessWidget {
   }
 }
 
-class _PeopleGroup extends StatelessWidget {
-  const _PeopleGroup({
-    required this.title,
-    required this.emptyLabel,
-    required this.children,
-  });
+class _PetPeopleBoxState extends StatelessWidget {
+  const _PetPeopleBoxState({required this.child});
 
-  final String title;
-  final String emptyLabel;
-  final List<Widget> children;
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            title,
-            style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const SizedBox(height: 8),
-          if (children.isEmpty)
-            Text(
-              emptyLabel,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            )
-          else
-            ...children,
-        ],
-      ),
+    return PeopleGroupBox(sections: const [], footer: child);
+  }
+}
+
+class _LoadingBody extends StatelessWidget {
+  const _LoadingBody();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.symmetric(vertical: 24),
+      child: Center(child: CircularProgressIndicator()),
     );
   }
 }
 
-class _PersonLine extends StatelessWidget {
-  const _PersonLine({required this.name, required this.subtitle});
+class _PetPeopleData extends ConsumerWidget {
+  const _PetPeopleData({
+    required this.people,
+    required this.canManage,
+    required this.petId,
+  });
 
-  final String name;
-  final String subtitle;
+  final PetPeople people;
+  final bool canManage;
+  final String petId;
 
   @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      dense: true,
-      title: Text(name),
-      subtitle: Text(subtitle),
+  Widget build(BuildContext context, WidgetRef ref) {
+    final viewerUserId = ref.watch(authProvider.select((s) => s.user?.id));
+    final l = AppLocalizations.of(context)!;
+    final grouped = groupPetPeople(people);
+    final useRoster = people.scope == 'full';
+    final rosterAsync = useRoster ? ref.watch(rosterProvider) : null;
+    final roster = rosterAsync?.valueOrNull;
+    final rosterReady = !useRoster || rosterAsync?.hasValue == true;
+
+    final sections = buildPetPeopleGroupSections(
+      context: context,
+      l: l,
+      people: people,
+      grouped: grouped,
+      rosterReady: rosterReady,
+      roster: roster,
+      viewerUserId: viewerUserId,
     );
+
+    final footer = canManage && people.scope == 'full'
+        ? Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton(
+              key: const Key('pet_people_add_someone'),
+              onPressed: () => context.push(
+                '/pc/people/new',
+                extra: AddPersonRouteArgs(initialPetIds: [petId]),
+              ),
+              child: Text(l.peopleAddSomeonePet),
+            ),
+          )
+        : null;
+
+    return PeopleGroupBox(sections: sections, footer: footer);
   }
 }

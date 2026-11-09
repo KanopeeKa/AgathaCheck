@@ -45,8 +45,10 @@ Don't change shipped strings ad hoc.
 | --- | --- | --- |
 | Section title | People around Buddy | Autour de Buddy |
 | Household group | At home | À la maison |
-| Carers group | Trusted carers | Proches & pet-sitters |
-| Professionals group | Pet professionals | Ses pros |
+| Carers group (`peopleGroupCarers`) | Trusted carers | Proches & pet-sitters |
+| Professionals group (`peopleGroupPetProfessionals`) | Pet professionals | Ses pros |
+| Record owner row | Parent of {pet} | Parent de {pet} |
+| Call action on a row | Call {name} | Appeler {name} |
 
 "At home" / "À la maison" is used **only** on the pet profile. A pet has at most one household, so it always means that pet's home.
 

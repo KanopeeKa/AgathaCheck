@@ -14,7 +14,7 @@ class PeopleGroupSection {
   final List<Widget> rows;
 }
 
-/// White bordered box with uppercase group headings (D-039).
+/// White bordered box with uppercase group headings (D-042).
 class PeopleGroupBox extends StatelessWidget {
   const PeopleGroupBox({super.key, required this.sections, this.footer});
 

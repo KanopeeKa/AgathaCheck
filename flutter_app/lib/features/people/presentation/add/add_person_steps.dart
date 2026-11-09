@@ -296,9 +296,16 @@ class AddPersonStepPets extends ConsumerWidget {
       error: (_, __) => Text(l.peopleListLoadError),
       data: (petNames) {
         if (controller.pets.isEmpty && petNames.isNotEmpty) {
+          final initialIds = controller.initialPetIds.toSet();
           controller.setPets(
             petNames
-                .map((p) => AddPersonPetSelection(petId: p.id, petName: p.name))
+                .map(
+                  (p) => AddPersonPetSelection(
+                    petId: p.id,
+                    petName: p.name,
+                    selected: initialIds.contains(p.id),
+                  ),
+                )
                 .toList(),
           );
         }
@@ -358,8 +365,13 @@ class _PetRow extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(left: 16, bottom: 8),
             child: DropdownButtonFormField<RelationshipKind>(
-              initialValue: selection.relationshipKind,
-              decoration: InputDecoration(labelText: l.peopleAddPetLinkKind),
+              value: selection.relationshipKind,
+              decoration: InputDecoration(
+                labelText: l.peopleAddPetLinkKind,
+                helperText: selection.relationshipKind == null
+                    ? l.peopleDetailLinkPetKindRequired
+                    : null,
+              ),
               items:
                   const [
                         RelationshipKind.primaryVet,

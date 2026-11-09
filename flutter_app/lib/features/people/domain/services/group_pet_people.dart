@@ -6,8 +6,7 @@ import 'pet_people_slots.dart';
 const _vetRoles = {'vet', 'vet_nurse'};
 const _otherProRoles = {'groomer', 'trainer', 'behaviourist', 'boarding'};
 
-/// Pure placement for D-039 / D-040. Legacy lists in [pet_people_grouping.dart]
-/// stay until the pet profile section migrates (P2b).
+/// Pure placement for D-042 / D-043.
 PetPeopleGroupedSection groupPetPeople(PetPeople people) {
   final aggregates = _contactAggregates(people);
   final vetRows = <String>[];

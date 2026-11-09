@@ -106,7 +106,6 @@ import 'package:pet_profile_app/features/people/domain/services/contact_vet_mapp
 import 'package:pet_profile_app/features/people/domain/services/desk_ranking.dart';
 import 'package:pet_profile_app/features/people/domain/services/group_pet_people.dart';
 import 'package:pet_profile_app/features/people/domain/services/people_query.dart';
-import 'package:pet_profile_app/features/people/domain/services/pet_people_grouping.dart';
 import 'package:pet_profile_app/features/people/domain/services/pet_people_slots.dart';
 import 'package:pet_profile_app/features/people/domain/services/roster_search.dart';
 import 'package:pet_profile_app/features/people/domain/services/roster_sections.dart';
@@ -154,4 +153,4 @@ import 'package:pet_profile_app/features/weight_tracking/domain/entities/weight_
 import 'package:pet_profile_app/features/weight_tracking/domain/repositories/weight_repository.dart';
 import 'package:pet_profile_app/features/weight_tracking/domain/weight_entry_sort.dart';
 
-const int coverageHelperDomainFileCount = 152;
+const int coverageHelperDomainFileCount = 151;

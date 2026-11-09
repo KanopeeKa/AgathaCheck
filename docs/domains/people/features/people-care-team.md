@@ -95,8 +95,8 @@ There are 32 decisions. D1, D4, D7 and D10 were revised after an external review
 | PEOPLE-CARE-TEAM-D-039 | **People around {pet} layout:** one white box; group order Vets → Emergency contact → At home → Trusted carers → Other professionals; one row per contact with slot pills; record owner first in At home; only Primary vet empty slot shown when empty; removes separate Emergency card and owner subtitle | Removes duplicate slot vets, prioritises primary vet, matches pet profile surfaces | Superseded | 2026-11-09 | superseded — ID reused on `main` for hub frame (D-041) |
 | PEOPLE-CARE-TEAM-D-040 | **Grouping uses contact roles:** `GET /pets/:petId/people` adds `contact.roles`; professional vs carer classification follows `ROLE_GROUP` / `ContactGroup`; vets via `vet` or `vet_nurse` roles or vet slots | Individual vets and groomers land in the correct group | Superseded | 2026-11-09 | superseded — renumbered to D-043 |
 | PEOPLE-CARE-TEAM-D-041 | **People hub frame:** routes under `/pc/people` sit inside one experience shell from `PeopleHubLayout` at every width; screen width chooses layout (list-only, detail-only, or master–detail), not whether a frame is drawn; child routes must not nest a second `ExperienceShellScaffold` (no duplicate bottom nav); on compact widths the hub shell owns title, back (preserving roster `q` / filter query), and primary actions such as Edit for contacts | Implements PEOPLE-CARE-TEAM-R-039; closes double chrome on phones after hub `ShellRoute` remodel | Live | 2026-11-09 | people hub single frame |
-| PEOPLE-CARE-TEAM-D-042 | **People around {pet} layout:** one white box; group order Vets → Emergency contact → At home → Trusted carers → Other professionals; one row per contact with slot pills; record owner first in At home; only Primary vet empty slot shown when empty; removes separate Emergency card and owner subtitle | Removes duplicate slot vets, prioritises primary vet, matches pet profile surfaces | Planned | 2026-11-09 | — |
-| PEOPLE-CARE-TEAM-D-043 | **Grouping uses contact roles:** `GET /pets/:petId/people` adds `contact.roles`; professional vs carer classification follows `ROLE_GROUP` / `ContactGroup`; vets via `vet` or `vet_nurse` roles or vet slots | Individual vets and groomers land in the correct group | Planned | 2026-11-09 | — |
+| PEOPLE-CARE-TEAM-D-042 | **People around {pet} layout:** one white box; group order Vets → Emergency contact → At home → Trusted carers → Other professionals; one row per contact with slot pills; record owner first in At home; only Primary vet empty slot shown when empty; removes separate Emergency card and owner subtitle | Removes duplicate slot vets, prioritises primary vet, matches pet profile surfaces | Live | 2026-11-09 | people-around-pet-p2b |
+| PEOPLE-CARE-TEAM-D-043 | **Grouping uses contact roles:** `GET /pets/:petId/people` adds `contact.roles`; professional vs carer classification follows `ROLE_GROUP` / `ContactGroup`; vets via `vet` or `vet_nurse` roles or vet slots | Individual vets and groomers land in the correct group | Live | 2026-11-09 | people-around-pet-p1 |
 
 ## Where we start
 
@@ -467,27 +467,27 @@ One **roster** on `/pc/people` backed by a UI aggregate **PersonRosterEntry** (c
 
 - **People:** one section per household, headed by the household's name, then carers, then professionals.
 - **Pets:** your pets first, then one group per household. The group headers appear only when someone is in more than one household.
-- **Pet profile (D-042, delivery in progress):** "People around {pet}" — section header above one bordered module; groups inside the box: **Vets**, **Emergency contact(s)**, **At home**, **Trusted carers**, **Other professionals**. Placement uses `groupPetPeople` (merge relationships by `contact_id`, then rules V1–P1). Account holders are not merged with contacts (logged as debt at release). Handover scope: **At home** shows the record owner only (owner name was already visible via the removed subtitle).
+- **Pet profile (D-042, Live):** "People around {pet}" — section header above one bordered module; groups inside the box: **Vets**, **Emergency contact(s)**, **At home**, **Trusted carers**, **Other professionals**. Placement uses `groupPetPeople` (merge relationships by `contact_id`, then rules V1–P1). Account holders are not merged with contacts (logged as debt at release). Handover scope: **At home** shows the record owner only (owner row uses **Parent of {pet}** / **Parent de {pet}**).
 - There's no household switcher.
 
-#### People around {pet} — requirements (Planned until release)
+#### People around {pet} — requirements (Live)
 
 | ID | Requirement | Status |
 | --- | --- | --- |
-| PEOPLE-CARE-TEAM-R-040 | Section header `titleMedium` w700; Manage when `canManage && scope == full`; keep `pet_emergency_manage_button` | Planned |
-| PEOPLE-CARE-TEAM-R-041 | One box (`SurfaceModule` on `AppColorTokens`); remove `PetEmergencyCard` | Planned |
-| PEOPLE-CARE-TEAM-R-042 | Group order and one row per contact; slot pills aggregated | Planned |
-| PEOPLE-CARE-TEAM-R-043 | Vets always visible; empty primary slot row when no primary vet | Planned |
-| PEOPLE-CARE-TEAM-R-044 | Emergency group when emergency contacts not under Vets only | Planned |
-| PEOPLE-CARE-TEAM-R-045 | At home: owner row first; full scope household members; handover owner only | Planned |
-| PEOPLE-CARE-TEAM-R-046 | Trusted carers / Other professionals hidden when empty; D-043 classification | Planned |
-| PEOPLE-CARE-TEAM-R-047 | Person row layout, call/chevron, tap via `resolvePersonDetailTarget` | Planned |
-| PEOPLE-CARE-TEAM-R-048 | Neutral slot pills; star on Primary vet | Planned |
-| PEOPLE-CARE-TEAM-R-049 | `+ Add someone` with `AddPersonRouteArgs.initialPetIds` | Planned |
-| PEOPLE-CARE-TEAM-R-050 | Loading and error states in the box | Planned |
-| PEOPLE-CARE-TEAM-R-051 | API `contact.roles` on each relationship's `contact` (additive) | Planned |
+| PEOPLE-CARE-TEAM-R-040 | Section header `titleMedium` w700; Manage when `canManage && scope == full`; keep `pet_emergency_manage_button` | Live |
+| PEOPLE-CARE-TEAM-R-041 | One box (`SurfaceModule` on `AppColorTokens`); remove `PetEmergencyCard` | Live |
+| PEOPLE-CARE-TEAM-R-042 | Group order and one row per contact; slot pills aggregated | Live |
+| PEOPLE-CARE-TEAM-R-043 | Vets always visible; empty primary slot row when no primary vet | Live |
+| PEOPLE-CARE-TEAM-R-044 | Emergency group when emergency contacts not under Vets only | Live |
+| PEOPLE-CARE-TEAM-R-045 | At home: owner row first; full scope household members; handover owner only | Live |
+| PEOPLE-CARE-TEAM-R-046 | Trusted carers / Other professionals hidden when empty; D-043 classification | Live |
+| PEOPLE-CARE-TEAM-R-047 | Person row layout, call/chevron, tap via `resolvePersonDetailTarget` | Live |
+| PEOPLE-CARE-TEAM-R-048 | Neutral slot pills; star on Primary vet | Live |
+| PEOPLE-CARE-TEAM-R-049 | `+ Add someone` with `AddPersonRouteArgs.initialPetIds` | Live |
+| PEOPLE-CARE-TEAM-R-050 | Loading and error states in the box | Live |
+| PEOPLE-CARE-TEAM-R-051 | API `contact.roles` on each relationship's `contact` (additive) | Live |
 
-**Tests (proposed):** `group_pet_people_test.dart`; `pet_people_section_test.dart` (updated); `server/test/people/relationshipMappingRoles.test.js` / `readModels.test.js`; E2E pet profile helpers only (not hub "Pet professionals").
+**Tests:** `group_pet_people_test.dart`; `pet_people_section_test.dart`; `server/test/people/relationshipMappingRoles.test.js` / `readModels.test.js`; E2E pet profile helpers (`people-integration.spec.ts`).
 
 **Supersedes** pet profile bullets in §Mockup corrections ("Show the owner quietly…", separate emergency card list).
 

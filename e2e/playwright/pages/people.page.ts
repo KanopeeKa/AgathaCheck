@@ -924,24 +924,23 @@ export class PeoplePage {
     await refreshFlutterAccessibility(this.page);
   }
 
-  // ── Pet profile: People around {pet} / emergency card ────────────────────
+  // ── Pet profile: People around {pet} grouped box ─────────────────────────
 
   async expectPeopleAroundPetSection(petName: string): Promise<void> {
     await refreshFlutterAccessibility(this.page);
-    const section = this.page
-      .getByText(new RegExp(`People around ${escapeRegExp(petName)}`, 'i'))
-      .or(this.page.getByText(/^Emergency$/i));
+    const section = this.page.getByText(
+      new RegExp(`People around ${escapeRegExp(petName)}`, 'i'),
+    );
     await section.first().scrollIntoViewIfNeeded();
     await expect(section.first()).toBeVisible({ timeout: 30_000 });
   }
 
-  async expectEmergencyCardShowsContact(name: string): Promise<void> {
+  async expectPeopleAroundBoxShowsContact(name: string): Promise<void> {
     await refreshFlutterAccessibility(this.page);
     const pattern = new RegExp(escapeRegExp(name), 'i');
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      const card = this.page.getByRole('group', { name: /Emergency/i });
-      await expect(card.or(this.page.getByText(pattern)).first()).toBeVisible();
+      await expect(this.page.getByText(pattern).first()).toBeVisible();
     }).toPass({ timeout: 45_000 });
   }
 
