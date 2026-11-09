@@ -10,12 +10,10 @@ class PersonDetailInviteView extends StatelessWidget {
   const PersonDetailInviteView({
     super.key,
     required this.target,
-    required this.embedded,
     required this.roster,
   });
 
   final PersonDetailPendingInviteTarget target;
-  final bool embedded;
   final Roster roster;
 
   @override
@@ -25,9 +23,7 @@ class PersonDetailInviteView extends StatelessWidget {
     final invite = target.invite;
 
     return PersonDetailShell(
-      embedded: embedded,
       personId: invite.id,
-      title: invite.email,
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [

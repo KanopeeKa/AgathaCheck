@@ -483,6 +483,14 @@ plus accessible label. The persistent notification bell is an allowed example.
 Authentication fields use the landing input surface and Shelter-teal focus tokens but
 retain these dimensions and all accessibility states.
 
+**Form help icon (`AppFormInfoButton`):** Use `color-text-secondary` /
+`colorScheme.onSurfaceVariant` (not outline/border) for the `info_outline` glyph so
+contrast stays ≥3:1 on form surfaces (`surface`, `surfaceAlt`, collection groups).
+Minimum target **48×48** logical px (`IconButton.styleFrom(minimumSize: Size(48, 48))`).
+Expose a tooltip plus an `AlertDialog` on activate; keyboard focus and Enter must open
+the dialog. Place on the field label row via `AppFormLabeledField.labelTrailing` when
+the control below must stay full width (e.g. neutered Yes/No/Unknown).
+
 ### 6.4 Selection controls
 
 | Component | Specification |

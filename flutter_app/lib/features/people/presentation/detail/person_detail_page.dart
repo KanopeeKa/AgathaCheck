@@ -9,14 +9,9 @@ import 'person_detail_member_view.dart';
 import 'person_detail_target.dart';
 
 class PersonDetailPage extends ConsumerWidget {
-  const PersonDetailPage({
-    super.key,
-    required this.personId,
-    this.embedded = false,
-  });
+  const PersonDetailPage({super.key, required this.personId});
 
   final String personId;
-  final bool embedded;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -34,17 +29,14 @@ class PersonDetailPage extends ConsumerWidget {
         return switch (target) {
           PersonDetailContactTarget() => PersonDetailContactView(
             contactId: target.contactId,
-            embedded: embedded,
             roster: roster,
           ),
           PersonDetailHouseholdMemberTarget() => PersonDetailMemberView(
             target: target,
-            embedded: embedded,
             roster: roster,
           ),
           PersonDetailPendingInviteTarget() => PersonDetailInviteView(
             target: target,
-            embedded: embedded,
             roster: roster,
           ),
         };

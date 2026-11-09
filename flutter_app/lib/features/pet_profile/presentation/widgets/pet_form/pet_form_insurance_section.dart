@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/widgets/form/app_form_info_button.dart';
 import '../../../../../l10n/app_localizations.dart';
-import 'pet_form_info_tooltip.dart';
 
 class PetFormInsuranceSection extends StatelessWidget {
   const PetFormInsuranceSection({
@@ -24,7 +24,7 @@ class PetFormInsuranceSection extends StatelessWidget {
         labelText: l.insuranceDetails,
         alignLabelWithHint: true,
         helperText: 'Policy info for emergencies or vet visits',
-        suffixIcon: PetFormInfoTooltip(
+        suffixIcon: AppFormInfoButton(
           message:
               'Include details someone else would need to use your pet\'s insurance:\n\n'
               '\u2022 Insurance company name\n'
