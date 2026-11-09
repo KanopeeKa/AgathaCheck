@@ -92,6 +92,7 @@ import 'package:pet_profile_app/features/people/domain/entities/household_invite
 import 'package:pet_profile_app/features/people/domain/entities/household_invite_preview.dart';
 import 'package:pet_profile_app/features/people/domain/entities/person.dart';
 import 'package:pet_profile_app/features/people/domain/entities/pet_people.dart';
+import 'package:pet_profile_app/features/people/domain/entities/pet_people_grouped.dart';
 import 'package:pet_profile_app/features/people/domain/entities/pet_report_vet_details.dart';
 import 'package:pet_profile_app/features/people/domain/entities/related_care.dart';
 import 'package:pet_profile_app/features/people/domain/entities/roster.dart';
@@ -103,6 +104,7 @@ import 'package:pet_profile_app/features/people/domain/enums/relationship_kind.d
 import 'package:pet_profile_app/features/people/domain/repositories/people_repository.dart';
 import 'package:pet_profile_app/features/people/domain/services/contact_vet_mapping.dart';
 import 'package:pet_profile_app/features/people/domain/services/desk_ranking.dart';
+import 'package:pet_profile_app/features/people/domain/services/group_pet_people.dart';
 import 'package:pet_profile_app/features/people/domain/services/people_query.dart';
 import 'package:pet_profile_app/features/people/domain/services/pet_people_grouping.dart';
 import 'package:pet_profile_app/features/people/domain/services/pet_people_slots.dart';
@@ -152,4 +154,4 @@ import 'package:pet_profile_app/features/weight_tracking/domain/entities/weight_
 import 'package:pet_profile_app/features/weight_tracking/domain/repositories/weight_repository.dart';
 import 'package:pet_profile_app/features/weight_tracking/domain/weight_entry_sort.dart';
 
-const int coverageHelperDomainFileCount = 150;
+const int coverageHelperDomainFileCount = 152;
