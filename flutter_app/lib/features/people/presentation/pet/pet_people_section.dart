@@ -12,7 +12,7 @@ import 'pet_emergency_manage_sheet.dart';
 import 'pet_people_section_rows.dart';
 import 'widgets/people_group_box.dart';
 
-/// "People around {pet}" on the pet profile — one grouped module (D-039).
+/// "People around {pet}" on the pet profile — one grouped module (D-040).
 class PetPeopleSection extends ConsumerWidget {
   const PetPeopleSection({
     super.key,

@@ -1,6 +1,6 @@
 import '../enums/relationship_kind.dart';
 
-/// Ordered groups for the pet profile "People around {pet}" section (D-039).
+/// Ordered groups for the pet profile "People around {pet}" section (D-040).
 class PetPeopleGroupedSection {
   const PetPeopleGroupedSection({
     required this.vets,

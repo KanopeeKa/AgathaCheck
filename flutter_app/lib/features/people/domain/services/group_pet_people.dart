@@ -6,7 +6,7 @@ import 'pet_people_slots.dart';
 const _vetRoles = {'vet', 'vet_nurse'};
 const _otherProRoles = {'groomer', 'trainer', 'behaviourist', 'boarding'};
 
-/// Pure placement for D-039 / D-040.
+/// Pure placement for D-040 / D-041.
 PetPeopleGroupedSection groupPetPeople(PetPeople people) {
   final aggregates = _contactAggregates(people);
   final vetRows = <String>[];
