@@ -10,6 +10,8 @@ tags: [design,ui,ux,review]
 
 Analysis only. No app code, theme, copy, tests or routes were changed. Graded against the repository's own guidance ([`true-north.md`](../true-north.md), [`principles.md`](../principles.md), [`system.md`](../system.md), [`tokens.md`](../tokens.md), [`copy-tone.md`](../copy-tone.md), [`terminology.md`](../terminology.md), the `ui-design-deep` skill) and against public material from comparable pet apps (Part 3).
 
+> **Archive record.** This file is the original review, committed unchanged as the source for the execute-plan split in [`ui-ux-review-2026-11-execute-plan-split.md`](./ui-ux-review-2026-11-execute-plan-split.md). Only two kinds of edit were made to the text: (1) the two screenshot embeds in "Method and limits" are replaced by an archive note, because the image files were not supplied; (2) the file name of the full pre-push script was reworded in two places (Part 5 § 5.2 table row on the frozen test lane, and the last line of § 5.7), because `scripts/validate_docs.sh` fails when more than 40 lines in `docs/` contain that exact file name and the repository sits at the limit. Neither edit changes a finding.
+
 ## Summary
 
 **Overall assessment.** The product has a coherent, calm foundation that matches True North: a role-neutral entry, one responsive Pet Care shell (bottom navigation, rail, sidebar), server-authoritative care data, confirmations before consequential changes in People and Away, and no streaks or engagement mechanics. The problems sit at the edges of the main journeys, not in their centre:
@@ -2184,3 +2186,826 @@ There are 43 retained entries across 13 screens: requirement × High 4 / Medium 
 
 ---
 
+### D-4 Notifications — `/notifications`
+
+- **Source:** `features/notifications/presentation/screens/notifications_screen.dart`, `widgets/notification_panel.dart`, `notification_panel_header.dart`, `notification_inbox_list.dart`, `notification_tile.dart`, `core/router/experience_routes.dart`
+- **Purpose:** Authenticated Activity/For you inbox, also rendered inside the persistent shell panel.
+- **Strengths (confirmed):** shared tabs/date grouping, composed row semantics, textual read/action-needed state, refresh for populated lists, and an explicit settings action in the full-screen inbox.
+- **Attention flag:** FLAG.
+
+#### D-4.1 Shell panel has no route to the full inbox or preferences — UX · requirement · High
+
+1. **Problem.** `/pc/notifications` redirects home (`experience_routes.dart:147-151`); the shell mounts `NotificationPanel` as its end drawer (`experience_shell_scaffold.dart:227-235`), whose header has only title and Mark all read (`notification_panel_header.dart:19-37`) and whose remaining body adds no full-inbox/settings destination (`notification_panel.dart:55-110`).
+2. **Why it matters.** The full-screen settings action exists (`notifications_screen.dart:81-85`), but the persistent entry point does not lead to it; this is the top-five notification-navigation issue in the review Summary.
+3. **UX impact.** Panel history itself is available, so it is wrong to say all history is inaccessible; full-screen history and preference controls are undiscoverable from the main bell.
+4. **A11y impact.** Keyboard and screen-reader users share the missing destination; manually entering a route is not an adequate navigation alternative.
+5. **System impact.** A legacy pet-list app bar links to `/notifications` (`pet_list_app_bar.dart:43-46`), but it does not repair the active shell's missing path.
+6. **Proposed fix.** Add persistent “Open full inbox” and “Notification settings” actions to the panel header, closing the drawer before navigation; redirect `/pc/notifications` to `/notifications`.
+7. **Reusable rule.** X-11: every persistent utility entry point leads to the full destination and its essential controls.
+8. **Implementation notes.** Extend `NotificationPanelHeader` callbacks in `notification_panel_header.dart`/`notification_panel.dart`; use planned `DestinationRow` or 48 dp labelled buttons, add `notificationOpenInbox` to both ARBs and reuse `notificationSettings`.
+9. **Acceptance checklist.** From every shell layout, bell → panel → settings works by touch and keyboard; full inbox is one explicit action away; old `/pc/notifications` links no longer land on Home.
+
+#### D-4.2 For you empty copy can be quieter — Copy · recommendation · Low (was Medium)
+
+1. **Problem.** The empty branch selects `notificationInboxForYouEmpty` (`notification_inbox_list.dart:56-59`), which says “No suggestions right now. Agatha will let you know when something's worth a look” (`app_en.arb:2308`).
+2. **Why it matters.** `copy-tone.md` § Silence favours useful, low-pressure messages, but this conditional promise is not evidence of manufactured engagement or an incorrect runtime notification.
+3. **UX impact.** Minor extra expectation of future suggestions; no blocked task is demonstrated.
+4. **A11y impact.** None.
+5. **System impact.** One shared ARB value serves the panel and full inbox.
+6. **Proposed fix.** Shorten to “No suggestions right now” without prompting the user to enable anything in the normal empty state.
+7. **Reusable rule.** Empty informational states can stop after a precise explanation when no safe action is needed (§ 6.10).
+8. **Implementation notes.** Update `notificationInboxForYouEmpty` in `app_en.arb` and `app_fr.arb`; retain `NotificationForYouOffState` as the distinct explicit disabled state.
+9. **Acceptance checklist.** Normal empty For you copy is calm in both locales; disabled suggestions still show the separate settings-oriented state.
+
+#### D-4.3 Inbox error leaks exception text in both presentations — i18n · requirement · Medium (was recommendation)
+
+1. **Problem.** Full-screen errors render hard-coded `Failed to load notifications: $error` (`notifications_screen.dart:105-120`); the panel localizes the wrapper but still passes `error.toString()` (`notification_panel_error_view.dart:27-32`).
+2. **Why it matters.** `terminology.md` § Localization requires ARB strings, and `system.md` § 6.10 prohibits raw backend messages even inside a localized wrapper.
+3. **UX impact.** A recoverable inbox failure reads as technical breakage; both variants already have Retry.
+4. **A11y impact.** Exception details are included in spoken content instead of a short state explanation.
+5. **System impact.** Two error widgets duplicate a single provider failure treatment.
+6. **Proposed fix.** Use one safe localized load-error title and retain provider refresh in both surfaces.
+7. **Reusable rule.** X-1/X-6: translate the user explanation, not the exception.
+8. **Implementation notes.** Reuse planned `AsyncErrorState` from B-2.1 in `notifications_screen.dart` and `notification_panel_error_view.dart`; replace the parameterized `failedToLoadNotifications` usage with a safe `notificationsLoadError` key in both ARBs and keep `notificationsProvider.notifier.refresh()`.
+9. **Acceptance checklist.** EN/FR error branches contain no backend payload or English literal; each Retry re-requests notifications and recovers without losing its surrounding navigation.
+
+#### D-4.4 Mark all read remains active without unread items — UX · recommendation · Low
+
+1. **Problem.** The action is always enabled and reuses `markAllRead` as its success text (`notifications_screen.dart:86-99`); the panel follows the same pattern (`notification_panel.dart:136-143`).
+2. **Why it matters.** An action label does not clearly state completion, and a no-op creates unnecessary work.
+3. **UX impact.** Empty or fully read tabs still appear to need bulk cleanup.
+4. **A11y impact.** The confirmation does not clearly distinguish the previous action from the resulting state.
+5. **System impact.** Both surfaces share the selected-tab session state and can use one eligibility rule.
+6. **Proposed fix.** Disable bulk marking until loaded and when the current tab has no unread applicable items; confirm with a distinct result message after success.
+7. **Reusable rule.** X-5/X-7: actions reflect eligibility and success names the completed outcome.
+8. **Implementation notes.** Derive eligibility alongside `NotificationInboxV2Rules` in `notifications_screen.dart`/`notification_panel.dart`, pass a nullable callback into `notification_panel_header.dart`, and add `notificationsMarkedRead` to both ARBs.
+9. **Acceptance checklist.** Loading, empty and fully read tabs disable the control; a tab with unread items enables it, and successful completion announces the distinct localized result.
+
+---
+
+### D-5 Notification settings — `/notifications/settings`
+
+- **Source:** `features/notifications/presentation/screens/notification_settings_screen.dart`, `widgets/notification_settings_matrix_section.dart`, `notification_settings_care_reminders_section.dart`, `notification_settings_muted_pets_section.dart`
+- **Purpose:** Authenticated configuration of email/inbox categories, suggestions, care reminders and muted pets.
+- **Strengths (confirmed):** preferences initialize before editing, explicit Save disables during submission, success is localized, push controls are hidden behind a false shipped flag with explanatory copy, and care steppers have tooltips.
+- **Attention flag:** Watch.
+
+#### D-5.1 Primary preference failure has no retry — UX · requirement · Medium (was recommendation)
+
+1. **Problem.** Preferences initialize once on successful data (`notification_settings_screen.dart:46-59`), but their error branch is only `Text('Error: $error')` (`81-84`) with no recovery action.
+2. **Why it matters.** `system.md` § 6.10 requires meaningful retry for a failed primary load; source does not prove the provider can never recover independently, only that the screen provides no explicit retry.
+3. **UX impact.** A transient request failure blocks configuration until external refresh or re-entry.
+4. **A11y impact.** No focusable recovery control is present.
+5. **System impact.** Blindly resetting `_initialized` during a refresh could discard local edits, so recovery must distinguish initial loading from refreshing a draft.
+6. **Proposed fix.** Use a retryable error state for initial failure and preserve an initialized unsaved draft during background refresh.
+7. **Reusable rule.** X-1: primary-load failure is recoverable without losing the user's working context.
+8. **Implementation notes.** In `notification_settings_screen.dart`, reuse planned `AsyncErrorState` with `ref.invalidate(notificationPreferencesProvider)` and `notificationPreferencesLoadError` in both ARBs; use B-12.2 labelled progress and an explicit draft-reset policy.
+9. **Acceptance checklist.** Initial failure → Retry → loaded controls works in place; a refresh failure after editing does not silently replace the draft with defaults.
+
+#### D-5.2 Load and save errors use hard-coded English and raw details — i18n · requirement · Medium
+
+1. **Problem.** The load branch shows `Error: $error` (`notification_settings_screen.dart:83`) and failed Save shows `Failed to save: $e` (`186-190`).
+2. **Why it matters.** Both violate `terminology.md` § Localization and `system.md` § 6.10; the grade remains Medium because these utility failure paths do not by themselves establish data loss.
+3. **UX impact.** Users receive implementation details instead of whether their changes were saved.
+4. **A11y impact.** Technical text is read in the wrong language and may be excessively long.
+5. **System impact.** Load and mutation failures need different user messages even if both use shared state styling.
+6. **Proposed fix.** Say preferences could not load for initial failure, and “Your changes weren't saved. Try again” after a failed update, without clearing the draft.
+7. **Reusable rule.** X-1/X-5/X-6: failure copy states the user outcome, never exception text.
+8. **Implementation notes.** Replace the two literal branches in `notification_settings_screen.dart`, sharing D-5.1's `notificationPreferencesLoadError` and adding `notificationPreferencesSaveFailed` to both ARBs; retain `_saving` reset in `finally`.
+9. **Acceptance checklist.** Provider load/update failures render localized safe text without raw error content, preserve unsaved values, and leave Save enabled again after failure.
+
+#### D-5.3 Matrix switches lack contextual names; scaling needs verification (verify) — A11y · requirement · Medium
+
+1. **Problem.** Category rows use fixed trailing width `showPush ? 220 : 160` and bare `Switch` controls (`notification_settings_matrix_section.dart:212-265`); the suggestions row repeats this layout (`304-349`) without explicit category/channel labels or merged labelled-control semantics.
+2. **Why it matters.** `system.md` § 7.1 requires understandable controls and § 2.3 requires unclipped 200% text; missing explicit association is visible in code, while actual overflow requires a rendered test.
+3. **UX impact.** On a narrow phone, long French labels compete with a 160 dp control region; the 220 dp branch is currently dormant because push is deferred (`6-7`).
+4. **A11y impact.** Separate switches can expose only on/off state without identifying which channel/category changes; exact spoken output must be checked.
+5. **System impact.** Iterating every category also exposes frozen `organisationFoster` (`61-85,195-196`; `app_en.arb:2320`), which belongs to Part 5 removal rather than a new Shelter settings design.
+6. **Proposed fix.** Stack channel-labelled controls beneath the category on compact/large-text layouts, label each switch with category plus channel, and remove the frozen category from active rendering.
+7. **Reusable rule.** X-8/X-9: controls retain their full context without relying on visual column alignment; X-4 excludes frozen categories.
+8. **Implementation notes.** Refactor `_CategoryMatrixRow`/`_AgathaSuggestionsRow` in `notification_settings_matrix_section.dart` using `LayoutBuilder` and `SwitchListTile` or explicit `Semantics`; combine existing `notificationSettingsCategory*`/`notificationSettingsColumn*` through a new ARB `notificationChannelSetting(category, channel)`, keeping persisted matrix fields compatible until Part 5.
+9. **Acceptance checklist.** At 320/360 dp and 200% EN/FR, labels and switches do not overflow, each switch announces category/channel/state, targets remain 48 dp, and no organisation/foster row appears in active Pet Care.
+
+#### D-5.4 Current day/day-s output is valid in EN and FR (withdrawn) — i18n · recommendation · Low
+
+1. **Problem.** The string is assembled as `$reminderDays ${l.day}${reminderDays == 1 ? '' : 's'}` (`notification_settings_care_reminders_section.dart:95-100`), not an entirely English `day/days` literal; the French singular is `jour` (`app_fr.arb:539`), so supported counts produce correct `jour/jours`.
+2. **Why it matters.** The first-pass claim that French necessarily reads incorrectly is unsupported; plural assembly remains a maintainability recommendation.
+3. **UX impact.** None confirmed for the supported 1–14 range in the two current locales.
+4. **A11y impact.** None confirmed.
+5. **System impact.** Widget-side suffix rules will not generalize to more complex plural systems.
+6. **Proposed fix.** When touching this copy, replace assembly with an ICU plural rather than treating this as a confirmed translation defect.
+7. **Reusable rule.** X-6: plural messages belong in ARB, but verify the actual supported-language result before grading its harm.
+8. **Implementation notes.** Add `notificationReminderDays(count)` in both ARBs and call it from `notification_settings_care_reminders_section.dart`, reusing the existing stepper values and tooltips.
+9. **Acceptance checklist.** Counts 1, 2 and 14 have correct EN/FR singular/plural output, with no suffix logic in the widget after migration.
+
+#### D-5.5 Care-reminder jump ignores reduced motion — UX · requirement · Medium (was recommendation · Low)
+
+1. **Problem.** The link force-unwraps a lazily built ListView child's key context and always requests a 300 ms `ensureVisible` animation (`notification_settings_screen.dart:98-113`).
+2. **Why it matters.** `system.md` § 7.1 explicitly requires reduced-motion support; whether the distant keyed child is mounted at tap time depends on viewport/layout and is not asserted as a proven crash.
+3. **UX impact.** A useful section jump can fail if its target has not been built, and cannot adapt its animation to the accessibility setting.
+4. **A11y impact.** Forced animated scrolling ignores a system accessibility preference; viewport movement also needs a clear destination heading.
+5. **System impact.** Guarding null alone avoids failure but can leave a silent no-op, so the section-navigation mechanism must handle lazy layout.
+6. **Proposed fix.** Use a reliable index/controller or an eagerly built bounded section target; animate only when reduced motion is off, otherwise jump immediately.
+7. **Reusable rule.** X-8/X-11 and § 7.1: section navigation must work independently of mounted-child assumptions and respect reduced motion.
+8. **Implementation notes.** Change the jump in `notification_settings_screen.dart`, inspect `MediaQuery.disableAnimationsOf(context)` and guard context; reuse the existing `notificationSettingsCareRemindersTitle` heading rather than adding navigation copy.
+9. **Acceptance checklist.** Tapping the link reaches Care reminders when initially below the lazy viewport; reduced-motion mode uses zero-duration movement; no null-context exception or silent no-op occurs.
+
+---
+
+### D-6 Pending actions — `/pending-actions`
+
+- **Source:** `features/notifications/presentation/screens/pending_actions_screen.dart`, `utils/notification_navigation.dart`, `features/pet_profile/presentation/widgets/pet_list/pending_{foster,adoption,custody}_*section.dart`
+- **Purpose:** Legacy administrative deep-link wrapper; no active workflow body remains.
+- **Strengths (confirmed):** invalid focus values safely map to the all-sections branch; the page title is localized.
+- **Attention flag:** FLAG.
+
+#### D-6.1 Route retains only frozen no-op sections — UX · requirement · Medium (was High)
+
+1. **Problem.** The wrapper selects foster/adoption/custody children (`pending_actions_screen.dart:16,23-35`), but each corresponding child returns `SizedBox.shrink()` (`pending_foster_placements_section.dart:4-9`, `pending_adoption_placements_section.dart:4-9`, `pending_custody_transfers_section.dart:4-9`); it does not actually present functioning obsolete acceptance forms.
+2. **Why it matters.** Old notification wire types still route here (`notification_navigation.dart:37-60`), while frozen `/o/*` and organisation routes redirect home (`frozen_domain_route_stubs.dart:3-12`).
+3. **UX impact.** A retained administrative notification can land on an empty “Action needed” page; current generation of those wire types was not established by this client review.
+4. **A11y impact.** No actionable body exists to explain or resolve the destination.
+5. **System impact.** This is entirely a Part 5 deletion/compatibility decision, not work to revive frozen foster/adoption/custody features.
+6. **Proposed fix.** Prefer retiring the screen and redirecting `/pending-actions` (including old focus queries) to `/notifications` with a localized one-time notice that the old action is unavailable; if the route is kept, render a truthful resolved empty state and Open inbox action without frozen children.
+7. **Reusable rule.** X-4/X-11: retired workflows retain a safe compatibility destination, not empty active screens.
+8. **Implementation notes.** Update `app_router.dart:368-374` and `notification_navigation.dart` with Part 5; add `notificationActionUnavailable` in both ARBs and remove the no-op imports only after the route decision.
+9. **Acceptance checklist.** Every old foster/adoption/custody/fallback notification link reaches the chosen safe destination with an explanation; no frozen action form is restored; producer shutdown/retention is recorded separately by the owning team.
+
+#### D-6.2 Empty page gives no explanation or next action — UX · requirement · Medium
+
+1. **Problem.** The ListView has only the three conditional children (`pending_actions_screen.dart:25-35`), all now no-op widgets (`pending_*_section.dart:9` as listed in D-6.1), leaving the page blank for every valid focus.
+2. **Why it matters.** `system.md` § 6.10 requires a precise empty explanation and an appropriate safe action.
+3. **UX impact.** “Action needed” suggests unresolved work but nothing can be done.
+4. **A11y impact.** Traversal reaches the title and no content explaining what happened.
+5. **System impact.** D-6.1's retirement normally eliminates this defect; do not build a new aggregation of frozen queries.
+6. **Proposed fix.** If retained, show “There are no available actions here” with Open inbox; otherwise use the redirect-and-notice specified in D-6.1.
+7. **Reusable rule.** X-4 and § 6.10: a retired or empty workflow is an explicit state, not blank space.
+8. **Implementation notes.** Keep any retained body in `pending_actions_screen.dart` localized through new `pendingActionsUnavailable`/`openInbox` ARB keys; use a 48 dp button or planned `DestinationRow` to `/notifications`.
+9. **Acceptance checklist.** Empty/focus/invalid-focus direct links never show a blank body; the stated destination can be opened with touch, keyboard and a screen reader.
+
+#### D-6.3 Direct-link fallback navigation needs checking (verify) — A11y · recommendation · Low
+
+1. **Problem.** The app bar specifies only a title (`pending_actions_screen.dart:23-24`), but Material `AppBar` implies a back button when the Navigator can pop; the first-pass claim that in-app back is always absent is too broad.
+2. **Why it matters.** `context.go('/pending-actions?...')` in notification navigation (`notification_navigation.dart:37-45`) may leave no poppable prior page, which needs runtime/router-stack verification.
+3. **UX impact.** Possible dead end on a direct load rather than on every visit.
+4. **A11y impact.** Without an implied back button, users need an explicit destination rather than relying on platform gestures.
+5. **System impact.** Retiring the route per D-6.1 is preferable to enhancing this legacy app bar.
+6. **Proposed fix.** For any retained route, use pop-if-possible with an explicit Inbox fallback, or expose the body destination from D-6.2.
+7. **Reusable rule.** X-11: deep-link destinations need a fallback independent of navigation history.
+8. **Implementation notes.** In `pending_actions_screen.dart`, reuse the `routeShell`/return-navigation pattern from care detail where appropriate, existing `goBack` copy and `/notifications`; do not assume an absent explicit `leading` means no framework back control.
+9. **Acceptance checklist.** Verify normal push and fresh direct-load stacks; each has a reachable Inbox/back action, including keyboard traversal.
+
+---
+
+### D-7 Subscription / Paywall — `/subscription`
+
+- **Source:** `features/subscription/presentation/screens/paywall_screen.dart`, `widgets/paywall_body_content.dart`, `paywall_offering_card.dart`, `paywall_feature_list_card.dart`, `domain/entities/subscription_status.dart`
+- **Purpose:** Authenticated offer selection, purchase, restore and existing-subscription management.
+- **Strengths (confirmed):** store offerings and localized `priceString`, constrained 500 dp content, disabled purchase controls during purchase, restore action and existing entitlement display.
+- **Attention flag:** FLAG.
+
+#### D-7.1 Advertised subscription management is inert — UX · requirement · High
+
+1. **Problem.** When unlimited access and a management URL exist, the Manage subscription button is rendered with `onPressed: () {}` (`paywall_body_content.dart:135-146`); no management callback is supplied by the parent (`paywall_screen.dart:117-127`).
+2. **Why it matters.** This misrepresents a consequential billing control and is explicitly one of the review Summary's top-five trust issues.
+3. **UX impact.** An existing subscriber cannot use the advertised cancellation/management route.
+4. **A11y impact.** The named button activates without any perceivable outcome.
+5. **System impact.** RevenueCat already maps `info.managementURL` into `SubscriptionStatus.managementUrl` (`revenuecat_service.dart:145-152`), so the required destination data exists.
+6. **Proposed fix.** Pass a real management callback that validates and launches the supplied URL externally, with a copyable URL/platform-management fallback on failure.
+7. **Reusable rule.** X-5/X-11: a billing control must perform its named action or explicitly explain why it cannot.
+8. **Implementation notes.** Add `onManageSubscription` to `PaywallBodyContent` and implement launch handling in `paywall_screen.dart`; reuse `manageSubscription`, add `subscriptionManagementUnavailable` in both ARBs, and do not hide a failed launch without feedback.
+9. **Acceptance checklist.** A subscriber with a valid URL opens the management destination; false/throwing launch results show a safe localized fallback; no URL never produces an enabled inert button.
+
+#### D-7.2 Offer UI omits recurring-payment disclosure — UX · requirement · High
+
+1. **Problem.** Cards receive title, price, inferred period and an unconditional yearly “Best Value” tag (`paywall_body_content.dart:167-200`); `paywall_offering_card.dart:65-107` displays these and Subscribe without renewal/cancellation text, applicable trial conditions or terms/privacy links.
+2. **Why it matters.** Financial consent requires understandable recurring cost and applicable offer conditions before committing; this is a billing-trust requirement, not a claim that a particular live store submission has failed review.
+3. **UX impact.** Users cannot compare true recurring commitments from the app page, and annual “Best Value” is not substantiated by any savings calculation.
+4. **A11y impact.** Critical conditions absent visually are also absent from the card's accessible reading order.
+5. **System impact.** Period inference from identifier substrings/package type (`170-183`) is not a complete model for every store product or introductory offer.
+6. **Proposed fix.** Show actual recurring price/cadence, auto-renewal and cancellation guidance, links to terms/privacy, and any applicable trial/introductory period plus subsequent charge; omit value claims unless computed from comparable offers.
+7. **Reusable rule.** X-5/X-6: financial choices describe the real commitment in localized, factual language.
+8. **Implementation notes.** Introduce a display model from `package.storeProduct` in `paywall_body_content.dart`, extend `PaywallOfferingCard` with localized `subscriptionRenewalTerms`/`subscriptionTrialTerms` ARB messages, and link `LegalDocumentId` routes; verify the SDK's actual metadata and platform checkout separately.
+9. **Acceptance checklist.** Monthly, annual, nonstandard and trial-eligible test products show correct total recurring charge and cadence before Subscribe; cancellation and legal links work; no “Best Value” appears without a tested comparison.
+
+#### D-7.3 Billing/status/features and failure copy are hard-coded — i18n · requirement · Medium
+
+1. **Problem.** Status and semantic labels are English literals (`paywall_body_content.dart:61-88`), period/value/fallback titles are literals (`177-194`), feature rows are English (`paywall_feature_list_card.dart:19-32`), and load/purchase/restore failures are English (`paywall_screen.dart:37-46,71-76,91-94`).
+2. **Why it matters.** `terminology.md` § Localization and X-6 apply equally to billing information, semantic labels and failure messages; purchase/restore failures additionally violate § 6.10 by exposing `$e`.
+3. **UX impact.** French users see mixed-language critical information and technical failures.
+4. **A11y impact.** The icon's English semantic labels remain untranslated even when surrounding controls are French.
+5. **System impact.** `_formatDate` uses a literal day/month/year concatenation (`paywall_screen.dart:102-104`), and expiration is called “Renews” without a renewal flag in the status model (`subscription_status.dart:3-15`).
+6. **Proposed fix.** Localize all app-authored copy and dates, retain store-provided localized prices/titles, map errors safely, and label a date as renewal only when renewal is actually known.
+7. **Reusable rule.** X-6/X-5: ARB owns UI text and unknown billing status is not promoted to a renewal claim.
+8. **Implementation notes.** Update all four paywall files and both ARBs with `subscriptionStatus*`, `subscriptionPeriod*`, `subscriptionFeature*`, `subscriptionPurchaseFailed`/`subscriptionRestoreFailed`; use a locale-aware date formatter and extend the RevenueCat status mapping if verified renewal data is available.
+9. **Acceptance checklist.** French renders no app-authored English status/feature/error labels; prices remain store localized; canceled-but-entitled accounts never falsely say “Renews”; error strings contain no raw exception.
+
+#### D-7.4 Preferred offer treatment drifts from card tokens — Design · recommendation · Low
+
+1. **Problem.** A savings tag changes elevation from 0 to 2 and border from 1 to 2; both card and InkWell use radius 12 (`paywall_offering_card.dart:28-41`).
+2. **Why it matters.** `system.md` § 4 assigns cards radius 16, and § 5 defaults cards to a 1 px border without shadow; no overlay need explains this treatment.
+3. **UX impact.** Annual offers acquire extra visual pressure without a verified value basis.
+4. **A11y impact.** None established by the styling alone.
+5. **System impact.** A bespoke card family requires separate theme maintenance.
+6. **Proposed fix.** Use 16 dp card radius, 1 px themed outline and zero elevation; any factual offer badge should not alter those defaults.
+7. **Reusable rule.** X-10: border-first theme tokens express hierarchy before bespoke elevation.
+8. **Implementation notes.** Align `Card.shape` and `InkWell.borderRadius` in `paywall_offering_card.dart` with shared card-theme treatment; keep `textTheme` styles and apply D-7.2's separate decision about `savingsTag`.
+9. **Acceptance checklist.** Monthly/annual card goldens share the approved radius, outline and zero elevation; keyboard focus remains visible and distinct from the default border.
+
+#### D-7.5 Both failed and empty offering loads hide Reload — UX · requirement · Medium (was recommendation)
+
+1. **Problem.** Reload appears only when no card exists and `error == null` (`paywall_body_content.dart:207-220`), but `_loadOfferings` sets a non-null error for both an empty result and an exception (`paywall_screen.dart:37-47`).
+2. **Why it matters.** `system.md` § 6.10 requires actionable recovery; the first-pass statement that the ordinary no-offer state had a reload affordance was incorrect.
+3. **UX impact.** Neither unavailable-offer outcome can be retried from its visible state.
+4. **A11y impact.** An error sentence offers no focusable recovery action.
+5. **System impact.** `_loadOfferings` also does not reset `_loading` or clear `_error` at the start (`paywall_screen.dart:29-50`), so merely exposing the current callback would not fully restore state handling.
+6. **Proposed fix.** Show retry for both outcomes and make reload an explicit loading → error/empty/data transition, clearing stale errors on success.
+7. **Reusable rule.** X-1: retry is part of the failure state, not a control available only when there is no failure.
+8. **Implementation notes.** Use planned `AsyncErrorState` and B-12.2 labelled progress in `paywall_body_content.dart`, repair `_loadOfferings` in `paywall_screen.dart`, reuse `loadPlans`/`retry` and add safe `subscriptionPlansUnavailable` ARB copy.
+9. **Acceptance checklist.** Empty and thrown offering results both show Retry; repeated retry cannot overlap requests; success clears the old error and displays plans without leaving the page.
+
+---
+
+### D-8 Help / FAQ — `/help`
+
+- **Source:** `features/help/presentation/screens/help_screen.dart`, `l10n/app_en.arb`, `l10n/app_fr.arb`, `core/router/app_router.dart`
+- **Purpose:** Authenticated bundled feature help; `/help` is absent from the signed-out allow-list (`app_router.dart:111-123`).
+- **Strengths (confirmed):** localized questions/answers, native nested `ExpansionTile` disclosure controls and readable answer line height; no network request is required to read bundled content.
+- **Attention flag:** FLAG.
+
+#### D-8.1 FAQ teaches frozen features and retired workflows — Copy · requirement · Medium (was High)
+
+1. **Problem.** The screen renders Organisation and Family Events groups (`help_screen.dart:110-128`); EN values explicitly describe shelters/fostering and retired Family Events (`app_en.arb:1797-1815`), and Reports repeats those features (`1831-1833`).
+2. **Why it matters.** `terminology.md:12-14,136` separates frozen domains and forbids Family event as active vocabulary; wrong instructions are a correctness breach, but no direct data loss or blocked top-five execution path is established for this FAQ.
+3. **UX impact.** Users search for organisation and health-dashboard controls that are no longer active.
+4. **A11y impact.** Incorrect instructions remain incorrect when spoken; native disclosure semantics do not solve content accuracy.
+5. **System impact.** Frozen FAQ deletion belongs with Part 5, while active FAQ groups need a targeted rewrite rather than blanket removal.
+6. **Proposed fix.** Remove `faqOrg*` and `faqFamilyEvents*` groups entirely, not a rename to Away planning; retain Account, Pet Profiles, Care/Health, Weight, Vet, Sharing, Notifications, Reports, Subscription and Language groups but rewrite their active navigation and remove frozen references.
+7. **Reusable rule.** X-4: help describes only shipped product paths and current terminology.
+8. **Implementation notes.** In `help_screen.dart` remove the two groups; migrate both ARBs' `faqAccountA4/A5`, `faqHealthA2/A3`, `faqVetA1`, `faqSharingA3/A4`, `faqNotificationsA2` and `faqReportsA1/A2` using Account, All actions, People/Vet routes and the D-4.1 panel-settings solution, then verify each remaining behavioural claim with its feature owner.
+9. **Acceptance checklist.** EN/FR Help has no organisation/fostering/Family Events instructions; every retained navigation answer can be followed in active Pet Care without a frozen redirect; no unsupported Away/transfer replacement is invented.
+
+#### D-8.2 Nested FAQ has no direct support fallback — UX · recommendation · Medium
+
+1. **Problem.** The page contains twelve feature groups (`help_screen.dart:47-164`) and nested question disclosures (`193-235`), but no search field or support contact control.
+2. **Why it matters.** Even after frozen groups are removed, users with an unanswered problem must serially inspect topics and then leave Help to find Contact in Account.
+3. **UX impact.** More effort to reach a useful answer or a human support address.
+4. **A11y impact.** Nested expansion adds repeated focus stops; no actual disclosure semantics failure is demonstrated.
+5. **System impact.** Account already owns the contact address and needs the robust launch fallback in D-1.4.
+6. **Proposed fix.** Add a visible “Contact support” destination; add lightweight question filtering only if the reduced FAQ still warrants it.
+7. **Reusable rule.** X-11: self-service help offers an honest escape when its content does not answer the question.
+8. **Implementation notes.** Reuse `DrawerMenuConfig.contactEmail` and D-1.4's fallback handler from a planned `DestinationRow` in `help_screen.dart`; add `helpContactSupport` in both ARBs and retain native ExpansionTiles.
+9. **Acceptance checklist.** Support can be reached without leaving Help; mail launch failure exposes the address; if search is added, it matches localized questions and has a clear no-results state.
+
+#### D-8.3 EN/FR FAQ migration must preserve the same active meaning — i18n · recommendation · Low
+
+1. **Problem.** Both locales retain Family Events (`app_en.arb:1809-1815`, `app_fr.arb:1688-1694`), and Sharing's transfer answer differs materially between EN and FR (`app_en.arb:1794-1795`, `app_fr.arb:1673-1674`).
+2. **Why it matters.** Updating only widgets or EN leaves obsolete instructions in French; this finding coordinates the D-8.1 migration rather than counting a second independent policy failure.
+3. **UX impact.** People switching language can receive different guidance about what sharing/transfer allows.
+4. **A11y impact.** None beyond the inaccurate translated content.
+5. **System impact.** Retired ARB keys can continue to exist for frozen references until Part 5 removes them; visible values and active use are the immediate concern.
+6. **Proposed fix.** Review retained FAQ meanings as EN/FR pairs and remove the same frozen groups in both.
+7. **Reusable rule.** X-4/X-6: product-scope migrations are bilingual and preserve intent rather than literal legacy wording.
+8. **Implementation notes.** Update `app_en.arb`/`app_fr.arb` and `help_screen.dart` together, tracking `faqSharing*`, `faqHealth*`, `faqReports*` and the removed `faqOrg*`/`faqFamilyEvents*` families.
+9. **Acceptance checklist.** A bilingual review confirms identical supported capabilities and destinations; locale switching reveals no removed group or obsolete dashboard instruction.
+
+---
+
+### D-9 About — `/about`
+
+- **Source:** `features/about/presentation/screens/about_screen.dart`, `l10n/app_en.arb`, `l10n/app_fr.arb`, `core/legal/legal_document_id.dart`
+- **Purpose:** Brand overview, legal shortcuts and version; public in the router allow-list (the first pass treated it as signed-in only).
+- **Strengths (confirmed):** 500 dp readable-width column, localized visible strings, branded logo, four working legal route shortcuts and legal-index entry.
+- **Attention flag:** Watch.
+
+#### D-9.1 About does not render “pet guardians and shelters” (withdrawn) — Copy · recommendation · Low (was requirement · Medium)
+
+1. **Problem.** `aboutIntro` does contain that phrase (`app_en.arb:1868`, `app_fr.arb:1747`), but About renders `appTagline` and `appDescription` (`about_screen.dart:65-80`), not `aboutIntro`; the first-pass screen-specific claim is wrong.
+2. **Why it matters.** `terminology.md:185-197` already records that unused/legacy copy as debt for a deliberate migration, not proof of what this screen displays.
+3. **UX impact.** None from `aboutIntro` on this screen.
+4. **A11y impact.** None from that unused value.
+5. **System impact.** A future caller could reintroduce the debt, so usage should be checked during the content migration.
+6. **Proposed fix.** Do not replace About's description to fix an unused key; retire or migrate `aboutIntro` through the coordinated Part 5/copy pass.
+7. **Reusable rule.** X-4: trace ARB getters to rendered text before reporting visible terminology.
+8. **Implementation notes.** Check references to `aboutIntro` before changing both ARBs; keep `about_screen.dart`'s `appDescription`, and address its actually rendered tagline separately in D-9.3.
+9. **Acceptance checklist.** A widget test confirms About does not contain the old guardian phrase; any retirement of `aboutIntro` leaves no generated-getter call site broken.
+
+#### D-9.2 Four legal shortcuts duplicate the legal index — UX · preference · Low (was recommendation)
+
+1. **Problem.** About enumerates all four documents (`about_screen.dart:21-42,102-114`) and then offers View all legal documents (`117-123`); `/legal` enumerates the same four (`legal_documents_screen.dart:16-37`).
+2. **Why it matters.** This is redundant density, not a correctness or navigation breach; all destinations are valid.
+3. **UX impact.** A longer About page than necessary, with little new content behind View all.
+4. **A11y impact.** Extra equivalent navigation stops, but no inaccessible route is established.
+5. **System impact.** Two hand-maintained lists can diverge later.
+6. **Proposed fix.** Prefer one legal-index row on About, or retain Privacy/Terms shortcuts and make the index's broader purpose explicit.
+7. **Reusable rule.** Duplicate valid navigation is a presentation preference unless it creates ambiguity or blocks use.
+8. **Implementation notes.** Reuse `LegalDocumentId` and planned `DestinationRow` in `about_screen.dart`, keeping existing `legalInformation`/`viewAllLegalDocuments` ARB keys; no provider change is needed.
+9. **Acceptance checklist.** The chosen About layout still reaches privacy, terms and the complete legal index, and all shortcut titles remain localized.
+
+#### D-9.3 Visible tagline still markets Shelter — Copy · requirement · Medium
+
+1. **Problem.** About actually renders `l10n.appTagline` (`about_screen.dart:65-73`); its EN value says “at home, in a shelter, or as part of a team” (`app_en.arb:6`) and FR says “dans un refuge” (`app_fr.arb:6`).
+2. **Why it matters.** This is a verified visible frozen-audience claim under `terminology.md:12-14`, unlike the withdrawn `aboutIntro` allegation.
+3. **UX impact.** About positions an inactive Shelter product as part of the current offering.
+4. **A11y impact.** The same inaccurate audience statement is spoken.
+5. **System impact.** `appTagline` is a shared key, so the migration needs a reference inventory and Part 5 ownership rather than an isolated About-only override.
+6. **Proposed fix.** Rewrite the shared tagline around active Pet Care coordination at home and with trusted carers, without implying Shelter functionality.
+7. **Reusable rule.** X-4/X-6: public and signed-in brand copy describe the same active product in both languages.
+8. **Implementation notes.** Migrate `appTagline` in both ARBs, review its consumers including `about_screen.dart`, and preserve `appDescription`; use `terminology.md`'s natural pet-parent/“you” framing rather than a literal French relationship label.
+9. **Acceptance checklist.** About and every other active `appTagline` consumer contain no Shelter/fostering audience promise in EN or FR, while the public About/legal routes remain accessible.
+
+---
+
+### D-10 Legal documents — `/legal`
+
+- **Source:** `features/about/presentation/screens/legal_documents_screen.dart`, `core/legal/legal_document_id.dart`
+- **Purpose:** Public index of terms, privacy, legal notice and DPA.
+- **Strengths (confirmed):** four localized native ListTile destinations, scrollable constrained layout and explicit legal-route allow-list.
+- **Attention flag:** None.
+
+#### D-10.1 Native legal-link traversal needs runtime confirmation (verify) — A11y · recommendation · Low
+
+1. **Problem.** Legal rows use ordinary `ListTile(onTap: ...)` in source order (`legal_documents_screen.dart:57-67`), not custom focus ordering; the 24 dp page padding (`42`) is not evidence of an accessibility failure.
+2. **Why it matters.** Native ListTile normally supplies focus and semantics, so target/focus compliance must be measured before prescribing a replacement.
+3. **UX impact.** None confirmed.
+4. **A11y impact.** Verify visible keyboard focus, document title/action announcement and 48 dp targets with the actual app theme.
+5. **System impact.** Legal and About could share a destination pattern, but replacing native rows without evidence would add unnecessary work.
+6. **Proposed fix.** Keep the native rows unless testing finds a gap; adopt planned `DestinationRow` only if it preserves or improves their defaults.
+7. **Reusable rule.** X-9: verify native control behaviour before treating missing custom semantics as a defect.
+8. **Implementation notes.** Add keyboard/semantics checks around `legal_documents_screen.dart`, reuse `LegalDocumentId` route values and existing localized document titles; no new ARB text or provider is required for this verification.
+9. **Acceptance checklist.** Tab/Shift-Tab visits each document once in visual order, Enter opens it, focus is visible, targets are at least 48 dp and titles fit at 200% in EN/FR.
+
+---
+
+### D-11 Legal document viewer — `/legal/:document`
+
+- **Source:** `features/about/presentation/screens/legal_document_screen.dart`, `widgets/legal_document_body.dart`, `data/legal_document_loader.dart`, `core/legal/legal_document_id.dart`
+- **Purpose:** Public reader for bundled localized legal Markdown.
+- **Strengths (confirmed):** selectable Markdown, 700 dp maximum reading width, themed text, explicit loading/error branches, and bundled EN/FR asset selection.
+- **Attention flag:** Watch.
+
+#### D-11.1 Markdown heading/link navigation needs verification (verify) — A11y · recommendation · Medium
+
+1. **Problem.** The viewer delegates to `MarkdownBody(selectable: true)` with visual h1/h2/h3 styles (`legal_document_body.dart:15-37`) inside one scroll view (`legal_document_screen.dart:45-51`); no custom semantic headings or contents navigation are supplied.
+2. **Why it matters.** Neither missing headings nor broken keyboard links can be inferred from the absence of custom builders; the installed Markdown package's rendered behaviour must be tested.
+3. **UX impact.** Long documents may benefit from section navigation, but no reading blocker is proven.
+4. **A11y impact.** Verify heading rotor/landmark navigation, link roles, selectable copy and focus visibility through the complete document.
+5. **System impact.** One shared Markdown body affects all four legal documents.
+6. **Proposed fix.** Test first; if headings are missing, add semantic heading builders, and add a collapsible contents list only where document length warrants it.
+7. **Reusable rule.** X-9/X-8: long-form content preserves semantic structure and works with keyboard/large text, not only visual typography.
+8. **Implementation notes.** Implement any verified gap in `legal_document_body.dart` using the installed `flutter_markdown` builder/anchor support; reuse localized document titles and add `legalContents` to both ARBs only if a contents control is built.
+9. **Acceptance checklist.** VoiceOver/TalkBack can navigate headings and activate links; web keyboard focus is visible; EN/FR legal text remains selectable and unclipped at 200%.
+
+#### D-11.2 External legal-link launch failures are silent — UX · recommendation · Low
+
+1. **Problem.** `launchUrl(uri, mode: LaunchMode.externalApplication)` is called without awaiting or checking the result (`legal_document_body.dart:38-46`); parse failure also returns silently.
+2. **Why it matters.** A reader can activate an external policy/reference link with no destination or explanation.
+3. **UX impact.** Silent failure undermines confidence in the legal reference.
+4. **A11y impact.** No failure state or fallback URL is announced.
+5. **System impact.** The same launch-result rule applies to Account contact and subscription management.
+6. **Proposed fix.** Handle false/throwing results with a safe localized notice and selectable/copyable URL, leaving the legal reader in place.
+7. **Reusable rule.** X-11: external navigation has an explicit failure fallback.
+8. **Implementation notes.** Make the handler in `legal_document_body.dart` delegate to an awaited helper, reuse the fallback-dialog pattern from D-1.4, and add `externalLinkOpenFailed`/`copyLink` to both ARBs; retain internal `context.push` routing.
+9. **Acceptance checklist.** Valid external links open externally; false/throwing launches keep the reader open and expose a copyable URL; internal legal routes still navigate in-app.
+
+#### D-11.3 Legal asset-load error has no recovery action — UX · requirement · Medium
+
+1. **Problem.** `snapshot.hasError` renders only `legalDocumentLoadError` (`legal_document_screen.dart:36-42`); `LegalDocumentLoader` loads the bundled asset directly (`legal_document_loader.dart:8-13`), and the page has neither Retry nor an explicit legal-index fallback in that branch.
+2. **Why it matters.** `system.md` § 6.10 applies to local primary loads as well as network loads: a localized failure sentence alone is not an actionable recovery state.
+3. **UX impact.** A fresh legal deep link with an asset failure cannot direct the reader to another document; retry may help a transient load but cannot repair a missing bundle asset.
+4. **A11y impact.** There is no focusable in-body recovery control.
+5. **System impact.** All legal documents share this branch, and a fresh direct link may have no implied back stack.
+6. **Proposed fix.** Add safe error-with-retry and an Open legal documents fallback; retain a stable future so ordinary rebuilds do not repeatedly start the load.
+7. **Reusable rule.** X-1/X-11: a failed document load preserves context and offers meaningful retry or a safe alternative.
+8. **Implementation notes.** Store/recreate the loader future deliberately in `legal_document_screen.dart`, use planned `AsyncErrorState` with existing `legalDocumentLoadError`/`retry`, and reuse `viewAllLegalDocuments` for `/legal`; keep B-12.2 labelled progress during reload.
+9. **Acceptance checklist.** Injected asset failure shows safe localized error plus recovery; Retry reruns the loader, missing assets still offer `/legal`, and a restored loader renders selectable content.
+
+---
+
+### D-12 My details / data rights — `/my-details`
+
+- **Source:** `features/auth/presentation/screens/my_details_screen.dart`, `export_data_stub.dart`, `widgets/account_actions_section.dart`, `widgets/my_details/profile_settings_section.dart`, `widgets/change_password_form.dart`
+- **Purpose:** Authenticated profile/preferences/security and consent/export/deletion actions; password-change routing is covered separately in Area A.
+- **Strengths (confirmed):** constrained scrollable form, visible export/consent/delete entry points, password autofill hints, cancel-first delete confirmation with explicit irreversible consequences, and server-success-before-logout ordering.
+- **Attention flag:** FLAG.
+
+#### D-12.1 Native export claims success without delivering a file — UX · requirement · High
+
+1. **Problem.** The API response is encoded for every platform, but delivery runs only inside `if (kIsWeb)` (`my_details_screen.dart:240-248`) and the success snackbar runs unconditionally afterward (`249-252`); the non-web stub throws if called (`export_data_stub.dart:1-4`) but is never called here.
+2. **Why it matters.** `system.md:642-644` requires confirmations to state the actual result; this is a top-five trust/data-rights journey and a verified false outcome, not just an unsupported-platform inconvenience.
+3. **UX impact.** Native users see “exported” yet receive none of the JSON file promised by `exportMyDataSubtitle` (`app_en.arb:1934-1936`).
+4. **A11y impact.** Assistive technology receives the same false completion message.
+5. **System impact.** A successful API fetch is currently conflated with successful file delivery.
+6. **Proposed fix.** Implement native save/share through an explicit platform export service; until then, disclose unsupported delivery before requesting/exporting rather than claiming success.
+7. **Reusable rule.** X-5: confirmations describe the actual completed platform outcome, not an intermediate API response.
+8. **Implementation notes.** Replace the `kIsWeb`-only dispatch in `my_details_screen.dart` with web/native export implementations alongside `export_data_web.dart`/`export_data_stub.dart`, reuse `authRepositoryProvider.exportData`, and add `dataExportUnavailable`/`dataExportCancelled`/safe failure strings to both ARBs.
+9. **Acceptance checklist.** Web produces a valid JSON download, native supported targets produce a readable saved/shared artifact, cancellation is not reported as success, and unsupported targets never show `dataExported`.
+
+#### D-12.2 Delete dialog loses validation and request context — A11y · requirement · Medium
+
+1. **Problem.** Empty password submission silently returns (`my_details_screen.dart:297-299`), then valid submission closes the dialog before awaiting deletion (`300-305`); failure shows raw `$e` in a snackbar (`312-316`).
+2. **Why it matters.** X-5 and `system.md` § 6.9-6.10 require clear validation, busy/outcome feedback and no raw backend message.
+3. **UX impact.** An empty submit appears inert; a failed delete loses its warning/input context and provides only transient technical feedback.
+4. **A11y impact.** There is no field validation announcement or named in-progress state; technical snackbar output does not replace either.
+5. **System impact.** Deletion is already server-confirmed before logout, so the repair should preserve that order rather than invent client-only success.
+6. **Proposed fix.** Keep a stateful confirm-and-act dialog open, validate password inline, disable repeat submits during deletion, and show safe retryable failure in context.
+7. **Reusable rule.** X-5/X-7: destructive actions retain context from validation through confirmed result.
+8. **Implementation notes.** Refactor `_showDeleteAccountDialog` in `my_details_screen.dart` using a `Form`/`TextFormField`, reuse `currentPasswordRequired`, `deleteAccountWarning` and `authRepositoryProvider.deleteAccount`, add `accountDeleteFailed` in both ARBs and use B-12.2 labelled progress.
+9. **Acceptance checklist.** Blank submit stays open with announced field error; a failing request preserves dialog context and safe copy; busy state blocks duplicates; only successful server deletion logs out and reaches the existing deletion landing state.
+
+#### D-12.3 Irreversibility and deliberate confirmation already exist (withdrawn) — UX · recommendation · Low (was Medium)
+
+1. **Problem.** The dialog uses `deleteAccountWarning` (`my_details_screen.dart:269-284`), whose EN value explicitly says irreversible and enumerates permanently deleted data (`app_en.arb:1941`); the entry row also says permanent deletion (`1940`), and current password is required before the mutation.
+2. **Why it matters.** The first pass did not read the localized warning and incorrectly described it as generic; `system.md:642-644` does not mandate typing a second confirmation word.
+3. **UX impact.** No missing-permanence defect is supported by this UI code.
+4. **A11y impact.** None established for warning content; D-12.2 separately covers validation/status.
+5. **System impact.** Actual retention/deletion scope must be legally and technically accurate, but this client-only review cannot certify backend retention behaviour.
+6. **Proposed fix.** Keep the existing consequence warning; verify its scope with the data-rights owner and do not add friction merely to satisfy an invented typed-confirmation rule.
+7. **Reusable rule.** X-5: explain real consequences and require deliberate confirmation; avoid redundant confirmation rituals without evidence.
+8. **Implementation notes.** Review `deleteAccountWarning`/`deleteAccountSubtitle` in both ARBs against the authoritative deletion contract; preserve cancel-first actions and the password check in `my_details_screen.dart`.
+9. **Acceptance checklist.** Both locales explicitly state permanence and affected data; a documented deletion contract supports the wording; no extra typed phrase is required solely by this withdrawn finding.
+
+#### D-12.4 Section headings are uneven rather than wholly absent — A11y · recommendation · Low
+
+1. **Problem.** My details stacks profile, settings, password and actions (`my_details_screen.dart:151-225`); password already has an `AppFormSection` title (`change_password_form.dart:70-72`), but that shared title is plain `Text` without a semantic heading (`app_form_section.dart:29-34`), and settings/actions lack equivalent section headings.
+2. **Why it matters.** The first pass overstated “no visible section heading”; the remaining issue is consistent structural navigation through a long form.
+3. **UX impact.** Group boundaries are conveyed mostly by cards and spacing.
+4. **A11y impact.** Heading navigation cannot consistently jump among preferences, security and data-rights actions.
+5. **System impact.** Improving `AppFormSection` heading semantics benefits other forms; the frozen organisation row in `profile_settings_section.dart:47-54` and `/organizations` callback (`my_details_screen.dart:169`) belong to Part 5 removal, not a new heading group.
+6. **Proposed fix.** Add meaningful localized group headings and mark the existing password heading as a semantic header without changing natural traversal order.
+7. **Reusable rule.** X-9: visible form grouping has equivalent semantic structure; frozen destinations are removed under X-4.
+8. **Implementation notes.** Extend `core/widgets/form/app_form_section.dart` title semantics, reuse it around relevant groups in `my_details_screen.dart`/`account_actions_section.dart`, and add `accountPreferencesHeading`/`accountDataRightsHeading` to both ARBs while retaining existing `changePassword`.
+9. **Acceptance checklist.** Heading navigation exposes the intended groups once in visual order, password fields retain labels, and no frozen organisation entry is reintroduced by the regrouping.
+
+---
+
+### D-13 Not found — `GoRouter.errorBuilder`
+
+- **Source:** `core/router/app_router.dart`
+- **Purpose:** Router failure/unmatched-route recovery; signed-out visibility depends on the global redirect, not a universally public error route.
+- **Strengths (confirmed):** the error builder is centralized, so one repair covers its unmatched-route cases; echoing a URI is diagnostic, not a user-facing strength.
+- **Attention flag:** Watch.
+
+#### D-13.1 Unknown-route page has no recovery and echoes the URI — UX · requirement · Medium
+
+1. **Problem.** `errorBuilder` returns only a bare centered `Page not found: ${state.uri}` (`app_router.dart:446-447`), without app bar, explanation or destination control.
+2. **Why it matters.** `system.md` § 6.10 and X-11 require a usable state and safe way forward; echoing the URI includes whatever query/path values were present, although actual sensitive content exposure was not demonstrated.
+3. **UX impact.** A stale signed-in deep link can leave users with no in-app way out.
+4. **A11y impact.** No heading or focusable recovery action exists.
+5. **System impact.** The auth redirect sends many signed-out paths to Landing first (`app_router.dart:111-123`); the fallback must support both auth states rather than assuming Pet Care Home is universally appropriate.
+6. **Proposed fix.** Show a safe not-found title and explanation without the full URI; offer Back when meaningful and one primary destination: Pet Care Home signed in, Landing signed out.
+7. **Reusable rule.** X-11/X-1: route failures retain orientation and an auth-appropriate safe destination.
+8. **Implementation notes.** Replace the inline `errorBuilder` in `app_router.dart` with a localized recovery surface using `authNotifier.isLoggedIn`, the shell/`routeShell` pattern where appropriate and planned `DestinationRow` or 48 dp button; use the D-13.2 ARB keys.
+9. **Acceptance checklist.** An invalid signed-in route offers `/pc/home`; an allowed signed-out failure offers `/landing`; query tokens/full URI never appear in user copy; keyboard and screen-reader users can activate recovery.
+
+#### D-13.2 Router failure text is hard-coded English — i18n · requirement · Medium
+
+1. **Problem.** `Text('Page not found: ${state.uri}')` is an English literal (`app_router.dart:447`) rather than localized UI.
+2. **Why it matters.** `terminology.md` § Localization and `copy-tone.md` § Localization apply to router-level states too.
+3. **UX impact.** French users receive an untranslated failure at an already confusing point.
+4. **A11y impact.** Any added heading/action semantics must be localized along with visible text.
+5. **System impact.** Fixing the centralized builder localizes all cases that reach it.
+6. **Proposed fix.** Localize title, safe explanation and recovery action, without putting the attempted URI into an ARB placeholder.
+7. **Reusable rule.** X-6: framework-level failure surfaces are part of the product language boundary.
+8. **Implementation notes.** Read `AppLocalizations.of(context)` in the replacement `app_router.dart` error surface, add `routeNotFoundTitle`/`routeNotFoundBody`/`routeBackToHome` in both ARBs, and reuse existing localized Landing/back labels where suitable.
+9. **Acceptance checklist.** EN/FR invalid-route tests find the correct localized heading/body/action; no literal “Page not found” remains in the builder or its semantics.
+
+---
+
+**Patterns seen in this area** (feed Part 4):
+
+- Failed primary loads need safe copy and meaningful retry → planned `AsyncErrorState` (B-2.1), stable shell and labelled progress (B-12.2) → Pet tags, Notifications panel/full inbox, Notification settings, Subscription, Legal viewer (X-1/X-6/X-7).
+- Confirmation must match the delivered platform result and mutations must preserve recovery → platform export service and shared confirm-and-act dialog → My details export/delete, Pet-tag delete, Subscription management (X-5).
+- Frozen content is deleted rather than reimplemented → bilingual active-product content inventory plus compatibility redirects, with Part 5 owning deletion → Account placeholder, Pending actions no-op children, Help groups, About tagline, notification organisation category and My details organisation row (X-4).
+- Persistent utility entry points expose essential destinations → panel header destinations and planned `DestinationRow` → Notifications/preferences, Account contact, Help support, legal external-link fallback, Not found (X-9/X-11).
+- Financial choices state the actual recurring commitment → localized store-product display model and truthful subscription date state → Subscription offers/status/management (X-5/X-6).
+- A matrix must not depend on visual column context or fixed trailing widths → responsive labelled channel rows, 200% EN/FR tests and reduced-motion-aware section navigation → Notification settings (X-8/X-9).
+- Resolve aliases, ARB call sites and native defaults before alleging a breach → source-verification and semantics tests, not unnecessary custom replacements → Account colour/identity, Pet-tag overflow/count, About description, Legal index/viewer, Pending actions back (X-9/X-10).
+
+**Changes from the first pass (Area D).**
+
+- **D-1.2:** requirement · Medium → recommendation · Low, **(verify)**: no descendant semantics exclusion exists, so identity loss was not established.
+- **D-1.3:** retained as **(withdrawn)** at recommendation · Low: `operationsGold` already resolves to the approved Pet Care primary; only optional alias cleanup remains.
+- **D-2.1:** requirement · Medium → recommendation · Low, **(withdrawn)**: native `PopupMenuButton` provides a localized default tooltip; absence of a custom tooltip is not an unlabelled-icon finding.
+- **D-2.2:** recommendation · Medium → requirement · Medium: notifier and caller both leave failed delete without feedback, a concrete usability/outcome breach.
+- **D-2.4:** requirement · Low → recommendation · Low: the count is available but lacks a noun; no inaccessible action or lost content was proven.
+- **D-4.1:** grade unchanged; corrected the scope of the reachability claim because the panel already contains inbox history, while full-screen navigation and settings remain missing.
+- **D-4.2:** recommendation · Medium → recommendation · Low: conditional suggestion copy can be quieter, but is not evidence of an engagement-policy breach.
+- **D-4.3:** recommendation · Medium → requirement · Medium under § 6.10 and localization rules; expanded existing finding to the panel's localized raw-exception wrapper.
+- **D-5.1:** recommendation · Medium → requirement · Medium under § 6.10; corrected “cannot recover” to “has no explicit retry”, since independent provider recovery is possible.
+- **D-5.3:** grade unchanged, **(verify)** added for rendered overflow/spoken output; bare switch association and fixed layout are code-confirmed, and the 220 dp push branch is not currently shipped.
+- **D-5.4:** retained as **(withdrawn)** at recommendation · Low: singular is localized and `jour/jours` currently works; ICU plural migration remains optional maintainability work, not proven bad French.
+- **D-5.5:** recommendation · Low → requirement · Medium: unconditional 300 ms scrolling violates § 7.1 reduced motion; lazy-child mounting failure is a risk, not an asserted observed crash.
+- **D-6.1:** requirement · High → requirement · Medium: all three children are no-op frozen stubs, not live obsolete acceptance forms; generation of old notification types remains unconfirmed and Part 5 owns retirement.
+- **D-6.3:** grade unchanged, **(verify)** added: `AppBar` may imply Back when the stack can pop, so only fresh/deep-link fallback is in question.
+- **D-7.5:** recommendation · Medium → requirement · Medium under § 6.10; corrected no-offer strength because both empty and thrown loads set `_error` and hide Reload.
+- **D-8.1:** requirement · High → requirement · Medium: wrong help is a correctness/terminology breach, but the inspected informational content does not establish direct data risk or a blocked top-five execution path.
+- **D-9.1:** requirement · Medium → recommendation · Low, **(withdrawn)**: About never renders the cited `aboutIntro`; the actual visible frozen-audience text is separately recorded as new D-9.3.
+- **D-9.2:** recommendation · Low → preference · Low: duplicate valid legal shortcuts are density taste, not demonstrated usability failure.
+- **D-10.1:** grade unchanged, **(verify)** added: native ListTiles provide baseline focus/semantics; padding and lack of custom ordering prove no accessibility failure.
+- **D-11.1:** grade unchanged, **(verify)** added: Markdown semantics/link traversal depend on the installed package and runtime output, not just custom builders.
+- **D-11 attention flag:** None → Watch because the newly verified primary asset-load error lacks recovery (D-11.3), rather than because an untested Markdown accessibility failure was assumed.
+- **D-12.3:** recommendation · Medium → recommendation · Low, **(withdrawn)**: localized warning already explains permanence and deleted data; password confirmation is deliberate and no repository rule requires an additional typed phrase.
+- **D-12.4:** grade unchanged; corrected “no visible headings” because the password form already has an `AppFormSection` title, while semantic/group consistency remains incomplete.
+- **Routing correction:** Help is auth-gated. Contrary to the first pass's working assumption, About is public in this snapshot: `core/legal/legal_document_id.dart:43-52` includes `/about`, and `app_router.dart:121` allows that list; the first pass was right about About's access, though wrong about its rendered description.
+- **New findings (three total):** D-2.5 requirement · Medium (primary tag-load error/raw exception/no retry), D-9.3 requirement · Medium (actually rendered Shelter tagline), D-11.3 requirement · Medium (legal primary-load error lacks recovery).
+- **No IDs were dropped.** Withdrawn IDs remain fully specified for traceability; their grades are recommendation · Low and should not be counted as outstanding defects. Runtime-only checks remain D-1.2, D-5.3, D-6.3, D-10.1 and D-11.1; current store offer/trial conditions, actual checkout disclosures, notification producer shutdown and backend deletion retention were not certified from this client-only review.
+
+---
+
+# Part 3 — Benchmark notes
+
+**What was consulted.** Public help pages, product pages and guides, read in November 2026: Rover help centre (pet profiles, account sharing), 11pets feature page, PetDesk help and blog, Pebble getting-started guide, Petfolio share-link help, CorePaw family sharing page, the Pett blog on shared care, and the AAHA guide to pet-sitter instructions. Wag, Petcube, Chewy and Pawtrack appeared in searches but their app flows were not examined, so this part makes no claims about them. None of these apps was used hands-on; the notes compare documented behaviour with what the code shows.
+
+| Journey | What comparable products do | Takeaway for AgathaTrack |
+|---|---|---|
+| **Onboarding and adding a pet** | Pebble asks for the minimum (name, breed, birth date, sex), makes everything else optional, then points to vet and emergency contact as the next useful fields. PetDesk prompts for a photo and microchip number early. Pet-app onboarding advice generally favours collecting essentials first and the rest as the user goes (progressive profiling). | The two-step first-pet flow matches this pattern. Keep it short. The gaps are small and accessibility-related: silent validation on a blank name and unannounced progress (A-5.1, A-5.2). Vet and emergency contact fit later, as a quiet suggestion on the pet profile rather than another onboarding step, consistent with "reassure before prompting". |
+| **Logging and completing care; reminders** | 11pets keeps an automatic schedule for vaccines and deworming and reminds when the next action is due, with user-defined categories. PetDesk keeps reminders, prescriptions and labs in one place and can sync to a calendar and link to a vet clinic. Pett argues that most shared-care failures are double feeding or doubled medication, caused by nobody being able to see what the other person already did. | The server-authoritative schedule and the "recorded by" history cover the same ground and are calmer than reminder-count UIs. Reminders are the weak link: the bell panel does not lead to the full inbox or to settings (D-4.1). Calendar export is a common request in this category; it is a product decision, not a finding. |
+| **Sharing with a sitter or family** | Petfolio lets the owner choose which sections a link shows (profile, medications, vet, weight), set an expiry, list active links and disable one. It also has a sitter mode where the sitter logs meals and walks. CorePaw uses an invite code that already carries the role (viewer, member, co-owner). Rover profiles hold vet contact, daily care instructions and habits for the sitter. | AgathaTrack already has roles, link management and confirmation before revoking. What is missing is the recipient's first minute: the invite landing should state who invited, which pets, which role, and offer one clear sign-in or create-account action that returns to the invite (C-13.1, C-14.1, C-15.1, C-16.1). Showing which sections a link exposes, and an expiry, on the owner side would match the benchmark; check what the share screen already shows before treating this as new. |
+| **Away planning and handover** | AAHA lists what a sitter sheet should contain: pet profile and quirks, medical conditions, diet, medications, microchip, routine, vet and emergency contacts, and a photo for each pet. Pett's minimum list for any caretaker is feeding, active medications, allergies, current health issues, vet contact, and the owner's emergency contact. | The away plan groups carers, coverage and care by pet, which fits. Worth checking in the next pass, because it cannot be seen from the code review alone: whether the exported handover always includes vet and emergency contacts, allergies and microchip when they exist. |
+| **Account, data and billing** | Subscription products in this space show price, renewal period and cancellation path next to each offer. Native stores require clear renewal terms for auto-renewing subscriptions (general platform practice, not checked against current store text for this review). | The paywall shows price and period only, has an inert "Manage subscription" button, and calls the yearly plan "Best Value" without showing the saving (D-7.1, D-7.2). |
+
+**Where AgathaTrack already differs for the better.** No streaks, scores or badges; silence is a valid state; the entry page does not ask users to pick a role; the notification settings screen says plainly that push delivery is not available instead of showing toggles that do nothing. Those choices are consistent with True North and should be kept.
+
+---
+
+# Part 4 — Cross-screen patterns
+
+Each row: rule, shared component to build or extend, and the screens affected. Fixing the shared piece once is cheaper than repeating the fix screen by screen. IDs refer to Part 2.
+
+| # | Rule | Shared component | Screens |
+|---|---|---|---|
+| X-1 | A failed load shows calm localized text and a retry, never a raw exception, and keeps shell chrome (title, back, bell). Required by `system.md` § 6.10. | One localized async error-with-retry widget for `AsyncValue.error` (spec in B-2.1) | Home B-2, pet detail B-6, health issues B-7, all care B-8, care form load B-10, care item B-11, occurrence B-12, timeline B-13, weight B-14, away plan C-3, edit absence C-4, households C-9/C-10, person detail/edit C-7/C-8, share pet C-12, invite landings C-14/C-15/C-16, notifications D-4, notification settings D-5, paywall D-7, pet tags D-2 |
+| X-2 | A supplemental or dependent load that fails must not look like "none" or "all clear". Show loading, unavailable, or retry separately from empty. | Explicit partial-state caption next to the main content (spec in B-3.1, B-4.1) | All pets tag filter B-3, bulk-share care summary B-4, weight overview B-14, new away plan pet list C-2, household detail pets C-10, share pet access list C-12, away hub pet names C-1 |
+| X-3 | Anyone who opens an invitation or share link signed out must see who invited them, what they get, and one action to sign in or create an account that returns to the same invite. | A shared invite-recipient CTA block plus an auth return-URL, and the auth guard allow-list kept in one place | `/shared/:code` C-13, `/invite/:code` C-14, `/absence-invite/:code` C-15, `/household-invite/:code` C-16 |
+| X-4 | Active screens must not describe or link to frozen Shelter/Fostering features or retired terms. | Delete the frozen roots first (Part 5 § 5.2), then one "active product" content pass over ARB (EN and FR together) and the active-code branches in § 5.3, finishing with the unused-key sweep | Help D-8, Pending actions D-6, Account D-1, About D-9.3, My details A-7, Experience chooser A-4, shell workspace toggle B-1, Share pet C-12, Invite entry C-17, unrouted `LoginScreen`/`SignupScreen`, `ExperienceSettingsScreen`, away-plan placeholder |
+| X-5 | A confirmation says only what happened. Destructive actions validate inline, explain consequences, show progress, and report partial success. | Shared confirm-and-act dialog with inline validation and a result message | Export and delete account D-12, pet-tag delete D-2, add person then household invite C-6, password change A-7, "Manage subscription" D-7, consent save A-9 |
+| X-6 | Every user-visible string, including semantic labels, error text, plurals, dates and species names, comes from ARB and works in French. | ARB audit and a lint for string literals in `Text(...)` and `Semantics(label: ...)` | My details A-7, onboarding species A-5, pet form guard B-5, absence invite C-15, shared pet ages C-13, paywall D-7, notification settings and inbox D-4/D-5, consent date A-9, design preview A-6, not-found D-13 |
+| X-7 | Waiting and status must be perceivable without sight or colour: a label on every progress indicator, "step x of y" text, announced success and error. | One labelled progress indicator and one live-region status wrapper | Resolve A-3, onboarding A-5, forgot password A-2, secure account A-8, consent A-9, away screens C-1/C-3, household busy overlay C-10, occurrence B-12 |
+| X-8 | Layouts survive 200% text. No fixed-height tiles, `Spacer` inside short columns, or fixed-width trailing controls beside long labels. | A text-scale test pass on the shared form shell, tiles and sticky action bar | Onboarding A-5, pet tiles B-3, notification matrix D-5, household invite C-16, household create dialog C-9, add and edit person C-6/C-8 |
+| X-9 | Targets are at least 48dp and icon-only controls have tooltips. | Shared destination-row and overflow-menu components | Care item health-issue link B-11, pet-tag overflow menu D-2, compact bottom navigation without visible labels B-1 |
+| X-10 | Design tokens come from the theme, not one-offs. Cards are 1px border with no shadow; radii and type use theme values; coral stays decorative. | Token pass on bespoke surfaces | Consent banner (6dp shadow) A-10, paywall preferred card (elevation 2) D-7, auth card (28dp radius) A-1, navigation 11/14px labels B-1, the native login form's CSS colours (Part 5 § 5.5). Verified not to be drift: Account `operationsGold` and the "legacy olive/gold" palette are aliases of the current tokens (D-1.3, A-10.4 withdrawn); the Today card's 20dp radius is dead code (B-2.2 withdrawn) |
+| X-11 | After a flow ends, go to a registered, sensible destination, including when the page was opened by a deep link. | A named post-action destination helper | Password change names the dead `/login` literal (A-7.3, guard-corrected), add pet back goes to `/` B-5, secure account `pop()` A-8.4, pending actions has no back D-6.3, not-found page D-13, notifications entry D-4, absence invite `/login?redirect` C-15.1 |
+| X-12 | Web password managers can fill and save every credential field; native platforms get the save prompt after a successful change. | Generalise the native HTML form bridge used for sign-in into one credential form with sign-in, sign-up and new-password modes; call `finishAutofillContext()` after password changes on mobile. Scope, order and risks in Part 5 § 5.5 | Signup A-1.1, Forgot password step 2 A-2, My details change password A-7, Secure account A-8.2 (bare fields, no hints) |
+| X-13 | **Needs verification.** Flutter web needs its fallback font and analytics requests to pass the Content-Security-Policy. | `server/config/securityHeaders.js` `connect-src` | Whole app on web. See "Method and limits". |
+
+
+---
+
+# Part 5 — Code removal decisions: frozen Shelter/Fostering, unrouted and duplicate widgets
+
+Requested by the product owner on 2026-11-09, added to this review so that the removal is decided and scoped in one place. Nothing in this part has been executed: it is an inventory, a decision record, and the order of work. Sizes are line counts of the current source (`wc -l`), counted on 2026-11-09; they are indicative, not a budget.
+
+## 5.1 Decision
+
+**Delete the frozen Shelter and Fostering code from the repository. Git history and the existing tag keep it recoverable.**
+
+This replaces the "frozen, not deleted" stance of the [frozen-domains programme](../../engineering/frozen-domains/philosophy.md), which was written in September 2026 to avoid building archive machinery while the pivot was recent. Two months on, the costs of keeping the code have become visible in this review:
+
+- Active screens still carry frozen vocabulary, branches and placeholders (D-1.1, D-6.1, D-8.1, D-9.3, A-4.1, B-1.2, C-12, C-17), because the boundary only blocks imports, not semantics.
+- 124 active Dart files, roughly a quarter of the active tree, still mention organisation, shelter, foster, custody or adoption in identifiers, comments or copy. Every reader, including the agents that work on this repository, must keep deciding which of those are live.
+- The server keeps 27 modules, two email templates, three route families and a mount gate for endpoints that are never mounted.
+- The analyzer, Jest, BDD and Playwright configurations each carry an exclusion list to keep the frozen code from failing CI.
+
+**What "delete" covers.** Product code, its tests, its BDD features and Playwright specs, its mount gate and CI exclusions, and the active-code branches that exist only to serve it. Design and engineering documentation about the frozen domains is reduced to a short removal record pointing at the tag.
+
+**What "delete" does not cover now.** Data. The retained tables (`organizations`, `organization_users`, `foster_placements`, `custody_transfers`, `archived_pets`), the migration files that created them, and the GDPR export and account-deletion paths that read them stay until a separate data decision is taken (5.4). Deleting rows that belong to real people is a data-protection act, not a code clean-up, and the programme's "data protection exception" stands.
+
+**Recovery path.** Tag `frozen-domains-baseline-2026-09` already marks the last state in which the frozen code was complete and tested. Before the deletion PR merges, add a second tag on `main` (suggested name `pre-frozen-domains-removal-2026-11`) so that the exact removed tree is one `git checkout` away. The [rehydration runbook](../../engineering/frozen-domains/rehydration-runbook.md) becomes "check out the tag, cherry-pick what is needed"; the product decisions in `mvp-pivot-decisions.md` remain valid and should be kept as the record of why.
+
+**Why delete rather than keep freezing.** The programme's own success criterion was "Shelter can rot without infecting Pet Care". The review shows the infection is in the active vocabulary, routes and copy rather than in imports, and that is exactly what a boundary script cannot see. Removing the code lets the active-product content pass (Part 4, X-4) be checked mechanically: once the frozen roots are gone, any remaining organisation or foster identifier in `lib/` is a defect by definition.
+
+## 5.2 Inventory — frozen roots to delete
+
+| Location | What it is | Size | Prerequisite before deleting |
+|---|---|---|---|
+| `flutter_app/lib/features/organization/` | Shelter workspace: organisation screens, members, inventory, adoption, foster management | 213 files, 28,305 lines | None; already excluded from `flutter analyze` and unreachable from `main.dart` |
+| `flutter_app/lib/features/fostering_session/` | Pet Care-side foster session screens | 10 files, 1,016 lines | None |
+| `flutter_app/test/features/organization/`, `test/features/fostering_session/` | Their widget and unit tests | 70 files, 8,842 lines | Delete with the code |
+| `flutter_app/analysis_options.yaml` lines 2–4 | Analyzer exclusion of the two roots | 3 lines | Remove after the roots are gone, so the analyzer covers the whole tree again |
+| `server/routes/organizations/` | Organisation API | 28 files, 5,174 lines | None; mounted only when `ENABLE_FROZEN_DOMAINS=true`, which no environment sets |
+| `server/routes/fosterPlacements.js`, `server/routes/custodyTransfers.js` | Foster placement and custody transfer APIs | 447 lines | None |
+| `server/lib/` frozen-only modules: `adoptionJourneys`, `adoptionVisits`, `custodyTransfers`, `deriveSessionStatus`, `fosterAgreementWithdrawal`, `fosterCapacity`, `fosterCompliance`, `fosteringActivitySummary`, `fosterInvite`, `fosterParentPresenter`, `fosterPlacements`, `fosterProfiles`, `fosterRequests`, `fosterSessions`, `fosterVisibility`, `orgConnections`, `orgMemberPrivacy`, `orgPermissions`, `orgPetShadow`, `orgPetViewAccess`, `petCustody`, `sessionDetail` | Domain logic for the above | 22 files, about 5,100 lines | Three of them (`adoptionJourneys`, `fosterProfiles`, `orgMemberPrivacy`) and the shared `orgRoles` are imported by migration scripts `023`, `028` and `042`. Migrations must stay runnable on a fresh database, so either inline the SQL those migrations need or move the three modules under the migrations folder. Decide this first. |
+| `server/lib/email/templates/fosterInvitationNewUser.js`, `externalFosterNotice.js` | Foster e-mails | 2 files | Remove their entries from `server/lib/email/i18n.js` and `emailTemplates.js` |
+| `server/test/organizations/` | Server tests for the above | 31 files, 5,223 lines | Delete with the code |
+| `server/jest.config.frozen.cjs`, `scripts/test-frozen-domains.sh`, the frozen job in `.github/workflows/_reusable-test.yml`, the exclusions in `server/jest.config.active.cjs`, `scripts/pre-push` (the full script, `.sh`), `scripts/pre-push-changed.sh` | Separate frozen test lane | — | Delete the lane; fold the active config back into the default |
+| `server/lib/frozenDomains.js` and the `frozenDomainsEnabled()` branches in `server/bin/server.js` (lines 113–116, 138–141) | Mount gate | — | Delete the gate with the routes. The two helpers `rejectFrozenShelterApi` and `rejectFrozenOrganizationIdOnPetWrite` are used inside active pet routes; replace each call site with a plain 404/400 or remove the branch they guard (see 5.3) |
+| `scripts/check_frozen_domain_boundaries.sh`, `docs/engineering/frozen-domains/manifest.json`, `ci-integration.md` | Boundary machinery | — | Delete once the roots are gone; the boundary has nothing left to guard |
+| BDD features matching `organisation_*`, `org_*`, `foster_*`, `fostering_*`, `redacted_org_pet`, `admin_contacts`, `pet_screen_filters`, `pet_ownership_and_adoption` | Gherkin specs | 22 of 53 `.feature` files | Confirm `admin_contacts` and `pet_screen_filters` have no active scenarios before deleting; the other patterns are unambiguous |
+| Playwright specs named for org, foster, custody, adoption or shelter | Live E2E for frozen flows | 21 of 59 spec files in `e2e/playwright/tests` | Check each for shared helpers imported by active specs; move helpers before deleting |
+| `server/db/seeds/scenarios/{adoption,fostering,org-clinic,org-v3-demo,rescue-hearts}.js` | Demo seeds for frozen flows | 5 files | Delete; remove them from `scenarios/index.js` and from `demo-credentials-doc.js` |
+| `docs/engineering/frozen-domains/` (except `mvp-pivot-decisions.md`), `docs/engineering/frozen-domains/shelter-branding.md`, Shelter sections of `docs/design/*` | Documentation of the frozen state | — | Replace with one removal record (date, tag, what was removed, data decision pending). Keep `mvp-pivot-decisions.md` as the product record. `docs/design/terminology.md` keeps its "frozen domains" paragraph as the rule that these words are not active vocabulary |
+
+Shared server modules that active code still imports and that must **stay** (they are part of the data-protection surface or of active flows): `server/lib/gdprUserExport.js` (reads org and foster tables), `server/lib/petAccess.js`, `petCapabilityPolicy.js`, `orgPeople.js` (used by `routes/auth/profileRouter.js` and `sessionRouter.js` for `pinned_organization_id` and memberships), `orgRoles.js` (used by `routes/auth/shared.js`), `orgPetTransfer.js` (used by `routes/pets/transferRouter.js` for `POST /:id/transfer-to-org`). Each of these is a decision point in 5.3: either the active feature that uses it is also retired, or the module is trimmed to what the active feature needs.
+
+## 5.3 Inventory — frozen semantics inside active code
+
+These are not in the frozen roots and are not caught by the boundary script. They are the reason active screens still mention Shelter and Fostering. Grouped by what the clean-up touches; finding IDs point to the per-screen evidence in Part 2.
+
+**Routing and experience model**
+
+- `core/router/frozen_domain_route_stubs.dart` (34 lines): redirects `/o/*`, `/organizations*`, `/archived-pets` to `/pc/home`, and `isPublicOrganizationProfilePath` always returns `false` yet still sits in the signed-out allow-list (`app_router.dart:120`). Keep the three redirects for one or two releases as a courtesy to old bookmarks and e-mails, then delete; delete the always-false predicate now.
+- `core/experience/app_experience.dart`: `AppExperience.organization`, its `/o/...` home, events and settings paths, and the `'organization'` wire value. The enum becomes single-valued; most call sites that switch on it collapse. Fifteen files in `features/experience/presentation/widgets/` still mention it, `showShelterWorkspace` or Shelter chrome flags (B-1.2 `ExperienceWorkspaceToggle` always renders nothing).
+- `features/experience/presentation/screens/experience_chooser_screen.dart` (`/app/choose`, A-4.1) and `experience_resolve_screen.dart` eligibility branch (A-3.1): with one experience there is nothing to choose or resolve beyond "onboarding or home".
+- `ExperienceInviteScreen` organisation branch (C-17) and `ExperienceSettingsScreen` (shares the file, never constructed; `/pc/settings` redirects to `/account`).
+
+**Pet profile and form**
+
+- `pet_form_screen_actions.part.dart` `_navigateAfterForm` still has `/organizations/<id>` branches that can only hit the redirect stub; `initialOrgId`, `PetOrgSection` and `PetAssignmentSection` (both files unreachable, see 5.6).
+- `Pet.organizationId`: keep the nullable field while the API still returns it; the server already rejects it on writes (`rejectFrozenOrganizationIdOnPetWrite`). Remove it from the entity in the same change that removes the column from the API response, not before.
+- Providers `allPetsIncludingOrgProvider`, `orgGlobalEventHistoriesProvider`, the `_isOrg` branch in the global events list, and the two unused classes `OrgDueEventsScreen` and `PetCareGlobalEventsFilterBar` that share `pet_care_due_events_screen.dart` with the live All actions screen (B-8).
+- `core/widgets/collection_filter/org_context_collection_filter.dart` (300 lines, two org filter bars, reached only through `org_filter_chips.dart`).
+
+**Notifications**
+
+- `NotificationScope` org/foster values, the `organisation_foster` category in `notification_settings_matrix.dart` (D-5), and the foster, adoption and custody notification kinds that Pending actions renders as three no-op children (D-6.1). Prerequisite: confirm with the server owner that no producer still emits those kinds; if one does, retire the producer first so that no user has an unopenable notification.
+
+**Copy and content (X-4)**
+
+- Help FAQ organisation and "Family Events" groups, EN and FR (D-8.1, D-8.3); Account "Organisation settings" block (D-1.1); About `appTagline` "…in a shelter, or as part of a team" (D-9.3); My details organisation row (A-7); `web/index.html` meta description "pet guardians, shelters, and foster teams"; the share-pet foster and organisation branches (C-12); `family_events_controller.dart` (retired term, unreachable).
+- ARB: a pattern count finds about 600 of 2,544 keys whose names contain org, shelter, foster, custody, adoption or familyEvent. That number overcounts (for example `forgotPassword` matches "org"), so the real list must come from an unused-key pass after the roots are deleted: for each key in `app_en.arb`, grep `lib/` for `l10n.<key>` and `.<key>(`; remove the keys with no hit from both ARB files in one change. `flutter gen-l10n` does not report unused keys.
+
+**Theme**
+
+- Three files in `core/theme/` carry Shelter or Operations aliases. D-1.3 verified that `operationsGold` already resolves to the Pet Care plum, so these are aliases, not a second palette. Rename or remove the aliases in the token pass (X-10); do not remove any colour that an active screen resolves to.
+
+**Server**
+
+- `rejectFrozenShelterApi` / `rejectFrozenOrganizationIdOnPetWrite` call sites in `routes/pets/coreWriteRouter.js`, `familyEventsRouter.js` and `transferRouter.js`, `POST /pets/:id/transfer-to-org` (`routes/pets/transferRouter.js`), `pinned_organization_id` in the profile and session routers, organisation memberships in the login and `/me` payloads (`orgPeople.js`, `orgRoles.js`). Decision needed per item: retire the endpoint (transfer-to-org, pinned organisation) or keep returning an always-empty memberships array for client compatibility until the Flutter model drops the field.
+- The five frozen seed scenarios and the demo credentials that reference organisation accounts.
+
+**Measure of done.** After the removal, `grep -rli "organization\|organisation\|shelter\|foster\|custody\|adoption" flutter_app/lib` should return only the data-model fields that are deliberately kept (5.4) and the terminology rule itself. Today it returns 124 files.
+
+## 5.4 Data: kept for now, decided separately
+
+| Item | Status after code removal | Open decision |
+|---|---|---|
+| Tables `organizations`, `organization_users`, `foster_placements`, `custody_transfers`, `archived_pets` | Kept; no new writes possible once routes are gone | Export and drop, or keep as cold data. Needs the data-protection owner: these rows contain names, e-mails and addresses of organisation members and foster carers. |
+| Migration files `server/scripts/migrations/*` | Kept, always | Never delete migrations. Make `023`, `028` and `042` self-contained before deleting the libs they import (5.2). |
+| `gdprUserExport.js` reads of org and foster tables | Kept while the tables exist | Remove the reads in the same migration that drops the tables; until then the export must still include a user's organisation memberships and foster records. |
+| Account deletion cascades over the retained tables | Kept | Verify with the existing deletion tests after the route removal; the cascade is in the schema, not in the deleted routes. |
+| Pet rows with a non-null `organization_id` | Kept | Decide whether such pets become ordinary pets of the last custodian (D-MVP-2 says fostered animals are ordinary pets) or are archived. This is the one place where deleting code could change what a real user sees. Count them in production before deciding. |
+
+## 5.5 Unrouted auth screens and the password-manager bridge
+
+**Why `LoginScreen` and `SignupScreen` exist.** They are the pre-landing authentication screens: full-page sign-in and sign-up with Flutter `TextFormField`s, `AutofillGroup` and `autofillHints`, linking to each other through `/login` and `/signup`. When the role-neutral landing page replaced them, the routes were removed but the files were not; they are still exported from the `features/auth/auth.dart` barrel (lines 13 and 16), which is why they are reachable in the import graph while no code constructs them. No test references them. Their last commits are mechanical batch changes (import boundaries, key renames), not feature work.
+
+**They are not part of the password-manager solution.** The owner's hypothesis was reasonable, because the bridge was built for exactly the problem these screens would have, but the bridge lives elsewhere:
+
+| Piece | Where | Role |
+|---|---|---|
+| Native HTML form `#anl-form` (email `autocomplete="username"`, password `autocomplete="current-password"`, show/hide toggle, forgot link, error region) | `flutter_app/web/index.html:178-206` with its controller script `:208-310` | The real DOM fields that extension password managers (Proton Pass, Bitwarden, 1Password) can see; `window.agathaNativeLogin` exposes `configure`, `attach`, `detach`, `setError`, `setBusy` |
+| `core/web/native_login_web.dart`, `native_login_inline_view_web.dart` (+ `_stub` files off-web) | Dart ↔ JS bridge via `dart:js_interop`; registers an `HtmlElementView` factory with a fixed 268 px container | Mounts the form inside the Flutter landing card, forwards labels, receives credentials |
+| `LandingLoginForm` (`features/auth/presentation/widgets/landing/landing_login_form.dart:66-95`) | `if (kIsWeb && nativeLogin.isAvailable)` renders the native view, else Flutter fields | Selects the strategy per platform |
+| `LandingScreen` (`landing_screen.dart:34-108`) | Owns the `NativeLogin` instance; performs auth in Dart; calls `detach()` after success (clears the DOM fields) and `setError` after failure | Keeps token handling in one place |
+
+`LoginScreen` has none of this: it uses only `AutofillGroup` and `autofillHints`, which help the browser's built-in manager and native platforms but do not expose fields to extensions (the reason the bridge was built). Deleting `LoginScreen` and `SignupScreen` therefore removes nothing from password-manager support, and keeping them adds nothing to it.
+
+**Decision: delete both**, remove the two barrel exports, and replace the remaining literal references to the dead routes: `my_details_screen.dart:116` `context.go('/login')` after a password change (A-7.3; the guard already turns it into `/landing`, but the literal should name the real route) and `absence_invite_landing_screen.dart:64-69` `/login?redirect=…` (C-15.1; becomes `/landing?returnTo=…` under X-3).
+
+**Where password-manager support actually stands today (web).** The bridge covers one of five credential moments:
+
+| Credential moment | Screen | Fields on web | Extension managers | Built-in browser / OS managers |
+|---|---|---|---|---|
+| Sign in | Landing, Sign in tab | Native HTML (bridge) | Fill and save | Fill and save |
+| Create account | Landing, Create account tab (`landing_signup_form.dart`) | Flutter, `AutofillHints.newPassword` | Cannot see the fields: no generate, no save | May offer save; generation depends on the browser |
+| Forgot password, step 2 (new password) | `/forgot-password` | Flutter | Cannot see | May offer save |
+| Change password | `/my-details` (`ChangePasswordForm`, hints present) | Flutter | Cannot see | May offer update |
+| Secure account | `/secure-account` (`secure_account_screen.dart:72-85`, bare `TextField`, no hints) | Flutter | Cannot see | Nothing to key on |
+
+The practical consequence: a new user whose manager cannot generate or capture a password at sign-up types one by hand, the manager never stores it, and on the next visit the working sign-in bridge has nothing to fill. The sign-up gap therefore removes most of the value of the sign-in bridge for the extension audience. On iOS and Android, `TextInput.finishAutofillContext()` is what triggers the system "save password?" prompt; the landing screen calls it on all three success paths, but My details and Secure account do not, so password changes on mobile are not offered to the keychain either.
+
+**Observations on the existing bridge (verify in a browser; none is a blocker).** The host container is a fixed 268 px high `HtmlElementView`, so the inline error region and 200% browser zoom may clip (system.md § 2.3). The page's `lang="en"` does not follow the app locale, and the JS validation strings default to English until Dart calls `configure`. The show/hide toggle is 40 × 40 px against the 48 dp rule (§ 7.1). Dark mode follows `prefers-color-scheme`, not the app's theme setting. The CSS repeats eight hex colours from `tokens.md` as CSS variables, outside the hex-colour lint that guards the docs. The error `div` has `role="alert"` but no `aria-describedby` link from the inputs. The Playwright landing page object depends on the `anl-*` ids, which is good: any extension of the bridge should keep them.
+
+**Suggested improvements, in order of value.**
+
+1. **Generalise the bridge into one native credential form with modes** rather than adding a second form per screen: `signin` (username + current-password), `signup` (email + new-password + confirm; given and family names can stay in Flutter since managers do not need them), `new-password` (current + new + confirm, with a hidden read-only `username` field so managers update the right entry). One host element, one controller with `configure(mode, labels)`, one Dart API (`NativeCredentialForm`) with the same stub off-web. Size the `HtmlElementView` from the content (a `ResizeObserver` reporting height to Dart) instead of 268 px.
+2. **Apply it to sign-up first.** That is the moment managers must capture a password for the sign-in bridge to pay off. Then Change password and Secure account (they can share the `new-password` mode and the existing `ChangePasswordForm` layout), then Forgot password step 2.
+3. **Let managers see the submit.** Keep the inputs in the DOM until the Dart auth future settles and call `detach()` only after success; managers key their "save?" prompt on a form submission followed by a navigation. Keep `autocomplete` values exact (`username`, `current-password`, `new-password`).
+4. **Native platforms.** Keep Flutter fields; add `autofillHints` to Secure account (A-8.2) and call `TextInput.finishAutofillContext()` after a successful password change or secure-account submission so iOS and Android offer to update the saved credential.
+5. **Parity with the design system and accessibility rules** in the same change: locale-driven `lang`, 48 px toggle, `aria-describedby` from inputs to the error region, content-sized host, CSS variables generated from `tokens.md` rather than copied.
+6. **Tests.** One Playwright spec per mode using the `anl-*` ids; one Flutter widget test per screen asserting the Flutter fallback renders off-web and when `isAvailable` is false.
+
+Risk to manage: validation copy duplicated between JS and Dart. Keep JS validation to "required" only, as today, and let server validation come back through `setError`, so there is one source of truth for messages.
+
+## 5.6 Other unused or duplicate active code
+
+**Method.** Two text-based checks on the current tree, limited to `flutter_app/lib/` outside the frozen roots: (1) reachability from `main.dart` over `import`, `export`, `part` and conditional-import directives; (2) for widget-like classes, a reference count across `lib/` and `test/` excluding the declaring file, with a manual check for top-level `show…Sheet` helpers that construct a class inside its own file. The result is a candidate list, not proof: a file can be unreachable yet intentionally kept (a test shim), and a class can be unreferenced yet used by reflection, which Flutter does not do. Confirm with `flutter analyze` after each deletion batch and, if available, a dedicated unused-files check before the PR.
+
+**Result.** 73 active files, 5,061 lines, are unreachable from `main.dart`. A further 10 classes are reachable (through a barrel export or by sharing a file with live code) but never constructed. Two findings in this review turned out to describe dead code and are withdrawn below.
+
+**Correction to Area B.** `pet_care_today_orientation.dart` (254 lines) and `pet_care_today_header.dart` (95) are not imported by any live file; the home test even asserts the orientation key is absent (`pet_care_shell_home_content_test.dart:106`). Findings B-2.2 (20 dp radius) and B-2.3 (count-pill semantics) therefore describe a widget users never see and are withdrawn; the B-2 strengths that credit the Today card are struck. The live home composes `PetCareDashboardContextualSlotSection`, `PetCareOperationsDeskLayout`, the My pets, Upcoming care and Planned absence sections. B-2.1 (raw error on the pet list) is unaffected.
+
+### 5.6.1 Delete: unreachable files with no live or test references
+
+| Group | Files | Lines | Note |
+|---|---|---|---|
+| Frozen surfaces named in the manifest's `activeSurfacesToRemove` and never removed | `experience/presentation/widgets/pet_care_fostering_section.dart`, `experience/presentation/screens/pet_care/pet_care_fostering_screen.dart` | 329 | Three test files reference them; delete together |
+| Pre-`AppFormSection` pet form sections | `pet_profile/presentation/screens/widgets/pet_{assignment,bio,breed,chip,insurance,org,photo,radio,vet,weight}_section.dart`, `vet_creation_sheet.dart` | 386 | Superseded by the sections the `pet_profile.dart` barrel exports (`pet_dob_section`, `pet_gender_section`, `pet_species_section`, `pet_form_identity_header`, …) |
+| Legacy care-entry form and row widgets | `health_tracking/presentation/widgets/care_event_row.dart`, `care_event_row_context.dart`, `care_event_row_host.dart`, `entry_document_section.dart`, `entry_form_labels.dart`, `entry_frequency_fields.dart`, `entry_remind_before_field.dart`, `guardian_add_event_picker_sheet.dart`, `health_entry_form/health_entry_edit_actions.dart`, `mark_complete_sheet.dart`, `recurrence_anchor_toggle.dart`, `domain/health_events_scope.dart` | 1,246 | Replaced by the care item / occurrence screens (B-10 to B-12). `guardian_*` is a legacy name. Several test files reference parts of this group |
+| Legacy events PDF | `health_tracking/data/services/events_pdf_service.dart`, `experience/…/screens/widgets/download_report_section.dart` | 440 | The live report uses `download_report_controller.dart` and `core/files/pdf_saver*`; this is the older generator |
+| Old pet-profile sections and controllers | `experience/presentation/pet_profile/screens/widgets/{health_issues_section,other_events_section,pet_profile_card}.dart`, `controllers/{other_events_controller,pet_profile_controller}.dart`, `providers/{pet_care_status_provider,pet_vet_contacts_provider}.dart`, `widgets/pet_care_section/{pet_care_temporal_group_section,pet_care_temporal_group_labels,pet_care_buckets_filter}.dart` | 727 | Pet detail (B-6) is built from other widgets today. Three test files reference parts of this group |
+| Home widgets no longer composed | `experience/presentation/widgets/pet_care_today_orientation.dart`, `pet_care_today_header.dart` | 349 | See the Area B correction above; two test files |
+| Frozen-domain shell pieces | `experience/presentation/widgets/{org_experience_drawer,pet_care_experience_drawer,experience_settings_section}.dart`, `screens/pet_care/pet_care_bulk_share.dart` | 141 | `pet_care_bulk_share.dart` duplicates the live bulk-share flow (B-4); `pet_list_bulk_share_bar.dart` (48 lines, test only) is its companion |
+| Care item and occurrence leftovers | `experience/presentation/care_item/detail/care_occurrence_menu.dart`, `care_item/occurrence/occurrence_schedule_action_bar.dart` | 143 | The ⋯ menu that shipped lives elsewhere |
+| Away-plan leftovers | `pet_care/context/presentation/screens/planned_absence_plan_placeholder_screen.dart`, `widgets/{away_plan_details_section,away_plan_handover_note_section,away_plan_suggestions_section}.dart`, `away_plan_planner_copy.dart` | 489 | The suggestions section has one test file |
+| People leftovers | `people/presentation/widgets/people_directory_card.dart`, `utils/people_contact_role_labels.dart`, `core/widgets/contact_initials_avatar.dart` | 136 | Superseded by the People hub (C-5) |
+| Landing leftovers | `auth/presentation/widgets/landing/{landing_audience_section,landing_path_card,landing_logo}.dart`, `controllers/my_details_controller.dart` | 211 | Two test files |
+| Small orphans | `core/providers/http_client_provider.dart` (4), `core/widgets/form/app_form_sheet.dart` (45), `care_intelligence/…/suggestion_why_button.dart` (37), `care_taxonomy/…/{care_classification_section,care_classification_labels}.dart` (146), `pet_profile/…/{family_events_controller,care_source_labels,profile_prompt_row,pet_timeline/pet_timeline_section}.dart` (106), `sharing/…/{shared_pet_health_entry_card,shared_pet_vet_card}.dart` (60), `pet_profile/domain/entities/pet_species.dart` (15) | 413 | `family_events_controller` carries a retired term. `pet_species.dart` may be a duplicate of the enum in the live model; confirm before deleting |
+
+### 5.6.2 Delete: reachable but never constructed
+
+| Class | File | Why it is reachable | Decision |
+|---|---|---|---|
+| `LoginScreen`, `SignupScreen` | `auth/presentation/screens/login_screen.dart` (212), `signup_screen.dart` (259) | Barrel export | Delete (5.5) |
+| `ExperienceSettingsScreen` | `experience/presentation/screens/experience_settings_screen.dart:10-39` | Shares the file with the live `ExperienceInviteScreen` | Delete the class; `/pc/settings` already redirects to `/account` |
+| `OrgDueEventsScreen`, `PetCareGlobalEventsFilterBar` | `experience/presentation/screens/pet_care/pet_care_due_events_screen.dart` | Share the file with the live All actions screen | Delete both; frozen |
+| `HealthDashboardOrgCollectionFilterBar`, `VetOrgCollectionFilterBar` | `core/widgets/collection_filter/org_context_collection_filter.dart` (300) | Imported by `org_filter_chips.dart` | Delete with the org filter chips (5.3) |
+| `ExperienceWorkspaceToggle` | `experience/presentation/widgets/experience_workspace_toggle.dart` | Constructed by the shell, renders `SizedBox.shrink()` | Delete (B-1.2) |
+| `HealthEntryCard`, `HealthEntryOpenButton` | `health_tracking/presentation/widgets/health_entry_card.dart`, `health_entry_card_actions.dart` | Barrel export; two test files | Delete with the legacy care-entry group above |
+| `SharingSectionContent` | `sharing/presentation/pet_sharing_panel.dart:70` | Imported by `share_pet_screen.dart`, never constructed | Delete the class; keep what the share screen uses from the file |
+| `DrawerMenuSeparator` | `experience/domain/entities/drawer_menu_item.dart` | Entity file | Delete if no menu config produces one |
+| `PetEventPetCard`, `PetTimelineSection` | `health_tracking/presentation/widgets/pet_event_pet_card.dart`, `pet_profile/…/pet_timeline_section.dart` | Barrel export | Delete |
+| `ExperienceChooserScreen` | `experience/presentation/screens/experience_chooser_screen.dart` | Routed at `/app/choose`, not reached by the login path (A-4.1) | Delete with the route once `AppExperience` is single-valued |
+
+### 5.6.3 Keep, with a reason
+
+- One-line re-export shims `experience/presentation/widgets/pet_care_dashboard_section_header.dart`, `pet_care_illustrated_empty_state.dart` and `people/presentation/providers/people_providers.dart`: unreachable from `main.dart` but imported by 22 test files under their old paths. Either re-point those tests and delete the shims, or keep them; do not delete without the test change.
+- `core/router/frozen_domain_route_stubs.dart` redirects: keep one or two releases (5.3).
+- `Pet.organizationId` and the retained tables: keep until the data decision (5.4).
+- Classes with a `show…Sheet` helper in the same file (`PlanAnotherDateSheet`, `ResumeDateSheet`, `PostponeSheet`, `OccurrenceAddDetailsSheet`, `OccurrenceReviewSheet`, `PetEmergencyManageSheet`) and the roster sections in `roster_list_sections.dart`: the class name has no external reference, but the helper or the file is used. These are live; they appeared in the raw count and are listed so nobody deletes them on that basis.
+
+## 5.7 Order of work
+
+1. **Tag and record.** Tag `main`; write the removal record; count production pets with a non-null `organization_id` and confirm no frozen notification kinds are still produced.
+2. **Flutter roots** (5.2): delete `features/organization`, `features/fostering_session`, their tests, the analyzer exclusion; run `flutter analyze` and the active test suite. No active behaviour changes in this step.
+3. **Server roots** (5.2): make migrations `023`, `028`, `042` self-contained; delete routes, libs, templates, tests, the frozen Jest lane and the mount gate; decide `transfer-to-org`, `pinned_organization_id` and memberships payload (5.3); run the active server suite and the GDPR export and deletion tests.
+4. **Dead active code** (5.6.1, 5.6.2) including `LoginScreen`/`SignupScreen` and the two dead route literals (5.5): delete in two or three PRs by group so each is reviewable; re-point or keep the test shims (5.6.3).
+5. **Active semantics** (5.3): single-valued `AppExperience`, shell toggle, pet form branches, notification kinds, org filter chips, then the content pass over Help, Account, About, My details, `index.html` and both ARB files, finishing with the unused-key sweep. This step is where the user-visible X-4 findings close.
+6. **Boundary machinery and docs**: delete the boundary script, manifest, frozen CI lane and exclusions; replace the frozen-domains docs with the record; update `terminology.md`, `docs/design/index.md` and the agent memory notes that describe the freeze.
+7. **Password-manager bridge** (5.5): independent of the above; can start any time after step 4 removes the dead auth screens.
+8. **Data decision** (5.4): separate track with the data-protection owner.
+
+Each step ends with the existing gates (the full `./scripts/pre-push` script, the active E2E lane) and, for steps 2, 3 and 5, a grep for the frozen words to show the count falling toward the 5.3 measure of done.
+
+---
+
+# Needs particular attention
+
+Ranked by user impact first, then by how many journeys the screen touches. Flags from the four reviewers were normalised: a screen is listed here when it has a High finding, sits on a core journey with a Medium requirement, or fails the same rule in several places. "Watch" screens follow the ranked list.
+
+| Rank | Screen(s) | Route(s) | Why | Findings |
+|---|---|---|---|---|
+| 1 | Invitation landings (four screens, one fix) | `/shared/:code`, `/invite/:code`, `/absence-invite/:code`, `/household-invite/:code` | Signed-out recipients cannot accept, or cannot reach the screen. Absence invite is blocked by the auth guard allow-list and its `/login?redirect` fallback is unrouted. Household invite exposes authenticated actions that the server rejects with 401. The absence invite screen is also untranslated; shared preview has no retry and prints the accept exception. | C-13.1, C-13.4, C-14.1, C-14.2, C-15.1, C-15.2, C-16.1 |
+| 2 | My details (data rights and password) | `/my-details` | Export claims success on iOS/Android without a file. The profile editor reports success after a swallowed save failure, and the language preference can diverge from what was persisted. Delete account's enabled button silently rejects a missing password. (First-pass claims withdrawn: the `/login` not-found page after a password change, and the missing deletion warning.) | D-12.1, A-7.6, A-7.2, A-7.5, D-12.2 |
+| 3 | Subscription | `/subscription` | "Manage subscription" does nothing. Renewal, cancellation and saving are not shown. English-only billing copy in a French build. Fetch error has no retry. | D-7.1, D-7.2, D-7.3, D-7.5 |
+| 4 | Notifications entry and inbox | `/notifications`, shell bell | The full inbox and settings cannot be reached from the active shell. Error state exposes a raw exception. The empty "For you" copy promises Agatha will speak up, which cuts against "silence is valid". | D-4.1, D-4.2, D-4.3 |
+| 5 | Help | `/help` | FAQ still teaches organisation and "Family Events" workflows, in English and French. Downgraded to Medium on the second pass (wrong help, not blocked work); closes with the Part 5 content pass. | D-8.1, D-8.3 |
+| 6 | Pending actions | `/pending-actions` | Its three sections are no-op frozen stubs (foster, adoption, custody). Empty state is a blank list; back behaviour on a deep link needs checking. Confirm with the notifications owner that those notification kinds are no longer generated, then retire the screen with the Part 5 removal. | D-6.1, D-6.2, D-6.3 |
+| 7 | Secure account | `/secure-account` | Reached from a security notification. No client validation or confirmation field (the server rejects empty and weak passwords, so this is Medium, not High), raw service errors, bare `TextField`s with no autofill hints, success assumes a previous route. | A-8.1, A-8.2, A-8.3, A-8.4 |
+| 8 | Pet Care onboarding | `/pc/onboarding` | First screen new users see after sign-up. A blank pet name fails silently; species labels are English in a French build; a failed save shows the raw error; the welcome step may crowd at large text. (Colour-only progress was withdrawn: the determinate bar already carries numeric semantics.) | A-5.1, A-5.5, A-5.6, A-5.3 |
+| 9 | Not-found page | router `errorBuilder` | Any bad or expired link ends on English text and the raw URI, with no way back. | D-13.1, D-13.2 |
+| 10 | First-use consent popup | global overlay | Compact layout puts `Expanded` buttons inside an unbounded column, which Flutter rejects at runtime; no one-tap "reject optional". | A-10.5, A-10.1 |
+
+**Watch list** (worth a closer look, no single severe defect):
+
+- Pet Care home (B-2.1): raw error and no retry on the screen users open most.
+- Add and edit care entry (B-10.2): edit-load failure shows only a snackbar and leaves an editable empty form; what Save then does needs verifying.
+- All actions queue (B-9.2): renders only after every entry's history has loaded (N+1 requests).
+- Bulk share select (B-4.1): tiles claim "All set" while care data is loading or failed.
+- New away plan (C-2.1) and household detail (C-10.1): pet-load failure looks like an empty account.
+- Add person (C-6.1): the contact can be saved while the household invite silently fails.
+- Landing and signup (A-1.1): signup lacks the password-manager bridge sign-in has, so managers never capture the password the bridge would later fill. Scope in Part 5 § 5.5.
+- Manage pet tags (D-2.5, D-2.2): primary load prints the raw exception with no retry; a failed delete gives no feedback.
+- Legal document viewer (D-11.3): a failed asset load has no recovery on a public screen.
+- Household detail (C-10.4) and person detail/edit (C-7.1, C-8.1): primary-load failures without retry.
+- Account (D-1.1): frozen organisation block; the identity-card announcement needs a runtime check (D-1.2, verify).
+- Experience resolve (A-3.3): an eligibility error silently falls back to Pet Care home.
+- Forgot password (A-2.2, A-2.4): the reset confirmation is server-authored English; recovery errors are raw.
+- Dead code reviewed as live (B-2.2, B-2.3): the "Today orientation" card is not on the home screen; see Part 5 § 5.6 before touching anything in the first-pass source lists.
+
+**Strongest screens**, for contrast: Forgot password, Legal documents and reader, Contacts hub, Away hub, Person detail, Pet timeline. Use them as references when fixing the weaker ones.
+
+**Check first, before any screen work:** X-13 below. If confirmed it affects every screen on web.
+
+---
+
+# Method and limits
+
+**How each screen was assessed.** The router files, then each screen's widget source and direct child widgets, the ARB strings (`app_en.arb`, `app_fr.arb`) and the design documents listed above. Four reviewers each took one area (entry and auth; home, pets and care; away, people and sharing; account, notifications, legal and help) and wrote findings with `file:line` evidence. The lead normalised severity and labels, removed overlaps, and spot-checked seven claims against the source: the `/login` navigation after password change, the empty "Manage subscription" handler, the export success message on non-web platforms, the Help FAQ strings, the absence-invite auth guard, and the two terminology findings. Five held. Two did not: the first pass said "dose" and "Missed" appear in the care UI, but they appear only in code identifiers and ARB key names while the displayed text says "overdue". Those findings (B-10.1, B-12.1) were downgraded to Low and the care form's flag was removed. The remaining findings were not individually re-verified, so treat file and line references as pointers to confirm.
+
+**Second pass on all areas (2026-11-09).** Every finding in Areas A, B, C and D was re-read against the source file by file (the lead for Area B; one reviewer each for A, C and D, with file reads rather than search snippets), re-graded against `system.md` § 6.10, § 7.1, § 2.3 and § 4 and `terminology.md`, and expanded to the nine-part structure. Each area ends with its list of changes. The lead then spot-checked the highest-impact second-pass claims in the source: the A-7.3 withdrawal (`changePassword` clears tokens and resets auth state before the navigation, and go_router 14.8.1 runs the top-level redirect for an unmatched location, so the user lands on `/landing`); the About route being public (`legal_document_id.dart` `publicRoutes` includes `/about`) and its visible `appTagline` (D-9.3); the shared-pet accept exception and missing retry (C-13.4); the raw tag-load error (D-2.5); the server's rejection of empty passwords on Secure account (A-8.1). All held. The lead also ran an import-graph reachability check from `main.dart`, which found that `pet_care_today_orientation.dart`, reviewed in Area B as part of Home, is not imported by any live file; B-2.2 and B-2.3 were withdrawn and the full dead-code list went into Part 5 § 5.6. Line references in the detailed findings are from this pass; they will drift as the code changes.
+
+**Part 5 evidence.** The frozen-code inventory comes from `docs/engineering/frozen-domains/manifest.json`, the analyzer and Jest configurations, `server/bin/server.js`, `scripts/check_frozen_domain_boundaries.sh` (which reports OK: no active import of a frozen root) and import greps over `server/`; sizes are `wc -l` on 2026-11-09. The password-manager analysis comes from `web/index.html`, the `core/web/native_login_*` bridge, `LandingLoginForm`, `LandingScreen` and the five credential screens; no browser extension was exercised, so the behaviour table in § 5.5 states what the field technology allows, not an observed result. The dead-code list is text-based reachability plus reference counts; confirm with the analyzer before deleting.
+
+**Not seen live.** Every signed-in screen was assessed from code only; the review environment cannot sign in. Public screens were attempted in a locally built preview of the current source (Flutter 3.44, release web build), at phone width (402 × 874) and desktop width (1280 × 800). Only the landing page rendered usefully, and in that capture all text painted by Flutter (headings, tab labels, banner text) is missing; only the native HTML login fields show. The Forgot password and Legal captures were blank or showed the landing page, so they are not included. The other public screens (`/shared`, `/invite`, `/household-invite`, `/legal/*`) were not captured. Findings on them rest on code.
+
+> **Archive note (not part of the original text).** The original review embedded two screenshots here, `screenshots/landing-desktop.jpg` and `screenshots/landing-mobile.jpg`, captioned "Both captures: Flutter text is missing, see X-13. They show layout only." The image files were not supplied when this record was committed, so the embeds are omitted. The surrounding text is otherwise a verbatim copy.
+
+**X-13, font and analytics requests blocked by the security policy (needs verification).** In the preview build, the browser log reported that `connect-src 'self' https://www.gstatic.com` in `server/config/securityHeaders.js` blocked the fetch of Flutter's fallback font from `fonts.gstatic.com` and of RevenueCat events from `e.revenue.cat`. The app declares no bundled font family, so Flutter web relies on that fetch for its text. The production site at the time of this review serves a "not open for public use yet" page, so production could not be compared. The test suites run with `E2E=1`, which turns the policy off, so they would not catch this. This may be specific to the review environment; it should be checked in a normal browser against a deployment that has the same headers. If confirmed it is a requirement-level issue for every screen on web.
+
+**Not verifiable from code, and not claimed:** rendered colour contrast, keyboard focus order and visibility, screen-reader output, behaviour at 200% text size, real layout overflow, offline behaviour, animation and reduced-motion handling, real subscription offer text from the stores. Findings that depend on these are phrased as "verify".
+
+**Out of scope.** Any code change; a UI review of the frozen Shelter and Fostering screens (their removal is decided in Part 5); redesign proposals for flagged screens; the mockup sandbox artifacts.
+
+**Suggested next step.** Three tracks can start independently: (1) the shared async-state widget (B-2.1) and its roll-out, which closes most X-1/X-2 findings across all areas; (2) the invite-recipient fix (X-3, C-13 to C-16); (3) Part 5 step 1 (tag, record, count production org-linked pets) followed by the Flutter root deletion. Flagged screens that need a proposed layout (Subscription, Notifications entry, the consent overlay) can be taken to the design canvas once the owner picks them.

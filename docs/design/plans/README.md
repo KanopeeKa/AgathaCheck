@@ -15,4 +15,5 @@ Working documents for UI/theme projects. Extract surviving rules into canonical 
 |------|--------|
 | [ui-rework-plan.md](./ui-rework-plan.md) | Phased theme rollout |
 | [agathatrack-redesign-blueprint.md](./agathatrack-redesign-blueprint.md) | Operations Desk blueprint (superseded by `system.md` for tokens) |
+| [ui-ux-review-2026-11.md](./ui-ux-review-2026-11.md) | Draft: original November 2026 UI/UX review of all active screens (record, verbatim) |
 | [ui-ux-review-2026-11-execute-plan-split.md](./ui-ux-review-2026-11-execute-plan-split.md) | Draft: options for delivering the November 2026 UI/UX review as three execute-plans |
