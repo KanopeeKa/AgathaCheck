@@ -3,7 +3,7 @@ title: Design delivery plans
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-23
+last_updated: 2026-11-09
 tags: [design, plans]
 ---
 
@@ -15,3 +15,4 @@ Working documents for UI/theme projects. Extract surviving rules into canonical 
 |------|--------|
 | [ui-rework-plan.md](./ui-rework-plan.md) | Phased theme rollout |
 | [agathatrack-redesign-blueprint.md](./agathatrack-redesign-blueprint.md) | Operations Desk blueprint (superseded by `system.md` for tokens) |
+| [ui-ux-review-2026-11-execute-plan-split.md](./ui-ux-review-2026-11-execute-plan-split.md) | Draft: options for delivering the November 2026 UI/UX review as three execute-plans |
