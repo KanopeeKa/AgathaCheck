@@ -47,9 +47,7 @@ PeopleHubShellChrome resolvePeopleHubCompactChrome({
     final householdId = state.pathParameters['householdId'];
     return PeopleHubShellChrome(
       screenTitle: l.householdsTitle,
-      backPath: householdId == null
-          ? listBackPath
-          : '/pc/people/households',
+      backPath: householdId == null ? listBackPath : '/pc/people/households',
       forceBackPath: true,
     );
   }
@@ -74,16 +72,17 @@ PeopleHubShellChrome resolvePeopleHubCompactChrome({
   final personId = peoplePersonIdFromState(state);
   if (personId != null) {
     final title = _personTitle(l, roster, personId);
-    final target =
-        roster == null ? null : resolvePersonDetailTarget(roster, personId);
+    final target = roster == null
+        ? null
+        : resolvePersonDetailTarget(roster, personId);
     final editAction = target is PersonDetailContactTarget
-      ? IconButton(
-          key: const Key('people_hub_edit_person'),
-          tooltip: l.peopleEditPerson,
-          onPressed: () => context.push('/pc/people/$personId/edit'),
-          icon: const Icon(Icons.edit_outlined),
-        )
-      : null;
+        ? IconButton(
+            key: const Key('people_hub_edit_person'),
+            tooltip: l.peopleEditPerson,
+            onPressed: () => context.push('/pc/people/$personId/edit'),
+            icon: const Icon(Icons.edit_outlined),
+          )
+        : null;
 
     return PeopleHubShellChrome(
       screenTitle: title,
@@ -93,9 +92,7 @@ PeopleHubShellChrome resolvePeopleHubCompactChrome({
     );
   }
 
-  return PeopleHubShellChrome(
-    screenTitle: l.peoplePageTitle,
-  );
+  return PeopleHubShellChrome(screenTitle: l.peoplePageTitle);
 }
 
 String _personTitle(AppLocalizations l, Roster? roster, String personId) {
