@@ -16,6 +16,8 @@ import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet_cache_freshness.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
 import 'package:pet_profile_app/features/experience/presentation/pet_profile/screens/pet_detail_screen.dart';
+import 'package:pet_profile_app/features/pet_tags/domain/entities/pet_tag.dart';
+import 'package:pet_profile_app/features/pet_tags/presentation/providers/pet_tag_providers.dart';
 import 'package:pet_profile_app/features/sharing/domain/entities/household_pet_access.dart';
 import 'package:pet_profile_app/features/sharing/domain/entities/pet_access.dart';
 import 'package:pet_profile_app/features/sharing/domain/entities/pet_share_access.dart';
@@ -32,6 +34,13 @@ import '../../../../helpers/fakes.dart';
 class _EmptyWeightEntriesNotifier extends WeightEntriesNotifier {
   @override
   Future<List<WeightEntry>> build(String arg) async => [];
+}
+
+class _PetDetailTagListNotifier extends PetTagListNotifier {
+  @override
+  Future<List<PetTag>> build() async => const [
+    PetTag(id: 'tag-1', name: 'Fred', petIds: ['pet-1']),
+  ];
 }
 
 class _PetDetailPetListNotifier extends PetListNotifier {
@@ -80,6 +89,11 @@ class _FakeSharingRepository implements SharingRepository {
 
   @override
   noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+double _globalTop(WidgetTester tester, Key key) {
+  final box = tester.renderObject<RenderBox>(find.byKey(key));
+  return box.localToGlobal(Offset.zero).dy;
 }
 
 void main() {
@@ -148,6 +162,7 @@ void main() {
         weightEntriesNotifierProvider.overrideWith(
           () => _EmptyWeightEntriesNotifier(),
         ),
+        petTagListProvider.overrideWith(_PetDetailTagListNotifier.new),
       ],
       child: MaterialApp.router(
         theme: AppTheme.lightTheme,
@@ -228,6 +243,49 @@ void main() {
     expect(find.byKey(const Key('pet_profile_weight_insight')), findsOneWidget);
     expect(find.text('Care Rhythms'), findsNothing);
     expect(find.text('Time to Follow Up'), findsNothing);
+  });
+
+  testWidgets('tag chips render below health history on narrow layout', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      buildApp(pet: ownedPet, initialLocation: '/pet/pet-1'),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('My tags'), findsNothing);
+    final tagTop = _globalTop(tester, const Key('pet_tag_add_chip'));
+    final healthTop = _globalTop(
+      tester,
+      const Key('pet_profile_health_history'),
+    );
+    final weightTop = _globalTop(
+      tester,
+      const Key('pet_profile_weight_insight'),
+    );
+    expect(tagTop, greaterThan(healthTop));
+    expect(tagTop, greaterThan(weightTop));
+  });
+
+  testWidgets('tag chips render below health history on wide layout', (
+    tester,
+  ) async {
+    final view = tester.view;
+    view.physicalSize = const Size(1280, 900);
+    view.devicePixelRatio = 1.0;
+    addTearDown(view.resetPhysicalSize);
+
+    await tester.pumpWidget(
+      buildApp(pet: ownedPet, initialLocation: '/pet/pet-1'),
+    );
+    await tester.pumpAndSettle();
+
+    final tagTop = _globalTop(tester, const Key('pet_tag_add_chip'));
+    final healthTop = _globalTop(
+      tester,
+      const Key('pet_profile_health_history'),
+    );
+    expect(tagTop, greaterThan(healthTop));
   });
 
   testWidgets('shows stale cache banner when pet list metadata is stale', (
