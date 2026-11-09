@@ -21,6 +21,8 @@ export 'domain/enums/relationship_kind.dart';
 export 'domain/repositories/people_repository.dart';
 export 'domain/services/contact_vet_mapping.dart';
 export 'domain/services/desk_ranking.dart';
+export 'domain/entities/pet_people_grouped.dart';
+export 'domain/services/group_pet_people.dart';
 export 'domain/services/pet_people_grouping.dart';
 export 'domain/services/pet_people_slots.dart';
 export 'domain/services/people_query.dart';
