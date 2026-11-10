@@ -18,6 +18,7 @@ import { test, expect, loginAs } from '../fixtures/auth.fixture';
 import {
   createHealthEntry,
   createPet,
+  getNotifications,
   getUnreadNotificationCount,
   markNotificationRead,
   markAllNotificationsRead,
@@ -25,6 +26,7 @@ import {
   seedPetOnlyNotification,
   signupUser,
   triggerCheckDueNotifications,
+  type TestNotification,
 } from '../support/api';
 import {
   checkCareReminders,
