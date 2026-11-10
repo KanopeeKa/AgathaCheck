@@ -106,7 +106,8 @@ class InviteRecipientBlock extends StatelessWidget {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
-    final displayInviter = (inviterName != null && inviterName!.trim().isNotEmpty)
+    final displayInviter =
+        (inviterName != null && inviterName!.trim().isNotEmpty)
         ? inviterName!.trim()
         : l.sharedPetLinkIdentityUnavailable;
 
@@ -146,9 +147,7 @@ class InviteRecipientBlock extends StatelessWidget {
               key: const Key('invite_recipient_continue_account'),
               onPressed: () {
                 final target = parseInviteReturnTo(invitePath) ?? invitePath;
-                context.go(
-                  appendInviteReturnQuery('/landing', target),
-                );
+                context.go(appendInviteReturnQuery('/landing', target));
               },
               style: FilledButton.styleFrom(
                 minimumSize: const Size.fromHeight(48),

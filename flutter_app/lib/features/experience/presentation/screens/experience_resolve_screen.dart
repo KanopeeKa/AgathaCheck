@@ -83,9 +83,7 @@ class _ExperienceResolveScreenState
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) _navigate(data);
         });
-        return const Scaffold(
-          body: Center(child: CircularProgressIndicator()),
-        );
+        return const Scaffold(body: Center(child: CircularProgressIndicator()));
       },
     );
   }

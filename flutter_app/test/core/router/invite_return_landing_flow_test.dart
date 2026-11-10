@@ -23,10 +23,7 @@ class _LoginOnSubmitAuthNotifier extends AuthNotifier {
   }
 
   @override
-  Future<void> login({
-    required String email,
-    required String password,
-  }) async {
+  Future<void> login({required String email, required String password}) async {
     state = loggedInAuthState;
   }
 
@@ -89,7 +86,9 @@ Widget _app(GoRouter router, AuthNotifier authNotifier) {
 }
 
 void main() {
-  testWidgets('login preserves invite returnTo through resolve', (tester) async {
+  testWidgets('login preserves invite returnTo through resolve', (
+    tester,
+  ) async {
     tester.view.physicalSize = const Size(800, 1400);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
@@ -108,10 +107,15 @@ void main() {
     await tester.tap(find.byKey(const Key('login_submit_button')));
     await _pumpSettleBounded(tester);
 
-    expect(router.state.uri.toString(), '/app/resolve?returnTo=%2Finvite%2Fabc');
+    expect(
+      router.state.uri.toString(),
+      '/app/resolve?returnTo=%2Finvite%2Fabc',
+    );
   });
 
-  testWidgets('signup preserves invite returnTo through resolve', (tester) async {
+  testWidgets('signup preserves invite returnTo through resolve', (
+    tester,
+  ) async {
     tester.view.physicalSize = const Size(800, 1400);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
@@ -152,7 +156,10 @@ void main() {
     await tester.tap(find.byKey(const Key('signup_submit_button')));
     await _pumpSettleBounded(tester);
 
-    expect(router.state.uri.toString(), '/app/resolve?returnTo=%2Finvite%2Fabc');
+    expect(
+      router.state.uri.toString(),
+      '/app/resolve?returnTo=%2Finvite%2Fabc',
+    );
   });
 
   testWidgets('native login preserves invite returnTo through resolve', (
@@ -188,7 +195,10 @@ void main() {
     await handleNativeLogin('native@example.com', 'password12');
     await _pumpSettleBounded(tester);
 
-    expect(router.state.uri.toString(), '/app/resolve?returnTo=%2Finvite%2Fabc');
+    expect(
+      router.state.uri.toString(),
+      '/app/resolve?returnTo=%2Finvite%2Fabc',
+    );
   });
 
   testWidgets('onboarding skip returns to stored invite route', (tester) async {
@@ -199,9 +209,7 @@ void main() {
     );
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [
-          sharedPreferencesProvider.overrideWithValue(prefs),
-        ],
+        overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
         child: MaterialApp.router(
           routerConfig: router,
           localizationsDelegates: const [
