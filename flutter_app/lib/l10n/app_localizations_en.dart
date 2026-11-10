@@ -477,6 +477,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get allCareClosedCareEmpty => 'No closed care yet.';
 
   @override
+  String get globalEventsPausedCareSection => 'Paused care';
+
+  @override
+  String get globalEventsClosedCareSection => 'Closed care';
+
+  @override
+  String globalEventsLifecycleSection(String title, int count) {
+    return '$title ($count)';
+  }
+
+  @override
+  String globalEventsShowSection(String title) {
+    return 'Show $title';
+  }
+
+  @override
+  String globalEventsHideSection(String title) {
+    return 'Hide $title';
+  }
+
+  @override
   String get careItemClosedByYou => 'Closed by you';
 
   @override
